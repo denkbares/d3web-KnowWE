@@ -90,7 +90,7 @@ public class CIBuilder {
 
 		List<TestObjectProvider> providers = new ArrayList<TestObjectProvider>();
 		providers.add(DefaultWikiTestObjectProvider.getInstance());
-		List<TestObjectProvider> pluggedProviders = TestObjectProviderManager.findTestObjectProviders();
+		List<TestObjectProvider> pluggedProviders = TestObjectProviderManager.getTestObjectProviders();
 		providers.addAll(pluggedProviders);
 
 		ProgressListener listener = new AjaxProgressListenerImpl();

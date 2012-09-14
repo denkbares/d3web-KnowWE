@@ -125,11 +125,11 @@
 	</extension>	
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="ShowTestDocumentationMarkup">
+		id="TestDocumentationMarkup">
 		<parameter id="class"
-			value="de.d3web.we.ci4ke.doc.ShowTestDocumentationMarkup" />
-		<parameter id="name" value="ShowTestDocumentationMarkup" />
-		<parameter id="description" value="Type ShowTestDocumentationMarkup to show test documentation" />
+			value="de.d3web.we.ci4ke.doc.TestDocumentationMarkup" />
+		<parameter id="name" value="TestDocumentationMarkup" />
+		<parameter id="description" value="Type TestDocumentationMarkup to show test documentation" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />

@@ -35,10 +35,10 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * Shows documentation for all tests that are available on the current KnowWE
  * installation
  * 
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer (denkbares GmbH)
  * @created 31.07.2012
  */
-public class ShowTestDocumentationMarkup extends DefaultMarkupType {
+public class TestDocumentationMarkup extends DefaultMarkupType {
 
 	private static final DefaultMarkup MARKUP;
 
@@ -46,7 +46,7 @@ public class ShowTestDocumentationMarkup extends DefaultMarkupType {
 		MARKUP = new DefaultMarkup("TestDocumentation");
 	}
 
-	public ShowTestDocumentationMarkup() {
+	public TestDocumentationMarkup() {
 		super(MARKUP);
 		this.setIgnorePackageCompile(true);
 		this.setRenderer(new TestDocumentationRenderer());
@@ -55,15 +55,72 @@ public class ShowTestDocumentationMarkup extends DefaultMarkupType {
 	class TestDocumentationRenderer extends DefaultMarkupRenderer {
 
 		@Override
-		public void render(Section<?> section, UserContext user, StringBuilder buff) {
+		public void render(Section<?> section, UserContext user, StringBuilder string) {
 			List<String> allTests = TestManager.findAllTestNames();
 			Collections.sort(allTests);
 
-			StringBuffer buffer = new StringBuffer();
+			StringBuffer temp = new StringBuffer();
 
-			buffer.append("<table class='wikitable'>");
+			temp.append("\n<table class='wikitable'>");
 
-			// table header line
+			appendHeader(temp);
+
+			for (String testName : allTests) {
+				appendTest(temp, testName);
+			}
+
+			temp.append("</table>\n");
+
+			string.append(Strings.maskHTML(temp.toString()));
+		}
+
+		private void appendTest(StringBuffer buffer, String testName) {
+			buffer.append("<tr>");
+
+			Test<?> test = TestManager.findTest(testName);
+
+			// name
+			buffer.append("<td>");
+			buffer.append(testName);
+			buffer.append("</td>");
+
+			// test object class
+			buffer.append("<td>");
+			buffer.append(test.getTestObjectClass().getSimpleName());
+			buffer.append("</td>");
+
+			// description
+			buffer.append("<td>");
+			buffer.append(test.getDescription());
+			buffer.append("</td>");
+
+			// test parameters
+			buffer.append("<td>");
+			appendParameterVerbalization(buffer, test);
+			buffer.append("</td>");
+
+			buffer.append("</tr>\n");
+		}
+
+		private void appendParameterVerbalization(StringBuffer buffer, Test<?> t) {
+			List<TestParameter> parameters = t.getParameterSpecification();
+			int size = parameters.size();
+			if (parameters.isEmpty()) {
+				buffer.append("No parameters");
+			}
+			else {
+				buffer.append(size + " parameter"
+						+ (size > 1 ? "s" : "") + ":<br/>");
+			}
+			int i = 1;
+			for (TestParameter testParameter : parameters) {
+				buffer.append((size > 1 ? i + ": " : "") + testParameter.toString() + "<br/>");
+				i++;
+			}
+		}
+
+		private void appendHeader(StringBuffer buffer) {
+			buffer.append("<tr>");
 			buffer.append("<th>");
 			buffer.append("Name of test");
 			buffer.append("</th>");
@@ -79,46 +136,7 @@ public class ShowTestDocumentationMarkup extends DefaultMarkupType {
 			buffer.append("<th>");
 			buffer.append("Parameters");
 			buffer.append("</th>");
-
-			for (String testName : allTests) {
-				buffer.append("<tr>");
-
-				Test<?> t = TestManager.findTest(testName);
-
-				// name
-				buffer.append("<td>");
-				buffer.append(testName);
-				buffer.append("</td>");
-
-				// test object class
-				buffer.append("<td>");
-				buffer.append(t.getTestObjectClass().getSimpleName());
-				buffer.append("</td>");
-
-				// description
-				buffer.append("<td>");
-				buffer.append(t.getDescription());
-				buffer.append("</td>");
-
-				// test parameters
-				buffer.append("<td>");
-				List<TestParameter> parameters = t.getParameterSpecification();
-				if (parameters.size() == 0) {
-					buffer.append("none");
-				}
-				int i = 1;
-				for (TestParameter testParameter : parameters) {
-					buffer.append(i + ".: " + testParameter.toString() + "\n");
-					i++;
-				}
-				buffer.append("</td>");
-
-				buffer.append("</tr>");
-			}
-
-			buffer.append("</table>");
-
-			buff.append(Strings.maskHTML(buffer.toString()));
+			buffer.append("</tr>");
 		}
 
 	}

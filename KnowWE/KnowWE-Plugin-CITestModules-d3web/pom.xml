@@ -39,6 +39,11 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-Plugin-TestCases</artifactId>
+			<version>0.2-SNAPSHOT</version>
+		</dependency>
   	</dependencies>
   
 </project>

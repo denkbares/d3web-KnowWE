@@ -48,9 +48,6 @@ import de.d3web.testcase.model.TestCase;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.knowledgebase.KnowledgeBaseType;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
-import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -302,35 +299,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		String[] kbpackages = DefaultMarkupType.getPackages(section,
 				KnowledgeBaseType.ANNOTATION_COMPILE);
 		String web = section.getWeb();
-		return getTestCaseProviders(kbpackages, web);
-	}
-
-	public static List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(String[] kbpackages, String web) {
-		Environment env = Environment.getInstance();
-		PackageManager packageManager = env.getPackageManager(web);
-		ArticleManager articleManager = env.getArticleManager(web);
-		List<Triple<TestCaseProvider, Section<?>, Article>> providers = new LinkedList<Triple<TestCaseProvider, Section<?>, Article>>();
-		for (String kbpackage : kbpackages) {
-			List<Section<?>> sectionsInPackage = packageManager.getSectionsOfPackage(kbpackage);
-			Set<String> articlesReferringTo = packageManager.getCompilingArticles(kbpackage);
-			for (String masterTitle : articlesReferringTo) {
-				Article masterArticle = articleManager.getArticle(masterTitle);
-				for (Section<?> packageSections : sectionsInPackage) {
-					TestCaseProviderStorage testCaseProviderStorage =
-							(TestCaseProviderStorage) packageSections.getSectionStore().getObject(
-									masterArticle,
-									TestCaseProviderStorage.KEY);
-					if (testCaseProviderStorage != null) {
-						for (TestCaseProvider testCaseProvider : testCaseProviderStorage.getTestCaseProviders()) {
-							providers.add(new Triple<TestCaseProvider, Section<?>, Article>(
-									testCaseProvider,
-									packageSections, masterArticle));
-						}
-					}
-				}
-			}
-		}
-		return providers;
+		return de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(kbpackages, web);
 	}
 
 	private void renderTableLine(Triple<TestCaseProvider, Section<?>, Article> selectedTriple, TestCase testCase, SessionDebugStatus status, String[] questionStrings, Collection<Question> usedQuestions, TerminologyManager manager, TerminologyObject selectedObject, Date date, int row, TableModel tableModel) {

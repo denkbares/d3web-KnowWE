@@ -17,21 +17,21 @@
 	</runtime>
 	
 	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="TestObjectProvider"
-		id="KnowledgeBaseTestObjectProvider">
+		id="KnowledgeBaseProvider">
 		<parameter id="class"
-			value="de.d3web.we.ci4ke.WikiKnowledgeBaseTestObjectProvider" />
-		<parameter id="name" value="KnowledgeBaseTestObjectProvider" />
-		<parameter id="description" value="KnowledgeBaseTestObjectProvider" />
+			value="de.d3web.we.ci4ke.WikiKnowledgeBaseProvider" />
+		<parameter id="name" value="KnowledgeBaseProvider" />
+		<parameter id="description" value="KnowledgeBaseProvider" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
 		<extension plugin-id="d3web-Plugin-TestingFramework" point-id="TestObjectProvider"
-		id="WikiTestCaseTestObjectProvider">
+		id="WikiTestCaseProvider">
 		<parameter id="class"
-			value="de.d3web.we.ci4ke.WikiTestCaseTestObjectProvider" />
-		<parameter id="name" value="WikiTestCaseTestObjectProvider" />
-		<parameter id="description" value="WikiTestCaseTestObjectProvider" />
+			value="de.d3web.we.ci4ke.WikiTestCaseProvider" />
+		<parameter id="name" value="WikiTestCaseProvider" />
+		<parameter id="description" value="WikiTestCaseProvider" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

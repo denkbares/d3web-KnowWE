@@ -65,10 +65,10 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 				RessourceLoader.RESOURCE_SCRIPT);
 
 		String dashboardName = DefaultMarkupType.getAnnotation(section,
-					CIDashboardType.NAME_KEY);
+				CIDashboardType.NAME_KEY);
 
 		string.append(Strings.maskHTML(renderDashboardContents(user,
-					section.getTitle(), dashboardName)));
+				section.getTitle(), dashboardName)));
 
 	}
 
@@ -77,11 +77,11 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	 * @created 25.06.2012
 	 * @return
 	 */
-	private static boolean checkDashBoardEditedAfterLatestBuild(Section<?> section, UserContext user, String dashboardName) {
+	private static boolean isDashBoardModifiedAfterLatestBuild(Section<?> section, UserContext user, String dashboardName) {
 
 		String title = section.getTitle();
 		String currentDashboardSourcetext = section.getText();
-		Dashboard dashboard = Dashboard.getDashboard(user.getWeb(), title,
+		Dashboard dashboard = Dashboard.getDashboard(section.getWeb(), title,
 				dashboardName);
 		BuildResult latestBuild = dashboard.getLatestBuild();
 		if (latestBuild == null) return false; // nothing to do
@@ -152,7 +152,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		// check whether dashboard definition has been changed
 		// if so render outdated-warning
-		boolean buildOutdated = checkDashBoardEditedAfterLatestBuild(dashboardSection, user,
+		boolean buildOutdated = isDashBoardModifiedAfterLatestBuild(dashboardSection, user,
 				dashboardName);
 		if (buildOutdated) {
 			String warningString = "Dashboard has been modified. Latest build is not up to date. (Consider to trigger new build: ";
@@ -235,8 +235,6 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		string.append(Strings.maskHTML("</div>"));
 		return string.toString();
 	}
-
-
 
 	private static BuildResult getBuildToShow(UserContext user, Dashboard dashboard) {
 		// find build number for detail view

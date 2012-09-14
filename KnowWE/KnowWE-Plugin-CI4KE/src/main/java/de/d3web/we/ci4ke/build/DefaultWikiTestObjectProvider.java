@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
@@ -53,30 +54,31 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 	}
 
 	@Override
-	public <T> List<T> getTestObjects(Class<T> c, String testObjectName) {
+	public <T> List<TestObjectContainer<T>> getTestObjects(Class<T> c, String testObjectName) {
 		if (c == null) {
 			Logger.getLogger(this.getClass()).warn("Class given to TestObjectProvider was 'null'");
 			return Collections.emptyList();
 		}
-		List<T> result = new ArrayList<T>();
+		List<TestObjectContainer<T>> result = new ArrayList<TestObjectContainer<T>>();
 		if (c.equals(Article.class)) {
 
 			Collection<Article> articlesMatchingPattern = getArticlesMatchingPattern(testObjectName);
 			for (Article article : articlesMatchingPattern) {
-				result.add(c.cast(article));
+				result.add(new TestObjectContainer<T>(article.getTitle(), c.cast(article)));
 			}
 
 		}
+		String web = Environment.DEFAULT_WEB;
 		if (c.equals(ArticleManager.class)) {
-			Object byName = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+			Object byName = Environment.getInstance().getArticleManager(web);
 			if (byName != null) {
-				result.add(c.cast(byName));
+				result.add(new TestObjectContainer<T>(web, c.cast(byName)));
 			}
 		}
 		if (c.equals(PackageManager.class)) {
-			Object byName = Environment.getInstance().getPackageManager(Environment.DEFAULT_WEB);
+			Object byName = Environment.getInstance().getPackageManager(web);
 			if (byName != null) {
-				result.add(c.cast(byName));
+				result.add(new TestObjectContainer<T>(web, c.cast(byName)));
 			}
 		}
 
@@ -94,17 +96,6 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 			}
 		}
 		return Collections.unmodifiableCollection(matchingArticles);
-	}
-
-	@Override
-	public <T> String getTestObjectName(T testObject) {
-		if (testObject instanceof Article) {
-			return ((Article) testObject).getTitle();
-		}
-		if (testObject instanceof ArticleManager) {
-			return Environment.DEFAULT_WEB;
-		}
-		return testObject.toString();
 	}
 
 }

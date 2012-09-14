@@ -111,8 +111,8 @@ public class CIDashboardType extends DefaultMarkupType {
 								monitoredArticles.add(parameter);
 							}
 							else {
-								msgs.add(Messages.error("Article name for trigger not existing: "
-										+ parameter));
+								msgs.add(Messages.error("Article '" + parameter
+										+ "' for trigger does not exist"));
 								return msgs;
 							}
 						}
@@ -191,7 +191,7 @@ public class CIDashboardType extends DefaultMarkupType {
 					}
 
 				}
-				if(arguments.length == 0 && message.getMessage(0) != null) {
+				if (arguments.length == 0 && message.getMessage(0) != null) {
 					msgs.add(new Message(Message.Type.ERROR, message.getMessage(0)));
 				}
 			}

@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Environment;
@@ -31,14 +32,15 @@ import de.knowwe.core.Environment;
  */
 
 /**
+ * Provides KnowledgeBases for the TestingApp or the CIDashboard.
  * 
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer (denkbares GmbH)
  * @created 22.05.2012
  */
-public class WikiKnowledgeBaseTestObjectProvider implements TestObjectProvider {
+public class WikiKnowledgeBaseProvider implements TestObjectProvider {
 
 	@Override
-	public <T> List<T> getTestObjects(Class<T> c, String id) {
+	public <T> List<TestObjectContainer<T>> getTestObjects(Class<T> c, String id) {
 		if (c == null) {
 			Logger.getLogger(this.getClass()).warn("Class given to TestObjectProvider was 'null'");
 			return Collections.emptyList();
@@ -47,20 +49,15 @@ public class WikiKnowledgeBaseTestObjectProvider implements TestObjectProvider {
 			return Collections.emptyList();
 		}
 
-		List<T> result = new ArrayList<T>();
+		List<TestObjectContainer<T>> result = new ArrayList<TestObjectContainer<T>>();
 		// get the KB for this article
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(
 				Environment.DEFAULT_WEB, id);
 		if (kb != null) {
-			result.add(c.cast(kb));
+			TestObjectContainer<T> container = new TestObjectContainer<T>(kb.getId(), c.cast(kb));
+			result.add(container);
 		}
 		return result;
-	}
-
-	@Override
-	public <T> String getTestObjectName(T testObject) {
-		if (testObject == null) return null;
-		return ((KnowledgeBase) testObject).getId();
 	}
 
 }
