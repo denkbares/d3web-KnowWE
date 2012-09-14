@@ -1003,12 +1003,6 @@
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
-					<artifactId>KnowWE-Plugin-CITestModules</artifactId>
-					<version>0-SNAPSHOT</version>
-					<scope>compile</scope>
-				</dependency>
-				<dependency>
-					<groupId>com.denkbares</groupId>
 					<artifactId>d3web-Plugin-TextbundleExport</artifactId>
 					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
@@ -1028,6 +1022,12 @@
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-JournalParser</artifactId>
+					<version>0-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>d3web-Plugin-Tests-ClosedSource</artifactId>
 					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
@@ -1079,12 +1079,6 @@
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-DenkbaresDialog</artifactId>
 					<version>0.2-SNAPSHOT</version>
-					<scope>compile</scope>
-				</dependency>
-				<dependency>
-					<groupId>com.denkbares</groupId>
-					<artifactId>KnowWE-Plugin-CITestModules</artifactId>
-					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
