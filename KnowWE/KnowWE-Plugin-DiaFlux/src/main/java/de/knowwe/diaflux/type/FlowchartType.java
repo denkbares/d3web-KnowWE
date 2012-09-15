@@ -25,6 +25,7 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.InvalidKDOMSchemaModificationOperation;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.MessageRenderer;
 import de.knowwe.diaflux.DiaFluxTrace;
 import de.knowwe.diaflux.DiaFluxValueTrace;
 import de.knowwe.diaflux.FlowchartRenderer;
@@ -50,10 +51,21 @@ public class FlowchartType extends AbstractXMLType {
 		SessionFactory.addPropagationListener(DiaFluxValueTrace.LISTENER);
 	}
 
-	/**
-	 * 
-	 * @created 08.12.2010
-	 */
+	@Override
+	public MessageRenderer getErrorRenderer() {
+		return null;
+	}
+
+	@Override
+	public MessageRenderer getWarningRenderer() {
+		return null;
+	}
+
+	@Override
+	public MessageRenderer getNoticeRenderer() {
+		return null;
+	}
+
 	public void replaceHead() {
 		try {
 			this.replaceChildType(new FlowchartXMLHeadType(), XMLHead.class);
@@ -64,7 +76,9 @@ public class FlowchartType extends AbstractXMLType {
 	}
 
 	public static String getFlowchartName(Section<FlowchartType> sec) {
-		return Sections.findSuccessor(sec, FlowchartTermDef.class).getText();
+		Section<FlowchartTermDef> definition = Sections.findSuccessor(sec, FlowchartTermDef.class);
+		if (definition == null) return "Unnamed Flowchart";
+		return definition.getText();
 	}
 
 }
