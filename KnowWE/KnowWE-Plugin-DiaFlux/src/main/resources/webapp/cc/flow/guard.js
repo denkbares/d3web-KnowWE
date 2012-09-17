@@ -60,7 +60,7 @@ Guard.prototype.lookupDisplayHTML = function(guardPatterns) {
 			if (DiaFluxUtils.isString(guard)) continue;
 			if (guard.isPatternFor(this, skipQuotes[k])) {
 				// extrahiere Wert
-				var values = this.getValues(guard);
+				var values = this.getValues(guard, skipQuotes);
 				// und erzeuge auf Werte passendes displayHTML
 				this.displayHTML = guard.getDisplayHTML(values);
 				this.unit = guard.unit;
@@ -88,8 +88,9 @@ Guard.prototype.getVariableTypes = function() {
 	return result;
 }
 
-Guard.prototype.getValues = function(patternGuard) {
+Guard.prototype.getValues = function(patternGuard, skipQuotes) {
 	var pattern = patternGuard.getConditionString();
+	if (skipQuotes) pattern = pattern.replace(/"/g, "");
 	pattern = pattern.replace(/\$\{[:\w]*\}/gi, '__ANY__');
 	pattern = DiaFluxUtils.escapeRegex(pattern);
 
@@ -100,7 +101,9 @@ Guard.prototype.getValues = function(patternGuard) {
 	}
 	
 	var regexp = new RegExp(pattern,'gi');
-	var result = regexp.exec(this.conditionString);
+	var condString = this.conditionString;
+	if (skipQuotes) condString = condString.replace(/"/g, "");
+	var result = regexp.exec(condString);
 	if (!result) {
 		return ""; 
 	} else {
