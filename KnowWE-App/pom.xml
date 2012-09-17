@@ -300,25 +300,6 @@
 			</dependencies>
 		</profile>
 
-		<!-- Continuous Integration/Anomlaies plugin -->
-		<profile>
-			<id>ci4ke-anomalies-plugin</id>
-			<activation>
-				<property>
-					<name>ci4ke-anomalies-plugin</name>
-				</property>
-			</activation>
-
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-CI4KE-Anomalies</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
 		<!-- Hermes Module -->
 		<profile>
 			<id>hermes-plugin</id>
@@ -878,41 +859,6 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		
-		
-		<profile>
-			<id>jspwikimarkup-plugin</id>
-			<activation>
-				<property>
-					<name>jspwikimarkup-plugin</name>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
-					<version>0.2-SNAPSHOT</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-		
-		<profile>
-			<id>loadkb-plugin</id>
-			<activation>
-				<property>
-					<name>loadkb-plugin</name>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-LoadKnowledgeBase</artifactId>
-					<version>0.2-SNAPSHOT</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
 
 		<profile>
 			<id>knowsec</id>
@@ -1029,6 +975,18 @@
 					<groupId>com.denkbares</groupId>
 					<artifactId>d3web-Plugin-Tests-ClosedSource</artifactId>
 					<version>0-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		
+		<profile>
+			<id>denkbares-thrillseeker</id>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-LoadKnowledgeBase</artifactId>
+					<version>0.2-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
