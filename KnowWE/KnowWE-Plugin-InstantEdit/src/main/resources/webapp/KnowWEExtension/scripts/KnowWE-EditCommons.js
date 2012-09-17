@@ -17,6 +17,17 @@ KNOWWE.editCommons = function() {
         mode: null,
 
         wikiText: new Object(),
+        
+        wrapHTML: function(id, locked, html) {
+            var lockedHTML = "";
+            if (locked) {
+                lockedHTML = "<div class=\"error\">Another user has started to edit this page, but " + "hasn't yet saved it. You are allowed to further edit this page, but be " + "aware that the other user will not be pleased if you do so!</div>"
+            }
+            var openingDiv = "<div id='" + id + "' class='editarea'>";
+            var closingDiv = "</div>\n";
+
+            return openingDiv + lockedHTML + html + closingDiv;
+        },
 
         hideTools: function() {
             $$('.markupTools').setStyle("display", "none");
@@ -26,7 +37,7 @@ KNOWWE.editCommons = function() {
             var ajaxLoaderGif = new Element("img", {
                 'id': 'instantedit_loader',
                 'src': 'KnowWEExtension/images/ajax-100.gif',
-                'class': 'ajaxloader',
+                'class': 'ajaxloader'
             });
             $(id).appendChild(ajaxLoaderGif);
         },
@@ -82,7 +93,7 @@ KNOWWE.editCommons = function() {
 
         executeIfPrivileged: function(grantedFN, forbiddenFN) {
             var params = {
-                action: 'CheckCanEditPageAction',
+                action: 'CheckCanEditPageAction'
             }
 
             var options = {
@@ -119,7 +130,7 @@ KNOWWE.editCommons = function() {
                         $(window).removeEvents('unload');
                         fn();
                     },
-                    onError: _EC.onErrorBehavior,
+                    onError: _EC.onErrorBehavior
                 }
             }
             new _KA(options).send();
@@ -135,7 +146,7 @@ KNOWWE.editCommons = function() {
 
             var params = {
                 action: actionName,
-                KdomNodeId: id,
+                KdomNodeId: id
             };
 
             var options = {
@@ -145,7 +156,7 @@ KNOWWE.editCommons = function() {
                     action: 'none',
                     // for FF 3.6 compatibility, we can't use the function fn
                     // in synchronous call (no onreadystatechange event fired)
-                    onError: _EC.onErrorBehavior,
+                    onError: _EC.onErrorBehavior
                 }
             };
             var ajaxCall = new _KA(options);

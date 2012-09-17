@@ -22,19 +22,6 @@ if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
  */
 KNOWWE.plugin.instantEdit = function() {
  
-    function wrapHTML(id, locked, html) {
-        var lockedHTML = "";
-        if (locked) {
-            lockedHTML = "<div class=\"error\">Another user has started to edit this page, but "
-            + "hasn't yet saved it. You are allowed to further edit this page, but be "
-            + "aware that the other user will not be pleased if you do so!</div>"
-        }
-        var openingDiv = "<div id='" + id + "' class='editarea'>";
-        var closingDiv = "</div>\n";
-
-        return openingDiv + lockedHTML + html + closingDiv;
-    }
-
     function enabledWarning() {
         if (_IE.enabled) {
             alert("You can only edit the page once at a time.")
@@ -76,7 +63,7 @@ KNOWWE.plugin.instantEdit = function() {
 
             var params = {
                 action: 'InstantEditEnableAction',
-                KdomNodeId: id,
+                KdomNodeId: id
             };
 
             var options = {
@@ -93,7 +80,7 @@ KNOWWE.plugin.instantEdit = function() {
                         var locked = JSON.parse(this.responseText).locked;
                         var html = toolNameSpace.generateHTML(id);
                         html += toolNameSpace.generateButtons(id);
-                        html = wrapHTML(id, locked, html);
+                        html = _EC.wrapHTML(id, locked, html);
 
                         KNOWWE.core.util.replace(html);
 
@@ -113,7 +100,7 @@ KNOWWE.plugin.instantEdit = function() {
         disable: function(id, reload, fn) {
             var params = {
                 action: 'InstantEditDisableAction',
-                KdomNodeId: id,
+                KdomNodeId: id
             }
 
             var options = {
@@ -121,7 +108,7 @@ KNOWWE.plugin.instantEdit = function() {
                 async: false,
                 response: {
                     action: 'none',
-                    onError: _IE.onErrorBehavior,
+                    onError: _IE.onErrorBehavior
                 }
             }
             new _KA(options).send();
@@ -176,7 +163,7 @@ KNOWWE.plugin.instantEdit = function() {
             var params = {
                 action: 'InstantEditAddArticleAction',
                 KdomNodeId: id,
-                KWiki_Topic: title,
+                KWiki_Topic: title
             }
 
             _EC.sendChanges(newWikiText, params, function(id) { _IE.disable(id, true, null); });

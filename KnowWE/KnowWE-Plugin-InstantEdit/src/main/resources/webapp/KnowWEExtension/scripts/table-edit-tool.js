@@ -26,7 +26,7 @@ KNOWWE.plugin.tableEditTool = function() {
 	    },
 	    
 	    generateButtons : function(id) {
-	    	return _EC.getSaveCancelDeleteButtons(id, new Array(
+	    	return _EC.elements.getSaveCancelDeleteButtons(id, new Array(
 	    	    			createButton("table_insert_col_before", "gif"),
 	    	    			createButton("table_insert_col_after", "gif"),
 	    	    			createButton("table_delete_col", "gif"),
@@ -87,7 +87,13 @@ KNOWWE.plugin.tableEditTool = function() {
 	    generateWikiText : function(id) {
 	    	spreadsheet[id].stopEditCell();
 	    	return spreadsheet[id].getWikiMarkup();
+	    },
+	    
+	    getOriginalWikiText : function(id) {
+	    	return originalWikiText[id];
 	    }
+	    
+	    
     }
 }();
 
