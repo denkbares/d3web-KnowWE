@@ -17,6 +17,8 @@
 		<parameter-def id="description" />
 		<parameter-def id="version" />
 		<parameter-def id="priority" type="number" />
+		<parameter-def id="script" multiplicity="any" />
+		<parameter-def id="css" multiplicity="any" />
 	</extension-point>
 
 	<extension-point id="KnowledgeRepresentationHandler">

@@ -261,6 +261,8 @@ public class Plugins {
 				EXTENDED_POINT_ToolProvider));
 		addScripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_Renderer));
+		addScripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_KnowWEAction));
 		for (String s : files) {
 			RessourceLoader.getInstance().add(s, RessourceLoader.RESOURCE_SCRIPT);
 		}
@@ -278,6 +280,8 @@ public class Plugins {
 				EXTENDED_POINT_ToolProvider));
 		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_Renderer));
+		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_KnowWEAction));
 		for (String s : files) {
 			RessourceLoader.getInstance().add(s, RessourceLoader.RESOURCE_STYLESHEET);
 		}
