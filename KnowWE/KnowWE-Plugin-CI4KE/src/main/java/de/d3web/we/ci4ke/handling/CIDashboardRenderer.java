@@ -332,7 +332,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 				messageText = messageText + successes + " test objects tested successfully\n";
 
-				String[] config = result.getArguments();
+				String[] config = result.getConfiguration();
 
 				// render bullet
 				buffy.append(CIUtilities.renderResultType(buildResult, 16,
