@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 
 import de.d3web.testing.ArgsCheckResult;
 import de.d3web.testing.ExecutableTest;
-import de.d3web.testing.Utils;
+import de.d3web.testing.TestParser;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -60,6 +60,8 @@ public class CIDashboardType extends DefaultMarkupType {
 		MARKUP.addAnnotation(NAME_KEY, true);
 		MARKUP.addAnnotation(TEST_KEY, true);
 		MARKUP.addAnnotation(TRIGGER_KEY, true);
+		MARKUP.addAnnotationContentType(TEST_KEY, new TestIgnoreType());
+		MARKUP.addAnnotationContentType(TEST_KEY, new TestDeclarationType());
 	}
 
 	public CIDashboardType() {
@@ -141,8 +143,18 @@ public class CIDashboardType extends DefaultMarkupType {
 			// iterate over all @test-Annotations
 			List<ArgsCheckResult> messages = new ArrayList<ArgsCheckResult>();
 			for (Section<?> annoSection : annotationSections) {
-				ExecutableTest executableTest = Utils.createExecutableTest(annoSection.getText(),
-						messages);
+				// Section<TestDeclarationType> testSection =
+				// Sections.findChildOfType(annoSection,
+				// TestDeclarationType.class);
+				// List<Section<TestIgnoreType>> ignoreSections =
+				// Sections.findChildrenOfType(annoSection,
+				// TestIgnoreType.class);
+
+				// parse test
+				TestParser testParser = new TestParser(annoSection.getText());
+				ExecutableTest executableTest = testParser.getExecutableTest();
+				messages.add(testParser.getParameterCheckResult());
+				messages.addAll(testParser.getIgnoreCheckResults());
 				if (executableTest != null) {
 					tests.add(executableTest);
 				}
@@ -180,6 +192,7 @@ public class CIDashboardType extends DefaultMarkupType {
 		 */
 		private void convertMessages(List<ArgsCheckResult> messages, List<Message> msgs) {
 			for (ArgsCheckResult message : messages) {
+				if (message == null) continue;
 				String[] arguments = message.getArguments();
 				for (int i = 0; i < arguments.length; i++) {
 					String messageText = message.getMessage(i);

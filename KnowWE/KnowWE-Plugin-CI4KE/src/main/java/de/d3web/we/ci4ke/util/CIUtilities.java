@@ -48,8 +48,6 @@ public class CIUtilities {
 
 	private static Map<String, TestExecutor> runningBuilds = new HashMap<String, TestExecutor>();
 
-
-
 	/**
 	 * Registers a running build for a specific dashboard.
 	 * 
@@ -62,8 +60,8 @@ public class CIUtilities {
 	}
 
 	/**
-	 * Removes a running build process for a specific dashboard.
-	 * If it is still alive it will stop (interrupted and after time-out by force).
+	 * Removes a running build process for a specific dashboard. If it is still
+	 * alive it will stop (interrupted and after time-out by force).
 	 * 
 	 * @created 13.08.2012
 	 * @param dashBoardID
@@ -75,7 +73,7 @@ public class CIUtilities {
 			executor.terminate();
 			// finally remove executor from register
 			runningBuilds.remove(dashBoardID);
-			//System.out.println("build thread removed");
+			// System.out.println("build thread removed");
 		}
 	}
 
@@ -234,7 +232,7 @@ public class CIUtilities {
 		StringBuilder string = new StringBuilder();
 		String dashboardName = dashboard.getDashboardName();
 
-		string.append("<h3>");
+		string.append("<span class='header'>");
 
 		if (latestBuild != null || buildRunning(dashboardName)) {
 			CIBuildRenderer renderer = dashboard.getRenderer();
@@ -248,7 +246,7 @@ public class CIUtilities {
 		if (buildRunning(dashboardName)) {
 			renderProgressInfoHTML(dashboard, string, dashboardName);
 		}
-		string.append("</h3>");
+		string.append("</span>");
 		return string.toString();
 	}
 

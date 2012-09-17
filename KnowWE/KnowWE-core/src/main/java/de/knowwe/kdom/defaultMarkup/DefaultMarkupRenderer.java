@@ -188,12 +188,16 @@ public class DefaultMarkupRenderer implements Renderer {
 
 			// only if there are such messages
 			if (messages.isEmpty()) continue;
-			string.append(Strings.maskHTML("<span class='" + type.toString().toLowerCase()
+			String clazz = type.toString().toLowerCase();
+			if (messages.size() == 1) {
+				clazz += " singleLine";
+			}
+			string.append(Strings.maskHTML("<span class='" + clazz
 					+ "' style='white-space: pre-wrap;'>"));
 			for (String messageString : messages) {
 				string.append(messageString).append("\n");
 			}
-			string.append(Strings.maskHTML("</span><br/>"));
+			string.append(Strings.maskHTML("</span>\n"));
 		}
 	}
 

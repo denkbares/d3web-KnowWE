@@ -23,6 +23,7 @@ package de.knowwe.core.kdom.taghandler;
 import java.util.Map;
 
 import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
 import de.knowwe.core.user.UserContext;
@@ -51,4 +52,10 @@ public class KDOMRenderer extends AbstractHTMLTagHandler {
 		return data;
 	}
 
+	public static String renderPlain(Article article) {
+		RenderKDOMVisitor v = new RenderKDOMVisitor();
+		v.visit(article.getRootSection());
+		String plain = v.getRenderedKDOM().replaceAll("<[^>]*>", "").replace("&quot;", "\"");
+		return plain;
+	}
 }

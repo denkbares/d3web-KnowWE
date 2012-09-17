@@ -49,7 +49,7 @@ public class ArticleContains extends AbstractTest<Article> {
 	}
 
 	@Override
-	public Message execute(Article article, String[] args) throws InterruptedException {
+	public Message execute(Article article, String[] args, String[]... ignores) throws InterruptedException {
 
 		Utils.checkInterrupt();
 

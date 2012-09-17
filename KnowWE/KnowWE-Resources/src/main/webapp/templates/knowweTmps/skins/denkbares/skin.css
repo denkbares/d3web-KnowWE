@@ -445,6 +445,22 @@ td .information, td .warning, td .error {
 	margin:0;
 }
 
+.defaultMarkup .markupText .error, 
+.defaultMarkup .markupText .warning,
+.defaultMarkup .markupText .information {
+	padding: 5px 20px 5px 45px;
+	margin: 0px;
+	min-height: 32px;
+}
+
+.defaultMarkup .markupText .error.singleLine, 
+.defaultMarkup .markupText .warning.singleLine,
+.defaultMarkup .markupText .information.singleLine {
+	padding-top: 13px;
+	min-height: 24px;
+}
+
+
 /* +++ 290 Comment boxes (used on some pages) +++ */
 .commentbox {
 	display:block;

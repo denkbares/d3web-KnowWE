@@ -24,6 +24,9 @@ import java.util.List;
 import de.d3web.testing.Test;
 import de.d3web.testing.TestManager;
 import de.d3web.testing.TestParameter;
+import de.d3web.testing.TestParameter.Mode;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Strings;
@@ -71,7 +74,13 @@ public class TestDocumentationMarkup extends DefaultMarkupType {
 
 			temp.append("</table>\n");
 
+			string.append("\n%%table-filter");
+			string.append("\n%%sortable");
+			string.append("\n");
 			string.append(Strings.maskHTML(temp.toString()));
+			string.append("\n/%");
+			string.append("\n/%");
+			string.append("\n");
 		}
 
 		private void appendTest(StringBuffer buffer, String testName) {
@@ -86,56 +95,91 @@ public class TestDocumentationMarkup extends DefaultMarkupType {
 
 			// test object class
 			buffer.append("<td>");
-			buffer.append(test.getTestObjectClass().getSimpleName());
+			buffer.append(getTestObjectName(test));
 			buffer.append("</td>");
 
 			// description
 			buffer.append("<td>");
-			buffer.append(test.getDescription());
-			buffer.append("</td>");
-
-			// test parameters
-			buffer.append("<td>");
-			appendParameterVerbalization(buffer, test);
+			appendDescription(buffer, test);
+			appendParameterDetails(buffer,
+					"Parameter Details",
+					test.getParameterSpecification());
+			appendParameterDetails(buffer,
+					"This test also allows to specify items to be ignored",
+					test.getIgnoreSpecification());
 			buffer.append("</td>");
 
 			buffer.append("</tr>\n");
 		}
 
-		private void appendParameterVerbalization(StringBuffer buffer, Test<?> t) {
-			List<TestParameter> parameters = t.getParameterSpecification();
-			int size = parameters.size();
-			if (parameters.isEmpty()) {
-				buffer.append("No parameters");
+		private void appendDescription(StringBuffer buffer, Test<?> test) {
+			buffer.append("<i>Synopsis: @test ").append(test.getName());
+			buffer.append(" \u00AB").append(getTestObjectName(test)).append("\u00BB");
+			for (TestParameter parameter : test.getParameterSpecification()) {
+				boolean optional = Mode.Optional.equals(parameter.getMode());
+				if (optional) {
+					buffer.append(" [\u00AB").append(parameter.getName()).append("\u00BB]");
+				}
+				else {
+					buffer.append(" \u00AB").append(parameter.getName()).append("\u00BB");
+				}
 			}
-			else {
-				buffer.append(size + " parameter"
-						+ (size > 1 ? "s" : "") + ":<br/>");
+			buffer.append("</i><p>");
+			buffer.append(test.getDescription());
+		}
+
+		private void appendParameterDetails(StringBuffer buffer, String title, List<TestParameter> parameters) {
+			if (parameters.isEmpty()) return;
+			buffer.append("<p>").append(title).append(":<ul>");
+			for (TestParameter parameter : parameters) {
+				buffer.append("<li><i>&laquo;").append(parameter.getName()).append("&raquo;</i>");
+				boolean optional = Mode.Optional.equals(parameter.getMode());
+				if (optional) buffer.append(" (optional)");
+				buffer.append(": ");
+				buffer.append("<br>").append(parameter.getDescription());
+				buffer.append("</li>");
 			}
-			int i = 1;
-			for (TestParameter testParameter : parameters) {
-				buffer.append((size > 1 ? i + ": " : "") + testParameter.toString() + "<br/>");
-				i++;
+			buffer.append("</ul>");
+		}
+
+		private String getTestObjectName(Test<?> test) {
+			String testObjectName = "Object";
+			if (Article.class.isAssignableFrom(test.getTestObjectClass())) {
+				testObjectName = "Article";
 			}
+			else if (PackageManager.class.isAssignableFrom(test.getTestObjectClass())) {
+				testObjectName = "Package";
+			}
+			else if (test.getTestObjectClass().getSimpleName().equals("KnowledgeBase")) {
+				testObjectName = "KnowledgeBase";
+			}
+			else if (test.getTestObjectClass().getSimpleName().equals("TestCase")) {
+				testObjectName = "TestCase";
+			}
+			else if (test.getTestObjectClass().getSimpleName().equals("OWLAPIConnector")) {
+				testObjectName = "Ontology";
+			}
+			else if (test.getTestObjectClass().getSimpleName().equals("Rdf2GoCore")) {
+				testObjectName = "Ontology";
+			}
+			return testObjectName;
 		}
 
 		private void appendHeader(StringBuffer buffer) {
 			buffer.append("<tr>");
+
 			buffer.append("<th>");
-			buffer.append("Name of test");
+			buffer.append("Name of Test");
 			buffer.append("</th>");
 
 			buffer.append("<th>");
-			buffer.append("Test object class");
+			buffer.append("Test Object");
 			buffer.append("</th>");
 
 			buffer.append("<th>");
 			buffer.append("Description");
 			buffer.append("</th>");
 
-			buffer.append("<th>");
-			buffer.append("Parameters");
-			buffer.append("</th>");
 			buffer.append("</tr>");
 		}
 

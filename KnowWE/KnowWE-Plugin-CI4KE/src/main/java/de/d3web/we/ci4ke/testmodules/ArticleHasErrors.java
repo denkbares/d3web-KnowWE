@@ -38,7 +38,7 @@ import de.knowwe.core.report.Messages;
 public class ArticleHasErrors extends AbstractTest<Article> {
 
 	@Override
-	public Message execute(Article moni, String[] args2) throws InterruptedException {
+	public Message execute(Article moni, String[] args2, String[]... ignores) throws InterruptedException {
 
 		boolean hasError = false;
 		StringBuffer buffy = new StringBuffer();

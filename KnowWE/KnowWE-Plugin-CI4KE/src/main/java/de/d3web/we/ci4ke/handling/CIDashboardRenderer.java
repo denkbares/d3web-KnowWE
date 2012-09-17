@@ -185,8 +185,9 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		// render top part of the dashboard
 		string.append("<a name='" + dashboard.getDashboardName() + "'></a>");
-		string.append("<div id='top_" + dashboardName
-				+ "' style='border-bottom:1px solid #DDDDDD;'>");
+		string.append("<div id='top_"
+				+ dashboardName
+				+ "' style='border-bottom:1px solid #DDDDDD;padding-bottom: 12px;padding-top: 12px;'>");
 		string.append(CIUtilities.renderDashboardHeader(dashboard, latestBuild));
 		string.append("</div>");
 

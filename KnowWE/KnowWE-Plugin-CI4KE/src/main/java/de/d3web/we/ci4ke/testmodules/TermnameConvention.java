@@ -52,7 +52,7 @@ public class TermnameConvention extends AbstractTest<Article> {
 	}
 
 	@Override
-	public Message execute(Article testObject, String[] args) throws InterruptedException {
+	public Message execute(Article testObject, String[] args, String[]... ignores) throws InterruptedException {
 		Pattern pattern = Pattern.compile(args[0]);
 		Section<Article> rootSection = testObject.getRootSection();
 		List<Section<SimpleTerm>> terms = Sections.findSuccessorsOfType(rootSection,

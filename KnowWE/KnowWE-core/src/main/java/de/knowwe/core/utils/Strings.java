@@ -20,7 +20,12 @@
 
 package de.knowwe.core.utils;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -743,6 +748,85 @@ public class Strings {
 			Logger.getLogger(Strings.class.getName()).log(
 					Level.WARNING, "String to decode is not correctly encoded", e);
 			return text;
+		}
+	}
+
+	/**
+	 * Reads the contents of a file into a String and return the string.
+	 * 
+	 * @created 16.09.2012
+	 * @param filePath the file to be loaded
+	 * @return the contents of the file
+	 * @throws IOException if there was any problem reading the file
+	 * @throws NullPointerException if the argument is null.
+	 */
+	public static String readFile(String filePath) throws IOException {
+		File file = new File(filePath);
+		return readFile(file);
+	}
+
+	/**
+	 * Reads the contents of a file into a String and return the string.
+	 * 
+	 * @created 16.09.2012
+	 * @param file the file to be loaded
+	 * @return the contents of the file
+	 * @throws IOException if there was any problem reading the file
+	 * @throws NullPointerException if the argument is null.
+	 */
+	public static String readFile(File file) throws IOException {
+		StringBuilder result = new StringBuilder((int) file.length());
+		BufferedReader reader = new BufferedReader(new FileReader(file));
+		try {
+			char[] buf = new char[1024];
+			int readCount = 0;
+			while ((readCount = reader.read(buf)) != -1) {
+				result.append(buf, 0, readCount);
+			}
+		}
+		finally {
+			reader.close();
+		}
+		return result.toString();
+	}
+
+	/**
+	 * Reads the contents of a stream into a String and return the string.
+	 * 
+	 * @created 16.09.2012
+	 * @param inStream the stream to load from
+	 * @return the contents of the file
+	 * @throws IOException if there was any problem reading the file
+	 * @throws NullPointerException if the argument is null.
+	 */
+	public static String readStream(InputStream inStream) throws IOException {
+		StringBuilder result = new StringBuilder();
+
+		byte[] buf = new byte[1024];
+		int readCount = 0;
+		while ((readCount = inStream.read(buf)) != -1) {
+			result.append(new String(buf, 0, readCount));
+		}
+
+		return result.toString();
+	}
+
+	/**
+	 * Reads the contents of a stream into a String and return the string. After
+	 * the stream has been read, the stream will be closed by this method.
+	 * 
+	 * @created 16.09.2012
+	 * @param inStream the stream to load from
+	 * @return the contents of the file
+	 * @throws IOException if there was any problem reading the file
+	 * @throws NullPointerException if the argument is null.
+	 */
+	public static String readStreamAndClose(InputStream inStream) throws IOException {
+		try {
+			return readStream(inStream);
+		}
+		finally {
+			inStream.close();
 		}
 	}
 
