@@ -18,6 +18,8 @@
  */
 package de.d3web.we.ci4ke.build;
 
+import java.util.List;
+
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message.Type;
 import de.d3web.we.ci4ke.util.CIUtilities;
@@ -47,8 +49,8 @@ public class CIBuildRenderer {
 	 */
 	public String renderBuildHealthReport(int pixelSize) {
 
-		BuildResult[] lastBuilds = dashboard.getBuildsBefore(Integer.MAX_VALUE, 5);
-		int count = lastBuilds.length;
+		List<BuildResult> lastBuilds = dashboard.getBuildsByIndex(Integer.MAX_VALUE, 5);
+		int count = lastBuilds.size();
 		int failed = 0;
 		for (BuildResult build : lastBuilds) {
 			if (!Type.SUCCESS.equals(build.getOverallResult())) {
@@ -59,34 +61,23 @@ public class CIBuildRenderer {
 	}
 
 	public String renderBuildList(int indexFromBack, int numberOfBuilds, int shownBuild) {
-
-		int buildCount = dashboard.getBuildCount();
-		if (indexFromBack < 0 || indexFromBack >= buildCount) indexFromBack = 0;
-		if (shownBuild != -1) {
-			if (buildCount - indexFromBack >= shownBuild && buildCount - indexFromBack - numberOfBuilds <= shownBuild) {
-				//indexFromBack retains value => same set of builds shown
-			}
-			else {
-
-				int half = numberOfBuilds / 2;
-				indexFromBack = buildCount - (shownBuild + half);
-			}
+		BuildResult latestBuild = dashboard.getLatestBuild();
+		int latestBuildNumber = indexFromBack;
+		if (latestBuild != null) {
+			latestBuildNumber = latestBuild.getBuildNumber();
 		}
+		if (indexFromBack == 0) indexFromBack = latestBuildNumber;
+
 		String dashboardNameEncoded = CIUtilities.utf8Escape(dashboard.getDashboardName());
 
-		// get array borders from min (inclusively) to max (exclusively)
-		int maxIndex = buildCount - indexFromBack;
-		int minIndex = buildCount - indexFromBack - numberOfBuilds;
-		minIndex = Math.max(minIndex, 0);
-		BuildResult[] builds = dashboard.getBuildsByIndex(minIndex, maxIndex);
+		List<BuildResult> builds = dashboard.getBuildsByIndex(indexFromBack, numberOfBuilds);
 
 		StringBuffer sb = new StringBuffer();
 		sb.append("<H4>Builds</H4>");
 		sb.append("<table width=\"100%\" border='1' class=\"build-table\">");
 
 		// reverse order to have the most current builds on top
-		for (int i = builds.length - 1; i >= 0; i--) {
-			BuildResult build = builds[i];
+		for (BuildResult build : builds) {
 			int buildNr = build.getBuildNumber();
 
 			// mark currently shown build number
@@ -103,23 +94,29 @@ public class CIBuildRenderer {
 			sb.append("<td>");
 
 			// render link
-			sb.append("<a href='Wiki.jsp?page="+dashboard.getDashboardArticle()+"&build_number="
-					+ buildNr + "&indexFromBack="
-					+ indexFromBack + "#"+dashboard.getDashboardName()+"'>");
-			
+			sb.append("<a href='Wiki.jsp?page=" + dashboard.getDashboardArticle()
+					+ "&build_number=" + buildNr
+					+ "&indexFromBack=" + indexFromBack + "#" + dashboard.getDashboardName() + "'>");
+
 			// actual shown content:
-			sb.append("#" + buildNr)
-			;
+			sb.append("#" + buildNr);
 			sb.append("</a>");
-			
+
 			sb.append("</tr>");
 		}
 		sb.append("</table>");
 
+		int latestDisplayedBuildNumber = indexFromBack;
+
+		if (!builds.isEmpty()) {
+			latestDisplayedBuildNumber = builds.get(0).getBuildNumber();
+		}
+
 		// wenn man noch weiter zurückblättern kann, rendere einen Button
-		if (minIndex > 0) {
+		if (latestDisplayedBuildNumber - numberOfBuilds > 0) {
 			String buttonLeft = "<button onclick=\"fctRefreshBuildList('"
-					+ dashboardNameEncoded + "','" + (indexFromBack + numberOfBuilds)
+					+ dashboardNameEncoded + "','"
+					+ (latestDisplayedBuildNumber - numberOfBuilds)
 					+ "','" + numberOfBuilds + "');\" style=\"margin-top: 4px; float: left;\">"
 					+ "<img src=\"KnowWEExtension/ci4ke/images/16x16/left.png\" "
 					+ "style=\"vertical-align: middle; margin-right: 5px;\">"
@@ -128,14 +125,17 @@ public class CIBuildRenderer {
 		}
 
 		// wenn man noch weiter vorblättern kann, rendere einen Button
-		if (indexFromBack > 0) {
+		if (latestDisplayedBuildNumber < latestBuildNumber) {
 			String buttonRight = "<button onclick=\"fctRefreshBuildList('"
-					+ dashboardNameEncoded + "','" + (indexFromBack - numberOfBuilds)
-					+ "','" + numberOfBuilds + "');\" style=\"margin-top: 4px; float: right;\">"
+					+ dashboardNameEncoded + "','"
+					+ (latestDisplayedBuildNumber + numberOfBuilds)
+					+ "','" + numberOfBuilds
+					+ "');\" style=\"margin-top: 4px; float: right;\">"
 					+ "<img src=\"KnowWEExtension/ci4ke/images/16x16/right.png\" "
 					+ "style=\"vertical-align: middle; margin-left: 5px;\"></button>";
 			sb.append(buttonRight);
 		}
+
 		return sb.toString();
 	}
 

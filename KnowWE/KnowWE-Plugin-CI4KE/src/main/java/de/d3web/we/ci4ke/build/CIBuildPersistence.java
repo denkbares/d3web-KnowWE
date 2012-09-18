@@ -57,12 +57,13 @@ public class CIBuildPersistence {
 	}
 
 	/**
-	 * Returns the build numbers available in the underlying wiki.
+	 * Returns the build versions available in the underlying wiki. A build
+	 * version is not necessarily the same as the build number.
 	 * 
 	 * @created 19.05.2012
-	 * @return the available build numbers
+	 * @return the available build versions
 	 */
-	public int[] getBuildNumbers() throws IOException {
+	public int[] getBuildVersions() throws IOException {
 		WikiAttachment attachment = getAttachment();
 		if (attachment != null) {
 			int[] versions = attachment.getAvailableVersions();
@@ -72,12 +73,12 @@ public class CIBuildPersistence {
 	}
 
 	/**
-	 * Returns the latest build number available in the underlying wiki.
+	 * Returns the latest build version available in the underlying wiki.
 	 * 
 	 * @created 19.05.2012
-	 * @return the latest build number
+	 * @return the latest build version
 	 */
-	public int getLatestBuildNumber() throws IOException {
+	public int getLatestBuildVersion() throws IOException {
 		WikiAttachment attachment = getAttachment();
 		if (attachment != null) {
 			int version = attachment.getVersion();
@@ -95,24 +96,29 @@ public class CIBuildPersistence {
 			// we attach the build again (version + 1)
 			// and delete the previous attached version
 			int latest;
-			while ((latest = getLatestBuildNumber()) < build.getBuildNumber() && latest > 0) {
+			while ((latest = getLatestBuildVersion()) < build.getBuildNumber() && latest > 0) {
 				write(document);
 				getAttachment().delete(latest);
 			}
 		}
 		catch (TransformerFactoryConfigurationError e) {
-			throwUnecpectedError(e);
+			throwUnecpectedWriterError(e);
 		}
 		catch (ParserConfigurationException e) {
-			throwUnecpectedError(e);
+			throwUnecpectedWriterError(e);
 		}
 		catch (TransformerException e) {
-			throwUnecpectedError(e);
+			throwUnecpectedWriterError(e);
 		}
 	}
 
-	private void throwUnecpectedError(Throwable e) throws IOException {
+	private void throwUnecpectedWriterError(Throwable e) throws IOException {
 		String message = "cannot write build results as attachment due to unexpected internal error";
+		throw new IOException(message, e);
+	}
+
+	private void throwUnecpectedReadError(Throwable e) throws IOException {
+		String message = "cannot read build results as attachment due to unexpected internal error";
 		throw new IOException(message, e);
 	}
 
@@ -133,20 +139,25 @@ public class CIBuildPersistence {
 				dashboard.getDashboardArticle(), getAttachmentName(), "ci-process", in);
 	}
 
-	public BuildResult read(int buildNumber) throws IOException {
-		InputStream in = getAttachment().getInputStream(buildNumber);
+	public BuildResult read(int buildVersion) throws IOException {
+		WikiAttachment attachment = getAttachment();
+		if (attachment == null) {
+			throw new IOException("no attachment found for dashboard "
+					+ dashboard.getDashboardName());
+		}
+		InputStream in = attachment.getInputStream(buildVersion);
 		BuildResult build = null;
 		try {
 			build = read(in);
 		}
 		catch (ParserConfigurationException e) {
-			throwUnecpectedError(e);
+			throwUnecpectedReadError(e);
 		}
 		catch (SAXException e) {
-			throwUnecpectedError(e);
+			throwUnecpectedReadError(e);
 		}
 		catch (ParseException e) {
-			throwUnecpectedError(e);
+			throwUnecpectedReadError(e);
 		}
 		finally {
 			in.close();

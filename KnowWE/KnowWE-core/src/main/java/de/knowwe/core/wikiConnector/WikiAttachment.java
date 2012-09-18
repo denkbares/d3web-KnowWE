@@ -146,6 +146,9 @@ public interface WikiAttachment {
 	/**
 	 * Returns an array of all available versions of this attachment. The
 	 * version numbers are sorted naturally in ascending order.
+	 * <p/>
+	 * <b>Attention:</b> This method can be very slow if there are a lot of
+	 * versions. Use with care!
 	 * 
 	 * @created 18.05.2012
 	 * @return the array of versions still available

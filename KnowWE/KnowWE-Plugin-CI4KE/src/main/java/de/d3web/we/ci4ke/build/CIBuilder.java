@@ -84,22 +84,19 @@ public class CIBuilder {
 	 */
 	public void executeBuild() {
 
-		// retrieve build number
-		BuildResult previousBuild = dashboard.getLatestBuild();
-		int buildNumber = (previousBuild == null) ? 1 : previousBuild.getBuildNumber() + 1;
-
 		List<TestObjectProvider> providers = new ArrayList<TestObjectProvider>();
 		providers.add(DefaultWikiTestObjectProvider.getInstance());
 		List<TestObjectProvider> pluggedProviders = TestObjectProviderManager.getTestObjectProviders();
 		providers.addAll(pluggedProviders);
 
 		ProgressListener listener = new AjaxProgressListenerImpl();
-		ProgressListenerManager.getInstance().setProgressListener(dashboard.getDashboardName(),listener);
-			
+		ProgressListenerManager.getInstance().setProgressListener(dashboard.getDashboardName(),
+				listener);
+
 		// create and run TestExecutor
 		TestExecutor executor = new TestExecutor(providers,
-				this.config.getTests(), listener, buildNumber);
-		
+				this.config.getTests(), listener, dashboard.getNextBuildNumber());
+
 		CIUtilities.registerBuildExecutor(dashboard.getDashboardName(), executor);
 		executor.run();
 
