@@ -50,9 +50,9 @@ public class CIBuildPersistence {
 
 	private static final String ATTACHMENT_PREFIX = "ci-build-";
 
-	private final Dashboard dashboard;
+	private final CIDashboard dashboard;
 
-	public CIBuildPersistence(Dashboard dashboard) {
+	public CIBuildPersistence(CIDashboard dashboard) {
 		this.dashboard = dashboard;
 	}
 
@@ -78,8 +78,14 @@ public class CIBuildPersistence {
 	 * @created 19.05.2012
 	 * @return the latest build version
 	 */
-	public int getLatestBuildVersion() throws IOException {
-		WikiAttachment attachment = getAttachment();
+	public int getLatestBuildVersion() {
+		WikiAttachment attachment = null;
+		try {
+			attachment = getAttachment();
+		}
+		catch (IOException e) {
+			// nothing to do, 0 will be returned
+		}
 		if (attachment != null) {
 			int version = attachment.getVersion();
 			return version;
@@ -92,14 +98,6 @@ public class CIBuildPersistence {
 			Document document = BuildResultPersistenceDocumentWriter.toXML(build);
 			// we write the document as an attachment
 			write(document);
-			// if the version of the attachment is below our build number,
-			// we attach the build again (version + 1)
-			// and delete the previous attached version
-			int latest;
-			while ((latest = getLatestBuildVersion()) < build.getBuildNumber() && latest > 0) {
-				write(document);
-				getAttachment().delete(latest);
-			}
 		}
 		catch (TransformerFactoryConfigurationError e) {
 			throwUnecpectedWriterError(e);
@@ -145,10 +143,13 @@ public class CIBuildPersistence {
 			throw new IOException("no attachment found for dashboard "
 					+ dashboard.getDashboardName());
 		}
-		InputStream in = attachment.getInputStream(buildVersion);
+		if (buildVersion < 1) buildVersion = attachment.getVersion();
 		BuildResult build = null;
+		InputStream in = null;
 		try {
+			in = attachment.getInputStream(buildVersion);
 			build = read(in);
+			build.setBuildNumber(buildVersion);
 		}
 		catch (ParserConfigurationException e) {
 			throwUnecpectedReadError(e);
@@ -159,8 +160,11 @@ public class CIBuildPersistence {
 		catch (ParseException e) {
 			throwUnecpectedReadError(e);
 		}
+		catch (IllegalArgumentException e) {
+			throwUnecpectedReadError(e);
+		}
 		finally {
-			in.close();
+			if (in != null) in.close();
 		}
 		return build;
 	}

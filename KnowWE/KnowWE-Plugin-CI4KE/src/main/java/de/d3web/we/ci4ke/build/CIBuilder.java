@@ -45,7 +45,7 @@ public class CIBuilder {
 	public static final String BUILD_RESULT = "result";
 
 	private final CIConfig config;
-	private final Dashboard dashboard;
+	private final CIDashboard dashboard;
 
 	/**
 	 * This constructor searches only the given dashboardArticle for dashboard
@@ -55,7 +55,7 @@ public class CIBuilder {
 	 * @param dashboardName
 	 */
 	public CIBuilder(String web, String dashboardArticleTitle, String dashboardName) {
-		this.dashboard = Dashboard.getDashboard(web, dashboardArticleTitle, dashboardName);
+		this.dashboard = CIDashboard.getDashboard(web, dashboardArticleTitle, dashboardName);
 		Article dashboardArticle = Environment.getInstance().getArticleManager(
 				Environment.DEFAULT_WEB).getArticle(dashboardArticleTitle);
 		Section<CIDashboardType> sec = CIUtilities.
@@ -94,8 +94,7 @@ public class CIBuilder {
 				listener);
 
 		// create and run TestExecutor
-		TestExecutor executor = new TestExecutor(providers,
-				this.config.getTests(), listener, dashboard.getNextBuildNumber());
+		TestExecutor executor = new TestExecutor(providers, this.config.getTests(), listener);
 
 		CIUtilities.registerBuildExecutor(dashboard.getDashboardName(), executor);
 		executor.run();

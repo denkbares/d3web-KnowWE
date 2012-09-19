@@ -19,19 +19,11 @@
 package de.d3web.we.ci4ke.handling;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 import de.d3web.testing.BuildResult;
-import de.d3web.testing.Message.Type;
-import de.d3web.testing.Test;
-import de.d3web.testing.TestManager;
-import de.d3web.testing.TestResult;
-import de.d3web.we.ci4ke.build.Dashboard;
+import de.d3web.we.ci4ke.build.CIDashboard;
 import de.d3web.we.ci4ke.util.CIUtilities;
 import de.knowwe.core.Environment;
 import de.knowwe.core.RessourceLoader;
@@ -81,7 +73,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		String title = section.getTitle();
 		String currentDashboardSourcetext = section.getText();
-		Dashboard dashboard = Dashboard.getDashboard(section.getWeb(), title,
+		CIDashboard dashboard = CIDashboard.getDashboard(section.getWeb(), title,
 				dashboardName);
 		BuildResult latestBuild = dashboard.getLatestBuild();
 		if (latestBuild == null) return false; // nothing to do
@@ -175,7 +167,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 					string);
 		}
 
-		Dashboard dashboard = Dashboard.getDashboard(user.getWeb(), dashboardArticleTitle,
+		CIDashboard dashboard = CIDashboard.getDashboard(user.getWeb(), dashboardArticleTitle,
 				dashboardName);
 		// if at least one build has been executed: Render forecast icons:
 		BuildResult latestBuild = dashboard.getLatestBuild();
@@ -188,7 +180,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		string.append("<div id='top_"
 				+ dashboardName
 				+ "' style='border-bottom:1px solid #DDDDDD;padding-bottom: 12px;padding-top: 12px;'>");
-		string.append(CIUtilities.renderDashboardHeader(dashboard, latestBuild));
+		string.append(dashboard.getRenderer().renderDashboardHeader(latestBuild));
 		string.append("</div>");
 
 		// start table (only a single row)
@@ -226,7 +218,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		string.append("<div id='")
 				.append(dashboardNameEscaped)
 				.append("-build-details-wrapper' class='ci-build-details-wrapper'>");
-		string.append(renderBuildDetails(dashboard, shownBuild));
+		string.append(dashboard.getRenderer().renderBuildDetails(shownBuild));
 		string.append("</div>");
 		string.append("</td>");
 
@@ -237,7 +229,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		return string.toString();
 	}
 
-	private static BuildResult getBuildToShow(UserContext user, Dashboard dashboard) {
+	private static BuildResult getBuildToShow(UserContext user, CIDashboard dashboard) {
 		// find build number for detail view
 		BuildResult shownBuild = dashboard.getLatestBuild(); // latest as
 																// default
@@ -260,124 +252,4 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		return shownBuild;
 	}
 
-	/**
-	 * Renders out the test results of a selected Build
-	 */
-	public static String renderBuildDetails(Dashboard dashboard, BuildResult build) {
-
-		String dashboardNameEscaped = CIUtilities.utf8Escape(dashboard.getDashboardName());
-		DateFormat dateFormat = DateFormat.getDateTimeInstance();
-
-		StringBuffer buffy = new StringBuffer();
-
-		// ------------------------------------------------------------------------
-		// Render the build details in the middle column
-		// (ci-column-middle)
-		// ------------------------------------------------------------------------
-
-		buffy.append("<div id='" + dashboardNameEscaped
-				+ "-column-middle' class='ci-column-middle'>");
-
-		if (build != null) {
-			String buildDate = dateFormat.format(build.getBuildDate());
-			buffy.append("<H4>Build #").append(build.getBuildNumber())
-					.append(" (").append(buildDate).append(") ");
-
-			// get the build duration time
-			buffy.append(" in ");
-			long duration = build.getBuildDuration();
-			if (duration < 1000) {
-				buffy.append(duration + " msec.");
-			}
-			else if (duration >= 1000 && duration < 60000) {
-				buffy.append((duration / 1000) + " sec.");
-			}
-			else {
-				long sec = duration / 1000;
-				buffy.append(String.format("%d:%02d min.", sec / 60, sec % 60));
-			}
-
-			buffy.append("</H4>");
-
-			// sorting results for stable rendering
-			List<TestResult> results = build.getResults();
-			List<TestResult> resultsSorted = new ArrayList<TestResult>();
-			resultsSorted.addAll(results);
-			Collections.sort(resultsSorted);
-
-			for (TestResult result : resultsSorted) {
-				buffy.append("<div class='ci-collapsible-box'>");
-
-				// prepare some information
-				String name = result.getTestName();
-				Type buildResult = result.getType();
-				String messageText = "";
-				Collection<String> testObjectNames = result.getTestObjectNames();
-				int successes = 0;
-				for (String testObject : testObjectNames) {
-					de.d3web.testing.Message m = result.getMessage(testObject);
-					Type messageType = m.getType();
-					if (messageType.equals(Type.SUCCESS)) {
-						successes++;
-					}
-					else {
-						String text = m.getText();
-						if (text == null) {
-							text = "";
-						}
-						messageText += messageType.toString() + ": " + text + " (test object: "
-								+ testObject + ")\n";
-					}
-				}
-
-				messageText = messageText + successes + " test objects tested successfully\n";
-
-				String[] config = result.getConfiguration();
-
-				// render bullet
-				buffy.append(CIUtilities.renderResultType(buildResult, 16,
-						dashboard.getDashboardName()));
-
-				Test<?> test = TestManager.findTest(name);
-				String title = "";
-				if (test != null) {
-					title = test.getDescription();
-				}
-
-				// render test-name
-				buffy.append("<span class='ci-test-title' title='" + title + "'>");
-				buffy.append(name);
-
-				// render test-configuration (if existent)
-				if (config != null && !(config.length == 0)) {
-					String configString = "";
-					for (String string : config) {
-						configString += "\"" + string + "\"; ";
-					}
-					// cut off last semicolon
-					if (configString.trim().endsWith(";")) {
-						configString = configString.substring(0, configString.lastIndexOf(";"));
-					}
-					buffy.append("<span class='ci-configuration'>");
-					buffy.append(" (").append(configString).append(")");
-					buffy.append("</span>");
-				}
-				buffy.append("</span>");
-
-				// render test-message (if exists)
-				if (messageText != null && !messageText.isEmpty()) {
-					buffy.append("<div class='ci-message'>");
-					buffy.append(messageText);
-					buffy.append("</div>");
-				}
-
-				buffy.append("</div>\n");
-			}
-		}
-		else {
-			buffy.append("<div class='ci-no-details'>No build selected.</div>");
-		}
-		buffy.append("</div>\n");
-		return buffy.toString();
-	}
 }

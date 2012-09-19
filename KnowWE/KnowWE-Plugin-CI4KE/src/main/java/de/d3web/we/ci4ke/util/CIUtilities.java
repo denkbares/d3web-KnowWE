@@ -30,17 +30,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.d3web.testing.BuildResult;
-import de.d3web.testing.Message.Type;
 import de.d3web.testing.TestExecutor;
-import de.d3web.we.ci4ke.build.CIBuildRenderer;
-import de.d3web.we.ci4ke.build.Dashboard;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.Strings;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
@@ -182,127 +177,6 @@ public class CIUtilities {
 			}
 		}
 		return null;
-	}
-
-	// RENDER - HELPERS
-
-	public static String renderResultType(Type resultType, int pixelSize, String dashboardName) {
-
-		String imageURL = "KnowWEExtension/ci4ke/images/"
-				+
-				pixelSize + "x" + pixelSize
-				+ "/%s.png";
-
-		String imgBulb = "<img class='cideamon_state' width='" + pixelSize
-				+ "'id='state_" + dashboardName
-				+ "' " +
-				"dashboardName='" + dashboardName + "' src='" + imageURL
-				+ "' alt='%<s' align='absmiddle' title='%s'>";
-
-		switch (resultType) {
-		case SUCCESS:
-			imgBulb = String.format(imgBulb, "green", "Build successful!");
-		case FAILURE:
-			imgBulb = String.format(imgBulb, "red", "Build failed!");
-		case ERROR:
-			imgBulb = String.format(imgBulb, "grey", "Build has errors!");
-		}
-
-		return imgBulb;
-	}
-
-	public static String renderHeaderResultType(Type resultType, int pixelSize, String dashboardName) {
-
-		if (CIUtilities.buildRunning(dashboardName)) {
-			// if currently a build is running show animated icon
-			String imageURL = "KnowWEExtension/images/ajax-loader16.gif";
-			String imgBulb = "<img class='cideamon_state' running='true' width='"
-					+ pixelSize + "'id='state_"
-					+ dashboardName
-					+ "' " +
-					"dashboardName='" + dashboardName + "' src='" + imageURL
-					+ "' alt='%<s' align='absmiddle' title='%s'>";
-			return imgBulb;
-		}
-
-		return renderResultType(resultType, pixelSize, dashboardName);
-	}
-
-	public static String renderDashboardHeader(Dashboard dashboard, BuildResult latestBuild) {
-		StringBuilder string = new StringBuilder();
-		String dashboardName = dashboard.getDashboardName();
-
-		string.append("<span class='header'>");
-
-		if (latestBuild != null || buildRunning(dashboardName)) {
-			CIBuildRenderer renderer = dashboard.getRenderer();
-			string.append(renderer.renderCurrentBuildStatus(22)).append("  ");
-			string.append(renderer.renderBuildHealthReport(22)).append("  ");
-		}
-		string.append(dashboardName);
-
-		// insert tag for progress bar
-		// open/close div progress_container
-		if (buildRunning(dashboardName)) {
-			renderProgressInfoHTML(dashboard, string, dashboardName);
-		}
-		string.append("</span>");
-		return string.toString();
-	}
-
-	public static void renderProgressInfoHTML(Dashboard dashboard, StringBuilder string, String dashboardName) {
-		string.append("<div class='progressInfo' dashboardname='" + dashboardName
-				+ "' dashboardarticle='" + dashboard.getDashboardArticle()
-				+ "' onload=\"refreshBuildProgress('"
-				+ dashboardName
-				+ "', '" + dashboard.getDashboardArticle()
-				+ "');\" id='progress_container' style='display:inline;'>");
-
-		string.append("<div style='display:inline;'> <a href=\"javascript:stopRunningBuild('"
-				+ dashboardName
-				+ "', '"
-				+ dashboard.getDashboardArticle()
-				+ "', '"
-				+ KnowWEUtils.getURLLink(dashboard.getDashboardArticle() + "#" + dashboardName)
-				+ "');undefined;\"><img height=\"14\" title=\"Stops the current build\" src=\"KnowWEExtension/images/cross.png\"></img></a></div>     <div style='display:inline' class='prog-meter-wrap' ><div class='prog-meter-value' id='progress_value'>&nbsp;0 %</div>  </div><div class='prog-meter-text' style='display:inline' id='progress_text'>build running...</div>");
-		string.append("</div>");
-	}
-
-	public static String renderForecastIcon(int buildCount, int failedCount, int pixelSize) {
-
-		int score = (buildCount > 0) ? score = (100 * (buildCount - failedCount)) / buildCount : 0;
-		String imgForecast = "<img src='KnowWEExtension/ci4ke/images/" +
-				pixelSize + "x" + pixelSize + "/%s.png' align='absmiddle' alt='%<s' title='%s'>";
-
-		if (score == 0) {
-			imgForecast = String.format(imgForecast, "health-00to19",
-					"All recent builds failed.");
-		}
-		else if (score == 100) {
-			imgForecast = String.format(imgForecast, "health-80plus",
-					"No recent builds failed.");
-		}
-		else {
-			String summary =
-					failedCount + " out of the last " + buildCount + " builds failed.";
-			if (score <= 20) {
-				imgForecast = String.format(imgForecast, "health-00to19", summary);
-			}
-			else if (score <= 40) {
-				imgForecast = String.format(imgForecast, "health-20to39", summary);
-			}
-			else if (score <= 60) {
-				imgForecast = String.format(imgForecast, "health-40to59", summary);
-			}
-			else if (score <= 80) {
-				imgForecast = String.format(imgForecast, "health-60to79", summary);
-			}
-			else {
-				imgForecast = String.format(imgForecast, "health-80plus", summary);
-			}
-		}
-
-		return imgForecast;
 	}
 
 	/**

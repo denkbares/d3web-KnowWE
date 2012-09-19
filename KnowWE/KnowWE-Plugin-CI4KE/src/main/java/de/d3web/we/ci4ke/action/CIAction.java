@@ -29,8 +29,7 @@ import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message.Type;
 import de.d3web.we.ci4ke.build.CIBuildRenderer;
 import de.d3web.we.ci4ke.build.CIBuilder;
-import de.d3web.we.ci4ke.build.Dashboard;
-import de.d3web.we.ci4ke.handling.CIDashboardRenderer;
+import de.d3web.we.ci4ke.build.CIDashboard;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.d3web.we.ci4ke.util.CIUtilities;
 import de.knowwe.core.Environment;
@@ -82,7 +81,7 @@ public class CIAction extends AbstractAction {
 			// there can only be one dashboard with this name
 			dashBoardArticle = dashboardSections.iterator().next().getTitle();
 		}
-		Dashboard dashboard = Dashboard.getDashboard(web, dashBoardArticle, dashboardName);
+		CIDashboard dashboard = CIDashboard.getDashboard(web, dashBoardArticle, dashboardName);
 		CIBuildRenderer renderer = dashboard.getRenderer();
 
 		String html = null;
@@ -105,17 +104,17 @@ public class CIAction extends AbstractAction {
 				e.printStackTrace();
 			}
 			BuildResult build = dashboard.getBuild(selectedBuildNumber);
-			html = CIUtilities.renderDashboardHeader(dashboard, build);
-			
+			html = renderer.renderDashboardHeader(build);
+
 		}// Get the details of one build (wiki changes + test results)
 		else if (task.equals("getBuildDetails")) {
 			BuildResult build = dashboard.getBuild(selectedBuildNumber);
-			html = CIDashboardRenderer.renderBuildDetails(dashboard, build);
+			html = renderer.renderBuildDetails(build);
 		}
 		else if (task.equals("refreshBubble")) {
 			BuildResult build = dashboard.getLatestBuild();
 			Type overallResult = build.getOverallResult();
-			html = CIUtilities.renderResultType(overallResult, 16, dashboardName);
+			html = renderer.renderResultType(overallResult, 16, dashboardName);
 		}
 		else if (task.equals("refreshBuildList")) {
 			int indexFromBack =

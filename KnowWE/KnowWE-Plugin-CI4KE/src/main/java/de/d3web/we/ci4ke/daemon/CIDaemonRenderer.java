@@ -1,9 +1,9 @@
 package de.d3web.we.ci4ke.daemon;
 
 import de.d3web.testing.Message.Type;
-import de.d3web.we.ci4ke.build.Dashboard;
+import de.d3web.we.ci4ke.build.CIBuildRenderer;
+import de.d3web.we.ci4ke.build.CIDashboard;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
-import de.d3web.we.ci4ke.util.CIUtilities;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -38,7 +38,7 @@ public class CIDaemonRenderer implements Renderer {
 					+ " has to specify an existing article name.");
 			string.append("</span>");
 		}
-		boolean hasDashboard = Dashboard.hasDashboard(web, dashboardArticleTitle, dashboardName);
+		boolean hasDashboard = CIDashboard.hasDashboard(web, dashboardArticleTitle, dashboardName);
 
 		if (!hasDashboard) {
 			string.append("<span class='error'>");
@@ -54,17 +54,17 @@ public class CIDaemonRenderer implements Renderer {
 				+ "\">";
 		string.append(srclink);
 
+		CIDashboard dashboard = CIDashboard.getDashboard(web, dashboardArticleTitle, dashboardName);
+		CIBuildRenderer renderer = dashboard.getRenderer();
 		if (!hasDashboard) {
-			string.append(CIUtilities.renderResultType(Type.ERROR, PIXEL_SIZE, dashboardName));
+			string.append(renderer.renderResultType(Type.ERROR, PIXEL_SIZE, dashboardName));
 		}
 		else {
-			Dashboard dashboard = Dashboard.getDashboard(web, dashboardArticleTitle, dashboardName);
-			string.append(dashboard.getRenderer().renderCurrentBuildStatus(PIXEL_SIZE));
+			string.append(renderer.renderCurrentBuildStatus(PIXEL_SIZE));
 		}
 		string.append("</a>");
 
 		return string.toString();
 	}
-
 
 }

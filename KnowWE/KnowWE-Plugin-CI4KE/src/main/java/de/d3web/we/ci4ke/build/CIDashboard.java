@@ -41,7 +41,7 @@ import de.knowwe.core.kdom.parsing.Sections;
  * @author volker_belli
  * @created 19.05.2012
  */
-public class Dashboard {
+public class CIDashboard {
 
 	private final String web;
 	private final String dashboardArticle;
@@ -49,9 +49,7 @@ public class Dashboard {
 	private final CIBuildRenderer renderer;
 	private final CIBuildPersistence persistence;
 
-	private int currentBuildNumber = 0;
-
-	private Dashboard(String web, String dashboardArticle, String dashboardName) {
+	private CIDashboard(String web, String dashboardArticle, String dashboardName) {
 		this.web = web;
 		this.dashboardArticle = dashboardArticle;
 		this.dashboardName = dashboardName;
@@ -87,45 +85,21 @@ public class Dashboard {
 	 * @return the latest build
 	 */
 	public BuildResult getLatestBuild() {
-		try {
-			int latestBuildVersion = persistence.getLatestBuildVersion();
-			if (latestBuildVersion == 0) return null;
-			return persistence.read(latestBuildVersion);
-		}
-		catch (IOException e) {
-			// just log and return null;
-			// so log this and continue as usual
-			Logger.getLogger(getClass().getName()).log(Level.WARNING,
-					"unable to acces latest build", e);
-			return null;
-		}
+		int latest = persistence.getLatestBuildVersion();
+		if (latest == 0) return null;
+		return getBuildIfPossible(latest, true);
 	}
 
 	/**
 	 * Returns the build of the specified buildNumber stored in this dashboard
-	 * or null if there is no build stored.
+	 * or null if this build does not exist.
 	 * 
 	 * @created 19.05.2012
 	 * @param buildNumber the build to be returned
 	 * @return the specified build
 	 */
 	public BuildResult getBuild(int buildNumber) {
-		buildNumber = cap(buildNumber);
-		int index = buildNumber;
-		BuildResult result = null;
-		while (result == null && index > 0) {
-			BuildResult build = getVersionIfPossible(index);
-			if (build != null) {
-				if (build.getBuildNumber() == buildNumber) {
-					return build;
-				}
-				else if (build.getBuildNumber() < buildNumber) {
-					break;
-				}
-			}
-			index--;
-		}
-		return null;
+		return getBuildIfPossible(buildNumber, true);
 	}
 
 	/**
@@ -145,7 +119,7 @@ public class Dashboard {
 		List<BuildResult> results = new ArrayList<BuildResult>(numberOfBuilds);
 		int index = fromIndex;
 		while (results.size() < numberOfBuilds && index > 0) {
-			BuildResult build = getVersionIfPossible(index);
+			BuildResult build = getBuildIfPossible(index, false);
 			if (build != null && build.getBuildNumber() <= fromIndex) {
 				results.add(build);
 			}
@@ -195,35 +169,39 @@ public class Dashboard {
 		}
 	}
 
-	private BuildResult getVersionIfPossible(int buildVersion) {
+	private BuildResult getBuildIfPossible(int buildVersion, boolean logging) {
 		BuildResult result = null;
 		try {
 			result = persistence.read(buildVersion);
 		}
 		catch (Exception e) {
+			if (logging) {
+				Logger.getLogger(getClass().getName()).warning(
+						"unable to access build " + buildVersion);
+			}
 		}
 		return result;
 	}
 
-	private static final Map<String, Dashboard> dashboards = new HashMap<String, Dashboard>();
+	private static final Map<String, CIDashboard> dashboards = new HashMap<String, CIDashboard>();
 
 	/**
-	 * Get the {@link Dashboard} instance responsible for a specific
+	 * Get the {@link CIDashboard} instance responsible for a specific
 	 * dashboardName-dashboardArticle-combination. If no handler exists for this
 	 * combination, a new handler is created.
 	 */
-	public static synchronized Dashboard getDashboard(String web, String dashboardArticleTitle, String dashboardName) {
+	public static synchronized CIDashboard getDashboard(String web, String dashboardArticleTitle, String dashboardName) {
 		String key = web + "/" + dashboardArticleTitle + "/" + dashboardName;
-		Dashboard dashboard = dashboards.get(key);
+		CIDashboard dashboard = dashboards.get(key);
 		if (dashboard == null) {
-			dashboard = new Dashboard(web, dashboardArticleTitle, dashboardName);
+			dashboard = new CIDashboard(web, dashboardArticleTitle, dashboardName);
 			dashboards.put(key, dashboard);
 		}
 		return dashboard;
 	}
 
 	/**
-	 * Checks if there is a {@link Dashboard} instance responsible for a
+	 * Checks if there is a {@link CIDashboard} instance responsible for a
 	 * specific dashboardName-dashboardArticle-combination. If no dashboard
 	 * exists for this combination, false is returned.
 	 * 
@@ -245,22 +223,6 @@ public class Dashboard {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Creates and returns a new and unique build number for new builds.
-	 * 
-	 * @created 18.09.2012
-	 * @returns a new and unique build number
-	 */
-	public int getNextBuildNumber() {
-		BuildResult latestBuild = getLatestBuild();
-		if (latestBuild != null) {
-			if (latestBuild.getBuildNumber() > currentBuildNumber) {
-				currentBuildNumber = latestBuild.getBuildNumber();
-			}
-		}
-		return ++currentBuildNumber;
 	}
 
 }
