@@ -21,6 +21,7 @@ package de.d3web.we.ci4ke.handling;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.TreeSet;
 
 import de.d3web.testing.BuildResult;
 import de.d3web.we.ci4ke.build.CIDashboard;
@@ -64,11 +65,6 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 	}
 
-	/**
-	 * 
-	 * @created 25.06.2012
-	 * @return
-	 */
 	private static boolean isDashBoardModifiedAfterLatestBuild(Section<?> section, UserContext user, String dashboardName) {
 
 		String title = section.getTitle();
@@ -88,7 +84,6 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			if (versionAtBuildDate < -1) return true;
 		}
 		catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -97,8 +92,8 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 				versionAtBuildDate);
 
 		if (sourceTextAtBuildTime.contains(currentDashboardSourcetext)) {
-			return false; // this is only safe for one single dashboard per
-							// article
+			// this is only safe for one single dashboard per article
+			return false;
 		}
 
 		return true;
@@ -117,31 +112,84 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		Section<CIDashboardType> dashboardSection = CIUtilities.findCIDashboardSection(
 				dashboardArticleTitle, dashboardName);
+		CIDashboard dashboard = CIDashboard.getDashboard(user.getWeb(), dashboardArticleTitle,
+				dashboardName);
 
 		StringBuilder string = new StringBuilder();
-		String dashboardNameEscaped = CIUtilities.utf8Escape(dashboardName);
-		string.append(Strings.maskHTML("<div id='" + dashboardNameEscaped
+
+		string.append(Strings.maskHTML("<div id='" + CIUtilities.utf8Escape(dashboardName)
 				+ "' class='ci-title'>"));
 
-		// check unique dashboard names and create error in case of
-		// duplicates
-		Collection<Section<CIDashboardType>> ciDashboardSections = CIUtilities.findCIDashboardSection(dashboardName);
-		if (ciDashboardSections.size() > 1) {
-			String articles = "";
-			String separator = ", ";
-			for (Section<CIDashboardType> section : ciDashboardSections) {
-				articles += KnowWEUtils.getURLLinkHTMLToArticle(section.getTitle()) + separator;
-			}
-			if (articles.endsWith(separator)) {
-				articles = articles.substring(0, articles.lastIndexOf(separator));
-			}
-			String errorText = "Multiple Dashboards with same name on the follwing articles: "
-					+ articles + ". Make sure every Dashbaord has a wiki-wide unique name!";
-			renderMessagesOfType(Message.Type.ERROR,
-					Messages.asList(Messages.error((errorText))),
-					string);
-		}
+		checkForUniqueName(dashboardName, string);
 
+		checkForOutdatedBuild(user, dashboardName, dashboardSection, string);
+
+		appendDashboard(dashboard, string);
+
+		string.append(Strings.maskHTML("</div>"));
+		return string.toString();
+	}
+
+	/**
+	 * 
+	 * @created 19.09.2012
+	 * @param dashboard
+	 * @param string
+	 */
+	private static void appendDashboard(CIDashboard dashboard, StringBuilder string) {
+		BuildResult latestBuild = dashboard.getLatestBuild();
+
+		renderDashboardHeader(dashboard, latestBuild, string);
+
+		// start table (only a single row)
+		string.append("<table><tr>");
+
+		appendBuildListCell(dashboard, latestBuild, string);
+
+		appendBuildDetailsCell(dashboard, latestBuild, string);
+
+		// close table
+		string.append("</tr></table>");
+	}
+
+	private static void renderDashboardHeader(CIDashboard dashboard, BuildResult latestBuild, StringBuilder string) {
+		string.append("<a name='" + dashboard.getDashboardName() + "'></a>");
+		string.append("<div id='top_"
+				+ dashboard.getDashboardName()
+				+ "' style='border-bottom:1px solid #DDDDDD;padding-bottom: 12px;padding-top: 12px;'>");
+		string.append(dashboard.getRenderer().renderDashboardHeader(latestBuild));
+		string.append("</div>");
+	}
+
+	private static void appendBuildListCell(CIDashboard dashboard, BuildResult shownBuild, StringBuilder string) {
+		String dashboardNameEscaped = CIUtilities.utf8Escape(dashboard.getDashboardName());
+		string.append("<td valign='top' style='border-right: 1px solid #DDDDDD;'>");
+		string.append("<div id='")
+				.append(dashboardNameEscaped)
+				.append("-column-left' class='ci-column-left'>");
+		string.append("<div id='")
+				.append(dashboardNameEscaped)
+				.append("-build-table'>");
+		if (shownBuild != null) {
+			// render build history
+			string.append(dashboard.getRenderer().renderBuildList(0, 10,
+					shownBuild.getBuildNumber()));
+		}
+		string.append("</div></div>");
+		string.append("</td>");
+	}
+
+	private static void appendBuildDetailsCell(CIDashboard dashboard, BuildResult shownBuild, StringBuilder string) {
+		string.append("<td valign='top'>");
+		string.append("<div id='")
+				.append(CIUtilities.utf8Escape(dashboard.getDashboardName()))
+				.append("-build-details-wrapper' class='ci-build-details-wrapper'>");
+		string.append(dashboard.getRenderer().renderBuildDetails(shownBuild));
+		string.append("</div>");
+		string.append("</td>");
+	}
+
+	private static void checkForOutdatedBuild(UserContext user, String dashboardName, Section<CIDashboardType> dashboardSection, StringBuilder string) {
 		// check whether dashboard definition has been changed
 		// if so render outdated-warning
 		boolean buildOutdated = isDashBoardModifiedAfterLatestBuild(dashboardSection, user,
@@ -166,90 +214,33 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 					Messages.asList(Messages.warning(warningString)),
 					string);
 		}
-
-		CIDashboard dashboard = CIDashboard.getDashboard(user.getWeb(), dashboardArticleTitle,
-				dashboardName);
-		// if at least one build has been executed: Render forecast icons:
-		BuildResult latestBuild = dashboard.getLatestBuild();
-
-		// which build has to be shown in detail
-		BuildResult shownBuild = getBuildToShow(user, dashboard);
-
-		// render top part of the dashboard
-		string.append("<a name='" + dashboard.getDashboardName() + "'></a>");
-		string.append("<div id='top_"
-				+ dashboardName
-				+ "' style='border-bottom:1px solid #DDDDDD;padding-bottom: 12px;padding-top: 12px;'>");
-		string.append(dashboard.getRenderer().renderDashboardHeader(latestBuild));
-		string.append("</div>");
-
-		// start table (only a single row)
-		string.append("<table><tr>");
-
-		// render the last x builds:
-		string.append("<td valign='top' style='border-right: 1px solid #DDDDDD;'>");
-		string.append("<div id='")
-				.append(dashboardNameEscaped)
-				.append("-column-left' class='ci-column-left'>");
-		string.append("<div id='")
-				.append(dashboardNameEscaped)
-				.append("-build-table'>");
-		if (shownBuild != null) {
-			// check whether a specific range of history is demanded by the
-			// request
-			int indexFromBack = 0;
-			if (user.getParameter("indexFromBack") != null) {
-				try {
-					indexFromBack = Integer.parseInt(user.getParameter("indexFromBack"));
-				}
-				catch (NumberFormatException e) {
-					e.printStackTrace();
-				}
-			}
-			// render build history
-			string.append(dashboard.getRenderer().renderNewestBuilds(10,
-					shownBuild.getBuildNumber(), indexFromBack));
-		}
-		string.append("</div></div>");
-		string.append("</td>");
-
-		// render the build-details pane
-		string.append("<td valign='top'>");
-		string.append("<div id='")
-				.append(dashboardNameEscaped)
-				.append("-build-details-wrapper' class='ci-build-details-wrapper'>");
-		string.append(dashboard.getRenderer().renderBuildDetails(shownBuild));
-		string.append("</div>");
-		string.append("</td>");
-
-		// close table
-		string.append("</tr></table>");
-
-		string.append(Strings.maskHTML("</div>"));
-		return string.toString();
 	}
 
-	private static BuildResult getBuildToShow(UserContext user, CIDashboard dashboard) {
-		// find build number for detail view
-		BuildResult shownBuild = dashboard.getLatestBuild(); // latest as
-																// default
-		if (user.getParameter("build_number") != null) {
-			String buildNumString = user.getParameter("build_number");
-			int buildNumber = -1;
-			try {
-				buildNumber = Integer.parseInt(buildNumString);
+	private static void checkForUniqueName(String dashboardName, StringBuilder string) {
+		// check unique dashboard names and create error in case of
+		// duplicates
+		Collection<Section<CIDashboardType>> ciDashboardSections = CIUtilities.findCIDashboardSection(dashboardName);
+		if (ciDashboardSections.size() > 1) {
+			TreeSet<String> articleTitles = new TreeSet<String>();
+			for (Section<CIDashboardType> section : ciDashboardSections) {
+				articleTitles.add(section.getTitle());
 			}
-			catch (NumberFormatException e) {
-				e.printStackTrace();
+			StringBuilder articleLinks = new StringBuilder();
+			boolean first = true;
+			for (String articleTitle : articleTitles) {
+				if (first) first = false;
+				else articleLinks.append(", ");
+				articleLinks.append(KnowWEUtils.getURLLinkHTMLToArticle(articleTitle));
 			}
-			if (buildNumber != -1) {
-				BuildResult build = dashboard.getBuild(buildNumber);
-				if (build != null) {
-					shownBuild = build;
-				}
-			}
+
+			String errorText = "Multiple Dashboards with same name on the follwing article"
+					+ (articleTitles.size() > 1 ? "s" : "") + ": "
+					+ articleLinks.toString()
+					+ ". Make sure every Dashbaord has a wiki-wide unique name!";
+			renderMessagesOfType(Message.Type.ERROR,
+					Messages.asList(Messages.error((errorText))),
+					string);
 		}
-		return shownBuild;
 	}
 
 }

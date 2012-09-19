@@ -166,15 +166,6 @@ public class CIBuildRenderer {
 				dashboard.getDashboardName());
 	}
 
-	// ------------ RENDERING ----------------
-
-	/**
-	 * Renders out a list of the newest builds in descending order
-	 */
-	public String renderNewestBuilds(int numberOfBuilds, int shownBuild, int indexFromTo) {
-		return renderBuildList(indexFromTo, numberOfBuilds, shownBuild);
-	}
-
 	/**
 	 * Renders out the test results of a selected Build
 	 */
