@@ -46,13 +46,13 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
-public class CIBuildPersistence {
+public class CIPersistence {
 
 	private static final String ATTACHMENT_PREFIX = "ci-build-";
 
 	private final CIDashboard dashboard;
 
-	public CIBuildPersistence(CIDashboard dashboard) {
+	public CIPersistence(CIDashboard dashboard) {
 		this.dashboard = dashboard;
 	}
 

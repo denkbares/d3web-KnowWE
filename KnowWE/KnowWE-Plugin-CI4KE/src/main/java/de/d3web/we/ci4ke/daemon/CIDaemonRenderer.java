@@ -1,7 +1,7 @@
 package de.d3web.we.ci4ke.daemon;
 
 import de.d3web.testing.Message.Type;
-import de.d3web.we.ci4ke.build.CIBuildRenderer;
+import de.d3web.we.ci4ke.build.CIRenderer;
 import de.d3web.we.ci4ke.build.CIDashboard;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.knowwe.core.Environment;
@@ -55,12 +55,12 @@ public class CIDaemonRenderer implements Renderer {
 		string.append(srclink);
 
 		CIDashboard dashboard = CIDashboard.getDashboard(web, dashboardArticleTitle, dashboardName);
-		CIBuildRenderer renderer = dashboard.getRenderer();
-		if (!hasDashboard) {
-			string.append(renderer.renderResultType(Type.ERROR, PIXEL_SIZE, dashboardName));
+		CIRenderer renderer = dashboard.getRenderer();
+		if (hasDashboard) {
+			string.append(renderer.renderCurrentBuildStatus(PIXEL_SIZE));
 		}
 		else {
-			string.append(renderer.renderCurrentBuildStatus(PIXEL_SIZE));
+			string.append(renderer.renderResultType(Type.ERROR, PIXEL_SIZE));
 		}
 		string.append("</a>");
 

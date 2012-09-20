@@ -27,7 +27,6 @@ import java.util.List;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.TestParameter;
-import de.d3web.testing.Utils;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -40,18 +39,16 @@ import de.knowwe.core.kdom.parsing.Sections;
  * @created 26.11.2010
  */
 public class ArticleContains extends AbstractTest<Article> {
-	
+
 	private static final String SEARCH_STRING_DESCRIPTION = "Specifies the string or pattern (regex) that will be searched. Any found occurrence within the test object will be considered as test failure.";
-	
 
 	public ArticleContains() {
-		this.addParameter("SearchString", TestParameter.Type.Regex, TestParameter.Mode.Mandatory, SEARCH_STRING_DESCRIPTION);
+		this.addParameter("SearchString", TestParameter.Type.Regex, TestParameter.Mode.Mandatory,
+				SEARCH_STRING_DESCRIPTION);
 	}
 
 	@Override
 	public Message execute(Article article, String[] args, String[]... ignores) throws InterruptedException {
-
-		Utils.checkInterrupt();
 
 		String searchForKeyword = args[0];
 
@@ -92,7 +89,7 @@ public class ArticleContains extends AbstractTest<Article> {
 	public Class<Article> getTestObjectClass() {
 		return Article.class;
 	}
-	
+
 	@Override
 	public String getDescription() {
 		return "Checks, whether the articles contain the text defined by <searchString>.";

@@ -18,9 +18,9 @@
  */
 package de.d3web.we.ci4ke.handling;
 
-import de.d3web.we.ci4ke.util.CIUtilities;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
@@ -38,7 +38,7 @@ public class CIDashboardToolProvider implements ToolProvider {
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		String dashboardName = DefaultMarkupType.getAnnotation(section,
 				CIDashboardType.NAME_KEY);
-		
+
 		if (dashboardName == null) {
 			return new Tool[0];
 		}
@@ -49,7 +49,8 @@ public class CIDashboardToolProvider implements ToolProvider {
 
 	public static Tool getStartNewBuildTool(String dashboardName, String title) {
 		// Tool which starts a new build
-		String jsAction = "fctExecuteNewBuild('" + CIUtilities.utf8Escape(dashboardName) + "','"+title+"')";
+		String jsAction = "fctExecuteNewBuild('" + Strings.encodeURL(dashboardName) + "','" + title
+				+ "')";
 		return new DefaultTool(
 				"KnowWEExtension/ci4ke/images/16x16/clock.png",
 				"Start a new build",

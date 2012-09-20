@@ -25,7 +25,7 @@ import java.util.TreeSet;
 
 import de.d3web.testing.BuildResult;
 import de.d3web.we.ci4ke.build.CIDashboard;
-import de.d3web.we.ci4ke.util.CIUtilities;
+import de.d3web.we.ci4ke.util.CIUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.kdom.parsing.Section;
@@ -110,14 +110,14 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	 */
 	public static String renderDashboardContents(UserContext user, String dashboardArticleTitle, String dashboardName) {
 
-		Section<CIDashboardType> dashboardSection = CIUtilities.findCIDashboardSection(
+		Section<CIDashboardType> dashboardSection = CIUtils.findCIDashboardSection(
 				dashboardArticleTitle, dashboardName);
 		CIDashboard dashboard = CIDashboard.getDashboard(user.getWeb(), dashboardArticleTitle,
 				dashboardName);
 
 		StringBuilder string = new StringBuilder();
 
-		string.append(Strings.maskHTML("<div id='" + CIUtilities.utf8Escape(dashboardName)
+		string.append(Strings.maskHTML("<div name='" + Strings.encodeURL(dashboardName)
 				+ "' class='ci-title'>"));
 
 		checkForUniqueName(dashboardName, string);
@@ -130,12 +130,6 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		return string.toString();
 	}
 
-	/**
-	 * 
-	 * @created 19.09.2012
-	 * @param dashboard
-	 * @param string
-	 */
 	private static void appendDashboard(CIDashboard dashboard, StringBuilder string) {
 		BuildResult latestBuild = dashboard.getLatestBuild();
 
@@ -153,16 +147,13 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	}
 
 	private static void renderDashboardHeader(CIDashboard dashboard, BuildResult latestBuild, StringBuilder string) {
-		string.append("<a name='" + dashboard.getDashboardName() + "'></a>");
-		string.append("<div id='top_"
-				+ dashboard.getDashboardName()
-				+ "' style='border-bottom:1px solid #DDDDDD;padding-bottom: 12px;padding-top: 12px;'>");
+		string.append("<div class='ci-header'>");
 		string.append(dashboard.getRenderer().renderDashboardHeader(latestBuild));
 		string.append("</div>");
 	}
 
 	private static void appendBuildListCell(CIDashboard dashboard, BuildResult shownBuild, StringBuilder string) {
-		String dashboardNameEscaped = CIUtilities.utf8Escape(dashboard.getDashboardName());
+		String dashboardNameEscaped = Strings.encodeURL(dashboard.getDashboardName());
 		string.append("<td valign='top' style='border-right: 1px solid #DDDDDD;'>");
 		string.append("<div id='")
 				.append(dashboardNameEscaped)
@@ -182,7 +173,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	private static void appendBuildDetailsCell(CIDashboard dashboard, BuildResult shownBuild, StringBuilder string) {
 		string.append("<td valign='top'>");
 		string.append("<div id='")
-				.append(CIUtilities.utf8Escape(dashboard.getDashboardName()))
+				.append(Strings.encodeURL(dashboard.getDashboardName()))
 				.append("-build-details-wrapper' class='ci-build-details-wrapper'>");
 		string.append(dashboard.getRenderer().renderBuildDetails(shownBuild));
 		string.append("</div>");
@@ -219,7 +210,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	private static void checkForUniqueName(String dashboardName, StringBuilder string) {
 		// check unique dashboard names and create error in case of
 		// duplicates
-		Collection<Section<CIDashboardType>> ciDashboardSections = CIUtilities.findCIDashboardSection(dashboardName);
+		Collection<Section<CIDashboardType>> ciDashboardSections = CIUtils.findCIDashboardSection(dashboardName);
 		if (ciDashboardSections.size() > 1) {
 			TreeSet<String> articleTitles = new TreeSet<String>();
 			for (Section<CIDashboardType> section : ciDashboardSections) {

@@ -33,7 +33,7 @@ import de.d3web.testing.TestObjectProviderManager;
 import de.d3web.we.ci4ke.handling.CIConfig;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.d3web.we.ci4ke.handling.CIHook;
-import de.d3web.we.ci4ke.util.CIUtilities;
+import de.d3web.we.ci4ke.util.CIUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -58,7 +58,7 @@ public class CIBuilder {
 		this.dashboard = CIDashboard.getDashboard(web, dashboardArticleTitle, dashboardName);
 		Article dashboardArticle = Environment.getInstance().getArticleManager(
 				Environment.DEFAULT_WEB).getArticle(dashboardArticleTitle);
-		Section<CIDashboardType> sec = CIUtilities.
+		Section<CIDashboardType> sec = CIUtils.
 				findCIDashboardSection(dashboardArticleTitle, dashboardName);
 		if (sec == null) {
 			throw new IllegalArgumentException("No dashboard " +
@@ -83,6 +83,10 @@ public class CIBuilder {
 	 * Therefore the TestExecutor is used. Adds the resultset to dashboard.
 	 */
 	public void executeBuild() {
+		String dashboardName = dashboard.getDashboardName();
+
+		// terminate current build (if one is running)
+		CIUtils.deregisterAndTerminateBuildExecutor(dashboardName);
 
 		List<TestObjectProvider> providers = new ArrayList<TestObjectProvider>();
 		providers.add(DefaultWikiTestObjectProvider.getInstance());
@@ -90,13 +94,13 @@ public class CIBuilder {
 		providers.addAll(pluggedProviders);
 
 		ProgressListener listener = new AjaxProgressListenerImpl();
-		ProgressListenerManager.getInstance().setProgressListener(dashboard.getDashboardName(),
+		ProgressListenerManager.getInstance().setProgressListener(dashboardName,
 				listener);
 
 		// create and run TestExecutor
 		TestExecutor executor = new TestExecutor(providers, this.config.getTests(), listener);
 
-		CIUtilities.registerBuildExecutor(dashboard.getDashboardName(), executor);
+		CIUtils.registerBuildExecutor(dashboardName, executor);
 		executor.run();
 
 		BuildResult build = executor.getBuildResult();
@@ -105,8 +109,8 @@ public class CIBuilder {
 		if (build != null && !Thread.interrupted()) {
 			dashboard.addBuild(build);
 		}
-		ProgressListenerManager.getInstance().removeProgressListener(dashboard.getDashboardName());
-		CIUtilities.deregisterAndTerminateBuildExecutor(dashboard.getDashboardName());
+		ProgressListenerManager.getInstance().removeProgressListener(dashboardName);
+		CIUtils.deregisterAndTerminateBuildExecutor(dashboardName);
 	}
 
 }

@@ -46,14 +46,14 @@ public class ArticleHasErrors extends AbstractTest<Article> {
 		String monitoredArticleTitle = moni.getTitle();
 
 		Collection<de.knowwe.core.report.Message> messages = new LinkedList<de.knowwe.core.report.Message>();
-		Type[] typeArray = new de.knowwe.core.report.Message.Type[]{de.knowwe.core.report.Message.Type.ERROR};
-		Map<String, Collection<de.knowwe.core.report.Message>> allMessagesMap = 
-			Messages.getMessagesFromSubtree(moni.getRootSection(), typeArray);
-		
-		for(String s : allMessagesMap.keySet()) {
+		Type[] typeArray = new de.knowwe.core.report.Message.Type[] { de.knowwe.core.report.Message.Type.ERROR };
+		Map<String, Collection<de.knowwe.core.report.Message>> allMessagesMap =
+				Messages.getMessagesFromSubtree(moni.getRootSection(), typeArray);
+
+		for (String s : allMessagesMap.keySet()) {
 			messages.addAll(allMessagesMap.get(s));
 		}
-		
+
 		Utils.checkInterrupt();
 
 		buffy.append("<a href=\"Wiki.jsp?page=" + monitoredArticleTitle + "\"> "
@@ -68,6 +68,7 @@ public class ArticleHasErrors extends AbstractTest<Article> {
 			buffy.append("<li> " + message.getVerbalization() + "</li>");
 		}
 		buffy.append("</ul>");
+		// Utils.slowDowntest(this.getClass(), 10000, true);
 		if (hasError) {
 			return new Message(
 					Message.Type.FAILURE, buffy.toString());
@@ -83,7 +84,6 @@ public class ArticleHasErrors extends AbstractTest<Article> {
 		return Article.class;
 	}
 
-	
 	@Override
 	public String getDescription() {
 		return "Checks, that the specified article reports no compile errors for knowledge definitions.";

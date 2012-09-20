@@ -46,15 +46,15 @@ public class CIDashboard {
 	private final String web;
 	private final String dashboardArticle;
 	private final String dashboardName;
-	private final CIBuildRenderer renderer;
-	private final CIBuildPersistence persistence;
+	private final CIRenderer renderer;
+	private final CIPersistence persistence;
 
 	private CIDashboard(String web, String dashboardArticle, String dashboardName) {
 		this.web = web;
 		this.dashboardArticle = dashboardArticle;
 		this.dashboardName = dashboardName;
-		this.renderer = new CIBuildRenderer(this);
-		this.persistence = new CIBuildPersistence(this);
+		this.renderer = new CIRenderer(this);
+		this.persistence = new CIPersistence(this);
 	}
 
 	public String getWeb() {
@@ -69,11 +69,11 @@ public class CIDashboard {
 		return dashboardName;
 	}
 
-	public CIBuildRenderer getRenderer() {
+	public CIRenderer getRenderer() {
 		return renderer;
 	}
 
-	public CIBuildPersistence getPersistence() {
+	public CIPersistence getPersistence() {
 		return persistence;
 	}
 

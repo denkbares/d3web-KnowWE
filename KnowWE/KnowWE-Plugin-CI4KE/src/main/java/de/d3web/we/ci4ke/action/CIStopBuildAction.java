@@ -21,19 +21,18 @@ package de.d3web.we.ci4ke.action;
 import java.io.IOException;
 
 import de.d3web.core.io.progress.ProgressListenerManager;
-import de.d3web.we.ci4ke.util.CIUtilities;
+import de.d3web.we.ci4ke.util.CIUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 
-
-public class CIStopBuildAction extends AbstractAction{
+public class CIStopBuildAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		//System.out.println("stop event");
-		String dashboardID = context.getParameter("id");
-		CIUtilities.deregisterAndTerminateBuildExecutor(dashboardID);
-		ProgressListenerManager.getInstance().removeProgressListener(dashboardID);
+		// System.out.println("stop event");
+		String dashboardName = context.getParameter("name");
+		CIUtils.deregisterAndTerminateBuildExecutor(dashboardName);
+		ProgressListenerManager.getInstance().removeProgressListener(dashboardName);
 	}
 
 }

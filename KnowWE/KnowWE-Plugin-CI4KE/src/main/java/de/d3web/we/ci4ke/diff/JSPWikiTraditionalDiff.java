@@ -37,7 +37,7 @@ import org.apache.commons.jrcs.diff.Revision;
 import org.apache.commons.jrcs.diff.RevisionVisitor;
 import org.apache.commons.jrcs.diff.myers.MyersDiff;
 
-import de.d3web.we.ci4ke.util.CIUtilities;
+import de.d3web.we.ci4ke.util.CIUtils;
 
 public class JSPWikiTraditionalDiff implements DiffEngine {
 
@@ -74,8 +74,8 @@ public class JSPWikiTraditionalDiff implements DiffEngine {
 		}
 
 		try {
-			String[] first = Diff.stringToArray(CIUtilities.replaceEntities(p1));
-			String[] second = Diff.stringToArray(CIUtilities.replaceEntities(p2));
+			String[] first = Diff.stringToArray(CIUtils.replaceEntities(p1));
+			String[] second = Diff.stringToArray(CIUtils.replaceEntities(p2));
 			Revision rev = Diff.diff(first, second, new MyersDiff());
 
 			if (rev == null || rev.size() == 0) {

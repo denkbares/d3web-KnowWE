@@ -59,6 +59,12 @@
 	}
 */
 
+.ci-header {
+	border-bottom: 1px solid #DDDDDD;
+	padding-bottom: 12px;
+	padding-top: 12px;'
+}
+
 .ci-title {
 	/*border-bottom: 1px solid #DDD;*/
 	padding: 0px 0px 6px 6px;
@@ -86,6 +92,20 @@
 	padding: 3px 5px;
 	white-space: pre-wrap;
 	}
+
+.ci-state {
+	margin: 0px 5px 0px 5px;
+}
+
+.ci-forecast {
+	margin: 0px 10px 0px 5px;
+}
+
+.ci-name {
+	font-weight: bold;
+	font-size: 16px;
+}
+	
 .ci-collapsible-box h4 
 	{
 	color:#000000;
@@ -115,51 +135,24 @@
 	clear: both; 
 	visibility: hidden;
 	}
-/*
-#ci-content-wrapper
-	{
-	display: inline-block;
-	}
-#ci-content-wrapper
-	{
-	display: block;
-	}
-*/
+
 /* end easy clearing */
 
-
-.prog-meter-wrap {
-    /* The width and height of your image */
-    /*width: 155px;*/ 
-    height: 30px;
-    display:inline;
-    /*border-style: solid;
-    border-width: 2px; 
-    margin: 10px;*/
-    white-space:normal;
-    position:relative;
-    /*background-color:#339900;
-	layer-background-color:#339900; */
+.ci-progress-info {
+	margin-left: 50px;
 }
 
-.top {
-	position: relative;
+.ci-progress-value-wrap {
 }
 
- .prog-meter-value {
- display:inline;
- }
+.ci-progress-value {
+}
 
+.ci-abort-build {
+	margin-bottom: -4px;
+}
 
-.prog-meter-text {
-	display:inline;
-    /*position: absolute;*/
-    top:0; left:0;
-	font-size: 90%;
-	font-weight: normal;
-    padding-top: 5px;
-    white-space:normal;
-    color: #555;
-    /*text-align: center;*/
-    width: 100%;
+.ci-progess-text {
+    white-space: normal;
+    padding: 0px 5px 0px 5px;
 }

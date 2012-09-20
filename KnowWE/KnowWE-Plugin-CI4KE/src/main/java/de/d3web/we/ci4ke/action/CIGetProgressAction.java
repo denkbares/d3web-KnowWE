@@ -22,6 +22,9 @@ package de.d3web.we.ci4ke.action;
 import java.io.IOException;
 import java.net.URLDecoder;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import de.d3web.core.io.progress.AjaxProgressListener;
 import de.d3web.core.io.progress.ProgressListener;
 import de.d3web.core.io.progress.ProgressListenerManager;
@@ -37,14 +40,14 @@ import de.knowwe.core.action.UserActionContext;
  */
 public class CIGetProgressAction extends AbstractAction {
 
-	String FINISHED = "finished";
+	String FINISHED = "Finished";
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String id = context.getParameter("id");
-		id = URLDecoder.decode(id, "UTF-8");
-		ProgressListener listener = ProgressListenerManager.getInstance().getProgressListener(id);
+		String name = context.getParameter("name");
+		name = URLDecoder.decode(name, "UTF-8");
+		ProgressListener listener = ProgressListenerManager.getInstance().getProgressListener(name);
 
 		float progress = 0;
 		// finished will be returned in case build is finished and
@@ -54,8 +57,8 @@ public class CIGetProgressAction extends AbstractAction {
 			if (listener instanceof AjaxProgressListener) {
 				progress = ((AjaxProgressListener) listener).getCurrentProgress();
 				message = ((AjaxProgressListener) listener).getCurrentMessage();
-				if (message == null || message.length() == 0) {
-					message = "starting build...";
+				if (message == null || message.isEmpty()) {
+					message = "Initializing...";
 				}
 			}
 		}
@@ -66,14 +69,17 @@ public class CIGetProgressAction extends AbstractAction {
 		int progressTwoDigits = (int) (progress * 100);
 		String percentString = "" + progressTwoDigits;
 		if (progressTwoDigits < 10) {
-			percentString = "&nbsp;&nbsp;" + percentString;
+			percentString = " " + percentString;
 		}
-		String result = "{\"progress\":\"" + percentString + "\",\"message\":\"" + message + "\"}";
-
-		if (context.getWriter() != null) {
-			context.setContentType("text/html; charset=UTF-8");
-			context.getWriter().write(result);
+		JSONObject result = new JSONObject();
+		try {
+			result.put("progress", percentString);
+			result.put("message", message);
+			result.write(context.getWriter());
 		}
-
+		catch (JSONException e) {
+			java.util.logging.Logger.getLogger(this.getClass().getName()).severe(
+					"Error while writing JSON message: " + e.getMessage());
+		}
 	}
 }

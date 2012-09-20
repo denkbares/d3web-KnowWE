@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
+import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Environment;
 
@@ -51,8 +52,13 @@ public class WikiKnowledgeBaseProvider implements TestObjectProvider {
 
 		List<TestObjectContainer<T>> result = new ArrayList<TestObjectContainer<T>>();
 		// get the KB for this article
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(
-				Environment.DEFAULT_WEB, id);
+		D3webKnowledgeHandler knowledgeHandler =
+				D3webUtils.getKnowledgeRepresentationHandler(Environment.DEFAULT_WEB);
+
+		KnowledgeBase kb = null;
+		if (knowledgeHandler != null && knowledgeHandler.getKnowledgeArticles().contains(id)) {
+			kb = knowledgeHandler.getKnowledgeBase(id);
+		}
 		if (kb != null) {
 			TestObjectContainer<T> container = new TestObjectContainer<T>(kb.getId(), c.cast(kb));
 			result.add(container);

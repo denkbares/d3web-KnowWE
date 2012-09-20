@@ -39,7 +39,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.Strings;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
-public class CIUtilities {
+public class CIUtils {
 
 	private static Map<String, TestExecutor> runningBuilds = new HashMap<String, TestExecutor>();
 
@@ -47,11 +47,11 @@ public class CIUtilities {
 	 * Registers a running build for a specific dashboard.
 	 * 
 	 * @created 13.08.2012
-	 * @param dashBoardID
-	 * @param th
+	 * @param dashBoardName the name of the dashboard
+	 * @param testExecutor the TestExecutor
 	 */
-	public static void registerBuildExecutor(String dashBoardID, TestExecutor th) {
-		runningBuilds.put(dashBoardID, th);
+	public static void registerBuildExecutor(String dashBoardName, TestExecutor testExecutor) {
+		runningBuilds.put(dashBoardName, testExecutor);
 	}
 
 	/**
@@ -59,15 +59,15 @@ public class CIUtilities {
 	 * alive it will stop (interrupted and after time-out by force).
 	 * 
 	 * @created 13.08.2012
-	 * @param dashBoardID
+	 * @param dashBoardName
 	 * @param user
 	 */
-	public static void deregisterAndTerminateBuildExecutor(String dashBoardID) {
-		TestExecutor executor = runningBuilds.get(dashBoardID);
+	public static void deregisterAndTerminateBuildExecutor(String dashBoardName) {
+		TestExecutor executor = runningBuilds.get(dashBoardName);
 		if (executor != null) {
 			executor.terminate();
 			// finally remove executor from register
-			runningBuilds.remove(dashBoardID);
+			runningBuilds.remove(dashBoardName);
 			// System.out.println("build thread removed");
 		}
 	}
@@ -97,7 +97,7 @@ public class CIUtilities {
 		WikiConnector con = Environment.getInstance().getWikiConnector();
 		String wikiDir = con.getSavePath();
 		if (wikiDir == null || wikiDir.isEmpty()) {
-			Logger.getLogger(CIUtilities.class.getName()).log(
+			Logger.getLogger(CIUtils.class.getName()).log(
 					Level.WARNING, "Wiki SavePath could not be retrieved! (null or empty!)");
 		}
 
@@ -230,17 +230,6 @@ public class CIUtilities {
 		res.append(orig.substring(end));
 
 		return res.toString();
-	}
-
-	/**
-	 * Escapes a string using UTF-8
-	 * 
-	 * @created 01.12.2010
-	 * @param toEscape
-	 * @return
-	 */
-	public static String utf8Escape(String toEscape) {
-		return Strings.encodeURL(toEscape);
 	}
 
 	/**

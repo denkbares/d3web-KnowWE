@@ -27,11 +27,11 @@ import de.d3web.core.io.progress.ProgressListener;
 import de.d3web.core.io.progress.ProgressListenerManager;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message.Type;
-import de.d3web.we.ci4ke.build.CIBuildRenderer;
+import de.d3web.we.ci4ke.build.CIRenderer;
 import de.d3web.we.ci4ke.build.CIBuilder;
 import de.d3web.we.ci4ke.build.CIDashboard;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
-import de.d3web.we.ci4ke.util.CIUtilities;
+import de.d3web.we.ci4ke.util.CIUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
@@ -45,7 +45,7 @@ public class CIAction extends AbstractAction {
 
 		String task = String.valueOf(context.getParameter("task"));
 
-		String dashboardName = String.valueOf(context.getParameter("id"));
+		String dashboardName = String.valueOf(context.getParameter("name"));
 		dashboardName = Strings.decodeURL(dashboardName);
 
 		ProgressListener listener = ProgressListenerManager.getInstance().getProgressListener(
@@ -76,13 +76,13 @@ public class CIAction extends AbstractAction {
 		}
 
 		String dashBoardArticle = null;
-		Collection<Section<CIDashboardType>> dashboardSections = CIUtilities.findCIDashboardSection(dashboardName);
+		Collection<Section<CIDashboardType>> dashboardSections = CIUtils.findCIDashboardSection(dashboardName);
 		if (dashboardSections != null && dashboardSections.size() > 0) {
 			// there can only be one dashboard with this name
 			dashBoardArticle = dashboardSections.iterator().next().getTitle();
 		}
 		CIDashboard dashboard = CIDashboard.getDashboard(web, dashBoardArticle, dashboardName);
-		CIBuildRenderer renderer = dashboard.getRenderer();
+		CIRenderer renderer = dashboard.getRenderer();
 
 		String html = null;
 		if (task.equals("executeNewBuild")) {
@@ -114,7 +114,7 @@ public class CIAction extends AbstractAction {
 		else if (task.equals("refreshBubble")) {
 			BuildResult build = dashboard.getLatestBuild();
 			Type overallResult = build.getOverallResult();
-			html = renderer.renderResultType(overallResult, 16, dashboardName);
+			html = renderer.renderResultType(overallResult, 16);
 		}
 		else if (task.equals("refreshBuildList")) {
 			int indexFromBack =
