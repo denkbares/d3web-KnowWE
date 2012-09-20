@@ -167,12 +167,11 @@
 		</profile>
 
 		<!-- ======= WIKI PLUGINS ======= -->
-		<!-- Comment plugin -->
 		<profile>
-			<id>comment-plugin</id>
+			<id>comment</id>
 			<activation>
 				<property>
-					<name>comment-plugin</name>
+					<name>comment</name>
 				</property>
 			</activation>
 
@@ -186,12 +185,11 @@
 			</dependencies>
 		</profile>
 
-		<!-- Calendar plugin -->
 		<profile>
-			<id>calendar-plugin</id>
+			<id>calendar</id>
 			<activation>
 				<property>
-					<name>calendar-plugin</name>
+					<name>calendar</name>
 				</property>
 			</activation>
 
@@ -205,12 +203,11 @@
 			</dependencies>
 		</profile>
 
-		<!-- Drools plugin -->
 		<profile>
-			<id>drools-plugin</id>
+			<id>drools</id>
 			<activation>
 				<property>
-					<name>drools-plugin</name>
+					<name>drools</name>
 				</property>
 			</activation>
 
@@ -224,26 +221,6 @@
 			</dependencies>
 		</profile>
 
-		<!-- Refactoring plugin -->
-		<profile>
-			<id>refactoring-plugin</id>
-			<activation>
-				<property>
-					<name>refactoring-plugin</name>
-				</property>
-			</activation>
-
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Refactoring</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<!-- DiaFlux Dialog -->
 		<profile>
 			<id>diafluxdialog</id>
 			<activation>
@@ -262,31 +239,11 @@
 			</dependencies>
 		</profile>
 
-		<!-- Continuous Integration plugin -->
 		<profile>
-			<id>ci4ke-plugin</id>
+			<id>ci4ke-groovy</id>
 			<activation>
 				<property>
-					<name>ci4ke-plugin</name>
-				</property>
-			</activation>
-
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-CI4KE</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<!-- Continuous Integration plugin - Groovy addons -->
-		<profile>
-			<id>ci4ke-groovy-plugin</id>
-			<activation>
-				<property>
-					<name>ci4ke-groovy-plugin</name>
+					<name>ci4ke-groovy</name>
 				</property>
 			</activation>
 
@@ -300,12 +257,11 @@
 			</dependencies>
 		</profile>
 
-		<!-- Hermes Module -->
 		<profile>
-			<id>hermes-plugin</id>
+			<id>hermes</id>
 			<activation>
 				<property>
-					<name>hermes-plugin</name>
+					<name>hermes</name>
 				</property>
 			</activation>
 
@@ -319,126 +275,11 @@
 			</dependencies>
 		</profile>
 
-		<!-- Flowchart Module -->
 		<profile>
-			<id>flowchart-plugin</id>
+			<id>onequestiondialog</id>
 			<activation>
 				<property>
-					<name>flowchart-plugin</name>
-				</property>
-			</activation>
-
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-DiaFlux</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<!-- TestCaseExecutor Module -->
-		<profile>
-			<id>testcaseexecutor-plugin</id>
-			<activation>
-				<property>
-					<name>testcaseexecutor-plugin</name>
-				</property>
-			</activation>
-
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-TestCaseExecutor</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<!-- WISEC plugin -->
-		<profile>
-			<id>wisec-plugin</id>
-			<activation>
-				<property>
-					<name>wisec-plugin</name>
-				</property>
-			</activation>
-
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-WISEC</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<!-- FAQ plugin -->
-		<profile>
-			<id>faq</id>
-			<activation>
-				<property>
-					<name>faq-plugin</name>
-				</property>
-			</activation>
-
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-FAQ</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<!-- Quick Interview plugin -->
-		<profile>
-			<id>quicki</id>
-			<activation>
-				<property>
-					<name>quicki-plugin</name>
-				</property>
-			</activation>
-
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-QuickInterview</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<!-- TestSuite plugin -->
-		<profile>
-			<id>testcase</id>
-			<activation>
-				<property>
-					<name>testcase-plugin</name>
-				</property>
-			</activation>
-
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-TestCase</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<!-- OneQuestionDialog plugin -->
-		<profile>
-			<id>onequestiondialog-plugin</id>
-			<activation>
-				<property>
-					<name>onequestiondialog-plugin</name>
+					<name>onequestiondialog</name>
 				</property>
 			</activation>
 
@@ -452,50 +293,11 @@
 			</dependencies>
 		</profile>
 
-		<!-- Table plugin -->
 		<profile>
-			<id>table-plugin</id>
+			<id>example</id>
 			<activation>
 				<property>
-					<name>table-plugin</name>
-				</property>
-			</activation>
-
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Table</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<!-- CaseViz plugin -->
-		<profile>
-			<id>caseviz</id>
-			<activation>
-				<property>
-					<name>caseviz</name>
-				</property>
-			</activation>
-
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-d3web-CaseViz</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<!-- Example/HelloWorld plugin -->
-		<profile>
-			<id>example-plugin</id>
-			<activation>
-				<property>
-					<name>example-plugin</name>
+					<name>example</name>
 				</property>
 			</activation>
 
@@ -508,69 +310,12 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		
-		<!-- Wiki zip download plugin -->
+
 		<profile>
-			<id>wikizip-plugin</id>
+			<id>onte</id>
 			<activation>
 				<property>
-					<name>wikizip-plugin</name>
-				</property>
-			</activation>
-
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Wikicontent-Download</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<!-- TestcaseTable plugin -->
-		<profile>
-			<id>testcasetable-plugin</id>
-			<activation>
-				<property>
-					<name>testcasetable-plugin</name>
-				</property>
-			</activation>
-
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-TestcaseTable-Extensions</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<!-- Semantic Core Plugin -->
-		<profile>
-			<id>KnowWE-Plugin-SemanticCore</id>
-			<activation>
-				<property>
-					<name>semanticcore-plugin</name>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-SemanticCore</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<!-- Onte Plugin -->
-		<profile>
-			<id>onte-plugin</id>
-			<activation>
-				<property>
-					<name>onte-plugin</name>
+					<name>onte</name>
 				</property>
 			</activation>
 			<dependencies>
@@ -584,10 +329,10 @@
 		</profile>
 
 		<profile>
-			<id>incremental-test-plugin</id>
+			<id>incremental-test</id>
 			<activation>
 				<property>
-					<name>incremental-test-plugin</name>
+					<name>incremental-test</name>
 				</property>
 			</activation>
 			<dependencies>
@@ -600,12 +345,11 @@
 			</dependencies>
 		</profile>
 
-		<!-- DiaFlux Refactoring -->
 		<profile>
-			<id>diafluxrefactoring-plugin</id>
+			<id>diafluxrefactoring</id>
 			<activation>
 				<property>
-					<name>diafluxrefactoring-plugin</name>
+					<name>diafluxrefactoring</name>
 				</property>
 			</activation>
 			<dependencies>
@@ -618,7 +362,6 @@
 			</dependencies>
 		</profile>
 
-		<!-- DiaFlux Coverage -->
 		<profile>
 			<id>diafluxcoverage</id>
 			<activation>
@@ -636,7 +379,6 @@
 			</dependencies>
 		</profile>
 
-		<!-- DiaFlux Coverage City -->
 		<profile>
 			<id>coveragecity</id>
 			<activation>
@@ -654,7 +396,6 @@
 			</dependencies>
 		</profile>
 
-		<!-- KBDebug -->
 		<profile>
 			<id>kbdebug</id>
 			<activation>
@@ -672,7 +413,6 @@
 			</dependencies>
 		</profile>
 
-		<!-- DiaFlux Anomalies -->
 		<profile>
 			<id>diaflux-anomalies</id>
 			<activation>
@@ -689,8 +429,25 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		
+		<profile>
+			<id>renaming</id>
+			<activation>
+				<property>
+					<name>renaming</name>
+				</property>
+			</activation>
 
-		<!-- JournalImport -->
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Renaming</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
 		<profile>
 			<id>journalimport</id>
 			<activation>
@@ -708,12 +465,11 @@
 			</dependencies>
 		</profile>
 
-		<!-- Shared Plugin -->
 		<profile>
-			<id>KnowWE-Plugin-Shared</id>
+			<id>shared</id>
 			<activation>
 				<property>
-					<name>shared-plugin</name>
+					<name>shared</name>
 				</property>
 			</activation>
 			<dependencies>
@@ -727,10 +483,10 @@
 		</profile>
 
 		<profile>
-			<id>proketproperties-plugin</id>
+			<id>proketproperties</id>
 			<activation>
 				<property>
-					<name>proketproperties-plugin</name>
+					<name>proketproperties</name>
 				</property>
 			</activation>
 			<dependencies>
@@ -744,50 +500,10 @@
 		</profile>
 
 		<profile>
-			<id>wikibook-plugin</id>
+			<id>inlineindication</id>
 			<activation>
 				<property>
-					<name>wikibook-plugin</name>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
-					<version>0.2-SNAPSHOT</version>
-					<scope>compile</scope>
-				</dependency>
-				<dependency>
-					<groupId>com.denkbares</groupId>
-					<artifactId>KnowWE-Plugin-WikiBook</artifactId>
-					<version>0-SNAPSHOT</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
-			<id>simplescoretable-plugin</id>
-			<activation>
-				<property>
-					<name>simplescoretable-plugin</name>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-d3web-SimpleScoreTable</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
-			<id>inlineindication-plugin</id>
-			<activation>
-				<property>
-					<name>inlineindication-plugin</name>
+					<name>inlineindication</name>
 				</property>
 			</activation>
 			<dependencies>
@@ -826,7 +542,7 @@
 		</profile>
 
 		<profile>
-			<id>rdfs-plugins</id>
+			<id>rdfs</id>
 			<activation>
 				<property>
 					<name>rdfs-plugins</name>
@@ -989,6 +705,24 @@
 					<version>0.2-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Wikicontent-Download</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-WikiBook</artifactId>
+					<version>0-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-d3web-SimpleScoreTable</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
 			</dependencies>
 		</profile>
 		
@@ -1004,8 +738,6 @@
 			</dependencies>
 		</profile>
 
-
-		<!-- WiMVent Profile -->
 		<profile>
 			<id>wimvent</id>
 			<dependencies>
@@ -1145,25 +877,6 @@
 					<groupId>jspwiki.plugin</groupId>
 					<artifactId>FreeMind</artifactId>
 					<version>0.1</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-
-		<profile>
-			<id>Renaming</id>
-			<activation>
-				<property>
-					<name>Renaming</name>
-				</property>
-			</activation>
-
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Renaming</artifactId>
-					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
