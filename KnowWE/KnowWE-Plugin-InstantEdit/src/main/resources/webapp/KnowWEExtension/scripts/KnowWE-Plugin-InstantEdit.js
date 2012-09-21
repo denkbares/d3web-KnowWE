@@ -178,6 +178,7 @@ KNOWWE.plugin.instantEdit = function() {
 		 *            id The id of the DOM element
 		 */
         cancel: function(id) {
+        	_IE.toolNameSpace[id].unloadCondition = null;
             _IE.disable(id, true, null);
         },
 
