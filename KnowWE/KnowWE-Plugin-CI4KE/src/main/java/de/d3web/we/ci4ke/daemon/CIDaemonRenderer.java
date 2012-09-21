@@ -1,8 +1,8 @@
 package de.d3web.we.ci4ke.daemon;
 
 import de.d3web.testing.Message.Type;
-import de.d3web.we.ci4ke.build.CIRenderer;
 import de.d3web.we.ci4ke.build.CIDashboard;
+import de.d3web.we.ci4ke.build.CIRenderer;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
@@ -17,17 +17,18 @@ public class CIDaemonRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, StringBuilder string) {
-
+		String content = DefaultMarkupType.getContent(section);
 		String dashboardName = DefaultMarkupType.getAnnotation(section,
 				CIDashboardType.NAME_KEY);
 		String dashboardArticle = DefaultMarkupType.getAnnotation(section,
 				CIDaemonType.DASHBOARD_ARTICLE);
-		string.append(Strings.maskHTML(renderDaemonContents(section.getWeb(), dashboardName,
+		string.append(Strings.maskHTML(renderDaemonContents(content, section.getWeb(),
+				dashboardName,
 				dashboardArticle)));
 
 	}
 
-	public static String renderDaemonContents(String web, String dashboardName, String dashboardArticleTitle) {
+	public static String renderDaemonContents(String content, String web, String dashboardName, String dashboardArticleTitle) {
 
 		StringBuilder string = new StringBuilder();
 
@@ -47,8 +48,10 @@ public class CIDaemonRenderer implements Renderer {
 			string.append("</span>");
 		}
 
-		String baseURL = Environment.getInstance().getWikiConnector().getBaseUrl();
-		String srclink = "<a href=\"" + baseURL + (baseURL.endsWith("/") ? "" : "/")
+		String baseURL =
+				Environment.getInstance().getWikiConnector().getBaseUrl();
+		String srclink = "<a href=\"" + baseURL + (baseURL.endsWith("/") ? ""
+				: "/")
 				+ "Wiki.jsp?page="
 				+ dashboardArticleTitle
 				+ "\">";
@@ -64,7 +67,8 @@ public class CIDaemonRenderer implements Renderer {
 		}
 		string.append("</a>");
 
+		string.append(Environment.getInstance().getWikiConnector().renderWikiSyntax(content));
+
 		return string.toString();
 	}
-
 }
