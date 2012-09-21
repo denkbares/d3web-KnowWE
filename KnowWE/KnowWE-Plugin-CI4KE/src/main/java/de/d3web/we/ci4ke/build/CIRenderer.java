@@ -354,12 +354,12 @@ public class CIRenderer {
 	public void renderProgressInfoHTML(StringBuilder string) {
 		string.append("<span class='ci-progress-info' id='" + dashboardNameEncoded
 				+ "_progress-container'>");
+		appendAbortButton(string);
 		string.append("<span class='ci-progress-value-wrap'><span class='ci-progress-value' id='"
 				+ dashboardNameEncoded + "_progress-value'>0 %");
 		string.append("</span></span>");
 		string.append("<span class='ci-progess-text' id='"
 				+ dashboardNameEncoded + "_progress-text'>Build running...</span>");
-		appendAbortButton(string);
 		string.append("</span>");
 	}
 

@@ -143,6 +143,7 @@
 }
 
 .ci-progress-value-wrap {
+	padding-left: 5px;
 }
 
 .ci-progress-value {
