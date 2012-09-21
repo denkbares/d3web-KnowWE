@@ -163,7 +163,24 @@ KNOWWE.editCommons = function() {
             ajaxCall.send();
             _EC.wikiText[id] = ajaxCall.getResponse();
             return _EC.wikiText[id];
-        }
+        },
+        
+        hasKDomID: function(object) {
+        	if (!object.id) {
+        		return false;
+        	}
+        	// TODO: Check RegExp
+        	var validID = new RegExp("^[0123456789abcdef]{1,8}$");
+        	if (validID.test(object.id)) {
+        		// TODO: Check also server-side
+        		return true;
+        	}
+        	return false;
+        },
+        
+        isEmpty: function(str) {
+    		return (!str || 0 === str.length);
+		}
 
     }
 }();
