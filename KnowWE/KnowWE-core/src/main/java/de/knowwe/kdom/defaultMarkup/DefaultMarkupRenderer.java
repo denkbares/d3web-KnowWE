@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -194,7 +195,7 @@ public class DefaultMarkupRenderer implements Renderer {
 			}
 			string.append(Strings.maskHTML("<span class='" + clazz
 					+ "' style='white-space: pre-wrap;'>"));
-			for (String messageString : messages) {
+			for (String messageString : new LinkedHashSet<String>(messages)) {
 				string.append(messageString).append("\n");
 			}
 			string.append(Strings.maskHTML("</span>\n"));
