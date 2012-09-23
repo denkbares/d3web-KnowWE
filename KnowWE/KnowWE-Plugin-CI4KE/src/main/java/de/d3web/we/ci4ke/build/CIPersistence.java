@@ -41,7 +41,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import de.d3web.testing.BuildResult;
-import de.d3web.testing.BuildResultPersistenceDocumentWriter;
+import de.d3web.testing.BuildResultPersistenceHandler;
 import de.knowwe.core.Environment;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
@@ -95,7 +95,7 @@ public class CIPersistence {
 
 	public void write(BuildResult build) throws IOException {
 		try {
-			Document document = BuildResultPersistenceDocumentWriter.toXML(build);
+			Document document = BuildResultPersistenceHandler.toXML(build);
 			// we write the document as an attachment
 			write(document);
 		}
@@ -173,7 +173,7 @@ public class CIPersistence {
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 		Document document = docBuilder.parse(in);
-		return BuildResultPersistenceDocumentWriter.fromXML(document);
+		return BuildResultPersistenceHandler.fromXML(document);
 	}
 
 	private WikiAttachment getAttachment() throws IOException {

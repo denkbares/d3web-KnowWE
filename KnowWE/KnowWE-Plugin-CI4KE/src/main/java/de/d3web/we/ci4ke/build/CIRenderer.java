@@ -28,6 +28,7 @@ import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message.Type;
 import de.d3web.testing.Test;
 import de.d3web.testing.TestManager;
+import de.d3web.testing.TestParser;
 import de.d3web.testing.TestResult;
 import de.d3web.we.ci4ke.util.CIUtils;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -219,16 +220,8 @@ public class CIRenderer {
 
 		// render test-configuration (if existent)
 		if (config != null && !(config.length == 0)) {
-			String configString = "";
-			for (String string : config) {
-				configString += "\"" + string + "\"; ";
-			}
-			// cut off last semicolon
-			if (configString.trim().endsWith(";")) {
-				configString = configString.substring(0, configString.lastIndexOf(";"));
-			}
 			buffy.append("<span class='ci-configuration'>");
-			buffy.append(" (").append(configString).append(")");
+			buffy.append(TestParser.concatParameters(config));
 			buffy.append("</span>");
 		}
 		buffy.append("</span>");
@@ -346,12 +339,12 @@ public class CIRenderer {
 		// insert tag for progress bar
 		// open/close div progress_container
 		if (CIUtils.buildRunning(dashboardName)) {
-			renderProgressInfoHTML(string);
+			renderProgressInfo(string);
 		}
 		return string.toString();
 	}
 
-	public void renderProgressInfoHTML(StringBuilder string) {
+	public void renderProgressInfo(StringBuilder string) {
 		string.append("<span class='ci-progress-info' id='" + dashboardNameEncoded
 				+ "_progress-container'>");
 		appendAbortButton(string);
