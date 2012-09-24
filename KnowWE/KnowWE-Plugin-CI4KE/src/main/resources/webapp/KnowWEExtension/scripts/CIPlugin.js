@@ -137,7 +137,9 @@ function refreshBuildProgress(dashboardName) {
 				if (progressText)
 					progressText.text(" " + message);
 				if (message != 'Finished') {
-					jq$.delay(new _KA(options).send(), 1000);
+					setTimeout(function() {
+						new _KA(options).send()
+					}, 500);
 				} else {
 					// lets just refresh...
 					// refreshCIDeamonBubble(dashboardName);
