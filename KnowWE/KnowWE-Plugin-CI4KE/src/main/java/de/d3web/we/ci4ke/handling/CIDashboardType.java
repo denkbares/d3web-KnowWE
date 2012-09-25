@@ -29,8 +29,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.testing.ArgsCheckResult;
-import de.d3web.testing.ExecutableTest;
 import de.d3web.testing.TestParser;
+import de.d3web.testing.TestSpecification;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -135,7 +135,7 @@ public class CIDashboardType extends DefaultMarkupType {
 			// This map is used for storing tests and their parameter-list
 			// Map<String, List<String>> tests = new HashMap<String,
 			// List<String>>();
-			List<ExecutableTest> tests = new ArrayList<ExecutableTest>();
+			List<TestSpecification<?>> tests = new ArrayList<TestSpecification<?>>();
 
 			List<Section<? extends AnnotationContentType>> annotationSections =
 					DefaultMarkupType.getAnnotationContentSections(s, TEST_KEY);
@@ -152,7 +152,7 @@ public class CIDashboardType extends DefaultMarkupType {
 
 				// parse test
 				TestParser testParser = new TestParser(annoSection.getText());
-				ExecutableTest executableTest = testParser.getExecutableTest();
+				TestSpecification<?> executableTest = testParser.getTestSpecification();
 				messages.add(testParser.getParameterCheckResult());
 				messages.addAll(testParser.getIgnoreCheckResults());
 				if (executableTest != null) {

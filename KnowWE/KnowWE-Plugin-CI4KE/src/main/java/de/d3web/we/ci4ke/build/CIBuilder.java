@@ -98,7 +98,7 @@ public class CIBuilder {
 				listener);
 
 		// create and run TestExecutor
-		TestExecutor executor = new TestExecutor(providers, this.config.getTests(), listener);
+		TestExecutor executor = new TestExecutor(providers, this.config.getTestSpecifications(), listener);
 
 		CIUtils.registerBuildExecutor(dashboardName, executor);
 		executor.run();
