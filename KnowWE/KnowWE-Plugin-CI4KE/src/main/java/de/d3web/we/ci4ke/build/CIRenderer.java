@@ -37,8 +37,8 @@ import de.d3web.testing.Test;
 import de.d3web.testing.TestManager;
 import de.d3web.testing.TestParser;
 import de.d3web.testing.TestResult;
-import de.d3web.we.ci4ke.rendering.TestObjectRenderer;
-import de.d3web.we.ci4ke.rendering.TestObjectRendererManager;
+import de.d3web.we.ci4ke.rendering.ObjectNameRenderer;
+import de.d3web.we.ci4ke.rendering.ObjectNameRendererManager;
 import de.d3web.we.ci4ke.util.CIUtils;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.Strings;
@@ -268,7 +268,7 @@ public class CIRenderer {
 				String text = renderMessage(message);
 				Test<?> test = TestManager.findTest(result.getTestName());
 				Class<?> testObjectClass = test.getTestObjectClass();
-				String renderedTestObjectName = renderTestObjectName(testObjectName,
+				String renderedTestObjectName = renderObjectName(testObjectName,
 						testObjectClass);
 				messageText.append(messageType.toString() + ": " + text +
 						" (test object: " + renderedTestObjectName + ")\n");
@@ -289,10 +289,10 @@ public class CIRenderer {
 		String[] replacements = new String[objects.size()];
 		int i = 0;
 		for (MessageObject object : objects) {
-			String renderedTestObject = renderTestObjectName(object.getObjectName(),
+			String renderedObjectName = renderObjectName(object.getObjectName(),
 					object.geObjectClass());
 			targets[i] = object.getObjectName();
-			replacements[i] = renderedTestObject;
+			replacements[i] = renderedObjectName;
 			i++;
 		}
 		// This is non repeating and since the targets are sorted by length, the
@@ -303,14 +303,14 @@ public class CIRenderer {
 		return text;
 	}
 
-	public String renderTestObjectName(String testObjectName, Class<?> testObjectClass) {
-		TestObjectRenderer testObjectRenderer = TestObjectRendererManager.getTestObjectRenderer(testObjectClass);
-		if (testObjectRenderer == null) {
+	public String renderObjectName(String objectName, Class<?> objectClass) {
+		ObjectNameRenderer objectRenderer = ObjectNameRendererManager.getObjectNameRenderer(objectClass);
+		if (objectRenderer == null) {
 			Logger.getLogger(this.getClass().getName()).log(
-					Level.WARNING, "No renderer found for " + testObjectClass);
-			return testObjectName;
+					Level.WARNING, "No renderer found for " + objectClass);
+			return objectName;
 		}
-		return testObjectRenderer.render(testObjectName);
+		return objectRenderer.render(objectName);
 	}
 
 	private void apppendBuildHeadline(BuildResult build, StringBuffer buffy) {

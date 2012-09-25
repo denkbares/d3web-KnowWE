@@ -26,7 +26,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 24.09.2012
  */
-public class ArticleRenderer implements TestObjectRenderer {
+public class ArticleRenderer implements ObjectNameRenderer {
 
 	@Override
 	public String render(String objectName) {

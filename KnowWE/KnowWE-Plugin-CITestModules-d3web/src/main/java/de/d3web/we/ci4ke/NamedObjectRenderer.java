@@ -20,7 +20,7 @@ package de.d3web.we.ci4ke;
 
 import java.util.Collection;
 
-import de.d3web.we.ci4ke.rendering.TestObjectRenderer;
+import de.d3web.we.ci4ke.rendering.ObjectNameRenderer;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -28,14 +28,14 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
- * Renders a link to the definition of a term or to the ObjectInfoPage of the
- * term, if there are multiple definitions.
+ * Renders a link to the definition of a NamedObject or to the ObjectInfoPage of
+ * the NamedObject, if there are multiple definitions.
  * 
  * 
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 25.09.2012
  */
-public class TermRenderer implements TestObjectRenderer {
+public class NamedObjectRenderer implements ObjectNameRenderer {
 
 	@Override
 	public String render(String objectName) {

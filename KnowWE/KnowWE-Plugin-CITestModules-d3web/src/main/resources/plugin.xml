@@ -37,35 +37,35 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWE-Plugin-CI4KE" point-id="TestObjectRenderer"
+	<extension plugin-id="KnowWE-Plugin-CI4KE" point-id="ObjectNameRenderer"
 		id="KnowledgeBaseRenderer">
 		<parameter id="class"
 			value="de.d3web.we.ci4ke.rendering.ArticleRenderer" />
 		<parameter id="name" value="ArticleRenderer" />
-		<parameter id="description" value="TestObjectRenderer for KnowledgeBaseRenderer" />
+		<parameter id="description" value="ObjectRenderer for KnowledgeBases" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="de.d3web.core.knowledge.KnowledgeBase" />
 	</extension>
 	
 	    
-    <extension plugin-id="KnowWE-Plugin-CI4KE" point-id="TestObjectRenderer"
+    <extension plugin-id="KnowWE-Plugin-CI4KE" point-id="ObjectNameRenderer"
 		id="TestCaseRenderer">
 		<parameter id="class"
 			value="de.d3web.we.ci4ke.TestCaseRenderer" />
 		<parameter id="name" value="TestCaseRenderer" />
-		<parameter id="description" value="TestObjectRenderer for TestCases" />
+		<parameter id="description" value="ObjectRenderer for TestCases" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="de.d3web.testcase.model.TestCase" />
 	</extension>
 		    
-    <extension plugin-id="KnowWE-Plugin-CI4KE" point-id="TestObjectRenderer"
-		id="TermRenderer">
+    <extension plugin-id="KnowWE-Plugin-CI4KE" point-id="ObjectNameRenderer"
+		id="NamedObjectRenderer">
 		<parameter id="class"
-			value="de.d3web.we.ci4ke.TermRenderer" />
+			value="de.d3web.we.ci4ke.NamedObjectRenderer" />
 		<parameter id="name" value="TermRenderer" />
-		<parameter id="description" value="TestObjectRenderer for TermObjects" />
+		<parameter id="description" value="ObjectRenderer for TermObjects" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="de.d3web.core.knowledge.terminology.NamedObject" />

@@ -25,23 +25,24 @@ import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 
 /**
+ * Manager providing the correct ObjectNameRenderer for a certain class.
  * 
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 24.09.2012
  */
 
-public class TestObjectRendererManager {
+public class ObjectNameRendererManager {
 
-	private static Map<String, TestObjectRenderer> renderers = null;
+	private static Map<String, ObjectNameRenderer> renderers = null;
 
-	private static Map<String, TestObjectRenderer> initRenderers() {
-		Map<String, TestObjectRenderer> renderers = new HashMap<String, TestObjectRenderer>();
+	private static Map<String, ObjectNameRenderer> initRenderers() {
+		Map<String, ObjectNameRenderer> renderers = new HashMap<String, ObjectNameRenderer>();
 		Extension[] extensions = PluginManager.getInstance().getExtensions(
-				TestObjectRenderer.PLUGIN_ID,
-				TestObjectRenderer.EXTENSION_POINT_ID);
+				ObjectNameRenderer.PLUGIN_ID,
+				ObjectNameRenderer.EXTENSION_POINT_ID);
 		for (Extension extension : extensions) {
-			if (extension.getSingleton() instanceof TestObjectRenderer) {
-				TestObjectRenderer renderer = (TestObjectRenderer) extension.getSingleton();
+			if (extension.getSingleton() instanceof ObjectNameRenderer) {
+				ObjectNameRenderer renderer = (ObjectNameRenderer) extension.getSingleton();
 				String scopeClass = extension.getParameter("scope");
 				renderers.put(scopeClass, renderer);
 			}
@@ -49,7 +50,7 @@ public class TestObjectRendererManager {
 		return renderers;
 	}
 
-	public static TestObjectRenderer getTestObjectRenderer(Class<?> clazz) {
+	public static ObjectNameRenderer getObjectNameRenderer(Class<?> clazz) {
 		if (renderers == null) {
 			renderers = initRenderers();
 		}

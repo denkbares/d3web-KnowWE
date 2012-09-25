@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.d3web.core.utilities.Triple;
-import de.d3web.we.ci4ke.rendering.TestObjectRenderer;
+import de.d3web.we.ci4ke.rendering.ObjectNameRenderer;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -37,7 +37,7 @@ import de.knowwe.testcases.TestCaseUtils;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 25.09.2012
  */
-public class TestCaseRenderer implements TestObjectRenderer {
+public class TestCaseRenderer implements ObjectNameRenderer {
 
 	@Override
 	public String render(String objectName) {

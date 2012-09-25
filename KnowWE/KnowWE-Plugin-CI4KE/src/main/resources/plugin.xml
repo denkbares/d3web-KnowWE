@@ -16,7 +16,7 @@
 		</library>
 	</runtime>
 	
-	<extension-point id="TestObjectRenderer">
+	<extension-point id="ObjectNameRenderer">
 		<parameter-def id="class" />
 		<parameter-def id="name" />
 		<parameter-def id="description" />
@@ -27,12 +27,12 @@
 		<parameter-def id="css" multiplicity="any" />
 	</extension-point>
 	
-	<extension plugin-id="KnowWE-Plugin-CI4KE" point-id="TestObjectRenderer"
+	<extension plugin-id="KnowWE-Plugin-CI4KE" point-id="ObjectNameRenderer"
 		id="ArticleRenderer">
 		<parameter id="class"
 			value="de.d3web.we.ci4ke.rendering.ArticleRenderer" />
 		<parameter id="name" value="ArticleRenderer" />
-		<parameter id="description" value="TestObjectRenderer for Articles" />
+		<parameter id="description" value="ObjectRenderer for Articles" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="de.knowwe.core.kdom.Article" />
