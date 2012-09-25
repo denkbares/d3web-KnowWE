@@ -144,7 +144,7 @@ public class Plugins {
 		}
 	}
 
-	public static void addPluginsAnnotation(Type type) {
+	public static void addAnnotations(Type type) {
 		if (type instanceof DefaultMarkupType) {
 
 			DefaultMarkupType markupType = (DefaultMarkupType) type;

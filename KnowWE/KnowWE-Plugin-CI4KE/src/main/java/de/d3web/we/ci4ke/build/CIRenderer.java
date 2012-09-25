@@ -22,14 +22,23 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.commons.lang.StringUtils;
 
 import de.d3web.testing.BuildResult;
+import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
+import de.d3web.testing.MessageObject;
 import de.d3web.testing.Test;
 import de.d3web.testing.TestManager;
 import de.d3web.testing.TestParser;
 import de.d3web.testing.TestResult;
+import de.d3web.we.ci4ke.rendering.TestObjectRenderer;
+import de.d3web.we.ci4ke.rendering.TestObjectRendererManager;
 import de.d3web.we.ci4ke.util.CIUtils;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.Strings;
@@ -198,16 +207,11 @@ public class CIRenderer {
 	private void appendTestResult(StringBuffer buffy, TestResult result) {
 		buffy.append("<div class='ci-collapsible-box'>");
 
-		// prepare some information
-		String name = result.getTestName();
-		Type buildResult = result.getType();
-		String messageText = generateMessageText(result);
-
-		String[] config = result.getConfiguration();
-
 		// render bullet
-		buffy.append(renderResultType(buildResult, 16));
+		Type type = result.getType();
+		buffy.append(renderResultType(type, 16));
 
+		String name = result.getTestName();
 		Test<?> test = TestManager.findTest(name);
 		String title = "";
 		if (test != null) {
@@ -219,6 +223,7 @@ public class CIRenderer {
 		buffy.append(name);
 
 		// render test-configuration (if existent)
+		String[] config = result.getConfiguration();
 		if (config != null && !(config.length == 0)) {
 			buffy.append("<span class='ci-configuration'>");
 			buffy.append(TestParser.concatParameters(config));
@@ -227,37 +232,85 @@ public class CIRenderer {
 		buffy.append("</span>");
 
 		// render test-message (if exists)
+		renderMessage(buffy, result);
+
+		buffy.append("</div>\n");
+	}
+
+	private void renderMessage(StringBuffer buffy, TestResult result) {
+		String messageText = generateMessageText(result);
 		if (!messageText.isEmpty()) {
 			buffy.append("<div class='ci-message'>");
 			buffy.append(messageText);
 			buffy.append("</div>");
 		}
-
-		buffy.append("</div>\n");
 	}
 
 	private String generateMessageText(TestResult result) {
 		StringBuilder messageText = new StringBuilder();
+		StringBuilder toolTip = new StringBuilder();
 		Collection<String> testObjectNames = result.getTestObjectNames();
 		int successes = 0;
-		for (String testObject : testObjectNames) {
-			de.d3web.testing.Message m = result.getMessage(testObject);
-			Type messageType = m.getType();
+		int maxObjects = 40;
+		for (String testObjectName : testObjectNames) {
+			de.d3web.testing.Message message = result.getMessage(testObjectName);
+			Type messageType = message.getType();
 			if (messageType.equals(Type.SUCCESS)) {
+				if (successes < maxObjects) {
+					toolTip.append(testObjectName + "\n");
+				}
+				else if (successes == maxObjects) {
+					toolTip.append("...");
+				}
 				successes++;
 			}
 			else {
-				String text = m.getText();
-				if (text == null) {
-					text = "";
-				}
-				messageText.append(messageType.toString() + ": " + text + " (test object: "
-						+ testObject + ")\n");
+				String text = renderMessage(message);
+				Test<?> test = TestManager.findTest(result.getTestName());
+				Class<?> testObjectClass = test.getTestObjectClass();
+				String renderedTestObjectName = renderTestObjectName(testObjectName,
+						testObjectClass);
+				messageText.append(messageType.toString() + ": " + text +
+						" (test object: " + renderedTestObjectName + ")\n");
 			}
 		}
-
-		messageText.append(successes + " test objects tested successfully\n");
+		messageText.append("<span"
+				+ (toolTip.length() == 0 ? "" : " title='" + toolTip.toString() + "'") + ">"
+				+ successes + " test objects tested successfully</span>");
 		return messageText.toString();
+	}
+
+	private String renderMessage(Message message) {
+		String text = message.getText();
+		if (text == null) text = "";
+		ArrayList<MessageObject> objects = new ArrayList<MessageObject>(message.getObjects());
+		Collections.sort(objects, new SizeComparator());
+		String[] targets = new String[objects.size()];
+		String[] replacements = new String[objects.size()];
+		int i = 0;
+		for (MessageObject object : objects) {
+			String renderedTestObject = renderTestObjectName(object.getObjectName(),
+					object.geObjectClass());
+			targets[i] = object.getObjectName();
+			replacements[i] = renderedTestObject;
+			i++;
+		}
+		// This is non repeating and since the targets are sorted by length, the
+		// replacing will be correct, if all targets are in the text. If not all
+		// are in the text, the replacing will only be inaccurate in rare cases
+		// (e.g. targets[0].contains(target[1]...)
+		text = StringUtils.replaceEach(text, targets, replacements);
+		return text;
+	}
+
+	public String renderTestObjectName(String testObjectName, Class<?> testObjectClass) {
+		TestObjectRenderer testObjectRenderer = TestObjectRendererManager.getTestObjectRenderer(testObjectClass);
+		if (testObjectRenderer == null) {
+			Logger.getLogger(this.getClass().getName()).log(
+					Level.WARNING, "No renderer found for " + testObjectClass);
+			return testObjectName;
+		}
+		return testObjectRenderer.render(testObjectName);
 	}
 
 	private void apppendBuildHeadline(BuildResult build, StringBuffer buffy) {
@@ -404,5 +457,21 @@ public class CIRenderer {
 		}
 
 		return imgForecast;
+	}
+
+	private class SizeComparator implements Comparator<MessageObject> {
+
+		@Override
+		public int compare(MessageObject o1, MessageObject o2) {
+			if (o1 == o2) return 0;
+			if (o1 == null) return -1;
+			if (o2 == null) return 1;
+			String objectName1 = o1.getObjectName();
+			String objectName2 = o2.getObjectName();
+			if (objectName1 == objectName2) return 0; // if both are null
+			if (objectName1 == null) return -1;
+			if (objectName2 == null) return 1;
+			return -(new Integer(objectName1.length()).compareTo(objectName2.length()));
+		}
 	}
 }

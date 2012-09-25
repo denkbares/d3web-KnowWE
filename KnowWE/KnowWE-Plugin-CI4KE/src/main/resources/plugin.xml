@@ -15,6 +15,28 @@
 			<export prefix="*" />
 		</library>
 	</runtime>
+	
+	<extension-point id="TestObjectRenderer">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+		<parameter-def id="scope" multiplicity="one-or-more" />
+		<parameter-def id="script" multiplicity="any" />
+		<parameter-def id="css" multiplicity="any" />
+	</extension-point>
+	
+	<extension plugin-id="KnowWE-Plugin-CI4KE" point-id="TestObjectRenderer"
+		id="ArticleRenderer">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.rendering.ArticleRenderer" />
+		<parameter id="name" value="ArticleRenderer" />
+		<parameter id="description" value="TestObjectRenderer for Articles" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="de.knowwe.core.kdom.Article" />
+	</extension>
 
 	<!-- (DefaultMarkup-) ObjectType for CIDashboard -->
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
@@ -134,5 +156,5 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 	</extension>
-	
+
 </plugin>

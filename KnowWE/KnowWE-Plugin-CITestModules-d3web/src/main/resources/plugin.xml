@@ -5,6 +5,7 @@
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
 		<import plugin-id="d3web-Plugin-TestingFramework" />
+		<import plugin-id="KnowWE-Plugin-CI4KE" />
 	</requires>
 	
 	<runtime>
@@ -36,4 +37,37 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
+	<extension plugin-id="KnowWE-Plugin-CI4KE" point-id="TestObjectRenderer"
+		id="KnowledgeBaseRenderer">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.rendering.ArticleRenderer" />
+		<parameter id="name" value="ArticleRenderer" />
+		<parameter id="description" value="TestObjectRenderer for KnowledgeBaseRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="de.d3web.core.knowledge.KnowledgeBase" />
+	</extension>
+	
+	    
+    <extension plugin-id="KnowWE-Plugin-CI4KE" point-id="TestObjectRenderer"
+		id="TestCaseRenderer">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.TestCaseRenderer" />
+		<parameter id="name" value="TestCaseRenderer" />
+		<parameter id="description" value="TestObjectRenderer for TestCases" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="de.d3web.testcase.model.TestCase" />
+	</extension>
+		    
+    <extension plugin-id="KnowWE-Plugin-CI4KE" point-id="TestObjectRenderer"
+		id="TermRenderer">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.TermRenderer" />
+		<parameter id="name" value="TermRenderer" />
+		<parameter id="description" value="TestObjectRenderer for TermObjects" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="de.d3web.core.knowledge.terminology.NamedObject" />
+    </extension>
 </plugin>

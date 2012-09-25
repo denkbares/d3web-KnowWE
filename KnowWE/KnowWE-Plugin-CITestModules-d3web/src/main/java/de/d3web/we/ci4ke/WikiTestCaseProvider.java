@@ -70,7 +70,8 @@ public class WikiTestCaseProvider implements TestObjectProvider {
 		for (Triple<TestCaseProvider, Section<?>, Article> triple : testCaseProviders) {
 			TestCaseProvider provider = triple.getA();
 			if (provider.getName().matches(name)) {
-				result.add(new TestObjectContainer<T>(name, clazz.cast(provider.getTestCase())));
+				result.add(new TestObjectContainer<T>(provider.getName(),
+						clazz.cast(provider.getTestCase())));
 			}
 		}
 

@@ -48,6 +48,7 @@ public class CIDashboard {
 	private final String dashboardName;
 	private final CIRenderer renderer;
 	private final CIPersistence persistence;
+	private BuildResult latestBuild;
 
 	private CIDashboard(String web, String dashboardArticle, String dashboardName) {
 		this.web = web;
@@ -85,6 +86,9 @@ public class CIDashboard {
 	 * @return the latest build
 	 */
 	public BuildResult getLatestBuild() {
+		if (latestBuild != null) return latestBuild;
+		// directly after wiki startup, there may be no latest build already
+		// loaded in the dashboard
 		int latest = persistence.getLatestBuildVersion();
 		if (latest == 0) return null;
 		return getBuildIfPossible(latest, true);
@@ -156,6 +160,15 @@ public class CIDashboard {
 	 */
 	public synchronized void addBuild(BuildResult build) throws IllegalArgumentException {
 		if (build == null) throw new IllegalArgumentException("build is null!");
+
+		// also store here for quick access and elements not covered by the
+		// persistence
+		int buildNumber = getLatestBuild().getBuildNumber() + 1;
+		build.setBuildNumber(buildNumber);
+		// the latest build is either from persistence and has the version of
+		// the attachment as the build number or it is already set from previous
+		// calls to this method
+		this.latestBuild = build;
 
 		// attach to wiki if possible
 		try {

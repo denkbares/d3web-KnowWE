@@ -28,6 +28,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +94,7 @@ public class Environment {
 	 * A terminology handler for each web and article. In case of JSPWiki there
 	 * is only on web ('default_web')
 	 */
-	private final Map<String, Map<String, TerminologyManager>> terminologyHandlers = new HashMap<String, Map<String, TerminologyManager>>();
+	private final Map<String, Map<String, TerminologyManager>> terminologyManagers = new HashMap<String, Map<String, TerminologyManager>>();
 
 	/**
 	 * This is the link to the connected Wiki-engine. Allows saving pages etc.
@@ -379,7 +380,7 @@ public class Environment {
 		Plugins.addChildrenTypesToType(type);
 		Plugins.addSubtreeHandlersToType(type);
 		Plugins.addRendererToType(type);
-		Plugins.addPluginsAnnotation(type);
+		Plugins.addAnnotations(type);
 
 		if (type.getChildrenTypesInit() == null) return;
 
@@ -487,23 +488,33 @@ public class Environment {
 	}
 
 	/**
-	 * returns the TerminologyHandler for a given web
+	 * Returns the TerminologyHandler for a given web
 	 * 
 	 * @param web
 	 * @return
 	 */
 	public TerminologyManager getTerminologyManager(String web, String title) {
-		Map<String, TerminologyManager> handlersOfWeb = this.terminologyHandlers.get(web);
-		if (handlersOfWeb == null) {
-			handlersOfWeb = new HashMap<String, TerminologyManager>();
-			this.terminologyHandlers.put(web, handlersOfWeb);
+		Map<String, TerminologyManager> managersOfWeb = this.terminologyManagers.get(web);
+		if (managersOfWeb == null) {
+			managersOfWeb = new HashMap<String, TerminologyManager>();
+			this.terminologyManagers.put(web, managersOfWeb);
 		}
-		TerminologyManager mgr = handlersOfWeb.get(title);
+		TerminologyManager mgr = managersOfWeb.get(title);
 		if (mgr == null) {
 			mgr = new TerminologyManager(web, title);
-			handlersOfWeb.put(title, mgr);
+			managersOfWeb.put(title, mgr);
 		}
 		return mgr;
+	}
+
+	public Collection<TerminologyManager> getTerminologyManagers(String web) {
+		Map<String, TerminologyManager> managersOfWeb = this.terminologyManagers.get(web);
+		if (managersOfWeb == null) {
+			return Collections.emptyList();
+		}
+		else {
+			return Collections.unmodifiableCollection(managersOfWeb.values());
+		}
 	}
 
 	public ServletContext getContext() {
