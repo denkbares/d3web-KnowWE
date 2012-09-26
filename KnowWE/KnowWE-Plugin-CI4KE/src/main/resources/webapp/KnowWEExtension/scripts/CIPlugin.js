@@ -158,6 +158,42 @@ function refreshBuildProgress(dashboardName) {
 }
 
 /*
+ * Repeatedly whether the current build process is still running.
+ * When 'finished' is responded as progress message, 
+ * the loop terminates and a refresh call of the state bubble is called.
+ */
+function refreshBuildProgressDeamon(dashboardName) {
+	
+	var params = {
+			action : 'CIGetProgressAction',
+			name   : dashboardName,
+    }; 
+	var options = {
+		url : KNOWWE.core.util.getURL(params),
+		response : {
+			action : 'none',
+			fn : function() {
+
+				var message = JSON.parse(this.responseText).message;
+				
+				if(message != 'Finished'){
+					setTimeout(function() {
+						new _KA(options).send()
+					}, 1000);
+				} else {
+					refreshCIDeamonBubble(dashboardName);
+				}
+
+			}
+		},
+		onError : function() {
+		}
+	}
+	
+	 new _KA(options).send();
+}
+
+/*
  * Fetches the ci state bubble html code for a deamon/dashboard and insertes it.
  * This is called after some build process has been finished on the server to
  * update the view correspondingly.
@@ -223,5 +259,16 @@ jq$(window).ready(function() {
 		var dashboardName = jq$(this).parents('.ci-title').attr('name');
 		refreshBuildProgress(dashboardName);
 	});
+	
+	// trigger request loop asking whether build is finished to stop daemon on LeftMenu
+	jq$('.ci-state').each(
+			function() {
+				var dashboardName = jq$(this).attr('dashboardName');
+				var runs = jq$(this).attr('running');
+				if(runs) {
+					refreshBuildProgressDeamon(dashboardName);
+				}
+			}
+	)
 
 });
