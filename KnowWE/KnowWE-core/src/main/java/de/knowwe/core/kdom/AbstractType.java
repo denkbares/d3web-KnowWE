@@ -23,6 +23,7 @@ package de.knowwe.core.kdom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
@@ -352,8 +353,14 @@ public abstract class AbstractType implements Type, Sectionizable {
 		this.childrenTypes.add(t);
 	}
 
-	public boolean removeChildType(Type t) {
-		return this.childrenTypes.remove(t);
+	public void removeChildType(Class<? extends Type> c) {
+		List<Type> removals = new LinkedList<Type>();
+		for (Type type : this.childrenTypes) {
+			if (type.getClass().equals(c)) {
+				removals.add(type);
+			}
+		}
+		this.childrenTypes.removeAll(removals);
 	}
 
 	public Type removeChild(int i) {
