@@ -242,6 +242,7 @@ KNOWWE.core.util = function(){
             //parse the url to add special token like debug etc.
             var p = document.location.search.replace('?','').split('&');
             for(var i = 0; i < p.length; i++){
+            	if (p[i].length == 0) continue;
                 var t = p[i].split('=');
                 if(!KNOWWE.helper.containsArr(tokens,t[0])){
                     tokens.push( t[0] + "=" + encodeURIComponent( t[1] ));

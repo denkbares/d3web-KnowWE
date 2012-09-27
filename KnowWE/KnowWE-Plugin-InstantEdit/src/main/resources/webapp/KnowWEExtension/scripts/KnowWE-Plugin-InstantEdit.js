@@ -190,11 +190,11 @@ KNOWWE.plugin.instantEdit = function() {
         },
 
         disableDefaultEditTool: function() {
-            $$('div.DefaultEditTool').setStyle("display", "none");
+            $$('div.InstantEditTool').setStyle("display", "none");
         },
 
         enableDefaultEditTool: function() {
-            $$('div.DefaultEditTool').setStyle("display", null);
+            $$('div.InstantEditTool').setStyle("display", null);
         }, 
         
         getSaveCancelDeleteButtons: function(id, additionalButtonArray) {        
@@ -230,12 +230,7 @@ KNOWWE.plugin.instantEdit = function() {
  */
 var _IE = KNOWWE.plugin.instantEdit;
 
- (function init() {
-    if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
-        window.addEvent('domready',
-        function() {
-            _EC.executeIfPrivileged(_IE.enableDefaultEditTool, _IE.disableDefaultEditTool);
-        });
-    }
-} ());
+jq$(document).ready(function() {
+	_EC.executeIfPrivileged(_IE.enableDefaultEditTool, _IE.disableDefaultEditTool);
+});
 
