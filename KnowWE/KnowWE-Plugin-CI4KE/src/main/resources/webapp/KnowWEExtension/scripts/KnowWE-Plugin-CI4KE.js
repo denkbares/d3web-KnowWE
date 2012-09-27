@@ -185,6 +185,7 @@ KNOWWE.plugin.ci4ke = function() {
 							}, 500);
 						} else {
 							jq$('[name="' + dashboardName +'"]').find('.ci-progress-info').fadeOut(500);
+							jq$('#modified-warning_' + dashboardName).parents('.warning').remove();
 							_CI.refreshBuildDetails(dashboardName);
 							_CI.refreshBuildList(dashboardName);
 							_CI.refreshBuildStatus(dashboardName);
