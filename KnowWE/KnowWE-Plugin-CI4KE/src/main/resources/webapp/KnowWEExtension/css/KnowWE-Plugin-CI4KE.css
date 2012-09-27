@@ -69,6 +69,10 @@
 	/*border-bottom: 1px solid #DDD;*/
 	padding: 0px 0px 6px 6px;
 	}
+	
+.ci-header .ci-state {
+	width: 22px;
+}
 
 .ci-message {
 	margin-left: 17px;
@@ -141,6 +145,7 @@
 
 .ci-progress-info {
 	margin-left: 50px;
+	display: none;
 }
 
 .ci-progress-value-wrap {

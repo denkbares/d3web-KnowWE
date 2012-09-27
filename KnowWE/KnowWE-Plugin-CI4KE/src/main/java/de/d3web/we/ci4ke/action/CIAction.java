@@ -23,13 +23,11 @@ package de.d3web.we.ci4ke.action;
 import java.io.IOException;
 import java.util.Collection;
 
-import de.d3web.core.io.progress.ProgressListener;
-import de.d3web.core.io.progress.ProgressListenerManager;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message.Type;
-import de.d3web.we.ci4ke.build.CIRenderer;
 import de.d3web.we.ci4ke.build.CIBuilder;
 import de.d3web.we.ci4ke.build.CIDashboard;
+import de.d3web.we.ci4ke.build.CIRenderer;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.d3web.we.ci4ke.util.CIUtils;
 import de.knowwe.core.Environment;
@@ -47,16 +45,6 @@ public class CIAction extends AbstractAction {
 
 		String dashboardName = String.valueOf(context.getParameter("name"));
 		dashboardName = Strings.decodeURL(dashboardName);
-
-		ProgressListener listener = ProgressListenerManager.getInstance().getProgressListener(
-				dashboardName);
-		if (listener != null) {
-			context.sendError(666, "<message will be inserted in JS>");
-			// NOTE: on current ajax handling this message text will will not be
-			// shown.
-			// but a list mapping error codes to message texts is managed in JS
-			return;
-		}
 
 		String topic = context.getTitle();
 		String web = context.getWeb();
@@ -86,6 +74,15 @@ public class CIAction extends AbstractAction {
 
 		String html = null;
 		if (task.equals("executeNewBuild")) {
+			if (CIUtils.buildRunning(dashboardName)) {
+				context.sendError(409, "<message will be inserted in JS>");
+				// NOTE: on current ajax handling this message text will will
+				// not be
+				// shown.
+				// but a list mapping error codes to message texts is managed in
+				// JS
+				return;
+			}
 			final CIBuilder builder = new CIBuilder(web, topic, dashboardName);
 			new Thread(new Runnable() {
 
@@ -107,20 +104,28 @@ public class CIAction extends AbstractAction {
 			html = renderer.renderDashboardHeader(build);
 
 		}// Get the details of one build (wiki changes + test results)
-		else if (task.equals("getBuildDetails")) {
+		else if (task.equals("refreshBuildDetails")) {
 			BuildResult build = dashboard.getBuild(selectedBuildNumber);
 			html = renderer.renderBuildDetails(build);
+		}
+		else if (task.equals("refreshBuildStatus")) {
+			BuildResult build = dashboard.getLatestBuild();
+			html = renderer.renderDashboardHeader(build);
 		}
 		else if (task.equals("refreshBubble")) {
 			BuildResult build = dashboard.getLatestBuild();
 			Type overallResult = build.getOverallResult();
-			html = renderer.renderResultType(overallResult, 16);
+			html = renderer.renderBuildStatus(overallResult, true);
 		}
 		else if (task.equals("refreshBuildList")) {
-			int indexFromBack =
-					Integer.parseInt(context.getParameter("indexFromBack"));
-			int numberOfBuilds =
-					Integer.parseInt(context.getParameter("numberOfBuilds"));
+			String indexFromBackParam = context.getParameter("indexFromBack");
+			String numberOfBuildsParameter = context.getParameter("numberOfBuilds");
+			int indexFromBack = indexFromBackParam == null
+					? 0
+					: Integer.parseInt(indexFromBackParam);
+			int numberOfBuilds = numberOfBuildsParameter == null
+					? -1
+					: Integer.parseInt(numberOfBuildsParameter);
 			html = renderer.renderBuildList(indexFromBack, numberOfBuilds, selectedBuildNumber);
 		}
 

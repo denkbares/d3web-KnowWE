@@ -190,7 +190,7 @@ public class CIDashboard {
 		catch (Exception e) {
 			if (logging) {
 				Logger.getLogger(getClass().getName()).warning(
-						"unable to access build " + buildVersion);
+						"Unable to access build " + buildVersion + ". Error: " + e.getMessage());
 			}
 		}
 		return result;

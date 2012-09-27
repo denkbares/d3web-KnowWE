@@ -39,8 +39,11 @@ KNOWWE.plugin.ci4ke = function() {
 			url : KNOWWE.core.util.getURL(params),
 			loader : true,
 			response : {
-				ids : [ 'state_' + dashboardName ],
-				action : 'replace',
+				fn : function() {
+					jq$('.ci-header,.ci-daemon').find('.ci-state')
+					        .filter('[dashboardName="' + dashboardName + '"]')
+					        .replaceWith(this.response);
+				},
 				onError : onErrorBehavior,
 			}
 		}
@@ -56,7 +59,7 @@ KNOWWE.plugin.ci4ke = function() {
 		case 0:
 			// server not running, do nothing.
 			break;
-		case 666:
+		case 409:
 			alert("There already is a build running for this dashbaord. Please abort the running build before starting a new one.");
 			break;
 		case 404:
@@ -70,13 +73,16 @@ KNOWWE.plugin.ci4ke = function() {
 	
 	return {
 	
-		getBuildDetails : function(dashboardName, buildNr) {
+		refreshBuildDetails : function(dashboardName, buildNr) {
 
 			var params = {
 				action : 'CIAction',
-				task : 'getBuildDetails',
+				task : 'refreshBuildDetails',
 				name : dashboardName,
-				nr : buildNr
+			}
+			
+			if (buildNr != null) {
+				params["nr"] = buildNr;
 			}
 
 			var options = {
@@ -133,7 +139,10 @@ KNOWWE.plugin.ci4ke = function() {
 				loader : true,
 				response : {
 					fn : function() {
-						window.location.reload();
+						//window.location.reload();
+						_CI.refreshBuildProgress(dashboardName);
+						refreshCIDeamonBubble(dashboardName);
+						_CI.refreshBuildProgressDeamon(dashboardName);
 					},
 					onError : onErrorBehavior,
 				}
@@ -170,13 +179,16 @@ KNOWWE.plugin.ci4ke = function() {
 						if (progressText)
 							progressText.text(" " + message);
 						if (message != 'Finished') {
+							jq$('[name="' + dashboardName +'"]').find('.ci-progress-info').show();
 							setTimeout(function() {
 								new _KA(options).send()
 							}, 500);
 						} else {
-							// lets just refresh...
-							// refreshCIDeamonBubble(dashboardName);
-							window.location.reload();
+							jq$('[name="' + dashboardName +'"]').find('.ci-progress-info').fadeOut(500);
+							_CI.refreshBuildDetails(dashboardName);
+							_CI.refreshBuildList(dashboardName);
+							_CI.refreshBuildStatus(dashboardName);
+							
 						}
 					},
 					onError : function() {
@@ -239,15 +251,40 @@ KNOWWE.plugin.ci4ke = function() {
 				action : 'CIAction',
 				task : 'refreshBuildList',
 				name : dashboardName,
-				indexFromBack : indexFromBack,
-				numberOfBuilds : numberOfBuilds
 			}
 		
+			if (indexFromBack != null) {
+				params["indexFromBack"] = indexFromBack;
+			}
+			
+			if (numberOfBuilds != null) {
+				params["numberOfBuilds"] = numberOfBuilds;
+			}
+			
 			var options = {
 				url : KNOWWE.core.util.getURL(params),
 				response : {
 					ids : [ dashboardName + '-build-table' ],
 					action : 'insert'
+				}
+			}
+		
+			new _KA(options).send();
+		},
+		
+		refreshBuildStatus : function(dashboardName) {
+			
+			var params = {
+				action : 'CIAction',
+				task : 'refreshBuildStatus',
+				name : dashboardName,
+			}
+			
+			var options = {
+				url : KNOWWE.core.util.getURL(params),
+				response : {
+					ids : [ 'ci-header_' + dashboardName ],
+					action : 'replace'
 				}
 			}
 		
@@ -269,17 +306,20 @@ var _CI = KNOWWE.plugin.ci4ke;
 jq$(window).ready(function() {
 
 	// trigger dashboard progress update
-	jq$('.ci-progress-info').each(function() {
-		var dashboardName = jq$(this).parents('.ci-title').attr('name');
-		_CI.refreshBuildProgress(dashboardName);
+	jq$('.ci-header').find('.ci-state').each(function() {
+		var runs = jq$(this).attr('running');
+		if(runs) {
+			var dashboardName = jq$(this).attr('dashboardName');
+			_CI.refreshBuildProgress(dashboardName);
+		}
 	});
 	
 	// trigger request loop asking whether build is finished to stop daemon on LeftMenu
-	jq$('.ci-state').each(
+	jq$('.ci-daemon').find('.ci-state').each(
 			function() {
-				var dashboardName = jq$(this).attr('dashboardName');
 				var runs = jq$(this).attr('running');
-				if(runs) {
+				if (runs) {
+					var dashboardName = jq$(this).attr('dashboardName');
 					_CI.refreshBuildProgressDeamon(dashboardName);
 				}
 			}

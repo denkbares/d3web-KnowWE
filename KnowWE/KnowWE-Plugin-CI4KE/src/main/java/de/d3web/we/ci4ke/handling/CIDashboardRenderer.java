@@ -27,7 +27,6 @@ import de.d3web.testing.BuildResult;
 import de.d3web.we.ci4ke.build.CIDashboard;
 import de.d3web.we.ci4ke.util.CIUtils;
 import de.knowwe.core.Environment;
-import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -128,7 +127,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	private static void appendDashboard(CIDashboard dashboard, StringBuilder string) {
 		BuildResult latestBuild = dashboard.getLatestBuild();
 
-		renderDashboardHeader(dashboard, latestBuild, string);
+		string.append(dashboard.getRenderer().renderDashboardHeader(latestBuild));
 
 		// start table (only a single row)
 		string.append("<table><tr>");
@@ -139,12 +138,6 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		// close table
 		string.append("</tr></table>");
-	}
-
-	private static void renderDashboardHeader(CIDashboard dashboard, BuildResult latestBuild, StringBuilder string) {
-		string.append("<div class='ci-header'>");
-		string.append(dashboard.getRenderer().renderDashboardHeader(latestBuild));
-		string.append("</div>");
 	}
 
 	private static void appendBuildListCell(CIDashboard dashboard, BuildResult shownBuild, StringBuilder string) {

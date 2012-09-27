@@ -70,7 +70,7 @@ public class ArticleContains extends AbstractTest<Article> {
 				namesOfArticlesWhichContainKeyword.add(article.getTitle());
 			}
 		}
-		// Utils.slowDowntest(this.getClass(), 50, true);
+		// Utils.slowDowntest(this.getClass(), 250, true);
 		// If at least one article was found, this test is FAILED
 		int count = namesOfArticlesWhichContainKeyword.size();
 		if (count > 0) {

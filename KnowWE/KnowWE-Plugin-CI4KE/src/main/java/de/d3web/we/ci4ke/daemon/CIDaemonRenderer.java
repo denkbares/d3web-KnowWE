@@ -13,8 +13,6 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class CIDaemonRenderer implements Renderer {
 
-	private static final int PIXEL_SIZE = 16;
-
 	@Override
 	public void render(Section<?> section, UserContext user, StringBuilder string) {
 		String content = DefaultMarkupType.getContent(section);
@@ -50,7 +48,7 @@ public class CIDaemonRenderer implements Renderer {
 
 		String baseURL =
 				Environment.getInstance().getWikiConnector().getBaseUrl();
-		String srclink = "<a href=\"" + baseURL + (baseURL.endsWith("/") ? ""
+		String srclink = "<a class=\"ci-daemon\" href=\"" + baseURL + (baseURL.endsWith("/") ? ""
 				: "/")
 				+ "Wiki.jsp?page="
 				+ dashboardArticleTitle
@@ -60,10 +58,10 @@ public class CIDaemonRenderer implements Renderer {
 		CIDashboard dashboard = CIDashboard.getDashboard(web, dashboardArticleTitle, dashboardName);
 		CIRenderer renderer = dashboard.getRenderer();
 		if (hasDashboard) {
-			string.append(renderer.renderCurrentBuildStatus(PIXEL_SIZE));
+			string.append(renderer.renderCurrentBuildStatus());
 		}
 		else {
-			string.append(renderer.renderResultType(Type.ERROR, PIXEL_SIZE));
+			string.append(renderer.renderBuildStatus(Type.ERROR, true));
 		}
 		string.append("</a>");
 

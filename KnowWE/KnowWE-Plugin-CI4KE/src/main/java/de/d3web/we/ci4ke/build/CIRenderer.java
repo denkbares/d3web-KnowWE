@@ -72,7 +72,7 @@ public class CIRenderer {
 	 * @created 27.05.2010
 	 * @return
 	 */
-	public String renderBuildHealthReport(int pixelSize) {
+	public String renderBuildHealthReport() {
 
 		List<BuildResult> lastBuilds = dashboard.getBuildsByIndex(
 				dashboard.getPersistence().getLatestBuildVersion(), 5);
@@ -83,7 +83,7 @@ public class CIRenderer {
 				failed++;
 			}
 		}
-		return renderForecastIcon(count, failed, pixelSize);
+		return renderForecastIcon(count, failed);
 	}
 
 	public String renderBuildList(int indexFromBack, int numberOfBuilds, int shownBuild) {
@@ -93,6 +93,7 @@ public class CIRenderer {
 			latestBuildNumber = latestBuild.getBuildNumber();
 		}
 		if (indexFromBack == 0) indexFromBack = latestBuildNumber;
+		if (numberOfBuilds < 1) numberOfBuilds = 10;
 
 		List<BuildResult> builds = dashboard.getBuildsByIndex(indexFromBack, numberOfBuilds);
 
@@ -112,12 +113,12 @@ public class CIRenderer {
 			sb.append("<tr class='" + cssClass + "'><td>");
 			// starting with a nice image...
 			Type buildResult = build.getOverallResult();
-			sb.append(renderResultType(buildResult, 16));
+			sb.append(renderBuildStatus(buildResult, false));
 
 			sb.append("</td><td>");
 			sb.append("<td>");
 
-			sb.append("<a onclick=\"_CI.getBuildDetails('"
+			sb.append("<a onclick=\"_CI.refreshBuildDetails('"
 					+ dashboardNameEncoded + "','"
 					+ buildNr + "','" + indexFromBack + "');\">");
 
@@ -168,10 +169,10 @@ public class CIRenderer {
 	 * @created 27.05.2010
 	 * @return
 	 */
-	public String renderCurrentBuildStatus(int pixelSize) {
+	public String renderCurrentBuildStatus() {
 		BuildResult build = dashboard.getLatestBuild();
 		if (build == null) return "";
-		return renderHeaderResultType(build.getOverallResult(), pixelSize);
+		return renderBuildStatus(build.getOverallResult(), true);
 	}
 
 	/**
@@ -209,7 +210,7 @@ public class CIRenderer {
 
 		// render bullet
 		Type type = result.getType();
-		buffy.append(renderResultType(type, 16));
+		buffy.append(renderBuildStatus(type, false));
 
 		String name = result.getTestName();
 		Test<?> test = TestManager.findTest(name);
@@ -336,70 +337,57 @@ public class CIRenderer {
 		buffy.append("</H4>");
 	}
 
-	// RENDER - HELPERS
+	public String renderBuildStatus(Type resultType, boolean checkRunning) {
 
-	public String renderResultType(Type resultType, int pixelSize) {
-		String imageURL = "KnowWEExtension/ci4ke/images/"
-				+
-				pixelSize + "x" + pixelSize
-				+ "/%s.png";
+		boolean showRunning = checkRunning && CIUtils.buildRunning(dashboardName);
 
-		String imgBulb = "<img class='ci-state' width='" + pixelSize
-				+ "'id='state_" + dashboardNameEncoded
-				+ "' " +
-				"dashboardName='" + dashboardNameEncoded + "' src='" + imageURL
-				+ "' alt='%<s' align='absmiddle' title='%s'>";
+		String imageURL = showRunning
+				? "KnowWEExtension/images/%s"
+				: "KnowWEExtension/ci4ke/images/16x16/%s";
 
-		switch (resultType) {
-		case SUCCESS:
-			imgBulb = String.format(imgBulb, "green", "Build successful!");
-		case FAILURE:
-			imgBulb = String.format(imgBulb, "red", "Build failed!");
-		case ERROR:
-			imgBulb = String.format(imgBulb, "grey", "Build has errors!");
+		String imgBulb = "<img class='ci-state' dashboardName='" + dashboardNameEncoded
+				+ "' src='" + imageURL
+				+ "' " + (showRunning ? "running=true " : "")
+				+ "alt='%<s' align='absmiddle' title='%s'>";
+		if (showRunning) {
+			imgBulb = String.format(imgBulb, "ajax-loader16.gif", "Build running!");
+		}
+		else {
+			switch (resultType) {
+			case SUCCESS:
+				imgBulb = String.format(imgBulb, "green.png", "Build successful!");
+			case FAILURE:
+				imgBulb = String.format(imgBulb, "red.png", "Build failed!");
+			case ERROR:
+				imgBulb = String.format(imgBulb, "grey.png", "Build has errors!");
+			}
 		}
 
 		return imgBulb;
-	}
 
-	public String renderHeaderResultType(Type resultType, int pixelSize) {
-
-		if (CIUtils.buildRunning(dashboardName)) {
-			// if currently a build is running show animated icon
-			String imageURL = "KnowWEExtension/images/ajax-loader16.gif";
-			String imgBulb = "<img class='ci-state' running='true' width='"
-					+ pixelSize + "'id='state_"
-					+ dashboardNameEncoded
-					+ "' " +
-					"dashboardName='" + dashboardNameEncoded + "' src='" + imageURL
-					+ "' alt='%<s' align='absmiddle' title='%s'>";
-			return imgBulb;
-		}
-
-		return renderResultType(resultType, pixelSize);
 	}
 
 	public String renderDashboardHeader(BuildResult latestBuild) {
 		StringBuilder string = new StringBuilder();
+		string.append("<div class='ci-header' id='ci-header_" + dashboard.getDashboardName() + "'>");
 
 		if (latestBuild != null || CIUtils.buildRunning(dashboardName)) {
 			CIRenderer renderer = dashboard.getRenderer();
-			string.append(renderer.renderCurrentBuildStatus(22));
-			string.append(renderer.renderBuildHealthReport(22));
+			string.append(renderer.renderCurrentBuildStatus());
+			string.append(renderer.renderBuildHealthReport());
 		}
 		string.append("<span class='ci-name'>" + dashboardName + "</span>");
 
-		// insert tag for progress bar
-		// open/close div progress_container
-		if (CIUtils.buildRunning(dashboardName)) {
-			renderProgressInfo(string);
-		}
+		renderProgressInfo(string);
+
+		string.append("</div>");
 		return string.toString();
 	}
 
 	public void renderProgressInfo(StringBuilder string) {
-		string.append("<span class='ci-progress-info' id='" + dashboardNameEncoded
-				+ "_progress-container'>");
+
+		string.append("<span " +
+				"class='ci-progress-info' id='" + dashboardNameEncoded + "_progress-container'>");
 		appendAbortButton(string);
 		string.append("<span class='ci-progress-value-wrap'><span class='ci-progress-value' id='"
 				+ dashboardNameEncoded + "_progress-value'>0 %");
@@ -422,11 +410,11 @@ public class CIRenderer {
 
 	}
 
-	public String renderForecastIcon(int buildCount, int failedCount, int pixelSize) {
+	public String renderForecastIcon(int buildCount, int failedCount) {
 
 		int score = (buildCount > 0) ? score = (100 * (buildCount - failedCount)) / buildCount : 0;
-		String imgForecast = "<img class='ci-forecast' src='KnowWEExtension/ci4ke/images/" +
-				pixelSize + "x" + pixelSize + "/%s.png' align='absmiddle' alt='%<s' title='%s'>";
+		String imgForecast = "<img class='ci-forecast' src='KnowWEExtension/ci4ke/images/22x22/%s.png' "
+				+ "align='absmiddle' alt='%<s' title='%s'>";
 
 		if (score == 0) {
 			imgForecast = String.format(imgForecast, "health-00to19",

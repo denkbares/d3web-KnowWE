@@ -116,7 +116,8 @@ public class CIPersistence {
 	}
 
 	private void throwUnecpectedReadError(Throwable e) throws IOException {
-		String message = "cannot read build results as attachment due to unexpected internal error";
+		String message = "Cannot read build results as attachment due to unexpected internal error: "
+				+ e.getMessage();
 		throw new IOException(message, e);
 	}
 
