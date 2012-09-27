@@ -74,8 +74,8 @@ public class CIRenderer {
 	 */
 	public String renderBuildHealthReport() {
 
-		List<BuildResult> lastBuilds = dashboard.getBuildsByIndex(
-				dashboard.getPersistence().getLatestBuildVersion(), 5);
+		List<BuildResult> lastBuilds = dashboard.getBuilds(
+				-1, 5);
 		int count = lastBuilds.size();
 		int failed = 0;
 		for (BuildResult build : lastBuilds) {
@@ -95,7 +95,7 @@ public class CIRenderer {
 		if (indexFromBack == 0) indexFromBack = latestBuildNumber;
 		if (numberOfBuilds < 1) numberOfBuilds = 10;
 
-		List<BuildResult> builds = dashboard.getBuildsByIndex(indexFromBack, numberOfBuilds);
+		List<BuildResult> builds = dashboard.getBuilds(indexFromBack, numberOfBuilds);
 
 		StringBuffer sb = new StringBuffer();
 		sb.append("<H4>Builds</H4>");
@@ -199,7 +199,7 @@ public class CIRenderer {
 			}
 		}
 		else {
-			buffy.append("<div class='ci-no-details'>No build selected.</div>");
+			buffy.append("<div class='ci-no-details'>No build found.</div>");
 		}
 		buffy.append("</div>\n");
 		return buffy.toString();

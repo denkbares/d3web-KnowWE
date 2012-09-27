@@ -45,9 +45,19 @@ public class CIAction extends AbstractAction {
 
 		String dashboardName = String.valueOf(context.getParameter("name"));
 		dashboardName = Strings.decodeURL(dashboardName);
+		if (task.equals("null") || dashboardName.equals("null")) {
+			throw new IOException(
+					"CIAction.execute(): Required parameters not set!");
+		}
 
-		String topic = context.getTitle();
+		String title = context.getTitle();
 		String web = context.getWeb();
+		String dashBoardArticle = null;
+		Collection<Section<CIDashboardType>> dashboardSections = CIUtils.findCIDashboardSection(dashboardName);
+		if (dashboardSections != null && dashboardSections.size() > 0) {
+			dashBoardArticle = dashboardSections.iterator().next().getTitle();
+		}
+		CIDashboard dashboard = CIDashboard.getDashboard(web, dashBoardArticle, dashboardName);
 		int selectedBuildNumber = -1;
 		if (context.getParameter("nr") != null) {
 			try {
@@ -57,19 +67,10 @@ public class CIAction extends AbstractAction {
 				e.printStackTrace();
 			}
 		}
-
-		if (task.equals("null") || dashboardName.equals("null")) {
-			throw new IOException(
-					"CIAction.execute(): Required parameters not set!");
+		if (selectedBuildNumber < 1) {
+			selectedBuildNumber = dashboard.getLatestBuild().getBuildNumber();
 		}
 
-		String dashBoardArticle = null;
-		Collection<Section<CIDashboardType>> dashboardSections = CIUtils.findCIDashboardSection(dashboardName);
-		if (dashboardSections != null && dashboardSections.size() > 0) {
-			// there can only be one dashboard with this name
-			dashBoardArticle = dashboardSections.iterator().next().getTitle();
-		}
-		CIDashboard dashboard = CIDashboard.getDashboard(web, dashBoardArticle, dashboardName);
 		CIRenderer renderer = dashboard.getRenderer();
 
 		String html = null;
@@ -83,7 +84,7 @@ public class CIAction extends AbstractAction {
 				// JS
 				return;
 			}
-			final CIBuilder builder = new CIBuilder(web, topic, dashboardName);
+			final CIBuilder builder = new CIBuilder(web, title, dashboardName);
 			new Thread(new Runnable() {
 
 				@Override

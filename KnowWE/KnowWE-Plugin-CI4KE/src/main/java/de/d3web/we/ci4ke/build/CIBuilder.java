@@ -107,7 +107,7 @@ public class CIBuilder {
 
 		// add resulting build to dashboard
 		if (build != null && !Thread.interrupted()) {
-			dashboard.addBuild(build);
+			dashboard.addNewBuild(build);
 		}
 		ProgressListenerManager.getInstance().removeProgressListener(dashboardName);
 		CIUtils.deregisterAndTerminateBuildExecutor(dashboardName);

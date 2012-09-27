@@ -57,22 +57,6 @@ public class CIPersistence {
 	}
 
 	/**
-	 * Returns the build versions available in the underlying wiki. A build
-	 * version is not necessarily the same as the build number.
-	 * 
-	 * @created 19.05.2012
-	 * @return the available build versions
-	 */
-	public int[] getBuildVersions() throws IOException {
-		WikiAttachment attachment = getAttachment();
-		if (attachment != null) {
-			int[] versions = attachment.getAvailableVersions();
-			return versions;
-		}
-		return new int[0];
-	}
-
-	/**
 	 * Returns the latest build version available in the underlying wiki.
 	 * 
 	 * @created 19.05.2012
@@ -111,7 +95,8 @@ public class CIPersistence {
 	}
 
 	private void throwUnecpectedWriterError(Throwable e) throws IOException {
-		String message = "cannot write build results as attachment due to unexpected internal error";
+		String message = "Cannot write build results as attachment due to unexpected internal error: "
+				+ e.getMessage();
 		throw new IOException(message, e);
 	}
 

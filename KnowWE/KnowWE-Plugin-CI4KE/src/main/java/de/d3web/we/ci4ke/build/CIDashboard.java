@@ -48,7 +48,7 @@ public class CIDashboard {
 	private final String dashboardName;
 	private final CIRenderer renderer;
 	private final CIPersistence persistence;
-	private BuildResult latestBuild;
+	private final CIBuildCache buildCache = new CIBuildCache();
 
 	private CIDashboard(String web, String dashboardArticle, String dashboardName) {
 		this.web = web;
@@ -74,10 +74,6 @@ public class CIDashboard {
 		return renderer;
 	}
 
-	public CIPersistence getPersistence() {
-		return persistence;
-	}
-
 	/**
 	 * Returns the latest build stored in this dashboard or null if there is no
 	 * build stored.
@@ -86,12 +82,7 @@ public class CIDashboard {
 	 * @return the latest build
 	 */
 	public BuildResult getLatestBuild() {
-		if (latestBuild != null) return latestBuild;
-		// directly after wiki startup, there may be no latest build already
-		// loaded in the dashboard
-		int latest = persistence.getLatestBuildVersion();
-		if (latest == 0) return null;
-		return getBuildIfPossible(latest, true);
+		return getBuildIfPossible(-1, true);
 	}
 
 	/**
@@ -99,7 +90,8 @@ public class CIDashboard {
 	 * or null if this build does not exist.
 	 * 
 	 * @created 19.05.2012
-	 * @param buildNumber the build to be returned
+	 * @param buildNumber the build to be returned, you can use -1 to get the
+	 *        latest build
 	 * @return the specified build
 	 */
 	public BuildResult getBuild(int buildNumber) {
@@ -115,10 +107,13 @@ public class CIDashboard {
 	 * indexes, an empty array is returned.
 	 * 
 	 * @created 19.05.2012
-	 * @param buildNumber the build to be returned
-	 * @return the specified build
+	 * @param buildNumber the newest build to be returned, you can use -1 to
+	 *        start with the latest build
+	 * @param numberOfBuilds the amount of builds you want to get (the next
+	 *        older ones)
+	 * @return the specified builds
 	 */
-	public List<BuildResult> getBuildsByIndex(int fromIndex, int numberOfBuilds) {
+	public List<BuildResult> getBuilds(int fromIndex, int numberOfBuilds) {
 		fromIndex = cap(fromIndex);
 		List<BuildResult> results = new ArrayList<BuildResult>(numberOfBuilds);
 		int index = fromIndex;
@@ -133,8 +128,8 @@ public class CIDashboard {
 	}
 
 	/**
-	 * If the buildNumber is to high, the highest available buildNumber is
-	 * returned;
+	 * If the buildNumber is to high or low, the highest available buildNumber
+	 * is returned;
 	 * 
 	 * @created 18.09.2012
 	 * @return the highest available build number if the given is higher that
@@ -145,20 +140,19 @@ public class CIDashboard {
 		if (latestBuild == null) return 0;
 		int latestBuildNumber = latestBuild.getBuildNumber();
 		if (latestBuildNumber < buildIndex) return latestBuildNumber;
+		if (buildIndex < 1) return latestBuildNumber;
 		return buildIndex;
 	}
 
 	/**
 	 * Adds a new build to the dashboard and makes the underlying persistence to
-	 * store that build. If the build is lower or equal than the latest build
-	 * number, an {@link IllegalArgumentException} is thrown.
+	 * store that build. The given build will always be considered as the latest
+	 * build
 	 * 
 	 * @created 19.05.2012
 	 * @param build the build to be added
-	 * @throws IllegalArgumentException the build number is not higher than the
-	 *         existing ones
 	 */
-	public synchronized void addBuild(BuildResult build) throws IllegalArgumentException {
+	public synchronized void addNewBuild(BuildResult build) {
 		if (build == null) throw new IllegalArgumentException("build is null!");
 
 		// also store here for quick access and elements not covered by the
@@ -168,7 +162,9 @@ public class CIDashboard {
 		// the latest build is either from persistence and has the version of
 		// the attachment as the build number or it is already set from previous
 		// calls to this method
-		this.latestBuild = build;
+
+		buildCache.setLatestBuild(build);
+		buildCache.addBuild(build);
 
 		// attach to wiki if possible
 		try {
@@ -178,14 +174,16 @@ public class CIDashboard {
 			// we cannot store the build as attachment
 			// so log this and continue as usual
 			Logger.getLogger(getClass().getName()).log(Level.SEVERE,
-					"cannot attached build information due to internal error", e);
+					"Cannot attached build information due to internal error", e);
 		}
 	}
 
-	private BuildResult getBuildIfPossible(int buildVersion, boolean logging) {
-		BuildResult result = null;
+	private BuildResult getBuildIfPossible(final int buildVersion, boolean logging) {
+		BuildResult build = null;
+		build = buildCache.getBuild(buildVersion);
+		if (build != null) return build;
 		try {
-			result = persistence.read(buildVersion);
+			build = persistence.read(buildVersion);
 		}
 		catch (Exception e) {
 			if (logging) {
@@ -193,7 +191,11 @@ public class CIDashboard {
 						"Unable to access build " + buildVersion + ". Error: " + e.getMessage());
 			}
 		}
-		return result;
+		if (build != null) {
+			if (buildVersion < 1) buildCache.setLatestBuild(build);
+			buildCache.addBuild(build);
+		}
+		return build;
 	}
 
 	private static final Map<String, CIDashboard> dashboards = new HashMap<String, CIDashboard>();
