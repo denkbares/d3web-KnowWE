@@ -117,7 +117,7 @@ public class CIRenderer {
 			sb.append("</td><td>");
 			sb.append("<td>");
 
-			sb.append("<a onclick=\"fctGetBuildDetails('"
+			sb.append("<a onclick=\"_CI.getBuildDetails('"
 					+ dashboardNameEncoded + "','"
 					+ buildNr + "','" + indexFromBack + "');\">");
 
@@ -137,7 +137,7 @@ public class CIRenderer {
 
 		// wenn man noch weiter zurückblättern kann, rendere einen Button
 		if (latestDisplayedBuildNumber - numberOfBuilds > 0) {
-			String buttonLeft = "<button onclick=\"fctRefreshBuildList('"
+			String buttonLeft = "<button onclick=\"_CI.refreshBuildList('"
 					+ dashboardNameEncoded + "','"
 					+ (latestDisplayedBuildNumber - numberOfBuilds)
 					+ "','" + numberOfBuilds + "');\" style=\"margin-top: 4px; float: left;\">"
@@ -149,7 +149,7 @@ public class CIRenderer {
 
 		// wenn man noch weiter vorblättern kann, rendere einen Button
 		if (latestDisplayedBuildNumber < latestBuildNumber) {
-			String buttonRight = "<button onclick=\"fctRefreshBuildList('"
+			String buttonRight = "<button onclick=\"_CI.refreshBuildList('"
 					+ dashboardNameEncoded + "','"
 					+ (latestDisplayedBuildNumber + numberOfBuilds)
 					+ "','" + numberOfBuilds
@@ -410,7 +410,7 @@ public class CIRenderer {
 	}
 
 	private void appendAbortButton(StringBuilder string) {
-		string.append("<a href=\"javascript:stopRunningBuild('"
+		string.append("<a href=\"javascript:_CI.stopRunningBuild('"
 				+ dashboardNameEncoded
 				+ "', '"
 				+ dashboard.getDashboardArticle()

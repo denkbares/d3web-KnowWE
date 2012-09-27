@@ -52,11 +52,6 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	@Override
 	protected void renderContents(Section<?> section, UserContext user, StringBuilder string) {
 
-		RessourceLoader.getInstance().add("CI4KE.css",
-				RessourceLoader.RESOURCE_STYLESHEET);
-		RessourceLoader.getInstance().add("CIPlugin.js",
-				RessourceLoader.RESOURCE_SCRIPT);
-
 		String dashboardName = DefaultMarkupType.getAnnotation(section,
 				CIDashboardType.NAME_KEY);
 

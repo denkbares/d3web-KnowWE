@@ -49,8 +49,8 @@ public class CIDashboardToolProvider implements ToolProvider {
 
 	public static Tool getStartNewBuildTool(String dashboardName, String title) {
 		// Tool which starts a new build
-		String jsAction = "fctExecuteNewBuild('" + Strings.encodeURL(dashboardName) + "','" + title
-				+ "')";
+		String jsAction = "_CI.executeNewBuild('" + Strings.encodeURL(dashboardName) + "','"
+				+ title + "')";
 		return new DefaultTool(
 				"KnowWEExtension/ci4ke/images/16x16/clock.png",
 				"Start a new build",
