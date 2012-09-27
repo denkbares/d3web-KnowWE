@@ -41,7 +41,7 @@ public class CIBuildCache {
 		this(50);
 	}
 
-	public void addBuild(BuildResult build) {
+	public synchronized void addBuild(BuildResult build) {
 		int buildNumber = build.getBuildNumber();
 		boolean alreadyCached = cache.containsKey(buildNumber);
 		cache.put(buildNumber, build);
