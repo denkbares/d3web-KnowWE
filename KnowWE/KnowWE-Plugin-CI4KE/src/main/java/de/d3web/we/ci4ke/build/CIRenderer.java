@@ -87,11 +87,9 @@ public class CIRenderer {
 	}
 
 	public String renderBuildList(int indexFromBack, int numberOfBuilds, int shownBuild) {
-		BuildResult latestBuild = dashboard.getLatestBuild();
-		int latestBuildNumber = indexFromBack;
-		if (latestBuild != null) {
-			latestBuildNumber = latestBuild.getBuildNumber();
-		}
+
+		int latestBuildNumber = dashboard.getLatestBuildNumber();
+
 		if (indexFromBack == 0) indexFromBack = latestBuildNumber;
 		if (numberOfBuilds < 1) numberOfBuilds = 10;
 

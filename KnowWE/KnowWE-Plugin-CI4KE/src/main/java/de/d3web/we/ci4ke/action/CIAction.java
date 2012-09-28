@@ -68,7 +68,7 @@ public class CIAction extends AbstractAction {
 			}
 		}
 		if (selectedBuildNumber < 1) {
-			selectedBuildNumber = dashboard.getLatestBuild().getBuildNumber();
+			selectedBuildNumber = dashboard.getLatestBuildNumber();
 		}
 
 		CIRenderer renderer = dashboard.getRenderer();

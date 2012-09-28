@@ -74,6 +74,15 @@ public class CIDashboard {
 		return renderer;
 	}
 
+	public int getLatestBuildNumber() {
+		int buildNumber = 0;
+		BuildResult latestBuild = getLatestBuild();
+		if (latestBuild != null) {
+			return latestBuild.getBuildNumber();
+		}
+		return buildNumber;
+	}
+
 	/**
 	 * Returns the latest build stored in this dashboard or null if there is no
 	 * build stored.
@@ -136,9 +145,7 @@ public class CIDashboard {
 	 *         that
 	 */
 	private int cap(int buildIndex) {
-		BuildResult latestBuild = getLatestBuild();
-		if (latestBuild == null) return 0;
-		int latestBuildNumber = latestBuild.getBuildNumber();
+		int latestBuildNumber = getLatestBuildNumber();
 		if (latestBuildNumber < buildIndex) return latestBuildNumber;
 		if (buildIndex < 1) return latestBuildNumber;
 		return buildIndex;
@@ -157,7 +164,7 @@ public class CIDashboard {
 
 		// also store here for quick access and elements not covered by the
 		// persistence
-		int buildNumber = getLatestBuild().getBuildNumber() + 1;
+		int buildNumber = getLatestBuildNumber() + 1;
 		build.setBuildNumber(buildNumber);
 		// the latest build is either from persistence and has the version of
 		// the attachment as the build number or it is already set from previous
