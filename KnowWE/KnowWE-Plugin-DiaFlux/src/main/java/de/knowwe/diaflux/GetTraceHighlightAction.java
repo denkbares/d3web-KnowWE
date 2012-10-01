@@ -19,10 +19,6 @@
 package de.knowwe.diaflux;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
@@ -65,31 +61,27 @@ public class GetTraceHighlightAction extends AbstractAction {
 		Session session = SessionProvider.getSession(context, kb);
 
 		if (flowchart == null || session == null) {
-			Highlights.write(context, Highlights.EMPTY_HIGHLIGHT);
+			Highlight.writeEmpty(context);
 			return;
 		}
 		String flowName = FlowchartType.getFlowchartName(flowchart);
-
-		StringBuilder builder = new StringBuilder();
-		Highlights.appendHeader(builder, FlowchartUtils.escapeHtmlId(flowName), PREFIX);
 
 		DiaFluxCaseObject diaFluxCaseObject = DiaFluxUtils.getDiaFluxCaseObject(session);
 		DiaFluxTrace trace = FlowchartUtils.getTrace(session);
 		
 		Flow flow = DiaFluxUtils.getFlowSet(session).get(flowName);
+		Highlight highlight = new Highlight(flow, PREFIX);
 
-		Map<Edge, Map<String, String>> edges = new HashMap<Edge, Map<String, String>>();
-		Map<Node, Map<String, String>> nodes = new HashMap<Node, Map<String, String>>();
 
 		// first highlight traced nodes/edges to yellow
 		for (Node node : trace.getTracedNodes()) {
 			if (node.getFlow().getName().equals(flowName)) {
-				Highlights.putValue(nodes, node, Highlights.CSS_CLASS, TRACE_SNAP_CLASS);
+				highlight.add(node, Highlight.CSS_CLASS, TRACE_SNAP_CLASS);
 			}
 		}
 		for (Edge edge : trace.getTracedEdges()) {
 			if (edge.getStartNode().getFlow().getName().equals(flowName)) {
-				Highlights.putValue(edges, edge, Highlights.CSS_CLASS, TRACE_SNAP_CLASS);
+				highlight.add(edge, Highlight.CSS_CLASS, TRACE_SNAP_CLASS);
 			}
 		}
 
@@ -97,49 +89,32 @@ public class GetTraceHighlightAction extends AbstractAction {
 		for (FlowRun run : diaFluxCaseObject.getRuns()) {
 			for (Node node : run.getActiveNodes()) {
 				if (node.getFlow().getName().equals(flowName)) {
-					Highlights.putValue(nodes, node, Highlights.CSS_CLASS, TRACE_ACTIVE_CLASS);
+					highlight.add(node, Highlight.CSS_CLASS, TRACE_ACTIVE_CLASS);
 
 					for (Edge edge : node.getOutgoingEdges()) {
 						if (FluxSolver.evalEdge(session, edge)) {
-							Highlights.putValue(edges, edge, Highlights.CSS_CLASS, TRACE_ACTIVE_CLASS);
+							highlight.add(edge, Highlight.CSS_CLASS, TRACE_ACTIVE_CLASS);
 						}
 					}
 				}
 			}
 		}
 
-		List<Edge> remainingEdges = new ArrayList<Edge>(flow.getEdges());
-		List<Node> remainingNodes = new ArrayList<Node>(flow.getNodes());
-		remainingEdges.removeAll(edges.keySet());
-		remainingNodes.removeAll(nodes.keySet());
+		highlight.removeClassFromRemainingNodes();
 
-		// clear classes on all remaining nodes and edges
-		for (Node node : remainingNodes) {
-			Highlights.putValue(nodes, node, Highlights.CSS_CLASS, "");
-		}
-
-		for (Edge edge : remainingEdges) {
-			Highlights.putValue(edges, edge, Highlights.CSS_CLASS, "");
-		}
-		
 		for (Node node : flow.getNodes()) {
-			addValueTooltip(session, nodes, node);
+			addValueTooltip(session, highlight, node);
 		}
 
-		Highlights.addNodeHighlight(builder, nodes);
-		Highlights.addEdgeHighlight(builder, edges);
-
-		Highlights.appendFooter(builder);
-
-		Highlights.write(context, builder.toString());
+		highlight.write(context);
 
 	}
 
 
-	private void addValueTooltip(Session session, Map<Node, Map<String, String>> nodes, Node node) {
+	private void addValueTooltip(Session session, Highlight highlight, Node node) {
 		String tooltip = FlowchartUtils.getValueTrace(session).getValueString(node);
 		if (tooltip != null) {
-			Highlights.putValue(nodes, node, Highlights.TOOL_TIP, tooltip);
+			highlight.add(node, Highlight.TOOL_TIP, tooltip);
 		}
 
 	}

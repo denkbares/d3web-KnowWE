@@ -46,7 +46,7 @@ public class GetSubflowLinksAction extends AbstractAction {
 
 		Section<FlowchartType> flowchart = Sections.getSection(kdomid, FlowchartType.class);
 		if (flowchart == null) {
-			Highlights.write(context, Highlights.EMPTY_HIGHLIGHT);
+			Highlight.writeEmpty(context);
 			return;
 		}
 
@@ -54,25 +54,25 @@ public class GetSubflowLinksAction extends AbstractAction {
 				DiaFluxType.class));
 
 		if (kb == null) {
-			Highlights.write(context, Highlights.EMPTY_HIGHLIGHT);
+			Highlight.writeEmpty(context);
 			return;
 		}
 
-		String string = addSubFlowLinks(kb, flowchart);
+		String string = getSubFlowLinks(kb, flowchart);
 
-		Highlights.write(context, string);
+		Highlight.write(context, string);
 
 	}
 
 	// copied from FlowchartRenderers
-	private static String addSubFlowLinks(KnowledgeBase kb, Section<FlowchartType> section) {
+	private static String getSubFlowLinks(KnowledgeBase kb, Section<FlowchartType> section) {
 		// make sub-flowcharts links to be able to go to their definition
 		String flowName = FlowchartType.getFlowchartName(section);
-		if (kb == null) return Highlights.EMPTY_HIGHLIGHT;
+		if (kb == null) return Highlight.EMPTY_HIGHLIGHT;
 		FlowSet flowSet = DiaFluxUtils.getFlowSet(kb);
-		if (flowSet == null) return Highlights.EMPTY_HIGHLIGHT;
+		if (flowSet == null) return Highlight.EMPTY_HIGHLIGHT;
 		Flow flow = flowSet.get(flowName);
-		if (flow == null) return Highlights.EMPTY_HIGHLIGHT;
+		if (flow == null) return Highlight.EMPTY_HIGHLIGHT;
 
 		StringBuilder builder = new StringBuilder();
 		builder.append("<flow id='" + FlowchartUtils.escapeHtmlId(flowName) + "'>");
