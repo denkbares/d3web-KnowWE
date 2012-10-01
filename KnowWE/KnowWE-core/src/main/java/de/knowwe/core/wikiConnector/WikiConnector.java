@@ -325,8 +325,10 @@ public interface WikiConnector {
 	 * Removes the lock for the article.
 	 * 
 	 * @param title the title of the article to be unlocked
+	 * @param user the user who's lock shall be removed, if null the most recent
+	 *        lock will be removed
 	 */
-	public void unlockArticle(String title);
+	public void unlockArticle(String title, String user);
 
 	/**
 	 * Checks whether a user is allowed edit a given article.

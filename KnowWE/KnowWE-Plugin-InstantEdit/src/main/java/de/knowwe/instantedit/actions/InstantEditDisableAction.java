@@ -49,7 +49,7 @@ public class InstantEditDisableAction extends AbstractAction {
 			return;
 		}
 
-		Environment.getInstance().getWikiConnector().unlockArticle(topic);
+		Environment.getInstance().getWikiConnector().unlockArticle(topic, context.getUserName());
 	}
 
 }

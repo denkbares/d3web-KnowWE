@@ -515,7 +515,7 @@ public class JSPWikiConnector implements WikiConnector {
 			attachment.setAuthor(user);
 			attachmentManager.storeAttachment(attachment, stream);
 
-			if (!wasLocked) unlockArticle(title);
+			if (!wasLocked) unlockArticle(title, user);
 			return getAttachment(title + "/" + filename);
 		}
 		catch (ProviderException e) {
@@ -524,13 +524,23 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public void unlockArticle(String title) {
+	public void unlockArticle(String title, String user) {
 		PageManager mgr = engine.getPageManager();
 		WikiPage page = new WikiPage(engine, title);
 
 		if (isArticleLocked(title)) {
-			PageLock lock = mgr.getCurrentLock(page);
-			mgr.unlockPage(lock);
+			if (user == null) {
+				PageLock lock = mgr.getCurrentLock(page);
+				mgr.unlockPage(lock);
+			}
+			else {
+				for (Object other : mgr.getActiveLocks()) {
+					PageLock otherLock = (PageLock) other;
+					if (otherLock.getLocker().equals(user)) {
+						mgr.unlockPage(otherLock);
+					}
+				}
+			}
 		}
 	}
 

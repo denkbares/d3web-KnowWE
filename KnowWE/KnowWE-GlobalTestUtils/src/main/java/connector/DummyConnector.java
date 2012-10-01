@@ -295,7 +295,7 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public void unlockArticle(String title) {
+	public void unlockArticle(String title, String user) {
 		locks.remove(title);
 	}
 
