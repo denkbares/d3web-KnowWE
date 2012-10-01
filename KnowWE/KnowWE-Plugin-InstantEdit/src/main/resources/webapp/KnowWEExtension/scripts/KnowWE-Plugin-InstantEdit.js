@@ -97,7 +97,7 @@ KNOWWE.plugin.instantEdit = function() {
         },
 
 
-        disable: function(id, reload, fn) {
+        disable: function(id, reload, f) {
             var params = {
                 action: 'InstantEditDisableAction',
                 KdomNodeId: id
@@ -108,15 +108,14 @@ KNOWWE.plugin.instantEdit = function() {
                 async: false,
                 response: {
                     action: 'none',
-                    onError: _IE.onErrorBehavior
+                    onError: _IE.onErrorBehavior,
+                    fn: f
                 }
             }
             new _KA(options).send();
 
             if (reload) {
             	_EC.reloadPage();
-            } else if (fn) {
-            	fn();
             }
         },
         

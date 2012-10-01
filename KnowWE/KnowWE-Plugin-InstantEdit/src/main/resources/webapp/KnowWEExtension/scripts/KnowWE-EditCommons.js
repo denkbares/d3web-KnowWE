@@ -18,6 +18,11 @@ KNOWWE.editCommons = function() {
 
         wikiText: new Object(),
         
+        sleep: function(ms) {
+			var startTime = new Date().getTime();
+			while (new Date().getTime() < startTime + ms);
+        },
+        
         wrapHTML: function(id, locked, html) {
             var lockedHTML = "";
             if (locked) {
