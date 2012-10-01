@@ -310,7 +310,7 @@ jspwiki.templateDir = knowweTmps
 
 # Set the language
 # By default, the language is read from the client browser http request
-# jspwiki.defaultprefs.template.language =en
+jspwiki.defaultprefs.template.language = en
 
 #
 #  Preferences for default template 
