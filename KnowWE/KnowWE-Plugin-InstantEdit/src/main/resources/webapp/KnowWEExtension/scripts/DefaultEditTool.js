@@ -33,7 +33,10 @@ KNOWWE.plugin.defaultEditTool = function() {
 	    
 	    unloadCondition : function(id) {
 	    	var textArea = $(createTextAreaID(id));
-			return textArea.defaultValue == textArea.value;
+			if (textArea) {
+	    		return textArea.defaultValue == textArea.value;
+	    	}
+	    	return true;
 	    },
 	    
 	    generateWikiText : function(id) {
