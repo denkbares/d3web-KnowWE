@@ -539,7 +539,7 @@ Spreadsheet.prototype.installAutoComplete = function(textAreaID, row, col) {
 			return json;
 		}
 		AutoComplete.initialize(textarea, completeFun);
-		TextArea.initialize(textarea, true);
+		new TextArea(textarea, true);
 	}
 }
 

@@ -188,7 +188,7 @@ var EditTools =
 		this.onPageLoadSectionEdit( );
 
 		//this.ta = new TextArea( this.textarea );
-		this.ta = TextArea.initialize( this.textarea ); //FIXME
+		this.ta = new TextArea( this.textarea ); //FIXME
 
 		this.onPageLoadResizeTextarea();
 		this.onPageLoadToolbar();

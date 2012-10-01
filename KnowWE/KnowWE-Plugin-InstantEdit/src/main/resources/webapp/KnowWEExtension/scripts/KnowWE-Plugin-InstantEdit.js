@@ -87,6 +87,18 @@ KNOWWE.plugin.instantEdit = function() {
                         toolNameSpace.postProcessHTML(id);
                         bindUnloadFunctions(id);
                         _EC.hideTools();
+                        //_EC.registerSaveCancelKeys(jq$('#' + id)); //TODO
+            	    	jq$('#' + id).keydown(function(event) {
+                         	event = new Event(event);
+                         	if (_EC.isSaveKey(event)) {     
+                         		event.stop();
+                         		KNOWWE.plugin.instantEdit.save(id);
+                         	}
+                         	else if (_EC.isCancelKey(event)) {                    		
+                         		event.stop();
+                         		KNOWWE.plugin.instantEdit.cancel(id);
+                         	}
+                         });
                     },
                     onError: _IE.onErrorBehavior,
                 }

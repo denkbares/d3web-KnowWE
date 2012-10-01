@@ -140,6 +140,28 @@ KNOWWE.editCommons = function() {
             }
             new _KA(options).send();
         },
+        
+        isSaveKey: function(event) {
+        	if ((!event.meta && event.control && !event.alt) 
+    				|| (!event.meta && !event.control && event.alt) 
+    				|| (event.meta && !event.control && !event.alt)) {
+    			if (event.code == 83) { // S
+    				return true;					
+    			}
+        	}
+        	return false;
+        },
+        
+        isCancelKey: function(event) {
+        	if ((!event.meta && event.control && !event.alt) 
+    				|| (!event.meta && !event.control && event.alt) 
+    				|| (event.meta && !event.control && !event.alt)) {
+    			if (event.code == 81 || event.code == 27) { // Q or ESC
+    				return true;	
+    			}
+        	}
+        	return false;
+        },
 
         getWikiText: function(id, actionName) {
 
