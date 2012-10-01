@@ -1,5 +1,8 @@
 
 	function TextArea(area) {
+		if (area.textarea != null) {
+			return area.textarea;
+		}
 		this.area = $(area);
 		area.textarea = this;
 		this.area.undoHistory = [];
