@@ -25,6 +25,7 @@
   <script type="text/javascript" src="KnowWEExtension/scripts/jQuery.js"></script>
   <script type="text/javascript" src="KnowWEExtension/scripts/jQueryCompatibility.js"></script>
   <wiki:Include page="commonheader.jsp"/>
+  <script type="text/javascript" src="KnowWEExtension/scripts/TextArea.js"></script>
   <script type="text/javascript" src="KnowWEExtension/scripts/KnowWE-Plugin-AutoComplete.js"></script>
 </head>
 
