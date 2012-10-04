@@ -87,13 +87,7 @@ KNOWWE.plugin.tableEditTool = function() {
 	    generateWikiText : function(id) {
 	    	spreadsheet[id].stopEditCell();
 	    	return spreadsheet[id].getWikiMarkup();
-	    },
-	    
-	    getOriginalWikiText : function(id) {
-	    	return originalWikiText[id];
 	    }
-	    
-	    
     }
 }();
 

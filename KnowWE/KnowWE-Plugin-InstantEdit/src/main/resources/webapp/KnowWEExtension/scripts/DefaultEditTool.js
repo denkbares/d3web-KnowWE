@@ -45,14 +45,6 @@ KNOWWE.plugin.defaultEditTool = function() {
 	    	} else {
 	    		return _EC.getWikiText(id);
 	    	}
-	    },
-	    
-	    getOriginalWikiText : function(id) {
-	    	if ($(createTextAreaID(id))) {
-	    		return $(createTextAreaID(id)).defaultValue;
-	    	} else {
-	    		return _EC.getWikiText(id);
-	    	}
 	    }
     }
 }();
