@@ -141,6 +141,20 @@ KNOWWE.editCommons = function() {
             new _KA(options).send();
         },
         
+        registerSaveCancelEvents: function(element, saveFunction, cancelFunction, argument) {
+	    	jq$(element).keydown(function(event) {
+             	event = new Event(event);
+             	if (_EC.isSaveKey(event)) {     
+             		event.stop();
+             		saveFunction(argument);
+             	}
+             	else if (_EC.isCancelKey(event)) {                    		
+             		event.stop();
+             		cancelFunction(argument);
+             	}
+             });
+        },
+        
         isSaveKey: function(event) {
         	if ((!event.meta && event.control && !event.alt) 
     				|| (!event.meta && !event.control && event.alt) 
@@ -155,7 +169,8 @@ KNOWWE.editCommons = function() {
         isCancelKey: function(event) {
         	if ((!event.meta && event.control && !event.alt) 
     				|| (!event.meta && !event.control && event.alt) 
-    				|| (event.meta && !event.control && !event.alt)) {
+    				|| (event.meta && !event.control && !event.alt)
+    				|| (!event.meta && event.control && event.alt)) {
     			if (event.code == 81 || event.code == 27) { // Q or ESC
     				return true;	
     			}
