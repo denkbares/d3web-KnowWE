@@ -31,6 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -394,7 +395,7 @@ public final class Messages {
 	}
 
 	public static Message ambiguousTermClassesError(String origTerm, Collection<Class<?>> termClasses) {
-		List<String> termClassesString = new ArrayList<String>(termClasses.size());
+		TreeSet<String> termClassesString = new TreeSet<String>();
 		for (Class<?> termClass : termClasses) {
 			termClassesString.add(termClass.getSimpleName());
 		}
@@ -404,8 +405,9 @@ public final class Messages {
 	}
 
 	public static Message ambiguousTermCaseWarning(Collection<String> termIdentifiers) {
+		TreeSet<String> sortedIdentifiers = new TreeSet<String>(termIdentifiers);
 		return Messages.warning("There are different cases for the same term: "
-				+ termIdentifiers.toString());
+				+ sortedIdentifiers.toString());
 	}
 
 	public static Message multipleTermDefintionsError(TermIdentifier termIdentifier) {

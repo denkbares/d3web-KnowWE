@@ -185,7 +185,7 @@ public class DefaultMarkupRenderer implements Renderer {
 			Message.Type... types) {
 
 		for (Type type : types) {
-			List<String> messages = getMessageStrings(rootSection, type);
+			Collection<String> messages = getMessageStrings(rootSection, type);
 
 			// only if there are such messages
 			if (messages.isEmpty()) continue;
@@ -195,18 +195,18 @@ public class DefaultMarkupRenderer implements Renderer {
 			}
 			string.append(Strings.maskHTML("<span class='" + clazz
 					+ "' style='white-space: pre-wrap;'>"));
-			for (String messageString : new LinkedHashSet<String>(messages)) {
+			for (String messageString : messages) {
 				string.append(messageString).append("\n");
 			}
 			string.append(Strings.maskHTML("</span>\n"));
 		}
 	}
 
-	public static List<String> getMessageStrings(Section<?> rootSection, Type type) {
+	public static Collection<String> getMessageStrings(Section<?> rootSection, Type type) {
 		Map<Section<?>, Map<Message, Collection<Article>>> collectedMessages =
 				getMessageSectionsOfSubtree(rootSection, type);
 
-		List<String> messages = new LinkedList<String>();
+		Collection<String> messages = new LinkedHashSet<String>();
 		for (Section<?> section : collectedMessages.keySet()) {
 			Map<Message, Collection<Article>> compilerForMessage = collectedMessages.get(section);
 			for (Message msg : compilerForMessage.keySet()) {
