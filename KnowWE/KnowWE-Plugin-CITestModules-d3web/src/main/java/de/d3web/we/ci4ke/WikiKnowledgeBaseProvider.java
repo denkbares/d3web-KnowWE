@@ -3,6 +3,8 @@ package de.d3web.we.ci4ke;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -49,19 +51,30 @@ public class WikiKnowledgeBaseProvider implements TestObjectProvider {
 		if (!c.equals(KnowledgeBase.class)) {
 			return Collections.emptyList();
 		}
-
 		List<TestObjectContainer<T>> result = new ArrayList<TestObjectContainer<T>>();
+		try {
+			Pattern.compile(id);
+		}
+		catch (java.util.regex.PatternSyntaxException e) {
+			return result;
+		}
+
 		// get the KB for this article
 		D3webKnowledgeHandler knowledgeHandler =
 				D3webUtils.getKnowledgeRepresentationHandler(Environment.DEFAULT_WEB);
 
-		KnowledgeBase kb = null;
-		if (knowledgeHandler != null && knowledgeHandler.getKnowledgeArticles().contains(id)) {
-			kb = knowledgeHandler.getKnowledgeBase(id);
-		}
-		if (kb != null) {
-			TestObjectContainer<T> container = new TestObjectContainer<T>(kb.getId(), c.cast(kb));
-			result.add(container);
+		if (knowledgeHandler != null) {
+
+		Set<String> knowledgeArticles = knowledgeHandler.getKnowledgeArticles();
+
+			for (String kbArticle : knowledgeArticles) {
+				if (kbArticle.matches(id)) {
+					KnowledgeBase kb = knowledgeHandler.getKnowledgeBase(kbArticle);
+					TestObjectContainer<T> container = new TestObjectContainer<T>(kb.getId(),
+							c.cast(kb));
+					result.add(container);
+				}
+			}
 		}
 		return result;
 	}
