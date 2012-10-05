@@ -208,7 +208,7 @@ KNOWWE.editCommons = function() {
         },
         
         hasKDomID: function(object) {
-        	if (!object.id) {
+        	if (!object || !object.id) {
         		return false;
         	}
         	// TODO: Check RegExp
