@@ -73,15 +73,13 @@ public class CIAction extends AbstractAction {
 
 		CIRenderer renderer = dashboard.getRenderer();
 
-		String html = null;
+		String html = "";
 		if (task.equals("executeNewBuild")) {
 			if (CIUtils.buildRunning(dashboardName)) {
 				context.sendError(409, "<message will be inserted in JS>");
 				// NOTE: on current ajax handling this message text will will
-				// not be
-				// shown.
-				// but a list mapping error codes to message texts is managed in
-				// JS
+				// not be shown. but a list mapping error codes to message texts
+				// is managed in JS
 				return;
 			}
 			final CIBuilder builder = new CIBuilder(web, title, dashboardName);
@@ -115,8 +113,10 @@ public class CIAction extends AbstractAction {
 		}
 		else if (task.equals("refreshBubble")) {
 			BuildResult build = dashboard.getLatestBuild();
-			Type overallResult = build.getOverallResult();
-			html = renderer.renderBuildStatus(overallResult, true, "");
+			if (build != null) {
+				Type overallResult = build.getOverallResult();
+				html = renderer.renderBuildStatus(overallResult, true, "");
+			}
 		}
 		else if (task.equals("refreshBuildList")) {
 			String indexFromBackParam = context.getParameter("indexFromBack");

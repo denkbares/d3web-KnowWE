@@ -83,6 +83,7 @@ public class CIBuilder {
 	 * Therefore the TestExecutor is used. Adds the resultset to dashboard.
 	 */
 	public void executeBuild() {
+		if (config == null) return;
 		String dashboardName = dashboard.getDashboardName();
 
 		// terminate current build (if one is running)
@@ -98,7 +99,8 @@ public class CIBuilder {
 				listener);
 
 		// create and run TestExecutor
-		TestExecutor executor = new TestExecutor(providers, this.config.getTestSpecifications(), listener);
+		TestExecutor executor = new TestExecutor(providers, this.config.getTestSpecifications(),
+				listener);
 
 		CIUtils.registerBuildExecutor(dashboardName, executor);
 		executor.run();

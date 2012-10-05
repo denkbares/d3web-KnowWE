@@ -212,8 +212,8 @@ public class CIRenderer {
 		// render bullet
 		Type type = result.getType();
 
-		String showButtonID = "showr" + name + index;
-		String hideButtonID = "hidr" + name + index;
+		String showButtonID = "show" + name + index;
+		String hideButtonID = "hide" + name + index;
 		buffy.append(Strings.maskHTML("<span id='" + showButtonID + "'>"
 				+ renderBuildStatus(type, false, "_plus")
 				+ "</span>"));
@@ -246,20 +246,20 @@ public class CIRenderer {
 		// some js for collapse of message details
 		buffy.append(Strings.maskHTML("<script> " +
 
-		// show
+				// show
 				"jq$(\"#" + showButtonID + "\").click(function() {" +
-						"jq$(\"#" + ciMessageID
+				"jq$(\"#" + ciMessageID
 				+ "\").show(\"slow\", function() {"
 				+ "jq$(\"#" + showButtonID + "\").hide(0);" +
 				"jq$(\"#" + hideButtonID + "\").show(0);" +
 				" });" +
-					"});" +
+				"});" +
 
-					// hide
+				// hide
 				"jq$(\"#" + hideButtonID + "\").click(function() {" +
-					"jq$(\"#" + ciMessageID + "\").hide(\"slow\", function() {" +
-					"jq$(\"#" + hideButtonID + "\").hide(0);" +
-					"jq$(\"#" + showButtonID + "\").show(0);" +
+				"jq$(\"#" + ciMessageID + "\").hide(\"slow\", function() {" +
+				"jq$(\"#" + hideButtonID + "\").hide(0);" +
+				"jq$(\"#" + showButtonID + "\").show(0);" +
 				" });" +
 				"});" +
 				"</script>"));
