@@ -192,8 +192,10 @@ public class CIRenderer {
 			resultsSorted.addAll(results);
 			Collections.sort(resultsSorted);
 
+			int index = 0;
 			for (TestResult result : resultsSorted) {
-				appendTestResult(buffy, result);
+				appendTestResult(buffy, result, index);
+				index++;
 			}
 		}
 		else {
@@ -203,14 +205,20 @@ public class CIRenderer {
 		return buffy.toString();
 	}
 
-	private void appendTestResult(StringBuffer buffy, TestResult result) {
+	private void appendTestResult(StringBuffer buffy, TestResult result, int index) {
 		buffy.append("<div class='ci-collapsible-box'>");
 
+		String name = result.getTestName();
 		// render bullet
 		Type type = result.getType();
-		buffy.append(renderBuildStatus(type, false));
+		String statusBlobImage = renderBuildStatus(type, false);
 
-		String name = result.getTestName();
+		String showButtonID = "showr" + name + index;
+		String hideButtonID = "hidr" + name + index;
+		buffy.append("<span id='" + showButtonID + "'>" + statusBlobImage + "</span>");
+		buffy.append("<span id='" + hideButtonID + "'>" + statusBlobImage
+				+ "</span>");
+
 		Test<?> test = TestManager.findTest(name);
 		String title = "";
 		if (test != null) {
@@ -230,16 +238,46 @@ public class CIRenderer {
 		}
 		buffy.append("</span>");
 
+		String ciMessageID = "ci-message" + name + index;
+
+		// some js for collapse of message details
+		buffy.append("<script type='text/javascript'> " +
+
+		// onload hide content and hide-button
+				"jq$(window).ready(function() {" +
+					"jq$(\"#" + hideButtonID + "\").hide(0);" +
+					"jq$(\"#" + ciMessageID + "\").hide(0)" +
+				"});" +
+
+				// show
+				"jq$(\"#" + showButtonID + "\").click(function() {" +
+						"jq$(\"#" + ciMessageID
+				+ "\").show(\"slow\", function() {"
+				+ "jq$(\"#" + showButtonID + "\").hide(0);" +
+				"jq$(\"#" + hideButtonID + "\").show(0);" +
+				" });" +
+					"});" +
+
+					// hide
+				"jq$(\"#" + hideButtonID + "\").click(function() {" +
+					"jq$(\"#" + ciMessageID + "\").hide(\"slow\", function() {" +
+					"jq$(\"#" + hideButtonID + "\").hide(0);" +
+					"jq$(\"#" + showButtonID + "\").show(0);" +
+				" });" +
+				"});" +
+				"</script>");
+
 		// render test-message (if exists)
-		renderMessage(buffy, result);
+		renderMessage(buffy, result, index);
 
 		buffy.append("</div>\n");
 	}
 
-	private void renderMessage(StringBuffer buffy, TestResult result) {
+	private void renderMessage(StringBuffer buffy, TestResult result, int index) {
 		String messageText = generateMessageText(result);
 		if (!messageText.isEmpty()) {
-			buffy.append("<div class='ci-message'>");
+			buffy.append("<div id='ci-message" + result.getTestName() + index
+					+ "' class='ci-message'>");
 			buffy.append(messageText);
 			buffy.append("</div>");
 		}
