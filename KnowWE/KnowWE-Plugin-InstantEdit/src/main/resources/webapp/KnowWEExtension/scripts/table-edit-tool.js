@@ -491,16 +491,24 @@ Spreadsheet.prototype.editCell = function(row, col) {
 }
 
 Spreadsheet.prototype.isAutoCompleteFocused = function(id) {
-	return $(id).autocomplete.hasFocus();
+	if (typeof AutoComplete != "undefined") {	
+		return $(id).autocomplete.hasFocus();
+	} else {		
+		return false;
+	}
 }
 
 Spreadsheet.prototype.showAutoComplete = function(id) {
-	$(id).autocomplete.requestFocus();
-	$(id).autocomplete.requestCompletions();
+	if (typeof AutoComplete != "undefined") {	
+		$(id).autocomplete.requestFocus();
+		$(id).autocomplete.requestCompletions();
+	}
 }
 
 Spreadsheet.prototype.uninstallAutoComplete = function(id) {
-	$(id).autocomplete.showCompletions(null);
+	if (typeof AutoComplete != "undefined") {	
+		$(id).autocomplete.showCompletions(null);
+	}
 }
 
 Spreadsheet.prototype.installAutoComplete = function(textAreaID, row, col) {
@@ -532,7 +540,9 @@ Spreadsheet.prototype.installAutoComplete = function(textAreaID, row, col) {
 		return json;
 	}
 	new TextArea(textarea, true);
-	new AutoComplete(textarea, completeFun);
+	if (typeof AutoComplete != "undefined") {		
+		new AutoComplete(textarea, completeFun);
+	}
 }
 
 Spreadsheet.prototype.setCellText = function(row, col, text) {
