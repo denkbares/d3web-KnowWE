@@ -96,8 +96,8 @@ public class CIRenderer {
 		List<BuildResult> builds = dashboard.getBuilds(indexFromBack, numberOfBuilds);
 
 		StringBuffer sb = new StringBuffer();
-		sb.append("<H4>Builds</H4>");
-		sb.append("<table width=\"100%\" border='1' class=\"build-table\">");
+		sb.append(Strings.maskHTML("<H4>Builds</H4>"));
+		sb.append(Strings.maskHTML("<table width=\"100%\" border='1' class=\"build-table\">"));
 
 		// reverse order to have the most current builds on top
 		for (BuildResult build : builds) {
@@ -108,25 +108,25 @@ public class CIRenderer {
 			if (buildNr == shownBuild) {
 				cssClass = "selectedBuildNR";
 			}
-			sb.append("<tr class='" + cssClass + "'><td>");
+			sb.append(Strings.maskHTML("<tr class='" + cssClass + "'><td>"));
 			// starting with a nice image...
 			Type buildResult = build.getOverallResult();
 			sb.append(renderBuildStatus(buildResult, false, ""));
 
-			sb.append("</td><td>");
-			sb.append("<td>");
+			sb.append(Strings.maskHTML("</td><td>"));
+			sb.append(Strings.maskHTML("<td>"));
 
-			sb.append("<a onclick=\"_CI.refreshBuildDetails('"
+			sb.append(Strings.maskHTML("<a onclick=\"_CI.refreshBuildDetails('"
 					+ dashboardNameEncoded + "','"
-					+ buildNr + "','" + indexFromBack + "');\">");
+					+ buildNr + "','" + indexFromBack + "');\">"));
 
 			// actual shown content:
 			sb.append("#" + buildNr);
-			sb.append("</a>");
+			sb.append(Strings.maskHTML("</a>"));
 
-			sb.append("</tr>");
+			sb.append(Strings.maskHTML("</tr>"));
 		}
-		sb.append("</table>");
+		sb.append(Strings.maskHTML("</table>"));
 
 		int latestDisplayedBuildNumber = indexFromBack;
 
@@ -143,7 +143,7 @@ public class CIRenderer {
 					+ "<img src=\"KnowWEExtension/ci4ke/images/16x16/left.png\" "
 					+ "style=\"vertical-align: middle; margin-right: 5px;\">"
 					+ "</button>";
-			sb.append(buttonLeft);
+			sb.append(Strings.maskHTML(buttonLeft));
 		}
 
 		// wenn man noch weiter vorblättern kann, rendere einen Button
@@ -155,7 +155,7 @@ public class CIRenderer {
 					+ "');\" style=\"margin-top: 4px; float: right;\">"
 					+ "<img src=\"KnowWEExtension/ci4ke/images/16x16/right.png\" "
 					+ "style=\"vertical-align: middle; margin-left: 5px;\"></button>";
-			sb.append(buttonRight);
+			sb.append(Strings.maskHTML(buttonRight));
 		}
 
 		return sb.toString();
@@ -180,8 +180,8 @@ public class CIRenderer {
 
 		StringBuffer buffy = new StringBuffer();
 
-		buffy.append("<div id='" + dashboardNameEncoded
-				+ "-column-middle' class='ci-column-middle'>");
+		buffy.append(Strings.maskHTML("<div id='" + dashboardNameEncoded
+				+ "-column-middle' class='ci-column-middle'>"));
 
 		if (build != null) {
 			apppendBuildHeadline(build, buffy);
@@ -199,14 +199,14 @@ public class CIRenderer {
 			}
 		}
 		else {
-			buffy.append("<div class='ci-no-details'>No build found.</div>");
+			buffy.append(Strings.maskHTML("<div class='ci-no-details'>No build found.</div>"));
 		}
-		buffy.append("</div>\n");
+		buffy.append(Strings.maskHTML("</div>\n"));
 		return buffy.toString();
 	}
 
 	private void appendTestResult(StringBuffer buffy, TestResult result, int index) {
-		buffy.append("<div class='ci-collapsible-box'>");
+		buffy.append(Strings.maskHTML("<div class='ci-collapsible-box'>"));
 
 		String name = result.getTestName();
 		// render bullet
@@ -214,12 +214,13 @@ public class CIRenderer {
 
 		String showButtonID = "showr" + name + index;
 		String hideButtonID = "hidr" + name + index;
-		buffy.append("<span id='" + showButtonID + "'>" + renderBuildStatus(type, false, "_plus")
-				+ "</span>");
+		buffy.append(Strings.maskHTML("<span id='" + showButtonID + "'>"
+				+ renderBuildStatus(type, false, "_plus")
+				+ "</span>"));
 		// not visible at beginning
-		buffy.append("<span style='display:none;' id='" + hideButtonID + "'>"
+		buffy.append(Strings.maskHTML("<span style='display:none;' id='" + hideButtonID + "'>"
 				+ renderBuildStatus(type, false, "_minus")
-				+ "</span>");
+				+ "</span>"));
 
 		Test<?> test = TestManager.findTest(name);
 		String title = "";
@@ -228,22 +229,22 @@ public class CIRenderer {
 		}
 
 		// render test-name
-		buffy.append("<span class='ci-test-title' title='" + title + "'>");
+		buffy.append(Strings.maskHTML("<span class='ci-test-title' title='" + title + "'>"));
 		buffy.append(name);
 
 		// render test-configuration (if existent)
 		String[] config = result.getConfiguration();
 		if (config != null && !(config.length == 0)) {
-			buffy.append("<span class='ci-configuration'>");
+			buffy.append(Strings.maskHTML("<span class='ci-configuration'>"));
 			buffy.append(TestParser.concatParameters(config));
-			buffy.append("</span>");
+			buffy.append(Strings.maskHTML("</span>"));
 		}
-		buffy.append("</span>");
+		buffy.append(Strings.maskHTML("</span>"));
 
 		String ciMessageID = "ci-message" + name + index;
 
 		// some js for collapse of message details
-		buffy.append("<script> " +
+		buffy.append(Strings.maskHTML("<script> " +
 
 		// show
 				"jq$(\"#" + showButtonID + "\").click(function() {" +
@@ -261,22 +262,23 @@ public class CIRenderer {
 					"jq$(\"#" + showButtonID + "\").show(0);" +
 				" });" +
 				"});" +
-				"</script>");
+				"</script>"));
 
 		// render test-message (if exists)
 		renderMessage(buffy, result, index);
 
-		buffy.append("</div>\n");
+		buffy.append(Strings.maskHTML("</div>\n"));
 	}
 
 	private void renderMessage(StringBuffer buffy, TestResult result, int index) {
 		String messageText = generateMessageText(result);
 		if (!messageText.isEmpty()) {
 			// not visible at beginning
-			buffy.append("<div style='display:none;' id='ci-message" + result.getTestName() + index
-					+ "' class='ci-message'>");
+			buffy.append(Strings.maskHTML("<div style='display:none;' id='ci-message"
+					+ result.getTestName() + index
+					+ "' class='ci-message'>"));
 			buffy.append(messageText);
-			buffy.append("</div>");
+			buffy.append(Strings.maskHTML("</div>"));
 		}
 	}
 
@@ -308,9 +310,9 @@ public class CIRenderer {
 						" (test object: " + renderedTestObjectName + ")\n");
 			}
 		}
-		messageText.append("<span"
+		messageText.append(Strings.maskHTML("<span"
 				+ (toolTip.length() == 0 ? "" : " title='" + toolTip.toString() + "'") + ">"
-				+ successes + " test objects tested successfully</span>");
+				+ successes + " test objects tested successfully</span>"));
 		return messageText.toString();
 	}
 
@@ -350,7 +352,7 @@ public class CIRenderer {
 	private void apppendBuildHeadline(BuildResult build, StringBuffer buffy) {
 		DateFormat dateFormat = DateFormat.getDateTimeInstance();
 		String buildDate = dateFormat.format(build.getBuildDate());
-		buffy.append("<H4>Build #").append(build.getBuildNumber())
+		buffy.append(Strings.maskHTML("<H4>Build #")).append(build.getBuildNumber())
 				.append(" (").append(buildDate).append(") ");
 
 		// get the build duration time
@@ -367,7 +369,7 @@ public class CIRenderer {
 			buffy.append(String.format("%d:%02d min.", sec / 60, sec % 60));
 		}
 
-		buffy.append("</H4>");
+		buffy.append(Strings.maskHTML("</H4>"));
 	}
 
 	public String renderBuildStatus(Type resultType, boolean checkRunning, String imageSuffix) {
@@ -397,42 +399,43 @@ public class CIRenderer {
 			}
 		}
 
-		return imgBulb;
+		return Strings.maskHTML(imgBulb);
 
 	}
 
 	public String renderDashboardHeader(BuildResult latestBuild) {
 		StringBuilder string = new StringBuilder();
-		string.append("<div class='ci-header' id='ci-header_" + dashboard.getDashboardName() + "'>");
+		string.append(Strings.maskHTML("<div class='ci-header' id='ci-header_"
+				+ dashboard.getDashboardName() + "'>"));
 
 		if (latestBuild != null || CIUtils.buildRunning(dashboardName)) {
 			CIRenderer renderer = dashboard.getRenderer();
 			string.append(renderer.renderCurrentBuildStatus());
 			string.append(renderer.renderBuildHealthReport());
 		}
-		string.append("<span class='ci-name'>" + dashboardName + "</span>");
+		string.append(Strings.maskHTML("<span class='ci-name'>" + dashboardName + "</span>"));
 
 		renderProgressInfo(string);
 
-		string.append("</div>");
+		string.append(Strings.maskHTML("</div>"));
 		return string.toString();
 	}
 
 	public void renderProgressInfo(StringBuilder string) {
 
-		string.append("<span " +
-				"class='ci-progress-info' id='" + dashboardNameEncoded + "_progress-container'>");
+		string.append(Strings.maskHTML("<span " +
+				"class='ci-progress-info' id='" + dashboardNameEncoded + "_progress-container'>"));
 		appendAbortButton(string);
-		string.append("<span class='ci-progress-value-wrap'><span class='ci-progress-value' id='"
-				+ dashboardNameEncoded + "_progress-value'>0 %");
-		string.append("</span></span>");
-		string.append("<span class='ci-progess-text' id='"
-				+ dashboardNameEncoded + "_progress-text'>Build running...</span>");
-		string.append("</span>");
+		string.append(Strings.maskHTML("<span class='ci-progress-value-wrap'><span class='ci-progress-value' id='"
+				+ dashboardNameEncoded + "_progress-value'>0 %"));
+		string.append(Strings.maskHTML("</span></span>"));
+		string.append(Strings.maskHTML("<span class='ci-progess-text' id='"
+				+ dashboardNameEncoded + "_progress-text'>Build running...</span>"));
+		string.append(Strings.maskHTML("</span>"));
 	}
 
 	private void appendAbortButton(StringBuilder string) {
-		string.append("<a href=\"javascript:_CI.stopRunningBuild('"
+		string.append(Strings.maskHTML("<a href=\"javascript:_CI.stopRunningBuild('"
 				+ dashboardNameEncoded
 				+ "', '"
 				+ dashboard.getDashboardArticle()
@@ -440,7 +443,7 @@ public class CIRenderer {
 				+ KnowWEUtils.getURLLink(dashboard.getDashboardArticle() + "#"
 						+ dashboardNameEncoded)
 				+ "')\"><img class='ci-abort-build' height='16' title='Stops the current build' " +
-				"src='KnowWEExtension/images/cross.png'></img></a>");
+				"src='KnowWEExtension/images/cross.png'></img></a>"));
 
 	}
 
@@ -478,7 +481,7 @@ public class CIRenderer {
 			}
 		}
 
-		return imgForecast;
+		return Strings.maskHTML(imgForecast);
 	}
 
 	private class SizeComparator implements Comparator<MessageObject> {
