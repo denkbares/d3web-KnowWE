@@ -243,7 +243,7 @@ public class CIRenderer {
 		String ciMessageID = "ci-message" + name + index;
 
 		// some js for collapse of message details
-		buffy.append("<script type='text/javascript'> " +
+		buffy.append("<script> " +
 
 		// show
 				"jq$(\"#" + showButtonID + "\").click(function() {" +

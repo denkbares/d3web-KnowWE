@@ -91,7 +91,20 @@ KNOWWE.plugin.ci4ke = function() {
 				response : {
 					ids : [ dashboardName + '-build-details-wrapper' ],
 					action : 'insert',
+					fn : function() {
+
+						// (re-)activate incoming script tags for collapsing
+						var result = null;
+						var rePattern = /<script>(.*)<\/script>/gi;
+						while (result = rePattern.exec(this.responseText)) {
+							var script = result[1];
+							eval(script);
+						}
+
+					}
 				}
+			
+			
 			}
 
 			new _KA(options).send();
@@ -189,7 +202,6 @@ KNOWWE.plugin.ci4ke = function() {
 							_CI.refreshBuildDetails(dashboardName);
 							_CI.refreshBuildList(dashboardName);
 							_CI.refreshBuildStatus(dashboardName);
-							
 						}
 					},
 					onError : function() {
