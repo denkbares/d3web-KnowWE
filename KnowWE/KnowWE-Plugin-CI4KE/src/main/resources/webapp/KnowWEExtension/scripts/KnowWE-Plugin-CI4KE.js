@@ -93,14 +93,6 @@ KNOWWE.plugin.ci4ke = function() {
 					action : 'insert',
 					fn : function() {
 
-						// (re-)activate incoming script tags for collapsing
-						var result = null;
-						var rePattern = /<script>(.*)<\/script>/gi;
-						while (result = rePattern.exec(this.responseText)) {
-							var script = result[1];
-							eval(script);
-						}
-
 					}
 				}
 			
