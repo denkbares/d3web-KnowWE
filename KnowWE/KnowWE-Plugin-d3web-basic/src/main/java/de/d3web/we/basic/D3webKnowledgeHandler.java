@@ -23,10 +23,11 @@ package de.d3web.we.basic;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -49,12 +50,12 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	/**
 	 * Map for all articles and their KBMs.
 	 */
-	private static Map<String, KnowledgeBase> kbs = new HashMap<String, KnowledgeBase>();
+	private static Map<String, KnowledgeBase> kbs = Collections.synchronizedMap(new HashMap<String, KnowledgeBase>());
 
 	/**
 	 * Map to store the last version of the KnowledgeBase.
 	 */
-	private static Map<String, KnowledgeBase> lastKB = new HashMap<String, KnowledgeBase>();
+	private static Map<String, KnowledgeBase> lastKB = Collections.synchronizedMap(new HashMap<String, KnowledgeBase>());
 
 	/**
 	 * Stores for each Article if the jar file already got built
@@ -104,15 +105,7 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	 * @return all topics with a compiled d3web knowledge base
 	 */
 	public Set<String> getKnowledgeArticles() {
-		return kbs.keySet();
-	}
-
-	public KnowledgeBase getLastKnowledgeBase(String title) {
-		return lastKB.get(title);
-	}
-
-	public Collection<KnowledgeBase> getKnowledgeBases() {
-		return kbs.values();
+		return new TreeSet<String>(kbs.keySet());
 	}
 
 	/**
@@ -152,7 +145,7 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 		// need to create a new knowledge base every time.
 		// if (!savedToJar.get(title)) {
 		PersistenceManager.getInstance().save(base,
-					new File(Strings.decodeURL(home.getFile())));
+				new File(Strings.decodeURL(home.getFile())));
 		// savedToJar.put(title, true);
 		// }
 		return home;
