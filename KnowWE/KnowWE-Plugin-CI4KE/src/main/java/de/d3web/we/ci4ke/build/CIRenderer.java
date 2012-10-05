@@ -290,6 +290,7 @@ public class CIRenderer {
 		int maxObjects = 40;
 		for (String testObjectName : testObjectNames) {
 			de.d3web.testing.Message message = result.getMessage(testObjectName);
+			if (message == null) continue;
 			Type messageType = message.getType();
 			if (messageType.equals(Type.SUCCESS)) {
 				if (successes < maxObjects) {
