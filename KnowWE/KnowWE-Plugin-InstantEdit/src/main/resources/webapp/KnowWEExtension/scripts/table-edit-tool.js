@@ -29,10 +29,10 @@ KNOWWE.plugin.tableEditTool = function() {
 	    	return _EC.elements.getSaveCancelDeleteButtons(id, new Array(
 	    	    			createButton("table_insert_col_before", "gif"),
 	    	    			createButton("table_insert_col_after", "gif"),
-	    	    			createButton("table_delete_col", "gif"),
 	    	    			createButton("table_insert_row_before", "gif"),
 	    	    			createButton("table_insert_row_after", "gif"),
-	    	    			createButton("table_delete_row", "gif"),
+	    	    			createButton("table_delete_col", "png"),
+	    	    			createButton("table_delete_row", "png"),
 	    	    			createButton("toggle_header", "png")
 	    					));
 	    },
@@ -85,11 +85,8 @@ KNOWWE.plugin.tableEditTool = function() {
 	    },
 	    
 	    generateWikiText : function(id) {
-	    	if (spreadsheet[id]) {
-		    	spreadsheet[id].stopEditCell();
-		    	return spreadsheet[id].getWikiMarkup();
-	    	}
-	    	return _EC.getWikiText(id);
+	    	spreadsheet[id].stopEditCell();
+	    	return spreadsheet[id].getWikiMarkup();
 	    }
     }
 }();
@@ -202,7 +199,7 @@ function Spreadsheet(elementID, saveFun, cancelFun) {
 	this.saveFunction = saveFun;
 	this.cancelFunction = cancelFun;
 	this.supportLinks = true;
-	this.element = jq$("#"+elementID);
+	this.element = jq$("#" + elementID);
 	
 	this.createTable();
 	this.selectCell(0,0);
@@ -325,7 +322,7 @@ Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, comma
 	// Ctrl+Space for edit mode and auto-completion (if available)
 	else if (keyCode == 32 && command) {
 		this.editCell(row, col);
-		this.showAutoComplete();
+		this.showAutoComplete(this.createCellAreaID(row, col));
 	}
 	// left
 	else if (keyCode == 37) {
@@ -412,13 +409,17 @@ Spreadsheet.prototype.stopEditCell = function(cancel) {
 	}
 }
 
+Spreadsheet.prototype.createCellAreaID = function(row, col) {
+	return "cellEditArea_" + this.elementID + "_"+  row + col;
+}
+
 Spreadsheet.prototype.editCell = function(row, col) {
 	this.stopEditCell();
 	this.uncopyCopiedCells();
 	this.selectCell(row,col);
 	var contentElement = this.getSelectedCell().find("div > a");
 	var pos = contentElement.parent().position();
-	var textAreaID = "cellEditArea_"+this.elementID;
+	var textAreaID = this.createCellAreaID(row, col);
 	var html = "";
 	html += "<div class='cellEdit' style='";
 	html += "left:"+(pos.left-3)+"px;top:"+(pos.top-3)+"px;";
@@ -442,7 +443,7 @@ Spreadsheet.prototype.editCell = function(row, col) {
 		var keyCode = event.which;
 		var command = event.ctrlKey || event.metaKey;
 		// ignore return key if auto-complete is on 
-		if ((keyCode == 13 || keyCode == 27) && spreadsheet.isAutoCompleteFocused()) return;
+		if ((keyCode == 13 || keyCode == 27) && spreadsheet.isAutoCompleteFocused(textAreaID)) return;
 		if ((keyCode == 13 && !event.altKey && !event.shiftKey) || (keyCode == 9 && !event.altKey)) {
 			spreadsheet.setCellText(row, col, editArea.val());
 		}
@@ -478,7 +479,7 @@ Spreadsheet.prototype.editCell = function(row, col) {
 	this.stopEditCellFunction = function(cancel) {
 		if (closing) return;
 		closing = true;
-		spreadsheet.uninstallAutoComplete();
+		spreadsheet.uninstallAutoComplete(textAreaID);
 		if (!cancel) spreadsheet.setCellText(row, col, editArea.val());
 		editDiv.detach();
 		spreadsheet.selectCell(row,col);
@@ -489,55 +490,49 @@ Spreadsheet.prototype.editCell = function(row, col) {
 	this.installAutoComplete(textAreaID, row, col);
 }
 
-Spreadsheet.prototype.isAutoCompleteFocused = function() {
-	return (typeof AutoComplete != "undefined") && AutoComplete.hasFocus();
+Spreadsheet.prototype.isAutoCompleteFocused = function(id) {
+	return $(id).autocomplete.hasFocus();
 }
 
-Spreadsheet.prototype.showAutoComplete = function() {
-	if (typeof AutoComplete != "undefined") {
-		AutoComplete.requestFocus();
-		AutoComplete.requestCompletions();
-	}
+Spreadsheet.prototype.showAutoComplete = function(id) {
+	$(id).autocomplete.requestFocus();
+	$(id).autocomplete.requestCompletions();
 }
 
-Spreadsheet.prototype.uninstallAutoComplete = function() {
-	if (typeof AutoComplete != "undefined") {
-		AutoComplete.showCompletions(null);
-	}
+Spreadsheet.prototype.uninstallAutoComplete = function(id) {
+	$(id).autocomplete.showCompletions(null);
 }
 
 Spreadsheet.prototype.installAutoComplete = function(textAreaID, row, col) {
 	// enable auto-completion if available
 	// but we require some special functionality because only editing part of table
-	if (typeof AutoComplete != "undefined") {
-		var spreadsheet = this;
-		var textarea = $(textAreaID);
-		var completeFun = function(prefix) {
-			var trimPrefix = prefix.trim();
-			var json = "[";
-			var textCache = new Array();
-			for (var r = 0; r < spreadsheet.size.rows; r++) {
-				// use each text once
-				var text = spreadsheet.getCellText(r, col).trim();
-				if (textCache[text]) continue;
-				textCache[text] = "done";
-				// check if it can be used for completion
-				if (text.length == 0) continue;
-				if (text.length < trimPrefix.length) continue;
-				if (text.substring(0, trimPrefix.length) != trimPrefix) continue;
-				json += "{ "+
-					"title: '" + text + "', " +
-					"insertText: '" + text + "', " +
-					"replaceLength: '" + prefix.length + "', " +
-					"cursorPosition: " + text.length + " }, "
-			}
-			json += "]";
-			//alert(json);
-			return json;
+	var spreadsheet = this;
+	var textarea = $(textAreaID);
+	var completeFun = function(prefix) {
+		var trimPrefix = prefix.trim();
+		var json = "[";
+		var textCache = new Array();
+		for (var r = 0; r < spreadsheet.size.rows; r++) {
+			// use each text once
+			var text = spreadsheet.getCellText(r, col).trim();
+			if (textCache[text]) continue;
+			textCache[text] = "done";
+			// check if it can be used for completion
+			if (text.length == 0) continue;
+			if (text.length < trimPrefix.length) continue;
+			if (text.substring(0, trimPrefix.length) != trimPrefix) continue;
+			json += "{ "+
+				"title: '" + text + "', " +
+				"insertText: '" + text + "', " +
+				"replaceLength: '" + prefix.length + "', " +
+				"cursorPosition: " + text.length + " }, "
 		}
-		AutoComplete.initialize(textarea, completeFun);
-		new TextArea(textarea, true);
+		json += "]";
+		//alert(json);
+		return json;
 	}
+	new TextArea(textarea, true);
+	new AutoComplete(textarea, completeFun);
 }
 
 Spreadsheet.prototype.setCellText = function(row, col, text) {
