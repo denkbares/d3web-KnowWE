@@ -25,9 +25,9 @@ import de.knowwe.core.kdom.AbstractType;
  * @author volker_belli
  * @created 16.03.2012
  */
-public class Table extends AbstractType {
+public class WikiTable extends AbstractType {
 
-	public Table() {
+	public WikiTable() {
 		this.sectionFinder = new TableSectionFinder();
 		this.setRenderer(new TableRenderer());
 	}

@@ -125,10 +125,10 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="Table">
+		id="WikiTable">
 		<parameter id="class"
-			value="de.knowwe.instantedit.table.Table" />
-		<parameter id="name" value="Table" />
+			value="de.knowwe.instantedit.table.WikiTable" />
+		<parameter id="name" value="WikiTable" />
 		<parameter id="description" value="Type to match a wiki-style table." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="6" />

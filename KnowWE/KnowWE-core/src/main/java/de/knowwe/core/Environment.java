@@ -377,14 +377,21 @@ public class Environment {
 
 	private void decorateTypeTree(Type type) {
 
+		List<Type> childrenTypesInit = new ArrayList<Type>(type.getChildrenTypesInit());
+
 		Plugins.addChildrenTypesToType(type);
 		Plugins.addSubtreeHandlersToType(type);
 		Plugins.addRendererToType(type);
 		Plugins.addAnnotations(type);
 
-		if (type.getChildrenTypesInit() == null) return;
+		if (type instanceof RootType) {
+			// Only types plugged with the scope root are allowed to be
+			// decorated again. To prevent loops, other plugged types are not
+			// again decorated.
+			childrenTypesInit = type.getChildrenTypesInit();
+		}
 
-		for (Type childType : type.getChildrenTypesInit()) {
+		for (Type childType : childrenTypesInit) {
 			if (childType.getPathToRoot() != null) continue;
 			Type[] pathToRoot = type.getPathToRoot();
 			Type[] childPath = new Type[pathToRoot.length + 1];

@@ -187,31 +187,32 @@ public class Scope {
 
 	private Set<String> getCachedNamesOfType(Type typeElement) {
 		Class<? extends Type> nodeTypeClass = typeElement.getClass();
-		Set<String> simpleNames = CACHED_NAMES_OF_KDOM_TYPE.get(typeElement);
-		if (simpleNames == null) {
-			simpleNames = new HashSet<String>();
-			// and all simple class names of the derivation hierarchy
-			collectAllSimpleClassNames(nodeTypeClass, simpleNames);
+		Set<String> names = CACHED_NAMES_OF_KDOM_TYPE.get(typeElement);
+		if (names == null) {
+			names = new HashSet<String>();
+			// and all class names of the derivation hierarchy
+			collectAllClassNames(nodeTypeClass, names);
 			// we accept the name of the object type (in lower case)
 			// (do this after collection to avoid breaking algorithm when
 			// classname and name is identical)
-			simpleNames.add(typeElement.getName().toLowerCase());
-			CACHED_NAMES_OF_KDOM_TYPE.put(typeElement, simpleNames);
+			names.add(typeElement.getName().toLowerCase());
+			CACHED_NAMES_OF_KDOM_TYPE.put(typeElement, names);
 		}
-		return simpleNames;
+		return names;
 	}
 
-	private void collectAllSimpleClassNames(Class<?> typeElement, Set<String> simpleNames) {
+	private void collectAllClassNames(Class<?> typeElement, Set<String> simpleNames) {
 		if (typeElement == null) return;
-		// adds the simple name in lower case
+		// adds the name and simple name in lower case
 		// and stop if it is already in
-		boolean hasAdded = simpleNames.add(typeElement.getSimpleName().toLowerCase());
+		boolean hasAdded = simpleNames.add(typeElement.getName().toLowerCase());
+		simpleNames.add(typeElement.getSimpleName().toLowerCase());
 		if (!hasAdded) return;
 		// recursive for super-class
-		collectAllSimpleClassNames(typeElement.getSuperclass(), simpleNames);
+		collectAllClassNames(typeElement.getSuperclass(), simpleNames);
 		// recursive for super-interfaces
 		for (Class<?> clazz : typeElement.getInterfaces()) {
-			collectAllSimpleClassNames(clazz, simpleNames);
+			collectAllClassNames(clazz, simpleNames);
 		}
 	}
 
