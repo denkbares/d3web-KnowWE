@@ -116,7 +116,7 @@ public class CIAction extends AbstractAction {
 		else if (task.equals("refreshBubble")) {
 			BuildResult build = dashboard.getLatestBuild();
 			Type overallResult = build.getOverallResult();
-			html = renderer.renderBuildStatus(overallResult, true);
+			html = renderer.renderBuildStatus(overallResult, true, "");
 		}
 		else if (task.equals("refreshBuildList")) {
 			String indexFromBackParam = context.getParameter("indexFromBack");

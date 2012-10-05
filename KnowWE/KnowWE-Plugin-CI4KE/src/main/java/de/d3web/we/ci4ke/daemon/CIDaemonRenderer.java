@@ -61,7 +61,7 @@ public class CIDaemonRenderer implements Renderer {
 			string.append(renderer.renderCurrentBuildStatus());
 		}
 		else {
-			string.append(renderer.renderBuildStatus(Type.ERROR, true));
+			string.append(renderer.renderBuildStatus(Type.ERROR, true, ""));
 		}
 		string.append("</a>");
 

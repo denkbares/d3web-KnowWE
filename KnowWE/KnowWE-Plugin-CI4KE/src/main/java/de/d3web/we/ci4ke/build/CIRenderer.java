@@ -111,7 +111,7 @@ public class CIRenderer {
 			sb.append("<tr class='" + cssClass + "'><td>");
 			// starting with a nice image...
 			Type buildResult = build.getOverallResult();
-			sb.append(renderBuildStatus(buildResult, false));
+			sb.append(renderBuildStatus(buildResult, false, ""));
 
 			sb.append("</td><td>");
 			sb.append("<td>");
@@ -170,7 +170,7 @@ public class CIRenderer {
 	public String renderCurrentBuildStatus() {
 		BuildResult build = dashboard.getLatestBuild();
 		if (build == null) return "";
-		return renderBuildStatus(build.getOverallResult(), true);
+		return renderBuildStatus(build.getOverallResult(), true, "");
 	}
 
 	/**
@@ -211,12 +211,14 @@ public class CIRenderer {
 		String name = result.getTestName();
 		// render bullet
 		Type type = result.getType();
-		String statusBlobImage = renderBuildStatus(type, false);
 
 		String showButtonID = "showr" + name + index;
 		String hideButtonID = "hidr" + name + index;
-		buffy.append("<span id='" + showButtonID + "'>" + statusBlobImage + "</span>");
-		buffy.append("<span id='" + hideButtonID + "'>" + statusBlobImage
+		buffy.append("<span id='" + showButtonID + "'>" + renderBuildStatus(type, false, "_plus")
+				+ "</span>");
+		// not visible at beginning
+		buffy.append("<span style='display:none;' id='" + hideButtonID + "'>"
+				+ renderBuildStatus(type, false, "_minus")
 				+ "</span>");
 
 		Test<?> test = TestManager.findTest(name);
@@ -243,13 +245,7 @@ public class CIRenderer {
 		// some js for collapse of message details
 		buffy.append("<script type='text/javascript'> " +
 
-		// onload hide content and hide-button
-				"jq$(window).ready(function() {" +
-					"jq$(\"#" + hideButtonID + "\").hide(0);" +
-					"jq$(\"#" + ciMessageID + "\").hide(0)" +
-				"});" +
-
-				// show
+		// show
 				"jq$(\"#" + showButtonID + "\").click(function() {" +
 						"jq$(\"#" + ciMessageID
 				+ "\").show(\"slow\", function() {"
@@ -276,7 +272,8 @@ public class CIRenderer {
 	private void renderMessage(StringBuffer buffy, TestResult result, int index) {
 		String messageText = generateMessageText(result);
 		if (!messageText.isEmpty()) {
-			buffy.append("<div id='ci-message" + result.getTestName() + index
+			// not visible at beginning
+			buffy.append("<div style='display:none;' id='ci-message" + result.getTestName() + index
 					+ "' class='ci-message'>");
 			buffy.append(messageText);
 			buffy.append("</div>");
@@ -373,7 +370,7 @@ public class CIRenderer {
 		buffy.append("</H4>");
 	}
 
-	public String renderBuildStatus(Type resultType, boolean checkRunning) {
+	public String renderBuildStatus(Type resultType, boolean checkRunning, String imageSuffix) {
 
 		boolean showRunning = checkRunning && CIUtils.buildRunning(dashboardName);
 
@@ -391,11 +388,12 @@ public class CIRenderer {
 		else {
 			switch (resultType) {
 			case SUCCESS:
-				imgBulb = String.format(imgBulb, "green.png", "Build successful!");
+				imgBulb = String.format(imgBulb, "green" + imageSuffix + ".png",
+						"Build successful!");
 			case FAILURE:
-				imgBulb = String.format(imgBulb, "red.png", "Build failed!");
+				imgBulb = String.format(imgBulb, "red" + imageSuffix + ".png", "Build failed!");
 			case ERROR:
-				imgBulb = String.format(imgBulb, "grey.png", "Build has errors!");
+				imgBulb = String.format(imgBulb, "grey" + imageSuffix + ".png", "Build has errors!");
 			}
 		}
 
