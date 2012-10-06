@@ -403,18 +403,12 @@ public class QuickInterviewRenderer {
 	}
 
 	private void renderTextAnswers(Question q, StringBuffer sb) {
-		String value = "";
 
 		// if answer has already been answered write value into the field
-		if (UndefinedValue.isNotUndefinedValue(session.getBlackboard().getValue(q))) {
-			Value answer = session.getBlackboard().getValue(q);
-
-			if (answer != null && answer instanceof Unknown) {
-				value = "";
-			}
-			else if (answer != null && answer instanceof TextValue) {
-				value = ((TextValue) answer).toString();
-			}
+		Value value = D3webUtils.getValueNonBlocking(session, q);
+		String valueString = "";
+		if (value instanceof TextValue) {
+			valueString = ((TextValue) value).toString();
 		}
 
 		String id = getID();
@@ -428,7 +422,7 @@ public class QuickInterviewRenderer {
 		// assemble the input field
 		sb.append("\n<input class='inputtextvalue'  style='display: inline;' id='input_" + id
 				+ "' type='text' "
-				+ "value='" + value + "' "
+				+ "value='" + valueString + "' "
 				+ "size='18' "
 				+ jscall + " />");
 		// "<div class='dateformatdesc'>()</div>");
@@ -471,11 +465,9 @@ public class QuickInterviewRenderer {
 
 			// if a value was already set, get the value and set corresponding
 			// css class
-			Value value = session.getBlackboard().getValue(q);
-
+			Value value = D3webUtils.getValueNonBlocking(session, q);
 			if (value != null && UndefinedValue.isNotUndefinedValue(value)
 					&& isAnsweredinCase(value, new ChoiceValue(choice))) {
-
 				cssclass = "answerClicked";
 			}
 
@@ -504,20 +496,14 @@ public class QuickInterviewRenderer {
 	 */
 	private void renderNumAnswers(Question q, StringBuffer sb) {
 
-		String value = "";
-
 		// if answer has already been answered write value into the field
-		Value answer = session.getBlackboard().getValue(q);
-		if (UndefinedValue.isNotUndefinedValue(answer)) {
-			if (answer != null && answer instanceof Unknown) {
-				value = "";
-			}
-			else if (answer != null && answer instanceof NumValue) {
-				value = answer.getValue().toString();
-			}
+		Value value = D3webUtils.getValueNonBlocking(session, q);
+		String valueString = "";
+		if (value instanceof NumValue) {
+			valueString = value.getValue().toString();
 		}
 
-		value = value.replaceAll("(?<=[\\.\\d]+?)0+$", "").replaceAll("\\.$", "");
+		valueString = valueString.replaceAll("(?<=[\\.\\d]+?)0+$", "").replaceAll("\\.$", "");
 
 		String id = getID();
 		String unit = "";
@@ -561,7 +547,7 @@ public class QuickInterviewRenderer {
 		// assemble the input field
 		sb.append("<input class='numinput' id='input_" + id
 				+ "' type='text' "
-				+ "value='" + value + "' "
+				+ "value='" + valueString + "' "
 				+ "size='7' "
 				+ jscall + " />");
 
@@ -570,7 +556,7 @@ public class QuickInterviewRenderer {
 
 		// sb.append("<input type='button' value='OK' class='num-ok' />");
 
-		if (Unknown.assignedTo(answer) || !suppressUnknown(q)) {
+		if (Unknown.assignedTo(value) || !suppressUnknown(q)) {
 			sb.append("<div class='separator'>");
 			// M.Ochlast: i added this (hidden) div to re-enable submitting of
 			// numValues by "clicking". This workaround is neccessary for KnowWE
@@ -600,22 +586,14 @@ public class QuickInterviewRenderer {
 	 */
 	private void renderDateAnswers(Question q, StringBuffer sb) {
 
-		String value = "";
-
 		// if answer has already been answered write value into the field
-		if (UndefinedValue.isNotUndefinedValue(session.getBlackboard().getValue(q))) {
-			Value answer = session.getBlackboard().getValue(q);
-
-			if (answer != null && answer instanceof Unknown) {
-				value = "";
-			}
-			else if (answer != null && answer instanceof DateValue) {
-				value = ((DateValue) answer).getDateString();
-			}
+		Value value = D3webUtils.getValueNonBlocking(session, q);
+		String valueString;
+		if (value instanceof DateValue) {
+			valueString = ((DateValue) value).getDateString();
 		}
-
-		if (value.equals("")) {
-			value = "yyyy-mm-dd-hh-mm-ss";
+		else {
+			valueString = "yyyy-mm-dd-hh-mm-ss";
 		}
 
 		String id = getID();
@@ -631,7 +609,7 @@ public class QuickInterviewRenderer {
 		// assemble the input field
 		sb.append("<input class='inputdate'  style='display: inline;' id='input_" + id
 				+ "' type='text' "
-				+ "value='" + value + "' "
+				+ "value='" + valueString + "' "
 				+ "size='18' "
 				+ jscall + " />");
 
@@ -678,8 +656,7 @@ public class QuickInterviewRenderer {
 						+ "choice:'" + Strings.encodeURL(choice.getName()) + "', "
 					+ "}\" ";
 
-			Value value = session.getBlackboard().getValue(q);
-
+			Value value = D3webUtils.getValueNonBlocking(session, q);
 			if (value != null && UndefinedValue.isNotUndefinedValue(value)
 					&& isAnsweredinCase(value, new ChoiceValue(choice))) {
 				cssclass = "answerMCClicked";
@@ -723,8 +700,9 @@ public class QuickInterviewRenderer {
 
 		// if unknown should neither be displayed, not is selected
 		// render no answer unknown
-		Value value = session.getBlackboard().getValue(q);
-		if (!Unknown.assignedTo(value) && suppressUnknown(q)) {
+		Value value = D3webUtils.getValueNonBlocking(session, q);
+		boolean isUnknown = Unknown.assignedTo(value);
+		if (!isUnknown && suppressUnknown(q)) {
 			return;
 		}
 
@@ -736,10 +714,10 @@ public class QuickInterviewRenderer {
 					+ "}\" ";
 		String cssclass = "answerunknown";
 
-		if (value != null && value.equals(Unknown.getInstance())) {
+		if (isUnknown) {
 			cssclass = "answerunknownClicked";
 		}
-		else if (value != null && !value.equals(Unknown.getInstance())) {
+		else if (value != null) {
 			cssclass = "answerunknown";
 		}
 		String spanid = q.getName() + "_" + Unknown.getInstance().getId();

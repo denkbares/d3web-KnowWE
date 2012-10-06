@@ -28,6 +28,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -38,8 +39,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.core.knowledge.ValueObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.Rating;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.records.SessionConversionFactory;
 import de.d3web.core.records.SessionRecord;
@@ -270,6 +275,112 @@ public class D3webUtils {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Returns the current value of a specific {@link ValueObject} within the
+	 * specified {@link Session}. If the value is currently being calculated,
+	 * the method immediately returns with "null" as value, instead of waiting
+	 * for the results of the current propagation.
+	 * 
+	 * @created 05.10.2012
+	 * @param session the session to read the value from
+	 * @param object the object to read the value for
+	 * @return the value of the value object
+	 */
+	public static Value getValueNonBlocking(Session session, ValueObject object) {
+		// variant 1: conservative
+		// only access values if we are not in a propagation. This is very
+		// secure to do, but shows no value at all, even if this value is
+		// not propagated at all
+		// if (session.getPropagationManager().isInPropagation()) return null;
+		// synchronized (session) {
+		// return session.getBlackboard().getValue((ValueObject) object);
+		// }
+
+		// variant 2: aggressive
+		// access the value without synchronization but catch the expected error
+		// if this access violates concurrency
+		try {
+			return session.getBlackboard().getValue(object);
+		}
+		catch (ConcurrentModificationException e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Returns the current value of a specific {@link Solution} within the
+	 * specified {@link Session}. If the value is currently being calculated,
+	 * the method immediately returns with "null" as value, instead of waiting
+	 * for the results of the current propagation.
+	 * 
+	 * @created 05.10.2012
+	 * @param session the session to read the value from
+	 * @param solution the object to read the value for
+	 * @return the value of the value object
+	 */
+	public static Rating getRatingNonBlocking(Session session, Solution solution) {
+		// variant 1: conservative
+		// only access values if we are not in a propagation. This is very
+		// secure to do, but shows no value at all, even if this value is
+		// not propagated at all
+		// if (session.getPropagationManager().isInPropagation()) return null;
+		// synchronized (session) {
+		// return session.getBlackboard().getRating(solution);
+		// }
+
+		// variant 2: aggressive
+		// access the value without synchronization but catch the expected error
+		// if this access violates concurrency
+		try {
+			return session.getBlackboard().getRating(solution);
+		}
+		catch (ConcurrentModificationException e) {
+			return null;
+		}
+
+	}
+
+	/**
+	 * Returns all {@link Solution} instances, that hold the specified
+	 * {@link Rating} in the specified session. If the value of any solution
+	 * currently is being calculated, the method immediately returns with "null"
+	 * instead of the list, not waiting for the results of the current
+	 * propagation.
+	 * 
+	 * @param session the session to read the current values from
+	 * @param state the Rating the diagnoses must have to be returned
+	 * @return a list of diagnoses in this case that have the state 'state' or
+	 *         null if any of these solutions is currently being calculated
+	 */
+	public static List<Solution> getSolutionsNonBlocking(Session session, Rating.State state) {
+		try {
+			return session.getBlackboard().getSolutions(state);
+		}
+		catch (ConcurrentModificationException e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Returns all {@link Question} instances, that have been answered (or
+	 * assigned with a value) in the specified session. If the value of any
+	 * solution currently is being calculated, the method immediately returns
+	 * with "null" instead of the list, not waiting for the results of the
+	 * current propagation.
+	 * 
+	 * @param session the session to read the current answers from
+	 * @return a list of diagnoses in this case that have the state 'state' or
+	 *         null if any of these solutions is currently being calculated
+	 */
+	public static List<Question> getAnsweredQuestionsNonBlocking(Session session) {
+		try {
+			return session.getBlackboard().getAnsweredQuestions();
+		}
+		catch (ConcurrentModificationException e) {
+			return null;
+		}
 	}
 
 	public static String getSessionPath(UserContext context) {

@@ -75,10 +75,13 @@ public class ValueTooltipRenderer implements Renderer {
 			KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(article);
 			Session session = provider.getSession(knowledgeBase);
 			if (namedObject instanceof ValueObject) {
-				Value value = session.getBlackboard().getValue((ValueObject) namedObject);
+				Value value = D3webUtils.getValueNonBlocking(session, (ValueObject) namedObject);
+				if (value == null) continue;
 				if (UndefinedValue.isUndefinedValue(value)) continue;
 				if (buffer.length() > 0) buffer.append('\n');
-				buffer.append("current value in '").append(knowledgeBase.getName()).append("': ");
+				String name = knowledgeBase.getName();
+				if (name == null) name = articleName;
+				buffer.append("current value in '").append(name).append("': ");
 				buffer.append(SolutionPanelUtils.formatValue(value, 2));
 			}
 		}

@@ -12,6 +12,7 @@ import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.taghandler.ObjectInfoTagHandler;
 import de.knowwe.core.utils.Strings;
 
@@ -80,10 +81,14 @@ public class SolutionPanelUtils {
 	}
 
 	public static String renderImage(Solution solution, Session session, StringBuilder content) {
-		Rating solutionRating = session.getBlackboard().getRating(solution);
-		String stateName = solutionRating.toString();
-
-		if (solutionRating.hasState(State.ESTABLISHED)) {
+		Rating solutionRating = D3webUtils.getRatingNonBlocking(session, solution);
+		String stateName = String.valueOf(solutionRating);
+		if (solutionRating == null) {
+			stateName = "<i style='color:grey'>value in calculation, please reload later</i>";
+			content.append(renderImage("KnowWEExtension/images/fsp_calculating.gif",
+					"value in calculation, please reload later"));
+		}
+		else if (solutionRating.hasState(State.ESTABLISHED)) {
 			content.append(renderImage("KnowWEExtension/images/fsp_established.gif", "Established"));
 		}
 		else if (solutionRating.hasState(State.SUGGESTED)) {
@@ -116,7 +121,7 @@ public class SolutionPanelUtils {
 		// render the abstraction question with value
 		buffer.append(question.getName()
 				+ " = "
-				+ formatValue(session.getBlackboard().getValue(question), digits));
+				+ formatValue(D3webUtils.getValueNonBlocking(session, question), digits));
 
 		// add the unit name for num question, if available
 		String unit = question.getInfoStore().getValue(MMInfo.UNIT);
@@ -137,8 +142,10 @@ public class SolutionPanelUtils {
 	 * @return A string representation of the specified value.
 	 */
 	public static String formatValue(Value value, int digits) {
-
-		if (value instanceof NumValue) {
+		if (value == null) {
+			return mask("<i style='color:grey'>value in calculation, please reload later</i>");
+		}
+		else if (value instanceof NumValue) {
 			Double numValue = (Double) value.getValue();
 			// check, if we need to round the value
 

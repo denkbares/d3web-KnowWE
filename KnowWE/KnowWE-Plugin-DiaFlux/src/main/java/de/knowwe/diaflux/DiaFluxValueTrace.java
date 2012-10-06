@@ -1,20 +1,20 @@
 /*
  * Copyright (C) 2012 University Wuerzburg, Computer Science VI
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.knowwe.diaflux;
 
@@ -42,7 +42,7 @@ import de.d3web.diaFlux.flow.FlowRun;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.flow.SnapshotNode;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
-
+import de.d3web.we.utils.D3webUtils;
 
 /**
  * This class traces the values the terminology objects of nodes had, when they
@@ -102,12 +102,11 @@ public class DiaFluxValueTrace implements SessionObject, SessionObjectSource<Dia
 	public Session getSession() {
 		return session;
 	}
-	
+
 	@Override
 	public DiaFluxValueTrace createSessionObject(Session session) {
 		return new DiaFluxValueTrace(session);
 	}
-
 
 	private static TerminologyObject getTermObject(Node node) {
 		if (node instanceof ActionNode) {
@@ -121,7 +120,7 @@ public class DiaFluxValueTrace implements SessionObject, SessionObjectSource<Dia
 		return null;
 	}
 
-	public void update() {
+	private void update() {
 		DiaFluxCaseObject caseObject = DiaFluxUtils.getDiaFluxCaseObject(session);
 		// we clear the current trace if the last snapshot is out-dated.
 		// we do not if the propagation time is still the same (so we are in
@@ -152,7 +151,6 @@ public class DiaFluxValueTrace implements SessionObject, SessionObjectSource<Dia
 		}
 	}
 
-
 	public Map<Node, Value> getTracedValues() {
 		return Collections.unmodifiableMap(tracedValues);
 	}
@@ -178,18 +176,20 @@ public class DiaFluxValueTrace implements SessionObject, SessionObjectSource<Dia
 		}
 
 		Value tracedValue = tracedValues.get(node);
-		Value value = session.getBlackboard().getValue((ValueObject) termObject);
-		String tooltip;
+		Value value = D3webUtils.getValueNonBlocking(session, (ValueObject) termObject);
+		String tooltip = "";
 		if (tracedValue == null) {
 			// Node has reference TermObject, but was not active during
 			// snapshot: show current value
-			tooltip = getValueString(termObject, value);
+			if (value != null) {
+				tooltip = getValueString(termObject, value);
+			}
 		}
 		else {
 			// Node was active: show that value
 			tooltip = getValueString(termObject, tracedValue);
 			// add current value, if not equal to value during snapshot
-			if (!tracedValue.equals(value)) {
+			if (value != null && !tracedValue.equals(value)) {
 				tooltip += " (Current: '" + value.toString() + "')";
 			}
 

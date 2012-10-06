@@ -100,7 +100,12 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		StringBuilder buffer = new StringBuilder();
 		if (ShowSolutionsType.shouldShowAbstractions(parentSection)) {
 			List<Question> abstractions = new ArrayList<Question>();
-			for (Question question : session.getBlackboard().getAnsweredQuestions()) {
+			List<Question> questions = D3webUtils.getAnsweredQuestionsNonBlocking(session);
+			if (questions == null) {
+				renderPropagationError(buffer);
+				return buffer;
+			}
+			for (Question question : questions) {
 				Boolean isAbstract = question.getInfoStore().getValue(
 						BasicProperties.ABSTRACTION_QUESTION);
 				if (isAbstract != null && isAbstract) {
@@ -125,6 +130,11 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		return buffer;
 	}
 
+	private void renderPropagationError(StringBuilder buffer) {
+		buffer.append(Strings.maskHTML(
+				"<i style='color:grey'>values in calculation, please reload later</i>\n"));
+	}
+
 	/**
 	 * Renders the derived solutions when panel opted for it.
 	 */
@@ -137,13 +147,29 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		// --- established solutions are presented by default and have to be
 		// --- opted out
 		if (ShowSolutionsType.shouldShowEstablished(parentSection)) {
-			allSolutions.addAll(session.getBlackboard().getSolutions(State.ESTABLISHED));
+			List<Solution> solutions =
+					D3webUtils.getSolutionsNonBlocking(session, State.ESTABLISHED);
+			if (solutions == null) {
+				renderPropagationError(content);
+				return content;
+			}
+			allSolutions.addAll(solutions);
 		}
 		if (ShowSolutionsType.shouldShowSuggested(parentSection)) {
-			allSolutions.addAll(session.getBlackboard().getSolutions(State.SUGGESTED));
+			List<Solution> solutions = D3webUtils.getSolutionsNonBlocking(session, State.SUGGESTED);
+			if (solutions == null) {
+				renderPropagationError(content);
+				return content;
+			}
+			allSolutions.addAll(solutions);
 		}
 		if (ShowSolutionsType.shouldShowExcluded(parentSection)) {
-			allSolutions.addAll(session.getBlackboard().getSolutions(State.EXCLUDED));
+			List<Solution> solutions = D3webUtils.getSolutionsNonBlocking(session, State.EXCLUDED);
+			if (solutions == null) {
+				renderPropagationError(content);
+				return content;
+			}
+			allSolutions.addAll(solutions);
 		}
 
 		// filter unwanted solutions
