@@ -1,21 +1,17 @@
 package de.d3web.we.kdom.abstractiontable;
 
 import de.d3web.core.inference.condition.CondDState;
-import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.knowledge.terminology.Rating;
+import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.we.kdom.condition.D3webCondition;
 import de.d3web.we.kdom.condition.SolutionStateType;
-import de.d3web.we.object.SolutionReference;
+import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.renderer.StyleRenderer;
-import de.knowwe.kdom.table.TableCellContent;
-import de.knowwe.kdom.table.TableUtils;
 
-public class SolutionStateCell extends D3webCondition<SolutionStateCell> {
+public class SolutionStateCell extends AbstractType {
 
 	public SolutionStateCell() {
 		SolutionStateType rating = new SolutionStateType();
@@ -27,22 +23,19 @@ public class SolutionStateCell extends D3webCondition<SolutionStateCell> {
 		this.setRenderer(renderer);
 	}
 
-	@Override
-	protected Condition createCondition(Article article, Section<SolutionStateCell> section) {
-		Section<TableCellContent> columnHeader = TableUtils.getColumnHeader(section);
-		Section<SolutionReference> sRef = Sections.findSuccessor(columnHeader,
-				SolutionReference.class);
-		Section<SolutionStateType> state = Sections.findSuccessor(section,
-				SolutionStateType.class);
-		if (sRef != null && state != null) {
-			Solution solution = sRef.get().getTermObject(article, sRef);
-			Rating.State solutionState = SolutionStateType.getSolutionState(state);
-			if (solution != null && solutionState != null) {
-				return new CondDState(solution, new Rating(solutionState));
+	public CondDState createCondDState(Article article, Solution solution, Section<SolutionStateCell> solutionStateCell) {
+		String state = solutionStateCell.getText().trim();
+		State solutionState = SolutionStateType.getSolutionState(state);
+		if (solutionState == null) {
+			if (solutionState == null) {
+				Messages.storeMessage(
+						article,
+						solutionStateCell,
+						this.getClass(),
+						Messages.error("No valid solution state found in '" + state + "'"));
+				return null;
 			}
 		}
-
-		return null;
+		return new CondDState(solution, solutionState);
 	}
-
 }

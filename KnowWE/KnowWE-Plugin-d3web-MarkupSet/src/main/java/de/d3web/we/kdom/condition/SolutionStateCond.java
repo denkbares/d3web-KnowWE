@@ -93,7 +93,7 @@ public class SolutionStateCond extends D3webCondition<SolutionStateCond> {
 				SolutionStateType.class);
 		if (sRef != null && state != null) {
 			Solution solution = sRef.get().getTermObject(article, sRef);
-			Rating.State solutionState = SolutionStateType.getSolutionState(state);
+			Rating.State solutionState = SolutionStateType.getSolutionState(state.getText());
 			if (solution != null && solutionState != null) {
 				return new CondDState(solution, new Rating(solutionState));
 			}

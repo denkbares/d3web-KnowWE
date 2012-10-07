@@ -18,14 +18,12 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
-import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.scoring.ActionHeuristicPS;
 import de.d3web.scoring.Score;
 import de.d3web.scoring.inference.PSMethodHeuristic;
-import de.d3web.we.kdom.condition.SolutionStateType;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.SolutionReference;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
@@ -154,19 +152,20 @@ public class LineHandler extends D3webSubtreeHandler<TableLine> {
 					Sections.cast(knowledgeSection, QuestionNumCell.class);
 			return createCondNum(article, questionNumCell);
 		}
-		else if (type instanceof SolutionStateType) {
-			Section<SolutionStateType> solutionStateCell =
-					Sections.cast(knowledgeSection, SolutionStateType.class);
+		else if (type instanceof SolutionStateCell) {
+			Section<SolutionStateCell> solutionStateCell =
+					Sections.cast(knowledgeSection, SolutionStateCell.class);
 			return createCondDState(article, solutionStateCell);
 		}
 		return null;
 	}
 
-	private Condition createCondDState(Article article, Section<SolutionStateType> solutionStateCell) {
-		Solution solution = getSolution(article, solutionStateCell);
-		State solutionState = SolutionStateType.getSolutionState(solutionStateCell);
-		if (solutionState == null) return null;
-		return new CondDState(solution, solutionState);
+	private CondEqual createCondEqual(Article article, Section<AnswerReferenceCell> answerReference) {
+		Question question = getQuestion(article, answerReference);
+		Choice choice = answerReference.get().getTermObject(article, answerReference);
+		if (choice == null) return null;
+		CondEqual cond = new CondEqual(question, new ChoiceValue(choice));
+		return cond;
 	}
 
 	private Condition createCondNum(Article article, Section<QuestionNumCell> questionNumCell) {
@@ -176,12 +175,11 @@ public class LineHandler extends D3webSubtreeHandler<TableLine> {
 		return condNum;
 	}
 
-	private CondEqual createCondEqual(Article article, Section<AnswerReferenceCell> answerReference) {
-		Question question = getQuestion(article, answerReference);
-		Choice choice = answerReference.get().getTermObject(article, answerReference);
-		if (choice == null) return null;
-		CondEqual cond = new CondEqual(question, new ChoiceValue(choice));
-		return cond;
+	private Condition createCondDState(Article article, Section<SolutionStateCell> solutionStateCell) {
+		Solution solution = getSolution(article, solutionStateCell);
+		CondDState condDState = solutionStateCell.get().createCondDState(article, solution,
+				solutionStateCell);
+		return condDState;
 	}
 
 	private Solution getSolution(Article article, Section<? extends Type> knowledgeSection) {

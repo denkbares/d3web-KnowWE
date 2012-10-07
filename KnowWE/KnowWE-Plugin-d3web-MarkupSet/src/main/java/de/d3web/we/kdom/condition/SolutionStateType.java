@@ -2,7 +2,6 @@ package de.d3web.we.kdom.condition;
 
 import de.d3web.core.knowledge.terminology.Rating;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
 
 /**
@@ -14,7 +13,6 @@ import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
  */
 public class SolutionStateType extends AbstractType {
 
-	
 	private static final String SOL_STATE_ESTABLISHED = "established";
 	private static final String SOL_STATE_ESTABLISHED_GER = "etabliert";
 	private static final String SOL_STATE_SUGGESTED = "suggested";
@@ -37,9 +35,9 @@ public class SolutionStateType extends AbstractType {
 		this.setRenderer(new DefaultTextRenderer());
 	}
 
-	public static Rating.State getSolutionState(Section<SolutionStateType> s) {
+	public static Rating.State getSolutionState(String state) {
 
-		String text = s.getText().trim();
+		String text = state.trim();
 
 		if (text.equalsIgnoreCase(SOL_STATE_ESTABLISHED)
 				|| text.equalsIgnoreCase(SOL_STATE_ESTABLISHED_GER)) {

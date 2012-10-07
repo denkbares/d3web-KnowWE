@@ -21,7 +21,7 @@ public class SolutionScoreCell extends AbstractType {
 		Score scoreForString = D3webUtils.getScoreForString(text.toUpperCase());
 		if (scoreForString == null) {
 			Messages.storeMessage(article, solutionScoreCell, this.getClass(),
-					Messages.error("Unable to parse '" + text + "'"));
+					Messages.error("No valid solution score found in '" + text + "'"));
 		}
 		else {
 			Messages.clearMessages(article, solutionScoreCell, this.getClass());
