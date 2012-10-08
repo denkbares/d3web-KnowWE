@@ -32,6 +32,7 @@ table.spreadsheet tr td.header {
 
 table.spreadsheet tr td {
 	border: 1px solid #CCC;
+	background: #F5FAFF;
 	padding: 0px;
 }
 

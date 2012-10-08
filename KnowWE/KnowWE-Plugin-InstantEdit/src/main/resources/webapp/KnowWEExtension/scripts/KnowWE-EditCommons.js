@@ -156,9 +156,7 @@ KNOWWE.editCommons = function() {
         },
         
         isSaveKey: function(event) {
-        	if ((!event.meta && event.control && !event.alt) 
-    				|| (!event.meta && !event.control && !event.shift && event.alt) 
-    				|| (event.meta && !event.control && !event.alt)) {
+        	if (_EC.isModifier(event)) {
     			if (event.code == 83) { // S
     				return true;					
     			}
@@ -167,13 +165,30 @@ KNOWWE.editCommons = function() {
         },
         
         isCancelKey: function(event) {
-        	if ((!event.meta && event.control && !event.alt) 
-    				|| (!event.meta && !event.control && event.alt) 
-    				|| (event.meta && !event.control && !event.alt)
-    				|| (!event.meta && event.control && event.alt)) {
+        	if (_EC.isModifier(event)) {
     			if (event.code == 81 || event.code == 27) { // Q or ESC
     				return true;	
     			}
+        	}
+        	return false;
+        },
+        
+        isModifier: function(event) {
+         	event = new Event(event);
+        	if ((!event.meta && event.control && !event.alt) 
+    				|| (!event.meta && !event.control && event.alt) 
+    				|| (event.meta && !event.control && !event.alt)) {
+    			return true;
+        	}
+        	return false;
+        },
+        
+        isDoubleModifier: function(event) {
+         	event = new Event(event);
+        	if ((!event.meta && event.control && event.alt) 
+    				|| (event.meta && !event.control && event.alt) 
+    				|| (event.meta && event.control && !event.alt)) {
+        		return true;
         	}
         	return false;
         },

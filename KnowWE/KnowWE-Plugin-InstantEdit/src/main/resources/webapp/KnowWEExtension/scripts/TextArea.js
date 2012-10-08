@@ -37,19 +37,7 @@ TextArea.replaceSelection = function(a, g) {
 TextArea.prototype.handleKeyDown = function(event) {
 	event = new Event(event);
 	var area = this.area;
-	if ((!event.meta && event.control && !event.alt) 
-			|| (!event.meta && !event.control && event.alt) 
-			|| (event.meta && !event.control && !event.alt)) {
-//			if (event.code == 83) { // S
-//				event.stop();
-//				this.onSave();
-//				return;					
-//			}
-//			if (event.code == 81 || event.code == 27) { // Q or ESC
-//				event.stop();
-//				this.onCancel();
-//				return;	
-//			}
+	if (_EC.isModifier(event)) {
 		if (event.code == 89 || (event.code == 90 && event.shift)) { // Y
 			event.stop();
 			this.redo();
