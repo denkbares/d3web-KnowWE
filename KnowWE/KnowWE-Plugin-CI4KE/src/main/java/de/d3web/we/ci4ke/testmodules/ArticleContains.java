@@ -31,6 +31,7 @@ import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.Strings;
 
 /**
  * This test can search articles (specified by a regexp pattern) for a keyword.
@@ -74,9 +75,11 @@ public class ArticleContains extends AbstractTest<Article> {
 		// If at least one article was found, this test is FAILED
 		int count = namesOfArticlesWhichContainKeyword.size();
 		if (count > 0) {
-			String message = "<b>Forbidden text found in " + count + " articles:</b>\n" +
-					"<ul><li>" + de.knowwe.core.utils.Strings.concat("</li><li>",
-							namesOfArticlesWhichContainKeyword) + "</li></ul>";
+			String message = Strings.maskHTML("<b>") + "Forbidden text found in " + count
+					+ " articles:" + Strings.maskHTML("</b>\n" +
+							"<ul><li>")
+					+ de.knowwe.core.utils.Strings.concat(Strings.maskHTML("</li><li>"),
+							namesOfArticlesWhichContainKeyword) + Strings.maskHTML("</li></ul>");
 			return new Message(Message.Type.FAILURE, message);
 		}
 		else {

@@ -28,6 +28,7 @@ import de.d3web.testing.Utils;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.report.Message.Type;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.Strings;
 
 /**
  * This tests checks, if
@@ -56,18 +57,19 @@ public class ArticleHasErrors extends AbstractTest<Article> {
 
 		Utils.checkInterrupt();
 
-		buffy.append("<a href=\"Wiki.jsp?page=" + monitoredArticleTitle + "\"> "
-				+ monitoredArticleTitle + "</a>:\n");
-		buffy.append("<ul>");
+		buffy.append(Strings.maskHTML("<a href=\"Wiki.jsp?page=" + monitoredArticleTitle + "\"> "
+				+ monitoredArticleTitle + Strings.maskHTML("</a>:\n")));
+		buffy.append(Strings.maskHTML("<ul>"));
 		for (de.knowwe.core.report.Message message : messages) {
 			// This finds only messages, that are explicitly stored
 			// as Message.ERROR, because the Type Message.UNKNOWN_ERROR
 			// is not public!
 			hasError = true;
 			// buffy.append("Error on monitored article: ");
-			buffy.append("<li> " + message.getVerbalization() + "</li>");
+			buffy.append(Strings.maskHTML("<li> ") + message.getVerbalization()
+					+ Strings.maskHTML("</li>"));
 		}
-		buffy.append("</ul>");
+		buffy.append(Strings.maskHTML("</ul>"));
 		// Utils.slowDowntest(this.getClass(), 10000, true);
 		if (hasError) {
 			return new Message(

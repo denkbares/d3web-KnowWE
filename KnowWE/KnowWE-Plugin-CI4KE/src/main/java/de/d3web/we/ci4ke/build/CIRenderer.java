@@ -246,7 +246,7 @@ public class CIRenderer {
 		// some js for collapse of message details
 		buffy.append(Strings.maskHTML("<script> " +
 
-				// show
+		// show
 				"jq$(\"#" + showButtonID + "\").click(function() {" +
 				"jq$(\"#" + ciMessageID
 				+ "\").show(\"slow\", function() {"
@@ -305,8 +305,8 @@ public class CIRenderer {
 				String text = renderMessage(message);
 				Test<?> test = TestManager.findTest(result.getTestName());
 				Class<?> testObjectClass = test.getTestObjectClass();
-				String renderedTestObjectName = renderObjectName(testObjectName,
-						testObjectClass);
+				String renderedTestObjectName = Strings.maskHTML(renderObjectName(testObjectName,
+						testObjectClass));
 				messageText.append(messageType.toString() + ": " + text +
 						" (test object: " + renderedTestObjectName + ")\n");
 			}
