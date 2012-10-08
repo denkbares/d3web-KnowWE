@@ -262,12 +262,13 @@ KNOWWE.plugin.ci4ke = function() {
 		 * build details panel on the right correspondingly.
 		 * 
 		 */
-		refreshBuildList : function(dashboardName, indexFromBack, numberOfBuilds) {
+		refreshBuildList : function(dashboardName, clickedIndex, indexFromBack, numberOfBuilds) {
 		
 			var params = {
 				action : 'CIAction',
 				task : 'refreshBuildList',
 				name : dashboardName,
+				nr: clickedIndex,
 			}
 		
 			if (indexFromBack != null) {

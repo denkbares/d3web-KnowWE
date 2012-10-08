@@ -118,7 +118,12 @@ public class CIRenderer {
 
 			sb.append(Strings.maskHTML("<a onclick=\"_CI.refreshBuildDetails('"
 					+ dashboardNameEncoded + "','"
-					+ buildNr + "','" + indexFromBack + "');\">"));
+					+ buildNr + "','" + indexFromBack + "');_CI.refreshBuildList('"
+					+ dashboardNameEncoded + "', " + buildNr + ",'"
+					+ indexFromBack + "','" + numberOfBuilds + "');\">"));
+
+			// _CI.refreshBuildList('"+ dashboardNameEncoded + "', " + buildNr +
+			// ");
 
 			// actual shown content:
 			sb.append("#" + buildNr);
@@ -137,7 +142,7 @@ public class CIRenderer {
 		// wenn man noch weiter zurückblättern kann, rendere einen Button
 		if (latestDisplayedBuildNumber - numberOfBuilds > 0) {
 			String buttonLeft = "<button onclick=\"_CI.refreshBuildList('"
-					+ dashboardNameEncoded + "','"
+					+ dashboardNameEncoded + "', -1 ,'"
 					+ (latestDisplayedBuildNumber - numberOfBuilds)
 					+ "','" + numberOfBuilds + "');\" style=\"margin-top: 4px; float: left;\">"
 					+ "<img src=\"KnowWEExtension/ci4ke/images/16x16/left.png\" "
@@ -149,7 +154,7 @@ public class CIRenderer {
 		// wenn man noch weiter vorblättern kann, rendere einen Button
 		if (latestDisplayedBuildNumber < latestBuildNumber) {
 			String buttonRight = "<button onclick=\"_CI.refreshBuildList('"
-					+ dashboardNameEncoded + "','"
+					+ dashboardNameEncoded + "', -1 ,'"
 					+ (latestDisplayedBuildNumber + numberOfBuilds)
 					+ "','" + numberOfBuilds
 					+ "');\" style=\"margin-top: 4px; float: right;\">"
