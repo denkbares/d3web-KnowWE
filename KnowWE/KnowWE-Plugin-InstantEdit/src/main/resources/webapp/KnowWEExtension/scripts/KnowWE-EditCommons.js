@@ -157,7 +157,7 @@ KNOWWE.editCommons = function() {
         
         isSaveKey: function(event) {
         	if ((!event.meta && event.control && !event.alt) 
-    				|| (!event.meta && !event.control && event.alt) 
+    				|| (!event.meta && !event.control && !event.shift && event.alt) 
     				|| (event.meta && !event.control && !event.alt)) {
     			if (event.code == 83) { // S
     				return true;					
