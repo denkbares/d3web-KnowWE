@@ -22,6 +22,8 @@ package de.d3web.we.ci4ke.action;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message.Type;
@@ -64,7 +66,7 @@ public class CIAction extends AbstractAction {
 				selectedBuildNumber = Integer.parseInt(context.getParameter("nr"));
 			}
 			catch (NumberFormatException e) {
-				e.printStackTrace();
+				Logger.getLogger(this.getClass().getName()).log(Level.WARNING, e.toString());
 			}
 		}
 		if (selectedBuildNumber < 1) {
