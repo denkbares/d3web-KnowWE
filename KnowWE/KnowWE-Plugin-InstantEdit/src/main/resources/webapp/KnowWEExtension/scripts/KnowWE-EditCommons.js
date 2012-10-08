@@ -185,9 +185,12 @@ KNOWWE.editCommons = function() {
         
         isDoubleModifier: function(event) {
          	event = new Event(event);
-        	if ((!event.meta && event.control && event.alt) 
-    				|| (event.meta && !event.control && event.alt) 
-    				|| (event.meta && event.control && !event.alt)) {
+         	var mods = 0;
+         	if (event.meta) mods++;
+         	if (event.control) mods++;
+         	if (event.alt) mods++;
+         	if (event.shift) mods++;
+        	if (mods == 2) {
         		return true;
         	}
         	return false;
