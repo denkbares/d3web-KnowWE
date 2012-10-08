@@ -24,6 +24,7 @@ import de.d3web.core.io.progress.ProgressListenerManager;
 import de.d3web.we.ci4ke.util.CIUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.utils.Strings;
 
 public class CIStopBuildAction extends AbstractAction {
 
@@ -31,7 +32,7 @@ public class CIStopBuildAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		// System.out.println("stop event");
 		String dashboardName = context.getParameter("name");
-		CIUtils.deregisterAndTerminateBuildExecutor(dashboardName);
+		CIUtils.deregisterAndTerminateBuildExecutor(Strings.decodeURL(dashboardName));
 		ProgressListenerManager.getInstance().removeProgressListener(dashboardName);
 	}
 
