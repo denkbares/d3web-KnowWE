@@ -189,12 +189,11 @@ KNOWWE.plugin.ci4ke = function() {
 						var percent = JSON.parse(this.responseText).progress;
 						var message = JSON.parse(this.responseText).message;
 		
-						var progressValue = jq$("#" + dashboardName + "_progress-value");
-						if (progressValue)
-							progressValue.text(percent + " %");
-						var progressText = jq$("#" + dashboardName + "_progress-text");
-						if (progressText)
-							progressText.text(" " + message);
+						var pv = document.getElementById(dashboardName + "_progress-value");
+						if(pv) pv.innerHTML = percent + " %";
+						var pt = document.getElementById(dashboardName + "_progress-text");
+						if(pt) pt.innerHTML = message;
+						
 						if (message != 'Finished') {
 							jq$('[name="' + dashboardName +'"]').find('.ci-progress-info').show();
 							setTimeout(function() {
