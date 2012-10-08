@@ -150,10 +150,16 @@ KNOWWE.plugin.ci4ke = function() {
 				loader : true,
 				response : {
 					fn : function() {
-						//window.location.reload();
 						_CI.refreshBuildProgress(dashboardName);
 						refreshCIDeamonBubble(dashboardName);
 						_CI.refreshBuildProgressDeamon(dashboardName);
+						
+						// make not-up-to-date warning disappear
+						jq$('.ci-title').each(function() {
+							if(jq$(this).attr('name') == dashboardName) {
+								jq$(this).find('.warning').hide();
+							}
+						});
 					},
 					onError : onErrorBehavior,
 				}
