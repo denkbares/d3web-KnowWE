@@ -132,8 +132,8 @@ public class CIAction extends AbstractAction {
 
 		// ensure jspwiki markup is rendered in similar way as on full page
 		// reload
-		html = Environment.getInstance().getWikiConnector().renderWikiSyntax(
-				Strings.maskHTML(html), context.getRequest());
+		html = Environment.getInstance().getWikiConnector().renderWikiSyntax(html,
+				context.getRequest());
 		html = Strings.unmaskHTML(html);
 
 		context.setContentType("text/html; charset=UTF-8");
