@@ -194,7 +194,7 @@ public class CIRenderer {
 
 			int index = 0;
 			for (TestResult result : resultsSorted) {
-				appendTestResult(buffy, result, index);
+				appendTestResult(buffy, result, index, dashboardNameEncoded);
 				index++;
 			}
 		}
@@ -205,15 +205,19 @@ public class CIRenderer {
 		return buffy.toString();
 	}
 
-	private void appendTestResult(StringBuffer buffy, TestResult result, int index) {
+	private void appendTestResult(StringBuffer buffy, TestResult result, int index, String dashboardName) {
+
+		// ruling out special characters (which are causing problems)
+		dashboardName = Integer.toString(dashboardName.hashCode());
+
 		buffy.append(Strings.maskHTML("<div class='ci-collapsible-box'>"));
 
 		String name = result.getTestName();
 		// render bullet
 		Type type = result.getType();
 
-		String showButtonID = "show" + name + index;
-		String hideButtonID = "hide" + name + index;
+		String showButtonID = "show" + name + index + dashboardName;
+		String hideButtonID = "hide" + name + index + dashboardName;
 		buffy.append(Strings.maskHTML("<span id='" + showButtonID + "'>"
 				+ renderBuildStatus(type, false, "_plus")
 				+ "</span>"));
@@ -241,7 +245,7 @@ public class CIRenderer {
 		}
 		buffy.append(Strings.maskHTML("</span>"));
 
-		String ciMessageID = "ci-message" + name + index;
+		String ciMessageID = "ci-message" + name + index + dashboardName;
 
 		// some js for collapse of message details
 		buffy.append(Strings.maskHTML("<script> " +
@@ -265,17 +269,17 @@ public class CIRenderer {
 				"</script>"));
 
 		// render test-message (if exists)
-		renderMessage(buffy, result, index);
+		renderMessage(buffy, result, index, dashboardName);
 
 		buffy.append(Strings.maskHTML("</div>\n"));
 	}
 
-	private void renderMessage(StringBuffer buffy, TestResult result, int index) {
+	private void renderMessage(StringBuffer buffy, TestResult result, int index, String dashboardName) {
 		String messageText = generateMessageText(result);
 		if (!messageText.isEmpty()) {
 			// not visible at beginning
 			buffy.append(Strings.maskHTML("<div style='display:none;' id='ci-message"
-					+ result.getTestName() + index
+					+ result.getTestName() + index + dashboardName
 					+ "' class='ci-message'>"));
 			buffy.append(messageText);
 			buffy.append(Strings.maskHTML("</div>"));
