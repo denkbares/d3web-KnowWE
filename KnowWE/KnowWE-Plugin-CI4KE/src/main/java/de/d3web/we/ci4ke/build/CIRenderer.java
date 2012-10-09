@@ -313,7 +313,14 @@ public class CIRenderer {
 			else {
 				String text = renderMessage(message);
 				Test<?> test = TestManager.findTest(result.getTestName());
-				Class<?> testObjectClass = test.getTestObjectClass();
+				Class<?> testObjectClass = null;
+				if (test != null) {
+					testObjectClass = test.getTestObjectClass();
+				}
+				else {
+					Logger.getLogger(this.getClass().getName()).log(
+							Level.WARNING, "No class found for test: " + result.getTestName());
+				}
 				String renderedTestObjectName = Strings.maskHTML(renderObjectName(testObjectName,
 						testObjectClass));
 				messageText.append(messageType.toString() + ": " + text +
@@ -350,6 +357,10 @@ public class CIRenderer {
 	}
 
 	public String renderObjectName(String objectName, Class<?> objectClass) {
+		if (objectClass == null) {
+			// the case on old build version with outdated test names
+			return objectName;
+		}
 		ObjectNameRenderer objectRenderer = ObjectNameRendererManager.getObjectNameRenderer(objectClass);
 		if (objectRenderer == null) {
 			Logger.getLogger(this.getClass().getName()).log(
@@ -442,6 +453,7 @@ public class CIRenderer {
 		string.append(Strings.maskHTML("<span class='ci-progess-text' id='"
 				+ dashboardNameEncoded + "_progress-text'>Build running...</span>"));
 		string.append(Strings.maskHTML("</span>"));
+
 	}
 
 	private void appendAbortButton(StringBuilder string) {
