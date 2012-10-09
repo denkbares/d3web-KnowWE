@@ -267,7 +267,10 @@ KNOWWE.plugin.ci4ke = function() {
 				action : 'CIAction',
 				task : 'refreshBuildList',
 				name : dashboardName,
-				nr: clickedIndex,
+			}
+			
+			if (clickedIndex != null) {
+				params["nr"] = clickedIndex;
 			}
 		
 			if (indexFromBack != null) {

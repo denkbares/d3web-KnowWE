@@ -245,7 +245,7 @@ public class CIRenderer {
 		String[] config = result.getConfiguration();
 		if (config != null && !(config.length == 0)) {
 			buffy.append(Strings.maskHTML("<span class='ci-configuration'>"));
-			buffy.append(TestParser.concatParameters(config));
+			buffy.append(Strings.maskJSPWikiMarkup(TestParser.concatParameters(config)));
 			buffy.append(Strings.maskHTML("</span>"));
 		}
 		buffy.append(Strings.maskHTML("</span>"));
@@ -255,7 +255,7 @@ public class CIRenderer {
 		// some js for collapse of message details
 		buffy.append(Strings.maskHTML("<script> " +
 
-		// show
+				// show
 				"jq$(\"#" + showButtonID + "\").click(function() {" +
 				"jq$(\"#" + ciMessageID
 				+ "\").show(\"slow\", function() {"

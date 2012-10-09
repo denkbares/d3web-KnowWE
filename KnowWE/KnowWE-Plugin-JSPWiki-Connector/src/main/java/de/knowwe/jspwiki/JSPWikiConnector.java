@@ -508,7 +508,7 @@ public class JSPWikiConnector implements WikiConnector {
 	public WikiAttachment storeAttachment(String title, String filename, String user, InputStream stream) throws IOException {
 		try {
 			boolean wasLocked = isArticleLocked(title);
-			if (!wasLocked) lockArticle(title, "WIKI-ENGINE");
+			if (!wasLocked) lockArticle(title, user);
 			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
 
 			Attachment attachment = new Attachment(engine, title, filename);
