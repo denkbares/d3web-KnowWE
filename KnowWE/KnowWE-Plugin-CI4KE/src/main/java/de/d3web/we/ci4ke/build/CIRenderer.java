@@ -255,10 +255,10 @@ public class CIRenderer {
 		// some js for collapse of message details
 		buffy.append(Strings.maskHTML("<script> " +
 
-				// show
+		// show
 				"jq$(\"#" + showButtonID + "\").click(function() {" +
 				"jq$(\"#" + ciMessageID
-				+ "\").show(\"slow\", function() {"
+				+ "\").show(\"fast\", function() {"
 				+ "jq$(\"#" + showButtonID + "\").hide(0);" +
 				"jq$(\"#" + hideButtonID + "\").show(0);" +
 				" });" +
@@ -266,7 +266,7 @@ public class CIRenderer {
 
 				// hide
 				"jq$(\"#" + hideButtonID + "\").click(function() {" +
-				"jq$(\"#" + ciMessageID + "\").hide(\"slow\", function() {" +
+				"jq$(\"#" + ciMessageID + "\").hide(\"fast\", function() {" +
 				"jq$(\"#" + hideButtonID + "\").hide(0);" +
 				"jq$(\"#" + showButtonID + "\").show(0);" +
 				" });" +
