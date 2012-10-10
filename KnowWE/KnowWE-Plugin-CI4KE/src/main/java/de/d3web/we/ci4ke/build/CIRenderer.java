@@ -191,14 +191,8 @@ public class CIRenderer {
 		if (build != null) {
 			apppendBuildHeadline(build, buffy);
 
-			// sorting results for stable rendering
-			List<TestResult> results = build.getResults();
-			List<TestResult> resultsSorted = new ArrayList<TestResult>();
-			resultsSorted.addAll(results);
-			Collections.sort(resultsSorted);
-
 			int index = 0;
-			for (TestResult result : resultsSorted) {
+			for (TestResult result : build.getResults()) {
 				appendTestResult(buffy, result, index, dashboardNameEncoded);
 				index++;
 			}
