@@ -93,7 +93,7 @@ public class CIDashboardType extends DefaultMarkupType {
 
 			CIBuildTriggers trigger = null;
 
-			Pattern pattern = Pattern.compile("(?:\\w+|\".+?\")");
+			Pattern pattern = Pattern.compile("(?:[^\\s]+|\".+?\")");
 
 			Set<String> monitoredArticles = new HashSet<String>();
 			Matcher matcher = pattern.matcher(triggerString);

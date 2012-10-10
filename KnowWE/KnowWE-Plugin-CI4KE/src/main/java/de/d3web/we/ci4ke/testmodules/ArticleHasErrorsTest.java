@@ -43,8 +43,6 @@ public class ArticleHasErrorsTest extends AbstractTest<Article> {
 		boolean hasError = false;
 		StringBuffer buffy = new StringBuffer();
 
-		String monitoredArticleTitle = moni.getTitle();
-
 		Collection<de.knowwe.core.report.Message> messages = new LinkedList<de.knowwe.core.report.Message>();
 		Type[] typeArray = new de.knowwe.core.report.Message.Type[] { de.knowwe.core.report.Message.Type.ERROR };
 		Map<String, Collection<de.knowwe.core.report.Message>> allMessagesMap =
