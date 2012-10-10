@@ -336,8 +336,8 @@ public class CIRenderer {
 		String[] replacements = new String[objects.size()];
 		int i = 0;
 		for (MessageObject object : objects) {
-			String renderedObjectName = renderObjectName(object.getObjectName(),
-					object.geObjectClass());
+			String renderedObjectName = Strings.maskHTML(renderObjectName(object.getObjectName(),
+					object.geObjectClass()));
 			targets[i] = object.getObjectName();
 			replacements[i] = renderedObjectName;
 			i++;
