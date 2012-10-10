@@ -32,6 +32,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.Strings;
 
 /**
  * A test that checks all term identifiers used in an article against a
@@ -57,7 +58,8 @@ public class TermnameConventionTest extends AbstractTest<Article> {
 		Section<Article> rootSection = testObject.getRootSection();
 		List<Section<SimpleTerm>> terms = Sections.findSuccessorsOfType(rootSection,
 				SimpleTerm.class);
-		Set<String> invalidTerms = new HashSet<String>(); // using set to filter duplicates
+		Set<String> invalidTerms = new HashSet<String>(); // using set to filter
+															// duplicates
 		for (Section<SimpleTerm> section : terms) {
 			String termName = section.get().getTermName(section);
 			if (!pattern.matcher(termName).matches()) {
@@ -71,9 +73,10 @@ public class TermnameConventionTest extends AbstractTest<Article> {
 			for (String string : invalidTerms) {
 				result += "* " + string + "\n";
 			}
-			return new Message(Message.Type.FAILURE,
+			return new Message(
+					Message.Type.FAILURE,
 					"The following terms do not comply to the specified naming convention pattern ("
-							+ args[0] + "):\n" + result);
+							+ Strings.maskJSPWikiMarkup(args[0]) + "):\n" + result);
 		}
 		return new Message(Message.Type.SUCCESS);
 	}
