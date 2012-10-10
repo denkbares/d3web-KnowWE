@@ -41,9 +41,9 @@ import de.knowwe.core.kdom.parsing.Sections;
  * @author jochenreutelshofer
  * @created 08.08.2012
  */
-public class TermnameConvention extends AbstractTest<Article> {
+public class TermnameConventionTest extends AbstractTest<Article> {
 
-	public TermnameConvention() {
+	public TermnameConventionTest() {
 		this.addParameter(
 				"Naming convention pattern",
 				Type.Regex,

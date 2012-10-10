@@ -21,8 +21,6 @@
 package de.d3web.we.ci4ke.testmodules;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
@@ -31,7 +29,6 @@ import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.utils.Strings;
 
 /**
  * This test can search articles (specified by a regexp pattern) for a keyword.
@@ -39,11 +36,11 @@ import de.knowwe.core.utils.Strings;
  * @author Marc-Oliver Ochlast/ Jochen Reutelshoefer (denkbares GmbH)
  * @created 26.11.2010
  */
-public class ArticleContains extends AbstractTest<Article> {
+public class ArticleContainsTest extends AbstractTest<Article> {
 
 	private static final String SEARCH_STRING_DESCRIPTION = "Specifies the string or pattern (regex) that will be searched. Any found occurrence within the test object will be considered as test failure.";
 
-	public ArticleContains() {
+	public ArticleContainsTest() {
 		this.addParameter("SearchString", TestParameter.Type.Regex, TestParameter.Mode.Mandatory,
 				SEARCH_STRING_DESCRIPTION);
 	}
@@ -52,34 +49,23 @@ public class ArticleContains extends AbstractTest<Article> {
 	public Message execute(Article article, String[] args, String[]... ignores) throws InterruptedException {
 
 		String searchForKeyword = args[0];
-
-		List<String> namesOfArticlesWhichContainKeyword = new LinkedList<String>();
+		boolean contains = false;
 
 		if (article.getRootSection().getText().contains(searchForKeyword)) {
 			// exclude findings from the CIDashboard because it will always
-			// contain the seached string, because it is defined there.
+			// contain the searched string, because it is defined there.
 			Collection<Section<?>> smallestSectionsContaining = Sections.findSmallestSectionsContaining(
 					article.getRootSection(), searchForKeyword);
-			boolean contains = false;
 			for (Section<?> containingSection : smallestSectionsContaining) {
 				if (Sections.findAncestorOfType(containingSection, CIDashboardType.class) == null) {
 					contains = true;
 					break;
 				}
 			}
-			if (contains) {
-				namesOfArticlesWhichContainKeyword.add(article.getTitle());
-			}
 		}
 		// Utils.slowDowntest(this.getClass(), 250, true);
-		// If at least one article was found, this test is FAILED
-		int count = namesOfArticlesWhichContainKeyword.size();
-		if (count > 0) {
-			String message = Strings.maskHTML("<b>") + "Forbidden text found in " + count
-					+ " articles:" + Strings.maskHTML("</b>\n" +
-							"<ul><li>")
-					+ de.knowwe.core.utils.Strings.concat(Strings.maskHTML("</li><li>"),
-							namesOfArticlesWhichContainKeyword) + Strings.maskHTML("</li></ul>");
+		if (contains) {
+			String message = "Forbidden text found in article.";
 			return new Message(Message.Type.FAILURE, message);
 		}
 		else {

@@ -28,7 +28,6 @@ import de.d3web.testing.Utils;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.report.Message.Type;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.Strings;
 
 /**
  * This tests checks, if
@@ -36,7 +35,7 @@ import de.knowwe.core.utils.Strings;
  * @author Marc-Oliver Ochlast
  * @created 29.05.2010
  */
-public class ArticleHasErrors extends AbstractTest<Article> {
+public class ArticleHasErrorsTest extends AbstractTest<Article> {
 
 	@Override
 	public Message execute(Article moni, String[] args2, String[]... ignores) throws InterruptedException {
@@ -57,19 +56,16 @@ public class ArticleHasErrors extends AbstractTest<Article> {
 
 		Utils.checkInterrupt();
 
-		buffy.append(Strings.maskHTML("<a href=\"Wiki.jsp?page=" + monitoredArticleTitle + "\"> "
-				+ monitoredArticleTitle + Strings.maskHTML("</a>:\n")));
-		buffy.append(Strings.maskHTML("<ul>"));
+		buffy.append(" errors found:");
 		for (de.knowwe.core.report.Message message : messages) {
 			// This finds only messages, that are explicitly stored
 			// as Message.ERROR, because the Type Message.UNKNOWN_ERROR
 			// is not public!
 			hasError = true;
 			// buffy.append("Error on monitored article: ");
-			buffy.append(Strings.maskHTML("<li> ") + message.getVerbalization()
-					+ Strings.maskHTML("</li>"));
+			buffy.append("\n* " + message.getVerbalization()
+					);
 		}
-		buffy.append(Strings.maskHTML("</ul>"));
 		// Utils.slowDowntest(this.getClass(), 10000, true);
 		if (hasError) {
 			return new Message(

@@ -323,8 +323,8 @@ public class CIRenderer {
 				}
 				String renderedTestObjectName = Strings.maskHTML(renderObjectName(testObjectName,
 						testObjectClass));
-				messageText.append(messageType.toString() + ": " + text +
-						" (test object: " + renderedTestObjectName + ")\n");
+				messageText.append("__" + messageType.toString() + "__: " + text +
+						"\n (test object: " + renderedTestObjectName + ")\n");
 			}
 		}
 		messageText.append(Strings.maskHTML("<span"
