@@ -210,6 +210,7 @@
 		<module>KnowWE-Plugin-InstantEdit</module>
 		<module>KnowWE-Plugin-TestCases</module>
 		<module>KnowWE-Plugin-Table</module>
+		<module>KnowWE-Plugin-JSPWiki-MarkupSet</module>
 	</modules>
 	<repositories>
 		<repository>

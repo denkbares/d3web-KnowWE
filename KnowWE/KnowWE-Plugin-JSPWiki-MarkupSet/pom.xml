@@ -1,0 +1,32 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>Research</artifactId>
+		<groupId>de.uniwue.d3web</groupId>
+		<version>0.2-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
+	<groupId>de.uniwue.d3web</groupId>
+	<version>0.2-SNAPSHOT</version>
+	<name>KnowWE-Plugin: JSPWiki-MarkupSet</name>
+	<description>Contains the JSPWiki Markups and handles their correct instantiation</description>
+	<dependencies>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-core</artifactId>
+			<version>0.2-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>6.0.20</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+</project>

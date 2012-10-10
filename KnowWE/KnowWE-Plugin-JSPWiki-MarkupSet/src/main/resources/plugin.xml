@@ -1,0 +1,76 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-JSPWiki-MarkupSet" version="0.1">
+
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+	</requires>
+
+	<!-- <runtime> <library id="" path="." type="code"> <export prefix="*" /> 
+		</library> <library id="webapp" path="webapp/" type="resources"> <export 
+		prefix="*" /> </library> </runtime> -->
+	
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="SectionType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.SectionType" />
+		<parameter id="name" value="SectionType" />
+		<parameter id="description" value="Represents a SectionType in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="2" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="SectionType2">
+		<parameter id="class" value="de.knowwe.jspwiki.types.SectionType2" />
+		<parameter id="name" value="SectionType2" />
+		<parameter id="description" value="Represents a SectionType2 in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="2.1" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="SectionType1">
+		<parameter id="class" value="de.knowwe.jspwiki.types.SectionType1" />
+		<parameter id="name" value="SectionType1" />
+		<parameter id="description" value="Represents a SectionType1 in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="2.2" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="ParagraphType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.ParagraphType" />
+		<parameter id="name" value="ParagraphType" />
+		<parameter id="description" value="Represents a ParagraphType in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="100" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="ParagraphTypeForLists">
+		<parameter id="class" value="de.knowwe.jspwiki.types.ParagraphTypeForLists" />
+		<parameter id="name" value="ParagraphTypeForLists" />
+		<parameter id="description" value="Represents a ParagraphTypeForLists in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="20" />
+		<parameter id="scope" value="OrderedListType/**/DashTreeElementContent" />
+		<parameter id="scope" value="ListType/**/DashTreeElementContent" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="TableRow">
+		<parameter id="class" value="de.knowwe.jspwiki.types.TableRow" />
+		<parameter id="name" value="TableRow" />
+		<parameter id="description" value="Represents a TableRow in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="de.knowwe.instantedit.table.WikiTable" />
+	</extension>
+	
+
+</plugin>
