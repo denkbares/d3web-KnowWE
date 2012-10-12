@@ -163,18 +163,6 @@
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
-			</dependencies>
-		</profile>
-
-		<!-- ======= WIKI PLUGINS ======= -->
-		<profile>
-			<id>jspwiki-markupset</id>
-			<activation>
-				<property>
-					<name>jspwiki-markupset</name>
-				</property>
-			</activation>
-			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
@@ -183,7 +171,8 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		
+
+		<!-- ======= WIKI PLUGINS ======= -->
 		<profile>
 			<id>comment</id>
 			<activation>
