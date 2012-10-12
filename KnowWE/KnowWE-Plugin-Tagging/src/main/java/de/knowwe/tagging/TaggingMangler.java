@@ -41,6 +41,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.search.GenericSearchResult;
 import de.knowwe.search.SearchProvider;
 import de.knowwe.search.SearchTerm;
@@ -138,14 +139,15 @@ public class TaggingMangler implements SearchProvider {
 				Environment.DEFAULT_WEB, pagename);
 
 		// Look for <tags> sections
-		List<Section<TagsContent>> tagsSections = new ArrayList<Section<TagsContent>>();
-		Sections.findSuccessorsOfType(article.getRootSection(), TagsContent.class, tagsSections);
+		List<Section<Tags>> tagsSections = Sections.findSuccessorsOfType(
+				article.getRootSection(), Tags.class);
 		Set<String> tags = new HashSet<String>();
 
 		if (tagsSections.size() > 0) {
 
-			for (Section<?> cur : tagsSections) {
-				for (String temptag : cur.getText().split(TAG_SEPARATOR)) {
+			for (Section<?> section : tagsSections) {
+				Section<TagsContent> content = Sections.findSuccessor(section, TagsContent.class);
+				for (String temptag : content.getText().split(TAG_SEPARATOR)) {
 					tags.add(temptag.trim());
 				}
 			}
@@ -153,17 +155,14 @@ public class TaggingMangler implements SearchProvider {
 			// tags is a set, dupe checking isn't needed
 			tags.add(tag.trim());
 
-			StringBuilder sb = new StringBuilder();
-
-			for (String temptag : tags) {
-				sb.append(temptag).append(" ");
-			}
-
-			String output = sb.toString().trim() + "\n";
-			Section<TagsContent> firstTagsSection = tagsSections.get(0);
+			String output = createTagSectionString(Strings.concat(" ", tags));
+			Section<Tags> firstTagsSection = tagsSections.remove(0);
 
 			Map<String, String> nodesMap = new HashMap<String, String>();
 			nodesMap.put(firstTagsSection.getID(), output);
+			for (Section<Tags> section : tagsSections) {
+				nodesMap.put(section.getID(), "");
+			}
 			Sections.replaceSections(context, nodesMap);
 		}
 		else {
@@ -346,32 +345,28 @@ public class TaggingMangler implements SearchProvider {
 	 * sets tags to tag and replaces old ones
 	 * 
 	 * @param topic
-	 * @param tag comma/space separated list of tags
+	 * @param tags comma/space separated list of tags
 	 * @throws IOException
 	 */
-	public void setTags(String topic, String tag, UserActionContext context) throws IOException {
+	public void setTags(String topic, String tags, UserActionContext context) throws IOException {
 		Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB,
 				topic);
-		List<Section<TagsContent>> tagslist = Sections.findSuccessorsOfType(
-				article.getRootSection(), TagsContent.class);
-		String output = processTagString(tag);
+		List<Section<Tags>> tagslist = Sections.findSuccessorsOfType(
+				article.getRootSection(), Tags.class);
+		String tagSectionString = createTagSectionString(tags);
 
 		if (tagslist.size() > 0) {
-			Section<?> keep = tagslist.get(0);
-
-			/*
-			 * The replaced section contains a linebreak at the end. The
-			 * linebreak is essential for the correct parsing of the
-			 * default-markup.
-			 */
-			output += System.getProperty("line.separator");
+			Section<?> keep = tagslist.remove(0);
 
 			Map<String, String> nodesMap = new HashMap<String, String>();
-			nodesMap.put(keep.getID(), output);
+			nodesMap.put(keep.getID(), tagSectionString);
+			for (Section<Tags> section : tagslist) {
+				nodesMap.put(section.getID(), "");
+			}
 			Sections.replaceSections(context, nodesMap);
 		}
 		else {
-			addNewTagSection(topic, output, context);
+			addNewTagSection(topic, tags, context);
 		}
 	}
 
@@ -385,14 +380,18 @@ public class TaggingMangler implements SearchProvider {
 		Article article = Environment.getInstance().getArticle(
 				Environment.DEFAULT_WEB, topic);
 
-		Section<?> articleSection = article.getRootSection();
-		String text = articleSection.getText();
+		Section<?> rootSection = article.getRootSection();
+		String articleText = rootSection.getText();
 
-		text += "%%tags\n" + processTagString(content) + "\n%";
+		articleText += createTagSectionString(content);
 
 		Map<String, String> nodesMap = new HashMap<String, String>();
-		nodesMap.put(articleSection.getID(), text);
+		nodesMap.put(rootSection.getID(), articleText);
 		Sections.replaceSections(context, nodesMap);
+	}
+
+	private String createTagSectionString(String content) {
+		return "%%tags\n" + processTagString(content) + "\n%\n";
 	}
 
 	/**
@@ -402,15 +401,14 @@ public class TaggingMangler implements SearchProvider {
 	 * @return A trimmed tag list separated by spaces
 	 */
 	private String processTagString(String tagString) {
-		StringBuilder sb = new StringBuilder();
-
+		Set<String> tags = new HashSet<String>();
 		for (String rawTag : tagString.split(TAG_SEPARATOR)) {
-			if (rawTag.trim().length() > 0) {
-				sb.append(rawTag.trim()).append(' ');
+			String trimmed = rawTag.trim();
+			if (trimmed.length() > 0) {
+				tags.add(trimmed);
 			}
 		}
-
-		return sb.toString().trim();
+		return Strings.concat(" ", tags);
 	}
 
 	/**
