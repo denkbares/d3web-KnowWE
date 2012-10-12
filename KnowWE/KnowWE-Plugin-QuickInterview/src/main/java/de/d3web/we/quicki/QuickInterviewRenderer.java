@@ -109,7 +109,7 @@ public class QuickInterviewRenderer {
 
 	public String render() {
 		// Assembles the Interview
-		StringBuffer buffi = new StringBuffer();
+		StringBuffer buffi = new StringBuffer("<div style='clear:both'>");
 
 		// Map all processed TerminologyObjects already in interview table,
 		// avoids endless recursion in cyclic hierarchies
@@ -123,7 +123,7 @@ public class QuickInterviewRenderer {
 		getInterviewElementsRenderingRecursively(kb.getRootQASet(), buffi, processedTOs, -2);
 
 		// add pseudo element for correctly closing the plugin
-		buffi.append("<div class='invisible'>  </div>");
+		buffi.append("<div class='invisible'>  </div></div>");
 		return buffi.toString();
 	}
 
@@ -413,11 +413,11 @@ public class QuickInterviewRenderer {
 
 		String id = getID();
 		String jscall = " rel=\"{oid: '" + id + "', "
-					+ "web:'" + web + "',"
-					+ "ns:'" + namespace + "',"
-					+ "type:'text', "
-					+ "qtext:'" + Strings.encodeURL(q.getName()) + "', "
-					+ "}\" ";
+				+ "web:'" + web + "',"
+				+ "ns:'" + namespace + "',"
+				+ "type:'text', "
+				+ "qtext:'" + Strings.encodeURL(q.getName()) + "', "
+				+ "}\" ";
 
 		// assemble the input field
 		sb.append("\n<input class='inputtextvalue'  style='display: inline;' id='input_" + id
@@ -455,12 +455,12 @@ public class QuickInterviewRenderer {
 
 			// assemble JS string
 			String jscall = " rel=\"{oid:'" + choice.getName() + "', "
-						+ "web:'" + web + "', "
-						+ "ns:'" + namespace + "', "
-						+ "qid:'" + Strings.encodeURL(q.getName()) + "', "
-						+ "choice:'" + Strings.encodeURL(choice.getName()) + "', "
-						+ "type:'oc', "
-						+ "}\" ";
+					+ "web:'" + web + "', "
+					+ "ns:'" + namespace + "', "
+					+ "qid:'" + Strings.encodeURL(q.getName()) + "', "
+					+ "choice:'" + Strings.encodeURL(choice.getName()) + "', "
+					+ "type:'oc', "
+					+ "}\" ";
 			String spanid = q.getName() + "_" + choice.getName();
 
 			// if a value was already set, get the value and set corresponding
@@ -525,23 +525,23 @@ public class QuickInterviewRenderer {
 		String jscall = "";
 		if (rangeMin != Double.MIN_VALUE && rangeMax != Double.MAX_VALUE) {
 			jscall = " rel=\"{oid: '" + id + "', "
-						+ "web:'" + web + "',"
-						+ "ns:'" + namespace + "',"
-						+ "type:'num', "
-						+ "rangeMin:'" + rangeMin + "', "
-						+ "rangeMax:'" + rangeMax + "', "
-						+ "qtext:'" + Strings.encodeURL(q.getName()) + "', "
-						+ "}\" ";
+					+ "web:'" + web + "',"
+					+ "ns:'" + namespace + "',"
+					+ "type:'num', "
+					+ "rangeMin:'" + rangeMin + "', "
+					+ "rangeMax:'" + rangeMax + "', "
+					+ "qtext:'" + Strings.encodeURL(q.getName()) + "', "
+					+ "}\" ";
 		}
 		else {
 			jscall = " rel=\"{oid: '" + id + "', "
-						+ "web:'" + web + "',"
-						+ "ns:'" + namespace + "',"
-						+ "type:'num', "
-						+ "rangeMin:'NaN', "
-						+ "rangeMax:'NaN', "
-						+ "qtext:'" + Strings.encodeURL(q.getName()) + "', "
-						+ "}\" ";
+					+ "web:'" + web + "',"
+					+ "ns:'" + namespace + "',"
+					+ "type:'num', "
+					+ "rangeMin:'NaN', "
+					+ "rangeMax:'NaN', "
+					+ "qtext:'" + Strings.encodeURL(q.getName()) + "', "
+					+ "}\" ";
 		}
 
 		// assemble the input field
@@ -600,11 +600,11 @@ public class QuickInterviewRenderer {
 
 		// assemble the JS call
 		String jscall = " rel=\"{oid: '" + id + "', "
-					+ "web:'" + web + "',"
-					+ "ns:'" + namespace + "',"
-					+ "type:'num', "
-					+ "qtext:'" + Strings.encodeURL(q.getName()) + "', "
-					+ "}\" ";
+				+ "web:'" + web + "',"
+				+ "ns:'" + namespace + "',"
+				+ "type:'num', "
+				+ "qtext:'" + Strings.encodeURL(q.getName()) + "', "
+				+ "}\" ";
 
 		// assemble the input field
 		sb.append("<input class='inputdate'  style='display: inline;' id='input_" + id
@@ -649,11 +649,11 @@ public class QuickInterviewRenderer {
 
 			String cssclass = "answerMC";
 			String jscall = " rel=\"{oid:'" + choice.getName() + "', "
-						+ "web:'" + web + "', "
-						+ "ns:'" + namespace + "', "
-						+ "qid:'" + Strings.encodeURL(q.getName()) + "', "
-						+ "type:'mc', "
-						+ "choice:'" + Strings.encodeURL(choice.getName()) + "', "
+					+ "web:'" + web + "', "
+					+ "ns:'" + namespace + "', "
+					+ "qid:'" + Strings.encodeURL(q.getName()) + "', "
+					+ "type:'mc', "
+					+ "choice:'" + Strings.encodeURL(choice.getName()) + "', "
 					+ "}\" ";
 
 			Value value = D3webUtils.getValueNonBlocking(session, q);
@@ -707,11 +707,11 @@ public class QuickInterviewRenderer {
 		}
 
 		String jscall = " rel=\"{oid: '" + Unknown.getInstance().getId() + "', "
-					+ "web:'" + web + "', "
-					+ "ns:'" + namespace + "', "
-					+ "type:'" + type + "', "
-					+ "qid:'" + Strings.encodeURL(q.getName()) + "', "
-					+ "}\" ";
+				+ "web:'" + web + "', "
+				+ "ns:'" + namespace + "', "
+				+ "type:'" + type + "', "
+				+ "qid:'" + Strings.encodeURL(q.getName()) + "', "
+				+ "}\" ";
 		String cssclass = "answerunknown";
 
 		if (isUnknown) {
