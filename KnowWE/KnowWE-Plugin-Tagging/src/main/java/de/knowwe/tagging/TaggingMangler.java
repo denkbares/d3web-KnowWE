@@ -143,7 +143,6 @@ public class TaggingMangler implements SearchProvider {
 		Set<String> tags = new HashSet<String>();
 
 		if (tagsSections.size() > 0) {
-			boolean multiple = tagsSections.size() > 1;
 
 			for (Section<?> cur : tagsSections) {
 				for (String temptag : cur.getText().split(TAG_SEPARATOR)) {
@@ -162,13 +161,6 @@ public class TaggingMangler implements SearchProvider {
 
 			String output = sb.toString().trim() + "\n";
 			Section<TagsContent> firstTagsSection = tagsSections.get(0);
-
-			// remove all further <tags> sections
-			if (multiple) {
-				for (int i = 1; i < tagsSections.size(); i++) {
-					article.getRootSection().removeChild(tagsSections.get(i));
-				}
-			}
 
 			Map<String, String> nodesMap = new HashMap<String, String>();
 			nodesMap.put(firstTagsSection.getID(), output);
@@ -196,8 +188,6 @@ public class TaggingMangler implements SearchProvider {
 		Sections.findSuccessorsOfType(article.getRootSection(), TagsContent.class, tagsSections);
 		Set<String> tags = new HashSet<String>();
 
-		boolean multiple = tagsSections.size() > 1;
-
 		for (Section<TagsContent> cur : tagsSections) {
 			for (String temptag : cur.getText().split(TAG_SEPARATOR)) {
 				tags.add(temptag.trim());
@@ -215,12 +205,6 @@ public class TaggingMangler implements SearchProvider {
 		String output = sb.toString().trim();
 
 		Section<?> keep = tagsSections.get(0);
-
-		if (multiple) {
-			for (int i = 1; i < tagsSections.size(); i++) {
-				article.getRootSection().removeChild(tagsSections.get(i));
-			}
-		}
 
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(keep.getID(), output);
@@ -368,18 +352,12 @@ public class TaggingMangler implements SearchProvider {
 	public void setTags(String topic, String tag, UserActionContext context) throws IOException {
 		Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB,
 				topic);
-		ArrayList<Section<TagsContent>> tagslist = new ArrayList<Section<TagsContent>>();
-		Sections.findSuccessorsOfType(article.getRootSection(), TagsContent.class, tagslist);
-		boolean multiple = tagslist.size() > 1;
+		List<Section<TagsContent>> tagslist = Sections.findSuccessorsOfType(
+				article.getRootSection(), TagsContent.class);
 		String output = processTagString(tag);
 
 		if (tagslist.size() > 0) {
 			Section<?> keep = tagslist.get(0);
-			if (multiple) {
-				for (int i = 1; i < tagslist.size(); i++) {
-					article.getRootSection().removeChild(tagslist.get(i));
-				}
-			}
 
 			/*
 			 * The replaced section contains a linebreak at the end. The
