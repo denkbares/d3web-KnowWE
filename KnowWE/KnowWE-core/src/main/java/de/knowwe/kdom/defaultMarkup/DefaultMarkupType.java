@@ -120,7 +120,7 @@ public class DefaultMarkupType extends AbstractType {
 					"|(?:" +
 					// at least one non-whitespace character followed by any
 					// non-line-break item
-					"[:=\\p{Blank}]\\p{Blank}*([^/][^$]*?)$" + // CONTENT
+					"[:=\\p{Blank}]\\p{Blank}*([^/][^$]*?(^|\\z))" + // CONTENT
 					// --> anything in a single line (reluctant match)
 					"))";
 
