@@ -18,7 +18,9 @@ KNOWWE.plugin.defaultEditTool = function() {
 	    
 	    postProcessHTML : function(id) {
 	    	var textarea = $(createTextAreaID(id));
-	    	new AutoComplete(textarea);
+	    	if (typeof AutoComplete != "undefined") {	    		
+	    		new AutoComplete(textarea);
+	    	}
 	    	new TextArea(textarea);
 	        
 	        textarea.focus();
