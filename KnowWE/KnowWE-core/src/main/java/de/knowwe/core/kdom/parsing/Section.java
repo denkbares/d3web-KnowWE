@@ -643,17 +643,6 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		id = null;
 	}
 
-	public void removeChild(Section<? extends Type> s) {
-		this.children.remove(s);
-
-	}
-
-	public void removeChildren(List<Section<? extends Type>> removeList) {
-		for (Section<? extends Type> s : removeList) {
-			this.removeChild(s);
-		}
-	}
-
 	public void collectTextsFromLeaves(StringBuilder buffi) {
 		collectTextsFromLeaves(buffi, true);
 	}
