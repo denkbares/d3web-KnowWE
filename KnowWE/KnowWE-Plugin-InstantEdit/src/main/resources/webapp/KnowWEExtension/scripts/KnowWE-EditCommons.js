@@ -156,7 +156,7 @@ KNOWWE.editCommons = function() {
         },
         
         isSaveKey: function(event) {
-        	if (_EC.isModifier(event)) {
+        	if (_EC.isModifier(event) || _EC.isDoubleModifier(event)) {
     			if (event.code == 83) { // S
     				return true;					
     			}
@@ -165,7 +165,7 @@ KNOWWE.editCommons = function() {
         },
         
         isCancelKey: function(event) {
-        	if (_EC.isModifier(event)) {
+        	if (_EC.isModifier(event) || _EC.isDoubleModifier(event)) {
     			if (event.code == 81 || event.code == 27) { // Q or ESC
     				return true;	
     			}
