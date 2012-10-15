@@ -18,14 +18,14 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.ci4ke.testmodules;
+package de.d3web.we.ci4ke.test;
 
 import java.util.Collection;
 
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.TestParameter;
-import de.d3web.we.ci4ke.handling.CIDashboardType;
+import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;

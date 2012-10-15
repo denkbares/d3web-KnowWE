@@ -16,7 +16,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.d3web.we.ci4ke.build;
+package de.d3web.we.ci4ke.dashboard;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,7 +27,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.d3web.testing.BuildResult;
-import de.d3web.we.ci4ke.handling.CIDashboardType;
+import de.d3web.we.ci4ke.build.CIBuildCache;
+import de.d3web.we.ci4ke.build.CIPersistence;
+import de.d3web.we.ci4ke.build.CIRenderer;
+import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;

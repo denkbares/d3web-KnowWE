@@ -20,7 +20,7 @@ package de.d3web.we.ci4ke;
 
 import java.util.Collection;
 
-import de.d3web.we.ci4ke.rendering.ObjectNameRenderer;
+import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRenderer;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;

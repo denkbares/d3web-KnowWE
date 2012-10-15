@@ -1,4 +1,4 @@
-package de.d3web.we.ci4ke.handling;
+package de.d3web.we.ci4ke.hook;
 
 import java.util.Collection;
 

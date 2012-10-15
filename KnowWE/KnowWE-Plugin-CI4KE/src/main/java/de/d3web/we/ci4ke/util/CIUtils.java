@@ -31,7 +31,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.d3web.testing.TestExecutor;
-import de.d3web.we.ci4ke.handling.CIDashboardType;
+import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;

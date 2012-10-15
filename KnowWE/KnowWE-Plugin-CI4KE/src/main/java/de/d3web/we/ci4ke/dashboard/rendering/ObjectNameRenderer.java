@@ -16,21 +16,21 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.d3web.we.ci4ke.rendering;
-
-import de.knowwe.core.utils.KnowWEUtils;
+package de.d3web.we.ci4ke.dashboard.rendering;
 
 /**
- * Renders Article names as links.
+ * Interface for renderers allowing to render certain objects dependent by their
+ * name of string representation. This can for example be used to render links
+ * to the objects.
  * 
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 24.09.2012
  */
-public class ArticleRenderer implements ObjectNameRenderer {
+public interface ObjectNameRenderer {
 
-	@Override
-	public String render(String objectName) {
-		return KnowWEUtils.getURLLinkHTMLToArticle(objectName);
-	}
+	public static final String PLUGIN_ID = "KnowWE-Plugin-CI4KE";
+	public static final String EXTENSION_POINT_ID = "ObjectNameRenderer";
+
+	String render(String objectName);
 
 }

@@ -1,9 +1,9 @@
 package de.d3web.we.ci4ke.daemon;
 
 import de.d3web.testing.Message.Type;
-import de.d3web.we.ci4ke.build.CIDashboard;
 import de.d3web.we.ci4ke.build.CIRenderer;
-import de.d3web.we.ci4ke.handling.CIDashboardType;
+import de.d3web.we.ci4ke.dashboard.CIDashboard;
+import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;

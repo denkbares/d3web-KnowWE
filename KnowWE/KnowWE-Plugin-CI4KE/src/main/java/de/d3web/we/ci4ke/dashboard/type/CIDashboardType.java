@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.ci4ke.handling;
+package de.d3web.we.ci4ke.dashboard.type;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,6 +31,10 @@ import java.util.regex.Pattern;
 import de.d3web.testing.ArgsCheckResult;
 import de.d3web.testing.TestParser;
 import de.d3web.testing.TestSpecification;
+import de.d3web.we.ci4ke.build.CIConfig;
+import de.d3web.we.ci4ke.dashboard.rendering.CIDashboardRenderer;
+import de.d3web.we.ci4ke.hook.CIHook;
+import de.d3web.we.ci4ke.hook.CIHookManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;

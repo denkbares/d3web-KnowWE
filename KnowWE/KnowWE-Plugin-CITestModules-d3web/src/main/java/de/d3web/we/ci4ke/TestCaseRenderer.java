@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.d3web.core.utilities.Triple;
-import de.d3web.we.ci4ke.rendering.ObjectNameRenderer;
+import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRenderer;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;

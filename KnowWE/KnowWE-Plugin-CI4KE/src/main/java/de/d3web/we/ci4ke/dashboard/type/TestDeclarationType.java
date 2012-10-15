@@ -16,22 +16,31 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.d3web.we.ci4ke.handling;
+package de.d3web.we.ci4ke.dashboard.type;
 
-import de.d3web.testing.TestParser;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
+import de.knowwe.kdom.constraint.ConstraintSectionFinder;
+import de.knowwe.kdom.constraint.SingleChildConstraint;
 
 /**
- * Type for a specific argument parameter of a test declaration or an ignore
- * declaration.
+ * Class to parse a test declaration and its parameters
  * 
  * @author volker_belli
  * @created 15.09.2012
  */
-public class ParameterType extends AbstractType {
+public class TestDeclarationType extends AbstractType {
 
-	public ParameterType() {
-		setSectionFinder(new RegexSectionFinder(TestParser.PARAMETER_PATTERN));
+	public TestDeclarationType() {
+		// first is test-name, second is test-object,
+		// following are the arguments
+		addChildType(new ParameterType());
+
+		// add finder to get the whole text before the first ignore
+		ConstraintSectionFinder finder = new ConstraintSectionFinder(new AllTextSectionFinder());
+		finder.addConstraint(SingleChildConstraint.getInstance());
+		finder.addConstraint(AtMostOneFindingConstraint.getInstance());
+		setSectionFinder(finder);
 	}
 }

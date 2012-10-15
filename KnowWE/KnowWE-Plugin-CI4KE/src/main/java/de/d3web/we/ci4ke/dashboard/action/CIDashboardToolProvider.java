@@ -16,8 +16,9 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.d3web.we.ci4ke.handling;
+package de.d3web.we.ci4ke.dashboard.action;
 
+import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Strings;

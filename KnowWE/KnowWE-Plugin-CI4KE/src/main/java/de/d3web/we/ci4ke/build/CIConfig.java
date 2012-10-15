@@ -18,14 +18,14 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.ci4ke.handling;
+package de.d3web.we.ci4ke.build;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import de.d3web.testing.TestSpecification;
-import de.d3web.we.ci4ke.handling.CIDashboardType.CIBuildTriggers;
+import de.d3web.we.ci4ke.dashboard.type.CIDashboardType.CIBuildTriggers;
 
 public final class CIConfig implements Cloneable {
 

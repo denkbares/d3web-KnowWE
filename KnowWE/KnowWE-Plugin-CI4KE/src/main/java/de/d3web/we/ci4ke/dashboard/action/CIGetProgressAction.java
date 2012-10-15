@@ -17,7 +17,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.ci4ke.action;
+package de.d3web.we.ci4ke.dashboard.action;
 
 import java.io.IOException;
 import java.net.URLDecoder;

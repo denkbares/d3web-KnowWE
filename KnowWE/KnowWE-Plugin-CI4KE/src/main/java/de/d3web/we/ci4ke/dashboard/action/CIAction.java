@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.ci4ke.action;
+package de.d3web.we.ci4ke.dashboard.action;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -28,9 +28,9 @@ import java.util.logging.Logger;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message.Type;
 import de.d3web.we.ci4ke.build.CIBuilder;
-import de.d3web.we.ci4ke.build.CIDashboard;
 import de.d3web.we.ci4ke.build.CIRenderer;
-import de.d3web.we.ci4ke.handling.CIDashboardType;
+import de.d3web.we.ci4ke.dashboard.CIDashboard;
+import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.d3web.we.ci4ke.util.CIUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;

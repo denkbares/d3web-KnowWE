@@ -30,7 +30,7 @@
 	<extension plugin-id="KnowWE-Plugin-CI4KE" point-id="ObjectNameRenderer"
 		id="ArticleRenderer">
 		<parameter id="class"
-			value="de.d3web.we.ci4ke.rendering.ArticleRenderer" />
+			value="de.d3web.we.ci4ke.dashboard.rendering.ArticleRenderer" />
 		<parameter id="name" value="ArticleRenderer" />
 		<parameter id="description" value="ObjectRenderer for Articles" />
 		<parameter id="version" value="1.0" />
@@ -42,7 +42,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="CIDashboardType">
 		<parameter id="class"
-			value="de.d3web.we.ci4ke.handling.CIDashboardType" />
+			value="de.d3web.we.ci4ke.dashboard.type.CIDashboardType" />
 		<parameter id="name" value="CIDashboardType" />
 		<parameter id="description" value="Type CIDashboardType" />
 		<parameter id="version" value="1.0" />
@@ -56,7 +56,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="CIAction">
 		<parameter id="class"
-			value="de.d3web.we.ci4ke.action.CIAction" />
+			value="de.d3web.we.ci4ke.dashboard.action.CIAction" />
 		<parameter id="name" value="CIAction" />
 		<parameter id="description" value="Action CIAction" />
 		<parameter id="version" value="1.0" />
@@ -68,7 +68,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="CIStopBuildAction">
 		<parameter id="class"
-			value="de.d3web.we.ci4ke.action.CIStopBuildAction" />
+			value="de.d3web.we.ci4ke.dashboard.action.CIStopBuildAction" />
 		<parameter id="name" value="CIStopBuildAction" />
 		<parameter id="description" value="Action to stop currently running builds" />
 		<parameter id="version" value="1.0" />
@@ -78,7 +78,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="CIGetProgressAction">
 		<parameter id="class"
-			value="de.d3web.we.ci4ke.action.CIGetProgressAction" />
+			value="de.d3web.we.ci4ke.dashbaord.action.CIGetProgressAction" />
 		<parameter id="name" value="CIGetProgressAction" />
 		<parameter id="description" value="Action CIProgressAction for progress listener" />
 		<parameter id="version" value="1.0" />
@@ -88,7 +88,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="EventListener"
 		id="CIEventForwarder">
 		<parameter id="class"
-			value="de.d3web.we.ci4ke.handling.CIEventForwarder" />
+			value="de.d3web.we.ci4ke.hook.CIEventForwarder" />
 		<parameter id="name" value="CIEventForwarder" />
 		<parameter id="description" value="EventListener CIEventForwarder" />
 		<parameter id="version" value="1.0" />
@@ -97,7 +97,7 @@
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
 		id="CIDashboardToolProvider">
-		<parameter id="class" value="de.d3web.we.ci4ke.handling.CIDashboardToolProvider" />
+		<parameter id="class" value="de.d3web.we.ci4ke.dashboard.action.CIDashboardToolProvider" />
 		<parameter id="name" value="CIDashboardToolProvider" />
 		<parameter id="description"
 			value="Offers the possibility to start a new build." />
@@ -110,7 +110,7 @@
 	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
 		id="ArticleHasErrors">
 		<parameter id="class"
-			value="de.d3web.we.ci4ke.testmodules.ArticleHasErrorsTest" />
+			value="de.d3web.we.ci4ke.test.ArticleHasErrorsTest" />
 		<parameter id="name" value="ArticleHasErrors" />
 		<parameter id="description" value="CITest ArticleHasErrors" />
 		<parameter id="version" value="1.0" />
@@ -120,7 +120,7 @@
 	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
 		id="ArticleContains">
 		<parameter id="class"
-			value="de.d3web.we.ci4ke.testmodules.ArticleContainsTest" />
+			value="de.d3web.we.ci4ke.test.ArticleContainsTest" />
 		<parameter id="name" value="ArticleContains" />
 		<parameter id="description" value="CITest ArticleContains" />
 		<parameter id="version" value="1.0" />
@@ -130,7 +130,7 @@
 	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
 		id="TermnameConvention">
 		<parameter id="class"
-			value="de.d3web.we.ci4ke.testmodules.TermnameConventionTest" />
+			value="de.d3web.we.ci4ke.test.TermnameConventionTest" />
 		<parameter id="name" value="TermnameConvention" />
 		<parameter id="description" value="CITest TermnameConvention" />
 		<parameter id="version" value="1.0" />

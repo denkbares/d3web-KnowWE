@@ -42,6 +42,7 @@ import org.xml.sax.SAXException;
 
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.BuildResultPersistenceHandler;
+import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.knowwe.core.Environment;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;

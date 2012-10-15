@@ -18,12 +18,15 @@
  */
 package de.d3web.we.ci4ke.daemon;
 
-import de.d3web.we.ci4ke.handling.CIDashboardType;
+import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
- * 
+ * The CI-Daemon can be connected to a dashbaord and renders the colored bubble
+ * according to the current dashboard build state. It can be inserted at a
+ * highly visible location (e.g., left menu) to constantly display the quality
+ * state of a dashboard.
  * 
  * @author Albrecht Striffler
  * @created 14.01.2011
@@ -33,7 +36,7 @@ public class CIDaemonType extends DefaultMarkupType {
 	private static final DefaultMarkup MARKUP;
 
 	public static final String DASHBOARD_ARTICLE = "dashboardArticle";
-	
+
 	static {
 		MARKUP = new DefaultMarkup("CIDaemon");
 		MARKUP.addAnnotation(DASHBOARD_ARTICLE, true);
@@ -44,7 +47,6 @@ public class CIDaemonType extends DefaultMarkupType {
 		super(MARKUP);
 		this.setIgnorePackageCompile(true);
 		this.setRenderer(new CIDaemonRenderer());
-		// TODO Auto-generated constructor stub
 	}
 
 }
