@@ -339,7 +339,7 @@ NodeEditor.prototype.render = function() {
 		Builder.node('div', {className: 'paneGroup'}, this.tabPanes),
 		Builder.node('div', {className: 'buttonGroup'}, [
 			Builder.node('button', {className: 'ok', onclick: 'this.parentNode.parentNode.__nodeEditor.handleOk();'}, ['Ok']),
-			Builder.node('button', {className: 'cancel', onclick: 'this.parentNode.parentNode.__nodeEditor.handleCancel();'}, ['Abbrechen'])
+			Builder.node('button', {className: 'cancel', onclick: 'this.parentNode.parentNode.__nodeEditor.handleCancel();'}, ['Cancel'])
 			])
 	]);
 	dom.__nodeEditor = this;
