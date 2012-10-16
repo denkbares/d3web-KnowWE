@@ -225,13 +225,13 @@ KNOWWE.editCommons = function() {
             return _EC.wikiText[id];
         },
         
-        hasKDomID: function(object) {
-        	if (!object || !object.id) {
+        isKDomID: function(id) {
+        	if (!id) {
         		return false;
         	}
         	// TODO: Check RegExp
         	var validID = new RegExp("^[0123456789abcdef]{1,8}$");
-        	if (validID.test(object.id)) {
+        	if (validID.test(id)) {
         		// TODO: Check also server-side
         		return true;
         	}
