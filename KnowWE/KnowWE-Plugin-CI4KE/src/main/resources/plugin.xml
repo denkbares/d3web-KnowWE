@@ -78,7 +78,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="CIGetProgressAction">
 		<parameter id="class"
-			value="de.d3web.we.ci4ke.dashbaord.action.CIGetProgressAction" />
+			value="de.d3web.we.ci4ke.dashboard.action.CIGetProgressAction" />
 		<parameter id="name" value="CIGetProgressAction" />
 		<parameter id="description" value="Action CIProgressAction for progress listener" />
 		<parameter id="version" value="1.0" />
