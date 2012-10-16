@@ -105,7 +105,15 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	 * @return all topics with a compiled d3web knowledge base
 	 */
 	public Set<String> getKnowledgeArticles() {
-		return new TreeSet<String>(kbs.keySet());
+		/*
+		 * Iterators are not automatically synchronized in synchronized
+		 * collections. Since the iterator of the key set is needed when adding
+		 * it to a new set, we synchronize it manually on the same mutex as the
+		 * map uses.
+		 */
+		synchronized (kbs) {
+			return new TreeSet<String>(kbs.keySet());
+		}
 	}
 
 	/**
