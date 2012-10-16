@@ -53,6 +53,7 @@ import de.d3web.core.session.values.TextValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Strings;
 
@@ -78,6 +79,8 @@ public class QuickInterviewRenderer {
 
 	private int counter = 0;
 
+	private final UserContext user;
+
 	/**
 	 * Assembles and returns the HTML representation of the interview.
 	 * 
@@ -101,13 +104,14 @@ public class QuickInterviewRenderer {
 		this.web = webb;
 		this.namespace = kb.getId();
 		this.rb = D3webUtils.getD3webBundle(user);
+		this.user = user;
 		this.config = user.getParameters();
 		// this.config = new HashMap<String, String>();
 		// config.put("use", "user");
 
 	}
 
-	public String render() {
+	private String render() {
 		// Assembles the Interview
 		StringBuffer buffi = new StringBuffer("<div style='clear:both'>");
 
@@ -826,10 +830,9 @@ public class QuickInterviewRenderer {
 	}
 
 	private String getLabel(NamedObject to) {
-		String prompt = to.getInfoStore().getValue(MMInfo.PROMPT);
-		if (prompt != null) {
-			return prompt;
-		}
+		String prompt = to.getInfoStore().getValue(MMInfo.PROMPT,
+				Environment.getInstance().getWikiConnector().getLocale(user.getRequest()));
+		if (prompt != null) return prompt;
 		return to.getName();
 	}
 
