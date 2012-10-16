@@ -166,7 +166,11 @@ KNOWWE.editCommons = function() {
         
         isCancelKey: function(event) {
         	if (_EC.isModifier(event) || _EC.isDoubleModifier(event)) {
-    			if (event.code == 81 || event.code == 27) { // Q or ESC
+        		// Q, but not with alt gr (= alt + ctrl)  to allow for @ in windows
+    			if (event.code == 81 &&  (!event.alt || !event.control)) {
+    				return true
+    			}
+    			if (event.code == 27) { // ESC
     				return true;	
     			}
         	}
