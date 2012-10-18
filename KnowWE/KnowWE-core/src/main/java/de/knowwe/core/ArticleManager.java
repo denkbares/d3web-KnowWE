@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -48,7 +49,7 @@ public class ArticleManager {
 	/**
 	 * Stores Articles for article-names
 	 */
-	private HashMap<String, Article> articleMap = new HashMap<String, Article>();
+	private Map<String, Article> articleMap = new HashMap<String, Article>();
 
 	private final TreeSet<String> currentRefreshQueue = new TreeSet<String>();
 
@@ -62,7 +63,7 @@ public class ArticleManager {
 	 * List that keeps track of all articles, that are already queued for
 	 * updating and don't need to be queued again.
 	 */
-	private final HashSet<String> globalRefreshQueue = new HashSet<String>();
+	private final Set<String> globalRefreshQueue = new HashSet<String>();
 
 	private boolean initializedArticles = false;
 
