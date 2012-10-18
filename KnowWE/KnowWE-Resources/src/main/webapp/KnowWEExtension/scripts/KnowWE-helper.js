@@ -1744,12 +1744,16 @@ KNOWWE.helper.logger = function(){
 	                if( obName.getName() === name ){
 	                    var f = obName.getFunct();
 	                    for(var j = 0; j < f.length; j++){
-	                        f[j].call( o );
+	                    	try {
+	                    		f[j].call( o );
+	                    	} catch(ex) {
+	                    		if (console) console.exception(ex);
+	                    	}
 	                    }
 	                }
 	            }
          	}
-        	catch (e) { /*ignore*/ }
+        	catch (e) { /*ignore*/ } // is this redundant, after adding try - catch above?
         	KNOWWE.core.util.updateProcessingState(-1);
         },
         /**
