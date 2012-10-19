@@ -54,6 +54,7 @@ import com.ecyrd.jspwiki.auth.permissions.PermissionFactory;
 import com.ecyrd.jspwiki.preferences.Preferences;
 import com.ecyrd.jspwiki.providers.ProviderException;
 
+import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -594,6 +595,10 @@ public class JSPWikiConnector implements WikiConnector {
 
 			WikiPage page = context.getPage();
 			page.setAuthor(context.getCurrentUser().getName());
+			String changeNote = user.getParameter(Attributes.CHANGE_NOTE);
+			if (changeNote != null) {
+				page.setAttribute(WikiPage.CHANGENOTE, changeNote);
+			}
 
 			engine.saveText(context, content);
 			// engine.saveText(map.getContext(), text);

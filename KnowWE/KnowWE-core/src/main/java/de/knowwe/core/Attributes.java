@@ -27,6 +27,7 @@ public class Attributes {
 	public static final String SECTION_ID = "SectionID";
 	public static final String ENCODING = "KWiki_Encoding";
 	public static final String WEB = "KWikiWeb";
+	public static final String CHANGE_NOTE = "KWikiChangeNote";
 	public static final String TERM = "KWikiTerm";
 	public static final String SESSIONPROVIDER = "KWikiSessionProvider";
 	public static final String NOTIFICATIONMANAGER = "KWikiNotificationManager";
