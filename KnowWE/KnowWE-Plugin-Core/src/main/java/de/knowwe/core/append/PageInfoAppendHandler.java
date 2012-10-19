@@ -18,11 +18,10 @@
  */
 package de.knowwe.core.append;
 
-import java.util.Date;
-
 import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Strings;
+import de.knowwe.core.wikiConnector.WikiConnector;
 
 
 /**
@@ -37,13 +36,16 @@ public class PageInfoAppendHandler implements PageAppendHandler {
 	@Override
 	public String getDataToAppend(String topic, String web, UserContext user) {
 		StringBuilder html = new StringBuilder();
-		int version = Environment.getInstance().getWikiConnector().getVersion(topic);
-		Date modDate = Environment.getInstance().getWikiConnector().getLastModifiedDate(topic, -1);
+		WikiConnector connector = Environment.getInstance().getWikiConnector();
+		int version = connector.getVersion(topic);
+		long modDate = connector.getLastModifiedDate(topic, -1).getTime();
 		String userName = user.getUserName();
 
+		// username and topic can not contain special chars, so no masking
+		// should be necessary
+		html.append("<input type='hidden' id='knowWEInfoPageName' value='" + topic + "'>");
 		html.append("<input type='hidden' id='knowWEInfoPageVersion' value='" + version + "'>");
-		html.append("<input type='hidden' id='knowWEInfoPageDate' value='" + modDate.getTime()
-				+ "'>");
+		html.append("<input type='hidden' id='knowWEInfoPageDate' value='" + modDate + "'>");
 		html.append("<input type='hidden' id='knowWEInfoUser' value='" + userName + "'>");
 		return Strings.maskHTML(html.toString());
 	}

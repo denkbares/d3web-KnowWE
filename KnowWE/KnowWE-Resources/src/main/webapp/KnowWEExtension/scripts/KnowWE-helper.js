@@ -200,7 +200,7 @@ KNOWWE.helper = function(){
          * through the {@link name} parameter.
          * (start code)
          * ../Wiki.jsp?page=KnowWE-ExamplePage : 
-         *     KNOWWE.util.gup( 'page' ) --> KnowWE-Example-Page 
+         *     KNOWWE.util.gup( 'page' ) --> KnowWE-ExamplePage 
          * (end)
          * 
          * Parameters:
@@ -219,7 +219,7 @@ KNOWWE.helper = function(){
                 return decodeURIComponent(results[1]);
             }
             if(name === 'page') { //fix for url parameter topic on Main page  
-                return 'Main';
+                return KNOWWE.helper.getPagename();
             }
             return null;
         },
@@ -308,7 +308,7 @@ KNOWWE.helper = function(){
          * Returns the version of the page currently displayed.
          * NB: This might not be the current version, if an edit happened in the meantime.
          */
-        getPageVersion : function(){
+        getPageVersion : function() {
         	return document.getElementById('knowWEInfoPageVersion').value;
         },
         
@@ -316,16 +316,25 @@ KNOWWE.helper = function(){
          * Returns the date (as millis since 1970) of the modification of the page currently displayed.
          * NB: This might not be the current date of modification, if an edit happened in the meantime.
          */
-        getPageDate : function(){
+        getPageDate : function() {
         	return document.getElementById('knowWEInfoPageDate').value;
         },
         
         /**
          * Returns the name of the current user
          */
-        getUsername : function(){
+        getUsername : function() {
         	return document.getElementById('knowWEInfoUser').value;
         },
+        
+        /**
+         * Returns the name of the current article
+         * (This is also available, if no page is set in URL, e.g. on Main page)
+         */
+        getPagename : function() {
+        	return document.getElementById('knowWEInfoPageName').value;
+        	
+        }
     }
 }();
 
