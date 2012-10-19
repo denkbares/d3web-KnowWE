@@ -54,7 +54,7 @@ Rule.prototype.render = function(selected) {
 		var ruleDom = Builder.node('div', {
 			id: this.fcid,
 			className: 'Rule'
-		},[highlightDom = Builder.node('div', {className :'rule_highlight'}), selectorDom = Builder.node('div', {className :'rule_selector'})]);
+		},[highlightDom = Builder.node('div', {className :'rule_highlight'}), selectorDom = Builder.node('div', {className :'rule_selector_parent'})]);
 		
 		for (var i = 0; i < this.coordinates.length - 1; i++) {
 			var x1 = this.coordinates[i][0];
