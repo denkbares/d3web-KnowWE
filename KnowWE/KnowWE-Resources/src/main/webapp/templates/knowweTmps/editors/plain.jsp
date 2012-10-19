@@ -79,9 +79,6 @@
   <input type="submit" name="ok" value="<fmt:message key='editor.plain.save.submit'/>" 
     accesskey="s"
         title="<fmt:message key='editor.plain.save.title'/>" />
-  <input type="submit" name="preview" value="<fmt:message key='editor.plain.preview.submit'/>" 
-    accesskey="v"
-        title="<fmt:message key='editor.plain.preview.title'/>" />
   <input type="submit" name="cancel" value="<fmt:message key='editor.plain.cancel.submit'/>" 
     accesskey="q" 
         title="<fmt:message key='editor.plain.cancel.title'/>" />
