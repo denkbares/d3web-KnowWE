@@ -21,7 +21,6 @@
 package de.d3web.we.kdom.condition;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,19 +28,12 @@ import java.util.regex.Pattern;
 import de.d3web.we.kdom.condition.helper.BracedCondition;
 import de.d3web.we.kdom.condition.helper.BracedConditionContent;
 import de.d3web.we.kdom.condition.helper.CompCondLineEndComment;
-import de.d3web.we.kdom.condition.helper.ConjunctSectionFinder;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.kdom.sectionFinder.SectionFinder;
-import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.utils.Strings;
-import de.knowwe.kdom.AnonymousType;
-import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
-import de.knowwe.kdom.constraint.ConstraintSectionFinder;
-import de.knowwe.kdom.sectionFinder.OneOfStringEnumFinder;
 
 /**
  * This class defines a KDOM-Schema to parse composite conditions as known from
@@ -266,73 +258,4 @@ public class CompositeCondition extends AbstractType {
 		return false;
 	}
 
-}
-
-/**
- * @author Jochen
- * 
- *         Type for a disjunct element in the CompositeCondition
- * 
- *         example: 'a OR b' here 'a' and 'b' are nodes of type disjunct
- * 
- */
-class Disjunct extends NonTerminalCondition implements de.knowwe.core.kdom.ExclusiveType {
-
-	public Disjunct(String[] keys) {
-		this.setSectionFinder(ConjunctSectionFinder.createConjunctFinder(keys));
-	}
-}
-
-/**
- * @author Jochen
- * 
- *         Type for a conjunct element in the CompositeCondition
- * 
- *         example: 'a AND b' here 'a' and 'b' are nodes of type conjunct
- * 
- */
-class Conjunct extends NonTerminalCondition implements de.knowwe.core.kdom.ExclusiveType {
-
-	public Conjunct(String[] keys) {
-		this.setSectionFinder(ConjunctSectionFinder.createConjunctFinder(keys));
-	}
-}
-
-/**
- * @author Jochen
- * 
- *         Type for a negated element in the CompositeCondition
- * 
- *         example: 'NOT b' here 'b' is not nodes of type NegatedExpression
- * 
- */
-class NegatedExpression extends NonTerminalCondition {
-
-	static String[] NEG_SIGNS = null;
-
-	public NegatedExpression(String[] keys) {
-		NEG_SIGNS = Arrays.copyOf(keys, keys.length);
-
-		AnonymousType negationSign = new AnonymousType("NegationSign");
-		ConstraintSectionFinder finder = new ConstraintSectionFinder(
-				new OneOfStringEnumFinder(NEG_SIGNS),
-				AtMostOneFindingConstraint.getInstance());
-		negationSign.setSectionFinder(finder);
-		this.addChildType(negationSign);
-
-		this.sectionFinder = new SectionFinder() {
-
-			@Override
-			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-				String trimmed = text.trim();
-				for (String sign : NEG_SIGNS) {
-					if (trimmed.startsWith(sign)) {
-						return new AllTextFinderTrimmed().lookForSections(text,
-								father, type);
-					}
-				}
-				return null;
-			}
-		};
-	}
 }
