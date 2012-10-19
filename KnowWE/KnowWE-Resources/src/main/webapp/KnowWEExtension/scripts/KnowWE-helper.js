@@ -302,7 +302,30 @@ KNOWWE.helper = function(){
         	} else {
         		dark.style.display = 'none';
         	}
-        }
+        },
+        
+        /**
+         * Returns the version of the page currently displayed.
+         * NB: This might not be the current version, if an edit happened in the meantime.
+         */
+        getPageVersion : function(){
+        	return document.getElementById('knowWEInfoPageVersion').value;
+        },
+        
+        /**
+         * Returns the date (as millis since 1970) of the modification of the page currently displayed.
+         * NB: This might not be the current date of modification, if an edit happened in the meantime.
+         */
+        getPageDate : function(){
+        	return document.getElementById('knowWEInfoPageDate').value;
+        },
+        
+        /**
+         * Returns the name of the current user
+         */
+        getUsername : function(){
+        	return document.getElementById('knowWEInfoUser').value;
+        },
     }
 }();
 

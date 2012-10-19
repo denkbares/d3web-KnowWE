@@ -236,6 +236,16 @@
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="correction.js" />
 	</extension>
+    
+	<extension plugin-id="KnowWEExtensionPoints" point-id="PageAppendHandler"
+		id="PageInfoAppendHandler">
+		<parameter id="class"
+			value="de.knowwe.core.append.PageInfoAppendHandler" />
+		<parameter id="name" value="PageInfoAppendHandler" />
+		<parameter id="description" value="Adds some infos to the page" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
 		id="CorrectionToolProvider">
