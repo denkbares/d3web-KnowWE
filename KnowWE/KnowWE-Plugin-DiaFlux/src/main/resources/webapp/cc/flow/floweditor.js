@@ -274,6 +274,9 @@ Flowchart.prototype.createDroppables = function(dom, contentPane, trashPane) {
 }
 
 FlowEditor.prototype._saveFlowchartText = function(xml, closeOnSuccess) {
+	var changeNote = prompt("Do you want to save your changes and exit? Please enter a change note below:");
+	if (changeNote == null) return; //return on cancel
+	
 	var url = "KnowWE.jsp";
 	new Ajax.Request(url, {
 		method: 'post',
@@ -281,7 +284,8 @@ FlowEditor.prototype._saveFlowchartText = function(xml, closeOnSuccess) {
 			action: 'SaveFlowchartAction',
 			KWiki_Topic: topic,			// article
 			TargetNamespace: nodeID,	// KDOM nodeID
-			KWikitext: xml				// content
+			KWikitext: xml,				// content
+			KWikiChangeNote : changeNote //change note for new page version
 		},
 		onSuccess: function(transport) {
 			if (window.opener) window.opener.location.reload();
@@ -539,7 +543,7 @@ Flowchart.prototype.toXML = function() {
 		xml += this.rules[i].toXML() + '\n';
 	}
 
-	xml += '</flowchart>\r\n'
+	xml += '</flowchart>\n'
 	return xml;
 }
 var SelectTool = {}
