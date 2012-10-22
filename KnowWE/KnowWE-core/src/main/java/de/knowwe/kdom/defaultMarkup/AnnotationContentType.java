@@ -23,6 +23,8 @@ package de.knowwe.kdom.defaultMarkup;
 import java.util.Collections;
 
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 
 public class AnnotationContentType extends AbstractType {
@@ -45,6 +47,25 @@ public class AnnotationContentType extends AbstractType {
 	@Override
 	public String getName() {
 		return this.annotation.getName();
+	}
+
+	/**
+	 * Returns the actual name parsed from the name section belonging to this
+	 * content section. This can differ, if the name was given as a regular
+	 * expression.
+	 * 
+	 * @return the parsed name of the annotation
+	 */
+	public String getName(Section<AnnotationContentType> section) {
+		if (!(section.get() instanceof AnnotationContentType)) {
+			throw new IllegalArgumentException("section must have the type "
+					+ AnnotationContentType.class.getSimpleName());
+		}
+		Section<AnnotationType> annotationSection = Sections.findAncestorOfType(section,
+				AnnotationType.class);
+		Section<AnnotationNameType> nameSection = Sections.findChildOfType(annotationSection,
+				AnnotationNameType.class);
+		return nameSection.get().getName(nameSection);
 	}
 
 	/**

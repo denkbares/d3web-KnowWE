@@ -263,8 +263,9 @@ public class DefaultMarkupType extends AbstractType {
 		}
 
 		for (Section<? extends Type> child : findAnnotationContentTypes(section)) {
-			String childName = child.get().getName();
-			if (childName.equalsIgnoreCase(name)) {
+			Section<AnnotationContentType> annotationContent = (Section<AnnotationContentType>) child;
+			String annotationName = annotationContent.get().getName(annotationContent);
+			if (annotationName.equalsIgnoreCase(name)) {
 				return (Section<? extends AnnotationContentType>) child;
 			}
 		}
@@ -290,8 +291,9 @@ public class DefaultMarkupType extends AbstractType {
 		}
 		List<Section<? extends AnnotationContentType>> results = new ArrayList<Section<? extends AnnotationContentType>>();
 		for (Section<? extends Type> child : findAnnotationContentTypes(section)) {
-			String childName = child.get().getName();
-			if (childName.equalsIgnoreCase(name)) {
+			Section<AnnotationContentType> annotationContent = (Section<AnnotationContentType>) child;
+			String annotationName = annotationContent.get().getName(annotationContent);
+			if (annotationName.equalsIgnoreCase(name)) {
 				results.add((Section<? extends AnnotationContentType>) child);
 			}
 		}

@@ -19,9 +19,11 @@
 package de.knowwe.kdom.defaultMarkup;
 
 import java.util.Collections;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 
 /**
@@ -32,25 +34,49 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
  */
 public class AnnotationNameType extends AbstractType {
 
+	private static final String ANNOTATION_NAME_KEY = "annotationNameKey";
 	private final DefaultMarkup.Annotation annotation;
+	private final Pattern namePattern;
 
 	public AnnotationNameType(DefaultMarkup.Annotation annotation) {
 		this.annotation = annotation;
-
-		this.setSectionFinder(new RegexSectionFinder(Pattern.compile("^@"
-				+ annotation.getName() + "\\s*[:=]?", Pattern.CASE_INSENSITIVE)));
-
+		this.namePattern = Pattern.compile("^@("
+				+ annotation.getName() + ")\\s*[:=]?", Pattern.CASE_INSENSITIVE);
+		this.setSectionFinder(new RegexSectionFinder(namePattern));
 		Collections.addAll(this.childrenTypes, this.annotation.getNameTypes());
 	}
 
 	/**
-	 * Returns the name of the underlying annotation defined.
+	 * Returns the name defined in the underlying annotation.
 	 * 
 	 * @return the annotation's name
 	 */
 	@Override
 	public String getName() {
 		return this.annotation.getName();
+	}
+
+	/**
+	 * Returns the actual name parsed from the {@link AnnotationNameType}
+	 * Section. This can differ, if the name was given as a regular expression.
+	 * 
+	 * @return the parsed name of the annotation
+	 */
+	public String getName(Section<AnnotationNameType> section) {
+		if (!(section.get() instanceof AnnotationNameType)) {
+			throw new IllegalArgumentException("section must have the type "
+					+ AnnotationNameType.class.getSimpleName());
+		}
+		String name = (String) section.getSectionStore().getObject(ANNOTATION_NAME_KEY);
+		if (name == null) {
+			Matcher matcher = namePattern.matcher(section.getText());
+			matcher.find();
+			// the has to be true/find something, because the
+			// section is parsed by the same regex
+			name = matcher.group(1);
+			section.getSectionStore().storeObject(ANNOTATION_NAME_KEY, name);
+		}
+		return name;
 	}
 
 	/**
