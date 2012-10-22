@@ -71,7 +71,7 @@ public class TermnameConventionTest extends AbstractTest<Article> {
 		if (invalidTerms.size() > 0) {
 			String result = "";
 			for (String string : invalidTerms) {
-				result += "* " + string + "\n";
+				result += "* " + Strings.maskJSPWikiMarkup(string) + "\n";
 			}
 			return new Message(
 					Message.Type.FAILURE,
