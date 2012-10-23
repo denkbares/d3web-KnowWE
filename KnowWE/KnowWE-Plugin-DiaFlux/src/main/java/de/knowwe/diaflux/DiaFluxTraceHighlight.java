@@ -78,6 +78,26 @@ public class DiaFluxTraceHighlight implements DiaFluxDisplayEnhancement {
 		else return false;
 	}
 
+	public static String getDeactivationJSAction() {
+		return "var url = window.location.href;" +
+				"if (url.search('highlight')!=-1)" +
+				"{url = url.replace(/highlight=[^&]*/g, 'highlight=none');}" +
+				"else {" +
+				"if (url.indexOf('?') == -1) {url += '?';}" +
+				"url = url.replace(/\\?/g,'?highlight=none&');}" +
+				"window.location = url;";
+	}
+
+	public static String getActivationJSAction(String highlightName) {
+		return "var url = window.location.href;" +
+				"if (url.search('highlight')!=-1)" +
+				"{url = url.replace(/highlight=[^&]*/g, 'highlight=" + highlightName + "');}" +
+				"else {" +
+				"if (url.indexOf('?') == -1) {url += '?';}" +
+				"url = url.replace(/\\?/g,'?highlight=" + highlightName + "&');}" +
+				"window.location = url;";
+	}
+
 	@Override
 	public String[] getScripts() {
 		return SCRIPTS;

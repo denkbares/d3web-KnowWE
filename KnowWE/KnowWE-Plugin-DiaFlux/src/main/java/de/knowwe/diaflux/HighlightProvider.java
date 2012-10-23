@@ -32,6 +32,8 @@ import de.knowwe.tools.ToolProvider;
  */
 public class HighlightProvider implements ToolProvider {
 
+	private static final String ICON = "KnowWEExtension/flowchart/icon/debug16.png";
+
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		Tool refresh = getHighlightTool(section, userContext);
@@ -44,32 +46,16 @@ public class HighlightProvider implements ToolProvider {
 						DiaFluxTraceHighlight.TRACE_HIGHLIGHT);
 
 		if (dohighlighting) {
-			String jsAction = "var url = window.location.href;" +
-					"if (url.search('highlight')!=-1)" +
-					"{url = url.replace(/highlight=[^&]*/g, 'highlight=none');}" +
-					"else {" +
-					"if (url.indexOf('?') == -1) {url += '?';}" +
-					"url = url.replace(/\\?/g,'?highlight=none&');}" +
-					"window.location = url;";
-			return new DefaultTool(
-					"KnowWEExtension/flowchart/icon/debug16.png",
-					"Hide Trace",
+			return new DefaultTool(ICON, "Hide Trace",
 					"Highlights active nodes and edges in the flowchart.",
-					jsAction);
+					DiaFluxTraceHighlight.getDeactivationJSAction());
 		}
 		else {
-			String jsAction = "var url = window.location.href;" +
-					"if (url.search('highlight')!=-1)" +
-					"{url = url.replace(/highlight=[^&]*/g, 'highlight=trace');}" +
-					"else {" +
-					"if (url.indexOf('?') == -1) {url += '?';}" +
-					"url = url.replace(/\\?/g,'?highlight=trace&');}" +
-					"window.location = url;";
 			return new DefaultTool(
-					"KnowWEExtension/flowchart/icon/debug16.png",
+					ICON,
 					"Show Trace",
 					"Highlights active nodes and edges in the flowchart.",
-					jsAction);
+					DiaFluxTraceHighlight.getActivationJSAction(DiaFluxTraceHighlight.TRACE_HIGHLIGHT));
 		}
 	}
 }
