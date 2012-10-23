@@ -2,33 +2,32 @@ DiaFlux.SubLink = {}
 
 DiaFlux.SubLink.getLinks = function(){
 	
+	var flow = this.flow;
 	
 	params = {
 		action : 'GetSubflowLinksAction',
-        kdomid: this.flow.kdomid,
+        kdomid: flow.kdomid,
 	};
 	
 	var options = {
 		url: KNOWWE.core.util.getURL( params ),
         response : {
             action: 'none',
-            fn: DiaFlux.SubLink.setLinks
+            fn: function(){DiaFlux.SubLink.setLinks(flow, this.responseXML);}
         }
     };
     new _KA(options).send();
 		
 } 
 
-DiaFlux.SubLink.setLinks = function(response) {
+DiaFlux.SubLink.setLinks = function(flow, xml) {
 	
-	var doc = this.responseXML;
-	
-	var flowid = doc.getElementsByTagName('flow')[0].getAttribute('id');
+	var flowid = xml.getElementsByTagName('flow')[0].getAttribute('id');
 	if (!flowid) {
 		return
 	}
-	var prefix = doc.getElementsByTagName('flow')[0].getAttribute('prefix');
-	var nodes = doc.getElementsByTagName('node');
+	var prefix = xml.getElementsByTagName('flow')[0].getAttribute('prefix');
+	var nodes = xml.getElementsByTagName('node');
 	
 	var flowDOM = $(flowid).getElementsBySelector('.FlowchartGroup')[0];
 	
@@ -43,6 +42,7 @@ DiaFlux.SubLink.setLinks = function(response) {
 		node.dom.innerHTML = "<a href='" + link +"'>" + node.dom.innerHTML +"</a>";
 	}
 	
+	KNOWWE.helper.observer.notify("flowchartlinked", {flow: flow});
 }
 
 KNOWWE.helper.observer.subscribe("flowchartrendered", DiaFlux.SubLink.getLinks);
