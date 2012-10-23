@@ -269,7 +269,7 @@ KNOWWE.editCommons.elements = function() {
         getSaveCancelDeleteButtons: function(id, additionalButtonArray) {
             var buttons = _EC.mode.getSaveCancelDeleteButtons(id, additionalButtonArray);
             return _EC.mode.getButtonsTable(buttons);
-        }
+        },
 
     }
 

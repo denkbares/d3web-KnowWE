@@ -157,7 +157,7 @@ KNOWWE.plugin.instantEdit = function() {
                 newWikiText = _IE.toolNameSpace[id].generateWikiText(id);
             }
             if (title == null) {
-                var title = _IE.toolNameSpace[id].getNewArticleTitle(id);
+                title = _IE.toolNameSpace[id].getNewArticleTitle(id);
             }
 
             var params = {
@@ -188,6 +188,14 @@ KNOWWE.plugin.instantEdit = function() {
                 _IE.save(id, "");
             }
         },
+        
+        deleteArticle : function(id) {
+        	var del = confirm("Do you really want to delete this content?");
+        	if (del) {
+        		var title = _IE.toolNameSpace[id].getCurrentArticleTitle(id); 	
+        		_IE.add(id, title, "");
+        	}
+        }, 
 
         disableDefaultEditTool: function() {
             $$('div.InstantEditTool').setStyle("display", "none");
