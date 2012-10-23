@@ -123,6 +123,7 @@
         <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
         <parameter id="css" value="table-edit-tool.css" />       
         <parameter id="scope" value="Table" />
+        <parameter id="scope" value="WikiTable" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
