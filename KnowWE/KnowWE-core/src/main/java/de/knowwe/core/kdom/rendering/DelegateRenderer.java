@@ -96,7 +96,7 @@ public class DelegateRenderer implements Renderer {
 		if (renderTypes) renderType(section, false, builder);
 	}
 
-	protected void renderSubSection(Section<?> subSection, UserContext user, StringBuilder builder) {
+	public void renderSubSection(Section<?> subSection, UserContext user, StringBuilder builder) {
 		renderAnchor(subSection, builder);
 
 		// any messageRenderer has pre- and post rendering hook
