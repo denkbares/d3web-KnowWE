@@ -116,7 +116,7 @@ public class Scope {
 		Type[] typePath = new Type[kdomDepth];
 		typePath[--kdomDepth] = section.get();
 		Section<?> father = section.getFather();
-		while (!father.get().getClass().equals(Article.class)) {
+		while (!father.get().getClass().equals(RootType.class)) {
 			typePath[--kdomDepth] = father.get();
 			father = father.getFather();
 		}

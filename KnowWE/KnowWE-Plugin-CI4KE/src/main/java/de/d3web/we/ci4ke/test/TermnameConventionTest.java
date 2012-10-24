@@ -29,6 +29,7 @@ import de.d3web.testing.TestParameter.Mode;
 import de.d3web.testing.TestParameter.Type;
 import de.d3web.testing.Utils;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -55,7 +56,7 @@ public class TermnameConventionTest extends AbstractTest<Article> {
 	@Override
 	public Message execute(Article testObject, String[] args, String[]... ignores) throws InterruptedException {
 		Pattern pattern = Pattern.compile(args[0]);
-		Section<Article> rootSection = testObject.getRootSection();
+		Section<RootType> rootSection = testObject.getRootSection();
 		List<Section<SimpleTerm>> terms = Sections.findSuccessorsOfType(rootSection,
 				SimpleTerm.class);
 		Set<String> invalidTerms = new HashSet<String>(); // using set to filter

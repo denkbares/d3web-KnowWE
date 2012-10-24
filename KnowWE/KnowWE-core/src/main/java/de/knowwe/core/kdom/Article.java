@@ -50,7 +50,7 @@ import de.knowwe.event.PreCompileFinishedEvent;
  * 
  * @author Jochen
  */
-public class Article extends AbstractType {
+public class Article {
 
 	/**
 	 * Name of this article (topic-name)
@@ -62,7 +62,7 @@ public class Article extends AbstractType {
 	/**
 	 * The section representing the root-node of the KDOM-tree
 	 */
-	private Section<Article> rootSection;
+	private Section<RootType> rootSection;
 
 	private Article lastVersion;
 
@@ -150,7 +150,6 @@ public class Article extends AbstractType {
 		this.currentStartTime = this.startTimeOverall;
 		this.title = title;
 		this.web = web;
-		this.childrenTypes.add(RootType.getInstance());
 		this.lastVersion = Environment.getInstance().getArticle(web, title);
 
 		boolean unchangedContent = lastVersion != null
@@ -213,7 +212,7 @@ public class Article extends AbstractType {
 	private void sectionizeArticle(String text) {
 
 		// create Sections recursively
-		rootSection = Section.createSection(text, this, null);
+		rootSection = Section.createSection(text, RootType.getInstance(), null);
 		rootSection.setArticle(this);
 		getRootType().getParser().parse(text, rootSection);
 
@@ -324,12 +323,11 @@ public class Article extends AbstractType {
 	 * Returns the simple name of this class, NOT THE NAME (Title) OF THIS
 	 * ARTICLE! For the articles title, use getTitle() instead!
 	 */
-	@Override
 	public String getName() {
 		return this.getClass().getSimpleName();
 	}
 
-	public Section<Article> getRootSection() {
+	public Section<RootType> getRootSection() {
 		return rootSection;
 	}
 
@@ -381,9 +379,9 @@ public class Article extends AbstractType {
 	}
 
 	public Type getRootType() {
-		return getChildrenTypes().get(0);
+		return RootType.getInstance();
 	}
-
+	
 	public ReviseIterator getReviseIterator() {
 		return this.reviseIterator;
 	}

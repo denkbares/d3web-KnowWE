@@ -37,6 +37,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.InjectType;
 import de.knowwe.core.kdom.objects.SimpleTerm;
@@ -557,9 +558,6 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	public String getWeb() {
-		if (this.type instanceof Article) {
-			return ((Article) type).getWeb();
-		}
 		return this.article.getWeb();
 	}
 
@@ -571,8 +569,8 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 * @return the depth of this Section inside the KDOM
 	 */
 	public int getDepth() {
-		if (get() instanceof Article) {
-			return 0;
+		if (get() instanceof RootType) {
+			return 1;
 		}
 		else {
 			return father.getDepth() + 1;

@@ -268,7 +268,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 				// RENDER PAGE
 				long start = System.currentTimeMillis();
-				article.getRenderer().render(article.getRootSection(), userContext,
+				article.getRootType().getRenderer().render(article.getRootSection(), userContext,
 						articleHTML);
 				Logger.getLogger(this.getClass().getName()).log(
 						Level.INFO, "Rendered article '" + article.getTitle() + "' in "
@@ -345,7 +345,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			Article article) {
 		if (article != null) {
 			StringBuilder articleString = new StringBuilder();
-			article.getRenderer().render(article.getRootSection(), userContext,
+			article.getRootType().getRenderer().render(article.getRootSection(), userContext,
 					articleString);
 			return articleString.toString();
 		}

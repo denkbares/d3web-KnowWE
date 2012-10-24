@@ -14,6 +14,7 @@ import java.util.Map;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.EmbracedType;
 import de.knowwe.core.wikiConnector.WikiConnector;
@@ -462,7 +463,7 @@ public class Sections {
 			father = father.getFather();
 		}
 
-		if (path.getFirst().isAssignableFrom(Article.class)) {
+		if (path.getFirst().isAssignableFrom(RootType.class)) {
 			return path;
 		}
 		else {
