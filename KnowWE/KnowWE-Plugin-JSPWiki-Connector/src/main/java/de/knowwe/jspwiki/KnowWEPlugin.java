@@ -72,6 +72,11 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	private static final String MORE_MENU = "MoreMenu";
 
 	private boolean wikiEngineInitialized = false;
+	private final List<String> supportArticleNames;
+
+	public KnowWEPlugin() {
+		supportArticleNames = Arrays.asList(MORE_MENU, LEFT_MENU, LEFT_MENU_FOOTER);
+	}
 
 	/**
 	 * To initialize KnowWE.
@@ -191,12 +196,12 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			return content;
 		}
 
-		/* creating KnowWEUserContext with username and requestParamteters */
-		if (!wikiContext.getCommand().getRequestContext().equals(
-				WikiContext.VIEW)) {
+		String context = wikiContext.getCommand().getRequestContext();
+		if (!(context.equals(WikiContext.VIEW) || context.equals(WikiContext.DIFF) || context.equals(WikiContext.EDIT))) {
 			return content;
 		}
 
+		/* creating KnowWEUserContext with username and requestParamteters */
 		JSPWikiUserContext userContext = new JSPWikiUserContext(wikiContext,
 				UserContextUtil.getParameters(wikiContext.getHttpRequest()));
 
@@ -205,14 +210,13 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		 * calls: they are handled and rendered from the KDOMs in the following
 		 */
 		String title = wikiContext.getRealPage().getName();
-		List<String> supportArticleNames = Arrays.asList(MORE_MENU, LEFT_MENU, LEFT_MENU_FOOTER);
+
 		if (supportArticleNames.contains(title)) {
 			Article supportArticle = Environment.getInstance()
 					.getArticle(Environment.DEFAULT_WEB, title);
 			if (supportArticle != null
 					&& supportArticle.getRootSection().getText().equals(
 							content)) {
-				includeDOMResources(wikiContext);
 				return renderKDOM(content, userContext, supportArticle);
 			}
 		}

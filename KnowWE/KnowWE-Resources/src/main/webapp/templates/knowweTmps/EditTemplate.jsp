@@ -1,7 +1,5 @@
 <%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ page import="java.util.*" %>
-<%@ page import="de.knowwe.core.RessourceLoader"%>
 <fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default"/>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -28,16 +26,6 @@
   <script type="text/javascript" src="KnowWEExtension/scripts/jQuery.js"></script>
   <script type="text/javascript" src="KnowWEExtension/scripts/jQueryCompatibility.js"></script>
   <wiki:Include page="commonheader.jsp"/>
-<% 
-	List<String> sheets = RessourceLoader.getInstance().getStylesheetIncludes();
-	for (String sheet : sheets) {	  
-		out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"KnowWEExtension/css/" + sheet + "\">");
-	}
-	List<String> scripts = RessourceLoader.getInstance().getScriptIncludes();
-	for (String script : scripts) {	  
-		out.println("<script type=\"text/javascript\" src=\"KnowWEExtension/scripts/" + script + "\"></script>");
-	}
-%>
 </head>
 
 <body <wiki:CheckRequestContext context='edit'>class="edit"</wiki:CheckRequestContext><wiki:CheckRequestContext context='comment'>class="comment"</wiki:CheckRequestContext> >
