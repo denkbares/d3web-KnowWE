@@ -35,6 +35,7 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -178,7 +179,7 @@ public class SaveFlowchartAction extends AbstractAction {
 		ArticleManager mgr = Environment.getInstance().getArticleManager(
 				context.getWeb());
 		Article article = mgr.getArticle(topic);
-		Section<Article> rootSection = article.getRootSection();
+		Section<RootType> rootSection = article.getRootSection();
 
 		// append flowchart to root section and replace it
 		String newArticle = rootSection.getText() + "\r\n%%DiaFlux\r\n" + newText
