@@ -33,6 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -180,8 +181,20 @@ public class D3webUtils {
 					D3webUtils.getKnowledgeRepresentationHandler(web);
 
 			if (knowledgeHandler != null) {
-				KnowledgeBase kb = knowledgeHandler.getKnowledgeBase(title);
-				return kb;
+
+				// check all existing KBs for kbID match
+				Set<String> kbArticles = knowledgeHandler.getKnowledgeArticles();
+				for (String articleName : kbArticles) {
+					KnowledgeBase kb = knowledgeHandler.getKnowledgeBase(articleName);
+					if (articleName.equals(title)) {
+						return kb;
+					}
+					if (kb != null && kb.getId().equals(title)) {
+						return kb;
+					}
+				}
+				return knowledgeHandler.getKnowledgeBase(title);
+
 			}
 		}
 		return null;
