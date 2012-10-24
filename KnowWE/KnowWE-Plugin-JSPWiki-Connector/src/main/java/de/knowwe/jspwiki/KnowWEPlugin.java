@@ -217,6 +217,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			if (supportArticle != null
 					&& supportArticle.getRootSection().getText().equals(
 							content)) {
+				includeDOMResources(wikiContext);
 				return renderKDOM(content, userContext, supportArticle);
 			}
 		}
