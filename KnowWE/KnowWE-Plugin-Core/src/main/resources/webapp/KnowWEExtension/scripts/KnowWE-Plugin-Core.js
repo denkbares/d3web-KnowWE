@@ -69,16 +69,19 @@ KNOWWE.core.plugin.objectinfo = function() {
 		 * Renames all occurrences of a specific term.
 		 */
 		renameTerm : function() {
+			
+			//TODO shouldn't these 3 be vars?
 			objectname = jq$('#objectinfo-target');
 			replacement = jq$('#objectinfo-replacement');
 			web = jq$('#objectinfo-web');
 			if (objectname && replacement && web) {
-				
+				var changeNote = 'Renaming: "' + objectname.val() + '" -> "' + replacement.val() +'"';
 				var params = {
 					action : jq$(replacement).attr('action'),
 					termname : objectname.val(),
 					termreplacement : replacement.val(),
-					KWikiWeb : web.val()
+					KWikiWeb : web.val(),
+					KWikiChangeNote: changeNote
 				}
 
 				var options = {
