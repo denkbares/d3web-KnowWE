@@ -132,7 +132,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 			Condition condition;
 
-			Section<GuardType> guardSection = Sections.findChildOfType(section, GuardType.class);
+			Section<GuardType> guardSection = Sections.findSuccessor(section, GuardType.class);
 			if (guardSection != null) {
 
 				Section<CompositeCondition> compositionConditionSection = Sections.findSuccessor(
