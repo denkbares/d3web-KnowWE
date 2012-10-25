@@ -216,7 +216,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 				articleLinks.append(KnowWEUtils.getURLLinkHTMLToArticle(articleTitle));
 			}
 
-			String errorText = "Multiple dashboards with same name on the follwing article"
+			String errorText = "Multiple dashboards with same name on the following article"
 					+ (articleTitles.size() > 1 ? "s" : "") + ": "
 					+ articleLinks.toString()
 					+ ". Make sure every Dashbaord has a wiki-wide unique name!";
