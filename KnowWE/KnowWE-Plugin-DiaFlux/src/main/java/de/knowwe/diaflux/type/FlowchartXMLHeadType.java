@@ -37,7 +37,7 @@ public class FlowchartXMLHeadType extends XMLHead {
 		addChildType(new FlowchartTermDef());
 	}
 
-	static class FlowchartTermDef extends SimpleDefinition {
+	public static class FlowchartTermDef extends SimpleDefinition {
 
 		public FlowchartTermDef() {
 			super(TermRegistrationScope.LOCAL, Flow.class);

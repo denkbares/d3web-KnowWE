@@ -1082,8 +1082,11 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				String text = "Unexpected internal error in subtree handler '" + handler
-						+ "' while creating for section '" + getID() + "' in article '"
+				String text = "Unexpected internal error in subtree handler '"
+						+ handler.getClass().getName()
+						+ "' while creating for '" + get().getClass().getSimpleName()
+						+ "' section '"
+						+ getID() + "' in article '"
 						+ getTitle() + "': " + e.toString();
 				Message msg = Messages.error(text);
 
