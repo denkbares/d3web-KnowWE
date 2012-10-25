@@ -37,19 +37,16 @@ import de.d3web.diaFlux.io.DiaFluxPersistenceHandler;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.diaflux.persistence.NodeHandler;
 import de.knowwe.diaflux.persistence.NodeHandlerManager;
 import de.knowwe.diaflux.type.EdgeType;
 import de.knowwe.diaflux.type.FlowchartType;
-import de.knowwe.diaflux.type.FlowchartXMLHeadType.FlowchartTermDef;
 import de.knowwe.diaflux.type.GuardType;
 import de.knowwe.diaflux.type.NodeType;
 import de.knowwe.diaflux.type.OriginType;
@@ -83,16 +80,6 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 
 		KnowledgeBase kb = getKB(article);
 		Section<XMLContent> flowcontent = AbstractXMLType.getContentChild(s);
-
-		Section<FlowchartTermDef> termDef = Sections.findSuccessor(s, FlowchartTermDef.class);
-		if (termDef != null) {
-			TermIdentifier termIdentifier = termDef.get().getTermIdentifier(termDef);
-			if (KnowWEUtils.getTerminologyManager(article).isDefinedTerm(
-					termIdentifier)) {
-				return Messages.asList(Messages.objectAlreadyDefinedError(
-						termIdentifier.toString()));
-			}
-		}
 
 		if (kb == null || flowcontent == null) {
 			return null;
