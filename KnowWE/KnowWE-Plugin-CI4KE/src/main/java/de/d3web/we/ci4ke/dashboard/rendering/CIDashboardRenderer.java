@@ -216,12 +216,12 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 				articleLinks.append(KnowWEUtils.getURLLinkHTMLToArticle(articleTitle));
 			}
 
-			String errorText = "Multiple Dashboards with same name on the follwing article"
+			String errorText = "Multiple dashboards with same name on the follwing article"
 					+ (articleTitles.size() > 1 ? "s" : "") + ": "
 					+ articleLinks.toString()
 					+ ". Make sure every Dashbaord has a wiki-wide unique name!";
 			renderMessagesOfType(Message.Type.ERROR,
-					Messages.asList(Messages.error((errorText))),
+					Messages.asList(Messages.error((Strings.maskHTML(errorText)))),
 					string);
 		}
 	}
