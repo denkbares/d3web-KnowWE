@@ -44,7 +44,7 @@ public class SolutionPanelUtils {
 		return false;
 	}
 
-	public static void renderSolution(Solution solution, Session session, StringBuilder content) {
+	public static void renderSolution(Solution solution, Session session, StringBuilder content, boolean endUser) {
 		// TODO: look for internationalization and only print getName,
 		// when no intlz is available
 		// content.append("* ");
@@ -52,6 +52,9 @@ public class SolutionPanelUtils {
 		String link = solution.getInfoStore().getValue(MMInfo.LINK);
 		String prompt = solution.getInfoStore().getValue(MMInfo.PROMPT);
 		String description = solution.getInfoStore().getValue(MMInfo.DESCRIPTION);
+		String infoLink = "Wiki.jsp?page=ObjectInfoPage" +
+				"&" + ObjectInfoTagHandler.TERM_IDENTIFIER + "=" + solution.getName() +
+				"&" + ObjectInfoTagHandler.OBJECT_NAME + "=" + solution.getName();
 
 		String tooltip = "";
 		if (description != null) tooltip = description;
@@ -61,23 +64,35 @@ public class SolutionPanelUtils {
 			tooltip = label + "\n" + tooltip;
 			label = prompt;
 		}
-
-		String stateName = renderImage(solution, session, content);
-		// render span for better testability
 		tooltip = tooltip.trim();
-		if (!tooltip.isEmpty()) tooltip = "title='" + tooltip.replace('\'', '"') + "' ";
+
+		// fetch derivation state icon
+		String stateName = renderImage(solution, session, content);
+
 		content.append(mask("<span " + tooltip + "class=\"SOLUTION-" + stateName + "\">"));
-		String infoLink = "Wiki.jsp?page=ObjectInfoPage" +
-				"&" + ObjectInfoTagHandler.TERM_IDENTIFIER + "=" + solution.getName() +
-				"&" + ObjectInfoTagHandler.OBJECT_NAME + "=" + solution.getName();
-		content.append(mask("<a href='" + infoLink + "'>" + label + "</a>"));
-
-		if (link != null) {
-			content.append(mask("<a href='" + link + "' target='solutionLink'> (link)</a>"));
+		if (endUser) {
+			// show solution in end user mode
+			if (prompt == null && description != null) {
+				label = description;
+			}
+			if (link != null) {
+				content.append(mask("<a href='" + link + "'>" + label + "</a>"));
+			}
+			else {
+				content.append(mask(label));
+			}
 		}
+		else {
+			// show solution in developer mode
+			if (!tooltip.isEmpty()) tooltip = "title='" + tooltip.replace('\'', '"') + "' ";
+			content.append(mask("<a href='" + infoLink + "'>" + label + "</a>"));
 
+			if (link != null) {
+				content.append(mask(" (" + "<a href='" + link + "' target='solutionLink'>link</a>"
+						+ ")"));
+			}
+		}
 		content.append(mask("</span>\n"));
-
 	}
 
 	public static String renderImage(Solution solution, Session session, StringBuilder content) {

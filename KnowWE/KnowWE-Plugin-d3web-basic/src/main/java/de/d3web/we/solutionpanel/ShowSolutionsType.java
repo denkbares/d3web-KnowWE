@@ -41,6 +41,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	private static final String ONLY_DERIVATIONS = "only_derivations";
 	private static final String EXCEPT_DERIVATIONS = "except_derivations";
 	private static final String SHOW_DIGITS = "show_digits";
+	private static final String END_USER_MODE = "end_user_mode";
 
 	public enum BoolValue {
 		TRUE, FALSE
@@ -58,6 +59,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ONLY_DERIVATIONS, false);
 		MARKUP.addAnnotation(EXCEPT_DERIVATIONS, false);
 		MARKUP.addAnnotation(SHOW_DIGITS, false);
+		MARKUP.addAnnotation(END_USER_MODE, false, BoolValue.values());
 
 		QuestionnaireReference qc = new QuestionnaireReference();
 		qc.setSectionFinder(new AllTextFinderTrimmed());
@@ -75,6 +77,11 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	public static String getText(Section<ShowSolutionsType> sec) {
 		assert sec.get() instanceof ShowSolutionsType;
 		return DefaultMarkupType.getContent(sec);
+	}
+
+	public static String getEndUserModeFlag(Section<ShowSolutionsType> sec) {
+		assert sec.get() instanceof ShowSolutionsType;
+		return DefaultMarkupType.getAnnotation(sec, END_USER_MODE);
 	}
 
 	public static String getMaster(Section<ShowSolutionsType> section) {

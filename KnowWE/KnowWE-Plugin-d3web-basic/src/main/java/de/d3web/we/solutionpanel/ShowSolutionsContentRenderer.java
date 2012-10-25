@@ -181,9 +181,17 @@ public class ShowSolutionsContentRenderer implements Renderer {
 			}
 		}
 
+		boolean endUserMode = false;
+		Section<ShowSolutionsType> markup = Sections.findAncestorOfType(section,
+				ShowSolutionsType.class);
+		String flagString = ShowSolutionsType.getEndUserModeFlag(markup);
+		if ("true".equalsIgnoreCase(flagString)) {
+			endUserMode = true;
+		}
+
 		// format the solutions
 		for (Solution solution : allSolutions) {
-			SolutionPanelUtils.renderSolution(solution, session, content);
+			SolutionPanelUtils.renderSolution(solution, session, content, endUserMode);
 		}
 
 		return content;
