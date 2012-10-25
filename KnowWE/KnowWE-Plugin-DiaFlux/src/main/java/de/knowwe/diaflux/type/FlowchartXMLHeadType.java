@@ -18,12 +18,23 @@
  */
 package de.knowwe.diaflux.type;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.regex.Pattern;
 
 import de.d3web.diaFlux.flow.Flow;
+import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
+import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.xml.XMLHead;
 
 /**
@@ -37,13 +48,32 @@ public class FlowchartXMLHeadType extends XMLHead {
 		addChildType(new FlowchartTermDef());
 	}
 
-	public static class FlowchartTermDef extends SimpleDefinition {
+	static class FlowchartTermDef extends SimpleDefinition {
 
 		public FlowchartTermDef() {
 			super(TermRegistrationScope.LOCAL, Flow.class);
 			setSectionFinder(new RegexSectionFinder(Pattern.compile("name=\"([^\"]*)\""), 1));
+			clearSubtreeHandlers();
+			addSubtreeHandler(Priority.HIGHER, new FlowchartRegistrationHandler());
 		}
 
+	}
+
+	static class FlowchartRegistrationHandler extends SubtreeHandler<FlowchartTermDef> {
+
+		@Override
+		public Collection<Message> create(Article article, Section<FlowchartTermDef> s) {
+			Collection<Message> messages = new ArrayList<Message>(1);
+			TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
+			TermIdentifier termIdentifier = s.get().getTermIdentifier(s);
+			if (terminologyManager.isDefinedTerm(termIdentifier)) {
+				messages.add(Messages.objectAlreadyDefinedError(termIdentifier.toString(), s));
+			}
+			terminologyManager.registerTermDefinition(s,
+					s.get().getTermObjectClass(s),
+					termIdentifier);
+			return messages;
+		}
 	}
 
 }

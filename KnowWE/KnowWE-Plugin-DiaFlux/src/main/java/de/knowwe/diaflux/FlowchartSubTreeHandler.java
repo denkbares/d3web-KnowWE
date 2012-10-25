@@ -81,7 +81,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		KnowledgeBase kb = getKB(article);
 		Section<XMLContent> flowcontent = AbstractXMLType.getContentChild(s);
 
-		if (kb == null || flowcontent == null) {
+		if (kb == null || flowcontent == null || s.hasErrorInSubtree()) {
 			return null;
 		}
 
