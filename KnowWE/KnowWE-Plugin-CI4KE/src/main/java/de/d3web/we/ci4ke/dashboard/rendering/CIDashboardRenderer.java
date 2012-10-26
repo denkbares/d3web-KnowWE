@@ -219,7 +219,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			String errorText = "Multiple dashboards with same name on the following article"
 					+ (articleTitles.size() > 1 ? "s" : "") + ": "
 					+ articleLinks.toString()
-					+ ". Make sure every Dashbaord has a wiki-wide unique name!";
+					+ ". Make sure every dashbaord has a wiki-wide unique name!";
 			renderMessagesOfType(Message.Type.ERROR,
 					Messages.asList(Messages.error((Strings.maskHTML(errorText)))),
 					string);
