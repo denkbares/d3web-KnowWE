@@ -71,6 +71,7 @@ public class JSPWikiConnector implements WikiConnector {
 
 	private ServletContext context = null;
 	private WikiEngine engine = null;
+	private final Object mutex = new Object();
 	public static final String LINK_PREFIX = "Wiki.jsp?page=";
 
 	public JSPWikiConnector(WikiEngine eng) {
@@ -466,8 +467,10 @@ public class JSPWikiConnector implements WikiConnector {
 	public boolean lockArticle(String title, String user) {
 		PageManager mgr = engine.getPageManager();
 		WikiPage page = new WikiPage(engine, title);
-		PageLock lock = mgr.lockPage(page, user);
-
+		PageLock lock = null;
+		synchronized (mutex) {
+			lock = mgr.lockPage(page, user);
+		}
 		if (lock != null) return true;
 		return false;
 	}
