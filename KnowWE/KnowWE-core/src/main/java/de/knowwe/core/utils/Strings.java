@@ -783,12 +783,12 @@ public class Strings {
 		}
 		catch (UnsupportedEncodingException e) {
 			Logger.getLogger(Strings.class.getName()).log(
-					Level.WARNING, "Unsupported encoding UTF-8", e);
+					Level.WARNING, e.getMessage());
 			return text;
 		}
 		catch (IllegalArgumentException e) {
 			Logger.getLogger(Strings.class.getName()).log(
-					Level.WARNING, "String to decode is not correctly encoded", e);
+					Level.WARNING, e.getMessage());
 			return text;
 		}
 	}
