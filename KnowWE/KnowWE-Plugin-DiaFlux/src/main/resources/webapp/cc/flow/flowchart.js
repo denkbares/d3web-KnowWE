@@ -20,7 +20,7 @@ Flowchart.loadFlowchart = function(kdomid, parent){
 	
 	var params = {
 		action : 'LoadFlowchartAction',
-		TargetNamespace : kdomid
+		SectionID : kdomid
 	};
 
 	// options for AJAX request

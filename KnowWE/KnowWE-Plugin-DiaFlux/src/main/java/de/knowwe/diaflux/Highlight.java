@@ -20,8 +20,8 @@ package de.knowwe.diaflux;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import de.d3web.diaFlux.flow.DiaFluxElement;
@@ -38,38 +38,43 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class Highlight {
 
-	private final Flow flow;
+	private final String parentId;
 	private final String prefix;
-	private final Map<Edge, Map<String, String>> edges;
-	private final Map<Node, Map<String, String>> nodes;
+	private final Map<String, Map<String, String>> edges;
+	private final Map<String, Map<String, String>> nodes;
 	public static final String EMPTY_HIGHLIGHT = "<flow></flow>";
 	public static final String TOOL_TIP = "title";
 	public static final String CSS_STYLE = "style";
 	public static final String CSS_CLASS = "class";
 
-	public Highlight(Flow flow, String prefix) {
-		this.flow = flow;
+	public Highlight(String parentId, String prefix) {
+		this.parentId = parentId;
 		this.prefix = prefix;
-		this.edges = new HashMap<Edge, Map<String, String>>();
-		this.nodes = new HashMap<Node, Map<String, String>>();
-	}
-
-	public Flow getFlow() {
-		return flow;
+		this.edges = new HashMap<String, Map<String, String>>();
+		this.nodes = new HashMap<String, Map<String, String>>();
 	}
 
 	public void add(Edge edge, String key, String value) {
-		putValue(edges, edge, key, value);
+		addEdge(edge.getID(), key, value);
+	}
+
+	public void addEdge(String id, String key, String value) {
+		putValue(edges, id, key, value);
 	}
 
 	public void add(Node node, String key, String value) {
-		putValue(nodes, node, key, value);
+		addNode(node.getID(), key, value);
 	}
 
-	private <T extends DiaFluxElement> void createHighlights(StringBuilder bob, Map<T, Map<String, String>> objects, String objectType) {
-		for (T element : objects.keySet()) {
+	public void addNode(String id, String key, String value) {
+		putValue(nodes, id, key, value);
+
+	}
+
+	private void createHighlights(StringBuilder bob, Map<String, Map<String, String>> objects, String objectType) {
+		for (String element : objects.keySet()) {
 			bob.append("<" + objectType + " id='");
-			bob.append(element.getID());
+			bob.append(element);
 			bob.append("' ");
 
 			Map<String, String> values = objects.get(element);
@@ -96,18 +101,16 @@ public class Highlight {
 
 	private void appendHeader(StringBuilder bob) {
 		bob.append("<flow id='");
-		bob.append(FlowchartUtils.escapeHtmlId(getFlow().getName()));
-		bob.append("' prefix ='" + prefix + "'>\r");
+		bob.append(parentId);
+		bob.append("' cssprefix ='" + prefix + "'>\r");
 
 	}
 
 	private void appendFooter(StringBuilder bob) {
 		bob.append("</flow>\r");
-		bob.append("\r");
-
 	}
 
-	private String getXML() {
+	public String getXML() {
 		StringBuilder bob = new StringBuilder();
 		appendHeader(bob);
 		createHighlights(bob, edges, "edge");
@@ -116,20 +119,29 @@ public class Highlight {
 		return bob.toString();
 	}
 
-	public void removeClassFromRemainingNodes() {
-		List<Edge> remainingEdges = new ArrayList<Edge>(flow.getEdges());
-		List<Node> remainingNodes = new ArrayList<Node>(flow.getNodes());
-		remainingEdges.removeAll(edges.keySet());
-		remainingNodes.removeAll(nodes.keySet());
+	public void removeClassFromRemainingNodes(Flow flow) {
+		Collection<String> remainingNodes = getRemainingIds(flow.getNodes(), nodes.keySet());
+		Collection<String> remainingEdges = getRemainingIds(flow.getEdges(), edges.keySet());
 
 		// clear classes on all remaining nodes and edges
-		for (Node node : remainingNodes) {
-			putValue(nodes, node, Highlight.CSS_CLASS, "");
+		for (String node : remainingNodes) {
+			addNode(node, Highlight.CSS_CLASS, "");
 		}
 
-		for (Edge edge : remainingEdges) {
-			putValue(edges, edge, Highlight.CSS_CLASS, "");
+		for (String edge : remainingEdges) {
+			addEdge(edge, Highlight.CSS_CLASS, "");
 		}
+	}
+
+	Collection<String> getRemainingIds(Collection<? extends DiaFluxElement> elements, Collection<String> ids) {
+		Collection<String> result = new ArrayList<String>(elements.size());
+
+		for (DiaFluxElement element : elements) {
+			result.add(element.getID());
+		}
+		result.removeAll(ids);
+		return result;
+
 	}
 
 	public String getPrefix() {

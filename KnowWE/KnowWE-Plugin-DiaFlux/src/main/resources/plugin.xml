@@ -65,6 +65,17 @@
 		<parameter id="scope" value="diaflux" />
 	</extension>
 	
+	<extension plugin-id="KnowWE-Plugin-DiaFlux" point-id="DiaFluxDisplayEnhancement"
+		id="DiaFluxDiffDisplay">
+		<parameter id="class"
+			value="de.knowwe.diaflux.DiaFluxDiffDisplay" />
+		<parameter id="name" value="DiaFluxDiffDisplay" />
+		<parameter id="description" value="DiaFluxDiffDisplay" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="diafluxdiff" />
+	</extension>
+	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="DiaFluxType">
 		<parameter id="class"
@@ -132,6 +143,16 @@
 			value="de.knowwe.diaflux.LoadFlowchartAction" />
 		<parameter id="name" value="LoadFlowchartAction" />
 		<parameter id="description" value="Action LoadFlowchartAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+			
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="GetDiffHighlightAction">
+		<parameter id="class"
+			value="de.knowwe.diaflux.GetDiffHighlightAction" />
+		<parameter id="name" value="GetDiffHighlightAction" />
+		<parameter id="description" value="Action GetDiffHighlightAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

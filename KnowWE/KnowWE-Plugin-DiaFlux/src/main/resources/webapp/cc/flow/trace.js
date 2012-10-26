@@ -1,3 +1,7 @@
+if (typeof DiaFlux == "undefined" || !DiaFlux) {
+    var DiaFlux = {};
+}
+
 DiaFlux.Trace = {}
 
 DiaFlux.Trace.getTrace = function(){

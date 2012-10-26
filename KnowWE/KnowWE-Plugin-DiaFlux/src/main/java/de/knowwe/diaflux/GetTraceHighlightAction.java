@@ -30,7 +30,6 @@ import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.diaFlux.inference.FluxSolver;
 import de.d3web.we.basic.SessionProvider;
-import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -42,53 +41,50 @@ import de.knowwe.diaflux.type.FlowchartType;
  * @author Reinhard Hatko
  * @created 08.06.2011
  */
-public class GetTraceHighlightAction extends AbstractAction {
+public class GetTraceHighlightAction extends AbstractHighlightAction {
 
-	private static final String PREFIX = "trace";
-	private static final String TRACE_ACTIVE_CLASS = PREFIX + "Active";
-	private static final String TRACE_SNAP_CLASS = PREFIX + "Snap";
+	static final String PREFIX = "trace";
+	static final String TRACE_ACTIVE_CLASS = PREFIX + "Active";
+	static final String TRACE_SNAP_CLASS = PREFIX + "Snap";
+
 
 	@Override
-	public void execute(UserActionContext context) throws IOException {
+	public String getPrefix() {
+		return PREFIX;
+	}
 
-		String kdomid = context.getParameter("kdomid");
-
-		Section<FlowchartType> flowchart = Sections.getSection(kdomid, FlowchartType.class);
+	@Override
+	public void insertHighlighting(Section<FlowchartType> flowchart, Highlight highlight, UserActionContext context) throws IOException {
 		Section<DiaFluxType> diaFluxSec = Sections.findAncestorOfExactType(flowchart,
 				DiaFluxType.class);
 
 		KnowledgeBase kb = FlowchartUtils.getKB(diaFluxSec);
 		Session session = SessionProvider.getSession(context, kb);
 
-		if (flowchart == null || session == null) {
-			Highlight.writeEmpty(context);
+		if (session == null) {
 			return;
 		}
-		String flowName = FlowchartType.getFlowchartName(flowchart);
 
-		DiaFluxCaseObject diaFluxCaseObject = DiaFluxUtils.getDiaFluxCaseObject(session);
+		Flow flow = findFlow(flowchart, kb);
+
 		DiaFluxTrace trace = FlowchartUtils.getTrace(session);
-		
-		Flow flow = DiaFluxUtils.getFlowSet(session).get(flowName);
-		Highlight highlight = new Highlight(flow, PREFIX);
-
-
 		// first highlight traced nodes/edges to yellow
 		for (Node node : trace.getTracedNodes()) {
-			if (node.getFlow().getName().equals(flowName)) {
+			if (node.getFlow().equals(flow)) {
 				highlight.add(node, Highlight.CSS_CLASS, TRACE_SNAP_CLASS);
 			}
 		}
 		for (Edge edge : trace.getTracedEdges()) {
-			if (edge.getStartNode().getFlow().getName().equals(flowName)) {
+			if (edge.getStartNode().getFlow().equals(flow)) {
 				highlight.add(edge, Highlight.CSS_CLASS, TRACE_SNAP_CLASS);
 			}
 		}
 
+		DiaFluxCaseObject diaFluxCaseObject = DiaFluxUtils.getDiaFluxCaseObject(session);
 		// then highlight all currently active nodes/edges to green
 		for (FlowRun run : diaFluxCaseObject.getRuns()) {
 			for (Node node : run.getActiveNodes()) {
-				if (node.getFlow().getName().equals(flowName)) {
+				if (node.getFlow().equals(flow)) {
 					highlight.add(node, Highlight.CSS_CLASS, TRACE_ACTIVE_CLASS);
 
 					for (Edge edge : node.getOutgoingEdges()) {
@@ -100,23 +96,24 @@ public class GetTraceHighlightAction extends AbstractAction {
 			}
 		}
 
-		highlight.removeClassFromRemainingNodes();
+		highlight.removeClassFromRemainingNodes(flow);
 
 		for (Node node : flow.getNodes()) {
 			addValueTooltip(session, highlight, node);
 		}
-
-		highlight.write(context);
-
 	}
 
-
-	private void addValueTooltip(Session session, Highlight highlight, Node node) {
+	public static void addValueTooltip(Session session, Highlight highlight, Node node) {
 		String tooltip = FlowchartUtils.getValueTrace(session).getValueString(node);
 		if (tooltip != null) {
 			highlight.add(node, Highlight.TOOL_TIP, tooltip);
 		}
 
+	}
+
+	public static Flow findFlow(Section<FlowchartType> flowchart, KnowledgeBase kb) {
+		String flowchartName = FlowchartType.getFlowchartName(flowchart);
+		return DiaFluxUtils.getFlowSet(kb).get(flowchartName);
 	}
 
 

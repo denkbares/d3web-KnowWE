@@ -110,11 +110,10 @@ public class FlowchartUtils {
 	}
 
 	private static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String scope) {
-		String parent = FlowchartType.getFlowchartName(section);
-		return createFlowchartRenderer(section, user, parent, scope, isInsertRessources(section));
+		return createFlowchartRenderer(section, user, getParentID(section), scope, isInsertRessources(section));
 	}
 
-	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String parent, String scope, boolean insertRessources) {
+	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String parentId, String scope, boolean insertRessources) {
 
 		if (user.getWeb() == null) return "";
 
@@ -123,18 +122,23 @@ public class FlowchartUtils {
 		if (insertRessources) {
 			insertDiafluxRessources(result, user);
 			addDisplayPlugins(result, user, scope);
+			result.append("\n");
 		}
 
-		parent = escapeHtmlId(parent);
+		parentId = escapeHtmlId(parentId);
 
-		result.append("\n");
-		result.append("<div id='" + parent + "'>");
+		result.append("<div id='" + parentId + "'>");
 		result.append("<script>");
-		result.append("Flowchart.loadFlowchart('" + section.getID() + "', '" + parent + "');");
+		result.append("Flowchart.loadFlowchart('" + section.getID() + "', '" + parentId + "');");
 		result.append("</script></div></div>\n");
 
 		return result.toString();
 
+	}
+
+	public static String getParentID(Section<FlowchartType> section) {
+		String flowName = FlowchartType.getFlowchartName(section);
+		return escapeHtmlId(flowName);
 	}
 
 	public static String escapeHtmlId(String text) {
@@ -207,8 +211,7 @@ public class FlowchartUtils {
 
 	// Just to load from old articles still containing preview. Should be
 	// removed in the future
-	public static String getFlowSourceWithoutPreview(Section<FlowchartType> section) {
-		String source = section.getText();
+	public static String removePreview(String source) {
 		int previewIndex = source.lastIndexOf("<preview");
 		// remove preview
 		if (previewIndex != -1) {
