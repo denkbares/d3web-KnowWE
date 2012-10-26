@@ -71,12 +71,27 @@ public class JSPWikiConnector implements WikiConnector {
 
 	private ServletContext context = null;
 	private WikiEngine engine = null;
-	private final Object mutex = new Object();
 	public static final String LINK_PREFIX = "Wiki.jsp?page=";
 
 	public JSPWikiConnector(WikiEngine eng) {
 		this.context = eng.getServletContext();
 		this.engine = eng;
+		initPageLocking();
+	}
+
+	/**
+	 * We need this method, because there is the possibility of an
+	 * IllegalThreadStateException while initializing the lock reaper of the
+	 * PageManager, if the first call of lockPage is done in parallel by two
+	 * threads. To avoid this, we call this directly at startup in a safe way.
+	 * 
+	 * @created 26.10.2012
+	 */
+	private void initPageLocking() {
+		PageManager mgr = engine.getPageManager();
+		WikiPage page = new WikiPage(engine, "Dummy");
+		PageLock lock = mgr.lockPage(page, "Dummy");
+		mgr.unlockPage(lock);
 	}
 
 	@Override
@@ -467,10 +482,8 @@ public class JSPWikiConnector implements WikiConnector {
 	public boolean lockArticle(String title, String user) {
 		PageManager mgr = engine.getPageManager();
 		WikiPage page = new WikiPage(engine, title);
-		PageLock lock = null;
-		synchronized (mutex) {
-			lock = mgr.lockPage(page, user);
-		}
+		PageLock lock = mgr.lockPage(page, user);
+
 		if (lock != null) return true;
 		return false;
 	}
