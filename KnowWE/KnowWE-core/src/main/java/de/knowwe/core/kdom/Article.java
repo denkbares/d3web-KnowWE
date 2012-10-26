@@ -216,7 +216,6 @@ public class Article {
 		rootSection.setArticle(this);
 		getRootType().getParser().parse(text, rootSection);
 
-		rootSection.setAbsolutePositionStartInArticle(0);
 		rootSection.clearReusedSuccessorRecursively();
 
 		if (lastVersion != null) {

@@ -407,19 +407,11 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 
 	public int getAbsolutePositionStartInArticle() {
 		if (absolutePositionStartInArticle == -1) {
-			calcAbsolutePositionStart();
+			int fatherStart = father != null ? father.getAbsolutePositionStartInArticle() : 0;
+			absolutePositionStartInArticle = getOffSetFromFatherText()
+					+ fatherStart;
 		}
 		return absolutePositionStartInArticle;
-	}
-
-	public void setAbsolutePositionStartInArticle(int absolutePositionStartInArticle) {
-		this.absolutePositionStartInArticle = absolutePositionStartInArticle;
-	}
-
-	private void calcAbsolutePositionStart() {
-		absolutePositionStartInArticle = getOffSetFromFatherText()
-				+ father.getAbsolutePositionStartInArticle();
-
 	}
 
 	public void removeAllChildren() {
