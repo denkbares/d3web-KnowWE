@@ -185,10 +185,10 @@ DenkbaresSkin.cleanTrail = function() {
 	// remove duplicate entries
 	for (var i = crumbs.length - 1; i >= 0; i--) {
 		var crumb = crumbs[i];
-		var crumbText = jq$(crumb).text();
-		var existingEntry = crumbsCheck[crumbText];
+		var crumbHtml = jq$(crumb).clone().wrap('<p>').parent().html();
+		var existingEntry = crumbsCheck[crumbHtml];
 		if (typeof existingEntry == "undefined") {
-			crumbsCheck[crumbText] = i;
+			crumbsCheck[crumbHtml] = i;
 		} else {
 			jq$(crumb).remove();
 			if (i == 0) removeBecauseLeadingComma = true;
