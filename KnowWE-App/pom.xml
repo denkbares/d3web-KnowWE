@@ -309,6 +309,55 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		<profile>
+			<id>caseviz</id>
+			<activation>
+				<property>
+					<name>caseviz</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-d3web-CaseViz</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>diafluxreview</id>
+			<activation>
+				<property>
+					<name>diafluxreview</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-DiaFlux-Review</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>wikibaseline</id>
+			<activation>
+				<property>
+					<name>wikibaseline</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-WikiBaseline</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		
 
 		<profile>
 			<id>onte</id>
