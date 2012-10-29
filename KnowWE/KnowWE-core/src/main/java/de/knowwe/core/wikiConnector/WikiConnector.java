@@ -228,6 +228,16 @@ public interface WikiConnector {
 	public int getVersionCount(String title);
 
 	/**
+	 * Returns the change note of the given version of the article with the
+	 * given title. If the article or the version do not exist, <tt>null</tt> is
+	 * returned. To get the latest version, pass -1 as the version attribute.
+	 * 
+	 * @param title the title of the article
+	 * @param version the version number of the article source to be retrieved
+	 */
+	public String getChangeNote(String title, int version);
+
+	/**
 	 * Checks whether a article has a editing lock (due to another user who has
 	 * started to edit it)
 	 * 

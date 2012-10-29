@@ -439,6 +439,24 @@ public class JSPWikiConnector implements WikiConnector {
 		return 0;
 	}
 
+	@Override
+	public String getChangeNote(String title, int version) {
+		PageManager pm = engine.getPageManager();
+		try {
+			WikiPage pageInfo = pm.getPageInfo(title, version);
+			if (pageInfo == null) {
+				return null;
+			}
+			String note = (String) pageInfo.getAttribute(WikiPage.CHANGENOTE);
+			return note == null ? "" : note;
+		}
+		catch (ProviderException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
 	public String getWikiProperty(String property) {
 		String path = (String) engine.getWikiProperties().get(property);
 		return path;

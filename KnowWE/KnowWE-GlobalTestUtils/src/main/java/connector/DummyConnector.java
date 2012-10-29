@@ -230,6 +230,13 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
+	public String getChangeNote(String title, int version) {
+		Logger.getLogger(this.getClass().getName()).warning(
+				"The used WikiConnector does not support change notes");
+		return "";
+	}
+
+	@Override
 	public boolean isArticleLocked(String title) {
 		return locks.containsKey(title);
 	}
