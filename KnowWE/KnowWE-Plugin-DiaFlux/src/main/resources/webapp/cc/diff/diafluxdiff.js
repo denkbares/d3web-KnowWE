@@ -26,8 +26,31 @@ DiaFlux.Diff.getHighlight = function(){
 	// creating the flowchart renderer from the old versions
 	if (renderStatus.LEFTkdomid && renderStatus.RGHTkdomid){
 		DiaFlux.Highlight.getHighlights.call(this, 'GetDiffHighlightAction',renderStatus);
+		DiaFlux.Diff.attachScrollSync(this.flow.parent);
 	}
 	
-} 
+}
+DiaFlux.Diff.attachScrollSync = function(flow){
+	var parentDiv = jq$(flow).closest('.flowChanged');
+	var box = parentDiv.find(".scrollSync input")[0];
+	
+	var flows = parentDiv.find('.FlowchartGroup');
+	var left = jq$(jq$(flows[0]).closest('.flowchartContainer')); 
+	var right = jq$(jq$(flows[1]).closest('.flowchartContainer')); 
+	
+	left.on('scroll', function () {
+		if (box.checked){
+			right.scrollLeft(left.scrollLeft());
+			
+		}
+	});
+	right.on('scroll', function () { 
+		if (box.checked){
+			left.scrollLeft(right.scrollLeft());
+		}
+	});
+	
+	
+}
 
 KNOWWE.helper.observer.subscribe("flowchartrendered", DiaFlux.Diff.getHighlight);

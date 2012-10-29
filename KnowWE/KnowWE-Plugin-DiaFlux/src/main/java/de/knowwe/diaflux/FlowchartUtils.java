@@ -117,7 +117,7 @@ public class FlowchartUtils {
 
 		if (user.getWeb() == null) return "";
 
-		StringBuilder result = new StringBuilder("<div>");
+		StringBuilder result = new StringBuilder("<div class='flowchartContainer'>");
 
 		if (insertRessources) {
 			insertDiafluxRessources(result, user);

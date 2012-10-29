@@ -200,9 +200,10 @@ public class FlowchartDiffProvider implements DiffProvider {
 	private void renderChangedFlow(UserContext user, Pair<Section<FlowchartType>, Section<FlowchartType>> pair, StringBuffer buffy, boolean insert) {
 		String parentID = FlowchartUtils.getParentID(pair.getA());
 		buffy.append("<div class=\"flowChanged\" id=\"diffParent" + parentID + "\">");
-
 		insertFlowRenderer(user, pair.getA(), buffy, insert, parentID + "-LEFT");
 		insertFlowRenderer(user, pair.getB(), buffy, false, parentID + "-RGHT");
+		// TODO label
+		buffy.append("<span class=\"scrollSync\"><input type=\"checkbox\" checked=\"checked\">Synchronize scrolling</span>");
 		buffy.append("</div>");
 	}
 

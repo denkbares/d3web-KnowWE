@@ -20,3 +20,8 @@
 .diffChanged {
 	border: 2px solid yellow;
 }
+
+span.scrollSync {
+	margin: 0.5em;
+	display:block;
+}
