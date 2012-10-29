@@ -344,7 +344,21 @@ public class KnowWEUtils {
 	 * @see #getWikiLink(Section)
 	 */
 	public static String getURLLink(String title) {
-		return "Wiki.jsp?page=" + title;
+		return getURLLink(title, -1);
+	}
+
+	/**
+	 * Creates a &lt;a href="..."&gt; styled link to the specified article in
+	 * the specified version.
+	 * 
+	 * @param title the article title to create the link for
+	 * @param version the article version to link to
+	 * @return the created link
+	 * @see #getURLLink(Section)
+	 * @see #getWikiLink(Section)
+	 */
+	public static String getURLLink(String title, int version) {
+		return "Wiki.jsp?page=" + title + (version != -1 ? "&version=" + version : "");
 	}
 
 	/**
@@ -372,6 +386,21 @@ public class KnowWEUtils {
 	 */
 	public static String getURLLink(Section<?> section) {
 		return "Wiki.jsp?page=" + section.getTitle() + "#" + getAnchor(section);
+	}
+
+	/**
+	 * Creates a &lt;a href="..."&gt; styled link to the diff of the specified
+	 * article.
+	 * 
+	 * @param title the article title to create the link for
+	 * @param version1 the first version
+	 * @param version2 the second version
+	 * @return the created link
+	 * @see #getURLLink(Section)
+	 * @see #getWikiLink(Section)
+	 */
+	public static String getDiffURLLink(String title, int version1, int version2) {
+		return "Diff.jsp?page=" + title + "&r1=" + version1 + "&r2=" + version2;
 	}
 
 	public static String getVersionsSavePath() {
