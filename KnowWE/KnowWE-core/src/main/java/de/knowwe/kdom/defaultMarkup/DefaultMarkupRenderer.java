@@ -421,7 +421,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		return "<script>\n" +
 				"var makeMenuFx = function() {\n" +
 				"var a=$('header_" + id + "'),c=$('menu_" + id + "');\n" +
-				"if(!a||!c){}\n" +
+				"if(!a||!c){return;}\n" +
 				"var b=c.effect(\"opacity\",{wait:false}).set(0);\n" +
 				"a.adopt(c).set({href:\"#\",events:{" +
 				"mouseout:function(){b.start(0);}," +
