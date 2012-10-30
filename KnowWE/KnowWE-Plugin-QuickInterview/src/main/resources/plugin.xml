@@ -37,4 +37,15 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="QuickInterviewMarkup">
+		<parameter id="class"
+			value="de.d3web.we.quicki.QuickInterviewMarkup" />
+		<parameter id="name" value="QuickInterviewMarkup" />
+		<parameter id="description" value="Markup for QuickInterview" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+		<parameter id="script" value="quicki.js" />
+	</extension>
 </plugin>
