@@ -197,7 +197,10 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		}
 
 		String context = wikiContext.getCommand().getRequestContext();
-		if (!(context.equals(WikiContext.VIEW) || context.equals(WikiContext.DIFF) || context.equals(WikiContext.EDIT))) {
+		if (!(context.equals(WikiContext.VIEW)
+				|| context.equals(WikiContext.DIFF)
+				|| context.equals(WikiContext.EDIT)
+				|| context.equals(WikiContext.FIND))) {
 			return content;
 		}
 
