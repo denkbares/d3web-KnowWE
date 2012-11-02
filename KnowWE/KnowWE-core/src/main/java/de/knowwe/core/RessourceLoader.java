@@ -105,12 +105,12 @@ public class RessourceLoader {
 	 */
 	private void loadDefaultResources() {
 		addFirst("KnowWE-notification.js", RessourceLoader.RESOURCE_SCRIPT);
-		addFirst("jquery-ui-1.8.23.custom.min.js", RessourceLoader.RESOURCE_SCRIPT);
-		addFirst("jQueryCompatibility.js", RessourceLoader.RESOURCE_SCRIPT);
-		addFirst("jQuery.js", RessourceLoader.RESOURCE_SCRIPT);
 		addFirst("KnowWE.js", RessourceLoader.RESOURCE_SCRIPT);
 		addFirst("KnowWE-helper.js", RessourceLoader.RESOURCE_SCRIPT);
 		addFirst("general.css", RessourceLoader.RESOURCE_STYLESHEET);
+		addFirst("jquery-ui-1.8.23.custom.min.js", RessourceLoader.RESOURCE_SCRIPT);
+		addFirst("jQueryCompatibility.js", RessourceLoader.RESOURCE_SCRIPT);
+		addFirst("jQuery.js", RessourceLoader.RESOURCE_SCRIPT);
 	}
 
 	/**
