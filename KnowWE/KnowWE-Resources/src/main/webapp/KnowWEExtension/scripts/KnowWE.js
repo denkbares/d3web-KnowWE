@@ -422,6 +422,24 @@ KNOWWE.core.util.form = function(){
  * Rerenders parts of the article.
  */
 KNOWWE.core.rerendercontent = function(){
+	
+	//helper functions for defaultmarkup menu animation
+	var hideMenu = function(header, menu) {
+		header.stop().animate({'max-width': 35, 'z-index': 1000, opacity: 0.3}, 200);
+		if (menu){
+			menu.hide();
+		}
+	}
+
+	var showMenu = function(header, menu) {
+		header.stop().animate({'max-width': 250, 'z-index': 1500, opacity: 1}, 200);
+		if(menu){
+			menu.show();
+			menu.stop().animate({opacity: 0.9},100);
+		}
+	}
+	
+	
     return {
         /**
          * Function: init
@@ -506,6 +524,30 @@ KNOWWE.core.rerendercontent = function(){
             }
         	KNOWWE.core.util.updateProcessingState(1);
             new _KA( options ).send();
+        },
+        
+        /**
+         * Function: animateDefaultMarkupMenu
+         * Creates the animation for the menu of an defaultmarkup
+         * 
+         * Parameters
+         * 		frame - the frame of the defaultmarkup as JQuery object
+         */
+        animateDefaultMarkupMenu : function($frame) {
+        	
+    		var header = $frame.find('.headerMenu');
+    		var menu = $frame.find('.markupMenu');
+    		if (menu.length == 0){
+    			header.find('.markupMenuIndicator').hide();
+    		}
+    		
+    		header.on('mouseout', function(e){
+    			hideMenu(header, menu);
+    		}).on('mouseover', function(e){
+    			showMenu(header, menu);
+    		});
+    		
+    		hideMenu(header, menu);
         }
     }
 }();
@@ -536,6 +578,11 @@ var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
 (function init(){
     
     window.addEvent( 'domready', _KL.setup );
+    window.addEvent( 'domready', function() {
+    	jq$('.defaultMarkupFrame').each(function(index, frame){
+    		KNOWWE.core.rerendercontent.animateDefaultMarkupMenu(jq$(frame));
+    	}); 
+    });
 
     if( KNOWWE.helper.loadCheck( ['Wiki.jsp'] )){
         window.addEvent( 'domready', function(){

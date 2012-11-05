@@ -288,11 +288,6 @@ public class DefaultMarkupRenderer implements Renderer {
 		string.append(Strings.maskHTML("</div>")); // class=defaultMarkup
 		string.append(Strings.maskHTML("</div>"));
 
-		if (renderMode == ToolsRenderMode.MENU) {
-			string.append(Strings.maskHTML(renderTitleAnimation(sectionID)));
-			string.append(Strings.maskHTML(renderMenuAnimation(sectionID)));
-		}
-
 	}
 
 	protected void renderHeader(String title,
@@ -400,36 +395,6 @@ public class DefaultMarkupRenderer implements Renderer {
 				" <span>" + tool.getTitle() + "</span>" +
 				"</" + (jsAction == null ? "span" : "a") + ">" +
 				"</div></div>";
-	}
-
-	protected String renderTitleAnimation(String id) {
-		return "<script>\n" +
-				"var makeTitleFx = function() {\n" +
-				"var a=$('header_" + id + "');\n" +
-				"var b=a.effect(\"opacity\",{wait:false,duration:200}).set(0.3);\n" +
-				"var d=a.effect(\"max-width\",{wait:false}).set(35);\n" +
-				"a.set({href:\"#\",events:{" +
-				"mouseout:function(){b.start(0.3);d.start(35);a.style['z-index']=1000;}," +
-				"click:function(){b.start(1);d.start(250);a.style['z-index']=1500;}," +
-				"mouseover:function(){b.start(1);d.start(250);a.style['z-index']=1500;}}});" +
-				"};" +
-				"makeTitleFx();" +
-				"</script>\n";
-	}
-
-	protected String renderMenuAnimation(String id) {
-		return "<script>\n" +
-				"var makeMenuFx = function() {\n" +
-				"var a=$('header_" + id + "'),c=$('menu_" + id + "');\n" +
-				"if(!a||!c){return;}\n" +
-				"var b=c.effect(\"opacity\",{wait:false}).set(0);\n" +
-				"a.adopt(c).set({href:\"#\",events:{" +
-				"mouseout:function(){b.start(0);}," +
-				"click:function(){b.start(0.9);}," +
-				"mouseover:function(){b.start(0.9);}}});" +
-				"};" +
-				"makeMenuFx();" +
-				"</script>\n";
 	}
 
 	public ToolsRenderMode getRenderMode() {
