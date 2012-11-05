@@ -390,11 +390,12 @@ public class KnowWEUtils {
 
 	/**
 	 * Creates a &lt;a href="..."&gt; styled link to the diff of the specified
-	 * article.
+	 * article. Usually, version1 is the newer version and version2 the older
+	 * one.
 	 * 
 	 * @param title the article title to create the link for
-	 * @param version1 the first version
-	 * @param version2 the second version
+	 * @param version1 the version containing the changes
+	 * @param version2 the base version
 	 * @return the created link
 	 * @see #getURLLink(Section)
 	 * @see #getWikiLink(Section)
