@@ -43,7 +43,8 @@
         <parameter id="scope" value="CoveringListMarkup" />
         <parameter id="scope" value="CIDashboardType" />
         <parameter id="scope" value="CoveringListSettingsMarkup" />
-         <parameter id="scope" value="OntoVisType" />
+       	<parameter id="scope" value="OntoVisType" />
+        <parameter id="scope" value="HierarchyMarkup" />
     </extension>
  
     <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
