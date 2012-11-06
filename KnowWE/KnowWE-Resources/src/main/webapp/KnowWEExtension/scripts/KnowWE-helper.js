@@ -377,54 +377,41 @@ KNOWWE.helper.message = function() {
 		},
 		
 		showOKCancelDialog : function(el, title, okAction) {
+			
+			var hide = function(){
+				div.remove();
+				KNOWWE.helper.greyOut();
+			}
+
 			KNOWWE.helper.greyOut();
+			var div = jq$('<div>', {'class': 'message-dialog', id: 'knowwe_message'})
+			.css({
+				height: 200, width: 500, 'margin-top': -100, 'margin-left': -250, opacity: 1
+			})
+			.append(jq$('<h2>').text(title))
+			.append(el)
+			.appendTo(document.body);
 			
-			var div = new Element('div', {
-				'class': 'message-dialog',
-				id: 'knowwe_message',
-				styles: {
-					height: 200,
-					width: 500,
-					'margin-top': -100,
-					'margin-left': -250,
-					opacity: 1
-				}
-			}).inject(document.body);
+			var ok=jq$('<button>').text('Ok')
+			.on('click', function(){
+				okAction();
+				hide();
+			});
 			
-			var h2 = new Element('h2').inject(div);
-			h2.setText(title);
+			var cancel=jq$('<button>').text('Cancel')
+			.on('click', function(){
+				hide();
+			});
 			
-			el.inject(div);
+			var buttons = jq$('<div>', {'class':'buttons'}).appendTo(div)
+			.append(ok)
+			.append(cancel);
 			
-			var buttons = new Element('div', {
-				'class': 'buttons'
-			}).inject(div);
-			
-			var ok = new Element('button', {
-				events: {
-					click: function(e) {
-						okAction();
-						$('knowwe_message').remove();
-						KNOWWE.helper.greyOut();
-					}
-				}
-			}).inject(buttons);
-			
-			var cancel = new Element('button', {
-				events: {
-					click: function(e) {
-						$('knowwe_message').remove();
-						KNOWWE.helper.greyOut();
-					}
-				}
-			}).inject(buttons);
-			
-			cancel.setText("Cancel");
-			ok.setText("OK");
+
 		}
 	
 	
-	}
+	};
 }();
 
 
