@@ -20,10 +20,18 @@
 
 package de.knowwe.kdom.defaultMarkup;
 
+import java.util.Collection;
 import java.util.regex.Pattern;
 
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 
 public class AnnotationType extends AbstractType {
 
@@ -39,6 +47,7 @@ public class AnnotationType extends AbstractType {
 		this.setSectionFinder(new AdaptiveMarkupFinder(annotation.getName(), REGEX, FLAGS, 1));
 		this.addChildType(new AnnotationNameType(annotation));
 		this.addChildType(new AnnotationContentType(annotation));
+		this.addSubtreeHandler(Priority.HIGHEST, new CheckContentExistsHandler());
 		Renderer renderer = annotation.getRenderer();
 		if (renderer != null) {
 			this.setRenderer(renderer);
@@ -62,6 +71,29 @@ public class AnnotationType extends AbstractType {
 	 */
 	public DefaultMarkup.Annotation getAnnotation() {
 		return annotation;
+	}
+
+	private class CheckContentExistsHandler extends SubtreeHandler<AnnotationType> {
+
+		public CheckContentExistsHandler() {
+			super(true);
+		}
+
+		@Override
+		public Collection<Message> create(Article article, Section<AnnotationType> section) {
+			Section<AnnotationContentType> content = Sections.findSuccessor(section,
+					AnnotationContentType.class);
+			if (content == null) {
+
+				return Messages.asList(Messages.error("No content found for annotation '"
+						+ section.getText() + "'"));
+			}
+			else {
+				return Messages.noMessage();
+			}
+
+		}
+
 	}
 
 }
