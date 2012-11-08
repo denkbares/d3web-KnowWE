@@ -251,6 +251,7 @@ Action.prototype._checkSemantic = function() {
 			case KBInfo.Question.TYPE_BOOL:
 			case KBInfo.Question.TYPE_OC:
 			case KBInfo.Question.TYPE_MC:
+				if (this.isFormula()) break;
 				if (infoObject.getOptions().indexOf(this.valueString) >= 0) break;
 				this.error = '"'+this.valueString+'" is no answer of this question.';
 				break;
@@ -286,7 +287,6 @@ Action.createPossibleActions = function(infoObject) {
 		result.push('Assign value');			
 		switch (infoObject.getType()) {
 			//add yes/no value
-			case KBInfo.Question.TYPE_BOOL:
 			case KBInfo.Question.TYPE_OC:
 			case KBInfo.Question.TYPE_MC:
 				var options = infoObject.getOptions();
@@ -295,6 +295,7 @@ Action.createPossibleActions = function(infoObject) {
 				}
 				break;
 			// currently add no options for other values
+			case KBInfo.Question.TYPE_BOOL:
 			case KBInfo.Question.TYPE_NUM:
 			case KBInfo.Question.TYPE_DATE:
 			case KBInfo.Question.TYPE_TEXT:
