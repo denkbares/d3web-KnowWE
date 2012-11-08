@@ -39,7 +39,7 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 	public SetQNumFormulaAction() {
 		this.sectionFinder = new SetQuestionValueSectionFinder();
 		Equals equals = new Equals();
-		QuestionReference qr = new QuestionReference();
+		QuestionNumReference qr = new QuestionNumReference();
 		qr.setSectionFinder(new AllBeforeTypeSectionFinder(equals));
 		this.childrenTypes.add(equals);
 		this.childrenTypes.add(qr);
