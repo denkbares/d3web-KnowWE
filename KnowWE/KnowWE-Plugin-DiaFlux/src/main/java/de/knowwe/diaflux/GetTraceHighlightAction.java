@@ -67,6 +67,12 @@ public class GetTraceHighlightAction extends AbstractHighlightAction {
 
 		Flow flow = findFlow(flowchart, kb);
 
+		// might happen, if flow contains errors and is not contained in kb 
+		if (flow == null) {
+			// TODO error handling
+			return;
+		}
+
 		DiaFluxTrace trace = FlowchartUtils.getTrace(session);
 		// first highlight traced nodes/edges to yellow
 		for (Node node : trace.getTracedNodes()) {
