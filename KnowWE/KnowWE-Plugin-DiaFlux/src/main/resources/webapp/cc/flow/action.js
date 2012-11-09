@@ -289,19 +289,19 @@ Action.createPossibleActions = function(infoObject) {
 			//add yes/no value
 			case KBInfo.Question.TYPE_OC:
 			case KBInfo.Question.TYPE_MC:
+			case KBInfo.Question.TYPE_BOOL:
 				var options = infoObject.getOptions();
 				for (var i=0; i<options.length; i++) {
 					result.push(new Action('KnOffice', Action._createExpression(name, options[i])));
 				}
-				break;
 			// currently add no options for other values
-			case KBInfo.Question.TYPE_BOOL:
 			case KBInfo.Question.TYPE_DATE:
 			case KBInfo.Question.TYPE_TEXT:
 				// no choices possible, use edit field instead!
 				result.push(new Action('timeDB', Action._createExpression(name, 'eval()', true)));
 				break;
 			case KBInfo.Question.TYPE_NUM:
+				result.push(new Action('timeDB', Action._createExpression(name, 'eval()', true)));
 				result.push(new Action('KnOffice', Action._createExpression(name, '()', true)));
 		}
 	}
