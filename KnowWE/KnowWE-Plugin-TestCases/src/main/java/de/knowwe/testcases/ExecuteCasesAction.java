@@ -53,8 +53,8 @@ public class ExecuteCasesAction extends AbstractAction {
 		catch (NumberFormatException e) {
 			throw new IOException(e);
 		}
-		@SuppressWarnings("unchecked")
-		Section<TestCasePlayerType> section = (Section<TestCasePlayerType>) Sections.getSection(sectionid);
+
+		Section<?> section = Sections.getSection(sectionid);
 		if (section == null) {
 			context.sendError(409, "Section '" + sectionid
 					+ "' could not be found, possibly because somebody else"
