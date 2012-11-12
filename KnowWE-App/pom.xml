@@ -326,6 +326,22 @@
 			</dependencies>
 		</profile>
 		<profile>
+			<id>d3webviz</id>
+			<activation>
+				<property>
+					<name>d3webviz</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-d3web-Visualizations</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
 			<id>diafluxreview</id>
 			<activation>
 				<property>
@@ -404,6 +420,23 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-DiaFlux-Refactoring</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
+			<id>timeline</id>
+			<activation>
+				<property>
+					<name>timeline</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Timeline</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
