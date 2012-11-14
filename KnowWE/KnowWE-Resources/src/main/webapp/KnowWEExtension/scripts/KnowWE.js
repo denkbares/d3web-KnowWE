@@ -546,8 +546,6 @@ KNOWWE.core.rerendercontent = function(){
     		}).on('mouseover', function(e){
     			showMenu(header, menu);
     		});
-    		
-    		hideMenu(header, menu);
         }
     }
 }();

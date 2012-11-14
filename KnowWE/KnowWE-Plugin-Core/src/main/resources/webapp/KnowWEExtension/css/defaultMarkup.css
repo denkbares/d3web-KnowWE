@@ -65,6 +65,9 @@
 }
 
 .defaultMarkupFrame .headerMenu {
+	opacity: 0.3;
+	z-index: 1000;
+	max-width: 35px;
 	background-color: white; 
 	right:			1px; 
 	position:		absolute; 
@@ -90,6 +93,7 @@
 }
 
 .defaultMarkupFrame .markupMenu {
+	display: none;
 	position:	absolute;
 	border:		2px solid #DDD;
 	background-color: white; 
