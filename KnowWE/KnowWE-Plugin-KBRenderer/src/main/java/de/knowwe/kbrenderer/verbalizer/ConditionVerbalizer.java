@@ -307,7 +307,7 @@ public class ConditionVerbalizer implements Verbalizer {
 	private CondVerbalization createTerminalConditionVerbalization(TerminalCondition tCondition) {
 
 		Collection<? extends TerminologyObject> terminalObjects = tCondition.getTerminalObjects();
-		if (terminalObjects == null) {
+		if (terminalObjects == null || terminalObjects.size() == 0) {
 			// Fail-safe, shouldn't happen!
 			return new TerminalCondVerbalization("TerminalObject", "=", "null", "");
 		}
