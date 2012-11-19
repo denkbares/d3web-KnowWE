@@ -110,7 +110,8 @@ public class FlowchartUtils {
 	}
 
 	private static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String scope) {
-		return createFlowchartRenderer(section, user, getParentID(section), scope, isInsertRessources(section));
+		return createFlowchartRenderer(section, user, FlowchartType.getFlowchartName(section),
+				scope, isInsertRessources(section));
 	}
 
 	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String parentId, String scope, boolean insertRessources) {
@@ -141,7 +142,7 @@ public class FlowchartUtils {
 		return escapeHtmlId(flowName);
 	}
 
-	public static String escapeHtmlId(String text) {
+	private static String escapeHtmlId(String text) {
 		text = Strings.encodeURL(text);
 		text = text.replaceAll("%", "");
 		return text;
