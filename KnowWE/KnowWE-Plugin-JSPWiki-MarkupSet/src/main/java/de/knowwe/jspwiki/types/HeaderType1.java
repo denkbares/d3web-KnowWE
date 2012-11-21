@@ -26,8 +26,8 @@ package de.knowwe.jspwiki.types;
  * @created 10.08.2012
  */
 
-public class SectionType1 extends SectionType {
-	public SectionType1() {
+public class HeaderType1 extends HeaderType {
+	public HeaderType1() {
 		super(1);
 	}
 }

@@ -12,32 +12,72 @@
 	
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="SectionType">
-		<parameter id="class" value="de.knowwe.jspwiki.types.SectionType" />
-		<parameter id="name" value="SectionType" />
-		<parameter id="description" value="Represents a SectionType in KDOM" />
-		<parameter id="version" value="0.2" />
-		<parameter id="priority" value="2" />
-		<parameter id="scope" value="root" />
-	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="SectionType2">
-		<parameter id="class" value="de.knowwe.jspwiki.types.SectionType2" />
-		<parameter id="name" value="SectionType2" />
-		<parameter id="description" value="Represents a SectionType2 in KDOM" />
+		id="HeaderType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.HeaderType" />
+		<parameter id="name" value="HeaderType" />
+		<parameter id="description" value="Represents a HeaderType in KDOM" />
 		<parameter id="version" value="0.2" />
 		<parameter id="priority" value="2.1" />
 		<parameter id="scope" value="root" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="SectionType1">
-		<parameter id="class" value="de.knowwe.jspwiki.types.SectionType1" />
-		<parameter id="name" value="SectionType1" />
-		<parameter id="description" value="Represents a SectionType1 in KDOM" />
+		id="HeaderType2">
+		<parameter id="class" value="de.knowwe.jspwiki.types.HeaderType2" />
+		<parameter id="name" value="HeaderType2" />
+		<parameter id="description" value="Represents a HeaderType2 in KDOM" />
 		<parameter id="version" value="0.2" />
 		<parameter id="priority" value="2.2" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="HeaderType1">
+		<parameter id="class" value="de.knowwe.jspwiki.types.HeaderType1" />
+		<parameter id="name" value="HeaderType1" />
+		<parameter id="description" value="Represents a HeaderType1 in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="2.3" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="VerbatimType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.VerbatimType" />
+		<parameter id="name" value="VerbatimType" />
+		<parameter id="description" value="Represents a VerbatimType in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="2" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="TabbedSectionType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.TabbedSectionType" />
+		<parameter id="name" value="TabbedSectionType" />
+		<parameter id="description" value="Represents a TabbedSectionType in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="2" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="CSSType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.CSSType" />
+		<parameter id="name" value="CSSType" />
+		<parameter id="description" value="Represents a CSSType in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="2" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="CollapsibleBoxType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.CollapsibleBoxType" />
+		<parameter id="name" value="CollapsibleBoxType" />
+		<parameter id="description" value="Represents a CollapsibleBoxType in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="2" />
 		<parameter id="scope" value="root" />
 	</extension>
 	

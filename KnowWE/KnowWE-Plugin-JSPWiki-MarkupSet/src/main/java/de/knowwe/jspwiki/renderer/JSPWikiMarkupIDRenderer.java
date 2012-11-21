@@ -34,11 +34,14 @@ import de.knowwe.core.utils.Strings;
 public class JSPWikiMarkupIDRenderer implements Renderer {
 
 	@Override
-	public void render(Section<?> section, UserContext user, StringBuilder string) {
-		string.append(Strings.maskHTML("<div style=\"position:relative\" id=\""
-				+ section.getID() + "\">"
-				+ System.getProperty("line.separator")));
+	public void render(Section<?> section, UserContext user,
+			StringBuilder string) {
+		string.append(Strings.maskHTML(System.getProperty("line.separator")
+				+ "<div style=\"position:relative\" id=\"" + section.getID()
+				+ "\">" + System.getProperty("line.separator")));
 		DelegateRenderer.getInstance().render(section, user, string);
-		string.append(Strings.maskHTML("</div>" + System.getProperty("line.separator")));
+		string.append(System.getProperty("line.separator")
+				+ Strings.maskHTML("</div>"
+						+ System.getProperty("line.separator")));
 	}
 }
