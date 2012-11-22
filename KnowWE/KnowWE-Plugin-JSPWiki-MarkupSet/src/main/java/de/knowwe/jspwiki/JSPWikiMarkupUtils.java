@@ -10,7 +10,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.jspwiki.types.HeaderType;
 
-public class JSPMarkupUtils {
+public class JSPWikiMarkupUtils {
 
 	/**
 	 * Returns toplevelsections for given article.<br />
