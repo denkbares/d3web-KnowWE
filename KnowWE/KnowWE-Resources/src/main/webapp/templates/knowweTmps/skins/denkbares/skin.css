@@ -238,11 +238,9 @@ br {
 ul ul, ol ol {
 	margin:0;
 }
-
 .leftmenu ul,ol {
 	padding-left:2em;
 }
-
 ul,ol {
 	padding-left:3em;
 }
@@ -375,8 +373,8 @@ img.attlink {
 } 
 .applicationlogo a {
 	display:block;
-	height:76px;
-	width:264px;
+	height:80px;
+	width:245px;
 	overflow:hidden;
 	margin-left:auto;
 	margin-right:auto;
