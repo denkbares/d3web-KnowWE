@@ -238,8 +238,13 @@ br {
 ul ul, ol ol {
 	margin:0;
 }
-ul,ol {
+
+.leftmenu ul,ol {
 	padding-left:2em;
+}
+
+ul,ol {
+	padding-left:3em;
 }
 dl dt {
 	font-weight:bold;
