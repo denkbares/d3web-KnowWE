@@ -40,7 +40,7 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 
 	private static DefaultMarkup m = null;
 
-	public static final String MARKUP_NAME = "quickinterview";
+	public static final String MARKUP_NAME = "Quickinterview";
 
 	public static String unknown;
 
@@ -49,7 +49,7 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 	public static String answers;
 
 	static {
-		m = new DefaultMarkup("quickinterview");
+		m = new DefaultMarkup(MARKUP_NAME);
 		m.addAnnotation("unknown", false, "true", "false");
 		m.addAnnotation("abstractions", false, "true", "false");
 		m.addAnnotation("answers", false);

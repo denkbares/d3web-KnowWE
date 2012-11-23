@@ -196,14 +196,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			return content;
 		}
 
-		String context = wikiContext.getCommand().getRequestContext();
-		if (!(context.equals(WikiContext.VIEW)
-				|| context.equals(WikiContext.DIFF)
-				|| context.equals(WikiContext.EDIT)
-				|| context.equals(WikiContext.FIND))) {
-			return content;
-		}
-
 		/* creating KnowWEUserContext with username and requestParamteters */
 		JSPWikiUserContext userContext = new JSPWikiUserContext(wikiContext,
 				UserContextUtil.getParameters(wikiContext.getHttpRequest()));
@@ -374,7 +366,13 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			ArticleManager amgr = Environment.getInstance()
 					.getArticleManager(Environment.DEFAULT_WEB);
 
-			amgr.deleteArticle(amgr.getArticle(e.getPageName()));
+			Article articleToDelete = amgr.getArticle(e.getPageName());
+			if (articleToDelete != null) {
+				// somehow the event is fired twice...
+				// don't call deleteArticle if the article is already deleted
+				amgr.deleteArticle(articleToDelete);
+			}
+
 		}
 		else if (event instanceof WikiPageRenameEvent) {
 			WikiPageRenameEvent e = (WikiPageRenameEvent) event;

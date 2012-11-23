@@ -24,8 +24,11 @@ KNOWWE.core = function(){
          * Core init functions.
          */
         init : function(){
-            KNOWWE.core.util.addCollabsiblePluginHeader();
+        	KNOWWE.core.util.init();
             KNOWWE.core.actions.init();
+            KNOWWE.core.rerendercontent.init();
+            setTimeout(function(){KNOWWE.helper.observer.notify('onload')}, 50);
+            //setTimeout(function(){KNOWWE.helper.observer.notify('update')}, 50);
         }
     }
 }();
@@ -122,6 +125,10 @@ KNOWWE.core.util = function(){
 	var indicatorShouldBeVisible = false;
 	
     return {
+    	
+    	init : function() {
+            KNOWWE.core.util.addCollabsiblePluginHeader();
+    	},
         /**
          * Function updateProcessingState
          *
@@ -130,19 +137,11 @@ KNOWWE.core.util = function(){
          */
         updateProcessingState : function (delta) {
         	activityCounter += delta;
-        	var node = $('KnowWEProcessingState');
-        	if (!node) {
-        		node = new Element('div', {'id': 'KnowWEProcessingState', 'styles': { 
-        			'display': 'none', 'position': 'absolute', 'top': '0px', 'left': '0px' }});
-        		document.body.appendChild(node);
-        	}
+        	
         	if (activityCounter > 0) {
-        		node.innerHTML = "processing";
         		KNOWWE.core.util.showProcessingIndicator();
         	}
         	else {
-        		// hide animation
-        		node.innerHTML = "idle";
         		KNOWWE.core.util.hideProcessingIndicator();
         	}
         },
@@ -155,16 +154,15 @@ KNOWWE.core.util = function(){
         	KNOWWE.core.util.updateProcessingIndicator();
         },
         updateProcessingIndicator : function () {
-       		var node = $('KnowWEProcessingIndicator');
-    		if (!node && indicatorShouldBeVisible) {
-    			// not visible but should be --> show it
-        		node = new Element('div', {'id': 'KnowWEProcessingIndicator', 'class' : 'ajaxloader'});
-        		document.body.appendChild(node);
-        		node.innerHTML = '<img src="KnowWEExtension/images/ajax-100.gif"></img>';
+        	var indicator = jq$('#KnowWEProcessingIndicator')
+    		if (indicatorShouldBeVisible) {
+    			indicator.attr('state', 'processing');
+    			indicator.show();
+        		
         	}
-        	else if (node && !indicatorShouldBeVisible) {
-    			// visible but should not be --> delete it
-    			node.remove();
+        	else if (!indicatorShouldBeVisible) {
+        		indicator.hide();
+    			indicator.attr('state', 'idle');
         	}
         },
         /**
@@ -579,15 +577,12 @@ var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
     window.addEvent( 'domready', function() {
     	jq$('.defaultMarkupFrame').each(function(index, frame){
     		KNOWWE.core.rerendercontent.animateDefaultMarkupMenu(jq$(frame));
-    	}); 
+    	});
     });
 
     if( KNOWWE.helper.loadCheck( ['Wiki.jsp'] )){
         window.addEvent( 'domready', function(){
             KNOWWE.core.init();
-            KNOWWE.core.rerendercontent.init();
-            setTimeout(function(){KNOWWE.helper.observer.notify('onload')}, 50);
-            //setTimeout(function(){KNOWWE.helper.observer.notify('update')}, 50);
         });
     };
 }());
