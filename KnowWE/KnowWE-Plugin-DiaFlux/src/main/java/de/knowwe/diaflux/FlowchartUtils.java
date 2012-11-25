@@ -130,7 +130,7 @@ public class FlowchartUtils {
 
 		result.append("<div id='" + parentId + "'>");
 		result.append("<script>");
-		result.append("if ($('#sheet_" + parentId + "') == null) ");
+		result.append("if ($('" + parentId + "').getElements('.FlowchartGroup').length == 0) ");
 		result.append("Flowchart.loadFlowchart('" + section.getID() + "', '" + parentId + "');");
 		result.append("</script></div></div>\n");
 
