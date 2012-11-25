@@ -32,7 +32,6 @@ import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
  * @author Lukas Brehl
  * @created 25.05.2012
  */
-
 public class SectionContentType extends AbstractType {
 
 	private final Type paragraphType;

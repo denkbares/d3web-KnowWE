@@ -17,7 +17,6 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-
 package de.knowwe.jspwiki.types;
 
 /**
@@ -25,7 +24,6 @@ package de.knowwe.jspwiki.types;
  * @author Lukas Brehl
  * @created 10.08.2012
  */
-
 public class HeaderType2 extends HeaderType {
 	public HeaderType2() {
 		super(2);

@@ -33,7 +33,6 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
  * @author Lukas Brehl
  * @created 25.05.2012
  */
-
 public class SectionHeaderType extends AbstractType {
 
 	/*
