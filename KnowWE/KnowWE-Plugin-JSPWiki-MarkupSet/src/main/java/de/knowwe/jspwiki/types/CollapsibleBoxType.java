@@ -28,7 +28,6 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.jspwiki.renderer.JSPWikiMarkupIDRenderer;
 
 /**
  * 
@@ -36,12 +35,12 @@ import de.knowwe.jspwiki.renderer.JSPWikiMarkupIDRenderer;
  * @created 21.11.2012
  */
 public class CollapsibleBoxType extends AbstractType {
+
 	public CollapsibleBoxType() {
 		this.setSectionFinder(new CollapsibleBoxSectionFinder());
 		this.addChildType(new SectionHeaderType());
 		this.addChildType(new CollapsibleBoxHeaderType());
 		this.addChildType(new SectionContentType(4));
-		this.setRenderer(new JSPWikiMarkupIDRenderer());
 	}
 
 	public class CollapsibleBoxSectionFinder implements SectionFinder {

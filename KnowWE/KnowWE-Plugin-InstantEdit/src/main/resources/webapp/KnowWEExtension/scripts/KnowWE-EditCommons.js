@@ -38,20 +38,12 @@ KNOWWE.editCommons = function() {
             $$('.markupTools').setStyle("display", "none");
         },
 
-        showAjaxLoader: function(id) {
-            var ajaxLoaderGif = new Element("img", {
-                'id': 'instantedit_loader',
-                'src': 'KnowWEExtension/images/ajax-100.gif',
-                'class': 'ajaxloader'
-            });
-            $(id).appendChild(ajaxLoaderGif);
+        showAjaxLoader: function() {
+        	KNOWWE.core.util.updateProcessingState(1);
         },
 
         hideAjaxLoader: function() {
-            var ajaxLoaderGif = $('instantedit_loader');
-            if (ajaxLoaderGif) {
-                ajaxLoaderGif.parentNode.removeChild(ajaxLoaderGif);
-            }
+        	KNOWWE.core.util.updateProcessingState(-1);
         },
 
         reloadPage: function() {

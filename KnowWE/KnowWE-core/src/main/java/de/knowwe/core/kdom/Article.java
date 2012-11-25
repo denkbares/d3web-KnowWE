@@ -212,9 +212,11 @@ public class Article {
 	private void sectionizeArticle(String text) {
 
 		// create Sections recursively
-		rootSection = Section.createSection(text, RootType.getInstance(), null);
-		rootSection.setArticle(this);
-		getRootType().getParser().parse(text, rootSection);
+		Section<?> dummySection = Section.createSection(text, getRootType(), null);
+		dummySection.setArticle(this);
+		getRootType().getParser().parse(text, dummySection);
+		rootSection = Sections.findChildOfType(dummySection, RootType.class);
+		rootSection.setFather(null);
 
 		rootSection.clearReusedSuccessorRecursively();
 
@@ -377,10 +379,10 @@ public class Article {
 		return this.secondBuild;
 	}
 
-	public Type getRootType() {
+	public RootType getRootType() {
 		return RootType.getInstance();
 	}
-	
+
 	public ReviseIterator getReviseIterator() {
 		return this.reviseIterator;
 	}

@@ -22,7 +22,6 @@ import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.jspwiki.renderer.JSPWikiMarkupIDRenderer;
 
 /**
  * 
@@ -44,6 +43,5 @@ public class ParagraphType extends AbstractType {
 		this.addChildType(new ImageType());
 		this.addChildType(new LinkType());
 		this.addChildType(new WikiTextType());
-		this.setRenderer(new JSPWikiMarkupIDRenderer());
 	}
 }
