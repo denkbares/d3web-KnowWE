@@ -95,6 +95,10 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 		// get path of of types the Section to be
 		// created would have
 		List<Class<? extends Type>> path = Sections.getTypePathFromRootToSection(father);
+		// while sectionizing, the article has still two root sections
+		// the last article does not have the second one, so we remove it from
+		// the path.
+		path.remove(0);
 		path.add(type.getClass());
 
 		// find all Sections with same path of Types

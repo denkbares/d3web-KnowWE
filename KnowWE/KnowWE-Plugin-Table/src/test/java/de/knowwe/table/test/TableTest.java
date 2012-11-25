@@ -136,9 +136,6 @@ public class TableTest extends TestCase {
 	 */
 	private Section<?> checkChildsTillLine(Article article, int line, boolean dirtyCheck) {
 		Section<?> actSec = article.getRootSection();
-		assertEquals(actSec + ": ", 1, actSec.getChildren().size());
-		// RootType
-		actSec = getChild(actSec, 0, 2, dirtyCheck);
 		// TableXMLType
 		actSec = getChild(actSec, 1, 3, dirtyCheck);
 		// XMLContent
