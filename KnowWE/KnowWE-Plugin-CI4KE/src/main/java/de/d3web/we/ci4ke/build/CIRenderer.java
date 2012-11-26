@@ -289,38 +289,27 @@ public class CIRenderer {
 	private String generateMessageText(TestResult result) {
 		StringBuilder messageText = new StringBuilder();
 		StringBuilder toolTip = new StringBuilder();
-		Collection<String> testObjectNames = result.getTestObjectNames();
-		int successes = 0;
-		int maxObjects = 40;
+		Collection<String> testObjectNames = result.getTestObjectsWithUnexpectedOutcome();
+		int successes = result.getSuccessfullTestObjectRuns();
+
 		for (String testObjectName : testObjectNames) {
-			de.d3web.testing.Message message = result.getMessage(testObjectName);
+			de.d3web.testing.Message message = result.getUnexpectedMessageForTestObject(testObjectName);
 			if (message == null) continue;
 			Type messageType = message.getType();
-			if (messageType.equals(Type.SUCCESS)) {
-				if (successes < maxObjects) {
-					toolTip.append(testObjectName + "\n");
-				}
-				else if (successes == maxObjects) {
-					toolTip.append("...");
-				}
-				successes++;
+			String text = renderMessage(message);
+			Test<?> test = TestManager.findTest(result.getTestName());
+			Class<?> testObjectClass = null;
+			if (test != null) {
+				testObjectClass = test.getTestObjectClass();
 			}
 			else {
-				String text = renderMessage(message);
-				Test<?> test = TestManager.findTest(result.getTestName());
-				Class<?> testObjectClass = null;
-				if (test != null) {
-					testObjectClass = test.getTestObjectClass();
-				}
-				else {
-					Logger.getLogger(this.getClass().getName()).log(
+				Logger.getLogger(this.getClass().getName()).log(
 							Level.WARNING, "No class found for test: " + result.getTestName());
-				}
-				String renderedTestObjectName = Strings.maskHTML(renderObjectName(testObjectName,
-						testObjectClass));
-				messageText.append("__" + messageType.toString() + "__: " + text +
-						"\n (test object: " + renderedTestObjectName + ")\n");
 			}
+			String renderedTestObjectName = Strings.maskHTML(renderObjectName(testObjectName,
+						testObjectClass));
+			messageText.append("__" + messageType.toString() + "__: " + text +
+						"\n (test object: " + renderedTestObjectName + ")\n");
 		}
 		messageText.append(Strings.maskHTML("<span"
 				+ (toolTip.length() == 0 ? "" : " title='" + toolTip.toString() + "'") + ">"
