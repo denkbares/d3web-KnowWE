@@ -72,8 +72,8 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
 			terminologyHandler.registerTermDefinition(section, termObjectClass, termIdentifier);
 
-			Collection<Message> msgs = section.get().canAbortTermObjectCreation(article, section);
-			if (msgs != null) return msgs;
+			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(article, section);
+			if (abortCheck.hasErrors() || abortCheck.termExist()) return abortCheck.getErrors();
 
 			KnowledgeBase kb = getKB(article);
 
@@ -90,8 +90,8 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 			new QContainer(parent, name);
 
 			return Messages.asList(Messages.objectCreatedNotice(
-						termObjectClass.getSimpleName()
-								+ " '" + name + "'"));
+					termObjectClass.getSimpleName()
+							+ " '" + name + "'"));
 		}
 	}
 

@@ -158,8 +158,9 @@ public abstract class AnswerDefinition
 			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
 			terminologyHandler.registerTermDefinition(section, termObjectClass, termIdentifier);
 
-			Collection<Message> msgs = section.get().canAbortTermObjectCreation(article, section);
-			if (msgs != null) return msgs;
+			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(
+					article, section);
+			if (abortCheck.hasErrors() || abortCheck.termExist()) return abortCheck.getErrors();
 
 			Question q = qDef.get().getTermObject(article, qDef);
 

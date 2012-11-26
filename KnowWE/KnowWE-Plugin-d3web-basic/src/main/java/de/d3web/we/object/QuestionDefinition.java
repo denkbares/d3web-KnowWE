@@ -105,8 +105,8 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
 			terminologyHandler.registerTermDefinition(section, termObjectClass, identifier);
 
-			Collection<Message> msgs = section.get().canAbortTermObjectCreation(article, section);
-			if (msgs != null) return msgs;
+			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(article, section);
+			if (abortCheck.hasErrors()) return abortCheck.getErrors();
 
 			KnowledgeBase kb = getKB(article);
 
@@ -124,36 +124,45 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 
 			String name = section.get().getTermName(section);
 
-			QuestionType questionType = section.get().getQuestionType(section);
-			if (questionType == null) {
-				return Messages.asList(Messages.objectCreationError(
-						"No type found for question '" + name + "'"));
-			}
-
-			if (questionType.equals(QuestionType.OC)) {
-				new QuestionOC(parent, name);
-			}
-			else if (questionType.equals(QuestionType.MC)) {
-				new QuestionMC(parent, name);
-			}
-			else if (questionType.equals(QuestionType.NUM)) {
-				new QuestionNum(parent, name);
-			}
-			else if (questionType.equals(QuestionType.YN)) {
-				new QuestionYN(parent, name);
-			}
-			else if (questionType.equals(QuestionType.DATE)) {
-				new QuestionDate(parent, name);
-			}
-			else if (questionType.equals(QuestionType.INFO)) {
-				new QuestionZC(parent, name);
-			}
-			else if (questionType.equals(QuestionType.TEXT)) {
-				new QuestionText(parent, name);
+			if (abortCheck.termExist()) {
+				// if the question already exists, we just hook it into the new
+				// questionnaire
+				Question existingQuestion = kb.getManager().searchQuestion(name);
+				parent.addChild(existingQuestion);
 			}
 			else {
-				return Messages.asList(Messages.error(
-						"No valid question type found for question '" + identifier + "'"));
+
+				QuestionType questionType = section.get().getQuestionType(section);
+				if (questionType == null) {
+					return Messages.asList(Messages.objectCreationError(
+							"No type found for question '" + name + "'"));
+				}
+
+				if (questionType.equals(QuestionType.OC)) {
+					new QuestionOC(parent, name);
+				}
+				else if (questionType.equals(QuestionType.MC)) {
+					new QuestionMC(parent, name);
+				}
+				else if (questionType.equals(QuestionType.NUM)) {
+					new QuestionNum(parent, name);
+				}
+				else if (questionType.equals(QuestionType.YN)) {
+					new QuestionYN(parent, name);
+				}
+				else if (questionType.equals(QuestionType.DATE)) {
+					new QuestionDate(parent, name);
+				}
+				else if (questionType.equals(QuestionType.INFO)) {
+					new QuestionZC(parent, name);
+				}
+				else if (questionType.equals(QuestionType.TEXT)) {
+					new QuestionText(parent, name);
+				}
+				else {
+					return Messages.asList(Messages.error(
+							"No valid question type found for question '" + identifier + "'"));
+				}
 			}
 
 			// return success message

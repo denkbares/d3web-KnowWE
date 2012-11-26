@@ -53,18 +53,20 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 	 * @return null if the creation must not be aborted, an Collection
 	 *         containing addition Messages or non (if not needed) else
 	 */
-	public Collection<Message> canAbortTermObjectCreation(Article article, Section<? extends D3webTermDefinition<TermObject>> section) {
+	public AbortCheck canAbortTermObjectCreation(Article article, Section<? extends D3webTermDefinition<TermObject>> section) {
 		Collection<Message> msgs = new ArrayList<Message>(1);
 		if (section.hasErrorInSubtree(article)) {
 			// obviously there are already errors present, simply abort
-			return msgs;
+			AbortCheck check = new AbortCheck();
+			check.setMessages(msgs);
+			return check;
 		}
 		Collection<NamedObject> termObjectsIgnoreTermObjectClass =
 				D3webUtils.getTermObjectsIgnoreTermObjectClass(article, section);
 		if (termObjectsIgnoreTermObjectClass.isEmpty()) {
 			// object does not yet exist, so just return null to continue
 			// creating the terminology object
-			return null;
+			return new AbortCheck();
 		}
 		else {
 			for (NamedObject termObject : termObjectsIgnoreTermObjectClass) {
@@ -79,7 +81,10 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 				}
 			}
 		}
-		return msgs;
+		AbortCheck check = new AbortCheck();
+		check.setMessages(msgs);
+		check.setTermExists(true);
+		return check;
 	}
 
 	@Override
