@@ -110,10 +110,10 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			Solution diagnosis = kb.getRootSolution();
 			boolean appendedSolutionsHeadline = false;
 			if (diagnosis.getName().equals("P000")) {
-				if (!appendedSolutionsHeadline) {
+				if (diagnosis.getChildren().length > 0) {
 					text.append("<strong>"
 							+ rb.getString("KnowWE.KBRenderer.solutions")
-							+ ":</strong><p/>\n\n");
+							+ ":</strong><p></p>\n\n");
 					appendedSolutionsHeadline = true;
 				}
 				// Get all Children
@@ -129,7 +129,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 					}
 				}
 			}
-			text.append("<p/>");
+			text.append("<p></p>");
 
 			/*
 			 * Render Rules
@@ -152,7 +152,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 							}
 							text.append("<strong>"
 									+ rb.getString("KnowWE.KBRenderer.rules")
-									+ ":</strong><p/>\n\n");
+									+ ":</strong><p></p>\n\n");
 							appendedRulesHeadline = true;
 						}
 					}
@@ -166,13 +166,12 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			for (de.d3web.core.inference.Rule r : sort) {
 				text.append(renderRule(r, parameterMap));
 			}
-			text.append("<p/>\n");
+			text.append("<p></p>\n");
 			renderedRulesCache = new HashMap<Rule, String>();
 
 			/*
 			 * Render DiaFlux Models
 			 */
-
 			List<Flow> flows = kb.getManager().getObjects(Flow.class);
 			if (!flows.isEmpty()) {
 				StringBuilder bob = new StringBuilder();
@@ -186,14 +185,13 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 							+ edgeCount + " Edges)<br>");
 				}
 				text.append("<p><strong>DiaFlux (" + flows.size() + " Flows, " + totalNodeCount
-						+ " Nodes, " + totalEdgeCount + " Edges):</strong><p/>\n\n");
+						+ " Nodes, " + totalEdgeCount + " Edges):</strong><p></p>\n\n");
 				text.append(bob);
 			}
 
 			/*
 			 * Questions
 			 */
-
 			List<QContainer> questions = new ArrayList<QContainer>(kb.getManager().getQContainers());
 			KnowledgeBaseUtils.sortQContainers(questions);
 			boolean appendedQuestionHeadline = false;
@@ -206,7 +204,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 						}
 						text.append("<strong>"
 								+ rb.getString("KnowWE.KBRenderer.questions")
-								+ ":</strong><p/>\n\n");
+								+ ":</strong><br/><p></p>");
 						appendedQuestionHeadline = true;
 					}
 					if (q1 instanceof QContainer) {
@@ -218,7 +216,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 					}
 				}
 			}
-			text.append("<p/>");
+			text.append("<p></p>");
 
 			// Covering List
 			Collection<XCLModel> xclRels = kb.getAllKnowledgeSlicesFor(XCLModel.KNOWLEDGE_KIND);
@@ -235,7 +233,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 					appendedXCLHeadline = true;
 				}
 
-				text.append("<p/>\n\n" + model.getSolution().getName()
+				text.append("<p></p>\n\n" + model.getSolution().getName()
 						+ ":<br/>\n");
 
 				Map<XCLRelationType, Collection<XCLRelation>> relationMap = model
@@ -363,6 +361,10 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 				result.append("<span style=\"color: rgb(150, 110, 120);\">"
 						+ VerbalizationManager.getInstance().verbalize(t1,
 								VerbalizationManager.RenderingFormat.HTML) + "</span><br/>\n");
+			}
+			else if (t1 instanceof QContainer) {
+				result.append("<span style=\"color: rgb(128, 128, 0);\">"
+						+ t1.getName() + "</span><br/>");
 			}
 			// Reset the prompt & property buffer for every object
 			prompt = new StringBuffer();
