@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.core.kdom.taghandler;
+package de.knowwe.core.kdom.renderer;
 
 import java.util.Map;
 
