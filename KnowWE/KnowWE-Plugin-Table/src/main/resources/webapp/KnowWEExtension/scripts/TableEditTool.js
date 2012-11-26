@@ -388,7 +388,7 @@ KNOWWE.table.edit.Editor = (function(editProvider) {
 	    generateHTML : function(id) {
 			editProvider.prepare(id);
 			
-			wikicode = KNOWWE.plugin.instantEdit.getWikiText(id);
+			wikicode = _EC.getWikiText(id);
 			areaId = id;
 			
 			var result = document.createElement('div')
@@ -413,10 +413,10 @@ KNOWWE.table.edit.Editor = (function(editProvider) {
 //			div.appendChild(table);
  			result.appendChild(table);
 			
-			var buttons = document.createElement('div');
-			buttons.innerHTML = KNOWWE.plugin.instantEdit.getSaveCancelDeleteButtons(id); 
-			result.appendChild(buttons.firstChild);
-			
+//			var buttons = document.createElement('div');
+//			buttons.innerHTML = KNOWWE.plugin.instantEdit.getSaveCancelDeleteButtons(id); 
+//			result.appendChild(buttons.firstChild);
+//			
 			return result.innerHTML;
 	    },
 	    
@@ -432,6 +432,10 @@ KNOWWE.table.edit.Editor = (function(editProvider) {
 			addMenuHandlers(editarea.getElementsByTagName("table")[0]);
 			
 			editProvider.postProcess(id);
+	    },
+	    
+	    generateButtons : function(id) {
+	    	return _EC.elements.getSaveCancelDeleteButtons(id)
 	    },
 	    
 		/**
