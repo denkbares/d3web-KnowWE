@@ -28,7 +28,7 @@ import connector.DummyConnector;
 import de.d3web.plugin.test.InitPluginManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.taghandler.KDOMRenderer;
+import de.knowwe.core.kdom.renderer.KDOMRenderer;
 import de.knowwe.core.utils.Strings;
 
 /**
