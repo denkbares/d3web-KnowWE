@@ -9,7 +9,12 @@ public class AbortCheck {
 
 	private Collection<Message> msgs = Collections.emptyList();
 
+	private boolean hasErrors = false;
 	private boolean termExists = false;
+
+	public void setHasErrors(boolean hasErrors) {
+		this.hasErrors = hasErrors;
+	}
 
 	public void setTermExists(boolean termExists) {
 		this.termExists = termExists;
@@ -24,7 +29,7 @@ public class AbortCheck {
 	}
 
 	public boolean hasErrors() {
-		return !this.msgs.isEmpty();
+		return this.hasErrors || !this.msgs.isEmpty();
 	}
 
 	public Collection<Message> getErrors() {

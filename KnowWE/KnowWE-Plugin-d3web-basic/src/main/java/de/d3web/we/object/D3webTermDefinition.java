@@ -59,6 +59,7 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 			// obviously there are already errors present, simply abort
 			AbortCheck check = new AbortCheck();
 			check.setMessages(msgs);
+			check.setHasErrors(true);
 			return check;
 		}
 		Collection<NamedObject> termObjectsIgnoreTermObjectClass =
