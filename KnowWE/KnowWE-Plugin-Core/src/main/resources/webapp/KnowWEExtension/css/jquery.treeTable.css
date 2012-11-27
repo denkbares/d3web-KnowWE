@@ -11,16 +11,15 @@
  	padding-left: 19px;
  }
  .table_text{
- 
- max-height:23px;
- /*overflow:hidden;
- transition: height .5s;
+ height:23px;
+ overflow:hidden;
+/* transition: height .5s;
 	-moz-transition: height .5s; 
 	-webkit-transition: height .5s; 
 	-o-transition: height .5s; */
  }
  .table_text:hover{
- max-height:auto;
+ height: auto;
  }
 .treeTable tr td .expander {
   cursor: pointer;
