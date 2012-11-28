@@ -35,6 +35,24 @@ public class Sections {
 		return sections;
 	}
 
+	/**
+	 * Creates a list of class names of the types of the sections on the path
+	 * from the given section to the root section.
+	 * 
+	 * @created 28.11.2012
+	 * @param s
+	 * @return
+	 */
+	public static List<String> createTypePathToRoot(Section<?> s) {
+		List<String> result = new ArrayList<String>();
+		Section<?> father = s.getFather();
+		while (father != null) {
+			result.add(father.get().getClass().getSimpleName());
+			father = father.getFather();
+		}
+		return result;
+	}
+
 	private static void getSubtreePreOrderToDepth(Section<?> section, List<Section<?>> sections,
 			int depth) {
 		sections.add(section);
