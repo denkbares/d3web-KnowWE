@@ -20,10 +20,12 @@ package de.knowwe.jspwiki.types;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
@@ -47,15 +49,10 @@ public class HeaderType extends AbstractType {
 	 * children.
 	 */
 	public HeaderType(int count) {
-		this.setSectionFinder(new SectionBlockFinder(createMarker(count)));
+		this.setSectionFinder(new RegexSectionFinder("^" + createMarker(count)
+				+ ".*?(?=^|\\z)", Pattern.MULTILINE + Pattern.DOTALL));
 	}
 
-	/**
-	 * 
-	 * @created 11.07.2012
-	 * @param count
-	 * @return
-	 */
 	private static String createMarker(int count) {
 		String marker = "";
 		for (int i = 0; i < count; i++) {

@@ -34,6 +34,7 @@ public class ParagraphType extends AbstractType {
 		Pattern pattern = Pattern.compile("^.+?([\n\r]{4,}|\\z)",
 				Pattern.MULTILINE + Pattern.DOTALL);
 		this.setSectionFinder(new RegexSectionFinder(pattern));
+		this.addChildType(new PrettifyType());
 		this.addChildType(new VerbatimType());
 		this.addChildType(new ListType());
 		this.addChildType(new OrderedListType());

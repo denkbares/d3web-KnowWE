@@ -53,7 +53,7 @@ table.spreadsheet tr td > div {
 	position: relative;
 	min-width: 40px;
 	min-height: 14px;
-	white-space: pre;
+	white-space: pre-wrap;
 }
 
 table.spreadsheet tr td > div > a, 

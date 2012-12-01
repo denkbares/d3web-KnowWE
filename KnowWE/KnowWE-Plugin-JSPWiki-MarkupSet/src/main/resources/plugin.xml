@@ -42,6 +42,16 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="PrettifyType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.PrettifyType" />
+		<parameter id="name" value="PrettifyType" />
+		<parameter id="description" value="Represents a PrettifyType in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="2" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="VerbatimType">
 		<parameter id="class" value="de.knowwe.jspwiki.types.VerbatimType" />
 		<parameter id="name" value="VerbatimType" />

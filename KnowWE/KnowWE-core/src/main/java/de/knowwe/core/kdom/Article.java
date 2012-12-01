@@ -142,8 +142,8 @@ public class Article {
 	 */
 	private Article(String text, String title, String web, boolean fullParse) {
 
-		Logger.getLogger(this.getClass().getName()).log(Level.INFO,
-				"====>> Starting to build article '" + title + "' ====>>");
+		Logger.getLogger(this.getClass().getName()).log(Level.FINE,
+				"Started to build article '" + title + "'");
 
 		currentlyBuildingArticles.put(getArticleKey(web, title), this);
 		this.startTimeOverall = System.currentTimeMillis();
@@ -192,8 +192,8 @@ public class Article {
 
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.FINE,
-				"<- Built KDOM in "
-						+ (System.currentTimeMillis() - currentStartTime) + "ms <-");
+				"Built KDOM in "
+						+ (System.currentTimeMillis() - currentStartTime) + "ms");
 		currentStartTime = System.currentTimeMillis();
 
 		preCompile();
@@ -204,8 +204,8 @@ public class Article {
 
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.FINE,
-				"<- Built Knowledge in "
-						+ (System.currentTimeMillis() - currentStartTime) + "ms <-");
+				"Built Knowledge in "
+						+ (System.currentTimeMillis() - currentStartTime) + "ms");
 		currentStartTime = System.currentTimeMillis();
 	}
 

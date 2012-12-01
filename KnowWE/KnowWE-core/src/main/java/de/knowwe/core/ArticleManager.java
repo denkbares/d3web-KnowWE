@@ -115,8 +115,8 @@ public class ArticleManager {
 
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.FINE,
-				"-> Starting to update dependencies to article '" + title
-						+ "' ->");
+				"Starting to update dependencies to article '" + title
+						+ "'");
 		updatingArticles.add(title);
 
 		EventManager.getInstance().fireEvent(new UpdatingDependenciesEvent(article));
@@ -126,16 +126,15 @@ public class ArticleManager {
 		updatingArticles.remove(title);
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.FINE,
-				"<- Finished updating dependencies to article '" + title
+				"Finished updating dependencies to article '" + title
 						+ "' in " + (System.currentTimeMillis() - startTime)
-						+ "ms <-");
+						+ "ms");
 
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.INFO,
-				"<<==== Finished building article '" + title + "' in "
-						+ web + " in "
+				"Finished building article  '" + title + "'  after "
 						+ (System.currentTimeMillis() - article.getStartTime())
-						+ "ms <<====");
+						+ "ms");
 		EventManager.getInstance().fireEvent(new ArticleRegisteredEvent(article));
 	}
 
