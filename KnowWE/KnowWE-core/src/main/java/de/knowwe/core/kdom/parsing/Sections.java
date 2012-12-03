@@ -633,9 +633,7 @@ public class Sections {
 				sectionInfo.sectionExists = true;
 				sectionInfo.title = section.getTitle();
 				sectionInfo.web = section.getWeb();
-				sectionInfo.newText =
-						Environment.getInstance().getWikiConnector().normalizeString(
-								sectionsMap.get(id));
+				sectionInfo.newText = sectionsMap.get(id);
 			}
 			sectionInfo.oldId = id;
 		}
@@ -758,12 +756,15 @@ public class Sections {
 						sectionInfo.positionInKDOM);
 				if (section == null) continue;
 
-				boolean sameText = section.getText().equals(sectionInfo.newText);
-				boolean sameOffset = section.getOffSetFromFatherText() + diff == sectionInfo.offSet;
+				String text = section.getText();
+				String newText = sectionInfo.newText;
+				boolean sameText = text.equals(newText);
+				int textOffset = section.getAbsolutePositionStartInArticle() + diff;
+				int newTextoffSet = sectionInfo.offSet;
+				boolean sameOffset = textOffset == newTextoffSet;
 
 				if (sameText && sameOffset) {
-					int tempDiff = section.getText().length() - sectionInfo.oldText.length();
-					diff += tempDiff;
+					diff += section.getText().length() - sectionInfo.oldText.length();
 					oldToNewIdsMap.put(sectionInfo.oldId, section.getID());
 					continue;
 				}
