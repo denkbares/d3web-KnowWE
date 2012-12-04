@@ -619,7 +619,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 
 	private String signatureString = null;
 
-	String getSignatureString() {
+	protected String getSignatureString() {
 		if (signatureString != null) return signatureString;
 		List<Integer> positionInKDOM = this.getPositionInKDOM();
 		String positionInKDOMString = positionInKDOM == null ? "" : positionInKDOM.toString();
@@ -629,8 +629,12 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		return signatureString;
 	}
 
+	protected boolean hasID() {
+		return this.id != null;
+	}
+
 	protected void clearID() {
-		id = null;
+		this.id = null;
 	}
 
 	public void collectTextsFromLeaves(StringBuilder buffi) {

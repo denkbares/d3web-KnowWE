@@ -522,7 +522,42 @@ public class Sections {
 		return id;
 	}
 
-	public static void unregisterSectionID(Section<?> section) {
+	/**
+	 * This method removes the entries of sections in the section map, if the
+	 * sections are no longer used - for example after an article is changed and
+	 * build again.<br/>
+	 * This method also takes care, that the equal section in the new article
+	 * gets an id. Since ids are created lazy while rendering and often the
+	 * article is not rendered completely again after changing just a few
+	 * isolated spots in the article, those ids would otherwise be gone,
+	 * although they might stay the same and are still usable.<br/>
+	 * We just look at the same spot/position in the KDOM. If we find a Section
+	 * and the Section also has the same type, we generate and register the id.
+	 * Of course we will only catch the right Sections if the KDOM has not
+	 * changed in this part, but if the KDOM has changed, also the ids will have
+	 * changed and therefore we don't need them anyway. We only do this, to
+	 * allow already rendered tools to still work, if it is possible.
+	 * 
+	 * @created 04.12.2012
+	 * @param section the old, no longer used Section
+	 * @param newArticle the new article which potentially contains an equal
+	 *        section
+	 */
+	public static void updateSectionID(Section<?> section, Article newArticle) {
+		if (section.hasID()) {
+			unregisterSectionID(section);
+			Section<?> newSection = getSection(newArticle, section.getPositionInKDOM());
+			if (newSection != null
+					&& newSection.get().getClass().equals(section.get().getClass())) {
+				// to not add ids to completely different sections if the
+				// article changed a lot, we only generate section ids for the
+				// same type of sections that had ids in the old article
+				newSection.getID();
+			}
+		}
+	}
+
+	private static void unregisterSectionID(Section<?> section) {
 		synchronized (sectionMap) {
 			sectionMap.remove(section.getID());
 			section.clearID();
@@ -693,7 +728,6 @@ public class Sections {
 
 		String newArticleText = getNewArticleText(title, sectionsMapForCurrentTitle, context);
 		wikiConnector.writeArticleToWikiPersistence(title, newArticleText, context);
-
 	}
 
 	private static String getNewArticleText(

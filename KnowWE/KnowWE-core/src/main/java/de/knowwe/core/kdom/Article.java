@@ -291,7 +291,7 @@ public class Article {
 	}
 
 	private void unregisterSectionIDRecursively(Section<?> section) {
-		Sections.unregisterSectionID(section);
+		Sections.updateSectionID(section, this);
 		for (Section<?> childSection : section.getChildren()) {
 			unregisterSectionIDRecursively(childSection);
 		}
