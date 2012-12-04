@@ -94,7 +94,7 @@ public class TagRenderer implements Renderer {
 						}
 						else {
 							buffi.append(Strings.maskHTML("<" + wrappingTag + " id=\""
-									+ key + "_" + sec.getID() + "\">"));
+									+ key + "_" + sec.getID() + "\" style=\"display:inline\">"));
 						}
 						String resultText =
 								handler.render(sec, user, attValues);

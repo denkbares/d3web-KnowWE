@@ -94,12 +94,12 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	public String getExampleString() {
 		StringBuilder example = new StringBuilder();
 		example.append("[{KnowWEPlugin objectInfo [");
-		example.append(", objectname=<name of object> ");
-		example.append(", termIdentifier=<external term identifier form of object> ");
-		example.append(", hideDefinition=<true|false> ");
-		example.append(", hideReferences=<true|false> ");
-		example.append(", hidePlainTextOccurrences=<true|false> ");
-		example.append(", hideRename=<true|false>] ");
+		example.append(", objectname=\u00ABname of object\u00BB ");
+		example.append(", termIdentifier=\u00ABexternal term identifier form of object\u00BB ");
+		example.append(", hideDefinition=\u00ABtrue|false\u00BB ");
+		example.append(", hideReferences=\u00ABtrue|false\u00BB ");
+		example.append(", hidePlainTextOccurrences=\u00ABtrue|false\u00BB ");
+		example.append(", hideRename=\u00ABtrue|false\u00BB] ");
 		example.append("}])\n ");
 		example.append("The parameters in [ ] are optional.");
 		return example.toString();

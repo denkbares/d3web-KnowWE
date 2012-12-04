@@ -43,7 +43,7 @@ public class VersionTagHandler extends AbstractHTMLTagHandler {
 	@Override
 	public String getExampleString() {
 		return "[{KnowWEPlugin " + getTagName()
-				+ "( = &lt;chuck|buildnumber|buildtag|buildtype&gt;)" + "}]";
+				+ "( = \u00ABchuck|buildnumber|buildtag|buildtype\u00BB)" + "}]";
 	}
 
 	@Override
