@@ -43,7 +43,7 @@ public class TagRenderer implements Renderer {
 			string.append(Strings
 					.maskHTML("<div><p class='info box'>"));
 			string.append(Messages.getMessageBundle(user).getString(
-							"KnowWE.Taghandler.notFoundError"));
+					"KnowWE.Taghandler.notFoundError"));
 			string.append(" '"
 					+ ((Section<?>) sec.getChildren().get(1)).getText()
 					+ "'");
@@ -73,36 +73,8 @@ public class TagRenderer implements Renderer {
 					String key = elem.toLowerCase();
 					if (defaultTagHandlers.containsKey(key)) {
 						TagHandler handler = defaultTagHandlers.get(key);
-						// boolean autoUpdate = handler.requiresAutoUpdate();
-						// if (autoUpdate) {
-						// buffi.append(KnowWEUtils.maskHTML(
-						// "<span class=\"ReRenderSectionMarker\"" +
-						// " id=\"" + id + "\"" +
-						// " rel=\"{id:'" + id +
-						// "'}\"" +
-						// ">"));
-						// }
-						String wrappingTag = "div";
-						if (attValues.containsKey("wrap")) {
-							if (attValues.get("wrap").contains("span")) {
-								wrappingTag = "span";
-							}
-						}
-						if (key.equals("quickinterview")) {
-							buffi.append(Strings.maskHTML("<" + wrappingTag + " id=\""
-									+ key + "\">"));
-						}
-						else {
-							buffi.append(Strings.maskHTML("<" + wrappingTag + " id=\""
-									+ key + "_" + sec.getID() + "\" style=\"display:inline\">"));
-						}
-						String resultText =
-								handler.render(sec, user, attValues);
-						buffi.append(resultText).append(" \n");
-						buffi.append(Strings.maskHTML("</" + wrappingTag + ">"));
-						// if (autoUpdate) {
-						// buffi.append(KnowWEUtils.maskHTML("</span>"));
-						// }
+						buffi.append(handler.render(sec, user, attValues));
+
 					}
 				}
 

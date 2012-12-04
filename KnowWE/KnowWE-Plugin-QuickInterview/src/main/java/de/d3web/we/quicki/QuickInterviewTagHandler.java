@@ -26,6 +26,7 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.Strings;
 
 public class QuickInterviewTagHandler extends AbstractHTMLTagHandler {
 
@@ -55,7 +56,6 @@ public class QuickInterviewTagHandler extends AbstractHTMLTagHandler {
 	 */
 	@Override
 	public String renderHTML(String topic, UserContext user, Map<String, String> values, String web) {
-
 		if (topic.equalsIgnoreCase("LeftMenu")) {
 			topic = user.getParameters().get("page");
 		}
@@ -63,6 +63,7 @@ public class QuickInterviewTagHandler extends AbstractHTMLTagHandler {
 		String iv = QuickInterviewAction.callQuickInterviewRenderer(user);
 		if (iv == null) return null;
 
+		iv = Strings.maskHTML("<div id='quickinterview'>") + iv + Strings.maskHTML("</div>");
 		return iv;
 	}
 }
