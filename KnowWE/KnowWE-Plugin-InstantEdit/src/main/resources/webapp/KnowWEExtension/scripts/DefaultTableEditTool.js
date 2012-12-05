@@ -425,7 +425,7 @@ Spreadsheet.prototype.editCell = function(row, col) {
 	html += "left:"+(pos.left-3)+"px;top:"+(pos.top-3)+"px;";
 	html += "'>";
 	html += "<textarea id='"+textAreaID+"' style='";
-	html += "width:"+(contentElement.width()+16)+"px;height:"+(contentElement.height()+6)+"px;";
+	html += "width:"+(contentElement.width()+16)+"px";
 	html += "'>";
 	html += this.getCellText(row, col);
 	html += "</textarea>";
@@ -435,6 +435,7 @@ Spreadsheet.prototype.editCell = function(row, col) {
 	var editArea = editDiv.children("textarea");
 	editArea.focus();
 	editArea.select();
+	jq$(editArea).autosize();
 	// then adding our key and event handling
 	var spreadsheet = this;
 	var closing = false; // flag to avoid multiple closing (detach forces focusout-event)

@@ -24,13 +24,14 @@ KNOWWE.plugin.defaultEditTool = function() {
 	    	new TextArea(textarea);
 	        
 	        textarea.focus();
-	        while (textarea.clientHeight == textarea.scrollHeight) {
-	        	var tempHeight = textarea.style.height; 
-	        	textarea.style.height = textarea.clientHeight - 5 + "px";
-	        	// abort if we are below minHeight and the height does not change anymore
-	        	if (textarea.style.height == tempHeight) break;
-	        }
-	        textarea.style.height = textarea.scrollHeight + 15 + "px";
+	        jq$(textarea).autosize({append: "\n"});
+//	        while (textarea.clientHeight == textarea.scrollHeight) {
+//	        	var tempHeight = textarea.style.height; 
+//	        	textarea.style.height = textarea.clientHeight - 5 + "px";
+//	        	// abort if we are below minHeight and the height does not change anymore
+//	        	if (textarea.style.height == tempHeight) break;
+//	        }
+//	        textarea.style.height = textarea.scrollHeight + 15 + "px";
 	    },
 	    
 	    unloadCondition : function(id) {
