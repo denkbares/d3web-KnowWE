@@ -40,7 +40,7 @@ public class OneOfStringEnumFinderExact implements SectionFinder {
 	public List<SectionFinderResult> lookForSections(String text,
 			Section<?> father, Type type) {
 		for (String string : strings) {
-			if (text.trim().equals(string)) {
+			if (text.replaceAll("\\xA0", " ").trim().equals(string)) {
 				return new AllTextFinderTrimmed().lookForSections(text, father, type);
 			}
 		}
