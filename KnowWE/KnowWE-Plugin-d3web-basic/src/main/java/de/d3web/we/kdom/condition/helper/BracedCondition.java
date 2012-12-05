@@ -39,18 +39,19 @@ class EmbracedExpressionFinder implements SectionFinder {
 
 	public static SectionFinder createEmbracedExpressionFinder() {
 		ConstraintSectionFinder sectionFinder = new ConstraintSectionFinder(
-					new EmbracedExpressionFinder());
+				new EmbracedExpressionFinder());
 		return sectionFinder;
 	}
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		String trimmed = text.trim();
+		if (trimmed.isEmpty()) return null;
 		int leadingSpaces = text.indexOf(trimmed);
 		int followingSpaces = text.length() - trimmed.length() - leadingSpaces;
 		boolean startsWithOpen = trimmed.startsWith(Character.toString(CompositeCondition.BRACE_OPEN));
 		int closingBracket = Strings.findIndexOfClosingBracket(trimmed, 0,
-						CompositeCondition.BRACE_OPEN, CompositeCondition.BRACE_CLOSED);
+				CompositeCondition.BRACE_OPEN, CompositeCondition.BRACE_CLOSED);
 
 		// if it doesnt start with an opening bracket
 		if (!startsWithOpen) {
@@ -61,21 +62,21 @@ class EmbracedExpressionFinder implements SectionFinder {
 		// throw error if no corresponding closing bracket can be found
 		if (closingBracket == -1) {
 			Messages.storeMessage(father.getArticle(), father,
-						this.getClass(), Messages.syntaxError("missing \")\""));
+					this.getClass(), Messages.syntaxError("missing \")\""));
 			return null;
 		}
 		else {
 			Messages.clearMessages(father.getArticle(), father,
-						this.getClass());
+					this.getClass());
 		}
 
 		// an embracedExpression needs to to start and end with '(' and ')'
 		if (startsWithOpen
-						&& trimmed.endsWith(Character.toString(CompositeCondition.BRACE_CLOSED))) {
+				&& trimmed.endsWith(Character.toString(CompositeCondition.BRACE_CLOSED))) {
 			// and the ending ')' needs to close the opening
 			if (closingBracket == trimmed.length() - 1) {
 				return SectionFinderResult.createSingleItemList(new SectionFinderResult(
-								leadingSpaces, text.length() - followingSpaces));
+						leadingSpaces, text.length() - followingSpaces));
 			}
 
 		}
@@ -86,12 +87,12 @@ class EmbracedExpressionFinder implements SectionFinder {
 		// the closing bracket but nothing in between!
 		if (trimmed.startsWith(Character.toString(CompositeCondition.BRACE_OPEN))) {
 			if (lastEndLineCommentSymbol > -1
-						&& !CompositeCondition.hasLineBreakAfterComment(trimmed)) {
+					&& !CompositeCondition.hasLineBreakAfterComment(trimmed)) {
 				// TODO fix: < 3 is inaccurate
 				// better check that there is no other expression in between
 				if (lastEndLineCommentSymbol - closingBracket < 3) {
 					return SectionFinderResult.createSingleItemList(new SectionFinderResult(
-									leadingSpaces, text.length()));
+							leadingSpaces, text.length()));
 				}
 			}
 
