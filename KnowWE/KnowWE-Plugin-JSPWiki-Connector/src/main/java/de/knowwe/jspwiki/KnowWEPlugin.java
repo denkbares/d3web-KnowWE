@@ -63,6 +63,7 @@ import de.knowwe.core.user.UserContextUtil;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.Strings;
 import de.knowwe.event.InitializedAllArticlesEvent;
+import de.knowwe.event.PageRenderedEvent;
 
 public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		WikiEventListener {
@@ -273,6 +274,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				Logger.getLogger(this.getClass().getName()).log(
 						Level.INFO, "Rendered article '" + article.getTitle() + "' in "
 								+ (System.currentTimeMillis() - start) + "ms");
+				EventManager.getInstance().fireEvent(
+						new PageRenderedEvent(article.getTitle(), userContext));
 
 				// Render Post-PageAppendHandlers
 				for (PageAppendHandler pageAppendHandler : appendhandlers) {
