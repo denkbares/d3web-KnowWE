@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- * Computer Science VI, University of Wuerzburg
+ * Copyright (C) 2012 University Wuerzburg, Computer Science VI
  * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -17,17 +16,34 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.core.event;
+package de.knowwe.event;
+
+import de.knowwe.core.event.Event;
+import de.knowwe.core.user.UserContext;
 
 /**
- * Extend this class to create new Events to which Eventlisteners can listen.
  * 
- * By now there is no specified behavior for events, in the future this may
- * change.
- * 
- * @author Sebastian Furth
- * 
+ * @author jochenreutelshofer
+ * @created 05.12.2012
  */
-public abstract class Event {
+public class PageRenderedEvent extends Event {
 
+	private final String title;
+	private final UserContext user;
+
+	/**
+	 * 
+	 */
+	public PageRenderedEvent(String title, UserContext user) {
+		this.user = user;
+		this.title = title;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public UserContext getUser() {
+		return user;
+	}
 }
