@@ -30,9 +30,15 @@ import de.d3web.core.session.Session;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.notification.NotificationManager;
 import de.knowwe.notification.OutDatedSessionNotification;
 
@@ -79,7 +85,18 @@ public class QuickInterviewAction extends AbstractAction {
 		}
 
 		Session session = SessionProvider.getSession(usercontext, kb);
-
-		return QuickInterviewRenderer.renderInterview(session, web, usercontext);
+		
+		Article article = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB).getArticle(topic);
+		Section<QuickInterviewMarkup> markup = Sections.findSuccessor(article.getRootSection(), QuickInterviewMarkup.class);
+		
+		String annotation = DefaultMarkupType.getAnnotation(markup, QuickInterviewMarkup.SAVE_KEY);
+		
+		boolean saveSession = false;
+		
+		if (annotation.equals("true")) {
+			saveSession = true;
+		}
+		
+		return QuickInterviewRenderer.renderInterview(session, web, usercontext, saveSession);
 	}
 }
