@@ -37,7 +37,6 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.notification.NotificationManager;
 import de.knowwe.notification.OutDatedSessionNotification;
@@ -93,7 +92,7 @@ public class QuickInterviewAction extends AbstractAction {
 		
 		boolean saveSession = false;
 		
-		if (annotation.equals("true")) {
+		if (annotation != null && annotation.equalsIgnoreCase("true")) {
 			saveSession = true;
 		}
 		
