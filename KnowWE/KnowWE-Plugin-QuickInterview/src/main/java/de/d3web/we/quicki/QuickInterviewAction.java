@@ -84,18 +84,23 @@ public class QuickInterviewAction extends AbstractAction {
 		}
 
 		Session session = SessionProvider.getSession(usercontext, kb);
-		
-		Article article = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB).getArticle(topic);
-		Section<QuickInterviewMarkup> markup = Sections.findSuccessor(article.getRootSection(), QuickInterviewMarkup.class);
-		
-		String annotation = DefaultMarkupType.getAnnotation(markup, QuickInterviewMarkup.SAVE_KEY);
-		
+
+		Article article = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB).getArticle(
+				topic);
+		Section<QuickInterviewMarkup> markup = Sections.findSuccessor(article.getRootSection(),
+				QuickInterviewMarkup.class);
+
+		String annotation = null;
+		if (markup != null) {
+			annotation = DefaultMarkupType.getAnnotation(markup, QuickInterviewMarkup.SAVE_KEY);
+		}
+
 		boolean saveSession = false;
-		
+
 		if (annotation != null && annotation.equalsIgnoreCase("true")) {
 			saveSession = true;
 		}
-		
+
 		return QuickInterviewRenderer.renderInterview(session, web, usercontext, saveSession);
 	}
 }
