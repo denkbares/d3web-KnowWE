@@ -36,7 +36,11 @@ KNOWWE.core.plugin.objectinfo = function() {
 			if (button)
 				_KE.add('click', button,
 						KNOWWE.core.plugin.objectinfo.renameTerm);
+			jq$('#objectinfo-search').keyup(function() {
+				KNOWWE.core.plugin.objectinfo.lookUp();
+			});
 		},
+		
 
 		/**
 		 * Function: createHomePage Used in the ObjectInfoToolProvider for
@@ -106,6 +110,33 @@ KNOWWE.core.plugin.objectinfo = function() {
 				KNOWWE.core.util.updateProcessingState(1);
 				new _KA(options).send();
 			}
+		},
+		
+		/**
+		 * shows a list of similar terms
+		 */
+		lookUp : function() {
+			
+			web = jq$('#objectinfo-web');
+			if (web) {
+				var params = {
+					action : jq$('#objectinfo-search').attr('action'),
+					KWikiWeb : web.val(),
+				}
+
+				var options = {
+					url : KNOWWE.core.util.getURL(params),
+					response : {
+						action : 'none',
+						fn : function() {
+							var jsonResponse = JSON.parse(this.responseText);
+							var a = jsonResponse.allTerms;
+							jq$('#objectinfo-search').autocomplete({source:a});
+						}
+					}
+				}
+				new _KA(options).send();
+			}
 		}
 	}
 }();
@@ -114,9 +145,8 @@ KNOWWE.core.plugin.objectinfo = function() {
 /* ------------- Onload Events ---------------------------------- */
 /* ############################################################### */
 (function init() {
-
+	
 	window.addEvent('domready', _KL.setup);
-
 	if (KNOWWE.helper.loadCheck([ 'Wiki.jsp' ])) {
 		window.addEvent('domready', function() {
 			KNOWWE.core.plugin.objectinfo.init();

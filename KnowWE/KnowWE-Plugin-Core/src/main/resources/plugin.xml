@@ -167,6 +167,7 @@
 		<parameter id="description" value="TagHandler ObjectInfoTagHandler" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
+		<parameter id="css" value="jqautocomplete.css" />
 		<parameter id="script" value="KnowWE-Plugin-Core.js" />
 	</extension>
 	
@@ -197,6 +198,16 @@
             value="de.knowwe.core.action.TermRenamingAction" />
         <parameter id="name" value="TermRenamingAction" />
         <parameter id="description" value="Action TermRenamingAction" />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="5" />
+    </extension>
+    
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+        id="LookUpAction">
+        <parameter id="class"
+            value="de.knowwe.core.action.LookUpAction" />
+        <parameter id="name" value="LookUpAction" />
+        <parameter id="description" value="Action LookUpAction" />
         <parameter id="version" value="1.0" />
         <parameter id="priority" value="5" />
     </extension>
