@@ -120,6 +120,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 			web = jq$('#objectinfo-web');
 			if (web) {
 				var params = {
+				    searchstring : jq$('#objectinfo-search').val(),
 					action : jq$('#objectinfo-search').attr('action'),
 					KWikiWeb : web.val(),
 				}

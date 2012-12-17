@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,6 +28,7 @@ public class LookUpAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String web = context.getParameter(Attributes.WEB);
+		String searchterm = context.getParameter("searchstring");
 
 		// gathering all terms
 		List<String> allTerms = new ArrayList<String>();
@@ -47,8 +50,9 @@ public class LookUpAction extends AbstractAction {
 			}
 		}
 
-		// sort the terms and write the response
 		Collections.sort(allTerms);
+		Collections.sort(allTerms, new LevenshteinComparator(searchterm));
+
 		JSONObject response = new JSONObject();
 		try {
 			response.accumulate("allTerms", allTerms);
@@ -56,5 +60,22 @@ public class LookUpAction extends AbstractAction {
 		} catch (JSONException e) {
 			throw new IOException(e.getMessage());
 		}
+	}
+
+	public class LevenshteinComparator implements Comparator<String> {
+
+		private final String searchString;
+
+		public LevenshteinComparator(String searchString) {
+			this.searchString = searchString;
+		}
+
+		@Override
+		public int compare(String o1, String o2) {
+			int first = StringUtils.getLevenshteinDistance(searchString, o1);
+			int second = StringUtils.getLevenshteinDistance(searchString, o2);
+			return first - second;
+		}
+
 	}
 }
