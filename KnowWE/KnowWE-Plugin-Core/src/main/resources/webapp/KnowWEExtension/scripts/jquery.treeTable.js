@@ -12,6 +12,7 @@
   var options;
   var defaultPaddingLeft;
   var persistStore;
+  
 
   $.fn.treeTable = function(opts) {
     options = $.extend({}, $.fn.treeTable.defaults, opts);
@@ -34,7 +35,7 @@
           }
 
           // Set child nodes to initial state if we're in expandable mode.
-          if(!isRootNode && options.expandable && options.initialState == "collapsed") {
+          if(!isRootNode && options.expandable && options.initialState == "kbrenderer-collapsed") {
             $(this).addClass('ui-helper-hidden');
           }
 
@@ -53,7 +54,7 @@
     clickableNodeNames: false,
     expandable: true,
     indent: 19,
-    initialState: "collapsed",
+    initialState: "kbrenderer-collapsed",
     onNodeShow: null,
     onNodeHide: null,
     treeColumn: 0,
@@ -80,14 +81,14 @@
   // Recursively hide all node's children in a tree
   $.fn.collapse = function() {
     return this.each(function() {
-      $(this).removeClass("expanded").addClass("collapsed");
+      $(this).removeClass("kbrenderer-expanded").addClass("kbrenderer-collapsed");
 
       if (options.persist) {
         persistNodeState($(this));
       }
 
       childrenOf($(this)).each(function() {
-        if(!$(this).hasClass("collapsed")) {
+        if(!$(this).hasClass("kbrenderer-collapsed")) {
           $(this).collapse();
         }
 
@@ -104,7 +105,7 @@
   // Recursively show all node's children in a tree
   $.fn.expand = function() {
     return this.each(function() {
-      $(this).removeClass("collapsed").addClass("expanded");
+      $(this).removeClass("kbrenderer-collapsed").addClass("kbrenderer-expanded");
 
       if (options.persist) {
         persistNodeState($(this));
@@ -113,7 +114,7 @@
       childrenOf($(this)).each(function() {
         initialize($(this));
 
-        if($(this).is(".expanded.parent")) {
+        if($(this).is(".kbrenderer-expanded.parent")) {
           $(this).expand();
         }
 
@@ -170,7 +171,7 @@
 
   // Toggle an entire branch
   $.fn.toggleBranch = function() {
-    if($(this).hasClass("collapsed")) {
+    if($(this).hasClass("kbrenderer-collapsed")) {
       $(this).expand();
     } else {
       $(this).collapse();
@@ -206,7 +207,9 @@
       indent($(this), value);
     });
   };
-
+$("#kdomExpandAll").click(function() {
+  alert("Handler for .click() called.");
+});
   function initialize(node) {
     if(!node.hasClass("initialized")) {
       node.addClass("initialized");
@@ -248,15 +251,15 @@
           }
 
           if (options.persist && getPersistedNodeState(node)) {
-            node.addClass('expanded');
+            node.addClass('kbrenderer-expanded');
           }
 
           // Check for a class set explicitly by the user, otherwise set the default class
-          if(!(node.hasClass("expanded") || node.hasClass("collapsed"))) {
+          if(!(node.hasClass("kbrenderer-expanded") || node.hasClass("kbrenderer-collapsed"))) {
             node.addClass(options.initialState);
           }
 
-          if(node.hasClass("expanded")) {
+          if(node.hasClass("kbrenderer-expanded")) {
             node.expand();
           }
         }
@@ -283,7 +286,7 @@
 
   //saving state functions, not critical, so will not generate alerts on error
   function persistNodeState(node) {
-    if(node.hasClass('expanded')) {
+    if(node.hasClass('kbrenderer-expanded')) {
       try {
          persistStore.set(node.attr('id'), '1');
       } catch (err) {
@@ -305,4 +308,5 @@
       return false;
     }
   }
+ 
 })(jQuery);

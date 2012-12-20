@@ -53,7 +53,7 @@ public class KDOMRendererType extends DefaultMarkupType {
 		@Override
 		protected void renderContents(Section<?> section, UserContext user, StringBuilder string) {
 			String html = "";
-			html += "<div class='zebra-table'>";
+			// html += "<div class='zebra-table'>";
 			html += "<table class='renderKDOMTable wikitable' id='tree'>";
 			html += "<th>Type</th>";
 			html += "<th>ID</th>";
@@ -65,15 +65,23 @@ public class KDOMRendererType extends DefaultMarkupType {
 			StringBuilder temp = new StringBuilder();
 			renderSubtree(section.getArticle().getRootSection(), temp, 1);
 			string.append(temp);
-			string.append(Strings.maskHTML("</table></div>"));
+			String expandAll = "jq$('.treeTable').expandAll();";
+			String collapseAll = "jq$('.treeTable').collapseAll();";
+			string.append(Strings.maskHTML("<a href='#' onclick=" + expandAll
+					+ ">Expand all</a><br/>"));
+			string.append(Strings.maskHTML("<a href='#' onclick=" + collapseAll
+					+ ">Collapse all</a>"));
+
+			string.append(Strings.maskHTML("</table>"/* </div>" */));
 
 			string.append(Strings.maskHTML("<script type='text/javascript'>jq$('#tree').treeTable();</script>"));
 
 		}
 
 		protected void renderSubtree(Section<?> s, StringBuilder string, int count) {
-			string.append(Strings.maskHTML("<tr id='" + s.getID() + "'"));
-			string.append(" class='");
+			string.append(Strings.maskHTML("<tr id='" + s.getID()
+					+ "'"));
+			string.append(" class='treetr");
 			if (s.getFather() != null) {
 				string.append(" child-of-" + s.getFather().getID());
 			}
@@ -90,11 +98,12 @@ public class KDOMRendererType extends DefaultMarkupType {
 					+ Strings.maskHTML("</td>"));
 			string.append(Strings.maskHTML("<td> " + s.getOffSetFromFatherText() + "</td>"));
 			string.append(Strings.maskHTML("<td> " + s.getChildren().size() + "</td>"));
-			String text = s.getText().length() < 50 ? s.getText() : s.getText().substring(0,
-					50) + "...";
-			string.append(Strings.maskHTML("<td><div class='table_text'> ")
-					+ Strings.maskJSPWikiMarkup(text)
-					+ Strings.maskHTML("</div></td>"));
+
+			string.append(Strings.maskHTML("<td><div class='table_text'><div> ")
+					+ ">"
+					+ Strings.maskJSPWikiMarkup(s.getText())
+					+ "<"
+					+ Strings.maskHTML("</div></div></td>"));
 			string.append(Strings.maskHTML("</tr>"));
 			if (s.getChildren().size() > 0) {
 				for (Section<?> child : s.getChildren()) {

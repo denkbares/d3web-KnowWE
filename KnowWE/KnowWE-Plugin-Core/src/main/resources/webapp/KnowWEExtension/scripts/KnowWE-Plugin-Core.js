@@ -142,6 +142,24 @@ KNOWWE.core.plugin.objectinfo = function() {
 	}
 }();
 
+KNOWWE.core.plugin.renderKDOM = function() {
+
+jq$('.table_text').hover(
+    function() {
+    var that = this;
+    setTimeout( function(){
+       jq$(that).css('height', that.scrollHeight);
+    },500);
+    	//alert(this.scrollHeight);
+    },
+    function() {
+        jq$(this).css('height', '23px');
+    }
+    
+
+);
+};
+
 /* ############################################################### */
 /* ------------- Onload Events ---------------------------------- */
 /* ############################################################### */
@@ -151,6 +169,8 @@ KNOWWE.core.plugin.objectinfo = function() {
 	if (KNOWWE.helper.loadCheck([ 'Wiki.jsp' ])) {
 		window.addEvent('domready', function() {
 			KNOWWE.core.plugin.objectinfo.init();
+			KNOWWE.core.plugin.renderKDOM();
+
 		});
 	}
 	;
