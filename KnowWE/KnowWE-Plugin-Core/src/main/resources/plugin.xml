@@ -129,27 +129,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="GlobalReplaceAction">
-		<parameter id="class"
-			value="de.knowwe.core.action.GlobalReplaceAction" />
-		<parameter id="name" value="GlobalReplaceAction" />
-		<parameter id="description" value="Action GlobalReplaceAction" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="WordBasedRenamingAction">
-		<parameter id="class"
-			value="de.knowwe.core.action.WordBasedRenamingAction" />
-		<parameter id="name" value="WordBasedRenamingAction" />
-		<parameter id="description" value="Action WordBasedRenamingAction" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-	
+
 		<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="ReplaceKDOMNodeAction">
 		<parameter id="class"
