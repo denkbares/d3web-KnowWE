@@ -162,6 +162,17 @@
 		<parameter id="scope" value="TagHandlerType/ObjectInfo" />
 	</extension>
 	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="KDOMRendererToolProvider">
+		<parameter id="class" value="de.knowwe.core.kdom.renderer.KDOMRendererToolProvider" />
+		<parameter id="name" value="KDOMRendererToolProvider" />
+		<parameter id="description"
+			value="Offers expand all and collapse all tools" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="DefaultMarkupType" />
+	</extension>
+	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
         id="CreateObjectHomePageAction">
         <parameter id="class"

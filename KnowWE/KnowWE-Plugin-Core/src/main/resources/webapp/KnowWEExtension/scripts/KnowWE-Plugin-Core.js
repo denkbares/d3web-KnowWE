@@ -148,12 +148,12 @@ jq$('.table_text').hover(
     function() {
     var that = this;
     setTimeout( function(){
-       jq$(that).css('height', that.scrollHeight);
-    },500);
+        jq$(that).css('height', that.scrollHeight);
+},0);
     	//alert(this.scrollHeight);
     },
     function() {
-        jq$(this).css('height', '23px');
+        jq$(this).css('height', '18px');
     }
     
 

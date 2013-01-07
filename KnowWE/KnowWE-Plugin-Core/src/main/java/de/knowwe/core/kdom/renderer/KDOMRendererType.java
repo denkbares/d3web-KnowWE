@@ -65,12 +65,7 @@ public class KDOMRendererType extends DefaultMarkupType {
 			StringBuilder temp = new StringBuilder();
 			renderSubtree(section.getArticle().getRootSection(), temp, 1);
 			string.append(temp);
-			String expandAll = "jq$('.treeTable').expandAll();";
-			String collapseAll = "jq$('.treeTable').collapseAll();";
-			string.append(Strings.maskHTML("<a href='#' onclick=" + expandAll
-					+ ">Expand all</a><br/>"));
-			string.append(Strings.maskHTML("<a href='#' onclick=" + collapseAll
-					+ ">Collapse all</a>"));
+
 
 			string.append(Strings.maskHTML("</table>"/* </div>" */));
 
@@ -92,17 +87,17 @@ public class KDOMRendererType extends DefaultMarkupType {
 				string.append("'");
 			}
 			string.append(Strings.maskHTML(">"));
-			string.append(Strings.maskHTML("<td> " + s.get().getClass().getSimpleName() + "</td>"));
-			string.append(Strings.maskHTML("<td> " + s.getID() + "</td>"));
-			string.append(Strings.maskHTML("<td> ") + s.getText().length()
+			string.append(Strings.maskHTML("<td>" + s.get().getClass().getSimpleName() + "</td>"));
+			string.append(Strings.maskHTML("<td>" + s.getID() + "</td>"));
+			string.append(Strings.maskHTML("<td>") + s.getText().length()
 					+ Strings.maskHTML("</td>"));
-			string.append(Strings.maskHTML("<td> " + s.getOffSetFromFatherText() + "</td>"));
-			string.append(Strings.maskHTML("<td> " + s.getChildren().size() + "</td>"));
+			string.append(Strings.maskHTML("<td>" + s.getOffSetFromFatherText() + "</td>"));
+			string.append(Strings.maskHTML("<td>" + s.getChildren().size() + "</td>"));
 
-			string.append(Strings.maskHTML("<td><div class='table_text'><div> ")
-					+ ">"
+			string.append(Strings.maskHTML("<td><div class='table_text'><div>")
+					+ "~|"
 					+ Strings.maskJSPWikiMarkup(s.getText())
-					+ "<"
+					+ "~|"
 					+ Strings.maskHTML("</div></div></td>"));
 			string.append(Strings.maskHTML("</tr>"));
 			if (s.getChildren().size() > 0) {
