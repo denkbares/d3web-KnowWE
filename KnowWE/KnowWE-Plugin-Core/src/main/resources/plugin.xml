@@ -170,7 +170,7 @@
 			value="Offers expand all and collapse all tools" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="scope" value="DefaultMarkupType" />
+		<parameter id="scope" value="KDOMRendererType" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
