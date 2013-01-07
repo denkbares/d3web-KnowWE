@@ -316,4 +316,15 @@
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="KnowWE-Plugin-Rdf2GoSemanticCore.js" />
 	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="RestoreAction">
+		<parameter id="class"
+			value="de.knowwe.core.action.RestoreAction" />
+		<parameter id="name" value="RestoreAction" />
+		<parameter id="description" value="Action RestoreAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="restoreActionScript.js" />
+	</extension>
 </plugin>
