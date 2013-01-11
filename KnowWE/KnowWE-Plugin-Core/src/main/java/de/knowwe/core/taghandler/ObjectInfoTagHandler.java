@@ -18,6 +18,7 @@
  */
 package de.knowwe.core.taghandler;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,6 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TermIdentifier;
@@ -228,6 +232,9 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				+ section.getWeb() + "\" />");
 		html.append("<input type=\"hidden\" name=\"page\" value=\""
 				+ Strings.encodeURL(section.getTitle()) + "\" />");
+		html.append("<div style=\"display:none\" id=\"objectinfo-terms\" name=\"terms\" >");
+		html.append(getTerms(section.getWeb()).toString());
+		html.append("</div>");
 		html.append("<input action=\"" + getLookUpAction()
 				+ "\" type=\"text\" size=\"60\" name=\"" + OBJECT_NAME
 				+ "\" id=\"objectinfo-search\" />");
@@ -572,6 +579,37 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		string = string.replace("\"", "&quot;");
 		string = string.replace("\\", "&#92;");
 		return string;
+	}
+
+	public JSONObject getTerms(String web) {
+		// gathering all terms
+		List<String> allTerms = new ArrayList<String>();
+		Iterator<Article> iter = Environment.getInstance()
+				.getArticleManager(web).getArticleIterator();
+		Article currentArticle;
+
+		TerminologyManager terminologyManager;
+		while (iter.hasNext()) {
+			currentArticle = iter.next();
+			terminologyManager = KnowWEUtils
+					.getTerminologyManager(currentArticle);
+			Collection<TermIdentifier> allDefinedTerms = terminologyManager
+					.getAllDefinedTerms();
+			for (TermIdentifier definition : allDefinedTerms) {
+				if (!allTerms.contains(definition.toExternalForm())) {
+					allTerms.add(definition.toExternalForm());
+				}
+			}
+		}
+		JSONObject response = new JSONObject();
+		try {
+			response.accumulate("allTerms", allTerms);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return response;
+
 	}
 
 }

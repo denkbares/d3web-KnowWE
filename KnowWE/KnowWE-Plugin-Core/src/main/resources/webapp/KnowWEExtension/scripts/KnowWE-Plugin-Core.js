@@ -117,27 +117,10 @@ KNOWWE.core.plugin.objectinfo = function() {
 		 */
 		lookUp : function() {
 			
-			web = jq$('#objectinfo-web');
-			if (web) {
-				var params = {
-				    searchstring : jq$('#objectinfo-search').val(),
-					action : jq$('#objectinfo-search').attr('action'),
-					KWikiWeb : web.val(),
-				}
-
-				var options = {
-					url : KNOWWE.core.util.getURL(params),
-					response : {
-						action : 'none',
-						fn : function() {
-							var jsonResponse = JSON.parse(this.responseText);
-							var a = jsonResponse.allTerms;
-							jq$('#objectinfo-search').autocomplete({source:a});
-						}
-					}
-				}
-				new _KA(options).send();
-			}
+			var response = jq$('#objectinfo-terms').text();
+			var jsonResponse =  JSON.parse(response);
+			var a = jsonResponse.allTerms;
+			jq$('#objectinfo-search').autocomplete({source:a});
 		}
 	}
 }();
