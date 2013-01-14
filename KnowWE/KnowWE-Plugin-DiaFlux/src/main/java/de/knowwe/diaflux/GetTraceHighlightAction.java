@@ -32,8 +32,6 @@ import de.d3web.diaFlux.inference.FluxSolver;
 import de.d3web.we.basic.SessionProvider;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.diaflux.type.DiaFluxType;
 import de.knowwe.diaflux.type.FlowchartType;
 
 /**
@@ -55,10 +53,7 @@ public class GetTraceHighlightAction extends AbstractHighlightAction {
 
 	@Override
 	public void insertHighlighting(Section<FlowchartType> flowchart, Highlight highlight, UserActionContext context) throws IOException {
-		Section<DiaFluxType> diaFluxSec = Sections.findAncestorOfExactType(flowchart,
-				DiaFluxType.class);
-
-		KnowledgeBase kb = FlowchartUtils.getKB(diaFluxSec);
+		KnowledgeBase kb = getKB(flowchart);
 		Session session = SessionProvider.getSession(context, kb);
 
 		if (session == null) {
@@ -67,7 +62,7 @@ public class GetTraceHighlightAction extends AbstractHighlightAction {
 
 		Flow flow = findFlow(flowchart, kb);
 
-		// might happen, if flow contains errors and is not contained in kb 
+		// might happen, if flow contains errors and is not contained in kb
 		if (flow == null) {
 			// TODO error handling
 			return;
@@ -116,12 +111,5 @@ public class GetTraceHighlightAction extends AbstractHighlightAction {
 		}
 
 	}
-
-	public static Flow findFlow(Section<FlowchartType> flowchart, KnowledgeBase kb) {
-		String flowchartName = FlowchartType.getFlowchartName(flowchart);
-		return DiaFluxUtils.getFlowSet(kb).get(flowchartName);
-	}
-
-
 
 }

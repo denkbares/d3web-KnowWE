@@ -76,6 +76,17 @@
 		<parameter id="scope" value="diafluxdiff" />
 	</extension>
 	
+	<extension plugin-id="KnowWE-Plugin-DiaFlux" point-id="DiaFluxDisplayEnhancement"
+		id="ErrorHighlight">
+		<parameter id="class"
+			value="de.knowwe.diaflux.ErrorHighlight" />
+		<parameter id="name" value="ErrorHighlight" />
+		<parameter id="description" value="ErrorHighlight" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="diaflux" />
+	</extension>
+	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="DiaFluxType">
 		<parameter id="class"
@@ -123,6 +134,16 @@
 			value="de.knowwe.diaflux.GetSubflowLinksAction" />
 		<parameter id="name" value="GetSubflowLinksAction" />
 		<parameter id="description" value="Action GetSubflowLinksAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="GetErrorHighlightAction">
+		<parameter id="class"
+			value="de.knowwe.diaflux.GetErrorHighlightAction" />
+		<parameter id="name" value="GetErrorHighlightAction" />
+		<parameter id="description" value="Action GetErrorHighlightAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

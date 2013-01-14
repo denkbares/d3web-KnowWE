@@ -20,20 +20,25 @@ package de.knowwe.diaflux;
 
 import java.io.IOException;
 
+import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.diaFlux.flow.Flow;
+import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.diaflux.type.DiaFluxType;
 import de.knowwe.diaflux.type.FlowchartType;
 
 /**
+ * This class provides some basic functionalities to highlight flowchart
+ * elements.
  * 
  * @author Reinhard Hatko
  * @created 26.10.2012
  */
-public abstract class AbstractHighlightAction extends
-		AbstractAction {
+public abstract class AbstractHighlightAction extends AbstractAction {
 
 	public static final String PARENTID = "parentid";
 
@@ -57,11 +62,23 @@ public abstract class AbstractHighlightAction extends
 
 	}
 
+	public static Flow findFlow(Section<FlowchartType> flowchart, KnowledgeBase kb) {
+		String flowchartName = FlowchartType.getFlowchartName(flowchart);
+		return DiaFluxUtils.getFlowSet(kb).get(flowchartName);
+	}
+
+	protected KnowledgeBase getKB(Section<FlowchartType> flowchart) {
+		Section<DiaFluxType> diaFluxSec = Sections.findAncestorOfExactType(flowchart,
+				DiaFluxType.class);
+
+		return FlowchartUtils.getKB(diaFluxSec);
+	}
+
 
 	/**
-	 * Returns the prefix of css classes to be removed, if highlighting is
-	 * updated without reloading the page, e.g. trace. If the highlighting is
-	 * just updated on page load, this doesnt matter.
+	 * Returns the prefix of CSS classes to be removed, if highlighting is
+	 * updated without reloading the page, e.g. the execution trace. If the
+	 * highlighting is just updated on page load, this doesn't matter.
 	 * 
 	 * @created 26.10.2012
 	 * @return
@@ -69,9 +86,10 @@ public abstract class AbstractHighlightAction extends
 	public abstract String getPrefix();
 
 	/**
+	 * This method has to implement the logic for highlighting.
 	 * 
 	 * @created 26.10.2012
-	 * @param flowchart TODO
+	 * @param flowchart
 	 * @param highlight
 	 * @param context
 	 * @throws IOException

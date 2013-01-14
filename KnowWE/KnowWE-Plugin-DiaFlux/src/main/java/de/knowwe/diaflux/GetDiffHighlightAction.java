@@ -96,9 +96,9 @@ public class GetDiffHighlightAction extends AbstractAction {
 		Triple<Collection<Section<NodeType>>, Collection<Section<NodeType>>, Collection<Section<NodeType>>> changes = getChanges(
 				leftFlow, rightFlow, NodeType.class);
 
-		addNodeHighlight(rightHighlight, changes.getA(), ADDED);
+		addNodeHighlight(rightHighlight, changes.getA(), REMOVED);
 
-		addNodeHighlight(leftHighlight, changes.getB(), REMOVED);
+		addNodeHighlight(leftHighlight, changes.getB(), ADDED);
 
 		addNodeHighlight(rightHighlight, changes.getC(), CHANGED);
 		addNodeHighlight(leftHighlight, changes.getC(), CHANGED);
@@ -109,9 +109,9 @@ public class GetDiffHighlightAction extends AbstractAction {
 		Triple<Collection<Section<EdgeType>>, Collection<Section<EdgeType>>, Collection<Section<EdgeType>>> changes = getChanges(
 				leftFlow, rightFlow, EdgeType.class);
 
-		addEdgeHighlight(rightHighlight, changes.getA(), ADDED);
+		addEdgeHighlight(rightHighlight, changes.getA(), REMOVED);
 
-		addEdgeHighlight(leftHighlight, changes.getB(), REMOVED);
+		addEdgeHighlight(leftHighlight, changes.getB(), ADDED);
 
 		addEdgeHighlight(rightHighlight, changes.getC(), CHANGED);
 		addEdgeHighlight(leftHighlight, changes.getC(), CHANGED);
