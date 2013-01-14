@@ -23,7 +23,6 @@
  */
 package de.knowwe.diaflux.persistence;
 
-import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.ComposedNode;
@@ -31,7 +30,6 @@ import de.d3web.diaFlux.flow.Node;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.Message;
 import de.knowwe.diaflux.type.ActionType;
 import de.knowwe.diaflux.type.CallFlowActionType;
 import de.knowwe.diaflux.type.FlowchartType;
@@ -62,7 +60,7 @@ public class ComposedNodeHandler extends AbstractNodeHandler {
 
 	@Override
 	public Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection,
-			Section<FlowchartType> flowSection, String id, List<Message> errors) {
+			Section<FlowchartType> flowSection, String id) {
 
 		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
 		Section<CallFlowActionType> section = Sections.findSuccessor(nodeInfo,

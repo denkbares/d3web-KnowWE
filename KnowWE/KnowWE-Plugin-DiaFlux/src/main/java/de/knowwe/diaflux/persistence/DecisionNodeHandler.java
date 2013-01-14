@@ -18,7 +18,6 @@
  */
 package de.knowwe.diaflux.persistence;
 
-import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
@@ -30,7 +29,6 @@ import de.d3web.we.object.NamedObjectReference;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.Message;
 import de.knowwe.diaflux.type.DecisionType;
 import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.diaflux.type.NodeType;
@@ -55,7 +53,7 @@ public class DecisionNodeHandler extends AbstractNodeHandler {
 
 	@Override
 	public Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection,
-			Section<FlowchartType> flowSection, String id, List<Message> errors) {
+			Section<FlowchartType> flowSection, String id) {
 		Section<NamedObjectReference> objectRef = Sections.findSuccessor(nodeSection,
 				NamedObjectReference.class);
 		NamedObject object = NamedObjectReference.getObject(article, objectRef);

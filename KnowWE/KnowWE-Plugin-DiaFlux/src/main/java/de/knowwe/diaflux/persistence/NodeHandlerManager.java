@@ -28,7 +28,6 @@ import de.d3web.plugin.PluginManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.Message;
 import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.diaflux.type.NodeType;
 
@@ -86,12 +85,12 @@ public class NodeHandlerManager implements NodeHandler {
 
 	@Override
 	public Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection,
-			Section<FlowchartType> flowSection, String id, List<Message> errors) {
+			Section<FlowchartType> flowSection, String id) {
 		NodeHandler nodeHandler = findNodeHandler(article, kb, nodeSection);
 
 		if (nodeHandler == null) return null;
 
-		return nodeHandler.createNode(article, kb, nodeSection, flowSection, id, errors);
+		return nodeHandler.createNode(article, kb, nodeSection, flowSection, id);
 	}
 
 	public NodeHandler findNodeHandler(Article article,

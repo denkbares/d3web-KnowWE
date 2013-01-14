@@ -20,14 +20,12 @@
 
 package de.knowwe.diaflux.persistence;
 
-import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.Node;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.Message;
 import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.diaflux.type.NodeType;
 
@@ -56,10 +54,9 @@ public interface NodeHandler {
 	 * @param nodeSection
 	 * @param flowSection
 	 * @param id id of the node to create
-	 * @param errors
 	 * @return
 	 */
-	Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection, Section<FlowchartType> flowSection, String id, List<Message> errors);
+	Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection, Section<FlowchartType> flowSection, String id);
 
 	/**
 	 * Returns the ObjectType of the NodeModel this handler handles.

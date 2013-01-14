@@ -23,7 +23,6 @@
  */
 package de.knowwe.diaflux.persistence;
 
-import java.util.List;
 
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -33,7 +32,6 @@ import de.d3web.we.kdom.rules.action.D3webRuleAction;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.Message;
 import de.knowwe.diaflux.type.ActionType;
 import de.knowwe.diaflux.type.CallFlowActionType;
 import de.knowwe.diaflux.type.FlowchartType;
@@ -64,7 +62,7 @@ public class ActionNodeHandler extends AbstractNodeHandler {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection,
-			Section<FlowchartType> flowSection, String id, List<Message> errors) {
+			Section<FlowchartType> flowSection, String id) {
 
 		@SuppressWarnings("rawtypes")
 		Section<D3webRuleAction> ruleAction = Sections.findSuccessor(nodeSection,

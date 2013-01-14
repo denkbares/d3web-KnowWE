@@ -23,14 +23,12 @@
  */
 package de.knowwe.diaflux.persistence;
 
-import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.flow.StartNode;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.Message;
 import de.knowwe.diaflux.FlowchartSubTreeHandler;
 import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.diaflux.type.NodeType;
@@ -59,7 +57,7 @@ public class StartNodeHandler extends AbstractNodeHandler {
 
 	@Override
 	public Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection,
-			Section<FlowchartType> flowSection, String id, List<Message> errors) {
+			Section<FlowchartType> flowSection, String id) {
 
 		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
 
