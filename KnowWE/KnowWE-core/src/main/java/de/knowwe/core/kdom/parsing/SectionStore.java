@@ -54,8 +54,8 @@ public class SectionStore {
 	/**
 	 * All objects stored in this {@link Section} with the given <tt>key</tt>
 	 * are collected and returned. The {@link Map} stores them by the title of
-	 * the {@link Article} they where stored for. If an object was stored
-	 * without an argument {@link Article} (article independent), the returned
+	 * the {@link Article} they were stored for. If an object was stored without
+	 * an argument {@link Article} (article independent), the returned
 	 * {@link Map} contains this object with <tt>null</tt> as the key.
 	 * 
 	 * @created 16.02.2012
