@@ -4,8 +4,12 @@
 CCEvents.addClassListener('click', 'Node', 
 		function(event) {
 
-		if (!this.__node.flowchart.isSelected(this.__node)) {
-			if (this.__node) this.__node.select(DiaFluxUtils.isControlKey(event));
+		if (!this.__node) return; 
+	
+		var multiple = DiaFluxUtils.isControlKey(event);
+		
+		if (!event.isRightClick()) {
+			this.__node.select(multiple);
 		}
 	
 		if (event.isRightClick()) {

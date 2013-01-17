@@ -32,10 +32,10 @@ Rule.prototype.isVisible = function() {
 Rule.prototype.setVisible = function(visible) {
 	if (!this.isVisible() && visible) {
 		// ==> show Node
-		var selected = this.flowchart.isSelected(this);
-		this.dom = this.render(selected);
+		this.dom = this.render();
 		this.flowchart.getContentPane().appendChild(this.dom);
 		this.createDraggable();
+		var selected = this.flowchart.isSelected(this);
 		this.setGuardVisible(!selected, selected);
 	}
 	else if (this.isVisible() && !visible) {
@@ -48,7 +48,7 @@ Rule.prototype.setVisible = function(visible) {
 }
 
 
-Rule.prototype.render = function(selected) {
+Rule.prototype.render = function() {
 		var highlightDom, selectorDom;
 		
 		var ruleDom = Builder.node('div', {

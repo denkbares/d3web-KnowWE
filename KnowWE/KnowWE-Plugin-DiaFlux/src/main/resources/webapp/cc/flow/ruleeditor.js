@@ -12,9 +12,7 @@ CCEvents.addClassListener('dblclick', 'RoutingTool', function(event) {
 //register select click events for rule
 CCEvents.addClassListener('click', 'Rule', 
 	function(event) {
-		if (!this.__rule.flowchart.isSelected(this.__rule)) {
-			if (this.__rule) this.__rule.select(DiaFluxUtils.isControlKey(event));
-		}
+		if (this.__rule) this.__rule.select(DiaFluxUtils.isControlKey(event));
 		
 		if (event.isRightClick()) {
 			contextMenuFlowchart.close();

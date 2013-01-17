@@ -171,7 +171,13 @@ Flowchart.prototype.setSelection = function(nodeOrRuleOrArray, addToSelection, r
 	// create new and defined selection array 
 	// for the items to be selected
 	var newSelection;
+	
+	// array is null, if click on no object
 	if (nodeOrRuleOrArray == null) {
+		if (addToSelection){
+			//if ctrl was pressed, preserve the selection
+			return;
+		}
 		newSelection = [];
 	}
 	else if (DiaFluxUtils.isArray(nodeOrRuleOrArray)) {

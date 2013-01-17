@@ -318,7 +318,7 @@ FlowEditor.prototype._saveFlowchartText = function(xml, closeOnSuccess) {
 //register select click events for flowchart
 CCEvents.addClassListener('click', 'FlowchartGroup', 
 	function(event) {
-		this.__flowchart.setSelection(null);
+		this.__flowchart.setSelection(null, DiaFluxUtils.isControlKey(event));
 		if (!event.isRightClick()) {
 			contextMenuFlowchart.close();
 			contextMenuNode.close();

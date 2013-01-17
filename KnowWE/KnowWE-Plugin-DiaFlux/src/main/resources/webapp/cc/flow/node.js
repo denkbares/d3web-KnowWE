@@ -23,7 +23,7 @@
  * 		}
  * }
  * 
- * Currently only 'KnOffice' ist supported as markup language.
+ * Currently only 'KnOffice' is supported as markup language.
  * There can be at least only one of "start", "exit" or "action",
  * making the node's type. Later there might be added additional
  * optional node types such as "freeze". It is possible that there
@@ -31,7 +31,7 @@
  * node and the contained (displayed) node content is extracted from
  * the outgoing rules (maybe later we add an "decision" section). 
  * 
- * For comparision here an example of the same data structure in KnOffice's 
+ * For comparison here an example of the same data structure in KnOffice's 
  * xml representation: 
  * <node id=no001> 
  * 		<position top=100 left=50/> 
@@ -41,7 +41,7 @@
  * </node>
  * 
  * 
- * The Node stores additional (non-persiatant) information outside the node model
+ * The Node stores additional (non-persistant) information outside the node model
  * and keeps them maintained when the node model is changed. 
  */
 function Node(flowchart, nodeModel) {
@@ -101,12 +101,32 @@ Node.prototype.setNodeModel = function(nodeModel) {
 		this.setVisible(false);
 		this.setVisible(true);
 	}
+	var rules = this.getOutgoingRules();
+	for (var i=0; i<rules.length; i++) {
+		rules[i].notifyNodeChanged();
+	}
+}
+
+Node.prototype.getOutgoingRules = function() {
+	var result = [];
 	var rules = this.flowchart.findRulesForNode(this);
 	for (var i=0; i<rules.length; i++) {
 		if (rules[i].getSourceNode() == this) {
-			rules[i].notifyNodeChanged();
+			result.push(rules[i]);
 		}
 	}
+	return result;
+}
+
+Node.prototype.getIncomingRules = function() {
+	var result = [];
+	var rules = this.flowchart.findRulesForNode(this);
+	for (var i=0; i<rules.length; i++) {
+		if (rules[i].getTargetNode() == this) {
+			result.push(rules[i]);
+		}
+	}
+	return result;
 }
 
 Node.prototype.moveTo = function(left, top) {
@@ -225,12 +245,9 @@ Node.prototype.render = function() {
 			'action';
 		this.actionPane = new ActionPane(contentNode, action, 
 			function (actionPane) {
-				var rules = this.flowchart.findRulesForNode(this);
+				var rules = this.getOutgoingRules();
 				for (var i=0; i<rules.length; i++) {
-					var rule = rules[i];
-					if (rule.getSourceNode() == this) {
-						rule.notifyNodeChanged(this);
-					}
+					rules[i].notifyNodeChanged(this);
 				}
 			}.bind(this)
 		);
