@@ -44,7 +44,7 @@ import de.d3web.diaFlux.inference.FluxSolver;
  * @author Reinhard Hatko
  * @created 02.04.2012
  */
-public class DiaFluxTrace implements SessionObject, SessionObjectSource<DiaFluxTrace> {
+public class DiaFluxTrace implements SessionObject {
 
 	public static final PropagationListener LISTENER = new PropagationListener() {
 
@@ -119,12 +119,6 @@ public class DiaFluxTrace implements SessionObject, SessionObjectSource<DiaFluxT
 	public Session getSession() {
 		return session;
 	}
-	
-	@Override
-	public DiaFluxTrace createSessionObject(Session session) {
-		return new DiaFluxTrace(session);
-	}
-
 
 	public static Collection<Node> collectActiveNodes(DiaFluxCaseObject caseObject, Collection<SnapshotNode> enteredSnapshots) {
 		Map<FlowRun, Collection<SnapshotNode>> snappyFlows = FluxSolver.getFlowRunsWithEnteredSnapshot(

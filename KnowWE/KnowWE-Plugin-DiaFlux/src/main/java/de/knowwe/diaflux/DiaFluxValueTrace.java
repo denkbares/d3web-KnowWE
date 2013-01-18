@@ -51,7 +51,7 @@ import de.d3web.we.utils.D3webUtils;
  * @author Reinhard Hatko
  * @created 02.04.2012
  */
-public class DiaFluxValueTrace implements SessionObject, SessionObjectSource<DiaFluxValueTrace> {
+public class DiaFluxValueTrace implements SessionObject {
 
 	public static final PropagationListener LISTENER = new PropagationListener() {
 
@@ -101,11 +101,6 @@ public class DiaFluxValueTrace implements SessionObject, SessionObjectSource<Dia
 
 	public Session getSession() {
 		return session;
-	}
-
-	@Override
-	public DiaFluxValueTrace createSessionObject(Session session) {
-		return new DiaFluxValueTrace(session);
 	}
 
 	private static TerminologyObject getTermObject(Node node) {
