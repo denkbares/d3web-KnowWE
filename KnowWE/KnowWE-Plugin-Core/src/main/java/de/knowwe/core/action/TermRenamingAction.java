@@ -65,23 +65,45 @@ public class TermRenamingAction extends AbstractAction {
 		String web = context.getParameter(Attributes.WEB);
 		String term = context.getParameter(TERMNAME);
 		String replacement = context.getParameter(REPLACEMENT);
+		String force = context.getParameter("force");
+
+		if (force.equals("false")
+				&& getTerms(web).contains(new TermIdentifier(replacement))) {
+			JSONObject response = new JSONObject();
+			try {
+				response.append("alreadyexists", "true");
+				if (new TermIdentifier(replacement).equals(new TermIdentifier(
+						term))) {
+					response.append("same", "true");
+				} else {
+					response.append("same", "false");
+				}
+				response.write(context.getWriter());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
+		}
 
 		replacement = makeExternalFormIfNeeded(replacement);
 
 		TermIdentifier termIdentifier = TermIdentifier.fromExternalForm(term);
 
-		HashMap<String, Set<Section<? extends SimpleTerm>>> allTerms =
-				new HashMap<String, Set<Section<? extends SimpleTerm>>>();
+		HashMap<String, Set<Section<? extends SimpleTerm>>> allTerms = new HashMap<String, Set<Section<? extends SimpleTerm>>>();
 
-		Iterator<Article> iter = Environment.getInstance().getArticleManager(web).getArticleIterator();
+		Iterator<Article> iter = Environment.getInstance()
+				.getArticleManager(web).getArticleIterator();
 		Article currentArticle;
 
 		TerminologyManager terminologyManager;
 		while (iter.hasNext()) {
 			currentArticle = iter.next();
-			terminologyManager = KnowWEUtils.getTerminologyManager(currentArticle);
+			terminologyManager = KnowWEUtils
+					.getTerminologyManager(currentArticle);
 			// Check if there is a TermDefinition
-			Collection<Section<?>> definingSections = terminologyManager.getTermDefiningSections(termIdentifier);
+			Collection<Section<?>> definingSections = terminologyManager
+					.getTermDefiningSections(termIdentifier);
 			for (Section<?> definition : definingSections) {
 				if (definition.get() instanceof SimpleTerm) {
 					getTermSet(definition.getTitle(), allTerms).add(
@@ -90,7 +112,8 @@ public class TermRenamingAction extends AbstractAction {
 			}
 
 			// Check if there are References
-			Collection<Section<?>> references = terminologyManager.getTermReferenceSections(termIdentifier);
+			Collection<Section<?>> references = terminologyManager
+					.getTermReferenceSections(termIdentifier);
 			for (Section<?> reference : references) {
 				if (reference.get() instanceof SimpleTerm) {
 					getTermSet(reference.getTitle(), allTerms).add(
@@ -106,7 +129,8 @@ public class TermRenamingAction extends AbstractAction {
 		writeResponse(failures, success, termIdentifier, replacement, context);
 	}
 
-	private Set<Section<? extends SimpleTerm>> getTermSet(String title, Map<String, Set<Section<? extends SimpleTerm>>> allTerms) {
+	private Set<Section<? extends SimpleTerm>> getTermSet(String title,
+			Map<String, Set<Section<? extends SimpleTerm>>> allTerms) {
 		Set<Section<? extends SimpleTerm>> terms = allTerms.get(title);
 		if (terms == null) {
 			terms = new HashSet<Section<? extends SimpleTerm>>();
@@ -115,23 +139,23 @@ public class TermRenamingAction extends AbstractAction {
 		return terms;
 	}
 
-	private void writeResponse(Set<String> failures,
-			Set<String> success,
-			TermIdentifier termIdentifier,
-			String replacement,
+	private void writeResponse(Set<String> failures, Set<String> success,
+			TermIdentifier termIdentifier, String replacement,
 			UserActionContext context) throws IOException {
 
 		JSONObject response = new JSONObject();
 		try {
 			// the new external form of the TermIdentifier
 			String[] pathElements = termIdentifier.getPathElements();
-			String newLastPathElement = TermIdentifier.fromExternalForm(replacement).getLastPathElement();
+			String newLastPathElement = TermIdentifier.fromExternalForm(
+					replacement).getLastPathElement();
 			pathElements[pathElements.length - 1] = newLastPathElement;
-			response.append("newTermIdentifier", new TermIdentifier(pathElements).toExternalForm());
+			response.append("newTermIdentifier", new TermIdentifier(
+					pathElements).toExternalForm());
 
 			// the new object name
-			response.append("newObjectName",
-					new TermIdentifier(newLastPathElement).toExternalForm());
+			response.append("newObjectName", new TermIdentifier(
+					newLastPathElement).toExternalForm());
 
 			// renamed Articles
 			StringBuilder renamedArticles = new StringBuilder();
@@ -146,34 +170,30 @@ public class TermRenamingAction extends AbstractAction {
 				renamedArticles.append("##");
 				renamedArticles.append(article);
 			}
+			response.append("alreadyexists", false);
 			response.accumulate("renamedArticles", renamedArticles);
 
 			response.write(context.getWriter());
-		}
-		catch (JSONException e) {
+		} catch (JSONException e) {
 			throw new IOException(e.getMessage());
 		}
 	}
 
-	private void renameTerms(HashMap<String, Set<Section<? extends SimpleTerm>>> allTerms,
-			String replacement,
-			ArticleManager mgr,
-			UserActionContext context,
-			Set<String> failures,
-			Set<String> success) throws IOException {
+	private void renameTerms(
+			HashMap<String, Set<Section<? extends SimpleTerm>>> allTerms,
+			String replacement, ArticleManager mgr, UserActionContext context,
+			Set<String> failures, Set<String> success) throws IOException {
 
 		for (String title : allTerms.keySet()) {
-			if (Environment.getInstance().getWikiConnector().userCanEditArticle(
-					title, context.getRequest())) {
+			if (Environment.getInstance().getWikiConnector()
+					.userCanEditArticle(title, context.getRequest())) {
 				Map<String, String> nodesMap = new HashMap<String, String>();
 				for (Section<?> termSection : allTerms.get(title)) {
 					nodesMap.put(termSection.getID(), replacement);
 				}
-				Sections.replaceSections(context,
-						nodesMap);
+				Sections.replaceSections(context, nodesMap);
 				success.add(title);
-			}
-			else {
+			} else {
 				failures.add(title);
 			}
 		}
@@ -184,8 +204,29 @@ public class TermRenamingAction extends AbstractAction {
 		boolean needsQuotes = TermIdentifier.needsQuotes(text)
 				|| text.replaceAll("\\s", "").length() < text.length();
 
-		if (needsQuotes && !quoted) text = Strings.quote(text);
+		if (needsQuotes && !quoted)
+			text = Strings.quote(text);
 
 		return text;
+	}
+
+	public Set<TermIdentifier> getTerms(String web) {
+		// gathering all terms
+		Set<TermIdentifier> allTerms = new HashSet<TermIdentifier>();
+		Iterator<Article> iter = Environment.getInstance()
+				.getArticleManager(web).getArticleIterator();
+		Article currentArticle;
+
+		TerminologyManager terminologyManager;
+		while (iter.hasNext()) {
+			currentArticle = iter.next();
+			terminologyManager = KnowWEUtils
+					.getTerminologyManager(currentArticle);
+			Collection<TermIdentifier> allDefinedTerms = terminologyManager
+					.getAllDefinedTerms();
+			allTerms.addAll(allDefinedTerms);
+
+		}
+		return allTerms;
 	}
 }

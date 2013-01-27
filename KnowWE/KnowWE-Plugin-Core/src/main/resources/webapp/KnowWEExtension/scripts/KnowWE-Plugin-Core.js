@@ -35,7 +35,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 			button = _KS('#objectinfo-replace-button');
 			if (button)
 				_KE.add('click', button,
-						KNOWWE.core.plugin.objectinfo.renameTerm);
+						KNOWWE.core.plugin.objectinfo.renameFunction);
 			jq$('#objectinfo-search').keyup(function() {
 				KNOWWE.core.plugin.objectinfo.lookUp();
 			});
@@ -68,55 +68,74 @@ KNOWWE.core.plugin.objectinfo = function() {
 			}
 
 		},
-
+		
+		renameFunction : function() {
+			KNOWWE.core.plugin.objectinfo.renameTerm(false);
+		},
+		
 		/**
 		 * Renames all occurrences of a specific term.
 		 */
-		renameTerm : function() {
-			
+		renameTerm : function(forceRename) {
+			if (forceRename == null) forceRename = false;
 			//TODO shouldn't these 3 be vars?
 			objectname = jq$('#objectinfo-target');
 			replacement = jq$('#objectinfo-replacement');
 			web = jq$('#objectinfo-web');
-			if (objectname && replacement && web) {
-				var changeNote = 'Renaming: "' + objectname.val() + '" -> "' + replacement.val() +'"';
-				var params = {
-					action : jq$(replacement).attr('action'),
-					termname : objectname.val(),
-					termreplacement : replacement.val(),
-					KWikiWeb : web.val(),
-					KWikiChangeNote: changeNote
-				}
-
-				var options = {
-					url : KNOWWE.core.util.getURL(params),
-					response : {
-						action : 'none',
-						fn : function() {
-							var jsonResponse = JSON.parse(this.responseText);
-							window.location.href = "Wiki.jsp?page=ObjectInfoPage&objectname="
-									+ encodeURIComponent(jsonResponse.newObjectName)
-									+ "&termIdentifier="
-									+ encodeURIComponent(jsonResponse.newTermIdentifier)
-									+ "&renamedArticles="
-									+ encodeURIComponent(jsonResponse.renamedArticles);
-							KNOWWE.core.util.updateProcessingState(-1);
-						},
-						onError : function() {
-							KNOWWE.core.util.updateProcessingState(-1);
-						}
+				if (objectname && replacement && web) {
+					var changeNote = 'Renaming: "' + objectname.val() + '" -> "' + replacement.val() +'"';
+					var params = {
+							action : jq$(replacement).attr('action'),
+							termname : objectname.val(),
+							termreplacement : replacement.val(),
+							KWikiWeb : web.val(),
+							KWikiChangeNote: changeNote,
+							force : forceRename ? "true" : "false",
 					}
+					var options = {
+							url : KNOWWE.core.util.getURL(params),
+							response : {
+								action : 'none',
+								fn : function() {
+									var jsonResponse = JSON.parse(this.responseText);
+									var alreadyexists = jsonResponse.alreadyexists;
+									var same = jsonResponse.same;
+									if(same=='true'){
+										alert('nothing changed');
+									}
+									else{
+										if(alreadyexists=='true'){
+											if(confirm('term already exists')){
+												KNOWWE.core.plugin.objectinfo.renameTerm(true);
+											}
+										}
+										else{
+											window.location.href = "Wiki.jsp?page=ObjectInfoPage&objectname="
+												+ encodeURIComponent(jsonResponse.newObjectName)
+												+ "&termIdentifier="
+												+ encodeURIComponent(jsonResponse.newTermIdentifier)
+												+ "&renamedArticles="
+												+ encodeURIComponent(jsonResponse.renamedArticles);
+										}
+									}
+									KNOWWE.core.util.updateProcessingState(-1);
+								},
+								onError : function() {
+									KNOWWE.core.util.updateProcessingState(-1);
+								}
+							}
+					}
+					KNOWWE.core.util.updateProcessingState(1);
+					new _KA(options).send();
 				}
-				KNOWWE.core.util.updateProcessingState(1);
-				new _KA(options).send();
-			}
+				
+			
 		},
 		
 		/**
 		 * shows a list of similar terms
 		 */
 		lookUp : function() {
-			
 			var response = jq$('#objectinfo-terms').text();
 			var jsonResponse =  JSON.parse(response);
 			var a = jsonResponse.allTerms;

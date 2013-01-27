@@ -235,10 +235,9 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		html.append("<div style=\"display:none\" id=\"objectinfo-terms\" name=\"terms\" >");
 		html.append(getTerms(section.getWeb()).toString());
 		html.append("</div>");
-		html.append("<input action=\"" + getLookUpAction()
-				+ "\" type=\"text\" size=\"60\" name=\"" + OBJECT_NAME
-				+ "\" id=\"objectinfo-search\" />");
-		html.append("<input type=\"submit\" value=\"&rarr;\" />");
+		html.append("<input type=\"text\" size=\"60\" name=\"" + OBJECT_NAME
+				+ "\" id=\"objectinfo-search\" />&nbsp;");
+		html.append("<input type=\"submit\" value=\"go to\" />");
 		html.append("</form>");
 
 		return renderSection(
@@ -258,7 +257,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		String escapedObjectName = maskTermForHTML(objectName);
 
 		StringBuilder html = new StringBuilder();
-		html.append("<form action=\"\" method=\"post\">");
+		html.append("<form action=\"\" method=\"post\" >");
 		html.append("<input type=\"hidden\" id=\"objectinfo-target\" value=\""
 				+ escapedExternalTermIdentifierForm + "\" />");
 		html.append("<input type=\"hidden\" id=\"objectinfo-web\" value=\""
@@ -266,7 +265,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		html.append("<input action=\"" + getRenamingAction()
 				+ "\" type=\"text\" size=\"60\" value=\"" + escapedObjectName
 				+ "\" id=\"objectinfo-replacement\" />&nbsp;");
-		html.append("<input type=\"button\" id=\"objectinfo-replace-button\" value=\"&rarr;\" />");
+		html.append("<input type=\"button\" id=\"objectinfo-replace-button\" value=\"rename\" />");
 		html.append("&nbsp;<span id=\"objectinfo-rename-result\">");
 		// render message of previous renaming if available...
 		String renamingMessage = urlParameters.get(RENAMED_ARTICLES);
