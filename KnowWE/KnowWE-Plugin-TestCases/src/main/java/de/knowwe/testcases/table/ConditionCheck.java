@@ -56,4 +56,8 @@ public class ConditionCheck implements Check {
 		return verbalization;
 	}
 
+	public Condition getConditionObject() {
+		return condition;
+	}
+
 }

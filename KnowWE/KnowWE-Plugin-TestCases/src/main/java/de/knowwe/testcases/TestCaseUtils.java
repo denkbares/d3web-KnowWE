@@ -18,16 +18,40 @@
  */
 package de.knowwe.testcases;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import de.d3web.core.inference.condition.CondDState;
+import de.d3web.core.inference.condition.CondDate;
+import de.d3web.core.inference.condition.CondEqual;
+import de.d3web.core.inference.condition.CondNum;
+import de.d3web.core.inference.condition.CondQuestion;
+import de.d3web.core.inference.condition.Condition;
+import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.Rating;
+import de.d3web.core.knowledge.terminology.Rating.State;
+import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.session.QuestionValue;
+import de.d3web.core.session.values.NumValue;
 import de.d3web.core.utilities.Triple;
+import de.d3web.empiricaltesting.Finding;
+import de.d3web.empiricaltesting.RatedSolution;
+import de.d3web.empiricaltesting.RatedTestCase;
+import de.d3web.empiricaltesting.SequentialTestCase;
+import de.d3web.empiricaltesting.StateRating;
+import de.d3web.testcase.model.Check;
+import de.d3web.testcase.model.TestCase;
+import de.d3web.testcase.stc.DerivedQuestionCheck;
+import de.d3web.testcase.stc.DerivedSolutionCheck;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.testcases.table.ConditionCheck;
 
 /**
  * 
@@ -64,4 +88,88 @@ public class TestCaseUtils {
 		return providers;
 	}
 
+	public static SequentialTestCase transformToSTC(TestCase testCase, KnowledgeBase kb) {
+		SequentialTestCase stc = new SequentialTestCase();
+
+		for (Date date : testCase.chronology()) {
+			RatedTestCase rtc = new RatedTestCase();
+			addFindings(testCase, rtc, date, kb);
+			addChecks(testCase, kb, date, rtc);
+			stc.add(rtc);
+		}
+
+		return stc;
+	}
+
+	private static void addChecks(TestCase testCase, KnowledgeBase kb, Date date, RatedTestCase rtc) {
+		for (Check check : testCase.getChecks(date, kb)) {
+			if (check instanceof DerivedSolutionCheck) {
+				Solution solution = ((DerivedSolutionCheck) check).getSolution();
+				Rating rating = ((DerivedSolutionCheck) check).getRating();
+				rtc.addDerived(new RatedSolution(solution, new StateRating(rating)));
+			}
+			else if (check instanceof DerivedQuestionCheck) {
+				Question question = ((DerivedQuestionCheck) check).getQuestion();
+				QuestionValue value = ((DerivedQuestionCheck) check).getValue();
+				rtc.addExpectedFinding(new Finding(question, value));
+			}
+			else if (check instanceof ConditionCheck) {
+				Object findingOrRatedSolution = transformToFinding((ConditionCheck) check);
+				if (findingOrRatedSolution instanceof RatedSolution) {
+					rtc.addDerived((RatedSolution) findingOrRatedSolution);
+				}
+				else {
+					rtc.addExpectedFinding((Finding) findingOrRatedSolution);
+				}
+			}
+			else {
+				throw new TransformationException(
+						"Unable to transform " + check.getClass().getName()
+								+ " for a SequentialTestCase");
+			}
+		}
+	}
+
+	private static void addFindings(TestCase testCase, RatedTestCase rtc, Date date, KnowledgeBase kb) {
+		for (de.d3web.testcase.model.Finding finding : testCase.getFindings(date, kb)) {
+			if (finding.getTerminologyObject() instanceof Question) {
+				Question question = (Question) finding.getTerminologyObject();
+				QuestionValue value = (QuestionValue) finding.getValue();
+				Finding rtcFinding = new Finding(
+						question, value);
+				rtc.add(rtcFinding);
+			}
+			else {
+				throw new TransformationException(
+						"SequentialTestCases do not support Solution based Findings");
+			}
+		}
+	}
+
+	private static Object transformToFinding(ConditionCheck check) {
+		Condition condition = check.getConditionObject();
+		if (condition instanceof CondQuestion) {
+			Question question = ((CondQuestion) condition).getQuestion();
+			if (condition instanceof CondEqual) {
+				QuestionValue value = (QuestionValue) ((CondEqual) condition).getValue();
+				return new Finding(question, value);
+			}
+			else if (condition instanceof CondNum) {
+				QuestionValue value = new NumValue(((CondNum) condition).getConditionValue());
+				return new Finding(question, value);
+			}
+			else if (condition instanceof CondDate) {
+				QuestionValue value = ((CondDate) condition).getValue();
+				return new Finding(question, value);
+			}
+		}
+		else if (condition instanceof CondDState) {
+			Solution solution = ((CondDState) condition).getSolution();
+			State ratingState = ((CondDState) condition).getRatingState();
+			return new RatedSolution(solution, new StateRating(new Rating(ratingState)));
+		}
+		throw new TransformationException(
+				"Unable to transform " + condition.getClass().getName()
+						+ " for a SequentialTestCase");
+	}
 }
