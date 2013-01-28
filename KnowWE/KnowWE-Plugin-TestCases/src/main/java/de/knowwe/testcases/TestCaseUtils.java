@@ -93,15 +93,16 @@ public class TestCaseUtils {
 
 		for (Date date : testCase.chronology()) {
 			RatedTestCase rtc = new RatedTestCase();
+			rtc.setTimeStamp(date);
 			addFindings(testCase, rtc, date, kb);
-			addChecks(testCase, kb, date, rtc);
+			addChecks(testCase, rtc, date, kb);
 			stc.add(rtc);
 		}
 
 		return stc;
 	}
 
-	private static void addChecks(TestCase testCase, KnowledgeBase kb, Date date, RatedTestCase rtc) {
+	private static void addChecks(TestCase testCase, RatedTestCase rtc, Date date, KnowledgeBase kb) {
 		for (Check check : testCase.getChecks(date, kb)) {
 			if (check instanceof DerivedSolutionCheck) {
 				Solution solution = ((DerivedSolutionCheck) check).getSolution();
@@ -116,7 +117,7 @@ public class TestCaseUtils {
 			else if (check instanceof ConditionCheck) {
 				Object findingOrRatedSolution = transformToFinding((ConditionCheck) check);
 				if (findingOrRatedSolution instanceof RatedSolution) {
-					rtc.addDerived((RatedSolution) findingOrRatedSolution);
+					rtc.addExpected((RatedSolution) findingOrRatedSolution);
 				}
 				else {
 					rtc.addExpectedFinding((Finding) findingOrRatedSolution);
