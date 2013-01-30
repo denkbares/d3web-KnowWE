@@ -2,7 +2,7 @@ package de.d3web.we.kdom.rules.action;
 
 import java.util.List;
 
-import de.d3web.abstraction.ActionSetValue;
+import de.d3web.abstraction.ActionSetQuestion;
 import de.d3web.abstraction.formula.FormulaNumber;
 import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.PSAction;
@@ -102,7 +102,7 @@ public class SetQuestionNumValueAction extends D3webRuleAction<SolutionValueAssi
 
 		if (qnum == null || value == null) return null;
 
-		ActionSetValue a = new ActionSetValue();
+		ActionSetQuestion a = new ActionSetQuestion();
 		a.setQuestion(q);
 		a.setValue(value);
 

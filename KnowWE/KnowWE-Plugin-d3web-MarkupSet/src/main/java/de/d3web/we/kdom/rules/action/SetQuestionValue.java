@@ -22,7 +22,7 @@ package de.d3web.we.kdom.rules.action;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.abstraction.ActionSetValue;
+import de.d3web.abstraction.ActionSetQuestion;
 import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;
@@ -101,7 +101,7 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 		Section<QuestionReference> qref = Sections.findSuccessor(s, QuestionReference.class);
 		Question q = qref.get().getTermObject(article, qref);
 		if (q != null && value != null) {
-			ActionSetValue a = new ActionSetValue();
+			ActionSetQuestion a = new ActionSetQuestion();
 			a.setQuestion(q);
 			a.setValue(value);
 			return a;

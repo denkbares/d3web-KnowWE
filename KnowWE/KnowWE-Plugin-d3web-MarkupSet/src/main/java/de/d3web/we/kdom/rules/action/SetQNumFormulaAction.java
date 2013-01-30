@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import de.d3web.abstraction.ActionSetValue;
+import de.d3web.abstraction.ActionSetQuestion;
 import de.d3web.abstraction.formula.FormulaNumberElement;
 import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.PSAction;
@@ -95,7 +95,7 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 		}
 
 		if (q != null && formular != null) {
-			ActionSetValue a = new ActionSetValue();
+			ActionSetQuestion a = new ActionSetQuestion();
 			a.setQuestion(q);
 			a.setValue(formular);
 			return a;

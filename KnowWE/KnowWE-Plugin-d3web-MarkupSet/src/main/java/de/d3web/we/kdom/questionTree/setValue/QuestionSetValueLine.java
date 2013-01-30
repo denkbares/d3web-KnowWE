@@ -23,7 +23,7 @@ package de.d3web.we.kdom.questionTree.setValue;
 import java.util.Collection;
 import java.util.List;
 
-import de.d3web.abstraction.ActionSetValue;
+import de.d3web.abstraction.ActionSetQuestion;
 import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
@@ -120,9 +120,9 @@ public class QuestionSetValueLine extends AbstractType {
 									Rule.class.getSimpleName() + ": check condition"));
 						}
 
-						ActionSetValue ac = null;
+						ActionSetQuestion ac = null;
 						if (q != null && a != null) {
-							ac = new ActionSetValue();
+							ac = new ActionSetQuestion();
 							ac.setQuestion(q);
 							ac.setValue(a);
 						}

@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import de.d3web.abstraction.ActionSetValue;
+import de.d3web.abstraction.ActionSetQuestion;
 import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethodRulebased;
@@ -80,7 +80,7 @@ public class LineHandler extends D3webSubtreeHandler<TableLine> {
 	private Rule createRule(List<Condition> conditions, PSAction action) {
 		Condition condition = combineConditions(conditions);
 		Class<? extends PSMethodRulebased> psMethodContext = null;
-		if (action instanceof ActionSetValue) {
+		if (action instanceof ActionSetQuestion) {
 			psMethodContext = PSMethodAbstraction.class;
 		}
 		else {
@@ -128,7 +128,7 @@ public class LineHandler extends D3webSubtreeHandler<TableLine> {
 		Choice choice = answerReference.get().getTermObject(article, answerReference);
 		if (choice == null) return null;
 		Question question = getQuestion(article, answerReference);
-		ActionSetValue action = new ActionSetValue();
+		ActionSetQuestion action = new ActionSetQuestion();
 		action.setQuestion(question);
 		action.setValue(new ChoiceValue(choice));
 		return action;

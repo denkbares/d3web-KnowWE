@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
-import de.d3web.abstraction.ActionSetValue;
+import de.d3web.abstraction.ActionSetQuestion;
 import de.d3web.abstraction.formula.FormulaElement;
 import de.d3web.abstraction.formula.FormulaNumber;
 import de.d3web.core.inference.PSAction;
@@ -177,8 +177,8 @@ public class RuleActionVerbalizer implements Verbalizer {
 		// return s;
 		//
 		// }
-		else if (ra instanceof ActionSetValue) {
-			ActionSetValue asv = (ActionSetValue) ra;
+		else if (ra instanceof ActionSetQuestion) {
+			ActionSetQuestion asv = (ActionSetQuestion) ra;
 			s += propertyRB.getString("rule.do.SetValue") + " ";
 			if (asv.getQuestion() != null) s += VerbalizationManager.getInstance().verbalize(
 					asv.getQuestion(), RenderingFormat.HTML);

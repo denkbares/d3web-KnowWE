@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import de.d3web.abstraction.ActionSetValue;
+import de.d3web.abstraction.ActionSetQuestion;
 import de.d3web.abstraction.formula.FormulaNumber;
 import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.Rule;
@@ -159,7 +159,7 @@ public class QuestionSetValueNumLine extends AbstractType {
 
 				if (cond != null) {
 					Double d = Double.parseDouble(argument);
-					ActionSetValue action = new ActionSetValue();
+					ActionSetQuestion action = new ActionSetQuestion();
 					action.setQuestion(q);
 					action.setValue(new FormulaNumber(d));
 

@@ -3,7 +3,7 @@ package de.d3web.we.kdom.abstractiontable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.abstraction.ActionSetValue;
+import de.d3web.abstraction.ActionSetQuestion;
 import de.d3web.core.inference.condition.CondNum;
 import de.d3web.core.inference.condition.CondNumEqual;
 import de.d3web.core.inference.condition.CondNumGreater;
@@ -32,7 +32,7 @@ public class QuestionNumCell extends AbstractType {
 		this.setRenderer(renderer);
 	}
 
-	public ActionSetValue createNumActionSetValue(Article article, QuestionNum questionNum, Section<QuestionNumCell> questionNumCell) {
+	public ActionSetQuestion createNumActionSetValue(Article article, QuestionNum questionNum, Section<QuestionNumCell> questionNumCell) {
 		NumericalInterval interval = questionNum.getInfoStore().getValue(
 				BasicProperties.QUESTION_NUM_RANGE);
 		String text = questionNumCell.getText().trim();
@@ -51,7 +51,7 @@ public class QuestionNumCell extends AbstractType {
 		else {
 			numValue = new NumValue(parsedDouble);
 		}
-		ActionSetValue action = new ActionSetValue();
+		ActionSetQuestion action = new ActionSetQuestion();
 		action.setQuestion(questionNum);
 		action.setValue(numValue);
 		Messages.clearMessages(article, questionNumCell, this.getClass());
