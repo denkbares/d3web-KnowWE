@@ -150,8 +150,8 @@ public class KnowWEUtils {
 		Pattern pattern = Pattern.compile(regex);
 		for (WikiAttachment attachment : attachments) {
 			if (pattern.matcher(attachment.getPath()).matches()
-						|| (pattern.matcher(attachment.getFileName()).matches() && attachment.getParentName().equals(
-								topic))) {
+					|| (pattern.matcher(attachment.getFileName()).matches() && attachment.getParentName().equals(
+							topic))) {
 				result.add(attachment);
 			}
 		}
@@ -358,7 +358,8 @@ public class KnowWEUtils {
 	 * @see #getWikiLink(Section)
 	 */
 	public static String getURLLink(String title, int version) {
-		return "Wiki.jsp?page=" + title + (version != -1 ? "&version=" + version : "");
+		return "Wiki.jsp?page=" + Strings.encodeURL(title)
+				+ (version != -1 ? "&version=" + version : "");
 	}
 
 	/**
