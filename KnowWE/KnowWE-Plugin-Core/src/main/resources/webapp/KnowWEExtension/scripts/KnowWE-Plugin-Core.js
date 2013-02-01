@@ -36,11 +36,9 @@ KNOWWE.core.plugin.objectinfo = function() {
 			if (button)
 				_KE.add('click', button,
 						KNOWWE.core.plugin.objectinfo.renameFunction);
-			jq$('#objectinfo-search').keyup(function() {
-				KNOWWE.core.plugin.objectinfo.lookUp();
-			});
+			
+			KNOWWE.core.plugin.objectinfo.lookUp();
 		},
-		
 
 		/**
 		 * Function: createHomePage Used in the ObjectInfoToolProvider for
@@ -105,7 +103,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 									}
 									else{
 										if(alreadyexists=='true'){
-											if(confirm('term already exists')){
+											if(confirm('A term with this name already exists, are you sure you want to merge both terms?')){
 												KNOWWE.core.plugin.objectinfo.renameTerm(true);
 											}
 										}
@@ -140,6 +138,11 @@ KNOWWE.core.plugin.objectinfo = function() {
 			var jsonResponse =  JSON.parse(response);
 			var a = jsonResponse.allTerms;
 			jq$('#objectinfo-search').autocomplete({source:a});
+			jq$('#objectinfo-search').on( "autocompleteselect", function(event, ui) {
+				jq$('#objectinfo-search').val(ui.item.value);
+				var t = jq$('#objectinfo-search').parent().children('[type="submit"]');
+				jq$('#objectinfo-search').parent().children('[type="submit"]').click();
+			});
 		}
 	}
 }();
