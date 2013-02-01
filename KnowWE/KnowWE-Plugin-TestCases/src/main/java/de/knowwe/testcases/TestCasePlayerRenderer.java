@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -81,109 +82,114 @@ public class TestCasePlayerRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, StringBuilder result) {
-		Section<TestCasePlayerType> playerSection =
-				Sections.cast(section.getFather(), TestCasePlayerType.class);
 		StringBuilder string = new StringBuilder();
 		if (user == null || user.getSession() == null) {
 			return;
 		}
+		Section<TestCasePlayerType> playerSection =
+				Sections.cast(section.getFather(), TestCasePlayerType.class);
 		List<Triple<TestCaseProvider, Section<?>, Article>> providers =
 				getTestCaseProviders(playerSection);
 
 		string.append(Strings.maskHTML("<div id='" + section.getID() + "'>"));
 
 		if (providers.size() == 0) {
-			StringBuilder message = new StringBuilder();
-			message.append("No test cases found in the packages: ");
-			boolean first = true;
-			for (String s : DefaultMarkupType.getPackages(playerSection,
-					KnowledgeBaseType.ANNOTATION_COMPILE)) {
-				if (!first) {
-					message.append(", ");
-				}
-				message.append(s);
-				first = false;
-			}
-			DefaultMarkupRenderer.renderMessagesOfType(Type.WARNING,
-					Arrays.asList(Messages.warning(message.toString())), string);
+			renderNoProviderWarning(playerSection, string);
 		}
 		else {
-			Triple<TestCaseProvider, Section<?>, Article> selectedTriple = renderTestCaseSelection(
-					section,
-					user, string, providers);
+			Triple<TestCaseProvider, Section<?>, Article> selectedTriple = getAndRenderTestCaseSelection(
+					section, user, providers, string);
 			if (selectedTriple != null) {
-				String link = "<a href='"
-						+ Strings.maskHTML(KnowWEUtils.getURLLink(selectedTriple.getB()))
-						+ "'><img src='KnowWEExtension/testcaseplayer/icon/testcaselink.png'></a>";
-				string.append(Strings.maskHTML(link));
-				TestCaseProvider provider = selectedTriple.getA();
-				Session session = provider.getActualSession(user);
-				List<Message> messages = provider.getMessages();
-				if (messages.size() > 0) {
-					DefaultMarkupRenderer.renderMessagesOfType(Type.ERROR, messages,
-							string);
-				}
-				if (session == null) {
-					DefaultMarkupRenderer.renderMessagesOfType(Type.WARNING,
-							Arrays.asList(Messages.warning("No knowledge base found.")), string);
-				}
-				else {
-					TestCase testCase = provider.getTestCase();
-					SessionDebugStatus status = provider.getDebugStatus(user);
-
-					if (status.getSession() != session) {
-						status.setSession(session);
-					}
-
-					if (testCase != null) {
-						try {
-							renderTestCase(section, user, string, selectedTriple, session,
-									testCase,
-									status);
-						}
-						catch (IllegalArgumentException e) {
-							DefaultMarkupRenderer.renderMessagesOfType(
-									Type.ERROR,
-									Arrays.asList(Messages.error("Test case not compatible to TestCasePlayer: "
-											+ e.getMessage())), string);
-						}
-					}
-					else {
-						string.append("\nNo TestCase contained!\n");
-					}
-				}
+				renderSelectedTestCase(section, user, selectedTriple, string);
 			}
 		}
 		string.append(Strings.maskHTML("</div>"));
 		result.append(string.toString());
 	}
 
-	private void renderTestCase(Section<?> section, UserContext user, StringBuilder string, Triple<TestCaseProvider, Section<?>, Article> selectedTriple, Session session, TestCase testCase, SessionDebugStatus status) {
-		string.append(Strings.maskHTML("<span class='fillText'> from </span>"));
-		if (testCase.getStartDate().getTime() != 0) {
-			string.append(dateFormat.format(testCase.getStartDate()));
+	private void renderSelectedTestCase(Section<?> section, UserContext user, Triple<TestCaseProvider, Section<?>, Article> selectedTriple, StringBuilder string) {
+		renderLinkToTestCase(selectedTriple, string);
+		TestCaseProvider provider = selectedTriple.getA();
+		renderProviderMessages(provider, string);
+		Session session = provider.getActualSession(user);
+		if (session == null) {
+			DefaultMarkupRenderer.renderMessagesOfType(Type.WARNING,
+					Arrays.asList(Messages.warning("No knowledge base found.")), string);
 		}
 		else {
-			string.append("---");
-		}
-		string.append(Strings.maskHTML("<div class='toolSeparator'></div>"));
+			TestCase testCase = provider.getTestCase();
+			SessionDebugStatus status = provider.getDebugStatus(user);
+			if (status.getSession() != session) {
+				status.setSession(session);
+			}
 
-		String additionalQuestions = getAdditionalQuestionsCookie(section, user);
-		String[] questionStrings = new String[0];
-		if (additionalQuestions != null && !additionalQuestions.isEmpty()) {
-			questionStrings = additionalQuestions.split(QUESTIONS_SEPARATOR);
+			if (testCase != null) {
+				try {
+					renderTestCase(section, user, selectedTriple, session, testCase,
+							status, string);
+				}
+				catch (IllegalArgumentException e) {
+					Message error = Messages.error("Test case not compatible to TestCasePlayer: "
+							+ e.getMessage());
+					DefaultMarkupRenderer.renderMessagesOfType(
+							Type.ERROR, Arrays.asList(error), string);
+				}
+			}
+			else {
+				string.append("\nNo TestCase contained!\n");
+			}
 		}
-		Collection<Question> usedQuestions = TestCaseUtils.getUsedQuestions(testCase,
-				session.getKnowledgeBase());
+	}
+
+	private void renderProviderMessages(TestCaseProvider provider, StringBuilder string) {
+		List<Message> messages = provider.getMessages();
+		if (messages.size() > 0) {
+			DefaultMarkupRenderer.renderMessagesOfType(Type.ERROR, messages,
+					string);
+		}
+	}
+
+	private void renderLinkToTestCase(Triple<TestCaseProvider, Section<?>, Article> selectedTriple, StringBuilder string) {
+		String link = "<a href='"
+				+ Strings.maskHTML(KnowWEUtils.getURLLink(selectedTriple.getB()))
+				+ "'> <img src='KnowWEExtension/testcaseplayer/icon/testcaselink.png'></a>";
+		string.append(Strings.maskHTML(link));
+	}
+
+	private void renderNoProviderWarning(Section<TestCasePlayerType> playerSection, StringBuilder string) {
+		StringBuilder message = new StringBuilder();
+		message.append("No test cases found in the packages: ");
+		boolean first = true;
+		for (String s : DefaultMarkupType.getPackages(playerSection,
+				KnowledgeBaseType.ANNOTATION_COMPILE)) {
+			if (!first) {
+				message.append(", ");
+			}
+			message.append(s);
+			first = false;
+		}
+		DefaultMarkupRenderer.renderMessagesOfType(Type.WARNING,
+				Arrays.asList(Messages.warning(message.toString())), string);
+	}
+
+	private void renderTestCase(Section<?> section, UserContext user, Triple<TestCaseProvider, Section<?>, Article> selectedTriple, Session session, TestCase testCase, SessionDebugStatus status, StringBuilder string) {
 		Collection<Date> chronology = testCase.chronology();
-		String sizeKey = SIZE_SELECTOR_KEY + "_" + section.getID();
-		String fromKey = FROM_KEY + "_" + section.getID();
-		TableParameters tableParameters = getTableParameters(user, chronology, sizeKey,
-				fromKey);
 
+		NavigationParameters navigatorParameters = getNavigationParameters(section, user,
+				chronology);
+
+		renderTestCaseHeader(section, user, testCase, chronology, navigatorParameters, string);
+
+		TableModel tableModel = getTableModel(section, user, selectedTriple, session, testCase,
+				status, chronology, navigatorParameters);
+
+		string.append(tableModel.toHtml(section, user));
+	}
+
+	private TableModel getTableModel(Section<?> section, UserContext user, Triple<TestCaseProvider, Section<?>, Article> selectedTriple, Session session, TestCase testCase, SessionDebugStatus status, Collection<Date> chronology, NavigationParameters navigatorParameters) {
+		String kbArticle = selectedTriple.getC().getTitle();
 		TerminologyManager manager = session.getKnowledgeBase().getManager();
 		TableModel tableModel = new TableModel();
-		String kbArticle = selectedTriple.getC().getTitle();
 		KnowledgeBase base = D3webUtils.getKnowledgeBase(user.getWeb(), kbArticle);
 
 		// check if the latest knowledge base is used
@@ -194,55 +200,87 @@ public class TestCasePlayerRenderer implements Renderer {
 			}
 		}
 
-		TerminologyObject selectedObject = renderHeader(section, user, kbArticle, status,
-				additionalQuestions, questionStrings, usedQuestions, manager,
+		Collection<String> additionalQuestions = getAdditionalQuestions(section, user);
+
+		Collection<Question> usedQuestions = TestCaseUtils.getUsedQuestions(testCase,
+				session.getKnowledgeBase());
+
+		TerminologyObject selectedObject = renderTableHeader(section, user, kbArticle,
+				additionalQuestions, usedQuestions, manager,
 				tableModel);
 		int row = 1;
 		for (Date date : chronology) {
-			if (row < tableParameters.from) {
+			if (row < navigatorParameters.from) {
 				row++;
 				continue;
 			}
-			if (row > tableParameters.to) break;
-			renderTableLine(selectedTriple, testCase, status, questionStrings,
-					usedQuestions,
-					manager, selectedObject, date, row - tableParameters.from + 1,
-					tableModel);
+			if (row > navigatorParameters.to) break;
+			renderTableLine(selectedTriple, testCase, status, additionalQuestions, usedQuestions,
+					manager, selectedObject, date, row - navigatorParameters.from + 1, tableModel);
 			row++;
 		}
-		string.append(
-				renderTableSizeSelector(section, user, sizeKey, tableParameters.size,
-						chronology.size()));
-		string.append(renderNavigation(section, tableParameters.from,
-				tableParameters.size, fromKey, chronology.size()));
-		string.append(tableModel.toHtml(section, user));
+		return tableModel;
 	}
 
-	private TerminologyObject renderHeader(Section<?> section, UserContext user, String kbArticle, SessionDebugStatus status, String additionalQuestions, String[] questionStrings, Collection<Question> usedQuestions, TerminologyManager manager, TableModel tableModel) {
-		tableModel.addCell(
-				0,
-				0,
-				Strings.maskHTML(renderToolbarButton("stop12.png",
-						"KNOWWE.plugin.d3webbasic.actions.resetSession('" + kbArticle
-								+ "')")), 1);
+	private Collection<String> getAdditionalQuestions(Section<?> section, UserContext user) {
+		String additionalQuestions = getAdditionalQuestionsCookie(section, user);
+		String[] additionalQuestionsSplit = new String[0];
+		if (additionalQuestions != null && !additionalQuestions.isEmpty()) {
+			additionalQuestionsSplit = additionalQuestions.split(QUESTIONS_SEPARATOR);
+		}
+		return new LinkedHashSet<String>(Arrays.asList(additionalQuestionsSplit));
+	}
+
+	private void renderTestCaseHeader(Section<?> section, UserContext user, TestCase testCase, Collection<Date> chronology, NavigationParameters navigatorParameters, StringBuilder string) {
+		string.append(Strings.maskHTML("<span class='fillText'> from </span>"));
+		if (testCase.getStartDate().getTime() == 0) {
+			string.append("---");
+		}
+		else {
+			string.append(dateFormat.format(testCase.getStartDate()));
+		}
+		string.append(Strings.maskHTML(renderToolSeparator()));
+
+		string.append(
+				renderTableSizeSelector(section, user, navigatorParameters.size,
+						chronology.size()));
+		string.append(renderNavigation(section, navigatorParameters.from,
+				navigatorParameters.size, chronology.size()));
+	}
+
+	private String createFromKey(Section<?> section) {
+		return FROM_KEY + "_" + section.getID();
+	}
+
+	private String createSizeKey(Section<?> section) {
+		String sizeKey = SIZE_SELECTOR_KEY + "_" + section.getID();
+		return sizeKey;
+	}
+
+	private TerminologyObject renderTableHeader(Section<?> section, UserContext user, String kbArticle, Collection<String> additionalQuestions, Collection<Question> usedQuestions, TerminologyManager manager, TableModel tableModel) {
+		String stopButton = Strings.maskHTML(renderToolbarButton("stop12.png",
+				"KNOWWE.plugin.d3webbasic.actions.resetSession('" + kbArticle
+						+ "')"));
+		tableModel.addCell(0, 0, stopButton, 1);
 		tableModel.addCell(0, 1, "Time", "Time".length());
 		int column = 2;
 		for (Question q : usedQuestions) {
 			tableModel.addCell(0, column++, q.getName(), q.getName().length());
 		}
 		tableModel.addCell(0, column++, "Checks", "Checks".length());
-		renderObservationQuestionsHeader(status, additionalQuestions, questionStrings,
+		renderObservationQuestionsHeader(additionalQuestions,
 				manager, tableModel, column);
-		column += questionStrings.length;
+		column += additionalQuestions.size();
 		TerminologyObject selectedObject = renderObservationQuestionAdder(section,
-				user,
-				questionStrings, manager, additionalQuestions,
+				user, manager, additionalQuestions,
 				tableModel, column++);
 		return selectedObject;
 	}
 
-	private TableParameters getTableParameters(UserContext user, Collection<Date> chronology, String sizeKey, String fromKey) {
-		TableParameters tableParameters = new TableParameters();
+	private NavigationParameters getNavigationParameters(Section<?> section, UserContext user, Collection<Date> chronology) {
+		String sizeKey = createSizeKey(section);
+		String fromKey = createFromKey(section);
+		NavigationParameters tableParameters = new NavigationParameters();
 		String selectedSizeString = "10";
 		String fromString = "1";
 		for (Cookie cookie : user.getRequest().getCookies()) {
@@ -302,7 +340,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		return de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(kbpackages, web);
 	}
 
-	private void renderTableLine(Triple<TestCaseProvider, Section<?>, Article> selectedTriple, TestCase testCase, SessionDebugStatus status, String[] questionStrings, Collection<Question> usedQuestions, TerminologyManager manager, TerminologyObject selectedObject, Date date, int row, TableModel tableModel) {
+	private void renderTableLine(Triple<TestCaseProvider, Section<?>, Article> selectedTriple, TestCase testCase, SessionDebugStatus status, Collection<String> additionalQuestions, Collection<Question> usedQuestions, TerminologyManager manager, TerminologyObject selectedObject, Date date, int row, TableModel tableModel) {
 		String dateString = String.valueOf(date.getTime());
 		renderRunTo(selectedTriple, status, date, dateString, tableModel, row);
 		int column = 1;
@@ -331,7 +369,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		}
 		renderCheckResults(testCase, status, date, tableModel, row, column++);
 		// render observations
-		for (String s : questionStrings) {
+		for (String s : additionalQuestions) {
 			TerminologyObject object = manager.search(s);
 			if (object != null) {
 				appendValueCell(status, object, date, tableModel, row, column);
@@ -350,34 +388,35 @@ public class TestCasePlayerRenderer implements Renderer {
 		}
 	}
 
-	private void renderObservationQuestionsHeader(SessionDebugStatus status, String additionalQuestions, String[] questionStrings, TerminologyManager manager, TableModel tableModel, int column) {
-		for (String s : questionStrings) {
-			TerminologyObject object = manager.search(s);
+	private void renderObservationQuestionsHeader(Collection<String> additionalQuestions, TerminologyManager manager, TableModel tableModel, int column) {
+		for (String questionString : additionalQuestions) {
+			TerminologyObject object = manager.search(questionString);
 			StringBuilder sb = new StringBuilder();
 			if (object instanceof Question || object instanceof Solution) {
-				sb.append(s);
+				sb.append(questionString);
 			}
 			else {
-				sb.append(Strings.maskHTML("<span style='color:silver'>" + s + "</span>"));
+				sb.append(Strings.maskHTML("<span style='color:silver'>" + questionString
+						+ "</span>"));
 			}
-			String newQuestionsString = additionalQuestions;
-			newQuestionsString = newQuestionsString.replace(s, "");
-			newQuestionsString = newQuestionsString.replace(QUESTIONS_SEPARATOR
-					+ QUESTIONS_SEPARATOR,
-					QUESTIONS_SEPARATOR);
-			if (newQuestionsString.startsWith(QUESTIONS_SEPARATOR)) {
-				newQuestionsString = newQuestionsString.replaceFirst(
-						QUESTIONS_SEPARATOR, "");
-			}
-			if (newQuestionsString.endsWith(QUESTIONS_SEPARATOR)) {
-				newQuestionsString = newQuestionsString.substring(0,
-						newQuestionsString.length() - QUESTIONS_SEPARATOR.length());
-			}
-			sb.append(Strings.maskHTML(" <input type=\"button\" value=\"-\" onclick=\"TestCasePlayer.addCookie(&quot;"
-					+ newQuestionsString
-					+ "&quot;);\">"));
-			tableModel.addCell(0, column++, sb.toString(), s.length() + 2);
+			Set<String> copy = new LinkedHashSet<String>(additionalQuestions);
+			copy.remove(questionString);
+			String input = " <input type=\"button\" value=\"-\" onclick=\"TestCasePlayer.addCookie(&quot;"
+					+ toAdditionalQuestionsCookyString(copy) + "&quot;);\">";
+			sb.append(Strings.maskHTML(input));
+			tableModel.addCell(0, column++, sb.toString(), questionString.length() + 2);
 		}
+	}
+
+	private String toAdditionalQuestionsCookyString(Collection<String> additionalQuestions) {
+		StringBuilder builder = new StringBuilder();
+		boolean first = true;
+		for (String question : additionalQuestions) {
+			if (first) first = false;
+			else builder.append(QUESTIONS_SEPARATOR);
+			builder.append(question);
+		}
+		return builder.toString();
 	}
 
 	private void renderRunTo(Triple<TestCaseProvider, Section<?>, Article> selectedTriple, SessionDebugStatus status, Date date, String dateString, TableModel tableModel, int row) {
@@ -456,7 +495,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		tableModel.addCell(row, column, sb.toString(), max);
 	}
 
-	private TerminologyObject renderObservationQuestionAdder(Section<?> section, UserContext user, String[] questionStrings, TerminologyManager manager, String questionString, TableModel tableModel, int column) {
+	private TerminologyObject renderObservationQuestionAdder(Section<?> section, UserContext user, TerminologyManager manager, Collection<String> alreadyAddedQuestions, TableModel tableModel, int column) {
 		String key = QUESTION_SELECTOR_KEY + "_" + section.getID();
 		String selectedQuestion = "";
 		for (Cookie cookie : user.getRequest().getCookies()) {
@@ -471,7 +510,6 @@ public class TestCasePlayerRenderer implements Renderer {
 				+ " onchange=\"TestCasePlayer.change('"
 				+ key
 				+ "', this.options[this.selectedIndex].value);\">");
-		HashSet<String> alreadyAddedQuestions = new HashSet<String>(Arrays.asList(questionStrings));
 		selectsb2.append("<option value='--'>--</option>");
 		boolean foundone = false;
 		List<TerminologyObject> objects = new LinkedList<TerminologyObject>();
@@ -502,12 +540,12 @@ public class TestCasePlayerRenderer implements Renderer {
 		if (object != null && !object.getName().equals(selectedQuestion)) {
 			user.getSession().setAttribute(key, object.getName());
 		}
-		if (questionString != null && !questionString.isEmpty()) {
+		if (!alreadyAddedQuestions.isEmpty()) {
 			selectsb2.append("<input "
 					+
 					(object == null ? "disabled='disabled'" : "")
 					+ " type=\"button\" value=\"+\" onclick=\"TestCasePlayer.addCookie(&quot;"
-					+ questionString
+					+ toAdditionalQuestionsCookyString(alreadyAddedQuestions)
 					+ QUESTIONS_SEPARATOR
 					+ "&quot;+this.form.toAdd.options[toAdd.selectedIndex].value);TestCasePlayer.change('"
 					+ key
@@ -527,7 +565,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		return object;
 	}
 
-	private Triple<TestCaseProvider, Section<?>, Article> renderTestCaseSelection(Section<?> section, UserContext user, StringBuilder string, List<Triple<TestCaseProvider, Section<?>, Article>> providers) {
+	private Triple<TestCaseProvider, Section<?>, Article> getAndRenderTestCaseSelection(Section<?> section, UserContext user, List<Triple<TestCaseProvider, Section<?>, Article>> providers, StringBuilder string) {
 		String key = generateSelectedTestCaseCookieKey(section);
 		String selectedID = "";
 		for (Cookie cookie : user.getRequest().getCookies()) {
@@ -570,10 +608,10 @@ public class TestCasePlayerRenderer implements Renderer {
 			string.append(Strings.maskHTML(selectsb.toString()));
 		}
 		else {
+			Message notValidTestCaseError = Messages.warning(
+					"There are testcase sections in the specified packages, but none of them generates a testcase.");
 			DefaultMarkupRenderer.renderMessagesOfType(
-					Type.WARNING,
-					Arrays.asList(Messages.warning("There are testcase sections in the specified packages, but none of them generates a testcase.")),
-					string);
+					Type.WARNING, Arrays.asList(notValidTestCaseError), string);
 		}
 		return selectedTriple;
 	}
@@ -595,7 +633,9 @@ public class TestCasePlayerRenderer implements Renderer {
 		return SELECTOR_KEY + "_" + Strings.encodeURL(section.getTitle()) + i;
 	}
 
-	private String renderTableSizeSelector(Section<?> section, UserContext user, String key, int selectedSize, int maxSize) {
+	private String renderTableSizeSelector(Section<?> section, UserContext user, int selectedSize, int maxSize) {
+
+		String sizeKey = createSizeKey(section);
 		StringBuilder builder = new StringBuilder();
 
 		int[] sizeArray = new int[] {
@@ -605,7 +645,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				+ "<select id=sizeSelector"
 				+ section.getID()
 				+ " onchange=\"TestCasePlayer.change('"
-				+ key
+				+ sizeKey
 				+ "', this.options[this.selectedIndex].value);\">");
 		for (int size : sizeArray) {
 			if (size == selectedSize) {
@@ -618,33 +658,38 @@ public class TestCasePlayerRenderer implements Renderer {
 			}
 		}
 		builder.append("</select><span class=fillText> lines of </span>" + maxSize);
-		builder.append("<div class='toolSeparator'></div>");
+		builder.append(renderToolSeparator());
 		builder.append("</div>");
 		return Strings.maskHTML(builder.toString());
 	}
 
-	private Object renderNavigation(Section<?> section, int from, int selectedSize, String key, int maxsize) {
+	private String renderToolSeparator() {
+		return "<div class='toolSeparator'></div>";
+	}
+
+	private Object renderNavigation(Section<?> section, int from, int selectedSize, int maxsize) {
+		String fromKey = createFromKey(section);
 		StringBuilder builder = new StringBuilder();
 		int previous = Math.max(1, from - selectedSize);
 		int next = from + selectedSize;
 
 		builder.append("<div class='toolBar avoidMenu'>");
 		renderToolbarButton(
-				"begin.png", "TestCasePlayer.change('" + key + "', " + 1 + ")",
+				"begin.png", "TestCasePlayer.change('" + fromKey + "', " + 1 + ")",
 				(from > 1), builder);
 		renderToolbarButton(
-				"back.png", "TestCasePlayer.change('" + key + "', " + previous + ")",
+				"back.png", "TestCasePlayer.change('" + fromKey + "', " + previous + ")",
 				(from > 1), builder);
 		builder.append("<span class=fillText> Lines </span>");
 		builder.append("<input size=3 type=\"field\" onchange=\"TestCasePlayer.change('"
-				+ key
+				+ fromKey
 				+ "', " + "this.value);\" value='" + from + "'>");
 		builder.append("<span class=fillText> to </span>" + (from + selectedSize - 1));
 		renderToolbarButton(
-				"forward.png", "TestCasePlayer.change('" + key + "', " + next + ")",
+				"forward.png", "TestCasePlayer.change('" + fromKey + "', " + next + ")",
 				(from + selectedSize <= maxsize), builder);
 		renderToolbarButton(
-				"end.png", "TestCasePlayer.change('" + key + "', " + maxsize + ")",
+				"end.png", "TestCasePlayer.change('" + fromKey + "', " + maxsize + ")",
 				(from + selectedSize <= maxsize), builder);
 		builder.append("</div>");
 		return Strings.maskHTML(builder.toString());
@@ -684,7 +729,7 @@ public class TestCasePlayerRenderer implements Renderer {
 	 * @author Markus Friedrich (denkbares GmbH)
 	 * @created 29.02.2012
 	 */
-	private static class TableParameters {
+	private static class NavigationParameters {
 
 		private int from;
 		private int to;
