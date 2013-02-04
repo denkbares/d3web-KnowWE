@@ -101,10 +101,13 @@ function SpreadsheetModel(wikiText, supportLinks) {
 		// prepend and append returns for easier expressions
 		wikiText = ("\n"+wikiText+"\n");
 		var firstTableLine = wikiText.search(/\n\r?\|/); // pipe is first char after return
+		if (firstTableLine == -1) {
+			firstTableLine = wikiText.indexOf("\n", wikiText.search(/\S/) + 1) ;	
+		}
 		if (firstTableLine > 1) {
 			this.textBeforeTable = wikiText.substring(1, firstTableLine);
-			wikiText = "\n" + wikiText.substring(firstTableLine);
-		}
+			wikiText = "\n" + wikiText.substring(firstTableLine + 1);
+		} 
 		var lastTableLineEnd = wikiText.search(/(\n\r?([^\r\|][^\n]*)?)*$/);
 		if (lastTableLineEnd >= 0 && lastTableLineEnd < wikiText.length - 2) {
 			this.textAfterTable = wikiText.substring(lastTableLineEnd + 1, wikiText.length - 1);
@@ -122,6 +125,7 @@ function SpreadsheetModel(wikiText, supportLinks) {
 		wikiText = wikiText.replace(/\~\~/g, "&#126;"); // unescape ~
 		if (supportLinks) wikiText = wikiText.replace(/\~\|/g, "&#124;"); // unescape |
 		var lines = wikiText.match(/\n\|[^\n]*/g);
+		if (lines == null) return;
 		var row = 0;
 		for (var i = 0; i<lines.length; i++) {
 			var line = lines [i];
