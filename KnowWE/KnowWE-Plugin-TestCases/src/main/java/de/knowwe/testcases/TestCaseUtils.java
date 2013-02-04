@@ -46,11 +46,13 @@ import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.TestCase;
 import de.d3web.testcase.stc.DerivedQuestionCheck;
 import de.d3web.testcase.stc.DerivedSolutionCheck;
+import de.d3web.we.knowledgebase.KnowledgeBaseType;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.table.ConditionCheck;
 
 /**
@@ -59,6 +61,13 @@ import de.knowwe.testcases.table.ConditionCheck;
  * @created 13.09.2012
  */
 public class TestCaseUtils {
+
+	public static List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(Section<TestCasePlayerType> section) {
+		String[] kbpackages = DefaultMarkupType.getPackages(section,
+				KnowledgeBaseType.ANNOTATION_COMPILE);
+		String web = section.getWeb();
+		return de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(kbpackages, web);
+	}
 
 	public static List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(String[] kbpackages, String web) {
 		Environment env = Environment.getInstance();

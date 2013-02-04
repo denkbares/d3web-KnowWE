@@ -62,6 +62,16 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="ExecuteCaseAction">
+		<parameter id="class"
+			value="de.knowwe.testcases.DownloadCaseAction" />
+		<parameter id="name" value="DownloadCaseAction" />
+		<parameter id="description" value="Action DownloadCaseAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
 
     <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
         id="InstantEditToolProvider">
