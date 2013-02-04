@@ -134,7 +134,9 @@ KNOWWE.core.plugin.objectinfo = function() {
 		 * shows a list of similar terms
 		 */
 		lookUp : function() {
-			var response = jq$('#objectinfo-terms').text();
+			var terms = jq$('#objectinfo-terms')
+			if (terms.length == 0) return;
+			var response = terms.text();
 			var jsonResponse =  JSON.parse(response);
 			var a = jsonResponse.allTerms;
 			jq$('#objectinfo-search').autocomplete({source:a});

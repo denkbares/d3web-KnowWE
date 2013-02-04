@@ -70,7 +70,7 @@ public class RootTypeExportAction extends AbstractAction {
 		String filename = "RootType.svg";
 		context.setContentType("application/x-bin");
 		context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
-		DOT_INSTALLATION = "D:\\Graphviz\\bin\\dot";
+		DOT_INSTALLATION = "dot";
 
 		ServletContext servletContext = context.getServletContext();
 		if (servletContext == null) return; // at wiki startup only
@@ -244,7 +244,7 @@ public class RootTypeExportAction extends AbstractAction {
 		String command;
 		if (OS.startsWith("windows")) {
 			command = DOT_INSTALLATION + " \"" + dot.getAbsolutePath() +
-				"\" -Tsvg -o \"" + svg.getAbsolutePath() + "\"";
+					"\" -Tsvg -o \"" + svg.getAbsolutePath() + "\"";
 		}
 		else {
 			command = DOT_INSTALLATION + " " + dot.getAbsolutePath() +
