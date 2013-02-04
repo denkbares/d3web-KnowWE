@@ -122,5 +122,14 @@
 		<parameter id="scope" value="de.knowwe.instantedit.table.WikiTable" />
 	</extension>
 	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="PluginType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.PluginType" />
+		<parameter id="name" value="JSPWikiPlugin" />
+		<parameter id="description" value="Represents a JSPWiki Plugin" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
 
 </plugin>
