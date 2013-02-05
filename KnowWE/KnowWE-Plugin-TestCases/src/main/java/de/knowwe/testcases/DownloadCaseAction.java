@@ -55,6 +55,14 @@ public class DownloadCaseAction extends AbstractAction {
 			return;
 		}
 
+		context.setContentType("application/x-bin");
+
+		String fileName = provider.getName();
+		if (!fileName.toLowerCase().endsWith(".xml")) fileName += ".xml";
+
+		context.setHeader("Content-Disposition", "attachment;filename=\"" + fileName
+				+ "\"");
+
 		SequentialTestCase sequentialTestCase = TestCaseUtils.transformToSTC(testCase,
 				session.getKnowledgeBase());
 
