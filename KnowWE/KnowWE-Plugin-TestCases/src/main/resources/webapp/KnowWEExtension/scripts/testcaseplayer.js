@@ -1,5 +1,32 @@
 var TestCasePlayer = {};
 
+TestCasePlayer.init = function() {
+	jq$(".type_TestCasePlayer").find(".wikitable").find("th").click(TestCasePlayer.initColumnHeaders);
+}
+
+TestCasePlayer.initColumnHeaders = function() {
+	var column = jq$(this).attr("column");
+	var collapsed = "";
+	jq$(this).siblings().each(function() {
+		if (jq$(this).hasClass("collapsedcolumn")) {
+			collapsed += jq$(this).attr("column") + "#";
+		}
+	});
+	collapsed += column;
+	
+	var id = jq$(this).parents(".type_TestCasePlayer").first().attr("id");
+	var testCase = jq$("#" + id).find("select").find('[selected="selected"]').attr("value");
+	
+	document.cookie = "columnstatus_" + id + "_" + testCase + "=" + collapsed;
+	
+	var tds = jq$(this).parents(".wikitable").first().find('[column="' + column + '"]');
+	if (jq$(this).hasClass("collapsedcolumn")) {
+		tds.removeClass("collapsedcolumn");
+	} else {			
+		tds.addClass("collapsedcolumn");
+	}
+}
+
 TestCasePlayer.send = function(sessionid, casedate, name, topic) {
 			
             var params = {
@@ -46,8 +73,7 @@ TestCasePlayer.send = function(sessionid, casedate, name, topic) {
 TestCasePlayer.change = function(key_sessionid, selectedvalue) {
  			var topic = KNOWWE.helper.gup('page');
 			document.cookie = key_sessionid +"=" + TestCasePlayer.encodeCookieValue(selectedvalue);
-           	KNOWWE.helper.observer.notify('update'); 
-
+           	KNOWWE.helper.observer.notify('update');
 }
 
 TestCasePlayer.addCookie = function(cookievalue) {
@@ -62,3 +88,7 @@ TestCasePlayer.encodeCookieValue = function(cookievalue) {
 			temp = temp.replace('+', '%2B');
 			return temp;
 }
+
+jq$(document).ready(function() {
+	TestCasePlayer.init();
+});

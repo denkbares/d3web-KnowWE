@@ -872,4 +872,50 @@ public class Strings {
 		}
 	}
 
+	/**
+	 * Creates a complete and masked HTML element without having to manipulate
+	 * strings. Just set tag name, content and the attributes. Attributes need
+	 * to be given in pairs. First the name of the attribute, second the content
+	 * of the attribute.
+	 * 
+	 * 
+	 * @created 05.02.2013
+	 * @param tag the tag name of the HTML element
+	 * @param content the content of the HTML element
+	 * @param attributes the attributes of the HTML element: the odd elements
+	 *        are the attribute names and the even elements the attribute
+	 *        contents
+	 * @return a complete and masked HTML element with content and attributes
+	 */
+	public static String getHtmlElement(String tag, String content, String... attributes) {
+		return getHtmlTag(tag, attributes) + content + maskHTML("</" + tag + ">");
+	}
+
+	/**
+	 * Creates an opening and masked HTML element without having to manipulate
+	 * strings. Just set tag name and the attributes. Attributes need to be
+	 * given in pairs. First the name of the attribute, second the content of
+	 * the attribute.
+	 * 
+	 * 
+	 * @created 05.02.2013
+	 * @param tag the tag name of the HTML element
+	 * @param attributes the attributes of the HTML element: the odd elements
+	 *        are the attribute names and the even elements the attribute
+	 *        contents
+	 * @return an opening and masked HTML element with attributes
+	 */
+	public static String getHtmlTag(String tag, String... attributes) {
+		StringBuilder html = new StringBuilder("<" + tag);
+		for (int i = 0; i + 2 <= attributes.length; i += 2) {
+			html.append(getAttribute(attributes[i], attributes[i + 1]));
+		}
+		html.append(">");
+		return maskHTML(html.toString());
+	}
+
+	private static String getAttribute(String attributeName, String attribute) {
+		return " " + attributeName + "=\"" + attribute + "\"";
+	}
+
 }

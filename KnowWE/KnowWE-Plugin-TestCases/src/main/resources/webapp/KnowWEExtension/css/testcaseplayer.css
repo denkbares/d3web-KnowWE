@@ -22,6 +22,7 @@
 	margin: 0px;
 	margin-top: 5px;
 	margin-bottom: 5px;
+	table-layout: fixed;
 }
 
 .type_TestCasePlayer TABLE.wikitable * TD {
@@ -58,4 +59,11 @@
 .type_TestCasePlayer .toolButton IMG {
 	position: relative;
 	top: 3px;
+}
+
+.type_TestCasePlayer .wikitable .collapsedcolumn {
+	padding-right: 0px;
+	max-width: 5px;
+	overflow: hidden;
+	max-height: 5px;
 }

@@ -18,8 +18,13 @@
  */
 package de.knowwe.testcases;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.Set;
+
+import javax.servlet.http.Cookie;
 
 import de.d3web.core.utilities.Pair;
 import de.knowwe.core.kdom.parsing.Section;
@@ -33,10 +38,11 @@ import de.knowwe.core.utils.Strings;
  */
 public class TableModel {
 
-	private HashMap<Pair<Integer, Integer>, String> cells = new HashMap<Pair<Integer, Integer>, String>();
-	private HashMap<Integer, Integer> columnWidths = new HashMap<Integer, Integer>();
+	private final HashMap<Pair<Integer, Integer>, String> cells = new HashMap<Pair<Integer, Integer>, String>();
+	private final HashMap<Integer, Integer> columnWidths = new HashMap<Integer, Integer>();
 	private int rowCount = 0;
 	private int columnCount = 0;
+	private String name;
 
 	public void addCell(int row, int column, String value, int width) {
 		rowCount = Math.max(rowCount, row);
@@ -111,32 +117,60 @@ public class TableModel {
 		StringBuilder string = new StringBuilder();
 		string.append(Strings.maskHTML("<div style='overflow:auto'>"));
 		string.append(Strings.maskHTML("<table class='wikitable' border='1'>"));
-		string.append(Strings.maskHTML("<thead>"));
 		// headline
+		Set<Integer> collapsedColumns = getCollapsedColumns(section, user);
 		string.append(Strings.maskHTML("<tr>"));
 		for (int i = 0; i <= columnCount; i++) {
 			String cell = getCell(0, i);
-			string.append(Strings.maskHTML("<th>"));
-			string.append(cell);
-			string.append(Strings.maskHTML("</th>"));
+			appendCell("th", cell, i, collapsedColumns, string);
 		}
 		string.append(Strings.maskHTML("</tr>\n"));
-		string.append(Strings.maskHTML("</thead>\n"));
-		string.append(Strings.maskHTML("<tbody>"));
 		for (int i = 1; i <= rowCount; i++) {
 			string.append(Strings.maskHTML(i % 2 == 1 ? "<tr>" : "<tr class='odd'>"));
 			for (int j = 0; j <= columnCount; j++) {
-				string.append(Strings.maskHTML("<td>"));
-				string.append(getCell(i, j));
-				string.append(Strings.maskHTML("</td>"));
+				String cell = getCell(i, j);
+				appendCell("td", cell, j, collapsedColumns, string);
 			}
 			string.append(Strings.maskHTML("</tr>\n"));
 		}
-		string.append(Strings.maskHTML("</tbody>"));
 		string.append(Strings.maskHTML("</table>"));
 		string.append(Strings.maskHTML("</div>"));
 
 		return string.toString();
+	}
+
+	private void appendCell(String type, String cell, int column, Set<Integer> collapsedColumns, StringBuilder string) {
+		ArrayList<String> attributes = new ArrayList<String>();
+		if (column > 0) {
+			attributes.add("column");
+			attributes.add(String.valueOf(column));
+		}
+		if (collapsedColumns.contains(column)) {
+			attributes.add("class");
+			attributes.add("collapsedcolumn");
+		}
+		String[] attrArray = attributes.toArray(new String[attributes.size()]);
+		string.append(Strings.getHtmlElement(type, cell, attrArray));
+	}
+
+	private Set<Integer> getCollapsedColumns(Section<?> section, UserContext user) {
+		String key = "columnstatus_" + section.getID() + "_" + name;
+		Set<Integer> collapsed = new HashSet<Integer>();
+		for (Cookie cookie : user.getRequest().getCookies()) {
+			if (cookie.getName().equals(key)) {
+				String[] columns = cookie.getValue().split("#");
+				for (String colString : columns) {
+					try {
+						int col = Integer.parseInt(colString);
+						collapsed.add(col);
+					}
+					catch (NumberFormatException e) {
+						// just skip...
+					}
+				}
+			}
+		}
+		return collapsed;
 	}
 
 	public TableModel copy() {
@@ -150,5 +184,9 @@ public class TableModel {
 			copy.columnWidths.put(e.getKey(), e.getValue());
 		}
 		return copy;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

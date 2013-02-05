@@ -194,13 +194,14 @@ public class TestCasePlayerRenderer implements Renderer {
 		TableModel tableModel = getTableModel(section, user, selectedTriple, session, testCase,
 				status, chronology, navigatorParameters);
 
-		string.append(tableModel.toHtml(section, user));
+		string.append(tableModel.toHtml(section.getFather(), user));
 	}
 
 	private TableModel getTableModel(Section<?> section, UserContext user, Triple<TestCaseProvider, Section<?>, Article> selectedTriple, Session session, TestCase testCase, SessionDebugStatus status, Collection<Date> chronology, NavigationParameters navigatorParameters) {
 		String kbArticle = selectedTriple.getC().getTitle();
 		TerminologyManager manager = session.getKnowledgeBase().getManager();
 		TableModel tableModel = new TableModel();
+		tableModel.setName(getTestCaseId(selectedTriple));
 		KnowledgeBase base = D3webUtils.getKnowledgeBase(user.getWeb(), kbArticle);
 
 		// check if the latest knowledge base is used
@@ -589,7 +590,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				if (selectedTriple == null) {
 					selectedTriple = triple;
 				}
-				String id = triple.getC().getTitle() + "/" + triple.getA().getName();
+				String id = getTestCaseId(triple);
 				String displayedID = (unique) ? triple.getA().getName() : id;
 				if (id.equals(selectedID)) {
 					selectsb.append("<option value='" + id + "' selected='selected'>"
@@ -613,6 +614,10 @@ public class TestCasePlayerRenderer implements Renderer {
 					Type.WARNING, Arrays.asList(notValidTestCaseError), string);
 		}
 		return selectedTriple;
+	}
+
+	private String getTestCaseId(Triple<TestCaseProvider, Section<?>, Article> triple) {
+		return triple.getC().getTitle() + "/" + triple.getA().getName();
 	}
 
 	public static String getSelectedTestCaseId(Section<?> section, UserContext user) {
