@@ -32,6 +32,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 
@@ -62,6 +64,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.user.UserContextUtil;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.Strings;
+import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.event.InitializedAllArticlesEvent;
 import de.knowwe.event.PageRenderedEvent;
 
@@ -248,6 +251,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			boolean fullParse = parse != null && (parse.equals("full") || parse.equals("true"));
 
 			if (fullParse || !originalText.equals(content)) {
+				deleteRenamedArticles(title, userContext);
 				article = Environment.getInstance().buildAndRegisterArticle(content, title,
 						Environment.DEFAULT_WEB, fullParse);
 			}
@@ -298,6 +302,22 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			System.out.println("*****EXCEPTION IN preTranslate !!! *********");
 			e.printStackTrace();
 			return null;
+		}
+	}
+
+	private void deleteRenamedArticles(String title, UserContext context) {
+		String changeNote = Environment.getInstance().getWikiConnector().getChangeNote(title, -1);
+		Pattern renamePattern = Pattern.compile("^(.+)" + Pattern.quote(" ==> " + title) + "$");
+		Matcher renameMatcher = renamePattern.matcher(changeNote);
+		if (renameMatcher.find()) {
+			String oldTitle = renameMatcher.group(1);
+			WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+			if (wikiConnector.userCanEditArticle(oldTitle, context.getRequest())) {
+				ArticleManager articleManager = Environment.getInstance().getArticleManager(
+						Environment.DEFAULT_WEB);
+				Article oldArticle = articleManager.getArticle(oldTitle);
+				if (oldArticle != null) articleManager.deleteArticle(oldArticle);
+			}
 		}
 	}
 
