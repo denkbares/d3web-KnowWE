@@ -251,7 +251,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			boolean fullParse = parse != null && (parse.equals("full") || parse.equals("true"));
 
 			if (fullParse || !originalText.equals(content)) {
-				deleteRenamedArticles(title, userContext);
+				deleteRenamedArticles(title);
 				article = Environment.getInstance().buildAndRegisterArticle(content, title,
 						Environment.DEFAULT_WEB, fullParse);
 			}
@@ -305,18 +305,20 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		}
 	}
 
-	private void deleteRenamedArticles(String title, UserContext context) {
+	private void deleteRenamedArticles(String title) {
 		String changeNote = Environment.getInstance().getWikiConnector().getChangeNote(title, -1);
 		Pattern renamePattern = Pattern.compile("^(.+)" + Pattern.quote(" ==> " + title) + "$");
 		Matcher renameMatcher = renamePattern.matcher(changeNote);
 		if (renameMatcher.find()) {
+			// from the change note we get the hint, that an article was renamed
 			String oldTitle = renameMatcher.group(1);
 			WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
-			if (wikiConnector.userCanEditArticle(oldTitle, context.getRequest())) {
-				ArticleManager articleManager = Environment.getInstance().getArticleManager(
-						Environment.DEFAULT_WEB);
-				Article oldArticle = articleManager.getArticle(oldTitle);
-				if (oldArticle != null) articleManager.deleteArticle(oldArticle);
+			ArticleManager articleManager = Environment.getInstance().getArticleManager(
+					Environment.DEFAULT_WEB);
+			Article oldArticle = articleManager.getArticle(oldTitle);
+			// only delete in KnowWE if it exists in KnowWE but not JSPWiki
+			if (!wikiConnector.doesArticleExist(oldTitle) && oldArticle != null) {
+				articleManager.deleteArticle(oldArticle);
 			}
 		}
 	}
