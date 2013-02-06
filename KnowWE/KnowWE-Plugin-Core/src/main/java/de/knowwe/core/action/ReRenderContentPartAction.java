@@ -45,40 +45,48 @@ public class ReRenderContentPartAction extends AbstractAction {
 
 		String nodeID = context.getParameter("KdomNodeId");
 
-		Section<? extends Type> secWithNodeID = Sections.getSection(nodeID);
+		Section<? extends Type> section = Sections.getSection(nodeID);
 
-		if (secWithNodeID == null) {
+		if (section == null) {
 			String message = "Section not found: " + nodeID;
 			Logger.getLogger(this.getClass().getName()).error(message);
 			return message;
 
 		}
 
-		if (secWithNodeID != null) {
-			StringBuilder b = new StringBuilder();
-
-			Type type = secWithNodeID.get();
-			Renderer renderer = type.getRenderer();
-			if (renderer != null) {
-				renderer.render(secWithNodeID, context, b);
-			}
-			else {
-				DelegateRenderer.getInstance().render(secWithNodeID, context, b);
-			}
-
-			// If the node is in <pre> than do not
-			// render it through the JSPWikiPipeline
-			String inPre = context.getParameter("inPre");
-			String pagedata = b.toString();
-
-			if (inPre == null) pagedata = Environment.getInstance().getWikiConnector()
-						.renderWikiSyntax(pagedata, context.getRequest());
-			if (inPre != null) if (inPre.equals("false")) pagedata = Environment.getInstance()
-							.getWikiConnector().renderWikiSyntax(pagedata, context.getRequest());
-
-			return Strings.unmaskHTML(pagedata);
+		if (!userCanView(context, section)) {
+			return "You are not allowed to view this content";
 		}
-		return null;
+
+		StringBuilder b = new StringBuilder();
+
+		Type type = section.get();
+		Renderer renderer = type.getRenderer();
+		if (renderer != null) {
+			renderer.render(section, context, b);
+		}
+		else {
+			DelegateRenderer.getInstance().render(section, context, b);
+		}
+
+		// If the node is in <pre> than do not
+		// render it through the JSPWikiPipeline
+		String inPre = context.getParameter("inPre");
+		String pagedata = b.toString();
+
+		if (inPre == null) pagedata = Environment.getInstance().getWikiConnector()
+				.renderWikiSyntax(pagedata, context.getRequest());
+		if (inPre != null) if (inPre.equals("false")) pagedata = Environment.getInstance()
+				.getWikiConnector().renderWikiSyntax(pagedata, context.getRequest());
+
+		return Strings.unmaskHTML(pagedata);
+
+	}
+
+	private boolean userCanView(UserActionContext context, Section<?> section) {
+		return Environment.getInstance().getWikiConnector().userCanViewArticle(
+				section.getTitle(),
+				context.getRequest());
 	}
 
 	@Override

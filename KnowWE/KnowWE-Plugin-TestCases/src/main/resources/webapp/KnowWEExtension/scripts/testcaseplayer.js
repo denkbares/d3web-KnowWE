@@ -5,6 +5,8 @@ TestCasePlayer.init = function() {
 }
 
 TestCasePlayer.initColumnHeaders = function() {
+	if (jq$(this).find("input").length > 0) return;
+	
 	var column = jq$(this).attr("column");
 	
 	var isCollapsed = jq$(this).hasClass("collapsedcolumn");
@@ -73,13 +75,15 @@ TestCasePlayer.send = function(sessionid, casedate, name, topic) {
 TestCasePlayer.change = function(key_sessionid, selectedvalue) {
  			var topic = KNOWWE.helper.gup('page');
 			document.cookie = key_sessionid +"=" + TestCasePlayer.encodeCookieValue(selectedvalue);
-           	KNOWWE.helper.observer.notify('update');
+            //KNOWWE.helper.observer.notify('update');
+           	TestCasePlayer.update();
 }
 
-TestCasePlayer.addCookie = function(cookievalue) {
+TestCasePlayer.addCookie = function(cookievalue)  {
 			var topic = KNOWWE.helper.gup('page');
 			document.cookie = "additionalQuestions"+ TestCasePlayer.encodeCookieValue(topic) +"=" + TestCasePlayer.encodeCookieValue(cookievalue);
-           	KNOWWE.helper.observer.notify('update');
+           	//KNOWWE.helper.observer.notify('update');
+           	TestCasePlayer.update();
 }
 
 TestCasePlayer.encodeCookieValue = function(cookievalue) {
@@ -87,6 +91,43 @@ TestCasePlayer.encodeCookieValue = function(cookievalue) {
 			temp = temp.replace('@', '%40');
 			temp = temp.replace('+', '%2B');
 			return temp;
+}
+
+TestCasePlayer.update = function() {
+	jq$(".ReRenderSectionMarker").each(function() {
+		var id = eval("(" + jq$(this).attr("rel") + ")" ).id;
+		var params = {
+            action: 'ReRenderContentPartAction',
+            KdomNodeId: id,
+        };
+
+        var options = {
+            url: KNOWWE.core.util.getURL(params),
+            response: {
+                action: 'none',
+                fn: function() {
+                	var tableDiv = jq$("#" + id).find('.' + "wikitable").parent();
+                	var scrollLeft = tableDiv.scrollLeft();
+                	var scrollWidth = tableDiv[0].scrollWidth;
+                	
+                    jq$("#" + id).replaceWith(this.responseText);
+                    
+                    tableDiv = jq$("#" + id).find('.' + "wikitable").parent();
+                    var scrollWidthAfter = tableDiv[0].scrollWidth;
+                    if (scrollWidth < scrollWidthAfter) {
+                    	scrollLeft += scrollWidthAfter - scrollWidth;
+                    }
+                    tableDiv.scrollLeft(scrollLeft);
+                    
+                    tableDiv.find("th").click(TestCasePlayer.initColumnHeaders);
+                    
+		        	KNOWWE.core.util.updateProcessingState(-1);
+                },
+            }
+        };
+        new _KA(options).send();
+    	KNOWWE.core.util.updateProcessingState(1);
+	});
 }
 
 jq$(document).ready(function() {
