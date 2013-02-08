@@ -128,7 +128,7 @@
 		<parameter id="name" value="JSPWikiPlugin" />
 		<parameter id="description" value="Represents a JSPWiki Plugin" />
 		<parameter id="version" value="0.2" />
-		<parameter id="priority" value="5" />
+		<parameter id="priority" value="1000" />
 		<parameter id="scope" value="root" />
 	</extension>
 
