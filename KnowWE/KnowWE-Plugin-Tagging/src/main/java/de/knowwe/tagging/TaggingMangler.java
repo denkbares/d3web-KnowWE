@@ -30,7 +30,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -40,11 +39,7 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Strings;
-import de.knowwe.search.GenericSearchResult;
-import de.knowwe.search.SearchProvider;
-import de.knowwe.search.SearchTerm;
 
 /**
  * Centralized management of tags. Takes care of adding/removing tags. And
@@ -53,7 +48,7 @@ import de.knowwe.search.SearchTerm;
  * @author Fabian Haupt
  * 
  */
-public class TaggingMangler implements SearchProvider {
+public class TaggingMangler {
 
 	/**
 	 * Singleton instance
@@ -84,27 +79,6 @@ public class TaggingMangler implements SearchProvider {
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
-	}
-
-	/**
-	 * Adds a tag to the tag map
-	 * 
-	 * @param page The article containing the tag
-	 * @param tag The tag
-	 * 
-	 *        deprecated because its hard to process removement of tags
-	 */
-	@Deprecated
-	public void registerTag(String page, String tag) {
-		if (page == null || tag == null) {
-			return;
-		}
-
-		if (!tagMap.containsKey(page)) {
-			tagMap.put(page, new HashSet<String>());
-		}
-
-		tagMap.get(page).add(tag.trim());
 	}
 
 	/**
@@ -415,11 +389,11 @@ public class TaggingMangler implements SearchProvider {
 	 * Searches for pages containing all of the requested tags
 	 * 
 	 * @param querytags Space-separated string of tags the pages must contain
-	 * @return List of {@link GenericSearchResult} instances for the found pages
+	 * @return List of {@link TaggingSearchResult} instances for the found pages
 	 */
-	public List<GenericSearchResult> searchPages(String querytags) {
+	public List<TaggingSearchResult> searchPages(String querytags) {
 		String[] tags = querytags.split(" ");
-		List<GenericSearchResult> result = new LinkedList<GenericSearchResult>();
+		List<TaggingSearchResult> result = new LinkedList<TaggingSearchResult>();
 
 		Iterator<String> it = tagMap.keySet().iterator();
 
@@ -434,7 +408,7 @@ public class TaggingMangler implements SearchProvider {
 			}
 
 			// The page is tagged with all query tags, add to result set
-			result.add(new GenericSearchResult(article, new String[] {}, 1));
+			result.add(new TaggingSearchResult(article, new String[] {}, 1));
 		}
 
 		return result;
@@ -449,11 +423,11 @@ public class TaggingMangler implements SearchProvider {
 	 */
 	public String getResultPanel(String queryString) {
 		if (queryString != null) {
-			List<GenericSearchResult> pages = searchPages(queryString);
-			Collections.sort(pages, new Comparator<GenericSearchResult>() {
+			List<TaggingSearchResult> pages = searchPages(queryString);
+			Collections.sort(pages, new Comparator<TaggingSearchResult>() {
 
 				@Override
-				public int compare(GenericSearchResult o1, GenericSearchResult o2) {
+				public int compare(TaggingSearchResult o1, TaggingSearchResult o2) {
 					return String.CASE_INSENSITIVE_ORDER.compare(
 							o1.getPagename(), o2.getPagename());
 				}
@@ -466,8 +440,7 @@ public class TaggingMangler implements SearchProvider {
 		}
 	}
 
-	@Override
-	public String renderResults(Collection<GenericSearchResult> pages, String queryString) {
+	public String renderResults(Collection<TaggingSearchResult> pages, String queryString) {
 		if (pages.size() == 0) {
 			return "No pages for query '" + queryString + "'.";
 		}
@@ -477,7 +450,7 @@ public class TaggingMangler implements SearchProvider {
 		// html.append("<ul>\n");
 		html.append("\n|| Page || Tags \n");
 
-		for (GenericSearchResult cur : pages) {
+		for (TaggingSearchResult cur : pages) {
 			String pagename = cur.getPagename();
 			html.append("| [").append(pagename);
 			html.append("]\t| ");
@@ -491,16 +464,6 @@ public class TaggingMangler implements SearchProvider {
 			}
 
 			html.append("\n");
-			// String link = "<a target='_blank' href=\"Wiki.jsp?page="
-			// + pagename + "\">" + pagename + "</a>";
-			//
-			// // String score = cur.getScore() + "";
-			// html.append("<div class='left'>");
-			// // html.append("<b>" + link + "</b>");
-			// html.append("<li>" + link + "</li>");
-			// // " (Score:" + score + ")");
-			// html.append("</div><br>\n");
-
 		}
 
 		// html.append("</ul>\n");
@@ -508,50 +471,14 @@ public class TaggingMangler implements SearchProvider {
 		return html.toString();
 	}
 
-	@Override
-	public String getID() {
-		return "TAG_SEARCH";
+	/**
+	 * Unregisters all tags of the given article.
+	 * 
+	 * @created 10.02.2013
+	 * @param article the article for which the tags are to be unregistered
+	 */
+	public void unregisterTags(Article article) {
+		tagMap.remove(article.getTitle());
 	}
 
-	@Override
-	public String getVerbalization(Locale local) {
-		// TODO verbalize
-		return "Tags";
-	}
-
-	@Override
-	public Collection<GenericSearchResult> search(Collection<SearchTerm> words,
-			UserContext user) {
-		Collection<GenericSearchResult> collection = new ArrayList<GenericSearchResult>();
-
-		for (SearchTerm searchTerm : words) {
-			collection.addAll(searchPages(searchTerm.getTerm()));
-		}
-
-		return collection;
-	}
-
-	@Override
-	public Collection<SearchTerm> getAllTerms() {
-		Collection<SearchTerm> result = new HashSet<SearchTerm>();
-		List<String> string = this.getAllTags();
-
-		for (String string2 : string) {
-			result.add(new SearchTerm(string2));
-		}
-
-		return result;
-	}
-
-	@Override
-	public Collection<SearchTerm> expandTermForRecommendation(SearchTerm t) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Collection<SearchTerm> expandTermForSearch(SearchTerm t) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

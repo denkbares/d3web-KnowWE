@@ -76,5 +76,15 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="EventListener"
+		id="TaggingManglerCleanerEventListener">
+		<parameter id="class"
+			value="de.knowwe.tagging.TaggingManglerCleaner" />
+		<parameter id="name" value="TaggingManglerCleaner" />
+		<parameter id="description" value="EventListener TaggingManglerCleaner" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
     
 </plugin>

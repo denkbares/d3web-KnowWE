@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.search;
+package de.knowwe.tagging;
 
 import java.util.Arrays;
 
@@ -28,13 +28,13 @@ import java.util.Arrays;
  * @author Jochen
  * 
  */
-public class GenericSearchResult {
+public class TaggingSearchResult {
 
 	private String pagename;
 	private String[] contexts;
 	private int score;
 
-	public GenericSearchResult(String page, String[] contexts, int score) {
+	public TaggingSearchResult(String page, String[] contexts, int score) {
 		this.pagename = page;
 		this.contexts = Arrays.copyOf(contexts, contexts.length);
 		this.score = score;
@@ -75,8 +75,8 @@ public class GenericSearchResult {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof GenericSearchResult) {
-			GenericSearchResult other = ((GenericSearchResult) o);
+		if (o instanceof TaggingSearchResult) {
+			TaggingSearchResult other = ((TaggingSearchResult) o);
 			if (pagename.equals(other.pagename)) {
 				for (int i = 0; i < contexts.length; i++) {
 					if (!contexts[i].equals(other.contexts[i])) {
