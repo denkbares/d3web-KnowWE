@@ -1,10 +1,10 @@
 var TestCasePlayer = {};
 
 TestCasePlayer.init = function() {
-	jq$(".type_TestCasePlayer").find(".wikitable").find("th").click(TestCasePlayer.clickColumnHeaders);
+	jq$(".type_TestCasePlayer").find(".wikitable").find("th").click(TestCasePlayer.registerClickableColumnHeaders);
 }
 
-TestCasePlayer.clickColumnHeaders = function() {
+TestCasePlayer.registerClickableColumnHeaders = function() {
 	var th = jq$(this);
 	if (th.find("input").length > 0) return;
 	var column = th.attr("column");
@@ -131,7 +131,7 @@ TestCasePlayer.update = function() {
                     }
                     tableDiv.scrollLeft(scrollLeft);
                     
-                    tableDiv.find("th").click(TestCasePlayer.initColumnHeaders);
+                    tableDiv.find("th").click(TestCasePlayer.registerClickableColumnHeaders);
                     
 		        	KNOWWE.core.util.updateProcessingState(-1);
                 },
