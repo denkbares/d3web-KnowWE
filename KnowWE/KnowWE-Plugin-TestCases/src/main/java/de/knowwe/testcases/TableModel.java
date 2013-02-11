@@ -144,10 +144,23 @@ public class TableModel {
 		if (column > 0) {
 			attributes.add("column");
 			attributes.add(String.valueOf(column));
-		}
-		if (collapsedColumns.contains(column)) {
-			attributes.add("class");
-			attributes.add("collapsedcolumn");
+			if (collapsedColumns.contains(column)) {
+				attributes.add("class");
+				attributes.add("collapsedcolumn");
+				attributes.add("title");
+				if (type.equals("th")) {
+					attributes.add("Expand " + cell);
+				}
+				else {
+					attributes.add(cell);
+				}
+			}
+			else {
+				if (type.equals("th")) {
+					attributes.add("title");
+					attributes.add("Collapse");
+				}
+			}
 		}
 		String[] attrArray = attributes.toArray(new String[attributes.size()]);
 		string.append(Strings.getHtmlElement(type, cell, attrArray));

@@ -1,31 +1,43 @@
 var TestCasePlayer = {};
 
 TestCasePlayer.init = function() {
-	jq$(".type_TestCasePlayer").find(".wikitable").find("th").click(TestCasePlayer.initColumnHeaders);
+	jq$(".type_TestCasePlayer").find(".wikitable").find("th").click(TestCasePlayer.clickColumnHeaders);
 }
 
-TestCasePlayer.initColumnHeaders = function() {
-	if (jq$(this).find("input").length > 0) return;
+TestCasePlayer.clickColumnHeaders = function() {
+	var th = jq$(this);
+	if (th.find("input").length > 0) return;
+	var column = th.attr("column");
 	
-	var column = jq$(this).attr("column");
-	
-	var isCollapsed = jq$(this).hasClass("collapsedcolumn");
-	var tds = jq$(this).parents(".wikitable").first().find('[column="' + column + '"]');
-	if (isCollapsed) tds.removeClass("collapsedcolumn");
+	var isCollapsed = th.hasClass("collapsedcolumn");
+	var tds = th.parents(".wikitable").first().find('[column="' + column + '"]');
+	if (isCollapsed) {
+		tds.removeClass("collapsedcolumn");
+		th.attr("title", "Collapse");
+		tds.filter("td").each(function() {
+			jq$(this).removeAttr("title");
+		});
+	}
 	
 	var collapsed = "";
-	jq$(this).siblings().each(function() {
+	th.siblings().each(function() {
 		if (jq$(this).hasClass("collapsedcolumn")) {
 			collapsed += jq$(this).attr("column") + "#";
 		}
 	});
 	if (!isCollapsed) collapsed += column;
 	
-	var id = jq$(this).parents(".type_TestCasePlayer").first().attr("id");
+	var id = th.parents(".type_TestCasePlayer").first().attr("id");
 	var testCase = jq$("#" + id).find("select").find('[selected="selected"]').attr("value");
 	document.cookie = "columnstatus_" + id + "_" + testCase + "=" + collapsed;
 	
-	if (!isCollapsed) tds.addClass("collapsedcolumn");
+	if (!isCollapsed) {
+		tds.addClass("collapsedcolumn");
+		th.attr("title", "Expand " + jq$(this).text());
+		tds.filter("td").each(function() {
+			jq$(this).attr("title", jq$(this).text());
+		});
+	}
 	
 }
 
