@@ -12,7 +12,11 @@ TestCasePlayer.registerClickableColumnHeaders = function() {
 	var isCollapsed = th.hasClass("collapsedcolumn");
 	var tds = th.parents(".wikitable").first().find('[column="' + column + '"]');
 	if (isCollapsed) {
-		tds.removeClass("collapsedcolumn");
+		if (tds.length < 12) {			
+			tds.removeClass("collapsedcolumn", 150, "linear");
+		} else {
+			tds.removeClass("collapsedcolumn");
+		}
 		th.attr("title", "Collapse");
 		tds.filter("td").each(function() {
 			jq$(this).removeAttr("title");
@@ -32,7 +36,12 @@ TestCasePlayer.registerClickableColumnHeaders = function() {
 	document.cookie = "columnstatus_" + id + "_" + testCase + "=" + collapsed;
 	
 	if (!isCollapsed) {
-		tds.addClass("collapsedcolumn");
+		if (tds.length < 12) {	
+			// for performance reasons
+			tds.addClass("collapsedcolumn", 150, "linear");
+		} else {
+			tds.addClass("collapsedcolumn");
+		}
 		th.attr("title", "Expand " + jq$(this).text());
 		tds.filter("td").each(function() {
 			jq$(this).attr("title", jq$(this).text());

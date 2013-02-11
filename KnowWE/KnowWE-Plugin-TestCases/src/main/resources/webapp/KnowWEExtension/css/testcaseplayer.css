@@ -41,6 +41,7 @@
 .type_TestCasePlayer .wikitable * TH {
 	vertical-align: middle;
 	text-align: left;
+	white-space: nowrap;
 }
 
 .type_TestCasePlayer .wikitable * TH SELECT, .type_TestCasePlayer .wikitable * TH INPUT {
@@ -62,8 +63,8 @@
 }
 
 .type_TestCasePlayer .wikitable .collapsedcolumn {
-	padding-right: 0px;
 	max-width: 5px;
 	overflow: hidden;
 	max-height: 5px;
+	padding-right: 0px;
 }

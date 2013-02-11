@@ -38,6 +38,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -49,6 +52,7 @@ import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.SectionStore;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 
 public class KnowWEUtils {
@@ -403,6 +407,51 @@ public class KnowWEUtils {
 	 */
 	public static String getDiffURLLink(String title, int version1, int version2) {
 		return "Diff.jsp?page=" + title + "&r1=" + version1 + "&r2=" + version2;
+	}
+
+	/**
+	 * Returns the String stored as a cookies with the given name from the
+	 * UserContext. If no cookie exists, null is returned.
+	 * 
+	 * @created 11.02.2013
+	 * @param name the name of the cookie
+	 * @param context the user context
+	 * @return the stored cookie or null, if no cookie with the given name
+	 *         exists
+	 */
+	public static String getCookie(String name, UserContext context) {
+		HttpServletRequest request = context.getRequest();
+		if (request == null) return null;
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if (cookie.getName().equals(name)) {
+					return cookie.getValue();
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Convenience method to get the value of the cookie. This method does the
+	 * same as the Method {@link KnowWEUtils#getCookie(String, UserContext)},
+	 * but never returns null, except null is given as the default value. The
+	 * default value will not be set as the cookie, but returned, if no cookie
+	 * is given yet (for example with new users).
+	 * 
+	 * @created 11.02.2013
+	 * @param name the name of the cookie
+	 * @param defaultValue the value to be returned, if the cookie could not be
+	 *        found
+	 * @param context the user context
+	 * @return the stored cookie or null, if no cookie with the given name
+	 *         exists
+	 */
+	public static String getCookie(String name, String defaultValue, UserContext context) {
+		String cookie = getCookie(name, context);
+		if (cookie == null) cookie = defaultValue;
+		return cookie;
 	}
 
 	public static String getVersionsSavePath() {

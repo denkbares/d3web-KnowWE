@@ -24,11 +24,10 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.servlet.http.Cookie;
-
 import de.d3web.core.utilities.Pair;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.Strings;
 
 /**
@@ -169,18 +168,18 @@ public class TableModel {
 	private Set<Integer> getCollapsedColumns(Section<?> section, UserContext user) {
 		String key = "columnstatus_" + section.getID() + "_" + name;
 		Set<Integer> collapsed = new HashSet<Integer>();
-		for (Cookie cookie : user.getRequest().getCookies()) {
-			if (cookie.getName().equals(key)) {
-				String[] columns = cookie.getValue().split("#");
-				for (String colString : columns) {
-					try {
-						int col = Integer.parseInt(colString);
-						collapsed.add(col);
-					}
-					catch (NumberFormatException e) {
-						// just skip...
-					}
+		String cookie = KnowWEUtils.getCookie(key, user);
+		if (cookie != null) {
+			String[] columns = cookie.split("#");
+			for (String colString : columns) {
+				try {
+					int col = Integer.parseInt(colString);
+					collapsed.add(col);
 				}
+				catch (NumberFormatException e) {
+					// just skip...
+				}
+
 			}
 		}
 		return collapsed;
