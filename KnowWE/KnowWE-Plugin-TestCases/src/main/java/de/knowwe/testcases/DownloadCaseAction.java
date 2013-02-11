@@ -55,6 +55,17 @@ public class DownloadCaseAction extends AbstractAction {
 			return;
 		}
 
+		SequentialTestCase sequentialTestCase = null;
+		try {
+			sequentialTestCase = TestCaseUtils.transformToSTC(testCase,
+					session.getKnowledgeBase());
+		}
+		catch (Exception e) {
+			context.sendError(HttpServletResponse.SC_CONFLICT,
+					"Exception while creating downloadable xml file: " + e.getMessage());
+			return;
+		}
+
 		context.setContentType("application/x-bin");
 
 		String fileName = provider.getName();
@@ -62,9 +73,6 @@ public class DownloadCaseAction extends AbstractAction {
 
 		context.setHeader("Content-Disposition", "attachment;filename=\"" + fileName
 				+ "\"");
-
-		SequentialTestCase sequentialTestCase = TestCaseUtils.transformToSTC(testCase,
-				session.getKnowledgeBase());
 
 		OutputStream out = context.getOutputStream();
 
