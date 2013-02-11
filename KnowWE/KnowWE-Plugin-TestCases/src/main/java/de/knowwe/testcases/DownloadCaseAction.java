@@ -50,7 +50,7 @@ public class DownloadCaseAction extends AbstractAction {
 		Session session = provider.getActualSession(context);
 
 		if (session == null) {
-			context.sendError(HttpServletResponse.SC_CONFLICT,
+			context.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
 					"Unable to download TestCase: No valid session found");
 			return;
 		}
@@ -61,7 +61,7 @@ public class DownloadCaseAction extends AbstractAction {
 					session.getKnowledgeBase());
 		}
 		catch (Exception e) {
-			context.sendError(HttpServletResponse.SC_CONFLICT,
+			context.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
 					"Exception while creating downloadable xml file: " + e.getMessage());
 			return;
 		}
