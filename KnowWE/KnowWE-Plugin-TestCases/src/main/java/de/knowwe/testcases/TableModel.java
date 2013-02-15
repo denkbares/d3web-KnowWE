@@ -162,7 +162,8 @@ public class TableModel {
 			}
 		}
 		String[] attrArray = attributes.toArray(new String[attributes.size()]);
-		string.append(Strings.getHtmlElement(type, cell, attrArray));
+		String cellDiv = Strings.getHtmlElement("div", cell);
+		string.append(Strings.getHtmlElement(type, cellDiv, attrArray));
 	}
 
 	private Set<Integer> getCollapsedColumns(Section<?> section, UserContext user) {

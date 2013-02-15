@@ -27,6 +27,7 @@
 
 .type_TestCasePlayer TABLE.wikitable * TD {
 	padding-bottom: 1px;
+	white-space: nowrap;
 }
 
 .type_TestCasePlayer .toolBar .toolButton {
@@ -65,6 +66,9 @@
 .type_TestCasePlayer .wikitable .collapsedcolumn {
 	max-width: 5px;
 	overflow: hidden;
-	max-height: 5px;
 	padding-right: 0px;
+}
+
+.type_TestCasePlayer .wikitable .collapsedcolumn div {
+	max-height: 20px;
 }
