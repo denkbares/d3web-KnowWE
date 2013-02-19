@@ -37,6 +37,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.d3web.property.PropertyObjectReference.PropertyAnswerReference;
 
 /**
@@ -51,6 +52,7 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 
 	@Override
 	public Collection<Message> create(Article article, Section<PropertyDeclarationType> s) {
+		if (Strings.isBlank(s.getText())) return Messages.noMessage();
 		// get NamedObject
 		Section<PropertyObjectReference> namendObjectSection = Sections.findSuccessor(s,
 				PropertyObjectReference.class);
@@ -116,11 +118,11 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 		}
 		catch (NoSuchMethodException e) {
 			return Messages.asList(Messages.syntaxError("The property '" + property.getName()
-						+ "' is not supported by the %%Propery markup."));
+					+ "' is not supported by the %%Propery markup."));
 		}
 		catch (IllegalArgumentException e) {
 			return Messages.asList(Messages.syntaxError("The property value '" + content
-						+ "' is not compatible with the property '" + property + "'."));
+					+ "' is not compatible with the property '" + property + "'."));
 		}
 		for (NamedObject namedObject : objects) {
 			try {
@@ -128,7 +130,7 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 			}
 			catch (IllegalArgumentException e) {
 				return Messages.asList(Messages.syntaxError("The property '" + property.getName() +
-							"' cannot be localized."));
+						"' cannot be localized."));
 			}
 		}
 
@@ -150,7 +152,7 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 
 			QuestionChoice questionChoice = (QuestionChoice) question;
 			Choice choice = KnowledgeBaseUtils.findChoice(questionChoice,
-						answerReference.getText());
+					answerReference.getText());
 			if (choice != null) choices.add(choice);
 
 		}
