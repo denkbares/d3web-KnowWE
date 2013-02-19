@@ -25,6 +25,8 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.testcases.MatchingAttachmentsRenderer;
 import de.knowwe.testcases.ProviderRefreshRenderer;
+import de.knowwe.testcases.prefix.PrefixTestCaseRenderer;
+import de.knowwe.testcases.prefix.PrefixedTestCaseProvider;
 
 /**
  * Type for TestCaseSTC Markup
@@ -44,12 +46,13 @@ public class TestCaseSTCType extends DefaultMarkupType {
 		MARKUP.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 		MARKUP.addAnnotationRenderer(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				StyleRenderer.ANNOTATION);
+		MARKUP.addAnnotation(PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME, false);
 	}
 
 	public TestCaseSTCType() {
 		super(MARKUP);
 		addSubtreeHandler(Priority.LOW, new TestCaseSTCSubtreeHandler());
-		this.setRenderer(new ProviderRefreshRenderer());
+		this.setRenderer(new PrefixTestCaseRenderer(new ProviderRefreshRenderer()));
 		DefaultMarkupType.getContentType(this).setRenderer(new MatchingAttachmentsRenderer());
 	}
 

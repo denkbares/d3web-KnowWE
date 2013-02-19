@@ -42,8 +42,8 @@ public class TestCaseSessionRecordSubtreeHandler extends SubtreeHandler<TestCase
 		FileTestCaseProviderStorage testCaseProviderStorage = (FileTestCaseProviderStorage) section.getSectionStore().getObject(
 				article, TestCaseProviderStorage.KEY);
 		if (testCaseProviderStorage == null) {
-			testCaseProviderStorage = new SessionRecordTestCaseProviderStorage(article, fileNames,
-					section.getArticle());
+			testCaseProviderStorage = new SessionRecordTestCaseProviderStorage(article, section,
+					fileNames, section.getArticle());
 			section.getSectionStore().storeObject(article, TestCaseProviderStorage.KEY,
 					testCaseProviderStorage);
 		}

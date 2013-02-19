@@ -30,11 +30,14 @@ import de.d3web.testcase.model.TestCase;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.testcases.prefix.PrefixedTestCaseProvider;
 
 /**
  * Abstract class providing all methods to create a {@link TestCaseProvider}
@@ -43,7 +46,7 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
  * @author Markus Friedrich (denkbares GmbH)
  * @created 27.01.2012
  */
-public abstract class AttachmentTestCaseProvider implements TestCaseProvider {
+public abstract class AttachmentTestCaseProvider extends PrefixedTestCaseProvider {
 
 	protected TestCase testCase;
 	protected WikiAttachment attachment;
@@ -52,15 +55,20 @@ public abstract class AttachmentTestCaseProvider implements TestCaseProvider {
 
 	protected final Article article;
 
-	public AttachmentTestCaseProvider(Article article, WikiAttachment attachment) {
-		super();
+	// public AttachmentTestCaseProvider(Article article, WikiAttachment
+	// attachment) {
+	// this(article, null, attachment);
+	// }
+
+	public AttachmentTestCaseProvider(Article article, Section<? extends DefaultMarkupType> prefixDefiningSection, WikiAttachment attachment) {
+		super(prefixDefiningSection);
 		this.article = article;
 		this.attachment = attachment;
 		parse();
 	}
 
 	@Override
-	public TestCase getTestCase() {
+	public TestCase getActualTestCase() {
 		try {
 			WikiAttachment actualAttachment;
 			actualAttachment = KnowWEUtils.getAttachment(

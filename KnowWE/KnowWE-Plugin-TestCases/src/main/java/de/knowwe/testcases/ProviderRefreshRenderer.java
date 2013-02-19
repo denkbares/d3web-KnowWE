@@ -27,6 +27,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
+import de.knowwe.testcases.prefix.PrefixTestCaseRenderer;
 
 /**
  * Triggers parsing of the TestCases if they are displayed (workaround for
@@ -39,6 +40,12 @@ public class ProviderRefreshRenderer extends DefaultMarkupRenderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, StringBuilder buffer) {
+		refreshProviders(section, user);
+		PrefixTestCaseRenderer.refreshPrefixWarning(section);
+		super.render(section, user, buffer);
+	}
+
+	private void refreshProviders(Section<?> section, UserContext user) {
 		Set<String> articlesReferringTo = Environment.getInstance().getPackageManager(
 				user.getWeb()).getCompilingArticles(section);
 		ArticleManager articleManager = Environment.getInstance().getArticleManager(
@@ -55,6 +62,5 @@ public class ProviderRefreshRenderer extends DefaultMarkupRenderer {
 						providerStorage.getMessages());
 			}
 		}
-		super.render(section, user, buffer);
 	}
 }

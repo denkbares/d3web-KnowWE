@@ -22,6 +22,8 @@ import de.d3web.we.testcase.renderer.TestCaseRenderer;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.testcases.prefix.PrefixTestCaseRenderer;
+import de.knowwe.testcases.prefix.PrefixedTestCaseProvider;
 
 /**
  * TestCaseType for defining test cases in wiki markup.
@@ -37,12 +39,13 @@ public class TestCaseType extends DefaultMarkupType {
 	static {
 		m = new DefaultMarkup("TestCase");
 		m.addContentType(new TestCaseContent());
+		m.addAnnotation(PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME, false);
 		m.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 	}
 
 	public TestCaseType() {
 		super(m);
-		setRenderer(new TestCaseRenderer());
+		setRenderer(new PrefixTestCaseRenderer(new TestCaseRenderer()));
 	}
 
 }

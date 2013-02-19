@@ -65,7 +65,7 @@ public class WikiTestCaseProvider implements TestObjectProvider {
 		String web = Environment.DEFAULT_WEB;
 		Set<String> allPackageNames = KnowWEUtils.getPackageManager(web).getAllPackageNames();
 		List<Triple<TestCaseProvider, Section<?>, Article>> testCaseProviders = de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(
-				allPackageNames.toArray(new String[allPackageNames.size()]), web);
+				web, allPackageNames.toArray(new String[allPackageNames.size()]));
 
 		for (Triple<TestCaseProvider, Section<?>, Article> triple : testCaseProviders) {
 			TestCaseProvider provider = triple.getA();

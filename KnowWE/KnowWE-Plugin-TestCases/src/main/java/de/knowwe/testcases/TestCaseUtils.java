@@ -66,10 +66,10 @@ public class TestCaseUtils {
 		String[] kbpackages = DefaultMarkupType.getPackages(section,
 				KnowledgeBaseType.ANNOTATION_COMPILE);
 		String web = section.getWeb();
-		return de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(kbpackages, web);
+		return de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(web, kbpackages);
 	}
 
-	public static List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(String[] kbpackages, String web) {
+	public static List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(String web, String... kbpackages) {
 		Environment env = Environment.getInstance();
 		PackageManager packageManager = env.getPackageManager(web);
 		ArticleManager articleManager = env.getArticleManager(web);

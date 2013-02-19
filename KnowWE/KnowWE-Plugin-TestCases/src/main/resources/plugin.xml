@@ -107,7 +107,7 @@
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
 		id="GoToPlayerToolProvider">
-		<parameter id="class" value="de.knowwe.testcases.GoToPlayerToolProvider" />
+		<parameter id="class" value="de.knowwe.testcases.tools.GoToPlayerToolProvider" />
 		<parameter id="name" value="GoToPlayerToolProvider" />
 		<parameter id="description"
 			value="Switches to a player section and opens the testcase of the section." />
@@ -115,6 +115,18 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="TestCaseTableType" />
 	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="TestCasePlayerToolProvider">
+		<parameter id="class" value="de.knowwe.testcases.tools.TestCasePlayerToolProvider" />
+		<parameter id="name" value="TestCasePlayerToolProvider" />
+		<parameter id="description"
+			value="Providers various tools for the TestCasePlayer." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="TestCasePlayerType" />
+	</extension>
+	
 	
 	<!--  Table Editor -->
     <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"

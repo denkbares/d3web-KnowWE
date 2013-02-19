@@ -109,9 +109,12 @@ public class TestCaseContent extends AbstractType {
 					testSuite.setKb(kb);
 					testSuite.setRepository(repository);
 					List<TestCaseProvider> providers = new LinkedList<TestCaseProvider>();
+					Section<DefaultMarkupType> markupSection = Sections.findAncestorOfType(s,
+							DefaultMarkupType.class);
 					for (de.d3web.empiricaltesting.SequentialTestCase stc : testSuite.getRepository()) {
-						providers.add(new SingleTestCaseProvider(new STCWrapper(stc), article,
-								s.getArticle().getTitle() + "/" + stc.getName()));
+						providers.add(new SingleTestCaseProvider(article, markupSection,
+								new STCWrapper(stc), s.getArticle().getTitle() + "/"
+										+ stc.getName()));
 					}
 					Section<DefaultMarkupType> defaultMarkupSection = Sections.findAncestorOfType(
 							s, DefaultMarkupType.class);

@@ -22,6 +22,8 @@ import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.StyleRenderer;
+import de.knowwe.testcases.prefix.PrefixTestCaseRenderer;
+import de.knowwe.testcases.prefix.PrefixedTestCaseProvider;
 
 /**
  * 
@@ -40,10 +42,11 @@ public class TestcaseTableType extends DefaultMarkupType {
 		m.addAnnotationRenderer(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				StyleRenderer.ANNOTATION);
 		m.addAnnotation(NAME, false);
-
+		m.addAnnotation(PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME, false);
 	}
 
 	public TestcaseTableType() {
 		super(m);
+		this.setRenderer(new PrefixTestCaseRenderer(this.getRenderer()));
 	}
 }

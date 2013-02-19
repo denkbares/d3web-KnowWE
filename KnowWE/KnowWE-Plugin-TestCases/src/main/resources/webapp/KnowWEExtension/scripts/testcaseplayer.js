@@ -4,49 +4,97 @@ TestCasePlayer.init = function() {
 	jq$(".type_TestCasePlayer").find(".wikitable").find("th").click(TestCasePlayer.registerClickableColumnHeaders);
 }
 
-TestCasePlayer.registerClickableColumnHeaders = function() {
-	var th = jq$(this);
-	if (th.find("input").length > 0) return;
-	var column = th.attr("column");
-	
-	var isCollapsed = th.hasClass("collapsedcolumn");
-	var tds = th.parents(".wikitable").first().find('[column="' + column + '"]');
-	if (isCollapsed) {
-		if (tds.length < 12) {			
-			tds.removeClass("collapsedcolumn", 150, "linear");
-		} else {
-			tds.removeClass("collapsedcolumn");
+
+TestCasePlayer.toggleFindings = function(id, action) {
+	jq$('#' + id).find('.wikitable').find('th').filter('[type="finding"]').each(function() {
+		var collapse = action == "collapse";
+		var th = jq$(this);
+		if (collapse && !th.hasClass("collapsedcolumn")) {
+			TestCasePlayer.collapseColumn(th);
+		} else if (!collapse && th.hasClass("collapsedcolumn")) {
+			TestCasePlayer.expandColumn(th);
 		}
-		th.attr("title", "Collapse");
-		tds.filter("td").each(function() {
-			jq$(this).removeAttr("title");
-		});
+	});
+}
+	
+TestCasePlayer.registerClickableColumnHeaders = function() {
+
+	TestCasePlayer.toggelColumnStatus(jq$(this));
+}
+
+TestCasePlayer.toggelColumnStatus = function(th) {
+
+	var isCollapsed = th.hasClass("collapsedcolumn");
+	
+	if (isCollapsed) {
+		TestCasePlayer.expandColumn(th, true);
+	} else {
+		TestCasePlayer.collapseColumn(th, true);
 	}
 	
+}
+
+TestCasePlayer.getCollapseStatus = function(th) {
 	var collapsed = "";
 	th.siblings().each(function() {
 		if (jq$(this).hasClass("collapsedcolumn")) {
 			collapsed += jq$(this).attr("column") + "#";
 		}
 	});
-	if (!isCollapsed) collapsed += column;
-	
+	return collapsed;
+}
+
+TestCasePlayer.writeCollapseStatus = function(th, collapsed) {
 	var id = th.parents(".type_TestCasePlayer").first().attr("id");
 	var testCase = jq$("#" + id).find("select").find('[selected="selected"]').attr("value");
 	document.cookie = "columnstatus_" + id + "_" + testCase + "=" + collapsed;
+}
+
+TestCasePlayer.collapseColumn = function(th, animated) {
+	if (th.find("input").length > 0) return;
+
+	var column = th.attr("column");
 	
-	if (!isCollapsed) {
-		if (tds.length < 12) {	
-			// for performance reasons
-			tds.addClass("collapsedcolumn", 150, "linear");
-		} else {
-			tds.addClass("collapsedcolumn");
-		}
-		th.attr("title", "Expand " + jq$(this).text());
-		tds.filter("td").each(function() {
-			jq$(this).attr("title", jq$(this).text());
-		});
+	var tds = th.parents(".wikitable").first().find('[column="' + column + '"]');
+	
+	var collapsed = TestCasePlayer.getCollapseStatus(th);
+	collapsed += column;
+	TestCasePlayer.writeCollapseStatus(th, collapsed);
+	
+	if (tds.length < 12 && animated) {	
+		// for performance reasons
+		tds.addClass("collapsedcolumn", 150, "linear");
+	} else {
+		tds.addClass("collapsedcolumn");
 	}
+	th.attr("title", "Expand " + jq$(this).text());
+	tds.filter("td").each(function() {
+		jq$(this).attr("title", jq$(this).text());
+	});
+	
+}
+
+TestCasePlayer.expandColumn = function(th, animated) {
+	if (th.find("input").length > 0) return;
+
+	var column = th.attr("column");
+	
+	var tds = th.parents(".wikitable").first().find('[column="' + column + '"]');
+
+	if (tds.length < 12 && animated) {			
+		tds.removeClass("collapsedcolumn", 150, "linear");
+	} else {
+		tds.removeClass("collapsedcolumn");
+	}
+	th.attr("title", "Collapse");
+	tds.filter("td").each(function() {
+		jq$(this).removeAttr("title");
+	});
+	
+	var collapsed = TestCasePlayer.getCollapseStatus(th);
+	
+	TestCasePlayer.writeCollapseStatus(th, collapsed);
+	
 	
 }
 
@@ -66,7 +114,7 @@ TestCasePlayer.send = function(sessionid, casedate, name, topic) {
                 	action : 'none',
                 	fn : function(){
 			        	try {
-	                		KNOWWE.helper.observer.notify('update');
+			               	TestCasePlayer.update();
 			        	}
 			        	catch (e) { /*ignore*/ }
 			        	KNOWWE.core.util.updateProcessingState(-1);

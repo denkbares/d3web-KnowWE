@@ -42,7 +42,7 @@ public class TestCaseSTCSubtreeHandler extends SubtreeHandler<TestCaseSTCType> {
 		FileTestCaseProviderStorage testCaseProviderStorage = (FileTestCaseProviderStorage) section.getSectionStore().getObject(
 				article, TestCaseProviderStorage.KEY);
 		if (testCaseProviderStorage == null) {
-			testCaseProviderStorage = new STCTestCaseProviderStorage(article, fileNames,
+			testCaseProviderStorage = new STCTestCaseProviderStorage(article, section, fileNames,
 					section.getArticle());
 			section.getSectionStore().storeObject(article, TestCaseProviderStorage.KEY,
 					testCaseProviderStorage);

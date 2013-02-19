@@ -19,6 +19,7 @@
 package de.knowwe.testcases;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -108,9 +109,9 @@ public class TestCasePlayerRenderer implements Renderer {
 	}
 
 	private void renderSelectedTestCase(Section<?> section, UserContext user, Triple<TestCaseProvider, Section<?>, Article> selectedTriple, StringBuilder string) {
-		renderLinkToTestCase(selectedTriple, string);
-		renderDownloadLink(section, string);
-		string.append(Strings.maskHTML(renderToolSeparator()));
+		// renderLinkToTestCase(selectedTriple, string);
+		// renderDownloadLink(section, string);
+		// string.append(Strings.maskHTML(renderToolSeparator()));
 		TestCaseProvider provider = selectedTriple.getA();
 		renderProviderMessages(provider, string);
 		Session session = provider.getActualSession(user);
@@ -144,10 +145,10 @@ public class TestCasePlayerRenderer implements Renderer {
 	}
 
 	private void renderDownloadLink(Section<?> section, StringBuilder string) {
-
 		String download = " <a title='Download selected TestCase' href='javascript:window.location=\"action/DownloadCaseAction?playerid="
 				+ section.getID()
-				+ "&KWikiWeb=default_web\";'><img style='margin-bottom: -4px' src='KnowWEExtension/d3web/icon/download16.gif'></a>";
+				+
+				"&KWikiWeb=default_web\";'><img style='margin-bottom: -4px' src='KnowWEExtension/d3web/icon/download16.gif'></a>";
 		string.append(Strings.maskHTML(download));
 
 	}
@@ -163,7 +164,8 @@ public class TestCasePlayerRenderer implements Renderer {
 	private void renderLinkToTestCase(Triple<TestCaseProvider, Section<?>, Article> selectedTriple, StringBuilder string) {
 		String link = " <a title='Go to selected TestCase' href='"
 				+ Strings.maskHTML(KnowWEUtils.getURLLink(selectedTriple.getB()))
-				+ "'><img src='KnowWEExtension/testcaseplayer/icon/testcaselink.png'></a>";
+				+
+				"'><img src='KnowWEExtension/testcaseplayer/icon/testcaselink.png'></a>";
 		string.append(Strings.maskHTML(link));
 	}
 
@@ -276,9 +278,11 @@ public class TestCasePlayerRenderer implements Renderer {
 		tableModel.addCell(0, 0, stopButton, 1);
 		tableModel.addCell(0, 1, "Time", "Time".length());
 		int column = 2;
+		tableModel.setFirstFinding(2);
 		for (Question q : usedQuestions) {
 			tableModel.addCell(0, column++, q.getName(), q.getName().length());
 		}
+		tableModel.setLastFinding(column - 1);
 		tableModel.addCell(0, column++, "Checks", "Checks".length());
 		renderObservationQuestionsHeader(additionalQuestions,
 				manager, tableModel, column);
@@ -295,7 +299,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		NavigationParameters tableParameters = new NavigationParameters();
 		String selectedSizeString = KnowWEUtils.getCookie(sizeKey, "10", user);
 		String fromString = KnowWEUtils.getCookie(fromKey, "1", user);
-		
+
 		tableParameters.size = Integer.parseInt(selectedSizeString);
 		tableParameters.from = 1;
 		if (fromString != null) {
@@ -561,10 +565,10 @@ public class TestCasePlayerRenderer implements Renderer {
 	private Triple<TestCaseProvider, Section<?>, Article> getAndRenderTestCaseSelection(Section<?> section, UserContext user, List<Triple<TestCaseProvider, Section<?>, Article>> providers, StringBuilder string) {
 		String key = generateSelectedTestCaseCookieKey(section);
 		String selectedID = getSelectedTestCaseId(section, user);
-		StringBuffer selectsb = new StringBuffer();
+		StringBuffer selectBuilder = new StringBuffer();
 		// if no pair is selected, use the first
 		Triple<TestCaseProvider, Section<?>, Article> selectedTriple = null;
-		selectsb.append("<span class=fillText>Case </span>"
+		selectBuilder.append("<span class=fillText>Case </span>"
 				+ "<select id=selector" + section.getID()
 				+ " onchange=\"TestCasePlayer.change('" + key
 				+ "', this.options[this.selectedIndex].value);\">");
@@ -580,20 +584,25 @@ public class TestCasePlayerRenderer implements Renderer {
 				}
 				String id = getTestCaseId(triple);
 				String displayedID = (unique) ? triple.getA().getName() : id;
+
+				List<String> attributes = new ArrayList<String>();
+				attributes.add("caselink");
+				attributes.add(KnowWEUtils.getURLLink(triple.getB()));
+				attributes.add("value");
+				attributes.add(id);
 				if (id.equals(selectedID)) {
-					selectsb.append("<option value='" + id + "' selected='selected'>"
-							+ displayedID + "</option>");
+					attributes.add("selected");
+					attributes.add("selected");
 					selectedTriple = triple;
 				}
-				else {
-					selectsb.append("<option value='" + id + "'>"
-							+ displayedID + "</option>");
-				}
+				String option = Strings.getHtmlElement("option", displayedID,
+						attributes.toArray(new String[attributes.size()]));
+				selectBuilder.append(option);
 			}
 		}
-		selectsb.append("</select>");
+		selectBuilder.append("</select>");
 		if (selectedTriple != null) {
-			string.append(Strings.maskHTML(selectsb.toString()));
+			string.append(Strings.maskHTML(selectBuilder.toString()));
 		}
 		else {
 			Message notValidTestCaseError = Messages.warning(

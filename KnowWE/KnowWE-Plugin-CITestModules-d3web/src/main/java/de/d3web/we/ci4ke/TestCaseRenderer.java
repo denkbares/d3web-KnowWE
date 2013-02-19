@@ -46,7 +46,7 @@ public class TestCaseRenderer implements ObjectNameRenderer {
 		String web = Environment.DEFAULT_WEB;
 		Set<String> allPackageNames = KnowWEUtils.getPackageManager(web).getAllPackageNames();
 		List<Triple<TestCaseProvider, Section<?>, Article>> testCaseProviders = TestCaseUtils.getTestCaseProviders(
-				allPackageNames.toArray(new String[allPackageNames.size()]), web);
+				web, allPackageNames.toArray(new String[allPackageNames.size()]));
 		for (Triple<TestCaseProvider, Section<?>, Article> triple : testCaseProviders) {
 			if (triple.getA().getName().equals(objectName)) {
 				String link = "<a href='"

@@ -29,8 +29,10 @@ import de.d3web.empiricaltesting.TestPersistence;
 import de.d3web.testcase.stc.STCWrapper;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.AttachmentTestCaseProvider;
 
 /**
@@ -41,8 +43,8 @@ import de.knowwe.testcases.AttachmentTestCaseProvider;
  */
 public class STCTestCaseProvider extends AttachmentTestCaseProvider {
 
-	public STCTestCaseProvider(Article article, WikiAttachment attachment) {
-		super(article, attachment);
+	public STCTestCaseProvider(Article article, Section<? extends DefaultMarkupType> prefixProvidingSection, WikiAttachment attachment) {
+		super(article, prefixProvidingSection, attachment);
 	}
 
 	@Override
@@ -64,8 +66,8 @@ public class STCTestCaseProvider extends AttachmentTestCaseProvider {
 			else if (cases.size() != 1) {
 				messages.add(Messages.error("The attached SequentialTestCase file "
 						+ attachment.getFileName()
-							+ " has " + cases.size()
-							+ " cases. Only files with exactly one case are allowed."));
+						+ " has " + cases.size()
+						+ " cases. Only files with exactly one case are allowed."));
 				return;
 			}
 			else {

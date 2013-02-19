@@ -24,6 +24,8 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.testcases.MatchingAttachmentsRenderer;
 import de.knowwe.testcases.ProviderRefreshRenderer;
+import de.knowwe.testcases.prefix.PrefixTestCaseRenderer;
+import de.knowwe.testcases.prefix.PrefixedTestCaseProvider;
 
 /**
  * Type for TestCaseSessionRecord Markup
@@ -43,12 +45,13 @@ public class TestCaseSessionRecordType extends DefaultMarkupType {
 		MARKUP.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 		MARKUP.addAnnotationRenderer(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				StyleRenderer.ANNOTATION);
+		MARKUP.addAnnotation(PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME, false);
 	}
 
 	public TestCaseSessionRecordType() {
 		super(MARKUP);
 		addSubtreeHandler(new TestCaseSessionRecordSubtreeHandler());
-		this.setRenderer(new ProviderRefreshRenderer());
+		this.setRenderer(new PrefixTestCaseRenderer(new ProviderRefreshRenderer()));
 		DefaultMarkupType.getContentType(this).setRenderer(new MatchingAttachmentsRenderer());
 	}
 

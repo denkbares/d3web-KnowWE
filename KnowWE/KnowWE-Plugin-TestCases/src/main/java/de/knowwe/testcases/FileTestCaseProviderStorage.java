@@ -32,11 +32,13 @@ import java.util.logging.Logger;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.d3web.resource.ResourceHandler;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * Abstract TestCaseProviderStorage that provides common methods for Storages
@@ -50,11 +52,13 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 	private final Map<String, List<AttachmentTestCaseProvider>> regexMap = new HashMap<String, List<AttachmentTestCaseProvider>>();
 	private final Article article;
 	protected final List<Message> messages = new LinkedList<Message>();
-	protected final Article sectionArticle;;
+	protected final Article sectionArticle;
+	protected final Section<? extends DefaultMarkupType> prefixProvidginSection;
 
-	public FileTestCaseProviderStorage(Article compilingArticle, String[] regexes, Article sectionArticle) {
+	public FileTestCaseProviderStorage(Article compilingArticle, Section<? extends DefaultMarkupType> prefixProvidingSection, String[] regexes) {
 		this.article = compilingArticle;
-		this.sectionArticle = sectionArticle;
+		this.sectionArticle = prefixProvidingSection.getArticle();
+		this.prefixProvidginSection = prefixProvidingSection;
 		update(regexes);
 	}
 
@@ -137,7 +141,8 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 				}
 				if (!exists) {
 					// provider has to be newly created
-					actualList.add(createTestCaseProvider(article, attachment));
+					actualList.add(createTestCaseProvider(article, prefixProvidginSection,
+							attachment));
 				}
 			}
 			regexMap.put(fileRegex, actualList);
@@ -145,7 +150,7 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 
 	}
 
-	protected abstract AttachmentTestCaseProvider createTestCaseProvider(Article article, WikiAttachment attachment);
+	protected abstract AttachmentTestCaseProvider createTestCaseProvider(Article article, Section<? extends DefaultMarkupType> prefixDefiningSection, WikiAttachment attachment);
 
 	@Override
 	public Collection<Message> getMessages() {

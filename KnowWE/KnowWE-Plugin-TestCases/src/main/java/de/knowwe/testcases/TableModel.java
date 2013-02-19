@@ -42,6 +42,8 @@ public class TableModel {
 	private int rowCount = 0;
 	private int columnCount = 0;
 	private String name;
+	private int firstFinding = 0;
+	private int lastFinding = 0;
 
 	public void addCell(int row, int column, String value, int width) {
 		rowCount = Math.max(rowCount, row);
@@ -149,6 +151,7 @@ public class TableModel {
 				attributes.add("title");
 				if (type.equals("th")) {
 					attributes.add("Expand " + cell);
+					setType(column, attributes);
 				}
 				else {
 					attributes.add(cell);
@@ -158,12 +161,20 @@ public class TableModel {
 				if (type.equals("th")) {
 					attributes.add("title");
 					attributes.add("Collapse");
+					setType(column, attributes);
 				}
 			}
 		}
 		String[] attrArray = attributes.toArray(new String[attributes.size()]);
 		String cellDiv = Strings.getHtmlElement("div", cell);
 		string.append(Strings.getHtmlElement(type, cellDiv, attrArray));
+	}
+
+	private void setType(int column, ArrayList<String> attributes) {
+		if (column >= firstFinding && column <= lastFinding) {
+			attributes.add("type");
+			attributes.add("finding");
+		}
 	}
 
 	private Set<Integer> getCollapsedColumns(Section<?> section, UserContext user) {
@@ -201,5 +212,14 @@ public class TableModel {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public void setLastFinding(int column) {
+		this.lastFinding = column;
+	}
+
+	public void setFirstFinding(int i) {
+		this.firstFinding = i;
+
 	}
 }

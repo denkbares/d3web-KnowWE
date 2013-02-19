@@ -27,8 +27,11 @@ import de.d3web.testcase.model.TestCase;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.testcases.prefix.PrefixedTestCaseProvider;
 
 /**
  * Capsules a {@link TestCase}
@@ -36,21 +39,27 @@ import de.knowwe.core.user.UserContext;
  * @author Markus Friedrich (denkbares GmbH)
  * @created 27.02.2012
  */
-public class SingleTestCaseProvider implements TestCaseProvider {
+public class SingleTestCaseProvider extends PrefixedTestCaseProvider {
 
-	private TestCase testCase;
+	private final TestCase testCase;
 	private final Article article;
 	private final String name;
 
-	public SingleTestCaseProvider(TestCase testCase, Article article, String name) {
-		super();
+	public SingleTestCaseProvider(Article article, Section<? extends DefaultMarkupType> prefixDefiningSection, TestCase testCase, String name) {
+		super(prefixDefiningSection);
 		this.testCase = testCase;
 		this.article = article;
 		this.name = name;
+
 	}
 
+	// public SingleTestCaseProvider(Article article, TestCase testCase, String
+	// name) {
+	// this(article, null, testCase, name);
+	// }
+
 	@Override
-	public TestCase getTestCase() {
+	public TestCase getActualTestCase() {
 		return testCase;
 	}
 

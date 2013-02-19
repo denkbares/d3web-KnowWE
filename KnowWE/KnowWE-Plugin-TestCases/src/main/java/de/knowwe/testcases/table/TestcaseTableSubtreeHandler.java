@@ -110,7 +110,7 @@ public class TestcaseTableSubtreeHandler extends SubtreeHandler<TestcaseTable> {
 			wrapper.addCheck(rtc, conditionsForRTC.get(rtc));
 		}
 		SingleTestCaseProvider provider = new SingleTestCaseProvider(
-				wrapper, article, name);
+				article, Sections.findAncestorOfType(s, DefaultMarkupType.class), wrapper, name);
 
 		// append Storage of the TestCaseProvider
 		// to the section of the default markup

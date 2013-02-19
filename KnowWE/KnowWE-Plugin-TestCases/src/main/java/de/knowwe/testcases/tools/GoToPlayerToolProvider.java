@@ -16,7 +16,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.testcases;
+package de.knowwe.testcases.tools;
 
 import java.util.List;
 import java.util.Set;
@@ -28,6 +28,9 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.testcases.TestCasePlayerRenderer;
+import de.knowwe.testcases.TestCasePlayerType;
+import de.knowwe.testcases.TestCaseProviderStorage;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
@@ -72,7 +75,7 @@ public class GoToPlayerToolProvider implements ToolProvider {
 							return new Tool[] { new DefaultTool(
 									null,
 									"Show in Player",
-									"Opens this testcase in an associated test case player",
+									"Opens this test case in an associated test case player",
 									"TestCasePlayer.change('"
 											+ TestCasePlayerRenderer.generateSelectedTestCaseCookieKey(DefaultMarkupType.getContentSection(sectionInPackage))
 											+ "', '" + value + "');"

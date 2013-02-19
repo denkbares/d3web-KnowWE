@@ -19,7 +19,9 @@
 package de.knowwe.testcases.stc;
 
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.AttachmentTestCaseProvider;
 import de.knowwe.testcases.FileTestCaseProviderStorage;
 
@@ -30,13 +32,13 @@ import de.knowwe.testcases.FileTestCaseProviderStorage;
  */
 public class STCTestCaseProviderStorage extends FileTestCaseProviderStorage {
 
-	public STCTestCaseProviderStorage(Article article, String[] regexes, Article sectionArticle) {
-		super(article, regexes, sectionArticle);
+	public STCTestCaseProviderStorage(Article compilingArticle, Section<? extends DefaultMarkupType> prefixProvidingSection, String[] regexes, Article sectionArticle) {
+		super(compilingArticle, prefixProvidingSection, regexes);
 	}
 
 	@Override
-	protected AttachmentTestCaseProvider createTestCaseProvider(Article article, WikiAttachment attachment) {
-		return new STCTestCaseProvider(article, attachment);
+	protected AttachmentTestCaseProvider createTestCaseProvider(Article article, Section<? extends DefaultMarkupType> prefixProvidingSection, WikiAttachment attachment) {
+		return new STCTestCaseProvider(article, prefixProvidingSection, attachment);
 	}
 
 }
