@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.d3web.core.inference.PSAction;
+import de.d3web.core.inference.PSMethod;
 import de.d3web.core.inference.PropagationEntry;
 import de.d3web.core.inference.PropagationListener;
 import de.d3web.core.knowledge.InfoStore;
@@ -62,6 +63,10 @@ public class DiaFluxValueTrace implements SessionObject {
 		@Override
 		public void propagationFinished(Session session, Collection<PropagationEntry> entries) {
 		}
+
+		@Override
+		public void propagating(Session session, PSMethod psMethod, Collection<PropagationEntry> entries) {
+		};
 
 		@Override
 		public void postPropagationStarted(Session session, Collection<PropagationEntry> entries) {

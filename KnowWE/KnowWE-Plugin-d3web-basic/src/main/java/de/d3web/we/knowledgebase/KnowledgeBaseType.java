@@ -21,6 +21,7 @@ package de.d3web.we.knowledgebase;
 
 import java.util.Collection;
 
+import de.d3web.core.inference.LoopTerminator;
 import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
@@ -86,6 +87,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_STATUS, false);
 		MARKUP.addAnnotation(ANNOTATION_AFFILIATION, false);
 		MARKUP.addContentType(new KnowledgeBaseCompileType());
+		LoopTerminator.getInstance().attachToNewSessions();
 	}
 
 	public KnowledgeBaseType() {
