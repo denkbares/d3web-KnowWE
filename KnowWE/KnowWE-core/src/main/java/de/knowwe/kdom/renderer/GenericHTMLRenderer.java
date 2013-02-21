@@ -61,18 +61,18 @@ public class GenericHTMLRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> sec, UserContext user, RenderResult string) {
-		string.appendHTML("<").append(tagName);
+		string.appendHtml("<").append(tagName);
 
 		if (attributes != null && attributes.length > 0) {
 			string.append(" ");
 			for (int i = 0; i < attributes.length; i += 2) {
-				string.append(attributes[i]).appendHTML("=\"");
+				string.append(attributes[i]).appendHtml("=\"");
 
 				if (i < attributes.length && attributes[i + 1] != null) {
 					string.append(attributes[i + 1].replace("\"", "&quot;"));
 				}
 
-				string.appendHTML("\"");
+				string.appendHtml("\"");
 
 				if ((i + 2) < attributes.length) {
 					string.append(" ");
@@ -80,15 +80,14 @@ public class GenericHTMLRenderer implements Renderer {
 			}
 		}
 
-		string.appendHTML(">");
+		string.appendHtml(">");
 		renderContent(sec, user, string);
-		string.appendHTML("</span>");
+		string.appendHtml("</span>");
 	}
 
 	protected void renderContent(Section<?> section, UserContext user, RenderResult string) {
 		RenderResult builder = new RenderResult(user);
 		DelegateRenderer.getInstance().render(section, user, builder);
-		builder.maskJSPWikiMarkup();
-		string.append(builder);
+		string.appendJSPWikiMarkup(builder);
 	}
 }

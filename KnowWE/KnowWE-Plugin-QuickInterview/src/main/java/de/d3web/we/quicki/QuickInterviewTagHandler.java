@@ -63,9 +63,9 @@ public class QuickInterviewTagHandler extends AbstractHTMLTagHandler {
 		String iv = QuickInterviewAction.callQuickInterviewRenderer(user);
 		if (iv == null) return;
 
-		result.appendHTML("<div id='quickinterview'>");
-		result.appendHTML(iv);
-		result.appendHTML("</div>");
+		result.appendHtml("<div id='quickinterview'>");
+		result.appendHtml(iv);
+		result.appendHtml("</div>");
 
 	}
 }

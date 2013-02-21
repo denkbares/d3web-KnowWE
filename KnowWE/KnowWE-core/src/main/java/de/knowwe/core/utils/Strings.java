@@ -40,7 +40,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
-import de.knowwe.core.kdom.rendering.RenderResult;
 
 public class Strings {
 
@@ -849,55 +848,6 @@ public class Strings {
 		finally {
 			inStream.close();
 		}
-	}
-
-	/**
-	 * Appends a complete and masked HTML element without having to fiddle with
-	 * strings and quoting. Just set tag name, content and the attributes.
-	 * Attributes need to be given in pairs. First the name of the attribute,
-	 * second the content of the attribute.
-	 * 
-	 * 
-	 * @created 05.02.2013
-	 * @param result the {@link RenderResult} the element will be appended to
-	 * @param tag the tag name of the HTML element
-	 * @param content the content of the HTML element
-	 * @param attributes the attributes of the HTML element: the odd elements
-	 *        are the attribute names and the even elements the attribute
-	 *        contents
-	 */
-	public static void appendHtmlElement(RenderResult result, String tag, String content, String... attributes) {
-		appendHtmlTag(result, tag, attributes);
-		result.append(content);
-		result.appendHTML("</" + tag + ">");
-	}
-
-	/**
-	 * Appends an opening and masked HTML element without having to fiddle with
-	 * strings and quoting. Just set tag name and the attributes. Attributes
-	 * need to be given in pairs. First the name of the attribute, second the
-	 * content of the attribute.
-	 * 
-	 * 
-	 * @created 05.02.2013
-	 * @param result the {@link RenderResult} the tag will be appended to
-	 * @param tag the tag name of the HTML element
-	 * @param attributes the attributes of the HTML element: the odd elements
-	 *        are the attribute names and the even elements the attribute
-	 *        contents
-	 * @return an opening and masked HTML element with attributes
-	 */
-	public static void appendHtmlTag(RenderResult result, String tag, String... attributes) {
-		result.appendHTML("<" + tag);
-		for (int i = 0; i + 2 <= attributes.length; i += 2) {
-			result.appendHTML(getAttribute(attributes[i], attributes[i + 1]));
-		}
-		result.appendHTML(">");
-	}
-
-	private static String getAttribute(String attributeName, String attribute) {
-
-		return " " + attributeName + "=\"" + encodeHtml(attribute) + "\"";
 	}
 
 }

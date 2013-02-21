@@ -66,8 +66,8 @@ public class CompileFlag extends DefaultMarkupType {
 				DelegateRenderer.getInstance().render(sec, user, string);
 				return;
 			}
-			string.appendHTML("<div id=\"knowledge-panel\" class=\"panel\">");
-			string.appendHTML("<h3>" + "Compile: " + sec.getText() +
+			string.appendHtml("<div id=\"knowledge-panel\" class=\"panel\">");
+			string.appendHtml("<h3>" + "Compile: " + sec.getText() +
 					"</h3><div>");
 			for (Section<?> child : packageReferences) {
 				if (child.get() instanceof SinglePackageReference) {
@@ -75,7 +75,7 @@ public class CompileFlag extends DefaultMarkupType {
 							user, string);
 				}
 			}
-			string.appendHTML("</div></div>");
+			string.appendHtml("</div></div>");
 		}
 
 	}

@@ -94,14 +94,14 @@ public class ValueTooltipRenderer implements Renderer {
 		if (tooltip == null) return;
 		tooltip = Strings.maskJSPWikiMarkup(tooltip.replace('\'', '"'));
 
-		string.appendHTML("<span");
+		string.appendHtml("<span");
 		string.append(" title='").append(tooltip).append("'");
-		string.appendHTML(">");
+		string.appendHtml(">");
 	}
 
 	private void postRenderTooltip(String tooltip, RenderResult string) {
 		if (tooltip == null) return;
-		string.appendHTML("</span>");
+		string.appendHtml("</span>");
 	}
 
 }

@@ -7,7 +7,7 @@ public class ProcessingStateAppendHandler implements PageAppendHandler {
 
 	@Override
 	public void append(String web, String topic, UserContext user, RenderResult result) {
-		result.appendHTML("<div id='KnowWEProcessingIndicator' class='ajaxloader' state='idle'>"
+		result.appendHtml("<div id='KnowWEProcessingIndicator' class='ajaxloader' state='idle'>"
 				+ "<img src='KnowWEExtension/images/ajax-100.gif'></img>"
 				+ "</div>");
 	}

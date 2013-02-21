@@ -49,21 +49,21 @@ public class ObjectInfoLinkRenderer implements Renderer {
 
 		String encodedObjectName = Strings.encodeURL(objectName);
 		if (pageExists) {
-			string.appendHTML("<a href=\"Wiki.jsp?page=" + encodedObjectName + "\">");
+			string.appendHtml("<a href=\"Wiki.jsp?page=" + encodedObjectName + "\">");
 			string.append(b);
-			string.appendHTML("</a>");
-			string.appendHTML(" <a href=\"Wiki.jsp?page=" + encodedObjectName + "\">"
+			string.appendHtml("</a>");
+			string.appendHtml(" <a href=\"Wiki.jsp?page=" + encodedObjectName + "\">"
 					+ "<img style='vertical-align:middle;' title='-> Wikipage "
 					+ encodedObjectName
 					+ "' src='KnowWEExtension/images/dt_icon_premises.gif' height='11' /></a>");
 		}
 		else {
-			string.appendHTML(
+			string.appendHtml(
 					"<a href=\"Wiki.jsp?page=ObjectInfoPage&objectname="
 							+ encodedObjectName
 							+ "\">");
 			string.append(b);
-			string.appendHTML("</a>");
+			string.appendHtml("</a>");
 		}
 	}
 }

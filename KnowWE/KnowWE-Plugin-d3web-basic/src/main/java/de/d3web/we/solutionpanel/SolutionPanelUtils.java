@@ -69,16 +69,16 @@ public class SolutionPanelUtils {
 
 		// fetch derivation state icon
 
-		content.appendHTML("<span class=\"SOLUTION\">");
+		content.appendHtml("<span class=\"SOLUTION\">");
 		if (endUser) {
 			// show solution in end user mode
 			if (prompt == null && description != null) {
 				label = description;
 			}
 			if (link != null) {
-				content.appendHTML("<a href='" + Strings.encodeHtml(link) + "'>");
+				content.appendHtml("<a href='" + Strings.encodeHtml(link) + "'>");
 				content.append(label);
-				content.appendHTML("</a>");
+				content.appendHtml("</a>");
 			}
 			else {
 				content.append(label);
@@ -87,17 +87,17 @@ public class SolutionPanelUtils {
 		else {
 			// show solution in developer mode
 			if (!tooltip.isEmpty()) tooltip = "title='" + tooltip.replace('\'', '"') + "' ";
-			content.appendHTML("<a href='" + Strings.encodeHtml(infoLink) + "'>");
+			content.appendHtml("<a href='" + Strings.encodeHtml(infoLink) + "'>");
 			content.append(label);
-			content.appendHTML("</a>");
+			content.appendHtml("</a>");
 
 			if (link != null) {
-				content.appendHTML(" (" + "<a href='" + Strings.encodeHtml(link)
+				content.appendHtml(" (" + "<a href='" + Strings.encodeHtml(link)
 						+ "' target='solutionLink'>link</a>"
 						+ ")");
 			}
 		}
-		content.appendHTML("</span>\n");
+		content.appendHtml("</span>\n");
 	}
 
 	public static void appendImage(Solution solution, Session session, RenderResult content) {
@@ -118,7 +118,7 @@ public class SolutionPanelUtils {
 	}
 
 	private static void appendImage(String filename, String altText, RenderResult content) {
-		content.appendHTML(" <img src='" + filename
+		content.appendHtml(" <img src='" + filename
 				+ "' id='sstate-update' class='pointer'"
 				+ " align='top' alt='" + Strings.encodeHtml(altText) + "'"
 				+ " title='" + Strings.encodeHtml(altText) + "' "
@@ -130,11 +130,11 @@ public class SolutionPanelUtils {
 		// when no intlz is available
 		// buffer.append("* ");
 		appendImage("KnowWEExtension/images/fsp_abstraction.gif", "Abstraction", buffer);
-		buffer.appendHTML("<span class=\"ABSTRACTION\">");
+		buffer.appendHtml("<span class=\"ABSTRACTION\">");
 		// render the abstraction question with value
 		Value value = D3webUtils.getValueNonBlocking(session, question);
 		if (value == null) {
-			buffer.appendHTML("<i style='color:grey'>value in calculation, please reload later</i>");
+			buffer.appendHtml("<i style='color:grey'>value in calculation, please reload later</i>");
 		}
 		else {
 			buffer.append(question.getName()
@@ -148,7 +148,7 @@ public class SolutionPanelUtils {
 			buffer.append(" " + unit);
 		}
 
-		buffer.appendHTML("</span>" + "\n");
+		buffer.appendHtml("</span>" + "\n");
 	}
 
 	/**

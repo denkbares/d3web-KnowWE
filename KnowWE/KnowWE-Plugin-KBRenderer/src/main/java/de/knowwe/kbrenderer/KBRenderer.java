@@ -98,11 +98,11 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 
 		ResourceBundle rb = D3webUtils.getD3webBundle(user);
 
-		text.appendHTML(
+		text.appendHtml(
 				"<div id=\"knowledge-panel\" class=\"panel\"><h3>"
 						+ rb.getString("KnowWE.KBRenderer.header") + "</h3>\n\n");
-		text.appendHTML("<div>");
-		text.appendHTML("<p>");
+		text.appendHtml("<div>");
+		text.appendHtml("<p>");
 		if (kb != null) {
 
 			/*
@@ -113,7 +113,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			boolean appendedSolutionsHeadline = false;
 			if (diagnosis.getName().equals("P000")) {
 				if (diagnosis.getChildren().length > 0) {
-					text.appendHTML("<strong>"
+					text.appendHtml("<strong>"
 							+ rb.getString("KnowWE.KBRenderer.solutions")
 							+ ":</strong><p></p>\n\n");
 					appendedSolutionsHeadline = true;
@@ -123,16 +123,16 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 				for (TerminologyObject t1 : getRoots) {
 					// Look for children @ depth 1
 					if (t1.getParents().length == 1) {
-						text.appendHTML("<span style=\"color: rgb(150, 110, 120);\">");
+						text.appendHtml("<span style=\"color: rgb(150, 110, 120);\">");
 						text.append(t1.getName());
-						text.appendHTML("</span><br/>\n");
+						text.appendHtml("</span><br/>\n");
 						// Get their childrens and build up the tree recursively
 						text.append(getAll(t1.getChildren(), 1, topic, user));
-						text.appendHTML("<br/>\n");
+						text.appendHtml("<br/>\n");
 					}
 				}
 			}
-			text.appendHTML("<p></p>");
+			text.appendHtml("<p></p>");
 
 			/*
 			 * Render Rules
@@ -151,9 +151,9 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 						duplRules.add(r);
 						if (!appendedRulesHeadline) {
 							if (appendedSolutionsHeadline) {
-								text.appendHTML("<br/>\n");
+								text.appendHtml("<br/>\n");
 							}
-							text.appendHTML("<strong>"
+							text.appendHtml("<strong>"
 									+ rb.getString("KnowWE.KBRenderer.rules")
 									+ ":</strong><p></p>\n\n");
 							appendedRulesHeadline = true;
@@ -169,7 +169,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			for (de.d3web.core.inference.Rule r : sort) {
 				text.append(renderRule(r, parameterMap, user));
 			}
-			text.appendHTML("<p></p>\n");
+			text.appendHtml("<p></p>\n");
 			renderedRulesCache = new HashMap<Rule, String>();
 
 			/*
@@ -292,7 +292,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 						r.getException(), VerbalizationManager.RenderingFormat.PLAIN_TEXT,
 						parameterMap));
 			}
-			text.appendHTML("<br/>\n");
+			text.appendHtml("<br/>\n");
 
 			renderedRule = text.toStringRaw();
 			renderedRulesCache.put(r, renderedRule);
@@ -351,9 +351,9 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 					for (int i = 0; i < depth + 1; i++) {
 						result.append("-");
 					}
-					result.appendHTML("<span style=\"color: rgb(0, 0, 255);\">");
+					result.appendHtml("<span style=\"color: rgb(0, 0, 255);\">");
 					result.append(c1.toString());
-					result.appendHTML("</span><br/>\n");
+					result.appendHtml("</span><br/>\n");
 				}
 			}
 			else if (t1 instanceof QuestionText) {
@@ -366,15 +366,15 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 				result.append(getTermHTML(prompt, property, t1, "[date]", title, user));
 			}
 			else if (t1 instanceof Solution) {
-				result.appendHTML("<span style=\"color: rgb(150, 110, 120);\">");
+				result.appendHtml("<span style=\"color: rgb(150, 110, 120);\">");
 				result.append(VerbalizationManager.getInstance().verbalize(t1,
 						VerbalizationManager.RenderingFormat.HTML));
-				result.appendHTML("</span><br/>\n");
+				result.appendHtml("</span><br/>\n");
 			}
 			else if (t1 instanceof QContainer) {
-				result.appendHTML("<span style=\"color: rgb(128, 128, 0);\">");
+				result.appendHtml("<span style=\"color: rgb(128, 128, 0);\">");
 				result.append(t1.getName());
-				result.appendHTML("</span><br/>");
+				result.appendHtml("</span><br/>");
 			}
 			// Reset the prompt & property buffer for every object
 			prompt = new StringBuffer();
@@ -397,9 +397,9 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 		RenderResult builder = new RenderResult(user);
 
 		termDefiningSection.get().getRenderer().render(termDefiningSection, user, builder);
-		builder.appendHTML("<span style=\"color: rgb(125, 80, 102);\"> ");
+		builder.appendHtml("<span style=\"color: rgb(125, 80, 102);\"> ");
 		builder.append(typeDeclaration + " " + property);
-		builder.appendHTML(" </span><br/>\n");
+		builder.appendHtml(" </span><br/>\n");
 
 		return builder.toStringRaw();
 	}

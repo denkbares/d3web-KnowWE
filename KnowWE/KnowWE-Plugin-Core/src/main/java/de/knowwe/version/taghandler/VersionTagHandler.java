@@ -102,7 +102,7 @@ public class VersionTagHandler extends AbstractHTMLTagHandler {
 			html.append("Invalid build metadata type. Valid types are: chuck, buildnumber, buildtag and buildtype.");
 		}
 
-		result.appendHTML(html.toString());
+		result.appendHtml(html.toString());
 	}
 
 	@Override

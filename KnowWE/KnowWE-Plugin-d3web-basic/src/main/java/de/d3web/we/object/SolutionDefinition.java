@@ -99,7 +99,7 @@ public abstract class SolutionDefinition
 				if (solution != null) {
 					Rating state = session.getBlackboard().getRating(solution);
 
-					string.appendHTML("<span style=\"background-color:");
+					string.appendHtml("<span style=\"background-color:");
 					if (state.hasState(State.ESTABLISHED)) {
 						string.append(StyleRenderer.CONDITION_FULLFILLED);
 					}
@@ -107,15 +107,15 @@ public abstract class SolutionDefinition
 						string.append(StyleRenderer.CONDITION_FALSE);
 					}
 					else {
-						string.appendHTML(" rgb()");
+						string.appendHtml(" rgb()");
 					}
-					string.appendHTML(";\">");
+					string.appendHtml(";\">");
 				}
 			}
 
 			new ObjectInfoLinkRenderer(StyleRenderer.SOLUTION).render(sec, user,
 					string);
-			string.appendHTML("</span>");
+			string.appendHtml("</span>");
 		}
 	}
 

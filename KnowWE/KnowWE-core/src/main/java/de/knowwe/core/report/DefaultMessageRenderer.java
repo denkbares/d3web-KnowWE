@@ -54,13 +54,13 @@ public class DefaultMessageRenderer implements MessageRenderer {
 
 	@Override
 	public void postRenderMessage(Message m, UserContext user, String source, RenderResult result) {
-		result.appendHTML("</span>");
+		result.appendHtml("</span>");
 	}
 
 	@Override
 	public void preRenderMessage(Message m, UserContext user, String source, RenderResult result) {
 
-		result.appendHTML("<span");
+		result.appendHtml("<span");
 		String tooltip = Strings.maskJSPWikiMarkup(m.getVerbalization());
 		if (tooltip != null) {
 			if (source != null && !source.isEmpty()) {
@@ -76,7 +76,7 @@ public class DefaultMessageRenderer implements MessageRenderer {
 			result.append(" style='").append(cssStyle).append("'");
 		}
 
-		result.appendHTML(">");
+		result.appendHtml(">");
 
 	}
 

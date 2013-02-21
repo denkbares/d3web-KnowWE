@@ -93,7 +93,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		List<Triple<TestCaseProvider, Section<?>, Article>> providers =
 				de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(playerSection);
 
-		string.appendHTML("<div id='" + section.getID() + "'>");
+		string.appendHtml("<div id='" + section.getID() + "'>");
 
 		if (providers.size() == 0) {
 			renderNoProviderWarning(playerSection, string);
@@ -105,7 +105,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				renderSelectedTestCase(section, user, selectedTriple, string);
 			}
 		}
-		string.appendHTML("</div>");
+		string.appendHtml("</div>");
 		result.append(string.toStringRaw());
 	}
 
@@ -250,14 +250,14 @@ public class TestCasePlayerRenderer implements Renderer {
 	}
 
 	private void renderTestCaseHeader(Section<?> section, UserContext user, TestCase testCase, Collection<Date> chronology, NavigationParameters navigatorParameters, RenderResult string) {
-		string.appendHTML("<span class='fillText'> Start: </span>");
+		string.appendHtml("<span class='fillText'> Start: </span>");
 		if (testCase.getStartDate().getTime() == 0) {
 			string.append("---");
 		}
 		else {
 			string.append(dateFormat.format(testCase.getStartDate()));
 		}
-		string.appendHTML(renderToolSeparator());
+		string.appendHtml(renderToolSeparator());
 
 		string.append(
 				renderTableSizeSelector(section, user, navigatorParameters.size,
@@ -280,7 +280,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				"KNOWWE.plugin.d3webbasic.actions.resetSession('" + kbArticle
 						+ "')", user);
 		RenderResult stopButtonResult = new RenderResult(tableModel.getUserContext());
-		stopButtonResult.appendHTML(stopButton);
+		stopButtonResult.appendHtml(stopButton);
 		tableModel.addCell(0, 0, stopButtonResult, 1);
 		tableModel.addCell(0, 1, "Time", "Time".length());
 		int column = 2;
@@ -365,10 +365,10 @@ public class TestCasePlayerRenderer implements Renderer {
 				TestCaseUtils.checkValues(errors, q, finding.getValue());
 				if (!errors.isEmpty()) {
 					RenderResult errorResult = new RenderResult(tableModel.getUserContext());
-					errorResult.appendHTML("<div style='background-color:"
+					errorResult.appendHtml("<div style='background-color:"
 							+ StyleRenderer.CONDITION_FALSE + "'>");
 					errorResult.append(findingString);
-					errorResult.appendHTML("</div>");
+					errorResult.appendHtml("</div>");
 					findingString = errorResult.toStringRaw();
 				}
 				tableModel.addCell(row, column, findingString,
@@ -405,15 +405,15 @@ public class TestCasePlayerRenderer implements Renderer {
 				sb.append(questionString);
 			}
 			else {
-				sb.appendHTML("<span style='color:silver'>");
+				sb.appendHtml("<span style='color:silver'>");
 				sb.append(questionString);
-				sb.appendHTML("</span>");
+				sb.appendHtml("</span>");
 			}
 			Set<String> copy = new LinkedHashSet<String>(additionalQuestions);
 			copy.remove(questionString);
 			String input = " <input type=\"button\" value=\"-\" onclick=\"TestCasePlayer.addCookie('"
 					+ toAdditionalQuestionsCookyString(copy) + "');\">";
-			sb.appendHTML(input);
+			sb.appendHtml(input);
 			tableModel.addCell(0, column++, sb.toStringRaw(), questionString.length() + 2);
 		}
 	}
@@ -439,9 +439,9 @@ public class TestCasePlayerRenderer implements Renderer {
 					+ "', '" + dateString
 					+ "', '" + selectedTriple.getA().getName()
 					+ "', '" + selectedTriple.getC().getTitle() + "');";
-			sb.appendHTML("<a href=\"javascript:" + js + ";undefined;\">");
-			sb.appendHTML("<img src='KnowWEExtension/testcaseplayer/icon/runto.png'>");
-			sb.appendHTML("</a>");
+			sb.appendHtml("<a href=\"javascript:" + js + ";undefined;\">");
+			sb.appendHtml("<img src='KnowWEExtension/testcaseplayer/icon/runto.png'>");
+			sb.appendHtml("</a>");
 			tableModel.addCell(row, 0, sb.toStringRaw(), 2);
 		}
 		else {
@@ -454,12 +454,12 @@ public class TestCasePlayerRenderer implements Renderer {
 			}
 			if (ok) {
 				RenderResult done = new RenderResult(tableModel.getUserContext());
-				done.appendHTML("<img src='KnowWEExtension/testcaseplayer/icon/done.png'>");
+				done.appendHtml("<img src='KnowWEExtension/testcaseplayer/icon/done.png'>");
 				tableModel.addCell(row, 0, done, 2);
 			}
 			else {
 				RenderResult done = new RenderResult(tableModel.getUserContext());
-				done.appendHTML("<img src='KnowWEExtension/testcaseplayer/icon/error.png'>");
+				done.appendHtml("<img src='KnowWEExtension/testcaseplayer/icon/error.png'>");
 				tableModel.addCell(row, 0, done, 2);
 			}
 		}
@@ -472,7 +472,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		if (checkResults == null) {
 			boolean first = true;
 			for (Check c : testCase.getChecks(date, status.getSession().getKnowledgeBase())) {
-				if (!first) sb.appendHTML("<br />");
+				if (!first) sb.appendHtml("<br />");
 				first = false;
 				sb.append(c.getCondition());
 				max = Math.max(max, c.getCondition().toString().length());
@@ -483,7 +483,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				boolean first = true;
 				for (Pair<Check, Boolean> p : checkResults) {
 					max = Math.max(max, p.getA().getCondition().toString().length());
-					if (!first) sb.appendHTML("<br />");
+					if (!first) sb.appendHtml("<br />");
 					first = false;
 					String color;
 					if (p.getB()) {
@@ -492,9 +492,9 @@ public class TestCasePlayerRenderer implements Renderer {
 					else {
 						color = StyleRenderer.CONDITION_FALSE;
 					}
-					sb.appendHTML("<span style='background-color:" + color + "'>");
+					sb.appendHtml("<span style='background-color:" + color + "'>");
 					sb.append(p.getA().getCondition());
-					sb.appendHTML("</span>");
+					sb.appendHtml("</span>");
 				}
 			}
 		}
@@ -506,12 +506,12 @@ public class TestCasePlayerRenderer implements Renderer {
 		String selectedQuestion = KnowWEUtils.getCookie(key, "", user);
 		TerminologyObject object = null;
 		RenderResult selectsb2 = new RenderResult(user);
-		selectsb2.appendHTML("<form><select name=\"toAdd\" id=adder"
+		selectsb2.appendHtml("<form><select name=\"toAdd\" id=adder"
 				+ section.getID()
 				+ " onchange=\"TestCasePlayer.change('"
 				+ key
 				+ "', this.options[this.selectedIndex].value);\">");
-		selectsb2.appendHTML("<option value='--'>--</option>");
+		selectsb2.appendHtml("<option value='--'>--</option>");
 		boolean foundone = false;
 		List<TerminologyObject> objects = new LinkedList<TerminologyObject>();
 		objects.addAll(manager.getQuestions());
@@ -522,18 +522,18 @@ public class TestCasePlayerRenderer implements Renderer {
 			if (!alreadyAddedQuestions.contains(q.getName())) {
 				max = Math.max(max, q.getName().toString().length());
 				if (q.getName().equals(selectedQuestion)) {
-					selectsb2.appendHTML("<option selected='selected' value='" + q.getName() + "'>"
+					selectsb2.appendHtml("<option selected='selected' value='" + q.getName() + "'>"
 							+ q.getName() + "</option>");
 					object = q;
 				}
 				else {
-					selectsb2.appendHTML("<option value='" + q.getName() + "'>" + q.getName()
+					selectsb2.appendHtml("<option value='" + q.getName() + "'>" + q.getName()
 							+ "</option>");
 				}
 				foundone = true;
 			}
 		}
-		selectsb2.appendHTML("</select>");
+		selectsb2.appendHtml("</select>");
 		// reset value because -- is selected
 		if (object == null) {
 			user.getSession().setAttribute(key, "");
@@ -542,7 +542,7 @@ public class TestCasePlayerRenderer implements Renderer {
 			user.getSession().setAttribute(key, object.getName());
 		}
 		if (!alreadyAddedQuestions.isEmpty()) {
-			selectsb2.appendHTML("<input "
+			selectsb2.appendHtml("<input "
 					+
 					(object == null ? "disabled='disabled'" : "")
 					+ " type=\"button\" value=\"+\" onclick=\"TestCasePlayer.addCookie(&quot;"
@@ -553,7 +553,7 @@ public class TestCasePlayerRenderer implements Renderer {
 					+ "','');\"></form>");
 		}
 		else {
-			selectsb2.appendHTML("<input "
+			selectsb2.appendHtml("<input "
 					+ (object == null ? "disabled='disabled'" : "")
 					+ "type=\"button\" value=\"+\" onclick=\"TestCasePlayer.addCookie(this.form.toAdd.options[toAdd.selectedIndex].value);TestCasePlayer.change('"
 					+ key
@@ -571,7 +571,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		RenderResult selectsb = new RenderResult(string);
 		// if no pair is selected, use the first
 		Triple<TestCaseProvider, Section<?>, Article> selectedTriple = null;
-		selectsb.appendHTML("<span class=fillText>Case </span>"
+		selectsb.appendHtml("<span class=fillText>Case </span>"
 				+ "<select id=selector" + section.getID()
 				+ " onchange=\"TestCasePlayer.change('" + key
 				+ "', this.options[this.selectedIndex].value);\">");
@@ -598,11 +598,11 @@ public class TestCasePlayerRenderer implements Renderer {
 					attributes.add("selected");
 					selectedTriple = triple;
 				}
-				Strings.appendHtmlElement(selectsb, "option", displayedID,
+				selectsb.appendHtmlElement("option", displayedID,
 						attributes.toArray(new String[attributes.size()]));
 			}
 		}
-		selectsb.appendHTML("</select>");
+		selectsb.appendHtml("</select>");
 		if (selectedTriple != null) {
 			string.append(selectsb.toStringRaw());
 		}
@@ -647,8 +647,8 @@ public class TestCasePlayerRenderer implements Renderer {
 
 		int[] sizeArray = new int[] {
 				1, 2, 5, 10, 20, 50, 100 };
-		builder.appendHTML("<div class='toolBar'>");
-		builder.appendHTML("<span class=fillText>Show </span>"
+		builder.appendHtml("<div class='toolBar'>");
+		builder.appendHtml("<span class=fillText>Show </span>"
 				+ "<select id=sizeSelector"
 				+ section.getID()
 				+ " onchange=\"TestCasePlayer.change('"
@@ -656,17 +656,17 @@ public class TestCasePlayerRenderer implements Renderer {
 				+ "', this.options[this.selectedIndex].value);\">");
 		for (int size : sizeArray) {
 			if (size == selectedSize) {
-				builder.appendHTML("<option selected='selected' value='" + size + "'>"
+				builder.appendHtml("<option selected='selected' value='" + size + "'>"
 						+ size + "</option>");
 			}
 			else {
-				builder.appendHTML("<option value='" + size + "'>" + size
+				builder.appendHtml("<option value='" + size + "'>" + size
 						+ "</option>");
 			}
 		}
-		builder.appendHTML("</select><span class=fillText> lines of </span>" + maxSize);
-		builder.appendHTML(renderToolSeparator());
-		builder.appendHTML("</div>");
+		builder.appendHtml("</select><span class=fillText> lines of </span>" + maxSize);
+		builder.appendHtml(renderToolSeparator());
+		builder.appendHtml("</div>");
 		return builder.toStringRaw();
 	}
 
@@ -680,25 +680,25 @@ public class TestCasePlayerRenderer implements Renderer {
 		int previous = Math.max(1, from - selectedSize);
 		int next = from + selectedSize;
 
-		builder.appendHTML("<div class='toolBar avoidMenu'>");
+		builder.appendHtml("<div class='toolBar avoidMenu'>");
 		renderToolbarButton(
 				"begin.png", "TestCasePlayer.change('" + fromKey + "', " + 1 + ")",
 				(from > 1), builder);
 		renderToolbarButton(
 				"back.png", "TestCasePlayer.change('" + fromKey + "', " + previous + ")",
 				(from > 1), builder);
-		builder.appendHTML("<span class=fillText> Lines </span>");
-		builder.appendHTML("<input size=3 type=\"field\" onchange=\"TestCasePlayer.change('"
+		builder.appendHtml("<span class=fillText> Lines </span>");
+		builder.appendHtml("<input size=3 type=\"field\" onchange=\"TestCasePlayer.change('"
 				+ fromKey
 				+ "', " + "this.value);\" value='" + from + "'>");
-		builder.appendHTML("<span class=fillText> to </span>" + (from + selectedSize - 1));
+		builder.appendHtml("<span class=fillText> to </span>" + (from + selectedSize - 1));
 		renderToolbarButton(
 				"forward.png", "TestCasePlayer.change('" + fromKey + "', " + next + ")",
 				(from + selectedSize <= maxsize), builder);
 		renderToolbarButton(
 				"end.png", "TestCasePlayer.change('" + fromKey + "', " + maxsize + ")",
 				(from + selectedSize <= maxsize), builder);
-		builder.appendHTML("</div>");
+		builder.appendHtml("</div>");
 		return builder.toStringRaw();
 	}
 
@@ -713,19 +713,19 @@ public class TestCasePlayerRenderer implements Renderer {
 		String suffix = icon.substring(index);
 		icon = icon.substring(0, index);
 		if (enabled) {
-			builder.appendHTML("<a onclick=\"");
-			builder.appendHTML(action);
-			builder.appendHTML(";\">");
+			builder.appendHtml("<a onclick=\"");
+			builder.appendHtml(action);
+			builder.appendHtml(";\">");
 		}
-		builder.appendHTML("<span class='toolButton ");
-		builder.appendHTML(enabled ? "enabled" : "disabled");
-		builder.appendHTML("'>");
-		builder.appendHTML("<img src='KnowWEExtension/testcaseplayer/icon/");
-		builder.appendHTML(icon);
-		if (!enabled) builder.appendHTML("_deactivated");
-		builder.appendHTML(suffix).appendHTML("'></img></span>");
+		builder.appendHtml("<span class='toolButton ");
+		builder.appendHtml(enabled ? "enabled" : "disabled");
+		builder.appendHtml("'>");
+		builder.appendHtml("<img src='KnowWEExtension/testcaseplayer/icon/");
+		builder.appendHtml(icon);
+		if (!enabled) builder.appendHtml("_deactivated");
+		builder.appendHtml(suffix).appendHtml("'></img></span>");
 		if (enabled) {
-			builder.appendHTML("</a>");
+			builder.appendHtml("</a>");
 		}
 	}
 

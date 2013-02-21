@@ -125,8 +125,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		String cssClassName = "type_" + section.get().getName();
 		defaultMarkupRenderer.renderDefaultMarkupStyled(getTagName(), content,
 				sectionID, cssClassName, tools, userContext, jspMasked);
-		jspMasked.maskJSPWikiMarkup();
-		result.append(jspMasked);
+		result.appendJSPWikiMarkup(jspMasked);
 	}
 
 	private String renderContent(Section<?> section, UserContext user,
@@ -157,7 +156,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		// If name is not defined -> render search form!
 		if (objectName == null || objectName.isEmpty()) {
 			RenderResult html = new RenderResult(user);
-			return html.appendHTML(renderLookUpForm(section)).toStringRaw();
+			return html.appendHtml(renderLookUpForm(section)).toStringRaw();
 		}
 
 		TermIdentifier termIdentifier = TermIdentifier

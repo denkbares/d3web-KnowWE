@@ -47,13 +47,13 @@ public class ReRenderSectionMarkerRenderer implements Renderer {
 			RenderResult string) {
 		Boolean ajaxAction = user.getParameters().containsKey("action");
 		if (!ajaxAction) {
-			string.appendHTML("<span class=\"ReRenderSectionMarker\" style=\"display: inline;\" rel=\"{id:'"
+			string.appendHtml("<span class=\"ReRenderSectionMarker\" style=\"display: inline;\" rel=\"{id:'"
 					+ sec.getID()
 					+ "'}\">");
 		}
 		renderer.render(sec, user, string);
 		if (!ajaxAction) {
-			string.appendHTML("</span>");
+			string.appendHtml("</span>");
 		}
 	}
 

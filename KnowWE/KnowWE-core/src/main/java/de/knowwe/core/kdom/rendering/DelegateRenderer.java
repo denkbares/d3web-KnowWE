@@ -86,9 +86,9 @@ public class DelegateRenderer implements Renderer {
 			// now we log instead AND report the error to the user
 			Logger.getLogger(getClass().getName()).warning(
 					"Internal error while rendering section");
-			builder.appendHTML("<span class='warning'>");
+			builder.appendHtml("<span class='warning'>");
 			builder.append("internal error while rendering section: " + e);
-			builder.appendHTML("</span>");
+			builder.appendHtml("</span>");
 			e.printStackTrace();
 		}
 
@@ -154,7 +154,7 @@ public class DelegateRenderer implements Renderer {
 		}
 
 		if (warnings.size() > 0 || notices.size() > 0 || errors.size() > 0) {
-			builder.appendHTML("<a name=\"" + subSection.getID()
+			builder.appendHtml("<a name=\"" + subSection.getID()
 					+ "\"></a>");
 		}
 	}
@@ -208,10 +208,10 @@ public class DelegateRenderer implements Renderer {
 
 	private void renderType(Section<?> section, boolean openIt,
 			RenderResult builder) {
-		builder.appendHTML("<sub>&lt;");
+		builder.appendHtml("<sub>&lt;");
 		if (!openIt) builder.append('/');
 		builder.append(section.get().getName());
-		builder.appendHTML("&gt;</sub>");
+		builder.appendHtml("&gt;</sub>");
 	}
 
 	public static Renderer getRenderer(Section<?> section, UserContext user) {

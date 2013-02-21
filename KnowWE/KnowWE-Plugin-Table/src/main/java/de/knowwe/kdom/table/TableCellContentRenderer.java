@@ -108,29 +108,29 @@ public class TableCellContentRenderer implements Renderer {
 		boolean tablehead = TableCellContent.isTableHeadContent(sec);
 
 		if (tablehead) {
-			html.appendHTML("<th");
+			html.appendHtml("<th");
 		}
 		else {
-			html.appendHTML("<td");
+			html.appendHtml("<td");
 		}
 
 		String classes = getClasses(sec, user);
 		if (!classes.isEmpty()) {
-			html.appendHTML(" class='").append(classes).append("'");
+			html.appendHtml(" class='").append(classes).append("'");
 		}
 		String style = getStyle(sec, user);
 		if (!style.isEmpty()) {
-			html.appendHTML(" style='").append(style).append("'");
+			html.appendHtml(" style='").append(style).append("'");
 		}
-		html.appendHTML(">");
+		html.appendHtml(">");
 
 		appendContent(sectionText, sec, user, sectionID, html);
 
 		if (tablehead) {
-			html.appendHTML("</th>");
+			html.appendHtml("</th>");
 		}
 		else {
-			html.appendHTML("</td>");
+			html.appendHtml("</td>");
 		}
 	}
 

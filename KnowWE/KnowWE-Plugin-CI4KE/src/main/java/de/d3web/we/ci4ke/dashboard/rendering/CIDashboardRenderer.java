@@ -114,7 +114,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		RenderResult string = new RenderResult(user);
 
-		string.appendHTML("<div name='" + Strings.encodeURL(dashboardName)
+		string.appendHtml("<div name='" + Strings.encodeURL(dashboardName)
 				+ "' class='ci-title'>");
 
 		checkForUniqueName(dashboardName, string);
@@ -123,7 +123,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		appendDashboard(dashboard, string);
 
-		string.appendHTML("</div>");
+		string.appendHtml("</div>");
 		return string.toStringRaw();
 	}
 
@@ -133,43 +133,43 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		dashboard.getRenderer().renderDashboardHeader(latestBuild, string);
 
 		// start table (only a single row)
-		string.appendHTML("<table><tr>");
+		string.appendHtml("<table><tr>");
 
 		appendBuildListCell(dashboard, latestBuild, string);
 
 		appendBuildDetailsCell(dashboard, latestBuild, string);
 
 		// close table
-		string.appendHTML("</tr></table>");
+		string.appendHtml("</tr></table>");
 	}
 
 	private static void appendBuildListCell(CIDashboard dashboard, BuildResult shownBuild, RenderResult string) {
 		String dashboardNameEscaped = Strings.encodeURL(dashboard.getDashboardName());
-		string.appendHTML("<td valign='top' style='border-right: 1px solid #DDDDDD;'>");
-		string.appendHTML("<div id='")
+		string.appendHtml("<td valign='top' style='border-right: 1px solid #DDDDDD;'>");
+		string.appendHtml("<div id='")
 				.append(dashboardNameEscaped)
-				.appendHTML("-column-left' class='ci-column-left'>");
-		string.appendHTML("<div id='")
+				.appendHtml("-column-left' class='ci-column-left'>");
+		string.appendHtml("<div id='")
 				.append(dashboardNameEscaped)
-				.appendHTML("-build-table'>");
+				.appendHtml("-build-table'>");
 		if (shownBuild != null) {
 			// render build history
 			dashboard.getRenderer().renderBuildList(0, 10,
 					shownBuild.getBuildNumber(), string);
 		}
-		string.appendHTML("</div></div>");
-		string.appendHTML("</td>");
+		string.appendHtml("</div></div>");
+		string.appendHtml("</td>");
 	}
 
 	private static void appendBuildDetailsCell(CIDashboard dashboard, BuildResult shownBuild, RenderResult string) {
-		string.appendHTML("<td valign='top'>");
-		string.appendHTML("<div id='")
+		string.appendHtml("<td valign='top'>");
+		string.appendHtml("<div id='")
 				.append(Strings.encodeURL(dashboard.getDashboardName()))
-				.appendHTML(
+				.appendHtml(
 						"-build-details-wrapper' class='ci-build-details-wrapper'>");
 		dashboard.getRenderer().renderBuildDetails(shownBuild, string);
-		string.appendHTML("</div>");
-		string.appendHTML("</td>");
+		string.appendHtml("</div>");
+		string.appendHtml("</td>");
 	}
 
 	private static void checkForOutdatedBuild(UserContext user, String dashboardName, Section<CIDashboardType> dashboardSection, RenderResult string) {
@@ -184,7 +184,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 					dashboardSection.getTitle());
 			String id = "modified-warning_" + dashboardName;
 			// insert build button/link into warning message
-			warningString.appendHTML("<div id='" + id
+			warningString.appendHtml("<div id='" + id
 					+ "' style='display:inline;' class=\""
 					+ buildTool.getClass().getSimpleName() + "\" >" +
 					"<a href=\"javascript:" + buildTool.getJSAction()
@@ -220,7 +220,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			}
 
 			RenderResult errorText = new RenderResult(string);
-			errorText.appendHTML("Multiple dashboards with same name on the following article"
+			errorText.appendHtml("Multiple dashboards with same name on the following article"
 					+ (articleTitles.size() > 1 ? "s" : "") + ": "
 					+ articleLinks.toString()
 					+ ". Make sure every dashbaord has a wiki-wide unique name!");

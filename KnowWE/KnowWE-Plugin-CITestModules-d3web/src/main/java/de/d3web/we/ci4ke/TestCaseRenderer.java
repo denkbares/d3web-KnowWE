@@ -49,11 +49,11 @@ public class TestCaseRenderer implements ObjectNameRenderer {
 				web, allPackageNames.toArray(new String[allPackageNames.size()]));
 		for (Triple<TestCaseProvider, Section<?>, Article> triple : testCaseProviders) {
 			if (triple.getA().getName().equals(objectName)) {
-				result.appendHTML("<a href='"
+				result.appendHtml("<a href='"
 						+ KnowWEUtils.getURLLink(triple.getB())
 						+ "'>");
 				result.append(objectName);
-				result.appendHTML("</a>");
+				result.appendHtml("</a>");
 				return;
 			}
 		}

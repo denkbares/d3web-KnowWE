@@ -62,7 +62,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult string) {
-		string.appendHTML("<span id='" + section.getID() + "'>");
+		string.appendHtml("<span id='" + section.getID() + "'>");
 		String text = section.getText();
 		if (!text.isEmpty()) {
 			string.append(text + "\n");
@@ -80,7 +80,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 			renderSolutions(section, session, string);
 			renderAbstractions(section, session, string);
 		}
-		string.appendHTML("</span>");
+		string.appendHtml("</span>");
 	}
 
 	private static Section<ShowSolutionsType> getShowSolutionsSection(Section<?> section) {
@@ -129,7 +129,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 	}
 
 	private void renderPropagationError(RenderResult buffer) {
-		buffer.appendHTML(
+		buffer.appendHtml(
 				"<i style='color:grey'>values in calculation, please reload later</i>\n");
 	}
 

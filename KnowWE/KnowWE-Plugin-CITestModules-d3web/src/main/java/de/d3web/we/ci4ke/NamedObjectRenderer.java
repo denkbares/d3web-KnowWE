@@ -58,9 +58,9 @@ public class NamedObjectRenderer implements ObjectNameRenderer {
 			}
 		}
 		if (url == null) url = "Wiki.jsp?page=ObjectInfoPage&objectname=" + objectName;
-		result.appendHTML("<a href='" + url + "'>");
+		result.appendHtml("<a href='" + url + "'>");
 		result.append(objectName);
-		result.appendHTML("</a>");
+		result.appendHtml("</a>");
 	}
 
 }

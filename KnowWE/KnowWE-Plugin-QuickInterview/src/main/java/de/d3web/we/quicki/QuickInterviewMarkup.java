@@ -91,7 +91,7 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 			String html = "<div id=\"quickinterview\">"
 					+ QuickInterviewAction.callQuickInterviewRenderer(user)
 					+ "</div>";
-			string.appendHTML(html);
+			string.appendHtml(html);
 			DelegateRenderer.getInstance().render(section, user, string);
 
 		}

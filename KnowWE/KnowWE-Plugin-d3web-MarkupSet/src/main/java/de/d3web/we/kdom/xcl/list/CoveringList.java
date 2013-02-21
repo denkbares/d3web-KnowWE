@@ -122,9 +122,9 @@ public class CoveringList extends AbstractType {
 
 		@Override
 		public void render(Section<?> sec, UserContext user, RenderResult string) {
-			string.appendHTML("<span id='" + sec.getID() + "'>");
+			string.appendHtml("<span id='" + sec.getID() + "'>");
 			DelegateRenderer.getInstance().render(sec, user, string);
-			string.appendHTML("</span>");
+			string.appendHtml("</span>");
 		}
 	}
 
@@ -356,7 +356,7 @@ public class CoveringList extends AbstractType {
 		public void render(Section<?> sec, UserContext user, RenderResult string) {
 
 			// wrapper for highlighting
-			string.appendHTML("<span id='" + sec.getID()
+			string.appendHtml("<span id='" + sec.getID()
 					+ "' class = 'XCLRelationInList'>");
 
 			Article article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
@@ -378,7 +378,7 @@ public class CoveringList extends AbstractType {
 					// Highlight Relation
 					this.renderRelation(sec, user, fulfilled, string, true);
 					// close the wrapper
-					string.appendHTML("</span>");
+					string.appendHtml("</span>");
 					return;
 				}
 				catch (Exception e) {
@@ -391,7 +391,7 @@ public class CoveringList extends AbstractType {
 			// Something went wrong: Delegate to children
 			this.renderRelation(sec, user, false, string, false);
 			// close the wrapper
-			string.appendHTML("</span>");
+			string.appendHtml("</span>");
 		}
 
 		/***
@@ -418,7 +418,7 @@ public class CoveringList extends AbstractType {
 					buffi.append(this.renderRelationChild(s,
 							fulfilled, user, ""));
 				}
-				string.appendHTML(buffi.toString());
+				string.appendHtml(buffi.toString());
 				return;
 			}
 
@@ -441,7 +441,7 @@ public class CoveringList extends AbstractType {
 				}
 
 			}
-			string.appendHTML(buffi.toString());
+			string.appendHtml(buffi.toString());
 		}
 
 		/**

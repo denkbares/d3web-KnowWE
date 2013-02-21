@@ -42,7 +42,7 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer {
 					+ FlowchartEditProvider.createEditLink(section, user)
 					+ "\">"
 					+ "Click here to create one." + "</a>";
-			string.appendHTML(link);
+			string.appendHtml(link);
 		}
 
 		super.renderContents(section, user, string);

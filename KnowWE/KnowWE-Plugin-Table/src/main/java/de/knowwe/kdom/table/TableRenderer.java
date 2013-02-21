@@ -40,22 +40,22 @@ public class TableRenderer implements Renderer {
 
 		boolean sortable = TableUtils.sortOption(sec);
 
-		string.appendHTML(getOpeningTag(sec));
+		string.appendHtml(getOpeningTag(sec));
 
 		if (sortable) {
-			string.appendHTML("<div class=\"sortable\" style='overflow:auto;white-space:normal;'>");
+			string.appendHtml("<div class=\"sortable\" style='overflow:auto;white-space:normal;'>");
 		}
 		else {
-			string.appendHTML("<div style='overflow:auto;white-space:normal;'>");
+			string.appendHtml("<div style='overflow:auto;white-space:normal;'>");
 		}
-		string.appendHTML("<table style='border:1px solid #999999;' id='" + sec.getID()
+		string.appendHtml("<table style='border:1px solid #999999;' id='" + sec.getID()
 				+ "'class='wikitable knowwetable' border='1'><tbody>");
-		string.appendHTML(getHeader());
+		string.appendHtml(getHeader());
 		DelegateRenderer.getInstance().render(sec, user, string);
-		string.appendHTML("</tbody></table>");
-		string.appendHTML("</div>");
+		string.appendHtml("</tbody></table>");
+		string.appendHtml("</div>");
 
-		string.appendHTML(getClosingTag());
+		string.appendHtml(getClosingTag());
 
 	}
 

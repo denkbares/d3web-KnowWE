@@ -49,10 +49,10 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 		String headerID = "header_" + sec.getID();
 
 		if (hasTools) {
-			string.appendHTML("<span " +
+			string.appendHtml("<span " +
 					"style='position:relative;'" +
 					">");
-			string.appendHTML("<div " +
+			string.appendHtml("<div " +
 					"style='position:absolute;' " +
 					"class='toolsMenuDecorator' " +
 					"id='" + headerID + "' " +
@@ -61,12 +61,12 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 		}
 		decoratedRenderer.render(sec, user, string);
 		if (hasTools) {
-			string.appendHTML("</span>");
+			string.appendHtml("</span>");
 			RenderResult menuHTMLResult = new RenderResult(string);
 			defaultMarkupRenderer.appendMenu(tools, sec.getID(), user, menuHTMLResult);
 			String menuHTML = menuHTMLResult.toStringRaw();
 			menuHTML = menuHTML.replace("'", "\\'").replace("</div>", "</div>' + \n '");
-			string.appendHTML(
+			string.appendHtml(
 					"<script>" +
 							"var makeMenuFx = function() {" +
 							"var a=$('" + headerID + "');" +

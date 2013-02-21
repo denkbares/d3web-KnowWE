@@ -41,7 +41,7 @@ public class FlowchartRenderer implements Renderer {
 
 		// render anchor to be able to link to that flowchart
 		String anchorName = KnowWEUtils.getAnchor(sec);
-		string.appendHTML("<a name='" + anchorName + "'></a>");
+		string.appendHtml("<a name='" + anchorName + "'></a>");
 
 		string.append(FlowchartUtils.createFlowchartRenderer(sec, user));
 

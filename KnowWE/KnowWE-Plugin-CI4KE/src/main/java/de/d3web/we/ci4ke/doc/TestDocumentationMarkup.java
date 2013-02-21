@@ -77,7 +77,7 @@ public class TestDocumentationMarkup extends DefaultMarkupType {
 			string.append("\n%%table-filter");
 			string.append("\n%%sortable");
 			string.append("\n");
-			string.appendHTML(temp.toString());
+			string.appendHtml(temp.toString());
 			string.append("\n/%");
 			string.append("\n/%");
 			string.append("\n");

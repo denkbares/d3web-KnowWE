@@ -48,9 +48,9 @@ public class KDOMRenderer extends AbstractHTMLTagHandler {
 		RenderKDOMVisitor v = new RenderKDOMVisitor(user);
 		v.visit(Environment.getInstance().getArticle(web, topic)
 				.getRootSection());
-		result.appendHTML("<div><h3>KDOM:</h3><tt>");
+		result.appendHtml("<div><h3>KDOM:</h3><tt>");
 		result.append(v.getRenderedKDOM());
-		result.appendHTML("</tt></div>");
+		result.appendHtml("</tt></div>");
 	}
 
 	public static String renderPlain(Article article, UserContext user) {

@@ -18,7 +18,7 @@ public final class TableRenderer implements Renderer {
 
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult out) {
-			out.appendHTML("<img src='KnowWEExtension/images/table/table-menu-icon.png'></img>");
+			out.appendHtml("<img src='KnowWEExtension/images/table/table-menu-icon.png'></img>");
 		}
 	}
 
@@ -26,17 +26,17 @@ public final class TableRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult out) {
-		out.appendHTML("<div>");
-		out.appendHTML("<div class='tablePopupParent' id='");
+		out.appendHtml("<div>");
+		out.appendHtml("<div class='tablePopupParent' id='");
 		out.append(section.getID());
-		out.appendHTML("'>");
+		out.appendHtml("'>");
 		out.append("\n");
 		out.append(section.getText());
-		out.appendHTML("<div class='tablePopupIcon'>");
+		out.appendHtml("<div class='tablePopupIcon'>");
 		popupRenderer.render(section, user, out);
-		out.appendHTML("</div>");
-		out.appendHTML("</div>");
-		out.appendHTML("</div>");
+		out.appendHtml("</div>");
+		out.appendHtml("</div>");
+		out.appendHtml("</div>");
 	}
 
 }

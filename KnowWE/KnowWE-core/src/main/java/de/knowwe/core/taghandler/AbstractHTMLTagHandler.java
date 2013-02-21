@@ -52,9 +52,11 @@ public abstract class AbstractHTMLTagHandler extends AbstractTagHandler {
 		renderHTML(section.getWeb(), section.getTitle(), userContext,
 				parameters, handlerResult);
 		if (maskJSPWikiSyntax) {
-			handlerResult.maskJSPWikiMarkup();
+			result.appendJSPWikiMarkup(handlerResult);
 		}
-		result.append(handlerResult);
+		else {
+			result.append(handlerResult);
+		}
 	}
 
 	/**

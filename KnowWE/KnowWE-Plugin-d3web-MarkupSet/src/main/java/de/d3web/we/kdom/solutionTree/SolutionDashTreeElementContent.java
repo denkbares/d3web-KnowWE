@@ -81,9 +81,9 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent {
 
 		@Override
 		public void render(Section<?> sec, UserContext user, RenderResult string) {
-			string.appendHTML("<span id='" + sec.getID() + "'>");
+			string.appendHtml("<span id='" + sec.getID() + "'>");
 			DelegateRenderer.getInstance().render(sec, user, string);
-			string.appendHTML("</span>");
+			string.appendHtml("</span>");
 		}
 	}
 

@@ -61,17 +61,17 @@ public class KDOMRendererType extends DefaultMarkupType {
 			html += "<th>Offset</th>";
 			html += "<th>Children</th>";
 			html += "<th>Text</th>";
-			string.appendHTML(html);
+			string.appendHtml(html);
 			renderSubtree(section.getArticle().getRootSection(), string, 1);
 
-			string.appendHTML("</table>"/* </div>" */);
+			string.appendHtml("</table>"/* </div>" */);
 
-			string.appendHTML("<script type='text/javascript'>jq$('#tree').treeTable();</script>");
+			string.appendHtml("<script type='text/javascript'>jq$('#tree').treeTable();</script>");
 
 		}
 
 		protected void renderSubtree(Section<?> s, RenderResult string, int count) {
-			string.appendHTML("<tr id='" + s.getID()
+			string.appendHtml("<tr id='" + s.getID()
 					+ "'");
 			string.append(" class='treetr");
 			if (s.getFather() != null) {
@@ -83,19 +83,19 @@ public class KDOMRendererType extends DefaultMarkupType {
 			else {
 				string.append("'");
 			}
-			string.appendHTML(">");
-			string.appendHTML("<td>" + s.get().getClass().getSimpleName() + "</td>");
-			string.appendHTML("<td>" + s.getID() + "</td>");
-			string.appendHTML("<td>" + s.getText().length() + "</td>");
-			string.appendHTML("<td>" + s.getOffSetFromFatherText() + "</td>");
-			string.appendHTML("<td>" + s.getChildren().size() + "</td>");
+			string.appendHtml(">");
+			string.appendHtml("<td>" + s.get().getClass().getSimpleName() + "</td>");
+			string.appendHtml("<td>" + s.getID() + "</td>");
+			string.appendHtml("<td>" + s.getText().length() + "</td>");
+			string.appendHtml("<td>" + s.getOffSetFromFatherText() + "</td>");
+			string.appendHtml("<td>" + s.getChildren().size() + "</td>");
 
-			string.appendHTML("<td><div class='table_text'><div>");
+			string.appendHtml("<td><div class='table_text'><div>");
 			string.append("~|");
 			string.appendJSPWikiMarkup(s.getText());
 			string.append("~|");
-			string.appendHTML("</div></div></td>");
-			string.appendHTML("</tr>");
+			string.appendHtml("</div></div></td>");
+			string.appendHtml("</tr>");
 			if (s.getChildren().size() > 0) {
 				for (Section<?> child : s.getChildren()) {
 					renderSubtree(child, string, (count + 1));

@@ -29,18 +29,18 @@ public class CIDaemonRenderer implements Renderer {
 
 		if (!Environment.getInstance().getArticleManager(web).getTitles().contains(
 				dashboardArticleTitle)) {
-			string.appendHTML("<span class='error'>");
+			string.appendHtml("<span class='error'>");
 			string.append("The annotation @" + CIDaemonType.DASHBOARD_ARTICLE
 					+ " has to specify an existing article name.");
-			string.appendHTML("</span>");
+			string.appendHtml("</span>");
 		}
 		boolean hasDashboard = CIDashboard.hasDashboard(web, dashboardArticleTitle, dashboardName);
 
 		if (!hasDashboard) {
-			string.appendHTML("<span class='error'>");
+			string.appendHtml("<span class='error'>");
 			string.append("The annotation @" + CIDashboardType.NAME_KEY
 					+ " has to specify an existing CI dashboard name on the specified article.");
-			string.appendHTML("</span>");
+			string.appendHtml("</span>");
 		}
 
 		String baseURL =
@@ -50,7 +50,7 @@ public class CIDaemonRenderer implements Renderer {
 				+ "Wiki.jsp?page="
 				+ dashboardArticleTitle
 				+ "\">";
-		string.appendHTML(srclink);
+		string.appendHtml(srclink);
 
 		CIDashboard dashboard = CIDashboard.getDashboard(web, dashboardArticleTitle, dashboardName);
 		CIRenderer renderer = dashboard.getRenderer();
@@ -60,7 +60,7 @@ public class CIDaemonRenderer implements Renderer {
 		else {
 			renderer.renderBuildStatus(Type.ERROR, true, "", string);
 		}
-		string.appendHTML("</a>");
+		string.appendHtml("</a>");
 
 		string.append(Environment.getInstance().getWikiConnector().renderWikiSyntax(content));
 

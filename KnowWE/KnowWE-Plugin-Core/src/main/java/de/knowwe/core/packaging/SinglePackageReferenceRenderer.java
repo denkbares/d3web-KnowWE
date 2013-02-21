@@ -65,23 +65,23 @@ public class SinglePackageReferenceRenderer implements Renderer {
 		string.append("! " + "Compiled package: " + packageName + headerSuffix + "\n");
 
 		if (errorsCount > 0) {
-			string.appendHTML("<strong>Errors:</strong><p/>\n");
+			string.appendHtml("<strong>Errors:</strong><p/>\n");
 			for (Message error : kdomErrors) {
-				string.appendHTML(error.getVerbalization() + "<br/>\n");
+				string.appendHtml(error.getVerbalization() + "<br/>\n");
 			}
-			string.appendHTML("<p/>");
+			string.appendHtml("<p/>");
 		}
 		if (warningsCount > 0) {
-			string.appendHTML("<strong>Warnings:</strong><p/>\n");
+			string.appendHtml("<strong>Warnings:</strong><p/>\n");
 			for (Message warning : kdomWarnings) {
-				string.appendHTML(warning.getVerbalization() + "<br/>\n");
+				string.appendHtml(warning.getVerbalization() + "<br/>\n");
 			}
-			string.appendHTML("<p/>");
+			string.appendHtml("<p/>");
 		}
 		if (packageDefinitions.size() > 0) {
-			string.appendHTML("<strong>Compiled Sections:</strong><p/>\n");
+			string.appendHtml("<strong>Compiled Sections:</strong><p/>\n");
 			for (Section<?> packDef : packageDefinitions) {
-				string.appendHTML(packDef.getTitle() + " - "
+				string.appendHtml(packDef.getTitle() + " - "
 						+ packDef.get().getName() + "<br/>\n");
 				// TODO: Make links!
 			}

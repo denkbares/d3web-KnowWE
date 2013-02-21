@@ -45,17 +45,17 @@ public class TagEditPanel extends AbstractHTMLTagHandler {
 		TaggingMangler tm = TaggingMangler.getInstance();
 		List<String> tags = tm.getPageTags(user.getTitle());
 		RenderResult output = new RenderResult(result);
-		output.appendHTML("<p>");
-		output.appendHTML("Tags (<span id=\"tagpanedit\" style='text-decoration:underline;'>edit</span>):");
-		output.appendHTML("<span id=\"tagspan\">");
+		output.appendHtml("<p>");
+		output.appendHtml("Tags (<span id=\"tagpanedit\" style='text-decoration:underline;'>edit</span>):");
+		output.appendHtml("<span id=\"tagspan\">");
 		if (tags != null) {
 			for (String cur : tags) {
 				// output += cur + " ";
-				output.appendHTML(" <a href =\"Wiki.jsp?page=TagSearch&query="
+				output.appendHtml(" <a href =\"Wiki.jsp?page=TagSearch&query="
 						+ Strings.encodeHtml(cur)
 						+ "&ok=Find!&start=0&maxitems=20\" >");
 				output.append(cur);
-				output.appendHTML("</a>");
+				output.appendHtml("</a>");
 
 			}
 		}
@@ -63,14 +63,14 @@ public class TagEditPanel extends AbstractHTMLTagHandler {
 		if (output.toStringRaw().trim().length() == 0) {
 			output.append("none");
 		}
-		output.appendHTML("</span>");
-		output.appendHTML("<script type=\"text/javascript\" src=\"KnowWEExtension/scripts/silveripe.0.2.js\"></script>");
-		output.appendHTML("<script type=\"text/javascript\">");
-		output.appendHTML("var myIPE=new SilverIPE('tagpanedit','tagspan','KnowWE.jsp',{parameterName:'tagtag',highlightColor: '#ffff77',"
+		output.appendHtml("</span>");
+		output.appendHtml("<script type=\"text/javascript\" src=\"KnowWEExtension/scripts/silveripe.0.2.js\"></script>");
+		output.appendHtml("<script type=\"text/javascript\">");
+		output.appendHtml("var myIPE=new SilverIPE('tagpanedit','tagspan','KnowWE.jsp',{parameterName:'tagtag',highlightColor: '#ffff77',"
 				+ "additionalParameters:{tagaction:\"set\",action:\"TagHandlingAction\","
 				+ Attributes.TOPIC + ":\"" + user.getTitle() + "\"} });");
-		output.appendHTML("</script>");
-		output.appendHTML("</p>");
+		output.appendHtml("</script>");
+		output.appendHtml("</p>");
 	}
 
 }

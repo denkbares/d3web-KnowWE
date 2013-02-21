@@ -71,7 +71,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 				KnowledgeBaseType.ANNOTATION_FILENAME);
 
 		// render title line
-		string.appendHTML("<b>" + title + "</b>");
+		string.appendHtml("<b>" + title + "</b>");
 		if (id != null) {
 			string.append(" (").append(id).append(")");
 		}
@@ -79,30 +79,30 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 
 		// render information block
 		if (version != null || author != null || comment != null || filename != null) {
-			string.appendHTML("<div style='padding-top:1em;'>");
+			string.appendHtml("<div style='padding-top:1em;'>");
 
 			if (version != null) {
-				string.appendHTML("<img src='KnowWEExtension/d3web/icon/date16.png'></img> ");
+				string.appendHtml("<img src='KnowWEExtension/d3web/icon/date16.png'></img> ");
 				string.append(version).append("\n");
 			}
 			if (author != null) {
-				string.appendHTML("<img src='KnowWEExtension/d3web/icon/author16.png'></img> ");
+				string.appendHtml("<img src='KnowWEExtension/d3web/icon/author16.png'></img> ");
 				string.append(author).append("\n");
 			}
 			if (comment != null) {
-				string.appendHTML("<img src='KnowWEExtension/d3web/icon/comment16.png'></img> ");
+				string.appendHtml("<img src='KnowWEExtension/d3web/icon/comment16.png'></img> ");
 				string.append(comment).append("\n");
 			}
 			if (filename != null) {
-				string.appendHTML("<img src='KnowWEExtension/d3web/icon/download16.gif'></img> ");
+				string.appendHtml("<img src='KnowWEExtension/d3web/icon/download16.gif'></img> ");
 				string.append(filename).append("\n");
 			}
 
-			string.appendHTML("</div>");
+			string.appendHtml("</div>");
 		}
 
 		// render used packages and their erroneous pages
-		string.appendHTML("<div style='padding-top:1em;'>");
+		string.appendHtml("<div style='padding-top:1em;'>");
 		// string.append(KnowWEUtils.maskHTML("<hr>\n"));
 		Section<KnowledgeBaseCompileType> compileSection = Sections.findSuccessor(section,
 				KnowledgeBaseCompileType.class);
@@ -112,7 +112,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 		for (Iterator<String> packageIter = packagesToCompile.iterator(); packageIter.hasNext();) {
 			String packageName = packageIter.next();
 			renderCompile(section.getArticle(), packageName, string);
-			if (packageIter.hasNext()) string.appendHTML("<br/>");
+			if (packageIter.hasNext()) string.appendHtml("<br/>");
 		}
 
 		// render plugged annotations
@@ -130,7 +130,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 			}
 		}
 
-		string.appendHTML("</div>");
+		string.appendHtml("</div>");
 
 	}
 
@@ -169,7 +169,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 		String icon = "KnowWEExtension/d3web/icon/uses_" +
 				(hasErrors ? "error" : hasWarnings ? "warn" : "ok") +
 				"16.gif";
-		string.appendHTML("<img src='" + icon + "'></img> ");
+		string.appendHtml("<img src='" + icon + "'></img> ");
 		string.append("uses package: ").append(packageName);
 		if (hasErrors) {
 			string.append(" (").append(errorsCount).append(" errors in ");
@@ -198,13 +198,13 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 		}
 		Collections.sort(names);
 
-		string.appendHTML("<ul>");
+		string.appendHtml("<ul>");
 		for (String name : names) {
-			string.appendHTML("<li>");
+			string.appendHtml("<li>");
 			string.append("[").append(name).append("]");
 			string.append("\n");
 		}
-		string.appendHTML("</ul>");
+		string.appendHtml("</ul>");
 	}
 
 	private Extension[] getPluggedAnnotation(Section<?> sec) {

@@ -41,10 +41,10 @@ public class PageInfoAppendHandler implements PageAppendHandler {
 
 		// username and topic can not contain special chars, so no masking
 		// should be necessary
-		html.appendHTML("<input type='hidden' id='knowWEInfoPageName' value='" + topic + "'>");
-		html.appendHTML("<input type='hidden' id='knowWEInfoPageVersion' value='" + version + "'>");
-		html.appendHTML("<input type='hidden' id='knowWEInfoPageDate' value='" + modDate + "'>");
-		html.appendHTML("<input type='hidden' id='knowWEInfoUser' value='" + userName + "'>");
+		html.appendHtml("<input type='hidden' id='knowWEInfoPageName' value='" + topic + "'>");
+		html.appendHtml("<input type='hidden' id='knowWEInfoPageVersion' value='" + version + "'>");
+		html.appendHtml("<input type='hidden' id='knowWEInfoPageDate' value='" + modDate + "'>");
+		html.appendHtml("<input type='hidden' id='knowWEInfoUser' value='" + userName + "'>");
 	}
 
 	@Override

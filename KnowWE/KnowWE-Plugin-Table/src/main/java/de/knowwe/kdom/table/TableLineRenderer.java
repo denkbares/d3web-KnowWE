@@ -38,20 +38,20 @@ public class TableLineRenderer implements Renderer {
 	@Override
 	public void render(Section<?> sec, UserContext user, RenderResult string) {
 
-		string.appendHTML("<tr");
+		string.appendHtml("<tr");
 
-		string.appendHTML(" id='").append(sec.getID()).append("'");
+		string.appendHtml(" id='").append(sec.getID()).append("'");
 
 		String classes = getClasses(sec, user);
 
 		if (!classes.isEmpty()) {
-			string.appendHTML(" class='" + classes + "'");
+			string.appendHtml(" class='" + classes + "'");
 		}
 
-		string.appendHTML(">");
+		string.appendHtml(">");
 		DelegateRenderer.getInstance().render(sec, user, string);
 
-		string.appendHTML("</tr>\n");
+		string.appendHtml("</tr>\n");
 
 	}
 

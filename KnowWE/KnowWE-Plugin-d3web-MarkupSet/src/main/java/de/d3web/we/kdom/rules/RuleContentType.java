@@ -239,14 +239,14 @@ public class RuleContentType extends AbstractType {
 						RuleContentType.ruleStoreKey);
 			}
 
-			string.appendHTML("<span id='" + sec.getID()
+			string.appendHtml("<span id='" + sec.getID()
 					+ "'>");
 
 			KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
 			Session session = SessionProvider.getSession(user, kb);
 
 			highlightRule(article, sec, rule, session, user, string);
-			string.appendHTML("</span>");
+			string.appendHtml("</span>");
 		}
 
 		private static final String highlightMarker = "HIGHLIGHT_MARKER";

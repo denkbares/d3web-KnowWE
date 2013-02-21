@@ -127,26 +127,26 @@ public class TableModel {
 
 	public String toHtml(Section<?> section, UserContext user) {
 		RenderResult string = new RenderResult(user);
-		string.appendHTML("<div style='overflow:auto'>");
-		string.appendHTML("<table class='wikitable' border='1'>");
+		string.appendHtml("<div style='overflow:auto'>");
+		string.appendHtml("<table class='wikitable' border='1'>");
 		// headline
 		Set<Integer> collapsedColumns = getCollapsedColumns(section, user);
-		string.appendHTML("<tr>");
+		string.appendHtml("<tr>");
 		for (int i = 0; i <= columnCount; i++) {
 			String cell = getCell(0, i);
 			appendCell("th", cell, i, collapsedColumns, string);
 		}
-		string.appendHTML("</tr>\n");
+		string.appendHtml("</tr>\n");
 		for (int i = 1; i <= rowCount; i++) {
-			string.appendHTML(i % 2 == 1 ? "<tr>" : "<tr class='odd'>");
+			string.appendHtml(i % 2 == 1 ? "<tr>" : "<tr class='odd'>");
 			for (int j = 0; j <= columnCount; j++) {
 				String cell = getCell(i, j);
 				appendCell("td", cell, j, collapsedColumns, string);
 			}
-			string.appendHTML("</tr>\n");
+			string.appendHtml("</tr>\n");
 		}
-		string.appendHTML("</table>");
-		string.appendHTML("</div>");
+		string.appendHtml("</table>");
+		string.appendHtml("</div>");
 
 		return string.toStringRaw();
 	}
@@ -178,8 +178,8 @@ public class TableModel {
 		}
 		String[] attrArray = attributes.toArray(new String[attributes.size()]);
 		RenderResult cellDiv = new RenderResult(string);
-		Strings.appendHtmlElement(cellDiv, "div", cell);
-		Strings.appendHtmlElement(string, type, cellDiv.toStringRaw(), attrArray);
+		cellDiv.appendHtmlElement("div", cell);
+		string.appendHtmlElement(type, cellDiv.toStringRaw(), attrArray);
 	}
 
 	private void setType(int column, ArrayList<String> attributes) {

@@ -40,13 +40,13 @@ public class TagRenderer implements Renderer {
 		Section<TagHandlerTypeContent> attrContent = Sections.findChildOfType(sec,
 				TagHandlerTypeContent.class);
 		if (attrContent == null) {
-			string.appendHTML("<div><p class='info box'>");
+			string.appendHtml("<div><p class='info box'>");
 			string.append(Messages.getMessageBundle(user).getString(
 					"KnowWE.Taghandler.notFoundError"));
 			string.append(" '"
 					+ ((Section<?>) sec.getChildren().get(1)).getText()
 					+ "'");
-			string.appendHTML("</p></div>");
+			string.appendHtml("</p></div>");
 			return;
 		}
 

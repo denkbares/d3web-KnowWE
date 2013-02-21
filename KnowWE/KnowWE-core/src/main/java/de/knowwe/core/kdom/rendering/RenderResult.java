@@ -147,8 +147,20 @@ public class RenderResult {
 		return this;
 	}
 
-	public RenderResult appendHTML(String html) {
+	public RenderResult appendHtml(RenderResult html) {
+		builder.append(mask(html.toStringRaw()));
+		return this;
+	}
+
+	public RenderResult appendHtml(String html) {
 		builder.append(mask(html));
+		return this;
+	}
+
+	public RenderResult appendJSPWikiMarkup(RenderResult result) {
+		StringBuilder tempBuilder = new StringBuilder(result.builder);
+		Strings.maskJSPWikiMarkup(tempBuilder);
+		builder.append(tempBuilder);
 		return this;
 	}
 
@@ -320,12 +332,53 @@ public class RenderResult {
 	}
 
 	/**
-	 * Masks all the JSPWiki syntax found in this RenderResult.
+	 * Appends an opening and masked HTML element without having to fiddle with
+	 * strings and quoting. Just set tag name and the attributes. Attributes
+	 * need to be given in pairs. First the name of the attribute, second the
+	 * content of the attribute.
 	 * 
-	 * @created 12.02.2013
+	 * 
+	 * @created 05.02.2013
+	 * @param result the {@link RenderResult} the tag will be appended to
+	 * @param tag the tag name of the HTML element
+	 * @param attributes the attributes of the HTML element: the odd elements
+	 *        are the attribute names and the even elements the attribute
+	 *        contents
+	 * @return an opening and masked HTML element with attributes
 	 */
-	public void maskJSPWikiMarkup() {
-		Strings.maskJSPWikiMarkup(builder);
+	public void appendHtmlTag(String tag, String... attributes) {
+		StringBuilder html = new StringBuilder();
+		html.append("<" + tag);
+		for (int i = 0; i + 2 <= attributes.length; i += 2) {
+			html.append(getAttribute(attributes[i], attributes[i + 1]));
+		}
+		html.append(">");
+		appendHtml(html.toString());
+	}
+
+	private static String getAttribute(String attributeName, String attribute) {
+		return " " + attributeName + "=\"" + Strings.encodeHtml(attribute) + "\"";
+	}
+
+	/**
+	 * Appends a complete and masked HTML element without having to fiddle with
+	 * strings and quoting. Just set tag name, content and the attributes.
+	 * Attributes need to be given in pairs. First the name of the attribute,
+	 * second the content of the attribute.
+	 * 
+	 * 
+	 * @created 05.02.2013
+	 * @param result the {@link RenderResult} the element will be appended to
+	 * @param tag the tag name of the HTML element
+	 * @param content the content of the HTML element
+	 * @param attributes the attributes of the HTML element: the odd elements
+	 *        are the attribute names and the even elements the attribute
+	 *        contents
+	 */
+	public void appendHtmlElement(String tag, String content, String... attributes) {
+		appendHtmlTag(tag, attributes);
+		append(content);
+		appendHtml("</" + tag + ">");
 	}
 
 }

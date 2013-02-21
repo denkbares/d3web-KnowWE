@@ -120,7 +120,7 @@ public class FlowchartUtils {
 		if (user.getWeb() == null) return "";
 
 		RenderResult result = new RenderResult(user);
-		result.appendHTML("<div class='flowchartContainer'>");
+		result.appendHtml("<div class='flowchartContainer'>");
 
 		if (insertRessources) {
 			insertDiafluxRessources(result, user);
@@ -130,11 +130,11 @@ public class FlowchartUtils {
 
 		parentId = escapeHtmlId(parentId);
 
-		result.appendHTML("<div id='" + parentId + "'>");
-		result.appendHTML("<script>");
-		result.appendHTML("if ($('" + parentId + "').getElements('.FlowchartGroup').length == 0) ");
-		result.appendHTML("Flowchart.loadFlowchart('" + section.getID() + "', '" + parentId + "');");
-		result.appendHTML("</script></div></div>\n");
+		result.appendHtml("<div id='" + parentId + "'>");
+		result.appendHtml("<script>");
+		result.appendHtml("if ($('" + parentId + "').getElements('.FlowchartGroup').length == 0) ");
+		result.appendHtml("Flowchart.loadFlowchart('" + section.getID() + "', '" + parentId + "');");
+		result.appendHtml("</script></div></div>\n");
 
 		return result.toStringRaw();
 
@@ -154,18 +154,18 @@ public class FlowchartUtils {
 	public static void insertDiafluxRessources(RenderResult result, UserContext user) {
 
 		for (String cssfile : CSS) {
-			result.appendHTML("<link rel='stylesheet' type='text/css' href='" + cssfile
+			result.appendHtml("<link rel='stylesheet' type='text/css' href='" + cssfile
 					+ "'></link>");
 		}
 
 		for (String jsfile : JS) {
-			result.appendHTML("<script src='" + jsfile + "' type='text/javascript'></script>");
+			result.appendHtml("<script src='" + jsfile + "' type='text/javascript'></script>");
 		}
 
-		result.appendHTML("<data id='referredKBInfo' style='display:none;'>");
-		result.appendHTML(JSPHelper.getReferrdInfoObjectsAsXML(user.getWeb()));
-		result.appendHTML("</data>\n");
-		result.appendHTML("<script>KBInfo._updateCache($('referredKBInfo'));</script>");
+		result.appendHtml("<data id='referredKBInfo' style='display:none;'>");
+		result.appendHtml(JSPHelper.getReferrdInfoObjectsAsXML(user.getWeb()));
+		result.appendHtml("</data>\n");
+		result.appendHtml("<script>KBInfo._updateCache($('referredKBInfo'));</script>");
 	}
 
 	private static boolean isInsertRessources(Section<FlowchartType> section) {
@@ -199,12 +199,12 @@ public class FlowchartUtils {
 					if (!enh.activate(user, scope)) continue next;
 
 					for (String script : enh.getScripts()) {
-						result.appendHTML("<script src='" + script
+						result.appendHtml("<script src='" + script
 								+ "' type='text/javascript'></script>");
 					}
 
 					for (String style : enh.getStylesheets()) {
-						result.appendHTML("<link rel='stylesheet' type='text/css' href='" + style
+						result.appendHtml("<link rel='stylesheet' type='text/css' href='" + style
 								+ "'></link>");
 					}
 				}

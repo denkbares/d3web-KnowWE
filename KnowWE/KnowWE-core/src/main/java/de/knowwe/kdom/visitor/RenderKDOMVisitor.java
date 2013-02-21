@@ -48,11 +48,11 @@ public class RenderKDOMVisitor implements Visitor {
 
 	private void renderSubtree(Section<? extends Type> s, int i, RenderResult buffi) {
 		buffi.append(getDashes(i));
-		buffi.appendHTML(" <span style=\"color:black\" title=\"");
+		buffi.appendHtml(" <span style=\"color:black\" title=\"");
 		buffi.append(" ID: " + s.getID() + "\n");
-		buffi.appendHTML("\">");
+		buffi.appendHtml("\">");
 		buffi.append(Strings.encodeHtml(s.verbalize()));
-		buffi.appendHTML("</span>\n <br />"); // \n only to avoid HTML-code
+		buffi.appendHtml("</span>\n <br />"); // \n only to avoid HTML-code
 												// being
 												// cut by JspWiki (String.length
 												// >

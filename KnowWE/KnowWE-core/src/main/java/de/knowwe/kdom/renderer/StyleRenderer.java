@@ -96,16 +96,16 @@ public class StyleRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult string) {
-		string.appendHTML("<span");
+		string.appendHtml("<span");
 		if (cssClass != null) {
 			string.append(" class='").append(cssClass).append("'");
 		}
 		if (cssStyle != null) {
 			string.append(" style='").append(cssStyle).append("'");
 		}
-		string.appendHTML(">");
+		string.appendHtml(">");
 		renderContent(section, user, string);
-		string.appendHTML("</span>");
+		string.appendHtml("</span>");
 	}
 
 	/**
@@ -121,8 +121,12 @@ public class StyleRenderer implements Renderer {
 	protected void renderContent(Section<?> section, UserContext user, RenderResult string) {
 		RenderResult builder = new RenderResult(user);
 		DelegateRenderer.getInstance().render(section, user, builder);
-		if (maskJSP) builder.maskJSPWikiMarkup();
-		string.append(builder);
+		if (maskJSP) {
+			string.appendJSPWikiMarkup(builder);
+		}
+		else {
+			string.append(builder);
+		}
 	}
 
 	public String getCssStyle() {

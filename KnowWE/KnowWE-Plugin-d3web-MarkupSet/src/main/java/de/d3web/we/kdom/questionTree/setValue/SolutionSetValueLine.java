@@ -135,10 +135,10 @@ public class SolutionSetValueLine extends AbstractType {
 				RenderResult string) {
 			String embracedContent = sec.getText().substring(1,
 					sec.getText().length() - 1);
-			string.appendHTML(" <img height='10' src='KnowWEExtension/images/arrow_right_s.png'>");
-			string.appendHTML("<b>(");
+			string.appendHtml(" <img height='10' src='KnowWEExtension/images/arrow_right_s.png'>");
+			string.appendHtml("<b>(");
 			string.append(embracedContent);
-			string.appendHTML(")</b>");
+			string.appendHtml(")</b>");
 
 		}
 
