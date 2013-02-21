@@ -22,9 +22,9 @@ package de.knowwe.kdom.table;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 
 /**
  * <p>
@@ -79,59 +79,59 @@ public class TableCellContentRenderer implements Renderer {
 	}
 
 	@Override
-	public void render(Section<?> sec, UserContext user, StringBuilder string) {
+	public void render(Section<?> sec, UserContext user, RenderResult string) {
 
 		String content;
 
 		if (callDelegate) {
-			StringBuilder builder = new StringBuilder();
+			RenderResult builder = new RenderResult(user);
 			DelegateRenderer.getInstance().render(sec, user, builder);
-			content = builder.toString();
+			content = builder.toStringRaw();
 		}
 		else {
 			content = sec.getText();
 		}
 
-		string.append(wrappContent(content, sec, user));
+		appendContentWrapped(content, sec, user, string);
 	}
 
 	/**
 	 * Wraps the content of the cell (sectionText) with the HTML-Code needed for
 	 * the table
+	 * 
+	 * @param result TODO
 	 */
-	protected String wrappContent(String sectionText, Section<?> sec, UserContext user) {
+	protected void appendContentWrapped(String sectionText, Section<?> sec, UserContext user, RenderResult html) {
 
 		String sectionID = sec.getID();
-		StringBuilder html = new StringBuilder();
 
 		boolean tablehead = TableCellContent.isTableHeadContent(sec);
 
 		if (tablehead) {
-			html.append("<th");
+			html.appendHTML("<th");
 		}
 		else {
-			html.append("<td");
+			html.appendHTML("<td");
 		}
 
 		String classes = getClasses(sec, user);
 		if (!classes.isEmpty()) {
-			html.append(" class='").append(classes).append("'");
+			html.appendHTML(" class='").append(classes).append("'");
 		}
 		String style = getStyle(sec, user);
 		if (!style.isEmpty()) {
-			html.append(" style='").append(style).append("'");
+			html.appendHTML(" style='").append(style).append("'");
 		}
-		html.append(">");
+		html.appendHTML(">");
 
-		generateContent(sectionText, sec, user, sectionID, html);
+		appendContent(sectionText, sec, user, sectionID, html);
 
 		if (tablehead) {
-			html.append("</th>");
+			html.appendHTML("</th>");
 		}
 		else {
-			html.append("</td>");
+			html.appendHTML("</td>");
 		}
-		return Strings.maskHTML(html.toString());
 	}
 
 	public String getStyle(Section<?> tableCell, UserContext user) {
@@ -143,8 +143,8 @@ public class TableCellContentRenderer implements Renderer {
 		return "";
 	}
 
-	protected void generateContent(String sectionText, Section<?> s,
-			UserContext user, String sectionID, StringBuilder html) {
+	protected void appendContent(String sectionText, Section<?> s,
+			UserContext user, String sectionID, RenderResult html) {
 
 		html.append(translateTextForView(sectionText, s));
 	}

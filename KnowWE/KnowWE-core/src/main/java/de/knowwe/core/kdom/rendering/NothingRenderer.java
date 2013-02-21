@@ -45,7 +45,7 @@ public class NothingRenderer implements Renderer {
 	}
 
 	@Override
-	public void render(Section<?> sec, UserContext user, StringBuilder string) {
+	public void render(Section<?> sec, UserContext user, RenderResult string) {
 		// nothing
 	}
 

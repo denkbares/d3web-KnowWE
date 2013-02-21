@@ -29,8 +29,8 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
-import de.knowwe.core.utils.Strings;
 
 /**
  * ReRenderContentPartAction. Renders a given section again. Often used in
@@ -58,7 +58,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 			return "You are not allowed to view this content";
 		}
 
-		StringBuilder b = new StringBuilder();
+		RenderResult b = new RenderResult(context);
 
 		Type type = section.get();
 		Renderer renderer = type.getRenderer();
@@ -72,15 +72,14 @@ public class ReRenderContentPartAction extends AbstractAction {
 		// If the node is in <pre> than do not
 		// render it through the JSPWikiPipeline
 		String inPre = context.getParameter("inPre");
-		String pagedata = b.toString();
+		String pagedata = b.toStringRaw();
 
 		if (inPre == null) pagedata = Environment.getInstance().getWikiConnector()
 				.renderWikiSyntax(pagedata, context.getRequest());
 		if (inPre != null) if (inPre.equals("false")) pagedata = Environment.getInstance()
 				.getWikiConnector().renderWikiSyntax(pagedata, context.getRequest());
 
-		return Strings.unmaskHTML(pagedata);
-
+		return new RenderResult(context).unmask(pagedata);
 	}
 
 	private boolean userCanView(UserActionContext context, Section<?> section) {

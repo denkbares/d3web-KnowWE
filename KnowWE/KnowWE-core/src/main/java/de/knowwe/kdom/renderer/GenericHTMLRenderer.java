@@ -23,9 +23,9 @@ import java.util.Arrays;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 
 /**
  * A renderer that encapsulates the content in arbitrary HTML content. Useful
@@ -60,19 +60,19 @@ public class GenericHTMLRenderer implements Renderer {
 	}
 
 	@Override
-	public void render(Section<?> sec, UserContext user, StringBuilder string) {
-		string.append(Strings.maskHTML("<")).append(tagName);
+	public void render(Section<?> sec, UserContext user, RenderResult string) {
+		string.appendHTML("<").append(tagName);
 
 		if (attributes != null && attributes.length > 0) {
 			string.append(" ");
 			for (int i = 0; i < attributes.length; i += 2) {
-				string.append(attributes[i]).append(Strings.maskHTML("=\""));
+				string.append(attributes[i]).appendHTML("=\"");
 
 				if (i < attributes.length && attributes[i + 1] != null) {
 					string.append(attributes[i + 1].replace("\"", "&quot;"));
 				}
 
-				string.append(Strings.maskHTML("\""));
+				string.appendHTML("\"");
 
 				if ((i + 2) < attributes.length) {
 					string.append(" ");
@@ -80,15 +80,15 @@ public class GenericHTMLRenderer implements Renderer {
 			}
 		}
 
-		string.append(Strings.maskHTML(">"));
+		string.appendHTML(">");
 		renderContent(sec, user, string);
-		string.append(Strings.maskHTML("</span>"));
+		string.appendHTML("</span>");
 	}
 
-	protected void renderContent(Section<?> section, UserContext user, StringBuilder string) {
-		StringBuilder builder = new StringBuilder();
+	protected void renderContent(Section<?> section, UserContext user, RenderResult string) {
+		RenderResult builder = new RenderResult(user);
 		DelegateRenderer.getInstance().render(section, user, builder);
-		Strings.maskJSPWikiMarkup(builder);
-		string.append(builder.toString());
+		builder.maskJSPWikiMarkup();
+		string.append(builder);
 	}
 }

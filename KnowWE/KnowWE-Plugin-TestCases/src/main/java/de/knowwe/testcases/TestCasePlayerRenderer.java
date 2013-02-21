@@ -53,6 +53,7 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Message.Type;
@@ -82,8 +83,8 @@ public class TestCasePlayerRenderer implements Renderer {
 	private static String FROM_KEY = "from_position";
 
 	@Override
-	public void render(Section<?> section, UserContext user, StringBuilder result) {
-		StringBuilder string = new StringBuilder();
+	public void render(Section<?> section, UserContext user, RenderResult result) {
+		RenderResult string = new RenderResult(result);
 		if (user == null || user.getSession() == null) {
 			return;
 		}
@@ -92,7 +93,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		List<Triple<TestCaseProvider, Section<?>, Article>> providers =
 				de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(playerSection);
 
-		string.append(Strings.maskHTML("<div id='" + section.getID() + "'>"));
+		string.appendHTML("<div id='" + section.getID() + "'>");
 
 		if (providers.size() == 0) {
 			renderNoProviderWarning(playerSection, string);
@@ -104,14 +105,14 @@ public class TestCasePlayerRenderer implements Renderer {
 				renderSelectedTestCase(section, user, selectedTriple, string);
 			}
 		}
-		string.append(Strings.maskHTML("</div>"));
-		result.append(string.toString());
+		string.appendHTML("</div>");
+		result.append(string.toStringRaw());
 	}
 
-	private void renderSelectedTestCase(Section<?> section, UserContext user, Triple<TestCaseProvider, Section<?>, Article> selectedTriple, StringBuilder string) {
+	private void renderSelectedTestCase(Section<?> section, UserContext user, Triple<TestCaseProvider, Section<?>, Article> selectedTriple, RenderResult string) {
 		// renderLinkToTestCase(selectedTriple, string);
 		// renderDownloadLink(section, string);
-		// string.append(Strings.maskHTML(renderToolSeparator()));
+		// string.appendHTML(renderToolSeparator());
 		TestCaseProvider provider = selectedTriple.getA();
 		renderProviderMessages(provider, string);
 		Session session = provider.getActualSession(user);
@@ -144,16 +145,18 @@ public class TestCasePlayerRenderer implements Renderer {
 		}
 	}
 
-	private void renderDownloadLink(Section<?> section, StringBuilder string) {
-		String download = " <a title='Download selected TestCase' href='javascript:window.location=\"action/DownloadCaseAction?playerid="
-				+ section.getID()
-				+
-				"&KWikiWeb=default_web\";'><img style='margin-bottom: -4px' src='KnowWEExtension/d3web/icon/download16.gif'></a>";
-		string.append(Strings.maskHTML(download));
+	// private void renderDownloadLink(Section<?> section, RenderResult string)
+	// {
+	// String download =
+	// " <a title='Download selected TestCase' href='javascript:window.location=\"action/DownloadCaseAction?playerid="
+	// + section.getID()
+	// +
+	// "&KWikiWeb=default_web\";'><img style='margin-bottom: -4px' src='KnowWEExtension/d3web/icon/download16.gif'></a>";
+	// string.appendHTML(download);
+	//
+	// }
 
-	}
-
-	private void renderProviderMessages(TestCaseProvider provider, StringBuilder string) {
+	private void renderProviderMessages(TestCaseProvider provider, RenderResult string) {
 		List<Message> messages = provider.getMessages();
 		if (messages.size() > 0) {
 			DefaultMarkupRenderer.renderMessagesOfType(Type.ERROR, messages,
@@ -161,15 +164,16 @@ public class TestCasePlayerRenderer implements Renderer {
 		}
 	}
 
-	private void renderLinkToTestCase(Triple<TestCaseProvider, Section<?>, Article> selectedTriple, StringBuilder string) {
-		String link = " <a title='Go to selected TestCase' href='"
-				+ Strings.maskHTML(KnowWEUtils.getURLLink(selectedTriple.getB()))
-				+
-				"'><img src='KnowWEExtension/testcaseplayer/icon/testcaselink.png'></a>";
-		string.append(Strings.maskHTML(link));
-	}
+	// private void renderLinkToTestCase(Triple<TestCaseProvider, Section<?>,
+	// Article> selectedTriple, RenderResult string) {
+	// String link = " <a title='Go to selected TestCase' href='"
+	// + KnowWEUtils.getURLLink(selectedTriple.getB())
+	// +
+	// "'><img src='KnowWEExtension/testcaseplayer/icon/testcaselink.png'></a>";
+	// string.appendHTML(link);
+	// }
 
-	private void renderNoProviderWarning(Section<TestCasePlayerType> playerSection, StringBuilder string) {
+	private void renderNoProviderWarning(Section<TestCasePlayerType> playerSection, RenderResult string) {
 		StringBuilder message = new StringBuilder();
 		message.append("No test cases found in the packages: ");
 		boolean first = true;
@@ -185,7 +189,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				Arrays.asList(Messages.warning(message.toString())), string);
 	}
 
-	private void renderTestCase(Section<?> section, UserContext user, Triple<TestCaseProvider, Section<?>, Article> selectedTriple, Session session, TestCase testCase, SessionDebugStatus status, StringBuilder string) {
+	private void renderTestCase(Section<?> section, UserContext user, Triple<TestCaseProvider, Section<?>, Article> selectedTriple, Session session, TestCase testCase, SessionDebugStatus status, RenderResult string) {
 		Collection<Date> chronology = testCase.chronology();
 
 		NavigationParameters navigatorParameters = getNavigationParameters(section, user,
@@ -202,7 +206,7 @@ public class TestCasePlayerRenderer implements Renderer {
 	private TableModel getTableModel(Section<?> section, UserContext user, Triple<TestCaseProvider, Section<?>, Article> selectedTriple, Session session, TestCase testCase, SessionDebugStatus status, Collection<Date> chronology, NavigationParameters navigatorParameters) {
 		String kbArticle = selectedTriple.getC().getTitle();
 		TerminologyManager manager = session.getKnowledgeBase().getManager();
-		TableModel tableModel = new TableModel();
+		TableModel tableModel = new TableModel(user);
 		tableModel.setName(getTestCaseId(selectedTriple));
 		KnowledgeBase base = D3webUtils.getKnowledgeBase(user.getWeb(), kbArticle);
 
@@ -245,21 +249,21 @@ public class TestCasePlayerRenderer implements Renderer {
 		return new LinkedHashSet<String>(Arrays.asList(additionalQuestionsSplit));
 	}
 
-	private void renderTestCaseHeader(Section<?> section, UserContext user, TestCase testCase, Collection<Date> chronology, NavigationParameters navigatorParameters, StringBuilder string) {
-		string.append(Strings.maskHTML("<span class='fillText'> Start: </span>"));
+	private void renderTestCaseHeader(Section<?> section, UserContext user, TestCase testCase, Collection<Date> chronology, NavigationParameters navigatorParameters, RenderResult string) {
+		string.appendHTML("<span class='fillText'> Start: </span>");
 		if (testCase.getStartDate().getTime() == 0) {
 			string.append("---");
 		}
 		else {
 			string.append(dateFormat.format(testCase.getStartDate()));
 		}
-		string.append(Strings.maskHTML(renderToolSeparator()));
+		string.appendHTML(renderToolSeparator());
 
 		string.append(
 				renderTableSizeSelector(section, user, navigatorParameters.size,
 						chronology.size()));
 		string.append(renderNavigation(section, navigatorParameters.from,
-				navigatorParameters.size, chronology.size()));
+				navigatorParameters.size, chronology.size(), user));
 	}
 
 	private String createFromKey(Section<?> section) {
@@ -272,10 +276,12 @@ public class TestCasePlayerRenderer implements Renderer {
 	}
 
 	private TerminologyObject renderTableHeader(Section<?> section, UserContext user, String kbArticle, Collection<String> additionalQuestions, Collection<Question> usedQuestions, TerminologyManager manager, TableModel tableModel) {
-		String stopButton = Strings.maskHTML(renderToolbarButton("stop12.png",
+		String stopButton = renderToolbarButton("stop12.png",
 				"KNOWWE.plugin.d3webbasic.actions.resetSession('" + kbArticle
-						+ "')"));
-		tableModel.addCell(0, 0, stopButton, 1);
+						+ "')", user);
+		RenderResult stopButtonResult = new RenderResult(tableModel.getUserContext());
+		stopButtonResult.appendHTML(stopButton);
+		tableModel.addCell(0, 0, stopButtonResult, 1);
 		tableModel.addCell(0, 1, "Time", "Time".length());
 		int column = 2;
 		tableModel.setFirstFinding(2);
@@ -358,11 +364,12 @@ public class TestCasePlayerRenderer implements Renderer {
 				Collection<String> errors = new LinkedList<String>();
 				TestCaseUtils.checkValues(errors, q, finding.getValue());
 				if (!errors.isEmpty()) {
-					String errorstring = Strings.maskHTML("<div style='background-color:"
+					RenderResult errorResult = new RenderResult(tableModel.getUserContext());
+					errorResult.appendHTML("<div style='background-color:"
 							+ StyleRenderer.CONDITION_FALSE + "'>");
-					errorstring += findingString;
-					errorstring += Strings.maskHTML("</div>");
-					findingString = errorstring;
+					errorResult.append(findingString);
+					errorResult.appendHTML("</div>");
+					findingString = errorResult.toStringRaw();
 				}
 				tableModel.addCell(row, column, findingString,
 						finding.getValue().toString().length());
@@ -393,20 +400,21 @@ public class TestCasePlayerRenderer implements Renderer {
 	private void renderObservationQuestionsHeader(Collection<String> additionalQuestions, TerminologyManager manager, TableModel tableModel, int column) {
 		for (String questionString : additionalQuestions) {
 			TerminologyObject object = manager.search(questionString);
-			StringBuilder sb = new StringBuilder();
+			RenderResult sb = new RenderResult(tableModel.getUserContext());
 			if (object instanceof Question || object instanceof Solution) {
 				sb.append(questionString);
 			}
 			else {
-				sb.append(Strings.maskHTML("<span style='color:silver'>" + questionString
-						+ "</span>"));
+				sb.appendHTML("<span style='color:silver'>");
+				sb.append(questionString);
+				sb.appendHTML("</span>");
 			}
 			Set<String> copy = new LinkedHashSet<String>(additionalQuestions);
 			copy.remove(questionString);
-			String input = " <input type=\"button\" value=\"-\" onclick=\"TestCasePlayer.addCookie(&quot;"
-					+ toAdditionalQuestionsCookyString(copy) + "&quot;);\">";
-			sb.append(Strings.maskHTML(input));
-			tableModel.addCell(0, column++, sb.toString(), questionString.length() + 2);
+			String input = " <input type=\"button\" value=\"-\" onclick=\"TestCasePlayer.addCookie('"
+					+ toAdditionalQuestionsCookyString(copy) + "');\">";
+			sb.appendHTML(input);
+			tableModel.addCell(0, column++, sb.toStringRaw(), questionString.length() + 2);
 		}
 	}
 
@@ -416,7 +424,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		for (String question : additionalQuestions) {
 			if (first) first = false;
 			else builder.append(QUESTIONS_SEPARATOR);
-			builder.append(question);
+			builder.append(Strings.encodeHtml(question));
 		}
 		return builder.toString();
 	}
@@ -424,17 +432,17 @@ public class TestCasePlayerRenderer implements Renderer {
 	private void renderRunTo(Triple<TestCaseProvider, Section<?>, Article> selectedTriple, SessionDebugStatus status, Date date, String dateString, TableModel tableModel, int row) {
 		if (status.getLastExecuted() == null
 				|| status.getLastExecuted().before(date)) {
-			StringBuffer sb = new StringBuffer();
+			RenderResult sb = new RenderResult(tableModel.getUserContext());
 			String js = "TestCasePlayer.send("
 					+ "'"
 					+ selectedTriple.getB().getID()
 					+ "', '" + dateString
 					+ "', '" + selectedTriple.getA().getName()
 					+ "', '" + selectedTriple.getC().getTitle() + "');";
-			sb.append("<a href=\"javascript:" + js + ";undefined;\">");
-			sb.append("<img src='KnowWEExtension/testcaseplayer/icon/runto.png'>");
-			sb.append("</a>");
-			tableModel.addCell(row, 0, Strings.maskHTML(sb.toString()), 2);
+			sb.appendHTML("<a href=\"javascript:" + js + ";undefined;\">");
+			sb.appendHTML("<img src='KnowWEExtension/testcaseplayer/icon/runto.png'>");
+			sb.appendHTML("</a>");
+			tableModel.addCell(row, 0, sb.toStringRaw(), 2);
 		}
 		else {
 			Collection<Pair<Check, Boolean>> checkResults = status.getCheckResults(date);
@@ -445,18 +453,14 @@ public class TestCasePlayerRenderer implements Renderer {
 				}
 			}
 			if (ok) {
-				tableModel.addCell(
-						row,
-						0,
-						Strings.maskHTML("<img src='KnowWEExtension/testcaseplayer/icon/done.png'>"),
-						2);
+				RenderResult done = new RenderResult(tableModel.getUserContext());
+				done.appendHTML("<img src='KnowWEExtension/testcaseplayer/icon/done.png'>");
+				tableModel.addCell(row, 0, done, 2);
 			}
 			else {
-				tableModel.addCell(
-						row,
-						0,
-						Strings.maskHTML("<img src='KnowWEExtension/testcaseplayer/icon/error.png'>"),
-						2);
+				RenderResult done = new RenderResult(tableModel.getUserContext());
+				done.appendHTML("<img src='KnowWEExtension/testcaseplayer/icon/error.png'>");
+				tableModel.addCell(row, 0, done, 2);
 			}
 		}
 	}
@@ -464,11 +468,11 @@ public class TestCasePlayerRenderer implements Renderer {
 	private void renderCheckResults(TestCase testCase, SessionDebugStatus status, Date date, TableModel tableModel, int row, int column) {
 		Collection<Pair<Check, Boolean>> checkResults = status.getCheckResults(date);
 		int max = 0;
-		StringBuilder sb = new StringBuilder();
+		RenderResult sb = new RenderResult(tableModel.getUserContext());
 		if (checkResults == null) {
 			boolean first = true;
 			for (Check c : testCase.getChecks(date, status.getSession().getKnowledgeBase())) {
-				if (!first) sb.append(Strings.maskHTML("<br />"));
+				if (!first) sb.appendHTML("<br />");
 				first = false;
 				sb.append(c.getCondition());
 				max = Math.max(max, c.getCondition().toString().length());
@@ -479,7 +483,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				boolean first = true;
 				for (Pair<Check, Boolean> p : checkResults) {
 					max = Math.max(max, p.getA().getCondition().toString().length());
-					if (!first) sb.append(Strings.maskHTML("<br />"));
+					if (!first) sb.appendHTML("<br />");
 					first = false;
 					String color;
 					if (p.getB()) {
@@ -488,26 +492,26 @@ public class TestCasePlayerRenderer implements Renderer {
 					else {
 						color = StyleRenderer.CONDITION_FALSE;
 					}
-					sb.append(Strings.maskHTML("<span style='background-color:" + color + "'>"));
+					sb.appendHTML("<span style='background-color:" + color + "'>");
 					sb.append(p.getA().getCondition());
-					sb.append(Strings.maskHTML("</span>"));
+					sb.appendHTML("</span>");
 				}
 			}
 		}
-		tableModel.addCell(row, column, sb.toString(), max);
+		tableModel.addCell(row, column, sb.toStringRaw(), max);
 	}
 
 	private TerminologyObject renderObservationQuestionAdder(Section<?> section, UserContext user, TerminologyManager manager, Collection<String> alreadyAddedQuestions, TableModel tableModel, int column) {
 		String key = QUESTION_SELECTOR_KEY + "_" + section.getID();
 		String selectedQuestion = KnowWEUtils.getCookie(key, "", user);
 		TerminologyObject object = null;
-		StringBuffer selectsb2 = new StringBuffer();
-		selectsb2.append("<form><select name=\"toAdd\" id=adder"
+		RenderResult selectsb2 = new RenderResult(user);
+		selectsb2.appendHTML("<form><select name=\"toAdd\" id=adder"
 				+ section.getID()
 				+ " onchange=\"TestCasePlayer.change('"
 				+ key
 				+ "', this.options[this.selectedIndex].value);\">");
-		selectsb2.append("<option value='--'>--</option>");
+		selectsb2.appendHTML("<option value='--'>--</option>");
 		boolean foundone = false;
 		List<TerminologyObject> objects = new LinkedList<TerminologyObject>();
 		objects.addAll(manager.getQuestions());
@@ -518,18 +522,18 @@ public class TestCasePlayerRenderer implements Renderer {
 			if (!alreadyAddedQuestions.contains(q.getName())) {
 				max = Math.max(max, q.getName().toString().length());
 				if (q.getName().equals(selectedQuestion)) {
-					selectsb2.append("<option selected='selected' value='" + q.getName() + "'>"
+					selectsb2.appendHTML("<option selected='selected' value='" + q.getName() + "'>"
 							+ q.getName() + "</option>");
 					object = q;
 				}
 				else {
-					selectsb2.append("<option value='" + q.getName() + "'>" + q.getName()
+					selectsb2.appendHTML("<option value='" + q.getName() + "'>" + q.getName()
 							+ "</option>");
 				}
 				foundone = true;
 			}
 		}
-		selectsb2.append("</select>");
+		selectsb2.appendHTML("</select>");
 		// reset value because -- is selected
 		if (object == null) {
 			user.getSession().setAttribute(key, "");
@@ -538,7 +542,7 @@ public class TestCasePlayerRenderer implements Renderer {
 			user.getSession().setAttribute(key, object.getName());
 		}
 		if (!alreadyAddedQuestions.isEmpty()) {
-			selectsb2.append("<input "
+			selectsb2.appendHTML("<input "
 					+
 					(object == null ? "disabled='disabled'" : "")
 					+ " type=\"button\" value=\"+\" onclick=\"TestCasePlayer.addCookie(&quot;"
@@ -549,26 +553,25 @@ public class TestCasePlayerRenderer implements Renderer {
 					+ "','');\"></form>");
 		}
 		else {
-			selectsb2.append("<input "
-					+
-					(object == null ? "disabled='disabled'" : "")
+			selectsb2.appendHTML("<input "
+					+ (object == null ? "disabled='disabled'" : "")
 					+ "type=\"button\" value=\"+\" onclick=\"TestCasePlayer.addCookie(this.form.toAdd.options[toAdd.selectedIndex].value);TestCasePlayer.change('"
 					+ key
 					+ "','');\"></form>");
 		}
 		if (foundone) {
-			tableModel.addCell(0, column, Strings.maskHTML(selectsb2.toString()), max + 3);
+			tableModel.addCell(0, column, selectsb2.toStringRaw(), max + 3);
 		}
 		return object;
 	}
 
-	private Triple<TestCaseProvider, Section<?>, Article> getAndRenderTestCaseSelection(Section<?> section, UserContext user, List<Triple<TestCaseProvider, Section<?>, Article>> providers, StringBuilder string) {
+	private Triple<TestCaseProvider, Section<?>, Article> getAndRenderTestCaseSelection(Section<?> section, UserContext user, List<Triple<TestCaseProvider, Section<?>, Article>> providers, RenderResult string) {
 		String key = generateSelectedTestCaseCookieKey(section);
 		String selectedID = getSelectedTestCaseId(section, user);
-		StringBuffer selectBuilder = new StringBuffer();
+		RenderResult selectsb = new RenderResult(string);
 		// if no pair is selected, use the first
 		Triple<TestCaseProvider, Section<?>, Article> selectedTriple = null;
-		selectBuilder.append("<span class=fillText>Case </span>"
+		selectsb.appendHTML("<span class=fillText>Case </span>"
 				+ "<select id=selector" + section.getID()
 				+ " onchange=\"TestCasePlayer.change('" + key
 				+ "', this.options[this.selectedIndex].value);\">");
@@ -595,14 +598,13 @@ public class TestCasePlayerRenderer implements Renderer {
 					attributes.add("selected");
 					selectedTriple = triple;
 				}
-				String option = Strings.getHtmlElement("option", displayedID,
+				Strings.appendHtmlElement(selectsb, "option", displayedID,
 						attributes.toArray(new String[attributes.size()]));
-				selectBuilder.append(option);
 			}
 		}
-		selectBuilder.append("</select>");
+		selectsb.appendHTML("</select>");
 		if (selectedTriple != null) {
-			string.append(Strings.maskHTML(selectBuilder.toString()));
+			string.append(selectsb.toStringRaw());
 		}
 		else {
 			Message notValidTestCaseError = Messages.warning(
@@ -641,12 +643,12 @@ public class TestCasePlayerRenderer implements Renderer {
 	private String renderTableSizeSelector(Section<?> section, UserContext user, int selectedSize, int maxSize) {
 
 		String sizeKey = createSizeKey(section);
-		StringBuilder builder = new StringBuilder();
+		RenderResult builder = new RenderResult(user);
 
 		int[] sizeArray = new int[] {
 				1, 2, 5, 10, 20, 50, 100 };
-		builder.append("<div class='toolBar'>");
-		builder.append("<span class=fillText>Show </span>"
+		builder.appendHTML("<div class='toolBar'>");
+		builder.appendHTML("<span class=fillText>Show </span>"
 				+ "<select id=sizeSelector"
 				+ section.getID()
 				+ " onchange=\"TestCasePlayer.change('"
@@ -654,77 +656,76 @@ public class TestCasePlayerRenderer implements Renderer {
 				+ "', this.options[this.selectedIndex].value);\">");
 		for (int size : sizeArray) {
 			if (size == selectedSize) {
-				builder.append("<option selected='selected' value='" + size + "'>"
+				builder.appendHTML("<option selected='selected' value='" + size + "'>"
 						+ size + "</option>");
 			}
 			else {
-				builder.append("<option value='" + size + "'>" + size
+				builder.appendHTML("<option value='" + size + "'>" + size
 						+ "</option>");
 			}
 		}
-		builder.append("</select><span class=fillText> lines of </span>" + maxSize);
-		builder.append(renderToolSeparator());
-		builder.append("</div>");
-		return Strings.maskHTML(builder.toString());
+		builder.appendHTML("</select><span class=fillText> lines of </span>" + maxSize);
+		builder.appendHTML(renderToolSeparator());
+		builder.appendHTML("</div>");
+		return builder.toStringRaw();
 	}
 
 	private String renderToolSeparator() {
 		return "<div class='toolSeparator'></div>";
 	}
 
-	private Object renderNavigation(Section<?> section, int from, int selectedSize, int maxsize) {
+	private Object renderNavigation(Section<?> section, int from, int selectedSize, int maxsize, UserContext user) {
 		String fromKey = createFromKey(section);
-		StringBuilder builder = new StringBuilder();
+		RenderResult builder = new RenderResult(user);
 		int previous = Math.max(1, from - selectedSize);
 		int next = from + selectedSize;
 
-		builder.append("<div class='toolBar avoidMenu'>");
+		builder.appendHTML("<div class='toolBar avoidMenu'>");
 		renderToolbarButton(
 				"begin.png", "TestCasePlayer.change('" + fromKey + "', " + 1 + ")",
 				(from > 1), builder);
 		renderToolbarButton(
 				"back.png", "TestCasePlayer.change('" + fromKey + "', " + previous + ")",
 				(from > 1), builder);
-		builder.append("<span class=fillText> Lines </span>");
-		builder.append("<input size=3 type=\"field\" onchange=\"TestCasePlayer.change('"
+		builder.appendHTML("<span class=fillText> Lines </span>");
+		builder.appendHTML("<input size=3 type=\"field\" onchange=\"TestCasePlayer.change('"
 				+ fromKey
 				+ "', " + "this.value);\" value='" + from + "'>");
-		builder.append("<span class=fillText> to </span>" + (from + selectedSize - 1));
+		builder.appendHTML("<span class=fillText> to </span>" + (from + selectedSize - 1));
 		renderToolbarButton(
 				"forward.png", "TestCasePlayer.change('" + fromKey + "', " + next + ")",
 				(from + selectedSize <= maxsize), builder);
 		renderToolbarButton(
 				"end.png", "TestCasePlayer.change('" + fromKey + "', " + maxsize + ")",
 				(from + selectedSize <= maxsize), builder);
-		builder.append("</div>");
-		return Strings.maskHTML(builder.toString());
+		builder.appendHTML("</div>");
+		return builder.toStringRaw();
 	}
 
-	private String renderToolbarButton(String icon, String action) {
-		StringBuilder buffer = new StringBuilder();
+	private String renderToolbarButton(String icon, String action, UserContext user) {
+		RenderResult buffer = new RenderResult(user);
 		renderToolbarButton(icon, action, true, buffer);
-		String buttonHTML = buffer.toString();
-		return buttonHTML;
+		return buffer.toStringRaw();
 	}
 
-	private void renderToolbarButton(String icon, String action, boolean enabled, StringBuilder builder) {
+	private void renderToolbarButton(String icon, String action, boolean enabled, RenderResult builder) {
 		int index = icon.lastIndexOf('.');
 		String suffix = icon.substring(index);
 		icon = icon.substring(0, index);
 		if (enabled) {
-			builder.append("<a onclick=\"");
-			builder.append(action);
-			builder.append(";\">");
+			builder.appendHTML("<a onclick=\"");
+			builder.appendHTML(action);
+			builder.appendHTML(";\">");
 		}
-		builder.append("<span class='toolButton ");
-		builder.append(enabled ? "enabled" : "disabled");
-		builder.append("'>");
-		builder.append("<img src='KnowWEExtension/testcaseplayer/icon/");
-		builder.append(icon);
-		if (!enabled) builder.append("_deactivated");
-		builder.append(suffix).append("'></img></span>");
+		builder.appendHTML("<span class='toolButton ");
+		builder.appendHTML(enabled ? "enabled" : "disabled");
+		builder.appendHTML("'>");
+		builder.appendHTML("<img src='KnowWEExtension/testcaseplayer/icon/");
+		builder.appendHTML(icon);
+		if (!enabled) builder.appendHTML("_deactivated");
+		builder.appendHTML(suffix).appendHTML("'></img></span>");
 		if (enabled) {
-			builder.append("</a>");
+			builder.appendHTML("</a>");
 		}
 	}
 

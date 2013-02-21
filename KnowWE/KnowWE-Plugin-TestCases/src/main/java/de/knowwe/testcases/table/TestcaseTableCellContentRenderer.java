@@ -20,8 +20,8 @@ package de.knowwe.testcases.table;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.table.TableCellContentRenderer;
 
 /**
@@ -32,11 +32,11 @@ import de.knowwe.kdom.table.TableCellContentRenderer;
 public class TestcaseTableCellContentRenderer extends TableCellContentRenderer {
 
 	@Override
-	public void render(Section<?> sec, UserContext user, StringBuilder string) {
+	public void render(Section<?> sec, UserContext user, RenderResult string) {
 
-		string.append(Strings.maskHTML("<td>"));
+		string.appendHTML("<td>");
 		DelegateRenderer.getInstance().render(sec, user, string);
-		string.append(Strings.maskHTML("</td>"));
+		string.appendHTML("</td>");
 	}
 
 }

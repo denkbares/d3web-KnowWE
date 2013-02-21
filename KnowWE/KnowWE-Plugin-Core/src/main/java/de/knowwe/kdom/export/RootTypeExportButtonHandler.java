@@ -23,6 +23,7 @@ import java.util.Map;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.taghandler.AbstractTagHandler;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Strings;
@@ -34,30 +35,27 @@ public class RootTypeExportButtonHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(Section<?> section, UserContext userContext, Map<String, String> parameters) {
-		return getButtonHTML();
+	public void render(Section<?> section, UserContext userContext, Map<String, String> parameters, RenderResult result) {
+		getButtonHTML(result);
 	}
 
-	public static String getButtonHTML() {
+	public static void getButtonHTML(RenderResult html) {
 
 		String description = "Download RootTypes as graph";
 		String jsAction = "window.location='action/RootTypeExportAction" +
 				"?" + Attributes.TOPIC + "=" + "RootType" +
 				"&" + Attributes.WEB + "=" + Environment.DEFAULT_WEB +
 				"&" + "filename" + "=" + "RootType.png'";
-		StringBuilder html = new StringBuilder();
 
-		html.append("<a href=\"javascript:");
-		html.append(jsAction);
-		html.append(";void(0);\" ");
-		html.append("\" title=\"");
-		html.append(description);
-		html.append("\" class=\"onte-button left small\">");
-		html.append("<img src=\"KnowWEExtension/images/disk.png\" style=\"");
-		html.append("background: url('").append("KnowWEExtension/images/disk.png").append(
+		html.appendHTML("<a href=\"javascript:");
+		html.appendHTML(jsAction);
+		html.appendHTML(";void(0);\" ");
+		html.appendHTML("\" title=\"");
+		html.append(Strings.encodeHtml(description));
+		html.appendHTML("\" class=\"onte-button left small\">");
+		html.appendHTML("<img src=\"KnowWEExtension/images/disk.png\" style=\"");
+		html.appendHTML("background: url('").appendHTML("KnowWEExtension/images/disk.png").appendHTML(
 				"') no-repeat scroll center 6px transparent; height: 22px;width: 22px;");
-		html.append("\" /></a>");
-
-		return Strings.maskHTML(html.toString());
+		html.appendHTML("\" /></a>");
 	}
 }

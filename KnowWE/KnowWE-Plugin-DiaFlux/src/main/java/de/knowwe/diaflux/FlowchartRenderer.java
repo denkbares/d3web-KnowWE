@@ -22,10 +22,10 @@ package de.knowwe.diaflux;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.diaflux.type.FlowchartType;
 
 /**
@@ -35,17 +35,16 @@ import de.knowwe.diaflux.type.FlowchartType;
 public class FlowchartRenderer implements Renderer {
 
 	@Override
-	public void render(Section<?> section, UserContext user, StringBuilder string) {
+	public void render(Section<?> section, UserContext user, RenderResult string) {
 
 		Section<FlowchartType> sec = Sections.cast(section, FlowchartType.class);
 
 		// render anchor to be able to link to that flowchart
 		String anchorName = KnowWEUtils.getAnchor(sec);
-		string.append(Strings.maskHTML("<a name='" + anchorName + "'></a>"));
+		string.appendHTML("<a name='" + anchorName + "'></a>");
 
 		string.append(FlowchartUtils.createFlowchartRenderer(sec, user));
 
 	}
-
 
 }

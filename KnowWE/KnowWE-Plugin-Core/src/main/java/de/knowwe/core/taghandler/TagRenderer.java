@@ -27,31 +27,28 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 
 public class TagRenderer implements Renderer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void render(Section<?> sec, UserContext user, StringBuilder string) {
+	public void render(Section<?> sec, UserContext user, RenderResult string) {
 		Section<TagHandlerTypeContent> attrContent = Sections.findChildOfType(sec,
 				TagHandlerTypeContent.class);
 		if (attrContent == null) {
-			string.append(Strings
-					.maskHTML("<div><p class='info box'>"));
+			string.appendHTML("<div><p class='info box'>");
 			string.append(Messages.getMessageBundle(user).getString(
 					"KnowWE.Taghandler.notFoundError"));
 			string.append(" '"
 					+ ((Section<?>) sec.getChildren().get(1)).getText()
 					+ "'");
-			string.append(Strings.maskHTML("</p></div>"));
+			string.appendHTML("</p></div>");
 			return;
 		}
-
-		StringBuilder buffi = new StringBuilder();
 
 		Type type = attrContent.get();
 
@@ -73,13 +70,12 @@ public class TagRenderer implements Renderer {
 					String key = elem.toLowerCase();
 					if (defaultTagHandlers.containsKey(key)) {
 						TagHandler handler = defaultTagHandlers.get(key);
-						buffi.append(handler.render(sec, user, attValues));
+						handler.render(sec, user, attValues, string);
 
 					}
 				}
 
 			}
-			string.append(buffi.toString());
 		}
 	}
 

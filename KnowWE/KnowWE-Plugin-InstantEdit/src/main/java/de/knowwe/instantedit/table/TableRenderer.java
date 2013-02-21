@@ -1,9 +1,9 @@
 package de.knowwe.instantedit.table;
 
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
 
 /**
@@ -17,26 +17,26 @@ public final class TableRenderer implements Renderer {
 	private class IconRenderer implements Renderer {
 
 		@Override
-		public void render(Section<?> section, UserContext user, StringBuilder out) {
-			out.append(Strings.maskHTML("<img src='KnowWEExtension/images/table/table-menu-icon.png'></img>"));
+		public void render(Section<?> section, UserContext user, RenderResult out) {
+			out.appendHTML("<img src='KnowWEExtension/images/table/table-menu-icon.png'></img>");
 		}
 	}
 
 	ToolMenuDecoratingRenderer popupRenderer = new ToolMenuDecoratingRenderer(new IconRenderer());
 
 	@Override
-	public void render(Section<?> section, UserContext user, StringBuilder out) {
-		out.append(Strings.maskHTML("<div>"));
-		out.append(Strings.maskHTML("<div class='tablePopupParent' id='"));
+	public void render(Section<?> section, UserContext user, RenderResult out) {
+		out.appendHTML("<div>");
+		out.appendHTML("<div class='tablePopupParent' id='");
 		out.append(section.getID());
-		out.append(Strings.maskHTML("'>"));
+		out.appendHTML("'>");
 		out.append("\n");
 		out.append(section.getText());
-		out.append(Strings.maskHTML("<div class='tablePopupIcon'>"));
+		out.appendHTML("<div class='tablePopupIcon'>");
 		popupRenderer.render(section, user, out);
-		out.append(Strings.maskHTML("</div>"));
-		out.append(Strings.maskHTML("</div>"));
-		out.append(Strings.maskHTML("</div>"));
+		out.appendHTML("</div>");
+		out.appendHTML("</div>");
+		out.appendHTML("</div>");
 	}
 
 }

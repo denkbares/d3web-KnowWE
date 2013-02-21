@@ -85,22 +85,6 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Escapes the given string for safely using user-input in web sites.
-	 * 
-	 * @param text Text to escape
-	 * @return Sanitized text
-	 */
-	public static String escapeHTML(String text) {
-		if (text == null) return null;
-
-		return text.replaceAll("&", "&amp;").
-				replaceAll("\"", "&quot;").
-				replaceAll("'", "&#x27;").
-				replaceAll("<", "&lt;").
-				replaceAll(">", "&gt;");
-	}
-
-	/**
 	 * Creates a unique anchor name for the section to link to. See method
 	 * {@link #getWikiLink(Section)} for more details on how to use this method.
 	 * 
@@ -196,17 +180,6 @@ public class KnowWEUtils {
 
 	public static ResourceBundle getConfigBundle() {
 		return ResourceBundle.getBundle("KnowWE_config");
-	}
-
-	public static String getErrorQ404(String question, String text) {
-		String rendering = "<span class=\"semLink\"><a href=\"#\" title=\""
-				+ "Question not found:"
-				+ question
-				+ "\" >"
-				+ text
-				+ "</a></span>";
-		return rendering;
-
 	}
 
 	/**

@@ -39,6 +39,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
@@ -124,14 +125,13 @@ public class QuestionSetValueNumLine extends AbstractType {
 
 		@Override
 		public void render(Section<?> sec, UserContext user,
-				StringBuilder string) {
+				RenderResult string) {
 			String embracedContent = sec.getText().substring(1,
 					sec.getText().length() - 1);
-			string
-					.append(Strings
-							.maskHTML(" <img height='10' src='KnowWEExtension/images/arrow_right_s.png'>"));
-			string.append(Strings
-					.maskHTML("<b>(" + embracedContent + ")</b>"));
+			string.appendHTML(" <img height='10' src='KnowWEExtension/images/arrow_right_s.png'>");
+			string.appendHTML("<b>(");
+			string.append(embracedContent);
+			string.appendHTML(")</b>");
 
 		}
 
@@ -155,7 +155,7 @@ public class QuestionSetValueNumLine extends AbstractType {
 
 			if (q != null) {
 				Condition cond = QuestionDashTreeUtils.createCondition(article,
-								DashTreeUtils.getAncestorDashTreeElements(s));
+						DashTreeUtils.getAncestorDashTreeElements(s));
 
 				if (cond != null) {
 					Double d = Double.parseDouble(argument);
@@ -167,7 +167,7 @@ public class QuestionSetValueNumLine extends AbstractType {
 					if (r != null) {
 						KnowWEUtils.storeObject(article, s, SETVALUE_ARGUMENT, r);
 						return Messages.asList(Messages.objectCreatedNotice(
-										r.getClass().toString()));
+								r.getClass().toString()));
 					}
 				}
 			}

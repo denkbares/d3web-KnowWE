@@ -30,9 +30,9 @@ import de.knowwe.core.compile.packaging.PackageCompiler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -58,7 +58,7 @@ public class CompileFlag extends DefaultMarkupType {
 		@Override
 		public void render(Section<?> sec,
 				UserContext user,
-				StringBuilder string) {
+				RenderResult string) {
 
 			List<Section<SinglePackageReference>> packageReferences = new LinkedList<Section<SinglePackageReference>>();
 			Sections.findSuccessorsOfType(sec, SinglePackageReference.class, packageReferences);
@@ -66,16 +66,16 @@ public class CompileFlag extends DefaultMarkupType {
 				DelegateRenderer.getInstance().render(sec, user, string);
 				return;
 			}
-			string.append(Strings.maskHTML("<div id=\"knowledge-panel\" class=\"panel\">"));
-			string.append(Strings.maskHTML("<h3>" + "Compile: " + sec.getText() +
-					"</h3><div>"));
+			string.appendHTML("<div id=\"knowledge-panel\" class=\"panel\">");
+			string.appendHTML("<h3>" + "Compile: " + sec.getText() +
+					"</h3><div>");
 			for (Section<?> child : packageReferences) {
 				if (child.get() instanceof SinglePackageReference) {
 					((SinglePackageReferenceRenderer) child.get().getRenderer()).render(child,
 							user, string);
 				}
 			}
-			string.append(Strings.maskHTML("</div></div>"));
+			string.appendHTML("</div></div>");
 		}
 
 	}

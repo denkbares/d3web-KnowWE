@@ -20,6 +20,7 @@
 
 package de.knowwe.core.report;
 
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Strings;
 
@@ -52,33 +53,31 @@ public class DefaultMessageRenderer implements MessageRenderer {
 	}
 
 	@Override
-	public String postRenderMessage(Message m, UserContext user, String source) {
-		return Strings.maskHTML("</span>");
+	public void postRenderMessage(Message m, UserContext user, String source, RenderResult result) {
+		result.appendHTML("</span>");
 	}
 
 	@Override
-	public String preRenderMessage(Message m, UserContext user, String source) {
-		StringBuilder string = new StringBuilder();
+	public void preRenderMessage(Message m, UserContext user, String source, RenderResult result) {
 
-		string.append(Strings.maskHTML("<span"));
+		result.appendHTML("<span");
 		String tooltip = Strings.maskJSPWikiMarkup(m.getVerbalization());
 		if (tooltip != null) {
 			if (source != null && !source.isEmpty()) {
 				tooltip = source + ": " + tooltip;
 			}
-			string.append(" title='").append(
+			result.append(" title='").append(
 					tooltip.replace('\'', '"')).append("'");
 		}
 		if (cssClass != null) {
-			string.append(" class='").append(cssClass).append("'");
+			result.append(" class='").append(cssClass).append("'");
 		}
 		if (cssStyle != null) {
-			string.append(" style='").append(cssStyle).append("'");
+			result.append(" style='").append(cssStyle).append("'");
 		}
 
-		string.append(Strings.maskHTML(">"));
+		result.appendHTML(">");
 
-		return string.toString();
 	}
 
 }

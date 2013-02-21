@@ -26,6 +26,7 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
@@ -39,7 +40,7 @@ public class DashesPrefix extends AbstractType {
 
 			@Override
 			public void render(Section<?> sec, UserContext user,
-					StringBuilder string) {
+					RenderResult string) {
 				// to suppress horizontal line in case of more than three dashes
 				if (sec.getText().trim().startsWith("" + key) && key == '-') {
 					string.append('~');

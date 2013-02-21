@@ -32,7 +32,6 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.MessageRenderer;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 
 public class DelegateRenderer implements Renderer {
 
@@ -56,7 +55,7 @@ public class DelegateRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user,
-			StringBuilder builder) {
+			RenderResult builder) {
 
 		boolean renderTypes = isRenderTypes(user.getParameters());
 		if (renderTypes) renderType(section, true, builder);
@@ -87,16 +86,16 @@ public class DelegateRenderer implements Renderer {
 			// now we log instead AND report the error to the user
 			Logger.getLogger(getClass().getName()).warning(
 					"Internal error while rendering section");
-			builder.append(Strings.maskHTML("<span class='warning'>"));
+			builder.appendHTML("<span class='warning'>");
 			builder.append("internal error while rendering section: " + e);
-			builder.append(Strings.maskHTML("</span>"));
+			builder.appendHTML("</span>");
 			e.printStackTrace();
 		}
 
 		if (renderTypes) renderType(section, false, builder);
 	}
 
-	public void renderSubSection(Section<?> subSection, UserContext user, StringBuilder builder) {
+	public void renderSubSection(Section<?> subSection, UserContext user, RenderResult builder) {
 		renderAnchor(subSection, builder);
 
 		// any messageRenderer has pre- and post rendering hook
@@ -111,17 +110,17 @@ public class DelegateRenderer implements Renderer {
 		renderMessagesPost(subSection, user, builder);
 	}
 
-	private void renderMessagesPost(Section<?> subSection, UserContext user, StringBuilder builder) {
+	private void renderMessagesPost(Section<?> subSection, UserContext user, RenderResult builder) {
 		// Render errors post
 		Map<String, Collection<Message>> errors = Messages.getMessages(subSection,
 				Message.Type.ERROR);
 		for (Entry<String, Collection<Message>> entry : errors.entrySet()) {
 			for (Message kdomNotice : entry.getValue()) {
 				MessageRenderer errorRenderer = subSection.get()
-							.getErrorRenderer();
+						.getErrorRenderer();
 				if (errorRenderer != null) {
-					builder.append(errorRenderer.postRenderMessage(kdomNotice, user,
-								entry.getKey()));
+					errorRenderer.postRenderMessage(kdomNotice, user,
+							entry.getKey(), builder);
 				}
 			}
 		}
@@ -132,10 +131,10 @@ public class DelegateRenderer implements Renderer {
 		for (Entry<String, Collection<Message>> entry : notices.entrySet()) {
 			for (Message kdomNotice : entry.getValue()) {
 				MessageRenderer noticeRenderer = subSection.get()
-							.getNoticeRenderer();
+						.getNoticeRenderer();
 				if (noticeRenderer != null) {
-					builder.append(noticeRenderer.postRenderMessage(kdomNotice, user,
-								entry.getKey()));
+					noticeRenderer.postRenderMessage(kdomNotice, user,
+							entry.getKey(), builder);
 				}
 			}
 		}
@@ -146,21 +145,21 @@ public class DelegateRenderer implements Renderer {
 		for (Entry<String, Collection<Message>> entry : warnings.entrySet()) {
 			for (Message kdomWarning : entry.getValue()) {
 				MessageRenderer warningRenderer = subSection.get()
-							.getWarningRenderer();
+						.getWarningRenderer();
 				if (warningRenderer != null) {
-					builder.append(warningRenderer
-								.postRenderMessage(kdomWarning, user, entry.getKey()));
+					warningRenderer
+							.postRenderMessage(kdomWarning, user, entry.getKey(), builder);
 				}
 			}
 		}
 
 		if (warnings.size() > 0 || notices.size() > 0 || errors.size() > 0) {
-			builder.append(Strings.maskHTML("<a name=\"" + subSection.getID()
-					+ "\"></a>"));
+			builder.appendHTML("<a name=\"" + subSection.getID()
+					+ "\"></a>");
 		}
 	}
 
-	private void renderMessagesPre(Section<?> subSection, UserContext user, StringBuilder builder) {
+	private void renderMessagesPre(Section<?> subSection, UserContext user, RenderResult builder) {
 		// Render warnings pre
 		Map<String, Collection<Message>> warnings = Messages.getMessages(
 				subSection, Message.Type.WARNING);
@@ -169,8 +168,8 @@ public class DelegateRenderer implements Renderer {
 				MessageRenderer warningRenderer = subSection.get()
 						.getWarningRenderer();
 				if (warningRenderer != null) {
-					builder.append(warningRenderer
-							.preRenderMessage(kdomWarning, user, entry.getKey()));
+					warningRenderer
+							.preRenderMessage(kdomWarning, user, entry.getKey(), builder);
 				}
 			}
 		}
@@ -183,7 +182,7 @@ public class DelegateRenderer implements Renderer {
 				MessageRenderer noticeRenderer = subSection.get()
 						.getNoticeRenderer();
 				if (noticeRenderer != null) {
-					builder.append(noticeRenderer.preRenderMessage(kdomNotice, user, entry.getKey()));
+					noticeRenderer.preRenderMessage(kdomNotice, user, entry.getKey(), builder);
 				}
 			}
 		}
@@ -196,23 +195,23 @@ public class DelegateRenderer implements Renderer {
 				MessageRenderer errorRenderer = subSection.get()
 						.getErrorRenderer();
 				if (errorRenderer != null) {
-					builder.append(errorRenderer.preRenderMessage(kdomNotice, user, entry.getKey()));
+					errorRenderer.preRenderMessage(kdomNotice, user, entry.getKey(), builder);
 				}
 			}
 		}
 	}
 
-	private void renderAnchor(Section<?> subSection, StringBuilder builder) {
+	private void renderAnchor(Section<?> subSection, RenderResult builder) {
 		// String anchor = subSection.getId();
 		// builder.append(KnowWEUtils.maskHTML("<a name='kdomID-"+anchor+"'></a>"));
 	}
 
 	private void renderType(Section<?> section, boolean openIt,
-			StringBuilder builder) {
-		builder.append(Strings.maskHTML("<sub>&lt;"));
+			RenderResult builder) {
+		builder.appendHTML("<sub>&lt;");
 		if (!openIt) builder.append('/');
 		builder.append(section.get().getName());
-		builder.append(Strings.maskHTML("&gt;</sub>"));
+		builder.appendHTML("&gt;</sub>");
 	}
 
 	public static Renderer getRenderer(Section<?> section, UserContext user) {

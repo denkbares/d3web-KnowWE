@@ -20,6 +20,7 @@ package de.d3web.we.solutionpanel;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
@@ -45,7 +46,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 public class ShowSolutionsRenderer extends DefaultMarkupRenderer {
 
 	@Override
-	protected void renderContents(Section<?> section, UserContext user, StringBuilder string) {
+	protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
 		// only render the content section
 		Section<?> child = DefaultMarkupType.getContentSection(section);
 		if (child == null) return; // noting to render

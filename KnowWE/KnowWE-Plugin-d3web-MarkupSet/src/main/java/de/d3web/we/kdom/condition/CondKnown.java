@@ -34,7 +34,6 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -54,15 +53,7 @@ public class CondKnown extends D3webCondition<CondKnown> {
 	public CondKnown() {
 
 		this.sectionFinder = new CondKnownFinder();
-		this.setRenderer(new StyleRenderer(StyleRenderer.KEYWORDS.getCssStyle()) {
-
-			@Override
-			protected void renderContent(Section<?> section, UserContext user, StringBuilder string) {
-				StringBuilder buffer = new StringBuilder();
-				super.renderContent(section, user, buffer);
-				string.append(buffer.toString());
-			}
-		});
+		this.setRenderer(StyleRenderer.KEYWORDS);
 
 		QuestionReference question = new QuestionReference();
 		question.setSectionFinder(new SectionFinder() {

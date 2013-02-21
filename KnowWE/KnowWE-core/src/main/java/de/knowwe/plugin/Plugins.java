@@ -66,7 +66,7 @@ public class Plugins {
 	public static final String EXTENDED_POINT_SearchProvider = "SearchProvider";
 	public static final String EXTENDED_POINT_TERMINOLOGY = "Terminology";
 	public static final String EXTENDED_POINT_COMPILESCRIPT = "CompileScript";
-	private static final String EXTENDED_POINT_Renderer = "Renderer";
+	public static final String EXTENDED_POINT_Renderer = "Renderer";
 	public static final String EXTENDED_POINT_Annotation = "Annotation";
 
 	/**

@@ -18,6 +18,7 @@
  */
 package de.d3web.we.ci4ke.dashboard.rendering;
 
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
@@ -29,8 +30,8 @@ import de.knowwe.core.utils.KnowWEUtils;
 public class ArticleRenderer implements ObjectNameRenderer {
 
 	@Override
-	public String render(String objectName) {
-		return KnowWEUtils.getURLLinkHTMLToArticle(objectName);
+	public void render(String objectName, RenderResult result) {
+		result.appendHTML(KnowWEUtils.getURLLinkHTMLToArticle(objectName));
 	}
 
 }

@@ -40,6 +40,7 @@ import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -109,8 +110,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public final String render(Section<?> section, UserContext userContext,
-			Map<String, String> parameters) {
+	public final void render(Section<?> section, UserContext userContext,
+			Map<String, String> parameters, RenderResult result) {
 		panelCounter = 0;
 		sectionCounter = 0;
 		rb = Messages.getMessageBundle(userContext);
@@ -120,12 +121,12 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		String sectionID = section.getID();
 		Tool[] tools = ToolUtils.getTools(tagNameSection, userContext);
 
-		StringBuilder buffer = new StringBuilder();
+		RenderResult jspMasked = new RenderResult(result);
 		String cssClassName = "type_" + section.get().getName();
 		defaultMarkupRenderer.renderDefaultMarkupStyled(getTagName(), content,
-				sectionID, cssClassName, tools, userContext, buffer);
-		Strings.maskJSPWikiMarkup(buffer);
-		return buffer.toString();
+				sectionID, cssClassName, tools, userContext, jspMasked);
+		jspMasked.maskJSPWikiMarkup();
+		result.append(jspMasked);
 	}
 
 	private String renderContent(Section<?> section, UserContext user,
@@ -137,7 +138,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		String objectName = null;
 		if (urlParameters.get(OBJECT_NAME) != null) {
 			objectName = Strings.decodeURL(urlParameters.get(OBJECT_NAME));
-		} else if (parameters.get(OBJECT_NAME) != null) {
+		}
+		else if (parameters.get(OBJECT_NAME) != null) {
 			objectName = Strings.decodeURL(parameters.get(OBJECT_NAME));
 		}
 
@@ -145,16 +147,17 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		if (urlParameters.get(TERM_IDENTIFIER) != null) {
 			externalTermIdentifierForm = Strings.decodeURL(urlParameters
 					.get(TERM_IDENTIFIER));
-		} else if (parameters.get(TERM_IDENTIFIER) != null) {
+		}
+		else if (parameters.get(TERM_IDENTIFIER) != null) {
 			externalTermIdentifierForm = Strings.decodeURL(parameters
 					.get(TERM_IDENTIFIER));
 		}
-		if (externalTermIdentifierForm == null)
-			externalTermIdentifierForm = objectName;
+		if (externalTermIdentifierForm == null) externalTermIdentifierForm = objectName;
 
 		// If name is not defined -> render search form!
 		if (objectName == null || objectName.isEmpty()) {
-			return Strings.maskHTML(renderLookUpForm(section));
+			RenderResult html = new RenderResult(user);
+			return html.appendHTML(renderLookUpForm(section)).toStringRaw();
 		}
 
 		TermIdentifier termIdentifier = TermIdentifier
@@ -179,7 +182,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		getTermReferences(null, termIdentifier, references);
 
 		// Render
-		StringBuilder html = new StringBuilder();
+		RenderResult html = new RenderResult(user);
 		html.append(renderHeader(externalTermIdentifierForm,
 				getTermObjectClass(definitions, references)));
 		html.append(renderRenamingForm(externalTermIdentifierForm, objectName,
@@ -189,7 +192,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				parameters));
 		html.append(renderLookUpForm(section));
 
-		return Strings.maskHTML(html.toString());
+		return html.toStringRaw();
 	}
 
 	private String getTermObjectClass(Set<Section<?>> definitions,
@@ -198,7 +201,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		Section<?> termSection = null;
 		if (!definitions.isEmpty()) {
 			termSection = definitions.iterator().next();
-		} else if (!references.isEmpty()) {
+		}
+		else if (!references.isEmpty()) {
 			termSection = references.iterator().next();
 		}
 		if (termSection != null && termSection.get() instanceof SimpleTerm) {
@@ -250,11 +254,10 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			Map<String, String> urlParameters) {
 
 		// Check if rendering is suppressed
-		if (checkParameter(HIDE_RENAME, parameters))
-			return "";
+		if (checkParameter(HIDE_RENAME, parameters)) return "";
 
-		String escapedExternalTermIdentifierForm = maskTermForHTML(externalTermIdentifierForm);
-		String escapedObjectName = maskTermForHTML(objectName);
+		String escapedExternalTermIdentifierForm = Strings.encodeHtml(externalTermIdentifierForm);
+		String escapedObjectName = Strings.encodeHtml(objectName);
 
 		StringBuilder html = new StringBuilder();
 		html.append("<form action=\"\" method=\"post\" >");
@@ -314,7 +317,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		for (String element : elements) {
 			if (!element.trim().isEmpty()) {
 				html.append("<li>");
-				html.append(KnowWEUtils.escapeHTML(element));
+				html.append(Strings.encodeHtml(element));
 				html.append("</li>");
 			}
 		}
@@ -324,10 +327,9 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	private String renderObjectInfo(Set<Section<?>> definitions,
 			Set<Section<?>> references, Map<String, String> parameters) {
 		StringBuilder html = new StringBuilder();
-		if (!checkParameter(HIDE_DEF, parameters))
-			html.append(renderTermDefinitions(definitions));
-		if (!checkParameter(HIDE_REFS, parameters))
-			html.append(renderTermReferences(references, definitions));
+		if (!checkParameter(HIDE_DEF, parameters)) html.append(renderTermDefinitions(definitions));
+		if (!checkParameter(HIDE_REFS, parameters)) html.append(renderTermReferences(references,
+				definitions));
 		return html.toString();
 	}
 
@@ -462,8 +464,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			Map<String, String> parameters) {
 
 		// Check if rendering is suppressed
-		if (checkParameter(HIDE_PLAIN, parameters))
-			return "";
+		if (checkParameter(HIDE_PLAIN, parameters)) return "";
 
 		StringBuilder html = new StringBuilder();
 
@@ -492,8 +493,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 					String textBefore = r.getAdditionalContext(-35).replaceAll(
 							"(\\{|\\})", "");
 					if (!article.getRootSection().getText()
-							.startsWith(textBefore))
-						innerHTML.append("...");
+							.startsWith(textBefore)) innerHTML.append("...");
 					innerHTML.append(textBefore);
 					innerHTML.append("<a href=\"Wiki.jsp?page=");
 					innerHTML.append(article.getTitle());
@@ -506,8 +506,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 					String textAfter = r.getAdditionalContext(40).replaceAll(
 							"(\\{|\\})", "");
 					innerHTML.append(textAfter);
-					if (!article.getRootSection().getText().endsWith(textAfter))
-						innerHTML.append("...");
+					if (!article.getRootSection().getText().endsWith(textAfter)) innerHTML.append("...");
 					innerHTML.append("</pre>");
 					innerHTML.append("</li>");
 				}
@@ -572,14 +571,6 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		return "LookUpAction";
 	}
 
-	public static String maskTermForHTML(String string) {
-		// string = StringEscapeUtils.escapeHtml(string);
-		string = string.replace("#", "&#35;");
-		string = string.replace("\"", "&quot;");
-		string = string.replace("\\", "&#92;");
-		return string;
-	}
-
 	public JSONObject getTerms(String web) {
 		// gathering all terms
 		List<String> allTerms = new ArrayList<String>();
@@ -603,7 +594,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		JSONObject response = new JSONObject();
 		try {
 			response.accumulate("allTerms", allTerms);
-		} catch (JSONException e) {
+		}
+		catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

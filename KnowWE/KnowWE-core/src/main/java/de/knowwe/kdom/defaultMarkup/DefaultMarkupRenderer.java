@@ -36,6 +36,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Message.Type;
@@ -65,20 +66,20 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	@Override
-	public void render(Section<?> section, UserContext user, StringBuilder buffer) {
+	public void render(Section<?> section, UserContext user, RenderResult buffer) {
 		String id = section.getID();
 		Tool[] tools = ToolUtils.getTools(section, user);
 
 		// render markup title
-		StringBuilder markupTitle = new StringBuilder();
+		RenderResult markupTitle = new RenderResult(buffer);
 		renderTitle(section, user, markupTitle);
 
 		// create content
-		StringBuilder content = new StringBuilder();
+		RenderResult content = new RenderResult(buffer);
 
 		// add an anchor to enable direct link to the section
 		String anchorName = KnowWEUtils.getAnchor(section);
-		content.append(Strings.maskHTML("<a name='" + anchorName + "'></a>"));
+		content.appendHTML("<a name='" + anchorName + "'></a>");
 
 		// render messages and content
 		renderMessages(section, content);
@@ -87,14 +88,14 @@ public class DefaultMarkupRenderer implements Renderer {
 		String cssClassName = "type_" + section.get().getName();
 
 		renderDefaultMarkupStyled(
-				markupTitle.toString(), content.toString(),
+				markupTitle.toStringRaw(), content.toStringRaw(),
 				id, cssClassName, tools, user, buffer);
 	}
 
-	protected void renderTitle(Section<?> section, UserContext user, StringBuilder string) {
+	protected void renderTitle(Section<?> section, UserContext user, RenderResult string) {
 		String icon = getTitleIcon(section, user);
 		String title = getTitleName(section, user);
-		string.append(renderTitle(icon, title));
+		string.appendHTML(renderTitle(icon, title));
 	}
 
 	protected String getTitleIcon(Section<?> section, UserContext user) {
@@ -117,7 +118,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		return result;
 	}
 
-	public void renderMessages(Section<?> section, StringBuilder string) {
+	public void renderMessages(Section<?> section, RenderResult string) {
 
 		renderCompileWarning(section, string);
 		renderMessageBlock(section, string, Message.Type.ERROR, Message.Type.WARNING);
@@ -151,7 +152,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		return collectedMessages;
 	}
 
-	private void renderCompileWarning(Section<?> section, StringBuilder string) {
+	private void renderCompileWarning(Section<?> section, RenderResult string) {
 		// add warning if section is not compiled
 		if (!section.get().isIgnoringPackageCompile()) {
 
@@ -181,7 +182,7 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	public static void renderMessageBlock(Section<?> rootSection,
-			StringBuilder string,
+			RenderResult string,
 			Message.Type... types) {
 
 		for (Type type : types) {
@@ -193,12 +194,12 @@ public class DefaultMarkupRenderer implements Renderer {
 			if (messages.size() == 1) {
 				clazz += " singleLine";
 			}
-			string.append(Strings.maskHTML("<span class='" + clazz
-					+ "' style='white-space: pre-wrap;'>"));
+			string.appendHTML("<span class='" + clazz
+					+ "' style='white-space: pre-wrap;'>");
 			for (String messageString : messages) {
 				string.append(messageString).append("\n");
 			}
-			string.append(Strings.maskHTML("</span>\n"));
+			string.appendHTML("</span>\n");
 		}
 	}
 
@@ -231,17 +232,17 @@ public class DefaultMarkupRenderer implements Renderer {
 		return messages;
 	}
 
-	public static void renderMessagesOfType(Message.Type type, Collection<Message> messages, StringBuilder string) {
-		string.append(Strings.maskHTML("<span class='" + type.toString().toLowerCase()
-				+ "' style='white-space: pre-wrap;'>"));
+	public static void renderMessagesOfType(Message.Type type, Collection<Message> messages, RenderResult string) {
+		string.appendHTML("<span class='" + type.toString().toLowerCase()
+				+ "' style='white-space: pre-wrap;'>");
 		for (Message msg : messages) {
 			string.append(Strings.maskJSPWikiMarkup(msg.getVerbalization()));
 			string.append("\n");
 		}
-		string.append(Strings.maskHTML("</span>"));
+		string.appendHTML("</span>");
 	}
 
-	protected void renderContents(Section<?> section, UserContext user, StringBuilder string) {
+	protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
 		List<Section<?>> subsecs = section.getChildren();
 		Section<?> first = subsecs.get(0);
 		Section<?> last = subsecs.get(subsecs.size() - 1);
@@ -262,41 +263,41 @@ public class DefaultMarkupRenderer implements Renderer {
 			String cssClassName,
 			Tool[] tools,
 			UserContext user,
-			StringBuilder string) {
+			RenderResult string) {
 
 		String cssClass = "defaultMarkupFrame";
 		if (cssClassName != null) cssClass += " " + cssClassName;
-		string.append(Strings.maskHTML("<div id=\"" + sectionID + "\" class='" + cssClass
-				+ "'>\n"));
+		string.appendHTML("<div id=\"" + sectionID + "\" class='" + cssClass
+				+ "'>\n");
 
-		renderHeader(title, sectionID, tools, user, string);
+		appendHeader(title, sectionID, tools, user, string);
 
 		// render pre-formatted box
-		string.append(Strings.maskHTML("<div id=\"box_" + sectionID
-				+ "\" class='defaultMarkup'>"));
-		string.append(Strings.maskHTML("<div id=\"content_" + sectionID
-				+ "\" class='markupText'>"));
+		string.appendHTML("<div id=\"box_" + sectionID
+				+ "\" class='defaultMarkup'>");
+		string.appendHTML("<div id=\"content_" + sectionID
+				+ "\" class='markupText'>");
 
 		// render content
 		// Returns are replaced to avoid JSPWiki to render <p> </p>, do not edit
-		// the following line!
-		string.append(content.replaceAll("(\r?\n){2}",
-				Strings.maskHTML("<span>\n</span><span>\n</span>")));
+		// the following lines!
+		String newLine = "(\r?\n){2}";
+		String newLineReplacement = new RenderResult(string).appendHTML(
+				"<span>\n</span><span>\n</span>").toStringRaw();
+		string.append(content.replaceAll(newLine, newLineReplacement));
 
 		// and close the box(es)
-		string.append(Strings.maskHTML("</div>")); // class=markupText
-		string.append(Strings.maskHTML("</div>")); // class=defaultMarkup
-		string.append(Strings.maskHTML("</div>"));
+		string.appendHTML("</div>"); // class=markupText
+		string.appendHTML("</div>"); // class=defaultMarkup
+		string.appendHTML("</div>");
 
 	}
 
-	protected void renderHeader(String title,
+	protected void appendHeader(String title,
 			String sectionID,
 			Tool[] tools,
 			UserContext user,
-			StringBuilder string) {
-
-		StringBuilder temp = new StringBuilder();
+			RenderResult temp) {
 
 		String renderModerClass = renderMode == ToolsRenderMode.TOOLBAR
 				? " headerToolbar"
@@ -304,34 +305,32 @@ public class DefaultMarkupRenderer implements Renderer {
 		String openingDiv = "<div id='header_" + sectionID + "' class='markupHeaderFrame"
 				+ renderModerClass + "'>";
 
-		temp.append(openingDiv);
+		temp.appendHTML(openingDiv);
 
-		temp.append("<div class='markupHeader'>");
+		temp.appendHTML("<div class='markupHeader'>");
 		temp.append(title);
 
 		if (renderMode == ToolsRenderMode.MENU) {
-			temp.append("<span class='markupMenuIndicator' />");
+			temp.appendHTML("<span class='markupMenuIndicator' />");
 		}
 		else if (renderMode == ToolsRenderMode.TOOLBAR) {
-			temp.append(renderToolbar(tools, user));
+			appendToolbar(tools, user, temp);
 		}
 
-		temp.append("</div>"); // class=markupHeader
+		temp.appendHTML("</div>"); // class=markupHeader
 
 		if (renderMode == ToolsRenderMode.MENU) {
-			temp.append(renderMenu(tools, sectionID, user));
+			appendMenu(tools, sectionID, user, temp);
 		}
 
-		temp.append("</div>"); // class=markupHeaderFrame
-
-		string.append(Strings.maskHTML(temp.toString()));
+		temp.appendHTML("</div>"); // class=markupHeaderFrame
 
 	}
 
-	protected String renderToolbar(Tool[] tools, UserContext user) {
-		StringBuilder toolbarHtml = new StringBuilder("<div class='markupTools'> ");
+	protected void appendToolbar(Tool[] tools, UserContext user, RenderResult result) {
+		result.appendHTML("<div class='markupTools'> ");
 		for (Tool tool : tools) {
-			toolbarHtml.append("<div class=\""
+			result.appendHTML("<div class=\""
 					+ tool.getClass().getSimpleName() + "\" >" +
 					"<a href=\"javascript:" + tool.getJSAction() + ";undefined;\">" +
 					"<img " +
@@ -339,17 +338,16 @@ public class DefaultMarkupRenderer implements Renderer {
 					"src=\"" + tool.getIconPath() + "\"></img>" +
 					"</a></div>");
 		}
-		toolbarHtml.append("</div>");
-		return toolbarHtml.toString();
+		result.appendHTML("</div>");
 	}
 
-	public String renderMenu(Tool[] tools, String id, UserContext user) {
+	public void appendMenu(Tool[] tools, String id, UserContext user, RenderResult result) {
 
-		if (tools == null || tools.length == 0) return "";
+		if (tools == null || tools.length == 0) return;
 
 		Map<String, Map<String, List<Tool>>> groupedTools = ToolUtils.groupTools(tools);
 
-		StringBuffer menuHtml = new StringBuffer("<div id='menu_" + id + "' class='markupMenu'>");
+		result.appendHTML("<div id='menu_" + id + "' class='markupMenu'>");
 
 		List<String> levelOneCategories = new ArrayList<String>(groupedTools.keySet());
 		Collections.sort(levelOneCategories);
@@ -362,24 +360,24 @@ public class DefaultMarkupRenderer implements Renderer {
 
 			for (String subcategory : levelTwoCategories) {
 				for (Tool t : groupedTools.get(category).get(subcategory)) {
-					menuHtml.append(renderToolAsMenuItem(t));
+					appendToolAsMenuItem(t, result);
 				}
 			}
 
 			if (!category.equals(levelOneCategories.get(levelOneCategories.size() - 1))) {
-				menuHtml.append("<span class=\"markupMenuDivider\">&nbsp;</span>");
+				result.appendHTML("<span class=\"markupMenuDivider\">&nbsp;</span>");
 			}
 		}
 
-		return menuHtml.append("</div>").toString();
+		result.appendHTML("</div>");
 	}
 
-	protected String renderToolAsMenuItem(Tool tool) {
+	protected void appendToolAsMenuItem(Tool tool, RenderResult result) {
 		String icon = tool.getIconPath();
 		String jsAction = tool.getJSAction();
 		boolean hasIcon = icon != null && !icon.trim().isEmpty();
 
-		return "<div class=\""
+		result.appendHTML("<div class=\""
 				+ tool.getClass().getSimpleName()
 				+ "\" >"
 				+ "<div class=\"markupMenuItem\">"
@@ -390,11 +388,11 @@ public class DefaultMarkupRenderer implements Renderer {
 						? " href=\"javascript:" + tool.getJSAction()
 								+ ";hideToolsPopupMenu();undefined;\""
 						: "") +
-				" title=\"" + tool.getDescription() + "\">" +
+				" title=\"" + Strings.encodeHtml(tool.getDescription()) + "\">" +
 				(hasIcon ? ("<img src=\"" + icon + "\"></img>") : "") +
 				" <span>" + tool.getTitle() + "</span>" +
 				"</" + (jsAction == null ? "span" : "a") + ">" +
-				"</div></div>";
+				"</div></div>");
 	}
 
 	public ToolsRenderMode getRenderMode() {

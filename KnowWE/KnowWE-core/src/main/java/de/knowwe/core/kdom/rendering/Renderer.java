@@ -34,6 +34,6 @@ public interface Renderer {
 	 * 
 	 * @return
 	 */
-	public void render(Section<?> section, UserContext user, StringBuilder string);
+	public void render(Section<?> section, UserContext user, RenderResult string);
 
 }

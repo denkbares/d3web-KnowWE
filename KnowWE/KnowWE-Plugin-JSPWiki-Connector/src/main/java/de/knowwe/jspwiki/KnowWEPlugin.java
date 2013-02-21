@@ -35,6 +35,8 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.io.FileUtils;
 
 import com.ecyrd.jspwiki.PageManager;
@@ -60,10 +62,10 @@ import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.user.UserContextUtil;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.event.InitializedAllArticlesEvent;
 import de.knowwe.event.PageRenderedEvent;
@@ -77,6 +79,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 	private boolean wikiEngineInitialized = false;
 	private final List<String> supportArticleNames;
+	private final String resultKey = RenderResult.class.getName();
 
 	public KnowWEPlugin() {
 		supportArticleNames = Arrays.asList(MORE_MENU, LEFT_MENU, LEFT_MENU_FOOTER);
@@ -175,14 +178,23 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		}
 	}
 
+	private String getRenderResultKey(String title) {
+		return resultKey + "_" + title;
+	}
+
 	@Override
 	public String postTranslate(WikiContext wikiContext, String htmlContent)
 			throws FilterException {
 
 		try {
-
-			htmlContent = Strings.unmaskNewline(htmlContent);
-			htmlContent = Strings.unmaskHTML(htmlContent);
+			HttpServletRequest httpRequest = wikiContext.getHttpRequest();
+			// When a page is rendered the first time, the request is null.
+			// Since this version with no http request is not shown to the user,
+			// we can just ignore it.
+			if (httpRequest != null) {
+				RenderResult result = new RenderResult(httpRequest);
+				htmlContent = result.unmask(htmlContent);
+			}
 
 			return htmlContent;
 		}
@@ -201,8 +213,15 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		}
 
 		/* creating KnowWEUserContext with username and requestParamteters */
+		HttpServletRequest httpRequest = wikiContext.getHttpRequest();
+		if (httpRequest == null) {
+			// When a page is rendered the first time, the request is null.
+			// Since this version with no http request is not shown to the user,
+			// we can just ignore it.
+			return content;
+		}
 		JSPWikiUserContext userContext = new JSPWikiUserContext(wikiContext,
-				UserContextUtil.getParameters(wikiContext.getHttpRequest()));
+				UserContextUtil.getParameters(httpRequest));
 
 		/*
 		 * The special pages MoreMenu, LeftMenu and LeftMenuFooter get extra
@@ -256,25 +275,28 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 						Environment.DEFAULT_WEB, fullParse);
 			}
 
-			StringBuilder articleHTML = new StringBuilder();
+			RenderResult renderResult = new RenderResult(userContext.getRequest());
 
-			if (article != null && wikiContext.getHttpRequest() != null) {
+			if (article != null && httpRequest != null) {
+
+				userContext.getRequest().setAttribute(getRenderResultKey(article.getTitle()),
+						renderResult);
 
 				// Render Pre-PageAppendHandlers
 				List<PageAppendHandler> appendhandlers = Environment.getInstance()
 						.getAppendHandlers();
 				for (PageAppendHandler pageAppendHandler : appendhandlers) {
 					if (pageAppendHandler.isPre()) {
-						articleHTML.append(pageAppendHandler.getDataToAppend(
-								title, Environment.DEFAULT_WEB,
-								userContext));
+						pageAppendHandler.append(
+								Environment.DEFAULT_WEB, title,
+								userContext, renderResult);
 					}
 				}
 
 				// RENDER PAGE
 				long start = System.currentTimeMillis();
 				article.getRootType().getRenderer().render(article.getRootSection(), userContext,
-						articleHTML);
+						renderResult);
 				Logger.getLogger(this.getClass().getName()).log(
 						Level.INFO, "Rendered article '" + article.getTitle() + "' in "
 								+ (System.currentTimeMillis() - start) + "ms");
@@ -284,9 +306,9 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				// Render Post-PageAppendHandlers
 				for (PageAppendHandler pageAppendHandler : appendhandlers) {
 					if (!pageAppendHandler.isPre()) {
-						articleHTML.append(pageAppendHandler.getDataToAppend(
-								title, Environment.DEFAULT_WEB,
-								userContext));
+						pageAppendHandler.append(
+								Environment.DEFAULT_WEB, title,
+								userContext, renderResult);
 					}
 				}
 
@@ -294,7 +316,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				includeDOMResources(wikiContext);
 			}
 
-			return articleHTML.toString();
+			return renderResult.toStringRaw();
 		}
 		catch (Exception e) {
 			System.out.println("*****EXCEPTION IN preTranslate !!! *********");
@@ -369,10 +391,12 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	private String renderKDOM(String content, UserContext userContext,
 			Article article) {
 		if (article != null) {
-			StringBuilder articleString = new StringBuilder();
+			RenderResult articleString = new RenderResult(userContext.getRequest());
+			userContext.getRequest().setAttribute(getRenderResultKey(article.getTitle()),
+					articleString);
 			article.getRootType().getRenderer().render(article.getRootSection(), userContext,
 					articleString);
-			return articleString.toString();
+			return articleString.toStringRaw();
 		}
 		return content + "\n(no KDOM)";
 	}

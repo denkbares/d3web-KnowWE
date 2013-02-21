@@ -58,12 +58,12 @@ import de.knowwe.core.kdom.basicType.UnrecognizedSyntaxType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.AllTextFinderDivCorrectTrimmed;
@@ -229,7 +229,7 @@ public class RuleContentType extends AbstractType {
 
 		@Override
 		public void render(Section<?> sec,
-				UserContext user, StringBuilder string) {
+				UserContext user, RenderResult string) {
 			Article article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
 			Section<RuleAction> ruleAction = Sections.findSuccessor(sec,
 					RuleAction.class);
@@ -239,14 +239,14 @@ public class RuleContentType extends AbstractType {
 						RuleContentType.ruleStoreKey);
 			}
 
-			string.append(Strings.maskHTML("<span id='" + sec.getID()
-					+ "'>"));
+			string.appendHTML("<span id='" + sec.getID()
+					+ "'>");
 
 			KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
 			Session session = SessionProvider.getSession(user, kb);
 
 			highlightRule(article, sec, rule, session, user, string);
-			string.append(Strings.maskHTML("</span>"));
+			string.appendHTML("</span>");
 		}
 
 		private static final String highlightMarker = "HIGHLIGHT_MARKER";
@@ -270,9 +270,9 @@ public class RuleContentType extends AbstractType {
 		 */
 		private void highlightRule(Article article,
 				Section<?> sec, Rule r,
-				Session session, UserContext user, StringBuilder string) {
+				Session session, UserContext user, RenderResult string) {
 
-			StringBuilder newContent = new StringBuilder();
+			RenderResult newContent = new RenderResult(string);
 			if (r == null || session == null) {
 				DelegateRenderer.getInstance().render(sec, user, newContent);
 			}
@@ -290,7 +290,7 @@ public class RuleContentType extends AbstractType {
 					this.exceptionRenderer.render(sec, user, newContent);
 				}
 			}
-			string.append(newContent.toString());
+			string.append(newContent.toStringRaw());
 		}
 
 	}

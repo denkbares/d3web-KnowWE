@@ -23,8 +23,8 @@ package de.knowwe.core.taghandler;
 import java.util.Map;
 
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 
 /**
  * @author Jochen
@@ -46,15 +46,15 @@ public abstract class AbstractHTMLTagHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public final String render(Section<?> section, UserContext userContext, Map<String, String> parameters) {
+	public final void render(Section<?> section, UserContext userContext, Map<String, String> parameters, RenderResult result) {
 
-		String renderedHTML = renderHTML(section.getTitle(), userContext, parameters,
-				section.getWeb());
-		String masked = Strings.maskHTML(renderedHTML);
+		RenderResult handlerResult = new RenderResult(result);
+		renderHTML(section.getWeb(), section.getTitle(), userContext,
+				parameters, handlerResult);
 		if (maskJSPWikiSyntax) {
-			masked = Strings.maskJSPWikiMarkup(masked);
+			handlerResult.maskJSPWikiMarkup();
 		}
-		return masked;
+		result.append(handlerResult);
 	}
 
 	/**
@@ -66,8 +66,8 @@ public abstract class AbstractHTMLTagHandler extends AbstractTagHandler {
 	 * @param title the title of the page where the tag handler is included.
 	 * @param user the user context for this request
 	 * @param parameters the parameters of the tag handler invocation
-	 * @return the resulting wiki markup text
+	 * @param result the result where the rendered contents are appended
 	 */
-	public abstract String renderHTML(String title, UserContext user, Map<String, String> parameters, String web);
+	public abstract void renderHTML(String web, String title, UserContext user, Map<String, String> parameters, RenderResult result);
 
 }

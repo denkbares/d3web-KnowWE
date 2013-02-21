@@ -35,11 +35,11 @@ import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.ScopeUtils;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.AnnotationType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
@@ -58,7 +58,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 	}
 
 	@Override
-	protected void renderContents(Section<?> section, UserContext user, StringBuilder string) {
+	protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
 		String title = KnowledgeBaseType.getContent(section).trim();
 		String id = KnowledgeBaseType.getAnnotation(section, KnowledgeBaseType.ANNOTATION_ID);
 		String author = KnowledgeBaseType.getAnnotation(section,
@@ -70,9 +70,8 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 		String filename = KnowledgeBaseType.getAnnotation(section,
 				KnowledgeBaseType.ANNOTATION_FILENAME);
 
-
 		// render title line
-		string.append(Strings.maskHTML("<b>" + title + "</b>"));
+		string.appendHTML("<b>" + title + "</b>");
 		if (id != null) {
 			string.append(" (").append(id).append(")");
 		}
@@ -80,30 +79,30 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 
 		// render information block
 		if (version != null || author != null || comment != null || filename != null) {
-			string.append(Strings.maskHTML("<div style='padding-top:1em;'>"));
+			string.appendHTML("<div style='padding-top:1em;'>");
 
 			if (version != null) {
-				string.append(Strings.maskHTML("<img src='KnowWEExtension/d3web/icon/date16.png'></img> "));
+				string.appendHTML("<img src='KnowWEExtension/d3web/icon/date16.png'></img> ");
 				string.append(version).append("\n");
 			}
 			if (author != null) {
-				string.append(Strings.maskHTML("<img src='KnowWEExtension/d3web/icon/author16.png'></img> "));
+				string.appendHTML("<img src='KnowWEExtension/d3web/icon/author16.png'></img> ");
 				string.append(author).append("\n");
 			}
 			if (comment != null) {
-				string.append(Strings.maskHTML("<img src='KnowWEExtension/d3web/icon/comment16.png'></img> "));
+				string.appendHTML("<img src='KnowWEExtension/d3web/icon/comment16.png'></img> ");
 				string.append(comment).append("\n");
 			}
 			if (filename != null) {
-				string.append(Strings.maskHTML("<img src='KnowWEExtension/d3web/icon/download16.gif'></img> "));
+				string.appendHTML("<img src='KnowWEExtension/d3web/icon/download16.gif'></img> ");
 				string.append(filename).append("\n");
 			}
 
-			string.append(Strings.maskHTML("</div>"));
+			string.appendHTML("</div>");
 		}
 
 		// render used packages and their erroneous pages
-		string.append(Strings.maskHTML("<div style='padding-top:1em;'>"));
+		string.appendHTML("<div style='padding-top:1em;'>");
 		// string.append(KnowWEUtils.maskHTML("<hr>\n"));
 		Section<KnowledgeBaseCompileType> compileSection = Sections.findSuccessor(section,
 				KnowledgeBaseCompileType.class);
@@ -113,7 +112,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 		for (Iterator<String> packageIter = packagesToCompile.iterator(); packageIter.hasNext();) {
 			String packageName = packageIter.next();
 			renderCompile(section.getArticle(), packageName, string);
-			if (packageIter.hasNext()) string.append(Strings.maskHTML("<br/>"));
+			if (packageIter.hasNext()) string.appendHTML("<br/>");
 		}
 
 		// render plugged annotations
@@ -131,11 +130,11 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 			}
 		}
 
-		string.append(Strings.maskHTML("</div>"));
+		string.appendHTML("</div>");
 
 	}
 
-	private void renderCompile(Article article, String packageName, StringBuilder string) {
+	private void renderCompile(Article article, String packageName, RenderResult string) {
 
 		PackageManager packageManager =
 				Environment.getInstance().getPackageManager(article.getWeb());
@@ -170,7 +169,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 		String icon = "KnowWEExtension/d3web/icon/uses_" +
 				(hasErrors ? "error" : hasWarnings ? "warn" : "ok") +
 				"16.gif";
-		string.append(Strings.maskHTML("<img src='" + icon + "'></img> "));
+		string.appendHTML("<img src='" + icon + "'></img> ");
 		string.append("uses package: ").append(packageName);
 		if (hasErrors) {
 			string.append(" (").append(errorsCount).append(" errors in ");
@@ -190,7 +189,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 		}
 	}
 
-	private void renderDefectArticleNames(Set<Article> articles, StringBuilder string) {
+	private void renderDefectArticleNames(Set<Article> articles, RenderResult string) {
 		// print all articles out as links (ordered alphabetically, duplicates
 		// removed)
 		List<String> names = new ArrayList<String>(articles.size());
@@ -199,13 +198,13 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 		}
 		Collections.sort(names);
 
-		string.append(Strings.maskHTML("<ul>"));
+		string.appendHTML("<ul>");
 		for (String name : names) {
-			string.append(Strings.maskHTML("<li>"));
+			string.appendHTML("<li>");
 			string.append("[").append(name).append("]");
 			string.append("\n");
 		}
-		string.append(Strings.maskHTML("</ul>"));
+		string.appendHTML("</ul>");
 	}
 
 	private Extension[] getPluggedAnnotation(Section<?> sec) {

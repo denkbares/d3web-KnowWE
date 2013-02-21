@@ -40,16 +40,9 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
-import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.rendering.RenderResult;
 
 public class Strings {
-
-	private static final String[] HTML = new String[] {
-			"[{", "}]", "\"", "'", ">", "<", "[", "]" };
-	private static final String[] MASKED_HTML = new String[] {
-			Environment.HTML_PLUGIN_BRACKETS_OPEN, Environment.HTML_PLUGIN_BRACKETS_CLOSE,
-			Environment.HTML_DOUBLEQUOTE, Environment.HTML_QUOTE, Environment.HTML_GT,
-			Environment.HTML_ST, Environment.HTML_BRACKET_OPEN, Environment.HTML_BRACKET_CLOSE };
 
 	private static final String[] QUOTE_UNESCAPED = new String[] {
 			"\\", "\"" };
@@ -430,21 +423,17 @@ public class Strings {
 		}
 	}
 
-	/**
-	 * 
-	 * masks output strings
-	 * 
-	 * @param htmlContent
-	 * @return
-	 */
-	public static String maskHTML(String htmlContent) {
-		for (int i = 0; i < HTML.length; i++) {
-			// somehow this is way faster for large strings than
-			// StringUtils.replaceEach(String, String[], String[]).
-			htmlContent = StringUtils.replace(htmlContent, HTML[i], MASKED_HTML[i]);
-		}
-		return htmlContent;
-	}
+	// /**
+	// *
+	// * masks output strings
+	// *
+	// * @param htmlContent
+	// * @return
+	// */
+	// public static String maskHTML(String htmlContent) {
+	//
+	// return "";
+	// }
 
 	/**
 	 * Masks [, ], ----, {{{, }}} and %% so that JSPWiki will render and not
@@ -503,11 +492,6 @@ public class Strings {
 		unmask(builder, "}}}");
 		unmask(builder, "%%");
 		unmask(builder, "\\");
-	}
-
-	public static String maskNewline(String htmlContent) {
-		htmlContent = htmlContent.replace("\n", Environment.NEWLINE);
-		return htmlContent;
 	}
 
 	public static String replaceUmlaut(String text) {
@@ -706,28 +690,6 @@ public class Strings {
 		return c == (char) 160;
 	}
 
-	/**
-	 * 
-	 * Unmasks output strings
-	 * 
-	 * @param htmlContent
-	 * @return
-	 */
-	public static String unmaskHTML(String htmlContent) {
-		for (int i = 0; i < MASKED_HTML.length; i++) {
-			// somehow this is way faster for large strings than
-			// StringUtils.replaceEach(String, String[], String[]).
-			htmlContent = StringUtils.replace(htmlContent, MASKED_HTML[i], HTML[i]);
-		}
-		return htmlContent;
-
-	}
-
-	public static String unmaskNewline(String htmlContent) {
-		htmlContent = StringUtils.replace(htmlContent, Environment.NEWLINE, "\n");
-		return htmlContent;
-	}
-
 	public static String quote(String element) {
 		return "\"" + StringUtils.replaceEach(element, QUOTE_UNESCAPED, QUOTE_ESCAPED) + "\"";
 	}
@@ -766,6 +728,23 @@ public class Strings {
 					Level.WARNING, "Unsupported encoding UTF-8", e);
 			return text;
 		}
+	}
+
+	/**
+	 * Escapes the given string for safely using user-input in web sites.
+	 * 
+	 * @param text Text to escape
+	 * @return sanitized text
+	 */
+	public static String encodeHtml(String text) {
+		if (text == null) return null;
+
+		return text.replaceAll("&", "&amp;").
+				replaceAll("\"", "&quot;").
+				replaceAll("'", "&#x27;").
+				replaceAll("<", "&lt;").
+				replaceAll(">", "&gt;").
+				replaceAll("#", "&#35;");
 	}
 
 	/**
@@ -873,49 +852,51 @@ public class Strings {
 	}
 
 	/**
-	 * Creates a complete and masked HTML element without having to manipulate
-	 * strings. Just set tag name, content and the attributes. Attributes need
-	 * to be given in pairs. First the name of the attribute, second the content
-	 * of the attribute.
+	 * Appends a complete and masked HTML element without having to fiddle with
+	 * strings and quoting. Just set tag name, content and the attributes.
+	 * Attributes need to be given in pairs. First the name of the attribute,
+	 * second the content of the attribute.
 	 * 
 	 * 
 	 * @created 05.02.2013
+	 * @param result the {@link RenderResult} the element will be appended to
 	 * @param tag the tag name of the HTML element
 	 * @param content the content of the HTML element
 	 * @param attributes the attributes of the HTML element: the odd elements
 	 *        are the attribute names and the even elements the attribute
 	 *        contents
-	 * @return a complete and masked HTML element with content and attributes
 	 */
-	public static String getHtmlElement(String tag, String content, String... attributes) {
-		return getHtmlTag(tag, attributes) + content + maskHTML("</" + tag + ">");
+	public static void appendHtmlElement(RenderResult result, String tag, String content, String... attributes) {
+		appendHtmlTag(result, tag, attributes);
+		result.append(content);
+		result.appendHTML("</" + tag + ">");
 	}
 
 	/**
-	 * Creates an opening and masked HTML element without having to manipulate
-	 * strings. Just set tag name and the attributes. Attributes need to be
-	 * given in pairs. First the name of the attribute, second the content of
-	 * the attribute.
+	 * Appends an opening and masked HTML element without having to fiddle with
+	 * strings and quoting. Just set tag name and the attributes. Attributes
+	 * need to be given in pairs. First the name of the attribute, second the
+	 * content of the attribute.
 	 * 
 	 * 
 	 * @created 05.02.2013
+	 * @param result the {@link RenderResult} the tag will be appended to
 	 * @param tag the tag name of the HTML element
 	 * @param attributes the attributes of the HTML element: the odd elements
 	 *        are the attribute names and the even elements the attribute
 	 *        contents
 	 * @return an opening and masked HTML element with attributes
 	 */
-	public static String getHtmlTag(String tag, String... attributes) {
-		StringBuilder html = new StringBuilder("<" + tag);
+	public static void appendHtmlTag(RenderResult result, String tag, String... attributes) {
+		result.appendHTML("<" + tag);
 		for (int i = 0; i + 2 <= attributes.length; i += 2) {
-			html.append(getAttribute(attributes[i], attributes[i + 1]));
+			result.append(getAttribute(attributes[i], attributes[i + 1]));
 		}
-		html.append(">");
-		return maskHTML(html.toString());
+		result.appendHTML(">");
 	}
 
 	private static String getAttribute(String attributeName, String attribute) {
-		return " " + attributeName + "=\"" + attribute + "\"";
+		return " " + attributeName + "='" + encodeHtml(attribute) + "'";
 	}
 
 }

@@ -56,8 +56,7 @@ public abstract class AnswerDefinition
 
 	public AnswerDefinition() {
 		this.addSubtreeHandler(Priority.HIGH, new CreateAnswerHandler());
-		this.setRenderer(
-				StyleRenderer.CHOICE);
+		this.setRenderer(StyleRenderer.CHOICE);
 		this.setOrderSensitive(true);
 	}
 

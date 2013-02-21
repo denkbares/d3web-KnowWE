@@ -20,9 +20,9 @@
 package de.knowwe.kdom.renderer;
 
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 
 /**
  * @author Johannes Dienst
@@ -44,17 +44,16 @@ public class ReRenderSectionMarkerRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> sec, UserContext user,
-			StringBuilder string) {
+			RenderResult string) {
 		Boolean ajaxAction = user.getParameters().containsKey("action");
 		if (!ajaxAction) {
-			string.append(Strings
-					.maskHTML("<span class=\"ReRenderSectionMarker\" style=\"display: inline;\" rel=\"{id:'"
-							+ sec.getID()
-							+ "'}\">"));
+			string.appendHTML("<span class=\"ReRenderSectionMarker\" style=\"display: inline;\" rel=\"{id:'"
+					+ sec.getID()
+					+ "'}\">");
 		}
 		renderer.render(sec, user, string);
 		if (!ajaxAction) {
-			string.append(Strings.maskHTML("</span>"));
+			string.appendHTML("</span>");
 		}
 	}
 

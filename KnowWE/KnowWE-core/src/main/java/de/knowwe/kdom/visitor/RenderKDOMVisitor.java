@@ -25,15 +25,20 @@ import java.util.List;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.Strings;
 
 public class RenderKDOMVisitor implements Visitor {
 
-	private StringBuffer buffi;
+	private final RenderResult buffi;
+
+	public RenderKDOMVisitor(UserContext user) {
+		buffi = new RenderResult(user);
+	}
 
 	@Override
 	public void visit(Section<? extends Type> s) {
-		buffi = new StringBuffer();
 		renderSubtree(s, 0, buffi);
 	}
 
@@ -41,15 +46,17 @@ public class RenderKDOMVisitor implements Visitor {
 		return buffi.toString();
 	}
 
-	private void renderSubtree(Section<? extends Type> s, int i, StringBuffer buffi) {
+	private void renderSubtree(Section<? extends Type> s, int i, RenderResult buffi) {
 		buffi.append(getDashes(i));
-		buffi.append(" <span style=\"color:black\" title=\"");
+		buffi.appendHTML(" <span style=\"color:black\" title=\"");
 		buffi.append(" ID: " + s.getID() + "\n");
-		buffi.append("\">");
-		buffi.append(KnowWEUtils.escapeHTML(s.verbalize()));
-		buffi.append("</span>\n <br />"); // \n only to avoid HTML-code being
-											// cut by JspWiki (String.length >
-											// 10000)
+		buffi.appendHTML("\">");
+		buffi.append(Strings.encodeHtml(s.verbalize()));
+		buffi.appendHTML("</span>\n <br />"); // \n only to avoid HTML-code
+												// being
+												// cut by JspWiki (String.length
+												// >
+												// 10000)
 		i++;
 		List<Section<? extends Type>> children = s.getChildren();
 		if (!(children.size() == 1 && children.get(0).get() instanceof PlainText)) {

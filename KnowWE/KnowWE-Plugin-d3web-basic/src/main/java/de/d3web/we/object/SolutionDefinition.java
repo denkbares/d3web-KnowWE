@@ -36,12 +36,12 @@ import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.renderer.ObjectInfoLinkRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
@@ -85,17 +85,12 @@ public abstract class SolutionDefinition
 
 		@Override
 		public void render(Section<?> sec, UserContext user,
-				StringBuilder string) {
+				RenderResult string) {
 
 			Article article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
 
 			KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
 			Session session = SessionProvider.getSession(user, kb);
-
-			String spanStart = Strings
-					.maskHTML("<span style=\"background-color:");
-			String spanStartEnd = Strings.maskHTML(";\">");
-			String spanEnd = Strings.maskHTML("</span>");
 
 			if (session != null) {
 				@SuppressWarnings("unchecked")
@@ -104,21 +99,23 @@ public abstract class SolutionDefinition
 				if (solution != null) {
 					Rating state = session.getBlackboard().getRating(solution);
 
+					string.appendHTML("<span style=\"background-color:");
 					if (state.hasState(State.ESTABLISHED)) {
-						string.append(spanStart + StyleRenderer.CONDITION_FULLFILLED + spanStartEnd);
+						string.append(StyleRenderer.CONDITION_FULLFILLED);
 					}
 					else if (state.hasState(State.EXCLUDED)) {
-						string.append(spanStart + StyleRenderer.CONDITION_FALSE + spanStartEnd);
+						string.append(StyleRenderer.CONDITION_FALSE);
 					}
 					else {
-						string.append(spanStart + " rgb()" + spanStartEnd);
+						string.appendHTML(" rgb()");
 					}
+					string.appendHTML(";\">");
 				}
 			}
 
 			new ObjectInfoLinkRenderer(StyleRenderer.SOLUTION).render(sec, user,
 					string);
-			string.append(spanEnd);
+			string.appendHTML("</span>");
 		}
 	}
 

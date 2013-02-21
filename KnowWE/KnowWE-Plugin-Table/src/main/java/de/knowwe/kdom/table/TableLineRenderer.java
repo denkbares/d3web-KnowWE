@@ -22,9 +22,9 @@ package de.knowwe.kdom.table;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 
 /**
  * This is a renderer for the TableLine. It wraps the <code>TableLine</code>
@@ -36,27 +36,23 @@ import de.knowwe.core.utils.Strings;
 public class TableLineRenderer implements Renderer {
 
 	@Override
-	public void render(Section<?> sec, UserContext user, StringBuilder string) {
-		StringBuilder b = new StringBuilder();
-		DelegateRenderer.getInstance().render(sec, user, b);
+	public void render(Section<?> sec, UserContext user, RenderResult string) {
 
-		StringBuilder buffi = new StringBuilder();
-		buffi.append("<tr");
+		string.appendHTML("<tr");
 
-		buffi.append(" id='").append(sec.getID()).append("'");
+		string.appendHTML(" id='").append(sec.getID()).append("'");
 
 		String classes = getClasses(sec, user);
 
 		if (!classes.isEmpty()) {
-			buffi.append(" class='").append(classes).append("'");
+			string.appendHTML(" class='" + classes + "'");
 		}
 
-		buffi.append(">");
+		string.appendHTML(">");
+		DelegateRenderer.getInstance().render(sec, user, string);
 
-		buffi.append(b.toString());
-		buffi.append("</tr>\n");
+		string.appendHTML("</tr>\n");
 
-		string.append(Strings.maskHTML(buffi.toString()));
 	}
 
 	/**

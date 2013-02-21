@@ -36,6 +36,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.Strings;
 
 public class CIAction extends AbstractAction {
@@ -75,7 +76,7 @@ public class CIAction extends AbstractAction {
 
 		CIRenderer renderer = dashboard.getRenderer();
 
-		String html = "";
+		RenderResult html = new RenderResult(context);
 		if (task.equals("executeNewBuild")) {
 			if (CIUtils.buildRunning(dashboardName)) {
 				context.sendError(409, "<message will be inserted in JS>");
@@ -102,22 +103,22 @@ public class CIAction extends AbstractAction {
 				e.printStackTrace();
 			}
 			BuildResult build = dashboard.getBuild(selectedBuildNumber);
-			html = renderer.renderDashboardHeader(build);
+			renderer.renderDashboardHeader(build, html);
 
 		}// Get the details of one build (wiki changes + test results)
 		else if (task.equals("refreshBuildDetails")) {
 			BuildResult build = dashboard.getBuild(selectedBuildNumber);
-			html = renderer.renderBuildDetails(build);
+			renderer.renderBuildDetails(build, html);
 		}
 		else if (task.equals("refreshBuildStatus")) {
 			BuildResult build = dashboard.getLatestBuild();
-			html = renderer.renderDashboardHeader(build);
+			renderer.renderDashboardHeader(build, html);
 		}
 		else if (task.equals("refreshBubble")) {
 			BuildResult build = dashboard.getLatestBuild();
 			if (build != null) {
 				Type overallResult = build.getOverallResult();
-				html = renderer.renderBuildStatus(overallResult, true, "");
+				renderer.renderBuildStatus(overallResult, true, "", html);
 			}
 		}
 		else if (task.equals("refreshBuildList")) {
@@ -129,16 +130,17 @@ public class CIAction extends AbstractAction {
 			int numberOfBuilds = numberOfBuildsParameter == null
 					? -1
 					: Integer.parseInt(numberOfBuildsParameter);
-			html = renderer.renderBuildList(indexFromBack, numberOfBuilds, selectedBuildNumber);
+			renderer.renderBuildList(indexFromBack, numberOfBuilds, selectedBuildNumber, html);
 		}
 
 		// ensure jspwiki markup is rendered in similar way as on full page
 		// reload
-		html = Environment.getInstance().getWikiConnector().renderWikiSyntax(html,
-				context.getRequest());
-		html = Strings.unmaskHTML(html);
+		RenderResult temp = new RenderResult(html);
+		temp.append(Environment.getInstance().getWikiConnector().renderWikiSyntax(
+				html.toStringRaw(),
+				context.getRequest()));
 
 		context.setContentType("text/html; charset=UTF-8");
-		context.getWriter().write(html);
+		context.getWriter().write(html.toString());
 	}
 }

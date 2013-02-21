@@ -23,6 +23,7 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
+import utils.TestUserContext;
 import utils.TestUtils;
 import connector.DummyConnector;
 import de.d3web.plugin.test.InitPluginManager;
@@ -62,7 +63,7 @@ public class CIDashboardTest {
 	@Test
 	public void parsing() throws IOException {
 		Article article = loadArticle("Dashboard");
-		System.out.println(KDOMRenderer.renderPlain(article));
+		System.out.println(KDOMRenderer.renderPlain(article, new TestUserContext(article)));
 
 	}
 

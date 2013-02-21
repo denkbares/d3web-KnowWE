@@ -45,6 +45,8 @@ public class TestUserContext implements UserContext {
 	private final Article article;
 	private final Map<String, String> parameterMap = new HashMap<String, String>();
 
+	private final TestHttpServletRequest request;
+
 	public TestUserContext(Article article) {
 		this(article, false, false);
 	}
@@ -53,6 +55,7 @@ public class TestUserContext implements UserContext {
 		this.article = article;
 		this.isAdmin = isAdmin;
 		this.isAsserted = isAsserted;
+		this.request = new TestHttpServletRequest();
 		addParameter(Attributes.WEB, getWeb());
 		addParameter(Attributes.TOPIC, getTopic());
 		addParameter(Attributes.USER, getUserName());
@@ -111,7 +114,7 @@ public class TestUserContext implements UserContext {
 
 	@Override
 	public HttpServletRequest getRequest() {
-		throw new UnsupportedOperationException("not implemented yet");
+		return this.request;
 	}
 
 	@Override

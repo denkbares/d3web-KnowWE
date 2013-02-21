@@ -116,25 +116,6 @@ public class Environment {
 	 */
 	public static final String DEFAULT_WEB = "default_web";
 
-	/**
-	 * This is used to mask HTML-syntax (and Markup, that collides with the
-	 * wiki-core-markup) Necessary to enable HTML-generation in the
-	 * pretranslate-hook, because the wiki engine (with HTML-diabled) escapes
-	 * HTML So HTML needs to be masked with these replacements and are unmasked
-	 * in the posttranslate-hook.
-	 */
-	public static final String HTML_DOUBLEQUOTE = "KNOWWEHTML_DOUBLEQUOTE";
-	public static final String HTML_GT = "KNOWWEHTML_GREATERTHAN";
-	public static final String HTML_ST = "KNOWWEHTML_SMALLERTHAN";
-	public static final String HTML_QUOTE = "KNOWWEHTML_QUOTE";
-	public static final String HTML_BRACKET_OPEN = "KNOWWE_BRACKET_OPEN";
-	public static final String HTML_BRACKET_CLOSE = "KNOWWE_BRACKET_CLOSE";
-	public static final String HTML_PLUGIN_BRACKETS_OPEN = "KNOWEPLUGIN_BRACKETS_OPEN";
-	public static final String HTML_PLUGIN_BRACKETS_CLOSE = "KNOWEPLUGIN_BRACKETS_CLOSE";
-	public static final String HTML_CURLY_BRACKET_OPEN = "KNOWWE_CURLY_BRACKET_OPEN";
-	public static final String HTML_CURLY_BRACKET_CLOSE = "KNOWWE_CURLY_BRACKET_CLOSE";
-	public static final String NEWLINE = "KNOWWE_NEWLINE";
-
 	public enum CompilationMode {
 		INCREMENTAL, DEFAULT
 	}

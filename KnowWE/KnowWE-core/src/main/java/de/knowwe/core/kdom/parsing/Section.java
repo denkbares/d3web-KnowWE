@@ -577,7 +577,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	public String verbalize() {
 		StringBuffer buffi = new StringBuffer();
 		String simpleName = this.get().getClass().getSimpleName();
-		if (simpleName.contains("nonymous")) {
+		if (simpleName.contains("anonymous")) {
 			simpleName = simpleName += "(" + this.get().getName() + ")";
 		}
 		buffi.append(simpleName);

@@ -18,6 +18,8 @@
  */
 package de.d3web.we.ci4ke.dashboard.rendering;
 
+import de.knowwe.core.kdom.rendering.RenderResult;
+
 /**
  * Interface for renderers allowing to render certain objects dependent by their
  * name of string representation. This can for example be used to render links
@@ -31,6 +33,6 @@ public interface ObjectNameRenderer {
 	public static final String PLUGIN_ID = "KnowWE-Plugin-CI4KE";
 	public static final String EXTENSION_POINT_ID = "ObjectNameRenderer";
 
-	String render(String objectName);
+	void render(String objectName, RenderResult result);
 
 }

@@ -62,6 +62,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kbrenderer.verbalizer.VerbalizationManager;
@@ -86,21 +87,22 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 	}
 
 	@Override
-	public String renderHTML(String topic, UserContext user,
-			Map<String, String> values, String web) {
+	public void renderHTML(String web, String topic,
+			UserContext user, Map<String, String> values, RenderResult result) {
+		renderedRulesCache = new HashMap<Rule, String>();
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
-		return renderHTML(web, topic, user, kb);
+		renderHTML(web, topic, user, kb, result);
 	}
 
-	public String renderHTML(String web, String topic, UserContext user, KnowledgeBase kb) {
+	public void renderHTML(String web, String topic, UserContext user, KnowledgeBase kb, RenderResult text) {
 
 		ResourceBundle rb = D3webUtils.getD3webBundle(user);
 
-		StringBuilder text = new StringBuilder(
+		text.appendHTML(
 				"<div id=\"knowledge-panel\" class=\"panel\"><h3>"
 						+ rb.getString("KnowWE.KBRenderer.header") + "</h3>\n\n");
-		text.append("<div>");
-		text.append("<p>");
+		text.appendHTML("<div>");
+		text.appendHTML("<p>");
 		if (kb != null) {
 
 			/*
@@ -111,7 +113,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			boolean appendedSolutionsHeadline = false;
 			if (diagnosis.getName().equals("P000")) {
 				if (diagnosis.getChildren().length > 0) {
-					text.append("<strong>"
+					text.appendHTML("<strong>"
 							+ rb.getString("KnowWE.KBRenderer.solutions")
 							+ ":</strong><p></p>\n\n");
 					appendedSolutionsHeadline = true;
@@ -121,15 +123,16 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 				for (TerminologyObject t1 : getRoots) {
 					// Look for children @ depth 1
 					if (t1.getParents().length == 1) {
-						text.append("<span style=\"color: rgb(150, 110, 120);\">"
-								+ t1.getName() + "</span><br/>\n");
+						text.appendHTML("<span style=\"color: rgb(150, 110, 120);\">");
+						text.append(t1.getName());
+						text.appendHTML("</span><br/>\n");
 						// Get their childrens and build up the tree recursively
 						text.append(getAll(t1.getChildren(), 1, topic, user));
-						text.append("<br/>\n");
+						text.appendHTML("<br/>\n");
 					}
 				}
 			}
-			text.append("<p></p>");
+			text.appendHTML("<p></p>");
 
 			/*
 			 * Render Rules
@@ -148,9 +151,9 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 						duplRules.add(r);
 						if (!appendedRulesHeadline) {
 							if (appendedSolutionsHeadline) {
-								text.append("<br/>\n");
+								text.appendHTML("<br/>\n");
 							}
-							text.append("<strong>"
+							text.appendHTML("<strong>"
 									+ rb.getString("KnowWE.KBRenderer.rules")
 									+ ":</strong><p></p>\n\n");
 							appendedRulesHeadline = true;
@@ -162,11 +165,11 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			List<de.d3web.core.inference.Rule> sort = new ArrayList<de.d3web.core.inference.Rule>(
 					duplRules);
 			// Sort rules
-			Collections.sort(sort, new RuleComparator());
+			Collections.sort(sort, new RuleComparator(user));
 			for (de.d3web.core.inference.Rule r : sort) {
-				text.append(renderRule(r, parameterMap));
+				text.append(renderRule(r, parameterMap, user));
 			}
-			text.append("<p></p>\n");
+			text.appendHTML("<p></p>\n");
 			renderedRulesCache = new HashMap<Rule, String>();
 
 			/*
@@ -267,32 +270,36 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 					+ rb.getString("KnowWE.KBRenderer.error") + "</p>");
 		}
 
-		return text.append("</p></div></div>").toString();
+		text.append("</p></div></div>");
 	}
 
-	private String renderRule(Rule r, Map<String, Object> parameterMap) {
+	private String renderRule(Rule r, Map<String, Object> parameterMap, UserContext user) {
+		RenderResult result = new RenderResult(user);
 		String renderedRule = renderedRulesCache.get(r);
-		if (renderedRule != null) return renderedRule;
+		if (renderedRule == null) {
 
-		StringBuilder text = new StringBuilder();
-		text.append("Rule: "
-				+ VerbalizationManager.getInstance().verbalize(
-						r.getCondition(), VerbalizationManager.RenderingFormat.PLAIN_TEXT));
-		text.append(" --> ");
-		text.append(VerbalizationManager.getInstance().verbalize(
-				r.getAction(), VerbalizationManager.RenderingFormat.HTML, parameterMap));
-
-		if (r.getException() != null) {
-			text.append(" EXCEPT ");
+			RenderResult text = new RenderResult(result);
+			text.append("Rule: "
+					+ VerbalizationManager.getInstance().verbalize(
+							r.getCondition(), VerbalizationManager.RenderingFormat.PLAIN_TEXT));
+			text.append(" --> ");
 			text.append(VerbalizationManager.getInstance().verbalize(
-					r.getException(), VerbalizationManager.RenderingFormat.PLAIN_TEXT, parameterMap));
+					r.getAction(), VerbalizationManager.RenderingFormat.HTML, parameterMap));
+
+			if (r.getException() != null) {
+				text.append(" EXCEPT ");
+				text.append(VerbalizationManager.getInstance().verbalize(
+						r.getException(), VerbalizationManager.RenderingFormat.PLAIN_TEXT,
+						parameterMap));
+			}
+			text.appendHTML("<br/>\n");
+
+			renderedRule = text.toStringRaw();
+			renderedRulesCache.put(r, renderedRule);
 		}
-		text.append("<br/>\n");
 
-		renderedRule = text.toString();
-		renderedRulesCache.put(r, renderedRule);
-
-		return renderedRule;
+		result.append(renderedRule);
+		return result.toStringRaw();
 	}
 
 	/**
@@ -310,7 +317,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 	 */
 	private String getAll(TerminologyObject[] nodes,
 			ArrayList<TerminologyObject> save, int depth, String title, UserContext user) {
-		StringBuffer result = new StringBuffer();
+		RenderResult result = new RenderResult(user);
 		StringBuffer prompt = new StringBuffer();
 		StringBuffer property = new StringBuffer();
 		for (TerminologyObject t1 : nodes) {
@@ -344,8 +351,9 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 					for (int i = 0; i < depth + 1; i++) {
 						result.append("-");
 					}
-					result.append("<span style=\"color: rgb(0, 0, 255);\">"
-							+ c1.toString() + "</span><br/>\n");
+					result.appendHTML("<span style=\"color: rgb(0, 0, 255);\">");
+					result.append(c1.toString());
+					result.appendHTML("</span><br/>\n");
 				}
 			}
 			else if (t1 instanceof QuestionText) {
@@ -358,13 +366,15 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 				result.append(getTermHTML(prompt, property, t1, "[date]", title, user));
 			}
 			else if (t1 instanceof Solution) {
-				result.append("<span style=\"color: rgb(150, 110, 120);\">"
-						+ VerbalizationManager.getInstance().verbalize(t1,
-								VerbalizationManager.RenderingFormat.HTML) + "</span><br/>\n");
+				result.appendHTML("<span style=\"color: rgb(150, 110, 120);\">");
+				result.append(VerbalizationManager.getInstance().verbalize(t1,
+						VerbalizationManager.RenderingFormat.HTML));
+				result.appendHTML("</span><br/>\n");
 			}
 			else if (t1 instanceof QContainer) {
-				result.append("<span style=\"color: rgb(128, 128, 0);\">"
-						+ t1.getName() + "</span><br/>");
+				result.appendHTML("<span style=\"color: rgb(128, 128, 0);\">");
+				result.append(t1.getName());
+				result.appendHTML("</span><br/>");
 			}
 			// Reset the prompt & property buffer for every object
 			prompt = new StringBuffer();
@@ -376,7 +386,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 				depth--;
 			}
 		}
-		return result.toString();
+		return result.toStringRaw();
 	}
 
 	private String getTermHTML(StringBuffer prompt, StringBuffer property, TerminologyObject t1, String typeDeclaration, String title, UserContext user) {
@@ -384,12 +394,14 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 				Environment.DEFAULT_WEB, title);
 		Section<?> termDefiningSection = terminologyManager.getTermDefiningSection(new TermIdentifier(
 				t1.getName()));
-		StringBuilder builder = new StringBuilder();
+		RenderResult builder = new RenderResult(user);
 
 		termDefiningSection.get().getRenderer().render(termDefiningSection, user, builder);
-		return builder.toString() + "<span style=\"color: rgb(125, 80, 102);\"> " + typeDeclaration
-				+ " "
-				+ property + " </span><br/>\n";
+		builder.appendHTML("<span style=\"color: rgb(125, 80, 102);\"> ");
+		builder.append(typeDeclaration + " " + property);
+		builder.appendHTML(" </span><br/>\n");
+
+		return builder.toStringRaw();
 	}
 
 	/**
@@ -405,11 +417,17 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 
 	private class RuleComparator implements Comparator<Rule> {
 
-		@Override
-		public int compare(Rule o1, Rule o2) {
-			return renderRule(o1, parameterMap).compareTo(renderRule(o2, parameterMap));
+		private final UserContext context;
+
+		public RuleComparator(UserContext context) {
+			this.context = context;
 		}
 
+		@Override
+		public int compare(Rule o1, Rule o2) {
+			return renderRule(o1, parameterMap, context).compareTo(
+					renderRule(o2, parameterMap, context));
+		}
 	}
 
 }

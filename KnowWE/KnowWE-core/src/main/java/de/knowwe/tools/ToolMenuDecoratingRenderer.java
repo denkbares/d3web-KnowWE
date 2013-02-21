@@ -19,9 +19,9 @@
 package de.knowwe.tools;
 
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 
 /**
@@ -41,7 +41,7 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 	}
 
 	@Override
-	public void render(Section<?> sec, UserContext user, StringBuilder string) {
+	public void render(Section<?> sec, UserContext user, RenderResult string) {
 		// prepare tools
 		Tool[] tools = ToolUtils.getTools(sec, user);
 		boolean hasTools = tools != null && tools.length > 0;
@@ -49,22 +49,24 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 		String headerID = "header_" + sec.getID();
 
 		if (hasTools) {
-			string.append(Strings.maskHTML("<span " +
+			string.appendHTML("<span " +
 					"style='position:relative;'" +
-					">"));
-			string.append(Strings.maskHTML("<div " +
+					">");
+			string.appendHTML("<div " +
 					"style='position:absolute;' " +
 					"class='toolsMenuDecorator' " +
 					"id='" + headerID + "' " +
 					">" +
-					"</div>"));
+					"</div>");
 		}
 		decoratedRenderer.render(sec, user, string);
 		if (hasTools) {
-			string.append(Strings.maskHTML("</span>"));
-			String menuHTML = defaultMarkupRenderer.renderMenu(tools, sec.getID(), user);
+			string.appendHTML("</span>");
+			RenderResult menuHTMLResult = new RenderResult(string);
+			defaultMarkupRenderer.appendMenu(tools, sec.getID(), user, menuHTMLResult);
+			String menuHTML = menuHTMLResult.toStringRaw();
 			menuHTML = menuHTML.replace("'", "\\'").replace("</div>", "</div>' + \n '");
-			string.append(Strings.maskHTML(
+			string.appendHTML(
 					"<script>" +
 							"var makeMenuFx = function() {" +
 							"var a=$('" + headerID + "');" +
@@ -83,7 +85,7 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 							"};" +
 							"makeMenuFx();" +
 							"</script>"
-					));
+					);
 		}
 	}
 }

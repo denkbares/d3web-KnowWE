@@ -40,6 +40,7 @@ import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.Strings;
@@ -106,7 +107,7 @@ public class FlowchartUtils {
 	}
 
 	public static String createFlowchartRenderer(Section<FlowchartType> flowSection, UserContext user) {
-		return Strings.maskHTML(createFlowchartRenderer(flowSection, user, DIAFLUX_SCOPE));
+		return createFlowchartRenderer(flowSection, user, DIAFLUX_SCOPE);
 	}
 
 	private static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String scope) {
@@ -118,7 +119,8 @@ public class FlowchartUtils {
 
 		if (user.getWeb() == null) return "";
 
-		StringBuilder result = new StringBuilder("<div class='flowchartContainer'>");
+		RenderResult result = new RenderResult(user);
+		result.appendHTML("<div class='flowchartContainer'>");
 
 		if (insertRessources) {
 			insertDiafluxRessources(result, user);
@@ -128,13 +130,13 @@ public class FlowchartUtils {
 
 		parentId = escapeHtmlId(parentId);
 
-		result.append("<div id='" + parentId + "'>");
-		result.append("<script>");
-		result.append("if ($('" + parentId + "').getElements('.FlowchartGroup').length == 0) ");
-		result.append("Flowchart.loadFlowchart('" + section.getID() + "', '" + parentId + "');");
-		result.append("</script></div></div>\n");
+		result.appendHTML("<div id='" + parentId + "'>");
+		result.appendHTML("<script>");
+		result.appendHTML("if ($('" + parentId + "').getElements('.FlowchartGroup').length == 0) ");
+		result.appendHTML("Flowchart.loadFlowchart('" + section.getID() + "', '" + parentId + "');");
+		result.appendHTML("</script></div></div>\n");
 
-		return result.toString();
+		return result.toStringRaw();
 
 	}
 
@@ -149,21 +151,21 @@ public class FlowchartUtils {
 		return text;
 	}
 
-	public static void insertDiafluxRessources(StringBuilder result, UserContext user) {
+	public static void insertDiafluxRessources(RenderResult result, UserContext user) {
 
 		for (String cssfile : CSS) {
-			result.append("<link rel='stylesheet' type='text/css' href='" + cssfile
+			result.appendHTML("<link rel='stylesheet' type='text/css' href='" + cssfile
 					+ "'></link>");
 		}
 
 		for (String jsfile : JS) {
-			result.append("<script src='" + jsfile + "' type='text/javascript'></script>");
+			result.appendHTML("<script src='" + jsfile + "' type='text/javascript'></script>");
 		}
 
-		result.append("<data id='referredKBInfo' style='display:none;'>");
-		result.append(JSPHelper.getReferrdInfoObjectsAsXML(user.getWeb()));
-		result.append("</data>\n");
-		result.append("<script>KBInfo._updateCache($('referredKBInfo'));</script>");
+		result.appendHTML("<data id='referredKBInfo' style='display:none;'>");
+		result.appendHTML(JSPHelper.getReferrdInfoObjectsAsXML(user.getWeb()));
+		result.appendHTML("</data>\n");
+		result.appendHTML("<script>KBInfo._updateCache($('referredKBInfo'));</script>");
 	}
 
 	private static boolean isInsertRessources(Section<FlowchartType> section) {
@@ -182,7 +184,7 @@ public class FlowchartUtils {
 	 * @param user
 	 * @param section
 	 */
-	public static void addDisplayPlugins(StringBuilder result, UserContext user, String scope) {
+	public static void addDisplayPlugins(RenderResult result, UserContext user, String scope) {
 		Extension[] extensions = JPFPluginManager.getInstance().getExtensions(
 				DiaFluxDisplayEnhancement.PLUGIN_ID, DiaFluxDisplayEnhancement.EXTENSION_POINT_ID);
 		next: for (Extension extension : extensions) {
@@ -197,12 +199,12 @@ public class FlowchartUtils {
 					if (!enh.activate(user, scope)) continue next;
 
 					for (String script : enh.getScripts()) {
-						result.append("<script src='" + script
+						result.appendHTML("<script src='" + script
 								+ "' type='text/javascript'></script>");
 					}
 
 					for (String style : enh.getStylesheets()) {
-						result.append("<link rel='stylesheet' type='text/css' href='" + style
+						result.appendHTML("<link rel='stylesheet' type='text/css' href='" + style
 								+ "'></link>");
 					}
 				}

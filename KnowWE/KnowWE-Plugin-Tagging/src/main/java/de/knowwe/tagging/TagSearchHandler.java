@@ -23,6 +23,7 @@ package de.knowwe.tagging;
 import java.util.Map;
 
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.taghandler.AbstractTagHandler;
 import de.knowwe.core.user.UserContext;
 
@@ -34,7 +35,7 @@ public class TagSearchHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public String render(Section<?> section, UserContext userContext, Map<String, String> parameters) {
+	public void render(Section<?> section, UserContext userContext, Map<String, String> parameters, RenderResult result) {
 
 		String querystring = null;
 		Map<String, String> par = userContext.getParameters();
@@ -44,10 +45,7 @@ public class TagSearchHandler extends AbstractTagHandler {
 				querystring = par.get(parameterName);
 			}
 		}
-		StringBuffer html = new StringBuffer();
-		html.append(TaggingMangler.getInstance().getResultPanel(querystring));
-
-		return html.toString();
+		result.append(TaggingMangler.getInstance().getResultPanel(querystring));
 
 	}
 

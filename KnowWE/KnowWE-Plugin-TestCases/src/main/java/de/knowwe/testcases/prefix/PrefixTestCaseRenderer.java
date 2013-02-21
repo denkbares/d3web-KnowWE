@@ -6,6 +6,7 @@ import java.util.Set;
 import de.d3web.core.utilities.Triple;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -23,7 +24,7 @@ public class PrefixTestCaseRenderer implements Renderer {
 	}
 
 	@Override
-	public void render(Section<?> section, UserContext user, StringBuilder string) {
+	public void render(Section<?> section, UserContext user, RenderResult string) {
 		refreshPrefixWarning(section);
 		renderer.render(section, user, string);
 	}

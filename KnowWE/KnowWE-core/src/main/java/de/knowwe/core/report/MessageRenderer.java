@@ -20,12 +20,13 @@
 
 package de.knowwe.core.report;
 
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 
 public interface MessageRenderer {
 
-	public String postRenderMessage(Message m, UserContext user, String source);
+	public void postRenderMessage(Message m, UserContext user, String source, RenderResult result);
 
-	public String preRenderMessage(Message m, UserContext user, String source);
+	public void preRenderMessage(Message m, UserContext user, String source, RenderResult result);
 
 }

@@ -24,9 +24,9 @@ import java.util.Map;
 
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.RessourceLoader;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 
 public class QuickInterviewTagHandler extends AbstractHTMLTagHandler {
 
@@ -55,15 +55,17 @@ public class QuickInterviewTagHandler extends AbstractHTMLTagHandler {
 	 * returns the interview-HTML-String
 	 */
 	@Override
-	public String renderHTML(String topic, UserContext user, Map<String, String> values, String web) {
+	public void renderHTML(String web, String topic, UserContext user, Map<String, String> values, RenderResult result) {
 		if (topic.equalsIgnoreCase("LeftMenu")) {
 			topic = user.getParameters().get("page");
 		}
 		user.getParameters().putAll(values);
 		String iv = QuickInterviewAction.callQuickInterviewRenderer(user);
-		if (iv == null) return null;
+		if (iv == null) return;
 
-		iv = Strings.maskHTML("<div id='quickinterview'>") + iv + Strings.maskHTML("</div>");
-		return iv;
+		result.appendHTML("<div id='quickinterview'>");
+		result.appendHTML(iv);
+		result.appendHTML("</div>");
+
 	}
 }

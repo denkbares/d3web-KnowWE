@@ -24,6 +24,7 @@ import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
@@ -39,7 +40,7 @@ import de.knowwe.testcases.prefix.PrefixTestCaseRenderer;
 public class ProviderRefreshRenderer extends DefaultMarkupRenderer {
 
 	@Override
-	public void render(Section<?> section, UserContext user, StringBuilder buffer) {
+	public void render(Section<?> section, UserContext user, RenderResult buffer) {
 		refreshProviders(section, user);
 		PrefixTestCaseRenderer.refreshPrefixWarning(section);
 		super.render(section, user, buffer);

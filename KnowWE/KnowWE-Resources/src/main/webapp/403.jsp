@@ -1,6 +1,5 @@
 <%@ page isErrorPage="true" %><%@ page import="org.apache.log4j.*" %><%@ page import="com.ecyrd.jspwiki.*" %><%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %><%@ taglib uri="http://java.sun.com/jsp/jstl/core" 
-     prefix="c" %><%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %><%
-    WikiEngine wiki = WikiEngine.getInstance( getServletConfig() );
+     prefix="c" %><%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %><%WikiEngine wiki = WikiEngine.getInstance( getServletConfig() );
     WikiContext wikiContext = wiki.createContext( request, 
                                                   WikiContext.ERROR );
     String pagereq = wikiContext.getName();
@@ -15,10 +14,9 @@
     // If the request was sent by AJAX, just return a plain error message
     if (xRequestedWith != null && xRequestedWith.equals("XMLHttpRequest")) {
         response.setContentType("text/plain; charset="+wiki.getContentEncoding() );
-        response.getWriter().append(message);
+        response.getWriter().appendHTML(message);
     } else {
-        response.setContentType("text/html; charset="+wiki.getContentEncoding() );
-%>
+        response.setContentType("text/html; charset="+wiki.getContentEncoding() );%>
 <html>
   <body>
     <h3>Forbidden</h3> 

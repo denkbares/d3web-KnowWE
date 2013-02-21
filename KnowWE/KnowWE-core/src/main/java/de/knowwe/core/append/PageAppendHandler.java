@@ -19,6 +19,7 @@
  */
 package de.knowwe.core.append;
 
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -40,12 +41,12 @@ public interface PageAppendHandler {
 	 * 
 	 * 
 	 * @created 17.08.2010
-	 * @param topic
 	 * @param web
+	 * @param topic
 	 * @param user
-	 * @return
+	 * @param result TODO
 	 */
-	public String getDataToAppend(String topic, String web, UserContext user);
+	public void append(String web, String topic, UserContext user, RenderResult result);
 
 	/**
 	 * Specifies whether the content should be inserted at the top/beginning

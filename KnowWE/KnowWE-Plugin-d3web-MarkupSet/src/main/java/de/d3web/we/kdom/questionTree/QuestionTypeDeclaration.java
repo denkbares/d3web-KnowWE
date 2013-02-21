@@ -15,7 +15,6 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.StringEnumChecker;
@@ -87,15 +86,7 @@ public class QuestionTypeDeclaration extends
 			}
 		};
 		this.setSectionFinder(typeFinder);
-		this.setRenderer(new StyleRenderer(StyleRenderer.OPERATOR.getCssStyle()) {
-
-			@Override
-			public void render(Section<?> section, UserContext user, StringBuilder string) {
-				StringBuilder temp = new StringBuilder();
-				super.render(section, user, temp);
-				string.append(temp.toString());
-			}
-		});
+		this.setRenderer(StyleRenderer.OPERATOR);
 		String allowedTypes = Arrays.asList(QUESTION_DECLARATIONS).toString();
 		allowedTypes = allowedTypes.substring(1, allowedTypes.length() - 1);
 		Message errorMsg = Messages.error(D3webUtils.getD3webBundle()

@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.knowwe.core.Attributes;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Strings;
@@ -35,38 +36,41 @@ public class TagEditPanel extends AbstractHTMLTagHandler {
 	}
 
 	@Override
-	public String renderHTML(String topic, UserContext user,
-			Map<String, String> values, String web) {
-		return render(user);
+	public void renderHTML(String web, String topic,
+			UserContext user, Map<String, String> values, RenderResult result) {
+		render(user, result);
 	}
 
-	public static String render(UserContext user) {
+	public static void render(UserContext user, RenderResult result) {
 		TaggingMangler tm = TaggingMangler.getInstance();
 		List<String> tags = tm.getPageTags(user.getTitle());
-		String output = "<p>";
-		output += "Tags (<span id=\"tagpanedit\" style='text-decoration:underline;'>edit</span>):";
-		output += "<span id=\"tagspan\">";
+		RenderResult output = new RenderResult(result);
+		output.appendHTML("<p>");
+		output.appendHTML("Tags (<span id=\"tagpanedit\" style='text-decoration:underline;'>edit</span>):");
+		output.appendHTML("<span id=\"tagspan\">");
 		if (tags != null) {
 			for (String cur : tags) {
 				// output += cur + " ";
-				output += " <a href =\"Wiki.jsp?page=TagSearch&query=" + cur
-						+ "&ok=Find!&start=0&maxitems=20\" >" + cur + "</a>";
+				output.appendHTML(" <a href =\"Wiki.jsp?page=TagSearch&query="
+						+ Strings.encodeHtml(cur)
+						+ "&ok=Find!&start=0&maxitems=20\" >");
+				output.append(cur);
+				output.appendHTML("</a>");
 
 			}
 		}
 
-		if (output.trim().length() == 0) {
-			output += "none";
+		if (output.toStringRaw().trim().length() == 0) {
+			output.append("none");
 		}
-		output += "</span>";
-		output += "<script type=\"text/javascript\" src=\"KnowWEExtension/scripts/silveripe.0.2.js\"></script>";
-		output += "<script type=\"text/javascript\">";
-		output += "var myIPE=new SilverIPE('tagpanedit','tagspan','KnowWE.jsp',{parameterName:'tagtag',highlightColor: '#ffff77',"
+		output.appendHTML("</span>");
+		output.appendHTML("<script type=\"text/javascript\" src=\"KnowWEExtension/scripts/silveripe.0.2.js\"></script>");
+		output.appendHTML("<script type=\"text/javascript\">");
+		output.appendHTML("var myIPE=new SilverIPE('tagpanedit','tagspan','KnowWE.jsp',{parameterName:'tagtag',highlightColor: '#ffff77',"
 				+ "additionalParameters:{tagaction:\"set\",action:\"TagHandlingAction\","
-				+ Attributes.TOPIC + ":\"" + user.getTitle() + "\"} });";
-		output += "</script>";
-		output += "</p>";
-		return Strings.maskHTML(output);
+				+ Attributes.TOPIC + ":\"" + user.getTitle() + "\"} });");
+		output.appendHTML("</script>");
+		output.appendHTML("</p>");
 	}
 
 }

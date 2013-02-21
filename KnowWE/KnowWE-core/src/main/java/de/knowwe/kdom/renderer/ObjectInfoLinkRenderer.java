@@ -23,6 +23,7 @@ package de.knowwe.kdom.renderer;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Strings;
@@ -37,35 +38,32 @@ public class ObjectInfoLinkRenderer implements Renderer {
 	}
 
 	@Override
-	public void render(Section<?> sec, UserContext user, StringBuilder string) {
+	public void render(Section<?> sec, UserContext user, RenderResult string) {
 
-		StringBuilder b = new StringBuilder();
+		RenderResult b = new RenderResult(string);
 		renderer.render(sec, user, b);
 
 		String objectName = sec.getText().trim();
 		boolean pageExists = Environment.getInstance().getWikiConnector().doesArticleExist(
 				objectName);
 
+		String encodedObjectName = Strings.encodeURL(objectName);
 		if (pageExists) {
-			string.append(Strings.maskHTML("<a href=\"Wiki.jsp?page="
-								+ objectName + "\">"
-								+ b.toString()
-								+ "</a>" + " <a href=\"Wiki.jsp?page="
-								+ objectName + "\">"
-
-								+ "<img style='vertical-align:middle;' title='-> Wikipage "
-					+ objectName
-					+ "' src='KnowWEExtension/images/dt_icon_premises.gif' height='11' /></a>"));
+			string.appendHTML("<a href=\"Wiki.jsp?page=" + encodedObjectName + "\">");
+			string.append(b);
+			string.appendHTML("</a>");
+			string.appendHTML(" <a href=\"Wiki.jsp?page=" + encodedObjectName + "\">"
+					+ "<img style='vertical-align:middle;' title='-> Wikipage "
+					+ encodedObjectName
+					+ "' src='KnowWEExtension/images/dt_icon_premises.gif' height='11' /></a>");
 		}
 		else {
-			// TODO: Maybe make the page name non-hardcoded
-			string.append(Strings.maskHTML(
-								"<a href=\"Wiki.jsp?page=ObjectInfoPage&objectname="
-										+ Strings.encodeURL(objectName)
-										+ "\">"
-										+ b.toString()
-										+ "</a>"));
+			string.appendHTML(
+					"<a href=\"Wiki.jsp?page=ObjectInfoPage&objectname="
+							+ encodedObjectName
+							+ "\">");
+			string.append(b);
+			string.appendHTML("</a>");
 		}
 	}
-
 }

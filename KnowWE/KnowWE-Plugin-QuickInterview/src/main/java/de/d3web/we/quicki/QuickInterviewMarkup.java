@@ -24,9 +24,9 @@ import java.util.Map;
 import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -42,12 +42,12 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 
 	public static final String MARKUP_NAME = "quickinterview";
 
-	public static final  String UNKNOWN_KEY = "unknown";
+	public static final String UNKNOWN_KEY = "unknown";
 
 	public static final String ABSTRACTIONS_KEY = "abstractions";
 
 	public static final String ANSWERS_KEY = "answers";
-	
+
 	public static final String SAVE_KEY = "save";
 
 	static {
@@ -70,13 +70,14 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 
 	static class QIRenderer implements Renderer {
 
+		@Override
 		public void render(Section<?> section, UserContext user,
-				StringBuilder string) {
+				RenderResult string) {
 			String unknown = DefaultMarkupType.getAnnotation(section, UNKNOWN_KEY);
 			String abstractions = DefaultMarkupType.getAnnotation(section,
 					ABSTRACTIONS_KEY);
 			String answers = DefaultMarkupType.getAnnotation(section, ANSWERS_KEY);
-			String save = DefaultMarkupType.getAnnotation(section, SAVE_KEY);
+			// String save = DefaultMarkupType.getAnnotation(section, SAVE_KEY);
 			Map<String, String> parameters = user.getParameters();
 			if (unknown != null) {
 				parameters.put(UNKNOWN_KEY, unknown);
@@ -87,11 +88,11 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 			if (answers != null) {
 				parameters.put(ANSWERS_KEY, answers);
 			}
-				String html = "<div id=\"quickinterview\">"
-						+ QuickInterviewAction.callQuickInterviewRenderer(user)
-						+ "</div>";
-				string.append(Strings.maskHTML(html));
-				DelegateRenderer.getInstance().render(section, user, string);
+			String html = "<div id=\"quickinterview\">"
+					+ QuickInterviewAction.callQuickInterviewRenderer(user)
+					+ "</div>";
+			string.appendHTML(html);
+			DelegateRenderer.getInstance().render(section, user, string);
 
 		}
 

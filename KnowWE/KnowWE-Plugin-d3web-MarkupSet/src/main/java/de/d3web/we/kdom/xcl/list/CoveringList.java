@@ -51,6 +51,7 @@ import de.knowwe.core.kdom.basicType.CommentLineType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
@@ -59,7 +60,6 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
@@ -121,10 +121,10 @@ public class CoveringList extends AbstractType {
 	private static final class CoveringListRenderer implements Renderer {
 
 		@Override
-		public void render(Section<?> sec, UserContext user, StringBuilder string) {
-			string.append(Strings.maskHTML("<span id='" + sec.getID() + "'>"));
+		public void render(Section<?> sec, UserContext user, RenderResult string) {
+			string.appendHTML("<span id='" + sec.getID() + "'>");
 			DelegateRenderer.getInstance().render(sec, user, string);
-			string.append(Strings.maskHTML("</span>"));
+			string.appendHTML("</span>");
 		}
 	}
 
@@ -353,11 +353,11 @@ public class CoveringList extends AbstractType {
 	class CoveringRelationRenderer implements Renderer {
 
 		@Override
-		public void render(Section<?> sec, UserContext user, StringBuilder string) {
+		public void render(Section<?> sec, UserContext user, RenderResult string) {
 
 			// wrapper for highlighting
-			string.append(Strings.maskHTML("<span id='" + sec.getID()
-					+ "' class = 'XCLRelationInList'>"));
+			string.appendHTML("<span id='" + sec.getID()
+					+ "' class = 'XCLRelationInList'>");
 
 			Article article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
 			XCLRelation relation = (XCLRelation) KnowWEUtils.getStoredObject(article, sec,
@@ -378,7 +378,7 @@ public class CoveringList extends AbstractType {
 					// Highlight Relation
 					this.renderRelation(sec, user, fulfilled, string, true);
 					// close the wrapper
-					string.append(Strings.maskHTML("</span>"));
+					string.appendHTML("</span>");
 					return;
 				}
 				catch (Exception e) {
@@ -391,7 +391,7 @@ public class CoveringList extends AbstractType {
 			// Something went wrong: Delegate to children
 			this.renderRelation(sec, user, false, string, false);
 			// close the wrapper
-			string.append(Strings.maskHTML("</span>"));
+			string.appendHTML("</span>");
 		}
 
 		/***
@@ -407,7 +407,7 @@ public class CoveringList extends AbstractType {
 		 * @return
 		 */
 		private void renderRelation(Section<?> relationSection,
-				UserContext user, boolean fulfilled, StringBuilder string, boolean highlight) {
+				UserContext user, boolean fulfilled, RenderResult string, boolean highlight) {
 
 			StringBuilder buffi = new StringBuilder();
 
@@ -418,7 +418,7 @@ public class CoveringList extends AbstractType {
 					buffi.append(this.renderRelationChild(s,
 							fulfilled, user, ""));
 				}
-				string.append(Strings.maskHTML(buffi.toString()));
+				string.appendHTML(buffi.toString());
 				return;
 			}
 
@@ -441,7 +441,7 @@ public class CoveringList extends AbstractType {
 				}
 
 			}
-			string.append(Strings.maskHTML(buffi.toString()));
+			string.appendHTML(buffi.toString());
 		}
 
 		/**
@@ -456,7 +456,7 @@ public class CoveringList extends AbstractType {
 		private String renderRelationChild(
 				Section<?> sec, boolean fulfilled, UserContext user,
 				String color) {
-			StringBuilder buffi = new StringBuilder();
+			RenderResult buffi = new RenderResult(user);
 			Type type = sec.get();
 
 			if (type instanceof XCLRelationWeight) { // renders contradiction in

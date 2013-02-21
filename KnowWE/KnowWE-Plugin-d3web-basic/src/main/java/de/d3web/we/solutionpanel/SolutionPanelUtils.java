@@ -13,6 +13,7 @@ import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.taghandler.ObjectInfoTagHandler;
 import de.knowwe.core.utils.Strings;
 
@@ -44,7 +45,7 @@ public class SolutionPanelUtils {
 		return false;
 	}
 
-	public static void renderSolution(Solution solution, Session session, StringBuilder content, boolean endUser) {
+	public static void renderSolution(Solution solution, Session session, boolean endUser, RenderResult content) {
 		// TODO: look for internationalization and only print getName,
 		// when no intlz is available
 		// content.append("* ");
@@ -67,76 +68,79 @@ public class SolutionPanelUtils {
 		tooltip = tooltip.trim();
 
 		// fetch derivation state icon
-		String stateName = renderImage(solution, session, content);
 
-		content.append(mask("<span " + tooltip + "class=\"SOLUTION-" + stateName + "\">"));
+		content.appendHTML("<span class=\"SOLUTION\">");
 		if (endUser) {
 			// show solution in end user mode
 			if (prompt == null && description != null) {
 				label = description;
 			}
 			if (link != null) {
-				content.append(mask("<a href='" + link + "'>" + label + "</a>"));
+				content.appendHTML("<a href='" + Strings.encodeHtml(link) + "'>");
+				content.append(label);
+				content.appendHTML("</a>");
 			}
 			else {
-				content.append(mask(label));
+				content.append(label);
 			}
 		}
 		else {
 			// show solution in developer mode
 			if (!tooltip.isEmpty()) tooltip = "title='" + tooltip.replace('\'', '"') + "' ";
-			content.append(mask("<a href='" + infoLink + "'>" + label + "</a>"));
+			content.appendHTML("<a href='" + Strings.encodeHtml(infoLink) + "'>");
+			content.append(label);
+			content.appendHTML("</a>");
 
 			if (link != null) {
-				content.append(mask(" (" + "<a href='" + link + "' target='solutionLink'>link</a>"
-						+ ")"));
+				content.appendHTML(" (" + "<a href='" + Strings.encodeHtml(link)
+						+ "' target='solutionLink'>link</a>"
+						+ ")");
 			}
 		}
-		content.append(mask("</span>\n"));
+		content.appendHTML("</span>\n");
 	}
 
-	public static String renderImage(Solution solution, Session session, StringBuilder content) {
+	public static void appendImage(Solution solution, Session session, RenderResult content) {
 		Rating solutionRating = D3webUtils.getRatingNonBlocking(session, solution);
-		String stateName = String.valueOf(solutionRating);
 		if (solutionRating == null) {
-			stateName = "<i style='color:grey'>value in calculation, please reload later</i>";
-			content.append(renderImage("KnowWEExtension/images/fsp_calculating.gif",
-					"value in calculation, please reload later"));
+			appendImage("KnowWEExtension/images/fsp_calculating.gif",
+					"value in calculation, please reload later", content);
 		}
 		else if (solutionRating.hasState(State.ESTABLISHED)) {
-			content.append(renderImage("KnowWEExtension/images/fsp_established.gif", "Established"));
+			appendImage("KnowWEExtension/images/fsp_established.gif", "Established", content);
 		}
 		else if (solutionRating.hasState(State.SUGGESTED)) {
-			content.append(renderImage("KnowWEExtension/images/fsp_suggested.gif", "Suggested"));
+			appendImage("KnowWEExtension/images/fsp_suggested.gif", "Suggested", content);
 		}
 		else if (solutionRating.hasState(State.EXCLUDED)) {
-			content.append(renderImage("KnowWEExtension/images/fsp_excluded.gif", "Excluded"));
+			appendImage("KnowWEExtension/images/fsp_excluded.gif", "Excluded", content);
 		}
-		return stateName;
 	}
 
-	private static String renderImage(String filename, String altText) {
-		return mask(" <img src='" + filename
+	private static void appendImage(String filename, String altText, RenderResult content) {
+		content.appendHTML(" <img src='" + filename
 				+ "' id='sstate-update' class='pointer'"
-				+ " align='top' alt='" + altText + "'"
-				+ " title='" + altText + "' "
+				+ " align='top' alt='" + Strings.encodeHtml(altText) + "'"
+				+ " title='" + Strings.encodeHtml(altText) + "' "
 				+ "/> ");
 	}
 
-	private static String mask(String string) {
-		return Strings.maskHTML(string);
-	}
-
-	public static void renderAbstraction(Question question, Session session, int digits, StringBuilder buffer) {
+	public static void renderAbstraction(Question question, Session session, int digits, RenderResult buffer) {
 		// TODO: look for internationalization and only print getName,
 		// when no intlz is available
 		// buffer.append("* ");
-		buffer.append(renderImage("KnowWEExtension/images/fsp_abstraction.gif", "Abstraction"));
-		buffer.append(mask("<span class=\"ABSTRACTION\">"));
+		appendImage("KnowWEExtension/images/fsp_abstraction.gif", "Abstraction", buffer);
+		buffer.appendHTML("<span class=\"ABSTRACTION\">");
 		// render the abstraction question with value
-		buffer.append(question.getName()
-				+ " = "
-				+ formatValue(D3webUtils.getValueNonBlocking(session, question), digits));
+		Value value = D3webUtils.getValueNonBlocking(session, question);
+		if (value == null) {
+			buffer.appendHTML("<i style='color:grey'>value in calculation, please reload later</i>");
+		}
+		else {
+			buffer.append(question.getName()
+					+ " = "
+					+ formatValue(value, digits));
+		}
 
 		// add the unit name for num question, if available
 		String unit = question.getInfoStore().getValue(MMInfo.UNIT);
@@ -144,7 +148,7 @@ public class SolutionPanelUtils {
 			buffer.append(" " + unit);
 		}
 
-		buffer.append(mask("</span>") + "\n");
+		buffer.appendHTML("</span>" + "\n");
 	}
 
 	/**
@@ -157,10 +161,7 @@ public class SolutionPanelUtils {
 	 * @return A string representation of the specified value.
 	 */
 	public static String formatValue(Value value, int digits) {
-		if (value == null) {
-			return mask("<i style='color:grey'>value in calculation, please reload later</i>");
-		}
-		else if (value instanceof NumValue) {
+		if (value instanceof NumValue) {
 			Double numValue = (Double) value.getValue();
 			// check, if we need to round the value
 

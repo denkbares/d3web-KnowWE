@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.report.Message;
@@ -49,7 +50,7 @@ public class RootType extends AbstractType {
 		this.setRenderer(new Renderer() {
 
 			@Override
-			public void render(Section<?> section, UserContext user, StringBuilder string) {
+			public void render(Section<?> section, UserContext user, RenderResult string) {
 				Map<String, Collection<Message>> messages = Messages.getMessages(section);
 				for (Entry<String, Collection<Message>> entry : messages.entrySet()) {
 					for (Message message : entry.getValue()) {

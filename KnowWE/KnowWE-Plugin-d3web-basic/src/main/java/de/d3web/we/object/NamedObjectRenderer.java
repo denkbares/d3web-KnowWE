@@ -28,6 +28,7 @@ import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -41,7 +42,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class NamedObjectRenderer implements Renderer {
 
 	@Override
-	public void render(Section<?> section, UserContext user, StringBuilder string) {
+	public void render(Section<?> section, UserContext user, RenderResult string) {
 		Article article = KnowWEUtils.getCompilingArticles(section).iterator().next();
 		TermIdentifier termIdentifier = KnowWEUtils.getTermIdentifier(section);
 		TerminologyManager tManager = KnowWEUtils.getTerminologyManager(article);

@@ -24,6 +24,7 @@ import java.util.Map;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
 import de.knowwe.core.user.UserContext;
@@ -43,17 +44,17 @@ public class KDOMRenderer extends AbstractHTMLTagHandler {
 	}
 
 	@Override
-	public String renderHTML(String topic, UserContext user, Map<String, String> values, String web) {
-		RenderKDOMVisitor v = new RenderKDOMVisitor();
+	public void renderHTML(String web, String topic, UserContext user, Map<String, String> values, RenderResult result) {
+		RenderKDOMVisitor v = new RenderKDOMVisitor(user);
 		v.visit(Environment.getInstance().getArticle(web, topic)
 				.getRootSection());
-		String data = "<div><h3>KDOM:</h3><tt>"
-				+ v.getRenderedKDOM() + "</tt></div>";
-		return data;
+		result.appendHTML("<div><h3>KDOM:</h3><tt>");
+		result.append(v.getRenderedKDOM());
+		result.appendHTML("</tt></div>");
 	}
 
-	public static String renderPlain(Article article) {
-		RenderKDOMVisitor v = new RenderKDOMVisitor();
+	public static String renderPlain(Article article, UserContext user) {
+		RenderKDOMVisitor v = new RenderKDOMVisitor(user);
 		v.visit(article.getRootSection());
 		String plain = v.getRenderedKDOM().replaceAll("<[^>]*>", "").replace("&quot;", "\"");
 		return plain;

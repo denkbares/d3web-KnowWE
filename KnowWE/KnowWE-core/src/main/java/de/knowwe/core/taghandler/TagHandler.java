@@ -23,6 +23,7 @@ package de.knowwe.core.taghandler;
 import java.util.Map;
 
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -66,12 +67,11 @@ public interface TagHandler {
 	 * 
 	 * @param section the section where the tag handler is used.
 	 * @param parameters the parameters of the tag handler invocation
+	 * @param result the result where the rendered contents are appended
 	 * @param topic the article the tag handler is rendered for.
 	 * @param user the user context for this request
-	 * 
-	 * @return the resulting wiki markup text
 	 */
-	public String render(Section<?> section, UserContext userContext, Map<String, String> parameters);
+	public void render(Section<?> section, UserContext userContext, Map<String, String> parameters, RenderResult result);
 
 	/**
 	 * Returns an usage example of this tag handler.

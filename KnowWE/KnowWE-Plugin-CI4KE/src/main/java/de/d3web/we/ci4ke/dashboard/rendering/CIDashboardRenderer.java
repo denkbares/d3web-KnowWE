@@ -30,6 +30,7 @@ import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.d3web.we.ci4ke.util.CIUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
@@ -51,7 +52,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	}
 
 	@Override
-	protected void renderContents(Section<?> section, UserContext user, StringBuilder string) {
+	protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
 
 		String dashboardName = DefaultMarkupType.getAnnotation(section,
 				CIDashboardType.NAME_KEY);
@@ -111,10 +112,10 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		CIDashboard dashboard = CIDashboard.getDashboard(user.getWeb(), dashboardArticleTitle,
 				dashboardName);
 
-		StringBuilder string = new StringBuilder();
+		RenderResult string = new RenderResult(user);
 
-		string.append(Strings.maskHTML("<div name='" + Strings.encodeURL(dashboardName)
-				+ "' class='ci-title'>"));
+		string.appendHTML("<div name='" + Strings.encodeURL(dashboardName)
+				+ "' class='ci-title'>");
 
 		checkForUniqueName(dashboardName, string);
 
@@ -122,66 +123,68 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		appendDashboard(dashboard, string);
 
-		string.append(Strings.maskHTML("</div>"));
-		return string.toString();
+		string.appendHTML("</div>");
+		return string.toStringRaw();
 	}
 
-	private static void appendDashboard(CIDashboard dashboard, StringBuilder string) {
+	private static void appendDashboard(CIDashboard dashboard, RenderResult string) {
 		BuildResult latestBuild = dashboard.getLatestBuild();
 
-		string.append(dashboard.getRenderer().renderDashboardHeader(latestBuild));
+		dashboard.getRenderer().renderDashboardHeader(latestBuild, string);
 
 		// start table (only a single row)
-		string.append(Strings.maskHTML("<table><tr>"));
+		string.appendHTML("<table><tr>");
 
 		appendBuildListCell(dashboard, latestBuild, string);
 
 		appendBuildDetailsCell(dashboard, latestBuild, string);
 
 		// close table
-		string.append(Strings.maskHTML("</tr></table>"));
+		string.appendHTML("</tr></table>");
 	}
 
-	private static void appendBuildListCell(CIDashboard dashboard, BuildResult shownBuild, StringBuilder string) {
+	private static void appendBuildListCell(CIDashboard dashboard, BuildResult shownBuild, RenderResult string) {
 		String dashboardNameEscaped = Strings.encodeURL(dashboard.getDashboardName());
-		string.append(Strings.maskHTML("<td valign='top' style='border-right: 1px solid #DDDDDD;'>"));
-		string.append(Strings.maskHTML("<div id='"))
+		string.appendHTML("<td valign='top' style='border-right: 1px solid #DDDDDD;'>");
+		string.appendHTML("<div id='")
 				.append(dashboardNameEscaped)
-				.append(Strings.maskHTML("-column-left' class='ci-column-left'>"));
-		string.append(Strings.maskHTML("<div id='"))
+				.appendHTML("-column-left' class='ci-column-left'>");
+		string.appendHTML("<div id='")
 				.append(dashboardNameEscaped)
-				.append(Strings.maskHTML("-build-table'>"));
+				.appendHTML("-build-table'>");
 		if (shownBuild != null) {
 			// render build history
-			string.append(dashboard.getRenderer().renderBuildList(0, 10,
-					shownBuild.getBuildNumber()));
+			dashboard.getRenderer().renderBuildList(0, 10,
+					shownBuild.getBuildNumber(), string);
 		}
-		string.append(Strings.maskHTML("</div></div>"));
-		string.append(Strings.maskHTML("</td>"));
+		string.appendHTML("</div></div>");
+		string.appendHTML("</td>");
 	}
 
-	private static void appendBuildDetailsCell(CIDashboard dashboard, BuildResult shownBuild, StringBuilder string) {
-		string.append(Strings.maskHTML("<td valign='top'>"));
-		string.append(Strings.maskHTML("<div id='"))
+	private static void appendBuildDetailsCell(CIDashboard dashboard, BuildResult shownBuild, RenderResult string) {
+		string.appendHTML("<td valign='top'>");
+		string.appendHTML("<div id='")
 				.append(Strings.encodeURL(dashboard.getDashboardName()))
-				.append(Strings.maskHTML("-build-details-wrapper' class='ci-build-details-wrapper'>"));
-		string.append(dashboard.getRenderer().renderBuildDetails(shownBuild));
-		string.append(Strings.maskHTML("</div>"));
-		string.append(Strings.maskHTML("</td>"));
+				.appendHTML(
+						"-build-details-wrapper' class='ci-build-details-wrapper'>");
+		dashboard.getRenderer().renderBuildDetails(shownBuild, string);
+		string.appendHTML("</div>");
+		string.appendHTML("</td>");
 	}
 
-	private static void checkForOutdatedBuild(UserContext user, String dashboardName, Section<CIDashboardType> dashboardSection, StringBuilder string) {
+	private static void checkForOutdatedBuild(UserContext user, String dashboardName, Section<CIDashboardType> dashboardSection, RenderResult string) {
 		// check whether dashboard definition has been changed
 		// if so render outdated-warning
 		boolean buildOutdated = isDashBoardModifiedAfterLatestBuild(dashboardSection, user,
 				dashboardName);
 		if (buildOutdated) {
-			String warningString = "Dashboard has been modified. Latest build is not up to date. (Consider to trigger new build: ";
+			RenderResult warningString = new RenderResult(string);
+			warningString.append("Dashboard has been modified. Latest build is not up to date. (Consider to trigger new build: ");
 			Tool buildTool = CIDashboardToolProvider.getStartNewBuildTool(dashboardName,
 					dashboardSection.getTitle());
 			String id = "modified-warning_" + dashboardName;
 			// insert build button/link into warning message
-			warningString += (Strings.maskHTML("<div id='" + id
+			warningString.appendHTML("<div id='" + id
 					+ "' style='display:inline;' class=\""
 					+ buildTool.getClass().getSimpleName() + "\" >" +
 					"<a href=\"javascript:" + buildTool.getJSAction()
@@ -189,17 +192,17 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 					"<img height='14'" +
 					"title=\"" + buildTool.getDescription() + "\" " +
 					"src=\"" + buildTool.getIconPath() + "\"></img>" +
-					"</a></div>"));
+					"</a></div>");
 
-			warningString += ")";
+			warningString.append(")");
 
 			renderMessagesOfType(Message.Type.WARNING,
-					Messages.asList(Messages.warning(warningString)),
+					Messages.asList(Messages.warning(warningString.toStringRaw())),
 					string);
 		}
 	}
 
-	private static void checkForUniqueName(String dashboardName, StringBuilder string) {
+	private static void checkForUniqueName(String dashboardName, RenderResult string) {
 		// check unique dashboard names and create error in case of
 		// duplicates
 		Collection<Section<CIDashboardType>> ciDashboardSections = CIUtils.findCIDashboardSection(dashboardName);
@@ -216,13 +219,13 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 				articleLinks.append(KnowWEUtils.getURLLinkHTMLToArticle(articleTitle));
 			}
 
-			String errorText = "Multiple dashboards with same name on the following article"
+			RenderResult errorText = new RenderResult(string);
+			errorText.appendHTML("Multiple dashboards with same name on the following article"
 					+ (articleTitles.size() > 1 ? "s" : "") + ": "
 					+ articleLinks.toString()
-					+ ". Make sure every dashbaord has a wiki-wide unique name!";
-			renderMessagesOfType(Message.Type.ERROR,
-					Messages.asList(Messages.error((Strings.maskHTML(errorText)))),
-					string);
+					+ ". Make sure every dashbaord has a wiki-wide unique name!");
+			Collection<Message> errorMsgs = Messages.asList(Messages.error(errorText.toStringRaw()));
+			renderMessagesOfType(Message.Type.ERROR, errorMsgs, string);
 		}
 	}
 

@@ -34,6 +34,7 @@ import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Strings;
@@ -52,7 +53,7 @@ public class QASetReference extends D3webTermReference<QASet> {
 	private static final class QASetRenderer implements Renderer {
 
 		@Override
-		public void render(Section<?> section, UserContext user, StringBuilder string) {
+		public void render(Section<?> section, UserContext user, RenderResult string) {
 			Renderer delegate = PlainText.getInstance().getRenderer();
 
 			// check if section is Questionnaire to use other renderer

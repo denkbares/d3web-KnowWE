@@ -6,6 +6,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -47,7 +48,7 @@ public class PackageType extends DefaultMarkupType {
 		}
 
 		@Override
-		protected void renderContents(Section<?> section, UserContext user, StringBuilder string) {
+		protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
 			Section<? extends ContentType> contentSection = DefaultMarkupType.getContentSection(section);
 			StyleRenderer.PACKAGE.render(contentSection, user, string);
 		}

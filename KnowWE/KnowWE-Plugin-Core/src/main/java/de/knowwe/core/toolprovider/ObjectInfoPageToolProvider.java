@@ -23,6 +23,7 @@ import de.knowwe.core.kdom.objects.SimpleTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.taghandler.ObjectInfoTagHandler;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
@@ -63,7 +64,7 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 
 	private String maskTermForHTML(String string) {
 		string = string.replace("\\", "\\\\");
-		string = ObjectInfoTagHandler.maskTermForHTML(string);
+		string = Strings.encodeHtml(string);
 		return string;
 	}
 

@@ -34,12 +34,12 @@ import de.knowwe.core.user.UserContext;
 public abstract class AnchorKDOMRender implements Renderer {
 
 	@Override
-	public void render(Section<?> sec, UserContext user, StringBuilder string) {
+	public void render(Section<?> sec, UserContext user, RenderResult string) {
 		String head = "<a name=\"" + sec.getID() + "\" id=\"" + sec.getID() + "\"></a>";
 		string.append(head);
 
 		renderContent(sec, user, string);
 	}
 
-	public abstract void renderContent(Section<?> sec, UserContext user, StringBuilder string);
+	public abstract void renderContent(Section<?> sec, UserContext user, RenderResult string);
 }

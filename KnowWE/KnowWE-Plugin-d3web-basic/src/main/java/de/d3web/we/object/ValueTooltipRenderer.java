@@ -32,6 +32,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Strings;
@@ -51,7 +52,7 @@ public class ValueTooltipRenderer implements Renderer {
 	}
 
 	@Override
-	public void render(Section<?> section, UserContext user, StringBuilder string) {
+	public void render(Section<?> section, UserContext user, RenderResult string) {
 		String tooltip = createTooltip(section, user);
 		preRenderTooltip(tooltip, string);
 		decoratedRenderer.render(section, user, string);
@@ -89,18 +90,18 @@ public class ValueTooltipRenderer implements Renderer {
 		return buffer.toString();
 	}
 
-	private void preRenderTooltip(String tooltip, StringBuilder string) {
+	private void preRenderTooltip(String tooltip, RenderResult string) {
 		if (tooltip == null) return;
 		tooltip = Strings.maskJSPWikiMarkup(tooltip.replace('\'', '"'));
 
-		string.append(Strings.maskHTML("<span"));
+		string.appendHTML("<span");
 		string.append(" title='").append(tooltip).append("'");
-		string.append(Strings.maskHTML(">"));
+		string.appendHTML(">");
 	}
 
-	private void postRenderTooltip(String tooltip, StringBuilder string) {
+	private void postRenderTooltip(String tooltip, RenderResult string) {
 		if (tooltip == null) return;
-		string.append(Strings.maskHTML("</span>"));
+		string.appendHTML("</span>");
 	}
 
 }

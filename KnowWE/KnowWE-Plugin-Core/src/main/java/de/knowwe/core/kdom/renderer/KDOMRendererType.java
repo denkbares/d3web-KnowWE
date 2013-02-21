@@ -19,8 +19,8 @@
 package de.knowwe.core.kdom.renderer;
 
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -51,7 +51,7 @@ public class KDOMRendererType extends DefaultMarkupType {
 	private class KDOMRender extends DefaultMarkupRenderer {
 
 		@Override
-		protected void renderContents(Section<?> section, UserContext user, StringBuilder string) {
+		protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
 			String html = "";
 			// html += "<div class='zebra-table'>";
 			html += "<table class='renderKDOMTable wikitable' id='tree'>";
@@ -61,21 +61,18 @@ public class KDOMRendererType extends DefaultMarkupType {
 			html += "<th>Offset</th>";
 			html += "<th>Children</th>";
 			html += "<th>Text</th>";
-			string.append(Strings.maskHTML(html));
-			StringBuilder temp = new StringBuilder();
-			renderSubtree(section.getArticle().getRootSection(), temp, 1);
-			string.append(temp);
+			string.appendHTML(html);
+			renderSubtree(section.getArticle().getRootSection(), string, 1);
 
+			string.appendHTML("</table>"/* </div>" */);
 
-			string.append(Strings.maskHTML("</table>"/* </div>" */));
-
-			string.append(Strings.maskHTML("<script type='text/javascript'>jq$('#tree').treeTable();</script>"));
+			string.appendHTML("<script type='text/javascript'>jq$('#tree').treeTable();</script>");
 
 		}
 
-		protected void renderSubtree(Section<?> s, StringBuilder string, int count) {
-			string.append(Strings.maskHTML("<tr id='" + s.getID()
-					+ "'"));
+		protected void renderSubtree(Section<?> s, RenderResult string, int count) {
+			string.appendHTML("<tr id='" + s.getID()
+					+ "'");
 			string.append(" class='treetr");
 			if (s.getFather() != null) {
 				string.append(" child-of-" + s.getFather().getID());
@@ -86,20 +83,19 @@ public class KDOMRendererType extends DefaultMarkupType {
 			else {
 				string.append("'");
 			}
-			string.append(Strings.maskHTML(">"));
-			string.append(Strings.maskHTML("<td>" + s.get().getClass().getSimpleName() + "</td>"));
-			string.append(Strings.maskHTML("<td>" + s.getID() + "</td>"));
-			string.append(Strings.maskHTML("<td>") + s.getText().length()
-					+ Strings.maskHTML("</td>"));
-			string.append(Strings.maskHTML("<td>" + s.getOffSetFromFatherText() + "</td>"));
-			string.append(Strings.maskHTML("<td>" + s.getChildren().size() + "</td>"));
+			string.appendHTML(">");
+			string.appendHTML("<td>" + s.get().getClass().getSimpleName() + "</td>");
+			string.appendHTML("<td>" + s.getID() + "</td>");
+			string.appendHTML("<td>" + s.getText().length() + "</td>");
+			string.appendHTML("<td>" + s.getOffSetFromFatherText() + "</td>");
+			string.appendHTML("<td>" + s.getChildren().size() + "</td>");
 
-			string.append(Strings.maskHTML("<td><div class='table_text'><div>")
-					+ "~|"
-					+ Strings.maskJSPWikiMarkup(s.getText())
-					+ "~|"
-					+ Strings.maskHTML("</div></div></td>"));
-			string.append(Strings.maskHTML("</tr>"));
+			string.appendHTML("<td><div class='table_text'><div>");
+			string.append("~|");
+			string.appendJSPWikiMarkup(s.getText());
+			string.append("~|");
+			string.appendHTML("</div></div></td>");
+			string.appendHTML("</tr>");
 			if (s.getChildren().size() > 0) {
 				for (Section<?> child : s.getChildren()) {
 					renderSubtree(child, string, (count + 1));

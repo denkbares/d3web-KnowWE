@@ -24,6 +24,7 @@ import java.util.TreeSet;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -41,7 +42,7 @@ public class MatchingAttachmentsRenderer implements Renderer {
 	private static final String ANNOTATION_FILE = "file";
 
 	@Override
-	public void render(Section<?> section, UserContext user, StringBuilder string) {
+	public void render(Section<?> section, UserContext user, RenderResult string) {
 		Section<DefaultMarkupType> defaultMarkupSection;
 		if (section.get() instanceof DefaultMarkupType) {
 			defaultMarkupSection = Sections.cast(section, DefaultMarkupType.class);

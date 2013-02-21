@@ -26,6 +26,7 @@ import java.util.Set;
 
 import de.d3web.core.utilities.Pair;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.Strings;
@@ -44,6 +45,16 @@ public class TableModel {
 	private String name;
 	private int firstFinding = 0;
 	private int lastFinding = 0;
+
+	private final UserContext user;
+
+	public TableModel(UserContext user) {
+		this.user = user;
+	}
+
+	public void addCell(int row, int column, RenderResult resultValue, int width) {
+		addCell(row, column, resultValue.toStringRaw(), width);
+	}
 
 	public void addCell(int row, int column, String value, int width) {
 		rowCount = Math.max(rowCount, row);
@@ -115,32 +126,32 @@ public class TableModel {
 	}
 
 	public String toHtml(Section<?> section, UserContext user) {
-		StringBuilder string = new StringBuilder();
-		string.append(Strings.maskHTML("<div style='overflow:auto'>"));
-		string.append(Strings.maskHTML("<table class='wikitable' border='1'>"));
+		RenderResult string = new RenderResult(user);
+		string.appendHTML("<div style='overflow:auto'>");
+		string.appendHTML("<table class='wikitable' border='1'>");
 		// headline
 		Set<Integer> collapsedColumns = getCollapsedColumns(section, user);
-		string.append(Strings.maskHTML("<tr>"));
+		string.appendHTML("<tr>");
 		for (int i = 0; i <= columnCount; i++) {
 			String cell = getCell(0, i);
 			appendCell("th", cell, i, collapsedColumns, string);
 		}
-		string.append(Strings.maskHTML("</tr>\n"));
+		string.appendHTML("</tr>\n");
 		for (int i = 1; i <= rowCount; i++) {
-			string.append(Strings.maskHTML(i % 2 == 1 ? "<tr>" : "<tr class='odd'>"));
+			string.appendHTML(i % 2 == 1 ? "<tr>" : "<tr class='odd'>");
 			for (int j = 0; j <= columnCount; j++) {
 				String cell = getCell(i, j);
 				appendCell("td", cell, j, collapsedColumns, string);
 			}
-			string.append(Strings.maskHTML("</tr>\n"));
+			string.appendHTML("</tr>\n");
 		}
-		string.append(Strings.maskHTML("</table>"));
-		string.append(Strings.maskHTML("</div>"));
+		string.appendHTML("</table>");
+		string.appendHTML("</div>");
 
-		return string.toString();
+		return string.toStringRaw();
 	}
 
-	private void appendCell(String type, String cell, int column, Set<Integer> collapsedColumns, StringBuilder string) {
+	private void appendCell(String type, String cell, int column, Set<Integer> collapsedColumns, RenderResult string) {
 		ArrayList<String> attributes = new ArrayList<String>();
 		if (column > 0) {
 			attributes.add("column");
@@ -166,8 +177,9 @@ public class TableModel {
 			}
 		}
 		String[] attrArray = attributes.toArray(new String[attributes.size()]);
-		String cellDiv = Strings.getHtmlElement("div", cell);
-		string.append(Strings.getHtmlElement(type, cellDiv, attrArray));
+		RenderResult cellDiv = new RenderResult(string);
+		Strings.appendHtmlElement(cellDiv, "div", cell);
+		Strings.appendHtmlElement(string, type, cellDiv.toStringRaw(), attrArray);
 	}
 
 	private void setType(int column, ArrayList<String> attributes) {
@@ -198,7 +210,7 @@ public class TableModel {
 	}
 
 	public TableModel copy() {
-		TableModel copy = new TableModel();
+		TableModel copy = new TableModel(user);
 		copy.columnCount = columnCount;
 		copy.rowCount = rowCount;
 		for (Entry<Pair<Integer, Integer>, String> e : cells.entrySet()) {
@@ -212,6 +224,10 @@ public class TableModel {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public UserContext getUserContext() {
+		return this.user;
 	}
 
 	public void setLastFinding(int column) {

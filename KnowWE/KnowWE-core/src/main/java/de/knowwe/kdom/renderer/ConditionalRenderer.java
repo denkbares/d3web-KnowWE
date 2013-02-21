@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 
@@ -38,8 +39,8 @@ public abstract class ConditionalRenderer implements Renderer {
 	}
 
 	@Override
-	public void render(Section<?> sec, UserContext user, StringBuilder string) {
-		StringBuilder b = new StringBuilder();
+	public void render(Section<?> sec, UserContext user, RenderResult string) {
+		RenderResult b = new RenderResult(user);
 		for (Renderer r : conditionalRenderers) {
 			r.render(sec, user, b);
 			if (b.length() == 0) {
@@ -49,6 +50,6 @@ public abstract class ConditionalRenderer implements Renderer {
 		renderDefault(sec, user, string);
 	}
 
-	protected abstract void renderDefault(Section sec, UserContext user, StringBuilder string);
+	protected abstract void renderDefault(Section sec, UserContext user, RenderResult string);
 
 }

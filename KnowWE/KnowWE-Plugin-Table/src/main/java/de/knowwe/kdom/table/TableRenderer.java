@@ -22,9 +22,9 @@ package de.knowwe.kdom.table;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 
 /**
  * This is a renderer for the Table. It wraps the <code>Table</code> tag into an
@@ -36,32 +36,27 @@ import de.knowwe.core.utils.Strings;
 public class TableRenderer implements Renderer {
 
 	@Override
-	public void render(Section<?> sec, UserContext user, StringBuilder string) {
+	public void render(Section<?> sec, UserContext user, RenderResult string) {
 
 		boolean sortable = TableUtils.sortOption(sec);
 
-		StringBuilder b = new StringBuilder();
-		StringBuilder buffi = new StringBuilder();
-		DelegateRenderer.getInstance().render(sec, user, b);
-
-		buffi.append(getOpeningTag(sec));
+		string.appendHTML(getOpeningTag(sec));
 
 		if (sortable) {
-			buffi.append("<div class=\"sortable\" style='overflow:auto;white-space:normal;'>");
+			string.appendHTML("<div class=\"sortable\" style='overflow:auto;white-space:normal;'>");
 		}
 		else {
-			buffi.append("<div style='overflow:auto;white-space:normal;'>");
+			string.appendHTML("<div style='overflow:auto;white-space:normal;'>");
 		}
-		buffi.append("<table style='border:1px solid #999999;' id='" + sec.getID()
+		string.appendHTML("<table style='border:1px solid #999999;' id='" + sec.getID()
 				+ "'class='wikitable knowwetable' border='1'><tbody>");
-		buffi.append(getHeader());
-		buffi.append(b.toString());
-		buffi.append("</tbody></table>");
-		buffi.append("</div>");
+		string.appendHTML(getHeader());
+		DelegateRenderer.getInstance().render(sec, user, string);
+		string.appendHTML("</tbody></table>");
+		string.appendHTML("</div>");
 
-		buffi.append(getClosingTag());
+		string.appendHTML(getClosingTag());
 
-		string.append(Strings.maskHTML(buffi.toString()));
 	}
 
 	protected String getHeader() {

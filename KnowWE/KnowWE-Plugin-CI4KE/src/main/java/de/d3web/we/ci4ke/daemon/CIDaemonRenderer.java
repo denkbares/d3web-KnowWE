@@ -6,44 +6,41 @@ import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class CIDaemonRenderer implements Renderer {
 
 	@Override
-	public void render(Section<?> section, UserContext user, StringBuilder string) {
+	public void render(Section<?> section, UserContext user, RenderResult string) {
 		String content = DefaultMarkupType.getContent(section);
 		String dashboardName = DefaultMarkupType.getAnnotation(section,
 				CIDashboardType.NAME_KEY);
 		String dashboardArticle = DefaultMarkupType.getAnnotation(section,
 				CIDaemonType.DASHBOARD_ARTICLE);
-		string.append(Strings.maskHTML(renderDaemonContents(content, section.getWeb(),
-				dashboardName,
-				dashboardArticle)));
+		renderDaemonContents(content, section.getWeb(),
+				dashboardName, dashboardArticle, string);
 
 	}
 
-	public static String renderDaemonContents(String content, String web, String dashboardName, String dashboardArticleTitle) {
-
-		StringBuilder string = new StringBuilder();
+	public static String renderDaemonContents(String content, String web, String dashboardName, String dashboardArticleTitle, RenderResult string) {
 
 		if (!Environment.getInstance().getArticleManager(web).getTitles().contains(
 				dashboardArticleTitle)) {
-			string.append("<span class='error'>");
+			string.appendHTML("<span class='error'>");
 			string.append("The annotation @" + CIDaemonType.DASHBOARD_ARTICLE
 					+ " has to specify an existing article name.");
-			string.append("</span>");
+			string.appendHTML("</span>");
 		}
 		boolean hasDashboard = CIDashboard.hasDashboard(web, dashboardArticleTitle, dashboardName);
 
 		if (!hasDashboard) {
-			string.append("<span class='error'>");
+			string.appendHTML("<span class='error'>");
 			string.append("The annotation @" + CIDashboardType.NAME_KEY
 					+ " has to specify an existing CI dashboard name on the specified article.");
-			string.append("</span>");
+			string.appendHTML("</span>");
 		}
 
 		String baseURL =
@@ -53,17 +50,17 @@ public class CIDaemonRenderer implements Renderer {
 				+ "Wiki.jsp?page="
 				+ dashboardArticleTitle
 				+ "\">";
-		string.append(srclink);
+		string.appendHTML(srclink);
 
 		CIDashboard dashboard = CIDashboard.getDashboard(web, dashboardArticleTitle, dashboardName);
 		CIRenderer renderer = dashboard.getRenderer();
 		if (hasDashboard) {
-			string.append(renderer.renderCurrentBuildStatus());
+			renderer.renderCurrentBuildStatus(string);
 		}
 		else {
-			string.append(renderer.renderBuildStatus(Type.ERROR, true, ""));
+			renderer.renderBuildStatus(Type.ERROR, true, "", string);
 		}
-		string.append("</a>");
+		string.appendHTML("</a>");
 
 		string.append(Environment.getInstance().getWikiConnector().renderWikiSyntax(content));
 

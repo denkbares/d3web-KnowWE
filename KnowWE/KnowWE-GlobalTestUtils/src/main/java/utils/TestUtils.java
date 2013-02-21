@@ -120,7 +120,7 @@ public class TestUtils {
 		map.put(Attributes.WEB, Environment.DEFAULT_WEB);
 		map.put(Attributes.USER, "Test User");
 		return new ActionContext(actionName != null ? actionName : "", path != null ? path : "",
-				map, null, null, null, null);
+				map, new TestHttpServletRequest(), null, null, null);
 	}
 
 	public static int countMatches(String text, String regex) {

@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
 import de.knowwe.core.user.UserContext;
@@ -47,14 +48,15 @@ public class VersionTagHandler extends AbstractHTMLTagHandler {
 	}
 
 	@Override
-	public String renderHTML(String topic, UserContext user, Map<String, String> values, String web) {
+	public void renderHTML(String web, String topic, UserContext user, Map<String, String> values, RenderResult result) {
 		ResourceBundle rb;
 
 		try {
 			rb = ResourceBundle.getBundle("metadata");
 		}
 		catch (MissingResourceException e) {
-			return "no build metadata file found";
+			result.append("no build metadata file found");
+			return;
 		}
 
 		StringBuilder html = new StringBuilder();
@@ -100,7 +102,7 @@ public class VersionTagHandler extends AbstractHTMLTagHandler {
 			html.append("Invalid build metadata type. Valid types are: chuck, buildnumber, buildtag and buildtype.");
 		}
 
-		return html.toString();
+		result.appendHTML(html.toString());
 	}
 
 	@Override

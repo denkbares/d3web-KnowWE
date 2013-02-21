@@ -22,9 +22,9 @@ package de.knowwe.kdom.renderer;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
 
 public class StyleRenderer implements Renderer {
@@ -95,17 +95,17 @@ public class StyleRenderer implements Renderer {
 	}
 
 	@Override
-	public void render(Section<?> section, UserContext user, StringBuilder string) {
-		string.append(Strings.maskHTML("<span"));
+	public void render(Section<?> section, UserContext user, RenderResult string) {
+		string.appendHTML("<span");
 		if (cssClass != null) {
 			string.append(" class='").append(cssClass).append("'");
 		}
 		if (cssStyle != null) {
 			string.append(" style='").append(cssStyle).append("'");
 		}
-		string.append(Strings.maskHTML(">"));
+		string.appendHTML(">");
 		renderContent(section, user, string);
-		string.append(Strings.maskHTML("</span>"));
+		string.appendHTML("</span>");
 	}
 
 	/**
@@ -118,11 +118,11 @@ public class StyleRenderer implements Renderer {
 	 * @param user the user to render for
 	 * @param string the buffer to render into
 	 */
-	protected void renderContent(Section<?> section, UserContext user, StringBuilder string) {
-		StringBuilder builder = new StringBuilder();
+	protected void renderContent(Section<?> section, UserContext user, RenderResult string) {
+		RenderResult builder = new RenderResult(user);
 		DelegateRenderer.getInstance().render(section, user, builder);
-		if (maskJSP) Strings.maskJSPWikiMarkup(builder);
-		string.append(builder.toString());
+		if (maskJSP) builder.maskJSPWikiMarkup();
+		string.append(builder);
 	}
 
 	public String getCssStyle() {

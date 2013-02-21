@@ -25,6 +25,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
@@ -38,7 +39,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 public class NamedObjectRenderer implements ObjectNameRenderer {
 
 	@Override
-	public String render(String objectName) {
+	public void render(String objectName, RenderResult result) {
 		String url = null;
 		Collection<TerminologyManager> terminologyManagers = Environment.getInstance().getTerminologyManagers(
 				Environment.DEFAULT_WEB);
@@ -57,7 +58,9 @@ public class NamedObjectRenderer implements ObjectNameRenderer {
 			}
 		}
 		if (url == null) url = "Wiki.jsp?page=ObjectInfoPage&objectname=" + objectName;
-		return "<a href='" + url + "'>" + objectName + "</a>";
+		result.appendHTML("<a href='" + url + "'>");
+		result.append(objectName);
+		result.appendHTML("</a>");
 	}
 
 }

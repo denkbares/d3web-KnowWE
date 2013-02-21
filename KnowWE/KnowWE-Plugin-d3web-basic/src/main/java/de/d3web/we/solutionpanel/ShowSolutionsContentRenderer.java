@@ -35,9 +35,9 @@ import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 
 /**
  * Displays a configurable pane presenting derived solutions and abstractions.
@@ -61,8 +61,8 @@ public class ShowSolutionsContentRenderer implements Renderer {
 	}
 
 	@Override
-	public void render(Section<?> section, UserContext user, StringBuilder string) {
-		string.append(Strings.maskHTML("<span id='" + section.getID() + "'>"));
+	public void render(Section<?> section, UserContext user, RenderResult string) {
+		string.appendHTML("<span id='" + section.getID() + "'>");
 		String text = section.getText();
 		if (!text.isEmpty()) {
 			string.append(text + "\n");
@@ -77,10 +77,10 @@ public class ShowSolutionsContentRenderer implements Renderer {
 			string.append("No knowledge base for article '" + masterArticleName + "'\n");
 		}
 		else {
-			string.append(renderSolutions(section, session));
-			string.append(renderAbstractions(section, session));
+			renderSolutions(section, session, string);
+			renderAbstractions(section, session, string);
 		}
-		string.append(Strings.maskHTML("</span>"));
+		string.appendHTML("</span>");
 	}
 
 	private static Section<ShowSolutionsType> getShowSolutionsSection(Section<?> section) {
@@ -90,20 +90,19 @@ public class ShowSolutionsContentRenderer implements Renderer {
 	/**
 	 * Renders the derived abstractions when panel opted for it.
 	 */
-	private StringBuilder renderAbstractions(Section<?> section, Session session) {
+	private void renderAbstractions(Section<?> section, Session session, RenderResult buffer) {
 		// Check, if the shown abstractions are limited to a number of
 		// questionnaires
 		Section<ShowSolutionsType> parentSection = getShowSolutionsSection(section);
 		String[] allowedParents = ShowSolutionsType.getAllowedParents(parentSection);
 		String[] excludedParents = ShowSolutionsType.getExcludedParents(parentSection);
 
-		StringBuilder buffer = new StringBuilder();
 		if (ShowSolutionsType.shouldShowAbstractions(parentSection)) {
 			List<Question> abstractions = new ArrayList<Question>();
 			List<Question> questions = D3webUtils.getAnsweredQuestionsNonBlocking(session);
 			if (questions == null) {
 				renderPropagationError(buffer);
-				return buffer;
+				return;
 			}
 			for (Question question : questions) {
 				Boolean isAbstract = question.getInfoStore().getValue(
@@ -127,19 +126,17 @@ public class ShowSolutionsContentRenderer implements Renderer {
 				SolutionPanelUtils.renderAbstraction(question, session, digits, buffer);
 			}
 		}
-		return buffer;
 	}
 
-	private void renderPropagationError(StringBuilder buffer) {
-		buffer.append(Strings.maskHTML(
-				"<i style='color:grey'>values in calculation, please reload later</i>\n"));
+	private void renderPropagationError(RenderResult buffer) {
+		buffer.appendHTML(
+				"<i style='color:grey'>values in calculation, please reload later</i>\n");
 	}
 
 	/**
 	 * Renders the derived solutions when panel opted for it.
 	 */
-	private StringBuilder renderSolutions(Section<?> section, final Session session) {
-		StringBuilder content = new StringBuilder();
+	private void renderSolutions(Section<?> section, final Session session, RenderResult content) {
 		Set<Solution> allSolutions = new TreeSet<Solution>(new SolutionComparator(session));
 		Section<ShowSolutionsType> parentSection = getShowSolutionsSection(section);
 
@@ -151,7 +148,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 					D3webUtils.getSolutionsNonBlocking(session, State.ESTABLISHED);
 			if (solutions == null) {
 				renderPropagationError(content);
-				return content;
+				return;
 			}
 			allSolutions.addAll(solutions);
 		}
@@ -159,7 +156,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 			List<Solution> solutions = D3webUtils.getSolutionsNonBlocking(session, State.SUGGESTED);
 			if (solutions == null) {
 				renderPropagationError(content);
-				return content;
+				return;
 			}
 			allSolutions.addAll(solutions);
 		}
@@ -167,7 +164,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 			List<Solution> solutions = D3webUtils.getSolutionsNonBlocking(session, State.EXCLUDED);
 			if (solutions == null) {
 				renderPropagationError(content);
-				return content;
+				return;
 			}
 			allSolutions.addAll(solutions);
 		}
@@ -191,10 +188,9 @@ public class ShowSolutionsContentRenderer implements Renderer {
 
 		// format the solutions
 		for (Solution solution : allSolutions) {
-			SolutionPanelUtils.renderSolution(solution, session, content, endUserMode);
+			SolutionPanelUtils.renderSolution(solution, session, endUserMode, content);
 		}
 
-		return content;
 	}
 
 	private Session getSessionFor(String title, UserContext user) {

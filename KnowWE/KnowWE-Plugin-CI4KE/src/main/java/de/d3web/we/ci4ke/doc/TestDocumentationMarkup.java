@@ -28,8 +28,8 @@ import de.d3web.testing.TestParameter.Mode;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -58,7 +58,7 @@ public class TestDocumentationMarkup extends DefaultMarkupType {
 	class TestDocumentationRenderer extends DefaultMarkupRenderer {
 
 		@Override
-		public void render(Section<?> section, UserContext user, StringBuilder string) {
+		public void render(Section<?> section, UserContext user, RenderResult string) {
 			List<String> allTests = TestManager.findAllTestNames();
 			Collections.sort(allTests);
 
@@ -77,7 +77,7 @@ public class TestDocumentationMarkup extends DefaultMarkupType {
 			string.append("\n%%table-filter");
 			string.append("\n%%sortable");
 			string.append("\n");
-			string.append(Strings.maskHTML(temp.toString()));
+			string.appendHTML(temp.toString());
 			string.append("\n/%");
 			string.append("\n/%");
 			string.append("\n");
