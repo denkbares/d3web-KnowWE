@@ -890,13 +890,14 @@ public class Strings {
 	public static void appendHtmlTag(RenderResult result, String tag, String... attributes) {
 		result.appendHTML("<" + tag);
 		for (int i = 0; i + 2 <= attributes.length; i += 2) {
-			result.append(getAttribute(attributes[i], attributes[i + 1]));
+			result.appendHTML(getAttribute(attributes[i], attributes[i + 1]));
 		}
 		result.appendHTML(">");
 	}
 
 	private static String getAttribute(String attributeName, String attribute) {
-		return " " + attributeName + "='" + encodeHtml(attribute) + "'";
+
+		return " " + attributeName + "=\"" + encodeHtml(attribute) + "\"";
 	}
 
 }
