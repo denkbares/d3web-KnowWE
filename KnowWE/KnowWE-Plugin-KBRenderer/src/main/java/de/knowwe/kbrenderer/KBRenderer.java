@@ -177,7 +177,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			 */
 			List<Flow> flows = kb.getManager().getObjects(Flow.class);
 			if (!flows.isEmpty()) {
-				StringBuilder bob = new StringBuilder();
+				RenderResult bob = new RenderResult(text);
 				int totalEdgeCount = 0, totalNodeCount = 0;
 				for (Flow flow : flows) {
 					int nodeCount = flow.getNodes().size();
@@ -185,9 +185,10 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 					totalNodeCount += nodeCount;
 					totalEdgeCount += edgeCount;
 					bob.append("Flow: '" + flow.getName() + "' (" + nodeCount + " Nodes, "
-							+ edgeCount + " Edges)<br>");
+							+ edgeCount + " Edges)");
+					bob.appendHtml("<br>");
 				}
-				text.append("<p><strong>DiaFlux (" + flows.size() + " Flows, " + totalNodeCount
+				text.appendHtml("<p><strong>DiaFlux (" + flows.size() + " Flows, " + totalNodeCount
 						+ " Nodes, " + totalEdgeCount + " Edges):</strong><p></p>\n\n");
 				text.append(bob);
 			}
@@ -203,23 +204,24 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 
 					if (!appendedQuestionHeadline) {
 						if (appendedSolutionsHeadline || appendedRulesHeadline) {
-							text.append("<br/>\n");
+							text.appendHtml("<br/>\n");
 						}
-						text.append("<strong>"
+						text.appendHtml("<strong>"
 								+ rb.getString("KnowWE.KBRenderer.questions")
 								+ ":</strong><br/><p></p>");
 						appendedQuestionHeadline = true;
 					}
 					if (q1 instanceof QContainer) {
-						text.append("<span style=\"color: rgb(128, 128, 0);\">"
-								+ q1.getName() + "</span><br/>");
+						text.appendHtml("<span style=\"color: rgb(128, 128, 0);\">");
+						text.append(q1.getName());
+						text.appendHtml("</span><br/>");
 						// Build up question tree recursively
 						text.append(getAll(q1.getChildren(), 1, topic, user));
-						text.append("<br/>\n");
+						text.appendHtml("<br/>\n");
 					}
 				}
 			}
-			text.append("<p></p>");
+			text.appendHtml("<p></p>");
 
 			// Covering List
 			Collection<XCLModel> xclRels = kb.getAllKnowledgeSlicesFor(XCLModel.KNOWLEDGE_KIND);
@@ -228,16 +230,17 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 				if (!appendedXCLHeadline) {
 					if (appendedSolutionsHeadline || appendedRulesHeadline
 							|| appendedQuestionHeadline) {
-						text.append("<br/>\n");
+						text.appendHtml("<br/>\n");
 					}
-					text.append("<strong>"
+					text.appendHtml("<strong>"
 							+ rb.getString("KnowWE.KBRenderer.xclModels")
 							+ ":</strong>");
 					appendedXCLHeadline = true;
 				}
 
-				text.append("<p></p>\n\n" + model.getSolution().getName()
-						+ ":<br/>\n");
+				text.appendHtml("<p></p>\n\n");
+				text.append(model.getSolution().getName());
+				text.appendHtml(":<br/>\n");
 
 				Map<XCLRelationType, Collection<XCLRelation>> relationMap = model
 						.getTypedRelations();
@@ -260,17 +263,17 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 												cond,
 												VerbalizationManager.RenderingFormat.PLAIN_TEXT,
 												parameterMap));
-						text.append(" <br/>\n");
+						text.appendHtml(" <br/>\n");
 					}
 				}
 			}
 		}
 		else {
-			text.append("<p class=\"box error\">"
+			text.appendHtml("<p class=\"box error\">"
 					+ rb.getString("KnowWE.KBRenderer.error") + "</p>");
 		}
 
-		text.append("</p></div></div>");
+		text.appendHtml("</p></div></div>");
 	}
 
 	private String renderRule(Rule r, Map<String, Object> parameterMap, UserContext user) {
