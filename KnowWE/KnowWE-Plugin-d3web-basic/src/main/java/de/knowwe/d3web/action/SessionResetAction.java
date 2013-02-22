@@ -65,9 +65,8 @@ public class SessionResetAction extends AbstractAction {
 		KnowledgeBase base = D3webUtils.getKnowledgeBase(context.getWeb(), kbArticle);
 
 		// reset session
-		SessionProvider provider = SessionProvider.getSessionProvider(context);
-		provider.removeSession(base);
-		provider.createSession(base);
+		SessionProvider.removeSession(context, base);
+		SessionProvider.createSession(context, base);
 
 		// remove out dated session notification
 		NotificationManager.removeNotification(context, kbArticle);

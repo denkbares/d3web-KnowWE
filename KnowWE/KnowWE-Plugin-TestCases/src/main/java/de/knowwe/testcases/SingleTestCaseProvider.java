@@ -83,8 +83,7 @@ public class SingleTestCaseProvider extends PrefixedTestCaseProvider {
 
 	@Override
 	public void storeSession(Session session, UserContext user) {
-		SessionProvider provider = SessionProvider.getSessionProvider(user);
-		provider.setSession(session);
+		SessionProvider.setSession(user, session);
 		getDebugStatus(user).setSession(session);
 	}
 

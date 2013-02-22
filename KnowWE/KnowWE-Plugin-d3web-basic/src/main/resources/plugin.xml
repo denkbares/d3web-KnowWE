@@ -149,5 +149,15 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="AnswerReference" />
 	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="EventListener"
+		id="PropagationLoopHandler">
+		<parameter id="class"
+			value="de.d3web.we.utils.PropagationLoopHandler" />
+		<parameter id="name" value="PropagationLoopHandler" />
+		<parameter id="description" value="EventListener PropagationLoopHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
 
 </plugin>

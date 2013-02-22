@@ -141,6 +141,6 @@ public class CIAction extends AbstractAction {
 				context.getRequest()));
 
 		context.setContentType("text/html; charset=UTF-8");
-		context.getWriter().write(html.toString());
+		context.getWriter().write(temp.toString());
 	}
 }

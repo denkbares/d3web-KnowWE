@@ -60,8 +60,6 @@ public class ValueTooltipRenderer implements Renderer {
 	}
 
 	private String createTooltip(Section<?> section, UserContext user) {
-		SessionProvider provider = SessionProvider.getSessionProvider(user);
-		if (provider == null) return null;
 		if (!(section.get() instanceof D3webTerm<?>)) return null;
 
 		@SuppressWarnings("unchecked")
@@ -74,7 +72,7 @@ public class ValueTooltipRenderer implements Renderer {
 			Article article = articleManager.getArticle(articleName);
 			NamedObject namedObject = sec.get().getTermObject(article, sec);
 			KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(article);
-			Session session = provider.getSession(knowledgeBase);
+			Session session = SessionProvider.getSession(user, knowledgeBase);
 			if (namedObject instanceof ValueObject) {
 				Value value = D3webUtils.getValueNonBlocking(session, (ValueObject) namedObject);
 				if (value == null) continue;

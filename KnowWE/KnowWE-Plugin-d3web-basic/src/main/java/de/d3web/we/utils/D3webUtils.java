@@ -34,10 +34,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import de.d3web.core.inference.LoopTerminator;
+import de.d3web.core.inference.LoopTerminator.LoopStatus;
+import de.d3web.core.inference.SessionTerminatedException;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.ValueObject;
@@ -53,6 +57,7 @@ import de.d3web.core.records.io.SessionPersistenceManager;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.blackboard.Blackboard;
+import de.d3web.core.session.blackboard.Fact;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.scoring.Score;
@@ -63,11 +68,17 @@ import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
+import de.knowwe.d3web.event.FindingSetEvent;
 import de.knowwe.knowRep.KnowledgeRepresentationHandler;
+import de.knowwe.notification.NotificationManager;
+import de.knowwe.notification.StandardNotification;
 
 public class D3webUtils {
 
@@ -322,6 +333,20 @@ public class D3webUtils {
 		}
 	}
 
+	public static void setFindingSynchronized(Fact fact, Session session, UserContext context) {
+		try {
+			synchronized (session) {
+				session.getBlackboard().addValueFact(fact);
+				session.touch();
+			}
+		}
+		catch (SessionTerminatedException e) {
+			Logger.getLogger(D3webUtils.class.getName()).log(Level.WARNING,
+					"Propagation terminated due to detected loop.", e);
+		}
+		EventManager.getInstance().fireEvent(new FindingSetEvent(fact, session, context));
+	}
+
 	/**
 	 * Returns the current value of a specific {@link Solution} within the
 	 * specified {@link Session}. If the value is currently being calculated,
@@ -446,6 +471,34 @@ public class D3webUtils {
 		Locale.setDefault(Environment.getInstance().getWikiConnector()
 				.getLocale(user.getRequest()));
 		return getD3webBundle();
+	}
+
+	public static void handleLoopDetectionNotification(UserContext context, Session session) {
+		LoopStatus loopStatus = LoopTerminator.getInstance().getLoopStatus(session);
+		if (loopStatus.hasTerminated()) {
+			String notificationId = generateNotificationId(session);
+			Collection<TerminologyObject> loopObjects = loopStatus.getLoopObjects();
+			String kbName = session.getKnowledgeBase().getName();
+			if (kbName == null) kbName = session.getKnowledgeBase().getId();
+			String notificationText = "Endless loop detected in reasoning of knowledge base '"
+					+ kbName
+					+ "'. The following object"
+					+ (loopObjects.size() == 1 ? " is" : "s are")
+					+ " mainly involved in the loop: " +
+					Strings.concat(",  ", loopObjects);
+			StandardNotification notification = new StandardNotification(
+					notificationText, Message.Type.WARNING, notificationId);
+			NotificationManager.addNotification(context, notification);
+		}
+	}
+
+	public static void removedLoopDetectionNotification(UserContext context, Session session) {
+		String notificationId = generateNotificationId(session);
+		NotificationManager.removeNotification(context, notificationId);
+	}
+
+	private static String generateNotificationId(Session session) {
+		return session.getId() + "_loop_detected";
 	}
 
 	/**

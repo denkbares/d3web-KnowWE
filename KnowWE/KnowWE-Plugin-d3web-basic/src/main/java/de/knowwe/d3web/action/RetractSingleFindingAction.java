@@ -25,7 +25,6 @@ import java.io.IOException;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.session.Session;
-import de.d3web.core.session.blackboard.Blackboard;
 import de.d3web.core.session.blackboard.Fact;
 import de.d3web.core.session.blackboard.FactFactory;
 import de.d3web.core.session.values.Unknown;
@@ -34,9 +33,7 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.event.EventManager;
 import de.knowwe.core.utils.Strings;
-import de.knowwe.d3web.event.FindingSetEvent;
 
 /**
  * An action that is performed for retracting a single value e.g. in Quick
@@ -60,7 +57,6 @@ public class RetractSingleFindingAction extends AbstractAction {
 
 		String objectid = context.getParameter(Attributes.SEMANO_OBJECT_ID);
 		String topic = context.getTitle();
-		String user = context.getUserName();
 		String web = context.getWeb();
 
 		topic = Strings.decodeURL(topic);
@@ -89,23 +85,14 @@ public class RetractSingleFindingAction extends AbstractAction {
 				}
 			}
 		}
-		Blackboard blackboard = session.getBlackboard();
 
 		Question question = kb.getManager().searchQuestion(objectid);
 		if (question != null) {
 
-			// TODO Use this Code?
-			// 6.2011 Johannes
 			Unknown unknown = Unknown.getInstance();
-			synchronized (session) {
-				Fact fact = FactFactory.createUserEnteredFact(question,
-						unknown);
-				blackboard.addValueFact(fact);
-				session.touch();
-			}
-			EventManager.getInstance().fireEvent(
-					new FindingSetEvent(question, unknown, namespace, web,
-							user));
+			Fact fact = FactFactory.createUserEnteredFact(question,
+					unknown);
+			D3webUtils.setFindingSynchronized(fact, session, context);
 		}
 
 		return null;

@@ -42,9 +42,7 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.event.EventManager;
 import de.knowwe.core.utils.Strings;
-import de.knowwe.d3web.event.FindingSetEvent;
 
 public class SetSingleFindingAction extends AbstractAction {
 
@@ -64,7 +62,6 @@ public class SetSingleFindingAction extends AbstractAction {
 		String valuedate = context.getParameter(Attributes.SEMANO_VALUE_DATE);
 		String valueText = context.getParameter(Attributes.SEMANO_VALUE_TEXT);
 		String topic = context.getTitle();
-		String user = context.getUserName();
 		String web = context.getWeb();
 		String namespace = null;
 		String term = null;
@@ -130,13 +127,8 @@ public class SetSingleFindingAction extends AbstractAction {
 			if (value != null) {
 				// synchronize to session as suggested for multi-threaded
 				// kernel access applications
-				synchronized (session) {
-					Fact fact = FactFactory.createUserEnteredFact(question, value);
-					blackboard.addValueFact(fact);
-					session.touch();
-				}
-				EventManager.getInstance().fireEvent(
-						new FindingSetEvent(question, value, namespace, web, user));
+				Fact fact = FactFactory.createUserEnteredFact(question, value);
+				D3webUtils.setFindingSynchronized(fact, session, context);
 			}
 		}
 		return null;

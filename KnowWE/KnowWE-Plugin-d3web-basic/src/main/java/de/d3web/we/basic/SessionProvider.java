@@ -72,6 +72,10 @@ public class SessionProvider {
 
 	private final Map<String, Session> sessions;
 
+	private SessionProvider() {
+		sessions = new HashMap<String, Session>();
+	}
+
 	/**
 	 * Returns the SessionProvider object for a specified {@link UserContext}.
 	 * If there is no SessionProvider object, a new one will be created and
@@ -85,7 +89,7 @@ public class SessionProvider {
 	 * @param context UserContext of the current user.
 	 * @return SessionProvider object associated to the user
 	 */
-	public static SessionProvider getSessionProvider(UserContext context) {
+	private static SessionProvider getSessionProvider(UserContext context) {
 		HttpSession httpSession = context.getSession();
 		SessionProvider provider = null;
 		if (httpSession != null) {
@@ -96,6 +100,76 @@ public class SessionProvider {
 			}
 		}
 		return provider;
+	}
+
+	private Session createSessionInternally(UserContext context, KnowledgeBase kb) {
+		removeSessionInternally(context, kb);
+		Session session = SessionFactory.createSession(kb);
+		EventManager.getInstance().fireEvent(new SessionCreatedEvent(session));
+		sessions.put(kb.getId(), session);
+		return session;
+	}
+
+	/**
+	 * Returns an existing {@link Session} for the provided knowledge base. If
+	 * there exists no session for this knowledge base this method will create
+	 * one. If the knowledge base of an existing session is not up to date and
+	 * no user facts has been set, the knowledge base will be replaced
+	 * automatically (the session will be reseted).
+	 * 
+	 * @created 06.03.2012
+	 * @param kb the underlying knowledge base
+	 * @return session for the specified knowledge base
+	 */
+	private Session getSessionInternally(UserContext context, KnowledgeBase kb) {
+		Session session = sessions.get(kb.getId());
+		if (session == null) {
+			session = createSessionInternally(context, kb);
+		}
+		// check if existing session is out dated
+		if (session.getKnowledgeBase() != kb) {
+			// check if the session is empty
+			for (TerminologyObject t : session.getBlackboard().getValuedObjects()) {
+				Fact fact = session.getBlackboard().getValueFact(t);
+				if (fact.getPSMethod() == null || fact.getPSMethod().hasType(Type.source)) {
+					// session is not empty -> don't touch it!
+					return session;
+				}
+			}
+			// session is empty -> reset
+			removeSessionInternally(context, kb);
+			session = createSessionInternally(context, kb);
+		}
+		return session;
+	}
+
+	private void removeSessionInternally(UserContext context, KnowledgeBase kb) {
+		Session removedSession = sessions.remove(kb.getId());
+		if (removedSession != null) {
+			EventManager.getInstance().fireEvent(new SessionRemovedEvent(removedSession, context));
+		}
+	}
+
+	private void setSessionInternally(UserContext context, Session session) {
+		removeSessionInternally(context, session.getKnowledgeBase());
+		sessions.put(session.getKnowledgeBase().getId(), session);
+	}
+
+	/**
+	 * Creates and returns a new {@link Session} for the {@link KnowledgeBase}.
+	 * The created session is accessible by using the id of the knowledge base.
+	 * 
+	 * @created 06.03.2012
+	 * @param context the {@link UserContext} the session will belong to
+	 * @param kb The underlying knowledge base
+	 * @return the created session
+	 */
+	public static Session createSession(UserContext context, KnowledgeBase kb) {
+		SessionProvider sessionProvider = getSessionProvider(context);
+		if (sessionProvider == null) {
+			return null;
+		}
+		return sessionProvider.createSessionInternally(context, kb);
 	}
 
 	/**
@@ -122,7 +196,7 @@ public class SessionProvider {
 		if (provider == null) {
 			return null;
 		}
-		return provider.getSession(base);
+		return provider.getSessionInternally(context, base);
 	}
 
 	/**
@@ -146,7 +220,7 @@ public class SessionProvider {
 		Collection<Session> result = new LinkedList<Session>();
 		for (String article : packageManager.getCompilingArticles(section)) {
 			KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(web, article);
-			result.add(provider.getSession(knowledgeBase));
+			result.add(provider.getSessionInternally(context, knowledgeBase));
 		}
 		return result;
 	}
@@ -165,81 +239,19 @@ public class SessionProvider {
 		return session.getKnowledgeBase() != base;
 	}
 
-	public SessionProvider() {
-		sessions = new HashMap<String, Session>();
-	}
-
-	/**
-	 * Returns all {@link Session} objects of this provider.
-	 * 
-	 * @created 06.03.2012
-	 * @return all sessions
-	 */
-	public Collection<Session> getSessions() {
-		return Collections.unmodifiableCollection(sessions.values());
-	}
-
-	/**
-	 * Returns an existing {@link Session} for the provided knowledge base. If
-	 * there exists no session for this knowledge base this method will create
-	 * one. If the knowledge base of an existing session is not up to date and
-	 * no user facts has been set, the knowledge base will be replaced
-	 * automatically (the session will be reseted).
-	 * 
-	 * @created 06.03.2012
-	 * @param kb the underlying knowledge base
-	 * @return session for the specified knowledge base
-	 */
-	public Session getSession(KnowledgeBase kb) {
-		Session session = sessions.get(kb.getId());
-		if (session == null) {
-			session = createSession(kb);
-		}
-		// check if existing session is out dated
-		if (session.getKnowledgeBase() != kb) {
-			// check if the session is empty
-			for (TerminologyObject t : session.getBlackboard().getValuedObjects()) {
-				Fact fact = session.getBlackboard().getValueFact(t);
-				if (fact.getPSMethod() == null || fact.getPSMethod().hasType(Type.source)) {
-					// session is not empty -> don't touch it!
-					return session;
-				}
-			}
-			// session is empty -> reset
-			removeSession(kb);
-			session = createSession(kb);
-		}
-		return session;
-	}
-
-	/**
-	 * Creates and returns a new {@link Session} for the {@link KnowledgeBase}.
-	 * The created session is accessible by using the id of the knowledge base.
-	 * 
-	 * @created 06.03.2012
-	 * @param kb The underlying knowledge base
-	 * @return the created session
-	 */
-	public Session createSession(KnowledgeBase kb) {
-		removeSession(kb);
-		Session session = SessionFactory.createSession(kb);
-		EventManager.getInstance().fireEvent(new SessionCreatedEvent(session));
-		sessions.put(kb.getId(), session);
-		return session;
-	}
-
 	/**
 	 * Removes an existing {@link Session} for the provided knowledge base. If
 	 * there exists no session for this knowledge base ID this method will do
 	 * nothing.
 	 * 
 	 * @created 06.03.2012
+	 * @param context the {@link UserContext} to which the session belongs
 	 * @param kb the underlying knowledge base
 	 */
-	public void removeSession(KnowledgeBase kb) {
-		Session removedSession = sessions.remove(kb.getId());
-		if (removedSession != null) {
-			EventManager.getInstance().fireEvent(new SessionRemovedEvent(removedSession));
+	public static void removeSession(UserContext context, KnowledgeBase kb) {
+		SessionProvider sessionProvider = getSessionProvider(context);
+		if (sessionProvider != null) {
+			sessionProvider.removeSessionInternally(context, kb);
 		}
 	}
 
@@ -248,11 +260,15 @@ public class SessionProvider {
 	 * session's underlying kb. An existing session will be overwritten!
 	 * 
 	 * @created 06.03.2012
+	 * @param context the {@link UserContext} for which the session should be
+	 *        set
 	 * @param session the session to be set
 	 */
-	public void setSession(Session session) {
-		removeSession(session.getKnowledgeBase());
-		sessions.put(session.getKnowledgeBase().getId(), session);
+	public static void setSession(UserContext context, Session session) {
+		SessionProvider sessionProvider = getSessionProvider(context);
+		if (sessionProvider != null) {
+			sessionProvider.setSessionInternally(context, session);
+		}
 	}
 
 }

@@ -22,7 +22,6 @@ package de.knowwe.core.event;
 
 import java.util.Collection;
 
-
 /**
  * An EventListener is an extension to KnowWE, that can listen to events firing
  * during operations handled by KnowWE (e.g., init, page-save...)

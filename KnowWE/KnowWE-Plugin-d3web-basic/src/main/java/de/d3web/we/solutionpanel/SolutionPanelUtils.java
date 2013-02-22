@@ -68,8 +68,11 @@ public class SolutionPanelUtils {
 		tooltip = tooltip.trim();
 
 		// fetch derivation state icon
+		Rating solutionRating = D3webUtils.getRatingNonBlocking(session, solution);
+		appendImage(solutionRating, content);
+		String stateName = String.valueOf(solutionRating);
 
-		content.appendHtml("<span class=\"SOLUTION\">");
+		content.appendHtml("<span " + tooltip + "class=\"SOLUTION-" + stateName + "\">");
 		if (endUser) {
 			// show solution in end user mode
 			if (prompt == null && description != null) {
@@ -100,8 +103,7 @@ public class SolutionPanelUtils {
 		content.appendHtml("</span>\n");
 	}
 
-	public static void appendImage(Solution solution, Session session, RenderResult content) {
-		Rating solutionRating = D3webUtils.getRatingNonBlocking(session, solution);
+	public static void appendImage(Rating solutionRating, RenderResult content) {
 		if (solutionRating == null) {
 			appendImage("KnowWEExtension/images/fsp_calculating.gif",
 					"value in calculation, please reload later", content);

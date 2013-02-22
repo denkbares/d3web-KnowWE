@@ -266,21 +266,21 @@ public class CIRenderer {
 				"</script>");
 
 		// render test-message (if exists)
-		renderMessage(testResult, index, dashboardName, renderResult);
+		appendMessageBlock(testResult, index, dashboardName, renderResult);
 
 		renderResult.appendHtml("</div>\n");
 	}
 
-	private void renderMessage(TestResult testResult, int index, String dashboardName, RenderResult renderResult) {
+	private void appendMessageBlock(TestResult testResult, int index, String dashboardName, RenderResult renderResult) {
 		// not visible at beginning
 		renderResult.appendHtml("<div style='display:none;' id='ci-message"
 				+ testResult.getTestName() + index + dashboardName
 				+ "' class='ci-message'>");
-		generateMessageText(testResult, renderResult);
+		appendMessage(testResult, renderResult);
 		renderResult.appendHtml("</div>");
 	}
 
-	private void generateMessageText(TestResult testResult, RenderResult renderResult) {
+	private void appendMessage(TestResult testResult, RenderResult renderResult) {
 		StringBuilder toolTip = new StringBuilder();
 		Collection<String> testObjectNames = testResult.getTestObjectsWithUnexpectedOutcome();
 		int successes = testResult.getSuccessfullTestObjectRuns();
@@ -300,7 +300,7 @@ public class CIRenderer {
 			}
 
 			renderResult.append("__" + messageType.toString() + "__: ");
-			renderMessage(message, renderResult);
+			renderMessageText(message, renderResult);
 			renderResult.append("\n (test object: ");
 			renderObjectName(testObjectName, testObjectClass, renderResult);
 			renderResult.append(")\n");
@@ -310,7 +310,7 @@ public class CIRenderer {
 				+ successes + " test objects tested successfully</span>");
 	}
 
-	private void renderMessage(Message message, RenderResult result) {
+	private void renderMessageText(Message message, RenderResult result) {
 		String text = message.getText();
 		if (text == null) text = "";
 		ArrayList<MessageObject> objects = new ArrayList<MessageObject>(message.getObjects());

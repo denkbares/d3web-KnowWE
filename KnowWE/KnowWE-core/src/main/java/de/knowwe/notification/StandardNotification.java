@@ -29,8 +29,13 @@ public class StandardNotification implements Notification {
 
 	private final String message;
 	private final Type type;
+	private final String id;
 
 	public StandardNotification(String message, Type type) {
+		this(message, type, null);
+	}
+
+	public StandardNotification(String message, Type type, String id) {
 		if (message == null || type == null) {
 			throw new NullPointerException();
 		}
@@ -39,6 +44,8 @@ public class StandardNotification implements Notification {
 		}
 		this.message = message;
 		this.type = type;
+		if (id == null) id = Integer.toString(hashCode());
+		this.id = id;
 	}
 
 	@Override
@@ -53,7 +60,7 @@ public class StandardNotification implements Notification {
 
 	@Override
 	public String getID() {
-		return Integer.toString(hashCode());
+		return id;
 	}
 
 	@Override

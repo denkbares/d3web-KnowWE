@@ -23,9 +23,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import de.knowwe.core.Environment;
-import de.knowwe.core.wikiConnector.WikiAttachment;
-import de.knowwe.core.wikiConnector.WikiConnector;
+
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.records.FactRecord;
 import de.d3web.core.records.SessionRecord;
@@ -37,9 +35,11 @@ import de.d3web.core.session.blackboard.FactFactory;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-
+import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.core.wikiConnector.WikiConnector;
 
 /**
  * 
@@ -50,23 +50,25 @@ import de.knowwe.core.action.UserActionContext;
 public class QuickInterviewLoadAction extends AbstractAction {
 
 	/**
-	 * Loads a .xml file with quickinterview session information to restore a previous session.
+	 * Loads a .xml file with quickinterview session information to restore a
+	 * previous session.
 	 * 
 	 * @param context UserActionContext with params
 	 * 
 	 */
+	@Override
 	public void execute(UserActionContext context) throws IOException {
-		
+
 		// get WikiConnector, KnowledgeBase and Session
-		 WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
 		String web = context.getParameter(Attributes.WEB);
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, context.getTitle());
-		
-		//deletes current Session and creates a new one, gets Blackboard
-		SessionProvider.getSessionProvider(context).removeSession(kb);
-		Session session = SessionProvider.getSessionProvider(context).createSession(kb);
+
+		// deletes current Session and creates a new one, gets Blackboard
+		SessionProvider.removeSession(context, kb);
+		Session session = SessionProvider.createSession(context, kb);
 		Blackboard blackboard = session.getBlackboard();
-		
+
 		// writes information an Blackboard
 		try {
 
@@ -76,23 +78,25 @@ public class QuickInterviewLoadAction extends AbstractAction {
 				String fileName = wikiAttachment.getFileName();
 
 				if (fileName.startsWith(context.getParameter("loadname"))) {
-				Collection<SessionRecord> sessionRecords =	SessionPersistenceManager.getInstance().loadSessions(wikiAttachment.getInputStream());
-					Iterator iterator = sessionRecords.iterator();
+					Collection<SessionRecord> sessionRecords = SessionPersistenceManager.getInstance().loadSessions(
+							wikiAttachment.getInputStream());
+					Iterator<SessionRecord> iterator = sessionRecords.iterator();
 					while (iterator.hasNext()) {
-						SessionRecord rec = (SessionRecord) iterator.next();
+						SessionRecord rec = iterator.next();
 						List<FactRecord> valueFacts = rec.getValueFacts();
 						for (FactRecord factRecord : valueFacts) {
-							Fact fact = FactFactory.createUserEnteredFact(kb, factRecord.getObjectName(), factRecord.getValue());
+							Fact fact = FactFactory.createUserEnteredFact(kb,
+									factRecord.getObjectName(), factRecord.getValue());
 							blackboard.addValueFact(fact);
-							
 						}
-						
+
 					}
-					
+
 				}
 			}
 
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			e.printStackTrace();
 		}
 

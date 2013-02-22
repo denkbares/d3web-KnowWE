@@ -20,12 +20,16 @@ package de.knowwe.testcases;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import de.d3web.core.inference.SessionTerminatedException;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.SessionFactory;
 import de.d3web.testcase.TestCaseUtils;
 import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.TestCase;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
@@ -75,36 +79,33 @@ public class ExecuteCasesAction extends AbstractAction {
 			session = SessionFactory.createSession(session.getKnowledgeBase(),
 					testCase.getStartDate());
 			provider.storeSession(session, context);
-			runTo(session, testCase, endDate, status);
+			runTo(session, testCase, null, endDate, status);
 			status.setLastExecuted(endDate);
 		}
 		else {
 			runTo(session, testCase, status.getLastExecuted(), endDate, status);
 			status.setLastExecuted(endDate);
 		}
-	}
-
-	private static void runTo(Session session, TestCase testCase, Date endDate, SessionDebugStatus status) {
-		for (Date date : testCase.chronology()) {
-			if (date.before(endDate) || date.equals(endDate)) {
-				TestCaseUtils.applyFindings(session, testCase, date);
-				for (Check c : testCase.getChecks(date, session.getKnowledgeBase())) {
-					status.addCheckResult(date, c, c.check(session));
-				}
-				status.finished(date);
-			}
-		}
+		D3webUtils.handleLoopDetectionNotification(context, session);
 	}
 
 	private static void runTo(Session session, TestCase testCase, Date startDate, Date endDate, SessionDebugStatus status) {
-		for (Date date : testCase.chronology()) {
-			if (date.after(startDate) && (date.before(endDate) || date.equals(endDate))) {
-				TestCaseUtils.applyFindings(session, testCase, date);
-				for (Check c : testCase.getChecks(date, session.getKnowledgeBase())) {
-					status.addCheckResult(date, c, c.check(session));
+		try {
+
+			for (Date date : testCase.chronology()) {
+				if ((startDate == null || date.after(startDate))
+						&& (date.before(endDate) || date.equals(endDate))) {
+					TestCaseUtils.applyFindings(session, testCase, date);
+					for (Check c : testCase.getChecks(date, session.getKnowledgeBase())) {
+						status.addCheckResult(date, c, c.check(session));
+					}
+					status.finished(date);
 				}
-				status.finished(date);
 			}
+		}
+		catch (SessionTerminatedException e) {
+			Logger.getLogger(D3webUtils.class.getName()).log(Level.WARNING,
+					"Propagation terminated due to detected loop.", e);
 		}
 	}
 }
