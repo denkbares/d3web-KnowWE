@@ -40,7 +40,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
-
 public class Strings {
 
 	private static final String[] QUOTE_UNESCAPED = new String[] {
@@ -737,10 +736,11 @@ public class Strings {
 	 */
 	public static String encodeHtml(String text) {
 		if (text == null) return null;
-
 		return text.replaceAll("&", "&amp;").
 				replaceAll("\"", "&quot;").
-				replaceAll("'", "&#x27;").
+				// this encoding are not decoded by the browser,
+				// we can not use it
+				// replaceAll("'", "&#39;")
 				replaceAll("<", "&lt;").
 				replaceAll(">", "&gt;").
 				replaceAll("#", "&#35;");

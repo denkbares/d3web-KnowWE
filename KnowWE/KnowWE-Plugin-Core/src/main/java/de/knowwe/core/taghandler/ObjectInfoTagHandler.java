@@ -182,14 +182,14 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 		// Render
 		RenderResult html = new RenderResult(user);
-		html.append(renderHeader(externalTermIdentifierForm,
+		html.appendHtml(renderHeader(externalTermIdentifierForm,
 				getTermObjectClass(definitions, references)));
-		html.append(renderRenamingForm(externalTermIdentifierForm, objectName,
+		html.appendHtml(renderRenamingForm(externalTermIdentifierForm, objectName,
 				section.getWeb(), parameters, urlParameters));
-		html.append(renderObjectInfo(definitions, references, parameters));
-		html.append(renderPlainTextOccurrences(objectName, section.getWeb(),
+		html.appendHtml(renderObjectInfo(definitions, references, parameters));
+		html.appendHtml(renderPlainTextOccurrences(objectName, section.getWeb(),
 				parameters));
-		html.append(renderLookUpForm(section));
+		html.appendHtml(renderLookUpForm(section));
 
 		return html.toStringRaw();
 	}
