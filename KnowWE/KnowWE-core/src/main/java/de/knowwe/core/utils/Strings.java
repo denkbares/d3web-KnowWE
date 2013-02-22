@@ -736,14 +736,15 @@ public class Strings {
 	 */
 	public static String encodeHtml(String text) {
 		if (text == null) return null;
-		return text.replaceAll("&", "&amp;").
-				replaceAll("\"", "&quot;").
+		return text.replace("&", "&amp;").
+				replace("\"", "&quot;").
 				// this encoding are not decoded by the browser,
 				// we can not use it
 				// replaceAll("'", "&#39;")
-				replaceAll("<", "&lt;").
-				replaceAll(">", "&gt;").
-				replaceAll("#", "&#35;");
+				replace("<", "&lt;").
+				replace(">", "&gt;").
+				replace("#", "&#35;").
+				replace("\\", "&#92;");
 	}
 
 	/**

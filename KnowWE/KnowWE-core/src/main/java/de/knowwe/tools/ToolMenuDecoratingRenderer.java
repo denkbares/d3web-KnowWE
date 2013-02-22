@@ -64,7 +64,7 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 			string.appendHtml("</span>");
 			RenderResult menuHTMLResult = new RenderResult(string);
 			defaultMarkupRenderer.appendMenu(tools, sec.getID(), user, menuHTMLResult);
-			String menuHTML = menuHTMLResult.toStringRaw();
+			String menuHTML = menuHTMLResult.toString();
 			menuHTML = menuHTML.replace("'", "\\'").replace("</div>", "</div>' + \n '");
 			string.appendHtml(
 					"<script>" +
