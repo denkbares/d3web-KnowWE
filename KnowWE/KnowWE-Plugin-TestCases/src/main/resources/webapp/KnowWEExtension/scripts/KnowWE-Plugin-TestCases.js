@@ -1,7 +1,8 @@
 var TestCasePlayer = {};
 
 TestCasePlayer.init = function() {
-	jq$(".type_TestCasePlayer").find(".wikitable").find("th").click(TestCasePlayer.registerClickableColumnHeaders);
+	TestCasePlayer.setLastSelected();
+	jq$(".type_TestCasePlayer").find(".wikitable").find("th").unbind('click').click(TestCasePlayer.registerClickableColumnHeaders);
 }
 
 
@@ -140,7 +141,17 @@ TestCasePlayer.send = function(sessionid, casedate, name, topic) {
         	KNOWWE.core.util.updateProcessingState(1);
             new _KA( options ).send();         
         }
-        
+
+TestCasePlayer.lastSelected = new Object();
+
+TestCasePlayer.setLastSelected = function() {
+	jq$('.type_TestCasePlayer').find(".ReRenderSectionMarker").each(function() {
+		var id = jq$(this).children().first().attr('id');
+		var selected = jq$('#selector' + id).val();
+		TestCasePlayer.lastSelected[id] = selected;
+	});
+}
+
 TestCasePlayer.change = function(key_sessionid, selectedvalue) {
  			var topic = KNOWWE.helper.gup('page');
 			document.cookie = key_sessionid +"=" + TestCasePlayer.encodeCookieValue(selectedvalue);
@@ -163,40 +174,40 @@ TestCasePlayer.encodeCookieValue = function(cookievalue) {
 }
 
 TestCasePlayer.update = function() {
-	jq$(".ReRenderSectionMarker").each(function() {
-		var id = eval("(" + jq$(this).attr("rel") + ")" ).id;
-		var params = {
-            action: 'ReRenderContentPartAction',
-            KdomNodeId: id,
-        };
-
-        var options = {
-            url: KNOWWE.core.util.getURL(params),
-            response: {
-                action: 'none',
-                fn: function() {
-                	var tableDiv = jq$("#" + id).find('.' + "wikitable").parent();
-                	var scrollLeft = tableDiv.scrollLeft();
-                	var scrollWidth = tableDiv[0].scrollWidth;
-                	
-                    jq$("#" + id).replaceWith(this.responseText);
-                    
-                    tableDiv = jq$("#" + id).find('.' + "wikitable").parent();
-                    var scrollWidthAfter = tableDiv[0].scrollWidth;
-                    if (scrollWidth < scrollWidthAfter) {
-                    	scrollLeft += scrollWidthAfter - scrollWidth;
-                    }
-                    tableDiv.scrollLeft(scrollLeft);
-                    
-                    tableDiv.find("th").click(TestCasePlayer.registerClickableColumnHeaders);
-                    
-		        	KNOWWE.core.util.updateProcessingState(-1);
-                },
-            }
-        };
-        new _KA(options).send();
-    	KNOWWE.core.util.updateProcessingState(1);
+	var scrollInfos = new Object();
+	jq$('.type_TestCasePlayer').find(".ReRenderSectionMarker").each(function() {
+		var id = jq$(this).children().first().attr('id');
+		var selected = jq$('#selector' + id).val();
+		var tableDiv = jq$("#" + id).find('.' + "wikitable").parent();
+    	var scrollLeft = tableDiv.scrollLeft();
+    	var scrollWidth = tableDiv[0].scrollWidth;
+    	var scrollInfo = new Object();
+    	scrollInfo.selected = selected;
+    	scrollInfo.left = scrollLeft;
+    	scrollInfo.width = scrollWidth;
+    	scrollInfos[id] = scrollInfo;
 	});
+	
+    var fn = function() {
+    	for (var id in scrollInfos) {
+    		var scrollInfo = scrollInfos[id];
+    		var selected = jq$('#selector' + id).val();
+	        var tableDiv = jq$("#" + id).find('.' + "wikitable").parent();
+	        var scrollWidthAfter = tableDiv[0].scrollWidth;
+	        if (scrollInfo.width < scrollWidthAfter) {
+	        	scrollInfo.left += scrollWidthAfter - scrollInfo.width;
+	        }
+	        if (selected == TestCasePlayer.lastSelected[id]) {	        	
+	        	tableDiv.scrollLeft(scrollInfo.left);
+	        } else {	        	
+				TestCasePlayer.setLastSelected();
+	        	//tableDiv.scrollLeft(0);
+	        }
+	        
+	        tableDiv.find("th").click(TestCasePlayer.registerClickableColumnHeaders);
+    	}
+    }
+	KNOWWE.helper.observer.notify('update', fn);
 }
 
 jq$(document).ready(function() {

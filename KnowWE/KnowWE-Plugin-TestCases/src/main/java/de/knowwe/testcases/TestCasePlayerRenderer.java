@@ -278,7 +278,7 @@ public class TestCasePlayerRenderer implements Renderer {
 	private TerminologyObject renderTableHeader(Section<?> section, UserContext user, String kbArticle, Collection<String> additionalQuestions, Collection<Question> usedQuestions, TerminologyManager manager, TableModel tableModel) {
 		String stopButton = renderToolbarButton("stop12.png",
 				"KNOWWE.plugin.d3webbasic.actions.resetSession('" + kbArticle
-						+ "')", user);
+						+ "', TestCasePlayer.init);", user);
 		RenderResult stopButtonResult = new RenderResult(tableModel.getUserContext());
 		stopButtonResult.appendHtml(stopButton);
 		tableModel.addCell(0, 0, stopButtonResult, 1);

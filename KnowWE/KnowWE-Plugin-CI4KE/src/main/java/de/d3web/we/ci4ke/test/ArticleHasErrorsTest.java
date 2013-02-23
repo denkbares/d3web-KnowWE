@@ -61,8 +61,7 @@ public class ArticleHasErrorsTest extends AbstractTest<Article> {
 			// is not public!
 			hasError = true;
 			// buffy.append("Error on monitored article: ");
-			buffy.append("\n* " + message.getVerbalization()
-					);
+			buffy.append("\n* " + message.getVerbalization());
 		}
 		// Utils.slowDowntest(this.getClass(), 10000, true);
 		if (hasError) {

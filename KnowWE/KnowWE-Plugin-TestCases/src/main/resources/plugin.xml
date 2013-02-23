@@ -27,8 +27,8 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
-		<parameter id="script" value="testcaseplayer.js" />
-		<parameter id="css" value="testcaseplayer.css" />
+		<parameter id="script" value="KnowWE-Plugin-TestCases.js" />
+		<parameter id="css" value="KnowWE-Plugin-TestCases.css" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"

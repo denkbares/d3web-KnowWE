@@ -489,7 +489,7 @@ KNOWWE.core.rerendercontent = function(){
                         inPre : KNOWWE.helper.tagParent(_KS('#' + rel.id), 'pre') != document 
                     }           
                     var url = KNOWWE.core.util.getURL( params );
-                    KNOWWE.core.rerendercontent.execute(url, rel.id, 'replace');
+                    KNOWWE.core.rerendercontent.execute(url, rel.id, 'replace', this);
                 }
             }
         },
@@ -501,7 +501,7 @@ KNOWWE.core.rerendercontent = function(){
          *     url - The URL for the AJAX request.
          *     id - The id of the node that should be updated.
          */
-        execute : function( url, id, action) {
+        execute : function( url, id, action, fn) {
             var options = {
                 url : url,
                 response : {
@@ -511,6 +511,9 @@ KNOWWE.core.rerendercontent = function(){
 			        	try {
 	                        KNOWWE.core.actions.init();
 	                        Collapsible.render( _KS('#page'), KNOWWE.helper.gup('page'));
+	                        if (typeof(fn) == "function") {	                        	
+	                        	fn();
+	                        }
 			        	}
 			        	catch (e) { /*ignore*/ }
 			        	KNOWWE.core.util.updateProcessingState(-1);

@@ -263,7 +263,7 @@ public class CIRenderer {
 				"jq$(\"#" + showButtonID + "\").show(0);" +
 				" });" +
 				"});" +
-				"</script>");
+				"</script>\n");
 
 		// render test-message (if exists)
 		appendMessageBlock(testResult, index, dashboardName, renderResult);
@@ -281,10 +281,8 @@ public class CIRenderer {
 	}
 
 	private void appendMessage(TestResult testResult, RenderResult renderResult) {
-		StringBuilder toolTip = new StringBuilder();
 		Collection<String> testObjectNames = testResult.getTestObjectsWithUnexpectedOutcome();
 		int successes = testResult.getSuccessfullTestObjectRuns();
-
 		for (String testObjectName : testObjectNames) {
 			de.d3web.testing.Message message = testResult.getUnexpectedMessageForTestObject(testObjectName);
 			if (message == null) continue;
@@ -300,17 +298,15 @@ public class CIRenderer {
 			}
 
 			renderResult.append("__" + messageType.toString() + "__: ");
-			renderMessageText(message, renderResult);
+			appendMessageText(message, renderResult);
 			renderResult.append("\n (test object: ");
 			renderObjectName(testObjectName, testObjectClass, renderResult);
 			renderResult.append(")\n");
 		}
-		renderResult.appendHtml("<span"
-				+ (toolTip.length() == 0 ? "" : " title='" + toolTip.toString() + "'") + ">"
-				+ successes + " test objects tested successfully</span>");
+		renderResult.appendHtml("<span>" + successes + " test objects tested successfully</span>");
 	}
 
-	private void renderMessageText(Message message, RenderResult result) {
+	private void appendMessageText(Message message, RenderResult result) {
 		String text = message.getText();
 		if (text == null) text = "";
 		ArrayList<MessageObject> objects = new ArrayList<MessageObject>(message.getObjects());

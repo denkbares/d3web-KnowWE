@@ -201,7 +201,7 @@ KNOWWE.plugin.d3webbasic.actions = function() {
 		 * 
 		 * @author Sebastian Furth (denkbares GmbH)
 		 */
-		resetSession : function(kbarticlevalue) {
+		resetSession : function(kbarticlevalue, fnAfter) {
 			var params = {
 				action : 'SessionResetAction'
 			}
@@ -216,7 +216,7 @@ KNOWWE.plugin.d3webbasic.actions = function() {
 					action : 'none',
 					fn : function() {
 						try {
-							KNOWWE.helper.observer.notify('update');
+							KNOWWE.helper.observer.notify('update', fnAfter);
 						} catch (e) { /* ignore */
 						}
 						KNOWWE.core.util.updateProcessingState(-1);
