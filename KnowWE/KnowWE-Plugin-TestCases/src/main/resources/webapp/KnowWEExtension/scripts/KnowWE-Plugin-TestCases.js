@@ -178,34 +178,32 @@ TestCasePlayer.update = function() {
 	jq$('.type_TestCasePlayer').find(".ReRenderSectionMarker").each(function() {
 		var id = jq$(this).children().first().attr('id');
 		var selected = jq$('#selector' + id).val();
-		var tableDiv = jq$("#" + id).find('.' + "wikitable").parent();
-    	var scrollLeft = tableDiv.scrollLeft();
-    	var scrollWidth = tableDiv[0].scrollWidth;
-    	var scrollInfo = new Object();
-    	scrollInfo.selected = selected;
-    	scrollInfo.left = scrollLeft;
-    	scrollInfo.width = scrollWidth;
+		var scrollInfo = new Object();
+        if (selected != TestCasePlayer.lastSelected[id]) {
+        	TestCasePlayer.lastSelected[id] = selected;
+        } else {
+			var tableDiv = jq$("#" + id).find('.' + "wikitable").parent();
+			scrollInfo.left = tableDiv.scrollLeft();
+			scrollInfo.width = tableDiv[0].scrollWidth;
+			scrollInfo.restoreScroll = true;
+        }
     	scrollInfos[id] = scrollInfo;
 	});
 	
     var fn = function() {
     	for (var id in scrollInfos) {
     		var scrollInfo = scrollInfos[id];
-    		var selected = jq$('#selector' + id).val();
-	        var tableDiv = jq$("#" + id).find('.' + "wikitable").parent();
-	        var scrollWidthAfter = tableDiv[0].scrollWidth;
-	        if (scrollInfo.width < scrollWidthAfter) {
-	        	scrollInfo.left += scrollWidthAfter - scrollInfo.width;
-	        }
-	        if (selected == TestCasePlayer.lastSelected[id]) {	        	
-	        	tableDiv.scrollLeft(scrollInfo.left);
-	        } else {	        	
-				TestCasePlayer.setLastSelected();
-	        	//tableDiv.scrollLeft(0);
-	        }
+    		if (scrollInfo.restoreScroll) {
+    			var tableDiv = jq$("#" + id).find('.' + "wikitable").parent();
+		        var scrollWidthAfter = tableDiv[0].scrollWidth;
+		        if (scrollInfo.width < scrollWidthAfter) {
+		        	scrollInfo.left += scrollWidthAfter - scrollInfo.width;
+		        }       	
+		        tableDiv.scrollLeft(scrollInfo.left);
+    		}
 	        
-	        tableDiv.find("th").click(TestCasePlayer.registerClickableColumnHeaders);
     	}
+    	jq$(".type_TestCasePlayer").find(".wikitable").find("th").unbind('click').click(TestCasePlayer.registerClickableColumnHeaders);
     }
 	KNOWWE.helper.observer.notify('update', fn);
 }
