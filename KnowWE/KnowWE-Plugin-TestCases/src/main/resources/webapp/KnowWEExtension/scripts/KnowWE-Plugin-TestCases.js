@@ -68,7 +68,7 @@ TestCasePlayer.collapseColumn = function(th, animated) {
 	} else {
 		tds.addClass("collapsedcolumn");
 	}
-	th.attr("title", "Expand " + jq$(this).text());
+	th.attr("title", "Expand " + th.text());
 	tds.filter("td").each(function() {
 		jq$(this).attr("title", jq$(this).text());
 	});
