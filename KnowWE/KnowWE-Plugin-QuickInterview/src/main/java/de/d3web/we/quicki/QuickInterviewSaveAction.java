@@ -23,18 +23,19 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import de.knowwe.core.Environment;
-import de.knowwe.core.wikiConnector.WikiAttachment;
-import de.knowwe.core.wikiConnector.WikiConnector;
+
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.records.SessionConversionFactory;
+import de.d3web.core.records.SessionRecord;
 import de.d3web.core.records.io.SessionPersistenceManager;
 import de.d3web.core.session.Session;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.wikiConnector.WikiConnector;
 
 /**
  * 
@@ -45,34 +46,36 @@ import de.knowwe.core.action.UserActionContext;
 public class QuickInterviewSaveAction extends AbstractAction {
 
 	/**
-	 * Stores a new .xml file with quickinterview session information in the attachments of he article.
+	 * Stores a new .xml file with quickinterview session information in the
+	 * attachments of he article.
 	 * 
 	 * @param context UserActionContext with params
 	 * 
 	 */
+	@Override
 	public void execute(UserActionContext context) throws IOException {
-		
+
 		// get WikiConnector and Session
 		WikiConnector wikiConnector = Environment.getInstance()
 				.getWikiConnector();
 		String web = context.getParameter(Attributes.WEB);
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, context.getTitle());
 		Session session = SessionProvider.getSession(context, kb);
-		
+
 		// create SessionRecord List
-		List srList = new ArrayList();
+		List<SessionRecord> srList = new ArrayList<SessionRecord>();
 		srList.add(SessionConversionFactory.copyToSessionRecord(session));
-		
+
 		// store new Attachment with Session information
 		File attachmentFile = new File(context.getParameter("savename")
 				+ ".xml");
 		attachmentFile.createNewFile();
 		SessionPersistenceManager.getInstance().saveSessions(
 				attachmentFile, srList);
-		WikiAttachment attachment = wikiConnector.storeAttachment(
+
+		/* WikiAttachment attachment = */
+		wikiConnector.storeAttachment(
 				context.getTitle(), context.getUserName(), attachmentFile);
-		
-		
 	}
 
 }

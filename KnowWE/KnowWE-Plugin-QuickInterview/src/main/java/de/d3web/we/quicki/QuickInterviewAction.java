@@ -25,6 +25,8 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
+import de.d3web.core.inference.LoopTerminator;
+import de.d3web.core.inference.LoopTerminator.LoopStatus;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
 import de.d3web.we.basic.SessionProvider;
@@ -36,10 +38,12 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.Message.Type;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.notification.NotificationManager;
 import de.knowwe.notification.OutDatedSessionNotification;
+import de.knowwe.notification.StandardNotification;
 
 public class QuickInterviewAction extends AbstractAction {
 
@@ -76,6 +80,7 @@ public class QuickInterviewAction extends AbstractAction {
 
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
 		if (kb == null) return rb.getString("KnowWE.quicki.error");
+		Session session = SessionProvider.getSession(usercontext, kb);
 
 		// check if the latest knowledge base is used
 		if (SessionProvider.hasOutDatedSession(usercontext, kb)) {
@@ -83,7 +88,13 @@ public class QuickInterviewAction extends AbstractAction {
 					new OutDatedSessionNotification(usercontext.getTitle()));
 		}
 
-		Session session = SessionProvider.getSession(usercontext, kb);
+		// check if the session has terminated due to loop detection
+		LoopStatus loopStatus = LoopTerminator.getInstance().getLoopStatus(session);
+		if (loopStatus.hasTerminated()) {
+			NotificationManager.addNotification(usercontext,
+					new StandardNotification("A loop has been detected in objects " +
+							loopStatus.getLoopObjects(), Type.WARNING));
+		}
 
 		Article article = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB).getArticle(
 				topic);
