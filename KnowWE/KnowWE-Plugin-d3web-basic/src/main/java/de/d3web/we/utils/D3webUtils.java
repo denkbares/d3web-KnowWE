@@ -473,23 +473,43 @@ public class D3webUtils {
 		return getD3webBundle();
 	}
 
-	public static void handleLoopDetectionNotification(UserContext context, Session session) {
-		LoopStatus loopStatus = LoopTerminator.getInstance().getLoopStatus(session);
+	public static void handleLoopDetectionNotification(UserContext context,
+			Session session) {
+		LoopStatus loopStatus =
+				LoopTerminator.getInstance().getLoopStatus(session);
 		if (loopStatus.hasTerminated()) {
 			String notificationId = generateNotificationId(session);
 			Collection<TerminologyObject> loopObjects = loopStatus.getLoopObjects();
-			String kbName = session.getKnowledgeBase().getName();
-			if (kbName == null) kbName = session.getKnowledgeBase().getId();
-			String notificationText = "Endless loop detected in reasoning of knowledge base '"
-					+ kbName
-					+ "'. The following object"
-					+ (loopObjects.size() == 1 ? " is" : "s are")
-					+ " mainly involved in the loop: " +
-					Strings.concat(",  ", loopObjects);
+			String notificationText = getLoopNotificationText(context, session, loopObjects);
 			StandardNotification notification = new StandardNotification(
 					notificationText, Message.Type.WARNING, notificationId);
 			NotificationManager.addNotification(context, notification);
 		}
+	}
+
+	private static String getLoopNotificationText(UserContext user, Session session, Collection<TerminologyObject> loopObjects) {
+		String kbName = session.getKnowledgeBase().getName();
+		if (kbName == null) kbName = session.getKnowledgeBase().getId();
+		String kbUrlLink = KnowWEUtils.getURLLinkToTermDefinition(new TermIdentifier(kbName));
+		kbName = "<a href=\"" + toAbsolutURL(kbUrlLink) + "\">" + kbName + "</a>";
+		Collection<String> renderedObjects = new ArrayList<String>(loopObjects.size());
+		for (TerminologyObject loopObject : loopObjects) {
+			String url = KnowWEUtils.getURLLinkToTermDefinition(new TermIdentifier(
+					loopObject.getName()));
+			renderedObjects.add("<a href=\"" + toAbsolutURL(url) + "\">" + loopObject.getName()
+					+ "</a>");
+		}
+		String notificationText = "Endless loop detected in knowledge base '"
+				+ kbName
+				+ "'. The following object"
+				+ (loopObjects.size() == 1 ? " is" : "s are")
+				+ " mainly involved in the loop: " +
+				Strings.concat(",  ", renderedObjects) + ".";
+		return notificationText;
+	}
+
+	private static String toAbsolutURL(String url) {
+		return Environment.getInstance().getWikiConnector().getBaseUrl() + url;
 	}
 
 	public static void removedLoopDetectionNotification(UserContext context, Session session) {

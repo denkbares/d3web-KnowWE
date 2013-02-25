@@ -19,12 +19,14 @@
 package de.knowwe.core.action;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import de.knowwe.core.report.Message.Type;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import de.knowwe.notification.Notification;
 import de.knowwe.notification.NotificationManager;
 
@@ -42,32 +44,20 @@ public class GetNotificationsAction extends AbstractAction {
 		NotificationManager manager = NotificationManager.getNotificationManager(context);
 		List<Notification> notifications = new ArrayList<Notification>(manager.getNotifications());
 		Collections.reverse(notifications);
-
-		Writer w = context.getWriter();
-		w.write("{ \"notifications\" : [");
-		for (int i = 0; i < notifications.size(); i++) {
-			Notification notification = notifications.get(i);
-			// id
-			w.write("{ \"id\" : \"");
-			w.write(notification.getID());
-			// type
-			w.write("\", \"type\" : \"");
-			if (notification.getType().equals(Type.ERROR)) {
-				w.write("error");
+		JSONArray response = new JSONArray();
+		try {
+			for (int i = 0; i < notifications.size(); i++) {
+				Notification notification = notifications.get(i);
+				JSONObject message = new JSONObject();
+				message.put("id", notification.getID());
+				message.put("type", notification.getType().toString().toLowerCase());
+				message.put("message", notification.getMessage());
+				response.put(message);
 			}
-			else {
-				w.write("warning");
-			}
-			// message
-			w.write("\", \"message\" : \"");
-			w.write(notification.getMessage());
-			w.write("\" }");
-			// the last element doesn't need a komma...
-			if (i < notifications.size() - 1) {
-				w.write(", ");
-			}
+			response.write(context.getWriter());
 		}
-		w.write("] }");
+		catch (JSONException e) {
+			throw new IOException(e);
+		}
 	}
-
 }

@@ -40,7 +40,7 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 
 	private static DefaultMarkup m = null;
 
-	public static final String MARKUP_NAME = "quickinterview";
+	public static final String MARKUP_NAME = "QuickInterview";
 
 	public static final String UNKNOWN_KEY = "unknown";
 

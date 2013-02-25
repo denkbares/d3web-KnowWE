@@ -308,7 +308,7 @@ public class KnowWEUtils {
 	 * @see #getURLLink(Section)
 	 * @see #getWikiLink(Section)
 	 */
-	public static String getURLLinkHTMLToArticle(String title) {
+	public static String getLinkHTMLToArticle(String title) {
 		return "<a href='" + getURLLink(title) + "' >" + title + "</a>";
 	}
 
@@ -380,6 +380,37 @@ public class KnowWEUtils {
 	 */
 	public static String getDiffURLLink(String title, int version1, int version2) {
 		return "Diff.jsp?page=" + title + "&r1=" + version1 + "&r2=" + version2;
+	}
+
+	public static String getURLLinkToTermDefinition(TermIdentifier identifier) {
+		String url = null;
+		Collection<TerminologyManager> terminologyManagers = Environment.getInstance().getTerminologyManagers(
+				Environment.DEFAULT_WEB);
+		for (TerminologyManager terminologyManager : terminologyManagers) {
+			Collection<Section<?>> termDefiningSections = terminologyManager.getTermDefiningSections(identifier);
+			if (termDefiningSections.size() > 1) break;
+			if (termDefiningSections.size() == 1) {
+				if (url == null) {
+					url = KnowWEUtils.getURLLink(termDefiningSections.iterator().next());
+				}
+				else {
+					url = null;
+					break;
+				}
+			}
+		}
+		if (url == null) url = getURLLinkToObjectInfoPage(identifier);
+		return url;
+	}
+
+	public static String getURLLinkToObjectInfoPage(TermIdentifier identifier) {
+
+		String objectName = Strings.encodeURL(Strings.encodeHtml(new TermIdentifier(
+				identifier.getLastPathElement()).toExternalForm()));
+		String termIdentifier = Strings.encodeURL(Strings.encodeHtml(identifier.toExternalForm()));
+		return "Wiki.jsp?page=ObjectInfoPage&objectname="
+				+ objectName + "&termIdentifier="
+				+ termIdentifier;
 	}
 
 	/**

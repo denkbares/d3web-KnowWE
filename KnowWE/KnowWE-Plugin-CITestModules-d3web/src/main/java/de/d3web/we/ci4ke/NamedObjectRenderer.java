@@ -18,13 +18,8 @@
  */
 package de.d3web.we.ci4ke;
 
-import java.util.Collection;
-
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRenderer;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TermIdentifier;
-import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -40,24 +35,7 @@ public class NamedObjectRenderer implements ObjectNameRenderer {
 
 	@Override
 	public void render(String objectName, RenderResult result) {
-		String url = null;
-		Collection<TerminologyManager> terminologyManagers = Environment.getInstance().getTerminologyManagers(
-				Environment.DEFAULT_WEB);
-		for (TerminologyManager terminologyManager : terminologyManagers) {
-			Collection<Section<?>> termDefiningSections = terminologyManager.getTermDefiningSections(new TermIdentifier(
-					objectName));
-			if (termDefiningSections.size() > 1) break;
-			if (termDefiningSections.size() == 1) {
-				if (url == null) {
-					url = KnowWEUtils.getURLLink(termDefiningSections.iterator().next());
-				}
-				else {
-					url = null;
-					break;
-				}
-			}
-		}
-		if (url == null) url = "Wiki.jsp?page=ObjectInfoPage&objectname=" + objectName;
+		String url = KnowWEUtils.getURLLinkToTermDefinition(TermIdentifier.fromExternalForm(objectName));
 		result.appendHtml("<a href='" + url + "'>");
 		result.append(objectName);
 		result.appendHtml("</a>");

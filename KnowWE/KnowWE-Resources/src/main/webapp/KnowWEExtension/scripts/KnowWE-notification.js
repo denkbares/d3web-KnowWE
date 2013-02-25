@@ -210,9 +210,9 @@ KNOWWE.notification = function() {
 					action : 'none',
 					fn : function() {
 						var notifications = JSON.parse(this.responseText);
-						if (notifications.notifications.length > 0) {
-						    for (var i = 0; i < notifications.notifications.length; i++) {
-						        var notification = notifications.notifications[i];
+						if (notifications.length > 0) {
+						    for (var i = 0; i < notifications.length; i++) {
+						        var notification = notifications[i];
 							    if (notification.type == "error") {
 								    KNOWWE.notification.error(null,
 										    notification.message, notification.id);

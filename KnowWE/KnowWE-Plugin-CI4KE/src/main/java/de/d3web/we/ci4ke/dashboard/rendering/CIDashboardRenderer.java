@@ -216,7 +216,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			for (String articleTitle : articleTitles) {
 				if (first) first = false;
 				else articleLinks.append(", ");
-				articleLinks.append(KnowWEUtils.getURLLinkHTMLToArticle(articleTitle));
+				articleLinks.append(KnowWEUtils.getLinkHTMLToArticle(articleTitle));
 			}
 
 			RenderResult errorText = new RenderResult(string);
