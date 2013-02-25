@@ -405,9 +405,9 @@ public class KnowWEUtils {
 
 	public static String getURLLinkToObjectInfoPage(TermIdentifier identifier) {
 
-		String objectName = Strings.encodeURL(Strings.encodeHtml(new TermIdentifier(
-				identifier.getLastPathElement()).toExternalForm()));
-		String termIdentifier = Strings.encodeURL(Strings.encodeHtml(identifier.toExternalForm()));
+		String objectName = Strings.encodeURL(new TermIdentifier(
+				identifier.getLastPathElement()).toExternalForm());
+		String termIdentifier = Strings.encodeURL(identifier.toExternalForm());
 		return "Wiki.jsp?page=ObjectInfoPage&objectname="
 				+ objectName + "&termIdentifier="
 				+ termIdentifier;
