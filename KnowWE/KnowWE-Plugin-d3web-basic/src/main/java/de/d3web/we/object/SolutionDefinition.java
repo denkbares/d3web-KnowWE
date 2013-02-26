@@ -58,6 +58,8 @@ public abstract class SolutionDefinition
 
 	public SolutionDefinition() {
 		this(Priority.HIGHEST);
+		this.addSubtreeHandler(Priority.LOW, new TerminologyLoopDetectionHandler<Solution>());
+		this.addSubtreeHandler(Priority.LOWER, new TerminologyLoopResolveHandler<Solution>());
 	}
 
 	@Override

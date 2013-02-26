@@ -59,6 +59,8 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 
 	public QuestionDefinition() {
 		this.addSubtreeHandler(Priority.HIGHER, new CreateQuestionHandler());
+		this.addSubtreeHandler(new TerminologyLoopDetectionHandler<Question>());
+		this.addSubtreeHandler(Priority.LOW, new TerminologyLoopResolveHandler<Question>());
 		this.setRenderer(new ValueTooltipRenderer(StyleRenderer.Question));
 		this.setOrderSensitive(true);
 	}

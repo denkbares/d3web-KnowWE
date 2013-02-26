@@ -66,6 +66,12 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 			}
 		}
 
+		if (markupSection.get().getMarkup().isDeprecated()) {
+			String deprecated = markupSection.get().getMarkup().getDeprecatedAlternative();
+			msgs.add(Messages.warning("This markup is deprecated. Use the markup '" + deprecated
+					+ "' instead."));
+		}
+
 		// check unrecognized annotations
 		List<Section<UnknownAnnotationType>> unknownSections = Sections.findChildrenOfType(
 				markupSection, UnknownAnnotationType.class);
@@ -99,7 +105,7 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 		// TODO: refactor this to somewhere else
 		if (!markupSection.get().isIgnoringPackageCompile()) {
 			Environment.getInstance().getPackageManager(article.getWeb()).removeSectionFromAllPackages(
-						markupSection);
+					markupSection);
 		}
 	}
 }

@@ -48,6 +48,8 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 
 	public QuestionnaireDefinition() {
 		addSubtreeHandler(Priority.HIGHEST, new CreateQuestionnaireHandler());
+		this.addSubtreeHandler(Priority.LOW, new TerminologyLoopDetectionHandler<QContainer>());
+		this.addSubtreeHandler(Priority.LOWER, new TerminologyLoopResolveHandler<QContainer>());
 		setRenderer(StyleRenderer.Questionaire);
 		setOrderSensitive(true);
 	}

@@ -127,6 +127,7 @@ public class DefaultMarkup {
 	private final String name;
 	private final Collection<Type> types = new LinkedList<Type>();
 	private final Map<String, Annotation> annotations = new HashMap<String, Annotation>();
+	private String deprecatedAlternative = null;
 
 	public DefaultMarkup(String name) {
 		super();
@@ -278,6 +279,25 @@ public class DefaultMarkup {
 		else {
 			throw new IllegalArgumentException("Annotation \"" + annotationName + "\" not defined.");
 		}
+	}
+
+	/**
+	 * Sets this markup as deprecated. Set the name for the alternative markup
+	 * replacing this deprecated one.
+	 * 
+	 * @created 26.02.2013
+	 * @param alternative the alternative markup replacing this deprecated one
+	 */
+	public void setDeprecated(String alternative) {
+		this.deprecatedAlternative = alternative;
+	}
+
+	public boolean isDeprecated() {
+		return deprecatedAlternative != null;
+	}
+
+	public String getDeprecatedAlternative() {
+		return deprecatedAlternative;
 	}
 
 }

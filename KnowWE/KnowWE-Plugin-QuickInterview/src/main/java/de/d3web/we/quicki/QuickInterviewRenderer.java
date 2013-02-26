@@ -88,10 +88,8 @@ public class QuickInterviewRenderer {
 	 * Assembles and returns the HTML representation of the interview.
 	 * 
 	 * @created 15.07.2010
-	 * @param c
-	 *            the session
-	 * @param web
-	 *            the web context
+	 * @param c the session
+	 * @param web the web context
 	 * @return the String representation of the interview
 	 */
 	public static String renderInterview(Session c, String web,
@@ -119,19 +117,22 @@ public class QuickInterviewRenderer {
 	}
 
 	private String render(boolean showSaveSessionDialog) {
-		
+
 		// StringBuffer
 		StringBuffer buffi = new StringBuffer();
-		
+
 		// add saveSessionDialog
 		if (showSaveSessionDialog) {
-			String savehtml = "<div id=\"sessionsave\"><form name=\"loadsave\"> " +
+			String savehtml = "<div id=\"sessionsave\"><form name=\"loadsave\"> "
+					+
 					"<select name=\"savedsessions\"  size=\"1\" width=\"30\"><option>-Load Session-</option>"
 					+ getSavedSessions()
-					+ "</select><input name=\"load\" type=\"button\" value=\"Load\" onclick=\"loadQuicki()\"/>" +
-					"<input name=\"name\" type=\"text\" size=\"20\" maxlength=\"30\" />" +
+					+ "</select><input name=\"load\" type=\"button\" value=\"Load\" onclick=\"loadQuicki()\"/>"
+					+
+					"<input name=\"name\" type=\"text\" size=\"20\" maxlength=\"30\" />"
+					+
 					"<input name=\"save\" type=\"button\" value=\"Save\" onclick=\"saveQuicki()\"/></form></div>";
-		buffi.append(savehtml);
+			buffi.append(savehtml);
 		}
 
 		// Assembles the Interview
@@ -179,17 +180,12 @@ public class QuickInterviewRenderer {
 	 * given StringBuffer
 	 * 
 	 * @created 14.07.2010
-	 * @param questionnaire
-	 *            the root container
-	 * @param buffer
-	 *            the StringBuffer
-	 * @param processedTOs
-	 *            already processed TerminologyObjects
-	 * @param depth
-	 *            recursion depth; used to calculate identation
-	 * @param indicated
-	 *            flag for signaling whether the processed element was is
-	 *            indicated or not
+	 * @param questionnaire the root container
+	 * @param buffer the StringBuffer
+	 * @param processedTOs already processed TerminologyObjects
+	 * @param depth recursion depth; used to calculate identation
+	 * @param indicated flag for signaling whether the processed element was is
+	 *        indicated or not
 	 */
 	private void getInterviewElementsRenderingRecursively(
 			TerminologyObject questionnaire, StringBuffer buffer,
@@ -204,7 +200,8 @@ public class QuickInterviewRenderer {
 			// if already contained, get the already-defined rendering
 			if (processedTOs.contains(questionnaire)) {
 				getAlreadyDefinedRendering(questionnaire, buffer, depth++);
-			} else {
+			}
+			else {
 				processedTOs.add(questionnaire);
 				getQuestionnaireRendering((QContainer) questionnaire, depth,
 						buffer, id);
@@ -227,7 +224,8 @@ public class QuickInterviewRenderer {
 					getInterviewElementsRenderingRecursively(child, buffer,
 							processedTOs, depth);
 				}
-			} else if (child instanceof Question) {
+			}
+			else if (child instanceof Question) {
 				getQuestionsRecursively((Question) child, buffer, processedTOs,
 						depth, questionnaire);
 			}
@@ -240,19 +238,13 @@ public class QuickInterviewRenderer {
 	 * methods for appending their rendering
 	 * 
 	 * @created 17.08.2010
-	 * @param topQuestion
-	 *            the root question
-	 * @param sb
-	 *            the StringBuffer
-	 * @param processedTOs
-	 *            already processed elements
-	 * @param depth
-	 *            the recursion depth
-	 * @param parent
-	 *            the parent element
-	 * @param init
-	 *            flag for displaying whether processed element is contained in
-	 *            an init questionnaire
+	 * @param topQuestion the root question
+	 * @param sb the StringBuffer
+	 * @param processedTOs already processed elements
+	 * @param depth the recursion depth
+	 * @param parent the parent element
+	 * @param init flag for displaying whether processed element is contained in
+	 *        an init questionnaire
 	 */
 	private void getQuestionsRecursively(Question topQuestion, StringBuffer sb,
 			Set<TerminologyObject> processedTOs, int depth,
@@ -286,12 +278,9 @@ public class QuickInterviewRenderer {
 	 * already been answered
 	 * 
 	 * @created 26.08.2010
-	 * @param element
-	 *            the element that was already been answered
-	 * @param sb
-	 *            StringBuffer to append the div to
-	 * @param depth
-	 *            indicator for the indentation depth
+	 * @param element the element that was already been answered
+	 * @param sb StringBuffer to append the div to
+	 * @param depth indicator for the indentation depth
 	 */
 	private void getAlreadyDefinedRendering(TerminologyObject element,
 			StringBuffer sb, int depth) {
@@ -308,13 +297,10 @@ public class QuickInterviewRenderer {
 	 * Assembles the div that displays icon and name of questionnaires
 	 * 
 	 * @created 16.08.2010
-	 * @param container
-	 *            the qcontainer to be rendered
-	 * @param depth
-	 *            recursion depth
-	 * @param show
-	 *            flag that indicates whether questionnaire is expanded (show)
-	 *            or not; for appropriately displaying corresponding triangles
+	 * @param container the qcontainer to be rendered
+	 * @param depth recursion depth
+	 * @param show flag that indicates whether questionnaire is expanded (show)
+	 *        or not; for appropriately displaying corresponding triangles
 	 * @param buffi
 	 * @return the HTML of a questionnaire div
 	 */
@@ -350,12 +336,9 @@ public class QuickInterviewRenderer {
 	 * question first, and the answers afterwards.
 	 * 
 	 * @created 20.07.2010
-	 * @param question
-	 *            the question to be rendered
-	 * @param depth
-	 *            the depth of the recursion - for calculating identation
-	 * @param parent
-	 *            the parent element
+	 * @param question the question to be rendered
+	 * @param depth the depth of the recursion - for calculating identation
+	 * @param parent the parent element
 	 * @param sb
 	 * @return HTML-String representation for one QA-Block
 	 */
@@ -385,8 +368,7 @@ public class QuickInterviewRenderer {
 		String divText = getLabel(question);
 		String cssClass = "question";
 		String title = question.getInfoStore().getValue(MMInfo.DESCRIPTION);
-		if (title == null)
-			title = "";
+		if (title == null) title = "";
 
 		sb.append("\n<div id='" + question.getName() + "' " + "parent='"
 				+ parent.getName() + "' " + "class='" + cssClass + "' "
@@ -399,18 +381,21 @@ public class QuickInterviewRenderer {
 			List<Choice> list = ((QuestionChoice) question)
 					.getAllAlternatives();
 			renderOCChoiceAnswers(question, list, sb);
-		} else if (question instanceof QuestionMC) {
+		}
+		else if (question instanceof QuestionMC) {
 			QuestionMC questionMC = (QuestionMC) question;
 			List<Choice> list = questionMC.getAllAlternatives();
 			MultipleChoiceValue mcVal = MultipleChoiceValue.fromChoices(list);
 			renderMCChoiceAnswers(questionMC, mcVal, sb);
-		} else if (question instanceof QuestionNum) {
+		}
+		else if (question instanceof QuestionNum) {
 			renderNumAnswers(question, sb);
 		}
 
 		else if (question instanceof QuestionDate) {
 			renderDateAnswers(question, sb);
-		} else if (question instanceof QuestionText) {
+		}
+		else if (question instanceof QuestionText) {
 			renderTextAnswers(question, sb);
 		}
 		sb.append("</td></tr></table>");
@@ -429,13 +414,13 @@ public class QuickInterviewRenderer {
 						BasicProperties.ABSTRACTION_QUESTION);
 	}
 
-	private final String[] defaultParams = { "KWikiWeb", "page", "KWikiUser",
+	private final String[] defaultParams = {
+			"KWikiWeb", "page", "KWikiUser",
 			"data", "action", "env", "tstamp", "KWiki_Topic", "namespace",
 			"_cmdline" };
 
 	private String renderConfigParams() {
-		if (this.config == null)
-			return "";
+		if (this.config == null) return "";
 		String result = " ";
 		for (String key : this.config.keySet()) {
 			boolean isDefault = false;
@@ -487,10 +472,8 @@ public class QuickInterviewRenderer {
 	 * Assembles the HTML for rendering a one choice question
 	 * 
 	 * @created 21.08.2010
-	 * @param q
-	 *            the question
-	 * @param list
-	 *            the list of possible choices
+	 * @param q the question
+	 * @param list the list of possible choices
 	 * @return the HTML representation of one choice questions
 	 */
 	private void renderOCChoiceAnswers(Question q, List<Choice> list,
@@ -501,7 +484,8 @@ public class QuickInterviewRenderer {
 		for (Choice choice : list) {
 			if (first) {
 				first = false;
-			} else {
+			}
+			else {
 				renderChoiceSeparator(sb);
 			}
 
@@ -543,8 +527,7 @@ public class QuickInterviewRenderer {
 	 * Assembles the HTML needed for displaying the (numerical) answer field
 	 * 
 	 * @created 20.07.2010
-	 * @param q
-	 *            the question to which numerical answers are attached
+	 * @param q the question to which numerical answers are attached
 	 * @return the String for rendering numerical answer field
 	 */
 	private void renderNumAnswers(Question q, StringBuffer sb) {
@@ -584,7 +567,8 @@ public class QuickInterviewRenderer {
 					+ rangeMin + "', " + "rangeMax:'" + rangeMax + "', "
 					+ "qtext:'" + Strings.encodeURL(q.getName()) + "', "
 					+ "}\" ";
-		} else {
+		}
+		else {
 			jscall = " rel=\"{oid: '" + id + "', " + "web:'" + web + "',"
 					+ "ns:'" + namespace + "'," + "type:'num', "
 					+ "rangeMin:'NaN', " + "rangeMax:'NaN', " + "qtext:'"
@@ -616,8 +600,7 @@ public class QuickInterviewRenderer {
 	}
 
 	private boolean suppressUnknown(Question question) {
-		if (!BasicProperties.isUnknownVisible(question))
-			return true;
+		if (!BasicProperties.isUnknownVisible(question)) return true;
 		return (this.config.containsKey("unknown") && this.config
 				.get("unknown").equals("false"));
 	}
@@ -627,10 +610,8 @@ public class QuickInterviewRenderer {
 	 * Assembles the HTML representation of a date answer input
 	 * 
 	 * @created 01.09.2010
-	 * @param q
-	 *            the date-question
-	 * @param sb
-	 *            the String Buffer, the HTML is attached to
+	 * @param q the date-question
+	 * @param sb the String Buffer, the HTML is attached to
 	 */
 	private void renderDateAnswers(Question q, StringBuffer sb) {
 
@@ -639,7 +620,8 @@ public class QuickInterviewRenderer {
 		String valueString;
 		if (value instanceof DateValue) {
 			valueString = ((DateValue) value).getDateString();
-		} else {
+		}
+		else {
 			valueString = "yyyy-mm-dd-hh-mm-ss";
 		}
 
@@ -689,7 +671,8 @@ public class QuickInterviewRenderer {
 		for (Choice choice : mcval.asChoiceList(q)) {
 			if (first) {
 				first = false;
-			} else {
+			}
+			else {
 				renderChoiceSeparator(sb);
 			}
 
@@ -722,7 +705,8 @@ public class QuickInterviewRenderer {
 	private void renderChoiceSeparator(StringBuffer sb) {
 		if (renderChoiceAnswerAsList()) {
 			sb.append("<br>");
-		} else {
+		}
+		else {
 			sb.append("<div class='separator'> | </div>");
 		}
 	}
@@ -736,12 +720,9 @@ public class QuickInterviewRenderer {
 	 * Assembles the HTML representation for rendering answer unknown
 	 * 
 	 * @created 22.07.2010
-	 * @param web
-	 *            the web context
-	 * @param namespace
-	 *            the namespace
-	 * @param q
-	 *            the question, to which unknown is added
+	 * @param web the web context
+	 * @param namespace the namespace
+	 * @param q the question, to which unknown is added
 	 * @return the HTML representation
 	 */
 	private void renderAnswerUnknown(Question q, String type, StringBuffer sb) {
@@ -762,7 +743,8 @@ public class QuickInterviewRenderer {
 
 		if (isUnknown) {
 			cssclass = "answerunknownClicked";
-		} else if (value != null) {
+		}
+		else if (value != null) {
 			cssclass = "answerunknown";
 		}
 		String spanid = q.getName() + "_" + Unknown.getInstance().getId();
@@ -780,20 +762,14 @@ public class QuickInterviewRenderer {
 	 * Assembles the HTML representation for a given Tag
 	 * 
 	 * @created 22.07.2010
-	 * @param tag
-	 *            The String representation of the tag
-	 * @param text
-	 *            The text to be placed inside the tag
-	 * @param cssclass
-	 *            The css class to style the resulting tag
-	 * @param onclick
-	 *            The String representation of the onclick action, i.e., a JS
-	 *            call
-	 * @param onmouseover
-	 *            Something to happen regarding the onmouseover
-	 * @param id
-	 *            The id of the object represented , i.e., answer alternative,
-	 *            here
+	 * @param tag The String representation of the tag
+	 * @param text The text to be placed inside the tag
+	 * @param cssclass The css class to style the resulting tag
+	 * @param onclick The String representation of the onclick action, i.e., a
+	 *        JS call
+	 * @param onmouseover Something to happen regarding the onmouseover
+	 * @param id The id of the object represented , i.e., answer alternative,
+	 *        here
 	 * @return String representation of the final tag. An example: <span rel=
 	 *         "{oid:'MaU',web:'default_web',ns:'FAQ Devel..FAQ Devel_KB',qid:'Q2'}"
 	 *         class="answercell" id="span_Q2_MaU" > MaU </span>
@@ -829,10 +805,8 @@ public class QuickInterviewRenderer {
 	 * session
 	 * 
 	 * @created 27.08.2010
-	 * @param sessionValue
-	 *            the sessionValue
-	 * @param value
-	 *            the value to be checked
+	 * @param sessionValue the sessionValue
+	 * @param value the value to be checked
 	 * @return true if the given session value contains the checked value (MC
 	 *         Questions) or if the session value equals the value
 	 */
@@ -840,7 +814,8 @@ public class QuickInterviewRenderer {
 		// test for MC values separately
 		if (sessionValue instanceof MultipleChoiceValue) {
 			return ((MultipleChoiceValue) sessionValue).contains(value);
-		} else {
+		}
+		else {
 			return sessionValue.equals(value);
 		}
 	}
@@ -849,17 +824,14 @@ public class QuickInterviewRenderer {
 	 * Checks, whether the given TerminologyObject is currently visible or not.
 	 * 
 	 * @created 30.10.2010
-	 * @param to
-	 *            the TerminologyObject to be checked.
+	 * @param to the TerminologyObject to be checked.
 	 * @param bb
 	 * @return true, if the given TerminologyObject is indicated.
 	 */
 	private boolean isVisible(TerminologyObject to) {
 
-		if (to == to.getKnowledgeBase().getRootQASet())
-			return true;
-		if (isThisOrFollowUpIndicated(to))
-			return true;
+		if (to == to.getKnowledgeBase().getRootQASet()) return true;
+		if (isThisOrFollowUpIndicated(to)) return true;
 		if (to instanceof Question) {
 			for (TerminologyObject parent : to.getParents()) {
 				if (parent instanceof QContainer) {
@@ -871,14 +843,20 @@ public class QuickInterviewRenderer {
 	}
 
 	private boolean isThisOrFollowUpIndicated(TerminologyObject to) {
+		Set<TerminologyObject> visited = new HashSet<TerminologyObject>();
+		return isThisOrFollowUpIndicated(visited, to);
+	}
+
+	private boolean isThisOrFollowUpIndicated(Set<TerminologyObject> visited, TerminologyObject to) {
+		if (visited.contains(to)) return false;
+		visited.add(to);
 		if (session.getBlackboard().getIndication((InterviewObject) to)
 				.isRelevant()) {
 			return true;
 		}
 		if (to.getChildren().length > 0) {
 			for (TerminologyObject child : to.getChildren()) {
-				if (isThisOrFollowUpIndicated(child))
-					return true;
+				if (isThisOrFollowUpIndicated(visited, child)) return true;
 			}
 		}
 		return false;
@@ -889,8 +867,7 @@ public class QuickInterviewRenderer {
 				MMInfo.PROMPT,
 				Environment.getInstance().getWikiConnector()
 						.getLocale(user.getRequest()));
-		if (prompt != null)
-			return prompt;
+		if (prompt != null) return prompt;
 		return to.getName();
 	}
 
@@ -920,7 +897,8 @@ public class QuickInterviewRenderer {
 				}
 			}
 
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
