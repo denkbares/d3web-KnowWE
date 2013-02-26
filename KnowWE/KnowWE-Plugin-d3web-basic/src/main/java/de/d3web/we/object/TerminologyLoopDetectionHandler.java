@@ -18,7 +18,7 @@ public class TerminologyLoopDetectionHandler<TermObject extends TerminologyObjec
 	@Override
 	public Collection<Message> create(Article article, Section<D3webTermDefinition<TermObject>> section) {
 		TermObject termObject = section.get().getTermObject(article, section);
-		if (KnowledgeBaseUtils.isInLoop(termObject)) {
+		if (termObject != null && KnowledgeBaseUtils.isInLoop(termObject)) {
 			section.getSectionStore().storeObject(article, LOOP_DETECTED, REMOVE_PARENTS);
 			return Messages.asList(Messages.error("Loop detected: The "
 					+ termObject.getClass().getSimpleName() + " '" + termObject.getName()
