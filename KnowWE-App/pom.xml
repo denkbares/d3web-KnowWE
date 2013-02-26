@@ -854,6 +854,12 @@
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Ontology-MarkupSet</artifactId>
+					<version>0.2-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
 			</dependencies>
 		</profile>
 
