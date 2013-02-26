@@ -49,7 +49,7 @@ public class OutDatedSessionNotification implements Notification {
 		message.append(kbArticle);
 		message.append("</em> is based on an out dated version of the knowledge base. ");
 		message.append("You should consider a ");
-		message.append("<a href='#' ");
+		message.append("<a ");
 		message.append("onclick='javascript:KNOWWE.plugin.d3webbasic.actions.resetSession(\"");
 		message.append(kbArticle);
 		message.append("\");KNOWWE.notification.loadNotifications();'>reset</a>.");
