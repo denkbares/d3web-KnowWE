@@ -356,7 +356,7 @@ public final class Messages {
 		if (name != null && name.isEmpty()) {
 			name = "empty String";
 		}
-		return Messages.error(type + " '" + name + "' not found.");
+		return Messages.error(type + " '" + name + "' not found");
 	}
 
 	/**
