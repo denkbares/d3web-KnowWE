@@ -20,12 +20,12 @@ public class CIDaemonRenderer implements Renderer {
 				CIDashboardType.NAME_KEY);
 		String dashboardArticle = DefaultMarkupType.getAnnotation(section,
 				CIDaemonType.DASHBOARD_ARTICLE);
-		renderDaemonContents(content, section.getWeb(),
+		renderDaemonContents(section.getWeb(),
 				dashboardName, dashboardArticle, string);
-
+		string.append(content);
 	}
 
-	public static String renderDaemonContents(String content, String web, String dashboardName, String dashboardArticleTitle, RenderResult string) {
+	public static void renderDaemonContents(String web, String dashboardName, String dashboardArticleTitle, RenderResult string) {
 
 		if (!Environment.getInstance().getArticleManager(web).getTitles().contains(
 				dashboardArticleTitle)) {
@@ -62,8 +62,5 @@ public class CIDaemonRenderer implements Renderer {
 		}
 		string.appendHtml("</a>");
 
-		string.append(Environment.getInstance().getWikiConnector().renderWikiSyntax(content));
-
-		return string.toString();
 	}
 }
