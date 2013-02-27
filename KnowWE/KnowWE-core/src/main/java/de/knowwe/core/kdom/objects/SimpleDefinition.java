@@ -18,7 +18,6 @@
  */
 package de.knowwe.core.kdom.objects;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import de.knowwe.core.compile.Priority;
@@ -30,6 +29,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
@@ -76,7 +76,7 @@ public abstract class SimpleDefinition extends AbstractType implements SimpleTer
 			getTerminologyHandler(article).registerTermDefinition(s, s.get().getTermObjectClass(s),
 					s.get().getTermIdentifier(s));
 
-			return new ArrayList<Message>(0);
+			return Messages.noMessage();
 		}
 
 		private TerminologyManager getTerminologyHandler(Article article) {
