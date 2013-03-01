@@ -2,8 +2,7 @@ package de.d3web.we.kdom.rules.action;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.log4j.Logger;
+import java.util.logging.Logger;
 
 import de.d3web.abstraction.ActionSetQuestion;
 import de.d3web.abstraction.formula.FormulaNumberElement;
@@ -90,7 +89,7 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 					article, formulaSection);
 		}
 		catch (Exception e) {
-			Logger.getLogger(this.getClass()).error(e.getMessage());
+			Logger.getLogger(this.getClass().getName()).severe(e.getMessage());
 			e.printStackTrace();
 		}
 

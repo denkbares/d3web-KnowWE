@@ -21,8 +21,7 @@ package de.knowwe.core.action;
  */
 
 import java.io.IOException;
-
-import org.apache.log4j.Logger;
+import java.util.logging.Logger;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Type;
@@ -49,7 +48,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 
 		if (section == null) {
 			String message = "Section not found: " + nodeID;
-			Logger.getLogger(this.getClass().getName()).error(message);
+			Logger.getLogger(this.getClass().getName()).warning(message);
 			return message;
 
 		}

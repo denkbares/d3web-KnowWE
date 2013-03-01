@@ -22,9 +22,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
-
-import org.apache.log4j.Logger;
 
 import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
@@ -56,7 +55,8 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 	@Override
 	public <T> List<TestObjectContainer<T>> getTestObjects(Class<T> c, String testObjectName) {
 		if (c == null) {
-			Logger.getLogger(this.getClass()).warn("Class given to TestObjectProvider was 'null'");
+			Logger.getLogger(this.getClass().getName()).warning(
+					"Class given to TestObjectProvider was 'null'");
 			return Collections.emptyList();
 		}
 		List<TestObjectContainer<T>> result = new ArrayList<TestObjectContainer<T>>();

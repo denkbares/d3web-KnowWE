@@ -88,7 +88,7 @@ public class DummyPageProvider {
 
 	private void cacheZipArticle(ZipFile wikiContentZip, ZipEntry entry, Matcher articleMatcher) throws IOException {
 		InputStream entryStream = wikiContentZip.getInputStream(entry);
-		String articleContent = KnowWEUtils.readFile(entryStream);
+		String articleContent = KnowWEUtils.readStream(entryStream);
 		String title = articleMatcher.group(1);
 		title = Strings.decodeURL(title);
 		setArticleContent(title, articleContent);

@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
-
-import org.apache.log4j.Logger;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.testing.TestObjectContainer;
@@ -45,7 +44,8 @@ public class WikiKnowledgeBaseProvider implements TestObjectProvider {
 	@Override
 	public <T> List<TestObjectContainer<T>> getTestObjects(Class<T> c, String id) {
 		if (c == null) {
-			Logger.getLogger(this.getClass()).warn("Class given to TestObjectProvider was 'null'");
+			Logger.getLogger(this.getClass().getName()).warning(
+					"Class given to TestObjectProvider was 'null'");
 			return Collections.emptyList();
 		}
 		if (!c.equals(KnowledgeBase.class)) {
@@ -65,7 +65,7 @@ public class WikiKnowledgeBaseProvider implements TestObjectProvider {
 
 		if (knowledgeHandler != null) {
 
-		Set<String> knowledgeArticles = knowledgeHandler.getKnowledgeArticles();
+			Set<String> knowledgeArticles = knowledgeHandler.getKnowledgeArticles();
 
 			for (String kbArticle : knowledgeArticles) {
 				if (kbArticle.matches(id)) {

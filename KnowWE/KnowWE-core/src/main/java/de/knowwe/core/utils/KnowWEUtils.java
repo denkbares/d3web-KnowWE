@@ -503,7 +503,7 @@ public class KnowWEUtils {
 
 	public static String readFile(String fileName) {
 		try {
-			return readFile(new FileInputStream(fileName));
+			return readStream(new FileInputStream(fileName));
 		}
 		catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -511,7 +511,7 @@ public class KnowWEUtils {
 		}
 	}
 
-	public static String readFile(InputStream inputStream) {
+	public static String readStream(InputStream inputStream) {
 		StringBuffer inContent = new StringBuffer();
 		try {
 			BufferedReader bufferedReader = new BufferedReader(

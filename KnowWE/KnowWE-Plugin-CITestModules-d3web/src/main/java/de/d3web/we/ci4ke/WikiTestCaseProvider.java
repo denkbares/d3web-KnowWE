@@ -22,9 +22,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
-
-import org.apache.log4j.Logger;
 
 import de.d3web.core.utilities.Triple;
 import de.d3web.testcase.model.TestCase;
@@ -49,7 +48,8 @@ public class WikiTestCaseProvider implements TestObjectProvider {
 	public <T> List<TestObjectContainer<T>> getTestObjects(Class<T> clazz, String name) {
 
 		if (clazz == null) {
-			Logger.getLogger(this.getClass()).warn("Class given to TestObjectProvider was 'null'");
+			Logger.getLogger(this.getClass().getName()).warning(
+					"Class given to TestObjectProvider was 'null'");
 			return Collections.emptyList();
 		}
 		if (!clazz.equals(TestCase.class)) {
