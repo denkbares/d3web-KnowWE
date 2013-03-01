@@ -42,16 +42,6 @@ import org.apache.commons.lang.StringUtils;
 
 public class Strings {
 
-	private static final String[] QUOTE_UNESCAPED = new String[] {
-			"\\", "\"" };
-	private static final String[] QUOTE_ESCAPED = new String[] {
-			"\\\\", "\\\"" };
-
-	private static final String[] UNQOUTE_ESCAPED = new String[] {
-			"\\\"", "\\\\" };
-	private static final String[] UNQOUTE_UNESCAPED = new String[] {
-			"\"", "\\" };
-
 	/**
 	 * This method appends the strings or objects and separates them with the
 	 * specified separation string in between (but not at the end). You can
@@ -345,9 +335,13 @@ public class Strings {
 		return false;
 	}
 
-	public static boolean isUnEscapedQuote(String text, int i) {
-		return text.length() > i && text.charAt(i) == '"'
+	public static boolean isUnEscapedQuote(String text, int i, char quoteChar) {
+		return text.length() > i && text.charAt(i) == quoteChar
 				&& getNumberOfDirectlyPrecedingBackSlashes(text, i) % 2 == 0;
+	}
+
+	public static boolean isUnEscapedQuote(String text, int i) {
+		return isUnEscapedQuote(text, i, '"');
 	}
 
 	private static int getNumberOfDirectlyPrecedingBackSlashes(String text, int i) {
@@ -678,30 +672,67 @@ public class Strings {
 		return (pos == text.length()) ? text : text.substring(0, pos);
 	}
 
-	/**
-	 * 
-	 * @created 21.06.2012
-	 * @param charAt
-	 * @return
-	 */
 	private static boolean isNonBreakingSpace(char c) {
 		return c == (char) 160;
 	}
 
+	/**
+	 * Quotes the given String with ". If the String contains ", it will be
+	 * escaped with the escape char \.
+	 * 
+	 * @param element the string to be quoted
+	 */
 	public static String quote(String element) {
-		return "\"" + StringUtils.replaceEach(element, QUOTE_UNESCAPED, QUOTE_ESCAPED) + "\"";
+		return quote(element, '"');
 	}
 
+	/**
+	 * Quotes the given String with a given quote char. If the String contains
+	 * the quote char, it will be escaped with the escape char \. Don't use \ as
+	 * the quote char for this reason.
+	 * 
+	 * @param element the string to be quoted
+	 * @param quoteChar the char used to quote
+	 */
+	public static String quote(String element, char quoteChar) {
+		String[] QUOTE_UNESCAPED = new String[] {
+				"\\", Character.toString(quoteChar) };
+		String[] QUOTE_ESCAPED = new String[] {
+				"\\\\", "\\" + quoteChar };
+		return quoteChar + StringUtils.replaceEach(element, QUOTE_UNESCAPED, QUOTE_ESCAPED)
+				+ quoteChar;
+	}
+
+	/**
+	 * Unquotes the given String. If the String contains an escaped quote char
+	 * (\"), it will be unescaped.
+	 * 
+	 * @param element the string to be unquoted
+	 */
 	public static String unquote(String text) {
+		return unquote(text, '"');
+	}
+
+	/**
+	 * Unquotes the given String from the given quote char. If the String
+	 * contains an escaped quote char (escaped with \), it will be unescaped.
+	 * 
+	 * @param element the string to be unquoted
+	 * @param quoteChar the char the string was quoted with
+	 */
+	public static String unquote(String text, char quoteChar) {
 
 		if (text == null) return null;
 
-		if (text.equals("\"")) return "";
+		if (text.length() == 1 && text.charAt(0) == quoteChar) return "";
 
 		if (isUnEscapedQuote(text, 0) && isUnEscapedQuote(text, text.length() - 1)) {
 			text = text.substring(1, text.length() - 1);
 			// unmask " and \
-
+			String[] UNQOUTE_ESCAPED = new String[] {
+					"\\" + quoteChar, "\\\\" };
+			String[] UNQOUTE_UNESCAPED = new String[] {
+					Character.toString(quoteChar), "\\" };
 			return StringUtils.replaceEach(text, UNQOUTE_ESCAPED, UNQOUTE_UNESCAPED);
 		}
 

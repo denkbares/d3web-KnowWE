@@ -59,7 +59,7 @@ public final class Patterns {
 	public static final String COMMENTLINE = "^" + SPACETABS + "//[^\r\n]*+" + LINEBREAK;
 
 	/**
-	 * A pattern for all quoted strings " can be masked by \
+	 * A pattern for all quoted strings. " can be masked by prepending \
 	 */
 	// Old patterns:
 	// public static final String quoted =
@@ -73,6 +73,12 @@ public final class Patterns {
 	// times.
 	// The current pattern is designed to have very little (or no) backtracking.
 	public static final String QUOTED = "(?:\"(?:[^\"\\\\]|(?:(?:\\\\\\\\)*(?:\\\\\")*))*\")";
+
+	/**
+	 * A pattern for all strings quoted with single quotes, respectively
+	 * apostrophe. ' can be masked by prepending \
+	 */
+	public static final String SINGLE_QUOTED = "(?:\'(?:[^'\\\\]|(?:(?:\\\\\\\\)*(?:\\\\')*))*\")";
 
 	/**
 	 * RegEx for legal identifier in d3web.
