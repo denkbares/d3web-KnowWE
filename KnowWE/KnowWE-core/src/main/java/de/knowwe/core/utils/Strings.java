@@ -726,7 +726,8 @@ public class Strings {
 
 		if (text.length() == 1 && text.charAt(0) == quoteChar) return "";
 
-		if (isUnEscapedQuote(text, 0) && isUnEscapedQuote(text, text.length() - 1)) {
+		if (isUnEscapedQuote(text, 0, quoteChar)
+				&& isUnEscapedQuote(text, text.length() - 1, quoteChar)) {
 			text = text.substring(1, text.length() - 1);
 			// unmask " and \
 			String[] UNQOUTE_ESCAPED = new String[] {

@@ -78,7 +78,7 @@ public final class Patterns {
 	 * A pattern for all strings quoted with single quotes, respectively
 	 * apostrophe. ' can be masked by prepending \
 	 */
-	public static final String SINGLE_QUOTED = "(?:\'(?:[^'\\\\]|(?:(?:\\\\\\\\)*(?:\\\\')*))*\")";
+	public static final String SINGLE_QUOTED = "(?:'(?:[^'\\\\]|(?:(?:\\\\\\\\)*(?:\\\\')*))*')";
 
 	/**
 	 * RegEx for legal identifier in d3web.
