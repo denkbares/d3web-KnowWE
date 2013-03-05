@@ -65,14 +65,14 @@ public class SolutionPanelUtils {
 			tooltip = label + "\n" + tooltip;
 			label = prompt;
 		}
-		tooltip = tooltip.trim();
+		tooltip = Strings.encodeHtml(tooltip.trim());
 
 		// fetch derivation state icon
 		Rating solutionRating = D3webUtils.getRatingNonBlocking(session, solution);
 		appendImage(solutionRating, content);
 		String stateName = String.valueOf(solutionRating);
 
-		content.appendHtml("<span " + tooltip + "class=\"SOLUTION-" + stateName + "\">");
+		content.appendHtml("<span title=\"" + tooltip + "\" class=\"SOLUTION-" + stateName + "\">");
 		if (endUser) {
 			// show solution in end user mode
 			if (prompt == null && description != null) {
