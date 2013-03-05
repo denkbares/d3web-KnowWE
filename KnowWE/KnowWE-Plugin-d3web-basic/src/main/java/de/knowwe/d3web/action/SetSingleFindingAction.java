@@ -31,7 +31,6 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
-import de.d3web.core.session.blackboard.Blackboard;
 import de.d3web.core.session.blackboard.Fact;
 import de.d3web.core.session.blackboard.FactFactory;
 import de.d3web.core.session.values.DateValue;
@@ -91,7 +90,6 @@ public class SetSingleFindingAction extends AbstractAction {
 				}
 			}
 		}
-		Blackboard blackboard = session.getBlackboard();
 
 		// Necessary for FindingSetEvent
 		Question question = kb.getManager().searchQuestion(objectid);
