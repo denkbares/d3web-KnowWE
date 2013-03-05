@@ -18,6 +18,7 @@
  */
 package de.knowwe.core.kdom.objects;
 
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.AbstractType;
@@ -33,8 +34,13 @@ public abstract class SimpleReference extends AbstractType implements SimpleTerm
 	private final Class<?> termObjectClass;
 
 	public SimpleReference(TermRegistrationScope scope, Class<?> termObjectClass) {
+		this(scope, termObjectClass, Priority.DEFAULT);
+	}
+
+	public SimpleReference(TermRegistrationScope scope, Class<?> termObjectClass, Priority registrationPriority) {
 		this.termObjectClass = termObjectClass;
-		this.addSubtreeHandler(new SimpleTermReferenceRegistrationHandler(scope));
+		this.addSubtreeHandler(registrationPriority, new SimpleTermReferenceRegistrationHandler(
+				scope));
 	}
 
 	@Override
