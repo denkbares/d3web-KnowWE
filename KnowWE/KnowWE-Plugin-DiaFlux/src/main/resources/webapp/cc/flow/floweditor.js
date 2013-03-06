@@ -543,7 +543,7 @@ Flowchart.prototype.toXML = function() {
 		xml += this.rules[i].toXML() + '\n';
 	}
 
-	xml += '</flowchart>\n'
+	xml += '</flowchart>'
 	return xml;
 }
 var SelectTool = {}
