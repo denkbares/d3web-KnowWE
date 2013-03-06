@@ -34,6 +34,7 @@ import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.CondKnown;
 import de.d3web.we.kdom.condition.CondKnownUnknown;
+import de.d3web.we.kdom.condition.CondRegularExpression;
 import de.d3web.we.kdom.condition.CondUnknown;
 import de.d3web.we.kdom.condition.Finding;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
@@ -119,6 +120,7 @@ public class RuleContentType extends AbstractType {
 		termConds.add(new SolutionStateCond());
 		termConds.add(new UserRatingConditionType());
 		termConds.add(new CondKnownUnknown());
+		termConds.add(new CondRegularExpression());
 		termConds.add(new Finding());
 		termConds.add(new CondUnknown());
 		termConds.add(new CondKnown());
