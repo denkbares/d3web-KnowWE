@@ -139,8 +139,7 @@ public class RuleContentType extends AbstractType {
 	class RuleCompiler extends D3webSubtreeHandler<RuleAction> {
 
 		public RuleCompiler() {
-			this
-					.registerConstraintModule(new SuccessorNotReusedConstraint<RuleAction>());
+			registerConstraintModule(new SuccessorNotReusedConstraint<RuleAction>());
 		}
 
 		@SuppressWarnings("unchecked")
@@ -226,8 +225,7 @@ public class RuleContentType extends AbstractType {
 	 *         Highlights Rules according to state.
 	 * 
 	 */
-	class RuleHighlightingRenderer implements
-			Renderer {
+	class RuleHighlightingRenderer implements Renderer {
 
 		@Override
 		public void render(Section<?> sec,
@@ -241,8 +239,7 @@ public class RuleContentType extends AbstractType {
 						RuleContentType.ruleStoreKey);
 			}
 
-			string.appendHtml("<span id='" + sec.getID()
-					+ "'>");
+			string.appendHtml("<span id='" + sec.getID() + "'>");
 
 			KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
 			Session session = SessionProvider.getSession(user, kb);
