@@ -25,6 +25,7 @@ import de.d3web.core.inference.condition.CondNumIn;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
+import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
@@ -57,6 +58,9 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 		Double number1 = intervall.get().getFirstNumber(intervall);
 		Double number2 = intervall.get().getSecondNumber(intervall);
 
+		boolean leftOpen = intervall.getText().charAt(0) == ']';
+		boolean rightOpen = intervall.getText().charAt(intervall.getText().length() - 1) == '[';
+
 		Question q = qRef.get().getTermObject(article, qRef);
 
 		if (!(q instanceof QuestionNum)) {
@@ -65,7 +69,8 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 		}
 		else if (number1 != null && number2 != null && q != null && q instanceof QuestionNum) {
 			Messages.clearMessages(article, s, this.getClass());
-			return new CondNumIn((QuestionNum) q, number1, number2);
+			return new CondNumIn((QuestionNum) q,
+					new NumericalInterval(number1, number2, leftOpen, rightOpen));
 		}
 		return null;
 	}
@@ -76,11 +81,15 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			// has to end with ']'
-			if (text.trim().endsWith("]")) {
-				int bracketsStart = Strings.lastIndexOfUnquoted(text, "[");
+			String trimmed = Strings.trimRight(text);
+			if (trimmed.endsWith("]") || trimmed.endsWith("[")) {
+				String rest = trimmed.substring(0, trimmed.length() - 1);
+				int bracketsStart = Math.max(
+						Strings.lastIndexOfUnquoted(rest, "["),
+						Strings.lastIndexOfUnquoted(rest, "]"));
 				if (bracketsStart == -1) return null;
 				// get the content in brackets
-				String brackets = text.substring(bracketsStart).trim();
+				String brackets = trimmed.substring(bracketsStart);
 				String content = brackets.substring(1, brackets.length() - 1);
 
 				// find out whether there are exactly 2 chains of characters
@@ -142,14 +151,16 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 
 				@Override
 				public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-					if (text.trim().endsWith("]")) {
-						int bracketsStart = Strings.lastIndexOfUnquoted(text, "[");
-						int bracketsEnd = Strings.lastIndexOfUnquoted(text, "]");
+					String trimmed = Strings.trimRight(text);
+					if (trimmed.endsWith("]") || trimmed.endsWith("[")) {
+						String rest = trimmed.substring(0, trimmed.length() - 1);
+						int bracketsStart = Math.max(
+								Strings.lastIndexOfUnquoted(rest, "["),
+								Strings.lastIndexOfUnquoted(rest, "]"));
 
 						return SectionFinderResult.createSingleItemList(new SectionFinderResult(
 								bracketsStart,
-								bracketsEnd + 1));
-
+								trimmed.length()));
 					}
 					return null;
 				}
