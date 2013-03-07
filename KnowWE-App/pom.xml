@@ -398,7 +398,6 @@
 			</dependencies>
 		</profile>
 
-
 		<profile>
 			<id>onte</id>
 			<activation>
@@ -959,12 +958,6 @@
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-TestCaseExecutor</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-d3web-basic</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
@@ -1013,6 +1006,12 @@
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-DiaFlux-Coverage</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
@@ -1027,6 +1026,48 @@
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-JournalUtils</artifactId>
 					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Timeline</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-WikiBaseline</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-DiaFlux-Review</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-d3web-Visualizations</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-InstantEdit</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Wikicontent-Download</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-KBB</artifactId>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
