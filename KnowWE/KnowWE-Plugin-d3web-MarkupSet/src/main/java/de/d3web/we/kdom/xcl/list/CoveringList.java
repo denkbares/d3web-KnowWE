@@ -30,10 +30,8 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Session;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.kdom.condition.CompositeCondition;
-import de.d3web.we.kdom.condition.Finding;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
-import de.d3web.we.kdom.condition.NumericalFinding;
-import de.d3web.we.kdom.condition.NumericalIntervallFinding;
+import de.d3web.we.kdom.rules.RuleContentType;
 import de.d3web.we.object.SolutionDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
@@ -70,14 +68,13 @@ import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.knowwe.kdom.sectionFinder.UnquotedExpressionFinder;
 
 /**
+ * A covering-list markup parser
+ * 
+ * In the first line the solution is defined @see ListSolutionType The rest of
+ * the content is split by ',' (commas) and the content in between is taken as
+ * CoveringRelations
+ * 
  * @author Jochen
- * 
- *         A covering-list markup parser
- * 
- *         In the first line the solution is defined @see ListSolutionType The
- *         rest of the content is split by ',' (komas) and the content inbetween
- *         is taken as CoveringRelations
- * 
  */
 public class CoveringList extends AbstractType {
 
@@ -164,21 +161,21 @@ public class CoveringList extends AbstractType {
 			CompositeCondition cond = new CompositeCondition();
 
 			// these are the allowed/recognized terminal-conditions
-			List<Type> termConds = new ArrayList<Type>();
-			termConds.add(new Finding());
-			termConds.add(new NumericalFinding());
-			termConds.add(new NumericalIntervallFinding());
+			// List<Type> termConds = new ArrayList<Type>();
+			// termConds.add(new Finding());
+			// termConds.add(new NumericalFinding());
+			// termConds.add(new NumericalIntervallFinding());
+			List<Type> termConds = RuleContentType.getTerminalConditions();
 			cond.setAllowedTerminalConditions(termConds);
 
 			this.addChildType(cond);
 		}
 
 		/**
+		 * this handler translates the parsed covering-relation-KDOM to the
+		 * d3web knowledge base
+		 * 
 		 * @author Jochen
-		 * 
-		 *         this handler translates the parsed covering-relation-KDOM to
-		 *         the d3web knowledge base
-		 * 
 		 */
 		class CreateXCLRelationHandler extends D3webSubtreeHandler<CoveringRelation> {
 

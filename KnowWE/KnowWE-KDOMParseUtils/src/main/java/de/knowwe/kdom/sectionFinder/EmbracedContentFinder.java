@@ -66,8 +66,13 @@ public class EmbracedContentFinder implements SectionFinder {
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-		int start = Strings.indexOfUnquoted(text, "" + open);
-		if (start > -1) {
+		return lookForSections(text, father, type, 0);
+	}
+
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type, int firstIndex) {
+		int start = Strings.indexOfUnquoted(
+				text.substring(firstIndex), String.valueOf(open)) + firstIndex;
+		if (start >= firstIndex) {
 			int end = Strings.findIndexOfClosingBracket(text, start,
 					open, close);
 			if (end < 0) return null;
@@ -86,11 +91,14 @@ public class EmbracedContentFinder implements SectionFinder {
 			}
 			else {
 				// else check chain restriction
-				String content = text.substring(startIndex,
-						endIndex);
+				String content = text.substring(startIndex, endIndex);
 				if (Strings.getCharacterChains(content).length == chains) {
 					return SectionFinderResult.createSingleItemResultList(startIndex,
 							endIndex);
+				}
+				// if not matches, try to find an other one after these brackets
+				else {
+					return lookForSections(text, father, type, start + 1);
 				}
 			}
 

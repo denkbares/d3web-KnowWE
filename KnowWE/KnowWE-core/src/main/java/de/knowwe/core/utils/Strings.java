@@ -233,9 +233,9 @@ public class Strings {
 	 * Scans the 'text' for the (first) occurrence of 'symbol' which is not
 	 * embedded in quotes ('"')
 	 * 
-	 * @param text
-	 * @param symbol
-	 * @return
+	 * @param text the text to search in
+	 * @param symbol the symbol to be searched
+	 * @return the index of the first unquoted occurrence of the symbol
 	 */
 	public static int indexOfUnquoted(String text, String symbol) {
 		boolean quoted = false;
