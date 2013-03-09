@@ -31,7 +31,7 @@ public class TestHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public Enumeration getAttributeNames() {
+	public Enumeration<String> getAttributeNames() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -85,7 +85,7 @@ public class TestHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public Enumeration getLocales() {
+	public Enumeration<Locale> getLocales() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -97,13 +97,13 @@ public class TestHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public Map getParameterMap() {
+	public Map<String, String[]> getParameterMap() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Enumeration getParameterNames() {
+	public Enumeration<String> getParameterNames() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -228,13 +228,13 @@ public class TestHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public Enumeration getHeaderNames() {
+	public Enumeration<String> getHeaderNames() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Enumeration getHeaders(String arg0) {
+	public Enumeration<String> getHeaders(String arg0) {
 		// TODO Auto-generated method stub
 		return null;
 	}
