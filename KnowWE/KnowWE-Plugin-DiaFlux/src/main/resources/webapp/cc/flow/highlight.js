@@ -30,7 +30,7 @@ DiaFlux.Highlight.getHighlights = function(actionName, infos){
 		
 } 
 
-DiaFlux.Highlight.highlight = function(response) {
+DiaFlux.Highlight.highlight = function() {
 	
 	var doc = this.responseXML;
 	var flows = doc.getElementsByTagName('flow');
