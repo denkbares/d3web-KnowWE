@@ -115,7 +115,8 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 				if (diagnosis.getChildren().length > 0) {
 					text.appendHtml("<strong>"
 							+ rb.getString("KnowWE.KBRenderer.solutions")
-							+ ":</strong><p></p>\n\n");
+							+ "(" + kb.getManager().getSolutions().size()
+							+ "):</strong><p></p>\n\n");
 					appendedSolutionsHeadline = true;
 				}
 				// Get all Children
@@ -149,18 +150,23 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 					for (de.d3web.core.inference.Rule r : rs.getRules()) {
 						// add every rule once
 						duplRules.add(r);
-						if (!appendedRulesHeadline) {
-							if (appendedSolutionsHeadline) {
-								text.appendHtml("<br/>\n");
-							}
-							text.appendHtml("<strong>"
-									+ rb.getString("KnowWE.KBRenderer.rules")
-									+ ":</strong><p></p>\n\n");
-							appendedRulesHeadline = true;
-						}
 					}
 				}
 			}
+
+			if (duplRules.size() > 0) {
+				if (!appendedRulesHeadline) {
+					if (appendedSolutionsHeadline) {
+						text.appendHtml("<br/>\n");
+					}
+					text.appendHtml("<strong>"
+							+ rb.getString("KnowWE.KBRenderer.rules")
+							+ "(" + duplRules.size() + "):</strong><p></p>\n\n");
+					appendedRulesHeadline = true;
+				}
+
+			}
+
 			// List with all Rules (no duplicates)
 			List<de.d3web.core.inference.Rule> sort = new ArrayList<de.d3web.core.inference.Rule>(
 					duplRules);
@@ -208,7 +214,8 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 						}
 						text.appendHtml("<strong>"
 								+ rb.getString("KnowWE.KBRenderer.questions")
-								+ ":</strong><br/><p></p>");
+								+ "(" + kb.getManager().getQuestions().size()
+								+ "):</strong><br/><p></p>");
 						appendedQuestionHeadline = true;
 					}
 					if (q1 instanceof QContainer) {
