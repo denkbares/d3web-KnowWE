@@ -42,8 +42,12 @@ public abstract class SimpleDefinition extends AbstractType implements SimpleTer
 	private final Class<?> termObjectClass;
 
 	public SimpleDefinition(TermRegistrationScope scope, Class<?> termObjectClass) {
+		this(scope, termObjectClass, Priority.HIGHER);
+	}
+
+	public SimpleDefinition(TermRegistrationScope scope, Class<?> termObjectClass, Priority handlerPriority) {
 		this.termObjectClass = termObjectClass;
-		this.addSubtreeHandler(Priority.HIGHER,
+		this.addSubtreeHandler(handlerPriority,
 				new StringDefinitionRegistrationHandler(scope));
 	}
 
