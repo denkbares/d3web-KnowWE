@@ -50,7 +50,7 @@ final class TestcaseTableLineSubtreeHandler extends SubtreeHandler<TestcaseTable
 		List<Section<ValueType>> values = Sections.findSuccessorsOfType(s, ValueType.class);
 		for (Section<ValueType> valueSec : values) {
 			// if value is unchanged, ignore it
-			String valueString = Strings.trimQuotes(valueSec.getText().trim());
+			String valueString = Strings.trimQuotes(valueSec.getText());
 			if (valueString.isEmpty()) continue;
 			if (valueString.equals("-")) continue;
 

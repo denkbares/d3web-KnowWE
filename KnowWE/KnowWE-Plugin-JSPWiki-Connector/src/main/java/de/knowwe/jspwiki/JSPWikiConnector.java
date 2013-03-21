@@ -586,9 +586,10 @@ public class JSPWikiConnector implements WikiConnector {
 				.getPage(title));
 
 		AuthorizationManager authmgr = engine.getAuthorizationManager();
-		PagePermission pp = PermissionFactory.getPagePermission(page, "edit");
-
-		return authmgr.checkPermission(context.getWikiSession(), pp);
+		synchronized (authmgr) {
+			PagePermission pp = PermissionFactory.getPagePermission(page, "edit");
+			return authmgr.checkPermission(context.getWikiSession(), pp);
+		}
 	}
 
 	@Override
@@ -598,9 +599,10 @@ public class JSPWikiConnector implements WikiConnector {
 				.getPage(title));
 
 		AuthorizationManager authmgr = engine.getAuthorizationManager();
-		PagePermission pp = PermissionFactory.getPagePermission(page, "view");
-
-		return authmgr.checkPermission(context.getWikiSession(), pp);
+		synchronized (authmgr) {
+			PagePermission pp = PermissionFactory.getPagePermission(page, "view");
+			return authmgr.checkPermission(context.getWikiSession(), pp);
+		}
 	}
 
 	@Override

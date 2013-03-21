@@ -61,7 +61,6 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
-import de.knowwe.kdom.sectionFinder.AllTextFinderTrimSpaces;
 import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
 import de.knowwe.kdom.sectionFinder.EmbracedContentFinder;
 import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
@@ -129,7 +128,7 @@ public class CoveringList extends AbstractType {
 
 		public CoveringRelation() {
 
-			this.setSectionFinder(new ConditionalSectionFinder(new AllTextFinderTrimSpaces()) {
+			this.setSectionFinder(new ConditionalSectionFinder(new AllTextFinderTrimmed()) {
 
 				// hack to allow for comment after last relation
 				// TODO: find better way

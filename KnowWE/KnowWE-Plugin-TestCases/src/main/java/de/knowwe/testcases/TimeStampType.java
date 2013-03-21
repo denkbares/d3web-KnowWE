@@ -1,4 +1,5 @@
 package de.knowwe.testcases;
+
 /*
  * Copyright (C) 2010 University Wuerzburg, Computer Science VI
  * 
@@ -18,7 +19,6 @@ package de.knowwe.testcases;
  * site: http://www.fsf.org.
  */
 
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -61,7 +61,7 @@ public class TimeStampType extends AbstractType {
 			Pattern.CASE_INSENSITIVE);
 
 	public TimeStampType() {
-		sectionFinder = new AllTextSectionFinder();
+		sectionFinder = new AllTextFinderTrimmed();
 		addSubtreeHandler(new TimeStampSubtreeHandler());
 	}
 

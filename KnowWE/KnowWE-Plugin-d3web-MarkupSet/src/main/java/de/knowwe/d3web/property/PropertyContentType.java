@@ -24,6 +24,7 @@ import de.d3web.core.knowledge.terminology.info.Property;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -49,6 +50,23 @@ public class PropertyContentType extends AbstractType {
 		while (end >= start && content.charAt(end) == '"') {
 			end--;
 		}
-		return content.substring(start, end + 1);
+		int quotesBefore = start;
+		int quotesAfter = (content.length() - 1) - end;
+		// 2 quotes are no expected syntax, so it must be part of the content
+		// and we just trim one quote
+		if ((quotesBefore == 1 || quotesBefore == 2) && quotesAfter >= 1) {
+			// with one quote before and after, we support escaped quotes inside
+			// trimQuotes() will unescape them
+			return Strings.unquote(content.toString());
+		}
+		// we do not expect more than 3 quotes as syntax, the rest must be
+		// unescaped quotes of the content (unescaped quotes are allowed with 3
+		// leading and ending quotes, we just do not allow 3 unescaped quotes in
+		// a row... for this, single quotes at the start and the end and escaped
+		// quotes in the content must be used)
+		else if (quotesBefore >= 3 && quotesAfter >= 3) {
+			return content.substring(3, content.length() - 3);
+		}
+		return content.toString();
 	}
 }

@@ -25,6 +25,7 @@ import java.util.List;
 
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.utils.Strings;
 
 /**
  * @author Jochen
@@ -42,7 +43,7 @@ public class AllTextFinderTrimmed implements SectionFinder {
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 
-		String trimmed = text.trim();
+		String trimmed = Strings.trim(text);
 		if (trimmed.length() == 0) return result;
 		int leadingSpaces = text.indexOf(trimmed);
 		int followingSpaces = text.length()

@@ -25,7 +25,7 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.InvalidKDOMSchemaModificationOperation;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.CommentLineType;
-import de.knowwe.kdom.sectionFinder.AllTextFinderDivCorrectTrimmed;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 
 /**
  * @author Jochen
@@ -55,7 +55,7 @@ public class DashTree extends AbstractType {
 	 * @param startLevel
 	 */
 	public DashTree(char keyCharacter, int startLevel) {
-		this.sectionFinder = new AllTextFinderDivCorrectTrimmed();
+		this.sectionFinder = new AllTextFinderTrimmed();
 		this.childrenTypes.add(new DashSubtree(keyCharacter, startLevel));
 		this.childrenTypes.add(new CommentLineType());
 		this.childrenTypes.add(new OverdashedElement(keyCharacter));

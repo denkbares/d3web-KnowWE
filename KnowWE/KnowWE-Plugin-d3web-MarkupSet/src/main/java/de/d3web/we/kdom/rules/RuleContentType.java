@@ -61,13 +61,13 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
-import de.knowwe.kdom.sectionFinder.AllTextFinderDivCorrectTrimmed;
 
 /**
  * @author Jochen
@@ -88,7 +88,7 @@ public class RuleContentType extends AbstractType {
 	 */
 	public RuleContentType() {
 		// take nearly all the text that is passed (kind of trimmed)
-		this.sectionFinder = new AllTextFinderDivCorrectTrimmed();
+		this.sectionFinder = new AllTextFinderTrimmed();
 
 		// configure the rule
 		ConditionActionRule rule = new ConditionActionRule();

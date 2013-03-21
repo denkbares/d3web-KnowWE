@@ -628,13 +628,12 @@ public class Strings {
 		return (pos == 0) ? text : text.substring(pos);
 	}
 
+	public static String trim(String text) {
+		return trimLeft(trimRight(text));
+	}
+
 	public static String trimQuotes(String text) {
-		if (text == null) return null;
-		// replacing non-breaking-space characters as otherwise they will not be
-		// trimmed
-		text = text.replaceAll("\\xA0", " ");
-		text = text.trim();
-		return unquote(text);
+		return unquote(trim(text));
 	}
 
 	/**
