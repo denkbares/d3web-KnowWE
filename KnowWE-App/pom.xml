@@ -730,7 +730,7 @@
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Sparql-Excel</artifactId>
+					<artifactId>KnowWE-Plugin-SparqlToExcel</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
