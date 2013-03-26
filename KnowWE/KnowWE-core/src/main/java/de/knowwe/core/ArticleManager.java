@@ -107,6 +107,13 @@ public class ArticleManager {
 	 */
 	public void registerArticle(Article article) {
 
+		if (article == null) {
+			Logger.getLogger(this.getClass().getName()).log(
+					Level.SEVERE,
+					"Article to be registered is null! (This is likely to be caused by an erroneous implementation of a plugin.)");
+			throw new NullPointerException();
+		}
+
 		// store new article
 		String title = article.getTitle();
 		articleMap.put(title, article);

@@ -423,7 +423,9 @@ public class Environment {
 		// create article with the new content
 		Article article = Article.createArticle(content, title, web);
 
-		this.getArticleManager(web).registerArticle(article);
+		if (article != null) {
+			this.getArticleManager(web).registerArticle(article);
+		}
 
 		return article;
 	}
