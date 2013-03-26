@@ -51,6 +51,7 @@ import de.d3web.core.utilities.Pair;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.user.UserContextUtil;
 import de.knowwe.diaflux.DiaFluxDiffDisplay;
@@ -73,7 +74,7 @@ public class FlowchartDiffProvider implements DiffProvider {
 	private static final String CSS_DIFF_UNCHANGED = "<tr><td class=\"diff\">";
 	private static final String CSS_DIFF_CLOSE = "</td></tr>" + Diff.NL;
 
-
+	@Override
 	public String getProviderInfo() {
 		return "FlowchartDiffProvider";
 	}
@@ -84,6 +85,7 @@ public class FlowchartDiffProvider implements DiffProvider {
 	 * @see com.ecyrd.jspwiki.WikiProvider#initialize(com.ecyrd.jspwiki.WikiEngine,
 	 *      java.util.Properties)
 	 */
+	@Override
 	public void initialize(WikiEngine engine, Properties properties)
 			throws NoRequiredPropertyException, IOException {
 	}
@@ -98,8 +100,8 @@ public class FlowchartDiffProvider implements DiffProvider {
 	 * 
 	 * @return Full HTML diff.
 	 */
+	@Override
 	public String makeDiffHtml(WikiContext ctx, String p1, String p2) {
-
 
 		// first version is empty page. Diff is called when article is created
 		if (p1.equals("")) {
@@ -107,7 +109,6 @@ public class FlowchartDiffProvider implements DiffProvider {
 		}
 		UserContext user = new JSPWikiUserContext(ctx,
 				UserContextUtil.getParameters(ctx.getHttpRequest()));
-
 
 		StringBuffer buffy = new StringBuffer();
 
@@ -148,7 +149,6 @@ public class FlowchartDiffProvider implements DiffProvider {
 			insert = false;
 
 		}
-
 
 		try {
 			createTextDiff(ctx, leftBob.toString(), rightBob.toString(), buffy);
@@ -220,7 +220,6 @@ public class FlowchartDiffProvider implements DiffProvider {
 		return flows;
 	}
 
-
 	private static Collection<Pair<Section<FlowchartType>, Section<FlowchartType>>> alignFlows(List<Section<FlowchartType>> leftFlows, List<Section<FlowchartType>> rightFlows) {
 		List<Pair<Section<FlowchartType>, Section<FlowchartType>>> alignments = new LinkedList<Pair<Section<FlowchartType>, Section<FlowchartType>>>();
 
@@ -237,8 +236,7 @@ public class FlowchartDiffProvider implements DiffProvider {
 			}
 		}
 
-		nextFlow:
-		for (int i = 0, size = rightFlows.size(); i < size; i++) {
+		nextFlow: for (int i = 0, size = rightFlows.size(); i < size; i++) {
 			Section<FlowchartType> rightFlow = rightFlows.get(i);
 
 			Section<FlowchartType> leftFlow = LoadFlowchartAction.findFlowInDifferentVersion(
@@ -282,8 +280,10 @@ public class FlowchartDiffProvider implements DiffProvider {
 	}
 
 	public void insertFlowRenderer(UserContext user, Section<FlowchartType> flow, StringBuffer ret, boolean insert, String parentId) {
-		ret.append(FlowchartUtils.createFlowchartRenderer(flow, user, parentId,
+		RenderResult renderResult = new RenderResult(user);
+		renderResult.append(FlowchartUtils.createFlowchartRenderer(flow, user, parentId,
 				DiaFluxDiffDisplay.SCOPE, insert));
+		ret.append(renderResult.toString());
 	}
 
 	private String createTextDiff(WikiContext ctx, String p1, String p2, StringBuffer buffy) throws DifferentiationFailedException {
@@ -313,8 +313,6 @@ public class FlowchartDiffProvider implements DiffProvider {
 		return buffy.toString();
 	}
 
-
-
 	private static final class RevisionPrint
 			implements RevisionVisitor {
 
@@ -328,16 +326,19 @@ public class FlowchartDiffProvider implements DiffProvider {
 			m_rb = ctx.getBundle(InternationalizationManager.CORE_BUNDLE);
 		}
 
+		@Override
 		public void visit(Revision rev) {
 			// GNDN (Goes nowhere, does nothing)
 		}
 
+		@Override
 		public void visit(AddDelta delta) {
 			Chunk changed = delta.getRevised();
 			print(changed, m_rb.getString("diff.traditional.added"));
 			changed.toString(m_result, CSS_DIFF_ADDED, CSS_DIFF_CLOSE);
 		}
 
+		@Override
 		public void visit(ChangeDelta delta) {
 			Chunk changed = delta.getOriginal();
 			print(changed, m_rb.getString("diff.traditional.changed"));
@@ -345,6 +346,7 @@ public class FlowchartDiffProvider implements DiffProvider {
 			delta.getRevised().toString(m_result, CSS_DIFF_ADDED, CSS_DIFF_CLOSE);
 		}
 
+		@Override
 		public void visit(DeleteDelta delta) {
 			Chunk changed = delta.getOriginal();
 			print(changed, m_rb.getString("diff.traditional.removed"));
@@ -355,10 +357,10 @@ public class FlowchartDiffProvider implements DiffProvider {
 			m_result.append(CSS_DIFF_UNCHANGED);
 
 			String[] choiceString =
-					{
-							m_rb.getString("diff.traditional.oneline"),
-							m_rb.getString("diff.traditional.lines")
-					};
+			{
+					m_rb.getString("diff.traditional.oneline"),
+					m_rb.getString("diff.traditional.lines")
+			};
 			double[] choiceLimits = {
 					1, 2 };
 
