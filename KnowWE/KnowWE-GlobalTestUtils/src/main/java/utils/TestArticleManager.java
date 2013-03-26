@@ -20,6 +20,7 @@ package utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -81,8 +82,8 @@ public class TestArticleManager {
 		// Initialize KnowWE
 		DummyConnector connector = null;
 		try {
-			// added a DummyPageProvider justs prevents NullPointers from beeing
-			// throws.
+			// added a DummyPageProvider just to prevent NullPointers from being
+			// thrown.
 			// TODO: rewrite/replace this TestArticleManager with one that
 			// properly uses the DummyConnector and DummyPageProvider
 			connector = new DummyConnector(new DummyPageProvider(new File("")));
@@ -91,7 +92,9 @@ public class TestArticleManager {
 			e.printStackTrace();
 		}
 		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
-		Environment.initInstance(connector);
+		if (!Environment.isInitialized()) {
+			Environment.initInstance(connector);
+		}
 
 		int start = filename.lastIndexOf("/") + 1;
 		int end = filename.lastIndexOf(".");
@@ -108,6 +111,11 @@ public class TestArticleManager {
 
 	public static void clear() {
 		getInstance().articles.clear();
+		ArticleManager articleManager = Environment.getInstance().getArticleManager(
+				"default_web");
+		for (Article article : new ArrayList<Article>(articleManager.getArticles())) {
+			articleManager.deleteArticle(article);
+		}
 	}
 
 }
