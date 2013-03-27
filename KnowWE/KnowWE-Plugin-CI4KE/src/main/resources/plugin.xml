@@ -37,6 +37,17 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="de.knowwe.core.kdom.Article" />
 	</extension>
+	
+	<extension plugin-id="KnowWE-Plugin-CI4KE" point-id="ObjectNameRenderer"
+		id="TermIdentifierRenderer">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.dashboard.rendering.TermIdentifierRenderer" />
+		<parameter id="name" value="TermIdentifierRenderer" />
+		<parameter id="description" value="ObjectRenderer for TermIdentifiers" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="de.knowwe.core.compile.terminology.TermIdentifier" />
+	</extension>
 
 	<!-- (DefaultMarkup-) ObjectType for CIDashboard -->
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
@@ -123,6 +134,16 @@
 			value="de.d3web.we.ci4ke.test.ArticleContainsTest" />
 		<parameter id="name" value="ArticleContains" />
 		<parameter id="description" value="CITest ArticleContains" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
+		id="SingleTermDefinition">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.test.SingleTermDefinitionTest" />
+		<parameter id="name" value="SingleTermDefinition" />
+		<parameter id="description" value="CITest SingleTermDefinition" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
