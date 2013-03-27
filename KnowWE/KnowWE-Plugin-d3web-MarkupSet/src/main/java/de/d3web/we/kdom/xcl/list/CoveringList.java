@@ -58,6 +58,7 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
@@ -468,8 +469,11 @@ public class CoveringList extends AbstractType {
 
 			}
 			else if (type instanceof CompositeCondition) {
+				RenderResult temp = new RenderResult(buffi);
+				// we do not want masked JPSWiki markup
 				StyleRenderer.getRenderer(null, color).render(
-						sec, user, buffi);
+						sec, user, temp);
+				buffi.append(Strings.unmaskJSPWikiMarkup(temp.toStringRaw()));
 			}
 			else {
 				type.getRenderer().render(sec, user, buffi);
