@@ -51,6 +51,10 @@ public class HeaderType extends AbstractType {
 	public HeaderType(int count) {
 		this.setSectionFinder(new RegexSectionFinder("^" + createMarker(count)
 				+ ".*?(?=^|\\z)", Pattern.MULTILINE + Pattern.DOTALL));
+		addChildType(new BoldType());
+		addChildType(new ItalicType());
+		addChildType(new TTType());
+		addChildType(new LinkType());
 	}
 
 	private static String createMarker(int count) {
