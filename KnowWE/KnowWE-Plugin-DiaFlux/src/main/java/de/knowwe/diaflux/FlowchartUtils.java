@@ -119,6 +119,23 @@ public class FlowchartUtils {
 
 		if (user.getWeb() == null) return "";
 
+		parentId = escapeHtmlId(parentId);
+		RenderResult result = prepareFlowchartRenderer(user, parentId, scope, insertRessources);
+		result.appendHtml("<script>");
+		result.appendHtml("if ($('" + parentId + "').getElements('.FlowchartGroup').length == 0) ");
+		result.appendHtml("Flowchart.loadFlowchart('" + section.getID() + "', '" + parentId + "');");
+		result.appendHtml("</script>");
+
+		return result.toStringRaw();
+	}
+
+	/**
+	 * Prepares a div to render a flowchart in later on using JS.
+	 * 
+	 * @created 20.03.2013
+	 * @return
+	 */
+	public static RenderResult prepareFlowchartRenderer(UserContext user, String parentId, String scope, boolean insertRessources) {
 		RenderResult result = new RenderResult(user);
 		result.appendHtml("<div class='flowchartContainer'>");
 
@@ -128,16 +145,9 @@ public class FlowchartUtils {
 			result.append("\n");
 		}
 
-		parentId = escapeHtmlId(parentId);
-
 		result.appendHtml("<div id='" + parentId + "'>");
-		result.appendHtml("<script>");
-		result.appendHtml("if ($('" + parentId + "').getElements('.FlowchartGroup').length == 0) ");
-		result.appendHtml("Flowchart.loadFlowchart('" + section.getID() + "', '" + parentId + "');");
-		result.appendHtml("</script></div></div>\n");
-
-		return result.toStringRaw();
-
+		result.appendHtml("</div></div>\n");
+		return result;
 	}
 
 	public static String getParentID(Section<FlowchartType> section) {
