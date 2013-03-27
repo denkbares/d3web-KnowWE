@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
@@ -93,12 +95,18 @@ public class EventManager {
 	 * @param s
 	 * @param event
 	 */
-	public void fireEvent(Event e) {
+	public void fireEvent(Event event) {
 
-		WeakHashMap<EventListener, Object> listeners = this.listenerMap.get(e.getClass());
+		WeakHashMap<EventListener, Object> listeners = this.listenerMap.get(event.getClass());
 		if (listeners != null) {
 			for (EventListener eventListener : new ArrayList<EventListener>(listeners.keySet())) {
-				eventListener.notify(e);
+				try {
+					eventListener.notify(event);
+				}
+				catch (Exception e) {
+					Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
+							"Catched exception in EventListener", e);
+				}
 			}
 		}
 
