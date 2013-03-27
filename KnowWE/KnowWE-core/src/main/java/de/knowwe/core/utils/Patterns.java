@@ -141,13 +141,15 @@ public final class Patterns {
 					"";
 	/**
 	 * A Pattern for jspwiki links. The link text is captured in group 1, the
-	 * optional page reference in group 2. This pattern can handle masked '['
-	 * (i.e., '[[').
+	 * optional page reference in group 2, group 3 contains optional link attributes.
+	 * This pattern can handle masked '[' (i.e., '[[').
 	 */
 	public static final String JSPWIKI_LINK =
-			"(?<!\\[)\\[(?!\\[)" + // opening bracket (except, if masked)
+			"(?<!\\[)\\[(?!\\[|\\{)" + // opening bracket (except, if masked or
+										// plugin insertion)
 					"([^]|]+)" + // link text (captured)
-					"(?:\\|([^]]+))?" + // optional reference
+					"(?:\\|([^]|]+))?" + // optional reference
+					"(?:\\|([^]|]+))?" + // optional attributes
 					"\\]"; // closing bracket
 
 	public static void main(String[] args) {
