@@ -18,6 +18,7 @@
  */
 package de.knowwe.diaflux.type;
 
+import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.SimpleTerm;
@@ -36,11 +37,17 @@ public class ExitNodeReference extends SimpleReference {
 	}
 
 	@Override
-	public String getTermName(Section<? extends SimpleTerm> section) {
-		Section<FlowchartReference> ref = Sections.findSuccessor(section.getFather(),
-				FlowchartReference.class);
-
-		return ref.getText() + "(" + section.getText() + ")";
+	public TermIdentifier getTermIdentifier(Section<? extends SimpleTerm> section) {
+		Section<FlowchartType> flowchart = Sections.findAncestorOfType(section,
+				FlowchartType.class);
+		String flowchartName = FlowchartType.getFlowchartName(flowchart);
+		return new TermIdentifier(flowchartName, getTermName(section));
 	}
+
+	@Override
+	public String getTermName(Section<? extends SimpleTerm> s) {
+		return s.getText();
+	}
+
 
 }
