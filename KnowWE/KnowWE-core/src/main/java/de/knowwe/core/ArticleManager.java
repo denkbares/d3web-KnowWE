@@ -110,8 +110,9 @@ public class ArticleManager {
 		if (article == null) {
 			Logger.getLogger(this.getClass().getName()).log(
 					Level.SEVERE,
-					"Article to be registered is null! (This is likely to be caused by an erroneous implementation of a plugin.)");
-			throw new NullPointerException();
+					"Article to be registered is null! (This is likely to be caused by an erroneous implementation of a plugin.)",
+					new NullPointerException("Article must not be null"));
+			return;
 		}
 
 		// store new article
