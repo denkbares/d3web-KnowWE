@@ -19,9 +19,8 @@
 package de.d3web.we.ci4ke;
 
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRenderer;
-import de.knowwe.core.compile.terminology.TermIdentifier;
+import de.d3web.we.ci4ke.dashboard.rendering.TermIdentifierRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Renders a link to the definition of a NamedObject or to the ObjectInfoPage of
@@ -35,10 +34,7 @@ public class NamedObjectRenderer implements ObjectNameRenderer {
 
 	@Override
 	public void render(String objectName, RenderResult result) {
-		String url = KnowWEUtils.getURLLinkToTermDefinition(TermIdentifier.fromExternalForm(objectName));
-		result.appendHtml("<a href='" + url + "'>");
-		result.append(objectName);
-		result.appendHtml("</a>");
+		TermIdentifierRenderer.renderTermIdentifier(objectName, result);
 	}
 
 }
