@@ -43,7 +43,7 @@ public class RenderKDOMVisitor implements Visitor {
 	}
 
 	public String getRenderedKDOM() {
-		return buffi.toString();
+		return buffi.toStringRaw();
 	}
 
 	private void renderSubtree(Section<? extends Type> s, int i, RenderResult buffi) {
