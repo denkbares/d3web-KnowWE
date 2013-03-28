@@ -38,10 +38,9 @@ public class ExitNodeReference extends SimpleReference {
 
 	@Override
 	public TermIdentifier getTermIdentifier(Section<? extends SimpleTerm> section) {
-		Section<FlowchartType> flowchart = Sections.findAncestorOfType(section,
-				FlowchartType.class);
-		String flowchartName = FlowchartType.getFlowchartName(flowchart);
-		return new TermIdentifier(flowchartName, getTermName(section));
+		Section<FlowchartReference> ref = Sections.findSuccessor(section.getFather(),
+				FlowchartReference.class);
+		return new TermIdentifier(ref.getText(), getTermName(section));
 	}
 
 	@Override
