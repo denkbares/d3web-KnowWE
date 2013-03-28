@@ -363,7 +363,7 @@ public class KnowWEUtils {
 	 * @see #getWikiLink(Section)
 	 */
 	public static String getURLLink(Section<?> section) {
-		return "Wiki.jsp?page=" + section.getTitle() + "#" + getAnchor(section);
+		return "Wiki.jsp?page=" + Strings.encodeURL(section.getTitle()) + "#" + getAnchor(section);
 	}
 
 	/**

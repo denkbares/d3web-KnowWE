@@ -422,11 +422,9 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 		if (reference != null) {
 			// Render link to anchor
-			html.append("<a href=\"Wiki.jsp?page=");
-			html.append(Strings.encodeURL(reference.getArticle().getTitle()));
-			html.append("#");
-			html.append(reference.getID());
-			html.append("\" >" + reference.getArticle().getTitle() + " (");
+			html.append("<a href=\"");
+			html.append(KnowWEUtils.getURLLink(reference));
+			html.append("\">" + reference.getArticle().getTitle() + " (");
 
 			// Get a nice name
 			Section<DefaultMarkupType> root = Sections.findAncestorOfType(
