@@ -52,7 +52,8 @@ public class FlowchartXMLHeadType extends XMLHead {
 
 		public FlowchartTermDef() {
 			super(TermRegistrationScope.LOCAL, Flow.class);
-			setSectionFinder(new RegexSectionFinder(Pattern.compile("name=\"([^\"]*)\""), 1));
+			setSectionFinder(new RegexSectionFinder(Pattern.compile("name=\"\\s*([^\"]*?\\s*)\""),
+					1));
 			clearSubtreeHandlers();
 			addSubtreeHandler(Priority.HIGHER, new FlowchartRegistrationHandler());
 		}
