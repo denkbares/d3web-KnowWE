@@ -30,7 +30,7 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.objects.SimpleTerm;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -57,7 +57,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 	public abstract int getPosition(Section<QuestionnaireDefinition> s);
 
 	@Override
-	public Class<?> getTermObjectClass(Section<? extends SimpleTerm> section) {
+	public Class<?> getTermObjectClass(Section<? extends Term> section) {
 		return QContainer.class;
 	}
 

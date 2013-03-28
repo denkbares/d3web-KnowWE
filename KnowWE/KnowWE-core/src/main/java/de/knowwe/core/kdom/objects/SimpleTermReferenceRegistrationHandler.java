@@ -35,7 +35,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 08.02.2012
  */
-public class SimpleTermReferenceRegistrationHandler extends SubtreeHandler<SimpleTerm> {
+public class SimpleTermReferenceRegistrationHandler extends SubtreeHandler<Term> {
 
 	private final TermRegistrationScope scope;
 
@@ -44,7 +44,7 @@ public class SimpleTermReferenceRegistrationHandler extends SubtreeHandler<Simpl
 	}
 
 	@Override
-	public Collection<Message> create(Article article, Section<SimpleTerm> section) {
+	public Collection<Message> create(Article article, Section<Term> section) {
 
 		TerminologyManager tHandler = KnowWEUtils.getTerminologyManager(article, scope);
 		TermIdentifier termIdentifier = section.get().getTermIdentifier(section);
@@ -65,7 +65,7 @@ public class SimpleTermReferenceRegistrationHandler extends SubtreeHandler<Simpl
 	 * @param section the section identifying the reference
 	 * @return result messages of validation
 	 */
-	public Collection<Message> validateReference(Article article, Section<SimpleTerm> section) {
+	public Collection<Message> validateReference(Article article, Section<Term> section) {
 		TerminologyManager tHandler = KnowWEUtils.getTerminologyManager(article, scope);
 		TermIdentifier termIdentifier = section.get().getTermIdentifier(section);
 		if (!tHandler.isDefinedTerm(termIdentifier)) {

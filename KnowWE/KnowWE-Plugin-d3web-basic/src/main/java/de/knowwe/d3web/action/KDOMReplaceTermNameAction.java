@@ -28,7 +28,7 @@ import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.kdom.objects.SimpleTerm;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.Strings;
@@ -78,11 +78,11 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 
 		Section<?> section = Sections.getSection(nodeID);
 
-		if (!(section.get() instanceof SimpleTerm)) {
+		if (!(section.get() instanceof Term)) {
 			context.sendError(500, "Invalid section type");
 			return;
 		}
-		Section<SimpleTerm> simpleTermSection = Sections.cast(section, SimpleTerm.class);
+		Section<Term> simpleTermSection = Sections.cast(section, Term.class);
 		// replaces only the text inside quotes if there are quotes
 		String newNodeText = section.getText().replace(
 				simpleTermSection.get().getTermIdentifier(simpleTermSection).getLastPathElement(),

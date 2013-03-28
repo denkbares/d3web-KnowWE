@@ -27,7 +27,7 @@ import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.objects.SimpleTerm;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -55,7 +55,7 @@ public abstract class AnswerReference
 	}
 
 	@Override
-	public TermIdentifier getTermIdentifier(Section<? extends SimpleTerm> s) {
+	public TermIdentifier getTermIdentifier(Section<? extends Term> s) {
 		if (s.get() instanceof AnswerReference) {
 			Section<AnswerReference> answerSection = Sections.cast(s, AnswerReference.class);
 			Section<? extends QuestionReference> questionSection = answerSection.get().getQuestionSection(
@@ -74,7 +74,7 @@ public abstract class AnswerReference
 	}
 
 	@Override
-	public Class<?> getTermObjectClass(Section<? extends SimpleTerm> section) {
+	public Class<?> getTermObjectClass(Section<? extends Term> section) {
 		return Choice.class;
 	}
 

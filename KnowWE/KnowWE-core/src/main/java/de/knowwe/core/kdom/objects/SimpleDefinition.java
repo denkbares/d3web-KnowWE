@@ -37,7 +37,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @author Albrecht
  * @created 16.12.2010
  */
-public abstract class SimpleDefinition extends AbstractType implements SimpleTerm {
+public abstract class SimpleDefinition extends AbstractType implements TermDefinition {
 
 	private final Class<?> termObjectClass;
 
@@ -52,17 +52,17 @@ public abstract class SimpleDefinition extends AbstractType implements SimpleTer
 	}
 
 	@Override
-	public Class<?> getTermObjectClass(Section<? extends SimpleTerm> section) {
+	public Class<?> getTermObjectClass(Section<? extends Term> section) {
 		return termObjectClass;
 	}
 
 	@Override
-	public String getTermName(Section<? extends SimpleTerm> section) {
+	public String getTermName(Section<? extends Term> section) {
 		return section.getText();
 	}
 
 	@Override
-	public TermIdentifier getTermIdentifier(Section<? extends SimpleTerm> section) {
+	public TermIdentifier getTermIdentifier(Section<? extends Term> section) {
 		return new TermIdentifier(getTermName(section));
 	}
 

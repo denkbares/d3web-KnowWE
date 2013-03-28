@@ -36,7 +36,7 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.objects.SimpleTerm;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
@@ -66,7 +66,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 	}
 
 	@Override
-	public final Class<?> getTermObjectClass(Section<? extends SimpleTerm> section) {
+	public final Class<?> getTermObjectClass(Section<? extends Term> section) {
 		QuestionType questionType = getQuestionType(Sections.cast(section, QuestionDefinition.class));
 		if (questionType == null) return Question.class;
 		switch (questionType) {

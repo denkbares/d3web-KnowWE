@@ -41,7 +41,7 @@ import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionDefinition;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.objects.SimpleTerm;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Messages;
@@ -188,9 +188,9 @@ public class QuestionDashTreeUtils {
 			if (lvl1SubtreeAncestor != null) {
 				Section<DashTreeElement> lvl1Element = Sections.findChildOfType(
 						lvl1SubtreeAncestor, DashTreeElement.class);
-				Section<? extends SimpleTerm> termRefSection = Sections.findSuccessor(
+				Section<? extends Term> termRefSection = Sections.findSuccessor(
 						lvl1Element,
-						SimpleTerm.class);
+						Term.class);
 
 				if (termRefSection.get() instanceof QASetDefinition) {
 					rootQuestionSubtree = lvl1SubtreeAncestor;

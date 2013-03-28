@@ -40,7 +40,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.InjectType;
-import de.knowwe.core.kdom.objects.SimpleTerm;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -180,8 +180,8 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	public String toString() {
 		String typeString = type != null ? this.get().getClass().getSimpleName() + ": " : "";
 		String content;
-		if (type != null && type instanceof SimpleTerm) {
-			Section<SimpleTerm> simpleTerm = Sections.cast(this, SimpleTerm.class);
+		if (type != null && type instanceof Term) {
+			Section<Term> simpleTerm = Sections.cast(this, Term.class);
 			content = simpleTerm.get().getTermIdentifier(simpleTerm).toString();
 		}
 		else {

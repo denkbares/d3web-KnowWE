@@ -48,7 +48,7 @@ import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.objects.SimpleTerm;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.SectionStore;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -245,9 +245,9 @@ public class KnowWEUtils {
 	 *        SimpleTerm
 	 */
 	public static String getTermName(Section<?> termSection) {
-		if (termSection.get() instanceof SimpleTerm) {
-			Section<? extends SimpleTerm> simpleSection = Sections.cast(termSection,
-					SimpleTerm.class);
+		if (termSection.get() instanceof Term) {
+			Section<? extends Term> simpleSection = Sections.cast(termSection,
+					Term.class);
 			return simpleSection.get().getTermName(simpleSection);
 		}
 		else {
@@ -264,9 +264,9 @@ public class KnowWEUtils {
 	 *        SimpleTerm
 	 */
 	public static TermIdentifier getTermIdentifier(Section<?> termSection) {
-		if (termSection.get() instanceof SimpleTerm) {
-			Section<? extends SimpleTerm> simpleSection = Sections.cast(termSection,
-					SimpleTerm.class);
+		if (termSection.get() instanceof Term) {
+			Section<? extends Term> simpleSection = Sections.cast(termSection,
+					Term.class);
 			return simpleSection.get().getTermIdentifier(simpleSection);
 		}
 		else {

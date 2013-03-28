@@ -19,7 +19,7 @@
 package de.knowwe.core.toolprovider;
 
 import de.knowwe.core.compile.terminology.TermIdentifier;
-import de.knowwe.core.kdom.objects.SimpleTerm;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.taghandler.ObjectInfoTagHandler;
 import de.knowwe.core.user.UserContext;
@@ -37,15 +37,15 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		if (section.get() instanceof SimpleTerm) {
+		if (section.get() instanceof Term) {
 			@SuppressWarnings("unchecked")
-			Section<? extends SimpleTerm> s = (Section<? extends SimpleTerm>) section;
+			Section<? extends Term> s = (Section<? extends Term>) section;
 			return new Tool[] { getObjectInfoPageTool(s, userContext) };
 		}
 		return new Tool[] {};
 	}
 
-	protected Tool getObjectInfoPageTool(Section<? extends SimpleTerm> section, UserContext userContext) {
+	protected Tool getObjectInfoPageTool(Section<? extends Term> section, UserContext userContext) {
 		TermIdentifier termIdentifier = section.get().getTermIdentifier(section);
 		String lastPathElementExternalForm = new TermIdentifier(termIdentifier.getLastPathElement()).toExternalForm();
 		String externalTermIdentifierForm = termIdentifier.toExternalForm();

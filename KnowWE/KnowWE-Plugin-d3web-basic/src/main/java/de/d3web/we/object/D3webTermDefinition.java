@@ -27,7 +27,8 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.objects.SimpleTerm;
+import de.knowwe.core.kdom.objects.Term;
+import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -44,7 +45,7 @@ import de.knowwe.core.utils.Strings;
  */
 public abstract class D3webTermDefinition<TermObject extends NamedObject>
 		extends AbstractType
-		implements D3webTerm<TermObject> {
+		implements TermDefinition, D3webTerm<TermObject> {
 
 	/**
 	 * Checks whether the creation of the term object can be aborted.
@@ -94,12 +95,12 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 	}
 
 	@Override
-	public String getTermName(Section<? extends SimpleTerm> section) {
+	public String getTermName(Section<? extends Term> section) {
 		return Strings.trimQuotes(section.getText());
 	}
 
 	@Override
-	public TermIdentifier getTermIdentifier(Section<? extends SimpleTerm> section) {
+	public TermIdentifier getTermIdentifier(Section<? extends Term> section) {
 		return new TermIdentifier(getTermName(section));
 	}
 

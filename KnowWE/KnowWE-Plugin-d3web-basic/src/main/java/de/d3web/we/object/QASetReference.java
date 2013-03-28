@@ -30,7 +30,7 @@ import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.basicType.PlainText;
-import de.knowwe.core.kdom.objects.SimpleTerm;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -62,7 +62,7 @@ public class QASetReference extends D3webTermReference<QASet> {
 			Set<String> compilingArticles = pm.getCompilingArticles(section);
 			for (String article : compilingArticles) {
 				TerminologyManager tm = env.getTerminologyManager(user.getWeb(), article);
-				Section<SimpleTerm> cast = Sections.cast(section, SimpleTerm.class);
+				Section<Term> cast = Sections.cast(section, Term.class);
 				TermIdentifier termIdentifier = cast.get().getTermIdentifier(cast);
 				if (tm.hasTermOfClass(termIdentifier, Question.class)) {
 					delegate = new ValueTooltipRenderer(StyleRenderer.Question);
@@ -85,12 +85,12 @@ public class QASetReference extends D3webTermReference<QASet> {
 	}
 
 	@Override
-	public Class<?> getTermObjectClass(Section<? extends SimpleTerm> section) {
+	public Class<?> getTermObjectClass(Section<? extends Term> section) {
 		return QASet.class;
 	}
 
 	@Override
-	public String getTermName(Section<? extends SimpleTerm> section) {
+	public String getTermName(Section<? extends Term> section) {
 		return Strings.trimQuotes(section.getText());
 	}
 

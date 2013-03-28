@@ -37,7 +37,7 @@ import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.PlainText;
-import de.knowwe.core.kdom.objects.SimpleTerm;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -204,9 +204,9 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		else if (!references.isEmpty()) {
 			termSection = references.iterator().next();
 		}
-		if (termSection != null && termSection.get() instanceof SimpleTerm) {
-			Section<SimpleTerm> simpleTermSection = Sections.cast(termSection,
-					SimpleTerm.class);
+		if (termSection != null && termSection.get() instanceof Term) {
+			Section<Term> simpleTermSection = Sections.cast(termSection,
+					Term.class);
 			Class<?> termObjectClass = simpleTermSection.get()
 					.getTermObjectClass(simpleTermSection);
 			termObjectClassString = termObjectClass.getSimpleName();

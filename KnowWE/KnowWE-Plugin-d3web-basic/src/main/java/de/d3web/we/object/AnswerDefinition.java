@@ -32,7 +32,7 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.objects.SimpleTerm;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
@@ -104,7 +104,7 @@ public abstract class AnswerDefinition
 	}
 
 	@Override
-	public TermIdentifier getTermIdentifier(Section<? extends SimpleTerm> s) {
+	public TermIdentifier getTermIdentifier(Section<? extends Term> s) {
 		if (s.get() instanceof AnswerDefinition) {
 			Section<AnswerDefinition> answerSection = Sections.cast(s, AnswerDefinition.class);
 			Section<? extends QuestionDefinition> questionSection = answerSection.get().getQuestionSection(
@@ -121,7 +121,7 @@ public abstract class AnswerDefinition
 	}
 
 	@Override
-	public Class<?> getTermObjectClass(Section<? extends SimpleTerm> section) {
+	public Class<?> getTermObjectClass(Section<? extends Term> section) {
 		return Choice.class;
 	}
 

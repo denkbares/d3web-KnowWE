@@ -29,7 +29,7 @@ import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.we.object.QASetReference;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.objects.SimpleTerm;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
@@ -84,7 +84,7 @@ public class ContraIndicationAction extends BracketsAction<ContraIndicationActio
 		}
 
 		@Override
-		public String getTermName(Section<? extends SimpleTerm> s) {
+		public String getTermName(Section<? extends Term> s) {
 			String text = s.getText().trim();
 			String questionName = "";
 			if (text.indexOf(OPEN) == 0 && text.lastIndexOf(CLOSE) == text.length() - 1) {

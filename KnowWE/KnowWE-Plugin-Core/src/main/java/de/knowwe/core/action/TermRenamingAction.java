@@ -35,7 +35,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.objects.SimpleTerm;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -90,7 +90,7 @@ public class TermRenamingAction extends AbstractAction {
 
 		TermIdentifier termIdentifier = TermIdentifier.fromExternalForm(term);
 
-		HashMap<String, Set<Section<? extends SimpleTerm>>> allTerms = new HashMap<String, Set<Section<? extends SimpleTerm>>>();
+		HashMap<String, Set<Section<? extends Term>>> allTerms = new HashMap<String, Set<Section<? extends Term>>>();
 
 		Iterator<Article> iter = Environment.getInstance()
 				.getArticleManager(web).getArticleIterator();
@@ -105,9 +105,9 @@ public class TermRenamingAction extends AbstractAction {
 			Collection<Section<?>> definingSections = terminologyManager
 					.getTermDefiningSections(termIdentifier);
 			for (Section<?> definition : definingSections) {
-				if (definition.get() instanceof SimpleTerm) {
+				if (definition.get() instanceof Term) {
 					getTermSet(definition.getTitle(), allTerms).add(
-							(Section<? extends SimpleTerm>) definition);
+							(Section<? extends Term>) definition);
 				}
 			}
 
@@ -115,9 +115,9 @@ public class TermRenamingAction extends AbstractAction {
 			Collection<Section<?>> references = terminologyManager
 					.getTermReferenceSections(termIdentifier);
 			for (Section<?> reference : references) {
-				if (reference.get() instanceof SimpleTerm) {
+				if (reference.get() instanceof Term) {
 					getTermSet(reference.getTitle(), allTerms).add(
-							(Section<? extends SimpleTerm>) reference);
+							(Section<? extends Term>) reference);
 				}
 			}
 		}
@@ -129,11 +129,11 @@ public class TermRenamingAction extends AbstractAction {
 		writeResponse(failures, success, termIdentifier, replacement, context);
 	}
 
-	private Set<Section<? extends SimpleTerm>> getTermSet(String title,
-			Map<String, Set<Section<? extends SimpleTerm>>> allTerms) {
-		Set<Section<? extends SimpleTerm>> terms = allTerms.get(title);
+	private Set<Section<? extends Term>> getTermSet(String title,
+			Map<String, Set<Section<? extends Term>>> allTerms) {
+		Set<Section<? extends Term>> terms = allTerms.get(title);
 		if (terms == null) {
-			terms = new HashSet<Section<? extends SimpleTerm>>();
+			terms = new HashSet<Section<? extends Term>>();
 			allTerms.put(title, terms);
 		}
 		return terms;
@@ -180,7 +180,7 @@ public class TermRenamingAction extends AbstractAction {
 	}
 
 	private void renameTerms(
-			HashMap<String, Set<Section<? extends SimpleTerm>>> allTerms,
+			HashMap<String, Set<Section<? extends Term>>> allTerms,
 			String replacement, ArticleManager mgr, UserActionContext context,
 			Set<String> failures, Set<String> success) throws IOException {
 

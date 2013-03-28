@@ -34,7 +34,7 @@ import de.d3web.we.object.QuestionnaireReference;
 import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.objects.SimpleTerm;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -100,9 +100,9 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 			TermIdentifier termIdentifier = new TermIdentifier(Strings.trimQuotes(s.getText()));
 			if (terminologyHandler.isDefinedTerm(termIdentifier)) {
 				Section<?> termDefinitionSection = terminologyHandler.getTermDefiningSection(termIdentifier);
-				if (termDefinitionSection.get() instanceof SimpleTerm) {
+				if (termDefinitionSection.get() instanceof Term) {
 					@SuppressWarnings("unchecked")
-					Section<? extends SimpleTerm> simpleDef = (Section<? extends SimpleTerm>) termDefinitionSection;
+					Section<? extends Term> simpleDef = (Section<? extends Term>) termDefinitionSection;
 					Class<?> objectClazz = simpleDef.get().getTermObjectClass(simpleDef);
 					if (Question.class.isAssignableFrom(objectClazz)) {
 						s.setType(new QuestionReference(), article);
