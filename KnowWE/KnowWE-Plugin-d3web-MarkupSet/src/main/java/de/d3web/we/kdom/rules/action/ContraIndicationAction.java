@@ -26,6 +26,7 @@ import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.indication.ActionContraIndication;
 import de.d3web.indication.inference.PSMethodStrategic;
+import de.d3web.strings.Strings;
 import de.d3web.we.object.QASetReference;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
@@ -34,7 +35,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.Strings;
 
 /**
  * 

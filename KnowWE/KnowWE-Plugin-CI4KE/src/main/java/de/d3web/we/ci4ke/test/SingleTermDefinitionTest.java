@@ -23,13 +23,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import de.d3web.strings.Identifier;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.TestParameter.Mode;
 import de.d3web.testing.TestParameter.Type;
 import de.d3web.testing.Utils;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -54,13 +54,13 @@ public class SingleTermDefinitionTest extends AbstractTest<Article> {
 
 		TerminologyManager manager = Environment.getInstance().getTerminologyManager(article.getWeb(), article.getTitle());
 		
-		Collection<TermIdentifier> terms = manager.getAllDefinedTerms();
+		Collection<Identifier> terms = manager.getAllDefinedTerms();
 		
 		Map<String, Collection<Section<?>>> multipleDefs = new HashMap<String, Collection<Section<?>>>();
 		
 		Collection<Pattern> ignorePatterns = Utils.compileIgnores(ignores);
 
-		for (TermIdentifier termIdentifier : terms) {
+		for (Identifier termIdentifier : terms) {
 
 			if (Utils.isIgnored(termIdentifier.toString(), ignorePatterns)) continue;
 
@@ -77,7 +77,7 @@ public class SingleTermDefinitionTest extends AbstractTest<Article> {
 		}
 		
 		return Utils.createErrorMessage(multipleDefs.keySet(),
-				"The following objects are defined more than once:", TermIdentifier.class);
+				"The following objects are defined more than once:", Identifier.class);
 	}
 
 	@Override

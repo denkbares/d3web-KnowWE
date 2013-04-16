@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import de.d3web.strings.Identifier;
+
 /**
  * 
  * @author Albrecht Striffler (denkbares GmbH)
@@ -30,18 +32,18 @@ import java.util.Set;
  */
 class TermLogManager {
 
-	private final Map<TermIdentifier, TermLog> termLogs =
-			new HashMap<TermIdentifier, TermLog>();
+	private final Map<Identifier, TermLog> termLogs =
+			new HashMap<Identifier, TermLog>();
 
-	public TermLog getLog(TermIdentifier termIdentifier) {
+	public TermLog getLog(Identifier termIdentifier) {
 		return termLogs.get(termIdentifier);
 	}
 
-	public void putLog(TermIdentifier termIdentifier, TermLog termLog) {
+	public void putLog(Identifier termIdentifier, TermLog termLog) {
 		termLogs.put(termIdentifier, termLog);
 	}
 
-	public Set<Entry<TermIdentifier, TermLog>> entrySet() {
+	public Set<Entry<Identifier, TermLog>> entrySet() {
 		return termLogs.entrySet();
 	}
 }

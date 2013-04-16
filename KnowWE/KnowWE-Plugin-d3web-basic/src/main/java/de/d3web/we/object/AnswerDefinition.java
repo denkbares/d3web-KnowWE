@@ -27,9 +27,10 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.manage.KnowledgeBaseUtils;
+import de.d3web.strings.Strings;
+import de.d3web.strings.Identifier;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
@@ -38,7 +39,6 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -104,20 +104,20 @@ public abstract class AnswerDefinition
 	}
 
 	@Override
-	public TermIdentifier getTermIdentifier(Section<? extends Term> s) {
+	public Identifier getTermIdentifier(Section<? extends Term> s) {
 		if (s.get() instanceof AnswerDefinition) {
 			Section<AnswerDefinition> answerSection = Sections.cast(s, AnswerDefinition.class);
 			Section<? extends QuestionDefinition> questionSection = answerSection.get().getQuestionSection(
 					answerSection);
-			TermIdentifier questionIdentifier = questionSection.get().getTermIdentifier(
+			Identifier questionIdentifier = questionSection.get().getTermIdentifier(
 					questionSection);
 
-			return questionIdentifier.append(new TermIdentifier(answerSection.get().getTermName(
+			return questionIdentifier.append(new Identifier(answerSection.get().getTermName(
 					answerSection)));
 		}
 
 		// should not happen
-		return new TermIdentifier(Strings.trimQuotes(s.getText()));
+		return new Identifier(Strings.trimQuotes(s.getText()));
 	}
 
 	@Override
@@ -151,7 +151,7 @@ public abstract class AnswerDefinition
 
 			// storing the current question needs to happen first, so the method
 			// getUniqueTermIdentifier() can use the right question.
-			TermIdentifier termIdentifier = section.get().getTermIdentifier(section);
+			Identifier termIdentifier = section.get().getTermIdentifier(section);
 			Class<?> termObjectClass = section.get().getTermObjectClass(section);
 
 			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);

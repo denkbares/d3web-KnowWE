@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.TreeSet;
 
+import de.d3web.strings.Strings;
 import de.d3web.testing.BuildResult;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.action.CIDashboardToolProvider;
@@ -35,7 +36,6 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.tools.Tool;

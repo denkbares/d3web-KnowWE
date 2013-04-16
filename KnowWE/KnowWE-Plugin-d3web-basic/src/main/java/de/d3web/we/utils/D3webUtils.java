@@ -61,12 +61,13 @@ import de.d3web.core.session.blackboard.Fact;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.scoring.Score;
+import de.d3web.strings.Strings;
+import de.d3web.strings.Identifier;
 import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.object.AnswerDefinition;
 import de.d3web.we.object.D3webTerm;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
@@ -74,7 +75,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.d3web.event.FindingSetEvent;
 import de.knowwe.knowRep.KnowledgeRepresentationHandler;
 import de.knowwe.notification.NotificationManager;
@@ -242,7 +242,7 @@ public class D3webUtils {
 
 	@SuppressWarnings("unchecked")
 	public static <TermObject extends NamedObject> TermObject getTermObjectDefaultImplementation(Article article, Section<? extends D3webTerm<TermObject>> section) {
-		TermIdentifier termIdentifier = section.get().getTermIdentifier(section);
+		Identifier termIdentifier = section.get().getTermIdentifier(section);
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
 		NamedObject termObject = kb.getManager().search(termIdentifier.getLastPathElement());
 		if (termObject != null) {
@@ -265,12 +265,12 @@ public class D3webUtils {
 	}
 
 	public static <TermObject extends NamedObject> Collection<NamedObject> getTermObjectsIgnoreTermObjectClass(Article article, Section<? extends D3webTerm<TermObject>> section) {
-		TermIdentifier termIdentifier = section.get().getTermIdentifier(section);
+		Identifier termIdentifier = section.get().getTermIdentifier(section);
 		TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
-		Collection<TermIdentifier> allTermsEqualIgnoreCase = terminologyHandler.getAllTermsEqualIgnoreCase(termIdentifier);
+		Collection<Identifier> allTermsEqualIgnoreCase = terminologyHandler.getAllTermsEqualIgnoreCase(termIdentifier);
 		List<NamedObject> foundTermObjects = new ArrayList<NamedObject>();
-		for (TermIdentifier termEqualIgnoreCase : allTermsEqualIgnoreCase) {
+		for (Identifier termEqualIgnoreCase : allTermsEqualIgnoreCase) {
 			NamedObject termObject = null;
 			if (section.get() instanceof AnswerDefinition) {
 				String[] pathElements = termEqualIgnoreCase.getPathElements();
@@ -490,11 +490,11 @@ public class D3webUtils {
 	private static String getLoopNotificationText(UserContext user, Session session, Collection<TerminologyObject> loopObjects) {
 		String kbName = session.getKnowledgeBase().getName();
 		if (kbName == null) kbName = session.getKnowledgeBase().getId();
-		String kbUrlLink = KnowWEUtils.getURLLinkToTermDefinition(new TermIdentifier(kbName));
+		String kbUrlLink = KnowWEUtils.getURLLinkToTermDefinition(new Identifier(kbName));
 		kbName = "<a href=\"" + toAbsolutURL(kbUrlLink) + "\">" + kbName + "</a>";
 		Collection<String> renderedObjects = new ArrayList<String>(loopObjects.size());
 		for (TerminologyObject loopObject : loopObjects) {
-			String url = KnowWEUtils.getURLLinkToTermDefinition(new TermIdentifier(
+			String url = KnowWEUtils.getURLLinkToTermDefinition(new Identifier(
 					loopObject.getName()));
 			renderedObjects.add("<a href=\"" + toAbsolutURL(url) + "\">" + loopObject.getName()
 					+ "</a>");

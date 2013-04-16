@@ -18,7 +18,7 @@
  */
 package de.d3web.we.ci4ke.dashboard.rendering;
 
-import de.knowwe.core.compile.terminology.TermIdentifier;
+import de.d3web.strings.Identifier;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -44,7 +44,7 @@ public class TermIdentifierRenderer implements ObjectNameRenderer {
 	 * @param result
 	 */
 	public static void renderTermIdentifier(String objectName, RenderResult result) {
-		String url = KnowWEUtils.getURLLinkToTermDefinition(TermIdentifier.fromExternalForm(objectName));
+		String url = KnowWEUtils.getURLLinkToTermDefinition(Identifier.fromExternalForm(objectName));
 		result.appendHtml("<a href='" + url + "'>");
 		result.append(objectName);
 		result.appendHtml("</a>");

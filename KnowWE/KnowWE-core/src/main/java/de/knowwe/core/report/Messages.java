@@ -35,8 +35,8 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import de.d3web.strings.Identifier;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -356,7 +356,7 @@ public final class Messages {
 		if (name != null && name.isEmpty()) {
 			name = "empty String";
 		}
-		return Messages.error(type + " '" + name + "' not found");
+		return Messages.error(type + " " + name + " not found");
 	}
 
 	/**
@@ -399,8 +399,8 @@ public final class Messages {
 		for (Class<?> termClass : termClasses) {
 			termClassesString.add(termClass.getSimpleName());
 		}
-		return Messages.error("The term '" + origTerm
-				+ "' is defined with ambiguous term classes: "
+		return Messages.error("The term " + origTerm
+				+ " is defined with ambiguous term classes: "
 				+ termClassesString.toString());
 	}
 
@@ -410,7 +410,7 @@ public final class Messages {
 				+ sortedIdentifiers.toString());
 	}
 
-	public static Message multipleTermDefintionsError(TermIdentifier termIdentifier) {
+	public static Message multipleTermDefintionsError(Identifier termIdentifier) {
 		return Messages.error("There is more than one definition for the term '"
 				+ termIdentifier + "' which is restricted to only one definition.");
 	}

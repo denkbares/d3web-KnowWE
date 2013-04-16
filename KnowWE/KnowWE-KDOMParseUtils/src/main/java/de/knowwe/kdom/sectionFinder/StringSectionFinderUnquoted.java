@@ -20,10 +20,10 @@
 
 package de.knowwe.kdom.sectionFinder;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.Strings;
 
 /**
  * Simple SectionFinder that identifies the first (or last if flagged)

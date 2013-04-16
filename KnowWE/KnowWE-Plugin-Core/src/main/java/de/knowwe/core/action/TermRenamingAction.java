@@ -29,17 +29,17 @@ import java.util.Set;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.d3web.strings.Strings;
+import de.d3web.strings.Identifier;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.Strings;
 
 /**
  * Action which renames all Definitions and References of a given Term. The
@@ -68,18 +68,20 @@ public class TermRenamingAction extends AbstractAction {
 		String force = context.getParameter("force");
 
 		if (force.equals("false")
-				&& getTerms(web).contains(new TermIdentifier(replacement))) {
+				&& getTerms(web).contains(new Identifier(replacement))) {
 			JSONObject response = new JSONObject();
 			try {
 				response.append("alreadyexists", "true");
-				if (new TermIdentifier(replacement).equals(new TermIdentifier(
+				if (new Identifier(replacement).equals(new Identifier(
 						term))) {
 					response.append("same", "true");
-				} else {
+				}
+				else {
 					response.append("same", "false");
 				}
 				response.write(context.getWriter());
-			} catch (JSONException e) {
+			}
+			catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -88,7 +90,7 @@ public class TermRenamingAction extends AbstractAction {
 
 		replacement = makeExternalFormIfNeeded(replacement);
 
-		TermIdentifier termIdentifier = TermIdentifier.fromExternalForm(term);
+		Identifier termIdentifier = Identifier.fromExternalForm(term);
 
 		HashMap<String, Set<Section<? extends Term>>> allTerms = new HashMap<String, Set<Section<? extends Term>>>();
 
@@ -140,21 +142,21 @@ public class TermRenamingAction extends AbstractAction {
 	}
 
 	private void writeResponse(Set<String> failures, Set<String> success,
-			TermIdentifier termIdentifier, String replacement,
+			Identifier termIdentifier, String replacement,
 			UserActionContext context) throws IOException {
 
 		JSONObject response = new JSONObject();
 		try {
 			// the new external form of the TermIdentifier
 			String[] pathElements = termIdentifier.getPathElements();
-			String newLastPathElement = TermIdentifier.fromExternalForm(
+			String newLastPathElement = Identifier.fromExternalForm(
 					replacement).getLastPathElement();
 			pathElements[pathElements.length - 1] = newLastPathElement;
-			response.append("newTermIdentifier", new TermIdentifier(
+			response.append("newTermIdentifier", new Identifier(
 					pathElements).toExternalForm());
 
 			// the new object name
-			response.append("newObjectName", new TermIdentifier(
+			response.append("newObjectName", new Identifier(
 					newLastPathElement).toExternalForm());
 
 			// renamed Articles
@@ -174,7 +176,8 @@ public class TermRenamingAction extends AbstractAction {
 			response.accumulate("renamedArticles", renamedArticles);
 
 			response.write(context.getWriter());
-		} catch (JSONException e) {
+		}
+		catch (JSONException e) {
 			throw new IOException(e.getMessage());
 		}
 	}
@@ -193,7 +196,8 @@ public class TermRenamingAction extends AbstractAction {
 				}
 				Sections.replaceSections(context, nodesMap);
 				success.add(title);
-			} else {
+			}
+			else {
 				failures.add(title);
 			}
 		}
@@ -201,18 +205,17 @@ public class TermRenamingAction extends AbstractAction {
 
 	private String makeExternalFormIfNeeded(String text) {
 		boolean quoted = Strings.isQuoted(text);
-		boolean needsQuotes = TermIdentifier.needsQuotes(text)
+		boolean needsQuotes = Identifier.needsQuotes(text)
 				|| text.replaceAll("\\s", "").length() < text.length();
 
-		if (needsQuotes && !quoted)
-			text = Strings.quote(text);
+		if (needsQuotes && !quoted) text = Strings.quote(text);
 
 		return text;
 	}
 
-	public Set<TermIdentifier> getTerms(String web) {
+	public Set<Identifier> getTerms(String web) {
 		// gathering all terms
-		Set<TermIdentifier> allTerms = new HashSet<TermIdentifier>();
+		Set<Identifier> allTerms = new HashSet<Identifier>();
 		Iterator<Article> iter = Environment.getInstance()
 				.getArticleManager(web).getArticleIterator();
 		Article currentArticle;
@@ -222,7 +225,7 @@ public class TermRenamingAction extends AbstractAction {
 			currentArticle = iter.next();
 			terminologyManager = KnowWEUtils
 					.getTerminologyManager(currentArticle);
-			Collection<TermIdentifier> allDefinedTerms = terminologyManager
+			Collection<Identifier> allDefinedTerms = terminologyManager
 					.getAllDefinedTerms();
 			allTerms.addAll(allDefinedTerms);
 

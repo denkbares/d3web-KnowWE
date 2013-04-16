@@ -12,6 +12,7 @@ import de.d3web.core.session.QuestionValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.empiricaltesting.Finding;
 import de.d3web.empiricaltesting.RatedTestCase;
+import de.d3web.strings.Strings;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.Article;
@@ -21,7 +22,6 @@ import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.testcases.TimeStampType;
 
 /**

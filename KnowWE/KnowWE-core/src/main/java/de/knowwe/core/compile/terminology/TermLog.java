@@ -29,6 +29,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
+import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -70,7 +71,7 @@ class TermLog {
 	public void addTermDefinition(Priority priority,
 			Section<?> termDefinition,
 			Class<?> termClass,
-			TermIdentifier termIdentifier) {
+			Identifier termIdentifier) {
 
 		TermLogEntry termLogEntry = createAndRegisterTermLogEntry(true, priority, termDefinition,
 				termClass, termIdentifier);
@@ -83,7 +84,7 @@ class TermLog {
 	private TermLogEntry createAndRegisterTermLogEntry(boolean definition, Priority priority,
 			Section<?> termSection,
 			Class<?> termClass,
-			TermIdentifier termIdentifier) {
+			Identifier termIdentifier) {
 
 		TermLogEntry logEntry = new TermLogEntry(priority, termSection, termClass,
 				termIdentifier);
@@ -151,14 +152,14 @@ class TermLog {
 
 	public void addTermReference(Section<?> termReference,
 			Class<?> termClass,
-			TermIdentifier termIdentifier) {
+			Identifier termIdentifier) {
 
 		createAndRegisterTermLogEntry(false, null, termReference, termClass, termIdentifier);
 		handleMessagesForReference(termReference, termIdentifier, termClass);
 	}
 
 	private void handleMessagesForReference(Section<?> s,
-			TermIdentifier termIdentifier,
+			Identifier termIdentifier,
 			Class<?> termClass) {
 
 		Article article = Article.getCurrentlyBuildingArticle(web, title);
@@ -173,8 +174,8 @@ class TermLog {
 			Class<?> termClassOfDefinition = termClasses.keySet().iterator().next();
 			boolean assignable = termClass.isAssignableFrom(termClassOfDefinition);
 			if (!assignable) {
-				msgs.add(Messages.error("The term '" + termIdentifier.toString()
-						+ "' is registered with the type '" + termClassOfDefinition.getSimpleName()
+				msgs.add(Messages.error("The term " + termIdentifier.toString()
+						+ " is registered with the type '" + termClassOfDefinition.getSimpleName()
 						+ "' which is incompatible to the type '" + termClass.getSimpleName()
 						+ "' of this reference."));
 			}
@@ -185,7 +186,7 @@ class TermLog {
 	public void removeTermDefinition(Priority priority,
 			Section<?> termDefinition,
 			Class<?> termClass,
-			TermIdentifier termIdentifier) {
+			Identifier termIdentifier) {
 
 		removeTermLogEntry(true, priority, termDefinition, termClass, termIdentifier);
 		removeFromAdditionalSetsAndHandleAmbiguity(termDefinition);
@@ -194,7 +195,7 @@ class TermLog {
 	private void removeTermLogEntry(boolean definition, Priority priority,
 			Section<?> termSection,
 			Class<?> termClass,
-			TermIdentifier termIdentifier) {
+			Identifier termIdentifier) {
 
 		TermLogEntry logEntry = new TermLogEntry(priority, termSection, termClass,
 				termIdentifier);
@@ -218,7 +219,7 @@ class TermLog {
 	}
 
 	public void removeTermReference(Section<?> termReference,
-			TermIdentifier termIdentifier,
+			Identifier termIdentifier,
 			Class<?> termClass) {
 
 		removeTermLogEntry(false, null, termReference, termClass, termIdentifier);
@@ -270,8 +271,8 @@ class TermLog {
 		return termClasses.keySet();
 	}
 
-	public Collection<TermIdentifier> getTermIdentifiers() {
-		ArrayList<TermIdentifier> termIdentifiers = new ArrayList<TermIdentifier>(
+	public Collection<Identifier> getTermIdentifiers() {
+		ArrayList<Identifier> termIdentifiers = new ArrayList<Identifier>(
 				this.termIdentifiers.size());
 		for (Entry<String, Set<TermLogEntry>> entry : this.termIdentifiers.entrySet()) {
 			Set<TermLogEntry> entrySet = entry.getValue();

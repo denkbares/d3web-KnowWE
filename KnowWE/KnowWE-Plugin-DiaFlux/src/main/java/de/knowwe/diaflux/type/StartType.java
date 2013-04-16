@@ -20,7 +20,7 @@
 
 package de.knowwe.diaflux.type;
 
-import de.knowwe.core.compile.terminology.TermIdentifier;
+import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
 import de.knowwe.core.kdom.objects.Term;
@@ -59,11 +59,11 @@ public class StartType extends AbstractXMLType {
 		}
 
 		@Override
-		public TermIdentifier getTermIdentifier(Section<? extends Term> section) {
+		public Identifier getTermIdentifier(Section<? extends Term> section) {
 			Section<FlowchartType> flowchart = Sections.findAncestorOfType(section,
 					FlowchartType.class);
 			String flowchartName = FlowchartType.getFlowchartName(flowchart);
-			return new TermIdentifier(flowchartName, getTermName(section));
+			return new Identifier(flowchartName, getTermName(section));
 		}
 
 		@Override

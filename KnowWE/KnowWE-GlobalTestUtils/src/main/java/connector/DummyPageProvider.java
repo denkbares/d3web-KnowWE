@@ -34,8 +34,8 @@ import java.util.zip.ZipFile;
 
 import com.ecyrd.jspwiki.providers.BasicAttachmentProvider;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 
 /**
@@ -194,8 +194,8 @@ public class DummyPageProvider {
 
 	private boolean isAttachmentDirectory(File attributeFile) {
 		return attributeFile.isDirectory()
-					&& attributeFile.getName().endsWith(
-							BasicAttachmentProvider.ATTDIR_EXTENSION);
+				&& attributeFile.getName().endsWith(
+						BasicAttachmentProvider.ATTDIR_EXTENSION);
 	}
 
 	private boolean isAttributeDirectory(File wikiFile) {

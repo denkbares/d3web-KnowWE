@@ -36,12 +36,12 @@ import de.d3web.core.session.blackboard.FactFactory;
 import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.TextValue;
+import de.d3web.strings.Strings;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.utils.Strings;
 
 public class SetSingleFindingAction extends AbstractAction {
 

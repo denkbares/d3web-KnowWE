@@ -25,8 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 
 public class RenderResult {
 

@@ -21,10 +21,10 @@ package de.d3web.we.ci4ke.dashboard.action;
 import java.io.IOException;
 
 import de.d3web.core.io.progress.ProgressListenerManager;
+import de.d3web.strings.Strings;
 import de.d3web.we.ci4ke.util.CIUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.utils.Strings;
 
 public class CIStopBuildAction extends AbstractAction {
 

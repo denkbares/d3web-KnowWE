@@ -32,10 +32,10 @@ import java.util.TreeSet;
 import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseUtils;
+import de.d3web.strings.Strings;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.knowRep.KnowledgeRepresentationHandler;
 
 /**

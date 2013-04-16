@@ -12,9 +12,9 @@ import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.d3web.strings.Identifier;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -41,9 +41,9 @@ public class LookUpAction extends AbstractAction {
 			currentArticle = iter.next();
 			terminologyManager = KnowWEUtils
 					.getTerminologyManager(currentArticle);
-			Collection<TermIdentifier> allDefinedTerms = terminologyManager
+			Collection<Identifier> allDefinedTerms = terminologyManager
 					.getAllDefinedTerms();
-			for (TermIdentifier definition : allDefinedTerms) {
+			for (Identifier definition : allDefinedTerms) {
 				if (!allTerms.contains(definition.toExternalForm())) {
 					allTerms.add(definition.toExternalForm());
 				}

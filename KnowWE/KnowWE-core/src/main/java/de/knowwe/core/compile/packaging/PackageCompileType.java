@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.d3web.strings.Identifier;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.ConstraintModule;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -58,7 +58,7 @@ public abstract class PackageCompileType extends AbstractType implements Package
 			}
 
 			KnowWEUtils.getGlobalTerminologyManager(article.getWeb()).registerTermDefinition(s,
-					String.class, new TermIdentifier(s.getTitle()));
+					String.class, new Identifier(s.getTitle()));
 
 			return Messages.noMessage();
 		}
@@ -66,7 +66,7 @@ public abstract class PackageCompileType extends AbstractType implements Package
 		@Override
 		public void destroy(Article article, Section<PackageCompileType> s) {
 			KnowWEUtils.getTerminologyManager(article).unregisterTermDefinition(
-					s, String.class, new TermIdentifier(s.getTitle()));
+					s, String.class, new Identifier(s.getTitle()));
 		}
 
 		private class CompileHandlerConstraint extends ConstraintModule<PackageCompileType> {

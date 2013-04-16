@@ -24,9 +24,10 @@ import java.util.Set;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.strings.Strings;
+import de.d3web.strings.Identifier;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.basicType.PlainText;
@@ -37,7 +38,6 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -63,7 +63,7 @@ public class QASetReference extends D3webTermReference<QASet> {
 			for (String article : compilingArticles) {
 				TerminologyManager tm = env.getTerminologyManager(user.getWeb(), article);
 				Section<Term> cast = Sections.cast(section, Term.class);
-				TermIdentifier termIdentifier = cast.get().getTermIdentifier(cast);
+				Identifier termIdentifier = cast.get().getTermIdentifier(cast);
 				if (tm.hasTermOfClass(termIdentifier, Question.class)) {
 					delegate = new ValueTooltipRenderer(StyleRenderer.Question);
 					break;

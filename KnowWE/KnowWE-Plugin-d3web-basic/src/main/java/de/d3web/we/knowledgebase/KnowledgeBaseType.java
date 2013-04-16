@@ -25,9 +25,9 @@ import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
+import de.d3web.strings.Identifier;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -111,7 +111,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 
 				TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
 				terminologyManager.registerTermDefinition(section, KnowledgeBase.class,
-						new TermIdentifier("KNOWLEDGEBASE"));
+						new Identifier("KNOWLEDGEBASE"));
 
 				// and write it to the knowledge base
 				if (id != null) kb.setId(id);
@@ -119,7 +119,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 				if (title != null && title.length() > 0) {
 					infoStore.addValue(MMInfo.PROMPT, title);
 					terminologyManager.registerTermDefinition(section, KnowledgeBase.class,
-							new TermIdentifier(title));
+							new Identifier(title));
 				}
 				if (author != null) infoStore.addValue(BasicProperties.AUTHOR, author);
 				if (comment != null) infoStore.addValue(MMInfo.DESCRIPTION, comment);

@@ -18,7 +18,7 @@
  */
 package de.knowwe.core.kdom.objects;
 
-import de.knowwe.core.compile.terminology.TermIdentifier;
+import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -42,20 +42,20 @@ public interface Term extends Type {
 	public Class<?> getTermObjectClass(Section<? extends Term> section);
 
 	/**
-	 * Defines the {@link TermIdentifier} which can be used to register this
-	 * {@link Term}. {@link TermIdentifier} need to be unique inside the
+	 * Defines the {@link Identifier} which can be used to register this
+	 * {@link Term}. {@link Identifier} need to be unique inside the
 	 * {@link TerminologyManager}, the term name does not have this restriction.
 	 * 
 	 * @created 28.03.2013
 	 * @param section the {@link Section} with this interface
 	 * @return the TermIdentifier for this {@link Section}
 	 */
-	public TermIdentifier getTermIdentifier(Section<? extends Term> section);
+	public Identifier getTermIdentifier(Section<? extends Term> section);
 
 	/**
 	 * Defines the name of this {@link Term}. It can be used for example to
 	 * render this Term, but is often also at least part of the
-	 * {@link TermIdentifier}.
+	 * {@link Identifier}.
 	 * 
 	 * @created 28.03.2013
 	 * @param section the {@link Section} with this {@link InternalError}

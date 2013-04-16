@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import de.d3web.strings.Strings;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message.Type;
 import de.d3web.we.ci4ke.build.CIBuilder;
@@ -37,7 +38,6 @@ import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.utils.Strings;
 
 public class CIAction extends AbstractAction {
 

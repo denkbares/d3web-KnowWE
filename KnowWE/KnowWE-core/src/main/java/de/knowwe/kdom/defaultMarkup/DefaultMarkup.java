@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -168,7 +169,7 @@ public class DefaultMarkup {
 	 */
 	public void addAnnotation(String name, boolean mandatory,
 			String... enumValues) {
-		String regex = "^(" + de.knowwe.core.utils.Strings.concat("|", enumValues)
+		String regex = "^(" + Strings.concat("|", enumValues)
 				+ ")$";
 		int flags = Pattern.CASE_INSENSITIVE;
 		addAnnotation(name, mandatory, Pattern.compile(regex, flags));
@@ -184,7 +185,7 @@ public class DefaultMarkup {
 	 */
 	public void addAnnotation(String name, boolean mandatory,
 			Enum<?>... enumValues) {
-		String regex = "^(" + de.knowwe.core.utils.Strings.concat("|", enumValues)
+		String regex = "^(" + Strings.concat("|", enumValues)
 				+ ")$";
 		int flags = Pattern.CASE_INSENSITIVE;
 		addAnnotation(name, mandatory, Pattern.compile(regex, flags));

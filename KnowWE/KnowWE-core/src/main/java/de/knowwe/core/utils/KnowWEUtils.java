@@ -41,10 +41,11 @@ import java.util.regex.Pattern;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import de.d3web.strings.Strings;
+import de.d3web.strings.Identifier;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
@@ -263,14 +264,14 @@ public class KnowWEUtils {
 	 * @param termSection the Section which should implement the interface
 	 *        SimpleTerm
 	 */
-	public static TermIdentifier getTermIdentifier(Section<?> termSection) {
+	public static Identifier getTermIdentifier(Section<?> termSection) {
 		if (termSection.get() instanceof Term) {
 			Section<? extends Term> simpleSection = Sections.cast(termSection,
 					Term.class);
 			return simpleSection.get().getTermIdentifier(simpleSection);
 		}
 		else {
-			return new TermIdentifier(
+			return new Identifier(
 					Strings.trimQuotes(termSection.getText()));
 		}
 	}
@@ -382,7 +383,7 @@ public class KnowWEUtils {
 		return "Diff.jsp?page=" + title + "&r1=" + version1 + "&r2=" + version2;
 	}
 
-	public static String getURLLinkToTermDefinition(TermIdentifier identifier) {
+	public static String getURLLinkToTermDefinition(Identifier identifier) {
 		String url = null;
 		Collection<TerminologyManager> terminologyManagers = Environment.getInstance().getTerminologyManagers(
 				Environment.DEFAULT_WEB);
@@ -403,9 +404,9 @@ public class KnowWEUtils {
 		return url;
 	}
 
-	public static String getURLLinkToObjectInfoPage(TermIdentifier identifier) {
+	public static String getURLLinkToObjectInfoPage(Identifier identifier) {
 
-		String objectName = Strings.encodeURL(new TermIdentifier(
+		String objectName = Strings.encodeURL(new Identifier(
 				identifier.getLastPathElement()).toExternalForm());
 		String termIdentifier = Strings.encodeURL(identifier.toExternalForm());
 		return "Wiki.jsp?page=ObjectInfoPage&objectname="

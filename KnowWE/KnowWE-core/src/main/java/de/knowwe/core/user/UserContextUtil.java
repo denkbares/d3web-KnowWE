@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
-import de.knowwe.core.utils.Strings;
+import de.d3web.strings.Strings;
 
 /**
  * This class offers some methods often needed for UserContext related tasks.

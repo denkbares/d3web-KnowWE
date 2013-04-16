@@ -12,10 +12,10 @@ import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
+import de.d3web.strings.Strings;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.taghandler.ObjectInfoTagHandler;
-import de.knowwe.core.utils.Strings;
 
 public class SolutionPanelUtils {
 

@@ -29,6 +29,7 @@ import java.util.Set;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
+import de.d3web.strings.Identifier;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Priority;
@@ -64,7 +65,7 @@ public class TerminologyManager {
 
 	public final static String HANDLER_KEY = TerminologyManager.class.getSimpleName();
 
-	private static final Set<TermIdentifier> occupiedTerms = new HashSet<TermIdentifier>();
+	private static final Set<Identifier> occupiedTerms = new HashSet<Identifier>();
 
 	private static boolean initializedOccupiedTerms = false;
 
@@ -96,7 +97,7 @@ public class TerminologyManager {
 
 	private void registerOccupiedTerm(TerminologyExtension terminologyExtension) {
 		for (String occupiedTermInExternalForm : terminologyExtension.getTermNames()) {
-			occupiedTerms.add(TermIdentifier.fromExternalForm(occupiedTermInExternalForm));
+			occupiedTerms.add(Identifier.fromExternalForm(occupiedTermInExternalForm));
 		}
 	}
 
@@ -119,7 +120,7 @@ public class TerminologyManager {
 	public void registerTermDefinition(
 			Section<?> termDefinition,
 			Class<?> termClass,
-			TermIdentifier termIdentifier) {
+			Identifier termIdentifier) {
 
 		Article article = global
 				? termDefinition.getArticle()
@@ -165,15 +166,15 @@ public class TerminologyManager {
 	 * 
 	 * 
 	 * @created 28.07.2012
-	 * @param termIdentifier an {@link TermIdentifier} with arbitrarily case for
+	 * @param termIdentifier an {@link Identifier} with arbitrarily case for
 	 *        a term for which you want potential other versions with different
 	 *        cases
-	 * @return the different versions of {@link TermIdentifier}s or an empty
+	 * @return the different versions of {@link Identifier}s or an empty
 	 *         Collection, if the term is undefined
 	 */
-	public Collection<TermIdentifier> getAllTermsEqualIgnoreCase(TermIdentifier termIdentifier) {
+	public Collection<Identifier> getAllTermsEqualIgnoreCase(Identifier termIdentifier) {
 		TermLog termLog = termLogManager.getLog(termIdentifier);
-		Collection<TermIdentifier> termIdentifiers;
+		Collection<Identifier> termIdentifiers;
 		if (termLog == null) {
 			termIdentifiers = Collections.emptyList();
 		}
@@ -186,7 +187,7 @@ public class TerminologyManager {
 	public <TermObject> void registerTermReference(
 			Section<?> termReference,
 			Class<?> termClass,
-			TermIdentifier termIdentifier) {
+			Identifier termIdentifier) {
 
 		TermLog termLog = termLogManager.getLog(termIdentifier);
 		if (termLog == null) {
@@ -199,7 +200,7 @@ public class TerminologyManager {
 	/**
 	 * Returns whether a term is defined through a TermDefinition.
 	 */
-	public boolean isDefinedTerm(TermIdentifier termIdentifier) {
+	public boolean isDefinedTerm(Identifier termIdentifier) {
 		TermLog termRef = termLogManager.getLog(termIdentifier);
 		if (termRef == null) return false;
 		if (termRef.getDefiningSection() == null) return false;
@@ -210,7 +211,7 @@ public class TerminologyManager {
 	 * Returns whether there are TermReferences for this Term, but no
 	 * TermDefinition
 	 */
-	public boolean isUndefinedTerm(TermIdentifier termIdentifier) {
+	public boolean isUndefinedTerm(Identifier termIdentifier) {
 		TermLog termRef = termLogManager.getLog(termIdentifier);
 		if (termRef != null) {
 			return termRef.getDefiningSection() == null;
@@ -219,15 +220,15 @@ public class TerminologyManager {
 	}
 
 	/**
-	 * For a {@link TermIdentifier} the first defining Section is returned. If
+	 * For a {@link Identifier} the first defining Section is returned. If
 	 * the term is not defined, <tt>null</tt> is returned.
 	 * 
-	 * @param termIdentifier the {@link TermIdentifier} for the defining Section
+	 * @param termIdentifier the {@link Identifier} for the defining Section
 	 *        you are looking for
 	 * @return the first defining Section for this term or <tt>null</tt> if the
 	 *         term is not defined
 	 */
-	public Section<?> getTermDefiningSection(TermIdentifier termIdentifier) {
+	public Section<?> getTermDefiningSection(Identifier termIdentifier) {
 		TermLog refLog = termLogManager.getLog(termIdentifier);
 		if (refLog != null) {
 			return refLog.getDefiningSection();
@@ -236,15 +237,15 @@ public class TerminologyManager {
 	}
 
 	/**
-	 * For a {@link TermIdentifier} all defining Sections are returned. If the
+	 * For a {@link Identifier} all defining Sections are returned. If the
 	 * term is not defined, an empty Collection is returned.
 	 * 
-	 * @param termIdentifier the {@link TermIdentifier} for the defining
+	 * @param termIdentifier the {@link Identifier} for the defining
 	 *        Sections you are looking for
 	 * @return the defining Sections for this term or an empty Collection if the
 	 *         term is not defined
 	 */
-	public Collection<Section<?>> getTermDefiningSections(TermIdentifier termIdentifier) {
+	public Collection<Section<?>> getTermDefiningSections(Identifier termIdentifier) {
 		Collection<Section<?>> definitions = new ArrayList<Section<?>>();
 		TermLog refLog = termLogManager.getLog(termIdentifier);
 		if (refLog != null) {
@@ -260,7 +261,7 @@ public class TerminologyManager {
 	 * @param s
 	 * @return
 	 */
-	public Collection<Section<?>> getRedundantTermDefiningSections(TermIdentifier termIdentifier) {
+	public Collection<Section<?>> getRedundantTermDefiningSections(Identifier termIdentifier) {
 		TermLog refLog = termLogManager.getLog(termIdentifier);
 		if (refLog != null) {
 			return Collections.unmodifiableSet(refLog.getRedundantDefinitions());
@@ -268,7 +269,7 @@ public class TerminologyManager {
 		return Collections.unmodifiableSet(new HashSet<Section<?>>(0));
 	}
 
-	public Set<TermIdentifier> getOccupiedTerms() {
+	public Set<Identifier> getOccupiedTerms() {
 		return Collections.unmodifiableSet(occupiedTerms);
 	}
 
@@ -276,7 +277,7 @@ public class TerminologyManager {
 	 * For a {@link KnowWETerm} (provided by the Section) the
 	 * {@link TermReference}s are returned.
 	 */
-	public <TermObject> Collection<Section<?>> getTermReferenceSections(TermIdentifier termIdentifier) {
+	public <TermObject> Collection<Section<?>> getTermReferenceSections(Identifier termIdentifier) {
 
 		TermLog refLog = termLogManager.getLog(termIdentifier);
 
@@ -290,7 +291,7 @@ public class TerminologyManager {
 	public void unregisterTermDefinition(
 			Section<?> termDefinition,
 			Class<?> termClass,
-			TermIdentifier termIdentifier) {
+			Identifier termIdentifier) {
 
 		TermLog termRefLog = termLogManager.getLog(termIdentifier);
 		if (termRefLog != null) {
@@ -304,7 +305,7 @@ public class TerminologyManager {
 		}
 	}
 
-	public void unregisterTermReference(Section<?> termReference, TermIdentifier termIdentifier, Class<?> termClass) {
+	public void unregisterTermReference(Section<?> termReference, Identifier termIdentifier, Class<?> termClass) {
 
 		TermLog refLog = termLogManager.getLog(termIdentifier);
 		if (refLog != null) {
@@ -318,7 +319,7 @@ public class TerminologyManager {
 	 * 
 	 * @created 03.11.2010
 	 */
-	public Collection<TermIdentifier> getAllDefinedTermsOfType(Class<?> termClass) {
+	public Collection<Identifier> getAllDefinedTermsOfType(Class<?> termClass) {
 		return getAllDefinedTerms(termClass);
 	}
 
@@ -328,13 +329,13 @@ public class TerminologyManager {
 	 * 
 	 * @created 03.11.2010
 	 */
-	public Collection<TermIdentifier> getAllDefinedTerms() {
+	public Collection<Identifier> getAllDefinedTerms() {
 		return getAllDefinedTerms(null);
 	}
 
-	public Collection<TermIdentifier> getAllDefinedTerms(Class<?> termClass) {
+	public Collection<Identifier> getAllDefinedTerms(Class<?> termClass) {
 		Collection<TermLog> termLogEntries = getAllDefinedTermLogEntries(termClass);
-		Collection<TermIdentifier> terms = new HashSet<TermIdentifier>();
+		Collection<Identifier> terms = new HashSet<Identifier>();
 		for (TermLog logEntry : termLogEntries) {
 			terms.addAll(logEntry.getTermIdentifiers());
 		}
@@ -343,7 +344,7 @@ public class TerminologyManager {
 
 	private Collection<TermLog> getAllDefinedTermLogEntries(Class<?> termClass) {
 		Collection<TermLog> filteredLogEntries = new HashSet<TermLog>();
-		for (Entry<TermIdentifier, TermLog> managerEntry : termLogManager.entrySet()) {
+		for (Entry<Identifier, TermLog> managerEntry : termLogManager.entrySet()) {
 			Set<Class<?>> termClasses = managerEntry.getValue().getTermClasses();
 			if (termClasses.size() != 1) continue;
 			boolean hasTermDefOfType = managerEntry.getValue().getDefiningSection() != null
@@ -366,7 +367,7 @@ public class TerminologyManager {
 	 *        class)
 	 * @return if the term has been registered as required
 	 */
-	public boolean hasTermOfClass(TermIdentifier termIdentifier, Class<?> clazz) {
+	public boolean hasTermOfClass(Identifier termIdentifier, Class<?> clazz) {
 		for (Class<?> termClass : getTermClasses(termIdentifier)) {
 			if (clazz.isAssignableFrom(termClass)) {
 				return true;
@@ -379,14 +380,14 @@ public class TerminologyManager {
 	 * Returns all term classes for a term or an empty Collection, if the term
 	 * is undefined.<br/>
 	 * A term only has multiple term classes, if the term is defined multiple
-	 * times with a matching {@link TermIdentifier} but different term classes.
+	 * times with a matching {@link Identifier} but different term classes.
 	 * 
 	 * @created 28.07.2012
-	 * @param termIdentifier the {@link TermIdentifier} for the term you want
+	 * @param termIdentifier the {@link Identifier} for the term you want
 	 *        the term classes from
 	 * @return all term classes or an empty Collection, if undefined
 	 */
-	public Collection<Class<?>> getTermClasses(TermIdentifier termIdentifier) {
+	public Collection<Class<?>> getTermClasses(Identifier termIdentifier) {
 		TermLog refLog = termLogManager.getLog(termIdentifier);
 		if (refLog == null) return Collections.emptyList();
 		else return Collections.unmodifiableCollection(refLog.getTermClasses());
@@ -407,8 +408,8 @@ public class TerminologyManager {
 
 			TerminologyManager globalTerminologyHandler = KnowWEUtils.getGlobalTerminologyManager(article.getWeb());
 
-			Set<Entry<TermIdentifier, TermLog>> entrySet = globalTerminologyHandler.termLogManager.entrySet();
-			for (Entry<TermIdentifier, TermLog> entry : new ArrayList<Entry<TermIdentifier, TermLog>>(
+			Set<Entry<Identifier, TermLog>> entrySet = globalTerminologyHandler.termLogManager.entrySet();
+			for (Entry<Identifier, TermLog> entry : new ArrayList<Entry<Identifier, TermLog>>(
 					entrySet)) {
 				Set<Section<?>> definitions = entry.getValue().getDefinitions();
 				for (Section<?> termDefinition : definitions) {

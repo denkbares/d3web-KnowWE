@@ -18,6 +18,7 @@
  */
 package de.knowwe.core.compile.terminology;
 
+import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.parsing.Section;
 
@@ -31,9 +32,9 @@ class TermLogEntry implements Comparable<TermLogEntry> {
 	private final Priority priority;
 	private final Section<?> section;
 	private final Class<?> termClass;
-	private final TermIdentifier termIdentifier;
+	private final Identifier termIdentifier;
 
-	public TermLogEntry(Priority priority, Section<?> section, Class<?> termClass, TermIdentifier termIdentifier) {
+	public TermLogEntry(Priority priority, Section<?> section, Class<?> termClass, Identifier termIdentifier) {
 		this.section = section;
 		this.termClass = termClass;
 		this.termIdentifier = termIdentifier;
@@ -52,7 +53,7 @@ class TermLogEntry implements Comparable<TermLogEntry> {
 		return termClass;
 	}
 
-	public TermIdentifier getTermIdentifier() {
+	public Identifier getTermIdentifier() {
 		return termIdentifier;
 	}
 

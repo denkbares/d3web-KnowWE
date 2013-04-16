@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
 
+import de.d3web.strings.Strings;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
@@ -43,7 +44,6 @@ import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRendererManager;
 import de.d3web.we.ci4ke.util.CIUtils;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.Strings;
 
 /**
  * 

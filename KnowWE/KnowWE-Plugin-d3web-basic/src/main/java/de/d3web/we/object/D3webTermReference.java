@@ -20,14 +20,14 @@
 package de.d3web.we.object;
 
 import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.strings.Strings;
+import de.d3web.strings.Identifier;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.utils.Strings;
 
 /**
  * Abstract type for referencing d3web-objects, such as solutions, questions,
@@ -43,8 +43,8 @@ public abstract class D3webTermReference<TermObject extends NamedObject>
 		implements TermReference, D3webTerm<TermObject> {
 
 	@Override
-	public TermIdentifier getTermIdentifier(Section<? extends Term> section) {
-		return new TermIdentifier(getTermName(section));
+	public Identifier getTermIdentifier(Section<? extends Term> section) {
+		return new Identifier(getTermName(section));
 	}
 
 	@Override

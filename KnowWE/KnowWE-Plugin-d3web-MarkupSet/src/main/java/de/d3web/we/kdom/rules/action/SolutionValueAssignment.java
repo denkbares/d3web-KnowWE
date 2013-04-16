@@ -28,6 +28,7 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.scoring.ActionHeuristicPS;
 import de.d3web.scoring.Score;
 import de.d3web.scoring.inference.PSMethodHeuristic;
+import de.d3web.strings.Strings;
 import de.d3web.we.kdom.auxiliary.Equals;
 import de.d3web.we.object.SolutionReference;
 import de.d3web.we.utils.D3webUtils;
@@ -39,7 +40,6 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.knowwe.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
 

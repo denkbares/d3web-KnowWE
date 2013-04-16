@@ -28,8 +28,8 @@ import de.d3web.diaFlux.flow.DiaFluxElement;
 import de.d3web.diaFlux.flow.Edge;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.Node;
+import de.d3web.strings.Strings;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.utils.Strings;
 
 /**
  * 

@@ -34,12 +34,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.utils.Strings;
 
 /**
  * Centralized management of tags. Takes care of adding/removing tags. And

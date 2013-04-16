@@ -24,9 +24,9 @@ import java.util.List;
 
 import com.wcohen.ss.Levenstein;
 
+import de.d3web.strings.Identifier;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.correction.CorrectionProvider;
 import de.knowwe.core.kdom.Article;
@@ -57,18 +57,18 @@ public class D3webAnswerCorrectionProvider implements CorrectionProvider {
 		Term termReference = (Term) section.get();
 		Section<AnswerReference> refSec = ((Section<AnswerReference>) section);
 
-		Collection<TermIdentifier> allDefinedLocalTermsOfType = terminologyHandler.getAllDefinedTermsOfType(
+		Collection<Identifier> allDefinedLocalTermsOfType = terminologyHandler.getAllDefinedTermsOfType(
 				termReference.getTermObjectClass(refSec));
 
 		String originalText = section.getText();
 		List<CorrectionProvider.Suggestion> suggestions = new LinkedList<CorrectionProvider.Suggestion>();
 		Levenstein l = new Levenstein();
 
-		for (TermIdentifier matchedIdentifier : allDefinedLocalTermsOfType) {
+		for (Identifier matchedIdentifier : allDefinedLocalTermsOfType) {
 
 			AnswerReference answerReference = (AnswerReference) termReference;
 			Section<QuestionReference> questionSection = answerReference.getQuestionSection((Section<? extends AnswerReference>) section);
-			TermIdentifier question = questionSection.get().getTermIdentifier(questionSection);
+			Identifier question = questionSection.get().getTermIdentifier(questionSection);
 			// Special case: AnswerReference: Also check that the defining
 			// Question matches
 			if (!(refSec.get().getTermIdentifier(refSec).startsWith(question))) {

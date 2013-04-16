@@ -25,10 +25,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 
 public class TagCloud extends AbstractHTMLTagHandler {
 

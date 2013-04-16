@@ -20,8 +20,8 @@ package de.knowwe.core.kdom.objects;
 
 import java.util.Collection;
 
+import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
@@ -62,8 +62,8 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 	}
 
 	@Override
-	public TermIdentifier getTermIdentifier(Section<? extends Term> section) {
-		return new TermIdentifier(getTermName(section));
+	public Identifier getTermIdentifier(Section<? extends Term> section) {
+		return new Identifier(getTermName(section));
 	}
 
 	private class StringDefinitionRegistrationHandler extends SubtreeHandler<SimpleDefinition> {

@@ -22,11 +22,11 @@ package de.knowwe.kdom.sectionFinder;
 
 import java.util.List;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.Strings;
 
 /**
  * Finds stuff embraced (regarding quoted occurrences of the embracing signs)

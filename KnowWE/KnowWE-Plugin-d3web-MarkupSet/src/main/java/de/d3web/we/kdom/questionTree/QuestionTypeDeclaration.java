@@ -3,6 +3,7 @@ package de.d3web.we.kdom.questionTree;
 import java.util.Arrays;
 import java.util.List;
 
+import de.d3web.strings.Strings;
 import de.d3web.we.kdom.questionTree.QuestionLine.QuestionTypeChecker;
 import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.object.QuestionDefinition.QuestionType;
@@ -15,7 +16,6 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.StringEnumChecker;
 

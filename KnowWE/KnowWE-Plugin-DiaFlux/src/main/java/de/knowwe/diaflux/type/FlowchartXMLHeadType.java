@@ -23,8 +23,8 @@ import java.util.Collection;
 import java.util.regex.Pattern;
 
 import de.d3web.diaFlux.flow.Flow;
+import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
@@ -66,7 +66,7 @@ public class FlowchartXMLHeadType extends XMLHead {
 		public Collection<Message> create(Article article, Section<FlowchartTermDef> s) {
 			Collection<Message> messages = new ArrayList<Message>(1);
 			TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
-			TermIdentifier termIdentifier = s.get().getTermIdentifier(s);
+			Identifier termIdentifier = s.get().getTermIdentifier(s);
 			if (terminologyManager.isDefinedTerm(termIdentifier)) {
 				messages.add(Messages.objectAlreadyDefinedError(termIdentifier.toString(), s));
 			}

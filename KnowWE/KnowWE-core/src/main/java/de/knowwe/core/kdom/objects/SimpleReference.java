@@ -18,8 +18,8 @@
  */
 package de.knowwe.core.kdom.objects;
 
+import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -54,8 +54,8 @@ public abstract class SimpleReference extends AbstractType implements TermRefere
 	}
 
 	@Override
-	public TermIdentifier getTermIdentifier(Section<? extends Term> section) {
-		return new TermIdentifier(getTermName(section));
+	public Identifier getTermIdentifier(Section<? extends Term> section) {
+		return new Identifier(getTermName(section));
 	}
 
 }

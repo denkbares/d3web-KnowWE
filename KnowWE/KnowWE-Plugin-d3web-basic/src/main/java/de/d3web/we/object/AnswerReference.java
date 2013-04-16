@@ -24,14 +24,14 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.manage.KnowledgeBaseUtils;
-import de.knowwe.core.compile.terminology.TermIdentifier;
+import de.d3web.strings.Strings;
+import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -55,22 +55,22 @@ public abstract class AnswerReference
 	}
 
 	@Override
-	public TermIdentifier getTermIdentifier(Section<? extends Term> s) {
+	public Identifier getTermIdentifier(Section<? extends Term> s) {
 		if (s.get() instanceof AnswerReference) {
 			Section<AnswerReference> answerSection = Sections.cast(s, AnswerReference.class);
 			Section<? extends QuestionReference> questionSection = answerSection.get().getQuestionSection(
 					answerSection);
-			TermIdentifier questionIdentifier = questionSection == null
-					? new TermIdentifier("")
+			Identifier questionIdentifier = questionSection == null
+					? new Identifier("")
 					: questionSection.get().getTermIdentifier(
 							questionSection);
 
-			return questionIdentifier.append(new TermIdentifier(answerSection.get().getTermName(
+			return questionIdentifier.append(new Identifier(answerSection.get().getTermName(
 					answerSection)));
 		}
 
 		// should not happen
-		return new TermIdentifier(Strings.trimQuotes(s.getText()));
+		return new Identifier(Strings.trimQuotes(s.getText()));
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public abstract class AnswerReference
 		Choice choice = null;
 		if (section.get() instanceof AnswerReference) {
 			TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
-			TermIdentifier termIdentifier = getTermIdentifier(section);
+			Identifier termIdentifier = getTermIdentifier(section);
 			Section<?> answerDef = terminologyManager.getTermDefiningSection(termIdentifier);
 			if (answerDef != null) {
 				choice = (Choice) KnowWEUtils.getStoredObject(article, answerDef,
@@ -92,7 +92,7 @@ public abstract class AnswerReference
 				if (choice != null) return choice;
 			}
 			if (answerDef == null || choice == null) {
-				TermIdentifier questionIdentifier = new TermIdentifier(
+				Identifier questionIdentifier = new Identifier(
 						termIdentifier.getPathElements()[0]);
 				Section<?> termDef = terminologyManager.getTermDefiningSection(questionIdentifier);
 				if (termDef != null && termDef.get() instanceof QuestionDefinition) {

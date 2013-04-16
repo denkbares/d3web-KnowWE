@@ -21,6 +21,7 @@ package de.knowwe.testcases.table;
 import java.util.Collection;
 import java.util.List;
 
+import de.d3web.strings.Strings;
 import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
@@ -30,7 +31,6 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableCellContentRenderer;
 import de.knowwe.kdom.table.TableUtils;

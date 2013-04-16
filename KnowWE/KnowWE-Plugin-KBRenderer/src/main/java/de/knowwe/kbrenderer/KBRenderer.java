@@ -54,12 +54,12 @@ import de.d3web.core.knowledge.terminology.info.Property.Autosave;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.utilities.Triple;
 import de.d3web.diaFlux.flow.Flow;
+import de.d3web.strings.Identifier;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -402,7 +402,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 	private String getTermHTML(StringBuffer prompt, StringBuffer property, TerminologyObject t1, String typeDeclaration, String title, UserContext user) {
 		TerminologyManager terminologyManager = Environment.getInstance().getTerminologyManager(
 				Environment.DEFAULT_WEB, title);
-		Section<?> termDefiningSection = terminologyManager.getTermDefiningSection(new TermIdentifier(
+		Section<?> termDefiningSection = terminologyManager.getTermDefiningSection(new Identifier(
 				t1.getName()));
 		RenderResult builder = new RenderResult(user);
 

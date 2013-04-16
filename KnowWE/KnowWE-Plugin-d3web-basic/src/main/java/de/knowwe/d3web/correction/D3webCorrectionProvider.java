@@ -24,7 +24,7 @@ import java.util.List;
 
 import com.wcohen.ss.Levenstein;
 
-import de.knowwe.core.compile.terminology.TermIdentifier;
+import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.correction.CorrectionProvider;
 import de.knowwe.core.kdom.Article;
@@ -54,14 +54,14 @@ public class D3webCorrectionProvider implements CorrectionProvider {
 		TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
 		Term termReference = (Term) section.get();
 
-		Collection<TermIdentifier> localTermMatches = terminologyHandler.getAllDefinedTermsOfType(
+		Collection<Identifier> localTermMatches = terminologyHandler.getAllDefinedTermsOfType(
 				termReference.getTermObjectClass(Sections.cast(section, Term.class)));
 
 		String originalText = section.getText();
 		List<CorrectionProvider.Suggestion> suggestions = new LinkedList<CorrectionProvider.Suggestion>();
 		Levenstein l = new Levenstein();
 
-		for (TermIdentifier match : localTermMatches) {
+		for (Identifier match : localTermMatches) {
 			double score = l.score(originalText, match.getLastPathElement());
 			if (score >= -threshold) {
 				suggestions.add(new CorrectionProvider.Suggestion(match.getLastPathElement(),

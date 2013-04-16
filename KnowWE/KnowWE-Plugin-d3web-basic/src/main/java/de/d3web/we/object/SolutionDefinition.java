@@ -27,11 +27,11 @@ import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Session;
+import de.d3web.strings.Identifier;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
@@ -127,7 +127,7 @@ public abstract class SolutionDefinition
 		public Collection<Message> create(Article article,
 				Section<SolutionDefinition> section) {
 
-			TermIdentifier termIdentifier = section.get().getTermIdentifier(section);
+			Identifier termIdentifier = section.get().getTermIdentifier(section);
 			String name = section.get().getTermName(section);
 			Class<?> termObjectClass = section.get().getTermObjectClass(section);
 			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);

@@ -20,13 +20,13 @@ package de.knowwe.kdom.export;
 
 import java.util.Map;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.taghandler.AbstractTagHandler;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 
 public class RootTypeExportButtonHandler extends AbstractTagHandler {
 

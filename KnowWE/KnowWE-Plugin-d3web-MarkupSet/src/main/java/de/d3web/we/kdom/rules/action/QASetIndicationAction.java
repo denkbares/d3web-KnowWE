@@ -29,9 +29,10 @@ import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.indication.ActionIndication;
 import de.d3web.indication.inference.PSMethodStrategic;
+import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.QuestionnaireReference;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
@@ -42,7 +43,6 @@ import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.AnonymousType;
 
 /**
@@ -97,7 +97,7 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 		@Override
 		public Collection<Message> create(Article article, Section<AnonymousType> s) {
 			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
-			TermIdentifier termIdentifier = new TermIdentifier(Strings.trimQuotes(s.getText()));
+			Identifier termIdentifier = new Identifier(Strings.trimQuotes(s.getText()));
 			if (terminologyHandler.isDefinedTerm(termIdentifier)) {
 				Section<?> termDefinitionSection = terminologyHandler.getTermDefiningSection(termIdentifier);
 				if (termDefinitionSection.get() instanceof Term) {
@@ -121,8 +121,8 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 			}
 
 			return Messages.asList(Messages.error(
-					"Could not find '" + termIdentifier
-							+ "' - expected was Question or Questionnaire"));
+					"Could not find " + termIdentifier
+							+ " - expected was Question or Questionnaire"));
 		}
 
 	}

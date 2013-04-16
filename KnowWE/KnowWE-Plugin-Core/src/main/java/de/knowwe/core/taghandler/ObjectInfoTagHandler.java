@@ -32,8 +32,9 @@ import java.util.Set;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.d3web.strings.Strings;
+import de.d3web.strings.Identifier;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.PlainText;
@@ -44,7 +45,6 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.search.Result;
@@ -159,7 +159,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			return html.appendHtml(renderLookUpForm(section)).toStringRaw();
 		}
 
-		TermIdentifier termIdentifier = TermIdentifier
+		Identifier termIdentifier = Identifier
 				.fromExternalForm(externalTermIdentifierForm);
 
 		// Get TermDefinitions and TermReferences
@@ -333,7 +333,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	}
 
 	protected void getTermDefinitions(Article currentArticle,
-			TermIdentifier termIdentifier, Set<Section<?>> definitions) {
+			Identifier termIdentifier, Set<Section<?>> definitions) {
 		TerminologyManager th = KnowWEUtils
 				.getTerminologyManager(currentArticle);
 
@@ -345,7 +345,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	}
 
 	protected void getTermReferences(Article currentArticle,
-			TermIdentifier termIdentifier, Set<Section<?>> references) {
+			Identifier termIdentifier, Set<Section<?>> references) {
 		TerminologyManager th = KnowWEUtils
 				.getTerminologyManager(currentArticle);
 		references.addAll(th.getTermReferenceSections(termIdentifier));
@@ -580,9 +580,9 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			currentArticle = iter.next();
 			terminologyManager = KnowWEUtils
 					.getTerminologyManager(currentArticle);
-			Collection<TermIdentifier> allDefinedTerms = terminologyManager
+			Collection<Identifier> allDefinedTerms = terminologyManager
 					.getAllDefinedTerms();
-			for (TermIdentifier definition : allDefinedTerms) {
+			for (Identifier definition : allDefinedTerms) {
 				if (!allTerms.contains(definition.toExternalForm())) {
 					allTerms.add(definition.toExternalForm());
 				}

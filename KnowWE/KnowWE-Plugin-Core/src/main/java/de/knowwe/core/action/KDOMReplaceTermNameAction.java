@@ -24,12 +24,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.utils.Strings;
 
 /**
  * This Action replaces a term name contained in a single KDOM node. Before

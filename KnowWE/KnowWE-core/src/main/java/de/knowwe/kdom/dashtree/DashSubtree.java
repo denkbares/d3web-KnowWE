@@ -25,13 +25,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.CommentLineType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.Strings;
 
 /**
  * @author Jochen
@@ -46,14 +46,13 @@ import de.knowwe.core.utils.Strings;
  * 
  */
 public class DashSubtree extends AbstractType {
-	
+
 	public char getKey() {
 		return key;
 	}
 
 	private final char key;
 
-	
 	public DashSubtree(char keyCharacter, int startLevel) {
 		this.key = keyCharacter;
 		this.sectionFinder = new SubtreeFinder(keyCharacter, startLevel);
@@ -94,7 +93,7 @@ public class DashSubtree extends AbstractType {
 		 * regex-meta-character
 		 */
 		private String keyString;
-		
+
 		/**
 		 * Pattern for dash tree level 0
 		 */
@@ -113,24 +112,25 @@ public class DashSubtree extends AbstractType {
 		private final Pattern p2;
 		private final Pattern p3;
 		private final Pattern p4;
-		
+
 		public SubtreeFinder(char c, int startLevel) {
 			this.startLevel = startLevel;
 			key = c;
 			p0 = Pattern.compile("^\\s*[\\w\"ÜÖÄüöäß]+.*$",
 					Pattern.MULTILINE);
 
-			keyString = ""+c;
-			
+			keyString = "" + c;
+
 			// just to increase speed by reuse of precompiled patterns
-			
+
 			try {
 				// check if its a meta-character for regex
-			p1 = Pattern.compile(getRegex(keyString, 1),
-					Pattern.MULTILINE);
-			} catch(PatternSyntaxException e) {
+				p1 = Pattern.compile(getRegex(keyString, 1),
+						Pattern.MULTILINE);
+			}
+			catch (PatternSyntaxException e) {
 				// escape meta-character
-				keyString = "\\"+c;
+				keyString = "\\" + c;
 				p1 = Pattern.compile(getRegex(keyString, 1),
 						Pattern.MULTILINE);
 			}
@@ -145,13 +145,12 @@ public class DashSubtree extends AbstractType {
 		}
 
 		private String getRegex(String keyString, int level) {
-			return "^\\s*" +keyString+"{"+level+"}" + "[^"+keyString+"]";
+			return "^\\s*" + keyString + "{" + level + "}" + "[^" + keyString + "]";
 		}
-		
+
 		public char getKey() {
 			return key;
 		}
-
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
@@ -189,7 +188,8 @@ public class DashSubtree extends AbstractType {
 						m = p4.matcher(text);
 					}
 					else {
-						m = Pattern.compile("^\\s*" + keyString+"{" + level + "}" + "[^"+keyString+"]",
+						m = Pattern.compile(
+								"^\\s*" + keyString + "{" + level + "}" + "[^" + keyString + "]",
 								Pattern.MULTILINE).matcher(text);
 					}
 

@@ -28,6 +28,8 @@ import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
+import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.d3web.we.kdom.questionTree.indication.IndicationHandler;
 import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionDefinition;
@@ -36,7 +38,6 @@ import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
@@ -47,7 +48,6 @@ import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
 import de.knowwe.kdom.dashtree.DashTreeElementContent;
@@ -193,7 +193,7 @@ public class QuestionLine extends AbstractType {
 					}
 
 					Section<QuestionDefinition> qDef = Sections.findSuccessor(
-								s.getFather(), QuestionDefinition.class);
+							s.getFather(), QuestionDefinition.class);
 
 					if (qDef != null) {
 
@@ -480,7 +480,7 @@ public class QuestionLine extends AbstractType {
 			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
 			Section<QuestionDefinition> thisQuestionDef = section.get().getQuestionDefinition(
 					section);
-			TermIdentifier termIdentifier = thisQuestionDef.get().getTermIdentifier(thisQuestionDef);
+			Identifier termIdentifier = thisQuestionDef.get().getTermIdentifier(thisQuestionDef);
 			Section<?> termDefiningSection =
 					terminologyHandler.getTermDefiningSection(termIdentifier);
 			if (termDefiningSection != null
@@ -496,9 +496,11 @@ public class QuestionLine extends AbstractType {
 						? "undefined"
 						: thisQuestionType.toString().toLowerCase();
 				if (actualQuestionType != thisQuestionType) {
-					String warningText = "The question '"
-							+ actualQuestionDef.get().getTermIdentifier(actualQuestionDef)
-							+ "' is already defined with the type '"
+					String questionText = actualQuestionDef.get().getTermIdentifier(
+							actualQuestionDef).toString();
+					String warningText = "The question "
+							+ questionText
+							+ " is already defined with the type '"
 							+ actualTypeString
 							+ "'. This type definition '"
 							+ thisTypeString

@@ -6,10 +6,11 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.strings.Strings;
+import de.d3web.strings.Identifier;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.SolutionReference;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
@@ -18,7 +19,6 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.Strings;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableUtils;
 
@@ -87,7 +87,7 @@ public class CellTypeHandler extends D3webSubtreeHandler<CellContent> {
 		TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
 		String name = Strings.trimQuotes(content.getText());
 		name = Strings.unquote(name);
-		TermIdentifier termIdentifier = new TermIdentifier(name);
+		Identifier termIdentifier = new Identifier(name);
 		Collection<Class<?>> termClasses = terminologyManager.getTermClasses(termIdentifier);
 		if (termClasses.isEmpty()) {
 			return Messages.asList(Messages.noSuchObjectError("Question or Solution", name));

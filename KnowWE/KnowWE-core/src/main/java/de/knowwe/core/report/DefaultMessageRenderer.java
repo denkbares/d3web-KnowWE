@@ -20,9 +20,9 @@
 
 package de.knowwe.core.report;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.Strings;
 
 /**
  * Default renderer for error messages

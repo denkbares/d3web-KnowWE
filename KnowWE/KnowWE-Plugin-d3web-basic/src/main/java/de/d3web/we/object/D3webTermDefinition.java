@@ -23,8 +23,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.strings.Strings;
+import de.d3web.strings.Identifier;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.compile.terminology.TermIdentifier;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
@@ -32,7 +33,6 @@ import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.Strings;
 
 /**
  * 
@@ -100,8 +100,8 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 	}
 
 	@Override
-	public TermIdentifier getTermIdentifier(Section<? extends Term> section) {
-		return new TermIdentifier(getTermName(section));
+	public Identifier getTermIdentifier(Section<? extends Term> section) {
+		return new Identifier(getTermName(section));
 	}
 
 }
