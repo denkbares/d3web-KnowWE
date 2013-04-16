@@ -34,21 +34,19 @@ public class QuestionNumReference extends QuestionReference {
 
 			Question question = s.get().getTermObject(article, s);
 
+			String name = s.get().getTermName(s);
 			if (question == null) {
 				return Messages.asList(Messages.noSuchObjectError(
-						s.get().getName()
-								+ ": " + s.get().getTermIdentifier(s)));
+						s.get().getName(), name));
 			}
 
 			// check for QuestionNum
 			if (!(question instanceof QuestionNum)) {
-				return Messages.asList(Messages.noSuchObjectError(
-						s.get().getName()
-								+ " numeric question expected:  " + s.get().getTermIdentifier(s)));
+				return Messages.asList(Messages.error("Expected numeric question (QuestionNum), but '"
+						+ name + "' is of the type '" + question.getClass().getSimpleName() + "'"));
 			}
 
 			return new ArrayList<Message>(0);
 		}
-
 	}
 }

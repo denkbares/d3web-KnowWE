@@ -36,6 +36,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
@@ -356,7 +357,8 @@ public final class Messages {
 		if (name != null && name.isEmpty()) {
 			name = "empty String";
 		}
-		return Messages.error(type + " " + name + " not found");
+		name = Strings.trimQuotes(name);
+		return Messages.error(type + " '" + name + "' not found");
 	}
 
 	/**
@@ -399,8 +401,9 @@ public final class Messages {
 		for (Class<?> termClass : termClasses) {
 			termClassesString.add(termClass.getSimpleName());
 		}
-		return Messages.error("The term " + origTerm
-				+ " is defined with ambiguous term classes: "
+		origTerm = Strings.trimQuotes(origTerm);
+		return Messages.error("The term '" + origTerm
+				+ "' is defined with ambiguous term classes: "
 				+ termClassesString.toString());
 	}
 
@@ -411,8 +414,9 @@ public final class Messages {
 	}
 
 	public static Message multipleTermDefintionsError(Identifier termIdentifier) {
+		String identifier = Strings.trimQuotes(termIdentifier.toString());
 		return Messages.error("There is more than one definition for the term '"
-				+ termIdentifier + "' which is restricted to only one definition.");
+				+ identifier + "' which is restricted to only one definition.");
 	}
 
 	public static Message relationCreatedNotice(String name) {

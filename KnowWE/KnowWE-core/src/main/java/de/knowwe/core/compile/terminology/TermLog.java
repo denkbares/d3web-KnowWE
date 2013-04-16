@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -174,8 +175,9 @@ class TermLog {
 			Class<?> termClassOfDefinition = termClasses.keySet().iterator().next();
 			boolean assignable = termClass.isAssignableFrom(termClassOfDefinition);
 			if (!assignable) {
-				msgs.add(Messages.error("The term " + termIdentifier.toString()
-						+ " is registered with the type '" + termClassOfDefinition.getSimpleName()
+				msgs.add(Messages.error("The term '"
+						+ Strings.trimQuotes(termIdentifier.toString())
+						+ "' is registered with the type '" + termClassOfDefinition.getSimpleName()
 						+ "' which is incompatible to the type '" + termClass.getSimpleName()
 						+ "' of this reference."));
 			}

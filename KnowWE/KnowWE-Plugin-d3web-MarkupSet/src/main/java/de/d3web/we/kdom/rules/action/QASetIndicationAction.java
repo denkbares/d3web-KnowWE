@@ -121,8 +121,8 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 			}
 
 			return Messages.asList(Messages.error(
-					"Could not find " + termIdentifier
-							+ " - expected was Question or Questionnaire"));
+					"Could not find '" + Strings.trimQuotes(termIdentifier.toString())
+							+ "' - expected was Question or Questionnaire"));
 		}
 
 	}
