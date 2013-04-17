@@ -71,6 +71,11 @@ public class JSPWikiConnector implements WikiConnector {
 
 	private ServletContext context = null;
 	private WikiEngine engine = null;
+
+	public WikiEngine getEngine() {
+		return engine;
+	}
+
 	public static final String LINK_PREFIX = "Wiki.jsp?page=";
 
 	public JSPWikiConnector(WikiEngine eng) {
