@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 import com.ecyrd.jspwiki.PageManager;
 import com.ecyrd.jspwiki.WikiContext;
@@ -323,8 +324,18 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			System.out.println("*****EXCEPTION IN preTranslate !!! *********");
 			System.out.println("*****EXCEPTION IN preTranslate !!! *********");
 			e.printStackTrace();
-			return null;
+			return getExceptionRendering(userContext, e);
 		}
+	}
+
+	private String getExceptionRendering(UserContext context, Exception e) {
+		RenderResult renderResult = new RenderResult(context.getRequest());
+		String message = "An exception occured while compiling and rendering this article, "
+				+ "try going pack to the last working version of the article.\n\n"
+				+ ExceptionUtils.getStackTrace(e);
+		renderResult.appendHtmlElement("div", message, "style",
+				"white-space: pre");
+		return renderResult.toStringRaw();
 	}
 
 	private void deleteRenamedArticles(String title) {

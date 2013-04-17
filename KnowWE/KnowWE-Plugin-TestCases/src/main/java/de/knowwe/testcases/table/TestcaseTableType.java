@@ -33,7 +33,7 @@ import de.knowwe.testcases.prefix.PrefixedTestCaseProvider;
 public class TestcaseTableType extends DefaultMarkupType {
 
 	private static DefaultMarkup m = null;
-	public static String NAME = "NAME";
+	public static String NAME = "name";
 
 	static {
 		m = new DefaultMarkup("TestCaseTable");
