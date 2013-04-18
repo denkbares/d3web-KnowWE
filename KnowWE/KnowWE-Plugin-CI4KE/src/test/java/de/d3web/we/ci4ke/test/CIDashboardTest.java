@@ -53,7 +53,7 @@ public class CIDashboardTest {
 	}
 
 	private Article loadArticle(String title) throws IOException {
-		String text = Strings.readStreamAndClose(
+		String text = Strings.readStream(
 				getClass().getResourceAsStream("/" + title + ".txt"));
 		env.buildAndRegisterArticle(text, title, web);
 		Article article = env.getArticle(web, title);

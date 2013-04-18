@@ -20,15 +20,11 @@
 
 package de.knowwe.core.utils;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -41,8 +37,8 @@ import java.util.regex.Pattern;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import de.d3web.strings.Strings;
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -504,43 +500,34 @@ public class KnowWEUtils {
 
 	public static String readFile(String fileName) {
 		try {
-			return readStream(new FileInputStream(fileName));
+			return Strings.readFile(fileName);
+
 		}
-		catch (FileNotFoundException e) {
-			e.printStackTrace();
+		catch (IOException e) {
+			Logger.getLogger(KnowWEUtils.class.getName()).log(
+					Level.SEVERE, "Unable to read File: " + e.getMessage());
 			return "";
 		}
 	}
 
 	public static String readStream(InputStream inputStream) {
-		StringBuffer inContent = new StringBuffer();
 		try {
-			BufferedReader bufferedReader = new BufferedReader(
-					new InputStreamReader(inputStream, "UTF-8"));
-			int char1 = bufferedReader.read();
-			while (char1 != -1) {
-				inContent.append((char) char1);
-				char1 = bufferedReader.read();
-			}
-			bufferedReader.close();
+			return Strings.readStream(inputStream);
 		}
-		catch (Exception e) {
-			e.printStackTrace();
+		catch (IOException e) {
+			Logger.getLogger(KnowWEUtils.class.getName()).log(
+					Level.SEVERE, "Unable to read stream: " + e.getMessage());
+			return "";
 		}
-		return inContent.toString();
 	}
 
 	public static void writeFile(String path, String content) {
-
 		try {
-			FileWriter fstream = new FileWriter(path);
-			BufferedWriter out = new BufferedWriter(fstream);
-			out.write(content);
-			out.close();
+			Strings.writeFile(path, content);
 		}
 		catch (Exception e) {
 			Logger.getLogger(KnowWEUtils.class.getName()).log(
-					Level.WARNING, "Unable to write File: " + e.getMessage());
+					Level.SEVERE, "Unable to write file: " + e.getMessage());
 		}
 	}
 
