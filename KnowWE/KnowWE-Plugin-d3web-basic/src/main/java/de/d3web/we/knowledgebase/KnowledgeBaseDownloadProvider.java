@@ -24,7 +24,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.strings.Strings;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
@@ -40,9 +42,12 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		// and provide both download and refresh as tools
-		Tool download = getDownloadTool(section, userContext);
-		Tool qrCode = getQRCodeTool(section, userContext);
 		Tool refresh = getRefreshTool(section, userContext);
+		Tool download = getDownloadTool(section, userContext);
+		if (download == null) {
+			return new Tool[] { refresh };
+		}
+		Tool qrCode = getQRCodeTool(section, userContext);
 		return new Tool[] {
 				refresh, download, qrCode };
 	}
@@ -63,6 +68,13 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 	}
 
 	protected Tool getDownloadTool(Section<?> section, UserContext userContext) {
+
+		// check if knowledge base is empty
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(section.getWeb(), section.getTitle());
+		if (D3webUtils.isEmpty(kb)) {
+			return null;
+		}
+
 		// tool to provide download capability
 		String kbName = DefaultMarkupType.getContent(section).trim();
 		if (kbName.isEmpty()) {

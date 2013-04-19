@@ -131,18 +131,6 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 		// savedToJar.put(art.getTitle(), false);
 	}
 
-	public static boolean isEmpty(KnowledgeBase kb) {
-		if (kb.getAllKnowledgeSlices().size() == 0
-				&& kb.getManager().getQuestions().size() < 1
-				&& kb.getManager().getSolutions().size() <= 1) {
-			return true;
-		}
-		else {
-			return false;
-		}
-
-	}
-
 	@Override
 	public URL saveKnowledge(String title) throws IOException {
 		KnowledgeBase base = getKnowledgeBase(title);

@@ -61,8 +61,8 @@ import de.d3web.core.session.blackboard.Fact;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.scoring.Score;
-import de.d3web.strings.Strings;
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.d3web.we.basic.D3webKnowledgeHandler;
 import de.d3web.we.object.AnswerDefinition;
 import de.d3web.we.object.D3webTerm;
@@ -545,6 +545,26 @@ public class D3webUtils {
 			}
 		}
 		return newValue;
+	}
+
+	/**
+	 * Checks if the knowledge base is empty. A knowledge base is empty, if
+	 * there are no knowledge slices. no questions and at most one solution
+	 * (root solution).
+	 * 
+	 * @created 19.04.2013
+	 * @param kb
+	 * @return
+	 */
+	public static boolean isEmpty(KnowledgeBase kb) {
+		if (kb.getAllKnowledgeSlices().size() == 0
+				&& kb.getManager().getQuestions().size() < 1
+				&& kb.getManager().getSolutions().size() <= 1) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 }
