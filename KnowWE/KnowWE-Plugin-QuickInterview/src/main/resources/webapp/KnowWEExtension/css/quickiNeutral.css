@@ -23,6 +23,7 @@
 /* dont display the blue plugin panel border */
 #quickinterview {
 	border: none;
+	white-space: nowrap;
 }
 
 /* dont display a header for the quicki plugin */
@@ -48,7 +49,7 @@
 	font-weight: normal;
 	min-height: 21px;
 	margin-right: 10px;
-	background-color: white;
+	background-color: transparent;
 	margin-bottom: 3px;
 }
 
@@ -70,7 +71,7 @@
 #quickinterview .qablock {
 	min-height: 21px;
 	margin-right: 10px;
-	background-color: white;
+	background-color: transparent;
 	margin-bottom: 3px;
 	/*-moz-box-shadow: 0 1px 0 black; -webkit-box-shadow: 0 1px 0 black; box-shadow-bottom: 0 1px 0 black; */
 }

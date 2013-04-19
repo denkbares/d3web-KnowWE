@@ -23,11 +23,11 @@ import java.util.Map;
 
 import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.DelegateRenderer;
+import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
@@ -53,9 +53,16 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 	static {
 		m = new DefaultMarkup(MARKUP_NAME);
 		m.addAnnotation(UNKNOWN_KEY, false, "true", "false");
+		m.addAnnotationRenderer(UNKNOWN_KEY, NothingRenderer.getInstance());
+
 		m.addAnnotation(ABSTRACTIONS_KEY, false, "true", "false");
+		m.addAnnotationRenderer(ABSTRACTIONS_KEY, NothingRenderer.getInstance());
+
 		m.addAnnotation(ANSWERS_KEY, false);
+		m.addAnnotationRenderer(ANSWERS_KEY, NothingRenderer.getInstance());
+
 		m.addAnnotation(SAVE_KEY, false);
+		m.addAnnotationRenderer(SAVE_KEY, NothingRenderer.getInstance());
 	}
 
 	public QuickInterviewMarkup() {
@@ -68,11 +75,10 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 
 	}
 
-	static class QIRenderer implements Renderer {
+	static class QIRenderer extends DefaultMarkupRenderer {
 
 		@Override
-		public void render(Section<?> section, UserContext user,
-				RenderResult string) {
+		public void renderContents(Section<?> section, UserContext user, RenderResult string) {
 			String unknown = DefaultMarkupType.getAnnotation(section, UNKNOWN_KEY);
 			String abstractions = DefaultMarkupType.getAnnotation(section,
 					ABSTRACTIONS_KEY);
@@ -92,7 +98,6 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 					+ QuickInterviewAction.callQuickInterviewRenderer(user)
 					+ "</div>";
 			string.appendHtml(html);
-			DelegateRenderer.getInstance().render(section, user, string);
 
 		}
 
