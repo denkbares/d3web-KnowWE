@@ -20,6 +20,9 @@ package de.knowwe.instantedit.actions;
 
 import java.io.IOException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Type;
@@ -48,10 +51,21 @@ public class GetWikiTextAction extends AbstractAction {
 			return;
 		}
 
-		if (context.getWriter() != null) {
-			context.setContentType("text/html; charset=UTF-8");
-			context.getWriter().write(sec.getText());
+		// we use a JSONObject here because it solves an issue where a lot of
+		// line breaks were added at the end of the section text if it was
+		// written directly to the writer
+		JSONObject response = new JSONObject();
+		try {
+			response.accumulate("text", sec.getText());
+			if (context.getWriter() != null) {
+				context.setContentType("text/html; charset=UTF-8");
+				response.write(context.getWriter());
+			}
 		}
+		catch (JSONException e) {
+			new IOException(e);
+		}
+
 	}
 
 }

@@ -217,7 +217,7 @@ KNOWWE.editCommons = function() {
             };
             var ajaxCall = new _KA(options);
             ajaxCall.send();
-            _EC.wikiText[id] = ajaxCall.getResponse();
+            _EC.wikiText[id] = JSON.parse(ajaxCall.getResponse()).text;
             return _EC.wikiText[id];
         },
         
