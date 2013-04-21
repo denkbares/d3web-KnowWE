@@ -33,10 +33,18 @@ KNOWWE.core.plugin.objectinfo = function() {
 		init : function() {
 			// init renaming form button
 			button = _KS('#objectinfo-replace-button');
-			if (button)
+			if (button) {				
 				_KE.add('click', button,
 						KNOWWE.core.plugin.objectinfo.renameFunction);
-			
+			}
+			input = _KS('#objectinfo-replacement');
+			if (input) {
+				_KE.add('keyup', input, function(event) {
+					if (event.keyCode == 13 && confirm("Are you sure you want to rename this term?")) {						
+						KNOWWE.core.plugin.objectinfo.renameFunction();
+					}
+				});
+			}
 			KNOWWE.core.plugin.objectinfo.lookUp();
 		},
 

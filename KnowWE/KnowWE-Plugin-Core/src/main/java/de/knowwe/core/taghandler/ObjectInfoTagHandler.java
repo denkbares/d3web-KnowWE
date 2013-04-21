@@ -32,8 +32,8 @@ import java.util.Set;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.d3web.strings.Strings;
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
@@ -259,7 +259,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		String escapedObjectName = Strings.encodeHtml(objectName);
 
 		StringBuilder html = new StringBuilder();
-		html.append("<form action=\"\" method=\"post\" >");
+		// html.append("<form action=\"\" method=\"post\" >");
 		html.append("<input type=\"hidden\" id=\"objectinfo-target\" value=\""
 				+ escapedExternalTermIdentifierForm + "\" />");
 		html.append("<input type=\"hidden\" id=\"objectinfo-web\" value=\""
@@ -275,7 +275,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			renderRenamingMessage(html, renamingMessage);
 		}
 		html.append("</span>");
-		html.append("</form>");
+		// html.append("</form>");
 
 		return renderSection(
 				rb.getString("KnowWE.ObjectInfoTagHandler.renameTo"),
