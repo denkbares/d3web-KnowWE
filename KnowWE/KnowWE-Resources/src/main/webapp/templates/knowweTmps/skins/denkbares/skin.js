@@ -167,11 +167,13 @@ DenkbaresSkin.checkFavScroll = function () {
 		// align bottom of fav to bottom of page
 		element.style.position = "absolute";
 		element.style.top = (docHeight - favHeight)+"px";
+		element.style.left = "0px";
 	}
 	else {
 		// otherwise fix fav to the top of the viewport
 		element.style.position = "fixed";
 		element.style.top = "0px";
+		element.style.left = "-" + window.getScrollLeft() + "px";
 	}
 };
 
