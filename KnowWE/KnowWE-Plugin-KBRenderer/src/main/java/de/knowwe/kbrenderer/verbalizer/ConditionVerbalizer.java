@@ -63,6 +63,7 @@ import de.knowwe.kbrenderer.verbalizer.VerbalizationManager.RenderingFormat;
  * @author lemmerich, astriffler
  * @date june 2008
  */
+@SuppressWarnings("deprecation")
 public class ConditionVerbalizer implements Verbalizer {
 
 	private Map<String, Object> parameter = new HashMap<String, Object>();
@@ -304,6 +305,7 @@ public class ConditionVerbalizer implements Verbalizer {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	private CondVerbalization createTerminalConditionVerbalization(TerminalCondition tCondition) {
 
 		Collection<? extends TerminologyObject> terminalObjects = tCondition.getTerminalObjects();
