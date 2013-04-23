@@ -72,6 +72,26 @@ KNOWWE.plugin.ci4ke = function() {
 	}
 	
 	return {
+		
+		 expandMessage : function(button) {
+			 var $expandButton = jq$(button);
+			 var $collapseButton = $expandButton.parent().find('.collapseCIMessage');
+			 var $message = $expandButton.parent().find('.ci-message');
+			 $message.show('fast', function() {
+				$expandButton.hide();
+				$collapseButton.show();
+			 });
+		},
+		
+		collapseMessage : function(button) {
+			 var $collapseButton = jq$(button);
+			 var $expandButton = $collapseButton.parent().find('.expandCIMessage');
+			 var $message = $collapseButton.parent().find('.ci-message');
+			 $message.hide('fast', function() {
+				$collapseButton.hide();
+				$expandButton.show();
+			 });
+		},
 	
 		refreshBuildDetails : function(dashboardName, buildNr) {
 
@@ -219,7 +239,7 @@ KNOWWE.plugin.ci4ke = function() {
 		},
 		
 		/*
-		 * Repeatedly whether the current build process is still running.
+		 * Repeatedly check whether the current build process is still running.
 		 * When 'finished' is responded as progress message, 
 		 * the loop terminates and a refresh call of the state bubble is called.
 		 */

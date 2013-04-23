@@ -48,7 +48,6 @@
 	{ 
 	float: left; 
 	width: 100%;
-	white-space: normal;
 	}
 /*
 .ci-column-right
@@ -62,12 +61,13 @@
 .ci-header {
 	border-bottom: 1px solid #DDDDDD;
 	padding-bottom: 12px;
-	padding-top: 12px;'
+	padding-top: 12px;
 }
 
 .ci-title {
 	/*border-bottom: 1px solid #DDD;*/
 	padding: 0px 0px 6px 6px;
+	white-space: normal;
 	}
 	
 .ci-header .ci-state {
@@ -76,7 +76,8 @@
 
 .ci-message {
 	margin-left: 17px;
-	padding-left: 4px;
+	padding-left: 10px;
+	padding-bottom: 3px;
 	border-left: 2px solid #88F;
 	font-size: 10px;
 	}
@@ -95,7 +96,6 @@
 	{
 	/*border: thin solid #96BBD9;*/
 	padding: 3px 5px;
-	white-space: pre-wrap;
 	}
 
 .ci-state {
@@ -117,7 +117,6 @@
 	cursor:pointer;
 	/*margin:3px 0;*/
 	padding: 5px 0px 5px 5px;
-	white-space: pre-wrap;
 	}
 
 .build-table a:hover
@@ -160,6 +159,5 @@
 }
 
 .ci-progess-text {
-    white-space: normal;
     padding: 0px 5px 0px 5px;
 }

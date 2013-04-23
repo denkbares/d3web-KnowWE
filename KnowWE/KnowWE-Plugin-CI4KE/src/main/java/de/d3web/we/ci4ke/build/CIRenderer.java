@@ -204,21 +204,22 @@ public class CIRenderer {
 
 		// ruling out special characters (which are causing problems)
 		dashboardName = Integer.toString(dashboardName.hashCode());
+		String name = testResult.getTestName();
 
 		renderResult.appendHtml("<div class='ci-collapsible-box'>");
 
-		String name = testResult.getTestName();
-		// render bullet
+		// render buttons
 		Type type = testResult.getType();
 
-		String showButtonID = "show" + name + index + dashboardName;
-		String hideButtonID = "hide" + name + index + dashboardName;
-		renderResult.appendHtml("<span id='" + showButtonID + "'>");
+		String styleExpand = type == Type.SUCCESS ? "" : "style='display:none' ";
+		renderResult.appendHtml("<span " + styleExpand
+				+ "class='expandCIMessage' onclick='KNOWWE.plugin.ci4ke.expandMessage(this)'>");
 		renderBuildStatus(type, false, "_plus", renderResult);
 		renderResult.appendHtml("</span>");
-		// not visible at beginning
-		renderResult.appendHtml("<span style='display:none;' id='" + hideButtonID
-				+ "'>");
+
+		String styleCollapse = type == Type.SUCCESS ? "style='display:none' " : "";
+		renderResult.appendHtml("<span " + styleCollapse
+				+ "class='collapseCIMessage' onclick='KNOWWE.plugin.ci4ke.collapseMessage(this)'>");
 		renderBuildStatus(type, false, "_minus", renderResult);
 		renderResult.appendHtml("</span>");
 
@@ -242,29 +243,6 @@ public class CIRenderer {
 		}
 		renderResult.appendHtml("</span>");
 
-		String ciMessageID = "ci-message" + name + index + dashboardName;
-
-		// some js for collapse of message details
-		renderResult.appendHtml("<script> " +
-
-				// show
-				"jq$(\"#" + showButtonID + "\").click(function() {" +
-				"jq$(\"#" + ciMessageID
-				+ "\").show(\"fast\", function() {"
-				+ "jq$(\"#" + showButtonID + "\").hide(0);" +
-				"jq$(\"#" + hideButtonID + "\").show(0);" +
-				" });" +
-				"});" +
-
-				// hide
-				"jq$(\"#" + hideButtonID + "\").click(function() {" +
-				"jq$(\"#" + ciMessageID + "\").hide(\"fast\", function() {" +
-				"jq$(\"#" + hideButtonID + "\").hide(0);" +
-				"jq$(\"#" + showButtonID + "\").show(0);" +
-				" });" +
-				"});" +
-				"</script>\n");
-
 		// render test-message (if exists)
 		appendMessageBlock(testResult, index, dashboardName, renderResult);
 
@@ -273,9 +251,8 @@ public class CIRenderer {
 
 	private void appendMessageBlock(TestResult testResult, int index, String dashboardName, RenderResult renderResult) {
 		// not visible at beginning
-		renderResult.appendHtml("<div style='display:none;' id='ci-message"
-				+ testResult.getTestName() + index + dashboardName
-				+ "' class='ci-message'>");
+		String styleCollapse = testResult.getType() == Type.SUCCESS ? "style='display:none' " : "";
+		renderResult.appendHtml("<div " + styleCollapse + "class='ci-message'>");
 		appendMessage(testResult, renderResult);
 		renderResult.appendHtml("</div>");
 	}
@@ -296,12 +273,12 @@ public class CIRenderer {
 				Logger.getLogger(this.getClass().getName()).log(
 						Level.WARNING, "No class found for test: " + testResult.getTestName());
 			}
-
+			renderResult.appendHtml("<p></p>");
 			renderResult.append("__" + messageType.toString() + "__: ");
 			appendMessageText(message, renderResult);
-			renderResult.append("\n (test object: ");
+			renderResult.appendHtml("<br>\n(test object: ");
 			renderObjectName(testObjectName, testObjectClass, renderResult);
-			renderResult.append(")\n");
+			renderResult.appendHtml(")\n");
 		}
 		renderResult.appendHtml("<span>" + successes + " test objects tested successfully</span>");
 	}
@@ -328,7 +305,9 @@ public class CIRenderer {
 		// are in the text, the replacing will only be inaccurate in rare cases
 		// (e.g. targets[0].contains(target[1]...)
 		text = StringUtils.replaceEach(text, targets, replacements);
-		result.append(text);
+		String lb = new RenderResult(result).appendHtml("<br>\n").toStringRaw();
+		text = text.replaceAll("\\r?\\n", lb);
+		result.appendJSPWikiMarkup(text);
 	}
 
 	public void renderObjectName(String objectName, Class<?> objectClass, RenderResult result) {

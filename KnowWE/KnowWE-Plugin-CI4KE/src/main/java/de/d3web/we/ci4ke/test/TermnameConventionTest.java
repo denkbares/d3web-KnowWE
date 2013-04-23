@@ -74,6 +74,7 @@ public class TermnameConventionTest extends AbstractTest<Article> {
 			for (String string : invalidTerms) {
 				result += "* " + Strings.maskJSPWikiMarkup(string) + "\n";
 			}
+			result = result.substring(0, result.length() - 1);
 			return new Message(
 					Message.Type.FAILURE,
 					"The following terms do not comply to the specified naming convention pattern ("
