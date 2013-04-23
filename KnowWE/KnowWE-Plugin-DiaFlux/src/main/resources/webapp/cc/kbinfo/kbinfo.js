@@ -135,10 +135,12 @@ KBInfo.searchInfoObject = function(phrase, classArray, maxCount, onResult) {
 	}
 	var phraseParam = '&phrase='+DiaFluxUtils.escapeRegex(phrase);
 	var maxCountParam = maxCount ? '&maxcount='+maxCount : '';
+	var sectionID = '&sectionID='+nodeID;
 	var url = "KnowWE.jsp?action=SearchInfoObjects" 
 			+ classesParam 
 			+ phraseParam
-			+ maxCountParam;
+			+ maxCountParam
+			+ sectionID;
 	new Ajax.Request(url, {
 		method: 'get',
 		onSuccess: function(transport) {

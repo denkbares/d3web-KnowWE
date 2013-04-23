@@ -120,7 +120,8 @@ public class FlowchartUtils {
 		if (user.getWeb() == null) return "";
 
 		parentId = escapeHtmlId(parentId);
-		RenderResult result = prepareFlowchartRenderer(user, parentId, scope, insertRessources);
+		RenderResult result = prepareFlowchartRenderer(user, parentId, section.getID(), scope,
+				insertRessources);
 		result.appendHtml("<script>");
 		result.appendHtml("if ($('" + parentId + "').getElements('.FlowchartGroup').length == 0) ");
 		result.appendHtml("Flowchart.loadFlowchart('" + section.getID() + "', '" + parentId + "');");
@@ -135,12 +136,12 @@ public class FlowchartUtils {
 	 * @created 20.03.2013
 	 * @return
 	 */
-	public static RenderResult prepareFlowchartRenderer(UserContext user, String parentId, String scope, boolean insertRessources) {
+	public static RenderResult prepareFlowchartRenderer(UserContext user, String parentId, String flowchartSectionID, String scope, boolean insertRessources) {
 		RenderResult result = new RenderResult(user);
 		result.appendHtml("<div class='flowchartContainer'>");
 
 		if (insertRessources) {
-			insertDiafluxRessources(result, user);
+			insertDiafluxRessources(result, user, flowchartSectionID);
 			addDisplayPlugins(result, user, scope);
 			result.append("\n");
 		}
@@ -161,7 +162,7 @@ public class FlowchartUtils {
 		return text;
 	}
 
-	public static void insertDiafluxRessources(RenderResult result, UserContext user) {
+	public static void insertDiafluxRessources(RenderResult result, UserContext user, String flowchartSectionID) {
 
 		for (String cssfile : CSS) {
 			result.appendHtml("<link rel='stylesheet' type='text/css' href='" + cssfile
@@ -173,7 +174,7 @@ public class FlowchartUtils {
 		}
 
 		result.appendHtml("<data id='referredKBInfo' style='display:none;'>");
-		result.appendHtml(JSPHelper.getReferrdInfoObjectsAsXML(user.getWeb()));
+		result.appendHtml(JSPHelper.getReferrdInfoObjectsAsXML(user.getWeb(), flowchartSectionID));
 		result.appendHtml("</data>\n");
 		result.appendHtml("<script>KBInfo._updateCache($('referredKBInfo'));</script>");
 	}

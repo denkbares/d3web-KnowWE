@@ -45,15 +45,16 @@ public class JSPHelper {
 		}
 	}
 
-	private static List<String> getAllMatches(String className, String web) {
+	private static List<String> getAllMatches(String className, String web, String flowchartSectionID) {
 		return SearchInfoObjects.searchObjects(
 				Environment.getInstance(),
 				web,
-				null, className, 65535);
+				null, className, 65535, flowchartSectionID);
 	}
 
-	public String getArticleIDsAsArray() {
-		List<String> matches = getAllMatches("Article", this.userContext.getWeb());
+	public String getArticleIDsAsArray(String flowchartSectionID) {
+		List<String> matches = getAllMatches("Article", this.userContext.getWeb(),
+				flowchartSectionID);
 		Collections.sort(matches);
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("[");
@@ -83,9 +84,10 @@ public class JSPHelper {
 		return data;
 	}
 
-	public String getArticleInfoObjectsAsXML() {
+	public String getArticleInfoObjectsAsXML(String flowchartSectionID) {
 		// search for matches
-		List<String> matches = getAllMatches("Article", this.userContext.getWeb());
+		List<String> matches = getAllMatches("Article", this.userContext.getWeb(),
+				flowchartSectionID);
 
 		// fill the response buffer
 		StringBuilder bob = new StringBuilder();
@@ -99,14 +101,14 @@ public class JSPHelper {
 		return bob.toString();
 	}
 
-	public String getReferredInfoObjectsAsXML() {
-		return getReferrdInfoObjectsAsXML(this.userContext.getWeb());
+	public String getReferredInfoObjectsAsXML(String flowchartSectionID) {
+		return getReferrdInfoObjectsAsXML(this.userContext.getWeb(), flowchartSectionID);
 	}
 
-	public static String getReferrdInfoObjectsAsXML(String web) {
+	public static String getReferrdInfoObjectsAsXML(String web, String flowchartSectionID) {
 		// TODO: extract used object ids from flowchart as a list
 		// for now we simply use all existing objects
-		List<String> matches = getAllMatches(null, web);
+		List<String> matches = getAllMatches(null, web, flowchartSectionID);
 
 		// fill the response buffer
 		StringBuilder bob = new StringBuilder();

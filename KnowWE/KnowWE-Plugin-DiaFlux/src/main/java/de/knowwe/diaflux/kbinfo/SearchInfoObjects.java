@@ -37,6 +37,9 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
 
 public class SearchInfoObjects extends AbstractAction {
@@ -49,16 +52,19 @@ public class SearchInfoObjects extends AbstractAction {
 		String phrase = parameterMap.get("phrase");
 		String classes = parameterMap.get("classes");
 		String max = parameterMap.get("maxcount");
+		String flowchartSectionID = parameterMap.get("sectionID");
 
 		int maxCount = (max != null) ? Integer.parseInt(max) : 100;
-		String result = search(Environment.getInstance(), web, phrase, classes, maxCount);
+		String result = search(Environment.getInstance(), web, phrase, classes, maxCount,
+				flowchartSectionID);
 		context.setContentType("text/xml; charset=UTF-8");
 		context.getWriter().write(result);
 	}
 
-	public static String search(Environment knowWEEnv, String web, String phraseString, String classesString, int maxCount) {
+	public static String search(Environment knowWEEnv, String web, String phraseString, String classesString, int maxCount, String flowchartSectionID) {
 		// get the matches
-		List<String> matches = searchObjects(knowWEEnv, web, phraseString, classesString, maxCount);
+		List<String> matches = searchObjects(knowWEEnv, web, phraseString, classesString, maxCount,
+				flowchartSectionID);
 
 		// build the page for the found matches
 		int count = Math.min(maxCount, matches.size());
@@ -80,7 +86,7 @@ public class SearchInfoObjects extends AbstractAction {
 		return page.toString();
 	}
 
-	public static List<String> searchObjects(Environment knowWEEnv, String web, String phraseString, String classesString, int maxCount) {
+	public static List<String> searchObjects(Environment knowWEEnv, String web, String phraseString, String classesString, int maxCount, String flowchartSectionID) {
 		String[] phrases = (phraseString != null) ? phraseString.split(" ") : new String[0];
 		Set<String> classes = null;
 		if (classesString == null) {
@@ -92,7 +98,18 @@ public class SearchInfoObjects extends AbstractAction {
 		List<String> result = new LinkedList<String>();
 
 		// the examine objects inside the articles
-		for (String compilingArticle : KnowWEUtils.getPackageManager(web).getCompilingArticles()) {
+		PackageManager packageManager = KnowWEUtils.getPackageManager(web);
+		Set<String> compilingArticles = new HashSet<String>();
+		Section<?> section = Sections.getSection(flowchartSectionID);
+		if (section == null) {
+			compilingArticles.addAll(packageManager.getCompilingArticles());
+		}
+		else {
+			for (String packageName : section.getPackageNames()) {
+				compilingArticles.addAll(packageManager.getCompilingArticles(packageName));
+			}
+		}
+		for (String compilingArticle : compilingArticles) {
 			KnowledgeBase base = D3webUtils.getKnowledgeBase(web, compilingArticle);
 			// filters KnowWE-Doc from object tree
 			// if (base.getId().startsWith("Doc ")) continue;

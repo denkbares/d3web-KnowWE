@@ -152,15 +152,15 @@
 	<link rel="stylesheet" type="text/css" href="cc/flow/guard.css"></link>
 	<link rel="stylesheet" type="text/css" href="cc/flow/contextmenu.css"></link>
 </head>
-<body onload="new FlowEditor(<%= jspHelper.getArticleIDsAsArray() %>).showEditor();">
+<body onload="new FlowEditor(<%= jspHelper.getArticleIDsAsArray(kdomID) %>).showEditor();">
 
 <%-- default kbinfo objects delivered from server --%>
 <data id="articleKBInfo" style="display:none;">
-<%= jspHelper.getArticleInfoObjectsAsXML() %>
+<%= jspHelper.getArticleInfoObjectsAsXML(kdomID) %>
 </data>
 <%-- default kbinfo objects delivered from server --%>
 <data id="referredKBInfo" style="display:none;">
-<%= jspHelper.getReferredInfoObjectsAsXML() %>
+<%= jspHelper.getReferredInfoObjectsAsXML(kdomID) %>
 </data>
 <data id="ajaxKBInfo" style="display:none;">
 	<kbinfo></kbinfo>
