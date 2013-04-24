@@ -101,13 +101,13 @@ public class SearchInfoObjects extends AbstractAction {
 		PackageManager packageManager = KnowWEUtils.getPackageManager(web);
 		Set<String> compilingArticles = new HashSet<String>();
 		Section<?> section = Sections.getSection(flowchartSectionID);
-		if (section == null) {
-			compilingArticles.addAll(packageManager.getCompilingArticles());
-		}
-		else {
+		if (section != null) {
 			for (String packageName : section.getPackageNames()) {
 				compilingArticles.addAll(packageManager.getCompilingArticles(packageName));
 			}
+		}
+		if (compilingArticles.isEmpty()) {
+			compilingArticles.addAll(packageManager.getCompilingArticles());
 		}
 		for (String compilingArticle : compilingArticles) {
 			KnowledgeBase base = D3webUtils.getKnowledgeBase(web, compilingArticle);
