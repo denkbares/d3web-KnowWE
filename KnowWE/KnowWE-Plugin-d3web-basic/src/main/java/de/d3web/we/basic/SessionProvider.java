@@ -147,6 +147,7 @@ public class SessionProvider {
 		Session removedSession = sessions.remove(kb.getId());
 		if (removedSession != null) {
 			EventManager.getInstance().fireEvent(new SessionRemovedEvent(removedSession, context));
+			removedSession.getPropagationManager().terminate();
 		}
 	}
 
