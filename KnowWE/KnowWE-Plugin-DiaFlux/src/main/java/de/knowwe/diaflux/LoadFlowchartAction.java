@@ -49,9 +49,7 @@ public class LoadFlowchartAction extends AbstractAction {
 		if (section != null) {
 			writeSource(context, section.getText());
 		}
-		else {
-			// TODO error handling
-		}
+		// TODO error handling
 
 	}
 
@@ -74,14 +72,13 @@ public class LoadFlowchartAction extends AbstractAction {
 		return null;
 	}
 
-
 	// FIXME This method is a dirty hack and should be removed in the future:
 	// It is used to sectionize old versions of an article to get the
 	// diaflux-related stuff without altering the KB and so on
 	//
 	public static Section<RootType> sectionizeArticle(String text) {
 		Section<RootType> rootSection = Section.createSection(text, RootType.getInstance(), null);
-		Article article = Article.createArticle("", "fakeArticleforDiff", "default_web",true);
+		Article article = Article.createArticle("", "fakeArticleforDiff", "default_web", true);
 		rootSection.setArticle(article);
 		RootType.getInstance().getParser().parse(text, rootSection);
 		return rootSection;

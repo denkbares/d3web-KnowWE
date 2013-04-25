@@ -1,5 +1,7 @@
 package de.knowwe.jspwiki;
 
+import java.util.Arrays;
+
 import com.ecyrd.jspwiki.SearchResult;
 import com.ecyrd.jspwiki.WikiPage;
 
@@ -12,7 +14,7 @@ public class PluggedSearchResult implements SearchResult, Comparable<PluggedSear
 	public PluggedSearchResult(WikiPage page, int score, String[] contexts) {
 		this.page = page;
 		this.score = score;
-		this.contexts = contexts;
+		this.contexts = Arrays.copyOf(contexts, contexts.length);
 	}
 
 	@Override
