@@ -46,8 +46,10 @@ TestCasePlayer.getCollapseStatus = function(th) {
 }
 
 TestCasePlayer.writeCollapseStatus = function(th, collapsed) {
-	var id = th.parents(".type_TestCasePlayer").first().attr("id");
-	var testCase = jq$("#" + id).find("select").find('[selected="selected"]').attr("value");
+	var id = th.parents(".TestCasePlayerContent").attr("id");
+	var testCase = jq$("#selector" + id).find('[selected="selected"]').attr("value");
+	if (!testCase) testCase = jq$("#selector" + id).val();
+	testCase = TestCasePlayer.encodeCookieValue(testCase);
 	document.cookie = "columnstatus_" + id + "_" + testCase + "=" + collapsed;
 }
 

@@ -24,12 +24,14 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 import de.d3web.core.utilities.Pair;
 import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * 
@@ -192,7 +194,7 @@ public class TableModel {
 	private Set<Integer> getCollapsedColumns(Section<?> section, UserContext user) {
 		String key = "columnstatus_" + section.getID() + "_" + name;
 		Set<Integer> collapsed = new HashSet<Integer>();
-		String cookie = KnowWEUtils.getCookie(key, user);
+		String cookie = getEncodedCookie(key, user);
 		if (cookie != null) {
 			String[] columns = cookie.split("#");
 			for (String colString : columns) {
@@ -207,6 +209,20 @@ public class TableModel {
 			}
 		}
 		return collapsed;
+	}
+
+	private String getEncodedCookie(String name, UserContext context) {
+		HttpServletRequest request = context.getRequest();
+		if (request == null) return null;
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if (Strings.decodeURL(cookie.getName()).equals(name)) {
+					return cookie.getValue();
+				}
+			}
+		}
+		return null;
 	}
 
 	public TableModel copy() {
