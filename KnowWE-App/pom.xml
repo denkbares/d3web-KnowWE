@@ -836,6 +836,12 @@
 		<profile>
 			<id>denkbares-thrillseeker</id>
 			<dependencies>
+			<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-OntoVis</artifactId>
+					<version>0.2-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Include</artifactId>
