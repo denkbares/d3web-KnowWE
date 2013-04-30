@@ -824,12 +824,6 @@
 					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
-                <dependency>
-                    <groupId>com.denkbares</groupId>
-                    <artifactId>KnowWE-Plugin-DenkbaresTmp</artifactId>
-                    <version>0-SNAPSHOT</version>
-                    <scope>compile</scope>
-                </dependency>
             </dependencies>
 		</profile>
 
@@ -906,6 +900,18 @@
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Flash</artifactId>
 					<version>0.2-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		
+		<profile>
+			<id>denkbares-homepage</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-DenkbaresTmp</artifactId>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
