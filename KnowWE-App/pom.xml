@@ -902,6 +902,12 @@
 					<version>0.2-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
+				<dependency>
+					<groupId>jspwiki.aFlashPlugin</groupId>
+  					<artifactId>aFlashPlugin</artifactId>
+					<version>0.1</version>
+					<scope>jar</scope>
+				</dependency>
 			</dependencies>
 		</profile>
 		
