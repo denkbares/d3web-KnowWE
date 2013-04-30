@@ -128,8 +128,6 @@ KNOWWE.plugin.instantEdit = function() {
 		 */
         save: function(id, newWikiText) {
 
-            _EC.showAjaxLoader(id);
-
             if (newWikiText == null) {
                 newWikiText = _IE.toolNameSpace[id].generateWikiText(id);
             }

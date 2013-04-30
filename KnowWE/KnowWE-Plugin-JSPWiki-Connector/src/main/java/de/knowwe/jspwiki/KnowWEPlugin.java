@@ -283,37 +283,14 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				userContext.getRequest().setAttribute(getRenderResultKey(article.getTitle()),
 						renderResult);
 
-				// Render Pre-PageAppendHandlers
 				List<PageAppendHandler> appendhandlers = Environment.getInstance()
 						.getAppendHandlers();
-				for (PageAppendHandler pageAppendHandler : appendhandlers) {
-					if (pageAppendHandler.isPre()) {
-						pageAppendHandler.append(
-								Environment.DEFAULT_WEB, title,
-								userContext, renderResult);
-					}
-				}
+				renderPrePageAppendHandler(userContext, title, renderResult, appendhandlers);
 
-				// RENDER PAGE
-				long start = System.currentTimeMillis();
-				article.getRootType().getRenderer().render(article.getRootSection(), userContext,
-						renderResult);
-				Logger.getLogger(this.getClass().getName()).log(
-						Level.INFO, "Rendered article '" + article.getTitle() + "' in "
-								+ (System.currentTimeMillis() - start) + "ms");
-				EventManager.getInstance().fireEvent(
-						new PageRenderedEvent(article.getTitle(), userContext));
+				renderPage(userContext, article, renderResult);
 
-				// Render Post-PageAppendHandlers
-				for (PageAppendHandler pageAppendHandler : appendhandlers) {
-					if (!pageAppendHandler.isPre()) {
-						pageAppendHandler.append(
-								Environment.DEFAULT_WEB, title,
-								userContext, renderResult);
-					}
-				}
+				renderPostPageAppendHandler(userContext, title, renderResult, appendhandlers);
 
-				// adds the js and css to the page
 				includeDOMResources(wikiContext);
 			}
 
@@ -326,6 +303,41 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			e.printStackTrace();
 			return getExceptionRendering(userContext, e);
 		}
+	}
+
+	private void renderPostPageAppendHandler(JSPWikiUserContext userContext, String title, RenderResult renderResult, List<PageAppendHandler> appendhandlers) {
+		renderResult.appendHtmlTag("div", "class", "postpageappend");
+		for (PageAppendHandler pageAppendHandler : appendhandlers) {
+			if (!pageAppendHandler.isPre()) {
+				pageAppendHandler.append(
+						Environment.DEFAULT_WEB, title,
+						userContext, renderResult);
+			}
+		}
+		renderResult.appendHtml("</div>");
+	}
+
+	private void renderPage(JSPWikiUserContext userContext, Article article, RenderResult renderResult) {
+		long start = System.currentTimeMillis();
+		article.getRootType().getRenderer().render(article.getRootSection(), userContext,
+				renderResult);
+		Logger.getLogger(this.getClass().getName()).log(
+				Level.INFO, "Rendered article '" + article.getTitle() + "' in "
+						+ (System.currentTimeMillis() - start) + "ms");
+		EventManager.getInstance().fireEvent(
+				new PageRenderedEvent(article.getTitle(), userContext));
+	}
+
+	private void renderPrePageAppendHandler(JSPWikiUserContext userContext, String title, RenderResult renderResult, List<PageAppendHandler> appendhandlers) {
+		renderResult.appendHtmlTag("div", "class", "prepageappend");
+		for (PageAppendHandler pageAppendHandler : appendhandlers) {
+			if (pageAppendHandler.isPre()) {
+				pageAppendHandler.append(
+						Environment.DEFAULT_WEB, title,
+						userContext, renderResult);
+			}
+		}
+		renderResult.appendHtml("</div>");
 	}
 
 	private String getExceptionRendering(UserContext context, Exception e) {

@@ -113,7 +113,7 @@ KNOWWE.editCommons = function() {
         },
 
         sendChanges: function(newWikiText, params, fn) {
-
+            _EC.showAjaxLoader();
             var options = {
                 url: KNOWWE.core.util.getURL(params),
                 data: newWikiText,
@@ -126,6 +126,7 @@ KNOWWE.editCommons = function() {
                         $(window).removeEvents('beforeunload');
                         $(window).removeEvents('unload');
                         fn();
+                        _EC.hideAjaxLoader();
                     },
                     onError: _EC.onErrorBehavior
                 }
