@@ -1,20 +1,20 @@
 /*
  * Copyright (C) 2011 University Wuerzburg, Computer Science VI
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.knowwe.core.action;
 
@@ -29,7 +29,7 @@ import de.knowwe.core.user.UserContext;
 /**
  * UserActionContext interface which is a specialisied UserContext interface for
  * Actions.
- *
+ * 
  * The UserActionContext of the execute method provides almost everything you
  * need for your Actions. If you want to have some textual output just use
  * context.getWriter().write(...). In case you are developing a KnowWEAction
@@ -47,7 +47,7 @@ public interface UserActionContext extends UserContext {
 	/**
 	 * Returns the action which is currently processed. Please note that this is
 	 * an optional parameter and thus can be null!
-	 *
+	 * 
 	 * @created Mar 4, 2011
 	 * @return the action the user triggerd (if available)
 	 */
@@ -56,7 +56,7 @@ public interface UserActionContext extends UserContext {
 	/**
 	 * Returns a special path concatenated to the action. Please note that this
 	 * is an optional parameter and thus can be null!
-	 *
+	 * 
 	 * @created Mar 4, 2011
 	 * @return
 	 */
@@ -64,7 +64,7 @@ public interface UserActionContext extends UserContext {
 
 	/**
 	 * Returns the http response.
-	 *
+	 * 
 	 * @created 14.10.2010
 	 * @return the user's http response
 	 */
@@ -72,7 +72,7 @@ public interface UserActionContext extends UserContext {
 
 	/**
 	 * Returns the name of the action.
-	 *
+	 * 
 	 * @created Mar 4, 2011
 	 * @return the name of the action.
 	 */
@@ -80,7 +80,7 @@ public interface UserActionContext extends UserContext {
 
 	/**
 	 * Returns the writer of the user's http response.
-	 *
+	 * 
 	 * @created Mar 4, 2011
 	 * @return the writer of the http response
 	 * @throws IOException
@@ -89,7 +89,7 @@ public interface UserActionContext extends UserContext {
 
 	/**
 	 * Returns the OutputStream of the http response.
-	 *
+	 * 
 	 * @created Mar 4, 2011
 	 * @return the outputstream of the http response.
 	 * @throws IOException
@@ -98,15 +98,16 @@ public interface UserActionContext extends UserContext {
 
 	/**
 	 * Allows to specify the content type of the http response.
-	 *
+	 * 
 	 * @created Mar 4, 2011
 	 * @param mimetype
 	 */
 	public void setContentType(String mimetype);
 
 	/**
-	 * Allows to specify the length of the http response
-	 *
+	 * Allows to specify the length of the http response. The length is the
+	 * number of bytes to be send.
+	 * 
 	 * @created Mar 4, 2011
 	 * @param length
 	 */
@@ -114,7 +115,7 @@ public interface UserActionContext extends UserContext {
 
 	/**
 	 * Allows to set the redirect location of the http response.
-	 *
+	 * 
 	 * @created Mar 4, 2011
 	 * @param location
 	 */
@@ -122,7 +123,7 @@ public interface UserActionContext extends UserContext {
 
 	/**
 	 * Allows to specify the header of the http response.
-	 *
+	 * 
 	 * @created Mar 4, 2011
 	 * @param name
 	 * @param value
@@ -131,7 +132,7 @@ public interface UserActionContext extends UserContext {
 
 	/**
 	 * Allows to send an http error as response.
-	 *
+	 * 
 	 * @created Mar 4, 2011
 	 * @param sc
 	 * @param msg
