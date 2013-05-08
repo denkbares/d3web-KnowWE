@@ -56,8 +56,17 @@ public class RetractSingleFindingAction extends AbstractAction {
 	private String retractValue(UserActionContext context) {
 
 		String objectid = context.getParameter(Attributes.SEMANO_OBJECT_ID);
-		String topic = context.getTitle();
+
 		String web = context.getWeb();
+
+		String topic;
+		String master = context.getParameter("master");
+		if (master == null) {
+			topic = context.getTitle();
+		}
+		else {
+			topic = master;
+		}
 
 		topic = Strings.decodeURL(topic);
 		String namespace = Strings.decodeURL(context.getParameter(Attributes.SEMANO_NAMESPACE));

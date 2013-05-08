@@ -743,11 +743,17 @@ KNOWWE.plugin.quicki = function(){
 		 * Some parameter depending on the HTMLInputElement
 		 */
         send : function( web, namespace, oid, termName, params){
+
             var pDefault = {
                 KWikiWeb : web,
                 namespace : namespace,
                 ObjectID : oid,
                 TermName : termName
+            }
+            
+        	var master = jq$('#quickinterview').attr('master');
+            if(master){
+            	pDefault.master = master;
             }
             
             pDefault = KNOWWE.helper.enrich( params, pDefault );
@@ -785,7 +791,14 @@ KNOWWE.plugin.quicki = function(){
         	 var params = {
                      namespace : KNOWWE.helper.gup( 'page' ),
                      action : 'QuickInterviewAction'
+                   
              }
+        	 
+         	var master = jq$('#quickinterview').attr('master');
+             if(master){
+             	pDefault.master = master;
+             }
+        	 
              // also submit config parameters defined in the markup
         	 var resetPointer = _KS('#quickireset');
         	 if(resetPointer) {

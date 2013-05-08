@@ -20,12 +20,13 @@
 
 package de.d3web.we.quicki;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.core.knowledge.InterviewObject;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -54,11 +55,13 @@ import de.d3web.core.session.values.TextValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.strings.Strings;
+import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.wikiConnector.WikiAttachment;
-import de.knowwe.core.wikiConnector.WikiConnector;
+import de.knowwe.notification.NotificationManager;
+import de.knowwe.notification.OutDatedSessionNotification;
 
 /**
  * Render the quick interview -aka QuickI- in KnowWE --- HTML / JS / CSS based
@@ -93,12 +96,12 @@ public class QuickInterviewRenderer {
 	 * @return the String representation of the interview
 	 */
 	public static String renderInterview(Session c, String web,
-			UserContext user, boolean saveSessionDialog) {
+			UserContext user) {
 		// removed all static items and creating an instance instead
 		// otherwise parallel access from different users will make
 		// the rendering process fail
 		return new QuickInterviewRenderer(c, web, user)
-				.render(saveSessionDialog);
+				.render();
 	}
 
 	private QuickInterviewRenderer(Session c, String webb, UserContext user) {
@@ -116,24 +119,9 @@ public class QuickInterviewRenderer {
 
 	}
 
-	private String render(boolean showSaveSessionDialog) {
+	private String render() {
 
-		// StringBuffer
 		StringBuffer buffi = new StringBuffer();
-
-		// add saveSessionDialog
-		if (showSaveSessionDialog) {
-			String savehtml = "<div id=\"sessionsave\"><form name=\"loadsave\"> "
-					+
-					"<select name=\"savedsessions\"  size=\"1\" width=\"30\"><option>-Load Session-</option>"
-					+ getSavedSessions()
-					+ "</select><input name=\"load\" type=\"button\" value=\"Load\" onclick=\"loadQuicki()\"/>"
-					+
-					"<input name=\"name\" type=\"text\" size=\"20\" maxlength=\"30\" />"
-					+
-					"<input name=\"save\" type=\"button\" value=\"Save\" onclick=\"saveQuicki()\"/></form></div>";
-			buffi.append(savehtml);
-		}
 
 		// Assembles the Interview
 		buffi.append("<div style='clear:both'>");
@@ -167,7 +155,7 @@ public class QuickInterviewRenderer {
 				+ "', " + renderConfigParams() + "}\" ";
 		html.append("<div style='position:relative'>");
 		html.append(
-				"<div id='quickireset' style='position:absolute;right:0px;top:3px;' ")
+				"<div id='quickireset'")
 				.append("class='reset pointer' title='")
 				.append(rb.getString("KnowWE.quicki.reset")).append("' ")
 				.append(relAt).append("></div>\n");
@@ -876,33 +864,56 @@ public class QuickInterviewRenderer {
 	}
 
 	/**
-	 * Finds previously saved QuickInterview Sessions
+	 * First initializes everything needed for using knowledge / using an
+	 * interview, then calls the appropriate renderer with the created session
 	 * 
-	 * @created 30.11.2012
-	 * @return String with html code containing options of .xml files
+	 * @created 15.07.2010
+	 * @param topic
+	 * @param user
+	 * @param request
+	 * @param web
+	 * @return
 	 */
-	private String getSavedSessions() {
-		WikiConnector wikiConnector = Environment.getInstance()
-				.getWikiConnector();
-		StringBuilder builder = new StringBuilder();
-		try {
-			List<WikiAttachment> attachments = wikiConnector
-					.getAttachments(user.getTitle());
-			for (WikiAttachment wikiAttachment : attachments) {
-				String fileName = wikiAttachment.getFileName();
-
-				if (fileName.endsWith("xml")) {
-					builder.append("<option value=\"" + fileName + "\">"
-							+ fileName + "</option>");
-				}
-			}
-
+	public static String callQuickInterviewRenderer(UserContext usercontext) {
+		if (usercontext == null || usercontext.getSession() == null) {
+			return "";
 		}
-		catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return builder.toString();
+	
+		String topic = usercontext.getTitle();
+
+		return callQuickInterviewRenderer(usercontext, topic);
+
 	}
+
+	public static String callQuickInterviewRenderer(UserContext usercontext, String title) {
+		if (usercontext == null || usercontext.getSession() == null) {
+			return "";
+		}
+		String topic;
+		if (title == null) {
+			topic = usercontext.getTitle();
+		}
+		else {
+			topic = title;
+		}
+		String web = usercontext.getParameter(Attributes.WEB);
+		HttpServletRequest request = usercontext.getRequest();
+	
+		ResourceBundle rb = D3webUtils.getD3webBundle(request);
+	
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
+		if (kb == null) return rb.getString("KnowWE.quicki.error");
+		Session session = SessionProvider.getSession(usercontext, kb);
+	
+		// check if the latest knowledge base is used
+		if (SessionProvider.hasOutDatedSession(usercontext, kb)) {
+			NotificationManager.addNotification(usercontext,
+					new OutDatedSessionNotification(topic));
+		}
+	
+		return renderInterview(session, web, usercontext);
+
+	}
+
 
 }

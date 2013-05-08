@@ -19,16 +19,24 @@ package de.d3web.we.quicki;
  * site: http://www.fsf.org.
  */
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
+import de.knowwe.core.Environment;
 import de.knowwe.core.RessourceLoader;
+import de.knowwe.core.compile.packaging.MasterAnnotationWarningHandler;
+import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
  * 
@@ -50,6 +58,8 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 
 	public static final String SAVE_KEY = "save";
 
+	public static final String MASTER_KEY = "master";
+
 	static {
 		m = new DefaultMarkup(MARKUP_NAME);
 		m.addAnnotation(UNKNOWN_KEY, false, "true", "false");
@@ -63,6 +73,10 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 
 		m.addAnnotation(SAVE_KEY, false);
 		m.addAnnotationRenderer(SAVE_KEY, NothingRenderer.getInstance());
+
+		m.addAnnotation(MASTER_KEY, false);
+		m.addAnnotationRenderer(MASTER_KEY, StyleRenderer.PACKAGE);
+
 	}
 
 	public QuickInterviewMarkup() {
@@ -71,11 +85,12 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 				RessourceLoader.RESOURCE_STYLESHEET);
 		RessourceLoader.getInstance().add("quicki.js",
 				RessourceLoader.RESOURCE_SCRIPT);
-		this.setRenderer(new QIRenderer());
+		this.setRenderer(new QuickInterviewMarkupRenderer());
+		this.addSubtreeHandler(new MasterAnnotationWarningHandler());
 
 	}
 
-	static class QIRenderer extends DefaultMarkupRenderer {
+	private static class QuickInterviewMarkupRenderer extends DefaultMarkupRenderer {
 
 		@Override
 		public void renderContents(Section<?> section, UserContext user, RenderResult string) {
@@ -83,7 +98,6 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 			String abstractions = DefaultMarkupType.getAnnotation(section,
 					ABSTRACTIONS_KEY);
 			String answers = DefaultMarkupType.getAnnotation(section, ANSWERS_KEY);
-			// String save = DefaultMarkupType.getAnnotation(section, SAVE_KEY);
 			Map<String, String> parameters = user.getParameters();
 			if (unknown != null) {
 				parameters.put(UNKNOWN_KEY, unknown);
@@ -94,13 +108,93 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 			if (answers != null) {
 				parameters.put(ANSWERS_KEY, answers);
 			}
-			String html = "<div id=\"quickinterview\">"
-					+ QuickInterviewAction.callQuickInterviewRenderer(user)
+
+
+			String annotation = DefaultMarkupType.getAnnotation(section,
+					QuickInterviewMarkup.SAVE_KEY);
+
+			boolean saveSession = false;
+			if (annotation != null && annotation.equalsIgnoreCase("true")) {
+				saveSession = true;
+			}
+
+			String savehtml = "";
+			if (saveSession) {
+				savehtml = "<div id=\"sessionsave\"><form name=\"loadsave\"> "
+						+
+						"<select name=\"savedsessions\"  size=\"1\" width=\"30\"><option>-Load Session-</option>"
+						+ getSavedSessions(user)
+						+ "</select><input name=\"load\" type=\"button\" value=\"Load\" onclick=\"loadQuicki()\"/>"
+						+
+						"<input name=\"name\" type=\"text\" size=\"20\" maxlength=\"30\" />"
+						+
+						"<input name=\"save\" type=\"button\" value=\"Save\" onclick=\"saveQuicki()\"/></form></div>";
+
+			}
+			string.appendHtml(savehtml);
+			String master = DefaultMarkupType.getAnnotation(section,
+					QuickInterviewMarkup.MASTER_KEY);
+			String masterHtml;
+			if (master != null) {
+				masterHtml = " master=\"" + master + "\"";
+			}
+			else {
+				masterHtml = "";
+			}
+			String html = "<div id=\"quickinterview\""
+					+ masterHtml
+					+ ">"
+					+ QuickInterviewRenderer.callQuickInterviewRenderer(user, master)
 					+ "</div>";
 			string.appendHtml(html);
 
+			// render subsections
+			List<Section<?>> subsecs = section.getChildren();
+			Section<?> first = subsecs.get(0);
+			Section<?> last = subsecs.get(subsecs.size() - 1);
+			for (Section<?> subsec : subsecs) {
+				if (subsec == first && subsec.get() instanceof PlainText) {
+					continue;
+				}
+				if (subsec == last && subsec.get() instanceof PlainText) {
+					continue;
+				}
+				subsec.get().getRenderer().render(subsec, user, string);
+			}
+		}
+
+		/**
+		 * Finds previously saved QuickInterview Sessions
+		 * 
+		 * @created 30.11.2012
+		 * @return String with html code containing options of .xml files
+		 */
+		private static String getSavedSessions(UserContext user) {
+			WikiConnector wikiConnector = Environment.getInstance()
+					.getWikiConnector();
+			StringBuilder builder = new StringBuilder();
+			try {
+				List<WikiAttachment> attachments = wikiConnector
+						.getAttachments(user.getTitle());
+				for (WikiAttachment wikiAttachment : attachments) {
+					String fileName = wikiAttachment.getFileName();
+
+					if (fileName.endsWith("xml")) {
+						builder.append("<option value=\"" + fileName + "\">"
+								+ fileName + "</option>");
+					}
+				}
+
+			}
+			catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return builder.toString();
 		}
 
 	}
+
+
 
 }

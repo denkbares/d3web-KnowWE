@@ -45,6 +45,9 @@
         <parameter id="scope" value="CoveringListSettingsMarkup" />
        	<parameter id="scope" value="OntoVisType" />
         <parameter id="scope" value="HierarchyMarkup" />
+        <parameter id="scope" value="QuickInterviewMarkup" />
+        
+        
     </extension>
  
     <extension plugin-id="KnowWEExtensionPoints" point-id="Action"

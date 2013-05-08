@@ -277,6 +277,18 @@
 	cursor: pointer;
 }
 
+#quickinterview #quickireset {
+	position: absolute;
+	right: 0px;
+	top: 3px;
+}
+
+.defaultMarkupFrame #quickinterview #quickireset {
+	position: absolute;
+	right: 100px;
+	top: 3px;
+}
+
 #quickinterview .mcbutton {
 	height: 20px;
 	float: left;

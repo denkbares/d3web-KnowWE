@@ -62,7 +62,18 @@ public class QuickInterviewLoadAction extends AbstractAction {
 		// get WikiConnector, KnowledgeBase and Session
 		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
 		String web = context.getParameter(Attributes.WEB);
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, context.getTitle());
+
+		String title = context.getTitle();
+
+		String topic;
+		if (title == null) {
+			topic = context.getTitle();
+		}
+		else {
+			topic = title;
+		}
+
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
 
 		// deletes current Session and creates a new one, gets Blackboard
 		SessionProvider.removeSession(context, kb);

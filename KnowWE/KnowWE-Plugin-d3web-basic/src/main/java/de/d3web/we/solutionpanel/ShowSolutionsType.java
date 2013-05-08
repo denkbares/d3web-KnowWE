@@ -19,6 +19,7 @@
 package de.d3web.we.solutionpanel;
 
 import de.d3web.we.object.QuestionnaireReference;
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -33,7 +34,6 @@ import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
  */
 public class ShowSolutionsType extends DefaultMarkupType {
 
-	private static final String ANNOTATION_MASTER = "master";
 	private static final String ANNOTATION_ABSTRACTIONS = "show_abstractions";
 	private static final String ANNOTATION_SUGGESTED = "show_suggested";
 	private static final String ANNOTATION_ESTABLISHED = "show_established";
@@ -51,7 +51,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("ShowSolutions");
-		MARKUP.addAnnotation(ANNOTATION_MASTER, true);
+		MARKUP.addAnnotation(PackageManager.ANNOTATION_MASTER, true);
 		MARKUP.addAnnotation(ANNOTATION_ESTABLISHED, false, BoolValue.values());
 		MARKUP.addAnnotation(ANNOTATION_SUGGESTED, false, BoolValue.values());
 		MARKUP.addAnnotation(ANNOTATION_EXCLUDED, false, BoolValue.values());
@@ -86,7 +86,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 
 	public static String getMaster(Section<ShowSolutionsType> section) {
 		assert section.get() instanceof ShowSolutionsType;
-		return DefaultMarkupType.getAnnotation(section, ANNOTATION_MASTER);
+		return DefaultMarkupType.getAnnotation(section, PackageManager.ANNOTATION_MASTER);
 	}
 
 	public static String[] getAllowedParents(Section<ShowSolutionsType> section) {

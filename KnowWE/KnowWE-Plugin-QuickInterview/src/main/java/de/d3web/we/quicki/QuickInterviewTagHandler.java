@@ -60,7 +60,7 @@ public class QuickInterviewTagHandler extends AbstractHTMLTagHandler {
 			topic = user.getParameters().get("page");
 		}
 		user.getParameters().putAll(values);
-		String iv = QuickInterviewAction.callQuickInterviewRenderer(user);
+		String iv = QuickInterviewRenderer.callQuickInterviewRenderer(user);
 		if (iv == null) return;
 
 		result.appendHtml("<div id='quickinterview'>");

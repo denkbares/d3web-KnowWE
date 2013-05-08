@@ -60,7 +60,16 @@ public class SetSingleFindingAction extends AbstractAction {
 		String valuenum = context.getParameter(Attributes.SEMANO_VALUE_NUM);
 		String valuedate = context.getParameter(Attributes.SEMANO_VALUE_DATE);
 		String valueText = context.getParameter(Attributes.SEMANO_VALUE_TEXT);
-		String topic = context.getTitle();
+
+		String topic;
+		String master = context.getParameter("master");
+		if (master == null) {
+			topic = context.getTitle();
+		}
+		else {
+			topic = master;
+		}
+
 		String web = context.getWeb();
 		String namespace = null;
 		String term = null;

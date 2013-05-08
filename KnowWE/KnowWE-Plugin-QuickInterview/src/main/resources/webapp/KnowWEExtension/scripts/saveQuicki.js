@@ -27,6 +27,11 @@ function saveQuicki() {
 		savename : name,
 		action : 'QuickInterviewSaveAction',
 	}
+	
+	var master = jq$('#quickinterview').attr('master');
+    if(master){
+    	params.master = master;
+    }
 	var options = {
 		url : KNOWWE.core.util.getURL(params),
 		loader : true,

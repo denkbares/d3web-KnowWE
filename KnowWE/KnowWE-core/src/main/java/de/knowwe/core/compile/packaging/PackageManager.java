@@ -52,6 +52,8 @@ public class PackageManager implements EventListener {
 
 	private static final String DEFAULT_PACKAGE = "default";
 
+	public static final String ANNOTATION_MASTER = "master";
+
 	private final String web;
 
 	/**

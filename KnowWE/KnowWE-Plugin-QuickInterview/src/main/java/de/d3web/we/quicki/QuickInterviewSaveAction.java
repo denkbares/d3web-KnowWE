@@ -59,7 +59,18 @@ public class QuickInterviewSaveAction extends AbstractAction {
 		WikiConnector wikiConnector = Environment.getInstance()
 				.getWikiConnector();
 		String web = context.getParameter(Attributes.WEB);
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, context.getTitle());
+
+		String title = context.getTitle();
+
+		String topic;
+		if (title == null) {
+			topic = context.getTitle();
+		}
+		else {
+			topic = title;
+		}
+
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
 		Session session = SessionProvider.getSession(context, kb);
 
 		// create SessionRecord List
