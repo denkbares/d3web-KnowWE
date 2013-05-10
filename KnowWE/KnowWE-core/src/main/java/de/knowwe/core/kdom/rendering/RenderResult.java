@@ -282,6 +282,21 @@ public class RenderResult {
 		return html;
 	}
 
+	public static String mask(String string, UserContext context) {
+		RenderResult renderResult = new RenderResult(context);
+		return renderResult.mask(string);
+	}
+
+	public static String mask(String string, RenderResult parent) {
+		RenderResult renderResult = new RenderResult(parent);
+		return renderResult.mask(string);
+	}
+
+	public static String mask(String string, HttpServletRequest request) {
+		RenderResult renderResult = new RenderResult(request);
+		return renderResult.mask(string);
+	}
+
 	public RenderResult replace(int start, int end, String str) {
 		builder.replace(start, end, str);
 		return this;
@@ -322,13 +337,28 @@ public class RenderResult {
 		return builder.toString();
 	}
 
-	public String unmask(String string) {
+	private String unmask(String string) {
 		for (int i = 0; i < maskedHtml.length; i++) {
 			// somehow this is way faster for large strings than
 			// StringUtils.replaceEach(String, String[], String[]).
 			string = StringUtils.replace(string, maskedHtml[i], HTML[i]);
 		}
 		return string;
+	}
+
+	public static String unmask(String string, UserContext context) {
+		RenderResult renderResult = new RenderResult(context);
+		return renderResult.unmask(string);
+	}
+
+	public static String unmask(String string, RenderResult parent) {
+		RenderResult renderResult = new RenderResult(parent);
+		return renderResult.unmask(string);
+	}
+
+	public static String unmask(String string, HttpServletRequest request) {
+		RenderResult renderResult = new RenderResult(request);
+		return renderResult.unmask(string);
 	}
 
 	/**

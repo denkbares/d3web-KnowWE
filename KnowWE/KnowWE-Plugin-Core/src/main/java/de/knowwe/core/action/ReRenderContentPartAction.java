@@ -78,7 +78,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 		if (inPre != null) if (inPre.equals("false")) pagedata = Environment.getInstance()
 				.getWikiConnector().renderWikiSyntax(pagedata, context.getRequest());
 
-		return new RenderResult(context).unmask(pagedata);
+		return RenderResult.unmask(pagedata, context);
 	}
 
 	private boolean userCanView(UserActionContext context, Section<?> section) {

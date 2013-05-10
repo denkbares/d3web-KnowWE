@@ -170,9 +170,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		if (article != null) {
 			String logEntry = topic + ", " + wikiContext.getRealPage().getVersion() + ", " + user
 					+ ", " + new Date().toString()
-					+ (article.isFullParse()
-							? ", fullparse " + article.getClassesCausingFullParse()
-							: "")
+					+ (article.isFullParse() ? ", fullparse" : "")
 					+ "\n";
 
 			KnowWEUtils.appendToFile(KnowWEUtils.getPageChangeLogPath(), logEntry);
@@ -193,8 +191,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			// Since this version with no http request is not shown to the user,
 			// we can just ignore it.
 			if (httpRequest != null) {
-				RenderResult result = new RenderResult(httpRequest);
-				htmlContent = result.unmask(htmlContent);
+				htmlContent = RenderResult.unmask(htmlContent, httpRequest);
 			}
 
 			return htmlContent;
