@@ -29,6 +29,7 @@ import de.d3web.core.inference.condition.CondDate;
 import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.inference.condition.CondNum;
 import de.d3web.core.inference.condition.CondQuestion;
+import de.d3web.core.inference.condition.CondUnknown;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
@@ -37,6 +38,7 @@ import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.QuestionValue;
 import de.d3web.core.session.values.NumValue;
+import de.d3web.core.session.values.Unknown;
 import de.d3web.core.utilities.Triple;
 import de.d3web.empiricaltesting.Finding;
 import de.d3web.empiricaltesting.RatedSolution;
@@ -186,6 +188,9 @@ public class TestCaseUtils {
 		else if (condition instanceof CondNum) {
 			QuestionValue value = new NumValue(((CondNum) condition).getConditionValue());
 			rtc.addExpectedFinding(new Finding(question, value));
+		}
+		else if (condition instanceof CondUnknown) {
+			rtc.addExpectedFinding(new Finding(question, Unknown.getInstance()));
 		}
 		else if (condition instanceof CondDate) {
 			QuestionValue value = ((CondDate) condition).getValue();
