@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondDate;
 import de.d3web.core.inference.condition.CondEqual;
@@ -111,35 +112,6 @@ public class TestCaseUtils {
 		return stc;
 	}
 
-	private static void addChecks(TestCase testCase, RatedTestCase rtc, Date date, KnowledgeBase kb) {
-		for (Check check : testCase.getChecks(date, kb)) {
-			if (check instanceof DerivedSolutionCheck) {
-				Solution solution = ((DerivedSolutionCheck) check).getSolution();
-				Rating rating = ((DerivedSolutionCheck) check).getRating();
-				rtc.addDerived(new RatedSolution(solution, new StateRating(rating)));
-			}
-			else if (check instanceof DerivedQuestionCheck) {
-				Question question = ((DerivedQuestionCheck) check).getQuestion();
-				QuestionValue value = ((DerivedQuestionCheck) check).getValue();
-				rtc.addExpectedFinding(new Finding(question, value));
-			}
-			else if (check instanceof ConditionCheck) {
-				Object findingOrRatedSolution = transformToFinding((ConditionCheck) check);
-				if (findingOrRatedSolution instanceof RatedSolution) {
-					rtc.addExpected((RatedSolution) findingOrRatedSolution);
-				}
-				else {
-					rtc.addExpectedFinding((Finding) findingOrRatedSolution);
-				}
-			}
-			else {
-				throw new TransformationException(
-						"Unable to transform " + check.getClass().getName()
-								+ " for a SequentialTestCase");
-			}
-		}
-	}
-
 	private static void addFindings(TestCase testCase, RatedTestCase rtc, Date date, KnowledgeBase kb) {
 		for (de.d3web.testcase.model.Finding finding : testCase.getFindings(date, kb)) {
 			if (finding.getTerminologyObject() instanceof Question) {
@@ -156,30 +128,90 @@ public class TestCaseUtils {
 		}
 	}
 
-	private static Object transformToFinding(ConditionCheck check) {
+	private static void addChecks(TestCase testCase, RatedTestCase rtc, Date date, KnowledgeBase kb) {
+		for (Check check : testCase.getChecks(date, kb)) {
+			if (check instanceof DerivedSolutionCheck) {
+				addDerivedSolutionCheck(rtc, (DerivedSolutionCheck) check);
+			}
+			else if (check instanceof DerivedQuestionCheck) {
+				addDerivedQuestionCheck(rtc, (DerivedQuestionCheck) check);
+			}
+			else if (check instanceof ConditionCheck) {
+				addConditionCheck(rtc, (ConditionCheck) check);
+			}
+			else {
+				throwUntransformableObjectException(check);
+			}
+		}
+	}
+
+	private static void addDerivedSolutionCheck(RatedTestCase rtc, DerivedSolutionCheck check) {
+		Solution solution = check.getSolution();
+		Rating rating = check.getRating();
+		rtc.addDerived(new RatedSolution(solution, new StateRating(rating)));
+	}
+
+	private static void addDerivedQuestionCheck(RatedTestCase rtc, DerivedQuestionCheck check) {
+		Question question = check.getQuestion();
+		QuestionValue value = check.getValue();
+		rtc.addExpectedFinding(new Finding(question, value));
+	}
+
+	private static void addConditionCheck(RatedTestCase rtc, ConditionCheck check) {
 		Condition condition = check.getConditionObject();
+		handleCondition(rtc, condition);
+	}
+
+	private static void handleCondition(RatedTestCase rtc, Condition condition) {
 		if (condition instanceof CondQuestion) {
-			Question question = ((CondQuestion) condition).getQuestion();
-			if (condition instanceof CondEqual) {
-				QuestionValue value = (QuestionValue) ((CondEqual) condition).getValue();
-				return new Finding(question, value);
-			}
-			else if (condition instanceof CondNum) {
-				QuestionValue value = new NumValue(((CondNum) condition).getConditionValue());
-				return new Finding(question, value);
-			}
-			else if (condition instanceof CondDate) {
-				QuestionValue value = ((CondDate) condition).getValue();
-				return new Finding(question, value);
-			}
+			addCondQuestion(rtc, (CondQuestion) condition);
+		}
+		else if (condition instanceof CondAnd) {
+			addCondAnd(rtc, (CondAnd) condition);
 		}
 		else if (condition instanceof CondDState) {
-			Solution solution = ((CondDState) condition).getSolution();
-			State ratingState = ((CondDState) condition).getRatingState();
-			return new RatedSolution(solution, new StateRating(new Rating(ratingState)));
+			addCondDState(rtc, condition);
 		}
+		else {
+			throwUntransformableObjectException(condition);
+		}
+	}
+
+	private static void addCondQuestion(RatedTestCase rtc, CondQuestion condition) {
+		Question question = condition.getQuestion();
+		if (condition instanceof CondEqual) {
+			QuestionValue value = (QuestionValue) ((CondEqual) condition).getValue();
+			rtc.addExpectedFinding(new Finding(question, value));
+		}
+		else if (condition instanceof CondNum) {
+			QuestionValue value = new NumValue(((CondNum) condition).getConditionValue());
+			rtc.addExpectedFinding(new Finding(question, value));
+		}
+		else if (condition instanceof CondDate) {
+			QuestionValue value = ((CondDate) condition).getValue();
+			rtc.addExpectedFinding(new Finding(question, value));
+		}
+		else {
+			throwUntransformableObjectException(condition);
+		}
+	}
+
+	private static void addCondAnd(RatedTestCase rtc, CondAnd condAnd) {
+		for (Condition condition : condAnd.getTerms()) {
+			handleCondition(rtc, condition);
+		}
+	}
+
+	private static void addCondDState(RatedTestCase rtc, Condition condition) {
+		Solution solution = ((CondDState) condition).getSolution();
+		State ratingState = ((CondDState) condition).getRatingState();
+		rtc.addExpected(new RatedSolution(solution, new StateRating(new Rating(ratingState))));
+	}
+
+	private static void throwUntransformableObjectException(Object object) {
 		throw new TransformationException(
-				"Unable to transform " + condition.getClass().getName()
+				"Unable to transform " + object.getClass().getName()
 						+ " for a SequentialTestCase");
 	}
+
 }
