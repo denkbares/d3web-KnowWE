@@ -38,6 +38,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class CIBuilder {
 
@@ -106,6 +107,9 @@ public class CIBuilder {
 		executor.run();
 
 		BuildResult build = executor.getBuildResult();
+		// set verbose persistence flag, will be considered by persistence
+		boolean verbosePersistence = lookUpVerboseFlag();
+		build.setVerbosePersistence(verbosePersistence);
 
 		// add resulting build to dashboard
 		if (build != null && !Thread.interrupted()) {
@@ -113,6 +117,23 @@ public class CIBuilder {
 		}
 		ProgressListenerManager.getInstance().removeProgressListener(dashboardName);
 		CIUtils.deregisterAndTerminateBuildExecutor(dashboardName);
+	}
+
+	/**
+	 * 
+	 * @created 13.05.2013
+	 * @param dashboard2
+	 * @return
+	 */
+	private boolean lookUpVerboseFlag() {
+		Section<CIDashboardType> ciDashboardSection = CIUtils.findCIDashboardSection(
+				dashboard.getDashboardArticle(), dashboard.getDashboardName());
+		String flagString = DefaultMarkupType.getAnnotation(ciDashboardSection,
+				CIDashboardType.VERBOSE_PERSISTENCE_KEY);
+		if (flagString != null && flagString.equalsIgnoreCase("true")) {
+			return true;
+		}
+		return false;
 	}
 
 }

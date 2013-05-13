@@ -261,7 +261,7 @@ public class CIRenderer {
 		Collection<String> testObjectNames = testResult.getTestObjectsWithUnexpectedOutcome();
 		int successes = testResult.getSuccessfullTestObjectRuns();
 		for (String testObjectName : testObjectNames) {
-			de.d3web.testing.Message message = testResult.getUnexpectedMessageForTestObject(testObjectName);
+			de.d3web.testing.Message message = testResult.getMessageForTestObject(testObjectName);
 			if (message == null) continue;
 			Type messageType = message.getType();
 			Test<?> test = TestManager.findTest(testResult.getTestName());

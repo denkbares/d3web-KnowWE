@@ -52,6 +52,7 @@ public class CIDashboardType extends DefaultMarkupType {
 	public static final String NAME_KEY = "name";
 	public static final String TEST_KEY = "test";
 	public static final String TRIGGER_KEY = "trigger";
+	public static final String VERBOSE_PERSISTENCE_KEY = "persistence_verbose";
 
 	public static enum CIBuildTriggers {
 		onDemand, onSave
@@ -64,6 +65,7 @@ public class CIDashboardType extends DefaultMarkupType {
 		MARKUP.addAnnotation(NAME_KEY, true);
 		MARKUP.addAnnotation(TEST_KEY, true);
 		MARKUP.addAnnotation(TRIGGER_KEY, true);
+		MARKUP.addAnnotation(VERBOSE_PERSISTENCE_KEY, false, Pattern.compile("^(true|false)$"));
 		MARKUP.addAnnotationContentType(TEST_KEY, new TestIgnoreType());
 		MARKUP.addAnnotationContentType(TEST_KEY, new TestDeclarationType());
 	}
