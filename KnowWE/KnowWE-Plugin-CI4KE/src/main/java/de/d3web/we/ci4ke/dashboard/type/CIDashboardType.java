@@ -52,7 +52,7 @@ public class CIDashboardType extends DefaultMarkupType {
 	public static final String NAME_KEY = "name";
 	public static final String TEST_KEY = "test";
 	public static final String TRIGGER_KEY = "trigger";
-	public static final String VERBOSE_PERSISTENCE_KEY = "persistence_verbose";
+	public static final String VERBOSE_PERSISTENCE_KEY = "persistenceVerbose";
 
 	public static enum CIBuildTriggers {
 		onDemand, onSave
