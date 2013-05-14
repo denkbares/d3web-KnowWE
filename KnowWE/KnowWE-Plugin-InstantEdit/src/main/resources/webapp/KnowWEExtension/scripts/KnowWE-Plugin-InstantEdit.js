@@ -89,7 +89,7 @@ KNOWWE.plugin.instantEdit = function() {
                         _EC.hideTools();
                         _EC.registerSaveCancelEvents(jq$('#' + id), _IE.save, _IE.cancel, id);
                     },
-                    onError: _IE.onErrorBehavior,
+                    onError: _EC.onErrorBehavior,
                 }
             };
             new _KA(options).send();
@@ -109,7 +109,7 @@ KNOWWE.plugin.instantEdit = function() {
                 async: false,
                 response: {
                     action: 'none',
-                    onError: _IE.onErrorBehavior,
+                    onError: _EC.onErrorBehavior,
                     fn: f
                 }
             }

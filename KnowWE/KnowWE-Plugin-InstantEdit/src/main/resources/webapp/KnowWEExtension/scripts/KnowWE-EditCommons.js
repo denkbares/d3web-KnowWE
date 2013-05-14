@@ -68,22 +68,23 @@ KNOWWE.editCommons = function() {
         // Maybe return given messages instead
         onErrorBehavior: function() {
             _EC.hideAjaxLoader();
-            if (this.status == null) return;
-            switch (this.status) {
+            var status = this.status;
+            if (status == null) return;
+            switch (status) {
             case 0:
-                // server not running, do nothing.
+        		KNOWWE.notification.error(null, "Server appears to be offline.", status);
                 break;
             case 403:
-                alert("You are not authorized to change this page.");
+            	KNOWWE.notification.error(null, "You are not authorized to change this page.", status);
                 break;
             case 404:
-                alert("This page no longer exists. Please reload.");
+            	KNOWWE.notification.error(null, "This page no longer exists. Please reload.", status);
                 break;
             case 409:
-                alert("This section has changed since you " + "loaded this page. Please reload the page.");
+            	KNOWWE.notification.error(null, "This section has changed since you loaded this page. Please reload the page.", status);
                 break;
             default:
-                alert("Error " + this.status + ". Please reload the page.");
+            	KNOWWE.notification.error(null, "Error " + status + ". Please reload the page.", status);
                 break;
             }
         },
