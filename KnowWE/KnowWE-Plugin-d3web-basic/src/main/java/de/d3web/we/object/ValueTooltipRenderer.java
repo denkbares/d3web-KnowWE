@@ -24,7 +24,6 @@ import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.values.UndefinedValue;
-import de.d3web.strings.Strings;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.solutionpanel.SolutionPanelUtils;
 import de.d3web.we.utils.D3webUtils;
@@ -36,6 +35,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Renders a D3webTerm section by adding the current value(s) as a tooltip.
@@ -90,7 +90,7 @@ public class ValueTooltipRenderer implements Renderer {
 
 	private void preRenderTooltip(String tooltip, RenderResult string) {
 		if (tooltip == null) return;
-		tooltip = Strings.maskJSPWikiMarkup(tooltip.replace('\'', '"'));
+		tooltip = KnowWEUtils.maskJSPWikiMarkup(tooltip.replace('\'', '"'));
 
 		string.appendHtml("<span");
 		string.append(" title='").append(tooltip).append("'");

@@ -211,7 +211,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		for (Section<?> section : collectedMessages.keySet()) {
 			Map<Message, Collection<Article>> compilerForMessage = collectedMessages.get(section);
 			for (Message msg : compilerForMessage.keySet()) {
-				String message = Strings.maskJSPWikiMarkup(msg.getVerbalization());
+				String message = KnowWEUtils.maskJSPWikiMarkup(msg.getVerbalization());
 				// if we have multiple other article compilers
 				boolean multiCompiled = KnowWEUtils.getCompilingArticleObjects(section).size() > 1;
 				Collection<Article> compilers = compilerForMessage.get(msg);
@@ -236,7 +236,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		string.appendHtml("<span class='" + type.toString().toLowerCase()
 				+ "' style='white-space: pre-wrap;'>");
 		for (Message msg : messages) {
-			string.append(Strings.maskJSPWikiMarkup(msg.getVerbalization()));
+			string.append(KnowWEUtils.maskJSPWikiMarkup(msg.getVerbalization()));
 			string.append("\n");
 		}
 		string.appendHtml("</span>");

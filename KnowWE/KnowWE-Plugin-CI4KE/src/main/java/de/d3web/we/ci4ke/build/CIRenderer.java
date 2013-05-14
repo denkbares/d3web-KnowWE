@@ -238,7 +238,7 @@ public class CIRenderer {
 		String[] config = testResult.getConfiguration();
 		if (config != null && !(config.length == 0)) {
 			renderResult.appendHtml("<span class='ci-configuration'>");
-			renderResult.append(Strings.maskJSPWikiMarkup(TestParser.concatParameters(config)));
+			renderResult.append(KnowWEUtils.maskJSPWikiMarkup(TestParser.concatParameters(config)));
 			renderResult.appendHtml("</span>");
 		}
 		renderResult.appendHtml("</span>");

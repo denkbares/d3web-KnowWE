@@ -27,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 
 import de.d3web.strings.Strings;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 
 public class RenderResult {
 
@@ -159,13 +160,13 @@ public class RenderResult {
 
 	public RenderResult appendJSPWikiMarkup(RenderResult result) {
 		StringBuilder tempBuilder = new StringBuilder(result.builder);
-		Strings.maskJSPWikiMarkup(tempBuilder);
+		KnowWEUtils.maskJSPWikiMarkup(tempBuilder);
 		builder.append(tempBuilder);
 		return this;
 	}
 
 	public RenderResult appendJSPWikiMarkup(String markup) {
-		builder.append(Strings.maskJSPWikiMarkup(markup));
+		builder.append(KnowWEUtils.maskJSPWikiMarkup(markup));
 		return this;
 	}
 

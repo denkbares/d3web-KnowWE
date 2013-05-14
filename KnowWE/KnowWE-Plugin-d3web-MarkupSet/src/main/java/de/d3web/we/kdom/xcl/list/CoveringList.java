@@ -28,7 +28,6 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Session;
-import de.d3web.strings.Strings;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
@@ -473,7 +472,7 @@ public class CoveringList extends AbstractType {
 				// we do not want masked JPSWiki markup
 				StyleRenderer.getRenderer(null, color).render(
 						sec, user, temp);
-				buffi.append(Strings.unmaskJSPWikiMarkup(temp.toStringRaw()));
+				buffi.append(KnowWEUtils.unmaskJSPWikiMarkup(temp.toStringRaw()));
 			}
 			else {
 				type.getRenderer().render(sec, user, buffi);

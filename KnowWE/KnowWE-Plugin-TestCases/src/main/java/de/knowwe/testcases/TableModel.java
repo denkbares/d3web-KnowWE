@@ -32,6 +32,7 @@ import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * 
@@ -81,7 +82,7 @@ public class TableModel {
 		if (cell == null) {
 			return "";
 		}
-		return Strings.maskJSPWikiMarkup(cell);
+		return KnowWEUtils.maskJSPWikiMarkup(cell);
 	}
 
 	/**

@@ -54,6 +54,89 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
 
 public class KnowWEUtils {
 
+	private static void mask(StringBuilder buffer, String toReplace) {
+		int index = buffer.indexOf(toReplace);
+		while (index >= 0) {
+			// string starts with substring which should be replaced
+			// or the char before the substring is not ~
+			if (index == 0 || !buffer.substring(index - 1, index).equals("~")) {
+				buffer.replace(index, index + toReplace.length(), "~" + toReplace);
+			}
+			index = buffer.indexOf(toReplace, index + 1);
+		}
+	}
+
+	private static void unmask(StringBuilder buffer, String toReplace) {
+		int index = buffer.indexOf(toReplace);
+		while (index >= 0) {
+			// string does not start with substring which should be replaced
+			// or the char before the substring is ~
+			if (index != 0 || buffer.substring(index - 1, index).equals("~")) {
+				buffer.replace(index - 1, index + toReplace.length(), toReplace);
+			}
+			index = buffer.indexOf(toReplace, index + 1);
+		}
+	}
+
+	/**
+	 * Masks [, ], ----, {{{, }}} and %% so that JSPWiki will render and not
+	 * interpret them, if the characters are already escaped, it will do nothing
+	 * 
+	 * @created 03.03.2011
+	 */
+	public static String maskJSPWikiMarkup(String string) {
+		StringBuilder temp = new StringBuilder(string);
+		maskJSPWikiMarkup(temp);
+		return temp.toString();
+	}
+
+	/**
+	 * Unmasks [, ], ----, {{{, }}} and %% so that tests of error messages run
+	 * properly.
+	 * 
+	 * @created 28.09.2012
+	 * @param builder
+	 */
+	public static String unmaskJSPWikiMarkup(String string) {
+		StringBuilder temp = new StringBuilder(string);
+		unmaskJSPWikiMarkup(temp);
+		return temp.toString();
+	}
+
+	/**
+	 * Masks [, ], ----, {{{, }}} and %% so that JSPWiki will render and not
+	 * interpret them, if the characters are already escaped, it will do nothing
+	 * 
+	 * @created 03.03.2011
+	 * @param builder
+	 */
+	public static void maskJSPWikiMarkup(StringBuilder builder) {
+		mask(builder, "[");
+		mask(builder, "]");
+		mask(builder, "----");
+		mask(builder, "{{{");
+		mask(builder, "}}}");
+		mask(builder, "%%");
+		mask(builder, "\\");
+	}
+
+	/**
+	 * Unmasks [, ], ----, {{{, }}} and %% so that tests of error messages run
+	 * properly.
+	 * 
+	 * @created 28.09.2012
+	 * @param builder
+	 */
+	public static void unmaskJSPWikiMarkup(StringBuilder builder) {
+		unmask(builder, "[");
+		unmask(builder, "]");
+		unmask(builder, "----");
+		unmask(builder, "{{{");
+		unmask(builder, "}}}");
+		unmask(builder, "%%");
+		unmask(builder, "\\");
+	}
+
 	public static void appendToFile(String path, String entry) {
 
 		try {

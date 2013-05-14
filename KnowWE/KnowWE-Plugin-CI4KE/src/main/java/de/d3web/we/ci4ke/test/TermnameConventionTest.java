@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import de.d3web.strings.Strings;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.TestParameter.Mode;
@@ -34,6 +33,7 @@ import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * A test that checks all term identifiers used in an article against a
@@ -72,13 +72,13 @@ public class TermnameConventionTest extends AbstractTest<Article> {
 		if (invalidTerms.size() > 0) {
 			String result = "";
 			for (String string : invalidTerms) {
-				result += "* " + Strings.maskJSPWikiMarkup(string) + "\n";
+				result += "* " + KnowWEUtils.maskJSPWikiMarkup(string) + "\n";
 			}
 			result = result.substring(0, result.length() - 1);
 			return new Message(
 					Message.Type.FAILURE,
 					"The following terms do not comply to the specified naming convention pattern ("
-							+ Strings.maskJSPWikiMarkup(args[0]) + "):\n" + result);
+							+ KnowWEUtils.maskJSPWikiMarkup(args[0]) + "):\n" + result);
 		}
 		return new Message(Message.Type.SUCCESS);
 	}
