@@ -59,6 +59,7 @@ import de.d3web.core.session.Value;
 import de.d3web.core.session.blackboard.Blackboard;
 import de.d3web.core.session.blackboard.Fact;
 import de.d3web.core.session.values.ChoiceValue;
+import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.scoring.Score;
 import de.d3web.strings.Identifier;
@@ -537,12 +538,11 @@ public class D3webUtils {
 	 */
 	public static Value handleEqualChoiceValues(Value newValue, Value existingValue) {
 		if (newValue instanceof ChoiceValue && newValue.equals(existingValue)) {
-			if (newValue.equals(Unknown.getInstance())) {
-				newValue = null;
-			}
-			else {
-				newValue = Unknown.getInstance();
-			}
+			newValue = Unknown.getInstance();
+		}
+		else if (Unknown.getInstance().equals(newValue)
+				&& Unknown.getInstance().equals(existingValue)) {
+			newValue = UndefinedValue.getInstance();
 		}
 		return newValue;
 	}
