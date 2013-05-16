@@ -54,6 +54,8 @@ import de.d3web.core.knowledge.terminology.info.Property.Autosave;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.utilities.Triple;
 import de.d3web.diaFlux.flow.Flow;
+import de.d3web.diaFlux.flow.FlowSet;
+import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.strings.Identifier;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.xcl.XCLModel;
@@ -181,11 +183,11 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			/*
 			 * Render DiaFlux Models
 			 */
-			List<Flow> flows = kb.getManager().getObjects(Flow.class);
-			if (!flows.isEmpty()) {
+			FlowSet flowSet = DiaFluxUtils.getFlowSet(kb);
+			if (!flowSet.isEmpty()) {
 				RenderResult bob = new RenderResult(text);
 				int totalEdgeCount = 0, totalNodeCount = 0;
-				for (Flow flow : flows) {
+				for (Flow flow : flowSet) {
 					int nodeCount = flow.getNodes().size();
 					int edgeCount = flow.getEdges().size();
 					totalNodeCount += nodeCount;
@@ -194,7 +196,8 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 							+ edgeCount + " Edges)");
 					bob.appendHtml("<br>");
 				}
-				text.appendHtml("<p><strong>DiaFlux (" + flows.size() + " Flows, " + totalNodeCount
+				text.appendHtml("<p><strong>DiaFlux (" + flowSet.size() + " Flows, "
+						+ totalNodeCount
 						+ " Nodes, " + totalEdgeCount + " Edges):</strong><p></p>\n\n");
 				text.append(bob);
 			}
