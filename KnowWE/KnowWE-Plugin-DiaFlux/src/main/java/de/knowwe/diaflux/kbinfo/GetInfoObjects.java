@@ -49,6 +49,7 @@ import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.flow.StartNode;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
+import de.d3web.diaFlux.inference.FluxSolver;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
@@ -173,12 +174,17 @@ public class GetInfoObjects extends AbstractAction {
 		else if (object instanceof QContainer) {
 			appendInfoObject(web, title, (QContainer) object, bob);
 		}
-		else if (object instanceof Flow) {
-			appendInfoObject(web, title, (Flow) object, bob);
-		}
 		else {
+			// no object found in TermManager of KB
 
-			bob.append("<unknown id='" + objectID + "'></unknown>");
+			FlowSet set = base.getKnowledgeStore().getKnowledge(FluxSolver.FLOW_SET);
+			// next, try flowcharts
+			if (set.contains(objectID)) {
+				appendInfoObject(web, title, set.get(objectID), bob);
+			}
+			else {
+				bob.append("<unknown id='" + objectID + "'></unknown>");
+			}
 
 		}
 	}
