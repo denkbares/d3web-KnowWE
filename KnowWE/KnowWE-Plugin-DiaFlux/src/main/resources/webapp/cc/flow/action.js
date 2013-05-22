@@ -641,12 +641,26 @@ ActionPane.prototype.setVisible = function(visible) {
 	}
 }
 
+ActionPane.WORD_WRAP_POINTS = ['[', ']', '-', '_','#','(',')'];
+
+//inserts a Zero-width space after special chars
+//NB: those have to be removed, if this string is re-used, eg to search for an object
+ActionPane.prototype.insertWordWrapPoints = function(s) {
+	for (var i = 0; i < ActionPane.WORD_WRAP_POINTS.length; i++){
+		var char = ActionPane.WORD_WRAP_POINTS[i];
+		s = s.replace(new RegExp("\\" + char, 'g'), char + "\u200B");
+	}
+	return s;
+}
+
 ActionPane.prototype.render = function() {
 	var name = this.action ? this.action.getInfoObjectName() : '---';
 	var infoObject = KBInfo.lookupInfoObject(name);
 	var iconURL = infoObject ? infoObject.getIconURL() : KBInfo.imagePath+'no-object.gif';
 	if (!name) name = '';
 
+	name = this.insertWordWrapPoints(name);
+	
 	var valueText = null;
 	var valueError = null;
 	valueText = this.action.getDisplayText(); // zeigt ZusatzInfo an (fragen/ immer fragen,...)
@@ -663,7 +677,7 @@ ActionPane.prototype.render = function() {
 		Builder.node('div', {
 			className: valueError ? 'value error' : 'value',
 			title: valueError ? valueError : ''
-		}, (valueText == null) ? [] : [valueText])
+		}, (valueText == null) ? [] : [this.insertWordWrapPoints(valueText)])
 	]);
 	dom.__ActionEditor = this;
 	return dom;
