@@ -18,13 +18,16 @@
  */
 package de.d3web.we.object;
 
+import java.util.Collection;
+
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.manage.NamedObjectFinderManager;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
@@ -47,14 +50,27 @@ public class NamedObjectReference extends D3webTermReference<NamedObject> {
 
 	@Override
 	public NamedObject getTermObject(Article article, Section<? extends D3webTerm<NamedObject>> section) {
+		Collection<NamedObject> result = getTermObjects(article, section);
+		if (result.size() > 0) {
+			return result.iterator().next();
+		}
+		else {
+			return super.getTermObject(article, section);
+		}
+	}
+
+	public static Collection<NamedObject> getTermObjects(Article article, Section<? extends D3webTerm<NamedObject>> section) {
+		if (section == null) return null;
+
 		String termIdentifier = section.get().getTermIdentifier(section).toString();
+
 		KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(article.getWeb(),
 				article.getTitle());
-		if (termIdentifier.equals("KNOWLEDGEBASE")
-				|| termIdentifier.equals(knowledgeBase.getName())) {
-			return knowledgeBase;
-		}
-		return super.getTermObject(article, section);
+
+		Collection<NamedObject> result = NamedObjectFinderManager.getInstance().find(
+				termIdentifier, knowledgeBase);
+
+		return result;
 	}
 
 }
