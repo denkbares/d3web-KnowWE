@@ -1,0 +1,21 @@
+[Link]
+
+[Link with spaces]
+
+[Text display | Link2]
+
+[Text display | Link with spaces2]
+
+[http://d3web.de]
+
+[d3web | http://d3web.de]
+
+[d3web (new window) | http://d3web.de | target='_blank']
+
+[Wikipedia:D3web]
+
+[d3web on Wikipedia | Wikipedia:D3web]
+
+[LinkTypeTest/Attachment.txt]
+
+[Attachment | LinkTypeTest/Attachment.txt]

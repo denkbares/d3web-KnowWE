@@ -18,8 +18,20 @@
  */
 package de.knowwe.jspwiki.types;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.utils.Patterns;
+import de.knowwe.core.wikiConnector.WikiAttachment;
 
 /**
  * 
@@ -28,8 +40,138 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
  */
 public class LinkType extends AbstractType {
 
+	//most important external protocols.
+	public static final String[] EXTERNAL_PROTOCOLS = {
+			"http:", "ftp:", "ftps:", "mailto:", "https:", "news:" };
+
+	// public static final String REGEX = "(?<=(^|[^\\[]))\\[[^\\[{].*?\\]";
+	public static final Pattern PATTERN = Pattern.compile(Patterns.JSPWIKI_LINK);
+	public static final Pattern ATTRIBUTES_PATTERN = Pattern.compile("(\\w+)\\s*=\\s*'([^']*)'");
+
 	public LinkType() {
-		this.setSectionFinder(new RegexSectionFinder(
-				"(?<=(^|[^\\[]))\\[[^\\[{].*?\\]"));
+		this.setSectionFinder(new RegexSectionFinder(PATTERN));
 	}
+
+	/**
+	 * 
+	 * 
+	 * @created 22.05.2013
+	 * @param link
+	 * @return s the target of the link. This is an article or attachment link
+	 *         for internal links, an URL for for external links.
+	 */
+	public static String getLink(Section<LinkType> link) {
+		Matcher matcher = PATTERN.matcher(link.getText());
+		if (!matcher.matches()) return null; // shouldn't happen
+
+		if (matcher.group(Patterns.LINK_GROUP_LINK) != null) return matcher.group(Patterns.LINK_GROUP_LINK).trim();
+		else return matcher.group(Patterns.LINK_GROUP_TEXT).trim();
+	}
+
+	/**
+	 * Returns the optional displayed text of the link. If none is specified, it
+	 * returns the link text.
+	 * 
+	 * @created 22.05.2013
+	 * @param link
+	 * @return
+	 */
+	public static String getDisplayText(Section<LinkType> link) {
+		Matcher matcher = PATTERN.matcher(link.getText());
+		if (!matcher.matches()) return null; // shouldn't happen
+
+		if (matcher.group(Patterns.LINK_GROUP_TEXT) != null) return matcher.group(
+				Patterns.LINK_GROUP_TEXT).trim();
+		else return getLink(link);
+	}
+
+	/**
+	 * Checks, if a link is internal and points to an attachment.
+	 * 
+	 * @created 22.05.2013
+	 * @param link
+	 * @return
+	 */
+	public static boolean isAttachment(Section<LinkType> link) {
+		Matcher matcher = PATTERN.matcher(link.getText());
+		if (!matcher.matches()) return false; // shouldn't happen
+
+		if (!isInternal(link)) return false;
+
+		String path = getLink(link);
+
+		// qualified attachment
+		if (path.contains("/")) return true;
+
+		// not qualified, check for attachment to current page
+		try {
+			List<WikiAttachment> list = Environment.getInstance().getWikiConnector().getAttachments(
+					link.getTitle());
+
+			for (WikiAttachment wikiAttachment : list) {
+				if (wikiAttachment.getFileName().equalsIgnoreCase(path)) return true;
+			}
+			return false;
+
+		}
+		catch (IOException e) {
+			return false;
+		}
+
+	}
+
+	public static boolean isInternal(Section<LinkType> link) {
+		return !isExternal(link) && !isInterWiki(link);
+	}
+
+	public static boolean isExternal(Section<LinkType> link) {
+		Matcher matcher = PATTERN.matcher(link.getText());
+		if (!matcher.matches()) return false; // shouldn't happen
+
+		return isExternalForm(getLink(link));
+	}
+
+	public static boolean isInterWiki(Section<LinkType> link) {
+		Matcher matcher = PATTERN.matcher(link.getText());
+		if (!matcher.matches()) return false; // shouldn't happen
+
+		return isInterWikiForm(getLink(link));
+	}
+
+	public static boolean isExternalForm(String link) {
+		for (String protocol : EXTERNAL_PROTOCOLS) {
+			if (link.trim().toLowerCase().startsWith(protocol)) return true;
+		}
+		return false;
+	}
+
+	public static boolean isInterWikiForm(String link) {
+		// if we want to support interwiki links, it would be best to check
+		// jspwiki.properties for defined interwiki links
+		return !isExternalForm(link) && link.contains(":");
+
+	}
+
+	public static Map<String, String> getAttributes(Section<LinkType> link) {
+		Matcher matcher = PATTERN.matcher(link.getText());
+		if (!matcher.matches()) return null; // shouldn't happen
+
+		if (matcher.group(Patterns.LINK_GROUP_ATTRIBUTES) == null) return Collections.emptyMap();
+		Map<String, String> result = new HashMap<String, String>();
+
+		String attributes = matcher.group(Patterns.LINK_GROUP_ATTRIBUTES);
+		Matcher attMatcher = ATTRIBUTES_PATTERN.matcher(attributes);
+
+		while (attMatcher.find()) {
+			String name = attMatcher.group(1);
+			String value = attMatcher.group(2);
+			result.put(name, value);
+
+		}
+
+		return result;
+
+	}
+
+
 }
