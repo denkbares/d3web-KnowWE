@@ -141,14 +141,31 @@ public final class Patterns {
 					SPACETABS + // space after thresholds
 					// LINEBREAK + // XCL has to be terminated by newline
 					"";
+
+	/**
+	 * Group for the text of a JSPWiki Link, if it exists. If not, this group
+	 * contains the link text.
+	 */
+	public static final int LINK_GROUP_TEXT = 1;
+
+	/**
+	 * Group for the link of a JSPWiki Link
+	 */
+	public static final int LINK_GROUP_LINK = 2;
+
+	/**
+	 * Group for the attributes of a JSPWiki Link
+	 */
+	public static final int LINK_GROUP_ATTRIBUTES = 3;
+
 	/**
 	 * A Pattern for jspwiki links. The link text is captured in group 1, the
-	 * optional page reference in group 2, group 3 contains optional link
-	 * attributes. This pattern can handle masked '[' (i.e., '[[').
+	 * optional page reference in group 2, group 3 contains optional link attributes.
+	 * This pattern can handle masked '[' (i.e., '[[', '~[').
 	 */
 	public static final String JSPWIKI_LINK =
-			"(?<!\\[)\\[(?!\\[|\\{)" + // opening bracket (except, if masked or
-										// plugin insertion)
+			"(?<![\\[~])\\[(?!\\[|\\{)" + // opening bracket (except, if masked
+											// or plugin insertion)
 					"([^]|]+)" + // link text (captured)
 					"(?:\\|([^]|]+))?" + // optional reference
 					"(?:\\|([^]|]+))?" + // optional attributes
@@ -166,4 +183,5 @@ public final class Patterns {
 			System.out.println(matcher.group());
 		}
 	}
+
 }
