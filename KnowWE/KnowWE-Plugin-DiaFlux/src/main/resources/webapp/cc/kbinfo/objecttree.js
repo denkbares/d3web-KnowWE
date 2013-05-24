@@ -139,6 +139,7 @@ ObjectTree.prototype.renderTreeItem = function(infoObject, className, isVisible)
 		}));
 	}
 	
+	var name = ActionPane.insertWordWrapPoints(infoObject.getName());
 	var dragItem;
 	childs.push(dragItem = Builder.node('span', {
 		className: 'item NodePrototype',
@@ -147,9 +148,8 @@ ObjectTree.prototype.renderTreeItem = function(infoObject, className, isVisible)
 		(icon) 
 			? [Builder.node('span', {className: 'icon'}, [
 					Builder.node('img', {src: icon})
-				]), 
-				infoObject.getName()]
-			: [infoObject.getName()]
+				]), name]
+			: [name]
 		));
 
 	var dom = Builder.node('div', {

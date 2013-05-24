@@ -645,7 +645,7 @@ ActionPane.WORD_WRAP_POINTS = ['[', ']', '-', '_','#','(',')'];
 
 //inserts a Zero-width space after special chars
 //NB: those have to be removed, if this string is re-used, eg to search for an object
-ActionPane.prototype.insertWordWrapPoints = function(s) {
+ActionPane.insertWordWrapPoints = function(s) {
 	for (var i = 0; i < ActionPane.WORD_WRAP_POINTS.length; i++){
 		var char = ActionPane.WORD_WRAP_POINTS[i];
 		s = s.replace(new RegExp("\\" + char, 'g'), char + "\u200B");
@@ -659,7 +659,7 @@ ActionPane.prototype.render = function() {
 	var iconURL = infoObject ? infoObject.getIconURL() : KBInfo.imagePath+'no-object.gif';
 	if (!name) name = '';
 
-	name = this.insertWordWrapPoints(name);
+	name = ActionPane.insertWordWrapPoints(name);
 	
 	var valueText = null;
 	var valueError = null;
@@ -677,7 +677,7 @@ ActionPane.prototype.render = function() {
 		Builder.node('div', {
 			className: valueError ? 'value error' : 'value',
 			title: valueError ? valueError : ''
-		}, (valueText == null) ? [] : [this.insertWordWrapPoints(valueText)])
+		}, (valueText == null) ? [] : [ActionPane.insertWordWrapPoints(valueText)])
 	]);
 	dom.__ActionEditor = this;
 	return dom;
