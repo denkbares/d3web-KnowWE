@@ -80,7 +80,12 @@ KNOWWE.helper = function(){
             if( typeof(oNew) != 'undefined' && oNew != null){
                 for( var i in oNew ) {
                     if( oNew[i] != null && typeof oNew[i] != 'object' ) oDefault[i] = oNew[i];
-                    if(typeof oNew[i] == 'object') this.enrich( oNew[i], oDefault[i]);
+                    if(typeof oNew[i] == 'object') {
+	                    // first create object, if it does not exist in oDef
+                    	if (!oDefault[i]) oDefault[i] = {}; 
+						// then call recursive enriching
+                    	this.enrich( oNew[i], oDefault[i]);
+                    }
                 }
             }
             return oDefault;
