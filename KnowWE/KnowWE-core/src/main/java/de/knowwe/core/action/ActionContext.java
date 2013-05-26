@@ -53,8 +53,8 @@ import de.knowwe.core.user.AuthenticationManager;
  */
 public class ActionContext extends AbstractUserContext implements UserActionContext {
 
-	public final String EXTENDED_PLUGIN_ID = "KnowWEExtensionPoints";
-	public final String EXTENDED_POINT_ID = "Action";
+	public static final String EXTENDED_PLUGIN_ID = "KnowWEExtensionPoints";
+	public static final String EXTENDED_POINT_ID = "Action";
 
 	/**
 	 * The name of the action
@@ -110,6 +110,7 @@ public class ActionContext extends AbstractUserContext implements UserActionCont
 		this.servletContext = servletContext;
 	}
 
+	@Override
 	public Action getAction() {
 		PluginManager manager = PluginManager.getInstance();
 		Extension[] extensions = manager.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_ID);
@@ -121,59 +122,73 @@ public class ActionContext extends AbstractUserContext implements UserActionCont
 		return null;
 	}
 
+	@Override
 	public String getActionName() {
 		return this.actionName;
 	}
 
+	@Override
 	public String getPath() {
 		return this.path;
 	}
 
+	@Override
 	public Map<String, String> getParameters() {
 		return this.parameters;
 	}
 
+	@Override
 	public ServletContext getServletContext() {
 		return this.servletContext;
 	}
 
+	@Override
 	public HttpServletRequest getRequest() {
 		return this.request;
 	}
 
+	@Override
 	public HttpServletResponse getResponse() {
 		return this.response;
 	}
 
+	@Override
 	public HttpSession getSession() {
 		return this.request.getSession();
 	}
 
+	@Override
 	public Writer getWriter() throws IOException {
 		if (response != null) return this.response.getWriter();
 		return null;
 	}
 
+	@Override
 	public OutputStream getOutputStream() throws IOException {
 		return this.response.getOutputStream();
 	}
 
+	@Override
 	public void setContentType(String mimetype) {
 		this.response.setContentType(mimetype);
 	}
 
+	@Override
 	public void setContentLength(int length) {
 		this.response.setContentLength(length);
 	}
 
+	@Override
 	public void sendRedirect(String location) throws IOException {
 		this.response.sendRedirect(location);
 	}
 
+	@Override
 	public void setHeader(String name, String value) throws IOException {
 		this.response.setHeader(name, value);
 	}
 
+	@Override
 	public void sendError(int sc, String msg) throws IOException {
 		this.response.sendError(sc, msg);
 	}
