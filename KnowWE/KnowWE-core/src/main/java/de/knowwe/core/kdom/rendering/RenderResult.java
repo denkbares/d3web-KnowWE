@@ -378,17 +378,39 @@ public class RenderResult {
 	 * @return an opening and masked HTML element with attributes
 	 */
 	public void appendHtmlTag(String tag, String... attributes) {
+		appendHtmlTag(tag, true, attributes);
+	}
+
+	/**
+	 * Appends an opening and masked HTML element without having to fiddle with
+	 * strings and quoting. Just set tag name and the attributes. Attributes
+	 * need to be given in pairs. First the name of the attribute, second the
+	 * content of the attribute.
+	 * 
+	 * 
+	 * @created 05.02.2013
+	 * @param result the {@link RenderResult} the tag will be appended to
+	 * @param tag the tag name of the HTML element
+	 * @param encode decides whether the attributes will be html encoded or not
+	 * @param attributes the attributes of the HTML element: the odd elements
+	 *        are the attribute names and the even elements the attribute
+	 *        contents
+	 * @return an opening and masked HTML element with attributes
+	 */
+	public void appendHtmlTag(String tag, boolean encode, String... attributes) {
 		StringBuilder html = new StringBuilder();
 		html.append("<" + tag);
 		for (int i = 0; i + 2 <= attributes.length; i += 2) {
-			html.append(getAttribute(attributes[i], attributes[i + 1]));
+			html.append(getAttribute(encode, attributes[i], attributes[i + 1]));
 		}
 		html.append(">");
 		appendHtml(html.toString());
 	}
 
-	private static String getAttribute(String attributeName, String attribute) {
-		return " " + attributeName + "=\"" + Strings.encodeHtml(attribute) + "\"";
+	private static String getAttribute(boolean encode, String attributeName, String attribute) {
+		return " " + attributeName + "=\""
+				+ (encode ? Strings.encodeHtml(attribute) : attribute)
+				+ "\"";
 	}
 
 	/**
