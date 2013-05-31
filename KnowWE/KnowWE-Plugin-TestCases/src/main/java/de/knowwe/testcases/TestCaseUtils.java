@@ -100,8 +100,11 @@ public class TestCaseUtils {
 		return providers;
 	}
 
-	public static SequentialTestCase transformToSTC(TestCase testCase, KnowledgeBase kb) {
+	public static SequentialTestCase transformToSTC(TestCase testCase, String testCaseName, KnowledgeBase kb) {
 		SequentialTestCase stc = new SequentialTestCase();
+		if (testCaseName != null) {
+			stc.setName(testCaseName);
+		}
 
 		for (Date date : testCase.chronology()) {
 			RatedTestCase rtc = new RatedTestCase();

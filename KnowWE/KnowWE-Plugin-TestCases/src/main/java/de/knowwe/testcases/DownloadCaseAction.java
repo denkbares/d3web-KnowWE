@@ -47,6 +47,7 @@ public class DownloadCaseAction extends AbstractAction {
 
 		TestCaseProvider provider = selectedTestCaseTriple.getA();
 		TestCase testCase = provider.getTestCase();
+		String testCaseName = provider.getName();
 		Session session = provider.getActualSession(context);
 
 		if (session == null) {
@@ -57,7 +58,7 @@ public class DownloadCaseAction extends AbstractAction {
 
 		SequentialTestCase sequentialTestCase = null;
 		try {
-			sequentialTestCase = TestCaseUtils.transformToSTC(testCase,
+			sequentialTestCase = TestCaseUtils.transformToSTC(testCase, testCaseName,
 					session.getKnowledgeBase());
 		}
 		catch (Exception e) {
@@ -68,10 +69,9 @@ public class DownloadCaseAction extends AbstractAction {
 
 		context.setContentType("application/x-bin");
 
-		String fileName = provider.getName();
-		if (!fileName.toLowerCase().endsWith(".xml")) fileName += ".xml";
+		if (!testCaseName.toLowerCase().endsWith(".xml")) testCaseName += ".xml";
 
-		context.setHeader("Content-Disposition", "attachment;filename=\"" + fileName
+		context.setHeader("Content-Disposition", "attachment;filename=\"" + testCaseName
 				+ "\"");
 
 		OutputStream out = context.getOutputStream();
