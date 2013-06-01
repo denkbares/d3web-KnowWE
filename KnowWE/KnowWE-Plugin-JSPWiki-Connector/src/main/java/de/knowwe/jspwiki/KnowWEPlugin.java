@@ -303,7 +303,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	}
 
 	private void renderPostPageAppendHandler(JSPWikiUserContext userContext, String title, RenderResult renderResult, List<PageAppendHandler> appendhandlers) {
-		renderResult.appendHtmlTag("div", "class", "postpageappend");
 		for (PageAppendHandler pageAppendHandler : appendhandlers) {
 			if (!pageAppendHandler.isPre()) {
 				pageAppendHandler.append(
@@ -311,7 +310,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 						userContext, renderResult);
 			}
 		}
-		renderResult.appendHtml("</div>");
 	}
 
 	private void renderPage(JSPWikiUserContext userContext, Article article, RenderResult renderResult) {
@@ -326,7 +324,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	}
 
 	private void renderPrePageAppendHandler(JSPWikiUserContext userContext, String title, RenderResult renderResult, List<PageAppendHandler> appendhandlers) {
-		renderResult.appendHtmlTag("div", "class", "prepageappend");
 		for (PageAppendHandler pageAppendHandler : appendhandlers) {
 			if (pageAppendHandler.isPre()) {
 				pageAppendHandler.append(
@@ -334,7 +331,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 						userContext, renderResult);
 			}
 		}
-		renderResult.appendHtml("</div>");
 	}
 
 	private String getExceptionRendering(UserContext context, Exception e) {
