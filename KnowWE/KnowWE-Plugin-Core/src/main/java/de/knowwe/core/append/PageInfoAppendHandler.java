@@ -33,15 +33,15 @@ import de.knowwe.core.wikiConnector.WikiConnector;
 public class PageInfoAppendHandler implements PageAppendHandler {
 
 	@Override
-	public void append(String web, String topic, UserContext user, RenderResult html) {
+	public void append(String web, String title, UserContext user, RenderResult html) {
 		WikiConnector connector = Environment.getInstance().getWikiConnector();
-		int version = connector.getVersion(topic);
-		long modDate = connector.getLastModifiedDate(topic, -1).getTime();
+		int version = connector.getVersion(title);
+		long modDate = connector.getLastModifiedDate(title, -1).getTime();
 		String userName = user.getUserName();
 
 		// username and topic can not contain special chars, so no masking
 		// should be necessary
-		html.appendHtml("<input type='hidden' id='knowWEInfoPageName' value='" + topic + "'>");
+		html.appendHtml("<input type='hidden' id='knowWEInfoPageName' value='" + title + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoPageVersion' value='" + version + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoPageDate' value='" + modDate + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoUser' value='" + userName + "'>");

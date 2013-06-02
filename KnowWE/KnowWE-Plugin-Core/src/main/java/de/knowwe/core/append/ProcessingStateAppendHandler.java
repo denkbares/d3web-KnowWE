@@ -6,7 +6,7 @@ import de.knowwe.core.user.UserContext;
 public class ProcessingStateAppendHandler implements PageAppendHandler {
 
 	@Override
-	public void append(String web, String topic, UserContext user, RenderResult result) {
+	public void append(String web, String title, UserContext user, RenderResult result) {
 		result.appendHtml("<div id='KnowWEProcessingIndicator' class='ajaxloader' state='idle' style='display:none'>"
 				+ "<img src='KnowWEExtension/images/ajax-100.gif'></img>"
 				+ "</div>");

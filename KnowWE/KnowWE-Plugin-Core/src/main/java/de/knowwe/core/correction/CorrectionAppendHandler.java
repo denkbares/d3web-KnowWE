@@ -33,7 +33,7 @@ import de.knowwe.core.user.UserContext;
 public class CorrectionAppendHandler implements PageAppendHandler {
 
 	@Override
-	public void append(String web, String topic, UserContext user, RenderResult result) {
+	public void append(String web, String title, UserContext user, RenderResult result) {
 
 	}
 

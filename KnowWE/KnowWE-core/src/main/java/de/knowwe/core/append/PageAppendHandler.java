@@ -42,11 +42,11 @@ public interface PageAppendHandler {
 	 * 
 	 * @created 17.08.2010
 	 * @param web
-	 * @param topic
+	 * @param title
 	 * @param user
-	 * @param result TODO
+	 * @param result
 	 */
-	public void append(String web, String topic, UserContext user, RenderResult result);
+	public void append(String web, String title, UserContext user, RenderResult result);
 
 	/**
 	 * Specifies whether the content should be inserted at the top/beginning
