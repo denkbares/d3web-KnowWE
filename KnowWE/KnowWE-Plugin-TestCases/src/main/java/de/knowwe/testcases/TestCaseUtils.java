@@ -49,6 +49,7 @@ import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.TestCase;
 import de.d3web.testcase.stc.DerivedQuestionCheck;
 import de.d3web.testcase.stc.DerivedSolutionCheck;
+import de.d3web.testcase.stc.STCWrapper;
 import de.d3web.we.knowledgebase.KnowledgeBaseType;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
@@ -101,6 +102,9 @@ public class TestCaseUtils {
 	}
 
 	public static SequentialTestCase transformToSTC(TestCase testCase, String testCaseName, KnowledgeBase kb) {
+		if (testCase instanceof STCWrapper) {
+			return ((STCWrapper) testCase).getSequentialTestCase();
+		}
 		SequentialTestCase stc = new SequentialTestCase();
 		if (testCaseName != null) {
 			stc.setName(testCaseName);

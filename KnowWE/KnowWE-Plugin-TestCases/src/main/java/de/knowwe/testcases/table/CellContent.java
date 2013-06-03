@@ -27,12 +27,12 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.NonEmptyConstraint;
 import de.knowwe.kdom.constraint.SectionFinderConstraint;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableUtils;
+import de.knowwe.testcases.NameType;
 import de.knowwe.testcases.TimeStampType;
 
 /**
@@ -49,7 +49,7 @@ public class CellContent extends TableCellContent {
 				timeStampType.getSectionFinder(),
 				new TableNameConstraint("Time", Arrays.asList(0, 1))));
 
-		AnonymousType nameType = new AnonymousType("name");
+		NameType nameType = new NameType();
 		nameType.setSectionFinder(new ConstraintSectionFinder(new AllTextSectionFinder(),
 				new TableNameConstraint("Name", Arrays.asList(0))));
 

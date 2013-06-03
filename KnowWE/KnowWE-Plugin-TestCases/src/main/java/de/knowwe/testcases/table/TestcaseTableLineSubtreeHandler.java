@@ -22,6 +22,7 @@ import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.testcases.NameType;
 import de.knowwe.testcases.TimeStampType;
 
 /**
@@ -45,6 +46,12 @@ final class TestcaseTableLineSubtreeHandler extends SubtreeHandler<TestcaseTable
 			// checked
 			long time = TimeStampType.getTimeInMillis(timeStamp);
 			testCase.setTimeStamp(new Date(time));
+		}
+
+		Section<NameType> nameSection = Sections.findSuccessor(s, NameType.class);
+		if (nameSection != null) {
+			String rtcName = nameSection.get().getRTCName(nameSection);
+			testCase.setName(rtcName);
 		}
 
 		List<Section<ValueType>> values = Sections.findSuccessorsOfType(s, ValueType.class);
