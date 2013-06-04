@@ -37,7 +37,7 @@ public class TestCasePlayerToolProvider implements ToolProvider {
 
 		String jsAction = "var goToLink = jq$('#"
 				+ section.getID()
-				+ "').find('select').find('[selected=&quot;selected&quot;]').attr('caselink');window.location=goToLink;";
+				+ "').find('select').find(':selected').attr('caselink');if (goToLink) window.location=goToLink;";
 		Tool goToTool = new DefaultTool("KnowWEExtension/testcaseplayer/icon/testcaselink.png",
 				"Go to test case", "Go to the currently selected test case", jsAction);
 		return goToTool;

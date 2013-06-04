@@ -37,6 +37,11 @@ public class DownloadCaseAction extends AbstractAction {
 
 		Triple<TestCaseProvider, Section<?>, Article> selectedTestCaseTriple = getSelectedTestCaseTriple(
 				section, context);
+		if (selectedTestCaseTriple == null) {
+			context.sendError(HttpServletResponse.SC_NOT_FOUND,
+					"No testcase found to download.");
+			return;
+		}
 		Section<?> testCaseSection = selectedTestCaseTriple.getB();
 
 		if (!userCanView(context, section) || !userCanView(context, testCaseSection)) {
@@ -105,6 +110,7 @@ public class DownloadCaseAction extends AbstractAction {
 				}
 			}
 		}
+		if (!providers.isEmpty()) return providers.get(0);
 		return null;
 	}
 

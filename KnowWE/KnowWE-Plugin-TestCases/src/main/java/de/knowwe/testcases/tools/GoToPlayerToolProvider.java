@@ -72,21 +72,26 @@ public class GoToPlayerToolProvider implements ToolProvider {
 					List<Section<?>> sectionsInPackage = packageManager.getSectionsOfPackage(kbpackage);
 					for (Section<?> sectionInPackage : sectionsInPackage) {
 						if (sectionInPackage.get() instanceof TestCasePlayerType) {
-							return new Tool[] { new DefaultTool(
-									null,
-									"Show in Player",
-									"Opens this test case in an associated test case player",
-									"TestCasePlayer.change('"
-											+ TestCasePlayerRenderer.generateSelectedTestCaseCookieKey(DefaultMarkupType.getContentSection(sectionInPackage))
-											+ "', '" + value + "');"
-											+ " window.location='"
-											+ KnowWEUtils.getURLLink(sectionInPackage) + "';") };
+							return createTools(value, sectionInPackage);
 						}
 					}
 				}
 			}
 		}
 		return null;
+	}
+
+	private Tool[] createTools(String value, Section<?> sectionInPackage) {
+		String testCaseSection = TestCasePlayerRenderer.generateSelectedTestCaseCookieKey(DefaultMarkupType.getContentSection(sectionInPackage));
+		return new Tool[] { new DefaultTool(
+				null,
+				"Show in Player",
+				"Opens this test case in an associated test case player",
+				"TestCasePlayer.change('"
+						+ testCaseSection
+						+ "', '" + value + "');"
+						+ " window.location='"
+						+ KnowWEUtils.getURLLink(sectionInPackage) + "';") };
 	}
 
 }
