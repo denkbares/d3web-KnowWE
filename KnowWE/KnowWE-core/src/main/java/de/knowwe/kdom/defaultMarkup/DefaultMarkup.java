@@ -39,6 +39,7 @@ public class DefaultMarkup {
 		private final String name;
 		private final boolean mandatory;
 		private final Pattern pattern; // optional
+		private final boolean isRegex;
 		private boolean deprecated;
 
 		private final Collection<Type> nameTypes = new LinkedList<Type>();
@@ -46,10 +47,11 @@ public class DefaultMarkup {
 
 		private Renderer renderer = null;
 
-		private Annotation(String name, boolean mandatory, Pattern pattern) {
+		private Annotation(String name, boolean mandatory, boolean isRegex, Pattern pattern) {
 			super();
 			this.name = name;
 			this.mandatory = mandatory;
+			this.isRegex = isRegex;
 			this.pattern = pattern;
 		}
 
@@ -80,6 +82,17 @@ public class DefaultMarkup {
 		 */
 		public boolean isDeprecated() {
 			return deprecated;
+		}
+
+		/**
+		 * Returns whether this annotations is described with a regular
+		 * expression instead of name string.
+		 * 
+		 * @created 05.06.2013
+		 * @return
+		 */
+		public boolean isRegex() {
+			return isRegex;
 		}
 
 		/**
@@ -160,6 +173,18 @@ public class DefaultMarkup {
 	}
 
 	/**
+	 * Adds a new annotation to the markup, where the name is a regular
+	 * expression. All annotations with names matching this expression will be
+	 * found and allowed.
+	 * 
+	 * @param regex the regex of the name of the annotations to be added
+	 * @param mandatory if the annotation is required for the markup
+	 */
+	public void addRegexAnnotation(String regex, boolean mandatory) {
+		this.addAnnotation(regex, mandatory, true, (Pattern) null);
+	}
+
+	/**
 	 * Adds a new annotation to the markup with a fixed list of possible values
 	 * (enumeration).
 	 * 
@@ -200,6 +225,20 @@ public class DefaultMarkup {
 	 * @param pattern a regular expression to check the allowed values
 	 */
 	public void addAnnotation(String name, boolean mandatory, Pattern pattern) {
+		this.addAnnotation(name, mandatory, false, pattern);
+	}
+
+	/**
+	 * Adds a new annotation to the markup with a pattern to specify the values
+	 * allowed for this annotation.
+	 * 
+	 * @param name the name of the annotation to be added
+	 * @param mandatory if the annotation is required for the markup
+	 * @param isRegex if the given name is a regex allowing a range of
+	 *        annotations
+	 * @param pattern a regular expression to check the allowed values
+	 */
+	public void addAnnotation(String name, boolean mandatory, boolean isRegex, Pattern pattern) {
 		// do not allow duplicates
 		String key = name.toLowerCase();
 		if (annotations.containsKey(key)) {
@@ -207,7 +246,7 @@ public class DefaultMarkup {
 					+ " already added");
 		}
 		// add new parameter
-		Annotation annotation = new Annotation(name, mandatory, pattern);
+		Annotation annotation = new Annotation(name, mandatory, isRegex, pattern);
 		this.annotations.put(key, annotation);
 	}
 
