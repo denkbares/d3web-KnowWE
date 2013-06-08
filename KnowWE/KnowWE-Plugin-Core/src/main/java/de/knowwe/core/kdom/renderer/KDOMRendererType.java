@@ -54,7 +54,7 @@ public class KDOMRendererType extends DefaultMarkupType {
 		protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
 			String html = "";
 			// html += "<div class='zebra-table'>";
-			html += "<table class='renderKDOMTable wikitable' id='tree'>";
+			html += "<table class='renderKDOMTable wikitable' id='kdomTreeTable'>";
 			html += "<th>Type</th>";
 			html += "<th>ID</th>";
 			html += "<th>Length</th>";
@@ -66,7 +66,7 @@ public class KDOMRendererType extends DefaultMarkupType {
 
 			string.appendHtml("</table>"/* </div>" */);
 
-			string.appendHtml("<script type='text/javascript'>jq$('#tree').treeTable();</script>");
+			string.appendHtml("<script type='text/javascript'>jq$('#kdomTreeTable').treeTable();</script>");
 
 		}
 
