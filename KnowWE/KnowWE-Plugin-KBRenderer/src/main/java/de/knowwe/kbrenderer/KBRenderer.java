@@ -184,7 +184,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			 * Render DiaFlux Models
 			 */
 			FlowSet flowSet = DiaFluxUtils.getFlowSet(kb);
-			if (!flowSet.isEmpty()) {
+			if (flowSet != null && !flowSet.isEmpty()) {
 				RenderResult bob = new RenderResult(text);
 				int totalEdgeCount = 0, totalNodeCount = 0;
 				for (Flow flow : flowSet) {
