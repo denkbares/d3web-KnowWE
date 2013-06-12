@@ -87,7 +87,7 @@ public class SingleTermDefinitionTest extends AbstractTest<Article> {
 
 	@Override
 	public String getDescription() {
-		return "This test checks, if each term is defined is only once.";
+		return "This test checks, if each term is defined only once.";
 	}
 
 
