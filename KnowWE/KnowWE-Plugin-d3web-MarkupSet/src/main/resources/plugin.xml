@@ -217,5 +217,15 @@
 		<parameter id="handlerpriority" value="-200" />
 		<parameter id="scope" value="PropertyDeclarationType" />
 	</extension>
+		
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="PropertyTableType">
+		<parameter id="class" value="de.d3web.we.kdom.propertytable.PropertyTableType" />
+		<parameter id="name" value="PropertyTableType" />
+		<parameter id="description" value="Type PropertyTableType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
 
 </plugin>
