@@ -197,9 +197,13 @@ public class TableUtils {
 	 * @return row description as String
 	 */
 	public static String getRowDescription(Section<?> cell) {
+		Section<TableCellContent> header = getRowHeader(cell);
+		return header != null ? header.getText() : null;
+	}
+
+	public static Section<TableCellContent> getRowHeader(Section<?> cell) {
 		Section<TableLine> line = Sections.findAncestorOfType(cell, TableLine.class);
-		Section<TableCellContent> descriptionCell = Sections.findSuccessor(line,
-				TableCellContent.class);
-		return descriptionCell != null ? descriptionCell.getText() : null;
+		return Sections.findSuccessor(line, TableCellContent.class);
+
 	}
 }
