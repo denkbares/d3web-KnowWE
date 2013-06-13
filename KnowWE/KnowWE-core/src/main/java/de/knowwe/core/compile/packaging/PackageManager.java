@@ -262,7 +262,7 @@ public class PackageManager implements EventListener {
 	 *        removed
 	 */
 	public void removeSectionFromAllPackages(Section<?> s) {
-		for (String packageName : s.getPackageNames()) {
+		for (String packageName : new ArrayList<String>(s.getPackageNames())) {
 			removeSectionFromPackage(s, packageName);
 		}
 	}
