@@ -96,11 +96,10 @@ public class PropertyValueType extends AbstractType {
 				}
 
 				if (object.getInfoStore().contains(property)) {
-					return Messages.asList(Messages.objectAlreadyDefinedWarning("Value of property '"
+					return Messages.asList(Messages.objectAlreadyDefinedWarning("Property '"
 							+ property.getName()
 							+ "' for object '"
-							+ object.getName()
-							+ "' already defined"));
+							+ object.getName() + "'"));
 				}
 
 				object.getInfoStore().addValue(property, parsedValue);

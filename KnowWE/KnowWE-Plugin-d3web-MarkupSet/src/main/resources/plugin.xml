@@ -227,5 +227,22 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+        id="PropertyTableEditToolProvider">
+        <parameter id="class"
+            value="de.d3web.we.kdom.propertytable.PropertyTableToolProvider" />
+        <parameter id="name" value="PropertyTableToolProvider" />
+        <parameter id="description"
+            value="Offers a tool for a spreadsheet-like table editor." />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="3" />
+        <parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
+        <parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
+        <parameter id="script" value="DefaultTableEditTool.js" />
+        <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
+        <parameter id="css" value="DefaultTableEditTool.css" />       
+        <parameter id="scope" value="PropertyTableType" />
+	</extension>
 
 </plugin>
