@@ -368,11 +368,13 @@ public class CIRenderer {
 			switch (resultType) {
 			case SUCCESS:
 				imgBulb = String.format(imgBulb, "green" + imageSuffix + ".png",
-						"Build successful!");
+						"Build successful: " + Strings.encodeHtml(dashboardName));
 			case FAILURE:
-				imgBulb = String.format(imgBulb, "red" + imageSuffix + ".png", "Build failed!");
+				imgBulb = String.format(imgBulb, "red" + imageSuffix + ".png", "Build failed: "
+						+ Strings.encodeHtml(dashboardName));
 			case ERROR:
-				imgBulb = String.format(imgBulb, "grey" + imageSuffix + ".png", "Build has errors!");
+				imgBulb = String.format(imgBulb, "grey" + imageSuffix + ".png", "Build has errors: "
+						+ Strings.encodeHtml(dashboardName));
 			}
 		}
 
