@@ -102,20 +102,25 @@ public class TestCaseUtils {
 	}
 
 	public static SequentialTestCase transformToSTC(TestCase testCase, String testCaseName, KnowledgeBase kb) {
+		SequentialTestCase stc = null;
 		if (testCase instanceof STCWrapper) {
-			return ((STCWrapper) testCase).getSequentialTestCase();
+			stc = ((STCWrapper) testCase).getSequentialTestCase();
+			for (RatedTestCase rtc : stc.getCases()) {
+				addChecks(testCase, rtc, rtc.getTimeStamp(), kb);
+			}
 		}
-		SequentialTestCase stc = new SequentialTestCase();
-		if (testCaseName != null) {
-			stc.setName(testCaseName);
-		}
-
-		for (Date date : testCase.chronology()) {
-			RatedTestCase rtc = new RatedTestCase();
-			rtc.setTimeStamp(date);
-			addFindings(testCase, rtc, date, kb);
-			addChecks(testCase, rtc, date, kb);
-			stc.add(rtc);
+		else {
+			stc = new SequentialTestCase();
+			if (testCaseName != null) {
+				stc.setName(testCaseName);
+			}
+			for (Date date : testCase.chronology()) {
+				RatedTestCase rtc = new RatedTestCase();
+				rtc.setTimeStamp(date);
+				addFindings(testCase, rtc, date, kb);
+				addChecks(testCase, rtc, date, kb);
+				stc.add(rtc);
+			}
 		}
 
 		return stc;
