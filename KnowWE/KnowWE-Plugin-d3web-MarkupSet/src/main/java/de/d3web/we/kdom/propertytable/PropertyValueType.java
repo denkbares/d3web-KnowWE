@@ -22,6 +22,7 @@ import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.info.Property;
+import de.d3web.strings.Strings;
 import de.d3web.we.object.NamedObjectReference;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
@@ -77,6 +78,8 @@ public class PropertyValueType extends AbstractType {
 				
 				Object parsedValue;
 				String value = section.getText().trim();
+				if (Strings.isBlank(value)) return Messages.noMessage();
+
 				try {
 					parsedValue = property.parseValue(value);
 				}
