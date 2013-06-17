@@ -45,3 +45,11 @@
 	width: 40px;
 	display: inline-table;
 }
+
+.changenotearea {
+	padding: .25em;
+}
+
+.changenotearea span {
+	font-weight: bold;
+}

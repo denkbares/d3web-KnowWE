@@ -79,6 +79,7 @@ KNOWWE.plugin.instantEdit = function() {
 
                         var locked = JSON.parse(this.responseText).locked;
                         var html = toolNameSpace.generateHTML(id);
+                        html += _IE.getChangeNoteField();
                         html += toolNameSpace.generateButtons(id);
                         html = _EC.wrapHTML(id, locked, html);
 
@@ -135,6 +136,7 @@ KNOWWE.plugin.instantEdit = function() {
             var params = {
                 action: 'InstantEditSaveAction',
                 KdomNodeId: id,
+                KWikiChangeNote: _EC.mode.getChangeNote(id)
             }
 
             _EC.sendChanges(newWikiText, params, function(id) { _IE.disable(id, true, null); });
@@ -224,6 +226,15 @@ KNOWWE.plugin.instantEdit = function() {
                 table += "<p>" + buttons[i] + "</p>\n";
             }
             return "<div class='editbuttons'>" + table + "</div>";
+        },
+        
+        getChangeNoteField: function(){
+        	return "<div class='changenotearea'><span>Change note: </span><input class='changenote' type='text' maxLength=100 size=100></input></div>";
+        },
+        
+        getChangeNote: function(id) {
+        	var note = jq$('#' + id + ' .changenote').val();
+        	return note;
         }
         
     }
