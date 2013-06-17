@@ -19,8 +19,10 @@
 package de.knowwe.testcases;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import de.d3web.core.inference.condition.CondAnd;
@@ -102,25 +104,28 @@ public class TestCaseUtils {
 	}
 
 	public static SequentialTestCase transformToSTC(TestCase testCase, String testCaseName, KnowledgeBase kb) {
-		SequentialTestCase stc = null;
+		SequentialTestCase stc = new SequentialTestCase();
+		Map<Date, String> rtcNames = new HashMap<Date, String>();
 		if (testCase instanceof STCWrapper) {
-			stc = ((STCWrapper) testCase).getSequentialTestCase();
-			for (RatedTestCase rtc : stc.getCases()) {
-				addChecks(testCase, rtc, rtc.getTimeStamp(), kb);
+			// we just use the names given in the stc, because the TestCase
+			// interface does not support names
+			SequentialTestCase actualStc = ((STCWrapper) testCase).getSequentialTestCase();
+			testCaseName = actualStc.getName();
+			for (RatedTestCase rtc : actualStc.getCases()) {
+				rtcNames.put(rtc.getTimeStamp(), rtc.getName());
 			}
 		}
-		else {
-			stc = new SequentialTestCase();
-			if (testCaseName != null) {
-				stc.setName(testCaseName);
-			}
-			for (Date date : testCase.chronology()) {
-				RatedTestCase rtc = new RatedTestCase();
-				rtc.setTimeStamp(date);
-				addFindings(testCase, rtc, date, kb);
-				addChecks(testCase, rtc, date, kb);
-				stc.add(rtc);
-			}
+		if (testCaseName != null) {
+			stc.setName(testCaseName);
+		}
+		for (Date date : testCase.chronology()) {
+			RatedTestCase rtc = new RatedTestCase();
+			String name = rtcNames.get(date);
+			if (name != null) rtc.setName(name);
+			rtc.setTimeStamp(date);
+			addFindings(testCase, rtc, date, kb);
+			addChecks(testCase, rtc, date, kb);
+			stc.add(rtc);
 		}
 
 		return stc;
@@ -162,7 +167,10 @@ public class TestCaseUtils {
 	private static void addDerivedSolutionCheck(RatedTestCase rtc, DerivedSolutionCheck check) {
 		Solution solution = check.getSolution();
 		Rating rating = check.getRating();
-		rtc.addDerived(new RatedSolution(solution, new StateRating(rating)));
+		// We always use expected solutions instread of derived solutions to
+		// stay consistent. Derived solutions are also loaded as expected
+		// solutions.
+		rtc.addExpected(new RatedSolution(solution, new StateRating(rating)));
 	}
 
 	private static void addDerivedQuestionCheck(RatedTestCase rtc, DerivedQuestionCheck check) {
