@@ -233,21 +233,21 @@ public class CIDashboard {
 	 * @param dashboardArticleTitle the article where the dashboard is located
 	 * @param dashboardName the name of the dashboard
 	 */
-	public static boolean hasDashboard(String web, String dashboardArticleTitle, String dashboardName) {
+	public static Section<CIDashboardType> hasDashboard(String web, String dashboardArticleTitle, String dashboardName) {
 		ArticleManager articleManager = Environment.getInstance().getArticleManager(web);
 		Article article = articleManager.getArticle(dashboardArticleTitle);
 		if (article == null) {
-			return false;
+			return null;
 		}
 		List<Section<CIDashboardType>> sections =
 				Sections.findSuccessorsOfType(article.getRootSection(), CIDashboardType.class);
 		for (Section<CIDashboardType> section : sections) {
 			String name = CIDashboardType.getDashboardName(section);
 			if (name != null && name.equalsIgnoreCase(dashboardName)) {
-				return true;
+				return section;
 			}
 		}
-		return false;
+		return null;
 	}
 
 }
