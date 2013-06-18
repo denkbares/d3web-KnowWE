@@ -540,6 +540,23 @@
 		</profile>
 
 		<profile>
+			<id>d3webthrillseekertests</id>
+			<activation>
+				<property>
+					<name>d3webthrillseekertests</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>d3web-Plugin-Tests-ThrillSeeker</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
 			<id>diaflux-anomalies</id>
 			<activation>
 				<property>
@@ -1078,7 +1095,19 @@
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>d3web-Plugin-Tests-ThrillSeeker</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-WikiBaseline</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-DiaFlux-Anomalies</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
@@ -1127,6 +1156,12 @@
 				<dependency>
 					<groupId>jspwiki.plugin</groupId>
 					<artifactId>FreeMind</artifactId>
+					<version>0.1</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>jspwiki.plugin</groupId>
+					<artifactId>Table</artifactId>
 					<version>0.1</version>
 					<scope>compile</scope>
 				</dependency>
