@@ -816,7 +816,7 @@ public class Sections {
 	 * <P>
 	 * This method is required because it:
 	 * <ol>
-	 * <li>avoids a "uncecked cast" warning when compiling the code
+	 * <li>avoids a "unchecked cast" warning when compiling the code
 	 * <li>does a runtime type check whether the cast is valid (java itself is
 	 * not capable to do)
 	 * </ol>
