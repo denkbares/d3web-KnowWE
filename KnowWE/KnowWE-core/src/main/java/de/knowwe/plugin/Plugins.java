@@ -119,13 +119,7 @@ public class Plugins {
 		extensions = ScopeUtils.getMatchingExtensions(extensions, type.getPathToRoot());
 		for (int i = extensions.length - 1; i >= 0; i--) {
 			Extension extension = extensions[i];
-			Double priority = extension.getPriority();
-			if (priority != null) {
-				type.addChildType(priority.intValue(), (Type) extension.getNewInstance());
-			}
-			else {
-				type.addChildType(0, (Type) extension.getNewInstance());
-			}
+			type.addChildType(0, (Type) extension.getNewInstance());
 		}
 	}
 

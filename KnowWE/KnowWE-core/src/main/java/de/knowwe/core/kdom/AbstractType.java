@@ -345,14 +345,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 
 	@Override
 	public void addChildType(int i, Type t) {
-		if (i > childrenTypes.size()) {
-			// TODO: temporary hack only - find appropriate overall concept and
-			// fix!
-			addChildType(0, t);
-		}
-		else {
-			this.childrenTypes.add(i, t);
-		}
+		this.childrenTypes.add(i, t);
 	}
 
 	@Override
