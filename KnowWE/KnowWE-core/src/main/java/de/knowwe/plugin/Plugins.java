@@ -125,12 +125,12 @@ public class Plugins {
 			// prevent cycles
 			if (!pathToRootContainsType(type.getPathToRoot(), pluggedType)) {
 				//
-				// if (priority != null) {
-				// type.addChildType(priority.intValue(), pluggedType);
-				// }
-				// else {
-				type.addChildType(0, pluggedType);
-				// }
+				if (priority != null) {
+					type.addChildType(priority.intValue(), pluggedType);
+				}
+				else {
+					type.addChildType(0, pluggedType);
+				}
 				pluggedType.setPathToRoot(type.getPathToRoot());
 				addChildrenTypesToType(pluggedType);
 			}
