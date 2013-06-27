@@ -55,6 +55,10 @@ public interface Type {
 
 	public void setPathToRoot(Type[] path);
 
+	public boolean isDecorated();
+
+	public void setDecorated();
+
 	public Type[] getPathToRoot();
 
 	public void addSubtreeHandler(Priority p, SubtreeHandler<? extends Type> handler);

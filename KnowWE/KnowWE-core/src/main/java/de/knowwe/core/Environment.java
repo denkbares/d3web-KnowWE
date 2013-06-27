@@ -373,12 +373,12 @@ public class Environment {
 		}
 
 		for (Type childType : childrenTypesInit) {
-			if (childType.getPathToRoot() != null) continue;
+			if (childType.isDecorated()) {
+				continue;
+			}
 			Type[] pathToRoot = type.getPathToRoot();
-			Type[] childPath = new Type[pathToRoot.length + 1];
-			System.arraycopy(pathToRoot, 0, childPath, 0, pathToRoot.length);
-			childPath[childPath.length - 1] = childType;
-			childType.setPathToRoot(childPath);
+			childType.setPathToRoot(pathToRoot);
+			childType.setDecorated();
 			decorateTypeTree(childType);
 		}
 

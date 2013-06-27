@@ -97,6 +97,21 @@ public abstract class AbstractType implements Type, Sectionizable {
 	protected boolean isNumberedType = false;
 
 	/**
+	 * determines whether this type has already been 'furnished' with plugins. 
+	 * It is only relevant during during the initialization process of KnowWE.
+	 * It is used to prevent cyclic infinite extension of the type tree by unfavourable plugins/plugin combinations.
+	 */
+	protected boolean hasBeenDecorated = false;
+
+	public boolean isDecorated() {
+		return hasBeenDecorated;
+	}
+
+	public void setDecorated() {
+		this.hasBeenDecorated = true;
+	}
+
+	/**
 	 * contains all types from this type to the {@link RootType}
 	 */
 	private Type[] pathToRoot = null;
@@ -345,7 +360,14 @@ public abstract class AbstractType implements Type, Sectionizable {
 
 	@Override
 	public void addChildType(int i, Type t) {
-		this.childrenTypes.add(i, t);
+		if (i > childrenTypes.size()) {
+			// TODO: temporary hack only - find appropriate overall concept and
+			// fix!
+			addChildType(0, t);
+		}
+		else {
+			this.childrenTypes.add(i, t);
+		}
 	}
 
 	@Override
@@ -368,8 +390,12 @@ public abstract class AbstractType implements Type, Sectionizable {
 	}
 
 	@Override
-	public void setPathToRoot(Type[] path) {
-		this.pathToRoot = Arrays.copyOf(path, path.length);
+	public void setPathToRoot(Type[] parentPath) {
+		Type[] childPath = new Type[parentPath.length + 1];
+		System.arraycopy(parentPath, 0, childPath, 0, parentPath.length);
+		childPath[childPath.length - 1] = this;
+		// TODO: why is this copy necessary?
+		this.pathToRoot = Arrays.copyOf(childPath, childPath.length);
 	}
 
 	@Override

@@ -119,8 +119,38 @@ public class Plugins {
 		extensions = ScopeUtils.getMatchingExtensions(extensions, type.getPathToRoot());
 		for (int i = extensions.length - 1; i >= 0; i--) {
 			Extension extension = extensions[i];
-			type.addChildType(0, (Type) extension.getNewInstance());
+			Double priority = extension.getPriority();
+			Type pluggedType = (Type) extension.getNewInstance();
+			// only types which are not yet on the path to root are plugged to
+			// prevent cycles
+			if (!pathToRootContainsType(type.getPathToRoot(), pluggedType)) {
+				//
+				// if (priority != null) {
+				// type.addChildType(priority.intValue(), pluggedType);
+				// }
+				// else {
+				type.addChildType(0, pluggedType);
+				// }
+				pluggedType.setPathToRoot(type.getPathToRoot());
+				addChildrenTypesToType(pluggedType);
+			}
+
 		}
+	}
+
+	/**
+	 * 
+	 * @created 22.06.2013
+	 * @param pathToRoot
+	 * @param pluggedType
+	 */
+	private static boolean pathToRootContainsType(Type[] pathToRoot, Type pluggedType) {
+		for (Type type : pathToRoot) {
+			if (type.getClass().equals(pluggedType.getClass())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static void addSubtreeHandlersToType(Type type) {
