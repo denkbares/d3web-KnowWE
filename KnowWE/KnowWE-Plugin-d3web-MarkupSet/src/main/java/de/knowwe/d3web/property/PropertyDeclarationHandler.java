@@ -51,38 +51,23 @@ import de.knowwe.d3web.property.PropertyObjectReference.PropertyAnswerReference;
 public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDeclarationType> {
 
 	@Override
-	public Collection<Message> create(Article article, Section<PropertyDeclarationType> s) {
-		if (Strings.isBlank(s.getText())) return Messages.noMessage();
+	public Collection<Message> create(Article article, Section<PropertyDeclarationType> section) {
+		if (Strings.isBlank(section.getText())) return Messages.noMessage();
 		// get NamedObject
-		Section<PropertyObjectReference> namendObjectSection = Sections.findSuccessor(s,
+		Section<PropertyObjectReference> namendObjectSection = Sections.findSuccessor(section,
 				PropertyObjectReference.class);
-		Section<PropertyType> propertySection = Sections.findSuccessor(s,
-				PropertyType.class);
 		if (namendObjectSection == null) {
 			return Messages.asList(Messages.syntaxError("No NamedObject found."));
 		}
-		List<NamedObject> objects = new ArrayList<NamedObject>(1);
-		NamedObject object = namendObjectSection.get().getTermObject(article, namendObjectSection);
-		if (object == null) {
-			Section<QuestionReference> questionReferenceSection = Sections.findChildOfType(
-					namendObjectSection, QuestionReference.class);
-			if (questionReferenceSection != null && questionReferenceSection.getText().isEmpty()) {
-				// question is a wild card, get all questions with the given
-				// answer.
-				Section<PropertyAnswerReference> answerReferenceSection =
-						Sections.findChildOfType(namendObjectSection, PropertyAnswerReference.class);
-				objects = getAllChoices(article, answerReferenceSection);
-			}
-		}
-		else {
-			objects.add(object);
-		}
+		List<NamedObject> objects = getNamedObjects(article, namendObjectSection);
 		if (objects.isEmpty()) {
 			return Messages.asList(Messages.error("No matching object(s) found for reference '"
 					+ namendObjectSection.get().getTermIdentifier(namendObjectSection) + "'"));
 		}
 
 		// get Property
+		Section<PropertyType> propertySection = Sections.findSuccessor(section,
+				PropertyType.class);
 		if (propertySection == null) {
 			return Messages.asList(Messages.syntaxError("No property found."));
 		}
@@ -93,14 +78,10 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 		}
 
 		// get Locale
-		Section<LocaleType> localeSection = Sections.findSuccessor(s, LocaleType.class);
-		Locale locale = InfoStore.NO_LANGUAGE;
-		if (localeSection != null) {
-			locale = localeSection.get().getLocale(localeSection);
-		}
+		Locale locale = getLocale(section);
 
 		// get content
-		Section<PropertyContentType> contentSection = Sections.findSuccessor(s,
+		Section<PropertyContentType> contentSection = Sections.findSuccessor(section,
 				PropertyContentType.class);
 		if (contentSection == null) {
 			return Messages.asList(Messages.syntaxError("No property value found for property '"
@@ -144,7 +125,36 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 		return Messages.asList(Messages.notice("Property declaration successful."));
 	}
 
-	private List<NamedObject> getAllChoices(Article article, Section<PropertyAnswerReference> answerReference) {
+	protected Locale getLocale(Section<PropertyDeclarationType> s) {
+		Section<LocaleType> localeSection = Sections.findSuccessor(s, LocaleType.class);
+		Locale locale = InfoStore.NO_LANGUAGE;
+		if (localeSection != null) {
+			locale = localeSection.get().getLocale(localeSection);
+		}
+		return locale;
+	}
+
+	protected List<NamedObject> getNamedObjects(Article article, Section<PropertyObjectReference> namendObjectSection) {
+		List<NamedObject> objects = new ArrayList<NamedObject>(1);
+		NamedObject object = namendObjectSection.get().getTermObject(article, namendObjectSection);
+		if (object == null) {
+			Section<QuestionReference> questionReferenceSection = Sections.findChildOfType(
+					namendObjectSection, QuestionReference.class);
+			if (questionReferenceSection != null && questionReferenceSection.getText().isEmpty()) {
+				// question is a wild card, get all questions with the given
+				// answer.
+				Section<PropertyAnswerReference> answerReferenceSection =
+						Sections.findChildOfType(namendObjectSection, PropertyAnswerReference.class);
+				objects = getAllChoices(article, answerReferenceSection);
+			}
+		}
+		else {
+			objects.add(object);
+		}
+		return objects;
+	}
+
+	protected List<NamedObject> getAllChoices(Article article, Section<PropertyAnswerReference> answerReference) {
 		List<Question> questions = getKB(article).getManager().getQuestions();
 		List<NamedObject> choices = new ArrayList<NamedObject>(questions.size());
 		for (Question question : questions) {

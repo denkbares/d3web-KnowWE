@@ -124,13 +124,8 @@ public class QClassLine extends AbstractType {
 						kb.getRootQASet().removeChild(localQuestionnaire);
 
 						// here the actual taxonomic relation is established
-						if (!article.isFullParse()) {
-							superQuestionnaire.addChild(localQuestionnaire,
-									localQuestionniareDef.get().getPosition(localQuestionniareDef));
-						}
-						else {
-							superQuestionnaire.addChild(localQuestionnaire);
-						}
+						superQuestionnaire.addChild(localQuestionnaire,
+								localQuestionniareDef.get().getPosition(localQuestionniareDef));
 
 						return Messages.asList(Messages.relationCreatedNotice(
 								s.getClass().getSimpleName()
@@ -203,7 +198,7 @@ public class QClassLine extends AbstractType {
 					Integer number = new Integer((originalnumber.intValue()));
 
 					Section<QuestionnaireDefinition> qDef = Sections.findSuccessor(
-								s.getFather(), QuestionnaireDefinition.class);
+							s.getFather(), QuestionnaireDefinition.class);
 
 					if (qDef != null) {
 
