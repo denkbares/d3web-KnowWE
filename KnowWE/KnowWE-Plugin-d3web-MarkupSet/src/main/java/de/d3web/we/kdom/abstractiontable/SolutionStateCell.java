@@ -3,6 +3,7 @@ package de.d3web.we.kdom.abstractiontable;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.strings.Strings;
 import de.d3web.we.kdom.condition.SolutionStateType;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
@@ -24,7 +25,7 @@ public class SolutionStateCell extends AbstractType {
 	}
 
 	public CondDState createCondDState(Article article, Solution solution, Section<SolutionStateCell> solutionStateCell) {
-		String state = solutionStateCell.getText().trim();
+		String state = Strings.trim(solutionStateCell.getText());
 		State solutionState = SolutionStateType.getSolutionState(state);
 		if (solutionState == null) {
 			if (solutionState == null) {

@@ -16,6 +16,7 @@ import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
 import de.d3web.core.session.values.NumValue;
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -35,7 +36,7 @@ public class QuestionNumCell extends AbstractType {
 	public ActionSetQuestion createNumActionSetValue(Article article, QuestionNum questionNum, Section<QuestionNumCell> questionNumCell) {
 		NumericalInterval interval = questionNum.getInfoStore().getValue(
 				BasicProperties.QUESTION_NUM_RANGE);
-		String text = questionNumCell.getText().trim();
+		String text = Strings.trim(questionNumCell.getText());
 		Double parsedDouble = parseDouble("=", text);
 		NumValue numValue = null;
 		if (parsedDouble == null) {
@@ -60,7 +61,7 @@ public class QuestionNumCell extends AbstractType {
 	}
 
 	public CondNum createCondNum(Article article, QuestionNum questionNum, Section<QuestionNumCell> questionNumCell) {
-		String text = questionNumCell.getText().trim();
+		String text = Strings.trim(questionNumCell.getText());
 		CondNum condNum = null;
 
 		Matcher matcher = INTERVAL_PATTERN.matcher(text);

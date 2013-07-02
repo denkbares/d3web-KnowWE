@@ -1,6 +1,7 @@
 package de.d3web.we.kdom.abstractiontable;
 
 import de.d3web.scoring.Score;
+import de.d3web.strings.Strings;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
@@ -17,7 +18,7 @@ public class SolutionScoreCell extends AbstractType {
 	}
 
 	public Score createScore(Article article, Section<SolutionScoreCell> solutionScoreCell) {
-		String text = solutionScoreCell.getText().trim();
+		String text = Strings.trim(solutionScoreCell.getText());
 		Score scoreForString = D3webUtils.getScoreForString(text.toUpperCase());
 		if (scoreForString == null) {
 			Messages.storeMessage(article, solutionScoreCell, this.getClass(),
