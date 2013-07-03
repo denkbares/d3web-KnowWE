@@ -56,6 +56,42 @@ public class Types {
 		}
 	}
 
+	/**
+	 * Replaces the FIRST occurrence of the target class type with the new type
+	 * 
+	 * @created 02.07.2013
+	 * @param typeHierarchy
+	 * @param c
+	 * @param newType
+	 */
+	public static boolean replaceType(Type typeHierarchy, Class<? extends Type> c, Type newType) {
+		List<Type> childrenTypes = typeHierarchy.getChildrenTypes();
+		int index = -1;
+		for (Type child : childrenTypes) {
+			if (child.isAssignableFromType(c)) {
+				index = childrenTypes.indexOf(child);
+				// we only replace first occurrence
+				break;
+			}
+			else {
+				return replaceType(child, c, newType);
+			}
+		}
+		if (index != -1) {
+			// some overhead to actually replace type in children list
+			List<Type> listCopy = new ArrayList<Type>();
+			listCopy.addAll(childrenTypes);
+			listCopy.add(index, newType);
+			listCopy.remove(index + 1);
+			((AbstractType) typeHierarchy).clearChildrenTypes();
+			for (Type type : listCopy) {
+				typeHierarchy.addChildType(type);
+			}
+			return true;
+		}
+		return false;
+	}
+
 	public static TreeSet<Type> getAllChildrenTypesRecursive(Type type) {
 		TreeSet<Type> allTypes = new TreeSet<Type>(new TypeComparator());
 		return getAllChildrenTypesRecursive(type, allTypes);
