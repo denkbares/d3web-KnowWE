@@ -29,8 +29,8 @@ import java.util.Set;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.d3web.strings.Strings;
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
@@ -72,17 +72,13 @@ public class TermRenamingAction extends AbstractAction {
 			JSONObject response = new JSONObject();
 			try {
 				response.append("alreadyexists", "true");
-				if (new Identifier(replacement).equals(new Identifier(
-						term))) {
-					response.append("same", "true");
-				}
-				else {
-					response.append("same", "false");
-				}
+				boolean sameTerm = new Identifier(replacement).toExternalForm().equals(
+						new Identifier(
+								term).toExternalForm());
+				response.append("same", String.valueOf(sameTerm));
 				response.write(context.getWriter());
 			}
 			catch (JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return;

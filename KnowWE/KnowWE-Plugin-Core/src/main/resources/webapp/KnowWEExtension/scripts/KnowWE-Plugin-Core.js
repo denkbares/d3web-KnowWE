@@ -107,7 +107,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 									var alreadyexists = jsonResponse.alreadyexists;
 									var same = jsonResponse.same;
 									if(same=='true'){
-										alert('nothing changed');
+										alert('The term has not changed.');
 									}
 									else{
 										if(alreadyexists=='true'){
