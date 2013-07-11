@@ -98,8 +98,10 @@ public class CIHookManager {
 		if (hookSet != null) {
 			for (final CIHook hook : hookSet) {
 				Logger.getLogger(CIEventForwarder.class.getName()).log(
-						Level.INFO, " >> CI >> Constructing and executing " +
-								"new CIBuilder for " + hook);
+						Level.INFO,
+						"Executing new CI build for dashboard '" + hook.getDashboardName()
+								+ "' in article '"
+								+ hook.getDashboardArticleTitle() + "'");
 				// runs as an own thread, so the wiki page
 				// shows up fast after editing
 				// (ci-deamon shows build as running)
