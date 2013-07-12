@@ -20,6 +20,9 @@
 package de.d3web.we.knowledgebase;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -28,12 +31,20 @@ import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.strings.Identifier;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.packaging.PackageAnnotationName;
+import de.knowwe.core.compile.packaging.PackageTermDefinition;
+import de.knowwe.core.compile.packaging.UsesAnnotationRenderer;
+import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
+import de.knowwe.kdom.defaultMarkup.AnnotationNameType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupTermReferenceRegisterHandler;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
@@ -86,10 +97,20 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_STATUS, false);
 		MARKUP.addAnnotation(ANNOTATION_AFFILIATION, false);
 		MARKUP.addContentType(new KnowledgeBaseCompileType());
+
+		MARKUP.addAnnotationNameType(ANNOTATION_COMPILE, new
+				PackageAnnotationName());
+		MARKUP.addAnnotationContentType(ANNOTATION_COMPILE, new
+				PackageTermDefinition());
+		MARKUP.addAnnotationRenderer(ANNOTATION_COMPILE, new UsesAnnotationRenderer());
 	}
 
 	public KnowledgeBaseType() {
 		super(MARKUP);
+
+		this.removeSubtreeHandler(DefaultMarkupTermReferenceRegisterHandler.class);
+		this.addSubtreeHandler(new KnowledgeBaseTermDefinitionRegisterHandler());
+
 		this.setIgnorePackageCompile(true);
 		this.setRenderer(new KnowledgeBaseRenderer());
 		this.addSubtreeHandler(Priority.HIGHER, new D3webSubtreeHandler<KnowledgeBaseType>() {
@@ -109,6 +130,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 				String status = getAnnotation(section, ANNOTATION_STATUS);
 				String affiliation = getAnnotation(section, ANNOTATION_AFFILIATION);
 
+				// register package defintion
 				TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
 				terminologyManager.registerTermDefinition(section, KnowledgeBase.class,
 						new Identifier("KNOWLEDGEBASE"));
@@ -130,6 +152,34 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 						affiliation);
 				return null;
 			}
+
 		});
+	}
+
+	@Override
+	public String getSectionTextAfterRename(Section<? extends RenamableTerm>
+			section, String oldValue, String replacement) {
+
+		Map<String, String> nodesMap = new HashMap<String, String>();
+		List<Section<? extends AnnotationContentType>> allAnnotationContentSections = DefaultMarkupType.getAllAnnotationContentSections(section);
+
+		for (Section<? extends AnnotationContentType> annotationContentSection : allAnnotationContentSections) {
+			if (annotationContentSection.getText().equals(oldValue)) {
+				List<Section<?>> nameTypes = annotationContentSection.getFather().getChildren();
+
+				for (Section<?> nameType : nameTypes) {
+					if (nameType.getText().equals("@" +
+							ANNOTATION_COMPILE + ":")
+							&& nameType.get() instanceof AnnotationNameType) {
+						nodesMap.put(annotationContentSection.getID(), replacement);
+					}
+
+				}
+				break;
+			}
+		}
+		StringBuffer collectedText = Sections.collectTextAndReplaceNode(section, nodesMap);
+
+		return collectedText.toString();
 	}
 }

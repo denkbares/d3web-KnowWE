@@ -340,4 +340,19 @@
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="restoreActionScript.js" />
 	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="PackageMarkupObjectInfoPageToolProvider">
+		<parameter id="class"
+			value="de.knowwe.core.packaging.PackageObjectInfoPageToolProvider" />
+		<parameter id="name" value="PackageMarkupObjectInfoPageToolProvider" />
+		<parameter id="description"
+			value="Offer a button to navigate to the object information page of an selected object." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+		<parameter id="scope" value="PackageTermDefinition" />
+		<parameter id="scope" value="PackageTermReference" />	
+	</extension>
+	
+	
 </plugin>

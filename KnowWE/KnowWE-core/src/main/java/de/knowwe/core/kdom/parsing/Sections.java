@@ -762,6 +762,13 @@ public class Sections {
 		}
 	}
 
+	public static StringBuffer collectTextAndReplaceNode(Section<?> sec,
+			Map<String, String> nodesMap) {
+		StringBuffer newText = new StringBuffer();
+		collectTextAndReplaceNode(sec, nodesMap, newText);
+		return newText;
+	}
+
 	private static void sendErrorMessages(UserActionContext context,
 			Collection<String> missingIDs,
 			Collection<String> forbiddenArticles)

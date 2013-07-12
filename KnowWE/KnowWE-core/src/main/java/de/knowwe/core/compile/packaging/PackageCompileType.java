@@ -57,9 +57,6 @@ public abstract class PackageCompileType extends AbstractType implements Package
 				article.getReviseIterator().addRootSection(sectionOfPackage);
 			}
 
-			KnowWEUtils.getGlobalTerminologyManager(article.getWeb()).registerTermDefinition(s,
-					String.class, new Identifier(s.getTitle()));
-
 			return Messages.noMessage();
 		}
 

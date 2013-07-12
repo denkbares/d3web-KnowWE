@@ -4,26 +4,31 @@ import java.util.Collection;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.packaging.PackageTermReference;
+import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.user.UserContext;
-import de.knowwe.kdom.defaultMarkup.ContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.kdom.renderer.StyleRenderer;
 
 public class PackageType extends DefaultMarkupType {
+	
+	private static final DefaultMarkup MARKUP;
 
+	static {
+		MARKUP = new DefaultMarkup("Package");
+		MARKUP.addContentType(new PackageTermReference());
+	}
+	
 	public PackageType() {
-		super(new DefaultMarkup("Package"));
+		super(MARKUP);
 		this.setIgnorePackageCompile(true);
 		this.addSubtreeHandler(Priority.PRECOMPILE_HIGH, new SetDefaultPackageHandler());
-		this.setRenderer(new PackageTypeRenderer());
+		this.childrenTypes.add(new PackageMarkupType());
 	}
 
 	private static class SetDefaultPackageHandler extends SubtreeHandler<PackageType> {
@@ -38,21 +43,15 @@ public class PackageType extends DefaultMarkupType {
 			}
 			return Messages.noMessage();
 		}
-
 	}
 
-	private static class PackageTypeRenderer extends DefaultMarkupRenderer {
-
-		public PackageTypeRenderer() {
-			super("KnowWEExtension/images/package_obj24.gif");
-		}
-
-		@Override
-		protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
-			Section<? extends ContentType> contentSection = DefaultMarkupType.getContentSection(section);
-			StyleRenderer.PACKAGE.render(contentSection, user, string);
-		}
-
+	@Override
+	public String getSectionTextAfterRename(Section<? extends RenamableTerm>
+			section, String oldValue, String replacement) {
+		Section<PackageMarkupType> packageDefinition =
+				Sections.findSuccessor(section,
+						PackageMarkupType.class);
+		return packageDefinition.getText() + " " + replacement + "\n";
 	}
 
 }

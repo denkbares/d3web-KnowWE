@@ -21,13 +21,16 @@
 package de.knowwe.kdom.defaultMarkup;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -97,7 +100,7 @@ import de.knowwe.core.report.MessageRenderer;
  * @author Volker Belli
  * 
  */
-public class DefaultMarkupType extends AbstractType {
+public class DefaultMarkupType extends AbstractType implements RenamableTerm {
 
 	private final static int FLAGS =
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL;
@@ -140,6 +143,7 @@ public class DefaultMarkupType extends AbstractType {
 		this.childrenTypes.add(new UnknownAnnotationType());
 		this.addSubtreeHandler(Priority.PRECOMPILE_MIDDLE, new AddMarkupSectionToPackagesHandler());
 		this.addSubtreeHandler(new DefaultMarkupSubtreeHandler(markup));
+		this.addSubtreeHandler(new DefaultMarkupTermReferenceRegisterHandler());
 	}
 
 	// TODO: already exists in parent class! Is this a problem?
@@ -398,6 +402,23 @@ public class DefaultMarkupType extends AbstractType {
 	@Override
 	public MessageRenderer getNoticeRenderer() {
 		return null;
+	}
+
+	@Override
+	public String getSectionTextAfterRename(Section<? extends RenamableTerm>
+			section, String oldValue, String replacement) {
+
+		Map<String, String> nodesMap = new HashMap<String, String>();
+		List<Section<? extends AnnotationContentType>> allAnnotationContentSections = DefaultMarkupType.getAllAnnotationContentSections(section);
+		for (Section<? extends AnnotationContentType> annotationContentSection : allAnnotationContentSections) {
+			if (annotationContentSection.getText().equals(oldValue)) {
+				nodesMap.put(annotationContentSection.getID(), replacement);
+				break;
+			}
+		}
+		StringBuffer collectedText = Sections.collectTextAndReplaceNode(section, nodesMap);
+
+		return collectedText.toString();
 	}
 
 }

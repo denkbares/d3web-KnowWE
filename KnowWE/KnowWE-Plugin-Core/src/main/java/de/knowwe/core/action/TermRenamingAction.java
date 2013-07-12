@@ -34,6 +34,7 @@ import de.d3web.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
@@ -88,34 +89,38 @@ public class TermRenamingAction extends AbstractAction {
 
 		Identifier termIdentifier = Identifier.fromExternalForm(term);
 
-		HashMap<String, Set<Section<? extends Term>>> allTerms = new HashMap<String, Set<Section<? extends Term>>>();
+		HashMap<String, Set<Section<? extends RenamableTerm>>> allTerms = new HashMap<String, Set<Section<? extends RenamableTerm>>>();
 
 		Iterator<Article> iter = Environment.getInstance()
 				.getArticleManager(web).getArticleIterator();
 		Article currentArticle;
 
-		TerminologyManager terminologyManager;
 		while (iter.hasNext()) {
 			currentArticle = iter.next();
-			terminologyManager = KnowWEUtils
-					.getTerminologyManager(currentArticle);
-			// Check if there is a TermDefinition
-			Collection<Section<?>> definingSections = terminologyManager
-					.getTermDefiningSections(termIdentifier);
-			for (Section<?> definition : definingSections) {
-				if (definition.get() instanceof Term) {
-					getTermSet(definition.getTitle(), allTerms).add(
-							(Section<? extends Term>) definition);
-				}
-			}
+			Collection<TerminologyManager> terminologyManagers = Environment.getInstance().getTerminologyManagers(
+					currentArticle.getWeb());
+			for (TerminologyManager terminologyManager : terminologyManagers) {
 
-			// Check if there are References
-			Collection<Section<?>> references = terminologyManager
-					.getTermReferenceSections(termIdentifier);
-			for (Section<?> reference : references) {
-				if (reference.get() instanceof Term) {
-					getTermSet(reference.getTitle(), allTerms).add(
-							(Section<? extends Term>) reference);
+				// terminologyManager = KnowWEUtils
+				// .getGlobalTerminologyManager(currentArticle.getWeb());
+				// Check if there is a TermDefinition
+				Collection<Section<?>> definingSections = terminologyManager
+						.getTermDefiningSections(termIdentifier);
+				for (Section<?> definition : definingSections) {
+					if (definition.get() instanceof RenamableTerm) {
+						getTermSet(definition.getTitle(), allTerms).add(
+								(Section<? extends RenamableTerm>) definition);
+					}
+				}
+
+				// Check if there are References
+				Collection<Section<?>> references = terminologyManager
+						.getTermReferenceSections(termIdentifier);
+				for (Section<?> reference : references) {
+					if (reference.get() instanceof RenamableTerm) {
+						getTermSet(reference.getTitle(), allTerms).add(
+								(Section<? extends RenamableTerm>) reference);
+					}
 				}
 			}
 		}
@@ -123,15 +128,15 @@ public class TermRenamingAction extends AbstractAction {
 		ArticleManager mgr = Environment.getInstance().getArticleManager(web);
 		Set<String> failures = new HashSet<String>();
 		Set<String> success = new HashSet<String>();
-		renameTerms(allTerms, replacement, mgr, context, failures, success);
+		renameTerms(allTerms, term, replacement, mgr, context, failures, success);
 		writeResponse(failures, success, termIdentifier, replacement, context);
 	}
 
-	private Set<Section<? extends Term>> getTermSet(String title,
-			Map<String, Set<Section<? extends Term>>> allTerms) {
-		Set<Section<? extends Term>> terms = allTerms.get(title);
+	private Set<Section<? extends RenamableTerm>> getTermSet(String title,
+			Map<String, Set<Section<? extends RenamableTerm>>> allTerms) {
+		Set<Section<? extends RenamableTerm>> terms = allTerms.get(title);
 		if (terms == null) {
-			terms = new HashSet<Section<? extends Term>>();
+			terms = new HashSet<Section<? extends RenamableTerm>>();
 			allTerms.put(title, terms);
 		}
 		return terms;
@@ -179,7 +184,7 @@ public class TermRenamingAction extends AbstractAction {
 	}
 
 	private void renameTerms(
-			HashMap<String, Set<Section<? extends Term>>> allTerms,
+			HashMap<String, Set<Section<? extends RenamableTerm>>> allTerms, String term,
 			String replacement, ArticleManager mgr, UserActionContext context,
 			Set<String> failures, Set<String> success) throws IOException {
 
@@ -187,8 +192,11 @@ public class TermRenamingAction extends AbstractAction {
 			if (Environment.getInstance().getWikiConnector()
 					.userCanEditArticle(title, context.getRequest())) {
 				Map<String, String> nodesMap = new HashMap<String, String>();
-				for (Section<?> termSection : allTerms.get(title)) {
-					nodesMap.put(termSection.getID(), replacement);
+				for (Section<? extends RenamableTerm> termSection : allTerms.get(title)) {
+					nodesMap.put(
+							termSection.getID(),
+							termSection.get().getSectionTextAfterRename(termSection, term,
+									replacement));
 				}
 				Sections.replaceSections(context, nodesMap);
 				success.add(title);

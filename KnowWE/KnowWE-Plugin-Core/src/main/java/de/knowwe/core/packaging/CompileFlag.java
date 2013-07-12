@@ -20,20 +20,31 @@
 
 package de.knowwe.core.packaging;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageCompiler;
+import de.knowwe.core.compile.packaging.PackageTermReference;
+import de.knowwe.core.compile.terminology.RenamableTerm;
+import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupTermReferenceRegisterHandler;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class CompileFlag extends DefaultMarkupType {
@@ -51,6 +62,9 @@ public class CompileFlag extends DefaultMarkupType {
 	public CompileFlag() {
 		super(m);
 		this.setRenderer(new CompileFlagRenderer());
+		this.removeSubtreeHandler(DefaultMarkupTermReferenceRegisterHandler.class);
+		this.addSubtreeHandler(new CompileFlagTermDefinitionRegisterHandler());
+
 	}
 
 	static class CompileFlagRenderer implements Renderer {
@@ -96,6 +110,29 @@ public class CompileFlag extends DefaultMarkupType {
 			}
 			return packagesToCompile;
 		}
+	}
+
+	@Override
+	public String getSectionTextAfterRename(Section<? extends RenamableTerm>
+			section, String oldValue, String replacement) {
+
+		return "%%" + MARKUP_NAME + " " + replacement + "\n";
+	}
+	
+	private class CompileFlagTermDefinitionRegisterHandler extends SubtreeHandler<CompileFlag> {
+
+		@Override
+		public Collection<Message> create(Article article, Section<CompileFlag> section) {
+			TerminologyManager terminologyHandler = KnowWEUtils.getGlobalTerminologyManager(article.getWeb());
+
+			String content = DefaultMarkupType.getContent(section).trim();
+			terminologyHandler.registerTermDefinition(section,
+					PackageTermReference.class,
+					new Identifier(content));
+
+			return Messages.noMessage();
+		}
+
 	}
 
 }

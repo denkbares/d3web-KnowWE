@@ -22,6 +22,7 @@ import java.util.Collection;
 
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
@@ -37,7 +38,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @author Albrecht
  * @created 16.12.2010
  */
-public abstract class SimpleDefinition extends AbstractType implements TermDefinition {
+public abstract class SimpleDefinition extends AbstractType implements TermDefinition, RenamableTerm {
 
 	private final Class<?> termObjectClass;
 
@@ -64,6 +65,11 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 	@Override
 	public Identifier getTermIdentifier(Section<? extends Term> section) {
 		return new Identifier(getTermName(section));
+	}
+
+	@Override
+	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, String oldValue, String replacement) {
+		return replacement;
 	}
 
 	private class StringDefinitionRegistrationHandler extends SubtreeHandler<SimpleDefinition> {

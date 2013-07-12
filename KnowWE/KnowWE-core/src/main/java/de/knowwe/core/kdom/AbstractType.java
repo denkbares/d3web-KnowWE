@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 
@@ -356,6 +357,29 @@ public abstract class AbstractType implements Type, Sectionizable {
 
 	public void clearSubtreeHandlers() {
 		this.subtreeHandler.clear();
+	}
+
+	public void removeSubtreeHandler(Class<? extends SubtreeHandler<? extends Type>> clazz) {
+
+		List<Priority> toRemovePriority = new LinkedList<Priority>();
+
+		for (Entry<Priority, List<SubtreeHandler<? extends Type>>> entry : subtreeHandler.entrySet()) {
+
+			List<SubtreeHandler<? extends Type>> toRemove = new LinkedList<SubtreeHandler<? extends Type>>();
+
+			for (SubtreeHandler<? extends Type> subtreeHandler : entry.getValue()) {
+				if (subtreeHandler.getClass().isAssignableFrom(clazz)) {
+					toRemove.add(subtreeHandler);
+				}
+
+			}
+			entry.getValue().removeAll(toRemove);
+			if (entry.getValue().isEmpty()) {
+				toRemovePriority.add(entry.getKey());
+			}
+
+		}
+		subtreeHandler.keySet().removeAll(toRemovePriority);
 	}
 
 	@Override

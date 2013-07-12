@@ -176,7 +176,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			getTermDefinitions(currentArticle, termIdentifier, definitions);
 			getTermReferences(currentArticle, termIdentifier, references);
 		}
-		// Get global and local term refereces
+		// Get global and local term references
 		getTermDefinitions(null, termIdentifier, definitions);
 		getTermReferences(null, termIdentifier, references);
 
@@ -337,10 +337,9 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		TerminologyManager th = KnowWEUtils
 				.getTerminologyManager(currentArticle);
 
-		Section<?> definition = th.getTermDefiningSection(termIdentifier);
-		if (definition != null) {
-			definitions.add(definition);
-		}
+		Collection<Section<?>> defininingSections = th.getTermDefiningSections(termIdentifier);
+
+		definitions.addAll(defininingSections);
 
 	}
 
@@ -593,7 +592,6 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			response.accumulate("allTerms", allTerms);
 		}
 		catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return response;

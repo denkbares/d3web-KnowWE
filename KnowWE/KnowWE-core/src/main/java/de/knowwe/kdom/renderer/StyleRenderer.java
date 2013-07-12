@@ -38,7 +38,6 @@ public class StyleRenderer implements Renderer {
 	public static final StyleRenderer COMMENT = new StyleRenderer("color:rgb(160, 160, 160)");
 	public static final StyleRenderer CONTENT = new StyleRenderer("color:rgb(80, 80, 80)");
 	public static final StyleRenderer LOCALE = new StyleRenderer("color:rgb(0, 128, 128)");
-	public static final StyleRenderer PACKAGE = new StyleRenderer("color:rgb(121,79, 64)");
 	public static final StyleRenderer ANNOTATION = COMMENT;
 
 	public static final Renderer CHOICE = new ToolMenuDecoratingRenderer(
@@ -49,6 +48,10 @@ public class StyleRenderer implements Renderer {
 			new StyleRenderer("color:rgb(0, 128, 0)"));
 	public static final Renderer Questionaire = new ToolMenuDecoratingRenderer(
 			new StyleRenderer("color:rgb(128, 128, 0)"));
+
+
+	public static final Renderer PACKAGE = new ToolMenuDecoratingRenderer(new StyleRenderer(
+			"color:rgb(121,79, 64)"));
 
 	public static final String CONDITION_FULLFILLED = "#CFFFCF";
 	public static final String CONDITION_FALSE = "#FFCFCF";

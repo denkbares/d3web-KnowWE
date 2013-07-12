@@ -23,9 +23,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.NamedObject;
-import de.d3web.strings.Strings;
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
@@ -45,7 +46,7 @@ import de.knowwe.core.report.Messages;
  */
 public abstract class D3webTermDefinition<TermObject extends NamedObject>
 		extends AbstractType
-		implements TermDefinition, D3webTerm<TermObject> {
+		implements TermDefinition, D3webTerm<TermObject>, RenamableTerm {
 
 	/**
 	 * Checks whether the creation of the term object can be aborted.
@@ -87,6 +88,11 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 		check.setMessages(msgs);
 		check.setTermExists(true);
 		return check;
+	}
+
+	@Override
+	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, String oldValue, String replacement) {
+		return replacement;
 	}
 
 	@Override

@@ -32,7 +32,9 @@ import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.packaging.PackageTermDefinition;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -111,7 +113,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 
 		for (Iterator<String> packageIter = packagesToCompile.iterator(); packageIter.hasNext();) {
 			String packageName = packageIter.next();
-			renderCompile(section.getArticle(), packageName, string);
+			renderCompile(section.getArticle(), section, packageName, string, user);
 			if (packageIter.hasNext()) string.appendHtml("<br/>");
 		}
 
@@ -134,7 +136,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 
 	}
 
-	private void renderCompile(Article article, String packageName, RenderResult string) {
+	private void renderCompile(Article article, Section<?> section, String packageName, RenderResult string, UserContext user) {
 
 		PackageManager packageManager =
 				Environment.getInstance().getPackageManager(article.getWeb());
@@ -166,11 +168,30 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 		boolean hasErrors = errorsCount > 0;
 		boolean hasWarnings = warningsCount > 0;
 
-		String icon = "KnowWEExtension/d3web/icon/uses_" +
-				(hasErrors ? "error" : hasWarnings ? "warn" : "ok") +
-				"16.gif";
-		string.appendHtml("<img src='" + icon + "'></img> ");
-		string.append("uses package: ").append(packageName);
+		Section<?> currentSection = null;
+		List<Section<PackageTermDefinition>> packageSecs = Sections.findSuccessorsOfType(section,
+				PackageTermDefinition.class);
+		for (Section<PackageTermDefinition> packageSec : packageSecs) {
+			if (packageSec.getText().equals(packageName)) {
+				currentSection = packageSec;
+				break;
+			}
+
+		}
+		if (currentSection != null) {
+			Section<? extends Type> grandFather = currentSection.getFather().getFather();
+			Section<AnnotationType> annotationTypeSec = Sections.findSuccessor(grandFather,
+					AnnotationType.class);
+			annotationTypeSec.get().getRenderer().render(annotationTypeSec, user, string);
+		}
+		else {
+		 
+			String icon = "KnowWEExtension/d3web/icon/uses_" +
+					(hasErrors ? "error" : hasWarnings ? "warn" : "ok") +
+					"16.gif";
+			string.appendHtml("<img src='" + icon + "'></img> ");
+			string.append("uses package: ").append(packageName);
+		}
 		if (hasErrors) {
 			string.append(" (").append(errorsCount).append(" errors in ");
 			string.append(errorArticles.size()).append(
@@ -187,6 +208,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 			// renderDefectArticleNames(kdomWarnings, icon, string);
 			// renderDefectArticleNames(messagesWarnings, icon, string);
 		}
+
 	}
 
 	private void renderDefectArticleNames(Set<Article> articles, RenderResult string) {

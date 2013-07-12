@@ -20,9 +20,10 @@
 package de.d3web.we.object;
 
 import de.d3web.core.knowledge.terminology.NamedObject;
-import de.d3web.strings.Strings;
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
@@ -40,7 +41,7 @@ import de.knowwe.core.kdom.parsing.Section;
  */
 public abstract class D3webTermReference<TermObject extends NamedObject>
 		extends AbstractType
-		implements TermReference, D3webTerm<TermObject> {
+		implements TermReference, D3webTerm<TermObject>, RenamableTerm {
 
 	@Override
 	public Identifier getTermIdentifier(Section<? extends Term> section) {
@@ -55,6 +56,11 @@ public abstract class D3webTermReference<TermObject extends NamedObject>
 	@Override
 	public TermObject getTermObject(Article article, Section<? extends D3webTerm<TermObject>> section) {
 		return D3webUtils.getTermObjectDefaultImplementation(article, section);
+	}
+
+	@Override
+	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, String oldValue, String replacement) {
+		return replacement;
 	}
 
 	/**
