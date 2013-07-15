@@ -428,13 +428,13 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			html.append(reference.getID());
 			html.append("\" >");
 			html.append(reference.getTitle());
-
+			html.append("(");
 			// Get a nice name
 			Section<DefaultMarkupType> root = Sections.findAncestorOfType(
 					reference, DefaultMarkupType.class);
 			html.append(root != null ? root.get().getName() : reference
 					.getFather().get().getName());
-
+			html.append(")");
 			html.append("</a>");
 		}
 
