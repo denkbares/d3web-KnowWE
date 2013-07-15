@@ -420,10 +420,14 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		StringBuilder html = new StringBuilder();
 
 		if (reference != null) {
-			// Render link to anchor
-			html.append("<a href=\"");
-			html.append(KnowWEUtils.getURLLink(reference));
-			html.append("\">" + reference.getArticle().getTitle() + " (");
+			// Render link to anchor (=uses div id as anchor))
+			html.append("<a href=\"Wiki.jsp?page=");
+			html.append(Strings.encodeURL(reference.getArticle()
+					.getTitle()));
+			html.append("#header_");
+			html.append(reference.getID());
+			html.append("\" >");
+			html.append(reference.getTitle());
 
 			// Get a nice name
 			Section<DefaultMarkupType> root = Sections.findAncestorOfType(
@@ -431,7 +435,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			html.append(root != null ? root.get().getName() : reference
 					.getFather().get().getName());
 
-			html.append(")</a>");
+			html.append("</a>");
 		}
 
 		return html.toString();
