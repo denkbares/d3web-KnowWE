@@ -31,7 +31,7 @@ import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.strings.Identifier;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.packaging.PackageAnnotationName;
+import de.knowwe.core.compile.packaging.UsesAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageTermDefinition;
 import de.knowwe.core.compile.packaging.UsesAnnotationRenderer;
 import de.knowwe.core.compile.terminology.RenamableTerm;
@@ -99,7 +99,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 		MARKUP.addContentType(new KnowledgeBaseCompileType());
 
 		MARKUP.addAnnotationNameType(ANNOTATION_COMPILE, new
-				PackageAnnotationName());
+				UsesAnnotationNameType());
 		MARKUP.addAnnotationContentType(ANNOTATION_COMPILE, new
 				PackageTermDefinition());
 		MARKUP.addAnnotationRenderer(ANNOTATION_COMPILE, new UsesAnnotationRenderer());
@@ -109,7 +109,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 		super(MARKUP);
 
 		this.removeSubtreeHandler(DefaultMarkupTermReferenceRegisterHandler.class);
-		this.addSubtreeHandler(new KnowledgeBaseTermDefinitionRegisterHandler());
+		this.addSubtreeHandler(Priority.HIGHEST, new KnowledgeBaseTermDefinitionRegisterHandler());
 
 		this.setIgnorePackageCompile(true);
 		this.setRenderer(new KnowledgeBaseRenderer());

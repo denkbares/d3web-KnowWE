@@ -19,7 +19,6 @@
 package de.knowwe.core.compile.packaging;
 
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
@@ -27,20 +26,13 @@ import de.knowwe.core.user.UserContext;
 /**
  * 
  * @author Stefan Plehn
- * @created 11.07.2013
+ * @created 17.07.2013
  */
-public class UsesAnnotationRenderer implements Renderer {
+public class PackageAnnotationNameTypeRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult string) {
-
-		Section<UsesAnnotationNameType> packageNameSec = Sections.findSuccessor(section,
-				UsesAnnotationNameType.class);
-		packageNameSec.get().getRenderer().render(packageNameSec, user, string);
-
-		Section<PackageTermDefinition> packageTermSec = Sections.findSuccessor(section,
-				PackageTermDefinition.class);
-		packageTermSec.get().getRenderer().render(packageTermSec, user, string);
+		string.appendHtml("<img style='position:relative; top:2px'; class='packageOpacity'; src='KnowWEExtension/images/package_obj.gif'></img>");
 
 	}
 

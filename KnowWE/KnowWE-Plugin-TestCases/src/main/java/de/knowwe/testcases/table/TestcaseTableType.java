@@ -18,10 +18,11 @@
  */
 package de.knowwe.testcases.table;
 
+import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.packaging.PackageTermReference;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.testcases.prefix.PrefixTestCaseRenderer;
 import de.knowwe.testcases.prefix.PrefixedTestCaseProvider;
 
@@ -39,8 +40,10 @@ public class TestcaseTableType extends DefaultMarkupType {
 		m = new DefaultMarkup("TestCaseTable");
 		m.addContentType(new TestcaseTable());
 		m.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-		m.addAnnotationRenderer(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				StyleRenderer.ANNOTATION);
+		m.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
+				new PackageAnnotationNameType());
+		m.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
+				new PackageTermReference());
 		m.addAnnotation(NAME, false);
 		m.addAnnotation(PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME, false);
 	}

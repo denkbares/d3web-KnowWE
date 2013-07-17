@@ -20,12 +20,13 @@
 package de.knowwe.d3web.resource;
 
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.packaging.PackageTermReference;
 import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
  * Defines a resource that should be added to the knowledge base as a binary
@@ -64,8 +65,10 @@ public class ResourceType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_PATH, false);
 		MARKUP.addAnnotation(ANNOTATION_SRC, false);
 		MARKUP.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-		MARKUP.addAnnotationRenderer(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				StyleRenderer.ANNOTATION);
+		MARKUP.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
+				new PackageAnnotationNameType());
+		MARKUP.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
+				new PackageTermReference());
 		MARKUP.addAnnotation(ANNOTATION_XMLSCHEMA);
 		AttachmentType schemaAttachment = new AttachmentType();
 		schemaAttachment.addSubtreeHandler(new XMLValidationHandler());

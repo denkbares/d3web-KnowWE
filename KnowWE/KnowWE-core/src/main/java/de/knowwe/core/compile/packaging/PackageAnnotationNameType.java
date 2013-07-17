@@ -16,26 +16,23 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.knowwe.core.packaging;
+package de.knowwe.core.compile.packaging;
 
-import java.util.regex.Pattern;
-
-import de.knowwe.core.compile.packaging.PackageAnnotationNameTypeRenderer;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+
 
 /**
  * 
- * @author Stefan Plehn
- * @created 22.05.2013
+ * @author stefan
+ * @created 17.07.2013
  */
-public class PackageMarkupType extends AbstractType {
-	
-	public PackageMarkupType() {
-		Pattern pattern = Pattern.compile("^(%%\\w+\\b)",
-				Pattern.MULTILINE + Pattern.DOTALL);
-		this.setSectionFinder(new RegexSectionFinder(pattern));
+public class PackageAnnotationNameType extends AbstractType {
+
+	public PackageAnnotationNameType() {
+		this.setSectionFinder(new AllTextSectionFinder());
 		this.setRenderer(new PackageAnnotationNameTypeRenderer());
 	}
+
 
 }

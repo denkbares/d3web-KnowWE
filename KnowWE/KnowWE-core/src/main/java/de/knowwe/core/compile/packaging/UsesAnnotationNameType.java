@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.AbstractType;
@@ -41,9 +40,9 @@ import de.knowwe.core.user.UserContext;
  * @author Stefan Plehn
  * @created 22.05.2013
  */
-public class PackageAnnotationName extends AbstractType {
+public class UsesAnnotationNameType extends AbstractType {
 
-	public PackageAnnotationName() {
+	public UsesAnnotationNameType() {
 
 		this.setSectionFinder(new AllTextSectionFinder());
 		this.setRenderer(new PackageAnnotationNameRenderer());
@@ -92,11 +91,21 @@ public class PackageAnnotationName extends AbstractType {
 			boolean hasErrors = errorsCount > 0;
 			boolean hasWarnings = warningsCount > 0;
 
-			String icon = "KnowWEExtension/d3web/icon/uses_" +
-					(hasErrors ? "error" : hasWarnings ? "warn" : "ok") +
-					"16.gif";
-			string.appendHtml("<img src='" + icon + "'></img> ");
-			string.append("uses package: ");
+			String icon;
+			if (hasErrors) {
+				icon = "KnowWEExtension/d3web/icon/uses_error16.gif";
+			}
+			else if (hasWarnings) {
+				icon = "KnowWEExtension/d3web/icon/warn_error16.gif";
+			}
+			else {
+				icon = "KnowWEExtension/images/package_obj.gif";
+			}
+
+			string.appendHtml("<img style='position:relative; top:2px; class='packageOpacity'; src='"
+					+ icon
+					+ "'></img>");
+			string.append(" ");
 
 			// .append(packageName);
 			// if (hasErrors) {

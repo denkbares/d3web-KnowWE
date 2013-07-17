@@ -41,10 +41,14 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class DefaultMarkupTermReferenceRegisterHandler extends SubtreeHandler<DefaultMarkupType> {
 
+	public DefaultMarkupTermReferenceRegisterHandler() {
+		super(false);
+	}
+
 	@Override
 	public Collection<Message> create(Article article, Section<DefaultMarkupType> section) {
 		// register packages as reference
-		TerminologyManager terminologyHandler = KnowWEUtils.getGlobalTerminologyManager(article.getWeb());
+		TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
 		String annotationString = DefaultMarkupType.getAnnotation(section,
 				PackageManager.PACKAGE_ATTRIBUTE_NAME);
 		if (annotationString != null) {

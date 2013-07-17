@@ -20,10 +20,11 @@
 package de.d3web.we.kdom.questionnaireTree;
 
 import de.d3web.we.kdom.questionTree.QuestionDashTree;
+import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.packaging.PackageTermReference;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.kdom.renderer.StyleRenderer;
 
 public class QuestionnaireTreeMarkup extends DefaultMarkupType {
 
@@ -33,8 +34,10 @@ public class QuestionnaireTreeMarkup extends DefaultMarkupType {
 		m = new DefaultMarkup("Questionnaire");
 		m.addContentType(new QuestionDashTree());
 		m.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-		m.addAnnotationRenderer(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				StyleRenderer.ANNOTATION);
+		m.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
+				new PackageAnnotationNameType());
+		m.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
+				new PackageTermReference());
 		m.setDeprecated("%%Question");
 	}
 

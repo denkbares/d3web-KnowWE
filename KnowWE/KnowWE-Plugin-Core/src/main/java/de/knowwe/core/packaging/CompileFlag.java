@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.d3web.strings.Identifier;
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageCompiler;
 import de.knowwe.core.compile.packaging.PackageTermReference;
@@ -63,7 +64,7 @@ public class CompileFlag extends DefaultMarkupType {
 		super(m);
 		this.setRenderer(new CompileFlagRenderer());
 		this.removeSubtreeHandler(DefaultMarkupTermReferenceRegisterHandler.class);
-		this.addSubtreeHandler(new CompileFlagTermDefinitionRegisterHandler());
+		this.addSubtreeHandler(Priority.HIGHEST, new CompileFlagTermDefinitionRegisterHandler());
 
 	}
 
@@ -121,9 +122,13 @@ public class CompileFlag extends DefaultMarkupType {
 	
 	private class CompileFlagTermDefinitionRegisterHandler extends SubtreeHandler<CompileFlag> {
 
+		public CompileFlagTermDefinitionRegisterHandler() {
+			super(false);
+		}
+
 		@Override
 		public Collection<Message> create(Article article, Section<CompileFlag> section) {
-			TerminologyManager terminologyHandler = KnowWEUtils.getGlobalTerminologyManager(article.getWeb());
+			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
 
 			String content = DefaultMarkupType.getContent(section).trim();
 			terminologyHandler.registerTermDefinition(section,

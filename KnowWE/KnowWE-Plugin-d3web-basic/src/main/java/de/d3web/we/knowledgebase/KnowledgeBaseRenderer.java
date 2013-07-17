@@ -186,11 +186,24 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 		}
 		else {
 		 
-			String icon = "KnowWEExtension/d3web/icon/uses_" +
-					(hasErrors ? "error" : hasWarnings ? "warn" : "ok") +
-					"16.gif";
-			string.appendHtml("<img src='" + icon + "'></img> ");
-			string.append("uses package: ").append(packageName);
+			String icon;
+			if(hasErrors){
+				icon = "KnowWEExtension/d3web/icon/uses_error16.gif";
+			}
+			else if(hasWarnings){
+				icon = "KnowWEExtension/d3web/icon/warn_error16.gif";
+			}
+			else {
+				icon = "KnowWEExtension/images/package_obj.gif";
+			}
+
+			string.appendHtml("<img style='position:relative; top:2px;' class='packageOpacity'; src='"
+					+ icon
+					+ "'></img>");
+			string.append(" ");
+			string.appendHtml("<span style='color:rgb(121,79, 64);'>");
+			string.append(packageName);
+			string.appendHtml("</span>");
 		}
 		if (hasErrors) {
 			string.append(" (").append(errorsCount).append(" errors in ");

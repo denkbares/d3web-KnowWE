@@ -22,7 +22,9 @@ import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.we.object.NamedObjectReference;
+import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.packaging.PackageTermReference;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
@@ -33,7 +35,6 @@ import de.knowwe.d3web.property.PropertyType;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.table.Table;
 import de.knowwe.kdom.table.TableIndexConstraint;
 
@@ -53,8 +54,10 @@ public class PropertyTableType extends DefaultMarkupType {
 		Table content = new Table();
 		markup.addContentType(content);
 		markup.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-		markup.addAnnotationRenderer(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				StyleRenderer.ANNOTATION);
+		markup.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
+				new PackageAnnotationNameType());
+		markup.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
+				new PackageTermReference());
 
 		PropertyType propertyType = new PropertyType();
 		propertyType.setSectionFinder(new ConstraintSectionFinder(new AllTextSectionFinder(),

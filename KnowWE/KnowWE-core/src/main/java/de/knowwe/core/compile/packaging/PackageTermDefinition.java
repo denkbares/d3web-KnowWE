@@ -33,7 +33,6 @@ import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -51,8 +50,7 @@ public class PackageTermDefinition extends AbstractType implements Term, Renamab
 		this.setSectionFinder(new AllTextSectionFinder());
 
 		setRenderer(StyleRenderer.PACKAGE);
-		this.addSubtreeHandler(new RegisterPackageTermDefinitionHandler());
-		this.addSubtreeHandler(Priority.HIGHEST, new CheckSectionsForPackageExistence());
+		this.addSubtreeHandler(Priority.HIGH, new CheckSectionsForPackageExistence());
 
 	}
 
@@ -76,28 +74,7 @@ public class PackageTermDefinition extends AbstractType implements Term, Renamab
 		return replacement;
 	}
 
-	private class RegisterPackageTermDefinitionHandler extends SubtreeHandler<PackageTermDefinition> {
-
-		public RegisterPackageTermDefinitionHandler() {
-			super(true);
-
-		}
-
-		@Override
-		public Collection<Message> create(Article article, Section<PackageTermDefinition> section) {
-			KnowWEUtils.getGlobalTerminologyManager(article.getWeb()).registerTermDefinition(
-					section,
-					PackageTermReference.class, new Identifier(section.getText()));
-
-			return Messages.noMessage();
-		}
-	}
-
 	private class CheckSectionsForPackageExistence extends SubtreeHandler<PackageTermDefinition> {
-
-		public CheckSectionsForPackageExistence() {
-			super(true);
-		}
 
 		@Override
 		public Collection<Message> create(Article article, Section<PackageTermDefinition> section) {

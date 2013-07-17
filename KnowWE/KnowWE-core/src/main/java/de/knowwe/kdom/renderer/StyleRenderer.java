@@ -51,7 +51,8 @@ public class StyleRenderer implements Renderer {
 
 
 	public static final Renderer PACKAGE = new ToolMenuDecoratingRenderer(new StyleRenderer(
-			"color:rgb(121,79, 64)"));
+			"packageOpacity",
+			"color:rgb(121,79, 64);"));
 
 	public static final String CONDITION_FULLFILLED = "#CFFFCF";
 	public static final String CONDITION_FALSE = "#FFCFCF";

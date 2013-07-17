@@ -36,12 +36,9 @@ public class PackageObjectInfoPageToolProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		if (section.get() instanceof Term) {
 			@SuppressWarnings("unchecked")
 			Section<? extends Term> s = (Section<? extends Term>) section;
 			return new Tool[] { getObjectInfoPageTool(s, userContext) };
-		}
-		return new Tool[] {};
 	}
 
 	protected Tool getObjectInfoPageTool(Section<? extends Term> section, UserContext userContext) {

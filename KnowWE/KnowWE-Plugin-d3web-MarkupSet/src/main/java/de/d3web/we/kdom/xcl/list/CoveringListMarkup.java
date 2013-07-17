@@ -20,10 +20,11 @@
 
 package de.d3web.we.kdom.xcl.list;
 
+import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.packaging.PackageTermReference;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.kdom.renderer.StyleRenderer;
 
 public class CoveringListMarkup extends DefaultMarkupType {
 
@@ -44,8 +45,10 @@ public class CoveringListMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotation(SUGGESTED_THRESHOLD, false);
 		MARKUP.addAnnotation(MIN_SUPPORT, false);
 		MARKUP.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-		MARKUP.addAnnotationRenderer(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				StyleRenderer.ANNOTATION);
+		MARKUP.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
+				new PackageAnnotationNameType());
+		MARKUP.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
+				new PackageTermReference());
 		MARKUP.addAnnotation(DESCRIPTION, false);
 		MARKUP.addAnnotation(OTHER_QUESTIONS, false,
 				OTHER_QUESTIONS_IGNORE, OTHER_QUESTIONS_NORMAL_VALUE_COVERED);
