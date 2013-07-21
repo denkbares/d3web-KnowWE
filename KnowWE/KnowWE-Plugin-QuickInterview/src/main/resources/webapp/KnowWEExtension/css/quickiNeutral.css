@@ -23,7 +23,6 @@
 /* dont display the blue plugin panel border */
 #quickinterview {
 	border: none;
-	white-space: nowrap;
 }
 
 /* dont display a header for the quicki plugin */
