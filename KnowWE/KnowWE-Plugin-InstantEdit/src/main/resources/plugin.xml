@@ -44,9 +44,9 @@
         <parameter id="scope" value="CIDashboardType" />
         <parameter id="scope" value="CoveringListSettingsMarkup" />
        	<parameter id="scope" value="OntoVisType" />
+       	<parameter id="scope" value="SparqlVisType" />
         <parameter id="scope" value="HierarchyMarkup" />
         <parameter id="scope" value="QuickInterviewMarkup" />
-        
         
     </extension>
  
