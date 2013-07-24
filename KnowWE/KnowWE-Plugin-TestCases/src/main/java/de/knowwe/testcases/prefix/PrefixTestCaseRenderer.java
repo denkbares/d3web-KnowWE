@@ -1,10 +1,9 @@
 package de.knowwe.testcases.prefix;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+import java.util.regex.Pattern;
 
-import de.d3web.core.utilities.Triple;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -33,27 +32,18 @@ public class PrefixTestCaseRenderer implements Renderer {
 		if (!(section.get() instanceof DefaultMarkupType)) return;
 		String prefix = DefaultMarkupType.getAnnotation(section,
 				PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME);
-		if (prefix == null) return;
-		Set<String> packageNames = section.getPackageNames();
-		String[] packages = packageNames.toArray(new String[packageNames.size()]);
-		List<Triple<TestCaseProvider, Section<?>, Article>> testCaseProviders = TestCaseUtils.getTestCaseProviders(
-				section.getWeb(), packages);
-		boolean found = false;
-		for (Triple<TestCaseProvider, Section<?>, Article> triple : testCaseProviders) {
-			TestCaseProvider provider = triple.getA();
-			if (provider.getName().equals(prefix)) {
-				found = true;
-				break;
-			}
-		}
-		if (found) {
-			Messages.clearMessages(null, section, PrefixTestCaseRenderer.class);
-		}
-		else {
+		List<TestCaseProvider> found = (prefix == null)
+				? Collections.<TestCaseProvider> emptyList()
+				: TestCaseUtils.getTestCaseProviders(
+						section.getWeb(), section.getPackageNames(),
+						"^" + Pattern.quote(prefix) + "$");
+		if (prefix != null && found.isEmpty()) {
 			Message warning = Messages.warning("Prefix testcase '" + prefix
 					+ "' does not exist or has errors");
 			Messages.storeMessage(null, section, PrefixTestCaseRenderer.class, warning);
-
+		}
+		else {
+			Messages.clearMessages(null, section, PrefixTestCaseRenderer.class);
 		}
 	}
 }

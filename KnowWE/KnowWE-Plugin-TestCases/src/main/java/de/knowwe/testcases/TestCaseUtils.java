@@ -18,12 +18,15 @@
  */
 package de.knowwe.testcases;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
@@ -67,6 +70,26 @@ import de.knowwe.testcases.table.ConditionCheck;
  * @created 13.09.2012
  */
 public class TestCaseUtils {
+
+	public static List<TestCaseProvider> getTestCaseProviders(String web, Set<String> packageNames, String nameRegex) throws PatternSyntaxException {
+		return getTestCaseProviders(web, packageNames,
+				Pattern.compile(nameRegex, Pattern.CASE_INSENSITIVE));
+	}
+
+	public static List<TestCaseProvider> getTestCaseProviders(String web, Set<String> packageNames, Pattern nameRegex) {
+		if (nameRegex == null) return Collections.emptyList();
+		String[] packages = packageNames.toArray(new String[packageNames.size()]);
+		List<Triple<TestCaseProvider, Section<?>, Article>> testCaseProviders = TestCaseUtils.getTestCaseProviders(
+				web, packages);
+		List<TestCaseProvider> found = new LinkedList<TestCaseProvider>();
+		for (Triple<TestCaseProvider, Section<?>, Article> triple : testCaseProviders) {
+			TestCaseProvider provider = triple.getA();
+			if (nameRegex.matcher(provider.getName()).matches()) {
+				found.add(provider);
+			}
+		}
+		return found;
+	}
 
 	public static List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(Section<TestCasePlayerType> section) {
 		String[] kbpackages = DefaultMarkupType.getPackages(section,
