@@ -47,7 +47,7 @@
        	<parameter id="scope" value="SparqlVisType" />
         <parameter id="scope" value="HierarchyMarkup" />
         <parameter id="scope" value="QuickInterviewMarkup" />
-        
+        <parameter id="scope" value="KPIAnalysis" />
     </extension>
  
     <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
