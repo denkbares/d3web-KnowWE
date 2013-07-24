@@ -19,6 +19,7 @@
 package de.d3web.we.solutionpanel;
 
 import de.d3web.we.object.QuestionnaireReference;
+import de.knowwe.core.compile.packaging.MasterAnnotationWarningHandler;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -72,6 +73,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		this.setRenderer(new ShowSolutionsRenderer());
 		DefaultMarkupType.getContentType(this).setRenderer(
 				new ReRenderSectionMarkerRenderer(new ShowSolutionsContentRenderer()));
+		this.addSubtreeHandler(new MasterAnnotationWarningHandler());
 	}
 
 	public static String getText(Section<ShowSolutionsType> sec) {

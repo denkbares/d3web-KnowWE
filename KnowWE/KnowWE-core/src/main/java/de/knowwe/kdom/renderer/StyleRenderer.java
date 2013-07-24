@@ -49,7 +49,6 @@ public class StyleRenderer implements Renderer {
 	public static final Renderer Questionaire = new ToolMenuDecoratingRenderer(
 			new StyleRenderer("color:rgb(128, 128, 0)"));
 
-
 	public static final Renderer PACKAGE = new ToolMenuDecoratingRenderer(new StyleRenderer(
 			"packageOpacity",
 			"color:rgb(121,79, 64);"));
@@ -109,6 +108,19 @@ public class StyleRenderer implements Renderer {
 		}
 		string.appendHtml(">");
 		renderContent(section, user, string);
+		string.appendHtml("</span>");
+	}
+
+	public void renderText(String text, UserContext user, RenderResult string) {
+		string.appendHtml("<span");
+		if (cssClass != null) {
+			string.append(" class='").append(cssClass).append("'");
+		}
+		if (cssStyle != null) {
+			string.append(" style='").append(cssStyle).append("'");
+		}
+		string.appendHtml(">");
+		string.append(text);
 		string.appendHtml("</span>");
 	}
 
