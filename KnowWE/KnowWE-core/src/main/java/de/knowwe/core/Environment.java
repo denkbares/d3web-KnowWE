@@ -175,9 +175,9 @@ public class Environment {
 
 		decorateTypeTree(RootType.getInstance());
 
-		initInstantiations();
-
 		initKnowledgeRepresentationHandler();
+
+		initInstantiations();
 
 		Plugins.initJS();
 		Plugins.initCSS();

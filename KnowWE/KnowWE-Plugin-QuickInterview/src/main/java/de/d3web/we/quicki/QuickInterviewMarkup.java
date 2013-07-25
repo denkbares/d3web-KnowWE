@@ -80,14 +80,17 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 	}
 
 	public QuickInterviewMarkup() {
-		super(m);
+		this(m);
+	}
+
+	public QuickInterviewMarkup(DefaultMarkup markup) {
+		super(markup);
 		RessourceLoader.getInstance().add("quickiNeutral.css",
 				RessourceLoader.RESOURCE_STYLESHEET);
 		RessourceLoader.getInstance().add("quicki.js",
 				RessourceLoader.RESOURCE_SCRIPT);
 		this.setRenderer(new QuickInterviewMarkupRenderer());
 		this.addSubtreeHandler(new MasterAnnotationWarningHandler());
-
 	}
 
 	private static class QuickInterviewMarkupRenderer extends DefaultMarkupRenderer {
@@ -108,7 +111,6 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 			if (answers != null) {
 				parameters.put(ANSWERS_KEY, answers);
 			}
-
 
 			String annotation = DefaultMarkupType.getAnnotation(section,
 					QuickInterviewMarkup.SAVE_KEY);
@@ -194,7 +196,5 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 		}
 
 	}
-
-
 
 }
