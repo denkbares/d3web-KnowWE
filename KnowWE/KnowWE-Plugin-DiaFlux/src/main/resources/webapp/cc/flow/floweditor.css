@@ -63,6 +63,21 @@ ul.toolbar li:last-child {
     border-width: 1px;
 }
 
+#changenotebar {
+	border: 1px solid gray;
+	border-radius: 3px 3px 3px 3px;
+	-moz-border-radius: 3px 3px 3px 3px;
+	width: 850px;
+	padding-left: 3px;
+	margin-bottom: 5px;
+}
+
+#changenotebar label {
+	font-family: Arial, Helvetica;
+	font-size: 10pt;
+	font-weight: bold;
+}
+
 .propertyArea div{
 	padding: 8px 0px 0px 0px;
 }

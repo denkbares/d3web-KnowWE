@@ -274,8 +274,7 @@ Flowchart.prototype.createDroppables = function(dom, contentPane, trashPane) {
 }
 
 FlowEditor.prototype._saveFlowchartText = function(xml, closeOnSuccess) {
-	var changeNote = prompt("Do you want to save your changes and exit? Please enter a change note below:");
-	if (changeNote == null) return; //return on cancel
+	var changeNote = $('changenote').value;
 	
 	var url = "KnowWE.jsp";
 	new Ajax.Request(url, {

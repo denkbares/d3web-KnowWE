@@ -199,7 +199,16 @@
 	  -->
 	</ul>
 </div>
-
+<div id="changenotebar">
+	<table>
+    	<tbody>
+    		<tr>
+   				<td><label for="changenote">Change Note</label></td>
+    			<td><input type="text" name="changenote" id="changenote" size="120" value=""></td>
+    		</tr>
+  		</tbody>
+ 	</table>
+</div>
 <div id="leftMenu" class="leftMenu">
 	<div id="objectTree"></div>
 </div>
