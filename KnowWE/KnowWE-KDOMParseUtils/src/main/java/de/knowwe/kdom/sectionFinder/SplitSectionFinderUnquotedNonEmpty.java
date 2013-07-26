@@ -18,6 +18,8 @@
  */
 package de.knowwe.kdom.sectionFinder;
 
+import de.knowwe.core.kdom.sectionFinder.MultiSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.NoEmptySectionsConstraint;
 
@@ -31,8 +33,20 @@ import de.knowwe.kdom.constraint.NoEmptySectionsConstraint;
  */
 public class SplitSectionFinderUnquotedNonEmpty extends ConstraintSectionFinder {
 
-	public SplitSectionFinderUnquotedNonEmpty(String key) {
-		super(new SplitSectionFinderUnquoted(key), NoEmptySectionsConstraint.getInstance());
+	public SplitSectionFinderUnquotedNonEmpty(String... keys) {
+		super(createDelegate(keys), NoEmptySectionsConstraint.getInstance());
 	}
 
+	private static SectionFinder createDelegate(String[] keys) {
+		if (keys.length == 1) {
+			return new SplitSectionFinderUnquoted(keys[0]);
+		}
+		else {
+			MultiSectionFinder finder = new MultiSectionFinder();
+			for (String key : keys) {
+				finder.addSectionFinder(new SplitSectionFinderUnquoted(key));
+			}
+			return finder;
+		}
+	}
 }
