@@ -373,6 +373,9 @@ public class Environment {
 		}
 
 		for (Type childType : childrenTypesInit) {
+			// secure against malformed plugins
+			if (childType == null) continue;
+
 			if (childType.isDecorated()) {
 				continue;
 			}
