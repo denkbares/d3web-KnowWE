@@ -26,10 +26,10 @@ public class ValueObjectReference extends NamedObjectReference {
 			public Collection<Message> create(Article article, Section<ValueObjectReference> section) {
 				NamedObject termObject = getTermObject(article, section);
 				if (termObject != null && !(termObject instanceof ValueObject)) {
-					Messages.asList(Messages.error("The object " + termObject.getName()
+					return Messages.asList(Messages.error("The object " + termObject.getName()
 							+ " is not a Question or Solution"));
 				}
-				return null;
+				return Messages.noMessage();
 			}
 
 		});
