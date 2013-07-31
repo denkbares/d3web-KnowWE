@@ -776,9 +776,6 @@ public class QuickInterviewRenderer {
 		if (id != null && id.length() > 0) {
 			sub.append(" id='" + id + "' ");
 		}
-		if (cssclass != null && cssclass.length() > 0) {
-			sub.append(" class='" + cssclass + "'");
-		}
 		if (onclick != null && onclick.length() > 0) {
 			sub.append(" " + onclick + " ");
 		}
@@ -786,7 +783,11 @@ public class QuickInterviewRenderer {
 			sub.append(" " + onmouseover + " ");
 		}
 		if (title != null && title.length() > 0) {
+			cssclass = cssclass + " tooltipster";
 			sub.append(" title='" + title + "' ");
+		}
+		if (cssclass != null && cssclass.length() > 0) {
+			sub.append(" class='" + cssclass + "'");
 		}
 		sub.append(">");
 		sub.append(text);

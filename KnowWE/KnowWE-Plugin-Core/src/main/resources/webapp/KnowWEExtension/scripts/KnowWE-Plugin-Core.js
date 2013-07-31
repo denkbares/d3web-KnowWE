@@ -184,7 +184,7 @@ KNOWWE.core.plugin.renderKDOM = function() {
 	);
 };
 
-KNOWWE.tooltips = {}
+KNOWWE.tooltips = {};
 
 KNOWWE.tooltips.enrich = function() {
 	jq$('.tooltipster').tooltipster({
@@ -192,7 +192,7 @@ KNOWWE.tooltips.enrich = function() {
 		interactive: true,
 		delay: 1000
 	});
-}
+};
 
 
 /* ############################################################### */
