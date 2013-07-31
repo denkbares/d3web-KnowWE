@@ -355,5 +355,50 @@
 		<parameter id="scope" value="PackageTermReference" />
 	</extension>
 	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="StartOperationAction">
+		<parameter id="class"
+			value="de.knowwe.core.utils.progress.StartOperationAction" />
+		<parameter id="name" value="StartOperationAction" />
+		<parameter id="description" value="Action to start long operations and e.g. attach the result file to the wiki page" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-Core-Progress.js" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="CancelOperationAction">
+		<parameter id="class"
+			value="de.knowwe.core.utils.progress.CancelOperationAction" />
+		<parameter id="name" value="CancelOperationAction" />
+		<parameter id="description" value="Action to cancel long operations" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-Core-Progress.js" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="RemoveOperationAction">
+		<parameter id="class"
+			value="de.knowwe.core.utils.progress.RemoveOperationAction" />
+		<parameter id="name" value="RemoveOperationAction" />
+		<parameter id="description" value="Action to remove long operations after they have terminated" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-Core-Progress.js" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="GetProgressAction">
+		<parameter id="class"
+			value="de.knowwe.core.utils.progress.GetProgressAction" />
+		<parameter id="name" value="GetProgressAction" />
+		<parameter id="description" value="Action to monitor long operations" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-Core-Progress.js" />
+	</extension>
+
+	
 	
 </plugin>

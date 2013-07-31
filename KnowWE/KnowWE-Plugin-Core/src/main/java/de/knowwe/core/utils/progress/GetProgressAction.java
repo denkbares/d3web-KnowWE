@@ -17,19 +17,20 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.ci4ke.dashboard.action;
+package de.knowwe.core.utils.progress;
 
 import java.io.IOException;
-import java.net.URLDecoder;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.d3web.core.io.progress.ProgressListener;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.utils.progress.AjaxProgressListener;
-import de.knowwe.core.utils.progress.ProgressListenerManager;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.user.UserContext;
 
 /**
  * This action handles the ajax upate request of the ci-build progress bar on
@@ -38,43 +39,36 @@ import de.knowwe.core.utils.progress.ProgressListenerManager;
  * @author Jochen Reutelshöfer (denkbares GmbH)
  * @created 18.07.2012
  */
-public class CIGetProgressAction extends AbstractAction {
-
-	String FINISHED = "Finished";
+public class GetProgressAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String name = context.getParameter("name");
-		name = URLDecoder.decode(name, "UTF-8");
-		ProgressListener listener = ProgressListenerManager.getInstance().getProgressListener(name);
-
-		float progress = 0;
-		// finished will be returned in case build is finished and
-		// ProgressListener already deregistered
-		String message = FINISHED;
-		if (listener != null) {
-			if (listener instanceof AjaxProgressListener) {
-				progress = ((AjaxProgressListener) listener).getCurrentProgress();
-				message = ((AjaxProgressListener) listener).getCurrentMessage();
-				if (message == null || message.isEmpty()) {
-					message = "Initializing...";
-				}
-			}
-		}
-		if (message.equals(FINISHED)) {
-			progress = 1;
+		String sectionID = context.getParameter(Attributes.SECTION_ID);
+		Section<?> section = Sections.getSection(sectionID);
+		if (section == null) {
+			context.sendError(404, "no such section");
+			return;
 		}
 
-		int progressTwoDigits = (int) (progress * 100);
-		String percentString = "" + progressTwoDigits;
-		if (progressTwoDigits < 10) {
-			percentString = " " + percentString;
-		}
-		JSONObject result = new JSONObject();
 		try {
-			result.put("progress", percentString);
-			result.put("message", message);
+			JSONArray result = new JSONArray();
+			for (LongOperation operation : LongOperationUtils.getLongOperations(section)) {
+				AjaxProgressListener listener =
+						ProgressListenerManager.getInstance().getProgressListener(operation);
+				if (listener == null) continue;
+
+				JSONObject progress = new JSONObject();
+				progress.put("operationID",
+						LongOperationUtils.getRegistrationID(section, operation));
+				progress.put("progress", listener.getCurrentProgress());
+				progress.put("message", listener.getCurrentMessage());
+				progress.put("error", listener.getError());
+				progress.put("running", listener.isRunning());
+				UserContext user = listener.getUserContext();
+				if (user != null) progress.put("user", user.getUserName());
+				result.put(progress);
+			}
 			result.write(context.getWriter());
 		}
 		catch (JSONException e) {
@@ -82,4 +76,5 @@ public class CIGetProgressAction extends AbstractAction {
 					"Error while writing JSON message: " + e.getMessage());
 		}
 	}
+
 }

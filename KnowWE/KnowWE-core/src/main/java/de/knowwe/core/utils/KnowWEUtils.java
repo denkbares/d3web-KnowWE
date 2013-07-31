@@ -432,6 +432,18 @@ public class KnowWEUtils {
 	}
 
 	/**
+	 * Creates a &lt;a href="..."&gt; styled link to the specified attachment of
+	 * the specified article.
+	 * 
+	 * @param article the article to create the link for
+	 * @param attachment the attachment to create the link for
+	 * @return the created link
+	 */
+	public static String getURLLink(Article article, String attachment) {
+		return "attach/" + article.getTitle() + "/" + attachment;
+	}
+
+	/**
 	 * Creates a &lt;a href="..."&gt; styled link to this section. The created
 	 * link navigates the user to the article of the section. If the section is
 	 * rendered with an anchor (see method {@link #getAnchor(Section)}) the page
@@ -579,6 +591,10 @@ public class KnowWEUtils {
 	 */
 	public static void storeObject(Article article, Section<?> s, String key, Object o) {
 		s.getSectionStore().storeObject(article, key, o);
+	}
+
+	public static void storeObject(Section<?> s, String key, Object o) {
+		storeObject(null, s, key, o);
 	}
 
 	public static String readFile(String fileName) {

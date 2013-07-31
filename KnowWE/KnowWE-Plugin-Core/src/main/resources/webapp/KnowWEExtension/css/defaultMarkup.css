@@ -149,6 +149,46 @@ span.markupMenuItem {
 	padding: 0 !important;
 }
 
+.defaultMarkupFrame .progress-container {
+}
+
+.defaultMarkupFrame .progress-container .progress-bar {
+	display: inline-block;
+	width: 50%;
+	min-height: 14px;	
+}
+.defaultMarkupFrame .progress-container .progress-bar .ui-progressbar-value {
+	height: 12px;
+}
+
+.defaultMarkupFrame .progress-container .progress-state {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	margin-right: 5px;
+	background-image: url("../images/progress_stop.gif");
+}
+
+.defaultMarkupFrame .progress-container .progress-error .progress-state {
+	background-image: url("../images/red_bulb.gif");
+}
+
+.defaultMarkupFrame .progress-container .progress-success .progress-state {
+	background-image: url("../images/green_bulb.gif");
+}
+
+.defaultMarkupFrame .progress-container .progress-message,
+.defaultMarkupFrame .progress-container .progress-close {
+	display: inline-block;
+	margin-left: 5px;
+	top: -3px;
+	position: relative;
+}
+
+.defaultMarkupFrame .progress-container .progress-close {
+	color: grey;
+}
+
 /*
  * make sure that in print-out all titles are visible, 
  * but no menus

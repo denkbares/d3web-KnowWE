@@ -44,6 +44,7 @@ import de.knowwe.core.report.Message.Type;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.progress.ProgressRenderer;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolUtils;
 
@@ -83,6 +84,7 @@ public class DefaultMarkupRenderer implements Renderer {
 
 		// render messages and content
 		renderMessages(section, content);
+		renderProgress(section, user, content);
 		renderContents(section, user, content);
 
 		String cssClassName = "type_" + section.get().getName();
@@ -90,6 +92,10 @@ public class DefaultMarkupRenderer implements Renderer {
 		renderDefaultMarkupStyled(
 				markupTitle.toStringRaw(), content.toStringRaw(),
 				id, cssClassName, tools, user, buffer);
+	}
+
+	protected void renderProgress(Section<?> section, UserContext user, RenderResult result) {
+		ProgressRenderer.getInstance().render(section, user, result);
 	}
 
 	protected void renderTitle(Section<?> section, UserContext user, RenderResult string) {

@@ -23,9 +23,6 @@ package de.d3web.we.ci4ke.build;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.core.io.progress.AjaxProgressListenerImpl;
-import de.d3web.core.io.progress.ProgressListener;
-import de.d3web.core.io.progress.ProgressListenerManager;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.TestExecutor;
 import de.d3web.testing.TestObjectProvider;
@@ -38,6 +35,9 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.progress.AjaxProgressListener;
+import de.knowwe.core.utils.progress.DefaultAjaxProgressListener;
+import de.knowwe.core.utils.progress.ProgressListenerManager;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class CIBuilder {
@@ -95,7 +95,7 @@ public class CIBuilder {
 		List<TestObjectProvider> pluggedProviders = TestObjectProviderManager.getTestObjectProviders();
 		providers.addAll(pluggedProviders);
 
-		ProgressListener listener = new AjaxProgressListenerImpl();
+		AjaxProgressListener listener = new DefaultAjaxProgressListener(null);
 		ProgressListenerManager.getInstance().setProgressListener(dashboardName,
 				listener);
 
