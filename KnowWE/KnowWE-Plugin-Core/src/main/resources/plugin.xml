@@ -138,8 +138,6 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="4" />
 		<parameter id="scope" value="root" />
-		<parameter id="css" value="jquery.treeTable.css" />
-		<parameter id="script" value="jquery.treeTable.js" />
 	</extension>	
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
@@ -169,7 +167,6 @@
 		<parameter id="description" value="TagHandler ObjectInfoTagHandler" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="css" value="jqautocomplete.css" />
 		<parameter id="script" value="KnowWE-Plugin-Core.js" />
 	</extension>
 	

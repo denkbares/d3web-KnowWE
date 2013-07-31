@@ -184,6 +184,17 @@ KNOWWE.core.plugin.renderKDOM = function() {
 	);
 };
 
+KNOWWE.tooltips = {}
+
+KNOWWE.tooltips.enrich = function() {
+	jq$('.tooltipster').tooltipster({
+		position: "top-left",
+		interactive: true,
+		delay: 1000
+	});
+}
+
+
 /* ############################################################### */
 /* ------------- Onload Events ---------------------------------- */
 /* ############################################################### */
@@ -192,6 +203,7 @@ KNOWWE.core.plugin.renderKDOM = function() {
 	window.addEvent('domready', _KL.setup);
 	if (KNOWWE.helper.loadCheck([ 'Wiki.jsp' ])) {
 		window.addEvent('domready', function() {
+			KNOWWE.tooltips.enrich();
 			KNOWWE.core.plugin.objectinfo.init();
 			KNOWWE.core.plugin.renderKDOM();
 

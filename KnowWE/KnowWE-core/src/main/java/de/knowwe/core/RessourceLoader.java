@@ -104,13 +104,19 @@ public class RessourceLoader {
 	 * @created 05.07.2010
 	 */
 	private void loadDefaultResources() {
+		addFirst("tooltipster.css", RessourceLoader.RESOURCE_STYLESHEET);
+		addFirst("jquery-autocomplete.css", RessourceLoader.RESOURCE_STYLESHEET);
+		addFirst("jquery-treeTable.css", RessourceLoader.RESOURCE_STYLESHEET);
+		addFirst("general.css", RessourceLoader.RESOURCE_STYLESHEET);
 		addFirst("KnowWE-notification.js", RessourceLoader.RESOURCE_SCRIPT);
 		addFirst("KnowWE.js", RessourceLoader.RESOURCE_SCRIPT);
 		addFirst("KnowWE-helper.js", RessourceLoader.RESOURCE_SCRIPT);
-		addFirst("general.css", RessourceLoader.RESOURCE_STYLESHEET);
 		addFirst("jquery-compatibility.js", RessourceLoader.RESOURCE_SCRIPT);
-		addFirst("jquery-ui-1.8.23.custom.min.js", RessourceLoader.RESOURCE_SCRIPT);
+		addFirst("jquery-cookies.js", RessourceLoader.RESOURCE_SCRIPT);
+		addFirst("jquery-tooltipster.js", RessourceLoader.RESOURCE_SCRIPT);
+		addFirst("jquery-treeTable.js", RessourceLoader.RESOURCE_SCRIPT);
 		addFirst("jquery-autosize.min.js", RessourceLoader.RESOURCE_SCRIPT);
+		addFirst("jquery-ui-1.8.23.custom.min.js", RessourceLoader.RESOURCE_SCRIPT);
 		addFirst("jquery-1.7.1.js", RessourceLoader.RESOURCE_SCRIPT);
 	}
 

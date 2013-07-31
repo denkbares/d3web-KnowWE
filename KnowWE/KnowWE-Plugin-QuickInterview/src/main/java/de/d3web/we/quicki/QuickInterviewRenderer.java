@@ -356,11 +356,17 @@ public class QuickInterviewRenderer {
 		String divText = getLabel(question);
 		String cssClass = "question";
 		String title = question.getInfoStore().getValue(MMInfo.DESCRIPTION);
-		if (title == null) title = "";
+		if (title == null) {
+			title = "";
+		}
+		else {
+			cssClass = cssClass + " tooltipster";
+			title = "title='" + title + "' ";
+		}
 
 		sb.append("\n<div id='" + question.getName() + "' " + "parent='"
 				+ parent.getName() + "' " + "class='" + cssClass + "' "
-				+ "title='" + title + "' " + "style='width: " + w
+				+ title + "style='width: " + w
 				+ "px; display: inline-block;' >" + divText + "</div>");
 		// }
 		sb.append("</td><td>");
@@ -878,7 +884,7 @@ public class QuickInterviewRenderer {
 		if (usercontext == null || usercontext.getSession() == null) {
 			return "";
 		}
-	
+
 		String topic = usercontext.getTitle();
 
 		return callQuickInterviewRenderer(usercontext, topic);
@@ -898,22 +904,21 @@ public class QuickInterviewRenderer {
 		}
 		String web = usercontext.getParameter(Attributes.WEB);
 		HttpServletRequest request = usercontext.getRequest();
-	
+
 		ResourceBundle rb = D3webUtils.getD3webBundle(request);
-	
+
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
 		if (kb == null) return rb.getString("KnowWE.quicki.error");
 		Session session = SessionProvider.getSession(usercontext, kb);
-	
+
 		// check if the latest knowledge base is used
 		if (SessionProvider.hasOutDatedSession(usercontext, kb)) {
 			NotificationManager.addNotification(usercontext,
 					new OutDatedSessionNotification(topic));
 		}
-	
+
 		return renderInterview(session, web, usercontext);
 
 	}
-
 
 }

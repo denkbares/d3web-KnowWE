@@ -832,6 +832,7 @@ KNOWWE.plugin.quicki = function(){
             				}
 			        	}
 			        	catch (e) { /* ignore */ }
+						KNOWWE.tooltips.enrich();
 			        	KNOWWE.core.util.updateProcessingState(-1);
                 	},
                     onError : function () {
