@@ -228,13 +228,21 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		String title = wikiContext.getRealPage().getName();
 
 		if (supportArticleNames.contains(title)) {
-			Article supportArticle = Environment.getInstance()
-					.getArticle(Environment.DEFAULT_WEB, title);
-			if (supportArticle != null
-					&& supportArticle.getRootSection().getText().equals(
-							content)) {
-				includeDOMResources(wikiContext);
-				return renderKDOM(content, userContext, supportArticle);
+			try {
+				Article supportArticle = Environment.getInstance()
+						.getArticle(Environment.DEFAULT_WEB, title);
+				if (supportArticle != null
+						&& supportArticle.getRootSection().getText().equals(
+								content)) {
+					includeDOMResources(wikiContext);
+					return renderKDOM(content, userContext, supportArticle);
+				}
+			}
+			catch (Exception e) {
+				Logger.getLogger(this.getClass().getName()).log(
+						Level.SEVERE,
+						"Exception while compiling and rendering article '" + title + "'", e);
+				return getExceptionRendering(userContext, e);
 			}
 		}
 
@@ -294,10 +302,9 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			return renderResult.toStringRaw();
 		}
 		catch (Exception e) {
-			System.out.println("*****EXCEPTION IN preTranslate !!! *********");
-			System.out.println("*****EXCEPTION IN preTranslate !!! *********");
-			System.out.println("*****EXCEPTION IN preTranslate !!! *********");
-			e.printStackTrace();
+			Logger.getLogger(this.getClass().getName()).log(
+					Level.SEVERE,
+					"Exception while compiling and rendering article '" + title + "'", e);
 			return getExceptionRendering(userContext, e);
 		}
 	}
@@ -339,7 +346,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				+ "try going pack to the last working version of the article.\n\n"
 				+ ExceptionUtils.getStackTrace(e);
 		renderResult.appendHtmlElement("div", message, "style",
-				"white-space: pre");
+				"white-space: pre; overflow: hidden");
 		return renderResult.toStringRaw();
 	}
 
