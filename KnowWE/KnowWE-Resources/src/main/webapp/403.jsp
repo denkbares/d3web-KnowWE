@@ -14,7 +14,7 @@
     // If the request was sent by AJAX, just return a plain error message
     if (xRequestedWith != null && xRequestedWith.equals("XMLHttpRequest")) {
         response.setContentType("text/plain; charset="+wiki.getContentEncoding() );
-        response.getWriter().appendHTML(message);
+        response.getWriter().append(message);
     } else {
         response.setContentType("text/html; charset="+wiki.getContentEncoding() );%>
 <html>
