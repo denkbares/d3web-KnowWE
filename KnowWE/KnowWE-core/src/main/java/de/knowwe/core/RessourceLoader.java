@@ -112,7 +112,7 @@ public class RessourceLoader {
 		addFirst("KnowWE.js", RessourceLoader.RESOURCE_SCRIPT);
 		addFirst("KnowWE-helper.js", RessourceLoader.RESOURCE_SCRIPT);
 		addFirst("jquery-compatibility.js", RessourceLoader.RESOURCE_SCRIPT);
-		addFirst("jquery-cookies.js", RessourceLoader.RESOURCE_SCRIPT);
+		addFirst("jquery-plugin-collection.js", RessourceLoader.RESOURCE_SCRIPT);
 		addFirst("jquery-tooltipster.js", RessourceLoader.RESOURCE_SCRIPT);
 		addFirst("jquery-treeTable.js", RessourceLoader.RESOURCE_SCRIPT);
 		addFirst("jquery-autosize.min.js", RessourceLoader.RESOURCE_SCRIPT);

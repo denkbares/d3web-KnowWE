@@ -48,6 +48,7 @@
         <parameter id="scope" value="HierarchyMarkup" />
         <parameter id="scope" value="QuickInterviewMarkup" />
         <parameter id="scope" value="KPIAnalysis" />
+        <parameter id="scope" value="ReadOnly" />
     </extension>
  
     <extension plugin-id="KnowWEExtensionPoints" point-id="Action"

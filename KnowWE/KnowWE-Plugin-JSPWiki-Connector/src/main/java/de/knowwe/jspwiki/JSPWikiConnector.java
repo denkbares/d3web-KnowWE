@@ -586,13 +586,15 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public boolean userCanEditArticle(String title, HttpServletRequest request) {
+		if (ReadOnlyManager.isReadOnly()) return false;
 		WikiPage page = new WikiPage(engine, title);
-		WikiContext context = new WikiContext(this.engine, request, this.engine
-				.getPage(title));
+		WikiContext context = new WikiContext(this.engine, request,
+				this.engine.getPage(title));
 
 		AuthorizationManager authmgr = engine.getAuthorizationManager();
 		synchronized (authmgr) {
-			PagePermission pp = PermissionFactory.getPagePermission(page, "edit");
+			PagePermission pp = PermissionFactory.getPagePermission(page,
+					"edit");
 			return authmgr.checkPermission(context.getWikiSession(), pp);
 		}
 	}
