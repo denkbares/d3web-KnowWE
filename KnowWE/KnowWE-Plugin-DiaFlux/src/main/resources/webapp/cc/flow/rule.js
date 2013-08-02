@@ -401,16 +401,21 @@ RoutingPoint.prototype.setCoordinates = function (x, y) {
 	y = Math.floor(y);
 	// if percentage if outside [0..1], use absolute pixel difference as percentage
 	var px, py;
-	if (x1 == x2) px = x1 - x;
-	if (y1 == y2) py = y1 - y;
-	if (x < x1 && x1 < x2) px = x - x1;
-	if (x > x1 && x1 > x2) px = x1 - x; 
-	if (x < x2 && x2 < x1) px = x2 - x;
-	if (x > x2 && x2 > x1) px = x - x2;
-	if (y < y1 && y1 < y2) py = y - y1;
-	if (y > y1 && y1 > y2) py = y1 - y;
-	if (y < y2 && y2 < y1) py = y2 - y;
-	if (y > y2 && y2 > y1) py = y - y2;
+	// Math.abs stuff because of a minor calculation difference between browser engines
+	if (Math.abs(x1 - x2) <= 1) px = x - x2;
+	else {
+		if (x < x1 && x1 < x2) px = x - x1;
+		if (x > x1 && x1 > x2) px = x1 - x; 
+		if (x < x2 && x2 < x1) px = x2 - x;
+		if (x > x2 && x2 > x1) px = x - x2;
+	}
+	if (Math.abs(y1 - y2) <= 1) py = y - y2;
+	else {		
+		if (y < y1 && y1 < y2) py = y - y1;
+		if (y > y1 && y1 > y2) py = y1 - y;
+		if (y < y2 && y2 < y1) py = y2 - y;
+		if (y > y2 && y2 > y1) py = y - y2;
+	}
 	// otherwise calculate percentage
 	var dx = x2 == x1 ? 1 : (x2 - x1);
 	var dy = y2 == y1 ? 1 : (y2 - y1);
@@ -436,7 +441,8 @@ RoutingPoint.prototype.getX = function () {
 	var n1 = this.rule.getSourceNode();
 	var n2 = this.rule.getTargetNode();
 	// handle outside values as relative position
-	var sgn = n1.getCenterX() < n2.getCenterX() ? 1 : -1; 
+	// Math.abs stuff because of a minor calculation difference between browser engines
+	var sgn = n1.getCenterX() < n2.getCenterX() || Math.abs(n1.getCenterX() - n2.getCenterX()) <= 1 ? 1 : -1; 
 	if (this.percentX < 0) return Math.floor(n1.getCenterX() + this.percentX * sgn);
 	if (this.percentX > 1) return Math.floor(n2.getCenterX() + this.percentX * sgn);
 	// otherwise handle as precentage between nodes
@@ -449,7 +455,8 @@ RoutingPoint.prototype.getY = function () {
 	var n1 = this.rule.getSourceNode();
 	var n2 = this.rule.getTargetNode();
 	// handle outside values as relative position
-	var sgn = n1.getCenterY() < n2.getCenterY() ? 1 : -1; 
+	// Math.abs stuff because of a minor calculation difference between browser engines
+	var sgn = n1.getCenterY() < n2.getCenterY() || Math.abs(n1.getCenterY() - n2.getCenterY()) <= 1 ? 1 : -1; 
 	if (this.percentY < 0) return Math.floor(n1.getCenterY() + this.percentY * sgn);
 	if (this.percentY > 1) return Math.floor(n2.getCenterY() + this.percentY * sgn);
 	// otherwise handle as precentage between nodes
