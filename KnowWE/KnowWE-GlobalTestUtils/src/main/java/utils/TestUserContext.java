@@ -18,7 +18,6 @@
  */
 package utils;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,6 +46,8 @@ public class TestUserContext implements UserContext {
 
 	private final TestHttpServletRequest request;
 
+	private final TestHttpSession session;
+
 	public TestUserContext(Article article) {
 		this(article, false, false);
 	}
@@ -55,7 +56,8 @@ public class TestUserContext implements UserContext {
 		this.article = article;
 		this.isAdmin = isAdmin;
 		this.isAsserted = isAsserted;
-		this.request = new TestHttpServletRequest();
+		this.session = new TestHttpSession();
+		this.request = new TestHttpServletRequest(session);
 		addParameter(Attributes.WEB, getWeb());
 		addParameter(Attributes.TOPIC, getTopic());
 		addParameter(Attributes.USER, getUserName());
@@ -93,7 +95,7 @@ public class TestUserContext implements UserContext {
 
 	@Override
 	public Map<String, String> getParameters() {
-		return Collections.unmodifiableMap(this.parameterMap);
+		return this.parameterMap;
 	}
 
 	@Override
@@ -119,7 +121,7 @@ public class TestUserContext implements UserContext {
 
 	@Override
 	public HttpSession getSession() {
-		throw new UnsupportedOperationException("not implemented yet");
+		return this.session;
 	}
 
 	@Override

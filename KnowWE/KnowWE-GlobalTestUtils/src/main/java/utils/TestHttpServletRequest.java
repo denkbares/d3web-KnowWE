@@ -24,6 +24,18 @@ import javax.servlet.http.HttpSession;
 public class TestHttpServletRequest implements HttpServletRequest {
 
 	Map<String, Object> attributes = new HashMap<String, Object>();
+	private HttpSession session;
+
+	public TestHttpServletRequest() {
+	}
+
+	public TestHttpServletRequest(HttpSession session) {
+		this.session = session;
+	}
+
+	public void setSession(HttpSession session) {
+		this.session = session;
+	}
 
 	@Override
 	public Object getAttribute(String arg0) {
@@ -223,8 +235,8 @@ public class TestHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public String getHeader(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		if (arg0.equals("Accept-Language")) return "en";
+		else return null;
 	}
 
 	@Override
@@ -301,8 +313,7 @@ public class TestHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public HttpSession getSession() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.session;
 	}
 
 	@Override
