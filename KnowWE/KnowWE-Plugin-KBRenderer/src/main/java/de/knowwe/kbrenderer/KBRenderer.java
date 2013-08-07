@@ -409,7 +409,12 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 				t1.getName()));
 		RenderResult builder = new RenderResult(user);
 
-		termDefiningSection.get().getRenderer().render(termDefiningSection, user, builder);
+		if (termDefiningSection == null) {
+			builder.append(t1.getName());
+		}
+		else {
+			termDefiningSection.get().getRenderer().render(termDefiningSection, user, builder);
+		}
 		builder.appendHtml("<span style=\"color: rgb(125, 80, 102);\"> ");
 		builder.append(typeDeclaration + " " + property);
 		builder.appendHtml(" </span><br/>\n");
