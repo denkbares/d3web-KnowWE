@@ -19,6 +19,7 @@
 package de.knowwe.core.user;
 
 import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
 
 /**
  * Abstract UserContext implementation with standard implementations of some
@@ -79,7 +80,9 @@ public abstract class AbstractUserContext implements UserContext {
 	 */
 	@Override
 	public String getWeb() {
-		return this.getParameter(Attributes.WEB);
+		String web = this.getParameter(Attributes.WEB);
+		if (web == null) web = Environment.DEFAULT_WEB;
+		return web;
 	}
 
 	@Override
