@@ -110,8 +110,12 @@ var Droppables = {
   fire: function(event, element) {
     if(!this.last_active) return;
     Position.prepare();
-
-    if (this.isAffected([Event.pointerX(event), Event.pointerY(event)], element, this.last_active))
+    var scroll = element.cumulativeScrollOffset();
+    var point = (element.getStyle('position') != 'fixed')
+    	? [Event.pointerX(event) + scroll.left, Event.pointerY(event) + scroll.top]
+    	: [Event.pointerX(event), Event.pointerY(event)];
+    
+    if (this.isAffected(point, element, this.last_active))
       if (this.last_active.onDrop) {
         this.last_active.onDrop(element, this.last_active.element, event);
         return true;
@@ -355,7 +359,12 @@ var Draggable = Class.create({
   },
 
   updateDrag: function(event, pointer) {
-    if(!this.dragging) this.startDrag(event);
+	var scroll = this.element.cumulativeScrollOffset();
+	var original = pointer;
+	if (this.element.getStyle('position') != 'fixed') {
+		pointer = new Array(pointer[0] + scroll.left, pointer[1] + scroll.top);
+	}
+	if(!this.dragging) this.startDrag(event);
 
     if(!this.options.quiet){
       Position.prepare();
@@ -364,7 +373,7 @@ var Draggable = Class.create({
 
     Draggables.notify('onDrag', this, event);
 
-    this.draw(pointer);
+    this.draw(this.options.ghosting ? pointer : original);
     if(this.options.change) this.options.change(this);
 
     if(this.options.scroll) {
@@ -377,6 +386,7 @@ var Draggable = Class.create({
         p = Position.page(this.options.scroll);
         p[0] += this.options.scroll.scrollLeft + Position.deltaX;
         p[1] += this.options.scroll.scrollTop + Position.deltaY;
+//        p = new Array(p[0] + scroll.left, p[1] + scroll.top);
         p.push(p[0]+this.options.scroll.offsetWidth);
         p.push(p[1]+this.options.scroll.offsetHeight);
       }

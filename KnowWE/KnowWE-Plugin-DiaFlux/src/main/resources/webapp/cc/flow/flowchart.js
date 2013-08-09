@@ -61,12 +61,19 @@ Flowchart.prototype.createID = function(prefix) {
 	return id;
 }
 
-Flowchart.prototype.setSize = function(width, height) {
+Flowchart.prototype.setSize = function(width, height, exactSize) {
 	this.width = width;
 	this.height = height;
 	if (this.dom) {
-		var w = Math.ceil(width / 10.0) * 10 + 1;
-		var h = Math.ceil(height / 10.0) * 10 + 1;
+		var w, h;
+		if (exactSize) {
+			w = width + 1;
+			h = height + 1;
+		}
+		else {
+			w = Math.ceil(width / 10.0) * 10 + 1;
+			h = Math.ceil(height / 10.0) * 10 + 1;
+		}
 		var div = this.dom.select('.Flowchart')[0];
 		div.style.width = w+'px';
 		div.style.height = h+'px';
@@ -360,24 +367,35 @@ Flowchart.createFromXML = function(parent, xmlDom) {
 	return flowchart;
 }
 
-Flowchart.prototype.getMaxObjects = function() {
-	var maxX = -1;
-	var maxY = -1;
-	for (var i=0; i<this.nodes.length; i++) {
-		maxX = Math.max(maxX, this.nodes[i].getLeft() + this.nodes[i].getWidth());
-		maxY = Math.max(maxY, this.nodes[i].getTop() + this.nodes[i].getHeight());
-	}
-	return [maxX, maxY];
-}
-
-Flowchart.prototype.getMinObjects = function() {
-	var minX = this.width;
-	var minY = this.height;
+Flowchart.prototype.getUsedArea = function() {
+	var maxX = 0;
+	var maxY = 0;
+	var minX = this.width - 1;
+	var minY = this.height - 1;
+	
 	for (var i=0; i<this.nodes.length; i++) {
 		minX = Math.min(minX, this.nodes[i].getLeft());
 		minY = Math.min(minY, this.nodes[i].getTop());
+		maxX = Math.max(maxX, this.nodes[i].getLeft() + this.nodes[i].getWidth());
+		maxY = Math.max(maxY, this.nodes[i].getTop() + this.nodes[i].getHeight());
 	}
-	return [minX, minY];
+	for (var i=0; i<this.rules.length; i++) {
+		var coords = this.rules[i].coordinates;
+		for (var c=0; c<coords.length; c++) {
+			minX = Math.min(minX, coords[c][0]);
+			minY = Math.min(minY, coords[c][1]);
+			maxX = Math.max(maxX, coords[c][0]);
+			maxY = Math.max(maxY, coords[c][1]);
+		}
+	}
+	return {
+		top: Math.min(minY, maxY),
+		bottom: Math.max(minY, maxY),
+		left: Math.min(minX, maxX),
+		right: Math.max(minX, maxX),
+		width: Math.abs(maxX - minX),
+		height: Math.abs(maxY - minY)
+	};
 }
 
 

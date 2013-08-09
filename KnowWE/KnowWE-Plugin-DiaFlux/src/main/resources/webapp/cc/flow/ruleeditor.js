@@ -46,7 +46,7 @@ Rule.prototype.destroyDraggable = function() {
 }
 
 
-Rule.prototype.toXML = function() {
+Rule.prototype.toXML = function(dx, dy) {
 	var xml = '\t<edge' +
 			(this.fcid ? ' fcid="'+this.fcid+'"' : '')+
 			'>\n';

@@ -173,6 +173,10 @@ Router.prototype.rerouteAll = function() {
 		rule.setTargetAnchor(rule._linesForRule[rule._linesForRule.length-1].targetAnchor);
 		this.setRuleCoordinates(rule);
 	} 
+	
+	if (typeof FlowEditor != "undefined" && FlowEditor && FlowEditor.autoResize) {
+		FlowEditor.autoResize();
+	}
 }
 
 Router.prototype.setRuleCoordinates = function(rule) {

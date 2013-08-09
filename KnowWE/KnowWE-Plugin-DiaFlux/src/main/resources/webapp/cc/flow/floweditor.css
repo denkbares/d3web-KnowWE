@@ -1,13 +1,28 @@
 body {
     background-color: #eee;
+	overflow: hidden;
 }
 
-.leftMenu {
-	float:left;
+#leftMenu {
+	position: absolute;
+	top: 85px;
+	left: 5px;
+	bottom: 5px;
+	overflow-x: scroll;
+	overflow-y: scroll;
 	border: 1px solid gray;
 	border-radius: 3px 3px 3px 3px;
-	-moz-border-radius: 3px 3px 3px 3px;
-	min-height: 500px;
+}
+
+#toolbar {
+	position: absolute;
+	background-color: #eee;
+	top: 5px;
+	left: 5px;
+	right: 5px;
+	min-width: 850px;
+	padding-bottom: 1px;
+	white-space: nowrap;
 }
 
 ul.toolbar {
@@ -67,7 +82,7 @@ ul.toolbar li:last-child {
 	border: 1px solid gray;
 	border-radius: 3px 3px 3px 3px;
 	-moz-border-radius: 3px 3px 3px 3px;
-	width: 850px;
+	width: 845px;
 	padding-left: 3px;
 	margin-bottom: 5px;
 }
@@ -76,6 +91,10 @@ ul.toolbar li:last-child {
 	font-family: Arial, Helvetica;
 	font-size: 10pt;
 	font-weight: bold;
+}
+
+#changenotebar #changenote {
+	width: 747px;
 }
 
 .propertyArea div{
@@ -98,6 +117,11 @@ ul.toolbar li:last-child {
 	font-weight: bold;
 }
 
+.propertyArea label.propertyTitle {
+	margin-left: -5px;
+	margin-top: 2px;
+}
+
 .propertyArea .propertyText {
 	font-family: Arial, Helvetica;
 	font-size: 10pt;
@@ -108,11 +132,24 @@ ul.toolbar li:last-child {
 }
 
 .propertyArea .long {
-	width: 120px;
+	width: 307px;
 }
 
+#contents {
+	position: absolute;
+	top: 85px;
+	right: 5px;
+	bottom: 5px;
+	left: 237px;
+	overflow: scroll;
+}
+
+#x_larger, #x_smaller, #y_larger, #y_smaller {
+	display: none;
+} 
+
 .FlowchartGroup {
-	margin-left: 230px;
+	//margin-left: 230px;
 }
 
 .FlowchartGroup .Flowchart {

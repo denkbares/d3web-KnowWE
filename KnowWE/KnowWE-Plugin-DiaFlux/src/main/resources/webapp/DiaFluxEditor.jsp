@@ -178,18 +178,11 @@
 	</ul>
 	<div class="propertyArea">
 		<div>
-			<span class="propertyTitle">Name:</span><input type=text id="properties.editName" class="propertyText long"></input>
-			<span class="propertyTitle">Autostart:</span><input type="checkbox" id="properties.autostart" title="Defines if all startnodes of this flowchart are activated on session start."></input>
-			<input type=hidden id="properties.editWidth" class="propertyText short"></input>
-			<input type=hidden id="properties.editHeight" class="propertyText short"></input>
+			<span class="propertyTitle">Name </span><input type=text id="properties.editName" class="propertyText long"></input>
+			<input type="checkbox" id="properties.autostart" title="Defines if all startnodes of this flowchart are activated on session start."></input>
+			<label class="propertyTitle" for="properties.autostart">Autostart</label>
 		</div>	
 	</div>
-	<ul class="toolbar">
-		<li class="icon" id="x_larger" title="Increase width" style="background-image:url(cc/image/toolbar/x_larger.png);"></li><!--
-	  --><li class="icon" id="x_smaller" title="Decrease width" style="background-image:url(cc/image/toolbar/x_smaller.png);"></li><!--  
-	  --><li class="icon" id="y_larger" title="Increase hight" style="background-image:url(cc/image/toolbar/y_larger.png);"></li><!--  
-	  --><li class="icon" id="y_smaller" title="Decrease hight" style="background-image:url(cc/image/toolbar/y_smaller.png);"></li>
-	</ul>	
 	<ul class="toolbar">
 		<li class="icon NodePrototype" id="decision_prototype" title="Action node" style="background-image:url(cc/image/node_decorators/decision_32.png);"></li><!--
 	  --><li class="icon NodePrototype" id="start_prototype" title="Start node" style="background-image:url(cc/image/node_decorators/start_32.png);"></li><!--
@@ -198,16 +191,16 @@
 	  --><li class="icon NodePrototype" id="snapshot_prototype" title="Snapshot node" style="background-image:url(cc/image/node_decorators/snapshot_32.png);"></li><!--
 	  -->
 	</ul>
-</div>
-<div id="changenotebar">
-	<table>
-    	<tbody>
-    		<tr>
-   				<td><label for="changenote">Change Note</label></td>
-    			<td><input type="text" name="changenote" id="changenote" size="120" value=""></td>
-    		</tr>
-  		</tbody>
- 	</table>
+	<div id="changenotebar">
+		<table>
+	    	<tbody>
+	    		<tr>
+	   				<td><label for="changenote">Change Note</label></td>
+	    			<td><input type="text" name="changenote" id="changenote" value=""></td>
+	    		</tr>
+	  		</tbody>
+	 	</table>
+	</div>
 </div>
 <div id="leftMenu" class="leftMenu">
 	<div id="objectTree"></div>

@@ -60,8 +60,8 @@ Node.prototype.stopEdit = function() {
 	}
 }
 
-Node.prototype.moveBy = function(dLeft, dTop) {
-	this.moveTo(this.getLeft() + dLeft, this.getTop() + dTop);
+Node.prototype.moveBy = function(dLeft, dTop, noRouting) {
+	this.moveTo(this.getLeft() + dLeft, this.getTop() + dTop, noRouting);
 }
 
 
@@ -83,7 +83,21 @@ Node.prototype.createDraggable = function() {
 	}
 	
 	this.draggable = new Draggable(this.getDOM(), {
-		ghosting: true, starteffect: null, endeffect: null,
+		ghosting: true, 
+		starteffect: function(element) {
+			element = $(element);
+			var pos = element.positionedOffset();
+			var delta = element.cumulativeScrollOffset();
+			element.setStyle({
+			});
+		}, 
+		endeffect: function(element, left, top) {
+			element = $(element);
+			var pos = element.positionedOffset();
+			var delta = element.cumulativeScrollOffset();
+			element.setStyle({
+			});
+		},
 		onStart: function(draggable, event) {
 			draggable.__snapManager.initializeSnapsForNode(draggable.__node);
 		},
@@ -94,7 +108,7 @@ Node.prototype.createDraggable = function() {
 		snap: function (x, y, draggable) {
 			return draggable.__snapManager.snapIt(x, y);
 		},
-		scroll: this.flowchart.fcid
+		scroll: null // $("contents")
 	});
 	this.draggable.__snapManager = this.snapManager;
 	this.draggable.__node = this;
@@ -111,7 +125,7 @@ Node.prototype.createDraggable = function() {
 
 
 
-Node.prototype.moveTo = function(left, top) {
+Node.prototype.moveTo = function(left, top, noRouting) {
 	this.nodeModel.position.left = left;
 	this.nodeModel.position.top = top;
 	if (this.dom != null) {
@@ -122,13 +136,18 @@ Node.prototype.moveTo = function(left, top) {
 		this.arrowTool.setVisible(false);
 		this.arrowTool.setVisible(true);
 	}
-	this.flowchart.router.rerouteNodes([this]); // TODO: + alle mit Regeln verbundenen Knoten!!!
+	if (!noRouting) {
+		// TODO: + alle mit Regeln verbundenen Knoten!!!
+		this.flowchart.router.rerouteNodes([this]); 
+	}
 }
 
 
-Node.prototype.toXML = function() {
+Node.prototype.toXML = function(dx, dy) {
+	if (!dx) dx = 0;
+	if (!dy) dy = 0;
 	var xml = '\t<node fcid="'+this.nodeModel.fcid+'">\n';
-	xml += '\t\t<position left="'+this.getLeft()+'" top="'+this.getTop()+'"></position>\n';
+	xml += '\t\t<position left="'+(this.getLeft()+dx)+'" top="'+(this.getTop()+dy)+'"></position>\n';
 	if (this.nodeModel.start) {
 		xml += '\t\t<start>'+this.nodeModel.start.escapeXML()+'</start>\n';
 	}

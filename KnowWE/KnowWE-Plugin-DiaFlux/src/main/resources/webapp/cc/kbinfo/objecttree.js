@@ -163,6 +163,8 @@ ObjectTree.prototype.renderTreeItem = function(infoObject, className, isVisible)
 
 	if (infoObject.getClassInstance() != KBInfo.Article) {
 		dragItem.createNode = function(flowchart, left, top) {
+			var d1 = $(dom).cumulativeScrollOffset().top;
+			var d2 = $(dom).cumulativeOffset().top;
 			var action;
 			if (infoObject.getClassInstance() == KBInfo.Solution) {
 				action = {markup: 'KnOffice', expression: '"'+infoObject.getName()+'" = P7' };
@@ -179,13 +181,19 @@ ObjectTree.prototype.renderTreeItem = function(infoObject, className, isVisible)
 			}
 			var model = {
 				//id: 'mf'+(mfCounter++), 
-				position: {left: left, top: top},
+				position: {left: left, top: top-d2},
 				action: action
 			};
 			new Node(flowchart, model).select();
 		};
 		//TODO: avoid memory leak by remeber the Draggable and remove it on destroy
-		new Draggable(dragItem, { ghosting: true, revert: true, reverteffect: ObjectTree.revertEffect, starteffect: ObjectTree.startEffect });
+		new Draggable(dragItem, { 
+			ghosting: true, 
+			//scroll: theFlowchart.getContentPane().parentNode.parentNode,
+			revert: true, 
+			reverteffect: ObjectTree.revertEffect, 
+			starteffect: ObjectTree.startEffect 
+		});
 	}
 	return dom;
 }
@@ -196,12 +204,15 @@ ObjectTree.revertEffect = function(element,  top_offset, left_offset) {
 	var x = parseFloat(element.getStyle('left') || '0');
 	var y = parseFloat(element.getStyle('top')  || '0');
 	element.setStyle({
+		position: "relative",
 		left: (x - left_offset) + 'px',
 		top:  (y - top_offset) + 'px'
 	});
 }
 
 ObjectTree.startEffect = function(element) {
+	element = $(element);
+	element.setStyle({position: "fixed"});
 }
 
 
