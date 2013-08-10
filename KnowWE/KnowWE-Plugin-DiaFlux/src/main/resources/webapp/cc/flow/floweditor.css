@@ -8,8 +8,8 @@ body {
 	top: 85px;
 	left: 5px;
 	bottom: 5px;
-	overflow-x: scroll;
-	overflow-y: scroll;
+	overflow-x: hidden;
+	overflow-y: auto;
 	border: 1px solid gray;
 	border-radius: 3px 3px 3px 3px;
 }
