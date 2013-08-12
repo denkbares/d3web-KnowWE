@@ -177,21 +177,29 @@ ul.toolbar li:last-child {
 	cursor: crosshair;	
 }
 
-.FlowchartGroup .trash {
+.trashParent {
 	position: absolute; 
 	overflow: visible; 
 	width: 64px; 
 	height: 64px;
+	left: 235px;
+	bottom: 7px;
+}
+
+.trashParent .trash {
+	position: relative; 
+	overflow: visible; 
+	width: 64px; 
+	height: 64px;
 	left: 0px;
-	top: -85px;
+	top: 0px;
 	background-image: url(../image/trash64.png);
 	z-index:1000;
 }
 
-.FlowchartGroup .trash_hover {
+.trashParent .trash.trash_hover {
 	background-image: url(../image/trash64-highlight.png);
 }
-
 
 .Flowchart .h_snapline {
 	position: absolute;

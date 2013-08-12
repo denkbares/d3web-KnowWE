@@ -219,6 +219,14 @@ FlowEditor.prototype.saveFlowchart = function(closeOnSuccess) {
 
 // Overrides empty implementation in flowchart.js
 Flowchart.prototype.createDroppables = function(dom, contentPane, trashPane) {
+
+	var trashPane, trashParent =
+		Builder.node('div', {className: 'trashParent'}, 
+				[
+				 trashPane = Builder.node('div', {className: 'trash'})
+				 ]);
+	$(window.document.body).appendChild(trashParent); 
+				 
 	// initialize trash to delete nodes and rules
 	Droppables.add(trashPane, { 
 		accept: ['Node', 'Rule', 'RoutingTool'],

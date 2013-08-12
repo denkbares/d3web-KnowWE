@@ -63,6 +63,10 @@ var Droppables = {
   },
 
   isAffected: function(point, element, drop) {
+	  var x = point[0], y = point[1];
+	  var scroll = drop.element.cumulativeScrollOffset();
+	  x += scroll.left;
+	  y += scroll.top;
     return (
       (drop.element!=element) &&
       ((!drop._containers) ||
@@ -70,7 +74,7 @@ var Droppables = {
       ((!drop.accept) ||
         (Element.classNames(element).detect(
           function(v) { return drop.accept.include(v) } ) )) &&
-      Position.within(drop.element, point[0], point[1]) );
+      Position.within(drop.element, x, y) );
   },
 
   deactivate: function(drop) {
@@ -110,11 +114,7 @@ var Droppables = {
   fire: function(event, element) {
     if(!this.last_active) return;
     Position.prepare();
-    var scroll = element.cumulativeScrollOffset();
-    var point = (element.getStyle('position') != 'fixed')
-    	? [Event.pointerX(event) + scroll.left, Event.pointerY(event) + scroll.top]
-    	: [Event.pointerX(event), Event.pointerY(event)];
-    
+    var point = [Event.pointerX(event), Event.pointerY(event)];
     if (this.isAffected(point, element, this.last_active))
       if (this.last_active.onDrop) {
         this.last_active.onDrop(element, this.last_active.element, event);
@@ -368,7 +368,7 @@ var Draggable = Class.create({
 
     if(!this.options.quiet){
       Position.prepare();
-      Droppables.show(pointer, this.element);
+      Droppables.show(original, this.element);
     }
 
     Draggables.notify('onDrag', this, event);

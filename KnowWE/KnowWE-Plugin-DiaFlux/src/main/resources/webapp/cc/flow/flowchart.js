@@ -237,7 +237,7 @@ Flowchart.prototype.render = function() {
 	var w = Math.ceil(this.width / 10.0) * 10 + 1;
 	var h = Math.ceil(this.height / 10.0) * 10 + 1;
 
-	var contentPane, trashPane;
+	var contentPane;
 	var dom = Builder.node('div', {
 		id: this.id,
 		className: 'FlowchartGroup'
@@ -247,20 +247,17 @@ Flowchart.prototype.render = function() {
 			className: 'Flowchart',
 			style: "width: " + w + "px; height:" + h + "px;"
 		}),
-		Builder.node('div', {style: 'position: absolute; bottom: 0px; left: 0px; width: 0px; height: 0px; overflow: visible;'}, [
-			trashPane = Builder.node('div', {className: 'trash'})
-		]),
 		Builder.node('a', {className: 'inputFocus', href: '#'}) // input focus
 	]);
 	dom.__flowchart = this;
 
-	this.createDroppables(dom, contentPane, trashPane);
+	this.createDroppables(dom, contentPane);
 
 	return dom;
 }
 
 // implemented in floweditor.js
-Flowchart.prototype.createDroppables = function(dom, contentPane, trashPane) {}
+Flowchart.prototype.createDroppables = function(dom, contentPane) {}
 
 
 
