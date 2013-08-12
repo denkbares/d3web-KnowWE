@@ -21,7 +21,6 @@
 package de.knowwe.diaflux.kbinfo;
 
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -50,9 +49,16 @@ import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.flow.StartNode;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.diaFlux.inference.FluxSolver;
+import de.d3web.strings.Identifier;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.objects.TermDefinition;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.diaflux.FlowchartSubTreeHandler;
 import de.knowwe.diaflux.FlowchartUtils;
 
@@ -91,15 +97,15 @@ public class GetInfoObjects extends AbstractAction {
 
 		// iterate through the requested Objects
 		String[] idArray = ids.split("\",\"");
-		if (idArray.length > 0) { // remove leading/trailing " on first/last
-									// entry
+		if (idArray.length > 0) {
+			// remove leading/trailing " on first/last entry
 			idArray[0] = idArray[0].substring(1, idArray[0].length());
 			idArray[idArray.length - 1] = idArray[idArray.length - 1].substring(0,
 					idArray[idArray.length - 1].length() - 1);
 		}
 		for (int i = 0; i < idArray.length; i++) {
-			String is = idArray[i];
-			appendInfoObject(web, is, bob);
+			Identifier identifier = Identifier.fromExternalForm(idArray[i]);
+			appendInfoObject(web, identifier, bob);
 		}
 
 		// finish result
@@ -114,57 +120,96 @@ public class GetInfoObjects extends AbstractAction {
 		bob.append("</kbinfo>");
 	}
 
-	public static void appendInfoObject(String web, String id, StringBuilder bob) {
-		// TODO: perhaps not the most elegant solution, but works as '/' is not
-		// allowed in article names, the first '/' must be separating the KB
-		// name from the object name.
-		int pos = id.indexOf("/");
-		String title = (pos == -1) ? id : id.substring(0, pos);
-		String objectID = (pos == -1) ? null : id.substring(pos + 1);
-
-		if (objectID == null) {
+	public static void appendInfoObject(String web, Identifier identifier, StringBuilder bob) {
+		// for objects the identifier always consists
+		// of the compiling article and the object name;
+		// for articles it only consists of the article's name
+		if (identifier.getPathElements().length == 1) {
 			// we want to have the article itself
-			appendArticleInfoObject(web, title, bob);
+			appendArticleInfoObject(web, identifier.getLastPathElement(), bob);
 		}
-		else { // look for an object inside the knowledgebase
+		else {
+			// look for an object inside a compiling article
+			String title = identifier.getPathElements()[0];
+			String objectID = identifier.getPathElements()[1];
 			appendInfoObject(web, title, objectID, bob);
 		}
+	}
 
+	private static boolean isCompilingArticle(String web, String title) {
+		PackageManager packages = Environment.getInstance().getPackageManager(web);
+		return packages.getCompilingArticles().contains(title);
 	}
 
 	private static void appendArticleInfoObject(String web, String title, StringBuilder bob) {
 
-		KnowledgeBase base = D3webUtils.getKnowledgeBase(web, title);
+		Environment env = Environment.getInstance();
+		Article article = env.getArticle(web, title);
+		PackageManager packages = env.getPackageManager(web);
+		String id = new Identifier(title).toExternalForm();
 
 		bob.append("\t<article");
-		bob.append(" id='").append(encodeXML(title)).append("'");
+		bob.append(" id='").append(encodeXML(id)).append("'");
 		bob.append(" name='").append(title).append("'");
 		bob.append(">");
-		// children of an article are all Solutions of P000 and all QSets of
-		// Q000
-		// as well as the flowcharts
-		List<TerminologyObject> qsets = new LinkedList<TerminologyObject>();
-		for (TerminologyObject object : base.getRootQASet().getChildren()) {
-			qsets.add(object);
-		}
-		appendChilds(web, title, qsets.toArray(new TerminologyObject[qsets.size()]), bob);
-		appendChilds(web, title, base.getRootSolution(), bob);
-		FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
-		if (flowSet != null) {
-			for (Flow flow : flowSet.getFlows()) {
-				bob.append("\t\t<child>");
-				bob.append(encodeXML(title) + "/" + flow.getName());
-				bob.append("</child>\n");
+
+		// check if the article is a compiling article
+		if (isCompilingArticle(web, title)) {
+
+			// for compiling articles use the knowledge base for the objects
+			KnowledgeBase base = D3webUtils.getKnowledgeBase(web, title);
+			for (TerminologyObject object : base.getRootQASet().getChildren()) {
+				appendChild(title, object, bob);
+			}
+			appendChilds(web, title, base.getRootSolution(), bob);
+			FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
+			if (flowSet != null) {
+				for (Flow flow : flowSet.getFlows()) {
+					appendChild(title, flow, bob);
+				}
 			}
 		}
+		else {
+			// for non-compiling articles,
+			// use the objects defined on the particular page
+			// and display them in a "flat" mode
+			List<Section<TermDefinition>> defSections =
+					Sections.findSuccessorsOfType(article.getRootSection(), TermDefinition.class);
+			nextTerm: for (Section<TermDefinition> section : defSections) {
+				Identifier identifier = section.get().getTermIdentifier(section);
+				String objectName = identifier.getLastPathElement();
+				for (String compilingArticle : packages.getCompilingArticles(section)) {
+					KnowledgeBase base = D3webUtils.getKnowledgeBase(web, compilingArticle);
+					// append if TerminologyObject
+					TerminologyObject object = base.getManager().search(objectName);
+					if ((object instanceof Solution)
+							|| (object instanceof QContainer)
+							|| (object instanceof Question)) {
+						appendChild(compilingArticle, object, bob);
+						continue nextTerm;
+					}
+					// append if flow
+					FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
+					if (flowSet != null) {
+						Flow flow = flowSet.get(objectName);
+						if (flow != null) {
+							appendChild(compilingArticle, flow, bob);
+							continue nextTerm;
+						}
+					}
+				}
+			}
+		}
+
 		bob.append("\t</article>\n");
 	}
 
-	private static void appendInfoObject(String web, String title, String objectID, StringBuilder bob) {
+	private static void appendInfoObject(String web, String title, String objectName, StringBuilder bob) {
 		if (title == null) return;
-		KnowledgeBase base = D3webUtils.getKnowledgeBase(web, title);
-		NamedObject object = base.getManager().search(objectID);
+		objectName = Identifier.fromExternalForm(objectName).getLastPathElement();
 
+		KnowledgeBase base = D3webUtils.getKnowledgeBase(web, title);
+		NamedObject object = base.getManager().search(objectName);
 		if (object instanceof Solution) {
 			appendInfoObject(web, title, (Solution) object, bob);
 		}
@@ -176,24 +221,22 @@ public class GetInfoObjects extends AbstractAction {
 		}
 		else {
 			// no object found in TermManager of KB
-
 			FlowSet set = base.getKnowledgeStore().getKnowledge(FluxSolver.FLOW_SET);
 			// next, try flowcharts
-			if (set.contains(objectID)) {
-				appendInfoObject(web, title, set.get(objectID), bob);
+			if (set.contains(objectName)) {
+				appendInfoObject(web, title, set.get(objectName), bob);
 			}
 			else {
-				bob.append("<unknown id='" + objectID + "'></unknown>");
+				bob.append("<unknown id='" + objectName + "'></unknown>");
 			}
 
 		}
 	}
 
 	private static void appendInfoObject(String web, String title, Solution object, StringBuilder bob) {
+		String id = new Identifier(title, object.getName()).toExternalForm();
 		bob.append("\t<solution");
-		bob.append(" id='").append(encodeXML(title)).append("/").append(
-				object.getName()).append(
-				"'");
+		bob.append(" id='").append(encodeXML(id)).append("'");
 		bob.append(" name='").append(encodeXML(object.getName())).append("'");
 		bob.append(">\n");
 		appendChilds(web, title, object, bob);
@@ -201,10 +244,9 @@ public class GetInfoObjects extends AbstractAction {
 	}
 
 	private static void appendInfoObject(String web, String title, Question object, StringBuilder bob) {
+		String id = new Identifier(title, object.getName()).toExternalForm();
 		bob.append("\t<question");
-		bob.append(" id='").append(encodeXML(title)).append("/").append(
-				object.getName()).append(
-				"'");
+		bob.append(" id='").append(encodeXML(id)).append("'");
 		bob.append(" name='").append(encodeXML(object.getName())).append("'");
 		if (BasicProperties.isAbstract(object)) {
 			bob.append(" abstract='true'");
@@ -249,10 +291,9 @@ public class GetInfoObjects extends AbstractAction {
 	}
 
 	private static void appendInfoObject(String web, String title, QContainer object, StringBuilder bob) {
+		String id = new Identifier(title, object.getName()).toExternalForm();
 		bob.append("\t<qset");
-		bob.append(" id='").append(encodeXML(title)).append("/").append(
-				object.getName()).append(
-				"'");
+		bob.append(" id='").append(encodeXML(id)).append("'");
 		bob.append(" name='").append(encodeXML(object.getName())).append("'");
 		bob.append(">\n");
 		appendChilds(web, title, object, bob);
@@ -261,13 +302,12 @@ public class GetInfoObjects extends AbstractAction {
 
 	private static void appendInfoObject(String web, String title, Flow flow, StringBuilder bob) {
 		String name = flow.getName();
-		// String id = flow.getId();
+		String id = new Identifier(title, name).toExternalForm();
 		List<StartNode> startNodes = flow.getStartNodes();
 		List<EndNode> exitNodes = flow.getExitNodes();
 
 		bob.append("\t<flowchart");
-		bob.append(" id='").append(encodeXML(title)).append("/").append(name).append(
-				"'");
+		bob.append(" id='").append(encodeXML(id)).append("'");
 		bob.append(" name='").append(encodeXML(name)).append("'");
 
 		// String iconName = flow.getInfoStore().getValue(
@@ -295,10 +335,14 @@ public class GetInfoObjects extends AbstractAction {
 
 	private static void appendChilds(String web, String title, TerminologyObject[] childs, StringBuilder bob) {
 		for (TerminologyObject child : childs) {
-			bob.append("\t\t<child>");
-			bob.append(encodeXML(title) + "/" + child.getName());
-			bob.append("</child>\n");
+			appendChild(title, child, bob);
 		}
+	}
+
+	private static void appendChild(String title, NamedObject child, StringBuilder bob) {
+		bob.append("\t\t<child>");
+		bob.append(encodeXML(new Identifier(title, child.getName()).toExternalForm()));
+		bob.append("</child>\n");
 	}
 
 	static String encodeXML(String text) {

@@ -152,7 +152,7 @@
 	<link rel="stylesheet" type="text/css" href="cc/flow/guard.css"></link>
 	<link rel="stylesheet" type="text/css" href="cc/flow/contextmenu.css"></link>
 </head>
-<body onload="new FlowEditor(<%= jspHelper.getArticleIDsAsArray(kdomID) %>).showEditor();">
+<body onload="new FlowEditor(<%= jspHelper.getArticleIDsAsArray(kdomID).replace("\"", "&quot;") %>).showEditor();">
 
 <%-- default kbinfo objects delivered from server --%>
 <data id="articleKBInfo" style="display:none;">

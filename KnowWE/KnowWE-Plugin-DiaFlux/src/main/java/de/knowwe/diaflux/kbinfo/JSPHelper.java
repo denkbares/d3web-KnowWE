@@ -20,10 +20,13 @@
 
 package de.knowwe.diaflux.kbinfo;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import de.d3web.strings.Identifier;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
@@ -45,7 +48,7 @@ public class JSPHelper {
 		}
 	}
 
-	private static List<String> getAllMatches(String className, String web, String flowchartSectionID) {
+	private static Collection<Identifier> getAllMatches(String className, String web, String flowchartSectionID) {
 		return SearchInfoObjects.searchObjects(
 				Environment.getInstance(),
 				web,
@@ -53,15 +56,15 @@ public class JSPHelper {
 	}
 
 	public String getArticleIDsAsArray(String flowchartSectionID) {
-		List<String> matches = getAllMatches("Article", this.userContext.getWeb(),
-				flowchartSectionID);
+		List<Identifier> matches = new ArrayList<Identifier>(
+				getAllMatches("Article", this.userContext.getWeb(), flowchartSectionID));
 		Collections.sort(matches);
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("[");
 		boolean first = true;
-		for (String id : matches) {
+		for (Identifier identifier : matches) {
 			// filters KnowWE-Doc from object tree
-			if (id.startsWith("Doc ")) continue;
+			if (identifier.getPathElements()[0].startsWith("Doc ")) continue;
 
 			if (first) {
 				first = false;
@@ -69,7 +72,8 @@ public class JSPHelper {
 			else {
 				buffer.append(", ");
 			}
-			buffer.append("'").append(id).append("'");
+			String quotable = identifier.toExternalForm().replace("'", "\\'");
+			buffer.append("'").append(quotable).append("'");
 		}
 		buffer.append("]");
 		return buffer.toString();
@@ -86,13 +90,13 @@ public class JSPHelper {
 
 	public String getArticleInfoObjectsAsXML(String flowchartSectionID) {
 		// search for matches
-		List<String> matches = getAllMatches("Article", this.userContext.getWeb(),
-				flowchartSectionID);
+		Collection<Identifier> matches =
+				getAllMatches("Article", this.userContext.getWeb(), flowchartSectionID);
 
 		// fill the response buffer
 		StringBuilder bob = new StringBuilder();
 		GetInfoObjects.appendHeader(bob);
-		for (String id : matches) {
+		for (Identifier id : matches) {
 			GetInfoObjects.appendInfoObject(this.userContext.getWeb(), id, bob);
 		}
 		GetInfoObjects.appendFooter(bob);
@@ -108,13 +112,13 @@ public class JSPHelper {
 	public static String getReferrdInfoObjectsAsXML(String web, String flowchartSectionID) {
 		// TODO: extract used object ids from flowchart as a list
 		// for now we simply use all existing objects
-		List<String> matches = getAllMatches(null, web, flowchartSectionID);
+		Collection<Identifier> matches = getAllMatches(null, web, flowchartSectionID);
 
 		// fill the response buffer
 		StringBuilder bob = new StringBuilder();
 		GetInfoObjects.appendHeader(bob);
-		for (String id : matches) {
-			GetInfoObjects.appendInfoObject(web, id, bob);
+		for (Identifier identifier : matches) {
+			GetInfoObjects.appendInfoObject(web, identifier, bob);
 		}
 		GetInfoObjects.appendFooter(bob);
 

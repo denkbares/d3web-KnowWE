@@ -22,6 +22,7 @@ package de.knowwe.diaflux.kbinfo;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,14 +31,19 @@ import java.util.Set;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
+import de.d3web.strings.Identifier;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -63,8 +69,9 @@ public class SearchInfoObjects extends AbstractAction {
 
 	public static String search(Environment knowWEEnv, String web, String phraseString, String classesString, int maxCount, String flowchartSectionID) {
 		// get the matches
-		List<String> matches = searchObjects(knowWEEnv, web, phraseString, classesString, maxCount,
-				flowchartSectionID);
+		Collection<Identifier> matches =
+				searchObjects(knowWEEnv, web, phraseString, classesString,
+						maxCount, flowchartSectionID);
 
 		// build the page for the found matches
 		int count = Math.min(maxCount, matches.size());
@@ -74,11 +81,11 @@ public class SearchInfoObjects extends AbstractAction {
 		page.append(" hasmore='").append(matches.size() > count).append("'");
 		page.append(">\n");
 		int index = 0;
-		for (String name : matches) {
+		for (Identifier identifier : matches) {
 			if (index >= count) break;
 			index++;
 			page.append("\t<match>");
-			page.append(GetInfoObjects.encodeXML(name));
+			page.append(GetInfoObjects.encodeXML(identifier.toExternalForm()));
 			page.append("</match>\n");
 		}
 		page.append("</matches>\n");
@@ -86,7 +93,85 @@ public class SearchInfoObjects extends AbstractAction {
 		return page.toString();
 	}
 
-	public static List<String> searchObjects(Environment knowWEEnv, String web, String phraseString, String classesString, int maxCount, String flowchartSectionID) {
+	public static Collection<Identifier> searchObjects(Environment knowWEEnv, String web, String phraseString, String classesString, int maxCount, String flowchartSectionID) {
+		String[] phrases = (phraseString != null) ? phraseString.split(" ") : new String[0];
+		Set<String> classes = null;
+		if (classesString == null) {
+			classesString = "article,flowchart,solution,question,qset";
+		}
+		classes = new HashSet<String>();
+		classes.addAll(Arrays.asList(classesString.toLowerCase().split(",")));
+
+		Set<Identifier> result = new HashSet<Identifier>();
+		Environment env = Environment.getInstance();
+
+		// the examine objects inside the articles
+		Set<String> compilingArticles = getCompilingArticles(flowchartSectionID);
+		for (String title : compilingArticles) {
+			TerminologyManager manager = env.getTerminologyManager(web, title);
+
+			// add article for a knowledge base
+			if (classes.contains("article")) {
+				Collection<Identifier> terms = manager.getAllDefinedTerms(NamedObject.class);
+				for (Identifier term : terms) {
+					Collection<Section<?>> sections = manager.getTermDefiningSections(term);
+					for (Section<?> section : sections) {
+						result.add(new Identifier(section.getTitle()));
+					}
+				}
+			}
+
+			List<Identifier> identifiers = new LinkedList<Identifier>();
+
+			// add Flowcharts
+			if (classes.contains("flowchart")) {
+				identifiers.addAll(manager.getAllDefinedTerms(Flow.class));
+			}
+
+			// add Diagnosis
+			if (classes.contains("solution")) {
+				identifiers.addAll(manager.getAllDefinedTerms(Solution.class));
+			}
+			// add QContainers (QSet)
+			if (classes.contains("qset")) {
+				identifiers.addAll(manager.getAllDefinedTerms(QContainer.class));
+			}
+			// add Questions
+			if (classes.contains("question")) {
+				identifiers.addAll(manager.getAllDefinedTerms(Question.class));
+			}
+
+			// add all identifier
+			for (Identifier identifier : identifiers) {
+				String name = identifier.getLastPathElement();
+				if (matches(name.toLowerCase(), phrases)) {
+					result.add(new Identifier(title, name));
+				}
+			}
+
+			// stop if we have enough matches
+			if (result.size() > maxCount) break;
+		}
+
+		return result;
+	}
+
+	private static Set<String> getCompilingArticles(String flowchartSectionID) {
+		Set<String> compilingArticles = new HashSet<String>();
+		Section<?> section = Sections.getSection(flowchartSectionID);
+		PackageManager packageManager = KnowWEUtils.getPackageManager(section.getArticle().getWeb());
+		if (section != null) {
+			for (String packageName : section.getPackageNames()) {
+				compilingArticles.addAll(packageManager.getCompilingArticles(packageName));
+			}
+		}
+		if (compilingArticles.isEmpty()) {
+			compilingArticles.addAll(packageManager.getCompilingArticles());
+		}
+		return compilingArticles;
+	}
+
+	public static List<String> searchObjectsByKB(Environment knowWEEnv, String web, String phraseString, String classesString, int maxCount, String flowchartSectionID) {
 		String[] phrases = (phraseString != null) ? phraseString.split(" ") : new String[0];
 		Set<String> classes = null;
 		if (classesString == null) {
@@ -98,17 +183,8 @@ public class SearchInfoObjects extends AbstractAction {
 		List<String> result = new LinkedList<String>();
 
 		// the examine objects inside the articles
-		PackageManager packageManager = KnowWEUtils.getPackageManager(web);
-		Set<String> compilingArticles = new HashSet<String>();
-		Section<?> section = Sections.getSection(flowchartSectionID);
-		if (section != null) {
-			for (String packageName : section.getPackageNames()) {
-				compilingArticles.addAll(packageManager.getCompilingArticles(packageName));
-			}
-		}
-		if (compilingArticles.isEmpty()) {
-			compilingArticles.addAll(packageManager.getCompilingArticles());
-		}
+		Set<String> compilingArticles = getCompilingArticles(flowchartSectionID);
+
 		for (String compilingArticle : compilingArticles) {
 			KnowledgeBase base = D3webUtils.getKnowledgeBase(web, compilingArticle);
 			// filters KnowWE-Doc from object tree

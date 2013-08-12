@@ -479,10 +479,22 @@ public class Environment {
 	}
 
 	/**
-	 * Returns the TerminologyHandler for a given web
+	 * Returns the TerminologyHandler for a given compiling article.
 	 * 
-	 * @param web
-	 * @return
+	 * @param article the compiling article
+	 * @return the {@link TerminologyManager} for that article
+	 */
+	public TerminologyManager getTerminologyManager(Article article) {
+		return getTerminologyManager(article.getWeb(), article.getName());
+	}
+
+	/**
+	 * Returns the TerminologyHandler for a given compiling article specified by
+	 * its web and article name.
+	 * 
+	 * @param web the web of the compiling article
+	 * @param title the name of the compiling article
+	 * @return the {@link TerminologyManager} for that article
 	 */
 	public TerminologyManager getTerminologyManager(String web, String title) {
 		Map<String, TerminologyManager> managersOfWeb = this.terminologyManagers.get(web);
