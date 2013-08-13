@@ -65,7 +65,7 @@ FlowEditor.prototype.showEditor = function(){
 	// enable ghost sheet around the existing one
 	FlowEditor.borderSpacing = 350;	
 	FlowEditor.autoResize();
-	theFlowchart.incScroll(FlowEditor.borderSpacing-19, FlowEditor.borderSpacing-19);
+	theFlowchart.setScroll(FlowEditor.borderSpacing-19, FlowEditor.borderSpacing-19);
 }
 
 FlowEditor.arrowMinSpacing = 50;
@@ -246,9 +246,9 @@ Flowchart.prototype.createDroppables = function(dom, contentPane, trashPane) {
 	});
 
 	// initialite drag from trees to the pane
-	Droppables.add(dom, { 
+	Droppables.add($('contents'), { 
 		accept: ['NodePrototype'],
-		hoverclass: 'FlowchartGroup_hover',
+		hoverclass: 'contents_hover',
 		onDrop: function(draggable, droppable, event) {
 			var p1 = draggable.cumulativeOffset();
 			var p2 = contentPane.cumulativeOffset();
@@ -261,19 +261,24 @@ Flowchart.prototype.createDroppables = function(dom, contentPane, trashPane) {
 }
 
 Flowchart.prototype.getScroll = function() {
-	var node = this.getContentPane().parentNode.parentNode;
-	return { x: node.scrollLeft, y: node.scrollTop };
+	var scroll = this.getContentPane().cumulativeScrollOffset();
+	scroll.x = scroll.left;
+	scroll.y = scroll.top;
+	return scroll;
 }
 
 Flowchart.prototype.incScroll = function(sx, sy) {
+	var scroll = this.getContentPane().cumulativeScrollOffset();
+	var x = scroll.left + sx;
+	var y = scroll.top  + sy;
+	this.setScroll(x, y);
+}
+
+Flowchart.prototype.setScroll = function(x, y) {
 	var node = this.getContentPane().parentNode.parentNode;
-	var x = node.scrollLeft + sx;
-	var y = node.scrollTop  + sy;
 	node.scrollLeft = x < 0 ? 0 : x;
 	node.scrollTop  = y < 0 ? 0 : y;
 }
-
-
 
 FlowEditor.prototype._saveFlowchartText = function(xml, closeOnSuccess) {
 	var changeNote = $('changenote').value;
