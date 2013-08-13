@@ -63,10 +63,12 @@ var Droppables = {
   },
 
   isAffected: function(point, element, drop) {
-	  var x = point[0], y = point[1];
-	  var scroll = drop.element.cumulativeScrollOffset();
+	var x = point[0], y = point[1];
+	if (drop.element.parentNode) {
+	  var scroll = drop.element.parentNode.cumulativeScrollOffset();
 	  x += scroll.left;
 	  y += scroll.top;
+	}
     return (
       (drop.element!=element) &&
       ((!drop._containers) ||
