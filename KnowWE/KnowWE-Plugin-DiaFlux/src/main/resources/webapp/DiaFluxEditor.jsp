@@ -123,6 +123,14 @@
 	<script src="cc/flow/nodeeditor.js" type="text/javascript"></script>
 	<script src="cc/flow/router.js" type="text/javascript"></script>
 	<script src="cc/flow/contextmenu.js" type="text/javascript"></script>
+
+	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-1.7.1.js'></script>
+	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-ui-1.8.23.custom.min.js'></script>
+	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-autosize.min.js'></script>
+	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-treeTable.js'></script>
+	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-tooltipster.js'></script>
+	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-plugin-collection.js'></script>
+	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-compatibility.js'></script>
 	
 <%
 	Extension[] extensions = JPFPluginManager.getInstance().getExtensions(DiaFluxEditorEnhancement.PLUGIN_ID, DiaFluxEditorEnhancement.EXTENSION_POINT_ID);
@@ -151,6 +159,8 @@
 	<link rel="stylesheet" type="text/css" href="cc/flow/rule.css"></link>
 	<link rel="stylesheet" type="text/css" href="cc/flow/guard.css"></link>
 	<link rel="stylesheet" type="text/css" href="cc/flow/contextmenu.css"></link>
+	<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/jquery-treeTable.css' />
+	<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/jquery-autocomplete.css' />
 </head>
 <body onload="new FlowEditor(<%= jspHelper.getArticleIDsAsArray(kdomID).replace("\"", "&quot;") %>).showEditor();">
 

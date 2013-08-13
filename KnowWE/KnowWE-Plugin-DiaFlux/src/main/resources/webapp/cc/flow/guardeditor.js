@@ -118,9 +118,8 @@ GuardEditor.prototype.handleInput = function() {
 	if (!this.isVisible()) return;
 	this.updateFromUI();
 	if (this.onChangeListener) this.onChangeListener(this.getGuard());
+	this.autoresize();
 }
-
-
 
 GuardEditor.prototype.updateFromUI = function() {
 	if (!this.isVisible()) return;
@@ -164,6 +163,16 @@ GuardEditor.prototype.updateInputField = function() {
 		else {
 			inputs[i].hide();
 		}
+	}
+	this.autoresize();
+}
+
+GuardEditor.prototype.autoresize = function () {
+	var areas = this.dom.select('textarea');
+	for (var i=0; i< areas.length; i++) {
+		var textarea = areas[i];
+		textarea.style.height = '0px';
+		textarea.style.height = (textarea.scrollHeight) + 'px';
 	}
 }
 
@@ -233,11 +242,17 @@ GuardEditor.prototype.createInputFields = function(){
 	var guard = this.getGuard();
 	
 	if (guard && guard.isFormula()) {
-		return [
-		    Builder.node('textarea', {className: 'input formula', style: 'display: none;', onBlur: 'this.parentNode.parentNode.__GuardEditor.handleInput();', rows: 1},[this.values.length > 0 ? this.values[0] : '']),
+		var result = [
+		    Builder.node('textarea', {className: 'input formula', style: 'display: none;', 
+		    	onBlur: 'this.parentNode.parentNode.__GuardEditor.handleInput();',
+		    	onkeydown: 'this.parentNode.parentNode.__GuardEditor.autoresize();',
+		    	onkeypress: 'this.parentNode.parentNode.__GuardEditor.autoresize();',
+		    	onkeyup: 'this.parentNode.parentNode.__GuardEditor.autoresize();',
+		    	rows: 1},[this.values.length > 0 ? this.values[0] : '']),
 		    //this one should never be visible, but avoids to see '${num} when switching from formula to interval
 		    Builder.node('input', {	className: 'input', type: 'text', style: 'display: none;', onBlur: 'this.parentNode.parentNode.__GuardEditor.handleValueSelected();', value: ''})
 		];
+		return result;
 	} else {
 		return [
 			Builder.node('input', {	className: 'input', type: 'text', style: 'display: none;', onBlur: 'this.parentNode.parentNode.__GuardEditor.handleInput();', value: this.values.length > 0 ? this.values[0] : ''}),
