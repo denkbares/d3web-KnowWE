@@ -258,7 +258,7 @@ RoutingTool.prototype.createDraggable = function() {
 			}
 			var flowchart = routingPoint.rule.flowchart;
 			flowchart.router.rerouteNodes([rule.getSourceNode(), rule.getTargetNode()]);
-			rule.select();
+			rule.select(false, true);
 		},
 		snap: function(x, y, draggable) {
 			draggable.__routingTool.showLine(x, y);

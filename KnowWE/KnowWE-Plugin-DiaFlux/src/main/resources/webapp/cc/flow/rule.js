@@ -165,9 +165,11 @@ Rule.prototype.getGuard = function() {
 	return this.guard;
 }
 
-Rule.prototype.select = function(multipleSelectionMode) {
+Rule.prototype.select = function(multipleSelectionMode, refresh) {
 	var selected = this.flowchart.isSelected(this);
-	if (selected && this.flowchart.selection.length == 1 && !multipleSelectionMode) return;
+	if (selected && this.flowchart.selection.length == 1 && !multipleSelectionMode && !refresh) {
+		return;
+	}
 	// select it 
 	// (add/remove to selection in multipleSelectionMode otherwise set as only selection)
 	this.flowchart.setSelection(this, 
@@ -267,18 +269,18 @@ Rule.prototype.setSelectionVisible = function(isSelected) {
 }
 
 Rule.prototype.setGuardVisible = function(paneVisible, editorVisible) {
-	if (this.guardPane && !paneVisible) {
+	if (this.guardPane) {
 		this.guardPane.destroy();
 		this.guardPane = null;
 	}
-	if (this.guardEditor && !editorVisible) {
+	if (this.guardEditor) {
 		this.guardEditor.destroy();
 		this.guardEditor = null;
 	}
-	if (!this.guardPane && paneVisible) {
+	if (paneVisible) {
 		this.guardPane = new GuardPane(this.getGuardRoot(), this.guard, this);
 	}
-	if (!this.guardEditor && editorVisible) {
+	if (editorVisible) {
 		this.guardEditor = new GuardEditor(
 			this.getGuardRoot(), 
 			this.guard, 
