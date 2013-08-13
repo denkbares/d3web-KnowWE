@@ -71,6 +71,10 @@ FlowEditor.autoResize = function() {
 	if (FlowEditor.avoidAutoResize) return;
 	var spacing = FlowEditor.borderSpacing;
 
+	// also adapt trash-can position
+	var delta = $('contents').offsetHeight - $('contents').clientHeight;
+	jq$('.trashParent .trash').css("top", (-delta)+"px");
+	
 	// move objects to upper left corner with some spacing left/above
 	var scroll = theFlowchart.getScroll();
 	var area = theFlowchart.getUsedArea();
