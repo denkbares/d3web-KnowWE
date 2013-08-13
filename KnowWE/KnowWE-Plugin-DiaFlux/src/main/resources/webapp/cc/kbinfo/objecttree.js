@@ -59,7 +59,7 @@ ObjectTree.prototype.render = function() {
 	
 	var dom = Builder.node('div', {
 		className: 'ObjectTree',
-		style: "position:relative;"
+//		style: "position:relative;"
 	});
 	
 	this.addChildTreeItems(dom, this.roots, 'rootTree');
@@ -204,7 +204,7 @@ ObjectTree.revertEffect = function(element,  top_offset, left_offset) {
 	var x = parseFloat(element.getStyle('left') || '0');
 	var y = parseFloat(element.getStyle('top')  || '0');
 	element.setStyle({
-		position: "relative",
+		position: "", //"relative",
 		left: (x - left_offset) + 'px',
 		top:  (y - top_offset) + 'px'
 	});
