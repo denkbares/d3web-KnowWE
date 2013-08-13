@@ -85,13 +85,12 @@ FlowEditor.autoResize = function() {
 		for (var i=0; i<theFlowchart.nodes.length; i++) {
 			theFlowchart.nodes[i].moveBy(dx, dy, true);
 		}
-		theFlowchart.incScroll(dx, dy);
 	}
 	
 	// resize flowchart to add some spacing on bottom right
 	// at least all visible space
-	var width = $('contents').offsetWidth - 3 + scroll.x;
-	var height = $('contents').offsetHeight - 3 + scroll.y;
+	var width = $('contents').offsetWidth - 3 + scroll.x + dx;
+	var height = $('contents').offsetHeight - 3 + scroll.y + dy;
 	// at least size of view panel
 	width = Math.max(area.right + spacing + dx, width);
 	height = Math.max(area.bottom + spacing + dy, height);
@@ -101,6 +100,7 @@ FlowEditor.autoResize = function() {
 	if (moveNodes) {
 		try {
 			FlowEditor.avoidAutoResize = true;
+			theFlowchart.incScroll(dx, dy);
 			theFlowchart.router.rerouteAll();			
 		} finally {
 			FlowEditor.avoidAutoResize = false;
