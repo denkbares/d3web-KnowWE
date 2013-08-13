@@ -21,6 +21,7 @@ package de.d3web.we.kdom.condition;
 
 import java.util.List;
 
+import de.d3web.core.inference.condition.CondNum;
 import de.d3web.core.inference.condition.CondNumEqual;
 import de.d3web.core.inference.condition.CondNumGreater;
 import de.d3web.core.inference.condition.CondNumGreaterEqual;
@@ -135,27 +136,39 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 
 		if (number != null && q != null && q instanceof QuestionNum) {
 
-			QuestionNum qnum = (QuestionNum) q;
+			return createCondNum(comparator, number, q);
 
-			if (comparator.equals("<=")) {
-				return new CondNumLessEqual(qnum, number);
-			}
-			else if (comparator.equals(">=")) {
-				return new CondNumGreaterEqual(qnum, number);
-			}
-			else if (comparator.equals("<")) {
-				return new CondNumLess(qnum, number);
-			}
-			else if (comparator.equals(">")) {
-				return new CondNumGreater(qnum, number);
-			}
-			else if (comparator.equals("==")) {
-				return new CondNumEqual(qnum, number);
-			}
-			else if (comparator.equals("=")) {
-				return new CondNumEqual(qnum, number);
-			}
+		}
+		return null;
+	}
 
+	/**
+	 * 
+	 * @created 08.08.2013
+	 * @param comparator
+	 * @param number
+	 * @param q
+	 */
+	public static CondNum createCondNum(String comparator, Double number, Question q) {
+		QuestionNum qnum = (QuestionNum) q;
+
+		if (comparator.equals("<=")) {
+			return new CondNumLessEqual(qnum, number);
+		}
+		else if (comparator.equals(">=")) {
+			return new CondNumGreaterEqual(qnum, number);
+		}
+		else if (comparator.equals("<")) {
+			return new CondNumLess(qnum, number);
+		}
+		else if (comparator.equals(">")) {
+			return new CondNumGreater(qnum, number);
+		}
+		else if (comparator.equals("==")) {
+			return new CondNumEqual(qnum, number);
+		}
+		else if (comparator.equals("=")) {
+			return new CondNumEqual(qnum, number);
 		}
 		return null;
 	}
@@ -166,6 +179,6 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 	 * @author Jochen
 	 * @created 26.10.2010
 	 */
-	class Comparator extends AbstractType {
+	public static class Comparator extends AbstractType {
 	}
 }
