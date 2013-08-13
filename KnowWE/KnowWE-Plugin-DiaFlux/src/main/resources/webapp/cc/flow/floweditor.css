@@ -201,6 +201,11 @@ ul.toolbar li:last-child {
 	background-image: url(../image/trash64-highlight.png);
 }
 
+.Flowchart #select_tool {
+	border: 1px dotted grey;
+	z-index: 2000;
+}
+
 .Flowchart .h_snapline {
 	position: absolute;
 	overflow: hidden;

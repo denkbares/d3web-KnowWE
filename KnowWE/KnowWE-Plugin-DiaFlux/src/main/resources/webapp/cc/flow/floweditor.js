@@ -32,10 +32,18 @@ FlowEditor.prototype.showEditor = function(){
 	$('close').observe('click', this.closeEditor);
 	$('delete').observe('click', this.deleteFlowchart);
 	
-		
-//	theFlowchart.getContentPane().observe('mousedown', function(event) {FlowEditor.massSelectDown(event);})
-//	theFlowchart.getContentPane().observe('mouseup', function(event) {FlowEditor.massSelectUp(event);})
-//	theFlowchart.getContentPane().observe('mousemove', function(event) {FlowEditor.massSelectMove(event);})
+	// mass selection events
+	// most attached to window to also get events outside content pane
+	theFlowchart.getContentPane().observe('mousedown', function(event) {FlowEditor.lassoSelectDown(event);});
+	Event.observe(window, 'mouseup', function(event) {FlowEditor.lassoSelectUp(event);});
+	Event.observe(window, 'click', function(event) {FlowEditor.lassoSelectUp(event);});
+	Event.observe(window, 'dbclick', function(event) {FlowEditor.lassoSelectUp(event);});
+	Event.observe(window, 'contextmenu', function(event) {FlowEditor.lassoSelectUp(event);});
+	Event.observe(window, 'mousemove', function(event) {FlowEditor.lassoSelectMove(event);});
+	Event.observe(window, 'keyup', function(event) {FlowEditor.lassoSelectMove(event);});
+	Event.observe(window, 'keydown', function(event) {FlowEditor.lassoSelectMove(event);});
+	$('contents').observe('scroll', function(event) {FlowEditor.lassoSelectMove(event);});
+	
 	Event.observe(window, "resize", function (event) {
 		FlowEditor.autoResize();
 	});
@@ -102,82 +110,81 @@ FlowEditor.autoResize = function() {
 }
 
 
-FlowEditor.massSelectDown = function(event) {
-	
-	// prevent this event from taking over newly dragged in nodes
-	if (event.target.nodeName === 'INPUT'
-			|| event.target.nodeName === 'TEXTAREA' 
-				|| event.target.id === 'resizeHandle') {
-		return;
-	}
-	
-	FlowEditor.SelectX = event.layerX;
-	FlowEditor.SelectY = event.layerY;
-	FlowEditor.moveStarted = true;
-	FlowEditor.difX = event.clientX - event.layerX;
-	FlowEditor.difY = event.clientY - event.layerY;
+FlowEditor.lassoSelectDown = function(event) {
 
+	var element = Event.element(event);
+	if (!element.hasClassName('Flowchart')) return;
+	if (FlowEditor.lassoSelect) return;
+	
+	var pos = element.cumulativeOffset();
+	var scroll = element.cumulativeScrollOffset();
+	var x = Event.pointerX(event) - pos.left + scroll.left;
+	var y = Event.pointerY(event) - pos.top + scroll.top;
+	var selection = theFlowchart.selection;
+	if (selection[0] && selection[0].guardEditor) selection = [];
+	FlowEditor.lassoSelect = {
+			x1: x,
+			y1: y,
+			x2: x,
+			y2: y,
+			px: Event.pointerX(event),
+			py: Event.pointerY(event),
+			startSelection: selection
+	};
+
+	theFlowchart.setSelection(null, DiaFluxUtils.isControlKey(event));
 	event.stop(); 
 }
 
-FlowEditor.massSelectMove = function(event) {
-	var selectTool = $('select_tool');
-	if (selectTool) {
-		selectTool.parentNode.removeChild(selectTool);
+FlowEditor.lassoSelectMove = function(event) {
+	if (!FlowEditor.lassoSelect) return;
+	
+	// get start coordinates
+	var x1 = FlowEditor.lassoSelect.x1;
+	var y1 = FlowEditor.lassoSelect.y1;
+	
+	// update end coordinates
+	// if event provides the coordinates (!= NaN)
+	// else use stored pointer coordinates
+	var px = Event.pointerX(event);
+	var py = Event.pointerY(event);
+	if (isNaN(px) || isNaN(py)) {
+		px = FlowEditor.lassoSelect.px;
+		py = FlowEditor.lassoSelect.py;
 	}
-	if (FlowEditor.moveStarted) {
-		var startX = FlowEditor.SelectX;
-		var startY = FlowEditor.SelectY;
-		var endX = event.clientX - FlowEditor.difX;
-		var endY = event.clientY - FlowEditor.difY;
-		
-		var lineDOM = SelectTool.createSelectionBox(startX, startY, endX, endY, 1, 'grey', 0, 1000);
-		theFlowchart.getContentPane().appendChild(lineDOM);
-		
-		var newSelection = [];
-		for ( var i = 0; i < theFlowchart.nodes.length; i++) {
-			if (theFlowchart.nodes[i].intersects(startX, startY, endX, endY)) {
-				newSelection.push(theFlowchart.nodes[i]);
-			}
+	else {
+		FlowEditor.lassoSelect.px = px;
+		FlowEditor.lassoSelect.py = py;
+	}
+	var pos = theFlowchart.getContentPane().cumulativeOffset();
+	var scroll = theFlowchart.getContentPane().cumulativeScrollOffset();
+	var x2 = px - pos.left + scroll.left;
+	var y2 = py - pos.top + scroll.top;
+	FlowEditor.lassoSelect.x2 = x2;
+	FlowEditor.lassoSelect.y2 = y2;
+	
+	// render and select nodes
+	SelectTool.renderSelectionBox(x1, y1, x2, y2);
+	
+	var multiple = DiaFluxUtils.isControlKey(event);
+	var newSelection = [];
+	for (var i = 0; i < theFlowchart.nodes.length; i++) {
+		var node = theFlowchart.nodes[i];
+		var select = node.intersects(x1, y1, x2, y2);
+		select |= multiple && FlowEditor.lassoSelect.startSelection.indexOf(node) >= 0; 
+		if (select) {
+			newSelection.push(node);
 		}
-
-		var currentSelection = theFlowchart.selection[0];
-		if ((currentSelection && !currentSelection.guardEditor) || newSelection.size() !== 0) {
-			theFlowchart.setSelection(newSelection, false, false);
-		} 
 	}
+
+	theFlowchart.setSelection(newSelection, false, false);
 }
 
-FlowEditor.massSelectUp = function(event) {
+FlowEditor.lassoSelectUp = function(event) {
+	if (!FlowEditor.lassoSelect) return;
 	
-	// prevent this event from taking over newly dragged in nodes
-	if (event.target.nodeName === 'INPUT'
-		|| event.target.nodeName === 'TEXTAREA') {
-		return;
-	}
-	
-	var startX = FlowEditor.SelectX;
-	var startY = FlowEditor.SelectY;
-	var endX = event.clientX - FlowEditor.difX;
-	var endY = event.clientY - FlowEditor.difY;
-	
-	
-	var newSelection = [];
-	for ( var i = 0; i < theFlowchart.nodes.length; i++) {
-		if (theFlowchart.nodes[i].intersects(startX, startY, endX, endY)) {
-			newSelection.push(theFlowchart.nodes[i]);
-		}
-	}
-
-	var currentSelection = theFlowchart.selection[0];
-	if ((currentSelection && !currentSelection.guardEditor) || newSelection.size() !== 0) {
-		theFlowchart.setSelection(newSelection, false, false);
-	} 
-	FlowEditor.moveStarted = false;
-	var selectTool = $('select_tool');
-	if (selectTool) {
-		selectTool.parentNode.removeChild(selectTool);
-	}
+	SelectTool.removeSelectionBox();
+	FlowEditor.lassoSelect = null;
 }
 
 FlowEditor.createActionNode = function(flowchart, left, top, nodeModel) {
@@ -312,7 +319,6 @@ FlowEditor.prototype._saveFlowchartText = function(xml, closeOnSuccess) {
 //register select click events for flowchart
 CCEvents.addClassListener('click', 'FlowchartGroup', 
 	function(event) {
-		this.__flowchart.setSelection(null, DiaFluxUtils.isControlKey(event));
 		if (!event.isRightClick()) {
 			contextMenuFlowchart.close();
 			contextMenuNode.close();
@@ -544,18 +550,26 @@ Flowchart.prototype.toXML = function() {
 	xml += '</flowchart>'
 	return xml;
 }
+
+
 var SelectTool = {}
 
-SelectTool.createSelectionBox = function(x1, y1, x2, y2, pixelSize, pixelColor, spacing, maxDots) {
-	var temp;
+SelectTool.removeSelectionBox = function() {
+	var selectTool = $('select_tool');
+	if (selectTool) {
+		selectTool.parentNode.removeChild(selectTool);
+	}	
+}
+
+SelectTool.renderSelectionBox = function(x1, y1, x2, y2) {
 	if (x2 < x1) {
-		temp = x1;
+		var temp = x1;
 		x1 = x2;
 		x2 = temp;
 	}
 	
 	if (y2 < y1) {
-		temp = y1;
+		var temp = y1;
 		y1 = y2;
 		y2 = temp;
 	}
@@ -563,69 +577,13 @@ SelectTool.createSelectionBox = function(x1, y1, x2, y2, pixelSize, pixelColor, 
 	var cx = x2 - x1;
 	var cy = y2 - y1;
 
-	var dotCountX = cx / (spacing + pixelSize);
-	var dotCountY = cy / (spacing + pixelSize);
-	if (maxDots && dotCountX > maxDots) dotCountX = maxDots;
-	if (maxDots && dotCountY > maxDots) dotCountY = maxDots;
-	var dx = cx / dotCountX;
-	var dy = cy / dotCountY;
-
-	var x = x1;
-	var y = y1;
-	var dotsHTML = '';
-	for (var i = 0; i < dotCountX; i++) {
-		dotsHTML += '<div style="position:absolute; overflow:hidden; ' +
-		'left:' + Math.ceil(x-pixelSize/2) + 'px; ' +
-		'top:' + y + 'px; ' +
-		'width:' + pixelSize + 'px; ' +
-		'height:' + pixelSize + 'px; ' +
-		'background-color: ' + pixelColor + ';"></div>';
-		
-		x += dx;
-	}
-	x = x1;
-	for (var i = 0; i < dotCountX; i++) {
-		dotsHTML += '<div style="position:absolute; overflow:hidden; ' +
-		'left:' + Math.ceil(x-pixelSize/2) + 'px; ' +
-		'top:' + y2 + 'px; ' +
-		'width:' + pixelSize + 'px; ' +
-		'height:' + pixelSize + 'px; ' +
-		'background-color: ' + pixelColor + ';"></div>';
-		
-		x += dx;
-	}
-	
-	for (var i = 0; i < dotCountY; i++) {
-		dotsHTML += '<div style="position:absolute; overflow:hidden; ' +
-		'left:' + x1 + 'px; ' +
-		'top:' + Math.ceil(y-pixelSize/2) + 'px; ' +
-		'width:' + pixelSize + 'px; ' +
-		'height:' + pixelSize + 'px; ' +
-		'background-color: ' + pixelColor + ';"></div>';
-		
-		y += dy;
-	}
-	y = y1;
-	
-	for (var i = 0; i < dotCountY; i++) {
-		dotsHTML += '<div style="position:absolute; overflow:hidden; ' +
-		'left:' + x2 + 'px; ' +
-		'top:' + Math.ceil(y-pixelSize/2) + 'px; ' +
-		'width:' + pixelSize + 'px; ' +
-		'height:' + pixelSize + 'px; ' +
-		'background-color: ' + pixelColor + ';"></div>';
-		
-		y += dy;
-	}
-	
-	
 	var div = Builder.node('div', {
 		id: 'select_tool',
-		style: 'position:absolute; overflow:visible; ' +
-		 		'top: 0px; left: 0px; width:1px; height:1px;'
+		style: 'position:absolute; ' +
+		 		'top: '+y1+'px; left: '+x1+'px; width:'+cx+'px; height:'+cy+'px;'
 	});
-	div.innerHTML = dotsHTML;
-	return div;
+	SelectTool.removeSelectionBox();
+	theFlowchart.getContentPane().appendChild(div);
 }
 
 
