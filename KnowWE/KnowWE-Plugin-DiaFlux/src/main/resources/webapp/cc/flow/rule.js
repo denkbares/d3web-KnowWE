@@ -437,7 +437,7 @@ RoutingPoint.prototype.destroy = function() {
 	// update flowchart and reselect rule
 	var flowchart = this.rule.flowchart;
 	flowchart.router.rerouteNodes([this.rule.getSourceNode(), this.rule.getTargetNode()]);
-	this.rule.select();
+	this.rule.select(false, true);
 }
 
 RoutingPoint.prototype.getX = function () {
