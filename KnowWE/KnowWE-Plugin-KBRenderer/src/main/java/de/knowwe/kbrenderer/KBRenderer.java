@@ -74,6 +74,8 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 
 	private Map<Rule, String> renderedRulesCache = new HashMap<Rule, String>();
 
+	private final static String KB_NAME = "kbname";
+
 	private final Map<String, Object> parameterMap = new HashMap<String, Object>();
 
 	public KBRenderer() {
@@ -92,7 +94,13 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 	public void renderHTML(String web, String topic,
 			UserContext user, Map<String, String> values, RenderResult result) {
 		renderedRulesCache = new HashMap<Rule, String>();
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
+		KnowledgeBase kb = null;
+		if (values.containsKey(KB_NAME)) {
+			kb = D3webUtils.getKnowledgeBase(web, values.get(KB_NAME));
+		}
+		else {
+			kb = D3webUtils.getKnowledgeBase(web, topic);
+		}
 		renderHTML(web, topic, user, kb, result);
 	}
 
