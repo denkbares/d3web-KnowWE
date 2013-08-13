@@ -140,7 +140,7 @@ Node.prototype.moveTo = function(left, top) {
 		this.arrowTool.setVisible(false);
 		this.arrowTool.setVisible(true);
 	}
-	this.flowchart.router.rerouteNodes([this]); // TODO: + alle mit Regeln verbundenen Knoten!!!
+	this.flowchart.router.rerouteNodes([this]);
 }
 
 Node.prototype.getPossibleGuards = function() {

@@ -5,6 +5,7 @@ CCEvents.addClassListener('click', 'Node',
 		function(event) {
 
 		if (!this.__node) return; 
+		if (this.__dragging) return; 
 	
 		var multiple = DiaFluxUtils.isControlKey(event);
 		
@@ -85,25 +86,49 @@ Node.prototype.createDraggable = function() {
 	this.draggable = new Draggable(this.getDOM(), {
 		ghosting: true, 
 		starteffect: function(element) {
-			element = $(element);
-			var pos = element.positionedOffset();
-			var delta = element.cumulativeScrollOffset();
-			element.setStyle({
-			});
+			element.__dragging = true;
 		}, 
 		endeffect: function(element, left, top) {
-			element = $(element);
-			var pos = element.positionedOffset();
-			var delta = element.cumulativeScrollOffset();
-			element.setStyle({
-			});
+			window.setTimeout(function() {element.__dragging = false;}, 100);
+			jq$(element).find('.badge').remove();
 		},
 		onStart: function(draggable, event) {
 			draggable.__snapManager.initializeSnapsForNode(draggable.__node);
+			draggable.__node.__draggable = draggable; 
+			var node = draggable.__node;
+			// if we drag a node of a multiple selection drag all nodes
+			if (node.flowchart.isSelected(node)) {
+				draggable.draggedNodes = [];
+				node.flowchart.selection.each(function(item) {
+					if (item.nodeModel) {
+						draggable.draggedNodes.push(item);
+					}
+				});
+			}
+			else {
+				draggable.draggedNodes = [node];
+			}
+			// add badge for multiple drag
+			var count = draggable.draggedNodes.length;
+			if (count > 1) {
+				var element = jq$(draggable.__node.getDOM());
+				element.append("<div class='badge'>"+count+"</div>");
+			}
 		},
 		onEnd: function(draggable, event) {
 			draggable.__snapManager.showSnapLines(null, null);
-			draggable.__node.updateFromView();
+			var node = draggable.__node;
+			// check if the node has been deleted
+			if (!node.getDOM()) return;
+			// if we moved a node of a multiple selection move all nodes
+			var dx = node.getDOM().offsetLeft - node.getLeft();
+			var dy = node.getDOM().offsetTop - node.getTop();
+			for (var i=0; i<draggable.draggedNodes.length; i++) {
+				node = draggable.draggedNodes[i];
+				node.moveTo(node.getLeft() + dx, node.getTop() + dy, true);
+			}
+			node.flowchart.router.rerouteNodes(draggable.draggedNodes);
+			node.flowchart.setSelection(draggable.draggedNodes);
 		},
 		snap: function (x, y, draggable) {
 			return draggable.__snapManager.snapIt(x, y);
@@ -229,7 +254,7 @@ NodeEditor.prototype.handleOk = function() {
 	if (this.tabItems[0].className == 'actionTab_selected') {
 		// vor dem ok noch sicherstellen, dass 
 		// das Selektionsfeld uebernommen wurde (blur() hilft hier)
-		var select = this.dom.select
+		var select = this.dom.select;
 		var action = this.actionEditor.getAction();
 		this.nodeModel.action = {
 			markup: action ? action.getMarkup() : 'NOP',

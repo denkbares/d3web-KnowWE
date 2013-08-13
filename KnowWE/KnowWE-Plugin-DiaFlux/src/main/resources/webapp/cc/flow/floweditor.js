@@ -9,12 +9,10 @@ function FlowEditor(articleIDs){
 	KBInfo._updateCache($('articleKBInfo'));
 	KBInfo._updateCache($('referredKBInfo'));
 	
-
 	// initialize wiki tree tool
 	new ObjectTree('objectTree', null, articleIDs);
 
 	theFlowchart = null;
-	
 }
 
 FlowEditor.prototype.showEditor = function(){
@@ -67,8 +65,6 @@ FlowEditor.prototype.showEditor = function(){
 	FlowEditor.autoResize();
 	theFlowchart.setScroll(FlowEditor.borderSpacing-19, FlowEditor.borderSpacing-19);
 }
-
-FlowEditor.arrowMinSpacing = 50;
 
 FlowEditor.autoResize = function() {
 	if (!theFlowchart) return;
@@ -242,7 +238,12 @@ Flowchart.prototype.createDroppables = function(dom, contentPane, trashPane) {
 		accept: ['Node', 'Rule', 'RoutingTool'],
 		hoverclass: 'trash_hover',
 		onDrop: function(draggable, droppable, event) {
-			if (draggable.__node) draggable.__node.destroy();
+			if (draggable.__node) {
+				var nodes = draggable.__node.__draggable.draggedNodes;
+				for (var i=0; i<nodes.length; i++) {
+					nodes[i].destroy();
+				}
+			}
 			if (draggable.__rule) draggable.__rule.destroy();
 			if (draggable.__routingTool) draggable.__routingTool.routingPoint.destroy();
 		}

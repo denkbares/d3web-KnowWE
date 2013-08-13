@@ -12,6 +12,21 @@
 	font-weight: bold;
 }
 
+.Node .badge {
+	position: absolute;
+	top: -10px;
+	right: -10px;
+	border: 2px solid white;
+	border-radius: 10px;	
+    box-shadow: 2px 2px 3px 0px grey;
+    text-align: center;
+    padding: 0px 0px 0px 0px;
+	color: white;
+	background-color: #C20012;
+	min-height: 15px;
+	min-width: 15px;
+}
+
 .Node .node_highlight {
 	position: absolute;
 	top: -2px;
@@ -31,7 +46,7 @@
 
 }
 
-.Node .start, .Node .exit, .Node .comment , .Node .snapshot{
+.Node .start, .Node .exit, .Node .comment , .Node .snapshot {
 	overflow:	hidden;
 	min-width:	60px;
 	max-width:	200px;
@@ -69,7 +84,6 @@
 
 .Node .snapshot {
 	background-color: #fbf; 
-
 }
 
 .Node .decorator {
