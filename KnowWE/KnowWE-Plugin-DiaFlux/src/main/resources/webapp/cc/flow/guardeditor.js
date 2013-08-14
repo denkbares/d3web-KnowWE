@@ -273,6 +273,12 @@ CCEvents.addClassListener('keydown', 'GuardEditorEventHandler', function(event) 
 		this.parentNode.__GuardEditor.setVisible(false); 
 		theFlowchart.setSelection(null);
 		return;
+	case Event.KEY_BACKSPACE:
+	case Event.KEY_DELETE:
+		if (event.ctrlKey || event.metaKey || event.altKey) {
+			theFlowchart.trashSelection();
+			return;
+		} 
 	}
 	
 	event.defaultHandler();	
