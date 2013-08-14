@@ -242,9 +242,14 @@ Guard.createPossibleGuards = function(nodeModel) {
 		result.push('User');
 		result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = confirmed', "confirmed"));
 		result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = rejected', "rejected"));		
-		result.push('Derivation');
+		result.push('Derived Value');
 		result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = established', "established"));
 		result.push(new Guard('KnOffice', '"'+infoObject.getName()+'" = excluded', "excluded"));
+		result.push('Negated Value');
+		result.push(new Guard('KnOffice', 'NOT("'+infoObject.getName()+'" = established)', "&ne; established"));
+		result.push(new Guard('KnOffice', 'NOT("'+infoObject.getName()+'" = excluded)', "&ne; excluded"));
+		result.push('Formula');
+		result.push(new Guard('timeDB', 'eval(${formula})', '${formula}'));
 		result.push('Common');
 		result.push(new Guard('NOP', ' ', ' '));
 	}
@@ -255,14 +260,9 @@ Guard.createPossibleGuards = function(nodeModel) {
 			for (var i=0; i<options.length; i++) {
 				result.push(new Guard('KnOffice', 'IS_ACTIVE[' + infoObject.getName()+'('+options[i]+')]', options[i]));
 			}
-			//result.push('Exclude result');
-			//for (var i=0; i<options.length; i++) {
-			//	result.push(new Guard('KnOffice', 'NICHT(IS_ACTIVE[' + infoObject.getName()+'('+options[i]+')])', '&ne; ' + options[i]));
-			//}
 		}
 		result.push('Common');
 		result.push(new Guard('KnOffice', 'PROCESSED[' + infoObject.getName()+']', 'processed'));
-		//result.push(new Guard('NOP', ' ', ' ')); //does this make sense for FCs?
 	}
 	else if (infoObject.getClassInstance() == KBInfo.QSet) {
 		result.push('Formula');

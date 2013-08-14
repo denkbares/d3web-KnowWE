@@ -37,14 +37,18 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer {
 		Section<FlowchartType> flowchart = Sections.findSuccessor(section, FlowchartType.class);
 
 		if (flowchart == null) {
-			string.append("No flowchart created yet. ");
-			String link = "<a href=\""
+			string.append("%%information ");
+			string.append("No flowchart created yet.");
+			string.appendHtml("<br><a href=\""
 					+ FlowchartEditProvider.createEditLink(section, user)
 					+ "\">"
-					+ "Click here to create one." + "</a>";
-			string.appendHtml(link);
+					+ "Click here to create one." + "</a><br>");
 		}
 
 		super.renderContents(section, user, string);
+
+		if (flowchart == null) {
+			string.append(" %%\n");
+		}
 	}
 }

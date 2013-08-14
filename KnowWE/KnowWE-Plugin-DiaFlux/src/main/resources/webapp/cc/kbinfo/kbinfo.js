@@ -33,9 +33,8 @@ KBInfo._collectNodeValues = function(xmlDom, selector) {
 
 
 KBInfo._updateCache = function(xmlDom) {
-	//alert(xmlDom.childNodes.length);
+	if (!xmlDom) return;
 	var changed = [];
-	//showMessage(xmlDom.childNodes);
 	if (xmlDom.nodeName.toLowerCase() != 'kbinfo') {
 		// if we are not having the correct root element
 		// search for it in the dom and process every one

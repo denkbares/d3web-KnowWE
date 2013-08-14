@@ -64,6 +64,29 @@ FlowEditor.prototype.showEditor = function(){
 	FlowEditor.borderSpacing = 350;	
 	FlowEditor.autoResize();
 	theFlowchart.setScroll(FlowEditor.borderSpacing-19, FlowEditor.borderSpacing-19);
+	
+
+	// register key event for save and cancel (reload is already provided by browser
+    var isModifier = function(event) {
+    	if ((!event.metaKey && event.ctrlKey && !event.altKey) 
+    			|| (!event.metaKey && !event.ctrlKey && event.altKey) 
+    			|| (event.metaKey && !event.ctrlKey && !event.altKey)) {
+    		return true;
+    	}
+    	return false;
+    };
+    
+    var flowedit = this;
+	Element.observe(window, 'keydown', function(event) {
+     	if (isModifier(event) && event.keyCode == 83) {     
+     		event.stop();
+     		flowedit.saveFlowchart(true);
+     	}
+     	else if (isModifier(event) && event.keyCode == 27) {                    		
+     		event.stop();
+     		flowedit.closeEditor();
+     	}
+     });
 }
 
 FlowEditor.autoResize = function() {
@@ -536,7 +559,9 @@ Flowchart.prototype.selectAt = function(x, y, addToSelection) {
 }
 
 Flowchart.prototype.toXML = function() {
-	var area = this.getUsedArea();
+	var area = (this.nodes.length == 0)
+		? {top: 0, left: 0, width: 300, height: 140, right: 300, bottom: 140}
+		: this.getUsedArea();
 	var dx = - area.left + 20;
 	var dy = - area.top + 20;
 	var xml = '<flowchart' +

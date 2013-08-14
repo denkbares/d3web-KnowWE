@@ -223,7 +223,7 @@ public class GetInfoObjects extends AbstractAction {
 			// no object found in TermManager of KB
 			FlowSet set = base.getKnowledgeStore().getKnowledge(FluxSolver.FLOW_SET);
 			// next, try flowcharts
-			if (set.contains(objectName)) {
+			if (set != null && set.contains(objectName)) {
 				appendInfoObject(web, title, set.get(objectName), bob);
 			}
 			else {

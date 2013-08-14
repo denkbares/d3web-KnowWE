@@ -180,12 +180,11 @@ public class FlowchartUtils {
 	}
 
 	private static boolean isInsertRessources(Section<FlowchartType> section) {
-		Section<DiaFluxType> diaFluxType = Sections.findAncestorOfType(section, DiaFluxType.class);
-
-		// load JS and CSS only for first DiaFluxSection in page
+		// load JS and CSS only for first Flowchart section (not
+		// DiaFluxSection!) in page
 		return Sections.findSuccessorsOfType(section.getArticle().getRootSection(),
-				DiaFluxType.class).indexOf(
-				diaFluxType) == 0;
+				FlowchartType.class).indexOf(
+				section) == 0;
 	}
 
 	/**

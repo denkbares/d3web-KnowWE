@@ -1846,6 +1846,11 @@ div.coverflow .knob {
 	white-space: normal;
 }
 
+.type_DiaFlux.defaultMarkupFrame > .defaultMarkup .markupText .information {
+	padding-right: 50px;
+	min-width: 400px;
+}
+
 .type_DiaFlux.defaultMarkupFrame > .defaultMarkup {
 	overflow-y: hidden;
 }

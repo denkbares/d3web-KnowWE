@@ -28,6 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
@@ -102,11 +103,14 @@ public class SaveFlowchartAction extends AbstractAction {
 			builder.append("\r\n");
 			builder.append(newText);
 
-			// one line version, breaks because of missing linebreak, see ticket
-			// #172
-			if (diaFluxSection.getText().matches("%%DiaFlux */?% *")) {
+			// one line version, breaks because of missing linebreak,
+			// see ticket #172
+			Pattern pattern = Pattern.compile("^%%DiaFlux([^\\n\\r\\f]+?)(/?%)?\\s*$");
+			Matcher matcher = pattern.matcher(diaFluxSection.getText());
+			if (matcher.find()) {
+				builder.append(Strings.trim(matcher.group(1)));
 				builder.append("\r\n");
-				builder.append("%");
+				builder.append("%\r\n");
 			}
 			else { // TODO this adds all content, just extract annotations
 				builder.append(diaFluxSection.getText().substring(9));

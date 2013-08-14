@@ -216,10 +216,6 @@ Flowchart.prototype.setSelection = function(nodeOrRuleOrArray, addToSelection, r
 			newSelection[i].setSelectionVisible(true);
 		}
 	}
-	
-	if (newSelection.length == 1) {
-		window.document;
-	}
 }
 
 Flowchart.prototype.findObject = function(id) {
