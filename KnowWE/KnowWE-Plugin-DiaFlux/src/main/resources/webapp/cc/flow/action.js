@@ -404,6 +404,7 @@ ActionEditor.prototype.handleValueSelected = function() {
 	var value = selects[0].options[selects[0].options.selectedIndex].value;
 	this.selectedAction = this.selectableActions[value];
 	this.updateInputField();
+	(function() {this.focus()}).bind(selects[0]).defer();
 }
 
 // Called after selecting an Action for the selected object

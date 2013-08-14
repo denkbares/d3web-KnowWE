@@ -247,7 +247,7 @@ Flowchart.prototype.render = function() {
 			className: 'Flowchart',
 			style: "width: " + w + "px; height:" + h + "px;"
 		}),
-		Builder.node('a', {className: 'inputFocus', href: '#'}) // input focus
+		Builder.node('input', {className: 'inputFocus', href: ''}) // input focus
 	]);
 	dom.__flowchart = this;
 

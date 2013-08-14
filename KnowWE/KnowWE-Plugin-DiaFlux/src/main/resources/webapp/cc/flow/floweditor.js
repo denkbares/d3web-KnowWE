@@ -64,7 +64,8 @@ FlowEditor.prototype.showEditor = function(){
 	FlowEditor.borderSpacing = 350;	
 	FlowEditor.autoResize();
 	theFlowchart.setScroll(FlowEditor.borderSpacing-19, FlowEditor.borderSpacing-19);
-	
+	theFlowchart.focus();
+	Event.observe(window, 'click', FlowEditor.checkFocus);
 
 	// register key event for save and cancel (reload is already provided by browser
     var isModifier = function(event) {
@@ -87,6 +88,18 @@ FlowEditor.prototype.showEditor = function(){
      		flowedit.closeEditor();
      	}
      });
+}
+
+FlowEditor.checkFocus = function() {
+	var active = document.activeElement;
+	if (active) {
+		var name = active.nodeName.toUpperCase();
+		if (name == 'TEXTAREA') return;
+		if (name == 'INPUT') return;
+		if (name == 'A') return;
+		if (jq$(active).closest('#contents').length > 0) return;
+	}
+	theFlowchart.focus();
 }
 
 FlowEditor.autoResize = function() {
@@ -239,7 +252,6 @@ FlowEditor.prototype.closeEditor = function(){
 FlowEditor.prototype.deleteFlowchart = function() {
 	var result = confirm('Do you really want to delete the flowchart?');
 	if (result) {
-	//TODO
 		FlowEditor.prototype._saveFlowchartText('', true);
 	}
 }
@@ -376,9 +388,13 @@ CCEvents.addClassListener('keydown', 'FlowchartGroup',
 	}
 );
 
+Element.observe(document, 'keydown', function(event) {
+//	theFlowchart.handleKeyEvent(event);
+});
+
 Flowchart.prototype.handleKeyEvent = function(event) {
 	var isHandled = false;
-	var ctrlKey = event.ctrlKey;
+	var ctrlKey = event.ctrlKey || event.metaKey;
 	switch (event.keyCode) {
 		case 65: // [ctrl] + a
 			if (ctrlKey) {
