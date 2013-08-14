@@ -281,6 +281,7 @@ NodeEditor.prototype.handleOk = function() {
 		throw "invalid/unexpected tab pane layout";
 	}
 	this.setVisible(false);
+	FlowEditor.checkFocus();
 	if (this.onSuccess) {
 		this.onSuccess(this);
 	}
@@ -288,6 +289,7 @@ NodeEditor.prototype.handleOk = function() {
 
 NodeEditor.prototype.handleCancel = function() {
 	this.setVisible(false);
+	FlowEditor.checkFocus();
 }
 
 NodeEditor.prototype.handleKeyEvent = function(e) {
