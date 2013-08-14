@@ -77,7 +77,9 @@ KBInfo._cache = { byID: [], byName: [], listeners: {} };
 
 KBInfo._addToChache = function(infoObject) {
 	KBInfo._cache.byID[KBInfo.createKey(infoObject.getID())] = infoObject;
-	KBInfo._cache.byName[KBInfo.createKey(infoObject.getName())] = infoObject;
+	if (infoObject.getClassInstance() != KBInfo.Article) {
+		KBInfo._cache.byName[KBInfo.createKey(infoObject.getName())] = infoObject;
+	}
 };
 
 /**

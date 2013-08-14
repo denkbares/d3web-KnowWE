@@ -116,7 +116,7 @@ public class SearchInfoObjects extends AbstractAction {
 				for (Identifier term : terms) {
 					Collection<Section<?>> sections = manager.getTermDefiningSections(term);
 					for (Section<?> section : sections) {
-						result.add(new Identifier(section.getTitle()));
+						result.add(GetInfoObjects.createArticleIdentifier(section.getTitle()));
 					}
 				}
 			}

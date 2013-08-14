@@ -64,6 +64,8 @@ import de.knowwe.diaflux.FlowchartUtils;
 
 public class GetInfoObjects extends AbstractAction {
 
+	private static final String ARTICLE_IDENTIFIER_PREFIX = "$article";
+
 	public GetInfoObjects() {
 	}
 
@@ -124,7 +126,7 @@ public class GetInfoObjects extends AbstractAction {
 		// for objects the identifier always consists
 		// of the compiling article and the object name;
 		// for articles it only consists of the article's name
-		if (identifier.getPathElements().length == 1) {
+		if (isArticleIdentifier(identifier)) {
 			// we want to have the article itself
 			appendArticleInfoObject(web, identifier.getLastPathElement(), bob);
 		}
@@ -136,6 +138,7 @@ public class GetInfoObjects extends AbstractAction {
 		}
 	}
 
+
 	private static boolean isCompilingArticle(String web, String title) {
 		PackageManager packages = Environment.getInstance().getPackageManager(web);
 		return packages.getCompilingArticles().contains(title);
@@ -146,7 +149,7 @@ public class GetInfoObjects extends AbstractAction {
 		Environment env = Environment.getInstance();
 		Article article = env.getArticle(web, title);
 		PackageManager packages = env.getPackageManager(web);
-		String id = new Identifier(title).toExternalForm();
+		String id = createArticleIdentifier(title).toExternalForm();
 
 		bob.append("\t<article");
 		bob.append(" id='").append(encodeXML(id)).append("'");
@@ -202,6 +205,14 @@ public class GetInfoObjects extends AbstractAction {
 		}
 
 		bob.append("\t</article>\n");
+	}
+
+	public static Identifier createArticleIdentifier(String title) {
+		return new Identifier(ARTICLE_IDENTIFIER_PREFIX, title);
+	}
+	
+	public static boolean isArticleIdentifier(Identifier identifier) {
+		return identifier.getPathElements()[0].equals(ARTICLE_IDENTIFIER_PREFIX);
 	}
 
 	private static void appendInfoObject(String web, String title, String objectName, StringBuilder bob) {
