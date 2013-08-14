@@ -145,6 +145,35 @@ String.prototype.escapeHTML = function() {
 }
 
 
+//----
+//Element Utils
+//----
+
+Element.scrollVisible = function(scrollPane, element) {
+	var posElement = $(element).viewportOffset();
+	var x1 = posElement.left;
+	var x2 = posElement.left + element.offsetWidth;
+	var y1 = posElement.top;
+	var y2 = posElement.top + element.offsetHeight;
+	
+	var posScroll = $(scrollPane).cumulativeOffset();
+	var sx1 = posScroll.left;
+	var sx2 = posScroll.left + scrollPane.offsetWidth;
+	var sy1 = posScroll.top;
+	var sy2 = posScroll.top + scrollPane.offsetHeight;
+	if (x1 < sx1) {
+		scrollPane.scrollLeft -= (sx1 - x1); 
+	}
+	else if (x2 > sx2) {
+		scrollPane.scrollLeft += (x2 - sx2); 
+	}
+	if (y1 < sy1) {
+		scrollPane.scrollTop -= (sy1 - y1); 
+	}
+	else if (y2 > sy2) {
+		scrollPane.scrollTop += (y2 - sy2); 
+	}
+}
 
 String.prototype.parseXML = function() {
 	//for IE

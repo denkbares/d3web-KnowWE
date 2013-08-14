@@ -127,7 +127,7 @@ DropDownList.prototype.setVisible = function(visible) {
 		this.parent.appendChild(this.dom);
 		//this.keyFx = this.handleKeyEvent.bindAsEventListener(this);
 		//document.observe('keydown',  this.keyFx);
-		this.dom.scrollIntoView(false);
+		Element.scrollVisible($('contents'), this.dom);
 	}
 	else if (this.isVisible() && !visible) {
 		// ==> hide Node

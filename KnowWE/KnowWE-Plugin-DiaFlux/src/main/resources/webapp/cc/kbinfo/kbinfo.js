@@ -220,11 +220,34 @@ KBInfo.findInfoObjects = function(conditionFx, searchedValue, maxCount) {
 			}
 		}
 		else if (conditionFx(value)) {
-			result.push(value);
-			count++;
-			
+			var isNew = true;
+			for (var i=0; i<result.length; i++) {
+				var old = result[i];
+				// check if it is the same object class
+				if (old.name != value.name) continue;
+				if (old.getClassInstance() != value.getClassInstance()) continue;
+				// also test for question if they are of the same type 
+				// for all other objects it is undefined an therefore '=='
+				if (old.type != value.type) continue;
+				// if all is same, ignore the new item
+				isNew = false;
+				break;
+			}
+			if (isNew) {
+				result.push(value);
+				count++;
+			}
 		}
 	}
+	result.sort(function (a, b) {
+		var n1 = a.name.toLowerCase();
+		var n2 = b.name.toLowerCase();
+		if (n1 > n2) return 1;
+		if (n1 < n2) return -1;
+		if (a.id > b.id) return 1;
+		if (a.id < b.id) return -1;
+		return 0;
+	});
 	return result;
 }
 

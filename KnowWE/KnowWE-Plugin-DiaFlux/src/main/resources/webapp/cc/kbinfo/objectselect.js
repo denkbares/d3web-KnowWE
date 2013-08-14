@@ -26,7 +26,7 @@ function ObjectSelect(parent, kbInfoClasses, value, changeListener) {
 				}
 				// and true if all phrases have matched
 				return true;
-			}.bind(this), value, 9);
+			}.bind(this), value, 10);
 		}
 		else {
 			return null;
@@ -99,7 +99,7 @@ ObjectSelect.prototype.getValue = function() {
 }
 
 ObjectSelect.prototype.setDom = function(newDom) {
-	if (this.dom) this.dom.remove();
+	this.parent.innerHTML = "";
 	this.dom = newDom;
 	if (this.dom) this.parent.appendChild(this.dom);
 }
@@ -276,11 +276,12 @@ ObjectSelect.prototype.updateSelector = function() {
 			this.valueSelected.bind(this), 
 			this.renderListItem.bind(this),
 			this.cancelEdit.bind(this));
-		this.dropDownList.setMaxItems(10, 'mehr...');
+		this.dropDownList.setMaxItems(10, 'more...');
 		this.dropDownList.setDefaultText('Type in the target object of this node - no matches yet.');
 	}
 	this.items = this.suggestionFx(this.value);
 	this.dropDownList.setItems(this.items);
 	//showMessage(this.items);
+	Element.scrollVisible($('contents'), this.dom.parentNode.parentNode.parentNode);
 }
 
