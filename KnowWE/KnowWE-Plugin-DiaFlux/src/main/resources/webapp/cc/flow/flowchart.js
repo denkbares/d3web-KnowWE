@@ -232,7 +232,7 @@ Flowchart.prototype.removeRule = function(rule) {
 
 Flowchart.prototype.render = function() {
 	var w = Math.ceil(this.width / 10.0) * 10 + 1;
-	var h = Math.ceil(this.height / 10.0) * 10;
+	var h = Math.ceil(this.height / 10.0) * 10 + 1;
 
 	var contentPane;
 	var dom = Builder.node('div', {
