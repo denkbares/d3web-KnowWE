@@ -26,12 +26,20 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
-public class Then extends AbstractType {
+/**
+ * Simple type that captures the indent of a line. Use careful, because it will
+ * also match whitespaces in the middle of the line if there has been any
+ * sectionizing before.
+ * 
+ * @author Volker Belli (denkbares GmbH)
+ * @created 16.08.2013
+ */
+public class Indent extends AbstractType {
 
-	public Then() {
-		sectionFinder = new RegexSectionFinder("\\s*(DANN|THEN)", Pattern.MULTILINE);
-		this.setRenderer(StyleRenderer.KEYWORDS);
-		addChildType(new Indent());
+	public Indent() {
+		setSectionFinder(new RegexSectionFinder(
+				"^([ \t\u00A0]+)[^\\s]", Pattern.MULTILINE, 1));
+		this.setRenderer(new StyleRenderer("indent", null));
 	}
 
 }

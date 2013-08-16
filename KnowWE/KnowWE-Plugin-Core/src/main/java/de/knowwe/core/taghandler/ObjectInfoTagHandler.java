@@ -20,12 +20,15 @@ package de.knowwe.core.taghandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -42,6 +45,8 @@ import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.preview.PreviewManager;
+import de.knowwe.core.preview.PreviewRenderer;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -80,6 +85,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	// internal counter used to create unique IDs
 	private int panelCounter = 0;
 	private int sectionCounter = 0;
+	private int lastResultLength = 0;
+	private final Set<String> renderedPreviewSectionIDs = new HashSet<String>();
 
 	private static DefaultMarkupRenderer defaultMarkupRenderer = new DefaultMarkupRenderer();
 
@@ -110,27 +117,34 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	}
 
 	@Override
-	public final void render(Section<?> section, UserContext userContext,
+	public final synchronized void render(Section<?> section, UserContext userContext,
 			Map<String, String> parameters, RenderResult result) {
+		// prepare rendering (single threaded, see synchronized above)
 		panelCounter = 0;
 		sectionCounter = 0;
+		lastResultLength = 0;
+
 		rb = Messages.getMessageBundle(userContext);
-		String content = renderContent(section, userContext, parameters);
+
+		RenderResult content = new RenderResult(userContext);
+		renderContent(section, userContext, parameters, content);
+
 		Section<TagHandlerTypeContent> tagNameSection = Sections.findSuccessor(
 				section, TagHandlerTypeContent.class);
 		String sectionID = section.getID();
 		Tool[] tools = ToolUtils.getTools(tagNameSection, userContext);
 
-		RenderResult jspMasked = new RenderResult(result);
+		// RenderResult jspMasked = new RenderResult(result);
 		String cssClassName = "type_" + section.get().getName();
-		defaultMarkupRenderer.renderDefaultMarkupStyled(getTagName(), content,
-				sectionID, cssClassName, tools, userContext, jspMasked);
-		result.appendJSPWikiMarkup(jspMasked);
+		defaultMarkupRenderer.renderDefaultMarkupStyled(getTagName(), content.toStringRaw(),
+				sectionID, cssClassName, tools, userContext, result);
+		// result.appendJSPWikiMarkup(jspMasked);
 	}
 
-	private String renderContent(Section<?> section, UserContext user,
-			Map<String, String> parameters) {
+	private void renderContent(Section<?> section, UserContext user,
+			Map<String, String> parameters, RenderResult result) {
 
+		renderLookUpForm(section, result);
 		Map<String, String> urlParameters = user.getParameters();
 
 		// First try the URL-Parameter, if null try the TagHandler-Parameter.
@@ -141,6 +155,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		else if (parameters.get(OBJECT_NAME) != null) {
 			objectName = Strings.decodeURL(parameters.get(OBJECT_NAME));
 		}
+		// If name is not defined stop rendering contents
+		if (Strings.isBlank(objectName)) return;
 
 		String externalTermIdentifierForm = null;
 		if (urlParameters.get(TERM_IDENTIFIER) != null) {
@@ -152,15 +168,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 					.get(TERM_IDENTIFIER));
 		}
 		if (externalTermIdentifierForm == null) externalTermIdentifierForm = objectName;
-
-		// If name is not defined -> render search form!
-		if (objectName == null || objectName.isEmpty()) {
-			RenderResult html = new RenderResult(user);
-			return html.appendHtml(renderLookUpForm(section)).toStringRaw();
-		}
-
-		Identifier termIdentifier = Identifier
-				.fromExternalForm(externalTermIdentifierForm);
+		Identifier termIdentifier = Identifier.fromExternalForm(externalTermIdentifierForm);
 
 		// Get TermDefinitions and TermReferences
 		Set<Section<?>> definitions = new HashSet<Section<?>>();
@@ -168,10 +176,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 		Iterator<Article> iter = Environment.getInstance()
 				.getArticleManager(section.getWeb()).getArticleIterator();
-		Article currentArticle;
-
 		while (iter.hasNext()) {
-			currentArticle = iter.next();
+			Article currentArticle = iter.next();
 			// Get global and local term definitions
 			getTermDefinitions(currentArticle, termIdentifier, definitions);
 			getTermReferences(currentArticle, termIdentifier, references);
@@ -181,17 +187,12 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		getTermReferences(null, termIdentifier, references);
 
 		// Render
-		RenderResult html = new RenderResult(user);
-		html.appendHtml(renderLookUpForm(section));
-		html.appendHtml(renderHeader(externalTermIdentifierForm,
-				getTermObjectClass(definitions, references)));
-		html.appendHtml(renderRenamingForm(externalTermIdentifierForm, objectName,
-				section.getWeb(), parameters, urlParameters));
-		html.appendHtml(renderObjectInfo(definitions, references, parameters));
-		html.appendHtml(renderPlainTextOccurrences(objectName, section.getWeb(),
-				parameters));
-
-		return html.toStringRaw();
+		renderHeader(externalTermIdentifierForm,
+				getTermObjectClass(definitions, references), result);
+		renderRenamingForm(externalTermIdentifierForm, objectName,
+				section.getWeb(), parameters, urlParameters, result);
+		renderObjectInfo(definitions, references, parameters, user, result);
+		renderPlainTextOccurrences(objectName, section.getWeb(), parameters, result);
 	}
 
 	private String getTermObjectClass(Set<Section<?>> definitions,
@@ -214,122 +215,114 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		return termObjectClassString;
 	}
 
-	private String renderHeader(String objectName, String termClassString) {
-		StringBuilder html = new StringBuilder();
-		html.append("<h3><span id=\"objectinfo-src\">");
-		html.append(objectName);
-		html.append("</span>");
+	private void renderHeader(String objectName, String termClassString, RenderResult result) {
+		result.appendHtml("<h3><span id=\"objectinfo-src\">");
+		result.append(objectName);
+		result.appendHtml("</span>");
 		// Render type of (first) TermDefinition
-		html.append(" <em>(");
-		html.append(termClassString);
-		html.append(")</em>");
-		html.append("</h3>\n");
-		return html.toString();
+		result.appendHtml(" <em>(");
+		result.append(termClassString);
+		result.appendHtml(")</em>");
+		result.appendHtml("</h3>\n");
 	}
 
-	private String renderLookUpForm(Section<?> section) {
-		StringBuilder html = new StringBuilder();
-
-		html.append("<form action=\"\" method=\"get\" class=\"ui-widget\" >");
-		html.append("<input type=\"hidden\" id=\"objectinfo-web\" value=\""
-				+ section.getWeb() + "\" />");
-		html.append("<input type=\"hidden\" name=\"page\" value=\""
-				+ Strings.encodeURL(section.getTitle()) + "\" />");
-		html.append("<div style=\"display:none\" id=\"objectinfo-terms\" name=\"terms\" >");
-		html.append(getTerms(section.getWeb()).toString());
-		html.append("</div>");
-		html.append("<input type=\"text\" size=\"60\" name=\"" + OBJECT_NAME
-				+ "\" id=\"objectinfo-search\" />&nbsp;");
-		html.append("<input type=\"submit\" value=\"go to\" />");
-		html.append("</form>");
-
-		return renderSection(
-				rb.getString("KnowWE.ObjectInfoTagHandler.lookUp"),
-				html.toString());
+	private void renderLookUpForm(Section<?> section, RenderResult result) {
+		renderSectionStart(rb.getString("KnowWE.ObjectInfoTagHandler.lookUp"), result);
+		result.appendHtml("<form action=\"\" method=\"get\" class=\"ui-widget\" >")
+				.appendHtml("<input type=\"hidden\" id=\"objectinfo-web\" value=\"")
+				.append(section.getWeb())
+				.appendHtmlTag("\" />");
+		result.appendHtml("<input type=\"hidden\" name=\"page\" value=\"")
+				.append(Strings.encodeURL(section.getTitle()))
+				.appendHtml("\" />");
+		result.appendHtml("<div style=\"display:none\" id=\"objectinfo-terms\" name=\"terms\" >");
+		result.appendJSPWikiMarkup(getTerms(section.getWeb()).toString());
+		result.appendHtml("</div>");
+		result.appendHtml("<input type=\"text\" size=\"60\" name=\"")
+				.append(OBJECT_NAME)
+				.appendHtml("\" id=\"objectinfo-search\" />&nbsp;");
+		result.appendHtml("<input type=\"submit\" value=\"go to\" />");
+		result.appendHtml("</form>");
+		renderSectionEnd(result);
 	}
 
-	private String renderRenamingForm(String externalTermIdentifierForm,
+	private void renderRenamingForm(String externalTermIdentifierForm,
 			String objectName, String web, Map<String, String> parameters,
-			Map<String, String> urlParameters) {
+			Map<String, String> urlParameters, RenderResult result) {
 
 		// Check if rendering is suppressed
-		if (checkParameter(HIDE_RENAME, parameters)) return "";
+		if (checkParameter(HIDE_RENAME, parameters)) return;
+		renderSectionStart(rb.getString("KnowWE.ObjectInfoTagHandler.renameTo"), result);
 
 		String escapedExternalTermIdentifierForm = Strings.encodeHtml(externalTermIdentifierForm);
 		String escapedObjectName = Strings.encodeHtml(objectName);
 
-		StringBuilder html = new StringBuilder();
-		// html.append("<form action=\"\" method=\"post\" >");
-		html.append("<input type=\"hidden\" id=\"objectinfo-target\" value=\""
+		result.appendHtml("<input type=\"hidden\" id=\"objectinfo-target\" value=\""
 				+ escapedExternalTermIdentifierForm + "\" />");
-		html.append("<input type=\"hidden\" id=\"objectinfo-web\" value=\""
+		result.appendHtml("<input type=\"hidden\" id=\"objectinfo-web\" value=\""
 				+ web + "\" />");
-		html.append("<input action=\"" + getRenamingAction()
+		result.appendHtml("<input action=\"" + getRenamingAction()
 				+ "\" type=\"text\" size=\"60\" value=\"" + escapedObjectName
 				+ "\" id=\"objectinfo-replacement\" />&nbsp;");
-		html.append("<input type=\"button\" id=\"objectinfo-replace-button\" value=\"rename\" />");
-		html.append("&nbsp;<span id=\"objectinfo-rename-result\">");
+		result.appendHtml("<input type=\"button\" id=\"objectinfo-replace-button\" value=\"rename\" />");
+		result.appendHtml("&nbsp;<span id=\"objectinfo-rename-result\">");
+
 		// render message of previous renaming if available...
 		String renamingMessage = urlParameters.get(RENAMED_ARTICLES);
 		if (renamingMessage != null) {
-			renderRenamingMessage(html, renamingMessage);
+			renderRenamingMessage(result, renamingMessage);
 		}
-		html.append("</span>");
-		// html.append("</form>");
+		result.appendHtml("</span>");
 
-		return renderSection(
-				rb.getString("KnowWE.ObjectInfoTagHandler.renameTo"),
-				html.toString());
+		renderSectionEnd(result);
 	}
 
-	private void renderRenamingMessage(StringBuilder html,
-			String renamingMessage) {
-
+	private void renderRenamingMessage(RenderResult result, String renamingMessage) {
 		String[] articles = renamingMessage.split("###");
-
 		if (articles.length > 0) {
 
 			// successfully renamed
 			String[] success = articles[0].split("##");
-			html.append("<p style=\"color:green;\">");
-			html.append(rb
-					.getString("KnowWE.ObjectInfoTagHandler.renamingSuccessful"));
-			html.append("</p>");
-			renderList(html, success);
+			result.appendHtml("<p style=\"color:green;\">");
+			result.append(rb.getString("KnowWE.ObjectInfoTagHandler.renamingSuccessful"));
+			result.appendHtml("</p>");
+			renderList(result, success);
 
 			// failure during renaming
 			if (articles.length > 1) {
 				String[] failure = articles[1].split("##");
-				html.append("<p style=\"color:red;\">");
-				html.append(rb
-						.getString("KnowWE.ObjectInfoTagHandler.renamingFailed"));
-				html.append("</p>");
-				renderList(html, failure);
+				result.appendHtml("<p style=\"color:red;\">");
+				result.append(rb.getString("KnowWE.ObjectInfoTagHandler.renamingFailed"));
+				result.appendHtml("</p>");
+				renderList(result, failure);
 			}
 
 		}
 
 	}
 
-	private void renderList(StringBuilder html, String[] elements) {
-		html.append("<ul>");
+	private void renderList(RenderResult result, String[] elements) {
+		result.appendHtml("<ul>");
 		for (String element : elements) {
 			if (!element.trim().isEmpty()) {
-				html.append("<li>");
-				html.append(Strings.encodeHtml(element));
-				html.append("</li>");
+				result.appendHtml("<li>");
+				result.append(Strings.encodeHtml(element));
+				result.appendHtml("</li>");
 			}
 		}
-		html.append("</ul>");
+		result.appendHtml("</ul>");
 	}
 
-	private String renderObjectInfo(Set<Section<?>> definitions,
-			Set<Section<?>> references, Map<String, String> parameters) {
-		StringBuilder html = new StringBuilder();
-		if (!checkParameter(HIDE_DEF, parameters)) html.append(renderTermDefinitions(definitions));
-		if (!checkParameter(HIDE_REFS, parameters)) html.append(renderTermReferences(references,
-				definitions));
-		return html.toString();
+	private void renderObjectInfo(Set<Section<?>> definitions,
+			Set<Section<?>> references, Map<String, String> parameters,
+			UserContext user, RenderResult result) {
+
+		if (!checkParameter(HIDE_DEF, parameters)) {
+			renderTermDefinitions(definitions, user, result);
+		}
+		if (!checkParameter(HIDE_REFS, parameters)) {
+			renderTermReferences(references, definitions, user, result);
+		}
 	}
 
 	protected void getTermDefinitions(Article currentArticle,
@@ -350,70 +343,116 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		references.addAll(th.getTermReferenceSections(termIdentifier));
 	}
 
-	private String renderTermDefinitions(Set<Section<?>> definitions) {
-		StringBuilder html = new StringBuilder();
+	private void renderTermPreview(Section<?> previewSection, Collection<Section<?>> relevantSubSections, UserContext user, String cssClass, RenderResult result) {
+		int count = relevantSubSections.size();
+		if (count == 0) return;
 
-		if (definitions.size() > 0) {
-			html.append("<p>");
-			html.append(definitions.size() > 1 ? "<ul>" : "");
-			for (Section<?> definition : definitions) {
-				html.append(definitions.size() > 1 ? "<li>" : "");
-				html.append(definition.get().getName());
-				html.append(" in ");
-				html.append("<a href=\"Wiki.jsp?page=");
-				html.append(Strings.encodeURL(definition.getArticle()
-						.getTitle()));
-				html.append("#");
-				html.append(definition.getID());
-				html.append("\" >");
-				html.append(definition.getTitle());
-				html.append("</a>");
-				html.append(definitions.size() > 1 ? "</li>" : "");
-			}
-			html.append(definitions.size() > 1 ? "</ul>" : "");
-			html.append("</p>");
+		if (count > 1) {
+			result.append(" (").append(count).append(" occurences)");
 		}
 
-		return renderSection(
-				rb.getString("KnowWE.ObjectInfoTagHandler.definition"),
-				html.toString());
+		result.appendHtml(": <div class='objectinfo preview ").append(cssClass).appendHtml("'>");
+		result.appendHtml("<div class='objectinfo type_")
+				.append(previewSection.get().getName()).appendHtml("'>");
+		PreviewManager previewManager = PreviewManager.getInstance();
+		PreviewRenderer renderer = previewManager.getPreviewRenderer(previewSection);
+		renderer.render(previewSection, relevantSubSections, user, result);
+		result.appendHtml("</div>");
+		result.appendHtml("</div>");
 	}
 
-	private String renderTermReferences(Set<Section<?>> references,
-			Set<Section<?>> definitions) {
+	private void renderTermDefinitions(Set<Section<?>> definitions, UserContext user, RenderResult result) {
+		renderSectionStart(rb.getString("KnowWE.ObjectInfoTagHandler.definition"), result);
+		if (definitions.size() > 0) {
+			result.appendHtml("<p>");
+			if (definitions.size() > 1) result.appendHtml("<ul>");
 
-		StringBuilder html = new StringBuilder();
+			Map<Section<?>, Collection<Section<?>>> groupedByPreview =
+					groupByPreview(definitions);
+			for (Entry<Section<?>, Collection<Section<?>>> entry : groupedByPreview.entrySet()) {
+				Section<?> previewSection = entry.getKey();
+				Collection<Section<?>> group = entry.getValue();
 
+				if (definitions.size() > 1) result.appendHtml("<li>");
+				result.appendHtml("<div>");
+				result.appendHtml("<strong>");
+				result.append("Article '[").append(previewSection.getTitle()).append("]' ");
+				result.appendHtml("</strong>");
+				result.append("(").appendHtml(renderLinkToSection(previewSection)).append(")");
+				renderTermPreview(previewSection, group, user, "definition", result);
+				result.appendHtml("</div>");
+				if (definitions.size() > 1) result.appendHtml("</li>");
+			}
+
+			if (definitions.size() > 1) result.appendHtml("</ul>");
+			result.appendHtml("</p>");
+		}
+		renderSectionEnd(result);
+	}
+
+	private void renderTermReferences(Set<Section<?>> references,
+			Set<Section<?>> definitions, UserContext user, RenderResult result) {
+
+		renderSectionStart(rb.getString("KnowWE.ObjectInfoTagHandler.references"), result);
 		if (references.size() > 0) {
 
 			// Render a warning if there is no definition for the references
 			if (definitions.size() == 0) {
-				html.append("<p style=\"color:red;\">");
-				html.append(rb
-						.getString("KnowWE.ObjectInfoTagHandler.noDefinitionAvailable"));
-				html.append("</p>");
+				result.appendHtml("<p style=\"color:red;\">");
+				result.append(rb.getString("KnowWE.ObjectInfoTagHandler.noDefinitionAvailable"));
+				result.appendHtml("</p>");
 			}
 
 			Map<Article, List<Section<?>>> groupedReferences = groupByArticle(references);
 			for (Article article : groupedReferences.keySet()) {
-				StringBuilder innerHTML = new StringBuilder();
-				innerHTML.append("<ul>");
-				for (Section<?> reference : groupedReferences.get(article)) {
-					innerHTML.append("<li>");
-					innerHTML.append(reference.get().getName());
-					innerHTML.append(" in ");
-					innerHTML.append(renderLinkToSection(reference));
-					innerHTML.append("</li>");
+				RenderResult innerResult = new RenderResult(result);
+				innerResult.appendHtml("<ul>");
+				Map<Section<?>, Collection<Section<?>>> groupedByPreview =
+						groupByPreview(groupedReferences.get(article));
+				for (Entry<Section<?>, Collection<Section<?>>> entry : groupedByPreview.entrySet()) {
+					Section<?> previewSection = entry.getKey();
+					Collection<Section<?>> group = entry.getValue();
+
+					innerResult.appendHtml("<li><div>");
+					innerResult.appendHtml(renderLinkToSection(previewSection));
+					renderTermPreview(previewSection, group, user, "reference", innerResult);
+					innerResult.appendHtml("</div></li>");
 				}
-				innerHTML.append("</ul>");
-				html.append(wrapInExtendPanel(article.getTitle(),
-						innerHTML.toString()));
+				innerResult.appendHtml("</ul>");
+				wrapInExtendPanel("Article '" + article.getTitle() + "'", innerResult, result);
 			}
 		}
+		renderSectionEnd(result);
+	}
 
-		return renderSection(
-				rb.getString("KnowWE.ObjectInfoTagHandler.references"),
-				html.toString());
+	/**
+	 * Groups the specified sections by the ancestor section to be rendered as a
+	 * preview. If a section has no ancestor to be rendered, the section itself
+	 * will be used as a group with an empty collection of grouped sections.
+	 * 
+	 * @created 16.08.2013
+	 * @param list list of sections to be grouped
+	 * @return the groups of sections
+	 */
+	private Map<Section<?>, Collection<Section<?>>> groupByPreview(Collection<Section<?>> list) {
+		Map<Section<?>, Collection<Section<?>>> result = new LinkedHashMap<Section<?>, Collection<Section<?>>>();
+		for (Section<?> section : list) {
+			Section<?> previewSection = PreviewManager.getInstance().getPreviewAncestor(section);
+			// handle if the section has no preview renderer
+			if (previewSection == null) {
+				result.put(section, Collections.<Section<?>> emptyList());
+				continue;
+			}
+			// otherwise add section to preview group
+			// or create group if it is new
+			Collection<Section<?>> group = result.get(previewSection);
+			if (group == null) {
+				group = new LinkedList<Section<?>>();
+				result.put(previewSection, group);
+			}
+			group.add(section);
+		}
+		return result;
 	}
 
 	private String renderLinkToSection(Section<?> reference) {
@@ -427,18 +466,23 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			html.append("#header_");
 			html.append(reference.getID());
 			html.append("\" >");
-			html.append(reference.getTitle());
-			html.append(" (");
+			// html.append(reference.getTitle());
+			// html.append(" (");
 			// Get a nice name
-			Section<DefaultMarkupType> root = Sections.findAncestorOfType(
-					reference, DefaultMarkupType.class);
-			html.append(root != null ? root.get().getName() : reference
-					.getFather().get().getName());
-			html.append(")");
+			html.append(getSurroundingMarkupName(reference));
+			// html.append(")");
 			html.append("</a>");
 		}
 
 		return html.toString();
+	}
+
+	private String getSurroundingMarkupName(Section<?> section) {
+		Section<?> root = Sections.findAncestorOfType(section, DefaultMarkupType.class);
+		if (root != null) return root.get().getName();
+		root = Sections.findAncestorOfType(section, TagHandlerType.class);
+		if (root != null) return root.get().getName();
+		return section.getFather().get().getName();
 	}
 
 	private Map<Article, List<Section<?>>> groupByArticle(
@@ -460,13 +504,12 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		return result;
 	}
 
-	private String renderPlainTextOccurrences(String objectName, String web,
-			Map<String, String> parameters) {
+	private void renderPlainTextOccurrences(String objectName, String web,
+			Map<String, String> parameters, RenderResult result) {
 
 		// Check if rendering is suppressed
-		if (checkParameter(HIDE_PLAIN, parameters)) return "";
-
-		StringBuilder html = new StringBuilder();
+		if (checkParameter(HIDE_PLAIN, parameters)) return;
+		renderSectionStart(rb.getString("KnowWE.ObjectInfoTagHandler.plaintextoccurrences"), result);
 
 		// Search for plain text occurrences
 		SearchEngine se = new SearchEngine(Environment.getInstance()
@@ -481,80 +524,74 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		boolean appropriateSections = false;
 
 		for (Article article : results.keySet()) {
-			StringBuilder innerHTML = new StringBuilder();
-			innerHTML.append("<ul style=\"list-style-type:none;\">");
+			RenderResult innerResult = new RenderResult(result);
+			innerResult.appendHtml("<ul style=\"list-style-type:none;\">");
 			for (Result r : results.get(article)) {
 				Section<?> s = r.getSection();
 				if (s.getFather() != null
 						&& s.getFather().get().equals(article.getRootType())) {
 					appropriateSections = true;
-					innerHTML.append("<li>");
-					innerHTML.append("<pre style=\"margin:1em -1em;\">");
-					String textBefore = r.getAdditionalContext(-35).replaceAll(
-							"(\\{|\\})", "");
-					if (!article.getRootSection().getText()
-							.startsWith(textBefore)) innerHTML.append("...");
-					innerHTML.append(textBefore);
-					innerHTML.append("<a href=\"Wiki.jsp?page=");
-					innerHTML.append(article.getTitle());
-					innerHTML.append("#");
-					innerHTML.append(s.getID());
-					innerHTML.append("\" >");
-					innerHTML.append(s.getText().substring(r.getStart(),
-							r.getEnd()));
-					innerHTML.append("</a>");
-					String textAfter = r.getAdditionalContext(40).replaceAll(
-							"(\\{|\\})", "");
-					innerHTML.append(textAfter);
-					if (!article.getRootSection().getText().endsWith(textAfter)) innerHTML.append("...");
-					innerHTML.append("</pre>");
-					innerHTML.append("</li>");
+					innerResult.appendHtml("<li>");
+					innerResult.appendHtml("<pre style=\"margin:1em -1em;\">");
+					String textBefore = r.getAdditionalContext(-35).replaceAll("(\\{|\\})", "");
+					if (!article.getRootSection().getText().startsWith(textBefore)) {
+						innerResult.appendHtml("...");
+					}
+					innerResult.append(textBefore);
+					innerResult.appendHtml("<a href=\"Wiki.jsp?page=");
+					innerResult.append(article.getTitle());
+					innerResult.appendHtml("#");
+					innerResult.appendHtml(s.getID());
+					innerResult.appendHtml("\" >");
+					innerResult.append(s.getText().substring(r.getStart(), r.getEnd()));
+					innerResult.appendHtml("</a>");
+					String textAfter = r.getAdditionalContext(40).replaceAll("(\\{|\\})", "");
+					innerResult.append(textAfter);
+					if (!article.getRootSection().getText().endsWith(textAfter)) innerResult.appendHtml("...");
+					innerResult.appendHtml("</pre>");
+					innerResult.appendHtml("</li>");
 				}
 			}
-			innerHTML.append("</ul>");
+			innerResult.appendHtml("</ul>");
 			// append the html only if there are appropriate sections!
 			if (appropriateSections) {
-				html.append(wrapInExtendPanel(article.getTitle(),
-						innerHTML.toString()));
+				wrapInExtendPanel(article.getTitle(), innerResult, result);
 				appropriateSections = false;
 			}
 		}
-
-		return renderSection(
-				rb.getString("KnowWE.ObjectInfoTagHandler.plaintextoccurrences"),
-				html.toString());
+		renderSectionEnd(result);
 	}
 
-	private String wrapInExtendPanel(String title, String text) {
-		StringBuilder html = new StringBuilder();
-		html.append("<p id=\"objectinfo-"
-				+ panelCounter++
-				+ "-show-extend\" class=\"show-extend pointer extend-panel-right\" >");
-		html.append("<strong>");
-		html.append(title);
-		html.append("</strong>");
-		html.append("</p>");
-		html.append("<div class=\"hidden\">");
-		html.append(text);
-		html.append("</div>");
-		return html.toString();
+	private void wrapInExtendPanel(String title, RenderResult content, RenderResult result) {
+		result.appendHtml("<p id=\"objectinfo-")
+				.appendHtml(String.valueOf(panelCounter++))
+				.appendHtml("-show-extend\" class=\"show-extend pointer extend-panel-right\" >");
+		result.appendHtml("<strong>");
+		result.append(title);
+		result.appendHtml("</strong>");
+		result.appendHtml("</p>");
+		result.appendHtml("<div class=\"hidden\">");
+		result.append(content);
+		result.appendHtml("</div>");
 	}
 
 	private String renderHR() {
 		return "<div style=\"margin-left:-4px; height:1px; width:102%; background-color:#DDDDDD;\"></div>";
 	}
 
-	private String renderSection(String title, String innerHTML) {
-		StringBuilder html = new StringBuilder();
-		html.append(sectionCounter > 0 ? renderHR() : "");
-		html.append("<div>");
-		html.append("<p><strong>");
-		html.append(title);
-		html.append("</strong></p>");
-		html.append(innerHTML.length() > 0 ? innerHTML : "N/A");
-		html.append("</div>\n");
+	private void renderSectionStart(String title, RenderResult result) {
+		result.appendHtml(sectionCounter > 0 ? renderHR() : "");
+		result.appendHtml("<div>");
+		result.appendHtml("<p><strong>");
+		result.appendHtml(title);
+		result.appendHtml("</strong></p>");
+		lastResultLength = result.length();
+	}
+
+	private void renderSectionEnd(RenderResult result) {
+		if (lastResultLength == result.length()) result.append("N/A");
+		result.appendHtml("</div>\n");
 		sectionCounter++;
-		return html.toString();
 	}
 
 	private boolean checkParameter(String parameter,

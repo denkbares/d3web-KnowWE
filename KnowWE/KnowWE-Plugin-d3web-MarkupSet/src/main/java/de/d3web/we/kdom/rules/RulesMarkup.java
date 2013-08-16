@@ -37,10 +37,6 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  */
 public class RulesMarkup extends DefaultMarkupType {
 
-	public RulesMarkup(DefaultMarkup markup) {
-		super(markup);
-	}
-
 	private static DefaultMarkup m = null;
 
 	static {

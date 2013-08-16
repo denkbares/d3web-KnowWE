@@ -4,6 +4,7 @@
 	
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
+		<import plugin-id="KnowWE-Plugin-Core" />
 		<import plugin-id="KnowWE-Plugin-Table" />
 		<import plugin-id="KnowWE-Plugin-d3web-basic" />
 		<import plugin-id="KnowWE-Plugin-d3web-MarkupSet" />
@@ -18,6 +19,16 @@
 		</library>
 	</runtime>
 	
+	<extension plugin-id="KnowWE-Plugin-Core" point-id="PreviewRenderer"
+		id="TestcaseTablePreviewRenderer">
+		<parameter id="class" value="de.knowwe.core.preview.DefaultPreviewRenderer" />
+		<parameter id="name" value="TestcaseTablePreviewRenderer" />
+		<parameter id="description" value="Renders a preview of a test-case-table." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="TestcaseTable" />
+	</extension>	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="TestCasePlayerType">
 		<parameter id="class"

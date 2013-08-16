@@ -4,6 +4,7 @@
 
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
+		<import plugin-id="KnowWE-Plugin-Core" />
 	</requires>
 
 	<runtime>
@@ -14,6 +15,16 @@
 			<export prefix="*" />
 		</library>
 	</runtime>
+
+	<extension plugin-id="KnowWE-Plugin-Core" point-id="PreviewRenderer" 
+		id="RulePreviewRenderer">
+		<parameter id="class" value="de.knowwe.core.preview.DefaultPreviewRenderer" />
+		<parameter id="name" value="RulePreviewRenderer" />
+		<parameter id="description" value="Renders a preview of a paricular rule." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="ConditionActionRuleContent" />
+	</extension>	
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
 		id="KnowledgeBaseDownloadProvider">

@@ -36,14 +36,21 @@ import de.knowwe.core.kdom.parsing.Section;
  */
 public class AllTextFinderTrimmed implements SectionFinder {
 
+	private final boolean trimBlankLinesOnly;
+
 	public AllTextFinderTrimmed() {
+		this(false);
+	}
+
+	public AllTextFinderTrimmed(boolean trimBlankLinesOnly) {
+		this.trimBlankLinesOnly = trimBlankLinesOnly;
 	}
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 
-		String trimmed = Strings.trim(text);
+		String trimmed = trimBlankLinesOnly ? Strings.trimBlankLines(text) : Strings.trim(text);
 		if (trimmed.length() == 0) return result;
 		int leadingSpaces = text.indexOf(trimmed);
 		int followingSpaces = text.length()

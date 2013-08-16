@@ -20,6 +20,7 @@ package de.knowwe.d3web.property;
 
 import java.util.regex.Pattern;
 
+import de.d3web.we.kdom.rule.Indent;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
@@ -44,7 +45,7 @@ public class PropertyDeclarationType extends AbstractType {
 		String anyCharButNoTripleQuotes = "(?:" + noTripleQuotes + ".)";
 
 		String singleLinePropertyDeclaration = anyCharButNoTripleQuotes + "+?$\\s*"
-						+ "(?!\\s*" + tripleQuotes + ")";
+				+ "(?!\\s*" + tripleQuotes + ")";
 		// the singleLinePropertyDeclaration is a line that does not contain
 		// triple quotes and also is not followed by a line that starts (maybe
 		// after some white spaces) with a triple quote
@@ -58,6 +59,7 @@ public class PropertyDeclarationType extends AbstractType {
 		Pattern p = Pattern.compile(propertyDeclaration, Pattern.MULTILINE + Pattern.DOTALL);
 		setSectionFinder(new RegexSectionFinder(p, 1));
 
+		this.childrenTypes.add(new Indent());
 		this.childrenTypes.add(new PropertyObjectReference());
 
 		this.childrenTypes.add(new PropertyType());

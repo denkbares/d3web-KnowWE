@@ -24,6 +24,7 @@ import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
+import de.d3web.we.kdom.rule.Indent;
 import de.d3web.we.object.SolutionDefinition;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.xcl.XCLModel;
@@ -61,6 +62,9 @@ public class ListSolutionType extends AbstractType {
 		this.setSectionFinder(solutionFinder);
 
 		this.addSubtreeHandler(Priority.HIGH, new XCLModelCreator());
+
+		// cut indent
+		addChildType(new Indent());
 
 		// cut the optional '{'
 		AnonymousType closing = new AnonymousType("bracket");

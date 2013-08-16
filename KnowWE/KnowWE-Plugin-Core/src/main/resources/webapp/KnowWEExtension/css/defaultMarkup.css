@@ -209,3 +209,18 @@ span.markupMenuItem {
 		visibility: hidden;
 	}
 }
+
+
+.objectinfo.preview {
+	display: block; /* inline-block;*/
+	vertical-align: top;
+	margin-bottom: 0.5em;
+}
+
+.objectinfo.preview .indent {
+	display: none;
+}
+
+.objectinfo.preview .type_CoveringList .relation, .objectinfo.preview .type_CoveringList .ellipse {
+	margin-left: 1em;
+}

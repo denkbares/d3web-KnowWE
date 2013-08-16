@@ -4,6 +4,7 @@
 	
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
+		<import plugin-id="KnowWE-Plugin-Core" />
 	</requires>
 	
 	<runtime>
@@ -15,12 +16,32 @@
         </library>
 	</runtime>
 	
+	<extension plugin-id="KnowWE-Plugin-Core" point-id="PreviewRenderer"
+		id="PropertyPreviewRenderer">
+		<parameter id="class" value="de.knowwe.core.preview.DefaultPreviewRenderer" />
+		<parameter id="name" value="PropertyPreviewRenderer" />
+		<parameter id="description" value="Renders a preview of a property assignment." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="PropertyDeclarationType" />
+	</extension>	
+
+	<extension plugin-id="KnowWE-Plugin-Core" point-id="PreviewRenderer"
+		id="CoveringListPreviewRenderer">
+		<parameter id="class" value="de.d3web.we.kdom.xcl.list.CoveringListPreviewRenderer" />
+		<parameter id="name" value="CoveringListPreviewRenderer" />
+		<parameter id="description" value="Renders a preview of a set covering list." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="ContentType/CoveringList" />
+	</extension>	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="AbstractionTableMarkup">
 		<parameter id="class"
 			value="de.d3web.we.kdom.abstractiontable.AbstractionTableMarkup" />
 		<parameter id="name" value="AbstractionTableMarkup" />
-		<parameter id="description" value="Type AbstractionTableMarkup" />
+		<parameter id="description" value="Defines markup for abstractioon tables." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />

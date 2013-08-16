@@ -114,11 +114,9 @@ public class Scope {
 	public static Type[] getTypePath(Section<?> section) {
 		int kdomDepth = section.getDepth();
 		Type[] typePath = new Type[kdomDepth];
-		typePath[--kdomDepth] = section.get();
-		Section<?> father = section.getFather();
-		while (!father.get().getClass().equals(RootType.class)) {
-			typePath[--kdomDepth] = father.get();
-			father = father.getFather();
+		for (int i = kdomDepth - 1; i >= 0; i--) {
+			typePath[i] = section.get();
+			section = section.getFather();
 		}
 		return typePath;
 	}

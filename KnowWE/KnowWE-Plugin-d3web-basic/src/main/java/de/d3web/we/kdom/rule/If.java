@@ -29,6 +29,7 @@ public class If extends AbstractType {
 	public If() {
 		sectionFinder = new RegexSectionFinder(ConditionActionRule.RULE_START);
 		this.setRenderer(StyleRenderer.KEYWORDS);
+		addChildType(new Indent());
 	}
 
 }

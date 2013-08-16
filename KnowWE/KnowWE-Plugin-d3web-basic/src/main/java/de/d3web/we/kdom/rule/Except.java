@@ -25,8 +25,9 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class Except extends AbstractType {
 
 	public Except() {
-		sectionFinder = new RegexSectionFinder("( *AUSSER\\s+| *EXCEPT\\s+)");
+		sectionFinder = new RegexSectionFinder("\\s*(AUSSER|EXCEPT)\\s+");
 		this.setRenderer(StyleRenderer.KEYWORDS);
+		addChildType(new Indent());
 	}
 
 }

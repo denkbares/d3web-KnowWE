@@ -235,6 +235,14 @@ public class Sections {
 	}
 
 	/**
+	 * Finds the nearest ancestor for the given section for the given array of
+	 * classes.
+	 */
+	public static Section<? extends Type> findAncestorOfTypes(Section<?> section, Class<? extends Type>... classes) {
+		return findAncestorOfTypes(section, Arrays.asList(classes));
+	}
+
+	/**
 	 * Finds the ancestor for the given section for the given class. Note: Here,
 	 * a section can't be its own ancestor. Furthermore, if an ancestor is just
 	 * a subtype of the given class, it will be ignored. For other purposes, use

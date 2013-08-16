@@ -4,6 +4,7 @@
 	
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
+		<import plugin-id="KnowWE-Plugin-Core" />
 		<import plugin-id="d3web-DiaFlux" />
 		<import plugin-id="KnowWE-Plugin-d3web-MarkupSet" />
 	</requires>
@@ -43,6 +44,17 @@
 	</extension-point>
 	
 	
+	<extension plugin-id="KnowWE-Plugin-Core" point-id="PreviewRenderer"
+		id="DiaFluxItemPreviewRenderer">
+		<parameter id="class" value="de.knowwe.core.preview.DefaultPreviewRenderer" />
+		<parameter id="name" value="DiaFluxItemPreviewRenderer" />
+		<parameter id="description" value="Renders a preview of a node or egde of a diaflux flowchart." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="FlowchartType/**/NodeType" />
+		<parameter id="scope" value="FlowchartType/**/EdgeType" />
+	</extension>	
+
 	<extension plugin-id="KnowWE-Plugin-DiaFlux" point-id="DiaFluxDisplayEnhancement"
 		id="DiaFluxTraceHighlight">
 		<parameter id="class"
