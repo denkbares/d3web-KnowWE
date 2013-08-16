@@ -28,6 +28,7 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.AnchorRenderer;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
@@ -49,9 +50,10 @@ public class AnnotationType extends AbstractType {
 		this.addChildType(new AnnotationContentType(annotation));
 		this.addSubtreeHandler(Priority.HIGHEST, new CheckContentExistsHandler());
 		Renderer renderer = annotation.getRenderer();
-		if (renderer != null) {
-			this.setRenderer(renderer);
+		if (renderer == null) {
+			renderer = AnchorRenderer.getDelegateInstance();
 		}
+		this.setRenderer(renderer);
 	}
 
 	/**

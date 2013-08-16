@@ -17,45 +17,46 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.kdom.renderer;
+package de.knowwe.core.kdom.rendering;
 
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
- * @author Johannes Dienst
+ * The AnchorKDOMRender prefixes a section with an HTML anchor. This anchor can
+ * be used to link from other articles to the section.
  * 
- *         Renders a marker as <b>div</b> around the CoveringList, so the
- *         content is automatically updated when answers are set.
- * 
+ * @author Volker Belli
+ * @since 16.08.2013
  */
-public class ReRenderSectionMarkerRenderer implements Renderer {
+public class AnchorRenderer implements Renderer {
 
-	/**
-	 * Holds the renderer of the inner text.
-	 */
-	private final Renderer renderer;
+	private final Renderer delegate;
+	private static final AnchorRenderer DELEGATE_INSTANCE = new AnchorRenderer();
 
-	public ReRenderSectionMarkerRenderer(Renderer renderer) {
-		this.renderer = renderer;
+	public AnchorRenderer() {
+		this(DelegateRenderer.getInstance());
+	}
+
+	public AnchorRenderer(Renderer delegate) {
+		this.delegate = delegate;
 	}
 
 	@Override
-	public void render(Section<?> sec, UserContext user, RenderResult string) {
-		Boolean ajaxAction = user.getParameters().containsKey("action");
-		if (!ajaxAction) {
-			string.appendHtml("<span class=\"ReRenderSectionMarker\" style=\"display: inline;\" rel=\"{id:'"
-					+ sec.getID()
-					+ "'}\">");
-		}
-		KnowWEUtils.renderAnchor(sec, string);
-		renderer.render(sec, user, string);
-		if (!ajaxAction) {
-			string.appendHtml("</span>");
-		}
+	public void render(Section<?> section, UserContext user, RenderResult result) {
+		KnowWEUtils.renderAnchor(section, result);
+		delegate.render(section, user, result);
 	}
 
+	/**
+	 * Returns a renderer that renders an anchor and used the delegate renderer
+	 * to render the contents of the section.
+	 * 
+	 * @created 16.08.2013
+	 * @return the anchor+delegate renderer
+	 */
+	public static Renderer getDelegateInstance() {
+		return DELEGATE_INSTANCE;
+	}
 }

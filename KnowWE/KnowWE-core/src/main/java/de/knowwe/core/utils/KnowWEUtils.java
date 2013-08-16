@@ -49,6 +49,7 @@ import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.SectionStore;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 
@@ -176,6 +177,20 @@ public class KnowWEUtils {
 		return "section-"
 				+ section.getArticle().getTitle().replace(' ', '+') + "-"
 				+ Math.abs(section.getID().hashCode());
+	}
+
+	/**
+	 * Renders a unique anchor name for the section to link to. See method
+	 * {@link #getWikiLink(Section)} and {@link #getURLLink(Section)} for more
+	 * details on how to use this method.
+	 * 
+	 * @created 16.08.2013
+	 * @param section the section to create the anchor for
+	 * @param result the output target to be wriotten to
+	 */
+	public static void renderAnchor(Section<?> section, RenderResult result) {
+		String anchorName = KnowWEUtils.getAnchor(section);
+		result.appendHtml("<a name='" + anchorName + "'></a>");
 	}
 
 	/**

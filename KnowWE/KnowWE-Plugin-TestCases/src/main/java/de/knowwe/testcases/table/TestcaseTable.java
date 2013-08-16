@@ -46,7 +46,6 @@ public class TestcaseTable extends Table {
 			e.printStackTrace();
 		}
 		addChildType(new TestcaseTableLine());
-
 		addSubtreeHandler(new TestcaseTableSubtreeHandler());
 	}
 

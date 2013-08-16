@@ -86,7 +86,6 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	private int panelCounter = 0;
 	private int sectionCounter = 0;
 	private int lastResultLength = 0;
-	private final Set<String> renderedPreviewSectionIDs = new HashSet<String>();
 
 	private static DefaultMarkupRenderer defaultMarkupRenderer = new DefaultMarkupRenderer();
 
@@ -378,7 +377,9 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				result.appendHtml("<strong>");
 				result.append("Article '[").append(previewSection.getTitle()).append("]' ");
 				result.appendHtml("</strong>");
-				result.append("(").appendHtml(renderLinkToSection(previewSection)).append(")");
+				result.append("(");
+				renderLinkToSection(previewSection, result);
+				result.append(")");
 				renderTermPreview(previewSection, group, user, "definition", result);
 				result.appendHtml("</div>");
 				if (definitions.size() > 1) result.appendHtml("</li>");
@@ -414,7 +415,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 					Collection<Section<?>> group = entry.getValue();
 
 					innerResult.appendHtml("<li><div>");
-					innerResult.appendHtml(renderLinkToSection(previewSection));
+					renderLinkToSection(previewSection, innerResult);
 					renderTermPreview(previewSection, group, user, "reference", innerResult);
 					innerResult.appendHtml("</div></li>");
 				}
@@ -455,26 +456,24 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		return result;
 	}
 
-	private String renderLinkToSection(Section<?> reference) {
-		StringBuilder html = new StringBuilder();
-
-		if (reference != null) {
-			// Render link to anchor (=uses div id as anchor))
-			html.append("<a href=\"Wiki.jsp?page=");
-			html.append(Strings.encodeURL(reference.getArticle()
-					.getTitle()));
-			html.append("#header_");
-			html.append(reference.getID());
-			html.append("\" >");
-			// html.append(reference.getTitle());
-			// html.append(" (");
-			// Get a nice name
-			html.append(getSurroundingMarkupName(reference));
-			// html.append(")");
-			html.append("</a>");
-		}
-
-		return html.toString();
+	private void renderLinkToSection(Section<?> reference, RenderResult result) {
+		if (reference == null) return;
+		// Render link to anchor (=uses div id as anchor))
+		// html.append("<a href=\"Wiki.jsp?page=");
+		// html.append(Strings.encodeURL(reference.getArticle()
+		// .getTitle()));
+		// html.append("#header_");
+		// html.append(reference.getID());
+		// html.append("\" >");
+		result.appendHtml("<a href='");
+		result.append(KnowWEUtils.getURLLink(reference));
+		result.appendHtml("'>");
+		// html.append(reference.getTitle());
+		// html.append(" (");
+		// Get a nice name
+		result.append(getSurroundingMarkupName(reference));
+		// html.append(")");
+		result.appendHtml("</a>");
 	}
 
 	private String getSurroundingMarkupName(Section<?> section) {

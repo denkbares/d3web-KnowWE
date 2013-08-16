@@ -30,6 +30,7 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.CommentLineType;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.AnchorRenderer;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
@@ -62,6 +63,8 @@ public class DashSubtree extends AbstractType {
 		this.childrenTypes.add(this);
 		this.childrenTypes.add(new OverdashedElement(keyCharacter));
 		this.childrenTypes.add(new CommentLineType());
+
+		setRenderer(AnchorRenderer.getDelegateInstance());
 	}
 
 	public DashSubtree(char keyCharacter) {

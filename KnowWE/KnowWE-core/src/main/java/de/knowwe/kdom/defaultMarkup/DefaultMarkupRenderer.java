@@ -79,8 +79,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		RenderResult content = new RenderResult(buffer);
 
 		// add an anchor to enable direct link to the section
-		String anchorName = KnowWEUtils.getAnchor(section);
-		content.appendHtml("<a name='" + anchorName + "'></a>");
+		KnowWEUtils.renderAnchor(section, content);
 
 		// render messages and content
 		renderMessages(section, content);

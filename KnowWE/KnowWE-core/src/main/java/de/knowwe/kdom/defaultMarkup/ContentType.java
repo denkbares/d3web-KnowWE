@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.AnchorRenderer;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
@@ -38,6 +39,7 @@ public class ContentType extends AbstractType {
 	public ContentType(DefaultMarkup markup) {
 		this.markup = markup;
 		this.setSectionFinder(new ContentFinder(markup));
+		this.setRenderer(AnchorRenderer.getDelegateInstance());
 		Collections.addAll(this.childrenTypes, this.markup.getTypes());
 	}
 

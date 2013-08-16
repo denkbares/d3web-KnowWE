@@ -117,10 +117,11 @@ public class CoveringList extends AbstractType {
 	private static final class CoveringListRenderer implements Renderer {
 
 		@Override
-		public void render(Section<?> sec, UserContext user, RenderResult string) {
-			string.appendHtml("<span id='" + sec.getID() + "'>");
-			DelegateRenderer.getInstance().render(sec, user, string);
-			string.appendHtml("</span>");
+		public void render(Section<?> section, UserContext user, RenderResult result) {
+			KnowWEUtils.renderAnchor(section, result);
+			result.appendHtml("<span id='" + section.getID() + "'>");
+			DelegateRenderer.getInstance().render(section, user, result);
+			result.appendHtml("</span>");
 		}
 	}
 

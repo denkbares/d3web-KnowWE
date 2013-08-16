@@ -23,17 +23,22 @@ package de.knowwe.core.kdom.rendering;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 
+/**
+ * Basic interface to define the renderer to create the html or wiki markup
+ * output for a specific section.
+ * 
+ * @author Volker Belli (denkbares GmbH)
+ * @created 16.08.2013
+ */
 public interface Renderer {
 
 	/**
 	 * All rendered Sections will be appended to string.
 	 * 
-	 * @param section
-	 * @param user
-	 * @param string
-	 * 
-	 * @return
+	 * @param section the section to be rendered
+	 * @param user the user context to be used for rendering
+	 * @param result the result buffer to render the output to
 	 */
-	public void render(Section<?> section, UserContext user, RenderResult string);
+	public void render(Section<?> section, UserContext user, RenderResult result);
 
 }
