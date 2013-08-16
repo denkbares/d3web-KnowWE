@@ -213,7 +213,7 @@
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-OphtoVis</artifactId>
+					<artifactId>KnowWE-Plugin-OphtoVisD3</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
