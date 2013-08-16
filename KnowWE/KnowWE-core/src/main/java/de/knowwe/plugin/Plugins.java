@@ -317,6 +317,20 @@ public class Plugins {
 		}
 	}
 
+	public static void initResources(Extension[] extensions) {
+		HashSet<String> cssFiles = new HashSet<String>();
+		addCSS(cssFiles, extensions);
+		for (String s : cssFiles) {
+			RessourceLoader.getInstance().add(s, RessourceLoader.RESOURCE_STYLESHEET);
+		}
+		List<String> jsFiles = new ArrayList<String>();
+		addScripts(jsFiles, extensions);
+		for (String s : jsFiles) {
+			RessourceLoader.getInstance().add(s, RessourceLoader.RESOURCE_SCRIPT);
+		}
+
+	}
+
 	private static void addScripts(List<String> files, Extension[] extensions) {
 		for (Extension e : extensions) {
 			List<String> scripts = e.getParameters("script");

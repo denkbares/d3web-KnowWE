@@ -68,11 +68,11 @@ Flowchart.prototype.setSize = function(width, height, exactSize) {
 		var w, h;
 		if (exactSize) {
 			w = width + 1;
-			h = height + 1;
+			h = height;
 		}
 		else {
 			w = Math.ceil(width / 10.0) * 10 + 1;
-			h = Math.ceil(height / 10.0) * 10 + 1;
+			h = Math.ceil(height / 10.0) * 10;
 		}
 		var div = this.dom.select('.Flowchart')[0];
 		div.style.width = w+'px';
@@ -89,9 +89,6 @@ Flowchart.prototype.isVisible = function() {
 }
 
 Flowchart.prototype.focus = function() {
-	if (this.isVisible()) {
-		this.dom.select('.inputFocus')[0].focus();
-	}
 }
 
 Flowchart.prototype.setVisible = function(visible) {
@@ -235,7 +232,7 @@ Flowchart.prototype.removeRule = function(rule) {
 
 Flowchart.prototype.render = function() {
 	var w = Math.ceil(this.width / 10.0) * 10 + 1;
-	var h = Math.ceil(this.height / 10.0) * 10 + 1;
+	var h = Math.ceil(this.height / 10.0) * 10;
 
 	var contentPane;
 	var dom = Builder.node('div', {
@@ -246,8 +243,7 @@ Flowchart.prototype.render = function() {
 		contentPane = Builder.node('div', {
 			className: 'Flowchart',
 			style: "width: " + w + "px; height:" + h + "px;"
-		}),
-		Builder.node('input', {className: 'inputFocus', href: ''}) // input focus
+		})
 	]);
 	dom.__flowchart = this;
 

@@ -46,13 +46,13 @@
 	
 	<extension plugin-id="KnowWE-Plugin-Core" point-id="PreviewRenderer"
 		id="DiaFluxItemPreviewRenderer">
-		<parameter id="class" value="de.knowwe.core.preview.DefaultPreviewRenderer" />
+		<parameter id="class" value="de.knowwe.diaflux.DiaFluxItemPreviewRenderer" />
 		<parameter id="name" value="DiaFluxItemPreviewRenderer" />
 		<parameter id="description" value="Renders a preview of a node or egde of a diaflux flowchart." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="scope" value="FlowchartType/**/NodeType" />
-		<parameter id="scope" value="FlowchartType/**/EdgeType" />
+		<parameter id="scope" value="FlowchartType" />
+		<parameter id="css" value="KnowWE-Plugin-DiaFlux-preview.css" />
 	</extension>	
 
 	<extension plugin-id="KnowWE-Plugin-DiaFlux" point-id="DiaFluxDisplayEnhancement"

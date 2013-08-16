@@ -262,7 +262,20 @@ FlowEditor.prototype.saveFlowchart = function(closeOnSuccess) {
 	this._saveFlowchartText(xml, closeOnSuccess);
 }
 
+
+
 // Overrides empty implementation in flowchart.js
+
+Flowchart.prototype.focus = function() {
+	if (this.isVisible()) {
+		if (!this.__focusElement) {
+			this.__focusElement = Builder.node('input', {className: 'inputFocus', href: ''}); 
+			$('contents').select('.FlowchartGroup')[0].appendChild(this.__focusElement);
+		}
+		this.__focusElement.focus();
+	}
+}
+
 Flowchart.prototype.createDroppables = function(dom, contentPane, trashPane) {
 
 	var trashPane, trashParent =
@@ -585,7 +598,7 @@ Flowchart.prototype.toXML = function() {
 			(this.name ? ' name="'+this.name.escapeXML()+'"' : '') +
 			(this.icon ?' icon="'+this.icon+'"' : '')  +
 			' width="'+(area.width + 30)+'"' +
-			' height="'+(area.height + 30)+'"' +
+			' height="'+(area.height + 29)+'"' +
 			' autostart="'+this.autostart+'"' +
 			' idCounter="'+this.idCounter+'">\n\n';
 	

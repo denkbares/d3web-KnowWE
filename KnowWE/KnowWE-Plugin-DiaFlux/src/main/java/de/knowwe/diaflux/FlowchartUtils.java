@@ -184,7 +184,7 @@ public class FlowchartUtils {
 		// DiaFluxSection!) in page
 		return Sections.findSuccessorsOfType(section.getArticle().getRootSection(),
 				FlowchartType.class).indexOf(
-				section) == 0;
+				section) <= 0;
 	}
 
 	/**

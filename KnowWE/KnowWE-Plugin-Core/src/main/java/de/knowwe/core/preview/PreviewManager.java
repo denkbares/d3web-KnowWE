@@ -10,6 +10,7 @@ import de.d3web.plugin.PluginManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.utils.Scope;
+import de.knowwe.plugin.Plugins;
 
 /**
  * Class managing the plugins to show previews of section. The registered
@@ -110,6 +111,7 @@ public class PreviewManager {
 								"' is not of the expected type " + Renderer.class.getName());
 			}
 		}
+		Plugins.initResources(extensions);
 	}
 
 }
