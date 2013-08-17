@@ -21,16 +21,16 @@ package de.knowwe.core.taghandler;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,8 +40,10 @@ import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.ArticleComparator;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.objects.Term;
+import de.knowwe.core.kdom.parsing.KDOMPositionComparator;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -170,8 +172,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		Identifier termIdentifier = Identifier.fromExternalForm(externalTermIdentifierForm);
 
 		// Get TermDefinitions and TermReferences
-		Set<Section<?>> definitions = new HashSet<Section<?>>();
-		Set<Section<?>> references = new HashSet<Section<?>>();
+		Set<Section<?>> definitions = new LinkedHashSet<Section<?>>();
+		Set<Section<?>> references = new LinkedHashSet<Section<?>>();
 
 		Iterator<Article> iter = Environment.getInstance()
 				.getArticleManager(section.getWeb()).getArticleIterator();
@@ -432,10 +434,12 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	 * will be used as a group with an empty collection of grouped sections.
 	 * 
 	 * @created 16.08.2013
-	 * @param list list of sections to be grouped
+	 * @param items list of sections to be grouped
 	 * @return the groups of sections
 	 */
-	private Map<Section<?>, Collection<Section<?>>> groupByPreview(Collection<Section<?>> list) {
+	private Map<Section<?>, Collection<Section<?>>> groupByPreview(Collection<Section<?>> items) {
+		List<Section<?>> list = new ArrayList<Section<?>>(items);
+		Collections.sort(list, KDOMPositionComparator.getInstance());
 		Map<Section<?>, Collection<Section<?>>> result = new LinkedHashMap<Section<?>, Collection<Section<?>>>();
 		for (Section<?> section : list) {
 			Section<?> previewSection = PreviewManager.getInstance().getPreviewAncestor(section);
@@ -477,6 +481,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	}
 
 	private String getSurroundingMarkupName(Section<?> section) {
+		if (section.get() instanceof DefaultMarkupType) return section.get().getName();
 		Section<?> root = Sections.findAncestorOfType(section, DefaultMarkupType.class);
 		if (root != null) return root.get().getName();
 		root = Sections.findAncestorOfType(section, TagHandlerType.class);
@@ -484,14 +489,11 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		return section.getFather().get().getName();
 	}
 
-	private Map<Article, List<Section<?>>> groupByArticle(
-			Set<Section<?>> references) {
-
-		Map<Article, List<Section<?>>> result = new HashMap<Article, List<Section<?>>>();
-		Article article;
-
+	private Map<Article, List<Section<?>>> groupByArticle(Set<Section<?>> references) {
+		Map<Article, List<Section<?>>> result =
+				new TreeMap<Article, List<Section<?>>>(ArticleComparator.getInstance());
 		for (Section<?> reference : references) {
-			article = reference.getArticle();
+			Article article = reference.getArticle();
 			List<Section<?>> existingReferences = result.get(article);
 			if (existingReferences == null) {
 				existingReferences = new LinkedList<Section<?>>();
