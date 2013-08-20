@@ -33,6 +33,11 @@ KNOWWE.editCommons = function() {
 
             return openingDiv + lockedHTML + html + closingDiv;
         },
+        
+        encodeForHtml: function(text) {
+        	if (text) return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        	return "";
+        },
 
         hideTools: function() {
             $$('.markupTools').setStyle("display", "none");

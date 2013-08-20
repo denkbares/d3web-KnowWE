@@ -257,7 +257,7 @@ Spreadsheet.prototype.createTable = function(model) {
 		html += "<tr>\n";
 		for (var col=0; col<this.size.cols; col++) {
 			var isHeader = model.isHeader(row, col);
-			var text = model.getCellText(row, col);
+			var text = _EC.encodeForHtml(model.getCellText(row, col));
 			html += "<";
 			html += isHeader ? "td class=header" : "td";
 			html += " id='"+this.getCellID(row, col)+"'><div><a href='#'>";
@@ -431,7 +431,7 @@ Spreadsheet.prototype.editCell = function(row, col) {
 	html += "<textarea id='"+textAreaID+"' style='";
 	html += "width:"+(contentElement.width()+16)+"px";
 	html += "'>";
-	html += this.getCellText(row, col);
+	html += _EC.encodeForHtml(this.getCellText(row, col));
 	html += "</textarea>";
 	html += "</div>";
 	this.element.prepend(html);

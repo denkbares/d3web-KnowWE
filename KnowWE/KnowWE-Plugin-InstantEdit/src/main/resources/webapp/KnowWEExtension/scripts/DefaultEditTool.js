@@ -8,7 +8,7 @@ KNOWWE.plugin.defaultEditTool = function() {
     	
 	    generateHTML : function(id) {
 	    	return "<textarea id = " + createTextAreaID(id) + " class='defaultEditTool' style='height: " + $(id).clientHeight + "px;'>"
-		    	+ _EC.getWikiText(id)
+		    	+ _EC.encodeForHtml(_EC.getWikiText(id))
 		    	+ "</textarea>";
 	    },
 	    

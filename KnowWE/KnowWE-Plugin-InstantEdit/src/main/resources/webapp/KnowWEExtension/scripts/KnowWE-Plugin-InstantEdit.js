@@ -100,6 +100,7 @@ KNOWWE.plugin.instantEdit = function() {
 
 
         disable: function(id, reload, f) {
+        	if (!f) f = false; // prevents JS error in KnowWE helper
             var params = {
                 action: 'InstantEditDisableAction',
                 KdomNodeId: id
