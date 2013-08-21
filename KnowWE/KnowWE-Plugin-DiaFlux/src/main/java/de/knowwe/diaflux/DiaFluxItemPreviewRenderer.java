@@ -16,6 +16,8 @@ import de.knowwe.diaflux.type.DecisionType;
 import de.knowwe.diaflux.type.EdgeType;
 import de.knowwe.diaflux.type.ExitType;
 import de.knowwe.diaflux.type.FlowchartType;
+import de.knowwe.diaflux.type.FlowchartXMLHeadType;
+import de.knowwe.diaflux.type.FlowchartXMLHeadType.FlowchartTermDef;
 import de.knowwe.diaflux.type.GuardType;
 import de.knowwe.diaflux.type.NodeContentType;
 import de.knowwe.diaflux.type.NodeType;
@@ -27,8 +29,7 @@ public class DiaFluxItemPreviewRenderer implements PreviewRenderer {
 	@Override
 	public void render(Section<?> section, Collection<Section<?>> relevantSubSections, UserContext user, RenderResult result) {
 		Section<FlowchartType> self = Sections.cast(section, FlowchartType.class);
-		String name = FlowchartType.getFlowchartName(self);
-		result.append(name);
+		renderFlowchartName(self, user, result);
 
 		// build sets first to avoid duplicates
 		Set<Section<NodeType>> nodes = new LinkedHashSet<Section<NodeType>>();
@@ -53,10 +54,26 @@ public class DiaFluxItemPreviewRenderer implements PreviewRenderer {
 		}
 	}
 
+	private void renderFlowchartName(Section<FlowchartType> self, UserContext user, RenderResult result) {
+		Section<FlowchartXMLHeadType> head =
+				Sections.findSuccessor(self, FlowchartXMLHeadType.class);
+		if (head != null) {
+			Section<FlowchartTermDef> term = Sections.findSuccessor(head, FlowchartTermDef.class);
+			if (term != null) {
+				DelegateRenderer.getRenderer(term, user).render(term, user, result);
+				return;
+			}
+		}
+		String name = FlowchartType.getFlowchartName(self);
+		result.append(name);
+	}
+
 	private void renderEdge(Section<EdgeType> edge, UserContext user, RenderResult result) {
 		result.appendHtml("<div class='preview edge'>&nbsp;&nbsp;").append("- edge ");
 		Section<GuardType> guard = Sections.findSuccessor(edge, GuardType.class);
-		DelegateRenderer.getRenderer(guard, user).render(guard, user, result);
+		if (guard != null) {
+			DelegateRenderer.getRenderer(guard, user).render(guard, user, result);
+		}
 		result.appendHtml("</div>");
 	}
 
@@ -65,7 +82,7 @@ public class DiaFluxItemPreviewRenderer implements PreviewRenderer {
 		result.appendHtml("<div class='preview node ")
 				.append(getNodeCSS(action))
 				.appendHtml("'>&nbsp;&nbsp;").append("- node ");
-		DelegateRenderer.getRenderer(action, user).render(action, user, result);
+		renderNodePreviewHtml(action, user, result);
 		result.appendHtml("</div>");
 	}
 
@@ -77,6 +94,51 @@ public class DiaFluxItemPreviewRenderer implements PreviewRenderer {
 		if (Sections.findChildOfType(action, SnapshotType.class) != null) return "type_Snapshot";
 		if (Sections.findChildOfType(action, DecisionType.class) != null) return "type_Decision";
 		return "type_Unexpected";
+	}
+
+	private void renderNodePreviewHtml(Section<NodeContentType> nodeSection, UserContext user, RenderResult result) {
+		Section<?> section = Sections.findChildOfType(nodeSection, StartType.class);
+		if (section != null) {
+			DelegateRenderer.getRenderer(section, user).render(section, user, result);
+			return;
+		}
+
+		section = Sections.findChildOfType(nodeSection, ExitType.class);
+		if (section != null) {
+			DelegateRenderer.getRenderer(section, user).render(section, user, result);
+			return;
+		}
+
+		section = Sections.findChildOfType(nodeSection, ActionType.class);
+		if (section != null) {
+			DelegateRenderer.getRenderer(section, user).render(section, user, result);
+			return;
+		}
+
+		section = Sections.findChildOfType(nodeSection, CommentType.class);
+		if (section != null) {
+			renderPrefixedXMLContent("Comment: ", section, user, result);
+			return;
+		}
+
+		section = Sections.findChildOfType(nodeSection, SnapshotType.class);
+		if (section != null) {
+			renderPrefixedXMLContent("", section, user, result);
+			return;
+		}
+
+		section = Sections.findChildOfType(nodeSection, DecisionType.class);
+		if (section != null) {
+			DelegateRenderer.getRenderer(section, user).render(section, user, result);
+			return;
+		}
+
+		result.appendEntityEncoded(nodeSection.getText());
+	}
+
+	private void renderPrefixedXMLContent(String prefix, Section<?> section, UserContext user, RenderResult result) {
+		result.append(prefix);
+		result.appendEntityEncoded(section.getText());
 	}
 
 }

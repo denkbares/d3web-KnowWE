@@ -20,10 +20,7 @@
 
 package de.knowwe.diaflux.type;
 
-import java.util.ArrayList;
-
 import de.d3web.we.kdom.rules.action.RuleAction;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.kdom.xml.AbstractXMLType;
 import de.knowwe.kdom.xml.XMLContent;
 
@@ -40,17 +37,7 @@ public class ActionType extends AbstractXMLType {
 		super("action");
 		// get the CFAction higher up in the list
 		RuleAction ruleAction = new RuleAction();
-		ArrayList<Type> list = new ArrayList<Type>(ruleAction.getChildrenTypes());
-
-		for (int i = list.size() - 1; i >= 0; i--) {
-			ruleAction.removeChild(i);
-		}
-		ruleAction.addChildType(new CallFlowActionType());
-
-		for (Type Type : list) {
-			ruleAction.addChildType(Type);
-		}
-
+		ruleAction.addChildType(0, new CallFlowActionType());
 		addChildType(new XMLContent(ruleAction));
 	}
 

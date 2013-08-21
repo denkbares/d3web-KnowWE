@@ -22,10 +22,11 @@ import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.kdom.renderer.StyleRenderer;
+import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
 
 /**
- * Type to match a special keyword (or a regular expression) surrounded by only
- * white-spaces.
+ * Type to match a special keyword surrounded by only white-spaces.
  * 
  * @author volker_belli
  * @created 21.01.2011
@@ -33,12 +34,15 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 public final class KeywordType extends AbstractType {
 
 	private final String keyWord;
+	private static final StyleRenderer DEFAULT_RENDERER = new StyleRenderer(StyleRenderer.KEYWORDS,
+			MaskMode.htmlEntities);
 
 	public KeywordType(String keyWord) {
 		this.keyWord = keyWord;
-		String regex = "\\s*(" + keyWord + ")\\s*";
+		String regex = "\\s*(" + Pattern.quote(keyWord) + ")\\s*";
 		Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
 		setSectionFinder(new RegexSectionFinder(pattern, 1));
+		setRenderer(DEFAULT_RENDERER);
 	}
 
 	@Override

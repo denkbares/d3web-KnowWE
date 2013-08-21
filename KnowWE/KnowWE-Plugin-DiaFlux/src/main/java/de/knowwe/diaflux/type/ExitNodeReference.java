@@ -24,6 +24,7 @@ import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
  * 
@@ -34,6 +35,7 @@ public class ExitNodeReference extends SimpleReference {
 
 	public ExitNodeReference() {
 		super(TermRegistrationScope.LOCAL, String.class);
+		setRenderer(StyleRenderer.FlowchartExit);
 	}
 
 	@Override

@@ -26,11 +26,10 @@ import de.d3web.diaFlux.inference.CallFlowAction;
 import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.we.kdom.rules.action.D3webRuleAction;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.basicType.KeywordType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.kdom.renderer.StyleRenderer;
-import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
 
 /**
  * 
@@ -49,13 +48,15 @@ public class CallFlowActionType extends D3webRuleAction<CallFlowActionType> {
 
 		FlowchartReference flowchartReference = new FlowchartReference();
 		flowchartReference.setSectionFinder(new RegexSectionFinder(PATTERN, FLOWCHART_GROUP));
-		flowchartReference.setRenderer(new StyleRenderer(MaskMode.htmlEntities));
 		addChildType(flowchartReference);
 
 		StartNodeReference startNodeReference = new StartNodeReference();
 		startNodeReference.setSectionFinder(new RegexSectionFinder(Pattern.compile("\\((.*)\\)"), 1));
-		startNodeReference.setRenderer(new StyleRenderer(MaskMode.htmlEntities));
 		addChildType(startNodeReference);
+
+		addChildType(new KeywordType("["));
+		addChildType(new KeywordType("]"));
+		addChildType(new KeywordType("CALL"));
 	}
 
 	@Override

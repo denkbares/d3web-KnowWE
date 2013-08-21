@@ -44,6 +44,23 @@
 	</extension-point>
 	
 	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="ObjectInfoPageToolProvider">
+		<parameter id="class"
+			value="de.knowwe.core.toolprovider.ObjectInfoPageToolProvider" />
+		<parameter id="name" value="ObjectInfoPageToolProvider" />
+		<parameter id="description"
+			value="Offer a button to navigate to the object information page of an selected flowcharts and nodes." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="StartNodeDef" />
+		<parameter id="scope" value="ExitNodeDef" />
+		<parameter id="scope" value="FlowchartTermDef" />
+		<parameter id="scope" value="StartNodeReference" />
+		<parameter id="scope" value="ExitNodeReference" />
+		<parameter id="scope" value="FlowchartReference" />
+	</extension>
+
 	<extension plugin-id="KnowWE-Plugin-Core" point-id="PreviewRenderer"
 		id="DiaFluxItemPreviewRenderer">
 		<parameter id="class" value="de.knowwe.diaflux.DiaFluxItemPreviewRenderer" />

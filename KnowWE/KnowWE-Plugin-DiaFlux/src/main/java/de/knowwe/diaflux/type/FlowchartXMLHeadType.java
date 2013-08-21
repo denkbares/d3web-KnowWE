@@ -24,17 +24,21 @@ import java.util.regex.Pattern;
 
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.xml.XMLHead;
 
 /**
@@ -48,16 +52,21 @@ public class FlowchartXMLHeadType extends XMLHead {
 		addChildType(new FlowchartTermDef());
 	}
 
-	static class FlowchartTermDef extends SimpleDefinition {
+	public static class FlowchartTermDef extends SimpleDefinition implements RenamableTerm {
 
 		public FlowchartTermDef() {
 			super(TermRegistrationScope.LOCAL, Flow.class);
-			setSectionFinder(new RegexSectionFinder(Pattern.compile("name=\"\\s*([^\"]*?\\s*)\""),
-					1));
+			Pattern pattern = Pattern.compile("name=\"\\s*([^\"]*?)\\s*\"");
+			setSectionFinder(new RegexSectionFinder(pattern, 1));
+			setRenderer(StyleRenderer.Flowchart);
 			clearSubtreeHandlers();
 			addSubtreeHandler(Priority.HIGHER, new FlowchartRegistrationHandler());
 		}
 
+		@Override
+		public String getTermName(Section<? extends Term> section) {
+			return Strings.decodeHtml(super.getTermName(section));
+		}
 	}
 
 	static class FlowchartRegistrationHandler extends SubtreeHandler<FlowchartTermDef> {

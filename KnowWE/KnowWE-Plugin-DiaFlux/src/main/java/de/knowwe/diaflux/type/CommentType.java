@@ -37,13 +37,14 @@ public class CommentType extends AbstractXMLType {
 	private CommentType() {
 		super("comment");
 		XMLContent content = new XMLContent();
-		content.setRenderer(new StyleRenderer(MaskMode.htmlEntities));
 		addChildType(content);
+		// content is already xml encoded,
+		// being compatible with html entity encoding
+		content.setRenderer(new StyleRenderer(MaskMode.none));
 	}
 
 	public static CommentType getInstance() {
 		if (instance == null) instance = new CommentType();
-
 		return instance;
 	}
 

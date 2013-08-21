@@ -37,8 +37,10 @@ public class SnapshotType extends AbstractXMLType {
 	private SnapshotType() {
 		super("snapshot");
 		XMLContent content = new XMLContent();
-		content.setRenderer(new StyleRenderer(MaskMode.htmlEntities));
 		addChildType(content);
+		// content is already xml encoded,
+		// being compatible with html entity encoding
+		content.setRenderer(new StyleRenderer(MaskMode.none));
 	}
 
 	public static SnapshotType getInstance() {

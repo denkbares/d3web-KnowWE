@@ -21,12 +21,14 @@
 package de.knowwe.diaflux.type;
 
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.xml.AbstractXMLType;
 import de.knowwe.kdom.xml.XMLContent;
 
@@ -56,6 +58,7 @@ public class StartType extends AbstractXMLType {
 		public StartNodeDef() {
 			super(TermRegistrationScope.LOCAL, String.class);
 			setSectionFinder(new AllTextSectionFinder());
+			setRenderer(StyleRenderer.FlowchartStart);
 		}
 
 		@Override
@@ -68,7 +71,7 @@ public class StartType extends AbstractXMLType {
 
 		@Override
 		public String getTermName(Section<? extends Term> s) {
-			return s.getText();
+			return Strings.decodeHtml(s.getText());
 		}
 
 	}

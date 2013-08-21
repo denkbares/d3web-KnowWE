@@ -21,6 +21,7 @@
 package de.knowwe.diaflux.type;
 
 import de.d3web.core.session.SessionFactory;
+import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.InvalidKDOMSchemaModificationOperation;
 import de.knowwe.core.kdom.parsing.Section;
@@ -78,7 +79,7 @@ public class FlowchartType extends AbstractXMLType {
 	public static String getFlowchartName(Section<FlowchartType> sec) {
 		Section<FlowchartTermDef> definition = Sections.findSuccessor(sec, FlowchartTermDef.class);
 		if (definition == null) return "Unnamed Flowchart";
-		return definition.getText();
+		return Strings.decodeHtml(definition.getText());
 	}
 
 }

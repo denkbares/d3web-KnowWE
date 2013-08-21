@@ -25,6 +25,7 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.diaFlux.inference.NodeActiveCondition;
 import de.d3web.we.kdom.condition.D3webCondition;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.basicType.KeywordType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 
@@ -51,6 +52,10 @@ public class NodeActiveConditionType extends D3webCondition<NodeActiveConditionT
 		exitNodeReference.setSectionFinder(new RegexSectionFinder(Pattern.compile("\\(([^)]*)\\)"),
 				1));
 		addChildType(exitNodeReference);
+
+		addChildType(new KeywordType("["));
+		addChildType(new KeywordType("]"));
+		addChildType(new KeywordType("IS_ACTIVE"));
 	}
 
 	@Override

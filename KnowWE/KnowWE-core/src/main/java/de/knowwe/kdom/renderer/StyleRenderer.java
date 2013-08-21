@@ -50,6 +50,13 @@ public class StyleRenderer implements Renderer {
 	public static final Renderer Questionaire = new ToolMenuDecoratingRenderer(
 			new StyleRenderer("color:rgb(128, 128, 0)", MaskMode.htmlEntities));
 
+	public static final Renderer Flowchart = new ToolMenuDecoratingRenderer(
+			new StyleRenderer("color:rgb(128, 128, 0)", MaskMode.htmlEntities));
+	public static final Renderer FlowchartStart = new ToolMenuDecoratingRenderer(
+			new StyleRenderer("color:rgb(0, 80, 40)", MaskMode.htmlEntities));
+	public static final Renderer FlowchartExit = new ToolMenuDecoratingRenderer(
+			new StyleRenderer("color:rgb(80, 0, 40)", MaskMode.htmlEntities));
+
 	public static final Renderer PACKAGE = new ToolMenuDecoratingRenderer(new StyleRenderer(
 			"packageOpacity",
 			"color:rgb(121,79, 64);"));
