@@ -168,8 +168,18 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			externalTermIdentifierForm = Strings.decodeURL(parameters
 					.get(TERM_IDENTIFIER));
 		}
-		if (externalTermIdentifierForm == null) externalTermIdentifierForm = objectName;
-		Identifier termIdentifier = Identifier.fromExternalForm(externalTermIdentifierForm);
+
+		// decode term identifier
+		// use object name as identifier for compatibility issues
+		Identifier termIdentifier;
+		if (externalTermIdentifierForm == null) {
+			externalTermIdentifierForm = objectName;
+			termIdentifier = Identifier.fromExternalForm(externalTermIdentifierForm);
+			objectName = termIdentifier.getLastPathElement();
+		}
+		else {
+			termIdentifier = Identifier.fromExternalForm(externalTermIdentifierForm);
+		}
 
 		// Get TermDefinitions and TermReferences
 		Set<Section<?>> definitions = new LinkedHashSet<Section<?>>();
@@ -232,7 +242,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		result.appendHtml("<form action=\"\" method=\"get\" class=\"ui-widget\" >")
 				.appendHtml("<input type=\"hidden\" id=\"objectinfo-web\" value=\"")
 				.append(section.getWeb())
-				.appendHtmlTag("\" />");
+				.appendHtml("\" />");
 		result.appendHtml("<input type=\"hidden\" name=\"page\" value=\"")
 				.append(Strings.encodeURL(section.getTitle()))
 				.appendHtml("\" />");
@@ -257,7 +267,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		renderSectionStart(rb.getString("KnowWE.ObjectInfoTagHandler.renameTo"), result);
 
 		String escapedExternalTermIdentifierForm = Strings.encodeHtml(externalTermIdentifierForm);
-		String escapedObjectName = Strings.encodeHtml(objectName);
+		String escapedObjectName = Strings.encodeHtml(Strings.unquote(objectName));
 
 		result.appendHtml("<input type=\"hidden\" id=\"objectinfo-target\" value=\""
 				+ escapedExternalTermIdentifierForm + "\" />");

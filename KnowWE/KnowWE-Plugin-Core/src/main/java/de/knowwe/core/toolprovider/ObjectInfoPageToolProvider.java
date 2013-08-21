@@ -46,6 +46,14 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 	}
 
 	protected Tool getObjectInfoPageTool(Section<? extends Term> section, UserContext userContext) {
+		return new DefaultTool(
+				"KnowWEExtension/d3web/icon/infoPage16.png",
+				"Show Info Page",
+				"Opens the information page for the specific object to show its usage inside this wiki.",
+				createJSAction(section));
+	}
+
+	public static String createJSAction(Section<? extends Term> section) {
 		Identifier termIdentifier = section.get().getTermIdentifier(section);
 		String lastPathElementExternalForm = new Identifier(termIdentifier.getLastPathElement()).toExternalForm();
 		String externalTermIdentifierForm = termIdentifier.toExternalForm();
@@ -55,14 +63,10 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 				+ maskTermForHTML(externalTermIdentifierForm)
 				+ "') + '&amp;" + ObjectInfoTagHandler.OBJECT_NAME + "=' + encodeURIComponent('"
 				+ maskTermForHTML(lastPathElementExternalForm) + "')";
-		return new DefaultTool(
-				"KnowWEExtension/d3web/icon/infoPage16.png",
-				"Show Info Page",
-				"Opens the information page for the specific object to show its usage inside this wiki.",
-				jsAction);
+		return jsAction;
 	}
 
-	private String maskTermForHTML(String string) {
+	private static String maskTermForHTML(String string) {
 		string = string.replace("\\", "\\\\").replace("'", "\\'");
 		string = Strings.encodeHtml(string);
 		// in some strange wiki pages we got terms with linebreaks,
