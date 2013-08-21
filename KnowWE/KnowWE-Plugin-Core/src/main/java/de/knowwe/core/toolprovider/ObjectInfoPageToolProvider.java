@@ -63,7 +63,7 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 	}
 
 	private String maskTermForHTML(String string) {
-		string = string.replace("\\", "\\\\");
+		string = string.replace("\\", "\\\\").replace("'", "\\'");
 		string = Strings.encodeHtml(string);
 		// in some strange wiki pages we got terms with linebreaks,
 		// so handle them well
