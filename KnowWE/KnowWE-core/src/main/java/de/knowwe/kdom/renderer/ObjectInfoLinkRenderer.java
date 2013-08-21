@@ -59,7 +59,7 @@ public class ObjectInfoLinkRenderer implements Renderer {
 		}
 		else {
 			string.appendHtml(
-					"<a href=\"Wiki.jsp?page=ObjectInfoPage&objectname="
+					"<a href=\"Wiki.jsp?page=ObjectInfoPage&amp;objectname="
 							+ encodedObjectName
 							+ "\">");
 			string.append(b);

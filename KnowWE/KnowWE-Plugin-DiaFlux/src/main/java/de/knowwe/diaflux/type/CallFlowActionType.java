@@ -18,17 +18,19 @@
  */
 package de.knowwe.diaflux.type;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.diaFlux.inference.CallFlowAction;
+import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.we.kdom.rules.action.D3webRuleAction;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.kdom.renderer.StyleRenderer;
+import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
 
 /**
  * 
@@ -42,26 +44,17 @@ public class CallFlowActionType extends D3webRuleAction<CallFlowActionType> {
 	public static final String REGEX = "CALL\\[(.*?)\\((.*?)\\)\\]";
 	public static final Pattern PATTERN = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE);
 
-	public static void main(String[] args) {
-		String test = "CALL[BMI-SelectTherapy(Mild therapy üöäß&amp;%$§`´&lt;#&gt;/\\|=,!()[]{};:_-)]";
-		Matcher m = Pattern.compile(REGEX).matcher(test);
-		m.find();
-		System.out.println(m.group());
-		System.out.println(m.group(1));
-		System.out.println(m.group(2));
-		System.out.println(m.group(3));
-	}
-
 	public CallFlowActionType() {
 		setSectionFinder(new RegexSectionFinder(PATTERN));
 
 		FlowchartReference flowchartReference = new FlowchartReference();
 		flowchartReference.setSectionFinder(new RegexSectionFinder(PATTERN, FLOWCHART_GROUP));
+		flowchartReference.setRenderer(new StyleRenderer(MaskMode.htmlEntities));
 		addChildType(flowchartReference);
 
 		StartNodeReference startNodeReference = new StartNodeReference();
-		startNodeReference.setSectionFinder(new RegexSectionFinder(
-				Pattern.compile("\\((.*)\\)"), 1));
+		startNodeReference.setSectionFinder(new RegexSectionFinder(Pattern.compile("\\((.*)\\)"), 1));
+		startNodeReference.setRenderer(new StyleRenderer(MaskMode.htmlEntities));
 		addChildType(startNodeReference);
 	}
 
@@ -90,8 +83,7 @@ public class CallFlowActionType extends D3webRuleAction<CallFlowActionType> {
 
 	@Override
 	public Class<? extends PSMethod> getActionPSContext() {
-		// TODO insert this, if this type will be used to create rules
-		return null;
+		return PSMethodStrategic.class;
 	}
 
 }

@@ -75,6 +75,10 @@
 	/*-moz-box-shadow: 0 1px 0 black; -webkit-box-shadow: 0 1px 0 black; box-shadow-bottom: 0 1px 0 black; */
 }
 
+.type_QuickInterview .defaultMarkup .markupText {
+	white-space: normal;	
+}
+
 /* abstraction questions */
 #quickinterview .qablockHidden {
 	color: #999;

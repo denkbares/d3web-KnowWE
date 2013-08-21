@@ -48,8 +48,8 @@ public class TableRenderer implements Renderer {
 		else {
 			string.appendHtml("<div style='overflow:auto;white-space:normal;'>");
 		}
-		string.appendHtml("<table style='border:1px solid #999999;' id='" + sec.getID()
-				+ "'class='wikitable knowwetable' border='1'><tbody>");
+		string.appendHtml("<table style='border:1px solid #999999;' id='table_" + sec.getID()
+				+ "' class='wikitable knowwetable' border='1'><tbody>");
 		string.appendHtml(getHeader());
 		DelegateRenderer.getInstance().render(sec, user, string);
 		string.appendHtml("</tbody></table>");

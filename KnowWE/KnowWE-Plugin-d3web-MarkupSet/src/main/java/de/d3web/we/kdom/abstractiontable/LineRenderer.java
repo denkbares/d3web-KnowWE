@@ -8,6 +8,9 @@ import de.knowwe.kdom.table.TableLineRenderer;
 
 public class LineRenderer extends TableLineRenderer {
 
+	public LineRenderer() {
+	}
+
 	@Override
 	protected String getClasses(Section<?> tableLine, UserContext user) {
 		if (Messages.getMessages(tableLine, Message.Type.ERROR).size() > 0) {
@@ -15,5 +18,4 @@ public class LineRenderer extends TableLineRenderer {
 		}
 		return super.getClasses(tableLine, user);
 	}
-
 }

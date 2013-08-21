@@ -81,29 +81,22 @@ public class TableCellContentRenderer implements Renderer {
 	@Override
 	public void render(Section<?> sec, UserContext user, RenderResult string) {
 
-		String content;
-
+		RenderResult builder = new RenderResult(user);
 		if (callDelegate) {
-			RenderResult builder = new RenderResult(user);
 			DelegateRenderer.getInstance().render(sec, user, builder);
-			content = builder.toStringRaw();
 		}
 		else {
-			content = sec.getText();
+			builder.append(sec.getText());
 		}
 
-		appendContentWrapped(content, sec, user, string);
+		appendContentWrapped(builder, sec, user, string);
 	}
 
 	/**
 	 * Wraps the content of the cell (sectionText) with the HTML-Code needed for
 	 * the table
-	 * 
-	 * @param result TODO
 	 */
-	protected void appendContentWrapped(String sectionText, Section<?> sec, UserContext user, RenderResult html) {
-
-		String sectionID = sec.getID();
+	protected void appendContentWrapped(RenderResult sectionText, Section<?> sec, UserContext user, RenderResult html) {
 
 		boolean tablehead = TableCellContent.isTableHeadContent(sec);
 
@@ -122,9 +115,9 @@ public class TableCellContentRenderer implements Renderer {
 		if (!style.isEmpty()) {
 			html.appendHtml(" style='").append(style).append("'");
 		}
-		html.appendHtml(">");
+		html.appendHtml("\n>");
 
-		appendContent(sectionText, sec, user, sectionID, html);
+		html.append(sectionText);
 
 		if (tablehead) {
 			html.appendHtml("</th>");
@@ -141,17 +134,6 @@ public class TableCellContentRenderer implements Renderer {
 	protected String getClasses(Section<?> tableCell, UserContext user) {
 		if (TableUtils.sortTest(tableCell)) return "sort";
 		return "";
-	}
-
-	protected void appendContent(String sectionText, Section<?> s,
-			UserContext user, String sectionID, RenderResult html) {
-
-		html.append(translateTextForView(sectionText, s));
-	}
-
-	protected String translateTextForView(String sectionText, Section<?> sec) {
-		// can be overriden by subclasses
-		return sectionText;
 	}
 
 	public boolean isCallDelegate() {

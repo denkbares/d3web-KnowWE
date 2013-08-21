@@ -158,6 +158,19 @@ public class RenderResult {
 		return this;
 	}
 
+	/**
+	 * Appends the specified string encoded as html entities, using
+	 * {@link Strings#encodeHtml(String)}.
+	 * 
+	 * @created 20.08.2013
+	 * @param text the text to be appended
+	 * @return a reference to this object.
+	 */
+	public RenderResult appendEntityEncoded(String text) {
+		builder.append(Strings.encodeHtml(text));
+		return this;
+	}
+
 	public RenderResult appendJSPWikiMarkup(RenderResult result) {
 		StringBuilder tempBuilder = new StringBuilder(result.builder);
 		KnowWEUtils.maskJSPWikiMarkup(tempBuilder);

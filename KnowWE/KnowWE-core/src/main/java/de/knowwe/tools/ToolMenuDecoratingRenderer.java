@@ -18,6 +18,8 @@
  */
 package de.knowwe.tools;
 
+import java.util.UUID;
+
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -46,7 +48,7 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 		Tool[] tools = ToolUtils.getTools(sec, user);
 		boolean hasTools = tools != null && tools.length > 0;
 
-		String headerID = "header_" + sec.getID();
+		String headerID = "tool_menu_" + sec.getID() + "_" + UUID.randomUUID().toString();
 
 		if (hasTools) {
 			string.appendHtml("<span " +
@@ -67,7 +69,7 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 			String menuHTML = menuHTMLResult.toString();
 			menuHTML = menuHTML.replace("'", "\\'").replace("</div>", "</div>' + \n '");
 			string.appendHtml(
-					"<script>" +
+					"<script>\n" +
 							"var makeMenuFx = function() {" +
 							"var a=$('" + headerID + "');" +
 							"a.parentNode.onmouseover = function(){" +
@@ -84,7 +86,7 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 							"};" +
 							"};" +
 							"makeMenuFx();" +
-							"</script>"
+							"\n</script>"
 					);
 		}
 	}

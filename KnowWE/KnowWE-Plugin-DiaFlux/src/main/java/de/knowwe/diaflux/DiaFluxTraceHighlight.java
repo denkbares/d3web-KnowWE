@@ -81,20 +81,20 @@ public class DiaFluxTraceHighlight implements DiaFluxDisplayEnhancement {
 	public static String getDeactivationJSAction() {
 		return "var url = window.location.href;" +
 				"if (url.search('highlight')!=-1)" +
-				"{url = url.replace(/highlight=[^&]*/g, 'highlight=none');}" +
+				"{url = url.replace(/highlight=[^&amp;]*/g, 'highlight=none');}" +
 				"else {" +
 				"if (url.indexOf('?') == -1) {url += '?';}" +
-				"url = url.replace(/\\?/g,'?highlight=none&');}" +
+				"url = url.replace(/\\?/g,'?highlight=none&amp;');}" +
 				"window.location = url;";
 	}
 
 	public static String getActivationJSAction(String highlightName) {
 		return "var url = window.location.href;" +
 				"if (url.search('highlight')!=-1)" +
-				"{url = url.replace(/highlight=[^&]*/g, 'highlight=" + highlightName + "');}" +
+				"{url = url.replace(/highlight=[^&amp;]*/g, 'highlight=" + highlightName + "');}" +
 				"else {" +
 				"if (url.indexOf('?') == -1) {url += '?';}" +
-				"url = url.replace(/\\?/g,'?highlight=" + highlightName + "&');}" +
+				"url = url.replace(/\\?/g,'?highlight=" + highlightName + "&amp;');}" +
 				"window.location = url;";
 	}
 

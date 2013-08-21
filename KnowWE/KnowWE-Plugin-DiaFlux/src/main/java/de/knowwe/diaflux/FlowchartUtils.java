@@ -165,8 +165,7 @@ public class FlowchartUtils {
 	public static void insertDiafluxRessources(RenderResult result, UserContext user, String flowchartSectionID) {
 
 		for (String cssfile : CSS) {
-			result.appendHtml("<link rel='stylesheet' type='text/css' href='" + cssfile
-					+ "'></link>");
+			result.appendHtml("<link rel='stylesheet' type='text/css' href='" + cssfile + "' />");
 		}
 
 		for (String jsfile : JS) {
@@ -214,8 +213,7 @@ public class FlowchartUtils {
 					}
 
 					for (String style : enh.getStylesheets()) {
-						result.appendHtml("<link rel='stylesheet' type='text/css' href='" + style
-								+ "'></link>");
+						result.appendHtml("<link rel='stylesheet' type='text/css' href='" + style + "' />");
 					}
 				}
 			}

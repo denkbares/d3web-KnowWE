@@ -56,9 +56,9 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 		// tool to execute a full-parse onto the knowledge base
 		// may be removed in later releases (after moneypenny)
 		String jsAction = "var url = window.location.href;" +
-				"url = url.replace(/&parse=full/g, '');" +
+				"url = url.replace(/&amp;parse=full/g, '');" +
 				"if (url.indexOf('?') == -1) {url += '?';}" +
-				"url += '&parse=full';" +
+				"url += '&amp;parse=full';" +
 				"window.location = url;";
 		return new DefaultTool(
 				"KnowWEExtension/d3web/icon/refresh16.png",
@@ -82,8 +82,8 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 		}
 		String jsAction = "window.location='action/DownloadKnowledgeBase" +
 				"?" + Attributes.TOPIC + "=" + section.getTitle() +
-				"&" + Attributes.WEB + "=" + section.getWeb() +
-				"&" + DownloadKnowledgeBase.PARAM_FILENAME + "=" + kbName + ".d3web'";
+				"&amp;" + Attributes.WEB + "=" + section.getWeb() +
+				"&amp;" + DownloadKnowledgeBase.PARAM_FILENAME + "=" + kbName + ".d3web'";
 		return new DefaultTool(
 				"KnowWEExtension/d3web/icon/download16.gif",
 				"Download",
@@ -114,19 +114,19 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 			e.printStackTrace();
 		}
 		String kbURL = baseUrl + "action/DownloadKnowledgeBase" +
-				"%3F" + Attributes.TOPIC + "=" + section.getTitle() +
-				"%26" + Attributes.WEB + "=" + section.getWeb() +
-				"%26" + DownloadKnowledgeBase.PARAM_FILENAME + "=" + kbName + ".d3web";
+				"?" + Attributes.TOPIC + "=" + section.getTitle() +
+				"&amp;" + Attributes.WEB + "=" + section.getWeb() +
+				"&amp;" + DownloadKnowledgeBase.PARAM_FILENAME + "=" + kbName + ".d3web";
 		kbURL = Strings.encodeURL(kbURL);
 
-		String imageURL = "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=" + kbURL;
+		String imageURL = "https://chart.googleapis.com/chart?cht=qr&amp;chs=200x200&amp;chl=" + kbURL;
 		String id = section.getID();
 		String jsAction = "var node=$E('.markupText', '" + id + "'); " +
 				"var visible = (node.firstChild.nodeName == 'IMG'); " +
 				"if (visible) node.firstChild.remove();" +
 				"else " +
 				"node.innerHTML='<img style=\\'float:left\\' " +
-				"src=\\'" + imageURL + "\\'></img>'+node.innerHTML;";
+				"src=\\'" + imageURL + "\\' />'+node.innerHTML;";
 		return new DefaultTool(
 				"KnowWEExtension/d3web/icon/qrcode16.gif",
 				"QR-Code",

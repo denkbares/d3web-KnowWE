@@ -47,7 +47,7 @@ public class TestCasePlayerToolProvider implements ToolProvider {
 		Section<ContentType> content = Sections.findChildOfType(section, ContentType.class);
 		String jsAction = "window.location='action/DownloadCaseAction?playerid="
 				+ content.getID()
-				+ "&KWikiWeb=default_web';";
+				+ "&amp;KWikiWeb=default_web';";
 		Tool downloadTool = new DefaultTool("KnowWEExtension/d3web/icon/download16.gif",
 				"Download test case", "Downloads the currently selected test case", jsAction);
 		return downloadTool;

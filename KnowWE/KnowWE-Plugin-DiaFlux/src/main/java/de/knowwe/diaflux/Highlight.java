@@ -96,9 +96,7 @@ public class Highlight {
 			values = new HashMap<String, String>();
 			map.put(object, values);
 		}
-		// TODO this should be removed, if "'" are escaped again in
-		// Strings.encodeHtml()
-		values.put(key, Strings.encodeHtml(value).replaceAll("'", "&#x27;"));
+		values.put(key, Strings.encodeHtml(value));
 	}
 
 	private void appendHeader(StringBuilder bob) {

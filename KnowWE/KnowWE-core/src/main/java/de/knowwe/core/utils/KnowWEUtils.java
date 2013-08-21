@@ -174,9 +174,10 @@ public class KnowWEUtils {
 	 */
 	public static String getAnchor(Section<?> section) {
 		// TODO: figure out how JSPWiki builds section anchor names
-		return "section-"
+		String anchor = "section-"
 				+ section.getArticle().getTitle().replace(' ', '+') + "-"
 				+ Math.abs(section.getID().hashCode());
+		return anchor;
 	}
 
 	/**
@@ -515,8 +516,8 @@ public class KnowWEUtils {
 		String objectName = Strings.encodeURL(new Identifier(
 				identifier.getLastPathElement()).toExternalForm());
 		String termIdentifier = Strings.encodeURL(identifier.toExternalForm());
-		return "Wiki.jsp?page=ObjectInfoPage&objectname="
-				+ objectName + "&termIdentifier="
+		return "Wiki.jsp?page=ObjectInfoPage&amp;objectname="
+				+ objectName + "&amp;termIdentifier="
 				+ termIdentifier;
 	}
 

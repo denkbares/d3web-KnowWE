@@ -420,7 +420,7 @@ public class CIRenderer {
 				+ KnowWEUtils.getURLLink(dashboard.getDashboardArticle() + "#"
 						+ dashboardNameEncoded)
 				+ "')\"><img class='ci-abort-build' height='16' title='Stops the current build' " +
-				"src='KnowWEExtension/images/cross.png'></img></a>");
+				"src='KnowWEExtension/images/cross.png' /></a>");
 
 	}
 

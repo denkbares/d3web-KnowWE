@@ -20,6 +20,8 @@
 
 package de.knowwe.diaflux.type;
 
+import de.knowwe.kdom.renderer.StyleRenderer;
+import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
 import de.knowwe.kdom.xml.AbstractXMLType;
 import de.knowwe.kdom.xml.XMLContent;
 
@@ -34,7 +36,9 @@ public class CommentType extends AbstractXMLType {
 
 	private CommentType() {
 		super("comment");
-		addChildType(new XMLContent());
+		XMLContent content = new XMLContent();
+		content.setRenderer(new StyleRenderer(MaskMode.htmlEntities));
+		addChildType(content);
 	}
 
 	public static CommentType getInstance() {

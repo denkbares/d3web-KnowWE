@@ -47,6 +47,7 @@ import de.d3web.core.knowledge.terminology.QuestionDate;
 import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionText;
+import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.Property;
@@ -291,7 +292,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 					+ rb.getString("KnowWE.KBRenderer.error") + "</p>");
 		}
 
-		text.appendHtml("</p></div></div>");
+		text.appendHtml("</div></div>");
 	}
 
 	private String renderRule(Rule r, Map<String, Object> parameterMap, UserContext user) {
@@ -365,6 +366,9 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 				if (t1 instanceof QuestionMC) {
 					result.append(getTermHTML(prompt, property, t1, "[mc]", title, user));
 				}
+				if (t1 instanceof QuestionYN) {
+					result.append(getTermHTML(prompt, property, t1, "[yn]", title, user));
+				}
 				else {
 					result.append(getTermHTML(prompt, property, t1, "[oc]", title, user));
 				}
@@ -411,10 +415,9 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 	}
 
 	private String getTermHTML(StringBuffer prompt, StringBuffer property, TerminologyObject t1, String typeDeclaration, String title, UserContext user) {
-		TerminologyManager terminologyManager = Environment.getInstance().getTerminologyManager(
-				Environment.DEFAULT_WEB, title);
-		Section<?> termDefiningSection = terminologyManager.getTermDefiningSection(new Identifier(
-				t1.getName()));
+		Environment env = Environment.getInstance();
+		TerminologyManager manager = env.getTerminologyManager(user.getWeb(), title);
+		Section<?> termDefiningSection = manager.getTermDefiningSection(new Identifier(t1.getName()));
 		RenderResult builder = new RenderResult(user);
 
 		if (termDefiningSection == null) {

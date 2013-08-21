@@ -32,8 +32,7 @@ public class PackageAnnotationNameTypeRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult string) {
-		string.appendHtml("<img style='position:relative; top:2px'; class='packageOpacity'; src='KnowWEExtension/images/package_obj.gif'></img>");
-
+		string.appendHtml("<img style='position:relative; top:2px' class='packageOpacity' src='KnowWEExtension/images/package_obj.gif' />");
 	}
 
 }

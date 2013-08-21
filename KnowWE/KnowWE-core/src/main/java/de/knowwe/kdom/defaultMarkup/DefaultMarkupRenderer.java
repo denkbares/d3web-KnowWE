@@ -115,7 +115,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		String result = "";
 		// render icon
 		if (iconPath != null) {
-			result = "<img class='markupIcon' src='" + iconPath + "'></img> ";
+			result = "<img class='markupIcon' src='" + iconPath + "' /> ";
 		}
 
 		// render heading
@@ -272,8 +272,7 @@ public class DefaultMarkupRenderer implements Renderer {
 
 		String cssClass = "defaultMarkupFrame";
 		if (cssClassName != null) cssClass += " " + cssClassName;
-		string.appendHtml("<div id=\"" + sectionID + "\" class='" + cssClass
-				+ "'>\n");
+		string.appendHtml("<div id=\"" + sectionID + "\" class='" + cssClass + "'>\n");
 
 		appendHeader(title, sectionID, tools, user, string);
 
@@ -316,7 +315,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		temp.append(title);
 
 		if (renderMode == ToolsRenderMode.MENU) {
-			temp.appendHtml("<span class='markupMenuIndicator' />");
+			temp.appendHtml("<span class='markupMenuIndicator'></span>");
 		}
 		else if (renderMode == ToolsRenderMode.TOOLBAR) {
 			appendToolbar(tools, user, temp);
@@ -340,7 +339,7 @@ public class DefaultMarkupRenderer implements Renderer {
 					"<a href=\"javascript:" + tool.getJSAction() + ";undefined;\">" +
 					"<img " +
 					"title=\"" + tool.getDescription() + "\" " +
-					"src=\"" + tool.getIconPath() + "\"></img>" +
+					"src=\"" + tool.getIconPath() + "\" \n/>" +
 					"</a></div>");
 		}
 		result.appendHtml("</div>");
@@ -394,7 +393,7 @@ public class DefaultMarkupRenderer implements Renderer {
 								+ ";hideToolsPopupMenu();undefined;\""
 						: "") +
 				" title=\"" + Strings.encodeHtml(tool.getDescription()) + "\">" +
-				(hasIcon ? ("<img src=\"" + icon + "\"></img>") : "") +
+				(hasIcon ? ("<img src=\"" + icon + "\" />") : "") +
 				" <span>" + tool.getTitle() + "</span>" +
 				"</" + (jsAction == null ? "span" : "a") + ">" +
 				"</div></div>");

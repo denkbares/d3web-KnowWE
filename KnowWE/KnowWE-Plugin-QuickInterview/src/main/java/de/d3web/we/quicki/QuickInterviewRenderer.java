@@ -155,7 +155,7 @@ public class QuickInterviewRenderer {
 				+ "', " + renderConfigParams() + "}\" ";
 		html.append("<div style='position:relative'>");
 		html.append(
-				"<div id='quickireset'")
+				"<div id='quickireset' ")
 				.append("class='reset pointer' title='")
 				.append(rb.getString("KnowWE.quicki.reset")).append("' ")
 				.append(relAt).append("></div>\n");
@@ -274,10 +274,10 @@ public class QuickInterviewRenderer {
 			StringBuffer sb, int depth) {
 
 		int margin = 30 + depth * 20;
-		sb.append("<div id='" + element.getName() + "' "
+		sb.append("<div "
 				+ "class='alreadyDefined' style='margin-left: " + margin
-				+ "px; display: block'; >");
-		sb.append(getLabel(element) + " is already defined!");
+				+ "px; display: block;' >");
+		sb.append(Strings.encodeHtml(getLabel(element)) + " is already defined!");
 		sb.append("</div>");
 	}
 
@@ -299,17 +299,18 @@ public class QuickInterviewRenderer {
 
 		boolean visible = isVisible(container);
 		boolean indicated = isThisOrFollowUpIndicated(container);
-		buffi.append("<div id='" + id + "' " + "class='questionnaire point"
+		buffi.append("<div id='" + Strings.encodeHtml(id)
+				+ "' " + "class='questionnaire point"
 				+ (visible ? "Down" : "Right")
 				+ (indicated ? " indicated" : "") + "' "
 				+ "style='margin-left: " + margin + "px;' >");
 
-		buffi.append(getLabel(container));
+		buffi.append(Strings.encodeHtml(getLabel(container)));
 		buffi.append("</div>\n");
 
 		if (container.getChildren().length == 0) {
 			margin = margin + 30;
-			buffi.append("<div id='group_" + container.getName()
+			buffi.append("<div id='group_" + Strings.encodeHtml(container.getName())
 					+ "' class='group' style='display: "
 					+ (visible ? "block" : "none") + ";' >");
 			buffi.append("\n<div class='emptyQuestionnaire' "
@@ -346,14 +347,14 @@ public class QuickInterviewRenderer {
 			}
 		}
 
-		sb.append("\n<div class='" + qablockCSS
-				+ "' id='qablock' style='display: block; margin-left: " + d
-				+ "px;'>");
+		sb.append("<div class='" + qablockCSS
+				+ "' style='display: block; margin-left: " + d
+				+ "px;'\n>");
 
-		sb.append("<table><tr><td class='tdquestion'>");
+		sb.append("<table><tr><td class='tdquestion'\n>");
 		// width of the question front section, i.e. total width - identation
 		int w = 320 - d;
-		String divText = getLabel(question);
+		String divText = Strings.encodeHtml(getLabel(question));
 		String cssClass = "question";
 		String title = question.getInfoStore().getValue(MMInfo.DESCRIPTION);
 		if (title == null) {
@@ -364,8 +365,9 @@ public class QuickInterviewRenderer {
 			title = "title='" + title + "' ";
 		}
 
-		sb.append("\n<div id='" + question.getName() + "' " + "parent='"
-				+ parent.getName() + "' " + "class='" + cssClass + "' "
+		sb.append("<div id='" + Strings.encodeHtml(question.getName())
+				+ "' " + "parent='"
+				+ Strings.encodeHtml(parent.getName()) + "' " + "class='" + cssClass + "' "
 				+ title + "style='width: " + w
 				+ "px; display: inline-block;' >" + divText + "</div>");
 		// }
@@ -449,16 +451,16 @@ public class QuickInterviewRenderer {
 				+ Strings.encodeURL(q.getName()) + "', " + "}\" ";
 
 		// assemble the input field
-		sb.append("\n<input class='inputtextvalue'  style='display: inline;' id='input_"
+		sb.append("<input class='inputtextvalue'  style='display: inline;' id='input_"
 				+ id
 				+ "' type='text' "
 				+ "value='"
-				+ valueString
+				+ Strings.encodeHtml(valueString)
 				+ "' "
-				+ "size='18' " + jscall + " />");
+				+ "size='18' " + jscall + " \n/>");
 		// "<div class='dateformatdesc'>()</div>");
 
-		sb.append("\n<div class='separator'></div>");
+		sb.append("<div class='separator'></div>");
 		renderAnswerUnknown(q, "num", sb);
 	}
 
@@ -486,7 +488,7 @@ public class QuickInterviewRenderer {
 			String cssclass = "answer";
 
 			// assemble JS string
-			String jscall = " rel=\"{oid:'" + choice.getName() + "', "
+			String jscall = " rel=\"{" + Strings.encodeHtml(choice.getName()) + "', "
 					+ "web:'" + web + "', " + "ns:'" + namespace + "', "
 					+ "qid:'" + Strings.encodeURL(q.getName()) + "', "
 					+ "choice:'" + Strings.encodeURL(choice.getName()) + "', "
@@ -574,7 +576,7 @@ public class QuickInterviewRenderer {
 				+ "value='" + valueString + "' " + "size='7' " + jscall + " />");
 
 		// print the units
-		sb.append("<div class='unit'>" + unit + "</div>");
+		sb.append("<div class='unit'>" + Strings.encodeHtml(unit) + "</div>");
 
 		// sb.append("<input type='button' value='OK' class='num-ok' />");
 
@@ -660,7 +662,7 @@ public class QuickInterviewRenderer {
 	private void renderMCChoiceAnswers(QuestionChoice q,
 			MultipleChoiceValue mcval, StringBuffer sb) {
 
-		sb.append("\n<div class='answers' style='display: inline;'>");
+		sb.append("<div class='answers' style='display: inline;'\n>");
 		boolean first = true;
 		for (Choice choice : mcval.asChoiceList(q)) {
 			if (first) {
@@ -671,7 +673,7 @@ public class QuickInterviewRenderer {
 			}
 
 			String cssclass = "answerMC";
-			String jscall = " rel=\"{oid:'" + choice.getName() + "', "
+			String jscall = " rel=\"{oid:'" + Strings.encodeHtml(choice.getName()) + "', "
 					+ "web:'" + web + "', " + "ns:'" + namespace + "', "
 					+ "qid:'" + Strings.encodeURL(q.getName()) + "', "
 					+ "type:'mc', " + "choice:'"
@@ -774,7 +776,7 @@ public class QuickInterviewRenderer {
 		StringBuffer sub = new StringBuffer();
 		sub.append("<" + tag);
 		if (id != null && id.length() > 0) {
-			sub.append(" id='" + id + "' ");
+			sub.append(" id='" + Strings.encodeHtml(id) + "' ");
 		}
 		if (onclick != null && onclick.length() > 0) {
 			sub.append(" " + onclick + " ");
@@ -784,13 +786,13 @@ public class QuickInterviewRenderer {
 		}
 		if (title != null && title.length() > 0) {
 			cssclass = cssclass + " tooltipster";
-			sub.append(" title='" + title + "' ");
+			sub.append(" title='" + Strings.encodeHtml(title) + "' ");
 		}
 		if (cssclass != null && cssclass.length() > 0) {
 			sub.append(" class='" + cssclass + "'");
 		}
 		sub.append(">");
-		sub.append(text);
+		sub.append(Strings.encodeHtml(text));
 		sub.append("</" + tag + ">");
 		return sub.toString();
 	}

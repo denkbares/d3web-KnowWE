@@ -237,7 +237,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				.append(Strings.encodeURL(section.getTitle()))
 				.appendHtml("\" />");
 		result.appendHtml("<div style=\"display:none\" id=\"objectinfo-terms\" name=\"terms\" >");
-		result.appendJSPWikiMarkup(getTerms(section.getWeb()).toString());
+		result.appendJSPWikiMarkup(getTerms(section.getWeb()).toString()
+				.replaceAll("([^\\\\]\\\"),\\\"", "$1,\n\""));
 		result.appendHtml("</div>");
 		result.appendHtml("<input type=\"text\" size=\"60\" name=\"")
 				.append(OBJECT_NAME)
@@ -624,8 +625,11 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			Collection<Identifier> allDefinedTerms = terminologyManager
 					.getAllDefinedTerms();
 			for (Identifier definition : allDefinedTerms) {
-				if (!allTerms.contains(definition.toExternalForm())) {
-					allTerms.add(definition.toExternalForm());
+				String externalForm = definition.toExternalForm()
+						.replaceAll("&", "&amp;")
+						.replaceAll("<", "&lt;");
+				if (!allTerms.contains(externalForm)) {
+					allTerms.add(externalForm);
 				}
 			}
 		}

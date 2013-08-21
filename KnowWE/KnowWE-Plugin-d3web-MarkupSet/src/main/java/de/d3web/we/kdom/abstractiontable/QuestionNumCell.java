@@ -22,6 +22,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.renderer.StyleRenderer;
+import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
 
 public class QuestionNumCell extends AbstractType {
 
@@ -29,7 +30,7 @@ public class QuestionNumCell extends AbstractType {
 
 	public QuestionNumCell() {
 		StyleRenderer renderer = new StyleRenderer("color:rgb(125, 80, 102)");
-		renderer.setMaskJSPWikiMarkup(false);
+		renderer.setMaskMode(MaskMode.htmlEntities);
 		this.setRenderer(renderer);
 	}
 

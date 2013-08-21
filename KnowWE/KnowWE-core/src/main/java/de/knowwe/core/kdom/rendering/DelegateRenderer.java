@@ -111,16 +111,17 @@ public class DelegateRenderer implements Renderer {
 	}
 
 	private void renderMessagesPost(Section<?> subSection, UserContext user, RenderResult builder) {
+
+		boolean renderedAny = false;
 		// Render errors post
 		Map<String, Collection<Message>> errors = Messages.getMessages(subSection,
 				Message.Type.ERROR);
 		for (Entry<String, Collection<Message>> entry : errors.entrySet()) {
 			for (Message kdomNotice : entry.getValue()) {
-				MessageRenderer errorRenderer = subSection.get()
-						.getErrorRenderer();
+				MessageRenderer errorRenderer = subSection.get().getErrorRenderer();
 				if (errorRenderer != null) {
-					errorRenderer.postRenderMessage(kdomNotice, user,
-							entry.getKey(), builder);
+					renderedAny = true;
+					errorRenderer.postRenderMessage(kdomNotice, user, entry.getKey(), builder);
 				}
 			}
 		}
@@ -130,11 +131,10 @@ public class DelegateRenderer implements Renderer {
 				.getMessages(subSection, Message.Type.INFO);
 		for (Entry<String, Collection<Message>> entry : notices.entrySet()) {
 			for (Message kdomNotice : entry.getValue()) {
-				MessageRenderer noticeRenderer = subSection.get()
-						.getNoticeRenderer();
+				MessageRenderer noticeRenderer = subSection.get().getNoticeRenderer();
 				if (noticeRenderer != null) {
-					noticeRenderer.postRenderMessage(kdomNotice, user,
-							entry.getKey(), builder);
+					renderedAny = true;
+					noticeRenderer.postRenderMessage(kdomNotice, user, entry.getKey(), builder);
 				}
 			}
 		}
@@ -144,18 +144,16 @@ public class DelegateRenderer implements Renderer {
 				Message.Type.WARNING);
 		for (Entry<String, Collection<Message>> entry : warnings.entrySet()) {
 			for (Message kdomWarning : entry.getValue()) {
-				MessageRenderer warningRenderer = subSection.get()
-						.getWarningRenderer();
+				MessageRenderer warningRenderer = subSection.get().getWarningRenderer();
 				if (warningRenderer != null) {
-					warningRenderer
-							.postRenderMessage(kdomWarning, user, entry.getKey(), builder);
+					renderedAny = true;
+					warningRenderer.postRenderMessage(kdomWarning, user, entry.getKey(), builder);
 				}
 			}
 		}
 
-		if (warnings.size() > 0 || notices.size() > 0 || errors.size() > 0) {
-			builder.appendHtml("<a name=\"" + subSection.getID()
-					+ "\"></a>");
+		if (renderedAny) {
+			builder.appendHtml("<a name=\"" + subSection.getID() + "\"></a>");
 		}
 	}
 

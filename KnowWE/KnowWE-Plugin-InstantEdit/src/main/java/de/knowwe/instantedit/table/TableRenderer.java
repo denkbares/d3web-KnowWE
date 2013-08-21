@@ -18,7 +18,7 @@ public final class TableRenderer implements Renderer {
 
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult out) {
-			out.appendHtml("<img src='KnowWEExtension/images/table/table-menu-icon.png'></img>");
+			out.appendHtml("<img src='KnowWEExtension/images/table/table-menu-icon.png' />");
 		}
 	}
 

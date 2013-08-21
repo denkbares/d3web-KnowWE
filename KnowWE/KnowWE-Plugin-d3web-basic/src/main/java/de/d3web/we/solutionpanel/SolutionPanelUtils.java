@@ -54,8 +54,8 @@ public class SolutionPanelUtils {
 		String prompt = solution.getInfoStore().getValue(MMInfo.PROMPT);
 		String description = solution.getInfoStore().getValue(MMInfo.DESCRIPTION);
 		String infoLink = "Wiki.jsp?page=ObjectInfoPage" +
-				"&" + ObjectInfoTagHandler.TERM_IDENTIFIER + "=" + solution.getName() +
-				"&" + ObjectInfoTagHandler.OBJECT_NAME + "=" + solution.getName();
+				"&amp;" + ObjectInfoTagHandler.TERM_IDENTIFIER + "=" + solution.getName() +
+				"&amp;" + ObjectInfoTagHandler.OBJECT_NAME + "=" + solution.getName();
 
 		String tooltip = "";
 		if (description != null) tooltip = description;

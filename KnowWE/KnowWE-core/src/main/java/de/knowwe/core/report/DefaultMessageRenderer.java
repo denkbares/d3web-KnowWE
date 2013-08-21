@@ -22,7 +22,6 @@ package de.knowwe.core.report;
 
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Default renderer for error messages
@@ -61,12 +60,12 @@ public class DefaultMessageRenderer implements MessageRenderer {
 	public void preRenderMessage(Message m, UserContext user, String source, RenderResult result) {
 
 		result.appendHtml("<span");
-		String tooltip = KnowWEUtils.maskJSPWikiMarkup(m.getVerbalization());
+		String tooltip = m.getVerbalization();
 		if (tooltip != null) {
 			if (source != null && !source.isEmpty()) {
 				tooltip = source + ": " + tooltip;
 			}
-			result.append(" title='").append(
+			result.append(" title='").appendEntityEncoded(
 					tooltip.replace('\'', '"')).append("'");
 		}
 		if (cssClass != null) {

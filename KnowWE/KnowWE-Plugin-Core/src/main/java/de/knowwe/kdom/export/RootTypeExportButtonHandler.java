@@ -44,8 +44,8 @@ public class RootTypeExportButtonHandler extends AbstractTagHandler {
 		String description = "Download RootTypes as graph";
 		String jsAction = "window.location='action/RootTypeExportAction" +
 				"?" + Attributes.TOPIC + "=" + "RootType" +
-				"&" + Attributes.WEB + "=" + Environment.DEFAULT_WEB +
-				"&" + "filename" + "=" + "RootType.png'";
+				"&amp;" + Attributes.WEB + "=" + Environment.DEFAULT_WEB +
+				"&amp;" + "filename" + "=" + "RootType.png'";
 
 		html.appendHtml("<a href=\"javascript:");
 		html.appendHtml(jsAction);

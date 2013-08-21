@@ -25,6 +25,8 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.kdom.AnonymousType;
+import de.knowwe.kdom.renderer.StyleRenderer;
+import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
 import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
 import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
 
@@ -46,6 +48,7 @@ public class QuestionRefLine extends AbstractType {
 		// take the keyword
 		AnonymousType key = new AnonymousType("ref-key");
 		key.setSectionFinder(new StringSectionFinderUnquoted(REF_KEYWORD));
+		key.setRenderer(new StyleRenderer(StyleRenderer.KEYWORDS, MaskMode.htmlEntities));
 		this.childrenTypes.add(key);
 
 		// the rest for the name of the question

@@ -145,17 +145,6 @@ public class TestCasePlayerRenderer implements Renderer {
 		}
 	}
 
-	// private void renderDownloadLink(Section<?> section, RenderResult string)
-	// {
-	// String download =
-	// " <a title='Download selected TestCase' href='javascript:window.location=\"action/DownloadCaseAction?playerid="
-	// + section.getID()
-	// +
-	// "&KWikiWeb=default_web\";'><img style='margin-bottom: -4px' src='KnowWEExtension/d3web/icon/download16.gif'></a>";
-	// string.appendHTML(download);
-	//
-	// }
-
 	private void renderProviderMessages(TestCaseProvider provider, RenderResult string) {
 		List<Message> messages = provider.getMessages();
 		if (messages.size() > 0) {
@@ -163,15 +152,6 @@ public class TestCasePlayerRenderer implements Renderer {
 					string);
 		}
 	}
-
-	// private void renderLinkToTestCase(Triple<TestCaseProvider, Section<?>,
-	// Article> selectedTriple, RenderResult string) {
-	// String link = " <a title='Go to selected TestCase' href='"
-	// + KnowWEUtils.getURLLink(selectedTriple.getB())
-	// +
-	// "'><img src='KnowWEExtension/testcaseplayer/icon/testcaselink.png'></a>";
-	// string.appendHTML(link);
-	// }
 
 	private void renderNoProviderWarning(Section<TestCasePlayerType> playerSection, RenderResult string) {
 		StringBuilder message = new StringBuilder();
@@ -522,12 +502,15 @@ public class TestCasePlayerRenderer implements Renderer {
 			if (!alreadyAddedQuestions.contains(q.getName())) {
 				max = Math.max(max, q.getName().toString().length());
 				if (q.getName().equals(selectedQuestion)) {
-					selectsb2.appendHtml("<option selected='selected' value='" + q.getName() + "'>"
-							+ q.getName() + "</option>");
+					selectsb2.appendHtml("<option selected='selected' value='"
+							+ Strings.encodeHtml(q.getName()) + "' \n>"
+							+ Strings.encodeHtml(q.getName()) + "</option>");
 					object = q;
 				}
 				else {
-					selectsb2.appendHtml("<option value='" + q.getName() + "'>" + q.getName()
+					selectsb2.appendHtml("<option value='"
+							+ Strings.encodeHtml(q.getName()) + "' \n>"
+							+ Strings.encodeHtml(q.getName())
 							+ "</option>");
 				}
 				foundone = true;
@@ -555,7 +538,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		else {
 			selectsb2.appendHtml("<input "
 					+ (object == null ? "disabled='disabled'" : "")
-					+ "type=\"button\" value=\"+\" onclick=\"TestCasePlayer.addCookie(this.form.toAdd.options[toAdd.selectedIndex].value);TestCasePlayer.change('"
+					+ " type=\"button\" value=\"+\" onclick=\"TestCasePlayer.addCookie(this.form.toAdd.options[toAdd.selectedIndex].value);TestCasePlayer.change('"
 					+ key
 					+ "','');\"></form>");
 		}
@@ -724,7 +707,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		builder.appendHtml("<img src='KnowWEExtension/testcaseplayer/icon/");
 		builder.appendHtml(icon);
 		if (!enabled) builder.appendHtml("_deactivated");
-		builder.appendHtml(suffix).appendHtml("'></img></span>");
+		builder.appendHtml(suffix).appendHtml("' /></span>");
 		if (enabled) {
 			builder.appendHtml("</a>");
 		}

@@ -42,9 +42,7 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.kdom.renderer.ObjectInfoLinkRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
-import de.knowwe.tools.ToolMenuDecoratingRenderer;
 
 /**
  * 
@@ -68,9 +66,7 @@ public abstract class SolutionDefinition
 	}
 
 	public SolutionDefinition(Priority p) {
-		this.setRenderer(
-				new ToolMenuDecoratingRenderer(
-						new SolutionIDHighlightingRenderer()));
+		this.setRenderer(new SolutionIDHighlightingRenderer());
 		// this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR4));
 		this.addSubtreeHandler(p, new CreateSolutionHandler());
 	}
@@ -115,8 +111,7 @@ public abstract class SolutionDefinition
 				}
 			}
 
-			new ObjectInfoLinkRenderer(StyleRenderer.SOLUTION).render(sec, user,
-					string);
+			StyleRenderer.SOLUTION.render(sec, user, string);
 			string.appendHtml("</span>");
 		}
 	}

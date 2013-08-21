@@ -84,19 +84,19 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 			string.appendHtml("<div style='padding-top:1em;'>");
 
 			if (version != null) {
-				string.appendHtml("<img src='KnowWEExtension/d3web/icon/date16.png'></img> ");
+				string.appendHtml("<img src='KnowWEExtension/d3web/icon/date16.png' /> ");
 				string.append(version).append("\n");
 			}
 			if (author != null) {
-				string.appendHtml("<img src='KnowWEExtension/d3web/icon/author16.png'></img> ");
+				string.appendHtml("<img src='KnowWEExtension/d3web/icon/author16.png' /> ");
 				string.append(author).append("\n");
 			}
 			if (comment != null) {
-				string.appendHtml("<img src='KnowWEExtension/d3web/icon/comment16.png'></img> ");
+				string.appendHtml("<img src='KnowWEExtension/d3web/icon/comment16.png' /> ");
 				string.append(comment).append("\n");
 			}
 			if (filename != null) {
-				string.appendHtml("<img src='KnowWEExtension/d3web/icon/download16.gif'></img> ");
+				string.appendHtml("<img src='KnowWEExtension/d3web/icon/download16.gif' /> ");
 				string.append(filename).append("\n");
 			}
 
@@ -197,9 +197,9 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 				icon = "KnowWEExtension/images/package_obj.gif";
 			}
 
-			string.appendHtml("<img style='position:relative; top:2px;' class='packageOpacity'; src='"
+			string.appendHtml("<img style='position:relative; top:2px;' class='packageOpacity' src='"
 					+ icon
-					+ "'></img>");
+					+ "' />");
 			string.append(" ");
 			string.appendHtml("<span style='color:rgb(121,79, 64);'>");
 			string.append(packageName);

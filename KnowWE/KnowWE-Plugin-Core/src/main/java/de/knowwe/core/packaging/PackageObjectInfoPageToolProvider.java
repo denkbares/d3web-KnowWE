@@ -36,18 +36,18 @@ public class PackageObjectInfoPageToolProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-			@SuppressWarnings("unchecked")
-			Section<? extends Term> s = (Section<? extends Term>) section;
-			return new Tool[] { getObjectInfoPageTool(s, userContext) };
+		@SuppressWarnings("unchecked")
+		Section<? extends Term> s = (Section<? extends Term>) section;
+		return new Tool[] { getObjectInfoPageTool(s, userContext) };
 	}
 
 	protected Tool getObjectInfoPageTool(Section<? extends Term> section, UserContext userContext) {
 		String packageName = section.getText();
 		String jsAction = "window.location.href = "
-				+ "'Wiki.jsp?page=ObjectInfoPage&" + ObjectInfoTagHandler.TERM_IDENTIFIER
+				+ "'Wiki.jsp?page=ObjectInfoPage&amp;" + ObjectInfoTagHandler.TERM_IDENTIFIER
 				+ "=' + encodeURIComponent('"
 				+ maskTermForHTML(packageName)
-				+ "') + '&" + ObjectInfoTagHandler.OBJECT_NAME + "=' + encodeURIComponent('"
+				+ "') + '&amp;" + ObjectInfoTagHandler.OBJECT_NAME + "=' + encodeURIComponent('"
 				+ maskTermForHTML(packageName) + "')";
 		return new DefaultTool(
 				"KnowWEExtension/d3web/icon/infoPage16.png",

@@ -18,8 +18,8 @@
  */
 package de.knowwe.core.toolprovider;
 
-import de.d3web.strings.Strings;
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.taghandler.ObjectInfoTagHandler;
@@ -50,10 +50,10 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 		String lastPathElementExternalForm = new Identifier(termIdentifier.getLastPathElement()).toExternalForm();
 		String externalTermIdentifierForm = termIdentifier.toExternalForm();
 		String jsAction = "window.location.href = "
-				+ "'Wiki.jsp?page=ObjectInfoPage&" + ObjectInfoTagHandler.TERM_IDENTIFIER
+				+ "'Wiki.jsp?page=ObjectInfoPage&amp;" + ObjectInfoTagHandler.TERM_IDENTIFIER
 				+ "=' + encodeURIComponent('"
 				+ maskTermForHTML(externalTermIdentifierForm)
-				+ "') + '&" + ObjectInfoTagHandler.OBJECT_NAME + "=' + encodeURIComponent('"
+				+ "') + '&amp;" + ObjectInfoTagHandler.OBJECT_NAME + "=' + encodeURIComponent('"
 				+ maskTermForHTML(lastPathElementExternalForm) + "')";
 		return new DefaultTool(
 				"KnowWEExtension/d3web/icon/infoPage16.png",
@@ -65,6 +65,9 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 	private String maskTermForHTML(String string) {
 		string = string.replace("\\", "\\\\");
 		string = Strings.encodeHtml(string);
+		// in some strange wiki pages we got terms with linebreaks,
+		// so handle them well
+		string = string.replace("\n", "\\n").replace("\r", "\\r");
 		return string;
 	}
 

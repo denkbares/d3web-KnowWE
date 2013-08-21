@@ -20,6 +20,7 @@
 
 package de.knowwe.kdom.renderer;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -41,13 +42,13 @@ public class StyleRenderer implements Renderer {
 	public static final StyleRenderer ANNOTATION = COMMENT;
 
 	public static final Renderer CHOICE = new ToolMenuDecoratingRenderer(
-			new StyleRenderer("color:rgb(40, 40, 160)"));
+			new StyleRenderer("color:rgb(40, 40, 160)", MaskMode.htmlEntities));
 	public static final Renderer SOLUTION = new ToolMenuDecoratingRenderer(
-			new StyleRenderer("color:rgb(150, 110, 120)"));
+			new StyleRenderer("color:rgb(150, 110, 120)", MaskMode.htmlEntities));
 	public static final Renderer Question = new ToolMenuDecoratingRenderer(
-			new StyleRenderer("color:rgb(0, 128, 0)"));
+			new StyleRenderer("color:rgb(0, 128, 0)", MaskMode.htmlEntities));
 	public static final Renderer Questionaire = new ToolMenuDecoratingRenderer(
-			new StyleRenderer("color:rgb(128, 128, 0)"));
+			new StyleRenderer("color:rgb(128, 128, 0)", MaskMode.htmlEntities));
 
 	public static final Renderer PACKAGE = new ToolMenuDecoratingRenderer(new StyleRenderer(
 			"packageOpacity",
@@ -84,9 +85,13 @@ public class StyleRenderer implements Renderer {
 				(background == null ? "" : "background-color:" + background);
 	}
 
+	public static enum MaskMode {
+		none, jspwikiMarkup, htmlEntities
+	}
+
 	private final String cssClass;
 	private final String cssStyle;
-	private boolean maskJSP = true;
+	private MaskMode maskMode = MaskMode.jspwikiMarkup;
 
 	public StyleRenderer(String cssStyle) {
 		this(null, cssStyle);
@@ -95,6 +100,24 @@ public class StyleRenderer implements Renderer {
 	public StyleRenderer(String cssClass, String cssStyle) {
 		this.cssClass = cssClass;
 		this.cssStyle = cssStyle;
+	}
+
+	public StyleRenderer(MaskMode maskMode) {
+		this(null, null, maskMode);
+	}
+
+	public StyleRenderer(String cssStyle, MaskMode maskMode) {
+		this(null, cssStyle, maskMode);
+	}
+
+	public StyleRenderer(StyleRenderer lookAlike, MaskMode maskMode) {
+		this(lookAlike.cssClass, lookAlike.cssStyle, maskMode);
+	}
+
+	public StyleRenderer(String cssClass, String cssStyle, MaskMode maskMode) {
+		this.cssClass = cssClass;
+		this.cssStyle = cssStyle;
+		this.maskMode = maskMode;
 	}
 
 	@Override
@@ -137,11 +160,16 @@ public class StyleRenderer implements Renderer {
 	protected void renderContent(Section<?> section, UserContext user, RenderResult string) {
 		RenderResult builder = new RenderResult(user);
 		DelegateRenderer.getInstance().render(section, user, builder);
-		if (maskJSP) {
+		switch (maskMode) {
+		case jspwikiMarkup:
 			string.appendJSPWikiMarkup(builder);
-		}
-		else {
+			break;
+		case htmlEntities:
+			string.append(Strings.encodeHtml(builder.toStringRaw()));
+			break;
+		case none:
 			string.append(builder);
+			break;
 		}
 	}
 
@@ -153,12 +181,7 @@ public class StyleRenderer implements Renderer {
 		return this.cssClass;
 	}
 
-	public void setMaskJSPWikiMarkup(boolean mask) {
-		this.maskJSP = mask;
+	public void setMaskMode(MaskMode maskMode) {
+		this.maskMode = maskMode;
 	}
-
-	public boolean isMaskingJSPWikiMarkup() {
-		return this.maskJSP;
-	}
-
 }

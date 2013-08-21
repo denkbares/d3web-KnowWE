@@ -217,7 +217,6 @@ public class GetInfoObjects extends AbstractAction {
 
 	private static void appendInfoObject(String web, String title, String objectName, StringBuilder bob) {
 		if (title == null) return;
-		objectName = Identifier.fromExternalForm(objectName).getLastPathElement();
 
 		KnowledgeBase base = D3webUtils.getKnowledgeBase(web, title);
 		NamedObject object = base.getManager().search(objectName);

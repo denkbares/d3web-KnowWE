@@ -25,6 +25,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.core.report.MessageRenderer;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SectionFinderConstraint;
 import de.knowwe.kdom.table.TableCell;
@@ -68,4 +69,26 @@ public class HeaderLine extends TableLine {
 
 				}));
 	}
+
+	// deactivate message renderer to avoid <span>...</span> rendered
+	// in between table lines
+	@Override
+	public MessageRenderer getNoticeRenderer() {
+		return null;
+	}
+
+	// deactivate message renderer to avoid <span>...</span> rendered
+	// in between table lines
+	@Override
+	public MessageRenderer getWarningRenderer() {
+		return null;
+	}
+
+	// deactivate message renderer to avoid <span>...</span> rendered
+	// in between table lines
+	@Override
+	public MessageRenderer getErrorRenderer() {
+		return null;
+	}
+
 }

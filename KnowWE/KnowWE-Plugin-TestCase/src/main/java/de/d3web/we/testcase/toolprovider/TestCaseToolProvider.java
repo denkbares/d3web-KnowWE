@@ -44,8 +44,8 @@ public class TestCaseToolProvider implements ToolProvider {
 
 	protected Tool getDownloadXMLTool(String topic, String web, String id) {
 		// tool to provide download capability
-		String jsAction = "window.location='action/TestCaseServlet?type=case&KWiki_Topic="
-				+ topic + "&web=" + web + "&filename=" + topic.replaceAll(" ", "_")
+		String jsAction = "window.location='action/TestCaseServlet?type=case&amp;KWiki_Topic="
+				+ topic + "&amp;web=" + web + "&amp;filename=" + topic.replaceAll(" ", "_")
 				+ "_testcase.xml'";
 		return new DefaultTool(
 				"KnowWEExtension/images/xml.png",
@@ -56,8 +56,8 @@ public class TestCaseToolProvider implements ToolProvider {
 
 	protected Tool getDownloadTXTTool(String topic, String web, String id) {
 		// tool to provide download capability
-		String jsAction = "window.location='action/TestCaseServlet?type=case&KWiki_Topic="
-				+ topic + "&web=" + web + "&filename=" + topic.replaceAll(" ", "_")
+		String jsAction = "window.location='action/TestCaseServlet?type=case&amp;KWiki_Topic="
+				+ topic + "&amp;web=" + web + "&amp;filename=" + topic.replaceAll(" ", "_")
 				+ "_testcase.txt'";
 		return new DefaultTool(
 				"KnowWEExtension/images/txt.png",

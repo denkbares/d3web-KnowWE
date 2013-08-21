@@ -46,6 +46,8 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
+import de.knowwe.kdom.renderer.StyleRenderer;
+import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
 import de.knowwe.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
 
 /**
@@ -68,6 +70,7 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 		// comparator
 		Comparator comparator = new Comparator();
 		comparator.setSectionFinder(new OneOfStringEnumUnquotedFinder(comparators));
+		comparator.setRenderer(new StyleRenderer(StyleRenderer.OPERATOR, MaskMode.htmlEntities));
 		this.childrenTypes.add(comparator);
 
 		// question

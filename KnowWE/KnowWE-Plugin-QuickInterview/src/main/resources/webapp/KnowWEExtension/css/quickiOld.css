@@ -46,7 +46,7 @@
 #quickinterview .pointDown { background: #ACC0D6 url(../images/arrow_down.png) no-repeat 10px 10px;  } 
 
 /* some declaration regarding as well questions as well as answers */
- #quickinterview #qablock { min-height: 21px;  margin-left: 0; margin-right: 10px; margin-bottom: 5px; background-color: #E8F2FE; }
+ #quickinterview .qablock { min-height: 21px;  margin-left: 0; margin-right: 10px; margin-bottom: 5px; background-color: #E8F2FE; }
 
 /* styling of the front part of the qablock that displays the question name */
 #quickinterview .question { clear: both; float: left; background-color: #E8F2FE; font-weight: bold; padding: 2px 5px 2px 10px;}

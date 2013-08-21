@@ -102,9 +102,9 @@ public class UsesAnnotationNameType extends AbstractType {
 				icon = "KnowWEExtension/images/package_obj.gif";
 			}
 
-			string.appendHtml("<img style='position:relative; top:2px; class='packageOpacity'; src='"
+			string.appendHtml("<img style='position:relative; top:2px;' class='packageOpacity' src='"
 					+ icon
-					+ "'></img>");
+					+ "' />");
 			string.append(" ");
 
 			// .append(packageName);

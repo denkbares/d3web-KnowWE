@@ -50,15 +50,7 @@ public class FlowchartEditProvider implements ToolProvider {
 
 	private static String createEditAction(Section<?> section, UserContext userContext) {
 		String id = section.getID();
-		// TODO encoding has no real effect as it doesn't make it through the
-		// rendering pipeline. e.g. '&' is encoded to %26, but is '&' again on
-		// the article. When opening the editor, the article can not be found.
-		// try {
-		// topic = URLEncoder.encode(userContext.getTopic(), "UTF-8");
-		// }
-		// catch (UnsupportedEncodingException e) {}
-		String url =
-				"DiaFluxEditor.jsp?kdomID=" + id;
+		String url = "DiaFluxEditor.jsp?kdomID=" + id;
 		String winID = id.replaceAll("[^\\w]", "_");
 		String jsAction = "window.open('" + url + "', '" + winID + "');";
 		return jsAction;
