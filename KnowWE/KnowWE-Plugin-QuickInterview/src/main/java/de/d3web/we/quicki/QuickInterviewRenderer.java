@@ -488,7 +488,8 @@ public class QuickInterviewRenderer {
 			String cssclass = "answer";
 
 			// assemble JS string
-			String jscall = " rel=\"{" + Strings.encodeHtml(choice.getName()) + "', "
+			String jscall = " rel=\"{oid:'"
+					+ Strings.encodeHtml(choice.getName().replace("'", "\\'")) + "', "
 					+ "web:'" + web + "', " + "ns:'" + namespace + "', "
 					+ "qid:'" + Strings.encodeURL(q.getName()) + "', "
 					+ "choice:'" + Strings.encodeURL(choice.getName()) + "', "
@@ -673,7 +674,8 @@ public class QuickInterviewRenderer {
 			}
 
 			String cssclass = "answerMC";
-			String jscall = " rel=\"{oid:'" + Strings.encodeHtml(choice.getName()) + "', "
+			String jscall = " rel=\"{oid:'"
+					+ Strings.encodeHtml(choice.getName().replace("'", "\\'")) + "', "
 					+ "web:'" + web + "', " + "ns:'" + namespace + "', "
 					+ "qid:'" + Strings.encodeURL(q.getName()) + "', "
 					+ "type:'mc', " + "choice:'"
