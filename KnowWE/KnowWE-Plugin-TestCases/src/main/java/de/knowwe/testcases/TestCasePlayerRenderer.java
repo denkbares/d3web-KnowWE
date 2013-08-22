@@ -44,6 +44,7 @@ import de.d3web.core.utilities.NamedObjectComparator;
 import de.d3web.core.utilities.Pair;
 import de.d3web.core.utilities.Triple;
 import de.d3web.strings.Strings;
+import de.d3web.strings.Strings.Encoding;
 import de.d3web.testcase.TestCaseUtils;
 import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.Finding;
@@ -320,8 +321,8 @@ public class TestCasePlayerRenderer implements Renderer {
 		String cookiename = "additionalQuestions" + section.getTitle();
 		Cookie[] cookies = user.getRequest().getCookies();
 		if (cookies != null) for (Cookie cookie : cookies) {
-			if (Strings.decodeURL(cookie.getName()).equals(cookiename)) {
-				additionalQuestions = Strings.decodeURL(cookie.getValue());
+			if (Strings.decodeURL(cookie.getName(), Encoding.ISO8859_1).equals(cookiename)) {
+				additionalQuestions = Strings.decodeURL(cookie.getValue(), Encoding.ISO8859_1);
 				break;
 			}
 		}
@@ -483,7 +484,8 @@ public class TestCasePlayerRenderer implements Renderer {
 
 	private TerminologyObject renderObservationQuestionAdder(Section<?> section, UserContext user, TerminologyManager manager, Collection<String> alreadyAddedQuestions, TableModel tableModel, int column) {
 		String key = QUESTION_SELECTOR_KEY + "_" + section.getID();
-		String selectedQuestion = Strings.decodeURL(KnowWEUtils.getCookie(key, "", user));
+		String cookie = KnowWEUtils.getCookie(key, "", user);
+		String selectedQuestion = Strings.decodeURL(cookie, Encoding.ISO8859_1);
 		TerminologyObject object = null;
 		RenderResult selectsb2 = new RenderResult(user);
 		selectsb2.appendHtml("<form><select name=\"toAdd\" id=adder"
@@ -604,7 +606,7 @@ public class TestCasePlayerRenderer implements Renderer {
 
 	public static String getSelectedTestCaseId(Section<?> section, UserContext user) {
 		return Strings.decodeURL(KnowWEUtils.getCookie(generateSelectedTestCaseCookieKey(section),
-				"", user));
+				"", user), Encoding.ISO8859_1);
 	}
 
 	public static String generateSelectedTestCaseCookieKey(Section<?> section) {
