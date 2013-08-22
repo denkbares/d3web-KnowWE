@@ -45,5 +45,7 @@ KNOWWE.plugin.jspwikiConnector.disableEditButtons = function() {
 }
 
 jq$(document).ready(function() {
-	_EC.executeIfPrivileged(KNOWWE.plugin.jspwikiConnector.enableEditButtons, KNOWWE.plugin.jspwikiConnector.disableEditButtons);
+    if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
+    	_EC.executeIfPrivileged(KNOWWE.plugin.jspwikiConnector.enableEditButtons, KNOWWE.plugin.jspwikiConnector.disableEditButtons);
+    }
 });
