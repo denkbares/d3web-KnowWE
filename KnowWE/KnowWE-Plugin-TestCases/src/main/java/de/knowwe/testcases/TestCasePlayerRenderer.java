@@ -321,8 +321,8 @@ public class TestCasePlayerRenderer implements Renderer {
 		String cookiename = "additionalQuestions" + section.getTitle();
 		Cookie[] cookies = user.getRequest().getCookies();
 		if (cookies != null) for (Cookie cookie : cookies) {
-			if (Strings.decodeURL(cookie.getName(), Encoding.ISO8859_1).equals(cookiename)) {
-				additionalQuestions = Strings.decodeURL(cookie.getValue(), Encoding.ISO8859_1);
+			if (Strings.decodeURL(cookie.getName(), Encoding.ISO_8859_1).equals(cookiename)) {
+				additionalQuestions = Strings.decodeURL(cookie.getValue(), Encoding.ISO_8859_1);
 				break;
 			}
 		}
@@ -405,7 +405,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		for (String question : additionalQuestions) {
 			if (first) first = false;
 			else builder.append(QUESTIONS_SEPARATOR);
-			builder.append(Strings.encodeHtml(question));
+			builder.append(Strings.encodeHtml(question.replace("\\", "\\\\")));
 		}
 		return builder.toString();
 	}
@@ -485,7 +485,7 @@ public class TestCasePlayerRenderer implements Renderer {
 	private TerminologyObject renderObservationQuestionAdder(Section<?> section, UserContext user, TerminologyManager manager, Collection<String> alreadyAddedQuestions, TableModel tableModel, int column) {
 		String key = QUESTION_SELECTOR_KEY + "_" + section.getID();
 		String cookie = KnowWEUtils.getCookie(key, "", user);
-		String selectedQuestion = Strings.decodeURL(cookie, Encoding.ISO8859_1);
+		String selectedQuestion = Strings.decodeURL(cookie, Encoding.ISO_8859_1);
 		TerminologyObject object = null;
 		RenderResult selectsb2 = new RenderResult(user);
 		selectsb2.appendHtml("<form><select name=\"toAdd\" id=adder"
@@ -606,7 +606,7 @@ public class TestCasePlayerRenderer implements Renderer {
 
 	public static String getSelectedTestCaseId(Section<?> section, UserContext user) {
 		return Strings.decodeURL(KnowWEUtils.getCookie(generateSelectedTestCaseCookieKey(section),
-				"", user), Encoding.ISO8859_1);
+				"", user), Encoding.ISO_8859_1);
 	}
 
 	public static String generateSelectedTestCaseCookieKey(Section<?> section) {
