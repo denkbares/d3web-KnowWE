@@ -63,7 +63,7 @@ Wiki.locatemenu = function(base, el) {
 // 1) to avoid popup at mouseover but having it on focus instead
 // 2) locate search-popup, even if text is selected
 if (SearchBox) {
-	
+
 	SearchBox.onPageLoadQuickSearch_original = SearchBox.onPageLoadQuickSearch;
 	SearchBox.ajaxQuickSearch_original = SearchBox.ajaxQuickSearch;
 	SearchBox.noSearchTargetText_original = null;
@@ -82,7 +82,7 @@ if (SearchBox) {
 			this.hover.start(0.9);
 		}.bind(this));
 	}
-	
+
 	SearchBox.ajaxQuickSearch = function() {
 		// capture original text before first search
 		if (!SearchBox.noSearchTargetText_original) {
@@ -98,16 +98,17 @@ if (SearchBox) {
 	}
 };
 
-
 var DenkbaresSkin = {};
 
 /**
  * Initialize cutting edge favorite scrolling
  */
-DenkbaresSkin.initFavScroll = function () {
-	if (DenkbaresSkin.isInitialized) return;
+DenkbaresSkin.initFavScroll = function() {
+	if (DenkbaresSkin.isInitialized)
+		return;
 	var element = $("favorites");
-	if (!element) return;
+	if (!element)
+		return;
 	DenkbaresSkin.isInitialized = true;
 	DenkbaresSkin.originY = element.offsetTop;
 	// initialize some additional events
@@ -115,14 +116,14 @@ DenkbaresSkin.initFavScroll = function () {
 };
 
 /**
- * Quick convenience function to be called every time
- * the document size may have changed.
- * Unfortunately this cannot be traced by an event. 
+ * Quick convenience function to be called every time the document size may have
+ * changed. Unfortunately this cannot be traced by an event.
  */
-DenkbaresSkin.checkDocSizeScroll = function () {
-	//alert("check");
+DenkbaresSkin.checkDocSizeScroll = function() {
+	// alert("check");
 	var docHeight = window.getScrollHeight();
-	if (DenkbaresSkin.docHeight == docHeight) return;
+	if (DenkbaresSkin.docHeight == docHeight)
+		return;
 	DenkbaresSkin.docHeight = docHeight;
 	DenkbaresSkin.checkFavScroll();
 };
@@ -131,45 +132,44 @@ DenkbaresSkin.checkDocSizeScroll = function () {
  * Get the height of the document independent of the used browser.
  */
 DenkbaresSkin.getDocHeight = function() {
-    var D = document;
-    return Math.max(
-        Math.max(D.body.scrollHeight, D.documentElement.scrollHeight),
-        Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),
-        Math.max(D.body.clientHeight, D.documentElement.clientHeight)
-    );
+	var D = document;
+	return Math.max(Math.max(D.body.scrollHeight,
+			D.documentElement.scrollHeight), Math.max(D.body.offsetHeight,
+			D.documentElement.offsetHeight), Math.max(D.body.clientHeight,
+			D.documentElement.clientHeight));
 }
 
 /**
- * Adapt the left menu favorites to the screen
- * so that the display size is optimally used.
+ * Adapt the left menu favorites to the screen so that the display size is
+ * optimally used.
  */
-DenkbaresSkin.checkFavScroll = function () {
+DenkbaresSkin.checkFavScroll = function() {
 	DenkbaresSkin.initFavScroll();
 	var element = $("favorites");
-	if (!element) return;
+	if (!element)
+		return;
 	var originY = DenkbaresSkin.originY;
 	var wHeight = window.getHeight();
 	var docHeight = DenkbaresSkin.getDocHeight();
 	var favHeight = element.clientHeight;
-	var favBottom = originY + favHeight; 
+	var favBottom = originY + favHeight;
 	var scrollY = window.getScrollTop();
 	var scrollMax = docHeight - wHeight;
 	var favToScroll = favHeight - wHeight;
-	var disableFixing = (favHeight >= $("actionsBottom").offsetTop + $("actionsBottom").clientHeight);
+	var disableFixing = (favHeight >= $("actionsBottom").offsetTop
+			+ $("actionsBottom").clientHeight);
 	if (scrollY <= originY || disableFixing) {
 		// when reaching top of page or if page height is made by leftMenu
 		// align fav originally to page
 		element.style.position = "static";
-		element.style.top = originY+"px";
-	}
-	else if (scrollMax - scrollY <= favToScroll) {
+		element.style.top = originY + "px";
+	} else if (scrollMax - scrollY <= favToScroll) {
 		// when reaching end of page
 		// align bottom of fav to bottom of page
 		element.style.position = "absolute";
-		element.style.top = (docHeight - favHeight)+"px";
+		element.style.top = (docHeight - favHeight) + "px";
 		element.style.left = "0px";
-	}
-	else {
+	} else {
 		// otherwise fix fav to the top of the viewport
 		element.style.position = "fixed";
 		element.style.top = "0px";
@@ -179,13 +179,15 @@ DenkbaresSkin.checkFavScroll = function () {
 
 DenkbaresSkin.cleanTrail = function() {
 	var breadcrumbs = jq$('.breadcrumbs');
-	if (breadcrumbs.length == 0) return;
+	if (breadcrumbs.length == 0)
+		return;
 	var crumbs = breadcrumbs.find('a.wikipage');
-	if (crumbs.length == 0) return;
+	if (crumbs.length == 0)
+		return;
 	var crumbsCheck = new Object();
 	var removeBecauseLeadingComma = false;
 	// remove duplicate entries
-	for (var i = crumbs.length - 1; i >= 0; i--) {
+	for ( var i = crumbs.length - 1; i >= 0; i--) {
 		var crumb = crumbs[i];
 		var crumbHtml = jq$(crumb).clone().wrap('<p>').parent().html();
 		var existingEntry = crumbsCheck[crumbHtml];
@@ -193,30 +195,31 @@ DenkbaresSkin.cleanTrail = function() {
 			crumbsCheck[crumbHtml] = i;
 		} else {
 			jq$(crumb).remove();
-			if (i == 0) removeBecauseLeadingComma = true;
+			if (i == 0)
+				removeBecauseLeadingComma = true;
 		}
 	}
 	// remove superfluous commas
 	var lastNodeText = "";
-	for (var i = 0; i < breadcrumbs[0].childNodes.length; i++) {
+	for ( var i = 0; i < breadcrumbs[0].childNodes.length; i++) {
 		var childNode = breadcrumbs[0].childNodes[i];
 		var tempValue = childNode.nodeValue;
 		if ((lastNodeText == ", " || removeBecauseLeadingComma == true)
 				&& tempValue == ", ") {
 			childNode.nodeValue = "";
 			removeBecauseLeadingComma = false;
-		}		
+		}
 		lastNodeText = tempValue;
-		
+
 	}
 	var text = jq$(breadcrumbs.first());
 }
 
-
-jq$(window).ready(function(){
-	DenkbaresSkin.cleanTrail();
-});
-
+if (typeof jq$ != 'undefined') {
+	jq$(window).ready(function() {
+		DenkbaresSkin.cleanTrail();
+	});
+}
 
 window.onresize = DenkbaresSkin.checkFavScroll;
 window.onscroll = DenkbaresSkin.checkFavScroll;
