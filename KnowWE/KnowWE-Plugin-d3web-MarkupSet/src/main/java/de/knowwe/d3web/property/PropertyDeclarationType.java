@@ -60,12 +60,12 @@ public class PropertyDeclarationType extends AbstractType {
 		Pattern p = Pattern.compile(propertyDeclaration, Pattern.MULTILINE + Pattern.DOTALL);
 		setSectionFinder(new RegexSectionFinder(p, 1));
 
-		this.childrenTypes.add(new Indent());
 		this.childrenTypes.add(new PropertyObjectReference());
 
 		this.childrenTypes.add(new PropertyType());
 		this.childrenTypes.add(new LocaleType());
 		this.childrenTypes.add(new PropertyContentType());
+		this.childrenTypes.add(new Indent());
 
 		addSubtreeHandler(Priority.LOW, new PropertyDeclarationHandler());
 		this.setRenderer(AnchorRenderer.getDelegateInstance());
