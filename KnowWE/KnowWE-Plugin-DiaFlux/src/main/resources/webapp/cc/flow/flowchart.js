@@ -27,7 +27,7 @@ Flowchart.parseXML = function(text) {
 	}
 	catch (error) {
 		xml = document.createElement('data');
-		xml.innerHTML = this.responseText;
+		xml.innerHTML = text;
 		return xml;
 	}
 }

@@ -54,9 +54,6 @@ public class CorrectionToolProvider implements ToolProvider {
 
 		int threshold = Integer.valueOf(wikiConfig.getString("knowweplugin.correction.threshold"));
 		Article article = KnowWEUtils.getCompilingArticles(section).iterator().next();
-		if (!hasError(article, section)) {
-			return new Tool[0];
-		}
 
 		for (CorrectionProvider c : getProviders(section)) {
 			List<CorrectionProvider.Suggestion> s = c.getSuggestions(article, section, threshold);

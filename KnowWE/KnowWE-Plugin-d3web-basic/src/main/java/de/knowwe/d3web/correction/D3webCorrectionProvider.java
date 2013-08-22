@@ -31,6 +31,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.Message.Type;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
@@ -47,7 +48,8 @@ public class D3webCorrectionProvider implements CorrectionProvider {
 			return null;
 		}
 
-		if (!section.hasErrorInSubtree(article)) {
+		if (!section.hasErrorInSubtree(article)
+				&& !section.hasMessageInSubtree(article, Type.WARNING)) {
 			return null;
 		}
 

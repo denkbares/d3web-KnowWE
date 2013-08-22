@@ -18,6 +18,7 @@
  */
 package de.knowwe.core.kdom.renderer;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
@@ -66,7 +67,7 @@ public class KDOMRendererType extends DefaultMarkupType {
 
 			string.appendHtml("</table>"/* </div>" */);
 
-			string.appendHtml("<script type='text/javascript'>jq$('#kdomTreeTable').treeTable();</script>");
+			string.appendHtml("<script type='text/javascript'>jq$('#kdomTreeTable').treeTable({clickableNodeNames: true});</script>");
 
 		}
 
@@ -90,10 +91,8 @@ public class KDOMRendererType extends DefaultMarkupType {
 			string.appendHtml("<td>" + s.getOffSetFromFatherText() + "</td>");
 			string.appendHtml("<td>" + s.getChildren().size() + "</td>");
 
-			string.appendHtml("<td><div class='table_text'><div>");
-			string.append("~|");
-			string.appendJSPWikiMarkup(s.getText());
-			string.append("~|");
+			string.appendHtml("<td><div class='table_text kdom_table_text'><div class='kdom_source'>");
+			string.append(Strings.encodeHtml(s.getText()) + "&#8203;");
 			string.appendHtml("</div></div></td>");
 			string.appendHtml("</tr>");
 			if (s.getChildren().size() > 0) {

@@ -142,11 +142,8 @@
 			value="Generates correction suggestions for d3web terms." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="scope" value="PropertyReference" />
-		<parameter id="scope" value="QuestionReference" />
-		<parameter id="scope" value="QuestionnaireReference" />
-		<parameter id="scope" value="SolutionReference" />
-		<parameter id="scope" value="IDObjectReference" />
+		<parameter id="scope" value="D3webTermReference" />
+		<parameter id="scope" value="D3webTermDefinition" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="CorrectionProvider"

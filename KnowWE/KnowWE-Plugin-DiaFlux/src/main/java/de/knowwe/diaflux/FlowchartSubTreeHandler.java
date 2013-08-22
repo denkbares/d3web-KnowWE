@@ -89,8 +89,8 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 			return null;
 		}
 
+		String name = FlowchartType.getFlowchartName(s);
 		Map<String, String> attributeMap = AbstractXMLType.getAttributeMapFor(s);
-		String name = attributeMap.get("name");
 		boolean autostart = Boolean.parseBoolean(attributeMap.get("autostart"));
 
 		if (name == null || name.equals("")) {
@@ -98,14 +98,11 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 		}
 
 		List<Node> nodes = createNodes(article, kb, s);
-
 		List<Edge> edges = createEdges(article, s, nodes);
-
 		Flow flow = FlowFactory.createFlow(kb, name, nodes, edges);
 		flow.setAutostart(autostart);
 
 		FlowchartUtils.storeFlowProperty(flow, ORIGIN_KEY, s.getID());
-
 		String icon = attributeMap.get("icon");
 		if (icon != null) {
 			FlowchartUtils.storeFlowProperty(flow, ICON_KEY, icon);
@@ -215,8 +212,9 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 					nodeSection);
 
 			if (handler == null) {
-				Messages.storeMessage(article, nodeSection, FlowchartSubTreeHandler.class, Messages.error("No NodeHandler found for: "
-						+ nodeSection.getText()));
+				Messages.storeMessage(article, nodeSection, FlowchartSubTreeHandler.class,
+						Messages.error("No NodeHandler found for: "
+								+ nodeSection.getText()));
 			}
 			else {// handler can in general handle NodeType
 				String id = AbstractXMLType.getAttributeMapFor(nodeSection).get("fcid");
@@ -232,9 +230,9 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 					Message msg = Messages.warning("Could not create node for: " + text);
 
 					Messages.storeMessage(article, nodeSection, FlowchartSubTreeHandler.class, msg);
-					
+
 					node = new CommentNode(id, "Surrogate for node of type " + text);
-					
+
 				}
 
 				nodeSection.getSectionStore().storeObject(NODE_KEY, node);

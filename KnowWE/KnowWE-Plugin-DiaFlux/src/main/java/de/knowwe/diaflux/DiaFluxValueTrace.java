@@ -176,7 +176,10 @@ public class DiaFluxValueTrace implements SessionObject {
 		}
 
 		Value tracedValue = tracedValues.get(node);
-		Value value = D3webUtils.getValueNonBlocking(session, (ValueObject) termObject);
+		Value value = null;
+		if (termObject instanceof ValueObject) {
+			value = D3webUtils.getValueNonBlocking(session, (ValueObject) termObject);
+		}
 		String tooltip = "";
 		if (tracedValue == null) {
 			// Node has reference TermObject, but was not active during

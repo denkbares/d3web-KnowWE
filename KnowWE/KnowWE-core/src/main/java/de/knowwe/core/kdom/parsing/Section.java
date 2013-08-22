@@ -666,11 +666,19 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	/**
+	 * Method that looks (recursively down) for this section whether some
+	 * message of the specified type has been stored in that subtree.
+	 */
+	public boolean hasErrorInSubtree() {
+		return hasMessageInSubtree(Message.Type.ERROR);
+	}
+
+	/**
 	 * Method that looks (recursively down) for this section whether some errors
 	 * has been stored in that subtree.
 	 */
-	public boolean hasErrorInSubtree() {
-		Map<String, Collection<Message>> errors = Messages.getMessages(this, Message.Type.ERROR);
+	public boolean hasMessageInSubtree(Message.Type type) {
+		Map<String, Collection<Message>> errors = Messages.getMessages(this, type);
 		if (!errors.isEmpty()) return true;
 		for (Section<?> child : children) {
 			boolean err = child.hasErrorInSubtree();
@@ -682,11 +690,20 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	/**
+	 * Method that looks (recursively down) for this section whether some
+	 * messages of the specified type has been stored in that subtree for the
+	 * given article.
+	 */
+	public boolean hasErrorInSubtree(Article article) {
+		return hasMessageInSubtree(article, Message.Type.ERROR);
+	}
+
+	/**
 	 * Method that looks (recursively down) for this section whether some errors
 	 * has been stored in that subtree for the given article.
 	 */
-	public boolean hasErrorInSubtree(Article article) {
-		Collection<Message> errors = Messages.getMessages(article, this, Message.Type.ERROR);
+	public boolean hasMessageInSubtree(Article article, Message.Type type) {
+		Collection<Message> errors = Messages.getMessages(article, this, type);
 		if (!errors.isEmpty()) return true;
 		for (Section<?> child : children) {
 			boolean err = child.hasErrorInSubtree(article);
