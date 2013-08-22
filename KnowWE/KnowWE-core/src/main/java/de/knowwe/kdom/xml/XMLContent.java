@@ -20,19 +20,47 @@
 
 package de.knowwe.kdom.xml;
 
+import java.util.regex.Pattern;
+
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.basicType.KeywordType;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.user.UserContext;
 
 public class XMLContent extends AbstractType {
 
+	// render nothing for CData keywords
+	private static final Renderer EMPTY_RENDERER = new Renderer() {
+
+		@Override
+		public void render(Section<?> section, UserContext user, RenderResult result) {
+		}
+	};
+
+	private static final String CDATA_START = "\\A(\\s*" + Pattern.quote("<![CDATA[") + ")";
+	private static final String CDATA_END = "(" + Pattern.quote("]]>") + "\\s*)\\z";
+
 	public XMLContent() {
 		sectionFinder = new AllTextSectionFinder();
+
+		KeywordType endCData = new KeywordType(
+				Pattern.compile(CDATA_START + ".*" + CDATA_END, Pattern.DOTALL), 2);
+		endCData.setRenderer(EMPTY_RENDERER);
+		addChildType(endCData);
+
+		KeywordType startCData = new KeywordType(
+				Pattern.compile(CDATA_START), 1);
+		startCData.setRenderer(EMPTY_RENDERER);
+		addChildType(startCData);
 	}
 
 	public XMLContent(Type child) {
 		this();
-		this.childrenTypes.add(child);
+		addChildType(child);
 	}
 
 	@Override

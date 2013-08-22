@@ -54,12 +54,12 @@ Rule.prototype.toXML = function(dx, dy) {
 	xml += '\t\t<target>'+this.targetNode.getNodeModel().fcid+'</target>\n';
 	if (this.guard && this.guard.getMarkup() != 'NOP') {
 		if (DiaFluxUtils.isString(this.guard)) {
-			xml += '\t\t<guard>' + this.guard + '</guard>\n';
+			xml += '\t\t<guard><![CDATA[' + this.guard + ']]></guard>\n';
 		}
 		else {
-			xml += '\t\t<guard markup="'+this.guard.getMarkup()+'">' +
+			xml += '\t\t<guard markup="'+this.guard.getMarkup()+'"><![CDATA[' +
 					this.guard.toXML(this) +
-					'</guard>\n';
+					']]></guard>\n';
 		}
 	}
 	for (var i=0; i<this.routingPoints.length; i++) {

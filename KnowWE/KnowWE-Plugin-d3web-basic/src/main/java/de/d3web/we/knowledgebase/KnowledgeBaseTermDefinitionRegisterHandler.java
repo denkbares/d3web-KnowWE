@@ -24,7 +24,6 @@ import java.util.Set;
 import de.d3web.strings.Identifier;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.packaging.PackageTermReference;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -64,13 +63,13 @@ public class KnowledgeBaseTermDefinitionRegisterHandler extends SubtreeHandler<K
 				Set<String> defaultPackages = packageManager.getDefaultPackages(article);
 				for (String defaultPackage : defaultPackages) {
 					terminologyHandler.registerTermDefinition(section,
-							PackageTermReference.class,
+							Package.class,
 							new Identifier(defaultPackage));
 				}
 			}
 			else {
 				terminologyHandler.registerTermDefinition(section,
-						PackageTermReference.class,
+						Package.class,
 						new Identifier(annotationString));
 			}
 		}

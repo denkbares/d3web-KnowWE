@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.UUID;
 
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
@@ -141,10 +142,10 @@ public class JSPHelper {
 				FlowchartType.class);
 
 		if (flowchart == null) {
-			return getEmptyFlowchart();
+			return Strings.encodeHtml(getEmptyFlowchart());
 		}
 
-		return getSectionText(kdomID);
+		return Strings.encodeHtml(flowchart.getText());
 	}
 
 	/**

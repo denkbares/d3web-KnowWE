@@ -30,7 +30,6 @@ import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageCompiler;
-import de.knowwe.core.compile.packaging.PackageTermReference;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
@@ -119,7 +118,7 @@ public class CompileFlag extends DefaultMarkupType {
 
 		return "%%" + MARKUP_NAME + " " + replacement + "\n";
 	}
-	
+
 	private class CompileFlagTermDefinitionRegisterHandler extends SubtreeHandler<CompileFlag> {
 
 		public CompileFlagTermDefinitionRegisterHandler() {
@@ -128,13 +127,14 @@ public class CompileFlag extends DefaultMarkupType {
 
 		@Override
 		public Collection<Message> create(Article article, Section<CompileFlag> section) {
+
 			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
-
-			String content = DefaultMarkupType.getContent(section).trim();
-			terminologyHandler.registerTermDefinition(section,
-					PackageTermReference.class,
-					new Identifier(content));
-
+			for (Section<SinglePackageReference> packageSection : Sections.findSuccessorsOfType(
+					section, SinglePackageReference.class)) {
+				terminologyHandler.registerTermDefinition(packageSection,
+						Package.class,
+						new Identifier(packageSection.getText()));
+			}
 			return Messages.noMessage();
 		}
 

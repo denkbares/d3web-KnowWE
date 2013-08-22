@@ -34,14 +34,28 @@ import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
 public final class KeywordType extends AbstractType {
 
 	private final String keyWord;
-	private static final StyleRenderer DEFAULT_RENDERER = new StyleRenderer(StyleRenderer.KEYWORDS,
-			MaskMode.htmlEntities);
+	private static final StyleRenderer DEFAULT_RENDERER =
+			new StyleRenderer(StyleRenderer.KEYWORDS, MaskMode.htmlEntities);
 
-	public KeywordType(String keyWord) {
-		this.keyWord = keyWord;
-		String regex = "\\s*(" + Pattern.quote(keyWord) + ")\\s*";
+	/**
+	 * Creates a new keyword type for a specific keyword that if treated as a
+	 * literal string, not as a regular expression. Thus also characters may be
+	 * included in the terminalKeyWord that usually interpreted as regular
+	 * expression control characters.
+	 * 
+	 * @param literalKeyWord the literal keyword
+	 */
+	public KeywordType(String literalKeyWord) {
+		this.keyWord = literalKeyWord;
+		String regex = "\\s*(" + Pattern.quote(literalKeyWord) + ")\\s*";
 		Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
 		setSectionFinder(new RegexSectionFinder(pattern, 1));
+		setRenderer(DEFAULT_RENDERER);
+	}
+
+	public KeywordType(Pattern keyWordPattern, int group) {
+		this.keyWord = keyWordPattern.pattern() + ".group(" + group + ")";
+		setSectionFinder(new RegexSectionFinder(keyWordPattern, group));
 		setRenderer(DEFAULT_RENDERER);
 	}
 

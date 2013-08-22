@@ -36,7 +36,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class PackageTermReference extends AbstractType implements Term, RenamableTerm {
 
 	public PackageTermReference() {
-		Pattern pattern = Pattern.compile("^(\\p{Graph}+\\b)",
+		Pattern pattern = Pattern.compile("^([\\w-_]+\\b)",
 				Pattern.MULTILINE + Pattern.DOTALL);
 		this.setSectionFinder(new RegexSectionFinder(pattern));
 		setRenderer(StyleRenderer.PACKAGE);
@@ -44,7 +44,7 @@ public class PackageTermReference extends AbstractType implements Term, Renamabl
 
 	@Override
 	public Class<?> getTermObjectClass(Section<? extends Term> section) {
-		return PackageTermReference.class;
+		return Package.class;
 	}
 
 	@Override

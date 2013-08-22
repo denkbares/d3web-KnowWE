@@ -153,7 +153,7 @@ public class SaveFlowchartAction extends AbstractAction {
 			return null;
 		}
 
-		String flowname = matcher.group(1);
+		String flowname = Strings.decodeHtml(matcher.group(1));
 
 		String title = articles.iterator().next();
 		Article article = Environment.getInstance().getArticle(web, title);

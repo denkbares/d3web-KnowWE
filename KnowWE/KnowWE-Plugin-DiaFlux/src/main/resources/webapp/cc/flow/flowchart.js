@@ -16,6 +16,22 @@ function Flowchart(parent, id, width, height, idCounter) {
 
 Flowchart.imagePath = "cc/image/";
 
+/**
+ * xml parsing with backward compatibility from older generated flowchart xml files
+ * that are not really xml compatible
+ */
+Flowchart.parseXML = function(text) {
+	try {
+		var xml = jq$.parseXML(text);
+		return xml;
+	}
+	catch (error) {
+		xml = document.createElement('data');
+		xml.innerHTML = this.responseText;
+		return xml;
+	}
+}
+
 Flowchart.loadFlowchart = function(kdomid, parent){
 	
 	var params = {
@@ -29,9 +45,11 @@ Flowchart.loadFlowchart = function(kdomid, parent){
 		response : {
 			fn : function() {
 				KNOWWE.core.util.updateProcessingState(-1);
-				var xml = document.createElement('data');
-				xml.innerHTML = this.responseText;
-				
+				var xml = this.responseXML;
+				// workaround if xml parser fails (backward compatibility)
+				if (!xml) {
+					xml = Flowchart.parseXML(this.responseText);
+				}
 				var flow = Flowchart.createFromXML(parent, xml);
 				flow.kdomid = kdomid;
 				KNOWWE.helper.observer.notify('flowchartrendered', {flow: flow});

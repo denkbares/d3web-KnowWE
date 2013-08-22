@@ -190,12 +190,12 @@ Node.prototype.toXML = function(dx, dy) {
 
 		if (action.markup == 'NOP') {
 				xml += '\t\t<decision>' + 
-				(action.expression ? action.expression : '') + 
+				(action.expression ? '<![CDATA['+action.expression+']]>' : '') + 
 				'</decision>\n';
 				
 		} else { 
 			xml += '\t\t<action markup="' + action.markup + '">' + 
-			(action.expression ? action.expression : '') + 
+			(action.expression ? '<![CDATA['+action.expression+']]>' : '') + 
 			'</action>\n';
 		}
 	}

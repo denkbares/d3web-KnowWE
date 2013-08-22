@@ -31,8 +31,8 @@ import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.strings.Identifier;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.packaging.UsesAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageTermDefinition;
+import de.knowwe.core.compile.packaging.UsesAnnotationNameType;
 import de.knowwe.core.compile.packaging.UsesAnnotationRenderer;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -98,10 +98,8 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_AFFILIATION, false);
 		MARKUP.addContentType(new KnowledgeBaseCompileType());
 
-		MARKUP.addAnnotationNameType(ANNOTATION_COMPILE, new
-				UsesAnnotationNameType());
-		MARKUP.addAnnotationContentType(ANNOTATION_COMPILE, new
-				PackageTermDefinition());
+		MARKUP.addAnnotationNameType(ANNOTATION_COMPILE, new UsesAnnotationNameType());
+		MARKUP.addAnnotationContentType(ANNOTATION_COMPILE, new PackageTermDefinition(true));
 		MARKUP.addAnnotationRenderer(ANNOTATION_COMPILE, new UsesAnnotationRenderer());
 	}
 

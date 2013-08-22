@@ -142,7 +142,7 @@ public class DiaFluxValueTrace implements SessionObject {
 		for (FlowRun flowRun : runs) {
 			for (Node node : flowRun.getActiveNodes()) {
 				TerminologyObject termObject = getTermObject(node);
-				if (termObject != null) {
+				if (termObject instanceof ValueObject) {
 					Value value = session.getBlackboard().getValue((ValueObject) termObject);
 					tracedValues.put(node, value);
 				}

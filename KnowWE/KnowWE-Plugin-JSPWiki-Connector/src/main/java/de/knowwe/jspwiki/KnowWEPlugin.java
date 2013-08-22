@@ -343,7 +343,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	private String getExceptionRendering(UserContext context, Exception e) {
 		RenderResult renderResult = new RenderResult(context.getRequest());
 		String message = "An exception occured while compiling and rendering this article, "
-				+ "try going pack to the last working version of the article.\n\n"
+				+ "try going back to the last working version of the article.\n\n"
 				+ ExceptionUtils.getStackTrace(e);
 		renderResult.appendHtmlElement("div", message, "style",
 				"white-space: pre; overflow: hidden");

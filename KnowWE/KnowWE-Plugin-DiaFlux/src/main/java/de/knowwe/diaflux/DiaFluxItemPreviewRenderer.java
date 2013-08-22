@@ -69,7 +69,7 @@ public class DiaFluxItemPreviewRenderer implements PreviewRenderer {
 	}
 
 	private void renderEdge(Section<EdgeType> edge, UserContext user, RenderResult result) {
-		result.appendHtml("<div class='preview edge'>&nbsp;&nbsp;").append("- edge ");
+		result.appendHtml("<div class='preview edge'>&nbsp;&nbsp;").append("- Edge ");
 		Section<GuardType> guard = Sections.findSuccessor(edge, GuardType.class);
 		if (guard != null) {
 			DelegateRenderer.getRenderer(guard, user).render(guard, user, result);
@@ -81,7 +81,7 @@ public class DiaFluxItemPreviewRenderer implements PreviewRenderer {
 		Section<NodeContentType> action = Sections.findSuccessor(node, NodeContentType.class);
 		result.appendHtml("<div class='preview node ")
 				.append(getNodeCSS(action))
-				.appendHtml("'>&nbsp;&nbsp;").append("- node ");
+				.appendHtml("'>&nbsp;&nbsp;").append("- Node ");
 		renderNodePreviewHtml(action, user, result);
 		result.appendHtml("</div>");
 	}

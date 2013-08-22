@@ -185,13 +185,13 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 			annotationTypeSec.get().getRenderer().render(annotationTypeSec, user, string);
 		}
 		else {
-		 
+
 			String icon;
-			if(hasErrors){
+			if (hasErrors) {
 				icon = "KnowWEExtension/d3web/icon/uses_error16.gif";
 			}
-			else if(hasWarnings){
-				icon = "KnowWEExtension/d3web/icon/warn_error16.gif";
+			else if (hasWarnings) {
+				icon = "KnowWEExtension/d3web/icon/uses_warn16.gif";
 			}
 			else {
 				icon = "KnowWEExtension/images/package_obj.gif";

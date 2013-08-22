@@ -45,13 +45,14 @@ import de.knowwe.kdom.renderer.StyleRenderer;
  */
 public class PackageTermDefinition extends AbstractType implements Term, RenamableTerm {
 
-	public PackageTermDefinition() {
+	public PackageTermDefinition(boolean checkExistingSections) {
 
-		this.setSectionFinder(new AllTextSectionFinder());
-
+		setSectionFinder(new AllTextSectionFinder());
 		setRenderer(StyleRenderer.PACKAGE);
-		this.addSubtreeHandler(Priority.HIGH, new CheckSectionsForPackageExistence());
 
+		if (checkExistingSections) {
+			addSubtreeHandler(Priority.HIGH, new CheckSectionsForPackageExistence());
+		}
 	}
 
 	@Override

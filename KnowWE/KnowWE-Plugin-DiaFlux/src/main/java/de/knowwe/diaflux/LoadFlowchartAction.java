@@ -97,7 +97,8 @@ public class LoadFlowchartAction extends AbstractAction {
 		// TODO fix xml-soup of source and set content type to xml
 		// Problem: '<' and '>' in e.g. conditions that would have to be escaped
 		// properly
-		context.setContentType("text/html; charset=UTF-8");
+		context.setContentType("text/xml");
+		context.getWriter().write("<?xml version='1.0' encoding='UTF-8' standalone='yes'?>");
 		context.getWriter().write(source);
 	}
 

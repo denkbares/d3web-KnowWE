@@ -16,7 +16,8 @@ function FlowEditor(articleIDs){
 }
 
 FlowEditor.prototype.showEditor = function(){
-	theFlowchart = Flowchart.createFromXML('contents', $('flowchartSource'));
+	var flowXML = Flowchart.parseXML(jq$('#flowchartSource').text());
+	theFlowchart = Flowchart.createFromXML('contents', flowXML);
 	theFlowchart.setVisible(true);
 	$('properties.editName').value = theFlowchart.name || theFlowchart.id;
 	$('properties.autostart').checked = theFlowchart.autostart;
