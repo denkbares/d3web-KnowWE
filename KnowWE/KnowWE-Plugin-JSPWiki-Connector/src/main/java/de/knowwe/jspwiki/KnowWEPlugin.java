@@ -57,6 +57,8 @@ import com.ecyrd.jspwiki.plugin.WikiPlugin;
 import com.ecyrd.jspwiki.providers.ProviderException;
 import com.ecyrd.jspwiki.ui.TemplateManager;
 
+import de.d3web.plugin.Plugin;
+import de.d3web.plugin.PluginManager;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.RessourceLoader;
@@ -475,6 +477,33 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 		List<String> script = loader.getScriptIncludes();
 		for (String resource : script) {
+
+			/*
+			 * Check whether the corresponding plugin shipping the resource is
+			 * also existing in current installation As css and js dependencies
+			 * within the plugin manifests are not resolved by the build process
+			 * broken dependencies might happen.
+			 */
+			String pluginPrefix = "KnowWE-Plugin-";
+			if (resource.startsWith(pluginPrefix)) {
+				String resourceName = resource.substring(0, resource.lastIndexOf("."));
+				Plugin[] plugins = PluginManager.getInstance().getPlugins();
+				boolean found = false;
+				for (Plugin plugin : plugins) {
+					if (resourceName.startsWith(plugin.getPluginID())) {
+						found = true;
+					}
+				}
+				if (!found) {
+					// obviously the plugin is not available in current
+					// installation
+					Logger.getLogger(this.getClass().getName()).log(
+							Level.WARNING,
+							"Found dependency to a css/js resource (" + resource
+									+ ") where the corresponding plugin is not available.");
+					continue;
+				}
+			}
 			if (ctx != null && !ctx.toString().contains(resource)) {
 				if (!resource.contains("://")) {
 					TemplateManager.addResourceRequest(wikiContext,
