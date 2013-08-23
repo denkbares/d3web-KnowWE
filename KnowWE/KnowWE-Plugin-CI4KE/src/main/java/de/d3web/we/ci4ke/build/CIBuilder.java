@@ -107,12 +107,11 @@ public class CIBuilder {
 		executor.run();
 
 		BuildResult build = executor.getBuildResult();
-		// set verbose persistence flag, will be considered by persistence
-		boolean verbosePersistence = lookUpVerboseFlag();
-		build.setVerbosePersistence(verbosePersistence);
 
 		// add resulting build to dashboard
 		if (build != null && !Thread.interrupted()) {
+			// set verbose persistence flag, will be considered by persistence
+			build.setVerbosePersistence(lookUpVerboseFlag());
 			dashboard.addNewBuild(build);
 		}
 		ProgressListenerManager.getInstance().removeProgressListener(dashboardName);
