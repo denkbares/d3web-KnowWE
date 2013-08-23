@@ -44,9 +44,10 @@ Guard.prototype.getConditionString = function() {
 }
 
 Guard.prototype.getDisplayHTML = function(values) {
-	var text = this.displayHTML ? this.displayHTML : this.conditionString.escapeHTML();
+	var text = this.displayHTML ? this.displayHTML : 
+		(this.conditionString ? this.conditionString.escapeHTML() : "");
 	if (values) {
-		text = Guard.inject(text, values);
+		text = Guard.inject(text, values, true);
 	}
 	return text;
 }
@@ -113,23 +114,25 @@ Guard.prototype.getValues = function(patternGuard, skipQuotes) {
 
 Guard.prototype.inject = function(values) {
 	this.conditionString = Guard.inject(this.conditionString, values);
-	this.displayHTML = Guard.inject(this.displayHTML, values);
+	this.displayHTML = Guard.inject(this.displayHTML, values, true);
 }
 
 Guard.prototype.isFormula = function() {
 	if (this.markup == 'timeDB'){
 		return true;
 	} else if (this.markup == 'KnOffice'){
-		return this.conditionString.startsWith('(') && this.conditionString.endsWith(')');
+		return this.conditionString && this.conditionString.startsWith('(') && this.conditionString.endsWith(')');
 	}
 	
 	return false;
 }
 
-Guard.inject = function(text, values) {
+Guard.inject = function(text, values, escapeHtml) {
 	var regexp = /\$\{[:\w]*\}/i;
 	for (var i=0; i<values.length; i++) {
-		text = text.replace(regexp, values[i]);
+		var item = values[i];
+		if (escapeHtml) item = item.escapeHTML();
+		text = text.replace(regexp, item);
 	}
 	return text;
 }

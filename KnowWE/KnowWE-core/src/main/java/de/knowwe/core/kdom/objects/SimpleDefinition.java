@@ -68,8 +68,9 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 	}
 
 	@Override
-	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, String oldValue, String replacement) {
-		return replacement;
+	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
+		String replacement = newIdentifier.getLastPathElement();
+		return TermUtils.quoteIfRequired(replacement);
 	}
 
 	private class StringDefinitionRegistrationHandler extends SubtreeHandler<SimpleDefinition> {

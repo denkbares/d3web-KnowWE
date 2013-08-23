@@ -65,7 +65,7 @@ public class JSPHelper {
 		boolean first = true;
 		for (Identifier identifier : matches) {
 			// filters KnowWE-Doc from object tree
-			if (identifier.getPathElements()[0].startsWith("Doc ")) continue;
+			if (identifier.getPathElementAt(0).startsWith("Doc ")) continue;
 
 			if (first) {
 				first = false;

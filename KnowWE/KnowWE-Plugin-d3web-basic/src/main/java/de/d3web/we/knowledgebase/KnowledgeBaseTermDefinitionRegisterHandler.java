@@ -55,26 +55,21 @@ public class KnowledgeBaseTermDefinitionRegisterHandler extends SubtreeHandler<K
 		for (String annotationString : annotationStrings) {
 
 			// register definition for the default package if there is no
-			// annotation
-			// to specify another package
+			// annotation to specify another package
 			if (annotationString == null) {
-				PackageManager packageManager = Environment.getInstance().getPackageManager(
+				PackageManager manager = Environment.getInstance().getPackageManager(
 						article.getWeb());
-				Set<String> defaultPackages = packageManager.getDefaultPackages(article);
+				Set<String> defaultPackages = manager.getDefaultPackages(article);
 				for (String defaultPackage : defaultPackages) {
 					terminologyHandler.registerTermDefinition(section,
-							Package.class,
-							new Identifier(defaultPackage));
+							Package.class, new Identifier(defaultPackage));
 				}
 			}
 			else {
 				terminologyHandler.registerTermDefinition(section,
-						Package.class,
-						new Identifier(annotationString));
+						Package.class, new Identifier(annotationString));
 			}
 		}
 		return Messages.noMessage();
-
 	}
-
 }

@@ -24,8 +24,8 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.manage.KnowledgeBaseUtils;
-import de.d3web.strings.Strings;
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
@@ -93,7 +93,7 @@ public abstract class AnswerReference
 			}
 			if (answerDef == null || choice == null) {
 				Identifier questionIdentifier = new Identifier(
-						termIdentifier.getPathElements()[0]);
+						termIdentifier.getPathElementAt(0));
 				Section<?> termDef = terminologyManager.getTermDefiningSection(questionIdentifier);
 				if (termDef != null && termDef.get() instanceof QuestionDefinition) {
 					Section<QuestionDefinition> questionDef = Sections.cast(termDef,

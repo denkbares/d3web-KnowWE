@@ -71,7 +71,8 @@ public class PackageTermDefinition extends AbstractType implements Term, Renamab
 	}
 
 	@Override
-	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, String oldValue, String replacement) {
+	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
+		String replacement = newIdentifier.getLastPathElement();
 		return replacement;
 	}
 

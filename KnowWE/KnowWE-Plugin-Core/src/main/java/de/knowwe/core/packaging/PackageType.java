@@ -6,10 +6,8 @@ import de.d3web.strings.Identifier;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageTermDefinition;
-import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -62,14 +60,4 @@ public class PackageType extends DefaultMarkupType {
 			return Messages.noMessage();
 		}
 	}
-
-	@Override
-	public String getSectionTextAfterRename(Section<? extends RenamableTerm>
-			section, String oldValue, String replacement) {
-		Section<PackageMarkupType> packageDefinition =
-				Sections.findSuccessor(section,
-						PackageMarkupType.class);
-		return packageDefinition.getText() + " " + replacement + "\n";
-	}
-
 }

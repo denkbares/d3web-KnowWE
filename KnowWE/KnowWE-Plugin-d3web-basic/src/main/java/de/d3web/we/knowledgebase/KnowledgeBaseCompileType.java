@@ -42,6 +42,7 @@ public class KnowledgeBaseCompileType extends PackageCompileType {
 
 	public KnowledgeBaseCompileType() {
 		this.setSectionFinder(new RegexSectionFinder(".*", Pattern.DOTALL));
+		addChildType(new KnowledgeBaseNameType());
 	}
 
 	@Override

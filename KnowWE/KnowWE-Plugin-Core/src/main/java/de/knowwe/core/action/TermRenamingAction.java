@@ -30,7 +30,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
@@ -73,8 +72,7 @@ public class TermRenamingAction extends AbstractAction {
 			try {
 				response.append("alreadyexists", "true");
 				boolean sameTerm = new Identifier(replacement).toExternalForm().equals(
-						new Identifier(
-								term).toExternalForm());
+						new Identifier(term).toExternalForm());
 				response.append("same", String.valueOf(sameTerm));
 				response.write(context.getWriter());
 			}
@@ -84,18 +82,16 @@ public class TermRenamingAction extends AbstractAction {
 			return;
 		}
 
-		replacement = makeExternalFormIfNeeded(replacement);
-
 		Identifier termIdentifier = Identifier.fromExternalForm(term);
+		Identifier replacmentIdentifier = createReplacingIdentifier(termIdentifier, replacement);
 
 		HashMap<String, Set<Section<? extends RenamableTerm>>> allTerms = new HashMap<String, Set<Section<? extends RenamableTerm>>>();
 
 		Iterator<Article> iter = Environment.getInstance()
 				.getArticleManager(web).getArticleIterator();
-		Article currentArticle;
 
 		while (iter.hasNext()) {
-			currentArticle = iter.next();
+			Article currentArticle = iter.next();
 			Collection<TerminologyManager> terminologyManagers = Environment.getInstance().getTerminologyManagers(
 					currentArticle.getWeb());
 			for (TerminologyManager terminologyManager : terminologyManagers) {
@@ -127,8 +123,8 @@ public class TermRenamingAction extends AbstractAction {
 		ArticleManager mgr = Environment.getInstance().getArticleManager(web);
 		Set<String> failures = new HashSet<String>();
 		Set<String> success = new HashSet<String>();
-		renameTerms(allTerms, term, replacement, mgr, context, failures, success);
-		writeResponse(failures, success, termIdentifier, replacement, context);
+		renameTerms(allTerms, termIdentifier, replacmentIdentifier, mgr, context, failures, success);
+		writeResponse(failures, success, termIdentifier, replacmentIdentifier, context);
 	}
 
 	private Set<Section<? extends RenamableTerm>> getTermSet(String title,
@@ -142,15 +138,14 @@ public class TermRenamingAction extends AbstractAction {
 	}
 
 	private void writeResponse(Set<String> failures, Set<String> success,
-			Identifier termIdentifier, String replacement,
+			Identifier termIdentifier, Identifier replacement,
 			UserActionContext context) throws IOException {
 
 		JSONObject response = new JSONObject();
 		try {
 			// the new external form of the TermIdentifier
 			String[] pathElements = termIdentifier.getPathElements();
-			String newLastPathElement = Identifier.fromExternalForm(
-					replacement).getLastPathElement();
+			String newLastPathElement = replacement.getLastPathElement();
 			pathElements[pathElements.length - 1] = newLastPathElement;
 			response.append("newTermIdentifier", new Identifier(
 					pathElements).toExternalForm());
@@ -183,8 +178,8 @@ public class TermRenamingAction extends AbstractAction {
 	}
 
 	private void renameTerms(
-			HashMap<String, Set<Section<? extends RenamableTerm>>> allTerms, String term,
-			String replacement, ArticleManager mgr, UserActionContext context,
+			HashMap<String, Set<Section<? extends RenamableTerm>>> allTerms, Identifier term,
+			Identifier replacement, ArticleManager mgr, UserActionContext context,
 			Set<String> failures, Set<String> success) throws IOException {
 
 		for (String title : allTerms.keySet()) {
@@ -206,14 +201,10 @@ public class TermRenamingAction extends AbstractAction {
 		}
 	}
 
-	private String makeExternalFormIfNeeded(String text) {
-		boolean quoted = Strings.isQuoted(text);
-		boolean needsQuotes = Identifier.needsQuotes(text)
-				|| text.replaceAll("\\s", "").length() < text.length();
-
-		if (needsQuotes && !quoted) text = Strings.quote(text);
-
-		return text;
+	private Identifier createReplacingIdentifier(Identifier oldIdentifier, String text) {
+		String[] elements = oldIdentifier.getPathElements();
+		elements[elements.length - 1] = text;
+		return new Identifier(elements);
 	}
 
 	public Set<Identifier> getTerms(String web) {

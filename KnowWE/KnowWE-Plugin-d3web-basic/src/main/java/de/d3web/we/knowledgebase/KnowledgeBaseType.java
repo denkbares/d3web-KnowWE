@@ -20,9 +20,6 @@
 package de.d3web.we.knowledgebase;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -34,15 +31,11 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageTermDefinition;
 import de.knowwe.core.compile.packaging.UsesAnnotationNameType;
 import de.knowwe.core.compile.packaging.UsesAnnotationRenderer;
-import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
-import de.knowwe.kdom.defaultMarkup.AnnotationNameType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupTermReferenceRegisterHandler;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -119,7 +112,6 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 				KnowledgeBase kb = getKB(article);
 
 				// prepare the items to be set into the knowledge base
-				String title = getContent(section).trim();
 				String id = getAnnotation(section, ANNOTATION_ID);
 				String author = getAnnotation(section, ANNOTATION_AUTHOR);
 				String comment = getAnnotation(section, ANNOTATION_COMMENT);
@@ -136,11 +128,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 				// and write it to the knowledge base
 				if (id != null) kb.setId(id);
 				InfoStore infoStore = kb.getInfoStore();
-				if (title != null && title.length() > 0) {
-					infoStore.addValue(MMInfo.PROMPT, title);
-					terminologyManager.registerTermDefinition(section, KnowledgeBase.class,
-							new Identifier(title));
-				}
+
 				if (author != null) infoStore.addValue(BasicProperties.AUTHOR, author);
 				if (comment != null) infoStore.addValue(MMInfo.DESCRIPTION, comment);
 				if (version != null) infoStore.addValue(BasicProperties.VERSION, version);
@@ -152,32 +140,5 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 			}
 
 		});
-	}
-
-	@Override
-	public String getSectionTextAfterRename(Section<? extends RenamableTerm>
-			section, String oldValue, String replacement) {
-
-		Map<String, String> nodesMap = new HashMap<String, String>();
-		List<Section<? extends AnnotationContentType>> allAnnotationContentSections = DefaultMarkupType.getAllAnnotationContentSections(section);
-
-		for (Section<? extends AnnotationContentType> annotationContentSection : allAnnotationContentSections) {
-			if (annotationContentSection.getText().equals(oldValue)) {
-				List<Section<?>> nameTypes = annotationContentSection.getFather().getChildren();
-
-				for (Section<?> nameType : nameTypes) {
-					if (nameType.getText().equals("@" +
-							ANNOTATION_COMPILE + ":")
-							&& nameType.get() instanceof AnnotationNameType) {
-						nodesMap.put(annotationContentSection.getID(), replacement);
-					}
-
-				}
-				break;
-			}
-		}
-		StringBuffer collectedText = Sections.collectTextAndReplaceNode(section, nodesMap);
-
-		return collectedText.toString();
 	}
 }

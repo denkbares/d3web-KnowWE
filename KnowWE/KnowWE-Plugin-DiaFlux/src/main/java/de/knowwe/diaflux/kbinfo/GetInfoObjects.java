@@ -132,12 +132,11 @@ public class GetInfoObjects extends AbstractAction {
 		}
 		else {
 			// look for an object inside a compiling article
-			String title = identifier.getPathElements()[0];
-			String objectID = identifier.getPathElements()[1];
+			String title = identifier.getPathElementAt(0);
+			String objectID = identifier.getPathElementAt(1);
 			appendInfoObject(web, title, objectID, bob);
 		}
 	}
-
 
 	private static boolean isCompilingArticle(String web, String title) {
 		PackageManager packages = Environment.getInstance().getPackageManager(web);
@@ -210,9 +209,9 @@ public class GetInfoObjects extends AbstractAction {
 	public static Identifier createArticleIdentifier(String title) {
 		return new Identifier(ARTICLE_IDENTIFIER_PREFIX, title);
 	}
-	
+
 	public static boolean isArticleIdentifier(Identifier identifier) {
-		return identifier.getPathElements()[0].equals(ARTICLE_IDENTIFIER_PREFIX);
+		return identifier.getPathElementAt(0).equals(ARTICLE_IDENTIFIER_PREFIX);
 	}
 
 	private static void appendInfoObject(String web, String title, String objectName, StringBuilder bob) {

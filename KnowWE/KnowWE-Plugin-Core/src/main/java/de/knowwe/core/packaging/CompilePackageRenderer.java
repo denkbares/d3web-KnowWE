@@ -15,7 +15,7 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
-public class SinglePackageReferenceRenderer implements Renderer {
+public class CompilePackageRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> sec,
@@ -23,10 +23,7 @@ public class SinglePackageReferenceRenderer implements Renderer {
 			RenderResult string) {
 
 		String packageName = sec.getText();
-
-		PackageManager packageManager = Environment.getInstance().getPackageManager(
-				sec.getWeb());
-
+		PackageManager packageManager = Environment.getInstance().getPackageManager(sec.getWeb());
 		List<Section<?>> packageDefinitions = packageManager.getSectionsOfPackage(packageName);
 
 		Collection<Message> kdomErrors = new LinkedList<Message>();
@@ -34,7 +31,6 @@ public class SinglePackageReferenceRenderer implements Renderer {
 		Article article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
 		for (Section<?> packageDef : packageDefinitions) {
 			Collection<Message> allmsgs = Messages.getMessagesFromSubtree(article, packageDef);
-
 			kdomErrors.addAll(Messages.getErrors(Messages.getErrors(allmsgs)));
 			kdomWarnings.addAll(Messages.getWarnings(Messages.getErrors(allmsgs)));
 		}

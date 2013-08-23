@@ -28,6 +28,7 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.TermReference;
+import de.knowwe.core.kdom.objects.TermUtils;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
@@ -59,8 +60,9 @@ public abstract class D3webTermReference<TermObject extends NamedObject>
 	}
 
 	@Override
-	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, String oldValue, String replacement) {
-		return replacement;
+	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
+		String replacement = newIdentifier.getLastPathElement();
+		return TermUtils.quoteIfRequired(replacement);
 	}
 
 	/**

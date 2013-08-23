@@ -67,6 +67,11 @@ public class FlowchartXMLHeadType extends XMLHead {
 		public String getTermName(Section<? extends Term> section) {
 			return Strings.decodeHtml(super.getTermName(section));
 		}
+
+		@Override
+		public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
+			return Strings.encodeHtml(newIdentifier.getLastPathElement());
+		}
 	}
 
 	static class FlowchartRegistrationHandler extends SubtreeHandler<FlowchartTermDef> {
@@ -85,5 +90,4 @@ public class FlowchartXMLHeadType extends XMLHead {
 			return messages;
 		}
 	}
-
 }

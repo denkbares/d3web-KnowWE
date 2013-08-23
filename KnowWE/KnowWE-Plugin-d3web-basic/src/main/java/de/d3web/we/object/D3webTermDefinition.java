@@ -31,6 +31,7 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.TermDefinition;
+import de.knowwe.core.kdom.objects.TermUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -91,8 +92,9 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 	}
 
 	@Override
-	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, String oldValue, String replacement) {
-		return replacement;
+	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
+		String replacement = newIdentifier.getLastPathElement();
+		return TermUtils.quoteIfRequired(replacement);
 	}
 
 	@Override
