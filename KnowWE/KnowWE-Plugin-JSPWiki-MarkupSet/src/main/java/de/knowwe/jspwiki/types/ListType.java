@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.dashtree.DashSubtree;
 import de.knowwe.kdom.dashtree.DashTree;
@@ -45,6 +46,7 @@ public class ListType extends AbstractType {
 	private Type getNoCommentDashTree() {
 
 		DashSubtree subtree = new DashSubtree('*', 1);
+		subtree.setRenderer(DelegateRenderer.getInstance());
 		subtree.clearChildrenTypes();
 
 		DashTreeElement element = new DashTreeElement(subtree.getKey());
