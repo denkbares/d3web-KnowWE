@@ -66,6 +66,10 @@ public class DefaultMarkupRenderer implements Renderer {
 		this.iconPath = iconPath;
 	}
 
+	public String getIconPath() {
+		return iconPath;
+	}
+
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult buffer) {
 		String id = section.getID();

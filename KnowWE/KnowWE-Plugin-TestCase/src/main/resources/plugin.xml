@@ -61,6 +61,7 @@
         <parameter id="script" value="DefaultEditTool.js" />
         <parameter id="script" value="TextArea.js" />
         <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
+        <parameter id="css" value="KnowWE-Plugin-AutoComplete.css" />
         <parameter id="css" value="DefaultEditTool.css" />
 	    <parameter id="scope" value="TestCaseType" />
     </extension>

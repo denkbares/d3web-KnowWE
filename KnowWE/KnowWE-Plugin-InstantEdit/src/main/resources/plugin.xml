@@ -30,6 +30,7 @@
         <parameter id="script" value="DefaultEditTool.js" />
         <parameter id="script" value="TextArea.js" />
         <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
+        <parameter id="css" value="KnowWE-Plugin-AutoComplete.css" />
         <parameter id="css" value="DefaultEditTool.css" />       
         <parameter id="scope" value="KnowledgeBaseType" />
         <parameter id="scope" value="PackageType" />
@@ -126,6 +127,7 @@
         <parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
         <parameter id="script" value="DefaultTableEditTool.js" />
         <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
+        <parameter id="css" value="KnowWE-Plugin-AutoComplete.css" />
         <parameter id="css" value="DefaultTableEditTool.css" />       
         <parameter id="scope" value="Table" />
         <parameter id="scope" value="WikiTable" />
