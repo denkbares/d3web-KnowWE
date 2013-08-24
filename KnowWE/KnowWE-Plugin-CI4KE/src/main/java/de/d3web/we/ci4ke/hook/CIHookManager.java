@@ -42,6 +42,8 @@ public class CIHookManager {
 	 */
 	private final Map<String, Set<CIHook>> hooks;
 
+	private int activeHookCounter = 0;
+
 	private static final CIHookManager instance = new CIHookManager();
 
 	private CIHookManager() {
@@ -109,13 +111,37 @@ public class CIHookManager {
 
 					@Override
 					public void run() {
-						new CIBuilder(hook).executeBuild();
+						try {
+							new CIBuilder(hook).executeBuild();
+						}
+						finally {
+							incActiveHookCounter(-1);
+						}
 					}
 				};
 				Thread ciThread = new Thread(task);
+				incActiveHookCounter(1);
 				ciThread.start();
 			}
 		}
+	}
+
+	private synchronized void incActiveHookCounter(int delta) {
+		this.activeHookCounter += delta;
+		this.notifyAll();
+	}
+
+	public void waitForTermination() {
+		while (activeHookCounter > 0) {
+			synchronized (this) {
+				try {
+					this.wait();
+				}
+				catch (InterruptedException e) {
+				}
+			}
+		}
+		return;
 	}
 
 }
