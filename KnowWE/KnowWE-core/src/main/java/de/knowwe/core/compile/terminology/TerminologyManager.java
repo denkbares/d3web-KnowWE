@@ -37,6 +37,7 @@ import de.knowwe.core.event.Event;
 import de.knowwe.core.event.EventListener;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -109,6 +110,10 @@ public class TerminologyManager {
 		return title;
 	}
 
+	public Article getArticle() {
+		return Environment.getInstance().getArticle(web, title);
+	}
+
 	/**
 	 * Allows to register a new term.
 	 * 
@@ -166,8 +171,8 @@ public class TerminologyManager {
 	 * 
 	 * 
 	 * @created 28.07.2012
-	 * @param termIdentifier an {@link Identifier} with arbitrarily case for
-	 *        a term for which you want potential other versions with different
+	 * @param termIdentifier an {@link Identifier} with arbitrarily case for a
+	 *        term for which you want potential other versions with different
 	 *        cases
 	 * @return the different versions of {@link Identifier}s or an empty
 	 *         Collection, if the term is undefined
@@ -220,11 +225,11 @@ public class TerminologyManager {
 	}
 
 	/**
-	 * For a {@link Identifier} the first defining Section is returned. If
-	 * the term is not defined, <tt>null</tt> is returned.
+	 * For a {@link Identifier} the first defining Section is returned. If the
+	 * term is not defined, <tt>null</tt> is returned.
 	 * 
-	 * @param termIdentifier the {@link Identifier} for the defining Section
-	 *        you are looking for
+	 * @param termIdentifier the {@link Identifier} for the defining Section you
+	 *        are looking for
 	 * @return the first defining Section for this term or <tt>null</tt> if the
 	 *         term is not defined
 	 */
@@ -237,11 +242,11 @@ public class TerminologyManager {
 	}
 
 	/**
-	 * For a {@link Identifier} all defining Sections are returned. If the
-	 * term is not defined, an empty Collection is returned.
+	 * For a {@link Identifier} all defining Sections are returned. If the term
+	 * is not defined, an empty Collection is returned.
 	 * 
-	 * @param termIdentifier the {@link Identifier} for the defining
-	 *        Sections you are looking for
+	 * @param termIdentifier the {@link Identifier} for the defining Sections
+	 *        you are looking for
 	 * @return the defining Sections for this term or an empty Collection if the
 	 *         term is not defined
 	 */
@@ -383,8 +388,8 @@ public class TerminologyManager {
 	 * times with a matching {@link Identifier} but different term classes.
 	 * 
 	 * @created 28.07.2012
-	 * @param termIdentifier the {@link Identifier} for the term you want
-	 *        the term classes from
+	 * @param termIdentifier the {@link Identifier} for the term you want the
+	 *        term classes from
 	 * @return all term classes or an empty Collection, if undefined
 	 */
 	public Collection<Class<?>> getTermClasses(Identifier termIdentifier) {
