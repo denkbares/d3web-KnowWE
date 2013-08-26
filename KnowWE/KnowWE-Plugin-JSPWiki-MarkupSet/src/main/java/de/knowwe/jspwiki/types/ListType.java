@@ -37,7 +37,7 @@ import de.knowwe.kdom.dashtree.LineEndComment;
 public class ListType extends AbstractType {
 
 	public ListType() {
-		Pattern pattern = Pattern.compile("(^|\n+)((\\*).+?)(?=\n[^(\\*)])",
+		Pattern pattern = Pattern.compile("(^|\n+)((\\*).+?)(?=\\z|\n[^(\\*)])",
 				Pattern.MULTILINE + Pattern.DOTALL);
 		this.setSectionFinder(new RegexSectionFinder(pattern));
 		this.addChildType(getNoCommentDashTree());
