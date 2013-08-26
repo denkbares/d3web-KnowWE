@@ -190,7 +190,7 @@ KNOWWE.tooltips.enrich = function() {
 	jq$('.tooltipster').tooltipster({
 		position: "top-left",
 		interactive: true,
-		delay: 1000
+		delay: 1300
 	});
 };
 
