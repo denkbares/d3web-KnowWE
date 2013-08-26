@@ -47,7 +47,7 @@ Flowchart.loadFlowchart = function(kdomid, parent){
 				KNOWWE.core.util.updateProcessingState(-1);
 				var xml = this.responseXML;
 				// workaround if xml parser fails (backward compatibility)
-				if (!xml) {
+				if (!xml || xml.getElementsByTagName("flowchart").length == 0) {
 					xml = Flowchart.parseXML(this.responseText);
 				}
 				var flow = Flowchart.createFromXML(parent, xml);
