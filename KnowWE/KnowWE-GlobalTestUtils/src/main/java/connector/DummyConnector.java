@@ -51,6 +51,7 @@ public class DummyConnector implements WikiConnector {
 	private final Map<String, String> locks = new HashMap<String, String>();
 
 	public DummyConnector() {
+		this(new DummyPageProvider());
 	}
 
 	public DummyConnector(DummyPageProvider dummyPageProvider) {

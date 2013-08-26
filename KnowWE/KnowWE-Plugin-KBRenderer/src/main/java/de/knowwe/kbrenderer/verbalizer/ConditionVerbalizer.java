@@ -305,7 +305,6 @@ public class ConditionVerbalizer implements Verbalizer {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	private CondVerbalization createTerminalConditionVerbalization(TerminalCondition tCondition) {
 
 		Collection<? extends TerminologyObject> terminalObjects = tCondition.getTerminalObjects();

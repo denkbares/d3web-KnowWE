@@ -71,8 +71,12 @@ public class DummyPageProvider {
 
 	private final Date startupDate;
 
-	public DummyPageProvider(ZipFile wikiContentZip) throws IOException {
+	public DummyPageProvider() {
 		startupDate = new Date();
+	}
+
+	public DummyPageProvider(ZipFile wikiContentZip) throws IOException {
+		this();
 		for (ZipEntry entry : Collections.list(wikiContentZip.entries())) {
 			Matcher articleMatcher = articleRegex.matcher(entry.getName());
 			Matcher attachmentMatcher = attachmentRegex.matcher(entry.getName());
@@ -83,7 +87,24 @@ public class DummyPageProvider {
 				cacheZipAttachment(wikiContentZip, entry, attachmentMatcher);
 			}
 		}
+	}
 
+	public DummyPageProvider(File wikiContent) throws IOException {
+		this();
+		if (wikiContent.isDirectory()) {
+
+			File[] wikiFiles = wikiContent.listFiles();
+			Arrays.sort(wikiFiles);
+
+			for (File wikiFile : wikiFiles) {
+				if (isArticleFile(wikiFile)) {
+					cacheFileSystemArticle(wikiFile);
+				}
+				else if (isAttributeDirectory(wikiFile)) {
+					cacheFileSystemAttachment(wikiFile);
+				}
+			}
+		}
 	}
 
 	private void cacheZipArticle(ZipFile wikiContentZip, ZipEntry entry, Matcher articleMatcher) throws IOException {
@@ -111,24 +132,6 @@ public class DummyPageProvider {
 
 	private Integer getVersion(String versionFileName) {
 		return Integer.parseInt(versionFileName.replaceAll("(?<=\\d+).*", ""));
-	}
-
-	public DummyPageProvider(File wikiContent) throws IOException {
-		startupDate = new Date();
-		if (wikiContent.isDirectory()) {
-
-			File[] wikiFiles = wikiContent.listFiles();
-			Arrays.sort(wikiFiles);
-
-			for (File wikiFile : wikiFiles) {
-				if (isArticleFile(wikiFile)) {
-					cacheFileSystemArticle(wikiFile);
-				}
-				else if (isAttributeDirectory(wikiFile)) {
-					cacheFileSystemAttachment(wikiFile);
-				}
-			}
-		}
 	}
 
 	private boolean isArticleFile(File wikiFile) {
