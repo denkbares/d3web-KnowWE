@@ -43,6 +43,8 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.ArticleComparator;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.objects.Term;
+import de.knowwe.core.kdom.objects.TermInfo;
+import de.knowwe.core.kdom.objects.TermUtils;
 import de.knowwe.core.kdom.parsing.KDOMPositionComparator;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -184,18 +186,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		// Get TermDefinitions and TermReferences
 		Set<Section<?>> definitions = new LinkedHashSet<Section<?>>();
 		Set<Section<?>> references = new LinkedHashSet<Section<?>>();
-
-		Iterator<Article> iter = Environment.getInstance()
-				.getArticleManager(section.getWeb()).getArticleIterator();
-		while (iter.hasNext()) {
-			Article currentArticle = iter.next();
-			// Get global and local term definitions
-			getTermDefinitions(currentArticle, termIdentifier, definitions);
-			getTermReferences(currentArticle, termIdentifier, references);
-		}
-		// Get global and local term references
-		getTermDefinitions(null, termIdentifier, definitions);
-		getTermReferences(null, termIdentifier, references);
+		findTermSections(section.getWeb(), termIdentifier, definitions, references);
 
 		// Render
 		renderHeader(externalTermIdentifierForm,
@@ -204,6 +195,14 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				section.getWeb(), parameters, urlParameters, result);
 		renderObjectInfo(definitions, references, parameters, user, result);
 		renderPlainTextOccurrences(objectName, section.getWeb(), parameters, result);
+	}
+
+	protected void findTermSections(String web, Identifier termIdentifier, Set<Section<?>> definitions, Set<Section<?>> references) {
+		TermInfo termInfo = TermUtils.getTermInfo(web, termIdentifier, false);
+		for (TerminologyManager termManager : termInfo) {
+			definitions.addAll(termManager.getTermDefiningSections(termIdentifier));
+			references.addAll(termManager.getTermReferenceSections(termIdentifier));
+		}
 	}
 
 	private String getTermObjectClass(Set<Section<?>> definitions,
@@ -335,24 +334,6 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		if (!checkParameter(HIDE_REFS, parameters)) {
 			renderTermReferences(references, definitions, user, result);
 		}
-	}
-
-	protected void getTermDefinitions(Article currentArticle,
-			Identifier termIdentifier, Set<Section<?>> definitions) {
-		TerminologyManager th = KnowWEUtils
-				.getTerminologyManager(currentArticle);
-
-		Collection<Section<?>> defininingSections = th.getTermDefiningSections(termIdentifier);
-
-		definitions.addAll(defininingSections);
-
-	}
-
-	protected void getTermReferences(Article currentArticle,
-			Identifier termIdentifier, Set<Section<?>> references) {
-		TerminologyManager th = KnowWEUtils
-				.getTerminologyManager(currentArticle);
-		references.addAll(th.getTermReferenceSections(termIdentifier));
 	}
 
 	private void renderTermPreview(Section<?> previewSection, Collection<Section<?>> relevantSubSections, UserContext user, String cssClass, RenderResult result) {

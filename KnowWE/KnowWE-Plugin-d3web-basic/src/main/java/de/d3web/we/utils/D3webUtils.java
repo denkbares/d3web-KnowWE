@@ -175,7 +175,8 @@ public class D3webUtils {
 
 	/**
 	 * Utility method to get a {@link KnowledgeBase} for an article specified by
-	 * its web and topic.
+	 * its web and topic. If no such knowledge base exists, a new knowledge base
+	 * is created for the article and returned.
 	 * 
 	 * @created 15.12.2010
 	 * @param web the web of the article the knowledge base is compiled

@@ -110,6 +110,13 @@ public class TerminologyManager {
 		return title;
 	}
 
+	/**
+	 * Returns the article this terminology manager belongs to, or null if this
+	 * is the global article manager.
+	 * 
+	 * @created 26.08.2013
+	 * @return the article of this terminology manager
+	 */
 	public Article getArticle() {
 		return Environment.getInstance().getArticle(web, title);
 	}

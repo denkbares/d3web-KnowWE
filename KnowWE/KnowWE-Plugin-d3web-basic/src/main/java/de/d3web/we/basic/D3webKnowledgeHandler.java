@@ -82,6 +82,10 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	}
 
 	/**
+	 * Returns the KB for the given article. If no such knowledge base exists, a
+	 * new (empty) base will be created, store for the article and finally
+	 * returned.
+	 * 
 	 * @returns the KB for the given article
 	 */
 	public KnowledgeBase getKnowledgeBase(String title) {
