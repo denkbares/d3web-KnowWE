@@ -253,16 +253,23 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
 		List<Section<?>> subsecs = section.getChildren();
-		Section<?> first = subsecs.get(0);
-		Section<?> last = subsecs.get(subsecs.size() - 1);
-		for (Section<?> subsec : subsecs) {
+		renderContentSections(subsecs, user, null, string);
+	}
+
+	public static void renderContentSections(List<Section<?>> subSections, UserContext user, String suffix, RenderResult result) {
+		Section<?> first = subSections.get(0);
+		Section<?> last = subSections.get(subSections.size() - 1);
+		for (Section<?> subsec : subSections) {
 			if (subsec == first && subsec.get() instanceof PlainText) {
 				continue;
 			}
 			if (subsec == last && subsec.get() instanceof PlainText) {
 				continue;
 			}
-			subsec.get().getRenderer().render(subsec, user, string);
+			subsec.get().getRenderer().render(subsec, user, result);
+			if (suffix != null) {
+				result.append(suffix);
+			}
 		}
 	}
 

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +18,7 @@ import de.knowwe.core.kdom.basicType.QuotedType;
 import de.knowwe.core.kdom.basicType.RoundBracedType;
 import de.knowwe.core.kdom.basicType.SquareBracedType;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.kdom.defaultMarkup.AnnotationType;
 
 /**
  * A scope is an selector of a specific subset of KDOM nodes. It's selection is
@@ -44,6 +46,8 @@ import de.knowwe.core.kdom.parsing.Section;
  * <li>If you specify a "**" wildcard as a path entry (".../ ** /...") , any
  * sub-path is matched to it. Especially also the empty sub-path is matched. (If
  * you want to have at least one section in between, use ".../ ** / * /...".)
+ * <li>If a path element start with an "@", it only matches a annotation of a
+ * default markup with the specified annotation name
  * </ul>
  * 
  * @author volker_belli
@@ -122,6 +126,35 @@ public class Scope {
 	}
 
 	/**
+	 * Returns a list of the top-most ancestors that matches this scope. If a
+	 * ancestor section matches it will be part of the returned list but no of
+	 * its ancestor will be included.
+	 * <p>
+	 * If the specified root section matches the scope, a list of only the root
+	 * section will be returned.
+	 * 
+	 * @created 26.08.2013
+	 * @param root the root section to start the search for
+	 * @return the matching ancestor sections
+	 */
+	public List<Section<?>> getMatchingAnchestors(Section<?> root) {
+		List<Section<?>> result = new LinkedList<Section<?>>();
+		getMatchingAnchestors(root, result);
+		return result;
+	}
+
+	private void getMatchingAnchestors(Section<?> section, List<Section<?>> result) {
+		if (matches(section)) {
+			result.add(section);
+		}
+		else {
+			for (Section<?> child : section.getChildren()) {
+				getMatchingAnchestors(child, result);
+			}
+		}
+	}
+
+	/**
 	 * Returns whether the given path of types matches this scope. The order of
 	 * the path should always be parents {@link Type} before children
 	 * {@link Type}.
@@ -194,6 +227,10 @@ public class Scope {
 			// (do this after collection to avoid breaking algorithm when
 			// classname and name is identical)
 			names.add(typeElement.getName().toLowerCase());
+			// also add "@<annoation-name>" for annotation types
+			if (typeElement instanceof AnnotationType) {
+				names.add("@" + typeElement.getName().toLowerCase());
+			}
 			CACHED_NAMES_OF_KDOM_TYPE.put(typeElement, names);
 		}
 		return names;

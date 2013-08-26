@@ -784,7 +784,7 @@ label[for="edittoc"] {
 	background-color: #FFFFCC;
 	font-size: 10px;
 	padding: 2px;
-	z-index: 10;
+	z-index: 2000;
 }
 /* ie6 hack */
 * html #findSuggestionMenu {

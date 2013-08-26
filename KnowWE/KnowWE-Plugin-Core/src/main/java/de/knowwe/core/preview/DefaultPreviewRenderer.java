@@ -6,6 +6,8 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class DefaultPreviewRenderer implements PreviewRenderer {
 
@@ -14,6 +16,13 @@ public class DefaultPreviewRenderer implements PreviewRenderer {
 
 	@Override
 	public void render(Section<?> section, Collection<Section<?>> relevantSubSections, UserContext user, RenderResult result) {
-		DelegateRenderer.getRenderer(section, user).render(section, user, result);
+		if (section.get() instanceof DefaultMarkupType) {
+			// render all sub sections, but not the default markup itself
+			DefaultMarkupRenderer.renderContentSections(section.getChildren(), user, " ", result);
+		}
+		else {
+			// or render the full markup
+			DelegateRenderer.getRenderer(section, user).render(section, user, result);
+		}
 	}
 }
