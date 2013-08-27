@@ -53,7 +53,7 @@ KNOWWE.plugin.tableEditTool = function() {
 	    		event.preventDefault();
 	    	});
 	    	root.find("#table_delete_row").click(function(event) {
-	    		if (spreadsheet[id].selected) spreadsheet[id].removeRow(spreadsheet[id].selected.row);
+	    		spreadsheet[id].removeSelectedRows();
 	    		event.preventDefault();
 	    	});
 	    	
@@ -66,7 +66,7 @@ KNOWWE.plugin.tableEditTool = function() {
 	    		event.preventDefault();
 	    	});
 	    	root.find("#table_delete_col").click(function(event) {
-	    		if (spreadsheet[id].selected) spreadsheet[id].removeCol(spreadsheet[id].selected.col);
+	    		spreadsheet[id].removeSelectedCols();
 	    		event.preventDefault();
 	    	});
 
@@ -394,7 +394,7 @@ Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, comma
 	}
 	// delete line: command+'d' or alt+'d'
 	else if (keyCode == 68 && ((command && !alt) || (!command && alt))) {
-		this.removeRow(row);
+		this.removeSelectedRows();
 	}
 	// ESC
 	else if (keyCode == 27) {
@@ -760,6 +760,30 @@ Spreadsheet.prototype.addRow = function(row) {
 	destModel.textAfterTable = srcModel.textAfterTable;
 	this.setModel(destModel);
 	this.selectCell(sr, sc);
+}
+
+Spreadsheet.prototype.removeSelectedRows = function() {
+	if (!this.selected) return;
+	if (!this.selectedRange) this.selectCell(this.selected.row,this.selected.col,true);
+	var r1 = this.selected.row;
+	var r2 = this.selectedRange.toRow;
+	var count = Math.abs(r2 - r1) + 1;
+	var upperRow = Math.min(r1, r2);
+	for (var i=0; i<count; i++) {
+		this.removeRow(upperRow);
+	}
+}
+
+Spreadsheet.prototype.removeSelectedCols = function() {
+	if (!this.selected) return;
+	if (!this.selectedRange) this.selectCell(this.selected.row,this.selected.col,true);
+	var c1 = this.selected.col;
+	var c2 = this.selectedRange.toCol;
+	var count = Math.abs(c2 - c1) + 1;
+	var leftCol = Math.min(c1, c2);
+	for (var i=0; i<count; i++) {
+		this.removeCol(leftCol);
+	}
 }
 
 Spreadsheet.prototype.removeRow = function(row) {
