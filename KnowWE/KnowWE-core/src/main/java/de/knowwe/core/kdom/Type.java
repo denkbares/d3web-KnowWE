@@ -49,33 +49,72 @@ import de.knowwe.core.report.MessageRenderer;
  */
 public interface Type {
 
-	public boolean isType(Class<? extends Type> clazz);
-
-	public boolean isAssignableFromType(Class<? extends Type> clazz);
-
-	public void setPathToRoot(Type[] path);
-
-	public boolean isDecorated();
-
-	public void setDecorated();
-
-	public Type[] getPathToRoot();
-
-	public void addSubtreeHandler(Priority p, SubtreeHandler<? extends Type> handler);
-
-	public void addChildType(double i, Type t);
-
-	public void addChildTypeAtPosition(int pos, Type t);
-
-	public void addChildType(Type t);
+	/**
+	 * Returns whether this type is a leaf type, i.e., true if it has no
+	 * children types.
+	 * 
+	 * @created 27.08.2013
+	 * @return
+	 */
+	boolean isLeafType();
 
 	/**
-	 * When KnowWE renders the article this renderer is used to render this
-	 * node. In most cases rendering should be delegated to children types.
+	 * Returns the path from this type up to the root type as an array. First
+	 * element is the root type, the last element is this.
+	 * 
+	 * @created 27.08.2013
+	 * @return
 	 */
-	public Renderer getRenderer();
+	Type[] getPathToRoot();
 
-	public void setRenderer(Renderer renderer);
+	/**
+	 * Set the the path from this type to the root type (for caching)
+	 * 
+	 * @created 27.08.2013
+	 * @param path
+	 */
+	void setPathToRoot(Type[] path);
+
+	/**
+	 * Returns whether this.getClass() equals the given class.
+	 * 
+	 * @created 27.08.2013
+	 * @param clazz
+	 * @return
+	 */
+	boolean isType(Class<? extends Type> clazz);
+
+	/**
+	 * Returns whether the passed class isAssignableFrom the class of this
+	 * instance.
+	 * 
+	 * @created 27.08.2013
+	 * @param clazz
+	 * @return
+	 */
+	boolean isAssignableFromType(Class<? extends Type> clazz);
+
+	/**
+	 * Returns the decorated flag, i.e. of this instance of the type already has
+	 * been considered for decoration (add child types, renderers, handlers...)
+	 * by the plugin framework.
+	 * 
+	 * @created 27.08.2013
+	 * @return
+	 */
+	boolean isDecorated();
+
+	/**
+	 * Sets the decorated flag at the end of type hierarchy initialization by
+	 * the plugin framework.
+	 * 
+	 * @created 27.08.2013
+	 */
+	void setDecorated();
+
+	/*
+	 * Methods related to parsing
+	 */
 
 	/**
 	 * Returns the parser that can be used to parse the textual markup of this
@@ -85,12 +124,74 @@ public interface Type {
 	 * @created 12.03.2011
 	 * @return the parser to be used to parse textual markup of this type
 	 */
-	public abstract Parser getParser();
+	Parser getParser();
+
+	boolean isNotRecyclable();
+
+	void setNotRecyclable(boolean notRecyclable);
+
+	/*
+	 * Management of children types
+	 */
+	/**
+	 * Adds the type a child of this type with the given priority value. If
+	 * there are already child types for the given priority it is appended at
+	 * the end of the list (lower priority).
+	 * 
+	 * @created 27.08.2013
+	 * @param priority
+	 * @param t
+	 */
+	void addChildType(double i, Type t);
+
+	/**
+	 * Adds the type as a child of this type at the specified position in the
+	 * priority chain.
+	 * 
+	 * NOTE: This position may change if other types are inserted into the chain
+	 * afterwards. It is recommended to work with priorities, therefore use
+	 * {@link Type#addChildType(double, Type)}
+	 * 
+	 * @created 27.08.2013
+	 * @param pos
+	 * @param t
+	 */
+	void addChildTypeAtPosition(int pos, Type t);
+
+	/**
+	 * Adds the type a child for this type with the default priority
+	 * (considering all existing type with default priority - if existing - it
+	 * is appended at the end, i.e., lower priority.)
+	 * 
+	 * 
+	 * @created 27.08.2013
+	 * @param t
+	 */
+	void addChildType(Type t);
+
+	/**
+	 * Replaces the first type with the passed type where the type is instance
+	 * of the passed class, if such is existing.
+	 * 
+	 * @created 27.08.2013
+	 * @param newType type to be inserted
+	 * @param classToBeReplaced class to determine what type should be replaced
+	 * @throws InvalidKDOMSchemaModificationOperation
+	 * @return true if a replacement has been made
+	 */
+	boolean replaceChildType(Type type, Class<? extends Type> c) throws InvalidKDOMSchemaModificationOperation;
+
+	/**
+	 * Clears the list of children for this type.
+	 * 
+	 * @created 27.08.2013
+	 */
+	void clearChildrenTypes();
 
 	/**
 	 * @return name of this type
 	 */
-	public abstract String getName();
+	String getName();
 
 	/**
 	 * A (priority-ordered) list of the types, which are allowed as children of
@@ -98,7 +199,7 @@ public interface Type {
 	 * 
 	 * @return
 	 */
-	public List<Type> getChildrenTypes();
+	List<Type> getChildrenTypes();
 
 	/**
 	 * Returns the children types attached to this type. Use for plugin
@@ -108,36 +209,47 @@ public interface Type {
 	 * 
 	 * @return
 	 */
-	public List<Type> getChildrenTypesInit();
+	List<Type> getChildrenTypesInit();
 
-	public void deactivateType();
+	/*
+	 * Management of Renderers
+	 */
 
-	public void activateType();
+	/**
+	 * When KnowWE renders the article this renderer is used to render this
+	 * node. In most cases rendering should be delegated to children types.
+	 * 
+	 * @created 27.08.2013
+	 * @return
+	 */
+	Renderer getRenderer();
 
-	public boolean getActivationStatus();
+	void setRenderer(Renderer renderer);
 
-	public MessageRenderer getErrorRenderer();
+	MessageRenderer getErrorRenderer();
 
-	public MessageRenderer getNoticeRenderer();
+	MessageRenderer getNoticeRenderer();
 
-	public MessageRenderer getWarningRenderer();
+	MessageRenderer getWarningRenderer();
 
-	public boolean isLeafType();
+	/*
+	 * Methods related to compilation
+	 */
+	boolean isOrderSensitive();
 
-	public boolean isNotRecyclable();
+	boolean isIgnoringPackageCompile();
 
-	public void setNotRecyclable(boolean notRecyclable);
+	void setIgnorePackageCompile(boolean ignorePackageCompile);
 
-	public boolean isOrderSensitive();
+	void setOrderSensitive(boolean orderSensitive);
 
-	public boolean isIgnoringPackageCompile();
+	/*
+	 * Management of SubtreeHandlers
+	 */
+	TreeMap<Priority, List<SubtreeHandler<? extends Type>>> getSubtreeHandlers();
 
-	public void setIgnorePackageCompile(boolean ignorePackageCompile);
+	List<SubtreeHandler<? extends Type>> getSubtreeHandlers(Priority p);
 
-	public void setOrderSensitive(boolean orderSensitive);
-
-	public TreeMap<Priority, List<SubtreeHandler<? extends Type>>> getSubtreeHandlers();
-
-	public List<SubtreeHandler<? extends Type>> getSubtreeHandlers(Priority p);
+	void addSubtreeHandler(Priority p, SubtreeHandler<? extends Type> handler);
 
 }

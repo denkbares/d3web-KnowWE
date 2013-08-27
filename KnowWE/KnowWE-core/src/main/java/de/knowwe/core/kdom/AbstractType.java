@@ -49,7 +49,6 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * @see Type#getChildrenTypes()
 	 * 
 	 */
-	// protected List<Type> childrenTypes = new ArrayList<Type>();
 	protected ChildrenTypePriorityList childrenTypes = new ChildrenTypePriorityList();
 
 	/**
@@ -63,7 +62,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * types can be activated and deactivated in KnowWE this field is holding
 	 * the current state
 	 */
-	protected boolean isActivated = true;
+	// protected boolean isActivated = true;
 
 	/**
 	 * determines whether this type is sectionized after creating the knowledge
@@ -224,58 +223,11 @@ public abstract class AbstractType implements Type, Sectionizable {
 		addSubtreeHandler(null, handler);
 	}
 
-	public void replaceChildType(Type type,
+	@Override
+	public boolean replaceChildType(Type type,
 			Class<? extends Type> c)
 			throws InvalidKDOMSchemaModificationOperation {
-		childrenTypes.replaceChildType(type, c);
-	}
-
-	//
-	// /**
-	// * Stores a list of messages under to message-store-key
-	// *
-	// * @param article is the article, the message is getting stored for. Be
-	// * aware, that this is not automatically the article the section is
-	// * directly linked to (because this Section might be included), but
-	// * the article that is calling this, for example while revising.
-	// * @param s
-	// * @param messages
-	// */
-	// public static void storeMessages(Article article, Section<? extends
-	// Type> s,
-	// List<Message> messages) {
-	// KnowWEUtils.storeSectionInfo(article.getWeb(), article
-	// .getTitle(), s.getId(), MESSAGES_STORE_KEY, messages);
-	// }
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.d3web.we.kdom.Type#deactivateType()
-	 */
-	@Override
-	public void deactivateType() {
-		isActivated = false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.d3web.we.kdom.Type#activateType()
-	 */
-	@Override
-	public void activateType() {
-		isActivated = true;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.d3web.we.kdom.Type#getActivationStatus()
-	 */
-	@Override
-	public boolean getActivationStatus() {
-		return isActivated;
+		return childrenTypes.replaceChildType(type, c);
 	}
 
 	/*
@@ -288,14 +240,6 @@ public abstract class AbstractType implements Type, Sectionizable {
 		return this.getClass().getSimpleName();
 	}
 
-	// /**
-	// * use normal constructor!
-	// */
-	// @Deprecated
-	// protected void init() {
-	//
-	// }
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -303,10 +247,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 */
 	@Override
 	public final SectionFinder getSectionFinder() {
-		if (isActivated) {
-			return sectionFinder;
-		}
-		return null;
+		return sectionFinder;
 	}
 
 	@Override
@@ -338,6 +279,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 
 	}
 
+	@Override
 	public void clearChildrenTypes() {
 		this.childrenTypes.clear();
 	}
@@ -379,6 +321,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 		this.childrenTypes.addLast(t);
 	}
 
+	@Override
 	public void addChildTypeAtPosition(int pos, Type t) {
 		childrenTypes.addChildTypeAtPosition(pos, t);
 	}
