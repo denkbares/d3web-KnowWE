@@ -20,9 +20,10 @@
 
 package de.knowwe.kdom.defaultMarkup;
 
-import java.util.Collections;
+import java.util.Arrays;
 
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -36,7 +37,8 @@ public class AnnotationContentType extends AbstractType {
 
 		this.setSectionFinder(new AllTextFinderTrimmed());
 
-		Collections.addAll(this.childrenTypes, this.annotation.getContentTypes());
+		Type[] contentTypes = this.annotation.getContentTypes();
+		childrenTypes.addAll(Arrays.asList(contentTypes));
 	}
 
 	/**

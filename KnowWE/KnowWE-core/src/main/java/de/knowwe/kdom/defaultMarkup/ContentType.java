@@ -20,7 +20,7 @@
 
 package de.knowwe.kdom.defaultMarkup;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,7 +40,8 @@ public class ContentType extends AbstractType {
 		this.markup = markup;
 		this.setSectionFinder(new ContentFinder(markup));
 		this.setRenderer(AnchorRenderer.getDelegateInstance());
-		Collections.addAll(this.childrenTypes, this.markup.getTypes());
+		Type[] types = this.markup.getTypes();
+		childrenTypes.addAll(Arrays.asList(types));
 	}
 
 	/**

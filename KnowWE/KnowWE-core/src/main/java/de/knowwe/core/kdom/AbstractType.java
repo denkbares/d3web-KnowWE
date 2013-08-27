@@ -22,7 +22,6 @@ package de.knowwe.core.kdom;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -50,7 +49,8 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * @see Type#getChildrenTypes()
 	 * 
 	 */
-	protected List<Type> childrenTypes = new ArrayList<Type>();
+	// protected List<Type> childrenTypes = new ArrayList<Type>();
+	protected ChildrenTypePriorityList childrenTypes = new ChildrenTypePriorityList();
 
 	/**
 	 * Manages the subtreeHandlers which are registered to this type
@@ -98,16 +98,19 @@ public abstract class AbstractType implements Type, Sectionizable {
 	protected boolean isNumberedType = false;
 
 	/**
-	 * determines whether this type has already been 'furnished' with plugins. 
+	 * determines whether this type has already been 'furnished' with plugins.
 	 * It is only relevant during during the initialization process of KnowWE.
-	 * It is used to prevent cyclic infinite extension of the type tree by unfavourable plugins/plugin combinations.
+	 * It is used to prevent cyclic infinite extension of the type tree by
+	 * unfavourable plugins/plugin combinations.
 	 */
 	protected boolean hasBeenDecorated = false;
 
+	@Override
 	public boolean isDecorated() {
 		return hasBeenDecorated;
 	}
 
+	@Override
 	public void setDecorated() {
 		this.hasBeenDecorated = true;
 	}
@@ -224,23 +227,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	public void replaceChildType(Type type,
 			Class<? extends Type> c)
 			throws InvalidKDOMSchemaModificationOperation {
-		if (c.isAssignableFrom(type.getClass())) {
-			Type toReplace = null;
-			for (Type child : childrenTypes) {
-				if (child.getClass().equals(c)) {
-					toReplace = child;
-				}
-			}
-			childrenTypes.set(childrenTypes.indexOf(toReplace), type);
-
-		}
-		else {
-			throw new InvalidKDOMSchemaModificationOperation("class"
-					+ c.toString() + " may not be replaced by: "
-					+ type.getClass().toString()
-					+ " since it isn't a subclass of former");
-		}
-
+		childrenTypes.replaceChildType(type, c);
 	}
 
 	//
@@ -334,7 +321,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 */
 	@Override
 	public List<Type> getChildrenTypes() {
-		return Collections.unmodifiableList(childrenTypes);
+		return childrenTypes.getChildrenTypes();
 	}
 
 	/**
@@ -347,12 +334,12 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 */
 	@Override
 	public final List<Type> getChildrenTypesInit() {
-		return Collections.unmodifiableList(childrenTypes);
+		return childrenTypes.getChildrenTypes();
 
 	}
 
 	public void clearChildrenTypes() {
-		this.childrenTypes = new ArrayList<Type>();
+		this.childrenTypes.clear();
 	}
 
 	public void clearSubtreeHandlers() {
@@ -383,34 +370,26 @@ public abstract class AbstractType implements Type, Sectionizable {
 	}
 
 	@Override
-	public void addChildType(int i, Type t) {
-		if (i > childrenTypes.size()) {
-			// TODO: temporary hack only - find appropriate overall concept and
-			// fix!
-			addChildType(0, t);
-		}
-		else {
-			this.childrenTypes.add(i, t);
-		}
+	public void addChildType(double i, Type t) {
+		childrenTypes.addChildType(i, t);
 	}
 
 	@Override
 	public void addChildType(Type t) {
-		this.childrenTypes.add(t);
+		this.childrenTypes.addLast(t);
+	}
+
+	public void addChildTypeAtPosition(int pos, Type t) {
+		childrenTypes.addChildTypeAtPosition(pos, t);
 	}
 
 	public void removeChildType(Class<? extends Type> c) {
-		List<Type> removals = new LinkedList<Type>();
-		for (Type type : this.childrenTypes) {
-			if (type.getClass().equals(c)) {
-				removals.add(type);
-			}
-		}
-		this.childrenTypes.removeAll(removals);
+		this.childrenTypes.removeChildType(c);
 	}
 
+	@Deprecated
 	public Type removeChild(int i) {
-		return this.childrenTypes.remove(i);
+		return this.childrenTypes.removeChild(i);
 	}
 
 	@Override
@@ -504,7 +483,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	@Override
 	public final void setNotRecyclable(boolean notRecyclable) {
 		this.isNotRecyclable = notRecyclable;
-		for (Type type : childrenTypes) {
+		for (Type type : childrenTypes.getChildrenTypes()) {
 			type.setNotRecyclable(notRecyclable);
 		}
 

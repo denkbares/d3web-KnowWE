@@ -18,11 +18,12 @@
  */
 package de.knowwe.kdom.defaultMarkup;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 
@@ -43,7 +44,8 @@ public class AnnotationNameType extends AbstractType {
 		this.namePattern = Pattern.compile("^@("
 				+ annotation.getName() + ")\\s*[:=]?", Pattern.CASE_INSENSITIVE);
 		this.setSectionFinder(new RegexSectionFinder(namePattern));
-		Collections.addAll(this.childrenTypes, this.annotation.getNameTypes());
+		Type[] nameTypes = this.annotation.getNameTypes();
+		childrenTypes.addAll(Arrays.asList(nameTypes));
 	}
 
 	/**

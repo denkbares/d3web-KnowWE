@@ -75,7 +75,7 @@ public class TerminalCondition extends AbstractType {
 	}
 
 	public void setAllowedTerminalConditions(List<Type> types) {
-		this.childrenTypes.addAll(0, types);
+		this.childrenTypes.addAll(3, types);
 	}
 
 }

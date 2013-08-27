@@ -126,7 +126,7 @@ public class Plugins {
 			if (!pathToRootContainsType(type.getPathToRoot(), pluggedType)) {
 				//
 				if (priority != null) {
-					type.addChildType(priority.intValue(), pluggedType);
+					type.addChildType(priority.doubleValue(), pluggedType);
 				}
 				else {
 					type.addChildType(0, pluggedType);

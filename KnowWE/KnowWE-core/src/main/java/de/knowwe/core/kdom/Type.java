@@ -63,7 +63,9 @@ public interface Type {
 
 	public void addSubtreeHandler(Priority p, SubtreeHandler<? extends Type> handler);
 
-	public void addChildType(int i, Type t);
+	public void addChildType(double i, Type t);
+
+	public void addChildTypeAtPosition(int pos, Type t);
 
 	public void addChildType(Type t);
 
