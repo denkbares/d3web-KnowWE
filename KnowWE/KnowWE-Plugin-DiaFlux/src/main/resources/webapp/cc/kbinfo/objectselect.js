@@ -194,6 +194,7 @@ ObjectSelect.prototype.renderListItem = function(item, index) {
 	if (this.value && !this.value.blank()) {
 		var phrases = this.value.strip().split(' ');
 		for (var i=0; i<phrases.length; i++) {
+			if (phrases[i].length == 0) continue;
 			text = text.gsub(new RegExp(DiaFluxUtils.escapeRegex(phrases[i]), 'i'), '<em>#{0}</em>');
 		}
 	}

@@ -134,7 +134,7 @@ KBInfo.searchInfoObject = function(phrase, classArray, maxCount, onResult) {
 			classesParam += classArray[i].getShortClassName();
 		}
 	}
-	var phraseParam = '&phrase='+DiaFluxUtils.escapeRegex(phrase);
+	var phraseParam = '&phrase='+encodeURIComponent(phrase);
 	var maxCountParam = maxCount ? '&maxcount='+maxCount : '';
 	var sectionID = '&sectionID='+nodeID;
 	var url = "KnowWE.jsp?action=SearchInfoObjects" 
@@ -147,7 +147,9 @@ KBInfo.searchInfoObject = function(phrase, classArray, maxCount, onResult) {
 		onSuccess: function(transport) {
 			// find root node
 			var root = transport.responseXML;
-			while (root && root.nodeName.toLowerCase() != 'matches') root = root.firstChild;
+			while (root && root.nodeName.toLowerCase() != 'matches') {
+				root = root.firstChild;
+			}
 			// extract result
 			var result = {
 				count: root ? root.getAttribute('count') : 0,
