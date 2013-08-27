@@ -338,7 +338,7 @@ KNOWWE.plugin.quicki = function(){
             	el.className='answerMCClicked';
             	
             	// if not already contained, attach value
-            	if(mcanswervals.indexOf(toreplace)==-1){
+            	if(mcanswervals.indexOf("#####" + toreplace)==-1){
             		mcanswervals += oid;
                     mcanswervals += "#####";
             	}
