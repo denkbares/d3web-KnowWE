@@ -19,6 +19,7 @@ import de.knowwe.core.kdom.basicType.RoundBracedType;
 import de.knowwe.core.kdom.basicType.SquareBracedType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.defaultMarkup.AnnotationType;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * A scope is an selector of a specific subset of KDOM nodes. It's selection is
@@ -46,6 +47,8 @@ import de.knowwe.kdom.defaultMarkup.AnnotationType;
  * <li>If you specify a "**" wildcard as a path entry (".../ ** /...") , any
  * sub-path is matched to it. Especially also the empty sub-path is matched. (If
  * you want to have at least one section in between, use ".../ ** / * /...".)
+ * <li>If a path element start with an "%%", it only matches a default markup
+ * with the specified markup name
  * <li>If a path element start with an "@", it only matches a annotation of a
  * default markup with the specified annotation name
  * </ul>
@@ -228,6 +231,9 @@ public class Scope {
 			// classname and name is identical)
 			names.add(typeElement.getName().toLowerCase());
 			// also add "@<annoation-name>" for annotation types
+			if (typeElement instanceof DefaultMarkupType) {
+				names.add("%%" + typeElement.getName().toLowerCase());
+			}
 			if (typeElement instanceof AnnotationType) {
 				names.add("@" + typeElement.getName().toLowerCase());
 			}
