@@ -1,6 +1,5 @@
 package de.knowwe.core.utils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,14 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.d3web.plugin.test.InitPluginManager;
-import de.knowwe.core.kdom.Article;
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.basicType.PlainText;
-import de.knowwe.core.kdom.basicType.QuotedType;
-import de.knowwe.core.kdom.basicType.RoundBracedType;
-import de.knowwe.core.kdom.basicType.SquareBracedType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.defaultMarkup.AnnotationType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -129,30 +123,30 @@ public class Scope {
 	}
 
 	/**
-	 * Returns a list of the top-most ancestors that matches this scope. If a
-	 * ancestor section matches it will be part of the returned list but no of
-	 * its ancestor will be included.
+	 * Returns a list of the top-most successors that matches this scope. If a
+	 * successor section matches it will be part of the returned list but no of
+	 * its successors will be included.
 	 * <p>
 	 * If the specified root section matches the scope, a list of only the root
 	 * section will be returned.
 	 * 
 	 * @created 26.08.2013
 	 * @param root the root section to start the search for
-	 * @return the matching ancestor sections
+	 * @return the matching successors sections
 	 */
-	public List<Section<?>> getMatchingAnchestors(Section<?> root) {
+	public List<Section<?>> getMatchingSuccessors(Section<?> root) {
 		List<Section<?>> result = new LinkedList<Section<?>>();
-		getMatchingAnchestors(root, result);
+		getMatchingSuccessors(root, result);
 		return result;
 	}
 
-	private void getMatchingAnchestors(Section<?> section, List<Section<?>> result) {
+	private void getMatchingSuccessors(Section<?> section, List<Section<?>> result) {
 		if (matches(section)) {
 			result.add(section);
 		}
 		else {
 			for (Section<?> child : section.getChildren()) {
-				getMatchingAnchestors(child, result);
+				getMatchingSuccessors(child, result);
 			}
 		}
 	}
@@ -257,43 +251,8 @@ public class Scope {
 		}
 	}
 
-	public static void main(String... args) throws IOException {
-		InitPluginManager.init();
-		// had to comment out this, because the DummyConnector was moved out of
-		// the core.
-		// Environment.initInstance(new DummyConnector());
-		String t4 = "hello world";
-		String t3 = "[" + t4 + "]";
-		String t2 = "\"" + t3 + "\"";
-		String t1 = "(" + t2 + ")";
-		String t0 = "<root>" + t1 + "</root>";
-
-		Type o4 = new PlainText();
-		Type o3 = new SquareBracedType(o4);
-		Type o2 = new QuotedType(o3);
-		Type o1 = new RoundBracedType(o2);
-		RootType o0 = RootType.getInstance();
-
-		Article.createArticle(t0, "test", "myWeb");
-		Section<?> s0 = Section.createSection(t0, o0, null);
-		Section<?> s1 = Section.createSection(t1, o1, s0);
-		Section<?> s2 = Section.createSection(t2, o2, s1);
-		Section<?> s3 = Section.createSection(t3, o3, s2);
-		Section<?> s4 = Section.createSection(t4, o4, s3);
-
-		// these ones should be true
-		System.out.println(new Scope("").matches(s4)); // empty path is always
-														// matched
-		System.out.println(new Scope("/**/PlainText").matches(s4));
-		System.out.println(new Scope("PlainText").matches(s4));
-		System.out.println(new Scope("QuotedType").matches(s2));
-		System.out.println(new Scope("QuotedType/*/PlainText").matches(s4));
-		System.out.println(new Scope("/EmbracedType/**/EmbracedType/**/Object/PlainText").matches(s4));
-		// and these ones should fail
-		System.out.println(new Scope("QuotedType").matches(s3));
-		System.out.println(new Scope(
-				"/EmbracedType/EmbracedType/EmbracedType/EmbracedType/PlainText").matches(s4));
-		System.out.println(new Scope(
-				"/EmbracedType/**/EmbracedType/**/EmbracedType/**/Object/PlainText").matches(s4));
+	@Override
+	public String toString() {
+		return "Scope[" + Strings.concat(", ", scopeElements) + "]";
 	}
 }
