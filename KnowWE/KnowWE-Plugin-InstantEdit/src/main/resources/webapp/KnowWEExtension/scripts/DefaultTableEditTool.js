@@ -298,8 +298,11 @@ Spreadsheet.prototype.createTable = function(model) {
 		var data = cell.data("cellInfo");
 		var multi = event.shiftKey;
 		var command = event.ctrlKey || event.metaKey;
-		var handled = data.spreadsheet.handleKeyDown(cell, event.which, multi, command);
-		if (handled) event.preventDefault();
+		var alt = event.altKey;
+		var handled = data.spreadsheet.handleKeyDown(cell, event.which, multi, command, alt);
+		if (handled) {
+			event.preventDefault();
+		}
 	});
 	
 	this.element.find(" tr > td > div > a").blur(function(event) {
@@ -312,7 +315,7 @@ Spreadsheet.prototype.createTable = function(model) {
 /**
  * Handles key down event end returns boolean if the key was handled or not
  */
-Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, command) {
+Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, command, alt) {
 	var row = this.selected.row;
 	var col = this.selected.col;
 	// Backspace + ENTF
@@ -388,6 +391,10 @@ Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, comma
 	else if (keyCode == 81 && command && this.cancelFunction) {
 		this.stopEditCell(true);
 		this.cancelFunction();
+	}
+	// delete line: command+'d' or alt+'d'
+	else if (keyCode == 68 && ((command && !alt) || (!command && alt))) {
+		this.removeRow(row);
 	}
 	// ESC
 	else if (keyCode == 27) {
@@ -474,10 +481,10 @@ Spreadsheet.prototype.editCell = function(row, col) {
 		spreadsheet.selectCell(row,col);
 		// on tab or return, select next cell as well
 		if (keyCode == 9) {
-			spreadsheet.handleKeyDown(spreadsheet.getSelectedCell(), keyCode, event.shiftKey, false);
+			spreadsheet.handleKeyDown(spreadsheet.getSelectedCell(), keyCode, event.shiftKey, false, false);
 		}
 		if (keyCode == 13) {
-			spreadsheet.handleKeyDown(spreadsheet.getSelectedCell(), 40, false, false);
+			spreadsheet.handleKeyDown(spreadsheet.getSelectedCell(), 40, false, false, false);
 		}
 	};
 	editArea.keydown(keyDownFunction);

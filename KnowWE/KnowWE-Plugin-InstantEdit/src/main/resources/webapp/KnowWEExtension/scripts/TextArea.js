@@ -50,16 +50,25 @@ TextArea.prototype.handleKeyDown = function(event) {
 			return;	
 		}
 	}
-	if (event.code == 38 && !event.control && !event.meta && event.alt) { // alt + UP
+	var isAltOnly = !event.control && !event.meta && event.alt;
+	var isCmdOnly = (!event.control && event.meta && !event.alt)
+				 || (event.control && !event.meta && !event.alt);
+	if (event.code == 38 && isAltOnly) { // alt + UP
 		event.stop();
 		this.snapshot();
 		this.moveLines("up");
 		return;
 	}
-	if (event.code == 40 && !event.control && !event.meta && event.alt) { // alt + DOWN
+	if (event.code == 40 && isAltOnly) { // alt + DOWN
 		event.stop();
 		this.snapshot();
 		this.moveLines("down");
+		return;
+	}
+	if (event.code == 68 && (isAltOnly || isCmdOnly)) { // alt + D, cmd + D
+		event.stop();
+		this.snapshot();
+		this.moveLines("delete");
 		return;
 	}
 	if (event.code == 9 && !event.control && !event.alt) {
@@ -108,6 +117,9 @@ TextArea.prototype.moveLines= function (direction) {
 		if (sel.start > 0) this.setSelection(sel.start-1, sel.end);
 	}
 	this.insertText("");
+	if (direction == "delete") {
+		return;
+	}
 	var text = area.getValue();
 	var curPos = this.getCursor(area);
 	if (missingLF) curPos++;
@@ -117,7 +129,7 @@ TextArea.prototype.moveLines= function (direction) {
 	if (direction == "up") {
 		newPos = text.substring(0, curPos-1).lastIndexOf('\n')+1;
 	}
-	else if (direction == "down"){
+	else if (direction == "down") {
 		newPos = text.substring(curPos).indexOf('\n');
 		if (newPos == -1) {
 			missingLF = true;
