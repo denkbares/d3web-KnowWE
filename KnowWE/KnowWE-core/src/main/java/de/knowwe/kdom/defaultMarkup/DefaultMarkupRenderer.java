@@ -253,10 +253,10 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
 		List<Section<?>> subsecs = section.getChildren();
-		renderContentSections(subsecs, user, null, string);
+		renderContentSections(subsecs, user, string);
 	}
 
-	public static void renderContentSections(List<Section<?>> subSections, UserContext user, String suffix, RenderResult result) {
+	public static void renderContentSections(List<Section<?>> subSections, UserContext user, RenderResult result) {
 		Section<?> first = subSections.get(0);
 		Section<?> last = subSections.get(subSections.size() - 1);
 		for (Section<?> subsec : subSections) {
@@ -267,9 +267,6 @@ public class DefaultMarkupRenderer implements Renderer {
 				continue;
 			}
 			subsec.get().getRenderer().render(subsec, user, result);
-			if (suffix != null) {
-				result.append(suffix);
-			}
 		}
 	}
 

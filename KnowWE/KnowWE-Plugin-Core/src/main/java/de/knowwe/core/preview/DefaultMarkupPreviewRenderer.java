@@ -8,12 +8,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.RootType;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Scope;
+import de.knowwe.kdom.defaultMarkup.AnnotationType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -27,13 +30,35 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * If it is only scoped to certain sub-sections only these sections are
  * rendered. In this case you can additionally specify a set of (relative)
  * scopes that will be additionally rendered.
+ * <p>
+ * Please not that this preview renderer is for selective rendering only. If you
+ * wand to render a complete default markup section without its frame, you may
+ * use the {@link DefaultPreviewRenderer} instead.
  * 
  * @author Volker Belli (denkbares GmbH)
  * @created 26.08.2013
  */
 public class DefaultMarkupPreviewRenderer implements PreviewRenderer {
 
-	public final Map<Scope, Boolean> previewItems = new HashMap<Scope, Boolean>();
+	public static enum Preview {
+		/**
+		 * Shows all successors matching the scope
+		 */
+		all,
+
+		/**
+		 * Shows successors that contains relevant items
+		 */
+		relevant,
+
+		/**
+		 * Shows successors that contains relevant items, but all if there are
+		 * no successors with relevant items
+		 */
+		relevantOrAll
+	}
+
+	public final Map<Scope, Preview> previewItems = new HashMap<Scope, Preview>();
 
 	public DefaultMarkupPreviewRenderer() {
 	}
@@ -50,45 +75,77 @@ public class DefaultMarkupPreviewRenderer implements PreviewRenderer {
 	 * @param forceVisible if the are always shown or only if the contain
 	 *        relevant items
 	 */
-	public void addPreviewItem(Scope scope, boolean forceVisible) {
-		previewItems.put(scope, forceVisible);
+	public void addPreviewItem(Scope scope, Preview preview) {
+		previewItems.put(scope, preview);
 	}
 
 	@Override
 	public void render(Section<?> section, Collection<Section<?>> relevantSubSections, UserContext user, RenderResult result) {
-		if (section.get() instanceof DefaultMarkupType) {
-			// render all sub sections, but not the default markup itself
-			DefaultMarkupRenderer.renderContentSections(section.getChildren(), user, " ", result);
-		}
-		else {
-			Section<?> parent = Sections.findAncestorOfType(section, DefaultMarkupType.class);
-			if (parent == null) {
-				parent = section;
-				while (!(parent.getFather().get() instanceof RootType)
-						&& parent.getFather() != null) {
-					parent = parent.getFather();
-				}
+		Section<?> parent = getParentSection(section);
+		List<Section<?>> previews = new LinkedList<Section<?>>();
+		// collect all relevant scoped sections plus the matched section
+		for (Entry<Scope, Preview> entry : previewItems.entrySet()) {
+			Scope scope = entry.getKey();
+			Preview preview = entry.getValue();
+			List<Section<?>> matches = scope.getMatchingAnchestors(parent);
+			if (preview.equals(Preview.all)) {
+				// add all matches if requested
+				previews.addAll(matches);
 			}
-			List<Section<?>> previews = new LinkedList<Section<?>>();
-			// collect all relevant scoped sections plus the matched section
-			for (Entry<Scope, Boolean> entry : previewItems.entrySet()) {
-				Scope scope = entry.getKey();
-				boolean forcePreview = entry.getValue();
-				List<Section<?>> matches = scope.getMatchingAnchestors(parent);
-				if (forcePreview) {
+			else {
+				// add only relevant matches if requested
+				boolean added = false;
+				for (Section<?> match : matches) {
+					if (hasSuccessor(match, relevantSubSections)) {
+						previews.add(match);
+						added = true;
+					}
+				}
+				// add all if no one has shown to be relevant
+				// if this has been requested
+				if (preview.equals(Preview.relevantOrAll) && !added) {
 					previews.addAll(matches);
 				}
-				else {
-					for (Section<?> match : matches) {
-						if (hasSuccessor(match, relevantSubSections)) {
-							previews.add(match);
-						}
+			}
+		}
+		Collections.sort(previews);
+		renderSections(previews, user, result);
+	}
+
+	static void renderSections(List<Section<?>> previews, UserContext user, RenderResult result) {
+		List<Section<?>> extended = new LinkedList<Section<?>>();
+		for (Section<?> section : previews) {
+			// if we have an annotation type also add the plain text right
+			// before it
+			// which only consists of white-spaces
+			if (section.get() instanceof AnnotationType) {
+				List<Section<? extends Type>> siblings = section.getFather().getChildren();
+				int index = siblings.indexOf(section);
+				if (index > 0) {
+					Section<?> sibling = siblings.get(index - 1);
+					if (Strings.isBlank(sibling.getText())) {
+						extended.add(sibling);
 					}
 				}
 			}
-			Collections.sort(previews);
-			DefaultMarkupRenderer.renderContentSections(previews, user, " ", result);
+			extended.add(section);
 		}
+		DefaultMarkupRenderer.renderContentSections(extended, user, result);
+	}
+
+	private Section<?> getParentSection(Section<?> section) {
+		if (section.get() instanceof DefaultMarkupType) {
+			return section;
+		}
+		Section<?> parent = Sections.findAncestorOfType(section, DefaultMarkupType.class);
+		if (parent != null) {
+			return parent;
+		}
+		parent = section;
+		while (!(parent.getFather().get() instanceof RootType)) {
+			parent = parent.getFather();
+		}
+		return parent;
 	}
 
 	/**
