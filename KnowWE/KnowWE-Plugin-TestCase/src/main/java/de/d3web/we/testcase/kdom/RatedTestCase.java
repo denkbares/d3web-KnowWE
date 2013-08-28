@@ -42,11 +42,11 @@ public class RatedTestCase extends AbstractType {
 		bracedType.setSteal(true);
 		bracedType.setRenderer(StyleRenderer.NUMBER);
 
-		childrenTypes.add(bracedType);
-		childrenTypes.add(new Findings());
-		childrenTypes.add(new RatedFindings());
-		childrenTypes.add(new RatedSolutions());
-		this.sectionFinder = new RatedTestCaseSectionFinder();
+		this.addChildType(bracedType);
+		this.addChildType(new Findings());
+		this.addChildType(new RatedFindings());
+		this.addChildType(new RatedSolutions());
+		this.setSectionFinder(new RatedTestCaseSectionFinder());
 	}
 
 	public class RatedTestCaseSectionFinder implements SectionFinder {

@@ -24,7 +24,6 @@ import java.util.List;
 
 import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.InvalidKDOMSchemaModificationOperation;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
@@ -43,16 +42,16 @@ public class DashTreeElement extends AbstractType {
 	private Type elementContent;
 
 	public DashTreeElement(char key) {
-		this.sectionFinder = new RootFinder();
-		this.childrenTypes.add(new DashesPrefix(key));
-		this.childrenTypes.add(new LineEndComment());
+		this.setSectionFinder(new RootFinder());
+		this.addChildType(new DashesPrefix(key));
+		this.addChildType(new LineEndComment());
 		elementContent = new DashTreeElementContent();
-		this.childrenTypes.add(elementContent);
+		this.addChildType(elementContent);
 
 	}
 
-	public void setDashTreeElementContent(Type newType) throws InvalidKDOMSchemaModificationOperation {
-		this.childrenTypes.replaceChildType(newType, elementContent.getClass());
+	public void setDashTreeElementContent(Type newType) {
+		this.replaceChildType(newType, elementContent.getClass());
 		elementContent = newType;
 	}
 

@@ -59,14 +59,7 @@ public class ChildrenTypePriorityList {
 	 * @throws InvalidKDOMSchemaModificationOperation
 	 * @return true if a replacement has been made
 	 */
-	public boolean replaceChildType(Type newType, Class<? extends Type> classToBeReplaced) throws InvalidKDOMSchemaModificationOperation {
-		if (!classToBeReplaced.isAssignableFrom(newType.getClass())) {
-			throw new InvalidKDOMSchemaModificationOperation("class"
-					+ classToBeReplaced.toString() + " may not be replaced by: "
-					+ newType.getClass().toString()
-					+ " since it isn't a subclass of former");
-		}
-
+	public boolean replaceChildType(Type newType, Class<? extends Type> classToBeReplaced) {
 		Set<Double> keySet = children.keySet();
 		for (Double priorityValue : keySet) {
 			List<Type> childrenForPriorityValue = children.get(priorityValue);
@@ -122,13 +115,13 @@ public class ChildrenTypePriorityList {
 	}
 
 	/**
-	 * Adds the type a child of this type with the given priority value. If
-	 * there are already child types for the given priority it is appended at
-	 * the end of the list (lower priority).
+	 * Adds the type as a child of the current type with the given priority
+	 * value. If there are already child types for the given priority it is
+	 * appended at the end of the list (lower priority).
 	 * 
 	 * @created 27.08.2013
-	 * @param priority
-	 * @param t
+	 * @param priority the priority with which the type is added
+	 * @param type the type to add
 	 */
 	public void addChildType(double priority, Type t) {
 		List<Type> list = children.get(priority);
@@ -141,39 +134,34 @@ public class ChildrenTypePriorityList {
 	}
 
 	/**
-	 * Adds the type as a child of this type at the specified position in the
-	 * priority chain.
-	 * 
-	 * NOTE: This position may change if other types are inserted into the chain
-	 * afterwards. It is recommended to work with priorities, therefore use
-	 * {@link ChildrenTypePriorityList#addChildType(double, Type)}
+	 * Adds the type as achild with the given priority value. If there are
+	 * already child types for the given priority it is appended at the end of
+	 * the list (lower priority).
 	 * 
 	 * @created 27.08.2013
-	 * @param pos
-	 * @param t
+	 * @param pos the positioner where the child is added
+	 * @param type the type to add
+	 * @deprecated The position may change if other types are inserted into the
+	 *             chain later. It is recommended to work with priorities,
+	 *             therefore use {@link Type#addChildType(double, Type)}
 	 */
-	public void addChildTypeAtPosition(int pos, Type t) {
+	@Deprecated
+	public void addChildTypeAtPosition(int pos, Type type) {
 		List<Type> childrenTypes = this.getChildrenTypes();
 		int index = 0;
 		boolean foundIndex = false;
-		for (Type type : childrenTypes) {
+		for (Type childType : childrenTypes) {
 			if (index == pos) {
 				foundIndex = true;
-				addBefore(type, t);
+				addBefore(childType, childType);
 			}
 			index++;
 		}
 		if (!foundIndex) {
-			addLast(t);
+			addLast(type);
 		}
 	}
 
-	/**
-	 * 
-	 * @created 27.08.2013
-	 * @param type
-	 * @param t
-	 */
 	private void addBefore(Type indexType, Type newType) {
 		Set<Double> keySet = children.keySet();
 		for (Double priorityValue : keySet) {
@@ -186,26 +174,14 @@ public class ChildrenTypePriorityList {
 	}
 
 	/**
-	 * Adds the type a child for this type with the default priority
-	 * (considering all existing type with default priority - if existing - it
-	 * is appended at the end, i.e., lower priority.)
-	 * 
+	 * Adds the type as the (currently) last child type with the default
+	 * priority (which is 5).
 	 * 
 	 * @created 27.08.2013
-	 * @param t
+	 * @param type the type to add
 	 */
 	public void addChildType(Type t) {
 		addChildType(DEFAULT_PRIORITY, t);
-	}
-
-	/**
-	 * @deprecated: Use addChildType instead!
-	 * @created 26.08.2013
-	 * @param t
-	 */
-	@Deprecated
-	public void add(Type t) {
-		addLast(t);
 	}
 
 	/**
@@ -224,17 +200,6 @@ public class ChildrenTypePriorityList {
 		set.add(t);
 		children.put(newLastKey, set);
 		clearCache();
-	}
-
-	/**
-	 * @deprecated: Use addChildType instead!
-	 * @created 26.08.2013
-	 * @param t
-	 * @param index
-	 */
-	@Deprecated
-	public void add(int index, Type t) {
-		addChildType(index, t);
 	}
 
 	/**
@@ -263,46 +228,6 @@ public class ChildrenTypePriorityList {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Removes the child that is currently at position i;
-	 * 
-	 * @deprecated Use is unsecure, use removeChildType() instead!
-	 * @created 26.08.2013
-	 * @param i position index of child to remove
-	 * @return
-	 */
-	@Deprecated
-	public Type removeChild(int i) {
-		Type type = this.getChildrenTypes().get(i);
-		return removeChildType(type.getClass());
-	}
-
-	/**
-	 * 
-	 * @created 26.08.2013
-	 * @param i
-	 * @param types
-	 */
-	@Deprecated
-	public void addAll(List<? extends Type> types) {
-		for (Type type : types) {
-			this.add(type);
-		}
-	}
-
-	/**
-	 * 
-	 * @created 26.08.2013
-	 * @param i
-	 * @param types
-	 */
-	@Deprecated
-	public void addAll(int i, List<? extends Type> types) {
-		for (Type type : types) {
-			this.add(i, type);
-		}
 	}
 
 }

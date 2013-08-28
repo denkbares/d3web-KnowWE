@@ -28,18 +28,18 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class RuleAction extends AbstractType {
 
 	public RuleAction() {
-		sectionFinder = new AllTextSectionFinder();
+		setSectionFinder(new AllTextSectionFinder());
 		EndLineComment comment = new EndLineComment();
 		comment.setRenderer(StyleRenderer.COMMENT);
-		this.childrenTypes.add(comment);
-		this.childrenTypes.add(new SolutionValueAssignment());
-		this.childrenTypes.add(new SetQuestionNumValueAction());
-		this.childrenTypes.add(new SetQNumFormulaAction());
-		this.childrenTypes.add(new SetQuestionValue());
-		this.childrenTypes.add(new ContraIndicationAction());
-		this.childrenTypes.add(new InstantIndication());
-		this.childrenTypes.add(new RepeatedIndication());
-		this.childrenTypes.add(new QASetIndicationAction());
+		this.addChildType(comment);
+		this.addChildType(new SolutionValueAssignment());
+		this.addChildType(new SetQuestionNumValueAction());
+		this.addChildType(new SetQNumFormulaAction());
+		this.addChildType(new SetQuestionValue());
+		this.addChildType(new ContraIndicationAction());
+		this.addChildType(new InstantIndication());
+		this.addChildType(new RepeatedIndication());
+		this.addChildType(new QASetIndicationAction());
 
 	}
 }

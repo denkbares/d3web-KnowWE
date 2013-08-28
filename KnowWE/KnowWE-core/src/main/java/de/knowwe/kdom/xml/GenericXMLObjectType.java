@@ -37,8 +37,8 @@ public class GenericXMLObjectType extends AbstractXMLType {
 
 	@Override
 	public List<Type> getChildrenTypes() {
-		childrenTypes.add(new GenericXMLContent());
-		return childrenTypes.getChildrenTypes();
+		this.addChildType(new GenericXMLContent());
+		return super.getChildrenTypes();
 	}
 
 }

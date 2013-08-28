@@ -28,12 +28,12 @@ public class TagHandlerType extends AbstractType {
 
 	public TagHandlerType() {
 		// searches for Strings like [{KnowWEPlugin ...}]
-		this.sectionFinder = new RegexSectionFinder("\\[\\{KnowWEPlugin [^}]*}]");
+		this.setSectionFinder(new RegexSectionFinder("\\[\\{KnowWEPlugin [^}]*}]"));
 
-		childrenTypes.add(new TagHandlerTypeStartSymbol());
-		childrenTypes.add(new TagHandlerTypeEndSymbol());
+		this.addChildType(new TagHandlerTypeStartSymbol());
+		this.addChildType(new TagHandlerTypeEndSymbol());
 		for (TagHandler tagHandler : Plugins.getTagHandlers()) {
-			childrenTypes.add(new TagHandlerTypeContent(tagHandler.getTagName()));
+			this.addChildType(new TagHandlerTypeContent(tagHandler.getTagName()));
 		}
 		this.setRenderer(new TagRenderer());
 	}

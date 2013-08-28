@@ -64,10 +64,9 @@ import de.knowwe.kdom.xml.XMLContent;
  */
 public class Table extends AbstractType {
 
-
 	public Table() {
-		this.childrenTypes.add(new TableLine());
-		this.sectionFinder = new AllTextSectionFinder();
+		this.addChildType(new TableLine());
+		this.setSectionFinder(new AllTextSectionFinder());
 		this.setRenderer(new TableRenderer());
 	}
 

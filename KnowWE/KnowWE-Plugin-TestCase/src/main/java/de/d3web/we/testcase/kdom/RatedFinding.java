@@ -41,13 +41,13 @@ public class RatedFinding extends AbstractType {
 	public RatedFinding() {
 		QuestionReference question = new QuestionReference();
 		question.setSectionFinder(new QuestionSectionFinder());
-		childrenTypes.add(question);
+		this.addChildType(question);
 
 		RoundBracedType bracedType = new RoundBracedType(new ValueType());
 		bracedType.setSteal(true);
 
-		childrenTypes.add(bracedType);
-		this.sectionFinder = new RatedFindingSectionFinder();
+		this.addChildType(bracedType);
+		this.setSectionFinder(new RatedFindingSectionFinder());
 	}
 
 	class RatedFindingSectionFinder implements SectionFinder {

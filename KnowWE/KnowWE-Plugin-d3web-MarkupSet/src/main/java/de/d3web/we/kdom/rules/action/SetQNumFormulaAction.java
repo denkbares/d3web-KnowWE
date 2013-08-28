@@ -36,12 +36,12 @@ import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 
 	public SetQNumFormulaAction() {
-		this.sectionFinder = new SetQuestionValueSectionFinder();
+		this.setSectionFinder(new SetQuestionValueSectionFinder());
 		Equals equals = new Equals();
 		QuestionNumReference qr = new QuestionNumReference();
 		qr.setSectionFinder(new AllBeforeTypeSectionFinder(equals));
-		this.childrenTypes.add(equals);
-		this.childrenTypes.add(qr);
+		this.addChildType(equals);
+		this.addChildType(qr);
 
 		CompositeFormula formula = new CompositeFormula();
 		// crate List of valid terminals
@@ -55,7 +55,7 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 		terminals.add(qref);
 		// set these terminals
 		formula.setAllowedTerminalConditions(terminals);
-		this.childrenTypes.add(formula);
+		this.addChildType(formula);
 	}
 
 	private class SetQuestionValueSectionFinder implements SectionFinder {

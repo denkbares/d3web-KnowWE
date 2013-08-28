@@ -35,7 +35,7 @@ import de.knowwe.core.user.UserContext;
 public class DashesPrefix extends AbstractType {
 
 	public DashesPrefix(final char key) {
-		this.sectionFinder = new DashesPrefixFinder(key);
+		this.setSectionFinder(new DashesPrefixFinder(key));
 		this.setRenderer(new Renderer() {
 
 			@Override

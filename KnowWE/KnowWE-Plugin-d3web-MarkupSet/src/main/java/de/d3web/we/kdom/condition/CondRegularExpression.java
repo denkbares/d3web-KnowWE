@@ -57,7 +57,7 @@ public class CondRegularExpression extends D3webCondition<CondRegularExpression>
 		// comparator
 		AnonymousType comparator = new AnonymousType("equals");
 		comparator.setSectionFinder(new StringSectionFinderUnquoted("="));
-		this.childrenTypes.add(comparator);
+		this.addChildType(comparator);
 
 		// question
 		QuestionReference questionRef = new QuestionReference();
@@ -65,10 +65,10 @@ public class CondRegularExpression extends D3webCondition<CondRegularExpression>
 				new AllTextFinderTrimmed());
 		questionFinder.addConstraint(SingleChildConstraint.getInstance());
 		questionRef.setSectionFinder(questionFinder);
-		this.childrenTypes.add(questionRef);
+		this.addChildType(questionRef);
 
 		// regex to be checked
-		this.childrenTypes.add(new RegexType());
+		this.addChildType(new RegexType());
 
 	}
 

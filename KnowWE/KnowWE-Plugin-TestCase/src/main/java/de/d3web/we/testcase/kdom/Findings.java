@@ -34,8 +34,8 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 public class Findings extends AbstractType {
 
 	public Findings() {
-		childrenTypes.add(new Finding());
-		this.sectionFinder = new FindingsSectionFinder();
+		this.addChildType(new Finding());
+		this.setSectionFinder(new FindingsSectionFinder());
 	}
 
 	public class FindingsSectionFinder implements SectionFinder {

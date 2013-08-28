@@ -22,9 +22,8 @@ import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 public class BracedCondition extends NonTerminalCondition {
 
 	public BracedCondition() {
-		this.sectionFinder = EmbracedExpressionFinder.createEmbracedExpressionFinder();
+		this.setSectionFinder(EmbracedExpressionFinder.createEmbracedExpressionFinder());
 	}
-
 }
 
 /**

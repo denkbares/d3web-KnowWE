@@ -37,7 +37,7 @@ public class ActionType extends AbstractXMLType {
 		super("action");
 		// get the CFAction higher up in the list
 		RuleAction ruleAction = new RuleAction();
-		ruleAction.addChildType(0, new CallFlowActionType());
+		ruleAction.addChildType(2, new CallFlowActionType());
 		addChildType(new XMLContent(ruleAction));
 	}
 

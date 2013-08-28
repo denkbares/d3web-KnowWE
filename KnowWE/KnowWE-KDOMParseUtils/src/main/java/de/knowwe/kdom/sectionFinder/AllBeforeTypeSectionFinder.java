@@ -53,8 +53,8 @@ public class AllBeforeTypeSectionFinder implements SectionFinder {
 	 * 
 	 * 	secondType.setSectionFinder(new AllBeforeTypeSectionFinder(firstType));
 	 * 
-	 * 	this.childrenTypes.add(firstType);
-	 * 	this.childrenTypes.add(secondType);
+	 * 	this.addChildType(firstType);
+	 * 	this.addChildType(secondType);
 	 * }
 	 * </pre>
 	 * 

@@ -44,7 +44,7 @@ public class ConditionActionRuleContent extends AbstractType {
 	ExceptionConditionArea exceptionCond = new ExceptionConditionArea();
 
 	public ConditionActionRuleContent(AbstractType action) {
-		this.sectionFinder = new AllTextFinderTrimmed(true);
+		this.setSectionFinder(new AllTextFinderTrimmed(true));
 		this.addChildType(new If());
 		Then then = new Then();
 		condArea.setSectionFinder(new AllBeforeTypeSectionFinder(then));

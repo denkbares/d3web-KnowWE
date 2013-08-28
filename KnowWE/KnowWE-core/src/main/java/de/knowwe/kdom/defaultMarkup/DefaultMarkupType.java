@@ -132,12 +132,12 @@ public class DefaultMarkupType extends AbstractType {
 		Pattern pattern = getPattern(markup.getName());
 		this.setSectionFinder(new RegexSectionFinder(pattern, 0));
 		// add children
-		this.childrenTypes.add(new ContentType(markup));
+		this.addChildType(new ContentType(markup));
 		for (DefaultMarkup.Annotation parameter : markup.getAnnotations()) {
 			// update KDOM structure for the annotations
-			this.childrenTypes.add(new AnnotationType(parameter));
+			this.addChildType(new AnnotationType(parameter));
 		}
-		this.childrenTypes.add(new UnknownAnnotationType());
+		this.addChildType(10, new UnknownAnnotationType());
 		this.addSubtreeHandler(Priority.PRECOMPILE_MIDDLE, new AddMarkupSectionToPackagesHandler());
 		this.addSubtreeHandler(new DefaultMarkupSubtreeHandler(markup));
 		this.addSubtreeHandler(new DefaultMarkupTermReferenceRegisterHandler());

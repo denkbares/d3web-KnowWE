@@ -49,13 +49,13 @@ import de.knowwe.core.utils.Patterns;
 public class TableCell extends AbstractType {
 
 	public TableCell() {
-		sectionFinder = new TableCellSectionFinder();
+		setSectionFinder(new TableCellSectionFinder());
 		LineBreak lineBreak = new LineBreak();
 		lineBreak.setRenderer(NothingRenderer.getInstance());
-		childrenTypes.add(lineBreak);
-		childrenTypes.add(new TableHeadStart());
-		childrenTypes.add(new TableCellStart());
-		childrenTypes.add(new TableCellContent());
+		this.addChildType(lineBreak);
+		this.addChildType(new TableHeadStart());
+		this.addChildType(new TableCellStart());
+		this.addChildType(new TableCellContent());
 	}
 
 	/**

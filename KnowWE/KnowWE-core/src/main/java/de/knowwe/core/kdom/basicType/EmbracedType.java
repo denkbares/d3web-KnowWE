@@ -43,10 +43,10 @@ public class EmbracedType extends AbstractType {
 	}
 
 	public EmbracedType(Type bodyType, String start, String end) {
-		this.childrenTypes.add(new EmbraceStart(start));
-		this.childrenTypes.add(new EmbraceEnd(end));
-		this.childrenTypes.add(bodyType);
-		this.sectionFinder = new EmbracementFinder(bodyType, start, end);
+		this.addChildType(new EmbraceStart(start));
+		this.addChildType(new EmbraceEnd(end));
+		this.addChildType(bodyType);
+		this.setSectionFinder(new EmbracementFinder(bodyType, start, end));
 	}
 
 	class EmbracementFinder implements SectionFinder {

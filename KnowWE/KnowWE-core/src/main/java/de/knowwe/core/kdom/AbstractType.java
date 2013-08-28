@@ -49,7 +49,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * @see Type#getChildrenTypes()
 	 * 
 	 */
-	protected ChildrenTypePriorityList childrenTypes = new ChildrenTypePriorityList();
+	private final ChildrenTypePriorityList childrenTypes = new ChildrenTypePriorityList();
 
 	/**
 	 * Manages the subtreeHandlers which are registered to this type
@@ -57,20 +57,6 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * @see SubtreeHandler
 	 */
 	private final TreeMap<Priority, List<SubtreeHandler<? extends Type>>> subtreeHandler = new TreeMap<Priority, List<SubtreeHandler<? extends Type>>>();
-
-	/**
-	 * types can be activated and deactivated in KnowWE this field is holding
-	 * the current state
-	 */
-	// protected boolean isActivated = true;
-
-	/**
-	 * determines whether this type is sectionized after creating the knowledge
-	 * or before as all other types
-	 * 
-	 * @see AbstractType#isPostBuildSectionizing()
-	 */
-	protected boolean postBuildSectionizing = false;
 
 	/**
 	 * a flag for the updating mechanism, which manages translations to explicit
@@ -94,7 +80,27 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * determines whether there is a enumeration of siblings defined for this
 	 * type (e.g., to add line numbers to line-based sections)
 	 */
-	protected boolean isNumberedType = false;
+	private boolean isNumberedType = false;
+
+	/**
+	 * allows to set a custom renderer for a type (at initialization) if a
+	 * custom renderer is set, it is used to present the type content in the
+	 * wiki view
+	 */
+	private Renderer renderer = DelegateRenderer.getInstance();
+
+	/**
+	 * The sectionFinder of this type, used to serve the getSectionFinder-method
+	 * of the Type interface
+	 * 
+	 * @see Type#getSectionFinder()
+	 */
+	private SectionFinder sectionFinder;
+
+	/**
+	 * contains all types from this type to the {@link RootType}
+	 */
+	private Type[] pathToRoot = null;
 
 	/**
 	 * determines whether this type has already been 'furnished' with plugins.
@@ -102,7 +108,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * It is used to prevent cyclic infinite extension of the type tree by
 	 * unfavourable plugins/plugin combinations.
 	 */
-	protected boolean hasBeenDecorated = false;
+	private boolean hasBeenDecorated = false;
 
 	@Override
 	public boolean isDecorated() {
@@ -114,11 +120,6 @@ public abstract class AbstractType implements Type, Sectionizable {
 		this.hasBeenDecorated = true;
 	}
 
-	/**
-	 * contains all types from this type to the {@link RootType}
-	 */
-	private Type[] pathToRoot = null;
-
 	public boolean isNumberedType() {
 		return isNumberedType;
 	}
@@ -126,14 +127,6 @@ public abstract class AbstractType implements Type, Sectionizable {
 	public void setNumberedType(boolean isNumberedType) {
 		this.isNumberedType = isNumberedType;
 	}
-
-	/**
-	 * The sectionFinder of this type, used to serve the getSectionFinder-method
-	 * of the Type interface
-	 * 
-	 * @see Type#getSectionFinder()
-	 */
-	protected SectionFinder sectionFinder;
 
 	/**
 	 * Allows to set a specific sectionFinder for this type
@@ -144,13 +137,6 @@ public abstract class AbstractType implements Type, Sectionizable {
 	public void setSectionFinder(SectionFinder sectionFinder) {
 		this.sectionFinder = sectionFinder;
 	}
-
-	/**
-	 * allows to set a custom renderer for a type (at initialization) if a
-	 * custom renderer is set, it is used to present the type content in the
-	 * wiki view
-	 */
-	private Renderer renderer = DelegateRenderer.getInstance();
 
 	/**
 	 * constructor calling init() which is abstract
@@ -171,7 +157,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 
 	public AbstractType(SectionFinder sectionFinder) {
 		this();
-		this.sectionFinder = sectionFinder;
+		this.setSectionFinder(sectionFinder);
 	}
 
 	/**
@@ -224,9 +210,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	}
 
 	@Override
-	public boolean replaceChildType(Type type,
-			Class<? extends Type> c)
-			throws InvalidKDOMSchemaModificationOperation {
+	public boolean replaceChildType(Type type, Class<? extends Type> c) {
 		return childrenTypes.replaceChildType(type, c);
 	}
 
@@ -312,27 +296,33 @@ public abstract class AbstractType implements Type, Sectionizable {
 	}
 
 	@Override
-	public void addChildType(double i, Type t) {
-		childrenTypes.addChildType(i, t);
+	public void addChildType(double priority, Type type) {
+		childrenTypes.addChildType(priority, type);
 	}
 
 	@Override
-	public void addChildType(Type t) {
-		this.childrenTypes.addLast(t);
+	public void addChildType(Type type) {
+		this.childrenTypes.addChildType(type);
 	}
 
 	@Override
-	public void addChildTypeAtPosition(int pos, Type t) {
-		childrenTypes.addChildTypeAtPosition(pos, t);
-	}
-
-	public void removeChildType(Class<? extends Type> c) {
-		this.childrenTypes.removeChildType(c);
-	}
-
 	@Deprecated
-	public Type removeChild(int i) {
-		return this.childrenTypes.removeChild(i);
+	public void addChildTypeAtPosition(int pos, Type type) {
+		childrenTypes.addChildTypeAtPosition(pos, type);
+	}
+
+	public void removeChildType(Class<? extends Type> typeClass) {
+		this.childrenTypes.removeChildType(typeClass);
+	}
+
+	/**
+	 * Adds the given type at the end of the (current) children priority chain.
+	 * 
+	 * @created 27.08.2013
+	 * @param type the type to add
+	 */
+	public void addChildTypeLast(Type type) {
+		childrenTypes.addLast(type);
 	}
 
 	@Override

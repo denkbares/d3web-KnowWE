@@ -63,10 +63,10 @@ public class CellContent extends TableCellContent {
 		valueType.setSectionFinder(new ConstraintSectionFinder(valueType.getSectionFinder(),
 				new NonEmptyConstraint()));
 
-		childrenTypes.add(nameType);
-		childrenTypes.add(timeStampType);
-		childrenTypes.add(checkType);
-		childrenTypes.add(valueType);
+		this.addChildType(nameType);
+		this.addChildType(timeStampType);
+		this.addChildType(checkType);
+		this.addChildType(valueType);
 	}
 
 	private static final class TableNameConstraint implements SectionFinderConstraint {

@@ -28,7 +28,7 @@ import de.knowwe.core.kdom.AbstractType;
 public class WikiTable extends AbstractType {
 
 	public WikiTable() {
-		this.sectionFinder = new TableSectionFinder();
+		this.setSectionFinder(new TableSectionFinder());
 		this.setRenderer(new TableRenderer());
 	}
 

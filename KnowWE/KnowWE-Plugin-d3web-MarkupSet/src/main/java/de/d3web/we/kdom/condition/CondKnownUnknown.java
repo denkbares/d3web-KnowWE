@@ -61,7 +61,7 @@ public class CondKnownUnknown extends D3webCondition<CondKnownUnknown> {
 		// comparator
 		AnonymousType comparator = new AnonymousType("equals");
 		comparator.setSectionFinder(new StringSectionFinderUnquoted("="));
-		this.childrenTypes.add(comparator);
+		this.addChildType(comparator);
 
 		// question
 		QuestionReference questionRef = new QuestionReference();
@@ -69,10 +69,10 @@ public class CondKnownUnknown extends D3webCondition<CondKnownUnknown> {
 				new AllTextFinderTrimmed());
 		questionFinder.addConstraint(SingleChildConstraint.getInstance());
 		questionRef.setSectionFinder(questionFinder);
-		this.childrenTypes.add(questionRef);
+		this.addChildType(questionRef);
 
 		// value to be checked
-		this.childrenTypes.add(new AssignmentType());
+		this.addChildType(new AssignmentType());
 
 	}
 

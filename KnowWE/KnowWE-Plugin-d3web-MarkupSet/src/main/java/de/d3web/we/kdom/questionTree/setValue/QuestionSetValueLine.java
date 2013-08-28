@@ -58,7 +58,7 @@ public class QuestionSetValueLine extends AbstractType {
 	private static final String CLOSE = ")";
 
 	public QuestionSetValueLine() {
-		this.sectionFinder = new ConditionalSectionFinder(new AllTextSectionFinder()) {
+		this.setSectionFinder(new ConditionalSectionFinder(new AllTextSectionFinder()) {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {
@@ -66,11 +66,11 @@ public class QuestionSetValueLine extends AbstractType {
 						&& Strings.containsUnquoted(text, CLOSE);
 
 			}
-		};
+		});
 
 		AnswerPart argumentType = new AnswerPart();
-		this.childrenTypes.add(argumentType);
-		this.childrenTypes.add(createObjectRefTypeBefore(argumentType));
+		this.addChildType(argumentType);
+		this.addChildType(createObjectRefTypeBefore(argumentType));
 
 	}
 
@@ -160,7 +160,7 @@ public class QuestionSetValueLine extends AbstractType {
 	class AnswerPart extends AbstractType {
 
 		public AnswerPart() {
-			this.sectionFinder = new SectionFinder() {
+			this.setSectionFinder(new SectionFinder() {
 
 				@Override
 				public List<SectionFinderResult> lookForSections(String text,
@@ -171,7 +171,7 @@ public class QuestionSetValueLine extends AbstractType {
 									Strings.indexOfUnquoted(text, OPEN),
 									Strings.indexOfUnquoted(text, CLOSE) + 1));
 				}
-			};
+			});
 
 			AnswerReferenceInsideBracket answerReferenceInsideBracket = new AnswerReferenceInsideBracket();
 			answerReferenceInsideBracket.setSectionFinder(new SectionFinder() {

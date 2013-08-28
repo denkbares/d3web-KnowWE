@@ -80,7 +80,7 @@ public class CoveringList extends AbstractType {
 	private static final String RELATION_STORE_KEY = "XCLRELATION_STORE_KEY";
 
 	public CoveringList() {
-		this.sectionFinder = new AllTextSectionFinder();
+		this.setSectionFinder(new AllTextSectionFinder());
 		this.addChildType(new ListSolutionType());
 
 		// cut the optional closing }

@@ -54,15 +54,15 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 	public SolutionValueAssignment() {
 		// possibleScorePoints = D3webUtils.getPossibleScores();
 
-		this.sectionFinder = new DiagnosisRuleActionSectionFinder(possibleScorePoints);
+		this.setSectionFinder(new DiagnosisRuleActionSectionFinder(possibleScorePoints));
 		ScorePoint scorePoint = new ScorePoint();
 		Equals equ = new Equals();
 		SolutionReference solutionRef = new SolutionReference();
 		solutionRef.setSectionFinder(new AllBeforeTypeSectionFinder(equ));
 
-		this.childrenTypes.add(scorePoint);
-		this.childrenTypes.add(equ);
-		this.childrenTypes.add(solutionRef);
+		this.addChildType(scorePoint);
+		this.addChildType(equ);
+		this.addChildType(solutionRef);
 
 		String n = "N";
 		String p = "P";

@@ -60,7 +60,7 @@ import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
 public class AnswerLine extends AbstractType {
 
 	public AnswerLine() {
-		this.sectionFinder = new ConditionalSectionFinder(new AllTextSectionFinder()) {
+		this.setSectionFinder(new ConditionalSectionFinder(new AllTextSectionFinder()) {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {
@@ -77,14 +77,14 @@ public class AnswerLine extends AbstractType {
 
 				return false;
 			}
-		};
+		});
 
 		// description text - startet by '~'
-		this.childrenTypes.add(new AnswerText());
+		this.addChildType(new AnswerText());
 
 		QuestionTreeAnswerDefinition aid = new QuestionTreeAnswerDefinition();
 		aid.setSectionFinder(new AllTextFinderTrimmed());
-		this.childrenTypes.add(aid);
+		this.addChildType(aid);
 
 	}
 
@@ -102,8 +102,7 @@ public class AnswerLine extends AbstractType {
 	static class InitFlag extends AbstractType {
 
 		public InitFlag() {
-			this.sectionFinder = new OneOfStringEnumFinder(new String[] {
-					"<init>" });
+			this.setSectionFinder(new OneOfStringEnumFinder("<init>"));
 			this.setRenderer(StyleRenderer.KEYWORDS);
 
 			this.addSubtreeHandler(new SubtreeHandler<InitFlag>() {
@@ -164,8 +163,8 @@ public class AnswerLine extends AbstractType {
 		private static final String QTEXT_START_SYMBOL = "~";
 
 		public AnswerText() {
-			this.sectionFinder = new MatchUntilEndFinder(new StringSectionFinderUnquoted(
-					QTEXT_START_SYMBOL));
+			this.setSectionFinder(new MatchUntilEndFinder(new StringSectionFinderUnquoted(
+					QTEXT_START_SYMBOL)));
 
 			this.setRenderer(StyleRenderer.PROMPT);
 			this.addSubtreeHandler(new D3webSubtreeHandler<AnswerText>() {

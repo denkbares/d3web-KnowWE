@@ -42,14 +42,14 @@ import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
 public class NumericCondLine extends AbstractType {
 
 	public NumericCondLine() {
-		this.sectionFinder = new ConditionalSectionFinder(new AllTextSectionFinder()) {
+		this.setSectionFinder(new ConditionalSectionFinder(new AllTextSectionFinder()) {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {
 				return (text.startsWith("[") && text.endsWith("]")) || text.startsWith("<")
 						|| text.startsWith(">") || text.startsWith("=");
 			}
-		};
+		});
 
 		this.addSubtreeHandler(new CheckConditionHandler());
 

@@ -33,7 +33,7 @@ public class TagHandlerTypeEndSymbol extends AbstractType {
 		SectionFinder f2 = new RegexSectionFinder("\\r?\\n");
 		multi.addSectionFinder(f1);
 		multi.addSectionFinder(f2);
-		this.sectionFinder = multi;
+		this.setSectionFinder(multi);
 
 	}
 

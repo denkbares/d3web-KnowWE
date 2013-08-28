@@ -170,9 +170,9 @@ public class AbstractXMLType extends AbstractType {
 
 	private AbstractXMLType(String tagName, boolean anyXML) {
 		this.xmlTagName = tagName;
-		childrenTypes.add(0, new XMLHead());
-		childrenTypes.add(1, new XMLTail());
-		this.sectionFinder = new XMLSectionFinder(anyXML ? null : xmlTagName);
+		this.addChildType(0, new XMLHead());
+		this.addChildType(0, new XMLTail());
+		this.setSectionFinder(new XMLSectionFinder(anyXML ? null : xmlTagName));
 	}
 
 	public String getXMLTagName() {

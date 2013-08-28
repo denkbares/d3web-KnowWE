@@ -33,7 +33,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class SequentialTestCaseName extends AbstractType {
 
 	public SequentialTestCaseName() {
-		this.sectionFinder = new SequentialTestCaseNameSectionFinder();
+		this.setSectionFinder(new SequentialTestCaseNameSectionFinder());
 		// Do not remove this, otherwise rendering brokes with quoted names
 		this.setRenderer(StyleRenderer.KEYWORDS);
 	}

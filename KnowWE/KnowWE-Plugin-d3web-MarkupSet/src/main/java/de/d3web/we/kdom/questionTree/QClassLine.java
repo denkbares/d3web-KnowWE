@@ -49,12 +49,12 @@ public class QClassLine extends AbstractType {
 
 		initSectionFinder();
 		// at first the init-number
-		this.childrenTypes.add(new InitNumber());
+		this.addChildType(new InitNumber());
 		// add description-type via '~'
 		this.addChildType(new ObjectDescription(MMInfo.DESCRIPTION));
 
 		// finally the rest is QuestionniareDefinition
-		this.childrenTypes.add(new QuestionTreeQuestionnaireDefinition());
+		this.addChildType(new QuestionTreeQuestionnaireDefinition());
 		this.addSubtreeHandler(new CreateSubQuestionnaireRelationHandler());
 
 	}
@@ -142,7 +142,7 @@ public class QClassLine extends AbstractType {
 	}
 
 	private void initSectionFinder() {
-		this.sectionFinder = new ConditionalSectionFinder(new AllTextSectionFinder()) {
+		this.setSectionFinder(new ConditionalSectionFinder(new AllTextSectionFinder()) {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {
@@ -164,7 +164,7 @@ public class QClassLine extends AbstractType {
 
 				return false;
 			}
-		};
+		});
 	}
 
 	static class InitNumber extends AbstractType {

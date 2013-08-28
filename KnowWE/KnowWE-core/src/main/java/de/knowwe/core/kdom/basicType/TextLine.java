@@ -32,10 +32,10 @@ public class TextLine extends AbstractType {
 
 	public TextLine(Type lineContent) {
 		this.setNumberedType(true);
-		childrenTypes.add(new LineBreak());
-		childrenTypes.add(new EndLineComment());
-		childrenTypes.add(lineContent);
-		sectionFinder = LineSectionFinder.getInstance();
+		this.addChildType(new LineBreak());
+		this.addChildType(new EndLineComment());
+		this.addChildType(lineContent);
+		setSectionFinder(LineSectionFinder.getInstance());
 	}
 
 }

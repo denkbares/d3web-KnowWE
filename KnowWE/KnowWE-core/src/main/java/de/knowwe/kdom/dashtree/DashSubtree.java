@@ -56,13 +56,13 @@ public class DashSubtree extends AbstractType {
 
 	public DashSubtree(char keyCharacter, int startLevel) {
 		this.key = keyCharacter;
-		this.sectionFinder = new SubtreeFinder(keyCharacter, startLevel);
+		this.setSectionFinder(new SubtreeFinder(keyCharacter, startLevel));
 
-		this.childrenTypes.add(new DashTreeElement(key));
+		this.addChildType(new DashTreeElement(key));
 		// rescursive type definition
-		this.childrenTypes.add(this);
-		this.childrenTypes.add(new OverdashedElement(keyCharacter));
-		this.childrenTypes.add(new CommentLineType());
+		this.addChildType(this);
+		this.addChildType(new OverdashedElement(keyCharacter));
+		this.addChildType(new CommentLineType());
 
 		setRenderer(AnchorRenderer.getDelegateInstance());
 	}

@@ -44,9 +44,9 @@ public class Finding extends AbstractType {
 		AnswerReference answer = new AnswerReferenceImpl();
 		answer.setSectionFinder(new AnswerSectionFinder());
 
-		this.childrenTypes.add(question);
-		this.childrenTypes.add(answer);
-		this.sectionFinder = new FindingSectionFinder();
+		this.addChildType(question);
+		this.addChildType(answer);
+		this.setSectionFinder(new FindingSectionFinder());
 	}
 
 	public class FindingSectionFinder implements SectionFinder {

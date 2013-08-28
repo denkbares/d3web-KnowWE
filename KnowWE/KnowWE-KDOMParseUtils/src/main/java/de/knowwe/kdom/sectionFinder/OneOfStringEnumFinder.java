@@ -33,7 +33,7 @@ public class OneOfStringEnumFinder implements SectionFinder {
 
 	MultiSectionFinder msf;
 
-	public OneOfStringEnumFinder(String[] values) {
+	public OneOfStringEnumFinder(String... values) {
 		msf = new MultiSectionFinder();
 		for (int i = 0; i < values.length; i++) {
 			msf.addSectionFinder(new RegexSectionFinder(values[i]));

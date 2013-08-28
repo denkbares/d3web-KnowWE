@@ -45,7 +45,7 @@ public class XMLContent extends AbstractType {
 	private static final String CDATA_END = "(" + Pattern.quote("]]>") + "\\s*)\\z";
 
 	public XMLContent() {
-		sectionFinder = new AllTextSectionFinder();
+		setSectionFinder(new AllTextSectionFinder());
 
 		KeywordType endCData = new KeywordType(
 				Pattern.compile(CDATA_START + ".*" + CDATA_END, Pattern.DOTALL), 2);

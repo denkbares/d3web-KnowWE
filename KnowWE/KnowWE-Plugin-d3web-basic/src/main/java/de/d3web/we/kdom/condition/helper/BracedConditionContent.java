@@ -20,7 +20,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 public class BracedConditionContent extends NonTerminalCondition {
 
 	public BracedConditionContent() {
-		this.sectionFinder = new BracedConditionContentFinder();
+		this.setSectionFinder(new BracedConditionContentFinder());
 	}
 
 	class BracedConditionContentFinder implements SectionFinder {

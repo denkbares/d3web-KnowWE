@@ -27,7 +27,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class EndLineComment extends AbstractType {
 
 	public EndLineComment() {
-		this.sectionFinder = new RegexSectionFinder("[\\s^]//.*$");
+		this.setSectionFinder(new RegexSectionFinder("[\\s^]//.*$"));
 		setRenderer(StyleRenderer.COMMENT);
 	}
 

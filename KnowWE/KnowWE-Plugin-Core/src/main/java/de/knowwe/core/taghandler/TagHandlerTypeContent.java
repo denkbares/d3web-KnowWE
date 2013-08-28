@@ -42,7 +42,7 @@ public class TagHandlerTypeContent extends AbstractType {
 
 		int flags = Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL;
 		String regex = "\\A\\s*" + Pattern.quote(name) + "(\\s+.*)?\\s*\\z";
-		this.sectionFinder = new RegexSectionFinder(Pattern.compile(regex, flags), 0);
+		this.setSectionFinder(new RegexSectionFinder(Pattern.compile(regex, flags), 0));
 		this.addSubtreeHandler(new TagHandlerAttributeSubTreeHandler());
 	}
 

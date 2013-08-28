@@ -34,7 +34,7 @@ public class XMLHead extends AbstractType {
 
 	public XMLHead() {
 		this.setRenderer(NothingRenderer.getInstance());
-		sectionFinder = new XMLHeadSectionFinder();
+		setSectionFinder(new XMLHeadSectionFinder());
 	}
 
 	public class XMLHeadSectionFinder implements SectionFinder {

@@ -71,7 +71,7 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 		Comparator comparator = new Comparator();
 		comparator.setSectionFinder(new OneOfStringEnumUnquotedFinder(comparators));
 		comparator.setRenderer(new StyleRenderer(StyleRenderer.OPERATOR, MaskMode.htmlEntities));
-		this.childrenTypes.add(comparator);
+		this.addChildType(comparator);
 
 		// question
 		QuestionReference question = new QuestionNumReference();
@@ -79,12 +79,12 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 				new AllTextFinderTrimmed());
 		questionFinder.addConstraint(SingleChildConstraint.getInstance());
 		question.setSectionFinder(questionFinder);
-		this.childrenTypes.add(question);
+		this.addChildType(question);
 
 		// answer
 		Number num = new Number();
 		num.setSectionFinder(new AllTextFinderTrimmed());
-		this.childrenTypes.add(num);
+		this.addChildType(num);
 	}
 
 	class NumericalFindingFinder implements SectionFinder {

@@ -32,9 +32,9 @@ public class EdgeContentType extends XMLContent {
 	private static EdgeContentType instance;
 
 	private EdgeContentType() {
-		this.childrenTypes.add(OriginType.getInstance());
-		this.childrenTypes.add(TargetType.getInstance());
-		this.childrenTypes.add(GuardType.getInstance());
+		this.addChildType(OriginType.getInstance());
+		this.addChildType(TargetType.getInstance());
+		this.addChildType(GuardType.getInstance());
 	}
 
 	public static EdgeContentType getInstance() {

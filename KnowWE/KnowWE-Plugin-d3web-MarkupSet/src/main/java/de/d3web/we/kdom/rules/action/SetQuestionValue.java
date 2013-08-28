@@ -50,17 +50,17 @@ import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 
 	public SetQuestionValue() {
-		this.sectionFinder = new SetQuestionValueSectionFinder();
+		this.setSectionFinder(new SetQuestionValueSectionFinder());
 		Equals equals = new Equals();
 		QuestionReference qr = new QuestionReference();
 		qr.setSectionFinder(new AllBeforeTypeSectionFinder(equals));
-		this.childrenTypes.add(equals);
-		this.childrenTypes.add(qr);
+		this.addChildType(equals);
+		this.addChildType(qr);
 
-		this.childrenTypes.add(new UnknownValueType());
+		this.addChildType(new UnknownValueType());
 		AnswerReference a = new AnswerReferenceImpl();
 		a.setSectionFinder(new AllTextFinderTrimmed());
-		this.childrenTypes.add(a);
+		this.addChildType(a);
 
 	}
 

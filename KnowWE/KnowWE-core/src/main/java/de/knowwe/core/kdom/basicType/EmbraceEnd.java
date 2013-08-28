@@ -32,7 +32,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 public class EmbraceEnd extends AbstractType {
 
 	public EmbraceEnd(String end) {
-		this.sectionFinder = new EmbraceEndSectionFinder(end);
+		this.setSectionFinder(new EmbraceEndSectionFinder(end));
 	}
 
 	class EmbraceEndSectionFinder implements SectionFinder {

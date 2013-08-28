@@ -22,7 +22,6 @@ package de.knowwe.kdom.dashtree;
 import java.util.List;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.InvalidKDOMSchemaModificationOperation;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.CommentLineType;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -55,10 +54,10 @@ public class DashTree extends AbstractType {
 	 * @param startLevel
 	 */
 	public DashTree(char keyCharacter, int startLevel) {
-		this.sectionFinder = new AllTextFinderTrimmed();
-		this.childrenTypes.add(new DashSubtree(keyCharacter, startLevel));
-		this.childrenTypes.add(new CommentLineType());
-		this.childrenTypes.add(new OverdashedElement(keyCharacter));
+		this.setSectionFinder(new AllTextFinderTrimmed());
+		this.addChildType(new DashSubtree(keyCharacter, startLevel));
+		this.addChildType(new CommentLineType());
+		this.addChildType(new OverdashedElement(keyCharacter));
 	}
 
 	public DashTree(char keyCharacter) {
@@ -82,17 +81,9 @@ public class DashTree extends AbstractType {
 						.getChildrenTypes();
 				for (Type Type2 : content) {
 					if (Type2 instanceof DashTreeElement) {
-						try {
-							((AbstractType) Type2)
-									.replaceChildType(
-											newContentType,
-											DashTreeElementContent.class);
+						((AbstractType) Type2).replaceChildType(newContentType,
+								DashTreeElementContent.class);
 
-						}
-						catch (InvalidKDOMSchemaModificationOperation e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
 					}
 				}
 			}

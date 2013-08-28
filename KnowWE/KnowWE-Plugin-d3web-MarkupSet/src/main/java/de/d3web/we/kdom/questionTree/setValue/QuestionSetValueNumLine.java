@@ -61,7 +61,7 @@ public class QuestionSetValueNumLine extends AbstractType {
 	private static final String CLOSE = ")";
 
 	public QuestionSetValueNumLine() {
-		this.sectionFinder = new ConditionalSectionFinder(new AllTextSectionFinder()) {
+		this.setSectionFinder(new ConditionalSectionFinder(new AllTextSectionFinder()) {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {
@@ -86,11 +86,11 @@ public class QuestionSetValueNumLine extends AbstractType {
 				return false;
 
 			}
-		};
+		});
 
 		AnonymousType argumentType = createArgumentType();
-		this.childrenTypes.add(argumentType);
-		this.childrenTypes.add(createObjectRefTypeBefore(argumentType));
+		this.addChildType(argumentType);
+		this.addChildType(createObjectRefTypeBefore(argumentType));
 
 	}
 

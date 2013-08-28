@@ -57,7 +57,7 @@ public class TerminalCondition extends AbstractType {
 	}
 
 	public TerminalCondition(String typename, final String messageText) {
-		this.sectionFinder = new AllTextFinderTrimmed();
+		this.setSectionFinder(new AllTextFinderTrimmed());
 
 		// last: Anything left is an UnrecognizedTC throwing an error
 		AnonymousType unrecognizedCond = new AnonymousType(typename);
@@ -75,7 +75,9 @@ public class TerminalCondition extends AbstractType {
 	}
 
 	public void setAllowedTerminalConditions(List<Type> types) {
-		this.childrenTypes.addAll(3, types);
+		for (Type type : types) {
+			this.addChildType(3, type);
+		}
 	}
 
 }

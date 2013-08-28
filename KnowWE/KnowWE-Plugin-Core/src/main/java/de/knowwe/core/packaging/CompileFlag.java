@@ -101,7 +101,7 @@ public class CompileFlag extends DefaultMarkupType {
 			PackageTermDefinition childType = new PackageTermDefinition(true);
 			childType.setRenderer(new CompilePackageRenderer());
 			childType.setSectionFinder(new RegexSectionFinder("[\\w-_]+"));
-			this.childrenTypes.add(childType);
+			this.addChildType(childType);
 		}
 
 		@Override

@@ -48,7 +48,7 @@ import de.knowwe.kdom.AnonymousType;
 public class ConditionTerminal extends AbstractType {
 
 	public ConditionTerminal() {
-		this.sectionFinder = new AllTextFinderTrimmed();
+		this.setSectionFinder(new AllTextFinderTrimmed());
 
 		// last: Anything left is an UnrecognizedTC throwing an error
 		AnonymousType unrecognizedCond = new AnonymousType(
@@ -77,7 +77,9 @@ public class ConditionTerminal extends AbstractType {
 	 * @param types
 	 */
 	public void setAllowedTerminalConditions(List<? extends ConditionTerminal> types) {
-		this.childrenTypes.addAll(0, types);
+		for (ConditionTerminal conditionTerminal : types) {
+			this.addChildType(3, conditionTerminal);
+		}
 	}
 
 }

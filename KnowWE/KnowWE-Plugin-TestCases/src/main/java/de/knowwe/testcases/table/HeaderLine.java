@@ -20,7 +20,6 @@ package de.knowwe.testcases.table;
 
 import java.util.List;
 
-import de.knowwe.core.kdom.InvalidKDOMSchemaModificationOperation;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
@@ -40,12 +39,7 @@ import de.knowwe.kdom.table.TableLine;
 public class HeaderLine extends TableLine {
 
 	public HeaderLine() {
-		try {
-			replaceChildType(new HeaderCell(), TableCell.class);
-		}
-		catch (InvalidKDOMSchemaModificationOperation e) {
-			e.printStackTrace();
-		}
+		replaceChildType(new HeaderCell(), TableCell.class);
 
 		setSectionFinder(new ConstraintSectionFinder(new RegexSectionFinder(TableLine.LINEPATTERN),
 				new SectionFinderConstraint() {

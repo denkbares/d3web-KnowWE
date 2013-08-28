@@ -88,7 +88,7 @@ public class RuleContentType extends AbstractType {
 	 */
 	public RuleContentType() {
 		// take nearly all the text that is passed (kind of trimmed)
-		this.sectionFinder = new AllTextFinderTrimmed();
+		this.setSectionFinder(new AllTextFinderTrimmed());
 
 		// configure the rule
 		ConditionActionRule rule = new ConditionActionRule();
@@ -108,7 +108,7 @@ public class RuleContentType extends AbstractType {
 		rule.addChildType(ruleContent);
 
 		// register the configured rule-type as child
-		this.childrenTypes.add(new CommentLineType());
+		this.addChildType(new CommentLineType());
 		this.addChildType(rule);
 		this.addChildType(new UnrecognizedSyntaxType());
 	}

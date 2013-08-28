@@ -193,17 +193,15 @@ public class Plugins {
 				markupType.getMarkup().addAnnotationRenderer(extension.getName(),
 						pluggedRenderer);
 
-				int i = 0;
 				for (Type childTyp : childrenTypes) {
 
 					if (childTyp.getClass().equals(UnknownAnnotationType.class)) {
 						Annotation annotation = markupType.getMarkup().getAnnotation(
 								extension.getName());
-						type.addChildType(i, new AnnotationType(annotation));
+						type.addChildType(new AnnotationType(annotation));
 
 						break;
 					}
-					i++;
 				}
 
 			}

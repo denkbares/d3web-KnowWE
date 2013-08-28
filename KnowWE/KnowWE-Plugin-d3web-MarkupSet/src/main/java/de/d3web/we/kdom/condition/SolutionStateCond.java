@@ -32,12 +32,12 @@ public class SolutionStateCond extends D3webCondition<SolutionStateCond> {
 
 	public SolutionStateCond() {
 
-		this.sectionFinder = new SolutionStateCondFinder();
+		this.setSectionFinder(new SolutionStateCondFinder());
 
 		// comparator
 		AnonymousType comparator = new AnonymousType("equals");
 		comparator.setSectionFinder(new StringSectionFinderUnquoted("="));
-		this.childrenTypes.add(comparator);
+		this.addChildType(comparator);
 
 		// solution
 		SolutionReference sol = new SolutionReference();
@@ -45,12 +45,12 @@ public class SolutionStateCond extends D3webCondition<SolutionStateCond> {
 				new AllTextFinderTrimmed());
 		solutionFinder.addConstraint(SingleChildConstraint.getInstance());
 		sol.setSectionFinder(solutionFinder);
-		this.childrenTypes.add(sol);
+		this.addChildType(sol);
 
 		// answer
 		SolutionStateType rating = new SolutionStateType();
 		rating.setSectionFinder(new AllTextFinderTrimmed());
-		this.childrenTypes.add(rating);
+		this.addChildType(rating);
 	}
 
 	class SolutionStateCondFinder implements SectionFinder {

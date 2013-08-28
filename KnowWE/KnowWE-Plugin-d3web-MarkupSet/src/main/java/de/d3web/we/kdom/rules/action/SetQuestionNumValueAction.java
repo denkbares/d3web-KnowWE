@@ -35,14 +35,14 @@ public class SetQuestionNumValueAction extends D3webRuleAction<SolutionValueAssi
 
 	public SetQuestionNumValueAction() {
 
-		this.sectionFinder = new SetNumValueActionSectionFinder();
+		this.setSectionFinder(new SetNumValueActionSectionFinder());
 		de.knowwe.core.kdom.basicType.Number number = new de.knowwe.core.kdom.basicType.Number();
 		Equals equ = new Equals();
 		QuestionReference qRef = new QuestionNumReference();
-		this.childrenTypes.add(equ);
-		this.childrenTypes.add(new UnknownValueType());
-		this.childrenTypes.add(number);
-		this.childrenTypes.add(qRef);
+		this.addChildType(equ);
+		this.addChildType(new UnknownValueType());
+		this.addChildType(number);
+		this.addChildType(qRef);
 		qRef.setSectionFinder(new AllBeforeTypeSectionFinder(equ));
 	}
 

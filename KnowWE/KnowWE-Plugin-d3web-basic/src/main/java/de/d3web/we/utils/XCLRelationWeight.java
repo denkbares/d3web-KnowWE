@@ -55,7 +55,7 @@ public class XCLRelationWeight extends AbstractType {
 	}
 
 	public XCLRelationWeight() {
-		this.sectionFinder = new XCLRelationWeightSectionFinder();
+		this.setSectionFinder(new XCLRelationWeightSectionFinder());
 		this.setRenderer(StyleRenderer.OPERATOR);
 	}
 

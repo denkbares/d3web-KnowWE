@@ -35,8 +35,8 @@ public class ObjectDescription extends AbstractType {
 	private static final String QTEXT_START_SYMBOL = "~";
 
 	public ObjectDescription(final Property<?> prop) {
-		this.sectionFinder = new MatchUntilEndFinder(new StringSectionFinderUnquoted(
-					QTEXT_START_SYMBOL));
+		this.setSectionFinder(new MatchUntilEndFinder(new StringSectionFinderUnquoted(
+				QTEXT_START_SYMBOL)));
 
 		this.setRenderer(StyleRenderer.PROMPT);
 		this.addSubtreeHandler(new SubtreeHandler<ObjectDescription>() {
@@ -81,8 +81,8 @@ public class ObjectDescription extends AbstractType {
 					}
 				}
 				return Messages.asList(Messages.objectCreationError(
-							D3webUtils.getD3webBundle()
-									.getString("KnowWE.questiontree.questiontext")));
+						D3webUtils.getD3webBundle()
+								.getString("KnowWE.questiontree.questiontext")));
 			}
 		});
 	}

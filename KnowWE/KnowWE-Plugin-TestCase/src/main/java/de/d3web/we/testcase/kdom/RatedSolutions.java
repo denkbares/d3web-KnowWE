@@ -34,8 +34,8 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 public class RatedSolutions extends AbstractType {
 
 	public RatedSolutions() {
-		childrenTypes.add(new RatedSolution());
-		this.sectionFinder = new RatedSolutionsSectionFinder();
+		this.addChildType(new RatedSolution());
+		this.setSectionFinder(new RatedSolutionsSectionFinder());
 	}
 
 	public class RatedSolutionsSectionFinder implements SectionFinder {

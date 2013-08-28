@@ -73,7 +73,7 @@ public class QuestionLine extends AbstractType {
 	public QuestionLine() {
 
 		// every line containing [...] (unquoted) is recognized as QuestionLine
-		this.sectionFinder = new ConditionalSectionFinder(new AllTextSectionFinder()) {
+		this.setSectionFinder(new ConditionalSectionFinder(new AllTextSectionFinder()) {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {
@@ -81,24 +81,23 @@ public class QuestionLine extends AbstractType {
 						&& Strings.containsUnquoted(text, "]")
 						&& !text.startsWith("[");
 			}
-		};
+		});
 
 		// type of the question '[oc]'
-		this.childrenTypes.add(new QuestionTypeDeclaration());
+		this.addChildType(new QuestionTypeDeclaration());
 		// abstract flag: '<abstract>'
-		this.childrenTypes.add(new AbstractFlag());
+		this.addChildType(new AbstractFlag());
 		// inline defined choice answers flag: '<low, average, high>'
-		this.childrenTypes.add(new InlineChoiceAnswerDefinition());
+		this.addChildType(new InlineChoiceAnswerDefinition());
 		// numerical interval/bounds - height [num] (100 220)
-		this.childrenTypes.add(new NumBounds());
+		this.addChildType(new NumBounds());
 		// numerical unit - height [num] {cm}
-		this.childrenTypes.add(new NumUnit());
+		this.addChildType(new NumUnit());
 		// questiontext - startet by '~'
-		this.childrenTypes.add(new QuestionText());
+		this.addChildType(new QuestionText());
 
 		// finally the name of the question
-		this.childrenTypes
-				.add(new QuestionTreeQuestionDefinition());
+		this.addChildType(new QuestionTreeQuestionDefinition());
 	}
 
 	/**
@@ -375,8 +374,8 @@ public class QuestionLine extends AbstractType {
 	static class AbstractFlag extends AbstractType {
 
 		public AbstractFlag() {
-			this.sectionFinder = new OneOfStringEnumFinder(new String[] {
-					"<abstract>", "<abstrakt>" });
+			this.setSectionFinder(new OneOfStringEnumFinder(new String[] {
+					"<abstract>", "<abstrakt>" }));
 			this.setRenderer(new StyleRenderer(StyleRenderer.KEYWORDS, MaskMode.htmlEntities));
 
 			this.addSubtreeHandler(Priority.HIGH, new D3webSubtreeHandler<AbstractFlag>() {
@@ -426,8 +425,8 @@ public class QuestionLine extends AbstractType {
 		private static final String QTEXT_START_SYMBOL = "~";
 
 		public QuestionText() {
-			this.sectionFinder = new MatchUntilEndFinder(new StringSectionFinderUnquoted(
-					QTEXT_START_SYMBOL));
+			this.setSectionFinder(new MatchUntilEndFinder(new StringSectionFinderUnquoted(
+					QTEXT_START_SYMBOL)));
 
 			this.setRenderer(StyleRenderer.PROMPT);
 			this.addSubtreeHandler(Priority.HIGH, new D3webSubtreeHandler<QuestionText>() {

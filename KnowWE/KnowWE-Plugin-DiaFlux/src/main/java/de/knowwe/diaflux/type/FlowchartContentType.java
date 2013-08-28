@@ -31,8 +31,8 @@ public class FlowchartContentType extends XMLContent {
 	private static FlowchartContentType instance;
 
 	private FlowchartContentType() {
-		this.childrenTypes.add(NodeType.getInstance());
-		this.childrenTypes.add(EdgeType.getInstance());
+		this.addChildType(NodeType.getInstance());
+		this.addChildType(EdgeType.getInstance());
 	}
 
 	public static FlowchartContentType getInstance() {

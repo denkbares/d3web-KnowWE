@@ -37,8 +37,8 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 public class RatedFindings extends AbstractType {
 
 	public RatedFindings() {
-		childrenTypes.add(new RatedFinding());
-		this.sectionFinder = new RatedFindingsSectionFinder();
+		this.addChildType(new RatedFinding());
+		this.setSectionFinder(new RatedFindingsSectionFinder());
 	}
 
 	class RatedFindingsSectionFinder implements SectionFinder {

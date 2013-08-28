@@ -42,10 +42,10 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 public class SequentialTestCase extends AbstractType {
 
 	public SequentialTestCase() {
-		this.sectionFinder = new SequentialTestCaseSectionFinder();
-		this.childrenTypes.add(new CommentLineType());
-		this.childrenTypes.add(new SequentialTestCaseName());
-		this.childrenTypes.add(new RatedTestCases());
+		this.setSectionFinder(new SequentialTestCaseSectionFinder());
+		this.addChildType(new CommentLineType());
+		this.addChildType(new SequentialTestCaseName());
+		this.addChildType(new RatedTestCases());
 	}
 
 	public class SequentialTestCaseSectionFinder implements SectionFinder {

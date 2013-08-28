@@ -32,7 +32,7 @@ public class Equals extends AbstractType {
 	public static final String SIGN = "=";
 
 	public Equals() {
-		this.sectionFinder = new UnquotedExpressionFinder(SIGN);
+		this.setSectionFinder(new UnquotedExpressionFinder(SIGN));
 	}
 
 }

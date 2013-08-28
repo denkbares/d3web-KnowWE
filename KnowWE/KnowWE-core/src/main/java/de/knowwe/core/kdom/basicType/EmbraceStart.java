@@ -32,7 +32,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 public class EmbraceStart extends AbstractType {
 
 	public EmbraceStart(String start) {
-		this.sectionFinder = new EmbraceStartSectionFinder(start);
+		this.setSectionFinder(new EmbraceStartSectionFinder(start));
 	}
 
 	class EmbraceStartSectionFinder implements SectionFinder {

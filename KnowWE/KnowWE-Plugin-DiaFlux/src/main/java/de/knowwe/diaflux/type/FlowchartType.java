@@ -23,7 +23,6 @@ package de.knowwe.diaflux.type;
 import de.d3web.core.session.SessionFactory;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.kdom.InvalidKDOMSchemaModificationOperation;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.MessageRenderer;
@@ -43,7 +42,7 @@ public class FlowchartType extends AbstractXMLType {
 
 	public FlowchartType() {
 		super("flowchart");
-		this.childrenTypes.add(FlowchartContentType.getInstance());
+		this.addChildType(FlowchartContentType.getInstance());
 		addSubtreeHandler(Priority.DEFAULT, new FlowchartSubTreeHandler());
 		replaceHead();
 		setRenderer(new FlowchartRenderer());
@@ -68,12 +67,7 @@ public class FlowchartType extends AbstractXMLType {
 	}
 
 	public void replaceHead() {
-		try {
-			this.replaceChildType(new FlowchartXMLHeadType(), XMLHead.class);
-		}
-		catch (InvalidKDOMSchemaModificationOperation e) {
-			e.printStackTrace();
-		}
+		this.replaceChildType(new FlowchartXMLHeadType(), XMLHead.class);
 	}
 
 	public static String getFlowchartName(Section<FlowchartType> sec) {

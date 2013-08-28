@@ -64,7 +64,7 @@ public class CompositeCondition extends AbstractType {
 
 		// this composite takes everything it gets => needs suitable wrapper
 		// type as father
-		this.sectionFinder = new AllTextFinderTrimmed();
+		this.setSectionFinder(new AllTextFinderTrimmed());
 		// this.setCustomRenderer(new
 		// de.d3web.we.kdom.renderer.KDOMDepthFontSizeRenderer());
 
@@ -72,7 +72,7 @@ public class CompositeCondition extends AbstractType {
 		BracedCondition braced = new BracedCondition(); // contains the brackets
 		// and the
 		// endline-comments
-		this.childrenTypes.add(braced);
+		this.addChildType(braced);
 		BracedConditionContent bracedContent = new BracedConditionContent(); // without
 		// brackets
 		// and
@@ -97,7 +97,7 @@ public class CompositeCondition extends AbstractType {
 
 		// ... a negated expression,...
 		NegatedExpression negatedExpression = new NegatedExpression(keys_not);
-		this.childrenTypes.add(negatedExpression);
+		this.addChildType(negatedExpression);
 		negatedExpression.addChildType(this); // a NegatedExpression again
 		// allows for a
 		// CompositeCondition

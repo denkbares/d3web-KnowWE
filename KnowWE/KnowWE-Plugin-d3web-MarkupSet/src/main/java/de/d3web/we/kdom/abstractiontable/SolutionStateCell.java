@@ -18,7 +18,7 @@ public class SolutionStateCell extends AbstractType {
 	public SolutionStateCell() {
 		SolutionStateType rating = new SolutionStateType();
 		rating.setSectionFinder(new AllTextFinderTrimmed());
-		this.childrenTypes.add(rating);
+		this.addChildType(rating);
 
 		StyleRenderer renderer = new StyleRenderer("color:rgb(125, 80, 102)");
 		renderer.setMaskMode(MaskMode.htmlEntities);

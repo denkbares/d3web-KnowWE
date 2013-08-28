@@ -32,13 +32,13 @@ public class NodeContentType extends XMLContent {
 	private static NodeContentType instance;
 
 	private NodeContentType() {
-		this.childrenTypes.add(StartType.getInstance());
-		this.childrenTypes.add(ExitType.getInstance());
-		this.childrenTypes.add(PositionType.getInstance());
-		this.childrenTypes.add(ActionType.getInstance());
-		this.childrenTypes.add(CommentType.getInstance());
-		this.childrenTypes.add(SnapshotType.getInstance());
-		this.childrenTypes.add(DecisionType.getInstance());
+		this.addChildType(StartType.getInstance());
+		this.addChildType(ExitType.getInstance());
+		this.addChildType(PositionType.getInstance());
+		this.addChildType(ActionType.getInstance());
+		this.addChildType(CommentType.getInstance());
+		this.addChildType(SnapshotType.getInstance());
+		this.addChildType(DecisionType.getInstance());
 	}
 
 	public static NodeContentType getInstance() {

@@ -29,7 +29,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class Then extends AbstractType {
 
 	public Then() {
-		sectionFinder = new RegexSectionFinder("\\s*(DANN|THEN)", Pattern.MULTILINE);
+		setSectionFinder(new RegexSectionFinder("\\s*(DANN|THEN)", Pattern.MULTILINE));
 		this.setRenderer(StyleRenderer.KEYWORDS);
 		addChildType(new Indent());
 	}

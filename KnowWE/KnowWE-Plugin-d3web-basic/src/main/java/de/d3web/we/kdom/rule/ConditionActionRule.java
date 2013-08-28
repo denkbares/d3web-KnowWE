@@ -42,9 +42,9 @@ public class ConditionActionRule extends AbstractType {
 	public ConditionActionRule(AbstractType action) {
 		// from the beginning of the rule until before the beginning of the next
 		// rule, an empty line or the end of the parent section
-		sectionFinder = new RegexSectionFinder(
+		setSectionFinder(new RegexSectionFinder(
 				RULE_START + ".*?(?=\\s*?(" + RULE_START + "|^\\s*?$|\\z))",
-				Pattern.DOTALL + Pattern.MULTILINE);
+				Pattern.DOTALL + Pattern.MULTILINE));
 		if (action != null) {
 			this.addChildType(new ConditionActionRuleContent(action));
 		}

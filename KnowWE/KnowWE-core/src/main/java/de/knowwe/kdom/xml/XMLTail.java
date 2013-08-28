@@ -37,7 +37,7 @@ public class XMLTail extends AbstractType {
 
 	public XMLTail() {
 		this.setRenderer(NothingRenderer.getInstance());
-		sectionFinder = new XMLTailSectionFinder();
+		setSectionFinder(new XMLTailSectionFinder());
 	}
 
 	public class XMLTailSectionFinder implements SectionFinder {

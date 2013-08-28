@@ -22,7 +22,6 @@ package de.knowwe.testcases.table;
 
 import java.util.List;
 
-import de.knowwe.core.kdom.InvalidKDOMSchemaModificationOperation;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.table.Table;
@@ -39,12 +38,8 @@ public class TestcaseTable extends Table {
 
 	public TestcaseTable() {
 
-		try {
-			replaceChildType(new HeaderLine(), TableLine.class);
-		}
-		catch (InvalidKDOMSchemaModificationOperation e) {
-			e.printStackTrace();
-		}
+		replaceChildType(new HeaderLine(), TableLine.class);
+
 		addChildType(new TestcaseTableLine());
 		addSubtreeHandler(new TestcaseTableSubtreeHandler());
 	}

@@ -33,7 +33,7 @@ public class EdgeType extends AbstractXMLType {
 
 	private EdgeType() {
 		super("edge");
-		childrenTypes.add(EdgeContentType.getInstance());
+		this.addChildType(EdgeContentType.getInstance());
 	}
 
 	public static EdgeType getInstance() {

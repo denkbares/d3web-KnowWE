@@ -36,7 +36,7 @@ public class DashTreeElementContent extends AbstractType {
 	}
 
 	public DashTreeElementContent() {
-		this.sectionFinder = new AllTextFinderTrimmed();
+		this.setSectionFinder(new AllTextFinderTrimmed());
 	}
 
 }

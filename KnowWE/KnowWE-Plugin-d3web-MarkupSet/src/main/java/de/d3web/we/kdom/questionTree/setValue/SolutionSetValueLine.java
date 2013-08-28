@@ -64,10 +64,10 @@ public class SolutionSetValueLine extends AbstractType {
 	private static final String CLOSE = ")";
 
 	public SolutionSetValueLine() {
-		this.sectionFinder = new SolutionSetValueFinder();
+		this.setSectionFinder(new SolutionSetValueFinder());
 		AnonymousType argumentType = createArgumentType();
-		this.childrenTypes.add(argumentType);
-		this.childrenTypes.add(createObjectRefTypeBefore(argumentType));
+		this.addChildType(argumentType);
+		this.addChildType(createObjectRefTypeBefore(argumentType));
 
 	}
 

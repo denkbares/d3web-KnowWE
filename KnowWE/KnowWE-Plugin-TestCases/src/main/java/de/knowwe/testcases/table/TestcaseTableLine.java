@@ -18,7 +18,6 @@
  */
 package de.knowwe.testcases.table;
 
-import de.knowwe.core.kdom.InvalidKDOMSchemaModificationOperation;
 import de.knowwe.core.report.MessageRenderer;
 import de.knowwe.kdom.table.TableCell;
 import de.knowwe.kdom.table.TableLine;
@@ -34,12 +33,8 @@ public class TestcaseTableLine extends TableLine {
 
 	public TestcaseTableLine() {
 		setRenderer(new TestcaseTableLineRenderer());
-		try {
-			replaceChildType(new Cell(), TableCell.class);
-		}
-		catch (InvalidKDOMSchemaModificationOperation e) {
-			e.printStackTrace();
-		}
+
+		replaceChildType(new Cell(), TableCell.class);
 
 		addSubtreeHandler(new TestcaseTableLineSubtreeHandler());
 	}

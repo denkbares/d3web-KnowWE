@@ -37,9 +37,9 @@ public class RatedSolution extends AbstractType {
 	public RatedSolution() {
 		SolutionReference solution = new SolutionReference();
 		solution.setSectionFinder(new SolutionSectionFinder());
-		childrenTypes.add(solution);
-		childrenTypes.add(new StateRating());
-		this.sectionFinder = new RatedSolutionSectionFinder();
+		this.addChildType(solution);
+		this.addChildType(new StateRating());
+		this.setSectionFinder(new RatedSolutionSectionFinder());
 	}
 
 	public class RatedSolutionSectionFinder implements SectionFinder {

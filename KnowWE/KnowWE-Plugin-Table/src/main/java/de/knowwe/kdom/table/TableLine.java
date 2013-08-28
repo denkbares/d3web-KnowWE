@@ -45,8 +45,8 @@ public class TableLine extends AbstractType {
 	public static final Pattern LINEPATTERN = Pattern.compile(LINEREGEX, Pattern.MULTILINE);
 
 	public TableLine() {
-		childrenTypes.add(new TableCell());
-		sectionFinder = new RegexSectionFinder(LINEPATTERN);
+		this.addChildType(new TableCell());
+		setSectionFinder(new RegexSectionFinder(LINEPATTERN));
 		setRenderer(new TableLineRenderer());
 	}
 

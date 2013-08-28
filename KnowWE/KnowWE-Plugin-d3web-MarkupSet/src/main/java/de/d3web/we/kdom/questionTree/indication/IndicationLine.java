@@ -28,12 +28,12 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 public class IndicationLine extends AbstractType {
 
 	public IndicationLine() {
-		this.sectionFinder = new AllTextFinderTrimmed();
+		this.setSectionFinder(new AllTextFinderTrimmed());
 
 		QuestionnaireReference qc = new QuestionnaireReference();
 		qc.setSectionFinder(new AllTextFinderTrimmed());
 		// qc.addSubtreeHandler(Priority.LOW, new CreateIndication());
 		qc.addSubtreeHandler(Priority.LOW, IndicationHandler.getInstance());
-		this.childrenTypes.add(qc);
+		this.addChildType(qc);
 	}
 }

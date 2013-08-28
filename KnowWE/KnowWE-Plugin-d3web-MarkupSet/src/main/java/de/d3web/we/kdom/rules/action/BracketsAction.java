@@ -38,7 +38,7 @@ public abstract class BracketsAction<T extends Type> extends D3webRuleAction<T> 
 	protected static final String CLOSE = "]";
 
 	public BracketsAction(final String[] alternativeKeys) {
-		this.sectionFinder = new ConditionalSectionFinder(new AllTextSectionFinder()) {
+		this.setSectionFinder(new ConditionalSectionFinder(new AllTextSectionFinder()) {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {
@@ -53,7 +53,7 @@ public abstract class BracketsAction<T extends Type> extends D3webRuleAction<T> 
 
 				return false;
 			}
-		};
+		});
 
 		AnonymousType negKey = new AnonymousType(this.getClass().getSimpleName() + "key");
 		negKey.setSectionFinder(new OneOfStringEnumUnquotedFinder(alternativeKeys));

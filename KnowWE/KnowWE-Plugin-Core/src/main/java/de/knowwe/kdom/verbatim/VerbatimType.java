@@ -44,8 +44,8 @@ public class VerbatimType extends AbstractType {
 	}
 
 	public VerbatimType() {
-		this.sectionFinder = new RegexSectionFinder(
-				"\\{\\{\\{\\s*(.+?)\\s*\\}\\}\\}", Pattern.DOTALL);
+		this.setSectionFinder(new RegexSectionFinder(
+				"\\{\\{\\{\\s*(.+?)\\s*\\}\\}\\}", Pattern.DOTALL));
 	}
 
 }

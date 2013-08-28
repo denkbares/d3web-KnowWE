@@ -61,7 +61,7 @@ public class TimeStampType extends AbstractType {
 			Pattern.CASE_INSENSITIVE);
 
 	public TimeStampType() {
-		sectionFinder = new AllTextFinderTrimmed();
+		setSectionFinder(new AllTextFinderTrimmed());
 		addSubtreeHandler(new TimeStampSubtreeHandler());
 	}
 

@@ -89,7 +89,7 @@ public class UserRatingConditionType extends D3webCondition<UserRatingConditionT
 		// comparator
 		AnonymousType comparator = new AnonymousType("equals");
 		comparator.setSectionFinder(new StringSectionFinderUnquoted("="));
-		this.childrenTypes.add(comparator);
+		this.addChildType(comparator);
 
 		// solution
 		SolutionReference sol = new SolutionReference();
@@ -97,10 +97,10 @@ public class UserRatingConditionType extends D3webCondition<UserRatingConditionT
 				new AllTextFinderTrimmed());
 		solutionFinder.addConstraint(SingleChildConstraint.getInstance());
 		sol.setSectionFinder(solutionFinder);
-		this.childrenTypes.add(sol);
+		this.addChildType(sol);
 
 		// evaluation
-		this.childrenTypes.add(new UserRatingType());
+		this.addChildType(new UserRatingType());
 
 	}
 

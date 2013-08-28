@@ -69,7 +69,7 @@ public class ContraIndicationAction extends BracketsAction<ContraIndicationActio
 	static class QASetReferenceInBrackets extends QASetReference {
 
 		public QASetReferenceInBrackets() {
-			this.sectionFinder = new SectionFinder() {
+			this.setSectionFinder(new SectionFinder() {
 
 				@Override
 				public List<SectionFinderResult> lookForSections(String text,
@@ -80,7 +80,7 @@ public class ContraIndicationAction extends BracketsAction<ContraIndicationActio
 									Strings.indexOfUnquoted(text, OPEN),
 									Strings.indexOfUnquoted(text, CLOSE) + 1));
 				}
-			};
+			});
 		}
 
 		@Override

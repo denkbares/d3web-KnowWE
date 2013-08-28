@@ -57,12 +57,12 @@ public class Finding extends D3webCondition<Finding> {
 
 	public Finding() {
 
-		this.sectionFinder = new FindingFinder();
+		this.setSectionFinder(new FindingFinder());
 
 		// comparator
 		AnonymousType comparator = new AnonymousType("equals");
 		comparator.setSectionFinder(new StringSectionFinderUnquoted("="));
-		this.childrenTypes.add(comparator);
+		this.addChildType(comparator);
 
 		// question
 		QuestionReference question = new QuestionReference();
@@ -71,12 +71,12 @@ public class Finding extends D3webCondition<Finding> {
 				new AllTextFinderTrimmed());
 		questionFinder.addConstraint(SingleChildConstraint.getInstance());
 		question.setSectionFinder(questionFinder);
-		this.childrenTypes.add(question);
+		this.addChildType(question);
 
 		// answer
 		AnswerReference answer = new AnswerReferenceImpl();
 		answer.setSectionFinder(new AllTextFinderTrimmed());
-		this.childrenTypes.add(answer);
+		this.addChildType(answer);
 	}
 
 	@Override

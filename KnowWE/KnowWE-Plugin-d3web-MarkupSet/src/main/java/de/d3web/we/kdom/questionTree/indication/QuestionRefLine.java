@@ -37,26 +37,25 @@ public class QuestionRefLine extends AbstractType {
 	public QuestionRefLine() {
 
 		// every line containing [...] (unquoted) is recognized as QuestionLine
-		this.sectionFinder = new ConditionalSectionFinder(new AllTextSectionFinder()) {
+		this.setSectionFinder(new ConditionalSectionFinder(new AllTextSectionFinder()) {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {
 				return text.trim().startsWith(REF_KEYWORD);
 			}
-		};
+		});
 
 		// take the keyword
 		AnonymousType key = new AnonymousType("ref-key");
 		key.setSectionFinder(new StringSectionFinderUnquoted(REF_KEYWORD));
 		key.setRenderer(new StyleRenderer(StyleRenderer.KEYWORDS, MaskMode.htmlEntities));
-		this.childrenTypes.add(key);
+		this.addChildType(key);
 
 		// the rest for the name of the question
 		QuestionReference questionRef = new QuestionReference();
 		questionRef.setSectionFinder(new AllTextFinderTrimmed());
 		questionRef.addSubtreeHandler(IndicationHandler.getInstance());
-		this.childrenTypes
-				.add(questionRef);
+		this.addChildType(questionRef);
 
 		// this.addSubtreeHandler(new CreateIndicationHandler());
 

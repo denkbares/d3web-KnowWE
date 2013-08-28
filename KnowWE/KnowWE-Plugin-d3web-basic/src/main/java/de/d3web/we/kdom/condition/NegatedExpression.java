@@ -35,7 +35,7 @@ public class NegatedExpression extends NonTerminalCondition {
 		negationSign.setSectionFinder(finder);
 		this.addChildType(negationSign);
 
-		this.sectionFinder = new SectionFinder() {
+		this.setSectionFinder(new SectionFinder() {
 
 			@Override
 			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
@@ -48,6 +48,6 @@ public class NegatedExpression extends NonTerminalCondition {
 				}
 				return null;
 			}
-		};
+		});
 	}
 }

@@ -52,7 +52,7 @@ public class CondKnown extends D3webCondition<CondKnown> {
 
 	public CondKnown() {
 
-		this.sectionFinder = new CondKnownFinder();
+		this.setSectionFinder(new CondKnownFinder());
 		this.setRenderer(StyleRenderer.KEYWORDS);
 
 		QuestionReference question = new QuestionReference();

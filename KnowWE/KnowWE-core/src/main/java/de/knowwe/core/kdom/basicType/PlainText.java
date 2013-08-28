@@ -45,7 +45,7 @@ public class PlainText extends TerminalType {
 
 	public PlainText() {
 		this.setRenderer(DefaultTextRenderer.getInstance());
-		this.sectionFinder = new AllTextSectionFinder();
+		this.setSectionFinder(new AllTextSectionFinder());
 	}
 
 	/**

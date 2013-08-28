@@ -28,14 +28,14 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 public class TagHandlerTypeStartSymbol extends AbstractType {
 
 	public TagHandlerTypeStartSymbol() {
-		// sectionFinder = new RegexSectionFinder("\\[\\{KnowWEPlugin ");
+		// setSectionFinder(new RegexSectionFinder("\\[\\{KnowWEPlugin ");
 
 		MultiSectionFinder multi = new MultiSectionFinder();
 		SectionFinder f1 = new RegexSectionFinder("\\[\\{KnowWEPlugin ");
 		SectionFinder f2 = new RegexSectionFinder("\\%\\%KnowWEPlugin ");
 		multi.addSectionFinder(f1);
 		multi.addSectionFinder(f2);
-		this.sectionFinder = multi;
+		this.setSectionFinder(multi);
 
 	}
 

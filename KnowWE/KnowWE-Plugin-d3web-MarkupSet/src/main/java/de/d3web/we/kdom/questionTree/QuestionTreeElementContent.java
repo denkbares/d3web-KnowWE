@@ -30,15 +30,15 @@ import de.knowwe.kdom.dashtree.DashTreeElementContent;
 public class QuestionTreeElementContent extends DashTreeElementContent {
 
 	public QuestionTreeElementContent() {
-		this.childrenTypes.add(new QuestionRefLine());
-		this.childrenTypes.add(new QuestionLine());
-		this.childrenTypes.add(new NumericCondLine());
-		this.childrenTypes.add(new SolutionSetValueLine());
-		this.childrenTypes.add(new QuestionSetValueNumLine());
-		this.childrenTypes.add(new QuestionSetValueLine());
-		this.childrenTypes.add(new AnswerLine());
-		this.childrenTypes.add(new QClassLine());
-		this.childrenTypes.add(new IndicationLine());
+		this.addChildType(new QuestionRefLine());
+		this.addChildType(new QuestionLine());
+		this.addChildType(new NumericCondLine());
+		this.addChildType(new SolutionSetValueLine());
+		this.addChildType(new QuestionSetValueNumLine());
+		this.addChildType(new QuestionSetValueLine());
+		this.addChildType(new AnswerLine());
+		this.addChildType(new QClassLine());
+		this.addChildType(new IndicationLine());
 	}
 
 }
