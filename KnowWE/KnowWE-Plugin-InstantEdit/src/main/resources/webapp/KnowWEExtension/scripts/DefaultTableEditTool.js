@@ -332,24 +332,45 @@ Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, comma
 		this.showAutoComplete(this.createCellAreaID(row, col));
 	}
 	// left
-	else if (keyCode == 37) {
+	else if (keyCode == 37 && !alt) {
 		var toCol = command ? 0 : col - 1;
 		if (toCol >= 0) this.selectCell(row, toCol, multiSelect);
 	}
 	// up
-	else if (keyCode == 38) {
+	else if (keyCode == 38 && !alt) {
 		var toRow = command ? 0 : row - 1;
 		if (toRow >= 0) this.selectCell(toRow, col, multiSelect);
 	}
 	// right
-	else if (keyCode == 39) {
+	else if (keyCode == 39 && !alt) {
 		var toCol = command ? this.size.cols-1 : col + 1;
 		if (toCol <= this.size.cols-1) this.selectCell(row, toCol, multiSelect);
 	}
 	// down
-	else if (keyCode == 40) {
+	else if (keyCode == 40 && !alt) {
 		var toRow = command ? this.size.rows-1 : row + 1;
 		if (toRow <= this.size.rows-1) this.selectCell(toRow, col, multiSelect);
+	}
+	// shift cells (command for not selecting full row/col)
+	// left + alt 
+	else if (keyCode == 37 && alt) {
+		if (!command) this.extendSelection(true, false);
+		this.shiftSelectedCells(0, -1)
+	}
+	// up + alt
+	else if (keyCode == 38 && alt) {
+		if (!command) this.extendSelection(false, true);
+		this.shiftSelectedCells(-1, 0)
+	}
+	// right + alt
+	else if (keyCode == 39 && alt) {
+		if (!command) this.extendSelection(true, false);
+		this.shiftSelectedCells(0, 1)
+	}
+	// down + alt
+	else if (keyCode == 40 && alt) {
+		if (!command) this.extendSelection(false, true);
+		this.shiftSelectedCells(1, 0)
 	}
 	// tab
 	else if (keyCode == 9 && !multiSelect) {
@@ -574,6 +595,32 @@ Spreadsheet.prototype.getCellText = function(row, col) {
 }
 
 /**
+ * Extends the selection to complete rows / cols including the selected cells.
+ */
+Spreadsheet.prototype.extendSelection = function(extendRows, extendCols) {
+	if (!this.selected) return;
+
+	// get the selected area
+	var r1 = this.selected.row;
+	var c1 = this.selected.col;
+	var r2 = this.selectedRange ? this.selectedRange.toRow : r1;
+	var c2 = this.selectedRange ? this.selectedRange.toCol : c1;
+	
+	// extend selection
+	if (extendRows) {
+		r1 = 0;
+		r2 = this.size.rows-1;
+	}
+	if (extendCols) {
+		c1 = 0;
+		c2 = this.size.cols-1;
+	}
+
+	this.selectCell(r2, c2, false);
+	this.selectCell(r1, c1, true);
+}
+
+/**
  * Selects the specified cell. Use this method without arguments
  * to deselect all cells.
  */
@@ -631,6 +678,86 @@ Spreadsheet.prototype.forEachSelected = function(fun) {
 Spreadsheet.prototype.clearSelectedCells = function() {
 	var sheet = this;
 	this.forEachSelected(function(cell, row, col) {sheet.setCellText(row, col, "");});
+}
+
+/**
+ * Moves the selected cells in the appropriate direction. The cells to be overwritten 
+ * are flowing around the shifted cells and will be appended on the other side.
+ * The selected cells are shiftey be dRow and dCol realtively. by specifying
+ * wrapAround you can specify if the shift stops at the end of the table borders
+ * or wraps around these border.
+ */
+Spreadsheet.prototype.shiftSelectedCells = function(dRow, dCol, wrapAround) {
+	// prepare selection
+	if (!this.selected) return;
+	if (!this.selectedRange) this.selectCell(this.selected.row,this.selected.col,true);
+	this.uncopyCopiedCells();
+
+	// get the selected area
+	var r1 = this.selected.row;
+	var c1 = this.selected.col;
+	var r2 = this.selectedRange.toRow;
+	var c2 = this.selectedRange.toCol;
+	var areaRow = Math.min(r1,r2);
+	var areaCol = Math.min(c1,c2);
+	var areaHeight = Math.abs(r1-r2)+1;
+	var areaWidth = Math.abs(c1-c2)+1;
+
+	// check wrap around
+	if (!wrapAround) {
+		if (areaRow + dRow < 0) {
+			dRow = -areaRow;
+		} 
+		if (areaCol + dCol < 0) {
+			dCol= -areaCol;
+		}
+		if (areaRow + areaHeight + dRow > this.size.rows) {
+			dRow = this.size.rows - areaRow - areaHeight; 
+		}
+		if (areaCol + areaWidth + dCol > this.size.cols) {
+			dCol = this.size.cols - areaCol - areaWidth; 
+		}
+	}
+	// check if there is something to do at all
+	if (dRow == 0 && dCol == 0) return;
+	
+	// extend the area by dRow and dCol
+	areaHeight += Math.abs(dRow);
+	areaWidth += Math.abs(dCol);
+	if (dRow < 0) areaRow += dRow;
+	if (dCol < 0) areaCol += dCol;
+	
+	
+	// be careful if ranges overlapping
+	// therefore first copy to array
+	var data = new Array();
+	var index = 0;
+	for (var row = areaRow; row < areaRow + areaHeight; row ++) {
+		for (var col = areaCol; col < areaCol + areaWidth; col ++) {
+			var text = this.getCellText(row % this.size.rows, col % this.size.cols);
+			data[index++] = text;
+		}
+	}
+	// and then insert copied texts ba shifting the coordinares
+	// flowing around the area borders
+	index = 0;
+	for (var row = areaRow; row < areaRow + areaHeight; row ++) {
+		for (var col = areaCol; col < areaCol + areaWidth; col ++) {
+			var text = data[index++];
+			// let them flow inside the area
+			var toRow = (row - areaRow + dRow + areaHeight) % areaHeight + areaRow; 
+			var toCol = (col - areaCol + dCol + areaWidth) % areaWidth + areaCol;
+			// and set to new position
+			this.setCellText(toRow % this.size.rows, toCol % this.size.cols, text);
+		}
+	}
+	
+	this.selectCell(
+			Math.min(Math.max(0, r2 + dRow), this.size.rows-1),
+			Math.min(Math.max(0, c2 + dCol), this.size.cols-1), false);
+	this.selectCell(
+			Math.min(Math.max(0, r1 + dRow), this.size.rows-1),
+			Math.min(Math.max(0, c1 + dCol), this.size.cols-1), true);
 }
 
 Spreadsheet.prototype.pasteCopiedCells = function() {
