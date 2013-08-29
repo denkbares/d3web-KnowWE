@@ -52,6 +52,9 @@ public class SectionContentType extends AbstractType {
 			for (Type type : RootType.getInstance().getChildrenTypes()) {
 				this.addChildType(type);
 			}
+			// CSSDanglingType can only be in the root, because there are
+			// situations where CSS markups are split below the root
+			this.removeChildType(CSSDanglingType.class);
 			this.addChildType(new ParagraphType());
 			initialized = true;
 		}

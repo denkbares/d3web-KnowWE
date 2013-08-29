@@ -43,8 +43,6 @@ public class ParagraphType extends AbstractType {
 		this.addChildType(new StrikeThroughType());
 		this.addChildType(new ImageType());
 		this.addChildType(new LinkType());
-		this.addChildType(new CSSType());
-		this.addChildType(new CSSDanglingType());
 		this.addChildType(new WikiTextType());
 	}
 }
