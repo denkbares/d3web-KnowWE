@@ -76,6 +76,7 @@ KNOWWE.plugin.tableEditTool = function() {
 	    		spreadsheet[id].forEachSelected(function(cell, row, col) {
 	    			spreadsheet[id].setHeader(row, col, !header);
 	    		});
+	    		spreadsheet[id].snapshot();
 	    		event.preventDefault();
 	    	});
 	    },
@@ -289,6 +290,8 @@ function Spreadsheet(elementID, saveFun, cancelFun) {
 	this.cancelFunction = cancelFun;
 	this.supportLinks = true;
 	this.element = jq$("#" + elementID);
+	this.undoHistory = [];
+	this.redoHistory = [];
 	
 	this.createTable();
 	this.selectCell(0,0);
@@ -296,6 +299,7 @@ function Spreadsheet(elementID, saveFun, cancelFun) {
 
 Spreadsheet.prototype.setWikiMarkup = function(wikiText) {
 	this.setModel(new SpreadsheetModel(wikiText, this.supportLinks));
+	this.snapshot();
 }
 
 Spreadsheet.prototype.setSupportLinks = function(support) {
@@ -381,10 +385,27 @@ Spreadsheet.prototype.createTable = function(model) {
 	this.element.find(" tr > td > div > a").keydown(function(event) {
 		var cell = jq$(this).parents(" tr > td");
 		var data = cell.data("cellInfo");
-		var multi = event.shiftKey;
-		var command = event.ctrlKey || event.metaKey;
-		var alt = event.altKey;
-		var handled = data.spreadsheet.handleKeyDown(cell, event.which, multi, command, alt);
+		event = new Event(event);
+		var multi = event.shift;
+		var command = event.control || event.meta;
+		var alt = event.alt;
+
+		// toplevel handle undo/redo
+		if (_EC.isModifier(event)) {
+			if (event.code == 89 || (event.code == 90 && event.shift)) { // Y
+				event.stop();
+				data.spreadsheet.redo();
+				return;	
+			}
+			if (event.code == 90) { // Z
+				event.stop();
+				data.spreadsheet.snapshot();
+				data.spreadsheet.undo();
+				return;	
+			}
+		}
+		// otherwise handle event normally
+		var handled = data.spreadsheet.handleKeyDown(cell, event.code, multi, command, alt);
 		if (handled) {
 			event.preventDefault();
 		}
@@ -568,6 +589,8 @@ Spreadsheet.prototype.editCell = function(row, col) {
 		if ((keyCode == 13 || keyCode == 27) && spreadsheet.isAutoCompleteFocused(textAreaID)) return;
 		if ((keyCode == 13 && !event.altKey && !event.shiftKey) || (keyCode == 9 && !event.altKey)) {
 			spreadsheet.setCellText(row, col, editArea.val());
+			spreadsheet.snapshot();
+
 		}
 		// save: 's'
 		else if (keyCode == 83 && command && spreadsheet.saveFunction) {
@@ -767,6 +790,7 @@ Spreadsheet.prototype.forEachSelected = function(fun) {
 Spreadsheet.prototype.clearSelectedCells = function() {
 	var sheet = this;
 	this.forEachSelected(function(cell, row, col) {sheet.setCellText(row, col, "");});
+	this.snapshot();
 }
 
 /**
@@ -847,6 +871,7 @@ Spreadsheet.prototype.shiftSelectedCells = function(dRow, dCol, wrapAround) {
 	this.selectCell(
 			Math.min(Math.max(0, r1 + dRow), this.size.rows-1),
 			Math.min(Math.max(0, c1 + dCol), this.size.cols-1), true);
+	this.snapshot();
 }
 
 Spreadsheet.prototype.pasteCopiedCells = function() {
@@ -899,6 +924,7 @@ Spreadsheet.prototype.pasteCopiedCells = function() {
 	if (this.copied.doCut) {
 		this.uncopyCopiedCells();
 	}
+	this.snapshot();
 }
 
 Spreadsheet.prototype.copySelectedCells = function(doCut) {
@@ -929,7 +955,6 @@ Spreadsheet.prototype.forEachCopied = function(fun) {
 		}
 	}
 }
-
 
 Spreadsheet.prototype.getSelectedCell = function() {
 	if (!this.selected) return null;
@@ -976,6 +1001,7 @@ Spreadsheet.prototype.addRow = function(row) {
 	destModel.textAfterTable = srcModel.textAfterTable;
 	this.setModel(destModel);
 	this.selectCell(sr, sc);
+	this.snapshot();
 }
 
 Spreadsheet.prototype.removeSelectedRows = function() {
@@ -1028,6 +1054,7 @@ Spreadsheet.prototype.removeRow = function(row) {
 	destModel.textAfterTable = srcModel.textAfterTable;
 	this.setModel(destModel);
 	this.selectCell(sr, sc);
+	this.snapshot();
 }
 
 Spreadsheet.prototype.addCol = function(col) {
@@ -1062,6 +1089,7 @@ Spreadsheet.prototype.addCol = function(col) {
 	destModel.textAfterTable = srcModel.textAfterTable;
 	this.setModel(destModel);
 	this.selectCell(sr, sc);
+	this.snapshot();
 }
 
 Spreadsheet.prototype.removeCol = function(col) {
@@ -1090,6 +1118,7 @@ Spreadsheet.prototype.removeCol = function(col) {
 	destModel.textAfterTable = srcModel.textAfterTable;
 	this.setModel(destModel);
 	this.selectCell(sr, sc);
+	this.snapshot();
 }
 
 Spreadsheet.prototype.setHeader = function(row, col, isHeader) {
@@ -1107,5 +1136,88 @@ Spreadsheet.prototype.setHeader = function(row, col, isHeader) {
 	}
 	this.selectCell(tr, tc, false);
 	this.selectCell(sr, sc, true);
+}
+
+Spreadsheet.prototype.snapshot = function(row, col, isHeader) {
+	var model = this.getModel();
+	var undo = this.undoHistory, redo = this.redoHistory;
+	if (undo.length > 0  && Spreadsheet.areEqual(undo[undo.length-1].model, model)) {
+		return; 
+	}
+	if (redo.length > 0  && Spreadsheet.areEqual(redo[redo.length-1].model, model)) {
+		return; 
+	}
+	// if we have a redo history, we take the recent element back to the undo history,
+	// because it was the text fields original state before editing again
+	if (redo.length > 0) {
+		var shot = redo.pop();
+		undo.push(shot);
+		this.redoHistory = [];
+	}
+
+	var snap = { 
+			model: jq$.extend(true, {}, model),
+			selected: null, 
+			selectedRange: null,
+			};
+	if (this.selected) snap.selected = jq$.extend(true, {}, this.selected);
+	if (this.selectedRange) snap.selectedRange = jq$.extend(true, {}, this.selectedRange);
+	this.undoHistory.push(snap);
+}
+
+Spreadsheet.prototype.undo = function() {
+	var model = this.getModel();
+	while (true) {
+		if (this.undoHistory.length == 0) return;
+		var shot = this.undoHistory.pop();
+		this.redoHistory.push(shot);
+		if (!Spreadsheet.areEqual(shot.model, model)) break;
+	}
+	this.restoreSnapshot(shot);
+}
+
+Spreadsheet.prototype.redo = function() {
+	var model = this.getModel();
+	while (true) {
+		if (this.redoHistory.length == 0) return;
+		var shot = this.redoHistory.pop();
+		this.undoHistory.push(shot);
+		if (!Spreadsheet.areEqual(shot.model, model)) break;
+	}
+	this.restoreSnapshot(shot);
+}
+
+Spreadsheet.prototype.restoreSnapshot = function(snapshot) {
+	this.uncopyCopiedCells();
+	this.setModel(snapshot.model);
+	var sel = snapshot.selected;
+	var range = snapshot.selectedRange;
+	if (sel) {
+		if (range) this.selectCell(range.toRow, range.toCol, false);
+		this.selectCell(sel.row, sel.col, range);
+	}
+}
+
+Spreadsheet.areEqual = function (x, y) {
+	for (var p in y) {
+		if(typeof(y[p]) !== typeof(x[p])) return false;
+		if((y[p]===null) !== (x[p]===null)) return false;
+		switch (typeof(y[p])) {
+		case 'undefined':
+			if (typeof(x[p]) != 'undefined') return false;
+			break;
+		case 'object':
+			if(y[p]!==null && x[p]!==null && 
+					(y[p].constructor.toString() !== x[p].constructor.toString() 
+					|| !Spreadsheet.areEqual(y[p], x[p]))) return false;
+			break;
+		case 'function':
+			if (p != 'equals' && y[p].toString() != x[p].toString()) return false;
+			break;
+		default:
+			if (y[p] !== x[p]) return false;
+		}
+	}
+	return true;
 }
 
