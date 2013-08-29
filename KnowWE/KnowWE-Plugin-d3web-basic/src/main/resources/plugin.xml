@@ -57,7 +57,7 @@
 		<parameter id="description"
 			value="Compiles and provides a master knowledge base." />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="9" />
+		<parameter id="priority" value="6" />
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
 	</extension>

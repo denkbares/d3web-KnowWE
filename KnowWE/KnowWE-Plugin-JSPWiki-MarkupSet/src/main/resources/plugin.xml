@@ -17,7 +17,7 @@
 		<parameter id="name" value="HeaderType" />
 		<parameter id="description" value="Represents a HeaderType in KDOM" />
 		<parameter id="version" value="0.2" />
-		<parameter id="priority" value="2.1" />
+		<parameter id="priority" value="10.1" />
 		<parameter id="scope" value="root" />
 	</extension>
 	
@@ -27,7 +27,7 @@
 		<parameter id="name" value="HeaderType2" />
 		<parameter id="description" value="Represents a HeaderType2 in KDOM" />
 		<parameter id="version" value="0.2" />
-		<parameter id="priority" value="2.2" />
+		<parameter id="priority" value="10.2" />
 		<parameter id="scope" value="root" />
 	</extension>
 	
@@ -37,7 +37,7 @@
 		<parameter id="name" value="HeaderType1" />
 		<parameter id="description" value="Represents a HeaderType1 in KDOM" />
 		<parameter id="version" value="0.2" />
-		<parameter id="priority" value="2.3" />
+		<parameter id="priority" value="10.3" />
 		<parameter id="scope" value="root" />
 	</extension>
 	
@@ -47,7 +47,7 @@
 		<parameter id="name" value="PrettifyType" />
 		<parameter id="description" value="Represents a PrettifyType in KDOM" />
 		<parameter id="version" value="0.2" />
-		<parameter id="priority" value="2" />
+		<parameter id="priority" value="10" />
 		<parameter id="scope" value="root" />
 	</extension>
 	
@@ -57,7 +57,7 @@
 		<parameter id="name" value="VerbatimType" />
 		<parameter id="description" value="Represents a VerbatimType in KDOM" />
 		<parameter id="version" value="0.2" />
-		<parameter id="priority" value="2" />
+		<parameter id="priority" value="1" />
 		<parameter id="scope" value="root" />
 	</extension>
 	
@@ -66,16 +66,6 @@
 		<parameter id="class" value="de.knowwe.jspwiki.types.TabbedSectionType" />
 		<parameter id="name" value="TabbedSectionType" />
 		<parameter id="description" value="Represents a TabbedSectionType in KDOM" />
-		<parameter id="version" value="0.2" />
-		<parameter id="priority" value="2" />
-		<parameter id="scope" value="root" />
-	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="CSSType">
-		<parameter id="class" value="de.knowwe.jspwiki.types.CSSType" />
-		<parameter id="name" value="CSSType" />
-		<parameter id="description" value="Represents a CSSType in KDOM" />
 		<parameter id="version" value="0.2" />
 		<parameter id="priority" value="2" />
 		<parameter id="scope" value="root" />
@@ -92,12 +82,22 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="ParagraphType">
-		<parameter id="class" value="de.knowwe.jspwiki.types.ParagraphType" />
-		<parameter id="name" value="ParagraphType" />
-		<parameter id="description" value="Represents a ParagraphType in KDOM" />
+		id="CSSType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.CSSType" />
+		<parameter id="name" value="CSSType" />
+		<parameter id="description" value="CSSType in KDOM (e.g. %%(color: red)Text%%)" />
 		<parameter id="version" value="0.2" />
-		<parameter id="priority" value="100" />
+		<parameter id="priority" value="9" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="CSSDanglingType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.CSSDanglingType" />
+		<parameter id="name" value="CSSDanglingType" />
+		<parameter id="description" value="CSSType in KDOM with no closing tag, therefore dangling" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="9.1" />
 		<parameter id="scope" value="root" />
 	</extension>
 	
@@ -107,7 +107,7 @@
 		<parameter id="name" value="ParagraphTypeForLists" />
 		<parameter id="description" value="Represents a ParagraphTypeForLists in KDOM" />
 		<parameter id="version" value="0.2" />
-		<parameter id="priority" value="20" />
+		<parameter id="priority" value="5" />
 		<parameter id="scope" value="OrderedListType/**/DashTreeElementContent" />
 		<parameter id="scope" value="ListType/**/DashTreeElementContent" />
 	</extension>
@@ -123,6 +123,16 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="TablePluginType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.TablePluginType" />
+		<parameter id="name" value="JSPWikiPlugin" />
+		<parameter id="description" value="Type for the brushed.jspwiki.tableplugin" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="PluginType">
 		<parameter id="class" value="de.knowwe.jspwiki.types.PluginType" />
 		<parameter id="name" value="JSPWikiPlugin" />
@@ -133,12 +143,12 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="TablePluginType">
-		<parameter id="class" value="de.knowwe.jspwiki.types.TablePluginType" />
-		<parameter id="name" value="JSPWikiPlugin" />
-		<parameter id="description" value="Type for the brushed.jspwiki.tableplugin" />
+		id="ParagraphType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.ParagraphType" />
+		<parameter id="name" value="ParagraphType" />
+		<parameter id="description" value="Represents a ParagraphType in KDOM" />
 		<parameter id="version" value="0.2" />
-		<parameter id="priority" value="5" />
+		<parameter id="priority" value="100" />
 		<parameter id="scope" value="root" />
 	</extension>
 

@@ -30,7 +30,7 @@ if (typeof KNOWWE.core.plugin == "undefined" || !KNOWWE.core.plugin) {
  */
 KNOWWE.core.plugin.objectinfo = function() {
 	return {
-		
+
 		init : function() {
 			// init renaming form button
 			jq$('#objectinfo-replace-button').click(
@@ -38,14 +38,14 @@ KNOWWE.core.plugin.objectinfo = function() {
 
 			// we have to suspend the enter event to prevent multiple
 			// confirm dialogs after when confirming the dialogs with enter...
-			var suspend = false; 
+			var suspend = false;
 			jq$('#objectinfo-replacement').keyup(function(event) {
 				if (event.keyCode == 13 && !suspend) {
 					suspend = true;
 					if (confirm("Are you sure you want to rename this term?")) {
 						KNOWWE.core.plugin.objectinfo.renameFunction();
 					} else {
-						suspend = false; 
+						suspend = false;
 					}
 				}
 			});
@@ -188,12 +188,28 @@ KNOWWE.tooltips = {};
 
 KNOWWE.tooltips.enrich = function() {
 	jq$('.tooltipster').tooltipster({
-		position: "top-left",
-		interactive: true,
-		delay: 1300
+		position : "top-left",
+		interactive : true,
+		delay : 1300
 	});
 };
 
+KNOWWE.treetable = {};
+
+KNOWWE.treetable.setOverflow = function() {
+	jq$('.table_text').hover(function() {
+		var elem = jq$(this);
+		elem.data("stillin", "yes");
+		setTimeout(function() {
+			if (elem.data("stillin") === "yes") {				
+				elem.css("overflow", "auto");
+			}
+		}, 700);
+	}, function() {
+		jq$(this).data('stillin', "no");
+		jq$(this).css("overflow", "hidden");
+	});
+};
 
 /* ############################################################### */
 /* ------------- Onload Events ---------------------------------- */
@@ -206,7 +222,7 @@ KNOWWE.tooltips.enrich = function() {
 			KNOWWE.tooltips.enrich();
 			KNOWWE.core.plugin.objectinfo.init();
 			KNOWWE.core.plugin.renderKDOM();
-
+			KNOWWE.treetable.setOverflow();
 		});
 	}
 	;

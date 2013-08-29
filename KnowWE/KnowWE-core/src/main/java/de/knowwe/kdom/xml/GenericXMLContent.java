@@ -23,7 +23,7 @@ package de.knowwe.kdom.xml;
 public class GenericXMLContent extends XMLContent {
 
 	public GenericXMLContent() {
-		this.addChildType(GenericXMLObjectType.getInstance());
+		this.addChildType(new GenericXMLObjectType());
 	}
 
 }

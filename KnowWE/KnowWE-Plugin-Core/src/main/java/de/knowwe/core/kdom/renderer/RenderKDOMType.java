@@ -31,7 +31,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * @author danielzugner
  * @created Nov 5, 2012
  */
-public class KDOMRendererType extends DefaultMarkupType {
+public class RenderKDOMType extends DefaultMarkupType {
 
 	/**
 	 * @param markup
@@ -42,14 +42,14 @@ public class KDOMRendererType extends DefaultMarkupType {
 		MARKUP = new DefaultMarkup("RenderKDOM");
 	}
 
-	public KDOMRendererType() {
+	public RenderKDOMType() {
 		super(MARKUP);
-		setRenderer(new KDOMRender());
+		setRenderer(new KDOMRenderer());
 		setIgnorePackageCompile(true);
 
 	}
 
-	private class KDOMRender extends DefaultMarkupRenderer {
+	private class KDOMRenderer extends DefaultMarkupRenderer {
 
 		@Override
 		protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
@@ -91,7 +91,7 @@ public class KDOMRendererType extends DefaultMarkupType {
 			string.appendHtml("<td>" + s.getOffSetFromFatherText() + "</td>");
 			string.appendHtml("<td>" + s.getChildren().size() + "</td>");
 
-			string.appendHtml("<td><div class='table_text kdom_table_text'><div class='kdom_source'>");
+			string.appendHtml("<td><div class='table_text'><div class='kdom_source'>");
 			string.append(Strings.encodeHtml(s.getText()) + "&#8203;");
 			string.appendHtml("</div></div></td>");
 			string.appendHtml("</tr>");

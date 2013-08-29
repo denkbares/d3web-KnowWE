@@ -19,7 +19,6 @@
  */
 package de.knowwe.jspwiki.types;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.knowwe.core.kdom.AbstractType;
@@ -34,15 +33,13 @@ import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
  */
 public class SectionContentType extends AbstractType {
 
-	private final Type paragraphType;
+	private boolean initialized = false;
 
 	/*
 	 * The SectionContentType takes everything left from a SectionType.
 	 */
 	public SectionContentType(int count) {
 		this.setSectionFinder(new AllTextSectionFinder());
-		paragraphType = new ParagraphType();
-		this.addChildType(paragraphType);
 	}
 
 	/*
@@ -51,10 +48,13 @@ public class SectionContentType extends AbstractType {
 	 */
 	@Override
 	public List<Type> getChildrenTypes() {
-		ArrayList<Type> result = new ArrayList<Type>(2);
-		List<Type> rootChildren = RootType.getInstance().getChildrenTypes();
-		result.addAll(rootChildren);
-		result.add(paragraphType);
-		return result;
+		if (!initialized) {
+			for (Type type : RootType.getInstance().getChildrenTypes()) {
+				this.addChildType(type);
+			}
+			this.addChildType(new ParagraphType());
+			initialized = true;
+		}
+		return super.getChildrenTypes();
 	}
 }

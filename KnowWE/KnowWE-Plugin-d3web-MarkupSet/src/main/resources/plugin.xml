@@ -145,7 +145,7 @@
 		<parameter id="name" value="SolutionTreeMarkup" />
 		<parameter id="description" value="Type SolutionTreeMarkup" />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="4.5" />
+		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
 	</extension>
@@ -157,7 +157,7 @@
 		<parameter id="name" value="QuestionnaireTreeMarkup" />
 		<parameter id="description" value="Type QuestionnaireTreeMarkup" />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="4.5" />
+		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
 	</extension>
@@ -193,7 +193,7 @@
 		<parameter id="name" value="PropertyMarkup" />
 		<parameter id="description" value="Markup to add properties to IDObjects (optional language and country specific)" />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="7.0" />
+		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
 	</extension>
@@ -205,7 +205,7 @@
 		<parameter id="description"
 			value="Adds a binary resource file to the knowledge base archive" />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="6" />
+		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
 	</extension>

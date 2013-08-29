@@ -141,11 +141,11 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="KDOMRendererType">
+		id="RenderKDOMType">
 		<parameter id="class"
-			value="de.knowwe.core.kdom.renderer.KDOMRendererType" />
-		<parameter id="name" value="KDOMRendererType" />
-		<parameter id="description" value="Type KDOMRendererType" />
+			value="de.knowwe.core.kdom.renderer.RenderKDOMType" />
+		<parameter id="name" value="RenderKDOMType" />
+		<parameter id="description" value="Type RenderKDOMType" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="4" />
 		<parameter id="scope" value="root" />

@@ -18,9 +18,11 @@
  */
 package de.knowwe.jspwiki.types;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 
 /**
@@ -29,10 +31,21 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
  * @created 21.11.2012
  */
 public class CSSType extends AbstractType {
+
+	private boolean initialized = false;
+
 	public CSSType() {
-		this.setSectionFinder(new RegexSectionFinder("%%\\(.*?\\).*?%%",
+		this.setSectionFinder(new RegexSectionFinder("%%(?:\\(.*?\\)|\\w.*).*?(?:%|/)%",
 				Pattern.DOTALL | Pattern.MULTILINE));
-		this.addChildType(new SectionHeaderType());
-		this.addChildType(new SectionContentType(4));
+	}
+
+	@Override
+	public List<Type> getChildrenTypes() {
+		if (!initialized) {
+			this.addChildType(new SectionHeaderType());
+			this.addChildType(new SectionContentType(4));
+			initialized = true;
+		}
+		return super.getChildrenTypes();
 	}
 }
