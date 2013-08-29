@@ -231,6 +231,15 @@ SpreadsheetModel.prototype.toWikiMarkup = function(supportLinks) {
 			// remain contents of links unchanged
 			if (supportLinks) {
 				var oldText; 
+				// fix unclosed links by adding escape character
+				// and use html entities to prevent link treatment
+				do {
+					oldText = cellText;
+					cellText = cellText.replace(/^(.*)\[([^\]]*)$/g, "$1&#126;&#91;$2");
+				}
+				while (oldText != cellText);
+
+				// prevent inner-link-text to be escaped by using html entities
 				do {
 					oldText = cellText;
 					cellText = cellText.replace(/(\[[^\]]*)\|/g, "$1&#124;");	// "|"
@@ -253,7 +262,7 @@ SpreadsheetModel.prototype.toWikiMarkup = function(supportLinks) {
 			cellText = cellText.replace(/\r?\n/g, "\\\\");	// RETURN --> "\\"
 			cellText = cellText.replace(/\\u00A0/g," ");	// &nbsp; --> " "
 			
-			// reveal out used html entities
+			// reveal our used html entities
 			cellText = cellText.replace(/\&\#124;/g, "|");
 			cellText = cellText.replace(/\&\#126;/g, "~");
 			cellText = cellText.replace(/\&\#91;/g, "[");
@@ -482,12 +491,14 @@ Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, comma
 	// save: 's'
 	else if (keyCode == 83 && command && this.saveFunction) {
 		this.stopEditCell();
-		this.saveFunction();
+		return false;
+//		this.saveFunction();
 	}
 	// cancel: 'q'
 	else if (keyCode == 81 && command && this.cancelFunction) {
 		this.stopEditCell(true);
-		this.cancelFunction();
+//		this.cancelFunction();
+		return false;
 	}
 	// delete line: command+'d' or alt+'d'
 	else if (keyCode == 68 && ((command && !alt) || (!command && alt))) {
