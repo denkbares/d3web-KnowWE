@@ -98,9 +98,9 @@ function SpreadsheetModel(wikiText, supportLinks) {
 	this.cells = new Array();
 
 	if (wikiText) {
-		// prepend and append returns for easier expressions
+		// prepend and append returns for easier regex
 		wikiText = ("\n"+wikiText+"\n");
-		var firstTableLine = wikiText.search(/\n\r?\|/); // pipe is first char after return
+		var firstTableLine = wikiText.search(/\r?\n[ \t]*\|/); // pipe is first char after return
 		if (firstTableLine == -1) {
 			firstTableLine = wikiText.indexOf("\n", wikiText.search(/\S/) + 1) ;	
 		}
@@ -108,23 +108,53 @@ function SpreadsheetModel(wikiText, supportLinks) {
 			this.textBeforeTable = wikiText.substring(1, firstTableLine);
 			wikiText = "\n" + wikiText.substring(firstTableLine + 1);
 		} 
-		var lastTableLineEnd = wikiText.search(/(\n\r?([^\r\|][^\n]*)?)*$/);
+		var lastTableLineEnd = wikiText.search(/(\r?\n([^\r\|][^\n]*)?)*$/);
 		if (lastTableLineEnd >= 0 && lastTableLineEnd < wikiText.length - 2) {
 			this.textAfterTable = wikiText.substring(lastTableLineEnd + 1, wikiText.length - 1);
 			wikiText = wikiText.substring(0, lastTableLineEnd+1);
 		}
 		
 		// normalize returns, remove multiples
-		wikiText = wikiText.replace(/[\n\r]+/g, "\n"); 
-		// replace in-link pipes by html entity
-		if (supportLinks) wikiText = wikiText.replace(/(\[[^\]]*)\|/g, "$1&#124;");
-		// unescape multiple "~", odd, but like jsp-wiki does
+		wikiText = wikiText.replace(/[\r\n]+/g, "\n"); 
+		
+		// avoid conflicting with already coded entities
+		wikiText = wikiText.replace(/\&/g, "&amp;");
+
+		// special treatment of multiple "~" 
+		// followed by a potentially escaped character (by insert a required space)
+		wikiText = wikiText.replace(/\~\~(\[|\\|\|)/g, "~~ $1");
+
+		// replace "~" by entities
+		// handle multiple "~", odd, but like jsp-wiki does
+		// (by this code single "~" remain untouched!)
 		while (wikiText.search(/\~\~\~/) != -1) {
 			wikiText = wikiText.replace(/\~\~\~/, "&#126;~~");
 		}
-		wikiText = wikiText.replace(/\~\~/g, "&#126;"); // unescape ~
-		if (supportLinks) wikiText = wikiText.replace(/\~\|/g, "&#124;"); // unescape |
-		var lines = wikiText.match(/\n\|[^\n]*/g);
+		wikiText = wikiText.replace(/\~\~/g, "&#126;");
+		
+		// replace escaped opening "[" by html entity
+		wikiText = wikiText.replace(/\~\[/g, "&#126;&#91;");
+		
+		// replace in-link pipes and escapes-characters by html entity
+		if (supportLinks) {
+			var oldText; 
+			do {
+				oldText = wikiText;
+				wikiText = wikiText.replace(/(\[[^\]]*)\|/g, "$1&#124;");	// "|"
+				wikiText = wikiText.replace(/(\[[^\]]*)\~/g, "$1&#126;");	// "~"
+				wikiText = wikiText.replace(/(\[[^\]]*)\\/g, "$1&#92;");	// "\"
+			}
+			while (oldText != wikiText);
+		}
+		
+		// replace remaining escaped "|" and "\" by html entity (outside links)
+		wikiText = wikiText.replace(/\~\|/g, "&#124;");
+		wikiText = wikiText.replace(/\~\\/g, "&#92;");
+		wikiText = wikiText.replace(/\~\]/g, "&#93;");
+
+		// and now parse the table structure,
+		// remaining | are now surely cell separators (!)
+		var lines = wikiText.match(/\n[ \t]*\|[^\n]*/g);
 		if (lines == null) return;
 		var row = 0;
 		for (var i = 0; i<lines.length; i++) {
@@ -132,19 +162,29 @@ function SpreadsheetModel(wikiText, supportLinks) {
 			line = line.replace(/\n/g, "");
 			if (line.match(/^\s*$/g)) continue;
 			var cells = line.match(/\|\|?[^\|]*/g);
-			var col = 0;
-			for (var j = 0; j<cells.length; j++) {
-				var cell = cells[j];
+			for (var col = 0; col<cells.length; col++) {
+				var cell = cells[col];
 				var text = "";
+				var header = false;
 				if (cell.charAt(1) == '|') {
-					text = jq$.trim(cell.substr(2).replace(/\\\\/g, "\n"));
-					this.setCell(row, col, text, true);
+					text = cell.substr(2);
+					header = true;
 				}
 				else { 
-					text = jq$.trim(cell.substr(1).replace(/\\\\/g, "\n"));
-					this.setCell(row, col, text, false);
+					text = cell.substr(1);
 				}
-				col++;
+				// within the cells, revert our html encoding
+				text = text.replace(/\\u00A0/g," ")
+				text = jq$.trim(text);
+				text = text.replace(/\\\\/g, "\n");
+				text = text.replace(/\&\#124;/g, "|");
+				text = text.replace(/\&\#126;/g, "~");
+				text = text.replace(/\&\#91;/g, "[");
+				text = text.replace(/\&\#92;/g, "\\");
+				text = text.replace(/\&\#93;/g, "]");
+				// reveal our initial "&" encoding
+				text = text.replace(/\&amp;/g, "&");
+				this.setCell(row, col, text, header);
 			}
 			row++;
 		}
@@ -176,17 +216,53 @@ SpreadsheetModel.prototype.isHeader = function(row, col) {
 	return false;
 }
 
-SpreadsheetModel.prototype.toWikiMarkup = function() {
+SpreadsheetModel.prototype.toWikiMarkup = function(supportLinks) {
 	var wikiText = this.textBeforeTable ? this.textBeforeTable : "";
 	for (var row = 0; row < this.height; row++) {
 		for (var col = 0; col < this.width; col++) {
 			var cellText = this.getCellText(row, col);
-			cellText = cellText.replace(/(\~+)/g, "~$1"); // escape escape character
-			cellText = cellText.replace(/(\[[^\]]*)\|/g, "$1&#124;"); // escape pipes in links
-			cellText = cellText.replace(/\|/g, "~|"); // escape pipes
-			cellText = cellText.replace(/\&\#124;/g, "|"); // unescape pipes in links
-			cellText = cellText.replace(/\r?\n\r?/g, "\\\\"); // escape line breaks
-			cellText = cellText.replace(/\\u00A0/g," "); // replace &nbsp; by normal space
+			
+			// avoid conflicting with already coded entities
+			cellText = cellText.replace(/\&/g, "&amp;");
+			
+			// recognize single escaped opening "["
+			cellText = cellText.replace(/\~\[/g, "&#126;&#91;");
+			
+			// remain contents of links unchanged
+			if (supportLinks) {
+				var oldText; 
+				do {
+					oldText = cellText;
+					cellText = cellText.replace(/(\[[^\]]*)\|/g, "$1&#124;");	// "|"
+					cellText = cellText.replace(/(\[[^\]]*)\~/g, "$1&#126;");	// "~"
+					cellText = cellText.replace(/(\[[^\]]*)\\/g, "$1&#92;");	// "\"
+				}
+				while (oldText != cellText);
+			}
+			
+			// special handling: "~~|" will be recognized 
+			// through jsp-wiki as new cell --> avoid this 
+			// by handling ~| directly and insert required space
+			cellText = cellText.replace(/\~\|/g, "&#126; &#124;");
+			
+			// escape special characters (outside links only)
+			cellText = cellText.replace(/(\~+)/g, "~$1");
+			cellText = cellText.replace(/\|/g, "~|");
+			
+			// escape remaining special characters
+			cellText = cellText.replace(/\r?\n/g, "\\\\");	// RETURN --> "\\"
+			cellText = cellText.replace(/\\u00A0/g," ");	// &nbsp; --> " "
+			
+			// reveal out used html entities
+			cellText = cellText.replace(/\&\#124;/g, "|");
+			cellText = cellText.replace(/\&\#126;/g, "~");
+			cellText = cellText.replace(/\&\#91;/g, "[");
+			cellText = cellText.replace(/\&\#92;/g, "\\");
+			
+			// reveal our initial "&" encoding
+			cellText = cellText.replace(/\&amp;/g, "&");
+			
+			// create cell markup
 			wikiText += this.isHeader(row, col) ? "|| " : "|  ";
 			wikiText += cellText;
 			wikiText += "\t";
@@ -226,7 +302,7 @@ Spreadsheet.prototype.setModel = function(model) {
 }
 
 Spreadsheet.prototype.getWikiMarkup = function() {
-	return this.getModel().toWikiMarkup();
+	return this.getModel().toWikiMarkup(this.supportLinks);
 }
 
 Spreadsheet.prototype.getModel = function() {
