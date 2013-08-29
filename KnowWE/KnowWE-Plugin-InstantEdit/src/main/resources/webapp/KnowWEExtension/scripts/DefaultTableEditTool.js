@@ -539,6 +539,8 @@ Spreadsheet.prototype.editCell = function(row, col) {
 	var contentElement = this.getSelectedCell().find("div > a");
 	var pos = contentElement.parent().position();
 	var textAreaID = this.createCellAreaID(row, col);
+	var cellText = this.getCellText(row, col);
+	if (cellText.match(/[ \t\u00A0\u200B]+/g)) cellText = "";
 	var html = "";
 	html += "<div class='cellEdit' style='";
 	html += "left:"+(pos.left-3)+"px;top:"+(pos.top-3)+"px;";
@@ -546,7 +548,7 @@ Spreadsheet.prototype.editCell = function(row, col) {
 	html += "<textarea id='"+textAreaID+"' style='";
 	html += "width:"+(contentElement.width()+16)+"px";
 	html += "'>";
-	html += _EC.encodeForHtml(this.getCellText(row, col));
+	html += _EC.encodeForHtml(cellText);
 	html += "</textarea>";
 	html += "</div>";
 	this.element.prepend(html);
