@@ -561,7 +561,7 @@ Spreadsheet.prototype.editCell = function(row, col) {
 	var pos = contentElement.parent().position();
 	var textAreaID = this.createCellAreaID(row, col);
 	var cellText = this.getCellText(row, col);
-	if (cellText.match(/[ \t\u00A0\u200B]+/g)) cellText = "";
+	if (cellText.match(/^[ \t\u00A0\u200B]*$/g)) cellText = "";
 	var html = "";
 	html += "<div class='cellEdit' style='";
 	html += "left:"+(pos.left-3)+"px;top:"+(pos.top-3)+"px;";
@@ -660,35 +660,70 @@ Spreadsheet.prototype.installAutoComplete = function(textAreaID, row, col) {
 	// enable auto-completion if available
 	// but we require some special functionality because only editing part of table
 	var spreadsheet = this;
-	var textarea = $(textAreaID);
-	var completeFun = function(prefix) {
-		var trimPrefix = prefix.trim();
-		var json = "[";
-		var textCache = new Array();
-		for (var r = 0; r < spreadsheet.size.rows; r++) {
-			// use each text once
-			var text = spreadsheet.getCellText(r, col).trim();
-			if (textCache[text]) continue;
-			textCache[text] = "done";
-			// check if it can be used for completion
-			if (text.length == 0) continue;
-			if (text.length < trimPrefix.length) continue;
-			if (text.substring(0, trimPrefix.length) != trimPrefix) continue;
-			json += "{ "+
-				"title: '" + text + "', " +
-				"insertText: '" + text + "', " +
-				"replaceLength: '" + prefix.length + "', " +
-				"cursorPosition: " + text.length + " }, "
-		}
-		json += "]";
-		//alert(json);
-		return json;
+	var completeFun = this.customAutoCompleteFunction
+	? function(callback, prefix) {
+		this.customAutoCompleteFunction(callback, prefix, spreadsheet, row, col);
 	}
+	: function(callback, prefix) {
+		callback(spreadsheet.getColumnCellCompletionSuggestions(prefix, col));
+//		AutoComplete.sendD3webConditionCompletionAction(function(byAjax) {
+//			var byCells = spreadsheet.getColumnCellCompletionSuggestions(prefix, col);
+//			callback(byCells.concat(byAjax));
+//		}, prefix);
+	};
+	var textarea = $(textAreaID);
 	new TextArea(textarea, true);
 	if (typeof AutoComplete != "undefined") {		
 		new AutoComplete(textarea, completeFun);
 	}
 }
+
+/**
+ * creates completion suggestions according to the other cells of the same column.
+ */
+Spreadsheet.prototype.getColumnCellCompletionSuggestions = function(prefix, col) {
+	var trimPrefix = prefix.trim();
+	var json = [];
+	var textCache = {};
+	for (var r = 0; r < this.size.rows; r++) {
+		// use each text once
+		var text = this.getCellText(r, col).trim();
+		if (textCache[text]) continue;
+		textCache[text] = "done";
+		// check if it can be used for completion
+		if (text.length == 0) continue;
+		if (text.length < trimPrefix.length) continue;
+		if (text.substring(0, trimPrefix.length) != trimPrefix) continue;
+		json.push({
+			insertText: text,
+			replaceLength: prefix.length
+		});
+	}
+	return json;
+}
+
+/**
+ * Sets the function used for autocompletion. The function to be specified will get the
+ * following parameters:
+ * <ul> 
+ * <li>callback: a function to be called with the auto-completion suggestions as they are prepard (see below)
+ * <li>prefix: text before cursor
+ * <li>table: the spreadsheet instance currently edited
+ * <li>row: the edited cell's row index (0..)   
+ * <li>col: the edited cell's column index (0..)
+ * <ul>
+ * The method shall cann the specified cabblack funtion with a javascript array of auto-completion suggestions. 
+ * Each suggestion is a javascript object with the following parameters:
+ * <ul>
+ * <li>title: title of the completion
+ * <li>insertTest: the text to be inserted
+ * <li>replaceLength: (optional) how many chars before the cursor shall be replaced
+ * <li>cursorPosition: (optional) where shall the cursor be positioned, relative to the start of the inserted text
+ * </ul> 
+ */
+Spreadsheet.prototype.setAutoCompleteFunction = function(fun) {
+	this.customAutoCompleteFunction = fun;
+} 
 
 Spreadsheet.prototype.setCellText = function(row, col, text) {
 	this.stopEditCell();
