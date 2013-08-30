@@ -42,7 +42,7 @@ KNOWWE.plugin.tableEditTool = function() {
 	    	spreadsheet[id].setSupportLinks(supportLinks[id] == null ? true : supportLinks[id]);
 	    	spreadsheet[id].setWikiMarkup(originalWikiText[id]);
 	    	originalWikiText[id] = spreadsheet[id].getWikiMarkup();
-
+	    	
 	    	var root = spreadsheet[id].element.parent();
 	    	root.find("#table_insert_row_before").click(function(event) {
 	    		if (spreadsheet[id].selected) spreadsheet[id].addRow(spreadsheet[id].selected.row);
@@ -88,7 +88,43 @@ KNOWWE.plugin.tableEditTool = function() {
 	    generateWikiText : function(id) {
 	    	spreadsheet[id].stopEditCell();
 	    	return spreadsheet[id].getWikiMarkup();
-	    }
+	    },
+
+	    /**
+	     * Creates a new table editor. Optionally you can specify the function 
+	     * used for auto-completion. The function to be specified will get the
+	     * following parameters:
+	     * <ul> 
+	     * <li>callback: a function to be called with the auto-completion suggestions 
+	     * as they are prepard (see below)
+	     * <li>prefix: text before cursor
+	     * <li>table: the spreadsheet instance currently edited
+	     * <li>row: the edited cell's row index (0..)   
+	     * <li>col: the edited cell's column index (0..)
+	     * <ul>
+	     * The method shall cann the specified cabblack funtion with a javascript 
+	     * array of auto-completion suggestions. Each suggestion is a javascript 
+	     * object with the following parameters:
+	     * <ul>
+	     * <li>insertTest: the text to be inserted
+	     * <li>title: (optional) title of the completion
+	     * <li>description: (optional) description of the completion
+	     * <li>iconPath: (optional) url to the icon of the completion
+	     * <li>replaceLength: (optional) how many chars before the cursor shall be replaced
+	     * <li>cursorPosition: (optional) where shall the cursor be positioned, relative to the start of the inserted text
+	     * </ul> 
+	     */
+	    create : function(autoCompleteFun) {
+	    	var created = jq$.extend({}, KNOWWE.plugin.tableEditTool);
+	    	var super_postProcessHTML = created.postProcessHTML;
+	    	created.postProcessHTML = function(id) {
+	    		super_postProcessHTML(id);
+		    	if (autoCompleteFun) {
+		    		spreadsheet[id].setAutoCompleteFunction(autoCompleteFun);
+		    	}
+	    	};
+	    	return created;
+	    },
     }
 }();
 
@@ -101,7 +137,7 @@ function SpreadsheetModel(wikiText, supportLinks) {
 	if (wikiText) {
 		// prepend and append returns for easier regex
 		wikiText = ("\n"+wikiText+"\n");
-		var firstTableLine = wikiText.search(/\r?\n[ \t]*\|/); // pipe is first char after return
+		var firstTableLine = wikiText.search(/\n[ \t]*\|/); // pipe is first char after return
 		if (firstTableLine == -1) {
 			firstTableLine = wikiText.indexOf("\n", wikiText.search(/\S/) + 1) ;	
 		}
@@ -109,7 +145,7 @@ function SpreadsheetModel(wikiText, supportLinks) {
 			this.textBeforeTable = wikiText.substring(1, firstTableLine);
 			wikiText = "\n" + wikiText.substring(firstTableLine + 1);
 		} 
-		var lastTableLineEnd = wikiText.search(/(\r?\n([^\r\|][^\n]*)?)*$/);
+		var lastTableLineEnd = wikiText.search(/(\n([^\|][^\n]*)?)*$/);
 		if (lastTableLineEnd >= 0 && lastTableLineEnd < wikiText.length - 2) {
 			this.textAfterTable = wikiText.substring(lastTableLineEnd + 1, wikiText.length - 1);
 			wikiText = wikiText.substring(0, lastTableLineEnd+1);
@@ -175,7 +211,7 @@ function SpreadsheetModel(wikiText, supportLinks) {
 					text = cell.substr(1);
 				}
 				// within the cells, revert our html encoding
-				text = text.replace(/\\u00A0/g," ")
+				text = text.replace(/\\u00A0/g," ");
 				text = jq$.trim(text);
 				text = text.replace(/\\\\/g, "\n");
 				text = text.replace(/\&\#124;/g, "|");
@@ -661,16 +697,12 @@ Spreadsheet.prototype.installAutoComplete = function(textAreaID, row, col) {
 	// but we require some special functionality because only editing part of table
 	var spreadsheet = this;
 	var completeFun = this.customAutoCompleteFunction
-	? function(callback, prefix) {
-		this.customAutoCompleteFunction(callback, prefix, spreadsheet, row, col);
-	}
-	: function(callback, prefix) {
-		callback(spreadsheet.getColumnCellCompletionSuggestions(prefix, col));
-//		AutoComplete.sendD3webConditionCompletionAction(function(byAjax) {
-//			var byCells = spreadsheet.getColumnCellCompletionSuggestions(prefix, col);
-//			callback(byCells.concat(byAjax));
-//		}, prefix);
-	};
+		? jq$.proxy(function(callback, prefix) {
+			this.customAutoCompleteFunction(callback, prefix, spreadsheet, row, col);
+		}, this)
+		: function(callback, prefix) {
+			callback(spreadsheet.getColumnCellCompletionSuggestions(prefix, col));
+		};
 	var textarea = $(textAreaID);
 	new TextArea(textarea, true);
 	if (typeof AutoComplete != "undefined") {		
@@ -734,6 +766,10 @@ Spreadsheet.prototype.setCellText = function(row, col, text) {
 	else {
 		elem.text(text);
 	}
+}
+
+Spreadsheet.prototype.getCellTextTrimmed = function(row, col) {
+	return jq$.trim(this.getCellText(row, col).replace(/\\u00A0/g," "));
 }
 
 Spreadsheet.prototype.getCellText = function(row, col) {

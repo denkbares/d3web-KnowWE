@@ -210,6 +210,49 @@ TestCasePlayer.update = function() {
 	KNOWWE.helper.observer.notify('update', fn);
 }
 
+if (!KNOWWE.plugin.testCases) KNOWWE.plugin.testCases = {};
+if (!KNOWWE.plugin.testCases.testCaseTable) KNOWWE.plugin.testCases.testCaseTable = {};
+
 jq$(document).ready(function() {
+	// Prepare for instant table editor with custom auto-complete 
+	KNOWWE.plugin.testCases.testCaseTable.editTool = KNOWWE.plugin.tableEditTool.create(
+			function (callback, prefix, spreadsheet, row, col) {
+				var ajaxFun, ajaxPrefix = prefix;
+				var otherItems = [];
+				var colName = spreadsheet.getCellTextTrimmed(0, col);
+				if (colName.charAt(0) == '"' && colName.charAt(colName.length-1) == '"') {
+					colName = colName.substring(1, colName.length-1);
+				}
+				if (row == 0) {
+					ajaxFun = AutoComplete.sendD3webValueObjectCompletionAction;
+					otherItems.push({
+						insertText: "Time",
+						replaceLength: prefix.length,
+						description: "Column for entering the reasoning time of the specific row."
+					});
+					otherItems.push({
+						insertText: "Checks", 
+						replaceLength: prefix.length,
+						description: "Column for entering some conditions. The condition must be true after executing the row. Otherwise the test case fails."
+					});
+				}
+				else if (colName == 'Time') {
+					ajaxFun = function(callback, prefix) {callback([]);};
+				}
+				else if (colName == 'Checks') {
+					ajaxFun = AutoComplete.sendD3webConditionCompletionAction;
+				}
+				else {
+					ajaxFun = AutoComplete.sendD3webActionCompletionAction;
+					ajaxPrefix = '"'+colName+'" = '+prefix;
+				}
+				ajaxFun(function(byAjax) {
+					callback(otherItems.concat(byAjax));
+				}, ajaxPrefix);
+			});
+	
+	// init test case player
 	TestCasePlayer.init();
 });
+
+

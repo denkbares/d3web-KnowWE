@@ -95,8 +95,8 @@
         <parameter id="priority" value="4" />
         <parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
         <parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
-        <parameter id="script" value="DefaultEditTool.js" />
         <parameter id="script" value="TextArea.js" />
+        <parameter id="script" value="DefaultEditTool.js" />
         <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
         <parameter id="css" value="KnowWE-Plugin-AutoComplete.css" />
         <parameter id="css" value="DefaultEditTool.css" />
@@ -144,7 +144,7 @@
     <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
         id="TableEditToolProvider">
         <parameter id="class"
-            value="de.knowwe.instantedit.table.TableEditToolProvider" />
+            value="de.knowwe.testcases.tools.TableEditToolProvider" />
         <parameter id="name" value="TableEditToolProvider" />
         <parameter id="description"
             value="Offers a tool for a spreadsheet-like table editor." />
@@ -153,6 +153,7 @@
         <parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
         <parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
         <parameter id="script" value="DefaultTableEditTool.js" />
+        <parameter id="script" value="KnowWE-Plugin-TestCases.js" />
         <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
         <parameter id="css" value="KnowWE-Plugin-AutoComplete.css" />
         <parameter id="css" value="DefaultTableEditTool.css" />       
