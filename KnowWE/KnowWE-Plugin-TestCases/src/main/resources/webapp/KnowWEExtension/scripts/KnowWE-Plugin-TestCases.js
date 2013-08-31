@@ -219,34 +219,38 @@ jq$(document).ready(function() {
 			function (callback, prefix, spreadsheet, row, col) {
 				var ajaxFun, ajaxPrefix = prefix;
 				var otherItems = [];
+				// prepare object name
 				var colName = spreadsheet.getCellTextTrimmed(0, col);
-				if (colName.charAt(0) == '"' && colName.charAt(colName.length-1) == '"') {
-					colName = colName.substring(1, colName.length-1);
-				}
+				// prepare ajax
 				if (row == 0) {
 					ajaxFun = AutoComplete.sendD3webValueObjectCompletionAction;
-					otherItems.push({
-						insertText: "Time",
-						replaceLength: prefix.length,
-						description: "Column for entering the reasoning time of the specific row."
-					});
-					otherItems.push({
-						insertText: "Checks", 
-						replaceLength: prefix.length,
-						description: "Column for entering some conditions. The condition must be true after executing the row. Otherwise the test case fails."
-					});
+					if (prefix.match(/^\s*"?(t(i(m(e)?)?)?)?"?\s*$/i))
+						otherItems.push({
+							insertText: "Time",
+							replaceLength: prefix.length,
+							description: "Column for entering the reasoning time of the specific row."
+						});
+					if (prefix.match(/^\s*"?(c(h(e(c(k(s)?)?)?)?)?)?"?\s*$/i))
+						otherItems.push({
+							insertText: "Checks", 
+							replaceLength: prefix.length,
+							description: "Column for entering some conditions. The condition must be true after executing the row. Otherwise the test case fails."
+						});
 				}
-				else if (colName == 'Time') {
+				else if (colName === 'Time') {
 					ajaxFun = function(callback, prefix) {callback([]);};
 				}
-				else if (colName == 'Checks') {
+				else if (colName === 'Checks') {
 					ajaxFun = AutoComplete.sendD3webConditionCompletionAction;
 				}
 				else {
+					colName = AutoComplete.unquoteTermIdentifier(colName);
+					if (AutoComplete.termRequiresQuotes(colName)) colName = '"' +colName + '"';
 					ajaxFun = AutoComplete.sendD3webActionCompletionAction;
-					ajaxPrefix = '"'+colName+'" = '+prefix;
+					ajaxPrefix = colName + ' = '+prefix;
 				}
 				ajaxFun(function(byAjax) {
+					AutoComplete.unquoteTermIdentifiers(byAjax);
 					callback(otherItems.concat(byAjax));
 				}, ajaxPrefix);
 			});

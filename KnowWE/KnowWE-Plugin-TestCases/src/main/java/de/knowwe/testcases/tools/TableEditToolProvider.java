@@ -21,8 +21,8 @@ package de.knowwe.testcases.tools;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.instantedit.tools.InstantEditTool;
+import de.knowwe.instantedit.tools.InstantEditToolProvider;
 import de.knowwe.tools.Tool;
-import de.knowwe.tools.ToolProvider;
 
 /**
  * Provides spreadsheet-like instant edit capabilities for tables.
@@ -30,14 +30,10 @@ import de.knowwe.tools.ToolProvider;
  * @author volker_belli
  * @created 16.03.2012
  */
-public class TableEditToolProvider implements ToolProvider {
+public class TableEditToolProvider extends InstantEditToolProvider {
 
 	@Override
-	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		return new Tool[] { getEditTool(section, userContext) };
-	}
-
-	private Tool getEditTool(Section<?> section, UserContext userContext) {
+	protected Tool getQuickEditPageTool(Section<?> section, UserContext userContext) {
 		return new InstantEditTool(
 				"KnowWEExtension/images/pencil.png",
 				"Edit Table",

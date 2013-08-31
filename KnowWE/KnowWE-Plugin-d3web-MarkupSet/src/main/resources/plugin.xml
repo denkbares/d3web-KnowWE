@@ -77,10 +77,10 @@
             value="Offers a button for quick editing a certain section." />
         <parameter id="version" value="1.0" />
         <parameter id="priority" value="4" />
+        <parameter id="script" value="TextArea.js" />
         <parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
         <parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
         <parameter id="script" value="DefaultEditTool.js" />
-        <parameter id="script" value="TextArea.js" />
         <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
         <parameter id="css" value="KnowWE-Plugin-AutoComplete.css" />
         <parameter id="css" value="DefaultEditTool.css" />       
@@ -99,6 +99,7 @@
         <parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
         <parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
         <parameter id="script" value="DefaultTableEditTool.js" />
+        <parameter id="script" value="AbstractionTable.js" />
         <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
         <parameter id="css" value="KnowWE-Plugin-AutoComplete.css" />
         <parameter id="css" value="DefaultTableEditTool.css" />       
