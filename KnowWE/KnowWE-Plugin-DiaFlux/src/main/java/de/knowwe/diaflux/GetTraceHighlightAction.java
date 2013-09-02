@@ -19,8 +19,9 @@
 package de.knowwe.diaflux;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Date;
 
-import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
 import de.d3web.diaFlux.flow.DiaFluxCaseObject;
 import de.d3web.diaFlux.flow.Edge;
@@ -45,7 +46,6 @@ public class GetTraceHighlightAction extends AbstractHighlightAction {
 	static final String TRACE_ACTIVE_CLASS = PREFIX + "Active";
 	static final String TRACE_SNAP_CLASS = PREFIX + "Snap";
 
-
 	@Override
 	public String getPrefix() {
 		return PREFIX;
@@ -53,14 +53,24 @@ public class GetTraceHighlightAction extends AbstractHighlightAction {
 
 	@Override
 	public void insertHighlighting(Section<FlowchartType> flowchart, Highlight highlight, UserActionContext context) throws IOException {
-		KnowledgeBase kb = getKB(flowchart);
-		Session session = SessionProvider.getSession(context, kb);
+
+		Collection<Session> sessions = SessionProvider.getSessions(context);
+
+		Session session = null;
+		Date latest = null;
+		for (Session s : sessions) {
+			Date lastChangeDate = s.getLastChangeDate();
+			if (latest == null || lastChangeDate.after(latest)) {
+				latest = lastChangeDate;
+				session = s;
+			}
+		}
 
 		if (session == null) {
 			return;
 		}
 
-		Flow flow = findFlow(flowchart, kb);
+		Flow flow = findFlow(flowchart, session.getKnowledgeBase());
 
 		// might happen, if flow contains errors and is not contained in kb
 		if (flow == null) {

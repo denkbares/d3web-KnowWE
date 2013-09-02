@@ -343,8 +343,11 @@ public class D3webUtils {
 			}
 		}
 		catch (SessionTerminatedException e) {
-			Logger.getLogger(D3webUtils.class.getName()).log(Level.WARNING,
-					"Propagation terminated due to detected loop.", e);
+			Logger.getLogger(D3webUtils.class.getName()).log(
+					Level.WARNING,
+					"Unable to set fact, because the current session is " +
+							"terminated (possibly due to a detected propagation loop).",
+					e);
 		}
 		EventManager.getInstance().fireEvent(new FindingSetEvent(fact, session, context));
 	}

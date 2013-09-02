@@ -23,7 +23,6 @@ package de.d3web.we.basic;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
@@ -34,12 +33,8 @@ import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.SessionFactory;
 import de.d3web.core.session.blackboard.Fact;
-import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
-import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.event.EventManager;
-import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -103,7 +98,7 @@ public class SessionProvider {
 	}
 
 	private Session createSessionInternally(UserContext context, KnowledgeBase kb) {
-		removeSessionInternally(context, kb);
+		removeSessionInternally(context, kb, true);
 		Session session = SessionFactory.createSession(kb);
 		EventManager.getInstance().fireEvent(new SessionCreatedEvent(session));
 		sessions.put(kb.getId(), session);
@@ -137,22 +132,22 @@ public class SessionProvider {
 				}
 			}
 			// session is empty -> reset
-			removeSessionInternally(context, kb);
+			removeSessionInternally(context, kb, true);
 			session = createSessionInternally(context, kb);
 		}
 		return session;
 	}
 
-	private void removeSessionInternally(UserContext context, KnowledgeBase kb) {
+	private void removeSessionInternally(UserContext context, KnowledgeBase kb, boolean terminate) {
 		Session removedSession = sessions.remove(kb.getId());
 		if (removedSession != null) {
 			EventManager.getInstance().fireEvent(new SessionRemovedEvent(removedSession, context));
-			removedSession.getPropagationManager().terminate();
+			if (terminate) removedSession.getPropagationManager().terminate();
 		}
 	}
 
 	private void setSessionInternally(UserContext context, Session session) {
-		removeSessionInternally(context, session.getKnowledgeBase());
+		removeSessionInternally(context, session.getKnowledgeBase(), true);
 		sessions.put(session.getKnowledgeBase().getId(), session);
 	}
 
@@ -201,29 +196,18 @@ public class SessionProvider {
 	}
 
 	/**
-	 * Returns a set of session of all knowledge bases that have been created,
-	 * using the specified section. Thus this method will provide the current
-	 * users d3web-session for every knowledge base that has been compiled using
-	 * the packe the specified section belongs to.
+	 * Returns a Collection of all sessions currently stored for the user.
 	 * 
 	 * @created 17.08.2012
 	 * @param context the user context to get the sessions for
-	 * @param section the section to determine the package for
-	 * @return the session of the knowledge bases created out of the section
+	 * @return all sessions of the user
 	 */
-	public static Collection<Session> getSessions(UserContext context, Section<?> section) {
+	public static Collection<Session> getSessions(UserContext context) {
 		SessionProvider provider = getSessionProvider(context);
 		if (provider == null) {
 			return Collections.emptyList();
 		}
-		String web = context.getWeb();
-		PackageManager packageManager = Environment.getInstance().getPackageManager(web);
-		Collection<Session> result = new LinkedList<Session>();
-		for (String article : packageManager.getCompilingArticles(section)) {
-			KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(web, article);
-			result.add(provider.getSessionInternally(context, knowledgeBase));
-		}
-		return result;
+		return Collections.unmodifiableCollection(provider.sessions.values());
 	}
 
 	/**
@@ -243,16 +227,32 @@ public class SessionProvider {
 	/**
 	 * Removes an existing {@link Session} for the provided knowledge base. If
 	 * there exists no session for this knowledge base ID this method will do
-	 * nothing.
+	 * nothing. The removed session is also terminated, so it cannot be used
+	 * later accidentally.
 	 * 
 	 * @created 06.03.2012
 	 * @param context the {@link UserContext} to which the session belongs
 	 * @param kb the underlying knowledge base
 	 */
 	public static void removeSession(UserContext context, KnowledgeBase kb) {
+		removeSession(context, kb, true);
+	}
+
+	/**
+	 * Removes an existing {@link Session} for the provided knowledge base. If
+	 * there exists no session for this knowledge base ID this method will do
+	 * nothing.
+	 * 
+	 * @created 06.03.2012
+	 * @param context the {@link UserContext} to which the session belongs
+	 * @param kb the underlying knowledge base
+	 * @param terminate a boolean to decide whether the removed session should
+	 *        also be terminated or not
+	 */
+	public static void removeSession(UserContext context, KnowledgeBase kb, boolean terminate) {
 		SessionProvider sessionProvider = getSessionProvider(context);
 		if (sessionProvider != null) {
-			sessionProvider.removeSessionInternally(context, kb);
+			sessionProvider.removeSessionInternally(context, kb, terminate);
 		}
 	}
 
