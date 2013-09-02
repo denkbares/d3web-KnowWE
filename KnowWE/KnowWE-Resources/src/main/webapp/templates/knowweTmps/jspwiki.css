@@ -781,11 +781,18 @@ label[for="edittoc"] {
 	position: fixed;
 	left: 20px;
 	border: 1px solid #7F7F66;
+	color: black;
 	background-color: #FFFFCC;
 	font-size: 10px;
 	padding: 2px;
 	z-index: 2000;
 }
+#findSuggestionMenu_Tooltip ul li {
+	list-style-type: disc;	
+	margin-left: 2em;
+	padding-left: 0px;
+}
+
 /* ie6 hack */
 * html #findSuggestionMenu {
 	background:url(images/tip.png) top left;

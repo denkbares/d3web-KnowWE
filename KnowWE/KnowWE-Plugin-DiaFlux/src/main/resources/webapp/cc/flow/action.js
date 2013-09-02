@@ -404,7 +404,8 @@ ActionEditor.prototype.handleValueSelected = function() {
 	var value = selects[0].options[selects[0].options.selectedIndex].value;
 	this.selectedAction = this.selectableActions[value];
 	this.updateInputField();
-	(function() {this.focus()}).bind(selects[0]).defer();
+	var toFocus = this.dom.select('.input')[0] || selects[0];
+	(function() {this.focus()}).bind(toFocus).defer();
 }
 
 // Called after selecting an Action for the selected object
@@ -415,6 +416,10 @@ ActionEditor.prototype.updateInputField = function() {
 		input.show();
 		input.focus();
 		input.select();
+		if (this.selectedAction.markup == 'timeDB') {
+			this.autocomplete = new AutoComplete(input, AutoComplete.sendD3webFormulaCompletionAction);
+			jq$(input).blur(jq$.proxy(function() {this.autocomplete.showCompletions(null)}, this));
+		}
 	}
 	else {
 		input.hide();
@@ -441,6 +446,10 @@ ActionEditor.prototype.setVisible = function(visible) {
 	}
 	else if (this.isVisible() && !visible) {
 		// ==> hide Node
+		if (this.autocomplete) {
+			this.autocomplete.showCompletions(null);
+			this.autocomplete = null;
+		}
 		this.objectSelect.destroy();
 		this.objectSelect = null;
 		this.parent.removeChild(this.dom);

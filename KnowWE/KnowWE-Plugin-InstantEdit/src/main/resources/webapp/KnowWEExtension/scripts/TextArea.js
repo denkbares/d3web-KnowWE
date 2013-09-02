@@ -7,12 +7,12 @@ function TextArea(area) {
 	area.textarea = this;
 	this.area.undoHistory = [];
 	this.area.redoHistory = [];
-	this.area.addEvent("keydown", function(event) {
+	jq$(this.area).keydown(jq$.proxy(function(event) {
 		this.handleKeyDown(event);
-	}.bind(this));
-	this.area.addEvent("select", function(){
+	}, this));
+	jq$(this.area).select(jq$.proxy(function(){
 		this.snapshot();
-	}.bind(this));
+	}, this));
 	this.snapshot();
 	return this
 }
@@ -35,64 +35,69 @@ TextArea.replaceSelection = function(a, g) {
 	return new TextArea(a).replaceSelection(g);
 }
 TextArea.prototype.handleKeyDown = function(event) {
-	event = new Event(event);
-	var area = this.area;
+	event = jq$.event.fix(event);
 	if (_EC.isModifier(event)) {
-		if (event.code == 89 || (event.code == 90 && event.shift)) { // Y
-			event.stop();
+		if (event.which == 89 || (event.which == 90 && event.shiftKey)) { // Y
+			event.stopPropagation();
+			event.preventDefault();
 			this.redo();
 			return;	
 		}
-		if (event.code == 90) { // Z
-			event.stop();
+		if (event.which == 90) { // Z
+			event.stopPropagation();
+			event.preventDefault();
 			this.snapshot();
 			this.undo();
 			return;	
 		}
 	}
-	var isAltOnly = !event.control && !event.meta && event.alt;
-	var isCmdOnly = (!event.control && event.meta && !event.alt)
-				 || (event.control && !event.meta && !event.alt);
-	if (event.code == 38 && isAltOnly) { // alt + UP
-		event.stop();
+	var isAltOnly = !event.ctrlKey && !event.metaKey && event.altKey;
+	var isCmdOnly = (!event.ctrlKey && event.metaKey && !event.altKey)
+				 || (event.ctrlKey && !event.metaKey && !event.altKey);
+	if (event.which == 38 && isAltOnly) { // alt + UP
+		event.stopPropagation();
+		event.preventDefault();
 		this.snapshot();
 		this.moveLines("up");
 		return;
 	}
-	if (event.code == 40 && isAltOnly) { // alt + DOWN
-		event.stop();
+	if (event.which == 40 && isAltOnly) { // alt + DOWN
+		event.stopPropagation();
+		event.preventDefault();
 		this.snapshot();
 		this.moveLines("down");
 		return;
 	}
-	if (event.code == 68 && (isAltOnly || isCmdOnly)) { // alt + D, cmd + D
-		event.stop();
+	if (event.which == 68 && (isAltOnly || isCmdOnly)) { // alt + D, cmd + D
+		event.stopPropagation();
+		event.preventDefault();
 		this.snapshot();
 		this.moveLines("delete");
 		return;
 	}
-	if (event.code == 9 && !event.control && !event.alt) {
-		event.stop();
+	if (event.which == 9 && !event.ctrlKey && !event.altKey) {
+		event.stopPropagation();
+		event.preventDefault();
 		this.insertText("\t");
 		return;
 	}
-	if (event.code == 13 && !event.control && !event.alt) {
+	if (event.which == 13 && !event.ctrlKey && !event.altKey) {
 		this.snapshot();
 		// late processing the intend, after events have completed
 		// to avoid conflict with e.g. auto-complete
-		var intend = this.getIntend(area);
-		setTimeout(function () {
+		var intend = this.getIntend();
+		setTimeout(jq$.proxy(function () {
 			if (!this.isSelectionAtStartOfLine()) return;
 			this.insertText(intend);
-		}.bind(this));
+		}, this));
 		return;
 	}
 	// snapshot on cursor keys
-	if (event.code >= 37 && event.code <= 40) {
+	if (event.which >= 37 && event.which <= 40) {
 		this.snapshot();
 	}
 	// snapshot on commands
-	if (event.code >= 65 && event.code <= 90 && (event.control || event.alt || event.meta)) {
+	if (event.which >= 65 && event.which <= 90 && (event.control || event.alt || event.meta)) {
 		this.snapshot();
 	}
 }
@@ -102,7 +107,7 @@ TextArea.prototype.onSave = function () {
 TextArea.prototype.onCancel = function () {
 	
 }
-TextArea.prototype.moveLines= function (direction) {
+TextArea.prototype.moveLines = function (direction) {
 	var area = this.area;
 	this.extendSelectionToFullLines(area);
 	// get lines and
@@ -217,7 +222,7 @@ TextArea.prototype.setSelection = function(f, a) {
 	if (!a) {
 		a = f
 	}
-	if ($defined(area.setSelectionRange)) {
+	if (area.setSelectionRange != undefined) {
 		area.setSelectionRange(f, a)
 	} else {
 		var c = area.value, d = c.substr(f, a - f).replace(/\r/g, "").length;
@@ -253,7 +258,7 @@ TextArea.prototype.getSelectionCoordinates = function() {
 		end : 0,
 		thin : true
 	};
-	if ($defined(f.selectionStart)) {
+	if (f.selectionStart != undefined) {
 		e = {
 			start : f.selectionStart,
 			end : f.selectionEnd
@@ -276,7 +281,7 @@ TextArea.prototype.getSelectionCoordinates = function() {
 }
 TextArea.prototype.replaceSelection = function(g) {
 	var h = g.replace(/\r/g, ""), d = this.area, c = d.scrollTop;
-	if ($defined(d.selectionStart)) {
+	if (d.selectionStart != undefined) {
 		var b = d.selectionStart, e = d.selectionEnd, i = d.value;
 		d.value = i.substr(0, b) + h + i.substr(e);
 		d.selectionStart = b;
@@ -291,7 +296,7 @@ TextArea.prototype.replaceSelection = function(g) {
 	}
 	d.focus();
 	d.scrollTop = c;
-	d.fireEvent("change");
+	jq$(d).trigger("change");
 	return;
 }
 TextArea.prototype.insertText = function(text) {

@@ -142,21 +142,24 @@ KNOWWE.editCommons = function() {
         
         registerSaveCancelEvents: function(element, saveFunction, cancelFunction, argument) {
 	    	jq$(element).keydown(function(event) {
-             	event = new Event(event);
-             	if (_EC.isSaveKey(event)) {     
-             		event.stop();
+	         	event = jq$.event.fix(event.originalEvent || event);
+             	if (_EC.isSaveKey(event)) {
+             		event.stopPropagation();
+             		event.preventDefault();
              		saveFunction(argument);
              	}
              	else if (_EC.isCancelKey(event)) {                    		
-             		event.stop();
+             		event.stopPropagation();
+             		event.preventDefault();
              		cancelFunction(argument);
              	}
              });
         },
         
         isSaveKey: function(event) {
+         	event = jq$.event.fix(event.originalEvent || event);
         	if (_EC.isModifier(event) || _EC.isDoubleModifier(event)) {
-    			if (event.code == 83) { // S
+    			if (event.which == 83) { // S
     				return true;					
     			}
         	}
@@ -164,12 +167,13 @@ KNOWWE.editCommons = function() {
         },
         
         isCancelKey: function(event) {
+         	event = jq$.event.fix(event.originalEvent || event);
         	if (_EC.isModifier(event) || _EC.isDoubleModifier(event)) {
         		// Q, but not with alt gr (= alt + ctrl)  to allow for @ in windows
-    			if (event.code == 81 &&  (!event.alt || !event.control)) {
+    			if (event.which == 81 &&  (!event.altKey || !event.ctrlKey)) {
     				return true
     			}
-    			if (event.code == 27) { // ESC
+    			if (event.which == 27) { // ESC
     				return true;	
     			}
         	}
@@ -177,22 +181,22 @@ KNOWWE.editCommons = function() {
         },
         
         isModifier: function(event) {
-         	event = new Event(event);
-        	if ((!event.meta && event.control && !event.alt) 
-    				|| (!event.meta && !event.control && event.alt) 
-    				|| (event.meta && !event.control && !event.alt)) {
+         	event = jq$.event.fix(event.originalEvent || event);
+        	if ((!event.metaKey && event.ctrlKey && !event.altKey) 
+    				|| (!event.metaKey && !event.ctrlKey && event.altKey) 
+    				|| (event.metaKey && !event.ctrlKey && !event.altKey)) {
     			return true;
         	}
         	return false;
         },
         
         isDoubleModifier: function(event) {
-         	event = new Event(event);
+         	event = jq$.event.fix(event.originalEvent || event);
          	var mods = 0;
-         	if (event.meta) mods++;
-         	if (event.control) mods++;
-         	if (event.alt) mods++;
-         	if (event.shift) mods++;
+         	if (event.metaKey) mods++;
+         	if (event.ctrlKey) mods++;
+         	if (event.altKey) mods++;
+         	if (event.shiftKey) mods++;
         	if (mods == 2) {
         		return true;
         	}

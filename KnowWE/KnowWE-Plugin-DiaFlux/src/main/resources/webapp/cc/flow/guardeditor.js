@@ -165,6 +165,13 @@ GuardEditor.prototype.updateInputField = function() {
 		}
 	}
 	this.autoresize();
+	if (guard && guard.isFormula() && inputs.length > 0 && typeof AutoComplete != "undefined") {
+		this.autocomplete = new AutoComplete(inputs[0], AutoComplete.sendD3webFormulaCompletionAction);
+	}
+	else if (this.autocomplete) {
+		this.autocomplete.showCompletions(null);
+		this.autocomplete = null;
+	}
 }
 
 GuardEditor.prototype.autoresize = function () {
@@ -197,6 +204,10 @@ GuardEditor.prototype.setVisible = function(visible) {
 	}
 	else if (this.isVisible() && !visible) {
 		// ==> hide Node
+		if (this.autocomplete) {
+			this.autocomplete.showCompletions(null);
+			this.autocomplete = null;
+		}
 		this.parent.removeChild(this.dom);
 		this.dom = null;
 	}

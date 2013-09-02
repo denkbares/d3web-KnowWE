@@ -131,7 +131,11 @@
 	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-tooltipster.js'></script>
 	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-plugin-collection.js'></script>
 	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-compatibility.js'></script>
-	
+
+	<script type='text/javascript' src='KnowWEExtension/scripts/TextArea.js'></script>
+	<script type='text/javascript' src='KnowWEExtension/scripts/KnowWE-EditCommons.js'></script>
+	<script type='text/javascript' src='KnowWEExtension/scripts/KnowWE-Plugin-AutoComplete.js'></script>
+
 <%
 	Extension[] extensions = JPFPluginManager.getInstance().getExtensions(DiaFluxEditorEnhancement.PLUGIN_ID, DiaFluxEditorEnhancement.EXTENSION_POINT_ID);
 	for (Extension extension : extensions){
@@ -144,9 +148,7 @@
 		for (String style : enh.getStylesheets()) {
 			out.println("<link rel='stylesheet' type='text/css' href='" + style + "'></link>");
 		}
-		
 	}
-
 %>	
 	
 	<link rel="stylesheet" type="text/css" href="cc/kbinfo/dropdownlist.css"></link>
@@ -161,6 +163,7 @@
 	<link rel="stylesheet" type="text/css" href="cc/flow/contextmenu.css"></link>
 	<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/jquery-treeTable.css' />
 	<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/jquery-autocomplete.css' />
+	<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/KnowWE-Plugin-AutoComplete.css' />
 </head>
 <body onload="new FlowEditor(<%= jspHelper.getArticleIDsAsArray(kdomID).replace("\"", "&quot;") %>).showEditor();">
 
@@ -213,6 +216,7 @@
 	</div>
 </div>
 <div id="leftMenu" class="leftMenu">
+	<div id="favorites"></div>
 	<div id="objectTree"></div>
 </div>
 <div id="contents"></div>

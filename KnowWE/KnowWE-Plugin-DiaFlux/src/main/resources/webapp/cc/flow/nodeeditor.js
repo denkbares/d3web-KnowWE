@@ -354,9 +354,7 @@ NodeEditor.prototype.selectTab = function(index) {
 				if (inputs && inputs.length >= 1) {
 					inputs[0].focus();
 					inputs[0].select();
-					
 				}
-				
 			}
 		}
 		else {
@@ -434,7 +432,6 @@ NodeEditor.prototype.renderCommentPane = function() {
 	 Builder.node('br'),
 	 Builder.node('textarea', 
 			 this.nodeModel.comment ? this.nodeModel.comment: ''
-	 	 
 	 )
 	 ]);
 	return dom;
