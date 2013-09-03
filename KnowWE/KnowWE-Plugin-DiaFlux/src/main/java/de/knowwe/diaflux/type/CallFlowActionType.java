@@ -20,12 +20,7 @@ package de.knowwe.diaflux.type;
 
 import java.util.regex.Pattern;
 
-import de.d3web.core.inference.PSAction;
-import de.d3web.core.inference.PSMethod;
-import de.d3web.diaFlux.inference.CallFlowAction;
-import de.d3web.indication.inference.PSMethodStrategic;
-import de.d3web.we.kdom.rules.action.D3webRuleAction;
-import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.KeywordType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -36,7 +31,7 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
  * @author Reinhard Hatko
  * @created 15.11.2010
  */
-public class CallFlowActionType extends D3webRuleAction<CallFlowActionType> {
+public class CallFlowActionType extends AbstractType {
 
 	public static final int FLOWCHART_GROUP = 1;
 	public static final int STARTNODE_GROUP = 2;
@@ -59,17 +54,6 @@ public class CallFlowActionType extends D3webRuleAction<CallFlowActionType> {
 		addChildType(new KeywordType("CALL"));
 	}
 
-	@Override
-	protected PSAction createAction(Article article,
-			Section<CallFlowActionType> section) {
-
-		String flowName = getStartNodeName(section);
-		String nodeName = getFlowName(section);
-
-		return new CallFlowAction(flowName, nodeName);
-
-	}
-
 	public static String getStartNodeName(Section<CallFlowActionType> action) {
 		Section<StartNodeReference> nodeSection = Sections.findChildOfType(action,
 				StartNodeReference.class);
@@ -82,9 +66,5 @@ public class CallFlowActionType extends D3webRuleAction<CallFlowActionType> {
 		return nodeSection.getText();
 	}
 
-	@Override
-	public Class<? extends PSMethod> getActionPSContext() {
-		return PSMethodStrategic.class;
-	}
 
 }

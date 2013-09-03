@@ -33,7 +33,6 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.diaflux.type.ActionType;
-import de.knowwe.diaflux.type.CallFlowActionType;
 import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.diaflux.type.NodeType;
 
@@ -55,8 +54,7 @@ public class ActionNodeHandler extends AbstractNodeHandler {
 		Section<D3webRuleAction> actionSection = Sections.findSuccessor(nodeSection,
 				D3webRuleAction.class);
 
-		return actionSection != null
-				&& actionSection.get().getClass() != CallFlowActionType.class;
+		return actionSection != null;
 	}
 
 	@Override

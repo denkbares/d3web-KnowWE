@@ -29,7 +29,6 @@ import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowRun;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
-import de.d3web.diaFlux.inference.FluxSolver;
 import de.d3web.we.basic.SessionProvider;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
@@ -99,7 +98,7 @@ public class GetTraceHighlightAction extends AbstractHighlightAction {
 					highlight.add(node, Highlight.CSS_CLASS, TRACE_ACTIVE_CLASS);
 
 					for (Edge edge : node.getOutgoingEdges()) {
-						if (FluxSolver.evalEdge(session, edge)) {
+						if (run.isActivated(edge)) {
 							highlight.add(edge, Highlight.CSS_CLASS, TRACE_ACTIVE_CLASS);
 						}
 					}
