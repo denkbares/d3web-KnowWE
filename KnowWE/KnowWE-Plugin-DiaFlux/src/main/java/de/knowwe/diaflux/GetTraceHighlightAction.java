@@ -57,10 +57,15 @@ public class GetTraceHighlightAction extends AbstractHighlightAction {
 
 		Session session = null;
 		Date latest = null;
+		boolean untouched = true;
 		for (Session s : sessions) {
-			Date lastChangeDate = s.getLastChangeDate();
-			if (latest == null || lastChangeDate.after(latest)) {
-				latest = lastChangeDate;
+			Date tempLatest = s.getLastChangeDate();
+			boolean tempUntouched = s.getCreationDate().equals(tempLatest);
+			// untouched sessions are only chosen, if there is non that is
+			// touched (changed)
+			if (latest == null || ((!tempUntouched || untouched) && tempLatest.after(latest))) {
+				latest = tempLatest;
+				untouched = tempUntouched;
 				session = s;
 			}
 		}

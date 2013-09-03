@@ -1,3 +1,4 @@
+package de.knowwe.test.diaflux;
 /*
  * Copyright (C) 2012 University Wuerzburg, Computer Science VI
  *
