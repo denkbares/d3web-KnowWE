@@ -21,6 +21,8 @@ package de.knowwe.testcases.table;
 import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTermReference;
+import de.knowwe.core.kdom.basicType.PlainText;
+import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.prefix.PrefixTestCaseRenderer;
@@ -39,6 +41,9 @@ public class TestcaseTableType extends DefaultMarkupType {
 	static {
 		m = new DefaultMarkup("TestCaseTable");
 		m.addContentType(new TestcaseTable());
+		PlainText plainText = new PlainText();
+		plainText.setRenderer(NothingRenderer.getInstance());
+		m.addContentType(plainText);
 		m.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 		m.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageAnnotationNameType());

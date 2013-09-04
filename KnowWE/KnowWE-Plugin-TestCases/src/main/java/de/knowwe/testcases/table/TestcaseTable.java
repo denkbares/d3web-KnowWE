@@ -24,6 +24,7 @@ import java.util.List;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.kdom.table.Table;
 import de.knowwe.kdom.table.TableCell;
 import de.knowwe.kdom.table.TableLine;
@@ -42,6 +43,7 @@ public class TestcaseTable extends Table {
 
 		addChildType(new TestcaseTableLine());
 		addSubtreeHandler(new TestcaseTableSubtreeHandler());
+		setSectionFinder(new AllTextFinderTrimmed());
 	}
 
 	@Override
