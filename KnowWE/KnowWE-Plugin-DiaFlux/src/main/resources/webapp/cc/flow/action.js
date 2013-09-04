@@ -25,6 +25,12 @@ Action.prototype.getExpression = function() {
 	return this.expression;
 }
 
+Action.prototype.getDisplayHtml= function() {
+	var text = this.getDisplayText();
+	if (text) text = text.escapeHTML();
+	return text;
+}
+
 Action.prototype.getDisplayText = function() {
 	if (this.markup == 'NOP')		return '';
 	if (this.valueString == "ERFRAGE")	return 'ask';
@@ -39,11 +45,8 @@ Action.prototype.getDisplayText = function() {
 	if (this.valueString == "eval()" && this.markup == "timeDB")		return 'Formula: f(x)='; // nur leere Formel so anzeigen
 	
 	if (this.isFormula()) { // nichtleere Formel
-		
 		var result = Action._extractFormulaExpression(this.markup, this.valueString);
-		
 		return "= " + result; 
-		
 	}
 	
 	return this.valueString;
@@ -150,18 +153,15 @@ Action.prototype._extractInfoObjectName = function(string) {
 	result = nameExpr.exec(string);
 	if (result && result.length > 1 && result[1]) return result[1];
 
-	// third try 'KEYWORD' '[' <name> ']'
-//	nameExpr = /^\s*[\w!]+\["?([^"]+)"?\]\s*$/i;
-//	result = nameExpr.exec(string);
-//	if (result && result.length > 1 && result[1]) return result[1];
-	
-	// third try 'KEYWORD' '[' <name> ']'
-	nameExpr = /^\s*([\w!]+)\[([^\(\)]+)\]\s*$/i;
+	// for graceful behavior try out known keywords first
+	// 'ALWAYS[' <name> ']'
+	// 'INSTANT[' <name> ']'
+	nameExpr = /^\s*(ALWAYS|INSTANT)\[(.+)\]\s*$/;
 	result = nameExpr.exec(string);
 	if (result && result.length > 2 && result[2]) return result[2];
-	
-	// 'KEYWORD' '[' <name> '(' <value> ')' ']'
-	nameExpr = /^\s*([\w!]+)\[(.+?)\((.+)\)\]\s*$/i;
+
+	// 'CALL[' <name> '(' <value> ')' ']'
+	nameExpr = /^\s*(CALL)\[(.+)\(([^\(]+)\)\]\s*$/;
 	result = nameExpr.exec(string);
 	if (result && result.length > 3 && result[2]) return result[2];
 	
@@ -190,6 +190,18 @@ Action.prototype._extractValueString = function(string) {
 	result = nameExpr.exec(string);
 	if (result && result.length > 1 && result[1]) return result[1];
 
+	// for graceful behavior try out known keywords first
+	// 'ALWAYS[' <name> ']'
+	// 'INSTANT[' <name> ']'
+	nameExpr = /^\s*(ALWAYS|INSTANT)\[(.+)\]\s*$/;
+	result = nameExpr.exec(string);
+	if (result && result.length > 2 && result[1]) return result[1];
+
+	// 'CALL[' <name> '(' <value> ')' ']'
+	nameExpr = /^\s*(CALL)\[(.+)\(([^\(]+)\)\]\s*$/;
+	result = nameExpr.exec(string);
+	if (result && result.length > 3 && result[3]) return result[3];
+	
 	// second.II try with brackets -> Value
 	nameExpr = /=\s*(\(.*\))\s*$/i;
 	result = nameExpr.exec(string);
@@ -200,18 +212,6 @@ Action.prototype._extractValueString = function(string) {
 	result = nameExpr.exec(string);
 	if (result && result.length > 1 && result[1]) return result[1];
 
-	// third try 'KEYWORD' '[' <name> ']'
-	nameExpr = /^\s*([\w!]+)\[([^\(\)]+)\]\s*$/i;
-	result = nameExpr.exec(string);
-	if (result && result.length > 2 && result[1]) return result[1];
-	
-	// 'KEYWORD' '[' <name> '(' <value> ')' ']'
-//	nameExpr = /^\s*([\w!]+)\[(\w+)\((\w+)\)\]\s*$/i;
-	nameExpr = /^\s*([\w!]+)\[(.+?)\((.+)\)\]\s*$/i;
-	result = nameExpr.exec(string);
-	if (result && result.length > 3 && result[3]) return result[3];
-	
-	
 	nameExpr = /^\s*"?(.*)"?\s*$/i;
 	result = nameExpr.exec(string);
 	if (result && result.length > 1 && result[1]) return 'ERFRAGE'; // we do have an implicit value	
@@ -571,7 +571,7 @@ ActionEditor.prototype.refreshValueInput = function() {
 			html += '<option value=' + (value++) + 
 				(indexToSelect == i ? ' selected' : '') + 
 				'>' +
-				action.getDisplayText() + 
+				action.getDisplayHtml() + 
 				'</option>';
 		}
 	}
@@ -673,7 +673,7 @@ ActionPane.prototype.render = function() {
 	
 	var valueText = null;
 	var valueError = null;
-	valueText = this.action.getDisplayText(); // zeigt ZusatzInfo an (fragen/ immer fragen,...)
+	valueText = this.action.getDisplayHtml(); // zeigt ZusatzInfo an (fragen/ immer fragen,...)
 	valueError = this.action.getError();
 
 	var dom = Builder.node('div', {
@@ -687,7 +687,7 @@ ActionPane.prototype.render = function() {
 		Builder.node('div', {
 			className: valueError ? 'value error' : 'value',
 			title: valueError ? valueError : ''
-		}, (valueText == null) ? [] : [ActionPane.insertWordWrapPoints(valueText)])
+		}, (valueText == null) ? [] : [ActionPane.insertWordWrapPoints(valueText.escapeHTML())])
 	]);
 	dom.__ActionEditor = this;
 	return dom;
