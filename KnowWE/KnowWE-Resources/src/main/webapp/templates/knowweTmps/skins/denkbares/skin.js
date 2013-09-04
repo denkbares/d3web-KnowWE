@@ -156,8 +156,8 @@ DenkbaresSkin.checkFavScroll = function() {
 	var scrollY = window.getScrollTop();
 	var scrollMax = docHeight - wHeight;
 	var favToScroll = favHeight - wHeight;
-	var disableFixing = (favHeight >= $("actionsBottom").offsetTop
-			+ $("actionsBottom").clientHeight);
+	var disableFixing = ($("actionsBottom") == null 
+			|| favHeight >= $("actionsBottom").offsetTop + $("actionsBottom").clientHeight);
 	if (scrollY <= originY || disableFixing) {
 		// when reaching top of page or if page height is made by leftMenu
 		// align fav originally to page
