@@ -19,6 +19,7 @@
 package de.knowwe.diaflux.type;
 
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.Term;
@@ -47,7 +48,7 @@ public class StartNodeReference extends SimpleReference {
 
 	@Override
 	public String getTermName(Section<? extends Term> s) {
-		return s.getText();
+		return Strings.unquote(s.getText());
 	}
 
 }

@@ -79,6 +79,10 @@ Action.prototype.isAssignment = function() {
 }
 
 Action.prototype.isFormula = function() {
+	// we cannot have formulas for some special expressions
+	if (this.expression && this.expression.startsWith('CALL[')) return false;
+	if (this.expression && this.expression.startsWith('ALWAYS[')) return false;
+	if (this.expression && this.expression.startsWith('INSTANT[')) return false;
 	return this.markup == 'KnOffice' && this.valueString && this.valueString.startsWith('(') && this.valueString.endsWith(')') ||
 	this.markup == 'timeDB' && this.valueString && this.valueString.startsWith('eval(') && this.valueString.endsWith(')');
 }
@@ -160,8 +164,13 @@ Action.prototype._extractInfoObjectName = function(string) {
 	result = nameExpr.exec(string);
 	if (result && result.length > 2 && result[2]) return result[2];
 
+	// 'CALL[' <name> '("' <value> '")' ']'
+	nameExpr = /^\s*(CALL)\[(.+)\("([^\\"]+((\\"|\\\\)[^\\"]*)*)"\)\]\s*$/;
+	result = nameExpr.exec(string);
+	if (result && result.length > 3 && result[2]) return result[2];
+
 	// 'CALL[' <name> '(' <value> ')' ']'
-	nameExpr = /^\s*(CALL)\[(.+)\(([^\(]+)\)\]\s*$/;
+	nameExpr = /^\s*(CALL)\[(.+)\(([^\(]+|"[^"]+(\\"[^"]+)*")\)\]\s*$/;
 	result = nameExpr.exec(string);
 	if (result && result.length > 3 && result[2]) return result[2];
 	
@@ -197,8 +206,13 @@ Action.prototype._extractValueString = function(string) {
 	result = nameExpr.exec(string);
 	if (result && result.length > 2 && result[1]) return result[1];
 
+	// 'CALL[' <name> '("' <value> '")' ']'
+	nameExpr = /^\s*(CALL)\[(.+)\("([^\\"]+((\\"|\\\\)[^\\"]*)*)"\)\]\s*$/;
+	result = nameExpr.exec(string);
+	if (result && result.length > 3 && result[3]) return result[3].replace(/\\\\/g, '\\').replace(/\\"/g, '"');
+
 	// 'CALL[' <name> '(' <value> ')' ']'
-	nameExpr = /^\s*(CALL)\[(.+)\(([^\(]+)\)\]\s*$/;
+	nameExpr = /^\s*(CALL)\[(.+)\(([^\(]+|"[^"]+(\\"[^"]+)*")\)\]\s*$/;
 	result = nameExpr.exec(string);
 	if (result && result.length > 3 && result[3]) return result[3];
 	
@@ -307,31 +321,27 @@ Action.createPossibleActions = function(infoObject) {
 	}
 	else if (infoObject.getClassInstance() == KBInfo.Solution) {
 		result.push('Rate solution');
-		 
 		for (var i = 7; i > 1; i--){
 			result.push(new Action('KnOffice', Action._createExpression(name, 'P' + i, true)));
-			
 		}
 		for (var i = 1; i <= 7; i++){
 			result.push(new Action('KnOffice', Action._createExpression(name, 'N' + i, true)));
-			
 		}
-		
 		result.push('Use value');			
 		result.push(new Action('NOP', '"'+name.escapeQuote()+'"'));	
-
 	}
 	else if (infoObject.getClassInstance() == KBInfo.Flowchart) {
 		result.push('Call start node');			
 		var options = infoObject.getStartNames();
 		for (var i=0; i<options.length; i++) {
-			result.push(new Action('KnOffice', 'CALL[' + name + '(' + options[i] + ')' + ']'));
+			var opt = options[i];
+			if (opt.match(/\(/)) opt = '"' + opt.replace(/\"/, '\\"').replace(/\\/, '\\\\') + '"';
+			result.push(new Action('KnOffice', 'CALL[' + name + '(' + opt + ')' + ']'));
 		}
 	}
 	else if (infoObject.getClassInstance() == KBInfo.QSet) {
 		result.push('Ask questionnaire');			
 		result.push(new Action('KnOffice', name));
-
 	}
 	
 	return result;
