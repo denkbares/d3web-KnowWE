@@ -23,47 +23,34 @@
  */
 package de.knowwe.diaflux.persistence;
 
-
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.EndNode;
 import de.d3web.diaFlux.flow.Node;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.diaflux.FlowchartSubTreeHandler;
 import de.knowwe.diaflux.type.ExitType;
 import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.diaflux.type.NodeType;
-import de.knowwe.kdom.xml.AbstractXMLType;
 
 /**
  * @author Reinhard Hatko
  * @created 10.08.10
  * 
  */
-public class ExitNodeHandler extends AbstractNodeHandler {
+public class ExitNodeHandler extends AbstractNodeHandler<ExitType> {
 
 	public ExitNodeHandler() {
 		super(ExitType.getInstance(), null);
 	}
 
 	@Override
-	public boolean canCreateNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection) {
-
-		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
-
-		return nodeInfo != null;
-	}
-
-	@Override
 	public Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id) {
 
-		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
+		Section<ExitType> action = getNodeInfo(nodeSection);
+		String name = action.get().getTermName(action);
 
-		String endNodeName = FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
-
-		return new EndNode(id, endNodeName);
-
+		return new EndNode(id, name);
 	}
 
 }

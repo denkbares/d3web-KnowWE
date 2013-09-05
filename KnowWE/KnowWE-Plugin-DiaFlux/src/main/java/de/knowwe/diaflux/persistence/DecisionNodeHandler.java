@@ -18,7 +18,6 @@
  */
 package de.knowwe.diaflux.persistence;
 
-
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
@@ -38,7 +37,7 @@ import de.knowwe.diaflux.type.NodeType;
  * @author Reinhard Hatko
  * @created 28.11.2010
  */
-public class DecisionNodeHandler extends AbstractNodeHandler {
+public class DecisionNodeHandler extends AbstractNodeHandler<DecisionType> {
 
 	public DecisionNodeHandler() {
 		super(DecisionType.getInstance());
@@ -46,22 +45,16 @@ public class DecisionNodeHandler extends AbstractNodeHandler {
 	}
 
 	@Override
-	public boolean canCreateNode(Article article, KnowledgeBase kb,
-			Section<NodeType> nodeSection) {
-		return getNodeInfo(nodeSection) != null;
-	}
-
-	@Override
 	public Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id) {
+
 		Section<NamedObjectReference> objectRef = Sections.findSuccessor(nodeSection,
 				NamedObjectReference.class);
 		NamedObject object = NamedObjectReference.getObject(article, objectRef);
 		NOOPAction action;
-		if (object != null) {
+		if (object instanceof TerminologyObject) {
 			// only references to Solutions and Questions can be modelled
 			action = new NOOPAction((TerminologyObject) object);
-
 		}
 		else {
 			action = new NOOPAction();

@@ -18,7 +18,6 @@
  */
 package de.knowwe.diaflux.type;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.core.inference.condition.Condition;
@@ -27,7 +26,9 @@ import de.d3web.we.kdom.condition.D3webCondition;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.KeywordType;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.utils.Patterns;
 
 /**
  * 
@@ -36,21 +37,24 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
  */
 public class NodeActiveConditionType extends D3webCondition<NodeActiveConditionType> {
 
-	public static final int FLOWCHART_GROUP = 1;
-	public static final int EXITNODE_GROUP = 2;
-	public static final String REGEX = "IS_ACTIVE\\[([^\\]]*)\\(([^)]*)\\)\\]";
-	public static final Pattern PATTERN = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE);
+	private static final int EXITNODE_GROUP = 1;
+	private static final String REGEX_EXITNDOE = "\\(([^()\"]*|" + Patterns.QUOTED + ")\\)";
+	private static final Pattern PATTERN_EXITNDOE = Pattern.compile(REGEX_EXITNDOE);
+
+	private static final int CONDITION_GROUP = 1;
+	private static final int FLOWCHART_GROUP = 2;
+	private static final String REGEX = "^\\s*(IS_ACTIVE\\[(.*)" + REGEX_EXITNDOE + "\\])\\s*$";
+	private static final Pattern PATTERN = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE);
 
 	public NodeActiveConditionType() {
-		setSectionFinder(new RegexSectionFinder(PATTERN));
+		setSectionFinder(new RegexSectionFinder(PATTERN, CONDITION_GROUP));
 
 		FlowchartReference flowchartReference = new FlowchartReference();
 		flowchartReference.setSectionFinder(new RegexSectionFinder(PATTERN, FLOWCHART_GROUP));
 		addChildType(flowchartReference);
 
 		ExitNodeReference exitNodeReference = new ExitNodeReference();
-		exitNodeReference.setSectionFinder(new RegexSectionFinder(Pattern.compile("\\(([^)]*)\\)"),
-				1));
+		exitNodeReference.setSectionFinder(new RegexSectionFinder(PATTERN_EXITNDOE, EXITNODE_GROUP));
 		addChildType(exitNodeReference);
 
 		addChildType(new KeywordType("["));
@@ -60,19 +64,17 @@ public class NodeActiveConditionType extends D3webCondition<NodeActiveConditionT
 
 	@Override
 	protected Condition createCondition(Article article, Section<NodeActiveConditionType> section) {
+		Section<FlowchartReference> flowRef =
+				Sections.findSuccessor(section, FlowchartReference.class);
+		Section<ExitNodeReference> nodeRef =
+				Sections.findSuccessor(section, ExitNodeReference.class);
 
-		Matcher matcher = PATTERN.matcher(section.getText());
+		if (flowRef == null || nodeRef == null) return null;
 
-		if (!matcher.matches()) {
-			return null;
-		}
-		else {
-			String flowName = matcher.group(1);
-			String nodeName = matcher.group(2);
+		String flowName = flowRef.get().getTermName(flowRef);
+		String nodeName = nodeRef.get().getTermName(nodeRef);
 
-			return new NodeActiveCondition(flowName, nodeName);
-		}
-
+		return new NodeActiveCondition(flowName, nodeName);
 	}
 
 }

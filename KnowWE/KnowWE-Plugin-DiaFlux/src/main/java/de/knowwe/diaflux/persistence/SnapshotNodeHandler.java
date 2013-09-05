@@ -23,7 +23,6 @@
  */
 package de.knowwe.diaflux.persistence;
 
-
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.flow.SnapshotNode;
@@ -33,40 +32,26 @@ import de.knowwe.diaflux.FlowchartSubTreeHandler;
 import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.diaflux.type.NodeType;
 import de.knowwe.diaflux.type.SnapshotType;
-import de.knowwe.kdom.xml.AbstractXMLType;
 
 /**
  * @author Reinhard Hatko
  * @created 10.08.10
  * 
  */
-public class SnapshotNodeHandler extends AbstractNodeHandler {
+public class SnapshotNodeHandler extends AbstractNodeHandler<SnapshotType> {
 
 	public SnapshotNodeHandler() {
 		super(SnapshotType.getInstance(), null);
 	}
 
 	@Override
-	public boolean canCreateNode(Article article, KnowledgeBase kb,
-			Section<NodeType> nodeSection) {
-
-		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
-
-		return nodeInfo != null;
-
-	}
-
-	@Override
 	public Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id) {
 
-		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
+		Section<SnapshotType> nodeInfo = getNodeInfo(nodeSection);
 		String content = FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
 
-		if (content.length() > 10) content = content.substring(0, 10) + "...";
-
 		return new SnapshotNode(id, content);
-
 	}
 
 }

@@ -53,6 +53,11 @@ public class StartType extends AbstractXMLType {
 		return instance;
 	}
 
+	public String getTermName(Section<? extends StartType> section) {
+		Section<StartNodeDef> term = Sections.findSuccessor(section, StartNodeDef.class);
+		return term.get().getTermName(term);
+	}
+
 	static class StartNodeDef extends SimpleDefinition {
 
 		public StartNodeDef() {

@@ -19,7 +19,6 @@
 package de.knowwe.diaflux.type;
 
 import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.Term;
@@ -43,12 +42,7 @@ public class StartNodeReference extends SimpleReference {
 	public Identifier getTermIdentifier(Section<? extends Term> section) {
 		Section<FlowchartReference> ref = Sections.findSuccessor(section.getFather(),
 				FlowchartReference.class);
-		return new Identifier(ref.getText(), getTermName(section));
-	}
-
-	@Override
-	public String getTermName(Section<? extends Term> s) {
-		return Strings.unquote(s.getText());
+		return new Identifier(ref.get().getTermName(ref), getTermName(section));
 	}
 
 }

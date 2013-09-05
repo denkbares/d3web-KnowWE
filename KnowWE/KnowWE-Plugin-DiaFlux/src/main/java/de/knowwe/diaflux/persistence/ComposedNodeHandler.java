@@ -23,7 +23,6 @@
  */
 package de.knowwe.diaflux.persistence;
 
-
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.ComposedNode;
 import de.d3web.diaFlux.flow.Node;
@@ -34,42 +33,35 @@ import de.knowwe.diaflux.type.ActionType;
 import de.knowwe.diaflux.type.CallFlowActionType;
 import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.diaflux.type.NodeType;
-import de.knowwe.kdom.xml.AbstractXMLType;
 
 /**
  * @author Reinhard Hatko
  * @created 10.08.10
  * 
  */
-public class ComposedNodeHandler extends AbstractNodeHandler {
+public class ComposedNodeHandler extends AbstractNodeHandler<ActionType> {
 
 	public ComposedNodeHandler() {
 		super(ActionType.getInstance(), "KnOffice");
 	}
 
 	@Override
-	public boolean canCreateNode(Article article, KnowledgeBase kb,
-			Section<NodeType> nodeSection) {
-
-		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
-
-		if (nodeInfo == null) return false;
-
-		return Sections.findSuccessor(nodeInfo, CallFlowActionType.class) != null;
+	public boolean canCreateNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection) {
+		return super.canCreateNode(article, kb, nodeSection)
+				&& Sections.findSuccessor(nodeSection, CallFlowActionType.class) != null;
 	}
 
 	@Override
 	public Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id) {
 
-		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
-		Section<CallFlowActionType> section = Sections.findSuccessor(nodeInfo,
-				CallFlowActionType.class);
+		Section<CallFlowActionType> section =
+				Sections.findSuccessor(nodeSection, CallFlowActionType.class);
+
 		String flowName = CallFlowActionType.getFlowName(section);
 		String nodeName = CallFlowActionType.getStartNodeName(section);
 
 		return new ComposedNode(id, flowName, nodeName);
-
 	}
 
 }

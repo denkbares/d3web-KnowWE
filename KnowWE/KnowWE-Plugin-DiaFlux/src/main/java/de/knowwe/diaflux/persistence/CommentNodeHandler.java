@@ -23,7 +23,6 @@
  */
 package de.knowwe.diaflux.persistence;
 
-
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.CommentNode;
 import de.d3web.diaFlux.flow.Node;
@@ -33,38 +32,26 @@ import de.knowwe.diaflux.FlowchartSubTreeHandler;
 import de.knowwe.diaflux.type.CommentType;
 import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.diaflux.type.NodeType;
-import de.knowwe.kdom.xml.AbstractXMLType;
 
 /**
  * @author Reinhard Hatko
  * @created 10.08.10
  * 
  */
-public class CommentNodeHandler extends AbstractNodeHandler {
+public class CommentNodeHandler extends AbstractNodeHandler<CommentType> {
 
 	public CommentNodeHandler() {
 		super(CommentType.getInstance(), null);
 	}
 
 	@Override
-	public boolean canCreateNode(Article article, KnowledgeBase kb,
-			Section<NodeType> nodeSection) {
-
-		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
-
-		return nodeInfo != null;
-
-	}
-
-	@Override
 	public Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id) {
 
-		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
+		Section<CommentType> nodeInfo = getNodeInfo(nodeSection);
 		String content = FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
 
 		return new CommentNode(id, content);
-
 	}
 
 }

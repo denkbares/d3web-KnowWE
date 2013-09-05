@@ -261,7 +261,11 @@ Guard.createPossibleGuards = function(nodeModel) {
 		if (options.length > 0) {
 			result.push('Use result');
 			for (var i=0; i<options.length; i++) {
-				result.push(new Guard('KnOffice', 'IS_ACTIVE[' + infoObject.getName()+'('+options[i]+')]', options[i]));
+				var opt = options[i];
+				if (IdentifierUtils.needQuotes(opt)) {
+					opt = IdentifierUtils.quote(opt);
+				}
+				result.push(new Guard('KnOffice', 'IS_ACTIVE[' + infoObject.getName()+'('+opt+')]', options[i]));
 			}
 		}
 		result.push('Common');

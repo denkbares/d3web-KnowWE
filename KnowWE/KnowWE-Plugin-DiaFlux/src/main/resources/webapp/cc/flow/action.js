@@ -165,7 +165,7 @@ Action.prototype._extractInfoObjectName = function(string) {
 	if (result && result.length > 2 && result[2]) return result[2];
 
 	// 'CALL[' <name> '("' <value> '")' ']'
-	nameExpr = /^\s*(CALL)\[(.+)\("([^\\"]+((\\"|\\\\)[^\\"]*)*)"\)\]\s*$/;
+	nameExpr = /^\s*(CALL)\[(.+)\(("[^\\"]+((\\"|\\\\)[^\\"]*)*")\)\]\s*$/;
 	result = nameExpr.exec(string);
 	if (result && result.length > 3 && result[2]) return result[2];
 
@@ -207,9 +207,9 @@ Action.prototype._extractValueString = function(string) {
 	if (result && result.length > 2 && result[1]) return result[1];
 
 	// 'CALL[' <name> '("' <value> '")' ']'
-	nameExpr = /^\s*(CALL)\[(.+)\("([^\\"]+((\\"|\\\\)[^\\"]*)*)"\)\]\s*$/;
+	nameExpr = /^\s*(CALL)\[(.+)\(("[^\\"]+((\\"|\\\\)[^\\"]*)*")\)\]\s*$/;
 	result = nameExpr.exec(string);
-	if (result && result.length > 3 && result[3]) return result[3].replace(/\\\\/g, '\\').replace(/\\"/g, '"');
+	if (result && result.length > 3 && result[3]) return IdentifierUtils.unquote(result[3]);
 
 	// 'CALL[' <name> '(' <value> ')' ']'
 	nameExpr = /^\s*(CALL)\[(.+)\(([^\(]+|"[^"]+(\\"[^"]+)*")\)\]\s*$/;
@@ -335,7 +335,9 @@ Action.createPossibleActions = function(infoObject) {
 		var options = infoObject.getStartNames();
 		for (var i=0; i<options.length; i++) {
 			var opt = options[i];
-			if (opt.match(/\(/)) opt = '"' + opt.replace(/\"/, '\\"').replace(/\\/, '\\\\') + '"';
+			if (IdentifierUtils.needQuotes(opt)) {
+				opt = IdentifierUtils.quote(opt);
+			}
 			result.push(new Action('KnOffice', 'CALL[' + name + '(' + opt + ')' + ']'));
 		}
 	}
@@ -683,7 +685,7 @@ ActionPane.prototype.render = function() {
 	
 	var valueText = null;
 	var valueError = null;
-	valueText = this.action.getDisplayHtml(); // zeigt ZusatzInfo an (fragen/ immer fragen,...)
+	valueText = this.action.getDisplayText(); // zeigt ZusatzInfo an (fragen/ immer fragen,...)
 	valueError = this.action.getError();
 
 	var dom = Builder.node('div', {
@@ -697,7 +699,7 @@ ActionPane.prototype.render = function() {
 		Builder.node('div', {
 			className: valueError ? 'value error' : 'value',
 			title: valueError ? valueError : ''
-		}, (valueText == null) ? [] : [ActionPane.insertWordWrapPoints(valueText.escapeHTML())])
+		}, (valueText == null) ? [] : [ActionPane.insertWordWrapPoints(valueText)])
 	]);
 	dom.__ActionEditor = this;
 	return dom;

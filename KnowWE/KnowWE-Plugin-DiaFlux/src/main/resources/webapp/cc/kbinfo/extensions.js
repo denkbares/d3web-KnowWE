@@ -128,6 +128,27 @@ Array.prototype.equals = function(other) {
 // String Utils
 // ----
 
+var IdentifierUtils = {};
+
+IdentifierUtils.needQuotes = function(text) {
+	if (!text) return text;
+	return text.match(/[\\\(\)\"]/);
+
+}
+
+IdentifierUtils.quote = function(text) {
+	if (!text) return text;
+	return '"' + text.replace(/\\/g, '\\\\').replace(/\"/g, '\\"') + '"';
+
+}
+
+IdentifierUtils.unquote = function(text) {
+	if (!text) return text;
+	if (text.length <= 1) return text;
+	if (text.charAt(0) != '"') return text;
+	if (text.charAt(text.length-1) != '"') return text;
+	return text.substring(1,text.length-1).replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+}
 
 String.prototype.escapeQuote = function() {
 	var result = this.gsub(/\"/,'\\"');

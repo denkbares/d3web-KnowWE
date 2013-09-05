@@ -19,6 +19,7 @@
 package de.knowwe.core.kdom.objects;
 
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
@@ -51,7 +52,7 @@ public abstract class SimpleReference extends AbstractType implements TermRefere
 
 	@Override
 	public String getTermName(Section<? extends Term> section) {
-		return section.getText();
+		return Strings.unquote(section.getText());
 	}
 
 	@Override

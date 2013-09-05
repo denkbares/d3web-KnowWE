@@ -23,7 +23,6 @@
  */
 package de.knowwe.diaflux.persistence;
 
-
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.ActionNode;
@@ -41,7 +40,7 @@ import de.knowwe.diaflux.type.NodeType;
  * @created 10.08.10
  * 
  */
-public class ActionNodeHandler extends AbstractNodeHandler {
+public class ActionNodeHandler extends AbstractNodeHandler<ActionType> {
 
 	public ActionNodeHandler() {
 		super(ActionType.getInstance());
@@ -58,7 +57,6 @@ public class ActionNodeHandler extends AbstractNodeHandler {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id) {
 
@@ -66,6 +64,7 @@ public class ActionNodeHandler extends AbstractNodeHandler {
 		Section<D3webRuleAction> ruleAction = Sections.findSuccessor(nodeSection,
 				D3webRuleAction.class);
 
+		@SuppressWarnings("unchecked")
 		PSAction action = ruleAction.get().getAction(article, ruleAction);
 
 		if (action == null) {
@@ -73,7 +72,6 @@ public class ActionNodeHandler extends AbstractNodeHandler {
 		}
 
 		return new ActionNode(id, action);
-
 	}
 
 }

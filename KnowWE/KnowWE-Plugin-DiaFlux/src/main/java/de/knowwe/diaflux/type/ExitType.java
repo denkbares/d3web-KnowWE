@@ -53,6 +53,11 @@ public class ExitType extends AbstractXMLType {
 		return instance;
 	}
 
+	public String getTermName(Section<? extends ExitType> section) {
+		Section<ExitNodeDef> term = Sections.findSuccessor(section, ExitNodeDef.class);
+		return term.get().getTermName(term);
+	}
+
 	static class ExitNodeDef extends SimpleDefinition {
 
 		public ExitNodeDef() {

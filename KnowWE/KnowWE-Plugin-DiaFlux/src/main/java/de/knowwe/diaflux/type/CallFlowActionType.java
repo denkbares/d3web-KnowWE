@@ -25,6 +25,7 @@ import de.knowwe.core.kdom.basicType.KeywordType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.utils.Patterns;
 
 /**
  * 
@@ -33,20 +34,25 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
  */
 public class CallFlowActionType extends AbstractType {
 
-	public static final int FLOWCHART_GROUP = 1;
-	public static final int STARTNODE_GROUP = 2;
-	public static final String REGEX = "CALL\\[(.*?)\\((.*?)\\)\\]";
-	public static final Pattern PATTERN = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE);
+	private static final int STARTNODE_GROUP = 1;
+	private static final String REGEX_STARTNDOE = "\\(([^()\"]*|" + Patterns.QUOTED + ")\\)";
+	private static final Pattern PATTERN_STARTNDOE = Pattern.compile(REGEX_STARTNDOE);
+
+	private static final int ACTION_GROUP = 1;
+	private static final int FLOWCHART_GROUP = 2;
+	private static final String REGEX = "^\\s*(CALL\\[(.*)" + REGEX_STARTNDOE + "\\])\\s*$";
+	private static final Pattern PATTERN = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE);
 
 	public CallFlowActionType() {
-		setSectionFinder(new RegexSectionFinder(PATTERN));
+		setSectionFinder(new RegexSectionFinder(PATTERN, ACTION_GROUP));
 
 		FlowchartReference flowchartReference = new FlowchartReference();
 		flowchartReference.setSectionFinder(new RegexSectionFinder(PATTERN, FLOWCHART_GROUP));
 		addChildType(flowchartReference);
 
 		StartNodeReference startNodeReference = new StartNodeReference();
-		startNodeReference.setSectionFinder(new RegexSectionFinder(Pattern.compile("\\((.*)\\)"), 1));
+		startNodeReference.setSectionFinder(new RegexSectionFinder(PATTERN_STARTNDOE,
+				STARTNODE_GROUP));
 		addChildType(startNodeReference);
 
 		addChildType(new KeywordType("["));
@@ -57,14 +63,13 @@ public class CallFlowActionType extends AbstractType {
 	public static String getStartNodeName(Section<CallFlowActionType> action) {
 		Section<StartNodeReference> nodeSection = Sections.findChildOfType(action,
 				StartNodeReference.class);
-		return nodeSection.getText();
+		return nodeSection.get().getTermName(nodeSection);
 	}
 
 	public static String getFlowName(Section<CallFlowActionType> action) {
-		Section<FlowchartReference> nodeSection = Sections.findChildOfType(action,
+		Section<FlowchartReference> flowRefSection = Sections.findChildOfType(action,
 				FlowchartReference.class);
-		return nodeSection.getText();
+		return flowRefSection.get().getTermName(flowRefSection);
 	}
-
 
 }

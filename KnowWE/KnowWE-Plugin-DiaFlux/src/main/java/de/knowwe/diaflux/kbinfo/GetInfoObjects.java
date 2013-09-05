@@ -355,6 +355,10 @@ public class GetInfoObjects extends AbstractAction {
 	}
 
 	static String encodeXML(String text) {
-		return StringEscapeUtils.escapeXml(text);
+		// we must additionally some jspwiki control characters
+		return StringEscapeUtils.escapeXml(text)
+				.replace("\\\\", "&#92;&#92;")
+				.replace("~", "&#126;")
+				.replace("%%", "&#37;&#37;");
 	}
 }

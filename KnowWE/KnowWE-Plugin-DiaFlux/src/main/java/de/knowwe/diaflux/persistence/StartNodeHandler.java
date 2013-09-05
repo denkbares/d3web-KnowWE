@@ -23,48 +23,34 @@
  */
 package de.knowwe.diaflux.persistence;
 
-
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.flow.StartNode;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.diaflux.FlowchartSubTreeHandler;
 import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.diaflux.type.NodeType;
 import de.knowwe.diaflux.type.StartType;
-import de.knowwe.kdom.xml.AbstractXMLType;
 
 /**
  * @author Reinhard Hatko
  * @created 10.08.10
  * 
  */
-public class StartNodeHandler extends AbstractNodeHandler {
+public class StartNodeHandler extends AbstractNodeHandler<StartType> {
 
 	public StartNodeHandler() {
 		super(StartType.getInstance(), null);
 	}
 
 	@Override
-	public boolean canCreateNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection) {
-
-		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
-
-		return nodeInfo != null;
-
-	}
-
-	@Override
 	public Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id) {
 
-		Section<AbstractXMLType> nodeInfo = getNodeInfo(nodeSection);
-
-		String name = FlowchartSubTreeHandler.getXMLContentText(nodeInfo);
+		Section<StartType> action = getNodeInfo(nodeSection);
+		String name = action.get().getTermName(action);
 
 		return new StartNode(id, name);
-
 	}
 
 }

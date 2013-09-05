@@ -23,34 +23,42 @@
  */
 package de.knowwe.diaflux.persistence;
 
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.diaflux.type.NodeType;
 import de.knowwe.kdom.xml.AbstractXMLType;
 
 /**
  * @author Reinhard Hatko
  * 
  */
-public abstract class AbstractNodeHandler implements NodeHandler {
+public abstract class AbstractNodeHandler<T extends AbstractXMLType> implements NodeHandler {
 
-	protected final AbstractType type;
+	protected final T type;
 	protected final String markup;
 
-	public AbstractNodeHandler(AbstractType type, String markup) {
+	public AbstractNodeHandler(T type, String markup) {
 		this.type = type;
 		this.markup = markup;
 	}
 
-	public AbstractNodeHandler(AbstractType type) {
+	public AbstractNodeHandler(T type) {
 		this(type, null);
 	}
 
-	@SuppressWarnings("unchecked")
-	protected Section<AbstractXMLType> getNodeInfo(Section<?> nodeSection) {
-		Section<AbstractXMLType> child = (Section<AbstractXMLType>) Sections.findSuccessor(
-				nodeSection, type.getClass());
+	@Override
+	public boolean canCreateNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection) {
+		Section<T> nodeInfo = getNodeInfo(nodeSection);
+		return nodeInfo != null;
+	}
+
+	protected Section<T> getNodeInfo(Section<?> nodeSection) {
+		@SuppressWarnings("unchecked")
+		Section<T> child = (Section<T>) Sections.findSuccessor(nodeSection, type.getClass());
 
 		if (child == null) {
 			return null; // no child of expected type
@@ -69,10 +77,9 @@ public abstract class AbstractNodeHandler implements NodeHandler {
 		else {
 			return null;
 		}
-
 	}
 
-	protected String getMarkup(Section<AbstractXMLType> child) {
+	protected String getMarkup(Section<T> child) {
 		return AbstractXMLType.getAttributeMapFor(child).get("markup");
 	}
 
