@@ -770,29 +770,12 @@ label[for="edittoc"] {
 	-moz-border-radius:10px;
 	-webkit-border-radius:5px;
 	-webkit-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
-	z-index: 10;
+	z-index: 2000;
 	font-size:85%;
 	overflow-x:hidden;
 	overflow-y:auto;
 	min-width:210px;
 }
-#findSuggestionMenu_Tooltip {
-	max-width: 450px;
-	position: fixed;
-	left: 20px;
-	border: 1px solid #7F7F66;
-	color: black;
-	background-color: #FFFFCC;
-	font-size: 10px;
-	padding: 2px;
-	z-index: 2000;
-}
-#findSuggestionMenu_Tooltip ul li {
-	list-style-type: disc;	
-	margin-left: 2em;
-	padding-left: 0px;
-}
-
 /* ie6 hack */
 * html #findSuggestionMenu {
 	background:url(images/tip.png) top left;
