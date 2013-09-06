@@ -130,16 +130,35 @@ Array.prototype.equals = function(other) {
 
 var IdentifierUtils = {};
 
-IdentifierUtils.needQuotes = function(text) {
-	if (!text) return text;
-	return text.match(/[\\\(\)\"]/);
+IdentifierUtils.CONTROLCHARS_STRING = "\\\\()\"!=\\[\\]\\{\\}\\n\\r";
+IdentifierUtils.QUOTED_STRING = "(?:\"(?:[^\"\\\\]|(?:(?:\\\\\\\\)*(?:\\\\\")*))*\")";
+IdentifierUtils.UNQUOTED_STRING = "(?:[^"+IdentifierUtils.CONTROLCHARS_STRING+"]+?)";
+IdentifierUtils.IDENTIFIER_STRING = "(?:" + IdentifierUtils.QUOTED_STRING + "|" + IdentifierUtils.UNQUOTED_STRING + ")"
 
+IdentifierUtils.QUOTED = new RegExp(IdentifierUtils.QUOTED_STRING);
+IdentifierUtils.UNQUOTED = new RegExp(IdentifierUtils.UNQUOTED_STRING);
+IdentifierUtils.IDENTIFIER = new RegExp(IdentifierUtils.IDENTIFIER_STRING);
+
+IdentifierUtils.isIdentifier = function(text) {
+	if (!text) return false;
+	return text.match(new RegExp("^\\s*"+IdentifierUtils.IDENTIFIER_STRING+"\\s*$"));
+}
+
+IdentifierUtils.needQuotes = function(text) {
+	if (!text) return false;
+	return text.match(new RegExp("["+IdentifierUtils.CONTROLCHARS_STRING+"]"));
 }
 
 IdentifierUtils.quote = function(text) {
 	if (!text) return text;
 	return '"' + text.replace(/\\/g, '\\\\').replace(/\"/g, '\\"') + '"';
+}
 
+IdentifierUtils.quoteIfNeeded = function(text) {
+	if (IdentifierUtils.needQuotes(text))  {
+		text = IdentifierUtils.quote(text);
+	}
+	return text;
 }
 
 IdentifierUtils.unquote = function(text) {

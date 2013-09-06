@@ -167,17 +167,22 @@ ObjectTree.prototype.renderTreeItem = function(infoObject, className, isVisible)
 			var d2 = $(dom).cumulativeOffset().top;
 			var action;
 			if (infoObject.getClassInstance() == KBInfo.Solution) {
-				action = {markup: 'KnOffice', expression: '"'+infoObject.getName()+'" = P7' };
+				var name = IdentifierUtils.quoteIfNeeded(infoObject.getName());
+				action = {markup: 'KnOffice', expression: name + ' = P7' };
 			}
 			else if (infoObject.getClassInstance() == KBInfo.Question && infoObject.isAbstract()) {
-				action = {markup: 'NOP', expression: infoObject.getName() };
+				var name = IdentifierUtils.quoteIfNeeded(infoObject.getName());
+				action = {markup: 'NOP', expression: name };
 			}
 			else if (infoObject.getClassInstance() == KBInfo.Flowchart) {
 				var startName = (infoObject.getStartNames().length > 0) ? infoObject.getStartNames()[0] : '---';
-				action = {markup: 'KnOffice', expression: 'CALL['+infoObject.getName()+'(' + startName + ')]' };
+				startName = IdentifierUtils.quoteIfNeeded(startName);
+				var objectName = IdentifierUtils.quoteIfNeeded(infoObject.getName());
+				action = {markup: 'KnOffice', expression: 'CALL[' + objectName + '(' + startName + ')]' };
 			}
 			else {
-				action = {markup: 'KnOffice', expression: infoObject.getName() };
+				var name = IdentifierUtils.quoteIfNeeded(infoObject.getName());
+				action = {markup: 'KnOffice', expression: name };
 			}
 			var model = {
 				//id: 'mf'+(mfCounter++), 

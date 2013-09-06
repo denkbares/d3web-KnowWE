@@ -11,8 +11,9 @@ function Action(markup, expression) {
 	this.markup = markup;
 	this.expression = expression;
 	this.error = null;
-	this.valueString = this._extractValueString(expression);
-	this.infoObjectName = this._extractInfoObjectName(expression);
+	var parameters = this._extractParameters(expression);
+	this.valueString = parameters.value;
+	this.infoObjectName = parameters.object;
 }
 
 Action.prototype.setValueString = function(newValueString) {
@@ -120,14 +121,15 @@ Action._extractFormulaExpression = function(markup, formExpr){
 
 Action._createExpression = function(name, value, isKeyword) {
 	var result;
+	name = IdentifierUtils.quoteIfNeeded(name);
 	if (Action._isFormulaString(value)) {
-		result = '"' + name.escapeQuote() + '" = ' + value;
+		result = name + ' = ' + value;
 	} 
 	else {
 		if (isKeyword){ // dont add quotes on right side if keyword is present
-			result = '"' + name.escapeQuote() + '" = ' + value;
+			result = name + ' = ' + value;
 		} else {
-			result = '"' + name.escapeQuote() + '" = "' + value.escapeQuote() + '"';
+			result = name + ' = ' + IdentifierUtils.quoteIfNeeded(value);
 		}
 		
 		
@@ -136,7 +138,8 @@ Action._createExpression = function(name, value, isKeyword) {
 	return result;
 }
 
-Action.prototype._extractInfoObjectName = function(string) {
+
+Action.prototype._extractInfoObjectName_deprecated = function(string) {
 	if (this.markup == 'NOP') {
 		var result = /^\s*"(.*)"\s*$/.exec(string);
 		if (result) {
@@ -184,7 +187,7 @@ Action.prototype._extractInfoObjectName = function(string) {
 }
 
 //extracts the value from the expression
-Action.prototype._extractValueString = function(string) {
+Action.prototype._extractValueString_deprecated = function(string) {
 	if (this.markup == 'NOP') {
 		return "";
 	}
@@ -233,6 +236,64 @@ Action.prototype._extractValueString = function(string) {
 	this.error = "The action can not be identified.";
 	return null;
 }
+
+
+Action.prototype._extractParameters = function(string) {
+	string = string.trim();
+	
+	// decision node
+	if (this.markup == 'NOP') {
+		return {
+			object: IdentifierUtils.unquote(string),
+			value: ''
+		};
+	}
+	
+	// only correctly encoded object name --> ask for it
+	if (IdentifierUtils.isIdentifier(string)) {
+		return {
+			object: IdentifierUtils.unquote(string),
+			value: 'ERFRAGE'
+		};
+	}
+	
+	// correctly encoded assignment
+	var regex = new RegExp("^("+IdentifierUtils.IDENTIFIER_STRING+")\\s*=\\s*("+IdentifierUtils.IDENTIFIER_STRING+")$");
+	var matches = regex.exec(string);
+	if (matches) return {
+		object: IdentifierUtils.unquote(matches[1]),
+		value: IdentifierUtils.unquote(matches[2])
+	};
+	
+	// correctly encoded and not encoded keyword actions
+	// because not encoded is also unambiguous
+	// 'ALWAYS[' <name> ']'
+	// 'INSTANT[' <name> ']'
+	regex = /^(ALWAYS|INSTANT)\[(.+)\]$/i;
+	matches = regex.exec(string);
+	if (matches) return {
+		object: IdentifierUtils.unquote(matches[2]),
+		value: matches[1].toUpperCase()
+	};
+	
+	// keyword actions for calling start nodes of other flows
+	// where at least the value has to be encoded correctly
+	// 'CALL[' <name> '(' <value> ')]'
+	regex = new RegExp("^CALL\\[(.+)\\(("+IdentifierUtils.IDENTIFIER_STRING+")\\)\\]$", "i");
+	matches = regex.exec(string);
+	if (matches) return {
+		object: IdentifierUtils.unquote(matches[1]),
+		value: IdentifierUtils.unquote(matches[2])
+	};
+	
+	// otherwise go for backward compatibility 
+	// (use old and deprecated methods)
+	return {
+		object: this._extractInfoObjectName_deprecated(string).trim(),
+		value: this._extractValueString_deprecated(string).trim()
+	};
+}
+
 
 /**
  * Checks the semantic of the action against the KBInfo object.
@@ -287,17 +348,18 @@ Action.prototype._checkSemantic = function() {
 Action.createPossibleActions = function(infoObject) {
 	if (!infoObject) return null;
 	var name = infoObject.getName();
+	var quoted = IdentifierUtils.quoteIfNeeded(name);
 	var result = [];
 	if (infoObject.getClassInstance() == KBInfo.Question) {
 		if (!infoObject.isAbstract()) {
 			result.push('Ask question');			
 			// questions can be asked
-			result.push(new Action('KnOffice', name));
-			result.push(new Action('KnOffice', 'INSTANT['+name+']'));
-			result.push(new Action('KnOffice', 'ALWAYS['+name+']'));
+			result.push(new Action('KnOffice', quoted));
+			result.push(new Action('KnOffice', 'INSTANT['+quoted+']'));
+			result.push(new Action('KnOffice', 'ALWAYS['+quoted+']'));
 		}
 		result.push('Use value');			
-		result.push(new Action('NOP', '"'+name.escapeQuote()+'"'));			
+		result.push(new Action('NOP', quoted));			
 		result.push('Assign value');			
 		switch (infoObject.getType()) {
 			//add yes/no value
@@ -328,22 +390,19 @@ Action.createPossibleActions = function(infoObject) {
 			result.push(new Action('KnOffice', Action._createExpression(name, 'N' + i, true)));
 		}
 		result.push('Use value');			
-		result.push(new Action('NOP', '"'+name.escapeQuote()+'"'));	
+		result.push(new Action('NOP', quoted));	
 	}
 	else if (infoObject.getClassInstance() == KBInfo.Flowchart) {
 		result.push('Call start node');			
 		var options = infoObject.getStartNames();
 		for (var i=0; i<options.length; i++) {
-			var opt = options[i];
-			if (IdentifierUtils.needQuotes(opt)) {
-				opt = IdentifierUtils.quote(opt);
-			}
-			result.push(new Action('KnOffice', 'CALL[' + name + '(' + opt + ')' + ']'));
+			var opt = IdentifierUtils.quoteIfNeeded(options[i]);
+			result.push(new Action('KnOffice', 'CALL[' + quoted + '(' + opt + ')' + ']'));
 		}
 	}
 	else if (infoObject.getClassInstance() == KBInfo.QSet) {
 		result.push('Ask questionnaire');			
-		result.push(new Action('KnOffice', name));
+		result.push(new Action('KnOffice', quoted));
 	}
 	
 	return result;
