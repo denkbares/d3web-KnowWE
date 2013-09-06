@@ -72,15 +72,17 @@ if (SearchBox) {
 		// call original first, doing lots of other stuff
 		SearchBox.onPageLoadQuickSearch_original();
 		// remove hover events
-		$(this.query.form).removeEvents("mouseout");
-		$(this.query.form).removeEvents("mouseover");
-		// and add focus events instead
-		$(this.query).addEvent("blur", function() {
-			this.hover.start(0);
-		}.bind(this)).addEvent("focus", function() {
-			Wiki.locatemenu(this.query, $("searchboxMenu"));
-			this.hover.start(0.9);
-		}.bind(this));
+		if (this.query) {
+			$(this.query.form).removeEvents("mouseout");
+			$(this.query.form).removeEvents("mouseover");
+			// and add focus events instead
+			$(this.query).addEvent("blur", function() {
+				this.hover.start(0);
+			}.bind(this)).addEvent("focus", function() {
+				Wiki.locatemenu(this.query, $("searchboxMenu"));
+				this.hover.start(0.9);
+			}.bind(this));
+		}
 	}
 
 	SearchBox.ajaxQuickSearch = function() {
