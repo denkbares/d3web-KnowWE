@@ -1,0 +1,21 @@
+[{TableOfContents title=' Questionnaires - TOC' numbered='false'}]
+
+!!Definition 
+Questionnaires are typically used to define a hierarchy of questions. Those questionnaires, in turn, can also be arranged hierarchically. The hierarchic structure is - similar to the solutions - defined by the number of hyphens at the beginning of each line, which denote the depth in the hierarchy. 
+
+The definition of the questionnaire hierarchy includes only the names of questionnaires, not the actual questions. The arrangement of the questions within the particular questionnaires is described in the [questions documentation|Doc Questions].
+
+!!Syntax 
+{{{<Questionnaires-section>
+Starting questions [1]
+Advanced questions
+- Idle speed system
+- Air intake system
+- Air filter
+- Ignition timing
+- Battery ~ Checks, whether there is something wrong with the battery.
+</Questionnaires-section>}}}
+* The example shows two super-questionnaires, ''Starting questions'' and ''Advanced questions''. The latter is further subdivided into sub-questionnaires (''Idle speed system'',...). 
+* Apart from the general definition of a questionnaire hierarchy, the example also shows how to flag starting questionnaires. Those questionnaires are presented to the user first of all when launching a case. They are flagged through appending a number - in squared brackets - to a questionnaire name. The order of the bracketed numbers further defines the order of the starting questionnaires. Here, the questionnaire ''Starting questions'' is defined as the first (and also the only) start questionnaire.
+* Also in the context of questionnaires, a more descriptive, detailed text can be provided that is shown to the user instead of the shorter questionnaire name. This is - similar to questions - achieved by adding a tilde followed by the more detailed text to the questionnaire name. In the example, the questionnaire ''Battery'' received a more detailed description ''Checks, whether there is something wrong with the battery.''. 
+

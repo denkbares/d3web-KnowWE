@@ -1,0 +1,150 @@
+Terminology of the car faults diagnosis knowledge base.
+
+!!! Questions / User Inputs
+
+%%Question
+Observations #2
+- Exhaust fumes [oc]
+-- black
+-- blue
+-- invisible
+- Exhaust pipe color [oc]
+-- brown
+-- grey
+-- light grey
+-- sooty black
+-- Exhaust pipe color evaluation [oc]<abstrakt>
+--- abnormal
+--- normal
+- Fuel [oc]
+-- diesel
+-- unleaded gasoline
+- "Average mileage /100km" [num]
+-- "Num. Mileage evaluation" [num]<abstract>
+--- Mileage evaluation [oc]<abstract>
+---- slightly increased
+---- normal
+---- increased
+- "Real mileage  /100km" [num]
+- Engine noises [oc]
+-- knocking
+-- ringing
+-- "no /else"
+- Engine start [oc]
+-- engine barely starts
+-- engine starts
+-- does not start
+- Starter [oc]
+-- does not turn over
+-- turns over
+- Driving [mc]
+-- insufficient power on partial load
+-- insufficient power on full load
+-- unsteady idle speed
+-- low idle speed
+-- "delayed take-off"
+-- weak acceleration
+-- "no /else"
+
+General #1
+- Make of car [oc]
+-- VW
+-- Opel
+-- Mercedes Benz
+-- BMW
+-- Porsche
+-- Fiat
+-- Toyota
+-- Mazda
+-- Other
+- Year of construction [num]
+
+Technical Examinations
+- "Check: Idle speed system." [oc]
+-- ok
+-- not ok
+- "Check: Air intake system." [oc]
+-- ok
+-- not ok
+- "Check: Air filter." [oc]
+-- ok
+-- not ok
+- "Check: Ignition timing." [oc]
+-- ok
+-- not ok
+- "Check: Battery." [oc]
+-- ok
+-- not ok
+@package: demo
+%
+
+!!! Derivable Solutions
+
+%%Solution 
+Faults
+- Flat battery 
+- Clogged air filter
+- Leaking air intake system
+- Bad ignition timing
+- Damaged idle speed system
+@package: demo
+%
+
+
+!!! General Abstraction Rules
+
+%%Rule
+The evaluation of the exhaust pipe color depends on the type of fuel:
+
+IF (Fuel = unleaded gasoline AND Exhaust pipe color = sooty black)
+THEN Exhaust pipe color evaluation = abnormal
+
+IF (Fuel = diesel AND Exhaust pipe color = sooty black)
+THEN Exhaust pipe color evaluation = normal  
+
+IF (Exhaust pipe color = brown OR Exhaust pipe color = grey OR Exhaust pipe color = light grey)
+THEN Exhaust pipe color evaluation = normal  
+
+
+Mileage is slightly increased when real mileage is between 110 and 130 percent of the average mileage:
+
+IF ("Num. Mileage evaluation" >= 110 AND "Num. Mileage evaluation" <= 130)
+THEN Mileage evaluation = slightly increased 
+
+
+Mileage is definitely increased if the real mileage is more than 130 percent of the average mileage:
+
+IF "Num. Mileage evaluation" > 130
+THEN Mileage evaluation = increased  
+
+Mileage evaluation is normal when it is lower than 110 percent of average mileage:
+
+IF "Num. Mileage evaluation" < 110
+THEN Mileage evaluation = normal
+
+Compute the percentage mileage increase from the real and the average mileage:
+
+IF "Average mileage /100km" > 0 AND "Real mileage  /100km" > 0
+THEN "Num. Mileage evaluation" = (("Real mileage  /100km" / "Average mileage /100km") * 100.0)  
+
+Here the clarification questions for the particular solutions are indicated:
+
+IF Flat battery = SUGGESTED OR Flat battery = ESTABLISHED
+THEN Check: Battery.
+
+IF Clogged air filter = SUGGESTED OR Clogged air filter = ESTABLISHED
+THEN Check: Air filter.
+
+IF Leaking air intake system = SUGGESTED OR Leaking air intake system = ESTABLISHED
+THEN Check: Air intake system.
+
+IF Bad ignition timing = SUGGESTED OR Bad ignition timing = ESTABLISHED
+THEN Check: Ignition timing.
+
+IF Damaged idle speed system = SUGGESTED OR Damaged idle speed system = ESTABLISHED
+THEN "Check: Idle speed system."
+
+@package: demo
+%
+
+

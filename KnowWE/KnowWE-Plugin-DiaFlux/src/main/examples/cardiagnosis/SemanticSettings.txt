@@ -1,0 +1,9 @@
+persistence=disabled
+
+persistence.dir=null
+
+extensions=enabled
+
+sparql=enabled
+
+[{KnowWEPlugin OwlImport}]

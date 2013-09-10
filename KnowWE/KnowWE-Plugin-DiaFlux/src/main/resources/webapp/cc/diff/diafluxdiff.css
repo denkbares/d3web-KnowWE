@@ -1,0 +1,27 @@
+.flowChanged {
+	border: 2px solid yellow;
+}
+
+.flowChanged>div{
+	width: 45%;
+	display: inline-block;
+	overflow: auto;
+	vertical-align: top;
+}
+
+.diffRemoved, .flowRemoved .Flowchart{
+	border: 2px solid #FF9933;
+}
+
+.diffAdded, .flowAdded .Flowchart{
+	border: 2px solid #99FF99;
+}
+
+.diffChanged {
+	border: 2px solid yellow;
+}
+
+span.scrollSync {
+	margin: 0.5em;
+	display:block;
+}

@@ -1,0 +1,90 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-Tagging" version="0.0.1">
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+	</requires>
+	
+    <runtime>
+		<library id="de.knowwe" path="." type="code">
+			<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="Tags">
+		<parameter id="class"
+			value="de.knowwe.tagging.Tags" />
+		<parameter id="name" value="Tags" />
+		<parameter id="description" value="Type Tags" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+		<parameter id="scope" value="root" />
+	</extension>
+	  
+	<extension 
+		plugin-id="KnowWEExtensionPoints" 
+		point-id="Type"
+		id="StatusType">
+		<parameter id="class" value="de.knowwe.workflow.StatusType" />
+		<parameter id="name" value="StatusType" />
+		<parameter id="description" value="Markup describing the workflow status of the current wiki-article." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+    <extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="TagCloud">
+		<parameter id="class"
+			value="de.knowwe.tagging.TagCloud" />
+		<parameter id="name" value="TagCloud" />
+		<parameter id="description" value="TagHandler TagCloud" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="TagEditPanel">
+		<parameter id="class"
+			value="de.knowwe.tagging.TagEditPanel" />
+		<parameter id="name" value="TagEditPanel" />
+		<parameter id="description" value="TagHandler TagEditPanel" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+		<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="TagHandlingAction">
+		<parameter id="class"
+			value="de.knowwe.tagging.TagHandlingAction" />
+		<parameter id="name" value="TagHandlingAction" />
+		<parameter id="description" value="Action TagHandlingAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="TagSearchHandler">
+		<parameter id="class"
+			value="de.knowwe.tagging.TagSearchHandler" />
+		<parameter id="name" value="TagSearchHandler" />
+		<parameter id="description" value="TagHandler TagSearchHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="EventListener"
+		id="TaggingManglerCleanerEventListener">
+		<parameter id="class"
+			value="de.knowwe.tagging.TaggingManglerCleaner" />
+		<parameter id="name" value="TaggingManglerCleaner" />
+		<parameter id="description" value="EventListener TaggingManglerCleaner" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+    
+</plugin>

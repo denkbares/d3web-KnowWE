@@ -1,0 +1,78 @@
+!!! This is the page for testing the Quick-Edit
+
+!! Table Editing   
+
+This page demonstrates how tables can be edited in KnowWE without going to the wiki edit view. Just klick on the quick-edit icon above the table.
+
+<Table default="+,-,0" width="100" row="0" column="0">
+| |Apple|Lemon|Coconut
+|sweetness|0|-|hm
+|grows in central europe|0|0|0
+|size|-|0|+
+</Table>
+
+The editable table can be configured, for example to only allow default-values to be selected. Further one can specify rows and columns that
+should not be quick-edited.
+
+{{{
+<Table default="+,-,0" width="100" row="1" column="1">
+|                        | Apple | Lemon | Coconut
+| sweetness              |   +   |   -   |   hm
+| grows in central europe|   +   |   -   |    -
+| size                   |   0   |   0   |    +
+</Table>
+}}}
+
+!!Hermes TimeEvent
+
+<<Wiederaufbau Athens (2)
+478v
+>>
+
+!! Knowledge
+
+%%Rule
+The evaluation of the exhaust pipe color depends on the type of fuel:
+
+IF (Fuel = unleaded gasoline AND Exhaust pipe color = sooty black)
+THEN Exhaust pipe color evaluation = abnormal
+%
+
+%%Question
+Observations 1
+- Exhaust fumes [oc]
+-- black
+-- blue
+-- invisible
+- Exhaust pipe color [oc]
+-- brown
+-- grey
+-- light grey
+-- sooty black
+-- Exhaust pipe color evaluation [oc]<abstrakt>
+--- abnormal
+--- normal
+- Fuel [oc]
+-- diesel
+-- unleaded gasoline
+- Starter [oc]
+-- does not turn over
+-- turns over
+
+
+%
+
+%%CoveringList
+Clogged air filter{
+    Exhaust pipe color evaluation = abnormal,
+}
+%
+
+%%Solution
+Clogged air filter
+Empty battery
+%
+
+[{KnowWEPlugin quickinterview}]
+
+Lorem ipsum dolor sit amet, ... (Used by the renaming tool, if deleted, please adapt the Renaming Tool Selenium test)

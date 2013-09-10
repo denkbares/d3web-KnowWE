@@ -1,0 +1,40 @@
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
+
+import org.openrdf.query.BindingSet;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.TupleQueryResult;
+
+import de.knowwe.semantic.sparql.SparqlRenderer;
+import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
+
+public class GroovyRenderer implements SparqlRenderer {
+
+	
+	private int myID;
+
+	public String render(TupleQueryResult result, Map<String, String> params) {				
+		%CONTENT%
+	}
+
+	
+	@Override
+	public String getName() {		
+		return "%NAME%";
+	}
+
+	@Override
+	public int getID() {		
+		return myID;
+	}
+
+	@Override
+	public void setID(int id) {
+	myID=id;
+		
+	}
+}

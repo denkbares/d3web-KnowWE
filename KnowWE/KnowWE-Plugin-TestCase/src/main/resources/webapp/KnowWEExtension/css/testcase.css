@@ -1,0 +1,13 @@
+#testcase-run-link {
+	cursor: pointer;
+}
+
+#testcase-failed-extend {
+	cursor: pointer;
+	margin-left: 7px;
+}
+
+#testcase-detail-panel {
+	margin-left: 16px;
+	display: none;
+}

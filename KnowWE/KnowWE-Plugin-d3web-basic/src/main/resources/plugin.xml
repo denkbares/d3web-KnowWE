@@ -1,0 +1,171 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-d3web-basic" version="0.0.1">
+
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+		<import plugin-id="KnowWE-Plugin-Core" />
+	</requires>
+
+	<runtime>
+		<library id="de.d3web" path="." type="code">
+			<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension plugin-id="KnowWE-Plugin-Core" point-id="PreviewRenderer" 
+		id="RulePreviewRenderer">
+		<parameter id="class" value="de.knowwe.core.preview.DefaultPreviewRenderer" />
+		<parameter id="name" value="RulePreviewRenderer" />
+		<parameter id="description" value="Renders a preview of a paricular rule." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="ConditionActionRuleContent" />
+	</extension>	
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="KnowledgeBaseDownloadProvider">
+		<parameter id="class"
+			value="de.d3web.we.knowledgebase.KnowledgeBaseDownloadProvider" />
+		<parameter id="name" value="KnowledgeBaseDownloadProvider" />
+		<parameter id="description"
+			value="Offers a download button to download the knowledge base as an knowledge archive." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="KnowledgeBase" />
+	</extension>
+
+	<!-- extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="StyledSolutionPanelToolProvider">
+		<parameter id="class"
+			value="de.d3web.we.solutionpanel.StyledSolutionPanelToolProvider" />
+		<parameter id="name" value="StyledSolutionPanelToolProvider" />
+		<parameter id="description"
+			value="Offers a restart button for the current session." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="ShowSolutions" />
+	</extension -->
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="KnowledgeBaseType">
+		<parameter id="class" value="de.d3web.we.knowledgebase.KnowledgeBaseType" />
+		<parameter id="name" value="KnowledgeBaseType" />
+		<parameter id="description"
+			value="Compiles and provides a master knowledge base." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="6" />
+		<parameter id="scope" value="root" />
+		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowledgeRepresentationHandler"
+		id="D3webKnowledgeHandler">
+		<parameter id="class" value="de.d3web.we.basic.D3webKnowledgeHandler" />
+		<parameter id="name" value="D3webKnowledgeHandler" />
+		<parameter id="description"
+			value="KnowledgeRepresentationHandler D3webKnowledgeHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="ShowSolutionsType">
+		<parameter id="class" value="de.d3web.we.solutionpanel.ShowSolutionsType" />
+		<parameter id="name" value="ShowSolutionsType" />
+		<parameter id="description"
+			value="Type to display the derived solutions and abstractions of the current user session." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="DownloadKnowledgeBase">
+		<parameter id="class" value="de.knowwe.d3web.action.DownloadKnowledgeBase" />
+		<parameter id="name" value="DownloadKnowledgeBase" />
+		<parameter id="description"
+			value="Downloads a specific d3web knowledge base archive of a named wiki article." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="SetSingleFindingAction">
+		<parameter id="class"
+			value="de.knowwe.d3web.action.SetSingleFindingAction" />
+		<parameter id="name" value="SetSingleFindingAction" />
+		<parameter id="description" value="Action SetSingleFindingAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="RetractSingleFindingAction">
+		<parameter id="class"
+			value="de.knowwe.d3web.action.RetractSingleFindingAction" />
+		<parameter id="name" value="RetractSingleFindingAction" />
+		<parameter id="description" value="Action RetractSingleFindingAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="GetKnowledgeBaseResourceAction">
+		<parameter id="class" value="de.knowwe.d3web.action.GetKnowledgeBaseResourceAction" />
+		<parameter id="name" value="GetKnowledgeBaseResourceAction" />
+		<parameter id="description" value="Action to get a knowledge base resource. The pathname behind the action specified the resource to be loaded." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+		
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="SessionResetAction">
+		<parameter id="class" value="de.knowwe.d3web.action.SessionResetAction" />
+		<parameter id="name" value="SessionResetAction" />
+		<parameter id="description" value="Action that resets a specific session." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CorrectionProvider"
+		id="D3webCorrectionProvider">
+		<parameter id="class"
+			value="de.knowwe.d3web.correction.D3webCorrectionProvider" />
+		<parameter id="name" value="D3webCorrectionProvider" />
+		<parameter id="description"
+			value="Generates correction suggestions for d3web terms." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="D3webTermReference" />
+		<parameter id="scope" value="D3webTermDefinition" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CorrectionProvider"
+		id="D3webAnswerCorrectionProvider">
+		<parameter id="class"
+			value="de.knowwe.d3web.correction.D3webAnswerCorrectionProvider" />
+		<parameter id="name" value="D3webAnswerCorrectionProvider" />
+		<parameter id="description"
+			value="Generates correction suggestions for AnswerReferences." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="AnswerReference" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="EventListener"
+		id="PropagationLoopHandler">
+		<parameter id="class"
+			value="de.d3web.we.utils.PropagationLoopHandler" />
+		<parameter id="name" value="PropagationLoopHandler" />
+		<parameter id="description" value="EventListener PropagationLoopHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+</plugin>

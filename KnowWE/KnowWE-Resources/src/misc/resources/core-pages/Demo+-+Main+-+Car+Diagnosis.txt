@@ -1,0 +1,25 @@
+!!! Car Diagnosis
+
+[{Image src='VW_Golf6.jpg' width='300' height='212' align='left' style='border: solid 1px' caption='VW Golf 6 (from Wikipedia)'}]
+\\ \\
+This demo knowledge base covers some exemplary faults of a car. Each fault is represented with text and its corresponding knowledge on a single wiki article: 
+
+* [Damaged idle speed system|Demo - DamagedIdleSpeedSystem]
+* [Leaking air intake system|Demo - LeakingAirIntakeSystem]
+* [Clogged air filter|Demo - CloggedAirFilter]
+* [Bad ignition timing|Demo - BadIgnitionTiming]
+* [Flat battery|Demo - FlatBattery]
+
+The common terminology of the knowledge base is defined in a single wiki article:
+
+* [Terminology|Demo - Terminology]
+
+All knowledge defined above is compiled in a so-called master article.
+The master article provides means of testing the knowledge base, downloading an executable version, etc.
+
+*  [Master Knowledge Base|Demo - Master]
+
+Testing: 
+
+* [Testing|Demo - Test Cases]
+<tags>Demo</tags>

@@ -1,0 +1,19 @@
+.defaultEditTool {
+	font-size: 13px;
+	font-family: monospace;
+	display: block;
+	border: 1px dashed black;
+	background-color: #F5FAFF;
+	padding: 5px;
+	margin-bottom: 8px;
+	width: 100%;
+	resize: none;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	vertical-align: top;
+	transition: height 0.2s;
+	-webkit-transition: height 0.2s;
+	-moz-transition: height 0.2s;
+}

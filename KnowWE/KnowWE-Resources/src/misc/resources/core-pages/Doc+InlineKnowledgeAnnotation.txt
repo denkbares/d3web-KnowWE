@@ -1,0 +1,26 @@
+[{TableOfContents title='Inline Knowledge Annotation HowTo - TOC'}] 
+
+!!Note: Inline annotation does not work properly for pre-"Ms Moneypenny" tests!
+
+!!Definition
+In KnowWe it is possible to insert knowledge into the floating text. This done via the tags ''asks::'', ''isContradictedBy::'', ''explains::'', ''requires::'' and ''sufficientlyDerives::'', which are explained on this page.\\
+
+!!General Syntax 
+The general annotation syntax is as follows:
+{{{ {{ <the text that is annotated and shown to the user>  <=> <tag>:: <knowledge> }} }}}
+Thereby, the text that is annotated is entered before the double arrow. The chosen tag is inserted before the double colon. The knowledge slice, that is to be handled, is entered after the tag. The above syntax example summarizes all annotation parts. Text, tags, as well as knowledge slices are entered without angle brackets.
+
+!!asks::
+The ''asks::'' annotation enables inline questioning. The annotated text is rendered as a link that---when clicked---presents a simple question-popup to the user containing the question that was defined via the annotation.
+
+An actual example then could look like this:
+{{{ {{ask about exhaust fumes <=> asks:: Exhaust fumes}} }}} 
+which renders to: {{ask about exhaust fumes  <=> asks:: Exhaust fumes}} 
+
+The example creates an inline annotation that connects a question popup for ''Exhaust fumes'' with the link-style text ''ask about exhaust fumes''. 
+Embedding that example into 'real text' of a KnowWE page finally could look like this:
+{{{Typical symptoms, which indicate exa clogged air filter are the following: 
+driving issues, unsteady idle speed, weak acceleration, starting problems, increased mileage (based on 
+average mileage and the currently measured mileage ) 
+or abnormal {{exhaust fumes <=> asks:: Exhaust fumes}}. }}}
+<tags>Documentation annotation</tags>

@@ -1,0 +1,39 @@
+<flowchart ficd="sh0073" name="Electronic system" icon="sanduhr.gif" width="750" height="950">
+
+	<!-- nodes of the flowchart -->
+	<node ficd="#node_0">
+		<position left="167" top="221"></position>
+		<exit>Done</exit>
+	</node>
+
+	<node ficd="#node_1">
+		<position left="183" top="51"></position>
+		<start>Start</start>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge ficd="#rule_0">
+		<origin>#node_1</origin>
+		<target>#node_0</target>
+	</edge>
+
+	<preview mimetype="text/html">
+		<![CDATA[
+<DIV class="Flowchart" style=" width: 751px; height: 951px;"><DIV class="Node" style="left: 183px;top: 51px; width: 72px; height: 20px;"><DIV class="start" style=" width: 58px; height: 20px;"><DIV class="decorator" style=" width: 25px; height: 25px;"></DIV><DIV class="title" style=" width: 60px; height: 16px;">Start</DIV></DIV></DIV><DIV class="Node" style="left: 167px;top: 221px; width: 74px; height: 20px;"><DIV class="exit" style=" width: 60px; height: 20px;"><DIV class="decorator" style=" width: 25px; height: 25px;"></DIV><DIV class="title" style=" width: 60px; height: 16px;">Done</DIV></DIV></DIV><DIV class="Rule" style="position: absolute;left: 0px;top: 0px;overflow: visible; width: 0px; height: 0px;"><DIV class="v_line" style="position: absolute;left: 219px;top: 71px;overflow: visible; width: 1px; height: 150px;"><DIV class="arrow_down" style=" width: 5px; height: 6px;"></DIV></DIV><DIV style="position: absolute;left: 219px;top: 71px;overflow: visible; width: 0px; height: 0px;"><DIV class="guard" style="position: absolute;left: 2px;top: 3px; width: 0px; height: 0px;"><DIV class="GuardPane" style=" width: 0px; height: 0px;"></DIV></DIV></DIV><DIV style="position: absolute;visibility: visible; width: 0px; height: 0px;"><DIV style="position: absolute;left: 216px;top: 68px;overflow: hidden; width: 7px; height: 156px;"></DIV></DIV></DIV></DIV>
+		]]>
+	</preview></flowchart>
+	
+<Kopic>
+<Questions-section>
+Observations
+- Spark from coil? [yn]
+</Questions-section>
+
+<Solutions-section>
+Voltage regulator
+
+</Solutions-section>
+</Kopic>
+	
+

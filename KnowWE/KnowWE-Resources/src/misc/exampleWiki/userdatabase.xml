@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<users>
+<user loginName="Administrator" wikiName="Administrator" fullName="Administrator" email="" password="{SHA}90e3b576d8497e28ec02a05cf11b70826f0c640a" created="2008.05.06 at 17:07:46:562 CEST" lastModified="2008.05.06 at 17:07:46:562 CEST"  />
+<user loginName="keinAdmin" wikiName="keinAdmin" fullName="keinAdmin" email="" password="{SHA}c6bc29c35824f5fc54aeb25c1966454d0643cab1" created="2008.05.07 at 09:09:10:890 CEST" lastModified="2008.05.07 at 09:09:10:890 CEST"  />
+<user loginName="Admin" wikiName="Florian" fullName="Florian" email="" password="{SHA}90e3b576d8497e28ec02a05cf11b70826f0c640a" created="2008.05.07 at 09:45:16:125 CEST" lastModified="2008.05.07 at 09:45:16:125 CEST"  />
+</users>

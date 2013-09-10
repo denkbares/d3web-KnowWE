@@ -1,0 +1,23 @@
+.Flowchart {
+	position:	relative;
+	background-image: url(../image/grid_10.png);
+	background-position: 1px 1px;
+	overflow:	auto;
+	/* DefaultMarkup sets white-space to pre -> No wrap in nodes */
+	white-space: normal;
+	-webkit-print-color-adjust:exact;
+}
+
+.Flowchart_ghost {
+	position:	absolute;
+	top: 0px; 
+	left: 0px;
+	background-image: url(../image/grid_10.png);
+	background-position: 1px 1px;
+	overflow:	auto;
+	opacity: 0.5;
+	z-index: -10;
+	/* DefaultMarkup sets white-space to pre -> No wrap in nodes */
+	white-space: normal;
+	-webkit-print-color-adjust:exact;
+}

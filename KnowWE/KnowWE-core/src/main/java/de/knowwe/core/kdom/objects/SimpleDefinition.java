@@ -1,0 +1,110 @@
+/*
+ * Copyright (C) 2010 University Wuerzburg, Computer Science VI
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+package de.knowwe.core.kdom.objects;
+
+import java.util.Collection;
+
+import de.d3web.strings.Identifier;
+import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.RenamableTerm;
+import de.knowwe.core.compile.terminology.TermRegistrationScope;
+import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
+
+/**
+ * 
+ * @author Albrecht
+ * @created 16.12.2010
+ */
+public abstract class SimpleDefinition extends AbstractType implements TermDefinition, RenamableTerm {
+
+	private final Class<?> termObjectClass;
+
+	public SimpleDefinition(TermRegistrationScope scope, Class<?> termObjectClass) {
+		this(scope, termObjectClass, Priority.HIGHER);
+	}
+
+	public SimpleDefinition(TermRegistrationScope scope, Class<?> termObjectClass, Priority handlerPriority) {
+		this.termObjectClass = termObjectClass;
+		this.addSubtreeHandler(handlerPriority,
+				new StringDefinitionRegistrationHandler(scope));
+	}
+
+	@Override
+	public Class<?> getTermObjectClass(Section<? extends Term> section) {
+		return termObjectClass;
+	}
+
+	@Override
+	public String getTermName(Section<? extends Term> section) {
+		return section.getText();
+	}
+
+	@Override
+	public Identifier getTermIdentifier(Section<? extends Term> section) {
+		return new Identifier(getTermName(section));
+	}
+
+	@Override
+	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
+		String replacement = newIdentifier.getLastPathElement();
+		return TermUtils.quoteIfRequired(replacement);
+	}
+
+	private class StringDefinitionRegistrationHandler extends SubtreeHandler<SimpleDefinition> {
+
+		private final TermRegistrationScope scope;
+
+		public StringDefinitionRegistrationHandler(TermRegistrationScope scope) {
+			this.scope = scope;
+		}
+
+		@Override
+		public Collection<Message> create(Article article, Section<SimpleDefinition> s) {
+
+			getTerminologyHandler(article).registerTermDefinition(s, s.get().getTermObjectClass(s),
+					s.get().getTermIdentifier(s));
+
+			return Messages.noMessage();
+		}
+
+		private TerminologyManager getTerminologyHandler(Article article) {
+			if (scope == TermRegistrationScope.GLOBAL) {
+				return KnowWEUtils.getGlobalTerminologyManager(article.getWeb());
+			}
+			else {
+				return KnowWEUtils.getTerminologyManager(article);
+			}
+		}
+
+		@Override
+		public void destroy(Article article, Section<SimpleDefinition> s) {
+			getTerminologyHandler(article).unregisterTermDefinition(s,
+					s.get().getTermObjectClass(s), s.get().getTermIdentifier(s));
+		}
+
+	}
+
+}

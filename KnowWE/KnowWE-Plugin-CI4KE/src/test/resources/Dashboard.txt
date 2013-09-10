@@ -1,0 +1,12 @@
+%%CIDashboard 
+  @trigger: onSave Main
+  @name: dashname
+
+  @test ArticleHasErrors Main1
+
+  @test: EmptyQuestionnaire 
+  ignore: Q000
+  ignore Foo.*
+
+  @test ArticleHasErrors Main2
+%

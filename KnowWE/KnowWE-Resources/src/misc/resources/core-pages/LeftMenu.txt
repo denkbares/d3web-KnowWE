@@ -1,0 +1,27 @@
+__[Home|Main]__
+
+* [Car Diagnosis Demo |Demo - Main - Car Diagnosis]
+
+__Administration__
+
+* [All pages | PageIndex]
+* [Documentation| Doc Overview]
+* [Plugins | InstalledTagHandlers]
+* [Left Menu | LeftMenu]
+
+
+----
+[{KnowWEPlugin tagcloud}]
+----
+[{KnowWEPlugin tageditpanel}]
+----
+
+[{KnowWEPlugin version}]
+
+%%ShowSolutions
+@master: Demo - Master
+@show_established: true
+@show_suggested: true
+@show_excluded: true
+@show_abstractions: true
+%
