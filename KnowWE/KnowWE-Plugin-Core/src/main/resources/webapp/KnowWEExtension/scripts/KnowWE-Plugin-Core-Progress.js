@@ -156,7 +156,9 @@ KNOWWE.core.plugin.progress = function() {
 									removeAllErrors();
 								};
 								bar.find(".progress-state").unbind("click").click(closeFunction);
-								bar.append(" <a class='progress-close'>[Hide]</a>");
+								if (!bar.find(".progress-close").exists()) {									
+									bar.append(" <a class='progress-close'>[Hide]</a>");
+								}
 								bar.find(".progress-close").unbind("click").click(closeFunction);
 								if (error) {
 									bar.addClass("progress-error");
