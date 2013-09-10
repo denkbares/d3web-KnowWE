@@ -1,1 +1,0 @@
-uploads folder: Files uploaded to KnowWE will be temporarily stored in this folder
