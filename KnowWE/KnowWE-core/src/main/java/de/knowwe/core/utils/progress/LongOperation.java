@@ -15,8 +15,9 @@ import de.knowwe.core.user.UserContext;
 public interface LongOperation {
 
 	/**
-	 * Starts the execution of the long operation. The method shall return
-	 * immediately, not waiting for the result of the long operation.
+	 * Executes the long operation. This method is normally called from an extra
+	 * thread, so there is no need to use additional threads when implementing
+	 * this method.
 	 * 
 	 * @created 30.07.2013
 	 * @param user the user context used for starting the long operation
