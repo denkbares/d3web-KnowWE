@@ -20,8 +20,6 @@
 package de.knowwe.core.utils.progress;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
@@ -43,35 +41,7 @@ public class StartOperationAction extends OperationAction {
 			return;
 		}
 
-		final AjaxProgressListener listener =
-				ProgressListenerManager.getInstance().createProgressListener(context, operation);
-
-		new Thread("long-operation-worker") {
-
-			public void run() {
-				try {
-					operation.execute(context, listener);
-				}
-				catch (IOException e) {
-					Logger.getLogger(getClass().getName()).log(Level.WARNING,
-							"cannot complete operation", e);
-					listener.setError("Error occured: " + e.getMessage() + ".");
-				}
-				catch (InterruptedException e) {
-					Logger.getLogger(getClass().getName()).log(Level.INFO,
-							"operation canceled by user");
-					listener.setError("Canceled by user.");
-				}
-				catch (Throwable e) {
-					Logger.getLogger(getClass().getName()).log(Level.SEVERE,
-							"cannot complete operation, unexpected internal error", e);
-					listener.setError("Unexpected internal error: " + e.getMessage() + ".");
-				}
-				finally {
-					listener.setRunning(false);
-				}
-			}
-		}.start();
+		LongOperationUtils.startLongOperation(context, operation, null);
 	}
 
 }

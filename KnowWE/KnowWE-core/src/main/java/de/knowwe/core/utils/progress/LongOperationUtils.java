@@ -1,5 +1,6 @@
 package de.knowwe.core.utils.progress;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -9,8 +10,10 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -126,5 +129,57 @@ public class LongOperationUtils {
 			KnowWEUtils.storeObject(section, key, storedObject);
 		}
 		return storedObject;
+	}
+
+	/**
+	 * Starts the given {@link LongOperation} in its own thread.
+	 * 
+	 * @created 13.09.2013
+	 * @param context the context of the user requesting the start of the
+	 *        operation
+	 * @param operation the operation to be started
+	 * @param doFinally a function that will be called after the operation is
+	 *        done (can be null if there is nothing to do)
+	 */
+	public static void startLongOperation(final UserActionContext context, final LongOperation operation, final Finally doFinally) {
+
+		final AjaxProgressListener listener =
+				ProgressListenerManager.getInstance().createProgressListener(context, operation);
+
+		new Thread("long-operation-worker") {
+
+			@Override
+			public void run() {
+				try {
+					operation.execute(context, listener);
+				}
+				catch (IOException e) {
+					Logger.getLogger(getClass().getName()).log(Level.WARNING,
+							"cannot complete operation", e);
+					listener.setError("Error occured: " + e.getMessage() + ".");
+				}
+				catch (InterruptedException e) {
+					Logger.getLogger(getClass().getName()).log(Level.INFO,
+							"operation canceled by user");
+					listener.setError("Canceled by user.");
+				}
+				catch (Throwable e) {
+					Logger.getLogger(getClass().getName()).log(Level.SEVERE,
+							"cannot complete operation, unexpected internal error", e);
+					listener.setError("Unexpected internal error: " + e.getMessage() + ".");
+				}
+				finally {
+					listener.setRunning(false);
+					if (doFinally != null) {
+						doFinally.doFinally();
+					}
+				}
+			}
+		}.start();
+	}
+
+	public interface Finally {
+
+		public void doFinally();
 	}
 }
