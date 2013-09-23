@@ -166,8 +166,8 @@ public class DelegateRenderer implements Renderer {
 				MessageRenderer warningRenderer = subSection.get()
 						.getWarningRenderer();
 				if (warningRenderer != null) {
-					warningRenderer
-							.preRenderMessage(kdomWarning, user, entry.getKey(), builder);
+					warningRenderer.preRenderMessage(kdomWarning, user,
+							warnings.size() > 1 ? entry.getKey() : null, builder);
 				}
 			}
 		}
@@ -180,7 +180,8 @@ public class DelegateRenderer implements Renderer {
 				MessageRenderer noticeRenderer = subSection.get()
 						.getNoticeRenderer();
 				if (noticeRenderer != null) {
-					noticeRenderer.preRenderMessage(kdomNotice, user, entry.getKey(), builder);
+					noticeRenderer.preRenderMessage(kdomNotice, user,
+							notices.size() > 1 ? entry.getKey() : null, builder);
 				}
 			}
 		}
@@ -193,7 +194,8 @@ public class DelegateRenderer implements Renderer {
 				MessageRenderer errorRenderer = subSection.get()
 						.getErrorRenderer();
 				if (errorRenderer != null) {
-					errorRenderer.preRenderMessage(kdomNotice, user, entry.getKey(), builder);
+					errorRenderer.preRenderMessage(kdomNotice, user,
+							errors.size() > 1 ? entry.getKey() : null, builder);
 				}
 			}
 		}

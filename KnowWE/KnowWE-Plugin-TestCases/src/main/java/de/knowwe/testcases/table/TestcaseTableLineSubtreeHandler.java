@@ -9,7 +9,6 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.QuestionValue;
-import de.d3web.core.session.values.Unknown;
 import de.d3web.empiricaltesting.Finding;
 import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.strings.Strings;
@@ -78,31 +77,10 @@ final class TestcaseTableLineSubtreeHandler extends SubtreeHandler<TestcaseTable
 			Question question = kb.getManager().searchQuestion(qName);
 			if (question == null) continue;
 
-			try {
-				QuestionValue value;
-				if (valueString.equals("-?-") || valueString.equalsIgnoreCase("UNKNOWN")) {
-					value = Unknown.getInstance();
-				}
-				else {
-					value = KnowledgeBaseUtils.findValue(question, valueString);
-				}
-				if (value != null) {
-					Finding finding = new Finding(question, value);
-					testCase.add(finding);
-				}
-				else {
-					// sectionizing finds a choiceValue
-					Messages.storeMessage(article, valueSec, getClass(),
-							Messages.noSuchObjectError(valueString));
-				}
-			}
-			catch (NumberFormatException e) {
-				// sectionizing find an illegal number
-				// replace message...
-				Messages.clearMessages(article,
-						Sections.findSuccessor(valueSec, CellAnswerRef.class));
-				Messages.storeMessage(article, valueSec, getClass(),
-						Messages.invalidNumberError(valueString));
+			QuestionValue value = KnowledgeBaseUtils.findValue(question, valueString, false);
+			if (value != null) {
+				Finding finding = new Finding(question, value);
+				testCase.add(finding);
 			}
 		}
 
