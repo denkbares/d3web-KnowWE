@@ -57,7 +57,6 @@ public class CorrectionToolProvider implements ToolProvider {
 
 		for (CorrectionProvider c : getProviders(section)) {
 			List<CorrectionProvider.Suggestion> s = c.getSuggestions(article, section, threshold);
-
 			if (s != null) {
 				suggestions.addAll(s);
 			}
