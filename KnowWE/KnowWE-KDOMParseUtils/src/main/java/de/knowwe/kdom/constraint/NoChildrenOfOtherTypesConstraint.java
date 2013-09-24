@@ -46,9 +46,7 @@ public class NoChildrenOfOtherTypesConstraint implements SectionFinderConstraint
 		}
 	}
 
-	@Override
-	public <T extends Type> boolean satisfiesConstraint(List<SectionFinderResult> found,
-			Section<?> father, Class<T> type, String text) {
+	private static <T extends Type> boolean satisfiesConstraint(List<SectionFinderResult> found, Section<?> father, Class<T> type, String text) {
 
 		for (Section<?> child : father.getChildren()) {
 			if (!child.get().getClass().equals(type)) return false;

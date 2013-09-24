@@ -25,8 +25,8 @@ import java.util.regex.Pattern;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
-import de.knowwe.kdom.constraint.ExactlyOneFindingConstraint;
 
 /**
  * TableCellStart.
@@ -45,7 +45,7 @@ public class TableCellStart extends AbstractType {
 	public TableCellStart() {
 		ConstraintSectionFinder csf = new ConstraintSectionFinder(new RegexSectionFinder(
 				Pattern.compile("(\\|).*"), 1));
-		csf.addConstraint(ExactlyOneFindingConstraint.getInstance());
+		csf.addConstraint(AtMostOneFindingConstraint.getInstance());
 		setSectionFinder(csf);
 		setRenderer(NothingRenderer.getInstance());
 	}

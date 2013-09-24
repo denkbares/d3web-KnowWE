@@ -37,8 +37,8 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.Message;
 import de.knowwe.kdom.AnonymousType;
+import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
-import de.knowwe.kdom.constraint.ExactlyOneFindingConstraint;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.sectionFinder.NonEmptyLineSectionFinder;
@@ -58,7 +58,7 @@ public class ListSolutionType extends AbstractType {
 	public ListSolutionType() {
 		ConstraintSectionFinder solutionFinder = new ConstraintSectionFinder(
 				new NonEmptyLineSectionFinder());
-		solutionFinder.addConstraint(ExactlyOneFindingConstraint.getInstance());
+		solutionFinder.addConstraint(AtMostOneFindingConstraint.getInstance());
 		this.setSectionFinder(solutionFinder);
 
 		this.addSubtreeHandler(Priority.HIGH, new XCLModelCreator());
@@ -73,7 +73,7 @@ public class ListSolutionType extends AbstractType {
 
 		XCListSolutionDefinition solDef = new XCListSolutionDefinition();
 		ConstraintSectionFinder allFinder = new ConstraintSectionFinder(new AllTextFinderTrimmed());
-		allFinder.addConstraint(ExactlyOneFindingConstraint.getInstance());
+		allFinder.addConstraint(AtMostOneFindingConstraint.getInstance());
 		solDef.setSectionFinder(allFinder);
 		this.addChildType(solDef);
 	}

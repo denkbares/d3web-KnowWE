@@ -18,15 +18,10 @@
  */
 package de.knowwe.testcases.table;
 
-import java.util.List;
-
-import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.MessageRenderer;
+import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
-import de.knowwe.kdom.constraint.SectionFinderConstraint;
 import de.knowwe.kdom.table.TableCell;
 import de.knowwe.kdom.table.TableLine;
 
@@ -41,27 +36,9 @@ public class HeaderLine extends TableLine {
 	public HeaderLine() {
 		replaceChildType(new HeaderCell(), TableCell.class);
 
-		setSectionFinder(new ConstraintSectionFinder(new RegexSectionFinder(TableLine.LINEPATTERN),
-				new SectionFinderConstraint() {
-
-					@Override
-					public <T extends Type> boolean satisfiesConstraint(List<SectionFinderResult> found, Section<?> father, Class<T> type, String text) {
-
-						// header line
-						return found.size() == 1;
-					}
-
-					@Override
-					public <T extends Type> void filterCorrectResults(List<SectionFinderResult> found, Section<?> father, Class<T> type, String text) {
-						if (found.size() < 2) {
-							return;
-						}
-						SectionFinderResult result = found.get(0);
-						found.clear();
-						found.add(result);
-					}
-
-				}));
+		setSectionFinder(new ConstraintSectionFinder(
+				new RegexSectionFinder(TableLine.LINEPATTERN),
+				AtMostOneFindingConstraint.getInstance()));
 	}
 
 	// deactivate message renderer to avoid <span>...</span> rendered

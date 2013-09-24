@@ -18,11 +18,6 @@
  */
 package de.knowwe.kdom.constraint;
 
-import java.util.Iterator;
-import java.util.List;
-
-import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 /**
@@ -31,7 +26,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
  * @author jochenreutelshofer
  * @created 28.11.2012
  */
-public class NoEmptySectionsConstraint implements SectionFinderConstraint {
+public class NoEmptySectionsConstraint extends AbstractFilterConstraint {
 
 	private static NoEmptySectionsConstraint instance = new NoEmptySectionsConstraint();
 
@@ -43,22 +38,8 @@ public class NoEmptySectionsConstraint implements SectionFinderConstraint {
 	}
 
 	@Override
-	public <T extends Type> boolean satisfiesConstraint(List<SectionFinderResult> found, Section<?> father, Class<T> type, String text) {
-		for (SectionFinderResult sectionFinderResult : found) {
-			if (sectionFinderResult.getStart() == sectionFinderResult.getEnd()) return false;
-		}
-		return true;
-	}
-
-	@Override
-	public <T extends Type> void filterCorrectResults(List<SectionFinderResult> found, Section<?> father, Class<T> type, String text) {
-		Iterator<SectionFinderResult> iterator = found.iterator();
-		while (iterator.hasNext()) {
-			SectionFinderResult nextResult = iterator.next();
-			if (nextResult.getStart() == nextResult.getEnd()) {
-				iterator.remove();
-			}
-		}
+	public boolean accept(String text, SectionFinderResult result) {
+		return result.getStart() < result.getEnd();
 	}
 
 }

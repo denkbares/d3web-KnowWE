@@ -79,15 +79,11 @@ public class ConstraintSectionFinder implements SectionFinder {
 	 * @return
 	 */
 
-	private void applyConstraints(List<SectionFinderResult> results, Section<?> father,
-			Class<? extends Type> ob, String text) {
+	private void applyConstraints(List<SectionFinderResult> results, Section<?> father, Class<? extends Type> ob, String text) {
 
 		for (SectionFinderConstraint sectionFinderConstraint : constraintList) {
-			if (!sectionFinderConstraint.satisfiesConstraint(results, father, ob, text)) {
-				sectionFinderConstraint.filterCorrectResults(results, father, ob, text);
-			}
+			sectionFinderConstraint.filterCorrectResults(results, father, ob, text);
 		}
-
 	}
 
 }

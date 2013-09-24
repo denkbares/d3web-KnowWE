@@ -54,29 +54,29 @@ public class RenderKDOMType extends DefaultMarkupType {
 		@Override
 		protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
 			String html = "";
-			// html += "<div class='zebra-table'>";
 			html += "<table class='renderKDOMTable wikitable' id='kdomTreeTable'>";
+			html += "<tr>";
 			html += "<th>Type</th>";
 			html += "<th>ID</th>";
 			html += "<th>Length</th>";
 			html += "<th>Offset</th>";
 			html += "<th>Children</th>";
 			html += "<th>Text</th>";
+			html += "</tr>";
+
 			string.appendHtml(html);
 			renderSubtree(section.getArticle().getRootSection(), string, 1);
 
-			string.appendHtml("</table>"/* </div>" */);
-
+			string.appendHtml("</table>");
 			string.appendHtml("<script type='text/javascript'>jq$('#kdomTreeTable').treeTable({clickableNodeNames: true});</script>");
-
 		}
 
 		protected void renderSubtree(Section<?> s, RenderResult string, int count) {
-			string.appendHtml("<tr id='" + s.getID()
+			string.appendHtml("<tr id='kdom-row-" + s.getID()
 					+ "'");
 			string.append(" class='treetr");
 			if (s.getFather() != null) {
-				string.append(" child-of-" + s.getFather().getID());
+				string.append(" child-of-kdom-row-" + s.getFather().getID());
 			}
 			if (count % 2 != 0) {
 				string.append(" odd' ");

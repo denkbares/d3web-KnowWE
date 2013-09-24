@@ -3,6 +3,7 @@ package de.d3web.we.kdom.condition;
 import java.util.Arrays;
 import java.util.List;
 
+import de.d3web.we.kdom.condition.helper.ConjunctSectionFinder;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -23,14 +24,14 @@ import de.knowwe.kdom.sectionFinder.OneOfStringEnumFinder;
  */
 public class NegatedExpression extends NonTerminalCondition {
 
-	static String[] NEG_SIGNS = null;
+	private final String[] negationKeywords;
 
 	public NegatedExpression(String[] keys) {
-		NEG_SIGNS = Arrays.copyOf(keys, keys.length);
+		negationKeywords = Arrays.copyOf(keys, keys.length);
 
 		AnonymousType negationSign = new AnonymousType("NegationSign");
 		ConstraintSectionFinder finder = new ConstraintSectionFinder(
-				new OneOfStringEnumFinder(NEG_SIGNS),
+				new OneOfStringEnumFinder(negationKeywords),
 				AtMostOneFindingConstraint.getInstance());
 		negationSign.setSectionFinder(finder);
 		this.addChildType(negationSign);
@@ -40,10 +41,11 @@ public class NegatedExpression extends NonTerminalCondition {
 			@Override
 			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 				String trimmed = text.trim();
-				for (String sign : NEG_SIGNS) {
-					if (trimmed.startsWith(sign)) {
-						return new AllTextFinderTrimmed().lookForSections(text,
-								father, type);
+				for (String sign : negationKeywords) {
+					if (trimmed.startsWith(sign)
+							&& trimmed.length() > sign.length()
+							&& ConjunctSectionFinder.isSeparatorChar(trimmed.charAt(sign.length()))) {
+						return new AllTextFinderTrimmed().lookForSections(text, father, type);
 					}
 				}
 				return null;

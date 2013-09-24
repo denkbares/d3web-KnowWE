@@ -28,7 +28,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
-import de.knowwe.kdom.constraint.NonEmptyConstraint;
+import de.knowwe.kdom.constraint.NoBlankSectionsConstraint;
 import de.knowwe.kdom.constraint.SectionFinderConstraint;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableUtils;
@@ -57,11 +57,11 @@ public class CellContent extends TableCellContent {
 		checkType.setAllowedTerminalConditions(RuleContentType.getTerminalConditions());
 		checkType.setSectionFinder(new ConstraintSectionFinder(new AllTextSectionFinder(),
 				new TableNameConstraint("Checks", null),
-				new NonEmptyConstraint()));
+				NoBlankSectionsConstraint.getInstance()));
 
 		ValueType valueType = new ValueType();
 		valueType.setSectionFinder(new ConstraintSectionFinder(valueType.getSectionFinder(),
-				new NonEmptyConstraint()));
+				NoBlankSectionsConstraint.getInstance()));
 
 		this.addChildType(nameType);
 		this.addChildType(timeStampType);
@@ -79,8 +79,7 @@ public class CellContent extends TableCellContent {
 			this.columns = columns;
 		}
 
-		@Override
-		public <T extends Type> boolean satisfiesConstraint(List<SectionFinderResult> found, Section<?> father, Class<T> type, String text) {
+		private <T extends Type> boolean satisfiesConstraint(List<SectionFinderResult> found, Section<?> father, Class<T> type, String text) {
 			int column = TableUtils.getColumn(father);
 			Section<? extends HeaderCell> headerCell = TestcaseTable.findHeaderCell(father);
 			if (headerCell == null) {
@@ -101,7 +100,7 @@ public class CellContent extends TableCellContent {
 
 		@Override
 		public <T extends Type> void filterCorrectResults(List<SectionFinderResult> found, Section<?> father, Class<T> type, String text) {
-			// clear all results, if outside the column range
+			if (satisfiesConstraint(found, father, type, text)) return;
 			found.clear();
 		}
 
