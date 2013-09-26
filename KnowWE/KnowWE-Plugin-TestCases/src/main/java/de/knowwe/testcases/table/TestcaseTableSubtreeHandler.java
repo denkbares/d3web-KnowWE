@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.empiricaltesting.SequentialTestCase;
@@ -32,6 +33,7 @@ import de.d3web.empiricaltesting.TestCase;
 import de.d3web.testcase.model.Check;
 import de.d3web.testcase.stc.STCWrapper;
 import de.d3web.we.kdom.condition.CompositeCondition;
+import de.d3web.we.kdom.condition.Conjunct;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
@@ -61,8 +63,8 @@ public class TestcaseTableSubtreeHandler extends SubtreeHandler<TestcaseTable> {
 
 		testcase.getRepository().add(stc);
 
-		Map<RatedTestCase, Check> conditionsForRTC =
-				new IdentityHashMap<RatedTestCase, Check>();
+		Map<RatedTestCase, List<Check>> conditionsForRTC =
+				new IdentityHashMap<RatedTestCase, List<Check>>();
 		List<Section<TestcaseTableLine>> lines =
 				Sections.findSuccessorsOfType(s, TestcaseTableLine.class);
 		for (Section<TestcaseTableLine> section : lines) {
@@ -78,8 +80,24 @@ public class TestcaseTableSubtreeHandler extends SubtreeHandler<TestcaseTable> {
 			if (condSec == null) continue;
 			Condition condition = KDOMConditionFactory.createCondition(article, condSec);
 			if (condition == null) continue;
-			Check check = new ConditionCheck(condition, condSec.getText());
-			conditionsForRTC.put(rtc, check);
+
+			// add multiple checks for and-conditions
+			List<Check> checks = new LinkedList<Check>();
+			conditionsForRTC.put(rtc, checks);
+			if (condition instanceof CondAnd) {
+				List<Section<Conjunct>> parts = Sections.findChildrenOfType(condSec, Conjunct.class);
+				List<Condition> terms = ((CondAnd) condition).getTerms();
+				if (parts.size() == terms.size()) {
+					for (int i = 0; i < terms.size(); i++) {
+						checks.add(new ConditionCheck(terms.get(i), parts.get(i).getText()));
+					}
+				}
+			}
+
+			// add one check if we have not added multiple ones
+			if (checks.isEmpty()) {
+				checks.add(new ConditionCheck(condition, condSec.getText()));
+			}
 		}
 
 		KnowWEUtils.storeObject(s.getArticle(), s, TestcaseTable.TESTCASE_KEY, testcase);
@@ -107,7 +125,7 @@ public class TestcaseTableSubtreeHandler extends SubtreeHandler<TestcaseTable> {
 		stc.setName(name);
 		STCWrapper wrapper = new STCWrapper(stc);
 		for (RatedTestCase rtc : conditionsForRTC.keySet()) {
-			wrapper.addCheck(rtc, conditionsForRTC.get(rtc));
+			wrapper.addChecks(rtc, conditionsForRTC.get(rtc));
 		}
 		SingleTestCaseProvider provider = new SingleTestCaseProvider(
 				article, Sections.findAncestorOfType(s, DefaultMarkupType.class), wrapper, name);
