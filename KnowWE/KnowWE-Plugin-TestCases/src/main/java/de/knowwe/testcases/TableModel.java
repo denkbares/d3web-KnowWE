@@ -162,14 +162,6 @@ public class TableModel {
 			if (collapsedColumns.contains(column)) {
 				attributes.add("class");
 				attributes.add("collapsedcolumn");
-				attributes.add("title");
-				if (type.equals("th")) {
-					attributes.add("Expand " + cell);
-					setType(column, attributes);
-				}
-				else {
-					attributes.add(cell);
-				}
 			}
 			else {
 				if (type.equals("th")) {

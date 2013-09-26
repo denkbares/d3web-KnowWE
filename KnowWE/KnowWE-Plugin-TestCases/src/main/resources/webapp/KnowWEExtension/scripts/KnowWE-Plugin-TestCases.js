@@ -3,6 +3,7 @@ var TestCasePlayer = {};
 TestCasePlayer.init = function() {
 	TestCasePlayer.setLastSelected();
 	jq$(".type_TestCasePlayer").find(".wikitable").find("th").unbind('click').click(TestCasePlayer.registerClickableColumnHeaders);
+	jq$(".type_TestCasePlayer").find(".wikitable").find(".collapsedcolumn").each(function() {TestCasePlayer.addToolTip(jq$(this));});
 }
 
 
@@ -70,11 +71,20 @@ TestCasePlayer.collapseColumn = function(th, animated) {
 	} else {
 		tds.addClass("collapsedcolumn");
 	}
-	th.attr("title", "Expand " + th.text());
-	tds.filter("td").each(function() {
-		jq$(this).attr("title", jq$(this).text());
-	});
+	TestCasePlayer.addToolTip(th);
+	tds.filter("td").each(function() {TestCasePlayer.addToolTip(jq$(this));});
 	
+}
+
+TestCasePlayer.addToolTip = function(element) {
+	if (element.is('th')) {
+		element.attr("title", "Expand " + element.text().trim());
+	} else if (element.is('td')) {
+		var data = element.clone();
+		data.find('script').remove();
+        data.find('br').replaceWith('\n');
+        element.attr("title", data.text().trim().replace(/[ \t]*(\r?\n)[ \t]*/g, '$1'));
+	}
 }
 
 TestCasePlayer.expandColumn = function(th, animated) {
@@ -205,7 +215,7 @@ TestCasePlayer.update = function() {
     		}
 	        
     	}
-    	jq$(".type_TestCasePlayer").find(".wikitable").find("th").unbind('click').click(TestCasePlayer.registerClickableColumnHeaders);
+    	TestCasePlayer.init();
     }
 	KNOWWE.helper.observer.notify('update', fn);
 }

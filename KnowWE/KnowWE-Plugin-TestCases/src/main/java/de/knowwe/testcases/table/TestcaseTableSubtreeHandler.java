@@ -89,14 +89,14 @@ public class TestcaseTableSubtreeHandler extends SubtreeHandler<TestcaseTable> {
 				List<Condition> terms = ((CondAnd) condition).getTerms();
 				if (parts.size() == terms.size()) {
 					for (int i = 0; i < terms.size(); i++) {
-						checks.add(new ConditionCheck(terms.get(i), parts.get(i).getText()));
+						checks.add(new ConditionCheck(terms.get(i), parts.get(i)));
 					}
 				}
 			}
 
 			// add one check if we have not added multiple ones
 			if (checks.isEmpty()) {
-				checks.add(new ConditionCheck(condition, condSec.getText()));
+				checks.add(new ConditionCheck(condition, condSec));
 			}
 		}
 

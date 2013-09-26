@@ -67,6 +67,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.notification.NotificationManager;
 import de.knowwe.notification.OutDatedSessionNotification;
+import de.knowwe.testcases.table.ConditionCheck;
 
 /**
  * Renderer for TestCasePlayerType
@@ -214,8 +215,9 @@ public class TestCasePlayerRenderer implements Renderer {
 				continue;
 			}
 			if (row > navigatorParameters.to) break;
-			renderTableLine(selectedTriple, testCase, status, additionalQuestions, usedQuestions,
-					manager, selectedObject, date, row - navigatorParameters.from + 1, tableModel);
+			renderTableLine(user, selectedTriple, testCase, status, additionalQuestions,
+					usedQuestions, manager, selectedObject, date,
+					row - navigatorParameters.from + 1, tableModel);
 			row++;
 		}
 		return tableModel;
@@ -329,7 +331,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		return additionalQuestions;
 	}
 
-	private void renderTableLine(Triple<TestCaseProvider, Section<?>, Article> selectedTriple, TestCase testCase, SessionDebugStatus status, Collection<String> additionalQuestions, Collection<Question> usedQuestions, TerminologyManager manager, TerminologyObject selectedObject, Date date, int row, TableModel tableModel) {
+	private void renderTableLine(UserContext user, Triple<TestCaseProvider, Section<?>, Article> selectedTriple, TestCase testCase, SessionDebugStatus status, Collection<String> additionalQuestions, Collection<Question> usedQuestions, TerminologyManager manager, TerminologyObject selectedObject, Date date, int row, TableModel tableModel) {
 		String dateString = String.valueOf(date.getTime());
 		renderRunTo(selectedTriple, status, date, dateString, tableModel, row);
 		int column = 1;
@@ -357,7 +359,7 @@ public class TestCasePlayerRenderer implements Renderer {
 			}
 			column++;
 		}
-		renderCheckResults(testCase, status, date, tableModel, row, column++);
+		renderCheckResults(user, testCase, status, date, tableModel, row, column++);
 		// render observations
 		for (String s : additionalQuestions) {
 			TerminologyObject object = manager.search(s);
@@ -446,7 +448,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		}
 	}
 
-	private void renderCheckResults(TestCase testCase, SessionDebugStatus status, Date date, TableModel tableModel, int row, int column) {
+	private void renderCheckResults(UserContext user, TestCase testCase, SessionDebugStatus status, Date date, TableModel tableModel, int row, int column) {
 		Collection<Pair<Check, Boolean>> checkResults = status.getCheckResults(date);
 		int max = 0;
 		RenderResult sb = new RenderResult(tableModel.getUserContext());
@@ -455,7 +457,7 @@ public class TestCasePlayerRenderer implements Renderer {
 			for (Check c : testCase.getChecks(date, status.getSession().getKnowledgeBase())) {
 				if (!first) sb.appendHtml("<br />");
 				first = false;
-				sb.append(c.getCondition());
+				renderCheck(c, user, sb);
 				max = Math.max(max, c.getCondition().toString().length());
 			}
 		}
@@ -463,23 +465,35 @@ public class TestCasePlayerRenderer implements Renderer {
 			if (!checkResults.isEmpty()) {
 				boolean first = true;
 				for (Pair<Check, Boolean> p : checkResults) {
-					max = Math.max(max, p.getA().getCondition().toString().length());
+					Check check = p.getA();
+					boolean success = p.getB();
+					max = Math.max(max, check.getCondition().toString().length());
 					if (!first) sb.appendHtml("<br />");
 					first = false;
 					String color;
-					if (p.getB()) {
+					if (success) {
 						color = StyleRenderer.CONDITION_FULLFILLED;
 					}
 					else {
 						color = StyleRenderer.CONDITION_FALSE;
 					}
 					sb.appendHtml("<span style='background-color:" + color + "'>");
-					sb.append(p.getA().getCondition());
+					// render the condition appropriately
+					renderCheck(check, user, sb);
 					sb.appendHtml("</span>");
 				}
 			}
 		}
 		tableModel.addCell(row, column, sb.toStringRaw(), max);
+	}
+
+	private void renderCheck(Check check, UserContext user, RenderResult sb) {
+		if (check instanceof ConditionCheck) {
+			((ConditionCheck) check).render(user, sb);
+		}
+		else {
+			sb.append(check.getCondition());
+		}
 	}
 
 	private TerminologyObject renderObservationQuestionAdder(Section<?> section, UserContext user, TerminologyManager manager, Collection<String> alreadyAddedQuestions, TableModel tableModel, int column) {

@@ -22,6 +22,10 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.Conditions;
 import de.d3web.core.session.Session;
 import de.d3web.testcase.model.Check;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.DelegateRenderer;
+import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.user.UserContext;
 
 /**
  * Class to implement a checker that test a condition to be true.
@@ -32,18 +36,18 @@ import de.d3web.testcase.model.Check;
 public class ConditionCheck implements Check {
 
 	private final Condition condition;
-	private final String verbalization;
+	private final Section<?> section;
 
 	/**
-	 * Creates a new ConditionCheck instance for a specified condition and a
-	 * given text verbalization.
+	 * Creates a new ConditionCheck instance for a specified condition and the
+	 * condition-defining section.
 	 * 
 	 * @param condition the condition to be checked
-	 * @param verbalization the text to be displayed
+	 * @param section the section defining the condition
 	 */
-	public ConditionCheck(Condition condition, String verbalization) {
+	public ConditionCheck(Condition condition, Section<?> section) {
 		this.condition = condition;
-		this.verbalization = verbalization;
+		this.section = section;
 	}
 
 	@Override
@@ -53,11 +57,14 @@ public class ConditionCheck implements Check {
 
 	@Override
 	public String getCondition() {
-		return verbalization;
+		return section.getText();
 	}
 
 	public Condition getConditionObject() {
 		return condition;
 	}
 
+	public void render(UserContext context, RenderResult result) {
+		DelegateRenderer.getRenderer(section, context).render(section, context, result);
+	}
 }
