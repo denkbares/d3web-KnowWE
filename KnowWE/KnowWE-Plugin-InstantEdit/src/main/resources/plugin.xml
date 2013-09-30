@@ -51,6 +51,7 @@
         <parameter id="scope" value="KPIAnalysis" />
         <parameter id="scope" value="ReadOnly" />
         <parameter id="scope" value="RuleMarkup" />
+        <parameter id="scope" value="SemanticAutocompletionType" />
     </extension>
  
     <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
