@@ -37,6 +37,16 @@ import de.knowwe.core.user.UserContext;
  */
 public class VersionTagHandler extends AbstractHTMLTagHandler {
 
+	private static ResourceBundle rb;
+	static {
+		try {
+			rb = ResourceBundle.getBundle("metadata");
+		}
+		catch (MissingResourceException e) {
+			rb = null;
+		}
+	}
+
 	public VersionTagHandler() {
 		super("version");
 	}
@@ -49,22 +59,17 @@ public class VersionTagHandler extends AbstractHTMLTagHandler {
 
 	@Override
 	public void renderHTML(String web, String topic, UserContext user, Map<String, String> values, RenderResult result) {
-		ResourceBundle rb;
 
-		try {
-			rb = ResourceBundle.getBundle("metadata");
-		}
-		catch (MissingResourceException e) {
+		StringBuilder html = new StringBuilder();
+		if (rb == null) {
 			result.append("no build metadata file found");
 			return;
 		}
 
-		StringBuilder html = new StringBuilder();
-
 		String v = values.get("version");
 		if (v == null || v.isEmpty()) {
 			html.append("KnowWE ");
-			html.append(rb.getString("build.time"));
+			html.append(getBuildTime());
 		}
 		else if (v.equals("chuck")) {
 			try {
@@ -75,20 +80,10 @@ public class VersionTagHandler extends AbstractHTMLTagHandler {
 			}
 		}
 		else if (v.equals("buildnumber")) {
-			try {
-				html.append(rb.getString("build.number"));
-			}
-			catch (MissingResourceException e) {
-				html.append("no build number");
-			}
+			html.append(getBuildNumber());
 		}
 		else if (v.equals("buildtag")) {
-			try {
-				html.append(rb.getString("build.tag"));
-			}
-			catch (MissingResourceException e) {
-				html.append("no build tag");
-			}
+			html.append(getBuildTag());
 		}
 		else if (v.equals("buildtype")) {
 			try {
@@ -103,6 +98,46 @@ public class VersionTagHandler extends AbstractHTMLTagHandler {
 		}
 
 		result.appendHtml(html.toString());
+	}
+
+	public static String getBuildNumber() {
+		try {
+			return rb.getString("build.number");
+		}
+		catch (MissingResourceException e) {
+			return "no build number";
+		}
+		catch (NullPointerException e) {
+			return "no build metadata file found";
+		}
+	}
+
+	public static String getBuildTime() {
+		try {
+			return rb.getString("build.time");
+		}
+		catch (MissingResourceException e) {
+			return "no build time";
+		}
+		catch (NullPointerException e) {
+			return "no build metadata file found";
+		}
+	}
+
+	public static String getBuildTag() {
+		try {
+			return rb.getString("build.tag");
+		}
+		catch (MissingResourceException e) {
+			return "no build tag";
+		}
+		catch (NullPointerException e) {
+			return "no build metadata file found";
+		}
+	}
+
+	public static boolean hasVersionInfo() {
+		return rb != null;
 	}
 
 	@Override
