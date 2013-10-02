@@ -511,6 +511,7 @@ KNOWWE.core.rerendercontent = function(){
 			        	try {
 	                        KNOWWE.core.actions.init();
 	                        Collapsible.render( _KS('#page'), KNOWWE.helper.gup('page'));
+	                        ToolMenu.decorateToolMenus();
 	                        if (typeof(fn) == "function") {	                        	
 	                        	fn();
 	                        }

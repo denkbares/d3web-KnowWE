@@ -58,6 +58,7 @@ ToolMenu.prototype.hideToolsPopupMenu = function() {
 ToolMenu.prototype.decorateToolMenus = function() {
 	jq$('.toolsMenuDecorator').each(function() {
 		var a = jq$(this);
+		if (a.data('toolMenuDecorated') === 'true') return;
 		a.parent().mouseenter(function() {
 			a.css('visibility', 'visible');
 		});
@@ -67,6 +68,7 @@ ToolMenu.prototype.decorateToolMenus = function() {
 		a.click(function() {
 			ToolMenu.showToolPopupMenu(a.attr('id'));
 		});
+		a.data('toolMenuDecorated', 'true');
 	});
 }
 var ToolMenu = new ToolMenu();
