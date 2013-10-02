@@ -18,11 +18,9 @@
  */
 package de.knowwe.jspwiki;
 
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -53,11 +51,7 @@ public class ReadOnlyMarkup extends DefaultMarkupType {
 
 		@Override
 		protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
-			WikiConnector connector = Environment.getInstance().getWikiConnector();
-			boolean visible = connector.userIsMemberOfGroup("admin",
-					user.getRequest()) || connector.userIsMemberOfGroup("Admin",
-					user.getRequest());
-			if (!visible) {
+			if (!user.userIsAdmin()) {
 				string.append("This feature is only visible and usable for administrators.");
 				return;
 			}
