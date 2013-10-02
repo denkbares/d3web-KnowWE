@@ -20,6 +20,7 @@
 package de.d3web.we.kdom.questionTree;
 
 import java.util.Collection;
+import java.util.logging.Logger;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.QContainer;
@@ -119,26 +120,33 @@ public class QClassLine extends AbstractType {
 					}
 
 					if (superQuestionnaire != null) {
-						// in case it was connected to the root, remove this
-						// connection
-						kb.getRootQASet().removeChild(localQuestionnaire);
+						int position = localQuestionniareDef.get().getPosition(
+								localQuestionniareDef);
+						int childrenCount = superQuestionnaire.getChildren().length;
+						if (position < childrenCount) {
+							// in case it was connected to the root, remove this
+							// connection
+							kb.getRootQASet().removeChild(localQuestionnaire);
 
-						// here the actual taxonomic relation is established
-						superQuestionnaire.addChild(localQuestionnaire,
-								localQuestionniareDef.get().getPosition(localQuestionniareDef));
-
-						return Messages.asList(Messages.relationCreatedNotice(
-								s.getClass().getSimpleName()
-										+ " '" + localQuestionnaire.getName() + "' is now "
-										+ "sub-questionnaire of '"
-										+ superQuestionnaire.getName() + "'"));
+							// here the actual taxonomic relation is established
+							superQuestionnaire.addChild(localQuestionnaire,
+									position);
+						}
+						else {
+							Logger.getLogger(this.getClass().getName()).warning(
+									"Unable to add sub-questionnaire at desired position.\nDesired position: "
+											+ position + ", children count in parent: "
+											+ childrenCount + ", questionnaire: '"
+											+ localQuestionnaire + "', parent: '"
+											+ superQuestionnaire + "'.\n This is likely because one of the"
+											+ " sibling questionnaires could not be added due to an error.");
+						}
 					}
 				}
 			}
 
 			return Messages.asList();
 		}
-
 	}
 
 	private void initSectionFinder() {
