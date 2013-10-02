@@ -398,7 +398,7 @@ public class DefaultMarkupRenderer implements Renderer {
 				+ " class=\"markupMenuItem\""
 				+ (jsAction != null
 						? " href=\"javascript:" + tool.getJSAction()
-								+ ";hideToolsPopupMenu();undefined;\""
+								+ ";ToolMenu.hideToolsPopupMenu();undefined;\""
 						: "") +
 				" title=\"" + Strings.encodeHtml(tool.getDescription()) + "\">" +
 				(hasIcon ? ("<img src=\"" + icon + "\" />") : "") +

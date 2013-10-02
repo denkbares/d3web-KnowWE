@@ -20,7 +20,7 @@ package de.knowwe.diaflux.type;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.toolprovider.ObjectInfoPageToolProvider;
+import de.knowwe.core.tools.ObjectInfoPageToolProvider;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.diaflux.type.FlowchartXMLHeadType.FlowchartTermDef;
 import de.knowwe.tools.Tool;

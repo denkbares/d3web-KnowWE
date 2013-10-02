@@ -24,7 +24,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 
 /**
  * 
@@ -34,9 +33,6 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 public class ToolMenuDecoratingRenderer implements Renderer {
 
 	private final Renderer decoratedRenderer;
-
-	private static DefaultMarkupRenderer defaultMarkupRenderer =
-			new DefaultMarkupRenderer();
 
 	public ToolMenuDecoratingRenderer(Renderer decoratedRenderer) {
 		this.decoratedRenderer = decoratedRenderer;
@@ -51,43 +47,14 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 		String headerID = "tool_menu_" + sec.getID() + "_" + UUID.randomUUID().toString();
 
 		if (hasTools) {
-			string.appendHtml("<span " +
-					"style='position:relative;'" +
-					">");
-			string.appendHtml("<div " +
-					"style='position:absolute;' " +
-					"class='toolsMenuDecorator' " +
-					"id='" + headerID + "' " +
-					">" +
-					"</div>");
+			string.appendHtmlTag("span", "style", "position:relative;");
+			string.appendHtmlTag("div", "style", "position:absolute", "class",
+					"toolsMenuDecorator", "id", headerID, "sectionID", sec.getID());
+			string.appendHtmlTag("/div");
 		}
 		decoratedRenderer.render(sec, user, string);
 		if (hasTools) {
-			string.appendHtml("</span>");
-			RenderResult menuHTMLResult = new RenderResult(string);
-			defaultMarkupRenderer.appendMenu(tools, sec.getID(), user, menuHTMLResult);
-			String menuHTML = menuHTMLResult.toString();
-			menuHTML = menuHTML.replace("'", "\\'").replace("</div>", "</div>' + \n '");
-			string.appendHtml(
-					"<script>\n" +
-							"var makeMenuFx = function() {" +
-							"var a=$('" + headerID + "');" +
-							"a.parentNode.onmouseover = function(){" +
-							"  a.style.visibility='visible';" +
-							"};" +
-							"a.parentNode.onmouseout = function(){" +
-							"  a.style.visibility='hidden';" +
-							"};" +
-							"a.onclick = function(){" +
-							// "  requestToolsPopupMenu(a, '" + sec.getID() +
-							// "');" +
-							"  showToolsPopupMenu(a, '" +
-							menuHTML + "');" +
-							"};" +
-							"};" +
-							"makeMenuFx();" +
-							"\n</script>"
-					);
+			string.appendHtmlTag("/span");
 		}
 	}
 }
