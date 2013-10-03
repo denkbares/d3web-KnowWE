@@ -258,8 +258,8 @@ public class TestCaseUtils {
 
 	private static void throwUntransformableObjectException(Object object) {
 		throw new TransformationException(
-				"Unable to transform " + object.getClass().getName()
-						+ " for a SequentialTestCase");
+				"The given test case contains a '" + object.getClass().getSimpleName()
+						+ "' which is not compatible with a SequentialTestCase.");
 	}
 
 }

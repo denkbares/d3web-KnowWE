@@ -123,7 +123,7 @@ public class QClassLine extends AbstractType {
 						int position = localQuestionniareDef.get().getPosition(
 								localQuestionniareDef);
 						int childrenCount = superQuestionnaire.getChildren().length;
-						if (position < childrenCount) {
+						if (position <= childrenCount) {
 							// in case it was connected to the root, remove this
 							// connection
 							kb.getRootQASet().removeChild(localQuestionnaire);
@@ -133,13 +133,13 @@ public class QClassLine extends AbstractType {
 									position);
 						}
 						else {
-							Logger.getLogger(this.getClass().getName()).warning(
-									"Unable to add sub-questionnaire at desired position.\nDesired position: "
-											+ position + ", children count in parent: "
-											+ childrenCount + ", questionnaire: '"
-											+ localQuestionnaire + "', parent: '"
-											+ superQuestionnaire + "'.\n This is likely because one of the"
-											+ " sibling questionnaires could not be added due to an error.");
+							String msg = "Unable to add sub-questionnaire at desired position.\nDesired position: "
+									+ position + ", children count in parent: "
+									+ childrenCount + ", questionnaire: '"
+									+ localQuestionnaire + "', parent: '"
+									+ superQuestionnaire + "'.\n This is likely because one of the"
+									+ " sibling questionnaires could not be added due to an error.";
+							Logger.getLogger(this.getClass().getName()).warning(msg);
 						}
 					}
 				}

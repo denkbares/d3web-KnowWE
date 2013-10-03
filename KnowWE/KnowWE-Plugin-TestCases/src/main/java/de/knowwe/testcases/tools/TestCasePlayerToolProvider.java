@@ -13,7 +13,8 @@ public class TestCasePlayerToolProvider implements ToolProvider {
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		return new Tool[] {
-				getGoToTools(section, userContext), getDownalodTool(section, userContext),
+				getGoToTools(section, userContext), getDownloadCaseTool(section, userContext),
+				getDownlaodCasesZipTool(section, userContext),
 				getExpandTool(section, userContext), getCollapseTool(section, userContext) };
 	}
 
@@ -43,13 +44,19 @@ public class TestCasePlayerToolProvider implements ToolProvider {
 		return goToTool;
 	}
 
-	public Tool getDownalodTool(Section<?> section, UserContext userContext) {
+	public Tool getDownloadCaseTool(Section<?> section, UserContext userContext) {
 		Section<ContentType> content = Sections.findChildOfType(section, ContentType.class);
-		String jsAction = "window.location='action/DownloadCaseAction?playerid="
-				+ content.getID()
-				+ "&amp;KWikiWeb=default_web';";
+		String jsAction = "TestCasePlayer.downloadCase('" + content.getID() + "')";
 		Tool downloadTool = new DefaultTool("KnowWEExtension/d3web/icon/download16.gif",
-				"Download test case", "Downloads the currently selected test case", jsAction);
+				"Download case", "Downloads the currently selected test case", jsAction);
+		return downloadTool;
+	}
+
+	public Tool getDownlaodCasesZipTool(Section<?> section, UserContext userContext) {
+		Section<ContentType> content = Sections.findChildOfType(section, ContentType.class);
+		String jsAction = "TestCasePlayer.downloadCasesZip('" + content.getID() + "')";
+		Tool downloadTool = new DefaultTool("KnowWEExtension/d3web/icon/download16.gif",
+				"Download all cases", "Downloads all available test cases as a zip file", jsAction);
 		return downloadTool;
 	}
 

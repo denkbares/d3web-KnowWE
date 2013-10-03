@@ -47,7 +47,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
 		id="ObjectInfoPageToolProvider">
 		<parameter id="class"
-			value="de.knowwe.core.toolprovider.ObjectInfoPageToolProvider" />
+			value="de.knowwe.core.tools.ObjectInfoPageToolProvider" />
 		<parameter id="name" value="ObjectInfoPageToolProvider" />
 		<parameter id="description"
 			value="Offer a button to navigate to the object information page of an selected flowcharts and nodes." />

@@ -75,11 +75,31 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="ExecuteCaseAction">
+		id="CheckDownloadCaseAction">
+		<parameter id="class"
+			value="de.knowwe.testcases.CheckDownloadCaseAction" />
+		<parameter id="name" value="CheckDownloadCaseAction" />
+		<parameter id="description" value="Action CheckDownloadCaseAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="DownloadCaseAction">
 		<parameter id="class"
 			value="de.knowwe.testcases.DownloadCaseAction" />
 		<parameter id="name" value="DownloadCaseAction" />
 		<parameter id="description" value="Action DownloadCaseAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="DownloadCasesZipAction">
+		<parameter id="class"
+			value="de.knowwe.testcases.DownloadCasesZipAction" />
+		<parameter id="name" value="DownloadCasesZipAction" />
+		<parameter id="description" value="Action DownloadCasesZipAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
