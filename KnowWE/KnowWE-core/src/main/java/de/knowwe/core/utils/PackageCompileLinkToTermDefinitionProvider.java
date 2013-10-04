@@ -24,7 +24,6 @@ import de.d3web.strings.Identifier;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.utils.LinkToTermDefinitionProvider;
 
 /**
  * 
@@ -38,10 +37,13 @@ public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDef
 		TerminologyManager terminologyManager = Environment.getInstance().getTerminologyManager(
 				Environment.DEFAULT_WEB, masterArticle);
 		Collection<Section<?>> termDefinitions = terminologyManager.getTermDefiningSections(new Identifier(
-				name));
+				name.trim().split("#")));
 		String targetArticle = name;
 		if (termDefinitions.size() > 0) {
 			targetArticle = termDefinitions.iterator().next().getTitle();
+		}
+		else {
+			return null;
 		}
 
 		return createBaseURL() + "?page=" + targetArticle;
