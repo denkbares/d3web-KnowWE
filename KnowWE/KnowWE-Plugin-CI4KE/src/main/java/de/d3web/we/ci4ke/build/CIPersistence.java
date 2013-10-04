@@ -163,7 +163,17 @@ public class CIPersistence {
 		return BuildResultPersistenceHandler.fromXML(document);
 	}
 
-	private WikiAttachment getAttachment() throws IOException {
+	/**
+	 * Returns the wiki attachment that stores the results of this CIDashboard.
+	 * The method returns null if the attachment does not exist (yet), e.g. if
+	 * no build has been created/written yet.
+	 * 
+	 * @created 04.10.2013
+	 * @return the attachment storing the results
+	 * @throws IOException if the attachment cannot be accessed, should usually
+	 *         not happen
+	 */
+	public WikiAttachment getAttachment() throws IOException {
 		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
 		WikiAttachment attachment = wikiConnector.getAttachment(getAttachmentPath());
 		return attachment;

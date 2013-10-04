@@ -36,6 +36,8 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * This class represents a dashboard data structure, managing the build results,
@@ -95,6 +97,20 @@ public class CIDashboard {
 	 */
 	public BuildResult getLatestBuild() {
 		return getBuildIfPossible(-1, true);
+	}
+
+	/**
+	 * Returns the wiki attachment that stores the results of this CIDashboard.
+	 * The method returns null if the attachment does not exist (yet), e.g. if
+	 * no build has been created/written yet.
+	 * 
+	 * @created 04.10.2013
+	 * @return the attachment storing the results
+	 * @throws IOException if the attachment cannot be accessed, should usually
+	 *         not happen
+	 */
+	public WikiAttachment getBuildAttachment() throws IOException {
+		return persistence.getAttachment();
 	}
 
 	/**
@@ -248,6 +264,11 @@ public class CIDashboard {
 			}
 		}
 		return null;
+	}
+
+	public static CIDashboard getDashboard(Section<CIDashboardType> section) {
+		String dashboardName = DefaultMarkupType.getAnnotation(section, "name");
+		return CIDashboard.getDashboard(Environment.DEFAULT_WEB, section.getTitle(), dashboardName);
 	}
 
 }

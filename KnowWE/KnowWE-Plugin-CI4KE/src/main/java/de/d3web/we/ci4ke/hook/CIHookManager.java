@@ -29,6 +29,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.d3web.we.ci4ke.build.CIBuilder;
+import de.knowwe.core.kdom.Article;
 
 /**
  * 
@@ -90,9 +91,18 @@ public class CIHookManager {
 	}
 
 	/**
+	 * Triggers the registered hooks for a given Article.
+	 * 
+	 * @param monitoredArticle the article to trigger hooks for
+	 */
+	public void triggerHooks(Article monitoredArticle) {
+		triggerHooks(monitoredArticle.getTitle());
+	}
+
+	/**
 	 * Triggers the registered hooks for a given Article
 	 * 
-	 * @param monitoredArticleTitle
+	 * @param monitoredArticleTitle the article to trigger hooks for
 	 */
 	public void triggerHooks(String monitoredArticleTitle) {
 
