@@ -1,12 +1,10 @@
-package de.knowwe.testcases;
+package de.knowwe.testcases.download;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,6 +20,11 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.kdom.defaultMarkup.ContentType;
+import de.knowwe.testcases.TestCasePlayerRenderer;
+import de.knowwe.testcases.TestCasePlayerType;
+import de.knowwe.testcases.TestCaseProvider;
+import de.knowwe.testcases.TestCaseUtils;
 
 public class CheckDownloadCaseAction extends AbstractAction {
 
@@ -30,8 +33,7 @@ public class CheckDownloadCaseAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String playerid = context.getParameter("playerid");
-		Section<?> section = getPlayerSection(context, playerid);
+		Section<?> section = getPlayerSection(context);
 		if (section == null) return; // error will already be added
 
 		Triple<TestCaseProvider, Section<?>, Article> selectedTestCaseTriple = getSelectedTestCaseTriple(
@@ -71,8 +73,6 @@ public class CheckDownloadCaseAction extends AbstractAction {
 			return;
 		}
 
-		if (!testCaseName.toLowerCase().endsWith(".xml")) testCaseName += ".xml";
-
 		File caseFile = File.createTempFile("TestCase", null);
 		caseFile.deleteOnExit();
 
@@ -83,10 +83,15 @@ public class CheckDownloadCaseAction extends AbstractAction {
 		out.flush();
 		out.close();
 
-		sendJSON(context, "path", caseFile.getAbsolutePath(), "file", testCaseName);
+		sendJSON(context, "path", caseFile.getAbsolutePath(), "file", toXMLFileName(testCaseName));
 	}
 
-	private void sendJSON(UserActionContext context, String... keyAndValues) throws IOException {
+	public static String toXMLFileName(String testCaseName) {
+		if (!testCaseName.toLowerCase().endsWith(".xml")) testCaseName += ".xml";
+		return testCaseName;
+	}
+
+	public static void sendJSON(UserActionContext context, String... keyAndValues) throws IOException {
 		JSONObject response = new JSONObject();
 		try {
 			for (int i = 0; i + 2 <= keyAndValues.length; i += 2) {
@@ -102,14 +107,22 @@ public class CheckDownloadCaseAction extends AbstractAction {
 		}
 	}
 
-	public static Section<?> getPlayerSection(UserActionContext context, String playerid) throws IOException {
+	public static Section<?> getPlayerSection(UserActionContext context) throws IOException {
+		String playerid = context.getParameter("playerid");
+		if (playerid == null) {
+			playerid = context.getParameter("SectionID");
+		}
+
 		Section<?> section = Sections.getSection(playerid);
+		if (section != null) {
+			section = Sections.findChildOfType(section, ContentType.class);
+		}
 		if (section == null || !(section.getFather().get() instanceof TestCasePlayerType)) {
-			context.sendError(HttpServletResponse.SC_CONFLICT,
+
+			CheckDownloadCaseAction.sendJSON(context, "error",
 					"Unable to find TestCasePlayer with id '"
 							+ playerid + "' , possibly because somebody else"
 							+ " has edited the page.");
-			return null;
 		}
 		return section;
 	}

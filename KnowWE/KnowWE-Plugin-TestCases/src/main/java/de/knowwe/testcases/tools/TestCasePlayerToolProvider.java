@@ -1,9 +1,7 @@
 package de.knowwe.testcases.tools;
 
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.kdom.defaultMarkup.ContentType;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
@@ -45,16 +43,14 @@ public class TestCasePlayerToolProvider implements ToolProvider {
 	}
 
 	public Tool getDownloadCaseTool(Section<?> section, UserContext userContext) {
-		Section<ContentType> content = Sections.findChildOfType(section, ContentType.class);
-		String jsAction = "TestCasePlayer.downloadCase('" + content.getID() + "')";
+		String jsAction = "TestCasePlayer.downloadCase('" + section.getID() + "')";
 		Tool downloadTool = new DefaultTool("KnowWEExtension/d3web/icon/download16.gif",
 				"Download case", "Downloads the currently selected test case", jsAction);
 		return downloadTool;
 	}
 
 	public Tool getDownlaodCasesZipTool(Section<?> section, UserContext userContext) {
-		Section<ContentType> content = Sections.findChildOfType(section, ContentType.class);
-		String jsAction = "TestCasePlayer.downloadCasesZip('" + content.getID() + "')";
+		String jsAction = "TestCasePlayer.downloadCasesZip('" + section.getID() + "')";
 		Tool downloadTool = new DefaultTool("KnowWEExtension/d3web/icon/download16.gif",
 				"Download all cases", "Downloads all available test cases as a zip file", jsAction);
 		return downloadTool;

@@ -77,7 +77,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="CheckDownloadCaseAction">
 		<parameter id="class"
-			value="de.knowwe.testcases.CheckDownloadCaseAction" />
+			value="de.knowwe.testcases.download.CheckDownloadCaseAction" />
 		<parameter id="name" value="CheckDownloadCaseAction" />
 		<parameter id="description" value="Action CheckDownloadCaseAction" />
 		<parameter id="version" value="1.0" />
@@ -85,23 +85,33 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="DownloadCaseAction">
+		id="DownloadCasesAction">
 		<parameter id="class"
-			value="de.knowwe.testcases.DownloadCaseAction" />
-		<parameter id="name" value="DownloadCaseAction" />
-		<parameter id="description" value="Action DownloadCaseAction" />
+			value="de.knowwe.testcases.download.DownloadCasesAction" />
+		<parameter id="name" value="DownloadCasesAction" />
+		<parameter id="description" value="Action DownloadCasesAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="DownloadCasesZipAction">
+		id="CheckDownloadCasesZipAction">
 		<parameter id="class"
-			value="de.knowwe.testcases.DownloadCasesZipAction" />
-		<parameter id="name" value="DownloadCasesZipAction" />
-		<parameter id="description" value="Action DownloadCasesZipAction" />
+			value="de.knowwe.testcases.download.CheckDownloadCasesZipAction" />
+		<parameter id="name" value="CheckDownloadCasesZipAction" />
+		<parameter id="description" value="Action CheckDownloadCasesZipAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="CasesZipToolProvider">
+		<parameter id="class" value="de.knowwe.testcases.download.CasesZipToolProvider" />
+		<parameter id="name" value="CasesZipToolProvider" />
+		<parameter id="description" value="Providers CasesZipToolProvider" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="TestCasePlayerType" />
 	</extension>
 
     <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"

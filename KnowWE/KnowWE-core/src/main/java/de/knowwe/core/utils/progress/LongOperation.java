@@ -2,7 +2,7 @@ package de.knowwe.core.utils.progress;
 
 import java.io.IOException;
 
-import de.knowwe.core.user.UserContext;
+import de.knowwe.core.action.UserActionContext;
 
 /**
  * Interface for describing a long-duration user operation. The operation may be
@@ -26,6 +26,6 @@ public interface LongOperation {
 	 * @throws InterruptedException if the operation has been interrupted (e.g.
 	 *         canceled by user)
 	 */
-	void execute(UserContext user, AjaxProgressListener listener) throws IOException, InterruptedException;
+	void execute(UserActionContext user, AjaxProgressListener listener) throws IOException, InterruptedException;
 
 }

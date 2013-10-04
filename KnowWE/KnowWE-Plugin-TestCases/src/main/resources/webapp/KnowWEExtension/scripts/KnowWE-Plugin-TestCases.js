@@ -46,53 +46,52 @@ TestCasePlayer.downloadCase = function(sectionID) {
 			playerid : sectionID,
 			action : 'CheckDownloadCaseAction'
 		}),
-		async : false,
 		response : {
 			action : 'none',
+			fn : function() {
+				var parsed = JSON.parse(this.responseText);
+				if (parsed.path) {
+					window.location = 'action/DownloadCasesAction?path='
+							+ parsed.path + '&file=' + parsed.file;
+				} else {
+					KNOWWE.notification.error(null, parsed.error, "tcp-error");
+				}
+				KNOWWE.core.util.updateProcessingState(-1);
+			},
 			onError : _EC.onErrorBehavior,
 		}
 	}
 	KNOWWE.core.util.updateProcessingState(1);
-	var ajaxCall = new _KA(options);
-	ajaxCall.send();
-	KNOWWE.core.util.updateProcessingState(-1);
-
-	console.log(ajaxCall.getResponse());
-	var parsed = JSON.parse(ajaxCall.getResponse());
-	if (parsed.path) {
-		window.location = 'action/DownloadCaseAction?path=' + parsed.path
-				+ '&file=' + parsed.file;
-	} else {
-		KNOWWE.notification.error(null, parsed.error, "tcp-error");
-	}
-
+	new _KA(options).send();
 }
 
 TestCasePlayer.downloadCasesZip = function(sectionID) {
 	var options = {
-			url : KNOWWE.core.util.getURL({
-				playerid : sectionID,
-				action : 'CheckDownloadCasesZipAction'
-			}),
-			async : false,
-			response : {
-				action : 'none',
-				onError : _EC.onErrorBehavior,
-			}
+		url : KNOWWE.core.util.getURL({
+			playerid : sectionID,
+			action : 'CheckDownloadCasesZipAction'
+		}),
+		response : {
+			action : 'none',
+			fn : function() {
+				var parsed = JSON.parse(this.responseText);
+				if (parsed.path) {
+					if (parsed.skipped) {
+						KNOWWE.notification.warn(null, parsed.skipped,
+								"tcp-note");
+					}
+					window.location = 'action/DownloadCasesAction?path='
+							+ parsed.path + '&file=' + parsed.file;
+				} else {
+					KNOWWE.notification.error(null, parsed.error, "tcp-error");
+				}
+				KNOWWE.core.util.updateProcessingState(-1);
+			},
+			onError : _EC.onErrorBehavior,
 		}
-		KNOWWE.core.util.updateProcessingState(1);
-		var ajaxCall = new _KA(options);
-		ajaxCall.send();
-		KNOWWE.core.util.updateProcessingState(-1);
-
-		console.log(ajaxCall.getResponse());
-		var parsed = JSON.parse(ajaxCall.getResponse());
-		if (parsed.path) {
-			window.location = 'action/DownloadCasesZipAction?path=' + parsed.path
-					+ '&file=' + parsed.file;
-		} else {
-			KNOWWE.notification.error(null, parsed.error, "tcp-error");
-		}
+	}
+	KNOWWE.core.util.updateProcessingState(1);
+	new _KA(options).send();
 }
 
 TestCasePlayer.getCollapseStatus = function(th) {

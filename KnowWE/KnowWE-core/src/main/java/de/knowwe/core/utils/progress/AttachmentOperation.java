@@ -6,8 +6,8 @@ import java.io.IOException;
 import de.d3web.core.io.progress.ParallelProgress;
 import de.d3web.core.io.progress.ProgressListener;
 import de.knowwe.core.Environment;
+import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
 public abstract class AttachmentOperation implements LongOperation {
@@ -23,7 +23,7 @@ public abstract class AttachmentOperation implements LongOperation {
 	}
 
 	@Override
-	public void execute(final UserContext user, final AjaxProgressListener listener) throws IOException, InterruptedException {
+	public void execute(final UserActionContext user, final AjaxProgressListener listener) throws IOException, InterruptedException {
 		final File folder = createTempFolder();
 		final File file = new File(folder, attachmentFileName);
 
@@ -64,7 +64,7 @@ public abstract class AttachmentOperation implements LongOperation {
 	 * @throws IOException if the result file cannot be created
 	 * @throws InterruptedException if the operation has been interrupted
 	 */
-	public abstract void execute(UserContext user, File resultFile, ProgressListener listener) throws IOException, InterruptedException;
+	public abstract void execute(UserActionContext user, File resultFile, ProgressListener listener) throws IOException, InterruptedException;
 
 	/**
 	 * Returns the file name to be used for the attachment. The attachment name
