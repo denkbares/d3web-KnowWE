@@ -129,7 +129,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			if (abortCheck.termExist()) {
 				// if the question already exists, we just hook it into the new
 				// questionnaire
-				Question existingQuestion = kb.getManager().searchQuestion(name);
+				Question existingQuestion = section.get().getTermObject(article, section);
 				parent.addChild(existingQuestion);
 			}
 			else {
