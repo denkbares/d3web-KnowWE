@@ -315,6 +315,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="TermReference" />
+		<parameter id="scope" value="TermDefinition" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="PageAppendHandler"

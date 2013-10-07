@@ -56,11 +56,25 @@ public class D3webCorrectionProvider implements CorrectionProvider {
 		TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
 		Term termReference = (Term) section.get();
 
+		List<CorrectionProvider.Suggestion> suggestions = new LinkedList<CorrectionProvider.Suggestion>();
+		Identifier termIdentifier = termReference.getTermIdentifier(Sections.cast(section,
+				Term.class));
+		Collection<Identifier> otherCaseVersions = terminologyHandler.getAllTermsEqualIgnoreCase(
+				termIdentifier);
+		// if there are multiple different case versions of the term,
+		// we only show these
+		if (otherCaseVersions.size() > 1) {
+			for (Identifier match : otherCaseVersions) {
+				if (match.getLastPathElement().equals(termIdentifier.getLastPathElement())) continue;
+				suggestions.add(new CorrectionProvider.Suggestion(match.getLastPathElement(), 0));
+			}
+			return suggestions;
+		}
+
 		Collection<Identifier> localTermMatches = terminologyHandler.getAllDefinedTermsOfType(
 				termReference.getTermObjectClass(Sections.cast(section, Term.class)));
 
 		String originalText = section.getText();
-		List<CorrectionProvider.Suggestion> suggestions = new LinkedList<CorrectionProvider.Suggestion>();
 		Levenstein l = new Levenstein();
 
 		for (Identifier match : localTermMatches) {

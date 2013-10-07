@@ -20,6 +20,7 @@ package de.knowwe.core.compile.terminology;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -250,7 +251,7 @@ class TermLog {
 	public Set<Section<?>> getRedundantDefinitions() {
 		Set<Section<?>> result = getDefinitions();
 		result.remove(this.getDefiningSection());
-		return result;
+		return Collections.unmodifiableSet(result);
 	}
 
 	public Set<Section<?>> getDefinitions() {
@@ -258,7 +259,7 @@ class TermLog {
 		for (TermLogEntry entry : this.termDefinitions) {
 			result.add(entry.getSection());
 		}
-		return result;
+		return Collections.unmodifiableSet(result);
 	}
 
 	public Set<Section<?>> getReferences() {
@@ -266,11 +267,11 @@ class TermLog {
 		for (TermLogEntry entry : this.termReferences) {
 			result.add(entry.getSection());
 		}
-		return result;
+		return Collections.unmodifiableSet(result);
 	}
 
 	public Set<Class<?>> getTermClasses() {
-		return termClasses.keySet();
+		return Collections.unmodifiableSet(termClasses.keySet());
 	}
 
 	public Collection<Identifier> getTermIdentifiers() {
@@ -281,7 +282,7 @@ class TermLog {
 			if (entrySet.isEmpty()) continue;
 			termIdentifiers.add(entrySet.iterator().next().getTermIdentifier());
 		}
-		return termIdentifiers;
+		return Collections.unmodifiableCollection(termIdentifiers);
 	}
 
 }
