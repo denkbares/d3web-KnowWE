@@ -39,7 +39,6 @@ KNOWWE.core.plugin.progress = function() {
 	
 	function removeAllErrors() {
 		KNOWWE.notification.removeNotification("lop_412");
-		KNOWWE.notification.removeNotification("lop_412");
 		KNOWWE.notification.removeNotification("lop_unexpected");
 	}
 	
@@ -149,6 +148,10 @@ KNOWWE.core.plugin.progress = function() {
 							bar.removeClass("progress-error progress-success");
 							bar.find(".progress-bar").progressbar({ value: Math.floor(progress*100) });
 							bar.find(".progress-message").html(message);
+							var hasLineBreaks = /<\/?(br|p)\/?>|\\n/.test(message);
+							if (hasLineBreaks) {
+								bar.find(".progress-message").css('display', 'block');
+							}
 							if (!running) {
 								var closeFunction = function () {
 									bar.remove();
@@ -156,8 +159,13 @@ KNOWWE.core.plugin.progress = function() {
 									removeAllErrors();
 								};
 								bar.find(".progress-state").unbind("click").click(closeFunction);
-								if (!bar.find(".progress-close").exists()) {									
-									bar.append(" <a class='progress-close'>[Hide]</a>");
+								if (!bar.find(".progress-close").exists()) {
+									var closeButton = "<a class='progress-close'>[Hide]</a>";
+									if (hasLineBreaks) {
+										bar.find('.progress-bar').after(closeButton);
+									} else {										
+										bar.append(" " + closeButton);
+									}
 								}
 								bar.find(".progress-close").unbind("click").click(closeFunction);
 								if (error) {

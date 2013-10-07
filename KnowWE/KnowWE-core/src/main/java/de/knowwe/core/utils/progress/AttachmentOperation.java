@@ -5,17 +5,17 @@ import java.io.IOException;
 
 import de.d3web.core.io.progress.ParallelProgress;
 import de.d3web.core.io.progress.ProgressListener;
+import de.d3web.utils.Files;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.utils.KnowWEUtils;
 
-public abstract class AttachmentOperation implements LongOperation {
-
-	private static final int TEMP_DIR_ATTEMPTS = 1000;
+public abstract class AttachmentOperation extends AbstractLongOperation {
 
 	private final Article article;
 	private final String attachmentFileName;
+	private String userName = null;
 
 	public AttachmentOperation(Article article, String attachmentFileName) {
 		this.article = article;
@@ -23,8 +23,13 @@ public abstract class AttachmentOperation implements LongOperation {
 	}
 
 	@Override
-	public void execute(final UserActionContext user, final AjaxProgressListener listener) throws IOException, InterruptedException {
-		final File folder = createTempFolder();
+	public void before(UserActionContext user) throws IOException {
+		this.userName = user.getUserName();
+	}
+
+	@Override
+	public void execute(final AjaxProgressListener listener) throws IOException, InterruptedException {
+		final File folder = Files.createTempDir();
 		final File file = new File(folder, attachmentFileName);
 
 		try {
@@ -32,11 +37,11 @@ public abstract class AttachmentOperation implements LongOperation {
 			ProgressListener executeListener = parallel.getSubTaskProgressListener(0);
 			ProgressListener attachListener = parallel.getSubTaskProgressListener(1);
 
-			execute(user, file, executeListener);
+			execute(file, executeListener);
 
 			attachListener.updateProgress(0f, "Attaching file " + attachmentFileName + ".");
 			Environment.getInstance().getWikiConnector().storeAttachment(
-					article.getTitle(), user.getUserName(), file);
+					article.getTitle(), userName, file);
 
 			attachListener.updateProgress(1f, "Done, file <a href='"
 					+ KnowWEUtils.getURLLink(getArticle(), attachmentFileName)
@@ -57,14 +62,13 @@ public abstract class AttachmentOperation implements LongOperation {
 	 * (and closed) properly.
 	 * 
 	 * @created 30.07.2013
-	 * @param user the user context used to execute the operation
 	 * @param resultFile the file to be written by this method
 	 * @param listener the progress listener used to indicate the progress of
 	 *        the operation
 	 * @throws IOException if the result file cannot be created
 	 * @throws InterruptedException if the operation has been interrupted
 	 */
-	public abstract void execute(UserActionContext user, File resultFile, ProgressListener listener) throws IOException, InterruptedException;
+	public abstract void execute(File resultFile, ProgressListener listener) throws IOException, InterruptedException;
 
 	/**
 	 * Returns the file name to be used for the attachment. The attachment name
@@ -79,23 +83,6 @@ public abstract class AttachmentOperation implements LongOperation {
 
 	public Article getArticle() {
 		return article;
-	}
-
-	private static File createTempFolder() throws IOException {
-		File baseDir = new File(System.getProperty("java.io.tmpdir"));
-		baseDir.mkdirs();
-		if (!baseDir.isDirectory()) {
-			throw new IOException("Failed to access temp directory");
-		}
-		String baseName = System.currentTimeMillis() + "-";
-
-		for (int counter = 0; counter < TEMP_DIR_ATTEMPTS; counter++) {
-			File tempDir = new File(baseDir, baseName + counter);
-			if (tempDir.mkdir()) {
-				return tempDir;
-			}
-		}
-		throw new IOException("Failed to create temp directory");
 	}
 
 	@Override

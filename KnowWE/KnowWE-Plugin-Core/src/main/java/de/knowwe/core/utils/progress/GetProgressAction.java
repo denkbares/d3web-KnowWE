@@ -61,8 +61,11 @@ public class GetProgressAction extends AbstractAction {
 				JSONObject progress = new JSONObject();
 				progress.put("operationID",
 						LongOperationUtils.getRegistrationID(section, operation));
-				progress.put("progress", listener.getCurrentProgress());
-				progress.put("message", listener.getCurrentMessage());
+				float currentProgress = listener.getCurrentProgress();
+				progress.put("progress", currentProgress);
+				String message = operation.renderMessage(context, currentProgress,
+						listener.getCurrentMessage());
+				progress.put("message", message);
 				progress.put("error", listener.getError());
 				progress.put("running", listener.isRunning());
 				UserContext user = listener.getUserContext();

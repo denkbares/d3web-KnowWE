@@ -51,8 +51,8 @@ TestCasePlayer.downloadCase = function(sectionID) {
 			fn : function() {
 				var parsed = JSON.parse(this.responseText);
 				if (parsed.path) {
-					window.location = 'action/DownloadCasesAction?path='
-							+ parsed.path + '&file=' + parsed.file;
+					window.location = 'action/DownloadFileAction?file='
+							+ parsed.path + '&name=' + parsed.file;
 				} else {
 					KNOWWE.notification.error(null, parsed.error, "tcp-error");
 				}
@@ -80,8 +80,8 @@ TestCasePlayer.downloadCasesZip = function(sectionID) {
 						KNOWWE.notification.warn(null, parsed.skipped,
 								"tcp-note");
 					}
-					window.location = 'action/DownloadCasesAction?path='
-							+ parsed.path + '&file=' + parsed.file;
+					window.location = 'action/DownloadFileAction?file='
+							+ parsed.path + '&name=' + parsed.file;
 				} else {
 					KNOWWE.notification.error(null, parsed.error, "tcp-error");
 				}

@@ -82,7 +82,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 	private boolean wikiEngineInitialized = false;
 	private final List<String> supportArticleNames;
-	private final String resultKey = RenderResult.class.getName();
 
 	public KnowWEPlugin() {
 		supportArticleNames = Arrays.asList(MORE_MENU, LEFT_MENU, LEFT_MENU_FOOTER);
@@ -177,10 +176,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 			KnowWEUtils.appendToFile(KnowWEUtils.getPageChangeLogPath(), logEntry);
 		}
-	}
-
-	private String getRenderResultKey(String title) {
-		return resultKey + "_" + title;
 	}
 
 	@Override
@@ -286,9 +281,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			RenderResult renderResult = new RenderResult(userContext.getRequest());
 
 			if (article != null && httpRequest != null) {
-
-				userContext.getRequest().setAttribute(getRenderResultKey(article.getTitle()),
-						renderResult);
 
 				List<PageAppendHandler> appendhandlers = Environment.getInstance()
 						.getAppendHandlers();
@@ -417,8 +409,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			Article article) {
 		if (article != null) {
 			RenderResult articleString = new RenderResult(userContext.getRequest());
-			userContext.getRequest().setAttribute(getRenderResultKey(article.getTitle()),
-					articleString);
 			article.getRootType().getRenderer().render(article.getRootSection(), userContext,
 					articleString);
 			return articleString.toStringRaw();

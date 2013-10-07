@@ -37,6 +37,7 @@ public class RemoveOperationAction extends OperationAction {
 		ProgressListenerManager manager = ProgressListenerManager.getInstance();
 		if (!manager.isRunning(operation)) {
 			manager.removeProgressListener(operation);
+			operation.cleanUp();
 		}
 	}
 

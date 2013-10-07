@@ -28,8 +28,6 @@ import de.knowwe.testcases.TestCaseUtils;
 
 public class CheckDownloadCaseAction extends AbstractAction {
 
-	public static final String PARAM_FILENAME = "filename";
-
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 

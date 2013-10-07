@@ -41,7 +41,6 @@ public class StartOperationAction extends OperationAction {
 			return;
 		}
 
-		LongOperationUtils.startLongOperation(context, operation, null);
+		LongOperationUtils.startLongOperation(context, operation);
 	}
-
 }

@@ -23,11 +23,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import de.d3web.core.io.progress.ParallelProgress;
 import de.d3web.core.io.progress.ProgressListener;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
 import de.d3web.core.utilities.Triple;
 import de.d3web.empiricaltesting.SequentialTestCase;
@@ -38,7 +42,7 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.utils.progress.AttachmentOperation;
+import de.knowwe.core.utils.progress.FileDownloadOperation;
 import de.knowwe.testcases.TestCasePlayerType;
 import de.knowwe.testcases.TestCaseProvider;
 import de.knowwe.testcases.TestCaseUtils;
@@ -48,47 +52,43 @@ import de.knowwe.testcases.TestCaseUtils;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 08.09.2013
  */
-public class CasesZipOperation extends AttachmentOperation {
+public class CasesZipOperation extends FileDownloadOperation {
+
+	private StringBuilder skipped = null;
+	private List<Triple<String, KnowledgeBase, TestCase>> casesToWrite = null;
 
 	public CasesZipOperation(Article article, String attachmentFileName) {
 		super(article, attachmentFileName);
 	}
 
-	private boolean userCanView(UserActionContext context, Section<?> section) {
-		// return true;
-		return Environment.getInstance().getWikiConnector().userCanViewArticle(
-				section.getTitle(), context.getRequest());
-	}
-
 	@Override
-	public void execute(UserActionContext context, File resultFile, ProgressListener listener) throws IOException, InterruptedException {
-		// get cases
-		Section<?> section = CheckDownloadCaseAction.getPlayerSection(context);
-		if (section == null) return; // error will already be added
-
+	public void before(UserActionContext user) throws IOException {
+		super.before(user);
+		Section<?> section = CheckDownloadCaseAction.getPlayerSection(user);
 		List<Triple<TestCaseProvider, Section<?>, Article>> providers =
 				TestCaseUtils.getTestCaseProviders(Sections.cast(section.getFather(),
 						TestCasePlayerType.class));
+		skipped = new StringBuilder();
+		casesToWrite = new ArrayList<Triple<String, KnowledgeBase, TestCase>>();
 
-		// check cases and write zip file and entries
-		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(resultFile));
+		check(user, section, providers, casesToWrite);
+	}
 
-		StringBuilder skipped = new StringBuilder();
+	private void check(UserActionContext context, Section<?> section, List<Triple<TestCaseProvider, Section<?>, Article>> providers, List<Triple<String, KnowledgeBase, TestCase>> casesToWrite) {
 
-		boolean atLeastOne = false;
-		int i = 0;
+		if (!userCanView(context, section)) {
+			throw new Error("You are not allowed to download here.");
+		}
+
 		for (Triple<TestCaseProvider, Section<?>, Article> triple : providers) {
 
 			Section<?> testCaseSection = triple.getB();
 			TestCaseProvider provider = triple.getA();
 			String testCaseName = provider.getName();
 
-			listener.updateProgress(i++ / providers.size(), "Transforming and zipping case '"
-					+ testCaseName + "'.");
-
 			if (!userCanView(context, section) || !userCanView(context, testCaseSection)) {
-				skipped.append("'" + testCaseName
-						+ "' was skipped because you are not authorized to see it.\n");
+				skipped.append(testCaseName
+						+ ": You are not authorized to see this case.<br/>");
 				continue;
 			}
 
@@ -96,53 +96,104 @@ public class CasesZipOperation extends AttachmentOperation {
 			Session session = provider.getActualSession(context);
 
 			if (session == null) {
-				skipped.append("'" + testCaseName
-						+ "' was skipped because of an internal error (no session found).\n");
+				skipped.append(testCaseName
+						+ ": Internal error (no session found).<br/>");
 				continue;
 			}
+			casesToWrite.add(new Triple<String, KnowledgeBase, TestCase>(testCaseName,
+					session.getKnowledgeBase(), testCase));
+		}
+	}
+
+	@Override
+	public void execute(File resultFile, ProgressListener listener) throws IOException, InterruptedException {
+		ParallelProgress parallel = new ParallelProgress(listener, 50f, 50f);
+		ProgressListener executeListener = parallel.getSubTaskProgressListener(0);
+		ProgressListener zipListener = parallel.getSubTaskProgressListener(1);
+		List<SequentialTestCase> stcs = transform(executeListener);
+		zipSTCs(resultFile, stcs, zipListener);
+
+	}
+
+	private List<SequentialTestCase> transform(ProgressListener listener) {
+		List<SequentialTestCase> stcs = new ArrayList<SequentialTestCase>();
+		int i = 0;
+		for (Triple<String, KnowledgeBase, TestCase> triple : casesToWrite) {
+			String testCaseName = triple.getA();
+			KnowledgeBase kb = triple.getB();
+			TestCase testCase = triple.getC();
+
+			listener.updateProgress(new Float(i++) / new Float(casesToWrite.size()),
+					"Transforming test case '" + testCaseName + "'");
 
 			SequentialTestCase sequentialTestCase = null;
 			try {
-				sequentialTestCase = TestCaseUtils.transformToSTC(testCase, testCaseName,
-						session.getKnowledgeBase());
+				sequentialTestCase = TestCaseUtils.transformToSTC(testCase, testCaseName, kb);
 			}
 			catch (Exception e) {
-				skipped.append("'"
+				skipped.append(""
 						+ testCaseName
-						+ "' was skipped because of an internal error while creating the xml file: "
-						+ e.getMessage() + "\n");
+						+ ": Internal error while creating the xml file: "
+						+ e.getMessage() + "<br/>");
 				continue;
 			}
 
-			ZipEntry e = new ZipEntry(CheckDownloadCaseAction.toXMLFileName(testCaseName));
-			out.putNextEntry(e);
-			TestPersistence.getInstance().writeCases(out,
-					Arrays.asList(sequentialTestCase), false);
-
-			out.closeEntry();
-			atLeastOne = true;
-			// System.out.println("Wrote " + testCaseName);
+			stcs.add(sequentialTestCase);
 		}
-		listener.updateProgress(1f, "Transformed all cases.");
+		return stcs;
+	}
 
-		out.flush();
-		out.close();
+	private void zipSTCs(File resultFile, List<SequentialTestCase> stcs, ProgressListener listener) throws IOException {
 
-		// write response
-		List<String> json = new ArrayList<String>();
+		if (!stcs.isEmpty()) {
 
-		String skippedString = skipped.toString();
-		if (!skippedString.isEmpty()) {
-			json.add("skipped");
-			json.add(skippedString);
+			ZipOutputStream out = new ZipOutputStream(new FileOutputStream(resultFile));
+			int i = 0;
+			Set<String> usedEntryNames = new HashSet<String>();
+			for (SequentialTestCase sequentialTestCase : stcs) {
+				String testCaseName = getNewEntryName(usedEntryNames, sequentialTestCase);
+				listener.updateProgress(new Float(i++) / new Float(stcs.size()),
+						"Zipping test case '" + testCaseName + ".xml'");
+				String fileName = CheckDownloadCaseAction.toXMLFileName(testCaseName);
+				ZipEntry e = new ZipEntry(fileName);
+				out.putNextEntry(e);
+				TestPersistence.getInstance().writeCases(out,
+						Arrays.asList(sequentialTestCase), false);
+
+				out.closeEntry();
+			}
+
+			out.flush();
+			out.close();
 		}
-		if (!atLeastOne) {
-			json.add("error");
-			json.add("There are not test cases to download.");
+		else {
+			throw new IOException("There are not test cases to download.");
 		}
+	}
 
-		CheckDownloadCaseAction.sendJSON(context, json.toArray(new String[json.size()]));
+	private String getNewEntryName(Set<String> usedEntryNames, SequentialTestCase sequentialTestCase) {
+		String testCaseName = sequentialTestCase.getName();
+		int i = 2;
+		while (usedEntryNames.contains(testCaseName)) {
+			testCaseName = sequentialTestCase.getName() + i++;
+		}
+		usedEntryNames.add(testCaseName);
+		return testCaseName;
+	}
 
+	private boolean userCanView(UserActionContext context, Section<?> section) {
+		return Environment.getInstance().getWikiConnector().userCanViewArticle(
+				section.getTitle(),
+				context.getRequest());
+	}
+
+	@Override
+	public String getReport() {
+		String skipped = this.skipped.toString();
+		if (!skipped.isEmpty()) {
+			return "Skipped:<br/>" + skipped;
+		}
+		return "";
 	}
 
 }

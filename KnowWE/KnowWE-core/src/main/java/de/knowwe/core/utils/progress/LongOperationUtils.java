@@ -141,7 +141,9 @@ public class LongOperationUtils {
 	 * @param doFinally a function that will be called after the operation is
 	 *        done (can be null if there is nothing to do)
 	 */
-	public static void startLongOperation(final UserActionContext context, final LongOperation operation, final Finally doFinally) {
+	public static void startLongOperation(final UserActionContext context, final LongOperation operation) throws IOException {
+
+		operation.before(context);
 
 		final AjaxProgressListener listener =
 				ProgressListenerManager.getInstance().createProgressListener(context, operation);
@@ -151,7 +153,7 @@ public class LongOperationUtils {
 			@Override
 			public void run() {
 				try {
-					operation.execute(context, listener);
+					operation.execute(listener);
 				}
 				catch (IOException e) {
 					Logger.getLogger(getClass().getName()).log(Level.WARNING,
@@ -170,16 +172,10 @@ public class LongOperationUtils {
 				}
 				finally {
 					listener.setRunning(false);
-					if (doFinally != null) {
-						doFinally.doFinally();
-					}
+					operation.doFinally();
 				}
 			}
 		}.start();
 	}
 
-	public interface Finally {
-
-		public void doFinally();
-	}
 }
