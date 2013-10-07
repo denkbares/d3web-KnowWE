@@ -67,6 +67,14 @@ public class ProgressListenerManager {
 
 	public synchronized AjaxProgressListener createProgressListener(UserContext context, LongOperation operation) {
 		AjaxProgressListener progressListener = new DefaultAjaxProgressListener(context);
+		if (listenerCache.containsKey(operation)) {
+			for (Object oldOperation : listenerCache.keySet()) {
+				if (oldOperation.equals(operation)) {
+					((LongOperation) oldOperation).cleanUp();
+					break;
+				}
+			}
+		}
 		listenerCache.put(operation, progressListener);
 		return progressListener;
 	}
