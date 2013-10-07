@@ -93,7 +93,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		Section<TestCasePlayerType> playerSection =
 				Sections.cast(section.getFather(), TestCasePlayerType.class);
 		List<Triple<TestCaseProvider, Section<?>, Article>> providers =
-				de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(playerSection);
+				de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(user, playerSection);
 
 		string.appendHtml("<div class='TestCasePlayerContent' id='" + section.getID() + "'>");
 

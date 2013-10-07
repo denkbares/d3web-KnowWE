@@ -18,6 +18,7 @@
  */
 package de.knowwe.testcases;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -61,6 +62,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.table.ConditionCheck;
 
@@ -91,6 +93,37 @@ public class TestCaseUtils {
 		return found;
 	}
 
+	/**
+	 * Returns all {@link TestCaseProviders} the given user is allowed to see
+	 * and that are in the same package as the given section.
+	 * 
+	 * @created 07.10.2013
+	 * @param context the context of the user
+	 * @param section the section used as a reference for the package
+	 * @return all {@link TestCaseProvider} visible to this user
+	 */
+	public static List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(UserContext context, Section<TestCasePlayerType> section) {
+		List<Triple<TestCaseProvider, Section<?>, Article>> testCaseProviders = getTestCaseProviders(section);
+		List<Triple<TestCaseProvider, Section<?>, Article>> filtered = new ArrayList<Triple<TestCaseProvider, Section<?>, Article>>();
+		for (Triple<TestCaseProvider, Section<?>, Article> triple : testCaseProviders) {
+			boolean userCanViewCase = Environment.getInstance().getWikiConnector().userCanViewArticle(
+					triple.getB().getTitle(), context.getRequest());
+			if (userCanViewCase) {
+				filtered.add(triple);
+			}
+		}
+		return filtered;
+	}
+
+	/**
+	 * Returns all {@link TestCaseProviders} in the packages the given section
+	 * is in.
+	 * 
+	 * @created 07.10.2013
+	 * @param section the section used as a reference for the package
+	 * @return all {@link TestCaseProvider} in the packages the given section is
+	 *         in
+	 */
 	public static List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(Section<TestCasePlayerType> section) {
 		String[] kbpackages = DefaultMarkupType.getPackages(section,
 				KnowledgeBaseType.ANNOTATION_COMPILE);
