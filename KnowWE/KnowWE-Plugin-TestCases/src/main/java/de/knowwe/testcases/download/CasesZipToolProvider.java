@@ -30,17 +30,9 @@ import de.knowwe.core.utils.progress.LongOperationToolProvider;
 public class CasesZipToolProvider extends LongOperationToolProvider {
 
 	public CasesZipToolProvider() {
-		super("KnowWEExtension/images/zip.jpg", "Download all cases (LongOperation)",
+		super("KnowWEExtension/images/zip.jpg", "Download all cases",
 				"Downloads all available test cases as a zip file");
 
-		// Section<ContentType> content = Sections.findChildOfType(section,
-		// ContentType.class);
-		// String jsAction = "TestCasePlayer.downloadCasesZip('" +
-		// content.getID() + "')";
-		// Tool downloadTool = new
-		// DefaultTool("KnowWEExtension/d3web/icon/download16.gif",
-		// "Download all cases",
-		// "Downloads all available test cases as a zip file", jsAction);
 	}
 
 	@Override

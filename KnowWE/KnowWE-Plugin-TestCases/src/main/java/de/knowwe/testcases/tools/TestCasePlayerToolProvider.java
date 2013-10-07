@@ -11,9 +11,8 @@ public class TestCasePlayerToolProvider implements ToolProvider {
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		return new Tool[] {
-				getGoToTools(section, userContext), getDownloadCaseTool(section, userContext),
-				getDownlaodCasesZipTool(section, userContext),
-				getExpandTool(section, userContext), getCollapseTool(section, userContext) };
+				getGoToTools(section, userContext), getExpandTool(section, userContext),
+				getCollapseTool(section, userContext), getDownloadCaseTool(section, userContext) };
 	}
 
 	public Tool getCollapseTool(Section<?> section, UserContext userContext) {
@@ -46,13 +45,6 @@ public class TestCasePlayerToolProvider implements ToolProvider {
 		String jsAction = "TestCasePlayer.downloadCase('" + section.getID() + "')";
 		Tool downloadTool = new DefaultTool("KnowWEExtension/d3web/icon/download16.gif",
 				"Download case", "Downloads the currently selected test case", jsAction);
-		return downloadTool;
-	}
-
-	public Tool getDownlaodCasesZipTool(Section<?> section, UserContext userContext) {
-		String jsAction = "TestCasePlayer.downloadCasesZip('" + section.getID() + "')";
-		Tool downloadTool = new DefaultTool("KnowWEExtension/d3web/icon/download16.gif",
-				"Download all cases", "Downloads all available test cases as a zip file", jsAction);
 		return downloadTool;
 	}
 

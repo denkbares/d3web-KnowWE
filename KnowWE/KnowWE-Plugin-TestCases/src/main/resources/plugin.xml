@@ -84,15 +84,6 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="CheckDownloadCasesZipAction">
-		<parameter id="class"
-			value="de.knowwe.testcases.download.CheckDownloadCasesZipAction" />
-		<parameter id="name" value="CheckDownloadCasesZipAction" />
-		<parameter id="description" value="Action CheckDownloadCasesZipAction" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
 		id="CasesZipToolProvider">
@@ -100,7 +91,7 @@
 		<parameter id="name" value="CasesZipToolProvider" />
 		<parameter id="description" value="Providers CasesZipToolProvider" />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
+		<parameter id="priority" value="6" />
 		<parameter id="scope" value="TestCasePlayerType" />
 	</extension>
 
