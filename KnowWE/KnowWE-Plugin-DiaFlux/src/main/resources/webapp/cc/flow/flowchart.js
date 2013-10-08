@@ -50,9 +50,7 @@ Flowchart.loadFlowchart = function(kdomid, parent){
 				if (!xml || xml.getElementsByTagName("flowchart").length == 0) {
 					xml = Flowchart.parseXML(this.responseText);
 				}
-				var flow = Flowchart.createFromXML(parent, xml);
-				flow.kdomid = kdomid;
-				KNOWWE.helper.observer.notify('flowchartrendered', {flow: flow});
+				Flowchart.update(parent, kdomid, xml);
 			},
 			onError : function() {
 				//TODO handle error
@@ -67,6 +65,13 @@ Flowchart.loadFlowchart = function(kdomid, parent){
 	
 	
 	
+}
+
+Flowchart.update = function(parent, kdomid, xml) {
+	var flow = Flowchart.createFromXML(parent, xml);
+	flow.kdomid = kdomid;
+	KNOWWE.helper.observer.notify('flowchartrendered', {flow: flow});
+	return flow;
 }
 
 Flowchart.prototype.createID = function(prefix) {
@@ -265,13 +270,13 @@ Flowchart.prototype.render = function() {
 	]);
 	dom.__flowchart = this;
 
-	this.createDroppables(dom, contentPane);
+	this.createDroppables();
 
 	return dom;
 }
 
 // implemented in floweditor.js
-Flowchart.prototype.createDroppables = function(dom, contentPane) {}
+Flowchart.prototype.createDroppables = function() {}
 
 
 

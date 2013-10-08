@@ -82,7 +82,7 @@ ul.toolbar li:last-child {
 	border: 1px solid gray;
 	border-radius: 3px 3px 3px 3px;
 	-moz-border-radius: 3px 3px 3px 3px;
-	width: 845px;
+	width: 853px;
 	padding-left: 3px;
 	margin-bottom: 5px;
 }
@@ -94,7 +94,7 @@ ul.toolbar li:last-child {
 }
 
 #changenotebar #changenote {
-	width: 747px;
+	width: 755px;
 }
 
 .propertyArea div{
@@ -102,7 +102,7 @@ ul.toolbar li:last-child {
 }
 
 .propertyArea {
-	padding: 0px 2px;
+	padding: 0px 5px;
 	height: 38px;
 	display: inline-block;
 	border: 1px solid gray;

@@ -129,6 +129,8 @@ Node.prototype.createDraggable = function() {
 			}
 			node.flowchart.router.rerouteNodes(draggable.draggedNodes);
 			node.flowchart.setSelection(draggable.draggedNodes);
+
+			EditorInstance.snapshot();
 		},
 		snap: function (x, y, draggable) {
 			return draggable.__snapManager.snapIt(x, y);
@@ -475,6 +477,7 @@ NodeEditor.prototype.destroy = function() {
 	if (this._destroyed) return;
 	this._destroyed = true;
 	this.setVisible(false);
+	EditorInstance.snapshot();
 }
 
 

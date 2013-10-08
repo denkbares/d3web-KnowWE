@@ -318,6 +318,7 @@ Node.prototype.destroy = function() {
 	this.draggable.options.endeffekt = null;
 	this.setVisible(false);
 	this.flowchart.removeNode(this);
+	EditorInstance.snapshot();
 }
 
 

@@ -301,5 +301,6 @@ GuardEditor.prototype.destroy = function() {
 	if (this._destroyed) return;
 	this._destroyed = true;
 	this.setVisible(false);
+	EditorInstance.snapshot();
 }
  

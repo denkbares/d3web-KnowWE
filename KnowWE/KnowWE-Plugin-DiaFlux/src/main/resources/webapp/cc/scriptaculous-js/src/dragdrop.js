@@ -10,6 +10,10 @@ if(Object.isUndefined(Effect))
 
 var Droppables = {
   drops: [],
+  
+  clear: function() {
+	  drops = [];
+  }, 
 
   remove: function(element) {
     this.drops = this.drops.reject(function(d) { return d.element==$(element) });
@@ -133,6 +137,11 @@ var Droppables = {
 var Draggables = {
   drags: [],
   observers: [],
+  
+  clear: function() {
+	  drags = [];
+	  observers = [];
+  }, 
 
   register: function(draggable) {
     if(this.drags.length == 0) {

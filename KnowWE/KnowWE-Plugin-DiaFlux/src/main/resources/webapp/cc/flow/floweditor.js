@@ -2,7 +2,11 @@ if (!FlowEditor){
 	FlowEditor = {};
 }
 
+var EditorInstance = null
+
 function FlowEditor(articleIDs){
+	
+	EditorInstance = this;
 	
 	// kbinfo initialization
 	KBInfo._updateCache($('ajaxKBInfo'));
@@ -13,35 +17,18 @@ function FlowEditor(articleIDs){
 	new ObjectTree('objectTree', null, articleIDs);
 
 	theFlowchart = null;
-}
-
-FlowEditor.prototype.showEditor = function(){
-	var flowXML = Flowchart.parseXML(jq$('#flowchartSource').text());
-	theFlowchart = Flowchart.createFromXML('contents', flowXML);
-	theFlowchart.setVisible(true);
-	$('properties.editName').value = theFlowchart.name || theFlowchart.id;
-	$('properties.autostart').checked = theFlowchart.autostart;
+	currentVersion = -1;
+	maxVersion = -1;
+	theFlowchartVersions = [];
+	
 	$('properties.editName').onchange = this.updateProperties;
 	$('properties.autostart').onchange = this.updateProperties;
 	
 	$('saveClose').observe('click', function(){this.saveFlowchart(true);}.bind(this));
 	//$('save').observe('click', function(){this.saveFlowchart(false);}.bind(this));
 	$('refresh').observe('click', this.revert);
-	
 	$('close').observe('click', this.closeEditor);
 	$('delete').observe('click', this.deleteFlowchart);
-	
-	// mass selection events
-	// most attached to window to also get events outside content pane
-	theFlowchart.getContentPane().observe('mousedown', function(event) {FlowEditor.lassoSelectDown(event);});
-	Event.observe(window, 'mouseup', function(event) {FlowEditor.lassoSelectUp(event);});
-	Event.observe(window, 'click', function(event) {FlowEditor.lassoSelectUp(event);});
-	Event.observe(window, 'dbclick', function(event) {FlowEditor.lassoSelectUp(event);});
-	Event.observe(window, 'contextmenu', function(event) {FlowEditor.lassoSelectUp(event);});
-	Event.observe(window, 'mousemove', function(event) {FlowEditor.lassoSelectMove(event);});
-	Event.observe(window, 'keyup', function(event) {FlowEditor.lassoSelectMove(event);});
-	Event.observe(window, 'keydown', function(event) {FlowEditor.lassoSelectMove(event);});
-	$('contents').observe('scroll', function(event) {FlowEditor.lassoSelectMove(event);});
 	
 	Event.observe(window, "resize", function (event) {
 		FlowEditor.autoResize();
@@ -61,13 +48,20 @@ FlowEditor.prototype.showEditor = function(){
 	$('comment_prototype').createNode = function(flowchart, left, top) { FlowEditor.createActionNode(flowchart, left, top, {comment: 'Comment'}); };
 	$('snapshot_prototype').createNode = function(flowchart, left, top) { FlowEditor.createActionNode(flowchart, left, top, {snapshot: 'Snapshot'}); };
 
-	// enable ghost sheet around the existing one
-	FlowEditor.borderSpacing = 350;	
-	FlowEditor.autoResize();
-	theFlowchart.setScroll(FlowEditor.borderSpacing-19, FlowEditor.borderSpacing-19);
-	theFlowchart.focus();
+	
+	// mass selection events
+	// must attached to window to also get events outside content pane
+	Event.observe(window, 'mouseup', function(event) {FlowEditor.lassoSelectUp(event);});
+	Event.observe(window, 'click', function(event) {FlowEditor.lassoSelectUp(event);});
+	Event.observe(window, 'dbclick', function(event) {FlowEditor.lassoSelectUp(event);});
+	Event.observe(window, 'contextmenu', function(event) {FlowEditor.lassoSelectUp(event);});
+	Event.observe(window, 'mousemove', function(event) {FlowEditor.lassoSelectMove(event);});
+	Event.observe(window, 'keyup', function(event) {FlowEditor.lassoSelectMove(event);});
+	Event.observe(window, 'keydown', function(event) {FlowEditor.lassoSelectMove(event);});
 	Event.observe(window, 'click', FlowEditor.checkFocus);
+	$('contents').observe('scroll', function(event) {FlowEditor.lassoSelectMove(event);});
 
+	
 	// register key event for save and cancel (reload is already provided by browser
     var isModifier = function(event) {
     	if ((!event.metaKey && event.ctrlKey && !event.altKey) 
@@ -78,17 +72,77 @@ FlowEditor.prototype.showEditor = function(){
     	return false;
     };
     
-    var flowedit = this;
 	Element.observe(window, 'keydown', function(event) {
-     	if (isModifier(event) && event.keyCode == 83) {     
+     	// s
+		if (isModifier(event) && event.keyCode == 83) {     
      		event.stop();
-     		flowedit.saveFlowchart(true);
+     		EditorInstance.saveFlowchart(true);
      	}
+     	// esc
      	else if (isModifier(event) && event.keyCode == 27) {                    		
      		event.stop();
-     		flowedit.closeEditor();
+     		EditorInstance.closeEditor();
+     	}
+     	// z
+     	else if (isModifier(event) && event.keyCode == 90) {                    		
+     		event.stop();
+     		if (currentVersion > 0) {     		
+     			EditorInstance.goToVersion(--currentVersion);
+     		}
+     	}
+     	// y
+     	else if (isModifier(event) && event.keyCode == 89) {                    		
+     		event.stop();
+     		if (currentVersion < maxVersion) {
+     			EditorInstance.goToVersion(++currentVersion);
+     		}
      	}
      });
+}
+
+FlowEditor.prototype.showEditor = function(xmlText) {
+	if (!xmlText) xmlText = jq$('#flowchartSource').text();
+	var flowXML = Flowchart.parseXML(xmlText);
+	theFlowchart = Flowchart.createFromXML('contents', flowXML);
+
+	$('properties.editName').value = theFlowchart.name || theFlowchart.id;
+	$('properties.autostart').checked = theFlowchart.autostart;
+	
+	// mass selection events
+	// must attached to window to also get events outside content pane
+	theFlowchart.getContentPane().observe('mousedown', function(event) {FlowEditor.lassoSelectDown(event);});
+
+	// enable ghost sheet around the existing one
+	FlowEditor.borderSpacing = 350;	
+	FlowEditor.autoResize();
+	theFlowchart.setScroll(FlowEditor.borderSpacing-19, FlowEditor.borderSpacing-19);
+	theFlowchart.focus();
+
+	if (maxVersion == -1) {
+		this.snapshot();		
+	}
+}
+
+FlowEditor.prototype.snapshot = function() {
+	var xml = theFlowchart.toXML();
+	if (theFlowchartVersions[currentVersion] === xml) return;
+	if (currentVersion === theFlowchartVersions.length - 1) {		
+		theFlowchartVersions.push(xml);
+	} else {
+		theFlowchartVersions[currentVersion + 1] = xml;
+	}
+	currentVersion++;
+	maxVersion = currentVersion;
+//	maxVersion = theFlowchartVersions.length - 1;
+//	currentVersion = maxVersion;
+}
+
+
+FlowEditor.prototype.goToVersion = function(version) {
+	jq$('#' + theFlowchart.id).remove();
+	Draggables.clear();
+	Droppables.clear();
+	this.showEditor(theFlowchartVersions[version]);
 }
 
 FlowEditor.checkFocus = function() {
@@ -277,13 +331,12 @@ Flowchart.prototype.focus = function() {
 	}
 }
 
-Flowchart.prototype.createDroppables = function(dom, contentPane, trashPane) {
+Flowchart.prototype.createDroppables = function(trashPane) {
 
+	jq$('.trashParent').remove();
 	var trashPane, trashParent =
 		Builder.node('div', {className: 'trashParent'}, 
-				[
-				 trashPane = Builder.node('div', {className: 'trash'})
-				 ]);
+				[trashPane = Builder.node('div', {className: 'trash'})]);
 	$(window.document.body).appendChild(trashParent); 
 				 
 	// initialize trash to delete nodes and rules
@@ -308,11 +361,11 @@ Flowchart.prototype.createDroppables = function(dom, contentPane, trashPane) {
 		hoverclass: 'contents_hover',
 		onDrop: function(draggable, droppable, event) {
 			var p1 = draggable.cumulativeOffset();
-			var p2 = contentPane.cumulativeOffset();
-			var scroll = dom.__flowchart.getScroll();
+			var p2 = theFlowchart.getContentPane().cumulativeOffset();
+			var scroll = theFlowchart.getScroll();
 			var x = p1.left - p2.left + scroll.x;
 			var y = p1.top  - p2.top + scroll.y;
-			draggable.createNode(dom.__flowchart, x, y); // dom.__flowchart is defined above
+			draggable.createNode(theFlowchart, x, y);
 		}
 	});
 }
