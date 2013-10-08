@@ -163,11 +163,10 @@ public class TableModel {
 				attributes.add("class");
 				attributes.add("collapsedcolumn");
 			}
-			else {
-				if (type.equals("th")) {
-					attributes.add("title");
-					attributes.add("Collapse");
-					setType(column, attributes);
+			if (type.equals("th")) {
+				if (column >= firstFinding && column <= lastFinding) {
+					attributes.add("type");
+					attributes.add("finding");
 				}
 			}
 		}
@@ -175,13 +174,6 @@ public class TableModel {
 		RenderResult cellDiv = new RenderResult(string);
 		cellDiv.appendHtmlElement("div", cell);
 		string.appendHtmlElement(type, cellDiv.toStringRaw(), attrArray);
-	}
-
-	private void setType(int column, ArrayList<String> attributes) {
-		if (column >= firstFinding && column <= lastFinding) {
-			attributes.add("type");
-			attributes.add("finding");
-		}
 	}
 
 	private Set<Integer> getCollapsedColumns(Section<?> section, UserContext user) {

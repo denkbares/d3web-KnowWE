@@ -2,6 +2,21 @@ html {
 	 -webkit-font-smoothing: antialiased;
 }
 
+.tcpTooltipser {
+	border-radius: 5px; 
+	border: 2px solid #000;
+	background: #4c4c4c;
+	color: #fff;
+	white-space: pre;
+}
+
+.tcpTooltipser .tooltipster-content {
+	font-family: Arial, sans-serif;
+	font-size: 14px;
+	line-height: 16px;
+	padding: 8px 10px;
+	overflow: hidden;
+}
 
 /* This is the default Tooltipster theme (feel free to modify or duplicate and create multiple themes!): */
 .tooltipster-default {

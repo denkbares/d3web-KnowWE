@@ -142,14 +142,37 @@ TestCasePlayer.collapseColumn = function(th, animated) {
 
 TestCasePlayer.addToolTip = function(element) {
 	if (element.is('th')) {
-		element.attr("title", "Expand " + element.text().trim());
+		TestCasePlayer.setToolTip(element, "Expand " + element.text().trim());
 	} else if (element.is('td')) {
+		var th = element.parents('table').find('th').filter('[column="' + element.attr('column') + '"]')
 		var data = element.clone();
 		data.find('script').remove();
 		data.find('br').replaceWith('\n');
-		element.attr("title", data.text().trim().replace(
-				/[ \t]*(\r?\n)[ \t]*/g, '$1'));
+		title = th.text() + "\n" + data.text().trim().replace(
+				/[ \t]*(\r?\n)[ \t]*/g, '$1');
+		if (title) {			
+			TestCasePlayer.setToolTip(element, title);
+		}
 	}
+}
+
+TestCasePlayer.setToolTip = function(element, tooltip) {
+	if (element.data('hasToolTip') === 'enabled') {
+		element.tooltipster('update', tooltip);
+	} else {
+		element.attr('title', tooltip);
+		element.tooltipster({
+			delay : 100,
+			theme : '.tcpTooltipser'
+		});
+		element.data('hasToolTip', 'enabled');
+	}
+}
+
+TestCasePlayer.removeToolTip = function(element) {
+	element.tooltipster('destroy');
+	element.attr('title', null);
+	element.data('hasToolTip', 'disabled');
 }
 
 TestCasePlayer.expandColumn = function(th, animated) {
@@ -166,9 +189,9 @@ TestCasePlayer.expandColumn = function(th, animated) {
 	} else {
 		tds.removeClass("collapsedcolumn");
 	}
-	th.attr("title", "Collapse");
+	TestCasePlayer.setToolTip(th, "Collapse");
 	tds.filter("td").each(function() {
-		jq$(this).removeAttr("title");
+		TestCasePlayer.removeToolTip(jq$(this));
 	});
 
 	var collapsed = TestCasePlayer.getCollapseStatus(th);
