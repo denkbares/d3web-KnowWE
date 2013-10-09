@@ -213,6 +213,8 @@
 		<module>KnowWE-Plugin-Table</module>
 		<module>KnowWE-Plugin-JSPWiki-MarkupSet</module>
 		<module>KnowWE-Plugin-DiaFlux-Review</module>
+		<module>KnowWE-Plugin-Timeline</module>
+		<module>KnowWE-Plugin-Include</module>
 	</modules>
 	<repositories>
 		<repository>
