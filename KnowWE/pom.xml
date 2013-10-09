@@ -212,6 +212,7 @@
 		<module>KnowWE-Plugin-TestCases</module>
 		<module>KnowWE-Plugin-Table</module>
 		<module>KnowWE-Plugin-JSPWiki-MarkupSet</module>
+		<module>KnowWE-Plugin-DiaFlux-Review</module>
 	</modules>
 	<repositories>
 		<repository>
