@@ -1,0 +1,24 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>Research</artifactId>
+    <groupId>de.uniwue.d3web</groupId>
+    <version>0.2-SNAPSHOT</version>
+    <relativePath>..</relativePath>
+  </parent>
+  <artifactId>KnowWE-Plugin-DiaFlux-Review</artifactId>
+  <name>KnowWE-Plugin-DiaFlux-Review</name>
+  <description>Offers the possibility to review DiaFlux flowcharts</description>
+  <dependencies>
+  	<dependency>
+  		<groupId>de.uniwue.d3web</groupId>
+  		<artifactId>KnowWE-Plugin-DiaFlux</artifactId>
+  		<version>0.2-SNAPSHOT</version>
+  	</dependency>
+  	<dependency>
+		<groupId>de.uniwue.d3web</groupId>
+		<artifactId>d3web-Plugin-TestingFramework</artifactId>
+		<version>0.2-SNAPSHOT</version>
+	</dependency>
+  </dependencies>
+</project>

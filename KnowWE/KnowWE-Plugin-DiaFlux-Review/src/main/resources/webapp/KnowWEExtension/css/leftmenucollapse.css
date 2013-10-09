@@ -1,0 +1,42 @@
+#collapsehandler {
+	border-left: 15px solid #ddd;
+	border-right: 2px solid #eee;
+	width: 0px;
+	left: 0;
+	position: fixed;
+	top: 0px;
+	height: 100%;
+	vertical-align: top;
+	color: black;
+	padding: 0;
+	overflow: hidden;
+	background-color: white;
+	z-index: 1000000000000;
+}
+
+#collapsehandler.expanded {
+	border-left: 1px solid #eee;
+	border-right: 5px solid #ddd;
+	padding: 5px;
+	overflow-y: scroll;
+}
+
+#page.expanded {
+	width:100%;
+	 
+}
+#collapsehandler #favorites {
+	width:95%;
+}
+
+#leftmenucollapsepin {
+	float: right;
+	width: 15px;
+	height: 15px;
+	background-image: url('../images/push-pin-icon4b.gif');
+}
+
+#leftmenucollapsepin.pinned {
+	background-image: url('../images/push-pin-icon4.gif');
+}
+
