@@ -71,7 +71,18 @@ function FlowEditor(articleIDs){
     	}
     	return false;
     };
-    
+    var undo = function() {
+    	event.stop();
+    	if (currentVersion > 0) {     		
+ 			EditorInstance.goToVersion(--currentVersion);
+ 		}
+    }
+    var redo = function() {
+    	event.stop();
+ 		if (currentVersion < maxVersion) {
+ 			EditorInstance.goToVersion(++currentVersion);
+ 		}
+    }
 	Element.observe(window, 'keydown', function(event) {
      	// s
 		if (isModifier(event) && event.keyCode == 83) {     
@@ -84,18 +95,16 @@ function FlowEditor(articleIDs){
      		EditorInstance.closeEditor();
      	}
      	// z
-     	else if (isModifier(event) && event.keyCode == 90) {                    		
-     		event.stop();
-     		if (currentVersion > 0) {     		
-     			EditorInstance.goToVersion(--currentVersion);
+     	else if (isModifier(event) && event.keyCode == 90) {
+     		if (event.shiftKey) {
+     			redo();
+     		} else {     			
+     			undo();
      		}
      	}
      	// y
      	else if (isModifier(event) && event.keyCode == 89) {                    		
-     		event.stop();
-     		if (currentVersion < maxVersion) {
-     			EditorInstance.goToVersion(++currentVersion);
-     		}
+     		redo();
      	}
      });
 }
