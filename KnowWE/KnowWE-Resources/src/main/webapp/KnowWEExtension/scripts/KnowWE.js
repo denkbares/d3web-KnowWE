@@ -537,8 +537,8 @@ KNOWWE.core.rerendercontent = function(){
          */
         animateDefaultMarkupMenu : function($frame) {
         	
-    		var header = $frame.find('.headerMenu');
-    		var menu = $frame.find('.markupMenu');
+    		var header = $frame.find('.headerMenu').first();
+    		var menu = $frame.find('.markupMenu').first();
     		if (menu.length == 0){
     			header.find('.markupMenuIndicator').hide();
     		}
