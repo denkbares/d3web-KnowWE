@@ -764,6 +764,24 @@
 			<id>denkbares</id>
 			<dependencies>
 				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Include</artifactId>
+					<version>0.2-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-DiaFlux-Review</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Timeline</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-KPI</artifactId>
 					<version>0-SNAPSHOT</version>
@@ -862,12 +880,6 @@
 			<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-OntoVis</artifactId>
-					<version>0.2-SNAPSHOT</version>
-					<scope>compile</scope>
-				</dependency>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Include</artifactId>
 					<version>0.2-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
