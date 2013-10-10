@@ -1,0 +1,91 @@
+@CHARSET "ISO-8859-1";
+
+.query-caption-holder {
+	position: absolute;
+	top: 4px;
+	left: 0;
+	z-index: 11;
+	padding: 1px;
+	pointer-events: none;
+	max-width: 100%;
+}
+
+.query-caption-holder div {
+	vertical-align:middle;
+	height: 12px;
+	padding: 0px;
+	margin: 2px;
+	float: left;
+	clear: both;
+	background: rgba(150, 150, 150, 0.3);
+	border: 1px solid #000;
+	pointer-events: auto;
+}
+
+.query-caption-holder div p {
+	font-size: 10px;
+	margin: 0;
+
+	/*display: inline;*/
+
+
+	height: 100%;
+	vertical-align: top;
+	line-height: 12px;
+	padding: 1px;
+}
+
+.label_region {
+	font-size: 50%;
+	padding: 0em 0.5em;
+}
+
+.query-caption-holder div p img {
+	height: 10px;
+	width: 10px;
+	cursor: pointer;
+}
+
+.type_Timeline .toolBar {
+	display: inline-block;
+}
+
+.type_Timeline .toolBar img {
+	margin: 1px;
+	cursor: pointer;
+	height: 16px;
+	width: 16px;
+}
+
+.type_Timeline .toolSeparator {
+	display: inline-block;
+	margin-left: 10px;
+	margin-right: 10px;
+	border-left: 2px solid #DDD;
+	height: 10px;
+}
+
+.simileAjax-bubble-contentContainer .toolBar .toolSeparator {
+	display: inline-block;
+	margin-left: 10px;
+	margin-right: 10px;
+	border-left: 2px solid #DDD;
+	height: 10px;
+}
+
+.simileAjax-bubble-contentContainer  .toolBar .toolButton {
+    border: 1px solid white;
+    position: relative;
+}
+
+.simileAjax-bubble-contentContainer .toolBar .toolButton.enabled {
+    cursor:pointer;
+}
+
+.simileAjax-bubble-contentContainer .toolBar .toolButton.enabled:hover {
+    border: 1px outset white;
+}
+.simileAjax-bubble-contentContainer .toolBar .toolButton IMG {
+    position: relative;
+    top: 3px;
+}

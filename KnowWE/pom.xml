@@ -214,6 +214,7 @@
 		<module>KnowWE-Plugin-JSPWiki-MarkupSet</module>
 		<module>KnowWE-Plugin-DiaFlux-Review</module>
 		<module>KnowWE-Plugin-Include</module>
+		<module>KnowWE-Plugin-Timeline</module>
 	</modules>
 	<repositories>
 		<repository>
