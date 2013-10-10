@@ -750,7 +750,7 @@ ActionPane.prototype.render = function() {
 	valueError = this.action.getError();
 	
 	var identifier = {
-			pagename: KNOWWE.helper.gup('page'),
+			pagename: KNOWWE ? (KNOWWE.helper ? KNOWWE.helper.gup('page') : null ) : null,
 			flowname: this.flowname,
 			nodeID: this.fcid
 	}
