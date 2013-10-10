@@ -20,18 +20,25 @@
 
 package de.knowwe.jspwiki;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +61,7 @@ import com.ecyrd.jspwiki.auth.permissions.PermissionFactory;
 import com.ecyrd.jspwiki.preferences.Preferences;
 import com.ecyrd.jspwiki.providers.ProviderException;
 
+import de.d3web.utils.Streams;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
@@ -202,46 +210,84 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public WikiAttachment getAttachment(String path) throws IOException {
-		try {
-			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
-			Attachment attachment = attachmentManager.getAttachmentInfo(path);
-
-			if (attachment == null) return null;
-			else return new JSPWikiAttachment(attachment, attachmentManager);
-
-		}
-		catch (ProviderException e) {
-			String message = "cannot access attachments due to provider error";
-			throw new IOException(message, e);
-		}
-	}
-
-	@Override
 	public Collection<WikiAttachment> getAttachments() throws IOException {
 		try {
 			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
 			Collection<?> attachments = attachmentManager.getAllAttachments();
-			Collection<WikiAttachment> ret = new LinkedList<WikiAttachment>();
+			Collection<WikiAttachment> wikiAttachments = new ArrayList<WikiAttachment>(
+					attachments.size());
 			for (Object o : attachments) {
 				if (o instanceof Attachment) {
-					ret.add(new JSPWikiAttachment((Attachment) o,
+					Attachment att = (Attachment) o;
+					wikiAttachments.add(new JSPWikiAttachment(att,
 							attachmentManager));
+					wikiAttachments.addAll(getZipEntryAttachments(att));
 				}
 			}
-			return ret;
+			return wikiAttachments;
 		}
 		catch (ProviderException e) {
-			String message = "cannot access attachments due to provider error";
+			String message = "Cannot access attachments due to provider error.";
 			throw new IOException(message, e);
 		}
 
+	}
+
+	@Override
+	public WikiAttachment getAttachment(String path) throws IOException {
+		try {
+			Pattern zipPattern = Pattern.compile("^([^/]+/[^/]+\\.zip)/(.+$)");
+			Matcher matcher = zipPattern.matcher(path);
+			String entry = null;
+			String actualPath = path;
+			if (matcher.find()) {
+				actualPath = matcher.group(1);
+				entry = matcher.group(2);
+			}
+			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
+			Attachment attachment = attachmentManager.getAttachmentInfo(actualPath);
+
+			if (attachment == null) return null;
+			else if (entry == null) return new JSPWikiAttachment(attachment, attachmentManager);
+			else {
+				InputStream attachmentStream = attachmentManager.getAttachmentStream(attachment);
+				ZipInputStream zipStream = new ZipInputStream(attachmentStream);
+				boolean found = false;
+				for (ZipEntry e; (e = zipStream.getNextEntry()) != null;) {
+					if (e.getName().equals(entry)) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) throw new IOException("ZipEntry '" + entry + "' not found.");
+				return new JSPWikiZipAttachment(entry, attachment, zipStream);
+			}
+
+		}
+		catch (ProviderException e) {
+			String message = "Cannot access attachments due to provider error.";
+			throw new IOException(message, e);
+		}
+	}
+
+	private List<WikiAttachment> getZipEntryAttachments(Attachment attachment) throws IOException, ProviderException {
+		if (!attachment.getFileName().endsWith(".zip")) return Collections.emptyList();
+		AttachmentManager attachmentManager = this.engine.getAttachmentManager();
+		InputStream attachmentStream = attachmentManager.getAttachmentStream(attachment);
+		ZipInputStream zipStream = new ZipInputStream(attachmentStream);
+		List<WikiAttachment> zipEntryAttachments = new ArrayList<WikiAttachment>();
+		for (ZipEntry e; (e = zipStream.getNextEntry()) != null;) {
+			ByteArrayOutputStream copy = new ByteArrayOutputStream();
+			Streams.stream(zipStream, copy);
+			ByteArrayInputStream entryStream = new ByteArrayInputStream(copy.toByteArray());
+			zipEntryAttachments.add(new JSPWikiZipAttachment(e.getName(), attachment, entryStream));
+		}
+		return zipEntryAttachments;
 	}
 
 	@Override
 	public List<WikiAttachment> getAttachments(String title) throws IOException {
 		try {
-			List<WikiAttachment> attachmentList = new LinkedList<WikiAttachment>();
 			// this list is in fact a Collection<Attachment>,
 			// the conversion is type safe!
 			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
@@ -249,15 +295,16 @@ public class JSPWikiConnector implements WikiConnector {
 			if (page == null) {
 				// might happen that a page of this title does not exist.
 				// return empty list to prevent NullPointer in AttachmentManager
-				return attachmentList;
+				return Collections.emptyList();
 			}
 			@SuppressWarnings("unchecked")
 			Collection<Attachment> attList = attachmentManager.
 					listAttachments(page);
 
+			List<WikiAttachment> attachmentList = new ArrayList<WikiAttachment>(attList.size());
 			for (Attachment att : attList) {
-				attachmentList.add(new JSPWikiAttachment(att,
-						attachmentManager));
+				attachmentList.add(new JSPWikiAttachment(att, attachmentManager));
+				attachmentList.addAll(getZipEntryAttachments(att));
 			}
 
 			return attachmentList;

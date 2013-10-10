@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
+import de.d3web.utils.Streams;
+
 /**
  * 
  * @author Albrecht Striffler (denkbares GmbH)
@@ -54,11 +56,7 @@ public class FileSystemConnectorAttachment extends SingleVersionAttachment {
 		this.attachmentFile = null;
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		byte[] buffer = new byte[1024];
-		int len;
-		while ((len = attachmentFileStream.read(buffer)) != -1) {
-			outputStream.write(buffer, 0, len);
-		}
+		Streams.stream(attachmentFileStream, outputStream);
 
 		this.attachmentFileBytes = outputStream.toByteArray();
 		this.fileName = fileName;
