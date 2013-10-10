@@ -24,7 +24,7 @@ import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.we.object.NamedObjectReference;
 import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.packaging.PackageTermReference;
+import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
@@ -57,7 +57,7 @@ public class PropertyTableType extends DefaultMarkupType {
 		markup.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageAnnotationNameType());
 		markup.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTermReference());
+				new PackageTerm(true));
 
 		PropertyType propertyType = new PropertyType();
 		propertyType.setSectionFinder(new ConstraintSectionFinder(new AllTextSectionFinder(),

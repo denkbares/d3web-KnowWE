@@ -33,6 +33,8 @@ import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.session.Session;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.Environment;
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -68,13 +70,13 @@ public class ShowSolutionsContentRenderer implements Renderer {
 			string.append(text + "\n");
 		}
 
-		String masterArticleName = ShowSolutionsType.getMaster(getShowSolutionsSection(section));
-		if (masterArticleName == null) {
-			masterArticleName = section.getTitle();
-		}
-		Session session = getSessionFor(masterArticleName, user);
+
+		Session session = getSessionFor(section, user);
 		if (session == null) {
-			string.append("No knowledge base for article '" + masterArticleName + "'\n");
+			// TODO
+			// fix error
+			string.append("No knowledge base for article '"
+					+ ShowSolutionsType.getMaster(getShowSolutionsSection(section)) + "'\n");
 		}
 		else {
 			renderSolutions(section, session, string);
@@ -193,7 +195,24 @@ public class ShowSolutionsContentRenderer implements Renderer {
 
 	}
 
-	private Session getSessionFor(String title, UserContext user) {
+	private Session getSessionFor(Section<?> section, UserContext user) {
+		String packageName = ShowSolutionsType.getPackageName(getShowSolutionsSection(section));
+		String masterArticleName = ShowSolutionsType.getMaster(getShowSolutionsSection(section));
+		String title = "";
+		if (masterArticleName == null) {
+			PackageManager packageManager = Environment.getInstance().getPackageManager(
+					user.getWeb());
+			Set<String> compilingArticles = packageManager.getCompilingArticles(packageName);
+
+			for (String compilingArticle : compilingArticles) {
+				title = compilingArticle;
+				break;
+			}
+		}
+		else {
+			title = masterArticleName;
+		}
+
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), title);
 		return SessionProvider.getSession(user, kb);
 	}

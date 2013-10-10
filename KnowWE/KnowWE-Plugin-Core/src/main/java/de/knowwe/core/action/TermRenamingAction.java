@@ -89,9 +89,10 @@ public class TermRenamingAction extends AbstractAction {
 
 		Iterator<Article> iter = Environment.getInstance()
 				.getArticleManager(web).getArticleIterator();
+		Article currentArticle;
 
 		while (iter.hasNext()) {
-			Article currentArticle = iter.next();
+			currentArticle = iter.next();
 			Collection<TerminologyManager> terminologyManagers = Environment.getInstance().getTerminologyManagers(
 					currentArticle.getWeb());
 			for (TerminologyManager terminologyManager : terminologyManagers) {

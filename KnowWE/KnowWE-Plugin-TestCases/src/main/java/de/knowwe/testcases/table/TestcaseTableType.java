@@ -20,7 +20,7 @@ package de.knowwe.testcases.table;
 
 import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.packaging.PackageTermReference;
+import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -48,7 +48,7 @@ public class TestcaseTableType extends DefaultMarkupType {
 		m.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageAnnotationNameType());
 		m.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTermReference());
+				new PackageTerm(true));
 		m.addAnnotation(NAME, false);
 		m.addAnnotation(PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME, false);
 	}

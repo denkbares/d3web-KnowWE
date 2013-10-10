@@ -30,7 +30,16 @@ public class QuickInterviewAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String master = context.getParameter("master");
-		String result = QuickInterviewRenderer.callQuickInterviewRenderer(context, master);
+		String packageName = context.getParameter("packageName");
+		String result = "";
+		if (packageName == null) {
+			result = QuickInterviewRenderer.callQuickInterviewRenderer(context, master);
+		}
+		else {
+			result = QuickInterviewRenderer.callQuickInterviewRendererWithPackageName(context,
+					packageName);
+		}
+		
 		if (result != null && context.getWriter() != null) {
 			context.setContentType("text/html; charset=UTF-8");
 			context.getWriter().write(result);

@@ -38,8 +38,8 @@ public class UsesAnnotationRenderer implements Renderer {
 				UsesAnnotationNameType.class);
 		packageNameSec.get().getRenderer().render(packageNameSec, user, string);
 
-		Section<PackageTermDefinition> packageTermSec = Sections.findSuccessor(section,
-				PackageTermDefinition.class);
+		Section<PackageTerm> packageTermSec = Sections.findSuccessor(section,
+				PackageTerm.class);
 		packageTermSec.get().getRenderer().render(packageTermSec, user, string);
 
 	}

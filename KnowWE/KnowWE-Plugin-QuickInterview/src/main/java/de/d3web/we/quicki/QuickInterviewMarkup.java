@@ -22,10 +22,15 @@ package de.d3web.we.quicki;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.compile.packaging.MasterAnnotationWarningHandler;
+import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.packaging.PackageTerm;
+import de.knowwe.core.compile.packaging.RegisterPackageTermHandler;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
@@ -58,8 +63,6 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 
 	public static final String SAVE_KEY = "save";
 
-	public static final String MASTER_KEY = "master";
-
 	static {
 		m = new DefaultMarkup(MARKUP_NAME);
 		m.addAnnotation(UNKNOWN_KEY, false, "true", "false");
@@ -74,13 +77,22 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 		m.addAnnotation(SAVE_KEY, false);
 		m.addAnnotationRenderer(SAVE_KEY, NothingRenderer.getInstance());
 
-		m.addAnnotation(MASTER_KEY, false);
-		m.addAnnotationRenderer(MASTER_KEY, StyleRenderer.PACKAGE);
+		m.addAnnotation(PackageManager.ANNOTATION_MASTER, false);
+		m.setAnnotationDeprecated(PackageManager.ANNOTATION_MASTER);
+		m.addAnnotationRenderer(PackageManager.ANNOTATION_MASTER, StyleRenderer.PACKAGE);
+
+		m.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
+		m.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
+				new PackageAnnotationNameType());
+		m.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
+				new PackageTerm(true));
 
 	}
 
 	public QuickInterviewMarkup() {
 		this(m);
+		this.addSubtreeHandler(new RegisterPackageTermHandler());
+
 	}
 
 	public QuickInterviewMarkup(DefaultMarkup markup) {
@@ -135,22 +147,53 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 			}
 			string.appendHtml(savehtml);
 			String master = DefaultMarkupType.getAnnotation(section,
-					QuickInterviewMarkup.MASTER_KEY);
-			String masterHtml;
+					PackageManager.ANNOTATION_MASTER);
+			String packageName = DefaultMarkupType.getAnnotation(section,
+					PackageManager.PACKAGE_ATTRIBUTE_NAME);
+			String masterHtml = "";
+			String packageNameHtml = "";
+			String defaultPackageName = "";
 			if (master != null) {
 				masterHtml = " master=\"" + master + "\"";
 			}
+			if (packageName != null) {
+				packageNameHtml = " package=\"" + packageName + "\"";
+			}
 			else {
-				masterHtml = "";
+				PackageManager packageManager = Environment.getInstance().getPackageManager(
+						user.getWeb());
+				Set<String> defaultPackages = packageManager.getDefaultPackages(section.getArticle());
+				for (String defaultPackage : defaultPackages) {
+					defaultPackageName = defaultPackage;
+					packageNameHtml = " package=\"" + defaultPackage
+							+ "\"";
+					break;
+				}
 			}
 			String html = "<div id=\"quickinterview\""
 					+ masterHtml
-					+ ">"
-					+ QuickInterviewRenderer.callQuickInterviewRenderer(user, master)
-					+ "</div>";
-			string.appendHtml(html);
+					+ " "
+					+ packageNameHtml
+					+ ">";
 
-			// render subsections
+			string.appendHtml(html);
+			if (packageName != null) {
+				string.appendHtml(QuickInterviewRenderer.callQuickInterviewRendererWithPackageName(
+						user, packageName));
+			}
+			else if (packageName == null && master != null) {
+
+				string.appendHtml(QuickInterviewRenderer.callQuickInterviewRenderer(user, master));
+			}
+			else {
+				string.appendHtml(QuickInterviewRenderer.callQuickInterviewRendererWithPackageName(
+						user, defaultPackageName));
+			}
+			string.appendHtml("</div>");
+
+			// render subsections +
+			// QuickInterviewRenderer.callQuickInterviewRenderer(user, master)
+
 			List<Section<?>> subsecs = section.getChildren();
 			Section<?> first = subsecs.get(0);
 			Section<?> last = subsecs.get(subsecs.size() - 1);

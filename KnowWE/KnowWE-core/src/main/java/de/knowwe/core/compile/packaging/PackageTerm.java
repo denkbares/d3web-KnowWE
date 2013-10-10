@@ -18,33 +18,47 @@
  */
 package de.knowwe.core.compile.packaging;
 
-import java.util.regex.Pattern;
+import java.util.Collection;
+import java.util.List;
 
 import de.d3web.strings.Identifier;
+import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
  * 
+ * 
  * @author Stefan Plehn
- * @created 22.05.2013
+ * @created 08.05.2013
+ * 
+ * 
  */
-public class PackageTermReference extends AbstractType implements Term, RenamableTerm {
+public class PackageTerm extends AbstractType implements Term, RenamableTerm {
 
-	public PackageTermReference() {
-		Pattern pattern = Pattern.compile("^([\\w-_]+\\b)",
-				Pattern.MULTILINE + Pattern.DOTALL);
-		this.setSectionFinder(new RegexSectionFinder(pattern));
+	public PackageTerm(boolean checkExistingSections) {
+
+		this.setSectionFinder(new AllTextSectionFinder());
+		
 		setRenderer(StyleRenderer.PACKAGE);
+
+		if (checkExistingSections) {
+			addSubtreeHandler(Priority.HIGH, new CheckSectionsForPackageExistence());
+		}
 	}
 
 	@Override
 	public Class<?> getTermObjectClass(Section<? extends Term> section) {
-		return Package.class;
+		return PackageTerm.class;
 	}
 
 	@Override
@@ -61,6 +75,30 @@ public class PackageTermReference extends AbstractType implements Term, Renamabl
 	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
 		String replacement = newIdentifier.getLastPathElement();
 		return replacement;
+	}
+
+	private class CheckSectionsForPackageExistence extends SubtreeHandler<PackageTerm> {
+
+		@Override
+		public Collection<Message> create(Article article, Section<PackageTerm> section) {
+
+			if (section.getText().equals(PackageManager.THIS)) {
+				return Messages.noMessage();
+			}
+			PackageManager packageManager =
+					Environment.getInstance().getPackageManager(article.getWeb());
+			List<Section<?>> sectionsOfPackage = packageManager.getSectionsOfPackage(section.getText());
+
+			if (sectionsOfPackage.isEmpty()) {
+				return Messages.asList(Messages.warning("Package " + section.getText()
+						+ " does not contain any sections."));
+			}
+			else {
+				return Messages.noMessage();
+			}
+
+		}
+
 	}
 
 }

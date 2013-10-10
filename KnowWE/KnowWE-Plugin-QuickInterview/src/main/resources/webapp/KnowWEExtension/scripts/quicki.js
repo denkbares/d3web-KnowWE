@@ -752,10 +752,14 @@ KNOWWE.plugin.quicki = function(){
             }
             
         	var master = jq$('#quickinterview').attr('master');
+            var packageName = jq$('#quickinterview').attr('package');
             if(master){
             	pDefault.master = master;
             }
-            
+            if(packageName){
+            	pDefault.packageName = packageName;
+            }
+
             pDefault = KNOWWE.helper.enrich( params, pDefault );
              
             var options = {
@@ -794,10 +798,6 @@ KNOWWE.plugin.quicki = function(){
                    
              }
         	 
-         	var master = jq$('#quickinterview').attr('master');
-             if(master){
-             	pDefault.master = master;
-             }
         	 
              // also submit config parameters defined in the markup
         	 var resetPointer = _KS('#quickireset');

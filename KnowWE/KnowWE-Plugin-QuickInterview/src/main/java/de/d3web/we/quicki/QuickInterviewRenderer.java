@@ -20,6 +20,8 @@
 
 package de.d3web.we.quicki;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +61,7 @@ import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.notification.NotificationManager;
 import de.knowwe.notification.OutDatedSessionNotification;
@@ -894,6 +897,28 @@ public class QuickInterviewRenderer {
 
 		return callQuickInterviewRenderer(usercontext, topic);
 
+	}
+
+	public static String callQuickInterviewRendererWithPackageName(UserContext usercontext, String packageName) {
+		PackageManager packageManager = Environment.getInstance().getPackageManager(usercontext.getWeb());
+		Set<String> compilingArticles = packageManager.getCompilingArticles(packageName);
+		List<String> compilingArticlesSorted = new ArrayList<String>(compilingArticles);
+		Collections.sort(compilingArticlesSorted);
+		String title = "";
+		for (String compilingArticle : compilingArticlesSorted) {
+			title = compilingArticle;
+			break;
+		}
+		String callQuickInterviewRenderer = "";
+		if (compilingArticlesSorted.size() > 1) {
+			callQuickInterviewRenderer = "<span class='warning'>The given package \""
+					+ packageName
+					+ "\" is part of multiple knowledge bases, only the first knowledge base (lexicographically) will be used.</span>";
+				
+		}
+		callQuickInterviewRenderer += callQuickInterviewRenderer(usercontext, title);
+		return callQuickInterviewRenderer;
+		
 	}
 
 	public static String callQuickInterviewRenderer(UserContext usercontext, String title) {

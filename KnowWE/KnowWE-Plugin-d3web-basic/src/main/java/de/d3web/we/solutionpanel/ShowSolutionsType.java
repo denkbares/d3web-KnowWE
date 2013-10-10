@@ -18,10 +18,18 @@
  */
 package de.d3web.we.solutionpanel;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import de.d3web.we.object.QuestionnaireReference;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.MasterAnnotationWarningHandler;
+import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.packaging.PackageTerm;
+import de.knowwe.core.compile.packaging.RegisterPackageTermHandler;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -52,8 +60,14 @@ public class ShowSolutionsType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("ShowSolutions");
-		MARKUP.addAnnotation(PackageManager.ANNOTATION_MASTER, true);
 		MARKUP.addAnnotation(ANNOTATION_ESTABLISHED, false, BoolValue.values());
+		MARKUP.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
+
+		MARKUP.addAnnotation(PackageManager.ANNOTATION_MASTER, true);
+		MARKUP.addAnnotationRenderer(PackageManager.ANNOTATION_MASTER,
+				NothingRenderer.getInstance());
+		MARKUP.setAnnotationDeprecated(PackageManager.ANNOTATION_MASTER);
+
 		MARKUP.addAnnotation(ANNOTATION_SUGGESTED, false, BoolValue.values());
 		MARKUP.addAnnotation(ANNOTATION_EXCLUDED, false, BoolValue.values());
 		MARKUP.addAnnotation(ANNOTATION_ABSTRACTIONS, false, BoolValue.values());
@@ -65,6 +79,11 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		QuestionnaireReference qc = new QuestionnaireReference();
 		qc.setSectionFinder(new AllTextFinderTrimmed());
 		MARKUP.addAnnotationContentType(ONLY_DERIVATIONS, qc);
+
+		MARKUP.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
+				new PackageAnnotationNameType());
+		MARKUP.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
+				new PackageTerm(true));
 	}
 
 	public ShowSolutionsType() {
@@ -74,6 +93,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		DefaultMarkupType.getContentType(this).setRenderer(
 				new ReRenderSectionMarkerRenderer(new ShowSolutionsContentRenderer()));
 		this.addSubtreeHandler(new MasterAnnotationWarningHandler());
+		this.addSubtreeHandler(new RegisterPackageTermHandler());
 	}
 
 	public static String getText(Section<ShowSolutionsType> sec) {
@@ -84,6 +104,24 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	public static String getEndUserModeFlag(Section<ShowSolutionsType> sec) {
 		assert sec.get() instanceof ShowSolutionsType;
 		return DefaultMarkupType.getAnnotation(sec, END_USER_MODE);
+	}
+
+	public static String getPackageName(Section<ShowSolutionsType> section) {
+		assert section.get() instanceof ShowSolutionsType;
+		String packageName = DefaultMarkupType.getAnnotation(section, PackageManager.PACKAGE_ATTRIBUTE_NAME);
+		Set<String> defaultPackages = new HashSet<String>();
+		if (packageName != null) {
+			return packageName;
+		}
+		if(packageName == null){
+			PackageManager packageManager = Environment.getInstance().getPackageManager(section.getWeb());
+			defaultPackages = packageManager.getDefaultPackages(section.getArticle());
+		}
+		for (String defaultPackage : defaultPackages) {
+			packageName = defaultPackage;
+			break;
+		}
+		return packageName;
 	}
 
 	public static String getMaster(Section<ShowSolutionsType> section) {

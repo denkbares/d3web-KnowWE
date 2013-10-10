@@ -32,7 +32,7 @@ import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.packaging.PackageTermDefinition;
+import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -169,9 +169,9 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 		boolean hasWarnings = warningsCount > 0;
 
 		Section<?> currentSection = null;
-		List<Section<PackageTermDefinition>> packageSecs = Sections.findSuccessorsOfType(section,
-				PackageTermDefinition.class);
-		for (Section<PackageTermDefinition> packageSec : packageSecs) {
+		List<Section<PackageTerm>> packageSecs = Sections.findSuccessorsOfType(section,
+				PackageTerm.class);
+		for (Section<PackageTerm> packageSec : packageSecs) {
 			if (packageSec.getText().equals(packageName)) {
 				currentSection = packageSec;
 				break;

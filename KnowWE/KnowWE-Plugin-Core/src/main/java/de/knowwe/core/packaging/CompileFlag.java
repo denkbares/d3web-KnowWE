@@ -30,7 +30,7 @@ import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageCompiler;
-import de.knowwe.core.compile.packaging.PackageTermDefinition;
+import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -75,8 +75,8 @@ public class CompileFlag extends DefaultMarkupType {
 				UserContext user,
 				RenderResult string) {
 
-			List<Section<PackageTermDefinition>> packageReferences = new LinkedList<Section<PackageTermDefinition>>();
-			Sections.findSuccessorsOfType(sec, PackageTermDefinition.class, packageReferences);
+			List<Section<PackageTerm>> packageReferences = new LinkedList<Section<PackageTerm>>();
+			Sections.findSuccessorsOfType(sec, PackageTerm.class, packageReferences);
 			if (packageReferences.isEmpty()) {
 				DelegateRenderer.getInstance().render(sec, user, string);
 				return;
@@ -85,7 +85,7 @@ public class CompileFlag extends DefaultMarkupType {
 			string.appendHtml("<h3>" + "Compile: " + sec.getText() +
 					"</h3><div>");
 			for (Section<?> child : packageReferences) {
-				if (child.get() instanceof PackageTermDefinition) {
+				if (child.get() instanceof PackageTerm) {
 					((CompilePackageRenderer) child.get().getRenderer()).render(child,
 							user, string);
 				}
@@ -98,7 +98,7 @@ public class CompileFlag extends DefaultMarkupType {
 	private static class CompileFlagContentType extends PackageCompileType {
 
 		public CompileFlagContentType() {
-			PackageTermDefinition childType = new PackageTermDefinition(true);
+			PackageTerm childType = new PackageTerm(true);
 			childType.setRenderer(new CompilePackageRenderer());
 			childType.setSectionFinder(new RegexSectionFinder("[\\w-_]+"));
 			this.addChildType(childType);
@@ -108,7 +108,7 @@ public class CompileFlag extends DefaultMarkupType {
 		public Set<String> getPackagesToCompile(Section<? extends PackageCompiler> section) {
 			Set<String> packagesToCompile = new HashSet<String>();
 			for (Section<?> child : section.getChildren()) {
-				if (child.get() instanceof PackageTermDefinition) {
+				if (child.get() instanceof PackageTerm) {
 					packagesToCompile.add(child.getText());
 				}
 			}
@@ -126,8 +126,8 @@ public class CompileFlag extends DefaultMarkupType {
 		public Collection<Message> create(Article article, Section<CompileFlag> section) {
 
 			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
-			for (Section<PackageTermDefinition> packageSection : Sections.findSuccessorsOfType(
-					section, PackageTermDefinition.class)) {
+			for (Section<PackageTerm> packageSection : Sections.findSuccessorsOfType(
+					section, PackageTerm.class)) {
 				terminologyHandler.registerTermDefinition(packageSection,
 						Package.class,
 						new Identifier(packageSection.getText()));

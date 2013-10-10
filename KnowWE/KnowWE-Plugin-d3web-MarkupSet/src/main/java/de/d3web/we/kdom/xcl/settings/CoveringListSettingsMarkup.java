@@ -38,7 +38,7 @@ import de.d3web.xcl.inference.PSMethodXCL;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.packaging.PackageTermReference;
+import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
@@ -69,7 +69,7 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 		m.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageAnnotationNameType());
 		m.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTermReference());
+				new PackageTerm(true));
 	}
 
 	public CoveringListSettingsMarkup() {
