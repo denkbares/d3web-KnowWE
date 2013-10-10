@@ -63,7 +63,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_ESTABLISHED, false, BoolValue.values());
 		MARKUP.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 
-		MARKUP.addAnnotation(PackageManager.ANNOTATION_MASTER, true);
+		MARKUP.addAnnotation(PackageManager.ANNOTATION_MASTER, false);
 		MARKUP.addAnnotationRenderer(PackageManager.ANNOTATION_MASTER,
 				NothingRenderer.getInstance());
 		MARKUP.setAnnotationDeprecated(PackageManager.ANNOTATION_MASTER);
@@ -108,13 +108,15 @@ public class ShowSolutionsType extends DefaultMarkupType {
 
 	public static String getPackageName(Section<ShowSolutionsType> section) {
 		assert section.get() instanceof ShowSolutionsType;
-		String packageName = DefaultMarkupType.getAnnotation(section, PackageManager.PACKAGE_ATTRIBUTE_NAME);
+		String packageName = DefaultMarkupType.getAnnotation(section,
+				PackageManager.PACKAGE_ATTRIBUTE_NAME);
 		Set<String> defaultPackages = new HashSet<String>();
 		if (packageName != null) {
 			return packageName;
 		}
-		if(packageName == null){
-			PackageManager packageManager = Environment.getInstance().getPackageManager(section.getWeb());
+		if (packageName == null) {
+			PackageManager packageManager = Environment.getInstance().getPackageManager(
+					section.getWeb());
 			defaultPackages = packageManager.getDefaultPackages(section.getArticle());
 		}
 		for (String defaultPackage : defaultPackages) {
