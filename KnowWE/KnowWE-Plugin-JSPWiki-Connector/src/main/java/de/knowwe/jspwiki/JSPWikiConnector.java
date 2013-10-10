@@ -20,8 +20,6 @@
 
 package de.knowwe.jspwiki;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -61,7 +59,6 @@ import com.ecyrd.jspwiki.auth.permissions.PermissionFactory;
 import com.ecyrd.jspwiki.preferences.Preferences;
 import com.ecyrd.jspwiki.providers.ProviderException;
 
-import de.d3web.utils.Streams;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
@@ -260,7 +257,7 @@ public class JSPWikiConnector implements WikiConnector {
 					}
 				}
 				if (!found) throw new IOException("ZipEntry '" + entry + "' not found.");
-				return new JSPWikiZipAttachment(entry, attachment, zipStream);
+				return new JSPWikiZipAttachment(entry, attachment, attachmentManager);
 			}
 
 		}
@@ -277,11 +274,10 @@ public class JSPWikiConnector implements WikiConnector {
 		ZipInputStream zipStream = new ZipInputStream(attachmentStream);
 		List<WikiAttachment> zipEntryAttachments = new ArrayList<WikiAttachment>();
 		for (ZipEntry e; (e = zipStream.getNextEntry()) != null;) {
-			ByteArrayOutputStream copy = new ByteArrayOutputStream();
-			Streams.stream(zipStream, copy);
-			ByteArrayInputStream entryStream = new ByteArrayInputStream(copy.toByteArray());
-			zipEntryAttachments.add(new JSPWikiZipAttachment(e.getName(), attachment, entryStream));
+			zipEntryAttachments.add(new JSPWikiZipAttachment(e.getName(), attachment,
+					attachmentManager));
 		}
+		zipStream.close();
 		return zipEntryAttachments;
 	}
 

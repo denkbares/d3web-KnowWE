@@ -21,8 +21,12 @@ package de.knowwe.jspwiki;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import com.ecyrd.jspwiki.attachment.Attachment;
+import com.ecyrd.jspwiki.attachment.AttachmentManager;
+import com.ecyrd.jspwiki.providers.ProviderException;
 
 import de.knowwe.core.wikiConnector.WikiAttachment;
 
@@ -38,19 +42,19 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
  */
 public class JSPWikiZipAttachment implements WikiAttachment {
 
-	private final String fileName;
+	private final String entryName;
 	private final Attachment attachment;
-	private final InputStream stream;
+	private final AttachmentManager attachmentManager;
 
-	public JSPWikiZipAttachment(String entryName, Attachment attachment, InputStream stream) {
-		this.fileName = entryName;
+	public JSPWikiZipAttachment(String entryName, Attachment attachment, AttachmentManager attachmentManager) {
+		this.entryName = entryName;
 		this.attachment = attachment;
-		this.stream = stream;
+		this.attachmentManager = attachmentManager;
 	}
 
 	@Override
 	public String getFileName() {
-		return this.fileName;
+		return this.entryName;
 	}
 
 	@Override
@@ -60,7 +64,7 @@ public class JSPWikiZipAttachment implements WikiAttachment {
 
 	@Override
 	public String getPath() {
-		return attachment.getName() + "/" + fileName;
+		return attachment.getName() + "/" + entryName;
 	}
 
 	@Override
@@ -75,12 +79,8 @@ public class JSPWikiZipAttachment implements WikiAttachment {
 
 	@Override
 	public long getSize() {
-		try {
-			return stream.available();
-		}
-		catch (IOException e) {
-			return 0;
-		}
+		// TODO do we need an implementation here?
+		return 0;
 	}
 
 	@Override
@@ -90,7 +90,20 @@ public class JSPWikiZipAttachment implements WikiAttachment {
 
 	@Override
 	public InputStream getInputStream() throws IOException {
-		return stream;
+		try {
+			InputStream attachmentStream;
+			attachmentStream = attachmentManager.getAttachmentStream(attachment);
+			ZipInputStream zipStream = new ZipInputStream(attachmentStream);
+			for (ZipEntry e; (e = zipStream.getNextEntry()) != null;) {
+				if (e.getName().equals(entryName)) {
+					break;
+				}
+			}
+			return zipStream;
+		}
+		catch (ProviderException e) {
+			throw new IOException(e);
+		}
 	}
 
 	@Override
