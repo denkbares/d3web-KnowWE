@@ -183,7 +183,7 @@ Action.prototype._extractInfoObjectName_deprecated = function(string) {
 	if (result && result.length > 1 && result[1]) return result[1];	
 
 	this.error = "The object's name can not be identified.";
-	return "";
+	return null;
 }
 
 //extracts the value from the expression
@@ -234,7 +234,7 @@ Action.prototype._extractValueString_deprecated = function(string) {
 	if (result && result.length > 1 && result[1]) return 'ERFRAGE'; // we do have an implicit value	
 
 	this.error = "The action can not be identified.";
-	return "";
+	return null;
 }
 
 
@@ -662,10 +662,12 @@ ActionEditor.prototype.destroy = function() {
  * Neben dem Rendern der Inhalte ueberwacht ActionPane auch den KBInfo Cache.
  */
  
- function ActionPane(parent, action, onChange) {
+ function ActionPane(parent, action, onChange, flowname, fcid) {
 	this.parent = $(parent);
 	this.action = action;
 	this.onChange = onChange;
+	this.flowname = flowname;
+	this.fcid = fcid;
 
 	this.dom = null;
 	this.cacheListener = function(changedInfoObjects) {this.handleCacheChange(changedInfoObjects);}.bind(this);
@@ -746,15 +748,32 @@ ActionPane.prototype.render = function() {
 	var valueError = null;
 	valueText = this.action.getDisplayText(); // zeigt ZusatzInfo an (fragen/ immer fragen,...)
 	valueError = this.action.getError();
+	
+	var identifier = {
+			pagename: KNOWWE.helper.gup('page'),
+			flowname: this.flowname,
+			nodeID: this.fcid
+	}
 
 	var dom = Builder.node('div', {
 		className: 'ActionPane'
 	}, 
 	[
 		Builder.node('span', {
-			className: 'object',
-			style: 'background-image: url(' + iconURL + ')'
-		}, [name]), 
+			style: 'position:relative'
+		}, [Builder.node('div', {
+				className: 'toolsMenuDecorator',
+				toolMenuIdentifier: JSON.stringify(identifier),
+				toolMenuAction: 'FlowchartToolMenuAction',
+				style: 'position:absolute'
+			}),
+		    Builder.node('span', {
+				className: 'object',
+				style: 'background-image: url(' + iconURL + ');'
+			}, [name]) 
+			]
+		), 
+		
 		Builder.node('div', {
 			className: valueError ? 'value error' : 'value',
 			title: valueError ? valueError : ''

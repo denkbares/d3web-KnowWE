@@ -49,7 +49,7 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 		if (hasTools) {
 			string.appendHtmlTag("span", "style", "position:relative;");
 			string.appendHtmlTag("div", "style", "position:absolute", "class",
-					"toolsMenuDecorator", "id", headerID, "sectionID", sec.getID());
+					"toolsMenuDecorator", "id", headerID, "toolMenuIdentifier", sec.getID());
 			string.appendHtmlTag("/div");
 		}
 		decoratedRenderer.render(sec, user, string);

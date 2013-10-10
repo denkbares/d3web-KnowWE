@@ -126,6 +126,16 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="FlowchartToolMenuAction">
+		<parameter id="class"
+			value="de.knowwe.diaflux.FlowchartToolMenuAction" />
+		<parameter id="name" value="FlowchartToolMenuAction" />
+		<parameter id="description" value="Action FlowchartToolMenuAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
 		
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="GetInfoObjects">

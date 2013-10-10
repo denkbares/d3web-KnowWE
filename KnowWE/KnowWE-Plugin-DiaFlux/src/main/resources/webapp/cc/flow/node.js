@@ -250,7 +250,7 @@ Node.prototype.render = function() {
 					rules[i].notifyNodeChanged(this);
 				}
 			}.bind(this)
-		);
+		, this.flowchart.name, this.nodeModel.fcid);
 	}
 	else if (this.nodeModel.snapshot) {
 		contentNode.className = 'snapshot';

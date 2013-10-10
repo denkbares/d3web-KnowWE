@@ -47,13 +47,13 @@ public class GetToolMenuAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String sectionID = context.getParameter("sectionID");
+		String identifier = context.getParameter("identifier");
 
-		Section<? extends Type> sec = Sections.getSection(sectionID);
+		Section<? extends Type> sec = getSection(identifier);
 
 		if (sec == null) {
-			context.sendError(409, "Section '" + sectionID
-					+ "' could not be found, possibly because somebody else"
+			context.sendError(409, "Section could not be found, "
+					+ "possibly because somebody else"
 					+ " has edited the page.");
 			return;
 		}
@@ -73,6 +73,10 @@ public class GetToolMenuAction extends AbstractAction {
 			new IOException(e);
 		}
 
+	}
+
+	protected Section<? extends Type> getSection(String identifier) {
+		return Sections.getSection(identifier);
 	}
 
 }

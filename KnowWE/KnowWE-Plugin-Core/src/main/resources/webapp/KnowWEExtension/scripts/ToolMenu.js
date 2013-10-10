@@ -2,9 +2,27 @@ function ToolMenu() {
 	this.cache = {};
 }
 
-ToolMenu.prototype.showToolPopupMenu = function(nodeID) {
+ToolMenu.prototype.decorateToolMenus = function(parent) {
+	var decorators = parent ? parent.find('.toolsMenuDecorator') : jq$('.toolsMenuDecorator');
+	jq$('.toolsMenuDecorator').each(function() {
+		var a = jq$(this);
+		if (a.data('toolMenuDecorated') === 'true') return;
+		a.parent().mouseenter(function() {
+			a.css('visibility', 'visible');
+		});
+		a.parent().mouseleave(function() {
+			a.css('visibility', 'hidden');
+		});
+		a.click(function() {
+			ToolMenu.showToolPopupMenu(a);
+		});
+		a.data('toolMenuDecorated', 'true');
+	});
+}
+
+ToolMenu.prototype.showToolPopupMenu = function($node) {
 	this.hideToolsPopupMenu();
-	var node = $(nodeID);
+	var node = $node[0];
 	var pos = node.getPosition();
 	var w = node.offsetWidth, h = node.offsetHeight;
 	var par = new Element('div', {
@@ -22,15 +40,23 @@ ToolMenu.prototype.showToolPopupMenu = function(nodeID) {
 
 	par.innerHTML = "<div class='toolMenuFrame'>" + "<div style='width:" + w
 			+ "px;height:" + h + "px;' onclick='ToolMenu.hideToolsPopupMenu();'></div>"
-			+ this.getToolMenuHtml(jq$('#' + nodeID).attr('sectionID')) + "</div>";
+			+ this.getToolMenuHtml($node) + "</div>";
 }
 
-ToolMenu.prototype.getToolMenuHtml = function(id) {
+ToolMenu.prototype.getToolMenuHtml = function($node) {
+	
+	var toolMenuIdentifier = $node.attr('toolMenuIdentifier');
+	
+	if (!this.cache[toolMenuIdentifier]) {
+		var toolMenuAction = 'GetToolMenuAction';
+		var specialAction = $node.attr('toolMenuAction');
+		if (specialAction) {
+			toolMenuAction = specialAction;
+		}
 
-	if (!this.cache[id]) {
 		var params = {
-			action : 'GetToolMenuAction',
-			sectionID : id
+			action : toolMenuAction,
+			identifier : toolMenuIdentifier
 		}
 
 		var options = {
@@ -43,9 +69,9 @@ ToolMenu.prototype.getToolMenuHtml = function(id) {
 		var ajaxCall = new _KA(options);
 		ajaxCall.send();
 		var parsedResponse = JSON.parse(ajaxCall.getResponse());
-		this.cache[id] = parsedResponse.menuHTML;
+		this.cache[toolMenuIdentifier] = parsedResponse.menuHTML;
 	}
-	return this.cache[id];
+	return this.cache[toolMenuIdentifier];
 }
 
 ToolMenu.prototype.hideToolsPopupMenu = function() {
@@ -55,24 +81,10 @@ ToolMenu.prototype.hideToolsPopupMenu = function() {
 	}
 }
 
-ToolMenu.prototype.decorateToolMenus = function() {
-	jq$('.toolsMenuDecorator').each(function() {
-		var a = jq$(this);
-		if (a.data('toolMenuDecorated') === 'true') return;
-		a.parent().mouseenter(function() {
-			a.css('visibility', 'visible');
-		});
-		a.parent().mouseleave(function() {
-			a.css('visibility', 'hidden');
-		});
-		a.click(function() {
-			ToolMenu.showToolPopupMenu(a.attr('id'));
-		});
-		a.data('toolMenuDecorated', 'true');
-	});
-}
 var ToolMenu = new ToolMenu();
 
 jq$(document).ready(function() {
 	ToolMenu.decorateToolMenus();
 });
+
+KNOWWE.helper.observer.subscribe("flowchartrendered", function() {ToolMenu.decorateToolMenus(jq$('.Flowchart'))});

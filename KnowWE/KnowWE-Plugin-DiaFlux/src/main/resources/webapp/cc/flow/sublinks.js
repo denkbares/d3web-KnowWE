@@ -29,17 +29,14 @@ DiaFlux.SubLink.setLinks = function(flow, xml) {
 	var prefix = xml.getElementsByTagName('flow')[0].getAttribute('prefix');
 	var nodes = xml.getElementsByTagName('node');
 	
-	var flowDOM = $(flowid).getElementsBySelector('.FlowchartGroup')[0];
-	
-	var flowchart = flowDOM.__flowchart;
 	
 	for (var i = 0; i< nodes.length; i++) {
 		var nodeInfo = nodes[i];
-		var link = KBInfo._nodeText(nodeInfo); //TODO
+		var link = KBInfo._nodeText(nodeInfo); 
 		
 		var colorNodeID = nodeInfo.getAttribute('id');
-		var node = flowchart.findNode(colorNodeID);
-		node.dom.innerHTML = "<a href='" + link +"'>" + node.dom.innerHTML +"</a>";
+		var node = jq$('#' + flowid).find('[id="' + colorNodeID + '"]').find(".value").first();
+		node.html("<a href='" + link +"'>" + node.html() +"</a>");
 	}
 	
 	KNOWWE.helper.observer.notify("flowchartlinked", {flow: flow});
