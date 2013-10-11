@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -49,6 +51,7 @@ import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
 import com.ecyrd.jspwiki.WikiException;
 import com.ecyrd.jspwiki.WikiPage;
+import com.ecyrd.jspwiki.WikiProvider;
 import com.ecyrd.jspwiki.attachment.Attachment;
 import com.ecyrd.jspwiki.attachment.AttachmentManager;
 import com.ecyrd.jspwiki.auth.AuthorizationManager;
@@ -57,7 +60,10 @@ import com.ecyrd.jspwiki.auth.WikiSecurityException;
 import com.ecyrd.jspwiki.auth.permissions.PagePermission;
 import com.ecyrd.jspwiki.auth.permissions.PermissionFactory;
 import com.ecyrd.jspwiki.preferences.Preferences;
+import com.ecyrd.jspwiki.providers.BasicAttachmentProvider;
+import com.ecyrd.jspwiki.providers.CachingAttachmentProvider;
 import com.ecyrd.jspwiki.providers.ProviderException;
+import com.ecyrd.jspwiki.providers.WikiAttachmentProvider;
 
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
@@ -76,6 +82,12 @@ public class JSPWikiConnector implements WikiConnector {
 
 	private ServletContext context = null;
 	private WikiEngine engine = null;
+
+	private static final Map<String, List<WikiAttachment>> zipAttachmentCache =
+			Collections.synchronizedMap(new HashMap<String, List<WikiAttachment>>());
+
+	private static int skipCount = 0;
+	private static final int skipAfter = 10;
 
 	public WikiEngine getEngine() {
 		return engine;
@@ -208,6 +220,7 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public Collection<WikiAttachment> getAttachments() throws IOException {
+		cleanZipAttachmentCache();
 		try {
 			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
 			Collection<?> attachments = attachmentManager.getAllAttachments();
@@ -267,22 +280,85 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 	}
 
+	/**
+	 * Removes zip attachments of zip files that are no longer attached
+	 * themselves.
+	 */
+	private void cleanZipAttachmentCache() {
+		// We call this method quite often, so we skip most of the
+		// calls...
+		if (skipCount++ < skipAfter) {
+			return;
+		}
+		else {
+			skipCount = 0;
+		}
+		List<String> remove = new ArrayList<String>();
+		for (String path : zipAttachmentCache.keySet()) {
+			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
+			try {
+				Attachment attachment = attachmentManager.getAttachmentInfo(path);
+				if (attachment == null) {
+					remove.add(path);
+				}
+			}
+			catch (ProviderException e) {
+				Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
+						"Exception while cleaning zip cache", e);
+			}
+		}
+		zipAttachmentCache.keySet().removeAll(remove);
+	}
+
 	private List<WikiAttachment> getZipEntryAttachments(Attachment attachment) throws IOException, ProviderException {
 		if (!attachment.getFileName().endsWith(".zip")) return Collections.emptyList();
+		List<WikiAttachment> zipEntryAttachments = zipAttachmentCache.get(attachment.getName());
 		AttachmentManager attachmentManager = this.engine.getAttachmentManager();
-		InputStream attachmentStream = attachmentManager.getAttachmentStream(attachment);
-		ZipInputStream zipStream = new ZipInputStream(attachmentStream);
-		List<WikiAttachment> zipEntryAttachments = new ArrayList<WikiAttachment>();
-		for (ZipEntry e; (e = zipStream.getNextEntry()) != null;) {
-			zipEntryAttachments.add(new JSPWikiZipAttachment(e.getName(), attachment,
-					attachmentManager));
+		if (attachment.getVersion() == WikiProvider.LATEST_VERSION) {
+			// little hack for JSPWiki 2.8.4 not always providing a correct
+			// version number and we need it here.
+			WikiAttachmentProvider currentProvider = attachmentManager.getCurrentProvider();
+			// there only are two possible providers, the
+			// BasicAttachmentProvider and the CachingAttachmentProvider
+			// the BasicAttachmentProvider has a correct version number
+			if (currentProvider instanceof CachingAttachmentProvider) {
+				currentProvider = ((CachingAttachmentProvider) currentProvider).getRealProvider();
+			}
+			Attachment attachmentInfo = ((BasicAttachmentProvider) currentProvider).getAttachmentInfo(
+					new WikiPage(engine, attachment.getParentName()),
+					attachment.getFileName(), WikiProvider.LATEST_VERSION);
+			// this attachmentInfo will have the correct version number, so
+			// we set it for the actual attachment
+			attachment.setVersion(attachmentInfo.getVersion());
 		}
-		zipStream.close();
+		if (zipEntryAttachments != null) {
+			// we check if the attachments are outdated
+			int cachedVersion = zipEntryAttachments.get(0).getVersion();
+			int currentVersion = attachment.getVersion();
+			if (cachedVersion != currentVersion) {
+				zipEntryAttachments = null;
+			}
+		}
+		if (zipEntryAttachments == null) {
+			zipEntryAttachments = new ArrayList<WikiAttachment>();
+
+			InputStream attachmentStream = attachmentManager.getAttachmentStream(attachment);
+			ZipInputStream zipStream = new ZipInputStream(attachmentStream);
+			for (ZipEntry e; (e = zipStream.getNextEntry()) != null;) {
+				zipEntryAttachments.add(new JSPWikiZipAttachment(e.getName(), attachment,
+						attachmentManager));
+			}
+			zipStream.close();
+			if (!zipEntryAttachments.isEmpty()) {
+				zipAttachmentCache.put(attachment.getName(), zipEntryAttachments);
+			}
+		}
 		return zipEntryAttachments;
 	}
 
 	@Override
 	public List<WikiAttachment> getAttachments(String title) throws IOException {
+		cleanZipAttachmentCache();
 		try {
 			// this list is in fact a Collection<Attachment>,
 			// the conversion is type safe!
