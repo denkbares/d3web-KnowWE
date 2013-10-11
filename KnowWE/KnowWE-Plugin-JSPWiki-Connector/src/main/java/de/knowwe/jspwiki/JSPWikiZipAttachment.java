@@ -80,7 +80,7 @@ public class JSPWikiZipAttachment implements WikiAttachment {
 	@Override
 	public long getSize() {
 		// TODO do we need an implementation here?
-		return 0;
+		return -1;
 	}
 
 	@Override

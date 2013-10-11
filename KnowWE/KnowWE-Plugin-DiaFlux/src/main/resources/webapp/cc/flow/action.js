@@ -183,7 +183,7 @@ Action.prototype._extractInfoObjectName_deprecated = function(string) {
 	if (result && result.length > 1 && result[1]) return result[1];	
 
 	this.error = "The object's name can not be identified.";
-	return null;
+	return "";
 }
 
 //extracts the value from the expression
@@ -234,7 +234,7 @@ Action.prototype._extractValueString_deprecated = function(string) {
 	if (result && result.length > 1 && result[1]) return 'ERFRAGE'; // we do have an implicit value	
 
 	this.error = "The action can not be identified.";
-	return null;
+	return "";
 }
 
 
@@ -748,32 +748,17 @@ ActionPane.prototype.render = function() {
 	var valueError = null;
 	valueText = this.action.getDisplayText(); // zeigt ZusatzInfo an (fragen/ immer fragen,...)
 	valueError = this.action.getError();
-	
-	var identifier = {
-			pagename: KNOWWE ? (KNOWWE.helper ? KNOWWE.helper.gup('page') : null ) : null,
-			flowname: this.flowname,
-			nodeID: this.fcid
-	}
 
+	var objectNode = Builder.node('span', {
+		className: 'object',
+		style: 'background-image: url(' + iconURL + ');'
+	}, [name]);
+	
 	var dom = Builder.node('div', {
 		className: 'ActionPane'
 	}, 
 	[
-		Builder.node('span', {
-			style: 'position:relative'
-		}, [Builder.node('div', {
-				className: 'toolsMenuDecorator',
-				toolMenuIdentifier: JSON.stringify(identifier),
-				toolMenuAction: 'FlowchartToolMenuAction',
-				style: 'position:absolute'
-			}),
-		    Builder.node('span', {
-				className: 'object',
-				style: 'background-image: url(' + iconURL + ');'
-			}, [name]) 
-			]
-		), 
-		
+		Node.wrapToolMenu(this.flowname, this.fcid, objectNode),
 		Builder.node('div', {
 			className: valueError ? 'value error' : 'value',
 			title: valueError ? valueError : ''

@@ -61,6 +61,24 @@ function Node(flowchart, nodeModel) {
 	this.setVisible(this.flowchart.isVisible());
 }
 
+Node.wrapToolMenu = function(flowname, nodeID, childToWrap) {
+	var identifier = {
+			pagename: KNOWWE ? (KNOWWE.helper ? KNOWWE.helper.gup('page') : null ) : null,
+					flowname: flowname,
+					nodeID: nodeID
+	}
+	return Builder.node('span', {
+		style: 'position:relative'
+	}, [Builder.node('div', {
+			className: 'toolsMenuDecorator',
+			toolMenuIdentifier: JSON.stringify(identifier),
+			toolMenuAction: 'FlowchartToolMenuAction',
+			style: 'position:absolute'
+		}),
+		childToWrap
+		]
+	)
+}
 
 
 Node.prototype.getDOM = function() {
@@ -225,11 +243,15 @@ Node.prototype.render = function() {
 
 	if (this.nodeModel.start){
 		contentNode.className = 'start';
-		contentNode.appendChild(Builder.node('div', {className: 'title'}, [this.nodeModel.start]));
+		var startLabel = Builder.node('span', [this.nodeModel.start]);
+		startLabel = Node.wrapToolMenu(this.flowchart.name, this.nodeModel.fcid, startLabel);
+		contentNode.appendChild(Builder.node('div', {className: 'title'}, [startLabel]));
 	}
 	else if (this.nodeModel.exit) {
 		contentNode.className = 'exit';
-		contentNode.appendChild(Builder.node('div', {className: 'title'}, [this.nodeModel.exit]));
+		var exitLabel = Builder.node('span', [this.nodeModel.exit]);
+		exitLabel = Node.wrapToolMenu(this.flowchart.name, this.nodeModel.fcid, exitLabel);
+		contentNode.appendChild(Builder.node('div', {className: 'title'}, [exitLabel]));
 	}
 	else if (this.nodeModel.comment) {
 		contentNode.className = 'comment';

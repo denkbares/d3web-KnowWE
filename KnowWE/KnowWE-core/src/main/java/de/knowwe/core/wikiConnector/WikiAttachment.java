@@ -77,7 +77,8 @@ public interface WikiAttachment {
 	public Date getDate(int version) throws IllegalArgumentException;
 
 	/**
-	 * Returns the size of the attachment in bytes.
+	 * Returns the size of the attachment in bytes. If the size is unknown, -1
+	 * will be returned.
 	 * 
 	 * @return the size of the attachment
 	 * @created 11.04.2012

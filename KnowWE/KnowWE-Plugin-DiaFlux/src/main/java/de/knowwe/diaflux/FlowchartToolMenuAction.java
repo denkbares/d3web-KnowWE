@@ -29,7 +29,7 @@ import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.objects.TermReference;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.tools.GetToolMenuAction;
@@ -74,7 +74,7 @@ public class FlowchartToolMenuAction extends GetToolMenuAction {
 			for (Section<NodeType> section : nodeSections) {
 				String fcid = AbstractXMLType.getAttributeMapFor(section).get("fcid");
 				if (fcid.equals(nodeID)) {
-					return Sections.findSuccessor(section, TermReference.class);
+					return Sections.findSuccessor(section, Term.class);
 				}
 			}
 
