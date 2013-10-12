@@ -54,7 +54,7 @@ public class JSPWikiZipAttachment implements WikiAttachment {
 
 	@Override
 	public String getFileName() {
-		return this.entryName;
+		return attachment.getFileName() + "/" + this.entryName;
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class JSPWikiZipAttachment implements WikiAttachment {
 
 	@Override
 	public String getPath() {
-		return attachment.getName() + "/" + entryName;
+		return attachment.getParentName() + "/" + getFileName();
 	}
 
 	@Override

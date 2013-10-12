@@ -56,8 +56,8 @@ public class MatchingAttachmentsRenderer implements Renderer {
 		Set<String> attachments = new TreeSet<String>();
 		for (String s : annotations) {
 			try {
-				for (WikiAttachment attachment : KnowWEUtils.getAttachments(s,
-						section.getArticle().getTitle())) {
+				for (WikiAttachment attachment : KnowWEUtils.getAttachments(section.getTitle(),
+						s)) {
 					attachments.add(attachment.getPath());
 				}
 			}

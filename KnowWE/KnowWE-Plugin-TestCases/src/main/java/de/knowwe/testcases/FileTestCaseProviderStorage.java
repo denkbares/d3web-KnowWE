@@ -110,7 +110,7 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 			Collection<WikiAttachment> fittingAttachments;
 			try {
 				fittingAttachments = KnowWEUtils.getAttachments(
-						fileRegex, sectionArticle.getTitle());
+						sectionArticle.getTitle(), fileRegex);
 			}
 			catch (IOException e) {
 				Logger.getLogger(ResourceHandler.class.getName()).log(Level.SEVERE,

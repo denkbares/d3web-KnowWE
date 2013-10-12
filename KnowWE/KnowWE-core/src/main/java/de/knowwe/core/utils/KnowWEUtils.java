@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -221,23 +222,39 @@ public class KnowWEUtils {
 	/**
 	 * Returns all {@link WikiAttachment}s which full name fits to the regex or
 	 * which filename matches to the regexp and which parent has the specified
-	 * topic
+	 * title
 	 * 
 	 * @created 09.02.2012
+	 * @param title the title of the article
 	 * @param regex regular expression the attachments should match to
-	 * @param topic Topic of the article
 	 * @return Collection of {@link WikiAttachment}s
 	 */
-	public static Collection<WikiAttachment> getAttachments(String regex, String topic) throws IOException {
+	public static Collection<WikiAttachment> getAttachments(String title, String regex) throws IOException {
 		Collection<WikiAttachment> result = new LinkedList<WikiAttachment>();
 		Collection<WikiAttachment> attachments = Environment.getInstance().getWikiConnector().getAttachments();
-		Pattern pattern = Pattern.compile(regex);
+		Pattern pattern;
+		try {
+			pattern = Pattern.compile(regex);
+		}
+		catch (PatternSyntaxException e) {
+			pattern = Pattern.compile(Pattern.quote(regex));
+		}
 		for (WikiAttachment attachment : attachments) {
-			if (pattern.matcher(attachment.getPath()).matches()
-					|| (pattern.matcher(attachment.getFileName()).matches() && attachment.getParentName().equals(
-							topic))) {
-				result.add(attachment);
+			// we return the attachment if:
+			// the regex argument directly equals the path
+			if (!regex.equals(attachment.getPath())) {
+				// or the pattern matches the path
+				if (!pattern.matcher(attachment.getPath()).matches()) {
+					// or we have the correct title and
+					if (!attachment.getParentName().equals(title)) continue;
+					// the regex either directly equals the file name
+					if (!regex.equals(attachment.getFileName())) {
+						// or the pattern matches the filename
+						if (!pattern.matcher(attachment.getFileName()).matches()) continue;
+					}
+				}
 			}
+			result.add(attachment);
 		}
 		return result;
 	}
