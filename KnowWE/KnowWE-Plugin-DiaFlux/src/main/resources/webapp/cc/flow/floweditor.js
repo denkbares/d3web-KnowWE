@@ -26,9 +26,7 @@ function FlowEditor(articleIDs){
 	
 	$('saveClose').observe('click', function(){this.saveFlowchart(true);}.bind(this));
 	//$('save').observe('click', function(){this.saveFlowchart(false);}.bind(this));
-	$('refresh').observe('click', this.revert);
-	$('close').observe('click', this.closeEditor);
-	$('delete').observe('click', this.deleteFlowchart);
+	$('cancel').observe('click', this.closeEditor);
 	
 	Event.observe(window, "resize", function (event) {
 		FlowEditor.autoResize();
@@ -83,6 +81,10 @@ function FlowEditor(articleIDs){
  			EditorInstance.goToVersion(++currentVersion);
  		}
     }
+    
+	$('undo').observe('click', undo);
+	$('redo').observe('click', redo);
+    
 	Element.observe(window, 'keydown', function(event) {
      	// s
 		if (isModifier(event) && event.keyCode == 83) {     

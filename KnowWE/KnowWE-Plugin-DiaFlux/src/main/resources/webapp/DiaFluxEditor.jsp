@@ -183,11 +183,13 @@
 </data>
 <div id="toolbar"> 
 	<ul class="toolbar">
-		<li class="icon" id="saveClose" title="Save flowchart & Close editor" style="background-image:url(cc/image/toolbar/saveclose_flowchart_32.png);"></li><!--
+		<li class="icon" id="saveClose" title="Save and Close Editor" style="background-image:url(cc/image/toolbar/saveclose.png);"></li><!--
 	  --><!--li class="icon" id="save" title="Save flowchart" style="background-image:url(cc/image/toolbar/save_flowchart_32.png);"></li--><!--  
-	  --><li class="icon" id="refresh" title="Revert changes" style="background-image:url(cc/image/toolbar/reload_32.png);"></li><!--  
-	  --><li class="icon" id="close" title="Close editor" style="background-image:url(cc/image/toolbar/cancel_32.png);"></li><!--  
-	  --><li class="icon" id="delete" title="Delete flowchart" style="background-image:url(cc/image/toolbar/delete_flowchart_32.png);"></li>
+	  --><li class="icon" id="cancel" title="Cancel" style="background-image:url(cc/image/toolbar/cancel.png);"></li>
+	 </ul>
+	 <ul class="toolbar">
+	     <li class="icon" id="undo" title="Undo" style="background-image:url(cc/image/toolbar/undo.png);"></li><!--  
+	  --><li class="icon" id="redo" title="Redo" style="background-image:url(cc/image/toolbar/redo.png);"></li>
 	</ul>
 	<div class="propertyArea">
 		<div>
