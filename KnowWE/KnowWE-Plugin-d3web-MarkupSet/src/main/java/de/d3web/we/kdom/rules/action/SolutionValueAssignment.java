@@ -20,6 +20,7 @@
 package de.d3web.we.kdom.rules.action;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.d3web.core.inference.PSAction;
@@ -41,7 +42,6 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
-import de.knowwe.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
 
 /**
  * @author Johannes Dienst
@@ -78,18 +78,13 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 		possibleScorePoints.add("established");
 		possibleScorePoints.add("suggested");
 
-		scorePoint.setSectionFinder(new OneOfStringEnumUnquotedFinder(
-				possibleScorePoints.toArray(new String[possibleScorePoints.size()])));
+		scorePoint.setSectionFinder(new ScorePointFinder(possibleScorePoints));
 	}
 
-	/**
-	 * Searches the pattern diagnosis = Score.
-	 */
 	private class DiagnosisRuleActionSectionFinder implements SectionFinder {
 
-		private List<String> possibleScorePoints = new ArrayList<String>();
+		private final List<String> possibleScorePoints;
 
-		// TODO Add missing score values
 		public DiagnosisRuleActionSectionFinder(List<String> possibleScorePoints) {
 			this.possibleScorePoints = possibleScorePoints;
 		}
@@ -109,12 +104,39 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 								type);
 					}
 				}
-
 			}
-
 			return null;
 		}
+	}
 
+	private class ScorePointFinder implements SectionFinder {
+
+		private final List<String> possibleScorePoints;
+
+		public ScorePointFinder(List<String> possibleScorePoints) {
+			this.possibleScorePoints = possibleScorePoints;
+		}
+
+		@Override
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
+			// check for comparator
+			if (Strings.containsUnquoted(text, Equals.SIGN)) {
+				// get right hand side of comparator
+				int index = Strings.indexOfUnquoted(text, Equals.SIGN);
+				String rightHandSide = text.substring(index + 1);
+				String trimmedRightHandSide = Strings.trim(rightHandSide);
+				// scan right hand side for score symbol match
+				for (String score : possibleScorePoints) {
+					if (trimmedRightHandSide.equals(score)) {
+						// ..and take all when match is found
+						int rightTrimLength = Strings.trimRight(text).length();
+						return Arrays.asList(new SectionFinderResult(rightTrimLength
+								- trimmedRightHandSide.length(), rightTrimLength));
+					}
+				}
+			}
+			return null;
+		}
 	}
 
 	class ScorePoint extends AbstractType {
