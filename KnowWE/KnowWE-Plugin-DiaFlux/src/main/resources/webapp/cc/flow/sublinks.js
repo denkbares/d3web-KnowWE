@@ -35,7 +35,7 @@ DiaFlux.SubLink.setLinks = function(flow, xml) {
 		var link = KBInfo._nodeText(nodeInfo); 
 		
 		var colorNodeID = nodeInfo.getAttribute('id');
-		var node = jq$('#' + flowid).find('[id="' + colorNodeID + '"]').find(".value").first();
+		var node = jq$('[id="' + flowid + '"]').find('[id="' + colorNodeID + '"]').find(".value").first();
 		node.html("<a href='" + link +"'>" + node.html() +"</a>");
 	}
 	
