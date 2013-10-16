@@ -252,5 +252,16 @@
 		<parameter id="scope" value="DiaFlux" />
 	</extension>
 	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="FlowchartGoToToolProvider">
+		<parameter id="class"
+			value="de.knowwe.diaflux.type.FlowchartGoToToolProvider" />
+		<parameter id="name" value="FlowchartGoToToolProvider" />
+		<parameter id="description"
+			value="Provides goto tools for start, exit and subflow notes." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+		<parameter id="scope" value="DiaFluxType/**/Term" />
+	</extension>
 	
 </plugin>
