@@ -90,7 +90,6 @@ ul.toolbar li:last-child {
 #changenotebar label {
 	font-family: Arial, Helvetica;
 	font-size: 10pt;
-	font-weight: bold;
 }
 
 #changenotebar #changenote {
@@ -114,7 +113,6 @@ ul.toolbar li:last-child {
 .propertyArea .propertyTitle {
 	font-family: Arial, Helvetica;
 	font-size: 10pt;
-	font-weight: bold;
 }
 
 .propertyArea label.propertyTitle {
