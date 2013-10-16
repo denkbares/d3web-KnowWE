@@ -20,6 +20,7 @@
 package de.knowwe.d3web.resource;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,11 +28,11 @@ import java.util.logging.Logger;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.Resource;
 import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -49,12 +50,26 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 		if (kb == null) return null;
 
 		String content = DefaultMarkupType.getContent(section);
-		String destinationPath =
-				DefaultMarkupType.getAnnotation(section, ResourceType.ANNOTATION_PATH);
-		String sourcePath =
-				DefaultMarkupType.getAnnotation(section, ResourceType.ANNOTATION_SRC);
 
-		return addResource(section.getArticle(), kb, content, sourcePath, destinationPath);
+		String[] paths = DefaultMarkupType.getAnnotations(section, ResourceType.ANNOTATION_PATH);
+		String[] sources = DefaultMarkupType.getAnnotations(section, ResourceType.ANNOTATION_SRC);
+		String sourcePath = null;
+		String destinationPath = null;
+		Collection<Message> msgs = new ArrayList<Message>();
+		if (paths.length > 0) {
+			destinationPath = paths[0];
+			if (paths.length > 1) {
+				msgs.add(Messages.warning("More than one path found. Only the first path will be used."));
+			}
+		}
+		if (sources.length > 0) {
+			sourcePath = sources[0];
+			if (sources.length > 1) {
+				msgs.add(Messages.warning("More than one source found. Only the first source will be used."));
+			}
+		}
+		msgs.addAll(addResource(section.getArticle(), kb, content, sourcePath, destinationPath));
+		return msgs;
 	}
 
 	/**
@@ -81,7 +96,7 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 			// the target path must be specified
 			if (!hasDestinationPath) {
 				return Messages.asList(Messages.syntaxError(
-						"missing pathname to store the content into"));
+						"Missing pathname to store the content into."));
 			}
 			// we use the content for a text file
 			// the content must not be empty
@@ -89,44 +104,30 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 			// but it is for its own security to get notice of missing content)
 			if (!hasContent) {
 				return Messages.asList(Messages.syntaxError(
-						"missing attachment or content block to be stored"));
+						"Missing attachment or content block to be stored."));
 			}
 			resource = new ByteArrayResource(destinationPath, content.getBytes());
 		}
 		else {
-			// otherwise search all attachments of the wiki
-			// remember that the article name is optional for local attachments
-			String sourceFile;
-			String sourceArticle;
-			if (sourcePath.contains("/")) {
-				int index = sourcePath.indexOf('/');
-				sourceFile = sourcePath.substring(index + 1);
-				sourceArticle = sourcePath.substring(0, index);
-			}
-			else {
-				sourceFile = sourcePath.trim();
-				sourceArticle = article.getTitle();
-			}
 			// is we have no destination path, we use the attachments path
 			if (destinationPath == null) {
-				destinationPath = sourceArticle + "/" + sourceFile;
+				destinationPath = article.getTitle() + "/" + sourcePath;
 			}
 			else if (destinationPath.trim().isEmpty()) {
-				return Messages.asList(Messages.syntaxError("empty destination path"));
+				return Messages.asList(Messages.syntaxError("Empty destination path."));
 			}
-			// do the search
 			try {
-				resource = getAttachmentResource(destinationPath, sourceFile, sourceArticle);
+				resource = getAttachmentResource(destinationPath, article.getTitle(), sourcePath);
 				if (resource == null) {
-					return Messages.asList(Messages.syntaxError("no attachment " + sourcePath
-							+ " found"));
+					return Messages.asList(Messages.syntaxError("No attachment " + sourcePath
+							+ " found."));
 				}
 			}
 			catch (IOException e) {
 				Logger.getLogger(ResourceHandler.class.getName()).log(Level.SEVERE,
 						"wiki error accessing attachments: ", e);
 				return Messages.asList(
-						Messages.error("wiki error accessing attachments: " + e));
+						Messages.error("Wiki error accessing attachments: " + e.getMessage()));
 			}
 		}
 
@@ -136,10 +137,10 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 		// if we have both content and source, warn this
 		// (but adding was still successful!)
 		if (hasContent && hasSourcePath) {
-			return Messages.asList(Messages.warning("both src and content is specified, the content has been ignored"));
+			return Messages.asList(Messages.warning("Both src and content is specified, the content has been ignored."));
 		}
 		else {
-			return null;
+			return Messages.noMessage();
 		}
 	}
 
@@ -152,16 +153,16 @@ public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
 	 * 
 	 * @created 12.06.2011
 	 * @param path the pathname for the resource to be constructed
-	 * @param attachmentName the filename of the attachment to be searched for
-	 * @param articleName the article name of the attachment to be searched for
+	 * @param attachmentArticleName the article name of the attachment to be
+	 *        searched for
+	 * @param attachmentFilename the filename of the attachment to be searched
+	 *        for
 	 * @return the constructed resource
 	 */
-	private static Resource getAttachmentResource(String path, String attachmentName, String articleName) throws IOException {
-		Collection<WikiAttachment> attachments =
-				Environment.getInstance().getWikiConnector().getAttachments();
-		for (WikiAttachment attachment : attachments) {
-			if (!attachment.getFileName().equalsIgnoreCase(attachmentName)) continue;
-			if (!attachment.getParentName().equalsIgnoreCase(articleName)) continue;
+	private static Resource getAttachmentResource(String path, String attachmentArticleName, String attachmentFilename) throws IOException {
+		WikiAttachment attachment = KnowWEUtils.getAttachment(attachmentArticleName,
+				attachmentFilename);
+		if (attachment != null) {
 			return new WikiAttachmentResource(path, attachment.getPath());
 		}
 		return null;

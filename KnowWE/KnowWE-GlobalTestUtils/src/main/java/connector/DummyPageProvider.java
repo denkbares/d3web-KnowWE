@@ -21,16 +21,21 @@ package connector;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 import com.ecyrd.jspwiki.providers.BasicAttachmentProvider;
 
@@ -211,7 +216,33 @@ public class DummyPageProvider {
 	}
 
 	public void storeAttachment(WikiAttachment attachment) {
+		// this method can also be used for example by the dummy page provider,
+		// so we further extract the ZipEntryAttachments here
 		attachments.put(attachment.getPath(), attachment);
+		Collection<WikiAttachment> zipEntryAttachments = getZipEntryAttachments(attachment);
+		for (WikiAttachment zipEntryAttachment : zipEntryAttachments) {
+			attachments.put(zipEntryAttachment.getPath(), zipEntryAttachment);
+		}
+	}
+
+	private Collection<WikiAttachment> getZipEntryAttachments(WikiAttachment attachment) {
+		if (!attachment.getFileName().endsWith(".zip")) return Collections.emptyList();
+		Collection<WikiAttachment> entryAttachments = new ArrayList<WikiAttachment>();
+		try {
+			InputStream attachmentStream = attachment.getInputStream();
+			ZipInputStream zipStream = new ZipInputStream(attachmentStream);
+			for (ZipEntry e; (e = zipStream.getNextEntry()) != null;) {
+				entryAttachments.add(new FileSystemConnectorAttachment(this,
+						attachment.getFileName() + "/" + e.getName(),
+						attachment.getParentName(), zipStream));
+			}
+			zipStream.close();
+		}
+		catch (IOException e) {
+			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
+					"Exception while creating ZipEntryAttachments", e);
+		}
+		return entryAttachments;
 	}
 
 	public void deleteAttachment(String path) {
@@ -230,8 +261,8 @@ public class DummyPageProvider {
 		return Collections.unmodifiableMap(attachments);
 	}
 
-	public WikiAttachment getAttachment(String fullName) {
-		return attachments.get(fullName);
+	public WikiAttachment getAttachment(String path) {
+		return attachments.get(path);
 	}
 
 	public Date getStartUpdate() {

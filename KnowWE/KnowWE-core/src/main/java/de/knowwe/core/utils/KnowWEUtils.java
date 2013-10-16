@@ -197,11 +197,13 @@ public class KnowWEUtils {
 
 	/**
 	 * Returns the ConnectorAttachment for a specified filename on a specified
-	 * wikipage
+	 * article. Either the title matches the article and the fileName matches
+	 * the filename of the attachment or the filename matches the complete path
+	 * for the attachment.
 	 * 
 	 * @created 27.01.2012
-	 * @param title Title of the wikipage
-	 * @param fileName filename of the attachment
+	 * @param title the title of the article of the attachment
+	 * @param fileName the filename of the attachment
 	 * @return {@link WikiAttachment} fulfilling the specified parameters or
 	 *         null, if no such attachment exists
 	 */

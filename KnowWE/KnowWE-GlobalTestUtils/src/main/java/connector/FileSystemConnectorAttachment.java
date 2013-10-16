@@ -75,12 +75,22 @@ public class FileSystemConnectorAttachment extends SingleVersionAttachment {
 
 	@Override
 	public Date getDate() {
-		return new Date(attachmentFile.lastModified());
+		if (attachmentFile == null) {
+			return new Date();
+		}
+		else {
+			return new Date(attachmentFile.lastModified());
+		}
 	}
 
 	@Override
 	public long getSize() {
-		return attachmentFile.length();
+		if (attachmentFile == null) {
+			return attachmentFileBytes.length;
+		}
+		else {
+			return attachmentFile.length();
+		}
 	}
 
 	@Override
