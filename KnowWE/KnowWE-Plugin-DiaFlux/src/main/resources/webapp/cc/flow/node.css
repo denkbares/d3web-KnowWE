@@ -6,6 +6,7 @@
 	background-color: black;
 	padding: 1px;
 	z-index: 100;
+	border-radius: 6px;
 }
 
 .Node .ActionPane {
@@ -49,7 +50,7 @@
 	min-height: 40px;
 	padding-left: 8px;
 	padding-right: 8px;
-
+	border-radius: 4px;
 }
 
 .Node .start, .Node .exit, .Node .comment , .Node .snapshot {
@@ -59,6 +60,7 @@
 	min-height: 18px;
 	padding-left: 8px;
 	padding-right: 8px;
+	border-radius: 4px;
 }
 
 .Node .action {
