@@ -30,6 +30,7 @@ ToolMenu.prototype.showToolPopupMenu = function($node) {
 		'styles' : {
 			'top' : pos.y + 'px',
 			'left' : pos.x + 'px',
+			'z-index' : '10000',
 			'position' : 'absolute'
 		},
 		'events' : {
@@ -37,7 +38,6 @@ ToolMenu.prototype.showToolPopupMenu = function($node) {
 		}
 	});
 	document.body.appendChild(par);
-
 	par.innerHTML = "<div class='toolMenuFrame'>" + "<div style='width:" + w
 			+ "px;height:" + h + "px;' onclick='ToolMenu.hideToolsPopupMenu();'></div>"
 			+ this.getToolMenuHtml($node) + "</div>";
