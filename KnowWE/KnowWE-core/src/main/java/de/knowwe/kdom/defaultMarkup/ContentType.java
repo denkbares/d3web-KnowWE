@@ -74,8 +74,7 @@ public class ContentType extends AbstractType {
 		private final AdaptiveMarkupFinder adaptiveFinder;
 
 		public ContentFinder(DefaultMarkup markup) {
-			adaptiveFinder = new AdaptiveMarkupFinder(
-					markup.getName(), REGEX, FLAGS, 1);
+			adaptiveFinder = new AdaptiveMarkupFinder(markup.getName(), REGEX, FLAGS, 1, true);
 			startPattern = Pattern.compile(STARTTAG.replace("$NAME$", markup.getName()), FLAGS);
 		}
 

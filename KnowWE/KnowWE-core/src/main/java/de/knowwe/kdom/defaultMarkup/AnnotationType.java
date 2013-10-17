@@ -45,7 +45,7 @@ public class AnnotationType extends AbstractType {
 
 	public AnnotationType(DefaultMarkup.Annotation annotation) {
 		this.annotation = annotation;
-		this.setSectionFinder(new AdaptiveMarkupFinder(annotation.getName(), REGEX, FLAGS, 1));
+		this.setSectionFinder(new AdaptiveMarkupFinder(annotation.getName(), REGEX, FLAGS, 1, false));
 		this.addChildType(new AnnotationNameType(annotation));
 		this.addChildType(new AnnotationContentType(annotation));
 		this.addSubtreeHandler(Priority.HIGHEST, new CheckContentExistsHandler());
