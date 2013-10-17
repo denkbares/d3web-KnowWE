@@ -1,5 +1,5 @@
 body {
-    background-color: #eee;
+	background-color: #eee;
 	overflow: hidden;
 }
 
@@ -23,10 +23,6 @@ body {
 	min-width: 850px;
 	padding-bottom: 1px;
 	white-space: nowrap;
-	user-select: none;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
 }
 
 ul.toolbar {
@@ -36,6 +32,10 @@ ul.toolbar {
 	color: #000;
 	text-align: left;
 	display: inline-block;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 ul.toolbar li {
@@ -51,35 +51,37 @@ ul.toolbar li {
 }
 
 ul.toolbar li.icon {
-	height:32px;
-    min-width: 37px; 
-    padding-right: 2px;
-    background-repeat: no-repeat;
-    background-position: 5px center;
+	height: 32px;
+	min-width: 37px;
+	padding-right: 2px;
+	background-repeat: no-repeat;
+	background-position: 5px center;
 }
 
 ul.toolbar li.iconsmall {
-	height:32px;
-    min-width: 37px; 
-    background-repeat: no-repeat;
-    background-position: 12px center;
+	height: 32px;
+	min-width: 37px;
+	background-repeat: no-repeat;
+	background-position: 12px center;
 }
 
-ul.toolbar li.selected, ul.toolbar li:hover {
-    background-color: rgba(80, 80, 80, 0.25);
+ul.toolbar li.selected,ul.toolbar li:hover {
+	background-color: rgba(80, 80, 80, 0.25);
 }
+
 ul.toolbar li:active {
-    background-color: rgba(0, 0, 0, 0.3);   
+	background-color: rgba(0, 0, 0, 0.3);
 }
 
 ul.toolbar li:first-child {
-    border-radius: 3px 0px 0px 3px;
-    -moz-border-radius: 3px 0px 0px 3px;
+	border-radius: 3px 0px 0px 3px;
+	-moz-border-radius: 3px 0px 0px 3px;
 }
+
 ul.toolbar li:last-child {
-    border-radius: 0px 3px 3px 0px;
-    -moz-border-radius: 0px 3px 3px 0px;
-    border-width: 1px;
+	border-radius: 0px 3px 3px 0px;
+	-moz-border-radius: 0px 3px 3px 0px;
+	border-width: 1px;
 }
 
 #changenotebar {
@@ -98,9 +100,10 @@ ul.toolbar li:last-child {
 
 #changenotebar #changenote {
 	width: 845px;
+	height: 15px;
 }
 
-.propertyArea div{
+.propertyArea div {
 	padding: 8px 0px 0px 0px;
 }
 
@@ -147,28 +150,27 @@ ul.toolbar li:last-child {
 }
 
 #contents.contents_hover {
-    box-shadow: 0px 0px 5px 2px grey;
+	box-shadow: 0px 0px 5px 2px grey;
 	border-radius: 3px 3px 3px 3px;
 }
 
-#x_larger, #x_smaller, #y_larger, #y_smaller {
+#x_larger,#x_smaller,#y_larger,#y_smaller {
 	display: none;
-} 
+}
 
-.FlowchartGroup {
-	//margin-left: 230px;
+.FlowchartGroup { //
+	margin-left: 230px;
 }
 
 .FlowchartGroup .Flowchart {
 	border: 1px solid gray;
 	border-radius: 3px 3px 3px 3px;
 	-moz-border-radius: 3px 3px 3px 3px;
-	
 }
 
 .FlowchartGroup .inputFocus {
-	position:	fixed;
-	overflow:	hidden;
+	position: fixed;
+	overflow: hidden;
 	width: 0px;
 	height: 0px;
 	top: 50px;
@@ -176,32 +178,32 @@ ul.toolbar li:last-child {
 	z-index: -100;
 }
 
-.Node { 
+.Node {
 	cursor: move;
 }
 
 .Rule .rule_selector {
-	cursor: crosshair;	
+	cursor: crosshair;
 }
 
 .trashParent {
-	position: absolute; 
-	overflow: visible; 
-	width: 64px; 
+	position: absolute;
+	overflow: visible;
+	width: 64px;
 	height: 64px;
 	left: 235px;
 	bottom: 7px;
 }
 
 .trashParent .trash {
-	position: relative; 
-	overflow: visible; 
-	width: 64px; 
+	position: relative;
+	overflow: visible;
+	width: 64px;
 	height: 64px;
 	left: 0px;
 	top: 0px;
 	background-image: url(../image/trash64.png);
-	z-index:1000;
+	z-index: 1000;
 }
 
 .trashParent .trash.trash_hover {
@@ -231,23 +233,24 @@ ul.toolbar li:last-child {
 	max-height: 50%;
 	top: 100px;
 	left: 20px;
-	position:fixed;
-	color:white;
-	background-color:rgba(0,0,0,0.7);
-	-moz-border-radius:10px;
-	-webkit-border-radius:5px;
-	-webkit-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
+	position: fixed;
+	color: white;
+	background-color: rgba(0, 0, 0, 0.7);
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 5px;
+	-webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 	z-index: 10;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 10px;
 	font-style: normal;
 	font-variant: normal;
 	font-weight: normal;
-	overflow-x:hidden;
-	overflow-y:auto;
-	min-width:210px;
+	overflow-x: hidden;
+	overflow-y: auto;
+	min-width: 210px;
 	z-index: 20000;
 }
+
 #findSuggestionMenu_Tooltip {
 	max-width: 450px;
 	position: fixed;
@@ -260,42 +263,41 @@ ul.toolbar li:last-child {
 }
 
 #findSuggestionMenu_Tooltip ul li {
-	list-style-type: disc;	
+	list-style-type: disc;
 	margin-left: 2em;
 	padding-left: 0px;
 }
 
-
 /* ie6 hack */
 * html #findSuggestionMenu {
-	background:url(images/tip.png) top left;
+	background: url(images/tip.png) top left;
 }
 /* ie7 hack */
 *:first-child+html #findSuggestionMenu {
-	background:url(images/tip.png) top left;
+	background: url(images/tip.png) top left;
 }
-
 
 #findSuggestionMenu ul {
-	list-style:none;
-	margin:0;
-	padding:0;
-}
-#findSuggestionMenu li { 
-	padding:0.25em 0.5em;
-	cursor:pointer;
-}
-#findSuggestionMenu .hover { 
-	background-color:rgba(0,0,0,0.5);
-	-moz-border-radius:10px;
-	-webkit-border-radius:5px;
-}
-/* ie6 hack */
-* html #findSuggestionMenu .hover { 
-	background-color:black;
-}
-/* ie7 hack */
-*:first-child+html #findSuggestionMenu .hover { 
-	background-color:black;
+	list-style: none;
+	margin: 0;
+	padding: 0;
 }
 
+#findSuggestionMenu li {
+	padding: 0.25em 0.5em;
+	cursor: pointer;
+}
+
+#findSuggestionMenu .hover {
+	background-color: rgba(0, 0, 0, 0.5);
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 5px;
+}
+/* ie6 hack */
+* html #findSuggestionMenu .hover {
+	background-color: black;
+}
+/* ie7 hack */
+*:first-child+html #findSuggestionMenu .hover {
+	background-color: black;
+}

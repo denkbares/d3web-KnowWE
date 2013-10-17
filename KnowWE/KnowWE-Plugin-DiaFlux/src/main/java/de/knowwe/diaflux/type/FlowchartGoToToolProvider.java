@@ -18,14 +18,11 @@
  */
 package de.knowwe.diaflux.type;
 
-import java.util.ArrayList;
 import java.util.Collection;
-
-import org.apache.commons.lang.StringUtils;
+import java.util.LinkedHashSet;
 
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
@@ -46,32 +43,50 @@ public class FlowchartGoToToolProvider implements ToolProvider {
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 
-		ArrayList<Tool> tools = new ArrayList<Tool>();
+		LinkedHashSet<Tool> tools = new LinkedHashSet<Tool>();
 		Article compilingArticle = KnowWEUtils.getCompilingArticles(section).iterator().next();
 		TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(compilingArticle);
 		if (section.get() instanceof StartNodeDef || section.get() instanceof ExitNodeDef) {
 			Collection<Section<?>> termRefSections = terminologyManager.getTermReferenceSections(KnowWEUtils.getTermIdentifier(section));
 			for (Section<?> termSection : termRefSections) {
-				createGoToTool(termSection, tools);
+				tools.add(createGoToTool(termSection));
 			}
 
 		}
 		if (section.get() instanceof FlowchartReference) {
 			Section<?> termDefSection = terminologyManager.getTermDefiningSection(KnowWEUtils.getTermIdentifier(section));
-			createGoToTool(termDefSection, tools);
+			tools.add(createGoToTool(termDefSection));
 		}
 		return tools.toArray(new Tool[tools.size()]);
 	}
 
-	private void createGoToTool(Section<?> termSection, ArrayList<Tool> tools) {
+	private OpenFlowTool createGoToTool(Section<?> termSection) {
 		Section<FlowchartType> flowchartSection = Sections.findAncestorOfType(
 				termSection, FlowchartType.class);
 		String link = KnowWEUtils.getURLLink(flowchartSection);
-		String linkType = termSection.get() instanceof TermDefinition ? "subflow" : "parent flow";
-		String title = linkType + " '"
-				+ FlowchartType.getFlowchartName(flowchartSection) + "'";
-		String description = "Go to " + title;
-		tools.add(new DefaultTool("KnowWEExtension/testcaseplayer/icon/testcaselink.png",
-				StringUtils.capitalize(title), description, "window.location = '" + link + "'"));
+		String title = "Open '" + FlowchartType.getFlowchartName(flowchartSection) + "'";
+		return new OpenFlowTool("KnowWEExtension/testcaseplayer/icon/testcaselink.png",
+				title, title, "window.location = '" + link + "'");
+	}
+
+	private class OpenFlowTool extends DefaultTool {
+
+		private final String jsAction;
+
+		public OpenFlowTool(String iconPath, String title, String description, String jsAction) {
+			super(iconPath, title, description, jsAction);
+			this.jsAction = jsAction;
+		}
+
+		@Override
+		public int hashCode() {
+			return this.jsAction.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			return this.jsAction.equals(((OpenFlowTool) obj).jsAction);
+		}
+
 	}
 }

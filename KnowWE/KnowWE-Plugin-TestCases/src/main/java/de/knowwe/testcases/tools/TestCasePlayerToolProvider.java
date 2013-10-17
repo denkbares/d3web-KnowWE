@@ -37,7 +37,7 @@ public class TestCasePlayerToolProvider implements ToolProvider {
 				+ section.getID()
 				+ "').find('select').find(':selected').attr('caselink');if (goToLink) window.location=goToLink;";
 		Tool goToTool = new DefaultTool("KnowWEExtension/testcaseplayer/icon/testcaselink.png",
-				"Go to test case", "Go to the currently selected test case", jsAction);
+				"Open test case", "Opens the currently selected test case source", jsAction);
 		return goToTool;
 	}
 

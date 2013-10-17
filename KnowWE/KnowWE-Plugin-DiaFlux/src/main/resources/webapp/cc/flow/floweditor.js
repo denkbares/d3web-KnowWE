@@ -109,6 +109,12 @@ function FlowEditor(articleIDs){
      		redo();
      	}
      });
+	
+	window.onbeforeunload = function() {
+        if (theFlowchartVersions[0] != theFlowchartVersions[currentVersion]) {
+            return "There are unsaved changes.";
+        }
+    };
 }
 
 FlowEditor.prototype.showEditor = function(xmlText) {
@@ -311,7 +317,7 @@ FlowEditor.prototype.revert = function(){
 	}
 }
 
-FlowEditor.prototype.closeEditor = function(){
+FlowEditor.prototype.closeEditor = function() {
 	window.close();
 }
 
@@ -416,7 +422,14 @@ FlowEditor.prototype._saveFlowchartText = function(xml, closeOnSuccess) {
 		},
 		onSuccess: function(transport) {
 			if (window.opener) window.opener.location.reload();
-			if (closeOnSuccess) window.close();
+			if (closeOnSuccess) {
+				window.onbeforeunload = null
+				window.close();
+			} else {
+				currentVersion = -1;
+				maxVersion = -1;
+				theFlowchartVersions = [];
+			}
 			//set Url according to new section id
 			if (transport.responseText) {
 				var loc = window.location.href;
