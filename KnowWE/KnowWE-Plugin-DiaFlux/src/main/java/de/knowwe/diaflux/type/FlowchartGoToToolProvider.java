@@ -114,5 +114,10 @@ public class FlowchartGoToToolProvider implements ToolProvider {
 			return this.jsAction.compareTo(o.jsAction);
 		}
 
+		@Override
+		public String getCategory() {
+			return this.getClass().getName();
+		}
+
 	}
 }
