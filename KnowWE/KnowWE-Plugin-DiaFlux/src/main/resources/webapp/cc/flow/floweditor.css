@@ -5,7 +5,7 @@ body {
 
 #leftMenu {
 	position: absolute;
-	top: 89px;
+	top: 84px;
 	left: 5px;
 	bottom: 5px;
 	overflow-x: hidden;
@@ -42,8 +42,8 @@ ul.toolbar li {
 	min-height: 16px;
 	border: 1px solid rgba(0, 0, 0, 0.5);
 	border-width: 1px 0px 1px 1px;
-	font-size: 8pt;
-	font-weight: bold;
+	font-family: Arial, Helvetica;
+	font-size: 10pt;
 }
 
 ul.toolbar li.icon {
@@ -82,7 +82,7 @@ ul.toolbar li:last-child {
 	border: 1px solid gray;
 	border-radius: 3px 3px 3px 3px;
 	-moz-border-radius: 3px 3px 3px 3px;
-	width: 858px;
+	width: 938px;
 	padding-left: 3px;
 	margin-bottom: 5px;
 }
@@ -93,7 +93,7 @@ ul.toolbar li:last-child {
 }
 
 #changenotebar #changenote {
-	width: 760px;
+	width: 845px;
 }
 
 .propertyArea div{
@@ -135,7 +135,7 @@ ul.toolbar li:last-child {
 
 #contents {
 	position: absolute;
-	top: 89px;
+	top: 84px;
 	right: 5px;
 	bottom: 5px;
 	left: 237px;

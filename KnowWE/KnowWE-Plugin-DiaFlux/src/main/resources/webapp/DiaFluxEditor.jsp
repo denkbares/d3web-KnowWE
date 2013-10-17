@@ -183,10 +183,12 @@
 </data>
 <div id="toolbar"> 
 	<ul class="toolbar">
-		<li class="icon" id="saveClose" title="Save and Close Editor" style="background-image:url(cc/image/toolbar/saveclose.png);"></li><!--
+		<li class="icon" id="saveClose" title="Save and Close Editor" style="position:relative; background-image:url(cc/image/toolbar/saveclose.png);width:80px"><span style="position:absolute;left: 45px;top:12px;">Save</span></li><!--  
 	  --><!--li class="icon" id="save" title="Save flowchart" style="background-image:url(cc/image/toolbar/save_flowchart_32.png);"></li--><!--  
-	  --><li class="icon" id="cancel" title="Cancel" style="background-image:url(cc/image/toolbar/cancel.png);"></li>
+	  --><li class="icon" id="cancel" title="Cancel" style="position:relative; background-image:url(cc/image/toolbar/cancel.png);;width:80px"><span style="position:absolute;left:38px;top:12px;">Cancel</span></li>
 	 </ul>
+
+	 
 	 <ul class="toolbar">
 	     <li class="icon" id="undo" title="Undo" style="background-image:url(cc/image/toolbar/undo.png);"></li><!--  
 	  --><li class="icon" id="redo" title="Redo" style="background-image:url(cc/image/toolbar/redo.png);"></li>
