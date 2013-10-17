@@ -5,7 +5,7 @@ body {
 
 #leftMenu {
 	position: absolute;
-	top: 84px;
+	top: 50px;
 	left: 5px;
 	bottom: 5px;
 	overflow-x: hidden;
@@ -23,6 +23,10 @@ body {
 	min-width: 850px;
 	padding-bottom: 1px;
 	white-space: nowrap;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 ul.toolbar {
@@ -32,10 +36,7 @@ ul.toolbar {
 	color: #000;
 	text-align: left;
 	display: inline-block;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
+	cursor: pointer;
 }
 
 ul.toolbar li {
@@ -99,7 +100,7 @@ ul.toolbar li:last-child {
 }
 
 #changenotebar #changenote {
-	width: 845px;
+	width: 505px;
 	height: 15px;
 }
 
@@ -140,9 +141,21 @@ ul.toolbar li:last-child {
 	width: 307px;
 }
 
+.propertyArea .medium {
+	width: 220px;
+}
+
+.propertyArea .medium {
+	width: 220px;
+}
+
+.pointer {
+	cursor: pointer;
+}
+
 #contents {
 	position: absolute;
-	top: 84px;
+	top: 50px;
 	right: 5px;
 	bottom: 5px;
 	left: 237px;
@@ -173,8 +186,8 @@ ul.toolbar li:last-child {
 	overflow: hidden;
 	width: 0px;
 	height: 0px;
-	top: 50px;
-	left: 50px;
+	top: 10px;
+	left: 10px;
 	z-index: -100;
 }
 

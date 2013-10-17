@@ -260,7 +260,7 @@
 		<parameter id="description"
 			value="Provides goto tools for start, exit and subflow notes." />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="4" />
+		<parameter id="priority" value="5.1" />
 		<parameter id="scope" value="DiaFluxType/**/Term" />
 	</extension>
 	
