@@ -41,6 +41,7 @@
 	left: -2px;
 	right: -2px;
 	border: 2px solid red;
+	border-radius: 7px;
 }
 
 .Node .action, .Node .question, .Node .decision, .Node .flowchart {
