@@ -8,8 +8,14 @@
 	z-index: 100;
 }
 
+.Node .ActionPane {
+	padding-top: 2px;
+}
+
 .Node .title {
-	font-weight: bold;
+	padding-top: 2px;
+	padding-bottom: 1px;
+	line-height: 16px;
 }
 
 .Node .badge {
@@ -41,8 +47,8 @@
 	min-width:  80px;
 	max-width:	200px;
 	min-height: 40px;
-	padding-left: 10px;
-	padding-right: 3px;
+	padding-left: 8px;
+	padding-right: 8px;
 
 }
 
@@ -51,8 +57,8 @@
 	min-width:	60px;
 	max-width:	200px;
 	min-height: 18px;
-	padding-left: 10px;
-	padding-right: 3px;
+	padding-left: 8px;
+	padding-right: 8px;
 }
 
 .Node .action {
@@ -133,7 +139,6 @@
 }
 
 .Node .ActionPane .object {
-	font-weight: bold;
 	max-height: 36px;
 	overflow: hidden;
 	padding-left: 16px;
@@ -143,6 +148,8 @@
 
 .Node .ActionPane .value {
 	padding-top: 4px;
+	font-style: italic;
+	color: #444;
 }
 
 .Node .ActionPane .error {
@@ -162,7 +169,7 @@
 }
 
 .defaultMarkup .Node a:link, .defaultMarkup .Node a:visited, .defaultMarkup .Node a:active {
-	color: black;
+	color: #444;
 }
 .defaultMarkup .Node a:hover {
 	color: #036;
