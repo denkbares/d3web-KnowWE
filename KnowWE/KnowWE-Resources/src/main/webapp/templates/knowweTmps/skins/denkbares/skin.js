@@ -223,5 +223,17 @@ if (typeof jq$ != 'undefined') {
 	});
 }
 
-window.onresize = DenkbaresSkin.checkFavScroll;
+DenkbaresSkin.resizeFlows = function() {
+	jq$('.Flowchart').each(function() {
+		var newWidth = parseInt(jq$('#pagecontent').css('width'));
+		newWidth = (Math.round(newWidth / 10) * 10) - 9;
+		jq$(this).css('width', newWidth);
+	});
+}
+
+KNOWWE.helper.observer.subscribe("flowchartrendered", DenkbaresSkin.resizeFlows);
+window.onresize = function() {
+	DenkbaresSkin.checkFavScroll();
+	DenkbaresSkin.resizeFlows();
+}
 window.onscroll = DenkbaresSkin.checkFavScroll;
