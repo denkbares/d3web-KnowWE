@@ -23,6 +23,10 @@ body {
 	min-width: 850px;
 	padding-bottom: 1px;
 	white-space: nowrap;
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
 }
 
 ul.toolbar {
