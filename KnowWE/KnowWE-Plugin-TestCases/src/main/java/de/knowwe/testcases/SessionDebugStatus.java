@@ -29,8 +29,8 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
-import de.d3web.core.utilities.Pair;
 import de.d3web.testcase.model.Check;
+import de.d3web.utils.Pair;
 
 /**
  * Represents the status of an SessionDebuggerSection

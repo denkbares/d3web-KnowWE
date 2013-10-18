@@ -3,9 +3,9 @@ package de.knowwe.testcases.prefix;
 import java.util.List;
 import java.util.Set;
 
-import de.d3web.core.utilities.Triple;
 import de.d3web.testcase.model.TestCase;
 import de.d3web.testcase.prefix.PrefixedTestCase;
+import de.d3web.utils.Triple;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;

@@ -27,8 +27,8 @@ import java.util.Set;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import de.d3web.core.utilities.Pair;
 import de.d3web.strings.Strings;
+import de.d3web.utils.Pair;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;

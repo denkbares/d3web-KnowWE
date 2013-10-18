@@ -47,7 +47,7 @@ import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
 import com.ecyrd.jspwiki.i18n.InternationalizationManager;
 
-import de.d3web.core.utilities.Pair;
+import de.d3web.utils.Pair;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
