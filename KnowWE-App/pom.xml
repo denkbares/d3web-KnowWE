@@ -765,18 +765,6 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Include</artifactId>
-					<version>0.2-SNAPSHOT</version>
-					<scope>compile</scope>
-				</dependency>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-DiaFlux-Review</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Timeline</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
@@ -871,13 +859,25 @@
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
-            </dependencies>
+			</dependencies>
 		</profile>
 
 		<profile>
 			<id>denkbares-thrillseeker</id>
 			<dependencies>
-			<dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Include</artifactId>
+					<version>0.2-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-DiaFlux-Review</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-OntoVis</artifactId>
 					<version>0.2-SNAPSHOT</version>
@@ -951,13 +951,13 @@
 				</dependency>
 				<dependency>
 					<groupId>jspwiki.aFlashPlugin</groupId>
-  					<artifactId>aFlashPlugin</artifactId>
+					<artifactId>aFlashPlugin</artifactId>
 					<version>0.1</version>
 					<scope>jar</scope>
 				</dependency>
 			</dependencies>
 		</profile>
-		
+
 		<profile>
 			<id>denkbares-homepage</id>
 			<dependencies>
