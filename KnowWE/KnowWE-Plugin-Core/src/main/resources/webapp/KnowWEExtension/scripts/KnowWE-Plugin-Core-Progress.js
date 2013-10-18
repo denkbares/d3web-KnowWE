@@ -139,14 +139,21 @@ KNOWWE.core.plugin.progress = function() {
 							var running = json[i].running;
 							var bar = container.find("#"+opID);
 							if (bar.length == 0) {
-								container.append("<div id='"+opID+"'><div class='progress-state'></div><div class='progress-bar'></div><div class='progress-message'></div></div>");
+								container.append("<div id='"+opID+"'>" +
+										"<div class='progress-state'></div>" +
+										"<div class='progress-bar'>" +
+										"<span class='progress-bar-percent' style='position: absolute; width: 100%; top: 3px; left: 25%;'>0 %</span>" +
+										"</div>" +
+										"<div class='progress-message'></div></div>");
 								bar = container.find("#"+opID);
 								bar.find(".progress-state").attr('title', "click to cancel").click(function () {
 									KNOWWE.core.plugin.progress.cancelLongOperation(sectionID, opID);
 								});
 							}
 							bar.removeClass("progress-error progress-success");
-							bar.find(".progress-bar").progressbar({ value: Math.floor(progress*100) });
+							var percent = Math.floor(progress*100);
+							bar.find(".progress-bar").progressbar({ value: percent });
+							bar.find(".progress-bar-percent").text(percent + " %");
 							bar.find(".progress-message").html(message);
 							var hasLineBreaks = /<\/?(br|p)\/?>|\\n/.test(message);
 							if (hasLineBreaks) {
