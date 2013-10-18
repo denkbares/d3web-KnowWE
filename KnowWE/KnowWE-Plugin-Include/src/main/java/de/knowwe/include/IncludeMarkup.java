@@ -19,11 +19,13 @@ package de.knowwe.include;
  * site: http://www.fsf.org.
  */
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
@@ -79,7 +81,7 @@ public class IncludeMarkup extends DefaultMarkupType {
 			String zoom = "";
 			String subSectionKey = "";
 
-			target = DefaultMarkupType.getContent(section).trim();
+			target = Strings.trim(DefaultMarkupType.getContent(section));
 			String[] targetArray = target.split("#");
 			targetKey = targetArray[0];
 			if (targetArray.length > 1) {
@@ -105,8 +107,9 @@ public class IncludeMarkup extends DefaultMarkupType {
 				Section<?> renderarticle = article.getRootSection();
 
 				if (targetArray.length > 1) {
-					List<?> secList = Sections.findSuccessorsOfType(
-							article.getRootSection(), HeaderType.class);
+					List<Section<HeaderType>> secList = new ArrayList<Section<HeaderType>>();
+					Sections.findSuccessorsOfType(
+							article.getRootSection(), HeaderType.class, 2, secList);
 					Iterator<?> listIterator = secList.iterator();
 					while (listIterator.hasNext()) {
 						Section<?> listElement = (Section<?>) listIterator.next();
