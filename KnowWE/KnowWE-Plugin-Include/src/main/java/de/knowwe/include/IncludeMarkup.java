@@ -35,7 +35,6 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.jspwiki.JSPWikiMarkupUtils;
 import de.knowwe.jspwiki.types.HeaderType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -54,11 +53,10 @@ public class IncludeMarkup extends DefaultMarkupType {
 
 	private static DefaultMarkup m = null;
 
-	public static final String MARKUP_NAME = "include";
+	public static final String MARKUP_NAME = "Include";
 
 	static {
 		m = new DefaultMarkup("include");
-		m.addAnnotation("target", true);
 		m.addAnnotation("frame", false, "true", "false");
 		m.addAnnotation("zoom", false);
 	}
@@ -76,17 +74,12 @@ public class IncludeMarkup extends DefaultMarkupType {
 				RenderResult string) {
 
 			String target = "";
-
 			String targetKey = "";
-
 			String frame = "";
-
 			String zoom = "";
-
 			String subSectionKey = "";
 
-			target = DefaultMarkupType.getAnnotation(section,
-					"target");
+			target = DefaultMarkupType.getContent(section).trim();
 			String[] targetArray = target.split("#");
 			targetKey = targetArray[0];
 			if (targetArray.length > 1) {
@@ -97,11 +90,12 @@ public class IncludeMarkup extends DefaultMarkupType {
 					"frame");
 
 			zoom = DefaultMarkupType.getAnnotation(section,
-					"zoom");
+					"zoom").replaceAll("%", "").trim();
 
 			Article article = Environment.getInstance()
 					.getArticleManager(Environment.DEFAULT_WEB)
 					.getArticle(targetKey);
+
 			// warning if article not found
 			if (article == null) {
 				renderWarning(user, section, string, "Article '" + targetKey + "' not found!");
@@ -132,14 +126,14 @@ public class IncludeMarkup extends DefaultMarkupType {
 								+ "' not found!");
 					}
 					else {
-						if (frame != null && frame.equals("false")) {
-							// render section, no frame
-							renderNoFrame(user, renderarticle, string, zoom);
-						}
-						else {
+						if (frame != null && frame.equals("true")) {
 							// render section, with frame
 							renderFrame(article, user, section, renderarticle, string, true,
 									targetKey, zoom, subSectionKey);
+						}
+						else {
+							// render section, no frame
+							renderNoFrame(user, renderarticle, string, zoom);
 						}
 					}
 				}
@@ -159,37 +153,21 @@ public class IncludeMarkup extends DefaultMarkupType {
 
 		public void renderFrame(Article article, UserContext user, Section<?> section, Section<?> renderarticle, RenderResult string, Boolean rendersec, String targetKey, String zoom, String subSectionKey) {
 
-			WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
-			String context = wikiConnector.getServletContext().getContextPath();
 			String link;
 			if (rendersec) {
 				// link for section
-				link = "<a href=\""
-						+ context
-						+ "/"
-						+ KnowWEUtils.getURLLink(article.getRootSection().getArticle())
-						+ "#section-"
-						+
-						article.getRootSection().getArticle().getTitle().replaceAll(
-								"\\s",
-								"+")
-						+ "-"
-						+ subSectionKey.replaceAll("\\s", "") + "\">"
-						+ targetKey + "</a>";
+				link = KnowWEUtils.getURLLink(article) + "#section-"
+						+ article.getTitle().replaceAll("\\s", "+")
+						+ "-" + subSectionKey.replaceAll("\\s", "");
 			}
 			else {
 				// link for article
-				link = "<a href=\"" + context + "/"
-						+ KnowWEUtils.getURLLink(article.getRootSection().getArticle())
-						+ "\">"
-						+ targetKey + "</a>";
+				link = KnowWEUtils.getURLLink(article);
 			}
 
 			Tool[] tools = new Tool[1];
-			tools[0] = new DefaultTool(
-					"",
-					link,
-					"Go to Page", "", "");
+			tools[0] = new DefaultTool(null, "Open Page", "Opens page '" + article.getTitle()
+					+ "'", "window.location ='" + link + "'");
 
 			RenderResult builder = new RenderResult(user);
 			String zoomStyle = "";
