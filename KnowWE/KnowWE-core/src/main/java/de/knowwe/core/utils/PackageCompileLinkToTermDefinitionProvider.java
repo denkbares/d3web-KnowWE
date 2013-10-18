@@ -33,12 +33,11 @@ import de.knowwe.core.kdom.parsing.Section;
 public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDefinitionProvider {
 
 	@Override
-	public String getLinkToTermDefinition(String name, String masterArticle) {
+	public String getLinkToTermDefinition(Identifier name, String masterArticle) {
 		TerminologyManager terminologyManager = Environment.getInstance().getTerminologyManager(
 				Environment.DEFAULT_WEB, masterArticle);
-		Collection<Section<?>> termDefinitions = terminologyManager.getTermDefiningSections(new Identifier(
-				name.trim().split("#")));
-		String targetArticle = name;
+		Collection<Section<?>> termDefinitions = terminologyManager.getTermDefiningSections(name);
+		String targetArticle = name.toString();
 		if (termDefinitions.size() > 0) {
 			targetArticle = termDefinitions.iterator().next().getTitle();
 		}

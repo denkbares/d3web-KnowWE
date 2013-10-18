@@ -18,6 +18,8 @@
  */
 package de.knowwe.core.utils;
 
+import de.d3web.strings.Identifier;
+
 /**
  * 
  * @author jochenreutelshofer
@@ -25,6 +27,6 @@ package de.knowwe.core.utils;
  */
 public interface LinkToTermDefinitionProvider {
 
-	public String getLinkToTermDefinition(String name, String masterArticle);
+	public String getLinkToTermDefinition(Identifier name, String masterArticle);
 
 }
