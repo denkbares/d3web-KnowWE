@@ -21,6 +21,8 @@ package de.knowwe.testcases;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -41,8 +43,8 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class TableModel {
 
-	private final HashMap<Pair<Integer, Integer>, String> cells = new HashMap<Pair<Integer, Integer>, String>();
-	private final HashMap<Integer, Integer> columnWidths = new HashMap<Integer, Integer>();
+	private final Map<Pair<Integer, Integer>, String> cells = new HashMap<Pair<Integer, Integer>, String>();
+	private final Map<Integer, Integer> columnWidths = new HashMap<Integer, Integer>();
 	private int rowCount = 0;
 	private int columnCount = 0;
 	private String name;
@@ -155,7 +157,7 @@ public class TableModel {
 	}
 
 	private void appendCell(String type, String cell, int column, Set<Integer> collapsedColumns, RenderResult string) {
-		ArrayList<String> attributes = new ArrayList<String>();
+		List<String> attributes = new ArrayList<String>();
 		if (column > 0) {
 			attributes.add("column");
 			attributes.add(String.valueOf(column));
