@@ -35,7 +35,7 @@ import de.knowwe.kdom.dashtree.DashTree;
 public class OrderedListType extends AbstractType {
 
 	public OrderedListType() {
-		Pattern pattern = Pattern.compile("(^|\n+)(#.+?)(?=\n[^(#)])",
+		Pattern pattern = Pattern.compile("(^|\n+)(#.+?)(?=\n[^(#)]|\\z)",
 				Pattern.MULTILINE + Pattern.DOTALL);
 		this.setSectionFinder(new RegexSectionFinder(pattern));
 		DashTree dashTree = new DashTree('#', 1);
