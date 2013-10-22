@@ -38,11 +38,10 @@ public class LineEndComment extends AbstractType {
 	}
 
 	/**
-	 * @author Jochen
+	 * this LineEndCommentFinder assumes that single text lines are given to the
+	 * sectionfinder
 	 * 
-	 *         this LineEndCommentFinder assumes that single text lines are
-	 *         given to the sectionfinder
-	 * 
+	 * @author Jochen, Albrecht
 	 */
 	static class LineEndCommentFinder implements SectionFinder {
 
@@ -54,10 +53,14 @@ public class LineEndComment extends AbstractType {
 			// point
 			int start = Strings.indexOfUnquoted(text, "//");
 			if (start != -1) {
-				// if found return section from start to the end of the line
-				return SectionFinderResult
-						.createSingleItemList(new SectionFinderResult(start,
-								text.length()));
+				String prefix = text.substring(0, start);
+				// we also want a white space directly before the // to avoid
+				// interpreting links (http://) and so on as comments
+				if (prefix.matches(".+?\\s$")) {
+					// if found return section from start to the end of the line
+					return SectionFinderResult.createSingleItemList(new SectionFinderResult(start,
+							text.length()));
+				}
 			}
 			return null;
 		}

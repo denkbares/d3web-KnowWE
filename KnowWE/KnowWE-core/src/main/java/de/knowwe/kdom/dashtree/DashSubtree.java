@@ -35,16 +35,15 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 /**
+ * A Dash-Subtree containing the subtree-content of a (root-)element. This type
+ * is defined recursively - meaning it has itself as a child (allowing any depth
+ * of parsing).
+ * 
+ * General Structure of this dashTree: Subtree always has 1 child which is an
+ * Element, which is the root of the subtree. Then it contains 0..* subtrees as
+ * further children.
+ * 
  * @author Jochen
- * 
- *         A Dash-Subtree containing the subtree-content of a (root-)element.
- *         This type is defined recursively - meaning it has itself as a child
- *         (allowing any depth of parsing).
- * 
- *         General Structure of this dashTree: Subtree always has 1 child which
- *         is an Element, which is the root of the subtree. Then it contains
- *         0..* subtrees as further children.
- * 
  */
 public class DashSubtree extends AbstractType {
 
@@ -72,11 +71,10 @@ public class DashSubtree extends AbstractType {
 	}
 
 	/**
+	 * Finds the subtrees for a given (dash-) level the level is retrieved from
+	 * father.
+	 * 
 	 * @author Jochen
-	 * 
-	 *         finds the subtrees for a given (dash-) level the level is
-	 *         retrieved from father.
-	 * 
 	 */
 	class SubtreeFinder implements SectionFinder {
 
