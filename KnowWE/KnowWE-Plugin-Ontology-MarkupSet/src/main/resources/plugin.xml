@@ -1,0 +1,200 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-Ontology-MarkupSet" version="0.0.1">
+	
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+		<import plugin-id="KnowWE-Plugin-Core" />
+		<import plugin-id="KnowWE-Plugin-Rdf2GoSemanticCore" />
+	</requires>
+	
+	<runtime>
+		<library id="de.d3web" path="." type="code">
+			<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>
+			
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="NamespaceType">
+		<parameter id="class"
+			value="de.knowwe.ontology.kdom.namespace.NamespaceType" />
+		<parameter id="name" value="NamespaceType" />
+		<parameter id="description" value="Type NamespaceType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="ClassType">
+		<parameter id="class"
+			value="de.knowwe.ontology.kdom.clazz.ClassType" />
+		<parameter id="name" value="ClassType" />
+		<parameter id="description" value="Type ClassType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="IndividualType">
+		<parameter id="class"
+			value="de.knowwe.ontology.kdom.individual.IndividualType" />
+		<parameter id="name" value="IndividualType" />
+		<parameter id="description" value="Type IndividualType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="ObjectPropertyType">
+		<parameter id="class"
+			value="de.knowwe.ontology.kdom.objectproperty.ObjectPropertyType" />
+		<parameter id="name" value="ObjectPropertyType" />
+		<parameter id="description" value="Type ObjectPropertyType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="RelationType">
+		<parameter id="class"
+			value="de.knowwe.ontology.kdom.relation.RelationType" />
+		<parameter id="name" value="RelationType" />
+		<parameter id="description" value="Type RelationType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+		<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="TurtleMarkup">
+		<parameter id="class"
+			value="de.knowwe.ontology.kdom.turtle.TurtleMarkup" />
+		<parameter id="name" value="RelationType" />
+		<parameter id="description" value="Type RelationType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+        id="OntologyMarkupInstantEditToolProvider">
+        <parameter id="class"
+            value="de.knowwe.instantedit.tools.InstantEditToolProvider" />
+        <parameter id="name" value="OntologyMarkupInstantEditToolProvider" />
+        <parameter id="description"
+            value="Offers a button for quick editing a certain section." />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="4" />
+        <parameter id="script" value="KnowWE-EditCommons.js" />
+        <parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
+        <parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
+        <parameter id="script" value="DefaultEditTool.js" />
+        <parameter id="script" value="TextArea.js" />
+        <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
+        <parameter id="css" value="KnowWE-Plugin-AutoComplete.css" />
+        <parameter id="css" value="DefaultEditTool.css" />       
+        <parameter id="scope" value="ObjectPropertyType" />
+        <parameter id="scope" value="ClassType" />
+        <parameter id="scope" value="RelationType" />
+        <parameter id="scope" value="NamespaceType" />
+        <parameter id="scope" value="IndividualType" />
+    </extension>
+    
+    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="OntologyMarkupObjectInfoPageToolProvider">
+		<parameter id="class"
+			value="de.knowwe.core.tools.ObjectInfoPageToolProvider" />
+		<parameter id="name" value="OntologyMarkupObjectInfoPageToolProvider" />
+		<parameter id="description"
+			value="Offer a button to navigate to the object information page of an selected object." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="ResourceDefinition" />
+		<parameter id="scope" value="ResourceReference" />
+		<parameter id="scope" value="NamespaceDefinition" />
+		<parameter id="scope" value="NamespaceReference" />
+
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="SubtreeHandler"
+		id="InitTerminologyHandler">
+		<parameter id="class"
+			value="de.knowwe.ontology.kdom.InitTerminologyHandler" />
+		<parameter id="name" value="InitTerminologyHandler" />
+		<parameter id="description" value="Handler InitTerminologyHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4.55" />
+		<parameter id="handlerpriority" value="1000" />
+        <parameter id="scope" value="PackageCompileType" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="OntologyDownloadAction">
+		<parameter id="class" value="de.knowwe.ontology.action.OntologyDownloadAction" />
+		<parameter id="name" value="OntologyDownloadAction" />
+		<parameter id="description"
+			value="Downloads a specific ontology of a named wiki article." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="OntologyDownloadProvider">
+		<parameter id="class"
+			value="de.knowwe.ontology.tools.OntologyDownloadProvider" />
+		<parameter id="name" value="OntologyDownloadProvider" />
+		<parameter id="description"
+			value="Offers a download button to download the ontology as RDF-XML." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="KnowledgeBase" />
+	</extension>
+	
+	<extension plugin-id="KnowWE-Plugin-Core" point-id="PreviewRenderer"
+		id="TurtlePreviewRenderer">
+		<parameter id="class" value="de.knowwe.ontology.kdom.preview.TurtlePreviewRenderer" />
+		<parameter id="name" value="TurtlePreviewRenderer" />
+		<parameter id="description" value="Renders a preview of a turtle ontology markup." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="TurtleMarkup/**/TurtleMarkupN3Content" />
+	</extension>	
+
+	<extension plugin-id="KnowWE-Plugin-Core" point-id="PreviewRenderer"
+		id="RelationPreviewRenderer">
+		<parameter id="class" value="de.knowwe.core.preview.DefaultPreviewRenderer" />
+		<parameter id="name" value="RelationPreviewRenderer" />
+		<parameter id="description" value="Renders a preview of a relation ontology markup." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="RelationType/**/RelationDefinition" />
+	</extension>	
+
+	<extension plugin-id="KnowWE-Plugin-Core" point-id="PreviewRenderer"
+		id="ClassPreviewRenderer">
+		<parameter id="class" value="de.knowwe.ontology.kdom.preview.ClassPreviewRenderer" />
+		<parameter id="name" value="ClassPreviewRenderer" />
+		<parameter id="description" value="Renders a preview of a class ontology markup." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="ClassType" />
+	</extension>	
+			
+	<extension plugin-id="KnowWE-Plugin-Core" point-id="PreviewRenderer"
+		id="IndividualPreviewRenderer">
+		<parameter id="class" value="de.knowwe.ontology.kdom.preview.IndividualPreviewRenderer" />
+		<parameter id="name" value="IndividualPreviewRenderer" />
+		<parameter id="description" value="Renders a preview of an individual ontology markup." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="IndividualType" />
+	</extension>	
+		
+</plugin>

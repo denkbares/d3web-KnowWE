@@ -213,6 +213,8 @@
 		<module>KnowWE-Plugin-Table</module>
 		<module>KnowWE-Plugin-JSPWiki-MarkupSet</module>
 		<module>KnowWE-Plugin-Include</module>
+		<module>KnowWE-Plugin-Ontology-MarkupSet</module>
+		<module>KnowWE-Plugin-Rdf2GoSemanticCore</module>
 	</modules>
 	<repositories>
 		<repository>

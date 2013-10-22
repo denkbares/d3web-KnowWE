@@ -1,0 +1,232 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-Rdf2GoSemanticCore" version="0.0.1">
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+	</requires>
+	
+	<runtime>
+		<library id="de.d3web" path="." type="code">
+			<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>
+	
+	
+	<extension-point id="SparqlResultNodeRenderer">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+	</extension-point>
+
+	
+	<extension-point id="Rdf2GoModelConfig">
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+		<parameter-def id="model" multiplicity="one" />
+		<parameter-def id="reasoning" multiplicity="one" />
+	</extension-point>
+	
+	<extension plugin-id="KnowWE-Plugin-Rdf2GoSemanticCore"
+			point-id="SparqlResultNodeRenderer"
+			id="DecodeUrlNodeRenderer">
+		<parameter id="class"
+			value="de.knowwe.rdf2go.sparql.DecodeUrlNodeRenderer" />
+		<parameter id="name" value="DecodeUrlNodeRenderer" />
+		<parameter id="description" value="NodeRenderer DecodeUrlNodeRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="3" />
+	</extension>
+	
+	<!--extension plugin-id="KnowWE-Plugin-Rdf2GoSemanticCore"
+			point-id="SparqlResultNodeRenderer"
+			id="ShrinkNodeRenderer">
+		<parameter id="class"
+			value="de.knowwe.rdf2go.sparql.ShrinkNodeRenderer" />
+		<parameter id="name" value="ShrinkNodeRenderer" />
+		<parameter id="description" value="NodeRenderer ShrinkNodeRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="1000" />
+	</extension-->
+	
+	<extension plugin-id="KnowWE-Plugin-Rdf2GoSemanticCore"
+			point-id="SparqlResultNodeRenderer"
+			id="TrimDataTypeNodeRenderer">
+		<parameter id="class"
+			value="de.knowwe.rdf2go.sparql.TrimDataTypeNodeRenderer" />
+		<parameter id="name" value="TrimDataTypeNodeRenderer" />
+		<parameter id="description" value="NodeRenderer TrimDataTypeNodeRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="50" />
+	</extension>
+	
+	<extension plugin-id="KnowWE-Plugin-Rdf2GoSemanticCore"
+			point-id="SparqlResultNodeRenderer"
+			id="TrimLocaleNodeRenderer">
+		<parameter id="class"
+			value="de.knowwe.rdf2go.sparql.TrimLocaleNodeRenderer" />
+		<parameter id="name" value="TrimLocaleNodeRenderer" />
+		<parameter id="description" value="NodeRenderer TrimLocaleNodeRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="60" />
+	</extension>
+	
+	<extension plugin-id="KnowWE-Plugin-Rdf2GoSemanticCore"
+			point-id="SparqlResultNodeRenderer"
+			id="TrimNamespaceNodeRenderer">
+		<parameter id="class"
+			value="de.knowwe.rdf2go.sparql.TrimNamespaceNodeRenderer" />
+		<parameter id="name" value="TrimNamespaceNodeRenderer" />
+		<parameter id="description" value="NodeRenderer TrimNamespaceNodeRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="50" />
+	</extension>
+	
+	<extension plugin-id="KnowWE-Plugin-Rdf2GoSemanticCore"
+			point-id="SparqlResultNodeRenderer"
+			id="ArticleLinkNodeRenderer">
+		<parameter id="class"
+			value="de.knowwe.rdf2go.sparql.ArticleLinkNodeRenderer" />
+		<parameter id="name" value="ArticleLinkNodeRenderer" />
+		<parameter id="description" value="NodeRenderer ArticleLinkNodeRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="2" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+ 	  	         id="SparqlMarkupTypeInstantEditToolProvider">
+         <parameter id="class"
+             value="de.knowwe.instantedit.tools.InstantEditToolProvider" />
+         <parameter id="name" value="SparqlMarkupTypeInstantEditToolProvider" />
+         <parameter id="description"
+             value="Offers a button for quick editing a certain section." />
+         <parameter id="version" value="1.0" />
+         <parameter id="priority" value="5" />
+         <parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
+         <parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
+         <parameter id="script" value="DefaultEditTool.js" />
+         <parameter id="script" value="TextArea.js" />
+         <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
+        <parameter id="css" value="KnowWE-Plugin-AutoComplete.css" />
+         <parameter id="css" value="DefaultEditTool.css" />
+         <parameter id="scope" value="SparqlMarkupType" />
+ 	 </extension>
+	
+	<extension plugin-id="KnowWE-Plugin-Rdf2GoSemanticCore"
+			point-id="SparqlResultNodeRenderer"
+			id="ReduceNamespaceNodeRenderer">
+		<parameter id="class"
+			value="de.knowwe.rdf2go.sparql.ReduceNamespaceNodeRenderer" />
+		<parameter id="name" value="ReduceNamespaceNodeRenderer" />
+		<parameter id="description" value="NodeRenderer ReduceNamespaceNodeRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="100" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="ShowNamespacesType">
+		<parameter id="class"
+			value="de.knowwe.kdom.namespaces.rdf2go.ShowNamespacesType" />
+		<parameter id="name" value="ShowNamespacesType" />
+		<parameter id="description" value="Type ShowNamespacesType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+		<parameter id="scope" value="root" />
+		<parameter id="script" value="KnowWE-Plugin-Rdf2GoSemanticCore.js" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="SparqlMarkupType">
+		<parameter id="class"
+			value="de.knowwe.rdf2go.sparql.SparqlMarkupType" />
+		<parameter id="name" value="SparqlMarkupType" />
+		<parameter id="description" value="Type SparqlMarkupType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="3" />
+		<parameter id="scope" value="root" />
+		<parameter id="css" value="sparql.css" />
+	</extension>
+	
+	<!--extension plugin-id="KnowWEExtensionPoints" point-id="EventListener"
+		id="Rdf2GoCoreEventListener">
+		<parameter id="class"
+			value="de.knowwe.rdf2go.Rdf2GoCore" />
+		<parameter id="name" value="Rdf2GoCore" />
+		<parameter id="description" value="EventListener Rdf2GoCore" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension-->
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="DumpHandler">
+		<parameter id="class"
+			value="de.knowwe.rdf2go.utils.DumpHandler" />
+		<parameter id="name" value="DumpHandler" />
+		<parameter id="description" value="TagHandler DumpHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="Rdf2GoPageViewHandler">
+		<parameter id="class"
+			value="de.knowwe.rdf2go.utils.Rdf2GoPageViewHandler" />
+		<parameter id="name" value="DumpHandler" />
+		<parameter id="description" value="TagHandler Rdf2GoPageViewHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+		<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="RDF2GoStatementCacheViewer">
+		<parameter id="class"
+			value="de.knowwe.rdf2go.RDF2GoStatementCacheViewer" />
+		<parameter id="name" value="RDF2GoStatementCacheViewer" />
+		<parameter id="description" value="TagHandler RDF2GoStatementCacheViewer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="RDFXMLExportAction">
+		<parameter id="class"
+			value="de.knowwe.rdf2go.export.RDFXMLExportAction" />
+		<parameter id="name" value="RDFXMLExportAction" />
+		<parameter id="description" value="Action RDFXMLExportAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="RDFXMLExportButtonHandler">
+		<parameter id="class"
+			value="de.knowwe.rdf2go.export.RDFXMLExportButtonHandler" />
+		<parameter id="name" value="RDFXMLExportButtonHandler" />
+		<parameter id="description" value="TagHandler RDFXMLExportButtonHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-Rdf2GoSemanticCore.js" />
+	</extension>
+	
+	<!--
+	<extension plugin-id="KnowWEExtensionPoints" point-id="SubtreeHandler"
+		id="DefaultMarkupOwlHandlerForRdf2Go">
+		<parameter id="class"
+			value="de.knowwe.kdom.defaultMarkup.DefaultMarkupOwlHandlerForRdf2Go" />
+		<parameter id="name" value="DefaultMarkupOwlHandlerForRdf2Go" />
+		<parameter id="description" value="Subtreehandler for Defaultmarkup to add owl knowledge" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="handlerpriority" value="0" />
+		<parameter id="scope" value="DefaultMarkupType" />
+	</extension>
+	-->
+	
+
+</plugin>
