@@ -29,7 +29,7 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -47,8 +47,8 @@ public class PackageTerm extends AbstractType implements Term, RenamableTerm {
 
 	public PackageTerm(boolean checkExistingSections) {
 
-		this.setSectionFinder(new AllTextSectionFinder());
-		
+		this.setSectionFinder(new AllTextFinderTrimmed());
+
 		setRenderer(StyleRenderer.PACKAGE);
 
 		if (checkExistingSections) {

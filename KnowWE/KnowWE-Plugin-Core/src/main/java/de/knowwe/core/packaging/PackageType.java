@@ -1,7 +1,6 @@
 package de.knowwe.core.packaging;
 
 import java.util.Collection;
-import java.util.regex.Pattern;
 
 import de.d3web.strings.Identifier;
 import de.knowwe.core.Environment;
@@ -9,7 +8,6 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -24,11 +22,7 @@ public class PackageType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("Package");
-		PackageTerm packagTerm = new PackageTerm(false);
-		Pattern pattern = Pattern.compile("^(.+?)\\r?\\n",
-				Pattern.MULTILINE + Pattern.DOTALL);
-		packagTerm.setSectionFinder(new RegexSectionFinder(pattern, 1));
-		MARKUP.addContentType(packagTerm);
+		MARKUP.addContentType(new PackageTerm(false));
 	}
 
 	public PackageType() {
