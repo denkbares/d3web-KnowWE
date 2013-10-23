@@ -575,9 +575,17 @@ public class QuickInterviewRenderer {
 					+ Strings.encodeURL(q.getName()) + "', " + "}\" ";
 		}
 
+		NumericalInterval range = q.getInfoStore().getValue(
+				BasicProperties.QUESTION_NUM_RANGE);
+		String rangeString = " ";
+		if (range != null) {
+			rangeString = "placeholder='" + trimPZ(range.getLeft()) + " - "
+					+ trimPZ(range.getRight()) + "' ";
+		}
+
 		// assemble the input field
 		sb.append("<input class='numinput' id='input_" + id + "' type='text' "
-				+ "value='" + valueString + "' " + "size='7' " + jscall + " />");
+				+ rangeString + "value='" + valueString + "' " + "size='7' " + jscall + " />");
 
 		// print the units
 		sb.append("<div class='unit'>" + Strings.encodeHtml(unit) + "</div>");
@@ -599,6 +607,17 @@ public class QuickInterviewRenderer {
 		sb.append("<div id='" + errmsgid + "' class='invisible' ></div>");
 	}
 
+	private String trimPZ(double d) {
+		return trimPZ(String.valueOf(d));
+	}
+
+	private String trimPZ(String dString) {
+		if (dString.endsWith(".0")) {
+			dString = dString.substring(0, dString.length() - 2);
+		}
+		return dString;
+	}
+
 	private boolean suppressUnknown(Question question) {
 		if (!BasicProperties.isUnknownVisible(question)) return true;
 		return (this.config.containsKey("unknown") && this.config
@@ -617,12 +636,9 @@ public class QuickInterviewRenderer {
 
 		// if answer has already been answered write value into the field
 		Value value = D3webUtils.getValueNonBlocking(session, q);
-		String valueString;
+		String valueString = "";
 		if (value instanceof DateValue) {
 			valueString = ((DateValue) value).getDateString();
-		}
-		else {
-			valueString = "yyyy-mm-dd-hh-mm-ss";
 		}
 
 		String id = getID();
@@ -632,18 +648,20 @@ public class QuickInterviewRenderer {
 				+ "ns:'" + namespace + "'," + "type:'num', " + "qtext:'"
 				+ Strings.encodeURL(q.getName()) + "', " + "}\" ";
 
+		String placeHolder = DateValue.DATE_FORMAT.toPattern();
+
 		// assemble the input field
+		String title = "Use the following date format:\n"
+				+ placeHolder + "\nTime is optional, "
+				+ "if you use time, seconds and milliseconds are optional.";
 		sb.append("<input class='inputdate'  style='display: inline;' id='input_"
-				+ id
-				+ "' type='text' "
-				+ "value='"
-				+ valueString
-				+ "' "
-				+ "size='18' " + jscall + " />");
+				+ id + "' type='dateValue' " + "value='" + valueString + "' placeholder='"
+				+ placeHolder + "' title='" + title + "' " + jscall + " />");
 
 		// sb.append("<input type='button' value='OK' class='date-ok' /> ");
-
-		sb.append("<div class='separator'> | </div>");
+		if (Unknown.assignedTo(value) || !suppressUnknown(q)) {
+			sb.append("<div class='separator'> | </div>");
+		}
 		renderAnswerUnknown(q, "num", sb);
 
 		String errmsgid = id + "_errormsg";
@@ -900,7 +918,8 @@ public class QuickInterviewRenderer {
 	}
 
 	public static String callQuickInterviewRendererWithPackageName(UserContext usercontext, String packageName) {
-		PackageManager packageManager = Environment.getInstance().getPackageManager(usercontext.getWeb());
+		PackageManager packageManager = Environment.getInstance().getPackageManager(
+				usercontext.getWeb());
 		Set<String> compilingArticles = packageManager.getCompilingArticles(packageName);
 		List<String> compilingArticlesSorted = new ArrayList<String>(compilingArticles);
 		Collections.sort(compilingArticlesSorted);
@@ -914,11 +933,11 @@ public class QuickInterviewRenderer {
 			callQuickInterviewRenderer = "<span class='warning'>The given package \""
 					+ packageName
 					+ "\" is part of multiple knowledge bases, only the first knowledge base (lexicographically) will be used.</span>";
-				
+
 		}
 		callQuickInterviewRenderer += callQuickInterviewRenderer(usercontext, title);
 		return callQuickInterviewRenderer;
-		
+
 	}
 
 	public static String callQuickInterviewRenderer(UserContext usercontext, String title) {

@@ -555,8 +555,14 @@ KNOWWE.plugin.quicki = function(){
 			             	{action: 'SetSingleFindingAction', ValueID: 'MaU'});
 			        return;
 			}
-			if (!inputtext.match(/^\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d$/)) {
-    	 			var errormessage = 'Input needs to be yyyy-mm-dd-hh-mm-ss!';
+            // either yyyy-MM-dd or dd.MM.yyyy, separator either - or .
+            var dateRegex = "(\\d\\d\\d\\d(-|\\.)\\d\\d(-|\\.)\\d\\d|\\d\\d(-|\\.)\\d\\d(-|\\.)\\d\\d\\d\\d)";
+            // HH-mm-ss-SSS, but seconds and milliseconds are optional, separator either - or :
+            var timeRegex = "\\d\\d(-|\\:)\\d\\d((-|\\:)\\d\\d((-|\\:|\\.)\\d\\d\\d)?)?";
+            // time is optional
+            var dateTimeRegex = new RegExp("^\\s*" + dateRegex + "((\\s|-)" + timeRegex + ")?\\s*$");
+			if (!(inputtext.match(dateTimeRegex))) {
+    	 			var errormessage = 'Input has wrong format!';
             		_KS('#' + rel.oid + "_errormsg").className='errormsg';
             		_KS('#' + rel.oid + "_errormsg").innerHTML=errormessage;
             		return;

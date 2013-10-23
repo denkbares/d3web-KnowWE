@@ -21,10 +21,6 @@
 package de.knowwe.d3web.action;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
@@ -115,17 +111,13 @@ public class SetSingleFindingAction extends AbstractAction {
 				catch (NumberFormatException e) {
 					// nothing to do, value will be null, field will be empty
 				}
-
-				// TODO set valuedate in Attributes
 			}
 			else if (valuedate != null) {
-				final DateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 				try {
-					Date date = format.parse(valuedate);
-					value = new DateValue(date);
+					value = DateValue.createDateValue(valuedate);
 				}
-				catch (ParseException e) {
-					e.printStackTrace();
+				catch (IllegalArgumentException e) {
+					// nothing to do, value will be null, field will be empty
 				}
 			}
 			else if (valueText != null) {
