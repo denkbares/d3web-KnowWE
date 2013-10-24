@@ -215,6 +215,7 @@
 		<module>KnowWE-Plugin-Include</module>
 		<module>KnowWE-Plugin-Ontology-MarkupSet</module>
 		<module>KnowWE-Plugin-Rdf2GoSemanticCore</module>
+		<module>KnowWE-Plugin-Wikicontent-Download</module>
 	</modules>
 	<repositories>
 		<repository>
