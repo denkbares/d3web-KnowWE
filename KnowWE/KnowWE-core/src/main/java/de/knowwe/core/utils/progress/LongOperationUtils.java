@@ -157,17 +157,17 @@ public class LongOperationUtils {
 				}
 				catch (IOException e) {
 					Logger.getLogger(getClass().getName()).log(Level.WARNING,
-							"cannot complete operation", e);
+							"Cannot complete operation.", e);
 					listener.setError("Error occured: " + e.getMessage() + ".");
 				}
 				catch (InterruptedException e) {
 					Logger.getLogger(getClass().getName()).log(Level.INFO,
-							"operation canceled by user");
+							"Operation canceled by user.");
 					listener.setError("Canceled by user.");
 				}
-				catch (Throwable e) {
+				catch (Exception e) {
 					Logger.getLogger(getClass().getName()).log(Level.SEVERE,
-							"cannot complete operation, unexpected internal error", e);
+							"Cannot complete operation, unexpected internal error.", e);
 					listener.setError("Unexpected internal error: " + e.getMessage() + ".");
 				}
 				finally {

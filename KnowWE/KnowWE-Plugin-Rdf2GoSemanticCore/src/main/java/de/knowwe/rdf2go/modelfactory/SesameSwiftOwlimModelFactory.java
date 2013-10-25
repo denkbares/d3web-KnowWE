@@ -112,10 +112,7 @@ public class SesameSwiftOwlimModelFactory extends AbstractModelFactory {
 					c.delete();
 				}
 				else {
-					boolean r = c.delete();
-					if (!r) {
-						// error
-					}
+					c.delete();
 				}
 			}
 		}

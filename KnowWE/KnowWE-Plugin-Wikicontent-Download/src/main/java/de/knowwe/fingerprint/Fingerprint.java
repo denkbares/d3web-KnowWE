@@ -135,7 +135,7 @@ public class Fingerprint {
 			for (Scanner scanner : scanners) {
 				Diff diff = results.get(new Pair<String, Scanner>(articleName, scanner));
 				page.append(" | ");
-				if (diff == null) {
+				if (diff == null) { // NOSONAR
 					// do nothing
 				}
 				else if (diff.isEqual()) {

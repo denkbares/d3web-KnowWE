@@ -100,9 +100,6 @@ public class TurtleCompileScript extends SubtreeHandler<TurtleMarkup> {
 					objectSec.getFather().getFather().getFather(),
 					TurtleMarkupN3Content.class));
 		}
-		else {
-
-		}
 
 		if (objURI != null && predURI != null && subjectURI != null) {
 			Statement triple = Rdf2GoCore.getInstance().createStatement(
