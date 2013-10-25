@@ -47,7 +47,7 @@
 		<parameter id="name" value="PrettifyType" />
 		<parameter id="description" value="Represents a PrettifyType in KDOM" />
 		<parameter id="version" value="0.2" />
-		<parameter id="priority" value="10" />
+		<parameter id="priority" value="1" />
 		<parameter id="scope" value="root" />
 	</extension>
 	
@@ -57,7 +57,7 @@
 		<parameter id="name" value="VerbatimType" />
 		<parameter id="description" value="Represents a VerbatimType in KDOM" />
 		<parameter id="version" value="0.2" />
-		<parameter id="priority" value="1" />
+		<parameter id="priority" value="1.1" />
 		<parameter id="scope" value="root" />
 	</extension>
 	
@@ -78,6 +78,26 @@
 		<parameter id="description" value="Represents a CollapsibleBoxType in KDOM" />
 		<parameter id="version" value="0.2" />
 		<parameter id="priority" value="2" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="ListType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.ListType" />
+		<parameter id="name" value="ListType" />
+		<parameter id="description" value="Represents a list in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="OrderedListType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.OrderedListType" />
+		<parameter id="name" value="OrderedListType" />
+		<parameter id="description" value="Represents a numbered list in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 	</extension>
 	
