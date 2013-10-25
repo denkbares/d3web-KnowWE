@@ -85,8 +85,14 @@ public class NamespaceFileAnnotationType extends AbstractType {
 						+ fileNameSection.getText()
 						+ "': " + e.getMessage()));
 			}
+			Rdf2GoCore core = Rdf2GoCore.getInstance(article);
+			if (core == null) {
+				return Messages.asList(Messages.error("No ontology repository found '"
+						+ section.getText()
+						+ "'"));
+			}
 			try {
-				Rdf2GoCore.getInstance(article).readFrom(attachment.getInputStream());
+				core.readFrom(attachment.getInputStream());
 			}
 			catch (ModelRuntimeException e) {
 				return Messages.asList(Messages.error("Error while importing ontology from '"
