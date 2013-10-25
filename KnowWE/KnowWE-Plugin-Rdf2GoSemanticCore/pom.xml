@@ -86,11 +86,6 @@
 			<version>3.3</version>
 		</dependency>
 		<dependency>
-			<groupId>com.ontotext</groupId>
-			<artifactId>trree</artifactId>
-			<version>3.3</version>
-		</dependency>
-		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-KDOMParseUtils</artifactId>
 			<version>0.2-SNAPSHOT</version>
