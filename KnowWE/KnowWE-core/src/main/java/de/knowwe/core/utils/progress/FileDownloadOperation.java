@@ -75,6 +75,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 
 	@Override
 	public String renderMessage(UserActionContext context, float percent, String message) {
+		if (tempFilePath == null) return message;
 		UUID requestMarker = (UUID) context.getSession().getAttribute(storeKey);
 		File file = new File(tempFilePath);
 		if (this.requestMarker == requestMarker && percent == 1f
@@ -101,6 +102,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 
 	@Override
 	public void cleanUp() {
+		if (tempFilePath == null) return;
 		File file = new File(tempFilePath);
 		file.delete();
 		file.deleteOnExit();
