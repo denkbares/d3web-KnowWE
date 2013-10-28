@@ -70,13 +70,13 @@ function FlowEditor(articleIDs){
     	return false;
     };
     var undo = function() {
-    	event.stop();
+    	if (typeof event != "undefined") event.stop();
     	if (currentVersion > 0) {     		
  			EditorInstance.goToVersion(--currentVersion);
  		}
     }
     var redo = function() {
-    	event.stop();
+    	if (typeof event != "undefined") event.stop();
  		if (currentVersion < maxVersion) {
  			EditorInstance.goToVersion(++currentVersion);
  		}
