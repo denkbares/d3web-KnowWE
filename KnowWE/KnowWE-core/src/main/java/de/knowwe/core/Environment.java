@@ -30,10 +30,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -163,24 +166,27 @@ public class Environment {
 		this.wikiConnector = wiki;
 	}
 
-	private void init() throws InstantiationError {
+	private void init() {
 
-		initProperties();
+		try {
+			initProperties();
+			initPlugins();
+			initTagHandler();
+			initSectionizerModules();
 
-		initPlugins();
+			// decorate types in breast-first-search
+			decorateTypeTree();
 
-		initTagHandler();
-
-		initSectionizerModules();
-
-		decorateTypeTree(RootType.getInstance());
-
-		initKnowledgeRepresentationHandler();
-
-		initInstantiations();
-
-		Plugins.initJS();
-		Plugins.initCSS();
+			initKnowledgeRepresentationHandler();
+			initInstantiations();
+			Plugins.initJS();
+			Plugins.initCSS();
+		}
+		catch (Throwable e) {
+			String msg = "Invalid initialization of the wiki type tree. This is caused by an invalid wiki plugin. Wiki is in unbstable state. Please exit and correct before using the wiki.";
+			Logger.getLogger(getClass().getName()).log(Level.SEVERE, msg, e);
+			throw new IllegalStateException(msg, e);
+		}
 	}
 
 	private void initProperties() {
@@ -356,35 +362,59 @@ public class Environment {
 		}
 	}
 
-	private void decorateTypeTree(Type type) {
+	/**
+	 * Initialize all types by decorating them. The method makes sure that each
+	 * instance is decorated only once. To do this a breath-first-search is
+	 * used. Thus each item is initialized with the shortest path towards it.
+	 * 
+	 * @created 24.10.2013
+	 */
+	private void decorateTypeTree() {
 
-		List<Type> childrenTypesInit = new ArrayList<Type>(type.getChildrenTypesInit());
+		// queue the queue of paths to be initialized
+		RootType root = RootType.getInstance();
+		LinkedList<Type[]> queue = new LinkedList<Type[]>();
+		queue.add(new Type[] { root });
 
-		Plugins.addChildrenTypesToType(type);
-		Plugins.addSubtreeHandlersToType(type);
-		Plugins.addRendererToType(type);
-		Plugins.addAnnotations(type);
+		// queuedTypes the already queued instances
+		HashSet<Type> queuedTypes = new HashSet<Type>();
+		queuedTypes.add(root);
 
-		if (type instanceof RootType) {
-			// Only types plugged with the scope root are allowed to be
-			// decorated again. To prevent loops, other plugged types are not
-			// again decorated.
-			childrenTypesInit = type.getChildrenTypesInit();
-		}
+		while (!queue.isEmpty()) {
+			// initialize the first element of the queue
+			// until the queue is empty
+			Type[] path = queue.pop();
+			Type type = path[path.length - 1];
 
-		for (Type childType : childrenTypesInit) {
-			// secure against malformed plugins
-			if (childType == null) continue;
+			// initialize plugged items
+			Plugins.addChildrenTypesToType(type, path);
+			Plugins.addSubtreeHandlersToType(type, path);
+			Plugins.addRendererToType(type, path);
+			Plugins.addAnnotations(type, path);
 
-			if (childType.isDecorated()) {
-				continue;
+			// initialize type itself
+			type.init(path);
+
+			// recurse for child types
+			for (Type childType : type.getChildrenTypes()) {
+				// secure against malformed plugins
+				if (childType == null) {
+					throw new NullPointerException(
+							"type '" + type.getClass().getName() + "' contains 'null' as child");
+				}
+
+				// avoid multiple decoration in recursive type declarations
+				if (!queuedTypes.add(childType)) continue;
+
+				// create path to this type
+				Type[] childPath = new Type[path.length + 1];
+				System.arraycopy(path, 0, childPath, 0, path.length);
+				childPath[path.length] = childType;
+
+				// add child to the end of the queue --> breadth first search
+				queue.add(childPath);
 			}
-			Type[] pathToRoot = type.getPathToRoot();
-			childType.setPathToRoot(pathToRoot);
-			childType.setDecorated();
-			decorateTypeTree(childType);
 		}
-
 	}
 
 	private void initTagHandler(TagHandler tagHandler) {

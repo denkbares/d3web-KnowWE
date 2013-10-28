@@ -53,6 +53,7 @@ public class DefaultMarkupRenderer implements Renderer {
 	private final String iconPath;
 
 	private ToolsRenderMode renderMode = ToolsRenderMode.MENU;
+	private boolean preFormattedStyle = true;
 
 	public enum ToolsRenderMode {
 		MENU, TOOLBAR
@@ -75,15 +76,15 @@ public class DefaultMarkupRenderer implements Renderer {
 		String id = section.getID();
 		Tool[] tools = ToolUtils.getTools(section, user);
 
-		// render markup title
+		// add an anchor to enable direct link to the section
 		RenderResult markupTitle = new RenderResult(buffer);
+		KnowWEUtils.renderAnchor(section, markupTitle);
+
+		// render markup title
 		renderTitle(section, user, markupTitle);
 
 		// create content
 		RenderResult content = new RenderResult(buffer);
-
-		// add an anchor to enable direct link to the section
-		KnowWEUtils.renderAnchor(section, content);
 
 		// render messages and content
 		renderMessages(section, content);
@@ -285,18 +286,27 @@ public class DefaultMarkupRenderer implements Renderer {
 		appendHeader(title, sectionID, tools, user, string);
 
 		// render pre-formatted box
+		String style = "";
+		if (!isPreFormattedStyle()) {
+			style = " style='white-space: normal;'";
+		}
 		string.appendHtml("<div id=\"box_" + sectionID
 				+ "\" class='defaultMarkup'>");
 		string.appendHtml("<div id=\"content_" + sectionID
-				+ "\" class='markupText'>");
+				+ "\" class='markupText'" + style + ">");
 
 		// render content
 		// Returns are replaced to avoid JSPWiki to render <p> </p>, do not edit
 		// the following lines!
-		String newLine = "(\r?\n){2}";
-		String newLineReplacement = new RenderResult(string).appendHtml(
-				"<span>\n</span><span>\n</span>").toStringRaw();
-		string.append(content.replaceAll(newLine, newLineReplacement));
+		if (isPreFormattedStyle()) {
+			String newLine = "(\r?\n){2}";
+			String newLineReplacement = new RenderResult(string).appendHtml(
+					"<span>\n</span><span>\n</span>").toStringRaw();
+			string.append(content.replaceAll(newLine, newLineReplacement));
+		}
+		else {
+			string.append("\n").append(content);
+		}
 
 		// and close the box(es)
 		string.appendHtml("</div>"); // class=markupText
@@ -413,6 +423,14 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	public void setRenderMode(ToolsRenderMode renderMode) {
 		this.renderMode = renderMode;
+	}
+
+	public boolean isPreFormattedStyle() {
+		return preFormattedStyle;
+	}
+
+	public void setPreFormattedStyle(boolean preFormattedStyle) {
+		this.preFormattedStyle = preFormattedStyle;
 	}
 
 	private static class ArticleComparator implements Comparator<Article> {

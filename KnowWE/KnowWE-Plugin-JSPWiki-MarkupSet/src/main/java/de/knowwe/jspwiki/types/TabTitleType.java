@@ -29,11 +29,12 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
  * @created 21.11.2012
  */
 public class TabTitleType extends AbstractType {
+
 	public TabTitleType() {
 		this.setSectionFinder(new RegexSectionFinder("%%tab-.*?/%",
 				Pattern.DOTALL | Pattern.MULTILINE));
 		this.addChildType(new SectionHeaderType());
-		this.addChildType(new SectionContentType(4));
+		this.addChildType(new SectionContentType());
 	}
 
 }

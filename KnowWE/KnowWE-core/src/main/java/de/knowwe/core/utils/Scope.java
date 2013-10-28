@@ -108,8 +108,7 @@ public class Scope {
 	 * @param section is the {@link Section} to be checked
 	 */
 	public boolean matches(Section<?> section) {
-		Type[] typePath = getTypePath(section);
-		return matches(typePath, typePath.length - 1, this.scopeElements.length - 1);
+		return matches(getTypePath(section));
 	}
 
 	public static Type[] getTypePath(Section<?> section) {

@@ -82,46 +82,6 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="ListType">
-		<parameter id="class" value="de.knowwe.jspwiki.types.ListType" />
-		<parameter id="name" value="ListType" />
-		<parameter id="description" value="Represents a list in KDOM" />
-		<parameter id="version" value="0.2" />
-		<parameter id="priority" value="5" />
-		<parameter id="scope" value="root" />
-	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="OrderedListType">
-		<parameter id="class" value="de.knowwe.jspwiki.types.OrderedListType" />
-		<parameter id="name" value="OrderedListType" />
-		<parameter id="description" value="Represents a numbered list in KDOM" />
-		<parameter id="version" value="0.2" />
-		<parameter id="priority" value="5" />
-		<parameter id="scope" value="root" />
-	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="CSSType">
-		<parameter id="class" value="de.knowwe.jspwiki.types.CSSType" />
-		<parameter id="name" value="CSSType" />
-		<parameter id="description" value="CSSType in KDOM (e.g. %%(color: red)Text%%)" />
-		<parameter id="version" value="0.2" />
-		<parameter id="priority" value="9" />
-		<parameter id="scope" value="root" />
-	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="CSSDanglingType">
-		<parameter id="class" value="de.knowwe.jspwiki.types.CSSDanglingType" />
-		<parameter id="name" value="CSSDanglingType" />
-		<parameter id="description" value="CSSType in KDOM with no closing tag, therefore dangling" />
-		<parameter id="version" value="0.2" />
-		<parameter id="priority" value="9.1" />
-		<parameter id="scope" value="root" />
-	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="ParagraphTypeForLists">
 		<parameter id="class" value="de.knowwe.jspwiki.types.ParagraphTypeForLists" />
 		<parameter id="name" value="ParagraphTypeForLists" />
@@ -148,7 +108,7 @@
 		<parameter id="name" value="JSPWikiPlugin" />
 		<parameter id="description" value="Type for the brushed.jspwiki.tableplugin" />
 		<parameter id="version" value="0.2" />
-		<parameter id="priority" value="5" />
+		<parameter id="priority" value="9" />
 		<parameter id="scope" value="root" />
 	</extension>
 	

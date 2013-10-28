@@ -28,8 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import de.d3web.plugin.Extension;
-import de.d3web.plugin.PluginManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
@@ -41,11 +39,8 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.ScopeUtils;
-import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.AnnotationType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
-import de.knowwe.plugin.Plugins;
 
 /**
  * Renders a knowledge base markup into the wiki page.
@@ -115,21 +110,6 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 			String packageName = packageIter.next();
 			renderCompile(section.getArticle(), section, packageName, string, user);
 			if (packageIter.hasNext()) string.appendHtml("<br/>");
-		}
-
-		// render plugged annotations
-		Extension[] pluggedAnnotations = getPluggedAnnotation(section);
-
-		for (Extension pluggedAnnotation : pluggedAnnotations) {
-			Section<? extends AnnotationContentType> annotationContentSection = KnowledgeBaseType.getAnnotationContentSection(
-					section, pluggedAnnotation.getName());
-			if (annotationContentSection != null) {
-				Section<AnnotationType> ancestorOfType = Sections.findAncestorOfType(
-						annotationContentSection, AnnotationType.class);
-				if (ancestorOfType != null) {
-					ancestorOfType.get().getRenderer().render(ancestorOfType, user, string);
-				}
-			}
 		}
 
 		string.appendHtml("</div>");
@@ -240,20 +220,6 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 			string.append("\n");
 		}
 		string.appendHtml("</ul>");
-	}
-
-	private Extension[] getPluggedAnnotation(Section<?> sec) {
-		Extension[] extensions = PluginManager.getInstance().getExtensions(
-				Plugins.EXTENDED_PLUGIN_ID,
-				Plugins.EXTENDED_POINT_Annotation);
-		extensions = ScopeUtils.getMatchingExtensions(extensions, sec.get().getPathToRoot());
-
-		if (extensions.length >= 1) {
-			return extensions;
-		}
-		else {
-			return new Extension[0];
-		}
 	}
 
 }

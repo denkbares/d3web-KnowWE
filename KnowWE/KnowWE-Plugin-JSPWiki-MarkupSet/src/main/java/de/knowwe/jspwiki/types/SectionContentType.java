@@ -19,11 +19,10 @@
  */
 package de.knowwe.jspwiki.types;
 
-import java.util.List;
-
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 
 /**
@@ -33,31 +32,20 @@ import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
  */
 public class SectionContentType extends AbstractType {
 
-	private boolean initialized = false;
-
-	/*
-	 * The SectionContentType takes everything left from a SectionType.
-	 */
-	public SectionContentType(int count) {
+	public SectionContentType() {
 		this.setSectionFinder(new AllTextSectionFinder());
 	}
 
-	/*
-	 * A SectionContentType can has a SectionType, every type that has root as
-	 * its father and paragraph type as children.
-	 */
 	@Override
-	public List<Type> getChildrenTypes() {
-		if (!initialized) {
-			for (Type type : RootType.getInstance().getChildrenTypes()) {
-				this.addChildType(type);
-			}
-			// CSSDanglingType can only be in the root, because there are
-			// situations where CSS markups are split below the root
-			this.removeChildType(CSSDanglingType.class);
-			this.addChildType(new ParagraphType());
-			initialized = true;
+	public void init(Type[] path) {
+		ParagraphType paragraph = Types.getLastOfType(path, ParagraphType.class);
+		if (paragraph == null) {
+			paragraph = new ParagraphType();
 		}
-		return super.getChildrenTypes();
+		addChildType(paragraph);
+		for (Type type : RootType.getInstance().getChildrenTypes()) {
+			this.addChildType(type);
+		}
 	}
+
 }

@@ -22,6 +22,7 @@ import java.io.IOException;
 import junit.framework.TestCase;
 import de.d3web.plugin.test.InitPluginManager;
 import de.knowwe.core.kdom.RootType;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.plugin.Plugins;
 
 /**
@@ -43,9 +44,11 @@ public class PluginTest extends TestCase {
 		Plugins.getKnowledgeRepresentationHandlers();
 		Plugins.getKnowWEAction();
 		Plugins.getPageAppendHandlers();
-		Plugins.addChildrenTypesToType(RootType.getInstance());
-		Plugins.addSubtreeHandlersToType(RootType.getInstance());
-		Plugins.addRendererToType(RootType.getInstance());
+		RootType root = RootType.getInstance();
+		Type[] path = new Type[] { root };
+		Plugins.addChildrenTypesToType(root, path);
+		Plugins.addSubtreeHandlersToType(root, path);
+		Plugins.addRendererToType(root, path);
 		Plugins.getTagHandlers();
 	}
 

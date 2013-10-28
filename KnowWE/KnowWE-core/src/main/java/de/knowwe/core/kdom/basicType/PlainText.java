@@ -20,7 +20,7 @@
 
 package de.knowwe.core.kdom.basicType;
 
-import de.knowwe.core.kdom.TerminalType;
+import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 
@@ -32,7 +32,7 @@ import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
  * 
  * @author Jochen
  */
-public class PlainText extends TerminalType {
+public class PlainText extends AbstractType {
 
 	private static PlainText instance;
 

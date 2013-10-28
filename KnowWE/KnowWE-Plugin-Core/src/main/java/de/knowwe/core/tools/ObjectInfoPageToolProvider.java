@@ -55,6 +55,10 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 
 	public static String createJSAction(Section<? extends Term> section) {
 		Identifier termIdentifier = section.get().getTermIdentifier(section);
+		return createJSAction(termIdentifier);
+	}
+
+	public static String createJSAction(Identifier termIdentifier) {
 		String lastPathElementExternalForm = new Identifier(termIdentifier.getLastPathElement()).toExternalForm();
 		String externalTermIdentifierForm = termIdentifier.toExternalForm();
 		String jsAction = "window.location.href = "

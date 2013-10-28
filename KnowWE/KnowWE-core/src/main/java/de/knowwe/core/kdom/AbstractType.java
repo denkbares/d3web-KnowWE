@@ -21,7 +21,6 @@
 package de.knowwe.core.kdom;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,7 +49,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * @see Type#getChildrenTypes()
 	 * 
 	 */
-	private final ChildrenTypePriorityList childrenTypes = new ChildrenTypePriorityList();
+	private final TypePriorityList childrenTypes = new TypePriorityList();
 
 	/**
 	 * Manages the subtreeHandlers which are registered to this type
@@ -58,12 +57,6 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * @see SubtreeHandler
 	 */
 	private final TreeMap<Priority, List<SubtreeHandler<? extends Type>>> subtreeHandler = new TreeMap<Priority, List<SubtreeHandler<? extends Type>>>();
-
-	/**
-	 * a flag for the updating mechanism, which manages translations to explicit
-	 * knowledge formats
-	 */
-	private boolean isNotRecyclable = false;
 
 	/**
 	 * a flag to show, that this ObjectType is sensitive to the order its
@@ -97,29 +90,6 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * @see Type#getSectionFinder()
 	 */
 	private SectionFinder sectionFinder;
-
-	/**
-	 * contains all types from this type to the {@link RootType}
-	 */
-	private Type[] pathToRoot = null;
-
-	/**
-	 * determines whether this type has already been 'furnished' with plugins.
-	 * It is only relevant during during the initialization process of KnowWE.
-	 * It is used to prevent cyclic infinite extension of the type tree by
-	 * unfavourable plugins/plugin combinations.
-	 */
-	private boolean hasBeenDecorated = false;
-
-	@Override
-	public boolean isDecorated() {
-		return hasBeenDecorated;
-	}
-
-	@Override
-	public void setDecorated() {
-		this.hasBeenDecorated = true;
-	}
 
 	public boolean isNumberedType() {
 		return isNumberedType;
@@ -212,7 +182,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 
 	@Override
 	public boolean replaceChildType(Type type, Class<? extends Type> c) {
-		return childrenTypes.replaceChildType(type, c);
+		return childrenTypes.replaceType(type, c);
 	}
 
 	/*
@@ -247,21 +217,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 */
 	@Override
 	public List<Type> getChildrenTypes() {
-		return Collections.unmodifiableList(childrenTypes.getChildrenTypes());
-	}
-
-	/**
-	 * Returns the children types attached to this type. Use for plugin
-	 * framework initialization only!
-	 * 
-	 * final!
-	 * 
-	 * @return
-	 */
-	@Override
-	public final List<Type> getChildrenTypesInit() {
-		return childrenTypes.getChildrenTypes();
-
+		return Collections.unmodifiableList(childrenTypes.getTypes());
 	}
 
 	@Override
@@ -298,22 +254,16 @@ public abstract class AbstractType implements Type, Sectionizable {
 
 	@Override
 	public void addChildType(double priority, Type type) {
-		childrenTypes.addChildType(priority, type);
+		childrenTypes.addType(priority, type);
 	}
 
 	@Override
 	public void addChildType(Type type) {
-		this.childrenTypes.addChildType(type);
-	}
-
-	@Override
-	@Deprecated
-	public void addChildTypeAtPosition(int pos, Type type) {
-		childrenTypes.addChildTypeAtPosition(pos, type);
+		this.childrenTypes.addType(type);
 	}
 
 	public void removeChildType(Class<? extends Type> typeClass) {
-		this.childrenTypes.removeChildType(typeClass);
+		this.childrenTypes.removeType(typeClass);
 	}
 
 	/**
@@ -324,20 +274,6 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 */
 	public void addChildTypeLast(Type type) {
 		childrenTypes.addLast(type);
-	}
-
-	@Override
-	public void setPathToRoot(Type[] parentPath) {
-		Type[] childPath = new Type[parentPath.length + 1];
-		System.arraycopy(parentPath, 0, childPath, 0, parentPath.length);
-		childPath[childPath.length - 1] = this;
-		// TODO: why is this copy necessary?
-		this.pathToRoot = Arrays.copyOf(childPath, childPath.length);
-	}
-
-	@Override
-	public Type[] getPathToRoot() {
-		return this.pathToRoot;
 	}
 
 	@Override
@@ -388,6 +324,11 @@ public abstract class AbstractType implements Type, Sectionizable {
 		return clazz.equals(this.getClass());
 	}
 
+	@Override
+	public void init(Type[] path) {
+		// do nothing here for default
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -397,30 +338,6 @@ public abstract class AbstractType implements Type, Sectionizable {
 	public boolean isLeafType() {
 		List<Type> types = getChildrenTypes();
 		return types == null || types.size() == 0;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.d3web.we.kdom.Type#isNotRecyclable()
-	 */
-	@Override
-	public boolean isNotRecyclable() {
-		return isNotRecyclable;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.d3web.we.kdom.Type#setNotRecyclable(boolean)
-	 */
-	@Override
-	public final void setNotRecyclable(boolean notRecyclable) {
-		this.isNotRecyclable = notRecyclable;
-		for (Type type : childrenTypes.getChildrenTypes()) {
-			type.setNotRecyclable(notRecyclable);
-		}
-
 	}
 
 	@Override

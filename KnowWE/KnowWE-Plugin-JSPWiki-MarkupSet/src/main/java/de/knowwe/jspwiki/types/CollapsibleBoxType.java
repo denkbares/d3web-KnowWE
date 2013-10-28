@@ -40,7 +40,7 @@ public class CollapsibleBoxType extends AbstractType {
 		this.setSectionFinder(new CollapsibleBoxSectionFinder());
 		this.addChildType(new SectionHeaderType());
 		this.addChildType(new SectionHeaderType());
-		this.addChildType(new SectionContentType(4));
+		this.addChildType(new SectionContentType());
 	}
 
 	public class CollapsibleBoxSectionFinder implements SectionFinder {

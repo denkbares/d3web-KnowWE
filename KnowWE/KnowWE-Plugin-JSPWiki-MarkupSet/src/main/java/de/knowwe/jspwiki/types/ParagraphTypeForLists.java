@@ -18,17 +18,33 @@
  */
 package de.knowwe.jspwiki.types;
 
-import de.knowwe.core.kdom.rendering.DelegateRenderer;
+import java.util.regex.Pattern;
+
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 
 /**
  * 
  * @author Lukas Brehl
  * @created 26.09.2012
  */
-public class ParagraphTypeForLists extends ParagraphType {
+public class ParagraphTypeForLists extends AbstractType {
 
 	public ParagraphTypeForLists() {
-		super();
-		this.setRenderer(new DelegateRenderer());
+		Pattern pattern = Pattern.compile("^.+?([\n\r]{4,}|\\z)",
+				Pattern.MULTILINE + Pattern.DOTALL);
+		this.setSectionFinder(new RegexSectionFinder(pattern));
+
+		// placeholder for lists
+		// --
+
+		this.addChildType(3d, new CSSType());
+		this.addChildType(3d, new CSSDanglingType());
+		this.addChildType(3d, new BoldType());
+		this.addChildType(3d, new ItalicType());
+		this.addChildType(3d, new StrikeThroughType());
+		this.addChildType(3d, new ImageType());
+		this.addChildType(3d, new LinkType());
+		this.addChildType(3d, new WikiTextType());
 	}
 }

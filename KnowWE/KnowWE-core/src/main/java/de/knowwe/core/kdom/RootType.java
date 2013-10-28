@@ -45,7 +45,6 @@ public class RootType extends AbstractType {
 	}
 
 	private RootType() {
-		this.setPathToRoot(new Type[] {});
 		this.setSectionFinder(new AllTextSectionFinder());
 		this.setRenderer(new Renderer() {
 

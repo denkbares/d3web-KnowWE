@@ -126,7 +126,6 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 	private boolean isAllowedToReuse(Section<?> father, Type type, SectionFinderResult result) {
 		return !father.getArticle().isFullParse()
 				&& result.getClass().equals(SectionFinderResult.class)
-				&& !type.isNotRecyclable()
 				&& !(type.isLeafType());
 	}
 

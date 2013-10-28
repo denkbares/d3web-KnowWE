@@ -59,23 +59,6 @@ public interface Type {
 	boolean isLeafType();
 
 	/**
-	 * Returns the path from this type up to the root type as an array. First
-	 * element is the root type, the last element is this.
-	 * 
-	 * @created 27.08.2013
-	 * @return
-	 */
-	Type[] getPathToRoot();
-
-	/**
-	 * Set the the path from this type to the root type (for caching)
-	 * 
-	 * @created 27.08.2013
-	 * @param path
-	 */
-	void setPathToRoot(Type[] path);
-
-	/**
 	 * Returns whether this.getClass() equals the given class.
 	 * 
 	 * @created 27.08.2013
@@ -95,22 +78,18 @@ public interface Type {
 	boolean isAssignableFromType(Class<? extends Type> clazz);
 
 	/**
-	 * Returns the decorated flag, i.e. of this instance of the type already has
-	 * been considered for decoration (add child types, renderers, handlers...)
-	 * by the plugin framework.
+	 * Initializes the type instance with a specific path to the root. Each type
+	 * is initialized only once. If the type is available in multiple path the
+	 * specified path is the breaths-first-path which can be used to access the
+	 * type. Especially for recursive types this is also the most shallow path
+	 * available. This method is called directly after the object has been
+	 * initialized through the available decorating plugins, e.g. child types,
+	 * subtree handlers, etc.
 	 * 
-	 * @created 27.08.2013
-	 * @return
+	 * @created 28.10.2013
+	 * @param path the path to this type
 	 */
-	boolean isDecorated();
-
-	/**
-	 * Sets the decorated flag at the end of type hierarchy initialization by
-	 * the plugin framework.
-	 * 
-	 * @created 27.08.2013
-	 */
-	void setDecorated();
+	void init(Type[] path);
 
 	/*
 	 * Methods related to parsing
@@ -126,10 +105,6 @@ public interface Type {
 	 */
 	Parser getParser();
 
-	boolean isNotRecyclable();
-
-	void setNotRecyclable(boolean notRecyclable);
-
 	/**
 	 * Adds the type as a child of the current type with the given priority
 	 * value. If there are already child types for the given priority it is
@@ -140,21 +115,6 @@ public interface Type {
 	 * @param type the type to add
 	 */
 	void addChildType(double priority, Type type);
-
-	/**
-	 * Adds the type as achild with the given priority value. If there are
-	 * already child types for the given priority it is appended at the end of
-	 * the list (lower priority).
-	 * 
-	 * @created 27.08.2013
-	 * @param pos the positioner where the child is added
-	 * @param type the type to add
-	 * @deprecated The position may change if other types are inserted into the
-	 *             chain later. It is recommended to work with priorities,
-	 *             therefore use {@link Type#addChildType(double, Type)}
-	 */
-	@Deprecated
-	void addChildTypeAtPosition(int pos, Type type);
 
 	/**
 	 * Adds the type as the (currently) last child type with the default
@@ -195,16 +155,6 @@ public interface Type {
 	 * @return
 	 */
 	List<Type> getChildrenTypes();
-
-	/**
-	 * Returns the children types attached to this type. Use for plugin
-	 * framework initialization only!
-	 * 
-	 * final!
-	 * 
-	 * @return
-	 */
-	List<Type> getChildrenTypesInit();
 
 	/*
 	 * Management of Renderers
