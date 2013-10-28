@@ -23,10 +23,6 @@ body {
 	min-width: 850px;
 	padding-bottom: 1px;
 	white-space: nowrap;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
 }
 
 ul.toolbar {
@@ -37,6 +33,10 @@ ul.toolbar {
 	text-align: left;
 	display: inline-block;
 	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 ul.toolbar li {
