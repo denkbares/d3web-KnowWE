@@ -21,7 +21,6 @@
 package de.knowwe.core.kdom;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -216,8 +215,8 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * @see de.d3web.we.kdom.Type#getAllowedChildrenTypes()
 	 */
 	@Override
-	public List<Type> getChildrenTypes() {
-		return Collections.unmodifiableList(childrenTypes.getTypes());
+	public final List<Type> getChildrenTypes() {
+		return childrenTypes.getTypes();
 	}
 
 	@Override

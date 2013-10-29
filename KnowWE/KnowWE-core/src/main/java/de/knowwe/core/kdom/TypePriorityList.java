@@ -87,17 +87,16 @@ public class TypePriorityList {
 	 * @return
 	 */
 	public List<Type> getTypes() {
-		if (cachedTypesOrder != null) {
-			return cachedTypesOrder;
+		if (cachedTypesOrder == null) {
+			List<Type> typesOrder = new ArrayList<Type>();
+			Set<Double> keySet = types.keySet();
+			for (Double priorityValue : keySet) {
+				List<Type> typesForPriorityValue = types.get(priorityValue);
+				typesOrder.addAll(typesForPriorityValue);
+			}
+			cachedTypesOrder = Collections.unmodifiableList(typesOrder);
 		}
-		List<Type> typesOrder = new ArrayList<Type>();
-		Set<Double> keySet = types.keySet();
-		for (Double priorityValue : keySet) {
-			List<Type> typesForPriorityValue = types.get(priorityValue);
-			typesOrder.addAll(typesForPriorityValue);
-		}
-		cachedTypesOrder = typesOrder;
-		return Collections.unmodifiableList(typesOrder);
+		return cachedTypesOrder;
 	}
 
 	/**
@@ -107,6 +106,7 @@ public class TypePriorityList {
 	 */
 	public void clear() {
 		types.clear();
+		clearCache();
 	}
 
 	private void clearCache() {
