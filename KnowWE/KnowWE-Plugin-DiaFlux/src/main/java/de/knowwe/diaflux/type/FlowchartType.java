@@ -25,6 +25,7 @@ import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.report.MessageRenderer;
 import de.knowwe.diaflux.DiaFluxTrace;
 import de.knowwe.diaflux.DiaFluxValueTrace;
@@ -52,17 +53,7 @@ public class FlowchartType extends AbstractXMLType {
 	}
 
 	@Override
-	public MessageRenderer getErrorRenderer() {
-		return null;
-	}
-
-	@Override
-	public MessageRenderer getWarningRenderer() {
-		return null;
-	}
-
-	@Override
-	public MessageRenderer getNoticeRenderer() {
+	public MessageRenderer getMessageRenderer(Message.Type type) {
 		return null;
 	}
 

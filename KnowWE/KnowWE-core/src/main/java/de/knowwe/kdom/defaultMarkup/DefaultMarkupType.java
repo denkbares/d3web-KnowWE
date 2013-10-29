@@ -38,6 +38,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.report.MessageRenderer;
 
 /**
@@ -388,21 +389,7 @@ public class DefaultMarkupType extends AbstractType implements RenamableTerm {
 	}
 
 	@Override
-	public MessageRenderer getErrorRenderer() {
-		// return null,
-		// because errors are already rendered inline in the markup
-		return null;
-	}
-
-	@Override
-	public MessageRenderer getWarningRenderer() {
-		// return null,
-		// because warnings are already rendered inline in the markup
-		return null;
-	}
-
-	@Override
-	public MessageRenderer getNoticeRenderer() {
+	public MessageRenderer getMessageRenderer(Message.Type messageType) {
 		return null;
 	}
 
@@ -411,7 +398,8 @@ public class DefaultMarkupType extends AbstractType implements RenamableTerm {
 			section, Identifier oldValue, Identifier replacement) {
 
 		Map<String, String> nodesMap = new HashMap<String, String>();
-		List<Section<PackageTerm>> packageTermSections = Sections.findSuccessorsOfType(section, PackageTerm.class);
+		List<Section<PackageTerm>> packageTermSections = Sections.findSuccessorsOfType(section,
+				PackageTerm.class);
 		for (Section<PackageTerm> packageTermSection : packageTermSections) {
 			if (packageTermSection.getText().equals(oldValue.toString())) {
 				nodesMap.put(packageTermSection.getID(), replacement.toString());

@@ -18,6 +18,7 @@
  */
 package de.knowwe.testcases.table;
 
+import de.knowwe.core.report.Message;
 import de.knowwe.core.report.MessageRenderer;
 import de.knowwe.kdom.table.TableCell;
 import de.knowwe.kdom.table.TableLine;
@@ -33,31 +34,12 @@ public class TestcaseTableLine extends TableLine {
 
 	public TestcaseTableLine() {
 		setRenderer(new TestcaseTableLineRenderer());
-
 		replaceChildType(new Cell(), TableCell.class);
-
 		addSubtreeHandler(new TestcaseTableLineSubtreeHandler());
 	}
 
-	// deactivate message renderer to avoid <span>...</span> rendered
-	// in between table lines
 	@Override
-	public MessageRenderer getNoticeRenderer() {
+	public MessageRenderer getMessageRenderer(Message.Type messageType) {
 		return null;
 	}
-
-	// deactivate message renderer to avoid <span>...</span> rendered
-	// in between table lines
-	@Override
-	public MessageRenderer getWarningRenderer() {
-		return null;
-	}
-
-	// deactivate message renderer to avoid <span>...</span> rendered
-	// in between table lines
-	@Override
-	public MessageRenderer getErrorRenderer() {
-		return null;
-	}
-
 }

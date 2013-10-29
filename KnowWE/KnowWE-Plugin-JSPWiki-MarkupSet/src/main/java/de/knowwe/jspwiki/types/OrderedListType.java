@@ -21,7 +21,7 @@ package de.knowwe.jspwiki.types;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.dashtree.DashSubtree;
@@ -39,12 +39,7 @@ public class OrderedListType extends AbstractType {
 				Pattern.MULTILINE + Pattern.DOTALL);
 		this.setSectionFinder(new RegexSectionFinder(pattern));
 		DashTree dashTree = new DashTree('#', 1);
-		for (Type type : dashTree.getChildrenTypes()) {
-			if (type instanceof DashSubtree) {
-				type.setRenderer(DelegateRenderer.getInstance());
-				break;
-			}
-		}
+		Types.injectRendererToChildren(dashTree, DashSubtree.class, DelegateRenderer.getInstance());
 		this.addChildType(dashTree);
 	}
 }

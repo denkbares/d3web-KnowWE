@@ -76,15 +76,42 @@ public class Types {
 	}
 
 	/**
-	 * Injects a given renderer to all subtype in the hierarchy
+	 * Injects a given renderer to all successors of the specified type in the
+	 * type hierarchy.
 	 * 
 	 * @created 15.04.2011
 	 * @param root the root of the hierarchy
-	 * @param clazz
-	 * @param renderer
+	 * @param clazz the class of the type to set the renderer for
+	 * @param renderer the renderer to be set
 	 */
-	public static void injectRendererToSuccessorType(Type root, Class<? extends Type> clazz, Renderer renderer) {
+	public static void injectRendererToSuccessors(Type root, Class<? extends AbstractType> clazz, Renderer renderer) {
 		Collection<Type> set = getAllChildrenTypesRecursive(root);
+		injectRendererToType(set, clazz, renderer);
+	}
+
+	/**
+	 * Injects a given renderer to all direct children of the specified type.
+	 * 
+	 * @created 15.04.2011
+	 * @param root the root type to take the children from
+	 * @param clazz the class of the type to set the renderer for
+	 * @param renderer the renderer to be set
+	 */
+	public static void injectRendererToChildren(Type root, Class<? extends AbstractType> clazz, Renderer renderer) {
+		Collection<Type> set = root.getChildrenTypes();
+		injectRendererToType(set, clazz, renderer);
+	}
+
+	/**
+	 * Injects a given renderer to all the types of the collection matching the
+	 * specified type.
+	 * 
+	 * @created 15.04.2011
+	 * @param set the types to match against
+	 * @param clazz the class of the type to set the renderer for
+	 * @param renderer the renderer to be set
+	 */
+	public static void injectRendererToType(Collection<Type> set, Class<? extends AbstractType> clazz, Renderer renderer) {
 		for (Type t : set) {
 			if (Types.isAssignableFromType(t, clazz)) {
 				((AbstractType) t).setRenderer(renderer);

@@ -30,6 +30,7 @@ import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.IncrementalSectionizerModule;
 import de.knowwe.core.kdom.parsing.SectionizerModule;
@@ -141,7 +142,14 @@ public class Plugins {
 				EXTENDED_POINT_Renderer);
 		extensions = ScopeUtils.getMatchingExtensions(extensions, path);
 		if (extensions.length >= 1) {
-			type.setRenderer((Renderer) extensions[0].getSingleton());
+			if (type instanceof AbstractType) {
+				((AbstractType) type).setRenderer((Renderer) extensions[0].getSingleton());
+			}
+			else {
+				throw new ClassCastException(
+						"renderers can only be plugged to types instances of 'AbstractType', but not to "
+								+ type.getClass().getName());
+			}
 		}
 	}
 

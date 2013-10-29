@@ -27,6 +27,7 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.parsing.Parser;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.report.MessageRenderer;
 
 /**
@@ -141,13 +142,15 @@ public interface Type {
 	 */
 	Renderer getRenderer();
 
-	void setRenderer(Renderer renderer);
-
-	MessageRenderer getErrorRenderer();
-
-	MessageRenderer getNoticeRenderer();
-
-	MessageRenderer getWarningRenderer();
+	/**
+	 * Returns the message renderer for the specified message type. The method
+	 * may return null if the messages shall not be rendered at all.
+	 * 
+	 * @created 29.10.2013
+	 * @param messageType the message type to be rendered
+	 * @return the message renderer to be used
+	 */
+	MessageRenderer getMessageRenderer(Message.Type messageType);
 
 	/*
 	 * Methods related to compilation

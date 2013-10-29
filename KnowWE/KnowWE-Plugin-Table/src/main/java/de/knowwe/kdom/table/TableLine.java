@@ -29,6 +29,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.report.MessageRenderer;
 
 /**
@@ -79,24 +80,8 @@ public class TableLine extends AbstractType {
 		return isHeaderLine;
 	}
 
-	// deactivate message renderer to avoid <span>...</span> rendered
-	// in between table lines
 	@Override
-	public MessageRenderer getNoticeRenderer() {
-		return null;
-	}
-
-	// deactivate message renderer to avoid <span>...</span> rendered
-	// in between table lines
-	@Override
-	public MessageRenderer getWarningRenderer() {
-		return null;
-	}
-
-	// deactivate message renderer to avoid <span>...</span> rendered
-	// in between table lines
-	@Override
-	public MessageRenderer getErrorRenderer() {
+	public MessageRenderer getMessageRenderer(Message.Type messageType) {
 		return null;
 	}
 }

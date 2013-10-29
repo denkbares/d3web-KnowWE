@@ -36,6 +36,7 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.DefaultMessageRenderer;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.report.MessageRenderer;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -281,24 +282,20 @@ public abstract class AbstractType implements Type, Sectionizable {
 	}
 
 	@Override
-	public MessageRenderer getErrorRenderer() {
-		return DefaultMessageRenderer.ERROR_RENDERER;
-	}
-
-	@Override
-	public MessageRenderer getNoticeRenderer() {
-		return DefaultMessageRenderer.NOTE_RENDERER;
-	}
-
-	@Override
-	public MessageRenderer getWarningRenderer() {
-		return DefaultMessageRenderer.WARNING_RENDERER;
+	public MessageRenderer getMessageRenderer(Message.Type messageType) {
+		switch (messageType) {
+		case INFO:
+			return DefaultMessageRenderer.NOTE_RENDERER;
+		case WARNING:
+			return DefaultMessageRenderer.WARNING_RENDERER;
+		default:
+			return DefaultMessageRenderer.ERROR_RENDERER;
+		}
 	}
 
 	/**
 	 * Allows to set a renderer for this type
 	 */
-	@Override
 	public void setRenderer(Renderer renderer) {
 		this.renderer = renderer;
 	}

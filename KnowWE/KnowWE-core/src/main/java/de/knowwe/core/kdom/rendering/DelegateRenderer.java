@@ -118,7 +118,8 @@ public class DelegateRenderer implements Renderer {
 				Message.Type.ERROR);
 		for (Entry<String, Collection<Message>> entry : errors.entrySet()) {
 			for (Message kdomNotice : entry.getValue()) {
-				MessageRenderer errorRenderer = subSection.get().getErrorRenderer();
+				MessageRenderer errorRenderer = subSection.get().getMessageRenderer(
+						Message.Type.ERROR);
 				if (errorRenderer != null) {
 					renderedAny = true;
 					errorRenderer.postRenderMessage(kdomNotice, user, entry.getKey(), builder);
@@ -131,7 +132,8 @@ public class DelegateRenderer implements Renderer {
 				.getMessages(subSection, Message.Type.INFO);
 		for (Entry<String, Collection<Message>> entry : notices.entrySet()) {
 			for (Message kdomNotice : entry.getValue()) {
-				MessageRenderer noticeRenderer = subSection.get().getNoticeRenderer();
+				MessageRenderer noticeRenderer = subSection.get().getMessageRenderer(
+						Message.Type.INFO);
 				if (noticeRenderer != null) {
 					renderedAny = true;
 					noticeRenderer.postRenderMessage(kdomNotice, user, entry.getKey(), builder);
@@ -144,7 +146,8 @@ public class DelegateRenderer implements Renderer {
 				Message.Type.WARNING);
 		for (Entry<String, Collection<Message>> entry : warnings.entrySet()) {
 			for (Message kdomWarning : entry.getValue()) {
-				MessageRenderer warningRenderer = subSection.get().getWarningRenderer();
+				MessageRenderer warningRenderer = subSection.get().getMessageRenderer(
+						Message.Type.WARNING);
 				if (warningRenderer != null) {
 					renderedAny = true;
 					warningRenderer.postRenderMessage(kdomWarning, user, entry.getKey(), builder);
@@ -164,7 +167,7 @@ public class DelegateRenderer implements Renderer {
 		for (Entry<String, Collection<Message>> entry : warnings.entrySet()) {
 			for (Message kdomWarning : entry.getValue()) {
 				MessageRenderer warningRenderer = subSection.get()
-						.getWarningRenderer();
+						.getMessageRenderer(Message.Type.WARNING);
 				if (warningRenderer != null) {
 					warningRenderer.preRenderMessage(kdomWarning, user,
 							warnings.size() > 1 ? entry.getKey() : null, builder);
@@ -178,7 +181,7 @@ public class DelegateRenderer implements Renderer {
 		for (Entry<String, Collection<Message>> entry : notices.entrySet()) {
 			for (Message kdomNotice : entry.getValue()) {
 				MessageRenderer noticeRenderer = subSection.get()
-						.getNoticeRenderer();
+						.getMessageRenderer(Message.Type.INFO);
 				if (noticeRenderer != null) {
 					noticeRenderer.preRenderMessage(kdomNotice, user,
 							notices.size() > 1 ? entry.getKey() : null, builder);
@@ -192,7 +195,7 @@ public class DelegateRenderer implements Renderer {
 		for (Entry<String, Collection<Message>> entry : errors.entrySet()) {
 			for (Message kdomNotice : entry.getValue()) {
 				MessageRenderer errorRenderer = subSection.get()
-						.getErrorRenderer();
+						.getMessageRenderer(Message.Type.ERROR);
 				if (errorRenderer != null) {
 					errorRenderer.preRenderMessage(kdomNotice, user,
 							errors.size() > 1 ? entry.getKey() : null, builder);
