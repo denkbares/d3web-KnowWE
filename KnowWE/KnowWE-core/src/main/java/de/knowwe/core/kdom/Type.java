@@ -50,34 +50,6 @@ import de.knowwe.core.report.MessageRenderer;
 public interface Type {
 
 	/**
-	 * Returns whether this type is a leaf type, i.e., true if it has no
-	 * children types.
-	 * 
-	 * @created 27.08.2013
-	 * @return
-	 */
-	boolean isLeafType();
-
-	/**
-	 * Returns whether this.getClass() equals the given class.
-	 * 
-	 * @created 27.08.2013
-	 * @param clazz
-	 * @return
-	 */
-	boolean isType(Class<? extends Type> clazz);
-
-	/**
-	 * Returns whether the passed class isAssignableFrom the class of this
-	 * instance.
-	 * 
-	 * @created 27.08.2013
-	 * @param clazz
-	 * @return
-	 */
-	boolean isAssignableFromType(Class<? extends Type> clazz);
-
-	/**
 	 * Initializes the type instance with a specific path to the root. Each type
 	 * is initialized only once. If the type is available in multiple path the
 	 * specified path is the breaths-first-path which can be used to access the

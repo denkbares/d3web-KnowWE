@@ -124,7 +124,7 @@ public class Sections {
 			}
 		}
 		for (Section<? extends Type> child : section.getChildren()) {
-			if (child.get().isAssignableFromType(class1)) {
+			if (Sections.hasType(child, class1)) {
 				if (section.getText().indexOf(text) < child
 						.getOffSetFromFatherText()) {
 					return true;
@@ -146,7 +146,7 @@ public class Sections {
 			}
 		}
 		for (Section<? extends Type> child : section.getChildren()) {
-			if (child.get().isAssignableFromType(class1)) {
+			if (Sections.hasType(child, class1)) {
 				if (section.text.indexOf(text) > child
 						.getOffSetFromFatherText()) {
 					return true;
@@ -857,4 +857,51 @@ public class Sections {
 		// and securely cast
 		return (Section<T>) section;
 	}
+
+	/**
+	 * Checks if the specified section is an instance of the specified type
+	 * class (technically the section has a section {@link Type} which is of the
+	 * specified type or is a class inherits or implements the specified type).
+	 * The method returns true if (and only if) the method
+	 * {@link #cast(Section, Class)} would be successful and the specified
+	 * section is not null. If the specified section is null, false is returned.
+	 * 
+	 * @created 28.02.2012
+	 * @param section the section to be checked
+	 * @param typeClass the class to check the section's type against
+	 * @return if the section can be casted
+	 * @throws NullPointerException is the specified class is null, but the
+	 *         section isn't
+	 */
+	public static boolean hasType(Section<?> section, Class<?> typeClass) {
+		// first check null, because Class.isInstance differs from
+		// "instanceof"-operator for null objects
+		if (section == null) return false;
+
+		// check the type of the section
+		return typeClass.isInstance(section.get());
+	}
+
+	/**
+	 * Checks if the specified section is an instance of the exactly the
+	 * specified type class (technically the section has a section {@link Type}
+	 * which is identical to the specified type). If the specified section is
+	 * null, false is returned.
+	 * 
+	 * @created 28.02.2012
+	 * @param section the section to be checked
+	 * @param typeClass the class to check the section's type against
+	 * @return if the section has exactly the specified type
+	 * @throws NullPointerException is the specified class is null, but the
+	 *         section isn't
+	 */
+	public static boolean hasExactType(Section<?> section, Class<?> typeClass) {
+		// first check null, because Class.isInstance differs from
+		// "instanceof"-operator for null objects
+		if (section == null) return false;
+
+		// check the type of the section
+		return typeClass.equals(section.get().getClass());
+	}
+
 }

@@ -303,40 +303,9 @@ public abstract class AbstractType implements Type, Sectionizable {
 		this.renderer = renderer;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.d3web.we.kdom.KnowWEType#isAssignableFromType(java.lang.Class)
-	 */
-	@Override
-	public boolean isAssignableFromType(Class<? extends Type> clazz) {
-		return clazz.isAssignableFrom(this.getClass());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.d3web.we.kdom.KnowWEType#isType(java.lang.Class)
-	 */
-	@Override
-	public boolean isType(Class<? extends Type> clazz) {
-		return clazz.equals(this.getClass());
-	}
-
 	@Override
 	public void init(Type[] path) {
 		// do nothing here for default
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.d3web.we.kdom.Type#isLeafType()
-	 */
-	@Override
-	public boolean isLeafType() {
-		List<Type> types = getChildrenTypes();
-		return types == null || types.size() == 0;
 	}
 
 	@Override

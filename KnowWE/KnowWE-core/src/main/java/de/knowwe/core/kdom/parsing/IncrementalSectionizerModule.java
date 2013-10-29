@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 public class IncrementalSectionizerModule implements SectionizerModule {
@@ -126,7 +127,7 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 	private boolean isAllowedToReuse(Section<?> father, Type type, SectionFinderResult result) {
 		return !father.getArticle().isFullParse()
 				&& result.getClass().equals(SectionFinderResult.class)
-				&& !(type.isLeafType());
+				&& !Types.isLeafType(type);
 	}
 
 }
