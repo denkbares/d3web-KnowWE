@@ -39,7 +39,7 @@ public class TagHandlerAttributeSubTreeHandler extends SubtreeHandler<TagHandler
 	public static final String ATTRIBUTE_MAP = "TagHandler.attributeMap";
 
 	public TagHandlerAttributeSubTreeHandler() {
-		super(true);
+		super(false);
 	}
 
 	@Override

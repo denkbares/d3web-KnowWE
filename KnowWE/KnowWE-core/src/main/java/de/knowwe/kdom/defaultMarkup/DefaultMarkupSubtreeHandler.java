@@ -38,7 +38,7 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 	private final DefaultMarkup markup;
 
 	public DefaultMarkupSubtreeHandler(DefaultMarkup markup) {
-		super(true);
+		super(false);
 		this.markup = markup;
 	}
 

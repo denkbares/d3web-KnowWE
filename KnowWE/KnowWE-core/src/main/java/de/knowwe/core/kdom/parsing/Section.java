@@ -1041,7 +1041,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	private boolean isMatchingPackageName(Article article, SubtreeHandler<?> h) {
 
 		// ignore: compile always but only for the article of this section
-		if (h.isIgnoringPackageCompile() || !type.isPackageCompile()) {
+		if (!h.isPackageCompile() || !type.isPackageCompile()) {
 			return article.getTitle().equals(getTitle());
 		}
 		// auto: compile always

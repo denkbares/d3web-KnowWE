@@ -28,7 +28,7 @@ public abstract class PackageCompileType extends AbstractType implements Package
 	private static class PackageCompileHandler extends SubtreeHandler<PackageCompileType> {
 
 		public PackageCompileHandler() {
-			super(true);
+			super(false);
 			this.unregisterAllConstraintModules();
 			this.registerConstraintModule(0, new CompileHandlerConstraint());
 		}

@@ -47,6 +47,10 @@ public class TagsContent extends XMLContent {
 	 */
 	private class TagsContentSubtreeHandler extends SubtreeHandler<TagsContent> {
 
+		public TagsContentSubtreeHandler() {
+			super(false);
+		}
+
 		@Override
 		public Collection<Message> create(Article article, Section<TagsContent> section) {
 
@@ -57,11 +61,6 @@ public class TagsContent extends XMLContent {
 			TaggingMangler.getInstance().registerTags(article.getTitle(), tags);
 
 			return new ArrayList<Message>(0);
-		}
-
-		@Override
-		public boolean isIgnoringPackageCompile() {
-			return true;
 		}
 	}
 }

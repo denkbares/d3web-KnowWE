@@ -40,10 +40,6 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  */
 public class KnowledgeBaseTermDefinitionRegisterHandler extends SubtreeHandler<KnowledgeBaseType> {
 
-	public KnowledgeBaseTermDefinitionRegisterHandler() {
-		super(false);
-	}
-
 	@Override
 	public Collection<Message> create(Article article, Section<KnowledgeBaseType> section) {
 

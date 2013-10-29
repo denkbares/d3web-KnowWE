@@ -42,7 +42,7 @@ public abstract class RDF2GoSubtreeHandler<T extends Type> extends
 		SubtreeHandler<T> {
 
 	public RDF2GoSubtreeHandler() {
-		super(true);
+		super(false);
 		this.registerConstraintModule(new RDF2GoHandlerConstraint<T>());
 		this.registerConstraintModule(new SuccessorNotReusedConstraint<T>());
 	}

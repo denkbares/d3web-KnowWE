@@ -78,7 +78,7 @@ public class AnnotationType extends AbstractType {
 	private class CheckContentExistsHandler extends SubtreeHandler<AnnotationType> {
 
 		public CheckContentExistsHandler() {
-			super(true);
+			super(false);
 		}
 
 		@Override

@@ -186,7 +186,7 @@ public class AbstractXMLType extends AbstractType {
 	static class RegisterPackageDefinitionHandler extends SubtreeHandler<AbstractXMLType> {
 
 		public RegisterPackageDefinitionHandler() {
-			super(true);
+			super(false);
 			this.registerConstraintModule(new IgnorePackageConstraint());
 		}
 

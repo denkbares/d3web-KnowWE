@@ -31,7 +31,7 @@ import de.knowwe.core.report.Messages;
 public class AddMarkupSectionToPackagesHandler extends SubtreeHandler<DefaultMarkupType> {
 
 	public AddMarkupSectionToPackagesHandler() {
-		super(true);
+		super(false);
 	}
 
 	@Override

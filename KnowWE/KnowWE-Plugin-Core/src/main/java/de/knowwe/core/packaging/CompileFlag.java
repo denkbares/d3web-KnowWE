@@ -118,10 +118,6 @@ public class CompileFlag extends DefaultMarkupType {
 
 	private class CompileFlagTermDefinitionRegisterHandler extends SubtreeHandler<CompileFlag> {
 
-		public CompileFlagTermDefinitionRegisterHandler() {
-			super(false);
-		}
-
 		@Override
 		public Collection<Message> create(Article article, Section<CompileFlag> section) {
 

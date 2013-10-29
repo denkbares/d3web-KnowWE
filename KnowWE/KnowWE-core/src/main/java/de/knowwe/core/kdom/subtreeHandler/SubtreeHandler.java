@@ -43,7 +43,7 @@ import de.knowwe.core.report.Message;
  */
 public abstract class SubtreeHandler<T extends Type> {
 
-	private boolean ignorePackageCompile;
+	private boolean packageCompile;
 
 	private final List<ConstraintModule<T>> constraintModulesDONT = new ArrayList<ConstraintModule<T>>();
 	private final List<ConstraintModule<T>> constraintModulesDO = new ArrayList<ConstraintModule<T>>();
@@ -51,12 +51,12 @@ public abstract class SubtreeHandler<T extends Type> {
 	/**
 	 * Creates a new SubtreeHandler.
 	 * 
-	 * @param ignorePackageCompile: If the handler ignores package compile, it
-	 *        will always run independently of any packages, but only for the
+	 * @param packageCompile: If the handler not uses package compile (false),
+	 *        it will always run independently of any packages, but only for the
 	 *        article, the section directly belongs to.
 	 */
-	public SubtreeHandler(boolean ignorePackageCompile) {
-		setIgnorePackageCompile(ignorePackageCompile);
+	public SubtreeHandler(boolean packageCompile) {
+		setPackageCompile(packageCompile);
 		registerConstraintModule(new CreateConstraintsDO<T>(this));
 		registerConstraintModule(new CreateConstraintsDONT<T>());
 		registerConstraintModule(new DestroyConstraintsDO<T>());
@@ -64,39 +64,41 @@ public abstract class SubtreeHandler<T extends Type> {
 	}
 
 	/**
-	 * Creates a new SubtreeHandler, that does not ignore package compilation.
+	 * Creates a new SubtreeHandler, that does use package compilation.
 	 */
 	public SubtreeHandler() {
-		this(false);
+		this(true);
 	}
 
 	/**
-	 * If the handler ignores package compile, it will always run independently
-	 * of any packages, but only for the article, the section directly belongs
-	 * to.
+	 * Defines if the subtree handler is package compiled or ignored. If false,
+	 * the handler shall be ignored by the package compiling. If a handler is
+	 * ignored by package compiling, compile independently of any packages, but
+	 * only for the article, the section directly belongs to.
 	 * 
 	 * @created 21.01.2011
 	 */
-	public void setIgnorePackageCompile(boolean ignore) {
-		this.ignorePackageCompile = ignore;
+	public void setPackageCompile(boolean packageCompile) {
+		this.packageCompile = packageCompile;
 	}
 
 	/**
-	 * If the handler ignores package compile, it will always run independently
-	 * of any packages, but only for the article, the section directly belongs
-	 * to.
+	 * Returns if the subtree handler is package compiled or ignored. If false,
+	 * the handler shall be ignored by the package compiling. If a handler is
+	 * ignored by package compiling, compile independently of any packages, but
+	 * only for the article, the section directly belongs to.
 	 * 
 	 * @created 21.01.2011
 	 * @returns whether the handler ignores package compile or not.
 	 */
-	public boolean isIgnoringPackageCompile() {
-		return this.ignorePackageCompile;
+	public boolean isPackageCompile() {
+		return this.packageCompile;
 	}
 
 	/**
 	 * If this method returns false, the method
-	 * <tt>create(Article, Section)</tt> in this handler will not be
-	 * called in the revising of the article.
+	 * <tt>create(Article, Section)</tt> in this handler will not be called in
+	 * the revising of the article.
 	 * <p/>
 	 * You can influence the outcome of this method by registering
 	 * ConstraintModules to the SubreeHandler.
@@ -135,8 +137,8 @@ public abstract class SubtreeHandler<T extends Type> {
 
 	/**
 	 * Revises this section or subtree and creates whatever needs to be created,
-	 * if the method <tt>needsToCreate(Article, Section)</tt> of this
-	 * handler returns true.
+	 * if the method <tt>needsToCreate(Article, Section)</tt> of this handler
+	 * returns true.
 	 * 
 	 * @param article is the article that calls this method... not necessarily
 	 *        the article the Section is hooked into directly, since Sections
@@ -189,9 +191,9 @@ public abstract class SubtreeHandler<T extends Type> {
 	/**
 	 * This method is called after the creation of the new KDOM (but prior to
 	 * the revising of the new KDOM) on the Sections of the last KDOM, if the
-	 * method <tt>needsToDestroy(Article, Section)</tt> of this handler
-	 * returns true. If you are implementing an incremental SubtreeHandler, you
-	 * can overwrite this method to implement one, that removes everything the
+	 * method <tt>needsToDestroy(Article, Section)</tt> of this handler returns
+	 * true. If you are implementing an incremental SubtreeHandler, you can
+	 * overwrite this method to implement one, that removes everything the
 	 * Section created in the last version of the article. This way you can,
 	 * later on in the revise-step, simply add the stuff from the newly created
 	 * Sections in the new KDOM to the remaining stuff from the last version of

@@ -47,7 +47,7 @@ public class PackageType extends DefaultMarkupType {
 	private static class SetDefaultPackageHandler extends SubtreeHandler<PackageType> {
 
 		public SetDefaultPackageHandler() {
-			super(true);
+			super(false);
 		}
 
 		@Override

@@ -39,10 +39,6 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class DefaultMarkupTermReferenceRegisterHandler extends SubtreeHandler<DefaultMarkupType> {
 
-	public DefaultMarkupTermReferenceRegisterHandler() {
-		super(false);
-	}
-
 	@Override
 	public Collection<Message> create(Article article, Section<DefaultMarkupType> section) {
 		// register packages as reference

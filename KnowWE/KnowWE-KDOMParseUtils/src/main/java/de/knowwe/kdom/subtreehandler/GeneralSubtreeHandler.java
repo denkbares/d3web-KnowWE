@@ -14,7 +14,7 @@ import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 public abstract class GeneralSubtreeHandler<T extends Type> extends SubtreeHandler<T> {
 
 	public GeneralSubtreeHandler() {
-		super(true);
+		super(false);
 	}
 
 }
