@@ -539,7 +539,7 @@ public class PackageManager implements EventListener {
 					Set<String> compilingArticles = getCompilingArticles(sectionOfPackage);
 					List<Section<?>> nodes = Sections.getSubtreePostOrder(sectionOfPackage);
 					for (Section<?> node : nodes) {
-						if (node.get().isIgnoringPackageCompile()) continue;
+						if (!node.get().isPackageCompile()) continue;
 						for (String title : new LinkedList<String>(node.getReusedBySet())) {
 							if (!compilingArticles.contains(title)) {
 								node.setReusedBy(title, false);

@@ -103,7 +103,7 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler<DefaultMarkupTyp
 	public void destroy(Article article, Section<DefaultMarkupType> markupSection) {
 		// unregister section in the package manager
 		// TODO: refactor this to somewhere else
-		if (!markupSection.get().isIgnoringPackageCompile()) {
+		if (markupSection.get().isPackageCompile()) {
 			Environment.getInstance().getPackageManager(article.getWeb()).removeSectionFromAllPackages(
 					markupSection);
 		}

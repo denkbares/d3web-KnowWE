@@ -152,13 +152,17 @@ public interface Type {
 	/*
 	 * Methods related to compilation
 	 */
+
+	// TODO: is this method really required?!
 	boolean isOrderSensitive();
 
-	boolean isIgnoringPackageCompile();
-
-	void setIgnorePackageCompile(boolean ignorePackageCompile);
-
-	void setOrderSensitive(boolean orderSensitive);
+	/**
+	 * Default value for package compile is true. If false, the type shall be
+	 * ignored by the package compiling. If a type is ignored by package
+	 * compiling, all SubtreeHandlers registered to this type will always
+	 * compile, but only for the article the section is directly hooked in.
+	 */
+	boolean isPackageCompile();
 
 	/*
 	 * Management of SubtreeHandlers

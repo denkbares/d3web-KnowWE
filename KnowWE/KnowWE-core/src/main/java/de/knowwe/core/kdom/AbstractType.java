@@ -64,10 +64,10 @@ public abstract class AbstractType implements Type, Sectionizable {
 	private boolean isOrderSensitive = false;
 
 	/**
-	 * a flag to determine if SubtreeHandlers registered to this type should
-	 * ignore package compile
+	 * a flag to determine if SubtreeHandlers registered to this type should be
+	 * package compile (true) or ignored by package compile (false)
 	 */
-	private boolean ignorePackageCompile = false;
+	private boolean packageCompile = true;
 
 	/**
 	 * determines whether there is a enumeration of siblings defined for this
@@ -117,10 +117,10 @@ public abstract class AbstractType implements Type, Sectionizable {
 		String ignoreFlag = "packaging.ignorePackages";
 		if (resourceBundle.containsKey(ignoreFlag)) {
 			if (resourceBundle.getString(ignoreFlag).contains("true")) {
-				this.ignorePackageCompile = true;
+				this.packageCompile = false;
 			}
 			if (resourceBundle.getString(ignoreFlag).contains("false")) {
-				this.ignorePackageCompile = false;
+				this.packageCompile = true;
 			}
 		}
 	}
@@ -313,19 +313,13 @@ public abstract class AbstractType implements Type, Sectionizable {
 		return isOrderSensitive;
 	}
 
-	@Override
 	public void setOrderSensitive(boolean orderSensitive) {
 		this.isOrderSensitive = orderSensitive;
 	}
 
-	/**
-	 * If a type ignores package compile, all SubtreeHandlers registered to this
-	 * type will always compile, but only for the article the section is
-	 * directly hooked in.
-	 */
 	@Override
-	public boolean isIgnoringPackageCompile() {
-		return ignorePackageCompile;
+	public boolean isPackageCompile() {
+		return packageCompile;
 	}
 
 	/**
@@ -333,9 +327,11 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * type will always compile, but only for the article the section is
 	 * directly hooked in.
 	 */
-	@Override
 	public void setIgnorePackageCompile(boolean ignorePackageCompile) {
-		this.ignorePackageCompile = ignorePackageCompile;
+		this.setPackageCompile(!ignorePackageCompile);
 	}
 
+	public void setPackageCompile(boolean packageCompile) {
+		this.packageCompile = packageCompile;
+	}
 }

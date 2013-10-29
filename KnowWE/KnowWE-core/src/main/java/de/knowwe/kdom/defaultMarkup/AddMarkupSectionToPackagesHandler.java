@@ -36,7 +36,7 @@ public class AddMarkupSectionToPackagesHandler extends SubtreeHandler<DefaultMar
 
 	@Override
 	public Collection<Message> create(Article article, Section<DefaultMarkupType> section) {
-		if (!section.get().isIgnoringPackageCompile()) {
+		if (section.get().isPackageCompile()) {
 			PackageManager packageManager = Environment.getInstance().getPackageManager(
 					article.getWeb());
 			for (String packageName : DefaultMarkupType.getPackages(section)) {

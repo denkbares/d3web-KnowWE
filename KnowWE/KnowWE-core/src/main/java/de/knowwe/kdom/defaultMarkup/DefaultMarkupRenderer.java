@@ -164,7 +164,7 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	private void renderCompileWarning(Section<?> section, RenderResult string) {
 		// add warning if section is not compiled
-		if (!section.get().isIgnoringPackageCompile()) {
+		if (section.get().isPackageCompile()) {
 
 			Set<String> compilingArticles = Environment.getInstance().getPackageManager(
 					section.getWeb()).getCompilingArticles(section);

@@ -212,7 +212,7 @@ public class AbstractXMLType extends AbstractType {
 
 			@Override
 			public boolean violatedConstraints(Article article, Section<AbstractXMLType> s) {
-				return s.get().isIgnoringPackageCompile();
+				return !s.get().isPackageCompile();
 			}
 
 		}
