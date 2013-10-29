@@ -63,7 +63,8 @@ public class LiteralType extends AbstractType {
 		Section<XSDPart> xsdPartSection = Sections.findChildOfType(section, XSDPart.class);
 		Section<LanguageTagPart> langTagPartSection = Sections.findChildOfType(section,
 				LanguageTagPart.class);
-		String literal = literalPartSection.get().getLiteral(literalPartSection);
+		String literal = literalPartSection.get()
+				.getLiteral(literalPartSection);
 		if (langTagPartSection != null) {
 			return core.createLanguageTaggedLiteral(literal,
 					langTagPartSection.get().getTag(langTagPartSection));
@@ -105,7 +106,8 @@ public class LiteralType extends AbstractType {
 		}
 
 		public String getLiteral(Section<LiteralPart> section) {
-			return Strings.unquote(section.getText(), '\'');
+			// unquote single and double quotes
+			return Strings.unquote(Strings.unquote(section.getText(), '\''));
 		}
 	}
 
