@@ -37,12 +37,18 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 public class CSSDanglingType extends AbstractType {
 
 	public CSSDanglingType() {
-		this.setSectionFinder(new RegexSectionFinder("(?:%|/)%"));
+		this.setSectionFinder(new RegexSectionFinder("(?:%|/)%[^\\s]*"));
 		this.setRenderer(new Renderer() {
 
 			@Override
 			public void render(Section<?> section, UserContext user, RenderResult result) {
-				result.appendJSPWikiMarkup(section.getText());
+				String text = section.getText();
+				if (text.startsWith("%%(") || text.equals("%%") || text.equals("/%")) {
+					result.append(text);
+				}
+				else {
+					result.appendJSPWikiMarkup(text);
+				}
 			}
 		});
 	}
