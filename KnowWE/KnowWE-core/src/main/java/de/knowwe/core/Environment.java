@@ -183,7 +183,7 @@ public class Environment {
 			Plugins.initCSS();
 		}
 		catch (Throwable e) {
-			String msg = "Invalid initialization of the wiki type tree. This is caused by an invalid wiki plugin. Wiki is in unbstable state. Please exit and correct before using the wiki.";
+			String msg = "Invalid initialization of the wiki type tree. This is caused by an invalid wiki plugin. Wiki is in unstable state. Please exit and correct before using the wiki.";
 			Logger.getLogger(getClass().getName()).log(Level.SEVERE, msg, e);
 			throw new IllegalStateException(msg, e);
 		}
