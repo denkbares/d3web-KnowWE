@@ -38,14 +38,14 @@ public class SectionContentType extends AbstractType {
 
 	@Override
 	public void init(Type[] path) {
+		for (Type type : RootType.getInstance().getChildrenTypes()) {
+			this.addChildType(type);
+		}
 		ParagraphType paragraph = Types.getLastOfType(path, ParagraphType.class);
 		if (paragraph == null) {
 			paragraph = new ParagraphType();
 		}
 		addChildType(paragraph);
-		for (Type type : RootType.getInstance().getChildrenTypes()) {
-			this.addChildType(type);
-		}
 	}
 
 }
