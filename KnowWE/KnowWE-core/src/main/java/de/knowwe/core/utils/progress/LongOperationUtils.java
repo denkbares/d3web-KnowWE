@@ -29,7 +29,7 @@ public class LongOperationUtils {
 
 				@Override
 				public Thread newThread(Runnable r) {
-					Thread thread = new Thread(r, "kpi-calculation");
+					Thread thread = new Thread(r, "long-operation-thread");
 					thread.setPriority(Thread.MIN_PRIORITY);
 					return thread;
 				}

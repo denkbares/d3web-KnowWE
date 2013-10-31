@@ -23,16 +23,17 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import de.d3web.collections.PriorityList;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.JPFExtension;
 import de.d3web.plugin.PluginManager;
 import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.append.PageAppendHandler;
+import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.parsing.IncrementalSectionizerModule;
 import de.knowwe.core.kdom.parsing.SectionizerModule;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
@@ -69,6 +70,17 @@ public class Plugins {
 	public static final String EXTENDED_POINT_Renderer = "Renderer";
 	public static final String EXTENDED_POINT_Annotation = "Annotation";
 	public static final String EXTENDED_POINT_SEARCHPROVIDER = "SearchProvider";
+	public static final String EXTENDED_POINT_COMPILER = "Compiler";
+
+	private static <T> List<T> getSingeltons(String point, Class<T> clazz) {
+		PluginManager pm = PluginManager.getInstance();
+		Extension[] extensions = pm.getExtensions(EXTENDED_PLUGIN_ID, point);
+		List<T> result = new ArrayList<T>();
+		for (Extension e : extensions) {
+			result.add(clazz.cast(e.getSingleton()));
+		}
+		return result;
+	}
 
 	/**
 	 * Returns all plugged Instantiations These are used to initialize plugins.
@@ -76,13 +88,22 @@ public class Plugins {
 	 * @return List of all Instantiations
 	 */
 	public static List<Instantiation> getInstantiations() {
-		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_Instantiation);
-		List<Instantiation> ret = new ArrayList<Instantiation>();
+		return getSingeltons(EXTENDED_POINT_Instantiation, Instantiation.class);
+	}
+
+	/**
+	 * Returns all plugged Instantiations These are used to initialize plugins.
+	 * 
+	 * @return List of all Instantiations
+	 */
+	public static PriorityList<Double, Compiler> getCompilers() {
+		PluginManager pm = PluginManager.getInstance();
+		Extension[] extensions = pm.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_COMPILER);
+		PriorityList<Double, Compiler> result = new PriorityList<Double, Compiler>(5d);
 		for (Extension e : extensions) {
-			ret.add((Instantiation) e.getSingleton());
+			result.add(e.getPriority(), Compiler.class.cast(e.getSingleton()));
 		}
-		return ret;
+		return result;
 	}
 
 	/**
@@ -90,13 +111,7 @@ public class Plugins {
 	 * web. Usually be clicking on pregenerated links on the wiki pages.
 	 */
 	public static List<Action> getKnowWEAction() {
-		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_KnowWEAction);
-		List<Action> ret = new ArrayList<Action>();
-		for (Extension e : extensions) {
-			ret.add((Action) e.getSingleton());
-		}
-		return ret;
+		return getSingeltons(EXTENDED_POINT_KnowWEAction, Action.class);
 	}
 
 	/**
@@ -105,13 +120,8 @@ public class Plugins {
 	 * @return List of KnowledgeRepresentationHandlers
 	 */
 	public static List<KnowledgeRepresentationHandler> getKnowledgeRepresentationHandlers() {
-		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_KnowledgeRepresentationHandler);
-		List<KnowledgeRepresentationHandler> ret = new ArrayList<KnowledgeRepresentationHandler>();
-		for (Extension e : extensions) {
-			ret.add((KnowledgeRepresentationHandler) e.getNewInstance());
-		}
-		return ret;
+		return getSingeltons(EXTENDED_POINT_KnowledgeRepresentationHandler,
+				KnowledgeRepresentationHandler.class);
 	}
 
 	public static void addChildrenTypesToType(Type type, Type[] path) {
@@ -189,14 +199,7 @@ public class Plugins {
 	}
 
 	public static List<SectionizerModule> getSectionizerModules() {
-		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_SectionizerModule);
-		List<SectionizerModule> sm = new ArrayList<SectionizerModule>();
-		for (Extension e : extensions) {
-			sm.add((SectionizerModule) e.getSingleton());
-		}
-		sm.add(new IncrementalSectionizerModule());
-		return sm;
+		return getSingeltons(EXTENDED_POINT_SectionizerModule, SectionizerModule.class);
 	}
 
 	/**
@@ -209,13 +212,7 @@ public class Plugins {
 	 * @return List of TagHandlers
 	 */
 	public static List<TagHandler> getTagHandlers() {
-		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_TagHandler);
-		List<TagHandler> ret = new ArrayList<TagHandler>();
-		for (Extension e : extensions) {
-			ret.add((TagHandler) e.getSingleton());
-		}
-		return ret;
+		return getSingeltons(EXTENDED_POINT_TagHandler, TagHandler.class);
 	}
 
 	/**
@@ -228,13 +225,7 @@ public class Plugins {
 	 * @return List of PageAppendHandlers
 	 */
 	public static List<PageAppendHandler> getPageAppendHandlers() {
-		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_PageAppendHandler);
-		List<PageAppendHandler> ret = new ArrayList<PageAppendHandler>();
-		for (Extension e : extensions) {
-			ret.add((PageAppendHandler) e.getSingleton());
-		}
-		return ret;
+		return getSingeltons(EXTENDED_POINT_PageAppendHandler, PageAppendHandler.class);
 	}
 
 	/**
@@ -244,13 +235,7 @@ public class Plugins {
 	 * @return List of Annotations
 	 */
 	public static List<Annotation> getAnnotations() {
-		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_Annotation);
-		List<Annotation> ret = new ArrayList<Annotation>();
-		for (Extension e : extensions) {
-			ret.add((Annotation) e.getSingleton());
-		}
-		return ret;
+		return getSingeltons(EXTENDED_POINT_Annotation, Annotation.class);
 	}
 
 	/**

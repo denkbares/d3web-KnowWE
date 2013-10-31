@@ -18,12 +18,11 @@
  */
 package de.knowwe.core.kdom;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+
+import de.d3web.collections.PriorityList;
 
 /**
  * Auxiliary data structure that helps e.g. to build up the list of children
@@ -42,12 +41,8 @@ public class TypePriorityList {
 	 * the final total order of the types the types within a list have
 	 * descending order.
 	 */
-	private final SortedMap<Double, List<Type>> types = new TreeMap<Double, List<Type>>();
-
-	/**
-	 * Caches the types' order as defined by the priority map.
-	 */
-	private List<Type> cachedTypesOrder = null;
+	private final PriorityList<Double, Type> types = new PriorityList<Double, Type>(
+			DEFAULT_PRIORITY);
 
 	/**
 	 * Replaces the first type with the passed type where the type is instance
@@ -60,20 +55,10 @@ public class TypePriorityList {
 	 * @return true if a replacement has been made
 	 */
 	public boolean replaceType(Type newType, Class<? extends Type> classToBeReplaced) {
-		Set<Double> keySet = types.keySet();
-		for (Double priorityValue : keySet) {
-			List<Type> typesForPriorityValue = types.get(priorityValue);
-			Type toReplace = null;
-			for (Type type : typesForPriorityValue) {
-				if (classToBeReplaced.isAssignableFrom(type.getClass())) {
-					toReplace = type;
-					break;
-				}
-			}
-			if (toReplace != null) {
-				int index = typesForPriorityValue.indexOf(toReplace);
-				typesForPriorityValue.set(index, newType);
-				clearCache();
+		for (int i = 0; i < types.size(); i++) {
+			Type type = types.get(i);
+			if (classToBeReplaced.isAssignableFrom(type.getClass())) {
+				types.set(i, newType);
 				return true;
 			}
 		}
@@ -87,16 +72,7 @@ public class TypePriorityList {
 	 * @return
 	 */
 	public List<Type> getTypes() {
-		if (cachedTypesOrder == null) {
-			List<Type> typesOrder = new ArrayList<Type>();
-			Set<Double> keySet = types.keySet();
-			for (Double priorityValue : keySet) {
-				List<Type> typesForPriorityValue = types.get(priorityValue);
-				typesOrder.addAll(typesForPriorityValue);
-			}
-			cachedTypesOrder = Collections.unmodifiableList(typesOrder);
-		}
-		return cachedTypesOrder;
+		return Collections.unmodifiableList(types);
 	}
 
 	/**
@@ -106,11 +82,6 @@ public class TypePriorityList {
 	 */
 	public void clear() {
 		types.clear();
-		clearCache();
-	}
-
-	private void clearCache() {
-		this.cachedTypesOrder = null;
 	}
 
 	/**
@@ -123,13 +94,7 @@ public class TypePriorityList {
 	 * @param type the type to add
 	 */
 	public void addType(double priority, Type t) {
-		List<Type> list = types.get(priority);
-		if (list == null) {
-			list = new ArrayList<Type>();
-			types.put(priority, list);
-		}
-		list.add(t);
-		clearCache();
+		types.add(priority, t);
 	}
 
 	/**
@@ -150,15 +115,12 @@ public class TypePriorityList {
 	 * @param t
 	 */
 	public void addLast(Type t) {
-		Double lastKey = DEFAULT_PRIORITY - 1;
-		if (types.keySet().size() != 0) {
-			lastKey = types.lastKey();
+		if (types.isEmpty()) {
+			types.add(t);
 		}
-		Double newLastKey = lastKey + 1;
-		List<Type> set = new ArrayList<Type>();
-		set.add(t);
-		types.put(newLastKey, set);
-		clearCache();
+		else {
+			types.add(types.getHighestPriority() + 1, t);
+		}
 	}
 
 	/**
@@ -170,20 +132,12 @@ public class TypePriorityList {
 	 * @return
 	 */
 	public Type removeType(Class<? extends Type> c) {
-		Set<Double> keySet = types.keySet();
-		for (Double priorityValue : keySet) {
-			List<Type> typesForPriorityValue = types.get(priorityValue);
-			Type toRemove = null;
-			for (Type type : typesForPriorityValue) {
-				if (c.isAssignableFrom(type.getClass())) {
-					toRemove = type;
-					break;
-				}
-			}
-			if (toRemove != null) {
-				typesForPriorityValue.remove(toRemove);
-				clearCache();
-				return toRemove;
+		Iterator<Type> iterator = types.iterator();
+		while (iterator.hasNext()) {
+			Type type = (Type) iterator.next();
+			if (c.isAssignableFrom(type.getClass())) {
+				iterator.remove();
+				return type;
 			}
 		}
 		return null;

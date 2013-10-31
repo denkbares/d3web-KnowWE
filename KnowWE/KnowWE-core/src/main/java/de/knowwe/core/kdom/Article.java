@@ -209,6 +209,14 @@ public class Article {
 		currentStartTime = System.currentTimeMillis();
 	}
 
+	public void recompile() {
+		this.postPreDestroy = false;
+		this.postDestroy = false;
+		preCompile();
+		compile();
+		postCompile();
+	}
+
 	private void sectionizeArticle(String text) {
 
 		// create Sections recursively

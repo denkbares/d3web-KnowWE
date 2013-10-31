@@ -24,13 +24,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.ConstraintModule;
 import de.knowwe.core.compile.ConstraintModule.Operator;
 import de.knowwe.core.compile.ConstraintModule.Purpose;
+import de.knowwe.core.compile.DefaultCompiler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Abstract class for a SubtreeHandler. This handler has to be registered to a
@@ -41,7 +45,7 @@ import de.knowwe.core.report.Message;
  * @author Jochen, Albrecht
  * 
  */
-public abstract class SubtreeHandler<T extends Type> {
+public abstract class SubtreeHandler<T extends Type> implements CompileScript<DefaultCompiler, T> {
 
 	private boolean packageCompile;
 
@@ -133,6 +137,20 @@ public abstract class SubtreeHandler<T extends Type> {
 		// if non of the Operator.COMPILE_IF_VIOLATED modules fires, the
 		// create() method will not be called.
 		return false;
+	}
+
+	@Override
+	public Class<DefaultCompiler> getCompilerClass() {
+		return DefaultCompiler.class;
+	}
+
+	@Override
+	public void compile(DefaultCompiler compiler, Section<T> section) {
+		for (Article article : KnowWEUtils.getCompilingArticles(section)) {
+			Collection<Message> messages = create(article, section);
+			Messages.storeMessages(article, section, getClass(), messages);
+			section.setCompiledBy(article.getTitle(), this, true);
+		}
 	}
 
 	/**

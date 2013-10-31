@@ -440,4 +440,22 @@
 		<parameter id="scope" value="DashSubtree" />
 	</extension>	
 
+	<!-- extensions for compilers -->
+	
+	<extension plugin-id="KnowWE-Plugin-Core" point-id="Compiler" id="DefaultCompiler">
+		<parameter id="class" value="de.knowwe.core.compile.DefaultCompiler" />
+		<parameter id="name" value="DefaultCompiler" />
+		<parameter id="description" value="Default compiler for all subtree handlers; provides compatibility mode and basic compile scripts." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>	
+
+	<extension plugin-id="KnowWE-Plugin-Core" point-id="Compiler" id="PackageCompiler">
+		<parameter id="class" value="de.knowwe.core.compile.PackageCompiler" />
+		<parameter id="name" value="PackageCompiler" />
+		<parameter id="description" value="Compiler to handle package definitions and defining the package manager." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="2" />
+	</extension>	
+
 </plugin>
