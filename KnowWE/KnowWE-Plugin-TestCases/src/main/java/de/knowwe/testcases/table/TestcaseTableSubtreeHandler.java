@@ -18,6 +18,7 @@
  */
 package de.knowwe.testcases.table;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.LinkedList;
@@ -82,7 +83,7 @@ public class TestcaseTableSubtreeHandler extends SubtreeHandler<TestcaseTable> {
 			if (condition == null) continue;
 
 			// add multiple checks for and-conditions
-			List<Check> checks = new LinkedList<Check>();
+			List<Check> checks = new ArrayList<Check>();
 			conditionsForRTC.put(rtc, checks);
 			if (condition instanceof CondAnd) {
 				List<Section<Conjunct>> parts = Sections.findChildrenOfType(condSec, Conjunct.class);
@@ -125,7 +126,8 @@ public class TestcaseTableSubtreeHandler extends SubtreeHandler<TestcaseTable> {
 		stc.setName(name);
 		STCWrapper wrapper = new STCWrapper(stc);
 		for (RatedTestCase rtc : conditionsForRTC.keySet()) {
-			wrapper.addChecks(rtc, conditionsForRTC.get(rtc));
+			List<Check> checks = conditionsForRTC.get(rtc);
+			wrapper.addChecks(rtc, checks.toArray(new Check[checks.size()]));
 		}
 		SingleTestCaseProvider provider = new SingleTestCaseProvider(
 				article, Sections.findAncestorOfType(s, DefaultMarkupType.class), wrapper, name);
