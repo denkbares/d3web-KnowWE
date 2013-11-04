@@ -55,6 +55,7 @@ import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Sectionizer;
 import de.knowwe.core.kdom.parsing.SectionizerModule;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.taghandler.TagHandler;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
@@ -74,6 +75,13 @@ import de.knowwe.plugin.Plugins;
  */
 
 public class Environment {
+
+	/**
+	 * Stores additional renderers if renderers are plugged via the plugin framework
+	 * The renderer plugged with highest priority _might_ decided to look up in this list 
+	 * and call other renderers
+	 */
+	private final Map<Type, List<Renderer>> additionalRenderers = new HashMap<Type, List<Renderer>>();
 
 	/**
 	 * An article manager for each web. In case of JSPWiki there is only on web
@@ -107,7 +115,7 @@ public class Environment {
 	/**
 	 * Holding the default tag handlers of KnowWE
 	 */
-	private final HashMap<String, TagHandler> tagHandlers = new HashMap<String, TagHandler>();
+	private final Map<String, TagHandler> tagHandlers = new HashMap<String, TagHandler>();
 
 	/**
 	 * The {@link CompilationMode} of KnowWE:
@@ -390,7 +398,6 @@ public class Environment {
 			Plugins.addChildrenTypesToType(type, path);
 			Plugins.addSubtreeHandlersToType(type, path);
 			Plugins.addRendererToType(type, path);
-			Plugins.addSurroundingRendererToType(type, path);
 			Plugins.addAnnotations(type, path);
 
 			// initialize type itself
@@ -434,6 +441,46 @@ public class Environment {
 
 	public WikiConnector getWikiConnector() {
 		return this.wikiConnector;
+	}
+
+	/**
+	 * Returns from the prioritized list of plugged renderers for the given type
+	 * the renderer positioned next in the priority list after the given
+	 * renderer. If the passed renderer is not contained in the given list, the
+	 * first renderer of the list is returned.
+	 * 
+	 * @created 04.11.2013
+	 * @param t
+	 * @param currentRenderer
+	 * @return
+	 */
+	public Renderer getNextRendererForType(Type t, Renderer currentRenderer) {
+		if (additionalRenderers.containsKey(t)) {
+			List<Renderer> pluggedRenderersForType = additionalRenderers.get(t);
+			if (pluggedRenderersForType != null) {
+				if (pluggedRenderersForType.contains(currentRenderer)) {
+					int currentIndex = pluggedRenderersForType.indexOf(currentRenderer);
+					if (pluggedRenderersForType.size() > currentIndex) {
+						return pluggedRenderersForType.get(currentIndex + 1);
+					}
+				}
+				else {
+					if (pluggedRenderersForType.size() > 0) {
+						return pluggedRenderersForType.get(0);
+					}
+				}
+			}
+		}
+
+		return null;
+	}
+
+	public void addRendererForType(Type t, Renderer r) {
+		if (!this.additionalRenderers.containsKey(t)) {
+			this.additionalRenderers.put(t, new ArrayList<Renderer>());
+		}
+		List<Renderer> renderersForType = this.additionalRenderers.get(t);
+		renderersForType.add(0, r);
 	}
 
 	/**
@@ -560,7 +607,7 @@ public class Environment {
 	 * 
 	 * @return HashMap holding the default tag handlers of KnowWE
 	 */
-	public HashMap<String, TagHandler> getDefaultTagHandlers() {
+	public Map<String, TagHandler> getDefaultTagHandlers() {
 		return tagHandlers;
 	}
 
