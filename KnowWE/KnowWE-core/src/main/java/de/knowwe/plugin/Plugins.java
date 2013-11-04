@@ -23,14 +23,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import de.d3web.collections.PriorityList;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.JPFExtension;
 import de.d3web.plugin.PluginManager;
 import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.append.PageAppendHandler;
-import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
@@ -43,6 +41,8 @@ import de.knowwe.kdom.defaultMarkup.AnnotationType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup.Annotation;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.defaultMarkup.UnknownAnnotationType;
+import de.knowwe.kdom.renderer.CompositeRenderer;
+import de.knowwe.kdom.renderer.SurroundingRenderer;
 import de.knowwe.knowRep.KnowledgeRepresentationHandler;
 
 /**
@@ -71,6 +71,7 @@ public class Plugins {
 	public static final String EXTENDED_POINT_Annotation = "Annotation";
 	public static final String EXTENDED_POINT_SEARCHPROVIDER = "SearchProvider";
 	public static final String EXTENDED_POINT_COMPILER = "Compiler";
+	private static final String EXTENDED_POINT_SURROUNDINGRENDERER = "SurroundingRenderer";
 
 	private static <T> List<T> getSingeltons(String point, Class<T> clazz) {
 		PluginManager pm = PluginManager.getInstance();
@@ -154,6 +155,30 @@ public class Plugins {
 		if (extensions.length >= 1) {
 			if (type instanceof AbstractType) {
 				((AbstractType) type).setRenderer((Renderer) extensions[0].getSingleton());
+			}
+			else {
+				throw new ClassCastException(
+						"renderers can only be plugged to types instances of 'AbstractType', but not to "
+								+ type.getClass().getName());
+			}
+		}
+	}
+
+	public static void addSurroundingRendererToType(Type type, Type[] path) {
+		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_SURROUNDINGRENDERER);
+		extensions = ScopeUtils.getMatchingExtensions(extensions, path);
+		if (extensions.length >= 1) {
+			if (type instanceof AbstractType) {
+				Renderer currentRenderer = ((AbstractType) type).getRenderer();
+				if (currentRenderer instanceof CompositeRenderer) {
+					((CompositeRenderer) currentRenderer).addRenderer((SurroundingRenderer) extensions[0].getSingleton());
+				}
+				else {
+					CompositeRenderer compRenderer = new CompositeRenderer(currentRenderer,
+							(SurroundingRenderer) extensions[0].getSingleton());
+					((AbstractType) type).setRenderer(compRenderer);
+				}
 			}
 			else {
 				throw new ClassCastException(

@@ -390,6 +390,7 @@ public class Environment {
 			Plugins.addChildrenTypesToType(type, path);
 			Plugins.addSubtreeHandlersToType(type, path);
 			Plugins.addRendererToType(type, path);
+			Plugins.addSurroundingRendererToType(type, path);
 			Plugins.addAnnotations(type, path);
 
 			// initialize type itself
