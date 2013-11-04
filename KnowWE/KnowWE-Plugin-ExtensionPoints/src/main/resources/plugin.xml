@@ -184,6 +184,17 @@
 		<parameter-def id="version" />
 	</extension-point>
 	
+	<extension-point id="SurroundingRenderer">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+		<parameter-def id="scope" multiplicity="one-or-more" />
+		<parameter-def id="script" multiplicity="any" />
+		<parameter-def id="css" multiplicity="any" />
+	</extension-point>
+	
 	
 
 </plugin>
