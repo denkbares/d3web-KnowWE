@@ -41,9 +41,16 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 public class SplitSectionFinderUnquoted implements SectionFinder {
 
 	private final String splitKey;
+	private final char[] quoteChars;
 
 	public SplitSectionFinderUnquoted(String key) {
 		this.splitKey = key;
+		this.quoteChars = new char[] { '"' };
+	}
+
+	public SplitSectionFinderUnquoted(String key, char[] quotes) {
+		this.splitKey = key;
+		this.quoteChars = quotes;
 	}
 
 	@Override
@@ -51,7 +58,7 @@ public class SplitSectionFinderUnquoted implements SectionFinder {
 			Section<?> father, Type type) {
 
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-		List<StringFragment> list = Strings.splitUnquoted(text, splitKey);
+		List<StringFragment> list = Strings.splitUnquoted(text, splitKey, quoteChars);
 		for (StringFragment stringFragment : list) {
 			result.add(new SectionFinderResult(stringFragment.getStartTrimmed(),
 					stringFragment.getEndTrimmed()));
