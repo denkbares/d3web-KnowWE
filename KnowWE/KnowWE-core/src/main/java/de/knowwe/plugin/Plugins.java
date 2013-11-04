@@ -30,6 +30,7 @@ import de.d3web.plugin.PluginManager;
 import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.append.PageAppendHandler;
+import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
@@ -101,9 +102,11 @@ public class Plugins {
 	public static PriorityList<Double, Compiler> getCompilers() {
 		PluginManager pm = PluginManager.getInstance();
 		Extension[] extensions = pm.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_COMPILER);
-		PriorityList<Double, Compiler> result = new PriorityList<Double, Compiler>(5d);
+		PriorityList<Double, Compiler> result = new PriorityList<Double, Compiler>(
+				5d);
 		for (Extension e : extensions) {
-			result.add(e.getPriority(), Compiler.class.cast(e.getSingleton()));
+			result.add(e.getPriority(),
+					Compiler.class.cast(e.getSingleton()));
 		}
 		return result;
 	}
