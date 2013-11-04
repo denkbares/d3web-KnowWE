@@ -13,6 +13,7 @@ import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.impl.AbstractModelFactory;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.ModelSet;
+import org.ontoware.rdf2go.model.QueryResultTable;
 import org.ontoware.rdf2go.model.node.URI;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Literal;
@@ -124,10 +125,8 @@ public class SesameSwiftOwlimModelFactory extends AbstractModelFactory {
 		return null;
 	}
 
-	// Only needed for 4.8.2
-	// @Override
-	// public QueryResultTable sparqlSelect(String url, String query) {
-	// System.out.println(url + " " + query);
-	// return null;
-	// }
+	@Override
+	public QueryResultTable sparqlSelect(String arg0, String arg1) {
+		throw new UnsupportedOperationException();
+	}
 }

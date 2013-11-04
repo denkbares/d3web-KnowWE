@@ -68,17 +68,17 @@
 		<dependency>
 			<groupId>org.semweb4j</groupId>
 			<artifactId>rdf2go.api</artifactId>
-			<version>4.7.4</version>
+			<version>4.8.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.semweb4j</groupId>
-			<artifactId>rdf2go.impl.sesame25</artifactId>
-			<version>4.7.4</version>
+			<artifactId>rdf2go.impl.sesame</artifactId>
+			<version>4.8.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-runtime-osgi</artifactId>
-			<version>2.5.1</version>
+			<version>2.6.10</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ontotext</groupId>
