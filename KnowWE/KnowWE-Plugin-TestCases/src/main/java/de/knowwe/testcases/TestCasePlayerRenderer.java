@@ -40,6 +40,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
+import de.d3web.core.session.values.DateValue;
 import de.d3web.core.utilities.NamedObjectComparator;
 import de.d3web.strings.Strings;
 import de.d3web.strings.Strings.Encoding;
@@ -343,9 +344,16 @@ public class TestCasePlayerRenderer implements Renderer {
 		for (Question q : usedQuestions) {
 			Finding finding = testCase.getFinding(date, q);
 			if (finding != null) {
-				String findingString = finding.getValue().toString();
+				Value value = finding.getValue();
+				String findingString;
+				if (value instanceof DateValue) {
+					findingString = ((DateValue) value).getDateString();
+				}
+				else {
+					findingString = value.toString();
+				}
 				Collection<String> errors = new LinkedList<String>();
-				TestCaseUtils.checkValues(errors, q, finding.getValue());
+				TestCaseUtils.checkValues(errors, q, value);
 				if (!errors.isEmpty()) {
 					RenderResult errorResult = new RenderResult(tableModel.getUserContext());
 					errorResult.appendHtml("<div style='background-color:"
@@ -355,7 +363,7 @@ public class TestCasePlayerRenderer implements Renderer {
 					findingString = errorResult.toStringRaw();
 				}
 				tableModel.addCell(row, column, findingString,
-						finding.getValue().toString().length());
+						value.toString().length());
 			}
 			column++;
 		}
