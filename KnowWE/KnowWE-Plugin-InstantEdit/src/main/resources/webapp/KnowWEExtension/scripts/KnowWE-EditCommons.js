@@ -142,7 +142,7 @@ KNOWWE.editCommons = function() {
         
         registerSaveCancelEvents: function(element, saveFunction, cancelFunction, argument) {
 	    	jq$(element).keydown(function(event) {
-	         	event = jq$.event.fix(event.originalEvent || event);
+	         	event = _EC.toJQueryEvent(event);
              	if (_EC.isSaveKey(event)) {
              		event.stopPropagation();
              		event.preventDefault();
@@ -157,7 +157,7 @@ KNOWWE.editCommons = function() {
         },
         
         isSaveKey: function(event) {
-         	event = jq$.event.fix(event.originalEvent || event);
+         	event = _EC.toJQueryEvent(event);
         	if (_EC.isModifier(event) || _EC.isDoubleModifier(event)) {
     			if (event.which == 83) { // S
     				return true;					
@@ -166,8 +166,12 @@ KNOWWE.editCommons = function() {
         	return false;
         },
         
+        toJQueryEvent: function(event) {
+        	return jq$.event.fix(event.originalEvent || event.event || event);
+        },
+        
         isCancelKey: function(event) {
-         	event = jq$.event.fix(event.originalEvent || event);
+         	event = _EC.toJQueryEvent(event);
         	if (_EC.isModifier(event) || _EC.isDoubleModifier(event)) {
         		// Q, but not with alt gr (= alt + ctrl)  to allow for @ in windows
     			if (event.which == 81 &&  (!event.altKey || !event.ctrlKey)) {
@@ -181,7 +185,7 @@ KNOWWE.editCommons = function() {
         },
         
         isModifier: function(event) {
-         	event = jq$.event.fix(event.originalEvent || event);
+         	event = _EC.toJQueryEvent(event);
         	if ((!event.metaKey && event.ctrlKey && !event.altKey) 
     				|| (!event.metaKey && !event.ctrlKey && event.altKey) 
     				|| (event.metaKey && !event.ctrlKey && !event.altKey)) {
@@ -191,7 +195,7 @@ KNOWWE.editCommons = function() {
         },
         
         isDoubleModifier: function(event) {
-         	event = jq$.event.fix(event.originalEvent || event);
+         	event = _EC.toJQueryEvent(event);
          	var mods = 0;
          	if (event.metaKey) mods++;
          	if (event.ctrlKey) mods++;
