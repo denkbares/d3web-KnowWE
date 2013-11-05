@@ -20,8 +20,6 @@
 
 package de.knowwe.testcases.table;
 
-import java.util.List;
-
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -54,9 +52,9 @@ public class TestcaseTable extends Table {
 	public static int getColumnIndex(Section<?> section) {
 
 		Section<TableLine> line = Sections.findAncestorOfType(section, TableLine.class);
-		List<Section<TableCell>> children = Sections.findChildrenOfType(line, TableCell.class);
 		int index = 0;
-		for (Section<?> child : children) {
+		for (Section<?> child : line.getChildren()) {
+			if (!(child.get() instanceof TableCell)) continue;
 			if (section.equalsOrIsSuccessorOf(child)) {
 				return index;
 			}
@@ -69,14 +67,15 @@ public class TestcaseTable extends Table {
 
 		Section<Table> table = Sections.findAncestorOfType(s, Table.class);
 		Section<TableLine> hLine = Sections.findSuccessor(table, TableLine.class);
-		List<Section<TableCell>> hCells = Sections.findChildrenOfType(hLine, TableCell.class);
 
 		int index = getColumnIndex(s);
-		if (index >= hCells.size()) {
-			return null;
-		}
 
-		Section<?> hCell = hCells.get(index);
-		return Sections.cast(hCell, HeaderCell.class);
+		int i = 0;
+		for (Section<?> hCell : hLine.getChildren()) {
+			if (!(hCell.get() instanceof TableCell)) continue;
+			if (i == index) return Sections.cast(hCell, HeaderCell.class);
+			i++;
+		}
+		return null;
 	}
 }
