@@ -32,8 +32,10 @@ import de.knowwe.kdom.table.TableLine;
  */
 public class TestcaseTable extends Table {
 
-	public static final String TESTCASE_INFOSTORE_KEY = "testcasetable";
-	public static final String TESTCASE_KEY = "TESTCASE";
+	public static final String TESTCASE_INFOSTORE_KEY = "testcasetablekey";
+	public static final String TESTCASE_KEY = "testcasekey";
+	private static final String INDEX_KEY = "indexkey";
+	private static final String HEADERCELL_KEY = "headercellkey";
 
 	public TestcaseTable() {
 
@@ -50,17 +52,27 @@ public class TestcaseTable extends Table {
 	}
 
 	public static int getColumnIndex(Section<?> section) {
-
-		Section<TableLine> line = Sections.findAncestorOfType(section, TableLine.class);
-		int index = 0;
-		for (Section<?> child : line.getChildren()) {
-			if (!(child.get() instanceof TableCell)) continue;
-			if (section.equalsOrIsSuccessorOf(child)) {
-				return index;
-			}
-			index++;
+		Section<TableCell> tCell;
+		if (section.get() instanceof TableCell) {
+			tCell = Sections.cast(section, TableCell.class);
 		}
-		throw new IllegalArgumentException("Specified section is not part of this table");
+		else {
+			tCell = Sections.findAncestorOfType(section, TableCell.class);
+		}
+		if (tCell == null) {
+			throw new IllegalArgumentException("Specified section is not part of this table");
+		}
+		Object index = tCell.getSectionStore().getObject(INDEX_KEY);
+		if (index == null) {
+			int i = 0;
+			for (Section<?> child : tCell.getFather().getChildren()) {
+				if (!(child.get() instanceof TableCell)) continue;
+				child.getSectionStore().storeObject(INDEX_KEY, i);
+				if (child == tCell) index = i;
+				i++;
+			}
+		}
+		return (Integer) index;
 	}
 
 	public static Section<? extends HeaderCell> findHeaderCell(Section<?> s) {
@@ -70,12 +82,20 @@ public class TestcaseTable extends Table {
 
 		int index = getColumnIndex(s);
 
-		int i = 0;
-		for (Section<?> hCell : hLine.getChildren()) {
-			if (!(hCell.get() instanceof TableCell)) continue;
-			if (i == index) return Sections.cast(hCell, HeaderCell.class);
-			i++;
+		String key = HEADERCELL_KEY + index;
+		Object hCell = hLine.getSectionStore().getObject(key);
+
+		if (hCell == null) {
+			int i = 0;
+			for (Section<?> child : hLine.getChildren()) {
+				if (!(child.get() instanceof TableCell)) continue;
+				if (i == index) {
+					hCell = child;
+					hLine.getSectionStore().storeObject(key, hCell);
+				}
+				i++;
+			}
 		}
-		return null;
+		return Sections.cast((Section<?>) hCell, HeaderCell.class);
 	}
 }

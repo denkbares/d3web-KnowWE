@@ -321,7 +321,7 @@ public class Sections {
 	 * given Section.
 	 */
 	public static <OT extends Type> List<Section<OT>> findSuccessorsOfType(Section<?> section, Class<OT> class1) {
-		List<Section<OT>> result = new LinkedList<Section<OT>>();
+		List<Section<OT>> result = new ArrayList<Section<OT>>();
 		findSuccessorsOfType(section, class1, result);
 		return result;
 	}

@@ -31,7 +31,6 @@ import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.NoBlankSectionsConstraint;
 import de.knowwe.kdom.constraint.SectionFinderConstraint;
 import de.knowwe.kdom.table.TableCellContent;
-import de.knowwe.kdom.table.TableUtils;
 import de.knowwe.testcases.NameType;
 import de.knowwe.testcases.TimeStampType;
 
@@ -80,7 +79,7 @@ public class CellContent extends TableCellContent {
 		}
 
 		private <T extends Type> boolean satisfiesConstraint(List<SectionFinderResult> found, Section<?> father, Class<T> type, String text) {
-			int column = TableUtils.getColumn(father);
+			int column = TestcaseTable.getColumnIndex(father);
 			Section<? extends HeaderCell> headerCell = TestcaseTable.findHeaderCell(father);
 			if (headerCell == null) {
 				return false;
