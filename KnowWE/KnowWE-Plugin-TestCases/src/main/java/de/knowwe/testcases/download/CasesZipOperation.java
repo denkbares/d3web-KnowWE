@@ -55,6 +55,7 @@ import de.knowwe.testcases.TestCaseUtils;
 public class CasesZipOperation extends FileDownloadOperation {
 
 	private StringBuilder skipped = null;
+	private StringBuilder errors = null;
 	private List<Triple<String, KnowledgeBase, TestCase>> casesToWrite = null;
 
 	public CasesZipOperation(Article article, String attachmentFileName) {
@@ -69,6 +70,7 @@ public class CasesZipOperation extends FileDownloadOperation {
 				TestCaseUtils.getTestCaseProviders(Sections.cast(section.getFather(),
 						TestCasePlayerType.class));
 		skipped = new StringBuilder();
+		errors = new StringBuilder();
 		casesToWrite = new ArrayList<Triple<String, KnowledgeBase, TestCase>>();
 
 		check(user, section, providers, casesToWrite);
@@ -152,7 +154,7 @@ public class CasesZipOperation extends FileDownloadOperation {
 			Set<String> usedEntryNames = new HashSet<String>();
 			for (SequentialTestCase sequentialTestCase : stcs) {
 				String testCaseName = getNewEntryName(usedEntryNames, sequentialTestCase);
-				listener.updateProgress(new Float(i++) / new Float(stcs.size()),
+				listener.updateProgress((float) i++ / (float) casesToWrite.size(),
 						"Zipping test case '" + testCaseName + ".xml'");
 				String fileName = CheckDownloadCaseAction.toXMLFileName(testCaseName);
 				ZipEntry e = new ZipEntry(fileName);
@@ -167,6 +169,7 @@ public class CasesZipOperation extends FileDownloadOperation {
 			out.close();
 		}
 		else {
+			errors.append("There are not test cases to download.<br/>");
 			throw new IOException("There are not test cases to download.");
 		}
 	}
@@ -189,11 +192,16 @@ public class CasesZipOperation extends FileDownloadOperation {
 
 	@Override
 	public String getReport() {
+		String report = "";
 		String skipped = this.skipped.toString();
 		if (!skipped.isEmpty()) {
-			return "Skipped:<br/>" + skipped;
+			report += "Skipped:<br/>" + skipped;
 		}
-		return "";
+		String errors = this.errors.toString();
+		if (!errors.isEmpty()) {
+			report += (skipped.isEmpty() ? "" : "<br/>") + "Error:<br/>" + errors;
+		}
+		return report;
 	}
 
 }

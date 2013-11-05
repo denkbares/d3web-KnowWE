@@ -3,6 +3,7 @@ package de.knowwe.core.utils.progress;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import de.d3web.core.io.progress.ProgressListener;
 import de.d3web.strings.Strings;
@@ -41,6 +42,10 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 		catch (Exception e) {
 			file.delete();
 			file.deleteOnExit();
+			listener.updateProgress(1f, COMPLETE_MESSAGE);
+			Logger.getLogger(this.getClass().getName()).info(
+					"Aborted execution of file download operation due to exception: "
+							+ e.getMessage());
 		}
 	}
 
@@ -79,15 +84,18 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 		UUID requestMarker = (UUID) context.getSession().getAttribute(storeKey);
 		File file = new File(tempFilePath);
 		if (this.requestMarker == requestMarker && percent == 1f
-				&& message.equals(COMPLETE_MESSAGE) && file.exists()) {
+				&& message.equals(COMPLETE_MESSAGE)) {
 			String report = getReport();
-			String downloadButton = "<span id='"
-					+ hashCode()
-					+ "'>Download <a href='javascript:jq$(\"#" + hashCode() + "\").remove();\n"
-					+ "window.location = \"action/DownloadFileAction?file="
-					+ Strings.encodeHtml(tempFilePath.replace("\\", "/")) + "&name="
-					+ Strings.encodeHtml(fileName)
-					+ "\"'>" + fileName + "</a></span>";
+			String downloadButton = "";
+			if (file.exists()) {
+				downloadButton = "<span id='"
+						+ hashCode()
+						+ "'>Download <a href='javascript:jq$(\"#" + hashCode() + "\").remove();\n"
+						+ "window.location = \"action/DownloadFileAction?file="
+						+ Strings.encodeHtml(tempFilePath.replace("\\", "/")) + "&name="
+						+ Strings.encodeHtml(fileName)
+						+ "\"'>" + fileName + "</a></span>";
+			}
 			if (report.isEmpty()) {
 				return message + " " + downloadButton;
 			}
