@@ -77,7 +77,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
-			<artifactId>sesame-runtime-osgi</artifactId>
+			<artifactId>sesame-runtime</artifactId>
 			<version>2.6.10</version>
 		</dependency>
 		<dependency>

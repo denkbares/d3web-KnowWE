@@ -5,8 +5,12 @@
  */
 package de.knowwe.rdf2go.modelfactory;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Properties;
 
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
@@ -18,7 +22,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
-import org.openrdf.model.ValueFactory;
+import org.openrdf.model.Statement;
 import org.openrdf.model.impl.GraphImpl;
 import org.openrdf.model.util.GraphUtil;
 import org.openrdf.model.vocabulary.RDF;
@@ -31,9 +35,11 @@ import org.openrdf.repository.config.RepositoryConfigUtil;
 import org.openrdf.repository.manager.LocalRepositoryManager;
 import org.openrdf.repository.manager.RepositoryManager;
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFHandler;
+import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
-import org.openrdf.rio.Rio;
-import org.openrdf.rio.helpers.StatementCollector;
+import org.openrdf.rio.turtle.TurtleParserFactory;
 
 public class SesameSwiftOwlimModelFactory extends AbstractModelFactory {
 
@@ -49,16 +55,8 @@ public class SesameSwiftOwlimModelFactory extends AbstractModelFactory {
 		return new RepositoryModel(contextURI, createRepository(null));
 	}
 
-	// public ModelSet createModelSet(Properties properties)
-	// throws ModelRuntimeException {
-	// return new RepositoryModelSet(createRepository(properties));
-	// }
-
 	private Repository createRepository(Properties properties)
 			throws ModelRuntimeException {
-		// find out if we need reasoning
-		// String reasoningProperty = properties == null ? null :
-		// properties.getProperty(REASONING);
 
 		// create a Sail stack
 		Repository repository = null;
@@ -74,14 +72,8 @@ public class SesameSwiftOwlimModelFactory extends AbstractModelFactory {
 			RepositoryManager man = new LocalRepositoryManager(new File(reppath));
 			man.initialize();
 			systemRepo = man.getSystemRepository();
-			ValueFactory vf = systemRepo.getValueFactory();
-			Graph graph = new GraphImpl(vf);
-
-			RDFParser rdfParser = Rio.createParser(RDFFormat.TURTLE, vf);
-			rdfParser.setRDFHandler(new StatementCollector(graph));
-			ClassLoader classLoader = this.getClass().getClassLoader();
-			InputStream configFileStream = classLoader.getResourceAsStream("owlim.ttl");
-			rdfParser.parse(configFileStream, RepositoryConfigSchema.NAMESPACE);
+			Graph graph = parseConfigFile("owlim.ttl", RDFFormat.TURTLE,
+					RepositoryConfigSchema.NAMESPACE);
 
 			Resource repositoryNode = GraphUtil.getUniqueSubject(graph,
 					RDF.TYPE, RepositoryConfigSchema.REPOSITORY);
@@ -102,6 +94,45 @@ public class SesameSwiftOwlimModelFactory extends AbstractModelFactory {
 		}
 
 		return repository;
+	}
+
+	private Graph parseConfigFile(String configurationFile, RDFFormat format,
+			String defaultNamespace) throws RDFParseException,
+			RDFHandlerException, IOException {
+		InputStream in = getClass().getClassLoader().getResourceAsStream(configurationFile);
+		Reader reader = new BufferedReader(new InputStreamReader(in));
+
+		final Graph graph = new GraphImpl();
+		TurtleParserFactory turtleParserFactory = new TurtleParserFactory();
+		RDFParser parser = turtleParserFactory.getParser();
+		RDFHandler handler = new RDFHandler() {
+
+			@Override
+			public void endRDF() throws RDFHandlerException {
+			}
+
+			@Override
+			public void handleComment(String arg0) throws RDFHandlerException {
+			}
+
+			@Override
+			public void handleNamespace(String arg0, String arg1)
+					throws RDFHandlerException {
+			}
+
+			@Override
+			public void handleStatement(Statement statement)
+					throws RDFHandlerException {
+				graph.add(statement);
+			}
+
+			@Override
+			public void startRDF() throws RDFHandlerException {
+			}
+		};
+		parser.setRDFHandler(handler);
+		parser.parse(reader, defaultNamespace);
+		return graph;
 	}
 
 	private void delete(File f) {

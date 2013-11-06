@@ -213,7 +213,9 @@ public class Rdf2GoCore implements EventListener {
 	 */
 	public void addNamespace(String abbreviation, String namespace) {
 		namespaces.put(abbreviation, namespace);
+		model.open();
 		model.setNamespace(abbreviation, namespace);
+		model.close();
 	}
 
 	/**
@@ -346,6 +348,7 @@ public class Rdf2GoCore implements EventListener {
 	 * @created 12.06.2012
 	 */
 	public synchronized void commit() {
+		model.open();
 		int removeSize = removeCache.size();
 		int insertSize = insertCache.size();
 		boolean verboseLog = removeSize + insertSize < 50;
@@ -384,6 +387,7 @@ public class Rdf2GoCore implements EventListener {
 
 		removeCache = new HashSet<Statement>();
 		insertCache = new HashSet<Statement>();
+		model.close();
 	}
 
 	public URI createBasensURI(String value) {
@@ -481,6 +485,8 @@ public class Rdf2GoCore implements EventListener {
 	@Deprecated
 	public Collection<Statement> generateStatementDiffForSection(Section<?> sec) throws ModelRuntimeException, MalformedQueryException {
 
+		// model.open();
+
 		Set<Statement> includingSection = getStatements();
 
 		// retrieve statements to be excluded
@@ -499,6 +505,8 @@ public class Rdf2GoCore implements EventListener {
 		if (statementsOfSection != null) {
 			model.addAll(statementsOfSection.iterator());
 		}
+
+		// model.close();
 
 		return includingSection;
 
@@ -573,7 +581,7 @@ public class Rdf2GoCore implements EventListener {
 	 * @return all {@link Statement}s of the Rdf2GoCore.
 	 */
 	public Set<Statement> getStatements() {
-		HashSet<Statement> result = new HashSet<Statement>();
+		Set<Statement> result = new HashSet<Statement>();
 
 		for (Statement s : model) {
 			result.add(s);
@@ -611,7 +619,9 @@ public class Rdf2GoCore implements EventListener {
 		insertCache = new HashSet<Statement>();
 		removeCache = new HashSet<Statement>();
 
+		model.open();
 		namespaces.putAll(model.getNamespaces());
+		model.close();
 		initDefaultNamespaces();
 		EventManager.getInstance().registerListener(this);
 	}
@@ -700,8 +710,6 @@ public class Rdf2GoCore implements EventListener {
 			break;
 		}
 
-		model.open();
-
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.INFO,
 				"RDF2Go model '" + modelType + "' with reasoning '"
@@ -735,11 +743,15 @@ public class Rdf2GoCore implements EventListener {
 	}
 
 	public void readFrom(InputStream in) throws ModelRuntimeException, IOException {
+		model.open();
 		model.readFrom(in);
+		model.close();
 	}
 
 	public void readFrom(Reader in) throws ModelRuntimeException, IOException {
+		model.open();
 		model.readFrom(in);
+		model.close();
 	}
 
 	public void removeAllCachedStatements() {
@@ -912,11 +924,14 @@ public class Rdf2GoCore implements EventListener {
 	}
 
 	public boolean sparqlAsk(String query) throws ModelRuntimeException, MalformedQueryException {
+		model.open();
 		String sparqlNamespaceShorts = Rdf2GoUtils.getSparqlNamespaceShorts(this);
 		if (query.startsWith(sparqlNamespaceShorts)) {
 			return model.sparqlAsk(query);
 		}
-		return model.sparqlAsk(sparqlNamespaceShorts + query);
+		boolean result = model.sparqlAsk(sparqlNamespaceShorts + query);
+		model.close();
+		return result;
 	}
 
 	/**
@@ -934,6 +949,8 @@ public class Rdf2GoCore implements EventListener {
 	 * @throws MalformedQueryException
 	 */
 	public boolean sparqlAskExcludeStatementForSection(String query, Section<?> sec) throws ModelRuntimeException, MalformedQueryException {
+
+		model.open();
 
 		// retrieve statements to be excluded
 		WeakHashMap<Section<? extends Type>, List<Statement>> allStatmentSectionsOfArticle =
@@ -958,18 +975,26 @@ public class Rdf2GoCore implements EventListener {
 			model.addAll(statementsOfSection.iterator());
 		}
 
+		model.close();
+
 		// return query result
 		return result;
 	}
 
 	public ClosableIterable<Statement> sparqlConstruct(String query) throws ModelRuntimeException, MalformedQueryException {
+		model.open();
 		if (query.startsWith(Rdf2GoUtils.getSparqlNamespaceShorts(this))) {
 			return model.sparqlConstruct(query);
 		}
-		return model.sparqlConstruct(Rdf2GoUtils.getSparqlNamespaceShorts(this) + query);
+		ClosableIterable<Statement> result = model.sparqlConstruct(Rdf2GoUtils.getSparqlNamespaceShorts(this)
+				+ query);
+		model.close();
+
+		return result;
 	}
 
 	public QueryResultTable sparqlSelect(String query) throws ModelRuntimeException, MalformedQueryException {
+
 		String completeQuery;
 		if (!query.startsWith(Rdf2GoUtils.getSparqlNamespaceShorts(this))) {
 			completeQuery = Rdf2GoUtils.getSparqlNamespaceShorts(this) + query;
@@ -978,7 +1003,9 @@ public class Rdf2GoCore implements EventListener {
 			completeQuery = query;
 		}
 		// long start = System.currentTimeMillis();
+		model.open();
 		QueryResultTable resultTable = model.sparqlSelect(completeQuery);
+		model.close();
 		// long time = System.currentTimeMillis() - start;
 		// if (time > 5) {
 		// Logger.getLogger(this.getClass().getName()).warning(
