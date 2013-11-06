@@ -555,16 +555,12 @@ public class TestCasePlayerRenderer implements Renderer {
 					+ " type=\"button\" value=\"+\" onclick=\"TestCasePlayer.addCookie(&quot;"
 					+ toAdditionalQuestionsCookyString(alreadyAddedQuestions)
 					+ QUESTIONS_SEPARATOR
-					+ "&quot;+this.form.toAdd.options[toAdd.selectedIndex].value);TestCasePlayer.change('"
-					+ key
-					+ "','');\"></form>");
+					+ "&quot;+this.form.toAdd.options[toAdd.selectedIndex].value);\"></form>");
 		}
 		else {
 			selectsb2.appendHtml("<input "
 					+ (object == null ? "disabled='disabled'" : "")
-					+ " type=\"button\" value=\"+\" onclick=\"TestCasePlayer.addCookie(this.form.toAdd.options[toAdd.selectedIndex].value);TestCasePlayer.change('"
-					+ key
-					+ "','');\"></form>");
+					+ " type=\"button\" value=\"+\" onclick=\"TestCasePlayer.addCookie(this.form.toAdd.options[toAdd.selectedIndex].value);\"></form>");
 		}
 		if (foundone) {
 			tableModel.addCell(0, column, selectsb2.toStringRaw(), max + 3);

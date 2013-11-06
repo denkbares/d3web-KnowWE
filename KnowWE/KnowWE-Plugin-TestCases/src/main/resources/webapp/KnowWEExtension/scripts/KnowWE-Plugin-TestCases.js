@@ -252,7 +252,7 @@ TestCasePlayer.addCookie = function(cookievalue) {
 			+ TestCasePlayer.encodeCookieValue(topic) + "="
 			+ TestCasePlayer.encodeCookieValue(cookievalue);
 	// KNOWWE.helper.observer.notify('update');
-	TestCasePlayer.update();
+	TestCasePlayer.update(true);
 }
 
 TestCasePlayer.encodeCookieValue = function(cookievalue) {
@@ -262,7 +262,7 @@ TestCasePlayer.encodeCookieValue = function(cookievalue) {
 	return temp;
 }
 
-TestCasePlayer.update = function() {
+TestCasePlayer.update = function(adjustLeft) {
 	var scrollInfos = new Object();
 	jq$('.type_TestCasePlayer').find(".ReRenderSectionMarker").each(function() {
 		var id = jq$(this).children().first().attr('id');
@@ -285,7 +285,8 @@ TestCasePlayer.update = function() {
 			if (scrollInfo.restoreScroll) {
 				var tableDiv = jq$("#" + id).find('.' + "wikitable").parent();
 				var scrollWidthAfter = tableDiv[0].scrollWidth;
-				if (scrollInfo.width < scrollWidthAfter) {
+				console.log("adjustLeft " + adjustLeft);
+				if (adjustLeft && scrollInfo.width < scrollWidthAfter) {
 					scrollInfo.left += scrollWidthAfter - scrollInfo.width;
 				}
 				tableDiv.scrollLeft(scrollInfo.left);
