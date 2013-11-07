@@ -34,6 +34,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Message.Type;
 import de.knowwe.ontology.kdom.relation.LiteralType;
 import de.knowwe.rdf2go.BlankNodeImpl;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -43,6 +44,8 @@ public class TurtleCompileScript extends SubtreeHandler<TurtleMarkup> {
 
 	@Override
 	public Collection<Message> create(Article article, Section<TurtleMarkup> section) {
+		Collection<Message> messages = new ArrayList<Message>();
+
 		List<Section<TurtleObjectSection>> found = new ArrayList<Section<TurtleObjectSection>>();
 
 		Sections.findSuccessorsOfType(section, TurtleObjectSection.class, found);
@@ -51,14 +54,14 @@ public class TurtleCompileScript extends SubtreeHandler<TurtleMarkup> {
 
 		for (Section<TurtleObjectSection> objectSec : found) {
 
-			createTriplesForObject(triples, objectSec, article);
+			createTriplesForObject(triples, objectSec, article, messages);
 
 		}
 		Rdf2GoCore.getInstance(article).addStatements(section, Rdf2GoUtils.toArray(triples));
-		return null;
+		return messages;
 	}
 
-	private void createTriplesForObject(List<Statement> triples, Section<TurtleObjectSection> objectSec, Article article) {
+	private void createTriplesForObject(List<Statement> triples, Section<TurtleObjectSection> objectSec, Article article, Collection<Message> messages) {
 
 		Rdf2GoCore core = Rdf2GoCore.getInstance(article);
 
@@ -88,6 +91,13 @@ public class TurtleCompileScript extends SubtreeHandler<TurtleMarkup> {
 
 		Section<TurtlePredicate> predSec = Sections.findSuccessor(
 				objectSec.getFather(), TurtlePredicate.class);
+
+		if (predSec == null) {
+			Message m = new Message(Type.ERROR, "No predicate found at '"
+					+ objectSec.getFather().getText() + "'");
+			messages.add(m);
+			return;
+		}
 
 		URI predURI = predSec.get().getResourceURI(core, predSec);
 
