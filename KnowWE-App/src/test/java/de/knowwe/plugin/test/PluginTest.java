@@ -20,7 +20,9 @@ package de.knowwe.plugin.test;
 import java.io.IOException;
 
 import junit.framework.TestCase;
+import connector.DummyConnector;
 import de.d3web.plugin.test.InitPluginManager;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.plugin.Plugins;
@@ -40,6 +42,7 @@ public class PluginTest extends TestCase {
 	 */
 	public void testPlugins() throws IOException {
 		InitPluginManager.init();
+		Environment.initInstance(new DummyConnector());
 		Plugins.getInstantiations();
 		Plugins.getKnowledgeRepresentationHandlers();
 		Plugins.getKnowWEAction();
