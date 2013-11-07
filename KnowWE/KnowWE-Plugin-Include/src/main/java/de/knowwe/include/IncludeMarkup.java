@@ -56,12 +56,12 @@ public class IncludeMarkup extends DefaultMarkupType {
 	private static DefaultMarkup m = null;
 
 	public static final String MARKUP_NAME = "Include";
-	
+
 	public static final String ANNOTATION_ZOOM = "zoom";
 	public static final String ANNOTATION_FRAME = "frame";
 
 	static {
-		m = new DefaultMarkup("include");
+		m = new DefaultMarkup(MARKUP_NAME);
 		m.addAnnotation(ANNOTATION_FRAME, false, "true", "false");
 		m.addAnnotation(ANNOTATION_ZOOM, false);
 	}
@@ -96,8 +96,8 @@ public class IncludeMarkup extends DefaultMarkupType {
 
 			zoom = DefaultMarkupType.getAnnotation(section,
 					ANNOTATION_ZOOM);
-					
-			if(zoom != null) {
+
+			if (zoom != null) {
 				zoom = zoom.replaceAll("%", "").trim();
 			}
 
