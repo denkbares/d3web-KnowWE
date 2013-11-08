@@ -244,11 +244,11 @@ ul.toolbar li:last-child {
 
 #findSuggestionMenu {
 	max-height: 50%;
-	top: 100px;
-	left: 20px;
+	top: 50px;
+	left: 5px;
 	position: fixed;
 	color: white;
-	background-color: rgba(0, 0, 0, 0.7);
+	background-color: rgba(0, 0, 0, 0.8);
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 5px;
 	-webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
