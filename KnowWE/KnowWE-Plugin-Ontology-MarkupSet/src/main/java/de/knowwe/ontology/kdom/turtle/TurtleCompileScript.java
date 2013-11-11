@@ -70,23 +70,13 @@ public class TurtleCompileScript extends SubtreeHandler<TurtleMarkup> {
 
 		Node objURI = null;
 
-		Section<TurtleObjectBlankNode> bn = Sections.findChildOfType(objectSec,
-				TurtleObjectBlankNode.class);
-		if (bn != null) {
-			Section<TurtleMarkupN3Content> turtleInner = Sections.findSuccessor(bn,
-					TurtleMarkupN3Content.class);
-			objURI = new BlankNodeImpl(turtleInner);
-
+		Section<TurtleObjectTerm> termSec = Sections.findSuccessor(objectSec,
+				TurtleObjectTerm.class);
+		if (termSec != null) {
+			objURI = termSec.get().getResourceURI(core, termSec);
 		}
-		else {
-			Section<TurtleObjectTerm> termSec = Sections.findSuccessor(objectSec,
-					TurtleObjectTerm.class);
-			if (termSec != null) {
-				objURI = termSec.get().getResourceURI(core, termSec);
-			}
-			if (literalSec != null) {
-				objURI = literalSec.get().getLiteral(core, literalSec);
-			}
+		if (literalSec != null) {
+			objURI = literalSec.get().getLiteral(core, literalSec);
 		}
 
 		Section<TurtlePredicate> predSec = Sections.findSuccessor(

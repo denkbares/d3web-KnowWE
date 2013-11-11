@@ -22,25 +22,14 @@
 
 package de.knowwe.ontology.kdom.turtle;
 
-import java.util.regex.Pattern;
-
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
-import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 
 public class TurtlePredicateSection extends AbstractType {
 
 	public TurtlePredicateSection() {
 
 		this.addChildType(new TurtlePredicate());
-		ConstraintSectionFinder c = new ConstraintSectionFinder(new RegexSectionFinder(
-				"([^\\s]*::)", Pattern.DOTALL, 1));
-		setSectionFinder(c);
-		c.addConstraint(AtMostOneFindingConstraint.getInstance());
-		// setCustomRenderer(new
-		// GenericHTMLRenderer<TurtlePredicateSection>("span", new String[]
-		// {"style", "color: green;", "title", "TurtlePredicateSection"}));
+		setSectionFinder(new FirstWordFinder());
 	}
 
 }

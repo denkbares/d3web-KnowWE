@@ -105,6 +105,7 @@
         <parameter id="scope" value="RelationType" />
         <parameter id="scope" value="NamespaceType" />
         <parameter id="scope" value="IndividualType" />
+        <parameter id="scope" value="TurtleMarkup" />
     </extension>
     
     <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"

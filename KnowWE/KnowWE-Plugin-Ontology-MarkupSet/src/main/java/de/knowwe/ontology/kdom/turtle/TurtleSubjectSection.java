@@ -22,30 +22,13 @@
 
 package de.knowwe.ontology.kdom.turtle;
 
-import java.util.regex.Pattern;
-
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.kdom.AnonymousType;
-import de.knowwe.kdom.LeadingSpaces;
-import de.knowwe.kdom.TrailingSpaces;
-import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
-import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 
 public class TurtleSubjectSection extends AbstractType {
 
 	public TurtleSubjectSection() {
-		AnonymousType after = new AnonymousType("After");
-		after.setSectionFinder(new RegexSectionFinder("\\b[^\\s]*::"));
-		this.addChildType(after);
-		this.addChildType(new LeadingSpaces());
-		this.addChildType(new TrailingSpaces());
-		this.addChildType(new SubjectBNode());
 		this.addChildType(new TurtleSubject());
-		ConstraintSectionFinder c = new ConstraintSectionFinder(new RegexSectionFinder(
-				"(^.*?)\\b[^\\s]*::", Pattern.DOTALL | Pattern.MULTILINE, 1));
-		setSectionFinder(c);
-		c.addConstraint(AtMostOneFindingConstraint.getInstance());
+		setSectionFinder(new FirstWordFinder());
 	}
 
 }

@@ -35,9 +35,6 @@ public class TurtleSubject extends AbbreviatedResourceReference {
 				new AllTextFinderTrimmed());
 		setSectionFinder(c);
 		c.addConstraint(AtMostOneFindingConstraint.getInstance());
-		// setCustomRenderer(new GenericHTMLRenderer<TurtleSubject>("span", new
-		// String[] {
-		// "style", "color: red;", "title", "TurtleSubject" }));
 	}
 
 }

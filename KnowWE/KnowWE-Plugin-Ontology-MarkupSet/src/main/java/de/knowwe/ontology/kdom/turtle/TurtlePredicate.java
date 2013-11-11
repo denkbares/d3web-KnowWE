@@ -22,28 +22,38 @@
 
 package de.knowwe.ontology.kdom.turtle;
 
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
-import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.kdom.AnonymousType;
-import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
-import de.knowwe.kdom.constraint.ConstraintSectionFinder;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.sectionFinder.SectionFinder;
+import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
 
 public class TurtlePredicate extends AbbreviatedResourceReference {
 
 	public TurtlePredicate() {
-		AnonymousType after = new AnonymousType("After");
-		after.setSectionFinder(new RegexSectionFinder("::"));
-		this.addChildType(after);
 
-		ConstraintSectionFinder c = new ConstraintSectionFinder(new RegexSectionFinder(
-				"([^\\s]*)::", Pattern.DOTALL, 1));
-		setSectionFinder(c);
-		c.addConstraint(AtMostOneFindingConstraint.getInstance());
-		// setCustomRenderer(new GenericHTMLRenderer<TurtlePredicate>("span",
-		// new String[] {
-		// "style", "color: green;", "title", "TurtlePredicate" }));
+		setSectionFinder(new PredicateFinder());
+	}
+
+	class PredicateFinder implements SectionFinder {
+
+		@Override
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
+			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>(1);
+			// this is basically an AlltextFinder, that chops trailing "::" if
+			// existing
+			if (text.trim().endsWith("::")) {
+				result.add(new SectionFinderResult(0, text.lastIndexOf("::")));
+			}
+			else {
+				result.add(new SectionFinderResult(0, text.length()));
+			}
+			return result;
+		}
+
 	}
 
 }

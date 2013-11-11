@@ -33,9 +33,6 @@ public class TurtlePredSentence extends AbstractType {
 		this.addChildType(new TurtleObjectSection());
 		setSectionFinder(new SplitSectionFinderUnquoted(";"));
 
-		// setCustomRenderer(new GenericHTMLRenderer<TurtlePredSentence>("span",
-		// new String[] {"style", "color: blue;", "title",
-		// "TurtlePredSentence"}));
 	}
 
 }

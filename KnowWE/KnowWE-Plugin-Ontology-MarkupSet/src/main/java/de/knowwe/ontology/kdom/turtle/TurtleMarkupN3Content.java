@@ -23,22 +23,15 @@
 package de.knowwe.ontology.kdom.turtle;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 
 public class TurtleMarkupN3Content extends AbstractType {
 
-	public static TurtleMarkupN3Content instance;
+
 
 	public TurtleMarkupN3Content() {
-		TurtleMarkupN3Content.instance = this;
-		this.addChildType(new TurtleSubjectSection());
-		this.addChildType(new TurtlePredSentence());
-		setSectionFinder(new AllTextSectionFinder());
-
-		// setCustomRenderer(new
-		// GenericHTMLRenderer<TurtleMarkupN3Content>("span",
-		// new String[] {
-		// "title", "TurtleMarkupN3Content" }));
+		this.setSectionFinder(new AllTextFinderTrimmed());
+		this.addChildType(new TurtleSentence());
 	}
 
 }
