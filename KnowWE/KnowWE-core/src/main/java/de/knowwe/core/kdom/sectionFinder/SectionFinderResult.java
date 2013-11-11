@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import de.knowwe.core.kdom.parsing.Section;
+
 public class SectionFinderResult implements Comparable<SectionFinderResult> {
 
 	protected int start = -1;
@@ -60,6 +62,10 @@ public class SectionFinderResult implements Comparable<SectionFinderResult> {
 		List<SectionFinderResult> resultList = new ArrayList<SectionFinderResult>();
 		resultList.add(s);
 		return resultList;
+	}
+
+	public static String getFoundText(SectionFinderResult result, Section<?> fatherSection) {
+		return fatherSection.getText().substring(result.start, result.end);
 	}
 
 	public int getStart() {
