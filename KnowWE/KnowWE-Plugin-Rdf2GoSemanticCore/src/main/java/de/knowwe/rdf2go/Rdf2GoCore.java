@@ -1039,7 +1039,9 @@ public class Rdf2GoCore implements EventListener {
 	 * @throws IOException
 	 */
 	public void writeModel(Writer out) throws ModelRuntimeException, IOException {
+		model.open();
 		model.writeTo(out);
+		model.close();
 	}
 
 	/**
