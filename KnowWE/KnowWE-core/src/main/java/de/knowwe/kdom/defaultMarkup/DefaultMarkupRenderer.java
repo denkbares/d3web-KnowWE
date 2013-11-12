@@ -258,6 +258,7 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	public static void renderContentSections(List<Section<?>> subSections, UserContext user, RenderResult result) {
+		if (subSections.size() == 0) return;
 		Section<?> first = subSections.get(0);
 		Section<?> last = subSections.get(subSections.size() - 1);
 		for (Section<?> subsec : subSections) {
