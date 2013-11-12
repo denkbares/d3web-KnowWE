@@ -9,7 +9,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
-
 public class FirstWordFinder implements SectionFinder {
 
 	@Override
@@ -19,7 +18,7 @@ public class FirstWordFinder implements SectionFinder {
 
 		String trimmedText = Strings.trim(text);
 		int leadingWhiteSpaceChars = text.indexOf(trimmedText);
-		int indexOfFirstWhitspace = Strings.indexOfUnquoted(trimmedText, new String[] { " ", "\t" ,"\n" , "\r" });
+		int indexOfFirstWhitspace = Strings.indexOfUnquoted(trimmedText, " ", "\t", "\n", "\r");
 
 		// if no whitespace is found, entire text is taken as one 'word'
 		if (indexOfFirstWhitspace == Integer.MAX_VALUE) {
