@@ -16,24 +16,18 @@ public class FirstWordFinder implements SectionFinder {
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>(1);
 		if (text.length() == 0) return result;
-		// counts leading spaces
-		int index = 0;
-		char c = text.charAt(index);
-		while (c == ' ') {
-			index++;
-			if (text.length() >= index) {
-				c = text.charAt(index);
-			}
-			else {
-				// String only contains whitespaces.. !?
-				break;
-			}
-		}
-		String trimmedText = text.substring(index);
 
+		String trimmedText = Strings.trim(text);
+		int leadingWhiteSpaceChars = text.indexOf(trimmedText);
+		int indexOfFirstWhitspace = Strings.indexOfUnquoted(trimmedText, new String[] { " ", "\t" ,"\n" , "\r" });
+
+		// if no whitespace is found, entire text is taken as one 'word'
+		if (indexOfFirstWhitspace == Integer.MAX_VALUE) {
+			indexOfFirstWhitspace = trimmedText.length();
+		}
 		// return first 'word' of input
-		int firstSpace = Strings.indexOfUnquoted(trimmedText, " ");
-		result.add(new SectionFinderResult(index, index + firstSpace));
+		result.add(new SectionFinderResult(leadingWhiteSpaceChars, leadingWhiteSpaceChars
+				+ indexOfFirstWhitspace));
 		return result;
 	}
 }
