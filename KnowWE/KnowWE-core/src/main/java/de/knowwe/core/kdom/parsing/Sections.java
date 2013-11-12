@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
@@ -747,7 +748,23 @@ public class Sections {
 		Article article = Environment.getInstance().getArticle(context.getWeb(),
 				title);
 		collectTextAndReplaceNode(article.getRootSection(), sectionsMapForCurrentTitle, newText);
+		trimSuperfluousLineBreaks(newText);
 		return newText.toString();
+	}
+
+	private static void trimSuperfluousLineBreaks(StringBuffer newText) {
+		int pos = newText.length() - 1;
+		List<Integer> lineBreakPositions = new ArrayList<Integer>();
+		while (pos >= 0 && Strings.isBlank(newText.charAt(pos))) {
+			if (newText.charAt(pos) == '\n') {
+				lineBreakPositions.add(pos);
+			}
+			pos--;
+		}
+		int lineBreakCount = lineBreakPositions.size();
+		if (lineBreakCount >= 1) {
+			newText.setLength(lineBreakPositions.get(lineBreakCount - 1) + 1);
+		}
 	}
 
 	private static void collectTextAndReplaceNode(Section<?> sec,
