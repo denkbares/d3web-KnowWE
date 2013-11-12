@@ -21,7 +21,6 @@ package de.knowwe.ontology.kdom.objectproperty;
 import org.ontoware.rdf2go.model.node.URI;
 
 import de.knowwe.core.kdom.Types;
-import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
@@ -37,7 +36,7 @@ public class AbbreviatedPropertyReference extends AbbreviatedResourceReference {
 				new ToolMenuDecoratingRenderer(StyleRenderer.CHOICE));
 	}
 
-	public String getProperty(Section<? extends Term> section) {
+	public String getProperty(Section<? extends AbbreviatedPropertyReference> section) {
 		return super.getResource(section);
 	}
 

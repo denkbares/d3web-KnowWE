@@ -121,6 +121,8 @@
 		<parameter id="scope" value="ResourceReference" />
 		<parameter id="scope" value="NamespaceDefinition" />
 		<parameter id="scope" value="NamespaceReference" />
+		<parameter id="scope" value="AbbreviationDefinition" />
+		<parameter id="scope" value="AbbreviationReference" />
 
 	</extension>
 	

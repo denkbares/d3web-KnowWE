@@ -28,7 +28,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.ontology.kdom.namespace.AbbreviationDefinition;
 import de.knowwe.ontology.kdom.objectproperty.Property;
-import de.knowwe.ontology.kdom.resource.AbbreviatedResourceDefinition;
 import de.knowwe.ontology.kdom.resource.Resource;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
@@ -63,17 +62,14 @@ public abstract class TerminologyHelper {
 			QueryRow row = iterator.next();
 			String value = row.getValue("resource").toString();
 			String abbreviation = getAbbreviation(value);
-			String literal = value.substring(value.indexOf("#") + 1);
+			String resource = value.substring(value.indexOf("#") + 1);
 			TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
-			Identifier abbrIdentifier = new Identifier(
-					AbbreviatedResourceDefinition.toTermName(abbreviation, literal));
+			Identifier abbrIdentifier = new Identifier(abbreviation, resource);
 			terminologyManager.registerTermDefinition(section, AbbreviationDefinition.class,
 					new Identifier(abbreviation));
 			terminologyManager.registerTermDefinition(
 					section, termClass, abbrIdentifier);
-			Identifier identifier = new Identifier(literal);
-			terminologyManager.registerTermDefinition(
-					section, Resource.class, identifier);
+
 		}
 		// System.out.println(System.currentTimeMillis() - currentTimeMillis);
 	}

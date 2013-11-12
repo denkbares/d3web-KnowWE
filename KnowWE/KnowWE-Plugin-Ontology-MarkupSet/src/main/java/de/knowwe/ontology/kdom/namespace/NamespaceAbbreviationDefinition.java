@@ -20,6 +20,8 @@ package de.knowwe.ontology.kdom.namespace;
 
 import java.util.Collection;
 
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
+
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.Article;
@@ -67,8 +69,14 @@ public class NamespaceAbbreviationDefinition extends SimpleDefinition {
 		@Override
 		public Collection<Message> create(Article article, Section<NamespaceAbbreviationDefinition> section) {
 			Rdf2GoCore core = Rdf2GoCore.getInstance(article);
-			String abbreviation = section.get().getAbbreviation(section);
 			String namespace = section.get().getNamespace(section);
+			try {
+				new URIImpl(namespace, true);
+			}
+			catch (IllegalArgumentException e) {
+				return Messages.asList(Messages.error("'" + namespace + "' is not a valid URI"));
+			}
+			String abbreviation = section.get().getAbbreviation(section);
 			core.addNamespace(abbreviation, namespace);
 			return Messages.noMessage();
 		}

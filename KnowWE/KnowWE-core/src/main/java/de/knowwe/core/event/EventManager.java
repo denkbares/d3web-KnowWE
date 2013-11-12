@@ -73,7 +73,7 @@ public class EventManager {
 	}
 
 	public void registerListener(EventListener listener) {
-		// Get the class of the event
+		// Get the classes of the events
 		Collection<Class<? extends Event>> eventClasses = listener.getEvents();
 
 		for (Class<? extends Event> eventClass : eventClasses) {
@@ -84,6 +84,17 @@ public class EventManager {
 				listenerMap.put(eventClass, list);
 			}
 			list.put(listener, null);
+		}
+	}
+
+	public void unregister(EventListener listener) {
+		// Get the classes of the events
+		Collection<Class<? extends Event>> eventClasses = listener.getEvents();
+
+		for (Class<? extends Event> eventClass : eventClasses) {
+			// unregister the listener for the event's class
+			WeakHashMap<EventListener, Object> list = listenerMap.get(eventClass);
+			list.remove(listener);
 		}
 	}
 

@@ -20,9 +20,7 @@ package de.knowwe.ontology.kdom.resource;
 
 import org.ontoware.rdf2go.model.node.URI;
 
-import de.knowwe.core.compile.terminology.TermRegistrationScope;
-import de.knowwe.core.kdom.objects.SimpleDefinition;
-import de.knowwe.core.kdom.objects.Term;
+import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -30,38 +28,30 @@ import de.knowwe.ontology.kdom.namespace.AbbreviationPrefixReference;
 import de.knowwe.ontology.kdom.namespace.AbbreviationReference;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
-public class AbbreviatedResourceDefinition extends SimpleDefinition {
+public class AbbreviatedResourceDefinition extends AbstractType {
 
 	public AbbreviatedResourceDefinition() {
 		this(Resource.class);
 	}
 
 	public AbbreviatedResourceDefinition(Class<?> termClass) {
-		super(TermRegistrationScope.LOCAL, termClass);
 		this.addChildType(new AbbreviationPrefixReference());
-		this.addChildType(new ResourceDefinition());
+		this.addChildType(new ResourceDefinition(termClass));
 		this.setSectionFinder(new AllTextFinderTrimmed());
-	}
-
-	@Override
-	public String getTermName(Section<? extends Term> section) {
-		String abbreviation = getAbbreviation(section);
-		String resource = getResource(section);
-		return toTermName(abbreviation, resource);
 	}
 
 	public static String toTermName(String abbreviation, String resource) {
 		return abbreviation + ":" + resource;
 	}
 
-	public String getResource(Section<? extends Term> section) {
+	public String getResource(Section<? extends AbbreviatedResourceDefinition> section) {
 		Section<ResourceDefinition> resourceSection = Sections.findChildOfType(section,
 				ResourceDefinition.class);
 		String resource = resourceSection.get().getTermName(resourceSection);
 		return resource;
 	}
 
-	public String getAbbreviation(Section<? extends Term> section) {
+	public String getAbbreviation(Section<? extends AbbreviatedResourceDefinition> section) {
 		Section<AbbreviationPrefixReference> abbreviationPrefixSection = Sections.findChildOfType(
 				section, AbbreviationPrefixReference.class);
 		String abbreviation;

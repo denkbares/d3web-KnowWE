@@ -149,7 +149,10 @@ public class Rdf2GoCore implements EventListener {
 	}
 
 	private static void removeInstance(Article article) {
-		instances.remove(getCoreId(article.getWeb(), article.getTitle()));
+		Rdf2GoCore removed = instances.remove(getCoreId(article.getWeb(), article.getTitle()));
+		if (removed != null) {
+			EventManager.getInstance().unregister(removed);
+		}
 	}
 
 	private final String bns;
@@ -739,7 +742,12 @@ public class Rdf2GoCore implements EventListener {
 		}
 
 		if (event instanceof ArticleCreatedEvent) {
-			commit();
+			Article article = ((ArticleCreatedEvent) event).getArticle();
+			String coreId = getCoreId(article.getWeb(), article.getTitle());
+			Rdf2GoCore instance = instances.get(coreId);
+			if (this == instance || this == globaleInstance) {
+				commit();
+			}
 		}
 	}
 
