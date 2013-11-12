@@ -38,7 +38,7 @@ import de.knowwe.kdom.constraint.SingleChildConstraint;
 public class ValueType extends AbstractType {
 
 	public ValueType() {
-		setSectionFinder(new AllTextSectionFinder());
+		setSectionFinder(AllTextSectionFinder.getInstance());
 
 		Number number = new Number();
 		number.setRenderer(DefaultTextRenderer.getInstance());
@@ -56,7 +56,7 @@ public class ValueType extends AbstractType {
 		};
 
 		// aRef.setCustomRenderer(DefaultTextRenderer.getInstance());
-		aRef.setSectionFinder(new AllTextSectionFinder());
+		aRef.setSectionFinder(AllTextSectionFinder.getInstance());
 
 		addChildType(aRef);
 	}

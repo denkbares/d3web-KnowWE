@@ -61,7 +61,7 @@ public class QuestionSetValueNumLine extends AbstractType {
 	private static final String CLOSE = ")";
 
 	public QuestionSetValueNumLine() {
-		this.setSectionFinder(new ConditionalSectionFinder(new AllTextSectionFinder()) {
+		this.setSectionFinder(new ConditionalSectionFinder(AllTextSectionFinder.getInstance()) {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {

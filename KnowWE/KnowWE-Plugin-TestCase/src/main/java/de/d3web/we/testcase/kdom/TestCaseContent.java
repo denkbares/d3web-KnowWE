@@ -64,7 +64,7 @@ import de.knowwe.testcases.TimeStampType;
 public class TestCaseContent extends AbstractType {
 
 	protected TestCaseContent() {
-		this.setSectionFinder(new AllTextSectionFinder());
+		this.setSectionFinder(AllTextSectionFinder.getInstance());
 		this.addChildType(new SequentialTestCase());
 		this.addSubtreeHandler(Priority.LOWEST, new TestSuiteSubTreeHandler());
 	}

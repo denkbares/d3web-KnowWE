@@ -50,7 +50,7 @@ public class PropertyValueType extends AbstractType {
 
 
 	public PropertyValueType() {
-		setSectionFinder(new ConstraintSectionFinder(new AllTextSectionFinder(),
+		setSectionFinder(new ConstraintSectionFinder(AllTextSectionFinder.getInstance(),
 				new TableIndexConstraint(1, Integer.MAX_VALUE, 1, Integer.MAX_VALUE)));
 
 		addSubtreeHandler(new SubtreeHandler<Type>() {

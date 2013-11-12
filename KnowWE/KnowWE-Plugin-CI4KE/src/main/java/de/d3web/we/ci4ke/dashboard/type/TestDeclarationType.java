@@ -38,7 +38,7 @@ public class TestDeclarationType extends AbstractType {
 		addChildType(new ParameterType());
 
 		// add finder to get the whole text before the first ignore
-		ConstraintSectionFinder finder = new ConstraintSectionFinder(new AllTextSectionFinder());
+		ConstraintSectionFinder finder = new ConstraintSectionFinder(AllTextSectionFinder.getInstance());
 		finder.addConstraint(SingleChildConstraint.getInstance());
 		finder.addConstraint(AtMostOneFindingConstraint.getInstance());
 		setSectionFinder(finder);

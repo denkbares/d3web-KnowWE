@@ -44,7 +44,7 @@ public class UsesAnnotationNameType extends AbstractType {
 
 	public UsesAnnotationNameType() {
 
-		this.setSectionFinder(new AllTextSectionFinder());
+		this.setSectionFinder(AllTextSectionFinder.getInstance());
 		this.setRenderer(new PackageAnnotationNameRenderer());
 
 	}

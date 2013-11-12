@@ -73,7 +73,7 @@ public class QuestionLine extends AbstractType {
 	public QuestionLine() {
 
 		// every line containing [...] (unquoted) is recognized as QuestionLine
-		this.setSectionFinder(new ConditionalSectionFinder(new AllTextSectionFinder()) {
+		this.setSectionFinder(new ConditionalSectionFinder(AllTextSectionFinder.getInstance()) {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {

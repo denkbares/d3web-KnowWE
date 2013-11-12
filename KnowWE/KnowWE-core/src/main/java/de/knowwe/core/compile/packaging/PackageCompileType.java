@@ -20,7 +20,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 public abstract class PackageCompileType extends AbstractType implements PackageCompiler {
 
 	public PackageCompileType() {
-		this.setSectionFinder(new AllTextSectionFinder());
+		this.setSectionFinder(AllTextSectionFinder.getInstance());
 		this.setIgnorePackageCompile(true);
 		this.addSubtreeHandler(Priority.PRECOMPILE_LOW, new PackageCompileHandler());
 	}

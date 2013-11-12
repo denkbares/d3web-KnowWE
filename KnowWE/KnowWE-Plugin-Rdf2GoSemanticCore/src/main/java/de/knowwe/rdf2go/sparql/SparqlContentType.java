@@ -39,7 +39,7 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 public class SparqlContentType extends AbstractType {
 
 	public SparqlContentType() {
-		this.setSectionFinder(new AllTextSectionFinder());
+		this.setSectionFinder(AllTextSectionFinder.getInstance());
 		this.setRenderer(new SparqlMarkupRenderer());
 		this.addSubtreeHandler(new SparqlConstructHandler());
 	}

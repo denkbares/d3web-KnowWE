@@ -38,13 +38,13 @@ public class ParagraphTypeForLists extends AbstractType {
 		// placeholder for lists
 		// --
 
-		this.addChildType(3d, new CSSType());
-		this.addChildType(3d, new CSSDanglingType());
-		this.addChildType(3d, new BoldType());
-		this.addChildType(3d, new ItalicType());
-		this.addChildType(3d, new StrikeThroughType());
-		this.addChildType(3d, new ImageType());
-		this.addChildType(3d, new LinkType());
-		this.addChildType(3d, new WikiTextType());
+		this.addChildType(6d, new CSSType());
+		this.addChildType(6d, new CSSDanglingType());
+		this.addChildType(6d, new BoldType());
+		this.addChildType(6d, new ItalicType());
+		this.addChildType(6d, new StrikeThroughType());
+		this.addChildType(6d, new ImageType());
+		this.addChildType(6d, new LinkType());
+		this.addChildType(6d, new WikiTextType());
 	}
 }

@@ -60,7 +60,7 @@ import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
 public class AnswerLine extends AbstractType {
 
 	public AnswerLine() {
-		this.setSectionFinder(new ConditionalSectionFinder(new AllTextSectionFinder()) {
+		this.setSectionFinder(new ConditionalSectionFinder(AllTextSectionFinder.getInstance()) {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {

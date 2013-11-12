@@ -37,9 +37,11 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.MessageRenderer;
+import de.knowwe.tools.ToolMenuDecoratingRenderer;
 
 /**
  * This class represents a section of the top-level default markup. That markup
@@ -108,7 +110,7 @@ public class DefaultMarkupType extends AbstractType implements RenamableTerm {
 	private final static int FLAGS =
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL;
 
-	private final static String SECTION_REGEXP =
+	private final static String SECTION_REGEXP_BLOCK =
 			// Declaration
 			"^\\p{Blank}*%%$NAME$\\p{Blank}*" +
 					"(?:" +
@@ -130,12 +132,22 @@ public class DefaultMarkupType extends AbstractType implements RenamableTerm {
 					// --> anything in a single line (reluctant match)
 					"))";
 
+	private final static String SECTION_REGEXP_INLINE =
+			// Declaration
+			"%%$NAME$\\p{Blank}*" +
+					// single-line content with termination
+					// at least one non-whitespace character followed by any
+					// non-line-break item
+					"[:=\\p{Blank}]\\p{Blank}*([^/][^$]*?[%/]%)"; // CONTENT
+
 	private final DefaultMarkup markup;
 
 	public DefaultMarkupType(DefaultMarkup markup) {
 		this.markup = markup;
-		this.setRenderer(new DefaultMarkupRenderer());
-		Pattern pattern = getPattern(markup.getName());
+		this.setRenderer(markup.isInline()
+				? new ToolMenuDecoratingRenderer(DelegateRenderer.getInstance())
+				: new DefaultMarkupRenderer());
+		Pattern pattern = getPattern(markup.getName(), markup.isInline());
 		this.setSectionFinder(new RegexSectionFinder(pattern, 0));
 		// add children
 		this.addChildType(new ContentType(markup));
@@ -149,7 +161,6 @@ public class DefaultMarkupType extends AbstractType implements RenamableTerm {
 		this.addSubtreeHandler(new DefaultMarkupTermReferenceRegisterHandler());
 	}
 
-	// TODO: already exists in parent class! Is this a problem?
 	@Override
 	public String getName() {
 		return this.markup.getName();
@@ -383,8 +394,9 @@ public class DefaultMarkupType extends AbstractType implements RenamableTerm {
 	 * @param name the name of the section ("%%&lt;name&gt;")
 	 * @return the pattern to match the complete section
 	 */
-	public static Pattern getPattern(String name) {
-		String regexp = SECTION_REGEXP.replace("$NAME$", name);
+	public static Pattern getPattern(String name, boolean isInline) {
+		String regex = isInline ? SECTION_REGEXP_INLINE : SECTION_REGEXP_BLOCK;
+		String regexp = regex.replace("$NAME$", name);
 		return Pattern.compile(regexp, FLAGS);
 	}
 

@@ -8,11 +8,11 @@ public class CellContent extends AbstractType {
 
 	public CellContent() {
 
-		this.setSectionFinder(new AllTextSectionFinder());
+		this.setSectionFinder(AllTextSectionFinder.getInstance());
 		this.addSubtreeHandler(new CellTypeHandler());
 
 		AnonymousType anonymousType = new AnonymousType("CellContent");
-		anonymousType.setSectionFinder(new AllTextSectionFinder());
+		anonymousType.setSectionFinder(AllTextSectionFinder.getInstance());
 		this.addChildType(anonymousType);
 
 	}

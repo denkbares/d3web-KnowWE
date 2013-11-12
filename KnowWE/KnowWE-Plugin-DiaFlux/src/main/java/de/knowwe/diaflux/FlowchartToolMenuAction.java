@@ -27,6 +27,7 @@ import org.json.JSONObject;
 
 import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;
+import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.objects.Term;
@@ -46,7 +47,7 @@ import de.knowwe.kdom.xml.AbstractXMLType;
 public class FlowchartToolMenuAction extends GetToolMenuAction {
 
 	@Override
-	protected Section<? extends Type> getSection(String identifier) {
+	protected Section<? extends Type> getSection(UserActionContext context, String identifier) {
 		try {
 			JSONObject json = new JSONObject(identifier);
 			String title = (String) json.get("pagename");

@@ -28,7 +28,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class RuleAction extends AbstractType {
 
 	public RuleAction() {
-		setSectionFinder(new AllTextSectionFinder());
+		setSectionFinder(AllTextSectionFinder.getInstance());
 		EndLineComment comment = new EndLineComment();
 		comment.setRenderer(StyleRenderer.COMMENT);
 		this.addChildType(comment);

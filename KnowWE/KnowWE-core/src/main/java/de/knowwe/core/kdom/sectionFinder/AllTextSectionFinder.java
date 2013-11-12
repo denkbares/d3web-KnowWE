@@ -33,6 +33,19 @@ import de.knowwe.core.kdom.parsing.Section;
  */
 public class AllTextSectionFinder implements SectionFinder {
 
+	private static final AllTextSectionFinder instance = new AllTextSectionFinder();
+
+	/**
+	 * @deprecated use {@link AllTextSectionFinder#getInstance()} instead
+	 */
+	@Deprecated
+	public AllTextSectionFinder() {
+	}
+
+	public static AllTextSectionFinder getInstance() {
+		return instance;
+	}
+
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		if (text.length() > 0) {
@@ -41,5 +54,4 @@ public class AllTextSectionFinder implements SectionFinder {
 		}
 		return null;
 	}
-
 }

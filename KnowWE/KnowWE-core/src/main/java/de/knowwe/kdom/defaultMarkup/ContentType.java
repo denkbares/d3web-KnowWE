@@ -65,7 +65,7 @@ public class ContentType extends AbstractType {
 				"(?:(?!$LINESTART$\\p{Space}*@\\w+).)*?";
 
 		private final static String ENDTAG =
-				"(?:^\\p{Blank}*/?%\\p{Blank}*$|\\z|\\p{Space}+@\\w+)";
+				"(?:^\\p{Blank}*[/%]?%\\p{Blank}*$|\\z|$LINESTART$\\p{Space}*@\\w+)";
 
 		private final static String REGEX = STARTTAG + "(" + CONTENT + ")" + ENDTAG;
 

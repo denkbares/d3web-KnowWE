@@ -60,7 +60,7 @@ public class PropertyTableType extends DefaultMarkupType {
 				new PackageTerm(true));
 
 		PropertyType propertyType = new PropertyType();
-		propertyType.setSectionFinder(new ConstraintSectionFinder(new AllTextSectionFinder(),
+		propertyType.setSectionFinder(new ConstraintSectionFinder(AllTextSectionFinder.getInstance(),
 				new TableIndexConstraint(1, Integer.MAX_VALUE, 0,1)));
 		
 		propertyType.addSubtreeHandler(new SubtreeHandler<PropertyType>() {
@@ -82,7 +82,7 @@ public class PropertyTableType extends DefaultMarkupType {
 		content.injectTableCellContentChildtype(propertyType);
 		
 		NamedObjectReference qRef = new NamedObjectReference();
-		qRef.setSectionFinder(new ConstraintSectionFinder(new AllTextSectionFinder(),
+		qRef.setSectionFinder(new ConstraintSectionFinder(AllTextSectionFinder.getInstance(),
 				new TableIndexConstraint(0, 1, 1, Integer.MAX_VALUE)));
 
 		content.injectTableCellContentChildtype(qRef);

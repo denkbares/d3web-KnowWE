@@ -34,7 +34,7 @@ import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 public class InjectType extends AbstractType {
 
 	public InjectType() {
-		this.setSectionFinder(new AllTextSectionFinder());
+		this.setSectionFinder(AllTextSectionFinder.getInstance());
 	}
 
 }

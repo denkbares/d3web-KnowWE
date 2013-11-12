@@ -28,7 +28,7 @@ import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 public class TableCellContent extends AbstractType {
 
 	public TableCellContent() {
-		this.setSectionFinder(new AllTextSectionFinder());
+		this.setSectionFinder(AllTextSectionFinder.getInstance());
 		this.setRenderer(new TableCellContentRenderer());
 	}
 

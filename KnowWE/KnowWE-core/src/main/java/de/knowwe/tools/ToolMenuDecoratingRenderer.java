@@ -42,17 +42,34 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 	public void render(Section<?> sec, UserContext user, RenderResult string) {
 		// prepare tools
 		Tool[] tools = ToolUtils.getTools(sec, user);
-		boolean hasTools = tools != null && tools.length > 0;
+		final boolean hasTools = tools != null && tools.length > 0;
 
-		String headerID = "tool_menu_" + sec.getID() + "_" + UUID.randomUUID().toString();
+		String headerID;
 
 		if (hasTools) {
+			headerID = "tool_menu_" + sec.getID() + "_" + UUID.randomUUID().toString();
 			string.appendHtmlTag("span", "style", "position:relative;");
 			string.appendHtmlTag("span", "style", "position:absolute", "class",
 					"toolsMenuDecorator", "id", headerID, "toolMenuIdentifier", sec.getID());
 			string.appendHtmlTag("/span");
 		}
 		decoratedRenderer.render(sec, user, string);
+		if (hasTools) {
+			string.appendHtmlTag("/span");
+		}
+	}
+
+	public static void renderText(String innerText, String toolMenuID, boolean hasTools, RenderResult string) {
+		String headerID;
+
+		if (hasTools) {
+			headerID = "tool_menu_" + toolMenuID + "_" + UUID.randomUUID().toString();
+			string.appendHtmlTag("span", "style", "position:relative;");
+			string.appendHtmlTag("span", "style", "position:absolute", "class",
+					"toolsMenuDecorator", "id", headerID, "toolMenuIdentifier", toolMenuID);
+			string.appendHtmlTag("/span");
+		}
+		string.append(innerText);
 		if (hasTools) {
 			string.appendHtmlTag("/span");
 		}

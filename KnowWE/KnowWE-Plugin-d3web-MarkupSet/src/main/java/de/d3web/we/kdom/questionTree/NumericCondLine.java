@@ -42,7 +42,7 @@ import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
 public class NumericCondLine extends AbstractType {
 
 	public NumericCondLine() {
-		this.setSectionFinder(new ConditionalSectionFinder(new AllTextSectionFinder()) {
+		this.setSectionFinder(new ConditionalSectionFinder(AllTextSectionFinder.getInstance()) {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {

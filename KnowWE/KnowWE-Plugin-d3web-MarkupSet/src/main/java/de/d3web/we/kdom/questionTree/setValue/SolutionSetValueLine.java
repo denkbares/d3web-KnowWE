@@ -74,7 +74,7 @@ public class SolutionSetValueLine extends AbstractType {
 	class SolutionSetValueFinder extends ConditionalSectionFinder {
 
 		public SolutionSetValueFinder() {
-			super(new AllTextSectionFinder());
+			super(AllTextSectionFinder.getInstance());
 		}
 
 		@Override

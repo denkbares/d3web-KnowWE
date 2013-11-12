@@ -45,7 +45,7 @@ public class PlainText extends AbstractType {
 
 	public PlainText() {
 		this.setRenderer(DefaultTextRenderer.getInstance());
-		this.setSectionFinder(new AllTextSectionFinder());
+		this.setSectionFinder(AllTextSectionFinder.getInstance());
 	}
 
 	/**

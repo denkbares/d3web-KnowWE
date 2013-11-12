@@ -49,12 +49,12 @@ public class CellContent extends TableCellContent {
 				new TableNameConstraint("Time", Arrays.asList(0, 1))));
 
 		NameType nameType = new NameType();
-		nameType.setSectionFinder(new ConstraintSectionFinder(new AllTextSectionFinder(),
+		nameType.setSectionFinder(new ConstraintSectionFinder(AllTextSectionFinder.getInstance(),
 				new TableNameConstraint("Name", Arrays.asList(0))));
 
 		CompositeCondition checkType = new CompositeCondition();
 		checkType.setAllowedTerminalConditions(RuleContentType.getTerminalConditions());
-		checkType.setSectionFinder(new ConstraintSectionFinder(new AllTextSectionFinder(),
+		checkType.setSectionFinder(new ConstraintSectionFinder(AllTextSectionFinder.getInstance(),
 				new TableNameConstraint("Checks", null),
 				NoBlankSectionsConstraint.getInstance()));
 

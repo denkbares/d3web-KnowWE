@@ -42,7 +42,7 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
 public class AttachmentType extends AbstractType {
 
 	public AttachmentType() {
-		setSectionFinder(new AllTextSectionFinder());
+		setSectionFinder(AllTextSectionFinder.getInstance());
 		addSubtreeHandler(Priority.HIGHER, new SubtreeHandler<AttachmentType>() {
 
 			@Override

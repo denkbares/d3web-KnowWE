@@ -38,7 +38,7 @@ public abstract class BracketsAction<T extends Type> extends D3webRuleAction<T> 
 	protected static final String CLOSE = "]";
 
 	public BracketsAction(final String[] alternativeKeys) {
-		this.setSectionFinder(new ConditionalSectionFinder(new AllTextSectionFinder()) {
+		this.setSectionFinder(new ConditionalSectionFinder(AllTextSectionFinder.getInstance()) {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {

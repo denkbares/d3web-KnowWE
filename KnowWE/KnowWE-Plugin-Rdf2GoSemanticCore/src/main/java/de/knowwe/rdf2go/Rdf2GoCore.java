@@ -72,6 +72,7 @@ import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.event.ArticleCreatedEvent;
 import de.knowwe.event.FullParseEvent;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 /**
@@ -991,6 +992,10 @@ public class Rdf2GoCore implements EventListener {
 		model.close();
 
 		return result;
+	}
+
+	public QueryResultTable sparqlSelect(SparqlQuery query) throws ModelRuntimeException, MalformedQueryException {
+		return sparqlSelect(query.toString());
 	}
 
 	public QueryResultTable sparqlSelect(String query) throws ModelRuntimeException, MalformedQueryException {

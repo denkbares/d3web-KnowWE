@@ -49,7 +49,7 @@ public class NamespaceFileAnnotationType extends AbstractType {
 	public NamespaceFileAnnotationType() {
 		this.addChildType(new AbbreviationPrefixReference());
 		this.addChildType(new FileNameType());
-		this.setSectionFinder(new AllTextSectionFinder());
+		this.setSectionFinder(AllTextSectionFinder.getInstance());
 		this.addSubtreeHandler(Priority.HIGH, new ReadOntologyFileHandler());
 	}
 
@@ -128,7 +128,7 @@ public class NamespaceFileAnnotationType extends AbstractType {
 	private static class FileNameType extends AbstractType {
 
 		public FileNameType() {
-			this.setSectionFinder(new AllTextSectionFinder());
+			this.setSectionFinder(AllTextSectionFinder.getInstance());
 		}
 	}
 

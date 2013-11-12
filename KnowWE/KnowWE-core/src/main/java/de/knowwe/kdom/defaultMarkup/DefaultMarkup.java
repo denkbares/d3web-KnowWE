@@ -142,6 +142,7 @@ public class DefaultMarkup {
 	private final Collection<Type> types = new LinkedList<Type>();
 	private final Map<String, Annotation> annotations = new HashMap<String, Annotation>();
 	private String deprecatedAlternative = null;
+	private boolean isInline = false;
 
 	public DefaultMarkup(String name) {
 		super();
@@ -338,6 +339,32 @@ public class DefaultMarkup {
 
 	public String getDeprecatedAlternative() {
 		return deprecatedAlternative;
+	}
+
+	/**
+	 * Returns if this markup shall be used as an inline markup, which means
+	 * that the markup is used in a line containing other wiki text. In this
+	 * case the markup still starts with a "%%" and is terminated either with
+	 * "%%" oder "/%" (sourrounded by white spaces).
+	 * 
+	 * @created 11.11.2013
+	 * @return if the markup shall be used inline
+	 */
+	public boolean isInline() {
+		return isInline;
+	}
+
+	/**
+	 * Specifies if this markup shall be used as an inline markup, which means
+	 * that the markup is used in a line containing other wiki text. In this
+	 * case the markup still starts with a "%%" and is terminated either with
+	 * "%%" oder "/%" (sourrounded by white spaces).
+	 * 
+	 * @created 11.11.2013
+	 * @param isInline if the markup shall be used inline
+	 */
+	public void setInline(boolean isInline) {
+		this.isInline = isInline;
 	}
 
 }

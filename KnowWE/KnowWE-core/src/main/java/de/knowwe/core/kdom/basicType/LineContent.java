@@ -37,6 +37,6 @@ public class LineContent extends AbstractType {
 	}
 
 	protected LineContent() {
-		this.setSectionFinder(new AllTextSectionFinder());
+		this.setSectionFinder(AllTextSectionFinder.getInstance());
 	}
 }

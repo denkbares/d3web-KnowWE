@@ -62,7 +62,7 @@ public class ExitType extends AbstractXMLType {
 
 		public ExitNodeDef() {
 			super(TermRegistrationScope.LOCAL, String.class);
-			setSectionFinder(new AllTextSectionFinder());
+			setSectionFinder(AllTextSectionFinder.getInstance());
 			setRenderer(StyleRenderer.FlowchartExit);
 		}
 
