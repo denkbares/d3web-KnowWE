@@ -60,13 +60,19 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 	}
 
 	public static void renderText(String innerText, String toolMenuID, boolean hasTools, RenderResult string) {
+		renderText(innerText, toolMenuID, "GetToolMenuAction", hasTools, string);
+	}
+
+	public static void renderText(String innerText, String toolMenuID, String toolMenuAction, boolean hasTools, RenderResult string) {
 		String headerID;
 
 		if (hasTools) {
 			headerID = "tool_menu_" + toolMenuID + "_" + UUID.randomUUID().toString();
 			string.appendHtmlTag("span", "style", "position:relative;");
 			string.appendHtmlTag("span", "style", "position:absolute", "class",
-					"toolsMenuDecorator", "id", headerID, "toolMenuIdentifier", toolMenuID);
+					"toolsMenuDecorator", "id", headerID,
+					"toolMenuIdentifier", toolMenuID,
+					"toolMenuAction", toolMenuAction);
 			string.appendHtmlTag("/span");
 		}
 		string.append(innerText);

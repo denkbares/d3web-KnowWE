@@ -18,6 +18,8 @@
  */
 package de.knowwe.rdf2go.sparql.utils;
 
+import de.knowwe.rdf2go.utils.Rdf2GoUtils;
+
 /**
  * 
  * @author Albrecht Striffler (denkbares GmbH)
@@ -62,6 +64,10 @@ public class SparqlQuery {
 		for (String part : content)
 			contentBuilder.append(part + " ");
 		return contentBuilder.toString();
+	}
+
+	public String toSparql() {
+		return Rdf2GoUtils.createSparqlString(toString());
 	}
 
 }

@@ -23,6 +23,7 @@
 package de.knowwe.ontology.kdom.turtle;
 
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.rendering.AnchorRenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 
 public class TurtleMarkupN3Content extends AbstractType {
@@ -30,6 +31,9 @@ public class TurtleMarkupN3Content extends AbstractType {
 	public TurtleMarkupN3Content() {
 		this.setSectionFinder(new AllTextFinderTrimmed());
 		this.addChildType(new TurtleSentence());
+
+		// required to be able to directly navigate from rendered previews
+		this.setRenderer(AnchorRenderer.getDelegateInstance());
 	}
 
 }

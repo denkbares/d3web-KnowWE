@@ -51,7 +51,7 @@ public class SparqlMarkupRenderer implements Renderer {
 	@Override
 	public void render(Section<?> sec, UserContext user, RenderResult result) {
 
-		String sparqlString = Rdf2GoUtils.createSparqlString(sec);
+		String sparqlString = Rdf2GoUtils.createSparqlString(sec.getText());
 
 		try {
 			if (sparqlString.toLowerCase().startsWith("construct")) {

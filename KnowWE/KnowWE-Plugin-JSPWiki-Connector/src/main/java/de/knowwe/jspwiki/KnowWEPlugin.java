@@ -397,12 +397,10 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				Environment.getInstance().buildAndRegisterArticle(content, wp.getName(),
 						Environment.DEFAULT_WEB);
 			}
-
 		}
 		articleManager.setArticlesInitialized(true);
 		articleManager.updateQueuedArticles();
 		EventManager.getInstance().fireEvent(InitializedAllArticlesEvent.getInstance());
-
 	}
 
 	private String renderKDOM(String content, UserContext userContext,

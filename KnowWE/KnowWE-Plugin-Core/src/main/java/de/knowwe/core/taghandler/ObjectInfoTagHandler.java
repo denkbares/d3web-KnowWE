@@ -195,6 +195,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				section.getWeb(), parameters, urlParameters, result);
 		renderObjectInfo(definitions, references, parameters, user, result);
 		renderPlainTextOccurrences(objectName, section.getWeb(), parameters, result);
+		result.append("\n");
 	}
 
 	protected void findTermSections(String web, Identifier termIdentifier, Set<Section<?>> definitions, Set<Section<?>> references) {

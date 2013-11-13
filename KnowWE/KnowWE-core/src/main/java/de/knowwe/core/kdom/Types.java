@@ -2,7 +2,9 @@ package de.knowwe.core.kdom;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -62,20 +64,6 @@ public class Types {
 	}
 
 	/**
-	 * Returns whether the specified type is an instance of the specified
-	 * {@link Type} instance.
-	 * 
-	 * @created 27.08.2013
-	 * @param type the type to be tested
-	 * @param clazz the class to check against
-	 * @return if the type can be cast to be an instance from the specified
-	 *         class
-	 */
-	public static boolean isAssignableFromType(Type type, Class<? extends Type> clazz) {
-		return clazz.isAssignableFrom(type.getClass());
-	}
-
-	/**
 	 * Injects a given renderer to all successors of the specified type in the
 	 * type hierarchy.
 	 * 
@@ -113,8 +101,8 @@ public class Types {
 	 */
 	public static void injectRendererToType(Collection<Type> set, Class<? extends AbstractType> clazz, Renderer renderer) {
 		for (Type t : set) {
-			if (Types.isAssignableFromType(t, clazz)) {
-				((AbstractType) t).setRenderer(renderer);
+			if (clazz.isInstance(t)) {
+				clazz.cast(t).setRenderer(renderer);
 			}
 		}
 	}
@@ -131,7 +119,7 @@ public class Types {
 		List<Type> childrenTypes = typeHierarchy.getChildrenTypes();
 		int index = -1;
 		for (Type child : childrenTypes) {
-			if (Types.isAssignableFromType(child, c)) {
+			if (c.isInstance(child)) {
 				index = childrenTypes.indexOf(child);
 				// we only replace first occurrence
 				break;
@@ -157,6 +145,7 @@ public class Types {
 
 	/**
 	 * Getting of all successor types of a {@link Type} in depth-first-order.
+	 * The specified type will always become a member of the returned types.
 	 * 
 	 * @param type the root of the type hierarchy to be fetched
 	 * @return the list of all types
@@ -192,15 +181,37 @@ public class Types {
 	 * @param clazz the class to be searched for
 	 * @return the matched {@link Type} instance
 	 */
-	public static <OT extends Type> Type findSuccessorType(Type root, Class<OT> clazz) {
+	public static <OT extends Type> OT findSuccessorType(Type root, Class<OT> clazz) {
 		List<Type> childrenTypes = root.getChildrenTypes();
 		for (Type type : childrenTypes) {
-			if (Types.isAssignableFromType(type, clazz)) {
-				return type;
+			if (clazz.isInstance(type)) {
+				return clazz.cast(type);
 			}
-			Type t = findSuccessorType(type, clazz);
+			OT t = findSuccessorType(type, clazz);
 			if (t != null) return t;
 		}
 		return null;
+	}
+
+	/**
+	 * Retrieves all successor {@link Type}s of the specified class (or being a
+	 * subclass or implementation of the specified class) in the specified
+	 * hierarchy. If no such type exists, an empty collection is returned
+	 * 
+	 * @created 02.03.2011
+	 * @param <OT>
+	 * @param root the root of the hierarchy
+	 * @param clazz the class to be searched for
+	 * @return the matched {@link Type} instance
+	 */
+	public static <OT extends Type> Collection<OT> findSuccessorTypes(Type root, Class<OT> clazz) {
+		Collection<Type> types = getAllChildrenTypesRecursive(root);
+		List<OT> result = new LinkedList<OT>();
+		for (Type type : types) {
+			if (clazz.isInstance(type)) {
+				result.add(clazz.cast(type));
+			}
+		}
+		return Collections.unmodifiableCollection(result);
 	}
 }

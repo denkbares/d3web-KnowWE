@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
@@ -60,6 +61,7 @@ import org.ontoware.rdf2go.vocabulary.RDFS;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
+import de.d3web.strings.Identifier;
 import de.knowwe.core.Environment;
 import de.knowwe.core.event.Event;
 import de.knowwe.core.event.EventListener;
@@ -220,6 +222,43 @@ public class Rdf2GoCore implements EventListener {
 		model.open();
 		model.setNamespace(abbreviation, namespace);
 		model.close();
+	}
+
+	/**
+	 * De-resolves a specified uri to a short uri name. If there is no matching
+	 * namespace, the full uri is returned.
+	 * 
+	 * @created 13.11.2013
+	 * @param uri the uri to be de-resolved
+	 * @return the short uri name
+	 */
+	public URI toShortURI(URI uri) {
+		String uriText = uri.toString();
+		int length = 0;
+		URI shortURI = uri;
+		for (Entry<String, String> entry : namespaces.entrySet()) {
+			String partURI = entry.getValue();
+			int partLength = partURI.length();
+			if (partLength > length && uriText.startsWith(partURI)) {
+				String shortText = entry.getKey() + ":" + uriText.substring(partLength);
+				shortURI = new ShortURIImpl(shortText, uri);
+				length = partLength;
+			}
+		}
+		return shortURI;
+	}
+
+	/**
+	 * Returns the terminology manager's identifier for the specified uri. The
+	 * uri's identifier is usually based on the short version of the uri, if
+	 * there is any.
+	 * 
+	 * @created 13.11.2013
+	 * @param uri the uri to create the identifier for
+	 * @return the identifier for the specified uri
+	 */
+	public Identifier toIndentifier(URI uri) {
+		return ShortURIImpl.toIdentifier(toShortURI(uri));
 	}
 
 	/**
@@ -1003,7 +1042,7 @@ public class Rdf2GoCore implements EventListener {
 	}
 
 	public QueryResultTable sparqlSelect(SparqlQuery query) throws ModelRuntimeException, MalformedQueryException {
-		return sparqlSelect(query.toString());
+		return sparqlSelect(query.toSparql());
 	}
 
 	public QueryResultTable sparqlSelect(String query) throws ModelRuntimeException, MalformedQueryException {

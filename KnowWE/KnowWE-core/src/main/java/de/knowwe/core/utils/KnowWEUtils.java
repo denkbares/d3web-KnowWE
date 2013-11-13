@@ -120,6 +120,7 @@ public class KnowWEUtils {
 		mask(builder, "}}}");
 		mask(builder, "%%");
 		mask(builder, "\\");
+		mask(builder, "__");
 	}
 
 	/**

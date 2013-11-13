@@ -18,7 +18,6 @@ import org.ontoware.rdf2go.vocabulary.RDFS;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
-import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.Rdf2GoCore.Rdf2GoReasoning;
 
@@ -159,11 +158,7 @@ public class Rdf2GoUtils {
 		return Strings.encodeURL(temp);
 	}
 
-	/**
-	 * get Sparql String from Section
-	 */
-	public static String createSparqlString(Section<?> sec) {
-		String sparqlString = sec.getText();
+	public static String createSparqlString(String sparqlString) {
 		sparqlString = sparqlString.trim();
 		sparqlString = sparqlString.replaceAll("\n", " ");
 		sparqlString = sparqlString.replaceAll("\r", "");
@@ -171,7 +166,7 @@ public class Rdf2GoUtils {
 		Map<String, String> nameSpaces = Rdf2GoCore.getInstance().getNameSpaces();
 
 		StringBuilder newSparqlString = new StringBuilder();
-		StringBuilder pattern = new StringBuilder(" <((");
+		StringBuilder pattern = new StringBuilder("[\\s\n\r()]<((");
 		boolean first = true;
 		for (String nsShort : nameSpaces.keySet()) {
 			if (first) first = false;
