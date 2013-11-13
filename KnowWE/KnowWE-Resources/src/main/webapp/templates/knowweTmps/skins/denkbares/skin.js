@@ -227,7 +227,7 @@ DenkbaresSkin.resizeFlows = function() {
 	jq$('.Flowchart').each(function() {
 		var newWidth = parseInt(jq$('#pagecontent').css('width'));
 		newWidth = (Math.round(newWidth / 10) * 10) - 9;
-		jq$(this).css('width', newWidth);
+		jq$(this).css('min-width', newWidth);
 	});
 }
 
