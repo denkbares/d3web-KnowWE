@@ -125,6 +125,24 @@ public class Rdf2GoCore implements EventListener {
 		return globaleInstance;
 	}
 
+	/**
+	 * Returns the title of the compiling master article of this core
+	 * 
+	 * @created 13.11.2013
+	 * @param core
+	 * @return
+	 */
+	public static String getMaster(Rdf2GoCore core, String web) {
+		Set<Entry<String, Rdf2GoCore>> entrySet = instances.entrySet();
+		for (Entry<String, Rdf2GoCore> entry : entrySet) {
+			if (entry.getValue().equals(core)) {
+				String articleIdentifier = entry.getKey();
+				return articleIdentifier.substring(web.length() + 1);
+			}
+		}
+		return null;
+	}
+
 	public static Rdf2GoCore getInstance(String web, String master) {
 		String coreId = getCoreId(web, master);
 		Rdf2GoCore instance = instances.get(coreId);

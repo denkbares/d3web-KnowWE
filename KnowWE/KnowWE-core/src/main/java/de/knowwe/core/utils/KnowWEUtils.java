@@ -425,7 +425,21 @@ public class KnowWEUtils {
 	 * @see #getWikiLink(Section)
 	 */
 	public static String getLinkHTMLToArticle(String title) {
-		return "<a href='" + getURLLink(title) + "' >" + title + "</a>";
+		return getLinkHTMLToArticle(title, title);
+	}
+
+	/**
+	 * Creates a &lt;a href="..."&gt; styled link to the specified article
+	 * including the HTML-anchor tag.
+	 * 
+	 * @param title the article title to create the link for
+	 * @param linkText the text for the link
+	 * @return the created link
+	 * @see #getURLLink(Section)
+	 * @see #getWikiLink(Section)
+	 */
+	public static String getLinkHTMLToArticle(String title, String linkText) {
+		return "<a href='" + getURLLink(title) + "' >" + linkText + "</a>";
 	}
 
 	/**
