@@ -40,10 +40,6 @@ public class AbbreviatedResourceDefinition extends AbstractType {
 		this.setSectionFinder(new AllTextFinderTrimmed());
 	}
 
-	public static String toTermName(String abbreviation, String resource) {
-		return abbreviation + ":" + resource;
-	}
-
 	public String getResource(Section<? extends AbbreviatedResourceDefinition> section) {
 		Section<ResourceDefinition> resourceSection = Sections.findChildOfType(section,
 				ResourceDefinition.class);
