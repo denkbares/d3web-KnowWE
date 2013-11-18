@@ -195,7 +195,8 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler<FlowchartType> 
 	public static String getXMLContentText(Section<? extends AbstractXMLType> s) {
 		Section<XMLContent> contentChild = AbstractXMLType.getContentChild(s);
 		if (contentChild == null) return "";
-		else return contentChild.getText();
+		else return contentChild.getText().replaceAll("^<!\\[CDATA\\[", "").replaceAll("\\]\\]>$",
+				"");
 	}
 
 	@SuppressWarnings("unchecked")
