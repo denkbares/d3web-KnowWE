@@ -428,12 +428,12 @@ public class Rdf2GoCore implements EventListener {
 
 		long startRemove = System.currentTimeMillis();
 		model.removeAll(removeCache.iterator());
-		EventManager.getInstance().fireEvent(new RemoveStatementsEvent(removeCache));
+		EventManager.getInstance().fireEvent(new RemoveStatementsEvent(removeCache, this));
 		if (verboseLog) logStatements(sortedRemoveCache, startRemove, "Removed statements:\n");
 
 		long startInsert = System.currentTimeMillis();
 		model.addAll(insertCache.iterator());
-		EventManager.getInstance().fireEvent(new InsertStatementsEvent(insertCache));
+		EventManager.getInstance().fireEvent(new InsertStatementsEvent(insertCache, this));
 		if (verboseLog) logStatements(new TreeSet<Statement>(insertCache), startInsert,
 				"Inserted statements:\n");
 

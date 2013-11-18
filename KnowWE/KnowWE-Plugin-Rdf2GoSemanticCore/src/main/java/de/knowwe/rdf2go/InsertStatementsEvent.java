@@ -4,17 +4,13 @@ import java.util.Collection;
 
 import org.ontoware.rdf2go.model.Statement;
 
-import de.knowwe.core.event.Event;
 
-public class InsertStatementsEvent extends Event {
+public class InsertStatementsEvent extends ModifiedCoreDataEvent {
 
-	private final Collection<Statement> statements;
-
-	public InsertStatementsEvent(Collection<Statement> statements) {
-		this.statements = statements;
+	public InsertStatementsEvent(Collection<Statement> statements, Rdf2GoCore core) {
+		super(statements, core);
 	}
 
-	public Collection<Statement> getStatements() {
-		return statements;
-	}
 }
+
+
