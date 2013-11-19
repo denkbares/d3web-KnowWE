@@ -48,7 +48,7 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 
 		if (hasTools) {
 			headerID = "tool_menu_" + sec.getID() + "_" + UUID.randomUUID().toString();
-			string.appendHtmlTag("span", "style", "position:relative;");
+			string.appendHtmlTag("span", "style", "position:relative;white-space: nowrap;");
 			string.appendHtmlTag("span", "style", "position:absolute", "class",
 					"toolsMenuDecorator", "id", headerID, "toolMenuIdentifier", sec.getID());
 			string.appendHtmlTag("/span");
@@ -68,7 +68,7 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 
 		if (hasTools) {
 			headerID = "tool_menu_" + toolMenuID + "_" + UUID.randomUUID().toString();
-			string.appendHtmlTag("span", "style", "position:relative;");
+			string.appendHtmlTag("span", "style", "position:relative; white-space: nowrap;");
 			string.appendHtmlTag("span", "style", "position:absolute", "class",
 					"toolsMenuDecorator", "id", headerID,
 					"toolMenuIdentifier", toolMenuID,
