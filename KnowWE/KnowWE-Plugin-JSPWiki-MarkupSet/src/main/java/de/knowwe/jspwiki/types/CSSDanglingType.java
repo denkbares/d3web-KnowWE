@@ -43,7 +43,7 @@ public class CSSDanglingType extends AbstractType {
 			@Override
 			public void render(Section<?> section, UserContext user, RenderResult result) {
 				String text = section.getText();
-				if (text.startsWith("%%(") || text.equals("%%") || text.equals("/%")) {
+				if (text.matches("^%%\\S.*") || text.equals("%%") || text.equals("/%")) {
 					result.append(text);
 				}
 				else {
