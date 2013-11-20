@@ -1938,3 +1938,20 @@ div.coverflow .knob {
 	overflow-x: auto;
 }
 
+.tocList ol { 
+	counter-reset: item;
+	padding-left: 0px;
+}
+
+.tocList li { 
+	display: block;
+}
+
+.tocList li:before { 
+	content: counters(item, ".") " "; 
+	counter-increment: item;
+	display: inline-block;
+	width: 8em;
+}
+
+
