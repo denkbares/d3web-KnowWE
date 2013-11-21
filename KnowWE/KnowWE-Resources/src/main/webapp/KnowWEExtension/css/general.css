@@ -201,6 +201,8 @@ code.box {
 .knowwetable select{
     width: 100px;
 }
+
+
 /* ################################################## */
 /* ------------->>> Panel Different  <<<------------- */
 /* ################################################## */
@@ -616,6 +618,17 @@ a.action.dialog {
     padding:0.25em 0.5em;
     text-decoration:none;
     white-space:nowrap;
+}
+
+/* ##################################### */
+/* ------->>> Ajax Laoding  <<<----------*/
+/* ##################################### */
+
+span.asynchronRenderer {
+	width: 32px;
+	height: 32px;
+	display: inline-block;
+	background-image: url(../images/ajax-loader.gif)
 }
 
 /* ################################################## */

@@ -286,27 +286,53 @@ KNOWWE.core.util = function(){
          * sure to validate the response properly before handling it here.
          * 
          * Parameters:
-         *     elements - The elements used for replacement.
+         *     htmlText - The html text of elements used for replacement.
          */
-        replace : function(elements){
-        	
-            //for( var i = 0; i < ids.length; i++){
-            //    if( typeof ids[i] != 'string' ) continue;
-                
-                  //var oldDOM = document.getElementById( ids[i] );
-                  var newDOMwrapper = document.createElement("div");
-                  newDOMwrapper.innerHTML = elements;
-                  
-                  var domChildNodes = newDOMwrapper.children;
-                  
-                  for(var j = 0; j < domChildNodes.length; j++) {
-                      var newDOM = domChildNodes[j];
-                      oldDOM = document.getElementById(newDOM.id);
-                      if(oldDOM) {
-                          oldDOM.parentNode.replaceChild( newDOM, oldDOM );
-                      }
-                  }
-            //}
+        replace : function(htmlText){
+			  var newDOMwrapper = document.createElement("div");
+			  newDOMwrapper.innerHTML = htmlText;
+			  
+			  var domChildNodes = newDOMwrapper.children;
+			  
+			  for(var j = 0; j < domChildNodes.length; j++) {
+			      var newDOM = domChildNodes[j];
+			      oldDOM = document.getElementById(newDOM.id);
+			      if(oldDOM) {
+			          oldDOM.parentNode.replaceChild( newDOM, oldDOM );
+			      }
+			  }
+        },
+        /**
+         * Function: replaceElement
+         * Used to replace elements in the DOM tree. The parameter 'elements'
+         * contains the HTML of the element one wants to replace. Multiple 
+         * elements can easily replaced since the function not only replaces the 
+         * root element in the elements HTML string but every element found on 
+         * the top level. 
+         * 
+         * In contrast to "replace", this method does not use any ids of the html
+         * to be replaced. Instead it replaces the specified ids with the root 
+         * elements of the specified html text. (first id with first element, 
+         * second with second, and so on).
+         * 
+         * The value for 'elements' often is a result from an AJAX query. So make 
+         * sure to validate the response properly before handling it here.
+         * 
+         * Parameters:
+         * 	   ids - array of ids to be replaced.
+         *     htmlText - The html text of the elements used for replacement.
+         */
+        replaceElement : function(ids, htmlText){
+	          var newDOMwrapper = document.createElement("div");
+	          newDOMwrapper.innerHTML = htmlText;
+	          var domChildNodes = newDOMwrapper.children;
+	          for(var j = 0; j < ids.length; j++) {
+	              var newDOM = domChildNodes[j];
+	              oldDOM = document.getElementById(ids[j]);
+	              if(oldDOM) {
+	                  oldDOM.parentNode.replaceChild( newDOM, oldDOM );
+	              }
+	          }
         }
     }
 }();
@@ -444,6 +470,7 @@ KNOWWE.core.rerendercontent = function(){
          */
         init : function(){
             KNOWWE.helper.observer.subscribe( 'update', KNOWWE.core.rerendercontent.update );
+            KNOWWE.core.rerendercontent.update(_KS('.asynchronRenderer'), 'replaceElement', false);
         },
         /**
          * Function: updateNode
@@ -469,12 +496,13 @@ KNOWWE.core.rerendercontent = function(){
          * Function: update
          * 
          */
-        update : function() {
-            var classlist = _KS('.ReRenderSectionMarker');             
+        update : function(elements, action, indicateProcess) {
+        	if (elements == undefined) elements = _KS('.ReRenderSectionMarker');
+        	if (action == undefined) action = 'replace';
             
-            if ( classlist.length != 0 ) {
-                for (var i = 0; i < classlist.length; i++) {
-                    var rel = classlist[i].getAttribute('rel');
+            if ( elements.length != 0 ) {
+                for (var i = 0; i < elements.length; i++) {
+                    var rel = elements[i].getAttribute('rel');
                     if(!rel) continue;
                     rel = eval("(" + rel + ")" );
                     
@@ -489,7 +517,7 @@ KNOWWE.core.rerendercontent = function(){
                         inPre : KNOWWE.helper.tagParent(_KS('#' + rel.id), 'pre') != document 
                     }           
                     var url = KNOWWE.core.util.getURL( params );
-                    KNOWWE.core.rerendercontent.execute(url, rel.id, 'replace', this);
+                    KNOWWE.core.rerendercontent.execute(url, rel.id, action, this, indicateProcess);
                 }
             }
         },
@@ -501,7 +529,8 @@ KNOWWE.core.rerendercontent = function(){
          *     url - The URL for the AJAX request.
          *     id - The id of the node that should be updated.
          */
-        execute : function( url, id, action, fn) {
+        execute : function( url, id, action, fn, indicateProcess) {
+        	if (indicateProcess == undefined) indicateProcess = true;
             var options = {
                 url : url,
                 response : {
@@ -517,14 +546,14 @@ KNOWWE.core.rerendercontent = function(){
 	                        }
 			        	}
 			        	catch (e) { /*ignore*/ }
-			        	KNOWWE.core.util.updateProcessingState(-1);
+			        	if (indicateProcess) KNOWWE.core.util.updateProcessingState(-1);
                     },
                     onError : function () {
-			        	KNOWWE.core.util.updateProcessingState(-1);                    	
+			        	if (indicateProcess) KNOWWE.core.util.updateProcessingState(-1);                    	
                     }
                 }
             }
-        	KNOWWE.core.util.updateProcessingState(1);
+            if (indicateProcess) KNOWWE.core.util.updateProcessingState(1);
             new _KA( options ).send();
         },
         

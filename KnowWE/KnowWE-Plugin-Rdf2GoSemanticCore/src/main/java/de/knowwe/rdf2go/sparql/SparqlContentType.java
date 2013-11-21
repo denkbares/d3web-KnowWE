@@ -33,6 +33,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.kdom.renderer.AsynchronRenderer;
 import de.knowwe.rdf2go.RDF2GoSubtreeHandler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
@@ -40,7 +41,7 @@ public class SparqlContentType extends AbstractType {
 
 	public SparqlContentType() {
 		this.setSectionFinder(AllTextSectionFinder.getInstance());
-		this.setRenderer(new SparqlMarkupRenderer());
+		this.setRenderer(new AsynchronRenderer(new SparqlMarkupRenderer()));
 		this.addSubtreeHandler(new SparqlConstructHandler());
 	}
 

@@ -45,7 +45,7 @@ public class ReRenderSectionMarkerRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> sec, UserContext user, RenderResult string) {
-		Boolean ajaxAction = user.getParameters().containsKey("action");
+		boolean ajaxAction = user.getParameters().containsKey("action");
 		if (!ajaxAction) {
 			KnowWEUtils.renderAnchor(sec, string);
 			string.appendHtml("<span class=\"ReRenderSectionMarker\" style=\"display: inline;\" rel=\"{id:'"

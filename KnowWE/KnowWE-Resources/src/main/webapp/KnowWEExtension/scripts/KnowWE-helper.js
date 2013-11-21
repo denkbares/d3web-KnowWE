@@ -517,7 +517,8 @@ KNOWWE.helper.ajax = function ( options ) {
                                 * the action value can be one of the following
                                 * predefined values:
                                 * - none: no action is triggered
-                                * - replace: the content of the given ids is replaced with the response
+                                * - replaceElement: the content of the given ids is replaced with the response
+                                * - replace: the content of the id of the response is replaced with the response. The specified ids are ignored.
                                 * - insert: the response is inserted into the given ids
                                 * - create: the response is inserted into the DOM before the element specified by create options
                                 * - string: a special command: see comments below for explanation
