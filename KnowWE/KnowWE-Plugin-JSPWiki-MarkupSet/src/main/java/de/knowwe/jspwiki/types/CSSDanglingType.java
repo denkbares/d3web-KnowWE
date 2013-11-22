@@ -31,11 +31,33 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * types (like {@link DefaultMarkupType}s) an therefore not found by the
  * {@link ClassType}. We do no longer support such class definitions.
  * 
- * @author Albrecht Striffler (denkbares GmbH)
+ * @author Albrecht Striffler (denkbares GmbH), Sebastian Furth (denkbares GmbH)
  * @created 28.08.2013
  */
 public class CSSDanglingType extends AbstractType {
-
+	
+	private static final String[] STYLES = new String[] 
+		{ "small", "sub", "sup", "strike", "ltr", "rtl", "commentbox",
+		   "information", "warning", "error", "quote", "center", "collapse",
+		   "collapsebox", "category", "tip", "graphbar", "sortable", "table-filter",
+		   "zebra-table", "columns", "tabbedSection", "tab", "tabbedAccordion",
+		   "accordion", "prettify", "slimbox", "reflection"
+		 };
+	
+	private static String PATTERN_STYLES;
+	
+	static {
+		StringBuilder b = new StringBuilder();
+		b.append("%%(");
+		for (String style : STYLES) {
+			b.append(style);
+			b.append("|");
+		}
+		b.delete(b.length() - 1, b.length());
+		b.append(").*");
+		PATTERN_STYLES = b.toString();
+	}
+	
 	public CSSDanglingType() {
 		this.setSectionFinder(new RegexSectionFinder("(?:%|/)%[^\\s]*"));
 		this.setRenderer(new Renderer() {
@@ -43,7 +65,14 @@ public class CSSDanglingType extends AbstractType {
 			@Override
 			public void render(Section<?> section, UserContext user, RenderResult result) {
 				String text = section.getText();
-				if (text.matches("^%%\\S.*") || text.equals("%%") || text.equals("/%")) {
+				String customSyle = CustomStyleMatcher.getCustomStyle(text);
+				if (customSyle != null) {
+					result.append("%%");
+					result.append(customSyle);
+					result.append("\n");
+				}
+				else if (text.startsWith("%%(") || text.equals("%%") 
+						|| text.equals("/%") || text.matches(PATTERN_STYLES)) {
 					result.append(text);
 				}
 				else {
