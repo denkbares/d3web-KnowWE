@@ -331,6 +331,15 @@ KNOWWE.core.util = function(){
 	              oldDOM = document.getElementById(ids[j]);
 	              if(oldDOM) {
 	                  oldDOM.parentNode.replaceChild( newDOM, oldDOM );
+	                  
+	                  // execute script tags that came in with the content
+	                  var newElementID = jq$(newDOM).attr("id");
+	                  var jqObjectNewDOM3 = jq$("#"+newElementID);
+	                  var arrayOfScriptElements = jqObjectNewDOM3.find('script'); 
+	                  for(var k = 0; k < arrayOfScriptElements.length; k++) {
+	                	  var jsCode = arrayOfScriptElements[k].innerHTML;
+	                	  eval(jsCode);
+	                  }
 	              }
 	          }
         }
