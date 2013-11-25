@@ -1,7 +1,9 @@
 package de.knowwe.rdf2go.sparql;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.model.QueryResultTable;
@@ -10,6 +12,7 @@ import org.ontoware.rdf2go.model.node.Node;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
@@ -64,14 +67,17 @@ public class SparqlResultRenderer {
 		boolean empty = true;
 		boolean zebraMode = opts.isZebraMode();
 		boolean rawOutput = opts.isRawOutput();
+		boolean isTree = opts.isTree();
 		int i = 0;
+		String tableID = UUID.randomUUID().toString();
+
 		List<String> variables = qrt.getVariables();
 		ClosableIterator<QueryRow> iterator = qrt.iterator();
 		RenderResult result = new RenderResult(user);
 		tablemode = variables.size() > 1;
 
 		if (tablemode) {
-			result.appendHtml("<table class='sparqltable'>");
+			result.appendHtml("<table id='").append(tableID).appendHtml("' class='sparqltable'>");
 			result.appendHtml(!zebraMode ? "<tr>" : "<tr class='odd'>");
 			for (String var : variables) {
 
@@ -95,6 +101,20 @@ public class SparqlResultRenderer {
 			result.appendHtml("<ul style='white-space: normal'>");
 		}
 
+		List<String> classNames = new LinkedList<String>();
+		String idVariable = null;
+		String parentVariable = null;
+		if (isTree) {
+			if (qrt.getVariables().size() > 2) {
+				idVariable = qrt.getVariables().get(0);
+				parentVariable = qrt.getVariables().get(1);
+			}
+			else {
+				isTree = false;
+				result.append("%%warning The result table requires at least three columns.");
+			}
+		}
+
 		while (iterator.hasNext()) {
 			i++;
 			if ((opts.isNavigation() && i >= opts.getNavigationOffset() && i < (opts.getNavigationOffset()
@@ -102,20 +122,32 @@ public class SparqlResultRenderer {
 					|| (opts.isNavigation() && opts.isShowAll()) || !opts.isNavigation()) {
 
 				empty = false;
+				classNames.clear();
 
 				QueryRow row = iterator.next();
 
 				if (tablemode) {
-					if (zebraMode) {
-						result.appendHtml((i + 1) % 2 == 0 ? "<tr>" : "<tr class='odd'>");
+					if (zebraMode && (i + 1) % 2 != 0) {
+						classNames.add("odd");
 					}
-					else {
-						result.appendHtml("<tr>");
+					if (isTree) {
+						String id = valueToID(parentVariable, row);
+						classNames.add("child-of-sparql-id-" + id);
 					}
-
+					result.appendHtml(classNames.isEmpty()
+							? "<tr"
+							: "<tr class='" + Strings.concat(" ", classNames) + "'");
+					if (isTree) {
+						String id = valueToID(idVariable, row);
+						result.append(" id='sparql-id-").append(id).append("'");
+					}
+					result.append(">");
 				}
 
+				int index = 0;
 				for (String var : variables) {
+					// ignore first two columns if we are in tree mode
+					if (isTree && index++ < 2) continue;
 					Node node = row.getValue(var);
 					String erg = renderNode(node, var, rawOutput, user, opts.getRdf2GoCore(),
 							RenderMode.HTML);
@@ -148,11 +180,20 @@ public class SparqlResultRenderer {
 		}
 		if (tablemode) {
 			result.appendHtml("</table>");
+			if (isTree) {
+				result.appendHtml("<script type='text/javascript'>jq$('#")
+						.append(tableID)
+						.appendHtml("').treeTable({clickableNodeNames: true});</script>");
+			}
 		}
 		else {
 			result.appendHtml("</ul>");
 		}
 		return new SparqlRenderResult(result.toStringRaw(), i);
+	}
+
+	private String valueToID(String variable, QueryRow row) {
+		return row.getValue(variable).toString().replaceAll("[\\s\"]+", "");
 	}
 
 	public String renderNode(Node node, String var, boolean rawOutput, UserContext user, Rdf2GoCore core, RenderMode mode) {

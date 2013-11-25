@@ -161,6 +161,8 @@ public class SparqlMarkupRenderer implements Renderer {
 		renderOpts.setSorting(checkSortingAnnotation(markupSection,
 				SparqlMarkupType.SORTING));
 		renderOpts.setZebraMode(checkAnnotation(markupSection, SparqlMarkupType.ZEBRAMODE));
+		renderOpts.setTree(Boolean.valueOf(DefaultMarkupType.getAnnotation(markupSection,
+				SparqlMarkupType.TREE)));
 		renderOpts.setBorder(checkAnnotation(markupSection, SparqlMarkupType.BORDER));
 		renderOpts.setNavigation(checkAnnotation(markupSection, SparqlMarkupType.NAVIGATION));
 	}

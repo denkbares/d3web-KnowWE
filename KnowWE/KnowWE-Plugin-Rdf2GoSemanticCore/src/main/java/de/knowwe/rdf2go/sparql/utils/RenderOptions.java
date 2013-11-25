@@ -18,6 +18,7 @@ public class RenderOptions {
 	int navigationOffset;
 	int navigationLimit;
 	boolean showAll;
+	private boolean tree = false;
 
 	public RenderOptions(String id) {
 		super();
@@ -115,5 +116,12 @@ public class RenderOptions {
 		this.showAll = showAll;
 	}
 
+	public boolean isTree() {
+		return tree;
+	}
+
+	public void setTree(boolean tree) {
+		this.tree = tree;
+	}
 
 }
