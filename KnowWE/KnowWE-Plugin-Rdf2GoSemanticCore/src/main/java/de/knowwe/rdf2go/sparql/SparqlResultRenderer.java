@@ -73,13 +73,33 @@ public class SparqlResultRenderer {
 
 		List<String> variables = qrt.getVariables();
 		ClosableIterator<QueryRow> iterator = qrt.iterator();
+
 		RenderResult result = new RenderResult(user);
 		tablemode = variables.size() > 1;
+
+		// tree table init
+		String idVariable = null;
+		String parentVariable = null;
+		if (isTree) {
+			if (qrt.getVariables().size() > 2) {
+				idVariable = qrt.getVariables().get(0);
+				parentVariable = qrt.getVariables().get(1);
+			}
+			else {
+				isTree = false;
+				result.append("%%warning The result table requires at least three columns.");
+			}
+		}
 
 		if (tablemode) {
 			result.appendHtml("<table id='").append(tableID).appendHtml("' class='sparqltable'>");
 			result.appendHtml(!zebraMode ? "<tr>" : "<tr class='odd'>");
+			int index = 0;
 			for (String var : variables) {
+
+				if (isTree && index++ < 2) {
+					continue;
+				}
 
 				result.appendHtml("<td><b>");
 				result.appendHtml("<a href='#/' onclick=\"KNOWWE.plugin.semantic.actions.sortResultsBy('"
@@ -102,19 +122,6 @@ public class SparqlResultRenderer {
 		}
 
 		List<String> classNames = new LinkedList<String>();
-		String idVariable = null;
-		String parentVariable = null;
-		if (isTree) {
-			if (qrt.getVariables().size() > 2) {
-				idVariable = qrt.getVariables().get(0);
-				parentVariable = qrt.getVariables().get(1);
-			}
-			else {
-				isTree = false;
-				result.append("%%warning The result table requires at least three columns.");
-			}
-		}
-
 		while (iterator.hasNext()) {
 			i++;
 			if ((opts.isNavigation() && i >= opts.getNavigationOffset() && i < (opts.getNavigationOffset()
@@ -130,15 +137,18 @@ public class SparqlResultRenderer {
 					if (zebraMode && (i + 1) % 2 != 0) {
 						classNames.add("odd");
 					}
+					String valueID = valueToID(idVariable, row);
 					if (isTree) {
-						String id = valueToID(parentVariable, row);
-						classNames.add("child-of-sparql-id-" + id);
+						String parentID = valueToID(parentVariable, row);
+						if (parentID != null) {
+							classNames.add("child-of-sparql-id-" + parentID);
+						}
 					}
 					result.appendHtml(classNames.isEmpty()
 							? "<tr"
 							: "<tr class='" + Strings.concat(" ", classNames) + "'");
 					if (isTree) {
-						String id = valueToID(idVariable, row);
+						String id = valueID;
 						result.append(" id='sparql-id-").append(id).append("'");
 					}
 					result.append(">");
@@ -147,7 +157,9 @@ public class SparqlResultRenderer {
 				int index = 0;
 				for (String var : variables) {
 					// ignore first two columns if we are in tree mode
-					if (isTree && index++ < 2) continue;
+					if (isTree && index++ < 2) {
+						continue;
+					}
 					Node node = row.getValue(var);
 					String erg = renderNode(node, var, rawOutput, user, opts.getRdf2GoCore(),
 							RenderMode.HTML);
@@ -179,12 +191,12 @@ public class SparqlResultRenderer {
 					"KnowWE.owl.query.no_result"));
 		}
 		if (tablemode) {
-			result.appendHtml("</table>");
 			if (isTree) {
 				result.appendHtml("<script type='text/javascript'>jq$('#")
 						.append(tableID)
 						.appendHtml("').treeTable({clickableNodeNames: true});</script>");
 			}
+			result.appendHtml("</table>");
 		}
 		else {
 			result.appendHtml("</ul>");
@@ -193,7 +205,9 @@ public class SparqlResultRenderer {
 	}
 
 	private String valueToID(String variable, QueryRow row) {
-		return row.getValue(variable).toString().replaceAll("[\\s\"]+", "");
+		Node value = row.getValue(variable);
+		if (value == null) return null;
+		return Integer.toString(value.toString().replaceAll("[\\s\"]+", "").hashCode());
 	}
 
 	public String renderNode(Node node, String var, boolean rawOutput, UserContext user, Rdf2GoCore core, RenderMode mode) {
