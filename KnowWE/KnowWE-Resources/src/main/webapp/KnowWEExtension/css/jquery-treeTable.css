@@ -1,15 +1,3 @@
-/* jQuery treeTable stylesheet
- *
- * This file contains styles that are used to display the tree table. Each tree
- * table is assigned the +treeTable+ class.
- * ========================================================================= */
-
-/* jquery.treeTable.collapsible
- * ------------------------------------------------------------------------- */
-.treeTable td {
-	padding-left: 19px;
-}
-
 .table_text {
 	height: 18px;
 	max-height: 400px;
@@ -24,49 +12,63 @@
 	white-space: pre-wrap;
 }
 
-.treeTable tr td .expander {
-	cursor: pointer;
-	padding: 0;
-	zoom: 1; /* IE7 Hack */
+table.treetable td {
+	padding-left: 19px;
 }
 
-.treeTable tr td a.expander {
+table.treetable td:first-child {
+	white-space: nowrap;
+}
+
+table.treetable span.indenter {
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+	text-align: right;
+	user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
+	-webkit-user-select: none;
+	width: 19px;
+}
+
+table.treetable span.indenter a {
 	background-position: left center;
 	background-repeat: no-repeat;
-	color: #000;
+	display: inline-block;
 	text-decoration: none;
+	width: 19px;
 }
 
-.treeTable tr.kbrenderer-collapsed td a.expander {
+table.treetable tr.collapsed span.indenter a {
 	background-image: url(../images/toggle-expand-dark.png);
 }
 
-.treeTable tr.kbrenderer-expanded td a.expander {
+table.treetable tr.expanded span.indenter a {
 	background-image: url(../images/toggle-collapse-dark.png);
 }
 
 /* jquery.treeTable.sortable
  * ------------------------------------------------------------------------- */
-.treeTable tr.kbrenderer-selected,.treeTable tr.accept {
+table.treeTable tr.selected,.treeTable tr.accept {
 	background-color: #3875d7;
 }
 
-.treeTable tr.kbrenderer-selected a.expander,.treeTable tr.accept a.expander
-	{
+table.treeTable tr.selected a.expander,table.treeTable tr.accept a.expander {
 	color: #fff;
 }
 
-.treeTable tr.kbrenderer-collapsed.kbrenderer-selected td a.expander,.treeTable tr.kbrenderer-collapsed.accept td a.expander
-	{
+table.treeTable tr.collapsed.selected td a.expander,table.treeTable tr.collapsed.accept td a.expander {
 	background-image: url(../images/toggle-expand-light.png);
 }
 
-.treeTable tr.kbrenderer-expanded.kbrenderer-selected td a.expander,.treeTable tr.kbrenderer-expanded.accept td a.expander
+table.treeTable tr.expanded.selected td a.expander,table.treeTable tr.expanded.accept td a.expander
 	{
 	background-image: url(../images/toggle-collapse-light.png);
 }
 
-.treeTable .ui-draggable-dragging {
+table.treeTable .ui-draggable-dragging {
 	color: #000;
 	z-index: 1;
 }

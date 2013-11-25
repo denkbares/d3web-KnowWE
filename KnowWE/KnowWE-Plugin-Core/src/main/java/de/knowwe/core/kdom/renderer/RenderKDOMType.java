@@ -68,12 +68,15 @@ public class RenderKDOMType extends DefaultMarkupType {
 			renderSubtree(section.getArticle().getRootSection(), string, 1);
 
 			string.appendHtml("</table>");
-			string.appendHtml("<script type='text/javascript'>jq$('#kdomTreeTable').treeTable({clickableNodeNames: true});</script>");
+			string.appendHtml("<script type='text/javascript'>jq$('#kdomTreeTable').agikiTreeTable({expandable: true, clickableNodeNames: true, persist: true}});</script>");
 		}
 
 		protected void renderSubtree(Section<?> s, RenderResult string, int count) {
-			string.appendHtml("<tr id='kdom-row-" + s.getID()
+			string.appendHtml("<tr data-tt-id='kdom-row-" + s.getID()
 					+ "'");
+			if (s.getFather() != null) {
+				string.append(" data-tt-parent-id='kdom-row-" + s.getFather().getID() + "'");
+			}
 			string.append(" class='treetr");
 			if (s.getFather() != null) {
 				string.append(" child-of-kdom-row-" + s.getFather().getID());
