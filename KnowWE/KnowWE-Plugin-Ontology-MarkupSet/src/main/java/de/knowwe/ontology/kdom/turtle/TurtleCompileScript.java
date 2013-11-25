@@ -72,7 +72,12 @@ public class TurtleCompileScript extends SubtreeHandler<TurtleMarkup> {
 
 		Section<TurtleObjectTerm> termSec = Sections.findSuccessor(objectSec,
 				TurtleObjectTerm.class);
-		if (termSec != null) {
+		if (termSec != null ) {
+			if (termSec.getText().trim().length() == 0) {
+				Message m = new Message(Type.ERROR, "Empty object section: No object found! ");
+				messages.add(m);
+				return;
+			}
 			objURI = termSec.get().getResourceURI(core, termSec);
 		}
 		if (literalSec != null) {
