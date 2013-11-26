@@ -1,5 +1,6 @@
 package de.knowwe.rdf2go.sparql;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -234,10 +235,10 @@ public class SparqlResultRenderer {
 
 		ResultTableModel result = new ResultTableModel(table.getVariables());
 
-		List<de.d3web.collections.PartialHierarchyTree.Node<TableRow>> rootLevelNodes = tree.getRootLevelNodes();
+		List<de.d3web.collections.PartialHierarchyTree.Node<TableRow>> rootLevelNodes = tree.getRootLevelNodesSorted(getComparator(result));
 		for (de.d3web.collections.PartialHierarchyTree.Node<TableRow> node : rootLevelNodes) {
 			TableRow row = node.getData();
-			Node topLevelConcept = row.getValue("par");
+			Node topLevelConcept = row.getValue(table.getVariables().get(1));
 			SimpleTableRow artificialTopLevelRow = new SimpleTableRow();
 			artificialTopLevelRow.addValue(table.getVariables().get(0), topLevelConcept);
 			artificialTopLevelRow.addValue(table.getVariables().get(1), topLevelConcept);
@@ -250,13 +251,31 @@ public class SparqlResultRenderer {
 		return result;
 	}
 
-	private void addRowRecursively(de.d3web.collections.PartialHierarchyTree.Node<TableRow> node, ResultTableModel result) {
+	private void addRowRecursively(de.d3web.collections.PartialHierarchyTree.Node<TableRow> node, final ResultTableModel result) {
+		// add current row
 		result.addTableRow(node.getData());
-		List<de.d3web.collections.PartialHierarchyTree.Node<TableRow>> children = node.getChildren();
+
+		// sort children order alphabetical
+		List<de.d3web.collections.PartialHierarchyTree.Node<TableRow>> children = node.getChildrenSorted(getComparator(result));
+
+		// add all children recursively
 		for (de.d3web.collections.PartialHierarchyTree.Node<TableRow> child : children) {
 			addRowRecursively(child, result);
 		}
 
+	}
+
+	private Comparator<TableRow> getComparator(final ResultTableModel result) {
+		return new Comparator<TableRow>() {
+
+			@Override
+			public int compare(TableRow o1, TableRow o2) {
+				Node concept1 = o1.getValue(result.getVariables().get(0));
+				Node concept2 = o2.getValue(result.getVariables().get(0));
+
+				return concept1.toString().compareTo(concept2.toString());
+			}
+		};
 	}
 
 	class ResultTableHierarchy implements PartialHierarchy<TableRow> {
@@ -274,12 +293,12 @@ public class SparqlResultRenderer {
 
 		private boolean checkSuccessorshipRecursively(TableRow ascendor, TableRow ancestor) {
 
-			Node ascendorNode = ascendor.getValue("sub");
-			Node potentialAncestorNode = ancestor.getValue("sub");
+			Node ascendorNode = ascendor.getValue(data.getVariables().get(0));
+			Node potentialAncestorNode = ancestor.getValue(data.getVariables().get(0));
 
 			if (ascendorNode.equals(potentialAncestorNode)) return true;
 
-			Node ascendorParent = ascendor.getValue("par");
+			Node ascendorParent = ascendor.getValue(data.getVariables().get(1));
 			TableRow parentRow = data.findRowFor(ascendorParent);
 			if (parentRow == null) return false;
 			return checkSuccessorshipRecursively(parentRow, ancestor);
