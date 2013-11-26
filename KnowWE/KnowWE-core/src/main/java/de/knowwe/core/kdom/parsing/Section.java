@@ -106,7 +106,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	/**
 	 * Contains the text of this KDOM-node
 	 */
-	protected String text;
+	private String text;
 
 	/**
 	 * Specifies whether the children of this Section were set through the
@@ -122,14 +122,19 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 * The father section of this KDOM-node. Used for upwards navigation through
 	 * the tree
 	 */
-	protected Section<? extends Type> father;
+	private Section<? extends Type> parent;
 
 	/**
-	 * the position when the text off this node starts related to the text of
-	 * the father node. Thus: for first child always 0, for 2nd
-	 * firstChild.length() etc.
+	 * the position the text of this node starts related to the text of the
+	 * parent node. Thus: for first child always 0, for 2nd firstChild.length()
+	 * etc.
 	 */
-	private int offSetFromFatherText = -1;
+	private int offsetInParent = -1;
+
+	/**
+	 * the position the text of this node starts related to the article's text.
+	 */
+	private int offsetInArticle = -1;
 
 	/**
 	 * Type of this node.
@@ -160,17 +165,13 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 * @param article is the article this section is hooked in
 	 */
 	private Section(String text, T objectType, Section<?> father) {
-		this.father = father;
+		this.parent = father;
 		if (father != null) {
-			this.father.addChild(this);
+			this.parent.addChild(this);
 			this.article = father.getArticle();
 		}
 		this.text = text;
 		this.type = objectType;
-	}
-
-	protected Section(Article article) {
-		this.article = article;
 	}
 
 	/*
@@ -301,10 +302,10 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		if (sec == this) {
 			return true;
 		}
-		if (article != sec.article || father == null) {
+		if (article != sec.article || parent == null) {
 			return false;
 		}
-		return father.equalsOrIsSuccessorOf(sec);
+		return parent.equalsOrIsSuccessorOf(sec);
 	}
 
 	public boolean equalsOrIsAncestorOf(Section<?> sec) {
@@ -353,10 +354,10 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		// setting the isDirty flag to true for all ancestor sections
 		// since they are also dirty (concatenation of leafs doesn't
 		// represent original text of the section, offsets don't fit...)
-		Section<? extends Type> ancestor = this.getFather();
+		Section<? extends Type> ancestor = this.getParent();
 		while (ancestor != null) {
 			ancestor.setDirty(true);
-			ancestor = ancestor.getFather();
+			ancestor = ancestor.getParent();
 		}
 	}
 
@@ -379,39 +380,18 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	/**
-	 * Searches the successor-node with nodeID in the successors of this node,
-	 * sets the text of the successor-node and makes it a leaf by deleting all
-	 * its children. This IS an article source edit operation! TODO: Important -
-	 * propagate changes through the whole tree OR ReIinit tree!
+	 * Returns the character index position in the articles text where this
+	 * section starts.
 	 * 
-	 * @author Franz Schwab
-	 * @param nodeID
-	 * @param replacingText
+	 * @created 25.11.2013
+	 * @return the start position of this section in the article text
 	 */
-	public void setOriginalTextSetLeaf(String nodeID, String replacingText) {
-		if (this.getID().equals(nodeID)) {
-			this.setText(replacingText);
-			this.removeAllChildren();
-			return;
+	public int getOffsetInArticle() {
+		if (offsetInArticle == -1) {
+			int parentOffset = parent != null ? parent.getOffsetInArticle() : 0;
+			offsetInArticle = getOffsetInParent() + parentOffset;
 		}
-		List<Section<?>> children = this.getChildren();
-		if (children.isEmpty() || sharedChildren) {
-			return;
-		}
-		for (Section<?> section : children) {
-			section.setOriginalTextSetLeaf(nodeID, replacingText);
-		}
-	}
-
-	protected int absolutePositionStartInArticle = -1;
-
-	public int getAbsolutePositionStartInArticle() {
-		if (absolutePositionStartInArticle == -1) {
-			int fatherStart = father != null ? father.getAbsolutePositionStartInArticle() : 0;
-			absolutePositionStartInArticle = getOffSetFromFatherText()
-					+ fatherStart;
-		}
-		return absolutePositionStartInArticle;
+		return offsetInArticle;
 	}
 
 	public void removeAllChildren() {
@@ -429,22 +409,10 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 			throw new NullPointerException("Children of a Section cannot be null.");
 		}
 		for (Section<?> child : children) {
-			child.setFather(this);
+			child.setParent(this);
 		}
 		this.children = children;
 	}
-
-	// /**
-	// * Use for KDOM creation and editing only!
-	// *
-	// * @created 26.08.2010
-	// * @param children
-	// */
-	// public void setLastChildren(List<Section<? extends Type>>
-	// children) {
-	// this.possiblySharedChildren = true;
-	// this.lastChildren = children;
-	// }
 
 	/**
 	 * @return the list of child nodes
@@ -469,35 +437,33 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	/**
-	 * returns father node
+	 * Returns the parent section of this section.
 	 * 
-	 * @return
+	 * @return the parent section
 	 */
-	public Section<? extends Type> getFather() {
-		return father;
+	public Section<? extends Type> getParent() {
+		return parent;
 	}
 
 	/**
-	 * returns offSet relatively to father text
+	 * Returns the character index position in the parent's section text where
+	 * this section starts.
 	 * 
-	 * @return
+	 * @created 25.11.2013
+	 * @return the start position of this section in the parent's section text
 	 */
-	public int getOffSetFromFatherText() {
-		if (offSetFromFatherText == -1) {
+	public int getOffsetInParent() {
+		if (offsetInParent == -1) {
 			int temp = 0;
-			if (father != null) {
-				for (Section<?> child : father.getChildren()) {
+			if (parent != null) {
+				for (Section<?> child : parent.getChildren()) {
 					if (child == this) break;
 					temp += child.getText().length();
 				}
 			}
-			offSetFromFatherText = temp;
+			offsetInParent = temp;
 		}
-		return offSetFromFatherText;
-	}
-
-	public void setOffSetFromFatherText(int offSet) {
-		this.offSetFromFatherText = offSet;
+		return offsetInParent;
 	}
 
 	/**
@@ -527,12 +493,12 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	public Set<String> getPackageNames() {
-		if (father == null) {
+		if (parent == null) {
 			if (packageNames == null) return Collections.emptySet();
 			else return Collections.unmodifiableSet(packageNames);
 		}
 		else {
-			Set<String> fatherPackageNames = father.getPackageNames();
+			Set<String> fatherPackageNames = parent.getPackageNames();
 			if (packageNames == null) return fatherPackageNames;
 			else {
 				if (fatherPackageNames.isEmpty()) {
@@ -565,7 +531,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 			return 1;
 		}
 		else {
-			return father.getDepth() + 1;
+			return parent.getDepth() + 1;
 		}
 	}
 
@@ -583,7 +549,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		buffi.append(simpleName);
 		buffi.append(", ID: " + getID());
 		buffi.append(", length: " + this.getText().length() + " ("
-				+ getOffSetFromFatherText() + ")" + ", children: " + getChildren().size());
+				+ getOffsetInParent() + ")" + ", children: " + getChildren().size());
 		String ot = this.getText().length() < 50 ? text : text.substring(0,
 				50) + "...";
 		ot = ot.replaceAll("\\n", "\\\\n");
@@ -661,8 +627,8 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		}
 	}
 
-	public void setFather(Section<? extends Type> father) {
-		this.father = father;
+	public void setParent(Section<?> parent) {
+		this.parent = parent;
 	}
 
 	/**
@@ -1005,13 +971,13 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	public List<Integer> calcPositionTil(Section<?> end) {
 		LinkedList<Integer> positions = new LinkedList<Integer>();
 		Section<?> temp = this;
-		Section<?> tempFather = temp.getFather();
+		Section<?> tempFather = temp.getParent();
 		while (temp != end && tempFather != null) {
 			List<Section<? extends Type>> childrenList = tempFather.getChildren();
 			int indexOf = getIndex(temp, childrenList);
 			positions.addFirst(indexOf);
 			temp = tempFather;
-			tempFather = temp.getFather();
+			tempFather = temp.getParent();
 		}
 		return positions;
 	}

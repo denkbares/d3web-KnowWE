@@ -120,7 +120,7 @@ public class QuestionLine extends AbstractType {
 		public QuestionDefinition.QuestionType getQuestionType(Section<QuestionDefinition> s) {
 			return QuestionTypeDeclaration
 					.getQuestionType(Sections.findSuccessor(
-							s.getFather(), QuestionTypeDeclaration.class));
+							s.getParent(), QuestionTypeDeclaration.class));
 		}
 
 		@Override
@@ -193,7 +193,7 @@ public class QuestionLine extends AbstractType {
 					}
 
 					Section<QuestionDefinition> qDef = Sections.findSuccessor(
-							s.getFather(), QuestionDefinition.class);
+							s.getParent(), QuestionDefinition.class);
 
 					if (qDef != null) {
 
@@ -330,7 +330,7 @@ public class QuestionLine extends AbstractType {
 				@Override
 				public Collection<Message> create(Article article, Section<NumUnit> s) {
 					Section<QuestionDefinition> qDef = Sections.findSuccessor(
-							s.getFather(), QuestionDefinition.class);
+							s.getParent(), QuestionDefinition.class);
 
 					if (qDef != null) {
 
@@ -384,7 +384,7 @@ public class QuestionLine extends AbstractType {
 				public Collection<Message> create(Article article, Section<AbstractFlag> s) {
 
 					Section<QuestionDefinition> qDef = Sections.findSuccessor(
-							s.getFather(), QuestionDefinition.class);
+							s.getParent(), QuestionDefinition.class);
 
 					if (qDef != null) {
 						Question question = qDef.get().getTermObject(article, qDef);
@@ -435,7 +435,7 @@ public class QuestionLine extends AbstractType {
 				public Collection<Message> create(Article article, Section<QuestionText> sec) {
 
 					Section<QuestionDefinition> qDef = Sections.findSuccessor(
-							sec.getFather(), QuestionDefinition.class);
+							sec.getParent(), QuestionDefinition.class);
 
 					if (qDef != null) {
 

@@ -92,7 +92,7 @@ public class TestCasePlayerRenderer implements Renderer {
 			return;
 		}
 		Section<TestCasePlayerType> playerSection =
-				Sections.cast(section.getFather(), TestCasePlayerType.class);
+				Sections.cast(section.getParent(), TestCasePlayerType.class);
 		List<Triple<TestCaseProvider, Section<?>, Article>> providers =
 				de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(user, playerSection);
 

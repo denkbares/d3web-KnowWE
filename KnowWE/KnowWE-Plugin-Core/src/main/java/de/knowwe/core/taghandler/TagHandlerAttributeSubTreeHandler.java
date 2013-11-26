@@ -64,7 +64,7 @@ public class TagHandlerAttributeSubTreeHandler extends SubtreeHandler<TagHandler
 			values.put(tag.trim(), value.trim());
 		}
 
-		KnowWEUtils.storeObject(art, sec.getFather(),
+		KnowWEUtils.storeObject(art, sec.getParent(),
 				ATTRIBUTE_MAP, values);
 		return null;
 

@@ -59,7 +59,7 @@ public class PreviewManager {
 					return previewSection;
 				}
 			}
-			previewSection = previewSection.getFather();
+			previewSection = previewSection.getParent();
 		}
 		return null;
 	}

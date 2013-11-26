@@ -42,14 +42,14 @@ public class DashTreeUtils {
 
 	public static List<Section<DashTreeElement>> findSuccessorDashtreeElements(Section<? extends DashTreeElement> element) {
 		List<Section<DashTreeElement>> found = new ArrayList<Section<DashTreeElement>>();
-		Sections.findSuccessorsOfType(element.getFather(), DashTreeElement.class, found);
+		Sections.findSuccessorsOfType(element.getParent(), DashTreeElement.class, found);
 		found.remove(element); // remove self
 		return found;
 	}
 
 	public static List<Section<DashTreeElement>> findChildrenDashtreeElements(Section<? extends DashTreeElement> element) {
 		List<Section<DashTreeElement>> found = new ArrayList<Section<DashTreeElement>>();
-		Sections.findSuccessorsOfType(element.getFather(), DashTreeElement.class, 2, found);
+		Sections.findSuccessorsOfType(element.getParent(), DashTreeElement.class, 2, found);
 		found.remove(element); // remove self
 		return found;
 	}
@@ -73,10 +73,10 @@ public class DashTreeUtils {
 	public static List<Section<? extends DashTreeElement>> getAncestorDashTreeElements(Section<?> s) {
 		List<Section<? extends DashTreeElement>> ancestors = new ArrayList<Section<? extends DashTreeElement>>();
 		List<Section<?>> ancestorSubTrees = new ArrayList<Section<?>>();
-		Section<?> ancestorSubtree = Sections.findAncestorOfType(s, DashSubtree.class).getFather();
+		Section<?> ancestorSubtree = Sections.findAncestorOfType(s, DashSubtree.class).getParent();
 		while (ancestorSubtree != null && ancestorSubtree.get() instanceof DashSubtree) {
 			ancestorSubTrees.add(ancestorSubtree);
-			ancestorSubtree = ancestorSubtree.getFather();
+			ancestorSubtree = ancestorSubtree.getParent();
 		}
 		for (Section<?> subTree : ancestorSubTrees) {
 			ancestors.add(Sections.findChildOfType(subTree, DashTreeElement.class));
@@ -104,8 +104,8 @@ public class DashTreeUtils {
 		Section<? extends DashSubtree> dashSubtree = Sections.findAncestorOfType(s,
 				DashSubtree.class);
 		if (dashSubtree != null) {
-			if (dashSubtree.getFather().get() instanceof DashSubtree) {
-				return (Section<? extends DashSubtree>) dashSubtree.getFather();
+			if (dashSubtree.getParent().get() instanceof DashSubtree) {
+				return (Section<? extends DashSubtree>) dashSubtree.getParent();
 			}
 		}
 		return null;
@@ -121,7 +121,7 @@ public class DashTreeUtils {
 				return null;
 			}
 			for (int i = fLevel; i > dashLevel; i--) {
-				dashSubtree = dashSubtree.getFather();
+				dashSubtree = dashSubtree.getParent();
 			}
 			return (Section<DashSubtree>) dashSubtree;
 		}
@@ -165,7 +165,7 @@ public class DashTreeUtils {
 
 		if (subTreeRoot != null) {
 
-			Section<?> fatherSubTree = subTreeRoot.getFather();
+			Section<?> fatherSubTree = subTreeRoot.getParent();
 			if (fatherSubTree.get() instanceof DashSubtree
 					|| fatherSubTree.get() instanceof DashTree) {
 				int pos = 0;

@@ -114,7 +114,7 @@ public class TestcaseTableSubtreeHandler extends SubtreeHandler<TestcaseTable> {
 				i++;
 			}
 		}
-		Section<? extends Type> defaultmarkupSection = s.getFather().getFather();
+		Section<? extends Type> defaultmarkupSection = s.getParent().getParent();
 		String name = DefaultMarkupType.getAnnotation(defaultmarkupSection, TestcaseTableType.NAME);
 		if (name == null) {
 			name = s.getArticle().getTitle() + "/TestCaseTable" + i;

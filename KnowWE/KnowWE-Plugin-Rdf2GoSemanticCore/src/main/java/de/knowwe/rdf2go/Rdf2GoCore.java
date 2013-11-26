@@ -56,12 +56,16 @@ import org.ontoware.rdf2go.model.node.Literal;
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.impl.DatatypeLiteralImpl;
 import org.ontoware.rdf2go.model.node.impl.LanguageTagLiteralImpl;
+import org.ontoware.rdf2go.model.node.impl.PlainLiteralImpl;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDFS;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.core.event.Event;
 import de.knowwe.core.event.EventListener;
@@ -484,6 +488,27 @@ public class Rdf2GoCore implements EventListener {
 		return model.createDatatypeLiteral(literal, datatypeURI);
 	}
 
+	public Node createNode(String uriOrLiteral) {
+		int index = Strings.indexOfUnquoted(uriOrLiteral, "^^");
+		if (index > 0) {
+			return new DatatypeLiteralImpl(uriOrLiteral);
+		}
+		index = Strings.indexOfUnquoted(uriOrLiteral, "@");
+		if (index > 0) {
+			return new LanguageTagLiteralImpl(uriOrLiteral);
+		}
+		if (Strings.isQuoted(uriOrLiteral)) {
+			return new PlainLiteralImpl(uriOrLiteral);
+		}
+		return createResource(uriOrLiteral);
+	}
+
+	public Resource createResource(String uri) {
+		// create blank node or uri,
+		// at the moment we only support uris
+		return new URIImpl(uri);
+	}
+
 	/**
 	 * @param cur
 	 */
@@ -542,7 +567,6 @@ public class Rdf2GoCore implements EventListener {
 	 */
 	@Deprecated
 	public Collection<Statement> generateStatementDiffForSection(Section<?> sec) throws ModelRuntimeException, MalformedQueryException {
-
 
 		Set<Statement> includingSection = getStatements();
 
@@ -984,7 +1008,7 @@ public class Rdf2GoCore implements EventListener {
 			return model.sparqlAsk(query);
 		}
 		boolean result = model.sparqlAsk(sparqlNamespaceShorts + query);
-		
+
 		return result;
 	}
 
@@ -1026,7 +1050,6 @@ public class Rdf2GoCore implements EventListener {
 		if (statementsOfSection != null) {
 			model.addAll(statementsOfSection.iterator());
 		}
-
 
 		// return query result
 		return result;

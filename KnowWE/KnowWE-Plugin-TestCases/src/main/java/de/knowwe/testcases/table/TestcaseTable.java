@@ -65,7 +65,7 @@ public class TestcaseTable extends Table {
 		Object index = tCell.getSectionStore().getObject(INDEX_KEY);
 		if (index == null) {
 			int i = 0;
-			for (Section<?> child : tCell.getFather().getChildren()) {
+			for (Section<?> child : tCell.getParent().getChildren()) {
 				if (!(child.get() instanceof TableCell)) continue;
 				child.getSectionStore().storeObject(INDEX_KEY, i);
 				if (child == tCell) index = i;

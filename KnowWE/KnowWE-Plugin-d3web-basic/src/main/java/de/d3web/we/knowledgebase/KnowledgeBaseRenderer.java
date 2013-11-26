@@ -159,7 +159,7 @@ public final class KnowledgeBaseRenderer extends DefaultMarkupRenderer {
 
 		}
 		if (currentSection != null) {
-			Section<? extends Type> grandFather = currentSection.getFather().getFather();
+			Section<? extends Type> grandFather = currentSection.getParent().getParent();
 			Section<AnnotationType> annotationTypeSec = Sections.findSuccessor(grandFather,
 					AnnotationType.class);
 			annotationTypeSec.get().getRenderer().render(annotationTypeSec, user, string);

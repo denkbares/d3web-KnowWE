@@ -480,7 +480,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		if (root != null) return root.get().getName();
 		root = Sections.findAncestorOfType(section, TagHandlerType.class);
 		if (root != null) return root.get().getName();
-		return section.getFather().get().getName();
+		return section.getParent().get().getName();
 	}
 
 	private Map<Article, List<Section<?>>> groupByArticle(Set<Section<?>> references) {
@@ -523,8 +523,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			innerResult.appendHtml("<ul style=\"list-style-type:none;\">");
 			for (Result r : results.get(article)) {
 				Section<?> s = r.getSection();
-				if (s.getFather() != null
-						&& s.getFather().get().equals(article.getRootType())) {
+				if (s.getParent() != null
+						&& s.getParent().get().equals(article.getRootType())) {
 					appropriateSections = true;
 					innerResult.appendHtml("<li>");
 					innerResult.appendHtml("<pre style=\"margin:1em -1em;\">");

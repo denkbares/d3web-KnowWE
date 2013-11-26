@@ -46,7 +46,7 @@ public class ObjectDescription extends AbstractType {
 
 				@SuppressWarnings("rawtypes")
 				Section<D3webTermDefinition> qDef = Sections.findSuccessor(
-						sec.getFather(), D3webTermDefinition.class);
+						sec.getParent(), D3webTermDefinition.class);
 
 				if (qDef != null) {
 

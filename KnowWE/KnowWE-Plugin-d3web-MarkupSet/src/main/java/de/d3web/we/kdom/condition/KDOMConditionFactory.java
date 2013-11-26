@@ -116,7 +116,7 @@ public class KDOMConditionFactory {
 
 			if (termChild == null) {
 				Logger.getLogger(KDOMConditionFactory.class.getName()).warning(
-						"Could not create Condition for: " + terminal.getFather());
+						"Could not create Condition for: " + terminal.getParent());
 				return null;
 			}
 

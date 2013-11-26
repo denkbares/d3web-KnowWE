@@ -167,7 +167,7 @@ public class FlowchartDiffProvider implements DiffProvider {
 	 */
 	private void remove(Section<FlowchartType> flow, StringBuilder bob) {
 		Section<DiaFluxType> diaFlux = Sections.findAncestorOfType(flow, DiaFluxType.class);
-		int start = diaFlux.getAbsolutePositionStartInArticle();
+		int start = diaFlux.getOffsetInArticle();
 		int end = start + diaFlux.getText().length();
 		bob.replace(start, end, "");
 

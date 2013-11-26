@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import de.d3web.strings.Strings;
@@ -17,7 +18,6 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.basicType.EmbracedType;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
 public class Sections {
@@ -46,10 +46,10 @@ public class Sections {
 	 */
 	public static List<String> createTypePathToRoot(Section<?> s) {
 		List<String> result = new ArrayList<String>();
-		Section<?> father = s.getFather();
+		Section<?> father = s.getParent();
 		while (father != null) {
 			result.add(father.get().getClass().getSimpleName());
-			father = father.getFather();
+			father = father.getParent();
 		}
 		return result;
 	}
@@ -105,62 +105,10 @@ public class Sections {
 		return list;
 	}
 
-	/**
-	 * Checks whether this node has a son of type class1 being right from the
-	 * given substring.
-	 * <p/>
-	 * <b> Attention: Be aware that this method does not work during the
-	 * Sectionizing, because the right hand Sections of the arguments Section
-	 * are not there yet! Perhaps you can use the AllBeforeTypeSectionFinder
-	 * instead.</b>
-	 * 
-	 * @deprecated because of the facts stated
-	 */
-	@Deprecated
-	public static boolean hasRightSonOfType(Section<?> section, Class<?
-			extends Type> class1, String text) {
-		if (section.get() instanceof EmbracedType) {
-			if (Sections.hasRightSonOfType(section.getFather(), class1, text)) {
-				return true;
-			}
-		}
-		for (Section<? extends Type> child : section.getChildren()) {
-			if (Sections.hasType(child, class1)) {
-				if (section.getText().indexOf(text) < child
-						.getOffSetFromFatherText()) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Checks whether this node has a son of type class1 beeing left from the
-	 * given substring.
-	 */
-	@Deprecated
-	public static boolean hasLeftSonOfType(Section<?> section, Class<? extends Type> class1, String text) {
-		if (section.get() instanceof EmbracedType) {
-			if (Sections.hasLeftSonOfType(section.getFather(), class1, text)) {
-				return true;
-			}
-		}
-		for (Section<? extends Type> child : section.getChildren()) {
-			if (Sections.hasType(child, class1)) {
-				if (section.text.indexOf(text) > child
-						.getOffSetFromFatherText()) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
 	public static Section<? extends Type> findSmallestSectionContaining(Section<?> section, int start, int end) {
 		Section<? extends Type> s = null;
-		int nodeStart = section.getAbsolutePositionStartInArticle();
-		if (nodeStart <= start && nodeStart + section.text.length() >= end) {
+		int nodeStart = section.getOffsetInArticle();
+		if (nodeStart <= start && nodeStart + section.getText().length() >= end) {
 			s = section;
 			for (Section<? extends Type> sec : section.getChildren()) {
 				Section<? extends Type> sub = Sections.findSmallestSectionContaining(
@@ -207,18 +155,20 @@ public class Sections {
 	}
 
 	/**
-	 * Searches the ancestor for the given section for a given class.
+	 * Searches the ancestor for the given section that matches to a given
+	 * class.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <OT extends Type> Section<OT> findAncestorOfType(Section<?> section, Class<OT> clazz) {
 
-		if (section.father == null) return null;
+		Section<? extends Type> parent = section.getParent();
+		if (parent == null) return null;
 
-		if (clazz.isAssignableFrom(section.father.get().getClass())) {
-			return (Section<OT>) section.father;
+		if (clazz.isInstance(parent.get())) {
+			return (Section<OT>) parent;
 		}
 
-		return Sections.findAncestorOfType(section.father, clazz);
+		return Sections.findAncestorOfType(parent, clazz);
 	}
 
 	/**
@@ -267,9 +217,9 @@ public class Sections {
 	 * @author Franz Schwab
 	 */
 	public static Section<? extends Type> findAncestorOfExactType(Section<?> section, Collection<Class<? extends Type>> classes) {
-		Section<? extends Type> f = section.getFather();
+		Section<? extends Type> f = section.getParent();
 		while ((f != null) && !(classes.contains(f.get().getClass()))) {
-			f = f.getFather();
+			f = f.getParent();
 		}
 		return f;
 	}
@@ -303,14 +253,35 @@ public class Sections {
 	 * Finds the first successors of type <code>class1</code> in the KDOM below
 	 * the given Section.
 	 */
-	@SuppressWarnings("unchecked")
 	public static <OT extends Type> Section<OT> findSuccessor(Section<?> section, Class<OT> class1) {
 
-		if (class1.isAssignableFrom(section.get().getClass())) {
-			return (Section<OT>) section;
+		if (class1.isInstance(section.get())) {
+			return cast(section, class1);
 		}
+
 		for (Section<?> sec : section.getChildren()) {
 			Section<OT> s = Sections.findSuccessor(sec, class1);
+			if (s != null) return s;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Finds the last successors of type <code>class1</code> in the KDOM below
+	 * the given Section.
+	 */
+	public static <OT extends Type> Section<OT> findLastSuccessor(Section<?> section, Class<OT> class1) {
+
+		if (class1.isInstance(section.get())) {
+			return cast(section, class1);
+		}
+
+		List<Section<?>> children = section.getChildren();
+		ListIterator<Section<?>> iterator = children.listIterator(children.size());
+		while (iterator.hasPrevious()) {
+			Section<?> sec = iterator.previous();
+			Section<OT> s = Sections.findLastSuccessor(sec, class1);
 			if (s != null) return s;
 		}
 
@@ -484,10 +455,10 @@ public class Sections {
 		LinkedList<Class<? extends Type>> path = new LinkedList<Class<? extends Type>>();
 
 		path.add(section.get().getClass());
-		Section<? extends Type> father = section.getFather();
+		Section<? extends Type> father = section.getParent();
 		while (father != null) {
 			path.addFirst(father.get().getClass());
-			father = father.getFather();
+			father = father.getParent();
 		}
 
 		if (path.getFirst().isAssignableFrom(RootType.class)) {
@@ -673,7 +644,7 @@ public class Sections {
 			if (section != null) {
 				sectionInfo.oldText = section.getText();
 				sectionInfo.positionInKDOM = section.getPositionInKDOM();
-				sectionInfo.offSet = section.getAbsolutePositionStartInArticle();
+				sectionInfo.offSet = section.getOffsetInArticle();
 				sectionInfo.sectionExists = true;
 				sectionInfo.title = section.getTitle();
 				sectionInfo.web = section.getWeb();
@@ -825,7 +796,7 @@ public class Sections {
 				String text = section.getText();
 				String newText = sectionInfo.newText;
 				boolean sameText = text.equals(newText);
-				int textOffset = section.getAbsolutePositionStartInArticle() + diff;
+				int textOffset = section.getOffsetInArticle() + diff;
 				int newTextoffSet = sectionInfo.offSet;
 				boolean sameOffset = textOffset == newTextoffSet;
 

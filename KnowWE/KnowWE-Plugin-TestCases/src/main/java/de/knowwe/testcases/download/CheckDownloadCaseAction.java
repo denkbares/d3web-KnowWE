@@ -115,7 +115,7 @@ public class CheckDownloadCaseAction extends AbstractAction {
 		if (section != null) {
 			section = Sections.findChildOfType(section, ContentType.class);
 		}
-		if (section == null || !(section.getFather().get() instanceof TestCasePlayerType)) {
+		if (section == null || !(section.getParent().get() instanceof TestCasePlayerType)) {
 
 			CheckDownloadCaseAction.sendJSON(context, "error",
 					"Unable to find TestCasePlayer with id '"
@@ -133,7 +133,7 @@ public class CheckDownloadCaseAction extends AbstractAction {
 
 	private Triple<TestCaseProvider, Section<?>, Article> getSelectedTestCaseTriple(Section<?> section, UserActionContext context) {
 		Section<TestCasePlayerType> playerSection =
-				Sections.cast(section.getFather(), TestCasePlayerType.class);
+				Sections.cast(section.getParent(), TestCasePlayerType.class);
 		List<Triple<TestCaseProvider, Section<?>, Article>> providers =
 				de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(playerSection);
 

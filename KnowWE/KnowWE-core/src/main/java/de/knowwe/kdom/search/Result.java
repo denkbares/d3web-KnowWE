@@ -85,7 +85,7 @@ public class Result implements Comparable<Result> {
 	 */
 	public String getAdditionalContext(int length) {
 		final String originalText = article.getRootSection().getText();
-		final int absPosition = section.getAbsolutePositionStartInArticle() + start;
+		final int absPosition = section.getOffsetInArticle() + start;
 
 		if (length < 0) {
 			// length is negative, so "+ length" is ok ;)

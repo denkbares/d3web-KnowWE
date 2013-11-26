@@ -224,7 +224,7 @@ public class Article {
 		dummySection.setArticle(this);
 		getRootType().getParser().parse(text, dummySection);
 		rootSection = Sections.findChildOfType(dummySection, RootType.class);
-		rootSection.setFather(null);
+		rootSection.setParent(null);
 
 		rootSection.clearReusedSuccessorRecursively();
 
@@ -364,6 +364,16 @@ public class Article {
 		StringBuilder buffi = new StringBuilder();
 		this.rootSection.collectTextsFromLeaves(buffi);
 		return buffi.toString();
+	}
+
+	/**
+	 * Returns the full text this article is build from.
+	 * 
+	 * @created 25.11.2013
+	 * @return the full text of this article
+	 */
+	public String getText() {
+		return getRootSection().getText();
 	}
 
 	@Override

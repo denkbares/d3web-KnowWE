@@ -65,7 +65,7 @@ public class AnswerLine extends AbstractType {
 			@Override
 			protected boolean condition(String text, Section<?> father) {
 
-				Section<?> dashTreeElement = father.getFather();
+				Section<?> dashTreeElement = father.getParent();
 				if (dashTreeElement.get() instanceof DashTreeElement) {
 					Section<? extends DashTreeElement> dashFather = DashTreeUtils
 							.getFatherDashTreeElement(dashTreeElement);
@@ -111,7 +111,7 @@ public class AnswerLine extends AbstractType {
 				public Collection<Message> create(Article article, Section<InitFlag> s) {
 
 					Section<AnswerDefinition> aDef = Sections.findSuccessor(
-							s.getFather(), AnswerDefinition.class);
+							s.getParent(), AnswerDefinition.class);
 
 					Section<? extends QuestionDefinition> qdef = aDef.get().getQuestionSection(
 							aDef);
@@ -173,7 +173,7 @@ public class AnswerLine extends AbstractType {
 				public Collection<Message> create(Article article, Section<AnswerText> sec) {
 
 					Section<AnswerDefinition> aDef = Sections.findSuccessor(
-							sec.getFather(), AnswerDefinition.class);
+							sec.getParent(), AnswerDefinition.class);
 
 					Section<? extends QuestionDefinition> qSec = aDef.get().getQuestionSection(aDef);
 

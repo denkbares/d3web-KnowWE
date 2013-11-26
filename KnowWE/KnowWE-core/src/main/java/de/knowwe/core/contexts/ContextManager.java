@@ -173,8 +173,8 @@ public class ContextManager {
 			return null;
 		}
 		else {
-			if (section.getFather() != null) {
-				return getContext(section.getFather(), originalSection, contextid);
+			if (section.getParent() != null) {
+				return getContext(section.getParent(), originalSection, contextid);
 			}
 			else {
 				return null;

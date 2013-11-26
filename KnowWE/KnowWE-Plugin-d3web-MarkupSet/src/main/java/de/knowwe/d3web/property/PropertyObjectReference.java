@@ -110,7 +110,7 @@ public class PropertyObjectReference extends D3webTermReference<NamedObject> {
 
 		@Override
 		public Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s) {
-			return Sections.findChildOfType(s.getFather(), QuestionReference.class);
+			return Sections.findChildOfType(s.getParent(), QuestionReference.class);
 		}
 
 	}

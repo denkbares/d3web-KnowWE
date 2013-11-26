@@ -206,7 +206,7 @@ public class QClassLine extends AbstractType {
 					Integer number = new Integer((originalnumber.intValue()));
 
 					Section<QuestionnaireDefinition> qDef = Sections.findSuccessor(
-							s.getFather(), QuestionnaireDefinition.class);
+							s.getParent(), QuestionnaireDefinition.class);
 
 					if (qDef != null) {
 
@@ -241,7 +241,7 @@ public class QClassLine extends AbstractType {
 				@Override
 				public void destroy(Article article, Section<InitNumber> s) {
 					Section<QuestionnaireDefinition> qDef = Sections.findSuccessor(
-							s.getFather(), QuestionnaireDefinition.class);
+							s.getParent(), QuestionnaireDefinition.class);
 
 					if (qDef != null) {
 						// remove init number value from registration in KB

@@ -85,11 +85,11 @@ public class TurtleCompileScript extends SubtreeHandler<TurtleMarkup> {
 		}
 
 		Section<TurtlePredicate> predSec = Sections.findSuccessor(
-				objectSec.getFather(), TurtlePredicate.class);
+				objectSec.getParent(), TurtlePredicate.class);
 
 		if (predSec == null) {
 			Message m = new Message(Type.ERROR, "No predicate found at '"
-					+ objectSec.getFather().getText() + "'");
+					+ objectSec.getParent().getText() + "'");
 			messages.add(m);
 			return;
 		}
@@ -97,12 +97,12 @@ public class TurtleCompileScript extends SubtreeHandler<TurtleMarkup> {
 		URI predURI = predSec.get().getResourceURI(core, predSec);
 
 		Section<TurtleSubject> subjectSec = Sections.findSuccessor(
-				objectSec.getFather().getFather(), TurtleSubject.class);
+				objectSec.getParent().getParent(), TurtleSubject.class);
 
 		Resource subjectURI = subjectSec.get().getResourceURI(core, subjectSec);
 		if (subjectURI == null) {
 			subjectURI = new BlankNodeImpl(Sections.findSuccessor(
-					objectSec.getFather().getFather().getFather(),
+					objectSec.getParent().getParent().getParent(),
 					TurtleMarkupN3Content.class));
 		}
 

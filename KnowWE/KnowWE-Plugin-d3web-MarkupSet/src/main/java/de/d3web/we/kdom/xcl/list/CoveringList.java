@@ -185,7 +185,7 @@ public class CoveringList extends AbstractType {
 			}
 
 			private Section<SolutionDefinition> getCorrespondingSolutionDef(Article article, Section<CoveringRelation> s) {
-				return Sections.findSuccessor(s.getFather().getFather(), SolutionDefinition.class);
+				return Sections.findSuccessor(s.getParent().getParent(), SolutionDefinition.class);
 			}
 
 			/*

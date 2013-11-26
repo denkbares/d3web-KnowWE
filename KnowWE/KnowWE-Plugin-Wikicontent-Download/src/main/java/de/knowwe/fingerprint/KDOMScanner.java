@@ -21,7 +21,7 @@ public class KDOMScanner implements Scanner {
 	}
 
 	private void printKDOM(Section<?> section, PrintStream out) {
-		int start = section.getAbsolutePositionStartInArticle();
+		int start = section.getOffsetInArticle();
 		String name = section.get().getName();
 		out.printf("<%s start='%d'>\n", name, start);
 		for (Section<?> child : section.getChildren()) {

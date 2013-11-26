@@ -3,13 +3,13 @@ package de.knowwe.ontology.kdom.turtle;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.kdom.sectionFinder.SplitSectionFinderUnquoted;
-
 
 public class TurtleSentence extends AbstractType {
 
@@ -34,7 +34,7 @@ public class TurtleSentence extends AbstractType {
 					result.add(new SectionFinderResult(sectionFinderResult.getStart(),
 							sectionFinderResult.getEnd() - 1));
 				}
-				else {
+				else if (!Strings.isBlank(foundText)) {
 					result.add(sectionFinderResult);
 				}
 			}

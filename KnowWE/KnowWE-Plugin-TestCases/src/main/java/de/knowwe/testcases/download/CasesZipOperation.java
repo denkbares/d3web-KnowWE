@@ -67,7 +67,7 @@ public class CasesZipOperation extends FileDownloadOperation {
 		super.before(user);
 		Section<?> section = CheckDownloadCaseAction.getPlayerSection(user);
 		List<Triple<TestCaseProvider, Section<?>, Article>> providers =
-				TestCaseUtils.getTestCaseProviders(Sections.cast(section.getFather(),
+				TestCaseUtils.getTestCaseProviders(Sections.cast(section.getParent(),
 						TestCasePlayerType.class));
 		skipped = new StringBuilder();
 		errors = new StringBuilder();

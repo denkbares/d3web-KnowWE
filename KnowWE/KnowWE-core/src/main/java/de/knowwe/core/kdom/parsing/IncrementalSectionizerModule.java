@@ -54,7 +54,7 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 		Section<?> ancestor = match;
 		while (ancestor != null) {
 			ancestor.isOrHasReusedSuccessor = true;
-			ancestor = ancestor.getFather();
+			ancestor = ancestor.getParent();
 		}
 
 		// store position in the list of children from
@@ -65,7 +65,7 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 		match.setLastPositionInKDOM(match.getPositionInKDOM());
 		match.clearPositionInKDOM();
 
-		match.setFather(father);
+		match.setParent(father);
 		father.addChild(match);
 
 		// perform necessary actions on complete reused

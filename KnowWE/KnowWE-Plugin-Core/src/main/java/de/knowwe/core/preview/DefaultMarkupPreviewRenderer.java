@@ -138,7 +138,7 @@ public class DefaultMarkupPreviewRenderer implements PreviewRenderer {
 			case afterSelected:
 			case beforeSelected:
 				for (Section<?> match : matches) {
-					List<Section<? extends Type>> siblings = match.getFather().getChildren();
+					List<Section<? extends Type>> siblings = match.getParent().getChildren();
 					int index = siblings.indexOf(match);
 					if (index == -1) continue;
 					// move index to the sibling that has to be included
@@ -170,8 +170,8 @@ public class DefaultMarkupPreviewRenderer implements PreviewRenderer {
 			return parent;
 		}
 		parent = section;
-		while (!(parent.getFather().get() instanceof RootType)) {
-			parent = parent.getFather();
+		while (!(parent.getParent().get() instanceof RootType)) {
+			parent = parent.getParent();
 		}
 		return parent;
 	}

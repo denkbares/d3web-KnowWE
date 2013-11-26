@@ -196,7 +196,7 @@ public class QuestionDashTreeUtils {
 					rootQuestionSubtree = lvl1SubtreeAncestor;
 				}
 				else {
-					rootQuestionSubtree = (Section<DashSubtree>) lvl1SubtreeAncestor.getFather();
+					rootQuestionSubtree = (Section<DashSubtree>) lvl1SubtreeAncestor.getParent();
 				}
 			}
 		}

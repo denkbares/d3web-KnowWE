@@ -40,7 +40,7 @@ public class StartNodeReference extends SimpleReference {
 
 	@Override
 	public Identifier getTermIdentifier(Section<? extends Term> section) {
-		Section<FlowchartReference> ref = Sections.findSuccessor(section.getFather(),
+		Section<FlowchartReference> ref = Sections.findSuccessor(section.getParent(),
 				FlowchartReference.class);
 		return new Identifier(ref.get().getTermName(ref), getTermName(section));
 	}

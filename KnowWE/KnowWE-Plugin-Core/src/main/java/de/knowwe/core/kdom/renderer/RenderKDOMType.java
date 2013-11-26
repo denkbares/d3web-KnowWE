@@ -74,12 +74,12 @@ public class RenderKDOMType extends DefaultMarkupType {
 		protected void renderSubtree(Section<?> s, RenderResult string, int count) {
 			string.appendHtml("<tr data-tt-id='kdom-row-" + s.getID()
 					+ "'");
-			if (s.getFather() != null) {
-				string.append(" data-tt-parent-id='kdom-row-" + s.getFather().getID() + "'");
+			if (s.getParent() != null) {
+				string.append(" data-tt-parent-id='kdom-row-" + s.getParent().getID() + "'");
 			}
 			string.append(" class='treetr");
-			if (s.getFather() != null) {
-				string.append(" child-of-kdom-row-" + s.getFather().getID());
+			if (s.getParent() != null) {
+				string.append(" child-of-kdom-row-" + s.getParent().getID());
 			}
 			if (count % 2 != 0) {
 				string.append(" odd' ");
@@ -91,7 +91,7 @@ public class RenderKDOMType extends DefaultMarkupType {
 			string.appendHtml("<td>" + s.get().getClass().getSimpleName() + "</td>");
 			string.appendHtml("<td>" + s.getID() + "</td>");
 			string.appendHtml("<td>" + s.getText().length() + "</td>");
-			string.appendHtml("<td>" + s.getOffSetFromFatherText() + "</td>");
+			string.appendHtml("<td>" + s.getOffsetInParent() + "</td>");
 			string.appendHtml("<td>" + s.getChildren().size() + "</td>");
 
 			string.appendHtml("<td><div class='table_text'><div class='kdom_source'>");
