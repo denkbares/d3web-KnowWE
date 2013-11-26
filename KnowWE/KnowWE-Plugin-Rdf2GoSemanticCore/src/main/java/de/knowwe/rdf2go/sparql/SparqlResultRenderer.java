@@ -1,15 +1,16 @@
 package de.knowwe.rdf2go.sparql;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.model.QueryResultTable;
-import org.ontoware.rdf2go.model.QueryRow;
 import org.ontoware.rdf2go.model.node.Node;
 
+import de.d3web.collections.PartialHierarchy;
+import de.d3web.collections.PartialHierarchyTree;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.strings.Strings;
@@ -19,6 +20,9 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.sparql.utils.SparqlRenderResult;
+import de.knowwe.rdf2go.utils.ResultTableModel;
+import de.knowwe.rdf2go.utils.SimpleTableRow;
+import de.knowwe.rdf2go.utils.TableRow;
 
 public class SparqlResultRenderer {
 
@@ -71,10 +75,11 @@ public class SparqlResultRenderer {
 		int i = 0;
 		String tableID = UUID.randomUUID().toString();
 
-		List<String> variables = qrt.getVariables();
-		ClosableIterator<QueryRow> iterator = qrt.iterator();
-
 		RenderResult result = new RenderResult(user);
+
+
+
+		List<String> variables = qrt.getVariables();
 		tablemode = variables.size() > 1;
 
 		// tree table init
@@ -120,7 +125,12 @@ public class SparqlResultRenderer {
 		else {
 			result.appendHtml("<ul style='white-space: normal'>");
 		}
+		ResultTableModel table = new ResultTableModel(qrt);
+		if (isTree) {
+			table = createMagicallySortedTable(table);
+		}
 
+		Iterator<TableRow> iterator = table.iterator();
 		List<String> classNames = new LinkedList<String>();
 		while (iterator.hasNext()) {
 			i++;
@@ -131,7 +141,8 @@ public class SparqlResultRenderer {
 				empty = false;
 				classNames.clear();
 
-				QueryRow row = iterator.next();
+				TableRow row = iterator.next();
+
 
 				if (tablemode) {
 					if (zebraMode && (i + 1) % 2 != 0) {
@@ -140,7 +151,9 @@ public class SparqlResultRenderer {
 					String valueID = valueToID(idVariable, row);
 					if (isTree) {
 						String parentID = valueToID(parentVariable, row);
-						if (parentID != null) {
+						if (parentID != null
+								&& !parentID.equals(valueID)) { // hack for top
+																// level rows
 							classNames.add("child-of-sparql-id-" + parentID);
 						}
 					}
@@ -204,7 +217,78 @@ public class SparqlResultRenderer {
 		return new SparqlRenderResult(result.toStringRaw(), i);
 	}
 
-	private String valueToID(String variable, QueryRow row) {
+	private ResultTableModel createMagicallySortedTable(ResultTableModel table) {
+		// creating hierarchy order using PartialHierarchyTree
+		PartialHierarchyTree<TableRow> tree = new
+				PartialHierarchyTree<TableRow>(
+						new ResultTableHierarchy(table));
+
+		// add all nodes to create the tree
+		Iterator<TableRow> iterator = table.iterator();
+		while (iterator.hasNext()) {
+			tree.insertNode(iterator.next());
+		}
+
+		// DFS traversion will create the desired order
+		// List<TableRow> nodesDFSOrder = tree.getNodesDFSOrder();
+
+		ResultTableModel result = new ResultTableModel(table.getVariables());
+
+		List<de.d3web.collections.PartialHierarchyTree.Node<TableRow>> rootLevelNodes = tree.getRootLevelNodes();
+		for (de.d3web.collections.PartialHierarchyTree.Node<TableRow> node : rootLevelNodes) {
+			TableRow row = node.getData();
+			Node topLevelConcept = row.getValue("par");
+			SimpleTableRow artificialTopLevelRow = new SimpleTableRow();
+			artificialTopLevelRow.addValue(table.getVariables().get(0), topLevelConcept);
+			artificialTopLevelRow.addValue(table.getVariables().get(1), topLevelConcept);
+			artificialTopLevelRow.addValue(table.getVariables().get(2), topLevelConcept);
+			result.addTableRow(artificialTopLevelRow);
+
+			addRowRecursively(node, result);
+		}
+
+		return result;
+	}
+
+	private void addRowRecursively(de.d3web.collections.PartialHierarchyTree.Node<TableRow> node, ResultTableModel result) {
+		result.addTableRow(node.getData());
+		List<de.d3web.collections.PartialHierarchyTree.Node<TableRow>> children = node.getChildren();
+		for (de.d3web.collections.PartialHierarchyTree.Node<TableRow> child : children) {
+			addRowRecursively(child, result);
+		}
+
+	}
+
+	class ResultTableHierarchy implements PartialHierarchy<TableRow> {
+
+		private final ResultTableModel data;
+
+		public ResultTableHierarchy(ResultTableModel data) {
+			this.data = data;
+		}
+
+		@Override
+		public boolean isSuccessorOf(TableRow row1, TableRow row2) {
+			return checkSuccessorshipRecursively(row1, row2);
+		}
+
+		private boolean checkSuccessorshipRecursively(TableRow ascendor, TableRow ancestor) {
+
+			Node ascendorNode = ascendor.getValue("sub");
+			Node potentialAncestorNode = ancestor.getValue("sub");
+
+			if (ascendorNode.equals(potentialAncestorNode)) return true;
+
+			Node ascendorParent = ascendor.getValue("par");
+			TableRow parentRow = data.findRowFor(ascendorParent);
+			if (parentRow == null) return false;
+			return checkSuccessorshipRecursively(parentRow, ancestor);
+
+		}
+
+	}
+
+	private String valueToID(String variable, TableRow row) {
 		Node value = row.getValue(variable);
 		if (value == null) return null;
 		return Integer.toString(value.toString().replaceAll("[\\s\"]+", "").hashCode());
