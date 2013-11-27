@@ -516,7 +516,8 @@
 	var fnc = function(options) {
 		var default_settings = {
 			loadBranches : false,
-			persist : false
+			persist : false,
+			article : ""
 		};
 		function defined(a) {
 			return typeof a !== "undefined";
@@ -526,7 +527,7 @@
 		// table.addClass('treeTable');
 		var persistStore;
 
-		var cookieStr = $.cookie("KdomPersistance");
+		var cookieStr = $.cookie("KdomPersistance-"+options.article);
 		if (cookieStr != null)
 			persistStore = $.parseJSON(cookieStr);
 
@@ -564,7 +565,7 @@
 				var stop;
 			}
 			var cookieStr = JSON.stringify(persistStore);
-			$.cookie("KdomPersistance", cookieStr);
+			$.cookie("KdomPersistance-"+options.article, cookieStr);
 		}
 
 		//necessary because node ids change after a new build of the site
