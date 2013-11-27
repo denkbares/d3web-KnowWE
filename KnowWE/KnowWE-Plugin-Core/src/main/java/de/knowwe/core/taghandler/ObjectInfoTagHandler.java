@@ -399,24 +399,38 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				result.append(rb.getString("KnowWE.ObjectInfoTagHandler.noDefinitionAvailable"));
 				result.appendHtml("</p>");
 			}
-
+			String exclude = user.getParameter("exclude");
 			Map<Article, List<Section<?>>> groupedReferences = groupByArticle(references);
 			for (Article article : groupedReferences.keySet()) {
 				RenderResult innerResult = new RenderResult(result);
 				innerResult.appendHtml("<ul>");
 				Map<Section<?>, Collection<Section<?>>> groupedByPreview =
 						groupByPreview(groupedReferences.get(article));
-				for (Entry<Section<?>, Collection<Section<?>>> entry : groupedByPreview.entrySet()) {
+				boolean atLeastOne = false;
+				outer: for (Entry<Section<?>, Collection<Section<?>>> entry : groupedByPreview.entrySet()) {
 					Section<?> previewSection = entry.getKey();
+					if (exclude != null) {
+						exclude = Strings.decodeURL(exclude);
+						Section<?> parent = previewSection;
+						while (parent != null) {
+							if (parent.get().getName().equals(exclude)) {
+								continue outer;
+							}
+							parent = parent.getParent();
+						}
+					}
 					Collection<Section<?>> group = entry.getValue();
 
 					innerResult.appendHtml("<li><div>");
 					renderLinkToSection(previewSection, innerResult);
 					renderTermPreview(previewSection, group, user, "reference", innerResult);
 					innerResult.appendHtml("</div></li>");
+					atLeastOne = true;
 				}
 				innerResult.appendHtml("</ul>");
-				wrapInExtendPanel("Article '" + article.getTitle() + "'", innerResult, result);
+				if (atLeastOne) {
+					wrapInExtendPanel("Article '" + article.getTitle() + "'", innerResult, result);
+				}
 			}
 		}
 		renderSectionEnd(result);
