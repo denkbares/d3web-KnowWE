@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Collection;
 
+import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.io.progress.DummyProgressListener;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.plugin.io.PluginConfigPersistenceHandler;
@@ -43,9 +44,10 @@ public class PluginConfigReviseSubtreeHandler extends D3webSubtreeHandler<Plugin
 					"No knowledgebase available."));
 		}
 		try {
-			new PluginConfigPersistenceHandler().read(kb,
-					new ByteArrayInputStream(xmlText.getBytes()),
-					new DummyProgressListener());
+			new PluginConfigPersistenceHandler().read(
+					PersistenceManager.getInstance(),
+					kb,
+					new ByteArrayInputStream(xmlText.getBytes()), new DummyProgressListener());
 		}
 		catch (IOException e1) {
 			return Messages.asList(Messages.error(e1.getMessage()));
