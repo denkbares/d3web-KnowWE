@@ -196,8 +196,7 @@ public class RuleContentType extends AbstractType {
 						exceptionCond, action.get().getActionPSContext());
 				if (r != null) {
 					KnowWEUtils.storeObject(article, actionS, ruleStoreKey, r);
-					return Messages.asList(Messages.objectCreatedNotice(
-							"Rule"));
+					return Messages.noMessage();
 				}
 
 			}
