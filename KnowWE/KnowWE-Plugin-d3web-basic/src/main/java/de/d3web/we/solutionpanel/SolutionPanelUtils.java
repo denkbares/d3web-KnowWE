@@ -184,7 +184,8 @@ public class SolutionPanelUtils {
 			// remove the brackets
 			return mcText.substring(1, mcText.length() - 1);
 		}
-		else if (value instanceof Unknown || value instanceof UndefinedValue) return "-";
+		else if (value instanceof Unknown) return "Unknown";
+		else if (value instanceof UndefinedValue) return "Undefined";
 		else return value.toString();
 	}
 
