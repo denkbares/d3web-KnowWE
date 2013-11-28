@@ -21,8 +21,8 @@ package de.d3web.we.object;
 
 import de.d3web.core.knowledge.terminology.Solution;
 import de.knowwe.core.compile.terminology.TermRegistrationScope;
-import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
@@ -36,7 +36,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class SolutionReference extends D3webTermReference<Solution> {
 
 	public SolutionReference() {
-		this.setRenderer(StyleRenderer.SOLUTION);
+		this.setRenderer(new ValueTooltipRenderer(StyleRenderer.SOLUTION));
 		this.addSubtreeHandler(new SimpleTermReferenceRegistrationHandler(
 				TermRegistrationScope.LOCAL));
 	}
