@@ -27,14 +27,13 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.kdom.renderer.StyleRenderer;
-import de.knowwe.tools.ToolMenuDecoratingRenderer;
 
 public class ResourceReference extends SimpleReference {
 
 	public ResourceReference(Class<?> termClass) {
 		super(TermRegistrationScope.LOCAL, termClass);
 		this.setSectionFinder(new AllTextFinderTrimmed());
-		this.setRenderer(new ToolMenuDecoratingRenderer(StyleRenderer.Question));
+		this.setRenderer(StyleRenderer.Question);
 	}
 
 	@Override

@@ -25,7 +25,6 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.renderer.StyleRenderer;
-import de.knowwe.tools.ToolMenuDecoratingRenderer;
 
 public class AbbreviationDefinition extends SimpleDefinition {
 
@@ -34,7 +33,7 @@ public class AbbreviationDefinition extends SimpleDefinition {
 		this.setSectionFinder(new ConstraintSectionFinder(
 				new RegexSectionFinder("\\w+"),
 				AtMostOneFindingConstraint.getInstance()));
-		this.setRenderer(new ToolMenuDecoratingRenderer(StyleRenderer.Questionaire));
+		this.setRenderer(StyleRenderer.Questionaire);
 	}
 
 }
