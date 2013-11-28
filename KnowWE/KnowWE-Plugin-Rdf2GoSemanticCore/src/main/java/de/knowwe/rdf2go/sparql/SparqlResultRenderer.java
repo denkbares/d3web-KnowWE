@@ -272,6 +272,11 @@ public class SparqlResultRenderer {
 			public int compare(TableRow o1, TableRow o2) {
 				Node concept1 = o1.getValue(result.getVariables().get(0));
 				Node concept2 = o2.getValue(result.getVariables().get(0));
+				if (result.getVariables().size() >= 3) {
+					concept1 = o1.getValue(result.getVariables().get(2));
+					concept2 = o2.getValue(result.getVariables().get(2));
+
+				}
 
 				return concept1.toString().compareTo(concept2.toString());
 			}

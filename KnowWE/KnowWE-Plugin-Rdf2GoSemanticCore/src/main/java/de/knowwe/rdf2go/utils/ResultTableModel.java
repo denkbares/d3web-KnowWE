@@ -78,8 +78,6 @@ public class ResultTableModel {
 		Node firstNode = row.getValue(variables.get(0));
 		this.data.put(firstNode, row);
 
-		Node parentNode = row.getValue(variables.get(1));
-
 	}
 
 	private void importRow(QueryRow queryRow) {
