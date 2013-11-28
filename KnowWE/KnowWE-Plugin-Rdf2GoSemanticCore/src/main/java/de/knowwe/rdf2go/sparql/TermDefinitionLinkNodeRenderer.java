@@ -1,6 +1,7 @@
 package de.knowwe.rdf2go.sparql;
 
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
@@ -14,7 +15,11 @@ public class TermDefinitionLinkNodeRenderer implements SparqlResultNodeRenderer 
 	@Override
 	public String renderNode(String text, String variable, UserContext user, Rdf2GoCore core, RenderMode mode) {
 		String abbreviatedName = Rdf2GoUtils.reduceNamespace(core, text);
-		Identifier identifier = new Identifier(abbreviatedName.split(":"));
+		String[] split = abbreviatedName.split(":");
+		for (int i = 0; i < split.length; i++) {
+			split[i] = Strings.decodeURL(split[i]);
+		}
+		Identifier identifier = new Identifier(split);
 
 		String master = Rdf2GoCore.getMaster(core, Environment.DEFAULT_WEB);
 		
@@ -25,7 +30,7 @@ public class TermDefinitionLinkNodeRenderer implements SparqlResultNodeRenderer 
 		if (termDefiningSection != null) {
 			if (mode == RenderMode.HTML) {
 				return KnowWEUtils.getLinkHTMLToArticle(termDefiningSection.getTitle(),
-						abbreviatedName);
+						Strings.concat(":", split));
 			}
 		}
 		return text;
