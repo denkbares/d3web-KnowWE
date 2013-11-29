@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import de.d3web.strings.StringFragment;
 import de.knowwe.core.kdom.parsing.Section;
 
 public class SectionFinderResult implements Comparable<SectionFinderResult> {
@@ -62,6 +63,15 @@ public class SectionFinderResult implements Comparable<SectionFinderResult> {
 		List<SectionFinderResult> resultList = new ArrayList<SectionFinderResult>();
 		resultList.add(s);
 		return resultList;
+	}
+
+	public static List<SectionFinderResult> createResultList(List<StringFragment> fragments) {
+		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+		for (StringFragment stringFragment : fragments) {
+			result.add(new SectionFinderResult(stringFragment.getStart(),
+					stringFragment.getEnd()));
+		}
+		return result;
 	}
 
 	public static String getFoundText(SectionFinderResult result, Section<?> fatherSection) {
