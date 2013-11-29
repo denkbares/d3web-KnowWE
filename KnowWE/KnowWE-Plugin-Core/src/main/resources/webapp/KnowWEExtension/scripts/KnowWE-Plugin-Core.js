@@ -52,6 +52,30 @@ KNOWWE.core.plugin.objectinfo = function() {
 
 			KNOWWE.core.plugin.objectinfo.lookUp();
 		},
+		
+		/**
+		 * Laod the ajax-previews
+		 */
+		loadPreviews : function(web, title, root) {
+			var select = (root == undefined) 
+					? jq$('.asynchronPreviewRenderer') 
+					: jq$(root).find('.asynchronPreviewRenderer');
+			var all = [];
+			select.each(function() {all.push(this);})
+			// we use a very non-aggressive way to fetch all previews, 
+			// because this might be many and will stop the web page from responding
+			var handleNext = function(after) {
+				var next = all.pop();
+				if (next) {
+					KNOWWE.core.plugin.objectinfo.loadPreview(web, title, next);
+					window.setTimeout(function() {after(after);});
+				}
+			};
+			window.setTimeout(function() {handleNext(handleNext);});
+		},
+		loadPreview : function(web, title, preview) {
+			KNOWWE.core.rerendercontent.updatePreviews(web, title, preview.id, preview.getAttribute('rel'));
+		},
 
 		/**
 		 * Function: createHomePage Used in the ObjectInfoToolProvider for

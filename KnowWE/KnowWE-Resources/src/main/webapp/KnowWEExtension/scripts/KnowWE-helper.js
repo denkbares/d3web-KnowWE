@@ -586,7 +586,9 @@ KNOWWE.helper.ajax = function ( options ) {
 	                    } 
 	                    break;
 	                case 'replaceElement':
-	                    KNOWWE.core.util.replaceElement( ids, http.responseText);
+	                	window.setTimeout(function() {
+	                		KNOWWE.core.util.replaceElement( ids, http.responseText);
+	                	});
 	                    break;                    
 	                case 'replace':
 	                    KNOWWE.core.util.replace(http.responseText);

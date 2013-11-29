@@ -414,6 +414,20 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			}
 		}
 		renderSectionEnd(result);
+
+		// render some js to update the async previews
+		result.appendHtml(
+				"<script>jq$('.extend-panel-right').click(function() {KNOWWE.core.plugin.objectinfo.loadPreviews("
+						+ Strings.quote(user.getWeb()) + ","
+						+ Strings.quote(user.getTitle()) + ", this._next());});</script>");
+		// comment this in to also preload all previews in the background
+		// instead of using ajax mode only
+		/*
+		 * result.appendHtml(
+		 * "<script>jq$(document).ready(function() {KNOWWE.core.plugin.objectinfo.loadPreviews("
+		 * + Strings.quote(user.getWeb()) + "," + Strings.quote(user.getTitle())
+		 * + ");});</script>");
+		 */
 	}
 
 	public static void renderTermReferencesPreviewsAsync(List<Section<?>> sections, UserContext user, RenderResult result) {
@@ -424,14 +438,10 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			sectionIDs.append(section.getID());
 		}
 
-		result.appendHtml("<span class='asynchronRendererLookAlike'")
-				.appendHtml(" id='").append(id).appendHtml("'></span>");
-		result.appendHtml("<script>KNOWWE.core.rerendercontent.updatePreviews("
-				+ Strings.quote(user.getWeb()) + ","
-				+ Strings.quote(user.getTitle()) + ","
-				+ Strings.quote(id) + ","
-				+ Strings.quote(sectionIDs.toString())
-				+ ");</script>");
+		result.appendHtml("<span class='asynchronPreviewRenderer'")
+				.append(" id='").append(id).append("'")
+				.append(" rel='").append(sectionIDs).append("'")
+				.appendHtml("></span>");
 	}
 
 	/**
@@ -450,7 +460,6 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			result.appendHtml("<i>You are not allowed to view this article.</i>");
 			return;
 		}
-
 		result.appendHtml("<ul>");
 		Map<Section<?>, Collection<Section<?>>> groupedByPreview = groupByPreview(sections);
 		for (Entry<Section<?>, Collection<Section<?>>> entry : groupedByPreview.entrySet()) {

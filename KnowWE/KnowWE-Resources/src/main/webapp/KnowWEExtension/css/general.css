@@ -624,7 +624,7 @@ a.action.dialog {
 /* ------->>> Ajax Laoding  <<<----------*/
 /* ##################################### */
 
-span.asynchronRenderer, span.asynchronRendererLookAlike {
+span.asynchronRenderer, span.asynchronPreviewRenderer {
 	width: 32px;
 	height: 32px;
 	display: inline-block;
