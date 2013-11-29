@@ -27,7 +27,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -61,10 +60,12 @@ public class RenderPreviewAction extends AbstractAction {
 
 		RenderResult result = new RenderResult(context);
 		ObjectInfoTagHandler.renderTermReferencesPreviews(sections, context, result);
-		String page = Environment.getInstance().getWikiConnector().renderWikiSyntax(
-				result.toStringRaw(), context.getRequest());
-		String html = RenderResult.unmask(page, context);
-		context.getWriter().append(html);
+		// String page =
+		// Environment.getInstance().getWikiConnector().renderWikiSyntax(
+		// result.toStringRaw(), context.getRequest());
+		// String html = RenderResult.unmask(page, context);
+		// context.getWriter().append(html);
+		context.getWriter().append(result.toString());
 		context.setContentType("text/html; charset=UTF-8");
 	}
 }
