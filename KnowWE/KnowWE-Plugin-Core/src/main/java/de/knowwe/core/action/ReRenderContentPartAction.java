@@ -30,6 +30,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * ReRenderContentPartAction. Renders a given section again. Often used in
@@ -53,7 +54,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 
 		}
 
-		if (!userCanView(context, section)) {
+		if (!KnowWEUtils.canView(section, context)) {
 			return "You are not allowed to view this content";
 		}
 
@@ -79,12 +80,6 @@ public class ReRenderContentPartAction extends AbstractAction {
 				.getWikiConnector().renderWikiSyntax(pagedata, context.getRequest());
 
 		return RenderResult.unmask(pagedata, context);
-	}
-
-	private boolean userCanView(UserActionContext context, Section<?> section) {
-		return Environment.getInstance().getWikiConnector().userCanViewArticle(
-				section.getTitle(),
-				context.getRequest());
 	}
 
 	@Override

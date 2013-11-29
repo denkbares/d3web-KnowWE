@@ -25,6 +25,7 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.diaFlux.inference.FlowchartProcessedCondition;
 import de.d3web.we.kdom.condition.D3webCondition;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.basicType.KeywordType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 
@@ -45,6 +46,10 @@ public class FlowchartProcessedConditionType extends D3webCondition<FlowchartPro
 		FlowchartReference reference = new FlowchartReference();
 		reference.setSectionFinder(new RegexSectionFinder(PATTERN, FLOWCHART_GROUP));
 		addChildType(reference);
+
+		addChildType(new KeywordType("["));
+		addChildType(new KeywordType("]"));
+		addChildType(new KeywordType("PROCESSED"));
 	}
 
 	@Override

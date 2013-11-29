@@ -530,6 +530,16 @@ KNOWWE.core.rerendercontent = function(){
                 }
             }
         },
+        updatePreviews : function(web, title, replaceID, previewSectionIDs) {
+            var params = {
+                action : 'RenderPreviewAction',
+//                KWikiWeb : web,
+//                KWiki_Topic: title,
+                SectionID : previewSectionIDs
+            }
+            var url = KNOWWE.core.util.getURL( params );
+            KNOWWE.core.rerendercontent.execute(url, replaceID, 'replaceElement', this, false);
+        },
         /**
          * Function: execute
          * Sends the rerendercontent AJAX request.

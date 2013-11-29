@@ -31,10 +31,12 @@ import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.d3web.collections.CountingSet;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;
@@ -338,7 +340,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		}
 	}
 
-	private void renderTermPreview(Section<?> previewSection, Collection<Section<?>> relevantSubSections, UserContext user, String cssClass, RenderResult result) {
+	private static void renderTermPreview(Section<?> previewSection, Collection<Section<?>> relevantSubSections, UserContext user, String cssClass, RenderResult result) {
 		int count = relevantSubSections.size();
 		if (count == 0) return;
 
@@ -399,41 +401,88 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				result.append(rb.getString("KnowWE.ObjectInfoTagHandler.noDefinitionAvailable"));
 				result.appendHtml("</p>");
 			}
-			String exclude = user.getParameter("exclude");
+
 			Map<Article, List<Section<?>>> groupedReferences = groupByArticle(references);
 			for (Article article : groupedReferences.keySet()) {
+				List<Section<?>> referencesGroup = groupedReferences.get(article);
 				RenderResult innerResult = new RenderResult(result);
-				innerResult.appendHtml("<ul>");
-				Map<Section<?>, Collection<Section<?>>> groupedByPreview =
-						groupByPreview(groupedReferences.get(article));
-				boolean atLeastOne = false;
-				outer: for (Entry<Section<?>, Collection<Section<?>>> entry : groupedByPreview.entrySet()) {
-					Section<?> previewSection = entry.getKey();
-					if (exclude != null) {
-						exclude = Strings.decodeURL(exclude);
-						Section<?> parent = previewSection;
-						while (parent != null) {
-							if (parent.get().getName().equals(exclude)) {
-								continue outer;
-							}
-							parent = parent.getParent();
-						}
-					}
-					Collection<Section<?>> group = entry.getValue();
-
-					innerResult.appendHtml("<li><div>");
-					renderLinkToSection(previewSection, innerResult);
-					renderTermPreview(previewSection, group, user, "reference", innerResult);
-					innerResult.appendHtml("</div></li>");
-					atLeastOne = true;
-				}
-				innerResult.appendHtml("</ul>");
-				if (atLeastOne) {
-					wrapInExtendPanel("Article '" + article.getTitle() + "'", innerResult, result);
-				}
+				renderTermReferencesPreviewsAsync(referencesGroup, user, innerResult);
+				wrapInExtendPanel(
+						"Article '" + article.getTitle() + "'",
+						getSurroundingMarkupNames(referencesGroup),
+						innerResult, result);
 			}
 		}
 		renderSectionEnd(result);
+	}
+
+	public static void renderTermReferencesPreviewsAsync(List<Section<?>> sections, UserContext user, RenderResult result) {
+		String id = UUID.randomUUID().toString();
+		StringBuilder sectionIDs = new StringBuilder();
+		for (Section<?> section : sections) {
+			if (sectionIDs.length() > 0) sectionIDs.append(",");
+			sectionIDs.append(section.getID());
+		}
+
+		result.appendHtml("<span class='asynchronRendererLookAlike'")
+				.appendHtml(" id='").append(id).appendHtml("'></span>");
+		result.appendHtml("<script>KNOWWE.core.rerendercontent.updatePreviews("
+				+ Strings.quote(user.getWeb()) + ","
+				+ Strings.quote(user.getTitle()) + ","
+				+ Strings.quote(id) + ","
+				+ Strings.quote(sectionIDs.toString())
+				+ ");</script>");
+	}
+
+	/**
+	 * Renders the specified list of term references (usually of one specific
+	 * article). The method renders the previews of the specified sections,
+	 * grouped by their preview. Each preview may render one or multiple of the
+	 * specified sections.
+	 * 
+	 * @created 29.11.2013
+	 * @param sections the section to be rendered in their previews
+	 * @param user the user context
+	 * @param result the buffer to render into
+	 */
+	public static void renderTermReferencesPreviews(List<Section<?>> sections, UserContext user, RenderResult result) {
+		if (!KnowWEUtils.canView(sections, user)) {
+			result.appendHtml("<i>You are not allowed to view this article.</i>");
+			return;
+		}
+
+		result.appendHtml("<ul>");
+		Map<Section<?>, Collection<Section<?>>> groupedByPreview = groupByPreview(sections);
+		for (Entry<Section<?>, Collection<Section<?>>> entry : groupedByPreview.entrySet()) {
+			Section<?> previewSection = entry.getKey();
+			Collection<Section<?>> group = entry.getValue();
+
+			result.appendHtml("<li><div>");
+			renderLinkToSection(previewSection, result);
+			renderTermPreview(previewSection, group, user, "reference", result);
+			result.appendHtml("</div></li>");
+		}
+		result.appendHtml("</ul>");
+	}
+
+	/**
+	 * Get a counting set of all markup names that surrounds the specified list
+	 * of sections. The count is not the number of sections contained in a
+	 * specific markup, but it is the number of preview sections required to
+	 * display these sections (some preview sections may display multiple of the
+	 * specified sections).
+	 * 
+	 * @created 29.11.2013
+	 * @param sections the section to get the markup names for
+	 * @return the counting set of markup names
+	 */
+	private CountingSet<String> getSurroundingMarkupNames(List<Section<?>> sections) {
+		CountingSet<String> types = new CountingSet<String>();
+		Map<Section<?>, Collection<Section<?>>> groupedByPreview = groupByPreview(sections);
+		for (Section<?> preview : groupedByPreview.keySet()) {
+			types.add(getSurroundingMarkupName(preview));
+		}
+		return types;
 	}
 
 	/**
@@ -445,7 +494,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	 * @param items list of sections to be grouped
 	 * @return the groups of sections
 	 */
-	private Map<Section<?>, Collection<Section<?>>> groupByPreview(Collection<Section<?>> items) {
+	private static Map<Section<?>, Collection<Section<?>>> groupByPreview(Collection<Section<?>> items) {
 		List<Section<?>> list = new ArrayList<Section<?>>(items);
 		Collections.sort(list, KDOMPositionComparator.getInstance());
 		Map<Section<?>, Collection<Section<?>>> result = new LinkedHashMap<Section<?>, Collection<Section<?>>>();
@@ -468,7 +517,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		return result;
 	}
 
-	private void renderLinkToSection(Section<?> reference, RenderResult result) {
+	private static void renderLinkToSection(Section<?> reference, RenderResult result) {
 		if (reference == null) return;
 		// Render link to anchor (=uses div id as anchor))
 		// html.append("<a href=\"Wiki.jsp?page=");
@@ -488,7 +537,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		result.appendHtml("</a>");
 	}
 
-	private String getSurroundingMarkupName(Section<?> section) {
+	private static String getSurroundingMarkupName(Section<?> section) {
 		if (section.get() instanceof DefaultMarkupType) return section.get().getName();
 		Section<?> root = Sections.findAncestorOfType(section, DefaultMarkupType.class);
 		if (root != null) return root.get().getName();
@@ -571,13 +620,31 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		renderSectionEnd(result);
 	}
 
+	private void wrapInExtendPanel(String title, CountingSet<String> occurences, RenderResult content, RenderResult result) {
+		StringBuilder info = new StringBuilder();
+		for (String string : occurences) {
+			if (info.length() > 0) info.append(", ");
+			int count = occurences.getCount(string);
+			if (count > 1) info.append(count).append("&times; ");
+			info.append(string);
+		}
+		wrapInExtendPanel(title, info.toString(), content, result);
+	}
+
 	private void wrapInExtendPanel(String title, RenderResult content, RenderResult result) {
+		wrapInExtendPanel(title, (String) null, content, result);
+	}
+
+	private void wrapInExtendPanel(String title, String info, RenderResult content, RenderResult result) {
 		result.appendHtml("<p id=\"objectinfo-")
 				.appendHtml(String.valueOf(panelCounter++))
 				.appendHtml("-show-extend\" class=\"show-extend pointer extend-panel-right\" >");
 		result.appendHtml("<strong>");
 		result.append(title);
 		result.appendHtml("</strong>");
+		if (!Strings.isBlank(info)) {
+			result.append(" (").append(info).append(")");
+		}
 		result.appendHtml("</p>");
 		result.appendHtml("<div class=\"hidden\">");
 		result.append(content);

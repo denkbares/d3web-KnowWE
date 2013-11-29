@@ -161,17 +161,23 @@
 		<parameter id="scope" value="root" />
 	</extension>	
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="ReRenderContentPartAction">
-		<parameter id="class"
-			value="de.knowwe.core.action.ReRenderContentPartAction" />
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="ReRenderContentPartAction">
+		<parameter id="class" value="de.knowwe.core.action.ReRenderContentPartAction" />
 		<parameter id="name" value="ReRenderContentPartAction" />
 		<parameter id="description" value="Action ReRenderContentPartAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="RenderPreviewAction">
+		<parameter id="class" value="de.knowwe.core.action.RenderPreviewAction" />
+		<parameter id="name" value="RenderPreviewAction" />
+		<parameter id="description" value="Action to render section previews asynchronously." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
 
-		<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="ReplaceKDOMNodeAction">
 		<parameter id="class"
 			value="de.knowwe.core.action.ReplaceKDOMNodeAction" />

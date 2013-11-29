@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -327,6 +328,69 @@ public class KnowWEUtils {
 
 	public static String getApplicationRootPath() {
 		return Environment.getInstance().getWikiConnector().getApplicationRootPath();
+	}
+
+	/**
+	 * Returns if the user has the read access rights to the specified article.
+	 * 
+	 * @created 29.11.2013
+	 * @param article the article to check the access rights for
+	 * @param user the user context
+	 * @return true if the user has the read access rights to the article
+	 */
+	public static boolean canView(Article article, UserContext user) {
+		return Environment.getInstance().getWikiConnector().userCanViewArticle(
+				article.getTitle(), user.getRequest());
+	}
+
+	/**
+	 * Returns if the user has the read access rights to all of the specified
+	 * articles.
+	 * 
+	 * @created 29.11.2013
+	 * @param articles the articles to check the access rights for
+	 * @param user the user context
+	 * @return true if the user has the read access rights to all of the
+	 *         articles
+	 */
+	private static boolean canView(Set<Article> articles, UserContext user) {
+		for (Article article : articles) {
+			if (!canView(article, user)) return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Returns if the user has the read access rights to the specified section.
+	 * To be more specific, it checks if the user has the read access rights to
+	 * the article that contains the specified section.
+	 * 
+	 * @created 29.11.2013
+	 * @param section the section to check the access rights for
+	 * @param user the user context
+	 * @return true if the user has the read access rights to the section
+	 */
+	public static boolean canView(Section<?> section, UserContext user) {
+		return canView(section.getArticle(), user);
+	}
+
+	/**
+	 * Returns if the user has the read access rights to all of the specified
+	 * sections. To be more specific, it checks if the user has the read access
+	 * rights to the set of all articles that contain the specified sections.
+	 * 
+	 * @created 29.11.2013
+	 * @param sections the sections to check the access rights for
+	 * @param user the user context
+	 * @return true if the user has the read access rights to all of the
+	 *         sections
+	 */
+	public static boolean canView(Collection<Section<?>> sections, UserContext user) {
+		Set<Article> articles = new HashSet<Article>();
+		for (Section<?> section : sections) {
+			articles.add(section.getArticle());
+		}
+		return canView(articles, user);
 	}
 
 	public static String getPageChangeLogPath() {
