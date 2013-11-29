@@ -26,6 +26,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -41,31 +44,65 @@ import de.knowwe.core.taghandler.ObjectInfoTagHandler;
  */
 public class RenderPreviewAction extends AbstractAction {
 
+	private static final String OUTDATED = "<i>The specified article sections are not available, maybe the page has been changed by an other user. Please reload this page.</i>";
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
+		RenderResult result = null;
+		String jsonString = context.getParameter(Attributes.JSON_DATA);
 		String nodeIDs = context.getParameter(Attributes.SECTION_ID);
+		if (jsonString != null) {
+			result = executeJSON(context, jsonString);
+		}
+		else if (nodeIDs != null) {
+			result = executePlain(context, nodeIDs);
+		}
+
+		if (result == null) {
+			context.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing data");
+		}
+		else {
+			context.setContentType("text/plain; charset=UTF-8");
+			context.getWriter().append(result.toString());
+		}
+	}
+
+	private RenderResult executePlain(UserActionContext context, String nodeIDs) throws IOException {
+		RenderResult result = new RenderResult(context);
+		renderItem(context, nodeIDs, result);
+		return result;
+	}
+
+	private void renderItem(UserActionContext context, String nodeIDs, RenderResult result) {
 		String[] ids = nodeIDs.split(",");
 		List<Section<?>> sections = new LinkedList<Section<?>>();
 		for (String sectionID : ids) {
 			Section<? extends Type> section = Sections.getSection(sectionID);
 			if (section == null) {
-				context.sendError(
-						HttpServletResponse.SC_BAD_REQUEST,
-						"The specified article sections are not available, maybe the page has been changed by an other user. Please reload this page.");
+				result.append(OUTDATED);
 				return;
 			}
 			sections.add(section);
 		}
-
-		RenderResult result = new RenderResult(context);
 		ObjectInfoTagHandler.renderTermReferencesPreviews(sections, context, result);
-		// String page =
-		// Environment.getInstance().getWikiConnector().renderWikiSyntax(
-		// result.toStringRaw(), context.getRequest());
-		// String html = RenderResult.unmask(page, context);
-		// context.getWriter().append(html);
-		context.getWriter().append(result.toString());
-		context.setContentType("text/html; charset=UTF-8");
+	}
+
+	private RenderResult executeJSON(UserActionContext context, String jsonText) throws IOException {
+		RenderResult result = new RenderResult(context);
+		try {
+			JSONArray object = new JSONArray(jsonText);
+			for (int i = 0; i < object.length(); i++) {
+				String ids = object.getString(i);
+				result.appendHtml("<div>");
+				renderItem(context, ids, result);
+				result.appendHtml("</div>");
+				result.append("\n");
+			}
+			return result;
+		}
+		catch (JSONException e) {
+			throw new IOException("wrong arguments: " + e.getMessage());
+		}
 	}
 }

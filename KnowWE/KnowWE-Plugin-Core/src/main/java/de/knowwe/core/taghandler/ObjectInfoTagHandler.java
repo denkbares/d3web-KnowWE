@@ -420,14 +420,13 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 				"<script>jq$('.extend-panel-right').click(function() {KNOWWE.core.plugin.objectinfo.loadPreviews("
 						+ Strings.quote(user.getWeb()) + ","
 						+ Strings.quote(user.getTitle()) + ", this._next());});</script>");
-		// comment this in to also preload all previews in the background
-		// instead of using ajax mode only
-		/*
-		 * result.appendHtml(
-		 * "<script>jq$(document).ready(function() {KNOWWE.core.plugin.objectinfo.loadPreviews("
-		 * + Strings.quote(user.getWeb()) + "," + Strings.quote(user.getTitle())
-		 * + ");});</script>");
-		 */
+
+		// the following statement will preload all previews in the background
+		// instead of using ajax mode only. Comment in/out to change behaviour
+		result.appendHtml(
+				"<script>jq$(document).ready(function() {KNOWWE.core.plugin.objectinfo.loadPreviews("
+						+ Strings.quote(user.getWeb()) + "," + Strings.quote(user.getTitle())
+						+ ");});</script>");
 	}
 
 	public static void renderTermReferencesPreviewsAsync(List<Section<?>> sections, UserContext user, RenderResult result) {

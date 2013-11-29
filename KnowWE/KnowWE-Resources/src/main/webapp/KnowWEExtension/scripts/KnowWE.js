@@ -326,7 +326,7 @@ KNOWWE.core.util = function(){
 	          var newDOMwrapper = document.createElement("div");
 	          newDOMwrapper.innerHTML = htmlText;
 	          var domChildNodes = newDOMwrapper.children;
-	          for(var j = 0; j < ids.length; j++) {
+	          for(var j = ids.length-1; j >= 0; j--) {
 	              var newDOM = domChildNodes[j];
 	              oldDOM = document.getElementById(ids[j]);
 	              if(oldDOM) {
@@ -529,16 +529,6 @@ KNOWWE.core.rerendercontent = function(){
                     KNOWWE.core.rerendercontent.execute(url, rel.id, action, this, indicateProcess);
                 }
             }
-        },
-        updatePreviews : function(web, title, replaceID, previewSectionIDs) {
-            var params = {
-                action : 'RenderPreviewAction',
-//                KWikiWeb : web,
-//                KWiki_Topic: title,
-                SectionID : previewSectionIDs
-            }
-            var url = KNOWWE.core.util.getURL( params );
-            KNOWWE.core.rerendercontent.execute(url, replaceID, 'replaceElement', this, false);
         },
         /**
          * Function: execute
