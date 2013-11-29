@@ -273,8 +273,12 @@ public class SparqlResultRenderer {
 				Node concept1 = o1.getValue(result.getVariables().get(0));
 				Node concept2 = o2.getValue(result.getVariables().get(0));
 				if (result.getVariables().size() >= 3) {
-					concept1 = o1.getValue(result.getVariables().get(2));
-					concept2 = o2.getValue(result.getVariables().get(2));
+					Node tmp1 = o1.getValue(result.getVariables().get(2));
+					Node tmp2 = o2.getValue(result.getVariables().get(2));
+					if (tmp1 != null && tmp2 != null) {
+						concept1 = o1.getValue(result.getVariables().get(2));
+						concept2 = o2.getValue(result.getVariables().get(2));
+					}
 
 				}
 
