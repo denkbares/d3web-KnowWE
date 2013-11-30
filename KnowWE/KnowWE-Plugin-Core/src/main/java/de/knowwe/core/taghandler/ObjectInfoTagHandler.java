@@ -61,7 +61,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.search.Result;
 import de.knowwe.kdom.search.SearchEngine;
 import de.knowwe.kdom.search.SearchOption;
-import de.knowwe.tools.Tool;
+import de.knowwe.tools.ToolSet;
 import de.knowwe.tools.ToolUtils;
 
 /**
@@ -137,7 +137,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		Section<TagHandlerTypeContent> tagNameSection = Sections.findSuccessor(
 				section, TagHandlerTypeContent.class);
 		String sectionID = section.getID();
-		Tool[] tools = ToolUtils.getTools(tagNameSection, userContext);
+		ToolSet tools = ToolUtils.getTools(tagNameSection, userContext);
 
 		// RenderResult jspMasked = new RenderResult(result);
 		String cssClassName = "type_" + section.get().getName();

@@ -81,6 +81,11 @@ public class FlowchartGoToToolProvider implements ToolProvider {
 		return tools.toArray(new Tool[tools.size()]);
 	}
 
+	@Override
+	public boolean hasTools(Section<?> section, UserContext userContext) {
+		return getTools(section, userContext).length > 0;
+	}
+
 	private OpenFlowTool createGoToTool(Section<?> termSection) {
 		Section<FlowchartType> flowchartSection = Sections.findAncestorOfType(
 				termSection, FlowchartType.class);

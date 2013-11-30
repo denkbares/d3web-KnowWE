@@ -27,6 +27,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.tools.ToolUtils;
 
 /**
  * 
@@ -36,8 +37,28 @@ import de.knowwe.tools.ToolProvider;
 public class HelpToolProvider implements ToolProvider {
 
 	@Override
+	public boolean hasTools(Section<?> section, UserContext userContext) {
+		return getDocArticle(section, userContext) != null;
+	}
+
+	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 
+		Article article = getDocArticle(section, userContext);
+		if (article == null) return ToolUtils.emptyToolArray();
+
+		String link = KnowWEUtils.getURLLink(article);
+
+		String js = "window.location.href = '" + link + "';";
+		Tool help = new DefaultTool(
+				"KnowWEExtension/d3web/icon/help16.gif",
+				"Help: " + section.get().getName(),
+				"Open help page for this markup.",
+				js);
+		return new Tool[] { help };
+	}
+
+	private Article getDocArticle(Section<?> section, UserContext userContext) {
 		ArticleManager articleManager =
 				Environment.getInstance().getArticleManager(userContext.getWeb());
 		String markupName = section.get().getName();
@@ -47,17 +68,7 @@ public class HelpToolProvider implements ToolProvider {
 		if (article == null) {
 			article = articleManager.getArticle("Doc " + markupName + "s");
 		}
-		if (article == null) return null;
-
-		String link = KnowWEUtils.getURLLink(article);
-
-		String js = "window.location.href = '" + link + "';";
-		Tool help = new DefaultTool(
-				"KnowWEExtension/d3web/icon/help16.gif",
-				"Help: " + markupName,
-				"Open help page for this markup.",
-				js);
-		return new Tool[] { help };
+		return article;
 	}
 
 }

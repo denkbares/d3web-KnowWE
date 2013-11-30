@@ -77,14 +77,14 @@ public class JSPWikiMarkupUtils {
 
 	public static List<Type> getInstalledJSPWikiRootMarkups() {
 		PluginManager manager = PluginManager.getInstance();
-		Extension[] extensions = manager.getExtensions(Plugins.EXTENDED_PLUGIN_ID,
-				Plugins.EXTENDED_POINT_Type);
-		extensions = ScopeUtils.getMatchingExtensions(extensions,
-				new Type[] { RootType.getInstance() });
+		Extension[] extensions = manager.getExtensions(
+				Plugins.EXTENDED_PLUGIN_ID, Plugins.EXTENDED_POINT_Type);
+		List<Extension> matches = ScopeUtils.getMatchingExtensions(
+				extensions, new Type[] { RootType.getInstance() });
 
 		Plugin plugin = manager.getPlugin("KnowWE-Plugin-JSPWiki-MarkupSet");
 		List<Type> result = new LinkedList<Type>();
-		for (Extension extension : extensions) {
+		for (Extension extension : matches) {
 			if (plugin.equals(extension.getPlugin())) {
 				Type type = (Type) extension.getNewInstance();
 				result.add(type);

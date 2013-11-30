@@ -1,6 +1,7 @@
 package de.knowwe.core.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -64,6 +65,42 @@ public class Scope {
 	private static final Map<String, Scope> CACHED_SCOPES =
 			new HashMap<String, Scope>();
 
+	public static class TypePath {
+
+		private final Type[] typePath;
+		private int hashCode = 0;
+
+		public TypePath(Type[] typePath) {
+			this.typePath = typePath;
+		}
+
+		public TypePath(Section<?> section) {
+			this(createPath(section));
+		}
+
+		private static Type[] createPath(Section<?> section) {
+			int kdomDepth = section.getDepth();
+			Type[] typePath = new Type[kdomDepth];
+			for (int i = kdomDepth - 1; i >= 0; i--) {
+				typePath[i] = section.get();
+				section = section.getParent();
+			}
+			return typePath;
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (!(other instanceof TypePath)) return false;
+			return Arrays.equals(typePath, ((TypePath) other).typePath);
+		}
+
+		@Override
+		public int hashCode() {
+			if (hashCode == 0) hashCode = Arrays.hashCode(typePath);
+			return hashCode;
+		}
+	}
+
 	/**
 	 * Returns the appropriate Scope for the specified scope's pathname.
 	 * 
@@ -111,14 +148,8 @@ public class Scope {
 		return matches(getTypePath(section));
 	}
 
-	public static Type[] getTypePath(Section<?> section) {
-		int kdomDepth = section.getDepth();
-		Type[] typePath = new Type[kdomDepth];
-		for (int i = kdomDepth - 1; i >= 0; i--) {
-			typePath[i] = section.get();
-			section = section.getParent();
-		}
-		return typePath;
+	public static TypePath getTypePath(Section<?> section) {
+		return new TypePath(section);
 	}
 
 	/**
@@ -158,8 +189,9 @@ public class Scope {
 	 * @created 23.09.2010
 	 * @param typePath is the typePath to be checked
 	 */
-	public boolean matches(Type[] typePath) {
-		return matches(typePath, typePath.length - 1, this.scopeElements.length - 1);
+	public boolean matches(TypePath typePath) {
+		Type[] path = typePath.typePath;
+		return matches(path, path.length - 1, this.scopeElements.length - 1);
 	}
 
 	private boolean matches(Type[] typePath, int typePathPosition, int scopeElementPosition) {

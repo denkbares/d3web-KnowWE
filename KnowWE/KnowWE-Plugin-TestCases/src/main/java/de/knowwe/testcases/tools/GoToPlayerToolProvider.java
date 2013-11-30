@@ -81,6 +81,11 @@ public class GoToPlayerToolProvider implements ToolProvider {
 		return null;
 	}
 
+	@Override
+	public boolean hasTools(Section<?> section, UserContext userContext) {
+		return getTools(section, userContext).length > 0;
+	}
+
 	private Tool[] createTools(String value, Section<?> sectionInPackage) {
 		String testCaseSection = TestCasePlayerRenderer.generateSelectedTestCaseCookieKey(DefaultMarkupType.getContentSection(sectionInPackage));
 		return new Tool[] { new DefaultTool(

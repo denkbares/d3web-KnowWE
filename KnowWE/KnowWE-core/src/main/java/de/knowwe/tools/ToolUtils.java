@@ -7,10 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import de.d3web.plugin.Extension;
-import de.d3web.plugin.PluginManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.ScopeUtils;
+import de.knowwe.core.utils.ScopeExtensions;
 
 public class ToolUtils {
 
@@ -20,27 +19,34 @@ public class ToolUtils {
 	 */
 	public final static String EMPTY_CATEGORY = "  empty_category";
 
-	public static ToolProvider[] getProviders(Section<?> section) {
-		Extension[] extensions = PluginManager.getInstance().getExtensions("KnowWEExtensionPoints",
-				"ToolProvider");
-		extensions = ScopeUtils.getMatchingExtensions(extensions, section);
-		ToolProvider[] providers = new ToolProvider[extensions.length];
-		for (int i = 0; i < extensions.length; i++) {
-			Extension extension = extensions[i];
-			providers[i] = (ToolProvider) extension.getSingleton();
-		}
-		return providers;
+	/**
+	 * Manages the {@link ToolProvider} extensions with their scopes
+	 */
+	private static final ScopeExtensions extensions =
+			new ScopeExtensions("KnowWEExtensionPoints", "ToolProvider");
+
+	public static ToolSet getTools(Section<?> section, UserContext userContext) {
+		return new FutureToolSet(section, userContext);
 	}
 
-	public static Tool[] getTools(Section<?> section, UserContext userContext) {
+	static List<Tool> getToolInstances(Section<?> section, UserContext userContext) {
 		List<Tool> result = new LinkedList<Tool>();
-		for (ToolProvider provider : getProviders(section)) {
+		for (Extension match : extensions.getMatches(section)) {
+			ToolProvider provider = (ToolProvider) match.getSingleton();
 			Tool[] tools = provider.getTools(section, userContext);
 			if (tools != null) {
 				Collections.addAll(result, tools);
 			}
 		}
-		return result.toArray(new Tool[result.size()]);
+		return result;
+	}
+
+	static boolean hasToolInstances(Section<?> section, UserContext userContext) {
+		for (Extension match : extensions.getMatches(section)) {
+			ToolProvider provider = (ToolProvider) match.getSingleton();
+			if (provider.hasTools(section, userContext)) return true;
+		}
+		return false;
 	}
 
 	/**
@@ -52,7 +58,7 @@ public class ToolUtils {
 	 * @param tools
 	 * @return
 	 */
-	public static Map<String, Map<String, List<Tool>>> groupTools(Tool[] tools) {
+	public static Map<String, Map<String, List<Tool>>> groupTools(ToolSet tools) {
 		Map<String, Map<String, List<Tool>>> toolMap = new HashMap<String, Map<String, List<Tool>>>();
 
 		for (Tool t : tools) {
@@ -93,5 +99,46 @@ public class ToolUtils {
 		}
 
 		return toolMap;
+	}
+
+	private static final ToolSet EMPTY_TOOL_SET = new DefaultToolSet();
+
+	public static ToolSet emptyTools() {
+		return EMPTY_TOOL_SET;
+	}
+
+	public static Tool[] emptyToolArray() {
+		return emptyTools().getTools();
+	}
+
+	/**
+	 * The method returns the array of tools, being null-secure and removing all
+	 * null entries from the specified tools. Therefore, calling this method
+	 * with any numbers of null will result in an empty tool array.
+	 * 
+	 * @created 30.11.2013
+	 * @param tools
+	 * @return the tool array with no null tools
+	 */
+	public static Tool[] asArray(Tool... tools) {
+		if (tools == null) return emptyToolArray();
+
+		// count tools
+		int count = 0;
+		for (Tool tool : tools) {
+			if (tool != null) count++;
+		}
+
+		// check two most common cases
+		if (count == 0) return emptyToolArray();
+		if (count == tools.length) return tools;
+
+		// otherwise remove null from the tool array
+		Tool[] result = new Tool[count];
+		int index = 0;
+		for (Tool tool : tools) {
+			if (tool != null) result[index++] = tool;
+		}
+		return result;
 	}
 }

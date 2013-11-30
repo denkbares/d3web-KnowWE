@@ -39,8 +39,12 @@ import de.knowwe.tools.ToolProvider;
 public class ObjectInfoToolProvider implements ToolProvider {
 
 	@Override
-	public Tool[] getTools(Section<?> section, UserContext userContext) {
+	public boolean hasTools(Section<?> section, UserContext userContext) {
+		return true;
+	}
 
+	@Override
+	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		Tool homepage = getCreateHomepageTool();
 		return new Tool[] { homepage };
 	}

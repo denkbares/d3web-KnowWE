@@ -46,6 +46,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.progress.ProgressRenderer;
 import de.knowwe.tools.Tool;
+import de.knowwe.tools.ToolSet;
 import de.knowwe.tools.ToolUtils;
 
 public class DefaultMarkupRenderer implements Renderer {
@@ -74,7 +75,7 @@ public class DefaultMarkupRenderer implements Renderer {
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult buffer) {
 		String id = section.getID();
-		Tool[] tools = ToolUtils.getTools(section, user);
+		ToolSet tools = ToolUtils.getTools(section, user);
 
 		// add an anchor to enable direct link to the section
 		RenderResult markupTitle = new RenderResult(buffer);
@@ -276,7 +277,7 @@ public class DefaultMarkupRenderer implements Renderer {
 			String content,
 			String sectionID,
 			String cssClassName,
-			Tool[] tools,
+			ToolSet tools,
 			UserContext user,
 			RenderResult string) {
 
@@ -318,7 +319,7 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	protected void appendHeader(String title,
 			String sectionID,
-			Tool[] tools,
+			ToolSet tools,
 			UserContext user,
 			RenderResult temp) {
 
@@ -350,7 +351,7 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	}
 
-	protected void appendToolbar(Tool[] tools, UserContext user, RenderResult result) {
+	protected void appendToolbar(ToolSet tools, UserContext user, RenderResult result) {
 		result.appendHtml("<div class='markupTools'> ");
 		for (Tool tool : tools) {
 			result.appendHtml("<div class=\""
@@ -364,9 +365,9 @@ public class DefaultMarkupRenderer implements Renderer {
 		result.appendHtml("</div>");
 	}
 
-	public void appendMenu(Tool[] tools, String id, UserContext user, RenderResult result) {
+	public void appendMenu(ToolSet tools, String id, UserContext user, RenderResult result) {
 
-		if (tools == null || tools.length == 0) return;
+		if (!tools.hasTools()) return;
 
 		Map<String, Map<String, List<Tool>>> groupedTools = ToolUtils.groupTools(tools);
 

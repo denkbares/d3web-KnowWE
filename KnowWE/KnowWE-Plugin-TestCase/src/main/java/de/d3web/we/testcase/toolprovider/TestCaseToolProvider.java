@@ -34,6 +34,11 @@ import de.knowwe.tools.ToolProvider;
 public class TestCaseToolProvider implements ToolProvider {
 
 	@Override
+	public boolean hasTools(Section<?> section, UserContext userContext) {
+		return true;
+	}
+
+	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 
 		Tool downloadXML = getDownloadXMLTool(section.getTitle(), section.getWeb(), section.getID());

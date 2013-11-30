@@ -23,18 +23,20 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import de.d3web.plugin.Extension;
-import de.d3web.plugin.PluginManager;
+import de.knowwe.core.correction.CorrectionProvider.Suggestion;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.ScopeUtils;
+import de.knowwe.core.utils.ScopeExtensions;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.tools.ToolUtils;
 
 /**
  * This ToolProvider provides quick fixes for correcting small mistakes (typos)
@@ -47,30 +49,14 @@ import de.knowwe.tools.ToolProvider;
  */
 public class CorrectionToolProvider implements ToolProvider {
 
+	private static final ScopeExtensions extensions =
+			new ScopeExtensions("KnowWEExtensionPoints", "CorrectionProvider");
+
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		List<CorrectionProvider.Suggestion> suggestions = new LinkedList<CorrectionProvider.Suggestion>();
-		ResourceBundle wikiConfig = KnowWEUtils.getConfigBundle();
-
-		int threshold = Integer.valueOf(wikiConfig.getString("knowweplugin.correction.threshold"));
-		Article article = KnowWEUtils.getCompilingArticles(section).iterator().next();
-
-		for (CorrectionProvider c : getProviders(section)) {
-			List<CorrectionProvider.Suggestion> s = c.getSuggestions(article, section, threshold);
-			if (s != null) {
-				suggestions.addAll(s);
-			}
-		}
-
-		// Ensure there are no duplicates
-		suggestions = new LinkedList<CorrectionProvider.Suggestion>(
-				new HashSet<CorrectionProvider.Suggestion>(suggestions));
-
-		// Sort by ascending distance
-		Collections.sort(suggestions);
-
-		if (suggestions.size() == 0) {
-			return new Tool[0];
+		List<Suggestion> suggestions = getSuggestions(section);
+		if (suggestions.isEmpty()) {
+			return ToolUtils.emptyToolArray();
 		}
 
 		Tool[] tools = new Tool[suggestions.size() + 1];
@@ -78,7 +64,7 @@ public class CorrectionToolProvider implements ToolProvider {
 		tools[0] = new DefaultTool(
 				"KnowWEExtension/images/quickfix.gif",
 				Messages.getMessageBundle().getString("KnowWE.Correction.do"),
-				Messages.getMessageBundle().getString("KnowWE.Correction.do"),
+				"",
 				null,
 				"correct"
 				);
@@ -97,21 +83,39 @@ public class CorrectionToolProvider implements ToolProvider {
 		return tools;
 	}
 
-	protected boolean hasError(Article article, Section<?> section) {
-		return section.hasErrorInSubtree(article);
+	@Override
+	public boolean hasTools(Section<?> section, UserContext userContext) {
+		Set<Suggestion> suggestions = getSuggestions(section, 1);
+		return !suggestions.isEmpty();
 	}
 
-	private static CorrectionProvider[] getProviders(Section<?> section) {
-		Extension[] extensions = PluginManager.getInstance().getExtensions("KnowWEExtensionPoints",
-				"CorrectionProvider");
-		extensions = ScopeUtils.getMatchingExtensions(extensions, section);
-		CorrectionProvider[] providers = new CorrectionProvider[extensions.length];
+	public static List<Suggestion> getSuggestions(Section<?> section) {
+		Set<Suggestion> suggestions = getSuggestions(section, 1000);
+		// Sort to list of ascending distance
+		List<Suggestion> result = new LinkedList<Suggestion>(suggestions);
+		Collections.sort(result);
+		return result;
+	}
 
-		for (int i = 0; i < extensions.length; i++) {
-			Extension extension = extensions[i];
-			providers[i] = (CorrectionProvider) extension.getSingleton();
+	public static Set<Suggestion> getSuggestions(Section<?> section, int maxCount) {
+		List<Extension> matches = extensions.getMatches(section);
+		if (matches.isEmpty()) return Collections.emptySet();
+
+		// Ensure there are no duplicates
+		Set<Suggestion> suggestions = new HashSet<Suggestion>();
+		ResourceBundle wikiConfig = KnowWEUtils.getConfigBundle();
+
+		int threshold = Integer.valueOf(wikiConfig.getString("knowweplugin.correction.threshold"));
+		Article article = KnowWEUtils.getCompilingArticles(section).iterator().next();
+
+		for (Extension extension : matches) {
+			CorrectionProvider c = (CorrectionProvider) extension.getSingleton();
+			List<Suggestion> s = c.getSuggestions(article, section, threshold);
+			if (s != null) {
+				suggestions.addAll(s);
+				if (suggestions.size() >= maxCount) break;
+			}
 		}
-
-		return providers;
+		return suggestions;
 	}
 }

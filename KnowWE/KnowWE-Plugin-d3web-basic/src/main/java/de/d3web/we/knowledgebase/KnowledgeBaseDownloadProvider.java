@@ -40,6 +40,11 @@ import de.knowwe.tools.ToolProvider;
 public class KnowledgeBaseDownloadProvider implements ToolProvider {
 
 	@Override
+	public boolean hasTools(Section<?> section, UserContext userContext) {
+		return true;
+	}
+
+	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		// and provide both download and refresh as tools
 		Tool refresh = getRefreshTool(section, userContext);
@@ -119,7 +124,8 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 				"&amp;" + DownloadKnowledgeBase.PARAM_FILENAME + "=" + kbName + ".d3web";
 		kbURL = Strings.encodeURL(kbURL);
 
-		String imageURL = "https://chart.googleapis.com/chart?cht=qr&amp;chs=200x200&amp;chl=" + kbURL;
+		String imageURL = "https://chart.googleapis.com/chart?cht=qr&amp;chs=200x200&amp;chl="
+				+ kbURL;
 		String id = section.getID();
 		String jsAction = "var node=$E('.markupText', '" + id + "'); " +
 				"var visible = (node.firstChild.nodeName == 'IMG'); " +

@@ -27,6 +27,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.tools.ToolUtils;
 
 /**
  * 
@@ -36,13 +37,18 @@ import de.knowwe.tools.ToolProvider;
 public class ObjectInfoPageToolProvider implements ToolProvider {
 
 	@Override
+	public boolean hasTools(Section<?> section, UserContext userContext) {
+		return section.get() instanceof Term;
+	}
+
+	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		if (section.get() instanceof Term) {
 			@SuppressWarnings("unchecked")
 			Section<? extends Term> s = (Section<? extends Term>) section;
 			return new Tool[] { getObjectInfoPageTool(s, userContext) };
 		}
-		return new Tool[] {};
+		return ToolUtils.emptyToolArray();
 	}
 
 	protected Tool getObjectInfoPageTool(Section<? extends Term> section, UserContext userContext) {

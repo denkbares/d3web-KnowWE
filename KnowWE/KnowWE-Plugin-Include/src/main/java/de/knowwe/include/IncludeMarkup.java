@@ -43,7 +43,8 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.tools.DefaultTool;
-import de.knowwe.tools.Tool;
+import de.knowwe.tools.DefaultToolSet;
+import de.knowwe.tools.ToolSet;
 
 /**
  * 
@@ -175,9 +176,9 @@ public class IncludeMarkup extends DefaultMarkupType {
 				link = KnowWEUtils.getURLLink(article);
 			}
 
-			Tool[] tools = new Tool[1];
-			tools[0] = new DefaultTool(null, "Open Page", "Opens page '" + article.getTitle()
-					+ "'", "window.location ='" + link + "'");
+			ToolSet tools = new DefaultToolSet(
+					new DefaultTool(null, "Open Page", "Opens page '" + article.getTitle()
+							+ "'", "window.location ='" + link + "'"));
 
 			RenderResult builder = new RenderResult(user);
 			String zoomStyle = "";

@@ -41,8 +41,8 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 	@Override
 	public void render(Section<?> sec, UserContext user, RenderResult string) {
 		// prepare tools
-		Tool[] tools = ToolUtils.getTools(sec, user);
-		final boolean hasTools = tools != null && tools.length > 0;
+		ToolSet tools = ToolUtils.getTools(sec, user);
+		final boolean hasTools = tools.hasTools();
 
 		String headerID;
 

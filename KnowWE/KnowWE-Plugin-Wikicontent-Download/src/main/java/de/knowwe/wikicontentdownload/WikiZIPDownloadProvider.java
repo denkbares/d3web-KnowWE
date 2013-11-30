@@ -35,6 +35,11 @@ public class WikiZIPDownloadProvider implements ToolProvider {
 	public static final String PARAM_FILENAME = "filename";
 
 	@Override
+	public boolean hasTools(Section<?> section, UserContext userContext) {
+		return userContext.userIsAdmin();
+	}
+
+	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		// and provide both downloads as tools
 		if (!userContext.userIsAdmin()) {

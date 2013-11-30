@@ -12,6 +12,7 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.tools.ToolUtils;
 
 /**
  * 
@@ -21,12 +22,15 @@ import de.knowwe.tools.ToolProvider;
 public class OntologyDownloadProvider implements ToolProvider {
 
 	@Override
+	public boolean hasTools(Section<?> section, UserContext userContext) {
+		Rdf2GoCore ontology = Rdf2GoCore.getInstance(section.getWeb(), section.getTitle());
+		return !ontology.isEmpty();
+	}
+
+	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		Tool download = getDownloadTool(section, userContext);
-		if (download != null) {
-			return new Tool[] { download };
-		}
-		return new Tool[0];
+		return ToolUtils.asArray(download);
 	}
 
 	protected Tool getDownloadTool(Section<?> section, UserContext userContext) {

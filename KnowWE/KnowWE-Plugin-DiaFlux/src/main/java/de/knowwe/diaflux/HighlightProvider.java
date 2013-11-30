@@ -35,6 +35,11 @@ public class HighlightProvider implements ToolProvider {
 	private static final String ICON = "KnowWEExtension/flowchart/icon/debug16.png";
 
 	@Override
+	public boolean hasTools(Section<?> section, UserContext userContext) {
+		return true;
+	}
+
+	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		Tool refresh = getHighlightTool(section, userContext);
 		return new Tool[] { refresh };

@@ -100,8 +100,7 @@ public class Plugins {
 	public static PriorityList<Double, Compiler> getCompilers() {
 		PluginManager pm = PluginManager.getInstance();
 		Extension[] extensions = pm.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_COMPILER);
-		PriorityList<Double, Compiler> result = new PriorityList<Double, Compiler>(
-				5d);
+		PriorityList<Double, Compiler> result = new PriorityList<Double, Compiler>(5d);
 		for (Extension e : extensions) {
 			result.add(e.getPriority(),
 					Compiler.class.cast(e.getSingleton()));
@@ -130,8 +129,7 @@ public class Plugins {
 	public static void addChildrenTypesToType(Type type, Type[] path) {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_Type);
-		extensions = ScopeUtils.getMatchingExtensions(extensions, path);
-		for (Extension extension : extensions) {
+		for (Extension extension : ScopeUtils.getMatchingExtensions(extensions, path)) {
 			double priority = extension.getPriority();
 			Type pluggedType = (Type) extension.getNewInstance();
 			type.addChildType(priority, pluggedType);
@@ -141,9 +139,7 @@ public class Plugins {
 	public static void addSubtreeHandlersToType(Type type, Type[] path) {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_SubtreeHandler);
-		extensions = ScopeUtils.getMatchingExtensions(extensions, path);
-		for (int i = 0; i < extensions.length; i++) {
-			Extension extension = extensions[i];
+		for (Extension extension : ScopeUtils.getMatchingExtensions(extensions, path)) {
 			int priorityValue = Integer.parseInt(extension.getParameter("handlerpriority"));
 			Priority priority = Priority.getPriority(priorityValue);
 			type.addSubtreeHandler(priority, (SubtreeHandler<?>) extension.getSingleton());
@@ -153,12 +149,12 @@ public class Plugins {
 	public static void addRendererToType(Type type, Type[] path) {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_Renderer);
-		extensions = ScopeUtils.getMatchingExtensions(extensions, path);
-		if (extensions.length >= 1) {
+		Extension match = ScopeUtils.getMatchingExtension(extensions, path);
+		if (match != null) {
 			if (type instanceof AbstractType) {
 				Renderer currentRenderer = ((AbstractType) type).getRenderer();
 				Environment.getInstance().addRendererForType(type, currentRenderer);
-				((AbstractType) type).setRenderer((Renderer) extensions[0].getSingleton());
+				((AbstractType) type).setRenderer((Renderer) match.getSingleton());
 			}
 			else {
 				throw new ClassCastException(
@@ -168,16 +164,14 @@ public class Plugins {
 		}
 	}
 
-
 	public static void addAnnotations(Type type, Type[] path) {
 		if (type instanceof DefaultMarkupType) {
 
 			DefaultMarkupType markupType = (DefaultMarkupType) type;
 			Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 					EXTENDED_POINT_Annotation);
-			extensions = ScopeUtils.getMatchingExtensions(extensions, path);
 
-			for (Extension extension : extensions) {
+			for (Extension extension : ScopeUtils.getMatchingExtensions(extensions, path)) {
 
 				List<Type> childrenTypes = markupType.getChildrenTypes();
 				markupType.getMarkup().addAnnotation(extension.getName());

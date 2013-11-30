@@ -37,6 +37,11 @@ import de.knowwe.tools.ToolProvider;
 public class StyledSolutionPanelToolProvider implements ToolProvider {
 
 	@Override
+	public boolean hasTools(Section<?> section, UserContext userContext) {
+		return true;
+	}
+
+	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		Tool clearSession = getSessionTool(section, userContext);
 		return new Tool[] { clearSession };

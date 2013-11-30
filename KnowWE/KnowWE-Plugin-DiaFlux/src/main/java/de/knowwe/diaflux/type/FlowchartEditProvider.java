@@ -18,12 +18,13 @@
  */
 package de.knowwe.diaflux.type;
 
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.tools.ToolUtils;
 
 /**
  * 
@@ -33,16 +34,20 @@ import de.knowwe.tools.ToolProvider;
 public class FlowchartEditProvider implements ToolProvider {
 
 	@Override
+	public boolean hasTools(Section<?> section, UserContext userContext) {
+		return KnowWEUtils.canWrite(section, userContext);
+	}
+
+	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
+		if (!KnowWEUtils.canWrite(section, userContext)) {
+			return ToolUtils.emptyToolArray();
+		}
 		Tool edit = getEditTool(section, userContext);
-		return edit != null ? new Tool[] { edit } : new Tool[] {};
+		return new Tool[] { edit };
 	}
 
 	private Tool getEditTool(Section<?> section, UserContext userContext) {
-		if (!Environment.getInstance().getWikiConnector().userCanEditArticle(section.getTitle(),
-				userContext.getRequest())) {
-			return null;
-		}
 		String jsAction = createEditAction(section, userContext);
 
 		return new DefaultTool(

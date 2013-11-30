@@ -7,10 +7,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 
 import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;
@@ -890,6 +892,23 @@ public class Sections {
 
 		// check the type of the section
 		return typeClass.equals(section.get().getClass());
+	}
+
+	/**
+	 * Returns the set of articles for a specified collection of sections. The
+	 * Articles will remain the order of the first appearance within the
+	 * specified section collection.
+	 * 
+	 * @created 30.11.2013
+	 * @param sections the sections to get the articles for
+	 * @return the articles of the sections
+	 */
+	public static Set<Article> getArticles(Collection<Section<?>> sections) {
+		Set<Article> articles = new LinkedHashSet<Article>();
+		for (Section<?> section : sections) {
+			articles.add(section.getArticle());
+		}
+		return articles;
 	}
 
 }

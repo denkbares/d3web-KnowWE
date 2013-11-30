@@ -48,6 +48,11 @@ public class CIDashboardToolProvider implements ToolProvider {
 		}
 	}
 
+	@Override
+	public boolean hasTools(Section<?> section, UserContext userContext) {
+		return DefaultMarkupType.getAnnotation(section, CIDashboardType.NAME_KEY) != null;
+	}
+
 	public static Tool getStartNewBuildTool(String dashboardName, String title) {
 		// Tool which starts a new build
 		String jsAction = "_CI.executeNewBuild('" + Strings.encodeURL(dashboardName) + "','"

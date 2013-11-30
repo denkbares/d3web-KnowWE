@@ -30,7 +30,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
-import de.knowwe.tools.Tool;
+import de.knowwe.tools.ToolSet;
 import de.knowwe.tools.ToolUtils;
 
 /**
@@ -50,8 +50,8 @@ public class GetToolMenuAction extends AbstractAction {
 
 		String identifier = context.getParameter(IDENTIFIER);
 
-		Tool[] tools = getTools(context, identifier);
-		if (tools == null) return;
+		ToolSet tools = getTools(context, identifier);
+		if (!tools.hasTools()) return;
 
 		RenderResult string = new RenderResult(context);
 		defaultMarkupRenderer.appendMenu(tools, identifier, context, string);
@@ -85,13 +85,13 @@ public class GetToolMenuAction extends AbstractAction {
 	 * @return the Tools for the identifier
 	 * @throws IOException
 	 */
-	protected Tool[] getTools(UserActionContext context, String identifier) throws IOException {
+	protected ToolSet getTools(UserActionContext context, String identifier) throws IOException {
 		Section<? extends Type> sec = getSection(context, identifier);
 		if (sec == null) {
 			context.sendError(409, "Section could not be found, "
 					+ "possibly because somebody else"
 					+ " has edited the page.");
-			return null;
+			return ToolUtils.emptyTools();
 		}
 		return ToolUtils.getTools(sec, context);
 	}

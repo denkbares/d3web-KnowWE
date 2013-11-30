@@ -33,6 +33,11 @@ import de.knowwe.tools.ToolProvider;
 public class InstantEditToolProvider implements ToolProvider {
 
 	@Override
+	public boolean hasTools(Section<?> section, UserContext userContext) {
+		return true;
+	}
+
+	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		return new Tool[] { getQuickEditPageTool(section, userContext) };
 	}

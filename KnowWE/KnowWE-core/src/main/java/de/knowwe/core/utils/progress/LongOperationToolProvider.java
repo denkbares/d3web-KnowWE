@@ -38,4 +38,10 @@ public abstract class LongOperationToolProvider implements ToolProvider {
 	}
 
 	public abstract LongOperation getOperation(Section<?> section);
+
+	@Override
+	public final boolean hasTools(Section<?> section, UserContext userContext) {
+		return true;
+	}
+
 }

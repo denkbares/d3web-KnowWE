@@ -21,7 +21,7 @@ package de.knowwe.include;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
-import de.knowwe.tools.Tool;
+import de.knowwe.tools.ToolSet;
 
 /**
  * 
@@ -35,7 +35,7 @@ public class IncludeDefaultMarkupRenderer extends DefaultMarkupRenderer {
 			String content,
 			String sectionID,
 			String cssClassName,
-			Tool[] tools,
+			ToolSet tools,
 			UserContext user,
 			RenderResult string) {
 
