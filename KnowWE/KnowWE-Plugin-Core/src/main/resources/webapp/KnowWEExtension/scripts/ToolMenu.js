@@ -3,6 +3,7 @@ function ToolMenu() {
 }
 
 ToolMenu.prototype.decorateToolMenus = function(parent) {
+	parent = jq$(parent);
 	var decorators = parent ? parent.find('.toolsMenuDecorator') : jq$('.toolsMenuDecorator');
 	jq$('.toolsMenuDecorator').each(function() {
 		var a = jq$(this);

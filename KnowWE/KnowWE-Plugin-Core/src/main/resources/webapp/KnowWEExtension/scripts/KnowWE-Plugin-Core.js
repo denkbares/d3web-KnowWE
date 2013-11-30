@@ -66,6 +66,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 				json.push(this.getAttribute('rel'));
 				ids.push(this.id);
 			});
+			var parent = (root == undefined) ? document : root.parent();
 			jq$.ajax("action/RenderPreviewAction", {
 				data: {
 	                KWikiWeb: web,
@@ -73,7 +74,8 @@ KNOWWE.core.plugin.objectinfo = function() {
 	                data: JSON.stringify(json)
 				},
 				success: function(html) {
-					KNOWWE.core.util.replaceElement(ids, html)
+					KNOWWE.core.util.replaceElement(ids, html);
+				    ToolMenu.decorateToolMenus();
 				}
 			});
 		},
