@@ -347,6 +347,23 @@ public class Rdf2GoCore implements EventListener {
 	}
 
 	/**
+	 * Adds the given {@link Statement}s for the given {@link Section} to the
+	 * triple store.
+	 * <p/>
+	 * You can remove the {@link Statement}s using the method
+	 * {@link Rdf2GoCore#removeStatementsForSection(Section)}.
+	 * 
+	 * @created 06.12.2010
+	 * @param section the {@link Section} for which the {@link Statement}s are
+	 *        added and cached
+	 * @param statements the {@link Statement}s to add
+	 */
+	public void addStatements(Section<?> section,
+			Collection<Statement> statements) {
+		addStatements(statements.toArray(new Statement[] {}));
+	}
+
+	/**
 	 * Adds the given {@link Statement}s directly to the triple store.
 	 * <p/>
 	 * <b>Attention</b>: The added {@link Statement}s are not cached in the

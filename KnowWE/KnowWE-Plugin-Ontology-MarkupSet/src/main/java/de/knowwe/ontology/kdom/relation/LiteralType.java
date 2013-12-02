@@ -21,6 +21,7 @@ package de.knowwe.ontology.kdom.relation;
 import java.util.regex.Pattern;
 
 import org.ontoware.rdf2go.model.node.Literal;
+import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.XSD;
@@ -32,9 +33,10 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.utils.Patterns;
 import de.knowwe.kdom.renderer.StyleRenderer;
+import de.knowwe.ontology.turtlePimped.compile.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
-public class LiteralType extends AbstractType {
+public class LiteralType extends AbstractType implements NodeProvider<LiteralType> {
 
 	public static final String XSD_PATTERN = "(?:\\^\\^xsd:(\\w+))";
 	public static final String LANGUAGE_TAG = "(?:@\\w+)";
@@ -46,7 +48,7 @@ public class LiteralType extends AbstractType {
 	 */
 	private static final String LITERAL_PATTERN =
 			Patterns.SINGLE_QUOTED + LITERAL_SUFFIX + "?"
-					+ "|" + Patterns.QUOTED + LITERAL_SUFFIX;
+					+ "|" + Patterns.QUOTED + LITERAL_SUFFIX + "?";
 
 	public LiteralType() {
 		this.setSectionFinder(new RegexSectionFinder(
@@ -131,6 +133,11 @@ public class LiteralType extends AbstractType {
 		public URI getXSDType(Section<XSDPart> section) {
 			return new URIImpl(XSD.XSD_NS + section.getText(), false);
 		}
+	}
+
+	@Override
+	public Node getNode(Section<LiteralType> section, Rdf2GoCore core) {
+		return getLiteral(core, section);
 	}
 
 }

@@ -83,6 +83,17 @@
 		<parameter id="scope" value="root" />
 	</extension>
 	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="TurtleMarkupPimped">
+		<parameter id="class"
+			value="de.knowwe.ontology.turtlePimped.TurtleMarkup" />
+		<parameter id="name" value="TurtleMarkupPimped" />
+		<parameter id="description" value="Type TurtleMarkupPimped" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
         id="OntologyMarkupInstantEditToolProvider">
         <parameter id="class"
