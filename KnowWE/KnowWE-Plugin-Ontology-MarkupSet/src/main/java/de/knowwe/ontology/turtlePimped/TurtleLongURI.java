@@ -20,8 +20,12 @@ package de.knowwe.ontology.turtlePimped;
 
 import org.ontoware.rdf2go.model.node.Node;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.ontology.turtlePimped.compile.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
@@ -29,6 +33,13 @@ public class TurtleLongURI extends AbstractType implements NodeProvider<TurtleLo
 
 	public TurtleLongURI() {
 		this.setSectionFinder(new ExpressionInBracketsFinder('<', '>'));
+		this.setRenderer(new Renderer() {
+
+			@Override
+			public void render(Section<?> section, UserContext user, RenderResult result) {
+				result.append(Strings.encodeHtml(section.getText()));
+			}
+		});
 	}
 
 
