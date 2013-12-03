@@ -267,13 +267,13 @@ public class TestCasePlayerRenderer implements Renderer {
 		stopButtonResult.appendHtml(stopButton);
 		tableModel.addCell(0, 0, stopButtonResult, 1);
 		tableModel.addCell(0, 1, "Time", "Time".length());
-		int column = 2;
-		tableModel.setFirstFinding(2);
+		tableModel.addCell(0, 2, "Checks", "Checks".length());
+		int column = 3;
+		tableModel.setFirstFinding(3);
 		for (Question q : usedQuestions) {
 			tableModel.addCell(0, column++, q.getName(), q.getName().length());
 		}
 		tableModel.setLastFinding(column - 1);
-		tableModel.addCell(0, column++, "Checks", "Checks".length());
 		renderObservationQuestionsHeader(additionalQuestions,
 				manager, tableModel, column);
 		column += additionalQuestions.size();
@@ -340,6 +340,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		String timeAsTimeStamp = TimeStampType.createTimeAsTimeStamp(date.getTime()
 				- testCase.getStartDate().getTime());
 		tableModel.addCell(row, column++, timeAsTimeStamp, timeAsTimeStamp.length());
+		renderCheckResults(user, testCase, status, date, tableModel, row, column++);
 		// render values of questions
 		for (Question q : usedQuestions) {
 			Finding finding = testCase.getFinding(date, q);
@@ -367,7 +368,6 @@ public class TestCasePlayerRenderer implements Renderer {
 			}
 			column++;
 		}
-		renderCheckResults(user, testCase, status, date, tableModel, row, column++);
 		// render observations
 		for (String s : additionalQuestions) {
 			TerminologyObject object = manager.search(s);
