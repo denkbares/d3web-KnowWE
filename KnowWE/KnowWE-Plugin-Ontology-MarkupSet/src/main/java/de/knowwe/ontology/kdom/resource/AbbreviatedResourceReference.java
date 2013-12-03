@@ -57,7 +57,12 @@ public class AbbreviatedResourceReference extends AbstractType {
 		else {
 			Section<AbbreviationReference> abbreviationSection = Sections.findChildOfType(
 					abbreviationPrefixSection, AbbreviationReference.class);
-			abbreviation = abbreviationSection.get().getTermName(abbreviationSection);
+			if (abbreviationSection == null) {
+				return Rdf2GoCore.LNS_ABBREVIATION;
+			}
+			else {
+				abbreviation = abbreviationSection.get().getTermName(abbreviationSection);
+			}
 		}
 		return abbreviation;
 	}

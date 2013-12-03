@@ -34,7 +34,7 @@ public class TurtleLongURI extends AbstractType implements NodeProvider<TurtleLo
 
 
 	private String getURI(Section<TurtleLongURI> section) {
-		return section.getText().substring(1, section.getText().length() - 2);
+		return section.getText().substring(1, section.getText().length() - 1);
 	}
 
 	@Override

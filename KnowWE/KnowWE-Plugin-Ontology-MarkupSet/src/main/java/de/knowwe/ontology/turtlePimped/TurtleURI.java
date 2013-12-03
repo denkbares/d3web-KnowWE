@@ -20,11 +20,15 @@ package de.knowwe.ontology.turtlePimped;
 
 import org.ontoware.rdf2go.model.node.Node;
 
+import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
+import de.knowwe.ontology.kdom.resource.ResourceReference;
 import de.knowwe.ontology.turtlePimped.compile.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
@@ -42,11 +46,26 @@ public class TurtleURI extends AbbreviatedResourceReference implements NodeProvi
 	@Override
 	public Node getNode(Section<TurtleURI> section, Rdf2GoCore core) {
 		String turtleURIText = section.getText();
+		Section<ResourceReference> ref = Sections.findSuccessor(section, ResourceReference.class);
+		if (ref != null) {
+			Identifier identifier = ref.get().getTermIdentifier(ref);
+			String shortURI = Strings.encodeURL(identifier.toExternalForm());
+			String[] idPath = identifier.getPathElements();
+				if (idPath.length == 2) {
+					String suffix = Strings.encodeURL(idPath[1]);
+					shortURI = idPath[0] + ":" + suffix;
+				}
+			String longURI = Rdf2GoUtils.expandNamespace(core, shortURI);
+			return core.createURI(longURI);
+		}
+		else {
+
 		if (turtleURIText.startsWith(":")) {
 			turtleURIText = "lns:" + turtleURIText;
 		}
 		String uri = Rdf2GoUtils.expandNamespace(core, turtleURIText);
 		return core.createURI(uri);
+		}
 	}
 
 }
