@@ -79,14 +79,15 @@ public class SparqlResultRenderer {
 
 		RenderResult result = new RenderResult(user);
 
-
-
 		List<String> variables = qrt.getVariables();
 		tablemode = variables.size() > 1;
 
+
+		// BEGIN: collapse tree mode code
 		// tree table init
 		String idVariable = null;
 		String parentVariable = null;
+
 		if (isTree) {
 			if (qrt.getVariables().size() > 2) {
 				idVariable = qrt.getVariables().get(0);
@@ -97,6 +98,7 @@ public class SparqlResultRenderer {
 				result.append("%%warning The result table requires at least three columns.");
 			}
 		}
+		// END: collapse tree mode code
 
 		if (tablemode) {
 			result.appendHtml("<table id='").append(tableID).appendHtml("' class='sparqltable'>");
@@ -104,9 +106,12 @@ public class SparqlResultRenderer {
 			int index = 0;
 			for (String var : variables) {
 
-				if (isTree && index++ < 2) {
-					continue;
-				}
+				{// BEGIN: collapse tree mode code
+					// ignore first two columns if we are in tree mode
+					if (isTree && index++ < 2) {
+						continue;
+					}
+				}// END: collapse tree mode code
 
 				result.appendHtml("<td><b>");
 				result.appendHtml("<a href='#/' onclick=\"KNOWWE.plugin.semantic.actions.sortResultsBy('"
@@ -128,9 +133,12 @@ public class SparqlResultRenderer {
 			result.appendHtml("<ul style='white-space: normal'>");
 		}
 		ResultTableModel table = new ResultTableModel(qrt);
-		if (isTree) {
-			table = createMagicallySortedTable(table);
-		}
+
+		{// BEGIN: collapse tree mode code
+			if (isTree) {
+				table = createMagicallySortedTable(table);
+			}
+		}// END: collapse tree mode code
 
 		Iterator<TableRow> iterator = table.iterator();
 		List<String> classNames = new LinkedList<String>();
@@ -145,36 +153,50 @@ public class SparqlResultRenderer {
 
 				TableRow row = iterator.next();
 
-
 				if (tablemode) {
 					if (zebraMode && (i + 1) % 2 != 0) {
 						classNames.add("odd");
 					}
-					String valueID = valueToID(idVariable, row);
-					if (isTree) {
-						String parentID = valueToID(parentVariable, row);
-						if (parentID != null
-								&& !parentID.equals(valueID)) { // hack for top
-																// level rows
-							classNames.add("child-of-sparql-id-" + parentID);
+
+					{// BEGIN: collapse tree mode code
+						if (isTree) {
+							classNames.add("treetr");
 						}
-					}
+					}// END: collapse tree mode code
+
 					result.appendHtml(classNames.isEmpty()
 							? "<tr"
 							: "<tr class='" + Strings.concat(" ", classNames) + "'");
-					if (isTree) {
-						String id = valueID;
-						result.append(" id='sparql-id-").append(id).append("'");
-					}
+
+					{// BEGIN: collapse tree mode code
+						if (isTree) {
+							String valueID = valueToID(idVariable, row);
+							String id = valueID;
+							result.append(" data-tt-id='sparql-id-").append(id).append("'");
+							String parentID = valueToID(parentVariable, row);
+							if (parentID != null
+									&& !parentID.equals(valueID)) {
+								// parentID.equals(valueID): hack for skipping
+								// top level rows
+								result.append(" data-tt-parent-id='sparql-id-").append(parentID).append(
+										"'");
+							}
+						}
+					}// END: collapse tree mode code
+
 					result.append(">");
 				}
 
 				int index = 0;
 				for (String var : variables) {
-					// ignore first two columns if we are in tree mode
-					if (isTree && index++ < 2) {
-						continue;
-					}
+
+					{// BEGIN: collapse tree mode code
+						// ignore first two columns if we are in tree mode
+						if (isTree && index++ < 2) {
+							continue;
+						}
+					}// END: collapse tree mode code
+
 					Node node = row.getValue(var);
 					String erg = renderNode(node, var, rawOutput, user, opts.getRdf2GoCore(),
 							RenderMode.HTML);
@@ -206,11 +228,16 @@ public class SparqlResultRenderer {
 					"KnowWE.owl.query.no_result"));
 		}
 		if (tablemode) {
-			if (isTree) {
-				result.appendHtml("<script type='text/javascript'>jq$('#")
-						.append(tableID)
-						.appendHtml("').treeTable({clickableNodeNames: true});</script>");
-			}
+			{// BEGIN: collapse tree mode code
+				if (isTree) {
+					result.appendHtml("<script type='text/javascript'>var table = jq$('#")
+							.append(tableID)
+							.appendHtml(
+									"');\ntable.agikiTreeTable({expandable: true, clickableNodeNames: true, persist: true, article:'"
+											+ user.getTitle() + "' });</script>");
+				}
+			}// END: collapse tree mode code
+
 			result.appendHtml("</table>");
 		}
 		else {
