@@ -20,36 +20,18 @@ package de.knowwe.rdf2go.sparql.utils;
 
 /**
  * 
- * @author Albrecht Striffler (denkbares GmbH)
- * @created 22.11.2011
+ * @author Sebastian Furth (denkbares GmbH)
+ * @created 29.11.2013
  */
-public class WHERE extends SparqlQuery {
+public class GROUP_BY extends SparqlQuery {
 
 	public ORDER_BY ORDER_BY(String orderBy) {
 		return (ORDER_BY) addNext(new ORDER_BY(), orderBy);
 	}
-
-	public WHERE AND_WHERE(String... where) {
-		return (WHERE) addNext(new WHERE(), where);
-	}
 	
-	public GROUP_BY GROUP_BY(String groupBy) {
-		return (GROUP_BY) addNext(new GROUP_BY(), groupBy);
-	}
-
 	@Override
 	public String verbalize() {
-		boolean isFirst = !(this.previous instanceof WHERE);
-		boolean isLast = !(this.next instanceof WHERE);
-		return (isFirst ? "WHERE {\n" : "") + content + (isLast ? "}\n" : "");
-	}
-
-	@Override
-	public String createContent(String... content) {
-		StringBuilder contentBuilder = new StringBuilder();
-		for (String part : content)
-			contentBuilder.append(part + " .\n");
-		return contentBuilder.toString();
+		return "GROUP BY " + content + "\n";
 	}
 
 }
