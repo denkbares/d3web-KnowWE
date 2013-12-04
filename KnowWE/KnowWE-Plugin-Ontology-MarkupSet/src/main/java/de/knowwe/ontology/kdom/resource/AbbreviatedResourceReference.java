@@ -43,6 +43,9 @@ public class AbbreviatedResourceReference extends AbstractType {
 	public String getResource(Section<? extends AbbreviatedResourceReference> section) {
 		Section<ResourceReference> resourceSection = Sections.findChildOfType(section,
 				ResourceReference.class);
+		if (resourceSection == null) {
+			return null;
+		}
 		String resource = resourceSection.get().getTermName(resourceSection);
 		return resource;
 	}
@@ -70,6 +73,9 @@ public class AbbreviatedResourceReference extends AbstractType {
 	public URI getResourceURI(Rdf2GoCore core, Section<? extends AbbreviatedResourceReference> section) {
 		String propertyAbbreviation = getAbbreviation(section);
 		String property = getResource(section);
+		if (property == null) {
+			return null;
+		}
 		return core.createURI(propertyAbbreviation, property);
 	}
 
