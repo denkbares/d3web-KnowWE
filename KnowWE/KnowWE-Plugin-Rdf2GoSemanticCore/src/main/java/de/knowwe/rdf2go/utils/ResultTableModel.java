@@ -19,10 +19,14 @@
  */
 package de.knowwe.rdf2go.utils;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.model.QueryResultTable;
@@ -32,7 +36,7 @@ import org.ontoware.rdf2go.model.node.Node;
 
 public class ResultTableModel {
 
-	private final Map<Node, TableRow> data = new LinkedHashMap<Node, TableRow>();
+	private final Map<Node, Set<TableRow>> data = new LinkedHashMap<Node, Set<TableRow>>();
 	private final List<String> variables;
 
 	public int getSize() {
@@ -58,8 +62,11 @@ public class ResultTableModel {
 
 
 	public Iterator<TableRow> iterator() {
-		Iterator<TableRow> iterator = data.values().iterator();
-		return iterator;
+		List<TableRow> result = new ArrayList<TableRow>();
+		for (Set<TableRow> list : data.values()) {
+			result.addAll(list);
+		}
+		return result.iterator();
 	}
 
 	private void populateTable(QueryResultTable result) {
@@ -76,14 +83,24 @@ public class ResultTableModel {
 
 	private void importRow(TableRow row) {
 		Node firstNode = row.getValue(variables.get(0));
-		this.data.put(firstNode, row);
+		Set<TableRow> nodeRows = data.get(firstNode);
+		if (nodeRows == null) {
+			nodeRows = new HashSet<TableRow>();
+			data.put(firstNode, nodeRows);
+		}
+		nodeRows.add(row);
 
 	}
 
 	private void importRow(QueryRow queryRow) {
 
 		Node firstNode = queryRow.getValue(variables.get(0));
-		this.data.put(firstNode, new QueryRowTableRow(queryRow));
+		Set<TableRow> nodeRows = data.get(firstNode);
+		if (nodeRows == null) {
+			nodeRows = new HashSet<TableRow>();
+			data.put(firstNode, nodeRows);
+		}
+		nodeRows.add(new QueryRowTableRow(queryRow));
 
 	}
 
@@ -93,7 +110,7 @@ public class ResultTableModel {
 		return variables;
 	}
 
-	public TableRow findRowFor(Node ascendorParent) {
+	public Collection<TableRow> findRowFor(Node ascendorParent) {
 		return data.get(ascendorParent);
 	}
 

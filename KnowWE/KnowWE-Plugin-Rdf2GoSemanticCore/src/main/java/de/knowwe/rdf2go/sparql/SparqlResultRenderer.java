@@ -1,5 +1,6 @@
 package de.knowwe.rdf2go.sparql;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -239,11 +240,16 @@ public class SparqlResultRenderer {
 		for (de.d3web.collections.PartialHierarchyTree.Node<TableRow> node : rootLevelNodes) {
 			TableRow row = node.getData();
 			Node topLevelConcept = row.getValue(table.getVariables().get(1));
-			SimpleTableRow artificialTopLevelRow = new SimpleTableRow();
-			artificialTopLevelRow.addValue(table.getVariables().get(0), topLevelConcept);
-			artificialTopLevelRow.addValue(table.getVariables().get(1), topLevelConcept);
-			artificialTopLevelRow.addValue(table.getVariables().get(2), topLevelConcept);
-			result.addTableRow(artificialTopLevelRow);
+
+			if (topLevelConcept == null
+					|| !topLevelConcept.equals(row.getValue(table.getVariables().get(1)))) {
+				// check whether an artifical root node is needed
+				SimpleTableRow artificialTopLevelRow = new SimpleTableRow();
+				artificialTopLevelRow.addValue(table.getVariables().get(0), topLevelConcept);
+				artificialTopLevelRow.addValue(table.getVariables().get(1), topLevelConcept);
+				artificialTopLevelRow.addValue(table.getVariables().get(2), topLevelConcept);
+				result.addTableRow(artificialTopLevelRow);
+			}
 
 			addRowRecursively(node, result);
 		}
@@ -308,9 +314,14 @@ public class SparqlResultRenderer {
 			if (ascendorNode.equals(potentialAncestorNode)) return true;
 
 			Node ascendorParent = ascendor.getValue(data.getVariables().get(1));
-			TableRow parentRow = data.findRowFor(ascendorParent);
-			if (parentRow == null) return false;
-			return checkSuccessorshipRecursively(parentRow, ancestor);
+			if (ascendorNode.equals(ascendorParent)) {
+				// is artificial, invalid root node
+				return false;
+			}
+			Collection<TableRow> parentRows = data.findRowFor(ascendorParent);
+			if (parentRows == null || parentRows.size() == 0) return false;
+
+			return checkSuccessorshipRecursively(parentRows.iterator().next(), ancestor);
 
 		}
 
