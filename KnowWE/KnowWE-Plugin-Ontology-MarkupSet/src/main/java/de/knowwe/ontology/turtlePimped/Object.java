@@ -32,7 +32,6 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.Message;
-import de.knowwe.ontology.kdom.relation.LiteralType;
 import de.knowwe.ontology.turtlePimped.compile.NodeProvider;
 import de.knowwe.ontology.turtlePimped.compile.StatementProvider;
 import de.knowwe.ontology.turtlePimped.compile.StatementProviderResult;
@@ -52,7 +51,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		this.addChildType(new BlankNode());
 		this.addChildType(new BlankNodeID());
 		this.addChildType(TurtleCollection.getInstance());
-		this.addChildType(new LiteralType());
+		this.addChildType(new TurtleLiteralType());
 		this.addChildType(new TurtleLongURI());
 		this.addChildType(new TurtleURI());
 	}

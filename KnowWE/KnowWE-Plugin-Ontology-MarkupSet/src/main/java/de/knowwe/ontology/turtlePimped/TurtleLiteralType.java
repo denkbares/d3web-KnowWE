@@ -16,11 +16,12 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.ontology.kdom.relation;
+package de.knowwe.ontology.turtlePimped;
 
 import java.util.regex.Pattern;
 
 import org.ontoware.rdf2go.model.node.Literal;
+import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.XSD;
@@ -32,9 +33,10 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.utils.Patterns;
 import de.knowwe.kdom.renderer.StyleRenderer;
+import de.knowwe.ontology.turtlePimped.compile.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
-public class LiteralType extends AbstractType {
+public class TurtleLiteralType extends AbstractType implements NodeProvider<TurtleLiteralType> {
 
 	public static final String XSD_PATTERN = "(?:\\^\\^xsd:(\\w+))";
 	public static final String LANGUAGE_TAG = "(?:@\\w+)";
@@ -46,9 +48,9 @@ public class LiteralType extends AbstractType {
 	 */
 	private static final String LITERAL_PATTERN =
 			Patterns.SINGLE_QUOTED + LITERAL_SUFFIX + "?"
-					+ "|" + Patterns.QUOTED + LITERAL_SUFFIX;
+					+ "|" + Patterns.QUOTED + LITERAL_SUFFIX + "?";
 
-	public LiteralType() {
+	public TurtleLiteralType() {
 		this.setSectionFinder(new RegexSectionFinder(
 				LITERAL_PATTERN));
 		this.setRenderer(StyleRenderer.CONTENT);
@@ -57,7 +59,7 @@ public class LiteralType extends AbstractType {
 		this.addChildType(new LanguageTagPart());
 	}
 
-	public Literal getLiteral(Rdf2GoCore core, Section<LiteralType> section) {
+	public Literal getLiteral(Rdf2GoCore core, Section<TurtleLiteralType> section) {
 		Section<LiteralPart> literalPartSection = Sections.findChildOfType(section,
 				LiteralPart.class);
 		Section<XSDPart> xsdPartSection = Sections.findChildOfType(section, XSDPart.class);
@@ -131,6 +133,11 @@ public class LiteralType extends AbstractType {
 		public URI getXSDType(Section<XSDPart> section) {
 			return new URIImpl(XSD.XSD_NS + section.getText(), false);
 		}
+	}
+
+	@Override
+	public Node getNode(Section<TurtleLiteralType> section, Rdf2GoCore core) {
+		return getLiteral(core, section);
 	}
 
 }
