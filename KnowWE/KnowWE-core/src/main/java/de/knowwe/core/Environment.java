@@ -563,7 +563,7 @@ public class Environment {
 	 * @return the {@link TerminologyManager} for that article
 	 */
 	public TerminologyManager getTerminologyManager(Article article) {
-		return getTerminologyManager(article.getWeb(), article.getName());
+		return getTerminologyManager(article.getWeb(), article.getTitle());
 	}
 
 	/**
