@@ -27,6 +27,7 @@ import org.ontoware.rdf2go.vocabulary.RDF;
 
 import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -116,7 +117,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 	}
 
 	@Override
-	public StatementProviderResult getStatements(Section<TurtleCollection> section, Rdf2GoCore core) {
+	public StatementProviderResult getStatements(Section<TurtleCollection> section, Rdf2GoCore core, Article article) {
 		StatementProviderResult result = new StatementProviderResult();
 		List<Section<CollectionItem>> listItems = new ArrayList<Section<CollectionItem>>();
 		Sections.findSuccessorsOfType(section,

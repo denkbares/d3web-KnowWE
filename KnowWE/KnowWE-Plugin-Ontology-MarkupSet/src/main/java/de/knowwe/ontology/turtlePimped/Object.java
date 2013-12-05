@@ -25,8 +25,12 @@ import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 
 import de.d3web.strings.Strings;
+import de.knowwe.core.Environment;
+import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
@@ -57,29 +61,58 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 	}
 
 	@Override
-	public StatementProviderResult getStatements(Section<Object> section, Rdf2GoCore core) {
+	public StatementProviderResult getStatements(Section<Object> section, Rdf2GoCore core, Article article) {
 
 		StatementProviderResult result = new StatementProviderResult();
-
-		// find and create object node
+		boolean termError = false;
+		/*
+		 * Handle OBJECT
+		 */
 		Node object = section.get().getNode(section, core);
-		if (object == null) {
+		Section<TurtleURI> turtleURITermObject = Sections.findChildOfType(section, TurtleURI.class);
+		if (turtleURITermObject != null) {
+			boolean isDefined = checkTurtleURIDefinition(article, turtleURITermObject);
+			if (!isDefined) {
+				// error message is already rendered by term reference renderer
+				// we do not insert statement in this case
+				object = null;
+				termError = true;
+			}
+		}
+		if (object == null && !termError) {
 			result.addMessage(new Message(de.knowwe.core.report.Message.Type.ERROR,
 					"object node was null for: " + section.getText()));
 		}
 
-		// find and create predicate node
+		/*
+		 * Handle PREDICATE
+		 */
 		Section<PredicateSentence> predSentenceSection = Sections.findAncestorOfType(section,
 				PredicateSentence.class);
 		Section<Predicate> predicateSection = Sections.findChildOfType(predSentenceSection,
 				Predicate.class);
+		
 		URI predicate = predicateSection.get().getURI(predicateSection, core);
-		if (predicate == null) {
+
+		// check term definition
+		Section<TurtleURI> turtleURITerm = Sections.findSuccessor(predicateSection, TurtleURI.class);
+		if(turtleURITerm != null) {
+			boolean isDefined = checkTurtleURIDefinition(article, turtleURITerm);
+			if (!isDefined) {
+				// error message is already rendered by term reference renderer
+				// we do not insert statment in this case
+				predicate = null;
+				termError = true;
+			}
+		}
+		if (predicate == null && !termError) {
 			result.addMessage(new Message(de.knowwe.core.report.Message.Type.ERROR,
 					"predicate URI was null for: " + predicateSection.getText()));
 		}
 
-		// find and create subject node
+		/*
+		 * Handle SUBJECT
+		 */
 		Resource subject = null;
 		// the subject can either be a normal turtle sentence subject
 		// OR a blank node
@@ -98,7 +131,22 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			Section<Subject> subjectSection = Sections.findSuccessor(sentence,
 					Subject.class);
 			subject = subjectSection.get().getResource(subjectSection, core);
-			if (subject == null) {
+
+			// check term definition
+			Section<TurtleURI> turtleURITermSubject = Sections.findChildOfType(subjectSection,
+					TurtleURI.class);
+			if (turtleURITermSubject != null) {
+				boolean isDefined = checkTurtleURIDefinition(article, turtleURITermSubject);
+				if (!isDefined) {
+					// error message is already rendered by term reference
+					// renderer
+					// we do not insert statement in this case
+					subject = null;
+					termError = true;
+				}
+			}
+
+			if (subject == null && !termError) {
 				result.addMessage(new Message(de.knowwe.core.report.Message.Type.ERROR,
 						"subject resource was null for: " + subjectSection.getText()));
 			}
@@ -112,6 +160,12 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			result.addStatement(core.createStatement(subject, predicate, object));
 		}
 		return result;
+	}
+
+	private boolean checkTurtleURIDefinition(Article article, Section<TurtleURI> turtleURITerm) {
+		TerminologyManager terminologyManager = Environment.getInstance().getTerminologyManager(article);
+		Section<TermReference> term = Sections.findSuccessor(turtleURITerm, TermReference.class);
+		return terminologyManager.isDefinedTerm(term.get().getTermIdentifier(term));
 	}
 
 	@Override

@@ -18,10 +18,13 @@
  */
 package de.knowwe.ontology.turtlePimped;
 
+import java.util.List;
+
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.URI;
 
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.ontology.kdom.turtle.FirstWordFinder;
@@ -29,12 +32,12 @@ import de.knowwe.ontology.turtlePimped.compile.NodeProvider;
 import de.knowwe.ontology.turtlePimped.compile.URIProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
-
 public class Predicate extends AbstractType implements URIProvider<Predicate> {
 
 	public Predicate() {
 		this.setSectionFinder(new FirstWordFinder());
 
+		this.addChildType(new RDFTypeType());
 		this.addChildType(new TurtleLongURI());
 		this.addChildType(new TurtleURI());
 	}
@@ -43,11 +46,16 @@ public class Predicate extends AbstractType implements URIProvider<Predicate> {
 	@SuppressWarnings({
 			"rawtypes", "unchecked" })
 	public Node getNode(Section<Predicate> section, Rdf2GoCore core) {
-		// there should be exactly one NodeProvider child
-		Section<NodeProvider> nodeProviderChild = Sections.findChildOfType(section,
-				NodeProvider.class);
-		if (nodeProviderChild != null) {
-			return nodeProviderChild.get().getNode(nodeProviderChild, core);
+		// there should be exactly one NodeProvider successor
+		List<Section<? extends Type>> children = section.getChildren();
+		for (Section<? extends Type> child : children) {
+			// explicitly iterating children because Sections.findSuccessor()
+			// returns 'this' otherwise
+			Section<NodeProvider> nodeProviderChild = Sections.findSuccessor(child,
+					NodeProvider.class);
+			if (nodeProviderChild != null) {
+				return nodeProviderChild.get().getNode(nodeProviderChild, core);
+			}
 		}
 		return null;
 	}

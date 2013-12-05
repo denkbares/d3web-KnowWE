@@ -28,7 +28,7 @@ public class TurtleCompileHandler extends SubtreeHandler<TurtleContent> {
 		for (Section<StatementProvider> statementSection : statementProviders) {
 
 			StatementProviderResult providerResult = statementSection.get().getStatements(
-					statementSection, core);
+					statementSection, core, article);
 			if (providerResult != null) {
 				core.addStatements(statementSection,
 						providerResult.getStatments());

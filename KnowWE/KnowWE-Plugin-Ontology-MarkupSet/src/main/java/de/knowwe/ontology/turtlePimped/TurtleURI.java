@@ -43,6 +43,7 @@ public class TurtleURI extends AbbreviatedResourceReference implements NodeProvi
 		c.addConstraint(AtMostOneFindingConstraint.getInstance());
 	}
 
+
 	@Override
 	public Node getNode(Section<TurtleURI> section, Rdf2GoCore core) {
 		String turtleURIText = section.getText();
