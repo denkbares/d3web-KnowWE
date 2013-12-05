@@ -84,8 +84,18 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 		@Override
 		public Collection<Message> create(Article article, Section<SimpleDefinition> s) {
 
-			getTerminologyHandler(article).registerTermDefinition(s, s.get().getTermObjectClass(s),
-					s.get().getTermIdentifier(s));
+			Identifier termIdentifier = s.get().getTermIdentifier(s);
+			if (termIdentifier != null) {
+				getTerminologyHandler(article).registerTermDefinition(s,
+						s.get().getTermObjectClass(s),
+						termIdentifier);
+			}
+			else {
+				/*
+				 * termIdentifier is null, obviously section chose not to define
+				 * a term, however so we can ignore this case
+				 */
+			}
 
 			return Messages.noMessage();
 		}
