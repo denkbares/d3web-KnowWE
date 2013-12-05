@@ -292,3 +292,46 @@ html {
 	-ms-transform: scale(1.1, 1.1);
 	transform: scale(1.1, 1.1);
 }
+
+
+/*
+ * Here we also provide some themes to be used
+*/
+ 
+ .tooltipster-shadow {
+	border-radius: 5px;
+	background: #fff;
+	box-shadow: 0px 0px 14px rgba(0,0,0,0.3);
+	color: #2c2c2c;
+}
+.tooltipster-shadow .tooltipster-content {
+	font-family: 'Arial', sans-serif;
+	font-size: 14px;
+	line-height: 16px;
+	padding: 8px 10px;
+}
+.tooltipster-light {
+	border-radius: 5px; 
+	border: 1px solid #cccccc;
+	background: #ededed;
+	color: #666666;
+}
+.tooltipster-light .tooltipster-content {
+	font-family: Arial, sans-serif;
+	font-size: 14px;
+	line-height: 16px;
+	padding: 8px 10px;
+}
+.tooltipster-knowwe {
+	border-radius: 5px; 
+	border: 1px solid #cccccc;
+	background: #ededed;
+	box-shadow: 0px 0px 14px rgba(0,0,0,0.3);
+	color: #2c2c2c;
+}
+.tooltipster-knowwe .tooltipster-content {
+	font-family: Arial, sans-serif;
+	font-size: 12px;
+	line-height: 16px;
+	padding: 8px 10px;
+}

@@ -218,6 +218,7 @@ KNOWWE.tooltips.enrich = function() {
 		position : "top-left",
 		interactive : true,
 		delay : 1300,
+		theme: ".tooltipster-knowwe",
 		functionBefore : function (origin, continueTooltip) {
 			// chech if we have an ajax-tooltip
 			// and only do once for each tooltip
