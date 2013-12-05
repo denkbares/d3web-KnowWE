@@ -277,7 +277,7 @@ public class Rdf2GoCore implements EventListener {
 	 * @param uri the uri to create the identifier for
 	 * @return the identifier for the specified uri
 	 */
-	public Identifier toIndentifier(URI uri) {
+	public Identifier toIdentifier(URI uri) {
 		return ShortURIImpl.toIdentifier(toShortURI(uri));
 	}
 

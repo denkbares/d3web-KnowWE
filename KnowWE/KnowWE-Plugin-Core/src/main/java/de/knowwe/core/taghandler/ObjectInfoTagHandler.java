@@ -20,9 +20,7 @@ package de.knowwe.core.taghandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,7 +45,6 @@ import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.TermInfo;
 import de.knowwe.core.kdom.objects.TermUtils;
-import de.knowwe.core.kdom.parsing.KDOMPositionComparator;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -365,7 +362,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			if (definitions.size() > 1) result.appendHtml("<ul>");
 
 			Map<Section<?>, Collection<Section<?>>> groupedByPreview =
-					groupByPreview(definitions);
+					PreviewManager.getInstance().groupByPreview(definitions);
 			for (Entry<Section<?>, Collection<Section<?>>> entry : groupedByPreview.entrySet()) {
 				Section<?> previewSection = entry.getKey();
 				Collection<Section<?>> group = entry.getValue();
@@ -460,7 +457,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			return;
 		}
 		result.appendHtml("<ul>");
-		Map<Section<?>, Collection<Section<?>>> groupedByPreview = groupByPreview(sections);
+		Map<Section<?>, Collection<Section<?>>> groupedByPreview =
+				PreviewManager.getInstance().groupByPreview(sections);
 		for (Entry<Section<?>, Collection<Section<?>>> entry : groupedByPreview.entrySet()) {
 			Section<?> previewSection = entry.getKey();
 			Collection<Section<?>> group = entry.getValue();
@@ -486,43 +484,12 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	 */
 	private CountingSet<String> getSurroundingMarkupNames(List<Section<?>> sections) {
 		CountingSet<String> types = new CountingSet<String>();
-		Map<Section<?>, Collection<Section<?>>> groupedByPreview = groupByPreview(sections);
+		Map<Section<?>, Collection<Section<?>>> groupedByPreview =
+				PreviewManager.getInstance().groupByPreview(sections);
 		for (Section<?> preview : groupedByPreview.keySet()) {
 			types.add(getSurroundingMarkupName(preview));
 		}
 		return types;
-	}
-
-	/**
-	 * Groups the specified sections by the ancestor section to be rendered as a
-	 * preview. If a section has no ancestor to be rendered, the section itself
-	 * will be used as a group with an empty collection of grouped sections.
-	 * 
-	 * @created 16.08.2013
-	 * @param items list of sections to be grouped
-	 * @return the groups of sections
-	 */
-	private static Map<Section<?>, Collection<Section<?>>> groupByPreview(Collection<Section<?>> items) {
-		List<Section<?>> list = new ArrayList<Section<?>>(items);
-		Collections.sort(list, KDOMPositionComparator.getInstance());
-		Map<Section<?>, Collection<Section<?>>> result = new LinkedHashMap<Section<?>, Collection<Section<?>>>();
-		for (Section<?> section : list) {
-			Section<?> previewSection = PreviewManager.getInstance().getPreviewAncestor(section);
-			// handle if the section has no preview renderer
-			if (previewSection == null) {
-				result.put(section, Collections.<Section<?>> emptyList());
-				continue;
-			}
-			// otherwise add section to preview group
-			// or create group if it is new
-			Collection<Section<?>> group = result.get(previewSection);
-			if (group == null) {
-				group = new LinkedList<Section<?>>();
-				result.put(previewSection, group);
-			}
-			group.add(section);
-		}
-		return result;
 	}
 
 	private static void renderLinkToSection(Section<?> reference, RenderResult result) {

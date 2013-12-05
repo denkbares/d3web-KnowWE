@@ -1,12 +1,17 @@
 package de.knowwe.core.preview;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
+import de.knowwe.core.kdom.parsing.KDOMPositionComparator;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.utils.Scope;
@@ -112,6 +117,38 @@ public class PreviewManager {
 			}
 		}
 		Plugins.initResources(extensions);
+	}
+
+	/**
+	 * Groups the specified sections by the ancestor section to be rendered as a
+	 * preview. If a section has no ancestor to be rendered, the section itself
+	 * will be used as a group with an empty collection of grouped sections.
+	 * 
+	 * @created 16.08.2013
+	 * @param items list of sections to be grouped
+	 * @return the groups of sections
+	 */
+	public Map<Section<?>, Collection<Section<?>>> groupByPreview(Collection<Section<?>> items) {
+		List<Section<?>> list = new ArrayList<Section<?>>(items);
+		Collections.sort(list, KDOMPositionComparator.getInstance());
+		Map<Section<?>, Collection<Section<?>>> result = new LinkedHashMap<Section<?>, Collection<Section<?>>>();
+		for (Section<?> section : list) {
+			Section<?> previewSection = getPreviewAncestor(section);
+			// handle if the section has no preview renderer
+			if (previewSection == null) {
+				result.put(section, Collections.<Section<?>> emptyList());
+				continue;
+			}
+			// otherwise add section to preview group
+			// or create group if it is new
+			Collection<Section<?>> group = result.get(previewSection);
+			if (group == null) {
+				group = new LinkedList<Section<?>>();
+				result.put(previewSection, group);
+			}
+			group.add(section);
+		}
+		return result;
 	}
 
 }
