@@ -217,7 +217,30 @@ KNOWWE.tooltips.enrich = function() {
 	jq$('.tooltipster').tooltipster({
 		position : "top-left",
 		interactive : true,
-		delay : 1300
+		delay : 1300,
+		functionBefore : function (origin, continueTooltip) {
+			// chech if we have an ajax-tooltip
+			// and only do once for each tooltip
+			var src = origin.data('tooltip-src');
+			if (!src) {
+				continueTooltip();
+				return;
+			}
+			origin.data('tooltip-src', null);
+			// show ajax-spinner until request is arriving
+			origin.tooltipster('update', '<span class="ajaxLoader">loading tooltip...</span>');
+			continueTooltip();
+			// request new content
+			jq$.ajax(src, {
+				success: function(html) {
+					origin.tooltipster('update', html).tooltipster('reposition');
+				},
+				error: function(request, status, error) {
+					KNOWWE.notification.error("Cannot get tooltip content", error, src);
+					origin.tooltipster('hide');
+				}
+			});
+		}
 	});
 };
 

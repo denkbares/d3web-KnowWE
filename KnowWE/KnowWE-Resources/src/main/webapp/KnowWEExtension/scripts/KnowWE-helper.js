@@ -338,7 +338,14 @@ KNOWWE.helper = function(){
          */
         getPagename : function() {
         	return document.getElementById('knowWEInfoPageName').value;
-        	
+        },
+        
+        /**
+         * Returns the name of the current article
+         * (This is also available, if no page is set in URL, e.g. on Main page)
+         */
+        getWeb : function() {
+        	return document.getElementById('knowWEInfoWeb').value;
         }
     }
 }();

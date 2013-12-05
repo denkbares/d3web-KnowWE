@@ -18,6 +18,7 @@
  */
 package de.knowwe.core.append;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
@@ -39,12 +40,13 @@ public class PageInfoAppendHandler implements PageAppendHandler {
 		long modDate = connector.getLastModifiedDate(title, -1).getTime();
 		String userName = user.getUserName();
 
-		// username and topic can not contain special chars, so no masking
-		// should be necessary
-		html.appendHtml("<input type='hidden' id='knowWEInfoPageName' value='" + title + "'>");
+		html.appendHtml("<input type='hidden' id='knowWEInfoWeb' value='" + web + "'>");
+		html.appendHtml("<input type='hidden' id='knowWEInfoPageName' value="
+				+ Strings.quote(title) + ">");
 		html.appendHtml("<input type='hidden' id='knowWEInfoPageVersion' value='" + version + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoPageDate' value='" + modDate + "'>");
-		html.appendHtml("<input type='hidden' id='knowWEInfoUser' value='" + userName + "'>");
+		html.appendHtml("<input type='hidden' id='knowWEInfoUser' value="
+				+ Strings.quote(userName) + ">");
 	}
 
 	@Override

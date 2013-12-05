@@ -631,6 +631,15 @@ span.asynchronRenderer, span.asynchronPreviewRenderer {
 	background-image: url(../images/ajax-loader.gif)
 }
 
+span.ajaxLoader {
+	position: relative;
+	min-height: 16px;
+	padding-left: 20px;
+	background-repeat: no-repeat;
+	background-position: left;
+	background-image: url(../images/ajax-loader16.gif)
+}
+
 /* ################################################## */
 /* ------->>> KnowWEObjectTypeActivator  <<<----------*/
 /* ################################################## */
