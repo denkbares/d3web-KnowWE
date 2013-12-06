@@ -648,7 +648,7 @@ public class QuickInterviewRenderer {
 				+ "ns:'" + namespace + "'," + "type:'num', " + "qtext:'"
 				+ Strings.encodeURL(q.getName()) + "', " + "}\" ";
 
-		String placeHolder = DateValue.DATE_FORMAT.toPattern();
+		String placeHolder = DateValue.getDefaultDateFormat().toPattern();
 
 		// assemble the input field
 		String title = "Use the following date format:\n"
