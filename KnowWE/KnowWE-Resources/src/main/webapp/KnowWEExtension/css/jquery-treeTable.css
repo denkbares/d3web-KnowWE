@@ -13,7 +13,7 @@
 }
 
 table.treetable td {
-	padding-left: 19px;
+	/* padding-left: 19px; */
 }
 
 table.treetable td:first-child {
