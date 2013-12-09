@@ -16,7 +16,7 @@ public class RDFTypeType extends SimpleDefinition {
 
 	public RDFTypeType() {
 		super(TermRegistrationScope.LOCAL, Resource.class);
-		this.setSectionFinder(new RegexSectionFinder("rdf:type"));
+		this.setSectionFinder(new RegexSectionFinder("[\\w]*?:type"));
 		this.clearChildrenTypes();
 		this.addChildType(new TurtleURI());
 	}

@@ -43,6 +43,15 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class Object extends AbstractType implements NodeProvider<Object>, StatementProvider<Object> {
 
+	/*
+	 * With strict compilation mode on, triples are not inserted into the
+	 * repository when corresponding term have errors, i.e., do not have a valid
+	 * definition.
+	 * With strict compilation mode off, triples are always inserted into the
+	 * triple store, not caring about type definitions.
+	 */
+	private static boolean STRICT_COMPILATTION = false;
+
 	public Object() {
 		this.setSectionFinder(new SectionFinder() {
 
@@ -70,7 +79,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		 */
 		Node object = section.get().getNode(section, core);
 		Section<TurtleURI> turtleURITermObject = Sections.findChildOfType(section, TurtleURI.class);
-		if (turtleURITermObject != null) {
+		if (turtleURITermObject != null && STRICT_COMPILATTION == true) {
 			boolean isDefined = checkTurtleURIDefinition(article, turtleURITermObject);
 			if (!isDefined) {
 				// error message is already rendered by term reference renderer
@@ -96,7 +105,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 
 		// check term definition
 		Section<TurtleURI> turtleURITerm = Sections.findSuccessor(predicateSection, TurtleURI.class);
-		if(turtleURITerm != null) {
+		if (turtleURITerm != null && STRICT_COMPILATTION == true) {
 			boolean isDefined = checkTurtleURIDefinition(article, turtleURITerm);
 			if (!isDefined) {
 				// error message is already rendered by term reference renderer
@@ -135,7 +144,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			// check term definition
 			Section<TurtleURI> turtleURITermSubject = Sections.findChildOfType(subjectSection,
 					TurtleURI.class);
-			if (turtleURITermSubject != null) {
+			if (turtleURITermSubject != null && STRICT_COMPILATTION == true) {
 				boolean isDefined = checkTurtleURIDefinition(article, turtleURITermSubject);
 				if (!isDefined) {
 					// error message is already rendered by term reference
@@ -155,7 +164,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 
 
 
-		// create statement
+		// create statement if all nodes are present
 		if (object != null && predicate != null && subject != null) {
 			result.addStatement(core.createStatement(subject, predicate, object));
 		}
