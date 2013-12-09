@@ -68,8 +68,8 @@ public class SectionFinderResult implements Comparable<SectionFinderResult> {
 	public static List<SectionFinderResult> createResultList(List<StringFragment> fragments) {
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 		for (StringFragment stringFragment : fragments) {
-			result.add(new SectionFinderResult(stringFragment.getStart(),
-					stringFragment.getEnd()));
+			result.add(new SectionFinderResult(stringFragment.getStartTrimmed(),
+					stringFragment.getEndTrimmed()));
 		}
 		return result;
 	}
