@@ -22,9 +22,14 @@
 
 package de.knowwe.ontology.kdom.turtle;
 
+import org.ontoware.rdf2go.model.node.Node;
+
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.sectionFinder.SplitSectionFinderUnquoted;
 import de.knowwe.ontology.kdom.relation.LiteralType;
+import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class TurtleObjectSection extends AbstractType {
 
@@ -34,6 +39,14 @@ public class TurtleObjectSection extends AbstractType {
 		this.addChildType(new TurtleObjectTerm());
 		setSectionFinder(new SplitSectionFinderUnquoted(",", new char[] {
 				'"', '\'' }));
+	}
+
+	public Node getNode(Rdf2GoCore core, Section<TurtleObjectSection> section) {
+		Section<LiteralType> literal = Sections.findChildOfType(section, LiteralType.class);
+		if (literal != null) return literal.get().getLiteral(core, literal);
+		Section<TurtleObjectTerm> term = Sections.findChildOfType(section, TurtleObjectTerm.class);
+		if (term != null) return term.get().getShortURI(core, term);
+		return null;
 	}
 
 }

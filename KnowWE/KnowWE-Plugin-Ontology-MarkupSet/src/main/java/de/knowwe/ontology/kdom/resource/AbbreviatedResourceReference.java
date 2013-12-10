@@ -79,4 +79,8 @@ public class AbbreviatedResourceReference extends AbstractType {
 		return core.createURI(propertyAbbreviation, property);
 	}
 
+	public URI getShortURI(Rdf2GoCore core, Section<? extends AbbreviatedResourceReference> section) {
+		return core.toShortURI(getResourceURI(core, section));
+	}
+
 }

@@ -31,10 +31,10 @@ public class TurtleSentence extends AbstractType {
 
 	public TurtleSentence() {
 		this.setSectionFinder(new SectionFinder() {
-			
+
 			@Override
 			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-				return SectionFinderResult.createResultList(Strings.splitUnquoted(text, ".", true,
+				return SectionFinderResult.createResultList(Strings.splitUnquoted(text, ".", false,
 						TurtleMarkup.TURTLE_QUOTES));
 			}
 		});
