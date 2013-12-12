@@ -18,6 +18,7 @@
  */
 package de.knowwe.ontology.kdom;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -78,7 +79,77 @@ public class OntologyUtils {
 	 * @return the article's content, extended with the statements
 	 */
 	public static String addTurtle(Article article, boolean compactMode, Statement... statements) {
-		return new TurtleWriter(compactMode).addTurtle(article, statements);
+		TurtleWriter writer = new TurtleWriter(article, compactMode);
+		writer.addToArticle(statements);
+		return writer.getResultText();
+	}
+
+	/**
+	 * Adds and deletes the specified statements to/from the the specified wiki
+	 * page. As a result a new wiki page content is returned with the statements
+	 * included in some turtle markup, and the existing turtle markup to be
+	 * modified so that the removed statements are no longer existing on this
+	 * article.
+	 * <p>
+	 * The statements will be included as seamless as possible. This means if
+	 * there are any turtle markup, no new markup section will be created. If
+	 * there is any turtle with the same subject it will be included in the
+	 * subjects relation list. If there is any turtle for the same subject and
+	 * relation the object is included in the values list.
+	 * <p>
+	 * The statements to be removed are removed at every occurrence of the
+	 * article. If there are multiple occurrences of the same statement, all
+	 * occurrences will be deleted.
+	 * <p>
+	 * If the article is null, the text for an article to be created is
+	 * returned.
+	 * 
+	 * @created 23.11.2013
+	 * @param article the article to integrate the statements into
+	 * @param compactMode specifies if the created markup shall be kept compact
+	 *        or more structured using line breaks and intends.
+	 * @param statementsToAdd the statements to be integrated
+	 * @param statementsToRemove the statements to be deleted from the article
+	 * @return the article's content, extended with the statements
+	 */
+	public static String modifyTurtle(Article article, boolean compactMode, Statement[] statementsToAdd, Statement[] statementsToRemove) {
+		return modifyTurtle(article, compactMode,
+				Arrays.asList(statementsToAdd), Arrays.asList(statementsToRemove));
+	}
+
+	/**
+	 * Adds and deletes the specified statements to/from the the specified wiki
+	 * page. As a result a new wiki page content is returned with the statements
+	 * included in some turtle markup, and the existing turtle markup to be
+	 * modified so that the removed statements are no longer existing on this
+	 * article.
+	 * <p>
+	 * The statements will be included as seamless as possible. This means if
+	 * there are any turtle markup, no new markup section will be created. If
+	 * there is any turtle with the same subject it will be included in the
+	 * subjects relation list. If there is any turtle for the same subject and
+	 * relation the object is included in the values list.
+	 * <p>
+	 * The statements to be removed are removed at every occurrence of the
+	 * article. If there are multiple occurrences of the same statement, all
+	 * occurrences will be deleted.
+	 * <p>
+	 * If the article is null, the text for an article to be created is
+	 * returned.
+	 * 
+	 * @created 23.11.2013
+	 * @param article the article to integrate the statements into
+	 * @param compactMode specifies if the created markup shall be kept compact
+	 *        or more structured using line breaks and intends.
+	 * @param statementsToAdd the statements to be integrated
+	 * @param statementsToRemove the statements to be deleted from the article
+	 * @return the article's content, extended with the statements
+	 */
+	public static String modifyTurtle(Article article, boolean compactMode, List<Statement> statementsToAdd, List<Statement> statementsToRemove) {
+		TurtlePimpedWriter writer = new TurtlePimpedWriter(article, compactMode);
+		writer.addInsert(statementsToAdd);
+		writer.addDelete(statementsToRemove);
+		return writer.getResultText();
 	}
 
 	/**

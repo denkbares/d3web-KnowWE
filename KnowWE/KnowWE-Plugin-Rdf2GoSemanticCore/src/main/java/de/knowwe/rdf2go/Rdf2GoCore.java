@@ -59,7 +59,6 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.DatatypeLiteralImpl;
 import org.ontoware.rdf2go.model.node.impl.LanguageTagLiteralImpl;
 import org.ontoware.rdf2go.model.node.impl.PlainLiteralImpl;
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDFS;
 
 import de.d3web.plugin.Extension;
@@ -67,6 +66,7 @@ import de.d3web.plugin.PluginManager;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.event.Event;
 import de.knowwe.core.event.EventListener;
 import de.knowwe.core.event.EventManager;
@@ -160,6 +160,15 @@ public class Rdf2GoCore implements EventListener {
 
 	public static Rdf2GoCore getInstance(Article article) {
 		return getInstance(article.getWeb(), article.getTitle());
+	}
+
+	public static Rdf2GoCore getAnyInstance(Section<?> section) {
+		String web = section.getWeb();
+		PackageManager packageManager = Environment.getInstance().getPackageManager(web);
+		Set<String> articles = packageManager.getCompilingArticles(section);
+		if (articles.isEmpty()) return getInstance();
+		String master = articles.iterator().next();
+		return getInstance(web, master);
 	}
 
 	public static Rdf2GoCore getInstance(Section<? extends DefaultMarkupType> section) {
@@ -259,7 +268,7 @@ public class Rdf2GoCore implements EventListener {
 		for (Entry<String, String> entry : namespaces.entrySet()) {
 			String partURI = entry.getValue();
 			int partLength = partURI.length();
-			if (partLength > length && uriText.startsWith(partURI)) {
+			if (partLength > length && uriText.length() > partLength && uriText.startsWith(partURI)) {
 				String shortText = entry.getKey() + ":" + uriText.substring(partLength);
 				shortURI = new ShortURIImpl(shortText, uri);
 				length = partLength;
@@ -523,7 +532,7 @@ public class Rdf2GoCore implements EventListener {
 	public Resource createResource(String uri) {
 		// create blank node or uri,
 		// at the moment we only support uris
-		return new URIImpl(uri);
+		return createURI(uri);
 	}
 
 	/**

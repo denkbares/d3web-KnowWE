@@ -4,6 +4,9 @@
 package de.knowwe.ontology.action;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -76,20 +79,13 @@ public class AddStatementsAction extends AbstractAction {
 			JSONObject json = new JSONObject(jsonText);
 			String articleName = (String) json.get("article");
 			boolean compactMode = json.optBoolean("compact");
-			JSONArray array = json.getJSONArray("statements");
-			Statement[] statements = new Statement[array.length()];
-			for (int i = 0; i < array.length(); i++) {
-				JSONObject stmt = array.getJSONObject(i);
-				statements[i] = new StatementImpl(
-						null,
-						core.createResource(stmt.getString("subject")),
-						core.createURI(stmt.getString("predicate")),
-						core.createNode(stmt.getString("object")));
-			}
+			Statement[] statementsToAdd = toStatements(core, json.getJSONArray("add"));
+			Statement[] statementsToRemove = toStatements(core, json.getJSONArray("remove"));
 
 			ArticleManager manager = Environment.getInstance().getArticleManager(web);
 			Article article = manager.getArticle(articleName);
-			String newText = OntologyUtils.addTurtle(article, compactMode, statements);
+			String newText = OntologyUtils.modifyTurtle(
+					article, compactMode, statementsToAdd, statementsToRemove);
 
 			context.setContentType("text/plain; charset=UTF-8");
 			context.getWriter().append(newText);
@@ -97,6 +93,19 @@ public class AddStatementsAction extends AbstractAction {
 		catch (JSONException e) {
 			context.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
 		}
+	}
+
+	private static Statement[] toStatements(Rdf2GoCore core, JSONArray array) throws JSONException {
+		Statement[] statements = new Statement[array.length()];
+		for (int i = 0; i < array.length(); i++) {
+			JSONObject stmt = array.getJSONObject(i);
+			statements[i] = new StatementImpl(
+					null,
+					core.createResource(stmt.getString("subject")),
+					core.createURI(stmt.getString("predicate")),
+					core.createNode(stmt.getString("object")));
+		}
+		return statements;
 	}
 
 	/**
@@ -124,19 +133,37 @@ public class AddStatementsAction extends AbstractAction {
 	 * @param targetArticle the article to add the statements to
 	 * @param compactMode Shall the created markup be kept compact or more
 	 *        structured using line breaks and intends.
-	 * @param statements the statements to be added
+	 * @param statement the statements to be added
 	 * @return the JavaScript action to be included in a {@link Tool}
 	 */
-	public static String getJSAction(Article source, String targetArticle, boolean compactMode, Statement... statements) {
+	public static String getJSAction(Article source, String targetArticle, boolean compactMode, Statement... statement) {
+		return getJSAction(source, targetArticle, compactMode,
+				Arrays.asList(statement), Collections.<Statement> emptyList());
+	}
+
+	/**
+	 * Creates a JavaScript action that can be used as a tool action which will
+	 * add the specified statements to the specified article if the action will
+	 * be executed.
+	 * 
+	 * @created 25.11.2013
+	 * @param source the article to place the JavaScript action
+	 * @param targetArticle the article to add the statements to
+	 * @param compactMode Shall the created markup be kept compact or more
+	 *        structured using line breaks and intends.
+	 * @param statementToAdd the statements to be added
+	 * @param statementToRemove the statements to be removed
+	 * @return the JavaScript action to be included in a {@link Tool}
+	 */
+	public static String getJSAction(Article source, String targetArticle, boolean compactMode, List<Statement> statementToAdd, List<Statement> statementToRemove) {
 		try {
 			JSONObject json = new JSONObject();
 			json.accumulate("article", targetArticle);
-			for (Statement statement : statements) {
-				JSONObject stmt = new JSONObject();
-				stmt.accumulate("subject", statement.getSubject().toString());
-				stmt.accumulate("predicate", statement.getPredicate().toString());
-				stmt.accumulate("object", statement.getObject().toString());
-				json.append("statements", stmt);
+			for (Statement statement : statementToAdd) {
+				json.append("add", toJSON(statement));
+			}
+			for (Statement statement : statementToRemove) {
+				json.append("remove", toJSON(statement));
 			}
 			json.accumulate("compact", compactMode);
 
@@ -150,5 +177,13 @@ public class AddStatementsAction extends AbstractAction {
 					"cannot create js action for statement insert", e);
 			return null;
 		}
+	}
+
+	private static JSONObject toJSON(Statement statement) throws JSONException {
+		JSONObject stmt = new JSONObject();
+		stmt.accumulate("subject", statement.getSubject().toString());
+		stmt.accumulate("predicate", statement.getPredicate().toString());
+		stmt.accumulate("object", statement.getObject().toString());
+		return stmt;
 	}
 }
