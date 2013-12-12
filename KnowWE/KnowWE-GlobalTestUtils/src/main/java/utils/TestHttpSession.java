@@ -1,5 +1,6 @@
 package utils;
 
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +18,7 @@ import javax.servlet.http.HttpSessionContext;
 @SuppressWarnings("deprecation")
 public class TestHttpSession implements HttpSession {
 
-	Map<String, Object> attributes = new HashMap<String, Object>();
+	private final Map<String, Object> attributes = new HashMap<String, Object>();
 
 	@Override
 	public Object getAttribute(String arg0) {
@@ -26,8 +27,7 @@ public class TestHttpSession implements HttpSession {
 
 	@Override
 	public Enumeration<String> getAttributeNames() {
-		// TODO Auto-generated method stub
-		return null;
+		return Collections.enumeration(attributes.keySet());
 	}
 
 	@Override

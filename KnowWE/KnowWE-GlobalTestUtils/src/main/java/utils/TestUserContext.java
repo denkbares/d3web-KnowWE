@@ -18,14 +18,23 @@
  */
 package utils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import de.knowwe.core.Attributes;
+import de.knowwe.core.action.Action;
+import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.user.UserContext;
 
@@ -34,7 +43,7 @@ import de.knowwe.core.user.UserContext;
  * @author volker_belli
  * @created 04.08.2011
  */
-public class TestUserContext implements UserContext {
+public class TestUserContext implements UserContext, UserActionContext {
 
 	private static int counter = 0;
 
@@ -43,9 +52,10 @@ public class TestUserContext implements UserContext {
 	private final String userName = "Testuser #" + (counter++);
 	private final Article article;
 	private final Map<String, String> parameterMap = new HashMap<String, String>();
+	private final ByteArrayOutputStream out = new ByteArrayOutputStream();
+	private final Writer writer = new OutputStreamWriter(out);
 
 	private final TestHttpServletRequest request;
-
 	private final TestHttpSession session;
 
 	public TestUserContext(Article article) {
@@ -129,4 +139,83 @@ public class TestUserContext implements UserContext {
 		throw new UnsupportedOperationException("not implemented yet");
 	}
 
+	@Override
+	public Action getAction() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getPath() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public HttpServletResponse getResponse() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getActionName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Writer getWriter() throws IOException {
+		return writer;
+	}
+
+	@Override
+	public OutputStream getOutputStream() throws IOException {
+		return out;
+	}
+
+	@Override
+	public void setContentType(String mimetype) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setContentLength(int length) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void sendRedirect(String location) throws IOException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setHeader(String name, String value) throws IOException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void sendError(int sc, String msg) throws IOException {
+		// we write errors to the output stream, replacing the content
+		writer.flush();
+		out.reset();
+		writer.append(sc + ": " + msg);
+	}
+
+	public String getResponseText() {
+		try {
+			writer.flush();
+			return out.toString("UTF-8");
+		}
+		catch (UnsupportedEncodingException e) {
+			throw new IllegalStateException("platform must support utf-8");
+		}
+		catch (IOException e) {
+			// must not happen
+			throw new IllegalStateException("write error writing byte[] only?");
+		}
+	}
 }
