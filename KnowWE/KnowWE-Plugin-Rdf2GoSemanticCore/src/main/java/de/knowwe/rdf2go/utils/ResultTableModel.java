@@ -36,6 +36,10 @@ import org.ontoware.rdf2go.model.node.Node;
 
 public class ResultTableModel {
 
+	public Map<Node, Set<TableRow>> getData() {
+		return data;
+	}
+
 	private final Map<Node, Set<TableRow>> data = new LinkedHashMap<Node, Set<TableRow>>();
 	private final List<String> variables;
 
@@ -59,6 +63,16 @@ public class ResultTableModel {
 		this.variables = variables;
 	}
 
+	public boolean contains(TableRow row) {
+		Node subjectValue = row.getValue(variables.get(0));
+		Set<TableRow> subjectRows = data.get(subjectValue);
+		if (subjectRows == null) return false;
+		for (TableRow tableRow : subjectRows) {
+			if(row.equals(tableRow)) return true;
+		}
+		return false;
+	}
+	
 
 
 	public Iterator<TableRow> iterator() {
@@ -92,6 +106,20 @@ public class ResultTableModel {
 
 	}
 
+	@Override
+	public String toString() {
+		Set<Node> keySet = data.keySet();
+		StringBuffer buffy = new StringBuffer();
+		buffy.append("Variables: " + variables.toString() + "\n");
+		for (Node node : keySet) {
+			Set<TableRow> set = data.get(node);
+			for (TableRow tableRow : set) {
+				buffy.append(tableRow.toString() + "\n");
+			}
+		}
+		return buffy.toString();
+	}
+
 	private void importRow(QueryRow queryRow) {
 
 		Node firstNode = queryRow.getValue(variables.get(0));
@@ -100,7 +128,7 @@ public class ResultTableModel {
 			nodeRows = new HashSet<TableRow>();
 			data.put(firstNode, nodeRows);
 		}
-		nodeRows.add(new QueryRowTableRow(queryRow));
+		nodeRows.add(new QueryRowTableRow(queryRow, variables));
 
 	}
 

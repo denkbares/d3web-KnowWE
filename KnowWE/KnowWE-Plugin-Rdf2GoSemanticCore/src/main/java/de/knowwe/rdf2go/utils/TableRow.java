@@ -19,10 +19,14 @@
  */
 package de.knowwe.rdf2go.utils;
 
+import java.util.List;
+
 import org.ontoware.rdf2go.model.node.Node;
 
 public interface TableRow {
 
 	Node getValue(String Variable);
+
+	List<String> getVariables();
 
 }

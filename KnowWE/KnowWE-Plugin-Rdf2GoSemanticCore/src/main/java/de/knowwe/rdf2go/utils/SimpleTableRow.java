@@ -19,14 +19,17 @@
  */
 package de.knowwe.rdf2go.utils;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.ontoware.rdf2go.model.node.Node;
 
 public class SimpleTableRow implements TableRow {
 
-	private final Map<String, Node> values = new HashMap<String, Node>();
+	private final Map<String, Node> values = new LinkedHashMap<String, Node>();
 
 	public void addValue(String variable, Node n) {
 		values.put(variable, n);
@@ -35,6 +38,46 @@ public class SimpleTableRow implements TableRow {
 	@Override
 	public Node getValue(String Variable) {
 		return values.get(Variable);
+	}
+
+	@Override
+	public String toString() {
+		return values.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((values == null) ? 0 : values.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (!(obj instanceof TableRow)) return false;
+		TableRow other = (TableRow) obj;
+
+		if (getVariables().size() != other.getVariables().size()) return false;
+
+		Set<String> variables = values.keySet();
+		for (String variable : variables) {
+			if (!other.getValue(variable).equals(values.get(variable))) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	@Override
+	public List<String> getVariables() {
+		List<String> result = new ArrayList<String>();
+		Set<String> keySet = values.keySet();
+		result.addAll(keySet);
+		return result;
 	}
 
 }

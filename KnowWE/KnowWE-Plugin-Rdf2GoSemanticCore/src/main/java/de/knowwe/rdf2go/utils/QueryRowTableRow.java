@@ -19,20 +19,70 @@
  */
 package de.knowwe.rdf2go.utils;
 
+import java.util.List;
+
 import org.ontoware.rdf2go.model.QueryRow;
+import org.ontoware.rdf2go.model.node.BlankNode;
 import org.ontoware.rdf2go.model.node.Node;
 
 public class QueryRowTableRow implements TableRow {
 
 	private final QueryRow row;
+	private final List<String> variables;
 
-	public QueryRowTableRow(QueryRow r) {
+	public QueryRowTableRow(QueryRow r, List<String> variables) {
 		row = r;
+		this.variables = variables;
+	}
+
+	@Override
+	public String toString() {
+		StringBuffer buffy = new StringBuffer();
+		for (String variable : variables) {
+			String verbalization = row.getValue(variable).toString();
+			if (row.getValue(variable) instanceof BlankNode) {
+				verbalization = "BlankNode";
+			}
+			buffy.append(verbalization + "  \t");
+		}
+		return buffy.toString();
 	}
 
 	@Override
 	public Node getValue(String variable) {
 		return row.getValue(variable);
 	}
+
+	@Override
+	public List<String> getVariables() {
+		return variables;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (!(obj instanceof TableRow)) return false;
+		TableRow other = (TableRow) obj;
+
+		if (getVariables().size() != other.getVariables().size()) return false;
+
+		for (String variable : variables) {
+			if (!other.getValue(variable).equals(row.getValue(variable))) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((row == null) ? 0 : row.hashCode());
+		return result;
+	}
+
 
 }
