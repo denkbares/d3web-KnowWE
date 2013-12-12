@@ -49,7 +49,7 @@ public class KDOMRenderer extends AbstractHTMLTagHandler {
 		v.visit(Environment.getInstance().getArticle(web, topic)
 				.getRootSection());
 		result.appendHtml("<div><h3>KDOM:</h3><tt>");
-		result.append(v.getRenderedKDOM());
+		v.appendRenderedKDOM(result);
 		result.appendHtml("</tt></div>");
 	}
 
