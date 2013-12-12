@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -37,19 +37,19 @@ import de.knowwe.core.user.AuthenticationManager;
 
 /**
  * This class is a default implemantation of the UserActionContext interface.
- *
+ * 
  * The parameters of the request are accessible via getParameter(String
  * parametername). Be sure you know which parameters you have in your request.
- *
+ * 
  * Additionally it is possible to write content to your pages via
  * getWriter().write() or to send Data in a response via getOutputStream().
- *
+ * 
  * Please note, that if you use this class with a KnowWEAction everything you
  * write via getWriter().write() will be written to the KnowWE.jsp where it is
  * applicable for further processing (via JavaScript etc.).
- *
+ * 
  * @author Sebastian Furth
- *
+ * 
  */
 public class ActionContext extends AbstractUserContext implements UserActionContext {
 
@@ -88,7 +88,7 @@ public class ActionContext extends AbstractUserContext implements UserActionCont
 
 	/**
 	 * Default constructor.
-	 *
+	 * 
 	 * @param actionName Name of your action, equivalent to the ID specified in
 	 *        your plugin.xml
 	 * @param path optional parameter, only necessary for special servlets
@@ -112,12 +112,16 @@ public class ActionContext extends AbstractUserContext implements UserActionCont
 
 	@Override
 	public Action getAction() {
+		return getAction(actionName);
+	}
+
+	public static Action getAction(String actionName) {
 		PluginManager manager = PluginManager.getInstance();
 		Extension[] extensions = manager.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_ID);
 		for (Extension e : extensions) {
 			if (e.getName().equals(actionName)) return ((Action) e.getSingleton());
 		}
-		Logger.getLogger(getClass().getName()).warning(
+		Logger.getLogger(ActionContext.class.getName()).warning(
 				"Action: \"" + actionName + "\" not found, check plugin.xml.");
 		return null;
 	}

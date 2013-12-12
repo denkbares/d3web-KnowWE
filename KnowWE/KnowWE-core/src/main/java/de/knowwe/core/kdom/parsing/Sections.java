@@ -291,6 +291,69 @@ public class Sections {
 	}
 
 	/**
+	 * This method returns all the successors of the specified section matching
+	 * the specified class as their type. The class matches if the type object
+	 * of a section if an instance of the specified class or an instance of any
+	 * sub-class of the specified class or interface.
+	 * <p>
+	 * <b>Note:</b><br>
+	 * This is the modern version of the method
+	 * {@link #findSuccessorsOfType(Section, Class)} which is only kept for
+	 * compatibility reasons.
+	 * 
+	 * @created 09.12.2013
+	 * @param section the section to get the successor sections for
+	 * @param clazz the class of the successors to be matched
+	 * @return the list of all successor sections of the specified class
+	 */
+	public static <OT extends Type> List<Section<OT>> successors(Section<?> section, Class<OT> clazz) {
+		return findSuccessorsOfType(section, clazz);
+	}
+
+	/**
+	 * This method returns the closest ancestor of the specified section
+	 * matching the specified class as its type. The ancestor must be a "real"
+	 * ancestor, so the search for a matching type starts at the specified
+	 * sections parent. The specified class matches if the type object of a
+	 * section if an instance of the specified class or an instance of any
+	 * sub-class of the specified class or interface.
+	 * <p>
+	 * <b>Note:</b><br>
+	 * This is the modern version of the method
+	 * {@link #findAncestorOfType(Section, Class)} which is only kept for
+	 * compatibility reasons.
+	 * 
+	 * @created 09.12.2013
+	 * @param section the section to get the ancestor section for
+	 * @param clazz the class of the ancestor to be matched
+	 * @return the first ancestor sections of the specified class
+	 */
+	public static <OT extends Type> Section<OT> ancestor(Section<?> section, Class<OT> clazz) {
+		return findAncestorOfType(section, clazz);
+	}
+
+	/**
+	 * This method returns the first successor in depth-first-search of the
+	 * specified section matching the specified class as its type. The class
+	 * matches if the type object of a section if an instance of the specified
+	 * class or an instance of any sub-class of the specified class or
+	 * interface.
+	 * <p>
+	 * <b>Note:</b><br>
+	 * This is the modern version of the method
+	 * {@link #findSuccessor(Section, Class)} which is only kept for
+	 * compatibility reasons.
+	 * 
+	 * @created 09.12.2013
+	 * @param section the section to get the successor sections for
+	 * @param clazz the class of the successors to be matched
+	 * @return the first successor sections of the specified class
+	 */
+	public static <OT extends Type> Section<OT> successor(Section<?> section, Class<OT> clazz) {
+		return findSuccessor(section, clazz);
+	}
+
+	/**
 	 * Finds all successors of type <code>class1</code> in the KDOM below the
 	 * given Section.
 	 */
