@@ -31,8 +31,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.node.DatatypeLiteral;
+import org.ontoware.rdf2go.model.node.LanguageTagLiteral;
 import org.ontoware.rdf2go.model.node.Literal;
 import org.ontoware.rdf2go.model.node.Node;
+import org.ontoware.rdf2go.model.node.PlainLiteral;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 
@@ -419,7 +422,21 @@ public class TurtlePimpedWriter {
 			if (text.startsWith("lns:")) text = text.substring(3);
 			return text;
 		}
-		if (node instanceof Literal) return node.asLiteral().toSPARQL();
+		if (node instanceof DatatypeLiteral) {
+			DatatypeLiteral literal = node.asDatatypeLiteral();
+			URI datatype = Rdf2GoCore.getAnyInstance(section).toShortURI(literal.getDatatype());
+			return Strings.quote(literal.getValue()) + "^^" + datatype;
+		}
+		if (node instanceof LanguageTagLiteral) {
+			LanguageTagLiteral literal = node.asLanguageTagLiteral();
+			return Strings.quote(literal.getValue()) + "@" + literal.getLanguageTag();
+		}
+		if (node instanceof PlainLiteral) {
+			return Strings.quote(node.asLiteral().getValue());
+		}
+		if (node instanceof Literal) {
+			return node.asLiteral().toSPARQL();
+		}
 		throw new IllegalArgumentException(
 				"non-implemented conversion method for " + node.getClass());
 	}
@@ -654,8 +671,8 @@ public class TurtlePimpedWriter {
 		}
 		else {
 			String indent = getIndent(predSentence.getOffsetInArticle()) + "  ";
-			if (!isFirst) result.append(",");
-			result.append(compactMode ? " " : "\n").append(indent);
+			if (!isFirst) result.append(", ");
+			result.append(compactMode ? "" : "\n" + indent);
 			createObjectTurtle(predSentence, toInsert, indent, result);
 		}
 		return true;
