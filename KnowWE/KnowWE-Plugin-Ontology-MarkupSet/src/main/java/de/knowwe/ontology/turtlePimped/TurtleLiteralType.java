@@ -26,7 +26,6 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.XSD;
 
-import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -76,7 +75,12 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 			xsdType = xsdPartSection.get().getXSDType(xsdPartSection);
 		}
 		if (xsdType == null) {
+			// try to derive the type, but for plain strings create a plain
+			// literal
 			xsdType = deriveTypeFromLiteral(literal);
+			if (XSD._string.equals(xsdType)) {
+				return core.createLiteral(literal);
+			}
 		}
 		return core.createLiteral(literal, xsdType);
 	}
@@ -109,7 +113,7 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 
 		public String getLiteral(Section<LiteralPart> section) {
 			// unquote single and double quotes
-			return Strings.unquote(Strings.unquote(section.getText(), '\''));
+			return Rdf2GoCore.unquoteTurtleLiteral(section.getText());
 		}
 	}
 

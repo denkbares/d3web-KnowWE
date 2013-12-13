@@ -56,9 +56,7 @@ import org.ontoware.rdf2go.model.node.Literal;
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.model.node.impl.DatatypeLiteralImpl;
 import org.ontoware.rdf2go.model.node.impl.LanguageTagLiteralImpl;
-import org.ontoware.rdf2go.model.node.impl.PlainLiteralImpl;
 import org.ontoware.rdf2go.vocabulary.RDFS;
 
 import de.d3web.plugin.Extension;
@@ -517,14 +515,21 @@ public class Rdf2GoCore implements EventListener {
 	public Node createNode(String uriOrLiteral) {
 		int index = Strings.indexOfUnquoted(uriOrLiteral, "^^");
 		if (index > 0) {
-			return new DatatypeLiteralImpl(uriOrLiteral);
+			String literal = unquoteTurtleLiteral(uriOrLiteral.substring(0, index));
+			String datatype = uriOrLiteral.substring(index + 2);
+			return model.createDatatypeLiteral(literal, model.createURI(datatype));
 		}
 		index = Strings.indexOfUnquoted(uriOrLiteral, "@");
 		if (index > 0) {
-			return new LanguageTagLiteralImpl(uriOrLiteral);
+			String literal = unquoteTurtleLiteral(uriOrLiteral.substring(0, index));
+			String langugeTag = uriOrLiteral.substring(index + 1);
+			return model.createLanguageTagLiteral(literal, langugeTag);
 		}
-		if (Strings.isQuoted(uriOrLiteral)) {
-			return new PlainLiteralImpl(uriOrLiteral);
+		if (uriOrLiteral.startsWith("'") && uriOrLiteral.endsWith("'")) {
+			return model.createPlainLiteral(unquoteTurtleLiteral(uriOrLiteral));
+		}
+		if (uriOrLiteral.startsWith("\"") && uriOrLiteral.endsWith("\"")) {
+			return model.createPlainLiteral(unquoteTurtleLiteral(uriOrLiteral));
 		}
 		return createResource(uriOrLiteral);
 	}
@@ -533,6 +538,21 @@ public class Rdf2GoCore implements EventListener {
 		// create blank node or uri,
 		// at the moment we only support uris
 		return createURI(uri);
+	}
+
+	public static String unquoteTurtleLiteral(String turtle) {
+		turtle = turtle.trim();
+		int len = turtle.length();
+		if (turtle.startsWith("'''") && turtle.endsWith("'''") && len >= 6) {
+			return Strings.unquote(turtle.substring(2, len - 2), '\'');
+		}
+		if (turtle.startsWith("\"\"\"") && turtle.endsWith("\"\"\"") && len >= 6) {
+			return Strings.unquote(turtle.substring(2, len - 2), '"');
+		}
+		if (turtle.startsWith("'") && turtle.endsWith("'")) {
+			return Strings.unquote(turtle, '\'');
+		}
+		return Strings.unquote(turtle);
 	}
 
 	/**
@@ -558,6 +578,7 @@ public class Rdf2GoCore implements EventListener {
 	}
 
 	public URI createURI(String value) {
+		if (value.startsWith(":")) value = "lns" + value;
 		return model.createURI(Rdf2GoUtils.expandNamespace(this, value));
 	}
 
