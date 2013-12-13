@@ -199,7 +199,7 @@ public class Rdf2GoCore implements EventListener {
 	/**
 	 * This statement cache is controlled by the incremental compiler.
 	 */
-	private Map<String, WeakHashMap<Section<?>, List<Statement>>> incrementalStatementCache;
+	private Map<String, WeakHashMap<Section<? extends Type>, List<Statement>>> incrementalStatementCache;
 
 	/**
 	 * We use a map or ArrayLists here because we will have a lot of Lists with
@@ -299,7 +299,7 @@ public class Rdf2GoCore implements EventListener {
 	 * @param subject the subject of the statement/triple
 	 * @param predicate the predicate of the statement/triple
 	 * @param object the object of the statement/triple
-	 * @param section the {@link Section} for which the {@link Statement}s are
+	 * @param sec the {@link Section} for which the {@link Statement}s are
 	 *        added and cached
 	 */
 	public void addStatement(Section<?> sec, Resource subject, URI predicate, Node object) {
@@ -413,7 +413,7 @@ public class Rdf2GoCore implements EventListener {
 	 * Adds statements to the incremental statement cache.
 	 */
 	private void addStatementToIncrementalCache(Section<?> section, Statement... newStatements) {
-		WeakHashMap<Section<?>, List<Statement>> sectionsWithStatements = incrementalStatementCache.get(section.getArticle().getTitle());
+		WeakHashMap<Section<? extends Type>, List<Statement>> sectionsWithStatements = incrementalStatementCache.get(section.getArticle().getTitle());
 		if (sectionsWithStatements == null) {
 			sectionsWithStatements = new WeakHashMap<Section<? extends Type>, List<Statement>>();
 			incrementalStatementCache.put(section.getTitle(), sectionsWithStatements);
@@ -976,10 +976,10 @@ public class Rdf2GoCore implements EventListener {
 	 * <b>Attention</b>: This method only removes {@link Statement}s that were
 	 * added (and cached) in connection with a {@link Section} using methods
 	 * like {@link Rdf2GoCore#addStatements(Section, Collection)} or
-	 * {@link Rdf2GoCore#addStatement(Statement, Section)}.
+	 * {@link Rdf2GoCore#addStatement(Section, Resource, URI, Node)}.
 	 * 
 	 * @created 06.12.2010
-	 * @param section the {@link Section} for which the {@link Statement}s
+	 * @param sec the {@link Section} for which the {@link Statement}s
 	 *        should be removed
 	 */
 	public void removeStatementsForSection(Section<? extends Type> sec) {
@@ -1027,8 +1027,7 @@ public class Rdf2GoCore implements EventListener {
 	 * <p/>
 	 * <b>Attention</b>: This method only removes {@link Statement}s that were
 	 * added (and cached) in connection with an {@link Article} using methods
-	 * like {@link Rdf2GoCore#addStatements(Article, Collection)} or
-	 * {@link Rdf2GoCore#addStatement(Article, Statement)}.
+	 * like {@link Rdf2GoCore#addStatements(Article, Statement...)}.
 	 * 
 	 * @created 13.06.2012
 	 * @param article the article for which you want to remove all
