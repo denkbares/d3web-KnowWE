@@ -509,6 +509,23 @@
 		</profile>
 
 		<profile>
+			<id>timeline-timedb</id>
+			<activation>
+				<property>
+					<name>timeline-timedb</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Timeline-TimeDBDataProvider</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
 			<id>diafluxcoverage</id>
 			<activation>
 				<property>
