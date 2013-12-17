@@ -37,7 +37,6 @@ public class Predicate extends AbstractType implements URIProvider<Predicate> {
 	public Predicate() {
 		this.setSectionFinder(new FirstWordFinder());
 
-		this.addChildType(new RDFTypeType());
 		this.addChildType(new TurtleLongURI());
 		this.addChildType(new TurtleURI());
 	}
