@@ -119,14 +119,16 @@ public class RelationDefinition extends AbstractType {
 				Section<LiteralType> literalSection = Sections.findChildOfType(section,
 						LiteralType.class);
 				Literal literal = literalSection.get().getLiteral(core, literalSection);
-				core.addStatements(core.createStatement(subjectURI, predicatedURI, literal));
+				core.addStatements(section,
+						core.createStatement(subjectURI, predicatedURI, literal));
 			}
 			else {
 				Section<AbbreviatedResourceReference> abbrObjectSection = Sections.findSuccessor(
 						objectSection, AbbreviatedResourceReference.class);
 				URI objectURI = abbrObjectSection.get().getResourceURI(core, abbrObjectSection);
 
-				core.addStatements(core.createStatement(subjectURI, predicatedURI, objectURI));
+				core.addStatements(section,
+						core.createStatement(subjectURI, predicatedURI, objectURI));
 			}
 
 			return Messages.noMessage();

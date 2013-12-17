@@ -41,7 +41,8 @@ public class AbbreviatedIndividualDefinition extends AbbreviatedResourceDefiniti
 					individualMarkup, IndividualType.TYPE_ANNOTATION_NAME);
 
 			if (contentTypeSections.isEmpty()) {
-				core.addStatements(core.createStatement(resourceURI, RDF.type, OWL.Thing));
+				core.addStatements(section,
+						core.createStatement(resourceURI, RDF.type, OWL.Thing));
 			}
 			else {
 				for (Section<? extends AnnotationContentType> contentTypeSection : contentTypeSections) {
@@ -49,7 +50,8 @@ public class AbbreviatedIndividualDefinition extends AbbreviatedResourceDefiniti
 							contentTypeSection, AbbreviatedResourceReference.class);
 					if (resourceSection.hasErrorInSubtree()) return Messages.noMessage();
 					URI typeURI = resourceSection.get().getResourceURI(core, resourceSection);
-					core.addStatements(core.createStatement(resourceURI, RDF.type, typeURI));
+					core.addStatements(section,
+							core.createStatement(resourceURI, RDF.type, typeURI));
 				}
 			}
 			return Messages.noMessage();

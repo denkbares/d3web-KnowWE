@@ -86,6 +86,89 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  */
 public class Rdf2GoCore implements EventListener {
 
+	private interface StatementSource {
+
+		Article getArticle();
+	}
+
+	private static class ArticleSource implements StatementSource {
+
+		private final String web;
+		private final String title;
+
+		public ArticleSource(Article article) {
+			this.web = article.getWeb();
+			this.title = article.getTitle();
+		}
+
+		@Override
+		public Article getArticle() {
+			return Environment.getInstance().getArticle(web, title);
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((title == null) ? 0 : title.hashCode());
+			result = prime * result + ((web == null) ? 0 : web.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) return true;
+			if (obj == null) return false;
+			if (getClass() != obj.getClass()) return false;
+			ArticleSource other = (ArticleSource) obj;
+			if (title == null) {
+				if (other.title != null) return false;
+			}
+			else if (!title.equals(other.title)) return false;
+			if (web == null) {
+				if (other.web != null) return false;
+			}
+			else if (!web.equals(other.web)) return false;
+			return true;
+		}
+	}
+
+	private class SectionSource implements StatementSource {
+
+		private final String sectionID;
+
+		public SectionSource(Section<?> section) {
+			this.sectionID = section.getID();
+		}
+
+		@Override
+		public Article getArticle() {
+			Section<?> section = Sections.getSection(sectionID);
+			return section.getArticle();
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((sectionID == null) ? 0 : sectionID.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) return true;
+			if (obj == null) return false;
+			if (getClass() != obj.getClass()) return false;
+			SectionSource other = (SectionSource) obj;
+			if (sectionID == null) {
+				if (other.sectionID != null) return false;
+			}
+			else if (!sectionID.equals(other.sectionID)) return false;
+			return true;
+		}
+	}
+
 	public static final String LNS_ABBREVIATION = "lns";
 
 	public enum Rdf2GoModel {
@@ -187,13 +270,10 @@ public class Rdf2GoCore implements EventListener {
 	}
 
 	private final String bns;
-
 	private final String lns;
 
 	private org.ontoware.rdf2go.model.Model model;
-
 	private Rdf2GoModel modelType = Rdf2GoModel.SESAME;
-
 	private Rdf2GoReasoning reasoningType = Rdf2GoReasoning.RDF;
 
 	/**
@@ -205,7 +285,7 @@ public class Rdf2GoCore implements EventListener {
 	 * We use a map or ArrayLists here because we will have a lot of Lists with
 	 * mostly 1 elements. HashSets or such would be memory overhead.
 	 */
-	private Map<Statement, ArrayList<String>> duplicateStatements;
+	private Map<Statement, ArrayList<StatementSource>> duplicateStatements;
 
 	/**
 	 * This statement cache gets cleaned with the full parse of an article. If a
@@ -229,13 +309,13 @@ public class Rdf2GoCore implements EventListener {
 	private boolean addedStatements = false;
 
 	public Rdf2GoCore() {
-		bns = "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#";
-		lns = Environment.getInstance().getWikiConnector().getBaseUrl()
+		this.bns = "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#";
+		this.lns = Environment.getInstance().getWikiConnector().getBaseUrl()
 				+ "Wiki.jsp?page=";
 	}
 
 	public Rdf2GoCore(String lns, Model model) {
-		bns = "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#";
+		this.bns = "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#";
 		this.lns = lns;
 		this.model = model;
 	}
@@ -299,8 +379,8 @@ public class Rdf2GoCore implements EventListener {
 	 * @param subject the subject of the statement/triple
 	 * @param predicate the predicate of the statement/triple
 	 * @param object the object of the statement/triple
-	 * @param sec the {@link Section} for which the {@link Statement}s are
-	 *        added and cached
+	 * @param sec the {@link Section} for which the {@link Statement}s are added
+	 *        and cached
 	 */
 	public void addStatement(Section<?> sec, Resource subject, URI predicate, Node object) {
 		addStatements(sec, createStatement(subject, predicate, object));
@@ -325,7 +405,7 @@ public class Rdf2GoCore implements EventListener {
 			fullParseStatementCache.put(article.getTitle(), statementsOfArticle);
 		}
 		statementsOfArticle.addAll(Arrays.asList(statements));
-		addStatementsToDuplicatedCache(article.getTitle(), statements);
+		addStatementsToDuplicatedCache(new ArticleSource(article), statements);
 		addStatementsToInsertCache(statements);
 		addedStatements = true;
 	}
@@ -342,12 +422,11 @@ public class Rdf2GoCore implements EventListener {
 	 *        added and cached
 	 * @param statements the {@link Statement}s to add
 	 */
-	public void addStatements(Section<?> section,
-			Statement... statements) {
+	public void addStatements(Section<?> section, Statement... statements) {
 		Logger.getLogger(this.getClass().getName()).finer(
 				"semantic core updating " + section.getID() + "  " + statements.length);
 
-		addStatementsToDuplicatedCache(section.getID(), statements);
+		addStatementsToDuplicatedCache(new SectionSource(section), statements);
 		addStatementToIncrementalCache(section, statements);
 		addStatementsToInsertCache(statements);
 		addedStatements = true;
@@ -365,9 +444,8 @@ public class Rdf2GoCore implements EventListener {
 	 *        added and cached
 	 * @param statements the {@link Statement}s to add
 	 */
-	public void addStatements(Section<?> section,
-			Collection<Statement> statements) {
-		addStatements(statements.toArray(new Statement[] {}));
+	public void addStatements(Section<?> section, Collection<Statement> statements) {
+		addStatements(section, statements.toArray(new Statement[statements.size()]));
 	}
 
 	/**
@@ -388,11 +466,11 @@ public class Rdf2GoCore implements EventListener {
 		addedStatements = true;
 	}
 
-	private void addStatementsToDuplicatedCache(String source, Statement... statements) {
+	private void addStatementsToDuplicatedCache(StatementSource source, Statement... statements) {
 		for (Statement statement : statements) {
-			ArrayList<String> registeredSourcesForStatements = duplicateStatements.get(statement);
+			ArrayList<StatementSource> registeredSourcesForStatements = duplicateStatements.get(statement);
 			if (registeredSourcesForStatements == null) {
-				registeredSourcesForStatements = new ArrayList<String>(1);
+				registeredSourcesForStatements = new ArrayList<StatementSource>(1);
 				duplicateStatements.put(statement, registeredSourcesForStatements);
 			}
 			if (!registeredSourcesForStatements.contains(source)) {
@@ -740,7 +818,7 @@ public class Rdf2GoCore implements EventListener {
 	private void init() {
 		initModel();
 		incrementalStatementCache = new HashMap<String, WeakHashMap<Section<? extends Type>, List<Statement>>>();
-		duplicateStatements = new HashMap<Statement, ArrayList<String>>();
+		duplicateStatements = new HashMap<Statement, ArrayList<StatementSource>>();
 
 		insertCache = new HashSet<Statement>();
 		removeCache = new HashSet<Statement>();
@@ -911,16 +989,16 @@ public class Rdf2GoCore implements EventListener {
 		return remove != null;
 	}
 
-	private boolean removeStatementFromDuplicateCache(Statement statement, String key) {
-		ArrayList<String> sectionIDsForStatement = duplicateStatements.get(statement);
+	private boolean removeStatementFromDuplicateCache(StatementSource source, Statement statement) {
+		ArrayList<StatementSource> sectionIDsForStatement = duplicateStatements.get(statement);
 		boolean removed = false;
 		if (sectionIDsForStatement != null) {
-			removed = sectionIDsForStatement.remove(key);
+			removed = sectionIDsForStatement.remove(source);
 		}
 		else {
 			Logger.getLogger(this.getClass().getName()).log(
 					Level.WARNING,
-					"Internal caching error. Expected statment to be cached with key '" + key
+					"Internal caching error. Expected statment to be cached with key '" + source
 							+ "', but wasn't:\n"
 							+ verbalizeStatement(statement));
 		}
@@ -940,7 +1018,7 @@ public class Rdf2GoCore implements EventListener {
 		List<Statement> removedStatements = new ArrayList<Statement>();
 
 		for (Statement statement : statementsOfSection) {
-			boolean removed = removeStatementFromDuplicateCache(statement, sec.getID());
+			boolean removed = removeStatementFromDuplicateCache(new SectionSource(sec), statement);
 			if (removed) {
 				removedStatements.add(statement);
 			}
@@ -961,7 +1039,7 @@ public class Rdf2GoCore implements EventListener {
 		if (statements == null) return;
 		List<Statement> removedStatements = new ArrayList<Statement>();
 		for (Statement statement : statements) {
-			boolean removed = removeStatementFromDuplicateCache(statement, null);
+			boolean removed = removeStatementFromDuplicateCache(null, statement);
 			if (removed) {
 				removedStatements.add(statement);
 			}
@@ -979,8 +1057,8 @@ public class Rdf2GoCore implements EventListener {
 	 * {@link Rdf2GoCore#addStatement(Section, Resource, URI, Node)}.
 	 * 
 	 * @created 06.12.2010
-	 * @param sec the {@link Section} for which the {@link Statement}s
-	 *        should be removed
+	 * @param sec the {@link Section} for which the {@link Statement}s should be
+	 *        removed
 	 */
 	public void removeStatementsForSection(Section<? extends Type> sec) {
 
@@ -1038,13 +1116,51 @@ public class Rdf2GoCore implements EventListener {
 		if (statementsOfArticle == null) return;
 		List<Statement> removedStatements = new ArrayList<Statement>();
 		for (Statement statement : statementsOfArticle) {
-			boolean removed = removeStatementFromDuplicateCache(statement, article.getTitle());
+			boolean removed = removeStatementFromDuplicateCache(new ArticleSource(article),
+					statement);
 			if (removed) {
 				removedStatements.add(statement);
 			}
 		}
 		addStatementsToRemoveCache(removedStatements);
 		fullParseStatementCache.remove(article.getTitle());
+	}
+
+	/**
+	 * Returns the articles the statement has been created on. The method may
+	 * return an empty list if the statement has not been added by a markup and
+	 * cannot be associated to an article.
+	 * 
+	 * @created 13.12.2013
+	 * @param statement the statement to get the articles for
+	 * @return the articles that defines that statement
+	 */
+	public Set<Article> getSourceArticles(Statement statement) {
+		ArrayList<StatementSource> list = duplicateStatements.get(statement);
+		if (list == null) return Collections.emptySet();
+		if (list.isEmpty()) return Collections.emptySet();
+		Set<Article> result = new HashSet<Article>();
+		for (StatementSource source : list) {
+			result.add(source.getArticle());
+		}
+		return Collections.unmodifiableSet(result);
+	}
+
+	/**
+	 * Returns the article the statement has been created on. The method may
+	 * return null if the statement has not been added by a markup and cannot be
+	 * associated to an article. If there are multiple articles defining that
+	 * statement one of the articles are returned.
+	 * 
+	 * @created 13.12.2013
+	 * @param statement the statement to get the article for
+	 * @return the article that defines that statement
+	 */
+	public Article getSourceArticle(Statement statement) {
+		ArrayList<StatementSource> list = duplicateStatements.get(statement);
+		if (list == null) return null;
+		if (list.isEmpty()) return null;
+		return list.get(0).getArticle();
 	}
 
 	public boolean sparqlAsk(String query) throws ModelRuntimeException, MalformedQueryException {

@@ -89,7 +89,7 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 				newText);
 
 		nodesMap.put(nodeID, newNodeText);
-		Sections.replaceSections(context, nodesMap);
+		Sections.replaceSections(context, nodesMap).sendErrors(context);
 
 		context.setContentType("text/html; charset=UTF-8");
 		context.getWriter().write("done");

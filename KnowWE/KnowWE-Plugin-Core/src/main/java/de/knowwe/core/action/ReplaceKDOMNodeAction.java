@@ -28,6 +28,7 @@ import de.d3web.strings.Strings;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.parsing.Sections.ReplaceResult;
 
 /**
  * This Action replaces a single KDOM node's content. Before performing the
@@ -66,7 +67,9 @@ public class ReplaceKDOMNodeAction extends AbstractAction {
 
 		String result = "done";
 
-		Map<String, String> newSectionIDs = Sections.replaceSections(context, nodesMap);
+		ReplaceResult replaceResult = Sections.replaceSections(context, nodesMap);
+		replaceResult.sendErrors(context);
+		Map<String, String> newSectionIDs = replaceResult.getSectionMapping();
 		if (newSectionIDs != null && newSectionIDs.size() > 1) {
 			result = newSectionIDs.values().iterator().next();
 

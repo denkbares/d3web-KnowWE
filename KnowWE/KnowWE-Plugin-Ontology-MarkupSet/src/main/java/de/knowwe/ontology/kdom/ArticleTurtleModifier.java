@@ -42,10 +42,13 @@ import org.ontoware.rdf2go.model.node.URI;
 import de.d3web.strings.Strings;
 import de.d3web.utils.EqualsUtils;
 import de.d3web.utils.Pair;
+import de.knowwe.core.Environment;
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.PlainText;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.ontology.turtlePimped.BlankNode;
@@ -60,7 +63,18 @@ import de.knowwe.ontology.turtlePimped.TurtleMarkup;
 import de.knowwe.ontology.turtlePimped.TurtleSentence;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
-public class TurtlePimpedWriter {
+/**
+ * This class allows to add and remove statements to/from the turtle markup of a
+ * specific wiki article. The class is capable to collect a set of desired
+ * changes and apply it to the wiki text of the article in a seamless manner. As
+ * a result the configured object is capable to return the newly created wiki
+ * article text and the statements changes that could not been applied to the
+ * wiki page.
+ * 
+ * @author Volker Belli (denkbares GmbH)
+ * @created 17.12.2013
+ */
+public class ArticleTurtleModifier {
 
 	private class AddedStatement {
 
@@ -111,6 +125,7 @@ public class TurtlePimpedWriter {
 	private final transient Set<Section<Object>> objectsToRemove = new HashSet<Section<Object>>();
 	private final transient List<Statement> ignoredStatements = new LinkedList<Statement>();
 	private transient StringBuilder buffer = null;
+	private Rdf2GoCore core;
 
 	/**
 	 * Creates a new {@link TurtleWriter} to modify the turtle statements of the
@@ -118,7 +133,7 @@ public class TurtlePimpedWriter {
 	 * 
 	 * @param article the wiki article to be modified
 	 */
-	public TurtlePimpedWriter(Article article) {
+	public ArticleTurtleModifier(Article article) {
 		this(article, true);
 	}
 
@@ -131,7 +146,7 @@ public class TurtlePimpedWriter {
 	 *        single-line-mode) or verbose (prefer readability with line-breaks
 	 *        for each property and value, using indenting).
 	 */
-	public TurtlePimpedWriter(Article article, boolean compactMode) {
+	public ArticleTurtleModifier(Article article, boolean compactMode) {
 		this(article, compactMode, "  ");
 	}
 
@@ -145,10 +160,45 @@ public class TurtlePimpedWriter {
 	 * @param compactMode if the turtle markup should be created compact (prefer
 	 *        single-line-mode) or verbose (prefer readability with line-breaks
 	 *        for each property and value, using indenting).
-	 * @param the preferred indent to be used, should consist of spaces and tab
-	 *        characters only
+	 * @param preferredIndent the preferred indent to be used, should consist of
+	 *        spaces and tab characters only
 	 */
-	public TurtlePimpedWriter(Article article, boolean compactMode, String preferredIndent) {
+	public ArticleTurtleModifier(Article article, boolean compactMode, String preferredIndent) {
+		this(findCore(article), article, compactMode, preferredIndent);
+	}
+
+	/**
+	 * Returns an instance that compiles any section in this article (taking the
+	 * terms as a basis)
+	 */
+	private static Rdf2GoCore findCore(Article article) {
+		String web = article.getWeb();
+		PackageManager packageManager = Environment.getInstance().getPackageManager(web);
+		for (Section<?> section : Sections.successors(article.getRootSection(), Term.class)) {
+			Set<String> masters = packageManager.getCompilingArticles(section);
+			if (masters.isEmpty()) continue;
+			String master = masters.iterator().next();
+			return Rdf2GoCore.getInstance(web, master);
+		}
+		return Rdf2GoCore.getInstance();
+	}
+
+	/**
+	 * Creates a new {@link TurtleWriter} to modify the turtle statements of the
+	 * specified wiki article. You can specify if the output shall be compact or
+	 * expressive/verbose and how to indent the particular turtle sentences if
+	 * newly created.
+	 * 
+	 * @param core the core to be used to compile the modified turtle contents
+	 * @param article the wiki article to be modified
+	 * @param compactMode if the turtle markup should be created compact (prefer
+	 *        single-line-mode) or verbose (prefer readability with line-breaks
+	 *        for each property and value, using indenting).
+	 * @param preferredIndent the preferred indent to be used, should consist of
+	 *        spaces and tab characters only
+	 */
+	public ArticleTurtleModifier(Rdf2GoCore core, Article article, boolean compactMode, String preferredIndent) {
+		this.core = core;
 		this.article = article;
 		this.compactMode = compactMode;
 		this.preferredIndent = preferredIndent;
@@ -246,7 +296,7 @@ public class TurtlePimpedWriter {
 	 * @param indent the indent to be used if not in compact mode
 	 * @param turtle the buffer to append the created turtle text
 	 */
-	private void createObjectTurtle(Section<?> target, List<Statement> statements, String indent, StringBuilder turtle) {
+	private void createObjectTurtle(List<Statement> statements, String indent, StringBuilder turtle) {
 		boolean first = true;
 		for (Statement statement : statements) {
 			// add object separator
@@ -254,7 +304,7 @@ public class TurtlePimpedWriter {
 			else if (compactMode) turtle.append(", ");
 			else turtle.append(",\n").append(indent);
 			// add object itself
-			turtle.append(toTurtle(target, statement.getObject()));
+			turtle.append(toTurtle(statement.getObject()));
 		}
 	}
 
@@ -272,17 +322,17 @@ public class TurtlePimpedWriter {
 	 * @param indent the indent to be used if not in compact mode
 	 * @param turtle the buffer to append the created turtle text
 	 */
-	private void createPredicateTurtle(Section<?> target, List<Statement> statements, String indent, StringBuilder turtle) {
+	private void createPredicateTurtle(List<Statement> statements, String indent, StringBuilder turtle) {
 		String objectIndent = indent + "  ";
 
 		// append predicate and spacing to objects
 		URI predicate = statements.get(0).getPredicate();
-		turtle.append(toTurtle(target, predicate));
+		turtle.append(toTurtle(predicate));
 		if (compactMode) turtle.append(" ");
 		else turtle.append("\n").append(objectIndent);
 
 		// append the list of objects
-		createObjectTurtle(target, statements, objectIndent, turtle);
+		createObjectTurtle(statements, objectIndent, turtle);
 	}
 
 	// private static String createSubjectTurtle(List<Statement> statements,
@@ -306,12 +356,12 @@ public class TurtlePimpedWriter {
 	 * @param indent the indent to be used for turtle sentences
 	 * @param turtle the buffer to append the created turtle text
 	 */
-	private void createSubjectTurtle(Section<?> target, List<Statement> statements, String indent, StringBuilder turtle) {
+	private void createSubjectTurtle(List<Statement> statements, String indent, StringBuilder turtle) {
 		String predicateIndent = indent + "  ";
 
 		// append subject and separator to first predicate
 		Resource subject = statements.get(0).getSubject();
-		turtle.append(toTurtle(target, subject));
+		turtle.append(toTurtle(subject));
 		if (compactMode) turtle.append(" ");
 		else turtle.append("\n").append(predicateIndent);
 
@@ -322,7 +372,7 @@ public class TurtlePimpedWriter {
 			else if (compactMode) turtle.append(";\n").append(predicateIndent);
 			else turtle.append(";\n\n").append(predicateIndent);
 			// render each predicate
-			createPredicateTurtle(target, group, predicateIndent, turtle);
+			createPredicateTurtle(group, predicateIndent, turtle);
 		}
 	}
 
@@ -350,7 +400,7 @@ public class TurtlePimpedWriter {
 			if (first) first = false;
 			else if (compactMode) turtle.append(".\n").append(indent);
 			else turtle.append(".\n\n").append(indent);
-			createSubjectTurtle(target, group, indent, turtle);
+			createSubjectTurtle(group, indent, turtle);
 		}
 	}
 
@@ -416,15 +466,15 @@ public class TurtlePimpedWriter {
 	 * @param node the node to create turtle markup for
 	 * @return the turtle markup to represent the node's value
 	 */
-	private String toTurtle(Section<?> section, Node node) {
+	private String toTurtle(Node node) {
 		if (node instanceof URI) {
-			String text = Rdf2GoCore.getAnyInstance(section).toShortURI(node.asURI()).toString();
+			String text = core.toShortURI(node.asURI()).toString();
 			if (text.startsWith("lns:")) text = text.substring(3);
 			return text;
 		}
 		if (node instanceof DatatypeLiteral) {
 			DatatypeLiteral literal = node.asDatatypeLiteral();
-			URI datatype = Rdf2GoCore.getAnyInstance(section).toShortURI(literal.getDatatype());
+			URI datatype = core.toShortURI(literal.getDatatype());
 			return Strings.quote(literal.getValue()) + "^^" + datatype;
 		}
 		if (node instanceof LanguageTagLiteral) {
@@ -667,13 +717,13 @@ public class TurtlePimpedWriter {
 			String indent = getIndent(sentence.getOffsetInArticle()) + "  ";
 			if (!isFirst) result.append(";");
 			result.append(compactMode ? "\n" : "\n\n").append(indent);
-			createPredicateTurtle(sentence, toInsert, indent, result);
+			createPredicateTurtle(toInsert, indent, result);
 		}
 		else {
 			String indent = getIndent(predSentence.getOffsetInArticle()) + "  ";
 			if (!isFirst) result.append(", ");
 			result.append(compactMode ? "" : "\n" + indent);
-			createObjectTurtle(predSentence, toInsert, indent, result);
+			createObjectTurtle(toInsert, indent, result);
 		}
 		return true;
 	}
@@ -706,32 +756,29 @@ public class TurtlePimpedWriter {
 		}
 	}
 
-	private static boolean hasSameSubject(Section<TurtleSentence> sentence, Statement statement) {
+	private boolean hasSameSubject(Section<TurtleSentence> sentence, Statement statement) {
 		if (sentence == null) return false;
-		Rdf2GoCore core = Rdf2GoCore.getAnyInstance(sentence);
 		Section<Subject> subject = Sections.successor(sentence, Subject.class);
 		if (subject == null) return false;
 		Resource resource = subject.get().getResource(subject, core);
 		return resource.equals(statement.getSubject());
 	}
 
-	private static boolean hasSamePredicate(Section<PredicateSentence> predicateSentence, Statement statement) {
+	private boolean hasSamePredicate(Section<PredicateSentence> predicateSentence, Statement statement) {
 		if (predicateSentence == null) return false;
-		Rdf2GoCore core = Rdf2GoCore.getAnyInstance(predicateSentence);
 		Section<Predicate> predicate = Sections.successor(predicateSentence, Predicate.class);
 		if (predicate == null) return false;
 		URI uri = predicate.get().getURI(predicate, core);
 		return uri.equals(statement.getPredicate());
 	}
 
-	private static boolean hasSameObject(Section<Object> object, Statement statement) {
+	private boolean hasSameObject(Section<Object> object, Statement statement) {
 		if (object == null) return false;
-		Rdf2GoCore core = Rdf2GoCore.getAnyInstance(object);
 		Node node = object.get().getNode(object, core);
 		return node.equals(statement.getObject());
 	}
 
-	private static Pair<Section<TurtleSentence>, Section<PredicateSentence>> getInsertPosition(Article article, Statement statement) {
+	private Pair<Section<TurtleSentence>, Section<PredicateSentence>> getInsertPosition(Article article, Statement statement) {
 		Section<RootType> root = article.getRootSection();
 		for (Section<PredicateSentence> ps : Sections.successors(root, PredicateSentence.class)) {
 			if (!hasSamePredicate(ps, statement)) continue;
@@ -746,7 +793,7 @@ public class TurtlePimpedWriter {
 		return new Pair<Section<TurtleSentence>, Section<PredicateSentence>>(null, null);
 	}
 
-	private static Section<Object> getDeleteSection(Article article, Statement statement) {
+	private Section<Object> getDeleteSection(Article article, Statement statement) {
 		Section<RootType> root = article.getRootSection();
 		for (Section<Object> object : Sections.successors(root, Object.class)) {
 			if (!hasSameObject(object, statement)) continue;
@@ -757,6 +804,16 @@ public class TurtlePimpedWriter {
 			return object;
 		}
 		return null;
+	}
+
+	/**
+	 * Returns the article this turtle modifier is working on.
+	 * 
+	 * @created 17.12.2013
+	 * @return the article of this modifier
+	 */
+	public Article getArticle() {
+		return this.article;
 	}
 
 }

@@ -146,7 +146,7 @@ public class OntologyUtils {
 	 * @return the article's content, extended with the statements
 	 */
 	public static String modifyTurtle(Article article, boolean compactMode, List<Statement> statementsToAdd, List<Statement> statementsToRemove) {
-		TurtlePimpedWriter writer = new TurtlePimpedWriter(article, compactMode);
+		ArticleTurtleModifier writer = new ArticleTurtleModifier(article, compactMode);
 		writer.addInsert(statementsToAdd);
 		writer.addDelete(statementsToRemove);
 		return writer.getResultText();

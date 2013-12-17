@@ -20,6 +20,7 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
 public class Sections {
@@ -664,19 +665,69 @@ public class Sections {
 	}
 
 	/**
+	 * This class contains some information about the replacement success or the
+	 * errors occurred. It also allows to send the detected error in a
+	 * standardized manner to the http result of some action user context.
+	 * 
+	 * @author Volker Belli (denkbares GmbH)
+	 * @created 17.12.2013
+	 */
+	public static class ReplaceResult {
+
+		private final Collection<String> missingSectionIDs;
+		private final Collection<String> forbiddenArticles;
+		private final List<SectionInfo> sectionInfos;
+
+		public ReplaceResult(List<SectionInfo> sectionInfos, Collection<String> missingSectionIDs, Collection<String> forbiddenArticles) {
+			this.sectionInfos = sectionInfos;
+			this.missingSectionIDs = missingSectionIDs;
+			this.forbiddenArticles = forbiddenArticles;
+		}
+
+		/**
+		 * Returns a map mapping the old section ids to the section ids
+		 * replacing the old sections. The Map that provides for each changed
+		 * Section a mapping from the old to the new id.
+		 * 
+		 * @created 17.12.2013
+		 */
+		public Map<String, String> getSectionMapping() {
+			return getOldToNewIdsMap(sectionInfos);
+		}
+
+		/**
+		 * Sends the error occurred during the replacement to the user context's
+		 * response. If there were no errors, the method has no effect on the
+		 * response. Therefore this method can be called withot checking for
+		 * errors first.
+		 * 
+		 * @created 17.12.2013
+		 * @param context the context to send the errors to
+		 * @return if there have been any errors sent
+		 */
+		public boolean sendErrors(UserActionContext context) throws IOException {
+			return sendErrorMessages(context, missingSectionIDs, forbiddenArticles);
+		}
+	}
+
+	/**
 	 * Replaces Sections with the given texts, but not in the KDOMs themselves.
 	 * It collects the texts deep through the KDOM and appends the new text
 	 * (instead of the original text) for the Sections with an ID in the
 	 * sectionsMap. Finally the article is saved with this new content.
+	 * <p>
+	 * If working on an action the resulting object may be used to send the
+	 * errors during replacement back to the caller using
+	 * {@link ReplaceResult#sendErrors(UserActionContext)}.
 	 * 
-	 * @param context is the standard user context
+	 * @param context the user context to use for modifying the articles
 	 * @param sectionsMap containing pairs of the section id and the new text
 	 *        for this section
-	 * @returns a Map that provides for each changed Section a mapping from the
-	 *          old to the new id.
-	 * @throws IOException
+	 * @returns a result object containing some information about the
+	 *          replacement success or the errors occurred
+	 * @throws IOException if an io error occurred during replacing the sections
 	 */
-	public static Map<String, String> replaceSections(UserActionContext context, Map<String, String> sectionsMap) throws IOException {
+	public static ReplaceResult replaceSections(UserContext context, Map<String, String> sectionsMap) throws IOException {
 
 		List<SectionInfo> sectionInfos = getSectionInfos(sectionsMap);
 		Map<String, Collection<String>> idsByTitle = getIdsByTitle(sectionsMap.keySet());
@@ -695,9 +746,7 @@ public class Sections {
 			}
 		}
 
-		sendErrorMessages(context, missingIDs, forbiddenArticles);
-
-		return getOldToNewIdsMap(sectionInfos);
+		return new ReplaceResult(sectionInfos, missingIDs, forbiddenArticles);
 	}
 
 	private static List<SectionInfo> getSectionInfos(Map<String, String> sectionsMap) {
@@ -738,7 +787,7 @@ public class Sections {
 	private static boolean handleErrors(
 			String title,
 			Collection<String> ids,
-			UserActionContext context,
+			UserContext context,
 			Collection<String> missingIDs,
 			Collection<String> forbiddenArticles) {
 
@@ -767,7 +816,7 @@ public class Sections {
 
 	private static void replaceSectionsForTitle(String title,
 			Map<String, String> sectionsMapForCurrentTitle,
-			UserActionContext context) {
+			UserContext context) {
 
 		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
 
@@ -778,7 +827,7 @@ public class Sections {
 	private static String getNewArticleText(
 			String title,
 			Map<String, String> sectionsMapForCurrentTitle,
-			UserActionContext context) {
+			UserContext context) {
 
 		StringBuffer newText = new StringBuffer();
 		Article article = Environment.getInstance().getArticle(context.getWeb(),
@@ -830,7 +879,7 @@ public class Sections {
 		return newText;
 	}
 
-	private static void sendErrorMessages(UserActionContext context,
+	private static boolean sendErrorMessages(UserActionContext context,
 			Collection<String> missingIDs,
 			Collection<String> forbiddenArticles)
 			throws IOException {
@@ -839,12 +888,15 @@ public class Sections {
 			context.sendError(409, "The Sections '" + missingIDs.toString()
 					+ "' could not be found, possibly because somebody else"
 					+ " has edited them.");
+			return true;
 		}
 		if (!forbiddenArticles.isEmpty()) {
 			context.sendError(403,
 					"You do not have the permission to edit the following pages: "
 							+ forbiddenArticles.toString() + ".");
+			return true;
 		}
+		return false;
 	}
 
 	private static Map<String, String> getOldToNewIdsMap(List<SectionInfo> sectionInfos) {

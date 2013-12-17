@@ -56,7 +56,7 @@ public class AbbreviatedClassDefinition extends AbbreviatedResourceDefinition {
 			URI classNameURI = getClassNameURI(core, section);
 
 			Statement classStatement = core.createStatement(classNameURI, RDF.type, RDFS.Class);
-			core.addStatements(classStatement);
+			core.addStatements(section, classStatement);
 
 			return Messages.noMessage();
 		}

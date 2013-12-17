@@ -137,7 +137,7 @@ public class TaggingMangler {
 			for (Section<Tags> section : tagsSections) {
 				nodesMap.put(section.getID(), "");
 			}
-			Sections.replaceSections(context, nodesMap);
+			Sections.replaceSections(context, nodesMap).sendErrors(context);
 		}
 		else {
 			addNewTagSection(pagename, tag, context);
@@ -181,7 +181,7 @@ public class TaggingMangler {
 
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(keep.getID(), output);
-		Sections.replaceSections(context, nodesMap);
+		Sections.replaceSections(context, nodesMap).sendErrors(context);
 	}
 
 	/**
@@ -337,7 +337,7 @@ public class TaggingMangler {
 			for (Section<Tags> section : tagslist) {
 				nodesMap.put(section.getID(), "");
 			}
-			Sections.replaceSections(context, nodesMap);
+			Sections.replaceSections(context, nodesMap).sendErrors(context);
 		}
 		else {
 			addNewTagSection(topic, tags, context);
@@ -361,7 +361,7 @@ public class TaggingMangler {
 
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(rootSection.getID(), articleText);
-		Sections.replaceSections(context, nodesMap);
+		Sections.replaceSections(context, nodesMap).sendErrors(context);
 	}
 
 	private String createTagSectionString(String content) {

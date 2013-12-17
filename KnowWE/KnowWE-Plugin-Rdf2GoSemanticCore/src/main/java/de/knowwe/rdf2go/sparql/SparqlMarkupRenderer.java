@@ -177,7 +177,6 @@ public class SparqlMarkupRenderer implements Renderer {
 		String annotationString = DefaultMarkupType.getAnnotation(markupSection,
 				annotationName);
 		return annotationString != null && annotationString.equals("true");
-
 	}
 
 	private String modifyOrderByInSparqlString(Map<String, String> sortOrder, String sparqlString) {

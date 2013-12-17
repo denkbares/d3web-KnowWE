@@ -80,7 +80,7 @@ public class ObjectPropertyType extends DefaultMarkupType {
 			if (namespace == null) return Messages.noMessage();
 			String property = section.get().getResource(section);
 			URI propertyURI = core.createURI(namespace, property);
-			core.addStatements(core.createStatement(propertyURI, RDF.type, RDF.Property));
+			core.addStatements(section, core.createStatement(propertyURI, RDF.type, RDF.Property));
 			return Messages.noMessage();
 		}
 	}
@@ -115,8 +115,8 @@ public class ObjectPropertyType extends DefaultMarkupType {
 					}
 
 					if (objectURI != null) {
-						core.addStatements(core.createStatement(propertyURI, predicateURI,
-								objectURI));
+						core.addStatements(section,
+								core.createStatement(propertyURI, predicateURI, objectURI));
 					}
 					return null;
 				}

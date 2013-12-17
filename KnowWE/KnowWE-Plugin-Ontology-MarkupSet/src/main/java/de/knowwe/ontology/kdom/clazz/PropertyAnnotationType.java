@@ -84,7 +84,8 @@ public class PropertyAnnotationType extends AbstractType {
 			for (Section<AbbreviatedClassDefinition> classSection : classSections) {
 				if (classSection.hasErrorInSubtree()) continue;
 				URI classNameURI = classSection.get().getClassNameURI(core, classSection);
-				core.addStatements(core.createStatement(propertyURI, RDFS.domain, classNameURI));
+				core.addStatements(section,
+						core.createStatement(propertyURI, RDFS.domain, classNameURI));
 			}
 
 			if (rangeSection != null) {
@@ -92,20 +93,20 @@ public class PropertyAnnotationType extends AbstractType {
 				String rangeAbbreviation = rangeSection.get().getAbbreviation(rangeSection);
 				String range = rangeSection.get().getResource(rangeSection);
 				URI rangeURI = core.createURI(rangeAbbreviation, range);
-				core.addStatements(core.createStatement(propertyURI, RDFS.range, rangeURI));
+				core.addStatements(section, core.createStatement(propertyURI, RDFS.range, rangeURI));
 
 				if (rangeAbbreviation.equalsIgnoreCase(XSD.class.getSimpleName())) {
-					core.addStatements(core.createStatement(propertyURI, RDF.type,
-							OWL.DatatypeProperty));
+					core.addStatements(section,
+							core.createStatement(propertyURI, RDF.type, OWL.DatatypeProperty));
 				}
 				else {
-					core.addStatements(core.createStatement(propertyURI, RDF.type,
-							OWL.ObjectProperty));
+					core.addStatements(section,
+							core.createStatement(propertyURI, RDF.type, OWL.ObjectProperty));
 				}
 			}
 			else {
-				core.addStatements(core.createStatement(propertyURI, RDF.type,
-						RDF.Property));
+				core.addStatements(section,
+						core.createStatement(propertyURI, RDF.type, RDF.Property));
 			}
 
 			return Messages.noMessage();

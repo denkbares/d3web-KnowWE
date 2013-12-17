@@ -54,7 +54,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 		},
 		
 		/**
-		 * Laod the ajax-previews
+		 * Load the ajax-previews
 		 */
 		loadPreviews : function(web, title, root) {
 			var select = (root == undefined) 
