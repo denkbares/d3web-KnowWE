@@ -1,4 +1,4 @@
-package de.knowwe.ontology.turtlePimped.compile;
+package de.knowwe.ontology.turtle.compile;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,7 +9,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
-import de.knowwe.ontology.turtlePimped.TurtleSentence;
+import de.knowwe.ontology.turtle.TurtleSentence;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class TurtleCompileHandler extends SubtreeHandler<TurtleSentence> {

@@ -16,7 +16,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.ontology.turtlePimped;
+package de.knowwe.ontology.turtle;
 
 import org.ontoware.rdf2go.model.node.Node;
 
@@ -26,7 +26,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.ontology.turtlePimped.compile.NodeProvider;
+import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class TurtleLongURI extends AbstractType implements NodeProvider<TurtleLongURI> {

@@ -16,7 +16,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.ontology.turtlePimped;
+package de.knowwe.ontology.turtle;
 
 import java.util.List;
 
@@ -36,9 +36,9 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.Message;
-import de.knowwe.ontology.turtlePimped.compile.NodeProvider;
-import de.knowwe.ontology.turtlePimped.compile.StatementProvider;
-import de.knowwe.ontology.turtlePimped.compile.StatementProviderResult;
+import de.knowwe.ontology.turtle.compile.NodeProvider;
+import de.knowwe.ontology.turtle.compile.StatementProvider;
+import de.knowwe.ontology.turtle.compile.StatementProviderResult;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class Object extends AbstractType implements NodeProvider<Object>, StatementProvider<Object> {

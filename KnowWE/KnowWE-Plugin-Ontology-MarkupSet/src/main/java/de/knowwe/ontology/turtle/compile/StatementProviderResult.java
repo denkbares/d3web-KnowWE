@@ -1,4 +1,4 @@
-package de.knowwe.ontology.turtlePimped.compile;
+package de.knowwe.ontology.turtle.compile;
 
 import java.util.ArrayList;
 import java.util.Collection;

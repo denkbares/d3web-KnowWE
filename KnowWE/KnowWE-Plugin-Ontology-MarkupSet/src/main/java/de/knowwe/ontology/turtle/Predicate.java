@@ -16,7 +16,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.ontology.turtlePimped;
+package de.knowwe.ontology.turtle;
 
 import java.util.List;
 
@@ -27,9 +27,8 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.ontology.kdom.turtle.FirstWordFinder;
-import de.knowwe.ontology.turtlePimped.compile.NodeProvider;
-import de.knowwe.ontology.turtlePimped.compile.URIProvider;
+import de.knowwe.ontology.turtle.compile.NodeProvider;
+import de.knowwe.ontology.turtle.compile.URIProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class Predicate extends AbstractType implements URIProvider<Predicate> {

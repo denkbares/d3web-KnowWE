@@ -16,7 +16,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.ontology.turtlePimped;
+package de.knowwe.ontology.turtle;
 
 import java.util.Collection;
 import java.util.List;
@@ -40,9 +40,8 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.ontology.kdom.resource.ResourceReference;
-import de.knowwe.ontology.kdom.turtle.FirstWordFinder;
-import de.knowwe.ontology.turtlePimped.compile.NodeProvider;
-import de.knowwe.ontology.turtlePimped.compile.ResourceProvider;
+import de.knowwe.ontology.turtle.compile.NodeProvider;
+import de.knowwe.ontology.turtle.compile.ResourceProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class Subject extends AbstractType implements ResourceProvider<Subject> {

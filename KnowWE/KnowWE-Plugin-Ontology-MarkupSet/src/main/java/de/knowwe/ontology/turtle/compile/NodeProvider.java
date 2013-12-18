@@ -1,4 +1,4 @@
-package de.knowwe.ontology.turtlePimped.compile;
+package de.knowwe.ontology.turtle.compile;
 
 import org.ontoware.rdf2go.model.node.Node;
 

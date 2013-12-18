@@ -16,34 +16,37 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.ontology.turtlePimped;
+package de.knowwe.ontology.turtle;
 
 import java.util.List;
 
 import de.d3web.strings.Strings;
+import de.knowwe.core.compile.Priority;
+import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.ontology.turtle.compile.TurtleCompileHandler;
 
-public class ExpressionInBracketsFinder implements SectionFinder {
+public class TurtleSentence extends AbstractType {
 
-	private final char open;
-	private final char close;
+	public TurtleSentence() {
+		this.setSectionFinder(new SectionFinder() {
 
-	public ExpressionInBracketsFinder(char open, char close) {
-		this.open = open;
-		this.close = close;
-	}
+			@Override
+			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
+				return SectionFinderResult.createResultList(Strings.splitUnquoted(text, ".", false,
+						TurtleMarkup.TURTLE_QUOTES));
+			}
+		});
 
-	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-		if (text.trim().startsWith(Character.toString(open))
-				&& Strings.endsWithUnescaped(text.trim(), close)) {
-			return new AllTextFinderTrimmed().lookForSections(text, father, type);
-		}
-		return null;
+		this.addChildType(new Subject());
+		this.addChildType(PredicateObjectSentenceList.getInstance());
+
+		// create triples for each sentence
+		this.addSubtreeHandler(Priority.LOW, new TurtleCompileHandler());
+
 	}
 
 }

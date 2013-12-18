@@ -16,18 +16,34 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.ontology.turtlePimped;
+package de.knowwe.ontology.turtle;
 
-import de.knowwe.core.kdom.AbstractType;
+import java.util.List;
+
+import de.d3web.strings.Strings;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.kdom.sectionFinder.SectionFinder;
+import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
-public class TurtleContent extends AbstractType {
+public class ExpressionInBracketsFinder implements SectionFinder {
 
-	public TurtleContent() {
-		this.setSectionFinder(new AllTextFinderTrimmed());
-		this.addChildType(new TurtleSentence());
+	private final char open;
+	private final char close;
 
+	public ExpressionInBracketsFinder(char open, char close) {
+		this.open = open;
+		this.close = close;
 	}
 
+	@Override
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
+		if (text.trim().startsWith(Character.toString(open))
+				&& Strings.endsWithUnescaped(text.trim(), close)) {
+			return new AllTextFinderTrimmed().lookForSections(text, father, type);
+		}
+		return null;
+	}
 
 }

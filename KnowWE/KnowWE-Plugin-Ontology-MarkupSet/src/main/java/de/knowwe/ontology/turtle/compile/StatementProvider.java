@@ -1,4 +1,4 @@
-package de.knowwe.ontology.turtlePimped.compile;
+package de.knowwe.ontology.turtle.compile;
 
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;

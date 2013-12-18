@@ -35,11 +35,11 @@ import de.knowwe.core.utils.Patterns;
 import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.ontology.kdom.namespace.AbbreviationPrefixReference;
-import de.knowwe.ontology.kdom.turtle.TurtleMarkup;
-import de.knowwe.ontology.kdom.turtle.TurtlePredSentence;
-import de.knowwe.ontology.kdom.turtle.TurtlePredicate;
-import de.knowwe.ontology.kdom.turtle.TurtleSentence;
 import de.knowwe.ontology.kdom.turtle.TurtleSubject;
+import de.knowwe.ontology.turtle.Predicate;
+import de.knowwe.ontology.turtle.PredicateSentence;
+import de.knowwe.ontology.turtle.TurtleMarkup;
+import de.knowwe.ontology.turtle.TurtleSentence;
 
 /**
  * 
@@ -163,8 +163,8 @@ public class OntologyUtils {
 	 * @param predicate the predicate to search for
 	 * @return the sentence for the subject and predicate
 	 */
-	public static Section<TurtlePredSentence> findSentence(Article article, Resource subject, URI predicate) {
-		List<Section<TurtlePredSentence>> sentences = findSentences(article, subject, predicate);
+	public static Section<PredicateSentence> findSentence(Article article, Resource subject, URI predicate) {
+		List<Section<PredicateSentence>> sentences = findSentences(article, subject, predicate);
 		if (sentences.isEmpty()) return null;
 		return sentences.get(0);
 	}
@@ -180,16 +180,16 @@ public class OntologyUtils {
 	 * @param predicate the predicate to search for
 	 * @return the predicate sentences for the subject and predicate
 	 */
-	public static List<Section<TurtlePredSentence>> findSentences(Article article, Resource subject, URI predicate) {
-		List<Section<TurtlePredSentence>> result = new LinkedList<Section<TurtlePredSentence>>();
+	public static List<Section<PredicateSentence>> findSentences(Article article, Resource subject, URI predicate) {
+		List<Section<PredicateSentence>> result = new LinkedList<Section<PredicateSentence>>();
 
 		// check all sentences of the specified subject
 		for (Section<TurtleSentence> sentence : findSentences(article, subject)) {
 			// check all predicate sentences within these sentences
-			for (Section<TurtlePredSentence> predSentence : Sections.findSuccessorsOfType(sentence,
-					TurtlePredSentence.class)) {
-				Section<TurtlePredicate> otherPredicate = Sections.findSuccessor(predSentence,
-						TurtlePredicate.class);
+			for (Section<PredicateSentence> predSentence : Sections.findSuccessorsOfType(sentence,
+					PredicateSentence.class)) {
+				Section<Predicate> otherPredicate = Sections.findSuccessor(predSentence,
+						Predicate.class);
 				if (otherPredicate == null) continue;
 				if (otherPredicate.getText().equals(predicate.toString())) {
 					// we found the same subject, so add to result

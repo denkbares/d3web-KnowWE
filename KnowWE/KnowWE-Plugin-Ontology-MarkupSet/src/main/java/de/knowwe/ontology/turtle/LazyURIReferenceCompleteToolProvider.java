@@ -1,4 +1,4 @@
-package de.knowwe.ontology.turtlePimped;
+package de.knowwe.ontology.turtle;
 
 import java.util.Collection;
 import java.util.Iterator;

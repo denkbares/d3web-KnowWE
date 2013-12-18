@@ -16,7 +16,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.ontology.turtlePimped;
+package de.knowwe.ontology.turtle;
 
 import de.d3web.strings.QuoteCharSet;
 import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
@@ -40,7 +40,7 @@ public class TurtleMarkup extends DefaultMarkupType {
 	private static final DefaultMarkup MARKUP;
 
 	static {
-		MARKUP = new DefaultMarkup("TurtlePimped");
+		MARKUP = new DefaultMarkup("Turtle");
 		MARKUP.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 		MARKUP.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageAnnotationNameType());

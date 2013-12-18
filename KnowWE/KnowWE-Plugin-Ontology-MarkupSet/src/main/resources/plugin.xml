@@ -73,22 +73,23 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="TurtleMarkup">
+		id="TurtleMarkupPimped">
 		<parameter id="class"
-			value="de.knowwe.ontology.kdom.turtle.TurtleMarkup" />
-		<parameter id="name" value="RelationType" />
-		<parameter id="description" value="Type RelationType" />
+			value="de.knowwe.ontology.turtlePimped.TurtleMarkupPimped" />
+		<parameter id="name" value="TurtleMarkupPimped" />
+		<parameter id="description" value="Type TurtleMarkupPimped" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
+		<parameter id="script" value="KnowWE-Plugin-Ontology-MarkupSet.js" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="TurtleMarkupPimped">
+		id="TurtleMarkup">
 		<parameter id="class"
-			value="de.knowwe.ontology.turtlePimped.TurtleMarkup" />
-		<parameter id="name" value="TurtleMarkupPimped" />
-		<parameter id="description" value="Type TurtleMarkupPimped" />
+			value="de.knowwe.ontology.turtle.TurtleMarkup" />
+		<parameter id="name" value="TurtleMarkup" />
+		<parameter id="description" value="Type TurtleMarkup" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
@@ -98,7 +99,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
         id="LazyURIReferenceToolProvider">
         <parameter id="class"
-            value="de.knowwe.ontology.turtlePimped.LazyURIReferenceCompleteToolProvider" />
+            value="de.knowwe.ontology.turtle.LazyURIReferenceCompleteToolProvider" />
         <parameter id="name" value="LazyURIReferenceToolProvider" />
         <parameter id="description"
             value="Offers options to expand a lazy URI Reference." />

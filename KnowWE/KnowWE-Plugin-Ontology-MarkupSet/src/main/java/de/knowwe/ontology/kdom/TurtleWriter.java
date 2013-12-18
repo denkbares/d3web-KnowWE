@@ -24,7 +24,8 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.ontology.kdom.turtle.TurtleObjectSection;
 import de.knowwe.ontology.kdom.turtle.TurtlePredSentence;
-import de.knowwe.ontology.kdom.turtle.TurtleSentence;
+import de.knowwe.ontology.turtle.PredicateSentence;
+import de.knowwe.ontology.turtle.TurtleSentence;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class TurtleWriter {
@@ -42,7 +43,7 @@ public class TurtleWriter {
 
 		private final String insertText;
 		private final int position;
-		private int replaceLength;
+		private final int replaceLength;
 
 		public Change(String insertText, int position, int replaceLength) {
 			this.insertText = insertText;
@@ -679,14 +680,14 @@ public class TurtleWriter {
 		// first try to insert into a list of objects,
 		// if there is already a turtle with this subject and predicate
 		Set<Node> unprocessedNodes = new HashSet<Node>(removes);
-		List<Section<TurtlePredSentence>> sentences =
+		List<Section<PredicateSentence>> sentences =
 				OntologyUtils.findSentences(article, subject, predicate);
-		for (Section<TurtlePredSentence> sentence : sentences) {
-			List<Section<TurtleObjectSection>> objects =
-					Sections.findSuccessorsOfType(sentence, TurtleObjectSection.class);
-			for (Section<TurtleObjectSection> object : objects) {
+		for (Section<PredicateSentence> sentence : sentences) {
+			List<Section<de.knowwe.ontology.turtle.Object>> objects =
+					Sections.findSuccessorsOfType(sentence, de.knowwe.ontology.turtle.Object.class);
+			for (Section<de.knowwe.ontology.turtle.Object> object : objects) {
 				Rdf2GoCore core = Rdf2GoCore.getAnyInstance(object);
-				Node node = object.get().getNode(core, object);
+				Node node = object.get().getNode(object, core);
 				if (removes.contains(node)) {
 					sectionsToDelete.add(object);
 					unprocessedNodes.remove(node);
@@ -718,7 +719,7 @@ public class TurtleWriter {
 
 		// first try to insert into a list of objects,
 		// if there is already a turtle with this subject and predicate
-		Section<TurtlePredSentence> predSentence =
+		Section<PredicateSentence> predSentence =
 				OntologyUtils.findSentence(article, subject, predicate);
 		if (predSentence != null) {
 			// add to the end of the list

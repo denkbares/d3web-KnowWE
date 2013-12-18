@@ -51,16 +51,16 @@ import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.ontology.turtlePimped.BlankNode;
-import de.knowwe.ontology.turtlePimped.Object;
-import de.knowwe.ontology.turtlePimped.ObjectList;
-import de.knowwe.ontology.turtlePimped.Predicate;
-import de.knowwe.ontology.turtlePimped.PredicateObjectSentenceList;
-import de.knowwe.ontology.turtlePimped.PredicateSentence;
-import de.knowwe.ontology.turtlePimped.Subject;
-import de.knowwe.ontology.turtlePimped.TurtleContent;
-import de.knowwe.ontology.turtlePimped.TurtleMarkup;
-import de.knowwe.ontology.turtlePimped.TurtleSentence;
+import de.knowwe.ontology.turtle.BlankNode;
+import de.knowwe.ontology.turtle.Object;
+import de.knowwe.ontology.turtle.ObjectList;
+import de.knowwe.ontology.turtle.Predicate;
+import de.knowwe.ontology.turtle.PredicateObjectSentenceList;
+import de.knowwe.ontology.turtle.PredicateSentence;
+import de.knowwe.ontology.turtle.Subject;
+import de.knowwe.ontology.turtle.TurtleContent;
+import de.knowwe.ontology.turtle.TurtleMarkup;
+import de.knowwe.ontology.turtle.TurtleSentence;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 /**
@@ -125,7 +125,7 @@ public class ArticleTurtleModifier {
 	private final transient Set<Section<Object>> objectsToRemove = new HashSet<Section<Object>>();
 	private final transient List<Statement> ignoredStatements = new LinkedList<Statement>();
 	private transient StringBuilder buffer = null;
-	private Rdf2GoCore core;
+	private final Rdf2GoCore core;
 
 	/**
 	 * Creates a new {@link TurtleWriter} to modify the turtle statements of the

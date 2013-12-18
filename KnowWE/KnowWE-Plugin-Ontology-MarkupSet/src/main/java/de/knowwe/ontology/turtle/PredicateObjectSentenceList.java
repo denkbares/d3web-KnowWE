@@ -16,15 +16,33 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.ontology.turtlePimped;
+package de.knowwe.ontology.turtle;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 
-public class ObjectList extends AbstractType {
 
-	public ObjectList() {
-		this.setSectionFinder(new AllTextFinderTrimmed());
-		this.addChildType(new Object());
+public class PredicateObjectSentenceList extends AbstractType {
+
+	private static PredicateObjectSentenceList instance = null;
+
+	public static PredicateObjectSentenceList getInstance() {
+		if (instance == null) {
+			instance = new PredicateObjectSentenceList();
+			instance.init();
+		}
+		return instance;
 	}
+
+	private PredicateObjectSentenceList() {
+		// initialization performed in init() to prevent infinite init-loop on
+		// startup
+	}
+
+	private void init() {
+		this.addChildType(new PredicateSentence());
+		this.setSectionFinder(new AllTextFinderTrimmed());
+	}
+
+
 }

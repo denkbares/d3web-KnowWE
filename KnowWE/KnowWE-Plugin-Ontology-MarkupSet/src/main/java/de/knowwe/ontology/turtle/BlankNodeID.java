@@ -16,36 +16,43 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.ontology.turtlePimped;
+package de.knowwe.ontology.turtle;
 
 import java.util.List;
 
-import de.d3web.strings.StringFragment;
-import de.d3web.strings.Strings;
+import org.ontoware.rdf2go.model.node.Node;
+
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.ontology.turtle.compile.NodeProvider;
+import de.knowwe.rdf2go.Rdf2GoCore;
 
+public class BlankNodeID extends AbstractType implements NodeProvider<BlankNodeID> {
 
-public class PredicateSentence extends AbstractType {
-
-	public PredicateSentence() {
-		this.setSectionFinder(new PredicateSentenceSectionFinder());
-		this.addChildType(new Predicate());
-		this.addChildType(new ObjectList());
+	public BlankNodeID() {
+		this.setSectionFinder(new BlankNodeIDFinder());
 	}
 
-	class PredicateSentenceSectionFinder implements SectionFinder {
-
+	class BlankNodeIDFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-			List<StringFragment> sentences = Strings.splitUnquoted(text, ";", true,
-					TurtleMarkup.TURTLE_QUOTES);
-			return SectionFinderResult.createResultList(sentences);
+			if (text.trim().startsWith("_:")) {
+				return new AllTextFinderTrimmed().lookForSections(text, father, type);
+			}
+			return null;
 		}
+	}
 
+	@Override
+	public Node getNode(Section<BlankNodeID> section, Rdf2GoCore core) {
+		Section<TurtleContent> content = Sections.findAncestorOfExactType(section,
+				TurtleContent.class);
+		return core.createBlankNode(content.getID() + "_" + section.getText());
 	}
 }

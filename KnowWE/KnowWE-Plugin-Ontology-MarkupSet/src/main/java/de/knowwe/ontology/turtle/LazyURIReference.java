@@ -1,4 +1,4 @@
-package de.knowwe.ontology.turtlePimped;
+package de.knowwe.ontology.turtle;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -17,7 +17,7 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.ontology.kdom.resource.Resource;
-import de.knowwe.ontology.turtlePimped.compile.NodeProvider;
+import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class LazyURIReference extends SimpleReference implements NodeProvider<LazyURIReference> {
