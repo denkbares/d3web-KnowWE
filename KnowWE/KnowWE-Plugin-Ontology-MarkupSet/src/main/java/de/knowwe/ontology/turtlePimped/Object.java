@@ -67,6 +67,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		this.addChildType(new TurtleLiteralType());
 		this.addChildType(new TurtleLongURI());
 		this.addChildType(new TurtleURI());
+		this.addChildType(new LazyURIReference());
 	}
 
 	@Override

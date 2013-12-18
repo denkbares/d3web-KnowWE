@@ -21,11 +21,13 @@ package de.knowwe.ontology.turtlePimped;
 import java.util.List;
 
 import de.d3web.strings.Strings;
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.ontology.turtlePimped.compile.TurtleCompileHandler;
 
 public class TurtleSentence extends AbstractType {
 
@@ -41,6 +43,9 @@ public class TurtleSentence extends AbstractType {
 
 		this.addChildType(new Subject());
 		this.addChildType(PredicateObjectSentenceList.getInstance());
+
+		// create triples for each sentence
+		this.addSubtreeHandler(Priority.LOW, new TurtleCompileHandler());
 
 	}
 

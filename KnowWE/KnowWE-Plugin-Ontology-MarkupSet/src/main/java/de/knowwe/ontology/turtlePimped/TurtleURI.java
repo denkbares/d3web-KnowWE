@@ -24,7 +24,7 @@ import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
@@ -38,7 +38,7 @@ public class TurtleURI extends AbbreviatedResourceReference implements NodeProvi
 	public TurtleURI() {
 
 		ConstraintSectionFinder c = new ConstraintSectionFinder(
-				new AllTextFinderTrimmed());
+				new RegexSectionFinder("\\w*:.+"));
 		setSectionFinder(c);
 		c.addConstraint(AtMostOneFindingConstraint.getInstance());
 	}
@@ -50,14 +50,7 @@ public class TurtleURI extends AbbreviatedResourceReference implements NodeProvi
 		Section<ResourceReference> ref = Sections.findSuccessor(section, ResourceReference.class);
 		if (ref != null) {
 			Identifier identifier = ref.get().getTermIdentifier(ref);
-			String shortURI = Strings.encodeURL(identifier.toExternalForm());
-			String[] idPath = identifier.getPathElements();
-				if (idPath.length == 2) {
-					String suffix = Strings.encodeURL(idPath[1]);
-					shortURI = idPath[0] + ":" + suffix;
-				}
-			String longURI = Rdf2GoUtils.expandNamespace(core, shortURI);
-			return core.createURI(longURI);
+			return getNodeForIdentifier(core, identifier);
 		}
 		else {
 
@@ -67,6 +60,19 @@ public class TurtleURI extends AbbreviatedResourceReference implements NodeProvi
 		String uri = Rdf2GoUtils.expandNamespace(core, turtleURIText);
 		return core.createURI(uri);
 		}
+	}
+
+
+	public static Node getNodeForIdentifier(Rdf2GoCore core, Identifier identifier) {
+		if (identifier == null) return null;
+		String shortURI = Strings.encodeURL(identifier.toExternalForm());
+		String[] idPath = identifier.getPathElements();
+			if (idPath.length == 2) {
+				String suffix = Strings.encodeURL(idPath[1]);
+				shortURI = idPath[0] + ":" + suffix;
+			}
+		String longURI = Rdf2GoUtils.expandNamespace(core, shortURI);
+		return core.createURI(longURI);
 	}
 
 }

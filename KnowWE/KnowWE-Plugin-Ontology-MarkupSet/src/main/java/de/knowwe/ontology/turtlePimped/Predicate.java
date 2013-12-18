@@ -39,6 +39,7 @@ public class Predicate extends AbstractType implements URIProvider<Predicate> {
 
 		this.addChildType(new TurtleLongURI());
 		this.addChildType(new TurtleURI());
+		this.addChildType(new LazyURIReference());
 	}
 
 	@Override

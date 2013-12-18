@@ -80,6 +80,7 @@
 			<artifactId>sesame-runtime</artifactId>
 			<version>2.6.10</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.ontotext</groupId>
 			<artifactId>owlim</artifactId>
@@ -90,6 +91,16 @@
 			<artifactId>trree</artifactId>
 			<version>3.3</version>
 		</dependency>
+		
+		<!-- 
+		<dependency>
+			<groupId>com.ontotext</groupId>
+			<artifactId>owlim-lite</artifactId>
+			<version>5.3</version>
+		</dependency>
+		 -->
+		
+		
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-KDOMParseUtils</artifactId>

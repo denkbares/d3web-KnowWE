@@ -38,12 +38,18 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
-		return section.get() instanceof Term;
+		return hasObjectInfoPage(section);
+	}
+
+	@SuppressWarnings("unchecked")
+	private boolean hasObjectInfoPage(Section<?> section) {
+		return section.get() instanceof Term
+				&& ((Term) section.get()).getTermIdentifier((Section<? extends Term>) section) != null;
 	}
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		if (section.get() instanceof Term) {
+		if (hasObjectInfoPage(section)) {
 			@SuppressWarnings("unchecked")
 			Section<? extends Term> s = (Section<? extends Term>) section;
 			return new Tool[] { getObjectInfoPageTool(s, userContext) };

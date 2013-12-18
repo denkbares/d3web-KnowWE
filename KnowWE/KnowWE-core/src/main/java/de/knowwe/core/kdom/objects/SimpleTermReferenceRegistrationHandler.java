@@ -68,7 +68,7 @@ public class SimpleTermReferenceRegistrationHandler extends SubtreeHandler<Term>
 	public Collection<Message> validateReference(Article article, Section<Term> section) {
 		TerminologyManager tHandler = KnowWEUtils.getTerminologyManager(article, scope);
 		Identifier termIdentifier = section.get().getTermIdentifier(section);
-		if (!tHandler.isDefinedTerm(termIdentifier)) {
+		if (termIdentifier == null || (!tHandler.isDefinedTerm(termIdentifier))) {
 			return Messages.asList(Messages.noSuchObjectError(
 					section.get().getTermObjectClass(section).getSimpleName(),
 					section.get().getTermName(section)));

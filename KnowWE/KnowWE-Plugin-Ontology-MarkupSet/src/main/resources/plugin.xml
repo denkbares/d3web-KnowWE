@@ -72,7 +72,7 @@
 		<parameter id="scope" value="root" />
 	</extension>
 	
-		<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="TurtleMarkup">
 		<parameter id="class"
 			value="de.knowwe.ontology.kdom.turtle.TurtleMarkup" />
@@ -92,7 +92,21 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
+		<parameter id="script" value="KnowWE-Plugin-Ontology-MarkupSet.js" />
 	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+        id="LazyURIReferenceToolProvider">
+        <parameter id="class"
+            value="de.knowwe.ontology.turtlePimped.LazyURIReferenceCompleteToolProvider" />
+        <parameter id="name" value="LazyURIReferenceToolProvider" />
+        <parameter id="description"
+            value="Offers options to expand a lazy URI Reference." />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="4" />
+        <parameter id="script" value="KnowWE-Plugin-Ontology-MarkupSet.js" />
+        <parameter id="scope" value="LazyURIReference" />
+    </extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
         id="OntologyMarkupInstantEditToolProvider">
@@ -134,6 +148,7 @@
 		<parameter id="scope" value="NamespaceReference" />
 		<parameter id="scope" value="AbbreviationDefinition" />
 		<parameter id="scope" value="AbbreviationReference" />
+		<parameter id="scope" value="LazyURIReference" />
 
 	</extension>
 	

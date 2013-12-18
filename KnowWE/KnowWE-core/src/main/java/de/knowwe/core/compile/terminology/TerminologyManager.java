@@ -200,7 +200,9 @@ public class TerminologyManager {
 			Section<?> termReference,
 			Class<?> termClass,
 			Identifier termIdentifier) {
-
+		
+		if (termIdentifier == null) return;
+		
 		TermLog termLog = termLogManager.getLog(termIdentifier);
 		if (termLog == null) {
 			termLog = new TermLog(web, title);
@@ -213,6 +215,7 @@ public class TerminologyManager {
 	 * Returns whether a term is defined through a TermDefinition.
 	 */
 	public boolean isDefinedTerm(Identifier termIdentifier) {
+		if (termIdentifier == null) return false;
 		TermLog termRef = termLogManager.getLog(termIdentifier);
 		if (termRef == null) return false;
 		if (termRef.getDefiningSection() == null) return false;

@@ -18,17 +18,15 @@
  */
 package de.knowwe.ontology.turtlePimped;
 
-import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.ontology.turtlePimped.compile.TurtleCompileHandler;
 
 public class TurtleContent extends AbstractType {
 
 	public TurtleContent() {
 		this.setSectionFinder(new AllTextFinderTrimmed());
 		this.addChildType(new TurtleSentence());
-		this.addSubtreeHandler(Priority.LOW, new TurtleCompileHandler());
+
 	}
 
 

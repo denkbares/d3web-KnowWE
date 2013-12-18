@@ -52,6 +52,7 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 		this.addChildType(new BlankNodeID());
 		this.addChildType(new TurtleLongURI());
 		this.addChildType(createSubjectURIWithDefinition());
+		this.addChildType(new LazyURIReference());
 		setSectionFinder(new FirstWordFinder());
 	}
 
