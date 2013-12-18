@@ -35,9 +35,9 @@ import de.knowwe.core.utils.Patterns;
 import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.ontology.kdom.namespace.AbbreviationPrefixReference;
-import de.knowwe.ontology.kdom.turtle.TurtleSubject;
 import de.knowwe.ontology.turtle.Predicate;
 import de.knowwe.ontology.turtle.PredicateSentence;
+import de.knowwe.ontology.turtle.Subject;
 import de.knowwe.ontology.turtle.TurtleMarkup;
 import de.knowwe.ontology.turtle.TurtleSentence;
 
@@ -238,8 +238,8 @@ public class OntologyUtils {
 			List<Section<TurtleSentence>> sentences =
 					Sections.findSuccessorsOfType(turtle, TurtleSentence.class);
 			for (Section<TurtleSentence> sentence : sentences) {
-				Section<TurtleSubject> otherSubject = Sections.findSuccessor(sentence,
-						TurtleSubject.class);
+				Section<Subject> otherSubject = Sections.findSuccessor(sentence,
+						Subject.class);
 				if (otherSubject == null) continue;
 				if (otherSubject.getText().equals(subject.toString())) {
 					// we found the same subject, so add to result

@@ -22,8 +22,6 @@ import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.ontology.kdom.turtle.TurtleObjectSection;
-import de.knowwe.ontology.kdom.turtle.TurtlePredSentence;
 import de.knowwe.ontology.turtle.PredicateSentence;
 import de.knowwe.ontology.turtle.TurtleSentence;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -723,8 +721,8 @@ public class TurtleWriter {
 				OntologyUtils.findSentence(article, subject, predicate);
 		if (predSentence != null) {
 			// add to the end of the list
-			Section<TurtleObjectSection> last =
-					Sections.findLastSuccessor(predSentence, TurtleObjectSection.class);
+			Section<de.knowwe.ontology.turtle.Object> last =
+					Sections.findLastSuccessor(predSentence, de.knowwe.ontology.turtle.Object.class);
 			if (last != null) {
 				// get indent of predicate
 				String indent = getIndent(predSentence.getOffsetInArticle());
@@ -745,8 +743,8 @@ public class TurtleWriter {
 		// and add the statements there as a new predicate sentence
 		Section<TurtleSentence> subjectSentence = OntologyUtils.findSentence(article, subject);
 		if (subjectSentence != null) {
-			Section<TurtlePredSentence> last =
-					Sections.findLastSuccessor(subjectSentence, TurtlePredSentence.class);
+			Section<PredicateSentence> last =
+					Sections.findLastSuccessor(subjectSentence, PredicateSentence.class);
 			if (last != null) {
 				// get indent of predicate
 				String indent = getIndent(last.getOffsetInArticle());
