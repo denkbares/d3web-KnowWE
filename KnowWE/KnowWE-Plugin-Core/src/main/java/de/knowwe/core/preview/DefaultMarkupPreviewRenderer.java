@@ -8,15 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Scope;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * Default implementation of a {@link PreviewRenderer} that can be applied to
@@ -104,13 +101,12 @@ public class DefaultMarkupPreviewRenderer implements PreviewRenderer {
 
 	@Override
 	public void render(Section<?> section, Collection<Section<?>> relevantSubSections, UserContext user, RenderResult result) {
-		Section<?> parent = getParentSection(section);
 		List<Section<?>> previews = new LinkedList<Section<?>>();
 		// collect all relevant scoped sections plus the matched section
 		for (Entry<Scope, Select> entry : previewItems.entrySet()) {
 			Scope scope = entry.getKey();
 			Select preview = entry.getValue();
-			List<Section<?>> matches = scope.getMatchingSuccessors(parent);
+			List<Section<?>> matches = scope.getMatchingSuccessors(section);
 			switch (preview) {
 
 			case all:
@@ -159,21 +155,6 @@ public class DefaultMarkupPreviewRenderer implements PreviewRenderer {
 	static void renderSections(List<Section<?>> previews, UserContext user, RenderResult result) {
 		Collections.sort(previews);
 		DefaultMarkupRenderer.renderContentSections(previews, user, result);
-	}
-
-	private Section<?> getParentSection(Section<?> section) {
-		if (section.get() instanceof DefaultMarkupType) {
-			return section;
-		}
-		Section<?> parent = Sections.findAncestorOfType(section, DefaultMarkupType.class);
-		if (parent != null) {
-			return parent;
-		}
-		parent = section;
-		while (!(parent.getParent().get() instanceof RootType)) {
-			parent = parent.getParent();
-		}
-		return parent;
 	}
 
 	/**

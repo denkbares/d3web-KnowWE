@@ -143,6 +143,13 @@ public class RenderResult {
 		return this;
 	}
 
+	public RenderResult appendAvoidParagraphs(RenderResult arg0) {
+		String raw = arg0.builder.toString();
+		raw = raw.replaceAll("\n\n", "\n \n");
+		builder.append(raw);
+		return this;
+	}
+
 	public RenderResult append(String arg0) {
 		builder.append(arg0);
 		return this;

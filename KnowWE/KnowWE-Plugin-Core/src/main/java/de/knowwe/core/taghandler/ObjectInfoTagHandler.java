@@ -348,9 +348,14 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		result.appendHtml(": <div class='objectinfo preview ").append(cssClass).appendHtml("'>");
 		result.appendHtml("<div class='objectinfo type_")
 				.append(previewSection.get().getName()).appendHtml("'>");
+
+		// render the preview content part, avoiding double returns
 		PreviewManager previewManager = PreviewManager.getInstance();
 		PreviewRenderer renderer = previewManager.getPreviewRenderer(previewSection);
-		renderer.render(previewSection, relevantSubSections, user, result);
+		RenderResult part = new RenderResult(result);
+		renderer.render(previewSection, relevantSubSections, user, part);
+		result.appendAvoidParagraphs(part);
+
 		result.appendHtml("</div>");
 		result.appendHtml("</div>");
 	}
