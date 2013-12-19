@@ -19,6 +19,7 @@
 package de.knowwe.ontology.kdom;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -79,9 +80,8 @@ public class OntologyUtils {
 	 * @return the article's content, extended with the statements
 	 */
 	public static String addTurtle(Article article, boolean compactMode, Statement... statements) {
-		TurtleWriter writer = new TurtleWriter(article, compactMode);
-		writer.addToArticle(statements);
-		return writer.getResultText();
+		return modifyTurtle(article, compactMode,
+				Arrays.asList(statements), Collections.<Statement> emptyList());
 	}
 
 	/**

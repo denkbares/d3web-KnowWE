@@ -7,12 +7,16 @@ public class TurtlePreviewRenderer extends DefaultMarkupPreviewRenderer {
 
 	public TurtlePreviewRenderer() {
 		// otherwise show at least defined class and relevant properties
-		addPreviewItem(Scope.getScope("TurtleMarkupN3Content/TurtleSentence/TurtleSubjectSection"),
+		addPreviewItem(Scope.getScope("TurtleContent/TurtleSentence/Subject"),
 				Select.all);
-		addPreviewItem(Scope.getScope("TurtleMarkupN3Content/TurtleSentence/TurtlePredSentence"),
+		addPreviewItem(Scope.getScope(
+				"TurtleContent/TurtleSentence/PredicateObjectSentenceList/PredicateSentence"),
 				Select.relevantOrAll);
 
-		addPreviewItem(Scope.getScope("TurtleMarkupN3Content/TurtleSentence/PlainText"),
+		addPreviewItem(Scope.getScope("TurtleContent/TurtleSentence/PlainText"),
+				Select.afterSelected);
+		addPreviewItem(Scope.getScope(
+				"TurtleContent/TurtleSentence/PredicateObjectSentenceList/PlainText"),
 				Select.afterSelected);
 	}
 }

@@ -25,6 +25,7 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.AnchorRenderer;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.ontology.turtle.compile.TurtleCompileHandler;
@@ -41,6 +42,7 @@ public class TurtleSentence extends AbstractType {
 			}
 		});
 
+		this.setRenderer(new AnchorRenderer());
 		this.addChildType(new Subject());
 		this.addChildType(PredicateObjectSentenceList.getInstance());
 

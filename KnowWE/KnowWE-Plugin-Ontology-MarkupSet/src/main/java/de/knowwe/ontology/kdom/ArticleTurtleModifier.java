@@ -561,7 +561,7 @@ public class ArticleTurtleModifier {
 				buffer.setLength(buffer.length() - 1);
 			}
 			// and append new turtle markup
-			buffer.append("\n\n%%TurtlePimped\n");
+			buffer.append("\n\n%%Turtle\n");
 			createTurtle(article.getRootSection(), rest, preferredIndent, buffer);
 			buffer.append(".\n%\n\n");
 		}

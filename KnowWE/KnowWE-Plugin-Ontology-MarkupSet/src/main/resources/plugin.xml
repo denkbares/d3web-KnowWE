@@ -204,7 +204,7 @@
 		<parameter id="description" value="Renders a preview of a turtle ontology markup." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="scope" value="TurtleMarkup/**/TurtleMarkupN3Content" />
+		<parameter id="scope" value="TurtleMarkup/**/TurtleContent/TurtleSentence" />
 	</extension>	
 
 	<extension plugin-id="KnowWE-Plugin-Core" point-id="PreviewRenderer"
