@@ -18,47 +18,6 @@
  */
 package de.knowwe.rdf2go;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.Writer;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.WeakHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.ontoware.aifbcommons.collection.ClosableIterable;
-import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.RDF2Go;
-import org.ontoware.rdf2go.Reasoning;
-import org.ontoware.rdf2go.exception.MalformedQueryException;
-import org.ontoware.rdf2go.exception.ModelRuntimeException;
-import org.ontoware.rdf2go.exception.ReasoningNotSupportedException;
-import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.QueryResultTable;
-import org.ontoware.rdf2go.model.QueryRow;
-import org.ontoware.rdf2go.model.Statement;
-import org.ontoware.rdf2go.model.node.BlankNode;
-import org.ontoware.rdf2go.model.node.Literal;
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.Resource;
-import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.model.node.impl.LanguageTagLiteralImpl;
-import org.ontoware.rdf2go.vocabulary.RDFS;
-
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.strings.Identifier;
@@ -78,6 +37,27 @@ import de.knowwe.event.FullParseEvent;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
+import org.ontoware.aifbcommons.collection.ClosableIterable;
+import org.ontoware.aifbcommons.collection.ClosableIterator;
+import org.ontoware.rdf2go.RDF2Go;
+import org.ontoware.rdf2go.Reasoning;
+import org.ontoware.rdf2go.exception.MalformedQueryException;
+import org.ontoware.rdf2go.exception.ModelRuntimeException;
+import org.ontoware.rdf2go.exception.ReasoningNotSupportedException;
+import org.ontoware.rdf2go.model.*;
+import org.ontoware.rdf2go.model.node.*;
+import org.ontoware.rdf2go.model.node.impl.LanguageTagLiteralImpl;
+import org.ontoware.rdf2go.vocabulary.RDFS;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.Writer;
+import java.net.URLDecoder;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * 
@@ -948,6 +928,14 @@ public class Rdf2GoCore implements EventListener {
 			}
 		}
 	}
+
+    public void readFrom(InputStream in, Syntax syntax) throws IOException {
+        model.readFrom(in, syntax);
+    }
+
+    public void readFrom(Reader in, Syntax syntax) throws IOException {
+        model.readFrom(in, syntax);
+    }
 
 	public void readFrom(InputStream in) throws ModelRuntimeException, IOException {
 		model.readFrom(in);

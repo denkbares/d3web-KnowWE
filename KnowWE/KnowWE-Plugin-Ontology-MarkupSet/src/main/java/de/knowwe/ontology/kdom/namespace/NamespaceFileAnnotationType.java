@@ -18,11 +18,6 @@
  */
 package de.knowwe.ontology.kdom.namespace;
 
-import java.io.IOException;
-import java.util.Collection;
-
-import org.ontoware.rdf2go.exception.ModelRuntimeException;
-
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -38,6 +33,12 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.ontology.kdom.TerminologyHelper;
 import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.utils.Rdf2GoUtils;
+import org.ontoware.rdf2go.exception.ModelRuntimeException;
+import org.ontoware.rdf2go.model.Syntax;
+
+import java.io.IOException;
+import java.util.Collection;
 
 /**
  * 
@@ -92,7 +93,9 @@ public class NamespaceFileAnnotationType extends AbstractType {
 						+ "'"));
 			}
 			try {
-				core.readFrom(attachment.getInputStream());
+                String fileName = attachment.getFileName();
+                Syntax syntax = Rdf2GoUtils.syntaxForFileName(fileName);
+				core.readFrom(attachment.getInputStream(), syntax);
 			}
 			catch (ModelRuntimeException e) {
 				return Messages.asList(Messages.error("Error while importing ontology from '"

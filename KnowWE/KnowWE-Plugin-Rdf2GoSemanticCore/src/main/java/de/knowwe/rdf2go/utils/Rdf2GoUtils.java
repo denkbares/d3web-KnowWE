@@ -19,15 +19,12 @@
  */
 package de.knowwe.rdf2go.utils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
+import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.Rdf2GoCore.Rdf2GoReasoning;
 import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.Literal;
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
@@ -35,10 +32,13 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.util.RDFTool;
 import org.ontoware.rdf2go.vocabulary.RDFS;
 
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
-import de.knowwe.rdf2go.Rdf2GoCore;
-import de.knowwe.rdf2go.Rdf2GoCore.Rdf2GoReasoning;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Rdf2GoUtils {
 
@@ -275,5 +275,14 @@ public class Rdf2GoUtils {
 		}
 		return externalForm;
 	}
+
+    public static Syntax syntaxForFileName(String fileName) {
+        for (Syntax syntax : Syntax.collection()) {
+            if (fileName.toLowerCase().endsWith(syntax.getFilenameExtension())) {
+                return syntax;
+            }
+        }
+        return null;
+    }
 
 }
