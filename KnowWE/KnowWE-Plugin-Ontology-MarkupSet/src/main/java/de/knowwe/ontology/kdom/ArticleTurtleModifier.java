@@ -38,6 +38,7 @@ import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.PlainLiteral;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
+import org.openrdf.rio.turtle.TurtleWriter;
 
 import de.d3web.strings.Strings;
 import de.d3web.utils.EqualsUtils;
@@ -114,6 +115,7 @@ public class ArticleTurtleModifier {
 	/*
 	 * Statements to be modified
 	 */
+	private final Rdf2GoCore core;
 	private final List<Statement> insertStatements = new LinkedList<Statement>();
 	private final List<Statement> deleteStatements = new LinkedList<Statement>();
 
@@ -121,11 +123,10 @@ public class ArticleTurtleModifier {
 	 * Some fields required for traversing the tree to create the resulting wiki
 	 * text
 	 */
+	private transient StringBuilder buffer = null;
 	private final transient List<AddedStatement> objectsToAdd = new LinkedList<AddedStatement>();
 	private final transient Set<Section<Object>> objectsToRemove = new HashSet<Section<Object>>();
 	private final transient List<Statement> ignoredStatements = new LinkedList<Statement>();
-	private transient StringBuilder buffer = null;
-	private final Rdf2GoCore core;
 
 	/**
 	 * Creates a new {@link TurtleWriter} to modify the turtle statements of the
@@ -202,6 +203,20 @@ public class ArticleTurtleModifier {
 		this.article = article;
 		this.compactMode = compactMode;
 		this.preferredIndent = preferredIndent;
+	}
+
+	/**
+	 * Adds all the statements to be inserted and to be deleted from the
+	 * specified turtle modifier to this modifier. The specified modifier
+	 * remains unchanged.
+	 * 
+	 * @created 20.12.2013
+	 * @param other the turtle modifier to add all statements from
+	 */
+	public void addAll(ArticleTurtleModifier other) {
+		insertStatements.addAll(other.insertStatements);
+		deleteStatements.addAll(other.deleteStatements);
+		invalidate();
 	}
 
 	/**

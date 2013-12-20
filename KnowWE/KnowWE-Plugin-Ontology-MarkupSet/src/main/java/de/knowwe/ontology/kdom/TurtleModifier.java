@@ -50,9 +50,6 @@ import de.knowwe.rdf2go.Rdf2GoCore;
  */
 public class TurtleModifier {
 
-	// private static List<TurtleModifier> pending = new
-	// LinkedList<TurtleModifier>();
-
 	private final Rdf2GoCore core;
 	private final boolean compactMode;
 	private final String preferredIndent;
@@ -118,6 +115,40 @@ public class TurtleModifier {
 		this.core = core;
 		this.compactMode = compactMode;
 		this.preferredIndent = preferredIndent;
+	}
+
+	/**
+	 * Creates a new turtle modifier as a (deep) copy of the specified modifier.
+	 * 
+	 * @param modifier the turtle modifier to be copied
+	 */
+	public TurtleModifier(TurtleModifier modifier) {
+		this(modifier.core, modifier.compactMode, modifier.preferredIndent);
+		addAll(modifier);
+	}
+
+	/**
+	 * Returns the core used by this turtle modifier.
+	 * 
+	 * @created 20.12.2013
+	 * @return the core of this modifier
+	 */
+	public Rdf2GoCore getCore() {
+		return core;
+	}
+
+	/**
+	 * Adds all the statements to be inserted and to be deleted from the
+	 * specified turtle modifier to this modifier. The specified modifier
+	 * remains unchanged.
+	 * 
+	 * @created 20.12.2013
+	 * @param other the turtle modifier to add all statements from
+	 */
+	public void addAll(TurtleModifier other) {
+		for (ArticleTurtleModifier modifier : other.modifiers.values()) {
+			getModifier(modifier.getArticle()).addAll(modifier);
+		}
 	}
 
 	/**

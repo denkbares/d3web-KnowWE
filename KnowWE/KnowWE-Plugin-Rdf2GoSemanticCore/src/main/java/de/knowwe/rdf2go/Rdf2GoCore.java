@@ -184,35 +184,17 @@ public class Rdf2GoCore implements EventListener {
 	 */
 	public static Rdf2GoCore getInstance() {
 		if (globaleInstance == null) {
-			globaleInstance = new Rdf2GoCore();
+			globaleInstance = new Rdf2GoCore(Environment.DEFAULT_WEB);
 			globaleInstance.init();
 		}
 		return globaleInstance;
-	}
-
-	/**
-	 * Returns the title of the compiling master article of this core
-	 * 
-	 * @created 13.11.2013
-	 * @param core
-	 * @return
-	 */
-	public static String getMaster(Rdf2GoCore core, String web) {
-		Set<Entry<String, Rdf2GoCore>> entrySet = instances.entrySet();
-		for (Entry<String, Rdf2GoCore> entry : entrySet) {
-			if (entry.getValue().equals(core)) {
-				String articleIdentifier = entry.getKey();
-				return articleIdentifier.substring(web.length() + 1);
-			}
-		}
-		return null;
 	}
 
 	public static Rdf2GoCore getInstance(String web, String master) {
 		String coreId = getCoreId(web, master);
 		Rdf2GoCore instance = instances.get(coreId);
 		if (instance == null) {
-			instance = new Rdf2GoCore();
+			instance = new Rdf2GoCore(web);
 			instance.init();
 			instances.put(coreId, instance);
 		}
@@ -251,6 +233,7 @@ public class Rdf2GoCore implements EventListener {
 
 	private final String bns;
 	private final String lns;
+	private final String web;
 
 	private org.ontoware.rdf2go.model.Model model;
 	private Rdf2GoModel modelType = Rdf2GoModel.SESAME;
@@ -288,16 +271,48 @@ public class Rdf2GoCore implements EventListener {
 
 	private boolean addedStatements = false;
 
-	public Rdf2GoCore() {
+	public Rdf2GoCore(String web) {
+		this.web = web;
 		this.bns = "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#";
 		this.lns = Environment.getInstance().getWikiConnector().getBaseUrl()
 				+ "Wiki.jsp?page=";
 	}
 
-	public Rdf2GoCore(String lns, Model model) {
+	public Rdf2GoCore(String web, String lns, Model model) {
+		this.web = web;
 		this.bns = "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#";
 		this.lns = lns;
 		this.model = model;
+	}
+
+	/**
+	 * Returns the title of the compiling master article of this core.
+	 * 
+	 * @created 13.11.2013
+	 * @return the name of the master article
+	 */
+	public Article getMaster() {
+		String id = getID();
+		if (id == null) return null;
+		String title = id.substring(web.length() + 1);
+		return Environment.getInstance().getArticle(web, title);
+	}
+
+	/**
+	 * Returns the unique id of this core. The method returns null for the
+	 * global instance.
+	 * 
+	 * @created 13.11.2013
+	 * @return the id of this core
+	 */
+	public String getID() {
+		Set<Entry<String, Rdf2GoCore>> entrySet = instances.entrySet();
+		for (Entry<String, Rdf2GoCore> entry : entrySet) {
+			if (entry.getValue().equals(this)) {
+				return entry.getKey();
+			}
+		}
+		return null;
 	}
 
 	/**

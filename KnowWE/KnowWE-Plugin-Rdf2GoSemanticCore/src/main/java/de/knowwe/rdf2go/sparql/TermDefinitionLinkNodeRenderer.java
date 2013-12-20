@@ -20,9 +20,8 @@ public class TermDefinitionLinkNodeRenderer implements SparqlResultNodeRenderer 
 			split[i] = Strings.decodeURL(split[i]);
 		}
 		Identifier identifier = new Identifier(split);
+		String master = core.getMaster().getTitle();
 
-		String master = Rdf2GoCore.getMaster(core, Environment.DEFAULT_WEB);
-		
 		TerminologyManager manager = Environment.getInstance().getTerminologyManager(
 				Environment.DEFAULT_WEB, master);
 		Section<?> termDefiningSection = manager.getTermDefiningSection(identifier);
