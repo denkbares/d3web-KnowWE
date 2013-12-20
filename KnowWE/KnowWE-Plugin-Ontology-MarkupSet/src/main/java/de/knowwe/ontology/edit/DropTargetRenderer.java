@@ -1,4 +1,4 @@
-package de.knowwe.ontology.turtle;
+package de.knowwe.ontology.edit;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;

@@ -29,6 +29,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.kdom.renderer.CompositeRenderer;
+import de.knowwe.ontology.edit.DropTargetRenderer;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.URIProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;

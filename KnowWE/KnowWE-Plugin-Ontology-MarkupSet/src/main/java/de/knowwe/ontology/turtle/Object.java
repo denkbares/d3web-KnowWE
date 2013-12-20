@@ -57,7 +57,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 
 			@Override
 			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-				return SectionFinderResult.createResultList(Strings.splitUnquoted(text, ",", true,
+				return SectionFinderResult.createResultList(Strings.splitUnquoted(text, ",", false,
 						TurtleMarkup.TURTLE_QUOTES));
 			}
 		});

@@ -28,6 +28,36 @@
 		<parameter id="scope" value="root" />
 	</extension>
 	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="CorrectionToolProvider">
+		<parameter id="class"
+			value="de.knowwe.core.correction.CorrectionToolProvider" />
+		<parameter id="name" value="CorrectionToolProvider" />
+		<parameter id="description"
+			value="Offers to quickly correct typos in term references." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="ResourceReference" />
+		<parameter id="scope" value="TurtleURI" />
+		<parameter id="scope" value="**/ResourceReference" />
+		<parameter id="scope" value="**/TurtleURI" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CorrectionProvider"
+		id="URITermCorrectionToolProvider">
+		<parameter id="class"
+			value="de.knowwe.ontology.edit.URITermCorrectionProvider" />
+		<parameter id="name" value="URITermCorrectionToolProvider" />
+		<parameter id="description"
+			value="Offers to quickly correct typos in term references." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="ResourceReference" />
+		<parameter id="scope" value="TurtleURI" />
+		<parameter id="scope" value="**/ResourceReference" />
+		<parameter id="scope" value="**/TurtleURI" />
+	</extension>
+	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="ClassType">
 		<parameter id="class"
