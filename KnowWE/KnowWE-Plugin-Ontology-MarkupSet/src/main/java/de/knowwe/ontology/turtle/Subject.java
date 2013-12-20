@@ -35,10 +35,12 @@ import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.renderer.CompositeRenderer;
 import de.knowwe.ontology.kdom.resource.ResourceReference;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.ResourceProvider;
@@ -53,6 +55,10 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 		this.addChildType(createSubjectURIWithDefinition());
 		this.addChildType(new LazyURIReference());
 		setSectionFinder(new FirstWordFinder());
+
+		this.setRenderer(new CompositeRenderer(DelegateRenderer.getInstance(),
+				new DropTargetRenderer()));
+
 	}
 
 	private Type createSubjectURIWithDefinition() {

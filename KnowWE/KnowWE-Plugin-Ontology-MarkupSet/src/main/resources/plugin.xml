@@ -236,5 +236,15 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="IndividualType" />
 	</extension>	
+	
+	<extension plugin-id="KnowWE-Plugin-Core" point-id="Renderer"
+		id="PredicateDropableRenderer">
+		<parameter id="class" value="de.knowwe.ontology.kdom.preview.IndividualPreviewRenderer" />
+		<parameter id="name" value="IndividualPreviewRenderer" />
+		<parameter id="description" value="Renders a preview of an individual ontology markup." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="IndividualType" />
+	</extension>	
 		
 </plugin>

@@ -27,6 +27,8 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.DelegateRenderer;
+import de.knowwe.kdom.renderer.CompositeRenderer;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.URIProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -39,7 +41,11 @@ public class Predicate extends AbstractType implements URIProvider<Predicate> {
 		this.addChildType(new TurtleLongURI());
 		this.addChildType(new TurtleURI());
 		this.addChildType(new LazyURIReference());
+
+		this.setRenderer(new CompositeRenderer(DelegateRenderer.getInstance(),
+				new DropTargetRenderer()));
 	}
+
 
 	@Override
 	@SuppressWarnings({
