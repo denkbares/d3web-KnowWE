@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
+import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
@@ -114,43 +115,48 @@ public class DelegateRenderer implements Renderer {
 
 		boolean renderedAny = false;
 		// Render errors post
-		Map<String, Collection<Message>> errors = Messages.getMessages(subSection,
+		Map<Compiler, Collection<Message>> errors = Messages.getMessagesMap(
+				subSection,
 				Message.Type.ERROR);
-		for (Entry<String, Collection<Message>> entry : errors.entrySet()) {
+		for (Entry<Compiler, Collection<Message>> entry : errors.entrySet()) {
 			for (Message kdomNotice : entry.getValue()) {
 				MessageRenderer errorRenderer = subSection.get().getMessageRenderer(
 						Message.Type.ERROR);
 				if (errorRenderer != null) {
 					renderedAny = true;
-					errorRenderer.postRenderMessage(kdomNotice, user, entry.getKey(), builder);
+					errorRenderer.postRenderMessage(kdomNotice, user, entry.getKey(),
+							builder);
 				}
 			}
 		}
 
 		// Render notices post
-		Map<String, Collection<Message>> notices = Messages
-				.getMessages(subSection, Message.Type.INFO);
-		for (Entry<String, Collection<Message>> entry : notices.entrySet()) {
+		Map<Compiler, Collection<Message>> notices = Messages
+				.getMessagesMap(subSection, Message.Type.INFO);
+		for (Entry<Compiler, Collection<Message>> entry : notices.entrySet()) {
 			for (Message kdomNotice : entry.getValue()) {
 				MessageRenderer noticeRenderer = subSection.get().getMessageRenderer(
 						Message.Type.INFO);
 				if (noticeRenderer != null) {
 					renderedAny = true;
-					noticeRenderer.postRenderMessage(kdomNotice, user, entry.getKey(), builder);
+					noticeRenderer.postRenderMessage(kdomNotice, user, entry.getKey(),
+							builder);
 				}
 			}
 		}
 
 		// Render warnings post
-		Map<String, Collection<Message>> warnings = Messages.getMessages(subSection,
+		Map<Compiler, Collection<Message>> warnings = Messages.getMessagesMap(
+				subSection,
 				Message.Type.WARNING);
-		for (Entry<String, Collection<Message>> entry : warnings.entrySet()) {
+		for (Entry<Compiler, Collection<Message>> entry : warnings.entrySet()) {
 			for (Message kdomWarning : entry.getValue()) {
 				MessageRenderer warningRenderer = subSection.get().getMessageRenderer(
 						Message.Type.WARNING);
 				if (warningRenderer != null) {
 					renderedAny = true;
-					warningRenderer.postRenderMessage(kdomWarning, user, entry.getKey(), builder);
+					warningRenderer.postRenderMessage(kdomWarning, user, entry.getKey(),
+							builder);
 				}
 			}
 		}
@@ -162,9 +168,9 @@ public class DelegateRenderer implements Renderer {
 
 	private void renderMessagesPre(Section<?> subSection, UserContext user, RenderResult builder) {
 		// Render warnings pre
-		Map<String, Collection<Message>> warnings = Messages.getMessages(
+		Map<Compiler, Collection<Message>> warnings = Messages.getMessagesMap(
 				subSection, Message.Type.WARNING);
-		for (Entry<String, Collection<Message>> entry : warnings.entrySet()) {
+		for (Entry<Compiler, Collection<Message>> entry : warnings.entrySet()) {
 			for (Message kdomWarning : entry.getValue()) {
 				MessageRenderer warningRenderer = subSection.get()
 						.getMessageRenderer(Message.Type.WARNING);
@@ -176,9 +182,9 @@ public class DelegateRenderer implements Renderer {
 		}
 
 		// Render notices pre
-		Map<String, Collection<Message>> notices = Messages
-				.getMessages(subSection, Message.Type.INFO);
-		for (Entry<String, Collection<Message>> entry : notices.entrySet()) {
+		Map<Compiler, Collection<Message>> notices = Messages
+				.getMessagesMap(subSection, Message.Type.INFO);
+		for (Entry<Compiler, Collection<Message>> entry : notices.entrySet()) {
 			for (Message kdomNotice : entry.getValue()) {
 				MessageRenderer noticeRenderer = subSection.get()
 						.getMessageRenderer(Message.Type.INFO);
@@ -190,9 +196,10 @@ public class DelegateRenderer implements Renderer {
 		}
 
 		// Render errors pre
-		Map<String, Collection<Message>> errors = Messages.getMessages(subSection,
+		Map<Compiler, Collection<Message>> errors = Messages.getMessagesMap(
+				subSection,
 				Message.Type.ERROR);
-		for (Entry<String, Collection<Message>> entry : errors.entrySet()) {
+		for (Entry<Compiler, Collection<Message>> entry : errors.entrySet()) {
 			for (Message kdomNotice : entry.getValue()) {
 				MessageRenderer errorRenderer = subSection.get()
 						.getMessageRenderer(Message.Type.ERROR);

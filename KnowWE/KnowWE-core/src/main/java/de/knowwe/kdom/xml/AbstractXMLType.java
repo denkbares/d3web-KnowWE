@@ -24,19 +24,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import de.knowwe.core.Environment;
-import de.knowwe.core.compile.ConstraintModule;
-import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.Message;
-import de.knowwe.core.utils.KnowWEUtils;
 
 public class AbstractXMLType extends AbstractType {
 
@@ -61,7 +54,7 @@ public class AbstractXMLType extends AbstractType {
 
 	@SuppressWarnings("unchecked")
 	public static Map<String, String> getAttributeMapFor(Section<?> s) {
-		return (Map<String, String>) KnowWEUtils.getStoredObject(null, s,
+		return (Map<String, String>) Compilers.getStoredObject(s,
 				SectionFinderResult.ATTRIBUTE_MAP_STORE_KEY);
 
 	}
@@ -177,46 +170,6 @@ public class AbstractXMLType extends AbstractType {
 
 	public String getXMLTagName() {
 		return xmlTagName;
-	}
-
-	public void registerPackageDefinitionHandler() {
-		this.addSubtreeHandler(Priority.PRECOMPILE_MIDDLE, new RegisterPackageDefinitionHandler());
-	}
-
-	static class RegisterPackageDefinitionHandler extends SubtreeHandler<AbstractXMLType> {
-
-		public RegisterPackageDefinitionHandler() {
-			super(false);
-			this.registerConstraintModule(new IgnorePackageConstraint());
-		}
-
-		@Override
-		public Collection<Message> create(Article article, Section<AbstractXMLType> s) {
-			String value = getAttributeMapFor(s).get(PackageManager.PACKAGE_ATTRIBUTE_NAME);
-			Environment.getInstance().getPackageManager(
-					article.getWeb()).addSectionToPackage(s, value);
-			return null;
-		}
-
-		@Override
-		public void destroy(Article article, Section<AbstractXMLType> s) {
-			Environment.getInstance().getPackageManager(
-					article.getWeb()).removeSectionFromAllPackages(s);
-		}
-
-		private class IgnorePackageConstraint extends ConstraintModule<AbstractXMLType> {
-
-			public IgnorePackageConstraint() {
-				super(Operator.DONT_COMPILE_IF_VIOLATED, Purpose.CREATE_AND_DESTROY);
-			}
-
-			@Override
-			public boolean violatedConstraints(Article article, Section<AbstractXMLType> s) {
-				return !s.get().isPackageCompile();
-			}
-
-		}
-
 	}
 
 }

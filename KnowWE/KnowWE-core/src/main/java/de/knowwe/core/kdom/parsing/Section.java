@@ -23,30 +23,26 @@ package de.knowwe.core.kdom.parsing;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
-import de.knowwe.core.Environment;
-import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.basicType.InjectType;
 import de.knowwe.core.kdom.objects.Term;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.filter.SectionFilter;
 import de.knowwe.kdom.visitor.Visitable;
 import de.knowwe.kdom.visitor.Visitor;
-import de.knowwe.logging.Logging;
 
 /**
  * @author Jochen
@@ -70,9 +66,9 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 
 	private HashSet<String> reusedBy = null;
 
-	@SuppressWarnings("rawtypes")
-	private HashMap<String, HashSet<Class<? extends SubtreeHandler>>> compiledBy = null;
-
+	// @SuppressWarnings("rawtypes")
+	// private HashMap<String, HashSet<Class<? extends SubtreeHandler>>>
+	// compiledBy = null;
 	private List<Integer> position = null;
 
 	private List<Integer> lastPositions = null;
@@ -105,13 +101,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	/**
 	 * Contains the text of this KDOM-node
 	 */
-	private String text;
-
-	/**
-	 * Specifies whether the children of this Section were set through the
-	 * setChildren(List<Section> children) methods.
-	 */
-	protected boolean sharedChildren;
+	protected String text;
 
 	/**
 	 * The child-nodes of this KDOM-node. This forms the tree-structure of KDOM.
@@ -208,14 +198,14 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		if (comp == 0) {
 			List<Integer> thisPos = getPositionInKDOM();
 			List<Integer> otherPos = o.getPositionInKDOM();
-			Iterator<Integer> thisIter = thisPos.iterator();
-			Iterator<Integer> otherIter = otherPos.iterator();
+			ListIterator<Integer> thisIter = thisPos.listIterator(thisPos.size());
+			ListIterator<Integer> otherIter = otherPos.listIterator(otherPos.size());
 
-			while (comp == 0 && thisIter.hasNext() && otherIter.hasNext()) {
-				comp = thisIter.next().compareTo(otherIter.next());
+			while (comp == 0 && thisIter.hasPrevious() && otherIter.hasPrevious()) {
+				comp = thisIter.previous().compareTo(otherIter.previous());
 			}
 			if (comp == 0) {
-				comp = thisPos.size() - otherPos.size();
+				comp = otherPos.size() - thisPos.size();
 			}
 		}
 		return comp;
@@ -230,46 +220,6 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	public void accept(Visitor v) {
 		v.visit(this);
 
-	}
-
-	@SuppressWarnings("unchecked")
-	public Section<InjectType> injectChildren(InjectType injectType) {
-
-		Section<InjectType> injectSection = Section.createSection(
-				text, injectType, this);
-
-		if (!this.get().getChildrenTypes().isEmpty()
-				|| this.getChildren().size() > 1
-				|| (this.getChildren().size() == 1 && !(this.getChildren().get(0).get() instanceof InjectType))) {
-			Messages.storeMessage(null, this, this.getClass(),
-					Messages.error(
-							"Internal error: Tried to inject sections in non-leaf section."));
-			return null;
-		}
-
-		if (this.getChildren().size() == 1 && !this.getChildren().get(0).equalsAsKDOMSubtree(
-				injectSection)) {
-			Messages.storeMessage(null, this, this.getClass(),
-					Messages.error(
-							"Internal error: Multiple diverging section injections."));
-			return (Section<InjectType>) this.getChildren().get(0);
-		}
-
-		Messages.clearMessages(null, this, this.getClass());
-		this.addChild(injectSection);
-
-		return injectSection;
-	}
-
-	public boolean removeInjectedChildren() {
-		if (this.getChildren().size() == 1 && this.getChildren().get(0).get() instanceof InjectType) {
-			Section<?> injectSection = this.getChildren().remove(0);
-			Environment.getInstance().getArticleManager(getWeb()).addAllArticlesToUpdate(
-					injectSection.getReusedBySet());
-			injectSection.clearReusedBySet();
-			return true;
-		}
-		return false;
 	}
 
 	/**
@@ -613,8 +563,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 *        of a wikipage having generated.
 	 */
 	public void collectTextsFromLeaves(StringBuilder buffi, boolean followSharedChildren) {
-		if (!this.getChildren().isEmpty()
-				&& (followSharedChildren ? true : sharedChildren)) {
+		if (!this.getChildren().isEmpty()) {
 			for (Section<?> s : this.getChildren()) {
 				if (s != null) {
 					s.collectTextsFromLeaves(buffi, followSharedChildren);
@@ -643,7 +592,8 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 * has been stored in that subtree.
 	 */
 	public boolean hasMessageInSubtree(Message.Type type) {
-		Map<String, Collection<Message>> errors = Messages.getMessages(this, type);
+		Map<Compiler, Collection<Message>> errors = Messages.getMessagesMap(
+				this, type);
 		if (!errors.isEmpty()) return true;
 		for (Section<?> child : children) {
 			boolean err = child.hasErrorInSubtree();
@@ -659,41 +609,25 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 * messages of the specified type has been stored in that subtree for the
 	 * given article.
 	 */
-	public boolean hasErrorInSubtree(Article article) {
-		return hasMessageInSubtree(article, Message.Type.ERROR);
+	public boolean hasErrorInSubtree(Compiler compiler) {
+		return hasMessageInSubtree(compiler, Message.Type.ERROR);
 	}
 
 	/**
 	 * Method that looks (recursively down) for this section whether some errors
 	 * has been stored in that subtree for the given article.
 	 */
-	public boolean hasMessageInSubtree(Article article, Message.Type type) {
-		Collection<Message> errors = Messages.getMessages(article, this, type);
+	public boolean hasMessageInSubtree(Compiler compiler, Message.Type type) {
+		Collection<Message> errors = Messages.getMessages(compiler, this, type);
 		if (!errors.isEmpty()) return true;
 		for (Section<?> child : children) {
-			boolean err = child.hasErrorInSubtree(article);
+			boolean err = child.hasErrorInSubtree(compiler);
 			if (err) {
 				return true;
 			}
 		}
 
 		return false;
-	}
-
-	/**
-	 * Return whether this Section has children that were set with the
-	 * setChildren(List<Section> children) methods, for example by the
-	 * IncludeManager.
-	 * 
-	 * @created 26.08.2010
-	 * @return
-	 */
-	public boolean hasSharedChildren() {
-		return this.sharedChildren;
-	}
-
-	public void setHasSharedChildren(boolean shared) {
-		this.sharedChildren = shared;
 	}
 
 	public boolean isEmpty() {
@@ -740,52 +674,58 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		}
 	}
 
-	/**
-	 * Checks whether this Section or a successor is not reused. Sections and
-	 * successors with a Type contained in the Set of classes will be ignored.
-	 * 
-	 * @created 10.07.2010
-	 * @param title is the article, for which to check.
-	 * @param filteredTypes if this Section has one of the filtered types, false
-	 *        is returned.
-	 * @return a boolean with the result of the check
-	 */
-	public boolean isOrHasChangedSuccessor(String title, Collection<Class<? extends Type>> filteredTypes) {
-		if (isChanged(title, filteredTypes)) {
-			return true;
-		}
-		else {
-			for (Section<?> child : this.getChildren()) {
-				if (child.isOrHasChangedSuccessor(title, filteredTypes)) return true;
-			}
-			return false;
-		}
-	}
+	//
+	// /**
+	// * Checks whether this Section or a successor is not reused. Sections and
+	// * successors with a Type contained in the Set of classes will be ignored.
+	// *
+	// * @created 10.07.2010
+	// * @param title is the article, for which to check.
+	// * @param filteredTypes if this Section has one of the filtered types,
+	// false
+	// * is returned.
+	// * @return a boolean with the result of the check
+	// */
+	// public boolean isOrHasChangedSuccessor(String title, Collection<Class<?
+	// extends Type>> filteredTypes) {
+	// if (isChanged(title, filteredTypes)) {
+	// return true;
+	// }
+	// else {
+	// for (Section<?> child : this.getChildren()) {
+	// if (child.isOrHasChangedSuccessor(title, filteredTypes)) return true;
+	// }
+	// return false;
+	// }
+	// }
 
-	/**
-	 * Checks, whether this Section has changed since the last version of the
-	 * article.
-	 * 
-	 * @created 08.12.2010
-	 * @param title is the article, for which to check.
-	 * @param filteredTypes if this Section has one of the filtered types, false
-	 *        is returned.
-	 * @return a boolean with the result of the check
-	 */
-	public boolean isChanged(String title, Collection<Class<? extends Type>> filteredTypes) {
-		if (filteredTypes != null) {
-			for (Class<?> c : filteredTypes) {
-				if (c.isAssignableFrom(type.getClass())) {
-					return false;
-				}
-			}
-		}
-		if (!isReusedBy(title) || (type.isOrderSensitive() && hasPositionChanged())) {
-			return true;
-		}
-		return false;
-	}
-
+	// /**
+	// * Checks, whether this Section has changed since the last version of the
+	// * article.
+	// *
+	// * @created 08.12.2010
+	// * @param title is the article, for which to check.
+	// * @param filteredTypes if this Section has one of the filtered types,
+	// false
+	// * is returned.
+	// * @return a boolean with the result of the check
+	// */
+	// public boolean isChanged(String title, Collection<Class<? extends Type>>
+	// filteredTypes) {
+	// if (filteredTypes != null) {
+	// for (Class<?> c : filteredTypes) {
+	// if (c.isAssignableFrom(type.getClass())) {
+	// return false;
+	// }
+	// }
+	// }
+	// if (!isReusedBy(title) || (type.isOrderSensitive() &&
+	// hasPositionChanged())) {
+	// return true;
+	// }
+	// return false;
+	// }
+	//
 	public void setReusedBy(String title, boolean reused) {
 		if (reused) {
 			if (reusedBy == null) reusedBy = new HashSet<String>(4);
@@ -806,18 +746,6 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 			child.setReusedByRecursively(title, reused);
 		}
 	}
-
-	/**
-	 * Sets all compiled states to false. This method does not affect includes.
-	 */
-	// public void clearCompiledRecursively() {
-	// this.compiledBy = null;
-	// for (Section<? extends Type> child : getChildren()) {
-	// if (child.getTitle().equals(getTitle())) {
-	// child.clearCompiledRecursively();
-	// }
-	// }
-	// }
 
 	public void clearReusedBySet() {
 		this.reusedBy = null;
@@ -865,75 +793,78 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
-	public boolean isCompiledBy(String title, SubtreeHandler handler) {
-		if (compiledBy == null) return false;
-		HashSet<Class<? extends SubtreeHandler>> compiledByHandlerSet =
-				compiledBy.get(title);
-		if (compiledByHandlerSet == null) return false;
-		return compiledByHandlerSet.contains(handler.getClass());
-	}
+	//
+	// @SuppressWarnings("rawtypes")
+	// public boolean isCompiledBy(String title, SubtreeHandler handler) {
+	// if (compiledBy == null) return false;
+	// HashSet<Class<? extends SubtreeHandler>> compiledByHandlerSet =
+	// compiledBy.get(title);
+	// if (compiledByHandlerSet == null) return false;
+	// return compiledByHandlerSet.contains(handler.getClass());
+	// }
+	//
+	// public boolean isCompiledBy(String title) {
+	// if (compiledBy == null) return false;
+	// return compiledBy.containsKey(title);
+	// }
+	//
+	// @SuppressWarnings("rawtypes")
+	// public Map<String, HashSet<Class<? extends SubtreeHandler>>>
+	// getCompiledByMap() {
+	// return compiledBy == null
+	// ? Collections.unmodifiableMap(
+	// new HashMap<String, HashSet<Class<? extends SubtreeHandler>>>(
+	// 0))
+	// : Collections.unmodifiableMap(compiledBy);
+	// }
+	//
+	// @SuppressWarnings("rawtypes")
+	// public void setCompiledBy(String title, SubtreeHandler handler, boolean
+	// compiled) {
+	// if (compiled) {
+	// if (compiledBy == null) {
+	// compiledBy = new HashMap<String, HashSet<Class<? extends
+	// SubtreeHandler>>>(4);
+	// }
+	// HashSet<Class<? extends SubtreeHandler>> reusedByArticleSet =
+	// compiledBy.get(title);
+	// if (reusedByArticleSet == null) {
+	// reusedByArticleSet = new HashSet<Class<? extends SubtreeHandler>>(4);
+	// compiledBy.put(title, reusedByArticleSet);
+	// }
+	// reusedByArticleSet.add(handler.getClass());
+	// }
+	// else {
+	// if (compiledBy != null) {
+	// HashSet<Class<? extends SubtreeHandler>> compiledByHandlerSet =
+	// compiledBy.get(title);
+	// if (compiledByHandlerSet != null) {
+	// compiledByHandlerSet.remove(handler.getClass());
+	// if (compiledByHandlerSet.isEmpty()) compiledBy.remove(title);
+	// }
+	// }
+	// }
+	// }
+	//
+	// public void setNotCompiledBy(String title) {
+	// if (compiledBy != null) compiledBy.remove(title);
+	// }
+	//
+	// /**
+	// * Affects all Sections this Section is connected to (also included
+	// * Sections).
+	// */
+	// public void setNotCompiledByRecursively(String title) {
+	// setNotCompiledBy(title);
+	// for (Section<? extends Type> child : getChildren()) {
+	// child.setNotCompiledByRecursively(title);
+	// }
+	// }
 
-	public boolean isCompiledBy(String title) {
-		if (compiledBy == null) return false;
-		return compiledBy.containsKey(title);
-	}
-
-	@SuppressWarnings("rawtypes")
-	public Map<String, HashSet<Class<? extends SubtreeHandler>>> getCompiledByMap() {
-		return compiledBy == null
-				? Collections.unmodifiableMap(
-						new HashMap<String, HashSet<Class<? extends SubtreeHandler>>>(
-								0))
-				: Collections.unmodifiableMap(compiledBy);
-	}
-
-	@SuppressWarnings("rawtypes")
-	public void setCompiledBy(String title, SubtreeHandler handler, boolean compiled) {
-		if (compiled) {
-			if (compiledBy == null) {
-				compiledBy = new HashMap<String, HashSet<Class<? extends
-						SubtreeHandler>>>(4);
-			}
-			HashSet<Class<? extends SubtreeHandler>> reusedByArticleSet =
-					compiledBy.get(title);
-			if (reusedByArticleSet == null) {
-				reusedByArticleSet = new HashSet<Class<? extends SubtreeHandler>>(4);
-				compiledBy.put(title, reusedByArticleSet);
-			}
-			reusedByArticleSet.add(handler.getClass());
-		}
-		else {
-			if (compiledBy != null) {
-				HashSet<Class<? extends SubtreeHandler>> compiledByHandlerSet =
-						compiledBy.get(title);
-				if (compiledByHandlerSet != null) {
-					compiledByHandlerSet.remove(handler.getClass());
-					if (compiledByHandlerSet.isEmpty()) compiledBy.remove(title);
-				}
-			}
-		}
-	}
-
-	public void setNotCompiledBy(String title) {
-		if (compiledBy != null) compiledBy.remove(title);
-	}
-
-	/**
-	 * Affects all Sections this Section is connected to (also included
-	 * Sections).
-	 */
-	public void setNotCompiledByRecursively(String title) {
-		setNotCompiledBy(title);
-		for (Section<? extends Type> child : getChildren()) {
-			child.setNotCompiledByRecursively(title);
-		}
-	}
-
-	public boolean hasPositionChanged() {
-		if (lastPositions == null) return false;
-		return !lastPositions.equals(getPositionInKDOM());
-	}
+	// public boolean hasPositionChanged() {
+	// if (lastPositions == null) return false;
+	// return !lastPositions.equals(getPositionInKDOM());
+	// }
 
 	protected void clearPositionInKDOM() {
 		position = null;
@@ -951,7 +882,8 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	public List<Integer> getLastPositionInKDOM() {
-		return lastPositions == null ? null : Collections.unmodifiableList(lastPositions);
+		return lastPositions == null ? null :
+				Collections.unmodifiableList(lastPositions);
 	}
 
 	public List<Integer> calcPositionInKDOM() {
@@ -1003,145 +935,149 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		return -1;
 	}
 
-	private boolean isMatchingPackageName(Article article, SubtreeHandler<?> h) {
+	// private boolean isMatchingPackageName(Article article, SubtreeHandler<?>
+	// h) {
+	//
+	// // ignore: compile always but only for the article of this section
+	// if (!h.isPackageCompile() || !type.isPackageCompile()) {
+	// return article.getTitle().equals(getTitle());
+	// }
+	// // auto: compile always
+	// else if (PackageManager.isAutocompileArticleEnabled()) {
+	// return true;
+	// }
+	// else {
+	// Set<String> referencedPackages =
+	// Environment.getInstance().getPackageManager(
+	// article.getWeb()).getCompiledPackages(article.getTitle());
+	//
+	// if (referencedPackages.contains(PackageManager.THIS)) return true;
+	//
+	// for (String name : getPackageNames()) {
+	// if (referencedPackages.contains(name)) return true;
+	// }
+	// return false;
+	// }
+	// }
+	//
+	// /*
+	// * (non-Javadoc)
+	// *
+	// * Templates aren't working for us here, since getSubtreeHandlers() can
+	// not
+	// * have any knowledge of the template T specified by the Section =>
+	// * SuppressWarning...
+	// *
+	// * @see SubtreeHandler#create(Article, Section)
+	// */
+	// public final void letSubtreeHandlersCreate(Article article, Priority p) {
+	// List<SubtreeHandler<? extends Type>> handlerList =
+	// type.getSubtreeHandlers().get(
+	// p);
+	// if (handlerList != null) {
+	// for (@SuppressWarnings("rawtypes")
+	// SubtreeHandler handler : handlerList) {
+	// if (handler != null) letSubtreeHandlerCreate(article, handler);
+	// }
+	// }
+	//
+	// }
 
-		// ignore: compile always but only for the article of this section
-		if (!h.isPackageCompile() || !type.isPackageCompile()) {
-			return article.getTitle().equals(getTitle());
-		}
-		// auto: compile always
-		else if (PackageManager.isAutocompileArticleEnabled()) {
-			return true;
-		}
-		else {
-			Set<String> referencedPackages = Environment.getInstance().getPackageManager(
-					article.getWeb()).getCompiledPackages(article.getTitle());
-
-			if (referencedPackages.contains(PackageManager.THIS)) return true;
-
-			for (String name : getPackageNames()) {
-				if (referencedPackages.contains(name)) return true;
-			}
-			return false;
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * Templates aren't working for us here, since getSubtreeHandlers() can not
-	 * have any knowledge of the template T specified by the Section =>
-	 * SuppressWarning...
-	 * 
-	 * @see SubtreeHandler#create(Article, Section)
-	 */
-	public final void letSubtreeHandlersCreate(Article article, Priority p) {
-		List<SubtreeHandler<? extends Type>> handlerList = type.getSubtreeHandlers().get(
-				p);
-		if (handlerList != null) {
-			for (@SuppressWarnings("rawtypes")
-			SubtreeHandler handler : handlerList) {
-				if (handler != null) letSubtreeHandlerCreate(article, handler);
-			}
-		}
-
-	}
-
-	@SuppressWarnings({
-			"unchecked", "rawtypes" })
-	public final void letSubtreeHandlerCreate(Article article, SubtreeHandler handler) {
-		if (handler.needsToCreate(article, this)
-				&& isMatchingPackageName(article, handler)) {
-			try {
-				// long time = System.currentTimeMillis();
-				Collection<Message> msgs = handler.create(article, this);
-				Messages.storeMessages(article, this, handler.getClass(), msgs);
-				setCompiledBy(article.getTitle(), handler, true);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				String text = "Unexpected internal error in subtree handler '"
-						+ handler.getClass().getName()
-						+ "' while creating for '" + get().getClass().getSimpleName()
-						+ "' section '"
-						+ getID() + "' in article '"
-						+ getTitle() + "': " + e.toString();
-				Message msg = Messages.error(text);
-
-				Logging.getInstance().severe(text);
-				Messages.storeMessage(getArticle(), this, getClass(), msg);
-
-			}
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * Templates aren't working for us here, since getSubtreeHandlers() can not
-	 * have any knowledge of the template T specified by the Section =>
-	 * SuppressWarning...
-	 * 
-	 * @see SubtreeHandler#destroy(Article, Section)
-	 */
-	public final void letSubtreeHandlersDestroy(Article article, Priority p) {
-		List<SubtreeHandler<? extends Type>> handlerList =
-				type.getSubtreeHandlers().get(p);
-		if (handlerList != null) {
-			for (@SuppressWarnings("rawtypes")
-			SubtreeHandler handler : handlerList) {
-				if (handler != null) letSubtreeHandlerDestroy(article, handler);
-			}
-		}
-
-	}
-
-	@SuppressWarnings({
-			"unchecked", "rawtypes" })
-	public final void letSubtreeHandlerDestroy(Article article, SubtreeHandler handler) {
-		if (handler.needsToDestroy(article, this)) {
-			try {
-				handler.destroy(article, this);
-				setCompiledBy(article.getTitle(), handler, false);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				Logging.getInstance().severe(
-						"Unexpected internal error in subtree handler '" + handler
-								+ "' while destroying for section '" + getID() + "' in article '"
-								+ getTitle() + "': " + e.toString());
-
-			}
-		}
-	}
+	// @SuppressWarnings({
+	// "unchecked", "rawtypes" })
+	// public final void letSubtreeHandlerCreate(Article article, SubtreeHandler
+	// handler) {
+	// if (handler.needsToCreate(article, this)
+	// && isMatchingPackageName(article, handler)) {
+	// try {
+	// // long time = System.currentTimeMillis();
+	// Collection<Message> msgs = handler.create(article, this);
+	// Messages.storeMessages(article, this, handler.getClass(), msgs);
+	// setCompiledBy(article.getTitle(), handler, true);
+	// }
+	// catch (Exception e) {
+	// e.printStackTrace();
+	// String text = "Unexpected internal error in subtree handler '"
+	// + handler.getClass().getName()
+	// + "' while creating for '" + get().getClass().getSimpleName()
+	// + "' section '"
+	// + getID() + "' in article '"
+	// + getTitle() + "': " + e.toString();
+	// Message msg = Messages.error(text);
+	//
+	// Logging.getInstance().severe(text);
+	// Messages.storeMessage(getArticle(), this, getClass(), msg);
+	//
+	// }
+	// }
+	// }
+	//
+	// /*
+	// * (non-Javadoc)
+	// *
+	// * Templates aren't working for us here, since getSubtreeHandlers() can
+	// not
+	// * have any knowledge of the template T specified by the Section =>
+	// * SuppressWarning...
+	// *
+	// * @see SubtreeHandler#destroy(Article, Section)
+	// */
+	// public final void letSubtreeHandlersDestroy(Article article, Priority p)
+	// {
+	// List<SubtreeHandler<? extends Type>> handlerList =
+	// type.getSubtreeHandlers().get(p);
+	// if (handlerList != null) {
+	// for (@SuppressWarnings("rawtypes")
+	// SubtreeHandler handler : handlerList) {
+	// if (handler != null) letSubtreeHandlerDestroy(article, handler);
+	// }
+	// }
+	//
+	// }
+	//
+	// @SuppressWarnings({
+	// "unchecked", "rawtypes" })
+	// public final void letSubtreeHandlerDestroy(Article article,
+	// SubtreeHandler handler) {
+	// if (handler.needsToDestroy(article, this)) {
+	// try {
+	// handler.destroy(article, this);
+	// setCompiledBy(article.getTitle(), handler, false);
+	// }
+	// catch (Exception e) {
+	// e.printStackTrace();
+	// Logging.getInstance().severe(
+	// "Unexpected internal error in subtree handler '" + handler
+	// + "' while destroying for section '" + getID() + "' in article '"
+	// + getTitle() + "': " + e.toString());
+	//
+	// }
+	// }
+	// }
 
 	/**
-	 * Overrides type and executes the SubtreeHandlers of the new type for the
-	 * given article, if <tt>create</tt> is true.
+	 * Overrides type.
 	 * 
 	 * 
 	 * @created 03.03.2011
+	 * @deprecated we should get rid of this method, because it can cause
+	 *             problems with methods depending on a static type tree (like
+	 *             the methods in {@link Sections} and ScriptManager)
 	 * @param newType the new type to be set
-	 * @param create whether the handlers of the new type should be executed
-	 *        right afterwards
-	 * @param article the compilation context for removing old information
-	 *        (error messages) and executing the new SubtreeHandlers
 	 */
+	@Deprecated
 	@SuppressWarnings("unchecked")
-	public void setType(Type newType, Article article) {
-
-		// remove error messages from old type
-		TreeMap<Priority, List<SubtreeHandler<? extends Type>>> subtreeHandlers = this.get().getSubtreeHandlers();
-		for (Priority p : subtreeHandlers.keySet()) {
-			List<SubtreeHandler<? extends Type>> list = subtreeHandlers.get(p);
-			for (SubtreeHandler<? extends Type> subtreeHandler : list) {
-				Messages.clearMessages(article, this,
-						subtreeHandler.getClass());
-			}
+	public void setType(Type newType) {
+		for (Type type : this.type.getParentTypes()) {
+			// we need to update the successor type, otherwise the methods
+			// looking for successors no longer work correctly.
+			((AbstractType) type).addSuccessorType(newType.getClass());
 		}
 		this.type = (T) newType;
-		clearReusedBySet();
-		article.getReviseIterator().addSection(this);
 
+	}
+
+	public ArticleManager getArticleManager() {
+		return article.getArticleManager();
 	}
 }

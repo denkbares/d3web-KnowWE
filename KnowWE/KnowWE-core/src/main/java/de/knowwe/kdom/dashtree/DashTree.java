@@ -81,7 +81,7 @@ public class DashTree extends AbstractType {
 						.getChildrenTypes();
 				for (Type Type2 : content) {
 					if (Type2 instanceof DashTreeElement) {
-						((AbstractType) Type2).replaceChildType(newContentType,
+						((Type) Type2).replaceChildType(newContentType,
 								DashTreeElementContent.class);
 
 					}

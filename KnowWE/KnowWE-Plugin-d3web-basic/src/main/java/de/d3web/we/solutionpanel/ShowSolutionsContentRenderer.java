@@ -33,13 +33,16 @@ import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.session.Session;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 
 /**
  * Displays a configurable pane presenting derived solutions and abstractions.
@@ -70,15 +73,15 @@ public class ShowSolutionsContentRenderer implements Renderer {
 			string.append(text + "\n");
 		}
 
-
 		Session session = getSessionFor(section, user);
 		if (session == null) {
-			// TODO
-			// fix error
-			string.append("No knowledge base for article '"
-					+ ShowSolutionsType.getMaster(getShowSolutionsSection(section)) + "'\n");
+			String msg = "Unable to find knowledgeg base. Please either add to a package" +
+					" used for a knowledge base or specify a master article.";
+			DefaultMarkupRenderer.renderMessagesOfType(Message.Type.WARNING,
+					Messages.asList(Messages.warning(msg)), string);
 		}
 		else {
+
 			renderSolutions(section, session, string);
 			renderAbstractions(section, session, string);
 		}
@@ -198,10 +201,9 @@ public class ShowSolutionsContentRenderer implements Renderer {
 	private Session getSessionFor(Section<?> section, UserContext user) {
 		String packageName = ShowSolutionsType.getPackageName(getShowSolutionsSection(section));
 		String masterArticleName = ShowSolutionsType.getMaster(getShowSolutionsSection(section));
-		String title = "";
+		String title = null;
 		if (masterArticleName == null) {
-			PackageManager packageManager = Environment.getInstance().getPackageManager(
-					user.getWeb());
+			PackageManager packageManager = Compilers.getPackageManager(section);
 			Set<String> compilingArticles = packageManager.getCompilingArticles(packageName);
 
 			for (String compilingArticle : compilingArticles) {
@@ -212,6 +214,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		else {
 			title = masterArticleName;
 		}
+		if (title == null) return null;
 
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), title);
 		return SessionProvider.getSession(user, kb);

@@ -106,7 +106,7 @@
         <parameter id="scope" value="AbstractionTableMarkup" />
 	</extension>
 		
-	<extension plugin-id="KnowWEExtensionPoints" point-id="SubtreeHandler"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript"
 		id="LineHandler">
 		<parameter id="class"
 			value="de.d3web.we.kdom.abstractiontable.LineHandler" />
@@ -114,7 +114,7 @@
 		<parameter id="description" value="Type LineHandler" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="4.55" />
-		<parameter id="handlerpriority" value="0" />
+		<parameter id="compilepriority" value="0" />
         <parameter id="scope" value="AbstractionTableMarkup/**/TableLine" />
 	</extension>
 		
@@ -231,14 +231,14 @@
 		<parameter id="scope" value="root" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="SubtreeHandler"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript"
 		id="InitPropertyHandler">
 		<parameter id="class" value="de.knowwe.d3web.property.init.InitPropertyHandler" />
 		<parameter id="name" value="InitPropertyHandler" />
 		<parameter id="description" value="Handler InitPropertyHandler" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="handlerpriority" value="-200" />
+		<parameter id="compilepriority" value="200" />
 		<parameter id="scope" value="PropertyDeclarationType" />
 	</extension>
 		

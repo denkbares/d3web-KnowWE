@@ -10,9 +10,10 @@ import java.util.regex.Pattern;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
-import de.d3web.we.basic.D3webKnowledgeHandler;
-import de.d3web.we.utils.D3webUtils;
+import de.d3web.we.basic.KnowledgeBaseManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.packaging.PackageCompileType;
+import de.knowwe.core.kdom.parsing.Section;
 
 /*
  * Copyright (C) 2012 denkbares GmbH
@@ -59,21 +60,17 @@ public class WikiKnowledgeBaseProvider implements TestObjectProvider {
 			return result;
 		}
 
-		// get the KB for this article
-		D3webKnowledgeHandler knowledgeHandler =
-				D3webUtils.getKnowledgeRepresentationHandler(Environment.DEFAULT_WEB);
+		KnowledgeBaseManager mgr = KnowledgeBaseManager.getInstance(Environment.DEFAULT_WEB);
 
-		if (knowledgeHandler != null) {
+		Set<Section<? extends PackageCompileType>> knowledgeArticles = mgr.getKnowledgeBaseSections();
 
-			Set<String> knowledgeArticles = knowledgeHandler.getKnowledgeArticles();
+		for (Section<? extends PackageCompileType> compileSection : knowledgeArticles) {
 
-			for (String kbArticle : knowledgeArticles) {
-				if (kbArticle.matches(id)) {
-					KnowledgeBase kb = knowledgeHandler.getKnowledgeBase(kbArticle);
-					TestObjectContainer<T> container = new TestObjectContainer<T>(kb.getId(),
-							c.cast(kb));
-					result.add(container);
-				}
+			if (compileSection.getTitle().matches(id)) {
+				KnowledgeBase kb = mgr.getKnowledgeBase(compileSection);
+				TestObjectContainer<T> container = new TestObjectContainer<T>(kb.getId(),
+						c.cast(kb));
+				result.add(container);
 			}
 		}
 		return result;

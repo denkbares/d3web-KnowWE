@@ -1,20 +1,20 @@
 /*
  * Copyright (C) 2012 University Wuerzburg, Computer Science VI
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package de.knowwe.d3web.resource;
 
@@ -34,16 +34,15 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import de.knowwe.core.Environment;
-import de.knowwe.core.kdom.Article;
+import de.knowwe.core.compile.DefaultGlobalCompiler;
+import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalHandler;
 import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-
 
 /**
  * This Handler validates an XML file against a schema.
@@ -51,12 +50,12 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * @author Reinhard Hatko
  * @created 08.08.2012
  */
-public class XMLValidationHandler extends SubtreeHandler<AttachmentType> {
-
+public class XMLValidationHandler extends DefaultGlobalHandler<AttachmentType> {
 
 	@Override
-	public Collection<Message> create(Article article, Section<AttachmentType> section) {
-		Map<String, Collection<Message>> errors = Messages.getMessagesFromSubtree(section,
+	public Collection<Message> create(DefaultGlobalCompiler compiler, Section<AttachmentType> section) {
+		Map<de.knowwe.core.compile.Compiler, Collection<Message>> errors = Messages.getMessagesMapFromSubtree(
+				section,
 				new Message.Type[] { Message.Type.ERROR });
 
 		// if the attachment is not found, we stop here

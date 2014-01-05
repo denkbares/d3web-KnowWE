@@ -23,23 +23,22 @@ import java.util.Collection;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.terminology.TermRegistrationScope;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.ontology.compile.OntologyCompiler;
+import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
-public class NamespaceAbbreviationDefinition extends SimpleDefinition {
+public class NamespaceAbbreviationDefinition extends SimpleDefinition<OntologyCompiler> {
 
 	public NamespaceAbbreviationDefinition() {
-		super(TermRegistrationScope.LOCAL, NamespaceAbbreviationDefinition.class);
-		this.addSubtreeHandler(Priority.HIGHEST, new NamespaceSubtreeHandler());
+		super(OntologyCompiler.class, NamespaceAbbreviationDefinition.class);
+		this.addCompileScript(Priority.HIGHEST, new NamespaceSubtreeHandler());
 		this.setSectionFinder(new RegexSectionFinder("\\s*\\w+\\s+\\S+\\s*"));
 		this.addChildType(new AbbreviationDefinition());
 		this.addChildType(new NamespaceDefinition());
@@ -64,11 +63,10 @@ public class NamespaceAbbreviationDefinition extends SimpleDefinition {
 		return abbreviationName;
 	}
 
-	private static class NamespaceSubtreeHandler extends SubtreeHandler<NamespaceAbbreviationDefinition> {
+	private static class NamespaceSubtreeHandler extends OntologyHandler<NamespaceAbbreviationDefinition> {
 
 		@Override
-		public Collection<Message> create(Article article, Section<NamespaceAbbreviationDefinition> section) {
-			Rdf2GoCore core = Rdf2GoCore.getInstance(article);
+		public Collection<Message> create(OntologyCompiler compiler, Section<NamespaceAbbreviationDefinition> section) {
 			String namespace = section.get().getNamespace(section);
 			try {
 				new URIImpl(namespace, true);
@@ -77,8 +75,14 @@ public class NamespaceAbbreviationDefinition extends SimpleDefinition {
 				return Messages.asList(Messages.error("'" + namespace + "' is not a valid URI"));
 			}
 			String abbreviation = section.get().getAbbreviation(section);
-			core.addNamespace(abbreviation, namespace);
+			Rdf2GoCore.getInstance(compiler).addNamespace(abbreviation, namespace);
 			return Messages.noMessage();
+		}
+
+		@Override
+		public void destroy(OntologyCompiler compiler, Section<NamespaceAbbreviationDefinition> section) {
+			String abbreviation = section.get().getAbbreviation(section);
+			Rdf2GoCore.getInstance(compiler).removeNamespace(abbreviation);
 		}
 	}
 }

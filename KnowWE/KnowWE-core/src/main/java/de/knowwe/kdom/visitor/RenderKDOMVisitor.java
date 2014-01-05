@@ -42,12 +42,8 @@ public class RenderKDOMVisitor implements Visitor {
 		renderSubtree(s, 0, buffi);
 	}
 
-	public void appendRenderedKDOM(RenderResult result) {
-		result.append(buffi);
-	}
-
 	public String getRenderedKDOM() {
-		return buffi.toString();
+		return buffi.toStringRaw();
 	}
 
 	private void renderSubtree(Section<? extends Type> s, int i, RenderResult buffi) {

@@ -20,6 +20,7 @@
 
 package de.knowwe.core.report;
 
+
 /**
  * 
  * Message tied to Sections in the KDOM.
@@ -29,7 +30,7 @@ package de.knowwe.core.report;
  * @author Albrecht Striffler (denkbares GmbH)
  * 
  */
-public final class Message {
+public final class Message implements Comparable<Message> {
 
 	public enum Type {
 		INFO, WARNING, ERROR
@@ -82,6 +83,11 @@ public final class Message {
 	@Override
 	public String toString() {
 		return getVerbalization();
+	}
+
+	@Override
+	public int compareTo(Message o) {
+		return getVerbalization().compareTo(o.getVerbalization());
 	}
 
 }

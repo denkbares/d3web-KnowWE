@@ -43,8 +43,7 @@ import org.openrdf.rio.turtle.TurtleWriter;
 import de.d3web.strings.Strings;
 import de.d3web.utils.EqualsUtils;
 import de.d3web.utils.Pair;
-import de.knowwe.core.Environment;
-import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
@@ -52,6 +51,7 @@ import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.turtle.BlankNode;
 import de.knowwe.ontology.turtle.Object;
 import de.knowwe.ontology.turtle.ObjectList;
@@ -173,13 +173,10 @@ public class ArticleTurtleModifier {
 	 * terms as a basis)
 	 */
 	private static Rdf2GoCore findCore(Article article) {
-		String web = article.getWeb();
-		PackageManager packageManager = Environment.getInstance().getPackageManager(web);
 		for (Section<?> section : Sections.successors(article.getRootSection(), Term.class)) {
-			Set<String> masters = packageManager.getCompilingArticles(section);
-			if (masters.isEmpty()) continue;
-			String master = masters.iterator().next();
-			return Rdf2GoCore.getInstance(web, master);
+			OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
+			if (compiler == null) continue;
+			return compiler.getRdf2GoCore();
 		}
 		return Rdf2GoCore.getInstance();
 	}

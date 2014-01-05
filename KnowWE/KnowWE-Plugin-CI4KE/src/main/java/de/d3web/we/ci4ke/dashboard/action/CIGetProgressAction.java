@@ -26,6 +26,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.d3web.core.io.progress.ProgressListener;
+import de.d3web.we.ci4ke.dashboard.CIDashboard;
+import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.utils.progress.AjaxProgressListener;
@@ -44,10 +46,13 @@ public class CIGetProgressAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-
 		String name = context.getParameter("name");
 		name = URLDecoder.decode(name, "UTF-8");
-		ProgressListener listener = ProgressListenerManager.getInstance().getProgressListener(name);
+		String web = context.getWeb();
+		String title = context.getTitle();
+		CIDashboard dashboard = CIDashboardManager.getDashboard(web, title, name);
+		ProgressListener listener = ProgressListenerManager.getInstance().getProgressListener(
+				Integer.toString(dashboard.hashCode()));
 
 		float progress = 0;
 		// finished will be returned in case build is finished and

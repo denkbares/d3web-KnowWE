@@ -26,6 +26,7 @@ import java.util.TreeSet;
 import de.d3web.strings.Strings;
 import de.d3web.testing.BuildResult;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
+import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.d3web.we.ci4ke.dashboard.action.CIDashboardToolProvider;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.d3web.we.ci4ke.util.CIUtils;
@@ -66,7 +67,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		String title = section.getTitle();
 		String currentDashboardSourcetext = section.getText();
-		CIDashboard dashboard = CIDashboard.getDashboard(section.getWeb(), title,
+		CIDashboard dashboard = CIDashboardManager.getDashboard(section.getWeb(), title,
 				dashboardName);
 		BuildResult latestBuild = dashboard.getLatestBuild();
 		if (latestBuild == null) return false; // nothing to do
@@ -109,7 +110,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		Section<CIDashboardType> dashboardSection = CIUtils.findCIDashboardSection(
 				dashboardArticleTitle, dashboardName);
-		CIDashboard dashboard = CIDashboard.getDashboard(user.getWeb(), dashboardArticleTitle,
+		CIDashboard dashboard = CIDashboardManager.getDashboard(user.getWeb(), dashboardArticleTitle,
 				dashboardName);
 
 		RenderResult string = new RenderResult(user);
@@ -162,12 +163,13 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	}
 
 	private static void appendBuildDetailsCell(CIDashboard dashboard, BuildResult shownBuild, RenderResult string) {
+
 		string.appendHtml("<td valign='top'>");
 		string.appendHtml("<div id='")
 				.append(Strings.encodeURL(dashboard.getDashboardName()))
 				.appendHtml(
 						"-build-details-wrapper' class='ci-build-details-wrapper'>");
-		dashboard.getRenderer().renderBuildDetails(shownBuild, string);
+		dashboard.getRenderer().renderBuildDetails(dashboard.getWeb(), shownBuild, string);
 		string.appendHtml("</div>");
 		string.appendHtml("</td>");
 	}

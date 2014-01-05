@@ -26,7 +26,7 @@ package de.knowwe.diaflux.persistence;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.EndNode;
 import de.d3web.diaFlux.flow.Node;
-import de.knowwe.core.kdom.Article;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.diaflux.type.ExitType;
 import de.knowwe.diaflux.type.FlowchartType;
@@ -44,7 +44,7 @@ public class ExitNodeHandler extends AbstractNodeHandler<ExitType> {
 	}
 
 	@Override
-	public Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection,
+	public Node createNode(D3webCompiler compiler, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id) {
 
 		Section<ExitType> action = getNodeInfo(nodeSection);

@@ -23,12 +23,12 @@
  */
 package de.knowwe.rdf2go;
 
-import de.knowwe.core.compile.ConstraintModule;
-import de.knowwe.core.compile.SuccessorNotReusedConstraint;
-import de.knowwe.core.kdom.Article;
+import java.util.Collection;
+
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 
 /**
  * @author grotheer
@@ -38,36 +38,24 @@ import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
  *        SubtreeHandlers to facilitate the incremental build of Articles
  * 
  */
-public abstract class RDF2GoSubtreeHandler<T extends Type> extends
-		SubtreeHandler<T> {
+public abstract class RDF2GoSubtreeHandler<C extends Rdf2GoCompiler, T extends Type> implements Rdf2GoCompileScript<C, T> {
 
-	public RDF2GoSubtreeHandler() {
-		super(false);
-		this.registerConstraintModule(new RDF2GoHandlerConstraint<T>());
-		this.registerConstraintModule(new SuccessorNotReusedConstraint<T>());
+	public abstract Collection<Message> create(C compiler, Section<T> section);
+
+	@Override
+	public void compile(C compiler, Section<T> section) {
+		Messages.storeMessages(compiler, section, getClass(), create(compiler, section));
+
 	}
 
 	@Override
-	public void destroy(Article article, Section<T> section) {
+	public void destroy(C compiler, Section<T> section) {
 		try {
-			Rdf2GoCore.getInstance().removeStatementsForSection(section);
+			compiler.getRdf2GoCore().removeStatementsForSection(section);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	private class RDF2GoHandlerConstraint<T2 extends Type> extends ConstraintModule<T2> {
-
-		public RDF2GoHandlerConstraint() {
-			super(Operator.DONT_COMPILE_IF_VIOLATED, Purpose.CREATE_AND_DESTROY);
-		}
-
-		@Override
-		public boolean violatedConstraints(Article article, Section<T2> section) {
-			return !section.getTitle().equals(article.getTitle());
-		}
-
 	}
 
 }

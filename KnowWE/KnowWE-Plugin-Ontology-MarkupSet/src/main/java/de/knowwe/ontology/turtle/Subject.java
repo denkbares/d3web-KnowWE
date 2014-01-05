@@ -26,21 +26,19 @@ import org.ontoware.rdf2go.model.node.Resource;
 
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.terminology.TermRegistrationScope;
-import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.objects.SimpleReference;
+import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.CompositeRenderer;
+import de.knowwe.ontology.compile.OntologyCompiler;
+import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.ontology.edit.DropTargetRenderer;
 import de.knowwe.ontology.kdom.resource.ResourceReference;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
@@ -62,24 +60,20 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	private Type createSubjectURIWithDefinition() {
 		TurtleURI turtleURI = new TurtleURI();
-		SimpleReference reference = Types.findSuccessorType(turtleURI, ResourceReference.class);
-		reference.addSubtreeHandler(Priority.HIGHER, new RDFTypeDefinitionHandler(
-				TermRegistrationScope.LOCAL));
+		SimpleReference<?> reference = Types.findSuccessorType(turtleURI, ResourceReference.class);
+		reference.addCompileScript(Priority.HIGH, new RDFTypeDefinitionHandler());
+		reference.removeCompileScript(OntologyCompiler.class,
+				SimpleReferenceRegistrationScript.class);
 		return turtleURI;
 	}
 
-	class RDFTypeDefinitionHandler extends SubtreeHandler<SimpleReference> {
-
-		private final TermRegistrationScope scope;
-
-		public RDFTypeDefinitionHandler(TermRegistrationScope scope) {
-			this.scope = scope;
-		}
+	class RDFTypeDefinitionHandler extends OntologyHandler<SimpleReference<OntologyCompiler>> {
 
 		@Override
-		public Collection<Message> create(Article article, Section<SimpleReference> s) {
+		public Collection<Message> create(OntologyCompiler compiler, Section<SimpleReference<OntologyCompiler>> s) {
 
 			Section<TurtleSentence> sentence = Sections.findAncestorOfType(s, TurtleSentence.class);
 			List<Section<Predicate>> predicates = Sections.findSuccessorsOfType(sentence,
@@ -96,7 +90,7 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 
 			Identifier termIdentifier = s.get().getTermIdentifier(s);
 			if (termIdentifier != null) {
-				getTerminologyHandler(article).registerTermDefinition(s,
+				compiler.getTerminologyManager().registerTermDefinition(compiler, s,
 						s.get().getTermObjectClass(s),
 						termIdentifier);
 			}
@@ -110,18 +104,9 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 			return Messages.noMessage();
 		}
 
-		private TerminologyManager getTerminologyHandler(Article article) {
-			if (scope == TermRegistrationScope.GLOBAL) {
-				return KnowWEUtils.getGlobalTerminologyManager(article.getWeb());
-			}
-			else {
-				return KnowWEUtils.getTerminologyManager(article);
-			}
-		}
-
 		@Override
-		public void destroy(Article article, Section<SimpleReference> s) {
-			getTerminologyHandler(article).unregisterTermDefinition(s,
+		public void destroy(OntologyCompiler compiler, Section<SimpleReference<OntologyCompiler>> s) {
+			compiler.getTerminologyManager().unregisterTermDefinition(compiler, s,
 					s.get().getTermObjectClass(s), s.get().getTermIdentifier(s));
 		}
 

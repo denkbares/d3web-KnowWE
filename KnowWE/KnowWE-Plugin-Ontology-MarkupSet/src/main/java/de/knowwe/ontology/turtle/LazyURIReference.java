@@ -7,23 +7,22 @@ import org.ontoware.rdf2go.model.node.Node;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
-import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
+import de.knowwe.ontology.compile.OntologyCompiler;
+import de.knowwe.ontology.kdom.OntologyUtils;
 import de.knowwe.ontology.kdom.resource.Resource;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
-public class LazyURIReference extends SimpleReference implements NodeProvider<LazyURIReference> {
+public class LazyURIReference extends SimpleReference<OntologyCompiler> implements NodeProvider<LazyURIReference> {
 
 	public LazyURIReference() {
-		super(TermRegistrationScope.LOCAL, Resource.class);
+		super(OntologyCompiler.class, Resource.class);
 		this.setSectionFinder(new AllTextFinderTrimmed());
 		this.setRenderer(StyleRenderer.Question);
 	}
@@ -56,16 +55,15 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 	public static Collection<Identifier> getPotentiallyMatchingIdentifiers(Section<?> section) {
 		Collection<Identifier> identifiers = new HashSet<Identifier>();
 		if (!(section.get() instanceof Term)) return identifiers;
-		Collection<Article> compilingArticles = KnowWEUtils.getCompilingArticles(section);
-		for (Article article : compilingArticles) {
-			TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
+		OntologyCompiler ontologyCompiler = OntologyUtils.getOntologyCompiler(section);
+		if (ontologyCompiler != null) {
+			TerminologyManager terminologyManager = ontologyCompiler.getTerminologyManager();
 			Collection<Identifier> allDefinedTerms = terminologyManager.getAllDefinedTerms();
 			for (Identifier identifier : allDefinedTerms) {
 				String[] pathElements = identifier.getPathElements();
 				if (pathElements.length == 2) {
 					if (pathElements[1].equals(section.getText())) {
 						// found match
-
 						identifiers.add(identifier);
 					}
 				}

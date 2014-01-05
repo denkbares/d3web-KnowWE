@@ -36,7 +36,6 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.plugin.test.InitPluginManager;
-import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.logging.Logging;
 
@@ -54,7 +53,6 @@ public class QuestionTreeTest extends TestCase {
 	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
-		PackageManager.overrideAutocompileArticle(true);
 	}
 
 	public void testNumberOfQuestions() {

@@ -20,9 +20,10 @@
 
 package de.knowwe.diaflux.type;
 
+import de.d3web.diaFlux.flow.EndNode;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
-import de.knowwe.core.compile.terminology.TermRegistrationScope;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
@@ -58,10 +59,10 @@ public class ExitType extends AbstractXMLType {
 		return term.get().getTermName(term);
 	}
 
-	static class ExitNodeDef extends SimpleDefinition {
+	static class ExitNodeDef extends SimpleDefinition<D3webCompiler> {
 
 		public ExitNodeDef() {
-			super(TermRegistrationScope.LOCAL, String.class);
+			super(D3webCompiler.class, EndNode.class);
 			setSectionFinder(AllTextSectionFinder.getInstance());
 			setRenderer(StyleRenderer.FlowchartExit);
 		}

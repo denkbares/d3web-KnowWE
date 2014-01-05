@@ -24,12 +24,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import de.d3web.strings.Identifier;
-import de.knowwe.core.Environment;
-import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.compile.terminology.RenamableTerm;
@@ -156,9 +154,9 @@ public class DefaultMarkupType extends AbstractType implements RenamableTerm {
 			this.addChildType(new AnnotationType(parameter));
 		}
 		this.addChildType(10, new UnknownAnnotationType());
-		this.addSubtreeHandler(Priority.PRECOMPILE_MIDDLE, new AddMarkupSectionToPackagesHandler());
-		this.addSubtreeHandler(new DefaultMarkupSubtreeHandler(markup));
-		this.addSubtreeHandler(new DefaultMarkupTermReferenceRegisterHandler());
+		this.addCompileScript(new DefaultMarkupPackageRegistrationScript());
+		this.addCompileScript(new DefaultMarkupCompileScript(markup));
+		this.addCompileScript(new DefaultMarkupPackageTermReferenceRegistrationHandler());
 	}
 
 	@Override
@@ -345,11 +343,9 @@ public class DefaultMarkupType extends AbstractType implements RenamableTerm {
 		}
 		String[] packageNames = DefaultMarkupType.getAnnotations(section,
 				annotation);
-		PackageManager packageManager = Environment.getInstance().getPackageManager(
-				section.getWeb());
+		PackageManager packageManager = Compilers.getPackageManager(section);
 		if (packageNames.length == 0) {
-			Set<String> defaultPackages = packageManager.getDefaultPackages(section.getArticle());
-			packageNames = defaultPackages.toArray(new String[defaultPackages.size()]);
+			packageNames = packageManager.getDefaultPackages(section.getArticle());
 		}
 		return packageNames;
 	}

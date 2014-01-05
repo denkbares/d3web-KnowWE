@@ -22,10 +22,10 @@ package de.d3web.we.quicki;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.RessourceLoader;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.MasterAnnotationWarningHandler;
 import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -77,21 +77,21 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 		m.addAnnotation(SAVE_KEY, false);
 		m.addAnnotationRenderer(SAVE_KEY, NothingRenderer.getInstance());
 
-		m.addAnnotation(PackageManager.ANNOTATION_MASTER, false);
-		m.setAnnotationDeprecated(PackageManager.ANNOTATION_MASTER);
-		m.addAnnotationRenderer(PackageManager.ANNOTATION_MASTER, StyleRenderer.PACKAGE);
+		m.addAnnotation(PackageManager.MASTER_ATTRIBUTE_NAME, false);
+		m.setAnnotationDeprecated(PackageManager.MASTER_ATTRIBUTE_NAME);
+		m.addAnnotationRenderer(PackageManager.MASTER_ATTRIBUTE_NAME, StyleRenderer.PACKAGE);
 
 		m.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 		m.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageAnnotationNameType());
 		m.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm(true));
+				new PackageTerm());
 
 	}
 
 	public QuickInterviewMarkup() {
 		this(m);
-		this.addSubtreeHandler(new RegisterPackageTermHandler());
+		this.addCompileScript(new RegisterPackageTermHandler());
 
 	}
 
@@ -102,7 +102,7 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 		RessourceLoader.getInstance().add("quicki.js",
 				RessourceLoader.RESOURCE_SCRIPT);
 		this.setRenderer(new QuickInterviewMarkupRenderer());
-		this.addSubtreeHandler(new MasterAnnotationWarningHandler());
+		this.addCompileScript(new MasterAnnotationWarningHandler());
 	}
 
 	private static class QuickInterviewMarkupRenderer extends DefaultMarkupRenderer {
@@ -147,7 +147,7 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 			}
 			string.appendHtml(savehtml);
 			String master = DefaultMarkupType.getAnnotation(section,
-					PackageManager.ANNOTATION_MASTER);
+					PackageManager.MASTER_ATTRIBUTE_NAME);
 			String packageName = DefaultMarkupType.getAnnotation(section,
 					PackageManager.PACKAGE_ATTRIBUTE_NAME);
 			String masterHtml = "";
@@ -160,9 +160,8 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 				packageNameHtml = " package=\"" + packageName + "\"";
 			}
 			else {
-				PackageManager packageManager = Environment.getInstance().getPackageManager(
-						user.getWeb());
-				Set<String> defaultPackages = packageManager.getDefaultPackages(section.getArticle());
+				PackageManager packageManager = Compilers.getPackageManager(section.getArticleManager());
+				String[] defaultPackages = packageManager.getDefaultPackages(section.getArticle());
 				for (String defaultPackage : defaultPackages) {
 					defaultPackageName = defaultPackage;
 					packageNameHtml = " package=\"" + defaultPackage

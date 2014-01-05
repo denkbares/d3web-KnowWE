@@ -25,7 +25,6 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Util class which offers convenience methods for the handling of test suites
@@ -45,7 +44,7 @@ public class TestCaseUtils {
 	 * @return loaded test suite or null (if no test suite was found)
 	 */
 	public static TestCase loadTestSuite(String article, String web) {
-		Article a = Environment.getInstance().getArticleManager(web).getArticle(article);
+		Article a = Environment.getInstance().getDefaultArticleManager(web).getArticle(article);
 		Section<TestCaseContent> s = null;
 		TestCase testSuite = null;
 
@@ -53,8 +52,7 @@ public class TestCaseUtils {
 			s = Sections.findSuccessor(a.getRootSection(), TestCaseContent.class);
 		}
 		if (s != null) {
-			testSuite = (TestCase) KnowWEUtils.getStoredObject(a, s,
-					TestCaseType.TESTCASEKEY);
+			testSuite = (TestCase) s.getSectionStore().getObject(TestCaseType.TESTCASEKEY);
 		}
 		return testSuite;
 	}

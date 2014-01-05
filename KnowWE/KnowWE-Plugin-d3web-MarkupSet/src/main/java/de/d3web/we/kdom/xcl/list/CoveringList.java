@@ -32,18 +32,17 @@ import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.d3web.we.kdom.rules.RuleContentType;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.SolutionDefinition;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.XCLRelationWeight;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
-import de.knowwe.core.compile.ConstraintModule;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.SuccessorNotReusedConstraint;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.CommentLineType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -144,7 +143,7 @@ public class CoveringList extends AbstractType {
 				}
 			});
 
-			this.addSubtreeHandler(Priority.LOW, new CreateXCLRelationHandler());
+			this.addCompileScript(Priority.LOW, new CreateXCLRelationHandler());
 			this.setRenderer(new CoveringRelationRenderer());
 
 			// here also a comment might occur:
@@ -177,14 +176,9 @@ public class CoveringList extends AbstractType {
 		 * 
 		 * @author Jochen
 		 */
-		class CreateXCLRelationHandler extends D3webSubtreeHandler<CoveringRelation> {
+		class CreateXCLRelationHandler extends D3webHandler<CoveringRelation> {
 
-			public CreateXCLRelationHandler() {
-				this.registerConstraintModule(new SuccessorNotReusedConstraint<CoveringRelation>());
-				this.registerConstraintModule(new CreateXCLRelationConstraint());
-			}
-
-			private Section<SolutionDefinition> getCorrespondingSolutionDef(Article article, Section<CoveringRelation> s) {
+			private Section<SolutionDefinition> getCorrespondingSolutionDef(Section<CoveringRelation> s) {
 				return Sections.findSuccessor(s.getParent().getParent(), SolutionDefinition.class);
 			}
 
@@ -196,7 +190,7 @@ public class CoveringList extends AbstractType {
 			 * .we.kdom.Article, de.d3web.we.kdom.Section)
 			 */
 			@Override
-			public Collection<Message> create(Article article, Section<CoveringRelation> s) {
+			public Collection<Message> create(D3webCompiler compiler, Section<CoveringRelation> s) {
 
 				List<Message> result = new ArrayList<Message>();
 
@@ -207,16 +201,16 @@ public class CoveringList extends AbstractType {
 					return result;
 				}
 
-				if (s.hasErrorInSubtree(article)) {
+				if (s.hasErrorInSubtree(compiler)) {
 					return Messages.asList(Messages.creationFailedWarning(
 							D3webUtils.getD3webBundle()
 									.getString("KnowWE.xcllist.relationfail")));
 				}
 
-				Section<SolutionDefinition> solutionDef = getCorrespondingSolutionDef(article, s);
+				Section<SolutionDefinition> solutionDef = getCorrespondingSolutionDef(s);
 				if (solutionDef != null) {
 					Solution solution = solutionDef.get().getTermObject(
-							article, solutionDef);
+							compiler, solutionDef);
 
 					if (solution != null) {
 						XCLModel xclModel = solution.getKnowledgeStore().getKnowledge(
@@ -226,7 +220,8 @@ public class CoveringList extends AbstractType {
 
 							if (cond != null) {
 
-								Condition condition = KDOMConditionFactory.createCondition(article,
+								Condition condition = KDOMConditionFactory.createCondition(
+										compiler,
 										cond);
 
 								if (condition == null) {
@@ -263,11 +258,11 @@ public class CoveringList extends AbstractType {
 
 								// Insert the Relation into the currentModel
 								XCLRelation relation = XCLModel.insertAndReturnXCLRelation(
-										getKB(article),
+										getKB(compiler),
 										condition,
 										solution, type, w);
 
-								KnowWEUtils.storeObject(article, s, RELATION_STORE_KEY, relation);
+								Compilers.storeObject(compiler, s, RELATION_STORE_KEY, relation);
 
 								String wString = "";
 								if (w > 0 && w != 1) {
@@ -287,8 +282,8 @@ public class CoveringList extends AbstractType {
 			}
 
 			@Override
-			public void destroy(Article article, Section<CoveringRelation> s) {
-				Section<SolutionDefinition> soltuionDef = getCorrespondingSolutionDef(article, s);
+			public void destroy(D3webCompiler article, Section<CoveringRelation> s) {
+				Section<SolutionDefinition> soltuionDef = getCorrespondingSolutionDef(s);
 
 				if (soltuionDef == null) return;
 				Solution solution = soltuionDef.get().getTermObject(article,
@@ -304,24 +299,6 @@ public class CoveringList extends AbstractType {
 
 				if (rel == null) return;
 				xclModel.removeRelation(rel);
-
-			}
-
-			private class CreateXCLRelationConstraint extends ConstraintModule<CoveringRelation> {
-
-				public CreateXCLRelationConstraint() {
-					super(Operator.COMPILE_IF_VIOLATED, Purpose.CREATE);
-				}
-
-				@Override
-				public boolean violatedConstraints(Article article, Section<CoveringRelation> s) {
-					Section<SolutionDefinition> solutionDef = getCorrespondingSolutionDef(article,
-							s);
-					if (solutionDef == null) {
-						return false;
-					}
-					return !solutionDef.isReusedBy(article.getTitle());
-				}
 
 			}
 
@@ -356,8 +333,8 @@ public class CoveringList extends AbstractType {
 			string.appendHtml("<span id='" + sec.getID()
 					+ "' class = 'XCLRelationInList'>");
 
-			Article article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
-			XCLRelation relation = (XCLRelation) KnowWEUtils.getStoredObject(article, sec,
+			D3webCompiler compiler = Compilers.getCompiler(sec, D3webCompiler.class);
+			XCLRelation relation = (XCLRelation) Compilers.getStoredObject(compiler, sec,
 					RELATION_STORE_KEY);
 
 			if (relation == null) {
@@ -365,7 +342,7 @@ public class CoveringList extends AbstractType {
 				return;
 			}
 
-			KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
+			KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
 			Session session = SessionProvider.getSession(user, kb);
 
 			if (session != null) {

@@ -50,8 +50,15 @@ public class SparqlMarkupRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> sec, UserContext user, RenderResult result) {
-
-		String sparqlString = Rdf2GoUtils.createSparqlString(sec.getText());
+		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(Sections.findAncestorOfType(sec,
+				DefaultMarkupType.class));
+		if (core == null) {
+			// we render an empty div, otherwise the ajax rerendering does not
+			// work properly
+			result.appendHtmlElement("div", "");
+			return;
+		}
+		String sparqlString = Rdf2GoUtils.createSparqlString(core, sec.getText());
 
 		try {
 			if (sparqlString.toLowerCase().startsWith("construct")) {
@@ -101,7 +108,6 @@ public class SparqlMarkupRenderer implements Renderer {
 
 				SparqlRenderResult resultEntry;
 
-				Rdf2GoCore core = Rdf2GoCore.getInstance(markupSection);
 				renderOpts.setRdf2GoCore(core);
 
 				if (renderOpts.isNavigation()) {
@@ -151,7 +157,6 @@ public class SparqlMarkupRenderer implements Renderer {
 					+ e.getMessage() + "</span>");
 		}
 		catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -177,6 +182,7 @@ public class SparqlMarkupRenderer implements Renderer {
 		String annotationString = DefaultMarkupType.getAnnotation(markupSection,
 				annotationName);
 		return annotationString != null && annotationString.equals("true");
+
 	}
 
 	private String modifyOrderByInSparqlString(Map<String, String> sortOrder, String sparqlString) {

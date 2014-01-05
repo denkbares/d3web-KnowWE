@@ -19,8 +19,6 @@
  */
 package de.d3web.we.kdom.questionTree.indication;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,22 +31,22 @@ import de.d3web.we.kdom.questionTree.NumericCondLine;
 import de.d3web.we.kdom.questionTree.QuestionDashTree;
 import de.d3web.we.kdom.questionTree.QuestionDashTreeUtils;
 import de.d3web.we.kdom.questionTree.QuestionTreeAnswerDefinition;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.object.D3webTerm;
 import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.QuestionnaireReference;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.kdom.Article;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.dashtree.DashTreeElement;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 
-public class IndicationHandler extends D3webSubtreeHandler<D3webTerm<NamedObject>> {
+public class IndicationHandler extends D3webCompileScript<D3webTerm<NamedObject>> {
 
 	private final String indicationStoreKey = "INDICATION_STORE_KEY";
 
@@ -62,27 +60,28 @@ public class IndicationHandler extends D3webSubtreeHandler<D3webTerm<NamedObject
 	}
 
 	@Override
-	public void destroy(Article article, Section<D3webTerm<NamedObject>> s) {
-		Rule kbr = (Rule) s.getSectionStore().getObject(article,
+	public void destroy(D3webCompiler compiler, Section<D3webTerm<NamedObject>> section) {
+		Rule kbr = (Rule) section.getSectionStore().getObject(compiler,
 				indicationStoreKey);
 		if (kbr != null) kbr.remove();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Collection<Message> create(Article article, Section<D3webTerm<NamedObject>> s) {
+	public void compile(D3webCompiler compiler, Section<D3webTerm<NamedObject>> section) {
 
-		Section<DashTreeElement> element = Sections.findAncestorOfType(s, DashTreeElement.class);
+		Section<DashTreeElement> element = Sections.findAncestorOfType(section,
+				DashTreeElement.class);
 
 		if (element == null) {
 			Logger.getLogger(this.getClass().getName()).log(
 					Level.WARNING,
-					"The "
-							+ this.getClass().getSimpleName()
+					"The " + this.getClass().getSimpleName()
 							+ " only works inside "
 							+ QuestionDashTree.class.getSimpleName()
 							+ "s. It seems the handler is used with the wrong Type.");
-			return new ArrayList<Message>(0);
+			Messages.clearMessages(compiler, section, getClass());
+			return;
 		}
 
 		Section<? extends DashTreeElement> dashTreeFather = DashTreeUtils
@@ -91,7 +90,8 @@ public class IndicationHandler extends D3webSubtreeHandler<D3webTerm<NamedObject
 		if (dashTreeFather == null) {
 			// In case, that the element is already root element, no indication
 			// rule has to be defined, this a warning is not reasonable
-			return new ArrayList<Message>(0);
+			Messages.clearMessages(compiler, section, getClass());
+			return;
 			// return Arrays.asList((KDOMReportMessage) new
 			// CreateRelationFailed(
 			// D3webModule.getKwikiBundle_d3web().
@@ -100,16 +100,18 @@ public class IndicationHandler extends D3webSubtreeHandler<D3webTerm<NamedObject
 		}
 
 		Section<QuestionTreeAnswerDefinition> answerSec =
-					Sections.findSuccessor(dashTreeFather, QuestionTreeAnswerDefinition.class);
+				Sections.findSuccessor(dashTreeFather, QuestionTreeAnswerDefinition.class);
 		Section<NumericCondLine> numCondSec =
-					Sections.findSuccessor(dashTreeFather, NumericCondLine.class);
+				Sections.findSuccessor(dashTreeFather, NumericCondLine.class);
 
 		if (answerSec != null || numCondSec != null) {
 
-			if (s.hasErrorInSubtree(article)) {
-				return Messages.asList(Messages.creationFailedWarning(
-						D3webUtils.getD3webBundle().
-								getString("KnowWE.rulesNew.indicationnotcreated")));
+			if (section.hasErrorInSubtree(compiler)) {
+				Message msg = Messages.creationFailedWarning(
+						D3webUtils.getD3webBundle().getString(
+								"KnowWE.rulesNew.indicationnotcreated"));
+				Messages.storeMessage(compiler, section, getClass(), msg);
+				return;
 			}
 
 			// retrieve the QASet for the different Types that might
@@ -121,38 +123,42 @@ public class IndicationHandler extends D3webSubtreeHandler<D3webTerm<NamedObject
 			if (termRef != null) {
 				if (termRef.get() instanceof QuestionnaireReference) {
 					Section<QuestionnaireReference> qnref = (Section<QuestionnaireReference>) termRef;
-					qaset = qnref.get().getTermObject(article, qnref);
+					qaset = qnref.get().getTermObject(compiler, qnref);
 				}
 				else if (termRef.get() instanceof QuestionDefinition) {
 					Section<QuestionDefinition> qdef = (Section<QuestionDefinition>) termRef;
-					qaset = qdef.get().getTermObject(article, qdef);
+					qaset = qdef.get().getTermObject(compiler, qdef);
 				}
 				else if (termRef.get() instanceof QuestionReference) {
 					Section<QuestionReference> qref = (Section<QuestionReference>) termRef;
-					qaset = qref.get().getTermObject(article, qref);
+					qaset = qref.get().getTermObject(compiler, qref);
 				}
 			}
 
 			if (qaset != null) {
 
-				Condition cond = QuestionDashTreeUtils.createCondition(article,
+				Condition cond = QuestionDashTreeUtils.createCondition(compiler,
 						DashTreeUtils.getAncestorDashTreeElements(element));
 
 				if (cond != null) {
 					Rule r = RuleFactory.createIndicationRule(qaset, cond);
 
 					if (r != null) {
-						KnowWEUtils.storeObject(article, s, indicationStoreKey, r);
-						return Messages.asList(Messages.objectCreatedNotice(
-								r.getClass().toString()));
+						Compilers.storeObject(compiler, section, indicationStoreKey, r);
+						Messages.storeMessage(compiler, section, getClass(),
+								Messages.objectCreatedNotice(
+										r.getClass().toString()));
+						return;
 					}
 				}
 			}
-			return Messages.asList(Messages.creationFailedWarning(
-					Rule.class.getSimpleName()));
+
+			Messages.storeMessage(compiler, section, getClass(),
+					Messages.creationFailedWarning(
+							Rule.class.getSimpleName()));
 		}
 
-		return new ArrayList<Message>(0);
+		Messages.clearMessages(compiler, section, getClass());
 	}
 
 }

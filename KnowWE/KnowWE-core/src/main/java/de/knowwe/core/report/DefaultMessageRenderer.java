@@ -20,6 +20,7 @@
 
 package de.knowwe.core.report;
 
+import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 
@@ -52,17 +53,17 @@ public class DefaultMessageRenderer implements MessageRenderer {
 	}
 
 	@Override
-	public void postRenderMessage(Message m, UserContext user, String source, RenderResult result) {
+	public void postRenderMessage(Message m, UserContext user, Compiler source, RenderResult result) {
 		result.appendHtml("</span>");
 	}
 
 	@Override
-	public void preRenderMessage(Message m, UserContext user, String source, RenderResult result) {
+	public void preRenderMessage(Message m, UserContext user, Compiler source, RenderResult result) {
 
 		result.appendHtml("<span");
 		String tooltip = m.getVerbalization();
 		if (tooltip != null) {
-			if (source != null && !source.isEmpty()) {
+			if (source != null) {
 				tooltip = source + ": " + tooltip;
 			}
 			result.append(" title='").appendEntityEncoded(

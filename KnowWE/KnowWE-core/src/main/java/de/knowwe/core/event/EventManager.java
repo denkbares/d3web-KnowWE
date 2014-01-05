@@ -27,10 +27,6 @@ import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.d3web.plugin.Extension;
-import de.d3web.plugin.PluginManager;
-import de.knowwe.plugin.Plugins;
-
 /**
  * A very simple EventManager. Events are represented by Classes
  * 
@@ -59,17 +55,8 @@ public class EventManager {
 	 * Creates the listener map by fetching all EventListener extensions from
 	 * the PluginManager
 	 */
-	public EventManager() {
-		// get all EventListeners
-		Extension[] exts = PluginManager.getInstance().getExtensions(
-				Plugins.EXTENDED_PLUGIN_ID,
-				Plugins.EXTENDED_POINT_EventListener);
-		for (Extension extension : exts) {
-			Object o = extension.getSingleton();
-			if (o instanceof EventListener) {
-				registerListener(((EventListener) o));
-			}
-		}
+	private EventManager() {
+
 	}
 
 	public void registerListener(EventListener listener) {
@@ -102,25 +89,28 @@ public class EventManager {
 	 * Fires events; the calls are distributed in the system where the
 	 * corresponding events should be fired (also plugin may fire events)
 	 * 
-	 * @param username
-	 * @param s
-	 * @param event
+	 * @param event the fired event
 	 */
 	public void fireEvent(Event event) {
 
-		WeakHashMap<EventListener, Object> listeners = this.listenerMap.get(event.getClass());
-		if (listeners != null) {
-			for (EventListener eventListener : new ArrayList<EventListener>(listeners.keySet())) {
-				try {
-					eventListener.notify(event);
-				}
-				catch (Exception e) {
-					Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
-							"Catched exception in EventListener", e);
-				}
+		ArrayList<EventListener> allListeners = new ArrayList<EventListener>();
+		Class<?> eventClass = event.getClass();
+		while (!eventClass.equals(Event.class)) {
+			WeakHashMap<EventListener, Object> listeners = this.listenerMap.get(eventClass);
+			if (listeners != null) {
+				allListeners.addAll(listeners.keySet());
+			}
+			eventClass = eventClass.getSuperclass();
+		}
+		for (EventListener eventListener : allListeners) {
+			try {
+				eventListener.notify(event);
+			}
+			catch (Exception e) {
+				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
+						"Catched exception in EventListener", e);
 			}
 		}
 
 	}
-
 }

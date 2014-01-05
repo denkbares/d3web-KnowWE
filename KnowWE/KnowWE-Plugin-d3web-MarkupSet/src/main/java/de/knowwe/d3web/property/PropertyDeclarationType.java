@@ -67,7 +67,7 @@ public class PropertyDeclarationType extends AbstractType {
 		this.addChildType(new PropertyContentType());
 		this.addChildType(new Indent());
 
-		addSubtreeHandler(Priority.LOW, new PropertyDeclarationHandler());
+		addCompileScript(Priority.LOW, new PropertyDeclarationHandler());
 		this.setRenderer(AnchorRenderer.getDelegateInstance());
 	}
 

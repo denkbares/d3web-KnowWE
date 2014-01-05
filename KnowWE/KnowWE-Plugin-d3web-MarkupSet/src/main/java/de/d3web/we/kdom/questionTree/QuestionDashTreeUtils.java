@@ -38,8 +38,10 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.session.values.ChoiceValue;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionDefinition;
+import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
@@ -60,15 +62,14 @@ public class QuestionDashTreeUtils {
 	 * <tt>DashTreeElement.getDashTreeAncestors(Section s)</tt>, if <tt>s</tt>
 	 * is the child Section of an answer in a valid DashTree.
 	 * 
-	 * @param article TODO
 	 */
 	public static Condition createCondition(
-			Article article, List<Section<? extends DashTreeElement>> ancestors) {
+			D3webCompiler compiler, List<Section<? extends DashTreeElement>> ancestors) {
 
 		List<Condition> simpleConds = new ArrayList<Condition>();
 
 		for (int i = 0; i + 2 <= ancestors.size(); i += 2) {
-			Condition simpleCond = createSimpleCondition(article, ancestors
+			Condition simpleCond = createSimpleCondition(compiler, ancestors
 					.get(i), ancestors.get(i + 1));
 			if (simpleCond != null) {
 				simpleConds.add(simpleCond);
@@ -93,16 +94,16 @@ public class QuestionDashTreeUtils {
 	 * QuestionID. If thats not the case, <tt>null</tt> will be returned.
 	 */
 	public static Condition createSimpleCondition(
-			Article article,
+			D3webCompiler compiler,
 			Section<? extends DashTreeElement> father,
 			Section<? extends DashTreeElement> grandFather) {
 
-		if (father.hasErrorInSubtree(article) || grandFather.hasErrorInSubtree(article)) {
+		if (father.hasErrorInSubtree(compiler) || grandFather.hasErrorInSubtree(compiler)) {
 			return null;
 		}
 
 		Section<QuestionTreeAnswerDefinition> answerSec =
-					Sections.findSuccessor(father, QuestionTreeAnswerDefinition.class);
+				Sections.findSuccessor(father, QuestionTreeAnswerDefinition.class);
 		Section<QuestionDefinition> qSec = Sections.findSuccessor(grandFather,
 				QuestionDefinition.class);
 
@@ -110,10 +111,10 @@ public class QuestionDashTreeUtils {
 			return null;
 		}
 
-		Question q = qSec.get().getTermObject(article, qSec);
+		Question q = qSec.get().getTermObject(compiler, qSec);
 
 		if (answerSec != null && q instanceof QuestionChoice) {
-			Choice a = answerSec.get().getTermObject(article, answerSec);
+			Choice a = answerSec.get().getTermObject(compiler, answerSec);
 			if (a != null) {
 				CondEqual c = new CondEqual(q, new ChoiceValue(
 						a));
@@ -122,7 +123,7 @@ public class QuestionDashTreeUtils {
 		}
 
 		Section<NumericCondLine> numCondSec =
-					Sections.findSuccessor(father, NumericCondLine.class);
+				Sections.findSuccessor(father, NumericCondLine.class);
 
 		if (numCondSec != null && q instanceof QuestionNum) {
 			if (NumericCondLine.isIntervall(numCondSec)) {
@@ -134,9 +135,9 @@ public class QuestionDashTreeUtils {
 				if (d == null) return null;
 				String comp = NumericCondLine.getComparator(numCondSec);
 
-				if (d != null && comp != null) return createCondNum(father.getArticle(),
+				if (d != null && comp != null) return createCondNum(compiler,
 						numCondSec, comp, d,
-								(QuestionNum) q);
+						(QuestionNum) q);
 				;
 			}
 		}
@@ -145,10 +146,10 @@ public class QuestionDashTreeUtils {
 
 	}
 
-	private static Condition createCondNum(Article article,
+	private static Condition createCondNum(PackageCompiler compiler,
 			Section<NumericCondLine> comp, String comparator, Double valueOf,
 			QuestionNum questionNum) {
-		Messages.clearMessages(article, comp, QuestionDashTreeUtils.class);
+		Messages.clearMessages(compiler, comp, QuestionDashTreeUtils.class);
 
 		if (comparator.equals("=")) return new CondNumEqual(questionNum, valueOf);
 		else if (comparator.equals(">")) return new CondNumGreater(questionNum, valueOf);
@@ -158,7 +159,7 @@ public class QuestionDashTreeUtils {
 		else if (comparator.equals("<=")) return new CondNumLessEqual(questionNum,
 				valueOf);
 		else {
-			Messages.storeMessage(article, comp,
+			Messages.storeMessage(compiler, comp,
 					QuestionDashTreeUtils.class,
 					Messages.error("Unkown comparator '" + comparator + "'."));
 			return null;

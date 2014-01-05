@@ -25,7 +25,7 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
-import de.knowwe.core.kdom.Article;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.diaflux.type.FlowchartType;
@@ -75,29 +75,29 @@ public class NodeHandlerManager implements NodeHandler {
 	}
 
 	@Override
-	public boolean canCreateNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection) {
+	public boolean canCreateNode(D3webCompiler compiler, KnowledgeBase kb, Section<NodeType> nodeSection) {
 		for (NodeHandler handler : HANDLERS) {
-			if (handler.canCreateNode(article, kb, nodeSection)) return true;
+			if (handler.canCreateNode(compiler, kb, nodeSection)) return true;
 		}
 
 		return false;
 	}
 
 	@Override
-	public Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection,
+	public Node createNode(D3webCompiler compiler, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id) {
-		NodeHandler nodeHandler = findNodeHandler(article, kb, nodeSection);
+		NodeHandler nodeHandler = findNodeHandler(compiler, kb, nodeSection);
 
 		if (nodeHandler == null) return null;
 
-		return nodeHandler.createNode(article, kb, nodeSection, flowSection, id);
+		return nodeHandler.createNode(compiler, kb, nodeSection, flowSection, id);
 	}
 
-	public NodeHandler findNodeHandler(Article article,
+	public NodeHandler findNodeHandler(D3webCompiler compiler,
 			KnowledgeBase kb, Section<NodeType> nodeSection) {
 
 		for (NodeHandler handler : HANDLERS) {
-			if (handler.canCreateNode(article, kb, nodeSection)) return handler;
+			if (handler.canCreateNode(compiler, kb, nodeSection)) return handler;
 		}
 
 		return null;

@@ -7,7 +7,9 @@ import java.io.PrintStream;
 import java.util.List;
 
 import de.d3web.utils.Streams;
+import de.d3web.we.ci4ke.build.CIBuildManager;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
+import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.d3web.we.ci4ke.hook.CIHookManager;
 import de.knowwe.core.kdom.Article;
@@ -22,7 +24,7 @@ public class DashboadScanner implements Scanner {
 		// wait for build thread to terminate
 		CIHookManager hookManager = CIHookManager.getInstance();
 		hookManager.triggerHooks(article);
-		hookManager.waitForTermination();
+		CIBuildManager.awaitTermination();
 
 		List<Section<CIDashboardType>> dashboardTypes = Sections.findSuccessorsOfType(
 				article.getRootSection(), CIDashboardType.class);
@@ -32,7 +34,7 @@ public class DashboadScanner implements Scanner {
 		PrintStream out = new PrintStream(target);
 		try {
 			for (Section<CIDashboardType> section : dashboardTypes) {
-				CIDashboard dashboard = CIDashboard.getDashboard(section);
+				CIDashboard dashboard = CIDashboardManager.getDashboard(section);
 				out.printf("<!-- Dashboard %s -->\n", dashboard.getDashboardName());
 				InputStream in = dashboard.getBuildAttachment().getInputStream();
 				try {

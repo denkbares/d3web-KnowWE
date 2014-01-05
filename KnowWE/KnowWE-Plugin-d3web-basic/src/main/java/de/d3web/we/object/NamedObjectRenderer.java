@@ -24,6 +24,7 @@ import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.strings.Identifier;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.PlainText;
@@ -43,9 +44,9 @@ public class NamedObjectRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult string) {
-		Article article = KnowWEUtils.getCompilingArticles(section).iterator().next();
+		Article article = Compilers.getCompilingArticles(section).iterator().next();
 		Identifier termIdentifier = KnowWEUtils.getTermIdentifier(section);
-		TerminologyManager tManager = KnowWEUtils.getTerminologyManager(article);
+		TerminologyManager tManager = Compilers.getTerminologyManager(article);
 		Renderer renderer;
 		if (tManager.hasTermOfClass(termIdentifier, Question.class)) {
 			renderer = new ValueTooltipRenderer(StyleRenderer.Question);

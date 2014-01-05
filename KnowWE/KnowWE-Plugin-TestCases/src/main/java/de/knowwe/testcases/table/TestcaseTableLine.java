@@ -35,7 +35,7 @@ public class TestcaseTableLine extends TableLine {
 	public TestcaseTableLine() {
 		setRenderer(new TestcaseTableLineRenderer());
 		replaceChildType(new Cell(), TableCell.class);
-		addSubtreeHandler(new TestcaseTableLineSubtreeHandler());
+		addCompileScript(new TestcaseTableLineSubtreeHandler());
 	}
 
 	@Override

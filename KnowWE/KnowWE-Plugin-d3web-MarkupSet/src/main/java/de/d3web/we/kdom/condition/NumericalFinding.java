@@ -32,9 +32,9 @@ import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.strings.Strings;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.Number;
 import de.knowwe.core.kdom.parsing.Section;
@@ -107,7 +107,7 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 	}
 
 	@Override
-	protected Condition createCondition(Article article, Section<NumericalFinding> s) {
+	protected Condition createCondition(D3webCompiler compiler, Section<NumericalFinding> s) {
 		Section<QuestionReference> qRef = Sections.findSuccessor(s, QuestionReference.class);
 
 		Section<Number> numberSec = Sections.findSuccessor(s, Number.class);
@@ -115,7 +115,7 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 		if (numberSec == null) {
 			Message error = Messages.invalidNumberError(
 					"No number on right side of comparator.");
-			Messages.storeMessage(article, s, getClass(), error);
+			Messages.storeMessage(compiler, s, getClass(), error);
 			return null;
 		}
 
@@ -126,11 +126,11 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 		if (number == null) {
 			Message error = Messages.invalidNumberError(
 					numberSec.getText());
-			Messages.storeMessage(article, numberSec, getClass(), error);
+			Messages.storeMessage(compiler, numberSec, getClass(), error);
 			return null;
 		}
 
-		Question q = qRef.get().getTermObject(article, qRef);
+		Question q = qRef.get().getTermObject(compiler, qRef);
 
 		if (!(q instanceof QuestionNum)) {
 			// TODO some reasonable error handling here!

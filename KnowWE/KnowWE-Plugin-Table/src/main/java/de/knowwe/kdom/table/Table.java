@@ -77,7 +77,7 @@ public class Table extends AbstractType {
 		Type cellContentType = de.knowwe.core.kdom.Types.findSuccessorType(master,
 				TableCellContent.class);
 		if (cellContentType instanceof AbstractType) {
-			((AbstractType) cellContentType).addChildType(injection);
+			((Type) cellContentType).addChildType(injection);
 		}
 	}
 

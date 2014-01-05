@@ -33,7 +33,6 @@ import de.knowwe.kdom.table.TableLine;
 public class TestcaseTable extends Table {
 
 	public static final String TESTCASE_INFOSTORE_KEY = "testcasetablekey";
-	public static final String TESTCASE_KEY = "testcasekey";
 	private static final String INDEX_KEY = "indexkey";
 	private static final String HEADERCELL_KEY = "headercellkey";
 
@@ -42,7 +41,7 @@ public class TestcaseTable extends Table {
 		replaceChildType(new HeaderLine(), TableLine.class);
 
 		addChildType(new TestcaseTableLine());
-		addSubtreeHandler(new TestcaseTableSubtreeHandler());
+		addCompileScript(new TestcaseTableSubtreeHandler());
 		setSectionFinder(new AllTextFinderTrimmed());
 	}
 

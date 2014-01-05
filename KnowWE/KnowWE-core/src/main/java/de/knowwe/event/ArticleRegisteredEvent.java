@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 denkbares GmbH
+ * Copyright (C) 2010 University Wuerzburg, Computer Science VI
  * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -18,19 +18,13 @@
  */
 package de.knowwe.event;
 
-import de.knowwe.core.event.Event;
+import de.knowwe.core.event.ArticleEvent;
 import de.knowwe.core.kdom.Article;
 
-public class ArticleRegisteredEvent extends Event {
-
-	private final Article article;
+public class ArticleRegisteredEvent extends ArticleEvent {
 
 	public ArticleRegisteredEvent(Article article) {
-		this.article = article;
-	}
-
-	public Article getArticle() {
-		return this.article;
+		super(article);
 	}
 
 }

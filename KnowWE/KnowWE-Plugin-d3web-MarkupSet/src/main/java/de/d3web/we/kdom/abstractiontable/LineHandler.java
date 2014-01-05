@@ -1,7 +1,6 @@
 package de.d3web.we.kdom.abstractiontable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -24,25 +23,27 @@ import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.scoring.ActionHeuristicPS;
 import de.d3web.scoring.Score;
 import de.d3web.scoring.inference.PSMethodHeuristic;
+import de.d3web.we.knowledgebase.D3webCompileScript;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.SolutionReference;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableLine;
 import de.knowwe.kdom.table.TableUtils;
 
-public class LineHandler extends D3webSubtreeHandler<TableLine> {
+public class LineHandler extends D3webCompileScript<TableLine> {
 
 	@Override
-	public Collection<Message> create(Article article, Section<TableLine> section) {
+	public void compile(D3webCompiler compiler, Section<TableLine> section) {
 
-		if (TableUtils.isHeaderRow(section)) return Messages.noMessage();
+		if (TableUtils.isHeaderRow(section)) {
+			Messages.clearMessages(compiler, section, getClass());
+			return;
+		}
 
 		List<Section<CellContent>> cells = Sections.findSuccessorsOfType(section, CellContent.class);
 		Iterator<Section<CellContent>> cellIter = cells.iterator();
@@ -55,12 +56,12 @@ public class LineHandler extends D3webSubtreeHandler<TableLine> {
 			Section<? extends Type> knowledgeSection = cell.getChildren().get(0);
 			if (cellIter.hasNext()) {
 				// it's a condition cell
-				Condition condition = createCondition(article, knowledgeSection);
+				Condition condition = createCondition(compiler, knowledgeSection);
 				if (condition != null) conditions.add(condition);
 			}
 			else {
 				// it's the action cell then
-				action = createAction(article, knowledgeSection);
+				action = createAction(compiler, knowledgeSection);
 			}
 		}
 
@@ -69,12 +70,14 @@ public class LineHandler extends D3webSubtreeHandler<TableLine> {
 			String message = "Rule for row " + row + " was not created (no "
 					+ (action == null ? "action" : "conditions")
 					+ " found)";
-			return Messages.asList(Messages.error(message));
+			Messages.storeMessage(compiler, section, getClass(), Messages.error(message));
+			return;
 		}
 
 		Rule rule = createRule(conditions, action);
 
-		return Messages.asList(Messages.notice("Created Rule " + rule.toString()));
+		Messages.storeMessage(compiler, section, getClass(),
+				Messages.notice("Created Rule " + rule.toString()));
 	}
 
 	private Rule createRule(List<Condition> conditions, PSAction action) {
@@ -94,107 +97,110 @@ public class LineHandler extends D3webSubtreeHandler<TableLine> {
 		return new CondAnd(conditions);
 	}
 
-	private PSAction createAction(Article article, Section<? extends Type> knowledgeSection) {
+	private PSAction createAction(D3webCompiler compiler, Section<? extends Type> knowledgeSection) {
 		Type type = knowledgeSection.get();
 		if (type instanceof AnswerReferenceCell) {
 			Section<AnswerReferenceCell> answerReference =
 					Sections.cast(knowledgeSection, AnswerReferenceCell.class);
-			return createActionSetValue(article, answerReference);
+			return createActionSetValue(compiler, answerReference);
 		}
 		else if (type instanceof QuestionNumCell) {
 			Section<QuestionNumCell> questionNumCell =
 					Sections.cast(knowledgeSection, QuestionNumCell.class);
-			return createNumActionSetValue(article, questionNumCell);
+			return createNumActionSetValue(compiler, questionNumCell);
 		}
 		else if (type instanceof SolutionScoreCell) {
 			Section<SolutionScoreCell> solutionScoreCell =
 					Sections.cast(knowledgeSection, SolutionScoreCell.class);
-			return createActionHeuristicPS(article, solutionScoreCell);
+			return createActionHeuristicPS(compiler, solutionScoreCell);
 		}
 		return null;
 	}
 
-	private PSAction createActionHeuristicPS(Article article, Section<SolutionScoreCell> solutionScoreCell) {
-		Score score = solutionScoreCell.get().createScore(article, solutionScoreCell);
+	private PSAction createActionHeuristicPS(D3webCompiler compiler, Section<SolutionScoreCell> solutionScoreCell) {
+		Score score = solutionScoreCell.get().createScore(compiler, solutionScoreCell);
 		if (score == null) return null;
-		Solution solution = getSolution(article, solutionScoreCell);
+		Solution solution = getSolution(compiler, solutionScoreCell);
 		ActionHeuristicPS action = new ActionHeuristicPS();
 		action.setSolution(solution);
 		action.setScore(score);
 		return action;
 	}
 
-	private PSAction createActionSetValue(Article article, Section<AnswerReferenceCell> answerReference) {
-		Choice choice = answerReference.get().getTermObject(article, answerReference);
+	private PSAction createActionSetValue(D3webCompiler compiler, Section<AnswerReferenceCell> answerReference) {
+		Choice choice = answerReference.get().getTermObject(compiler, answerReference);
 		if (choice == null) return null;
-		Question question = getQuestion(article, answerReference);
+		Question question = getQuestion(compiler, answerReference);
 		ActionSetQuestion action = new ActionSetQuestion();
 		action.setQuestion(question);
 		action.setValue(new ChoiceValue(choice));
 		return action;
 	}
 
-	private PSAction createNumActionSetValue(Article article, Section<QuestionNumCell> questionNumCell) {
-		Question questionNum = getQuestion(article, questionNumCell);
-		return questionNumCell.get().createNumActionSetValue(article, (QuestionNum) questionNum,
+	private PSAction createNumActionSetValue(D3webCompiler compiler, Section<QuestionNumCell> questionNumCell) {
+		Question questionNum = getQuestion(compiler, questionNumCell);
+		return questionNumCell.get().createNumActionSetValue(compiler, (QuestionNum) questionNum,
 				questionNumCell);
 	}
 
-	private Condition createCondition(Article article, Section<? extends Type> knowledgeSection) {
+	private Condition createCondition(D3webCompiler compiler, Section<? extends Type> knowledgeSection) {
 		Type type = knowledgeSection.get();
 		if (type instanceof AnswerReferenceCell) {
 			Section<AnswerReferenceCell> answerReference =
 					Sections.cast(knowledgeSection, AnswerReferenceCell.class);
-			return createCondEqual(article, answerReference);
+			return createCondEqual(compiler, answerReference);
 		}
 		else if (type instanceof QuestionNumCell) {
 			Section<QuestionNumCell> questionNumCell =
 					Sections.cast(knowledgeSection, QuestionNumCell.class);
-			return createCondNum(article, questionNumCell);
+			return createCondNum(compiler, questionNumCell);
 		}
 		else if (type instanceof SolutionStateCell) {
 			Section<SolutionStateCell> solutionStateCell =
 					Sections.cast(knowledgeSection, SolutionStateCell.class);
-			return createCondDState(article, solutionStateCell);
+			return createCondDState(compiler, solutionStateCell);
 		}
 		return null;
 	}
 
-	private CondEqual createCondEqual(Article article, Section<AnswerReferenceCell> answerReference) {
-		Question question = getQuestion(article, answerReference);
-		Choice choice = answerReference.get().getTermObject(article, answerReference);
+	private CondEqual createCondEqual(D3webCompiler compiler, Section<AnswerReferenceCell> answerReference) {
+		Question question = getQuestion(compiler, answerReference);
+		Choice choice = answerReference.get().getTermObject(compiler, answerReference);
 		if (choice == null) return null;
 		CondEqual cond = new CondEqual(question, new ChoiceValue(choice));
 		return cond;
 	}
 
-	private Condition createCondNum(Article article, Section<QuestionNumCell> questionNumCell) {
-		Question question = getQuestion(article, questionNumCell);
-		CondNum condNum = questionNumCell.get().createCondNum(article, (QuestionNum) question,
+	private Condition createCondNum(D3webCompiler compiler, Section<QuestionNumCell> questionNumCell) {
+		Question question = getQuestion(compiler, questionNumCell);
+		CondNum condNum = questionNumCell.get().createCondNum(compiler, (QuestionNum) question,
 				questionNumCell);
 		return condNum;
 	}
 
-	private Condition createCondDState(Article article, Section<SolutionStateCell> solutionStateCell) {
-		Solution solution = getSolution(article, solutionStateCell);
-		CondDState condDState = solutionStateCell.get().createCondDState(article, solution,
+	private Condition createCondDState(D3webCompiler compiler, Section<SolutionStateCell> solutionStateCell) {
+		Solution solution = getSolution(compiler, solutionStateCell);
+		CondDState condDState = solutionStateCell.get().createCondDState(compiler, solution,
 				solutionStateCell);
 		return condDState;
 	}
 
-	private Solution getSolution(Article article, Section<? extends Type> knowledgeSection) {
+	private Solution getSolution(D3webCompiler compiler, Section<? extends Type> knowledgeSection) {
 		Section<TableCellContent> columnHeader = TableUtils.getColumnHeader(knowledgeSection);
 		Section<SolutionReference> solutionReference = Sections.findSuccessor(columnHeader,
 				SolutionReference.class);
-		Solution solution = solutionReference.get().getTermObject(article, solutionReference);
+		if (solutionReference == null) return null;
+		Solution solution = solutionReference.get().getTermObject(compiler, solutionReference);
 		return solution;
 	}
 
-	private Question getQuestion(Article article, Section<? extends Type> knowledgeSection) {
+	private Question getQuestion(D3webCompiler compiler, Section<? extends Type> knowledgeSection) {
 		Section<TableCellContent> columnHeader = TableUtils.getColumnHeader(knowledgeSection);
 		Section<QuestionReference> questionReference = Sections.findSuccessor(columnHeader,
 				QuestionReference.class);
-		Question question = questionReference.get().getTermObject(article, questionReference);
+		if (questionReference == null) return null;
+		Question question = questionReference.get().getTermObject(compiler, questionReference);
 		return question;
 	}
+
 }

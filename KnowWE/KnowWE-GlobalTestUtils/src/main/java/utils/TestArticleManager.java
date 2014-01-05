@@ -18,16 +18,14 @@
  */
 package utils;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
 
 import connector.DummyConnector;
 import connector.DummyPageProvider;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -38,15 +36,15 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class TestArticleManager {
 
-	private final Map<String, Article> articles = new HashMap<String, Article>();
-
 	private static TestArticleManager instance = new TestArticleManager();
 
 	/**
 	 * Private Constructor insures noninstantiabilty.
 	 */
 	private TestArticleManager() {
-
+		DummyPageProvider pageProvider = new DummyPageProvider();
+		DummyConnector connector = new DummyConnector(pageProvider);
+		Environment.initInstance(connector);
 	}
 
 	public static TestArticleManager getInstance() {
@@ -60,60 +58,29 @@ public class TestArticleManager {
 	 */
 	public static Article getArticle(String filename) {
 
-		if (!getInstance().articles.containsKey(filename)) {
+		Article article = Compilers.getDefaultArticleManager(Environment.DEFAULT_WEB).getArticle(
+				filename);
+		if (article == null) {
 			// Read File containing content
 			String content = KnowWEUtils.readFile(filename);
-			Article article = createArcticleFromSourceFile(content, filename);
-			getInstance().articles.put(filename, article);
-
-			return article;
+			Environment.getInstance().getWikiConnector().createArticle(filename, content,
+					TestArticleManager.class.getSimpleName());
+			article = Compilers.getDefaultArticleManager(Environment.DEFAULT_WEB).getArticle(
+					filename);
 		}
-
-		return getInstance().articles.get(filename);
-	}
-
-	/**
-	 * 
-	 * @created 01.09.2010
-	 * @param content
-	 * @return
-	 */
-	private static Article createArcticleFromSourceFile(String content, String filename) {
-		// Initialize KnowWE
-		DummyConnector connector = null;
 		try {
-			// added a DummyPageProvider just to prevent NullPointers from being
-			// thrown.
-			// TODO: rewrite/replace this TestArticleManager with one that
-			// properly uses the DummyConnector and DummyPageProvider
-			connector = new DummyConnector(new DummyPageProvider(new File("")));
+			Compilers.getDefaultCompilerManager(Environment.DEFAULT_WEB).awaitTermination();
 		}
-		catch (IOException e) {
-			e.printStackTrace();
+		catch (InterruptedException e) {
+			return null;
 		}
-		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
-		if (!Environment.isInitialized()) {
-			Environment.initInstance(connector);
-		}
-
-		int start = filename.lastIndexOf("/") + 1;
-		int end = filename.lastIndexOf(".");
-		String topic = filename.substring(start, end);
-		ArticleManager articleManager = Environment.getInstance().getArticleManager(
-				"default_web");
-		articleManager.setArticlesInitialized(true);
-
-		// Create Article
-		Article article = Article.createArticle(content, topic, "default_web");
-		articleManager.registerArticle(article);
 		return article;
 	}
 
 	public static void clear() {
-		getInstance().articles.clear();
-		ArticleManager articleManager = Environment.getInstance().getArticleManager(
-				"default_web");
-		for (Article article : new ArrayList<Article>(articleManager.getArticles())) {
+		ArticleManager articleManager = Compilers.getDefaultArticleManager(Environment.DEFAULT_WEB);
+		Collection<Article> articles = articleManager.getArticles();
+		for (Article article : new ArrayList<Article>(articles)) {
 			articleManager.deleteArticle(article);
 		}
 	}

@@ -22,18 +22,18 @@ package de.knowwe.kdom.defaultMarkup;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import de.d3web.strings.Strings;
-import de.knowwe.core.Environment;
-import de.knowwe.core.kdom.Article;
+import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.packaging.PackageCompileType;
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -130,27 +130,43 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	public void renderMessages(Section<?> section, RenderResult string) {
-
 		renderCompileWarning(section, string);
 		renderMessageBlock(section, string, Message.Type.ERROR, Message.Type.WARNING);
 	}
 
-	private static Map<Section<?>, Map<Message, Collection<Article>>> getMessageSectionsOfSubtree(Section<?> rootSection, Type messageType) {
-		Map<Section<?>, Map<Message, Collection<Article>>> collectedMessages = new HashMap<Section<?>, Map<Message, Collection<Article>>>();
+	protected void renderCompileWarning(Section<?> section, RenderResult string) {
+
+		String[] packages = DefaultMarkupType.getAnnotations(section,
+				PackageManager.PACKAGE_ATTRIBUTE_NAME);
+		List<Message> msgs = new ArrayList<Message>();
+		for (String packageName : packages) {
+
+			Collection<Section<? extends PackageCompileType>> compileSections = Compilers.getPackageManager(
+					section).getCompileSections(packageName);
+
+			// add warning if section is not compiled
+			if (compileSections.isEmpty()) {
+				msgs.add(Messages.warning("The package '" + packageName
+						+ "' is not used to compile any knowledge."));
+			}
+		}
+		if (!msgs.isEmpty()) Messages.storeMessages(section, getClass(), msgs);
+	}
+
+	private static Map<Section<?>, Map<Message, Collection<Compiler>>> getMessageSectionsOfSubtree(Section<?> rootSection, Type messageType) {
+		Map<Section<?>, Map<Message, Collection<Compiler>>> collectedMessages = new LinkedHashMap<Section<?>, Map<Message, Collection<Compiler>>>();
 		for (Section<?> subTreeSection : Sections.getSubtreePreOrder(rootSection)) {
-			Collection<Article> compilers = new TreeSet<Article>(new ArticleComparator());
-			compilers.addAll(
-					KnowWEUtils.getCompilingArticleObjects(subTreeSection));
-			compilers.add(rootSection.getArticle());
+			Collection<Compiler> compilers = new ArrayList<Compiler>(Compilers.getCompilers(
+					subTreeSection, Compiler.class));
 			compilers.add(null);
-			Map<Message, Collection<Article>> compilersForMessage = new HashMap<Message, Collection<Article>>();
-			for (Article compiler : compilers) {
+			Map<Message, Collection<Compiler>> compilersForMessage = new LinkedHashMap<Message, Collection<Compiler>>();
+			for (Compiler compiler : compilers) {
 				Collection<Message> messages = Messages.getMessages(compiler, subTreeSection,
 						messageType);
 				for (Message message : messages) {
-					Collection<Article> messageCompilers = compilersForMessage.get(message);
+					Collection<Compiler> messageCompilers = compilersForMessage.get(message);
 					if (messageCompilers == null) {
-						messageCompilers = new LinkedList<Article>();
+						messageCompilers = new LinkedList<Compiler>();
 						compilersForMessage.put(message, messageCompilers);
 					}
 					messageCompilers.add(compiler);
@@ -161,35 +177,6 @@ public class DefaultMarkupRenderer implements Renderer {
 			}
 		}
 		return collectedMessages;
-	}
-
-	private void renderCompileWarning(Section<?> section, RenderResult string) {
-		// add warning if section is not compiled
-		if (section.get().isPackageCompile()) {
-
-			Set<String> compilingArticles = Environment.getInstance().getPackageManager(
-					section.getWeb()).getCompilingArticles(section);
-			if (compilingArticles.isEmpty()) {
-				Set<String> packageNames = section.getPackageNames();
-				String warningString;
-				if (packageNames.size() == 1) {
-					warningString = "This section is registered to the package '"
-							+ packageNames.iterator().next()
-							+ "' which is not compiled in any article.";
-				}
-				else if (packageNames.size() > 1) {
-					warningString = "This section is registered to the packages "
-							+ packageNames.toString() + " which are not compiled in any article.";
-				}
-				else {
-					warningString = "This section is not registered to any package and therefore "
-							+ "not compiled in any article.";
-				}
-				renderMessagesOfType(Type.WARNING,
-						Messages.asList(Messages.warning(warningString)),
-						string);
-			}
-		}
 	}
 
 	public static void renderMessageBlock(Section<?> rootSection,
@@ -215,26 +202,22 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	public static Collection<String> getMessageStrings(Section<?> rootSection, Type type) {
-		Map<Section<?>, Map<Message, Collection<Article>>> collectedMessages =
+		Map<Section<?>, Map<Message, Collection<Compiler>>> collectedMessages =
 				getMessageSectionsOfSubtree(rootSection, type);
 
 		Collection<String> messages = new LinkedHashSet<String>();
 		for (Section<?> section : collectedMessages.keySet()) {
-			Map<Message, Collection<Article>> compilerForMessage = collectedMessages.get(section);
-			for (Message msg : compilerForMessage.keySet()) {
+			Map<Message, Collection<Compiler>> compilerForMessage = collectedMessages.get(section);
+			for (Entry<Message, Collection<Compiler>> entry : compilerForMessage.entrySet()) {
+				Message msg = entry.getKey();
 				String message = KnowWEUtils.maskJSPWikiMarkup(msg.getVerbalization());
 				// if we have multiple other article compilers
-				boolean multiCompiled = KnowWEUtils.getCompilingArticleObjects(section).size() > 1;
-				Collection<Article> compilers = compilerForMessage.get(msg);
+				Collection<Compiler> compilers = entry.getValue();
+				boolean multiCompiled = compilers.size() > 1;
 				compilers.remove(null);
 				if (multiCompiled && !compilers.isEmpty()) {
 					message += " (compiled in ";
-					boolean first = true;
-					for (Article article : compilers) {
-						if (!first) message += ", ";
-						first = false;
-						message += "[" + article.getTitle() + "]";
-					}
+					message += Strings.concat(", ", compilers);
 					message += ")";
 				}
 				messages.add(message);
@@ -433,18 +416,6 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	public void setPreFormattedStyle(boolean preFormattedStyle) {
 		this.preFormattedStyle = preFormattedStyle;
-	}
-
-	private static class ArticleComparator implements Comparator<Article> {
-
-		@Override
-		public int compare(Article o1, Article o2) {
-			if (o1 == null && o2 != null) return -1;
-			if (o1 != null && o2 == null) return 1;
-			if (o1 == null && o2 == null) return 0;
-			return o1.getTitle().compareTo(o2.getTitle());
-		}
-
 	}
 
 }

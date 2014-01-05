@@ -54,8 +54,8 @@ public class TagRenderer implements Renderer {
 		if (type instanceof TagHandlerTypeContent) {
 			Map<String, String> attValues = null; // ((TagHandlerTypeContent)type).getValuesForSections().get(attrContent);
 			String id = sec.getID();
-			Object storedValues = sec.getSectionStore().getObject(sec.getArticle(),
-					TagHandlerAttributeSubTreeHandler.ATTRIBUTE_MAP);
+			Object storedValues = sec.getSectionStore().getObject(
+					TagHandlerAttributeScript.ATTRIBUTE_MAP);
 			if (storedValues != null) {
 				if (storedValues instanceof Map) {
 					attValues = (Map<String, String>) storedValues;

@@ -102,7 +102,7 @@ public class GetToolMenuAction extends AbstractAction {
 	 * identifier is required.
 	 * 
 	 * @created 10.11.2013
-	 * @param context TODO
+	 * @param context the context of the user
 	 * @param identifier the identifier to get the section for
 	 * @return the section for that identifier
 	 */

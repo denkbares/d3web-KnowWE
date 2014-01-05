@@ -18,27 +18,27 @@
  */
 package de.knowwe.ontology.kdom.namespace;
 
+import java.io.IOException;
+import java.util.Collection;
+
+import org.ontoware.rdf2go.exception.ModelRuntimeException;
+import org.ontoware.rdf2go.model.Syntax;
+
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.ontology.compile.OntologyCompiler;
+import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.ontology.kdom.TerminologyHelper;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
-import org.ontoware.rdf2go.exception.ModelRuntimeException;
-import org.ontoware.rdf2go.model.Syntax;
-
-import java.io.IOException;
-import java.util.Collection;
 
 /**
  * 
@@ -51,13 +51,13 @@ public class NamespaceFileAnnotationType extends AbstractType {
 		this.addChildType(new AbbreviationPrefixReference());
 		this.addChildType(new FileNameType());
 		this.setSectionFinder(AllTextSectionFinder.getInstance());
-		this.addSubtreeHandler(Priority.HIGH, new ReadOntologyFileHandler());
+		this.addCompileScript(Priority.HIGH, new ReadOntologyFileHandler());
 	}
 
-	private class ReadOntologyFileHandler extends SubtreeHandler<NamespaceFileAnnotationType> {
+	private class ReadOntologyFileHandler extends OntologyHandler<NamespaceFileAnnotationType> {
 
 		@Override
-		public Collection<Message> create(Article article, Section<NamespaceFileAnnotationType> section) {
+		public Collection<Message> create(OntologyCompiler compiler, Section<NamespaceFileAnnotationType> section) {
 			Section<FileNameType> fileNameSection = Sections.findChildOfType(section,
 					FileNameType.class);
 			if (fileNameSection == null) {
@@ -86,15 +86,15 @@ public class NamespaceFileAnnotationType extends AbstractType {
 						+ fileNameSection.getText()
 						+ "': " + e.getMessage()));
 			}
-			Rdf2GoCore core = Rdf2GoCore.getInstance(article);
+			Rdf2GoCore core = Rdf2GoCore.getInstance(compiler);
 			if (core == null) {
 				return Messages.asList(Messages.error("No ontology repository found '"
 						+ section.getText()
 						+ "'"));
 			}
 			try {
-                String fileName = attachment.getFileName();
-                Syntax syntax = Rdf2GoUtils.syntaxForFileName(fileName);
+				String fileName = attachment.getFileName();
+				Syntax syntax = Rdf2GoUtils.syntaxForFileName(fileName);
 				core.readFrom(attachment.getInputStream(), syntax);
 			}
 			catch (ModelRuntimeException e) {
@@ -108,7 +108,7 @@ public class NamespaceFileAnnotationType extends AbstractType {
 						+ "': " + e.getMessage()));
 			}
 
-			TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
+			TerminologyManager terminologyManager = compiler.getTerminologyManager();
 			Section<?> abbrevDefSection = terminologyManager.getTermDefiningSection(abbrevSection.get().getTermIdentifier(
 					abbrevSection));
 			if (abbrevDefSection == null) {
@@ -118,13 +118,18 @@ public class NamespaceFileAnnotationType extends AbstractType {
 					abbrevDefSection, NamespaceAbbreviationDefinition.class);
 			String namespace = nsAbbrevDefSection.get().getNamespace(nsAbbrevDefSection);
 
-			new FileTerminologyHelper(abbrevSection.getText()).registerTerminology(article,
+			new FileTerminologyHelper(abbrevSection.getText()).registerTerminology(compiler,
 					section, namespace);
 			return Messages.noMessage();
 		}
 
 		private String createPath(Section<NamespaceFileAnnotationType> section, Section<FileNameType> fileNameSection) {
 			return section.getTitle() + "/" + fileNameSection.getText();
+		}
+
+		@Override
+		public void destroy(OntologyCompiler compiler, Section<NamespaceFileAnnotationType> section) {
+			compiler.doCompleteCompilation();
 		}
 	}
 

@@ -63,6 +63,8 @@ import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.append.PageAppendHandler;
+import de.knowwe.core.compile.CompilerManager;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -70,7 +72,6 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.user.UserContextUtil;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
-import de.knowwe.event.InitializedAllArticlesEvent;
 import de.knowwe.event.PageRenderedEvent;
 
 public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
@@ -250,7 +251,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 					wikiContext.getPage().getVersion());
 			if (!content.equals(pureText)) return content;
 		}
-		Set<String> titles = Environment.getInstance().getArticleManager(
+		Set<String> titles = Environment.getInstance().getDefaultArticleManager(
 				Environment.DEFAULT_WEB).getTitles();
 		if (!titles.contains(title)) {
 			for (String availableTitle : titles) {
@@ -274,14 +275,15 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 			if (fullParse || !originalText.equals(content)) {
 				deleteRenamedArticles(title);
-				article = Environment.getInstance().buildAndRegisterArticle(content, title,
-						Environment.DEFAULT_WEB, fullParse);
+				article = Environment.getInstance().buildAndRegisterArticle(
+						Environment.DEFAULT_WEB, title,
+						content, fullParse);
 			}
 
 			RenderResult renderResult = new RenderResult(userContext.getRequest());
 
 			if (article != null && httpRequest != null) {
-
+				Compilers.getDefaultCompilerManager(Environment.DEFAULT_WEB).awaitTermination();
 				List<PageAppendHandler> appendhandlers = Environment.getInstance()
 						.getAppendHandlers();
 				renderPrePageAppendHandler(userContext, title, renderResult, appendhandlers);
@@ -352,7 +354,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			// from the change note we get the hint, that an article was renamed
 			String oldTitle = renameMatcher.group(1);
 			WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
-			ArticleManager articleManager = Environment.getInstance().getArticleManager(
+			ArticleManager articleManager = Environment.getInstance().getDefaultArticleManager(
 					Environment.DEFAULT_WEB);
 			Article oldArticle = articleManager.getArticle(oldTitle);
 			// only delete in KnowWE if it exists in KnowWE but not JSPWiki
@@ -371,36 +373,47 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	 */
 	private void initializeAllArticlesIfNeeded(WikiEngine engine) {
 
-		ArticleManager articleManager = Environment.getInstance().getArticleManager(
+		ArticleManager articleManager = Environment.getInstance().getDefaultArticleManager(
 				Environment.DEFAULT_WEB);
-		if (articleManager.areArticlesInitialized()) {
-			return;
-		}
-
-		PageManager mgr = engine.getPageManager();
-		Collection<?> wikipages = null;
+		articleManager.open();
 
 		try {
-			wikipages = mgr.getAllPages();
-		}
-		catch (ProviderException e1) {
-			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
-					"Unable to load all articles, maybe some articles won't be initialized!");
-		}
+			PageManager mgr = engine.getPageManager();
+			Collection<?> wikipages = null;
 
-		for (Object o : wikipages) {
-			WikiPage wp = (WikiPage) o;
-			Article article = Environment.getInstance().getArticle(
-					Environment.DEFAULT_WEB, wp.getName());
-			if (article == null) {
-				String content = engine.getPureText(wp.getName(), wp.getVersion());
-				Environment.getInstance().buildAndRegisterArticle(content, wp.getName(),
-						Environment.DEFAULT_WEB);
+			try {
+				wikipages = mgr.getAllPages();
+			}
+			catch (ProviderException e1) {
+				Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
+						"Unable to load all articles, maybe some articles won't be initialized!");
+			}
+
+			for (Object o : wikipages) {
+				WikiPage wp = (WikiPage) o;
+				Article article = Environment.getInstance().getArticle(
+						Environment.DEFAULT_WEB, wp.getName());
+				if (article == null) {
+					String content = engine.getPureText(wp.getName(), wp.getVersion());
+					Environment.getInstance().buildAndRegisterArticle(content, wp.getName(),
+							Environment.DEFAULT_WEB);
+				}
 			}
 		}
-		articleManager.setArticlesInitialized(true);
-		articleManager.updateQueuedArticles();
-		EventManager.getInstance().fireEvent(InitializedAllArticlesEvent.getInstance());
+		finally {
+			articleManager.commit();
+		}
+
+		try {
+			// we wait to get an accurate reading on the server startup time
+			articleManager.getCompilerManager().awaitTermination();
+		}
+		catch (InterruptedException e) {
+			Logger.getLogger(CompilerManager.class.getName()).log(
+					Level.WARNING,
+					"Caught InterrupedException while waiting til compilation is finished.",
+					e);
+		}
 	}
 
 	private String renderKDOM(String content, UserContext userContext,
@@ -426,7 +439,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			WikiPageEvent e = (WikiPageEvent) event;
 
 			ArticleManager amgr = Environment.getInstance()
-					.getArticleManager(Environment.DEFAULT_WEB);
+					.getDefaultArticleManager(Environment.DEFAULT_WEB);
 
 			Article articleToDelete = amgr.getArticle(e.getPageName());
 			if (articleToDelete != null) {
@@ -440,7 +453,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			WikiPageRenameEvent e = (WikiPageRenameEvent) event;
 
 			ArticleManager amgr = Environment.getInstance()
-					.getArticleManager(Environment.DEFAULT_WEB);
+					.getDefaultArticleManager(Environment.DEFAULT_WEB);
 
 			amgr.deleteArticle(amgr.getArticle(e.getOldPageName()));
 		}

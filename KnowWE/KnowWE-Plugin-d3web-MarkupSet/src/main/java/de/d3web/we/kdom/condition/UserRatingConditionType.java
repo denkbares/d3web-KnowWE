@@ -27,8 +27,8 @@ import de.d3web.core.inference.condition.CondSolutionConfirmed;
 import de.d3web.core.inference.condition.CondSolutionRejected;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.SolutionReference;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -105,11 +105,11 @@ public class UserRatingConditionType extends D3webCondition<UserRatingConditionT
 	}
 
 	@Override
-	protected Condition createCondition(Article article, Section<UserRatingConditionType> s) {
+	protected Condition createCondition(D3webCompiler compiler, Section<UserRatingConditionType> s) {
 		Section<SolutionReference> sRef = Sections.findSuccessor(s, SolutionReference.class);
 		Section<UserRatingType> ratingSec = Sections.findSuccessor(s, UserRatingType.class);
 		if (sRef != null && ratingSec != null) {
-			Solution solution = sRef.get().getTermObject(article, sRef);
+			Solution solution = sRef.get().getTermObject(compiler, sRef);
 			UserEvaluation eval = UserRatingType.getUserEvaluationType(ratingSec);
 			if (solution != null && eval != null) {
 				if (eval.equals(UserEvaluation.CONFIRMED)) return new CondSolutionConfirmed(

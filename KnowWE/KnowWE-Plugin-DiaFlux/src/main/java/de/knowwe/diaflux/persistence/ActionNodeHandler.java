@@ -28,7 +28,7 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.ActionNode;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.we.kdom.rules.action.D3webRuleAction;
-import de.knowwe.core.kdom.Article;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.diaflux.type.ActionType;
@@ -47,7 +47,7 @@ public class ActionNodeHandler extends AbstractNodeHandler<ActionType> {
 	}
 
 	@Override
-	public boolean canCreateNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection) {
+	public boolean canCreateNode(D3webCompiler compiler, KnowledgeBase kb, Section<NodeType> nodeSection) {
 
 		@SuppressWarnings("rawtypes")
 		Section<D3webRuleAction> actionSection = Sections.findSuccessor(nodeSection,
@@ -57,7 +57,7 @@ public class ActionNodeHandler extends AbstractNodeHandler<ActionType> {
 	}
 
 	@Override
-	public Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection,
+	public Node createNode(D3webCompiler compiler, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id) {
 
 		@SuppressWarnings("rawtypes")
@@ -65,7 +65,7 @@ public class ActionNodeHandler extends AbstractNodeHandler<ActionType> {
 				D3webRuleAction.class);
 
 		@SuppressWarnings("unchecked")
-		PSAction action = ruleAction.get().getAction(article, ruleAction);
+		PSAction action = ruleAction.get().getAction(compiler, ruleAction);
 
 		if (action == null) {
 			return null;

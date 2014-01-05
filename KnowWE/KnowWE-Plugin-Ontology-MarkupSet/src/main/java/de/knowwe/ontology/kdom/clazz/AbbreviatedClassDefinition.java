@@ -25,12 +25,12 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.ontoware.rdf2go.vocabulary.RDFS;
 
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.ontology.compile.OntologyCompiler;
+import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceDefinition;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
@@ -38,20 +38,19 @@ public class AbbreviatedClassDefinition extends AbbreviatedResourceDefinition {
 
 	public AbbreviatedClassDefinition() {
 		this.setSectionFinder(new AllTextFinderTrimmed());
-		this.addSubtreeHandler(new AbbreviatedClassHandler());
+		this.addCompileScript(new AbbreviatedClassHandler());
 	}
 
 	public URI getClassNameURI(Rdf2GoCore core, Section<AbbreviatedClassDefinition> section) {
 		return super.getResourceURI(core, section);
 	}
 
-	private class AbbreviatedClassHandler extends SubtreeHandler<AbbreviatedClassDefinition> {
+	private class AbbreviatedClassHandler extends OntologyHandler<AbbreviatedClassDefinition> {
 
 		@Override
-		public Collection<Message> create(Article article, Section<AbbreviatedClassDefinition> section) {
-			if (section.hasErrorInSubtree()) return Messages.noMessage();
+		public Collection<Message> create(OntologyCompiler compiler, Section<AbbreviatedClassDefinition> section) {
 
-			Rdf2GoCore core = Rdf2GoCore.getInstance(article);
+			Rdf2GoCore core = Rdf2GoCore.getInstance(compiler);
 
 			URI classNameURI = getClassNameURI(core, section);
 
@@ -59,6 +58,11 @@ public class AbbreviatedClassDefinition extends AbbreviatedResourceDefinition {
 			core.addStatements(section, classStatement);
 
 			return Messages.noMessage();
+		}
+
+		@Override
+		public void destroy(OntologyCompiler compiler, Section<AbbreviatedClassDefinition> section) {
+			Rdf2GoCore.getInstance(compiler).removeStatementsForSection(section);
 		}
 
 	}

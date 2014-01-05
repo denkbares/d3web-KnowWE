@@ -20,19 +20,16 @@
 
 package de.d3web.we.kdom.rules.action;
 
-import java.util.Collection;
-
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.compile.SuccessorNotReusedConstraint;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.knowledgebase.D3webCompileScript;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 
 public abstract class D3webRuleAction<T extends Type>
 		extends AbstractType {
@@ -40,17 +37,17 @@ public abstract class D3webRuleAction<T extends Type>
 	private static final String ACTION_STORE_KEY = "action-store-key";
 
 	public D3webRuleAction() {
-		this.addSubtreeHandler(new ActionCreateHandler());
+		this.addCompileScript(new ActionCreateHandler());
 	}
 
 	public abstract Class<? extends PSMethod> getActionPSContext();
 
-	public final PSAction getAction(Article article, Section<T> s) {
-		return (PSAction) KnowWEUtils.getStoredObject(article, s, ACTION_STORE_KEY);
+	public final PSAction getAction(PackageCompiler compiler, Section<T> s) {
+		return (PSAction) Compilers.getStoredObject(compiler, s, ACTION_STORE_KEY);
 	}
 
-	private void storeAction(Article article, PSAction action, Section<T> section) {
-		KnowWEUtils.storeObject(article, section, ACTION_STORE_KEY, action);
+	private void storeAction(D3webCompiler compiler, PSAction action, Section<T> section) {
+		Compilers.storeObject(compiler, section, ACTION_STORE_KEY, action);
 	}
 
 	/**
@@ -61,29 +58,24 @@ public abstract class D3webRuleAction<T extends Type>
 	 * @param section the section of this action
 	 * @return the newly created action
 	 */
-	protected abstract PSAction createAction(Article article, Section<T> section);
+	protected abstract PSAction createAction(D3webCompiler compiler, Section<T> section);
 
-	private class ActionCreateHandler extends D3webSubtreeHandler<T> {
+	private class ActionCreateHandler extends D3webCompileScript<T> {
 
-		public ActionCreateHandler() {
-			this.registerConstraintModule(new SuccessorNotReusedConstraint<T>());
+		@Override
+		public void destroy(D3webCompiler compiler, Section<T> section) {
+			storeAction(compiler, null, section);
+			Messages.clearMessages(compiler, section, getClass());
 		}
 
 		@Override
-		public void destroy(Article article, Section<T> s) {
-			storeAction(article, null, s);
-			Messages.clearMessages(article, s, getClass());
-		}
-
-		@Override
-		public Collection<Message> create(Article article, Section<T> section) {
+		public void compile(D3webCompiler compiler, Section<T> section) {
 			if (section.hasErrorInSubtree()) {
-				return null;
+				return;
 			}
-			PSAction action = createAction(article, section);
-			storeAction(article, action, section);
+			PSAction action = createAction(compiler, section);
+			storeAction(compiler, action, section);
 			// do not overwrite existing messages
-			return null;
 		}
 
 	}

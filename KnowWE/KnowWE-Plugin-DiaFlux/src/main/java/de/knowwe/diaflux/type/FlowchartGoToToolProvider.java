@@ -21,6 +21,7 @@ package de.knowwe.diaflux.type;
 import java.util.Collection;
 import java.util.TreeSet;
 
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -45,8 +46,8 @@ public class FlowchartGoToToolProvider implements ToolProvider {
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 
 		TreeSet<Tool> tools = new TreeSet<Tool>();
-		Article compilingArticle = KnowWEUtils.getCompilingArticles(section).iterator().next();
-		TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(compilingArticle);
+		Article compilingArticle = Compilers.getCompilingArticles(section).iterator().next();
+		TerminologyManager terminologyManager = Compilers.getTerminologyManager(compilingArticle);
 		if (section.get() instanceof StartNodeDef || section.get() instanceof ExitNodeDef) {
 			Collection<Section<?>> termRefSections = terminologyManager.getTermReferenceSections(KnowWEUtils.getTermIdentifier(section));
 			for (Section<?> termSection : termRefSections) {

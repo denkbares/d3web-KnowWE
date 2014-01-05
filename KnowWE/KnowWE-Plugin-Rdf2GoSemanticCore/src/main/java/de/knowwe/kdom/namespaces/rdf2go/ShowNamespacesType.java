@@ -30,6 +30,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 public class ShowNamespacesType extends DefaultMarkupType {
 
@@ -37,7 +38,6 @@ public class ShowNamespacesType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("ShowNamespaces");
-		MARKUP.addAnnotation(Rdf2GoCore.MASTER_ANNOTATION, false);
 	}
 
 	public ShowNamespacesType() {
@@ -50,7 +50,7 @@ public class ShowNamespacesType extends DefaultMarkupType {
 		@Override
 		protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
 
-			Rdf2GoCore core = Rdf2GoCore.getInstance(Sections.cast(section,
+			Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(Sections.cast(section,
 					ShowNamespacesType.class));
 
 			Map<String, String> namespaces = core.getNameSpaces();

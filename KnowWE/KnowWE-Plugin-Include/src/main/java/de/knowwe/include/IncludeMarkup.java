@@ -70,7 +70,6 @@ public class IncludeMarkup extends DefaultMarkupType {
 	public IncludeMarkup() {
 		super(m);
 		this.setRenderer(new IncludeRenderer());
-		setIgnorePackageCompile(true);
 	}
 
 	static class IncludeRenderer implements Renderer {
@@ -103,7 +102,7 @@ public class IncludeMarkup extends DefaultMarkupType {
 			}
 
 			Article article = Environment.getInstance()
-					.getArticleManager(Environment.DEFAULT_WEB)
+					.getDefaultArticleManager(Environment.DEFAULT_WEB)
 					.getArticle(targetKey);
 
 			// warning if article not found

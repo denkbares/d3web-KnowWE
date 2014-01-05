@@ -25,8 +25,8 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
 import de.d3web.testcase.model.TestCase;
 import de.d3web.we.basic.SessionProvider;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.user.UserContext;
@@ -42,10 +42,10 @@ import de.knowwe.testcases.prefix.PrefixedTestCaseProvider;
 public class SingleTestCaseProvider extends PrefixedTestCaseProvider {
 
 	private final TestCase testCase;
-	private final Article article;
+	private final D3webCompiler article;
 	private final String name;
 
-	public SingleTestCaseProvider(Article article, Section<? extends DefaultMarkupType> prefixDefiningSection, TestCase testCase, String name) {
+	public SingleTestCaseProvider(D3webCompiler article, Section<? extends DefaultMarkupType> prefixDefiningSection, TestCase testCase, String name) {
 		super(prefixDefiningSection);
 		this.testCase = testCase;
 		this.article = article;
@@ -65,14 +65,14 @@ public class SingleTestCaseProvider extends PrefixedTestCaseProvider {
 
 	@Override
 	public Session getActualSession(UserContext user) {
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article);
 		Session session = SessionProvider.getSession(user, kb);
 		return session;
 	}
 
 	@Override
 	public SessionDebugStatus getDebugStatus(UserContext user) {
-		String key = "SessionDebugStatus_" + article.getTitle() + "/" + getName();
+		String key = "SessionDebugStatus_" + article.getCompileSection().getID() + "/" + getName();
 		SessionDebugStatus status = (SessionDebugStatus) user.getSession().getAttribute(key);
 		if (status == null) {
 			status = new SessionDebugStatus(getActualSession(user));

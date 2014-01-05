@@ -32,8 +32,7 @@ import java.util.TreeSet;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
-import de.knowwe.core.compile.Priority;
-import de.knowwe.core.kdom.Article;
+import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -51,55 +50,50 @@ class TermLog {
 
 	private final Set<TermLogEntry> termReferences = new HashSet<TermLogEntry>();
 
+	private final Set<Section<?>> termDefinitionSections = new HashSet<Section<?>>();
+
+	private final Set<Section<?>> termReferenceSections = new HashSet<Section<?>>();
+
 	private final Map<Class<?>, Set<TermLogEntry>> termClasses =
 			new HashMap<Class<?>, Set<TermLogEntry>>();
 
 	private final Map<String, Set<TermLogEntry>> termIdentifiers =
 			new HashMap<String, Set<TermLogEntry>>();
 
-	private final String web;
-
-	private final String title;
-
-	public TermLog(String web, String title) {
-		this.web = web;
-		this.title = title;
-	}
-
-	public Priority getPriorityOfDefiningSection() {
-		return this.termDefinitions.first().getPriority();
-	}
-
-	public void addTermDefinition(Priority priority,
+	public void addTermDefinition(Compiler compiler,
 			Section<?> termDefinition,
 			Class<?> termClass,
 			Identifier termIdentifier) {
 
-		TermLogEntry termLogEntry = createAndRegisterTermLogEntry(true, priority, termDefinition,
-				termClass, termIdentifier);
+		TermLogEntry termLogEntry = createAndRegisterTermLogEntry(true, compiler,
+				termDefinition, termClass, termIdentifier);
 		addTermLogEntryToMap(termLogEntry.getTermIdentifier().toExternalForm(), termLogEntry,
 				termIdentifiers);
 		addTermLogEntryToMap(termLogEntry.getTermClass(), termLogEntry, termClasses);
-		handleMessagesForDefinition(termDefinition);
+		handleMessagesForDefinition(compiler, termDefinition);
 	}
 
-	private TermLogEntry createAndRegisterTermLogEntry(boolean definition, Priority priority,
+	private TermLogEntry createAndRegisterTermLogEntry(
+			boolean definition,
+			Compiler compiler,
 			Section<?> termSection,
 			Class<?> termClass,
 			Identifier termIdentifier) {
 
-		TermLogEntry logEntry = new TermLogEntry(priority, termSection, termClass,
-				termIdentifier);
+		TermLogEntry logEntry = new TermLogEntry(compiler, termSection,
+				termClass, termIdentifier);
 		if (definition) {
 			termDefinitions.add(logEntry);
+			termDefinitionSections.add(termSection);
 		}
 		else {
 			termReferences.add(logEntry);
+			termReferenceSections.add(termSection);
 		}
 		return logEntry;
 	}
 
-	private void handleMessagesForDefinition(Section<?> termDefinition) {
+	private void handleMessagesForDefinition(Compiler compiler, Section<?> termDefinition) {
 
 		Collection<Message> msgs = new ArrayList<Message>(2);
 
@@ -110,7 +104,7 @@ class TermLog {
 		if (termIdentifiers.size() > 1) {
 			msgs.add(Messages.ambiguousTermCaseWarning(termIdentifiers.keySet()));
 		}
-		storeMessagesForSections(msgs, getAllSectionsOfLog());
+		storeMessagesForSections(compiler, msgs, getAllSectionsOfLog());
 	}
 
 	private Collection<Section<?>> getAllSectionsOfLog() {
@@ -121,10 +115,10 @@ class TermLog {
 		return sectionsOfLog;
 	}
 
-	private void storeMessagesForSections(Collection<Message> msgs, Collection<Section<?>> sections) {
-		Article article = Article.getCurrentlyBuildingArticle(web, title);
+	private void storeMessagesForSections(Compiler compiler, Collection<Message> msgs, Collection<Section<?>> sections) {
 		for (Section<?> section : sections) {
-			Messages.storeMessages(article, section, this.getClass(), msgs);
+			Messages.storeMessages(compiler,
+					section, this.getClass(), msgs);
 		}
 	}
 
@@ -137,12 +131,15 @@ class TermLog {
 		entriesForKey.add(logEntry);
 	}
 
-	private <MapKey> void removeLogEntriesWithSectionFromMap(Section<?> termSection, Map<MapKey, Set<TermLogEntry>> entriesMap) {
+	private <MapKey> void removeLogEntriesWithSectionFromMap(Compiler compiler, Section<?> termSection, Map<MapKey, Set<TermLogEntry>> entriesMap) {
 		List<MapKey> keysToRemove = new LinkedList<MapKey>();
 		for (Entry<MapKey, Set<TermLogEntry>> mapEntry : entriesMap.entrySet()) {
 			List<TermLogEntry> logEntriesToRemove = new LinkedList<TermLogEntry>();
 			for (TermLogEntry logEntry : mapEntry.getValue()) {
-				if (logEntry.getSection() == termSection) logEntriesToRemove.add(logEntry);
+				if (logEntry.getSection().equals(termSection)
+						&& logEntry.getCompiler().equals(compiler)) {
+					logEntriesToRemove.add(logEntry);
+				}
 			}
 			mapEntry.getValue().removeAll(logEntriesToRemove);
 			if (mapEntry.getValue().isEmpty()) keysToRemove.add(mapEntry.getKey());
@@ -152,19 +149,18 @@ class TermLog {
 		}
 	}
 
-	public void addTermReference(Section<?> termReference,
-			Class<?> termClass,
-			Identifier termIdentifier) {
+	public void addTermReference(Compiler compiler,
+			Section<?> termReference,
+			Class<?> termClass, Identifier termIdentifier) {
 
-		createAndRegisterTermLogEntry(false, null, termReference, termClass, termIdentifier);
-		handleMessagesForReference(termReference, termIdentifier, termClass);
+		createAndRegisterTermLogEntry(false, compiler, termReference, termClass, termIdentifier);
+		handleMessagesForReference(compiler, termReference, termIdentifier, termClass);
 	}
 
-	private void handleMessagesForReference(Section<?> s,
-			Identifier termIdentifier,
-			Class<?> termClass) {
+	private void handleMessagesForReference(Compiler compiler,
+			Section<?> section,
+			Identifier termIdentifier, Class<?> termClass) {
 
-		Article article = Article.getCurrentlyBuildingArticle(web, title);
 		Collection<Message> msgs = new ArrayList<Message>(2);
 		Set<String> termIdentifiersSet = new HashSet<String>(
 				termIdentifiers.keySet());
@@ -183,64 +179,64 @@ class TermLog {
 						+ "' of this reference."));
 			}
 		}
-		Messages.storeMessages(article, s, this.getClass(), msgs);
+		Messages.storeMessages(compiler, section, this.getClass(), msgs);
 	}
 
-	public void removeTermDefinition(Priority priority,
+	public void removeTermDefinition(Compiler compiler,
 			Section<?> termDefinition,
 			Class<?> termClass,
 			Identifier termIdentifier) {
-
-		removeTermLogEntry(true, priority, termDefinition, termClass, termIdentifier);
-		removeFromAdditionalSetsAndHandleAmbiguity(termDefinition);
+		removeTermLogEntry(compiler, true, termDefinition, termClass, termIdentifier);
+		removeLogEntriesWithSectionFromMap(compiler, termDefinition, termClasses);
+		removeLogEntriesWithSectionFromMap(compiler, termDefinition, termIdentifiers);
+		handleMessagesForDefinition(compiler, termDefinition);
 	}
 
-	private void removeTermLogEntry(boolean definition, Priority priority,
+	private void removeTermLogEntry(Compiler compiler,
+			boolean definition,
 			Section<?> termSection,
-			Class<?> termClass,
-			Identifier termIdentifier) {
+			Class<?> termClass, Identifier termIdentifier) {
 
-		TermLogEntry logEntry = new TermLogEntry(priority, termSection, termClass,
-				termIdentifier);
+		TermLogEntry logEntry = new TermLogEntry(compiler, termSection,
+				termClass, termIdentifier);
 		if (definition) {
 			termDefinitions.remove(logEntry);
+			termDefinitionSections.remove(termSection);
 		}
 		else {
 			termReferences.remove(logEntry);
+			termReferenceSections.remove(logEntry.getSection());
 		}
+		Messages.clearMessages(compiler, termSection, this.getClass());
 	}
 
-	public void removeTermDefinition(Section<?> termDefinition) {
-		removeAllEntriesWithSection(true, termDefinition);
-		removeFromAdditionalSetsAndHandleAmbiguity(termDefinition);
+	public void removeTermReference(Compiler compiler, Section<?> termReference,
+			Class<?> termClass, Identifier termIdentifier) {
+		removeTermLogEntry(compiler, false, termReference, termClass, termIdentifier);
 	}
 
-	private void removeFromAdditionalSetsAndHandleAmbiguity(Section<?> termDefinition) {
-		removeLogEntriesWithSectionFromMap(termDefinition, termClasses);
-		removeLogEntriesWithSectionFromMap(termDefinition, termIdentifiers);
-		handleMessagesForDefinition(termDefinition);
-	}
-
-	public void removeTermReference(Section<?> termReference,
-			Identifier termIdentifier,
-			Class<?> termClass) {
-
-		removeTermLogEntry(false, null, termReference, termClass, termIdentifier);
-	}
-
-	public void removeTermReference(Section<?> termReference) {
-		removeAllEntriesWithSection(false, termReference);
-	}
-
-	private void removeAllEntriesWithSection(boolean definition, Section<?> section) {
-		Collection<TermLogEntry> logEntries = definition
-				? termDefinitions
-				: termReferences;
-		Collection<TermLogEntry> entriesToRemove = new LinkedList<TermLogEntry>();
-		for (TermLogEntry entry : logEntries) {
-			if (entry.getSection() == section) entriesToRemove.add(entry);
+	public void removeEntriesOfCompiler(Compiler compiler) {
+		Collection<TermLogEntry> toRemove = new ArrayList<TermLogEntry>(termReferences.size());
+		for (TermLogEntry entry : termReferences) {
+			if (entry.getCompiler().equals(compiler)) {
+				toRemove.add(entry);
+			}
 		}
-		logEntries.removeAll(entriesToRemove);
+		for (TermLogEntry entry : toRemove) {
+			removeTermReference(entry.getCompiler(), entry.getSection(), entry.getTermClass(),
+					entry.getTermIdentifier());
+		}
+		toRemove = new ArrayList<TermLogEntry>(termDefinitions.size());
+		for (TermLogEntry entry : termDefinitions) {
+			if (entry.getCompiler().equals(compiler)) {
+				toRemove.add(entry);
+			}
+		}
+		for (TermLogEntry entry : toRemove) {
+			removeTermDefinition(entry.getCompiler(), entry.getSection(),
+					entry.getTermClass(),
+					entry.getTermIdentifier());
+		}
 	}
 
 	public Section<?> getDefiningSection() {
@@ -255,19 +251,11 @@ class TermLog {
 	}
 
 	public Set<Section<?>> getDefinitions() {
-		Set<Section<?>> result = new HashSet<Section<?>>();
-		for (TermLogEntry entry : this.termDefinitions) {
-			result.add(entry.getSection());
-		}
-		return Collections.unmodifiableSet(result);
+		return Collections.unmodifiableSet(termDefinitionSections);
 	}
 
 	public Set<Section<?>> getReferences() {
-		Set<Section<?>> result = new HashSet<Section<?>>();
-		for (TermLogEntry entry : this.termReferences) {
-			result.add(entry.getSection());
-		}
-		return Collections.unmodifiableSet(result);
+		return Collections.unmodifiableSet(termReferenceSections);
 	}
 
 	public Set<Class<?>> getTermClasses() {
@@ -283,6 +271,10 @@ class TermLog {
 			termIdentifiers.add(entrySet.iterator().next().getTermIdentifier());
 		}
 		return Collections.unmodifiableCollection(termIdentifiers);
+	}
+
+	public boolean isEmpty() {
+		return termDefinitions.isEmpty() && termReferences.isEmpty();
 	}
 
 }

@@ -40,7 +40,8 @@ public class TestcaseTableLineRenderer extends TableLineRenderer {
 	@Override
 	protected String getClasses(Section<?> tableLine, UserContext user) {
 
-		Map<String, Collection<Message>> errorMessages = Messages.getMessagesFromSubtree(tableLine,
+		Map<de.knowwe.core.compile.Compiler, Collection<Message>> errorMessages = Messages.getMessagesMapFromSubtree(
+				tableLine,
 				Message.Type.ERROR);
 
 		if (errorMessages != null && !errorMessages.isEmpty()) {

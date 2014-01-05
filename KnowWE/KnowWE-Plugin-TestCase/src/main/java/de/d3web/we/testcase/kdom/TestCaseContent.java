@@ -34,20 +34,19 @@ import de.d3web.core.session.QuestionValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.empiricaltesting.TestCase;
 import de.d3web.testcase.stc.STCWrapper;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.SolutionReference;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.Number;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.DefaultTestCaseStorage;
 import de.knowwe.testcases.SingleTestCaseProvider;
@@ -66,16 +65,16 @@ public class TestCaseContent extends AbstractType {
 	protected TestCaseContent() {
 		this.setSectionFinder(AllTextSectionFinder.getInstance());
 		this.addChildType(new SequentialTestCase());
-		this.addSubtreeHandler(Priority.LOWEST, new TestSuiteSubTreeHandler());
+		this.addCompileScript(Priority.LOWEST, new TestSuiteSubTreeHandler());
 	}
 
-	public class TestSuiteSubTreeHandler extends D3webSubtreeHandler<TestCaseContent> {
+	public class TestSuiteSubTreeHandler extends D3webHandler<TestCaseContent> {
 
 		@Override
-		public Collection<Message> create(Article article, Section<TestCaseContent> s) {
+		public Collection<Message> create(D3webCompiler compiler, Section<TestCaseContent> s) {
 
 			List<Message> messages = new LinkedList<Message>();
-			KnowledgeBase kb = getKB(article);
+			KnowledgeBase kb = getKB(compiler);
 			if (kb != null) {
 
 				List<de.d3web.empiricaltesting.SequentialTestCase> repository =
@@ -112,18 +111,17 @@ public class TestCaseContent extends AbstractType {
 					Section<DefaultMarkupType> markupSection = Sections.findAncestorOfType(s,
 							DefaultMarkupType.class);
 					for (de.d3web.empiricaltesting.SequentialTestCase stc : testSuite.getRepository()) {
-						providers.add(new SingleTestCaseProvider(article, markupSection,
+						providers.add(new SingleTestCaseProvider(compiler, markupSection,
 								new STCWrapper(stc), s.getArticle().getTitle() + "/"
 										+ stc.getName()));
 					}
 					Section<DefaultMarkupType> defaultMarkupSection = Sections.findAncestorOfType(
 							s, DefaultMarkupType.class);
-					defaultMarkupSection.getSectionStore().storeObject(article,
+					defaultMarkupSection.getSectionStore().storeObject(compiler,
 							TestCaseProviderStorage.KEY,
 							new DefaultTestCaseStorage(providers));
 					// Store the test suite
-					KnowWEUtils.storeObject(s.getArticle(), s,
-							TestCaseType.TESTCASEKEY, testSuite);
+					s.getSectionStore().storeObject(TestCaseType.TESTCASEKEY, testSuite);
 					messages.add(Messages.objectCreatedNotice(
 							"Test Suite successfully created with "
 									+ testSuite.getRepository().size() + " cases."));

@@ -31,10 +31,10 @@ import de.d3web.scoring.Score;
 import de.d3web.scoring.inference.PSMethodHeuristic;
 import de.d3web.strings.Strings;
 import de.d3web.we.kdom.auxiliary.Equals;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.SolutionReference;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -144,11 +144,11 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 	}
 
 	@Override
-	public PSAction createAction(Article article, Section<SolutionValueAssignment> s) {
+	public PSAction createAction(D3webCompiler compiler, Section<SolutionValueAssignment> s) {
 		Section<SolutionReference> solutionRef = Sections.findSuccessor(s, SolutionReference.class);
 		Section<ScorePoint> scoreRef = Sections.findSuccessor(s, ScorePoint.class);
 		if (scoreRef == null || solutionRef == null) return null;
-		Solution solution = solutionRef.get().getTermObject(article, solutionRef);
+		Solution solution = solutionRef.get().getTermObject(compiler, solutionRef);
 		Score score = D3webUtils.getScoreForString(scoreRef.getText());
 		if (solution == null || score == null) return null;
 		ActionHeuristicPS a = new ActionHeuristicPS();

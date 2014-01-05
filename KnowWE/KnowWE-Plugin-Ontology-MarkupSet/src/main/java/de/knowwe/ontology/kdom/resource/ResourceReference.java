@@ -20,18 +20,18 @@ package de.knowwe.ontology.kdom.resource;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
-import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.kdom.renderer.StyleRenderer;
+import de.knowwe.ontology.compile.OntologyCompiler;
 
-public class ResourceReference extends SimpleReference {
+public class ResourceReference extends SimpleReference<OntologyCompiler> {
 
 	public ResourceReference(Class<?> termClass) {
-		super(TermRegistrationScope.LOCAL, termClass);
+		super(OntologyCompiler.class, termClass);
 		this.setSectionFinder(new AllTextFinderTrimmed());
 		this.setRenderer(StyleRenderer.Question);
 	}

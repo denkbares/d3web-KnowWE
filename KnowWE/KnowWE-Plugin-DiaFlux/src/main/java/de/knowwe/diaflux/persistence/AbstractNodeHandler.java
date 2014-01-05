@@ -24,8 +24,7 @@
 package de.knowwe.diaflux.persistence;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -51,7 +50,7 @@ public abstract class AbstractNodeHandler<T extends AbstractXMLType> implements 
 	}
 
 	@Override
-	public boolean canCreateNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection) {
+	public boolean canCreateNode(D3webCompiler compiler, KnowledgeBase kb, Section<NodeType> nodeSection) {
 		Section<T> nodeInfo = getNodeInfo(nodeSection);
 		return nodeInfo != null;
 	}
@@ -88,7 +87,7 @@ public abstract class AbstractNodeHandler<T extends AbstractXMLType> implements 
 		return type;
 	}
 
-	public AbstractType getType() {
+	public Type getType() {
 		return type;
 	}
 

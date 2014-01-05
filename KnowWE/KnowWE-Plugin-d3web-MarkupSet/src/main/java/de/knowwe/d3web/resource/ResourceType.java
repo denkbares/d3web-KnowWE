@@ -68,10 +68,10 @@ public class ResourceType extends DefaultMarkupType {
 		MARKUP.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageAnnotationNameType());
 		MARKUP.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm(true));
+				new PackageTerm());
 		MARKUP.addAnnotation(ANNOTATION_XMLSCHEMA);
 		AttachmentType schemaAttachment = new AttachmentType();
-		schemaAttachment.addSubtreeHandler(new XMLValidationHandler());
+		schemaAttachment.addCompileScript(new XMLValidationHandler());
 		MARKUP.addAnnotationContentType(ANNOTATION_XMLSCHEMA, schemaAttachment);
 	}
 
@@ -79,7 +79,7 @@ public class ResourceType extends DefaultMarkupType {
 		super(MARKUP);
 		this.setRenderer(new DefaultMarkupRenderer(
 				"KnowWEExtension/d3web/icon/resource24.png"));
-		this.addSubtreeHandler(new ResourceHandler());
+		this.addCompileScript(new ResourceHandler());
 	}
 
 }

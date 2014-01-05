@@ -33,7 +33,6 @@ import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.diaflux.type.NodeType;
 import de.knowwe.kdom.xml.AbstractXMLType;
 
-
 /**
  * Highlights nodes and edges containing errors.
  * 
@@ -53,13 +52,13 @@ public class GetErrorHighlightAction extends AbstractHighlightAction {
 	@Override
 	public void insertHighlighting(Section<FlowchartType> flowchart, Highlight highlight, UserActionContext context) throws IOException {
 		List<Section<NodeType>> nodes = Sections.findSuccessorsOfType(flowchart, NodeType.class);
-		
+
 		for (Section<NodeType> section : nodes) {
 			if (section.hasErrorInSubtree()) {
 				String id = AbstractXMLType.getAttributeMapFor(section).get("fcid");
 				highlight.addNode(id, Highlight.CSS_CLASS, ERROR_CLASS);
 
-				Map<String, Collection<Message>> messages = Messages.getMessagesFromSubtree(
+				Map<de.knowwe.core.compile.Compiler, Collection<Message>> messages = Messages.getMessagesMapFromSubtree(
 						section, Message.Type.ERROR);
 
 				StringBuilder bob = new StringBuilder();
@@ -71,12 +70,12 @@ public class GetErrorHighlightAction extends AbstractHighlightAction {
 				}
 
 				// then article-specific ones
-				for (String article : messages.keySet()) {
-					if (article == null) continue;
+				for (de.knowwe.core.compile.Compiler compiler : messages.keySet()) {
+					if (compiler == null) continue;
 					bob.append("[");
-					bob.append(article);
+					bob.append(compiler);
 					bob.append("]: ");
-					bob.append(messages.get(article));
+					bob.append(messages.get(compiler));
 					bob.append("\r\n");
 
 				}
@@ -84,7 +83,7 @@ public class GetErrorHighlightAction extends AbstractHighlightAction {
 				highlight.addNode(id, Highlight.TOOL_TIP, bob.toString());
 
 			}
-			
+
 		}
 		List<Section<EdgeType>> edges = Sections.findSuccessorsOfType(flowchart, EdgeType.class);
 
@@ -93,7 +92,7 @@ public class GetErrorHighlightAction extends AbstractHighlightAction {
 				String id = AbstractXMLType.getAttributeMapFor(section).get("fcid");
 				highlight.addEdge(id, Highlight.CSS_CLASS, ERROR_CLASS);
 
-				Map<String, Collection<Message>> messages = Messages.getMessagesFromSubtree(
+				Map<de.knowwe.core.compile.Compiler, Collection<Message>> messages = Messages.getMessagesMapFromSubtree(
 						section, Message.Type.ERROR);
 
 				StringBuilder bob = new StringBuilder();
@@ -103,12 +102,12 @@ public class GetErrorHighlightAction extends AbstractHighlightAction {
 				bob.append("\r\n");
 
 				// then article-specific ones
-				for (String article : messages.keySet()) {
-					if (article == null) continue;
+				for (de.knowwe.core.compile.Compiler compiler : messages.keySet()) {
+					if (compiler == null) continue;
 					bob.append("[");
-					bob.append(article);
+					bob.append(compiler);
 					bob.append("]: ");
-					bob.append(messages.get(article));
+					bob.append(messages.get(compiler));
 					bob.append("\r\n");
 
 				}

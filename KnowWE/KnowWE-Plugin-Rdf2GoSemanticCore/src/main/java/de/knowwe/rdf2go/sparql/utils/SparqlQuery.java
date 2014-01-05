@@ -18,6 +18,7 @@
  */
 package de.knowwe.rdf2go.sparql.utils;
 
+import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 /**
@@ -66,8 +67,8 @@ public class SparqlQuery {
 		return contentBuilder.toString();
 	}
 
-	public String toSparql() {
-		return Rdf2GoUtils.createSparqlString(toString());
+	public String toSparql(Rdf2GoCore core) {
+		return Rdf2GoUtils.createSparqlString(core, toString());
 	}
 
 }

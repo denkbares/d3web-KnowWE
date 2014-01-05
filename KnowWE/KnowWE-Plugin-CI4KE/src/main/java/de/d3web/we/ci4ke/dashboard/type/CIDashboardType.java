@@ -36,13 +36,14 @@ import de.d3web.we.ci4ke.dashboard.rendering.CIDashboardRenderer;
 import de.d3web.we.ci4ke.hook.CIHook;
 import de.d3web.we.ci4ke.hook.CIHookManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.DefaultGlobalCompiler;
+import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -72,8 +73,7 @@ public class CIDashboardType extends DefaultMarkupType {
 
 	public CIDashboardType() {
 		super(MARKUP);
-		this.addSubtreeHandler(new DashboardSubtreeHandler());
-		this.setIgnorePackageCompile(true);
+		this.addCompileScript(new DashboardSubtreeHandler());
 		// this.setCustomRenderer(new DashboardRenderer());
 		this.setRenderer(new CIDashboardRenderer());
 	}
@@ -82,20 +82,20 @@ public class CIDashboardType extends DefaultMarkupType {
 		return DefaultMarkupType.getAnnotation(section, NAME_KEY);
 	}
 
-	private class DashboardSubtreeHandler extends SubtreeHandler<CIDashboardType> {
+	private class DashboardSubtreeHandler extends DefaultGlobalScript<CIDashboardType> {
 
 		@Override
-		public Collection<Message> create(Article article, Section<CIDashboardType> s) {
+		public void compile(DefaultGlobalCompiler compiler, Section<CIDashboardType> s) {
 
-			List<Message> msgs = new ArrayList<Message>();
+			// List<Message> msgs = new ArrayList<Message>();
 
 			String dashboardName = DefaultMarkupType.getAnnotation(s, NAME_KEY);
 
-			if (dashboardName == null) return msgs;
+			if (dashboardName == null) return;
 
 			String triggerString = DefaultMarkupType.getAnnotation(s, TRIGGER_KEY);
 
-			if (triggerString == null) return msgs;
+			if (triggerString == null) return;
 
 			CIBuildTriggers trigger = null;
 
@@ -119,23 +119,26 @@ public class CIDashboardType extends DefaultMarkupType {
 								monitoredArticles.add(parameter);
 							}
 							else {
-								msgs.add(Messages.error("Article '" + parameter
-										+ "' for trigger does not exist"));
-								return msgs;
+								Message msg = Messages.error("Article '" + parameter
+										+ "' for trigger does not exist");
+								Messages.storeMessage(s, this.getClass(), msg);
+								return;
 							}
 						}
 					}
 				}
 				catch (IllegalArgumentException e) {
-					msgs.add(Messages.error("Invalid trigger specified: " + triggerString));
-					return msgs;
+					Message msg = Messages.error("Invalid trigger specified: " + triggerString);
+					Messages.storeMessage(s, this.getClass(), msg);
+					return;
 				}
 			}
 
 			if (trigger.equals(CIBuildTriggers.onSave) && monitoredArticles.isEmpty()) {
-				msgs.add(Messages.error("Invalid trigger: " + CIBuildTriggers.onSave
-						+ " requires attached articles to monitor."));
-				return msgs;
+				Message msg = Messages.error("Invalid trigger: " + CIBuildTriggers.onSave
+						+ " requires attached articles to monitor.");
+				Messages.storeMessage(s, this.getClass(), msg);
+				return;
 			}
 
 			// This map is used for storing tests and their parameter-list
@@ -165,29 +168,28 @@ public class CIDashboardType extends DefaultMarkupType {
 					tests.add(executableTest);
 				}
 			}
-			convertMessages(messages, msgs);
+			convertMessages(compiler, s, messages);
 
-			CIConfig config = new CIConfig(article.getWeb(), s.getArticle().getTitle(),
+			CIConfig config = new CIConfig(s.getWeb(), s.getArticle().getTitle(),
 					dashboardName, tests, trigger);
 
 			// Parse the trigger-parameter and (eventually) register
 			// a CIHook
 			if (trigger.equals(CIBuildTriggers.onSave)) {
 				// Hook registrieren
-				CIHook ciHook = new CIHook(article.getWeb(), article.getTitle(), dashboardName,
+				CIHook ciHook = new CIHook(s.getWeb(), s.getTitle(), dashboardName,
 						monitoredArticles);
 				CIHookManager.getInstance().registerHook(ciHook);
 				// Store to be able to unregister in destroy method
-				KnowWEUtils.storeObject(article, s,
+				Compilers.storeObject(s,
 						CIHook.CIHOOK_STORE_KEY, ciHook);
 			}
 
 			// Alright, everything seems to be ok. Let's store the CIConfig in
 			// the store
 
-			KnowWEUtils.storeObject(article, s, CIConfig.CICONFIG_STORE_KEY, config);
+			Compilers.storeObject(s, CIConfig.CICONFIG_STORE_KEY, config);
 
-			return msgs;
 		}
 
 		/**
@@ -196,7 +198,8 @@ public class CIDashboardType extends DefaultMarkupType {
 		 * @param messages
 		 * @param msgs
 		 */
-		private void convertMessages(List<ArgsCheckResult> messages, List<Message> msgs) {
+		private void convertMessages(DefaultGlobalCompiler compiler, Section<?> section, List<ArgsCheckResult> messages) {
+			Collection<Message> msgs = new ArrayList<Message>();
 			for (ArgsCheckResult message : messages) {
 				if (message == null) continue;
 				String[] arguments = message.getArguments();
@@ -214,17 +217,17 @@ public class CIDashboardType extends DefaultMarkupType {
 					msgs.add(new Message(Message.Type.ERROR, message.getMessage(0)));
 				}
 			}
-
+			Messages.storeMessages(section, this.getClass(), msgs);
 		}
 
 		@Override
-		public void destroy(Article article, Section<CIDashboardType> s) {
-			CIHook ciHook = (CIHook) s.getSectionStore().getObject(article,
-					CIHook.CIHOOK_STORE_KEY);
+		public void destroy(DefaultGlobalCompiler compiler, Section<CIDashboardType> section) {
+			CIHook ciHook = (CIHook) section.getSectionStore().getObject(CIHook.CIHOOK_STORE_KEY);
 			if (ciHook != null) {
 				CIHookManager.getInstance().unregisterHook(ciHook);
 			}
 		}
+
 	}
 
 	/**
@@ -242,7 +245,7 @@ public class CIDashboardType extends DefaultMarkupType {
 
 		List<Section<CIDashboardType>> sectionList = new ArrayList<Section<CIDashboardType>>();
 		for (Article article : Environment.getInstance().
-				getArticleManager(section.getWeb()).getArticles()) {
+				getDefaultArticleManager(section.getWeb()).getArticles()) {
 			Sections.findSuccessorsOfType(article.getRootSection(), CIDashboardType.class,
 					sectionList);
 		}

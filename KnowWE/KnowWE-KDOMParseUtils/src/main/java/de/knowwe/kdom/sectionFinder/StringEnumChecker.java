@@ -22,41 +22,42 @@ package de.knowwe.kdom.sectionFinder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
-import de.knowwe.core.kdom.Article;
+import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 
-public class StringEnumChecker<T extends Type> extends SubtreeHandler<T> {
+public class StringEnumChecker<C extends de.knowwe.core.compile.Compiler, T extends Type> implements CompileScript<C, T> {
 
 	private final String[] values;
 	private final Message error;
 	private final int startOffset;
 	private final int endOffset;
+	private Class<C> compilerClass;
 
-	public StringEnumChecker(String[] values, Message error, int startOffset, int endoffset) {
+	public StringEnumChecker(Class<C> compilerClass, String[] values, Message error, int startOffset, int endoffset) {
 		this.values = Arrays.copyOf(values, values.length);
 		this.error = error;
 		this.startOffset = startOffset;
 		this.endOffset = endoffset;
+		this.compilerClass = compilerClass;
 	}
 
-	public StringEnumChecker(String[] values, Message error) {
-		this(values, error, 0, 0);
+	public StringEnumChecker(Class<C> compilerClass, String[] values, Message error) {
+		this(compilerClass, values, error, 0, 0);
 	}
 
 	@Override
-	public Collection<Message> create(Article article, Section<T> s) {
+	public void compile(C compiler, Section<T> s) {
 
 		// cut offsets and trim
 		String sectionContent = s.getText();
 		sectionContent = sectionContent.substring(startOffset);
 		sectionContent = sectionContent.substring(0,
-					sectionContent.length() - endOffset);
+				sectionContent.length() - endOffset);
 		String checkContent = sectionContent.trim();
 
 		// check against string values
@@ -71,7 +72,12 @@ public class StringEnumChecker<T extends Type> extends SubtreeHandler<T> {
 		if (!found) {
 			msgs.add(error);
 		}
-		return msgs;
+		Messages.storeMessages(compiler, s, getClass(), msgs);
+	}
+
+	@Override
+	public Class<C> getCompilerClass() {
+		return compilerClass;
 	}
 
 }

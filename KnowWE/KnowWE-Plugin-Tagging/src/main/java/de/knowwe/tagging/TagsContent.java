@@ -20,23 +20,20 @@
 
 package de.knowwe.tagging;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.knowwe.core.kdom.Article;
+import de.knowwe.core.compile.DefaultGlobalCompiler;
+import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.Message;
 import de.knowwe.kdom.xml.XMLContent;
 
 public class TagsContent extends XMLContent {
 
 	public TagsContent() {
 		this.setRenderer(NothingRenderer.getInstance());
-		this.addSubtreeHandler(new TagsContentSubtreeHandler());
+		this.addCompileScript(new TagsContentSubtreeHandler());
 	}
 
 	/**
@@ -45,22 +42,16 @@ public class TagsContent extends XMLContent {
 	 * 
 	 * @author Alex Legler
 	 */
-	private class TagsContentSubtreeHandler extends SubtreeHandler<TagsContent> {
-
-		public TagsContentSubtreeHandler() {
-			super(false);
-		}
+	private class TagsContentSubtreeHandler extends DefaultGlobalScript<TagsContent> {
 
 		@Override
-		public Collection<Message> create(Article article, Section<TagsContent> section) {
-
+		public void compile(DefaultGlobalCompiler compiler, Section<TagsContent> section) {
 			Set<String> tags = new HashSet<String>();
 			for (String tag : section.getText().split(TaggingMangler.TAG_SEPARATOR)) {
 				tags.add(tag);
 			}
-			TaggingMangler.getInstance().registerTags(article.getTitle(), tags);
+			TaggingMangler.getInstance().registerTags(section.getTitle(), tags);
 
-			return new ArrayList<Message>(0);
 		}
 	}
 }

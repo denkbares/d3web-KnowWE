@@ -29,9 +29,9 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.strings.StringFragment;
 import de.d3web.strings.Strings;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -80,7 +80,7 @@ public class Finding extends D3webCondition<Finding> {
 	}
 
 	@Override
-	protected Condition createCondition(Article article, Section<Finding> s) {
+	protected Condition createCondition(D3webCompiler compiler, Section<Finding> s) {
 
 		Section<QuestionReference> qRef = Sections.findSuccessor(s,
 				QuestionReference.class);
@@ -88,13 +88,13 @@ public class Finding extends D3webCondition<Finding> {
 		Section<AnswerReference> aRef = Sections.findSuccessor(s, AnswerReference.class);
 
 		if (qRef != null && aRef != null) {
-			Choice answer = aRef.get().getTermObject(article, aRef);
+			Choice answer = aRef.get().getTermObject(compiler, aRef);
 			if (answer == null) {
 				return null;
 			}
 			ChoiceValue value = new ChoiceValue(
 					answer);
-			return new CondEqual(qRef.get().getTermObject(article, qRef), value);
+			return new CondEqual(qRef.get().getTermObject(compiler, qRef), value);
 		}
 
 		return null;

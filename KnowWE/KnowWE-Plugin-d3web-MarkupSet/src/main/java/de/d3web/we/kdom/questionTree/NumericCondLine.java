@@ -26,9 +26,9 @@ import java.util.Collection;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
@@ -51,7 +51,7 @@ public class NumericCondLine extends AbstractType {
 			}
 		});
 
-		this.addSubtreeHandler(new CheckConditionHandler());
+		this.addCompileScript(new CheckConditionHandler());
 
 		this.setRenderer(StyleRenderer.NUMBER);
 
@@ -66,15 +66,15 @@ public class NumericCondLine extends AbstractType {
 	 * @author Jochen
 	 * @created 03.08.2010
 	 */
-	static class CheckConditionHandler extends D3webSubtreeHandler<NumericCondLine> {
+	static class CheckConditionHandler extends D3webHandler<NumericCondLine> {
 
 		@Override
-		public Collection<Message> create(Article article, Section<NumericCondLine> s) {
+		public Collection<Message> create(D3webCompiler compiler, Section<NumericCondLine> s) {
 
 			Section<DashTreeElement> dte = Sections.findAncestorOfType(s, DashTreeElement.class);
 			Section<? extends DashTreeElement> fatherDashTreeElement = DashTreeUtils.getFatherDashTreeElement(dte);
 
-			Condition simpleCondition = QuestionDashTreeUtils.createSimpleCondition(article, dte,
+			Condition simpleCondition = QuestionDashTreeUtils.createSimpleCondition(compiler, dte,
 					fatherDashTreeElement);
 			if (simpleCondition == null) {
 				return Messages.asList(Messages.invalidNumberError(
@@ -82,11 +82,6 @@ public class NumericCondLine extends AbstractType {
 			}
 
 			return new ArrayList<Message>(0);
-		}
-
-		@Override
-		public void destroy(Article article, Section<NumericCondLine> s) {
-			Messages.clearMessages(article, s, CheckConditionHandler.class);
 		}
 
 	}

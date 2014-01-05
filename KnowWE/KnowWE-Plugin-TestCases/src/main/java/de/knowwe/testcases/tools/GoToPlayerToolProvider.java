@@ -18,10 +18,12 @@
  */
 package de.knowwe.testcases.tools;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Set;
 
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -56,20 +58,21 @@ public class GoToPlayerToolProvider implements ToolProvider {
 					DefaultMarkupType.class);
 		}
 		String[] packages = DefaultMarkupType.getPackages(defaultMarkupSection);
-		Environment env = Environment.getInstance();
-		PackageManager packageManager = env.getPackageManager(section.getWeb());
+		PackageManager packageManager = Compilers.getPackageManager(section);
 		for (String kbpackage : packages) {
 			Set<String> articles = packageManager.getCompilingArticles(kbpackage);
 			// we need an article compiling the section
 			if (articles.size() > 0) {
 				String articleTitle = articles.iterator().next();
 				TestCaseProviderStorage providerStorage = (TestCaseProviderStorage) section.getSectionStore().getObject(
-						Environment.getInstance().getArticle(section.getWeb(), articleTitle),
+						Compilers.getCompiler(
+								Environment.getInstance().getArticle(section.getWeb(), articleTitle),
+								D3webCompiler.class),
 						TestCaseProviderStorage.KEY);
 				if ((providerStorage != null) && providerStorage.getTestCaseProviders().size() > 0) {
 					String testcasename = providerStorage.getTestCaseProviders().iterator().next().getName();
 					String value = articleTitle + "/" + testcasename;
-					List<Section<?>> sectionsInPackage = packageManager.getSectionsOfPackage(kbpackage);
+					Collection<Section<?>> sectionsInPackage = packageManager.getSectionsOfPackage(kbpackage);
 					for (Section<?> sectionInPackage : sectionsInPackage) {
 						if (sectionInPackage.get() instanceof TestCasePlayerType) {
 							return createTools(value, sectionInPackage);

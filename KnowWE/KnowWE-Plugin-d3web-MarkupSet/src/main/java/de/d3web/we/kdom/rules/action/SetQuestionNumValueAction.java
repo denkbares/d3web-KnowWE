@@ -13,9 +13,9 @@ import de.d3web.core.session.values.Unknown;
 import de.d3web.strings.Strings;
 import de.d3web.we.kdom.auxiliary.Equals;
 import de.d3web.we.kdom.condition.QuestionNumReference;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.UnknownValueType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -75,7 +75,7 @@ public class SetQuestionNumValueAction extends D3webRuleAction<SolutionValueAssi
 	}
 
 	@Override
-	public PSAction createAction(Article article, Section<SolutionValueAssignment> s) {
+	public PSAction createAction(D3webCompiler compiler, Section<SolutionValueAssignment> s) {
 		Object value;
 
 		if (Sections.findSuccessor(s, UnknownValueType.class) != null) {
@@ -95,7 +95,7 @@ public class SetQuestionNumValueAction extends D3webRuleAction<SolutionValueAssi
 
 		if (qRef == null) return null;
 
-		Question q = qRef.get().getTermObject(article, qRef);
+		Question q = qRef.get().getTermObject(compiler, qRef);
 
 		if (!(q instanceof QuestionNum)) return null;
 		QuestionNum qnum = (QuestionNum) q;

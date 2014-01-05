@@ -5,8 +5,8 @@ import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.strings.Strings;
 import de.d3web.we.kdom.condition.SolutionStateType;
+import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.Messages;
@@ -25,13 +25,13 @@ public class SolutionStateCell extends AbstractType {
 		this.setRenderer(renderer);
 	}
 
-	public CondDState createCondDState(Article article, Solution solution, Section<SolutionStateCell> solutionStateCell) {
+	public CondDState createCondDState(PackageCompiler compiler, Solution solution, Section<SolutionStateCell> solutionStateCell) {
 		String state = Strings.trim(solutionStateCell.getText());
 		State solutionState = SolutionStateType.getSolutionState(state);
 		if (solutionState == null) {
 			if (solutionState == null) {
 				Messages.storeMessage(
-						article,
+						compiler,
 						solutionStateCell,
 						this.getClass(),
 						Messages.error("No valid solution state found in '" + state + "'"));

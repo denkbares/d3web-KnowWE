@@ -22,7 +22,7 @@ import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
-import de.knowwe.core.compile.terminology.TermRegistrationScope;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 
@@ -31,18 +31,18 @@ import de.knowwe.core.kdom.parsing.Section;
  * @author Albrecht
  * @created 16.12.2010
  */
-public abstract class SimpleReference extends AbstractType implements TermReference, RenamableTerm {
+public abstract class SimpleReference<C extends TermCompiler> extends AbstractType implements TermReference, RenamableTerm {
 
 	private final Class<?> termObjectClass;
 
-	public SimpleReference(TermRegistrationScope scope, Class<?> termObjectClass) {
-		this(scope, termObjectClass, Priority.DEFAULT);
+	public SimpleReference(Class<C> compilerClass, Class<?> termObjectClass) {
+		this(compilerClass, termObjectClass, Priority.DEFAULT);
 	}
 
-	public SimpleReference(TermRegistrationScope scope, Class<?> termObjectClass, Priority registrationPriority) {
+	public SimpleReference(Class<C> compilerClass, Class<?> termObjectClass, Priority registrationPriority) {
 		this.termObjectClass = termObjectClass;
-		this.addSubtreeHandler(registrationPriority, new SimpleTermReferenceRegistrationHandler(
-				scope));
+		this.addCompileScript(registrationPriority, new SimpleReferenceRegistrationScript<C>(
+				compilerClass));
 	}
 
 	@Override

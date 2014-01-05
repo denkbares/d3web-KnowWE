@@ -20,10 +20,9 @@
 
 package de.knowwe.diaflux.persistence;
 
-
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.Node;
-import de.knowwe.core.kdom.Article;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.diaflux.type.FlowchartType;
@@ -39,24 +38,24 @@ public interface NodeHandler {
 	/**
 	 * Checks if this NodeHandler can create a node from the supplied section.
 	 * 
-	 * @param article the article which contains the section
+	 * @param compiler the compiler compiling this node
 	 * @param kb the KBM of the article
 	 * @param nodeSection the section of the node
 	 * @return true, if this nodehandler can create a node
 	 */
-	boolean canCreateNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection);
+	boolean canCreateNode(D3webCompiler compiler, KnowledgeBase kb, Section<NodeType> nodeSection);
 
 	/**
 	 * Creates a node from the supplied section.
 	 * 
-	 * @param article
+	 * @param compiler
 	 * @param kb
 	 * @param nodeSection
 	 * @param flowSection
 	 * @param id id of the node to create
 	 * @return
 	 */
-	Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection, Section<FlowchartType> flowSection, String id);
+	Node createNode(D3webCompiler compiler, KnowledgeBase kb, Section<NodeType> nodeSection, Section<FlowchartType> flowSection, String id);
 
 	/**
 	 * Returns the ObjectType of the NodeModel this handler handles.

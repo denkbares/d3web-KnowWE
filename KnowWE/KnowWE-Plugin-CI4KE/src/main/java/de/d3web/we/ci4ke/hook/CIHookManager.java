@@ -28,7 +28,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.d3web.we.ci4ke.build.CIBuilder;
+import de.d3web.we.ci4ke.build.CIBuildManager;
+import de.d3web.we.ci4ke.dashboard.CIDashboard;
+import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.kdom.Article;
 
 /**
@@ -42,8 +44,6 @@ public class CIHookManager {
 	 * Fore each monitored articles a list of hooks are stored.
 	 */
 	private final Map<String, Set<CIHook>> hooks;
-
-	private int activeHookCounter = 0;
 
 	private static final CIHookManager instance = new CIHookManager();
 
@@ -71,8 +71,12 @@ public class CIHookManager {
 		Collection<String> monitoredArticles = hook.getMonitoredArticles();
 		for (String monitoredArticle : monitoredArticles) {
 			Set<CIHook> set = hooks.get(monitoredArticle);
-			if (set != null) set.remove(hook);
-			if (set.isEmpty()) hooks.remove(monitoredArticle);
+			if (set != null) {
+				set.remove(hook);
+				if (set.isEmpty()) {
+					hooks.remove(monitoredArticle);
+				}
+			}
 		}
 	}
 
@@ -114,44 +118,11 @@ public class CIHookManager {
 						"Executing new CI build for dashboard '" + hook.getDashboardName()
 								+ "' in article '"
 								+ hook.getDashboardArticleTitle() + "'");
-				// runs as an own thread, so the wiki page
-				// shows up fast after editing
-				// (ci-deamon shows build as running)
-				Runnable task = new Runnable() {
-
-					@Override
-					public void run() {
-						try {
-							new CIBuilder(hook).executeBuild();
-						}
-						finally {
-							incActiveHookCounter(-1);
-						}
-					}
-				};
-				Thread ciThread = new Thread(task);
-				incActiveHookCounter(1);
-				ciThread.start();
+				CIDashboard dashboard = CIDashboardManager.getDashboard(hook.getWeb(),
+						hook.getDashboardArticleTitle(), hook.getDashboardName());
+				CIBuildManager.startBuild(dashboard);
 			}
 		}
-	}
-
-	private synchronized void incActiveHookCounter(int delta) {
-		this.activeHookCounter += delta;
-		this.notifyAll();
-	}
-
-	public void waitForTermination() {
-		while (activeHookCounter > 0) {
-			synchronized (this) {
-				try {
-					this.wait();
-				}
-				catch (InterruptedException e) {
-				}
-			}
-		}
-		return;
 	}
 
 }

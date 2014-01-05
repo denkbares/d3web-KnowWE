@@ -162,5 +162,4 @@ Damaged idle speed system  {
 
 %%knowledgebase
 KBCreationTestNewMarkup
-@uses: this
 %

@@ -28,8 +28,8 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
 import de.d3web.testcase.model.TestCase;
 import de.d3web.we.basic.SessionProvider;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -53,16 +53,16 @@ public abstract class AttachmentTestCaseProvider extends PrefixedTestCaseProvide
 	protected List<Message> messages = new LinkedList<Message>();
 	private List<Message> testCaseMessages = new LinkedList<Message>();
 
-	protected final Article article;
+	protected final D3webCompiler compiler;
 
 	// public AttachmentTestCaseProvider(Article article, WikiAttachment
 	// attachment) {
 	// this(article, null, attachment);
 	// }
 
-	public AttachmentTestCaseProvider(Article article, Section<? extends DefaultMarkupType> prefixDefiningSection, WikiAttachment attachment) {
+	public AttachmentTestCaseProvider(D3webCompiler compiler, Section<? extends DefaultMarkupType> prefixDefiningSection, WikiAttachment attachment) {
 		super(prefixDefiningSection);
-		this.article = article;
+		this.compiler = compiler;
 		this.attachment = attachment;
 		parse();
 	}
@@ -110,7 +110,7 @@ public abstract class AttachmentTestCaseProvider extends PrefixedTestCaseProvide
 
 	@Override
 	public Session getActualSession(UserContext user) {
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
 		Session session = SessionProvider.getSession(user, kb);
 		return session;
 	}
@@ -123,7 +123,8 @@ public abstract class AttachmentTestCaseProvider extends PrefixedTestCaseProvide
 
 	@Override
 	public SessionDebugStatus getDebugStatus(UserContext user) {
-		String key = "SessionDebugStatus_" + article.getTitle() + "/" + getName();
+		String key = "SessionDebugStatus_" + compiler.getCompileSection().getTitle() + "/"
+				+ getName();
 		SessionDebugStatus status = (SessionDebugStatus) user.getSession().getAttribute(key);
 		if (status == null) {
 			status = new SessionDebugStatus(getActualSession(user));

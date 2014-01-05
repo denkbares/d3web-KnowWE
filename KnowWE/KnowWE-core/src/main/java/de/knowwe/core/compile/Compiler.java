@@ -2,7 +2,6 @@ package de.knowwe.core.compile;
 
 import java.util.Collection;
 
-import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
@@ -13,17 +12,26 @@ import de.knowwe.core.kdom.parsing.Section;
  * @param <Artifact> the artifact that will be compiled as the result of this
  *        compiler
  */
-public interface Compiler {
+public interface Compiler extends Comparable<Compiler> {
+
+	CompilerManager getCompilerManager();
 
 	/**
-	 * Returns the {@link TerminologyManager} that will hold all defined
-	 * terminology of this compiler. Each compiler has its own terminology
-	 * manager that will be distinct by all other compilers.
+	 * Returns whether the given section is generally in the responsibility of
+	 * this {@link Compiler}. We don't check if there is a {@link CompileScript}
+	 * for the given {@link Section} for the given {@link Compiler}, we only
+	 * check if this compiler would compile the Section, if there were
+	 * {@link CompileScript}.<br/>
+	 * Global Compilers will mostly return true here, {@link PackageCompiler}s
+	 * will only return true, if the Section is part of a package they are
+	 * compiling.
 	 * 
-	 * @created 30.10.2013
-	 * @return the {@link TerminologyManager} of this compiler
+	 * @created 13.12.2013
+	 * @param section the section we want to check.
+	 * @return whether this Compiler compiles this section or would compile it,
+	 *         if it had a CompileScript
 	 */
-	TerminologyManager getTerminologyManager();
+	boolean isCompiling(Section<?> section);
 
 	/**
 	 * This method is called once to initialize the compiler right after it has
@@ -45,5 +53,12 @@ public interface Compiler {
 	 * @param removed the sections removed from the wiki
 	 */
 	void compile(Collection<Section<?>> added, Collection<Section<?>> removed);
+
+	/**
+	 * Since often do have Collections of {@link Compiler}s, we maybe want them
+	 * comparable to have stable collections.
+	 */
+	@Override
+	public int compareTo(Compiler o);
 
 }

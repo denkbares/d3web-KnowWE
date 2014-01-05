@@ -25,11 +25,11 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
@@ -62,7 +62,7 @@ public class TimeStampType extends AbstractType {
 
 	public TimeStampType() {
 		setSectionFinder(new AllTextFinderTrimmed());
-		addSubtreeHandler(new TimeStampSubtreeHandler());
+		addCompileScript(new TimeStampSubtreeHandler());
 	}
 
 	public static boolean isValid(String sectionText) {
@@ -114,10 +114,10 @@ public class TimeStampType extends AbstractType {
 		return result;
 	}
 
-	class TimeStampSubtreeHandler extends SubtreeHandler<TimeStampType> {
+	class TimeStampSubtreeHandler extends D3webHandler<TimeStampType> {
 
 		@Override
-		public Collection<Message> create(Article article, Section<TimeStampType> s) {
+		public Collection<Message> create(D3webCompiler compiler, Section<TimeStampType> s) {
 			if (TimeStampType.isValid(s.getText())) {
 				return Collections.emptyList();
 			}

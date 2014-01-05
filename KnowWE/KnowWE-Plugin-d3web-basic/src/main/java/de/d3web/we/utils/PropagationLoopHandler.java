@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import de.d3web.core.inference.LoopTerminator;
 import de.d3web.we.basic.SessionRemovedEvent;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.event.Event;
 import de.knowwe.core.event.EventListener;
 import de.knowwe.d3web.event.FindingSetEvent;
@@ -26,6 +27,7 @@ public class PropagationLoopHandler implements EventListener {
 		if (event instanceof FindingSetEvent) {
 			FindingSetEvent findingSetEvent = (FindingSetEvent) event;
 			D3webUtils.handleLoopDetectionNotification(
+					Compilers.getDefaultArticleManager(findingSetEvent.getUserContext().getWeb()),
 					findingSetEvent.getUserContext(),
 					findingSetEvent.getSession());
 		}

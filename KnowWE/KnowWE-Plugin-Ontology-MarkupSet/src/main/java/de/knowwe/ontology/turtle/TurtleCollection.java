@@ -27,7 +27,6 @@ import org.ontoware.rdf2go.vocabulary.RDF;
 
 import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -117,7 +116,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 	}
 
 	@Override
-	public StatementProviderResult getStatements(Section<TurtleCollection> section, Rdf2GoCore core, Article article) {
+	public StatementProviderResult getStatements(Section<TurtleCollection> section, Rdf2GoCore core) {
 		StatementProviderResult result = new StatementProviderResult();
 		List<Section<CollectionItem>> listItems = new ArrayList<Section<CollectionItem>>();
 		Sections.findSuccessorsOfType(section,
@@ -127,7 +126,8 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 			addListStatements(listNode, 0, listItems, result, core, section);
 		}
 		else {
-			result.addStatement(core.createStatement(listNode, RDF.rest, RDF.nil));
+			result.addStatement(core.createStatement(listNode, RDF.rest,
+					RDF.nil));
 		}
 
 		return result;
@@ -137,31 +137,32 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 			"unchecked", "rawtypes" })
 	private void addListStatements(Resource subject, int listIndex, List<Section<CollectionItem>> subList, StatementProviderResult result, Rdf2GoCore core, Section<TurtleCollection> collectionSection) {
 
-			Section<CollectionItem> dataSection = subList.get(0);
+		Section<CollectionItem> dataSection = subList.get(0);
 
-			// search data value node
-			Section<NodeProvider> dataNodeSection = Sections.findSuccessor(dataSection,
-					NodeProvider.class);
+		// search data value node
+		Section<NodeProvider> dataNodeSection = Sections.findSuccessor(dataSection,
+				NodeProvider.class);
 
-			// add data triple
-			result.addStatement(core.createStatement(subject, RDF.first,
-					dataNodeSection.get().getNode(dataNodeSection, core)));
+		// add data triple
+		result.addStatement(core.createStatement(subject, RDF.first,
+				dataNodeSection.get().getNode(dataNodeSection, core)));
 
-			// go on to next list element
-			List<Section<CollectionItem>> nextSublist = subList.subList(1, subList.size());
-			if(nextSublist.size() == 0) {
-				// end of list and end of recursion
-				result.addStatement(core.createStatement(subject, RDF.rest, RDF.nil));
-				
-			} else {
-				listIndex++;
-				org.ontoware.rdf2go.model.node.BlankNode nextListNode = core.createBlankNode(collectionSection.getID()
-						+ "_" + listIndex);
-				result.addStatement(core.createStatement(subject, RDF.rest, nextListNode));
-				
-				addListStatements(nextListNode, listIndex,
-						nextSublist, result, core, collectionSection);
-			}
+		// go on to next list element
+		List<Section<CollectionItem>> nextSublist = subList.subList(1, subList.size());
+		if (nextSublist.size() == 0) {
+			// end of list and end of recursion
+			result.addStatement(core.createStatement(subject, RDF.rest, RDF.nil));
+
+		}
+		else {
+			listIndex++;
+			org.ontoware.rdf2go.model.node.BlankNode nextListNode = core.createBlankNode(collectionSection.getID()
+					+ "_" + listIndex);
+			result.addStatement(core.createStatement(subject, RDF.rest, nextListNode));
+
+			addListStatements(nextListNode, listIndex,
+					nextSublist, result, core, collectionSection);
+		}
 
 	}
 

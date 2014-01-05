@@ -29,15 +29,15 @@ import org.ontoware.rdf2go.vocabulary.XSD;
 
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.defaultMarkup.ContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.ontology.compile.OntologyCompiler;
+import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.ontology.kdom.OntologyUtils;
 import de.knowwe.ontology.kdom.objectproperty.AbbreviatedPropertyDefinition;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
@@ -52,14 +52,14 @@ public class PropertyAnnotationType extends AbstractType {
 		AbbreviatedResourceReference classReference = new AbbreviatedResourceReference();
 		classReference.setSectionFinder(OntologyUtils.ABBREVIATED_RESOURCE_FINDER);
 		this.addChildType(classReference);
-		this.addSubtreeHandler(Priority.HIGH, new PropertyAnnotationHandler());
+		this.addCompileScript(Priority.HIGH, new PropertyAnnotationHandler());
 		this.setSectionFinder(new AllTextFinderTrimmed());
 	}
 
-	private static class PropertyAnnotationHandler extends SubtreeHandler<PropertyAnnotationType> {
+	private static class PropertyAnnotationHandler extends OntologyHandler<PropertyAnnotationType> {
 
 		@Override
-		public Collection<Message> create(Article article, Section<PropertyAnnotationType> section) {
+		public Collection<Message> create(OntologyCompiler compiler, Section<PropertyAnnotationType> section) {
 
 			Section<DefaultMarkupType> classTypeSection = Sections.findAncestorOfType(section,
 					DefaultMarkupType.class);
@@ -74,7 +74,7 @@ public class PropertyAnnotationType extends AbstractType {
 
 			if (propertySection.hasErrorInSubtree()) return Messages.noMessage();
 
-			Rdf2GoCore core = Rdf2GoCore.getInstance(article);
+			Rdf2GoCore core = Rdf2GoCore.getInstance(compiler);
 
 			URI propertyURI = propertySection.get().getPropertyURI(core, propertySection);
 
@@ -96,20 +96,25 @@ public class PropertyAnnotationType extends AbstractType {
 				core.addStatements(section, core.createStatement(propertyURI, RDFS.range, rangeURI));
 
 				if (rangeAbbreviation.equalsIgnoreCase(XSD.class.getSimpleName())) {
-					core.addStatements(section,
-							core.createStatement(propertyURI, RDF.type, OWL.DatatypeProperty));
+					core.addStatements(section, core.createStatement(propertyURI, RDF.type,
+							OWL.DatatypeProperty));
 				}
 				else {
-					core.addStatements(section,
-							core.createStatement(propertyURI, RDF.type, OWL.ObjectProperty));
+					core.addStatements(section, core.createStatement(propertyURI, RDF.type,
+							OWL.ObjectProperty));
 				}
 			}
 			else {
-				core.addStatements(section,
-						core.createStatement(propertyURI, RDF.type, RDF.Property));
+				core.addStatements(section, core.createStatement(propertyURI, RDF.type,
+						RDF.Property));
 			}
 
 			return Messages.noMessage();
+		}
+
+		@Override
+		public void destroy(OntologyCompiler compiler, Section<PropertyAnnotationType> section) {
+			Rdf2GoCore.getInstance(compiler).removeStatementsForSection(section);
 		}
 
 	}

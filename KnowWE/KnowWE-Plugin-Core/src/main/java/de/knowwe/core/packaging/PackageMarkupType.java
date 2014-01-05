@@ -1,55 +1,99 @@
-/*
- * Copyright (C) 2013 University Wuerzburg, Computer Science VI
- * 
- * This is free software; you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 3 of the License, or (at your option) any
- * later version.
- * 
- * This software is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this software; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
- * site: http://www.fsf.org.
- */
 package de.knowwe.core.packaging;
 
-import java.util.regex.Pattern;
+import java.util.Collection;
 
-import de.knowwe.core.compile.packaging.PackageAnnotationNameTypeRenderer;
-import de.knowwe.core.kdom.AbstractType;
+import de.d3web.strings.Identifier;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.PackageRegistrationCompiler;
+import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScript;
+import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.packaging.PackageCompileType;
+import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.kdom.rendering.Renderer;
-import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.user.UserContext;
+import de.knowwe.core.report.Message.Type;
+import de.knowwe.core.report.Messages;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageRegistrationScript;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageTermReferenceRegistrationHandler;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
-/**
- * 
- * @author Stefan Plehn
- * @created 22.05.2013
- */
-public class PackageMarkupType extends AbstractType {
+public class PackageMarkupType extends DefaultMarkupType {
 
-	public PackageMarkupType() {
-		Pattern pattern = Pattern.compile("^(%%\\w+\\b\\s*)",
-				Pattern.MULTILINE + Pattern.DOTALL);
-		this.setSectionFinder(new RegexSectionFinder(pattern));
-		this.setRenderer(new Renderer() {
+	private static final DefaultMarkup MARKUP;
 
-			private final Renderer renderer = new PackageAnnotationNameTypeRenderer();
-
-			@Override
-			public void render(Section<?> section, UserContext user, RenderResult result) {
-				renderer.render(section, user, result);
-				result.append(" ");
-			}
-
-		});
+	static {
+		MARKUP = new DefaultMarkup("Package");
+		MARKUP.addContentType(new PackageTerm());
 	}
 
+	public PackageMarkupType() {
+		super(MARKUP);
+		addCompileScript(Priority.HIGH, new SetDefaultPackageHandler());
+		addCompileScript(Priority.HIGH, new PackageTermDefinitionRegistrationHandler());
+		removeCompileScript(PackageRegistrationCompiler.class,
+				DefaultMarkupPackageTermReferenceRegistrationHandler.class);
+		removeCompileScript(PackageRegistrationCompiler.class,
+				DefaultMarkupPackageRegistrationScript.class);
+		setRenderer(new PackageMarkupRenderer());
+		addChildType(new PackageType());
+	}
+
+	private static class PackageMarkupRenderer extends DefaultMarkupRenderer {
+
+		@Override
+		protected void renderCompileWarning(Section<?> section, RenderResult string) {
+
+			String defaultPackage = DefaultMarkupType.getContent(section).trim();
+			Collection<Section<? extends PackageCompileType>> compileSections = Compilers.getPackageManager(
+					section).getCompileSections(defaultPackage);
+
+			// add warning if section is not compiled
+			if (compileSections.isEmpty()) {
+				String warningString = "The package '" + defaultPackage
+						+ "' is not used to compile any knowledge.";
+				renderMessagesOfType(Type.WARNING,
+						Messages.asList(Messages.warning(warningString)),
+						string);
+			}
+		}
+	}
+
+	private static class PackageTermDefinitionRegistrationHandler extends PackageRegistrationScript<PackageMarkupType> {
+
+		@Override
+		public void compile(PackageRegistrationCompiler compiler, Section<PackageMarkupType> section) {
+
+			String defaultPackage = DefaultMarkupType.getContent(section).trim();
+			compiler.getTerminologyManager().registerTermDefinition(compiler,
+					section, Package.class, new Identifier(defaultPackage));
+		}
+
+		@Override
+		public void destroy(PackageRegistrationCompiler compiler, Section<PackageMarkupType> section) {
+			String defaultPackage = DefaultMarkupType.getContent(section).trim();
+			compiler.getTerminologyManager().unregisterTermDefinition(compiler,
+					section, Package.class, new Identifier(defaultPackage));
+		}
+	}
+
+	private static class SetDefaultPackageHandler extends PackageRegistrationScript<PackageMarkupType> {
+
+		@Override
+		public void compile(PackageRegistrationCompiler compiler, Section<PackageMarkupType> section) {
+			String defaultPackage = DefaultMarkupType.getContent(section).trim();
+			if (!defaultPackage.isEmpty()) {
+				Compilers.getPackageManager(section).addDefaultPackage(
+						section.getArticle(), defaultPackage);
+			}
+		}
+
+		@Override
+		public void destroy(PackageRegistrationCompiler compiler, Section<PackageMarkupType> section) {
+			String defaultPackage = DefaultMarkupType.getContent(section).trim();
+			Compilers.getPackageManager(section).removeDefaultPackage(
+					section.getArticle(), defaultPackage);
+		}
+	}
 }

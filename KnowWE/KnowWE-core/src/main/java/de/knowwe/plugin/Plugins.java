@@ -22,6 +22,7 @@ package de.knowwe.plugin;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Logger;
 
 import de.d3web.collections.PriorityList;
 import de.d3web.plugin.Extension;
@@ -31,20 +32,19 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.append.PageAppendHandler;
+import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.SectionizerModule;
 import de.knowwe.core.kdom.rendering.Renderer;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.taghandler.TagHandler;
 import de.knowwe.core.utils.ScopeUtils;
 import de.knowwe.kdom.defaultMarkup.AnnotationType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup.Annotation;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.defaultMarkup.UnknownAnnotationType;
-import de.knowwe.knowRep.KnowledgeRepresentationHandler;
 
 /**
  * Provides utilities methods for Plugins used in KnowWE
@@ -56,8 +56,8 @@ public class Plugins {
 	public static final String SCOPE_ROOT = "root";
 	public static final String EXTENDED_PLUGIN_ID = "KnowWEExtensionPoints";
 	public static final String EXTENDED_POINT_KnowWEAction = "Action";
-	public static final String EXTENDED_POINT_KnowledgeRepresentationHandler = "KnowledgeRepresentationHandler";
 	public static final String EXTENDED_POINT_Type = "Type";
+	public static final String EXTENDED_POINT_CompileScript = "CompileScript";
 	public static final String EXTENDED_POINT_SubtreeHandler = "SubtreeHandler";
 	public static final String EXTENDED_POINT_ToolProvider = "ToolProvider";
 	public static final String EXTENDED_POINT_TagHandler = "TagHandler";
@@ -66,12 +66,12 @@ public class Plugins {
 	public static final String EXTENDED_POINT_SectionizerModule = "SectionizerModule";
 	public static final String EXTENDED_POINT_SemanticCore = "SemanticCoreImpl";
 	public static final String EXTENDED_POINT_EventListener = "EventListener";
-	public static final String EXTENDED_POINT_TERMINOLOGY = "Terminology";
-	public static final String EXTENDED_POINT_COMPILESCRIPT = "CompileScript";
+	public static final String EXTENDED_POINT_Terminology = "Terminology";
+	public static final String EXTENDED_POINT_IncrementalCompileScript = "IncrementalCompileScript";
 	public static final String EXTENDED_POINT_Renderer = "Renderer";
 	public static final String EXTENDED_POINT_Annotation = "Annotation";
-	public static final String EXTENDED_POINT_SEARCHPROVIDER = "SearchProvider";
-	public static final String EXTENDED_POINT_COMPILER = "Compiler";
+	public static final String EXTENDED_POINT_SearchProvider = "SearchProvider";
+	public static final String EXTENDED_POINT_Compiler = "Compiler";
 
 	private static <T> List<T> getSingeltons(String point, Class<T> clazz) {
 		PluginManager pm = PluginManager.getInstance();
@@ -99,7 +99,7 @@ public class Plugins {
 	 */
 	public static PriorityList<Double, Compiler> getCompilers() {
 		PluginManager pm = PluginManager.getInstance();
-		Extension[] extensions = pm.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_COMPILER);
+		Extension[] extensions = pm.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_Compiler);
 		PriorityList<Double, Compiler> result = new PriorityList<Double, Compiler>(5d);
 		for (Extension e : extensions) {
 			result.add(e.getPriority(),
@@ -116,16 +116,6 @@ public class Plugins {
 		return getSingeltons(EXTENDED_POINT_KnowWEAction, Action.class);
 	}
 
-	/**
-	 * Returns a list of all plugged KnowledgeRepresentationHandlers
-	 * 
-	 * @return List of KnowledgeRepresentationHandlers
-	 */
-	public static List<KnowledgeRepresentationHandler> getKnowledgeRepresentationHandlers() {
-		return getSingeltons(EXTENDED_POINT_KnowledgeRepresentationHandler,
-				KnowledgeRepresentationHandler.class);
-	}
-
 	public static void addChildrenTypesToType(Type type, Type[] path) {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_Type);
@@ -136,13 +126,24 @@ public class Plugins {
 		}
 	}
 
-	public static void addSubtreeHandlersToType(Type type, Type[] path) {
+	@SuppressWarnings("unchecked")
+	public static void addCompileScriptsToType(Type type, Type[] path) {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_SubtreeHandler);
+				EXTENDED_POINT_CompileScript);
 		for (Extension extension : ScopeUtils.getMatchingExtensions(extensions, path)) {
-			int priorityValue = Integer.parseInt(extension.getParameter("handlerpriority"));
+			int priorityValue = Integer.parseInt(extension.getParameter("compilepriority"));
 			Priority priority = Priority.getPriority(priorityValue);
-			type.addSubtreeHandler(priority, (SubtreeHandler<?>) extension.getSingleton());
+			if (type instanceof AbstractType) {
+				((AbstractType) type).addCompileScript(priority,
+						(CompileScript<Compiler, AbstractType>) extension.getSingleton());
+			}
+			else {
+				Logger.getLogger(Plugins.class.getName()).warning(
+						"Tried to plug CompileScript '"
+								+ extension.getSingleton().getClass().getSimpleName()
+								+ "' into an type '" + type.getClass().getSimpleName()
+								+ "' which is not an AbstractType");
+			}
 		}
 	}
 
@@ -152,7 +153,7 @@ public class Plugins {
 		Extension match = ScopeUtils.getMatchingExtension(extensions, path);
 		if (match != null) {
 			if (type instanceof AbstractType) {
-				Renderer currentRenderer = ((AbstractType) type).getRenderer();
+				Renderer currentRenderer = type.getRenderer();
 				Environment.getInstance().addRendererForType(type, currentRenderer);
 				((AbstractType) type).setRenderer((Renderer) match.getSingleton());
 			}

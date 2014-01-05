@@ -25,14 +25,14 @@ import java.util.List;
 import com.wcohen.ss.Levenstein;
 
 import de.d3web.strings.Identifier;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.correction.CorrectionProvider;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message.Type;
-import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * A basic correction provider for d3web term references
@@ -43,17 +43,17 @@ import de.knowwe.core.utils.KnowWEUtils;
 public class D3webCorrectionProvider implements CorrectionProvider {
 
 	@Override
-	public List<CorrectionProvider.Suggestion> getSuggestions(Article article, Section<?> section, int threshold) {
+	public List<CorrectionProvider.Suggestion> getSuggestions(TermCompiler compiler, Section<?> section, int threshold) {
 		if (!(section.get() instanceof Term)) {
 			return null;
 		}
 
-		if (!section.hasErrorInSubtree(article)
-				&& !section.hasMessageInSubtree(article, Type.WARNING)) {
+		if (!section.hasErrorInSubtree(compiler)
+				&& !section.hasMessageInSubtree(compiler, Type.WARNING)) {
 			return null;
 		}
 
-		TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
+		TerminologyManager terminologyHandler = compiler.getTerminologyManager();
 		Term termReference = (Term) section.get();
 
 		List<CorrectionProvider.Suggestion> suggestions = new LinkedList<CorrectionProvider.Suggestion>();

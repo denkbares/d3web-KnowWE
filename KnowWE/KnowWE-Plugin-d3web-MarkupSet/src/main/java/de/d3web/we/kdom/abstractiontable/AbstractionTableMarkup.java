@@ -18,7 +18,7 @@ public class AbstractionTableMarkup extends DefaultMarkupType {
 		markup.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageAnnotationNameType());
 		markup.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm(true));
+				new PackageTerm());
 	}
 
 	public AbstractionTableMarkup() {

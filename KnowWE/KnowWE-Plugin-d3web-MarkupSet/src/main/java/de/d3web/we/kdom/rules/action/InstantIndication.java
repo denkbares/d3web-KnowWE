@@ -27,8 +27,8 @@ import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.indication.ActionInstantIndication;
 import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.we.kdom.rules.action.ContraIndicationAction.QASetReferenceInBrackets;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QASetReference;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -52,9 +52,9 @@ public class InstantIndication extends BracketsAction<InstantIndication> {
 	}
 
 	@Override
-	public PSAction createAction(Article article, Section<InstantIndication> s) {
+	public PSAction createAction(D3webCompiler compiler, Section<InstantIndication> s) {
 		Section<QASetReference> qSec = Sections.findSuccessor(s, QASetReference.class);
-		QASet termObject = qSec.get().getTermObject(article, qSec);
+		QASet termObject = qSec.get().getTermObject(compiler, qSec);
 
 		ActionInstantIndication actionContraIndication = new ActionInstantIndication();
 		List<QASet> obs = new ArrayList<QASet>();

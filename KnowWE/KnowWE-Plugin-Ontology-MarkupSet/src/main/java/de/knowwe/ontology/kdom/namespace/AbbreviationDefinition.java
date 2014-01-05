@@ -19,17 +19,17 @@
 package de.knowwe.ontology.kdom.namespace;
 
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.renderer.StyleRenderer;
+import de.knowwe.ontology.compile.OntologyCompiler;
 
-public class AbbreviationDefinition extends SimpleDefinition {
+public class AbbreviationDefinition extends SimpleDefinition<OntologyCompiler> {
 
 	public AbbreviationDefinition() {
-		super(TermRegistrationScope.LOCAL, AbbreviationDefinition.class, Priority.HIGHEST);
+		super(OntologyCompiler.class, AbbreviationDefinition.class, Priority.HIGHEST);
 		this.setSectionFinder(new ConstraintSectionFinder(
 				new RegexSectionFinder("\\w+"),
 				AtMostOneFindingConstraint.getInstance()));

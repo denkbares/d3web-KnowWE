@@ -3,8 +3,8 @@ package de.d3web.we.kdom.abstractiontable;
 import de.d3web.scoring.Score;
 import de.d3web.strings.Strings;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.renderer.StyleRenderer;
@@ -18,15 +18,15 @@ public class SolutionScoreCell extends AbstractType {
 		this.setRenderer(renderer);
 	}
 
-	public Score createScore(Article article, Section<SolutionScoreCell> solutionScoreCell) {
+	public Score createScore(PackageCompiler compiler, Section<SolutionScoreCell> solutionScoreCell) {
 		String text = Strings.trim(solutionScoreCell.getText());
 		Score scoreForString = D3webUtils.getScoreForString(text.toUpperCase());
 		if (scoreForString == null) {
-			Messages.storeMessage(article, solutionScoreCell, this.getClass(),
+			Messages.storeMessage(compiler, solutionScoreCell, this.getClass(),
 					Messages.error("No valid solution score found in '" + text + "'"));
 		}
 		else {
-			Messages.clearMessages(article, solutionScoreCell, this.getClass());
+			Messages.clearMessages(compiler, solutionScoreCell, this.getClass());
 		}
 
 		return scoreForString;

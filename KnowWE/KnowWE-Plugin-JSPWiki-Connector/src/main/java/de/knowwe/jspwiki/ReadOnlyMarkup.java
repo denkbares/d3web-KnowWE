@@ -43,7 +43,6 @@ public class ReadOnlyMarkup extends DefaultMarkupType {
 
 	public ReadOnlyMarkup() {
 		super(MARKUP);
-		this.setIgnorePackageCompile(true);
 		this.setRenderer(new ReadOnlyMarkupRenderer());
 	}
 

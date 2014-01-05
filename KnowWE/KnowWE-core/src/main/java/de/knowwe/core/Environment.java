@@ -27,8 +27,8 @@ import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -42,14 +42,21 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
+import de.d3web.plugin.Extension;
 import de.d3web.plugin.JPFPluginManager;
 import de.d3web.plugin.Plugin;
 import de.d3web.plugin.PluginManager;
 import de.d3web.plugin.Resource;
 import de.knowwe.core.append.PageAppendHandler;
+import de.knowwe.core.compile.CompilerManager;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.DefaultGlobalCompiler;
+import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.event.EventListener;
 import de.knowwe.core.event.EventManager;
+import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
@@ -60,8 +67,6 @@ import de.knowwe.core.taghandler.TagHandler;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.event.InitEvent;
-import de.knowwe.knowRep.KnowledgeRepresentationHandler;
-import de.knowwe.knowRep.KnowledgeRepresentationManager;
 import de.knowwe.plugin.Instantiation;
 import de.knowwe.plugin.Plugins;
 
@@ -77,9 +82,9 @@ import de.knowwe.plugin.Plugins;
 public class Environment {
 
 	/**
-	 * Stores additional renderers if renderers are plugged via the plugin framework
-	 * The renderer plugged with highest priority _might_ decided to look up in this list 
-	 * and call other renderers
+	 * Stores additional renderers if renderers are plugged via the plugin
+	 * framework The renderer plugged with highest priority _might_ decided to
+	 * look up in this list and call other renderers
 	 */
 	private final Map<Type, List<Renderer>> additionalRenderers = new HashMap<Type, List<Renderer>>();
 
@@ -88,24 +93,6 @@ public class Environment {
 	 * ('default_web')
 	 */
 	private final Map<String, ArticleManager> articleManagers = new HashMap<String, ArticleManager>();
-
-	/**
-	 * A knowledge manager for each web. In case of JSPWiki there is only on web
-	 * ('default_web')
-	 */
-	private final Map<String, KnowledgeRepresentationManager> knowledgeManagers = new HashMap<String, KnowledgeRepresentationManager>();
-
-	/**
-	 * A package manager for each web. In case of JSPWiki there is only on web
-	 * ('default_web')
-	 */
-	private final Map<String, PackageManager> packageManagers = new HashMap<String, PackageManager>();
-
-	/**
-	 * A terminology handler for each web and article. In case of JSPWiki there
-	 * is only on web ('default_web')
-	 */
-	private final Map<String, Map<String, TerminologyManager>> terminologyManagers = new HashMap<String, Map<String, TerminologyManager>>();
 
 	/**
 	 * This is the link to the connected Wiki-engine. Allows saving pages etc.
@@ -179,22 +166,46 @@ public class Environment {
 		try {
 			initProperties();
 			initPlugins();
+			initEventManager();
 			initTagHandler();
 			initSectionizerModules();
+			initCompilers();
 
 			// decorate types in breast-first-search
 			decorateTypeTree();
 
-			initKnowledgeRepresentationHandler();
+			// initSuccessorType();
+
 			initInstantiations();
 			Plugins.initJS();
 			Plugins.initCSS();
 		}
 		catch (Throwable e) {
-			String msg = "Invalid initialization of the wiki type tree. This is caused by an invalid wiki plugin. Wiki is in unstable state. Please exit and correct before using the wiki.";
+			String msg = "Invalid initialization of the wiki. This is caused by an invalid wiki plugin. "
+					+ "Wiki is in unstable state. Please exit and correct before using the wiki.";
 			Logger.getLogger(getClass().getName()).log(Level.SEVERE, msg, e);
 			throw new IllegalStateException(msg, e);
 		}
+	}
+
+	private void initEventManager() {
+		// get all EventListeners
+		Extension[] exts = PluginManager.getInstance().getExtensions(
+				Plugins.EXTENDED_PLUGIN_ID,
+				Plugins.EXTENDED_POINT_EventListener);
+		for (Extension extension : exts) {
+			Object o = extension.getSingleton();
+			if (o instanceof EventListener) {
+				EventManager.getInstance().registerListener(((EventListener) o));
+			}
+		}
+
+	}
+
+	private void initCompilers() {
+		CompilerManager defaultCompilerManager = Compilers.getDefaultCompilerManager(DEFAULT_WEB);
+		defaultCompilerManager.addCompiler(2, new PackageRegistrationCompiler());
+		defaultCompilerManager.addCompiler(4, new DefaultGlobalCompiler());
 	}
 
 	private void initProperties() {
@@ -281,7 +292,7 @@ public class Environment {
 
 	private void initInstantiations() {
 		for (Instantiation inst : Plugins.getInstantiations()) {
-			inst.init();
+			inst.init(DEFAULT_WEB);
 		}
 	}
 
@@ -294,14 +305,6 @@ public class Environment {
 	private void initSectionizerModules() {
 		for (SectionizerModule sm : Plugins.getSectionizerModules()) {
 			Sectionizer.registerSectionizerModule(sm);
-		}
-	}
-
-	private void initKnowledgeRepresentationHandler() {
-		KnowledgeRepresentationManager manager = this.getKnowledgeRepresentationManager(DEFAULT_WEB);
-		for (KnowledgeRepresentationHandler handler : Plugins.getKnowledgeRepresentationHandlers()) {
-			handler.setWeb(DEFAULT_WEB);
-			manager.registerHandler(handler);
 		}
 	}
 
@@ -396,7 +399,7 @@ public class Environment {
 
 			// initialize plugged items
 			Plugins.addChildrenTypesToType(type, path);
-			Plugins.addSubtreeHandlersToType(type, path);
+			Plugins.addCompileScriptsToType(type, path);
 			Plugins.addRendererToType(type, path);
 			Plugins.addAnnotations(type, path);
 
@@ -421,6 +424,45 @@ public class Environment {
 
 				// add child to the end of the queue --> breadth first search
 				queue.add(childPath);
+			}
+		}
+	}
+
+	private void initSuccessorType() {
+
+		// queue the queue of paths to be initialized
+		RootType root = RootType.getInstance();
+		for (Type type : root.getChildrenTypes()) {
+			initSuccessorTypes(new Type[] {
+					root, type });
+		}
+	}
+
+	private void initSuccessorTypes(Type[] path) {
+		Type type = path[path.length - 1];
+		List<Type> childrenTypes = type.getChildrenTypes();
+		if (childrenTypes.isEmpty()) {
+			addSuccessorTypes(path);
+		}
+		for (Type child : childrenTypes) {
+			if (Arrays.asList(path).contains(child)) continue;
+			Type[] copy = Arrays.copyOf(path, path.length + 1);
+			copy[path.length] = child;
+			initSuccessorTypes(copy);
+		}
+
+	}
+
+	private void addSuccessorTypes(Type[] path) {
+		for (int i = 0; i < path.length; i++) {
+			if (!(path[i] instanceof AbstractType)) continue;
+			Type type = path[i];
+			for (int j = i + 1; j < path.length; j++) {
+				Class<?> clazz = path[j].getClass();
+				while (clazz != null && clazz != AbstractType.class) {
+					// type.addSuccessorType(clazz);
+					clazz = clazz.getSuperclass();
+				}
 			}
 		}
 	}
@@ -488,14 +530,14 @@ public class Environment {
 	 */
 	public Article buildAndRegisterArticle(String content,
 			String title, String web) {
-		return buildAndRegisterArticle(content, title, web, false);
+		return buildAndRegisterArticle(web, title, content, false);
 	}
 
 	/**
 	 * Builds an {@link Article} and registers it in the {@link ArticleManager}.
 	 */
-	public Article buildAndRegisterArticle(String content,
-			String title, String web, boolean fullParse) {
+	public Article buildAndRegisterArticle(String web,
+			String title, String content, boolean fullParse) {
 
 		if (Article.isArticleCurrentlyBuilding(web, title)) {
 			return Article.getCurrentlyBuildingArticle(web, title);
@@ -504,7 +546,7 @@ public class Environment {
 		// create article with the new content
 		Article article = Article.createArticle(content, title, web);
 
-		this.getArticleManager(web).registerArticle(article);
+		this.getDefaultArticleManager(web).registerArticle(article);
 
 		return article;
 	}
@@ -516,7 +558,7 @@ public class Environment {
 	 * @param title the title of the {@link Article}
 	 */
 	public Article getArticle(String web, String title) {
-		return getArticleManager(web).getArticle(title);
+		return getDefaultArticleManager(web).getArticle(title);
 	}
 
 	/**
@@ -524,78 +566,13 @@ public class Environment {
 	 * 
 	 * @param web the web of the {@link ArticleManager}
 	 */
-	public ArticleManager getArticleManager(String web) {
+	public ArticleManager getDefaultArticleManager(String web) {
 		ArticleManager mgr = this.articleManagers.get(web);
 		if (mgr == null) {
-			mgr = new ArticleManager(this, web);
+			mgr = new DefaultArticleManager(this, web);
 			articleManagers.put(web, mgr);
 		}
 		return mgr;
-	}
-
-	public KnowledgeRepresentationManager getKnowledgeRepresentationManager(String web) {
-		KnowledgeRepresentationManager mgr = this.knowledgeManagers.get(web);
-		if (mgr == null) {
-			mgr = new KnowledgeRepresentationManager(web);
-			knowledgeManagers.put(web, mgr);
-		}
-		return mgr;
-	}
-
-	/**
-	 * Returns the {@link PackageManager} for a given web.
-	 * 
-	 * @param web the web of the {@link PackageManager}
-	 */
-	public PackageManager getPackageManager(String web) {
-		PackageManager mgr = this.packageManagers.get(web);
-		if (mgr == null) {
-			mgr = new PackageManager(web);
-			packageManagers.put(web, mgr);
-		}
-		return mgr;
-	}
-
-	/**
-	 * Returns the TerminologyHandler for a given compiling article.
-	 * 
-	 * @param article the compiling article
-	 * @return the {@link TerminologyManager} for that article
-	 */
-	public TerminologyManager getTerminologyManager(Article article) {
-		return getTerminologyManager(article.getWeb(), article.getTitle());
-	}
-
-	/**
-	 * Returns the TerminologyHandler for a given compiling article specified by
-	 * its web and article name.
-	 * 
-	 * @param web the web of the compiling article
-	 * @param title the name of the compiling article
-	 * @return the {@link TerminologyManager} for that article
-	 */
-	public TerminologyManager getTerminologyManager(String web, String title) {
-		Map<String, TerminologyManager> managersOfWeb = this.terminologyManagers.get(web);
-		if (managersOfWeb == null) {
-			managersOfWeb = new HashMap<String, TerminologyManager>();
-			this.terminologyManagers.put(web, managersOfWeb);
-		}
-		TerminologyManager mgr = managersOfWeb.get(title);
-		if (mgr == null) {
-			mgr = new TerminologyManager(web, title);
-			managersOfWeb.put(title, mgr);
-		}
-		return mgr;
-	}
-
-	public Collection<TerminologyManager> getTerminologyManagers(String web) {
-		Map<String, TerminologyManager> managersOfWeb = this.terminologyManagers.get(web);
-		if (managersOfWeb == null) {
-			return Collections.emptyList();
-		}
-		else {
-			return Collections.unmodifiableCollection(managersOfWeb.values());
-		}
 	}
 
 	public ServletContext getContext() {
@@ -629,6 +606,37 @@ public class Environment {
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
+	}
+
+	/**
+	 * @deprecated
+	 * @created 15.11.2013
+	 * @param defaultWeb
+	 * @param master
+	 * @return
+	 */
+	@Deprecated
+	public TerminologyManager getTerminologyManager(String defaultWeb, String master) {
+		return Compilers.getTerminologyManager(Compilers.getDefaultArticleManager(defaultWeb).getArticle(
+				master));
+	}
+
+	/**
+	 * 
+	 * @deprecated remove this method after merging with trunk
+	 */
+	@Deprecated
+	public ArticleManager getArticleManager(String web) {
+		return getDefaultArticleManager(web);
+	}
+
+	/**
+	 * 
+	 * @deprecated remove this method after merging with trunk
+	 */
+	@Deprecated
+	public PackageManager getPackageManager(String web) {
+		return Compilers.getDefaultPackageManager(web);
 	}
 
 }

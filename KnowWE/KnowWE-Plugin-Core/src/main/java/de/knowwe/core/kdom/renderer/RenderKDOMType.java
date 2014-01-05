@@ -45,8 +45,6 @@ public class RenderKDOMType extends DefaultMarkupType {
 	public RenderKDOMType() {
 		super(MARKUP);
 		setRenderer(new KDOMRenderer());
-		setIgnorePackageCompile(true);
-
 	}
 
 	private class KDOMRenderer extends DefaultMarkupRenderer {

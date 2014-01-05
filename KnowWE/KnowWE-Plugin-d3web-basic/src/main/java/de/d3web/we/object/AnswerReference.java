@@ -26,12 +26,13 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -51,7 +52,7 @@ public abstract class AnswerReference
 
 	public AnswerReference() {
 		this.setRenderer(StyleRenderer.CHOICE);
-		this.addSubtreeHandler(new AnswerReferenceRegistrationHandler());
+		this.addCompileScript(new AnswerReferenceRegistrationHandler());
 	}
 
 	@Override
@@ -79,15 +80,15 @@ public abstract class AnswerReference
 	}
 
 	@Override
-	public Choice getTermObject(Article article, Section<? extends D3webTerm<Choice>> section) {
+	public Choice getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<Choice>> section) {
 
 		Choice choice = null;
 		if (section.get() instanceof AnswerReference) {
-			TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
+			TerminologyManager terminologyManager = compiler.getTerminologyManager();
 			Identifier termIdentifier = getTermIdentifier(section);
 			Section<?> answerDef = terminologyManager.getTermDefiningSection(termIdentifier);
 			if (answerDef != null) {
-				choice = (Choice) KnowWEUtils.getStoredObject(article, answerDef,
+				choice = (Choice) Compilers.getStoredObject((PackageCompiler) compiler, answerDef,
 						AnswerDefinition.ANSWER_STORE_KEY);
 				if (choice != null) return choice;
 			}
@@ -98,7 +99,7 @@ public abstract class AnswerReference
 				if (termDef != null && termDef.get() instanceof QuestionDefinition) {
 					Section<QuestionDefinition> questionDef = Sections.cast(termDef,
 							QuestionDefinition.class);
-					Question question = questionDef.get().getTermObject(article, questionDef);
+					Question question = questionDef.get().getTermObject(compiler, questionDef);
 					if (question instanceof QuestionChoice) {
 						choice = KnowledgeBaseUtils.findChoice((QuestionChoice) question,
 								termIdentifier.getLastPathElement(), false);

@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.diaFlux.inference.NodeActiveCondition;
 import de.d3web.we.kdom.condition.D3webCondition;
-import de.knowwe.core.kdom.Article;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.basicType.KeywordType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -63,7 +63,7 @@ public class NodeActiveConditionType extends D3webCondition<NodeActiveConditionT
 	}
 
 	@Override
-	protected Condition createCondition(Article article, Section<NodeActiveConditionType> section) {
+	protected Condition createCondition(D3webCompiler compiler, Section<NodeActiveConditionType> section) {
 		Section<FlowchartReference> flowRef =
 				Sections.findSuccessor(section, FlowchartReference.class);
 		Section<ExitNodeReference> nodeRef =

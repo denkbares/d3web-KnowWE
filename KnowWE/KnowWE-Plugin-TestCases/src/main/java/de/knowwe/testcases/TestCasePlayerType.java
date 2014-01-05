@@ -18,15 +18,10 @@
  */
 package de.knowwe.testcases;
 
-import java.util.Collection;
-
-import de.d3web.we.knowledgebase.KnowledgeBaseType;
-import de.knowwe.core.Environment;
+import de.knowwe.core.compile.PackageRegistrationCompiler;
+import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScript;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.Message;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
@@ -44,26 +39,28 @@ public class TestCasePlayerType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("TestCasePlayer");
-		MARKUP.addAnnotation(KnowledgeBaseType.ANNOTATION_COMPILE, false);
-		MARKUP.addAnnotationRenderer(KnowledgeBaseType.ANNOTATION_COMPILE, StyleRenderer.ANNOTATION);
+		MARKUP.addAnnotation(PackageManager.COMPILE_ATTRIBUTE_NAME, false);
+		MARKUP.addAnnotationRenderer(PackageManager.COMPILE_ATTRIBUTE_NAME,
+				StyleRenderer.ANNOTATION);
 	}
 
 	public TestCasePlayerType() {
 		super(MARKUP);
-		this.setIgnorePackageCompile(true);
 		DefaultMarkupType.getContentType(this).setRenderer(
 				new ReRenderSectionMarkerRenderer(new TestCasePlayerRenderer()));
-		this.addSubtreeHandler(new SubtreeHandler<TestCasePlayerType>() {
+		this.addCompileScript(new PackageRegistrationScript<TestCasePlayerType>() {
 
 			@Override
-			public Collection<Message> create(Article article, Section<TestCasePlayerType> section) {
-				PackageManager packageManager = Environment.getInstance().getPackageManager(
-						article.getWeb());
-				for (String uses : DefaultMarkupType.getPackages(section,
-						KnowledgeBaseType.ANNOTATION_COMPILE)) {
-					packageManager.addSectionToPackage(section, uses);
+			public void compile(PackageRegistrationCompiler compiler, Section<TestCasePlayerType> section) {
+				for (String packageName : DefaultMarkupType.getPackages(section,
+						PackageManager.COMPILE_ATTRIBUTE_NAME)) {
+					compiler.getPackageManager().addSectionToPackage(section, packageName);
 				}
-				return null;
+			}
+
+			@Override
+			public void destroy(PackageRegistrationCompiler compiler, Section<TestCasePlayerType> section) {
+				compiler.getPackageManager().removeSectionFromAllPackages(section);
 			}
 		});
 	}

@@ -21,24 +21,27 @@
 package de.knowwe.core.kdom;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.ResourceBundle;
-import java.util.TreeMap;
+import java.util.Set;
 
+import de.knowwe.core.compile.CompileScript;
+import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.ScriptManager;
 import de.knowwe.core.kdom.parsing.Parser;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sectionizable;
 import de.knowwe.core.kdom.parsing.Sectionizer;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.DefaultMessageRenderer;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.MessageRenderer;
-import de.knowwe.core.utils.KnowWEUtils;
 
 public abstract class AbstractType implements Type, Sectionizable {
 
@@ -51,24 +54,26 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 */
 	private final TypePriorityList childrenTypes = new TypePriorityList();
 
+	private final List<Type> parents = new ArrayList<Type>(2);
+
 	/**
-	 * Manages the subtreeHandlers which are registered to this type
-	 * 
-	 * @see SubtreeHandler
+	 * Contains all types this type can have as successors. It can be used to
+	 * faster search for {@link Section}s of a certain type inside the KDOM.
+	 * This set will be filled lazily while the KDOM is created. For search
+	 * speed it would be better to have this set in every {@link Section} with
+	 * the actual successor types of this section, but to reduce the memory
+	 * overhead of another Set in each individual {@link Section}, we just do
+	 * this per type. It will not be much slower to search and we can also
+	 * reduce the overhead for creating this set (because it we don't need to to
+	 * it every time a new Section is created).
 	 */
-	private final TreeMap<Priority, List<SubtreeHandler<? extends Type>>> subtreeHandler = new TreeMap<Priority, List<SubtreeHandler<? extends Type>>>();
+	private final Set<Class<?>> successorTypes = new HashSet<Class<?>>();
 
 	/**
 	 * a flag to show, that this ObjectType is sensitive to the order its
 	 * Sections appears in the article
 	 */
 	private boolean isOrderSensitive = false;
-
-	/**
-	 * a flag to determine if SubtreeHandlers registered to this type should be
-	 * package compile (true) or ignored by package compile (false)
-	 */
-	private boolean packageCompile = true;
 
 	/**
 	 * determines whether there is a enumeration of siblings defined for this
@@ -114,16 +119,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * 
 	 */
 	public AbstractType() {
-		ResourceBundle resourceBundle = KnowWEUtils.getConfigBundle();
-		String ignoreFlag = "packaging.ignorePackages";
-		if (resourceBundle.containsKey(ignoreFlag)) {
-			if (resourceBundle.getString(ignoreFlag).contains("true")) {
-				this.packageCompile = false;
-			}
-			if (resourceBundle.getString(ignoreFlag).contains("false")) {
-				this.packageCompile = true;
-			}
-		}
+
 	}
 
 	public AbstractType(SectionFinder sectionFinder) {
@@ -131,58 +127,34 @@ public abstract class AbstractType implements Type, Sectionizable {
 		this.setSectionFinder(sectionFinder);
 	}
 
-	/**
-	 * Returns the list of the registered ReviseSubtreeHandlers
-	 * 
-	 * @return list of handlers
-	 */
-	@Override
-	public final TreeMap<Priority, List<SubtreeHandler<? extends Type>>> getSubtreeHandlers() {
-		return subtreeHandler;
+	@SuppressWarnings("unchecked")
+	public <C extends Compiler, T extends Type, CS extends CompileScript<C, T>> void removeCompileScript(Class<C> compilerClass, Class<CS> scriptClass) {
+		CompilerManager.getScriptManager(compilerClass).removeScript((T) this, scriptClass);
 	}
 
-	@Override
-	public final List<SubtreeHandler<? extends Type>> getSubtreeHandlers(Priority p) {
-		List<SubtreeHandler<? extends Type>> handlers = getSubtreeHandlers().get(p);
-		if (handlers == null) {
-			handlers = new ArrayList<SubtreeHandler<? extends Type>>();
-			subtreeHandler.put(p, handlers);
-		}
-		return handlers;
+	public <C extends Compiler, T extends Type> void addCompileScript(CompileScript<C, T> script) {
+		addCompileScript(null, script);
 	}
 
 	/**
 	 * Registers the given SubtreeHandlers with the given Priority.
 	 */
-	@Override
-	public void addSubtreeHandler(Priority p, SubtreeHandler<? extends Type> handler) {
-		if (p == null) p = Priority.DEFAULT;
-		addSubtreeHandler(-1, p, handler);
-	}
-
-	/**
-	 * Registers the given SubtreeHandlers at position <tt>pos</tt> in the List
-	 * of SubtreeHandlers of the given Priority.
-	 */
-	public final void addSubtreeHandler(int pos, Priority p, SubtreeHandler<? extends Type> handler) {
-		if (pos < 0) {
-			getSubtreeHandlers(p).add(handler);
-		}
-		else {
-			getSubtreeHandlers(p).add(pos, handler);
-		}
-	}
-
-	/**
-	 * Registers the given SubtreeHandlers with Priority.DEFAULT.
-	 */
-	public void addSubtreeHandler(SubtreeHandler<? extends Type> handler) {
-		addSubtreeHandler(null, handler);
+	@SuppressWarnings("unchecked")
+	public <C extends Compiler, T extends Type> void addCompileScript(Priority priority, CompileScript<C, T> script) {
+		if (priority == null) priority = Priority.DEFAULT;
+		CompilerManager.addScript(priority, (T) this, script);
 	}
 
 	@Override
 	public boolean replaceChildType(Type type, Class<? extends Type> c) {
-		return childrenTypes.replaceType(type, c);
+		Type replacedType = childrenTypes.replaceType(type, c);
+		if (replacedType != null && replacedType instanceof AbstractType) {
+			removeParentChildLink((AbstractType) replacedType);
+		}
+		if (type instanceof AbstractType) {
+			addParentChildLink((AbstractType) type);
+		}
+		return replacedType != null;
 	}
 
 	/*
@@ -221,49 +193,96 @@ public abstract class AbstractType implements Type, Sectionizable {
 	}
 
 	@Override
+	public final Collection<Type> getParentTypes() {
+		return Collections.unmodifiableCollection(parents);
+	}
+
+	@Override
 	public void clearChildrenTypes() {
+		for (Type childrenType : childrenTypes.getTypes()) {
+			if (childrenType instanceof AbstractType) {
+				removeParentChildLink((AbstractType) childrenType);
+			}
+		}
 		this.childrenTypes.clear();
 	}
 
-	public void clearSubtreeHandlers() {
-		this.subtreeHandler.clear();
-	}
-
-	public void removeSubtreeHandler(Class<? extends SubtreeHandler<? extends Type>> clazz) {
-
-		List<Priority> toRemovePriority = new LinkedList<Priority>();
-
-		for (Entry<Priority, List<SubtreeHandler<? extends Type>>> entry : subtreeHandler.entrySet()) {
-
-			List<SubtreeHandler<? extends Type>> toRemove = new LinkedList<SubtreeHandler<? extends Type>>();
-
-			for (SubtreeHandler<? extends Type> subtreeHandler : entry.getValue()) {
-				if (subtreeHandler.getClass().isAssignableFrom(clazz)) {
-					toRemove.add(subtreeHandler);
-				}
-
-			}
-			entry.getValue().removeAll(toRemove);
-			if (entry.getValue().isEmpty()) {
-				toRemovePriority.add(entry.getKey());
-			}
-
+	@SuppressWarnings("unchecked")
+	public <T extends Type> void clearCompileScripts() {
+		Collection<ScriptManager<? extends Compiler>> scriptManagers = CompilerManager.getScriptManagers();
+		for (ScriptManager<? extends Compiler> manager : scriptManagers) {
+			manager.removeAllScript((T) this);
 		}
-		subtreeHandler.keySet().removeAll(toRemovePriority);
 	}
 
 	@Override
 	public void addChildType(double priority, Type type) {
+		if (type instanceof AbstractType) {
+			addParentChildLink((AbstractType) type);
+		}
 		childrenTypes.addType(priority, type);
 	}
 
-	@Override
-	public void addChildType(Type type) {
-		this.childrenTypes.addType(type);
+	private void addParentChildLink(AbstractType type) {
+		type.parents.add(this);
+		addSuccessorType(type.getClass());
+		for (Class<?> successor : type.successorTypes) {
+			addSuccessorType(successor);
+		}
 	}
 
+	@Override
+	public final void addChildType(Type type) {
+		addChildType(TypePriorityList.DEFAULT_PRIORITY, type);
+	}
+
+	/**
+	 * Adds the given typeClass to the potential successor types of this type.
+	 * The added successor is automatically also added to all parent types.
+	 * <p>
+	 * <b>Normally, you don't have to add successor types manually, because
+	 * children types are automatically also added as successor types. You
+	 * should only need this, if you change the type tree after initialization,
+	 * which you should only do, if you exactly know what you are doing.</b>
+	 * 
+	 * @created 10.12.2013
+	 * @param typeClass the class of the successor you want to add
+	 */
+	public void addSuccessorType(Class<?> typeClass) {
+		if (typeClass != null && typeClass != Type.class && typeClass != Object.class) {
+			if (successorTypes.add(typeClass)) {
+				for (Type parent : parents) {
+					if (parent instanceof AbstractType) {
+						((AbstractType) parent).addSuccessorType(typeClass);
+					}
+				}
+			}
+			addSuccessorType(typeClass.getSuperclass());
+			for (Class<?> interfaze : typeClass.getInterfaces()) {
+				addSuccessorType(interfaze);
+			}
+		}
+	}
+
+	/**
+	 * Removes the first occurrence (descending priority order) of a type where
+	 * the given class is assignable from this type.
+	 * 
+	 * @created 09.12.2013
+	 * @param typeClass the class of the type to be removed
+	 */
 	public void removeChildType(Class<? extends Type> typeClass) {
-		this.childrenTypes.removeType(typeClass);
+		Type removedType = this.childrenTypes.removeType(typeClass);
+		if (removedType != null && removedType instanceof AbstractType) {
+			removeParentChildLink((AbstractType) removedType);
+		}
+		// we could also clean the successorTypes, but for now, because of
+		// possible loops and inheritance we don't know for sure which
+		// successors belong to which child exactly
+	}
+
+	private void removeParentChildLink(AbstractType type) {
+		type.parents.remove(this);
 	}
 
 	/**
@@ -305,6 +324,10 @@ public abstract class AbstractType implements Type, Sectionizable {
 		// do nothing here for default
 	}
 
+	protected Set<Class<?>> getPotentialSuccessorTypes() {
+		return Collections.unmodifiableSet(successorTypes);
+	}
+
 	@Override
 	public boolean isOrderSensitive() {
 		return isOrderSensitive;
@@ -314,21 +337,17 @@ public abstract class AbstractType implements Type, Sectionizable {
 		this.isOrderSensitive = orderSensitive;
 	}
 
-	@Override
-	public boolean isPackageCompile() {
-		return packageCompile;
-	}
-
-	/**
-	 * If a type ignores package compile, all SubtreeHandlers registered to this
-	 * type will always compile, but only for the article the section is
-	 * directly hooked in.
-	 */
-	public void setIgnorePackageCompile(boolean ignorePackageCompile) {
-		this.setPackageCompile(!ignorePackageCompile);
-	}
-
-	public void setPackageCompile(boolean packageCompile) {
-		this.packageCompile = packageCompile;
-	}
+	// /**
+	// * If a type ignores package compile, all SubtreeHandlers registered to
+	// this
+	// * type will always compile, but only for the article the section is
+	// * directly hooked in.
+	// */
+	// public void setIgnorePackageCompile(boolean ignorePackageCompile) {
+	// this.setPackageCompile(!ignorePackageCompile);
+	// }
+	//
+	// public void setPackageCompile(boolean packageCompile) {
+	// this.packageCompile = packageCompile;
+	// }
 }

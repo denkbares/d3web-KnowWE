@@ -26,12 +26,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.ExclusiveType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * @author Jochen, Albrecht
@@ -75,7 +75,7 @@ public class Sectionizer implements Parser {
 
 		// small hack, should be removed soon...
 		if (parameterMap != null) {
-			KnowWEUtils.storeObject(null, section,
+			Compilers.storeObject(section,
 					SectionFinderResult.ATTRIBUTE_MAP_STORE_KEY,
 					parameterMap);
 		}

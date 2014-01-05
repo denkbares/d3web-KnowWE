@@ -33,7 +33,7 @@ public class IndicationLine extends AbstractType {
 		QuestionnaireReference qc = new QuestionnaireReference();
 		qc.setSectionFinder(new AllTextFinderTrimmed());
 		// qc.addSubtreeHandler(Priority.LOW, new CreateIndication());
-		qc.addSubtreeHandler(Priority.LOW, IndicationHandler.getInstance());
+		qc.addCompileScript(Priority.LOW, IndicationHandler.getInstance());
 		this.addChildType(qc);
 	}
 }

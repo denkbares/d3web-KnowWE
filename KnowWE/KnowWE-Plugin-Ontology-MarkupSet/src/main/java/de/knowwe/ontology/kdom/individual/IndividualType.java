@@ -37,7 +37,7 @@ public class IndividualType extends DefaultMarkupType {
 		MARKUP.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageAnnotationNameType());
 		MARKUP.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm(true));
+				new PackageTerm());
 		MARKUP.addAnnotation(IndividualType.TYPE_ANNOTATION_NAME, false);
 		MARKUP.addAnnotationContentType(TYPE_ANNOTATION_NAME, new AbbreviatedResourceReference());
 		OntologyLineType lineType = new OntologyLineType();

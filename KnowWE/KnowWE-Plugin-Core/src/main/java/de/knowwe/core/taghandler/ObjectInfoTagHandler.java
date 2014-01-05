@@ -38,6 +38,7 @@ import de.d3web.collections.CountingSet;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.ArticleComparator;
@@ -551,7 +552,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 		// Search for plain text occurrences
 		SearchEngine se = new SearchEngine(Environment.getInstance()
-				.getArticleManager(web));
+				.getDefaultArticleManager(web));
 		se.setOption(SearchOption.FUZZY);
 		se.setOption(SearchOption.CASE_INSENSITIVE);
 		se.setOption(SearchOption.DOTALL);
@@ -668,14 +669,13 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		// gathering all terms
 		List<String> allTerms = new ArrayList<String>();
 		Iterator<Article> iter = Environment.getInstance()
-				.getArticleManager(web).getArticleIterator();
+				.getDefaultArticleManager(web).getArticleIterator();
 		Article currentArticle;
 
 		TerminologyManager terminologyManager;
 		while (iter.hasNext()) {
 			currentArticle = iter.next();
-			terminologyManager = KnowWEUtils
-					.getTerminologyManager(currentArticle);
+			terminologyManager = Compilers.getTerminologyManager(currentArticle);
 			Collection<Identifier> allDefinedTerms = terminologyManager
 					.getAllDefinedTerms();
 			for (Identifier definition : allDefinedTerms) {

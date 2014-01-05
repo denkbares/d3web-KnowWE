@@ -62,16 +62,6 @@
 		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowledgeRepresentationHandler"
-		id="D3webKnowledgeHandler">
-		<parameter id="class" value="de.d3web.we.basic.D3webKnowledgeHandler" />
-		<parameter id="name" value="D3webKnowledgeHandler" />
-		<parameter id="description"
-			value="KnowledgeRepresentationHandler D3webKnowledgeHandler" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="ShowSolutionsType">
 		<parameter id="class" value="de.d3web.we.solutionpanel.ShowSolutionsType" />
@@ -85,9 +75,9 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="DownloadKnowledgeBase">
-		<parameter id="class" value="de.knowwe.d3web.action.DownloadKnowledgeBase" />
-		<parameter id="name" value="DownloadKnowledgeBase" />
+		id="KnowledgeBaseDownloadAction">
+		<parameter id="class" value="de.knowwe.d3web.action.KnowledgeBaseDownloadAction" />
+		<parameter id="name" value="KnowledgeBaseDownloadAction" />
 		<parameter id="description"
 			value="Downloads a specific d3web knowledge base archive of a named wiki article." />
 		<parameter id="version" value="1.0" />
@@ -166,6 +156,16 @@
 		<parameter id="description" value="EventListener PropagationLoopHandler" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Instantiation"
+		id="D3webInstantiation">
+		<parameter id="class"
+			value="de.d3web.we.basic.D3webInstantiation" />
+		<parameter id="name" value="D3webInstantiation" />
+		<parameter id="description" value="D3webInstantiation" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
 	</extension>
 
 </plugin>

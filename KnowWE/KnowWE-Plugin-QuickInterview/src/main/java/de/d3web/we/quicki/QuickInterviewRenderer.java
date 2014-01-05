@@ -61,6 +61,7 @@ import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.notification.NotificationManager;
@@ -917,9 +918,18 @@ public class QuickInterviewRenderer {
 
 	}
 
+	/**
+	 * TODO: Also do this for other markups using the current package like
+	 * Sparql and ShowSolution
+	 * 
+	 * @created 16.12.2013
+	 * @param usercontext
+	 * @param packageName
+	 * @return
+	 */
 	public static String callQuickInterviewRendererWithPackageName(UserContext usercontext, String packageName) {
-		PackageManager packageManager = Environment.getInstance().getPackageManager(
-				usercontext.getWeb());
+
+		PackageManager packageManager = Compilers.getPackageManager(Compilers.getDefaultArticleManager(usercontext.getWeb()));
 		Set<String> compilingArticles = packageManager.getCompilingArticles(packageName);
 		List<String> compilingArticlesSorted = new ArrayList<String>(compilingArticles);
 		Collections.sort(compilingArticlesSorted);

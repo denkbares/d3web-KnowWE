@@ -30,7 +30,6 @@ public class StatusType extends DefaultMarkupType {
 
 	public StatusType() {
 		super(MARKUP);
-		this.setIgnorePackageCompile(true);
 	}
 
 }

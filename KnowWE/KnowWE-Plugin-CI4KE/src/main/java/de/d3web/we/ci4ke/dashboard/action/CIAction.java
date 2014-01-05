@@ -28,9 +28,10 @@ import java.util.logging.Logger;
 import de.d3web.strings.Strings;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message.Type;
-import de.d3web.we.ci4ke.build.CIBuilder;
+import de.d3web.we.ci4ke.build.CIBuildManager;
 import de.d3web.we.ci4ke.build.CIRenderer;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
+import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.d3web.we.ci4ke.util.CIUtils;
 import de.knowwe.core.Environment;
@@ -53,14 +54,14 @@ public class CIAction extends AbstractAction {
 					"CIAction.execute(): Required parameters not set!");
 		}
 
-		String title = context.getTitle();
 		String web = context.getWeb();
 		String dashBoardArticle = null;
 		Collection<Section<CIDashboardType>> dashboardSections = CIUtils.findCIDashboardSection(dashboardName);
 		if (dashboardSections != null && dashboardSections.size() > 0) {
 			dashBoardArticle = dashboardSections.iterator().next().getTitle();
 		}
-		CIDashboard dashboard = CIDashboard.getDashboard(web, dashBoardArticle, dashboardName);
+		CIDashboard dashboard = CIDashboardManager.getDashboard(web, dashBoardArticle,
+				dashboardName);
 		int selectedBuildNumber = -1;
 		if (context.getParameter("nr") != null) {
 			try {
@@ -78,37 +79,23 @@ public class CIAction extends AbstractAction {
 
 		RenderResult html = new RenderResult(context);
 		if (task.equals("executeNewBuild")) {
-			if (CIUtils.buildRunning(dashboardName)) {
+			if (CIBuildManager.isRunning(dashboard)) {
 				context.sendError(409, "<message will be inserted in JS>");
 				// NOTE: on current ajax handling this message text will will
 				// not be shown. but a list mapping error codes to message texts
 				// is managed in JS
 				return;
 			}
-			final CIBuilder builder = new CIBuilder(web, title, dashboardName);
-			new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					builder.executeBuild();
-				}
-			}).start();
-			try {
-				// give some time to initialize build process before rendering
-				// it
-				Thread.sleep(10);
-			}
-			catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			CIBuildManager.startBuild(CIDashboardManager.getDashboard(web, dashBoardArticle,
+					dashboardName));
+			// TODO: Why are we rendering the old build? Necessary?
 			BuildResult build = dashboard.getBuild(selectedBuildNumber);
 			renderer.renderDashboardHeader(build, html);
 
 		}// Get the details of one build (wiki changes + test results)
 		else if (task.equals("refreshBuildDetails")) {
 			BuildResult build = dashboard.getBuild(selectedBuildNumber);
-			renderer.renderBuildDetails(build, html);
+			renderer.renderBuildDetails(web, build, html);
 		}
 		else if (task.equals("refreshBuildStatus")) {
 			BuildResult build = dashboard.getLatestBuild();

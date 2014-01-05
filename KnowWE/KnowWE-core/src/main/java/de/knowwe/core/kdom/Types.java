@@ -134,7 +134,7 @@ public class Types {
 			listCopy.addAll(childrenTypes);
 			listCopy.add(index, newType);
 			listCopy.remove(index + 1);
-			((AbstractType) typeHierarchy).clearChildrenTypes();
+			((Type) typeHierarchy).clearChildrenTypes();
 			for (Type type : listCopy) {
 				typeHierarchy.addChildType(type);
 			}
@@ -213,5 +213,21 @@ public class Types {
 			}
 		}
 		return Collections.unmodifiableCollection(result);
+	}
+
+	/**
+	 * Returns whether the given type potentially has a successor with the given
+	 * class. If <tt>false</tt> is returned, we can be sure, that there is no
+	 * successor with the given class. If it returns <tt>true</tt>, it is
+	 * possible that there is a successor with the given class. If needed, use
+	 * {@link Types#findSuccessorType(Type, Class)} to be sure.
+	 * 
+	 * @created 09.12.2013
+	 * @param clazz the type class we look for in the successors
+	 * @return true if the type can have a successor with the given class, false
+	 *         if not
+	 */
+	public static boolean canHaveSuccessorOfType(AbstractType type, Class<?> clazz) {
+		return type.getPotentialSuccessorTypes().contains(clazz);
 	}
 }

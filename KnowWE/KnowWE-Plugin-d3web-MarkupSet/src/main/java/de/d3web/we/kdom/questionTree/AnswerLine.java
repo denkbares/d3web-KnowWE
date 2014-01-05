@@ -28,17 +28,17 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.strings.Strings;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.object.AnswerDefinition;
 import de.d3web.we.object.QuestionDefinition;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.dashtree.DashTreeElement;
@@ -105,22 +105,21 @@ public class AnswerLine extends AbstractType {
 			this.setSectionFinder(new OneOfStringEnumFinder("<init>"));
 			this.setRenderer(StyleRenderer.KEYWORDS);
 
-			this.addSubtreeHandler(new SubtreeHandler<InitFlag>() {
+			this.addCompileScript(new D3webCompileScript<InitFlag>() {
 
 				@Override
-				public Collection<Message> create(Article article, Section<InitFlag> s) {
-
+				public void compile(D3webCompiler compiler, Section<InitFlag> section) {
 					Section<AnswerDefinition> aDef = Sections.findSuccessor(
-							s.getParent(), AnswerDefinition.class);
+							section.getParent(), AnswerDefinition.class);
 
 					Section<? extends QuestionDefinition> qdef = aDef.get().getQuestionSection(
 							aDef);
 
 					if (qdef != null) {
 
-						Question question = qdef.get().getTermObject(article, qdef);
+						Question question = qdef.get().getTermObject(compiler, qdef);
 
-						String answerName = aDef.get().getTermObject(article, aDef).getName();
+						String answerName = aDef.get().getTermObject(compiler, aDef).getName();
 
 						InfoStore infoStore = question.getInfoStore();
 						Object p = infoStore.getValue(BasicProperties.INIT);
@@ -135,14 +134,8 @@ public class AnswerLine extends AbstractType {
 							}
 
 						}
-						return Messages.asList(Messages.objectCreatedNotice(
-								D3webUtils.getD3webBundle()
-										.getString("KnowWE.questiontree.abstractquestion")));
 
 					}
-					return Messages.asList(Messages.objectCreationError(
-							D3webUtils.getD3webBundle()
-									.getString("KnowWE.questiontree.abstractflag")));
 				}
 			});
 		}
@@ -167,10 +160,10 @@ public class AnswerLine extends AbstractType {
 					QTEXT_START_SYMBOL)));
 
 			this.setRenderer(StyleRenderer.PROMPT);
-			this.addSubtreeHandler(new D3webSubtreeHandler<AnswerText>() {
+			this.addCompileScript(new D3webHandler<AnswerText>() {
 
 				@Override
-				public Collection<Message> create(Article article, Section<AnswerText> sec) {
+				public Collection<Message> create(D3webCompiler compiler, Section<AnswerText> sec) {
 
 					Section<AnswerDefinition> aDef = Sections.findSuccessor(
 							sec.getParent(), AnswerDefinition.class);
@@ -179,8 +172,8 @@ public class AnswerLine extends AbstractType {
 
 					if (aDef != null && qSec != null) {
 
-						Question question = qSec.get().getTermObject(article, qSec);
-						Choice choice = aDef.get().getTermObject(article, aDef);
+						Question question = qSec.get().getTermObject(compiler, qSec);
+						Choice choice = aDef.get().getTermObject(compiler, aDef);
 
 						if (question != null && choice != null) {
 							choice.getInfoStore().addValue(MMInfo.PROMPT,
@@ -195,7 +188,7 @@ public class AnswerLine extends AbstractType {
 				}
 
 				@Override
-				public void destroy(Article article, Section<AnswerText> sec) {
+				public void destroy(D3webCompiler article, Section<AnswerText> sec) {
 					// text is destroyed together with object
 				}
 			});

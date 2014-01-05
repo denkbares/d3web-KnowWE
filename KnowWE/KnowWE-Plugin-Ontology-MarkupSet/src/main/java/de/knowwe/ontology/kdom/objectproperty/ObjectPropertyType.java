@@ -27,14 +27,14 @@ import org.ontoware.rdf2go.vocabulary.RDFS;
 import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.ontology.compile.OntologyCompiler;
+import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.ontology.kdom.OntologyLineType;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -52,7 +52,7 @@ public class ObjectPropertyType extends DefaultMarkupType {
 		MARKUP.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageAnnotationNameType());
 		MARKUP.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm(true));
+				new PackageTerm());
 		MARKUP.addAnnotation(DOMAIN_ANNOTATION_NAME, false);
 		MARKUP.addAnnotationContentType(DOMAIN_ANNOTATION_NAME, new DomainRangeAnnotationType(
 				DomainRangeAnnotationType.DomainRange.DOMAIN));
@@ -62,7 +62,7 @@ public class ObjectPropertyType extends DefaultMarkupType {
 
 		OntologyLineType lineType = new OntologyLineType();
 		AbbreviatedPropertyDefinition propertyDefinition = new AbbreviatedPropertyDefinition();
-		propertyDefinition.addSubtreeHandler(new AbbreviatedObjectPropertyHandler());
+		propertyDefinition.addCompileScript(new AbbreviatedObjectPropertyHandler());
 		lineType.addChildType(propertyDefinition);
 		MARKUP.addContentType(lineType);
 	}
@@ -71,17 +71,22 @@ public class ObjectPropertyType extends DefaultMarkupType {
 		super(MARKUP);
 	}
 
-	private static class AbbreviatedObjectPropertyHandler extends SubtreeHandler<AbbreviatedPropertyDefinition> {
+	private static class AbbreviatedObjectPropertyHandler extends OntologyHandler<AbbreviatedPropertyDefinition> {
 
 		@Override
-		public Collection<Message> create(Article article, Section<AbbreviatedPropertyDefinition> section) {
-			Rdf2GoCore core = Rdf2GoCore.getInstance(article);
+		public Collection<Message> create(OntologyCompiler compiler, Section<AbbreviatedPropertyDefinition> section) {
+			Rdf2GoCore core = Rdf2GoCore.getInstance(compiler);
 			String namespace = core.getNameSpaces().get(section.get().getAbbreviation(section));
 			if (namespace == null) return Messages.noMessage();
 			String property = section.get().getResource(section);
 			URI propertyURI = core.createURI(namespace, property);
 			core.addStatements(section, core.createStatement(propertyURI, RDF.type, RDF.Property));
 			return Messages.noMessage();
+		}
+
+		@Override
+		public void destroy(OntologyCompiler compiler, Section<AbbreviatedPropertyDefinition> section) {
+			Rdf2GoCore.getInstance(compiler).removeStatementsForSection(section);
 		}
 	}
 
@@ -95,16 +100,16 @@ public class ObjectPropertyType extends DefaultMarkupType {
 		 * 
 		 */
 		public DomainRangeAnnotationType(final DomainRange kind) {
-			this.addSubtreeHandler(new SubtreeHandler<DomainRangeAnnotationType>() {
+			this.addCompileScript(new OntologyHandler<DomainRangeAnnotationType>() {
 
 				@Override
-				public Collection<Message> create(Article article, Section<DomainRangeAnnotationType> section) {
+				public Collection<Message> create(OntologyCompiler compiler, Section<DomainRangeAnnotationType> section) {
 
 					Section<DefaultMarkupType> defaultMarkup = Sections.findAncestorOfType(section,
 							DefaultMarkupType.class);
 					Section<AbbreviatedPropertyDefinition> propertySec = Sections.findSuccessor(
 							defaultMarkup, AbbreviatedPropertyDefinition.class);
-					Rdf2GoCore core = Rdf2GoCore.getInstance(article);
+					Rdf2GoCore core = Rdf2GoCore.getInstance(compiler);
 					URI propertyURI = propertySec.get().getResourceURI(core, propertySec);
 
 					URI objectURI = section.get().getResourceURI(core, section);
@@ -115,10 +120,15 @@ public class ObjectPropertyType extends DefaultMarkupType {
 					}
 
 					if (objectURI != null) {
-						core.addStatements(section,
-								core.createStatement(propertyURI, predicateURI, objectURI));
+						core.addStatements(section, core.createStatement(propertyURI, predicateURI,
+								objectURI));
 					}
 					return null;
+				}
+
+				@Override
+				public void destroy(OntologyCompiler compiler, Section<DomainRangeAnnotationType> section) {
+					Rdf2GoCore.getInstance(compiler).removeStatementsForSection(section);
 				}
 
 			});

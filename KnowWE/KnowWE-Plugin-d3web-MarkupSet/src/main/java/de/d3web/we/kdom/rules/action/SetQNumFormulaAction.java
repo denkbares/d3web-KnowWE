@@ -15,8 +15,8 @@ import de.d3web.we.kdom.auxiliary.Equals;
 import de.d3web.we.kdom.condition.QuestionNumReference;
 import de.d3web.we.kdom.rules.action.formula.CompositeFormula;
 import de.d3web.we.kdom.rules.action.formula.KDOMFormulaNumberElementFactory;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionReference;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -78,15 +78,15 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 	}
 
 	@Override
-	protected PSAction createAction(Article article, Section<SetQuestionValue> s) {
+	protected PSAction createAction(D3webCompiler compiler, Section<SetQuestionValue> s) {
 		Section<QuestionReference> qref = Sections.findSuccessor(s, QuestionReference.class);
-		Question q = qref.get().getTermObject(article, qref);
+		Question q = qref.get().getTermObject(compiler, qref);
 		Section<CompositeFormula> formulaSection = Sections.findSuccessor(s, CompositeFormula.class);
 		if (formulaSection == null) return null;
 		FormulaNumberElement formular = null;
 		try {
 			formular = KDOMFormulaNumberElementFactory.createExpression(
-					article, formulaSection);
+					compiler, formulaSection);
 		}
 		catch (Exception e) {
 			Logger.getLogger(this.getClass().getName()).severe(e.getMessage());

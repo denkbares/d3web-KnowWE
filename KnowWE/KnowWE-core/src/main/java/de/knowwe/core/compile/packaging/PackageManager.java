@@ -25,36 +25,26 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
-import de.knowwe.core.Environment;
-import de.knowwe.core.event.Event;
-import de.knowwe.core.event.EventListener;
+import de.d3web.utils.Pair;
+import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.event.FullParseEvent;
-import de.knowwe.event.PreCompileFinishedEvent;
-import de.knowwe.event.UpdatingDependenciesEvent;
 
-public class PackageManager implements EventListener {
+public class PackageManager {// implements EventListener {
 
 	public static final String PACKAGE_ATTRIBUTE_NAME = "package";
-
-	public static final String THIS = "this";
+	public static final String MASTER_ATTRIBUTE_NAME = "master";
+	public static final String COMPILE_ATTRIBUTE_NAME = "uses";
 
 	private static final String DEFAULT_PACKAGE = "default";
 
-	public static final String ANNOTATION_MASTER = "master";
-
-	private final String web;
+	public final Compiler compiler;
 
 	/**
 	 * For each article title, you get all default packages used in this
@@ -67,82 +57,41 @@ public class PackageManager implements EventListener {
 	 * For each packageName, you get all Sections in the wiki belonging to this
 	 * packageName.
 	 */
-	private final Map<String, LinkedList<Section<?>>> packageToSectionsOfPackage =
-			new HashMap<String, LinkedList<Section<?>>>();
-
-	private final Map<String, Map<String, Set<Section<?>>>> deactivatedSectionsMap =
-			new HashMap<String, Map<String, Set<Section<?>>>>();
+	private final Map<String, TreeSet<Section<?>>> packageToSectionsOfPackage =
+			new HashMap<String, TreeSet<Section<?>>>();
 
 	/**
 	 * For each article title, you get all Sections of type
 	 * {@link PackageManager} defined in this article.
 	 */
-	private final Map<String, HashSet<Section<? extends PackageCompiler>>> articleToPackageCompileSections =
-			new HashMap<String, HashSet<Section<? extends PackageCompiler>>>();
+	// private final Map<String, HashSet<Section<? extends PackageCompiler>>>
+	// articleToPackageCompileSections =
+	// new HashMap<String, HashSet<Section<? extends PackageCompiler>>>();
 
+	private final Set<Section<? extends PackageCompileType>> packageCompileSections = new HashSet<Section<? extends PackageCompileType>>();
 	/**
 	 * For each article title, you get all packages compiled in this article by
 	 * Sections of the type {@link PackageCompiler}.
 	 */
-	private final Map<String, HashSet<String>> articleToCompiledPackages =
-			new HashMap<String, HashSet<String>>();
+	// private final Map<String, HashSet<String>> articleToCompiledPackages =
+	// new HashMap<String, HashSet<String>>();
 
 	/**
 	 * For each package, you get all articles compiling this package.
 	 */
-	private final Map<String, HashSet<String>> packageToCompilingArticles =
-			new HashMap<String, HashSet<String>>();
+	private final Map<String, HashSet<Section<? extends PackageCompileType>>> packageToCompilingSections =
+			new HashMap<String, HashSet<Section<? extends PackageCompileType>>>();
 
-	private final Set<String> changedPackages = new HashSet<String>();
+	private final Map<String, Pair<TreeSet<Section<?>>, TreeSet<Section<?>>>> changedPackages =
+			new HashMap<String, Pair<TreeSet<Section<?>>, TreeSet<Section<?>>>>();
 
-	private static boolean autocompileArticleEnabled = KnowWEUtils.getConfigBundle().getString(
-			"packaging.autocompileArticle").contains("true");
-
-	public PackageManager(String web) {
-		this.web = web;
-		EventManager.getInstance().registerListener(this);
-	}
-
-	public String getWeb() {
-		return web;
+	public <C extends Compiler> PackageManager(C compiler) {
+		this.compiler = compiler;
+		// EventManager.getInstance().registerListener(this);
 	}
 
 	private boolean isDisallowedPackageName(String packageName) {
-		return packageName == null || packageName.isEmpty() || packageName.equals(THIS);
-	}
-
-	private void addDeactivatedSection(String packageName, Section<?> s) {
-		Map<String, Set<Section<?>>> map = deactivatedSectionsMap.get(packageName);
-		if (map == null) {
-			map = new HashMap<String, Set<Section<?>>>();
-			deactivatedSectionsMap.put(packageName, map);
-		}
-		Set<Section<?>> set = map.get(s.getTitle());
-		if (set == null) {
-			set = new HashSet<Section<?>>();
-			map.put(s.getTitle(), set);
-		}
-		set.add(s);
-	}
-
-	private Set<Section<?>> getDeactivatedSections(String packageName) {
-		Set<Section<?>> all = new HashSet<Section<?>>();
-		Map<String, Set<Section<?>>> map = deactivatedSectionsMap.get(packageName);
-		if (map != null) {
-			for (Set<Section<?>> set : map.values()) {
-				all.addAll(set);
-			}
-		}
-		return all;
-	}
-
-	private Set<Section<?>> getDeactivatedSections(String packageName, String title) {
-		Map<String, Set<Section<?>>> map = deactivatedSectionsMap.get(packageName);
-		if (map != null) {
-			Set<Section<?>> set = map.get(title);
-			if (set != null) return set;
-		}
-		return new HashSet<Section<?>>(0);
+		return packageName == null || packageName.isEmpty();
 	}
 
 	public void addDefaultPackage(Article article, String defaultPackage) {
@@ -154,13 +103,20 @@ public class PackageManager implements EventListener {
 		defaultPackages.add(defaultPackage);
 	}
 
-	public Set<String> getDefaultPackages(Article article) {
+	public void removeDefaultPackage(Article article, String defaultPackage) {
+		HashSet<String> defaultPackages = articleToDefaultPackages.get(article.getTitle());
+		if (defaultPackages != null) {
+			defaultPackages.remove(defaultPackage);
+		}
+	}
+
+	public String[] getDefaultPackages(Article article) {
 		HashSet<String> defaultPackages = articleToDefaultPackages.get(article.getTitle());
 		if (defaultPackages == null) {
 			defaultPackages = new HashSet<String>(4);
 			defaultPackages.add(DEFAULT_PACKAGE);
 		}
-		return Collections.unmodifiableSet(defaultPackages);
+		return defaultPackages.toArray(new String[defaultPackages.size()]);
 	}
 
 	/**
@@ -175,76 +131,61 @@ public class PackageManager implements EventListener {
 	public void addSectionToPackage(Section<?> section, String packageName) {
 
 		if (isDisallowedPackageName(packageName)) {
-			Messages.storeMessage(null, section, this.getClass(), Messages.error("'"
+			Messages.storeMessage(section, this.getClass(), Messages.error("'"
 					+ packageName
 					+ "' is not allowed as a package name."));
 			return;
 		}
-		if (section.getPackageNames().contains(packageName)) {
-			Messages.storeMessage(null, section, this.getClass(), Messages.error(
-					"This Section is added to " +
-							"the package '" + packageName + "' multiple times."));
-			addDeactivatedSection(packageName, section);
-		}
-		else {
-			section.addPackageName(packageName);
-		}
-		List<Section<?>> sectionsOfPackage = getSectionsOfPackage(packageName);
-		for (Section<?> sectionOfPackage : sectionsOfPackage) {
-			if (sectionOfPackage.equalsOrIsSuccessorOf(section)) {
-				Messages.storeMessage(null, sectionOfPackage, this.getClass(),
-						Messages.error("This Section is added to " +
-								"the package '" + packageName + "' multiple times."));
-				addDeactivatedSection(packageName, sectionOfPackage);
-				sectionOfPackage.removePackageName(packageName);
-			}
-		}
-		LinkedList<Section<?>> packageList = packageToSectionsOfPackage.get(packageName);
+		TreeSet<Section<?>> packageList = packageToSectionsOfPackage.get(packageName);
 		if (packageList == null) {
-			packageList = new LinkedList<Section<?>>();
+			packageList = new TreeSet<Section<?>>();
 			packageToSectionsOfPackage.put(packageName, packageList);
 		}
 		packageList.add(section);
-		changedPackages.add(packageName);
+		addSectionToChangedPackagesAsAdded(section, packageName);
+		section.addPackageName(packageName);
+	}
+
+	private void addSectionToChangedPackagesAsAdded(Section<?> section, String packageName) {
+		Pair<TreeSet<Section<?>>, TreeSet<Section<?>>> pair = changedPackages.get(packageName);
+		if (pair == null) {
+			pair = new Pair<TreeSet<Section<?>>, TreeSet<Section<?>>>(
+					new TreeSet<Section<?>>(), new TreeSet<Section<?>>());
+			changedPackages.put(packageName, pair);
+		}
+		TreeSet<Section<?>> added = pair.getA();
+		added.add(section);
+	}
+
+	private void addSectionToChangedPackagesAsRemoved(Section<?> section, String packageName) {
+		Pair<TreeSet<Section<?>>, TreeSet<Section<?>>> pair = changedPackages.get(packageName);
+		if (pair == null) {
+			pair = new Pair<TreeSet<Section<?>>, TreeSet<Section<?>>>(
+					new TreeSet<Section<?>>(), new TreeSet<Section<?>>());
+			changedPackages.put(packageName, pair);
+		}
+		TreeSet<Section<?>> removed = pair.getB();
+		removed.add(section);
 	}
 
 	/**
 	 * Removes the given Section from the package with the given name.
 	 * 
 	 * @created 28.12.2010
-	 * @param s is the Section to remove
+	 * @param section is the Section to remove
 	 * @param packageName is the name of the package from which the section is
 	 *        removed
 	 * @returns whether the Section was removed
 	 */
-	public boolean removeSectionFromPackage(Section<?> s, String packageName) {
+	public boolean removeSectionFromPackage(Section<?> section, String packageName) {
 		if (!isDisallowedPackageName(packageName)) {
-			LinkedList<Section<?>> packageList = packageToSectionsOfPackage.get(packageName);
-			if (packageList != null) {
-				boolean removed = packageList.remove(s);
+			TreeSet<Section<?>> packageSet = packageToSectionsOfPackage.get(packageName);
+			if (packageSet != null) {
+				boolean removed = packageSet.remove(section);
 				if (removed) {
-					changedPackages.add(packageName);
-					s.removePackageName(packageName);
-					// reactivate deactivated sections
-					Set<Section<?>> deactivatedSections = getDeactivatedSections(packageName,
-							s.getTitle());
-					if (!deactivatedSections.remove(s)) {
-						// if the section was itself deactivated, it can not
-						// reactivate other sections
-						List<Section<?>> notLongerDeactivated = new ArrayList<Section<?>>(
-								deactivatedSections.size());
-						for (Section<?> dSec : deactivatedSections) {
-							if (!dSec.getPackageNames().contains(packageName)) {
-								notLongerDeactivated.add(dSec);
-								Messages.storeMessages(null, dSec, this.getClass(),
-										new ArrayList<Message>());
-								dSec.addPackageName(packageName);
-							}
-						}
-						deactivatedSections.removeAll(notLongerDeactivated);
-					}
+					addSectionToChangedPackagesAsRemoved(section, packageName);
 				}
-				if (packageList.isEmpty()) {
+				if (packageSet.isEmpty()) {
 					packageToSectionsOfPackage.remove(packageName);
 				}
 				return removed;
@@ -267,173 +208,131 @@ public class PackageManager implements EventListener {
 		}
 	}
 
-	public void cleanForArticle(Article article) {
-		for (LinkedList<Section<?>> list : new ArrayList<LinkedList<Section<?>>>(
-				packageToSectionsOfPackage.values())) {
-			List<Section<?>> sectionsToRemove = new ArrayList<Section<?>>();
-			for (Section<?> sec : list) {
-				if (sec.getTitle().equals(article.getTitle())) {
-					sectionsToRemove.add(sec);
-				}
-			}
-			for (Section<?> sec : sectionsToRemove) {
-				removeSectionFromAllPackages(sec);
-			}
-		}
-		for (HashSet<Section<? extends PackageCompiler>> set : new ArrayList<HashSet<Section<? extends PackageCompiler>>>(
-				articleToPackageCompileSections.values())) {
-			List<Section<? extends PackageCompiler>> sectionsToRemove =
-					new ArrayList<Section<? extends PackageCompiler>>();
-			for (Section<? extends PackageCompiler> sec : set) {
-				if (sec.getTitle().equals(article.getTitle())) {
-					sectionsToRemove.add(sec);
-				}
-			}
-			for (Section<? extends PackageCompiler> sec : sectionsToRemove) {
-				unregisterPackageCompileSection(article, sec);
-			}
-		}
-		// remove this last so getDefaultPackages correctly works while cleanup
-		// and unregister
-		articleToDefaultPackages.remove(article.getTitle());
-	}
-
-	public List<Section<?>> getSectionsOfPackage(String packageName) {
-		LinkedList<Section<?>> sectionsOfPackage = packageToSectionsOfPackage.get(packageName);
-		if (sectionsOfPackage != null) {
-			Set<Section<?>> deactivatedSections = getDeactivatedSections(packageName);
-			ArrayList<Section<?>> cleanedSections = new ArrayList<Section<?>>(
-					sectionsOfPackage.size());
-			for (Section<?> s : sectionsOfPackage) {
-				if (!deactivatedSections.contains(s)) {
-					cleanedSections.add(s);
-				}
-			}
-			Collections.sort(cleanedSections);
-			return Collections.unmodifiableList(new ArrayList<Section<?>>(cleanedSections));
-		}
-		else return Collections.unmodifiableList(new ArrayList<Section<?>>(0));
-	}
-
 	/**
-	 * Override the autocompile-article-switch of KnowWE_config. This should
-	 * only be used during unit tests!
+	 * Returns an unmodifiable view on the sections of the given packages at the
+	 * time of calling this method.
 	 * 
-	 * @param autocompileArticleEnabled whether autocompile of articles should
-	 *        be enabled or disabled
-	 * @created 12.10.2010
+	 * @created 15.12.2013
+	 * @param packageNames the package names to get the sections for
+	 * @return the sections of the given packages
 	 */
-	public static void overrideAutocompileArticle(boolean autocompileArticleEnabled) {
-		PackageManager.autocompileArticleEnabled = autocompileArticleEnabled;
+	public Collection<Section<?>> getSectionsOfPackage(String... packageNames) {
+		TreeSet<Section<?>> sectionsOfPackage = new TreeSet<Section<?>>();
+		for (String packageName : packageNames) {
+			TreeSet<Section<?>> sections = packageToSectionsOfPackage.get(packageName);
+			if (sections != null) {
+				sectionsOfPackage.addAll(sections);
+			}
+		}
+		return Collections.unmodifiableSet(sectionsOfPackage);
 	}
 
-	/**
-	 * Returns whether autocompiling of articles is enabled or not.
-	 * 
-	 * @created 12.10.2010
-	 * @return
-	 */
-	public static boolean isAutocompileArticleEnabled() {
-		return autocompileArticleEnabled;
-	}
-
-	public void registerPackageCompileSection(Article article, Section<? extends PackageCompiler> s) {
-
-		Collection<String> packagesToCompile = s.get().getPackagesToCompile(s);
-
-		HashSet<Section<? extends PackageCompiler>> packageCompileSections =
-				articleToPackageCompileSections.get(article.getTitle());
-		if (packageCompileSections == null) {
-			packageCompileSections = new HashSet<Section<? extends PackageCompiler>>(4);
-			articleToPackageCompileSections.put(article.getTitle(), packageCompileSections);
-		}
-		packageCompileSections.add(s);
-
-		HashSet<String> compiledPackages =
-				articleToCompiledPackages.get(article.getTitle());
-		if (compiledPackages == null) {
-			compiledPackages = new HashSet<String>();
-			articleToCompiledPackages.put(article.getTitle(), compiledPackages);
-		}
-		for (String packageToCompile : packagesToCompile) {
-			compiledPackages.add(packageToCompile);
-
-			HashSet<String> compilingArticles = packageToCompilingArticles.get(packageToCompile);
-			if (compilingArticles == null) {
-				compilingArticles = new HashSet<String>();
-				packageToCompilingArticles.put(packageToCompile, compilingArticles);
-			}
-			compilingArticles.add(article.getTitle());
-		}
-
-	}
-
-	public boolean unregisterPackageCompileSection(Article article, Section<? extends PackageCompiler> s) {
-
-		Set<Section<? extends PackageCompiler>> packageCompileSections = articleToPackageCompileSections.get(article.getTitle());
-
-		if (packageCompileSections != null) {
-
-			HashSet<String> compiledPackages = articleToCompiledPackages.get(article.getTitle());
-
-			boolean removed = packageCompileSections.remove(s);
-			if (removed) {
-				// set all Sections that were referenced by this
-				// PackageCompiler to reused = false for the given article
-				Collection<String> packagesToCompile = s.get().getPackagesToCompile(s);
-				for (String packageToCompile : packagesToCompile) {
-					boolean stillCompiled = false;
-					for (Section<? extends PackageCompiler> packageCompileSection : packageCompileSections) {
-						if (packageCompileSection.get().getPackagesToCompile(packageCompileSection).contains(
-								packageToCompile)) {
-							stillCompiled = true;
-							break;
-						}
-					}
-					// but don't set to false, if the package is still
-					// compiled via another Section of type PackageCompiler in
-					// this article
-					if (!stillCompiled) {
-						// remove map entries
-						compiledPackages.remove(packageToCompile);
-						HashSet<String> compilingArticles = packageToCompilingArticles.get(packageToCompile);
-						compilingArticles.remove(article.getTitle());
-
-						// cleanup empty set
-						if (compilingArticles.isEmpty()) {
-							packageToCompilingArticles.remove(packageToCompile);
-						}
-
-						List<Section<?>> sectionsOfPackage;
-						if (packageToCompile.equals(article.getTitle())
-								|| (packageToCompile.equals(THIS))) {
-							sectionsOfPackage = new ArrayList<Section<?>>(1);
-							sectionsOfPackage.add(article.getRootSection());
-						}
-						else {
-							sectionsOfPackage = getSectionsOfPackage(packageToCompile);
-						}
-						for (Section<?> oackSection : sectionsOfPackage) {
-							oackSection.setReusedByRecursively(article.getTitle(), false);
-							Messages.clearMessagesRecursively(article, oackSection);
-						}
-					}
-				}
-			}
-			// cleanup empty sets
-			if (packageCompileSections.isEmpty()) {
-				articleToPackageCompileSections.remove(article.getTitle());
-			}
-			if (compiledPackages.isEmpty()) {
-				articleToCompiledPackages.remove(article.getTitle());
-			}
-			return removed;
+	public boolean hasChanged(String... packageNames) {
+		for (String packageName : packageNames) {
+			if (changedPackages.containsKey(packageName)) return true;
 		}
 		return false;
 	}
 
+	/**
+	 * Returns all sections added to the given packages since the changes were
+	 * last cleared with {@link PackageManager#clearChangedPackage()}
+	 * 
+	 * @created 15.12.2013
+	 * @param packageNames the package to return the added sections for
+	 * @return the sections last added to the given packages
+	 */
+	public Collection<Section<?>> getAddedSections(String... packageNames) {
+		TreeSet<Section<?>> addedSections = new TreeSet<Section<?>>();
+		for (String packageName : packageNames) {
+			Pair<TreeSet<Section<?>>, TreeSet<Section<?>>> pair = changedPackages.get(packageName);
+			if (pair != null) {
+				addedSections.addAll(pair.getA());
+			}
+		}
+		return Collections.unmodifiableSet(addedSections);
+	}
+
+	/**
+	 * Returns all sections removed from the given packages since the changes
+	 * were last cleared with {@link PackageManager#clearChangedPackage()}
+	 * 
+	 * @created 15.12.2013
+	 * @param packageNames the package to return the removed sections for
+	 * @return the sections last removed to the given packages
+	 */
+	public Collection<Section<?>> getRemovedSections(String... packageNames) {
+		TreeSet<Section<?>> addedSections = new TreeSet<Section<?>>();
+		for (String packageName : packageNames) {
+			Pair<TreeSet<Section<?>>, TreeSet<Section<?>>> pair = changedPackages.get(packageName);
+			if (pair != null) {
+				addedSections.addAll(pair.getB());
+			}
+		}
+		return Collections.unmodifiableSet(addedSections);
+	}
+
+	public void registerPackageCompileSection(Section<PackageCompileType> section) {
+
+		String[] packagesToCompile = section.get().getPackagesToCompile(section);
+
+		packageCompileSections.add(section);
+
+		for (String packageToCompile : packagesToCompile) {
+			HashSet<Section<? extends PackageCompileType>> compilingSections = packageToCompilingSections.get(packageToCompile);
+			if (compilingSections == null) {
+				compilingSections = new HashSet<Section<? extends PackageCompileType>>();
+				packageToCompilingSections.put(packageToCompile, compilingSections);
+			}
+			compilingSections.add(section);
+		}
+		EventManager.getInstance().fireEvent(new RegisteredPackageCompileSectionEvent(section));
+	}
+
+	public boolean unregisterPackageCompileSection(Section<PackageCompileType> section) {
+
+		boolean removed = packageCompileSections.remove(section);
+		if (removed) {
+			// set all Sections that were referenced by this
+			// PackageCompiler to reused = false for the given article
+			String[] packagesToCompile = section.get().getPackagesToCompile(section);
+			for (String packageToCompile : packagesToCompile) {
+				HashSet<Section<? extends PackageCompileType>> compilingSections = packageToCompilingSections.get(packageToCompile);
+				if (compilingSections.isEmpty()) {
+					packageToCompilingSections.remove(packageToCompile);
+				}
+			}
+		}
+		EventManager.getInstance().fireEvent(new UnregisteredPackageCompileSectionEvent(section));
+		return removed;
+	}
+
 	public Set<String> getAllPackageNames() {
 		return Collections.unmodifiableSet(packageToSectionsOfPackage.keySet());
+	}
+
+	public Collection<Section<? extends PackageCompileType>> getCompileSections() {
+		return Collections.unmodifiableCollection(packageCompileSections);
+	}
+
+	public void clearChangedPackages() {
+		this.changedPackages.clear();
+	}
+
+	/**
+	 * Returns all the Sections of type {@link PackageCompileType}, that have a
+	 * package the given Section is part of.
+	 * 
+	 * @created 28.12.2010
+	 * @param section
+	 * @return a Set of Sections compiling the given Section
+	 */
+	public Set<Section<? extends PackageCompileType>> getCompileSections(Section<?> section) {
+		Set<Section<? extends PackageCompileType>> compileSections = new HashSet<Section<? extends PackageCompileType>>();
+		for (String packageName : section.getPackageNames()) {
+			compileSections.addAll(getCompileSections(packageName));
+		}
+		return Collections.unmodifiableSet(compileSections);
 	}
 
 	/**
@@ -445,151 +344,195 @@ public class PackageManager implements EventListener {
 	 * @return a Set of titles of articles compiling the package with the given
 	 *         name.
 	 */
-	public Set<String> getCompilingArticles(String packageName) {
-		HashSet<String> compilingArticles = packageToCompilingArticles.get(packageName);
-		return compilingArticles == null
-				? Collections.<String> emptySet()
-				: Collections.unmodifiableSet(compilingArticles);
+	public Set<Section<? extends PackageCompileType>> getCompileSections(String packageName) {
+		HashSet<Section<? extends PackageCompileType>> compilingSections =
+				packageToCompilingSections.get(packageName);
+		return compilingSections == null
+				? Collections.<Section<? extends PackageCompileType>> emptySet()
+				: Collections.unmodifiableSet(compilingSections);
 	}
 
 	/**
-	 * Returns the a Set of all titles of articles that compile any package.
-	 * 
-	 * @created 28.08.2010
-	 * @return a Set of titles of articles compiling
-	 */
-	public Set<String> getCompilingArticles() {
-		// get articles compiling a package
-		HashSet<String> compilingArticles = new HashSet<String>();
-		for (String packageName : getAllPackageNames()) {
-			compilingArticles.addAll(getCompilingArticles(packageName));
-		}
-		// get articles compiling "this"
-		for (HashSet<Section<? extends PackageCompiler>> compileSections : articleToPackageCompileSections.values()) {
-			for (Section<? extends PackageCompiler> compileSection : compileSections) {
-				Collection<String> packagesToCompile = compileSection.get().getPackagesToCompile(
-						compileSection);
-				if (packagesToCompile.contains(THIS)) {
-					compilingArticles.add(compileSection.getTitle());
-				}
-			}
-		}
-		return compilingArticles;
-	}
-
-	/**
-	 * Returns all titles of articles, that compile the given Section via
-	 * packages.
-	 * 
-	 * @created 28.12.2010
+	 * @deprecated
+	 * @created 15.11.2013
 	 * @param section
-	 * @return a Set of titles of articles compiling the given Section
+	 * @return
 	 */
+	@Deprecated
 	public Set<String> getCompilingArticles(Section<?> section) {
-		Set<String> matchingArticles = new HashSet<String>();
-		for (String packageName : section.getPackageNames()) {
-			matchingArticles.addAll(getCompilingArticles(packageName));
+		Set<Section<? extends PackageCompileType>> compileSections = getCompileSections(section);
+		Set<String> titles = new HashSet<String>();
+		for (Section<? extends PackageCompileType> sections : compileSections) {
+			titles.add(sections.getTitle());
 		}
-		HashSet<String> compilingPackages = articleToCompiledPackages.get(section.getTitle());
-		if (autocompileArticleEnabled
-				|| (compilingPackages != null && compilingPackages.contains(THIS))) {
-			matchingArticles.add(section.getTitle());
-		}
-		return Collections.unmodifiableSet(matchingArticles);
+		return titles;
 	}
 
 	/**
-	 * Returns all packages the given article compiles via his Sections of the
-	 * type {@link PackageCompiler}.
-	 * 
-	 * @created 29.08.2010
-	 * @param title the title of the article to check
+	 * @deprecated
+	 * @created 15.11.2013
+	 * @return
 	 */
-	public Set<String> getCompiledPackages(String title) {
-		Set<String> referencedPackages = articleToCompiledPackages.get(title);
-		return referencedPackages == null
-				? Collections.<String> emptySet()
-				: Collections.unmodifiableSet(
-						referencedPackages);
+	@Deprecated
+	public Set<String> getCompilingArticles() {
+		Collection<Section<? extends PackageCompileType>> compileSections = getCompileSections();
+		Set<String> titles = new HashSet<String>();
+		for (Section<? extends PackageCompileType> sections : compileSections) {
+			titles.add(sections.getTitle());
+		}
+		return titles;
 	}
 
 	/**
-	 * Returns all Sections of the type {@link PackageCompiler} of the given
-	 * article.
 	 * 
-	 * @created 29.08.2010
-	 * @param title the title of the article to check
+	 * @created 15.11.2013
+	 * @param packageName
+	 * @return
+	 * @deprecated
 	 */
-	public Set<Section<? extends PackageCompiler>> getPackageCompileSections(String title) {
-		Set<Section<? extends PackageCompiler>> packageCompileSections =
-				articleToPackageCompileSections.get(title);
-		return packageCompileSections == null
-				? Collections.unmodifiableSet(new HashSet<Section<? extends PackageCompiler>>(0))
-				: Collections.unmodifiableSet(new HashSet<Section<? extends PackageCompiler>>(
-						packageCompileSections));
+	@Deprecated
+	public Set<String> getCompilingArticles(String packageName) {
+		Collection<Section<? extends PackageCompileType>> compileSections = getCompileSections(packageName);
+		Set<String> titles = new HashSet<String>();
+		for (Section<? extends PackageCompileType> sections : compileSections) {
+			titles.add(sections.getTitle());
+		}
+		return titles;
 	}
 
-	public void updateReusedStates(Article article) {
-		// TODO: not that fast... probably use own map sorted by article
-		// maybe only do this for changed sections of the package... take care
-		// of multiuser-scenarios
-		for (LinkedList<Section<?>> sectionsOfPackageList : packageToSectionsOfPackage.values()) {
-			for (Section<?> sectionOfPackage : sectionsOfPackageList) {
-				if (sectionOfPackage.getTitle().equals(article.getTitle())) {
-					Set<String> compilingArticles = getCompilingArticles(sectionOfPackage);
-					List<Section<?>> nodes = Sections.getSubtreePostOrder(sectionOfPackage);
-					for (Section<?> node : nodes) {
-						if (!node.get().isPackageCompile()) continue;
-						for (String title : new LinkedList<String>(node.getReusedBySet())) {
-							if (!compilingArticles.contains(title)) {
-								node.setReusedBy(title, false);
-								Messages.clearMessages(article, node);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+	//
+	// /**
+	// * Returns the a Set of all titles of articles that compile any package.
+	// *
+	// * @created 28.08.2010
+	// * @return a Set of titles of articles compiling
+	// */
+	// public Set<String> getCompilingArticles() {
+	// // get articles compiling a package
+	// HashSet<String> compilingArticles = new HashSet<String>();
+	// for (String packageName : getAllPackageNames()) {
+	// compilingArticles.addAll(getCompilingArticles(packageName));
+	// }
+	// // get articles compiling "this"
+	// for (HashSet<Section<? extends PackageCompiler>> compileSections :
+	// articleToPackageCompileSections.values()) {
+	// for (Section<? extends PackageCompiler> compileSection : compileSections)
+	// {
+	// Collection<String> packagesToCompile =
+	// compileSection.get().getPackagesToCompile(
+	// compileSection);
+	// if (packagesToCompile.contains(THIS)) {
+	// compilingArticles.add(compileSection.getTitle());
+	// }
+	// }
+	// }
+	// return compilingArticles;
+	// }
+	//
+	// /**
+	// * Returns all titles of articles, that compile the given Section via
+	// * packages.
+	// *
+	// * @created 28.12.2010
+	// * @param section
+	// * @return a Set of titles of articles compiling the given Section
+	// */
+	// public Set<String> getCompilingArticles(Section<?> section) {
+	// Set<String> matchingArticles = new HashSet<String>();
+	// for (String packageName : section.getPackageNames()) {
+	// matchingArticles.addAll(getCompilingArticles(packageName));
+	// }
+	// HashSet<String> compilingPackages =
+	// articleToCompiledPackages.get(section.getTitle());
+	// if (autocompileArticleEnabled
+	// || (compilingPackages != null && compilingPackages.contains(THIS))) {
+	// matchingArticles.add(section.getTitle());
+	// }
+	// return Collections.unmodifiableSet(matchingArticles);
+	// }
+	//
+	// /**
+	// * Returns all packages the given article compiles via his Sections of the
+	// * type {@link PackageCompiler}.
+	// *
+	// * @created 29.08.2010
+	// * @param title the title of the article to check
+	// */
+	// public Set<String> getCompiledPackages(String title) {
+	// Set<String> referencedPackages = articleToCompiledPackages.get(title);
+	// return referencedPackages == null
+	// ? Collections.<String> emptySet()
+	// : Collections.unmodifiableSet(
+	// referencedPackages);
+	// }
 
-	public void updateReferringArticles(Article article) {
+	// public void updateReusedStates(Article article) {
+	// // TODO: not that fast... probably use own map sorted by article
+	// // maybe only do this for changed sections of the package... take care
+	// // of multiuser-scenarios
+	// for (LinkedList<Section<?>> sectionsOfPackageList :
+	// packageToSectionsOfPackage.values()) {
+	// for (Section<?> sectionOfPackage : sectionsOfPackageList) {
+	// if (sectionOfPackage.getTitle().equals(article.getTitle())) {
+	// Set<String> compilingArticles = getCompilingArticles(sectionOfPackage);
+	// List<Section<?>> nodes = Sections.getSubtreePostOrder(sectionOfPackage);
+	// for (Section<?> node : nodes) {
+	// if (!node.get().isPackageCompile()) continue;
+	// for (String title : new LinkedList<String>(node.getReusedBySet())) {
+	// if (!compilingArticles.contains(title)) {
+	// node.setReusedBy(title, false);
+	// Messages.clearMessages(article, node);
+	// }
+	// }
+	// }
+	// }
+	// }
+	// }
+	// }
 
-		for (HashSet<Section<? extends PackageCompiler>> packageCompileSections : articleToPackageCompileSections.values()) {
-			for (Section<? extends PackageCompiler> packageCompileSection : packageCompileSections) {
-				Collection<String> packagesToCompile = packageCompileSection.get().getPackagesToCompile(
-						packageCompileSection);
-				for (String packageName : packagesToCompile) {
-					if (changedPackages.contains(packageName)) {
-						Environment.getInstance().getArticleManager(article.getWeb()).addArticleToUpdate(
-								packageCompileSection.getTitle());
-					}
-				}
-			}
-		}
+	// public void updateReferringArticles(Article article) {
+	//
+	// for (HashSet<Section<? extends PackageCompiler>> packageCompileSections :
+	// articleToPackageCompileSections.values()) {
+	// for (Section<? extends PackageCompiler> packageCompileSection :
+	// packageCompileSections) {
+	// Collection<String> packagesToCompile =
+	// packageCompileSection.get().getPackagesToCompile(
+	// packageCompileSection);
+	// for (String packageName : packagesToCompile) {
+	// if (changedPackages.contains(packageName)) {
+	// Environment.getInstance().getArticleManager(article.getWeb()).addArticleToUpdate(
+	// packageCompileSection.getTitle());
+	// }
+	// }
+	// }
+	// }
+	//
+	// changedPackages.clear();
+	// }
 
-		changedPackages.clear();
-	}
+	// @Override
+	// public Collection<Class<? extends Event>> getEvents() {
+	// ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends
+	// Event>>(3);
+	// events.add(FullParseEvent.class);
+	// events.add(UpdatingDependenciesEvent.class);
+	// events.add(PreCompileFinishedEvent.class);
+	// return events;
+	// }
 
-	@Override
-	public Collection<Class<? extends Event>> getEvents() {
-		ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(3);
-		events.add(FullParseEvent.class);
-		events.add(UpdatingDependenciesEvent.class);
-		events.add(PreCompileFinishedEvent.class);
-		return events;
-	}
-
-	@Override
-	public void notify(Event event) {
-		if (event instanceof FullParseEvent) {
-			cleanForArticle(((FullParseEvent) event).getArticle());
-		}
-		else if (event instanceof UpdatingDependenciesEvent) {
-			updateReferringArticles(((UpdatingDependenciesEvent) event).getArticle());
-		}
-		else if (event instanceof PreCompileFinishedEvent) {
-			updateReusedStates(((PreCompileFinishedEvent) event).getArticle());
-		}
-	}
+	// @Override
+	// public void notify(Event event) {
+	// if (event instanceof FullParseEvent) {
+	// cleanForArticle(((FullParseEvent) event).getArticle());
+	// }
+	// else if (event instanceof UpdatingDependenciesEvent) {
+	// updateReferringArticles(((UpdatingDependenciesEvent)
+	// event).getArticle());
+	// }
+	// else if (event instanceof PreCompileFinishedEvent) {
+	// updateReusedStates(((PreCompileFinishedEvent) event).getArticle());
+	// }
+	// }
 
 }

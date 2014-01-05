@@ -14,8 +14,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.utils.KnowWEUtils;
 
 public class LongOperationUtils {
 
@@ -122,11 +122,11 @@ public class LongOperationUtils {
 		String key = LongOperation.class.getName();
 		@SuppressWarnings("unchecked")
 		Map<String, LongOperation> storedObject =
-				(Map<String, LongOperation>) KnowWEUtils.getStoredObject(section, key);
+				(Map<String, LongOperation>) Compilers.getStoredObject(section, key);
 		if (storedObject == null) {
 			if (!create) return Collections.emptyMap();
 			storedObject = new LinkedHashMap<String, LongOperation>();
-			KnowWEUtils.storeObject(section, key, storedObject);
+			Compilers.storeObject(section, key, storedObject);
 		}
 		return storedObject;
 	}

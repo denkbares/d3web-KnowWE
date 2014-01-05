@@ -26,15 +26,15 @@ import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.strings.Identifier;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.reviseHandler.D3webHandler;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -47,9 +47,9 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer> {
 
 	public QuestionnaireDefinition() {
-		addSubtreeHandler(Priority.HIGHEST, new CreateQuestionnaireHandler());
-		this.addSubtreeHandler(Priority.LOW, new TerminologyLoopDetectionHandler<QContainer>());
-		this.addSubtreeHandler(Priority.LOWER, new TerminologyLoopResolveHandler<QContainer>());
+		addCompileScript(Priority.HIGHEST, new CreateQuestionnaireHandler());
+		this.addCompileScript(Priority.LOW, new TerminologyLoopDetectionHandler<QContainer>());
+		this.addCompileScript(Priority.LOWER, new TerminologyLoopResolveHandler<QContainer>());
 		setRenderer(StyleRenderer.Questionaire);
 		setOrderSensitive(true);
 	}
@@ -62,22 +62,22 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 	}
 
 	static class CreateQuestionnaireHandler
-			extends D3webSubtreeHandler<QuestionnaireDefinition> {
+			extends D3webHandler<QuestionnaireDefinition> {
 
 		@Override
-		public Collection<Message> create(Article article,
+		public Collection<Message> create(D3webCompiler compiler,
 				Section<QuestionnaireDefinition> section) {
 
 			Identifier termIdentifier = section.get().getTermIdentifier(section);
 			String name = section.get().getTermName(section);
 			Class<?> termObjectClass = section.get().getTermObjectClass(section);
-			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
-			terminologyHandler.registerTermDefinition(section, termObjectClass, termIdentifier);
+			TerminologyManager terminologyHandler = compiler.getTerminologyManager();
+			terminologyHandler.registerTermDefinition(compiler, section, termObjectClass, termIdentifier);
 
-			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(article, section);
+			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(compiler, section);
 			if (abortCheck.hasErrors() || abortCheck.termExist()) return abortCheck.getErrors();
 
-			KnowledgeBase kb = getKB(article);
+			KnowledgeBase kb = getKB(compiler);
 
 			TerminologyObject termObject = kb.getManager().search(name);
 			if (termObject != null) {

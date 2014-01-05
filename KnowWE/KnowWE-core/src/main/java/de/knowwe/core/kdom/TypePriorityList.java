@@ -52,17 +52,18 @@ public class TypePriorityList {
 	 * @param newType type to be inserted
 	 * @param classToBeReplaced class to determine what type should be replaced
 	 * @throws InvalidKDOMSchemaModificationOperation
-	 * @return true if a replacement has been made
+	 * @return the replaced type if the replacement was successful, else
+	 *         <tt>null</tt> is returned
 	 */
-	public boolean replaceType(Type newType, Class<? extends Type> classToBeReplaced) {
+	public Type replaceType(Type newType, Class<? extends Type> classToBeReplaced) {
 		for (int i = 0; i < types.size(); i++) {
 			Type type = types.get(i);
 			if (classToBeReplaced.isAssignableFrom(type.getClass())) {
 				types.set(i, newType);
-				return true;
+				return type;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	/**
@@ -134,7 +135,7 @@ public class TypePriorityList {
 	public Type removeType(Class<? extends Type> c) {
 		Iterator<Type> iterator = types.iterator();
 		while (iterator.hasNext()) {
-			Type type = (Type) iterator.next();
+			Type type = iterator.next();
 			if (c.isAssignableFrom(type.getClass())) {
 				iterator.remove();
 				return type;

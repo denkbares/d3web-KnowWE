@@ -24,9 +24,9 @@ import de.d3web.core.inference.condition.CondKnown;
 import de.d3web.core.inference.condition.CondUnknown;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -77,7 +77,7 @@ public class CondKnownUnknown extends D3webCondition<CondKnownUnknown> {
 	}
 
 	@Override
-	protected Condition createCondition(Article article, Section<CondKnownUnknown> section) {
+	protected Condition createCondition(D3webCompiler compiler, Section<CondKnownUnknown> section) {
 		Section<QuestionReference> qRef = Sections.findSuccessor(section, QuestionReference.class);
 		Section<AssignmentType> valueSec = Sections.findSuccessor(section, AssignmentType.class);
 
@@ -86,7 +86,7 @@ public class CondKnownUnknown extends D3webCondition<CondKnownUnknown> {
 			return null;
 		}
 
-		Question question = qRef.get().getTermObject(article, qRef);
+		Question question = qRef.get().getTermObject(compiler, qRef);
 		Assignment assignemt = null;
 		try {
 			assignemt = Assignment.valueOf(valueSec.getText().toUpperCase());
@@ -112,7 +112,7 @@ public class CondKnownUnknown extends D3webCondition<CondKnownUnknown> {
 		}
 
 		Message msg = Messages.syntaxError("unexpected internal error");
-		Messages.storeMessage(article, section, getClass(), msg);
+		Messages.storeMessage(compiler, section, getClass(), msg);
 		return null;
 	}
 

@@ -24,8 +24,8 @@ import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.diaFlux.flow.ActionNode;
 import de.d3web.diaFlux.flow.NOOPAction;
 import de.d3web.diaFlux.flow.Node;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.NamedObjectReference;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.diaflux.type.DecisionType;
@@ -45,12 +45,12 @@ public class DecisionNodeHandler extends AbstractNodeHandler<DecisionType> {
 	}
 
 	@Override
-	public Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection,
+	public Node createNode(D3webCompiler compiler, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id) {
 
 		Section<NamedObjectReference> objectRef = Sections.findSuccessor(nodeSection,
 				NamedObjectReference.class);
-		NamedObject object = NamedObjectReference.getObject(article, objectRef);
+		NamedObject object = NamedObjectReference.getObject(compiler, objectRef);
 		NOOPAction action;
 		if (object instanceof TerminologyObject) {
 			// only references to Solutions and Questions can be modelled

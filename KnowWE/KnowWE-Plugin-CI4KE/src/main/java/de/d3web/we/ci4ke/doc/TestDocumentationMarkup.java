@@ -51,7 +51,6 @@ public class TestDocumentationMarkup extends DefaultMarkupType {
 
 	public TestDocumentationMarkup() {
 		super(MARKUP);
-		this.setIgnorePackageCompile(true);
 		this.setRenderer(new TestDocumentationRenderer());
 	}
 

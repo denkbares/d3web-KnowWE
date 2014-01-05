@@ -26,8 +26,8 @@ import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.kdom.Article;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
@@ -44,10 +44,10 @@ import de.knowwe.d3web.property.PropertyType;
  * @author Albrecht Striffler
  * @created 20.09.2011
  */
-public class InitPropertyHandler extends D3webSubtreeHandler<PropertyDeclarationType> {
+public class InitPropertyHandler extends D3webHandler<PropertyDeclarationType> {
 
 	@Override
-	public Collection<Message> create(Article article, Section<PropertyDeclarationType> s) {
+	public Collection<Message> create(D3webCompiler article, Section<PropertyDeclarationType> s) {
 		// get Property
 		Section<PropertyType> propertySection = Sections.findSuccessor(s,
 				PropertyType.class);

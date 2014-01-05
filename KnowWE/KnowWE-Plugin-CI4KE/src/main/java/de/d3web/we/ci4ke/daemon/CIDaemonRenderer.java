@@ -3,6 +3,7 @@ package de.d3web.we.ci4ke.daemon;
 import de.d3web.testing.Message.Type;
 import de.d3web.we.ci4ke.build.CIRenderer;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
+import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
@@ -28,14 +29,14 @@ public class CIDaemonRenderer implements Renderer {
 
 	public static void renderDaemonContents(String web, String dashboardName, String dashboardArticleTitle, RenderResult string) {
 
-		if (!Environment.getInstance().getArticleManager(web).getTitles().contains(
+		if (!Environment.getInstance().getDefaultArticleManager(web).getTitles().contains(
 				dashboardArticleTitle)) {
 			string.appendHtml("<span class='error'>");
 			string.append("The annotation @" + CIDaemonType.DASHBOARD_ARTICLE
 					+ " has to specify an existing article name.");
 			string.appendHtml("</span>");
 		}
-		Section<CIDashboardType> dashboardSec = CIDashboard.hasDashboard(web, dashboardArticleTitle, dashboardName);
+		Section<CIDashboardType> dashboardSec = CIDashboardManager.hasDashboard(web, dashboardArticleTitle, dashboardName);
 
 		String srclink;
 		if (dashboardSec == null) {
@@ -55,7 +56,7 @@ public class CIDaemonRenderer implements Renderer {
 		
 		string.appendHtml(srclink);
 
-		CIDashboard dashboard = CIDashboard.getDashboard(web, dashboardArticleTitle, dashboardName);
+		CIDashboard dashboard = CIDashboardManager.getDashboard(web, dashboardArticleTitle, dashboardName);
 		CIRenderer renderer = dashboard.getRenderer();
 		if (dashboardSec != null) {
 			renderer.renderCurrentBuildStatus(string);

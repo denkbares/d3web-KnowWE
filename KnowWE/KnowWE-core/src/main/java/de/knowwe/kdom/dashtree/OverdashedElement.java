@@ -20,20 +20,18 @@
 
 package de.knowwe.kdom.dashtree;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import de.knowwe.core.compile.DefaultGlobalCompiler;
+import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
 /**
@@ -51,7 +49,7 @@ public class OverdashedElement extends AbstractType {
 
 	public OverdashedElement(char keyCharacter) {
 
-		this.addSubtreeHandler(new OverDashedErrorHandler());
+		this.addCompileScript(new OverDashedErrorHandler());
 
 		this.setSectionFinder(new OverDashedSectionFinder(keyCharacter));
 	}
@@ -101,11 +99,12 @@ public class OverdashedElement extends AbstractType {
 
 	}
 
-	class OverDashedErrorHandler extends SubtreeHandler<OverdashedElement> {
+	class OverDashedErrorHandler extends DefaultGlobalScript<OverdashedElement> {
 
 		@Override
-		public Collection<Message> create(Article article, Section<OverdashedElement> s) {
-			return Messages.asList(Messages.syntaxError("to many dashes; remove \"-\""));
+		public void compile(DefaultGlobalCompiler compiler, Section<OverdashedElement> section) {
+			Messages.storeMessage(compiler, section, getClass(),
+					Messages.syntaxError("to many dashes; remove \"-\""));
 		}
 	}
 }

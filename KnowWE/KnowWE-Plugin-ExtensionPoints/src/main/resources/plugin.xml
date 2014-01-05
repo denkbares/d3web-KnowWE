@@ -68,6 +68,17 @@
 		<parameter-def id="handlerpriority" type="number" />
 		<parameter-def id="scope" multiplicity="one-or-more" />
 	</extension-point>
+	
+	<extension-point id="CompileScript">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+		<parameter-def id="compilepriority" type="number" />
+		<parameter-def id="scope" multiplicity="one-or-more" />
+	</extension-point>
+	
 
 	<extension-point id="ToolProvider">
 		<parameter-def id="class" />
@@ -158,7 +169,7 @@
 		<parameter-def id="priority" type="number" />
 	</extension-point>
 	
-	<extension-point id="CompileScript">
+	<extension-point id="IncrementalCompileScript">
 		<parameter-def id="class" />
 		<parameter-def id="name" />
 		<parameter-def id="description" />

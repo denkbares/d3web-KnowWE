@@ -29,6 +29,7 @@ import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 
@@ -70,13 +71,14 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 		}
 		String web = Environment.DEFAULT_WEB;
 		if (c.equals(ArticleManager.class)) {
-			Object byName = Environment.getInstance().getArticleManager(web);
+			Object byName = Environment.getInstance().getDefaultArticleManager(web);
 			if (byName != null) {
 				result.add(new TestObjectContainer<T>(web, c.cast(byName)));
 			}
 		}
 		if (c.equals(PackageManager.class)) {
-			Object byName = Environment.getInstance().getPackageManager(web);
+			Environment r = Environment.getInstance();
+			Object byName = Compilers.getDefaultPackageManager(web);
 			if (byName != null) {
 				result.add(new TestObjectContainer<T>(web, c.cast(byName)));
 			}
@@ -86,7 +88,8 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 	}
 
 	private Collection<Article> getArticlesMatchingPattern(String s) {
-		ArticleManager mgr = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		ArticleManager mgr = Environment.getInstance().getDefaultArticleManager(
+				Environment.DEFAULT_WEB);
 		Pattern pattern = Pattern.compile(s);
 		List<Article> matchingArticles = new ArrayList<Article>();
 		for (Article article : mgr.getArticles()) {

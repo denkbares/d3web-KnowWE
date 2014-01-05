@@ -18,26 +18,25 @@
  */
 package de.knowwe.d3web.property;
 
-import java.util.Collection;
 import java.util.regex.Pattern;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.AnswerReferenceRegistrationHandler;
 import de.d3web.we.object.D3webTerm;
 import de.d3web.we.object.D3webTermReference;
 import de.d3web.we.object.NamedObjectReference;
 import de.d3web.we.object.QuestionReference;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
+import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.NoChildrenOfOtherTypesConstraint;
@@ -62,7 +61,7 @@ public class PropertyObjectReference extends D3webTermReference<NamedObject> {
 		QuestionReference questionReference = new QuestionReference();
 		questionReference.setSectionFinder(new RegexSectionFinder(
 				Pattern.compile("^\\s*(" + PropertyDeclarationType.NAME + ")\\s*#"), 1));
-		questionReference.addSubtreeHandler(new WildcardQuestionErrorRemover());
+		questionReference.addCompileScript(new WildcardQuestionErrorRemover());
 		this.addChildType(questionReference);
 
 		PropertyAnswerReference answerReference = new PropertyAnswerReference();
@@ -76,36 +75,35 @@ public class PropertyObjectReference extends D3webTermReference<NamedObject> {
 	}
 
 	@Override
-	public NamedObject getTermObject(Article article, Section<? extends D3webTerm<NamedObject>> s) {
+	public NamedObject getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<NamedObject>> s) {
 		Section<PropertyAnswerReference> propertyAnswerReference = Sections.findChildOfType(s,
 				PropertyAnswerReference.class);
 		if (propertyAnswerReference != null) {
-			return propertyAnswerReference.get().getTermObject(article, propertyAnswerReference);
+			return propertyAnswerReference.get().getTermObject(compiler, propertyAnswerReference);
 		}
 		Section<NamedObjectReference> namedObjectReference = Sections.findChildOfType(s,
 				NamedObjectReference.class);
 		if (namedObjectReference != null) {
-			return namedObjectReference.get().getTermObject(article, namedObjectReference);
+			return namedObjectReference.get().getTermObject(compiler, namedObjectReference);
 		}
 		return null;
 	}
 
-	static class WildcardQuestionErrorRemover extends D3webSubtreeHandler<QuestionReference> {
+	static class WildcardQuestionErrorRemover extends D3webCompileScript<QuestionReference> {
 
 		@Override
-		public Collection<Message> create(Article article, Section<QuestionReference> section) {
+		public void compile(D3webCompiler compiler, Section<QuestionReference> section) {
 			if (section.getText().isEmpty()) {
-				Messages.clearMessages(article, section,
-						SimpleTermReferenceRegistrationHandler.class);
+				Messages.clearMessages(compiler, section,
+						SimpleReferenceRegistrationScript.class);
 			}
-			return null;
 		}
 	}
 
 	public static class PropertyAnswerReference extends AnswerReference {
 
 		public PropertyAnswerReference() {
-			this.addSubtreeHandler(new WildcardAnswerErrorRemover());
+			this.addCompileScript(new WildcardAnswerErrorRemover());
 		}
 
 		@Override
@@ -115,16 +113,16 @@ public class PropertyObjectReference extends D3webTermReference<NamedObject> {
 
 	}
 
-	static class WildcardAnswerErrorRemover extends D3webSubtreeHandler<PropertyAnswerReference> {
+	static class WildcardAnswerErrorRemover extends D3webCompileScript<PropertyAnswerReference> {
 
 		@Override
-		public Collection<Message> create(Article article, Section<PropertyAnswerReference> section) {
+		public void compile(D3webCompiler compiler, Section<PropertyAnswerReference> section) {
+
 			Section<QuestionReference> questionSection = section.get().getQuestionSection(section);
 			if (questionSection != null && questionSection.getText().isEmpty()) {
-				Messages.clearMessages(article, section,
+				Messages.clearMessages(compiler, section,
 						AnswerReferenceRegistrationHandler.class);
 			}
-			return null;
 		}
 	}
 

@@ -59,6 +59,7 @@
 		<parameter id="scope" value="AbstractIRITermDefinition" />
 		<parameter id="scope" value="IRITermReference" />
 		<parameter id="scope" value="FlowchartOrderReference" />
+		<parameter id="scope" value="PackageTerm" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
@@ -71,25 +72,14 @@
 		<parameter id="priority" value="4" />
 		<parameter id="scope" value="root" />
 	</extension>
+
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="CompileFlag">
+		id="PackageMarkupType">
 		<parameter id="class"
-			value="de.knowwe.core.packaging.CompileFlag" />
-		<parameter id="name" value="CompileFlag" />
-		<parameter id="description" value="Type CompileFlag" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5.0" />
-		<parameter id="scope" value="root" />
-		<parameter id="css" value="packaging.css" />
-	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="PackageType">
-		<parameter id="class"
-			value="de.knowwe.core.packaging.PackageType" />
-		<parameter id="name" value="CompileFlag" />
-		<parameter id="description" value="Type PackageType" />
+			value="de.knowwe.core.packaging.PackageMarkupType" />
+		<parameter id="name" value="PackageMarkupType" />
+		<parameter id="description" value="Type PackageMarkupType" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5.0" />
 		<parameter id="scope" value="root" />
@@ -364,18 +354,6 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="restoreActionScript.js" />
-	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
-		id="PackageMarkupObjectInfoPageToolProvider">
-		<parameter id="class"
-			value="de.knowwe.core.tools.ObjectInfoPageToolProvider" />
-		<parameter id="name" value="PackageMarkupObjectInfoPageToolProvider" />
-		<parameter id="description"
-			value="Offer a button to navigate to the object information page of an selected object." />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="4" />
-		<parameter id="scope" value="PackageTerm" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"

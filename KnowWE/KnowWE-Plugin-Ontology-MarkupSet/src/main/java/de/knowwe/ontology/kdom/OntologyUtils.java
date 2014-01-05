@@ -19,6 +19,7 @@
 package de.knowwe.ontology.kdom;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,6 +28,9 @@ import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.PackageCompiler;
+import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -35,6 +39,8 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.utils.Patterns;
 import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
+import de.knowwe.ontology.compile.OntologyCompiler;
+import de.knowwe.ontology.compile.OntologyType;
 import de.knowwe.ontology.kdom.namespace.AbbreviationPrefixReference;
 import de.knowwe.ontology.turtle.Predicate;
 import de.knowwe.ontology.turtle.PredicateSentence;
@@ -57,6 +63,23 @@ public class OntologyUtils {
 	public static final SectionFinder ABBREVIATED_RESOURCE_FINDER = new ConstraintSectionFinder(
 			new RegexSectionFinder(ABBREVIATED_RESOURCE_PATTERN),
 			AtMostOneFindingConstraint.getInstance());
+
+	public static OntologyCompiler getOntologyCompiler(Section<?> section) {
+		OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
+		if (compiler == null && section.get() instanceof OntologyType) {
+			Section<DefaultMarkupPackageCompileType> compileSection = Sections.findSuccessor(
+					section, DefaultMarkupPackageCompileType.class);
+			Collection<PackageCompiler> packageCompilers = compileSection.get().getPackageCompilers(
+					compileSection);
+			for (PackageCompiler packageCompiler : packageCompilers) {
+				if (packageCompiler instanceof OntologyCompiler) {
+					return (OntologyCompiler) packageCompiler;
+				}
+			}
+
+		}
+		return compiler;
+	}
 
 	/**
 	 * Adds the specified statements to the the specified wiki page. As a result

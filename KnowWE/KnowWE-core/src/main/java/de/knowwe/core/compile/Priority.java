@@ -29,36 +29,21 @@ public class Priority implements Comparable<Priority> {
 
 	private static final HashMap<Integer, Priority> registeredPrioritiesHash = new HashMap<Integer, Priority>();
 
-	/**
-	 * DON'T USE THIS PRIORITY FOR HANDLERS CREATING KNOWLEDGE!!!
-	 */
-	public static final Priority PRECOMPILE_HIGH = new Priority(300000);
+	public static final Priority INIT_KB = new Priority(-1000);
 
-	/**
-	 * DON'T USE THIS PRIORITY FOR HANDLERS CREATING KNOWLEDGE!!!
-	 */
-	public static final Priority PRECOMPILE_MIDDLE = new Priority(200000);
+	public static final Priority HIGHEST = new Priority(-300);
 
-	/**
-	 * DON'T USE THIS PRIORITY FOR HANDLERS CREATING KNOWLEDGE!!!
-	 */
-	public static final Priority PRECOMPILE_LOW = new Priority(100000);
+	public static final Priority HIGHER = new Priority(-200);
 
-	public static final Priority INIT_KB = new Priority(1000);
-
-	public static final Priority HIGHEST = new Priority(300);
-
-	public static final Priority HIGHER = new Priority(200);
-
-	public static final Priority HIGH = new Priority(100);
+	public static final Priority HIGH = new Priority(-100);
 
 	public static final Priority DEFAULT = new Priority(0);
 
-	public static final Priority LOW = new Priority(-100);
+	public static final Priority LOW = new Priority(100);
 
-	public static final Priority LOWER = new Priority(-200);
+	public static final Priority LOWER = new Priority(200);
 
-	public static final Priority LOWEST = new Priority(-300);
+	public static final Priority LOWEST = new Priority(300);
 
 	private final int value;
 
@@ -108,7 +93,7 @@ public class Priority implements Comparable<Priority> {
 	@Override
 	public int compareTo(Priority p) {
 		if (p == null) return -1;
-		return this.value < p.value ? -1 : (this.value == p.value ? 0 : 1);
+		return this.value < p.value ? 1 : (this.value == p.value ? 0 : -1);
 	}
 
 	@Override

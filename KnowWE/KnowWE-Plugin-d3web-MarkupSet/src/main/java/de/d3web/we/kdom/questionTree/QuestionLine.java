@@ -31,23 +31,22 @@ import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalExcept
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.we.kdom.questionTree.indication.IndicationHandler;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QASetDefinition;
 import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.object.QuestionDefinition.QuestionType;
 import de.d3web.we.object.QuestionnaireDefinition;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
 import de.knowwe.kdom.dashtree.DashTreeElementContent;
@@ -113,7 +112,7 @@ public class QuestionLine extends AbstractType {
 			f.addConstraint(SingleChildConstraint.getInstance());
 			this.setSectionFinder(f);
 			// this.addSubtreeHandler(new CreateIndicationHandler());
-			this.addSubtreeHandler(IndicationHandler.getInstance());
+			this.addCompileScript(IndicationHandler.getInstance());
 		}
 
 		@Override
@@ -171,7 +170,7 @@ public class QuestionLine extends AbstractType {
 			this.setRenderer(StyleRenderer.NUMBER);
 			this.setSectionFinder(new EmbracedContentFinder(BOUNDS_OPEN, BOUNDS_CLOSE));
 
-			this.addSubtreeHandler(Priority.HIGH, new D3webSubtreeHandler<NumBounds>() {
+			this.addCompileScript(Priority.HIGH, new D3webHandler<NumBounds>() {
 
 				/**
 				 * creates the bound-property for a bound-definition
@@ -181,7 +180,7 @@ public class QuestionLine extends AbstractType {
 				 * @return
 				 */
 				@Override
-				public Collection<Message> create(Article article, Section<NumBounds> s) {
+				public Collection<Message> create(D3webCompiler article, Section<NumBounds> s) {
 
 					Double lower = s.get().getLowerBound(s);
 					Double upper = s.get().getUpperBound(s);
@@ -230,7 +229,7 @@ public class QuestionLine extends AbstractType {
 				}
 
 				@Override
-				public void destroy(Article article, Section<NumBounds> sec) {
+				public void destroy(D3webCompiler article, Section<NumBounds> sec) {
 					// bounds are destroyed together with question
 				}
 			});
@@ -318,7 +317,7 @@ public class QuestionLine extends AbstractType {
 
 			this.setSectionFinder(new EmbracedContentFinder(UNIT_OPEN, UNIT_CLOSE));
 
-			this.addSubtreeHandler(Priority.HIGH, new D3webSubtreeHandler<NumUnit>() {
+			this.addCompileScript(Priority.HIGH, new D3webHandler<NumUnit>() {
 
 				/**
 				 * creates the unit-property for a unit-definition
@@ -328,7 +327,7 @@ public class QuestionLine extends AbstractType {
 				 * @return
 				 */
 				@Override
-				public Collection<Message> create(Article article, Section<NumUnit> s) {
+				public Collection<Message> create(D3webCompiler article, Section<NumUnit> s) {
 					Section<QuestionDefinition> qDef = Sections.findSuccessor(
 							s.getParent(), QuestionDefinition.class);
 
@@ -352,7 +351,7 @@ public class QuestionLine extends AbstractType {
 				}
 
 				@Override
-				public void destroy(Article article, Section<NumUnit> sec) {
+				public void destroy(D3webCompiler article, Section<NumUnit> sec) {
 					// unit is destroyed together with question
 				}
 			});
@@ -378,16 +377,16 @@ public class QuestionLine extends AbstractType {
 					"<abstract>", "<abstrakt>" }));
 			this.setRenderer(new StyleRenderer(StyleRenderer.KEYWORDS, MaskMode.htmlEntities));
 
-			this.addSubtreeHandler(Priority.HIGH, new D3webSubtreeHandler<AbstractFlag>() {
+			this.addCompileScript(Priority.HIGH, new D3webHandler<AbstractFlag>() {
 
 				@Override
-				public Collection<Message> create(Article article, Section<AbstractFlag> s) {
+				public Collection<Message> create(D3webCompiler compiler, Section<AbstractFlag> s) {
 
 					Section<QuestionDefinition> qDef = Sections.findSuccessor(
 							s.getParent(), QuestionDefinition.class);
 
 					if (qDef != null) {
-						Question question = qDef.get().getTermObject(article, qDef);
+						Question question = qDef.get().getTermObject(compiler, qDef);
 						if (question != null) {
 							question.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION,
 									Boolean.TRUE);
@@ -403,7 +402,7 @@ public class QuestionLine extends AbstractType {
 				}
 
 				@Override
-				public void destroy(Article article, Section<AbstractFlag> sec) {
+				public void destroy(D3webCompiler article, Section<AbstractFlag> sec) {
 					// flag is destroyed together with question
 				}
 			});
@@ -429,17 +428,17 @@ public class QuestionLine extends AbstractType {
 					QTEXT_START_SYMBOL)));
 
 			this.setRenderer(StyleRenderer.PROMPT);
-			this.addSubtreeHandler(Priority.HIGH, new D3webSubtreeHandler<QuestionText>() {
+			this.addCompileScript(Priority.HIGH, new D3webHandler<QuestionText>() {
 
 				@Override
-				public Collection<Message> create(Article article, Section<QuestionText> sec) {
+				public Collection<Message> create(D3webCompiler compiler, Section<QuestionText> sec) {
 
 					Section<QuestionDefinition> qDef = Sections.findSuccessor(
 							sec.getParent(), QuestionDefinition.class);
 
 					if (qDef != null) {
 
-						Question question = qDef.get().getTermObject(article, qDef);
+						Question question = qDef.get().getTermObject(compiler, qDef);
 
 						if (question != null) {
 							question.getInfoStore().addValue(MMInfo.PROMPT,
@@ -455,7 +454,7 @@ public class QuestionLine extends AbstractType {
 				}
 
 				@Override
-				public void destroy(Article article, Section<QuestionText> sec) {
+				public void destroy(D3webCompiler article, Section<QuestionText> sec) {
 					// text is destroyed together with question
 				}
 			});
@@ -471,13 +470,13 @@ public class QuestionLine extends AbstractType {
 		}
 	}
 
-	static class QuestionTypeChecker extends D3webSubtreeHandler<QuestionTypeDeclaration> {
+	static class QuestionTypeChecker extends D3webHandler<QuestionTypeDeclaration> {
 
 		@Override
-		public Collection<Message> create(Article article, Section<QuestionTypeDeclaration> section) {
+		public Collection<Message> create(D3webCompiler compiler, Section<QuestionTypeDeclaration> section) {
 			QuestionType thisQuestionType = QuestionTypeDeclaration.getQuestionType(section);
 			if (thisQuestionType == null) return Messages.asList();
-			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
+			TerminologyManager terminologyHandler = compiler.getTerminologyManager();
 			Section<QuestionDefinition> thisQuestionDef = section.get().getQuestionDefinition(
 					section);
 			Identifier termIdentifier = thisQuestionDef.get().getTermIdentifier(thisQuestionDef);

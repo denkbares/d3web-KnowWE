@@ -31,9 +31,9 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.strings.Strings;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionReference;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.kdom.Article;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
@@ -48,10 +48,10 @@ import de.knowwe.d3web.property.PropertyObjectReference.PropertyAnswerReference;
  * @author Markus Friedrich, Albrecht Striffler (denkbares GmbH)
  * @created 10.11.2010
  */
-public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDeclarationType> {
+public class PropertyDeclarationHandler extends D3webHandler<PropertyDeclarationType> {
 
 	@Override
-	public Collection<Message> create(Article article, Section<PropertyDeclarationType> section) {
+	public Collection<Message> create(D3webCompiler compiler, Section<PropertyDeclarationType> section) {
 		if (Strings.isBlank(section.getText())) return Messages.noMessage();
 		// get NamedObject
 		Section<PropertyObjectReference> namendObjectSection = Sections.findSuccessor(section,
@@ -59,7 +59,7 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 		if (namendObjectSection == null) {
 			return Messages.asList(Messages.syntaxError("No NamedObject found."));
 		}
-		List<NamedObject> objects = getNamedObjects(article, namendObjectSection);
+		List<NamedObject> objects = getNamedObjects(compiler, namendObjectSection);
 		if (objects.isEmpty()) {
 			return Messages.asList(Messages.error("No matching object(s) found for reference '"
 					+ namendObjectSection.get().getTermIdentifier(namendObjectSection) + "'"));
@@ -134,9 +134,9 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 		return locale;
 	}
 
-	protected List<NamedObject> getNamedObjects(Article article, Section<PropertyObjectReference> namendObjectSection) {
+	protected List<NamedObject> getNamedObjects(D3webCompiler compiler, Section<PropertyObjectReference> namendObjectSection) {
 		List<NamedObject> objects = new ArrayList<NamedObject>(1);
-		NamedObject object = namendObjectSection.get().getTermObject(article, namendObjectSection);
+		NamedObject object = namendObjectSection.get().getTermObject(compiler, namendObjectSection);
 		if (object == null) {
 			Section<QuestionReference> questionReferenceSection = Sections.findChildOfType(
 					namendObjectSection, QuestionReference.class);
@@ -145,7 +145,7 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 				// answer.
 				Section<PropertyAnswerReference> answerReferenceSection =
 						Sections.findChildOfType(namendObjectSection, PropertyAnswerReference.class);
-				objects = getAllChoices(article, answerReferenceSection);
+				objects = getAllChoices(compiler, answerReferenceSection);
 			}
 		}
 		else {
@@ -154,8 +154,8 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 		return objects;
 	}
 
-	protected List<NamedObject> getAllChoices(Article article, Section<PropertyAnswerReference> answerReference) {
-		List<Question> questions = getKB(article).getManager().getQuestions();
+	protected List<NamedObject> getAllChoices(D3webCompiler compiler, Section<PropertyAnswerReference> answerReference) {
+		List<Question> questions = getKB(compiler).getManager().getQuestions();
 		List<NamedObject> choices = new ArrayList<NamedObject>(questions.size());
 		for (Question question : questions) {
 			if (!(question instanceof QuestionChoice)) continue;
@@ -170,13 +170,13 @@ public class PropertyDeclarationHandler extends D3webSubtreeHandler<PropertyDecl
 	}
 
 	@Override
-	public void destroy(Article article, Section<PropertyDeclarationType> s) {
+	public void destroy(D3webCompiler compiler, Section<PropertyDeclarationType> s) {
 		Section<PropertyObjectReference> idobjectSection = Sections.findSuccessor(s,
 				PropertyObjectReference.class);
 		Section<PropertyType> propertySection = Sections.findSuccessor(s,
 				PropertyType.class);
 		if (idobjectSection == null) return;
-		NamedObject object = idobjectSection.get().getTermObject(article, idobjectSection);
+		NamedObject object = idobjectSection.get().getTermObject(compiler, idobjectSection);
 		if (object == null) return;
 		if (propertySection == null) return;
 		Property<?> property = propertySection.get().getProperty(propertySection);

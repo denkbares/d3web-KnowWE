@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.Set;
 
 import junit.framework.TestCase;
+
+import org.junit.BeforeClass;
+
 import utils.KBTestUtilNewMarkup;
 import utils.TestArticleManager;
 import de.d3web.abstraction.inference.PSMethodAbstraction;
@@ -38,7 +41,6 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.scoring.inference.PSMethodHeuristic;
-import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 
 /**
@@ -58,10 +60,9 @@ import de.knowwe.core.kdom.Article;
 public class RulesTest extends TestCase {
 
 	@Override
+	@BeforeClass
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
-		// Enforce Autocompile
-		PackageManager.overrideAutocompileArticle(true);
 	}
 
 	/**

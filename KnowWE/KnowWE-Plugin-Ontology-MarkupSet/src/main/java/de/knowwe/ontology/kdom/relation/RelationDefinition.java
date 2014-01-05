@@ -25,13 +25,13 @@ import org.ontoware.rdf2go.model.node.URI;
 
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.ontology.compile.OntologyCompiler;
+import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.ontology.kdom.OntologyUtils;
 import de.knowwe.ontology.kdom.objectproperty.AbbreviatedPropertyReference;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
@@ -45,7 +45,7 @@ public class RelationDefinition extends AbstractType {
 		this.addChildType(new PredicateType());
 		this.addChildType(new LiteralType());
 		this.addChildType(new ObjectType());
-		this.addSubtreeHandler(Priority.LOWER, new RelationSubtreeHandler());
+		this.addCompileScript(Priority.LOWER, new RelationSubtreeHandler());
 	}
 
 	private static class SubjectType extends AbstractType {
@@ -72,10 +72,10 @@ public class RelationDefinition extends AbstractType {
 		}
 	}
 
-	private static class RelationSubtreeHandler extends SubtreeHandler<RelationDefinition> {
+	private static class RelationSubtreeHandler extends OntologyHandler<RelationDefinition> {
 
 		@Override
-		public Collection<Message> create(Article article, Section<RelationDefinition> section) {
+		public Collection<Message> create(OntologyCompiler compiler, Section<RelationDefinition> section) {
 
 			if (section.hasErrorInSubtree()) {
 				Section<LiteralType> literalSection = Sections.findChildOfType(section,
@@ -88,7 +88,7 @@ public class RelationDefinition extends AbstractType {
 				return Messages.noMessage();
 			}
 
-			Rdf2GoCore core = Rdf2GoCore.getInstance(article);
+			Rdf2GoCore core = Rdf2GoCore.getInstance(compiler);
 
 			Section<SubjectType> subjectSection = Sections.findChildOfType(section,
 					SubjectType.class);
@@ -132,6 +132,11 @@ public class RelationDefinition extends AbstractType {
 			}
 
 			return Messages.noMessage();
+		}
+
+		@Override
+		public void destroy(OntologyCompiler compiler, Section<RelationDefinition> section) {
+			Rdf2GoCore.getInstance(compiler).removeStatementsForSection(section);
 		}
 
 	}

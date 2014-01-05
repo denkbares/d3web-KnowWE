@@ -37,7 +37,7 @@ public class NamespaceType extends DefaultMarkupType {
 		MARKUP.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageAnnotationNameType());
 		MARKUP.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm(true));
+				new PackageTerm());
 		MARKUP.addAnnotation(NamespaceType.FILE_ANNOTATION_NAME, false);
 		MARKUP.addAnnotationContentType(FILE_ANNOTATION_NAME, new NamespaceFileAnnotationType());
 		OntologyLineType lineType = new OntologyLineType();

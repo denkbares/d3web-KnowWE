@@ -27,18 +27,19 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.manage.KnowledgeBaseUtils;
-import de.d3web.strings.Strings;
 import de.d3web.strings.Identifier;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.strings.Strings;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.reviseHandler.D3webHandler;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -55,7 +56,7 @@ public abstract class AnswerDefinition
 	public static final String ANSWER_STORE_KEY = "answerStoreKey";
 
 	public AnswerDefinition() {
-		this.addSubtreeHandler(Priority.HIGH, new CreateAnswerHandler());
+		this.addCompileScript(Priority.HIGH, new CreateAnswerHandler());
 		this.setRenderer(StyleRenderer.CHOICE);
 		this.setOrderSensitive(true);
 	}
@@ -73,28 +74,29 @@ public abstract class AnswerDefinition
 	public abstract Section<? extends QuestionDefinition> getQuestionSection(Section<? extends AnswerDefinition> s);
 
 	@Override
-	public Choice getTermObject(Article article, Section<? extends D3webTerm<Choice>> s) {
+	public Choice getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<Choice>> section) {
 
 		Choice choice = null;
-		if (s.get() instanceof AnswerDefinition) {
-			TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
-			Section<?> def = terminologyManager.getTermDefiningSection(getTermIdentifier(s));
+		if (section.get() instanceof AnswerDefinition) {
+			TerminologyManager terminologyManager = compiler.getTerminologyManager();
+			Section<?> def = terminologyManager.getTermDefiningSection(getTermIdentifier(section));
 			if (def != null) {
-				choice = (Choice) KnowWEUtils.getStoredObject(article, def,
+				choice = (Choice) Compilers.getStoredObject((PackageCompiler) compiler, def,
 						ANSWER_STORE_KEY);
 			}
 
 			if (choice == null) {
-				Section<AnswerDefinition> answerDef = Sections.cast(s, AnswerDefinition.class);
+				Section<AnswerDefinition> answerDef = Sections.cast(section, AnswerDefinition.class);
 				Section<? extends QuestionDefinition> ref = answerDef.get().getQuestionSection(
 						answerDef);
 				if (ref != null) {
-					Question question = ref.get().getTermObject(article, ref);
+					Question question = ref.get().getTermObject(compiler, ref);
 					if (question != null && question instanceof QuestionChoice) {
 						String answerName = answerDef.get().getTermName(answerDef);
 						choice = KnowledgeBaseUtils.findChoice((QuestionChoice) question,
 								answerName, false);
-						KnowWEUtils.storeObject(article, answerDef, ANSWER_STORE_KEY, choice);
+						Compilers.storeObject((PackageCompiler) compiler, answerDef,
+								ANSWER_STORE_KEY, choice);
 					}
 				}
 			}
@@ -133,10 +135,10 @@ public abstract class AnswerDefinition
 	 *          This handler actually creates the Answer as an object of the
 	 *          knowledge base
 	 */
-	static class CreateAnswerHandler extends D3webSubtreeHandler<AnswerDefinition> {
+	static class CreateAnswerHandler extends D3webHandler<AnswerDefinition> {
 
 		@Override
-		public Collection<Message> create(Article article,
+		public Collection<Message> create(D3webCompiler compiler,
 				Section<AnswerDefinition> section) {
 
 			String name = section.get().getTermName(section);
@@ -144,7 +146,7 @@ public abstract class AnswerDefinition
 			Section<? extends QuestionDefinition> qDef = section.get().getQuestionSection(section);
 
 			// if having error somewhere, do nothing and report error
-			if (qDef == null || qDef.hasErrorInSubtree(article)) {
+			if (qDef == null || qDef.hasErrorInSubtree(compiler)) {
 				return Arrays.asList(Messages.objectCreationError(
 						"No valid question for choice '" + name + "'"));
 			}
@@ -154,14 +156,14 @@ public abstract class AnswerDefinition
 			Identifier termIdentifier = section.get().getTermIdentifier(section);
 			Class<?> termObjectClass = section.get().getTermObjectClass(section);
 
-			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
-			terminologyHandler.registerTermDefinition(section, termObjectClass, termIdentifier);
+			TerminologyManager terminologyHandler = compiler.getTerminologyManager();
+			terminologyHandler.registerTermDefinition(compiler, section, termObjectClass, termIdentifier);
 
 			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(
-					article, section);
+					compiler, section);
 			if (abortCheck.hasErrors() || abortCheck.termExist()) return abortCheck.getErrors();
 
-			Question q = qDef.get().getTermObject(article, qDef);
+			Question q = qDef.get().getTermObject(compiler, qDef);
 
 			if (q instanceof QuestionChoice) {
 
@@ -191,7 +193,7 @@ public abstract class AnswerDefinition
 							section.get().getPosition(section));
 				}
 
-				KnowWEUtils.storeObject(article, section, ANSWER_STORE_KEY, choice);
+				Compilers.storeObject(compiler, section, ANSWER_STORE_KEY, choice);
 
 				return Messages.asList(Messages.objectCreatedNotice(
 						choice.getClass().getSimpleName() + "  "

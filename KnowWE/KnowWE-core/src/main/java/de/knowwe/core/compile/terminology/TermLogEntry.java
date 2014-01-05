@@ -19,30 +19,21 @@
 package de.knowwe.core.compile.terminology;
 
 import de.d3web.strings.Identifier;
-import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.parsing.Section;
 
-/**
- * 
- * @author Albrecht Striffler (denkbares GmbH)
- * @created 03.02.2012
- */
 class TermLogEntry implements Comparable<TermLogEntry> {
 
-	private final Priority priority;
 	private final Section<?> section;
 	private final Class<?> termClass;
 	private final Identifier termIdentifier;
+	private final Compiler compiler;
 
-	public TermLogEntry(Priority priority, Section<?> section, Class<?> termClass, Identifier termIdentifier) {
+	public TermLogEntry(Compiler compiler, Section<?> section, Class<?> termClass, Identifier termIdentifier) {
+		this.compiler = compiler;
 		this.section = section;
 		this.termClass = termClass;
 		this.termIdentifier = termIdentifier;
-		this.priority = priority;
-	}
-
-	public Priority getPriority() {
-		return priority;
 	}
 
 	public Section<?> getSection() {
@@ -57,11 +48,15 @@ class TermLogEntry implements Comparable<TermLogEntry> {
 		return termIdentifier;
 	}
 
+	public Compiler getCompiler() {
+		return compiler;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((priority == null) ? 0 : priority.hashCode());
+		result = prime * result + ((compiler == null) ? 0 : compiler.hashCode());
 		result = prime * result + ((section == null) ? 0 : section.hashCode());
 		result = prime * result + ((termClass == null) ? 0 : termClass.hashCode());
 		result = prime * result + ((termIdentifier == null) ? 0 : termIdentifier.hashCode());
@@ -74,10 +69,10 @@ class TermLogEntry implements Comparable<TermLogEntry> {
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		TermLogEntry other = (TermLogEntry) obj;
-		if (priority == null) {
-			if (other.priority != null) return false;
+		if (compiler == null) {
+			if (other.compiler != null) return false;
 		}
-		else if (!priority.equals(other.priority)) return false;
+		else if (!compiler.equals(other.compiler)) return false;
 		if (section == null) {
 			if (other.section != null) return false;
 		}
@@ -99,13 +94,6 @@ class TermLogEntry implements Comparable<TermLogEntry> {
 		if (o == null) return -1;
 
 		int result = 0;
-		if (priority == null) {
-			if (o.priority != null) return 1;
-		}
-		else {
-			result = -priority.compareTo(o.priority);
-			if (result != 0) return result;
-		}
 
 		if (section == null) {
 			if (o.section != null) return 1;

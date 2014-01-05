@@ -21,35 +21,30 @@ package de.knowwe.core.kdom.objects;
 import java.util.Collection;
 
 import de.d3web.strings.Identifier;
+import de.knowwe.core.compile.CompileScript;
+import de.knowwe.core.compile.DestroyScript;
+import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
-import de.knowwe.core.compile.terminology.TermRegistrationScope;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 
-/**
- * 
- * @author Albrecht
- * @created 16.12.2010
- */
-public abstract class SimpleDefinition extends AbstractType implements TermDefinition, RenamableTerm {
+public abstract class SimpleDefinition<C extends TermCompiler> extends AbstractType implements TermDefinition, RenamableTerm {
 
 	private final Class<?> termObjectClass;
 
-	public SimpleDefinition(TermRegistrationScope scope, Class<?> termObjectClass) {
-		this(scope, termObjectClass, Priority.HIGHER);
+	private final Class<C> compilerClass;
+
+	public SimpleDefinition(Class<C> compilerClass, Class<?> termObjectClass) {
+		this(compilerClass, termObjectClass, Priority.HIGHER);
 	}
 
-	public SimpleDefinition(TermRegistrationScope scope, Class<?> termObjectClass, Priority handlerPriority) {
+	public SimpleDefinition(Class<C> compilerClass, Class<?> termObjectClass, Priority handlerPriority) {
 		this.termObjectClass = termObjectClass;
-		this.addSubtreeHandler(handlerPriority,
-				new StringDefinitionRegistrationHandler(scope));
+		this.compilerClass = compilerClass;
+		this.addCompileScript(handlerPriority, new SimpleDefinitionRegistrationScript());
 	}
 
 	@Override
@@ -73,48 +68,44 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 		return TermUtils.quoteIfRequired(replacement);
 	}
 
-	private class StringDefinitionRegistrationHandler extends SubtreeHandler<SimpleDefinition> {
+	private class SimpleDefinitionRegistrationScript implements CompileScript<C, SimpleDefinition<C>>, DestroyScript<C, SimpleDefinition<C>> {
 
-		private final TermRegistrationScope scope;
-
-		public StringDefinitionRegistrationHandler(TermRegistrationScope scope) {
-			this.scope = scope;
+		@Override
+		public Class<C> getCompilerClass() {
+			return compilerClass;
 		}
 
 		@Override
-		public Collection<Message> create(Article article, Section<SimpleDefinition> s) {
+		public void compile(C compiler, Section<SimpleDefinition<C>> section) {
 
-			Identifier termIdentifier = s.get().getTermIdentifier(s);
-			if (termIdentifier != null) {
-				getTerminologyHandler(article).registerTermDefinition(s,
-						s.get().getTermObjectClass(s),
-						termIdentifier);
-			}
-			else {
-				/*
-				 * termIdentifier is null, obviously section chose not to define
-				 * a term, however so we can ignore this case
-				 */
+			TerminologyManager terminologyManager = compiler.getTerminologyManager();
+			Identifier termIdentifier = section.get().getTermIdentifier(section);
+
+			terminologyManager.registerTermDefinition(compiler,
+					section, section.get().getTermObjectClass(section),
+					termIdentifier);
+
+			if (compiler instanceof IncrementalCompiler) {
+				Collection<Section<?>> termReferenceSections = terminologyManager.getTermReferenceSections(termIdentifier);
+				((IncrementalCompiler) compiler).addSectionsToCompile(termReferenceSections);
 			}
 
-			return Messages.noMessage();
-		}
-
-		private TerminologyManager getTerminologyHandler(Article article) {
-			if (scope == TermRegistrationScope.GLOBAL) {
-				return KnowWEUtils.getGlobalTerminologyManager(article.getWeb());
-			}
-			else {
-				return KnowWEUtils.getTerminologyManager(article);
-			}
 		}
 
 		@Override
-		public void destroy(Article article, Section<SimpleDefinition> s) {
-			getTerminologyHandler(article).unregisterTermDefinition(s,
-					s.get().getTermObjectClass(s), s.get().getTermIdentifier(s));
-		}
+		public void destroy(C compiler, Section<SimpleDefinition<C>> section) {
+			TerminologyManager terminologyManager = compiler.getTerminologyManager();
+			Identifier termIdentifier = section.get().getTermIdentifier(section);
+			terminologyManager.unregisterTermDefinition(compiler,
+					section, section.get().getTermObjectClass(section),
+					termIdentifier);
 
+			if (compiler instanceof IncrementalCompiler) {
+				Collection<Section<?>> termReferenceSections = terminologyManager.getTermReferenceSections(termIdentifier);
+				((IncrementalCompiler) compiler).addSectionsToDestroy(termReferenceSections);
+			}
+
+		}
 	}
 
 }

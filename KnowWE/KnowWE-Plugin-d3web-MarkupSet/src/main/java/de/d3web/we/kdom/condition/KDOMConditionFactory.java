@@ -27,7 +27,7 @@ import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondNot;
 import de.d3web.core.inference.condition.CondOr;
 import de.d3web.core.inference.condition.Condition;
-import de.knowwe.core.kdom.Article;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 
@@ -44,13 +44,13 @@ import de.knowwe.core.kdom.parsing.Sections;
 public class KDOMConditionFactory {
 
 	@SuppressWarnings("unchecked")
-	public static Condition createCondition(Article article, Section<? extends CompositeCondition> c) {
+	public static Condition createCondition(D3webCompiler compiler, Section<? extends CompositeCondition> c) {
 		if (c == null) return null;
 
 		// if braced - delegate to next composite
 		if (c.get().isBraced(c)) {
 			Section<? extends NonTerminalCondition> braced = c.get().getBraced(c);
-			return createCondition(article,
+			return createCondition(compiler,
 					Sections.findSuccessor(braced, CompositeCondition.class));
 		}
 
@@ -63,7 +63,7 @@ public class KDOMConditionFactory {
 			for (Section<? extends NonTerminalCondition> conjunct : conjuncts) {
 				Section<? extends CompositeCondition> subCondSection = Sections.findChildOfType(
 						conjunct, CompositeCondition.class);
-				Condition subCond = createCondition(article,
+				Condition subCond = createCondition(compiler,
 						(Section<CompositeCondition>) subCondSection);
 				if (subCond == null) return null;
 				conds.add(subCond);
@@ -82,7 +82,7 @@ public class KDOMConditionFactory {
 			for (Section<? extends NonTerminalCondition> disjunct : disjuncts) {
 				Section<? extends CompositeCondition> subCondSection = Sections.findChildOfType(
 						disjunct, CompositeCondition.class);
-				Condition subCond = createCondition(article,
+				Condition subCond = createCondition(compiler,
 						(Section<CompositeCondition>) subCondSection);
 				if (subCond == null) return null;
 				conds.add(subCond);
@@ -99,7 +99,7 @@ public class KDOMConditionFactory {
 					c);
 			Section<? extends CompositeCondition> subCondSection = Sections.findChildOfType(neg,
 					CompositeCondition.class);
-			Condition subCond = createCondition(article,
+			Condition subCond = createCondition(compiler,
 					(Section<CompositeCondition>) subCondSection);
 			if (subCond == null) return null;
 			Condition cond = new CondNot(subCond);
@@ -120,7 +120,7 @@ public class KDOMConditionFactory {
 				return null;
 			}
 
-			Condition cond = termChild.get().getCondition(article, termChild);
+			Condition cond = termChild.get().getCondition(compiler, termChild);
 
 			return cond;
 		}

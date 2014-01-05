@@ -23,10 +23,10 @@ import java.util.Collection;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.manage.NamedObjectFinderManager;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.compile.terminology.TermRegistrationScope;
-import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
+import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 
@@ -39,8 +39,8 @@ public class NamedObjectReference extends D3webTermReference<NamedObject> {
 
 	public NamedObjectReference() {
 		this.setRenderer(new NamedObjectRenderer());
-		this.addSubtreeHandler(new SimpleTermReferenceRegistrationHandler(
-				TermRegistrationScope.LOCAL));
+		this.addCompileScript(new SimpleReferenceRegistrationScript<D3webCompiler>(
+				D3webCompiler.class));
 	}
 
 	@Override
@@ -49,23 +49,22 @@ public class NamedObjectReference extends D3webTermReference<NamedObject> {
 	}
 
 	@Override
-	public NamedObject getTermObject(Article article, Section<? extends D3webTerm<NamedObject>> section) {
-		Collection<NamedObject> result = getTermObjects(article, section);
+	public NamedObject getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<NamedObject>> section) {
+		Collection<NamedObject> result = getTermObjects(compiler, section);
 		if (result.size() > 0) {
 			return result.iterator().next();
 		}
 		else {
-			return super.getTermObject(article, section);
+			return super.getTermObject(compiler, section);
 		}
 	}
 
-	public static Collection<NamedObject> getTermObjects(Article article, Section<? extends D3webTerm<NamedObject>> section) {
+	public static Collection<NamedObject> getTermObjects(Compiler compiler, Section<? extends D3webTerm<NamedObject>> section) {
 		if (section == null) return null;
 
 		String termIdentifier = section.get().getTermIdentifier(section).toString();
 
-		KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(article.getWeb(),
-				article.getTitle());
+		KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(compiler);
 
 		Collection<NamedObject> result = NamedObjectFinderManager.getInstance().find(
 				termIdentifier, knowledgeBase);

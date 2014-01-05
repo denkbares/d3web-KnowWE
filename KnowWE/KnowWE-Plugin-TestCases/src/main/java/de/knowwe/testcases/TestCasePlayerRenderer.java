@@ -51,8 +51,8 @@ import de.d3web.testcase.model.TestCase;
 import de.d3web.utils.Pair;
 import de.d3web.utils.Triple;
 import de.d3web.we.basic.SessionProvider;
-import de.d3web.we.knowledgebase.KnowledgeBaseType;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -161,7 +161,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		message.append("No test cases found in the packages: ");
 		boolean first = true;
 		for (String s : DefaultMarkupType.getPackages(playerSection,
-				KnowledgeBaseType.ANNOTATION_COMPILE)) {
+				PackageManager.COMPILE_ATTRIBUTE_NAME)) {
 			if (!first) {
 				message.append(", ");
 			}

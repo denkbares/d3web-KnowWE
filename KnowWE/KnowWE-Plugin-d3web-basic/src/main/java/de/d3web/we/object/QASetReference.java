@@ -19,20 +19,19 @@
  */
 package de.d3web.we.object;
 
-import java.util.Set;
+import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.strings.Strings;
 import de.d3web.strings.Identifier;
-import de.knowwe.core.Environment;
-import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.terminology.TermRegistrationScope;
+import de.d3web.strings.Strings;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.basicType.PlainText;
+import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
-import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -57,11 +56,10 @@ public class QASetReference extends D3webTermReference<QASet> {
 			Renderer delegate = PlainText.getInstance().getRenderer();
 
 			// check if section is Questionnaire to use other renderer
-			Environment env = Environment.getInstance();
-			PackageManager pm = env.getPackageManager(user.getWeb());
-			Set<String> compilingArticles = pm.getCompilingArticles(section);
-			for (String article : compilingArticles) {
-				TerminologyManager tm = env.getTerminologyManager(user.getWeb(), article);
+			Collection<D3webCompiler> compilers = Compilers.getCompilers(section,
+					D3webCompiler.class);
+			for (D3webCompiler compiler : compilers) {
+				TerminologyManager tm = compiler.getTerminologyManager();
 				Section<Term> cast = Sections.cast(section, Term.class);
 				Identifier termIdentifier = cast.get().getTermIdentifier(cast);
 				if (tm.hasTermOfClass(termIdentifier, Question.class)) {
@@ -80,8 +78,8 @@ public class QASetReference extends D3webTermReference<QASet> {
 
 	public QASetReference() {
 		this.setRenderer(RENDERER);
-		this.addSubtreeHandler(new SimpleTermReferenceRegistrationHandler(
-				TermRegistrationScope.LOCAL));
+		this.addCompileScript(new SimpleReferenceRegistrationScript<D3webCompiler>(
+				D3webCompiler.class));
 	}
 
 	@Override

@@ -22,7 +22,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.WeakHashMap;
 
+import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.Article;
 
 /**
@@ -34,7 +36,7 @@ import de.knowwe.core.kdom.Article;
  */
 public class SectionStore {
 
-	private HashMap<String, HashMap<String, Object>> store = null;
+	private WeakHashMap<Compiler, HashMap<String, Object>> store = null;
 
 	/**
 	 * Has the same behavior as {@link SectionStore#getObject(Article, String)}
@@ -48,7 +50,7 @@ public class SectionStore {
 	 *         Object was stored
 	 */
 	public Object getObject(String key) {
-		return getObject(null, key);
+		return getObject((Compiler) null, key);
 	}
 
 	/**
@@ -61,12 +63,16 @@ public class SectionStore {
 	 * @created 16.02.2012
 	 * @param key is the key for which the objects were stored
 	 */
-	public Map<String, Object> getObjects(String key) {
-		Map<String, Object> objects = new HashMap<String, Object>(store == null ? 2 : store.size());
+	public Map<Compiler, Object> getObjects(String key) {
+		Map<Compiler, Object> objects = new HashMap<Compiler, Object>(
+				store == null
+						? 2 : store.size());
 		if (store != null) {
-			for (Entry<String, HashMap<String, Object>> entry : store.entrySet()) {
+			for (Entry<Compiler, HashMap<String, Object>> entry : store.entrySet()) {
+				Compiler compiler = entry.getKey();
+				if (compiler != null && !compiler.getCompilerManager().contains(compiler)) continue;
 				Object object = entry.getValue().get(key);
-				if (object != null) objects.put(entry.getKey(), object);
+				if (object != null) objects.put(compiler, object);
 			}
 		}
 		return Collections.unmodifiableMap(objects);
@@ -74,13 +80,14 @@ public class SectionStore {
 
 	/**
 	 * @created 08.07.2011
-	 * @param article is the {@link Article} for which the Object was stored
+	 * @param compiler is the {@link Article} for which the Object was stored
 	 * @param key is the key, for which the Object was stored
 	 * @return the previously stored Object for the given key and article, or
 	 *         <tt>null</tt>, if no Object was stored
 	 */
-	public Object getObject(Article article, String key) {
-		HashMap<String, Object> storeForArticle = getStoreForArticle(article);
+	public Object getObject(Compiler compiler, String key) {
+		if (compiler != null && !compiler.getCompilerManager().contains(compiler)) return null;
+		HashMap<String, Object> storeForArticle = getStoreForCompiler(compiler);
 		if (storeForArticle == null) return null;
 		return storeForArticle.get(key);
 	}
@@ -101,7 +108,7 @@ public class SectionStore {
 	 * @param object is the object to be stored
 	 */
 	public void storeObject(String key, Object object) {
-		storeObject(null, key, object);
+		storeObject((Compiler) null, key, object);
 	}
 
 	/**
@@ -114,34 +121,31 @@ public class SectionStore {
 	 * applies for retrieving the Object later via the getObject - methods).
 	 * 
 	 * @created 08.07.2011
-	 * @param article
+	 * @param compiler
 	 * @param key
 	 * @param object
 	 */
-	public void storeObject(Article article, String key, Object object) {
-		HashMap<String, Object> storeForArticle = getStoreForArticle(article);
+	public void storeObject(Compiler compiler, String key, Object object) {
+		HashMap<String, Object> storeForArticle = getStoreForCompiler(compiler);
 		if (storeForArticle == null) {
 			storeForArticle = new HashMap<String, Object>();
-			putStoreForArticle(article, storeForArticle);
+			putStoreForCompiler(compiler, storeForArticle);
 		}
 		storeForArticle.put(key, object);
 	}
 
-	private HashMap<String, Object> getStoreForArticle(Article article) {
+	private HashMap<String, Object> getStoreForCompiler(Compiler compiler) {
 		if (store == null) return null;
-		return store.get(getKeyForArticle(article));
+		return store.get(compiler);
 	}
 
-	private void putStoreForArticle(Article article, HashMap<String, Object> storeForArticle) {
-		if (store == null) store = new HashMap<String, HashMap<String, Object>>();
-		store.put(getKeyForArticle(article), storeForArticle);
-	}
-
-	private String getKeyForArticle(Article article) {
-		return article == null ? null : article.getTitle();
+	private void putStoreForCompiler(Compiler compiler, HashMap<String, Object> storeForArticle) {
+		if (store == null) store = new WeakHashMap<Compiler, HashMap<String, Object>>();
+		store.put(compiler, storeForArticle);
 	}
 
 	public boolean isEmpty() {
 		return store == null;
 	}
+
 }

@@ -7,40 +7,37 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.strings.Identifier;
 import de.d3web.we.object.D3webTerm;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.Message;
-import de.knowwe.core.utils.KnowWEUtils;
 
 public class KnowledgeBaseNameType extends AbstractType implements D3webTerm<KnowledgeBase>, RenamableTerm {
 
 	public KnowledgeBaseNameType() {
-		this.setIgnorePackageCompile(true);
 		setSectionFinder(new AllTextFinderTrimmed());
-		addSubtreeHandler(Priority.HIGHER, new D3webSubtreeHandler<KnowledgeBaseNameType>() {
+		addCompileScript(Priority.HIGHER, new D3webHandler<KnowledgeBaseNameType>() {
 
 			@Override
-			public Collection<Message> create(Article article, Section<KnowledgeBaseNameType> section) {
+			public Collection<Message> create(D3webCompiler compiler, Section<KnowledgeBaseNameType> section) {
 				// get required information
-				KnowledgeBase kb = getKB(article);
+				KnowledgeBase kb = getKB(compiler);
 				InfoStore infoStore = kb.getInfoStore();
 				Section<KnowledgeBaseNameType> titleSection =
 						Sections.findSuccessor(section, KnowledgeBaseNameType.class);
 				if (titleSection != null) {
 					String title = titleSection.get().getTermName(titleSection);
 					infoStore.addValue(MMInfo.PROMPT, title);
-					TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
+					TerminologyManager terminologyManager = compiler.getTerminologyManager();
 					terminologyManager.registerTermDefinition(
-							titleSection, KnowledgeBase.class, new Identifier(title));
+							compiler, titleSection, KnowledgeBase.class, new Identifier(title));
 				}
 				return null;
 			}
@@ -68,8 +65,8 @@ public class KnowledgeBaseNameType extends AbstractType implements D3webTerm<Kno
 	}
 
 	@Override
-	public KnowledgeBase getTermObject(Article article, Section<? extends D3webTerm<KnowledgeBase>> section) {
-		return D3webUtils.getKnowledgeBase(article);
+	public KnowledgeBase getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<KnowledgeBase>> section) {
+		return D3webUtils.getKnowledgeBase(compiler);
 	}
 
 }

@@ -20,6 +20,7 @@
 package de.knowwe.diaflux;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,13 +38,14 @@ import de.d3web.strings.Strings;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.diaflux.kbinfo.JSPHelper;
 import de.knowwe.diaflux.type.DiaFluxType;
 import de.knowwe.diaflux.type.FlowchartType;
@@ -213,7 +215,8 @@ public class FlowchartUtils {
 					}
 
 					for (String style : enh.getStylesheets()) {
-						result.appendHtml("<link rel='stylesheet' type='text/css' href='" + style + "' />");
+						result.appendHtml("<link rel='stylesheet' type='text/css' href='" + style
+								+ "' />");
 					}
 				}
 			}
@@ -250,7 +253,7 @@ public class FlowchartUtils {
 	 * @return
 	 */
 	public static Section<FlowchartType> findFlowchartSection(String web, String flowName) {
-		ArticleManager manager = Environment.getInstance().getArticleManager(web);
+		ArticleManager manager = Environment.getInstance().getDefaultArticleManager(web);
 
 		for (Iterator<Article> iterator = manager.getArticleIterator(); iterator.hasNext();) {
 			Article article = iterator.next();
@@ -282,12 +285,13 @@ public class FlowchartUtils {
 		// get all articles compiling this flowchart that will be containing the
 		// link
 		PackageManager pkgManager =
-				Environment.getInstance().getPackageManager(section.getWeb());
-		Set<String> compilingArticles = pkgManager.getCompilingArticles(section);
+				Compilers.getPackageManager(section.getArticleManager());
+		Set<Section<? extends PackageCompileType>> compileSections = pkgManager.getCompileSections(section);
 		// get all packages that are compiled by these articles
 		Collection<String> allPossiblePackageNames = new ArrayList<String>();
-		for (String compilingArticle : compilingArticles) {
-			allPossiblePackageNames.addAll(pkgManager.getCompiledPackages(compilingArticle));
+		for (Section<? extends PackageCompileType> compilingSection : compileSections) {
+			allPossiblePackageNames.addAll(Arrays.asList(compilingSection.get().getPackagesToCompile(
+					compilingSection)));
 		}
 
 		// get all sections compiled by these articles
@@ -322,7 +326,7 @@ public class FlowchartUtils {
 	 */
 	public static KnowledgeBase getKB(Section<DiaFluxType> s) {
 
-		Iterator<Article> iterator = KnowWEUtils.getCompilingArticles(s).iterator();
+		Iterator<Article> iterator = Compilers.getCompilingArticles(s).iterator();
 		if (!iterator.hasNext()) return null;
 
 		// TODO how to select right kb, if more than 1?

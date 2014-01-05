@@ -25,10 +25,10 @@ import java.util.logging.Logger;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionnaireDefinition;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -56,7 +56,7 @@ public class QClassLine extends AbstractType {
 
 		// finally the rest is QuestionniareDefinition
 		this.addChildType(new QuestionTreeQuestionnaireDefinition());
-		this.addSubtreeHandler(new CreateSubQuestionnaireRelationHandler());
+		this.addCompileScript(new CreateSubQuestionnaireRelationHandler());
 
 	}
 
@@ -77,31 +77,30 @@ public class QClassLine extends AbstractType {
 	}
 
 	/**
+	 * This handler establishes sub-questionnaire-relations defined by the
+	 * questionTree in the knowledge base i.e., if a questionnaire is a
+	 * dashTree-child of another questionnaire we add it as child in the
+	 * knowledge base
+	 * 
 	 * @author Jochen
-	 * 
-	 *         This handler establishes sub-questionnaire-relations defined by
-	 *         the questionTree in the knowledge base i.e., if a questionnaire
-	 *         is a dashTree-child of another questionnaire we add it as child
-	 *         in the knowledge base
-	 * 
 	 */
-	static class CreateSubQuestionnaireRelationHandler extends D3webSubtreeHandler<QClassLine> {
+	static class CreateSubQuestionnaireRelationHandler extends D3webHandler<QClassLine> {
 
 		@Override
-		public void destroy(Article article, Section<QClassLine> s) {
+		public void destroy(D3webCompiler article, Section<QClassLine> s) {
 			// will be destroyed by QuestionniareDefinition#destroy()
 
 		}
 
 		@Override
-		public Collection<Message> create(Article article, Section<QClassLine> s) {
+		public Collection<Message> create(D3webCompiler compiler, Section<QClassLine> s) {
 			Section<? extends DashTreeElementContent> fatherContent = DashTreeUtils.getFatherDashTreeElementContent(
 					s);
 
 			Section<QuestionnaireDefinition> localQuestionniareDef = Sections.findSuccessor(s,
 					QuestionnaireDefinition.class);
 			QContainer localQuestionnaire = localQuestionniareDef.get().getTermObject(
-					article,
+					compiler,
 					localQuestionniareDef);
 
 			if (fatherContent != null && localQuestionnaire != null) {
@@ -110,10 +109,10 @@ public class QClassLine extends AbstractType {
 						fatherContent, QuestionnaireDefinition.class);
 				if (superQuestionnaireDef != null) {
 					QContainer superQuestionnaire = superQuestionnaireDef.get().getTermObject(
-							article,
+							compiler,
 							superQuestionnaireDef);
 
-					KnowledgeBase kb = getKB(article);
+					KnowledgeBase kb = getKB(compiler);
 					if (superQuestionnaire == null) {
 						superQuestionnaire = kb.getManager().searchQContainer(
 								superQuestionnaireDef.get().getTermIdentifier(superQuestionnaireDef).toString());
@@ -185,18 +184,17 @@ public class QClassLine extends AbstractType {
 			initNumberFinder.addConstraint(SingleChildConstraint.getInstance());
 			this.setSectionFinder(initNumberFinder);
 
-			this.addSubtreeHandler(new D3webSubtreeHandler<InitNumber>() {
+			this.addCompileScript(new D3webHandler<InitNumber>() {
 
 				/**
 				 * creates the bound-property for a bound-definition
 				 * 
-				 * @param article
+				 * @param compiler
 				 * @param s
 				 * @return
 				 */
 				@Override
-				public Collection<Message> create(Article article, Section<InitNumber> s) {
-
+				public Collection<Message> create(D3webCompiler compiler, Section<InitNumber> s) {
 					Double originalnumber = s.get().getNumber(s);
 					if (originalnumber == null) {
 						// if the numbers cannot be found throw error
@@ -210,10 +208,10 @@ public class QClassLine extends AbstractType {
 
 					if (qDef != null) {
 
-						QContainer questionnaire = qDef.get().getTermObject(article, qDef);
+						QContainer questionnaire = qDef.get().getTermObject(compiler, qDef);
 
 						if (questionnaire != null) {
-							boolean alreadyInitDefined = getKB(article).removeInitQuestion(
+							boolean alreadyInitDefined = getKB(compiler).removeInitQuestion(
 									questionnaire);
 							// check whether there is already some init-number
 							// registered for this QASet
@@ -224,7 +222,7 @@ public class QClassLine extends AbstractType {
 							}
 							else {
 								// else register init value
-								getKB(article).addInitQuestion(
+								getKB(compiler).addInitQuestion(
 										questionnaire,
 										number);
 
@@ -239,7 +237,7 @@ public class QClassLine extends AbstractType {
 				}
 
 				@Override
-				public void destroy(Article article, Section<InitNumber> s) {
+				public void destroy(D3webCompiler article, Section<InitNumber> s) {
 					Section<QuestionnaireDefinition> qDef = Sections.findSuccessor(
 							s.getParent(), QuestionnaireDefinition.class);
 

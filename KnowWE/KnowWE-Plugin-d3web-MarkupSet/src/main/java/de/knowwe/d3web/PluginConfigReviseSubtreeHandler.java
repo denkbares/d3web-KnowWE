@@ -26,19 +26,19 @@ import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.io.progress.DummyProgressListener;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.plugin.io.PluginConfigPersistenceHandler;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.kdom.Article;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
-public class PluginConfigReviseSubtreeHandler extends D3webSubtreeHandler<PluginConfigType> {
+public class PluginConfigReviseSubtreeHandler extends D3webHandler<PluginConfigType> {
 
 	@Override
-	public Collection<Message> create(Article article, Section<PluginConfigType> s) {
+	public Collection<Message> create(D3webCompiler compiler, Section<PluginConfigType> s) {
 		String xmlText = "<settings><plugins /><psmethods>" + s.getText()
 				+ "</psmethods></settings>";
-		KnowledgeBase kb = getKB(article);
+		KnowledgeBase kb = getKB(compiler);
 		if (kb == null) {
 			return Messages.asList(Messages.error(
 					"No knowledgebase available."));

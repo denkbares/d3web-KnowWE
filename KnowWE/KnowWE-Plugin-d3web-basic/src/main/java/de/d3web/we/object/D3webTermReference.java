@@ -22,10 +22,10 @@ package de.d3web.we.object;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.objects.TermUtils;
@@ -55,9 +55,17 @@ public abstract class D3webTermReference<TermObject extends NamedObject>
 	}
 
 	@Override
-	public TermObject getTermObject(Article article, Section<? extends D3webTerm<TermObject>> section) {
-		return D3webUtils.getTermObjectDefaultImplementation(article, section);
+	public TermObject getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
+		return D3webUtils.getTermObjectDefaultImplementation(compiler, section);
 	}
+
+	// @Override
+	// @Deprecated
+	// public TermObject getTermObject(Article article, Section<? extends
+	// D3webTerm<TermObject>> section) {
+	// // TODO Auto-generated method stub
+	// return getTermObject(Compilers.getPackageCompiler(article), section);
+	// }
 
 	@Override
 	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
@@ -66,9 +74,10 @@ public abstract class D3webTermReference<TermObject extends NamedObject>
 	}
 
 	/**
-	 * Null-save implementation of {@link #getTermObject(Article, Section)}.
-	 * Using a specific {@link D3webTermReference} subclass will automatically
-	 * result to the correctly casted {@link NamedObject} (e.g.
+	 * Null-save implementation of
+	 * {@link #getTermObject(D3webCompiler, Section)}. Using a specific
+	 * {@link D3webTermReference} subclass will automatically result to the
+	 * correctly casted {@link NamedObject} (e.g.
 	 * QuestionReference.getObject(...) -> Question).
 	 * 
 	 * @created 21.03.2012
@@ -78,9 +87,9 @@ public abstract class D3webTermReference<TermObject extends NamedObject>
 	 * @return the NamedObject referenced by the section
 	 */
 	public static <TermObject extends NamedObject>
-			TermObject getObject(Article article, Section<? extends D3webTerm<TermObject>> section) {
+			TermObject getObject(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
 		if (section == null) return null;
-		return section.get().getTermObject(article, section);
+		return section.get().getTermObject(compiler, section);
 	}
 
 }

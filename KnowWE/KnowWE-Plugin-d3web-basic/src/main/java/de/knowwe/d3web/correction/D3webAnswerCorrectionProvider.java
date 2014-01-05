@@ -27,12 +27,11 @@ import com.wcohen.ss.Levenstein;
 import de.d3web.strings.Identifier;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.correction.CorrectionProvider;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * A Correction Provider for AnswerReference objects
@@ -44,16 +43,16 @@ public class D3webAnswerCorrectionProvider implements CorrectionProvider {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<CorrectionProvider.Suggestion> getSuggestions(Article article, Section<?> section, int threshold) {
+	public List<CorrectionProvider.Suggestion> getSuggestions(TermCompiler compiler, Section<?> section, int threshold) {
 		if (!(section.get() instanceof Term)) {
 			return null;
 		}
 
-		if (!section.hasErrorInSubtree(article)) {
+		if (!section.hasErrorInSubtree(compiler)) {
 			return null;
 		}
 
-		TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
+		TerminologyManager terminologyHandler = compiler.getTerminologyManager();
 		Term termReference = (Term) section.get();
 		Section<AnswerReference> refSec = ((Section<AnswerReference>) section);
 

@@ -23,14 +23,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import de.knowwe.core.compile.DefaultGlobalCompiler;
+import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalHandler;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.renderer.StyleRenderer;
@@ -53,7 +53,7 @@ public class Number extends AbstractType {
 	public Number(SectionFinder f) {
 		this.setSectionFinder(f);
 		// NumberChecker only makes sense if NumberFinder is not Numberfinder
-		this.addSubtreeHandler(new NumberChecker());
+		this.addCompileScript(new NumberChecker());
 		this.setRenderer(StyleRenderer.NUMBER);
 	}
 
@@ -95,10 +95,10 @@ class NumberFinder implements SectionFinder {
 
 }
 
-class NumberChecker extends SubtreeHandler<Number> {
+class NumberChecker extends DefaultGlobalHandler<Number> {
 
 	@Override
-	public Collection<Message> create(Article article, Section<Number> s) {
+	public Collection<Message> create(DefaultGlobalCompiler compiler, Section<Number> s) {
 		List<Message> msgs = new ArrayList<Message>();
 		String trim = s.getText().trim();
 		try {

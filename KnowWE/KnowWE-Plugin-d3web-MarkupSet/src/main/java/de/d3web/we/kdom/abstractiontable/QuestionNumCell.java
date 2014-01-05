@@ -17,8 +17,8 @@ import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.strings.Strings;
+import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.renderer.StyleRenderer;
@@ -34,19 +34,19 @@ public class QuestionNumCell extends AbstractType {
 		this.setRenderer(renderer);
 	}
 
-	public ActionSetQuestion createNumActionSetValue(Article article, QuestionNum questionNum, Section<QuestionNumCell> questionNumCell) {
+	public ActionSetQuestion createNumActionSetValue(PackageCompiler compiler, QuestionNum questionNum, Section<QuestionNumCell> questionNumCell) {
 		NumericalInterval interval = questionNum.getInfoStore().getValue(
 				BasicProperties.QUESTION_NUM_RANGE);
 		String text = Strings.trim(questionNumCell.getText());
 		Double parsedDouble = parseDouble("=", text);
 		NumValue numValue = null;
 		if (parsedDouble == null) {
-			Messages.storeMessage(article, questionNumCell, this.getClass(),
+			Messages.storeMessage(compiler, questionNumCell, this.getClass(),
 					Messages.error("Unable to parse '" + text + "'"));
 			return null;
 		}
 		if (interval != null && interval.contains(parsedDouble)) {
-			Messages.storeMessage(article, questionNumCell, this.getClass(),
+			Messages.storeMessage(compiler, questionNumCell, this.getClass(),
 					Messages.error("Unable to parse '" + text + "'"));
 			return null;
 		}
@@ -56,12 +56,12 @@ public class QuestionNumCell extends AbstractType {
 		ActionSetQuestion action = new ActionSetQuestion();
 		action.setQuestion(questionNum);
 		action.setValue(numValue);
-		Messages.clearMessages(article, questionNumCell, this.getClass());
+		Messages.clearMessages(compiler, questionNumCell, this.getClass());
 
 		return action;
 	}
 
-	public CondNum createCondNum(Article article, QuestionNum questionNum, Section<QuestionNumCell> questionNumCell) {
+	public CondNum createCondNum(PackageCompiler compiler, QuestionNum questionNum, Section<QuestionNumCell> questionNumCell) {
 		String text = Strings.trim(questionNumCell.getText());
 		CondNum condNum = null;
 
@@ -77,11 +77,11 @@ public class QuestionNumCell extends AbstractType {
 		}
 
 		if (condNum == null) {
-			Messages.storeMessage(article, questionNumCell, this.getClass(),
+			Messages.storeMessage(compiler, questionNumCell, this.getClass(),
 					Messages.error("Unable to parse '" + text + "'"));
 		}
 		else {
-			Messages.clearMessages(article, questionNumCell, this.getClass());
+			Messages.clearMessages(compiler, questionNumCell, this.getClass());
 		}
 		return condNum;
 	}

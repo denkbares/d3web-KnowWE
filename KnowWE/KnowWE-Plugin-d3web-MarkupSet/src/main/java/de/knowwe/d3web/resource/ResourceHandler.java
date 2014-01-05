@@ -27,7 +27,8 @@ import java.util.logging.Logger;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.Resource;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
@@ -42,11 +43,11 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * @author volker_belli
  * @created 13.10.2010
  */
-public class ResourceHandler extends D3webSubtreeHandler<ResourceType> {
+public class ResourceHandler extends D3webHandler<ResourceType> {
 
 	@Override
-	public Collection<Message> create(Article article, Section<ResourceType> section) {
-		KnowledgeBase kb = getKB(article);
+	public Collection<Message> create(D3webCompiler compiler, Section<ResourceType> section) {
+		KnowledgeBase kb = getKB(compiler);
 		if (kb == null) return null;
 
 		String content = DefaultMarkupType.getContent(section);

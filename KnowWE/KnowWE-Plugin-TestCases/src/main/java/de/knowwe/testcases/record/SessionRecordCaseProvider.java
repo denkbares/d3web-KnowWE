@@ -25,8 +25,8 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.records.SessionRecord;
 import de.d3web.core.records.io.SessionPersistenceManager;
 import de.d3web.testcase.record.SessionRecordWrapper;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -41,14 +41,14 @@ import de.knowwe.testcases.AttachmentTestCaseProvider;
  */
 public class SessionRecordCaseProvider extends AttachmentTestCaseProvider {
 
-	public SessionRecordCaseProvider(Article article, Section<? extends DefaultMarkupType> prefixProvidingSection, WikiAttachment attachment) {
-		super(article, prefixProvidingSection, attachment);
+	public SessionRecordCaseProvider(D3webCompiler compiler, Section<? extends DefaultMarkupType> prefixProvidingSection, WikiAttachment attachment) {
+		super(compiler, prefixProvidingSection, attachment);
 	}
 
 	@Override
 	public void parse() {
 		testCase = null;
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
 		if (kb == null) {
 			messages.add(Messages.error("Kb not found."));
 			return;

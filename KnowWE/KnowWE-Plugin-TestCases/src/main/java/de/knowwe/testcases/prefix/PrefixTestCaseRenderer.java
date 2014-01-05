@@ -40,10 +40,10 @@ public class PrefixTestCaseRenderer implements Renderer {
 		if (prefix != null && found.isEmpty()) {
 			Message warning = Messages.warning("Prefix testcase '" + prefix
 					+ "' does not exist or has errors");
-			Messages.storeMessage(null, section, PrefixTestCaseRenderer.class, warning);
+			Messages.storeMessage(section, PrefixTestCaseRenderer.class, warning);
 		}
 		else {
-			Messages.clearMessages(null, section, PrefixTestCaseRenderer.class);
+			Messages.clearMessages(section, PrefixTestCaseRenderer.class);
 		}
 	}
 }

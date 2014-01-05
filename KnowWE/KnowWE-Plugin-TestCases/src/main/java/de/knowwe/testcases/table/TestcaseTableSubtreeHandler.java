@@ -36,13 +36,13 @@ import de.d3web.testcase.stc.STCWrapper;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.Conjunct;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
-import de.knowwe.core.kdom.Article;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.reviseHandler.D3webHandler;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.DefaultTestCaseStorage;
 import de.knowwe.testcases.SingleTestCaseProvider;
@@ -54,10 +54,10 @@ import de.knowwe.testcases.TestCaseProviderStorage;
  * @author Reinhard Hatko
  * @created 27.05.2011
  */
-public class TestcaseTableSubtreeHandler extends SubtreeHandler<TestcaseTable> {
+public class TestcaseTableSubtreeHandler extends D3webHandler<TestcaseTable> {
 
 	@Override
-	public Collection<Message> create(Article article, Section<TestcaseTable> s) {
+	public Collection<Message> create(D3webCompiler compiler, Section<TestcaseTable> section) {
 
 		TestCase testcase = new TestCase();
 		SequentialTestCase stc = new SequentialTestCase();
@@ -67,19 +67,19 @@ public class TestcaseTableSubtreeHandler extends SubtreeHandler<TestcaseTable> {
 		Map<RatedTestCase, List<Check>> conditionsForRTC =
 				new IdentityHashMap<RatedTestCase, List<Check>>();
 		List<Section<TestcaseTableLine>> lines =
-				Sections.findSuccessorsOfType(s, TestcaseTableLine.class);
-		for (Section<TestcaseTableLine> section : lines) {
+				Sections.findSuccessorsOfType(section, TestcaseTableLine.class);
+		for (Section<TestcaseTableLine> line : lines) {
 			// check for an rated test case of that line
-			RatedTestCase rtc = (RatedTestCase) KnowWEUtils.getStoredObject(article, section,
+			RatedTestCase rtc = (RatedTestCase) Compilers.getStoredObject(compiler, line,
 					TestcaseTableLine.TESTCASE_KEY);
 			if (rtc == null) continue;
 			stc.add(rtc);
 
 			// also check for additional check conditions
 			Section<CompositeCondition> condSec =
-					Sections.findSuccessor(section, CompositeCondition.class);
+					Sections.findSuccessor(line, CompositeCondition.class);
 			if (condSec == null) continue;
-			Condition condition = KDOMConditionFactory.createCondition(article, condSec);
+			Condition condition = KDOMConditionFactory.createCondition(compiler, condSec);
 			if (condition == null) continue;
 
 			// add multiple checks for and-conditions
@@ -101,23 +101,21 @@ public class TestcaseTableSubtreeHandler extends SubtreeHandler<TestcaseTable> {
 			}
 		}
 
-		KnowWEUtils.storeObject(s.getArticle(), s, TestcaseTable.TESTCASE_KEY, testcase);
-
 		List<Section<TestcaseTable>> sections = Sections.findSuccessorsOfType(
-				s.getArticle().getRootSection(), TestcaseTable.class);
+				section.getArticle().getRootSection(), TestcaseTable.class);
 		int i = 1;
-		for (Section<TestcaseTable> section : new TreeSet<Section<TestcaseTable>>(sections)) {
-			if (section.equals(s)) {
+		for (Section<TestcaseTable> table : new TreeSet<Section<TestcaseTable>>(sections)) {
+			if (table.equals(section)) {
 				break;
 			}
 			else {
 				i++;
 			}
 		}
-		Section<? extends Type> defaultmarkupSection = s.getParent().getParent();
+		Section<? extends Type> defaultmarkupSection = section.getParent().getParent();
 		String name = DefaultMarkupType.getAnnotation(defaultmarkupSection, TestcaseTableType.NAME);
 		if (name == null) {
-			name = s.getArticle().getTitle() + "/TestCaseTable" + i;
+			name = section.getArticle().getTitle() + "/TestCaseTable" + i;
 		}
 
 		// create a test case provider and a STC wrapper
@@ -130,13 +128,13 @@ public class TestcaseTableSubtreeHandler extends SubtreeHandler<TestcaseTable> {
 			wrapper.addChecks(rtc, checks.toArray(new Check[checks.size()]));
 		}
 		SingleTestCaseProvider provider = new SingleTestCaseProvider(
-				article, Sections.findAncestorOfType(s, DefaultMarkupType.class), wrapper, name);
+				compiler, Sections.findAncestorOfType(section, DefaultMarkupType.class), wrapper, name);
 
 		// append Storage of the TestCaseProvider
 		// to the section of the default markup
 		List<TestCaseProvider> list = new LinkedList<TestCaseProvider>();
 		list.add(provider);
-		defaultmarkupSection.getSectionStore().storeObject(article,
+		defaultmarkupSection.getSectionStore().storeObject(compiler,
 				TestCaseProviderStorage.KEY,
 				new DefaultTestCaseStorage(list));
 

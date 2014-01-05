@@ -23,38 +23,29 @@ package de.d3web.we.ci4ke.hook;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import de.knowwe.core.Environment;
+import de.knowwe.core.compile.CompilerFinishedEvent;
+import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.event.Event;
 import de.knowwe.core.event.EventListener;
-import de.knowwe.event.ArticleRegisteredEvent;
-import de.knowwe.event.FullParseEvent;
+import de.knowwe.core.kdom.Article;
 
 public class CIEventForwarder implements EventListener {
 
-	public CIEventForwarder() {
-	}
-
 	@Override
 	public Collection<Class<? extends Event>> getEvents() {
-		ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(2);
-		events.add(ArticleRegisteredEvent.class);
-		events.add(FullParseEvent.class);
+		ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(4);
+		events.add(CompilerFinishedEvent.class);
 		return events;
 	}
 
 	@Override
 	public void notify(Event event) {
-		if (event instanceof ArticleRegisteredEvent) {
-			ArticleRegisteredEvent arEvent = (ArticleRegisteredEvent) event;
-			if (Environment.getInstance().getArticleManager(
-					arEvent.getArticle().getWeb()).areArticlesInitialized()) {
-				CIHookManager.getInstance().triggerHooks(
-						((ArticleRegisteredEvent) event).getArticle().getTitle());
+		if (event instanceof CompilerFinishedEvent) {
+			de.knowwe.core.compile.Compiler compiler = ((CompilerFinishedEvent<?>) event).getCompiler();
+			if (compiler instanceof PackageCompiler) {
+				Article article = ((PackageCompiler) compiler).getCompileSection().getArticle();
+				CIHookManager.getInstance().triggerHooks(article.getTitle());
 			}
-		}
-		else if (event instanceof FullParseEvent) {
-			CIHookManager.getInstance().cleanHooksForArticle(
-					((FullParseEvent) event).getArticle().getTitle());
 		}
 	}
 }

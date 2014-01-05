@@ -21,9 +21,9 @@ package de.d3web.we.object;
 
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.strings.Strings;
-import de.knowwe.core.compile.terminology.TermRegistrationScope;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
-import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
@@ -36,10 +36,16 @@ import de.knowwe.kdom.renderer.StyleRenderer;
  */
 public class QuestionReference extends D3webTermReference<Question> {
 
-	public QuestionReference() {
+	public QuestionReference(boolean addRegistrationScript) {
 		this.setRenderer(new ValueTooltipRenderer(StyleRenderer.Question));
-		this.addSubtreeHandler(new SimpleTermReferenceRegistrationHandler(
-				TermRegistrationScope.LOCAL));
+		if (addRegistrationScript) {
+			this.addCompileScript(new SimpleReferenceRegistrationScript<D3webCompiler>(
+					D3webCompiler.class));
+		}
+	}
+
+	public QuestionReference() {
+		this(true);
 	}
 
 	@Override

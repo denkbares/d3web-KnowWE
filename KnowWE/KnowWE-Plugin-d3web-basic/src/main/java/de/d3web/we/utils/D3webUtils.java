@@ -64,20 +64,26 @@ import de.d3web.core.session.values.Unknown;
 import de.d3web.scoring.Score;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
-import de.d3web.we.basic.D3webKnowledgeHandler;
+import de.d3web.we.basic.KnowledgeBaseManager;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.AnswerDefinition;
 import de.d3web.we.object.D3webTerm;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.AbstractPackageCompiler;
+import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.d3web.event.FindingSetEvent;
-import de.knowwe.knowRep.KnowledgeRepresentationHandler;
 import de.knowwe.notification.NotificationManager;
 import de.knowwe.notification.StandardNotification;
 
@@ -105,6 +111,15 @@ public class D3webUtils {
 			possibleScorePoints.add("suggested");
 		}
 		return possibleScorePoints;
+	}
+
+	public static D3webCompiler getD3webCompiler(Section<?> section) {
+		return Compilers.getCompiler(section, D3webCompiler.class);
+	}
+
+	@Deprecated
+	public static D3webCompiler getD3webCompiler(Article master) {
+		return Compilers.getCompiler(master, D3webCompiler.class);
 	}
 
 	public static void storeSessionRecordsAsAttachment(String user, Collection<Session> sessions, String attachmentArticle, String attachmentName) throws IOException {
@@ -161,6 +176,10 @@ public class D3webUtils {
 		object.destroy();
 	}
 
+	public static KnowledgeBase getKnowledgeBase(Compiler compiler) {
+		return getKnowledgeBase(((AbstractPackageCompiler) compiler).getCompileSection());
+	}
+
 	/**
 	 * Utility method to get a {@link KnowledgeBase} for a specified article.
 	 * 
@@ -169,6 +188,7 @@ public class D3webUtils {
 	 * @return the knowledge base if such one exists, null otherwise
 	 * @throws NullPointerException if the article is null
 	 */
+	@Deprecated
 	public static KnowledgeBase getKnowledgeBase(Article article) {
 		return getKnowledgeBase(article.getWeb(), article.getTitle());
 	}
@@ -183,34 +203,32 @@ public class D3webUtils {
 	 * @param title the title of the article the knowledge base is compiled
 	 * @return the knowledge base if such one exists, null otherwise
 	 * @throws NullPointerException if web or topic is null
+	 * @deprecated it is possible that there are multiple knowledge bases on one
+	 *             page, this method will always only return the first one. You
+	 *             can use
 	 */
+	@Deprecated
 	public static KnowledgeBase getKnowledgeBase(String web, String title) {
-		if (web == null || title == null) {
-			throw new NullPointerException(
-					"Cannot acces knowledge base with 'web' and/or 'topic' null");
-		}
-		if (Environment.getInstance() != null) {
-			D3webKnowledgeHandler knowledgeHandler =
-					D3webUtils.getKnowledgeRepresentationHandler(web);
+		Section<PackageCompileType> compileSection = Sections.findSuccessor(
+				Environment.getInstance().getArticle(web, title).getRootSection(),
+				PackageCompileType.class);
+		return KnowledgeBaseManager.getInstance(web).getKnowledgeBase(compileSection);
+	}
 
-			if (knowledgeHandler != null) {
-
-				// check all existing KBs for kbID match
-				Set<String> kbArticles = knowledgeHandler.getKnowledgeArticles();
-				for (String articleName : kbArticles) {
-					KnowledgeBase kb = knowledgeHandler.getKnowledgeBase(articleName);
-					if (articleName.equals(title)) {
-						return kb;
-					}
-					if (kb != null && kb.getId().equals(title)) {
-						return kb;
-					}
-				}
-				return knowledgeHandler.getKnowledgeBase(title);
-
-			}
-		}
-		return null;
+	/**
+	 * Utility method to get a {@link KnowledgeBase} for an article specified by
+	 * its web and topic. If no such knowledge base exists, a new knowledge base
+	 * is created for the article and returned.
+	 * 
+	 * @created 15.12.2010
+	 * @param web the web of the article the knowledge base is compiled
+	 * @param title the title of the article the knowledge base is compiled
+	 * @return the knowledge base if such one exists, null otherwise
+	 * @throws NullPointerException if web or topic is null
+	 */
+	public static KnowledgeBase getKnowledgeBase(Section<? extends PackageCompileType> compileSection) {
+		return KnowledgeBaseManager.getInstance(compileSection.getWeb()).getKnowledgeBase(
+				compileSection);
 	}
 
 	/**
@@ -221,13 +239,10 @@ public class D3webUtils {
 	 * @return
 	 */
 	public static KnowledgeBase getFirstKnowledgeBase(String web) {
-		D3webKnowledgeHandler knowledgeHandler =
-				D3webUtils.getKnowledgeRepresentationHandler(web);
-		D3webKnowledgeHandler repHandler = D3webUtils.getKnowledgeRepresentationHandler(web);
-		KnowledgeBase base = null;
-		for (String t : knowledgeHandler.getKnowledgeArticles()) {
-			base = repHandler.getKnowledgeBase(t);
-			if (base.getName() != null) return base;
+		KnowledgeBaseManager mngr = KnowledgeBaseManager.getInstance(web);
+		Set<Section<? extends PackageCompileType>> compileSections = mngr.getKnowledgeBaseSections();
+		if (!compileSections.isEmpty()) {
+			mngr.getKnowledgeBase(compileSections.iterator().next());
 		}
 		return null;
 	}
@@ -243,9 +258,9 @@ public class D3webUtils {
 	// }
 
 	@SuppressWarnings("unchecked")
-	public static <TermObject extends NamedObject> TermObject getTermObjectDefaultImplementation(Article article, Section<? extends D3webTerm<TermObject>> section) {
+	public static <TermObject extends NamedObject> TermObject getTermObjectDefaultImplementation(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
 		Identifier termIdentifier = section.get().getTermIdentifier(section);
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
 		NamedObject termObject = kb.getManager().search(termIdentifier.getLastPathElement());
 		if (termObject != null) {
 			if (section.get().getTermObjectClass(section).isAssignableFrom(termObject.getClass())) {
@@ -256,7 +271,7 @@ public class D3webUtils {
 			}
 		}
 		Collection<NamedObject> foundTermObjects = getTermObjectsIgnoreTermObjectClass(
-				article, section);
+				compiler, section);
 		if (foundTermObjects.size() == 1) {
 			termObject = foundTermObjects.iterator().next();
 			if (section.get().getTermObjectClass(section).isAssignableFrom(termObject.getClass())) {
@@ -266,10 +281,10 @@ public class D3webUtils {
 		return null;
 	}
 
-	public static <TermObject extends NamedObject> Collection<NamedObject> getTermObjectsIgnoreTermObjectClass(Article article, Section<? extends D3webTerm<TermObject>> section) {
+	public static <TermObject extends NamedObject> Collection<NamedObject> getTermObjectsIgnoreTermObjectClass(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
 		Identifier termIdentifier = section.get().getTermIdentifier(section);
-		TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
+		TerminologyManager terminologyHandler = compiler.getTerminologyManager();
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
 		Collection<Identifier> allTermsEqualIgnoreCase = terminologyHandler.getAllTermsEqualIgnoreCase(termIdentifier);
 		List<NamedObject> foundTermObjects = new ArrayList<NamedObject>();
 		for (Identifier termEqualIgnoreCase : allTermsEqualIgnoreCase) {
@@ -288,19 +303,6 @@ public class D3webUtils {
 			if (termObject != null) foundTermObjects.add(termObject);
 		}
 		return foundTermObjects;
-	}
-
-	public static D3webKnowledgeHandler getKnowledgeRepresentationHandler(
-			String web) {
-		Collection<KnowledgeRepresentationHandler> handlers = Environment
-				.getInstance().getKnowledgeRepresentationManager(web)
-				.getHandlers();
-		for (KnowledgeRepresentationHandler handler : handlers) {
-			if (handler instanceof D3webKnowledgeHandler) {
-				return (D3webKnowledgeHandler) handler;
-			}
-		}
-		return null;
 	}
 
 	/**
@@ -478,28 +480,29 @@ public class D3webUtils {
 		return getD3webBundle();
 	}
 
-	public static void handleLoopDetectionNotification(UserContext context,
+	public static void handleLoopDetectionNotification(ArticleManager manager, UserContext context,
 			Session session) {
 		LoopStatus loopStatus =
 				LoopTerminator.getInstance().getLoopStatus(session);
 		if (loopStatus.hasTerminated()) {
 			String notificationId = generateNotificationId(session);
 			Collection<TerminologyObject> loopObjects = loopStatus.getLoopObjects();
-			String notificationText = getLoopNotificationText(context, session, loopObjects);
+			String notificationText = getLoopNotificationText(manager, context, session,
+					loopObjects);
 			StandardNotification notification = new StandardNotification(
 					notificationText, Message.Type.WARNING, notificationId);
 			NotificationManager.addNotification(context, notification);
 		}
 	}
 
-	private static String getLoopNotificationText(UserContext user, Session session, Collection<TerminologyObject> loopObjects) {
+	private static String getLoopNotificationText(ArticleManager manager, UserContext user, Session session, Collection<TerminologyObject> loopObjects) {
 		String kbName = session.getKnowledgeBase().getName();
 		if (kbName == null) kbName = session.getKnowledgeBase().getId();
-		String kbUrlLink = KnowWEUtils.getURLLinkToTermDefinition(new Identifier(kbName));
+		String kbUrlLink = KnowWEUtils.getURLLinkToTermDefinition(manager, new Identifier(kbName));
 		kbName = "<a href=\"" + toAbsolutURL(kbUrlLink) + "\">" + kbName + "</a>";
 		Collection<String> renderedObjects = new ArrayList<String>(loopObjects.size());
 		for (TerminologyObject loopObject : loopObjects) {
-			String url = KnowWEUtils.getURLLinkToTermDefinition(new Identifier(
+			String url = KnowWEUtils.getURLLinkToTermDefinition(manager, new Identifier(
 					loopObject.getName()));
 			renderedObjects.add("<a href=\"" + toAbsolutURL(url) + "\">" + loopObject.getName()
 					+ "</a>");
@@ -569,6 +572,17 @@ public class D3webUtils {
 		else {
 			return false;
 		}
+	}
+
+	/**
+	 * @deprecated helper method for compiler refactoring
+	 * @created 15.11.2013
+	 * @param defaultWeb
+	 * @return
+	 */
+	@Deprecated
+	public static KnowledgeBaseManager getKnowledgeRepresentationHandler(String web) {
+		return KnowledgeBaseManager.getInstance(web);
 	}
 
 }

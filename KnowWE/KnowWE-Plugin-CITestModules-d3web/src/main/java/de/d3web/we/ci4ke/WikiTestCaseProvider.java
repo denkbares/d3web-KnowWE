@@ -30,9 +30,9 @@ import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
 import de.d3web.utils.Triple;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.testcases.TestCaseProvider;
 
 /**
@@ -63,7 +63,7 @@ public class WikiTestCaseProvider implements TestObjectProvider {
 			return result;
 		}
 		String web = Environment.DEFAULT_WEB;
-		Set<String> allPackageNames = KnowWEUtils.getPackageManager(web).getAllPackageNames();
+		Set<String> allPackageNames = Compilers.getDefaultPackageManager(web).getAllPackageNames();
 		List<Triple<TestCaseProvider, Section<?>, Article>> testCaseProviders = de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(
 				web, allPackageNames.toArray(new String[allPackageNames.size()]));
 

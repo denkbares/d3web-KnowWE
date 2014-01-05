@@ -20,9 +20,9 @@
 package de.d3web.we.object;
 
 import de.d3web.core.knowledge.terminology.QContainer;
-import de.knowwe.core.compile.terminology.TermRegistrationScope;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
-import de.knowwe.core.kdom.objects.SimpleTermReferenceRegistrationHandler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
@@ -38,8 +38,8 @@ public class QuestionnaireReference extends D3webTermReference<QContainer> {
 	public QuestionnaireReference() {
 		this.setRenderer(StyleRenderer.Questionaire);
 		this.setOrderSensitive(true);
-		this.addSubtreeHandler(new SimpleTermReferenceRegistrationHandler(
-				TermRegistrationScope.LOCAL));
+		this.addCompileScript(new SimpleReferenceRegistrationScript<D3webCompiler>(
+				D3webCompiler.class));
 	}
 
 	@Override

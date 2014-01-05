@@ -24,9 +24,9 @@ import java.util.regex.PatternSyntaxException;
 import de.d3web.core.inference.condition.CondRegex;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -73,7 +73,7 @@ public class CondRegularExpression extends D3webCondition<CondRegularExpression>
 	}
 
 	@Override
-	protected Condition createCondition(Article article, Section<CondRegularExpression> section) {
+	protected Condition createCondition(D3webCompiler compiler, Section<CondRegularExpression> section) {
 		Section<QuestionReference> qRef = Sections.findSuccessor(section, QuestionReference.class);
 		Section<RegexType> valueSec = Sections.findSuccessor(section, RegexType.class);
 
@@ -82,13 +82,13 @@ public class CondRegularExpression extends D3webCondition<CondRegularExpression>
 			return null;
 		}
 
-		Question question = qRef.get().getTermObject(article, qRef);
+		Question question = qRef.get().getTermObject(compiler, qRef);
 		String regex = valueSec.getText();
 		regex = regex.substring(1, regex.length() - 1);
 
 		if (question == null) {
 			Message msg = Messages.noSuchObjectError(Question.class.getSimpleName(), qRef.getText());
-			Messages.storeMessage(article, qRef, getClass(), msg);
+			Messages.storeMessage(compiler, qRef, getClass(), msg);
 			return null;
 		}
 
@@ -98,7 +98,7 @@ public class CondRegularExpression extends D3webCondition<CondRegularExpression>
 		catch (PatternSyntaxException e) {
 			Message msg = Messages.syntaxError(
 					"'" + regex + "' is not valid regular expression");
-			Messages.storeMessage(article, valueSec, getClass(), msg);
+			Messages.storeMessage(compiler, valueSec, getClass(), msg);
 			return null;
 		}
 	}

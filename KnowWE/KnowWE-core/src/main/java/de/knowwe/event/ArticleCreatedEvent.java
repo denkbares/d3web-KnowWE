@@ -20,7 +20,7 @@
 
 package de.knowwe.event;
 
-import de.knowwe.core.event.Event;
+import de.knowwe.core.event.ArticleEvent;
 import de.knowwe.core.kdom.Article;
 
 /**
@@ -29,16 +29,10 @@ import de.knowwe.core.kdom.Article;
  * @author Sebastian Furth
  * 
  */
-public class ArticleCreatedEvent extends Event {
-
-	private final Article article;
+public class ArticleCreatedEvent extends ArticleEvent {
 
 	public ArticleCreatedEvent(Article article) {
-		this.article = article;
-	}
-
-	public Article getArticle() {
-		return this.article;
+		super(article);
 	}
 
 }

@@ -153,15 +153,6 @@
 		<parameter id="css" value="sparql.css" />
 	</extension>
 	
-	<!--extension plugin-id="KnowWEExtensionPoints" point-id="EventListener"
-		id="Rdf2GoCoreEventListener">
-		<parameter id="class"
-			value="de.knowwe.rdf2go.Rdf2GoCore" />
-		<parameter id="name" value="Rdf2GoCore" />
-		<parameter id="description" value="EventListener Rdf2GoCore" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension-->
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="DumpHandler">
@@ -183,7 +174,7 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
-		<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="RDF2GoStatementCacheViewer">
 		<parameter id="class"
 			value="de.knowwe.rdf2go.RDF2GoStatementCacheViewer" />
@@ -215,7 +206,7 @@
 	</extension>
 	
 	<!--
-	<extension plugin-id="KnowWEExtensionPoints" point-id="SubtreeHandler"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript"
 		id="DefaultMarkupOwlHandlerForRdf2Go">
 		<parameter id="class"
 			value="de.knowwe.kdom.defaultMarkup.DefaultMarkupOwlHandlerForRdf2Go" />
@@ -223,7 +214,7 @@
 		<parameter id="description" value="Subtreehandler for Defaultmarkup to add owl knowledge" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="handlerpriority" value="0" />
+		<parameter id="compilepriority" value="0" />
 		<parameter id="scope" value="DefaultMarkupType" />
 	</extension>
 	-->

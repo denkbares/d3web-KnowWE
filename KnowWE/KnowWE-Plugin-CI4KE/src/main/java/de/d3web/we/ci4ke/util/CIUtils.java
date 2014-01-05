@@ -24,14 +24,11 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.d3web.strings.Strings;
-import de.d3web.testing.TestExecutor;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
@@ -40,37 +37,6 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
 public class CIUtils {
-
-	private static Map<String, TestExecutor> runningBuilds = new HashMap<String, TestExecutor>();
-
-	/**
-	 * Registers a running build for a specific dashboard.
-	 * 
-	 * @created 13.08.2012
-	 * @param dashBoardName the name of the dashboard
-	 * @param testExecutor the TestExecutor
-	 */
-	public static void registerBuildExecutor(String dashBoardName, TestExecutor testExecutor) {
-		runningBuilds.put(dashBoardName, testExecutor);
-	}
-
-	/**
-	 * Removes a running build process for a specific dashboard. If it is still
-	 * alive it will stop (interrupted and after time-out by force).
-	 * 
-	 * @created 13.08.2012
-	 * @param dashBoardName
-	 * @param user
-	 */
-	public static void deregisterAndTerminateBuildExecutor(String dashBoardName) {
-		TestExecutor executor = runningBuilds.get(dashBoardName);
-		if (executor != null) {
-			executor.terminate();
-			// finally remove executor from register
-			runningBuilds.remove(dashBoardName);
-			// System.out.println("build thread removed");
-		}
-	}
 
 	/**
 	 * Returns the savepath for ci-builds. If the path does not exist, it will
@@ -136,7 +102,7 @@ public class CIUtils {
 	public static Collection<Section<CIDashboardType>> findCIDashboardSection(String dashboardName) {
 		List<Section<CIDashboardType>> found = new ArrayList<Section<CIDashboardType>>();
 		for (Article article : Environment.getInstance().
-				getArticleManager(Environment.DEFAULT_WEB).getArticles()) {
+				getDefaultArticleManager(Environment.DEFAULT_WEB).getArticles()) {
 
 			List<Section<CIDashboardType>> list = new ArrayList<Section<CIDashboardType>>();
 
@@ -164,7 +130,7 @@ public class CIUtils {
 			String dashboardArticleTitle, String dashboardName) {
 		// get the article
 		Article article = Environment.getInstance().
-				getArticleManager(Environment.DEFAULT_WEB).
+				getDefaultArticleManager(Environment.DEFAULT_WEB).
 				getArticle(dashboardArticleTitle);
 		// get all CIDashboardType-sections on this article
 		List<Section<CIDashboardType>> list = new ArrayList<Section<CIDashboardType>>();
@@ -232,15 +198,4 @@ public class CIUtils {
 		return res.toString();
 	}
 
-	/**
-	 * Looks up whether there is currently a build process running for this
-	 * dashboard
-	 * 
-	 * @created 16.08.2012
-	 * @param dashboardName
-	 * @return
-	 */
-	public static boolean buildRunning(String dashboardName) {
-		return runningBuilds.get(dashboardName) != null;
-	}
 }

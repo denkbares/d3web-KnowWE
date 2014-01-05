@@ -31,7 +31,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * types (like {@link DefaultMarkupType}s) an therefore not found by the
  * {@link ClassType}. We do no longer support such class definitions.
  * 
- * @author Albrecht Striffler (denkbares GmbH), Sebastian Furth (denkbares GmbH)
+ * @author Albrecht Striffler, Sebastian Furth (denkbares GmbH)
  * @created 28.08.2013
  */
 public class CSSDanglingType extends AbstractType {

@@ -29,7 +29,8 @@ import de.d3web.plugin.Plugin;
 import de.d3web.plugin.PluginConfig;
 import de.d3web.plugin.PluginEntry;
 import de.d3web.plugin.PluginManager;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.xcl.DefaultScoreAlgorithm;
 import de.d3web.xcl.ScoreAlgorithm;
@@ -39,7 +40,6 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -69,21 +69,21 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 		m.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageAnnotationNameType());
 		m.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm(true));
+				new PackageTerm());
 	}
 
 	public CoveringListSettingsMarkup() {
 		super(m);
-		this.addSubtreeHandler(Priority.HIGHEST, new CoveringListSettingsHandler());
+		this.addCompileScript(Priority.HIGHEST, new CoveringListSettingsHandler());
 	}
 
-	public class CoveringListSettingsHandler extends D3webSubtreeHandler<CoveringListSettingsMarkup> {
+	public class CoveringListSettingsHandler extends D3webHandler<CoveringListSettingsMarkup> {
 
 		@Override
-		public Collection<Message> create(Article article, Section<CoveringListSettingsMarkup> s) {
+		public Collection<Message> create(D3webCompiler compiler, Section<CoveringListSettingsMarkup> s) {
 
 			// Get KnowledgeBase
-			KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
+			KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
 			if (kb == null) {
 				return Messages.asList(Messages.error(
 						"No knowledgebase available."));

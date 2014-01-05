@@ -32,16 +32,15 @@ import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.QuestionZC;
 import de.d3web.strings.Identifier;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -58,9 +57,9 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 	}
 
 	public QuestionDefinition() {
-		this.addSubtreeHandler(Priority.HIGHER, new CreateQuestionHandler());
-		this.addSubtreeHandler(new TerminologyLoopDetectionHandler<Question>());
-		this.addSubtreeHandler(Priority.LOW, new TerminologyLoopResolveHandler<Question>());
+		this.addCompileScript(Priority.HIGHER, new CreateQuestionHandler());
+		this.addCompileScript(new TerminologyLoopDetectionHandler<Question>());
+		this.addCompileScript(Priority.LOW, new TerminologyLoopResolveHandler<Question>());
 		this.setRenderer(new ValueTooltipRenderer(StyleRenderer.Question));
 		this.setOrderSensitive(true);
 	}
@@ -95,22 +94,22 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 
 	public abstract int getPosition(Section<QuestionDefinition> s);
 
-	static class CreateQuestionHandler extends D3webSubtreeHandler<QuestionDefinition> {
+	static class CreateQuestionHandler extends D3webHandler<QuestionDefinition> {
 
 		@Override
 		@SuppressWarnings("unchecked")
-		public Collection<Message> create(Article article,
+		public Collection<Message> create(D3webCompiler compiler,
 				Section<QuestionDefinition> section) {
 
 			Identifier identifier = section.get().getTermIdentifier(section);
 			Class<?> termObjectClass = section.get().getTermObjectClass(section);
-			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
-			terminologyHandler.registerTermDefinition(section, termObjectClass, identifier);
+			TerminologyManager terminologyHandler = compiler.getTerminologyManager();
+			terminologyHandler.registerTermDefinition(compiler, section, termObjectClass, identifier);
 
-			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(article, section);
+			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(compiler, section);
 			if (abortCheck.hasErrors()) return abortCheck.getErrors();
 
-			KnowledgeBase kb = getKB(article);
+			KnowledgeBase kb = getKB(compiler);
 
 			@SuppressWarnings("rawtypes")
 			Section<? extends QASetDefinition> parentQASetSection =
@@ -118,7 +117,8 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 
 			QASet parent = null;
 			if (parentQASetSection != null) {
-				parent = (QASet) parentQASetSection.get().getTermObject(article, parentQASetSection);
+				parent = (QASet) parentQASetSection.get().getTermObject(compiler,
+						parentQASetSection);
 			}
 			if (parent == null) {
 				parent = kb.getRootQASet();
@@ -129,7 +129,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			if (abortCheck.termExist()) {
 				// if the question already exists, we just hook it into the new
 				// questionnaire
-				Question existingQuestion = section.get().getTermObject(article, section);
+				Question existingQuestion = section.get().getTermObject(compiler, section);
 				parent.addChild(existingQuestion);
 			}
 			else {

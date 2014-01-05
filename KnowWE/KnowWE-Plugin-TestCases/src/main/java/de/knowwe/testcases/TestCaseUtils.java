@@ -19,6 +19,7 @@
 package de.knowwe.testcases;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,9 +57,10 @@ import de.d3web.testcase.stc.DerivedQuestionCheck;
 import de.d3web.testcase.stc.DerivedSolutionCheck;
 import de.d3web.testcase.stc.STCWrapper;
 import de.d3web.utils.Triple;
-import de.d3web.we.knowledgebase.KnowledgeBaseType;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -126,25 +128,25 @@ public class TestCaseUtils {
 	 */
 	public static List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(Section<TestCasePlayerType> section) {
 		String[] kbpackages = DefaultMarkupType.getPackages(section,
-				KnowledgeBaseType.ANNOTATION_COMPILE);
+				PackageManager.COMPILE_ATTRIBUTE_NAME);
 		String web = section.getWeb();
 		return de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(web, kbpackages);
 	}
 
 	public static List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(String web, String... kbpackages) {
 		Environment env = Environment.getInstance();
-		PackageManager packageManager = env.getPackageManager(web);
-		ArticleManager articleManager = env.getArticleManager(web);
+		PackageManager packageManager = Compilers.getDefaultPackageManager(web);
+		ArticleManager articleManager = env.getDefaultArticleManager(web);
 		List<Triple<TestCaseProvider, Section<?>, Article>> providers = new LinkedList<Triple<TestCaseProvider, Section<?>, Article>>();
 		for (String kbpackage : kbpackages) {
-			List<Section<?>> sectionsInPackage = packageManager.getSectionsOfPackage(kbpackage);
+			Collection<Section<?>> sectionsInPackage = packageManager.getSectionsOfPackage(kbpackage);
 			Set<String> articlesReferringTo = packageManager.getCompilingArticles(kbpackage);
 			for (String masterTitle : articlesReferringTo) {
 				Article masterArticle = articleManager.getArticle(masterTitle);
 				for (Section<?> packageSections : sectionsInPackage) {
 					TestCaseProviderStorage testCaseProviderStorage =
 							(TestCaseProviderStorage) packageSections.getSectionStore().getObject(
-									masterArticle,
+									Compilers.getCompiler(masterArticle, D3webCompiler.class),
 									TestCaseProviderStorage.KEY);
 					if (testCaseProviderStorage != null) {
 						for (TestCaseProvider testCaseProvider : testCaseProviderStorage.getTestCaseProviders()) {

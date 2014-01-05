@@ -31,10 +31,10 @@ import de.d3web.core.session.values.Unknown;
 import de.d3web.strings.Strings;
 import de.d3web.we.kdom.auxiliary.Equals;
 import de.d3web.we.kdom.condition.AnswerReferenceImpl;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.UnknownValueType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -84,7 +84,7 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 	}
 
 	@Override
-	public PSAction createAction(Article article, Section<SetQuestionValue> s) {
+	public PSAction createAction(D3webCompiler compiler, Section<SetQuestionValue> s) {
 
 		Object value;
 
@@ -95,11 +95,11 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 			Section<AnswerReference> aref = Sections.findSuccessor(s,
 					AnswerReference.class);
 			if (aref == null) return null;
-			value = aref.get().getTermObject(article, aref);
+			value = aref.get().getTermObject(compiler, aref);
 		}
 
 		Section<QuestionReference> qref = Sections.findSuccessor(s, QuestionReference.class);
-		Question q = qref.get().getTermObject(article, qref);
+		Question q = qref.get().getTermObject(compiler, qref);
 		if (q != null && value != null) {
 			ActionSetQuestion a = new ActionSetQuestion();
 			a.setQuestion(q);

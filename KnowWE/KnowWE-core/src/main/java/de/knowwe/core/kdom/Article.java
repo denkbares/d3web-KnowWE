@@ -29,18 +29,14 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.Environment.CompilationMode;
-import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.ReviseIterator;
-import de.knowwe.core.compile.ReviseIterator.SectionPriorityTuple;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.event.ArticleCreatedEvent;
-import de.knowwe.event.FullParseEvent;
 import de.knowwe.event.KDOMCreatedEvent;
-import de.knowwe.event.PreCompileFinishedEvent;
 
 /**
  * 
@@ -68,23 +64,7 @@ public class Article {
 
 	private final long startTimeOverall;
 
-	private long currentStartTime;
-
-	private boolean fullParse;
-
-	private final boolean reParse;
-
-	private boolean postDestroy;
-
-	private boolean postPreDestroy;
-
-	private boolean postDestroyFullParse;
-
-	private boolean postPreDestroyFullParse;
-
-	private boolean secondBuild;
-
-	private ReviseIterator reviseIterator;
+	private final boolean fullParse;
 
 	private final Set<String> classesCausingFullParse = new HashSet<String>();
 
@@ -142,20 +122,11 @@ public class Article {
 	 */
 	private Article(String text, String title, String web, boolean fullParse) {
 
-		Logger.getLogger(this.getClass().getName()).log(Level.FINE,
-				"Started to build article '" + title + "'");
-
 		currentlyBuildingArticles.put(getArticleKey(web, title), this);
 		this.startTimeOverall = System.currentTimeMillis();
-		this.currentStartTime = this.startTimeOverall;
 		this.title = title;
 		this.web = web;
 		this.lastVersion = Environment.getInstance().getArticle(web, title);
-
-		boolean unchangedContent = lastVersion != null
-				&& lastVersion.getRootSection().getText().equals(text);
-
-		this.reParse = unchangedContent && fullParse;
 
 		boolean defFullParse = fullParse
 				|| lastVersion == null
@@ -163,12 +134,7 @@ public class Article {
 
 		this.fullParse = defFullParse;
 
-		build(text);
-
-		if (this.postDestroyFullParse) {
-			this.secondBuild = true;
-			build(text);
-		}
+		sectionizeArticle(text);
 
 		// if for example a SubtreeHandlers uses
 		// Article#setFullParse(Class) he prevents incremental updating
@@ -181,40 +147,10 @@ public class Article {
 
 		// important! prevents memory leak
 		lastVersion = null;
-	}
-
-	private void build(String text) {
-
-		this.postPreDestroy = false;
-		this.postDestroy = false;
-
-		sectionizeArticle(text);
-
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINE,
-				"Built KDOM in "
-						+ (System.currentTimeMillis() - currentStartTime) + "ms");
-		currentStartTime = System.currentTimeMillis();
-
-		preCompile();
-
-		compile();
-
-		postCompile();
-
-		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINE,
-				"Built Knowledge in "
-						+ (System.currentTimeMillis() - currentStartTime) + "ms");
-		currentStartTime = System.currentTimeMillis();
-	}
-
-	public void recompile() {
-		this.postPreDestroy = false;
-		this.postDestroy = false;
-		preCompile();
-		compile();
-		postCompile();
+				Level.INFO,
+				"Sectionized article '" + title + "' in "
+						+ (System.currentTimeMillis() - startTimeOverall) + "ms");
 	}
 
 	private void sectionizeArticle(String text) {
@@ -226,76 +162,14 @@ public class Article {
 		rootSection = Sections.findChildOfType(dummySection, RootType.class);
 		rootSection.setParent(null);
 
-		rootSection.clearReusedSuccessorRecursively();
+		// rootSection.clearReusedSuccessorRecursively();
 
 		if (lastVersion != null) {
-			lastVersion.getRootSection().clearReusedOfOldSectionsRecursively(this);
+			// lastVersion.getRootSection().clearReusedOfOldSectionsRecursively(this);
 			unregisterSectionIDRecursively(lastVersion.getRootSection());
 		}
 
 		EventManager.getInstance().fireEvent(new KDOMCreatedEvent(this));
-	}
-
-	private void preCompile() {
-		if (this.fullParse) {
-			EventManager.getInstance().fireEvent(new FullParseEvent(this));
-		}
-
-		// destroy
-		if (!this.fullParse && this.lastVersion != null) {
-			lastVersion.reviseIterator.reset();
-		}
-		destroy(Priority.PRECOMPILE_LOW);
-		this.postPreDestroy = true;
-
-		// create
-		reviseIterator = new ReviseIterator();
-		reviseIterator.addRootSection(rootSection);
-		create(Priority.PRECOMPILE_LOW);
-		EventManager.getInstance().fireEvent(new PreCompileFinishedEvent(this));
-	}
-
-	private void compile() {
-
-		// destroy
-		destroy(Priority.LOWEST);
-		this.postDestroy = true;
-
-		Environment.getInstance().getKnowledgeRepresentationManager(web)
-				.initArticle(this);
-
-		// create
-		if (this.postPreDestroyFullParse && !this.secondBuild) {
-			reviseIterator = new ReviseIterator();
-			reviseIterator.addRootSection(rootSection);
-		}
-		create(Priority.LOWEST);
-	}
-
-	private void postCompile() {
-		for (Section<?> section : reviseIterator.getRootSections()) {
-			section.setReusedByRecursively(title, true);
-		}
-	}
-
-	private void destroy(Priority p) {
-		if (!this.fullParse && this.lastVersion != null) {
-			lastVersion.reviseIterator.setIteratorStop(p);
-			while (lastVersion.reviseIterator.hasNext()) {
-				SectionPriorityTuple tuple = lastVersion.reviseIterator.next();
-				tuple.getSection().letSubtreeHandlersDestroy(this, tuple.getPriority());
-			}
-
-		}
-	}
-
-	private void create(Priority p) {
-		reviseIterator.setIteratorStop(p);
-		// compile the handlers with main priorities
-		while (reviseIterator.hasNext()) {
-			SectionPriorityTuple tuple = reviseIterator.next();
-			tuple.getSection().letSubtreeHandlersCreate(this, tuple.getPriority());
-		}
 	}
 
 	private void unregisterSectionIDRecursively(Section<?> section) {
@@ -343,6 +217,8 @@ public class Article {
 	private final Map<String, Map<String, List<Section<?>>>> knownResults =
 			new HashMap<String, Map<String, List<Section<?>>>>();
 
+	private ArticleManager articleManager;
+
 	/**
 	 * Finds all children with the same path of Types in the KDOM. The
 	 * <tt>path</tt> has to start with the type Article and end with the Type of
@@ -385,45 +261,8 @@ public class Article {
 		return this.fullParse;
 	}
 
-	public boolean isReParse() {
-		return this.reParse;
-	}
-
-	public boolean isPostDestroyFullParse() {
-		return this.postDestroyFullParse;
-	}
-
-	public boolean isSecondBuild() {
-		return this.secondBuild;
-	}
-
 	public RootType getRootType() {
 		return RootType.getInstance();
-	}
-
-	public ReviseIterator getReviseIterator() {
-		return this.reviseIterator;
-	}
-
-	/**
-	 * Causes an full parse for this article.
-	 * 
-	 * @created 09.10.2010
-	 * @param source is just for tracking...
-	 */
-	public void setFullParse(Class<?> source) {
-		if (!this.fullParse) {
-			if (this.postPreDestroy) this.postPreDestroyFullParse = true;
-			if (this.postDestroy) this.postDestroyFullParse = true;
-			rootSection.setNotCompiledByRecursively(title);
-			EventManager.getInstance().fireEvent(new FullParseEvent(this));
-		}
-		classesCausingFullParse.add(source.isAnonymousClass()
-				? source.getName().substring(
-						source.getName().lastIndexOf(".") + 1)
-				: source.getSimpleName());
-
-		this.fullParse = true;
 	}
 
 	public Set<String> getClassesCausingFullParse() {
@@ -454,6 +293,14 @@ public class Article {
 		}
 		else if (!web.equals(other.web)) return false;
 		return true;
+	}
+
+	public void setArticleManager(ArticleManager articleManager) {
+		this.articleManager = articleManager;
+	}
+
+	public ArticleManager getArticleManager() {
+		return articleManager;
 	}
 
 }

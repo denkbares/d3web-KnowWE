@@ -50,8 +50,8 @@ public class RootType extends AbstractType {
 
 			@Override
 			public void render(Section<?> section, UserContext user, RenderResult string) {
-				Map<String, Collection<Message>> messages = Messages.getMessages(section);
-				for (Entry<String, Collection<Message>> entry : messages.entrySet()) {
+				Map<de.knowwe.core.compile.Compiler, Collection<Message>> messages = Messages.getMessagesMap(section);
+				for (Entry<de.knowwe.core.compile.Compiler, Collection<Message>> entry : messages.entrySet()) {
 					for (Message message : entry.getValue()) {
 						String tag = (message.getType() == Message.Type.ERROR)
 								? "error"

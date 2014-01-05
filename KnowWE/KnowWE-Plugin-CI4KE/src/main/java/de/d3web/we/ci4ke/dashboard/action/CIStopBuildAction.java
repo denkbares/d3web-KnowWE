@@ -21,7 +21,8 @@ package de.d3web.we.ci4ke.dashboard.action;
 import java.io.IOException;
 
 import de.d3web.strings.Strings;
-import de.d3web.we.ci4ke.util.CIUtils;
+import de.d3web.we.ci4ke.build.CIBuildManager;
+import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.utils.progress.ProgressListenerManager;
@@ -31,8 +32,10 @@ public class CIStopBuildAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		// System.out.println("stop event");
-		String dashboardName = context.getParameter("name");
-		CIUtils.deregisterAndTerminateBuildExecutor(Strings.decodeURL(dashboardName));
+		String dashboardName = Strings.decodeURL(context.getParameter("name"));
+		String dashboardArticleName = context.getTitle();
+		String web = context.getWeb();
+		CIBuildManager.terminate(CIDashboardManager.getDashboard(web, dashboardArticleName, dashboardName));
 		ProgressListenerManager.getInstance().removeProgressListener(dashboardName);
 	}
 

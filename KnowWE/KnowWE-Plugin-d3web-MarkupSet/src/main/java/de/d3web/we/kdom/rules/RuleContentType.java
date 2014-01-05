@@ -21,7 +21,6 @@
 package de.d3web.we.kdom.rules;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import de.d3web.core.inference.PSAction;
@@ -47,12 +46,12 @@ import de.d3web.we.kdom.rule.ConditionActionRuleContent;
 import de.d3web.we.kdom.rule.ExceptionConditionArea;
 import de.d3web.we.kdom.rules.action.D3webRuleAction;
 import de.d3web.we.kdom.rules.action.RuleAction;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.knowledgebase.D3webCompileScript;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.SuccessorNotReusedConstraint;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.CommentLineType;
 import de.knowwe.core.kdom.basicType.UnrecognizedSyntaxType;
@@ -62,10 +61,8 @@ import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
@@ -78,7 +75,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
  */
 public class RuleContentType extends AbstractType {
 
-	public static final String ruleStoreKey = "RULE_STORE_KEY";
+	public static final String RULE_STORE_KEY = "RULE_STORE_KEY";
 
 	/**
 	 * Here the type is configured. It takes (mostly) all the text it gets. A
@@ -97,7 +94,7 @@ public class RuleContentType extends AbstractType {
 				ruleAction);
 
 		// add handler to create the rules in the d3web knowledge base
-		ruleAction.addSubtreeHandler(Priority.LOW, new RuleCompiler());
+		ruleAction.addCompileScript(Priority.LOW, new RuleCompiler());
 
 		ruleContent.setRenderer(new ReRenderSectionMarkerRenderer(
 				new RuleHighlightingRenderer()));
@@ -130,55 +127,50 @@ public class RuleContentType extends AbstractType {
 	}
 
 	/**
+	 * This handler compiles a parsed rule into the d3web knowledge base (if it
+	 * doesn't have errors)
+	 * 
 	 * @author Jochen
-	 * 
-	 *         This handler compiles a parsed rule into the d3web knowledge base
-	 *         (if it doesn't have errors)
-	 * 
 	 */
-	class RuleCompiler extends D3webSubtreeHandler<RuleAction> {
+	class RuleCompiler extends D3webCompileScript<RuleAction> {
 
-		public RuleCompiler() {
-			registerConstraintModule(new SuccessorNotReusedConstraint<RuleAction>());
-		}
-
-		@SuppressWarnings("unchecked")
 		@Override
-		public Collection<Message> create(Article article,
-				Section<RuleAction> actionS) {
+		public void compile(D3webCompiler compiler, Section<RuleAction> section) {
 
-			Section<ConditionActionRuleContent> rule = Sections
-					.findAncestorOfType(actionS,
+			Section<ConditionActionRuleContent> ruleSection = Sections
+					.findAncestorOfType(section,
 							ConditionActionRuleContent.class);
 
-			if (rule.hasErrorInSubtree(article)) {
-				return Messages
-						.asList(Messages.creationFailedWarning(
-								Rule.class.getSimpleName()));
+			if (ruleSection.hasErrorInSubtree(compiler)) {
+				Messages.storeMessage(compiler, section, getClass(),
+						Messages.creationFailedWarning(Rule.class.getSimpleName()));
+				return;
 			}
 
 			// create condition
-			Section<CompositeCondition> cond = Sections.findSuccessor(rule,
+			Section<CompositeCondition> cond = Sections.findSuccessor(ruleSection,
 					CompositeCondition.class);
-			Condition d3Cond = KDOMConditionFactory.createCondition(article,
+			Condition d3Cond = KDOMConditionFactory.createCondition(compiler,
 					cond);
 
 			// create action
 			@SuppressWarnings("rawtypes")
-			Section<D3webRuleAction> action = Sections.findSuccessor(actionS,
+			Section<D3webRuleAction> action = Sections.findSuccessor(section,
 					D3webRuleAction.class);
 			if (action == null) {
-				return Messages
-						.asList(Messages.creationFailedWarning(
+				Messages.storeMessage(compiler, section, getClass(),
+						Messages.creationFailedWarning(
 								D3webUtils.getD3webBundle().getString(
 										"KnowWE.rulesNew.notcreated")
 										+ " : no valid action found"));
+				return;
 			}
-			PSAction d3action = action.get().getAction(article, action);
+			@SuppressWarnings("unchecked")
+			PSAction d3action = action.get().getAction(compiler, action);
 
 			// create exception (if exists)
 			Section<ExceptionConditionArea> exceptionCondSec = Sections
-					.findSuccessor(rule, ExceptionConditionArea.class);
+					.findSuccessor(ruleSection, ExceptionConditionArea.class);
 			Condition exceptionCond = null;
 			if (exceptionCondSec != null) {
 				Section<CompositeCondition> exceptionCompCondSec = Sections
@@ -186,31 +178,34 @@ public class RuleContentType extends AbstractType {
 								CompositeCondition.class);
 				if (exceptionCompCondSec != null) {
 					exceptionCond = KDOMConditionFactory.createCondition(
-							article, exceptionCompCondSec);
+							compiler, exceptionCompCondSec);
 				}
 			}
 
 			// create actual rule
 			if (d3action != null && d3Cond != null) {
-				Rule r = RuleFactory.createRule(d3action, d3Cond,
+				@SuppressWarnings("unchecked")
+				Rule rule = RuleFactory.createRule(d3action, d3Cond,
 						exceptionCond, action.get().getActionPSContext());
-				if (r != null) {
-					KnowWEUtils.storeObject(article, actionS, ruleStoreKey, r);
-					return Messages.noMessage();
+				if (rule != null) {
+					Compilers.storeObject(compiler, section, RULE_STORE_KEY, rule);
+					Messages.storeMessage(compiler, section, getClass(),
+							Messages.objectCreatedNotice(
+									"Rule"));
+					return;
 				}
 
 			}
 
 			// should not happen
-			return Messages.asList(Messages.creationFailedWarning(
-					D3webUtils.getD3webBundle().getString(
-							"KnowWE.rulesNew.notcreated")));
+			Messages.storeMessage(compiler, section, getClass(), Messages.creationFailedWarning(
+					D3webUtils.getD3webBundle().getString("KnowWE.rulesNew.notcreated")));
 		}
 
 		@Override
-		public void destroy(Article article, Section<RuleAction> rule) {
-			Rule kbr = (Rule) rule.getSectionStore().getObject(article,
-					ruleStoreKey);
+		public void destroy(D3webCompiler compiler, Section<RuleAction> section) {
+			Rule kbr = (Rule) section.getSectionStore().getObject(compiler,
+					RULE_STORE_KEY);
 			if (kbr != null) {
 				kbr.remove();
 			}
@@ -219,9 +214,9 @@ public class RuleContentType extends AbstractType {
 	}
 
 	/**
-	 * @author Johannes Dienst
+	 * Highlights Rules according to state.
 	 * 
-	 *         Highlights Rules according to state.
+	 * @author Johannes Dienst
 	 * 
 	 */
 	class RuleHighlightingRenderer implements Renderer {
@@ -229,22 +224,28 @@ public class RuleContentType extends AbstractType {
 		@Override
 		public void render(Section<?> sec,
 				UserContext user, RenderResult string) {
-			Article article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
+
+			D3webCompiler compiler = Compilers.getCompiler(sec, D3webCompiler.class);
+			Rule rule = null;
+			Session session = null;
+
 			Section<RuleAction> ruleAction = Sections.findSuccessor(sec,
 					RuleAction.class);
-			Rule rule = null;
 			if (ruleAction != null) {
-				rule = (Rule) KnowWEUtils.getStoredObject(article, ruleAction,
-						RuleContentType.ruleStoreKey);
+				rule = (Rule) Compilers.getStoredObject(compiler, ruleAction,
+						RuleContentType.RULE_STORE_KEY);
 			}
 
 			string.appendHtml("<span id='" + sec.getID() + "'>");
 
-			KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
-			Session session = SessionProvider.getSession(user, kb);
+			if (compiler != null) {
+				KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
+				session = SessionProvider.getSession(user, kb);
+			}
 
-			highlightRule(article, sec, rule, session, user, string);
+			highlightRule(sec, rule, session, user, string);
 			string.appendHtml("</span>");
+
 		}
 
 		private static final String highlightMarker = "HIGHLIGHT_MARKER";
@@ -266,17 +267,16 @@ public class RuleContentType extends AbstractType {
 		 * @param session
 		 * @return
 		 */
-		private void highlightRule(Article article,
-				Section<?> sec, Rule r,
+		private void highlightRule(Section<?> sec, Rule rule,
 				Session session, UserContext user, RenderResult string) {
 
 			RenderResult newContent = new RenderResult(string);
-			if (r == null || session == null) {
+			if (rule == null || session == null) {
 				DelegateRenderer.getInstance().render(sec, user, newContent);
 			}
 			else {
 				try {
-					if (r.hasFired(session)) {
+					if (rule.hasFired(session)) {
 						this.firedRenderer.render(sec, user, newContent);
 					}
 					else {

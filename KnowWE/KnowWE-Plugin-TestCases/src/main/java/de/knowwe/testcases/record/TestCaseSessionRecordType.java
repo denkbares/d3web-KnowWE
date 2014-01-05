@@ -47,13 +47,13 @@ public class TestCaseSessionRecordType extends DefaultMarkupType {
 		MARKUP.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageAnnotationNameType());
 		MARKUP.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm(true));
+				new PackageTerm());
 		MARKUP.addAnnotation(PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME, false);
 	}
 
 	public TestCaseSessionRecordType() {
 		super(MARKUP);
-		addSubtreeHandler(new TestCaseSessionRecordSubtreeHandler());
+		addCompileScript(new TestCaseSessionRecordSubtreeHandler());
 		this.setRenderer(new PrefixTestCaseRenderer(new ProviderRefreshRenderer()));
 		DefaultMarkupType.getContentType(this).setRenderer(new MatchingAttachmentsRenderer());
 	}

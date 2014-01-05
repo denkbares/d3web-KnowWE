@@ -19,7 +19,7 @@
 package de.knowwe.diaflux.type;
 
 import de.d3web.diaFlux.flow.Flow;
-import de.knowwe.core.compile.terminology.TermRegistrationScope;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
@@ -28,10 +28,10 @@ import de.knowwe.kdom.renderer.StyleRenderer;
  * @author Reinhard Hatko
  * @created 08.12.2010
  */
-public class FlowchartReference extends SimpleReference {
+public class FlowchartReference extends SimpleReference<D3webCompiler> {
 
 	public FlowchartReference() {
-		super(TermRegistrationScope.LOCAL, Flow.class);
+		super(D3webCompiler.class, Flow.class);
 		setRenderer(StyleRenderer.Flowchart);
 	}
 

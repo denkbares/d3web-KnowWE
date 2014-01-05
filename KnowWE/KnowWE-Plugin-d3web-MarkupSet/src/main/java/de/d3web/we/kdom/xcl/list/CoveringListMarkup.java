@@ -48,7 +48,7 @@ public class CoveringListMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageAnnotationNameType());
 		MARKUP.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm(true));
+				new PackageTerm());
 		MARKUP.addAnnotation(DESCRIPTION, false);
 		MARKUP.addAnnotation(OTHER_QUESTIONS, false,
 				OTHER_QUESTIONS_IGNORE, OTHER_QUESTIONS_NORMAL_VALUE_COVERED);

@@ -18,18 +18,18 @@
  */
 package de.d3web.we.object;
 
+import java.util.Collection;
+
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.ValueObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.we.basic.SessionProvider;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.solutionpanel.SolutionPanelUtils;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
-import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.kdom.Article;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -63,14 +63,12 @@ public class ValueTooltipRenderer implements Renderer {
 
 		@SuppressWarnings("unchecked")
 		Section<D3webTerm<NamedObject>> sec = (Section<D3webTerm<NamedObject>>) section;
-		String web = user.getWeb();
-		ArticleManager articleManager = Environment.getInstance().getArticleManager(web);
-		PackageManager packageManager = Environment.getInstance().getPackageManager(web);
 		StringBuilder buffer = new StringBuilder();
-		for (String articleName : packageManager.getCompilingArticles(section)) {
-			Article article = articleManager.getArticle(articleName);
-			NamedObject namedObject = sec.get().getTermObject(article, sec);
-			KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(article);
+		Collection<D3webCompiler> compilers = Compilers.getCompilers(section, D3webCompiler.class);
+		for (D3webCompiler compiler : compilers) {
+
+			NamedObject namedObject = sec.get().getTermObject(compiler, sec);
+			KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(compiler);
 			Session session = SessionProvider.getSession(user, knowledgeBase);
 			if (namedObject instanceof ValueObject) {
 				Value value = D3webUtils.getValueNonBlocking(session, (ValueObject) namedObject);
@@ -78,7 +76,7 @@ public class ValueTooltipRenderer implements Renderer {
 				// if (UndefinedValue.isUndefinedValue(value)) continue;
 				if (buffer.length() > 0) buffer.append('\n');
 				String name = knowledgeBase.getName();
-				if (name == null) name = articleName;
+				if (name == null) name = compiler.getCompileSection().getTitle();
 				buffer.append("current value in '").append(name).append("': ");
 				buffer.append(SolutionPanelUtils.formatValue(value, 2));
 			}

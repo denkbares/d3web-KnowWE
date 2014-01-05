@@ -18,16 +18,15 @@
  */
 package de.knowwe.core.compile.packaging;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import de.knowwe.core.kdom.Article;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.DefaultGlobalCompiler;
+import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -36,20 +35,16 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * @author Stefan Plehn
  * @created 25.04.2013
  */
-public class MasterAnnotationWarningHandler extends SubtreeHandler<DefaultMarkupType> {
-
-	public MasterAnnotationWarningHandler() {
-		super(false);
-	}
+public class MasterAnnotationWarningHandler extends DefaultGlobalScript<DefaultMarkupType> {
 
 	@Override
-	public Collection<Message> create(Article article, Section<DefaultMarkupType> section) {
+	public void compile(DefaultGlobalCompiler compiler, Section<DefaultMarkupType> section) {
 
-		PackageManager packageManager = KnowWEUtils.getPackageManager(article.getWeb());
+		PackageManager packageManager = Compilers.getPackageManager(section);
 		Set<String> compilingArticles = packageManager.getCompilingArticles();
 
 		List<Section<? extends AnnotationContentType>> annotationContents = DefaultMarkupType.getAnnotationContentSections(
-				section, PackageManager.ANNOTATION_MASTER);
+				section, PackageManager.MASTER_ATTRIBUTE_NAME);
 
 		for (Section<? extends AnnotationContentType> annotationContent : annotationContents) {
 			String master = annotationContent.getText();
@@ -60,10 +55,11 @@ public class MasterAnnotationWarningHandler extends SubtreeHandler<DefaultMarkup
 				Message error = Messages.error("Error in @master annotation: \n '"
 						+ master
 						+ "' is not a valid master page, i.e. this page doesn't exist or doesn't contain a knowledge base.");
-				return Messages.asList(error);
+				Messages.storeMessage(section, this.getClass(), error);
+				return;
 			}
 		}
-		return Messages.noMessage();
+		Messages.clearMessages(section, this.getClass());
 	}
 
 }

@@ -30,11 +30,12 @@ import de.d3web.core.manage.RuleFactory;
 import de.d3web.scoring.Score;
 import de.d3web.strings.Strings;
 import de.d3web.we.kdom.questionTree.QuestionDashTreeUtils;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.SolutionReference;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -46,7 +47,6 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
@@ -101,11 +101,11 @@ public class SolutionSetValueLine extends AbstractType {
 
 	}
 
-	private AbstractType createObjectRefTypeBefore(
+	private Type createObjectRefTypeBefore(
 			AbstractType typeAfter) {
 		SolutionReference sid = new SolutionReference();
 		sid.setSectionFinder(new AllBeforeTypeSectionFinder(typeAfter));
-		sid.addSubtreeHandler(new CreateScoringRuleHandler());
+		sid.addCompileScript(new CreateScoringRuleHandler());
 		return sid;
 	}
 
@@ -144,19 +144,19 @@ public class SolutionSetValueLine extends AbstractType {
 
 	}
 
-	static class CreateScoringRuleHandler extends D3webSubtreeHandler<SolutionReference> {
+	static class CreateScoringRuleHandler extends D3webHandler<SolutionReference> {
 
 		@Override
-		public void destroy(Article article, Section<SolutionReference> s) {
-			Rule kbr = (Rule) s.getSectionStore().getObject(article,
+		public void destroy(D3webCompiler compiler, Section<SolutionReference> s) {
+			Rule kbr = (Rule) s.getSectionStore().getObject(compiler,
 					SETVALUE_ARGUMENT);
 			if (kbr != null) kbr.remove();
 		}
 
 		@Override
-		public Collection<Message> create(Article article, Section<SolutionReference> s) {
+		public Collection<Message> create(D3webCompiler compiler, Section<SolutionReference> s) {
 
-			Solution sol = s.get().getTermObject(article, s);
+			Solution sol = s.get().getTermObject(compiler, s);
 
 			String argument = getArgumentString(s);
 
@@ -165,12 +165,12 @@ public class SolutionSetValueLine extends AbstractType {
 
 				if (score != null) {
 
-					Condition cond = QuestionDashTreeUtils.createCondition(article,
+					Condition cond = QuestionDashTreeUtils.createCondition(compiler,
 							DashTreeUtils.getAncestorDashTreeElements(s));
 					if (cond != null) {
 						Rule r = RuleFactory.createHeuristicPSRule(sol, score, cond);
 						if (r != null) {
-							KnowWEUtils.storeObject(article, s, SETVALUE_ARGUMENT, r);
+							Compilers.storeObject(compiler, s, SETVALUE_ARGUMENT, r);
 							return Messages.asList(Messages.objectCreatedNotice(
 									r.getClass().toString()));
 						}

@@ -27,9 +27,9 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.strings.Strings;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -50,7 +50,7 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 	}
 
 	@Override
-	protected Condition createCondition(Article article, Section<NumericalFinding> s) {
+	protected Condition createCondition(D3webCompiler compiler, Section<NumericalFinding> s) {
 		Section<QuestionReference> qRef = Sections.findSuccessor(s, QuestionReference.class);
 
 		Section<Intervall> intervall = Sections.findSuccessor(s, Intervall.class);
@@ -61,14 +61,14 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 		boolean leftOpen = intervall.getText().charAt(0) == ']';
 		boolean rightOpen = intervall.getText().charAt(intervall.getText().length() - 1) == '[';
 
-		Question q = qRef.get().getTermObject(article, qRef);
+		Question q = qRef.get().getTermObject(compiler, qRef);
 
 		if (!(q instanceof QuestionNum)) {
-			Messages.storeMessage(article, s, this.getClass(), Messages.error(
+			Messages.storeMessage(compiler, s, this.getClass(), Messages.error(
 					"The question '" + qRef.get().getTermIdentifier(qRef) + "' must be numerical."));
 		}
 		else if (number1 != null && number2 != null && q != null && q instanceof QuestionNum) {
-			Messages.clearMessages(article, s, this.getClass());
+			Messages.clearMessages(compiler, s, this.getClass());
 			return new CondNumIn((QuestionNum) q,
 					new NumericalInterval(number1, number2, leftOpen, rightOpen));
 		}

@@ -29,11 +29,12 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Session;
 import de.d3web.strings.Identifier;
 import de.d3web.we.basic.SessionProvider;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -41,7 +42,6 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -56,8 +56,8 @@ public abstract class SolutionDefinition
 
 	public SolutionDefinition() {
 		this(Priority.HIGHEST);
-		this.addSubtreeHandler(Priority.LOW, new TerminologyLoopDetectionHandler<Solution>());
-		this.addSubtreeHandler(Priority.LOWER, new TerminologyLoopResolveHandler<Solution>());
+		this.addCompileScript(Priority.LOW, new TerminologyLoopDetectionHandler<Solution>());
+		this.addCompileScript(Priority.LOWER, new TerminologyLoopResolveHandler<Solution>());
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public abstract class SolutionDefinition
 	public SolutionDefinition(Priority p) {
 		this.setRenderer(new SolutionIDHighlightingRenderer());
 		// this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR4));
-		this.addSubtreeHandler(p, new CreateSolutionHandler());
+		this.addCompileScript(p, new CreateSolutionHandler());
 	}
 
 	/**
@@ -85,14 +85,14 @@ public abstract class SolutionDefinition
 		public void render(Section<?> sec, UserContext user,
 				RenderResult string) {
 
-			Article article = KnowWEUtils.getCompilingArticles(sec).iterator().next();
+			D3webCompiler compiler = Compilers.getCompiler(sec, D3webCompiler.class);
 
-			KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), article.getTitle());
+			KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
 			Session session = SessionProvider.getSession(user, kb);
 
 			if (session != null) {
 				@SuppressWarnings("unchecked")
-				Solution solution = getTermObject(article,
+				Solution solution = getTermObject(compiler,
 						(Section<? extends D3webTerm<Solution>>) sec);
 				if (solution != null) {
 					Rating state = session.getBlackboard().getRating(solution);
@@ -116,22 +116,23 @@ public abstract class SolutionDefinition
 		}
 	}
 
-	static class CreateSolutionHandler extends D3webSubtreeHandler<SolutionDefinition> {
+	static class CreateSolutionHandler extends D3webHandler<SolutionDefinition> {
 
 		@Override
-		public Collection<Message> create(Article article,
+		public Collection<Message> create(D3webCompiler compiler,
 				Section<SolutionDefinition> section) {
 
 			Identifier termIdentifier = section.get().getTermIdentifier(section);
 			String name = section.get().getTermName(section);
 			Class<?> termObjectClass = section.get().getTermObjectClass(section);
-			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
-			terminologyHandler.registerTermDefinition(section, termObjectClass, termIdentifier);
+			TerminologyManager terminologyHandler = compiler.getTerminologyManager();
+			terminologyHandler.registerTermDefinition(compiler, section, termObjectClass,
+					termIdentifier);
 
-			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(article, section);
+			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(compiler, section);
 			if (abortCheck.hasErrors() || abortCheck.termExist()) return abortCheck.getErrors();
 
-			KnowledgeBase kb = getKB(article);
+			KnowledgeBase kb = getKB(compiler);
 
 			TerminologyObject o = kb.getManager().search(name);
 

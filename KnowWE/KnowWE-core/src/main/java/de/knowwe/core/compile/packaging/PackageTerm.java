@@ -18,21 +18,12 @@
  */
 package de.knowwe.core.compile.packaging;
 
-import java.util.Collection;
-import java.util.List;
-
 import de.d3web.strings.Identifier;
-import de.knowwe.core.Environment;
-import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -45,15 +36,12 @@ import de.knowwe.kdom.renderer.StyleRenderer;
  */
 public class PackageTerm extends AbstractType implements Term, RenamableTerm {
 
-	public PackageTerm(boolean checkExistingSections) {
+	public PackageTerm() {
 
 		this.setSectionFinder(new AllTextFinderTrimmed());
 
 		setRenderer(StyleRenderer.PACKAGE);
 
-		if (checkExistingSections) {
-			addSubtreeHandler(Priority.HIGH, new CheckSectionsForPackageExistence());
-		}
 	}
 
 	@Override
@@ -73,32 +61,7 @@ public class PackageTerm extends AbstractType implements Term, RenamableTerm {
 
 	@Override
 	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
-		String replacement = newIdentifier.getLastPathElement();
-		return replacement;
-	}
-
-	private class CheckSectionsForPackageExistence extends SubtreeHandler<PackageTerm> {
-
-		@Override
-		public Collection<Message> create(Article article, Section<PackageTerm> section) {
-
-			if (section.getText().equals(PackageManager.THIS)) {
-				return Messages.noMessage();
-			}
-			PackageManager packageManager =
-					Environment.getInstance().getPackageManager(article.getWeb());
-			List<Section<?>> sectionsOfPackage = packageManager.getSectionsOfPackage(section.getText());
-
-			if (sectionsOfPackage.isEmpty()) {
-				return Messages.asList(Messages.warning("Package " + section.getText()
-						+ " does not contain any sections."));
-			}
-			else {
-				return Messages.noMessage();
-			}
-
-		}
-
+		return newIdentifier.getLastPathElement();
 	}
 
 }

@@ -26,7 +26,7 @@ package de.knowwe.diaflux.persistence;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.ComposedNode;
 import de.d3web.diaFlux.flow.Node;
-import de.knowwe.core.kdom.Article;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.diaflux.type.ActionType;
@@ -46,13 +46,13 @@ public class ComposedNodeHandler extends AbstractNodeHandler<ActionType> {
 	}
 
 	@Override
-	public boolean canCreateNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection) {
-		return super.canCreateNode(article, kb, nodeSection)
+	public boolean canCreateNode(D3webCompiler compiler, KnowledgeBase kb, Section<NodeType> nodeSection) {
+		return super.canCreateNode(compiler, kb, nodeSection)
 				&& Sections.findSuccessor(nodeSection, CallFlowActionType.class) != null;
 	}
 
 	@Override
-	public Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection,
+	public Node createNode(D3webCompiler compiler, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id) {
 
 		Section<CallFlowActionType> section =

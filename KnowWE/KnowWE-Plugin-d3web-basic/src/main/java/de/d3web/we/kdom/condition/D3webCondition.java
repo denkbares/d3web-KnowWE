@@ -19,18 +19,15 @@
  */
 package de.d3web.we.kdom.condition;
 
-import java.util.Collection;
-
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.compile.SuccessorNotReusedConstraint;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.knowledgebase.D3webCompileScript;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * 
@@ -44,53 +41,47 @@ public abstract class D3webCondition<T extends D3webCondition<T>>
 	private static final String COND_STORE_KEY = "cond-store-key";
 
 	public D3webCondition() {
-		this.addSubtreeHandler(new CondCreateHandler());
+		this.addCompileScript(new CondCreateHandler());
 	}
 
-	public final Condition getCondition(Article article, Section<? extends D3webCondition<?>> s) {
-		return (Condition) KnowWEUtils.getStoredObject(article, s, COND_STORE_KEY);
+	public final Condition getCondition(PackageCompiler compiler, Section<? extends D3webCondition<?>> s) {
+		return (Condition) Compilers.getStoredObject(compiler, s, COND_STORE_KEY);
 	}
 
-	public static Condition findCondition(Article article, Section<?> parent) {
+	public static Condition findCondition(D3webCompiler compiler, Section<?> parent) {
 		@SuppressWarnings("rawtypes")
 		Section<D3webCondition> section = Sections.findSuccessor(parent, D3webCondition.class);
 		@SuppressWarnings("unchecked")
-		Condition condition = section.get().getCondition(article, section);
+		Condition condition = section.get().getCondition(compiler, section);
 		return condition;
 	}
 
-	private void storeCondition(Article article, Condition condition, Section<? extends D3webCondition<?>> section) {
-		KnowWEUtils.storeObject(article, section, COND_STORE_KEY, condition);
+	private void storeCondition(D3webCompiler compiler, Condition condition, Section<? extends D3webCondition<?>> section) {
+		Compilers.storeObject(compiler, section, COND_STORE_KEY, condition);
 	}
 
 	/**
 	 * Creates the condition for the requested section in the specified article.
 	 * 
 	 * @created 02.10.2010
-	 * @param article to create the condition for
+	 * @param compiler to create the condition for
 	 * @param section the section of this condition
 	 * @return the newly created condition
 	 */
-	protected abstract Condition createCondition(Article article, Section<T> section);
+	protected abstract Condition createCondition(D3webCompiler compiler, Section<T> section);
 
-	private class CondCreateHandler extends D3webSubtreeHandler<T> {
+	private class CondCreateHandler extends D3webCompileScript<T> {
 
-		public CondCreateHandler() {
-			this.registerConstraintModule(new SuccessorNotReusedConstraint<T>());
+		@Override
+		public void destroy(D3webCompiler compiler, Section<T> section) {
+			storeCondition(compiler, null, section);
+			Messages.clearMessages(compiler, section, getClass());
 		}
 
 		@Override
-		public void destroy(Article article, Section<T> s) {
-			storeCondition(article, null, s);
-			Messages.clearMessages(article, s, getClass());
-		}
-
-		@Override
-		public Collection<Message> create(Article article, Section<T> section) {
-			Condition condition = createCondition(article, section);
-			storeCondition(article, condition, section);
-			// do not overwrite existing messages
-			return null;
+		public void compile(D3webCompiler compiler, Section<T> section) {
+			Condition condition = createCondition(compiler, section);
+			storeCondition(compiler, condition, section);
 		}
 
 	}

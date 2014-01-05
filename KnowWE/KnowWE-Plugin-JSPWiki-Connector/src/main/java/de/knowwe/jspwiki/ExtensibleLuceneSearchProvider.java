@@ -27,7 +27,7 @@ public class ExtensibleLuceneSearchProvider extends LuceneSearchProvider {
 
 		Extension[] extensions = PluginManager.getInstance().getExtensions(
 				Plugins.EXTENDED_PLUGIN_ID,
-				Plugins.EXTENDED_POINT_SEARCHPROVIDER);
+				Plugins.EXTENDED_POINT_SearchProvider);
 
 		// execute search for all plugged search-providers
 		for (Extension extension : extensions) {

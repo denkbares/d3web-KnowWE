@@ -29,10 +29,12 @@ import de.d3web.core.session.SessionFactory;
 import de.d3web.testcase.TestCaseUtils;
 import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.TestCase;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -68,7 +70,7 @@ public class ExecuteCasesAction extends AbstractAction {
 		Article article = Environment.getInstance().getArticle(context.getWeb(),
 				context.getTitle());
 		TestCaseProviderStorage providerStorage = (TestCaseProviderStorage) section.getSectionStore().getObject(
-				article,
+				Compilers.getCompiler(article, D3webCompiler.class),
 				TestCaseProviderStorage.KEY);
 		TestCaseProvider provider = providerStorage.getTestCaseProvider(testCaseName);
 		Session session = provider.getActualSession(context);
@@ -86,7 +88,7 @@ public class ExecuteCasesAction extends AbstractAction {
 			runTo(session, testCase, status.getLastExecuted(), endDate, status);
 			status.setLastExecuted(endDate);
 		}
-		D3webUtils.handleLoopDetectionNotification(context, session);
+		D3webUtils.handleLoopDetectionNotification(section.getArticleManager(), context, session);
 	}
 
 	private static void runTo(Session session, TestCase testCase, Date startDate, Date endDate, SessionDebugStatus status) {

@@ -26,7 +26,7 @@ package de.knowwe.diaflux.persistence;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.flow.SnapshotNode;
-import de.knowwe.core.kdom.Article;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.diaflux.FlowchartSubTreeHandler;
 import de.knowwe.diaflux.type.FlowchartType;
@@ -45,7 +45,7 @@ public class SnapshotNodeHandler extends AbstractNodeHandler<SnapshotType> {
 	}
 
 	@Override
-	public Node createNode(Article article, KnowledgeBase kb, Section<NodeType> nodeSection,
+	public Node createNode(D3webCompiler compiler, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id) {
 
 		Section<SnapshotType> nodeInfo = getNodeInfo(nodeSection);

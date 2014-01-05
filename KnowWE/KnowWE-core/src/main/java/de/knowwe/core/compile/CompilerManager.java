@@ -3,6 +3,7 @@ package de.knowwe.core.compile;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -17,16 +18,17 @@ import java.util.logging.Logger;
 
 import de.d3web.collections.PriorityList;
 import de.d3web.collections.PriorityList.Group;
-import de.knowwe.core.Environment;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.Messages;
 import de.knowwe.plugin.Plugins;
 
 /**
- * This class represents the compile manager for a specific web. It is
- * responsible to manage every compile process for all articles and section of
- * the web. Therefore all compile code has been removed out of sections and
- * articles and placed here.
+ * This class represents the compile manager for a specific
+ * {@link ArticleManager}. It is responsible to manage every compile process for
+ * all articles and section of the {@link ArticleManager}. Therefore all compile
+ * code has been removed out of sections and articles and placed here.
  * <p>
  * The compile manager holds a set of compilers. The compilers can be plugged
  * into the manager using the defined extension point. Each compiler may
@@ -40,22 +42,25 @@ import de.knowwe.plugin.Plugins;
  * (defined through the compiler's extension), they are ordered by these
  * priorities. Only compilers with same priority may compile in parallel.
  * <p>
- * The compile managers itself can be accessed through the {@link Environment}
- * using {@link Environment#getCompileManager(String)}.
  */
 public class CompilerManager {
 
 	private static final Map<Class<? extends Compiler>, ScriptManager<? extends Compiler>> scriptManagers = new HashMap<Class<? extends Compiler>, ScriptManager<? extends Compiler>>();
 
 	private final PriorityList<Double, Compiler> compilers;
-	private final String web;
+	// just a fast cache for the contains() method
+	private final HashSet<Compiler> compilerCache;
+	private final ArticleManager articleManager;
 	private Iterator<Group<Double, Compiler>> running = null;
 	private final ExecutorService threadPool;
+	private final Object lock = new Object();
 
-	public CompilerManager(String web) {
-		this.web = web;
+	public CompilerManager(ArticleManager articleManager) {
+		this.articleManager = articleManager;
+		this.compilerCache = new HashSet<Compiler>();
 		this.compilers = Plugins.getCompilers();
 		for (Compiler compiler : compilers) {
+			compilerCache.add(compiler);
 			compiler.init(this);
 		}
 		ExecutorService pool = createExecutorService();
@@ -68,7 +73,7 @@ public class CompilerManager {
 
 			@Override
 			public Thread newThread(Runnable r) {
-				Thread thread = new Thread(r, "wiki-compiler");
+				Thread thread = new Thread(r, "KnowWE-Compiler");
 				return thread;
 			}
 		});
@@ -80,6 +85,10 @@ public class CompilerManager {
 	@SuppressWarnings("unchecked")
 	public static <C extends Compiler> ScriptManager<C> getScriptManager(C compiler) {
 		return (ScriptManager<C>) getScriptManager(compiler.getClass());
+	}
+
+	public static Collection<ScriptManager<? extends Compiler>> getScriptManagers() {
+		return Collections.unmodifiableCollection(scriptManagers.values());
 	}
 
 	public static <C extends Compiler> ScriptManager<C> getScriptManager(Class<C> compilerClass) {
@@ -107,7 +116,11 @@ public class CompilerManager {
 	 * @return the web of this compiler
 	 */
 	public String getWeb() {
-		return web;
+		return articleManager.getWeb();
+	}
+
+	public ArticleManager getArticleManager() {
+		return this.articleManager;
 	}
 
 	/**
@@ -128,17 +141,24 @@ public class CompilerManager {
 
 			@Override
 			public void run() {
+				long startTime = System.currentTimeMillis();
 				try {
 					doCompile(added, removed);
 				}
 				catch (Throwable e) {
 					Logger.getLogger(CompilerManager.class.getName()).log(Level.SEVERE,
-							"unexpected internal error starting compile", e);
+							"Unexpected internal error while starting compilation.", e);
 				}
 				finally {
-					synchronized (this) {
+					synchronized (lock) {
 						running = null;
-						this.notifyAll();
+						Logger.getLogger(this.getClass().getName()).log(
+								Level.INFO,
+								"Compiled " + added.size() + " added and " + removed.size()
+										+ " removed section" + (removed.size() != 1 ? "s" : "")
+										+ " after " + (System.currentTimeMillis() - startTime)
+										+ "ms");
+						lock.notifyAll();
 					}
 				}
 			}
@@ -151,7 +171,9 @@ public class CompilerManager {
 			// get the current compilers
 			List<Compiler> simultaneousCompilers;
 			synchronized (this) {
-				if (!running.hasNext()) break;
+				if (!running.hasNext()) {
+					break;
+				}
 				Group<Double, Compiler> group = running.next();
 				simultaneousCompilers = group.getElements();
 			}
@@ -165,20 +187,35 @@ public class CompilerManager {
 
 					@Override
 					public void run() {
+						long startTime = System.currentTimeMillis();
 						try {
 							// compile the content
 							compiler.compile(added, removed);
 						}
 						catch (Throwable e) {
-							Logger.getLogger(CompilerManager.class.getName()).log(Level.SEVERE,
-									"unexpected internal error while compiling with " + compiler,
-									e);
+							String msg = "Unexpected internal error while compiling with "
+									+ compiler + ": " + e.getMessage();
+							Logger.getLogger(CompilerManager.class.getName()).log(
+									Level.SEVERE, msg, e);
+							for (Section<?> section : added) {
+								// it does not matter if we store the messages
+								// for the same article multiple times, because
+								// for each source there can only be one
+								// collection of messages
+								Messages.storeMessage(section.getArticle().getRootSection(),
+										this.getClass(), Messages.error(msg));
+							}
 						}
 						finally {
 							// and notify that the compiler has finished
-							synchronized (this) {
+							synchronized (lock) {
 								activeCompilers.remove(compiler);
-								this.notifyAll();
+								Logger.getLogger(this.getClass().getName()).log(
+										Level.FINE,
+										compiler.getClass().getSimpleName()
+												+ " finished after "
+												+ (System.currentTimeMillis() - startTime) + "ms");
+								lock.notifyAll();
 							}
 						}
 					}
@@ -186,9 +223,9 @@ public class CompilerManager {
 			}
 
 			// we wait until all have been terminated
-			synchronized (this) {
+			synchronized (lock) {
 				while (!activeCompilers.isEmpty())
-					this.wait();
+					lock.wait();
 			}
 		}
 	}
@@ -219,7 +256,7 @@ public class CompilerManager {
 	/**
 	 * Adds a new compiler with the specific priority.
 	 * <p>
-	 * Please not that it is allowed that compilers are added and removed while
+	 * Please note that it is allowed that compilers are added and removed while
 	 * compiling the wiki. Usually a more prioritized compiler may add or remove
 	 * sub-sequential Compilers depending on specific markups, e.g. defining a
 	 * knowledge base or triple store for specific package combination to be
@@ -233,11 +270,12 @@ public class CompilerManager {
 		// debug code: check that we only add items
 		// that not already have been added
 		if (compilers.contains(compiler)) {
-			throw new IllegalStateException("do not add equal compilers instances multiple times");
+			throw new IllegalStateException("Do not add equal compilers instances multiple times.");
 		}
 		// add the compiler, being thread-save
-		synchronized (this) {
+		synchronized (lock) {
 			compilers.add(priority, compiler);
+			compilerCache.add(compiler);
 			compiler.init(this);
 		}
 	}
@@ -258,11 +296,18 @@ public class CompilerManager {
 		// debug code: check that we only remove items
 		// that already have been added
 		if (!compilers.contains(compiler)) {
-			throw new NoSuchElementException("removeing non-exisitng compiler instance");
+			throw new NoSuchElementException("Removeing non-exisitng compiler instance.");
 		}
 		// remove the compiler, being thread-save
-		synchronized (this) {
+		synchronized (lock) {
+			compilerCache.remove(compiler);
 			compilers.remove(compiler);
+		}
+	}
+
+	public boolean contains(Compiler compiler) {
+		synchronized (lock) {
+			return compilerCache.contains(compiler);
 		}
 	}
 
@@ -285,16 +330,16 @@ public class CompilerManager {
 	 * timeout occurs, or the current thread is interrupted, whichever happens
 	 * first.
 	 * 
-	 * @param timeout the maximum time to wait
+	 * @param timeoutMilliSeconds the maximum time to wait
 	 * @param unit the time unit of the timeout argument
 	 * @return <tt>true</tt> if the compilation has finished and <tt>false</tt>
 	 *         if the timeout elapsed before termination
 	 * @throws InterruptedException if interrupted while waiting
 	 * @see #compile
 	 */
-	public boolean awaitTermination(long timeout) throws InterruptedException {
-		long endTime = System.currentTimeMillis() + timeout;
-		synchronized (this) {
+	public boolean awaitTermination(long timeoutMilliSeconds) throws InterruptedException {
+		long endTime = System.currentTimeMillis() + timeoutMilliSeconds;
+		synchronized (lock) {
 			while (true) {
 				// if every compile has terminated within the specified time,
 				// return true
@@ -304,8 +349,30 @@ public class CompilerManager {
 				// required to complete, and stop if time has been elapsed.
 				long remainingTime = endTime - System.currentTimeMillis();
 				if (remainingTime <= 0) return false;
-				this.wait(remainingTime);
+				lock.wait(remainingTime);
 			}
 		}
 	}
+
+	/**
+	 * Convenience method which compiles the given sections. Since for now only
+	 * one compilation operation can happen at the same time, this methods wait
+	 * until the current operation finishes before it starts the next.
+	 * 
+	 * @created 16.11.2013
+	 */
+	public void compile(List<Section<?>> added, List<Section<?>> removed) {
+		while (!startCompile(added, removed)) {
+			try {
+				awaitTermination();
+			}
+			catch (InterruptedException e) {
+				Logger.getLogger(CompilerManager.class.getName()).log(
+						Level.WARNING,
+						"Caught InterrupedException while waiting to compile.",
+						e);
+			}
+		}
+	}
+
 }

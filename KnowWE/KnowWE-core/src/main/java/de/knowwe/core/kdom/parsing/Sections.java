@@ -17,9 +17,12 @@ import java.util.Set;
 import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.Types;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
@@ -247,26 +250,51 @@ public class Sections {
 	@SuppressWarnings("unchecked")
 	public static <OT extends Type> List<Section<OT>> findChildrenOfType(Section<?> section, Class<OT> clazz) {
 		List<Section<OT>> result = new ArrayList<Section<OT>>();
-		for (Section<?> s : section.getChildren())
-			if (clazz.isAssignableFrom(s.get().getClass())) result.add((Section<OT>) s);
+		if (canHaveSuccessorOfType(section, clazz)) {
+			for (Section<?> s : section.getChildren()) {
+				if (clazz.isAssignableFrom(s.get().getClass())) {
+					result.add((Section<OT>) s);
+				}
+			}
+		}
 		return result;
+	}
+
+	public static boolean canHaveSuccessorOfType(Section<?> section, Class<?>... clazzes) {
+		Object type = section.get();
+		if (type instanceof AbstractType) {
+			AbstractType aType = (AbstractType) type;
+			boolean can = false;
+			for (Class<?> clazz : clazzes) {
+				if (Types.canHaveSuccessorOfType(aType, clazz)) {
+					can = true;
+					break;
+				}
+			}
+			return can;
+		}
+		// should not happen, but just in case: we don't
+		// know and say yes to be safe
+		return true;
 	}
 
 	/**
 	 * Finds the first successors of type <code>class1</code> in the KDOM below
 	 * the given Section.
 	 */
-	public static <OT extends Type> Section<OT> findSuccessor(Section<?> section, Class<OT> class1) {
+	public static <OT extends Type> Section<OT> findSuccessor(Section<?> section, Class<OT> clazz) {
 
-		if (class1.isInstance(section.get())) {
-			return cast(section, class1);
+		if (clazz.isInstance(section.get())) {
+			return cast(section, clazz);
 		}
 
-		for (Section<?> sec : section.getChildren()) {
-			Section<OT> s = Sections.findSuccessor(sec, class1);
-			if (s != null) return s;
-		}
+		if (canHaveSuccessorOfType(section, clazz)) {
+			for (Section<?> sec : section.getChildren()) {
+				Section<OT> s = Sections.findSuccessor(sec, clazz);
+				if (s != null) return s;
+			}
 
+		}
 		return null;
 	}
 
@@ -280,14 +308,15 @@ public class Sections {
 			return cast(section, class1);
 		}
 
-		List<Section<?>> children = section.getChildren();
-		ListIterator<Section<?>> iterator = children.listIterator(children.size());
-		while (iterator.hasPrevious()) {
-			Section<?> sec = iterator.previous();
-			Section<OT> s = Sections.findLastSuccessor(sec, class1);
-			if (s != null) return s;
+		if (canHaveSuccessorOfType(section, class1)) {
+			List<Section<?>> children = section.getChildren();
+			ListIterator<Section<?>> iterator = children.listIterator(children.size());
+			while (iterator.hasPrevious()) {
+				Section<?> sec = iterator.previous();
+				Section<OT> s = Sections.findLastSuccessor(sec, class1);
+				if (s != null) return s;
+			}
 		}
-
 		return null;
 	}
 
@@ -358,9 +387,9 @@ public class Sections {
 	 * Finds all successors of type <code>class1</code> in the KDOM below the
 	 * given Section.
 	 */
-	public static <OT extends Type> List<Section<OT>> findSuccessorsOfType(Section<?> section, Class<OT> class1) {
+	public static <OT extends Type> List<Section<OT>> findSuccessorsOfType(Section<?> section, Class<OT> clazz) {
 		List<Section<OT>> result = new ArrayList<Section<OT>>();
-		findSuccessorsOfType(section, class1, result);
+		findSuccessorsOfType(section, clazz, result);
 		return result;
 	}
 
@@ -369,13 +398,15 @@ public class Sections {
 	 * given Section.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <OT extends Type> void findSuccessorsOfType(Section<?> section, Class<OT> class1, List<Section<OT>> found) {
+	public static <OT extends Type> void findSuccessorsOfType(Section<?> section, Class<OT> clazz, List<Section<OT>> found) {
 
-		if (class1.isAssignableFrom(section.get().getClass())) {
+		if (clazz.isAssignableFrom(section.get().getClass())) {
 			found.add((Section<OT>) section);
 		}
-		for (Section<?> child : section.getChildren()) {
-			Sections.findSuccessorsOfType(child, class1, found);
+		if (canHaveSuccessorOfType(section, clazz)) {
+			for (Section<?> child : section.getChildren()) {
+				Sections.findSuccessorsOfType(child, clazz, found);
+			}
 		}
 	}
 
@@ -385,13 +416,15 @@ public class Sections {
 	 */
 	@SuppressWarnings({
 			"unchecked", "rawtypes" })
-	public static void findSuccessorsOfTypeUntyped(Section<?> section, Class class1, List<Section<?>> found) {
+	public static void findSuccessorsOfTypeUntyped(Section<?> section, Class clazz, List<Section<?>> found) {
 
-		if (class1.isAssignableFrom(section.get().getClass())) {
+		if (clazz.isAssignableFrom(section.get().getClass())) {
 			found.add(section);
 		}
-		for (Section<? extends Type> sec : section.getChildren()) {
-			Sections.findSuccessorsOfTypeUntyped(sec, class1, found);
+		if (canHaveSuccessorOfType(section, clazz)) {
+			for (Section<? extends Type> sec : section.getChildren()) {
+				Sections.findSuccessorsOfTypeUntyped(sec, clazz, found);
+			}
 		}
 	}
 
@@ -401,20 +434,20 @@ public class Sections {
 	 * key.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <OT extends Type> void findSuccessorsOfTypeAsMap(Section<?> section, Class<OT> class1, Map<String, Section<OT>> found) {
+	public static <OT extends Type> void findSuccessorsOfTypeAsMap(Section<?> section, Class<OT> clazz, Map<String, Section<OT>> found) {
 
-		if (class1.isAssignableFrom(section.get().getClass())) {
+		if (clazz.isAssignableFrom(section.get().getClass())) {
 			Section<OT> tmp = found.get(section.getText());
 			// only replace the finding by this Section, if this Section is not
-			// reused
-			// but the Section already in the map is reused
-			if (tmp == null
-					|| (tmp.isOrHasReusedSuccessor && !section.isOrHasReusedSuccessor)) {
+			// reused but the Section already in the map is reused
+			if (tmp == null || (tmp.isOrHasReusedSuccessor && !section.isOrHasReusedSuccessor)) {
 				found.put((section).getText(), (Section<OT>) section);
 			}
 		}
-		for (Section<?> sec : section.getChildren()) {
-			Sections.findSuccessorsOfTypeAsMap(sec, class1, found);
+		if (canHaveSuccessorOfType(section, clazz)) {
+			for (Section<?> sec : section.getChildren()) {
+				Sections.findSuccessorsOfTypeAsMap(sec, clazz, found);
+			}
 		}
 
 	}
@@ -424,19 +457,20 @@ public class Sections {
 	 * of <code>depth</code> below the argument Section.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <OT extends Type> void findSuccessorsOfType(Section<?> section, Class<OT> class1,
+	public static <OT extends Type> void findSuccessorsOfType(Section<?> section, Class<OT> clazz,
 			int depth, List<Section<OT>> found) {
 
-		if (class1.isAssignableFrom(section.get().getClass())) {
+		if (clazz.isAssignableFrom(section.get().getClass())) {
 			found.add((Section<OT>) section);
 		}
 		if (depth == 0) {
 			return;
 		}
-		for (Section<?> sec : section.getChildren()) {
-			Sections.findSuccessorsOfType(sec, class1, depth - 1, found);
+		if (canHaveSuccessorOfType(section, clazz)) {
+			for (Section<?> sec : section.getChildren()) {
+				Sections.findSuccessorsOfType(sec, clazz, depth - 1, found);
+			}
 		}
-
 	}
 
 	/**
@@ -735,6 +769,7 @@ public class Sections {
 		Collection<String> missingIDs = new LinkedList<String>();
 		Collection<String> forbiddenArticles = new LinkedList<String>();
 
+		Compilers.getDefaultArticleManager(context.getWeb()).open();
 		for (String title : idsByTitle.keySet()) {
 			Collection<String> idsForCurrentTitle = idsByTitle.get(title);
 			boolean errorsForThisTitle = handleErrors(title, idsForCurrentTitle, context,
@@ -745,6 +780,7 @@ public class Sections {
 						sectionsMap), context);
 			}
 		}
+		Compilers.getDefaultArticleManager(context.getWeb()).commit();
 
 		return new ReplaceResult(sectionInfos, missingIDs, forbiddenArticles);
 	}
@@ -862,8 +898,7 @@ public class Sections {
 		}
 
 		List<Section<?>> children = sec.getChildren();
-		if (children == null || children.isEmpty()
-				|| sec.hasSharedChildren()) {
+		if (children == null || children.isEmpty()) {
 			newText.append(sec.getText());
 			return;
 		}

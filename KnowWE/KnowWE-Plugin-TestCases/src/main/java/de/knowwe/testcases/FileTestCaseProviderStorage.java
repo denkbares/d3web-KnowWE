@@ -30,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -50,13 +51,13 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 public abstract class FileTestCaseProviderStorage implements TestCaseProviderStorage {
 
 	private final Map<String, List<AttachmentTestCaseProvider>> regexMap = new HashMap<String, List<AttachmentTestCaseProvider>>();
-	private final Article article;
+	private final D3webCompiler compiler;
 	protected final List<Message> messages = new LinkedList<Message>();
 	protected final Article sectionArticle;
 	protected final Section<? extends DefaultMarkupType> prefixProvidginSection;
 
-	public FileTestCaseProviderStorage(Article compilingArticle, Section<? extends DefaultMarkupType> prefixProvidingSection, String[] regexes) {
-		this.article = compilingArticle;
+	public FileTestCaseProviderStorage(D3webCompiler compiler, Section<? extends DefaultMarkupType> prefixProvidingSection, String[] regexes) {
+		this.compiler = compiler;
 		this.sectionArticle = prefixProvidingSection.getArticle();
 		this.prefixProvidginSection = prefixProvidingSection;
 		update(regexes);
@@ -78,7 +79,7 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 			}
 		}
 		refresh();
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
 		for (AttachmentTestCaseProvider provider : getTestCaseProviders()) {
 			provider.updateTestCaseMessages(kb);
 		}
@@ -141,7 +142,7 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 				}
 				if (!exists) {
 					// provider has to be newly created
-					actualList.add(createTestCaseProvider(article, prefixProvidginSection,
+					actualList.add(createTestCaseProvider(compiler, prefixProvidginSection,
 							attachment));
 				}
 			}
@@ -150,7 +151,7 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 
 	}
 
-	protected abstract AttachmentTestCaseProvider createTestCaseProvider(Article article, Section<? extends DefaultMarkupType> prefixDefiningSection, WikiAttachment attachment);
+	protected abstract AttachmentTestCaseProvider createTestCaseProvider(D3webCompiler compiler, Section<? extends DefaultMarkupType> prefixDefiningSection, WikiAttachment attachment);
 
 	@Override
 	public Collection<Message> getMessages() {

@@ -24,8 +24,8 @@ import java.util.List;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionReference;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -68,22 +68,22 @@ public class CondKnown extends D3webCondition<CondKnown> {
 	}
 
 	@Override
-	protected Condition createCondition(Article article, de.knowwe.core.kdom.parsing.Section<CondKnown> section) {
+	protected Condition createCondition(D3webCompiler compiler, de.knowwe.core.kdom.parsing.Section<CondKnown> section) {
 		Section<QuestionReference> qRef = Sections.findSuccessor(section, QuestionReference.class);
 		if (qRef != null) {
-			Question q = qRef.get().getTermObject(article, qRef);
+			Question q = qRef.get().getTermObject(compiler, qRef);
 
 			if (q != null) {
 				return createCond(q);
 			}
 			else {
 				Message msg = Messages.noSuchObjectError(qRef.getText());
-				Messages.storeMessage(article, section, getClass(), msg);
+				Messages.storeMessage(compiler, section, getClass(), msg);
 				return null;
 			}
 		}
 		Message msg = Messages.noSuchObjectError("");
-		Messages.storeMessage(article, section, getClass(), msg);
+		Messages.storeMessage(compiler, section, getClass(), msg);
 		return null;
 	}
 

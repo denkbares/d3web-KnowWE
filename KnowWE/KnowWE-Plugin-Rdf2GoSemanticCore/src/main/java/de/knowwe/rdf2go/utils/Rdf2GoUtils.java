@@ -19,10 +19,14 @@
  */
 package de.knowwe.rdf2go.utils;
 
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
-import de.knowwe.rdf2go.Rdf2GoCore;
-import de.knowwe.rdf2go.Rdf2GoCore.Rdf2GoReasoning;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.Literal;
@@ -32,15 +36,29 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.util.RDFTool;
 import org.ontoware.rdf2go.vocabulary.RDFS;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
+import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.Rdf2GoCore.Rdf2GoReasoning;
 
 public class Rdf2GoUtils {
+
+	public static Rdf2GoCore getRdf2GoCore(Section<? extends DefaultMarkupType> section) {
+		String globalAnnotation = DefaultMarkupType.getAnnotation(section, Rdf2GoCore.GLOBAL);
+		if (globalAnnotation != null && globalAnnotation.equals("true")) {
+			return Rdf2GoCore.getInstance();
+		}
+		Collection<Rdf2GoCompiler> compilers = Compilers.getCompilers(section,
+				Rdf2GoCompiler.class);
+		if (!compilers.isEmpty()) {
+			return compilers.iterator().next().getRdf2GoCore();
+		}
+		return null;
+	}
 
 	public static Statement[] toArray(Collection<Statement> statements) {
 		return statements.toArray(new Statement[statements.size()]);
@@ -177,12 +195,12 @@ public class Rdf2GoUtils {
 		return Strings.encodeURL(temp);
 	}
 
-	public static String createSparqlString(String sparqlString) {
+	public static String createSparqlString(Rdf2GoCore core, String sparqlString) {
 		sparqlString = sparqlString.trim();
 		sparqlString = sparqlString.replaceAll("\n", " ");
 		sparqlString = sparqlString.replaceAll("\r", "");
 
-		Map<String, String> nameSpaces = Rdf2GoCore.getInstance().getNameSpaces();
+		Map<String, String> nameSpaces = core.getNameSpaces();
 
 		StringBuilder newSparqlString = new StringBuilder();
 		StringBuilder pattern = new StringBuilder("[\\s\n\r()]<((");
@@ -210,24 +228,11 @@ public class Rdf2GoUtils {
 		return sparqlString;
 	}
 
-	public static void addStringLiteral(String subject, String predicate, String literalText, Collection<Statement> statements) {
-		URI subjectUri = Rdf2GoCore.getInstance().createlocalURI(subject);
-		URI predicateUri = Rdf2GoCore.getInstance().createlocalURI(predicate);
-		Literal literal = Rdf2GoCore.getInstance().createLiteral(literalText);
-		addStatement(subjectUri, predicateUri, literal, statements);
-	}
-
-	/**
-	 * Creates a statement and adds it to the list of statements. Additionally,
-	 * in case of RDF reasoning, the rdfs label of the object is created and
-	 * added.
-	 * 
-	 */
-	public static void addStatement(String subject, String predicate, String object, Collection<Statement> statements) {
-		Rdf2GoCore core = Rdf2GoCore.getInstance();
+	public static void addStringLiteral(Rdf2GoCore core, String subject, String predicate, String literalText, Collection<Statement> statements) {
 		URI subjectUri = core.createlocalURI(subject);
 		URI predicateUri = core.createlocalURI(predicate);
-		addStatement(subjectUri, predicateUri, object, statements);
+		Literal literal = core.createLiteral(literalText);
+		addStatement(core, subjectUri, predicateUri, literal, statements);
 	}
 
 	/**
@@ -235,24 +240,36 @@ public class Rdf2GoUtils {
 	 * in case of RDF reasoning, the rdfs label of the object is created and
 	 * added.
 	 * 
+	 * 
 	 */
-	public static void addStatement(Resource subject, URI predicate, String object, Collection<Statement> statements) {
-		Rdf2GoCore core = Rdf2GoCore.getInstance();
+	public static void addStatement(Rdf2GoCore core, String subject, String predicate, String object, Collection<Statement> statements) {
+		URI subjectUri = core.createlocalURI(subject);
+		URI predicateUri = core.createlocalURI(predicate);
+		addStatement(core, subjectUri, predicateUri, object, statements);
+	}
+
+	/**
+	 * Creates a statement and adds it to the list of statements. Additionally,
+	 * in case of RDF reasoning, the rdfs label of the object is created and
+	 * added.
+	 * 
+	 * 
+	 */
+	public static void addStatement(Rdf2GoCore core, Resource subject, URI predicate, String object, Collection<Statement> statements) {
 		URI objectUri = core.createlocalURI(object);
-		addStatement(subject, predicate, objectUri, statements);
+		addStatement(core, subject, predicate, objectUri, statements);
 		if (core.getReasoningType().equals(Rdf2GoReasoning.RDF)) {
-			addStatement(objectUri, RDFS.label, core.createLiteral(object), statements);
+			addStatement(core, objectUri, RDFS.label, core.createLiteral(object), statements);
 		}
 	}
 
-	public static void addStatement(Resource subject, URI predicate, Node object, Collection<Statement> statements) {
-		Rdf2GoCore core = Rdf2GoCore.getInstance();
+	public static void addStatement(Rdf2GoCore core, Resource subject, URI predicate, Node object, Collection<Statement> statements) {
 		if (core.getReasoningType().equals(Rdf2GoReasoning.RDF)) {
 			createUriLabel(core, subject, statements);
 			createUriLabel(core, predicate, statements);
 			createUriLabel(core, object, statements);
 		}
-		statements.add(Rdf2GoCore.getInstance().createStatement(subject, predicate, object));
+		statements.add(core.createStatement(subject, predicate, object));
 	}
 
 	private static void createUriLabel(Rdf2GoCore core, Node node, Collection<Statement> statements) {
@@ -262,7 +279,7 @@ public class Rdf2GoUtils {
 			if (uriNodeString.startsWith(core.getLocalNamespace())) {
 				String stringPart = uriNodeString.substring(core.getLocalNamespace().length());
 				Literal nodeLiteral = core.createLiteral(Strings.decodeURL(stringPart));
-				statements.add(Rdf2GoCore.getInstance().createStatement(uriNode, RDFS.label,
+				statements.add(core.createStatement(uriNode, RDFS.label,
 						nodeLiteral));
 			}
 		}
@@ -276,13 +293,13 @@ public class Rdf2GoUtils {
 		return externalForm;
 	}
 
-    public static Syntax syntaxForFileName(String fileName) {
-        for (Syntax syntax : Syntax.collection()) {
-            if (fileName.toLowerCase().endsWith(syntax.getFilenameExtension())) {
-                return syntax;
-            }
-        }
-        return null;
-    }
+	public static Syntax syntaxForFileName(String fileName) {
+		for (Syntax syntax : Syntax.collection()) {
+			if (fileName.toLowerCase().endsWith(syntax.getFilenameExtension())) {
+				return syntax;
+			}
+		}
+		return null;
+	}
 
 }

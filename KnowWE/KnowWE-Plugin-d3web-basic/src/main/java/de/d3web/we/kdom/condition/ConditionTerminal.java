@@ -23,11 +23,11 @@ package de.d3web.we.kdom.condition;
 import java.util.Collection;
 import java.util.List;
 
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.AnonymousType;
@@ -54,13 +54,13 @@ public class ConditionTerminal extends AbstractType {
 		AnonymousType unrecognizedCond = new AnonymousType(
 				"UnrecognizedTerminalCondition");
 		unrecognizedCond.setSectionFinder(new AllTextFinderTrimmed());
-		unrecognizedCond.addSubtreeHandler(new SubtreeHandler<ConditionTerminal>() {
+		unrecognizedCond.addCompileScript(new D3webHandler<ConditionTerminal>() {
 
 			@Override
-			public Collection<Message> create(Article article, Section<ConditionTerminal> s) {
+			public Collection<Message> create(D3webCompiler compiler, Section<ConditionTerminal> section) {
 				return Messages.asList(Messages.syntaxError(
 						"no valid TerminalCondition: "
-								+ s.getText()));
+								+ section.getText()));
 			}
 		});
 

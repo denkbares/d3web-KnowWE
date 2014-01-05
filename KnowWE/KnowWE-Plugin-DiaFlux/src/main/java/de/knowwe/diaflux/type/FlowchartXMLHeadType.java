@@ -25,19 +25,17 @@ import java.util.regex.Pattern;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
-import de.knowwe.core.compile.terminology.TermRegistrationScope;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.xml.XMLHead;
 
@@ -52,15 +50,15 @@ public class FlowchartXMLHeadType extends XMLHead {
 		addChildType(new FlowchartTermDef());
 	}
 
-	public static class FlowchartTermDef extends SimpleDefinition implements RenamableTerm {
+	public static class FlowchartTermDef extends SimpleDefinition<D3webCompiler> implements RenamableTerm {
 
 		public FlowchartTermDef() {
-			super(TermRegistrationScope.LOCAL, Flow.class);
+			super(D3webCompiler.class, Flow.class);
 			Pattern pattern = Pattern.compile("name=\"\\s*([^\"]*?)\\s*\"");
 			setSectionFinder(new RegexSectionFinder(pattern, 1));
 			setRenderer(StyleRenderer.Flowchart);
-			clearSubtreeHandlers();
-			addSubtreeHandler(Priority.HIGHER, new FlowchartRegistrationHandler());
+			clearCompileScripts();
+			addCompileScript(Priority.HIGHER, new FlowchartRegistrationHandler());
 		}
 
 		@Override
@@ -74,20 +72,20 @@ public class FlowchartXMLHeadType extends XMLHead {
 		}
 	}
 
-	static class FlowchartRegistrationHandler extends SubtreeHandler<FlowchartTermDef> {
+	static class FlowchartRegistrationHandler extends D3webHandler<FlowchartTermDef> {
 
 		@Override
-		public Collection<Message> create(Article article, Section<FlowchartTermDef> s) {
+		public Collection<Message> create(D3webCompiler compiler, Section<FlowchartTermDef> s) {
 			Collection<Message> messages = new ArrayList<Message>(1);
-			TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
+			TerminologyManager terminologyManager = compiler.getTerminologyManager();
 			Identifier termIdentifier = s.get().getTermIdentifier(s);
 			if (terminologyManager.isDefinedTerm(termIdentifier)) {
 				messages.add(Messages.objectAlreadyDefinedError(termIdentifier.toString(), s));
 			}
-			terminologyManager.registerTermDefinition(s,
-					s.get().getTermObjectClass(s),
-					termIdentifier);
+			terminologyManager.registerTermDefinition(compiler, s,
+					s.get().getTermObjectClass(s), termIdentifier);
 			return messages;
 		}
+
 	}
 }

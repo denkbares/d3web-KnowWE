@@ -41,7 +41,6 @@ import de.d3web.testing.TestResult;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRenderer;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRendererManager;
-import de.d3web.we.ci4ke.util.CIUtils;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -180,7 +179,7 @@ public class CIRenderer {
 	/**
 	 * Renders out the test results of a selected Build
 	 */
-	public void renderBuildDetails(BuildResult build, RenderResult result) {
+	public void renderBuildDetails(String web, BuildResult build, RenderResult result) {
 
 		result.appendHtml("<div id='" + dashboardNameEncoded
 				+ "-column-middle' class='ci-column-middle'>");
@@ -190,7 +189,7 @@ public class CIRenderer {
 
 			int index = 0;
 			for (TestResult testResult : build.getResults()) {
-				appendTestResult(testResult, index, dashboardNameEncoded, result);
+				appendTestResult(web, testResult, index, dashboardNameEncoded, result);
 				index++;
 			}
 		}
@@ -200,7 +199,7 @@ public class CIRenderer {
 		result.appendHtml("</div>\n");
 	}
 
-	private void appendTestResult(TestResult testResult, int index, String dashboardName, RenderResult renderResult) {
+	private void appendTestResult(String web, TestResult testResult, int index, String dashboardName, RenderResult renderResult) {
 
 		// ruling out special characters (which are causing problems)
 		dashboardName = Integer.toString(dashboardName.hashCode());
@@ -244,20 +243,20 @@ public class CIRenderer {
 		renderResult.appendHtml("</span>");
 
 		// render test-message (if exists)
-		appendMessageBlock(testResult, index, dashboardName, renderResult);
+		appendMessageBlock(web, testResult, index, dashboardName, renderResult);
 
 		renderResult.appendHtml("</div>\n");
 	}
 
-	private void appendMessageBlock(TestResult testResult, int index, String dashboardName, RenderResult renderResult) {
+	private void appendMessageBlock(String web, TestResult testResult, int index, String dashboardName, RenderResult renderResult) {
 		// not visible at beginning
 		String styleCollapse = testResult.getType() == Type.SUCCESS ? "style='display:none' " : "";
 		renderResult.appendHtml("<div " + styleCollapse + "class='ci-message'>");
-		appendMessage(testResult, renderResult);
+		appendMessage(web, testResult, renderResult);
 		renderResult.appendHtml("</div>");
 	}
 
-	private void appendMessage(TestResult testResult, RenderResult renderResult) {
+	private void appendMessage(String web, TestResult testResult, RenderResult renderResult) {
 		Collection<String> testObjectNames = testResult.getTestObjectsWithUnexpectedOutcome();
 		int successes = testResult.getSuccessfullTestObjectRuns();
 		for (String testObjectName : testObjectNames) {
@@ -275,15 +274,15 @@ public class CIRenderer {
 			}
 			renderResult.appendHtml("<p></p>");
 			renderResult.append("__" + messageType.toString() + "__: ");
-			appendMessageText(message, renderResult);
+			appendMessageText(web, message, renderResult);
 			renderResult.appendHtml("<br>\n(test object: ");
-			renderObjectName(testObjectName, testObjectClass, renderResult);
+			renderObjectName(web, testObjectName, testObjectClass, renderResult);
 			renderResult.appendHtml(")\n");
 		}
 		renderResult.appendHtml("<span>" + successes + " test objects tested successfully</span>");
 	}
 
-	private void appendMessageText(Message message, RenderResult result) {
+	private void appendMessageText(String web, Message message, RenderResult result) {
 		String text = message.getText();
 		if (text == null) text = "";
 		ArrayList<MessageObject> objects = new ArrayList<MessageObject>(message.getObjects());
@@ -293,8 +292,8 @@ public class CIRenderer {
 		int i = 0;
 		for (MessageObject object : objects) {
 			RenderResult temp = new RenderResult(result);
-			renderObjectName(object.getObjectName(),
-					object.geObjectClass(), temp);
+			renderObjectName(web,
+					object.getObjectName(), object.geObjectClass(), temp);
 			String renderedObjectName = temp.toStringRaw();
 			targets[i] = object.getObjectName();
 			replacements[i] = renderedObjectName;
@@ -310,7 +309,7 @@ public class CIRenderer {
 		result.appendJSPWikiMarkup(text);
 	}
 
-	public void renderObjectName(String objectName, Class<?> objectClass, RenderResult result) {
+	public void renderObjectName(String web, String objectName, Class<?> objectClass, RenderResult result) {
 		if (objectClass == null) {
 			// the case on old build version with outdated test names
 			result.append(objectName);
@@ -323,7 +322,7 @@ public class CIRenderer {
 			result.append(objectName);
 			return;
 		}
-		objectRenderer.render(objectName, result);
+		objectRenderer.render(web, objectName, result);
 	}
 
 	private void apppendBuildHeadline(BuildResult build, RenderResult buffy) {
@@ -351,7 +350,7 @@ public class CIRenderer {
 
 	public void renderBuildStatus(Type resultType, boolean checkRunning, String imageSuffix, RenderResult result) {
 
-		boolean showRunning = checkRunning && CIUtils.buildRunning(dashboardName);
+		boolean showRunning = checkRunning && CIBuildManager.isRunning(dashboard);
 
 		String imageURL = showRunning
 				? "KnowWEExtension/images/%s"
@@ -373,8 +372,9 @@ public class CIRenderer {
 				imgBulb = String.format(imgBulb, "red" + imageSuffix + ".png", "Build failed: "
 						+ Strings.encodeHtml(dashboardName));
 			case ERROR:
-				imgBulb = String.format(imgBulb, "grey" + imageSuffix + ".png", "Build has errors: "
-						+ Strings.encodeHtml(dashboardName));
+				imgBulb = String.format(imgBulb, "grey" + imageSuffix + ".png",
+						"Build has errors: "
+								+ Strings.encodeHtml(dashboardName));
 			}
 		}
 
@@ -385,7 +385,7 @@ public class CIRenderer {
 		result.appendHtml("<div class='ci-header' id='ci-header_"
 				+ dashboard.getDashboardName() + "'>");
 
-		if (latestBuild != null || CIUtils.buildRunning(dashboardName)) {
+		if (latestBuild != null || CIBuildManager.isRunning(dashboard)) {
 			CIRenderer renderer = dashboard.getRenderer();
 			renderer.renderCurrentBuildStatus(result);
 			renderer.renderBuildHealthReport(result);

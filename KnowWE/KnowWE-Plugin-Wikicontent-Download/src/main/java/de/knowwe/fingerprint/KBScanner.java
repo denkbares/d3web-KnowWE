@@ -7,7 +7,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -16,21 +15,23 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.SessionFactory;
 import de.d3web.utils.Streams;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileType;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 
 public class KBScanner implements Scanner {
 
 	@Override
 	public void scan(Article article, File target) throws IOException {
 		// check if this article compiles a base
-		Set<String> compilingArticles =
-				KnowWEUtils.getPackageManager(article.getWeb()).getCompilingArticles();
-		if (!compilingArticles.contains(article.getTitle())) return;
+		Section<DefaultMarkupPackageCompileType> kbType = Sections.findSuccessor(
+				article.getRootSection(), DefaultMarkupPackageCompileType.class);
+		if (kbType == null) return;
 
 		// write the base
 		// create Session to trigger lazy stuff like "start" and "now";
-		KnowledgeBase base = D3webUtils.getKnowledgeBase(article);
+		KnowledgeBase base = D3webUtils.getKnowledgeBase(kbType);
 		SessionFactory.createSession(base);
 		PersistenceManager persistance = PersistenceManager.getInstance();
 		persistance.save(base, target);

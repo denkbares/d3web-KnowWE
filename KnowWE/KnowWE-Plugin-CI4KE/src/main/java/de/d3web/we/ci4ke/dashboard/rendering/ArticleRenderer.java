@@ -30,7 +30,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 public class ArticleRenderer implements ObjectNameRenderer {
 
 	@Override
-	public void render(String objectName, RenderResult result) {
+	public void render(String web, String objectName, RenderResult result) {
 		result.appendHtml(KnowWEUtils.getLinkHTMLToArticle(objectName));
 	}
 

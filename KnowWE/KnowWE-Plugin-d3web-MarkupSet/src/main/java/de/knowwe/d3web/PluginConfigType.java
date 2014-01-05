@@ -34,12 +34,12 @@ public class PluginConfigType extends DefaultMarkupType {
 		MARKUP.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageAnnotationNameType());
 		MARKUP.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm(true));
+				new PackageTerm());
 	}
 
 	public PluginConfigType() {
 		super(MARKUP);
-		this.addSubtreeHandler(new PluginConfigReviseSubtreeHandler());
+		this.addCompileScript(new PluginConfigReviseSubtreeHandler());
 	}
 
 }

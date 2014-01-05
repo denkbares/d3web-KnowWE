@@ -37,14 +37,16 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.plugin.test.InitPluginManager;
-import de.knowwe.core.compile.packaging.PackageManager;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.d3web.property.PropertyObjectReference;
 import de.knowwe.d3web.property.PropertyDeclarationType;
+import de.knowwe.d3web.property.PropertyObjectReference;
 import de.knowwe.d3web.property.init.InitPropertyHandler;
 
 /**
@@ -59,7 +61,6 @@ public class PropertiesTest extends TestCase {
 	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
-		PackageManager.overrideAutocompileArticle(true);
 	}
 
 	private Article getArticle() {
@@ -92,7 +93,8 @@ public class PropertiesTest extends TestCase {
 				getArticle().getRootSection(), PropertyObjectReference.class);
 		for (Section<PropertyObjectReference> namedObjectRef : namendObjectRefs) {
 			NamedObject termObject = namedObjectRef.get().getTermObject(
-					namedObjectRef.getArticle(), namedObjectRef);
+					Compilers.getCompiler(namedObjectRef.getArticle(), D3webCompiler.class),
+					namedObjectRef);
 			if (termObject.getName().equals(name)) {
 				return Sections.findAncestorOfType(namedObjectRef,
 						PropertyDeclarationType.class);
@@ -147,7 +149,8 @@ public class PropertiesTest extends TestCase {
 		assertEquals("INIT for Solution not set correctly", "wrong init for solution", init);
 
 		Section<PropertyDeclarationType> propDeclSec = getPropertyDeclarationSection("Mechanical problem");
-		Collection<Message> messages = Messages.getMessages(propDeclSec.getArticle(), propDeclSec,
+		Collection<Message> messages = Messages.getMessages(
+				D3webUtils.getD3webCompiler(propDeclSec), propDeclSec,
 				InitPropertyHandler.class);
 		assertEquals("No message found for assigning an init value to a Solution", 1,
 				messages.size());
@@ -159,8 +162,7 @@ public class PropertiesTest extends TestCase {
 		assertEquals("INIT for Questionnaire not set correctly", "wrong init for questionnaire",
 				init);
 
-		messages = Messages.getMessages(
-				propDeclSec.getArticle(), propDeclSec,
+		messages = Messages.getMessages(D3webUtils.getD3webCompiler(propDeclSec), propDeclSec,
 				InitPropertyHandler.class);
 		assertEquals("No message found for assigning an init value to a Questionnaire", 1,
 				messages.size());
@@ -173,7 +175,7 @@ public class PropertiesTest extends TestCase {
 		assertEquals("INIT QuestionChoice not set correctly", "makes no sense", init);
 
 		propDeclSec = getPropertyDeclarationSection("Yes");
-		messages = Messages.getMessages(propDeclSec.getArticle(), propDeclSec,
+		messages = Messages.getMessages(D3webUtils.getD3webCompiler(propDeclSec), propDeclSec,
 				InitPropertyHandler.class);
 		assertEquals("No message found for assigning an init value to a choice", 1,
 				messages.size());
@@ -185,7 +187,7 @@ public class PropertiesTest extends TestCase {
 		assertEquals("INIT QuestionChoice not set correctly", "water", init);
 
 		propDeclSec = getPropertyDeclarationSection("Fuel");
-		messages = Messages.getMessages(propDeclSec.getArticle(), propDeclSec,
+		messages = Messages.getMessages(D3webUtils.getD3webCompiler(propDeclSec), propDeclSec,
 				InitPropertyHandler.class);
 		assertEquals("No message found for assigning 'water' as the init value of Fuel", 1,
 				messages.size());
@@ -198,7 +200,7 @@ public class PropertiesTest extends TestCase {
 				init);
 
 		propDeclSec = getPropertyDeclarationSection("Average mileage /100km");
-		messages = Messages.getMessages(propDeclSec.getArticle(), propDeclSec,
+		messages = Messages.getMessages(D3webUtils.getD3webCompiler(propDeclSec), propDeclSec,
 				InitPropertyHandler.class);
 		assertEquals("No message found for assigning 'five' as the init value for a QuestionNum",
 				1, messages.size());

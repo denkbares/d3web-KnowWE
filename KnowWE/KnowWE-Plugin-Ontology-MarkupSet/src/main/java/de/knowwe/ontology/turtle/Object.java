@@ -25,10 +25,10 @@ import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 
 import de.d3web.strings.Strings;
-import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.parsing.Section;
@@ -46,9 +46,8 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 	/*
 	 * With strict compilation mode on, triples are not inserted into the
 	 * repository when corresponding term have errors, i.e., do not have a valid
-	 * definition.
-	 * With strict compilation mode off, triples are always inserted into the
-	 * triple store, not caring about type definitions.
+	 * definition. With strict compilation mode off, triples are always inserted
+	 * into the triple store, not caring about type definitions.
 	 */
 	private static boolean STRICT_COMPILATTION = false;
 
@@ -71,7 +70,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 	}
 
 	@Override
-	public StatementProviderResult getStatements(Section<Object> section, Rdf2GoCore core, Article article) {
+	public StatementProviderResult getStatements(Section<Object> section, Rdf2GoCore core) {
 
 		StatementProviderResult result = new StatementProviderResult();
 		boolean termError = false;
@@ -81,7 +80,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		Node object = section.get().getNode(section, core);
 		Section<TurtleURI> turtleURITermObject = Sections.findChildOfType(section, TurtleURI.class);
 		if (turtleURITermObject != null && STRICT_COMPILATTION == true) {
-			boolean isDefined = checkTurtleURIDefinition(article, turtleURITermObject);
+			boolean isDefined = checkTurtleURIDefinition(turtleURITermObject);
 			if (!isDefined) {
 				// error message is already rendered by term reference renderer
 				// we do not insert statement in this case
@@ -101,13 +100,13 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 				PredicateSentence.class);
 		Section<Predicate> predicateSection = Sections.findChildOfType(predSentenceSection,
 				Predicate.class);
-		
+
 		URI predicate = predicateSection.get().getURI(predicateSection, core);
 
 		// check term definition
 		Section<TurtleURI> turtleURITerm = Sections.findSuccessor(predicateSection, TurtleURI.class);
 		if (turtleURITerm != null && STRICT_COMPILATTION == true) {
-			boolean isDefined = checkTurtleURIDefinition(article, turtleURITerm);
+			boolean isDefined = checkTurtleURIDefinition(turtleURITerm);
 			if (!isDefined) {
 				// error message is already rendered by term reference renderer
 				// we do not insert statment in this case
@@ -146,7 +145,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			Section<TurtleURI> turtleURITermSubject = Sections.findChildOfType(subjectSection,
 					TurtleURI.class);
 			if (turtleURITermSubject != null && STRICT_COMPILATTION == true) {
-				boolean isDefined = checkTurtleURIDefinition(article, turtleURITermSubject);
+				boolean isDefined = checkTurtleURIDefinition(turtleURITermSubject);
 				if (!isDefined) {
 					// error message is already rendered by term reference
 					// renderer
@@ -162,9 +161,6 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			}
 		}
 
-
-
-
 		// create statement if all nodes are present
 		if (object != null && predicate != null && subject != null) {
 			result.addStatement(core.createStatement(subject, predicate, object));
@@ -172,8 +168,9 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		return result;
 	}
 
-	private boolean checkTurtleURIDefinition(Article article, Section<TurtleURI> turtleURITerm) {
-		TerminologyManager terminologyManager = Environment.getInstance().getTerminologyManager(article);
+	private boolean checkTurtleURIDefinition(Section<TurtleURI> turtleURITerm) {
+		TermCompiler compiler = Compilers.getCompiler(turtleURITerm, TermCompiler.class);
+		TerminologyManager terminologyManager = compiler.getTerminologyManager();
 		Section<TermReference> term = Sections.findSuccessor(turtleURITerm, TermReference.class);
 		return terminologyManager.isDefinedTerm(term.get().getTermIdentifier(term));
 	}

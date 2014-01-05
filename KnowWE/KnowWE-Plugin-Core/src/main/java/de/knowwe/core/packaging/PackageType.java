@@ -1,64 +1,55 @@
+/*
+ * Copyright (C) 2013 University Wuerzburg, Computer Science VI
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
 package de.knowwe.core.packaging;
 
-import java.util.Collection;
+import java.util.regex.Pattern;
 
-import de.d3web.strings.Identifier;
-import de.knowwe.core.Environment;
-import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.packaging.PackageTerm;
-import de.knowwe.core.kdom.Article;
+import de.knowwe.core.compile.packaging.PackageAnnotationNameTypeRenderer;
+import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupTermReferenceRegisterHandler;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.user.UserContext;
 
-public class PackageType extends DefaultMarkupType {
-
-	private static final DefaultMarkup MARKUP;
-
-	static {
-		MARKUP = new DefaultMarkup("Package");
-		MARKUP.addContentType(new PackageTerm(false));
-	}
+/**
+ * 
+ * @author Stefan Plehn
+ * @created 22.05.2013
+ */
+public class PackageType extends AbstractType {
 
 	public PackageType() {
-		super(MARKUP);
-		addSubtreeHandler(Priority.PRECOMPILE_HIGH, new SetDefaultPackageHandler());
-		addSubtreeHandler(Priority.HIGHEST, new RegisterPackageDefinitionHandler());
-		removeSubtreeHandler(DefaultMarkupTermReferenceRegisterHandler.class);
-		addChildType(new PackageMarkupType());
-	}
+		Pattern pattern = Pattern.compile("^(%%\\w+\\b\\s*)",
+				Pattern.MULTILINE + Pattern.DOTALL);
+		this.setSectionFinder(new RegexSectionFinder(pattern));
+		this.setRenderer(new Renderer() {
 
-	private static class RegisterPackageDefinitionHandler extends SubtreeHandler<PackageType> {
+			private final Renderer renderer = new PackageAnnotationNameTypeRenderer();
 
-		@Override
-		public Collection<Message> create(Article article, Section<PackageType> section) {
-			String defaultPackage = DefaultMarkupType.getContent(section).trim();
-			KnowWEUtils.getTerminologyManager(article).registerTermDefinition(section,
-					Package.class, new Identifier(defaultPackage));
-			return Messages.noMessage();
-		}
-	}
-
-	private static class SetDefaultPackageHandler extends SubtreeHandler<PackageType> {
-
-		public SetDefaultPackageHandler() {
-			super(false);
-		}
-
-		@Override
-		public Collection<Message> create(Article article, Section<PackageType> section) {
-			String defaultPackage = DefaultMarkupType.getContent(section).trim();
-			if (!defaultPackage.isEmpty()) {
-				Environment.getInstance().getPackageManager(
-						article.getWeb()).addDefaultPackage(
-						article, defaultPackage);
+			@Override
+			public void render(Section<?> section, UserContext user, RenderResult result) {
+				renderer.render(section, user, result);
+				result.append(" ");
 			}
-			return Messages.noMessage();
-		}
+
+		});
 	}
+
 }

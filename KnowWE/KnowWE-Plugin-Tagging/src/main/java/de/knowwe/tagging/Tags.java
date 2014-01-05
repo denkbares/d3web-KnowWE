@@ -36,7 +36,6 @@ public class Tags extends DefaultMarkupType {
 	public Tags() {
 		super(m);
 		this.setRenderer(NothingRenderer.getInstance());
-		this.setIgnorePackageCompile(true);
 	}
 
 }

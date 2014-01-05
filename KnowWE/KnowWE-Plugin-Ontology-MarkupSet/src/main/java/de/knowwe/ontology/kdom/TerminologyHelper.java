@@ -23,9 +23,8 @@ import org.ontoware.rdf2go.model.QueryRow;
 
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.namespace.AbbreviationDefinition;
 import de.knowwe.ontology.kdom.objectproperty.Property;
 import de.knowwe.ontology.kdom.resource.Resource;
@@ -39,36 +38,36 @@ import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
  */
 public abstract class TerminologyHelper {
 
-	public void registerTerminology(Article article, Section<?> section, String namespace) {
+	public void registerTerminology(OntologyCompiler compiler, Section<?> section, String namespace) {
 		String query = new SparqlQuery().SELECT("?resource")
 				.WHERE("?resource rdf:type rdfs:Resource MINUS { ?resource rdf:type rdf:Property }")
 				.AND_WHERE(
 						"FILTER(REGEX(STR(?resource), \"^" + namespace + "\"))").toString();
 		Class<? extends Resource> termClass = Resource.class;
-		registerTerminology(article, section, query, termClass);
+		registerTerminology(compiler, section, query, termClass);
 
 		query = new SparqlQuery().SELECT("?resource")
 				.WHERE("?resource rdf:type rdf:Property")
 				.AND_WHERE("FILTER(REGEX(STR(?resource), \"^" + namespace + "\"))").toString();
 		termClass = Property.class;
-		registerTerminology(article, section, query, termClass);
+		registerTerminology(compiler, section, query, termClass);
 	}
 
-	public void registerTerminology(Article article, Section<?> section, String query, Class<? extends Resource> termClass) {
+	public void registerTerminology(OntologyCompiler compiler, Section<?> section, String query, Class<? extends Resource> termClass) {
 		// long currentTimeMillis = System.currentTimeMillis();
 		ClosableIterator<QueryRow> iterator =
-				Rdf2GoCore.getInstance(article).sparqlSelectIt(query);
+				Rdf2GoCore.getInstance(compiler).sparqlSelectIt(query);
 		while (iterator.hasNext()) {
 			QueryRow row = iterator.next();
 			String value = row.getValue("resource").toString();
 			String abbreviation = getAbbreviation(value);
 			String resource = value.substring(value.indexOf("#") + 1);
-			TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
+			TerminologyManager terminologyManager = compiler.getTerminologyManager();
 			Identifier abbrIdentifier = new Identifier(abbreviation, resource);
-			terminologyManager.registerTermDefinition(section, AbbreviationDefinition.class,
-					new Identifier(abbreviation));
+			terminologyManager.registerTermDefinition(compiler, section,
+					AbbreviationDefinition.class, new Identifier(abbreviation));
 			terminologyManager.registerTermDefinition(
-					section, termClass, abbrIdentifier);
+					compiler, section, termClass, abbrIdentifier);
 
 		}
 		// System.out.println(System.currentTimeMillis() - currentTimeMillis);

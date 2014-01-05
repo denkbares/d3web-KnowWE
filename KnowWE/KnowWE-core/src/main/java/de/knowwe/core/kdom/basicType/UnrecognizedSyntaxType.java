@@ -21,11 +21,11 @@ package de.knowwe.core.kdom.basicType;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import de.knowwe.core.compile.DefaultGlobalCompiler;
+import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalHandler;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
@@ -43,10 +43,10 @@ public class UnrecognizedSyntaxType extends AbstractType {
 
 	public UnrecognizedSyntaxType() {
 		this.setSectionFinder(new AllTextFinderTrimmed());
-		this.addSubtreeHandler(new SubtreeHandler<UnrecognizedSyntaxType>() {
+		this.addCompileScript(new DefaultGlobalHandler<UnrecognizedSyntaxType>() {
 
 			@Override
-			public Collection<Message> create(Article article, Section<UnrecognizedSyntaxType> section) {
+			public Collection<Message> create(DefaultGlobalCompiler article, Section<UnrecognizedSyntaxType> section) {
 				Collection<Message> msgs = new ArrayList<Message>(1);
 				msgs.add(Messages.error("Unrecognizable syntax"));
 				return msgs;

@@ -54,6 +54,7 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.TermDefinition;
@@ -139,7 +140,7 @@ public class GetInfoObjects extends AbstractAction {
 	}
 
 	private static boolean isCompilingArticle(String web, String title) {
-		PackageManager packages = Environment.getInstance().getPackageManager(web);
+		PackageManager packages = Compilers.getDefaultPackageManager(web);
 		return packages.getCompilingArticles().contains(title);
 	}
 
@@ -147,7 +148,7 @@ public class GetInfoObjects extends AbstractAction {
 
 		Environment env = Environment.getInstance();
 		Article article = env.getArticle(web, title);
-		PackageManager packages = env.getPackageManager(web);
+		PackageManager packages = Compilers.getDefaultPackageManager(web);
 		String id = createArticleIdentifier(title).toExternalForm();
 
 		bob.append("\t<article");

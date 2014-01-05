@@ -45,7 +45,6 @@ public class CIDaemonType extends DefaultMarkupType {
 
 	public CIDaemonType() {
 		super(MARKUP);
-		this.setIgnorePackageCompile(true);
 		this.setRenderer(new CIDaemonRenderer());
 	}
 

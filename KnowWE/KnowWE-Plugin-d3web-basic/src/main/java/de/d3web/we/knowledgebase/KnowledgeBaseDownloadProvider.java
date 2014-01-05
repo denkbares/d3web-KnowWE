@@ -29,9 +29,11 @@ import de.d3web.strings.Strings;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.d3web.action.DownloadKnowledgeBase;
+import de.knowwe.d3web.action.KnowledgeBaseDownloadAction;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
@@ -73,9 +75,13 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 	}
 
 	protected Tool getDownloadTool(Section<?> section, UserContext userContext) {
-
+		Section<PackageCompileType> compileSection = Sections.findSuccessor(section,
+				PackageCompileType.class);
+		if (compileSection == null) {
+			return null;
+		}
 		// check if knowledge base is empty
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(section.getWeb(), section.getTitle());
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(compileSection);
 		if (D3webUtils.isEmpty(kb)) {
 			return null;
 		}
@@ -85,10 +91,10 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 		if (kbName.isEmpty()) {
 			kbName = "knowledgebase";
 		}
-		String jsAction = "window.location='action/DownloadKnowledgeBase" +
-				"?" + Attributes.TOPIC + "=" + section.getTitle() +
-				"&amp;" + Attributes.WEB + "=" + section.getWeb() +
-				"&amp;" + DownloadKnowledgeBase.PARAM_FILENAME + "=" + kbName + ".d3web'";
+		String jsAction = "window.location='action/KnowledgeBaseDownloadAction" +
+				"?" + Attributes.SECTION_ID + "=" + compileSection.getID() +
+				"&amp;" + Attributes.WEB + "=" + compileSection.getWeb() +
+				"&amp;" + KnowledgeBaseDownloadAction.PARAM_FILENAME + "=" + kbName + ".d3web'";
 		return new DefaultTool(
 				"KnowWEExtension/d3web/icon/download16.gif",
 				"Download",
@@ -97,6 +103,11 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 	}
 
 	protected Tool getQRCodeTool(Section<?> section, UserContext userContext) {
+		Section<PackageCompileType> compileSection = Sections.findSuccessor(section,
+				PackageCompileType.class);
+		if (compileSection == null) {
+			return null;
+		}
 		// tool to provide download capability
 		String kbName = DefaultMarkupType.getContent(section).trim();
 		if (kbName.isEmpty()) {
@@ -118,10 +129,10 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String kbURL = baseUrl + "action/DownloadKnowledgeBase" +
-				"?" + Attributes.TOPIC + "=" + section.getTitle() +
-				"&amp;" + Attributes.WEB + "=" + section.getWeb() +
-				"&amp;" + DownloadKnowledgeBase.PARAM_FILENAME + "=" + kbName + ".d3web";
+		String kbURL = baseUrl + "action/KnowledgeBaseDownloadAction" +
+				"?" + Attributes.SECTION_ID + "=" + compileSection.getID() +
+				"&amp;" + Attributes.WEB + "=" + compileSection.getWeb() +
+				"&amp;" + KnowledgeBaseDownloadAction.PARAM_FILENAME + "=" + kbName + ".d3web";
 		kbURL = Strings.encodeURL(kbURL);
 
 		String imageURL = "https://chart.googleapis.com/chart?cht=qr&amp;chs=200x200&amp;chl="

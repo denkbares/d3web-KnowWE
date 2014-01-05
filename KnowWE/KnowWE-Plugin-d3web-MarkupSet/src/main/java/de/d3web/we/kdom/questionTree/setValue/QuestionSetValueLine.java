@@ -20,7 +20,6 @@
 
 package de.d3web.we.kdom.questionTree.setValue;
 
-import java.util.Collection;
 import java.util.List;
 
 import de.d3web.abstraction.ActionSetQuestion;
@@ -33,20 +32,19 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.strings.Strings;
 import de.d3web.we.kdom.questionTree.QuestionDashTreeUtils;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
@@ -74,29 +72,29 @@ public class QuestionSetValueLine extends AbstractType {
 
 	}
 
-	private AbstractType createObjectRefTypeBefore(
+	private Type createObjectRefTypeBefore(
 			AbstractType typeAfter) {
 		QuestionReference qid = new QuestionReference();
 		qid.setSectionFinder(new AllBeforeTypeSectionFinder(typeAfter));
-		qid.addSubtreeHandler(new CreateSetValueRuleHandler());
+		qid.addCompileScript(new CreateSetValueRuleHandler());
 		return qid;
 	}
 
-	static class CreateSetValueRuleHandler extends D3webSubtreeHandler<QuestionReference> {
+	static class CreateSetValueRuleHandler extends D3webCompileScript<QuestionReference> {
 
 		@Override
-		public void destroy(Article article, Section<QuestionReference> s) {
-			Rule kbr = (Rule) s.getSectionStore().getObject(article, SETVALUE_ARGUMENT);
+		public void destroy(D3webCompiler compiler, Section<QuestionReference> section) {
+			Rule kbr = (Rule) section.getSectionStore().getObject(compiler, SETVALUE_ARGUMENT);
 			if (kbr != null) kbr.remove();
 		}
 
 		@Override
-		public Collection<Message> create(Article article, Section<QuestionReference> s) {
+		public void compile(D3webCompiler compiler, Section<QuestionReference> section) {
 
-			Question q = s.get().getTermObject(article, s);
+			Question q = section.get().getTermObject(compiler, section);
 
 			Section<AnswerReference> answerSec = Sections.findSuccessor(
-					s.getParent(), AnswerReference.class);
+					section.getParent(), AnswerReference.class);
 
 			String answerName = answerSec.get().getTermName(answerSec);
 
@@ -113,11 +111,13 @@ public class QuestionSetValueLine extends AbstractType {
 					}
 
 					if (a != null) {
-						Condition cond = QuestionDashTreeUtils.createCondition(article,
-								DashTreeUtils.getAncestorDashTreeElements(s));
+						Condition cond = QuestionDashTreeUtils.createCondition(compiler,
+								DashTreeUtils.getAncestorDashTreeElements(section));
 						if (cond == null) {
-							return Messages.asList(Messages.creationFailedWarning(
-									Rule.class.getSimpleName() + ": check condition"));
+							Messages.storeMessage(compiler, section, getClass(),
+									Messages.creationFailedWarning(
+											Rule.class.getSimpleName() + ": check condition"));
+							return;
 						}
 
 						ActionSetQuestion ac = null;
@@ -134,18 +134,18 @@ public class QuestionSetValueLine extends AbstractType {
 						}
 
 						if (r != null) {
-							KnowWEUtils.storeObject(article, s, SETVALUE_ARGUMENT, r);
-							return Messages.asList(Messages.objectCreatedNotice(
-									r.getClass().toString()));
+							Compilers.storeObject(compiler, section, SETVALUE_ARGUMENT, r);
+							Messages.storeMessage(compiler, section, getClass(),
+									Messages.objectCreatedNotice(r.getClass().toString()));
+							return;
 						}
 
 					}
 				}
 			}
 
-			return Messages.asList(Messages.creationFailedWarning(
-					Rule.class.getSimpleName()));
-
+			Messages.storeMessage(compiler, section, getClass(),
+					Messages.creationFailedWarning(Rule.class.getSimpleName()));
 		}
 
 	}

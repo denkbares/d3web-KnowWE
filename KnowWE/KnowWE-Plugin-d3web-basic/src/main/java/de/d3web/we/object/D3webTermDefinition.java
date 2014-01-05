@@ -25,10 +25,10 @@ import java.util.Collection;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.objects.TermUtils;
@@ -56,9 +56,9 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 	 * @return null if the creation must not be aborted, an Collection
 	 *         containing addition Messages or non (if not needed) else
 	 */
-	public AbortCheck canAbortTermObjectCreation(Article article, Section<? extends D3webTermDefinition<TermObject>> section) {
+	public AbortCheck canAbortTermObjectCreation(D3webCompiler compiler, Section<? extends D3webTermDefinition<TermObject>> section) {
 		Collection<Message> msgs = new ArrayList<Message>(1);
-		if (section.hasErrorInSubtree(article)) {
+		if (section.hasErrorInSubtree(compiler)) {
 			// obviously there are already errors present, simply abort
 			AbortCheck check = new AbortCheck();
 			check.setMessages(msgs);
@@ -66,7 +66,8 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 			return check;
 		}
 		Collection<NamedObject> termObjectsIgnoreTermObjectClass =
-				D3webUtils.getTermObjectsIgnoreTermObjectClass(article, section);
+				D3webUtils.getTermObjectsIgnoreTermObjectClass(
+						compiler, section);
 		if (termObjectsIgnoreTermObjectClass.isEmpty()) {
 			// object does not yet exist, so just return null to continue
 			// creating the terminology object
@@ -98,8 +99,8 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 	}
 
 	@Override
-	public TermObject getTermObject(Article article, Section<? extends D3webTerm<TermObject>> section) {
-		return D3webUtils.getTermObjectDefaultImplementation(article, section);
+	public TermObject getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
+		return D3webUtils.getTermObjectDefaultImplementation(compiler, section);
 	}
 
 	@Override

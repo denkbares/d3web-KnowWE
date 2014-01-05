@@ -18,8 +18,9 @@
  */
 package de.knowwe.diaflux.type;
 
+import de.d3web.diaFlux.flow.EndNode;
 import de.d3web.strings.Identifier;
-import de.knowwe.core.compile.terminology.TermRegistrationScope;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
@@ -31,10 +32,10 @@ import de.knowwe.kdom.renderer.StyleRenderer;
  * @author Reinhard Hatko
  * @created 08.12.2010
  */
-public class ExitNodeReference extends SimpleReference {
+public class ExitNodeReference extends SimpleReference<D3webCompiler> {
 
 	public ExitNodeReference() {
-		super(TermRegistrationScope.LOCAL, String.class);
+		super(D3webCompiler.class, EndNode.class);
 		setRenderer(StyleRenderer.FlowchartExit);
 	}
 

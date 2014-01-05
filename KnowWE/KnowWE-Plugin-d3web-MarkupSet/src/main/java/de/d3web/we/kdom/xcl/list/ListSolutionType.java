@@ -25,13 +25,12 @@ import java.util.Collection;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.kdom.rule.Indent;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.SolutionDefinition;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.d3web.xcl.XCLModel;
-import de.knowwe.core.compile.ConstraintModule;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -61,7 +60,7 @@ public class ListSolutionType extends AbstractType {
 		solutionFinder.addConstraint(AtMostOneFindingConstraint.getInstance());
 		this.setSectionFinder(solutionFinder);
 
-		this.addSubtreeHandler(Priority.HIGH, new XCLModelCreator());
+		this.addCompileScript(Priority.HIGH, new XCLModelCreator());
 
 		// cut indent
 		addChildType(new Indent());
@@ -85,24 +84,10 @@ public class ListSolutionType extends AbstractType {
 	 *         covering-model
 	 * 
 	 */
-	class XCLModelCreator extends D3webSubtreeHandler<ListSolutionType> {
-
-		public XCLModelCreator() {
-			this.registerConstraintModule(new XCLModelCreatorConstraint());
-		}
-
-		private class XCLModelCreatorConstraint extends ConstraintModule<ListSolutionType> {
-
-			@Override
-			public boolean violatedConstraints(Article article, Section<ListSolutionType> s) {
-				return !Sections.findSuccessor(s, SolutionDefinition.class).isReusedBy(
-						article.getTitle());
-			}
-
-		}
+	class XCLModelCreator extends D3webHandler<ListSolutionType> {
 
 		@Override
-		public Collection<Message> create(Article article, Section<ListSolutionType> s) {
+		public Collection<Message> create(D3webCompiler article, Section<ListSolutionType> s) {
 
 			Section<SolutionDefinition> solutionDef = Sections.findSuccessor(s,
 					SolutionDefinition.class);
@@ -137,13 +122,6 @@ public class ListSolutionType extends AbstractType {
 				}
 			}
 			return null;
-		}
-
-		@Override
-		public void destroy(Article article, Section<ListSolutionType> s) {
-			// nothing to do, the solution, along with its attached model, will
-			// be destroyed in the SolutionDef
-			return;
 		}
 
 		/**

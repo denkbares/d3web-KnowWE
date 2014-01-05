@@ -33,12 +33,12 @@ import de.d3web.strings.Identifier;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Action which renames all Definitions and References of a given Term. The
@@ -88,13 +88,14 @@ public class TermRenamingAction extends AbstractAction {
 		HashMap<String, Set<Section<? extends RenamableTerm>>> allTerms = new HashMap<String, Set<Section<? extends RenamableTerm>>>();
 
 		Iterator<Article> iter = Environment.getInstance()
-				.getArticleManager(web).getArticleIterator();
+				.getDefaultArticleManager(web).getArticleIterator();
 		Article currentArticle;
 
 		while (iter.hasNext()) {
 			currentArticle = iter.next();
-			Collection<TerminologyManager> terminologyManagers = Environment.getInstance().getTerminologyManagers(
-					currentArticle.getWeb());
+			Collection<TerminologyManager> terminologyManagers = Compilers.getTerminologyManagers(
+					Compilers.getDefaultArticleManager(
+							currentArticle.getWeb()));
 			for (TerminologyManager terminologyManager : terminologyManagers) {
 
 				// terminologyManager = KnowWEUtils
@@ -121,7 +122,7 @@ public class TermRenamingAction extends AbstractAction {
 			}
 		}
 
-		ArticleManager mgr = Environment.getInstance().getArticleManager(web);
+		ArticleManager mgr = Environment.getInstance().getDefaultArticleManager(web);
 		Set<String> failures = new HashSet<String>();
 		Set<String> success = new HashSet<String>();
 		renameTerms(allTerms, termIdentifier, replacmentIdentifier, mgr, context, failures, success);
@@ -212,13 +213,13 @@ public class TermRenamingAction extends AbstractAction {
 		// gathering all terms
 		Set<Identifier> allTerms = new HashSet<Identifier>();
 		Iterator<Article> iter = Environment.getInstance()
-				.getArticleManager(web).getArticleIterator();
+				.getDefaultArticleManager(web).getArticleIterator();
 		Article currentArticle;
 
 		TerminologyManager terminologyManager;
 		while (iter.hasNext()) {
 			currentArticle = iter.next();
-			terminologyManager = KnowWEUtils
+			terminologyManager = Compilers
 					.getTerminologyManager(currentArticle);
 			Collection<Identifier> allDefinedTerms = terminologyManager
 					.getAllDefinedTerms();

@@ -47,7 +47,7 @@ public class TurtleMarkupPimped extends DefaultMarkupType {
 		MARKUP.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageAnnotationNameType());
 		MARKUP.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm(true));
+				new PackageTerm());
 		TurtleContent markupN3Content = new TurtleContent();
 		MARKUP.addContentType(markupN3Content);
 	}

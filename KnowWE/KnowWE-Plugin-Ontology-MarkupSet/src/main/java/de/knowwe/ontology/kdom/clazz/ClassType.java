@@ -36,7 +36,7 @@ public class ClassType extends DefaultMarkupType {
 		MARKUP.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageAnnotationNameType());
 		MARKUP.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm(true));
+				new PackageTerm());
 		MARKUP.addAnnotation(PROPERTY_ANNOTATION_NAME, false);
 		MARKUP.addAnnotationContentType(PROPERTY_ANNOTATION_NAME, new PropertyAnnotationType());
 		OntologyLineType lineType = new OntologyLineType();

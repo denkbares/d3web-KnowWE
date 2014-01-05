@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.ResourceBundle;
@@ -42,13 +41,11 @@ import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.terminology.TermRegistrationScope;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.SectionStore;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
@@ -262,48 +259,8 @@ public class KnowWEUtils {
 		return result;
 	}
 
-	/**
-	 * Returns all master articles that compile the given Section. If no master
-	 * article compiles the Section, at least the article of the Section itself
-	 * is returned, so the Collection always at least contains one article.
-	 * 
-	 * @created 16.02.2012
-	 * @param section is the Section for which you want to know the compiling
-	 *        articles
-	 * @return a non empty Collection of articles that compile the given Section
-	 */
-	public static Collection<Article> getCompilingArticles(Section<?> section) {
-		Collection<Article> articles = getCompilingArticleObjects(section);
-		if (articles.isEmpty()) articles.add(section.getArticle());
-		return articles;
-	}
-
-	public static Collection<Article> getCompilingArticleObjects(Section<?> section) {
-		Collection<Article> articles = new ArrayList<Article>();
-		Environment env = Environment.getInstance();
-		Set<String> referingArticleTitles = env.getPackageManager(section.getWeb()).getCompilingArticles(
-				section);
-		ArticleManager articleManager = env.getArticleManager(section.getWeb());
-		for (String title : referingArticleTitles) {
-			Article article =
-					Article.getCurrentlyBuildingArticle(section.getWeb(), title);
-			if (article == null) article = articleManager.getArticle(title);
-			if (article == null) continue;
-			articles.add(article);
-		}
-		return articles;
-	}
-
 	public static ResourceBundle getConfigBundle() {
 		return ResourceBundle.getBundle("KnowWE_config");
-	}
-
-	/**
-	 * @return the {@link TerminologyManager} that handles global terms for this
-	 *         web (similar to the former {@link TermRegistrationScope#GLOBAL}).
-	 */
-	public static TerminologyManager getGlobalTerminologyManager(String web) {
-		return Environment.getInstance().getTerminologyManager(web, null);
 	}
 
 	// public static String repairUmlauts(String s) {
@@ -462,33 +419,6 @@ public class KnowWEUtils {
 		return varPath;
 	}
 
-	public static Object getStoredObject(Article article, Section<?> s, String key) {
-		return s.getSectionStore().getObject(article, key);
-	}
-
-	public static Object getStoredObject(Section<?> s, String key) {
-		return getStoredObject(null, s, key);
-	}
-
-	/**
-	 * Returns the term identifier if the given Section has the type SimpleTerm,
-	 * the text of the Section else.
-	 * 
-	 * @created 06.05.2012
-	 * @param termSection the Section which should implement the interface
-	 *        SimpleTerm
-	 */
-	public static String getTermName(Section<?> termSection) {
-		if (termSection.get() instanceof Term) {
-			Section<? extends Term> simpleSection = Sections.cast(termSection,
-					Term.class);
-			return simpleSection.get().getTermName(simpleSection);
-		}
-		else {
-			return Strings.trimQuotes(termSection.getText());
-		}
-	}
-
 	/**
 	 * Returns the term identifier if the given Section has the type SimpleTerm,
 	 * the text of the Section else.
@@ -510,27 +440,22 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * @return the {@link TerminologyManager} for the given (master) article.
+	 * Returns the term identifier if the given Section has the type SimpleTerm,
+	 * the text of the Section else.
+	 * 
+	 * @created 06.05.2012
+	 * @param termSection the Section which should implement the interface
+	 *        SimpleTerm
 	 */
-	public static TerminologyManager getTerminologyManager(Article article) {
-		String web = article == null ? Environment.DEFAULT_WEB : article.getWeb();
-		String title = article == null ? null : article.getTitle();
-		return Environment.getInstance().getTerminologyManager(web, title);
-	}
-
-	public static PackageManager getPackageManager(String web) {
-		return Environment.getInstance().getPackageManager(web);
-	}
-
-	public static TerminologyManager getTerminologyManager(Article article, TermRegistrationScope scope) {
-		TerminologyManager tHandler;
-		if (scope == TermRegistrationScope.GLOBAL) {
-			tHandler = getGlobalTerminologyManager(article.getWeb());
+	public static String getTermName(Section<?> termSection) {
+		if (termSection.get() instanceof Term) {
+			Section<? extends Term> simpleSection = Sections.cast(termSection,
+					Term.class);
+			return simpleSection.get().getTermName(simpleSection);
 		}
 		else {
-			tHandler = getTerminologyManager(article);
+			return Strings.trimQuotes(termSection.getText());
 		}
-		return tHandler;
 	}
 
 	/**
@@ -642,10 +567,9 @@ public class KnowWEUtils {
 		return "Diff.jsp?page=" + title + "&r1=" + version1 + "&r2=" + version2;
 	}
 
-	public static String getURLLinkToTermDefinition(Identifier identifier) {
+	public static String getURLLinkToTermDefinition(ArticleManager manager, Identifier identifier) {
 		String url = null;
-		Collection<TerminologyManager> terminologyManagers = Environment.getInstance().getTerminologyManagers(
-				Environment.DEFAULT_WEB);
+		Collection<TerminologyManager> terminologyManagers = Compilers.getTerminologyManagers(manager);
 		for (TerminologyManager terminologyManager : terminologyManagers) {
 			Collection<Section<?>> termDefiningSections = terminologyManager.getTermDefiningSections(identifier);
 			if (termDefiningSections.size() > 1) break;
@@ -741,28 +665,6 @@ public class KnowWEUtils {
 	 */
 	public static String getWikiLink(Section<?> section) {
 		return section.getTitle() + "#" + Math.abs(section.getID().hashCode());
-	}
-
-	/**
-	 * Do not use this method anymore, use
-	 * {@link SectionStore#storeObject(String, Object)} or
-	 * {@link SectionStore#storeObject(Article, String, Object)} instead. Use
-	 * {@link Section#getSectionStore()} to get the right {@link SectionStore}.
-	 * 
-	 * @created 08.07.2011
-	 * @param article is the article you want to store the Object for... if the
-	 *        Object is relevant for all articles, you can set the argument to
-	 *        null
-	 * @param s is the {@link Section} you want to store the object for
-	 * @param key is key used to store and retrieve the Object
-	 * @param o is the Object to store
-	 */
-	public static void storeObject(Article article, Section<?> s, String key, Object o) {
-		s.getSectionStore().storeObject(article, key, o);
-	}
-
-	public static void storeObject(Section<?> s, String key, Object o) {
-		storeObject(null, s, key, o);
 	}
 
 	public static String readFile(String fileName) {

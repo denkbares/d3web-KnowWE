@@ -33,8 +33,8 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 public class NamedObjectRenderer implements ObjectNameRenderer {
 
 	@Override
-	public void render(String objectName, RenderResult result) {
-		TermIdentifierRenderer.renderTermIdentifier(objectName, result);
+	public void render(String web, String objectName, RenderResult result) {
+		TermIdentifierRenderer.renderTermIdentifier(web, objectName, result);
 	}
 
 }

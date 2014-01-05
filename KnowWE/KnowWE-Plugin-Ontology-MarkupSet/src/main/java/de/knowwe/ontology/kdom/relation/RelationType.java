@@ -35,7 +35,7 @@ public class RelationType extends DefaultMarkupType {
 		MARKUP.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageAnnotationNameType());
 		MARKUP.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm(true));
+				new PackageTerm());
 		OntologyLineType lineType = new OntologyLineType();
 		lineType.addChildType(new RelationDefinition());
 		MARKUP.addContentType(lineType);

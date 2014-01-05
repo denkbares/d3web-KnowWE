@@ -31,7 +31,6 @@ import de.knowwe.kdom.AnonymousType;
 import de.knowwe.ontology.turtle.compile.ResourceProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
-
 public class BlankNode extends AbstractType implements ResourceProvider<BlankNode> {
 
 	static final char OPEN_BLANK_NODE = '[';
@@ -59,7 +58,7 @@ public class BlankNode extends AbstractType implements ResourceProvider<BlankNod
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult result) {
 			result.append(section.getText().replaceAll("\\[", "~[").replaceAll("\\]", "~]"));
-			
+
 		}
 
 	}

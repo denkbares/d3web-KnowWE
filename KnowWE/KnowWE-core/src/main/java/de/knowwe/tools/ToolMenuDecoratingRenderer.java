@@ -44,35 +44,35 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 		ToolSet tools = ToolUtils.getTools(sec, user);
 		final boolean hasTools = tools.hasTools();
 
-		String headerID;
-
-		if (hasTools) {
-			headerID = "tool_menu_" + sec.getID() + "_" + UUID.randomUUID().toString();
-			string.appendHtmlTag("span", "style", "position:relative;white-space: nowrap;");
-			string.appendHtmlTag("span", "style", "position:absolute", "class",
-					"toolsMenuDecorator", "id", headerID, "toolMenuIdentifier", sec.getID());
-			string.appendHtmlTag("/span");
-		}
-		decoratedRenderer.render(sec, user, string);
-		if (hasTools) {
-			string.appendHtmlTag("/span");
-		}
+		RenderResult subResult = new RenderResult(string);
+		decoratedRenderer.render(sec, user, subResult);
+		renderToolMenuDecorator(subResult.toStringRaw(), sec.getID(), hasTools, string);
 	}
 
-	public static void renderText(String innerText, String toolMenuID, boolean hasTools, RenderResult string) {
-		renderText(innerText, toolMenuID, "GetToolMenuAction", hasTools, string);
+	public static void renderToolMenuDecorator(String innerText, String toolMenuID, boolean hasTools, RenderResult string) {
+		renderToolMenuDecorator(innerText, toolMenuID, null, hasTools, string);
 	}
 
-	public static void renderText(String innerText, String toolMenuID, String toolMenuAction, boolean hasTools, RenderResult string) {
-		String headerID;
+	public static void renderToolMenuDecorator(String innerText, String toolMenuID, String toolMenuAction, boolean hasTools, RenderResult string) {
 
 		if (hasTools) {
-			headerID = "tool_menu_" + toolMenuID + "_" + UUID.randomUUID().toString();
+			String headerID = "tool_menu_" + toolMenuID + "_" + UUID.randomUUID().toString();
 			string.appendHtmlTag("span", "style", "position:relative; white-space: nowrap;");
-			string.appendHtmlTag("span", "style", "position:absolute", "class",
-					"toolsMenuDecorator", "id", headerID,
-					"toolMenuIdentifier", toolMenuID,
-					"toolMenuAction", toolMenuAction);
+
+			String[] attributes = new String[toolMenuAction == null ? 8 : 10];
+			attributes[0] = "style";
+			attributes[1] = "position:absolute";
+			attributes[2] = "class";
+			attributes[3] = "toolsMenuDecorator";
+			attributes[4] = "id";
+			attributes[5] = headerID;
+			attributes[6] = "toolMenuIdentifier";
+			attributes[7] = toolMenuID;
+			if (toolMenuAction != null) {
+				attributes[8] = "toolMenuAction";
+				attributes[9] = toolMenuAction;
+			}
+			string.appendHtmlTag("span", attributes);
 			string.appendHtmlTag("/span");
 		}
 		string.append(innerText);

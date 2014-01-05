@@ -60,13 +60,12 @@ class EmbracedExpressionFinder implements SectionFinder {
 
 		// throw error if no corresponding closing bracket can be found
 		if (closingBracket == -1) {
-			Messages.storeMessage(father.getArticle(), father,
-					this.getClass(), Messages.syntaxError("missing \")\""));
+			Messages.storeMessage(father, this.getClass(),
+					Messages.syntaxError("missing \")\""));
 			return null;
 		}
 		else {
-			Messages.clearMessages(father.getArticle(), father,
-					this.getClass());
+			Messages.clearMessages(father, this.getClass());
 		}
 
 		// an embracedExpression needs to to start and end with '(' and ')'

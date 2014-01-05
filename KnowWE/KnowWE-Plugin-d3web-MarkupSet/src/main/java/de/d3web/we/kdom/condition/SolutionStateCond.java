@@ -8,8 +8,8 @@ import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.strings.StringFragment;
 import de.d3web.strings.Strings;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.SolutionReference;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -86,13 +86,13 @@ public class SolutionStateCond extends D3webCondition<SolutionStateCond> {
 	}
 
 	@Override
-	protected Condition createCondition(Article article, Section<SolutionStateCond> s) {
+	protected Condition createCondition(D3webCompiler compiler, Section<SolutionStateCond> s) {
 		Section<SolutionReference> sRef = Sections.findSuccessor(s,
 				SolutionReference.class);
 		Section<SolutionStateType> state = Sections.findSuccessor(s,
 				SolutionStateType.class);
 		if (sRef != null && state != null) {
-			Solution solution = sRef.get().getTermObject(article, sRef);
+			Solution solution = sRef.get().getTermObject(compiler, sRef);
 			Rating.State solutionState = SolutionStateType.getSolutionState(state.getText());
 			if (solution != null && solutionState != null) {
 				return new CondDState(solution, new Rating(solutionState));

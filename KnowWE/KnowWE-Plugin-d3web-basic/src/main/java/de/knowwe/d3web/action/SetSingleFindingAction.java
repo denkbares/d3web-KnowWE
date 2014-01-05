@@ -33,11 +33,14 @@ import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.TextValue;
 import de.d3web.strings.Strings;
+import de.d3web.we.basic.KnowledgeBaseManager;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.packaging.PackageCompileType;
+import de.knowwe.core.kdom.parsing.Section;
 
 public class SetSingleFindingAction extends AbstractAction {
 
@@ -87,8 +90,9 @@ public class SetSingleFindingAction extends AbstractAction {
 		// Added for KnowWE-Plugin-d3web-Debugger
 		if (context.getParameters().containsKey("KBid")) {
 			String kbID = context.getParameter("KBid");
-			for (String title : D3webUtils.getKnowledgeRepresentationHandler(web).getKnowledgeArticles()) {
-				kb = D3webUtils.getKnowledgeBase(web, title);
+			for (Section<? extends PackageCompileType> compileSection : KnowledgeBaseManager.getInstance(
+					web).getKnowledgeBaseSections()) {
+				kb = D3webUtils.getKnowledgeBase(compileSection);
 				if (kb.getId() != null && kb.getId().equals(kbID)) {
 					session = SessionProvider.getSession(context, kb);
 					break;

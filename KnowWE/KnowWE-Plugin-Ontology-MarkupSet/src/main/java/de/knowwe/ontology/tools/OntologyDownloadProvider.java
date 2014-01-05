@@ -8,6 +8,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.ontology.action.OntologyDownloadAction;
+import de.knowwe.ontology.kdom.OntologyUtils;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
@@ -23,7 +24,7 @@ public class OntologyDownloadProvider implements ToolProvider {
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
-		Rdf2GoCore ontology = Rdf2GoCore.getInstance(section.getWeb(), section.getTitle());
+		Rdf2GoCore ontology = Rdf2GoCore.getInstance(OntologyUtils.getOntologyCompiler(section));
 		return !ontology.isEmpty();
 	}
 
@@ -36,7 +37,7 @@ public class OntologyDownloadProvider implements ToolProvider {
 	protected Tool getDownloadTool(Section<?> section, UserContext userContext) {
 
 		// check if ontology is empty
-		Rdf2GoCore ontology = Rdf2GoCore.getInstance(section.getWeb(), section.getTitle());
+		Rdf2GoCore ontology = Rdf2GoCore.getInstance(OntologyUtils.getOntologyCompiler(section));
 		if (ontology.isEmpty()) {
 			return null;
 		}

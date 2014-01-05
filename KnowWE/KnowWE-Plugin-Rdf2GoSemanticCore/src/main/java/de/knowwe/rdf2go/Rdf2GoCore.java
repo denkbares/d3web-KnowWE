@@ -18,25 +18,28 @@
  */
 package de.knowwe.rdf2go;
 
-import de.d3web.plugin.Extension;
-import de.d3web.plugin.PluginManager;
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
-import de.knowwe.core.Environment;
-import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.event.Event;
-import de.knowwe.core.event.EventListener;
-import de.knowwe.core.event.EventManager;
-import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
-import de.knowwe.event.ArticleCreatedEvent;
-import de.knowwe.event.FullParseEvent;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
-import de.knowwe.rdf2go.utils.Rdf2GoUtils;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.Writer;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.WeakHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.RDF2Go;
@@ -44,54 +47,61 @@ import org.ontoware.rdf2go.Reasoning;
 import org.ontoware.rdf2go.exception.MalformedQueryException;
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.exception.ReasoningNotSupportedException;
-import org.ontoware.rdf2go.model.*;
-import org.ontoware.rdf2go.model.node.*;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.QueryResultTable;
+import org.ontoware.rdf2go.model.QueryRow;
+import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.Syntax;
+import org.ontoware.rdf2go.model.node.BlankNode;
+import org.ontoware.rdf2go.model.node.Literal;
+import org.ontoware.rdf2go.model.node.Node;
+import org.ontoware.rdf2go.model.node.Resource;
+import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.LanguageTagLiteralImpl;
-import org.ontoware.rdf2go.vocabulary.RDFS;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.Writer;
-import java.net.URLDecoder;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import de.d3web.plugin.Extension;
+import de.d3web.plugin.PluginManager;
+import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
+import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.PackageCompiler;
+import de.knowwe.core.compile.packaging.PackageCompileType;
+import de.knowwe.core.event.EventManager;
+import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.event.ArticleRegisteredEvent;
+import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
+import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
-/**
- * 
- * @author grotheer
- * @created 29.11.2010
- */
-public class Rdf2GoCore implements EventListener {
+public class Rdf2GoCore {
 
 	private interface StatementSource {
 
 		Article getArticle();
 	}
 
-	private static class ArticleSource implements StatementSource {
+	private static class CompilerSource implements StatementSource {
 
-		private final String web;
-		private final String title;
+		private final Article article;
 
-		public ArticleSource(Article article) {
-			this.web = article.getWeb();
-			this.title = article.getTitle();
+		public CompilerSource(PackageCompiler compiler) {
+			this.article = compiler.getCompileSection().getArticle();
 		}
 
 		@Override
 		public Article getArticle() {
-			return Environment.getInstance().getArticle(web, title);
+			return article;
 		}
 
 		@Override
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
-			result = prime * result + ((title == null) ? 0 : title.hashCode());
-			result = prime * result + ((web == null) ? 0 : web.hashCode());
+			result = prime * result + ((article == null) ? 0 : article.hashCode());
 			return result;
 		}
 
@@ -100,17 +110,14 @@ public class Rdf2GoCore implements EventListener {
 			if (this == obj) return true;
 			if (obj == null) return false;
 			if (getClass() != obj.getClass()) return false;
-			ArticleSource other = (ArticleSource) obj;
-			if (title == null) {
-				if (other.title != null) return false;
+			CompilerSource other = (CompilerSource) obj;
+			if (article == null) {
+				if (other.article != null) return false;
 			}
-			else if (!title.equals(other.title)) return false;
-			if (web == null) {
-				if (other.web != null) return false;
-			}
-			else if (!web.equals(other.web)) return false;
+			else if (!article.equals(other.article)) return false;
 			return true;
 		}
+
 	}
 
 	private class SectionSource implements StatementSource {
@@ -161,101 +168,80 @@ public class Rdf2GoCore implements EventListener {
 
 	private static Rdf2GoCore globaleInstance;
 
-	private static Map<String, Rdf2GoCore> instances = new HashMap<String, Rdf2GoCore>();
-
 	private static final String MODEL_CONFIG_POINT_ID = "Rdf2GoModelConfig";
 
 	public static final String PLUGIN_ID = "KnowWE-Plugin-Rdf2GoSemanticCore";
 
-	private static final String NARY_PROPERTY = "NaryProperty";
+	public static final String GLOBAL = "GLOBAL";
 
-	public static final String MASTER_ANNOTATION = "master";
+	public static Rdf2GoCore getInstance(Rdf2GoCompiler compiler) {
+		return compiler.getRdf2GoCore();
+	}
 
-	private static String getCoreId(String web, String title) {
-		return web + "_" + title;
+	@Deprecated
+	public static Rdf2GoCore getInstance(Article master) {
+		List<Section<PackageCompileType>> compileSections = Sections.findSuccessorsOfType(
+				master.getRootSection(), PackageCompileType.class);
+		for (Section<PackageCompileType> section : compileSections) {
+			Collection<PackageCompiler> packageCompilers = section.get().getPackageCompilers(
+					section);
+			for (PackageCompiler packageCompiler : packageCompilers) {
+				if (packageCompiler instanceof Rdf2GoCompiler) {
+					return ((Rdf2GoCompiler) packageCompiler).getRdf2GoCore();
+				}
+			}
+		}
+		return null;
+	}
+
+	@Deprecated
+	public static Rdf2GoCore getInstance(String web, String master) {
+		return getInstance(Compilers.getDefaultArticleManager(web).getArticle(master));
 	}
 
 	/**
-	 * Returns the global Rdf2GoCore. Be aware, that there are also other cores
-	 * for markups with package support. They are accessible with
+	 * @deprecated use {@link Rdf2GoCore#getInstance(Rdf2GoCompiler)} instead.
+	 *             Using the global instance will cause problems with different
+	 *             webs or different article managers
 	 * 
-	 * @created 26.02.2013
-	 * @return
+	 * @created 14.12.2013
+	 * @return one global instance for all webs an compilers
 	 */
+	@Deprecated
 	public static Rdf2GoCore getInstance() {
 		if (globaleInstance == null) {
-			globaleInstance = new Rdf2GoCore(Environment.DEFAULT_WEB);
-			globaleInstance.init();
+			globaleInstance = new Rdf2GoCore();
 		}
 		return globaleInstance;
 	}
 
-	public static Rdf2GoCore getInstance(String web, String master) {
-		String coreId = getCoreId(web, master);
-		Rdf2GoCore instance = instances.get(coreId);
-		if (instance == null) {
-			instance = new Rdf2GoCore(web);
-			instance.init();
-			instances.put(coreId, instance);
-		}
-		return instance;
-	}
-
-	public static Rdf2GoCore getInstance(Article article) {
-		return getInstance(article.getWeb(), article.getTitle());
-	}
-
-	public static Rdf2GoCore getAnyInstance(Section<?> section) {
-		String web = section.getWeb();
-		PackageManager packageManager = Environment.getInstance().getPackageManager(web);
-		Set<String> articles = packageManager.getCompilingArticles(section);
-		if (articles.isEmpty()) return getInstance();
-		String master = articles.iterator().next();
-		return getInstance(web, master);
-	}
-
-	public static Rdf2GoCore getInstance(Section<? extends DefaultMarkupType> section) {
-		String master = DefaultMarkupType.getAnnotation(section, Rdf2GoCore.MASTER_ANNOTATION);
-		if (master == null) {
-			return Rdf2GoCore.getInstance();
-		}
-		else {
-			return Rdf2GoCore.getInstance(section.getWeb(), master);
-		}
-	}
-
-	private static void removeInstance(Article article) {
-		Rdf2GoCore removed = instances.remove(getCoreId(article.getWeb(), article.getTitle()));
-		if (removed != null) {
-			EventManager.getInstance().unregister(removed);
-		}
-	}
-
 	private final String bns;
+
 	private final String lns;
-	private final String web;
 
 	private org.ontoware.rdf2go.model.Model model;
+
 	private Rdf2GoModel modelType = Rdf2GoModel.SESAME;
+
 	private Rdf2GoReasoning reasoningType = Rdf2GoReasoning.RDF;
 
 	/**
 	 * This statement cache is controlled by the incremental compiler.
 	 */
-	private Map<String, WeakHashMap<Section<? extends Type>, List<Statement>>> incrementalStatementCache;
+	private final Map<String, WeakHashMap<Section<? extends Type>, List<Statement>>> incrementalStatementCache;
 
 	/**
 	 * We use a map or ArrayLists here because we will have a lot of Lists with
 	 * mostly 1 elements. HashSets or such would be memory overhead.
 	 */
-	private Map<Statement, ArrayList<StatementSource>> duplicateStatements;
+	private final Map<Statement, ArrayList<StatementSource>> duplicateStatements;
 
 	/**
 	 * This statement cache gets cleaned with the full parse of an article. If a
 	 * full parse on an article is performed, all old statements registered for
 	 * this article are removed.
 	 */
-	private final Map<String, Set<Statement>> fullParseStatementCache = new HashMap<String, Set<Statement>>();
+	private final Map<Compiler, Set<Statement>> fullParseStatementCache = new HashMap<Compiler, Set<Statement>>();
 	/**
 	 * All namespaces known to KnowWE. Key is the namespace abbreviation, value
 	 * is the full namespace, e.g. rdf and
@@ -271,48 +257,30 @@ public class Rdf2GoCore implements EventListener {
 
 	private boolean addedStatements = false;
 
-	public Rdf2GoCore(String web) {
-		this.web = web;
-		this.bns = "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#";
-		this.lns = Environment.getInstance().getWikiConnector().getBaseUrl()
-				+ "Wiki.jsp?page=";
+	public Rdf2GoCore() {
+		this(Environment.getInstance().getWikiConnector().getBaseUrl()
+				+ "Wiki.jsp?page=", "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#",
+				null);
 	}
 
-	public Rdf2GoCore(String web, String lns, Model model) {
-		this.web = web;
-		this.bns = "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#";
+	public Rdf2GoCore(String lns, String bns, Model model) {
+		this.bns = bns;
 		this.lns = lns;
-		this.model = model;
-	}
-
-	/**
-	 * Returns the title of the compiling master article of this core.
-	 * 
-	 * @created 13.11.2013
-	 * @return the name of the master article
-	 */
-	public Article getMaster() {
-		String id = getID();
-		if (id == null) return null;
-		String title = id.substring(web.length() + 1);
-		return Environment.getInstance().getArticle(web, title);
-	}
-
-	/**
-	 * Returns the unique id of this core. The method returns null for the
-	 * global instance.
-	 * 
-	 * @created 13.11.2013
-	 * @return the id of this core
-	 */
-	public String getID() {
-		Set<Entry<String, Rdf2GoCore>> entrySet = instances.entrySet();
-		for (Entry<String, Rdf2GoCore> entry : entrySet) {
-			if (entry.getValue().equals(this)) {
-				return entry.getKey();
-			}
+		if (model == null) {
+			initModel();
 		}
-		return null;
+		else {
+			this.model = model;
+		}
+
+		incrementalStatementCache = new HashMap<String, WeakHashMap<Section<? extends Type>, List<Statement>>>();
+		duplicateStatements = new HashMap<Statement, ArrayList<StatementSource>>();
+
+		insertCache = new HashSet<Statement>();
+		removeCache = new HashSet<Statement>();
+
+		namespaces.putAll(this.model.getNamespaces());
+		initDefaultNamespaces();
 	}
 
 	/**
@@ -389,18 +357,18 @@ public class Rdf2GoCore implements EventListener {
 	 * used in a {@link SubtreeHandler}.
 	 * 
 	 * @created 11.06.2012
-	 * @param article the article for which the statements are added and for
+	 * @param compiler the article for which the statements are added and for
 	 *        which they are removed at full parse
 	 * @param statements the statements to add to the triple store
 	 */
-	public void addStatements(Article article, Statement... statements) {
-		Set<Statement> statementsOfArticle = fullParseStatementCache.get(article.getTitle());
+	public void addStatements(PackageCompiler compiler, Statement... statements) {
+		Set<Statement> statementsOfArticle = fullParseStatementCache.get(compiler);
 		if (statementsOfArticle == null) {
 			statementsOfArticle = new HashSet<Statement>();
-			fullParseStatementCache.put(article.getTitle(), statementsOfArticle);
+			fullParseStatementCache.put(compiler, statementsOfArticle);
 		}
 		statementsOfArticle.addAll(Arrays.asList(statements));
-		addStatementsToDuplicatedCache(new ArticleSource(article), statements);
+		addStatementsToDuplicatedCache(new CompilerSource(compiler), statements);
 		addStatementsToInsertCache(statements);
 		addedStatements = true;
 	}
@@ -628,19 +596,6 @@ public class Rdf2GoCore implements EventListener {
 		return Strings.unquote(turtle);
 	}
 
-	/**
-	 * @param cur
-	 */
-	public List<Statement> createlocalProperty(String cur) {
-		URI prop = createlocalURI(cur);
-		List<Statement> io = new ArrayList<Statement>();
-		if (!PropertyManager.getInstance().isValid(this, prop)) {
-			io.add(createStatement(prop, RDFS.subClassOf, createURI(getBaseNamespace(),
-					NARY_PROPERTY)));
-		}
-		return io;
-	}
-
 	public URI createlocalURI(String value) {
 		return createURI(lns, value);
 	}
@@ -713,15 +668,6 @@ public class Rdf2GoCore implements EventListener {
 
 	public String getBaseNamespace() {
 		return bns;
-	}
-
-	@Override
-	public Collection<Class<? extends Event>> getEvents() {
-		ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(
-				2);
-		events.add(FullParseEvent.class);
-		events.add(ArticleCreatedEvent.class);
-		return events;
 	}
 
 	public String getLocalNamespace() {
@@ -805,22 +751,6 @@ public class Rdf2GoCore implements EventListener {
 
 	public Object getUnderlyingModelImplementation() {
 		return model.getUnderlyingModelImplementation();
-	}
-
-	/**
-	 * Initializes the model and its caches and namespaces
-	 */
-	private void init() {
-		initModel();
-		incrementalStatementCache = new HashMap<String, WeakHashMap<Section<? extends Type>, List<Statement>>>();
-		duplicateStatements = new HashMap<Statement, ArrayList<StatementSource>>();
-
-		insertCache = new HashSet<Statement>();
-		removeCache = new HashSet<Statement>();
-
-		namespaces.putAll(model.getNamespaces());
-		initDefaultNamespaces();
-		EventManager.getInstance().registerListener(this);
 	}
 
 	/**
@@ -926,31 +856,13 @@ public class Rdf2GoCore implements EventListener {
 				key + buffy.toString());
 	}
 
-	@Override
-	public void notify(Event event) {
-		if (event instanceof FullParseEvent) {
-			Article article = ((FullParseEvent) event).getArticle();
-			removeStatementsOfArticle(article);
-			removeInstance(article);
-		}
-
-		if (event instanceof ArticleCreatedEvent) {
-			Article article = ((ArticleCreatedEvent) event).getArticle();
-			String coreId = getCoreId(article.getWeb(), article.getTitle());
-			Rdf2GoCore instance = instances.get(coreId);
-			if (this == instance || this == globaleInstance) {
-				commit();
-			}
-		}
+	public void readFrom(InputStream in, Syntax syntax) throws IOException {
+		model.readFrom(in, syntax);
 	}
 
-    public void readFrom(InputStream in, Syntax syntax) throws IOException {
-        model.readFrom(in, syntax);
-    }
-
-    public void readFrom(Reader in, Syntax syntax) throws IOException {
-        model.readFrom(in, syntax);
-    }
+	public void readFrom(Reader in, Syntax syntax) throws IOException {
+		model.readFrom(in, syntax);
+	}
 
 	public void readFrom(InputStream in) throws ModelRuntimeException, IOException {
 		model.readFrom(in);
@@ -1060,19 +972,19 @@ public class Rdf2GoCore implements EventListener {
 	 * {@link Rdf2GoCore#addStatement(Section, Resource, URI, Node)}.
 	 * 
 	 * @created 06.12.2010
-	 * @param sec the {@link Section} for which the {@link Statement}s should be
-	 *        removed
+	 * @param section the {@link Section} for which the {@link Statement}s
+	 *        should be removed
 	 */
-	public void removeStatementsForSection(Section<? extends Type> sec) {
+	public void removeStatementsForSection(Section<? extends Type> section) {
 
 		boolean removed = false;
 
 		WeakHashMap<Section<? extends Type>, List<Statement>> allStatementSectionsOfArticle =
-				incrementalStatementCache.get(sec.getTitle());
+				incrementalStatementCache.get(section.getTitle());
 
 		if (allStatementSectionsOfArticle != null) {
-			if (allStatementSectionsOfArticle.containsKey(sec)) {
-				removed = removeStatementListOfSection(sec);
+			if (allStatementSectionsOfArticle.containsKey(section)) {
+				removed = removeStatementListOfSection(section);
 			}
 			else {
 				// fix: IncrementalCompiler not necessarily delivers the same
@@ -1080,13 +992,13 @@ public class Rdf2GoCore implements EventListener {
 				Set<Section<? extends Type>> keySet = allStatementSectionsOfArticle.keySet();
 				Iterator<Section<? extends Type>> iterator = keySet.iterator();
 				while (iterator.hasNext()) {
-					Section<? extends Type> section = iterator.next();
-					if (section.getText().equals(sec.getText())) {
-						List<String> sectionPathToRoot = Sections.createTypePathToRoot(section);
-						List<String> secPathToRoot = Sections.createTypePathToRoot(sec);
+					Section<? extends Type> next = iterator.next();
+					if (next.getText().equals(section.getText())) {
+						List<String> sectionPathToRoot = Sections.createTypePathToRoot(next);
+						List<String> secPathToRoot = Sections.createTypePathToRoot(section);
 						if (sectionPathToRoot.equals(
 								secPathToRoot)) {
-							removed = removeStatementListOfSection(section);
+							removed = removeStatementListOfSection(next);
 							break;
 						}
 					}
@@ -1095,7 +1007,7 @@ public class Rdf2GoCore implements EventListener {
 		}
 		if (!removed) {
 			Logger.getLogger(this.getClass().getName()).log(Level.INFO,
-					"failed to remove statement for: " + sec.toString());
+					"failed to remove statement for: " + section.toString());
 		}
 
 	}
@@ -1103,30 +1015,31 @@ public class Rdf2GoCore implements EventListener {
 	/**
 	 * Removes all {@link Statement}s that were added and cached for the given
 	 * {@link Article}. This method is automatically called every time an
-	 * article is parsed fully ({@link FullParseEvent} fired) so normally you
-	 * shouldn't need to call this method yourself.
+	 * article is parsed fully ({@link ArticleRegisteredEvent} fired) so
+	 * normally you shouldn't need to call this method yourself.
 	 * <p/>
 	 * <b>Attention</b>: This method only removes {@link Statement}s that were
 	 * added (and cached) in connection with an {@link Article} using methods
-	 * like {@link Rdf2GoCore#addStatements(Article, Statement...)}.
+	 * like {@link Rdf2GoCore#addStatements(Article, Collection)} or
+	 * {@link Rdf2GoCore#addStatement(Article, Statement)}.
 	 * 
 	 * @created 13.06.2012
 	 * @param article the article for which you want to remove all
 	 *        {@link Statement}s
 	 */
-	public void removeStatementsOfArticle(Article article) {
-		Set<Statement> statementsOfArticle = fullParseStatementCache.get(article.getTitle());
+	public void removeStatementsOfCompiler(PackageCompiler compiler) {
+		Set<Statement> statementsOfArticle = fullParseStatementCache.get(compiler);
 		if (statementsOfArticle == null) return;
 		List<Statement> removedStatements = new ArrayList<Statement>();
 		for (Statement statement : statementsOfArticle) {
-			boolean removed = removeStatementFromDuplicateCache(new ArticleSource(article),
+			boolean removed = removeStatementFromDuplicateCache(new CompilerSource(compiler),
 					statement);
 			if (removed) {
 				removedStatements.add(statement);
 			}
 		}
 		addStatementsToRemoveCache(removedStatements);
-		fullParseStatementCache.remove(article.getTitle());
+		fullParseStatementCache.remove(compiler);
 	}
 
 	/**
@@ -1232,7 +1145,7 @@ public class Rdf2GoCore implements EventListener {
 	}
 
 	public QueryResultTable sparqlSelect(SparqlQuery query) throws ModelRuntimeException, MalformedQueryException {
-		return sparqlSelect(query.toSparql());
+		return sparqlSelect(query.toSparql(this));
 	}
 
 	public QueryResultTable sparqlSelect(String query) throws ModelRuntimeException, MalformedQueryException {

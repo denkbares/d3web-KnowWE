@@ -3,17 +3,17 @@ package tests;
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -27,17 +27,15 @@ import utils.TSUtil;
 import utils.TestArticleManager;
 import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.plugin.test.InitPluginManager;
-import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 
 /**
  * This class tests whether the TestCases are equal
- *
+ * 
  * @author Sebastian Furth
- * @see TSUtil to modify the TestSuite against which everything is
- *      tested
+ * @see TSUtil to modify the TestSuite against which everything is tested
  * @see TestCaseTest.txt to modify the Article which is tested
- *
+ * 
  */
 public class TestCaseTest extends TestCase {
 
@@ -46,8 +44,6 @@ public class TestCaseTest extends TestCase {
 	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
-		// Enforce Autocompile
-		PackageManager.overrideAutocompileArticle(true);
 	}
 
 	/**

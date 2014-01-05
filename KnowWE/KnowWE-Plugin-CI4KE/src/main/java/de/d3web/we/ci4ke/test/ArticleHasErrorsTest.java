@@ -45,10 +45,10 @@ public class ArticleHasErrorsTest extends AbstractTest<Article> {
 
 		Collection<de.knowwe.core.report.Message> messages = new LinkedList<de.knowwe.core.report.Message>();
 		Type[] typeArray = new de.knowwe.core.report.Message.Type[] { de.knowwe.core.report.Message.Type.ERROR };
-		Map<String, Collection<de.knowwe.core.report.Message>> allMessagesMap =
-				Messages.getMessagesFromSubtree(moni.getRootSection(), typeArray);
+		Map<de.knowwe.core.compile.Compiler, Collection<de.knowwe.core.report.Message>> allMessagesMap =
+				Messages.getMessagesMapFromSubtree(moni.getRootSection(), typeArray);
 
-		for (String s : allMessagesMap.keySet()) {
+		for (de.knowwe.core.compile.Compiler s : allMessagesMap.keySet()) {
 			messages.addAll(allMessagesMap.get(s));
 		}
 

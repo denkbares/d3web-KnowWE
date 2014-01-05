@@ -30,7 +30,6 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
-import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.logging.Logging;
 
@@ -48,7 +47,6 @@ public class XCLTest extends TestCase {
 	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
-		PackageManager.overrideAutocompileArticle(true);
 	}
 
 	public void testNumberOfXCLModels() {

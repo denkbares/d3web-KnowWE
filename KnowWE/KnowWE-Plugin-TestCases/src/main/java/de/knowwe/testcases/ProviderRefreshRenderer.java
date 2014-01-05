@@ -18,11 +18,8 @@
  */
 package de.knowwe.testcases;
 
-import java.util.Set;
-
-import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
-import de.knowwe.core.kdom.Article;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Messages;
@@ -47,19 +44,14 @@ public class ProviderRefreshRenderer extends DefaultMarkupRenderer {
 	}
 
 	private void refreshProviders(Section<?> section, UserContext user) {
-		Set<String> articlesReferringTo = Environment.getInstance().getPackageManager(
-				user.getWeb()).getCompilingArticles(section);
-		ArticleManager articleManager = Environment.getInstance().getArticleManager(
-				user.getWeb());
-		for (String referingArticleTitle : articlesReferringTo) {
-			Article referningArticle = articleManager.getArticle(referingArticleTitle);
+		D3webCompiler compiler = Compilers.getCompiler(section, D3webCompiler.class);
+		if (compiler != null) {
 			TestCaseProviderStorage providerStorage = (TestCaseProviderStorage) section.getSectionStore().getObject(
-					referningArticle,
-					TestCaseProviderStorage.KEY);
+					compiler, TestCaseProviderStorage.KEY);
 			if (providerStorage != null) {
 				providerStorage.refresh();
-				Messages.clearMessages(referningArticle, section);
-				Messages.storeMessages(referningArticle, section, providerStorage.getClass(),
+				Messages.clearMessages(compiler, section);
+				Messages.storeMessages(compiler, section, providerStorage.getClass(),
 						providerStorage.getMessages());
 			}
 		}

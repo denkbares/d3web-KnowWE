@@ -38,7 +38,7 @@ public class Fingerprint {
 	};
 
 	public static void createFingerprint(String web, File folder) throws IOException {
-		ArticleManager manager = Environment.getInstance().getArticleManager(web);
+		ArticleManager manager = Environment.getInstance().getDefaultArticleManager(web);
 		Collection<Article> articles = manager.getArticles();
 		createFingerprint(articles, folder);
 	}

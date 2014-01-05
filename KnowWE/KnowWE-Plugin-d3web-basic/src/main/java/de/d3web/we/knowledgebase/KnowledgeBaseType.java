@@ -26,18 +26,22 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.strings.Identifier;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
+import de.d3web.we.reviseHandler.D3webHandler;
+import de.knowwe.core.compile.PackageCompiler;
+import de.knowwe.core.compile.PackageRegistrationCompiler;
+import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScript;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileType;
+import de.knowwe.core.compile.packaging.PackageCompileType;
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
-import de.knowwe.core.compile.packaging.UsesAnnotationNameType;
-import de.knowwe.core.compile.packaging.UsesAnnotationRenderer;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupTermReferenceRegisterHandler;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageRegistrationScript;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageTermReferenceRegistrationHandler;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
@@ -72,7 +76,6 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 	public static final String ANNOTATION_VERSION = "version";
 	public static final String ANNOTATION_AUTHOR = "author";
 	public static final String ANNOTATION_COMMENT = "comment";
-	public static final String ANNOTATION_COMPILE = "uses";
 	public static final String ANNOTATION_FILENAME = "filename";
 	public static final String ANNOTATION_STATUS = "status";
 	public static final String ANNOTATION_AFFILIATION = "affiliation";
@@ -81,7 +84,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("KnowledgeBase");
-		MARKUP.addAnnotation(ANNOTATION_COMPILE, false);
+		MARKUP.addAnnotation(PackageManager.COMPILE_ATTRIBUTE_NAME, false);
 		MARKUP.addAnnotation(ANNOTATION_AUTHOR, false);
 		MARKUP.addAnnotation(ANNOTATION_COMMENT, false);
 		MARKUP.addAnnotation(ANNOTATION_ID, false);
@@ -89,27 +92,48 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_FILENAME, false);
 		MARKUP.addAnnotation(ANNOTATION_STATUS, false);
 		MARKUP.addAnnotation(ANNOTATION_AFFILIATION, false);
-		MARKUP.addContentType(new KnowledgeBaseCompileType());
+		DefaultMarkupPackageCompileType compileType = new DefaultMarkupPackageCompileType();
+		compileType.addChildType(new KnowledgeBaseNameType());
+		compileType.addCompileScript(new PackageRegistrationScript<PackageCompileType>() {
 
-		MARKUP.addAnnotationNameType(ANNOTATION_COMPILE, new UsesAnnotationNameType());
-		MARKUP.addAnnotationContentType(ANNOTATION_COMPILE, new PackageTerm(true));
-		MARKUP.addAnnotationRenderer(ANNOTATION_COMPILE, new UsesAnnotationRenderer());
+			@Override
+			public void compile(de.knowwe.core.compile.PackageRegistrationCompiler compiler, Section<PackageCompileType> section) {
+				compiler.getPackageManager().registerPackageCompileSection(section);
+				compiler.getCompilerManager().addCompiler(5,
+						new D3webCompiler(compiler.getPackageManager(), section));
+
+			}
+
+			@Override
+			public void destroy(de.knowwe.core.compile.PackageRegistrationCompiler compiler, Section<PackageCompileType> section) {
+				compiler.getPackageManager().unregisterPackageCompileSection(section);
+				for (PackageCompiler packageCompiler : section.get().getPackageCompilers(section)) {
+					if (packageCompiler instanceof D3webCompiler) {
+						compiler.getCompilerManager().removeCompiler(packageCompiler);
+					}
+				}
+			}
+
+		});
+		MARKUP.addContentType(compileType);
+
+		MARKUP.addAnnotationContentType(PackageManager.COMPILE_ATTRIBUTE_NAME,
+				new PackageTerm());
 	}
 
 	public KnowledgeBaseType() {
 		super(MARKUP);
 
-		this.removeSubtreeHandler(DefaultMarkupTermReferenceRegisterHandler.class);
-		this.addSubtreeHandler(Priority.HIGHEST, new KnowledgeBaseTermDefinitionRegisterHandler());
+		this.removeCompileScript(PackageRegistrationCompiler.class,
+				DefaultMarkupPackageTermReferenceRegistrationHandler.class);
 
-		this.setIgnorePackageCompile(true);
-		this.setRenderer(new KnowledgeBaseRenderer());
-		this.addSubtreeHandler(Priority.HIGHER, new D3webSubtreeHandler<KnowledgeBaseType>() {
+		this.setRenderer(new KnowledgeBaseTypeRenderer());
+		this.addCompileScript(Priority.HIGHER, new D3webHandler<KnowledgeBaseType>() {
 
 			@Override
-			public Collection<Message> create(Article article, Section<KnowledgeBaseType> section) {
+			public Collection<Message> create(D3webCompiler compiler, Section<KnowledgeBaseType> section) {
 				// get required information
-				KnowledgeBase kb = getKB(article);
+				KnowledgeBase kb = getKB(compiler);
 
 				// prepare the items to be set into the knowledge base
 				String id = getAnnotation(section, ANNOTATION_ID);
@@ -121,9 +145,9 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 				String affiliation = getAnnotation(section, ANNOTATION_AFFILIATION);
 
 				// register package defintion
-				TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(article);
-				terminologyManager.registerTermDefinition(section, KnowledgeBase.class,
-						new Identifier("KNOWLEDGEBASE"));
+				TerminologyManager terminologyManager = compiler.getTerminologyManager();
+				terminologyManager.registerTermDefinition(compiler, section,
+						KnowledgeBase.class, new Identifier("KNOWLEDGEBASE"));
 
 				// and write it to the knowledge base
 				if (id != null) kb.setId(id);
@@ -137,6 +161,31 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 				if (affiliation != null) infoStore.addValue(BasicProperties.AFFILIATION,
 						affiliation);
 				return null;
+			}
+
+		});
+
+		// for the scripts to be compiled in a package we also have to register
+		// the KnowledgeBaseType to the correct packages (the ones compiled by
+		// its PackageCompileType section)
+		removeCompileScript(PackageRegistrationCompiler.class,
+				DefaultMarkupPackageRegistrationScript.class);
+		this.addCompileScript(new PackageRegistrationScript<KnowledgeBaseType>() {
+
+			@Override
+			public void compile(PackageRegistrationCompiler compiler, Section<KnowledgeBaseType> section) {
+				Section<DefaultMarkupPackageCompileType> compileSection = Sections.findSuccessor(
+						section, DefaultMarkupPackageCompileType.class);
+				String[] packagesToCompile = compileSection.get().getPackagesToCompile(
+						compileSection);
+				for (String packageName : packagesToCompile) {
+					compiler.getPackageManager().addSectionToPackage(section, packageName);
+				}
+			}
+
+			@Override
+			public void destroy(PackageRegistrationCompiler compiler, Section<KnowledgeBaseType> section) {
+				compiler.getPackageManager().removeSectionFromAllPackages(section);
 			}
 
 		});

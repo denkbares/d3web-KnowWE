@@ -20,9 +20,9 @@ package de.knowwe.testcases.record;
 
 import java.util.Collection;
 
-import de.knowwe.core.kdom.Article;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.FileTestCaseProviderStorage;
@@ -34,17 +34,17 @@ import de.knowwe.testcases.TestCaseProviderStorage;
  * @author Markus Friedrich (denkbares GmbH)
  * @created 26.01.2012
  */
-public class TestCaseSessionRecordSubtreeHandler extends SubtreeHandler<TestCaseSessionRecordType> {
+public class TestCaseSessionRecordSubtreeHandler extends D3webHandler<TestCaseSessionRecordType> {
 
 	@Override
-	public Collection<Message> create(Article article, Section<TestCaseSessionRecordType> section) {
+	public Collection<Message> create(D3webCompiler compiler, Section<TestCaseSessionRecordType> section) {
 		String[] fileNames = DefaultMarkupType.getAnnotations(section, "file");
 		FileTestCaseProviderStorage testCaseProviderStorage = (FileTestCaseProviderStorage) section.getSectionStore().getObject(
-				article, TestCaseProviderStorage.KEY);
+				compiler, TestCaseProviderStorage.KEY);
 		if (testCaseProviderStorage == null) {
-			testCaseProviderStorage = new SessionRecordTestCaseProviderStorage(article, section,
+			testCaseProviderStorage = new SessionRecordTestCaseProviderStorage(compiler, section,
 					fileNames, section.getArticle());
-			section.getSectionStore().storeObject(article, TestCaseProviderStorage.KEY,
+			section.getSectionStore().storeObject(compiler, TestCaseProviderStorage.KEY,
 					testCaseProviderStorage);
 		}
 		else {

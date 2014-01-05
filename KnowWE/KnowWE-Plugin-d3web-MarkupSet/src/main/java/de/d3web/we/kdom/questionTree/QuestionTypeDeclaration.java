@@ -5,6 +5,7 @@ import java.util.List;
 
 import de.d3web.strings.Strings;
 import de.d3web.we.kdom.questionTree.QuestionLine.QuestionTypeChecker;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.object.QuestionDefinition.QuestionType;
 import de.d3web.we.utils.D3webUtils;
@@ -92,9 +93,9 @@ public class QuestionTypeDeclaration extends
 		Message errorMsg = Messages.error(D3webUtils.getD3webBundle()
 				.getString("KnowWE.questiontree.allowingonly")
 				+ allowedTypes);
-		this.addSubtreeHandler(new StringEnumChecker<QuestionTypeDeclaration>(
-				QUESTION_DECLARATIONS, errorMsg, 1, 1));
-		this.addSubtreeHandler(new QuestionTypeChecker());
+		this.addCompileScript(new StringEnumChecker<D3webCompiler, QuestionTypeDeclaration>(
+				D3webCompiler.class, QUESTION_DECLARATIONS, errorMsg, 1, 1));
+		this.addCompileScript(new QuestionTypeChecker());
 	}
 
 	public Section<QuestionDefinition> getQuestionDefinition(Section<QuestionTypeDeclaration> typeDeclaration) {

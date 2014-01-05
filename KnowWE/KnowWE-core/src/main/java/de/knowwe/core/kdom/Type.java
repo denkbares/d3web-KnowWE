@@ -20,13 +20,11 @@
 
 package de.knowwe.core.kdom;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.TreeMap;
 
-import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.parsing.Parser;
 import de.knowwe.core.kdom.rendering.Renderer;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.MessageRenderer;
 
@@ -152,28 +150,18 @@ public interface Type {
 	 */
 	MessageRenderer getMessageRenderer(Message.Type messageType);
 
+	/**
+	 * An unordered collection of the types, which are the parents of this type.
+	 * 
+	 * @return the Collection of parent types
+	 */
+	Collection<Type> getParentTypes();
+
 	/*
 	 * Methods related to compilation
 	 */
 
 	// TODO: is this method really required?!
 	boolean isOrderSensitive();
-
-	/**
-	 * Default value for package compile is true. If false, the type shall be
-	 * ignored by the package compiling. If a type is ignored by package
-	 * compiling, all SubtreeHandlers registered to this type will always
-	 * compile, but only for the article the section is directly hooked in.
-	 */
-	boolean isPackageCompile();
-
-	/*
-	 * Management of SubtreeHandlers
-	 */
-	TreeMap<Priority, List<SubtreeHandler<? extends Type>>> getSubtreeHandlers();
-
-	List<SubtreeHandler<? extends Type>> getSubtreeHandlers(Priority p);
-
-	void addSubtreeHandler(Priority p, SubtreeHandler<? extends Type> handler);
 
 }

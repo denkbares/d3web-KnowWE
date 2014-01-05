@@ -18,6 +18,7 @@
  */
 package de.knowwe.core.correction;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -26,8 +27,9 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import de.d3web.plugin.Extension;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.correction.CorrectionProvider.Suggestion;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
@@ -106,14 +108,16 @@ public class CorrectionToolProvider implements ToolProvider {
 		ResourceBundle wikiConfig = KnowWEUtils.getConfigBundle();
 
 		int threshold = Integer.valueOf(wikiConfig.getString("knowweplugin.correction.threshold"));
-		Article article = KnowWEUtils.getCompilingArticles(section).iterator().next();
+		Collection<TermCompiler> compilers = Compilers.getCompilers(section, TermCompiler.class);
+		for (TermCompiler termCompiler : compilers) {
 
-		for (Extension extension : matches) {
-			CorrectionProvider c = (CorrectionProvider) extension.getSingleton();
-			List<Suggestion> s = c.getSuggestions(article, section, threshold);
-			if (s != null) {
-				suggestions.addAll(s);
-				if (suggestions.size() >= maxCount) break;
+			for (Extension extension : matches) {
+				CorrectionProvider c = (CorrectionProvider) extension.getSingleton();
+				List<Suggestion> s = c.getSuggestions(termCompiler, section, threshold);
+				if (s != null) {
+					suggestions.addAll(s);
+					if (suggestions.size() >= maxCount) break;
+				}
 			}
 		}
 		return suggestions;

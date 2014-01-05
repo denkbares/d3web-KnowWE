@@ -27,8 +27,8 @@ import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.indication.ActionContraIndication;
 import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.strings.Strings;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QASetReference;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
@@ -55,9 +55,9 @@ public class ContraIndicationAction extends BracketsAction<ContraIndicationActio
 	}
 
 	@Override
-	public PSAction createAction(Article article, Section<ContraIndicationAction> s) {
+	public PSAction createAction(D3webCompiler compiler, Section<ContraIndicationAction> s) {
 		Section<QASetReference> qSec = Sections.findSuccessor(s, QASetReference.class);
-		QASet termObject = qSec.get().getTermObject(article, qSec);
+		QASet termObject = qSec.get().getTermObject(compiler, qSec);
 
 		ActionContraIndication actionContraIndication = new ActionContraIndication();
 		List<QASet> obs = new ArrayList<QASet>();

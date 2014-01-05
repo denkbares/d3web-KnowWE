@@ -20,10 +20,23 @@
 
 package de.knowwe.rdf2go.sparql;
 
+import java.util.Set;
+
+import de.d3web.strings.Strings;
+import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.packaging.PackageTerm;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
+import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.report.Messages;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 public class SparqlMarkupType extends DefaultMarkupType {
 
@@ -49,19 +62,47 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		m.addAnnotationRenderer(SORTING, NothingRenderer.getInstance());
 		m.addAnnotation(BORDER, false, "true", "false");
 		m.addAnnotationRenderer(BORDER, NothingRenderer.getInstance());
-		m.addAnnotation(Rdf2GoCore.MASTER_ANNOTATION, false);
-		m.addAnnotationRenderer(Rdf2GoCore.MASTER_ANNOTATION, NothingRenderer.getInstance());
+		m.addAnnotation(Rdf2GoCore.GLOBAL, false, "true", "false");
+		m.addAnnotationRenderer(Rdf2GoCore.GLOBAL, NothingRenderer.getInstance());
+		m.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
+		m.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
+				new PackageAnnotationNameType());
+		m.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
+				new PackageTerm());
 	}
 
 	public SparqlMarkupType(DefaultMarkup markup) {
 		super(markup);
-		this.setIgnorePackageCompile(true);
+		this.setRenderer(new DefaultMarkupRenderer() {
+
+			@Override
+			public void render(Section<?> section, UserContext user, RenderResult buffer) {
+				Rdf2GoCore rdf2GoCore = Rdf2GoUtils.getRdf2GoCore(Sections.cast(section,
+						DefaultMarkupType.class));
+				if (rdf2GoCore == null) {
+					String message = "No ontology found! The package";
+					Set<String> packageNames = section.getPackageNames();
+					String packagesString = Strings.concat(" ,", packageNames);
+					if (packageNames.size() > 1) {
+						message += "s '" + packagesString + "' are";
+					}
+					else {
+						message += " '" + packagesString + "' is";
+					}
+					message += " not used to compile an ontology.";
+
+					Messages.storeMessage(section, getClass(), Messages.warning(message));
+				}
+				else {
+					Messages.clearMessages(section, getClass());
+				}
+				super.render(section, user, buffer);
+			}
+		});
 	}
 
 	public SparqlMarkupType() {
-		super(m);
-		this.setIgnorePackageCompile(true);
-
+		this(m);
 	}
 
 }

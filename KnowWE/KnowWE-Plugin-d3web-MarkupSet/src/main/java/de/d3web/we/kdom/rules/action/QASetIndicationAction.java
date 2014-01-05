@@ -19,7 +19,6 @@
 package de.d3web.we.kdom.rules.action;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import de.d3web.core.inference.PSAction;
@@ -31,18 +30,18 @@ import de.d3web.indication.ActionIndication;
 import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.QuestionnaireReference;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.AnonymousType;
 
 /**
@@ -57,14 +56,14 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 
 		AnonymousType qasetType = new AnonymousType("QuestionORQusetionnaire");
 		qasetType.setSectionFinder(new AllTextFinderTrimmed());
-		qasetType.addSubtreeHandler(new SetTypeHandler());
+		qasetType.addCompileScript(new SetTypeHandler());
 
 		this.addChildType(qasetType);
 
 	}
 
 	@Override
-	public PSAction createAction(Article article, Section<QASetIndicationAction> s) {
+	public PSAction createAction(D3webCompiler compiler, Section<QASetIndicationAction> s) {
 		ActionIndication a = new ActionIndication();
 		List<QASet> qasets = new ArrayList<QASet>();
 		a.setQASets(qasets);
@@ -72,7 +71,7 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 		Section<QuestionReference> questionRef = Sections.findSuccessor(s, QuestionReference.class);
 		if (questionRef != null) {
 
-			Question object = questionRef.get().getTermObject(article, questionRef);
+			Question object = questionRef.get().getTermObject(compiler, questionRef);
 			qasets.add(object);
 		}
 
@@ -80,7 +79,7 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 				QuestionnaireReference.class);
 		if (questionnaireRef != null) {
 
-			QContainer object = questionnaireRef.get().getTermObject(article, questionnaireRef);
+			QContainer object = questionnaireRef.get().getTermObject(compiler, questionnaireRef);
 			qasets.add(object);
 		}
 
@@ -92,11 +91,11 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 		return PSMethodStrategic.class;
 	}
 
-	static class SetTypeHandler extends SubtreeHandler<AnonymousType> {
+	static class SetTypeHandler extends D3webCompileScript<AnonymousType> {
 
 		@Override
-		public Collection<Message> create(Article article, Section<AnonymousType> s) {
-			TerminologyManager terminologyHandler = KnowWEUtils.getTerminologyManager(article);
+		public void compile(D3webCompiler compiler, Section<AnonymousType> s) {
+			TerminologyManager terminologyHandler = compiler.getTerminologyManager();
 			Identifier termIdentifier = new Identifier(Strings.trimQuotes(s.getText()));
 			if (terminologyHandler.isDefinedTerm(termIdentifier)) {
 				Section<?> termDefinitionSection = terminologyHandler.getTermDefiningSection(termIdentifier);
@@ -105,26 +104,27 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 					Section<? extends Term> simpleDef = (Section<? extends Term>) termDefinitionSection;
 					Class<?> objectClazz = simpleDef.get().getTermObjectClass(simpleDef);
 					if (Question.class.isAssignableFrom(objectClazz)) {
-						s.setType(new QuestionReference(), article);
-						return Messages.noMessage();
+						s.setType(new QuestionReference());
+						Compilers.compile(compiler, s);
+						return;
 					}
 					if (QContainer.class.isAssignableFrom(objectClazz)) {
-						s.setType(new QuestionnaireReference(), article);
-						return Messages.noMessage();
+						s.setType(new QuestionnaireReference());
+						Compilers.compile(compiler, s);
+						return;
 					}
-
-					return Messages.asList(Messages.error(
+					Message msg = Messages.error(
 							termIdentifier + "is defined as: "
 									+ objectClazz.getName()
-									+ " - expected was Question or Questionnaire"));
+									+ " - expected was Question or Questionnaire");
+
 				}
 			}
-
-			return Messages.asList(Messages.error(
+			Message msg = Messages.error(
 					"Could not find '" + Strings.trimQuotes(termIdentifier.toString())
-							+ "' - expected was Question or Questionnaire"));
+							+ "' - expected was Question or Questionnaire");
+			Messages.storeMessage(compiler, s, this.getClass(), msg);
 		}
-
 	}
 
 }

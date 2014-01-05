@@ -25,9 +25,9 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.kdom.questionTree.ObjectDescription;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.SolutionDefinition;
-import de.d3web.we.reviseHandler.D3webSubtreeHandler;
-import de.knowwe.core.kdom.Article;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
@@ -57,7 +57,7 @@ import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 public class SolutionDashTreeElementContent extends DashTreeElementContent {
 
 	public SolutionDashTreeElementContent() {
-		this.addSubtreeHandler(new CreateSubSolutionRelationHandler());
+		this.addCompileScript(new CreateSubSolutionRelationHandler());
 
 		// add description-type via '~'
 		this.addChildType(new ObjectDescription(MMInfo.DESCRIPTION));
@@ -96,29 +96,29 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent {
 	 *         knowledge base
 	 * 
 	 */
-	class CreateSubSolutionRelationHandler extends D3webSubtreeHandler<SolutionDashTreeElementContent> {
+	class CreateSubSolutionRelationHandler extends D3webHandler<SolutionDashTreeElementContent> {
 
 		@Override
-		public Collection<Message> create(Article article, Section<SolutionDashTreeElementContent> s) {
+		public Collection<Message> create(D3webCompiler compiler, Section<SolutionDashTreeElementContent> s) {
 			Section<? extends DashTreeElementContent> fatherSolutionContent = DashTreeUtils.getFatherDashTreeElementContent(
 					s);
 			Section<SolutionDefinition> localSolutionDef = Sections.findSuccessor(s,
 					SolutionDefinition.class);
-			Solution localSolution = localSolutionDef.get().getTermObject(article, localSolutionDef);
+			Solution localSolution = localSolutionDef.get().getTermObject(compiler, localSolutionDef);
 
 			if (fatherSolutionContent != null && localSolution != null) {
 
 				Section<SolutionDefinition> solutionDef = Sections.findSuccessor(
 						fatherSolutionContent, SolutionDefinition.class);
 				if (solutionDef != null) {
-					Solution superSolution = solutionDef.get().getTermObject(article, solutionDef);
+					Solution superSolution = solutionDef.get().getTermObject(compiler, solutionDef);
 					if (superSolution != null) {
 						// here the actual taxonomic relation is established
 
 						// remove this solution if already registered as child
 						// of
 						// root
-						KnowledgeBase kb = getKB(article);
+						KnowledgeBase kb = getKB(compiler);
 						kb.getRootSolution().removeChild(localSolution);
 						superSolution.addChild(localSolution);
 

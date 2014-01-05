@@ -12,15 +12,15 @@ import de.d3web.core.session.QuestionValue;
 import de.d3web.empiricaltesting.Finding;
 import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.strings.Strings;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionReference;
+import de.d3web.we.reviseHandler.D3webHandler;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.kdom.Article;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.subtreeHandler.SubtreeHandler;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.testcases.NameType;
 import de.knowwe.testcases.TimeStampType;
 
@@ -29,12 +29,12 @@ import de.knowwe.testcases.TimeStampType;
  * @author Reinhard Hatko
  * @created 16.03.2011
  */
-final class TestcaseTableLineSubtreeHandler extends SubtreeHandler<TestcaseTableLine> {
+final class TestcaseTableLineSubtreeHandler extends D3webHandler<TestcaseTableLine> {
 
 	@Override
-	public Collection<Message> create(Article article, Section<TestcaseTableLine> s) {
+	public Collection<Message> create(D3webCompiler article, Section<TestcaseTableLine> s) {
 
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article);
 
 		Section<TimeStampType> timeStamp = Sections.findSuccessor(s, TimeStampType.class);
 
@@ -84,7 +84,7 @@ final class TestcaseTableLineSubtreeHandler extends SubtreeHandler<TestcaseTable
 			}
 		}
 
-		KnowWEUtils.storeObject(article, s, TestcaseTableLine.TESTCASE_KEY, testCase);
+		Compilers.storeObject(article, s, TestcaseTableLine.TESTCASE_KEY, testCase);
 		return Collections.emptyList();
 	}
 }
