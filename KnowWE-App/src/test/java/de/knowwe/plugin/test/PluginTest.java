@@ -44,14 +44,13 @@ public class PluginTest extends TestCase {
 		InitPluginManager.init();
 		Environment.initInstance(new DummyConnector());
 		Plugins.getInstantiations();
-		Plugins.getKnowledgeRepresentationHandlers();
 		Plugins.getKnowWEAction();
 		Plugins.getPageAppendHandlers();
 		RootType root = RootType.getInstance();
 		Type[] path = new Type[] { root };
 		Plugins.addChildrenTypesToType(root, path);
-		Plugins.addSubtreeHandlersToType(root, path);
 		Plugins.addRendererToType(root, path);
+		Plugins.addCompileScriptsToType(root, path);
 		Plugins.getTagHandlers();
 	}
 
