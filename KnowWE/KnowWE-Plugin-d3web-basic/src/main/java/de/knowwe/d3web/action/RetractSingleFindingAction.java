@@ -21,6 +21,8 @@
 package de.knowwe.d3web.action;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
@@ -29,14 +31,12 @@ import de.d3web.core.session.blackboard.Fact;
 import de.d3web.core.session.blackboard.FactFactory;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.strings.Strings;
-import de.d3web.we.basic.KnowledgeBaseManager;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.compile.packaging.PackageCompileType;
-import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.compile.Compilers;
 
 /**
  * An action that is performed for retracting a single value e.g. in Quick
@@ -89,8 +89,10 @@ public class RetractSingleFindingAction extends AbstractAction {
 		// Added for KnowWE-Plugin-d3web-Debugger
 		if (context.getParameters().containsKey("KBid")) {
 			String kbID = context.getParameter("KBid");
-			for (Section<? extends PackageCompileType> compileSection : KnowledgeBaseManager.getInstance(web).getKnowledgeBaseSections()) {
-				kb = D3webUtils.getKnowledgeBase(compileSection);
+			Collection<KnowledgeBase> knowledgeBases = D3webUtils.getKnowledgeBases(Compilers.getDefaultArticleManager(web));
+			Iterator<KnowledgeBase> iterator = knowledgeBases.iterator();
+			while (iterator.hasNext()) {
+				kb = iterator.next();
 				if (kb.getId() != null && kb.getId().equals(kbID)) {
 					session = SessionProvider.getSession(context, kb);
 					break;

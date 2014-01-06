@@ -113,7 +113,6 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
-		
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SessionResetAction">
 		<parameter id="class" value="de.knowwe.d3web.action.SessionResetAction" />
@@ -158,14 +157,5 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Instantiation"
-		id="D3webInstantiation">
-		<parameter id="class"
-			value="de.d3web.we.basic.D3webInstantiation" />
-		<parameter id="name" value="D3webInstantiation" />
-		<parameter id="description" value="D3webInstantiation" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="4" />
-	</extension>
 
 </plugin>

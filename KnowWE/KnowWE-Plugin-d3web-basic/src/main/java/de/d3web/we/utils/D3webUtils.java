@@ -33,7 +33,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,7 +63,6 @@ import de.d3web.core.session.values.Unknown;
 import de.d3web.scoring.Score;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
-import de.d3web.we.basic.KnowledgeBaseManager;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.AnswerDefinition;
 import de.d3web.we.object.D3webTerm;
@@ -180,6 +178,15 @@ public class D3webUtils {
 		return getKnowledgeBase(((AbstractPackageCompiler) compiler).getCompileSection());
 	}
 
+	public static Collection<KnowledgeBase> getKnowledgeBases(ArticleManager manager) {
+		Collection<D3webCompiler> compilers = Compilers.getCompilers(manager, D3webCompiler.class);
+		Collection<KnowledgeBase> kbs = new ArrayList<KnowledgeBase>(compilers.size());
+		for (D3webCompiler d3webCompiler : compilers) {
+			kbs.add(d3webCompiler.getKnowledgeBase());
+		}
+		return kbs;
+	}
+
 	/**
 	 * Utility method to get a {@link KnowledgeBase} for a specified article.
 	 * 
@@ -212,50 +219,20 @@ public class D3webUtils {
 		Section<PackageCompileType> compileSection = Sections.findSuccessor(
 				Environment.getInstance().getArticle(web, title).getRootSection(),
 				PackageCompileType.class);
-		return KnowledgeBaseManager.getInstance(web).getKnowledgeBase(compileSection);
+		return getD3webCompiler(compileSection).getKnowledgeBase();
 	}
 
 	/**
-	 * Utility method to get a {@link KnowledgeBase} for an article specified by
-	 * its web and topic. If no such knowledge base exists, a new knowledge base
-	 * is created for the article and returned.
+	 * If the given section is compiled by a {@link D3webCompiler} or is a
+	 * section of the type {@link PackageCompileType} belonging to a knowledge
+	 * base markup, the knowledge base of the right {@link D3webCompiler} is
+	 * returned.
 	 * 
-	 * @created 15.12.2010
-	 * @param web the web of the article the knowledge base is compiled
-	 * @param title the title of the article the knowledge base is compiled
-	 * @return the knowledge base if such one exists, null otherwise
-	 * @throws NullPointerException if web or topic is null
+	 * @created 06.01.2014
 	 */
-	public static KnowledgeBase getKnowledgeBase(Section<? extends PackageCompileType> compileSection) {
-		return KnowledgeBaseManager.getInstance(compileSection.getWeb()).getKnowledgeBase(
-				compileSection);
+	public static KnowledgeBase getKnowledgeBase(Section<?> section) {
+		return getD3webCompiler(section).getKnowledgeBase();
 	}
-
-	/**
-	 * Gets the first usable KnowledgeBase of a web.
-	 * 
-	 * @created 16.06.2011
-	 * @param web
-	 * @return
-	 */
-	public static KnowledgeBase getFirstKnowledgeBase(String web) {
-		KnowledgeBaseManager mngr = KnowledgeBaseManager.getInstance(web);
-		Set<Section<? extends PackageCompileType>> compileSections = mngr.getKnowledgeBaseSections();
-		if (!compileSections.isEmpty()) {
-			mngr.getKnowledgeBase(compileSections.iterator().next());
-		}
-		return null;
-	}
-
-	// public static Session getFirstSession(String web, String user, String
-	// topic) {
-	//
-	// KnowledgeBase kb = D3webUtils.getFirstKnowledgeBase(web);
-	// SessionBroker broker = D3webUtils.getBroker(user, web);
-	// Session session = broker.getSession(kb.getId());
-	//
-	// return session;
-	// }
 
 	@SuppressWarnings("unchecked")
 	public static <TermObject extends NamedObject> TermObject getTermObjectDefaultImplementation(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
@@ -572,17 +549,6 @@ public class D3webUtils {
 		else {
 			return false;
 		}
-	}
-
-	/**
-	 * @deprecated helper method for compiler refactoring
-	 * @created 15.11.2013
-	 * @param defaultWeb
-	 * @return
-	 */
-	@Deprecated
-	public static KnowledgeBaseManager getKnowledgeRepresentationHandler(String web) {
-		return KnowledgeBaseManager.getInstance(web);
 	}
 
 }

@@ -21,7 +21,7 @@ package de.d3web.we.knowledgebase;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.we.utils.D3webUtils;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.ScriptCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
@@ -40,10 +40,13 @@ import de.knowwe.core.kdom.parsing.Section;
 public class D3webCompiler extends AbstractPackageCompiler implements TermCompiler {
 
 	private final TerminologyManager terminologyManager;
+	private KnowledgeBase knowledgeBase;
+	private final Section<? extends PackageCompileType> compileSection;
 
 	public D3webCompiler(PackageManager packageManager, Section<? extends PackageCompileType> compileSection) {
 		super(packageManager, compileSection);
-		terminologyManager = new TerminologyManager();
+		this.terminologyManager = new TerminologyManager();
+		this.compileSection = compileSection;
 	}
 
 	@Override
@@ -52,13 +55,33 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	}
 
 	public KnowledgeBase getKnowledgeBase() {
-		return D3webUtils.getKnowledgeBase(this);
+		return knowledgeBase;
+	}
+
+	/**
+	 * FIXME: This method is currently only needed by the
+	 * AnnotationLoadKnowledgeBaseHandler where a knowledge base is loaded from
+	 * a file. The better way would be though to instead to fill an existing
+	 * knowledge base with the contents read from the file. We should implement
+	 * this later and then remove this method.
+	 * 
+	 * @created 06.01.2014
+	 */
+	public void setKnowledgeBase(KnowledgeBase knowledgeBase) {
+		this.knowledgeBase = knowledgeBase;
 	}
 
 	@Override
 	public void compilePackages(String[] packagesToCompile) {
+		knowledgeBase = KnowledgeBaseUtils.createKnowledgeBase();
+		// set id to title of article as default so it is no null
+		knowledgeBase.setId(compileSection.getTitle());
 
+		// we init the knowledge base before sending the start event so the
+		// knowledge base of the compiler always returns the knowledge base of
+		// the current compilation
 		EventManager.getInstance().fireEvent(new D3webCompilerStartEvent(this));
+
 		terminologyManager.removeTermsOfCompiler(this);
 		ScriptCompiler<D3webCompiler> helper = new ScriptCompiler<D3webCompiler>(
 				this);
@@ -68,8 +91,8 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 			helper.addSubtree(section);
 		}
 		helper.compile();
-		EventManager.getInstance().fireEvent(new D3webCompilerFinishedEvent(this));
 
+		EventManager.getInstance().fireEvent(new D3webCompilerFinishedEvent(this));
 	}
 
 }

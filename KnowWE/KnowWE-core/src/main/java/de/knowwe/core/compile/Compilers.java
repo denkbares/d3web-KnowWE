@@ -127,7 +127,7 @@ public class Compilers {
 	}
 
 	/**
-	 * Returns the first {@link Compiler}s of a given ArticleManager and Class.
+	 * Returns the first {@link Compiler} of a given ArticleManager and Class.
 	 * 
 	 * @created 15.11.2013
 	 * @param manager the {@link ArticleManager} for which we want the
@@ -141,13 +141,12 @@ public class Compilers {
 	}
 
 	/**
-	 * Returns all {@link AbstractPackageCompiler}s that compile the given
-	 * section based on the packages it is in.
+	 * Returns all {@link Compiler}s with the given type that compile the given
+	 * section.
 	 * 
 	 * @created 15.11.2013
-	 * @param section the section for which we want the
-	 *        {@link AbstractPackageCompiler}s
-	 * @returns all {@link AbstractPackageCompiler}s compiling the given section
+	 * @param section the section for which we want the {@link Compiler}s
+	 * @returns all {@link Compiler}s compiling the given section
 	 */
 	public static <C extends Compiler> Collection<C> getCompilers(Section<?> section, Class<C> compilerClass) {
 		Set<C> compilers = new TreeSet<C>();

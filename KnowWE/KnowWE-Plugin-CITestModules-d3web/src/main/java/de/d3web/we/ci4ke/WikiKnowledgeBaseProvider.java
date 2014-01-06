@@ -1,19 +1,18 @@
 package de.d3web.we.ci4ke;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
-import de.d3web.we.basic.KnowledgeBaseManager;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.packaging.PackageCompileType;
-import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.compile.Compilers;
 
 /*
  * Copyright (C) 2012 denkbares GmbH
@@ -60,14 +59,12 @@ public class WikiKnowledgeBaseProvider implements TestObjectProvider {
 			return result;
 		}
 
-		KnowledgeBaseManager mgr = KnowledgeBaseManager.getInstance(Environment.DEFAULT_WEB);
+		Collection<D3webCompiler> compilers = Compilers.getCompilers(
+				Compilers.getDefaultArticleManager(Environment.DEFAULT_WEB), D3webCompiler.class);
 
-		Set<Section<? extends PackageCompileType>> knowledgeArticles = mgr.getKnowledgeBaseSections();
-
-		for (Section<? extends PackageCompileType> compileSection : knowledgeArticles) {
-
-			if (compileSection.getTitle().matches(id)) {
-				KnowledgeBase kb = mgr.getKnowledgeBase(compileSection);
+		for (D3webCompiler compiler : compilers) {
+			if (compiler.getCompileSection().getTitle().matches(id)) {
+				KnowledgeBase kb = compiler.getKnowledgeBase();
 				TestObjectContainer<T> container = new TestObjectContainer<T>(kb.getId(),
 						c.cast(kb));
 				result.add(container);
@@ -75,5 +72,4 @@ public class WikiKnowledgeBaseProvider implements TestObjectProvider {
 		}
 		return result;
 	}
-
 }

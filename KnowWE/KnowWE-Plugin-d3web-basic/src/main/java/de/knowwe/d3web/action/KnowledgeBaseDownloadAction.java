@@ -1,5 +1,6 @@
 package de.knowwe.d3web.action;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,9 +14,10 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
+import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
-import de.d3web.we.basic.KnowledgeBaseManager;
+import de.d3web.strings.Strings;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
@@ -81,7 +83,7 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 
 		URL home = null;
 		try {
-			home = KnowledgeBaseManager.getInstance(web).saveKnowledge(compileSection);
+			home = saveKnowledge(web, base);
 		}
 		catch (IOException e) {
 			context.sendError(410, e.getMessage());
@@ -112,6 +114,17 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 		outs.flush();
 		outs.close();
 
+	}
+
+	public URL saveKnowledge(String web, KnowledgeBase base) throws IOException {
+		URL home = D3webUtils.getKnowledgeBaseURL(web, base.getId());
+		// We no longer can cache knowledge bases, because attachments added as
+		// resources could change without anyone knowing. As long as we do not
+		// get any notification from JSPWiki that attachments have changed, we
+		// need to create a new knowledge base every time.
+		PersistenceManager.getInstance().save(base,
+				new File(Strings.decodeURL(home.getFile())));
+		return home;
 	}
 
 	private Collection<String> getArticlesOfKnowledgebaseLoadedWithWrongVersion(Section<PackageCompileType> section) {

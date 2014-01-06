@@ -48,7 +48,8 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 
 	@Override
 	public boolean isCompiling(Section<?> section) {
-		return packageManager.getCompileSections(section).contains(compileSection);
+		return section == compileSection
+				|| packageManager.getCompileSections(section).contains(compileSection);
 	}
 
 	@Override
