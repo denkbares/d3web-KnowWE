@@ -330,7 +330,7 @@ public class Compilers {
 	@Deprecated
 	public static TerminologyManager getTerminologyManager(Article article) {
 		if (article == null) {
-			return Compilers.getCompiler(getArticleManager(article.getWeb()),
+			return Compilers.getCompiler(getArticleManager(Environment.DEFAULT_WEB),
 					DefaultGlobalCompiler.class).getTerminologyManager();
 		}
 		Section<PackageCompileType> compileSection = Sections.findSuccessor(
