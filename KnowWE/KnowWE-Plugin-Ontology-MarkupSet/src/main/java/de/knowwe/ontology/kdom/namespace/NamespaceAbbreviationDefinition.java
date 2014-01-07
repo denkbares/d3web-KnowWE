@@ -34,7 +34,7 @@ import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
-public class NamespaceAbbreviationDefinition extends SimpleDefinition<OntologyCompiler> {
+public class NamespaceAbbreviationDefinition extends SimpleDefinition {
 
 	public NamespaceAbbreviationDefinition() {
 		super(OntologyCompiler.class, NamespaceAbbreviationDefinition.class);

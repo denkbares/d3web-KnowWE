@@ -59,7 +59,7 @@ public class ExitType extends AbstractXMLType {
 		return term.get().getTermName(term);
 	}
 
-	static class ExitNodeDef extends SimpleDefinition<D3webCompiler> {
+	static class ExitNodeDef extends SimpleDefinition {
 
 		public ExitNodeDef() {
 			super(D3webCompiler.class, EndNode.class);

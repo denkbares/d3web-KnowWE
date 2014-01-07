@@ -26,7 +26,7 @@ import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.ontology.compile.OntologyCompiler;
 
-public class AbbreviationDefinition extends SimpleDefinition<OntologyCompiler> {
+public class AbbreviationDefinition extends SimpleDefinition {
 
 	public AbbreviationDefinition() {
 		super(OntologyCompiler.class, AbbreviationDefinition.class, Priority.HIGHEST);

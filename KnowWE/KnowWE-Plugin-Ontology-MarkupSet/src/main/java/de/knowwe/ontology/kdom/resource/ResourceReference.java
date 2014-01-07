@@ -28,7 +28,7 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.ontology.compile.OntologyCompiler;
 
-public class ResourceReference extends SimpleReference<OntologyCompiler> {
+public class ResourceReference extends SimpleReference {
 
 	public ResourceReference(Class<?> termClass) {
 		super(OntologyCompiler.class, termClass);

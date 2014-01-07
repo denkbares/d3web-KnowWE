@@ -19,7 +19,7 @@ import de.knowwe.ontology.kdom.resource.Resource;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
-public class LazyURIReference extends SimpleReference<OntologyCompiler> implements NodeProvider<LazyURIReference> {
+public class LazyURIReference extends SimpleReference implements NodeProvider<LazyURIReference> {
 
 	public LazyURIReference() {
 		super(OntologyCompiler.class, Resource.class);

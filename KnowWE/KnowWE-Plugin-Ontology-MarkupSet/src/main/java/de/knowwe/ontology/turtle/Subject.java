@@ -63,17 +63,17 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 	@SuppressWarnings("unchecked")
 	private Type createSubjectURIWithDefinition() {
 		TurtleURI turtleURI = new TurtleURI();
-		SimpleReference<?> reference = Types.findSuccessorType(turtleURI, ResourceReference.class);
+		SimpleReference reference = Types.findSuccessorType(turtleURI, ResourceReference.class);
 		reference.addCompileScript(Priority.HIGH, new RDFTypeDefinitionHandler());
 		reference.removeCompileScript(OntologyCompiler.class,
 				SimpleReferenceRegistrationScript.class);
 		return turtleURI;
 	}
 
-	class RDFTypeDefinitionHandler extends OntologyHandler<SimpleReference<OntologyCompiler>> {
+	class RDFTypeDefinitionHandler extends OntologyHandler<SimpleReference> {
 
 		@Override
-		public Collection<Message> create(OntologyCompiler compiler, Section<SimpleReference<OntologyCompiler>> s) {
+		public Collection<Message> create(OntologyCompiler compiler, Section<SimpleReference> s) {
 
 			Section<TurtleSentence> sentence = Sections.findAncestorOfType(s, TurtleSentence.class);
 			List<Section<Predicate>> predicates = Sections.findSuccessorsOfType(sentence,
@@ -105,7 +105,7 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 		}
 
 		@Override
-		public void destroy(OntologyCompiler compiler, Section<SimpleReference<OntologyCompiler>> s) {
+		public void destroy(OntologyCompiler compiler, Section<SimpleReference> s) {
 			compiler.getTerminologyManager().unregisterTermDefinition(compiler, s,
 					s.get().getTermObjectClass(s), s.get().getTermIdentifier(s));
 		}

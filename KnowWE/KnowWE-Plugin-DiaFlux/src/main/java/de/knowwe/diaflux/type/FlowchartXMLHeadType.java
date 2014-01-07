@@ -50,7 +50,7 @@ public class FlowchartXMLHeadType extends XMLHead {
 		addChildType(new FlowchartTermDef());
 	}
 
-	public static class FlowchartTermDef extends SimpleDefinition<D3webCompiler> implements RenamableTerm {
+	public static class FlowchartTermDef extends SimpleDefinition implements RenamableTerm {
 
 		public FlowchartTermDef() {
 			super(D3webCompiler.class, Flow.class);

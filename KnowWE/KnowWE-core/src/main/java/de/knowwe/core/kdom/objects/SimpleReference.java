@@ -31,18 +31,20 @@ import de.knowwe.core.kdom.parsing.Section;
  * @author Albrecht
  * @created 16.12.2010
  */
-public abstract class SimpleReference<C extends TermCompiler> extends AbstractType implements TermReference, RenamableTerm {
+public abstract class SimpleReference extends AbstractType implements TermReference, RenamableTerm {
 
 	private final Class<?> termObjectClass;
 
-	public SimpleReference(Class<C> compilerClass, Class<?> termObjectClass) {
+	public SimpleReference(Class<? extends TermCompiler> compilerClass, Class<?> termObjectClass) {
 		this(compilerClass, termObjectClass, Priority.DEFAULT);
 	}
 
-	public SimpleReference(Class<C> compilerClass, Class<?> termObjectClass, Priority registrationPriority) {
+	@SuppressWarnings("unchecked")
+	public SimpleReference(Class<? extends TermCompiler> compilerClass, Class<?> termObjectClass, Priority registrationPriority) {
 		this.termObjectClass = termObjectClass;
-		this.addCompileScript(registrationPriority, new SimpleReferenceRegistrationScript<C>(
-				compilerClass));
+		this.addCompileScript(registrationPriority,
+				new SimpleReferenceRegistrationScript<TermCompiler>(
+						(Class<TermCompiler>) compilerClass));
 	}
 
 	@Override

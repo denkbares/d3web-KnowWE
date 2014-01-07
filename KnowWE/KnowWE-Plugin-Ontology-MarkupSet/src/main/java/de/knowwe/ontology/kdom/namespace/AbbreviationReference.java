@@ -27,7 +27,7 @@ import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.ontology.compile.OntologyCompiler;
 
-public class AbbreviationReference extends SimpleReference<OntologyCompiler> {
+public class AbbreviationReference extends SimpleReference {
 
 	public AbbreviationReference() {
 		super(OntologyCompiler.class, AbbreviationDefinition.class, Priority.HIGHER);

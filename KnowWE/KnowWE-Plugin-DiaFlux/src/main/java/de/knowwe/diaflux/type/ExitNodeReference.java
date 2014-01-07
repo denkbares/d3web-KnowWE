@@ -32,7 +32,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
  * @author Reinhard Hatko
  * @created 08.12.2010
  */
-public class ExitNodeReference extends SimpleReference<D3webCompiler> {
+public class ExitNodeReference extends SimpleReference {
 
 	public ExitNodeReference() {
 		super(D3webCompiler.class, EndNode.class);

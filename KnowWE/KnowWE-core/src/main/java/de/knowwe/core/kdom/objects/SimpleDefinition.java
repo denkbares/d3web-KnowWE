@@ -31,20 +31,20 @@ import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 
-public abstract class SimpleDefinition<C extends TermCompiler> extends AbstractType implements TermDefinition, RenamableTerm {
+public abstract class SimpleDefinition extends AbstractType implements TermDefinition, RenamableTerm {
 
 	private final Class<?> termObjectClass;
 
-	private final Class<C> compilerClass;
-
-	public SimpleDefinition(Class<C> compilerClass, Class<?> termObjectClass) {
+	public SimpleDefinition(Class<? extends TermCompiler> compilerClass, Class<?> termObjectClass) {
 		this(compilerClass, termObjectClass, Priority.HIGHER);
 	}
 
-	public SimpleDefinition(Class<C> compilerClass, Class<?> termObjectClass, Priority handlerPriority) {
+	@SuppressWarnings("unchecked")
+	public SimpleDefinition(Class<? extends TermCompiler> compilerClass, Class<?> termObjectClass, Priority handlerPriority) {
 		this.termObjectClass = termObjectClass;
-		this.compilerClass = compilerClass;
-		this.addCompileScript(handlerPriority, new SimpleDefinitionRegistrationScript());
+		this.addCompileScript(handlerPriority,
+				new SimpleDefinitionRegistrationScript<TermCompiler>(
+						(Class<TermCompiler>) compilerClass));
 	}
 
 	@Override
@@ -68,15 +68,21 @@ public abstract class SimpleDefinition<C extends TermCompiler> extends AbstractT
 		return TermUtils.quoteIfRequired(replacement);
 	}
 
-	private class SimpleDefinitionRegistrationScript implements CompileScript<C, SimpleDefinition<C>>, DestroyScript<C, SimpleDefinition<C>> {
+	private class SimpleDefinitionRegistrationScript<C extends TermCompiler> implements CompileScript<C, SimpleDefinition>, DestroyScript<C, SimpleDefinition> {
+
+		private final Class<C> compilerClass;
 
 		@Override
 		public Class<C> getCompilerClass() {
 			return compilerClass;
 		}
 
+		public SimpleDefinitionRegistrationScript(Class<C> compilerClass) {
+			this.compilerClass = compilerClass;
+		}
+
 		@Override
-		public void compile(C compiler, Section<SimpleDefinition<C>> section) {
+		public void compile(C compiler, Section<SimpleDefinition> section) {
 
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
 			Identifier termIdentifier = section.get().getTermIdentifier(section);
@@ -93,7 +99,7 @@ public abstract class SimpleDefinition<C extends TermCompiler> extends AbstractT
 		}
 
 		@Override
-		public void destroy(C compiler, Section<SimpleDefinition<C>> section) {
+		public void destroy(C compiler, Section<SimpleDefinition> section) {
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
 			Identifier termIdentifier = section.get().getTermIdentifier(section);
 			terminologyManager.unregisterTermDefinition(compiler,

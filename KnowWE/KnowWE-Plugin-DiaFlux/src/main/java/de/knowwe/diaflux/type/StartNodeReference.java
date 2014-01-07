@@ -32,7 +32,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
  * @author Reinhard Hatko
  * @created 08.12.2010
  */
-public class StartNodeReference extends SimpleReference<D3webCompiler> {
+public class StartNodeReference extends SimpleReference {
 
 	public StartNodeReference() {
 		super(D3webCompiler.class, StartNode.class);

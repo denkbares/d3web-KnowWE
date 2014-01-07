@@ -28,7 +28,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
  * @author Reinhard Hatko
  * @created 08.12.2010
  */
-public class FlowchartReference extends SimpleReference<D3webCompiler> {
+public class FlowchartReference extends SimpleReference {
 
 	public FlowchartReference() {
 		super(D3webCompiler.class, Flow.class);

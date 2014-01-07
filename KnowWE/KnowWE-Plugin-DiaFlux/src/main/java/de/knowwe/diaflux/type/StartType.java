@@ -59,7 +59,7 @@ public class StartType extends AbstractXMLType {
 		return term.get().getTermName(term);
 	}
 
-	static class StartNodeDef extends SimpleDefinition<D3webCompiler> {
+	static class StartNodeDef extends SimpleDefinition {
 
 		public StartNodeDef() {
 			super(D3webCompiler.class, StartNode.class);
