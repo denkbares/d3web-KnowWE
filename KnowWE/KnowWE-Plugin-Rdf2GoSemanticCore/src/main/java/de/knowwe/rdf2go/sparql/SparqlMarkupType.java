@@ -20,23 +20,13 @@
 
 package de.knowwe.rdf2go.sparql;
 
-import java.util.Set;
-
-import de.d3web.strings.Strings;
 import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
-import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.report.Messages;
-import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCore;
-import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 public class SparqlMarkupType extends DefaultMarkupType {
 
@@ -73,32 +63,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 
 	public SparqlMarkupType(DefaultMarkup markup) {
 		super(markup);
-		this.setRenderer(new DefaultMarkupRenderer() {
-
-			@Override
-			public void render(Section<?> section, UserContext user, RenderResult buffer) {
-				Rdf2GoCore rdf2GoCore = Rdf2GoUtils.getRdf2GoCore(Sections.cast(section,
-						DefaultMarkupType.class));
-				if (rdf2GoCore == null) {
-					String message = "No ontology found! The package";
-					Set<String> packageNames = section.getPackageNames();
-					String packagesString = Strings.concat(" ,", packageNames);
-					if (packageNames.size() > 1) {
-						message += "s '" + packagesString + "' are";
-					}
-					else {
-						message += " '" + packagesString + "' is";
-					}
-					message += " not used to compile an ontology.";
-
-					Messages.storeMessage(section, getClass(), Messages.warning(message));
-				}
-				else {
-					Messages.clearMessages(section, getClass());
-				}
-				super.render(section, user, buffer);
-			}
-		});
+		this.setRenderer(new Rdf2GoCoreCheckRenderer());
 	}
 
 	public SparqlMarkupType() {
