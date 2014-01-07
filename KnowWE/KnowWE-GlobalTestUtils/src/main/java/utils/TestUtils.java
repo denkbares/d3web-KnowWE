@@ -138,7 +138,7 @@ public class TestUtils {
 	 */
 	public static void processAndUpdateArticleJunit(String username, String content,
 			String topic, String web) {
-		Environment.getInstance().getDefaultArticleManager(web).registerArticle(
+		Environment.getInstance().getArticleManager(web).registerArticle(
 				Article.createArticle(content, topic, web, true));
 	}
 

@@ -929,7 +929,7 @@ public class QuickInterviewRenderer {
 	 */
 	public static String callQuickInterviewRendererWithPackageName(UserContext usercontext, String packageName) {
 
-		PackageManager packageManager = Compilers.getPackageManager(Compilers.getDefaultArticleManager(usercontext.getWeb()));
+		PackageManager packageManager = Compilers.getPackageManager(Compilers.getArticleManager(usercontext.getWeb()));
 		Set<String> compilingArticles = packageManager.getCompilingArticles(packageName);
 		List<String> compilingArticlesSorted = new ArrayList<String>(compilingArticles);
 		Collections.sort(compilingArticlesSorted);

@@ -253,7 +253,7 @@ public class FlowchartUtils {
 	 * @return
 	 */
 	public static Section<FlowchartType> findFlowchartSection(String web, String flowName) {
-		ArticleManager manager = Environment.getInstance().getDefaultArticleManager(web);
+		ArticleManager manager = Environment.getInstance().getArticleManager(web);
 
 		for (Iterator<Article> iterator = manager.getArticleIterator(); iterator.hasNext();) {
 			Article article = iterator.next();

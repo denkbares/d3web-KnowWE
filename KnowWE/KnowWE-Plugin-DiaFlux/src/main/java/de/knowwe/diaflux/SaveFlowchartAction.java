@@ -180,7 +180,7 @@ public class SaveFlowchartAction extends AbstractAction {
 	 * @throws IOException
 	 */
 	private void saveNewFlowchart(UserActionContext context, String web, String topic, String newText) throws IOException {
-		ArticleManager mgr = Environment.getInstance().getDefaultArticleManager(
+		ArticleManager mgr = Environment.getInstance().getArticleManager(
 				context.getWeb());
 		Article article = mgr.getArticle(topic);
 		Section<RootType> rootSection = article.getRootSection();

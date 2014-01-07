@@ -63,7 +63,7 @@ public class WikiTestCaseProvider implements TestObjectProvider {
 			return result;
 		}
 		String web = Environment.DEFAULT_WEB;
-		Set<String> allPackageNames = Compilers.getDefaultPackageManager(web).getAllPackageNames();
+		Set<String> allPackageNames = Compilers.getPackageManager(web).getAllPackageNames();
 		List<Triple<TestCaseProvider, Section<?>, Article>> testCaseProviders = de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(
 				web, allPackageNames.toArray(new String[allPackageNames.size()]));
 

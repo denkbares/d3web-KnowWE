@@ -203,7 +203,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		String masterArticleName = ShowSolutionsType.getMaster(getShowSolutionsSection(section));
 		String title = null;
 		if (masterArticleName == null) {
-			PackageManager packageManager = Compilers.getPackageManager(section);
+			PackageManager packageManager = Compilers.getPackageManager(section.getArticleManager());
 			Set<String> compilingArticles = packageManager.getCompilingArticles(packageName);
 
 			for (String compilingArticle : compilingArticles) {

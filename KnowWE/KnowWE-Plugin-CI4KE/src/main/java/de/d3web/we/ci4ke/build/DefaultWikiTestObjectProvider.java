@@ -71,14 +71,14 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 		}
 		String web = Environment.DEFAULT_WEB;
 		if (c.equals(ArticleManager.class)) {
-			Object byName = Environment.getInstance().getDefaultArticleManager(web);
+			Object byName = Environment.getInstance().getArticleManager(web);
 			if (byName != null) {
 				result.add(new TestObjectContainer<T>(web, c.cast(byName)));
 			}
 		}
 		if (c.equals(PackageManager.class)) {
 			Environment r = Environment.getInstance();
-			Object byName = Compilers.getDefaultPackageManager(web);
+			Object byName = Compilers.getPackageManager(web);
 			if (byName != null) {
 				result.add(new TestObjectContainer<T>(web, c.cast(byName)));
 			}
@@ -88,7 +88,7 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 	}
 
 	private Collection<Article> getArticlesMatchingPattern(String s) {
-		ArticleManager mgr = Environment.getInstance().getDefaultArticleManager(
+		ArticleManager mgr = Environment.getInstance().getArticleManager(
 				Environment.DEFAULT_WEB);
 		Pattern pattern = Pattern.compile(s);
 		List<Article> matchingArticles = new ArrayList<Article>();

@@ -33,7 +33,7 @@ public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 			if (statement.isEmpty()) continue;
 			String title = Rdf2GoUtils.trimNamespace(core, statement);
 
-			if (Environment.getInstance().getDefaultArticleManager(Environment.DEFAULT_WEB)
+			if (Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB)
 					.getTitles().contains(title)) {
 				foundArticle = true;
 				if (mode == RenderMode.HTML) {

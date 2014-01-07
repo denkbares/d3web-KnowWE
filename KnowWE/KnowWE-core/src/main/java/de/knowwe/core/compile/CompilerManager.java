@@ -47,6 +47,7 @@ public class CompilerManager {
 
 	private static final Map<Class<? extends Compiler>, ScriptManager<? extends Compiler>> scriptManagers = new HashMap<Class<? extends Compiler>, ScriptManager<? extends Compiler>>();
 
+	private int compilationCount = 0;
 	private final PriorityList<Double, Compiler> compilers;
 	// just a fast cache for the contains() method
 	private final HashSet<Compiler> compilerCache;
@@ -152,6 +153,7 @@ public class CompilerManager {
 				finally {
 					synchronized (lock) {
 						running = null;
+						compilationCount++;
 						Logger.getLogger(this.getClass().getName()).log(
 								Level.INFO,
 								"Compiled " + added.size() + " added and " + removed.size()
@@ -228,6 +230,15 @@ public class CompilerManager {
 					lock.wait();
 			}
 		}
+	}
+
+	/**
+	 * Returns the number of compilations since
+	 * 
+	 * @created 07.01.2014
+	 */
+	public int getCompilationCount() {
+		return this.compilationCount;
 	}
 
 	/**

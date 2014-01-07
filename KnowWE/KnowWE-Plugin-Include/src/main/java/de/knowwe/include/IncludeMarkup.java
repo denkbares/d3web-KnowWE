@@ -102,7 +102,7 @@ public class IncludeMarkup extends DefaultMarkupType {
 			}
 
 			Article article = Environment.getInstance()
-					.getDefaultArticleManager(Environment.DEFAULT_WEB)
+					.getArticleManager(Environment.DEFAULT_WEB)
 					.getArticle(targetKey);
 
 			// warning if article not found

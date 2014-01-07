@@ -58,18 +58,18 @@ public class TestArticleManager {
 	 */
 	public static Article getArticle(String filename) {
 
-		Article article = Compilers.getDefaultArticleManager(Environment.DEFAULT_WEB).getArticle(
+		Article article = Compilers.getArticleManager(Environment.DEFAULT_WEB).getArticle(
 				filename);
 		if (article == null) {
 			// Read File containing content
 			String content = KnowWEUtils.readFile(filename);
 			Environment.getInstance().getWikiConnector().createArticle(filename, content,
 					TestArticleManager.class.getSimpleName());
-			article = Compilers.getDefaultArticleManager(Environment.DEFAULT_WEB).getArticle(
+			article = Compilers.getArticleManager(Environment.DEFAULT_WEB).getArticle(
 					filename);
 		}
 		try {
-			Compilers.getDefaultCompilerManager(Environment.DEFAULT_WEB).awaitTermination();
+			Compilers.getCompilerManager(Environment.DEFAULT_WEB).awaitTermination();
 		}
 		catch (InterruptedException e) {
 			return null;
@@ -78,7 +78,7 @@ public class TestArticleManager {
 	}
 
 	public static void clear() {
-		ArticleManager articleManager = Compilers.getDefaultArticleManager(Environment.DEFAULT_WEB);
+		ArticleManager articleManager = Compilers.getArticleManager(Environment.DEFAULT_WEB);
 		Collection<Article> articles = articleManager.getArticles();
 		for (Article article : new ArrayList<Article>(articles)) {
 			articleManager.deleteArticle(article);

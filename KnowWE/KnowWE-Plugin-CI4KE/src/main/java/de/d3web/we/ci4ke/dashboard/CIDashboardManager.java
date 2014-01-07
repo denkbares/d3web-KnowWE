@@ -64,7 +64,7 @@ public class CIDashboardManager {
 	 * @param dashboardName the name of the dashboard
 	 */
 	public static Section<CIDashboardType> hasDashboard(String web, String dashboardArticleTitle, String dashboardName) {
-		ArticleManager articleManager = Environment.getInstance().getDefaultArticleManager(web);
+		ArticleManager articleManager = Environment.getInstance().getArticleManager(web);
 		Article article = articleManager.getArticle(dashboardArticleTitle);
 		if (article == null) {
 			return null;

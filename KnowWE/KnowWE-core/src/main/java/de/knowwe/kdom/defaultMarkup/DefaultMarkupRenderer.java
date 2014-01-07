@@ -142,7 +142,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		for (String packageName : packages) {
 
 			Collection<Section<? extends PackageCompileType>> compileSections = Compilers.getPackageManager(
-					section).getCompileSections(packageName);
+					section.getArticleManager()).getCompileSections(packageName);
 
 			// add warning if section is not compiled
 			if (compileSections.isEmpty()) {

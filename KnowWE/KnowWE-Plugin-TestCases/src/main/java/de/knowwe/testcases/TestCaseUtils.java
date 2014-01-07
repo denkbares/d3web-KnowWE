@@ -135,8 +135,8 @@ public class TestCaseUtils {
 
 	public static List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(String web, String... kbpackages) {
 		Environment env = Environment.getInstance();
-		PackageManager packageManager = Compilers.getDefaultPackageManager(web);
-		ArticleManager articleManager = env.getDefaultArticleManager(web);
+		PackageManager packageManager = Compilers.getPackageManager(web);
+		ArticleManager articleManager = env.getArticleManager(web);
 		List<Triple<TestCaseProvider, Section<?>, Article>> providers = new LinkedList<Triple<TestCaseProvider, Section<?>, Article>>();
 		for (String kbpackage : kbpackages) {
 			Collection<Section<?>> sectionsInPackage = packageManager.getSectionsOfPackage(kbpackage);

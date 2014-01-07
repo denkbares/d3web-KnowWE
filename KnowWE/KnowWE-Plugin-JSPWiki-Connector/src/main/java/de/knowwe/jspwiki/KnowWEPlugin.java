@@ -251,7 +251,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 					wikiContext.getPage().getVersion());
 			if (!content.equals(pureText)) return content;
 		}
-		Set<String> titles = Environment.getInstance().getDefaultArticleManager(
+		Set<String> titles = Environment.getInstance().getArticleManager(
 				Environment.DEFAULT_WEB).getTitles();
 		if (!titles.contains(title)) {
 			for (String availableTitle : titles) {
@@ -283,7 +283,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			RenderResult renderResult = new RenderResult(userContext.getRequest());
 
 			if (article != null && httpRequest != null) {
-				Compilers.getDefaultCompilerManager(Environment.DEFAULT_WEB).awaitTermination();
+				Compilers.getCompilerManager(Environment.DEFAULT_WEB).awaitTermination();
 				List<PageAppendHandler> appendhandlers = Environment.getInstance()
 						.getAppendHandlers();
 				renderPrePageAppendHandler(userContext, title, renderResult, appendhandlers);
@@ -354,7 +354,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			// from the change note we get the hint, that an article was renamed
 			String oldTitle = renameMatcher.group(1);
 			WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
-			ArticleManager articleManager = Environment.getInstance().getDefaultArticleManager(
+			ArticleManager articleManager = Environment.getInstance().getArticleManager(
 					Environment.DEFAULT_WEB);
 			Article oldArticle = articleManager.getArticle(oldTitle);
 			// only delete in KnowWE if it exists in KnowWE but not JSPWiki
@@ -373,7 +373,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	 */
 	private void initializeAllArticlesIfNeeded(WikiEngine engine) {
 
-		ArticleManager articleManager = Environment.getInstance().getDefaultArticleManager(
+		ArticleManager articleManager = Environment.getInstance().getArticleManager(
 				Environment.DEFAULT_WEB);
 		articleManager.open();
 
@@ -439,7 +439,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			WikiPageEvent e = (WikiPageEvent) event;
 
 			ArticleManager amgr = Environment.getInstance()
-					.getDefaultArticleManager(Environment.DEFAULT_WEB);
+					.getArticleManager(Environment.DEFAULT_WEB);
 
 			Article articleToDelete = amgr.getArticle(e.getPageName());
 			if (articleToDelete != null) {
@@ -453,7 +453,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			WikiPageRenameEvent e = (WikiPageRenameEvent) event;
 
 			ArticleManager amgr = Environment.getInstance()
-					.getDefaultArticleManager(Environment.DEFAULT_WEB);
+					.getArticleManager(Environment.DEFAULT_WEB);
 
 			amgr.deleteArticle(amgr.getArticle(e.getOldPageName()));
 		}

@@ -44,7 +44,7 @@ public class TestCaseUtils {
 	 * @return loaded test suite or null (if no test suite was found)
 	 */
 	public static TestCase loadTestSuite(String article, String web) {
-		Article a = Environment.getInstance().getDefaultArticleManager(web).getArticle(article);
+		Article a = Environment.getInstance().getArticleManager(web).getArticle(article);
 		Section<TestCaseContent> s = null;
 		TestCase testSuite = null;
 

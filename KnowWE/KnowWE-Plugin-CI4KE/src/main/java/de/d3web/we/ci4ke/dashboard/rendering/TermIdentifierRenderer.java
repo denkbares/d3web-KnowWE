@@ -39,7 +39,7 @@ public class TermIdentifierRenderer implements ObjectNameRenderer {
 
 	public static void renderTermIdentifier(String web, String objectName, RenderResult result) {
 		String url = KnowWEUtils.getURLLinkToTermDefinition(
-				Compilers.getDefaultArticleManager(web), Identifier.fromExternalForm(objectName));
+				Compilers.getArticleManager(web), Identifier.fromExternalForm(objectName));
 		result.appendHtml("<a href='" + url + "'>");
 		result.append(objectName);
 		result.appendHtml("</a>");

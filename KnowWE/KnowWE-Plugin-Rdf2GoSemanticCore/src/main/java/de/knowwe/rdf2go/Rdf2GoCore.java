@@ -196,7 +196,7 @@ public class Rdf2GoCore {
 
 	@Deprecated
 	public static Rdf2GoCore getInstance(String web, String master) {
-		return getInstance(Compilers.getDefaultArticleManager(web).getArticle(master));
+		return getInstance(Compilers.getArticleManager(web).getArticle(master));
 	}
 
 	/**

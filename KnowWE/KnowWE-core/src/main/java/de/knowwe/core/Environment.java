@@ -203,7 +203,7 @@ public class Environment {
 	}
 
 	private void initCompilers() {
-		CompilerManager defaultCompilerManager = Compilers.getDefaultCompilerManager(DEFAULT_WEB);
+		CompilerManager defaultCompilerManager = Compilers.getCompilerManager(DEFAULT_WEB);
 		defaultCompilerManager.addCompiler(2, new PackageRegistrationCompiler());
 		defaultCompilerManager.addCompiler(4, new DefaultGlobalCompiler());
 	}
@@ -546,7 +546,7 @@ public class Environment {
 		// create article with the new content
 		Article article = Article.createArticle(content, title, web);
 
-		this.getDefaultArticleManager(web).registerArticle(article);
+		this.getArticleManager(web).registerArticle(article);
 
 		return article;
 	}
@@ -558,7 +558,7 @@ public class Environment {
 	 * @param title the title of the {@link Article}
 	 */
 	public Article getArticle(String web, String title) {
-		return getDefaultArticleManager(web).getArticle(title);
+		return getArticleManager(web).getArticle(title);
 	}
 
 	/**
@@ -566,7 +566,7 @@ public class Environment {
 	 * 
 	 * @param web the web of the {@link ArticleManager}
 	 */
-	public ArticleManager getDefaultArticleManager(String web) {
+	public ArticleManager getArticleManager(String web) {
 		ArticleManager mgr = this.articleManagers.get(web);
 		if (mgr == null) {
 			mgr = new DefaultArticleManager(this, web);
@@ -617,7 +617,7 @@ public class Environment {
 	 */
 	@Deprecated
 	public TerminologyManager getTerminologyManager(String defaultWeb, String master) {
-		return Compilers.getTerminologyManager(Compilers.getDefaultArticleManager(defaultWeb).getArticle(
+		return Compilers.getTerminologyManager(Compilers.getArticleManager(defaultWeb).getArticle(
 				master));
 	}
 
@@ -626,17 +626,8 @@ public class Environment {
 	 * @deprecated remove this method after merging with trunk
 	 */
 	@Deprecated
-	public ArticleManager getArticleManager(String web) {
-		return getDefaultArticleManager(web);
-	}
-
-	/**
-	 * 
-	 * @deprecated remove this method after merging with trunk
-	 */
-	@Deprecated
 	public PackageManager getPackageManager(String web) {
-		return Compilers.getDefaultPackageManager(web);
+		return Compilers.getPackageManager(web);
 	}
 
 }

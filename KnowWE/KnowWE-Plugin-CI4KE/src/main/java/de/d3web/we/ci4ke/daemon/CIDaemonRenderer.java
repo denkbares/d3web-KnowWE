@@ -29,7 +29,7 @@ public class CIDaemonRenderer implements Renderer {
 
 	public static void renderDaemonContents(String web, String dashboardName, String dashboardArticleTitle, RenderResult string) {
 
-		if (!Environment.getInstance().getDefaultArticleManager(web).getTitles().contains(
+		if (!Environment.getInstance().getArticleManager(web).getTitles().contains(
 				dashboardArticleTitle)) {
 			string.appendHtml("<span class='error'>");
 			string.append("The annotation @" + CIDaemonType.DASHBOARD_ARTICLE

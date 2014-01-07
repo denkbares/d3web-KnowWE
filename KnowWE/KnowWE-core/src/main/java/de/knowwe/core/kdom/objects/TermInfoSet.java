@@ -170,7 +170,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 
 	public void initTerm(String web, Identifier identifier) {
 		// check all articles' term manager to be added
-		ArticleManager articleManager = Environment.getInstance().getDefaultArticleManager(web);
+		ArticleManager articleManager = Environment.getInstance().getArticleManager(web);
 		for (Article article : articleManager.getArticles()) {
 			TerminologyManager termManager = Compilers.getTerminologyManager(article);
 			addTermManagerIfMatches(identifier, termManager);
@@ -201,7 +201,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 	}
 
 	public void initAllTerms(String web) {
-		ArticleManager articleManager = Environment.getInstance().getDefaultArticleManager(web);
+		ArticleManager articleManager = Environment.getInstance().getArticleManager(web);
 		for (Article article : articleManager.getArticles()) {
 			TerminologyManager termManager = Compilers.getTerminologyManager(article);
 			addAllMatchingTermInfos(result, termManager);

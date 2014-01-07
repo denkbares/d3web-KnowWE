@@ -552,7 +552,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 		// Search for plain text occurrences
 		SearchEngine se = new SearchEngine(Environment.getInstance()
-				.getDefaultArticleManager(web));
+				.getArticleManager(web));
 		se.setOption(SearchOption.FUZZY);
 		se.setOption(SearchOption.CASE_INSENSITIVE);
 		se.setOption(SearchOption.DOTALL);
@@ -669,7 +669,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		// gathering all terms
 		List<String> allTerms = new ArrayList<String>();
 		Iterator<Article> iter = Environment.getInstance()
-				.getDefaultArticleManager(web).getArticleIterator();
+				.getArticleManager(web).getArticleIterator();
 		Article currentArticle;
 
 		TerminologyManager terminologyManager;

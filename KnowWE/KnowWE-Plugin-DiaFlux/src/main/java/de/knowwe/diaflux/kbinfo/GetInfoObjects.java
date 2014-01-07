@@ -140,7 +140,7 @@ public class GetInfoObjects extends AbstractAction {
 	}
 
 	private static boolean isCompilingArticle(String web, String title) {
-		PackageManager packages = Compilers.getDefaultPackageManager(web);
+		PackageManager packages = Compilers.getPackageManager(web);
 		return packages.getCompilingArticles().contains(title);
 	}
 
@@ -148,7 +148,7 @@ public class GetInfoObjects extends AbstractAction {
 
 		Environment env = Environment.getInstance();
 		Article article = env.getArticle(web, title);
-		PackageManager packages = Compilers.getDefaultPackageManager(web);
+		PackageManager packages = Compilers.getPackageManager(web);
 		String id = createArticleIdentifier(title).toExternalForm();
 
 		bob.append("\t<article");

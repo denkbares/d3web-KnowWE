@@ -102,7 +102,7 @@ public class CIUtils {
 	public static Collection<Section<CIDashboardType>> findCIDashboardSection(String dashboardName) {
 		List<Section<CIDashboardType>> found = new ArrayList<Section<CIDashboardType>>();
 		for (Article article : Environment.getInstance().
-				getDefaultArticleManager(Environment.DEFAULT_WEB).getArticles()) {
+				getArticleManager(Environment.DEFAULT_WEB).getArticles()) {
 
 			List<Section<CIDashboardType>> list = new ArrayList<Section<CIDashboardType>>();
 
@@ -130,7 +130,7 @@ public class CIUtils {
 			String dashboardArticleTitle, String dashboardName) {
 		// get the article
 		Article article = Environment.getInstance().
-				getDefaultArticleManager(Environment.DEFAULT_WEB).
+				getArticleManager(Environment.DEFAULT_WEB).
 				getArticle(dashboardArticleTitle);
 		// get all CIDashboardType-sections on this article
 		List<Section<CIDashboardType>> list = new ArrayList<Section<CIDashboardType>>();

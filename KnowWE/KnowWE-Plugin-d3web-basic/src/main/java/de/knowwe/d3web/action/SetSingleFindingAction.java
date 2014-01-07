@@ -90,7 +90,7 @@ public class SetSingleFindingAction extends AbstractAction {
 		// Added for KnowWE-Plugin-d3web-Debugger
 		if (context.getParameters().containsKey("KBid")) {
 			String kbID = context.getParameter("KBid");
-			Collection<KnowledgeBase> knowledgeBases = D3webUtils.getKnowledgeBases(Compilers.getDefaultArticleManager(web));
+			Collection<KnowledgeBase> knowledgeBases = D3webUtils.getKnowledgeBases(Compilers.getArticleManager(web));
 			Iterator<KnowledgeBase> iterator = knowledgeBases.iterator();
 			while (iterator.hasNext()) {
 				kb = iterator.next();

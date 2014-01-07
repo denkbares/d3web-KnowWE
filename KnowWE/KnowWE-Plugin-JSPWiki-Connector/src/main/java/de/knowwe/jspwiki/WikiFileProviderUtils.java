@@ -183,6 +183,6 @@ public class WikiFileProviderUtils {
 	public static Article getArticle(String web, File wikiFolder, File file) {
 		String title = getArticleTitle(wikiFolder, file);
 		if (title == null) return null;
-		return Environment.getInstance().getDefaultArticleManager(web).getArticle(title);
+		return Environment.getInstance().getArticleManager(web).getArticle(title);
 	}
 }

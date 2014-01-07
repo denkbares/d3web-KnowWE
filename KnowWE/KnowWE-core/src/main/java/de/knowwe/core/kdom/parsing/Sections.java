@@ -769,7 +769,7 @@ public class Sections {
 		Collection<String> missingIDs = new LinkedList<String>();
 		Collection<String> forbiddenArticles = new LinkedList<String>();
 
-		Compilers.getDefaultArticleManager(context.getWeb()).open();
+		Compilers.getArticleManager(context.getWeb()).open();
 		for (String title : idsByTitle.keySet()) {
 			Collection<String> idsForCurrentTitle = idsByTitle.get(title);
 			boolean errorsForThisTitle = handleErrors(title, idsForCurrentTitle, context,
@@ -780,7 +780,7 @@ public class Sections {
 						sectionsMap), context);
 			}
 		}
-		Compilers.getDefaultArticleManager(context.getWeb()).commit();
+		Compilers.getArticleManager(context.getWeb()).commit();
 
 		return new ReplaceResult(sectionInfos, missingIDs, forbiddenArticles);
 	}

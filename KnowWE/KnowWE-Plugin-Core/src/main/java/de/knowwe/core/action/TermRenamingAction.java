@@ -88,13 +88,13 @@ public class TermRenamingAction extends AbstractAction {
 		HashMap<String, Set<Section<? extends RenamableTerm>>> allTerms = new HashMap<String, Set<Section<? extends RenamableTerm>>>();
 
 		Iterator<Article> iter = Environment.getInstance()
-				.getDefaultArticleManager(web).getArticleIterator();
+				.getArticleManager(web).getArticleIterator();
 		Article currentArticle;
 
 		while (iter.hasNext()) {
 			currentArticle = iter.next();
 			Collection<TerminologyManager> terminologyManagers = Compilers.getTerminologyManagers(
-					Compilers.getDefaultArticleManager(
+					Compilers.getArticleManager(
 							currentArticle.getWeb()));
 			for (TerminologyManager terminologyManager : terminologyManagers) {
 
@@ -122,7 +122,7 @@ public class TermRenamingAction extends AbstractAction {
 			}
 		}
 
-		ArticleManager mgr = Environment.getInstance().getDefaultArticleManager(web);
+		ArticleManager mgr = Environment.getInstance().getArticleManager(web);
 		Set<String> failures = new HashSet<String>();
 		Set<String> success = new HashSet<String>();
 		renameTerms(allTerms, termIdentifier, replacmentIdentifier, mgr, context, failures, success);
@@ -213,7 +213,7 @@ public class TermRenamingAction extends AbstractAction {
 		// gathering all terms
 		Set<Identifier> allTerms = new HashSet<Identifier>();
 		Iterator<Article> iter = Environment.getInstance()
-				.getDefaultArticleManager(web).getArticleIterator();
+				.getArticleManager(web).getArticleIterator();
 		Article currentArticle;
 
 		TerminologyManager terminologyManager;
