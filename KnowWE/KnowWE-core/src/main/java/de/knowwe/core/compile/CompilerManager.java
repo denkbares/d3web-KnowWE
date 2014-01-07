@@ -324,9 +324,9 @@ public class CompilerManager {
 
 	/**
 	 * Blocks until all compilers have completed after a compile request, or the
-	 * current thread is interrupted, whichever happens first.
+	 * current thread is interrupted, whichever happens first. The method
+	 * returns immediately if the compilers are currently idle (not compiling).
 	 * 
-	 * @param unit the time unit of the timeout argument
 	 * @throws InterruptedException if interrupted while waiting
 	 * @see #compile
 	 */
@@ -339,10 +339,10 @@ public class CompilerManager {
 	/**
 	 * Blocks until all compilers have completed after a compile request, or the
 	 * timeout occurs, or the current thread is interrupted, whichever happens
-	 * first.
+	 * first. The method returns immediately if the compilers are currently idle
+	 * (not compiling).
 	 * 
 	 * @param timeoutMilliSeconds the maximum time to wait
-	 * @param unit the time unit of the timeout argument
 	 * @return <tt>true</tt> if the compilation has finished and <tt>false</tt>
 	 *         if the timeout elapsed before termination
 	 * @throws InterruptedException if interrupted while waiting

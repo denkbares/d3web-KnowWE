@@ -623,6 +623,8 @@ public class Environment {
 
 	/**
 	 * 
+	 * TODO: How about having a 'UserContext.getArticleManager()'?
+	 * 
 	 * @deprecated remove this method after merging with trunk
 	 */
 	@Deprecated
