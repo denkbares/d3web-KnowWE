@@ -23,6 +23,7 @@ import java.util.Collection;
 
 import connector.DummyConnector;
 import connector.DummyPageProvider;
+import de.d3web.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
@@ -57,16 +58,22 @@ public class TestArticleManager {
 	 * filename == title
 	 */
 	public static Article getArticle(String filename) {
+		
+		String articleName = filename; 
+		
+		if(filename.contains("/") && filename.contains(".")) {
+			articleName = Strings.decodeURL(filename.substring(filename.lastIndexOf('/')+1, filename.lastIndexOf('.')));
+		}
 
 		Article article = Compilers.getArticleManager(Environment.DEFAULT_WEB).getArticle(
-				filename);
+				articleName);
 		if (article == null) {
 			// Read File containing content
 			String content = KnowWEUtils.readFile(filename);
-			Environment.getInstance().getWikiConnector().createArticle(filename, content,
+			Environment.getInstance().getWikiConnector().createArticle(articleName, content,
 					TestArticleManager.class.getSimpleName());
 			article = Compilers.getArticleManager(Environment.DEFAULT_WEB).getArticle(
-					filename);
+					articleName);
 		}
 		try {
 			Compilers.getCompilerManager(Environment.DEFAULT_WEB).awaitTermination();
