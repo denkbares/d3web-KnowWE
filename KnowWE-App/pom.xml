@@ -908,12 +908,6 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Timeline</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-DiaFlux-Review</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
