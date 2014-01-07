@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -198,14 +197,14 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		if (comp == 0) {
 			List<Integer> thisPos = getPositionInKDOM();
 			List<Integer> otherPos = o.getPositionInKDOM();
-			ListIterator<Integer> thisIter = thisPos.listIterator(thisPos.size());
-			ListIterator<Integer> otherIter = otherPos.listIterator(otherPos.size());
+			Iterator<Integer> thisIter = thisPos.iterator();
+			Iterator<Integer> otherIter = otherPos.iterator();
 
-			while (comp == 0 && thisIter.hasPrevious() && otherIter.hasPrevious()) {
-				comp = thisIter.previous().compareTo(otherIter.previous());
+			while (comp == 0 && thisIter.hasNext() && otherIter.hasNext()) {
+				comp = thisIter.next().compareTo(otherIter.next());
 			}
 			if (comp == 0) {
-				comp = otherPos.size() - thisPos.size();
+				comp = thisPos.size() - otherPos.size();
 			}
 		}
 		return comp;
