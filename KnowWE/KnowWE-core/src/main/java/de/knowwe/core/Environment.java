@@ -617,8 +617,8 @@ public class Environment {
 	 */
 	@Deprecated
 	public TerminologyManager getTerminologyManager(String defaultWeb, String master) {
-		return Compilers.getTerminologyManager(Compilers.getArticleManager(defaultWeb).getArticle(
-				master));
+		return Compilers.getTerminologyManager(master == null ? null : Compilers.getArticleManager(
+				defaultWeb).getArticle(master));
 	}
 
 	/**
