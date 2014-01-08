@@ -21,6 +21,7 @@ package de.knowwe.ontology.kdom.objectproperty;
 import java.util.Collection;
 
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.vocabulary.OWL;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.ontoware.rdf2go.vocabulary.RDFS;
 
@@ -45,6 +46,7 @@ public class ObjectPropertyType extends DefaultMarkupType {
 
 	private static final String DOMAIN_ANNOTATION_NAME = "domain";
 	private static final String RANGE_ANNOTATION_NAME = "range";
+	private static final String FUNCTIONAL_ANNOTATION_NAME = "functional";
 
 	static {
 		MARKUP = new DefaultMarkup("ObjectProperty");
@@ -54,6 +56,8 @@ public class ObjectPropertyType extends DefaultMarkupType {
 		MARKUP.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageTerm());
 		MARKUP.addAnnotation(DOMAIN_ANNOTATION_NAME, false);
+		MARKUP.addAnnotation(FUNCTIONAL_ANNOTATION_NAME, false, new String[] {
+				"true", "false" });
 		MARKUP.addAnnotationContentType(DOMAIN_ANNOTATION_NAME, new DomainRangeAnnotationType(
 				DomainRangeAnnotationType.DomainRange.DOMAIN));
 		MARKUP.addAnnotation(RANGE_ANNOTATION_NAME, false);
@@ -81,6 +85,19 @@ public class ObjectPropertyType extends DefaultMarkupType {
 			String property = section.get().getResource(section);
 			URI propertyURI = core.createURI(namespace, property);
 			core.addStatements(section, core.createStatement(propertyURI, RDF.type, RDF.Property));
+
+			/*
+			 * set functional property if specified
+			 */
+			Section<DefaultMarkupType> markup = Sections.findAncestorOfType(section,
+					DefaultMarkupType.class);
+			String annotation = DefaultMarkupType.getAnnotation(markup, FUNCTIONAL_ANNOTATION_NAME);
+			if (annotation != null && annotation.equalsIgnoreCase("true")) {
+				core.addStatements(section,
+						core.createStatement(propertyURI, RDF.type, OWL.FunctionalProperty));
+
+			}
+
 			return Messages.noMessage();
 		}
 

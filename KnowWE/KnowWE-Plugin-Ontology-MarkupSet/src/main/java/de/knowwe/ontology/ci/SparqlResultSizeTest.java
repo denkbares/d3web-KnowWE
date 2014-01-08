@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 denkbares GmbH
+ * Copyright (C) 2014 denkbares GmbH
  * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -39,9 +39,9 @@ import de.knowwe.rdf2go.sparql.SparqlMarkupType;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 /**
- * This test allows to verify the size of the result size of a specific sparql
- * query (referenced by name). In that way one for instance can ensure the an
- * ontology contains at least/at most/exactly x instances of some class.
+ * This test allows to verify the size of the result of a specific sparql query
+ * (referenced by name). In that way one for instance can ensure the an ontology
+ * contains at least/at most/exactly x instances of some class.
  * 
  * @author jochenreutelshofer
  * @created 08.01.2014
@@ -108,6 +108,11 @@ public class SparqlResultSizeTest extends AbstractTest<ArticleManager> {
 		Section<? extends Type> sparqlDefaultMarkupSection = sparqlSectionsWithName.get(0);
 		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(Sections.cast(sparqlDefaultMarkupSection,
 				DefaultMarkupType.class));
+
+		if (core == null) {
+			return new Message(Message.Type.ERROR,
+					"No repository found for section: " + sparqlDefaultMarkupSection);
+		}
 
 		String sparqlString = Rdf2GoUtils.createSparqlString(core, Sections.findSuccessor(
 				sparqlDefaultMarkupSection, SparqlContentType.class).getText());
