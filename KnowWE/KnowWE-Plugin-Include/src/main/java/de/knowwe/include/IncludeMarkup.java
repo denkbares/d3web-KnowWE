@@ -251,7 +251,7 @@ public class IncludeMarkup extends DefaultMarkupType {
 					builder);
 			new IncludeDefaultMarkupRenderer().renderDefaultMarkupStyled("include",
 					builder.toStringRaw(),
-					section.getID(), "", null, user,
+					section.getID(), "", new DefaultToolSet(), user,
 					string);
 		}
 	}
