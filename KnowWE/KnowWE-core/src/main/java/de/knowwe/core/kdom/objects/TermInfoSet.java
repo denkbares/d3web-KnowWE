@@ -169,15 +169,11 @@ public class TermInfoSet implements Collection<TermInfo> {
 	}
 
 	public void initTerm(String web, Identifier identifier) {
-		// check all articles' term manager to be added
-		ArticleManager articleManager = Environment.getInstance().getArticleManager(web);
-		for (Article article : articleManager.getArticles()) {
-			TerminologyManager termManager = Compilers.getTerminologyManager(article);
-			addTermManagerIfMatches(identifier, termManager);
+		Collection<TerminologyManager> terminologyManagers = Compilers.getTerminologyManagers(Compilers.getArticleManager(web));
+		for (TerminologyManager terminologyManager : terminologyManagers) {
+			addTermManagerIfMatches(identifier, terminologyManager);
 		}
-		// check also global term manager to be added
-		addTermManagerIfMatches(identifier,
-				Environment.getInstance().getTerminologyManager(web, null));
+
 	}
 
 	private void addTermManagerIfMatches(Identifier termIdentifier, TerminologyManager termManager) {
