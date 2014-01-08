@@ -614,18 +614,11 @@ public class Sections {
 	 * @return the ID for the given Section
 	 */
 	public static String generateAndRegisterSectionID(Section<?> section) {
-		String title = section.getTitle();
-		if (title == null) title = "";
-
 		int hashCode = section.getSignatureString().hashCode();
 		String id = Integer.toHexString(hashCode);
 		synchronized (sectionMap) {
 			Section<?> existingSection = sectionMap.get(id);
 			while (existingSection != null) {
-				if (section.getSignatureString().equals(existingSection.getSignatureString())) {
-					break; // we assume that it is really the one and the same
-							// Section and therefore give the same id
-				}
 				id = Integer.toHexString(++hashCode);
 				existingSection = sectionMap.get(id);
 			}
@@ -655,7 +648,7 @@ public class Sections {
 	 * @param newArticle the new article which potentially contains an equal
 	 *        section
 	 */
-	public static void updateSectionID(Section<?> section, Article newArticle) {
+	public static void unregisterOrUpdateSectionID(Section<?> section, Article newArticle) {
 		if (section.hasID()) {
 			unregisterSectionID(section);
 			Section<?> newSection = getSection(newArticle, section.getPositionInKDOM());
@@ -671,8 +664,7 @@ public class Sections {
 
 	private static void unregisterSectionID(Section<?> section) {
 		synchronized (sectionMap) {
-			sectionMap.remove(section.getID());
-			section.clearID();
+			System.out.println("removed " + section.getID());
 		}
 	}
 

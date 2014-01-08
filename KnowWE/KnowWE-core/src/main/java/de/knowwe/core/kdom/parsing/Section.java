@@ -538,17 +538,13 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		List<Integer> positionInKDOM = this.getPositionInKDOM();
 		String positionInKDOMString = positionInKDOM == null ? "" : positionInKDOM.toString();
 
-		String signatureString = getTitle() + positionInKDOMString + this.getText();
+		String signatureString = getWeb() + getTitle() + positionInKDOMString + this.getText();
 		this.signatureString = signatureString;
 		return signatureString;
 	}
 
 	protected boolean hasID() {
 		return this.id != null;
-	}
-
-	protected void clearID() {
-		this.id = null;
 	}
 
 	public void collectTextsFromLeaves(StringBuilder buffi) {

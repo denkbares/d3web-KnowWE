@@ -173,7 +173,7 @@ public class Article {
 	}
 
 	private void unregisterSectionIDRecursively(Section<?> section) {
-		Sections.updateSectionID(section, this);
+		Sections.unregisterOrUpdateSectionID(section, this);
 		for (Section<?> childSection : section.getChildren()) {
 			unregisterSectionIDRecursively(childSection);
 		}
