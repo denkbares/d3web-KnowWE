@@ -6,6 +6,7 @@
 		<import plugin-id="KnowWEExtensionPoints" />
 		<import plugin-id="KnowWE-Plugin-Core" />
 		<import plugin-id="KnowWE-Plugin-Rdf2GoSemanticCore" />
+		<import plugin-id="d3web-Plugin-TestingFramework" />
 	</requires>
 	
 	<runtime>
@@ -258,5 +259,15 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="IndividualType" />
 	</extension>	
+	
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
+		id="SparqlResultSizeTest">
+		<parameter id="class"
+			value="de.knowwe.ontology.ci.SparqlResultSizeTest" />
+		<parameter id="name" value="SparqlResultSize" />
+		<parameter id="description" value="CITest SparqlResultSizeTest" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+	</extension>
 		
 </plugin>
