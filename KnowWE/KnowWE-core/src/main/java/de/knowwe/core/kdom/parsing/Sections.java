@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.d3web.strings.Strings;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
@@ -69,6 +70,37 @@ public class Sections {
 						child.getTitle().equals(section.getTitle()) ? --depth : depth);
 			}
 		}
+	}
+
+	public static <T extends Type> List<Section<? extends Type>> findSectionsOfTypeGlobal(Class<T> clazz, ArticleManager articles) {
+		@SuppressWarnings("unchecked")
+		Class<T>[] array = new Class[1];
+		array[0] = clazz;
+		return findSectionsOfTypeGlobal(array, articles);
+	}
+
+	/**
+	 * Finds all Sections of the given types in the entire wiki.
+	 * 
+	 * WARNING: This could take a while for very large wikis!
+	 * 
+	 * @created 08.01.2014
+	 * @param classes Types to be searched
+	 * @param articles ArticleManager to be searched
+	 * @return
+	 */
+	public static <T extends Type> List<Section<? extends Type>> findSectionsOfTypeGlobal(Class<T>[] classes, ArticleManager articles) {
+		List<Section<? extends Type>> result = new ArrayList<Section<? extends Type>>();
+
+		Iterator<Article> articleIterator = articles.getArticleIterator();
+		while (articleIterator.hasNext()) {
+			Article next = articleIterator.next();
+			for (Class<T> clazz : classes) {
+				result.addAll(findSuccessorsOfType(next.getRootSection(), clazz));
+			}
+		}
+
+		return result;
 	}
 
 	public static List<Section<?>> getSubtreePreOrder(Section<?> section) {
