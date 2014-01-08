@@ -36,6 +36,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 	public static final String TREE = "tree";
 	public static final String SORTING = "sorting";
 	public static final String BORDER = "border";
+	public static final String NAME = "name";
 	private static DefaultMarkup m = null;
 
 	static {
@@ -54,6 +55,8 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		m.addAnnotationRenderer(BORDER, NothingRenderer.getInstance());
 		m.addAnnotation(Rdf2GoCore.GLOBAL, false, "true", "false");
 		m.addAnnotationRenderer(Rdf2GoCore.GLOBAL, NothingRenderer.getInstance());
+		m.addAnnotation(NAME, false);
+		m.addAnnotationRenderer(NAME, NothingRenderer.getInstance());
 		m.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 		m.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageAnnotationNameType());
