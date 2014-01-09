@@ -32,6 +32,7 @@ import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.ScriptManager;
+import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Parser;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sectionizable;
@@ -325,7 +326,10 @@ public abstract class AbstractType implements Type, Sectionizable {
 	}
 
 	protected Set<Class<?>> getPotentialSuccessorTypes() {
-		return Collections.unmodifiableSet(successorTypes);
+		Set<Class<?>> result = new HashSet<Class<?>>();
+		result.addAll(successorTypes);
+		result.add(PlainText.class);
+		return Collections.unmodifiableSet(result);
 	}
 
 	@Override
