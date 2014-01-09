@@ -52,7 +52,7 @@ public class Compilers {
 	 * 
 	 * @created 07.01.2014
 	 */
-	public Article getArticle(String web, String title) {
+	public static Article getArticle(String web, String title) {
 		return Environment.getInstance().getArticle(web, title);
 	}
 

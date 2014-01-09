@@ -664,7 +664,7 @@ public class Sections {
 
 	private static void unregisterSectionID(Section<?> section) {
 		synchronized (sectionMap) {
-			System.out.println("removed " + section.getID());
+			sectionMap.remove(section.getID());
 		}
 	}
 
@@ -719,6 +719,7 @@ public class Sections {
 			if (temp.getChildren().size() <= pos) return null;
 			temp = temp.getChildren().get(pos);
 		}
+		temp.setPositionInKDOM(positionInKDOM);
 		return temp;
 	}
 

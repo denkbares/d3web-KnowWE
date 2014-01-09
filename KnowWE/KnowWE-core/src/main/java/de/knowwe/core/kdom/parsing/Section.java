@@ -861,6 +861,10 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	// return !lastPositions.equals(getPositionInKDOM());
 	// }
 
+	protected void setPositionInKDOM(List<Integer> positionInKDOM) {
+		position = positionInKDOM;
+	}
+
 	protected void clearPositionInKDOM() {
 		position = null;
 	}
