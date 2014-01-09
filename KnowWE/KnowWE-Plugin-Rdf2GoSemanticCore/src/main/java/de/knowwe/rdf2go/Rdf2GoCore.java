@@ -352,13 +352,6 @@ public class Rdf2GoCore {
 			if (!statementCache.containsValue(statement)) {
 				insertCache.add(statement);
 			}
-			if (source != null) {
-				Article a = source.getArticle();
-				Article article = Environment.getInstance().getArticle(a.getWeb(), a.getTitle());
-				if (a != article) {
-					System.out.println("alarm");
-				}
-			}
 			statementCache.put(source, statement);
 		}
 	}
