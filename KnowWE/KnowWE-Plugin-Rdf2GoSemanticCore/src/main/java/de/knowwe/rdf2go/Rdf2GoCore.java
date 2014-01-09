@@ -29,14 +29,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -59,12 +57,14 @@ import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.LanguageTagLiteralImpl;
 
+import de.d3web.collections.MultiMap;
+import de.d3web.collections.MultiMaps;
+import de.d3web.collections.N2MMap;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
@@ -225,23 +225,11 @@ public class Rdf2GoCore {
 
 	private Rdf2GoReasoning reasoningType = Rdf2GoReasoning.RDF;
 
-	/**
-	 * This statement cache is controlled by the incremental compiler.
-	 */
-	private final Map<String, WeakHashMap<Section<? extends Type>, List<Statement>>> incrementalStatementCache;
+	private final MultiMap<StatementSource, Statement> statementCache =
+			new N2MMap<Rdf2GoCore.StatementSource, Statement>(
+					MultiMaps.<StatementSource> hashMinimizedFactory(),
+					MultiMaps.<Statement> hashMinimizedFactory());
 
-	/**
-	 * We use a map or ArrayLists here because we will have a lot of Lists with
-	 * mostly 1 elements. HashSets or such would be memory overhead.
-	 */
-	private final Map<Statement, ArrayList<StatementSource>> duplicateStatements;
-
-	/**
-	 * This statement cache gets cleaned with the full parse of an article. If a
-	 * full parse on an article is performed, all old statements registered for
-	 * this article are removed.
-	 */
-	private final Map<Compiler, Set<Statement>> fullParseStatementCache = new HashMap<Compiler, Set<Statement>>();
 	/**
 	 * All namespaces known to KnowWE. Key is the namespace abbreviation, value
 	 * is the full namespace, e.g. rdf and
@@ -250,12 +238,9 @@ public class Rdf2GoCore {
 	private final Map<String, String> namespaces = new HashMap<String, String>();;
 
 	private Set<Statement> insertCache;
-
 	private Set<Statement> removeCache;
 
 	ResourceBundle properties = ResourceBundle.getBundle("model");
-
-	private boolean addedStatements = false;
 
 	public Rdf2GoCore() {
 		this(Environment.getInstance().getWikiConnector().getBaseUrl()
@@ -272,9 +257,6 @@ public class Rdf2GoCore {
 		else {
 			this.model = model;
 		}
-
-		incrementalStatementCache = new HashMap<String, WeakHashMap<Section<? extends Type>, List<Statement>>>();
-		duplicateStatements = new HashMap<Statement, ArrayList<StatementSource>>();
 
 		insertCache = new HashSet<Statement>();
 		removeCache = new HashSet<Statement>();
@@ -362,15 +344,23 @@ public class Rdf2GoCore {
 	 * @param statements the statements to add to the triple store
 	 */
 	public void addStatements(PackageCompiler compiler, Statement... statements) {
-		Set<Statement> statementsOfArticle = fullParseStatementCache.get(compiler);
-		if (statementsOfArticle == null) {
-			statementsOfArticle = new HashSet<Statement>();
-			fullParseStatementCache.put(compiler, statementsOfArticle);
+		addStatements(new CompilerSource(compiler), Arrays.asList(statements));
+	}
+
+	private void addStatements(StatementSource source, Collection<Statement> statements) {
+		for (Statement statement : statements) {
+			if (!statementCache.containsValue(statement)) {
+				insertCache.add(statement);
+			}
+			if (source != null) {
+				Article a = source.getArticle();
+				Article article = Environment.getInstance().getArticle(a.getWeb(), a.getTitle());
+				if (a != article) {
+					System.out.println("alarm");
+				}
+			}
+			statementCache.put(source, statement);
 		}
-		statementsOfArticle.addAll(Arrays.asList(statements));
-		addStatementsToDuplicatedCache(new CompilerSource(compiler), statements);
-		addStatementsToInsertCache(statements);
-		addedStatements = true;
 	}
 
 	/**
@@ -386,13 +376,7 @@ public class Rdf2GoCore {
 	 * @param statements the {@link Statement}s to add
 	 */
 	public void addStatements(Section<?> section, Statement... statements) {
-		Logger.getLogger(this.getClass().getName()).finer(
-				"semantic core updating " + section.getID() + "  " + statements.length);
-
-		addStatementsToDuplicatedCache(new SectionSource(section), statements);
-		addStatementToIncrementalCache(section, statements);
-		addStatementsToInsertCache(statements);
-		addedStatements = true;
+		addStatements(new SectionSource(section), Arrays.asList(statements));
 	}
 
 	/**
@@ -408,7 +392,7 @@ public class Rdf2GoCore {
 	 * @param statements the {@link Statement}s to add
 	 */
 	public void addStatements(Section<?> section, Collection<Statement> statements) {
-		addStatements(section, statements.toArray(new Statement[statements.size()]));
+		addStatements(new SectionSource(section), statements);
 	}
 
 	/**
@@ -424,47 +408,7 @@ public class Rdf2GoCore {
 	 * @param statements the statements you want to add to the triple store
 	 */
 	public void addStatements(Statement... statements) {
-		addStatementsToDuplicatedCache(null, statements);
-		addStatementsToInsertCache(statements);
-		addedStatements = true;
-	}
-
-	private void addStatementsToDuplicatedCache(StatementSource source, Statement... statements) {
-		for (Statement statement : statements) {
-			ArrayList<StatementSource> registeredSourcesForStatements = duplicateStatements.get(statement);
-			if (registeredSourcesForStatements == null) {
-				registeredSourcesForStatements = new ArrayList<StatementSource>(1);
-				duplicateStatements.put(statement, registeredSourcesForStatements);
-			}
-			if (!registeredSourcesForStatements.contains(source)) {
-				registeredSourcesForStatements.add(source);
-			}
-		}
-	}
-
-	private void addStatementsToInsertCache(Statement... array) {
-		insertCache.addAll(Arrays.asList(array));
-	}
-
-	private void addStatementsToRemoveCache(List<Statement> list) {
-		removeCache.addAll(list);
-	}
-
-	/**
-	 * Adds statements to the incremental statement cache.
-	 */
-	private void addStatementToIncrementalCache(Section<?> section, Statement... newStatements) {
-		WeakHashMap<Section<? extends Type>, List<Statement>> sectionsWithStatements = incrementalStatementCache.get(section.getArticle().getTitle());
-		if (sectionsWithStatements == null) {
-			sectionsWithStatements = new WeakHashMap<Section<? extends Type>, List<Statement>>();
-			incrementalStatementCache.put(section.getTitle(), sectionsWithStatements);
-		}
-		List<Statement> statementsOfSection = sectionsWithStatements.get(section);
-		if (statementsOfSection == null) {
-			statementsOfSection = new ArrayList<Statement>();
-			sectionsWithStatements.put(section, statementsOfSection);
-		}
-		statementsOfSection.addAll(Arrays.asList(newStatements));
+		addStatements((StatementSource) null, Arrays.asList(statements));
 	}
 
 	/**
@@ -626,46 +570,6 @@ public class Rdf2GoCore {
 		model.dump();
 	}
 
-	/**
-	 * Calculates the Set-subtraction of the inference closure of the model with
-	 * and without the statements created by the given section
-	 * 
-	 * @deprecated this method has some serious flaws since it operates directly
-	 *             on the model, removing and adding statements. Example:
-	 *             queries to the model performed simultaneously might not
-	 *             contain all the results it would contain normally.
-	 * @created 02.01.2012
-	 * @param sec
-	 * @return
-	 * @throws ModelRuntimeException
-	 * @throws MalformedQueryException
-	 */
-	@Deprecated
-	public Collection<Statement> generateStatementDiffForSection(Section<?> sec) throws ModelRuntimeException, MalformedQueryException {
-
-		Set<Statement> includingSection = getStatements();
-
-		// retrieve statements to be excluded
-		WeakHashMap<Section<? extends Type>, List<Statement>> allStatmentSectionsOfArticle =
-				incrementalStatementCache.get(sec.getTitle());
-		List<Statement> statementsOfSection = allStatmentSectionsOfArticle.get(sec);
-
-		// remove these statements
-		if (statementsOfSection != null) {
-			model.removeAll(statementsOfSection.iterator());
-		}
-		Set<Statement> excludingSection = getStatements();
-		includingSection.removeAll(excludingSection);
-
-		// reinsert statements
-		if (statementsOfSection != null) {
-			model.addAll(statementsOfSection.iterator());
-		}
-
-		return includingSection;
-
-	}
-
 	public String getBaseNamespace() {
 		return bns;
 	}
@@ -695,33 +599,6 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * 
-	 * @created 06.12.2010
-	 * @param s
-	 * @return statements of section s (with children)
-	 */
-	public List<Statement> getSectionStatementsRecursively(Section<? extends Type> s) {
-		List<Statement> allstatements = new ArrayList<Statement>();
-
-		if (getStatementsofSingleSection(s) != null) {
-			// add statements of this section
-			allstatements.addAll(getStatementsofSingleSection(s));
-		}
-
-		// walk over all children
-		for (Section<? extends Type> current : s.getChildren()) {
-			// collect statements of the the children's descendants
-			allstatements.addAll(getSectionStatementsRecursively(current));
-		}
-
-		return allstatements;
-	}
-
-	Map<String, WeakHashMap<Section<? extends Type>, List<Statement>>> getStatementCache() {
-		return Collections.unmodifiableMap(incrementalStatementCache);
-	}
-
-	/**
 	 * @created 15.07.2012
 	 * @return all {@link Statement}s of the Rdf2GoCore.
 	 */
@@ -732,21 +609,6 @@ public class Rdf2GoCore {
 			result.add(s);
 		}
 		return result;
-	}
-
-	/**
-	 * 
-	 * @param sec
-	 * @created 06.12.2010
-	 * @return statements of section sec (without children)
-	 */
-	private List<Statement> getStatementsofSingleSection(
-			Section<? extends Type> sec) {
-		WeakHashMap<Section<? extends Type>, List<Statement>> temp = incrementalStatementCache.get(sec.getArticle().getTitle());
-		if (temp != null) {
-			return temp.get(sec);
-		}
-		return new ArrayList<Statement>();
 	}
 
 	public Object getUnderlyingModelImplementation() {
@@ -874,74 +736,13 @@ public class Rdf2GoCore {
 
 	public void removeAllCachedStatements() {
 		// get all statements of this wiki and remove them from the model
-		ArrayList<Statement> allStatements = new ArrayList<Statement>();
-		for (WeakHashMap<Section<? extends Type>, List<Statement>> w : incrementalStatementCache.values()) {
-			for (List<Statement> l : w.values()) {
-				allStatements.addAll(l);
-			}
-		}
-		for (Set<Statement> statements : fullParseStatementCache.values()) {
-			allStatements.addAll(statements);
-		}
-		addStatementsToRemoveCache(allStatements);
-
-		// clear statementcache and duplicateStatements
-		fullParseStatementCache.clear();
-		incrementalStatementCache.clear();
-		duplicateStatements.clear();
+		removeCache.addAll(statementCache.valueSet());
+		statementCache.clear();
 	}
 
 	public void removeNamespace(String sh) {
 		namespaces.remove(sh);
 		model.removeNamespace(sh);
-	}
-
-	private boolean removeSectionFromIncrementalStatementCache(Section<? extends Type> sec, WeakHashMap<Section<? extends Type>, List<Statement>> allStatementSectionsOfArticle) {
-		List<Statement> remove = allStatementSectionsOfArticle.remove(sec);
-		if (allStatementSectionsOfArticle.isEmpty()) {
-			incrementalStatementCache.remove(sec.getArticle().getTitle());
-		}
-		return remove != null;
-	}
-
-	private boolean removeStatementFromDuplicateCache(StatementSource source, Statement statement) {
-		ArrayList<StatementSource> sectionIDsForStatement = duplicateStatements.get(statement);
-		boolean removed = false;
-		if (sectionIDsForStatement != null) {
-			removed = sectionIDsForStatement.remove(source);
-		}
-		else {
-			Logger.getLogger(this.getClass().getName()).log(
-					Level.WARNING,
-					"Internal caching error. Expected statment to be cached with key '" + source
-							+ "', but wasn't:\n"
-							+ verbalizeStatement(statement));
-		}
-		if (removed && sectionIDsForStatement.isEmpty()) {
-			duplicateStatements.remove(statement);
-			return true;
-		}
-		return false;
-	}
-
-	private boolean removeStatementListOfSection(Section<? extends Type> sec) {
-
-		WeakHashMap<Section<? extends Type>, List<Statement>> allStatementSectionsOfArticle =
-				incrementalStatementCache.get(sec.getTitle());
-
-		List<Statement> statementsOfSection = allStatementSectionsOfArticle.get(sec);
-		List<Statement> removedStatements = new ArrayList<Statement>();
-
-		for (Statement statement : statementsOfSection) {
-			boolean removed = removeStatementFromDuplicateCache(new SectionSource(sec), statement);
-			if (removed) {
-				removedStatements.add(statement);
-			}
-		}
-		boolean removeSectionFromIncrementalStatementCache = removeSectionFromIncrementalStatementCache(
-				sec, allStatementSectionsOfArticle);
-		addStatementsToRemoveCache(removedStatements);
-		return removeSectionFromIncrementalStatementCache;
 	}
 
 	/**
@@ -951,15 +752,21 @@ public class Rdf2GoCore {
 	 * @param statements
 	 */
 	public void removeStatements(Collection<Statement> statements) {
-		if (statements == null) return;
-		List<Statement> removedStatements = new ArrayList<Statement>();
+		removeStatements((StatementSource) null, statements);
+	}
+
+	private void removeStatements(StatementSource source) {
+		Collection<Statement> statements = statementCache.getValues(source);
+		removeStatements(source, new ArrayList<Statement>(statements));
+	}
+
+	private void removeStatements(StatementSource source, Collection<Statement> statements) {
 		for (Statement statement : statements) {
-			boolean removed = removeStatementFromDuplicateCache(null, statement);
-			if (removed) {
-				removedStatements.add(statement);
+			statementCache.remove(source, statement);
+			if (!statementCache.containsValue(statement)) {
+				removeCache.add(statement);
 			}
 		}
-		addStatementsToRemoveCache(removedStatements);
 	}
 
 	/**
@@ -976,40 +783,7 @@ public class Rdf2GoCore {
 	 *        should be removed
 	 */
 	public void removeStatementsForSection(Section<? extends Type> section) {
-
-		boolean removed = false;
-
-		WeakHashMap<Section<? extends Type>, List<Statement>> allStatementSectionsOfArticle =
-				incrementalStatementCache.get(section.getTitle());
-
-		if (allStatementSectionsOfArticle != null) {
-			if (allStatementSectionsOfArticle.containsKey(section)) {
-				removed = removeStatementListOfSection(section);
-			}
-			else {
-				// fix: IncrementalCompiler not necessarily delivers the same
-				// section object, maybe another with the same content
-				Set<Section<? extends Type>> keySet = allStatementSectionsOfArticle.keySet();
-				Iterator<Section<? extends Type>> iterator = keySet.iterator();
-				while (iterator.hasNext()) {
-					Section<? extends Type> next = iterator.next();
-					if (next.getText().equals(section.getText())) {
-						List<String> sectionPathToRoot = Sections.createTypePathToRoot(next);
-						List<String> secPathToRoot = Sections.createTypePathToRoot(section);
-						if (sectionPathToRoot.equals(
-								secPathToRoot)) {
-							removed = removeStatementListOfSection(next);
-							break;
-						}
-					}
-				}
-			}
-		}
-		if (!removed) {
-			Logger.getLogger(this.getClass().getName()).log(Level.INFO,
-					"failed to remove statement for: " + section.toString());
-		}
-
+		removeStatements(new SectionSource(section));
 	}
 
 	/**
@@ -1028,18 +802,7 @@ public class Rdf2GoCore {
 	 *        {@link Statement}s
 	 */
 	public void removeStatementsOfCompiler(PackageCompiler compiler) {
-		Set<Statement> statementsOfArticle = fullParseStatementCache.get(compiler);
-		if (statementsOfArticle == null) return;
-		List<Statement> removedStatements = new ArrayList<Statement>();
-		for (Statement statement : statementsOfArticle) {
-			boolean removed = removeStatementFromDuplicateCache(new CompilerSource(compiler),
-					statement);
-			if (removed) {
-				removedStatements.add(statement);
-			}
-		}
-		addStatementsToRemoveCache(removedStatements);
-		fullParseStatementCache.remove(compiler);
+		removeStatements(new CompilerSource(compiler));
 	}
 
 	/**
@@ -1052,8 +815,7 @@ public class Rdf2GoCore {
 	 * @return the articles that defines that statement
 	 */
 	public Set<Article> getSourceArticles(Statement statement) {
-		ArrayList<StatementSource> list = duplicateStatements.get(statement);
-		if (list == null) return Collections.emptySet();
+		Collection<StatementSource> list = statementCache.getKeys(statement);
 		if (list.isEmpty()) return Collections.emptySet();
 		Set<Article> result = new HashSet<Article>();
 		for (StatementSource source : list) {
@@ -1073,10 +835,9 @@ public class Rdf2GoCore {
 	 * @return the article that defines that statement
 	 */
 	public Article getSourceArticle(Statement statement) {
-		ArrayList<StatementSource> list = duplicateStatements.get(statement);
-		if (list == null) return null;
+		Collection<StatementSource> list = statementCache.getKeys(statement);
 		if (list.isEmpty()) return null;
-		return list.get(0).getArticle();
+		return list.iterator().next().getArticle();
 	}
 
 	public boolean sparqlAsk(String query) throws ModelRuntimeException, MalformedQueryException {
@@ -1087,49 +848,6 @@ public class Rdf2GoCore {
 		}
 		boolean result = model.sparqlAsk(sparqlNamespaceShorts + query);
 
-		return result;
-	}
-
-	/**
-	 * Asks a sparql query on the model as if a specific Section wouldnt be
-	 * there. The statements of this section are removed from the model before
-	 * the query is executed. Afterwards these statements are inserted again to
-	 * provide a consistent model.
-	 * 
-	 * @created 14.12.2011
-	 * @param query the query to be ask
-	 * @param sec the section determining the statements to be excluded for the
-	 *        query
-	 * @return
-	 * @throws ModelRuntimeException
-	 * @throws MalformedQueryException
-	 */
-	public boolean sparqlAskExcludeStatementForSection(String query, Section<?> sec) throws ModelRuntimeException, MalformedQueryException {
-
-		// retrieve statements to be excluded
-		WeakHashMap<Section<? extends Type>, List<Statement>> allStatmentSectionsOfArticle =
-				incrementalStatementCache.get(sec.getTitle());
-		List<Statement> statementsOfSection = allStatmentSectionsOfArticle.get(sec);
-
-		// remove these statements
-		if (statementsOfSection != null) {
-			model.removeAll(statementsOfSection.iterator());
-		}
-
-		boolean result;
-
-		// ask query
-		if (query.startsWith(Rdf2GoUtils.getSparqlNamespaceShorts(this))) {
-			result = model.sparqlAsk(query);
-		}
-		result = model.sparqlAsk(Rdf2GoUtils.getSparqlNamespaceShorts(this) + query);
-
-		// reinsert statements
-		if (statementsOfSection != null) {
-			model.addAll(statementsOfSection.iterator());
-		}
-
-		// return query result
 		return result;
 	}
 
@@ -1205,7 +923,7 @@ public class Rdf2GoCore {
 	 * @return true if instance is empty, else false.
 	 */
 	public boolean isEmpty() {
-		return !addedStatements;
+		return statementCache.isEmpty();
 	}
 
 }

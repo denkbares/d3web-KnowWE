@@ -10,7 +10,6 @@ import de.knowwe.core.report.Message;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.ontology.turtle.TurtleSentence;
-import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class TurtleCompileHandler extends OntologyHandler<TurtleSentence> {
 

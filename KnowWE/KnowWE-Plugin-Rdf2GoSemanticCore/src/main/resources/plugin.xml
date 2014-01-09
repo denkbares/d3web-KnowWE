@@ -164,26 +164,6 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
-		id="Rdf2GoPageViewHandler">
-		<parameter id="class"
-			value="de.knowwe.rdf2go.utils.Rdf2GoPageViewHandler" />
-		<parameter id="name" value="DumpHandler" />
-		<parameter id="description" value="TagHandler Rdf2GoPageViewHandler" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
-		id="RDF2GoStatementCacheViewer">
-		<parameter id="class"
-			value="de.knowwe.rdf2go.RDF2GoStatementCacheViewer" />
-		<parameter id="name" value="RDF2GoStatementCacheViewer" />
-		<parameter id="description" value="TagHandler RDF2GoStatementCacheViewer" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="RDFXMLExportAction">
 		<parameter id="class"
