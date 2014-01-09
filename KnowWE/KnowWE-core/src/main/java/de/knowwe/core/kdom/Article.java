@@ -145,12 +145,15 @@ public class Article {
 							classesCausingFullParse.toString());
 		}
 
-		// important! prevents memory leak
-		lastVersion = null;
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.INFO,
 				"Sectionized article '" + title + "' in "
 						+ (System.currentTimeMillis() - startTimeOverall) + "ms");
+	}
+
+	public void clearLastVersion() {
+		// important! prevents memory leak
+		lastVersion = null;
 	}
 
 	private void sectionizeArticle(String text) {

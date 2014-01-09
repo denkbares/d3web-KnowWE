@@ -121,6 +121,7 @@ public class DefaultArticleManager implements ArticleManager {
 
 			EventManager.getInstance().fireEvent(
 					new ArticleRegisteredEvent(article));
+			article.clearLastVersion();
 		}
 		finally {
 			commit();
