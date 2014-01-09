@@ -77,7 +77,6 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 			}
 		}
 		if (c.equals(PackageManager.class)) {
-			Environment r = Environment.getInstance();
 			Object byName = Compilers.getPackageManager(web);
 			if (byName != null) {
 				result.add(new TestObjectContainer<T>(web, c.cast(byName)));
