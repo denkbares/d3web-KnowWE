@@ -14,6 +14,8 @@ import de.d3web.utils.Pair;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.CompilerMessage;
+import de.knowwe.core.report.Messages;
 
 /**
  * For the given {@link Section}s and {@link Compiler} it gets all
@@ -155,9 +157,14 @@ public class ScriptCompiler<C extends Compiler> {
 			try {
 				pair.getB().compile(compiler, pair.getA());
 			}
+			catch (CompilerMessage cm) {
+				Messages.storeMessages(compiler, pair.getA(), pair.getB().getClass(),
+						cm.getMessages());
+			}
 			catch (Exception e) {
 				String msg = "Unexpected internal exception while compiling with script "
 						+ pair.getB() + ": " + e.getMessage();
+				Messages.storeMessage(pair.getA(), pair.getB().getClass(), Messages.error(msg));
 				Logger.getLogger(CompilerManager.class.getName()).log(
 						Level.SEVERE, msg, e);
 			}
