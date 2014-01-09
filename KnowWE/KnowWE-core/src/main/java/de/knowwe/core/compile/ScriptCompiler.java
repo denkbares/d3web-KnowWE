@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.d3web.utils.Pair;
 import de.knowwe.core.kdom.Type;
@@ -150,7 +152,15 @@ public class ScriptCompiler<C extends Compiler> {
 	public void compile() {
 		while (hasNext()) {
 			CompilePair pair = next();
-			pair.getB().compile(compiler, pair.getA());
+			try {
+				pair.getB().compile(compiler, pair.getA());
+			}
+			catch (Exception e) {
+				String msg = "Unexpected internal exception while compiling with script "
+						+ pair.getB() + ": " + e.getMessage();
+				Logger.getLogger(CompilerManager.class.getName()).log(
+						Level.SEVERE, msg, e);
+			}
 		}
 	}
 

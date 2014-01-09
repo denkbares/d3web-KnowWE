@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.TestExecutor;
@@ -33,8 +35,7 @@ import de.d3web.testing.TestObjectProvider;
 import de.d3web.testing.TestObjectProviderManager;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
-import de.d3web.we.ci4ke.util.CIUtils;
-import de.knowwe.core.compile.Compilers;
+import de.d3web.we.ci4ke.hook.CIEventForwarder;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.progress.AjaxProgressListener;
 import de.knowwe.core.utils.progress.DefaultAjaxProgressListener;
@@ -54,17 +55,12 @@ public class CIBuildManager {
 	 * done.
 	 */
 	public static void startBuild(final CIDashboard dashboard) {
-		final String dashboardName = dashboard.getDashboardName();
-		Section<CIDashboardType> sec = CIUtils.
-				findCIDashboardSection(dashboard.getDashboardArticle(), dashboardName);
-		if (sec == null) {
-			throw new IllegalArgumentException("No dashboard " +
-					"with the given name found on this article");
-		}
-		CIConfig config = (CIConfig) Compilers.getStoredObject(sec,
-				CIConfig.CICONFIG_STORE_KEY);
+		Section<CIDashboardType> sec = dashboard.getDashboardSection();
 
-		if (config == null) return;
+		Logger.getLogger(CIEventForwarder.class.getName()).log(
+				Level.INFO,
+				"Executing new CI build for dashboard '" + dashboard
+						+ "'");
 
 		List<TestObjectProvider> providers = new ArrayList<TestObjectProvider>();
 		providers.add(DefaultWikiTestObjectProvider.getInstance());
@@ -77,7 +73,7 @@ public class CIBuildManager {
 
 		// create and run TestExecutor
 		final TestExecutor executor = new TestExecutor(providers,
-				config.getTestSpecifications(), listener);
+				dashboard.getTestSpecifications(), listener);
 
 		// if there already is a running build, we terminate it
 		terminate(dashboard);
@@ -115,8 +111,7 @@ public class CIBuildManager {
 	}
 
 	private static boolean lookUpVerboseFlag(CIDashboard dashboard) {
-		Section<CIDashboardType> ciDashboardSection = CIUtils.findCIDashboardSection(
-				dashboard.getDashboardArticle(), dashboard.getDashboardName());
+		Section<CIDashboardType> ciDashboardSection = dashboard.getDashboardSection();
 		String flagString = DefaultMarkupType.getAnnotation(ciDashboardSection,
 				CIDashboardType.VERBOSE_PERSISTENCE_KEY);
 		if (flagString != null && flagString.equalsIgnoreCase("true")) {

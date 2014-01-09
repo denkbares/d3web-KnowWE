@@ -44,7 +44,7 @@ public class CIEventForwarder implements EventListener {
 			de.knowwe.core.compile.Compiler compiler = ((CompilerFinishedEvent<?>) event).getCompiler();
 			if (compiler instanceof PackageCompiler) {
 				Article article = ((PackageCompiler) compiler).getCompileSection().getArticle();
-				CIHookManager.getInstance().triggerHooks(article.getTitle());
+				CIHookManager.triggerHooks(article);
 			}
 		}
 	}

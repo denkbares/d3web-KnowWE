@@ -18,17 +18,19 @@
  */
 package de.d3web.we.ci4ke.dashboard;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
 
+import de.d3web.collections.MultiMap;
+import de.d3web.collections.N2MMap;
+import de.d3web.testing.TestSpecification;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * Manages and provides {@link CIDashboard}s
@@ -38,51 +40,49 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  */
 public class CIDashboardManager {
 
-	public static final Map<String, CIDashboard> dashboards = new HashMap<String, CIDashboard>();
+	private static final Map<ArticleManager, MultiMap<Object, CIDashboard>> dashboardsForManagers = new WeakHashMap<ArticleManager, MultiMap<Object, CIDashboard>>();
 
-	/**
-	 * Get the {@link CIDashboard} instance responsible for a specific
-	 * dashboardName-dashboardArticle-combination. If no handler exists for this
-	 * combination, a new handler is created.
-	 */
-	public static synchronized CIDashboard getDashboard(String web, String dashboardArticleTitle, String dashboardName) {
-		String key = web + "/" + dashboardArticleTitle + "/" + dashboardName;
-		CIDashboard dashboard = dashboards.get(key);
-		if (dashboard == null) {
-			dashboard = new CIDashboard(web, dashboardArticleTitle, dashboardName);
-			dashboards.put(key, dashboard);
+	private static MultiMap<Object, CIDashboard> getDashboardsMap(ArticleManager manager) {
+		MultiMap<Object, CIDashboard> dashboards = dashboardsForManagers.get(manager);
+		if (dashboards == null) {
+			dashboards = new N2MMap<Object, CIDashboard>();
+			dashboardsForManagers.put(manager, dashboards);
 		}
+		return dashboards;
+	}
+
+	public static synchronized CIDashboard generateAndRegisterDashboard(Section<CIDashboardType> section, List<TestSpecification<?>> tests) {
+		CIDashboard dashboard = new CIDashboard(section, tests);
+		MultiMap<Object, CIDashboard> dashboardsMap = getDashboardsMap(section.getArticleManager());
+		dashboardsMap.put(dashboard.getDashboardName(), dashboard);
+		dashboardsMap.put(section, dashboard);
 		return dashboard;
 	}
 
-	/**
-	 * Checks if there is a {@link CIDashboard} instance responsible for a
-	 * specific dashboardName-dashboardArticle-combination. If no dashboard
-	 * exists for this combination, false is returned.
-	 * 
-	 * @param dashboardArticleTitle the article where the dashboard is located
-	 * @param dashboardName the name of the dashboard
-	 */
-	public static Section<CIDashboardType> hasDashboard(String web, String dashboardArticleTitle, String dashboardName) {
-		ArticleManager articleManager = Environment.getInstance().getArticleManager(web);
-		Article article = articleManager.getArticle(dashboardArticleTitle);
-		if (article == null) {
-			return null;
-		}
-		List<Section<CIDashboardType>> sections =
-				Sections.findSuccessorsOfType(article.getRootSection(), CIDashboardType.class);
-		for (Section<CIDashboardType> section : sections) {
-			String name = CIDashboardType.getDashboardName(section);
-			if (name != null && name.equalsIgnoreCase(dashboardName)) {
-				return section;
-			}
+	public static synchronized CIDashboard getDashboard(ArticleManager manager, String dashboardName) {
+		Set<CIDashboard> dashboards = getDashboardsMap(manager).getValues(dashboardName);
+		if (!dashboards.isEmpty()) return dashboards.iterator().next();
+		return null;
+	}
+
+	public static synchronized CIDashboard getDashboard(Section<CIDashboardType> section) {
+		Set<CIDashboard> dashboards = getDashboardsMap(section.getArticleManager()).getValues(
+				section);
+		for (CIDashboard dashboard : dashboards) {
+			if (dashboard.getDashboardSection() == section) return dashboard;
 		}
 		return null;
 	}
 
-	public static CIDashboard getDashboard(Section<CIDashboardType> section) {
-		String dashboardName = DefaultMarkupType.getAnnotation(section, "name");
-		return getDashboard(Environment.DEFAULT_WEB, section.getTitle(), dashboardName);
+	public static synchronized void unregisterDashboard(Section<CIDashboardType> section) {
+		getDashboardsMap(section.getArticleManager()).removeValue(getDashboard(section));
 	}
 
+	public static synchronized Collection<Section<CIDashboardType>> getDashboardSections(ArticleManager manager, String dashboardName) {
+		Collection<Section<CIDashboardType>> dashboardSections = new ArrayList<Section<CIDashboardType>>();
+		for (CIDashboard ciDashboard : getDashboardsMap(manager).getValues(dashboardName)) {
+			dashboardSections.add(ciDashboard.getDashboardSection());
+		}
+		return dashboardSections;
+	}
 }

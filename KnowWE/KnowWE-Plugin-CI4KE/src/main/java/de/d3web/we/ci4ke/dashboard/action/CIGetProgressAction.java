@@ -30,6 +30,7 @@ import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.utils.progress.AjaxProgressListener;
 import de.knowwe.core.utils.progress.ProgressListenerManager;
 
@@ -49,8 +50,9 @@ public class CIGetProgressAction extends AbstractAction {
 		String name = context.getParameter("name");
 		name = URLDecoder.decode(name, "UTF-8");
 		String web = context.getWeb();
-		String title = context.getTitle();
-		CIDashboard dashboard = CIDashboardManager.getDashboard(web, title, name);
+		CIDashboard dashboard = CIDashboardManager.getDashboard(
+				Compilers.getArticleManager(web),
+				name);
 		ProgressListener listener = ProgressListenerManager.getInstance().getProgressListener(
 				Integer.toString(dashboard.hashCode()));
 

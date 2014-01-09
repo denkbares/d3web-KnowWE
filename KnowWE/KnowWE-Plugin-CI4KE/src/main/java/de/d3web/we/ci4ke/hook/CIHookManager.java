@@ -21,16 +21,11 @@
 package de.d3web.we.ci4ke.hook;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import de.d3web.collections.MultiMap;
+import de.d3web.collections.N2MMap;
 import de.d3web.we.ci4ke.build.CIBuildManager;
-import de.d3web.we.ci4ke.dashboard.CIDashboard;
-import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.kdom.Article;
 
 /**
@@ -43,55 +38,19 @@ public class CIHookManager {
 	/**
 	 * Fore each monitored articles a list of hooks are stored.
 	 */
-	private final Map<String, Set<CIHook>> hooks;
+	private static final MultiMap<Article, CIHook> hooks = new N2MMap<Article, CIHook>();
 
-	private static final CIHookManager instance = new CIHookManager();
-
-	private CIHookManager() {
-		hooks = new HashMap<String, Set<CIHook>>();
-	}
-
-	public static CIHookManager getInstance() {
-		return instance;
-	}
-
-	public void registerHook(CIHook hook) {
+	public static synchronized void registerHook(CIHook hook) {
 		Collection<String> monitoredArticles = hook.getMonitoredArticles();
 		for (String monitoredArticle : monitoredArticles) {
-			Set<CIHook> set = hooks.get(monitoredArticle);
-			if (set == null) {
-				set = new HashSet<CIHook>();
-				hooks.put(monitoredArticle, set);
-			}
-			set.add(hook);
+			Article article = hook.getDashboard().getDashboardSection().getArticleManager().getArticle(
+					monitoredArticle);
+			hooks.put(article, hook);
 		}
 	}
 
-	public void unregisterHook(CIHook hook) {
-		Collection<String> monitoredArticles = hook.getMonitoredArticles();
-		for (String monitoredArticle : monitoredArticles) {
-			Set<CIHook> set = hooks.get(monitoredArticle);
-			if (set != null) {
-				set.remove(hook);
-				if (set.isEmpty()) {
-					hooks.remove(monitoredArticle);
-				}
-			}
-		}
-	}
-
-	public void cleanHooksForArticle(String article) {
-		Set<CIHook> hooksToRemove = new HashSet<CIHook>();
-		for (Set<CIHook> hooks : this.hooks.values()) {
-			for (CIHook hook : hooks) {
-				if (article.equals(hook.getDashboardArticleTitle())) {
-					hooksToRemove.add(hook);
-				}
-			}
-		}
-		for (CIHook hookToRemove : hooksToRemove) {
-			unregisterHook(hookToRemove);
-		}
+	public static synchronized void unregisterHook(CIHook hook) {
+		hooks.removeValue(hook);
 	}
 
 	/**
@@ -99,30 +58,10 @@ public class CIHookManager {
 	 * 
 	 * @param monitoredArticle the article to trigger hooks for
 	 */
-	public void triggerHooks(Article monitoredArticle) {
-		triggerHooks(monitoredArticle.getTitle());
-	}
-
-	/**
-	 * Triggers the registered hooks for a given Article
-	 * 
-	 * @param monitoredArticleTitle the article to trigger hooks for
-	 */
-	public void triggerHooks(String monitoredArticleTitle) {
-
-		Set<CIHook> hookSet = hooks.get(monitoredArticleTitle);
-		if (hookSet != null) {
-			for (final CIHook hook : hookSet) {
-				Logger.getLogger(CIEventForwarder.class.getName()).log(
-						Level.INFO,
-						"Executing new CI build for dashboard '" + hook.getDashboardName()
-								+ "' in article '"
-								+ hook.getDashboardArticleTitle() + "'");
-				CIDashboard dashboard = CIDashboardManager.getDashboard(hook.getWeb(),
-						hook.getDashboardArticleTitle(), hook.getDashboardName());
-				CIBuildManager.startBuild(dashboard);
-			}
+	public static synchronized void triggerHooks(Article monitoredArticle) {
+		Set<CIHook> hookSet = hooks.getValues(monitoredArticle);
+		for (final CIHook hook : hookSet) {
+			CIBuildManager.startBuild(hook.getDashboard());
 		}
 	}
-
 }

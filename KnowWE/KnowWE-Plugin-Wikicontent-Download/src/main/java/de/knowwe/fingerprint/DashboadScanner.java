@@ -22,8 +22,7 @@ public class DashboadScanner implements Scanner {
 	public void scan(Article article, File target) throws IOException {
 		// execute builds and
 		// wait for build thread to terminate
-		CIHookManager hookManager = CIHookManager.getInstance();
-		hookManager.triggerHooks(article);
+		CIHookManager.triggerHooks(article);
 		CIBuildManager.awaitTermination();
 
 		List<Section<CIDashboardType>> dashboardTypes = Sections.findSuccessorsOfType(

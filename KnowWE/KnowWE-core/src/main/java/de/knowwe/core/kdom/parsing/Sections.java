@@ -795,17 +795,22 @@ public class Sections {
 		Collection<String> forbiddenArticles = new LinkedList<String>();
 
 		Compilers.getArticleManager(context.getWeb()).open();
-		for (String title : idsByTitle.keySet()) {
-			Collection<String> idsForCurrentTitle = idsByTitle.get(title);
-			boolean errorsForThisTitle = handleErrors(title, idsForCurrentTitle, context,
-					missingIDs,
-					forbiddenArticles);
-			if (!errorsForThisTitle) {
-				replaceSectionsForTitle(title, getSectionsMapForCurrentTitle(idsForCurrentTitle,
-						sectionsMap), context);
+		try {
+			for (String title : idsByTitle.keySet()) {
+				Collection<String> idsForCurrentTitle = idsByTitle.get(title);
+				boolean errorsForThisTitle = handleErrors(title, idsForCurrentTitle, context,
+						missingIDs,
+						forbiddenArticles);
+				if (!errorsForThisTitle) {
+					replaceSectionsForTitle(title,
+							getSectionsMapForCurrentTitle(idsForCurrentTitle,
+									sectionsMap), context);
+				}
 			}
 		}
-		Compilers.getArticleManager(context.getWeb()).commit();
+		finally {
+			Compilers.getArticleManager(context.getWeb()).commit();
+		}
 
 		return new ReplaceResult(sectionInfos, missingIDs, forbiddenArticles);
 	}

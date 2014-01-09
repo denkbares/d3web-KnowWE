@@ -31,7 +31,8 @@ import java.util.regex.Pattern;
 import de.d3web.testing.ArgsCheckResult;
 import de.d3web.testing.TestParser;
 import de.d3web.testing.TestSpecification;
-import de.d3web.we.ci4ke.build.CIConfig;
+import de.d3web.we.ci4ke.dashboard.CIDashboard;
+import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.d3web.we.ci4ke.dashboard.rendering.CIDashboardRenderer;
 import de.d3web.we.ci4ke.hook.CIHook;
 import de.d3web.we.ci4ke.hook.CIHookManager;
@@ -170,34 +171,18 @@ public class CIDashboardType extends DefaultMarkupType {
 			}
 			convertMessages(compiler, s, messages);
 
-			CIConfig config = new CIConfig(s.getWeb(), s.getArticle().getTitle(),
-					dashboardName, tests, trigger);
+			CIDashboard dashboard = CIDashboardManager.generateAndRegisterDashboard(s, tests);
 
-			// Parse the trigger-parameter and (eventually) register
-			// a CIHook
 			if (trigger.equals(CIBuildTriggers.onSave)) {
-				// Hook registrieren
-				CIHook ciHook = new CIHook(s.getWeb(), s.getTitle(), dashboardName,
-						monitoredArticles);
-				CIHookManager.getInstance().registerHook(ciHook);
+				CIHook ciHook = new CIHook(dashboard, monitoredArticles);
+				CIHookManager.registerHook(ciHook);
 				// Store to be able to unregister in destroy method
 				Compilers.storeObject(s,
 						CIHook.CIHOOK_STORE_KEY, ciHook);
 			}
 
-			// Alright, everything seems to be ok. Let's store the CIConfig in
-			// the store
-
-			Compilers.storeObject(s, CIConfig.CICONFIG_STORE_KEY, config);
-
 		}
 
-		/**
-		 * 
-		 * @created 11.06.2012
-		 * @param messages
-		 * @param msgs
-		 */
 		private void convertMessages(DefaultGlobalCompiler compiler, Section<?> section, List<ArgsCheckResult> messages) {
 			Collection<Message> msgs = new ArrayList<Message>();
 			for (ArgsCheckResult message : messages) {
@@ -224,8 +209,9 @@ public class CIDashboardType extends DefaultMarkupType {
 		public void destroy(DefaultGlobalCompiler compiler, Section<CIDashboardType> section) {
 			CIHook ciHook = (CIHook) section.getSectionStore().getObject(CIHook.CIHOOK_STORE_KEY);
 			if (ciHook != null) {
-				CIHookManager.getInstance().unregisterHook(ciHook);
+				CIHookManager.unregisterHook(ciHook);
 			}
+			CIDashboardManager.unregisterDashboard(section);
 		}
 
 	}

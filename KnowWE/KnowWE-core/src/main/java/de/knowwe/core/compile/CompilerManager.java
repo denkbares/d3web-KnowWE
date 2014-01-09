@@ -195,7 +195,7 @@ public class CompilerManager {
 							compiler.compile(added, removed);
 						}
 						catch (Throwable e) {
-							String msg = "Unexpected internal error while compiling with "
+							String msg = "Unexpected internal exception while compiling with "
 									+ compiler + ": " + e.getMessage();
 							Logger.getLogger(CompilerManager.class.getName()).log(
 									Level.SEVERE, msg, e);

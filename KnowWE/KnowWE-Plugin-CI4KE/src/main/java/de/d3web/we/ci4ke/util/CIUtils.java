@@ -22,21 +22,23 @@ package de.d3web.we.ci4ke.util;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.d3web.strings.Strings;
+import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
 public class CIUtils {
+
+	public static Collection<Section<CIDashboardType>> getDashboardSections(ArticleManager manager, String dashboardName) {
+		return CIDashboardManager.getDashboardSections(manager, dashboardName);
+	}
 
 	/**
 	 * Returns the savepath for ci-builds. If the path does not exist, it will
@@ -89,60 +91,6 @@ public class CIUtils {
 			attachmentsDir.mkdirs();
 		}
 		return attachmentsDir;
-	}
-
-	/**
-	 * This method finds a CIDashboard section only by its dashboard ID, by
-	 * iterating over all wiki articles.
-	 * 
-	 * @param dashboardName the dashboard ID to look for
-	 * @return the section where the dashboard with the given ID is defined, or
-	 *         null if no section with this ID can be found
-	 */
-	public static Collection<Section<CIDashboardType>> findCIDashboardSection(String dashboardName) {
-		List<Section<CIDashboardType>> found = new ArrayList<Section<CIDashboardType>>();
-		for (Article article : Environment.getInstance().
-				getArticleManager(Environment.DEFAULT_WEB).getArticles()) {
-
-			List<Section<CIDashboardType>> list = new ArrayList<Section<CIDashboardType>>();
-
-			Sections.findSuccessorsOfType(article.getRootSection(), CIDashboardType.class, list);
-
-			for (Section<CIDashboardType> sec : list) {
-				if (CIDashboardType.getAnnotation(sec, CIDashboardType.NAME_KEY).equals(
-						dashboardName)) {
-					found.add(sec);
-				}
-			}
-		}
-		return found;
-	}
-
-	/**
-	 * This method finds a CIDashboard section by its dashboard ID, searching on
-	 * the article with the given title.
-	 * 
-	 * @param dashboardArticleTitle
-	 * @param dashboardName
-	 * @return
-	 */
-	public static Section<CIDashboardType> findCIDashboardSection(
-			String dashboardArticleTitle, String dashboardName) {
-		// get the article
-		Article article = Environment.getInstance().
-				getArticleManager(Environment.DEFAULT_WEB).
-				getArticle(dashboardArticleTitle);
-		// get all CIDashboardType-sections on this article
-		List<Section<CIDashboardType>> list = new ArrayList<Section<CIDashboardType>>();
-		Sections.findSuccessorsOfType(article.getRootSection(), CIDashboardType.class, list);
-		// iterate all sections and look for the given dashboard ID
-		for (Section<CIDashboardType> sec : list) {
-			String otherDashName = CIDashboardType.getAnnotation(sec, CIDashboardType.NAME_KEY);
-			if (otherDashName != null && otherDashName.equals(dashboardName)) {
-				return sec;
-			}
-		}
-		return null;
 	}
 
 	/**

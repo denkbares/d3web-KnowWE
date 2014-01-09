@@ -47,7 +47,6 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 
 	public OntologyCompiler(PackageManager manager, Section<? extends PackageCompileType> compileSection) {
 		super(manager, compileSection);
-		this.rdf2GoCore = new Rdf2GoCore();
 		this.terminologyManager = new TerminologyManager();
 		this.scriptCompiler = new ScriptCompiler<OntologyCompiler>(this);
 		this.destroyScriptCompiler = new ScriptCompiler<OntologyCompiler>(this);
@@ -88,6 +87,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 			completeCompilation = false;
 		}
 		else {
+			if (this.rdf2GoCore == null) this.rdf2GoCore = new Rdf2GoCore();
 			sectionsOfPackage = getPackageManager().getAddedSections(packagesToCompile);
 		}
 

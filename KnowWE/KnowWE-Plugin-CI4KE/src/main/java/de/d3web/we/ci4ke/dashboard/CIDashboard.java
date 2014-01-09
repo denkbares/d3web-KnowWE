@@ -25,9 +25,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.d3web.testing.BuildResult;
+import de.d3web.testing.TestSpecification;
 import de.d3web.we.ci4ke.build.CIBuildCache;
 import de.d3web.we.ci4ke.build.CIPersistence;
 import de.d3web.we.ci4ke.build.CIRenderer;
+import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 
 /**
@@ -39,27 +42,31 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
  */
 public class CIDashboard {
 
-	private final String web;
-	private final String dashboardArticle;
 	private final String dashboardName;
 	private final CIRenderer renderer;
 	private final CIPersistence persistence;
 	private final CIBuildCache buildCache = new CIBuildCache();
+	private final Section<CIDashboardType> dashboardSection;
+	private final List<TestSpecification<?>> testSpecifications;
 
-	protected CIDashboard(String web, String dashboardArticle, String dashboardName) {
-		this.web = web;
-		this.dashboardArticle = dashboardArticle;
-		this.dashboardName = dashboardName;
+	protected CIDashboard(Section<CIDashboardType> dashboardSection, List<TestSpecification<?>> specifications) {
+		this.dashboardSection = dashboardSection;
+		this.dashboardName = CIDashboardType.getDashboardName(dashboardSection);
+		this.testSpecifications = specifications;
 		this.renderer = new CIRenderer(this);
 		this.persistence = new CIPersistence(this);
 	}
 
+	public Section<CIDashboardType> getDashboardSection() {
+		return this.dashboardSection;
+	}
+
 	public String getWeb() {
-		return web;
+		return dashboardSection.getWeb();
 	}
 
 	public String getDashboardArticle() {
-		return dashboardArticle;
+		return dashboardSection.getTitle();
 	}
 
 	public String getDashboardName() {
@@ -213,6 +220,15 @@ public class CIDashboard {
 			buildCache.addBuild(build);
 		}
 		return build;
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + " (" + dashboardName + ")";
+	}
+
+	public List<TestSpecification<?>> getTestSpecifications() {
+		return this.testSpecifications;
 	}
 
 }

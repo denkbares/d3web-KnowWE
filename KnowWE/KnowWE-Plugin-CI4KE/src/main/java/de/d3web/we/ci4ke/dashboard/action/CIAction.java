@@ -21,7 +21,6 @@
 package de.d3web.we.ci4ke.dashboard.action;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,12 +31,10 @@ import de.d3web.we.ci4ke.build.CIBuildManager;
 import de.d3web.we.ci4ke.build.CIRenderer;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
-import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
-import de.d3web.we.ci4ke.util.CIUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.rendering.RenderResult;
 
 public class CIAction extends AbstractAction {
@@ -53,14 +50,10 @@ public class CIAction extends AbstractAction {
 			throw new IOException(
 					"CIAction.execute(): Required parameters not set!");
 		}
-
 		String web = context.getWeb();
-		String dashBoardArticle = null;
-		Collection<Section<CIDashboardType>> dashboardSections = CIUtils.findCIDashboardSection(dashboardName);
-		if (dashboardSections != null && dashboardSections.size() > 0) {
-			dashBoardArticle = dashboardSections.iterator().next().getTitle();
-		}
-		CIDashboard dashboard = CIDashboardManager.getDashboard(web, dashBoardArticle,
+
+		CIDashboard dashboard = CIDashboardManager.getDashboard(
+				Compilers.getArticleManager(web),
 				dashboardName);
 		int selectedBuildNumber = -1;
 		if (context.getParameter("nr") != null) {
@@ -86,7 +79,8 @@ public class CIAction extends AbstractAction {
 				// is managed in JS
 				return;
 			}
-			CIBuildManager.startBuild(CIDashboardManager.getDashboard(web, dashBoardArticle,
+			CIBuildManager.startBuild(CIDashboardManager.getDashboard(
+					Compilers.getArticleManager(web),
 					dashboardName));
 			// TODO: Why are we rendering the old build? Necessary?
 			BuildResult build = dashboard.getBuild(selectedBuildNumber);
@@ -95,7 +89,7 @@ public class CIAction extends AbstractAction {
 		}// Get the details of one build (wiki changes + test results)
 		else if (task.equals("refreshBuildDetails")) {
 			BuildResult build = dashboard.getBuild(selectedBuildNumber);
-			renderer.renderBuildDetails(web, build, html);
+			renderer.renderBuildDetails(context.getWeb(), build, html);
 		}
 		else if (task.equals("refreshBuildStatus")) {
 			BuildResult build = dashboard.getLatestBuild();

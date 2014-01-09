@@ -1,11 +1,9 @@
 package de.d3web.we.ci4ke.daemon;
 
-import de.d3web.testing.Message.Type;
 import de.d3web.we.ci4ke.build.CIRenderer;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -20,51 +18,31 @@ public class CIDaemonRenderer implements Renderer {
 		String content = DefaultMarkupType.getContent(section);
 		String dashboardName = DefaultMarkupType.getAnnotation(section,
 				CIDashboardType.NAME_KEY);
-		String dashboardArticle = DefaultMarkupType.getAnnotation(section,
-				CIDaemonType.DASHBOARD_ARTICLE);
-		renderDaemonContents(section.getWeb(),
-				dashboardName, dashboardArticle, string);
+		renderDaemonContents(section,
+				dashboardName, string);
 		string.append(content);
 	}
 
-	public static void renderDaemonContents(String web, String dashboardName, String dashboardArticleTitle, RenderResult string) {
+	public static void renderDaemonContents(Section<?> section, String dashboardName, RenderResult string) {
 
-		if (!Environment.getInstance().getArticleManager(web).getTitles().contains(
-				dashboardArticleTitle)) {
-			string.appendHtml("<span class='error'>");
-			string.append("The annotation @" + CIDaemonType.DASHBOARD_ARTICLE
-					+ " has to specify an existing article name.");
-			string.appendHtml("</span>");
-		}
-		Section<CIDashboardType> dashboardSec = CIDashboardManager.hasDashboard(web, dashboardArticleTitle, dashboardName);
+		CIDashboard dashboard = CIDashboardManager.getDashboard(section.getArticleManager(),
+				dashboardName);
 
-		String srclink;
-		if (dashboardSec == null) {
+		if (dashboard == null) {
 			string.appendHtml("<span class='error'>");
 			string.append("The annotation @" + CIDashboardType.NAME_KEY
-					+ " has to specify an existing CI dashboard name on the specified article.");
+					+ " has to specify an existing CI dashboard name.");
 			string.appendHtml("</span>");
-			srclink = "<a class=\"ci-daemon\" href=\""
-					+ KnowWEUtils.getURLLink(dashboardArticleTitle)
-					+ "\">";
 
 		}
 		else {
-			srclink = "<a class=\"ci-daemon\" href=\"" + KnowWEUtils.getURLLink(dashboardSec)
-					+ "\">";
-		}
-		
-		string.appendHtml(srclink);
-
-		CIDashboard dashboard = CIDashboardManager.getDashboard(web, dashboardArticleTitle, dashboardName);
-		CIRenderer renderer = dashboard.getRenderer();
-		if (dashboardSec != null) {
+			string.appendHtml("<a class=\"ci-daemon\" href=\""
+					+ KnowWEUtils.getURLLink(dashboard.getDashboardSection())
+					+ "\">");
+			CIRenderer renderer = dashboard.getRenderer();
 			renderer.renderCurrentBuildStatus(string);
+			string.appendHtml("</a>");
 		}
-		else {
-			renderer.renderBuildStatus(Type.ERROR, true, "", string);
-		}
-		string.appendHtml("</a>");
 
 	}
 }

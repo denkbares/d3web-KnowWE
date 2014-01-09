@@ -29,16 +29,15 @@ import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.d3web.we.ci4ke.dashboard.action.CIDashboardToolProvider;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
-import de.d3web.we.ci4ke.util.CIUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.tools.Tool;
 
 /**
@@ -55,20 +54,18 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	@Override
 	protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
 
-		String dashboardName = DefaultMarkupType.getAnnotation(section,
-				CIDashboardType.NAME_KEY);
+		CIDashboard dashboard = CIDashboardManager.getDashboard(Sections.cast(section,
+				CIDashboardType.class));
 
-		string.append(renderDashboardContents(user,
-				section.getTitle(), dashboardName));
+		string.append(renderDashboardContents(user, dashboard));
 
 	}
 
-	private static boolean isDashBoardModifiedAfterLatestBuild(Section<?> section, UserContext user, String dashboardName) {
+	private static boolean isDashBoardModifiedAfterLatestBuild(Section<CIDashboardType> section) {
 
 		String title = section.getTitle();
 		String currentDashboardSourcetext = section.getText();
-		CIDashboard dashboard = CIDashboardManager.getDashboard(section.getWeb(), title,
-				dashboardName);
+		CIDashboard dashboard = CIDashboardManager.getDashboard(section);
 		BuildResult latestBuild = dashboard.getLatestBuild();
 		if (latestBuild == null) return false; // nothing to do
 
@@ -86,8 +83,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		}
 
 		String sourceTextAtBuildTime = Environment.getInstance().getWikiConnector().getVersion(
-				section.getTitle(),
-				versionAtBuildDate);
+				section.getTitle(), versionAtBuildDate);
 
 		if (sourceTextAtBuildTime.contains(currentDashboardSourcetext)) {
 			// this is only safe for one single dashboard per article
@@ -106,19 +102,16 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	 * @param dashboardArticleTitle the name of the article of the dashboard
 	 * @param dashboardName the name of the dashboard
 	 */
-	public static String renderDashboardContents(UserContext user, String dashboardArticleTitle, String dashboardName) {
-
-		Section<CIDashboardType> dashboardSection = CIUtils.findCIDashboardSection(
-				dashboardArticleTitle, dashboardName);
-		CIDashboard dashboard = CIDashboardManager.getDashboard(user.getWeb(), dashboardArticleTitle,
-				dashboardName);
+	public static String renderDashboardContents(UserContext user, CIDashboard dashboard) {
+		String dashboardName = dashboard.getDashboardName();
+		Section<CIDashboardType> dashboardSection = dashboard.getDashboardSection();
 
 		RenderResult string = new RenderResult(user);
 
 		string.appendHtml("<div name='" + Strings.encodeURL(dashboardName)
 				+ "' class='ci-title'>");
 
-		checkForUniqueName(dashboardName, string);
+		isUniqueDashboardName(dashboard, string);
 
 		checkForOutdatedBuild(user, dashboardName, dashboardSection, string);
 
@@ -177,8 +170,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	private static void checkForOutdatedBuild(UserContext user, String dashboardName, Section<CIDashboardType> dashboardSection, RenderResult string) {
 		// check whether dashboard definition has been changed
 		// if so render outdated-warning
-		boolean buildOutdated = isDashBoardModifiedAfterLatestBuild(dashboardSection, user,
-				dashboardName);
+		boolean buildOutdated = isDashBoardModifiedAfterLatestBuild(dashboardSection);
 		if (buildOutdated) {
 			RenderResult warningString = new RenderResult(string);
 			warningString.append("Dashboard has been modified. Latest build is not up to date. (Consider to trigger new build: ");
@@ -204,10 +196,11 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		}
 	}
 
-	private static void checkForUniqueName(String dashboardName, RenderResult string) {
+	private static boolean isUniqueDashboardName(CIDashboard dashboard, RenderResult string) {
 		// check unique dashboard names and create error in case of
 		// duplicates
-		Collection<Section<CIDashboardType>> ciDashboardSections = CIUtils.findCIDashboardSection(dashboardName);
+		Collection<Section<CIDashboardType>> ciDashboardSections = CIDashboardManager.getDashboardSections(
+				dashboard.getDashboardSection().getArticleManager(), dashboard.getDashboardName());
 		if (ciDashboardSections.size() > 1) {
 			TreeSet<String> articleTitles = new TreeSet<String>();
 			for (Section<CIDashboardType> section : ciDashboardSections) {
@@ -222,13 +215,14 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			}
 
 			RenderResult errorText = new RenderResult(string);
-			errorText.appendHtml("Multiple dashboards with same name on the following article"
-					+ (articleTitles.size() > 1 ? "s" : "") + ": "
+			errorText.appendHtml("Multiple dashboards with same name on the following articles: "
 					+ articleLinks.toString()
 					+ ". Make sure every dashbaord has a wiki-wide unique name!");
 			Collection<Message> errorMsgs = Messages.asList(Messages.error(errorText.toStringRaw()));
 			renderMessagesOfType(Message.Type.ERROR, errorMsgs, string);
+			return false;
 		}
+		return true;
 	}
 
 }

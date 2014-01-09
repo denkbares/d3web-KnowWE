@@ -216,6 +216,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			// we can just ignore it.
 			return content;
 		}
+
 		JSPWikiUserContext userContext = new JSPWikiUserContext(wikiContext,
 				UserContextUtil.getParameters(httpRequest));
 
@@ -263,6 +264,9 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		}
 		try {
 
+			String stringRaw = (String) httpRequest.getAttribute("renderresult");
+			if (stringRaw != null) return stringRaw;
+
 			Article article = Environment.getInstance().getArticle(
 					Environment.DEFAULT_WEB, title);
 
@@ -278,14 +282,15 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				article = Environment.getInstance().buildAndRegisterArticle(
 						Environment.DEFAULT_WEB, title,
 						content, fullParse);
+				Compilers.getCompilerManager(Environment.DEFAULT_WEB).awaitTermination();
 			}
 
 			RenderResult renderResult = new RenderResult(userContext.getRequest());
 
 			if (article != null && httpRequest != null) {
-				Compilers.getCompilerManager(Environment.DEFAULT_WEB).awaitTermination();
 				List<PageAppendHandler> appendhandlers = Environment.getInstance()
 						.getAppendHandlers();
+
 				renderPrePageAppendHandler(userContext, title, renderResult, appendhandlers);
 
 				renderPage(userContext, article, renderResult);
@@ -294,8 +299,9 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 				includeDOMResources(wikiContext);
 			}
-
-			return renderResult.toStringRaw();
+			stringRaw = renderResult.toStringRaw();
+			userContext.getRequest().setAttribute("renderresult", stringRaw);
+			return stringRaw;
 		}
 		catch (Exception e) {
 			Logger.getLogger(this.getClass().getName()).log(

@@ -24,8 +24,7 @@ public class OntologyDownloadProvider implements ToolProvider {
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
-		Rdf2GoCore ontology = Rdf2GoCore.getInstance(OntologyUtils.getOntologyCompiler(section));
-		return !ontology.isEmpty();
+		return OntologyUtils.getOntologyCompiler(section) != null;
 	}
 
 	@Override
