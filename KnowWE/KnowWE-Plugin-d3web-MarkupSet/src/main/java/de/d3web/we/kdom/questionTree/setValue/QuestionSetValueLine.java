@@ -32,8 +32,8 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.strings.Strings;
 import de.d3web.we.kdom.questionTree.QuestionDashTreeUtils;
-import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.knowledgebase.D3webCompileScript;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.compile.Compilers;
@@ -44,6 +44,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
@@ -114,10 +115,9 @@ public class QuestionSetValueLine extends AbstractType {
 						Condition cond = QuestionDashTreeUtils.createCondition(compiler,
 								DashTreeUtils.getAncestorDashTreeElements(section));
 						if (cond == null) {
-							Messages.storeMessage(compiler, section, getClass(),
+							throw new CompilerMessage(
 									Messages.creationFailedWarning(
 											Rule.class.getSimpleName() + ": check condition"));
-							return;
 						}
 
 						ActionSetQuestion ac = null;
@@ -135,16 +135,15 @@ public class QuestionSetValueLine extends AbstractType {
 
 						if (r != null) {
 							Compilers.storeObject(compiler, section, SETVALUE_ARGUMENT, r);
-							Messages.storeMessage(compiler, section, getClass(),
+							throw new CompilerMessage(
 									Messages.objectCreatedNotice(r.getClass().toString()));
-							return;
 						}
 
 					}
 				}
 			}
 
-			Messages.storeMessage(compiler, section, getClass(),
+			throw new CompilerMessage(
 					Messages.creationFailedWarning(Rule.class.getSimpleName()));
 		}
 

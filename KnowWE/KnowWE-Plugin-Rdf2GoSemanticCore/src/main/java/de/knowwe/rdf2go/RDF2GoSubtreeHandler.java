@@ -27,8 +27,8 @@ import java.util.Collection;
 
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
 
 /**
  * @author grotheer
@@ -44,8 +44,7 @@ public abstract class RDF2GoSubtreeHandler<C extends Rdf2GoCompiler, T extends T
 
 	@Override
 	public void compile(C compiler, Section<T> section) {
-		Messages.storeMessages(compiler, section, getClass(), create(compiler, section));
-
+		throw new CompilerMessage(create(compiler, section));
 	}
 
 	@Override

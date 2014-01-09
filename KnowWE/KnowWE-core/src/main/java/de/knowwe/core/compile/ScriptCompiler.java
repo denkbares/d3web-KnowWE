@@ -176,7 +176,15 @@ public class ScriptCompiler<C extends Compiler> {
 		while (hasNext()) {
 			CompilePair pair = next();
 			if (pair.getB() instanceof DestroyScript) {
-				((DestroyScript<C, Type>) pair.getB()).destroy(compiler, pair.getA());
+				try {
+					((DestroyScript<C, Type>) pair.getB()).destroy(compiler, pair.getA());
+				}
+				catch (Exception e) {
+					String msg = "Unexpected internal exception while destroying with script "
+							+ pair.getB() + ": " + e.getMessage();
+					Logger.getLogger(CompilerManager.class.getName()).log(
+							Level.SEVERE, msg, e);
+				}
 			}
 		}
 	}

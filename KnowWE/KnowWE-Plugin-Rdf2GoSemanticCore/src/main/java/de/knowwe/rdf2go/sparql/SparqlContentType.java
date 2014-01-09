@@ -28,7 +28,7 @@ import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
-import de.knowwe.core.report.Messages;
+import de.knowwe.core.report.CompilerError;
 import de.knowwe.kdom.renderer.AsynchronRenderer;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
@@ -59,8 +59,7 @@ public class SparqlContentType extends AbstractType {
 					}
 				}
 				catch (Exception e) {
-					Messages.storeMessage(section, getClass(),
-							Messages.error(e.getMessage()));
+					throw new CompilerError(e.getMessage());
 				}
 			}
 		}

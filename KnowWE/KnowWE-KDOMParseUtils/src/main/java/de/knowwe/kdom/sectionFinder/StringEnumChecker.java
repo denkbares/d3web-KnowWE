@@ -20,15 +20,13 @@
 
 package de.knowwe.kdom.sectionFinder;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
 
 public class StringEnumChecker<C extends de.knowwe.core.compile.Compiler, T extends Type> implements CompileScript<C, T> {
 
@@ -68,11 +66,9 @@ public class StringEnumChecker<C extends de.knowwe.core.compile.Compiler, T exte
 				break;
 			}
 		}
-		List<Message> msgs = new ArrayList<Message>();
 		if (!found) {
-			msgs.add(error);
+			throw new CompilerMessage(error);
 		}
-		Messages.storeMessages(compiler, s, getClass(), msgs);
 	}
 
 	@Override

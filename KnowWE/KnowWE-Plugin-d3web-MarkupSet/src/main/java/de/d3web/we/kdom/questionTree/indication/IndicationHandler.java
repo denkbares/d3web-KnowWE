@@ -31,8 +31,8 @@ import de.d3web.we.kdom.questionTree.NumericCondLine;
 import de.d3web.we.kdom.questionTree.QuestionDashTree;
 import de.d3web.we.kdom.questionTree.QuestionDashTreeUtils;
 import de.d3web.we.kdom.questionTree.QuestionTreeAnswerDefinition;
-import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.knowledgebase.D3webCompileScript;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.D3webTerm;
 import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.object.QuestionReference;
@@ -41,6 +41,7 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.dashtree.DashTreeElement;
@@ -110,8 +111,7 @@ public class IndicationHandler extends D3webCompileScript<D3webTerm<NamedObject>
 				Message msg = Messages.creationFailedWarning(
 						D3webUtils.getD3webBundle().getString(
 								"KnowWE.rulesNew.indicationnotcreated"));
-				Messages.storeMessage(compiler, section, getClass(), msg);
-				return;
+				throw new CompilerMessage(msg);
 			}
 
 			// retrieve the QASet for the different Types that might
@@ -145,20 +145,16 @@ public class IndicationHandler extends D3webCompileScript<D3webTerm<NamedObject>
 
 					if (r != null) {
 						Compilers.storeObject(compiler, section, indicationStoreKey, r);
-						Messages.storeMessage(compiler, section, getClass(),
-								Messages.objectCreatedNotice(
-										r.getClass().toString()));
-						return;
+						throw new CompilerMessage(Messages.objectCreatedNotice(
+								r.getClass().toString()));
 					}
 				}
 			}
-
-			Messages.storeMessage(compiler, section, getClass(),
+			throw new CompilerMessage(
 					Messages.creationFailedWarning(
 							Rule.class.getSimpleName()));
 		}
-
-		Messages.clearMessages(compiler, section, getClass());
+		throw new CompilerMessage();
 	}
 
 }

@@ -37,8 +37,8 @@ public class CompilerInfo extends CompilerMessage {
 
 	private static final long serialVersionUID = -1525406929065056290L;
 
-	CompilerInfo(String... messages) {
-		super(Message.Type.INFO, messages);
+	public CompilerInfo(String... infos) {
+		super(Message.Type.INFO, infos);
 	}
 
 }

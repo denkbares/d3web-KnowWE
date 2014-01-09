@@ -43,6 +43,7 @@ import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.CompilerError;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
@@ -120,26 +121,20 @@ public class CIDashboardType extends DefaultMarkupType {
 								monitoredArticles.add(parameter);
 							}
 							else {
-								Message msg = Messages.error("Article '" + parameter
+								throw new CompilerError("Article '" + parameter
 										+ "' for trigger does not exist");
-								Messages.storeMessage(s, this.getClass(), msg);
-								return;
 							}
 						}
 					}
 				}
 				catch (IllegalArgumentException e) {
-					Message msg = Messages.error("Invalid trigger specified: " + triggerString);
-					Messages.storeMessage(s, this.getClass(), msg);
-					return;
+					throw new CompilerError("Invalid trigger specified: " + triggerString);
 				}
 			}
 
 			if (trigger.equals(CIBuildTriggers.onSave) && monitoredArticles.isEmpty()) {
-				Message msg = Messages.error("Invalid trigger: " + CIBuildTriggers.onSave
+				throw new CompilerError("Invalid trigger: " + CIBuildTriggers.onSave
 						+ " requires attached articles to monitor.");
-				Messages.storeMessage(s, this.getClass(), msg);
-				return;
 			}
 
 			// This map is used for storing tests and their parameter-list

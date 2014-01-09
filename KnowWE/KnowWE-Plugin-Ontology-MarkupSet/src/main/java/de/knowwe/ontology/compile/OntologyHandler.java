@@ -23,8 +23,8 @@ import java.util.Collection;
 import de.knowwe.core.compile.packaging.PackageCompileScript;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
 
 /**
  * 
@@ -42,7 +42,7 @@ public abstract class OntologyHandler<T extends Type> implements PackageCompileS
 
 	@Override
 	public void compile(OntologyCompiler compiler, Section<T> section) {
-		Messages.storeMessages(compiler, section, getClass(), create(compiler, section));
+		throw new CompilerMessage(create(compiler, section));
 	}
 
 }

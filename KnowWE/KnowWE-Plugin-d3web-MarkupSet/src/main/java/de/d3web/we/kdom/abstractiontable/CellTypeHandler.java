@@ -17,6 +17,9 @@ import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.CompilerError;
+import de.knowwe.core.report.CompilerInfo;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableUtils;
@@ -39,9 +42,7 @@ public class CellTypeHandler extends D3webCompileScript<CellContent> {
 	private void handleNormalCell(D3webCompiler compiler, Section<?> content) {
 		Section<TableCellContent> columnHeader = TableUtils.getColumnHeader(content);
 		if (columnHeader == null) {
-			Messages.storeMessage(compiler, content, this.getClass(),
-					Messages.error("Header is missing"));
-			return;
+			throw new CompilerError("Header is missing");
 		}
 		Section<? extends Type> d3webReference = columnHeader.getChildren().get(0)
 				.getChildren().get(0);
@@ -65,10 +66,9 @@ public class CellTypeHandler extends D3webCompileScript<CellContent> {
 					Compilers.compile(compiler, content);
 				}
 				else {
-					Messages.storeMessage(compiler, content, getClass(), Messages.error("The type "
+					throw new CompilerError("The type "
 							+ question.getClass().getSimpleName()
-							+ " of question '" + question.getName() + "' is not supported"));
-					return;
+							+ " of question '" + question.getName() + "' is not supported");
 				}
 			}
 			else if (type instanceof SolutionReference) {
@@ -84,9 +84,7 @@ public class CellTypeHandler extends D3webCompileScript<CellContent> {
 				}
 			}
 			else {
-				Messages.storeMessage(compiler, content, getClass(),
-						Messages.error("Invalid header"));
-				return;
+				throw new CompilerError("Invalid header");
 			}
 		}
 		Messages.clearMessages(compiler, content, this.getClass());
@@ -99,27 +97,23 @@ public class CellTypeHandler extends D3webCompileScript<CellContent> {
 		Identifier termIdentifier = new Identifier(name);
 		Collection<Class<?>> termClasses = terminologyManager.getTermClasses(termIdentifier);
 		if (termClasses.isEmpty()) {
-			Messages.storeMessage(compiler, content, getClass(),
+			throw new CompilerMessage(
 					Messages.noSuchObjectError("Question or Solution", name));
-			return;
 		}
 		for (Class<?> termClass : termClasses) {
 			if (Question.class.isAssignableFrom(termClass)) {
 				content.setType(new QuestionReference());
 				Compilers.compile(compiler, content);
-				Messages.clearMessages(compiler, content, this.getClass());
-				return;
+				throw new CompilerInfo();
 			}
 			else if (Solution.class.isAssignableFrom(termClass)) {
 				content.setType(new SolutionReference());
 				Compilers.compile(compiler, content);
-				Messages.clearMessages(compiler, content, this.getClass());
-				return;
+				throw new CompilerInfo();
 			}
 		}
-		Messages.storeMessage(compiler, content, getClass(), Messages.error("'" + name
+		throw new CompilerError("'" + name
 				+ "' is expected to be a Question or a Solution, but is a "
-				+ termClasses.iterator().next().getSimpleName()));
+				+ termClasses.iterator().next().getSimpleName());
 	}
-
 }

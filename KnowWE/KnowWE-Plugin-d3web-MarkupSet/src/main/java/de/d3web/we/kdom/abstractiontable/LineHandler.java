@@ -30,6 +30,8 @@ import de.d3web.we.object.SolutionReference;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.CompilerError;
+import de.knowwe.core.report.CompilerInfo;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableLine;
@@ -70,14 +72,12 @@ public class LineHandler extends D3webCompileScript<TableLine> {
 			String message = "Rule for row " + row + " was not created (no "
 					+ (action == null ? "action" : "conditions")
 					+ " found)";
-			Messages.storeMessage(compiler, section, getClass(), Messages.error(message));
-			return;
+			throw new CompilerError(message);
 		}
 
 		Rule rule = createRule(conditions, action);
 
-		Messages.storeMessage(compiler, section, getClass(),
-				Messages.notice("Created Rule " + rule.toString()));
+		throw new CompilerInfo("Created Rule " + rule.toString());
 	}
 
 	private Rule createRule(List<Condition> conditions, PSAction action) {

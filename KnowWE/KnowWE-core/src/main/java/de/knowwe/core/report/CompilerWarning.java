@@ -38,8 +38,8 @@ public class CompilerWarning extends CompilerMessage {
 
 	private static final long serialVersionUID = 3292493558089174762L;
 
-	public CompilerWarning(String... messages) {
-		super(Message.Type.WARNING, messages);
+	public CompilerWarning(String... warnings) {
+		super(Message.Type.WARNING, warnings);
 	}
 
 }

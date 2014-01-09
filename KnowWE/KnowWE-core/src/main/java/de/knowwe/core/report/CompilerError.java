@@ -37,8 +37,8 @@ public class CompilerError extends CompilerMessage {
 
 	private static final long serialVersionUID = -3826252252003707023L;
 
-	public CompilerError(String... messages) {
-		super(Message.Type.ERROR, messages);
+	public CompilerError(String... errors) {
+		super(Message.Type.ERROR, errors);
 	}
 
 }

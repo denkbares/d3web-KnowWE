@@ -26,6 +26,7 @@ import de.knowwe.core.compile.DestroyScript;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
@@ -56,8 +57,7 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 		tHandler.registerTermReference(compiler,
 				section, section.get().getTermObjectClass(section), termIdentifier);
 
-		Collection<Message> msgs = validateReference(compiler, section);
-		Messages.storeMessages(compiler, section, getClass(), msgs);
+		throw new CompilerMessage(validateReference(compiler, section));
 	}
 
 	/**

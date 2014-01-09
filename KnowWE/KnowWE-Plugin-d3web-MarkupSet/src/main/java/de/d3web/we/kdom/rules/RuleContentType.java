@@ -61,6 +61,7 @@ import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
@@ -142,9 +143,8 @@ public class RuleContentType extends AbstractType {
 							ConditionActionRuleContent.class);
 
 			if (ruleSection.hasErrorInSubtree(compiler)) {
-				Messages.storeMessage(compiler, section, getClass(),
+				throw new CompilerMessage(
 						Messages.creationFailedWarning(Rule.class.getSimpleName()));
-				return;
 			}
 
 			// create condition
@@ -158,12 +158,11 @@ public class RuleContentType extends AbstractType {
 			Section<D3webRuleAction> action = Sections.findSuccessor(section,
 					D3webRuleAction.class);
 			if (action == null) {
-				Messages.storeMessage(compiler, section, getClass(),
+				throw new CompilerMessage(
 						Messages.creationFailedWarning(
 								D3webUtils.getD3webBundle().getString(
 										"KnowWE.rulesNew.notcreated")
 										+ " : no valid action found"));
-				return;
 			}
 			@SuppressWarnings("unchecked")
 			PSAction d3action = action.get().getAction(compiler, action);
@@ -189,16 +188,15 @@ public class RuleContentType extends AbstractType {
 						exceptionCond, action.get().getActionPSContext());
 				if (rule != null) {
 					Compilers.storeObject(compiler, section, RULE_STORE_KEY, rule);
-					Messages.storeMessage(compiler, section, getClass(),
+					throw new CompilerMessage(
 							Messages.objectCreatedNotice(
 									"Rule"));
-					return;
 				}
 
 			}
 
 			// should not happen
-			Messages.storeMessage(compiler, section, getClass(), Messages.creationFailedWarning(
+			throw new CompilerMessage(Messages.creationFailedWarning(
 					D3webUtils.getD3webBundle().getString("KnowWE.rulesNew.notcreated")));
 		}
 

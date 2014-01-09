@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.DefaultArticleManager;
@@ -37,6 +39,8 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.CompilerMessage;
+import de.knowwe.core.report.Messages;
 
 /**
  * Utility methods needed while compiling.
@@ -70,7 +74,14 @@ public class Compilers {
 		Map<Priority, List<CompileScript<C, T>>> scripts = scriptManager.getScripts(section.get());
 		for (List<CompileScript<C, T>> scriptList : scripts.values()) {
 			for (CompileScript<C, T> compileScript : scriptList) {
-				compileScript.compile(compiler, section);
+				try {
+					compileScript.compile(compiler, section);
+				}
+				catch (CompilerMessage cm) {
+					Messages.storeMessages(compiler, section, compileScript.getClass(),
+							cm.getMessages());
+				}
+
 			}
 		}
 	}
@@ -91,7 +102,15 @@ public class Compilers {
 		for (List<CompileScript<C, T>> scriptList : scripts.values()) {
 			for (CompileScript<C, T> compileScript : scriptList) {
 				if (!(compileScript instanceof DestroyScript)) continue;
-				((DestroyScript<C, T>) compileScript).destroy(compiler, section);
+				try {
+					((DestroyScript<C, T>) compileScript).destroy(compiler, section);
+				}
+				catch (Exception e) {
+					String msg = "Unexpected internal exception while destroying with script "
+							+ section + ": " + e.getMessage();
+					Logger.getLogger(CompilerManager.class.getName()).log(
+							Level.SEVERE, msg, e);
+				}
 			}
 		}
 	}

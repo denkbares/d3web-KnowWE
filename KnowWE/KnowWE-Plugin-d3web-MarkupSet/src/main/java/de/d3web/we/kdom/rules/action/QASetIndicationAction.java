@@ -30,8 +30,8 @@ import de.d3web.indication.ActionIndication;
 import de.d3web.indication.inference.PSMethodStrategic;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
-import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.knowledgebase.D3webCompileScript;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.QuestionnaireReference;
 import de.knowwe.core.compile.Compilers;
@@ -40,8 +40,8 @@ import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
+import de.knowwe.core.report.CompilerError;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.kdom.AnonymousType;
 
 /**
@@ -106,24 +106,23 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 					if (Question.class.isAssignableFrom(objectClazz)) {
 						s.setType(new QuestionReference());
 						Compilers.compile(compiler, s);
-						return;
+						throw new CompilerMessage();
 					}
 					if (QContainer.class.isAssignableFrom(objectClazz)) {
 						s.setType(new QuestionnaireReference());
 						Compilers.compile(compiler, s);
-						return;
+						throw new CompilerMessage();
 					}
-					Message msg = Messages.error(
+					throw new CompilerError(
 							termIdentifier + "is defined as: "
 									+ objectClazz.getName()
 									+ " - expected was Question or Questionnaire");
 
 				}
 			}
-			Message msg = Messages.error(
+			throw new CompilerError(
 					"Could not find '" + Strings.trimQuotes(termIdentifier.toString())
 							+ "' - expected was Question or Questionnaire");
-			Messages.storeMessage(compiler, s, this.getClass(), msg);
 		}
 	}
 

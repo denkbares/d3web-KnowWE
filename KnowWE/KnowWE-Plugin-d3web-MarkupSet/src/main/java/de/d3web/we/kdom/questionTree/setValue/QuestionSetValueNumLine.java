@@ -32,8 +32,8 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.strings.Strings;
 import de.d3web.we.kdom.questionTree.QuestionDashTreeUtils;
-import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.knowledgebase.D3webCompileScript;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.AbstractType;
@@ -45,6 +45,7 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.AnonymousType;
@@ -164,14 +165,13 @@ public class QuestionSetValueNumLine extends AbstractType {
 					Rule r = RuleFactory.createRule(action, cond, null, PSMethodAbstraction.class);
 					if (r != null) {
 						Compilers.storeObject(compiler, section, SETVALUE_ARGUMENT, r);
-						Messages.storeMessage(compiler, section, getClass(),
+						throw new CompilerMessage(
 								Messages.objectCreatedNotice(
 										r.getClass().toString()));
-						return;
 					}
 				}
 			}
-			Messages.storeMessage(compiler, section, getClass(),
+			throw new CompilerMessage(
 					Messages.creationFailedWarning(
 							Rule.class.getSimpleName()));
 		}
