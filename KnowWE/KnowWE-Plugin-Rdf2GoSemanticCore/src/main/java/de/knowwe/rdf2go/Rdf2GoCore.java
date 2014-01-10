@@ -653,50 +653,52 @@ public class Rdf2GoCore {
 					"Unable to read Rdf2Go model config, using default");
 		}
 
-		switch (modelType) {
-		case JENA:
-			// Jena dependency currently commented out because of clashing
-			// lucene version in jspwiki
+		synchronized (RDF2Go.class) {
+			switch (modelType) {
+			case JENA:
+				// Jena dependency currently commented out because of clashing
+				// lucene version in jspwiki
 
-			// RDF2Go.register(new
-			// org.ontoware.rdf2go.impl.jena26.ModelFactoryImpl());
-			break;
-		case BIGOWLIM:
-			// registers the customized model factory (in memory, owl-max)
-			// RDF2Go.register(new
-			// de.d3web.we.core.semantic.rdf2go.modelfactory.BigOwlimInMemoryModelFactory());
+				// RDF2Go.register(new
+				// org.ontoware.rdf2go.impl.jena26.ModelFactoryImpl());
+				break;
+			case BIGOWLIM:
+				// registers the customized model factory (in memory, owl-max)
+				// RDF2Go.register(new
+				// de.d3web.we.core.semantic.rdf2go.modelfactory.BigOwlimInMemoryModelFactory());
 
-			// standard bigowlim model factory:
-			// RDF2Go.register(new
-			// com.ontotext.trree.rdf2go.OwlimModelFactory());
-			break;
-		case SESAME:
-			RDF2Go.register(new org.openrdf.rdf2go.RepositoryModelFactory());
-			break;
-		case SWIFTOWLIM:
-			RDF2Go.register(new de.knowwe.rdf2go.modelfactory.SesameSwiftOwlimModelFactory());
-			break;
+				// standard bigowlim model factory:
+				// RDF2Go.register(new
+				// com.ontotext.trree.rdf2go.OwlimModelFactory());
+				break;
+			case SESAME:
+				RDF2Go.register(new org.openrdf.rdf2go.RepositoryModelFactory());
+				break;
+			case SWIFTOWLIM:
+				RDF2Go.register(new de.knowwe.rdf2go.modelfactory.SesameSwiftOwlimModelFactory());
+				break;
+			default:
+				throw new ModelRuntimeException("Model not supported");
+			}
+
+			switch (reasoningType) {
+			case OWL:
+				model = RDF2Go.getModelFactory().createModel(Reasoning.owl);
+				break;
+			case RDFS:
+				model = RDF2Go.getModelFactory().createModel(Reasoning.rdfs);
+				break;
+			default:
+				model = RDF2Go.getModelFactory().createModel();
+				break;
+			}
 		}
 
-		// throw new ModelRuntimeException("Model not supported");
-
-		switch (reasoningType) {
-		case OWL:
-			model = RDF2Go.getModelFactory().createModel(Reasoning.owl);
-			break;
-		case RDFS:
-			model = RDF2Go.getModelFactory().createModel(Reasoning.rdfs);
-			break;
-		default:
-			model = RDF2Go.getModelFactory().createModel();
-			break;
-		}
 		model.open();
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.INFO,
 				"RDF2Go model '" + modelType + "' with reasoning '"
 						+ reasoningType + "' initialized");
-
 	}
 
 	private void logStatements(TreeSet<Statement> statements, long start, String key) {
