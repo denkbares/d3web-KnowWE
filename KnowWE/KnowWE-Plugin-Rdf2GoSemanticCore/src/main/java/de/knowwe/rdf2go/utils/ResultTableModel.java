@@ -31,8 +31,11 @@ import java.util.Set;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.model.QueryResultTable;
 import org.ontoware.rdf2go.model.QueryRow;
+import org.ontoware.rdf2go.model.node.BlankNode;
 import org.ontoware.rdf2go.model.node.Node;
 
+import de.d3web.testing.Message;
+import de.d3web.testing.Message.Type;
 
 public class ResultTableModel {
 
@@ -144,6 +147,65 @@ public class ResultTableModel {
 
 	public void addTableRow(TableRow artificialTopLevelRow) {
 		importRow(artificialTopLevelRow);
+	}
+
+	public static List<Message> checkEquality(ResultTableModel expectedResultTable, ResultTableModel actualResultTable) {
+		List<Message> errorMessages = new ArrayList<Message>();
+
+		/*
+		 * 2. Compare all result rows (except for those with blank nodes)
+		 */
+		Iterator<TableRow> iterator = expectedResultTable.iterator();
+		while (iterator.hasNext()) {
+			TableRow expectedTableRow = iterator.next();
+
+			// found no easy way to retrieve and match statements with
+			// blanknodes, so for now we skip them from the check...
+			for (String var : expectedResultTable.getVariables()) {
+				if (expectedTableRow.getValue(var) instanceof BlankNode) {
+					continue;
+				}
+			}
+
+
+			boolean contained = actualResultTable.contains(expectedTableRow);
+			if (!contained) {
+				errorMessages.add(new Message(Type.ERROR, "result does not contain expected row: "
+						+ expectedTableRow.toString()));
+			}
+		}
+
+		/*
+		 * 3. Compare numbers for each subject node (except for blank nodes)
+		 */
+
+		Map<Node, Set<TableRow>> expectedData = expectedResultTable.getData();
+		Map<Node, Set<TableRow>> actualData = actualResultTable.getData();
+		Set<Node> keySet = actualData.keySet();
+		for (Node node : keySet) {
+			if (!(node instanceof BlankNode)) {
+				if (!expectedData.keySet().contains(node)) {
+					errorMessages.add(new Message(Type.ERROR, "node not contained: "
+							+ node.toString()));
+					continue;
+				}
+
+				if (!(expectedData.get(node).size() == (actualData.get(node).size()))) {
+					errorMessages.add(new Message(Type.ERROR,
+							"number of result rows not matching for: " + node.toString()));
+				}
+			}
+		}
+		return errorMessages;
+	}
+
+	public static String generateErrorsText(List<Message> errorMessages) {
+		StringBuffer buffy = new StringBuffer();
+		buffy.append("The following test failures occured:\n");
+		for (Message message : errorMessages) {
+			buffy.append(message.getText() + "\n");
+		}
+		return buffy.toString();
 	}
 
 }

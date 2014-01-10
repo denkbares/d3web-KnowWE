@@ -39,13 +39,24 @@ import org.ontoware.rdf2go.vocabulary.RDFS;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.Rdf2GoCore.Rdf2GoReasoning;
 
 public class Rdf2GoUtils {
+
+	public static Rdf2GoCore getRdf2GoCoreForDefaultMarkupSubSection(Section<? extends Type> section) {
+		Section<DefaultMarkupType> defaultMarkup = Sections.findAncestorOfType(section,
+				DefaultMarkupType.class);
+		if (defaultMarkup == null) {
+			throw new IllegalArgumentException();
+		}
+		return getRdf2GoCore(defaultMarkup);
+	}
 
 	public static Rdf2GoCore getRdf2GoCore(Section<? extends DefaultMarkupType> section) {
 		String globalAnnotation = DefaultMarkupType.getAnnotation(section, Rdf2GoCore.GLOBAL);
