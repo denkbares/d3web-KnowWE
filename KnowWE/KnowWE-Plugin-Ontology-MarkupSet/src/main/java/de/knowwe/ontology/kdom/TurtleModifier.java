@@ -67,6 +67,8 @@ public class TurtleModifier {
 	 * <p>
 	 * By default, the created turtle modifier will use compact mode and two
 	 * space characters as indent.
+	 * 
+	 * @param core the core that compiles the turtle to be modified
 	 */
 	public TurtleModifier(Rdf2GoCore core) {
 		this(core, true);
@@ -85,6 +87,7 @@ public class TurtleModifier {
 	 * By default, the created turtle modifier will two space characters as
 	 * indent.
 	 * 
+	 * @param core the core that compiles the turtle to be modified
 	 * @param compactMode specifies if newly inserted turtle markup should be
 	 *        created compact (prefer single-line-mode) or verbose (prefer
 	 *        readability with line-breaks for each property and value, using
@@ -104,6 +107,7 @@ public class TurtleModifier {
 	 * Note that it is not possible to remove statements from a core, that is
 	 * not based on some compiled turtle markup.
 	 * 
+	 * @param core the core that compiles the turtle to be modified
 	 * @param compactMode specifies if newly inserted turtle markup should be
 	 *        created compact (prefer single-line-mode) or verbose (prefer
 	 *        readability with line-breaks for each property and value, using

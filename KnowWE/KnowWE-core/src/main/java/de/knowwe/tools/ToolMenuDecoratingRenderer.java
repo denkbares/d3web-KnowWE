@@ -53,11 +53,21 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 		renderToolMenuDecorator(innerText, toolMenuID, null, hasTools, string);
 	}
 
+	public static void renderToolMenuDecorator(String innerText, String toolMenuID, boolean hasTools, RenderResult string, boolean allowWrap) {
+		renderToolMenuDecorator(innerText, toolMenuID, null, hasTools, string, allowWrap);
+	}
+
 	public static void renderToolMenuDecorator(String innerText, String toolMenuID, String toolMenuAction, boolean hasTools, RenderResult string) {
+		renderToolMenuDecorator(innerText, toolMenuID, toolMenuAction, hasTools, string, false);
+	}
+
+	public static void renderToolMenuDecorator(String innerText, String toolMenuID, String toolMenuAction, boolean hasTools, RenderResult string, boolean allowWrap) {
 
 		if (hasTools) {
 			String headerID = "tool_menu_" + toolMenuID + "_" + UUID.randomUUID().toString();
-			string.appendHtmlTag("span", "style", "position:relative; white-space: nowrap;");
+			string.appendHtmlTag("span", "style", allowWrap
+					? "position:relative"
+					: "position:relative; white-space: nowrap;");
 
 			String[] attributes = new String[toolMenuAction == null ? 8 : 10];
 			attributes[0] = "style";
