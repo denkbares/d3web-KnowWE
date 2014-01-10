@@ -16,7 +16,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.ontology.ci;
+package de.knowwe.ontology.ci.provider;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +29,11 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.ontology.compile.OntologyCompiler;
 
 
+/**
+ * 
+ * @author jochenreutelshofer
+ * @created 10.01.2014
+ */
 public class OntologyCompilerTestObjectProvider implements TestObjectProvider {
 
 	@Override

@@ -38,6 +38,11 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 
 
+/**
+ * 
+ * @author jochenreutelshofer
+ * @created 10.01.2014
+ */
 public class FunctionalPropertyTest extends AbstractTest<OntologyCompiler> {
 
 	@Override
@@ -91,7 +96,9 @@ public class FunctionalPropertyTest extends AbstractTest<OntologyCompiler> {
 			return new Message(Type.FAILURE, message.toString());
 		}
 
-
+		/*
+		 * no conflicts, therefore test successful
+		 */
 		return Message.SUCCESS;
 	}
 

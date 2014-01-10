@@ -18,9 +18,6 @@
  */
 package de.knowwe.ontology.ci;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.model.QueryResultTable;
 import org.ontoware.rdf2go.model.QueryRow;
@@ -28,14 +25,8 @@ import org.ontoware.rdf2go.model.QueryRow;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.TestParameter.Mode;
-import de.knowwe.core.ArticleManager;
-import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.ontology.ci.provider.SparqlQuerySection;
 import de.knowwe.rdf2go.Rdf2GoCore;
-import de.knowwe.rdf2go.sparql.SparqlContentType;
-import de.knowwe.rdf2go.sparql.SparqlMarkupType;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 /**
@@ -46,7 +37,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  * @author jochenreutelshofer
  * @created 08.01.2014
  */
-public class SparqlResultSizeTest extends AbstractTest<ArticleManager> {
+public class SparqlResultSizeTest extends AbstractTest<SparqlQuerySection> {
 
 
 	public static final String GREATER_THAN = ">";
@@ -57,9 +48,6 @@ public class SparqlResultSizeTest extends AbstractTest<ArticleManager> {
 		String[] comparators = new String[] {
 				EQUAL, SMALLER_THAN, GREATER_THAN };
 
-		this.addParameter("sparqlQueryName", de.d3web.testing.TestParameter.Type.String,
-				Mode.Mandatory,
-				"The name of the sparql query to be checked.");
 		this.addParameter("comparator", Mode.Mandatory,
 				"how to compare the result size against the expected size", comparators);
 		this.addParameter("expected size", de.d3web.testing.TestParameter.Type.Number,
@@ -68,8 +56,8 @@ public class SparqlResultSizeTest extends AbstractTest<ArticleManager> {
 	}
 
 	@Override
-	public Class<ArticleManager> getTestObjectClass() {
-		return ArticleManager.class;
+	public Class<SparqlQuerySection> getTestObjectClass() {
+		return SparqlQuerySection.class;
 	}
 
 	@Override
@@ -78,44 +66,18 @@ public class SparqlResultSizeTest extends AbstractTest<ArticleManager> {
 	}
 
 	@Override
-	public Message execute(ArticleManager articleManager, String[] args, String[]... ignores) throws InterruptedException {
-		String sparqlName = args[0];
-		String comparator = args[1];
-		double number = Double.parseDouble(args[2]);
+	public Message execute(SparqlQuerySection query, String[] args, String[]... ignores) throws InterruptedException {
+		String comparator = args[0];
+		double number = Double.parseDouble(args[1]);
 
-		List<Section<? extends Type>> sparqlSections = Sections.findSectionsOfTypeGlobal(
-				SparqlMarkupType.class, articleManager);
-
-		List<Section<? extends Type>> sparqlSectionsWithName = new ArrayList<Section<? extends Type>>();
-
-		for (Section<? extends Type> section : sparqlSections) {
-			String name = DefaultMarkupType.getAnnotation(section, SparqlMarkupType.NAME);
-			if (sparqlName.equalsIgnoreCase(name)) {
-				sparqlSectionsWithName.add(section);
-			}
-		}
-
-		if (sparqlSectionsWithName.size() > 1) {
-			return new Message(Message.Type.ERROR,
-					"Multiple sparql queries in the wiki with name: " + sparqlName);
-		}
-
-		if (sparqlSectionsWithName.size() == 0) {
-			return new Message(Message.Type.ERROR,
-					"No sparql query in the wiki found for name: " + sparqlName);
-		}
-
-		Section<? extends Type> sparqlDefaultMarkupSection = sparqlSectionsWithName.get(0);
-		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(Sections.cast(sparqlDefaultMarkupSection,
-				DefaultMarkupType.class));
+		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCoreForDefaultMarkupSubSection(query.getSection());
 
 		if (core == null) {
 			return new Message(Message.Type.ERROR,
-					"No repository found for section: " + sparqlDefaultMarkupSection);
+					"No repository found for section: " + query.getSection());
 		}
 
-		String sparqlString = Rdf2GoUtils.createSparqlString(core, Sections.findSuccessor(
-				sparqlDefaultMarkupSection, SparqlContentType.class).getText());
+		String sparqlString = Rdf2GoUtils.createSparqlString(core, query.getSection().getText());
 
 		QueryResultTable resultSet = core.sparqlSelect(
 				sparqlString);

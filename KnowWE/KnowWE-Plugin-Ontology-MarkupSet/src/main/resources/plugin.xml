@@ -28,6 +28,17 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="ExpectedSparqlResultTableMarkup">
+		<parameter id="class"
+			value="de.knowwe.ontology.ci.ExpectedSparqlResultTableMarkup" />
+		<parameter id="name" value="ExpectedSparqlResultTableType" />
+		<parameter id="description" value="Type ExpectedSparqlResultTableType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
 			
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="NamespaceType">
@@ -280,15 +291,46 @@
 		<parameter id="priority" value="4" />
 	</extension>
 	
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
+		id="ExpectedSparqlResultTest">
+		<parameter id="class"
+			value="de.knowwe.ontology.ci.ExpectedSparqlResultTest" />
+		<parameter id="name" value="ExpectedSparqlResultTest" />
+		<parameter id="description" value="CITest ExpectedSparqlResultTest" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+	</extension>
+	
 	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="TestObjectProvider"
 		id="OntologyCompilerTestObjectProvider">
 		<parameter id="class"
-			value="de.knowwe.ontology.ci.OntologyCompilerTestObjectProvider" />
+			value="de.knowwe.ontology.ci.provider.OntologyCompilerTestObjectProvider" />
 		<parameter id="name" value="OntologyCompilerTestObjectProvider" />
 		<parameter id="description" value="OntologyCompilerTestObjectProvider" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
+	
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="TestObjectProvider"
+		id="SparqlExpectedSectionTestObjectProvider">
+		<parameter id="class"
+			value="de.knowwe.ontology.ci.provider.SparqlExpectedSectionTestObjectProvider" />
+		<parameter id="name" value="SparqlExpectedSectionTestObjectProvider" />
+		<parameter id="description" value="SparqlExpectedSectionTestObjectProvider" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+		<extension plugin-id="d3web-Plugin-TestingFramework" point-id="TestObjectProvider"
+		id="SparqlQueryTestObjectProvider">
+		<parameter id="class"
+			value="de.knowwe.ontology.ci.provider.SparqlQueryTestObjectProvider" />
+		<parameter id="name" value="SparqlQueryTestObjectProvider" />
+		<parameter id="description" value="SparqlQueryTestObjectProvider" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
 	
 		
 </plugin>
