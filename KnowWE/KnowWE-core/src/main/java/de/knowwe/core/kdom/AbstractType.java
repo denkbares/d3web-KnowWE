@@ -120,7 +120,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * 
 	 */
 	public AbstractType() {
-
+		successorTypes.add(PlainText.class);
 	}
 
 	public AbstractType(SectionFinder sectionFinder) {
@@ -326,10 +326,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	}
 
 	protected Set<Class<?>> getPotentialSuccessorTypes() {
-		Set<Class<?>> result = new HashSet<Class<?>>();
-		result.addAll(successorTypes);
-		result.add(PlainText.class);
-		return Collections.unmodifiableSet(result);
+		return Collections.unmodifiableSet(successorTypes);
 	}
 
 	@Override
