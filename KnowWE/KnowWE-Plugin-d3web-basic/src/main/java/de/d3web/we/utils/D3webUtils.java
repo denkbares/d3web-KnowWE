@@ -219,7 +219,9 @@ public class D3webUtils {
 		Section<PackageCompileType> compileSection = Sections.findSuccessor(
 				Environment.getInstance().getArticle(web, title).getRootSection(),
 				PackageCompileType.class);
-		return getD3webCompiler(compileSection).getKnowledgeBase();
+		D3webCompiler d3webCompiler = getD3webCompiler(compileSection);
+		if (d3webCompiler == null) return null;
+		return d3webCompiler.getKnowledgeBase();
 	}
 
 	/**
