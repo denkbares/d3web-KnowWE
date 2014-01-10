@@ -328,6 +328,7 @@ html {
 	background: #ededed;
 	box-shadow: 0px 0px 14px rgba(0,0,0,0.3);
 	color: #2c2c2c;
+	max-width: 75%;
 }
 .tooltipster-knowwe .tooltipster-content {
 	font-family: Arial, sans-serif;
