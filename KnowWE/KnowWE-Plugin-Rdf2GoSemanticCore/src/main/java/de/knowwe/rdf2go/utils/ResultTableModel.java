@@ -161,12 +161,16 @@ public class ResultTableModel {
 
 			// found no easy way to retrieve and match statements with
 			// blanknodes, so for now we skip them from the check...
+			boolean containsBlankNode = false;
 			for (String var : expectedResultTable.getVariables()) {
 				if (expectedTableRow.getValue(var) instanceof BlankNode) {
-					continue;
+					containsBlankNode = true;
+					break;
 				}
 			}
-
+			if (containsBlankNode) {
+				continue;
+			}
 
 			boolean contained = actualResultTable.contains(expectedTableRow);
 			if (!contained) {
