@@ -38,9 +38,9 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 	private final Class<C> compilerClass;
 
 	@SuppressWarnings("rawtypes")
-	private final Map<Type, ScriptList> scripts = new HashMap<Type, ScriptList>();
+	private final Map<Type, ScriptList> scripts = Collections.synchronizedMap(new HashMap<Type, ScriptList>());
 
-	private final Set<Type> subtreeTypesWithScripts = new HashSet<Type>();
+	private final Set<Type> subtreeTypesWithScripts = Collections.synchronizedSet(new HashSet<Type>());
 
 	public ScriptManager(Class<C> compilerClass) {
 		this.compilerClass = compilerClass;
@@ -66,12 +66,13 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 		}
 
 		// add script to list
-		list.add(priority, script);
+		synchronized (list) {
+			list.add(priority, script);
+		}
 	}
 
 	private <T extends Type> void addSubtreeTypesWithScripts(Type type) {
-		if (subtreeTypesWithScripts.contains(type)) return;
-		subtreeTypesWithScripts.add(type);
+		if (!subtreeTypesWithScripts.add(type)) return;
 		for (Type parent : type.getParentTypes()) {
 			addSubtreeTypesWithScripts(parent);
 		}
@@ -82,7 +83,9 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 	public <T extends Type> Map<Priority, List<CompileScript<C, T>>> getScripts(T type) {
 		ScriptList list = scripts.get(type);
 		if (list == null) list = EMPTY_SCRIPT_LIST;
-		return list.getPriorityMap();
+		synchronized (list) {
+			return list.getPriorityMap();
+		}
 	}
 
 	public Collection<Type> getTypes() {
@@ -97,12 +100,14 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 		@SuppressWarnings("unchecked")
 		ScriptList<C, T> scriptsOfType = scripts.get(type);
 		List<CompileScript<C, T>> remove = new ArrayList<CompileScript<C, T>>();
-		for (CompileScript<C, T> compileScript : scriptsOfType) {
-			if (compileScript.getClass().equals(clazz)) {
-				remove.add(compileScript);
+		synchronized (scriptsOfType) {
+			for (CompileScript<C, T> compileScript : scriptsOfType) {
+				if (compileScript.getClass().equals(clazz)) {
+					remove.add(compileScript);
+				}
 			}
+			scriptsOfType.removeAll(remove);
 		}
-		scriptsOfType.removeAll(remove);
 	}
 
 	public <T extends Type> void removeAllScript(T type) {
