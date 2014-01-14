@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.action.UserActionContext;
@@ -203,6 +204,11 @@ public class TestUserContext implements UserContext, UserActionContext {
 		writer.flush();
 		out.reset();
 		writer.append(sc + ": " + msg);
+	}
+
+	@Override
+	public ArticleManager getArticleManager() {
+		return article.getArticleManager();
 	}
 
 	public String getResponseText() {

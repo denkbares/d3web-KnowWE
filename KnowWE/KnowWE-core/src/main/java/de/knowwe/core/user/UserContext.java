@@ -24,6 +24,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import de.knowwe.core.ArticleManager;
+
 /**
  * UserContext which represents the users interaction with the server.
  * 
@@ -36,7 +38,6 @@ public interface UserContext {
 	 * Returns whether the user has administration rights.
 	 * 
 	 * @created 14.10.2010
-	 * @return user is an admin or not
 	 */
 	public boolean userIsAdmin();
 
@@ -44,7 +45,6 @@ public interface UserContext {
 	 * Returns whether the user is authenticated or not.
 	 * 
 	 * @created 01.02.2011
-	 * @return boolean authentication state of the user
 	 */
 	public boolean userIsAsserted();
 
@@ -52,7 +52,6 @@ public interface UserContext {
 	 * Returns the name of the current user.
 	 * 
 	 * @created 14.10.2010
-	 * @return the user name
 	 */
 	public String getUserName();
 
@@ -61,7 +60,6 @@ public interface UserContext {
 	 * 
 	 * @deprecated improper naming, use {@link UserContext#getTitle()} instead.
 	 * @created 14.10.2010
-	 * @return the article's topic
 	 */
 	@Deprecated
 	public String getTopic();
@@ -69,8 +67,7 @@ public interface UserContext {
 	/**
 	 * Returns the title of the article the user is currently visiting.
 	 * 
-	 * @created 14.10.2010
-	 * @return the article's title
+	 * @created 14.10.2010 s
 	 */
 	public String getTitle();
 
@@ -79,7 +76,6 @@ public interface UserContext {
 	 * article belongs to.
 	 * 
 	 * @created 14.10.2010
-	 * @return the article's web
 	 */
 	public String getWeb();
 
@@ -88,7 +84,6 @@ public interface UserContext {
 	 * currently accessing the wiki server.
 	 * 
 	 * @created 14.10.2010
-	 * @return the user's http request parameters
 	 */
 	public Map<String, String> getParameters();
 
@@ -97,7 +92,6 @@ public interface UserContext {
 	 * 
 	 * @created Mar 4, 2011
 	 * @param key key for the parameter
-	 * @return parameter of the user's http request if available
 	 */
 	public String getParameter(String key);
 
@@ -108,8 +102,6 @@ public interface UserContext {
 	 * @created Mar 4, 2011
 	 * @param key key for the parameter
 	 * @param defaultValue the default value for the parameter
-	 * @return parameter of the user's http request if available, otherwise the
-	 *         default value
 	 */
 	public String getParameter(String key, String defaultValue);
 
@@ -118,7 +110,6 @@ public interface UserContext {
 	 * wiki server.
 	 * 
 	 * @created 14.10.2010
-	 * @return the user's http request
 	 */
 	public HttpServletRequest getRequest();
 
@@ -126,7 +117,6 @@ public interface UserContext {
 	 * Returns the user's current http session
 	 * 
 	 * @created Mar 4, 2011
-	 * @return the user's http session
 	 */
 	public HttpSession getSession();
 
@@ -134,8 +124,14 @@ public interface UserContext {
 	 * Returns the servlet context if available.
 	 * 
 	 * @created Mar 4, 2011
-	 * @return the servlet context
 	 */
 	public ServletContext getServletContext();
+
+	/**
+	 * Returns the ARticleManager belonging to this context
+	 * 
+	 * @created 14.01.2014
+	 */
+	public ArticleManager getArticleManager();
 
 }

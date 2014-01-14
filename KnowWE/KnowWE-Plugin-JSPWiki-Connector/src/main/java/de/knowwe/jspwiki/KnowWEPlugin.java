@@ -72,6 +72,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.user.UserContextUtil;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
+import de.knowwe.event.InitializedArticlesEvent;
 import de.knowwe.event.PageRenderedEvent;
 
 public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
@@ -377,7 +378,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	 * @created 07.06.2010
 	 * @param engine
 	 */
-	private void initializeAllArticlesIfNeeded(WikiEngine engine) {
+	private void initializeAllArticles(WikiEngine engine) {
 
 		ArticleManager articleManager = Environment.getInstance().getArticleManager(
 				Environment.DEFAULT_WEB);
@@ -420,6 +421,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 					"Caught InterrupedException while waiting til compilation is finished.",
 					e);
 		}
+		EventManager.getInstance().fireEvent(new InitializedArticlesEvent(articleManager));
 	}
 
 	private String renderKDOM(String content, UserContext userContext,
@@ -467,7 +469,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			if (event.getType() == WikiEngineEvent.INITIALIZED) {
 				WikiEngine engine = ((WikiEngineEvent) event).getEngine();
 				initEnvironmentIfNeeded(engine);
-				initializeAllArticlesIfNeeded(engine);
+				initializeAllArticles(engine);
 				wikiEngineInitialized = true;
 			}
 		}

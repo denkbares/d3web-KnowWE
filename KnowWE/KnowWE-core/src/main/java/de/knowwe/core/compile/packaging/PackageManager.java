@@ -42,7 +42,7 @@ public class PackageManager {// implements EventListener {
 	public static final String MASTER_ATTRIBUTE_NAME = "master";
 	public static final String COMPILE_ATTRIBUTE_NAME = "uses";
 
-	private static final String DEFAULT_PACKAGE = "default";
+	public static final String DEFAULT_PACKAGE = "default";
 
 	public final Compiler compiler;
 

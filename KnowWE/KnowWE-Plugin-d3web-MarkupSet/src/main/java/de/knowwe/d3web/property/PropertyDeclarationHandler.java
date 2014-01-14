@@ -125,7 +125,7 @@ public class PropertyDeclarationHandler extends D3webHandler<PropertyDeclaration
 		return Messages.asList(Messages.notice("Property declaration successful."));
 	}
 
-	protected Locale getLocale(Section<PropertyDeclarationType> s) {
+	public static Locale getLocale(Section<PropertyDeclarationType> s) {
 		Section<LocaleType> localeSection = Sections.findSuccessor(s, LocaleType.class);
 		Locale locale = InfoStore.NO_LANGUAGE;
 		if (localeSection != null) {
@@ -134,7 +134,7 @@ public class PropertyDeclarationHandler extends D3webHandler<PropertyDeclaration
 		return locale;
 	}
 
-	protected List<NamedObject> getNamedObjects(D3webCompiler compiler, Section<PropertyObjectReference> namendObjectSection) {
+	public static List<NamedObject> getNamedObjects(D3webCompiler compiler, Section<PropertyObjectReference> namendObjectSection) {
 		List<NamedObject> objects = new ArrayList<NamedObject>(1);
 		NamedObject object = namendObjectSection.get().getTermObject(compiler, namendObjectSection);
 		if (object == null) {
@@ -154,8 +154,8 @@ public class PropertyDeclarationHandler extends D3webHandler<PropertyDeclaration
 		return objects;
 	}
 
-	protected List<NamedObject> getAllChoices(D3webCompiler compiler, Section<PropertyAnswerReference> answerReference) {
-		List<Question> questions = getKB(compiler).getManager().getQuestions();
+	public static List<NamedObject> getAllChoices(D3webCompiler compiler, Section<PropertyAnswerReference> answerReference) {
+		List<Question> questions = compiler.getKnowledgeBase().getManager().getQuestions();
 		List<NamedObject> choices = new ArrayList<NamedObject>(questions.size());
 		for (Question question : questions) {
 			if (!(question instanceof QuestionChoice)) continue;

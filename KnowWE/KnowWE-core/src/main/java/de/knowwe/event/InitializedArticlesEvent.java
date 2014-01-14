@@ -24,8 +24,8 @@ import de.knowwe.core.event.Event;
 /**
  * 
  * Gets fired after all articles of an {@link ArticleManager} are registered and
- * compiled to the ArticleManager during initialization of the ArticleManager.
- * 
+ * compiled for the {@link ArticleManager} during initialization of the
+ * {@link ArticleManager}.
  * 
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 08.03.2012

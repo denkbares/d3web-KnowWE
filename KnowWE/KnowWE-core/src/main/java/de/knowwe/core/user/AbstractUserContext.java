@@ -18,8 +18,10 @@
  */
 package de.knowwe.core.user;
 
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
 
 /**
  * Abstract UserContext implementation with standard implementations of some
@@ -95,6 +97,11 @@ public abstract class AbstractUserContext implements UserContext {
 		return this.getParameters().get(key) != null
 				? this.getParameters().get(key)
 				: defaultValue;
+	}
+
+	@Override
+	public ArticleManager getArticleManager() {
+		return Compilers.getArticleManager(getWeb());
 	}
 
 }
