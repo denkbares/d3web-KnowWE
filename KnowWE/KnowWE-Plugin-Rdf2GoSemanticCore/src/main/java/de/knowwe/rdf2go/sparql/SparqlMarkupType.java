@@ -37,6 +37,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 	public static final String SORTING = "sorting";
 	public static final String BORDER = "border";
 	public static final String NAME = "name";
+	public static final String RENDER_QUERY = "showQuery";
 	private static DefaultMarkup m = null;
 
 	static {
@@ -44,6 +45,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		m.addContentType(new SparqlContentType());
 		m.addAnnotation(RAW_OUTPUT, false, "true", "false");
 		m.addAnnotation(NAVIGATION, false, "true", "false");
+		m.addAnnotation(RENDER_QUERY, false, "true", "false");
 		m.addAnnotationRenderer(NAVIGATION, NothingRenderer.getInstance());
 		m.addAnnotation(ZEBRAMODE, false, "true", "false");
 		m.addAnnotationRenderer(ZEBRAMODE, NothingRenderer.getInstance());

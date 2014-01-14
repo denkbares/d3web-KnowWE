@@ -95,7 +95,6 @@ public class ResultTableModel {
 
 		}
 		iterator.close();
-
 	}
 
 	private void importRow(TableRow row) {

@@ -37,6 +37,7 @@ import org.ontoware.rdf2go.model.QueryResultTable;
 import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
@@ -50,14 +51,37 @@ public class SparqlMarkupRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> sec, UserContext user, RenderResult result) {
-		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(Sections.findAncestorOfType(sec,
-				DefaultMarkupType.class));
+		Section<DefaultMarkupType> defaultMarkup = Sections.findAncestorOfType(sec,
+				DefaultMarkupType.class);
+		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(defaultMarkup);
 		if (core == null) {
 			// we render an empty div, otherwise the ajax rerendering does not
 			// work properly
 			result.appendHtmlElement("div", "");
 			return;
 		}
+
+		/*
+		 * Show query text above of query result
+		 */
+		String showQueryFlag = DefaultMarkupType.getAnnotation(defaultMarkup,
+				SparqlMarkupType.RENDER_QUERY);
+		if (showQueryFlag != null && showQueryFlag.equalsIgnoreCase("true")) {
+			/*
+			 * we need an opening html element around all the content as for
+			 * some reason the ajax insert onyl inserts one (the first) html
+			 * element into the page
+			 */
+			result.appendHtml("<div>");
+
+			/*
+			 * render query text
+			 */
+			result.appendHtml("<span>");
+			DelegateRenderer.getInstance().render(sec, user, result);
+			result.appendHtml("</span>");
+		}
+
 		String sparqlString = Rdf2GoUtils.createSparqlString(core, sec.getText());
 
 		try {
@@ -149,6 +173,16 @@ public class SparqlMarkupRenderer implements Renderer {
 				}
 				result.appendHtml(resultEntry.getHTML());
 				if (renderOpts.isBorder()) result.appendHtml("</div>");
+
+
+				if (showQueryFlag != null && showQueryFlag.equalsIgnoreCase("true")) {
+					/*
+					 * we need an opening html element around all the content as
+					 * for some reason the ajax insert onyl inserts one (the
+					 * first) html element into the page
+					 */
+					result.appendHtml("</div>");
+				}
 
 			}
 		}

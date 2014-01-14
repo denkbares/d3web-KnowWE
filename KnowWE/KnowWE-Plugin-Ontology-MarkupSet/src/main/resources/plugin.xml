@@ -321,7 +321,7 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
-		<extension plugin-id="d3web-Plugin-TestingFramework" point-id="TestObjectProvider"
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="TestObjectProvider"
 		id="SparqlQueryTestObjectProvider">
 		<parameter id="class"
 			value="de.knowwe.ontology.ci.provider.SparqlQueryTestObjectProvider" />
@@ -331,6 +331,15 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="SparqlShortURIReference">
+		<parameter id="class"
+			value="de.knowwe.ontology.kdom.sparql.SparqlShortURIReference" />
+		<parameter id="name" value="SparqlShortURIReference" />
+		<parameter id="description" value="Type SparqlShortURIReference" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="SparqlContentType" />
+	</extension>
 		
 </plugin>
