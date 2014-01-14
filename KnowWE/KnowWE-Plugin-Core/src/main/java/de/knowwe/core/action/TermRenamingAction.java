@@ -85,7 +85,7 @@ public class TermRenamingAction extends AbstractAction {
 		Identifier termIdentifier = Identifier.fromExternalForm(term);
 		Identifier replacmentIdentifier = createReplacingIdentifier(termIdentifier, replacement);
 
-		HashMap<String, Set<Section<? extends RenamableTerm>>> allTerms = new HashMap<String, Set<Section<? extends RenamableTerm>>>();
+		Map<String, Set<Section<? extends RenamableTerm>>> allTerms = new HashMap<String, Set<Section<? extends RenamableTerm>>>();
 
 		Iterator<Article> iter = Environment.getInstance()
 				.getArticleManager(web).getArticleIterator();
@@ -180,26 +180,31 @@ public class TermRenamingAction extends AbstractAction {
 	}
 
 	private void renameTerms(
-			HashMap<String, Set<Section<? extends RenamableTerm>>> allTerms, Identifier term,
+			Map<String, Set<Section<? extends RenamableTerm>>> allTerms, Identifier term,
 			Identifier replacement, ArticleManager mgr, UserActionContext context,
 			Set<String> failures, Set<String> success) throws IOException {
-
-		for (String title : allTerms.keySet()) {
-			if (Environment.getInstance().getWikiConnector()
-					.userCanEditArticle(title, context.getRequest())) {
-				Map<String, String> nodesMap = new HashMap<String, String>();
-				for (Section<? extends RenamableTerm> termSection : allTerms.get(title)) {
-					nodesMap.put(
-							termSection.getID(),
-							termSection.get().getSectionTextAfterRename(termSection, term,
-									replacement));
+		mgr.open();
+		try {
+			for (String title : allTerms.keySet()) {
+				if (Environment.getInstance().getWikiConnector()
+						.userCanEditArticle(title, context.getRequest())) {
+					Map<String, String> nodesMap = new HashMap<String, String>();
+					for (Section<? extends RenamableTerm> termSection : allTerms.get(title)) {
+						nodesMap.put(
+								termSection.getID(),
+								termSection.get().getSectionTextAfterRename(termSection, term,
+										replacement));
+					}
+					Sections.replaceSections(context, nodesMap).sendErrors(context);
+					success.add(title);
 				}
-				Sections.replaceSections(context, nodesMap).sendErrors(context);
-				success.add(title);
+				else {
+					failures.add(title);
+				}
 			}
-			else {
-				failures.add(title);
-			}
+		}
+		finally {
+			mgr.commit();
 		}
 	}
 
