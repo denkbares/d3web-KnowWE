@@ -54,12 +54,12 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.diaflux.FlowchartSubTreeHandler;
 import de.knowwe.diaflux.FlowchartUtils;
 
@@ -140,7 +140,7 @@ public class GetInfoObjects extends AbstractAction {
 	}
 
 	private static boolean isCompilingArticle(String web, String title) {
-		PackageManager packages = Compilers.getPackageManager(web);
+		PackageManager packages = KnowWEUtils.getPackageManager(web);
 		return packages.getCompilingArticles().contains(title);
 	}
 
@@ -148,7 +148,7 @@ public class GetInfoObjects extends AbstractAction {
 
 		Environment env = Environment.getInstance();
 		Article article = env.getArticle(web, title);
-		PackageManager packages = Compilers.getPackageManager(web);
+		PackageManager packages = KnowWEUtils.getPackageManager(web);
 		String id = createArticleIdentifier(title).toExternalForm();
 
 		bob.append("\t<article");

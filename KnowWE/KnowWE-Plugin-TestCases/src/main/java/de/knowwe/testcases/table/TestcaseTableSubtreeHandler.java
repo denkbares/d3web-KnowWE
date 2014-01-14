@@ -38,11 +38,11 @@ import de.d3web.we.kdom.condition.Conjunct;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webHandler;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.DefaultTestCaseStorage;
 import de.knowwe.testcases.SingleTestCaseProvider;
@@ -70,7 +70,7 @@ public class TestcaseTableSubtreeHandler extends D3webHandler<TestcaseTable> {
 				Sections.findSuccessorsOfType(section, TestcaseTableLine.class);
 		for (Section<TestcaseTableLine> line : lines) {
 			// check for an rated test case of that line
-			RatedTestCase rtc = (RatedTestCase) Compilers.getStoredObject(compiler, line,
+			RatedTestCase rtc = (RatedTestCase) KnowWEUtils.getStoredObject(compiler, line,
 					TestcaseTableLine.TESTCASE_KEY);
 			if (rtc == null) continue;
 			stc.add(rtc);

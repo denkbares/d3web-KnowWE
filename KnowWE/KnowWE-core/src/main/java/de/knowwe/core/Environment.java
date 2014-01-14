@@ -617,7 +617,7 @@ public class Environment {
 	 */
 	@Deprecated
 	public TerminologyManager getTerminologyManager(String defaultWeb, String master) {
-		return Compilers.getTerminologyManager(master == null ? null : Compilers.getArticleManager(
+		return KnowWEUtils.getTerminologyManager(master == null ? null : KnowWEUtils.getArticleManager(
 				defaultWeb).getArticle(master));
 	}
 
@@ -629,7 +629,7 @@ public class Environment {
 	 */
 	@Deprecated
 	public PackageManager getPackageManager(String web) {
-		return Compilers.getPackageManager(web);
+		return KnowWEUtils.getPackageManager(web);
 	}
 
 }

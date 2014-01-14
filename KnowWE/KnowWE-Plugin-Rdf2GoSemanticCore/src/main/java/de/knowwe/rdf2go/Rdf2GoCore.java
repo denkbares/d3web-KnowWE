@@ -65,7 +65,6 @@ import de.d3web.plugin.PluginManager;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.event.EventManager;
@@ -73,6 +72,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.event.ArticleRegisteredEvent;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
@@ -196,7 +196,7 @@ public class Rdf2GoCore {
 
 	@Deprecated
 	public static Rdf2GoCore getInstance(String web, String master) {
-		return getInstance(Compilers.getArticleManager(web).getArticle(master));
+		return getInstance(KnowWEUtils.getArticleManager(web).getArticle(master));
 	}
 
 	/**

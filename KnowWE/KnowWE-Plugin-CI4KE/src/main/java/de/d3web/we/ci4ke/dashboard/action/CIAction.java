@@ -34,8 +34,8 @@ import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.utils.KnowWEUtils;
 
 public class CIAction extends AbstractAction {
 
@@ -53,7 +53,7 @@ public class CIAction extends AbstractAction {
 		String web = context.getWeb();
 
 		CIDashboard dashboard = CIDashboardManager.getDashboard(
-				Compilers.getArticleManager(web),
+				KnowWEUtils.getArticleManager(web),
 				dashboardName);
 		int selectedBuildNumber = -1;
 		if (context.getParameter("nr") != null) {
@@ -80,7 +80,7 @@ public class CIAction extends AbstractAction {
 				return;
 			}
 			CIBuildManager.startBuild(CIDashboardManager.getDashboard(
-					Compilers.getArticleManager(web),
+					KnowWEUtils.getArticleManager(web),
 					dashboardName));
 			// TODO: Why are we rendering the old build? Necessary?
 			BuildResult build = dashboard.getBuild(selectedBuildNumber);

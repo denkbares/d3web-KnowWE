@@ -37,7 +37,6 @@ import de.d3web.we.ci4ke.dashboard.rendering.CIDashboardRenderer;
 import de.d3web.we.ci4ke.hook.CIHook;
 import de.d3web.we.ci4ke.hook.CIHookManager;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.kdom.Article;
@@ -46,6 +45,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerError;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -172,7 +172,7 @@ public class CIDashboardType extends DefaultMarkupType {
 				CIHook ciHook = new CIHook(dashboard, monitoredArticles);
 				CIHookManager.registerHook(ciHook);
 				// Store to be able to unregister in destroy method
-				Compilers.storeObject(s,
+				KnowWEUtils.storeObject(s,
 						CIHook.CIHOOK_STORE_KEY, ciHook);
 			}
 

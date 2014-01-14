@@ -16,11 +16,11 @@ import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.testcases.NameType;
 import de.knowwe.testcases.TimeStampType;
 
@@ -84,7 +84,7 @@ final class TestcaseTableLineSubtreeHandler extends D3webHandler<TestcaseTableLi
 			}
 		}
 
-		Compilers.storeObject(article, s, TestcaseTableLine.TESTCASE_KEY, testCase);
+		KnowWEUtils.storeObject(article, s, TestcaseTableLine.TESTCASE_KEY, testCase);
 		return Collections.emptyList();
 	}
 }

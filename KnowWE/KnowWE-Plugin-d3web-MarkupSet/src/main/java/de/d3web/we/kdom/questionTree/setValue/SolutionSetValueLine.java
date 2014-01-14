@@ -34,7 +34,6 @@ import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.SolutionReference;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -47,6 +46,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
@@ -170,7 +170,7 @@ public class SolutionSetValueLine extends AbstractType {
 					if (cond != null) {
 						Rule r = RuleFactory.createHeuristicPSRule(sol, score, cond);
 						if (r != null) {
-							Compilers.storeObject(compiler, s, SETVALUE_ARGUMENT, r);
+							KnowWEUtils.storeObject(compiler, s, SETVALUE_ARGUMENT, r);
 							return Messages.asList(Messages.objectCreatedNotice(
 									r.getClass().toString()));
 						}

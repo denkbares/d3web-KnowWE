@@ -40,6 +40,7 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
@@ -84,7 +85,7 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 	private void renderPackage(Section<? extends PackageCompileType> compileSection, Section<?> section, String packageName, RenderResult string, UserContext user) {
 
 		PackageManager packageManager =
-				Compilers.getPackageManager(section);
+				KnowWEUtils.getPackageManager(section);
 		Collection<Section<?>> sectionsOfPackage = packageManager.getSectionsOfPackage(packageName);
 
 		Collection<Message> kdomErrors = new LinkedList<Message>();

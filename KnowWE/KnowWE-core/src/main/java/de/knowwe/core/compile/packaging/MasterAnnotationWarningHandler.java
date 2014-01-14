@@ -21,12 +21,12 @@ package de.knowwe.core.compile.packaging;
 import java.util.List;
 import java.util.Set;
 
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -40,7 +40,7 @@ public class MasterAnnotationWarningHandler extends DefaultGlobalScript<DefaultM
 	@Override
 	public void compile(DefaultGlobalCompiler compiler, Section<DefaultMarkupType> section) {
 
-		PackageManager packageManager = Compilers.getPackageManager(section);
+		PackageManager packageManager = KnowWEUtils.getPackageManager(section);
 		Set<String> compilingArticles = packageManager.getCompilingArticles();
 
 		List<Section<? extends AnnotationContentType>> annotationContents = DefaultMarkupType.getAnnotationContentSections(

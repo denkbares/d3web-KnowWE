@@ -27,12 +27,12 @@ import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -88,7 +88,7 @@ public abstract class AnswerReference
 			Identifier termIdentifier = getTermIdentifier(section);
 			Section<?> answerDef = terminologyManager.getTermDefiningSection(termIdentifier);
 			if (answerDef != null) {
-				choice = (Choice) Compilers.getStoredObject((PackageCompiler) compiler, answerDef,
+				choice = (Choice) KnowWEUtils.getStoredObject((PackageCompiler) compiler, answerDef,
 						AnswerDefinition.ANSWER_STORE_KEY);
 				if (choice != null) return choice;
 			}

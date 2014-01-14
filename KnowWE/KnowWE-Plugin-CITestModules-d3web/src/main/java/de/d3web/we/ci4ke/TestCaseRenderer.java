@@ -23,7 +23,6 @@ import java.util.Set;
 
 import de.d3web.utils.Triple;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRenderer;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -43,7 +42,7 @@ public class TestCaseRenderer implements ObjectNameRenderer {
 	public void render(String web, String objectName, RenderResult result) {
 		// this is pretty slow... but since it is only needed if TestCaseTests
 		// fail and there aren't normally many, it's ok for now
-		Set<String> allPackageNames = Compilers.getPackageManager(web).getAllPackageNames();
+		Set<String> allPackageNames = KnowWEUtils.getPackageManager(web).getAllPackageNames();
 		List<Triple<TestCaseProvider, Section<?>, Article>> testCaseProviders = TestCaseUtils.getTestCaseProviders(
 				web, allPackageNames.toArray(new String[allPackageNames.size()]));
 		for (Triple<TestCaseProvider, Section<?>, Article> triple : testCaseProviders) {

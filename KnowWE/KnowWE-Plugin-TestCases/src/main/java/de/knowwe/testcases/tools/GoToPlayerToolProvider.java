@@ -58,7 +58,7 @@ public class GoToPlayerToolProvider implements ToolProvider {
 					DefaultMarkupType.class);
 		}
 		String[] packages = DefaultMarkupType.getPackages(defaultMarkupSection);
-		PackageManager packageManager = Compilers.getPackageManager(section);
+		PackageManager packageManager = KnowWEUtils.getPackageManager(section);
 		for (String kbpackage : packages) {
 			Set<String> articles = packageManager.getCompilingArticles(kbpackage);
 			// we need an article compiling the section

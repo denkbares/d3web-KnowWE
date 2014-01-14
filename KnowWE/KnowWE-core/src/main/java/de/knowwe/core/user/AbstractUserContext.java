@@ -21,7 +21,7 @@ package de.knowwe.core.user;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Abstract UserContext implementation with standard implementations of some
@@ -101,7 +101,7 @@ public abstract class AbstractUserContext implements UserContext {
 
 	@Override
 	public ArticleManager getArticleManager() {
-		return Compilers.getArticleManager(getWeb());
+		return KnowWEUtils.getArticleManager(getWeb());
 	}
 
 }

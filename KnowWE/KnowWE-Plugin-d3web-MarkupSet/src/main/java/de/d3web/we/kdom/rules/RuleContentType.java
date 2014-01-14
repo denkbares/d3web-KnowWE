@@ -64,6 +64,7 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
@@ -187,7 +188,7 @@ public class RuleContentType extends AbstractType {
 				Rule rule = RuleFactory.createRule(d3action, d3Cond,
 						exceptionCond, action.get().getActionPSContext());
 				if (rule != null) {
-					Compilers.storeObject(compiler, section, RULE_STORE_KEY, rule);
+					KnowWEUtils.storeObject(compiler, section, RULE_STORE_KEY, rule);
 					throw new CompilerMessage(
 							Messages.objectCreatedNotice(
 									"Rule"));
@@ -230,7 +231,7 @@ public class RuleContentType extends AbstractType {
 			Section<RuleAction> ruleAction = Sections.findSuccessor(sec,
 					RuleAction.class);
 			if (ruleAction != null) {
-				rule = (Rule) Compilers.getStoredObject(compiler, ruleAction,
+				rule = (Rule) KnowWEUtils.getStoredObject(compiler, ruleAction,
 						RuleContentType.RULE_STORE_KEY);
 			}
 

@@ -33,7 +33,6 @@ import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.session.Session;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -42,6 +41,7 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 
 /**
@@ -203,7 +203,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		String masterArticleName = ShowSolutionsType.getMaster(getShowSolutionsSection(section));
 		String title = null;
 		if (masterArticleName == null) {
-			PackageManager packageManager = Compilers.getPackageManager(section.getArticleManager());
+			PackageManager packageManager = KnowWEUtils.getPackageManager(section.getArticleManager());
 			Set<String> compilingArticles = packageManager.getCompilingArticles(packageName);
 
 			for (String compilingArticle : compilingArticles) {

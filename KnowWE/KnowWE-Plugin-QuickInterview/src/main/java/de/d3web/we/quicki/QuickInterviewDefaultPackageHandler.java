@@ -20,13 +20,13 @@ package de.d3web.we.quicki;
 
 import de.d3web.strings.Identifier;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
@@ -47,7 +47,7 @@ public class QuickInterviewDefaultPackageHandler extends DefaultGlobalScript<Typ
 		// to specify another package
 		if (annotationStrings.length == 0) {
 			Environment r = Environment.getInstance();
-			PackageManager packageManager = Compilers.getPackageManager(section.getArticleManager());
+			PackageManager packageManager = KnowWEUtils.getPackageManager(section.getArticleManager());
 			String[] defaultPackages = packageManager.getDefaultPackages(section.getArticle());
 			for (String defaultPackage : defaultPackages) {
 				terminologyHandler.registerTermReference(compiler,

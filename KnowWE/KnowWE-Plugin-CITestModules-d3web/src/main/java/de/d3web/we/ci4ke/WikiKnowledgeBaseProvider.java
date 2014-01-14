@@ -13,6 +13,7 @@ import de.d3web.testing.TestObjectProvider;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /*
  * Copyright (C) 2012 denkbares GmbH
@@ -60,7 +61,7 @@ public class WikiKnowledgeBaseProvider implements TestObjectProvider {
 		}
 
 		Collection<D3webCompiler> compilers = Compilers.getCompilers(
-				Compilers.getArticleManager(Environment.DEFAULT_WEB), D3webCompiler.class);
+				KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB), D3webCompiler.class);
 
 		for (D3webCompiler compiler : compilers) {
 			if (compiler.getCompileSection().getTitle().matches(id)) {

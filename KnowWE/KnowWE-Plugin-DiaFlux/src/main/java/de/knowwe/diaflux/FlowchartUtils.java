@@ -46,6 +46,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.diaflux.kbinfo.JSPHelper;
 import de.knowwe.diaflux.type.DiaFluxType;
 import de.knowwe.diaflux.type.FlowchartType;
@@ -285,7 +286,7 @@ public class FlowchartUtils {
 		// get all articles compiling this flowchart that will be containing the
 		// link
 		PackageManager pkgManager =
-				Compilers.getPackageManager(section.getArticleManager());
+				KnowWEUtils.getPackageManager(section.getArticleManager());
 		Set<Section<? extends PackageCompileType>> compileSections = pkgManager.getCompileSections(section);
 		// get all packages that are compiled by these articles
 		Collection<String> allPossiblePackageNames = new ArrayList<String>();

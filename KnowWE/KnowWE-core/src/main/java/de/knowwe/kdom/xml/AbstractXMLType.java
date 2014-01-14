@@ -24,12 +24,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.core.utils.KnowWEUtils;
 
 public class AbstractXMLType extends AbstractType {
 
@@ -54,7 +54,7 @@ public class AbstractXMLType extends AbstractType {
 
 	@SuppressWarnings("unchecked")
 	public static Map<String, String> getAttributeMapFor(Section<?> s) {
-		return (Map<String, String>) Compilers.getStoredObject(s,
+		return (Map<String, String>) KnowWEUtils.getStoredObject(s,
 				SectionFinderResult.ATTRIBUTE_MAP_STORE_KEY);
 
 	}

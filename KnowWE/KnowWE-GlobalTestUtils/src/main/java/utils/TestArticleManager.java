@@ -65,14 +65,14 @@ public class TestArticleManager {
 			articleName = Strings.decodeURL(filename.substring(filename.lastIndexOf('/')+1, filename.lastIndexOf('.')));
 		}
 
-		Article article = Compilers.getArticleManager(Environment.DEFAULT_WEB).getArticle(
+		Article article = KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB).getArticle(
 				articleName);
 		if (article == null) {
 			// Read File containing content
 			String content = KnowWEUtils.readFile(filename);
 			Environment.getInstance().getWikiConnector().createArticle(articleName, content,
 					TestArticleManager.class.getSimpleName());
-			article = Compilers.getArticleManager(Environment.DEFAULT_WEB).getArticle(
+			article = KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB).getArticle(
 					articleName);
 		}
 		try {
@@ -85,7 +85,7 @@ public class TestArticleManager {
 	}
 
 	public static void clear() {
-		ArticleManager articleManager = Compilers.getArticleManager(Environment.DEFAULT_WEB);
+		ArticleManager articleManager = KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB);
 		Collection<Article> articles = articleManager.getArticles();
 		for (Article article : new ArrayList<Article>(articles)) {
 			articleManager.deleteArticle(article);

@@ -12,9 +12,9 @@ import java.util.Map;
 import de.d3web.strings.Identifier;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.utils.KnowWEUtils;
 
 public class TermInfoSet implements Collection<TermInfo> {
 
@@ -169,7 +169,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 	}
 
 	public void initTerm(String web, Identifier identifier) {
-		Collection<TerminologyManager> terminologyManagers = Compilers.getTerminologyManagers(Compilers.getArticleManager(web));
+		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(KnowWEUtils.getArticleManager(web));
 		for (TerminologyManager terminologyManager : terminologyManagers) {
 			addTermManagerIfMatches(identifier, terminologyManager);
 		}
@@ -199,7 +199,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 	public void initAllTerms(String web) {
 		ArticleManager articleManager = Environment.getInstance().getArticleManager(web);
 		for (Article article : articleManager.getArticles()) {
-			TerminologyManager termManager = Compilers.getTerminologyManager(article);
+			TerminologyManager termManager = KnowWEUtils.getTerminologyManager(article);
 			addAllMatchingTermInfos(result, termManager);
 		}
 		// add and enhance term infos also for global term manager

@@ -38,12 +38,12 @@ import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.object.QuestionnaireReference;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.dashtree.DashTreeElement;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 
@@ -144,7 +144,7 @@ public class IndicationHandler extends D3webCompileScript<D3webTerm<NamedObject>
 					Rule r = RuleFactory.createIndicationRule(qaset, cond);
 
 					if (r != null) {
-						Compilers.storeObject(compiler, section, indicationStoreKey, r);
+						KnowWEUtils.storeObject(compiler, section, indicationStoreKey, r);
 						throw new CompilerMessage(Messages.objectCreatedNotice(
 								r.getClass().toString()));
 					}

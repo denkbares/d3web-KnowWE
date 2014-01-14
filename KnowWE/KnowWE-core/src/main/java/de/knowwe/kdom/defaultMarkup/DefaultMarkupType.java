@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import de.d3web.strings.Identifier;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.compile.terminology.RenamableTerm;
@@ -39,6 +38,7 @@ import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.MessageRenderer;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
 
 /**
@@ -343,7 +343,7 @@ public class DefaultMarkupType extends AbstractType implements RenamableTerm {
 		}
 		String[] packageNames = DefaultMarkupType.getAnnotations(section,
 				annotation);
-		PackageManager packageManager = Compilers.getPackageManager(section);
+		PackageManager packageManager = KnowWEUtils.getPackageManager(section);
 		if (packageNames.length == 0) {
 			packageNames = packageManager.getDefaultPackages(section.getArticle());
 		}

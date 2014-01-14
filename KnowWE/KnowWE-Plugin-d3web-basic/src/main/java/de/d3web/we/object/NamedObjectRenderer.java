@@ -46,7 +46,7 @@ public class NamedObjectRenderer implements Renderer {
 	public void render(Section<?> section, UserContext user, RenderResult string) {
 		Article article = Compilers.getCompilingArticles(section).iterator().next();
 		Identifier termIdentifier = KnowWEUtils.getTermIdentifier(section);
-		TerminologyManager tManager = Compilers.getTerminologyManager(article);
+		TerminologyManager tManager = KnowWEUtils.getTerminologyManager(article);
 		Renderer renderer;
 		if (tManager.hasTermOfClass(termIdentifier, Question.class)) {
 			renderer = new ValueTooltipRenderer(StyleRenderer.Question);

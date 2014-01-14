@@ -33,12 +33,12 @@ import de.d3web.strings.Identifier;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Action which renames all Definitions and References of a given Term. The
@@ -93,8 +93,8 @@ public class TermRenamingAction extends AbstractAction {
 
 		while (iter.hasNext()) {
 			currentArticle = iter.next();
-			Collection<TerminologyManager> terminologyManagers = Compilers.getTerminologyManagers(
-					Compilers.getArticleManager(
+			Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(
+					KnowWEUtils.getArticleManager(
 							currentArticle.getWeb()));
 			for (TerminologyManager terminologyManager : terminologyManagers) {
 
@@ -224,7 +224,7 @@ public class TermRenamingAction extends AbstractAction {
 		TerminologyManager terminologyManager;
 		while (iter.hasNext()) {
 			currentArticle = iter.next();
-			terminologyManager = Compilers
+			terminologyManager = KnowWEUtils
 					.getTerminologyManager(currentArticle);
 			Collection<Identifier> allDefinedTerms = terminologyManager
 					.getAllDefinedTerms();

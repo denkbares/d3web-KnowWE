@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.ResourceBundle;
@@ -40,8 +41,15 @@ import javax.servlet.http.HttpServletRequest;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.DefaultGlobalCompiler;
+import de.knowwe.core.compile.PackageRegistrationCompiler;
+import de.knowwe.core.compile.packaging.PackageCompileType;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
@@ -569,7 +577,7 @@ public class KnowWEUtils {
 
 	public static String getURLLinkToTermDefinition(ArticleManager manager, Identifier identifier) {
 		String url = null;
-		Collection<TerminologyManager> terminologyManagers = Compilers.getTerminologyManagers(manager);
+		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(manager);
 		for (TerminologyManager terminologyManager : terminologyManagers) {
 			Collection<Section<?>> termDefiningSections = terminologyManager.getTermDefiningSections(identifier);
 			if (termDefiningSections.size() > 1) break;
@@ -698,6 +706,148 @@ public class KnowWEUtils {
 			Logger.getLogger(KnowWEUtils.class.getName()).log(
 					Level.SEVERE, "Unable to write file: " + e.getMessage());
 		}
+	}
+
+	/**
+	 * @deprecated use the method
+	 *             {@link KnowWEUtils#getTerminologyManagers(Section)}
+	 * @return the {@link TerminologyManager} for the given (master) article.
+	 */
+	@Deprecated
+	public static TerminologyManager getTerminologyManager(Article article) {
+		if (article == null) {
+			return Compilers.getCompiler(KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB),
+					DefaultGlobalCompiler.class).getTerminologyManager();
+		}
+		Section<PackageCompileType> compileSection = Sections.findSuccessor(
+				article.getRootSection(), PackageCompileType.class);
+		// to emulate old behavior (not return null) we return an empty
+		// TerminologyManager
+		if (compileSection == null) return new TerminologyManager();
+		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(compileSection);
+		if (terminologyManagers.isEmpty()) return null;
+		return terminologyManagers.iterator().next();
+	}
+
+	/**
+	 * Returns the TerminologyManagers of the {@link TermCompiler}s compiling
+	 * the give compile Section.
+	 * 
+	 * @created 15.11.2013
+	 * @param section the section to get the TerminologyManagers for
+	 * @return the {@link TerminologyManager}s of the given section
+	 */
+	public static Collection<TerminologyManager> getTerminologyManagers(Section<?> section) {
+		Collection<TermCompiler> compilers = Compilers.getCompilers(section, TermCompiler.class);
+		return KnowWEUtils.getTerminologyManagers(compilers);
+	}
+
+	/**
+	 * Returns all TerminologyManagers of the given {@link ArticleManager}.
+	 * 
+	 * @created 15.11.2013
+	 * @param manager the {@link ArticleManager} to get the TerminologyManagers
+	 *        for
+	 * @return the {@link TerminologyManager}s of the given manager
+	 */
+	public static Collection<TerminologyManager> getTerminologyManagers(ArticleManager manager) {
+		Collection<TermCompiler> compilers = Compilers.getCompilers(manager, TermCompiler.class);
+		return KnowWEUtils.getTerminologyManagers(compilers);
+	}
+
+	/**
+	 * Returns all TerminologyManagers of the given {@link ArticleManager} that
+	 * are from {@link Compiler} of the given compiler class.
+	 * 
+	 * @created 15.11.2013
+	 * @param manager the {@link ArticleManager} to get the TerminologyManagers
+	 *        for
+	 * @param compilerClass the type of the {@link Compiler}s we want the
+	 *        {@link TerminologyManager}s from
+	 * @return the {@link TerminologyManager}s of the given manager
+	 */
+	public static Collection<TerminologyManager> getTerminologyManagers(ArticleManager manager, Class<? extends TermCompiler> compilerClass) {
+		Collection<? extends TermCompiler> compilers = Compilers.getCompilers(manager,
+				compilerClass);
+		return KnowWEUtils.getTerminologyManagers(compilers);
+	}
+
+	private static Collection<TerminologyManager> getTerminologyManagers(Collection<? extends TermCompiler> compilers) {
+		Collection<TerminologyManager> managers = new ArrayList<TerminologyManager>(
+				compilers.size());
+		for (TermCompiler packageCompiler : compilers) {
+			managers.add(packageCompiler.getTerminologyManager());
+		}
+		return managers;
+	}
+
+	/**
+	 * Returns the article with the given web and title from the
+	 * {@link DefaultArticleManager}.
+	 * 
+	 * @created 07.01.2014
+	 */
+	public static Article getArticle(String web, String title) {
+		return Environment.getInstance().getArticle(web, title);
+	}
+
+	/**
+	 * Returns the default {@link ArticleManager} of the given web.
+	 * 
+	 * @created 07.01.2014
+	 * @param web the web we want the {@link ArticleManager} from
+	 */
+	public static ArticleManager getArticleManager(String web) {
+		return Environment.getInstance().getArticleManager(web);
+	}
+
+	/**
+	 * Returns the {@link PackageManager} of the given {@link ArticleManager}.
+	 * 
+	 * @created 07.01.2014
+	 * @param manager the ArticleManager we want the {@link PackageManager} from
+	 */
+	public static PackageManager getPackageManager(ArticleManager manager) {
+		Collection<PackageRegistrationCompiler> compilers = Compilers.getCompilers(manager,
+				PackageRegistrationCompiler.class);
+		if (compilers.isEmpty()) return null;
+		return compilers.iterator().next().getPackageManager();
+	}
+
+	/**
+	 * Returns the {@link PackageManager} for the given {@link Section}.
+	 * 
+	 * @created 07.01.2014
+	 * @param section the {@link Section} we want the {@link PackageManager} for
+	 */
+	public static PackageManager getPackageManager(Section<?> section) {
+		return getPackageManager(section.getArticleManager());
+	}
+
+	/**
+	 * Returns the default {@link PackageManager} of the given web.
+	 * 
+	 * @created 07.01.2014
+	 * @param web the web we want the {@link PackageManager} from
+	 */
+	public static PackageManager getPackageManager(String web) {
+		return getPackageManager(getArticleManager(web));
+	}
+
+	public static void storeObject(Section<?> s, String key, Object o) {
+		KnowWEUtils.storeObject(null, s, key, o);
+	}
+
+	public static void storeObject(Compiler compiler, Section<?> s, String key, Object o) {
+		s.getSectionStore().storeObject(compiler, key, o);
+	}
+
+	public static Object getStoredObject(Section<?> s, String key) {
+		return KnowWEUtils.getStoredObject(null, s, key);
+	}
+
+	public static Object getStoredObject(Compiler compiler, Section<?> s, String key) {
+		return s.getSectionStore().getObject(compiler, key);
 	}
 
 }

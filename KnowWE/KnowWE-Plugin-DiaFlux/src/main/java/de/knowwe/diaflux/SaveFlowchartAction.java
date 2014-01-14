@@ -34,12 +34,12 @@ import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.diaflux.type.DiaFluxType;
 import de.knowwe.diaflux.type.FlowchartType;
 
@@ -93,7 +93,7 @@ public class SaveFlowchartAction extends AbstractAction {
 
 		// if flowchart is existing, replace flowchart
 		if (flowchartSection != null) {
-			Set<String> articles = Compilers.getPackageManager(flowchartSection).getCompilingArticles(
+			Set<String> articles = KnowWEUtils.getPackageManager(flowchartSection).getCompilingArticles(
 					flowchartSection);
 			save(context, topic, flowchartSection.getID(), newText);
 			id = getSectionID(web, newText, articles);
@@ -158,7 +158,7 @@ public class SaveFlowchartAction extends AbstractAction {
 		String title = articles.iterator().next();
 		Article article = Environment.getInstance().getArticle(web, title);
 
-		TerminologyManager handler = Compilers.getTerminologyManager(article);
+		TerminologyManager handler = KnowWEUtils.getTerminologyManager(article);
 		Section<?> section = handler.getTermDefiningSection(new Identifier(flowname));
 
 		Section<DiaFluxType> diafluxSec = Sections.findAncestorOfExactType(section,

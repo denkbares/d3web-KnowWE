@@ -40,7 +40,7 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.utils.KnowWEUtils;
 
 public class SetSingleFindingAction extends AbstractAction {
 
@@ -90,7 +90,7 @@ public class SetSingleFindingAction extends AbstractAction {
 		// Added for KnowWE-Plugin-d3web-Debugger
 		if (context.getParameters().containsKey("KBid")) {
 			String kbID = context.getParameter("KBid");
-			Collection<KnowledgeBase> knowledgeBases = D3webUtils.getKnowledgeBases(Compilers.getArticleManager(web));
+			Collection<KnowledgeBase> knowledgeBases = D3webUtils.getKnowledgeBases(KnowWEUtils.getArticleManager(web));
 			Iterator<KnowledgeBase> iterator = knowledgeBases.iterator();
 			while (iterator.hasNext()) {
 				kb = iterator.next();

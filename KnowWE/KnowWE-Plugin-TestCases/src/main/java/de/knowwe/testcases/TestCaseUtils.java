@@ -65,6 +65,7 @@ import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.table.ConditionCheck;
 
@@ -135,7 +136,7 @@ public class TestCaseUtils {
 
 	public static List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(String web, String... kbpackages) {
 		Environment env = Environment.getInstance();
-		PackageManager packageManager = Compilers.getPackageManager(web);
+		PackageManager packageManager = KnowWEUtils.getPackageManager(web);
 		ArticleManager articleManager = env.getArticleManager(web);
 		List<Triple<TestCaseProvider, Section<?>, Article>> providers = new LinkedList<Triple<TestCaseProvider, Section<?>, Article>>();
 		for (String kbpackage : kbpackages) {

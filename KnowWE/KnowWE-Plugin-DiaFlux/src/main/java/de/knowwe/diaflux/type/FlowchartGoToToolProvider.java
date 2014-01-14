@@ -47,7 +47,7 @@ public class FlowchartGoToToolProvider implements ToolProvider {
 
 		TreeSet<Tool> tools = new TreeSet<Tool>();
 		Article compilingArticle = Compilers.getCompilingArticles(section).iterator().next();
-		TerminologyManager terminologyManager = Compilers.getTerminologyManager(compilingArticle);
+		TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(compilingArticle);
 		if (section.get() instanceof StartNodeDef || section.get() instanceof ExitNodeDef) {
 			Collection<Section<?>> termRefSections = terminologyManager.getTermReferenceSections(KnowWEUtils.getTermIdentifier(section));
 			for (Section<?> termSection : termRefSections) {

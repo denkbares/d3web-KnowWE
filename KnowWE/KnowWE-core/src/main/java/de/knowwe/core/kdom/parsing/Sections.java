@@ -18,13 +18,13 @@ import de.d3web.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.Types;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
 public class Sections {
@@ -794,7 +794,7 @@ public class Sections {
 		Collection<String> missingIDs = new LinkedList<String>();
 		Collection<String> forbiddenArticles = new LinkedList<String>();
 
-		Compilers.getArticleManager(context.getWeb()).open();
+		KnowWEUtils.getArticleManager(context.getWeb()).open();
 		try {
 			for (String title : idsByTitle.keySet()) {
 				Collection<String> idsForCurrentTitle = idsByTitle.get(title);
@@ -809,7 +809,7 @@ public class Sections {
 			}
 		}
 		finally {
-			Compilers.getArticleManager(context.getWeb()).commit();
+			KnowWEUtils.getArticleManager(context.getWeb()).commit();
 		}
 
 		return new ReplaceResult(sectionInfos, missingIDs, forbiddenArticles);

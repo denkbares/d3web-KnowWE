@@ -61,9 +61,9 @@ import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.notification.NotificationManager;
 import de.knowwe.notification.OutDatedSessionNotification;
 
@@ -929,7 +929,7 @@ public class QuickInterviewRenderer {
 	 */
 	public static String callQuickInterviewRendererWithPackageName(UserContext usercontext, String packageName) {
 
-		PackageManager packageManager = Compilers.getPackageManager(Compilers.getArticleManager(usercontext.getWeb()));
+		PackageManager packageManager = KnowWEUtils.getPackageManager(KnowWEUtils.getArticleManager(usercontext.getWeb()));
 		Set<String> compilingArticles = packageManager.getCompilingArticles(packageName);
 		List<String> compilingArticlesSorted = new ArrayList<String>(compilingArticles);
 		Collections.sort(compilingArticlesSorted);

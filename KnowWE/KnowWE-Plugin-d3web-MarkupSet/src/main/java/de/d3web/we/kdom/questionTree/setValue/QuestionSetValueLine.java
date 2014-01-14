@@ -36,7 +36,6 @@ import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -46,6 +45,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
@@ -134,7 +134,7 @@ public class QuestionSetValueLine extends AbstractType {
 						}
 
 						if (r != null) {
-							Compilers.storeObject(compiler, section, SETVALUE_ARGUMENT, r);
+							KnowWEUtils.storeObject(compiler, section, SETVALUE_ARGUMENT, r);
 							throw new CompilerMessage(
 									Messages.objectCreatedNotice(r.getClass().toString()));
 						}

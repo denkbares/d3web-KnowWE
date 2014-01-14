@@ -25,7 +25,6 @@ import java.util.Map;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.RessourceLoader;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.MasterAnnotationWarningHandler;
 import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -36,6 +35,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -160,7 +160,7 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 				packageNameHtml = " package=\"" + packageName + "\"";
 			}
 			else {
-				PackageManager packageManager = Compilers.getPackageManager(section.getArticleManager());
+				PackageManager packageManager = KnowWEUtils.getPackageManager(section.getArticleManager());
 				String[] defaultPackages = packageManager.getDefaultPackages(section.getArticle());
 				for (String defaultPackage : defaultPackages) {
 					defaultPackageName = defaultPackage;

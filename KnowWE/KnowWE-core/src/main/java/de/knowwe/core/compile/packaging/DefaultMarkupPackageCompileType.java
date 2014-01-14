@@ -24,7 +24,6 @@ import java.util.regex.Pattern;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScript;
 import de.knowwe.core.compile.Priority;
@@ -33,6 +32,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
@@ -135,7 +135,7 @@ public class DefaultMarkupPackageCompileType extends PackageCompileType {
 		String[] uses = DefaultMarkupType.getAnnotations(markupSection,
 				PackageManager.COMPILE_ATTRIBUTE_NAME);
 		if (uses.length == 0) {
-			return Compilers.getPackageManager(section).getDefaultPackages(
+			return KnowWEUtils.getPackageManager(section).getDefaultPackages(
 					section.getArticle());
 		}
 		return uses;

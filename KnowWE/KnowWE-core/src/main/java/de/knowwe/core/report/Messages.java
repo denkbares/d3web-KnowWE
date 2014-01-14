@@ -39,12 +39,12 @@ import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compiler;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 
 public final class Messages {
 
@@ -554,7 +554,7 @@ public final class Messages {
 			Map<String, Collection<Message>> msgsMap = getMessagesMapModifiable(compiler, section);
 			if (msgsMap == null) {
 				msgsMap = new HashMap<String, Collection<Message>>(4);
-				Compilers.storeObject(compiler, section, MESSAGE_KEY, msgsMap);
+				KnowWEUtils.storeObject(compiler, section, MESSAGE_KEY, msgsMap);
 			}
 			msgsMap.put(source.getName(), Collections.unmodifiableCollection(msgs));
 		}

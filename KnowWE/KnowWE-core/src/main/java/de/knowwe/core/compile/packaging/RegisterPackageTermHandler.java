@@ -19,11 +19,11 @@
 package de.knowwe.core.compile.packaging;
 
 import de.d3web.strings.Identifier;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
@@ -43,7 +43,7 @@ public class RegisterPackageTermHandler extends DefaultGlobalScript<DefaultMarku
 		// annotation
 		// to specify another package
 		if (annotationStrings.length == 0) {
-			PackageManager packageManager = Compilers.getPackageManager(section);
+			PackageManager packageManager = KnowWEUtils.getPackageManager(section);
 			String[] defaultPackages = packageManager.getDefaultPackages(section.getArticle());
 			for (String defaultPackage : defaultPackages) {
 				terminologyHandler.registerTermReference(compiler,

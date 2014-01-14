@@ -31,7 +31,6 @@ import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webHandler;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -40,6 +39,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -81,7 +81,7 @@ public abstract class AnswerDefinition
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
 			Section<?> def = terminologyManager.getTermDefiningSection(getTermIdentifier(section));
 			if (def != null) {
-				choice = (Choice) Compilers.getStoredObject((PackageCompiler) compiler, def,
+				choice = (Choice) KnowWEUtils.getStoredObject((PackageCompiler) compiler, def,
 						ANSWER_STORE_KEY);
 			}
 
@@ -95,7 +95,7 @@ public abstract class AnswerDefinition
 						String answerName = answerDef.get().getTermName(answerDef);
 						choice = KnowledgeBaseUtils.findChoice((QuestionChoice) question,
 								answerName, false);
-						Compilers.storeObject((PackageCompiler) compiler, answerDef,
+						KnowWEUtils.storeObject((PackageCompiler) compiler, answerDef,
 								ANSWER_STORE_KEY, choice);
 					}
 				}
@@ -193,7 +193,7 @@ public abstract class AnswerDefinition
 							section.get().getPosition(section));
 				}
 
-				Compilers.storeObject(compiler, section, ANSWER_STORE_KEY, choice);
+				KnowWEUtils.storeObject(compiler, section, ANSWER_STORE_KEY, choice);
 
 				return Messages.asList(Messages.objectCreatedNotice(
 						choice.getClass().getSimpleName() + "  "

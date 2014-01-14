@@ -15,9 +15,9 @@ import org.json.JSONObject;
 import de.d3web.strings.Identifier;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * @author Lukas Brehl
@@ -39,7 +39,7 @@ public class LookUpAction extends AbstractAction {
 		TerminologyManager terminologyManager;
 		while (iter.hasNext()) {
 			currentArticle = iter.next();
-			terminologyManager = Compilers
+			terminologyManager = KnowWEUtils
 					.getTerminologyManager(currentArticle);
 			Collection<Identifier> allDefinedTerms = terminologyManager
 					.getAllDefinedTerms();

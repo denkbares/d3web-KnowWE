@@ -40,11 +40,11 @@ import de.d3web.strings.Identifier;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 
 public class SearchInfoObjects extends AbstractAction {
 
@@ -170,7 +170,7 @@ public class SearchInfoObjects extends AbstractAction {
 	private static Set<String> getCompilingArticles(String flowchartSectionID) {
 		Set<String> compilingArticles = new HashSet<String>();
 		Section<?> section = Sections.getSection(flowchartSectionID);
-		PackageManager packageManager = Compilers.getPackageManager(section);
+		PackageManager packageManager = KnowWEUtils.getPackageManager(section);
 		if (section != null) {
 			for (String packageName : section.getPackageNames()) {
 				compilingArticles.addAll(packageManager.getCompilingArticles(packageName));

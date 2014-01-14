@@ -23,7 +23,6 @@ import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
@@ -128,7 +127,7 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 	}
 
 	private Collection<String> getArticlesOfKnowledgebaseLoadedWithWrongVersion(Section<PackageCompileType> section) {
-		PackageManager packageManager = Compilers.getPackageManager(section);
+		PackageManager packageManager = KnowWEUtils.getPackageManager(section);
 		String[] compiledPackages = section.get().getPackagesToCompile(section);
 		Set<Section<?>> compiledSections = new HashSet<Section<?>>();
 		for (String compiledPackage : compiledPackages) {

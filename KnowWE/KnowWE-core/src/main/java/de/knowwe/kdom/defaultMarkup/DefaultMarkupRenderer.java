@@ -141,7 +141,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		List<Message> msgs = new ArrayList<Message>();
 		for (String packageName : packages) {
 
-			Collection<Section<? extends PackageCompileType>> compileSections = Compilers.getPackageManager(
+			Collection<Section<? extends PackageCompileType>> compileSections = KnowWEUtils.getPackageManager(
 					section.getArticleManager()).getCompileSections(packageName);
 
 			// add warning if section is not compiled

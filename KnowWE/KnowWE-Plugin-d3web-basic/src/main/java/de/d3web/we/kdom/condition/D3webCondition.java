@@ -22,12 +22,12 @@ package de.d3web.we.kdom.condition;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.knowledgebase.D3webCompileScript;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * 
@@ -45,7 +45,7 @@ public abstract class D3webCondition<T extends D3webCondition<T>>
 	}
 
 	public final Condition getCondition(PackageCompiler compiler, Section<? extends D3webCondition<?>> s) {
-		return (Condition) Compilers.getStoredObject(compiler, s, COND_STORE_KEY);
+		return (Condition) KnowWEUtils.getStoredObject(compiler, s, COND_STORE_KEY);
 	}
 
 	public static Condition findCondition(D3webCompiler compiler, Section<?> parent) {
@@ -57,7 +57,7 @@ public abstract class D3webCondition<T extends D3webCondition<T>>
 	}
 
 	private void storeCondition(D3webCompiler compiler, Condition condition, Section<? extends D3webCondition<?>> section) {
-		Compilers.storeObject(compiler, section, COND_STORE_KEY, condition);
+		KnowWEUtils.storeObject(compiler, section, COND_STORE_KEY, condition);
 	}
 
 	/**

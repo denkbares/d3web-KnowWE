@@ -262,7 +262,7 @@ public class CoveringList extends AbstractType {
 										condition,
 										solution, type, w);
 
-								Compilers.storeObject(compiler, s, RELATION_STORE_KEY, relation);
+								KnowWEUtils.storeObject(compiler, s, RELATION_STORE_KEY, relation);
 
 								String wString = "";
 								if (w > 0 && w != 1) {
@@ -334,7 +334,7 @@ public class CoveringList extends AbstractType {
 					+ "' class = 'XCLRelationInList'>");
 
 			D3webCompiler compiler = Compilers.getCompiler(sec, D3webCompiler.class);
-			XCLRelation relation = (XCLRelation) Compilers.getStoredObject(compiler, sec,
+			XCLRelation relation = (XCLRelation) KnowWEUtils.getStoredObject(compiler, sec,
 					RELATION_STORE_KEY);
 
 			if (relation == null) {

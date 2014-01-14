@@ -26,7 +26,7 @@ import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.progress.ProgressListenerManager;
 
 public class CIStopBuildAction extends AbstractAction {
@@ -35,7 +35,7 @@ public class CIStopBuildAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		String dashboardName = Strings.decodeURL(context.getParameter("name"));
 		String web = context.getWeb();
-		CIDashboard dashboard = CIDashboardManager.getDashboard(Compilers.getArticleManager(web),
+		CIDashboard dashboard = CIDashboardManager.getDashboard(KnowWEUtils.getArticleManager(web),
 				dashboardName);
 		CIBuildManager.terminate(dashboard);
 		ProgressListenerManager.getInstance().removeProgressListener(dashboardName);

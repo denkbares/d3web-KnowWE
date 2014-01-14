@@ -24,12 +24,12 @@ import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.knowledgebase.D3webCompileScript;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 
 public abstract class D3webRuleAction<T extends Type>
 		extends AbstractType {
@@ -43,11 +43,11 @@ public abstract class D3webRuleAction<T extends Type>
 	public abstract Class<? extends PSMethod> getActionPSContext();
 
 	public final PSAction getAction(PackageCompiler compiler, Section<T> s) {
-		return (PSAction) Compilers.getStoredObject(compiler, s, ACTION_STORE_KEY);
+		return (PSAction) KnowWEUtils.getStoredObject(compiler, s, ACTION_STORE_KEY);
 	}
 
 	private void storeAction(D3webCompiler compiler, PSAction action, Section<T> section) {
-		Compilers.storeObject(compiler, section, ACTION_STORE_KEY, action);
+		KnowWEUtils.storeObject(compiler, section, ACTION_STORE_KEY, action);
 	}
 
 	/**

@@ -29,9 +29,9 @@ import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * 
@@ -77,7 +77,7 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 			}
 		}
 		if (c.equals(PackageManager.class)) {
-			Object byName = Compilers.getPackageManager(web);
+			Object byName = KnowWEUtils.getPackageManager(web);
 			if (byName != null) {
 				result.add(new TestObjectContainer<T>(web, c.cast(byName)));
 			}
