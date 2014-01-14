@@ -20,7 +20,6 @@
 package de.knowwe.plugin;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -243,7 +242,7 @@ public class Plugins {
 	 * Initializes the Javascript files
 	 */
 	public static void initJS() {
-		List<String> files = new ArrayList<String>();
+		PriorityList<Double, String> files = new PriorityList<Double, String>(5.0);
 		addScripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_PageAppendHandler));
 		addScripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
@@ -262,7 +261,7 @@ public class Plugins {
 	}
 
 	public static void initCSS() {
-		HashSet<String> files = new HashSet<String>();
+		PriorityList<Double, String> files = new PriorityList<Double, String>(5.0);
 		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_PageAppendHandler));
 		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
@@ -281,38 +280,42 @@ public class Plugins {
 	}
 
 	public static void initResources(Extension[] extensions) {
-		HashSet<String> cssFiles = new HashSet<String>();
+		PriorityList<Double, String> cssFiles = new PriorityList<Double, String>(5.0);
 		addCSS(cssFiles, extensions);
 		for (String s : cssFiles) {
 			RessourceLoader.getInstance().add(s, RessourceLoader.RESOURCE_STYLESHEET);
 		}
-		List<String> jsFiles = new ArrayList<String>();
+		PriorityList<Double, String> jsFiles = new PriorityList<Double, String>(5.0);
 		addScripts(jsFiles, extensions);
-		for (String s : jsFiles) {
-			RessourceLoader.getInstance().add(s, RessourceLoader.RESOURCE_SCRIPT);
+		for (int i = 0; i < jsFiles.size(); i++) {
+			String filename = jsFiles.get(i);
+			RessourceLoader.getInstance().add(filename, RessourceLoader.RESOURCE_SCRIPT);
 		}
+
 
 	}
 
-	private static void addScripts(List<String> files, Extension[] extensions) {
+	private static void addScripts(PriorityList<Double, String> files, Extension[] extensions) {
 		for (Extension e : extensions) {
+			double priority = e.getPriority();
 			List<String> scripts = e.getParameters("script");
 			if (scripts != null) {
 				for (String s : scripts) {
 					if (!files.contains(s)) {
-						files.add(s);
+						files.add(priority, s);
 					}
 				}
 			}
 		}
 	}
 
-	private static void addCSS(HashSet<String> files, Extension[] extensions) {
+	private static void addCSS(PriorityList<Double, String> files, Extension[] extensions) {
 		for (Extension e : extensions) {
+			double priority = e.getPriority();
 			List<String> scripts = e.getParameters("css");
 			if (scripts != null) {
 				for (String s : scripts) {
-					files.add(s);
+					files.add(priority, s);
 				}
 			}
 		}
