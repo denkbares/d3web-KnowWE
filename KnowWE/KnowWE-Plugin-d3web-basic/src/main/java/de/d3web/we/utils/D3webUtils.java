@@ -216,8 +216,10 @@ public class D3webUtils {
 	 */
 	@Deprecated
 	public static KnowledgeBase getKnowledgeBase(String web, String title) {
+		Article article = Environment.getInstance().getArticle(web, title);
+		if (article == null) return null;
 		Section<PackageCompileType> compileSection = Sections.findSuccessor(
-				Environment.getInstance().getArticle(web, title).getRootSection(),
+				article.getRootSection(),
 				PackageCompileType.class);
 		D3webCompiler d3webCompiler = getD3webCompiler(compileSection);
 		if (d3webCompiler == null) return null;
