@@ -20,6 +20,7 @@ package de.knowwe.ontology.compile;
 
 import java.util.Collection;
 
+import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.ScriptCompiler;
@@ -29,6 +30,7 @@ import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.ontology.kdom.namespace.AbbreviationDefinition;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
@@ -47,7 +49,6 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 
 	public OntologyCompiler(PackageManager manager, Section<? extends PackageCompileType> compileSection) {
 		super(manager, compileSection);
-		this.terminologyManager = new TerminologyManager();
 		this.scriptCompiler = new ScriptCompiler<OntologyCompiler>(this);
 		this.destroyScriptCompiler = new ScriptCompiler<OntologyCompiler>(this);
 		this.completeCompilation = true;
@@ -67,6 +68,8 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 	public void compilePackages(String[] packagesToCompile) {
 		EventManager.getInstance().fireEvent(new OntologyCompilerStartEvent(this));
 
+		if (terminologyManager == null) createTerminologyManager();
+
 		destroyScriptCompiler = new ScriptCompiler<OntologyCompiler>(this);
 		scriptCompiler = new ScriptCompiler<OntologyCompiler>(this);
 
@@ -82,7 +85,8 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 
 		if (completeCompilation) {
 			this.rdf2GoCore = new Rdf2GoCore();
-			this.terminologyManager = new TerminologyManager();
+			createTerminologyManager();
+
 			sectionsOfPackage = getPackageManager().getSectionsOfPackage(packagesToCompile);
 			completeCompilation = false;
 		}
@@ -99,6 +103,14 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 		rdf2GoCore.commit();
 
 		EventManager.getInstance().fireEvent(new OntologyCompilerFinishedEvent(this));
+	}
+
+	private void createTerminologyManager() {
+		this.terminologyManager = new TerminologyManager();
+		// register the lns abbreviation immediately as defined
+		this.getTerminologyManager().registerTermDefinition(this,
+				this.getCompileSection(), AbbreviationDefinition.class,
+				new Identifier(Rdf2GoCore.LNS_ABBREVIATION));
 	}
 
 	/**

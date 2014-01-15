@@ -37,7 +37,7 @@ public class OntologyDownloadProvider implements ToolProvider {
 
 		// check if ontology is empty
 		Rdf2GoCore ontology = Rdf2GoCore.getInstance(OntologyUtils.getOntologyCompiler(section));
-		if (ontology.isEmpty()) {
+		if (ontology == null || ontology.isEmpty()) {
 			return null;
 		}
 

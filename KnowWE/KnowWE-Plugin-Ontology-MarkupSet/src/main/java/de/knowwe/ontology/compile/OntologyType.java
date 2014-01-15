@@ -18,7 +18,6 @@
  */
 package de.knowwe.ontology.compile;
 
-import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScript;
@@ -33,8 +32,6 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageTermReferenceRegistrationHandler;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.ontology.kdom.InitTerminologyHandler;
-import de.knowwe.ontology.kdom.namespace.AbbreviationDefinition;
-import de.knowwe.rdf2go.Rdf2GoCore;
 
 /**
  * Compiles and provides ontology from the Ontology-MarkupSet.
@@ -60,11 +57,7 @@ public class OntologyType extends DefaultMarkupType {
 				compiler.getPackageManager().registerPackageCompileSection(section);
 				OntologyCompiler ontologyCompiler = new OntologyCompiler(
 						compiler.getPackageManager(), section);
-				// register the lns abbreviation immediately as defined
 				compiler.getCompilerManager().addCompiler(5, ontologyCompiler);
-				ontologyCompiler.getTerminologyManager().registerTermDefinition(ontologyCompiler,
-						section, AbbreviationDefinition.class,
-						new Identifier(Rdf2GoCore.LNS_ABBREVIATION));
 
 			}
 
