@@ -55,7 +55,6 @@ public class CIBuildManager {
 	 * done.
 	 */
 	public static void startBuild(final CIDashboard dashboard) {
-		Section<CIDashboardType> sec = dashboard.getDashboardSection();
 
 		Logger.getLogger(CIEventForwarder.class.getName()).log(
 				Level.INFO,

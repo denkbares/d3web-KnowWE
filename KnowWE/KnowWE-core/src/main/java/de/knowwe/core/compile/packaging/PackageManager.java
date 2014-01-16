@@ -107,6 +107,9 @@ public class PackageManager {// implements EventListener {
 		HashSet<String> defaultPackages = articleToDefaultPackages.get(article.getTitle());
 		if (defaultPackages != null) {
 			defaultPackages.remove(defaultPackage);
+			if (defaultPackages.isEmpty()) {
+				articleToDefaultPackages.remove(article.getTitle());
+			}
 		}
 	}
 
