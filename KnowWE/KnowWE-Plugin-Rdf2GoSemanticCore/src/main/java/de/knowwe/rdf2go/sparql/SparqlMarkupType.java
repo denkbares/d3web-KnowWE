@@ -26,6 +26,7 @@ import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.renderer.AsynchronRenderer;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class SparqlMarkupType extends DefaultMarkupType {
@@ -55,11 +56,14 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		m.addAnnotationRenderer(SORTING, NothingRenderer.getInstance());
 		m.addAnnotation(BORDER, false, "true", "false");
 		m.addAnnotationRenderer(BORDER, NothingRenderer.getInstance());
+		m.addAnnotation(AsynchronRenderer.ASYNCHRONOUS, false, "true", "false");
+		m.addAnnotationRenderer(AsynchronRenderer.ASYNCHRONOUS, NothingRenderer.getInstance());
 		m.addAnnotation(Rdf2GoCore.GLOBAL, false, "true", "false");
 		m.addAnnotationRenderer(Rdf2GoCore.GLOBAL, NothingRenderer.getInstance());
 		m.addAnnotation(NAME, false);
 		m.addAnnotationRenderer(NAME, NothingRenderer.getInstance());
 		m.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
+
 		m.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageAnnotationNameType());
 		m.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
