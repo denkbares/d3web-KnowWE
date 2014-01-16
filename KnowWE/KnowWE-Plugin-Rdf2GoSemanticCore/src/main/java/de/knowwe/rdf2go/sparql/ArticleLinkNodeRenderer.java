@@ -13,7 +13,7 @@ public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 	@Override
 	public String renderNode(String text, String variable, UserContext user, Rdf2GoCore core, RenderMode mode) {
 		boolean foundArticle = false;
-		String lns = Rdf2GoCore.getInstance().getLocalNamespace();
+		String lns = core.getLocalNamespace();
 
 		String[] statements;
 		// We are only interested in statements from the local name space.
