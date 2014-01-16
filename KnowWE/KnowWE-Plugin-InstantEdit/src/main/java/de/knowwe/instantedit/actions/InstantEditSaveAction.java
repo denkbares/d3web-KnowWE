@@ -24,6 +24,7 @@ import java.util.Map;
 
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Sections;
 
 /**
@@ -49,6 +50,10 @@ public class InstantEditSaveAction extends AbstractAction {
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(id, value);
 		Sections.replaceSections(context, nodesMap).sendErrors(context);
+		try {
+			Compilers.getCompilerManager(context.getWeb()).awaitTermination();
+		}
+		catch (InterruptedException e) {
+		}
 	}
-
 }
