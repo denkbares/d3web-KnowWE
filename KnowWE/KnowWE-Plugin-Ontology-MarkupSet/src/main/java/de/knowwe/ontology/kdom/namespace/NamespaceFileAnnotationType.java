@@ -21,7 +21,6 @@ package de.knowwe.ontology.kdom.namespace;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Syntax;
 
 import de.knowwe.core.Environment;
@@ -92,17 +91,18 @@ public class NamespaceFileAnnotationType extends AbstractType {
 						+ section.getText()
 						+ "'"));
 			}
+			if (attachment == null) {
+				return Messages.asList(Messages.error("No file found for at '"
+						+ section.getText().trim()
+						+ "'"));
+			}
 			try {
 				String fileName = attachment.getFileName();
 				Syntax syntax = Rdf2GoUtils.syntaxForFileName(fileName);
 				core.readFrom(attachment.getInputStream(), syntax);
 			}
-			catch (ModelRuntimeException e) {
-				return Messages.asList(Messages.error("Error while importing ontology from '"
-						+ fileNameSection.getText()
-						+ "': " + e.getMessage()));
-			}
-			catch (IOException e) {
+			catch (Exception e) {
+				e.printStackTrace();
 				return Messages.asList(Messages.error("Error while importing ontology from '"
 						+ fileNameSection.getText()
 						+ "': " + e.getMessage()));
@@ -124,7 +124,11 @@ public class NamespaceFileAnnotationType extends AbstractType {
 		}
 
 		private String createPath(Section<NamespaceFileAnnotationType> section, Section<FileNameType> fileNameSection) {
-			return section.getTitle() + "/" + fileNameSection.getText();
+			String fileName = fileNameSection.getText().trim();
+			if (!fileName.startsWith(section.getTitle())) {
+				return section.getTitle() + "/" + fileName;
+			}
+			return fileName;
 		}
 
 		@Override

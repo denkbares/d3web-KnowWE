@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -159,25 +158,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	@Override
 	public void postSave(WikiContext wikiContext, String content)
 			throws FilterException {
-		// setWikiContextAndEngine(wikiContext);
-
-		// get the Page-name
-		String topic = wikiContext.getPage().getName();
-		String user = wikiContext.getWikiSession().getUserPrincipal().getName();
-
-		// process this article in KnowWE
-		Article article = Environment.getInstance().buildAndRegisterArticle(content,
-				topic, Environment.DEFAULT_WEB);
-
-		// write log
-		if (article != null) {
-			String logEntry = topic + ", " + wikiContext.getRealPage().getVersion() + ", " + user
-					+ ", " + new Date().toString()
-					+ (article.isFullParse() ? ", fullparse" : "")
-					+ "\n";
-
-			KnowWEUtils.appendToFile(KnowWEUtils.getPageChangeLogPath(), logEntry);
-		}
+		// nothing to do here, everything is handled in pre- and post translate
 	}
 
 	@Override

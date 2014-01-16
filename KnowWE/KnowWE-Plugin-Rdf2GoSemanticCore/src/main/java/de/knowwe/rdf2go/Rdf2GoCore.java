@@ -714,11 +714,21 @@ public class Rdf2GoCore {
 	}
 
 	public void readFrom(InputStream in, Syntax syntax) throws IOException {
-		model.readFrom(in, syntax);
+		if (syntax == null) {
+			readFrom(in);
+		}
+		else {
+			model.readFrom(in, syntax);
+		}
 	}
 
 	public void readFrom(Reader in, Syntax syntax) throws IOException {
-		model.readFrom(in, syntax);
+		if (syntax == null) {
+			readFrom(in);
+		}
+		else {
+			model.readFrom(in, syntax);
+		}
 	}
 
 	public void readFrom(InputStream in) throws ModelRuntimeException, IOException {
