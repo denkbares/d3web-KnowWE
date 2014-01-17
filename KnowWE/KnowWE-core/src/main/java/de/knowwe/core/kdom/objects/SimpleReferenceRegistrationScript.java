@@ -76,7 +76,7 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 		if (!tHandler.isDefinedTerm(termIdentifier)) {
 			return Messages.asList(Messages.noSuchObjectError(
 					section.get().getTermObjectClass(section).getSimpleName(),
-					section.get().getTermIdentifier(section).toString()));
+					section.get().getTermName(section)));
 		}
 		return Messages.noMessage();
 	}
