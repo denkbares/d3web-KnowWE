@@ -35,7 +35,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.StatementProvider;
 import de.knowwe.ontology.turtle.compile.StatementProviderResult;
@@ -89,8 +89,8 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			}
 		}
 		if (object == null && !termError) {
-			result.addMessage(new Message(de.knowwe.core.report.Message.Type.ERROR,
-					"object node was null for: " + section.getText()));
+			result.addMessage(Messages.error("'" + section.getText()
+					+ "' is not a valid object."));
 		}
 
 		/*
@@ -115,8 +115,8 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			}
 		}
 		if (predicate == null && !termError) {
-			result.addMessage(new Message(de.knowwe.core.report.Message.Type.ERROR,
-					"predicate URI was null for: " + predicateSection.getText()));
+			result.addMessage(Messages.error("'" + predicateSection.getText()
+					+ "' is not a valid predicate."));
 		}
 
 		/*
@@ -130,8 +130,8 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		if (blankNodeSection != null) {
 			subject = blankNodeSection.get().getResource(blankNodeSection, core);
 			if (subject == null) {
-				result.addMessage(new Message(de.knowwe.core.report.Message.Type.ERROR,
-						"subject resource was null for: " + blankNodeSection.getText()));
+				result.addMessage(Messages.error("'" + blankNodeSection.getText()
+						+ "' is not a valid subject."));
 			}
 		}
 		else {
@@ -156,8 +156,8 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			}
 
 			if (subject == null && !termError) {
-				result.addMessage(new Message(de.knowwe.core.report.Message.Type.ERROR,
-						"subject resource was null for: " + subjectSection.getText()));
+				result.addMessage(Messages.error("'" + subjectSection.getText()
+						+ "' is not a valid subject."));
 			}
 		}
 

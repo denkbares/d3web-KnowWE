@@ -83,8 +83,10 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 			Collection<Identifier> potentiallyMatchingIdentifiers = getPotentiallyMatchingIdentifiers(section);
 
 			if (potentiallyMatchingIdentifiers.size() == 0) {
-				throw new CompilerError("Term '" + section.get().getTermName(section)
-						+ "' is unknown.");
+				throw new CompilerError(
+						"Term '"
+								+ section.get().getTermName(section)
+								+ "' not found. A term either needs a namespace or to be defined unambiguously.");
 			}
 			else if (potentiallyMatchingIdentifiers.size() == 1) {
 				section.getSectionStore().storeObject(compiler, IDENTIFIER_KEY,
