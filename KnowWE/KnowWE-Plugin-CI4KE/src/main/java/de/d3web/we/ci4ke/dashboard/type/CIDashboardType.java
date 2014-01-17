@@ -39,6 +39,7 @@ import de.d3web.we.ci4ke.hook.CIHookManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
+import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -48,6 +49,7 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageRegistrationScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class CIDashboardType extends DefaultMarkupType {
@@ -78,6 +80,8 @@ public class CIDashboardType extends DefaultMarkupType {
 		this.addCompileScript(new DashboardSubtreeHandler());
 		// this.setCustomRenderer(new DashboardRenderer());
 		this.setRenderer(new CIDashboardRenderer());
+		this.removeCompileScript(PackageRegistrationCompiler.class,
+				DefaultMarkupPackageRegistrationScript.class);
 	}
 
 	public static String getDashboardName(Section<CIDashboardType> section) {
