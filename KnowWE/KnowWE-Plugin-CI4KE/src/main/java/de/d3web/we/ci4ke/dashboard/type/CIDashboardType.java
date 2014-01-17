@@ -42,7 +42,7 @@ import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.CompilerError;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -81,7 +81,9 @@ public class CIDashboardType extends DefaultMarkupType {
 	}
 
 	public static String getDashboardName(Section<CIDashboardType> section) {
-		return DefaultMarkupType.getAnnotation(section, NAME_KEY);
+		String name = DefaultMarkupType.getAnnotation(section, NAME_KEY);
+		if (name == null) name = "unnamed";
+		return name;
 	}
 
 	private class DashboardSubtreeHandler extends DefaultGlobalScript<CIDashboardType> {
@@ -89,52 +91,49 @@ public class CIDashboardType extends DefaultMarkupType {
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<CIDashboardType> s) {
 
-			// List<Message> msgs = new ArrayList<Message>();
-
-			String dashboardName = DefaultMarkupType.getAnnotation(s, NAME_KEY);
-
-			if (dashboardName == null) return;
+			List<Message> msgs = new ArrayList<Message>();
 
 			String triggerString = DefaultMarkupType.getAnnotation(s, TRIGGER_KEY);
 
-			if (triggerString == null) return;
-
 			CIBuildTriggers trigger = null;
-
-			Pattern pattern = Pattern.compile("(?:\".+?\"|[^\\s]+)");
-
 			Set<String> monitoredArticles = new HashSet<String>();
-			Matcher matcher = pattern.matcher(triggerString);
-			if (matcher.find()) {
-				// get the name of the test
-				try {
-					trigger = CIBuildTriggers.valueOf(matcher.group());
-					// get the monitoredArticles if onSave
-					if (trigger.equals(CIDashboardType.CIBuildTriggers.onSave)) {
-						while (matcher.find()) {
-							String parameter = matcher.group();
-							if (parameter.startsWith("\"") && parameter.endsWith("\"")) {
-								parameter = parameter.substring(1, parameter.length() - 1);
-							}
-							if (Environment.getInstance().getWikiConnector().doesArticleExist(
-									parameter)) {
-								monitoredArticles.add(parameter);
-							}
-							else {
-								throw new CompilerError("Article '" + parameter
-										+ "' for trigger does not exist");
+
+			if (triggerString != null) {
+
+				Pattern pattern = Pattern.compile("(?:\".+?\"|[^\\s]+)");
+
+				Matcher matcher = pattern.matcher(triggerString);
+				if (matcher.find()) {
+					// get the name of the test
+					try {
+						trigger = CIBuildTriggers.valueOf(matcher.group());
+						// get the monitoredArticles if onSave
+						if (trigger.equals(CIDashboardType.CIBuildTriggers.onSave)) {
+							while (matcher.find()) {
+								String parameter = matcher.group();
+								if (parameter.startsWith("\"") && parameter.endsWith("\"")) {
+									parameter = parameter.substring(1, parameter.length() - 1);
+								}
+								if (Environment.getInstance().getWikiConnector().doesArticleExist(
+										parameter)) {
+									monitoredArticles.add(parameter);
+								}
+								else {
+									msgs.add(Messages.error("Article '" + parameter
+											+ "' for trigger does not exist"));
+								}
 							}
 						}
 					}
+					catch (IllegalArgumentException e) {
+						msgs.add(Messages.error("Invalid trigger specified: " + triggerString));
+					}
 				}
-				catch (IllegalArgumentException e) {
-					throw new CompilerError("Invalid trigger specified: " + triggerString);
-				}
-			}
 
-			if (trigger.equals(CIBuildTriggers.onSave) && monitoredArticles.isEmpty()) {
-				throw new CompilerError("Invalid trigger: " + CIBuildTriggers.onSave
-						+ " requires attached articles to monitor.");
+				if (trigger.equals(CIBuildTriggers.onSave) && monitoredArticles.isEmpty()) {
+					msgs.add(Messages.error("Invalid trigger: " + CIBuildTriggers.onSave
+							+ " requires attached articles to monitor."));
+				}
 			}
 
 			// This map is used for storing tests and their parameter-list
@@ -168,14 +167,14 @@ public class CIDashboardType extends DefaultMarkupType {
 
 			CIDashboard dashboard = CIDashboardManager.generateAndRegisterDashboard(s, tests);
 
-			if (trigger.equals(CIBuildTriggers.onSave)) {
+			if (trigger != null && trigger.equals(CIBuildTriggers.onSave)) {
 				CIHook ciHook = new CIHook(dashboard, monitoredArticles);
 				CIHookManager.registerHook(ciHook);
 				// Store to be able to unregister in destroy method
 				KnowWEUtils.storeObject(s,
 						CIHook.CIHOOK_STORE_KEY, ciHook);
 			}
-
+			throw new CompilerMessage(msgs);
 		}
 
 		private void convertMessages(DefaultGlobalCompiler compiler, Section<?> section, List<ArgsCheckResult> messages) {
