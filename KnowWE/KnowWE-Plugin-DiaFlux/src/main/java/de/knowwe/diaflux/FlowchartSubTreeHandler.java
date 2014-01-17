@@ -67,8 +67,6 @@ public class FlowchartSubTreeHandler extends D3webCompileScript<FlowchartType> {
 
 	public static final String ORIGIN_KEY = "diafluxorigin";
 	public static final String ICON_KEY = "diafluxicon";
-	public static final String NODE_KEY = "diafluxNode";
-	public static final String EDGE_KEY = "diafluxEdge";
 
 	private final List<Class<? extends Type>> filteredTypes =
 			new ArrayList<Class<? extends Type>>(1);
@@ -153,8 +151,6 @@ public class FlowchartSubTreeHandler extends D3webCompileScript<FlowchartType> {
 			Edge edge = FlowFactory.createEdge(id, origin, target, condition);
 			result.add(edge);
 
-			section.getSectionStore().storeObject(compiler, EDGE_KEY, edge);
-
 		}
 
 		return result;
@@ -235,7 +231,6 @@ public class FlowchartSubTreeHandler extends D3webCompileScript<FlowchartType> {
 
 				}
 
-				nodeSection.getSectionStore().storeObject(NODE_KEY, node);
 				result.add(node);
 			}
 

@@ -38,7 +38,6 @@ import de.d3web.strings.Strings;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
@@ -326,14 +325,7 @@ public class FlowchartUtils {
 	 * @return
 	 */
 	public static KnowledgeBase getKB(Section<DiaFluxType> s) {
-
-		Iterator<Article> iterator = Compilers.getCompilingArticles(s).iterator();
-		if (!iterator.hasNext()) return null;
-
-		// TODO how to select right kb, if more than 1?
-		Article article = iterator.next();
-
-		return D3webUtils.getKnowledgeBase(s.getWeb(), article.getTitle());
+		return D3webUtils.getKnowledgeBase(s);
 	}
 
 }
