@@ -93,7 +93,7 @@ public class CIDashboardType extends DefaultMarkupType {
 	private class DashboardSubtreeHandler extends DefaultGlobalScript<CIDashboardType> {
 
 		@Override
-		public void compile(DefaultGlobalCompiler compiler, Section<CIDashboardType> s) {
+		public void compile(DefaultGlobalCompiler compiler, Section<CIDashboardType> s) throws CompilerMessage {
 
 			List<Message> msgs = new ArrayList<Message>();
 

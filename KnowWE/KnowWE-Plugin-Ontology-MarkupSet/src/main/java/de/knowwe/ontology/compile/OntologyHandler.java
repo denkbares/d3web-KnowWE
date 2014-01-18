@@ -41,7 +41,7 @@ public abstract class OntologyHandler<T extends Type> implements PackageCompileS
 	}
 
 	@Override
-	public void compile(OntologyCompiler compiler, Section<T> section) {
+	public void compile(OntologyCompiler compiler, Section<T> section) throws CompilerMessage {
 		throw new CompilerMessage(create(compiler, section));
 	}
 

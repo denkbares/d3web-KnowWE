@@ -49,7 +49,7 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 	}
 
 	@Override
-	public void compile(C compiler, Section<Term> section) {
+	public void compile(C compiler, Section<Term> section) throws CompilerMessage {
 
 		TerminologyManager tHandler = compiler.getTerminologyManager();
 		Identifier termIdentifier = section.get().getTermIdentifier(section);

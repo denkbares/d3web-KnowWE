@@ -30,8 +30,7 @@ import de.d3web.we.object.SolutionReference;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.CompilerError;
-import de.knowwe.core.report.CompilerInfo;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableLine;
@@ -40,7 +39,7 @@ import de.knowwe.kdom.table.TableUtils;
 public class LineHandler extends D3webCompileScript<TableLine> {
 
 	@Override
-	public void compile(D3webCompiler compiler, Section<TableLine> section) {
+	public void compile(D3webCompiler compiler, Section<TableLine> section) throws CompilerMessage {
 
 		if (TableUtils.isHeaderRow(section)) {
 			Messages.clearMessages(compiler, section, getClass());
@@ -72,12 +71,11 @@ public class LineHandler extends D3webCompileScript<TableLine> {
 			String message = "Rule for row " + row + " was not created (no "
 					+ (action == null ? "action" : "conditions")
 					+ " found)";
-			throw new CompilerError(message);
+			throw CompilerMessage.error(message);
 		}
 
-		Rule rule = createRule(conditions, action);
-
-		throw new CompilerInfo("Created Rule " + rule.toString());
+		/* Rule rule = */createRule(conditions, action);
+		throw CompilerMessage.info();
 	}
 
 	private Rule createRule(List<Condition> conditions, PSAction action) {

@@ -38,7 +38,7 @@ import de.knowwe.core.kdom.parsing.Section;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 09.01.2014
  */
-public class CompilerMessage extends RuntimeException {
+public final class CompilerMessage extends Exception {
 
 	private static final long serialVersionUID = 6181153543632706782L;
 
@@ -64,8 +64,40 @@ public class CompilerMessage extends RuntimeException {
 		return messages;
 	}
 
+	/**
+	 * Creates a compiler message instance for the specified error message(s)
+	 * 
+	 * @created 18.01.2014
+	 * @param errors the error message(s) to create the compiler message for
+	 * @return the created compiler message
+	 */
+	public static CompilerMessage error(String... errors) {
+		return new CompilerMessage(Message.Type.ERROR, errors);
+	}
+
+	/**
+	 * Creates a compiler message instance for the specified warning message(s)
+	 * 
+	 * @created 18.01.2014
+	 * @param warnings the warning message(s) to create the compiler message for
+	 * @return the created compiler message
+	 */
+	public static CompilerMessage warning(String... warnings) {
+		return new CompilerMessage(Message.Type.WARNING, warnings);
+	}
+
+	/**
+	 * Creates a compiler message instance for the specified info message(s)
+	 * 
+	 * @created 18.01.2014
+	 * @param infos the info message(s) to create the compiler message for
+	 * @return the created compiler message
+	 */
+	public static CompilerMessage info(String... infos) {
+		return new CompilerMessage(Message.Type.INFO, infos);
+	}
+
 	public Collection<Message> getMessages() {
 		return this.messages;
 	}
-
 }

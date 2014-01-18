@@ -37,7 +37,7 @@ public abstract class D3webHandler<T extends Type> extends D3webCompileScript<T>
 	public abstract Collection<Message> create(D3webCompiler compiler, Section<T> section);
 
 	@Override
-	public void compile(D3webCompiler compiler, Section<T> section) {
+	public void compile(D3webCompiler compiler, Section<T> section) throws CompilerMessage {
 		throw new CompilerMessage(create(compiler, section));
 	}
 

@@ -14,7 +14,7 @@ import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.report.CompilerError;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.OntologyUtils;
@@ -79,14 +79,13 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 		}
 
 		@Override
-		public void compile(OntologyCompiler compiler, Section<Term> section) {
+		public void compile(OntologyCompiler compiler, Section<Term> section) throws CompilerMessage {
 			Collection<Identifier> potentiallyMatchingIdentifiers = getPotentiallyMatchingIdentifiers(section);
 
 			if (potentiallyMatchingIdentifiers.size() == 0) {
-				throw new CompilerError(
-						"Term '"
-								+ section.get().getTermName(section)
-								+ "' not found. A term either needs a namespace or to be defined unambiguously.");
+				throw CompilerMessage.error("Term '"
+						+ section.get().getTermName(section)
+						+ "' not found. A term either needs a namespace or to be defined unambiguously.");
 			}
 			else if (potentiallyMatchingIdentifiers.size() == 1) {
 				section.getSectionStore().storeObject(compiler, IDENTIFIER_KEY,
@@ -94,7 +93,7 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 				super.compile(compiler, section);
 			}
 			else {
-				throw new CompilerError("Term '" + section.get().getTermName(section)
+				throw CompilerMessage.error("Term '" + section.get().getTermName(section)
 						+ "' is ambiguous: " + Strings.concat(", ", potentiallyMatchingIdentifiers));
 			}
 		}

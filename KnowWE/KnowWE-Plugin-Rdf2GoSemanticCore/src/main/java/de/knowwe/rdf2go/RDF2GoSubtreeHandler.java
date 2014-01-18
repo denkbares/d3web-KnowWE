@@ -43,7 +43,7 @@ public abstract class RDF2GoSubtreeHandler<C extends Rdf2GoCompiler, T extends T
 	public abstract Collection<Message> create(C compiler, Section<T> section);
 
 	@Override
-	public void compile(C compiler, Section<T> section) {
+	public void compile(C compiler, Section<T> section) throws CompilerMessage {
 		throw new CompilerMessage(create(compiler, section));
 	}
 

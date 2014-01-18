@@ -49,7 +49,7 @@ public class StringEnumChecker<C extends de.knowwe.core.compile.Compiler, T exte
 	}
 
 	@Override
-	public void compile(C compiler, Section<T> s) {
+	public void compile(C compiler, Section<T> s) throws CompilerMessage {
 
 		// cut offsets and trim
 		String sectionContent = s.getText();

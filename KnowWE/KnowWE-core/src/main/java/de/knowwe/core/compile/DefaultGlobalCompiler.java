@@ -6,6 +6,7 @@ import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
@@ -73,10 +74,10 @@ public class DefaultGlobalCompiler implements TermCompiler {
 			return DefaultGlobalCompiler.class;
 		}
 
-		public abstract Collection<Message> create(DefaultGlobalCompiler compiler, Section<T> section);
+		public abstract Collection<Message> create(DefaultGlobalCompiler compiler, Section<T> section) throws CompilerMessage;
 
 		@Override
-		public void compile(DefaultGlobalCompiler compiler, Section<T> section) {
+		public void compile(DefaultGlobalCompiler compiler, Section<T> section) throws CompilerMessage {
 			Messages.storeMessages(section, getClass(), create(compiler, section));
 
 		}

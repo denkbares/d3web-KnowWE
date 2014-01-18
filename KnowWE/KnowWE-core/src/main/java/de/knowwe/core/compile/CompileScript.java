@@ -2,6 +2,7 @@ package de.knowwe.core.compile;
 
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.CompilerMessage;
 
 /**
  * This interface defines a compilation unit that is used to compile some piece
@@ -17,7 +18,22 @@ import de.knowwe.core.kdom.parsing.Section;
  */
 public interface CompileScript<C extends Compiler, T extends Type> {
 
-	void compile(C compiler, Section<T> section);
+	/**
+	 * Compiles a specified section for the specified compiler instance. The
+	 * method shall check the validity of the specified section and/or modify
+	 * some data of the compilers build artifacts (e.g. modify the knowledge
+	 * base for a d3web compiler).
+	 * <p>
+	 * If there are any errors or warnings during compilation, the compiler may
+	 * throw a {@link CompilerMessage} to indicate the compilation issue.
+	 * 
+	 * @created 18.01.2014
+	 * @param compiler the compiler the section shall be compiled for
+	 * @param section the section to be compiled
+	 * @throws CompilerMessage the message(s) indicating a problem or a
+	 *         user-relevant information
+	 */
+	void compile(C compiler, Section<T> section) throws CompilerMessage;
 
 	/**
 	 * Returns the class instance of the {@link Compiler} the script is intended

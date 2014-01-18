@@ -137,7 +137,7 @@ public class RuleContentType extends AbstractType {
 	class RuleCompiler extends D3webCompileScript<RuleAction> {
 
 		@Override
-		public void compile(D3webCompiler compiler, Section<RuleAction> section) {
+		public void compile(D3webCompiler compiler, Section<RuleAction> section) throws CompilerMessage {
 
 			Section<ConditionActionRuleContent> ruleSection = Sections
 					.findAncestorOfType(section,

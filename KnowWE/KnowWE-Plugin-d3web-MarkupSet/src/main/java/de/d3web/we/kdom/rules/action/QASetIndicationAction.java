@@ -40,7 +40,6 @@ import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.report.CompilerError;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.kdom.AnonymousType;
 
@@ -94,7 +93,7 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 	static class SetTypeHandler extends D3webCompileScript<AnonymousType> {
 
 		@Override
-		public void compile(D3webCompiler compiler, Section<AnonymousType> s) {
+		public void compile(D3webCompiler compiler, Section<AnonymousType> s) throws CompilerMessage {
 			TerminologyManager terminologyHandler = compiler.getTerminologyManager();
 			Identifier termIdentifier = new Identifier(Strings.trimQuotes(s.getText()));
 			if (terminologyHandler.isDefinedTerm(termIdentifier)) {
@@ -113,16 +112,15 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 						Compilers.compile(compiler, s);
 						throw new CompilerMessage();
 					}
-					throw new CompilerError(
-							termIdentifier + "is defined as: "
-									+ objectClazz.getName()
-									+ " - expected was Question or Questionnaire");
+					throw CompilerMessage.error(termIdentifier + "is defined as: "
+							+ objectClazz.getName()
+							+ " - expected was Question or Questionnaire");
 
 				}
 			}
-			throw new CompilerError(
-					"Could not find '" + Strings.trimQuotes(termIdentifier.toString())
-							+ "' - expected was Question or Questionnaire");
+			throw CompilerMessage.error("Could not find '"
+					+ Strings.trimQuotes(termIdentifier.toString())
+					+ "' - expected was Question or Questionnaire");
 		}
 	}
 

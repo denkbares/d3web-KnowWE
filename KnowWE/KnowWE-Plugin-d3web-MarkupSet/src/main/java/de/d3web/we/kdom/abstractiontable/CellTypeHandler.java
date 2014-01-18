@@ -17,8 +17,6 @@ import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.CompilerError;
-import de.knowwe.core.report.CompilerInfo;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.table.TableCellContent;
@@ -27,7 +25,7 @@ import de.knowwe.kdom.table.TableUtils;
 public class CellTypeHandler extends D3webCompileScript<CellContent> {
 
 	@Override
-	public void compile(D3webCompiler compiler, Section<CellContent> section) {
+	public void compile(D3webCompiler compiler, Section<CellContent> section) throws CompilerMessage {
 
 		Section<?> content = section.getChildren().get(0);
 
@@ -39,10 +37,10 @@ public class CellTypeHandler extends D3webCompileScript<CellContent> {
 		}
 	}
 
-	private void handleNormalCell(D3webCompiler compiler, Section<?> content) {
+	private void handleNormalCell(D3webCompiler compiler, Section<?> content) throws CompilerMessage {
 		Section<TableCellContent> columnHeader = TableUtils.getColumnHeader(content);
 		if (columnHeader == null) {
-			throw new CompilerError("Header is missing");
+			throw CompilerMessage.error("Header is missing");
 		}
 		Section<? extends Type> d3webReference = columnHeader.getChildren().get(0)
 				.getChildren().get(0);
@@ -66,7 +64,7 @@ public class CellTypeHandler extends D3webCompileScript<CellContent> {
 					Compilers.compile(compiler, content);
 				}
 				else {
-					throw new CompilerError("The type "
+					throw CompilerMessage.error("The type "
 							+ question.getClass().getSimpleName()
 							+ " of question '" + question.getName() + "' is not supported");
 				}
@@ -84,13 +82,13 @@ public class CellTypeHandler extends D3webCompileScript<CellContent> {
 				}
 			}
 			else {
-				throw new CompilerError("Invalid header");
+				throw CompilerMessage.error("Invalid header");
 			}
 		}
 		Messages.clearMessages(compiler, content, this.getClass());
 	}
 
-	private void handleHeader(D3webCompiler compiler, Section<?> content) {
+	private void handleHeader(D3webCompiler compiler, Section<?> content) throws CompilerMessage {
 		TerminologyManager terminologyManager = compiler.getTerminologyManager();
 		String name = Strings.trimQuotes(content.getText());
 		name = Strings.unquote(name);
@@ -104,15 +102,15 @@ public class CellTypeHandler extends D3webCompileScript<CellContent> {
 			if (Question.class.isAssignableFrom(termClass)) {
 				content.setType(new QuestionReference());
 				Compilers.compile(compiler, content);
-				throw new CompilerInfo();
+				throw CompilerMessage.info();
 			}
 			else if (Solution.class.isAssignableFrom(termClass)) {
 				content.setType(new SolutionReference());
 				Compilers.compile(compiler, content);
-				throw new CompilerInfo();
+				throw CompilerMessage.info();
 			}
 		}
-		throw new CompilerError("'" + name
+		throw CompilerMessage.error("'" + name
 				+ "' is expected to be a Question or a Solution, but is a "
 				+ termClasses.iterator().next().getSimpleName());
 	}

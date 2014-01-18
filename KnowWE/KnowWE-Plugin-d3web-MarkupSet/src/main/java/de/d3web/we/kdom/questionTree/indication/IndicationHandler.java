@@ -69,7 +69,7 @@ public class IndicationHandler extends D3webCompileScript<D3webTerm<NamedObject>
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void compile(D3webCompiler compiler, Section<D3webTerm<NamedObject>> section) {
+	public void compile(D3webCompiler compiler, Section<D3webTerm<NamedObject>> section) throws CompilerMessage {
 
 		Section<DashTreeElement> element = Sections.findAncestorOfType(section,
 				DashTreeElement.class);

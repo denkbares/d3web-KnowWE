@@ -90,7 +90,7 @@ public class QuestionSetValueLine extends AbstractType {
 		}
 
 		@Override
-		public void compile(D3webCompiler compiler, Section<QuestionReference> section) {
+		public void compile(D3webCompiler compiler, Section<QuestionReference> section) throws CompilerMessage {
 
 			Question q = section.get().getTermObject(compiler, section);
 
