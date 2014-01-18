@@ -19,7 +19,6 @@
 package de.d3web.we.quicki;
 
 import de.d3web.strings.Identifier;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -46,7 +45,6 @@ public class QuickInterviewDefaultPackageHandler extends DefaultGlobalScript<Typ
 		// annotation
 		// to specify another package
 		if (annotationStrings.length == 0) {
-			Environment r = Environment.getInstance();
 			PackageManager packageManager = KnowWEUtils.getPackageManager(section.getArticleManager());
 			String[] defaultPackages = packageManager.getDefaultPackages(section.getArticle());
 			for (String defaultPackage : defaultPackages) {

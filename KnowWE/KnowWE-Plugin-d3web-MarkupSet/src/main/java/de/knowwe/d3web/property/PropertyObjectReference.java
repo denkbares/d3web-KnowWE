@@ -22,15 +22,14 @@ import java.util.regex.Pattern;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.NamedObject;
-import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.knowledgebase.D3webCompileScript;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.AnswerReferenceRegistrationHandler;
 import de.d3web.we.object.D3webTerm;
 import de.d3web.we.object.D3webTermReference;
 import de.d3web.we.object.NamedObjectReference;
 import de.d3web.we.object.QuestionReference;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;

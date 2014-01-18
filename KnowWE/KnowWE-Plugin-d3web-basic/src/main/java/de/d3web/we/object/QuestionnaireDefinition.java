@@ -28,7 +28,6 @@ import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.strings.Identifier;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webHandler;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.Term;
@@ -72,7 +71,8 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 			String name = section.get().getTermName(section);
 			Class<?> termObjectClass = section.get().getTermObjectClass(section);
 			TerminologyManager terminologyHandler = compiler.getTerminologyManager();
-			terminologyHandler.registerTermDefinition(compiler, section, termObjectClass, termIdentifier);
+			terminologyHandler.registerTermDefinition(compiler, section, termObjectClass,
+					termIdentifier);
 
 			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(compiler, section);
 			if (abortCheck.hasErrors() || abortCheck.termExist()) return abortCheck.getErrors();
