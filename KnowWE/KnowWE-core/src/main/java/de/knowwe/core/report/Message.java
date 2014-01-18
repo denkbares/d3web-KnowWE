@@ -20,6 +20,7 @@
 
 package de.knowwe.core.report;
 
+import java.io.Serializable;
 
 /**
  * 
@@ -30,7 +31,9 @@ package de.knowwe.core.report;
  * @author Albrecht Striffler (denkbares GmbH)
  * 
  */
-public final class Message implements Comparable<Message> {
+public final class Message implements Comparable<Message>, Serializable {
+
+	private static final long serialVersionUID = 686699156806288497L;
 
 	public enum Type {
 		INFO, WARNING, ERROR
