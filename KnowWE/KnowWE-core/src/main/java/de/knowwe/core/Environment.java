@@ -36,9 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
@@ -47,6 +45,7 @@ import de.d3web.plugin.JPFPluginManager;
 import de.d3web.plugin.Plugin;
 import de.d3web.plugin.PluginManager;
 import de.d3web.plugin.Resource;
+import de.d3web.utils.Log;
 import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
@@ -128,8 +127,7 @@ public class Environment {
 	 */
 	public static synchronized Environment getInstance() {
 		if (instance == null) {
-			Logger.getLogger(Environment.class.getName()).severe(
-					"Environment was not instantiated!");
+			Log.severe("Environment was not instantiated!");
 		}
 		return instance;
 	}
@@ -139,15 +137,13 @@ public class Environment {
 	}
 
 	public static void initInstance(WikiConnector wiki) {
-		Logger.getLogger(Environment.class.getName()).info(
-				"STARTING TO INITIALIZE KNOWWE ENVIRONMENT");
+		Log.info("STARTING TO INITIALIZE KNOWWE ENVIRONMENT");
 
 		instance = new Environment(wiki);
 		instance.init();
 		EventManager.getInstance().fireEvent(InitEvent.getInstance());
 
-		Logger.getLogger(Environment.class.getName()).info(
-				"INITIALIZED KNOWWE ENVIRONMENT");
+		Log.info("INITIALIZED KNOWWE ENVIRONMENT");
 	}
 
 	/**
@@ -183,7 +179,7 @@ public class Environment {
 		catch (Throwable e) {
 			String msg = "Invalid initialization of the wiki. This is caused by an invalid wiki plugin. "
 					+ "Wiki is in unstable state. Please exit and correct before using the wiki.";
-			Logger.getLogger(getClass().getName()).log(Level.SEVERE, msg, e);
+			Log.severe(msg, e);
 			throw new IllegalStateException(msg, e);
 		}
 	}
@@ -264,8 +260,7 @@ public class Environment {
 				pis.close();
 			}
 			catch (IOException ioe) {
-				Logger.getLogger(this.getClass().getName()).severe(
-						"Failed to set LogLevel: " + ioe.getMessage());
+				Log.severe("Failed to set LogLevel ", ioe);
 			}
 		}
 	}
@@ -472,9 +467,7 @@ public class Environment {
 		String key = tagName.toLowerCase();
 
 		if (tagHandlers.containsKey(key)) {
-			Logger.getLogger(this.getClass().getName()).warning(
-					"TagHandler for tag '" + tagName
-							+ "' had already been added.");
+			Log.warning("TagHandler for tag '" + tagName + "' had already been added.");
 		}
 		else {
 			this.tagHandlers.put(key, tagHandler);
@@ -617,8 +610,10 @@ public class Environment {
 	 */
 	@Deprecated
 	public TerminologyManager getTerminologyManager(String defaultWeb, String master) {
-		return KnowWEUtils.getTerminologyManager(master == null ? null : KnowWEUtils.getArticleManager(
-				defaultWeb).getArticle(master));
+		return KnowWEUtils.getTerminologyManager(master == null
+				? null
+				: KnowWEUtils.getArticleManager(
+						defaultWeb).getArticle(master));
 	}
 
 	/**

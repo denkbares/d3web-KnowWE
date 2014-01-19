@@ -32,6 +32,16 @@ import de.knowwe.core.kdom.parsing.Section;
  */
 public interface DestroyScript<C extends Compiler, T extends Type> {
 
+	/**
+	 * Reverts the compilation a specified section previously created by a
+	 * (this) compile script for the specified compiler instance. The method
+	 * shall revert the modifications of some data of the compilers build
+	 * artifacts (e.g. modify the knowledge base for a d3web compiler).
+	 * 
+	 * @created 18.01.2014
+	 * @param compiler the compiler the section shall be compiled for
+	 * @param section the section to be compiled
+	 */
 	void destroy(C compiler, Section<T> section);
 
 	/**
