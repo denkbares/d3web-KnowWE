@@ -35,13 +35,11 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
  * 
@@ -76,10 +74,6 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 
 		m.addAnnotation(SAVE_KEY, false);
 		m.addAnnotationRenderer(SAVE_KEY, NothingRenderer.getInstance());
-
-		m.addAnnotation(PackageManager.MASTER_ATTRIBUTE_NAME, false);
-		m.setAnnotationDeprecated(PackageManager.MASTER_ATTRIBUTE_NAME);
-		m.addAnnotationRenderer(PackageManager.MASTER_ATTRIBUTE_NAME, StyleRenderer.PACKAGE);
 
 		m.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 		m.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
@@ -138,7 +132,9 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 						+
 						"<select name=\"savedsessions\"  size=\"1\" width=\"30\"><option>-Load Session-</option>"
 						+ getSavedSessions(user)
-						+ "</select><input name=\"load\" type=\"button\" value=\"Load\" onclick=\"loadQuicki()\"/>"
+						+ "</select><input name=\"load\" type=\"button\" value=\"Load\" onclick=\"loadQuicki('"
+						+ section.getID()
+						+ "')\"/>"
 						+
 						"<input name=\"name\" type=\"text\" size=\"20\" maxlength=\"30\" />"
 						+
@@ -146,52 +142,11 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 
 			}
 			string.appendHtml(savehtml);
-			String master = DefaultMarkupType.getAnnotation(section,
-					PackageManager.MASTER_ATTRIBUTE_NAME);
-			String packageName = DefaultMarkupType.getAnnotation(section,
-					PackageManager.PACKAGE_ATTRIBUTE_NAME);
-			String masterHtml = "";
-			String packageNameHtml = "";
-			String defaultPackageName = "";
-			if (master != null) {
-				masterHtml = " master=\"" + master + "\"";
-			}
-			if (packageName != null) {
-				packageNameHtml = " package=\"" + packageName + "\"";
-			}
-			else {
-				PackageManager packageManager = KnowWEUtils.getPackageManager(section.getArticleManager());
-				String[] defaultPackages = packageManager.getDefaultPackages(section.getArticle());
-				for (String defaultPackage : defaultPackages) {
-					defaultPackageName = defaultPackage;
-					packageNameHtml = " package=\"" + defaultPackage
-							+ "\"";
-					break;
-				}
-			}
-			String html = "<div id=\"quickinterview\""
-					+ masterHtml
-					+ " "
-					+ packageNameHtml
-					+ ">";
 
-			string.appendHtml(html);
-			if (packageName != null) {
-				string.appendHtml(QuickInterviewRenderer.callQuickInterviewRendererWithPackageName(
-						user, packageName));
-			}
-			else if (packageName == null && master != null) {
-
-				string.appendHtml(QuickInterviewRenderer.callQuickInterviewRenderer(user, master));
-			}
-			else {
-				string.appendHtml(QuickInterviewRenderer.callQuickInterviewRendererWithPackageName(
-						user, defaultPackageName));
-			}
-			string.appendHtml("</div>");
-
-			// render subsections +
-			// QuickInterviewRenderer.callQuickInterviewRenderer(user, master)
+			string.appendHtmlTag("div", "class", "quickinterview", "sectionId", section.getID(),
+					"id", "quickinterview_" + section.getID());
+			QuickInterviewRenderer.renderInterview(section, user, string);
+			string.appendHtmlTag("/div");
 
 			List<Section<?>> subsecs = section.getChildren();
 			Section<?> first = subsecs.get(0);

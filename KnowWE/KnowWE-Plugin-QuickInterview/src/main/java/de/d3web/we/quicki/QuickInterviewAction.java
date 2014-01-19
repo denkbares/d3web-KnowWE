@@ -22,27 +22,28 @@ package de.d3web.we.quicki;
 
 import java.io.IOException;
 
+import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.utils.KnowWEUtils;
 
 public class QuickInterviewAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		String master = context.getParameter("master");
-		String packageName = context.getParameter("packageName");
-		String result = "";
-		if (packageName == null) {
-			result = QuickInterviewRenderer.callQuickInterviewRenderer(context, master);
-		}
-		else {
-			result = QuickInterviewRenderer.callQuickInterviewRendererWithPackageName(context,
-					packageName);
-		}
-		
-		if (result != null && context.getWriter() != null) {
-			context.setContentType("text/html; charset=UTF-8");
-			context.getWriter().write(result);
+		String sectionId = context.getParameter(Attributes.SECTION_ID);
+		Section<?> section = Sections.getSection(sectionId);
+		if (section != null && KnowWEUtils.canView(section, context)) {
+			RenderResult result = new RenderResult(context);
+			QuickInterviewRenderer.renderInterview(section, context, result);
+			String string = result.toString();
+			if (string != null && context.getWriter() != null) {
+				context.setContentType("text/html; charset=UTF-8");
+				context.getWriter().write(string);
+			}
 		}
 	}
 }

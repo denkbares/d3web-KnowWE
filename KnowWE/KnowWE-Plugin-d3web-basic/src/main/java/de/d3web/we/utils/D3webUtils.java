@@ -79,6 +79,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
+import de.knowwe.core.taghandler.TagHandlerType;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.d3web.event.FindingSetEvent;
@@ -221,6 +222,7 @@ public class D3webUtils {
 		Section<PackageCompileType> compileSection = Sections.findSuccessor(
 				article.getRootSection(),
 				PackageCompileType.class);
+		if (compileSection == null) return null;
 		D3webCompiler d3webCompiler = getD3webCompiler(compileSection);
 		if (d3webCompiler == null) return null;
 		return d3webCompiler.getKnowledgeBase();
@@ -230,12 +232,18 @@ public class D3webUtils {
 	 * If the given section is compiled by a {@link D3webCompiler} or is a
 	 * section of the type {@link PackageCompileType} belonging to a knowledge
 	 * base markup, the knowledge base of the right {@link D3webCompiler} is
-	 * returned.
+	 * returned. If a {@link TagHandlerType} is given, the {@link KnowledgeBase}
+	 * of the same article is returned for compatibility reasons.
 	 * 
 	 * @created 06.01.2014
 	 */
 	public static KnowledgeBase getKnowledgeBase(Section<?> section) {
-		return getD3webCompiler(section).getKnowledgeBase();
+		if (section.get() instanceof TagHandlerType) {
+			return D3webUtils.getKnowledgeBase(section.getArticle());
+		}
+		else {
+			return getD3webCompiler(section).getKnowledgeBase();
+		}
 	}
 
 	@SuppressWarnings("unchecked")

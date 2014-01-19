@@ -12,13 +12,13 @@ import de.d3web.core.session.SessionFactory;
 import de.d3web.testcase.TestCaseUtils;
 import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.TestCase;
-import de.d3web.utils.Triple;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.testcases.ProviderTriple;
 import de.knowwe.testcases.TestCasePlayerType;
-import de.knowwe.testcases.TestCaseProvider;
 
 public class TestCaseScanner implements Scanner {
 
@@ -33,12 +33,12 @@ public class TestCaseScanner implements Scanner {
 		PrintStream out = new PrintStream(target);
 		try {
 			for (Section<TestCasePlayerType> player : players) {
-				List<Triple<TestCaseProvider, Section<?>, Article>> providers = de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(player);
-				for (Triple<TestCaseProvider, Section<?>, Article> triple : providers) {
+				List<ProviderTriple> providers = de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(player);
+				for (ProviderTriple triple : providers) {
 					TestCase testCase = triple.getA().getTestCase();
-					Article master = triple.getC();
+					Section<? extends PackageCompileType> kbSection = triple.getC();
 					// test case with original knowledge base
-					KnowledgeBase base = D3webUtils.getKnowledgeBase(master);
+					KnowledgeBase base = D3webUtils.getKnowledgeBase(kbSection);
 					out.printf("Results for test case '%s'\n", triple.getA().getName());
 					execute(base, testCase, out);
 					out.print("\n");

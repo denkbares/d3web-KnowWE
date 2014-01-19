@@ -21,18 +21,18 @@
 /* ------------ Quick Interview Styling ------------- */
 /* ################################################## */
 /* dont display the blue plugin panel border */
-#quickinterview {
+.quickinterview {
 	border: none;
 }
 
 /* dont display a header for the quicki plugin */
-#quickinterview  h3 {
+.quickinterview  h3 {
 	font-size: 1.25em;
 	line-height: 1.0em;
 }
 
 /* styling of the questionnaire div */
-#quickinterview .questionnaire {
+.quickinterview .questionnaire {
 	clear: both;
 	display: block;
 	padding: 5px 0 3px 30px;
@@ -42,7 +42,7 @@
 }
 
 /* styling of empty questionnaires */
-#quickinterview .emptyQuestionnaire {
+.quickinterview .emptyQuestionnaire {
 	display: block;
 	clear: both;
 	font-weight: normal;
@@ -53,21 +53,21 @@
 }
 
 /* styling of the questionnaire div */
-#quickinterview .pointRight {
+.quickinterview .pointRight {
 	background: transparent url(../images/triangleRight.png) no-repeat 10px
 		5px;
 	cursor: pointer;
 }
 
 /* styling of the questionnaire div */
-#quickinterview .pointDown {
+.quickinterview .pointDown {
 	background: transparent url(../images/triangleDown.png) no-repeat 10px
 		5px;
 	cursor: pointer;
 }
 
 /* some declaration regarding as well questions as well as answers */
-#quickinterview .qablock {
+.quickinterview .qablock {
 	min-height: 21px;
 	margin-right: 10px;
 	background-color: transparent;
@@ -80,17 +80,17 @@
 }
 
 /* abstraction questions */
-#quickinterview .qablockHidden {
+.quickinterview .qablockHidden {
 	color: #999;
 	margin-bottom: 3px;
 }
 
-#quickinterview .qablock:hover,.qablockHidden:hover {
+.quickinterview .qablock:hover,.qablockHidden:hover {
 	background: #f5f5f5;
 }
 
 /* styling of the front part of the qablock that displays the question name */
-#quickinterview .question {
+.quickinterview .question {
 	clear: both;
 	float: left;
 	background-color: transparent;
@@ -99,7 +99,7 @@
 }
 
 /* styling of the front part of the qablock that displays the question name */
-#quickinterview .questionTT {
+.quickinterview .questionTT {
 	clear: both;
 	float: left;
 	background-color: transparent;
@@ -108,21 +108,21 @@
 	cursor: pointer;
 }
 
-#quickinterview .tdquestion {
+.quickinterview .tdquestion {
 	width: 320;
 }
 
 /* styling for indicated questions/questionnaires */
-/* #quickinterview .indicated { border: 2px solid #ACC0D6; padding: 3px 0 0 0; }*/
+/* .quickinterview .indicated { border: 2px solid #ACC0D6; padding: 3px 0 0 0; }*/
 /* the separator between the answers */
-#quickinterview .separator {
+.quickinterview .separator {
 	float: left;
 	padding: 2px 3px;
 	border: none;
 }
 
 /* answer styling */
-#quickinterview .answer {
+.quickinterview .answer {
 	float: left;
 	background-color: transparent;
 	padding: 2px 0 2px 0;
@@ -130,7 +130,7 @@
 }
 
 /* answer active syling */
-#quickinterview .answerClicked {
+.quickinterview .answerClicked {
 	float: left;
 	background-color: transparent;
 	border-top: 2px solid #ACC0D6;
@@ -140,7 +140,7 @@
 }
 
 /* answer mc styling */
-#quickinterview .answerMC {
+.quickinterview .answerMC {
 	float: left;
 	background-color: transparent;
 	padding: 2px 0;
@@ -148,7 +148,7 @@
 }
 
 /* answer mcs when clicked */
-#quickinterview .answerMCClicked {
+.quickinterview .answerMCClicked {
 	float: left;
 	background-color: transparent;
 	border-top: 2px solid #ACC0D6;
@@ -158,7 +158,7 @@
 }
 
 /* answer unknown styling */
-#quickinterview .answerunknown {
+.quickinterview .answerunknown {
 	padding: 2px 0;
 	cursor: pointer;
 	float: left;
@@ -166,7 +166,7 @@
 }
 
 /* answer unknown styling clicked */
-#quickinterview .answerunknownClicked {
+.quickinterview .answerunknownClicked {
 	padding: 0 0;
 	cursor: pointer;
 	border-bottom: 2px #ACC0D6 solid;
@@ -176,7 +176,7 @@
 }
 
 /* styling of input box */
-#quickinterview .numinput {
+.quickinterview .numinput {
 	height: 12px;
 	float: left;
 	margin-left: 0;
@@ -184,7 +184,7 @@
 }
 
 /* error message when input is out of range */
-#quickinterview .inputrangeerror {
+.quickinterview .inputrangeerror {
 	color: red;
 	height: 12px;
 	float: left;
@@ -192,7 +192,7 @@
 	cursor: pointer;
 }
 
-#quickinterview .errormsg {
+.quickinterview .errormsg {
 	color: red;
 	float: left;
 	margin-left: 5px;
@@ -201,19 +201,19 @@
 }
 
 /* styling of hidden div for submitting num-values */
-#quickinterview .num-ok {
+.quickinterview .num-ok {
 	float: left; /* height: 20px; margin: 0 5px; cursor: pointer; */
 }
 
 /* styling of input box button */
-#quickinterview .unit {
+.quickinterview .unit {
 	margin: 0 5px;
 	float: left;
 	cursor: default;
 }
 
 /* styling of input box date answers */
-#quickinterview .inputdate {
+.quickinterview .inputdate {
 	height: 12px;
 	float: left;
 	margin-left: 0;
@@ -221,7 +221,7 @@
 }
 
 /* styling of input box text answers */
-#quickinterview .inputtextvalue {
+.quickinterview .inputtextvalue {
 	height: 12px;
 	float: left;
 	margin-left: 0;
@@ -229,7 +229,7 @@
 }
 
 /* styling of input box button date answers */
-#quickinterview .date-ok {
+.quickinterview .date-ok {
 	height: 20px;
 	margin: 0 5px;
 	float: left;
@@ -238,7 +238,7 @@
 }
 
 /* pseudo element for the correct closing of the plugin rendering regardless of at which depth of recursion */
-#quickinterview .invisible {
+.quickinterview .invisible {
 	display: block;
 	clear: both;
 	width: 100%;
@@ -247,7 +247,7 @@
 }
 
 /* styling of interview elements that occur repeated times */
-#quickinterview .alreadyDefined {
+.quickinterview .alreadyDefined {
 	background-color: transparent;
 	font-color: #666;
 	color: #666;
@@ -257,7 +257,7 @@
 }
 
 /* the reset button in the interview header */
-#quickinterview .norun {
+.quickinterview .norun {
 	background-image: url(../images/progress_stop_pale.gif);
 	height: 20px;
 	width: 20px;
@@ -268,7 +268,7 @@
 	background-color: transparent;
 }
 
-#quickinterview .reset {
+.quickinterview .reset {
 	background-image: url(../images/progress_stop.gif);
 	height: 20px;
 	width: 20px;
@@ -280,26 +280,26 @@
 	cursor: pointer;
 }
 
-#quickinterview #quickireset {
+.quickinterview #quickireset {
 	position: absolute;
 	right: 0px;
 	top: 3px;
 }
 
-.defaultMarkupFrame #quickinterview #quickireset {
+.defaultMarkupFrame .quickinterview #quickireset {
 	position: absolute;
 	right: 100px;
 	top: 3px;
 }
 
-#quickinterview .mcbutton {
+.quickinterview .mcbutton {
 	height: 20px;
 	float: left;
 	margin-left: 5px;
 }
 
 /* the enable-quick answers button in the interview header */
-#quickinterview .qquickanswers {
+.quickinterview .qquickanswers {
 	background-image: url(../images/smartmode_co.gif);
 	height: 20px;
 	width: 20px;

@@ -21,17 +21,14 @@
  * saves QuickInterview Session
  */
 
-function saveQuicki() {
+function saveQuicki(sectionId) {
 	var name = document.loadsave.name.value
 	var params = {
 		savename : name,
 		action : 'QuickInterviewSaveAction',
+		SectionID : sectionId,
 	}
 	
-	var master = jq$('#quickinterview').attr('master');
-    if(master){
-    	params.master = master;
-    }
 	var options = {
 		url : KNOWWE.core.util.getURL(params),
 		loader : true,

@@ -21,16 +21,13 @@
  * loads QuickInterview Session
  */
 
-function loadQuicki() {
+function loadQuicki(sectionId) {
 	var name = document.loadsave.savedsessions.value
 	var params = {
 		loadname : name,
 		action : 'QuickInterviewLoadAction',
+		SectionID : sectionId,
 	}
-	var master = jq$('#quickinterview').attr('master');
-    if(master){
-    	params.master = master;
-    }
     
 	var options = {
 		url : KNOWWE.core.util.getURL(params),

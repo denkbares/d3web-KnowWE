@@ -20,15 +20,12 @@
 
 package de.d3web.we.quicki;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.core.knowledge.InterviewObject;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -58,14 +55,13 @@ import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.strings.Strings;
 import de.d3web.we.basic.SessionProvider;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.notification.NotificationManager;
-import de.knowwe.notification.OutDatedSessionNotification;
 
 /**
  * Render the quick interview -aka QuickI- in KnowWE --- HTML / JS / CSS based
@@ -91,21 +87,30 @@ public class QuickInterviewRenderer {
 
 	private final UserContext user;
 
-	/**
-	 * Assembles and returns the HTML representation of the interview.
-	 * 
-	 * @created 15.07.2010
-	 * @param c the session
-	 * @param web the web context
-	 * @return the String representation of the interview
-	 */
-	public static String renderInterview(Session c, String web,
-			UserContext user) {
-		// removed all static items and creating an instance instead
-		// otherwise parallel access from different users will make
-		// the rendering process fail
-		return new QuickInterviewRenderer(c, web, user)
-				.render();
+	public static void renderInterview(Section<?> section, UserContext user, RenderResult result) {
+		KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(section);
+
+		Collection<D3webCompiler> compilers = Compilers.getCompilers(section,
+				D3webCompiler.class);
+		if (compilers.size() > 1) {
+			result.appendHtmlElement(
+					"span",
+					"This interview belongs to multiple knowledge bases, only " +
+							"the first knowledge base (lexicographically) will be used.",
+					"class", "warning");
+
+		}
+		knowledgeBase = D3webUtils.getKnowledgeBase(section);
+
+		if (knowledgeBase == null) {
+			result.appendHtmlElement(
+					"span",
+					"No knowledge base found for this interview.",
+					"class", "error");
+			return;
+		}
+		Session session = SessionProvider.getSession(user, knowledgeBase);
+		new QuickInterviewRenderer(session, section.getWeb(), user).render(result);
 	}
 
 	private QuickInterviewRenderer(Session c, String webb, UserContext user) {
@@ -123,12 +128,10 @@ public class QuickInterviewRenderer {
 
 	}
 
-	private String render() {
-
-		StringBuffer buffi = new StringBuffer();
+	private String render(RenderResult buffi) {
 
 		// Assembles the Interview
-		buffi.append("<div style='clear:both'>");
+		buffi.appendHtml("<div style='clear:both'>");
 
 		// Map all processed TerminologyObjects already in interview table,
 		// avoids endless recursion in cyclic hierarchies
@@ -143,7 +146,7 @@ public class QuickInterviewRenderer {
 				processedTOs, -2);
 
 		// add pseudo element for correctly closing the plugin
-		buffi.append("<div class='invisible'>  </div></div>");
+		buffi.appendHtml("<div class='invisible'>  </div></div>");
 		return buffi.toString();
 	}
 
@@ -153,17 +156,17 @@ public class QuickInterviewRenderer {
 	 * @created 15.07.2010
 	 * @return the plugin header HTML String
 	 */
-	private void getInterviewPluginHeader(StringBuffer html) {
+	private void getInterviewPluginHeader(RenderResult html) {
 		// assemble JS string
 		String relAt = "rel=\"{" + "web:'" + web + "', " + "ns:'" + namespace
 				+ "', " + renderConfigParams() + "}\" ";
-		html.append("<div style='position:relative'>");
-		html.append(
+		html.appendHtml("<div style='position:relative'>");
+		html.appendHtml(
 				"<div id='quickireset' ")
-				.append("class='reset pointer' title='")
-				.append(rb.getString("KnowWE.quicki.reset")).append("' ")
-				.append(relAt).append("></div>\n");
-		html.append("</div>");
+				.appendHtml("class='reset pointer' title='")
+				.appendHtml(rb.getString("KnowWE.quicki.reset")).appendHtml("' ")
+				.appendHtml(relAt).appendHtml("></div>\n");
+		html.appendHtml("</div>");
 	}
 
 	/**
@@ -180,7 +183,7 @@ public class QuickInterviewRenderer {
 	 *        indicated or not
 	 */
 	private void getInterviewElementsRenderingRecursively(
-			TerminologyObject questionnaire, StringBuffer buffer,
+			TerminologyObject questionnaire, RenderResult buffer,
 			Set<TerminologyObject> processedTOs, int depth) {
 
 		boolean visible = isVisible(questionnaire);
@@ -202,7 +205,7 @@ public class QuickInterviewRenderer {
 
 		// group all following questionnaires/questions for easily hiding them
 		// blockwise later
-		buffer.append("<div id='group_" + id + "' style='display: "
+		buffer.appendHtml("<div id='group_" + id + "' style='display: "
 				+ (visible ? "block" : "none") + "' >");
 
 		depth++;
@@ -222,7 +225,7 @@ public class QuickInterviewRenderer {
 						depth, questionnaire);
 			}
 		}
-		buffer.append("</div>"); // close the grouping div
+		buffer.appendHtml("</div>"); // close the grouping div
 	}
 
 	/**
@@ -238,7 +241,7 @@ public class QuickInterviewRenderer {
 	 * @param init flag for displaying whether processed element is contained in
 	 *        an init questionnaire
 	 */
-	private void getQuestionsRecursively(Question topQuestion, StringBuffer sb,
+	private void getQuestionsRecursively(Question topQuestion, RenderResult sb,
 			Set<TerminologyObject> processedTOs, int depth,
 			TerminologyObject parent) {
 
@@ -275,14 +278,14 @@ public class QuickInterviewRenderer {
 	 * @param depth indicator for the indentation depth
 	 */
 	private void getAlreadyDefinedRendering(TerminologyObject element,
-			StringBuffer sb, int depth) {
+			RenderResult sb, int depth) {
 
 		int margin = 30 + depth * 20;
-		sb.append("<div "
+		sb.appendHtml("<div "
 				+ "class='alreadyDefined' style='margin-left: " + margin
 				+ "px; display: block;' >");
 		sb.append(Strings.encodeHtml(getLabel(element)) + " is already defined!");
-		sb.append("</div>");
+		sb.appendHtml("</div>");
 	}
 
 	/**
@@ -297,30 +300,30 @@ public class QuickInterviewRenderer {
 	 * @return the HTML of a questionnaire div
 	 */
 	private void getQuestionnaireRendering(QASet container, int depth,
-			StringBuffer buffi, String id) {
+			RenderResult buffi, String id) {
 
 		int margin = 10 + depth * 20; // calculate identation
 
 		boolean visible = isVisible(container);
 		boolean indicated = isThisOrFollowUpIndicated(container);
-		buffi.append("<div id='" + Strings.encodeHtml(id)
+		buffi.appendHtml("<div id='" + Strings.encodeHtml(id)
 				+ "' " + "class='questionnaire point"
 				+ (visible ? "Down" : "Right")
 				+ (indicated ? " indicated" : "") + "' "
 				+ "style='margin-left: " + margin + "px;' >");
 
 		buffi.append(Strings.encodeHtml(getLabel(container)));
-		buffi.append("</div>\n");
+		buffi.appendHtml("</div>\n");
 
 		if (container.getChildren().length == 0) {
 			margin = margin + 30;
-			buffi.append("<div id='group_" + Strings.encodeHtml(container.getName())
+			buffi.appendHtml("<div id='group_" + Strings.encodeHtml(container.getName())
 					+ "' class='group' style='display: "
 					+ (visible ? "block" : "none") + ";' >");
-			buffi.append("\n<div class='emptyQuestionnaire' "
+			buffi.appendHtml("\n<div class='emptyQuestionnaire' "
 					+ "style='margin-left: " + margin
 					+ "px'>No elements defined!</div>");
-			buffi.append("</div>");
+			buffi.appendHtml("</div>");
 		}
 	}
 
@@ -336,7 +339,7 @@ public class QuickInterviewRenderer {
 	 * @return HTML-String representation for one QA-Block
 	 */
 	private void getQABlockRendering(Question question, int depth,
-			TerminologyObject parent, StringBuffer sb) {
+			TerminologyObject parent, RenderResult sb) {
 
 		// calculate indentation depth & resulting width of the question display
 		// 10 for standard margin and 30 for indenting further than the triangle
@@ -351,11 +354,11 @@ public class QuickInterviewRenderer {
 			}
 		}
 
-		sb.append("<div class='" + qablockCSS
+		sb.appendHtml("<div class='" + qablockCSS
 				+ "' style='display: block; margin-left: " + d
 				+ "px;'\n>");
 
-		sb.append("<table><tr><td class='tdquestion'\n>");
+		sb.appendHtml("<table><tr><td class='tdquestion'\n>");
 		// width of the question front section, i.e. total width - identation
 		int w = 320 - d;
 		String divText = Strings.encodeHtml(getLabel(question));
@@ -369,13 +372,13 @@ public class QuickInterviewRenderer {
 			title = "title='" + title + "' ";
 		}
 
-		sb.append("<div id='" + Strings.encodeHtml(question.getName())
+		sb.appendHtml("<div id='" + Strings.encodeHtml(question.getName())
 				+ "' " + "parent='"
 				+ Strings.encodeHtml(parent.getName()) + "' " + "class='" + cssClass + "' "
 				+ title + "style='width: " + w
-				+ "px; display: inline-block;' >" + divText + "</div>");
+				+ "px; display: inline-block;' >").append(divText).appendHtml("</div>");
 		// }
-		sb.append("</td><td>");
+		sb.appendHtml("</td><td>");
 
 		if (question instanceof QuestionOC) {
 			List<Choice> list = ((QuestionChoice) question)
@@ -398,8 +401,8 @@ public class QuickInterviewRenderer {
 		else if (question instanceof QuestionText) {
 			renderTextAnswers(question, sb);
 		}
-		sb.append("</td></tr></table>");
-		sb.append("</div>");
+		sb.appendHtml("</td></tr></table>");
+		sb.appendHtml("</div>");
 	}
 
 	private boolean hideAbstractions() {
@@ -440,7 +443,7 @@ public class QuickInterviewRenderer {
 		return result;
 	}
 
-	private void renderTextAnswers(Question q, StringBuffer sb) {
+	private void renderTextAnswers(Question q, RenderResult sb) {
 
 		// if answer has already been answered write value into the field
 		Value value = D3webUtils.getValueNonBlocking(session, q);
@@ -455,7 +458,7 @@ public class QuickInterviewRenderer {
 				+ Strings.encodeURL(q.getName()) + "', " + "}\" ";
 
 		// assemble the input field
-		sb.append("<input class='inputtextvalue'  style='display: inline;' id='input_"
+		sb.appendHtml("<input class='inputtextvalue'  style='display: inline;' id='input_"
 				+ id
 				+ "' type='text' "
 				+ "value='"
@@ -464,7 +467,7 @@ public class QuickInterviewRenderer {
 				+ "size='18' " + jscall + " \n/>");
 		// "<div class='dateformatdesc'>()</div>");
 
-		sb.append("<div class='separator'></div>");
+		sb.appendHtml("<div class='separator'></div>");
 		renderAnswerUnknown(q, "num", sb);
 	}
 
@@ -477,7 +480,7 @@ public class QuickInterviewRenderer {
 	 * @return the HTML representation of one choice questions
 	 */
 	private void renderOCChoiceAnswers(Question q, List<Choice> list,
-			StringBuffer sb) {
+			RenderResult sb) {
 
 		// go through all choices = answer alternatives
 		boolean first = true;
@@ -509,9 +512,9 @@ public class QuickInterviewRenderer {
 			}
 
 			String label = getLabel(choice);
-			sb.append(getEnclosingTagOnClick("div", "" + label + "", cssclass,
+			appendEnclosingTagOnClick("div", label, cssclass,
 					jscall, null, spanid,
-					choice.getInfoStore().getValue(MMInfo.DESCRIPTION)));
+					choice.getInfoStore().getValue(MMInfo.DESCRIPTION), sb);
 
 			// System.out.println(getEnclosingTagOnClick("div", "" +
 			// choice.getName() + " ",
@@ -531,7 +534,7 @@ public class QuickInterviewRenderer {
 	 * @param q the question to which numerical answers are attached
 	 * @return the String for rendering numerical answer field
 	 */
-	private void renderNumAnswers(Question q, StringBuffer sb) {
+	private void renderNumAnswers(Question q, RenderResult sb) {
 
 		// if answer has already been answered write value into the field
 		Value value = D3webUtils.getValueNonBlocking(session, q);
@@ -585,27 +588,27 @@ public class QuickInterviewRenderer {
 		}
 
 		// assemble the input field
-		sb.append("<input class='numinput' id='input_" + id + "' type='text' "
+		sb.appendHtml("<input class='numinput' id='input_" + id + "' type='text' "
 				+ rangeString + "value='" + valueString + "' " + "size='7' " + jscall + " />");
 
 		// print the units
-		sb.append("<div class='unit'>" + Strings.encodeHtml(unit) + "</div>");
+		sb.appendHtml("<div class='unit'>").append(Strings.encodeHtml(unit)).appendHtml("</div>");
 
 		// sb.append("<input type='button' value='OK' class='num-ok' />");
 
 		if (Unknown.assignedTo(value) || !suppressUnknown(q)) {
-			sb.append("<div class='separator'>");
+			sb.appendHtml("<div class='separator'>");
 			// M.Ochlast: i added this (hidden) div to re-enable submitting of
 			// numValues by "clicking". This workaround is neccessary for KnowWE
 			// Systemtests (there is no Return-Key emulation possible).
-			sb.append("<div id='num-ok_" + id + "' class='num-ok'> | </div>");
-			sb.append("</div>");
+			sb.appendHtml("<div id='num-ok_" + id + "' class='num-ok'> | </div>");
+			sb.appendHtml("</div>");
 		}
 
 		renderAnswerUnknown(q, "num", sb);
 
 		String errmsgid = id + "_errormsg";
-		sb.append("<div id='" + errmsgid + "' class='invisible' ></div>");
+		sb.appendHtml("<div id='" + errmsgid + "' class='invisible' ></div>");
 	}
 
 	private String trimPZ(double d) {
@@ -633,7 +636,7 @@ public class QuickInterviewRenderer {
 	 * @param q the date-question
 	 * @param sb the String Buffer, the HTML is attached to
 	 */
-	private void renderDateAnswers(Question q, StringBuffer sb) {
+	private void renderDateAnswers(Question q, RenderResult sb) {
 
 		// if answer has already been answered write value into the field
 		Value value = D3webUtils.getValueNonBlocking(session, q);
@@ -655,18 +658,18 @@ public class QuickInterviewRenderer {
 		String title = "Use the following date format:\n"
 				+ placeHolder + "\nTime is optional, "
 				+ "if you use time, seconds and milliseconds are optional.";
-		sb.append("<input class='inputdate'  style='display: inline;' id='input_"
+		sb.appendHtml("<input class='inputdate'  style='display: inline;' id='input_"
 				+ id + "' type='dateValue' " + "value='" + valueString + "' placeholder='"
 				+ placeHolder + "' title='" + title + "' " + jscall + " />");
 
 		// sb.append("<input type='button' value='OK' class='date-ok' /> ");
 		if (Unknown.assignedTo(value) || !suppressUnknown(q)) {
-			sb.append("<div class='separator'> | </div>");
+			sb.appendHtml("<div class='separator'> | </div>");
 		}
 		renderAnswerUnknown(q, "num", sb);
 
 		String errmsgid = id + "_errormsg";
-		sb.append("<div id='" + errmsgid + "' class='invisible' ></div>");
+		sb.appendHtml("<div id='" + errmsgid + "' class='invisible' ></div>");
 	}
 
 	/**
@@ -683,9 +686,9 @@ public class QuickInterviewRenderer {
 	 * @return
 	 */
 	private void renderMCChoiceAnswers(QuestionChoice q,
-			MultipleChoiceValue mcval, StringBuffer sb) {
+			MultipleChoiceValue mcval, RenderResult sb) {
 
-		sb.append("<div class='answers' style='display: inline;'\n>");
+		sb.appendHtml("<div class='answers' style='display: inline;'\n>");
 		boolean first = true;
 		for (Choice choice : mcval.asChoiceList(q)) {
 			if (first) {
@@ -711,23 +714,23 @@ public class QuickInterviewRenderer {
 
 			String label = getLabel(choice);
 			String spanid = q.getName() + "_" + choice.getName();
-			sb.append(getEnclosingTagOnClick("div", "" + label + "", cssclass,
+			appendEnclosingTagOnClick("div", "" + label + "", cssclass,
 					jscall, null, spanid,
-					choice.getInfoStore().getValue(MMInfo.DESCRIPTION)));
+					choice.getInfoStore().getValue(MMInfo.DESCRIPTION), sb);
 
 		}
 
 		// also render the unknown alternative for choice questions
 		renderAnswerUnknown(q, "mc", sb);
-		sb.append("</div>");
+		sb.appendHtml("</div>");
 	}
 
-	private void renderChoiceSeparator(StringBuffer sb) {
+	private void renderChoiceSeparator(RenderResult sb) {
 		if (renderChoiceAnswerAsList()) {
-			sb.append("<br>");
+			sb.appendHtml("<br>");
 		}
 		else {
-			sb.append("<div class='separator'> | </div>");
+			sb.appendHtml("<div class='separator'> | </div>");
 		}
 	}
 
@@ -745,7 +748,7 @@ public class QuickInterviewRenderer {
 	 * @param q the question, to which unknown is added
 	 * @return the HTML representation
 	 */
-	private void renderAnswerUnknown(Question q, String type, StringBuffer sb) {
+	private void renderAnswerUnknown(Question q, String type, RenderResult sb) {
 
 		// if unknown should neither be displayed, not is selected
 		// render no answer unknown
@@ -774,8 +777,8 @@ public class QuickInterviewRenderer {
 			// separator already rendered in renderNumAnswers
 			renderChoiceSeparator(sb);
 		}
-		sb.append(getEnclosingTagOnClick("div", prompt, cssclass, jscall, null,
-				spanid, null));
+		appendEnclosingTagOnClick("div", prompt, cssclass, jscall, null,
+				spanid, null, sb);
 	}
 
 	/**
@@ -790,35 +793,31 @@ public class QuickInterviewRenderer {
 	 * @param onmouseover Something to happen regarding the onmouseover
 	 * @param id The id of the object represented , i.e., answer alternative,
 	 *        here
-	 * @return String representation of the final tag. An example: <span rel=
-	 *         "{oid:'MaU',web:'default_web',ns:'FAQ Devel..FAQ Devel_KB',qid:'Q2'}"
-	 *         class="answercell" id="span_Q2_MaU" > MaU </span>
+	 * @param result TODO
 	 */
-	private String getEnclosingTagOnClick(String tag, String text,
+	private void appendEnclosingTagOnClick(String tag, String text,
 			String cssclass, String onclick, String onmouseover, String id,
-			String title) {
-		StringBuffer sub = new StringBuffer();
-		sub.append("<" + tag);
+			String title, RenderResult result) {
+		result.appendHtml("<" + tag);
 		if (id != null && id.length() > 0) {
-			sub.append(" id='" + Strings.encodeHtml(id) + "' ");
+			result.appendHtml(" id='" + Strings.encodeHtml(id) + "' ");
 		}
 		if (onclick != null && onclick.length() > 0) {
-			sub.append(" " + onclick + " ");
+			result.appendHtml(" " + onclick + " ");
 		}
 		if (onmouseover != null && onmouseover.length() > 0) {
-			sub.append(" " + onmouseover + " ");
+			result.appendHtml(" " + onmouseover + " ");
 		}
 		if (title != null && title.length() > 0) {
 			cssclass = cssclass + " tooltipster";
-			sub.append(" title='" + Strings.encodeHtml(title) + "' ");
+			result.appendHtml(" title='" + Strings.encodeHtml(title) + "' ");
 		}
 		if (cssclass != null && cssclass.length() > 0) {
-			sub.append(" class='" + cssclass + "'");
+			result.appendHtml(" class='" + cssclass + "'");
 		}
-		sub.append(">");
-		sub.append(Strings.encodeHtml(text));
-		sub.append("</" + tag + ">");
-		return sub.toString();
+		result.appendHtml(">");
+		result.append(Strings.encodeHtml(text));
+		result.appendHtml("</" + tag + ">");
 	}
 
 	/**
@@ -894,90 +893,6 @@ public class QuickInterviewRenderer {
 
 	private String getID() {
 		return "quicki" + counter++;
-	}
-
-	/**
-	 * First initializes everything needed for using knowledge / using an
-	 * interview, then calls the appropriate renderer with the created session
-	 * 
-	 * @created 15.07.2010
-	 * @param topic
-	 * @param user
-	 * @param request
-	 * @param web
-	 * @return
-	 */
-	public static String callQuickInterviewRenderer(UserContext usercontext) {
-		if (usercontext == null || usercontext.getSession() == null) {
-			return "";
-		}
-
-		String topic = usercontext.getTitle();
-
-		return callQuickInterviewRenderer(usercontext, topic);
-
-	}
-
-	/**
-	 * TODO: Also do this for other markups using the current package like
-	 * Sparql and ShowSolution
-	 * 
-	 * @created 16.12.2013
-	 * @param usercontext
-	 * @param packageName
-	 * @return
-	 */
-	public static String callQuickInterviewRendererWithPackageName(UserContext usercontext, String packageName) {
-
-		PackageManager packageManager = KnowWEUtils.getPackageManager(KnowWEUtils.getArticleManager(usercontext.getWeb()));
-		Set<String> compilingArticles = packageManager.getCompilingArticles(packageName);
-		List<String> compilingArticlesSorted = new ArrayList<String>(compilingArticles);
-		Collections.sort(compilingArticlesSorted);
-		String title = "";
-		for (String compilingArticle : compilingArticlesSorted) {
-			title = compilingArticle;
-			break;
-		}
-		String callQuickInterviewRenderer = "";
-		if (compilingArticlesSorted.size() > 1) {
-			callQuickInterviewRenderer = "<span class='warning'>The given package \""
-					+ packageName
-					+ "\" is part of multiple knowledge bases, only the first knowledge base (lexicographically) will be used.</span>";
-
-		}
-		callQuickInterviewRenderer += callQuickInterviewRenderer(usercontext, title);
-		return callQuickInterviewRenderer;
-
-	}
-
-	public static String callQuickInterviewRenderer(UserContext usercontext, String title) {
-		if (usercontext == null || usercontext.getSession() == null) {
-			return "";
-		}
-		String topic;
-		if (title == null) {
-			topic = usercontext.getTitle();
-		}
-		else {
-			topic = title;
-		}
-		String web = usercontext.getParameter(Attributes.WEB);
-		HttpServletRequest request = usercontext.getRequest();
-
-		ResourceBundle rb = D3webUtils.getD3webBundle(request);
-
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
-		if (kb == null) return rb.getString("KnowWE.quicki.error");
-		Session session = SessionProvider.getSession(usercontext, kb);
-
-		// check if the latest knowledge base is used
-		if (SessionProvider.hasOutDatedSession(usercontext, kb)) {
-			NotificationManager.addNotification(usercontext,
-					new OutDatedSessionNotification(topic));
-		}
-
-		return renderInterview(session, web, usercontext);
-
 	}
 
 }

@@ -5,10 +5,9 @@ import java.util.Set;
 
 import de.d3web.testcase.model.TestCase;
 import de.d3web.testcase.prefix.PrefixedTestCase;
-import de.d3web.utils.Triple;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.testcases.ProviderTriple;
 import de.knowwe.testcases.TestCaseProvider;
 import de.knowwe.testcases.TestCaseUtils;
 
@@ -73,9 +72,9 @@ public abstract class PrefixedTestCaseProvider implements TestCaseProvider {
 
 	private TestCaseProvider getProviderOfPrefix(String web, String prefixName, String... prefixPackage) {
 		if (web != null && prefixName != null && prefixPackage != null) {
-			List<Triple<TestCaseProvider, Section<?>, Article>> testCaseProviderTriples = TestCaseUtils.getTestCaseProviders(
+			List<ProviderTriple> testCaseProviderTriples = TestCaseUtils.getTestCaseProviders(
 					web, prefixPackage);
-			for (Triple<TestCaseProvider, Section<?>, Article> triple : testCaseProviderTriples) {
+			for (ProviderTriple triple : testCaseProviderTriples) {
 				if (triple.getA().getName().equals(prefixName)) return triple.getA();
 			}
 		}

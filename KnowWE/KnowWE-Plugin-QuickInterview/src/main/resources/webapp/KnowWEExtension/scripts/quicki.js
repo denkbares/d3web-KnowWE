@@ -71,6 +71,11 @@ KNOWWE.plugin.quicki = function(){
 											// visibility states
 	var questionVis = '';		// for storing question visibility states
 	
+    function sectionId(event) {
+        var el = _KE.target(event); 
+    	return jq$(el).parents('.quickinterview').attr('sectionId');
+    }
+	
 	return {
         applyProcessingStateToEventHandler : function (fun, event) {
         	KNOWWE.core.util.updateProcessingState(1);
@@ -180,7 +185,7 @@ KNOWWE.plugin.quicki = function(){
         	if ($('quickireset')) {
 	            _KE.add('click', _KS('#quickireset'),  
 	        		function(event) {
-	            		KNOWWE.plugin.d3webbasic.actions.resetSession();
+	            		KNOWWE.plugin.d3webbasic.actions.resetSession(sectionId(event));
 	        		});
         	}
             
@@ -346,7 +351,7 @@ KNOWWE.plugin.quicki = function(){
 				// "#####"
             	mcvals = mcanswervals.substring(0, mcanswervals.length-5);
             	// and send it
-            	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, rel.qid, 
+            	KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.qid, rel.qid, 
                     	{action: 'SetSingleFindingAction', ValueID: mcvals});
             	
             } 
@@ -365,13 +370,13 @@ KNOWWE.plugin.quicki = function(){
             	// if mcanswerval storage is empty after last removal
             	if(mcanswervals == ""){
             		// we need to call a retract action
-                	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, rel.qid, 
+                	KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.qid, rel.qid, 
                         	{action: 'RetractSingleFindingAction', ValueID: mcvalsOld});
             	} else {
             		// get the newly assembled, complete mc fact
                 	mcvals = mcanswervals.substring(0, mcanswervals.length-5);
                 	// and send it
-                	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, rel.qid, 
+                	KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.qid, rel.qid, 
                         	{action: 'SetSingleFindingAction', ValueID: mcvals});
             	}
         	}
@@ -406,12 +411,12 @@ KNOWWE.plugin.quicki = function(){
             // if it is already highlighted it should now be deactivated and
 			// value retracted
             if(retract){
-            	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, rel.qid, 
+            	KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.qid, rel.qid, 
                     	{action: 'RetractSingleFindingAction', ValueID: rel.choice});
             }
             // otherwise send the value
             else {
-            	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, rel.qid, 
+            	KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.qid, rel.qid, 
                     	{action: 'SetSingleFindingAction', ValueID: rel.choice});
             }
         },
@@ -441,7 +446,7 @@ KNOWWE.plugin.quicki = function(){
 			if(el.className=='answerunknownClicked'){
 				
 			} else if (el.className=="answerunknown"){
-				KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.qid, rel.qid, 
+				KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.qid, rel.qid, 
 			             	{action: 'SetSingleFindingAction', ValueID: 'MaU'});
 				
 				// TODO: check if those are correct and needed at all
@@ -482,7 +487,7 @@ KNOWWE.plugin.quicki = function(){
                 
                 // empty values should not be sent!
                 if(inputtext == '') {
-                	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.oid, rel.qtext, 
+                	KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.oid, rel.qtext, 
 			             	{action: 'SetSingleFindingAction', ValueID: 'MaU'});
 			        return;
 			    }
@@ -512,7 +517,7 @@ KNOWWE.plugin.quicki = function(){
                 	 	
             	 		// send KNOWWE request as SingleFindingAction with given
 						// value
-                    	KNOWWE.plugin.quicki.send(rel.web, rel.ns, rel.oid, rel.qtext, 
+                    	KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.oid, rel.qtext, 
                     		{action: 'SetSingleFindingAction', ValueNum: inputtext});
 
             	 	} else {
@@ -528,7 +533,7 @@ KNOWWE.plugin.quicki = function(){
             	else {
             		// send KNOWWE request as SingleFindingAction with given
 					// value
-                	KNOWWE.plugin.quicki.send(rel.web, rel.ns, rel.oid, rel.qtext, 
+                	KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.oid, rel.qtext, 
                 		{action: 'SetSingleFindingAction', ValueNum: inputtext});
             	}
             }
@@ -551,7 +556,7 @@ KNOWWE.plugin.quicki = function(){
                     inputtext = _KS('#input_' + rel.oid).value; 
             }
             if( !inputtext ) {
-            	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.oid, rel.qtext, 
+            	KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.oid, rel.qtext, 
 			             	{action: 'SetSingleFindingAction', ValueID: 'MaU'});
 			        return;
 			}
@@ -568,7 +573,7 @@ KNOWWE.plugin.quicki = function(){
             		return;
     	 	}
             // send KNOWWE request as SingleFindingAction with given value
-            KNOWWE.plugin.quicki.send(rel.web, rel.ns, rel.oid, rel.qtext, 
+            KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.oid, rel.qtext, 
             		{action: 'SetSingleFindingAction', ValueDate: inputtext});
         },
         /**
@@ -586,12 +591,12 @@ KNOWWE.plugin.quicki = function(){
                     inputtext = _KS('#input_' + rel.oid).value; 
             }
             if( !inputtext ) {
-            	KNOWWE.plugin.quicki.send( rel.web, rel.ns, rel.oid, rel.qtext, 
+            	KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.oid, rel.qtext, 
 			             	{action: 'SetSingleFindingAction', ValueID: 'MaU'});
 	            return;  
             }
             // send KNOWWE request as SingleFindingAction with given value
-            KNOWWE.plugin.quicki.send(rel.web, rel.ns, rel.oid, rel.qtext, 
+            KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.oid, rel.qtext, 
             		{action: 'SetSingleFindingAction', ValueText: inputtext});
         },
         /**
@@ -717,7 +722,6 @@ KNOWWE.plugin.quicki = function(){
             	
             	KNOWWE.plugin.quicki.toggleImage(0, questionnaire);   
             } 
-        	KNOWWE.plugin.quicki.showRefreshed;
         },
         /**
 		 * TODO
@@ -748,25 +752,18 @@ KNOWWE.plugin.quicki = function(){
 		 * oid - The id of the question termName - The question text params -
 		 * Some parameter depending on the HTMLInputElement
 		 */
-        send : function( web, namespace, oid, termName, params){
+        send : function(sectionId, web, namespace, oid, termName, params){
 
             var pDefault = {
+                action : 'QuickInterviewAction',
+            	SectionID : sectionId,
                 KWikiWeb : web,
                 namespace : namespace,
                 ObjectID : oid,
                 TermName : termName
             }
-            
-        	var master = jq$('#quickinterview').attr('master');
-            var packageName = jq$('#quickinterview').attr('package');
-            if(master){
-            	pDefault.master = master;
-            }
-            if(packageName){
-            	pDefault.packageName = packageName;
-            }
-
-            pDefault = KNOWWE.helper.enrich( params, pDefault );
+        
+        	pDefault = KNOWWE.helper.enrich(params, pDefault);
              
             var options = {
                 url : KNOWWE.core.util.getURL( pDefault ),
@@ -791,17 +788,17 @@ KNOWWE.plugin.quicki = function(){
 		 * Function: showRefreshed send the request and render the interview
 		 * newly via QuickInterviewAction
 		 */
-        showRefreshed : function ( ){
+        showRefreshed : function (sectionId) {
         	
         	// needed to avoid endless calls in case quicki is reloaded
         	// due to a session clearing from solution panel
-        	if(!_KS('#quickinterview'))
+        	if(!_KS('.quickinterview'))
         		return;
         	
         	 var params = {
                      namespace : KNOWWE.helper.gup( 'page' ),
-                     action : 'QuickInterviewAction'
-                   
+                     action : 'QuickInterviewAction',
+                     SectionID : sectionId,
              }
         	 
         	 
@@ -813,13 +810,12 @@ KNOWWE.plugin.quicki = function(){
        		 
         	 }
         	 
-        	 var id = 'quickinterview';
         	 var rememberedToFocus = toSelect;
              var options = {
                 url : KNOWWE.core.util.getURL( params ),
                 response : {
                 	action : 'insert',
-                    ids : [ id ],	
+                    ids : [ "quickinterview_" + sectionId ],	
                 	fn : function(){
 			        	try {
 	                		KNOWWE.plugin.quicki.initialize();
@@ -862,7 +858,12 @@ KNOWWE.plugin.quicki = function(){
     if( KNOWWE.helper.loadCheck( ['Wiki.jsp'] )){
         window.addEvent( 'domready', function(){
         	KNOWWE.plugin.quicki.initialize();
-        	KNOWWE.helper.observer.subscribe( 'update', KNOWWE.plugin.quicki.showRefreshed);
+        	var fn = function() {
+        		jq$('.quickinterview').each(function() {
+        			KNOWWE.plugin.quicki.showRefreshed(jq$(this).attr('sectionId'));
+        		})
+        	}
+        	KNOWWE.helper.observer.subscribe( 'update', fn);
         });
     }
 }());

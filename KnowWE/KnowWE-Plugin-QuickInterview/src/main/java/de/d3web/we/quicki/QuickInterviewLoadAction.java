@@ -38,6 +38,9 @@ import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
@@ -61,56 +64,52 @@ public class QuickInterviewLoadAction extends AbstractAction {
 
 		// get WikiConnector, KnowledgeBase and Session
 		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
-		String web = context.getParameter(Attributes.WEB);
 
-		String title = context.getTitle();
+		String sectionId = context.getParameter(Attributes.SECTION_ID);
+		Section<?> section = Sections.getSection(sectionId);
+		if (section != null && KnowWEUtils.canView(section, context)) {
 
-		String topic;
-		if (title == null) {
-			topic = context.getTitle();
-		}
-		else {
-			topic = title;
-		}
+			KnowledgeBase kb = D3webUtils.getKnowledgeBase(section);
+			if (kb == null) {
+				return;
+			}
 
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
+			// deletes current Session and creates a new one, gets Blackboard
+			SessionProvider.removeSession(context, kb);
+			Session session = SessionProvider.createSession(context, kb);
+			Blackboard blackboard = session.getBlackboard();
 
-		// deletes current Session and creates a new one, gets Blackboard
-		SessionProvider.removeSession(context, kb);
-		Session session = SessionProvider.createSession(context, kb);
-		Blackboard blackboard = session.getBlackboard();
+			// writes information an Blackboard
+			try {
 
-		// writes information an Blackboard
-		try {
+				List<WikiAttachment> attachments = wikiConnector
+						.getAttachments(context.getTitle());
+				for (WikiAttachment wikiAttachment : attachments) {
+					String fileName = wikiAttachment.getFileName();
 
-			List<WikiAttachment> attachments = wikiConnector
-					.getAttachments(context.getTitle());
-			for (WikiAttachment wikiAttachment : attachments) {
-				String fileName = wikiAttachment.getFileName();
+					if (fileName.startsWith(context.getParameter("loadname"))) {
+						Collection<SessionRecord> sessionRecords = SessionPersistenceManager.getInstance().loadSessions(
+								wikiAttachment.getInputStream());
+						Iterator<SessionRecord> iterator = sessionRecords.iterator();
+						while (iterator.hasNext()) {
+							SessionRecord rec = iterator.next();
+							List<FactRecord> valueFacts = rec.getValueFacts();
+							for (FactRecord factRecord : valueFacts) {
+								Fact fact = FactFactory.createUserEnteredFact(kb,
+										factRecord.getObjectName(), factRecord.getValue());
+								blackboard.addValueFact(fact);
+							}
 
-				if (fileName.startsWith(context.getParameter("loadname"))) {
-					Collection<SessionRecord> sessionRecords = SessionPersistenceManager.getInstance().loadSessions(
-							wikiAttachment.getInputStream());
-					Iterator<SessionRecord> iterator = sessionRecords.iterator();
-					while (iterator.hasNext()) {
-						SessionRecord rec = iterator.next();
-						List<FactRecord> valueFacts = rec.getValueFacts();
-						for (FactRecord factRecord : valueFacts) {
-							Fact fact = FactFactory.createUserEnteredFact(kb,
-									factRecord.getObjectName(), factRecord.getValue());
-							blackboard.addValueFact(fact);
 						}
 
 					}
-
 				}
+
 			}
-
+			catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-
 	}
 
 }

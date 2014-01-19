@@ -24,11 +24,12 @@ import java.util.Map;
 
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.RessourceLoader;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
+import de.knowwe.core.taghandler.AbstractTagHandler;
 import de.knowwe.core.user.UserContext;
 
-public class QuickInterviewTagHandler extends AbstractHTMLTagHandler {
+public class QuickInterviewTagHandler extends AbstractTagHandler {
 
 	/**
 	 * Create the TagHandler --> "quickInterview" defines the "name" of the tag,
@@ -49,23 +50,13 @@ public class QuickInterviewTagHandler extends AbstractHTMLTagHandler {
 		return D3webUtils.getD3webBundle(user).getString("KnowWE.quicki.description");
 	}
 
-	/*
-	 * calls the appropriate Action that is responsible for creating the
-	 * session, knowledge etc and then in turn calls the interview renderer that
-	 * returns the interview-HTML-String
-	 */
 	@Override
-	public void renderHTML(String web, String topic, UserContext user, Map<String, String> values, RenderResult result) {
-		if (topic.equalsIgnoreCase("LeftMenu")) {
-			topic = user.getParameters().get("page");
-		}
-		user.getParameters().putAll(values);
-		String iv = QuickInterviewRenderer.callQuickInterviewRenderer(user);
-		if (iv == null) return;
-
-		result.appendHtml("<div id='quickinterview'>");
-		result.appendHtml(iv);
-		result.appendHtml("</div>");
+	public final void render(Section<?> section, UserContext userContext, Map<String, String> parameters, RenderResult result) {
+		userContext.getParameters().putAll(parameters);
+		result.appendHtmlTag("div", "class", "quickinterview", "sectionId", section.getID(), "id",
+				"quickinterview_" + section.getID());
+		QuickInterviewRenderer.renderInterview(section, userContext, result);
+		result.appendHtmlTag("/div");
 
 	}
 }

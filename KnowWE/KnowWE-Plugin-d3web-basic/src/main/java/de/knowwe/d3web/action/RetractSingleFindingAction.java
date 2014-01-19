@@ -36,6 +36,8 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
@@ -62,18 +64,11 @@ public class RetractSingleFindingAction extends AbstractAction {
 
 		String web = context.getWeb();
 
-		String topic;
-		String master = context.getParameter("master");
-		if (master == null) {
-			topic = context.getTitle();
-		}
-		else {
-			topic = master;
-		}
-
-		topic = Strings.decodeURL(topic);
 		String namespace = Strings.decodeURL(context.getParameter(Attributes.SEMANO_NAMESPACE));
 		String term = Strings.decodeURL(context.getParameter(Attributes.SEMANO_TERM_NAME));
+
+		String sectionId = context.getParameter(Attributes.SECTION_ID);
+
 		if (objectid != null) objectid = Strings.decodeURL(objectid);
 
 		if (term != null && !term.equalsIgnoreCase("undefined")) {
@@ -81,10 +76,14 @@ public class RetractSingleFindingAction extends AbstractAction {
 		}
 
 		if (namespace == null || objectid == null) {
-			return "null";
+			return null;
 		}
 
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
+		Section<?> section = Sections.getSection(sectionId);
+		if (section == null || !KnowWEUtils.canView(section, context)) {
+			return null;
+		}
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(section);
 		Session session = SessionProvider.getSession(context, kb);
 		// Added for KnowWE-Plugin-d3web-Debugger
 		if (context.getParameters().containsKey("KBid")) {

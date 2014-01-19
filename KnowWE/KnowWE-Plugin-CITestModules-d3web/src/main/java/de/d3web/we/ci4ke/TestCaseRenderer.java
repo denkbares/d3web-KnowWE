@@ -21,13 +21,10 @@ package de.d3web.we.ci4ke;
 import java.util.List;
 import java.util.Set;
 
-import de.d3web.utils.Triple;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRenderer;
-import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.testcases.TestCaseProvider;
+import de.knowwe.testcases.ProviderTriple;
 import de.knowwe.testcases.TestCaseUtils;
 
 /**
@@ -43,9 +40,9 @@ public class TestCaseRenderer implements ObjectNameRenderer {
 		// this is pretty slow... but since it is only needed if TestCaseTests
 		// fail and there aren't normally many, it's ok for now
 		Set<String> allPackageNames = KnowWEUtils.getPackageManager(web).getAllPackageNames();
-		List<Triple<TestCaseProvider, Section<?>, Article>> testCaseProviders = TestCaseUtils.getTestCaseProviders(
+		List<ProviderTriple> testCaseProviders = TestCaseUtils.getTestCaseProviders(
 				web, allPackageNames.toArray(new String[allPackageNames.size()]));
-		for (Triple<TestCaseProvider, Section<?>, Article> triple : testCaseProviders) {
+		for (ProviderTriple triple : testCaseProviders) {
 			if (triple.getA().getName().equals(objectName)) {
 				result.appendHtml("<a href='"
 						+ KnowWEUtils.getURLLink(triple.getB())

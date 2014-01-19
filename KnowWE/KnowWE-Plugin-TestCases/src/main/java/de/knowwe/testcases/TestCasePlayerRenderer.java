@@ -49,11 +49,10 @@ import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.Finding;
 import de.d3web.testcase.model.TestCase;
 import de.d3web.utils.Pair;
-import de.d3web.utils.Triple;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -93,7 +92,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		}
 		Section<TestCasePlayerType> playerSection =
 				Sections.cast(section.getParent(), TestCasePlayerType.class);
-		List<Triple<TestCaseProvider, Section<?>, Article>> providers =
+		List<ProviderTriple> providers =
 				de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(user, playerSection);
 
 		string.appendHtml("<div class='TestCasePlayerContent' id='" + section.getID() + "'>");
@@ -102,7 +101,7 @@ public class TestCasePlayerRenderer implements Renderer {
 			renderNoProviderWarning(playerSection, string);
 		}
 		else {
-			Triple<TestCaseProvider, Section<?>, Article> selectedTriple = getAndRenderTestCaseSelection(
+			ProviderTriple selectedTriple = getAndRenderTestCaseSelection(
 					section, user, providers, string);
 			if (selectedTriple != null) {
 				renderSelectedTestCase(section, user, selectedTriple, string);
@@ -112,7 +111,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		result.append(string.toStringRaw());
 	}
 
-	private void renderSelectedTestCase(Section<?> section, UserContext user, Triple<TestCaseProvider, Section<?>, Article> selectedTriple, RenderResult string) {
+	private void renderSelectedTestCase(Section<?> section, UserContext user, ProviderTriple selectedTriple, RenderResult string) {
 		// renderLinkToTestCase(selectedTriple, string);
 		// renderDownloadLink(section, string);
 		// string.appendHTML(renderToolSeparator());
@@ -172,7 +171,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				Arrays.asList(Messages.warning(message.toString())), string);
 	}
 
-	private void renderTestCase(Section<?> section, UserContext user, Triple<TestCaseProvider, Section<?>, Article> selectedTriple, Session session, TestCase testCase, SessionDebugStatus status, RenderResult string) {
+	private void renderTestCase(Section<?> section, UserContext user, ProviderTriple selectedTriple, Session session, TestCase testCase, SessionDebugStatus status, RenderResult string) {
 		Collection<Date> chronology = testCase.chronology();
 
 		NavigationParameters navigatorParameters = getNavigationParameters(section, user,
@@ -186,18 +185,17 @@ public class TestCasePlayerRenderer implements Renderer {
 		string.append(tableModel.toHtml(section, user));
 	}
 
-	private TableModel getTableModel(Section<?> section, UserContext user, Triple<TestCaseProvider, Section<?>, Article> selectedTriple, Session session, TestCase testCase, SessionDebugStatus status, Collection<Date> chronology, NavigationParameters navigatorParameters) {
-		String kbArticle = selectedTriple.getC().getTitle();
+	private TableModel getTableModel(Section<?> section, UserContext user, ProviderTriple selectedTriple, Session session, TestCase testCase, SessionDebugStatus status, Collection<Date> chronology, NavigationParameters navigatorParameters) {
 		TerminologyManager manager = session.getKnowledgeBase().getManager();
 		TableModel tableModel = new TableModel(user);
 		tableModel.setName(getTestCaseId(selectedTriple));
-		KnowledgeBase base = D3webUtils.getKnowledgeBase(user.getWeb(), kbArticle);
+		KnowledgeBase base = D3webUtils.getKnowledgeBase(section);
 
 		// check if the latest knowledge base is used
 		if (base != null) {
 			if (SessionProvider.hasOutDatedSession(user, base)) {
 				NotificationManager.addNotification(user,
-						new OutDatedSessionNotification(kbArticle));
+						new OutDatedSessionNotification(selectedTriple.getC().getID()));
 			}
 		}
 
@@ -206,7 +204,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		Collection<Question> usedQuestions = TestCaseUtils.getUsedQuestions(testCase,
 				session.getKnowledgeBase());
 
-		TerminologyObject selectedObject = renderTableHeader(section, user, kbArticle,
+		TerminologyObject selectedObject = renderTableHeader(section, user, selectedTriple.getC(),
 				additionalQuestions, usedQuestions, manager,
 				tableModel);
 		int row = 1;
@@ -259,9 +257,9 @@ public class TestCasePlayerRenderer implements Renderer {
 		return sizeKey;
 	}
 
-	private TerminologyObject renderTableHeader(Section<?> section, UserContext user, String kbArticle, Collection<String> additionalQuestions, Collection<Question> usedQuestions, TerminologyManager manager, TableModel tableModel) {
+	private TerminologyObject renderTableHeader(Section<?> section, UserContext user, Section<? extends PackageCompileType> kbsection, Collection<String> additionalQuestions, Collection<Question> usedQuestions, TerminologyManager manager, TableModel tableModel) {
 		String stopButton = renderToolbarButton("stop12.png",
-				"KNOWWE.plugin.d3webbasic.actions.resetSession('" + kbArticle
+				"KNOWWE.plugin.d3webbasic.actions.resetSession('" + kbsection.getID()
 						+ "', TestCasePlayer.init);", user);
 		RenderResult stopButtonResult = new RenderResult(tableModel.getUserContext());
 		stopButtonResult.appendHtml(stopButton);
@@ -332,7 +330,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		return additionalQuestions;
 	}
 
-	private void renderTableLine(UserContext user, Triple<TestCaseProvider, Section<?>, Article> selectedTriple, TestCase testCase, SessionDebugStatus status, Collection<String> additionalQuestions, Collection<Question> usedQuestions, TerminologyManager manager, TerminologyObject selectedObject, Date date, int row, TableModel tableModel) {
+	private void renderTableLine(UserContext user, ProviderTriple selectedTriple, TestCase testCase, SessionDebugStatus status, Collection<String> additionalQuestions, Collection<Question> usedQuestions, TerminologyManager manager, TerminologyObject selectedObject, Date date, int row, TableModel tableModel) {
 		String dateString = String.valueOf(date.getTime());
 		renderRunTo(selectedTriple, status, date, dateString, tableModel, row);
 		int column = 1;
@@ -420,7 +418,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		return builder.toString();
 	}
 
-	private void renderRunTo(Triple<TestCaseProvider, Section<?>, Article> selectedTriple, SessionDebugStatus status, Date date, String dateString, TableModel tableModel, int row) {
+	private void renderRunTo(ProviderTriple selectedTriple, SessionDebugStatus status, Date date, String dateString, TableModel tableModel, int row) {
 		if (status.getLastExecuted() == null
 				|| status.getLastExecuted().before(date)) {
 			RenderResult sb = new RenderResult(tableModel.getUserContext());
@@ -568,22 +566,22 @@ public class TestCasePlayerRenderer implements Renderer {
 		return object;
 	}
 
-	private Triple<TestCaseProvider, Section<?>, Article> getAndRenderTestCaseSelection(Section<?> section, UserContext user, List<Triple<TestCaseProvider, Section<?>, Article>> providers, RenderResult string) {
+	private ProviderTriple getAndRenderTestCaseSelection(Section<?> section, UserContext user, List<ProviderTriple> providers, RenderResult string) {
 		String key = generateSelectedTestCaseCookieKey(section);
 		String selectedID = getSelectedTestCaseId(section, user);
 		RenderResult selectsb = new RenderResult(string);
 		// if no pair is selected, use the first
-		Triple<TestCaseProvider, Section<?>, Article> selectedTriple = null;
+		ProviderTriple selectedTriple = null;
 		selectsb.appendHtml("<span class=fillText>Case </span>"
 				+ "<select id=selector" + section.getID()
 				+ " onchange=\"TestCasePlayer.change('" + key
 				+ "', this.options[this.selectedIndex].value);\">");
 		Set<String> ids = new HashSet<String>();
 		boolean unique = true;
-		for (Triple<TestCaseProvider, Section<?>, Article> triple : providers) {
+		for (ProviderTriple triple : providers) {
 			unique &= ids.add(triple.getA().getName());
 		}
-		for (Triple<TestCaseProvider, Section<?>, Article> triple : providers) {
+		for (ProviderTriple triple : providers) {
 			if (triple.getA().getTestCase() != null) {
 				if (selectedTriple == null) {
 					selectedTriple = triple;
@@ -618,7 +616,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		return selectedTriple;
 	}
 
-	private String getTestCaseId(Triple<TestCaseProvider, Section<?>, Article> triple) {
+	private String getTestCaseId(ProviderTriple triple) {
 		return triple.getC().getTitle() + "/" + triple.getA().getName();
 	}
 

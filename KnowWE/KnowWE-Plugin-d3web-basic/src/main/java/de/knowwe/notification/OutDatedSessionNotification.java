@@ -18,6 +18,8 @@
  */
 package de.knowwe.notification;
 
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message.Type;
 
 /**
@@ -30,35 +32,36 @@ import de.knowwe.core.report.Message.Type;
  */
 public class OutDatedSessionNotification implements Notification {
 
-	private final String kbArticle;
+	private final String id;
+	private final String title;
 
-	public OutDatedSessionNotification(String kbArticle) {
-		if (kbArticle == null) {
-			throw new NullPointerException();
-		}
-		if (kbArticle.isEmpty()) {
-			throw new NullPointerException();
-		}
-		this.kbArticle = kbArticle;
+	public OutDatedSessionNotification(String sectionId) {
+		this.title = Sections.getSection(sectionId).getTitle();
+		this.id = sectionId;
+	}
+
+	public OutDatedSessionNotification(Section<?> section) {
+		this.title = section.getTitle();
+		this.id = section.getID();
 	}
 
 	@Override
 	public String getMessage() {
 		StringBuilder message = new StringBuilder();
 		message.append("The session for <em>");
-		message.append(kbArticle);
+		message.append(title);
 		message.append("</em> is based on an out dated version of the knowledge base. ");
 		message.append("You should consider a ");
 		message.append("<a ");
 		message.append("onclick='javascript:KNOWWE.plugin.d3webbasic.actions.resetSession(\"");
-		message.append(kbArticle);
+		message.append(id);
 		message.append("\");KNOWWE.notification.loadNotifications();'>reset</a>.");
 		return message.toString();
 	}
 
 	@Override
 	public String getID() {
-		return kbArticle;
+		return id;
 	}
 
 	@Override

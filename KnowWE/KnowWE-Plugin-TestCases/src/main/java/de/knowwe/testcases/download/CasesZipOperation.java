@@ -43,6 +43,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.progress.FileDownloadOperation;
+import de.knowwe.testcases.ProviderTriple;
 import de.knowwe.testcases.TestCasePlayerType;
 import de.knowwe.testcases.TestCaseProvider;
 import de.knowwe.testcases.TestCaseUtils;
@@ -66,7 +67,7 @@ public class CasesZipOperation extends FileDownloadOperation {
 	public void before(UserActionContext user) throws IOException {
 		super.before(user);
 		Section<?> section = CheckDownloadCaseAction.getPlayerSection(user);
-		List<Triple<TestCaseProvider, Section<?>, Article>> providers =
+		List<ProviderTriple> providers =
 				TestCaseUtils.getTestCaseProviders(Sections.cast(section.getParent(),
 						TestCasePlayerType.class));
 		skipped = new StringBuilder();
@@ -76,13 +77,13 @@ public class CasesZipOperation extends FileDownloadOperation {
 		check(user, section, providers, casesToWrite);
 	}
 
-	private void check(UserActionContext context, Section<?> section, List<Triple<TestCaseProvider, Section<?>, Article>> providers, List<Triple<String, KnowledgeBase, TestCase>> casesToWrite) {
+	private void check(UserActionContext context, Section<?> section, List<ProviderTriple> providers, List<Triple<String, KnowledgeBase, TestCase>> casesToWrite) {
 
 		if (!userCanView(context, section)) {
 			throw new Error("You are not allowed to download here.");
 		}
 
-		for (Triple<TestCaseProvider, Section<?>, Article> triple : providers) {
+		for (ProviderTriple triple : providers) {
 
 			Section<?> testCaseSection = triple.getB();
 			TestCaseProvider provider = triple.getA();

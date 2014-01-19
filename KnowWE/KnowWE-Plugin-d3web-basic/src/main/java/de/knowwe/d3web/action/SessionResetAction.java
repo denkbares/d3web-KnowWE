@@ -23,8 +23,12 @@ import java.io.IOException;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.notification.NotificationManager;
 
 /**
@@ -52,23 +56,22 @@ import de.knowwe.notification.NotificationManager;
  */
 public class SessionResetAction extends AbstractAction {
 
-	private static final String KBARTICLE = "kbarticle";
-
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
 		// get knowledge base
-		String kbArticle = context.getParameter(KBARTICLE);
-		if (kbArticle == null || kbArticle.isEmpty()) {
-			kbArticle = context.getTitle();
+		String sectionId = context.getParameter(Attributes.SECTION_ID);
+		Section<?> section = Sections.getSection(sectionId);
+		if (section == null || !KnowWEUtils.canView(section, context)) {
+			return;
 		}
-		KnowledgeBase base = D3webUtils.getKnowledgeBase(context.getWeb(), kbArticle);
+		KnowledgeBase base = D3webUtils.getKnowledgeBase(section);
 
 		// reset session
 		SessionProvider.removeSession(context, base);
 		SessionProvider.createSession(context, base);
 
 		// remove out dated session notification
-		NotificationManager.removeNotification(context, kbArticle);
+		NotificationManager.removeNotification(context, section.getTitle());
 	}
 }

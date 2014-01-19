@@ -35,6 +35,9 @@ import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
 /**
@@ -58,35 +61,31 @@ public class QuickInterviewSaveAction extends AbstractAction {
 		// get WikiConnector and Session
 		WikiConnector wikiConnector = Environment.getInstance()
 				.getWikiConnector();
-		String web = context.getParameter(Attributes.WEB);
 
-		String title = context.getTitle();
+		String sectionId = context.getParameter(Attributes.SECTION_ID);
+		Section<?> section = Sections.getSection(sectionId);
+		if (section != null && KnowWEUtils.canView(section, context)) {
+			KnowledgeBase kb = D3webUtils.getKnowledgeBase(section);
+			if (kb == null) {
+				return;
+			}
+			Session session = SessionProvider.getSession(context, kb);
 
-		String topic;
-		if (title == null) {
-			topic = context.getTitle();
+			// create SessionRecord List
+			List<SessionRecord> srList = new ArrayList<SessionRecord>();
+			srList.add(SessionConversionFactory.copyToSessionRecord(session));
+
+			// store new Attachment with Session information
+			File attachmentFile = new File(context.getParameter("savename")
+					+ ".xml");
+			attachmentFile.createNewFile();
+			SessionPersistenceManager.getInstance().saveSessions(
+					attachmentFile, srList);
+
+			/* WikiAttachment attachment = */
+			wikiConnector.storeAttachment(
+					context.getTitle(), context.getUserName(), attachmentFile);
 		}
-		else {
-			topic = title;
-		}
-
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
-		Session session = SessionProvider.getSession(context, kb);
-
-		// create SessionRecord List
-		List<SessionRecord> srList = new ArrayList<SessionRecord>();
-		srList.add(SessionConversionFactory.copyToSessionRecord(session));
-
-		// store new Attachment with Session information
-		File attachmentFile = new File(context.getParameter("savename")
-				+ ".xml");
-		attachmentFile.createNewFile();
-		SessionPersistenceManager.getInstance().saveSessions(
-				attachmentFile, srList);
-
-		/* WikiAttachment attachment = */
-		wikiConnector.storeAttachment(
-				context.getTitle(), context.getUserName(), attachmentFile);
 	}
 
 }

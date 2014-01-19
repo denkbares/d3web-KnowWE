@@ -201,13 +201,11 @@ KNOWWE.plugin.d3webbasic.actions = function() {
 		 * 
 		 * @author Sebastian Furth (denkbares GmbH)
 		 */
-		resetSession : function(kbarticlevalue, fnAfter) {
+		resetSession : function(sectionId, fnAfter) {
 			var params = {
-				action : 'SessionResetAction'
-			}
-
-			if (kbarticlevalue) {
-				params['kbarticle'] = kbarticlevalue;
+				action : 'SessionResetAction',
+				SectionID : sectionId,
+					
 			}
 
 			var options = {

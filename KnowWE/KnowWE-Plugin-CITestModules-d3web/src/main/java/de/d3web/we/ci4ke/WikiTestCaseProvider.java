@@ -28,11 +28,9 @@ import java.util.regex.Pattern;
 import de.d3web.testcase.model.TestCase;
 import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
-import de.d3web.utils.Triple;
 import de.knowwe.core.Environment;
-import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.testcases.ProviderTriple;
 import de.knowwe.testcases.TestCaseProvider;
 
 /**
@@ -64,10 +62,10 @@ public class WikiTestCaseProvider implements TestObjectProvider {
 		}
 		String web = Environment.DEFAULT_WEB;
 		Set<String> allPackageNames = KnowWEUtils.getPackageManager(web).getAllPackageNames();
-		List<Triple<TestCaseProvider, Section<?>, Article>> testCaseProviders = de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(
+		List<ProviderTriple> testCaseProviders = de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(
 				web, allPackageNames.toArray(new String[allPackageNames.size()]));
 
-		for (Triple<TestCaseProvider, Section<?>, Article> triple : testCaseProviders) {
+		for (ProviderTriple triple : testCaseProviders) {
 			TestCaseProvider provider = triple.getA();
 			if (provider.getName().matches(name)) {
 				result.add(new TestObjectContainer<T>(provider.getName(),

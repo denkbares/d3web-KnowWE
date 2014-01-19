@@ -17,10 +17,11 @@ import de.d3web.utils.Triple;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.kdom.Article;
+import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.defaultMarkup.ContentType;
+import de.knowwe.testcases.ProviderTriple;
 import de.knowwe.testcases.TestCasePlayerRenderer;
 import de.knowwe.testcases.TestCasePlayerType;
 import de.knowwe.testcases.TestCaseProvider;
@@ -34,7 +35,7 @@ public class CheckDownloadCaseAction extends AbstractAction {
 		Section<?> section = getPlayerSection(context);
 		if (section == null) return; // error will already be added
 
-		Triple<TestCaseProvider, Section<?>, Article> selectedTestCaseTriple = getSelectedTestCaseTriple(
+		Triple<TestCaseProvider, Section<?>, Section<? extends PackageCompileType>> selectedTestCaseTriple = getSelectedTestCaseTriple(
 				section, context);
 
 		if (selectedTestCaseTriple == null) {
@@ -131,15 +132,15 @@ public class CheckDownloadCaseAction extends AbstractAction {
 				context.getRequest());
 	}
 
-	private Triple<TestCaseProvider, Section<?>, Article> getSelectedTestCaseTriple(Section<?> section, UserActionContext context) {
+	private ProviderTriple getSelectedTestCaseTriple(Section<?> section, UserActionContext context) {
 		Section<TestCasePlayerType> playerSection =
 				Sections.cast(section.getParent(), TestCasePlayerType.class);
-		List<Triple<TestCaseProvider, Section<?>, Article>> providers =
+		List<ProviderTriple> providers =
 				de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(playerSection);
 
 		String selectedTestCaseId = TestCasePlayerRenderer.getSelectedTestCaseId(section,
 				context);
-		for (Triple<TestCaseProvider, Section<?>, Article> triple : providers) {
+		for (ProviderTriple triple : providers) {
 			if (triple.getA().getTestCase() != null) {
 				String id = triple.getC().getTitle() + "/" + triple.getA().getName();
 				if (id.equals(selectedTestCaseId)) {

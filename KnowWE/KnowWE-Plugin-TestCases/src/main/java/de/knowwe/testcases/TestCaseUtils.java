@@ -58,11 +58,10 @@ import de.d3web.testcase.stc.DerivedSolutionCheck;
 import de.d3web.testcase.stc.STCWrapper;
 import de.d3web.utils.Triple;
 import de.d3web.we.knowledgebase.D3webCompiler;
-import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -84,10 +83,10 @@ public class TestCaseUtils {
 	public static List<TestCaseProvider> getTestCaseProviders(String web, Set<String> packageNames, Pattern nameRegex) {
 		if (nameRegex == null) return Collections.emptyList();
 		String[] packages = packageNames.toArray(new String[packageNames.size()]);
-		List<Triple<TestCaseProvider, Section<?>, Article>> testCaseProviders = TestCaseUtils.getTestCaseProviders(
+		List<ProviderTriple> testCaseProviders = TestCaseUtils.getTestCaseProviders(
 				web, packages);
 		List<TestCaseProvider> found = new LinkedList<TestCaseProvider>();
-		for (Triple<TestCaseProvider, Section<?>, Article> triple : testCaseProviders) {
+		for (Triple<TestCaseProvider, Section<?>, Section<? extends PackageCompileType>> triple : testCaseProviders) {
 			TestCaseProvider provider = triple.getA();
 			if (nameRegex.matcher(provider.getName()).matches()) {
 				found.add(provider);
@@ -105,10 +104,10 @@ public class TestCaseUtils {
 	 * @param section the section used as a reference for the package
 	 * @return all {@link TestCaseProvider} visible to this user
 	 */
-	public static List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(UserContext context, Section<TestCasePlayerType> section) {
-		List<Triple<TestCaseProvider, Section<?>, Article>> testCaseProviders = getTestCaseProviders(section);
-		List<Triple<TestCaseProvider, Section<?>, Article>> filtered = new ArrayList<Triple<TestCaseProvider, Section<?>, Article>>();
-		for (Triple<TestCaseProvider, Section<?>, Article> triple : testCaseProviders) {
+	public static List<ProviderTriple> getTestCaseProviders(UserContext context, Section<TestCasePlayerType> section) {
+		List<ProviderTriple> testCaseProviders = getTestCaseProviders(section);
+		List<ProviderTriple> filtered = new ArrayList<ProviderTriple>();
+		for (ProviderTriple triple : testCaseProviders) {
 			boolean userCanViewCase = Environment.getInstance().getWikiConnector().userCanViewArticle(
 					triple.getB().getTitle(), context.getRequest());
 			if (userCanViewCase) {
@@ -127,33 +126,30 @@ public class TestCaseUtils {
 	 * @return all {@link TestCaseProvider} in the packages the given section is
 	 *         in
 	 */
-	public static List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(Section<TestCasePlayerType> section) {
+	public static List<ProviderTriple> getTestCaseProviders(Section<TestCasePlayerType> section) {
 		String[] kbpackages = DefaultMarkupType.getPackages(section,
 				PackageManager.COMPILE_ATTRIBUTE_NAME);
 		String web = section.getWeb();
 		return de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(web, kbpackages);
 	}
 
-	public static List<Triple<TestCaseProvider, Section<?>, Article>> getTestCaseProviders(String web, String... kbpackages) {
-		Environment env = Environment.getInstance();
+	public static List<ProviderTriple> getTestCaseProviders(String web, String... kbpackages) {
 		PackageManager packageManager = KnowWEUtils.getPackageManager(web);
-		ArticleManager articleManager = env.getArticleManager(web);
-		List<Triple<TestCaseProvider, Section<?>, Article>> providers = new LinkedList<Triple<TestCaseProvider, Section<?>, Article>>();
+		List<ProviderTriple> providers = new LinkedList<ProviderTriple>();
 		for (String kbpackage : kbpackages) {
 			Collection<Section<?>> sectionsInPackage = packageManager.getSectionsOfPackage(kbpackage);
-			Set<String> articlesReferringTo = packageManager.getCompilingArticles(kbpackage);
-			for (String masterTitle : articlesReferringTo) {
-				Article masterArticle = articleManager.getArticle(masterTitle);
+			Set<Section<? extends PackageCompileType>> compileSections = packageManager.getCompileSections(kbpackage);
+			for (Section<? extends PackageCompileType> compileSection : compileSections) {
 				for (Section<?> packageSections : sectionsInPackage) {
 					TestCaseProviderStorage testCaseProviderStorage =
 							(TestCaseProviderStorage) packageSections.getSectionStore().getObject(
-									Compilers.getCompiler(masterArticle, D3webCompiler.class),
+									Compilers.getCompiler(packageSections, D3webCompiler.class),
 									TestCaseProviderStorage.KEY);
 					if (testCaseProviderStorage != null) {
 						for (TestCaseProvider testCaseProvider : testCaseProviderStorage.getTestCaseProviders()) {
-							providers.add(new Triple<TestCaseProvider, Section<?>, Article>(
+							providers.add(new ProviderTriple(
 									testCaseProvider,
-									packageSections, masterArticle));
+									packageSections, compileSection));
 						}
 					}
 				}
