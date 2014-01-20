@@ -3,13 +3,13 @@
  */
 package de.knowwe.ontology.action;
 
-import java.io.IOException;
-import java.io.StringWriter;
-
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.rdf2go.Rdf2GoCore;
+
+import java.io.IOException;
+import java.io.StringWriter;
 
 /**
  * 
@@ -34,9 +34,10 @@ public class OntologyDownloadAction extends AbstractAction {
 		StringWriter writer = new StringWriter();
 		Rdf2GoCore.getInstance(web, title).writeModel(writer);
 		String content = writer.toString();
-		context.setContentLength(content.getBytes().length);
+        byte[] contentBytes = content.getBytes("UTF-8");
+		context.setContentLength(contentBytes.length);
 
-		context.getWriter().write(content);
+		context.getWriter().write(new String(contentBytes, "UTF-8"));
 	}
 
 }
