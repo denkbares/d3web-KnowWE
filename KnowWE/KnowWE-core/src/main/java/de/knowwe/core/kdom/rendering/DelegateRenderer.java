@@ -24,8 +24,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Logger;
 
+import de.d3web.utils.Log;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -85,8 +85,7 @@ public class DelegateRenderer implements Renderer {
 		catch (Exception e) {
 			// wow, that was evil!
 			// now we log instead AND report the error to the user
-			Logger.getLogger(getClass().getName()).warning(
-					"Internal error while rendering section");
+			Log.warning("Internal error while rendering section");
 			builder.appendHtml("<span class='warning'>");
 			builder.append("internal error while rendering section: " + e);
 			builder.appendHtml("</span>");

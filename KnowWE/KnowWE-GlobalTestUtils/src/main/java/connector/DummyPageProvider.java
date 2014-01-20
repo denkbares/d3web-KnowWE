@@ -29,8 +29,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -40,6 +38,7 @@ import java.util.zip.ZipInputStream;
 import com.ecyrd.jspwiki.providers.BasicAttachmentProvider;
 
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 
@@ -239,8 +238,7 @@ public class DummyPageProvider {
 			zipStream.close();
 		}
 		catch (IOException e) {
-			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
-					"Exception while creating ZipEntryAttachments", e);
+			Log.severe("Exception while creating ZipEntryAttachments", e);
 		}
 		return entryAttachments;
 	}

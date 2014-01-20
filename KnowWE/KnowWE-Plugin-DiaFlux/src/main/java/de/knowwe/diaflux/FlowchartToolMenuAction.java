@@ -19,13 +19,12 @@
 package de.knowwe.diaflux;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
@@ -81,8 +80,7 @@ public class FlowchartToolMenuAction extends GetToolMenuAction {
 
 		}
 		catch (JSONException e) {
-			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
-					"Recieved faulty JSON string", e);
+			Log.severe("Recieved faulty JSON string", e);
 		}
 		return null;
 	}

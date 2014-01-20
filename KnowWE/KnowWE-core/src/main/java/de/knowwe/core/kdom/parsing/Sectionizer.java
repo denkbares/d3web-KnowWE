@@ -23,9 +23,8 @@ package de.knowwe.core.kdom.parsing;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import de.d3web.utils.Log;
 import de.knowwe.core.kdom.ExclusiveType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.PlainText;
@@ -118,9 +117,7 @@ public class Sectionizer implements Parser {
 				results = finder.lookForSections(text, father, type);
 			}
 			catch (Exception e) {
-				Logger.getLogger(this.getClass().getName()).severe(
-						e.getClass().getSimpleName() + " while sectionizing");
-				e.printStackTrace();
+				Log.severe("Unexpected error while sectionizing", e);
 			}
 		}
 
@@ -134,9 +131,7 @@ public class Sectionizer implements Parser {
 
 				if (r.getStart() < lastEnd || r.getStart() > r.getEnd()
 						|| r.getStart() < 0 || r.getEnd() > text.length()) {
-					Logger.getLogger(this.getClass().getName()).log(
-							Level.WARNING,
-							"Invalid SectionFinderResults for the Type '"
+					Log.warning("Invalid SectionFinderResults for the Type '"
 									+ type.getName() + "'. Results: " + results
 									+ ". Result " + r
 									+ " will be skipped.");

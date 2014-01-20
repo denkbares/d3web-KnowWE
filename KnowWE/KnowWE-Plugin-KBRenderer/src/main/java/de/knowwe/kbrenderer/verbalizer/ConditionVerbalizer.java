@@ -29,7 +29,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
@@ -53,6 +52,7 @@ import de.d3web.core.knowledge.terminology.AnswerNo;
 import de.d3web.core.knowledge.terminology.AnswerYes;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QuestionMC;
+import de.d3web.utils.Log;
 import de.knowwe.kbrenderer.verbalizer.VerbalizationManager.RenderingFormat;
 
 /**
@@ -130,8 +130,7 @@ public class ConditionVerbalizer implements Verbalizer {
 		if (!(o instanceof Condition)) {
 			// this shouldnt happen, cause VerbalizationManager should not
 			// delegate here in this case!
-			Logger.getLogger("Verbalizer").warning(
-					"Object " + o + " couldnt be rendered by ConditionVerbalizer!");
+			Log.warning("Object " + o + " couldnt be rendered by ConditionVerbalizer!");
 			return null;
 		}
 
@@ -192,8 +191,7 @@ public class ConditionVerbalizer implements Verbalizer {
 		else {
 			// this shouldnt happen, cause VerbalizationManager should not
 			// delegate here in this case!
-			Logger.getLogger("Verbalizer").warning(
-					"RenderingTarget" + getTargetFormat() + " is not supported by RuleVerbalizer!");
+			Log.warning("RenderingTarget" + getTargetFormat() + " is not supported by RuleVerbalizer!");
 			return null;
 		}
 	}

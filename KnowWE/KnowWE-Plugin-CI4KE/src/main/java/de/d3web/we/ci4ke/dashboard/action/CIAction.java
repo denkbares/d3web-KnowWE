@@ -21,12 +21,11 @@
 package de.d3web.we.ci4ke.dashboard.action;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import de.d3web.strings.Strings;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message.Type;
+import de.d3web.utils.Log;
 import de.d3web.we.ci4ke.build.CIBuildManager;
 import de.d3web.we.ci4ke.build.CIRenderer;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
@@ -61,7 +60,7 @@ public class CIAction extends AbstractAction {
 				selectedBuildNumber = Integer.parseInt(context.getParameter("nr"));
 			}
 			catch (NumberFormatException e) {
-				Logger.getLogger(this.getClass().getName()).log(Level.WARNING, e.toString());
+				Log.warning(e.toString());
 			}
 		}
 		if (selectedBuildNumber < 1) {

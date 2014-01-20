@@ -33,8 +33,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -63,6 +61,7 @@ import de.d3web.core.session.values.Unknown;
 import de.d3web.scoring.Score;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.AnswerDefinition;
 import de.d3web.we.object.D3webTerm;
@@ -334,10 +333,8 @@ public class D3webUtils {
 			}
 		}
 		catch (SessionTerminatedException e) {
-			Logger.getLogger(D3webUtils.class.getName()).log(
-					Level.WARNING,
-					"Unable to set fact, because the current session is " +
-							"terminated (possibly due to a detected propagation loop).",
+			Log.warning("Unable to set fact, because the current session is " +
+					"terminated (possibly due to a detected propagation loop).",
 					e);
 		}
 		EventManager.getInstance().fireEvent(new FindingSetEvent(fact, session, context));
@@ -444,9 +441,7 @@ public class D3webUtils {
 			url = new File(varPath).toURI().toURL();
 		}
 		catch (MalformedURLException e) {
-			Logger.getLogger(KnowWEUtils.class.getName())
-					.warning("Cannot identify url for knowledgebase : "
-							+ e.getMessage());
+			Log.warning("Cannot identify url for knowledgebase", e);
 		}
 		return url;
 	}

@@ -24,8 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -38,6 +36,7 @@ import de.d3web.testing.Test;
 import de.d3web.testing.TestManager;
 import de.d3web.testing.TestParser;
 import de.d3web.testing.TestResult;
+import de.d3web.utils.Log;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRenderer;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRendererManager;
@@ -269,8 +268,7 @@ public class CIRenderer {
 				testObjectClass = test.getTestObjectClass();
 			}
 			else {
-				Logger.getLogger(this.getClass().getName()).log(
-						Level.WARNING, "No class found for test: " + testResult.getTestName());
+				Log.warning("No class found for test: " + testResult.getTestName());
 			}
 			renderResult.appendHtml("<p></p>");
 			renderResult.append("__" + messageType.toString() + "__: ");
@@ -317,8 +315,7 @@ public class CIRenderer {
 		}
 		ObjectNameRenderer objectRenderer = ObjectNameRendererManager.getObjectNameRenderer(objectClass);
 		if (objectRenderer == null) {
-			Logger.getLogger(this.getClass().getName()).log(
-					Level.WARNING, "No renderer found for " + objectClass);
+			Log.warning("No renderer found for " + objectClass);
 			result.append(objectName);
 			return;
 		}

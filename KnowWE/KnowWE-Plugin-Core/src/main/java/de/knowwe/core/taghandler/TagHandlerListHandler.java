@@ -23,13 +23,11 @@ package de.knowwe.core.taghandler;
 import java.util.Collection;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
+import de.d3web.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
-import de.knowwe.core.taghandler.TagHandler;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -81,9 +79,8 @@ public class TagHandlerListHandler extends AbstractHTMLTagHandler {
 			}
 			catch (Exception e) {
 				description = "Fehler";
-				Logger.getLogger(this.getClass().getName()).warning(
-						"Unable to get description for TagHandler: " + th.getClass() + " ("
-								+ e.getMessage() + ")");
+				Log.warning("Unable to get description for TagHandler: " + th.getClass() + " ("
+						+ e.getMessage() + ")");
 			}
 			html.append("<TR><TD>" + name + "</TD><TD>" + example + "</TD><TD>"
 					+ description + "</TD></TR> \n"); // \n only to avoid

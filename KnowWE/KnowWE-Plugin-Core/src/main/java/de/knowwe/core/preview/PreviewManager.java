@@ -7,10 +7,10 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
+import de.d3web.utils.Log;
 import de.knowwe.core.kdom.parsing.KDOMPositionComparator;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -111,8 +111,7 @@ public class PreviewManager {
 				}
 			}
 			else {
-				Logger.getLogger(getClass().getName()).warning(
-						"extension of class '" + object.getClass().getName() +
+				Log.warning("extension of class '" + object.getClass().getName() +
 								"' is not of the expected type " + Renderer.class.getName());
 			}
 		}

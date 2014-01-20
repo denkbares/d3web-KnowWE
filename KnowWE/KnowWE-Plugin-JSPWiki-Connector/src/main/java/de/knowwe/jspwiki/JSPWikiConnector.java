@@ -33,8 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -65,6 +63,7 @@ import com.ecyrd.jspwiki.providers.CachingAttachmentProvider;
 import com.ecyrd.jspwiki.providers.ProviderException;
 import com.ecyrd.jspwiki.providers.WikiAttachmentProvider;
 
+import de.d3web.utils.Log;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
@@ -303,8 +302,7 @@ public class JSPWikiConnector implements WikiConnector {
 				}
 			}
 			catch (ProviderException e) {
-				Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
-						"Exception while cleaning zip cache", e);
+				Log.warning("Exception while cleaning zip cache", e);
 			}
 		}
 		zipAttachmentCache.keySet().removeAll(remove);

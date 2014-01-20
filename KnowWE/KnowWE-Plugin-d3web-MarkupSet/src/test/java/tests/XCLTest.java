@@ -28,10 +28,10 @@ import utils.KBTestUtilNewMarkup;
 import utils.TestArticleManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.plugin.test.InitPluginManager;
+import de.d3web.utils.Log;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.logging.Logging;
 
 /**
  * This class tests whether the XCLModels are created as expected.
@@ -147,7 +147,7 @@ public class XCLTest extends TestCase {
 					loadedRelation.getWeight());
 		}
 		else {
-			Logging.getInstance().getLogger().warning("XCLTest: XCLModel has not been tested!");
+			Log.warning("XCLTest: XCLModel has not been tested!");
 		}
 	}
 

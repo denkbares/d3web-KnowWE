@@ -29,9 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import de.d3web.utils.Log;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
@@ -145,8 +144,7 @@ public class DefaultArticleManager implements ArticleManager {
 
 		articleMap.remove(article.getTitle());
 
-		Logger.getLogger(this.getClass().getName()).log(Level.INFO,
-				"-> Deleted article '" + article.getTitle() + "'" + " from " + web);
+		Log.info("-> Deleted article '" + article.getTitle() + "'" + " from " + web);
 	}
 
 	@Override

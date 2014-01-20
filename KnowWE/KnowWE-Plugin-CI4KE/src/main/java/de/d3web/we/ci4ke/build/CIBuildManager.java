@@ -26,16 +26,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.TestExecutor;
 import de.d3web.testing.TestObjectProvider;
 import de.d3web.testing.TestObjectProviderManager;
+import de.d3web.utils.Log;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
-import de.d3web.we.ci4ke.hook.CIEventForwarder;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.progress.AjaxProgressListener;
 import de.knowwe.core.utils.progress.DefaultAjaxProgressListener;
@@ -56,10 +54,7 @@ public class CIBuildManager {
 	 */
 	public static void startBuild(final CIDashboard dashboard) {
 
-		Logger.getLogger(CIEventForwarder.class.getName()).log(
-				Level.INFO,
-				"Executing new CI build for dashboard '" + dashboard
-						+ "'");
+		Log.info("Executing new CI build for dashboard '" + dashboard + "'");
 
 		List<TestObjectProvider> providers = new ArrayList<TestObjectProvider>();
 		providers.add(DefaultWikiTestObjectProvider.getInstance());

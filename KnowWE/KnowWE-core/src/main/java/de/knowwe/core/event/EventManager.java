@@ -24,8 +24,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import de.d3web.utils.Log;
 
 /**
  * A very simple EventManager. Events are represented by Classes
@@ -107,8 +107,7 @@ public class EventManager {
 				eventListener.notify(event);
 			}
 			catch (Exception e) {
-				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
-						"Catched exception in EventListener", e);
+				Log.severe("Catched exception in EventListener", e);
 			}
 		}
 

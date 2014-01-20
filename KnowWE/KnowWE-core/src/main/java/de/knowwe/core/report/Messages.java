@@ -32,11 +32,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.Article;
@@ -598,7 +597,7 @@ public final class Messages {
 	 * @param e the exception occurred
 	 */
 	public static Message internalError(String message, Throwable e) {
-		Logger.getLogger(Messages.class.getName()).log(Level.WARNING, message, e);
+		Log.warning(message, e);
 		return Messages.error(message + ": " + e);
 	}
 

@@ -26,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.d3web.core.io.progress.ProgressListener;
+import de.d3web.utils.Log;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.action.AbstractAction;
@@ -85,8 +86,7 @@ public class CIGetProgressAction extends AbstractAction {
 			result.write(context.getWriter());
 		}
 		catch (JSONException e) {
-			java.util.logging.Logger.getLogger(this.getClass().getName()).severe(
-					"Error while writing JSON message: " + e.getMessage());
+			Log.severe("Error while writing JSON message: " + e.getMessage());
 		}
 	}
 }

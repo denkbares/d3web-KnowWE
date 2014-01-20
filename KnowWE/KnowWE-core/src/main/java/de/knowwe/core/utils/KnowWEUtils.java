@@ -30,8 +30,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -40,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.Environment;
@@ -154,8 +153,7 @@ public class KnowWEUtils {
 			out.close();
 		}
 		catch (Exception e) {
-			Logger.getLogger(KnowWEUtils.class.getName()).log(
-					Level.WARNING, "Unable to append to File: " + e.getMessage());
+			Log.warning("Unable to append to File: " + e.getMessage());
 		}
 	}
 
@@ -681,8 +679,7 @@ public class KnowWEUtils {
 
 		}
 		catch (IOException e) {
-			Logger.getLogger(KnowWEUtils.class.getName()).log(
-					Level.SEVERE, "Unable to read File: " + e.getMessage());
+			Log.severe("Unable to read File", e);
 			return "";
 		}
 	}
@@ -692,8 +689,7 @@ public class KnowWEUtils {
 			return Strings.readStream(inputStream);
 		}
 		catch (IOException e) {
-			Logger.getLogger(KnowWEUtils.class.getName()).log(
-					Level.SEVERE, "Unable to read stream: " + e.getMessage());
+			Log.severe("Unable to read stream", e);
 			return "";
 		}
 	}
@@ -703,8 +699,7 @@ public class KnowWEUtils {
 			Strings.writeFile(path, content);
 		}
 		catch (Exception e) {
-			Logger.getLogger(KnowWEUtils.class.getName()).log(
-					Level.SEVERE, "Unable to write file: " + e.getMessage());
+			Log.severe("Unable to write file", e);
 		}
 	}
 

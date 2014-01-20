@@ -20,11 +20,11 @@
 package de.d3web.we.kdom.questionTree;
 
 import java.util.Collection;
-import java.util.logging.Logger;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
+import de.d3web.utils.Log;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webHandler;
@@ -138,7 +138,7 @@ public class QClassLine extends AbstractType {
 									+ localQuestionnaire + "', parent: '"
 									+ superQuestionnaire + "'.\n This is likely because one of the"
 									+ " sibling questionnaires could not be added due to an error.";
-							Logger.getLogger(this.getClass().getName()).warning(msg);
+							Log.warning(msg);
 						}
 					}
 				}

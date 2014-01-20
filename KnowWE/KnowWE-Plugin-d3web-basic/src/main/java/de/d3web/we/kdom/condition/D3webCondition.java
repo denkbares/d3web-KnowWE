@@ -20,8 +20,8 @@
 package de.d3web.we.kdom.condition;
 
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.knowledgebase.D3webCompileScript;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;

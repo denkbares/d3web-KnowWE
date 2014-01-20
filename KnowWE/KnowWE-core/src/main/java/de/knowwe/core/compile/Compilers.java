@@ -24,9 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.Article;
@@ -91,9 +90,8 @@ public class Compilers {
 				}
 				catch (Exception e) {
 					String msg = "Unexpected internal exception while destroying with script "
-							+ section + ": " + e.getMessage();
-					Logger.getLogger(CompilerManager.class.getName()).log(
-							Level.SEVERE, msg, e);
+							+ section;
+					Log.severe(msg, e);
 				}
 			}
 		}

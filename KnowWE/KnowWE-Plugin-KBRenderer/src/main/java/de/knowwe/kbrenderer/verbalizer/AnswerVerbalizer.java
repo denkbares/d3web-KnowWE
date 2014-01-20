@@ -24,11 +24,11 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
 import de.d3web.core.knowledge.terminology.AnswerNo;
 import de.d3web.core.knowledge.terminology.AnswerYes;
 import de.d3web.core.knowledge.terminology.Choice;
+import de.d3web.utils.Log;
 import de.knowwe.kbrenderer.verbalizer.VerbalizationManager.RenderingFormat;
 
 public class AnswerVerbalizer implements Verbalizer {
@@ -78,15 +78,13 @@ public class AnswerVerbalizer implements Verbalizer {
 		if (!Arrays.asList(getSupportedRenderingTargets()).contains(targetFormat)) {
 			// this should not happen, cause VerbalizationManager should not
 			// delegate here in this case!
-			Logger.getLogger("Verbalizer").warning(
-					"RenderingTarget" + targetFormat + " is not supported by RuleVerbalizer!");
+			Log.warning("RenderingTarget" + targetFormat + " is not supported by RuleVerbalizer!");
 			return null;
 		}
 		if (!(o instanceof Choice)) {
 			// this should not happen, cause VerbalizationManager should not
 			// delegate here in this case!
-			Logger.getLogger("Verbalizer").warning(
-					"Object " + o + " couldnt be rendered by DiagnosisVerbalizer!");
+			Log.warning("Object " + o + " couldnt be rendered by DiagnosisVerbalizer!");
 			return null;
 		}
 

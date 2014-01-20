@@ -22,12 +22,12 @@ package de.knowwe.core.action;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import de.d3web.utils.Log;
 
 /**
  * ActionServlet is a Servlet for ajax-based interview or any other user
@@ -92,12 +92,10 @@ public abstract class AbstractActionServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		Logger.getLogger("ActionServlet").fine(
-				"GET: " + request.getRequestURI() + "?" + request.getQueryString());
+		Log.fine("GET: " + request.getRequestURI() + "?" + request.getQueryString());
 		if (request.getPathInfo() == null || request.getPathInfo().length() <= 1) {
 			// no path provided (or only "/" as path)
-			Logger.getLogger("ActionServlet").info(
-					"no path provided (or only \"/\" as path): " + request.getRequestURI());
+			Log.info("no path provided (or only \"/\" as path): " + request.getRequestURI());
 			response.getWriter().write(
 					"<b>ActionServlet:</b> No path provided (or only \"/\" as path): "
 							+ request.getRequestURI());
@@ -114,7 +112,7 @@ public abstract class AbstractActionServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		Logger.getLogger("ActionServlet").info("POST: " + request.getRequestURI());
+		Log.info("POST: " + request.getRequestURI());
 		if (request.getPathInfo().equals("/command")) {
 			doXmlActions(request, response, request.getReader());
 		}
@@ -132,7 +130,7 @@ public abstract class AbstractActionServlet extends HttpServlet {
 			cmd.execute(context);
 		}
 		catch (RuntimeException e) {
-			Logger.getLogger("ActionServlet").log(Level.SEVERE, "unexpected internal error", e);
+			Log.severe("unexpected internal error", e);
 			throw e;
 		}
 	}

@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +31,7 @@ import javax.servlet.http.HttpSession;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
+import de.d3web.utils.Log;
 import de.knowwe.core.user.AbstractUserContext;
 import de.knowwe.core.user.AuthenticationManager;
 
@@ -121,8 +121,7 @@ public class ActionContext extends AbstractUserContext implements UserActionCont
 		for (Extension e : extensions) {
 			if (e.getName().equals(actionName)) return ((Action) e.getSingleton());
 		}
-		Logger.getLogger(ActionContext.class.getName()).warning(
-				"Action: \"" + actionName + "\" not found, check plugin.xml.");
+		Log.warning("Action: \"" + actionName + "\" not found, check plugin.xml.");
 		return null;
 	}
 

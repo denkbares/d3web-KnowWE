@@ -19,14 +19,12 @@
  */
 package de.d3web.we.kdom.questionTree.indication;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.manage.RuleFactory;
+import de.d3web.utils.Log;
 import de.d3web.we.kdom.questionTree.NumericCondLine;
 import de.d3web.we.kdom.questionTree.QuestionDashTree;
 import de.d3web.we.kdom.questionTree.QuestionDashTreeUtils;
@@ -75,9 +73,7 @@ public class IndicationHandler extends D3webCompileScript<D3webTerm<NamedObject>
 				DashTreeElement.class);
 
 		if (element == null) {
-			Logger.getLogger(this.getClass().getName()).log(
-					Level.WARNING,
-					"The " + this.getClass().getSimpleName()
+			Log.warning("The " + this.getClass().getSimpleName()
 							+ " only works inside "
 							+ QuestionDashTree.class.getSimpleName()
 							+ "s. It seems the handler is used with the wrong Type.");

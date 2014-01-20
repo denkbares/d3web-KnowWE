@@ -22,12 +22,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import de.d3web.testcase.model.TestCase;
 import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
+import de.d3web.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.testcases.ProviderTriple;
@@ -46,8 +46,7 @@ public class WikiTestCaseProvider implements TestObjectProvider {
 	public <T> List<TestObjectContainer<T>> getTestObjects(Class<T> clazz, String name) {
 
 		if (clazz == null) {
-			Logger.getLogger(this.getClass().getName()).warning(
-					"Class given to TestObjectProvider was 'null'");
+			Log.warning("Class given to TestObjectProvider was 'null'");
 			return Collections.emptyList();
 		}
 		if (!clazz.equals(TestCase.class)) {

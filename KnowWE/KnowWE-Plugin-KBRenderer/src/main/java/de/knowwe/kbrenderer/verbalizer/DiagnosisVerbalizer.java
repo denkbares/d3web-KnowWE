@@ -22,9 +22,9 @@ package de.knowwe.kbrenderer.verbalizer;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.utils.Log;
 import de.knowwe.kbrenderer.verbalizer.VerbalizationManager.RenderingFormat;
 
 /**
@@ -75,15 +75,13 @@ public class DiagnosisVerbalizer implements Verbalizer {
 		if (!Arrays.asList(getSupportedRenderingTargets()).contains(targetFormat)) {
 			// this should not happen, cause VerbalizationManager should not
 			// delegate here in this case!
-			Logger.getLogger("Verbalizer").warning(
-					"RenderingTarget" + targetFormat + " is not supported by this verbalizer!");
+			Log.warning("RenderingTarget" + targetFormat + " is not supported by this verbalizer!");
 			return null;
 		}
 		if (!(o instanceof Solution)) {
 			// this should not happen, cause VerbalizationManager should not
 			// delegate here in this case!
-			Logger.getLogger("Verbalizer").warning(
-					"Object " + o + " couldnt be rendered by this verbalizer!");
+			Log.warning("Object " + o + " couldnt be rendered by this verbalizer!");
 			return null;
 		}
 

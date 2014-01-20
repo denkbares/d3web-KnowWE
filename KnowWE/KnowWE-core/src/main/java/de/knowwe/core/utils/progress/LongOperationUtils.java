@@ -10,9 +10,8 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import de.d3web.utils.Log;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -34,8 +33,7 @@ public class LongOperationUtils {
 					return thread;
 				}
 			});
-			Logger.getLogger(LongOperationUtils.class.getName())
-					.fine("created multicore thread pool of size " + threadCount);
+			Log.fine("created multicore thread pool of size " + threadCount);
 		}
 		// and return new executor based on the thread pool
 		return threadPool;
@@ -156,18 +154,15 @@ public class LongOperationUtils {
 					operation.execute(listener);
 				}
 				catch (IOException e) {
-					Logger.getLogger(getClass().getName()).log(Level.WARNING,
-							"Cannot complete operation.", e);
+					Log.warning("Cannot complete operation.", e);
 					listener.setError("Error occured: " + e.getMessage() + ".");
 				}
 				catch (InterruptedException e) {
-					Logger.getLogger(getClass().getName()).log(Level.INFO,
-							"Operation canceled by user.");
+					Log.info("Operation canceled by user.");
 					listener.setError("Canceled by user.");
 				}
 				catch (Exception e) {
-					Logger.getLogger(getClass().getName()).log(Level.SEVERE,
-							"Cannot complete operation, unexpected internal error.", e);
+					Log.severe("Cannot complete operation, unexpected internal error.", e);
 					listener.setError("Unexpected internal error: " + e.getMessage() + ".");
 				}
 				finally {

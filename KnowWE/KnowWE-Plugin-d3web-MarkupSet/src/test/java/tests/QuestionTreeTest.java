@@ -36,8 +36,8 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.plugin.test.InitPluginManager;
+import de.d3web.utils.Log;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.logging.Logging;
 
 /**
  * This class tests whether the Questions are created as expected.
@@ -179,8 +179,7 @@ public class QuestionTreeTest extends TestCase {
 			}
 		}
 		else {
-			Logging.getInstance().getLogger().warning(
-					"QuestionTest: Questions have not been tested!");
+			Log.warning("QuestionTest: Questions have not been tested!");
 		}
 	}
 

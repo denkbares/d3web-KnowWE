@@ -13,11 +13,10 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import de.d3web.collections.PriorityList;
 import de.d3web.collections.PriorityList.Group;
+import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -78,8 +77,7 @@ public class CompilerManager {
 				return thread;
 			}
 		});
-		Logger.getLogger(CompilerManager.class.getName())
-				.fine("created multicore thread pool of size " + threadCount);
+		Log.fine("created multicore thread pool of size " + threadCount);
 		return pool;
 	}
 
@@ -147,19 +145,16 @@ public class CompilerManager {
 					doCompile(added, removed);
 				}
 				catch (Throwable e) {
-					Logger.getLogger(CompilerManager.class.getName()).log(Level.SEVERE,
-							"Unexpected internal error while starting compilation.", e);
+					Log.severe("Unexpected internal error while starting compilation.", e);
 				}
 				finally {
 					synchronized (lock) {
 						running = null;
 						compilationCount++;
-						Logger.getLogger(this.getClass().getName()).log(
-								Level.INFO,
-								"Compiled " + added.size() + " added and " + removed.size()
-										+ " removed section" + (removed.size() != 1 ? "s" : "")
-										+ " after " + (System.currentTimeMillis() - startTime)
-										+ "ms");
+						Log.info("Compiled " + added.size() + " added and " + removed.size()
+								+ " removed section" + (removed.size() != 1 ? "s" : "")
+								+ " after " + (System.currentTimeMillis() - startTime)
+								+ "ms");
 						lock.notifyAll();
 					}
 				}
@@ -197,8 +192,7 @@ public class CompilerManager {
 						catch (Throwable e) {
 							String msg = "Unexpected internal exception while compiling with "
 									+ compiler + ": " + e.getMessage();
-							Logger.getLogger(CompilerManager.class.getName()).log(
-									Level.SEVERE, msg, e);
+							Log.severe(msg, e);
 							for (Section<?> section : added) {
 								// it does not matter if we store the messages
 								// for the same article multiple times, because
@@ -212,11 +206,9 @@ public class CompilerManager {
 							// and notify that the compiler has finished
 							synchronized (lock) {
 								activeCompilers.remove(compiler);
-								Logger.getLogger(this.getClass().getName()).log(
-										Level.FINE,
-										compiler.getClass().getSimpleName()
-												+ " finished after "
-												+ (System.currentTimeMillis() - startTime) + "ms");
+								Log.fine(compiler.getClass().getSimpleName()
+										+ " finished after "
+										+ (System.currentTimeMillis() - startTime) + "ms");
 								lock.notifyAll();
 							}
 						}
@@ -378,9 +370,7 @@ public class CompilerManager {
 				awaitTermination();
 			}
 			catch (InterruptedException e) {
-				Logger.getLogger(CompilerManager.class.getName()).log(
-						Level.WARNING,
-						"Caught InterrupedException while waiting to compile.",
+				Log.warning("Caught InterrupedException while waiting to compile.",
 						e);
 			}
 		}

@@ -2,7 +2,6 @@ package de.d3web.we.kdom.rules.action;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import de.d3web.abstraction.ActionSetQuestion;
 import de.d3web.abstraction.formula.FormulaNumberElement;
@@ -11,6 +10,7 @@ import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.d3web.we.kdom.auxiliary.Equals;
 import de.d3web.we.kdom.condition.QuestionNumReference;
 import de.d3web.we.kdom.rules.action.formula.CompositeFormula;
@@ -89,8 +89,7 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 					compiler, formulaSection);
 		}
 		catch (Exception e) {
-			Logger.getLogger(this.getClass().getName()).severe(e.getMessage());
-			e.printStackTrace();
+			Log.severe("Unexpected error", e);
 		}
 
 		if (q != null && formular != null) {

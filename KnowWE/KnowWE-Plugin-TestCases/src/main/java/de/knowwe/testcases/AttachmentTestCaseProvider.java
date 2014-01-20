@@ -21,12 +21,11 @@ package de.knowwe.testcases;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
 import de.d3web.testcase.model.TestCase;
+import de.d3web.utils.Log;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
@@ -92,8 +91,7 @@ public abstract class AttachmentTestCaseProvider extends PrefixedTestCaseProvide
 			messages.clear();
 			messages.add(Messages.error("File " + attachment.getFileName()
 					+ " cannot be accessed: " + e.getMessage() + "\n"));
-			Logger.getLogger(getClass().getName()).log(Level.SEVERE,
-					"File " + attachment.getFileName() + " cannot be accessed", e);
+			Log.severe("File " + attachment.getFileName() + " cannot be accessed", e);
 			return null;
 		}
 	}

@@ -32,8 +32,8 @@ import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.plugin.test.InitPluginManager;
+import de.d3web.utils.Log;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.logging.Logging;
 
 /**
  * This class tests whether the Questionnaires are created as expected.
@@ -126,8 +126,7 @@ public class QuestionnaireTest extends TestCase {
 			}
 		}
 		else {
-			Logging.getInstance().getLogger().warning(
-					"QuestionnaireTest: Questionnaires have not been tested!");
+			Log.warning("QuestionnaireTest: Questionnaires have not been tested!");
 		}
 
 		assertEquals("Init Questions differ.", createdKB.getInitQuestions(),

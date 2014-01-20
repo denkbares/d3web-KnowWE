@@ -21,8 +21,8 @@ package de.knowwe.core.action;
  */
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
+import de.d3web.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -49,7 +49,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 
 		if (section == null) {
 			String message = "Section not found: " + nodeID;
-			Logger.getLogger(this.getClass().getName()).warning(message);
+			Log.warning(message);
 			return message;
 
 		}

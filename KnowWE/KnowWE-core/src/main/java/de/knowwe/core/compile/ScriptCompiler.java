@@ -7,9 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import de.d3web.utils.Log;
 import de.d3web.utils.Pair;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -165,8 +164,7 @@ public class ScriptCompiler<C extends Compiler> {
 				String msg = "Unexpected internal exception while compiling with script "
 						+ pair.getB() + ": " + e.getMessage();
 				Messages.storeMessage(pair.getA(), pair.getB().getClass(), Messages.error(msg));
-				Logger.getLogger(CompilerManager.class.getName()).log(
-						Level.SEVERE, msg, e);
+				Log.severe(msg, e);
 			}
 		}
 	}
@@ -181,9 +179,8 @@ public class ScriptCompiler<C extends Compiler> {
 				}
 				catch (Exception e) {
 					String msg = "Unexpected internal exception while destroying with script "
-							+ pair.getB() + ": " + e.getMessage();
-					Logger.getLogger(CompilerManager.class.getName()).log(
-							Level.SEVERE, msg, e);
+							+ pair.getB();
+					Log.severe(msg, e);
 				}
 			}
 		}

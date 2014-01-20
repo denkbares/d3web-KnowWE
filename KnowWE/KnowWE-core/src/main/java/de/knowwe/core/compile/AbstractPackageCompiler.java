@@ -19,10 +19,9 @@
 package de.knowwe.core.compile;
 
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
@@ -79,9 +78,7 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 		if (getPackageManager().hasChanged(packagesToCompile)) {
 			long start = System.currentTimeMillis();
 			compilePackages(packagesToCompile);
-			Logger.getLogger(this.getClass().getName()).log(
-					Level.INFO,
-					toString() + " finished after "
+			Log.info(toString() + " finished after "
 							+ (System.currentTimeMillis() - start) + "ms");
 		}
 	}

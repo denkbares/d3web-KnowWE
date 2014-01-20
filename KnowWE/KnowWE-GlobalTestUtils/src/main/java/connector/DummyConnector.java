@@ -30,11 +30,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import de.d3web.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -203,8 +203,7 @@ public class DummyConnector implements WikiConnector {
 			throw new NullPointerException(
 					"PageProvider is null, so there are no articles available");
 		}
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support page versions");
+		Log.warning("The used WikiConnector does not support page versions");
 		return dummyPageProvider.getArticle(title) == null ? 0 : 1;
 	}
 
@@ -214,8 +213,7 @@ public class DummyConnector implements WikiConnector {
 			throw new NullPointerException(
 					"PageProvider is null, so there are no articles available");
 		}
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector only provides one version per article");
+		Log.warning("The used WikiConnector only provides one version per article");
 		return dummyPageProvider.getArticle(title);
 	}
 
@@ -225,15 +223,13 @@ public class DummyConnector implements WikiConnector {
 			throw new NullPointerException(
 					"PageProvider is null, so there are no articles available");
 		}
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support page versions");
+		Log.warning("The used WikiConnector does not support page versions");
 		return dummyPageProvider.getArticle(title) == null ? 0 : 1;
 	}
 
 	@Override
 	public String getChangeNote(String title, int version) {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support change notes");
+		Log.warning("The used WikiConnector does not support change notes");
 		return "";
 	}
 
@@ -256,15 +252,13 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public String normalizeString(String string) {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support normalizing of strings");
+		Log.warning("The used WikiConnector does not support normalizing of strings");
 		return string;
 	}
 
 	@Override
 	public String renderWikiSyntax(String string, HttpServletRequest request) {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support a wiki syntax");
+		Log.warning("The used WikiConnector does not support a wiki syntax");
 		return string;
 	}
 
@@ -309,22 +303,19 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public boolean userCanEditArticle(String articlename, HttpServletRequest r) {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support rights managment");
+		Log.warning("The used WikiConnector does not support rights managment");
 		return true;
 	}
 
 	@Override
 	public boolean userCanViewArticle(String articlename, HttpServletRequest r) {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support rights managment");
+		Log.warning("The used WikiConnector does not support rights managment");
 		return true;
 	}
 
 	@Override
 	public boolean userIsMemberOfGroup(String groupname, HttpServletRequest r) {
-		Logger.getLogger(this.getClass().getName()).warning(
-				"The used WikiConnector does not support user groups");
+		Log.warning("The used WikiConnector does not support user groups");
 		return false;
 	}
 
@@ -332,8 +323,7 @@ public class DummyConnector implements WikiConnector {
 	public boolean writeArticleToWikiPersistence(String title, String content, UserContext context) {
 		Environment.getInstance().buildAndRegisterArticle(content, title, Environment.DEFAULT_WEB);
 		if (dummyPageProvider == null) {
-			Logger.getLogger(this.getClass().getName()).warning(
-					"No PageProvider given, so additional wiki pages cannot be added");
+			Log.warning("No PageProvider given, so additional wiki pages cannot be added");
 			return true;
 		}
 		dummyPageProvider.setArticleContent(title, content);

@@ -21,12 +21,12 @@ package de.knowwe.plugin;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import de.d3web.collections.PriorityList;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.JPFExtension;
 import de.d3web.plugin.PluginManager;
+import de.d3web.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.action.Action;
@@ -137,8 +137,7 @@ public class Plugins {
 						(CompileScript<Compiler, AbstractType>) extension.getSingleton());
 			}
 			else {
-				Logger.getLogger(Plugins.class.getName()).warning(
-						"Tried to plug CompileScript '"
+				Log.warning("Tried to plug CompileScript '"
 								+ extension.getSingleton().getClass().getSimpleName()
 								+ "' into an type '" + type.getClass().getSimpleName()
 								+ "' which is not an AbstractType");

@@ -22,8 +22,8 @@ package de.d3web.we.kdom.rules.action;
 
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;
-import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.knowledgebase.D3webCompileScript;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;

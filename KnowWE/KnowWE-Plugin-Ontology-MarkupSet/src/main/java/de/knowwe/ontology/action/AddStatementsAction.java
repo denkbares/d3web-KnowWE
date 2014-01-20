@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,6 +17,7 @@ import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.impl.StatementImpl;
 
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
@@ -173,8 +172,7 @@ public class AddStatementsAction extends AbstractAction {
 					+ "'";
 		}
 		catch (JSONException e) {
-			Logger.getLogger(AddStatementsAction.class.getName()).log(Level.WARNING,
-					"cannot create js action for statement insert", e);
+			Log.warning("cannot create js action for statement insert", e);
 			return null;
 		}
 	}

@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
+import de.d3web.utils.Log;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
@@ -45,8 +45,7 @@ public class WikiKnowledgeBaseProvider implements TestObjectProvider {
 	@Override
 	public <T> List<TestObjectContainer<T>> getTestObjects(Class<T> c, String id) {
 		if (c == null) {
-			Logger.getLogger(this.getClass().getName()).warning(
-					"Class given to TestObjectProvider was 'null'");
+			Log.warning("Class given to TestObjectProvider was 'null'");
 			return Collections.emptyList();
 		}
 		if (!c.equals(KnowledgeBase.class)) {

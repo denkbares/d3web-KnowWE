@@ -25,9 +25,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import de.d3web.core.inference.condition.Condition;
+import de.d3web.utils.Log;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
@@ -74,8 +74,7 @@ public class XclVerbalizer implements Verbalizer {
 			verbalisation = verbalizePlainText(model, parameter);
 		}
 		else {
-			Logger.getLogger("Verbalizer").warning(
-					"RenderingTarget" + targetFormat + " is not supported by XclVerbalizer!");
+			Log.warning("RenderingTarget" + targetFormat + " is not supported by XclVerbalizer!");
 		}
 		return verbalisation;
 	}

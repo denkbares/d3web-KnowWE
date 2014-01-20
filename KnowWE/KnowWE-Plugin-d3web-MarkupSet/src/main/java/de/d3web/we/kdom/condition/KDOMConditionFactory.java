@@ -21,12 +21,12 @@ package de.d3web.we.kdom.condition;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondNot;
 import de.d3web.core.inference.condition.CondOr;
 import de.d3web.core.inference.condition.Condition;
+import de.d3web.utils.Log;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -115,8 +115,7 @@ public class KDOMConditionFactory {
 					Sections.findChildOfType(terminal, D3webCondition.class);
 
 			if (termChild == null) {
-				Logger.getLogger(KDOMConditionFactory.class.getName()).warning(
-						"Could not create Condition for: " + terminal.getParent());
+				Log.warning("Could not create Condition for: " + terminal.getParent());
 				return null;
 			}
 

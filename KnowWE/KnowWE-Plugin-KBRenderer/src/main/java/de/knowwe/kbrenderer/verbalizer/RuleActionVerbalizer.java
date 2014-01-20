@@ -25,7 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
 import de.d3web.abstraction.ActionSetQuestion;
 import de.d3web.abstraction.formula.FormulaElement;
@@ -38,6 +37,7 @@ import de.d3web.indication.ActionInstantIndication;
 import de.d3web.indication.ActionNextQASet;
 import de.d3web.indication.ActionSuppressAnswer;
 import de.d3web.scoring.ActionHeuristicPS;
+import de.d3web.utils.Log;
 import de.knowwe.kbrenderer.verbalizer.VerbalizationManager.RenderingFormat;
 
 /**
@@ -82,14 +82,12 @@ public class RuleActionVerbalizer implements Verbalizer {
 		// test, if targetformat is legal for this verbalizer
 
 		if (targetFormat != RenderingFormat.HTML) {
-			Logger.getLogger("Verbalizer").warning(
-					"RenderingTarget" + targetFormat + " is not supported by RuleActionVerbalizer!");
+			Log.warning("RenderingTarget" + targetFormat + " is not supported by RuleActionVerbalizer!");
 			return null;
 		}
 		// Test if object is legal for this verbalizer
 		if (!(o instanceof PSAction)) {
-			Logger.getLogger("Verbalizer").warning(
-					"Object " + o + " couldnt be rendered by RuleActionVerbalizer!");
+			Log.warning("Object " + o + " couldnt be rendered by RuleActionVerbalizer!");
 			return null;
 		}
 		// cast the given object to RuleAction

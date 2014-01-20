@@ -22,11 +22,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
+import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -56,8 +56,7 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 	@Override
 	public <T> List<TestObjectContainer<T>> getTestObjects(Class<T> c, String testObjectName) {
 		if (c == null) {
-			Logger.getLogger(this.getClass().getName()).warning(
-					"Class given to TestObjectProvider was 'null'");
+			Log.warning("Class given to TestObjectProvider was 'null'");
 			return Collections.emptyList();
 		}
 		List<TestObjectContainer<T>> result = new ArrayList<TestObjectContainer<T>>();

@@ -21,11 +21,10 @@ package de.d3web.we.ci4ke.dashboard;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.TestSpecification;
+import de.d3web.utils.Log;
 import de.d3web.we.ci4ke.build.CIBuildCache;
 import de.d3web.we.ci4ke.build.CIPersistence;
 import de.d3web.we.ci4ke.build.CIRenderer;
@@ -197,8 +196,7 @@ public class CIDashboard {
 		catch (IOException e) {
 			// we cannot store the build as attachment
 			// so log this and continue as usual
-			Logger.getLogger(getClass().getName()).log(Level.SEVERE,
-					"Cannot attached build information due to internal error", e);
+			Log.severe("Cannot attached build information due to internal error", e);
 		}
 	}
 
@@ -211,8 +209,7 @@ public class CIDashboard {
 		}
 		catch (Exception e) {
 			if (logging) {
-				Logger.getLogger(getClass().getName()).warning(
-						"Unable to access build " + buildVersion + ". Error: " + e.getMessage());
+				Log.warning("Unable to access build " + buildVersion + ". Error: " + e.getMessage());
 			}
 		}
 		if (build != null) {

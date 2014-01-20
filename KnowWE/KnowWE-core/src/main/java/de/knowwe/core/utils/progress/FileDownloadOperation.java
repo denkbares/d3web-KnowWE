@@ -3,10 +3,10 @@ package de.knowwe.core.utils.progress;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 import de.d3web.core.io.progress.ProgressListener;
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 
@@ -43,9 +43,8 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 			file.delete();
 			file.deleteOnExit();
 			listener.updateProgress(1f, COMPLETE_MESSAGE);
-			Logger.getLogger(this.getClass().getName()).info(
-					"Aborted execution of file download operation due to exception: "
-							+ e.getMessage());
+			Log.info("Aborted execution of file download operation due to exception: "
+					+ e.getMessage());
 		}
 	}
 

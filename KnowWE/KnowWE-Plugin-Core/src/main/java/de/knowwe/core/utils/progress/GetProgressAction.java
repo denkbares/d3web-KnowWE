@@ -25,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.d3web.utils.Log;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
@@ -75,8 +76,7 @@ public class GetProgressAction extends AbstractAction {
 			result.write(context.getWriter());
 		}
 		catch (JSONException e) {
-			java.util.logging.Logger.getLogger(this.getClass().getName()).severe(
-					"Error while writing JSON message: " + e.getMessage());
+			Log.severe("Error while writing JSON message: " + e.getMessage());
 		}
 	}
 

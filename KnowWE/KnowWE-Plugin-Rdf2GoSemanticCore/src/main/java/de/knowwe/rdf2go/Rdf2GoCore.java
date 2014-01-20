@@ -36,7 +36,6 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
@@ -64,6 +63,7 @@ import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
@@ -435,7 +435,7 @@ public class Rdf2GoCore {
 		long startRemove = System.currentTimeMillis();
 		model.removeAll(removeCache.iterator());
 		EventManager.getInstance().fireEvent(new RemoveStatementsEvent(removeCache, this));
-		if (verboseLog) logStatements(sortedRemoveCache, startRemove, "Removed statements:\n");
+		if (verboseLog) logStatements(sortedRemoveCache, startRemove, "Removed statements");
 
 		long startInsert = System.currentTimeMillis();
 		model.addAll(insertCache.iterator());
@@ -443,12 +443,10 @@ public class Rdf2GoCore {
 		if (verboseLog) logStatements(new TreeSet<Statement>(insertCache), startInsert,
 				"Inserted statements:\n");
 
-		if (!verboseLog) Logger.getLogger(this.getClass().getName()).log(
-				Level.INFO,
-				"Removed " + removeSize + " statements from and added "
-						+ insertSize
-						+ " statements to " + Rdf2GoCore.class.getSimpleName() + " in "
-						+ (System.currentTimeMillis() - startRemove) + "ms.");
+		if (!verboseLog) Log.info("Removed " + removeSize + " statements from and added "
+				+ insertSize
+				+ " statements to " + Rdf2GoCore.class.getSimpleName() + " in "
+				+ (System.currentTimeMillis() - startRemove) + "ms.");
 
 		removeCache = new HashSet<Statement>();
 		insertCache = new HashSet<Statement>();
@@ -648,9 +646,7 @@ public class Rdf2GoCore {
 			reasoningType = Rdf2GoReasoning.valueOf(reasoning.toUpperCase());
 		}
 		catch (IllegalArgumentException e) {
-			Logger.getLogger(this.getClass().getName()).log(
-					Level.WARNING,
-					"Unable to read Rdf2Go model config, using default");
+			Log.warning("Unable to read Rdf2Go model config, using default");
 		}
 
 		synchronized (RDF2Go.class) {
@@ -695,22 +691,22 @@ public class Rdf2GoCore {
 		}
 
 		model.open();
-		Logger.getLogger(this.getClass().getName()).log(
-				Level.INFO,
-				"RDF2Go model '" + modelType + "' with reasoning '"
-						+ reasoningType + "' initialized");
+		Log.info("RDF2Go model '" + modelType + "' with reasoning '"
+				+ reasoningType + "' initialized");
 	}
 
-	private void logStatements(TreeSet<Statement> statements, long start, String key) {
-		// sort statements at this point using tree map
+	private void logStatements(TreeSet<Statement> statements, long start, String caption) {
+		// check if we have something to log
 		if (statements.isEmpty()) return;
+		if (!Log.logger().isLoggable(Level.FINE)) return;
+
+		// sort statements at this point using tree map
 		StringBuffer buffy = new StringBuffer();
 		for (Statement statement : statements) {
-			buffy.append(verbalizeStatement(statement) + "\n");
+			buffy.append("* " + verbalizeStatement(statement) + "\n");
 		}
 		buffy.append("Done after " + (System.currentTimeMillis() - start) + "ms");
-		Logger.getLogger(this.getClass().getName()).log(Level.FINE,
-				key + buffy.toString());
+		Log.fine(caption + ":\n" + buffy.toString());
 	}
 
 	public void readFrom(InputStream in, Syntax syntax) throws IOException {
@@ -886,8 +882,7 @@ public class Rdf2GoCore {
 
 		// long time = System.currentTimeMillis() - start;
 		// if (time > 5) {
-		// Logger.getLogger(this.getClass().getName()).warning(
-		// "Slow SPARQ query (" + time + "ms):\n" + query);
+		// Log.warning(// "Slow SPARQ query (" + time + "ms):\n" + query);
 		// }
 		return resultTable;
 	}

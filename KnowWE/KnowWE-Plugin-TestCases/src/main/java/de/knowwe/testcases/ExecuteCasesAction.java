@@ -20,8 +20,6 @@ package de.knowwe.testcases;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import de.d3web.core.inference.SessionTerminatedException;
 import de.d3web.core.session.Session;
@@ -29,6 +27,7 @@ import de.d3web.core.session.SessionFactory;
 import de.d3web.testcase.TestCaseUtils;
 import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.TestCase;
+import de.d3web.utils.Log;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Environment;
@@ -106,8 +105,7 @@ public class ExecuteCasesAction extends AbstractAction {
 			}
 		}
 		catch (SessionTerminatedException e) {
-			Logger.getLogger(D3webUtils.class.getName()).log(Level.WARNING,
-					"Propagation terminated due to detected loop.", e);
+			Log.warning("Propagation terminated due to detected loop.", e);
 		}
 	}
 }

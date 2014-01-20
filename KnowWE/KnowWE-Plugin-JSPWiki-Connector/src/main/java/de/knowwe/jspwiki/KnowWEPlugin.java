@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,11 +56,11 @@ import com.ecyrd.jspwiki.ui.TemplateManager;
 
 import de.d3web.plugin.Plugin;
 import de.d3web.plugin.PluginManager;
+import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.RessourceLoader;
 import de.knowwe.core.append.PageAppendHandler;
-import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
@@ -131,8 +129,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				}
 			}
 			catch (Exception e) {
-				Logger.getLogger(this.getClass().getName()).severe(
-						"Exception while trying to copy core pages: " + e.getMessage());
+				Log.severe("Exception while trying to copy core pages: " + e.getMessage());
 				// Start wiki without pages...
 			}
 		}
@@ -220,9 +217,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				}
 			}
 			catch (Exception e) {
-				Logger.getLogger(this.getClass().getName()).log(
-						Level.SEVERE,
-						"Exception while compiling and rendering article '" + title + "'", e);
+				Log.severe("Exception while compiling and rendering article '" + title + "'", e);
 				return getExceptionRendering(userContext, e);
 			}
 		}
@@ -286,9 +281,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			return stringRaw;
 		}
 		catch (Exception e) {
-			Logger.getLogger(this.getClass().getName()).log(
-					Level.SEVERE,
-					"Exception while compiling and rendering article '" + title + "'", e);
+			Log.severe("Exception while compiling and rendering article '" + title + "'", e);
 			return getExceptionRendering(userContext, e);
 		}
 	}
@@ -307,9 +300,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		long start = System.currentTimeMillis();
 		article.getRootType().getRenderer().render(article.getRootSection(), userContext,
 				renderResult);
-		Logger.getLogger(this.getClass().getName()).log(
-				Level.INFO, "Rendered article '" + article.getTitle() + "' in "
-						+ (System.currentTimeMillis() - start) + "ms");
+		Log.info("Rendered article '" + article.getTitle() + "' in "
+				+ (System.currentTimeMillis() - start) + "ms");
 		EventManager.getInstance().fireEvent(
 				new PageRenderedEvent(article.getTitle(), userContext));
 	}
@@ -373,8 +365,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				wikipages = mgr.getAllPages();
 			}
 			catch (ProviderException e1) {
-				Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
-						"Unable to load all articles, maybe some articles won't be initialized!");
+				Log.warning("Unable to load all articles, maybe some articles won't be initialized!");
 			}
 
 			for (Object o : wikipages) {
@@ -397,9 +388,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			articleManager.getCompilerManager().awaitTermination();
 		}
 		catch (InterruptedException e) {
-			Logger.getLogger(CompilerManager.class.getName()).log(
-					Level.WARNING,
-					"Caught InterrupedException while waiting til compilation is finished.",
+			Log.warning("Caught InterrupedException while waiting til compilation is finished.",
 					e);
 		}
 		EventManager.getInstance().fireEvent(new InitializedArticlesEvent(articleManager));
@@ -487,10 +476,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				if (!found) {
 					// obviously the plugin is not available in current
 					// installation
-					Logger.getLogger(this.getClass().getName()).log(
-							Level.WARNING,
-							"Found dependency to a css/js resource (" + resource
-									+ ") where the corresponding plugin is not available.");
+					Log.warning("Found dependency to a css/js resource (" + resource
+							+ ") where the corresponding plugin is not available.");
 					continue;
 				}
 			}

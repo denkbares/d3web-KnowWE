@@ -26,9 +26,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.Environment.CompilationMode;
@@ -90,8 +89,7 @@ public class Article {
 			String web, boolean fullParse) {
 
 		if (isArticleCurrentlyBuilding(web, title)) {
-			Logger.getLogger(Article.class.getName()).severe(
-					"The article '"
+			Log.severe("The article '"
 							+ title
 							+ "' is build more than once at the same time, "
 							+ "this should not be done! Developer please check with "
@@ -139,15 +137,12 @@ public class Article {
 		// if for example a SubtreeHandlers uses
 		// Article#setFullParse(Class) he prevents incremental updating
 		if (!defFullParse && !classesCausingFullParse.isEmpty()) {
-			Logger.getLogger(this.getClass().getName()).log(
-					Level.INFO, "The following classes " +
+			Log.info("The following classes " +
 							"caused a full parse:\n" +
 							classesCausingFullParse.toString());
 		}
 
-		Logger.getLogger(this.getClass().getName()).log(
-				Level.INFO,
-				"Sectionized article '" + title + "' in "
+		Log.info("Sectionized article '" + title + "' in "
 						+ (System.currentTimeMillis() - startTimeOverall) + "ms");
 	}
 

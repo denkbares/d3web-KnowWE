@@ -26,10 +26,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.utils.Log;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.Article;
@@ -38,7 +37,6 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
-import de.knowwe.d3web.resource.ResourceHandler;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
@@ -114,8 +112,7 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 						sectionArticle.getTitle(), fileRegex);
 			}
 			catch (IOException e) {
-				Logger.getLogger(ResourceHandler.class.getName()).log(Level.SEVERE,
-						"wiki error accessing attachments", e);
+				Log.severe("wiki error accessing attachments", e);
 				messages.add(Messages.error("Error accessing attachments '" + fileRegex + "': " + e));
 				continue;
 			}

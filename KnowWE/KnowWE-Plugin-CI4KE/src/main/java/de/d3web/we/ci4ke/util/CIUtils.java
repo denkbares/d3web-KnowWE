@@ -23,10 +23,9 @@ package de.d3web.we.ci4ke.util;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.ArticleManager;
@@ -65,8 +64,7 @@ public class CIUtils {
 		WikiConnector con = Environment.getInstance().getWikiConnector();
 		String wikiDir = con.getSavePath();
 		if (wikiDir == null || wikiDir.isEmpty()) {
-			Logger.getLogger(CIUtils.class.getName()).log(
-					Level.WARNING, "Wiki SavePath could not be retrieved! (null or empty!)");
+			Log.warning("Wiki SavePath could not be retrieved! (null or empty!)");
 		}
 
 		if (!wikiDir.endsWith(File.separator)) {

@@ -22,11 +22,10 @@ package de.knowwe.d3web.resource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.Resource;
+import de.d3web.utils.Log;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.Article;
@@ -125,8 +124,7 @@ public class ResourceHandler extends D3webHandler<ResourceType> {
 				}
 			}
 			catch (IOException e) {
-				Logger.getLogger(ResourceHandler.class.getName()).log(Level.SEVERE,
-						"wiki error accessing attachments: ", e);
+				Log.severe("wiki error accessing attachments: ", e);
 				return Messages.asList(
 						Messages.error("Wiki error accessing attachments: " + e.getMessage()));
 			}
