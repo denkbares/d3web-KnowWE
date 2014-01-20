@@ -25,6 +25,7 @@ import org.ontoware.rdf2go.model.QueryResultTable;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
+import de.d3web.testing.TestParameter.Mode;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -41,6 +42,18 @@ import de.knowwe.rdf2go.utils.ResultTableModel;
  * @created 10.01.2014
  */
 public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultSection> {
+
+	public static final String AT_LEAST = "atLeast";
+	public static final String EQUAL = "equal";
+
+	public ExpectedSparqlResultTest() {
+		String[] comparators = new String[] {
+				EQUAL, AT_LEAST };
+
+		this.addParameter("comparator", Mode.Optional,
+				"how to compare the result data against the expected table data: equal/atleast",
+				comparators);
+	}
 
 	@Override
 	public Message execute(SparqlExpectedResultSection testObject, String[] args, String[]... ignores) throws InterruptedException {
@@ -78,8 +91,7 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 		String sparqlString = Rdf2GoUtils.createSparqlString(core,
 				querySection.getText());
 
-		QueryResultTable resultSet = core.sparqlSelect(
-				sparqlString);
+		QueryResultTable resultSet = core.sparqlSelect(sparqlString);
 		ResultTableModel actualResultTable = new ResultTableModel(resultSet);
 
 		List<String> variables = actualResultTable.getVariables();
@@ -87,8 +99,16 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 		ResultTableModel expectedResultTable = ExpectedSparqlResultTable.getResultTableModel(
 				expectedResultTableSection, variables, core);
 
+		boolean atLeastFlag = false;
+		if (args.length > 0) {
+			String arg0 = args[0];
+			if (arg0.equalsIgnoreCase(AT_LEAST)) {
+				atLeastFlag = true;
+			}
+		}
+
 		List<Message> failures = ResultTableModel.checkEquality(expectedResultTable,
-				actualResultTable);
+				actualResultTable, atLeastFlag);
 
 		if (failures.size() > 0) {
 			return new Message(Type.FAILURE, ResultTableModel.generateErrorsText(failures));

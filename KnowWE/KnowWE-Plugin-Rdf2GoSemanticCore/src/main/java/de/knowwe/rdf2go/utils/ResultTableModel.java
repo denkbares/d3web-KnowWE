@@ -148,7 +148,23 @@ public class ResultTableModel {
 		importRow(artificialTopLevelRow);
 	}
 
-	public static List<Message> checkEquality(ResultTableModel expectedResultTable, ResultTableModel actualResultTable) {
+	/**
+	 * Compares the two sparql result data tables with each other. Equality is
+	 * checked if the atLeast-flag is set false. If the atLeast-flag is set to
+	 * true, only the subset relation of expected to actual data is checked.
+	 * 
+	 * CAUTION: result rows with blank nodes are ignored from consideration
+	 * (graph isomorphism problem)
+	 * 
+	 * 
+	 * @created 20.01.2014
+	 * @param expectedResultTable
+	 * @param actualResultTable
+	 * @param atLeast false: equality of data is required; true: expectedData
+	 *        SUBSET-OF actualData is required
+	 * @return
+	 */
+	public static List<Message> checkEquality(ResultTableModel expectedResultTable, ResultTableModel actualResultTable, boolean atLeast) {
 		List<Message> errorMessages = new ArrayList<Message>();
 
 		/*
@@ -176,6 +192,15 @@ public class ResultTableModel {
 				errorMessages.add(new Message(Type.ERROR, "result does not contain expected row: "
 						+ expectedTableRow.toString()));
 			}
+		}
+
+		if (atLeast) {
+			/*
+			 * if the atLeast-flag is set we stop at this point as we asserted
+			 * that the actual data contains at least the rows from the expected
+			 * data
+			 */
+			return errorMessages;
 		}
 
 		/*

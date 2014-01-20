@@ -295,7 +295,7 @@
 		id="ExpectedSparqlResultTest">
 		<parameter id="class"
 			value="de.knowwe.ontology.ci.ExpectedSparqlResultTest" />
-		<parameter id="name" value="ExpectedSparqlResultTest" />
+		<parameter id="name" value="SparqlResultTable" />
 		<parameter id="description" value="CITest ExpectedSparqlResultTest" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="4" />
