@@ -30,7 +30,7 @@ import de.knowwe.ontology.turtle.TurtleURI;
 public class SparqlShortURIReference extends AbstractType {
 
 	public SparqlShortURIReference() {
-		this.setSectionFinder(new RegexSectionFinder("\\w+:\\w+"));
+		this.setSectionFinder(new RegexSectionFinder("\\w+:[\\w_\\-%]+"));
 		this.addChildType(new TurtleURI());
 	}
 
