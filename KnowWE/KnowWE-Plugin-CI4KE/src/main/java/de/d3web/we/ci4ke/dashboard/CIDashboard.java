@@ -209,7 +209,7 @@ public class CIDashboard {
 		}
 		catch (Exception e) {
 			if (logging) {
-				Log.warning("Unable to access build " + buildVersion + ". Error: " + e.getMessage());
+				Log.warning("Unable to access build " + buildVersion, e);
 			}
 		}
 		if (build != null) {

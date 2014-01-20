@@ -43,8 +43,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 			file.delete();
 			file.deleteOnExit();
 			listener.updateProgress(1f, COMPLETE_MESSAGE);
-			Log.info("Aborted execution of file download operation due to exception: "
-					+ e.getMessage());
+			Log.warning("Aborted execution of file download operation due to exception", e);
 		}
 	}
 

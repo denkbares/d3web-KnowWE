@@ -79,8 +79,7 @@ public class TagHandlerListHandler extends AbstractHTMLTagHandler {
 			}
 			catch (Exception e) {
 				description = "Fehler";
-				Log.warning("Unable to get description for TagHandler: " + th.getClass() + " ("
-						+ e.getMessage() + ")");
+				Log.warning("Unable to get description for TagHandler " + th.getClass(), e);
 			}
 			html.append("<TR><TD>" + name + "</TD><TD>" + example + "</TD><TD>"
 					+ description + "</TD></TR> \n"); // \n only to avoid

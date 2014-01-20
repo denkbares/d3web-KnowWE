@@ -129,7 +129,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				}
 			}
 			catch (Exception e) {
-				Log.severe("Exception while trying to copy core pages: " + e.getMessage());
+				Log.severe("Exception while trying to copy core pages", e);
 				// Start wiki without pages...
 			}
 		}

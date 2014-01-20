@@ -76,7 +76,7 @@ public class GetProgressAction extends AbstractAction {
 			result.write(context.getWriter());
 		}
 		catch (JSONException e) {
-			Log.severe("Error while writing JSON message: " + e.getMessage());
+			Log.severe("Error while writing JSON message", e);
 		}
 	}
 

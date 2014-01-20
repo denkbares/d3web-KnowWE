@@ -153,7 +153,7 @@ public class KnowWEUtils {
 			out.close();
 		}
 		catch (Exception e) {
-			Log.warning("Unable to append to File: " + e.getMessage());
+			Log.warning("Unable to append to File", e);
 		}
 	}
 
