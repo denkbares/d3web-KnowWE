@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -55,7 +54,6 @@ import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.EventListener;
 import de.knowwe.core.event.EventManager;
-import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
@@ -419,45 +417,6 @@ public class Environment {
 
 				// add child to the end of the queue --> breadth first search
 				queue.add(childPath);
-			}
-		}
-	}
-
-	private void initSuccessorType() {
-
-		// queue the queue of paths to be initialized
-		RootType root = RootType.getInstance();
-		for (Type type : root.getChildrenTypes()) {
-			initSuccessorTypes(new Type[] {
-					root, type });
-		}
-	}
-
-	private void initSuccessorTypes(Type[] path) {
-		Type type = path[path.length - 1];
-		List<Type> childrenTypes = type.getChildrenTypes();
-		if (childrenTypes.isEmpty()) {
-			addSuccessorTypes(path);
-		}
-		for (Type child : childrenTypes) {
-			if (Arrays.asList(path).contains(child)) continue;
-			Type[] copy = Arrays.copyOf(path, path.length + 1);
-			copy[path.length] = child;
-			initSuccessorTypes(copy);
-		}
-
-	}
-
-	private void addSuccessorTypes(Type[] path) {
-		for (int i = 0; i < path.length; i++) {
-			if (!(path[i] instanceof AbstractType)) continue;
-			Type type = path[i];
-			for (int j = i + 1; j < path.length; j++) {
-				Class<?> clazz = path[j].getClass();
-				while (clazz != null && clazz != AbstractType.class) {
-					// type.addSuccessorType(clazz);
-					clazz = clazz.getSuperclass();
-				}
 			}
 		}
 	}
