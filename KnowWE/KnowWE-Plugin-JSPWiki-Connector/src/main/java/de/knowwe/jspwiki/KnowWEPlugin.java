@@ -155,7 +155,13 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	@Override
 	public void postSave(WikiContext wikiContext, String content)
 			throws FilterException {
-		// nothing to do here, everything is handled in pre- and post translate
+		try {
+			updateArticle(wikiContext, content);
+		}
+		catch (Exception e) {
+			String title = wikiContext.getPage().getName();
+			Log.severe("Exception while compiling article " + title, e);
+		}
 	}
 
 	@Override
@@ -244,23 +250,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			String stringRaw = (String) httpRequest.getAttribute("renderresult");
 			if (stringRaw != null) return stringRaw;
 
-			Article article = Environment.getInstance().getArticle(
-					Environment.DEFAULT_WEB, title);
-
-			String originalText = "";
-			if (article != null) {
-				originalText = article.getRootSection().getText();
-			}
-			String parse = userContext.getParameter("parse");
-			boolean fullParse = parse != null && (parse.equals("full") || parse.equals("true"));
-
-			if (fullParse || !originalText.equals(content)) {
-				deleteRenamedArticles(title);
-				article = Environment.getInstance().buildAndRegisterArticle(
-						Environment.DEFAULT_WEB, title,
-						content, fullParse);
-				Compilers.getCompilerManager(Environment.DEFAULT_WEB).awaitTermination();
-			}
+			Article article = updateArticle(wikiContext, content);
 
 			RenderResult renderResult = new RenderResult(userContext.getRequest());
 
@@ -284,6 +274,32 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			Log.severe("Exception while compiling and rendering article '" + title + "'", e);
 			return getExceptionRendering(userContext, e);
 		}
+	}
+
+	private Article updateArticle(WikiContext wikiContext, String content) throws InterruptedException {
+		HttpServletRequest httpRequest = wikiContext.getHttpRequest();
+		if (httpRequest == null) {
+			// When a page is rendered the first time, the request is null.
+			// Since this version with no http request is not shown to the user,
+			// we can just ignore it.
+			return null;
+		}
+		String title = wikiContext.getPage().getName();
+		Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
+
+		String originalText = "";
+		if (article != null) {
+			originalText = article.getRootSection().getText();
+		}
+		String parse = UserContextUtil.getParameters(httpRequest).get("parse");
+		boolean fullParse = parse != null && (parse.equals("full") || parse.equals("true"));
+		if (fullParse || !originalText.equals(content)) {
+			deleteRenamedArticles(title);
+			article = Environment.getInstance().buildAndRegisterArticle(
+					Environment.DEFAULT_WEB, title, content, fullParse);
+			Compilers.getCompilerManager(Environment.DEFAULT_WEB).awaitTermination();
+		}
+		return article;
 	}
 
 	private void renderPostPageAppendHandler(JSPWikiUserContext userContext, String title, RenderResult renderResult, List<PageAppendHandler> appendhandlers) {
