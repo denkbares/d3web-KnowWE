@@ -250,7 +250,10 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * @param typeClass the class of the successor you want to add
 	 */
 	public void addSuccessorType(Class<?> typeClass) {
-		if (typeClass != null && typeClass != Type.class && typeClass != Object.class) {
+		if (typeClass != null
+				&& Type.class.isAssignableFrom(typeClass)
+				&& typeClass != Type.class
+				&& typeClass != Object.class) {
 			if (successorTypes.add(typeClass)) {
 				for (Type parent : parents) {
 					if (parent instanceof AbstractType) {

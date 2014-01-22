@@ -30,12 +30,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -154,12 +156,12 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 */
 	private Section(String text, T objectType, Section<?> father) {
 		this.parent = father;
+		this.type = objectType;
+		this.text = text;
 		if (father != null) {
 			this.parent.addChild(this);
 			this.article = father.getArticle();
 		}
-		this.text = text;
-		this.type = objectType;
 	}
 
 	/*
@@ -270,8 +272,20 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	/**
 	 * Adds a child to this node. Use for KDOM creation and editing only!
 	 */
-	public void addChild(int index, Section<?> s) {
-		this.children.add(index, s);
+	public void addChild(int index, Section<?> child) {
+		this.children.add(index, child);
+		if (get() instanceof AbstractType && !(child.get() instanceof RootType)) {
+			Class<? extends Type> childTypeClass = ((Type) child.get()).getClass();
+			if (!Types.canHaveSuccessorOfType((AbstractType) type, childTypeClass)) {
+				Log.severe("Added section of type '"
+						+ childTypeClass.getSimpleName()
+						+ "' to parent section of type '"
+						+ type.getClass().getSimpleName()
+						+ "', but parent type does not expect this child type. "
+						+ "This has to be fixed, otherwise functionality based on a "
+						+ "well defined type tree will not work properly.");
+			}
+		}
 	}
 
 	/**

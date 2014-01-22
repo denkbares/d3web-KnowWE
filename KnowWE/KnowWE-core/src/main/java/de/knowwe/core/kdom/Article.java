@@ -90,10 +90,10 @@ public class Article {
 
 		if (isArticleCurrentlyBuilding(web, title)) {
 			Log.severe("The article '"
-							+ title
-							+ "' is build more than once at the same time, "
-							+ "this should not be done! Developer please check with "
-							+ "Article#isArticleCurrentlyBuilding(String) first!");
+					+ title
+					+ "' is build more than once at the same time, "
+					+ "this should not be done! Developer please check with "
+					+ "Article#isArticleCurrentlyBuilding(String) first!");
 		}
 		Article article = null;
 		currentlyBuildingArticles.put(getArticleKey(web, title), null);
@@ -138,12 +138,12 @@ public class Article {
 		// Article#setFullParse(Class) he prevents incremental updating
 		if (!defFullParse && !classesCausingFullParse.isEmpty()) {
 			Log.info("The following classes " +
-							"caused a full parse:\n" +
-							classesCausingFullParse.toString());
+					"caused a full parse:\n" +
+					classesCausingFullParse.toString());
 		}
 
 		Log.info("Sectionized article '" + title + "' in "
-						+ (System.currentTimeMillis() - startTimeOverall) + "ms");
+				+ (System.currentTimeMillis() - startTimeOverall) + "ms");
 	}
 
 	public void clearLastVersion() {
