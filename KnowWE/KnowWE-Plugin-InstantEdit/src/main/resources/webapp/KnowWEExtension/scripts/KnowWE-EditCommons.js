@@ -101,6 +101,7 @@ KNOWWE.editCommons = function() {
 
             var options = {
                 url: KNOWWE.core.util.getURL(params),
+                method : 'GET',
                 response: {
                     action: 'none',
                     fn: function() {

@@ -52,7 +52,7 @@ public final class CompilerMessage extends Exception {
 		this(Arrays.asList(messages));
 	}
 
-	CompilerMessage(Message.Type type, String... messages) {
+	private CompilerMessage(Message.Type type, String... messages) {
 		this(toMessages(type, messages));
 	}
 
