@@ -21,9 +21,16 @@ package de.knowwe.core.utils;
 import java.util.Collection;
 
 import de.d3web.strings.Identifier;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.PackageCompiler;
+import de.knowwe.core.compile.packaging.PackageCompileType;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * 
@@ -34,8 +41,7 @@ public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDef
 
 	@Override
 	public String getLinkToTermDefinition(Identifier name, String masterArticle) {
-		TerminologyManager terminologyManager = Environment.getInstance().getTerminologyManager(
-				Environment.DEFAULT_WEB, masterArticle);
+		TerminologyManager terminologyManager = getTerminologyManager(masterArticle);
 		Collection<Section<?>> termDefinitions = terminologyManager.getTermDefiningSections(name);
 		String targetArticle = name.toString();
 		if (termDefinitions.size() > 0) {
@@ -46,6 +52,23 @@ public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDef
 		}
 
 		return createBaseURL() + "?page=" + targetArticle;
+	}
+
+	public static TerminologyManager getTerminologyManager(String master) {
+		ArticleManager articleManager = Environment.getInstance().getArticleManager(
+				Environment.DEFAULT_WEB);
+		Collection<PackageCompiler> compilers = Compilers.getCompilers(articleManager,
+				PackageCompiler.class);
+		for (PackageCompiler ontologyCompiler : compilers) {
+			Section<? extends PackageCompileType> compileSection = ontologyCompiler.getCompileSection();
+			Section<DefaultMarkupType> defaultMarkup = Sections.findAncestorOfType(compileSection,
+					DefaultMarkupType.class);
+			if ((defaultMarkup.getText().contains(master) || defaultMarkup.getTitle().equals(master))
+					&& ontologyCompiler instanceof TermCompiler) {
+				return ((TermCompiler) ontologyCompiler).getTerminologyManager();
+			}
+		}
+		return null;
 	}
 
 	/**
