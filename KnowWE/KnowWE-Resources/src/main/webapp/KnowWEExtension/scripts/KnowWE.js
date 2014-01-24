@@ -322,29 +322,40 @@ KNOWWE.core.util = function(){
          * 	   ids - array of ids to be replaced.
          *     htmlText - The html text of the elements used for replacement.
          */
-        replaceElement : function(ids, htmlText){
-	          var newDOMwrapper = document.createElement("div");
-	          newDOMwrapper.innerHTML = htmlText;
-	          var domChildNodes = newDOMwrapper.children;
-	          for(var j = ids.length-1; j >= 0; j--) {
-	              var newDOM = domChildNodes[j];
-	              oldDOM = document.getElementById(ids[j]);
-	              if(oldDOM) {
-	                  oldDOM.parentNode.replaceChild( newDOM, oldDOM );
-	                  
-	                  // execute script tags that came in with the content
-	                  var newElementID = jq$(newDOM).attr("id");
-	                  var jqObjectNewDOM3 = jq$("#"+newElementID);
-	                  var arrayOfScriptElements = jqObjectNewDOM3.find('script'); 
-	                  for(var k = 0; k < arrayOfScriptElements.length; k++) {
-	                	  var jsCode = arrayOfScriptElements[k].innerHTML;
-	                	  eval(jsCode);
-	                  }
-	              }
-	          }
-        }
-    }
+		replaceElement : function(ids, htmlText) {
+			var domChildNodes = null;
+			var jsonArray = null;
+			try {
+				var jsonArray = JSON.parse(htmlText);
+			} catch (e) {
+				var temp = document.createElement("div");
+				temp.innerHTML = htmlText;
+				domChildNodes = temp.children;
+			}
+			// execute script tags that came in with the content
+			var evalAddedScripts = function(element) {
+				jq$(element).find('script').each(function() {
+					eval(this.innerHTML);							
+				});
+			}
+			for ( var j = ids.length - 1; j >= 0; j--) {
+				oldDOM = document.getElementById(ids[j]);
+				if (oldDOM) {
+					if (jsonArray) {
+						var temp = document.createElement("div");
+						temp.innerHTML = jsonArray[j];
+						jq$(oldDOM).replaceWith(temp.children);
+						evalAddedScripts(temp.children);
+					} else if (domChildNodes) {
+						jq$(oldDOM).replaceWith(domChildNodes[j]);
+						evalAddedScripts(domChildNodes[j]);
+					}
+				}
+			}
+		}
+	}
 }();
+
 
 /**
  * Namespace: KNOWWE.core.util.form

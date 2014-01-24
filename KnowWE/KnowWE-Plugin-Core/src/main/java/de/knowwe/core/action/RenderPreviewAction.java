@@ -52,7 +52,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class RenderPreviewAction extends AbstractAction {
 
-	private static final String OUTDATED = "<i>The specified article sections are not available, maybe the page has been changed by an other user. Please reload this page.</i>";
+	private static final String OUTDATED = "<i>The specified article sections are not available, maybe the page has been changed by an other user. Please reload this page.</i>\n";
 	public static final String ATTR_MODE = "mode";
 
 	public static enum Mode {
@@ -62,7 +62,7 @@ public class RenderPreviewAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		RenderResult result = null;
+		JSONArray result = null;
 		String jsonString = context.getParameter(Attributes.JSON_DATA);
 		String nodeIDs = context.getParameter(Attributes.SECTION_ID);
 		Mode mode = Mode.valueOf(context.getParameter(ATTR_MODE, Mode.list.name()));
@@ -78,34 +78,45 @@ public class RenderPreviewAction extends AbstractAction {
 			context.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing data");
 		}
 		else {
-			String markup = Environment.getInstance().getWikiConnector()
-					.renderWikiSyntax(result.toStringRaw().replaceAll("@!!!", "@\n!!!"),
-							context.getRequest());
-
 			context.setContentType("text/plain; charset=UTF-8");
-			context.getWriter().append(RenderResult.unmask(markup, context));
+			try {
+				result.write(context.getWriter());
+			}
+			catch (JSONException e) {
+				throw new IOException("Wrong json arguments: " + e.getMessage());
+			}
 		}
 	}
 
-	private RenderResult executePlain(UserActionContext context, String nodeIDs, Mode mode) throws IOException {
-		RenderResult result = new RenderResult(context);
+	private static String handleWikiSyntax(UserContext context, RenderResult result) {
+		String markup = Environment.getInstance().getWikiConnector()
+				.renderWikiSyntax(result.toStringRaw().replaceAll("@!!!", "@\n!!!"),
+						context.getRequest());
+		return RenderResult.unmask(markup, context);
+	}
+
+	private JSONArray executePlain(UserActionContext context, String nodeIDs, Mode mode) throws IOException {
+		JSONArray result = new JSONArray();
 		renderItem(context, nodeIDs, mode, result);
 		return result;
 	}
 
-	private void renderItem(UserActionContext context, String nodeIDs, Mode mode, RenderResult result) {
+	private void renderItem(UserActionContext context, String nodeIDs, Mode mode, JSONArray result) {
 		String[] ids = nodeIDs.split(",");
 		List<Section<?>> sections = new LinkedList<Section<?>>();
 		for (String sectionID : ids) {
 			Section<? extends Type> section = Sections.getSection(sectionID);
 			if (section == null) {
-				result.append(OUTDATED);
+				result.put(OUTDATED);
 				return;
 			}
 			sections.add(section);
 		}
 		if (mode == Mode.list) {
-			ObjectInfoTagHandler.renderTermReferencesPreviews(sections, context, result);
+			RenderResult temp = new RenderResult(context);
+			ObjectInfoTagHandler.renderTermReferencesPreviews(sections, context, temp);
+			temp.append("\n");
+			result.put(handleWikiSyntax(context, temp));
 		}
 		else {
 			renderPlainPreviews(sections, context, result);
@@ -123,20 +134,22 @@ public class RenderPreviewAction extends AbstractAction {
 	 * @param user the user context
 	 * @param result the buffer to render into
 	 */
-	public static void renderPlainPreviews(List<Section<?>> sections, UserContext user, RenderResult result) {
-		if (!KnowWEUtils.canView(sections, user)) {
-			result.appendHtml("<i>You are not allowed to view this article.</i>");
-			return;
-		}
-		Map<Section<?>, Collection<Section<?>>> groupedByPreview =
-				PreviewManager.getInstance().groupByPreview(sections);
-		for (Entry<Section<?>, Collection<Section<?>>> entry : groupedByPreview.entrySet()) {
-			Section<?> previewSection = entry.getKey();
-			Collection<Section<?>> group = entry.getValue();
+	public static void renderPlainPreviews(List<Section<?>> sections, UserContext user, JSONArray result) {
 
-			result.appendHtml("<div>");
-			renderPlainPreview(previewSection, group, user, result);
-			result.appendHtml("</div>");
+		RenderResult temp = new RenderResult(user);
+		if (KnowWEUtils.canView(sections, user)) {
+			Map<Section<?>, Collection<Section<?>>> groupedByPreview =
+					PreviewManager.getInstance().groupByPreview(sections);
+			for (Entry<Section<?>, Collection<Section<?>>> entry : groupedByPreview.entrySet()) {
+				Section<?> previewSection = entry.getKey();
+				Collection<Section<?>> group = entry.getValue();
+
+				renderPlainPreview(previewSection, group, user, temp);
+			}
+		}
+		else {
+			temp.appendHtml("<i>You are not allowed to view this article.</i>");
+			result.put(handleWikiSyntax(user, temp));
 		}
 	}
 
@@ -151,21 +164,18 @@ public class RenderPreviewAction extends AbstractAction {
 		result.appendHtml("</div>");
 	}
 
-	private RenderResult executeJSON(UserActionContext context, String jsonText, Mode mode) throws IOException {
-		RenderResult result = new RenderResult(context);
+	private JSONArray executeJSON(UserActionContext context, String jsonText, Mode mode) throws IOException {
+		JSONArray result = new JSONArray();
 		try {
 			JSONArray object = new JSONArray(jsonText);
 			for (int i = 0; i < object.length(); i++) {
 				String ids = object.getString(i);
-				result.appendHtml("<div>");
 				renderItem(context, ids, mode, result);
-				result.appendHtml("</div>");
-				result.append("\n");
 			}
 			return result;
 		}
 		catch (JSONException e) {
-			throw new IOException("wrong arguments: " + e.getMessage());
+			throw new IOException("Wrong json arguments: " + e.getMessage());
 		}
 	}
 }
