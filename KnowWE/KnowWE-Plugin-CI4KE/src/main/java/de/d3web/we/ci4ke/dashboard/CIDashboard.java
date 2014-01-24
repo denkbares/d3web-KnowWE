@@ -18,10 +18,6 @@
  */
 package de.d3web.we.ci4ke.dashboard;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.TestSpecification;
 import de.d3web.utils.Log;
@@ -31,6 +27,10 @@ import de.d3web.we.ci4ke.build.CIRenderer;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.wikiConnector.WikiAttachment;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class represents a dashboard data structure, managing the build results,
@@ -132,7 +132,7 @@ public class CIDashboard {
 	 * indexes, an empty array is returned.
 	 * 
 	 * @created 19.05.2012
-	 * @param buildNumber the newest build to be returned, you can use -1 to
+	 * @param fromIndex the newest build to be returned, you can use -1 to
 	 *        start with the latest build
 	 * @param numberOfBuilds the amount of builds you want to get (the next
 	 *        older ones)

@@ -22,7 +22,6 @@ package de.d3web.we.ci4ke.build;
 
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.BuildResultPersistenceHandler;
-import de.d3web.utils.Log;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.knowwe.core.Environment;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -126,10 +125,9 @@ public class CIPersistence {
 	public BuildResult read(int buildVersion) throws IOException {
 		WikiAttachment attachment = getAttachment();
 		if (attachment == null) {
-			Log.info("No attachment found for dashboard "
+			throw new IOException("No attachment found for dashboard "
 					+ dashboard.getDashboardName()
 					+ ". Unable to restore eventual builds.");
-			return null;
 		}
 		if (buildVersion < 1) buildVersion = attachment.getVersion();
 		BuildResult build = null;
