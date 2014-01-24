@@ -46,8 +46,8 @@ public class ProviderRefreshRenderer extends DefaultMarkupRenderer {
 	private void refreshProviders(Section<?> section, UserContext user) {
 		D3webCompiler compiler = Compilers.getCompiler(section, D3webCompiler.class);
 		if (compiler != null) {
-			TestCaseProviderStorage providerStorage = (TestCaseProviderStorage) section.getSectionStore().getObject(
-					compiler, TestCaseProviderStorage.KEY);
+			TestCaseProviderStorage providerStorage = TestCaseUtils.getTestCaseProviderStorage(
+					compiler, section);
 			if (providerStorage != null) {
 				providerStorage.refresh();
 				Messages.clearMessages(compiler, section);

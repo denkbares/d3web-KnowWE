@@ -28,15 +28,12 @@ import de.d3web.testcase.TestCaseUtils;
 import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.TestCase;
 import de.d3web.utils.Log;
-import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.compile.Compilers;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * Action that gets called when cases should be executed with the
@@ -66,11 +63,8 @@ public class ExecuteCasesAction extends AbstractAction {
 					+ " has edited the page.");
 			return;
 		}
-		Article article = Environment.getInstance().getArticle(context.getWeb(),
-				context.getTitle());
-		TestCaseProviderStorage providerStorage = (TestCaseProviderStorage) section.getSectionStore().getObject(
-				Compilers.getCompiler(article, D3webCompiler.class),
-				TestCaseProviderStorage.KEY);
+		TestCaseProviderStorage providerStorage = de.knowwe.testcases.TestCaseUtils.getTestCaseProviderStorage(
+				section);
 		TestCaseProvider provider = providerStorage.getTestCaseProvider(testCaseName);
 		Session session = provider.getActualSession(context);
 		SessionDebugStatus status = provider.getDebugStatus(context);

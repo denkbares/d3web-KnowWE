@@ -58,6 +58,7 @@ import de.d3web.testcase.stc.DerivedSolutionCheck;
 import de.d3web.testcase.stc.STCWrapper;
 import de.d3web.utils.Triple;
 import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageCompileType;
@@ -74,6 +75,43 @@ import de.knowwe.testcases.table.ConditionCheck;
  * @created 13.09.2012
  */
 public class TestCaseUtils {
+
+	private static final String PROVIDER_STORAGE_KEY = "TestCaseProviderStorage";
+
+	public static Collection<TestCaseProviderStorage> getTestCaseProviderStorages(Section<?> section) {
+		checkSection(section);
+		Collection<TestCaseProviderStorage> storages = new ArrayList<TestCaseProviderStorage>();
+		Collection<D3webCompiler> compilers = Compilers.getCompilers(section, D3webCompiler.class);
+		for (D3webCompiler compiler : compilers) {
+			TestCaseProviderStorage storage = getTestCaseProviderStorage(compiler, section);
+			if (storage != null) storages.add(storage);
+		}
+		return storages;
+	}
+
+	public static TestCaseProviderStorage getTestCaseProviderStorage(D3webCompiler compiler, Section<?> section) {
+		checkSection(section);
+		TestCaseProviderStorage storage = (TestCaseProviderStorage) section.getSectionStore().getObject(
+				compiler, PROVIDER_STORAGE_KEY);
+		return storage;
+	}
+
+	public static TestCaseProviderStorage getTestCaseProviderStorage(Section<?> section) {
+		checkSection(section);
+		return getTestCaseProviderStorages(section).iterator().next();
+	}
+
+	public static void storeTestCaseProviderStorage(D3webCompiler compiler, Section<?> section, TestCaseProviderStorage testCaseProviderStorage) {
+		checkSection(section);
+		section.getSectionStore().storeObject(compiler, PROVIDER_STORAGE_KEY,
+				testCaseProviderStorage);
+	}
+
+	private static void checkSection(Section<?> section) {
+		if (section.get() instanceof DefaultMarkupType) return;
+		throw new IllegalArgumentException("section has to be of the type "
+				+ DefaultMarkupType.class.getSimpleName());
+	}
 
 	public static List<TestCaseProvider> getTestCaseProviders(String web, Set<String> packageNames, String nameRegex) throws PatternSyntaxException {
 		return getTestCaseProviders(web, packageNames,
@@ -140,17 +178,19 @@ public class TestCaseUtils {
 			Collection<Section<?>> sectionsInPackage = packageManager.getSectionsOfPackage(kbpackage);
 			Set<Section<? extends PackageCompileType>> compileSections = packageManager.getCompileSections(kbpackage);
 			for (Section<? extends PackageCompileType> compileSection : compileSections) {
-				for (Section<?> packageSections : sectionsInPackage) {
-					TestCaseProviderStorage testCaseProviderStorage =
-							(TestCaseProviderStorage) packageSections.getSectionStore().getObject(
-									Compilers.getCompiler(packageSections, D3webCompiler.class),
-									TestCaseProviderStorage.KEY);
-					if (testCaseProviderStorage != null) {
-						for (TestCaseProvider testCaseProvider : testCaseProviderStorage.getTestCaseProviders()) {
-							providers.add(new ProviderTriple(
-									testCaseProvider,
-									packageSections, compileSection));
-						}
+				for (Section<?> section : sectionsInPackage) {
+
+					if (!(section.get() instanceof DefaultMarkupType)) continue;
+
+					D3webCompiler compiler = D3webUtils.getCompiler(section);
+					TestCaseProviderStorage testCaseProviderStorage = getTestCaseProviderStorage(
+							compiler, section);
+
+					if (testCaseProviderStorage == null) continue;
+
+					for (TestCaseProvider testCaseProvider : testCaseProviderStorage.getTestCaseProviders()) {
+						providers.add(new ProviderTriple(testCaseProvider, section,
+								compileSection));
 					}
 				}
 			}

@@ -150,7 +150,7 @@ public class PropertiesTest extends TestCase {
 
 		Section<PropertyDeclarationType> propDeclSec = getPropertyDeclarationSection("Mechanical problem");
 		Collection<Message> messages = Messages.getMessages(
-				D3webUtils.getD3webCompiler(propDeclSec), propDeclSec,
+				D3webUtils.getCompiler(propDeclSec), propDeclSec,
 				InitPropertyHandler.class);
 		assertEquals("No message found for assigning an init value to a Solution", 1,
 				messages.size());
@@ -162,7 +162,7 @@ public class PropertiesTest extends TestCase {
 		assertEquals("INIT for Questionnaire not set correctly", "wrong init for questionnaire",
 				init);
 
-		messages = Messages.getMessages(D3webUtils.getD3webCompiler(propDeclSec), propDeclSec,
+		messages = Messages.getMessages(D3webUtils.getCompiler(propDeclSec), propDeclSec,
 				InitPropertyHandler.class);
 		assertEquals("No message found for assigning an init value to a Questionnaire", 1,
 				messages.size());
@@ -175,7 +175,7 @@ public class PropertiesTest extends TestCase {
 		assertEquals("INIT QuestionChoice not set correctly", "makes no sense", init);
 
 		propDeclSec = getPropertyDeclarationSection("Yes");
-		messages = Messages.getMessages(D3webUtils.getD3webCompiler(propDeclSec), propDeclSec,
+		messages = Messages.getMessages(D3webUtils.getCompiler(propDeclSec), propDeclSec,
 				InitPropertyHandler.class);
 		assertEquals("No message found for assigning an init value to a choice", 1,
 				messages.size());
@@ -187,7 +187,7 @@ public class PropertiesTest extends TestCase {
 		assertEquals("INIT QuestionChoice not set correctly", "water", init);
 
 		propDeclSec = getPropertyDeclarationSection("Fuel");
-		messages = Messages.getMessages(D3webUtils.getD3webCompiler(propDeclSec), propDeclSec,
+		messages = Messages.getMessages(D3webUtils.getCompiler(propDeclSec), propDeclSec,
 				InitPropertyHandler.class);
 		assertEquals("No message found for assigning 'water' as the init value of Fuel", 1,
 				messages.size());
@@ -200,7 +200,7 @@ public class PropertiesTest extends TestCase {
 				init);
 
 		propDeclSec = getPropertyDeclarationSection("Average mileage /100km");
-		messages = Messages.getMessages(D3webUtils.getD3webCompiler(propDeclSec), propDeclSec,
+		messages = Messages.getMessages(D3webUtils.getCompiler(propDeclSec), propDeclSec,
 				InitPropertyHandler.class);
 		assertEquals("No message found for assigning 'five' as the init value for a QuestionNum",
 				1, messages.size());

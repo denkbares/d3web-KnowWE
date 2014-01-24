@@ -79,7 +79,7 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 			long start = System.currentTimeMillis();
 			compilePackages(packagesToCompile);
 			Log.info(toString() + " finished after "
-							+ (System.currentTimeMillis() - start) + "ms");
+					+ (System.currentTimeMillis() - start) + "ms");
 		}
 	}
 
@@ -91,16 +91,6 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 				getCompileSection());
 		return this.getClass().getSimpleName() + " ("
 				+ Strings.concat(",  ", packagesToCompile) + ")";
-	}
-
-	@Override
-	public int compareTo(Compiler o) {
-		if (o instanceof PackageCompiler) {
-			return getCompileSection().compareTo(((PackageCompiler) o).getCompileSection());
-		}
-		else {
-			return -1;
-		}
 	}
 
 }

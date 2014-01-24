@@ -111,12 +111,12 @@ public class D3webUtils {
 		return possibleScorePoints;
 	}
 
-	public static D3webCompiler getD3webCompiler(Section<?> section) {
+	public static D3webCompiler getCompiler(Section<?> section) {
 		return Compilers.getCompiler(section, D3webCompiler.class);
 	}
 
 	@Deprecated
-	public static D3webCompiler getD3webCompiler(Article master) {
+	public static D3webCompiler getCompiler(Article master) {
 		return Compilers.getCompiler(master, D3webCompiler.class);
 	}
 
@@ -222,7 +222,7 @@ public class D3webUtils {
 				article.getRootSection(),
 				PackageCompileType.class);
 		if (compileSection == null) return null;
-		D3webCompiler d3webCompiler = getD3webCompiler(compileSection);
+		D3webCompiler d3webCompiler = getCompiler(compileSection);
 		if (d3webCompiler == null) return null;
 		return d3webCompiler.getKnowledgeBase();
 	}
@@ -241,7 +241,7 @@ public class D3webUtils {
 			return D3webUtils.getKnowledgeBase(section.getArticle());
 		}
 		else {
-			return getD3webCompiler(section).getKnowledgeBase();
+			return getCompiler(section).getKnowledgeBase();
 		}
 	}
 

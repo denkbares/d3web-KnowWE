@@ -27,6 +27,7 @@ import de.knowwe.core.report.Message;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.FileTestCaseProviderStorage;
 import de.knowwe.testcases.TestCaseProviderStorage;
+import de.knowwe.testcases.TestCaseUtils;
 
 /**
  * {@link SubtreeHandler} for creating an {@link SessionRecordCaseProvider}
@@ -39,13 +40,12 @@ public class TestCaseSessionRecordSubtreeHandler extends D3webHandler<TestCaseSe
 	@Override
 	public Collection<Message> create(D3webCompiler compiler, Section<TestCaseSessionRecordType> section) {
 		String[] fileNames = DefaultMarkupType.getAnnotations(section, "file");
-		FileTestCaseProviderStorage testCaseProviderStorage = (FileTestCaseProviderStorage) section.getSectionStore().getObject(
-				compiler, TestCaseProviderStorage.KEY);
+		FileTestCaseProviderStorage testCaseProviderStorage = (FileTestCaseProviderStorage) TestCaseUtils.getTestCaseProviderStorage(
+				compiler, section);
 		if (testCaseProviderStorage == null) {
 			testCaseProviderStorage = new SessionRecordTestCaseProviderStorage(compiler, section,
 					fileNames, section.getArticle());
-			section.getSectionStore().storeObject(compiler, TestCaseProviderStorage.KEY,
-					testCaseProviderStorage);
+			TestCaseUtils.storeTestCaseProviderStorage(compiler, section, testCaseProviderStorage);
 		}
 		else {
 			testCaseProviderStorage.update(fileNames);

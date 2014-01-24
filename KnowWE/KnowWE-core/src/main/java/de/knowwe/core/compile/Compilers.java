@@ -20,6 +20,7 @@ package de.knowwe.core.compile;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -128,7 +129,7 @@ public class Compilers {
 	 * @returns the first {@link Compiler} that compiles the given section.
 	 */
 	public static <C extends Compiler> C getCompiler(Section<?> section, Class<C> compilerClass) {
-		Collection<C> compilers = getCompilers(section, compilerClass);
+		Collection<C> compilers = getCompilers(section, compilerClass, true);
 		if (compilers.isEmpty()) return null;
 		else return compilers.iterator().next();
 	}
@@ -144,14 +145,15 @@ public class Compilers {
 	 * @returns the first {@link Compiler}s of a given ArticleManager and Class.
 	 */
 	public static <C extends Compiler> C getCompiler(ArticleManager manager, Class<C> compilerClass) {
-		Collection<C> compilers = getCompilers(manager, compilerClass);
+		Collection<C> compilers = getCompilers(manager, compilerClass, true);
 		if (compilers.isEmpty()) return null;
 		else return compilers.iterator().next();
 	}
 
 	/**
 	 * Returns all {@link Compiler}s with the given type that compile the given
-	 * section.
+	 * section. The returned collection has a stable order according to the
+	 * {@link CompilerComparator}.
 	 * 
 	 * @created 15.11.2013
 	 * @param section the section for which we want the {@link Compiler}s
@@ -159,12 +161,17 @@ public class Compilers {
 	 * @returns all {@link Compiler}s compiling the given section
 	 */
 	public static <C extends Compiler> Collection<C> getCompilers(Section<?> section, Class<C> compilerClass) {
-		Set<C> compilers = new TreeSet<C>();
+		return getCompilers(section, compilerClass, false);
+	}
+
+	private static <C extends Compiler> Collection<C> getCompilers(Section<?> section, Class<C> compilerClass, boolean firstOnly) {
+		Set<C> compilers = new TreeSet<C>(new CompilerComparator());
 		List<Compiler> allCmpilers = section.getArticleManager().getCompilerManager().getCompilers();
 		for (Compiler compiler : allCmpilers) {
 			if (compilerClass.isAssignableFrom(compiler.getClass())
 					&& compiler.isCompiling(section)) {
 				compilers.add(compilerClass.cast(compiler));
+				if (firstOnly) break;
 			}
 		}
 		return compilers;
@@ -179,11 +186,16 @@ public class Compilers {
 	 * @returns all {@link AbstractPackageCompiler}s compiling the given section
 	 */
 	public static <C extends Compiler> Collection<C> getCompilers(ArticleManager manager, Class<C> compilerClass) {
-		Set<C> compilers = new TreeSet<C>();
+		return getCompilers(manager, compilerClass, false);
+	}
+
+	private static <C extends Compiler> Collection<C> getCompilers(ArticleManager manager, Class<C> compilerClass, boolean firstOnly) {
+		Set<C> compilers = new TreeSet<C>(new CompilerComparator());
 		List<Compiler> allCmpilers = manager.getCompilerManager().getCompilers();
 		for (Compiler compiler : allCmpilers) {
 			if (compilerClass.isAssignableFrom(compiler.getClass())) {
 				compilers.add(compilerClass.cast(compiler));
+				if (firstOnly) break;
 			}
 		}
 		return compilers;
@@ -239,6 +251,27 @@ public class Compilers {
 	 */
 	public static CompilerManager getCompilerManager(String web) {
 		return KnowWEUtils.getArticleManager(web).getCompilerManager();
+	}
+
+	public static class CompilerComparator implements Comparator<Compiler> {
+
+		@Override
+		public int compare(Compiler o1, Compiler o2) {
+			if (o1 instanceof PackageCompiler && o2 instanceof PackageCompiler) {
+				return ((PackageCompiler) o1).getCompileSection().compareTo(
+						((PackageCompiler) o2).getCompileSection());
+			}
+			else if (o1 instanceof PackageCompiler && !(o2 instanceof PackageCompiler)) {
+				return -1;
+			}
+			else if (!(o1 instanceof PackageCompiler) && o2 instanceof PackageCompiler) {
+				return 1;
+			}
+			else {
+				return o1.getClass().getSimpleName().compareTo(o2.getClass().getSimpleName());
+			}
+		}
+
 	}
 
 }

@@ -48,6 +48,7 @@ import de.knowwe.testcases.DefaultTestCaseStorage;
 import de.knowwe.testcases.SingleTestCaseProvider;
 import de.knowwe.testcases.TestCaseProvider;
 import de.knowwe.testcases.TestCaseProviderStorage;
+import de.knowwe.testcases.TestCaseUtils;
 
 /**
  * 
@@ -128,14 +129,14 @@ public class TestcaseTableSubtreeHandler extends D3webHandler<TestcaseTable> {
 			wrapper.addChecks(rtc, checks.toArray(new Check[checks.size()]));
 		}
 		SingleTestCaseProvider provider = new SingleTestCaseProvider(
-				compiler, Sections.findAncestorOfType(section, DefaultMarkupType.class), wrapper, name);
+				compiler, Sections.findAncestorOfType(section, DefaultMarkupType.class), wrapper,
+				name);
 
 		// append Storage of the TestCaseProvider
 		// to the section of the default markup
 		List<TestCaseProvider> list = new LinkedList<TestCaseProvider>();
 		list.add(provider);
-		defaultmarkupSection.getSectionStore().storeObject(compiler,
-				TestCaseProviderStorage.KEY,
+		TestCaseUtils.storeTestCaseProviderStorage(compiler, defaultmarkupSection,
 				new DefaultTestCaseStorage(list));
 
 		return null;

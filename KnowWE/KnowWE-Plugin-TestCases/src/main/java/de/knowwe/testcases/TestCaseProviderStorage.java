@@ -30,8 +30,6 @@ import de.knowwe.core.report.Message;
  */
 public interface TestCaseProviderStorage {
 
-	public static final String KEY = "TestCaseProviderStorage";
-
 	Collection<? extends TestCaseProvider> getTestCaseProviders();
 
 	TestCaseProvider getTestCaseProvider(String name);

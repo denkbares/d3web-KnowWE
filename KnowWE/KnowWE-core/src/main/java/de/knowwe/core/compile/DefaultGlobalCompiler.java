@@ -98,9 +98,4 @@ public class DefaultGlobalCompiler implements TermCompiler {
 		return true;
 	}
 
-	@Override
-	public int compareTo(Compiler o) {
-		return getClass().getSimpleName().compareTo(o.getClass().getSimpleName());
-	}
-
 }

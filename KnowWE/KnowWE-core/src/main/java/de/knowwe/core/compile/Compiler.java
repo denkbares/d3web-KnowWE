@@ -12,7 +12,7 @@ import de.knowwe.core.kdom.parsing.Section;
  * @param <Artifact> the artifact that will be compiled as the result of this
  *        compiler
  */
-public interface Compiler extends Comparable<Compiler> {
+public interface Compiler {
 
 	CompilerManager getCompilerManager();
 
@@ -53,12 +53,5 @@ public interface Compiler extends Comparable<Compiler> {
 	 * @param removed the sections removed from the wiki
 	 */
 	void compile(Collection<Section<?>> added, Collection<Section<?>> removed);
-
-	/**
-	 * Since often do have Collections of {@link Compiler}s, we maybe want them
-	 * comparable to have stable collections.
-	 */
-	@Override
-	public int compareTo(Compiler o);
 
 }

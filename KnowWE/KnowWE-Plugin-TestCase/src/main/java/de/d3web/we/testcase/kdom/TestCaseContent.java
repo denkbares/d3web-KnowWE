@@ -52,6 +52,7 @@ import de.knowwe.testcases.DefaultTestCaseStorage;
 import de.knowwe.testcases.SingleTestCaseProvider;
 import de.knowwe.testcases.TestCaseProvider;
 import de.knowwe.testcases.TestCaseProviderStorage;
+import de.knowwe.testcases.TestCaseUtils;
 import de.knowwe.testcases.TimeStampType;
 
 /**
@@ -117,8 +118,7 @@ public class TestCaseContent extends AbstractType {
 					}
 					Section<DefaultMarkupType> defaultMarkupSection = Sections.findAncestorOfType(
 							s, DefaultMarkupType.class);
-					defaultMarkupSection.getSectionStore().storeObject(compiler,
-							TestCaseProviderStorage.KEY,
+					TestCaseUtils.storeTestCaseProviderStorage(compiler, defaultMarkupSection,
 							new DefaultTestCaseStorage(providers));
 					// Store the test suite
 					s.getSectionStore().storeObject(TestCaseType.TESTCASEKEY, testSuite);

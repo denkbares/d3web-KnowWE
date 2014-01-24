@@ -26,7 +26,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.FileTestCaseProviderStorage;
-import de.knowwe.testcases.TestCaseProviderStorage;
+import de.knowwe.testcases.TestCaseUtils;
 
 /**
  * {@link SubtreeHandler} for creating an {@link STCTestCaseProvider}
@@ -39,13 +39,12 @@ public class TestCaseSTCSubtreeHandler extends D3webHandler<TestCaseSTCType> {
 	@Override
 	public Collection<Message> create(D3webCompiler compiler, Section<TestCaseSTCType> section) {
 		String[] fileNames = DefaultMarkupType.getAnnotations(section, "file");
-		FileTestCaseProviderStorage testCaseProviderStorage = (FileTestCaseProviderStorage) section.getSectionStore().getObject(
-				compiler, TestCaseProviderStorage.KEY);
+		FileTestCaseProviderStorage testCaseProviderStorage = (FileTestCaseProviderStorage) TestCaseUtils.getTestCaseProviderStorage(
+				compiler, section);
 		if (testCaseProviderStorage == null) {
 			testCaseProviderStorage = new STCTestCaseProviderStorage(compiler, section, fileNames,
 					section.getArticle());
-			section.getSectionStore().storeObject(compiler, TestCaseProviderStorage.KEY,
-					testCaseProviderStorage);
+			TestCaseUtils.storeTestCaseProviderStorage(compiler, section, testCaseProviderStorage);
 		}
 		else {
 			testCaseProviderStorage.update(fileNames);

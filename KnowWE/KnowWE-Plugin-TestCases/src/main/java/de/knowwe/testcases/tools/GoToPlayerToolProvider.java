@@ -19,12 +19,10 @@
 package de.knowwe.testcases.tools;
 
 import java.util.Collection;
-import java.util.Set;
 
 import de.d3web.we.knowledgebase.D3webCompiler;
-import de.knowwe.core.Environment;
-import de.knowwe.core.compile.Compilers;
-import de.knowwe.core.compile.packaging.PackageManager;
+import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
@@ -33,6 +31,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.TestCasePlayerRenderer;
 import de.knowwe.testcases.TestCasePlayerType;
 import de.knowwe.testcases.TestCaseProviderStorage;
+import de.knowwe.testcases.TestCaseUtils;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
@@ -49,35 +48,19 @@ public class GoToPlayerToolProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		Section<DefaultMarkupType> defaultMarkupSection;
-		if (section.get() instanceof DefaultMarkupType) {
-			defaultMarkupSection = Sections.cast(section, DefaultMarkupType.class);
-		}
-		else {
-			defaultMarkupSection = Sections.findAncestorOfType(section,
-					DefaultMarkupType.class);
-		}
-		String[] packages = DefaultMarkupType.getPackages(defaultMarkupSection);
-		PackageManager packageManager = KnowWEUtils.getPackageManager(section);
-		for (String kbpackage : packages) {
-			Set<String> articles = packageManager.getCompilingArticles(kbpackage);
-			// we need an article compiling the section
-			if (articles.size() > 0) {
-				String articleTitle = articles.iterator().next();
-				TestCaseProviderStorage providerStorage = (TestCaseProviderStorage) section.getSectionStore().getObject(
-						Compilers.getCompiler(
-								Environment.getInstance().getArticle(section.getWeb(), articleTitle),
-								D3webCompiler.class),
-						TestCaseProviderStorage.KEY);
-				if ((providerStorage != null) && providerStorage.getTestCaseProviders().size() > 0) {
-					String testcasename = providerStorage.getTestCaseProviders().iterator().next().getName();
-					String value = articleTitle + "/" + testcasename;
-					Collection<Section<?>> sectionsInPackage = packageManager.getSectionsOfPackage(kbpackage);
-					for (Section<?> sectionInPackage : sectionsInPackage) {
-						if (sectionInPackage.get() instanceof TestCasePlayerType) {
-							return createTools(value, sectionInPackage);
-						}
-					}
+		D3webCompiler compiler = D3webUtils.getCompiler(section);
+		TestCaseProviderStorage providerStorage = TestCaseUtils.getTestCaseProviderStorage(
+				compiler, section);
+		if ((providerStorage != null) && providerStorage.getTestCaseProviders().size() > 0) {
+			String testcasename = providerStorage.getTestCaseProviders().iterator().next().getName();
+			String value = section.getTitle() + "/" + testcasename;
+			Section<? extends PackageCompileType> compileSection = compiler.getCompileSection();
+			String[] packagesToCompile = compileSection.get().getPackagesToCompile(compileSection);
+			Collection<Section<?>> sectionsOfPackages = KnowWEUtils.getPackageManager(section).getSectionsOfPackage(
+					packagesToCompile);
+			for (Section<?> sectionInPackage : sectionsOfPackages) {
+				if (sectionInPackage.get() instanceof TestCasePlayerType) {
+					return createTools(value, sectionInPackage);
 				}
 			}
 		}
