@@ -20,11 +20,15 @@
 
 package de.d3web.we.ci4ke.build;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.text.ParseException;
+import de.d3web.testing.BuildResult;
+import de.d3web.testing.BuildResultPersistenceHandler;
+import de.d3web.utils.Log;
+import de.d3web.we.ci4ke.dashboard.CIDashboard;
+import de.knowwe.core.Environment;
+import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.core.wikiConnector.WikiConnector;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -36,16 +40,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import de.d3web.testing.BuildResult;
-import de.d3web.testing.BuildResultPersistenceHandler;
-import de.d3web.we.ci4ke.dashboard.CIDashboard;
-import de.knowwe.core.Environment;
-import de.knowwe.core.wikiConnector.WikiAttachment;
-import de.knowwe.core.wikiConnector.WikiConnector;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.text.ParseException;
 
 public class CIPersistence {
 
@@ -127,8 +126,10 @@ public class CIPersistence {
 	public BuildResult read(int buildVersion) throws IOException {
 		WikiAttachment attachment = getAttachment();
 		if (attachment == null) {
-			throw new IOException("no attachment found for dashboard "
-					+ dashboard.getDashboardName());
+			Log.info("No attachment found for dashboard "
+					+ dashboard.getDashboardName()
+					+ ". Unable to restore eventual builds.");
+			return null;
 		}
 		if (buildVersion < 1) buildVersion = attachment.getVersion();
 		BuildResult build = null;
