@@ -24,7 +24,6 @@ import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -53,7 +52,7 @@ public class GoToPlayerToolProvider implements ToolProvider {
 				compiler, section);
 		if ((providerStorage != null) && providerStorage.getTestCaseProviders().size() > 0) {
 			String testcasename = providerStorage.getTestCaseProviders().iterator().next().getName();
-			String value = section.getTitle() + "/" + testcasename;
+			String value = compiler.getCompileSection().getTitle() + "/" + testcasename;
 			Section<? extends PackageCompileType> compileSection = compiler.getCompileSection();
 			String[] packagesToCompile = compileSection.get().getPackagesToCompile(compileSection);
 			Collection<Section<?>> sectionsOfPackages = KnowWEUtils.getPackageManager(section).getSectionsOfPackage(
