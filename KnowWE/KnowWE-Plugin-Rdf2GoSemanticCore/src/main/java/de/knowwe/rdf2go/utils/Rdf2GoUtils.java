@@ -19,23 +19,6 @@
  */
 package de.knowwe.rdf2go.utils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.ontoware.rdf2go.model.Statement;
-import org.ontoware.rdf2go.model.Syntax;
-import org.ontoware.rdf2go.model.node.Literal;
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.Resource;
-import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.util.RDFTool;
-import org.ontoware.rdf2go.vocabulary.RDFS;
-
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compilers;
@@ -46,6 +29,22 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.Rdf2GoCore.Rdf2GoReasoning;
+import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.Syntax;
+import org.ontoware.rdf2go.model.node.Literal;
+import org.ontoware.rdf2go.model.node.Node;
+import org.ontoware.rdf2go.model.node.Resource;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.util.RDFTool;
+import org.ontoware.rdf2go.vocabulary.RDFS;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Rdf2GoUtils {
 
@@ -166,10 +165,12 @@ public class Rdf2GoUtils {
 	 *         string
 	 */
 	public static String parseKnownAbbreviation(Rdf2GoCore core, String string) {
-		for (String nsAbbreviation : core.getNameSpaces().keySet()) {
-			String prefix = toNamespacePrefix(nsAbbreviation);
-			if (string.startsWith(prefix)) {
-				return nsAbbreviation;
+		if (core != null) {
+			for (String nsAbbreviation : core.getNameSpaces().keySet()) {
+				String prefix = toNamespacePrefix(nsAbbreviation);
+				if (string.startsWith(prefix)) {
+					return nsAbbreviation;
+				}
 			}
 		}
 		return null;
