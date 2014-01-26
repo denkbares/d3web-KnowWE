@@ -14,8 +14,8 @@
       rep:repositoryType "openrdf:SailRepository" ;
       sr:sailImpl [
          sail:sailType "swiftowlim:Sail" ;
-         owlim:ruleset "owl-max" ;
-	 	 owlim:partialRDFS  "owl-max-optimized" ;
+         owlim:ruleset "owl2-rl-reduced" ;
+	 	 owlim:partialRDFS "false";
          owlim:noPersist "true" ;
          owlim:entity-index-size "200000" ;
          owlim:jobsize "200" ;
