@@ -1,5 +1,3 @@
-
-
 /* ################################################## */
 /* ------------Default Markup Styles----------------- */
 /* ################################################## */
@@ -217,10 +215,178 @@ span.markupMenuItem {
 	margin-bottom: 0.5em;
 }
 
+smartedit + .objectinfo.preview:hover{
+	display: block;
+}
+
 .objectinfo.preview .indent {
 	display: none;
 }
 
 .objectinfo.preview .type_CoveringList .relation, .objectinfo.preview .type_CoveringList .ellipse {
 	margin-left: 1em;
+}
+
+/* ################################################## */
+/* ------------Tool Menu Styles----------------- */
+/* ################################################## */
+
+.toolsMenuDecorator {
+	top:-1px;
+	bottom:-1px;
+	left:-1px;
+	right:-15px;
+	border: 1px dotted gray;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	text-align: right;
+	background: url(../../KnowWEExtension/d3web/icon/dropdown-opaque.png) no-repeat right 50%;
+	padding-right: 15px;
+	visibility: hidden;
+}
+
+.toolMenuFrame {
+	position:		relative;
+	margin:			0px 0px 0px 0px;
+	padding:		0px 0px 0px 0px;
+}
+
+.toolMenuFrame .markupHeader {
+	overflow: 		hidden;
+	padding:		3px 10px 3px 10px; 
+}
+
+.toolMenuFrame .markupHeaderFrame {
+	position:		absolute; 
+	top:			1px; 
+	right:			1px; 
+	border-left:	1px solid #DDD; 
+	border-bottom:	1px solid #DDD; 
+	border-bottom-left-radius: 10px;
+	-moz-border-radius-bottomleft: 10px;
+	background-color: white; 
+	white-space:	nowrap;
+	z-index:		1000;
+	overflow: 		visible;
+}
+
+.toolMenuFrame .markupTools {
+	display:		inline;
+	vertical-align:	-3px;
+}
+
+.toolMenuFrame .markupMenuIndicator {
+	background: white url(../../templates/knowweTmps/images/arrdownsmall.gif) no-repeat right 50%;
+	padding-right: 15px;
+}
+
+.toolMenuFrame .markupMenu {
+	position:	absolute;
+	border:		2px solid #DDD;
+	background-color: white; 
+	right:		0px; 
+	z-index:	2000;
+	right:		-1px;
+}
+
+.toolMenuFrame .markupMenuItem {
+	display:	block;
+	list-style: none;
+	padding:	0.25em;
+	white-space: nowrap;
+}
+
+.toolMenuFrame .markupMenuItem > img {
+	vertical-align:		-3px;
+	color:				#036;
+}
+
+.toolMenuFrame .markupMenuItem a.markupMenuItem {
+	padding:	0.25em;
+	margin:		-0.25em;
+}
+
+.toolMenuFrame .customMenuItem a.markupMenuItem {
+	margin:				0em;
+	margin-left:		-0.25em;
+	margin-right:		-0.25em;
+}
+
+.toolMenuFrame a.markupMenuItem:hover {
+	background-color:	#EEE;
+	text-decoration:	none;
+	color:				#003DF5;
+}
+
+.toolMenuFrame .markupHeader .markupIcon {
+	vertical-align:	-7px;
+}
+
+/* ################################################## */
+/* ------------Packaging Styles----------------- */
+/* ################################################## */
+
+.packageOpacity {
+	opacity: 0.4;
+}
+
+.defaultMarkupFrame.type_Package .packageOpacity {
+	opacity: 1 !important;
+}
+
+.defaultMarkupFrame.type_KnowledgeBase .packageOpacity {
+	opacity: 1 !important;
+}
+
+/* ################################################## */
+/* ------------Navigation Pagination Styles----------------- */
+/* ################################################## */
+
+.navigationPagination {
+    display: inline;
+}
+
+.navigationPagination .toolBar {
+    position: relative;
+    white-space: nowrap;
+    display: inline;
+}
+
+.navigationPagination .tableSize {
+    margin-left: 20px;
+}
+
+.navigationPagination .toolButton {
+    position: relative;
+    top: 3px;
+}
+
+.paginationHeader {
+    cursor: pointer;
+}
+
+.navigationPaginationWrapper th {
+    color: #036;
+    text-decoration: none;
+}
+
+.navigationPaginationWrapper th:hover {
+    color: #036;
+    text-decoration: underline;
+}
+
+.navigationPaginationWrapper .notSortable {
+    color: black !important;
+    text-decoration: none !important;
+}
+
+.navigationPaginationWrapper .notSortable:hover {
+    color: black !important;
+    text-decoration: none !important;
+}
+
+.navigationPaginationWrapper th img {
+    position: relative;
+    top: 2px;
+    float: right;
 }
