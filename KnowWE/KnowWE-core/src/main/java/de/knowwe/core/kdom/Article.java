@@ -20,13 +20,6 @@
 
 package de.knowwe.core.kdom;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
@@ -36,6 +29,11 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.event.ArticleCreatedEvent;
 import de.knowwe.event.KDOMCreatedEvent;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -61,11 +59,7 @@ public class Article {
 
 	private Article lastVersion;
 
-	private final long startTimeOverall;
-
 	private final boolean fullParse;
-
-	private final Set<String> classesCausingFullParse = new HashSet<String>();
 
 	private static Map<String, Article> currentlyBuildingArticles = Collections.synchronizedMap(new HashMap<String, Article>());
 
@@ -113,34 +107,20 @@ public class Article {
 
 	/**
 	 * Constructor: starts recursive parsing by creating new Section object
-	 * 
-	 * @param text
-	 * @param title
-	 * @param allowedObjects
-	 */
+     */
 	private Article(String text, String title, String web, boolean fullParse) {
 
 		currentlyBuildingArticles.put(getArticleKey(web, title), this);
-		this.startTimeOverall = System.currentTimeMillis();
+		long startTimeOverall = System.currentTimeMillis();
 		this.title = title;
 		this.web = web;
 		this.lastVersion = Environment.getInstance().getArticle(web, title);
 
-		boolean defFullParse = fullParse
+		this.fullParse = fullParse
 				|| lastVersion == null
 				|| Environment.getInstance().getCompilationMode() == CompilationMode.DEFAULT;
 
-		this.fullParse = defFullParse;
-
 		sectionizeArticle(text);
-
-		// if for example a SubtreeHandlers uses
-		// Article#setFullParse(Class) he prevents incremental updating
-		if (!defFullParse && !classesCausingFullParse.isEmpty()) {
-			Log.info("The following classes " +
-					"caused a full parse:\n" +
-					classesCausingFullParse.toString());
-		}
 
 		Log.info("Sectionized article '" + title + "' in "
 				+ (System.currentTimeMillis() - startTimeOverall) + "ms");
@@ -196,10 +176,6 @@ public class Article {
 		return lastVersion;
 	}
 
-	public long getStartTime() {
-		return this.startTimeOverall;
-	}
-
 	/**
 	 * Returns the simple name of this class, NOT THE NAME (Title) OF THIS
 	 * ARTICLE! For the articles title, use getTitle() instead!
@@ -226,7 +202,7 @@ public class Article {
 	 */
 	public Map<String, List<Section<?>>> findSectionsWithTypePathCached(List<Class<? extends Type>> path) {
 		String stringPath = path.toString();
-		Map<String, List<Section<? extends Type>>> foundChildren = knownResults.get(stringPath);
+		Map<String, List<Section<?>>> foundChildren = knownResults.get(stringPath);
 		if (foundChildren == null) {
 			foundChildren = Sections.findSuccessorsWithTypePathAsMap(rootSection, path, 0);
 			knownResults.put(stringPath, foundChildren);
@@ -235,9 +211,9 @@ public class Article {
 	}
 
 	public String collectTextsFromLeaves() {
-		StringBuilder buffi = new StringBuilder();
-		this.rootSection.collectTextsFromLeaves(buffi);
-		return buffi.toString();
+		StringBuilder builder = new StringBuilder();
+		this.rootSection.collectTextsFromLeaves(builder);
+		return builder.toString();
 	}
 
 	/**
@@ -261,10 +237,6 @@ public class Article {
 
 	public RootType getRootType() {
 		return RootType.getInstance();
-	}
-
-	public Set<String> getClassesCausingFullParse() {
-		return this.classesCausingFullParse;
 	}
 
 	@Override
