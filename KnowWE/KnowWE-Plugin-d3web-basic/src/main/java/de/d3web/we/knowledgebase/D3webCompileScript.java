@@ -30,7 +30,7 @@ import de.knowwe.core.kdom.parsing.Section;
 public abstract class D3webCompileScript<T extends Type> implements PackageCompileScript<D3webCompiler, T> {
 
 	@Override
-	public Class<D3webCompiler> getCompilerClass() {
+	public final Class<D3webCompiler> getCompilerClass() {
 		return D3webCompiler.class;
 	}
 
