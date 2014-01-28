@@ -356,7 +356,6 @@ KNOWWE.core.util = function(){
 	}
 }();
 
-
 /**
  * Namespace: KNOWWE.core.util.form
  * Some helper functions concerning HTML form elements.
@@ -567,6 +566,7 @@ KNOWWE.core.rerendercontent = function(){
 			        	}
 			        	catch (e) { /*ignore*/ }
 			        	if (indicateProcess) KNOWWE.core.util.updateProcessingState(-1);
+                        KNOWWE.helper.observer.notify("navigationPaginationRendered");
                     },
                     onError : function () {
 			        	if (indicateProcess) KNOWWE.core.util.updateProcessingState(-1);                    	
