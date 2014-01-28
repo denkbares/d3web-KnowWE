@@ -18,8 +18,6 @@
  */
 package de.knowwe.ontology.compile;
 
-import java.util.Collection;
-
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.IncrementalCompiler;
@@ -33,6 +31,9 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.ontology.kdom.namespace.AbbreviationDefinition;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.RuleSet;
+
+import java.util.Collection;
 
 /**
  * 
@@ -46,12 +47,18 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 	private boolean completeCompilation;
 	private ScriptCompiler<OntologyCompiler> scriptCompiler;
 	private ScriptCompiler<OntologyCompiler> destroyScriptCompiler;
+	private RuleSet ruleSet;
 
-	public OntologyCompiler(PackageManager manager, Section<? extends PackageCompileType> compileSection) {
+	public OntologyCompiler(PackageManager manager, Section<? extends PackageCompileType> compileSection, RuleSet ruleSet) {
 		super(manager, compileSection);
 		this.scriptCompiler = new ScriptCompiler<OntologyCompiler>(this);
 		this.destroyScriptCompiler = new ScriptCompiler<OntologyCompiler>(this);
 		this.completeCompilation = true;
+		this.ruleSet = ruleSet;
+	}
+
+	public OntologyCompiler(PackageManager manager, Section<? extends PackageCompileType> compileSection) {
+		this(manager, compileSection, null);
 	}
 
 	@Override
@@ -84,14 +91,14 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 		}
 
 		if (completeCompilation) {
-			this.rdf2GoCore = new Rdf2GoCore();
+			this.rdf2GoCore = new Rdf2GoCore(ruleSet);
 			createTerminologyManager();
 
 			sectionsOfPackage = getPackageManager().getSectionsOfPackage(packagesToCompile);
 			completeCompilation = false;
 		}
 		else {
-			if (this.rdf2GoCore == null) this.rdf2GoCore = new Rdf2GoCore();
+			if (this.rdf2GoCore == null) this.rdf2GoCore = new Rdf2GoCore(ruleSet);
 			sectionsOfPackage = getPackageManager().getAddedSections(packagesToCompile);
 		}
 

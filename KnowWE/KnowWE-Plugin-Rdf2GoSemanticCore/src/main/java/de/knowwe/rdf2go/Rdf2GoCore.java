@@ -242,17 +242,42 @@ public class Rdf2GoCore {
 
 	ResourceBundle properties = ResourceBundle.getBundle("model");
 
+	/**
+	 * Initializes the Rdf2GoCore with the default settings specified
+	 * in the "owlim.ttl" file.
+	 */
 	public Rdf2GoCore() {
-		this(Environment.getInstance().getWikiConnector().getBaseUrl()
-				+ "Wiki.jsp?page=", "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#",
-				null);
+		this(null);
 	}
 
-	public Rdf2GoCore(String lns, String bns, Model model) {
+	/**
+	 * Initializes the Rdf2GoCore with the specified {@link RuleSet}. Please note
+	 * that this only has an effect if OWLIM is used as underlying implementation.
+	 *
+	 * @param ruleSet specifies the reasoning profile.
+	 */
+	public Rdf2GoCore(RuleSet ruleSet) {
+		this(Environment.getInstance().getWikiConnector().getBaseUrl()
+				+ "Wiki.jsp?page=", "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#",
+				null, ruleSet);
+	}
+
+	/**
+	 * Initializes the Rdf2GoCore with the specified arguments. Please note
+	 * that the RuleSet argument only has an effekt if OWLIM is used as underlying
+	 * implementation.
+	 *
+	 *
+	 * @param lns the uri used as local namespace
+	 * @param bns the uri used as base namespace
+	 * @param model the underlying model
+	 * @param ruleSet the rule set (only relevant for OWLIM model)
+	 */
+	public Rdf2GoCore(String lns, String bns, Model model, RuleSet ruleSet) {
 		this.bns = bns;
 		this.lns = lns;
 		if (model == null) {
-			initModel();
+			initModel(ruleSet);
 		}
 		else {
 			this.model = model;
@@ -624,7 +649,7 @@ public class Rdf2GoCore {
 	 * 
 	 * @throws ModelRuntimeException
 	 */
-	private void initModel() throws ModelRuntimeException, ReasoningNotSupportedException {
+	private void initModel(RuleSet ruleSet) throws ModelRuntimeException, ReasoningNotSupportedException {
 
 		try {
 			String model;
@@ -671,7 +696,7 @@ public class Rdf2GoCore {
 				RDF2Go.register(new org.openrdf.rdf2go.RepositoryModelFactory());
 				break;
 			case SWIFTOWLIM:
-				RDF2Go.register(new de.knowwe.rdf2go.modelfactory.SesameSwiftOwlimModelFactory());
+				RDF2Go.register(new de.knowwe.rdf2go.modelfactory.SesameSwiftOwlimModelFactory(ruleSet));
 				break;
 			default:
 				throw new ModelRuntimeException("Model not supported");

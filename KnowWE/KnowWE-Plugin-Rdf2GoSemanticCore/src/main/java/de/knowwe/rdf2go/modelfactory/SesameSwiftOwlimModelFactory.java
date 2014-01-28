@@ -5,14 +5,7 @@
  */
 package de.knowwe.rdf2go.modelfactory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.Properties;
-
+import de.knowwe.rdf2go.RuleSet;
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.impl.AbstractModelFactory;
 import org.ontoware.rdf2go.model.Model;
@@ -41,7 +34,25 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.turtle.TurtleParserFactory;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.Properties;
+
 public class SesameSwiftOwlimModelFactory extends AbstractModelFactory {
+
+	private final RuleSet ruleSet;
+
+	public SesameSwiftOwlimModelFactory() {
+		this(null);
+	}
+
+	public SesameSwiftOwlimModelFactory(RuleSet ruleSet) {
+		this.ruleSet = ruleSet;
+	}
 
 	@Override
 	public Model createModel(Properties properties)
@@ -72,13 +83,16 @@ public class SesameSwiftOwlimModelFactory extends AbstractModelFactory {
 			RepositoryManager man = new LocalRepositoryManager(new File(reppath));
 			man.initialize();
 			systemRepo = man.getSystemRepository();
-			Graph graph = parseConfigFile("owlim.ttl", RDFFormat.TURTLE,
+			String configFile = ruleSet != null ? ruleSet.getConfigFile() : "owlim.ttl";
+			Graph graph = parseConfigFile(configFile, RDFFormat.TURTLE,
 					RepositoryConfigSchema.NAMESPACE);
 
 			Resource repositoryNode = GraphUtil.getUniqueSubject(graph,
 					RDF.TYPE, RepositoryConfigSchema.REPOSITORY);
 			RepositoryConfig repConfig = RepositoryConfig.create(graph,
 					repositoryNode);
+
+
 
 			repConfig.validate();
 			RepositoryConfigUtil.updateRepositoryConfigs(systemRepo, repConfig);
