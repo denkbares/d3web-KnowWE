@@ -56,7 +56,7 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 	 * @return null if the creation must not be aborted, an Collection
 	 *         containing addition Messages or non (if not needed) else
 	 */
-	public AbortCheck canAbortTermObjectCreation(D3webCompiler compiler, Section<D3webTermDefinition<TermObject>> section) {
+	public AbortCheck canAbortTermObjectCreation(D3webCompiler compiler, Section<? extends D3webTermDefinition<TermObject>> section) {
 		Collection<Message> msgs = new ArrayList<Message>(1);
 		if (section.hasErrorInSubtree(compiler)) {
 			// obviously there are already errors present, simply abort
