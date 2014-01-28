@@ -55,6 +55,7 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	private ToolsRenderMode renderMode = ToolsRenderMode.MENU;
 	private boolean preFormattedStyle = true;
+	private boolean listAnnotations = false;
 
 	public enum ToolsRenderMode {
 		MENU, TOOLBAR
@@ -238,13 +239,14 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
 		List<Section<?>> subsecs = section.getChildren();
-		renderContentSections(subsecs, user, string);
+		renderContentSections(subsecs, isListAnnotations(), user, string);
 	}
 
-	public static void renderContentSections(List<Section<?>> subSections, UserContext user, RenderResult result) {
+	public static void renderContentSections(List<Section<?>> subSections, boolean listAnnotations, UserContext user, RenderResult result) {
 		if (subSections.size() == 0) return;
 		Section<?> first = subSections.get(0);
 		Section<?> last = subSections.get(subSections.size() - 1);
+		boolean listOpen = false;
 		for (Section<?> subsec : subSections) {
 			if (subsec == first && subsec.get() instanceof PlainText) {
 				continue;
@@ -252,7 +254,21 @@ public class DefaultMarkupRenderer implements Renderer {
 			if (subsec == last && subsec.get() instanceof PlainText) {
 				continue;
 			}
-			subsec.get().getRenderer().render(subsec, user, result);
+			if (listAnnotations && subsec.get() instanceof AnnotationType) {
+				if (!listOpen) {
+					result.appendHtml("<ul class='defaultMarkupAnnotations'>");
+					listOpen = true;
+				}
+				result.appendHtml("<li>");
+				subsec.get().getRenderer().render(subsec, user, result);
+				result.appendHtml("</li>");
+			}
+			else {
+				subsec.get().getRenderer().render(subsec, user, result);
+			}
+		}
+		if (listOpen) {
+			result.appendHtml("</ul>");
 		}
 	}
 
@@ -416,6 +432,30 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	public void setPreFormattedStyle(boolean preFormattedStyle) {
 		this.preFormattedStyle = preFormattedStyle;
+	}
+
+	/**
+	 * Returns if the annotations shall be rendered as an unordered list,
+	 * instead of plain rendering.
+	 * 
+	 * @created 28.01.2014
+	 * @return if the annotation-as-list mode is enabled
+	 */
+	public boolean isListAnnotations() {
+		return listAnnotations;
+	}
+
+	/**
+	 * Specified if the annotations shall be rendered as an unordered list. The
+	 * default behavior for this renderer is "false", rendering annotations as
+	 * their plain section content using their specific renderer(s).
+	 * 
+	 * @created 28.01.2014
+	 * @param listAnnotations if the annotation-as-list mode shall be enabled
+	 *        (true) or disabled (false)
+	 */
+	public void setListAnnotations(boolean listAnnotations) {
+		this.listAnnotations = listAnnotations;
 	}
 
 }

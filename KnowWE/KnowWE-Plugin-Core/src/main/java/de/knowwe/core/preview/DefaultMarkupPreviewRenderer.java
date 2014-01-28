@@ -154,7 +154,7 @@ public class DefaultMarkupPreviewRenderer implements PreviewRenderer {
 
 	static void renderSections(List<Section<?>> previews, UserContext user, RenderResult result) {
 		Collections.sort(previews);
-		DefaultMarkupRenderer.renderContentSections(previews, user, result);
+		DefaultMarkupRenderer.renderContentSections(previews, false, user, result);
 	}
 
 	/**

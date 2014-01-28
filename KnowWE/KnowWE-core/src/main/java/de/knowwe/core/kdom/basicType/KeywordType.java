@@ -53,6 +53,10 @@ public final class KeywordType extends AbstractType {
 		setRenderer(DEFAULT_RENDERER);
 	}
 
+	public KeywordType(Pattern keyWordPattern) {
+		this(keyWordPattern, 0);
+	}
+
 	public KeywordType(Pattern keyWordPattern, int group) {
 		this.keyWord = keyWordPattern.pattern() + ".group(" + group + ")";
 		setSectionFinder(new RegexSectionFinder(keyWordPattern, group));
