@@ -524,6 +524,23 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		
+		<profile>
+			<id>requirements</id>
+			<activation>
+				<property>
+					<name>requirements</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-DiaFlux-Requirements</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 
 		<profile>
 			<id>diafluxcoverage</id>
