@@ -301,7 +301,7 @@ public class PackageManager {// implements EventListener {
 			String[] packagesToCompile = section.get().getPackagesToCompile(section);
 			for (String packageToCompile : packagesToCompile) {
 				HashSet<Section<? extends PackageCompileType>> compilingSections = packageToCompilingSections.get(packageToCompile);
-				if (compilingSections.isEmpty()) {
+				if (compilingSections == null || compilingSections.isEmpty()) {
 					packageToCompilingSections.remove(packageToCompile);
 				}
 			}
