@@ -18,14 +18,6 @@
  */
 package de.knowwe.core.compile;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
 import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.packaging.PackageCompileType;
@@ -35,6 +27,14 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Utility methods needed while compiling.
@@ -181,7 +181,7 @@ public class Compilers {
 	 * Returns all {@link Compiler}s of a given ArticleManager and class.
 	 * 
 	 * @created 15.11.2013
-	 * @param section the section for which we want the {@link Compiler}s
+	 * @param manager the {@link ArticleManager} for which we want the {@link Compiler}
 	 * @param compilerClass the type of the {@link Compiler} we want
 	 * @returns all {@link AbstractPackageCompiler}s compiling the given section
 	 */

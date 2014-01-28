@@ -18,8 +18,6 @@
  */
 package de.d3web.we.knowledgebase;
 
-import java.util.Collection;
-
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.knowwe.core.compile.AbstractPackageCompiler;
@@ -30,6 +28,8 @@ import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.parsing.Section;
+
+import java.util.Collection;
 
 /**
  * Compiles d3web knowledge bases.
@@ -90,7 +90,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		for (Section<?> section : sectionsOfPackage) {
 			helper.addSubtree(section);
 		}
-		helper.compile();
+ 		helper.compile();
 
 		EventManager.getInstance().fireEvent(new D3webCompilerFinishedEvent(this));
 	}

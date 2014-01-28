@@ -20,22 +20,6 @@
 
 package de.d3web.we.utils;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.ConcurrentModificationException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
-import javax.servlet.http.HttpServletRequest;
-
 import de.d3web.core.inference.LoopTerminator;
 import de.d3web.core.inference.LoopTerminator.LoopStatus;
 import de.d3web.core.inference.SessionTerminatedException;
@@ -68,8 +52,6 @@ import de.d3web.we.object.D3webTerm;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.AbstractPackageCompiler;
-import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -84,6 +66,21 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.d3web.event.FindingSetEvent;
 import de.knowwe.notification.NotificationManager;
 import de.knowwe.notification.StandardNotification;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class D3webUtils {
 
@@ -174,8 +171,8 @@ public class D3webUtils {
 		object.destroy();
 	}
 
-	public static KnowledgeBase getKnowledgeBase(Compiler compiler) {
-		return getKnowledgeBase(((AbstractPackageCompiler) compiler).getCompileSection());
+	public static KnowledgeBase getKnowledgeBase(D3webCompiler compiler) {
+		return compiler.getKnowledgeBase();
 	}
 
 	public static Collection<KnowledgeBase> getKnowledgeBases(ArticleManager manager) {

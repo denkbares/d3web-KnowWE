@@ -20,17 +20,16 @@
 
 package de.d3web.we.reviseHandler;
 
-import java.util.Collection;
-
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
+
+import java.util.Collection;
 
 public abstract class D3webHandler<T extends Type> extends D3webCompileScript<T> {
 
@@ -41,7 +40,7 @@ public abstract class D3webHandler<T extends Type> extends D3webCompileScript<T>
 		throw new CompilerMessage(create(compiler, section));
 	}
 
-	public KnowledgeBase getKB(PackageCompiler compiler) {
+	public KnowledgeBase getKB(D3webCompiler compiler) {
 		return D3webUtils.getKnowledgeBase(compiler);
 	}
 

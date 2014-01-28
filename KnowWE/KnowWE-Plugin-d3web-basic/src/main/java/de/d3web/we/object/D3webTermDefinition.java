@@ -19,9 +19,6 @@
  */
 package de.d3web.we.object;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
@@ -35,6 +32,9 @@ import de.knowwe.core.kdom.objects.TermUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * 
@@ -56,7 +56,7 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 	 * @return null if the creation must not be aborted, an Collection
 	 *         containing addition Messages or non (if not needed) else
 	 */
-	public AbortCheck canAbortTermObjectCreation(D3webCompiler compiler, Section<? extends D3webTermDefinition<TermObject>> section) {
+	public AbortCheck canAbortTermObjectCreation(D3webCompiler compiler, Section<D3webTermDefinition<TermObject>> section) {
 		Collection<Message> msgs = new ArrayList<Message>(1);
 		if (section.hasErrorInSubtree(compiler)) {
 			// obviously there are already errors present, simply abort
@@ -66,8 +66,7 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 			return check;
 		}
 		Collection<NamedObject> termObjectsIgnoreTermObjectClass =
-				D3webUtils.getTermObjectsIgnoreTermObjectClass(
-						compiler, section);
+				D3webUtils.getTermObjectsIgnoreTermObjectClass(compiler, section);
 		if (termObjectsIgnoreTermObjectClass.isEmpty()) {
 			// object does not yet exist, so just return null to continue
 			// creating the terminology object
@@ -81,7 +80,7 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 					// one of them has another type
 					msgs.add(Messages.error("The term '" + section.get().getTermIdentifier(section)
 							+ "' is already occupied by an object of the type '"
-							+ termObject.getClass().getSimpleName() + "' (propbably by the system)"));
+							+ termObject.getClass().getSimpleName() + "' (probably by the system)"));
 					break;
 				}
 			}

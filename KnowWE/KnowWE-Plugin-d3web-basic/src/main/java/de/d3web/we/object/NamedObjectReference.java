@@ -18,17 +18,16 @@
  */
 package de.d3web.we.object;
 
-import java.util.Collection;
-
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.manage.NamedObjectFinderManager;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
+
+import java.util.Collection;
 
 /**
  * 
@@ -59,7 +58,7 @@ public class NamedObjectReference extends D3webTermReference<NamedObject> {
 		}
 	}
 
-	public static Collection<NamedObject> getTermObjects(Compiler compiler, Section<? extends D3webTerm<NamedObject>> section) {
+	public static Collection<NamedObject> getTermObjects(D3webCompiler compiler, Section<? extends D3webTerm<NamedObject>> section) {
 		if (section == null) return null;
 
 		String termIdentifier = section.get().getTermIdentifier(section).toString();
