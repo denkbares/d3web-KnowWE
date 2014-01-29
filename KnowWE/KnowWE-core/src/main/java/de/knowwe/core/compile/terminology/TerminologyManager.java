@@ -20,14 +20,6 @@
 
 package de.knowwe.core.compile.terminology;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.strings.Identifier;
@@ -38,6 +30,14 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.plugin.Plugins;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * This class manages the definition and usage of terms. A term represents some
@@ -56,17 +56,14 @@ public class TerminologyManager {
 
 	private final Set<Compiler> compilers = new HashSet<Compiler>(4);
 
-	public final static String HANDLER_KEY = TerminologyManager.class.getSimpleName();
 
 	private static final Set<Identifier> occupiedTerms = new HashSet<Identifier>();
 
-	private static boolean initializedOccupiedTerms = false;
 
 	private TermLogManager termLogManager = new TermLogManager();
 
 	public TerminologyManager() {
 
-		if (!initializedOccupiedTerms) {
 			// extension point for plugins defining predefined terminology
 			Extension[] exts = PluginManager.getInstance().getExtensions(
 					Plugins.EXTENDED_PLUGIN_ID,
@@ -77,7 +74,6 @@ public class TerminologyManager {
 					registerOccupiedTerm(((TerminologyExtension) o));
 				}
 			}
-		}
 	}
 
 	private void registerOccupiedTerm(TerminologyExtension terminologyExtension) {
@@ -89,12 +85,9 @@ public class TerminologyManager {
 	/**
 	 * Allows to register a new term.
 	 * 
-	 * @param compiler TODO
+	 * @param compiler the compiler which registers the term.
 	 * @param termDefinition is the term section defining the term.
 	 * @param termIdentifier is the term for which the section is registered
-	 * 
-	 * @returns true if the sections was registered as the defining section for
-	 *          this term. false else.
 	 */
 	public synchronized void registerTermDefinition(
 			Compiler compiler,
@@ -131,7 +124,7 @@ public class TerminologyManager {
 	 * 
 	 * 
 	 * @created 28.07.2012
-	 * @param termIdentifier an {@link Identifier} with arbitrarily case for a
+	 * @param termIdentifier an {@link Identifier} with arbitrary case for a
 	 *        term for which you want potential other versions with different
 	 *        cases
 	 * @return the different versions of {@link Identifier}s or an empty
@@ -168,9 +161,7 @@ public class TerminologyManager {
 	 */
 	public synchronized boolean isDefinedTerm(Identifier termIdentifier) {
 		TermLog termRef = termLogManager.getLog(termIdentifier);
-		if (termRef == null) return false;
-		if (termRef.getDefiningSection() == null) return false;
-		return true;
+		return termRef != null && termRef.getDefiningSection() != null;
 	}
 
 	/**
@@ -179,10 +170,7 @@ public class TerminologyManager {
 	 */
 	public synchronized boolean isUndefinedTerm(Identifier termIdentifier) {
 		TermLog termRef = termLogManager.getLog(termIdentifier);
-		if (termRef != null) {
-			return termRef.getDefiningSection() == null;
-		}
-		return false;
+		return termRef != null && termRef.getDefiningSection() == null;
 	}
 
 	/**
@@ -221,11 +209,7 @@ public class TerminologyManager {
 	}
 
 	/**
-	 * For a TermName the redundant TermDefinition are returned.
-	 * 
-	 * @param <TermObject>
-	 * @param s
-	 * @return
+	 * For an Identifier the redundant TermDefinition are returned.
 	 */
 	public synchronized Collection<Section<?>> getRedundantTermDefiningSections(Identifier termIdentifier) {
 		TermLog refLog = termLogManager.getLog(termIdentifier);
@@ -235,15 +219,10 @@ public class TerminologyManager {
 		return Collections.unmodifiableSet(new HashSet<Section<?>>(0));
 	}
 
-	public Set<Identifier> getOccupiedTerms() {
-		return Collections.unmodifiableSet(occupiedTerms);
-	}
-
 	/**
-	 * For a {@link KnowWETerm} (provided by the Section) the
-	 * {@link TermReference}s are returned.
+	 * For an Identifier the {@link TermReference}s are returned.
 	 */
-	public synchronized <TermObject> Collection<Section<?>> getTermReferenceSections(Identifier termIdentifier) {
+	public synchronized Collection<Section<?>> getTermReferenceSections(Identifier termIdentifier) {
 
 		TermLog refLog = termLogManager.getLog(termIdentifier);
 
@@ -305,8 +284,7 @@ public class TerminologyManager {
 	}
 
 	/**
-	 * Returns all local terms that are compiled in the article with the given
-	 * title.
+	 * Returns known and defined terms of this {@link TerminologyManager}
 	 * 
 	 * @created 03.11.2010
 	 */
@@ -338,8 +316,8 @@ public class TerminologyManager {
 	}
 
 	/**
-	 * Returns if a term has been registered with the specified name and if its
-	 * class is of the specified class. Otherwise (if no such term exists or it
+	 * Returns if a term definition has been registered with the specified name and if its
+	 * class is of the specified class. Otherwise (if no such term is defined or it
 	 * does not have a compatible class) false is returned.
 	 * 
 	 * @created 05.03.2012

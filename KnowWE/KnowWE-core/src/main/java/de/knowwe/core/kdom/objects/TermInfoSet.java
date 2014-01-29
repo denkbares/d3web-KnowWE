@@ -1,5 +1,12 @@
 package de.knowwe.core.kdom.objects;
 
+import de.d3web.strings.Identifier;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Environment;
+import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.kdom.Article;
+import de.knowwe.core.utils.KnowWEUtils;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,13 +15,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import de.d3web.strings.Identifier;
-import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
-import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.Article;
-import de.knowwe.core.utils.KnowWEUtils;
 
 public class TermInfoSet implements Collection<TermInfo> {
 
@@ -113,9 +113,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 	 * 
 	 * @created 26.08.2013
 	 * @param identifier the term identifier
-	 * @param caseSensitive whether the term info shall be case sensitive
 	 * @return the key to be used by that term info
-	 * @see #getKey()
 	 */
 	private String getKey(Identifier identifier) {
 		return caseSensitive

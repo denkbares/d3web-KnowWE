@@ -18,6 +18,13 @@
  */
 package de.knowwe.core.compile.terminology;
 
+import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
+import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,17 +37,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
-import de.knowwe.core.compile.Compiler;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
-
 /**
  * This is an auxiliary data-structure to store the definitions and references
  * of terms
- * 
+ *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 01.02.2012
  */
@@ -55,10 +55,10 @@ class TermLog {
 	private final Set<Section<?>> termReferenceSections = new HashSet<Section<?>>();
 
 	private final Map<Class<?>, Set<TermLogEntry>> termClasses =
-			new HashMap<Class<?>, Set<TermLogEntry>>();
+			new HashMap<Class<?>, Set<TermLogEntry>>(2);
 
 	private final Map<String, Set<TermLogEntry>> termIdentifiers =
-			new HashMap<String, Set<TermLogEntry>>();
+			new HashMap<String, Set<TermLogEntry>>(2);
 
 	public void addTermDefinition(Compiler compiler,
 			Section<?> termDefinition,
@@ -70,7 +70,7 @@ class TermLog {
 		addTermLogEntryToMap(termLogEntry.getTermIdentifier().toExternalForm(), termLogEntry,
 				termIdentifiers);
 		addTermLogEntryToMap(termLogEntry.getTermClass(), termLogEntry, termClasses);
-		handleMessagesForDefinition(compiler, termDefinition);
+		handleMessagesForDefinition(compiler);
 	}
 
 	private TermLogEntry createAndRegisterTermLogEntry(
@@ -93,7 +93,7 @@ class TermLog {
 		return logEntry;
 	}
 
-	private void handleMessagesForDefinition(Compiler compiler, Section<?> termDefinition) {
+	private void handleMessagesForDefinition(Compiler compiler) {
 
 		Collection<Message> msgs = new ArrayList<Message>(2);
 
@@ -189,7 +189,7 @@ class TermLog {
 		removeTermLogEntry(compiler, true, termDefinition, termClass, termIdentifier);
 		removeLogEntriesWithSectionFromMap(compiler, termDefinition, termClasses);
 		removeLogEntriesWithSectionFromMap(compiler, termDefinition, termIdentifiers);
-		handleMessagesForDefinition(compiler, termDefinition);
+		handleMessagesForDefinition(compiler);
 	}
 
 	private void removeTermLogEntry(Compiler compiler,

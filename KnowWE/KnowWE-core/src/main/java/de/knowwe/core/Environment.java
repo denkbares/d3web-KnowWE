@@ -20,25 +20,7 @@
 
 package de.knowwe.core;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.logging.LogManager;
-
-import javax.servlet.ServletContext;
-
+import de.d3web.collections.PriorityList;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.JPFPluginManager;
 import de.d3web.plugin.Plugin;
@@ -46,6 +28,7 @@ import de.d3web.plugin.PluginManager;
 import de.d3web.plugin.Resource;
 import de.d3web.utils.Log;
 import de.knowwe.core.append.PageAppendHandler;
+import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
@@ -66,6 +49,24 @@ import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.event.InitEvent;
 import de.knowwe.plugin.Instantiation;
 import de.knowwe.plugin.Plugins;
+
+import javax.servlet.ServletContext;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.ResourceBundle;
+import java.util.logging.LogManager;
 
 /**
  * This is the core class of KnowWE. It manages the {@link ArticleManager} and
@@ -147,7 +148,7 @@ public class Environment {
 	/**
 	 * private contructor
 	 * 
-	 * @see getInstance()
+	 * @see #getInstance()
 	 * 
 	 * @param wiki Connector to the used core wiki engine
 	 */
@@ -193,13 +194,20 @@ public class Environment {
 				EventManager.getInstance().registerListener(((EventListener) o));
 			}
 		}
-
 	}
 
 	private void initCompilers() {
 		CompilerManager defaultCompilerManager = Compilers.getCompilerManager(DEFAULT_WEB);
 		defaultCompilerManager.addCompiler(2, new PackageRegistrationCompiler());
 		defaultCompilerManager.addCompiler(4, new DefaultGlobalCompiler());
+
+		List<PriorityList.Group<Double, Compiler>> priorityGroups = Plugins.getCompilers().getPriorityGroups();
+		for (PriorityList.Group<Double, Compiler> priorityGroup : priorityGroups) {
+			List<Compiler> compilers = priorityGroup.getElements();
+			for (Compiler compiler : compilers) {
+				defaultCompilerManager.addCompiler(priorityGroup.getPriority(), compiler);
+			}
+		}
 	}
 
 	private void initProperties() {
@@ -444,13 +452,13 @@ public class Environment {
 	 * first renderer of the list is returned.
 	 * 
 	 * @created 04.11.2013
-	 * @param t
-	 * @param currentRenderer
-	 * @return
+	 * @param type the type we want the next renderer for
+	 * @param currentRenderer the current renderer
+	 * @return the next renderer
 	 */
-	public Renderer getNextRendererForType(Type t, Renderer currentRenderer) {
-		if (additionalRenderers.containsKey(t)) {
-			List<Renderer> pluggedRenderersForType = additionalRenderers.get(t);
+	public Renderer getNextRendererForType(Type type, Renderer currentRenderer) {
+		if (additionalRenderers.containsKey(type)) {
+			List<Renderer> pluggedRenderersForType = additionalRenderers.get(type);
 			if (pluggedRenderersForType != null) {
 				if (pluggedRenderersForType.contains(currentRenderer)) {
 					int currentIndex = pluggedRenderersForType.indexOf(currentRenderer);
@@ -563,9 +571,6 @@ public class Environment {
 	/**
 	 * @deprecated
 	 * @created 15.11.2013
-	 * @param defaultWeb
-	 * @param master
-	 * @return
 	 */
 	@Deprecated
 	public TerminologyManager getTerminologyManager(String defaultWeb, String master) {

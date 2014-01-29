@@ -1,5 +1,13 @@
 package de.knowwe.core.compile;
 
+import de.d3web.collections.PriorityList;
+import de.d3web.collections.PriorityList.Group;
+import de.d3web.utils.Log;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.Messages;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,15 +21,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
-
-import de.d3web.collections.PriorityList;
-import de.d3web.collections.PriorityList.Group;
-import de.d3web.utils.Log;
-import de.knowwe.core.ArticleManager;
-import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.Messages;
-import de.knowwe.plugin.Plugins;
 
 /**
  * This class represents the compile manager for a specific
@@ -58,11 +57,7 @@ public class CompilerManager {
 	public CompilerManager(ArticleManager articleManager) {
 		this.articleManager = articleManager;
 		this.compilerCache = new HashSet<Compiler>();
-		this.compilers = Plugins.getCompilers();
-		for (Compiler compiler : compilers) {
-			compilerCache.add(compiler);
-			compiler.init(this);
-		}
+		this.compilers = new PriorityList<Double, Compiler>(5d);
 		ExecutorService pool = createExecutorService();
 		this.threadPool = pool;
 	}
