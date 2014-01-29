@@ -52,7 +52,9 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 		if (hasObjectInfoPage(section)) {
 			@SuppressWarnings("unchecked")
 			Section<? extends Term> s = (Section<? extends Term>) section;
-			return new Tool[] { getObjectInfoPageTool(s, userContext) };
+			return new Tool[] {
+					getObjectInfoPageTool(s, userContext) };
+			// getUltimateEditTool(s, userContext) };
 		}
 		return ToolUtils.emptyToolArray();
 	}
@@ -62,15 +64,23 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 				"KnowWEExtension/d3web/icon/infoPage16.png",
 				"Show Info Page",
 				"Opens the information page for the specific object to show its usage inside this wiki.",
-				createJSAction(section));
+				createObjectInfoJSAction(section));
 	}
 
-	public static String createJSAction(Section<? extends Term> section) {
+	protected Tool getUltimateEditTool(Section<? extends Term> section, UserContext userContext) {
+		return new DefaultTool(
+				"http://localhost:8080/KnowWE/KnowWEExtension/images/pencil.png",
+				"Open Ultimate Edit",
+				"Opens the ultra edit mode.",
+				createUltimateEditModeAction(section));
+	}
+
+	public static String createObjectInfoJSAction(Section<? extends Term> section) {
 		Identifier termIdentifier = section.get().getTermIdentifier(section);
-		return createJSAction(termIdentifier);
+		return createObjectInfoPageJSAction(termIdentifier);
 	}
 
-	public static String createJSAction(Identifier termIdentifier) {
+	public static String createObjectInfoPageJSAction(Identifier termIdentifier) {
 		String lastPathElementExternalForm = new Identifier(termIdentifier.getLastPathElement()).toExternalForm();
 		String externalTermIdentifierForm = termIdentifier.toExternalForm();
 		String jsAction = "window.location.href = "
@@ -79,6 +89,18 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 				+ maskTermForHTML(externalTermIdentifierForm)
 				+ "') + '&amp;" + ObjectInfoTagHandler.OBJECT_NAME + "=' + encodeURIComponent('"
 				+ maskTermForHTML(lastPathElementExternalForm) + "')";
+		return jsAction;
+	}
+
+	public static String createUltimateEditModeAction(Section<? extends Term> section) {
+		Identifier termIdentifier = section.get().getTermIdentifier(section);
+		return createUltimateEditModeAction(termIdentifier);
+	}
+
+	public static String createUltimateEditModeAction(Identifier termIdentifier) {
+		String externalTermIdentifierForm = termIdentifier.toExternalForm();
+		String jsAction = "KNOWWE.plugin.ultimateEditTool.createDialogDiv('"
+				+ externalTermIdentifierForm + "')";
 		return jsAction;
 	}
 

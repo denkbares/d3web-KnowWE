@@ -1,9 +1,3 @@
-.ui-widget-overlay { background: #aaaaaa/*{bgColorOverlay}*/ url(images/ui-bg_flat_0_aaaaaa_40x100.png)/*{bgImgUrlOverlay}*/ 50%/*{bgOverlayXPos}*/ 50%/*{bgOverlayYPos}*/ repeat-x/*{bgOverlayRepeat}*/; opacity: .65 !important;filter:Alpha(Opacity=65) !important/*{opacityOverlay}*/; }
-
-#ultimateEdit .markupText .nodisc li {
-	list-style-type: none;
-}
-
 .ui-dialog {
     border: 1px solid #9ACBFB !important;
 }
@@ -104,6 +98,7 @@
        left: -10px;
 }
 
+.ui-widget-overlay { background: #aaaaaa/*{bgColorOverlay}*/ url(images/ui-bg_flat_0_aaaaaa_40x100.png)/*{bgImgUrlOverlay}*/ 50%/*{bgOverlayXPos}*/ 50%/*{bgOverlayYPos}*/ repeat-x/*{bgOverlayRepeat}*/; opacity: .65 !important;filter:Alpha(Opacity=65) !important/*{opacityOverlay}*/; }
 /*
 .ui-dialog { z-index: 0 !important ;}
 */

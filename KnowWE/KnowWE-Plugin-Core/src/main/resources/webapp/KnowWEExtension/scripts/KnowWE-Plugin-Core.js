@@ -75,6 +75,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 				success: function(html) {
 					KNOWWE.core.util.replaceElement(ids, html);
 				    ToolMenu.decorateToolMenus();
+				    KNOWWE.helper.observer.notify("previewsLoaded");
 				}
 			});
 		},
@@ -261,6 +262,225 @@ KNOWWE.treetable.setOverflow = function() {
 	});
 };
 
+/**
+ * Namespace: KNOWWE.core.plugin.pagination The KNOWWE plugin d3web namespace.
+ */
+KNOWWE.core.plugin.pagination = function() {
+
+	function saveCookieAndUpdateNode(cookie, id) {
+		var cookieStr = JSON.stringify(cookie);
+		jq$.cookie("PaginationDecoratingRenderer-" + id, cookieStr);
+		KNOWWE.plugin.d3webbasic.actions.updateNode(jq$("#" + id).first().attr(
+				"id"), KNOWWE.helper.gup('page'), null);
+	}
+
+	function scrollToTopNavigation(id) {
+		jq$('html, body').animate({
+			scrollTop : jq$("#" + id).offset().top
+		}, 0);
+	}
+
+	function getSortingSymbol(naturalOrder) {
+		var file;
+		if (naturalOrder) {
+			file = "arrow_down.png";
+		} else {
+			file = "arrow_up.png";
+		}
+		return jq$('<img/>', {
+			"src" : 'KnowWEExtension/images/' + file
+		});
+	}
+
+	return {
+
+		sort : function(th, id) {
+
+			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-"
+					+ id));
+			var sorting = th.innerText;
+			if (cookie) {
+				if (cookie.sorting == sorting) {
+					cookie.naturalOrder = !cookie.naturalOrder;
+				} else {
+					cookie.sorting = sorting;
+					cookie.naturalOrder = "true";
+				}
+			} else {
+				cookie = {};
+				cookie.sorting = sorting;
+				cookie.naturalOrder = "true";
+			}
+			saveCookieAndUpdateNode(cookie, id);
+		},
+
+		setCount : function(selected) {
+
+			var id = jq$(selected).closest(".navigationPaginationWrapper")
+					.attr('id');
+
+			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-"
+					+ id));
+			if (cookie == null) {
+				cookie = {};
+			}
+			var scrollToTop = false;
+			if ((cookie.count)
+					&& parseInt(selected.value, 10) < parseInt(cookie.count, 10)) {
+				scrollToTop = true;
+			}
+
+			var count = selected.value;
+			var startRow = jq$("#" + id + " .startRow").val();
+			var search = /^\d+$/;
+			var found = search.test(startRow);
+			if (!(found)) {
+				jq$('.navigationPaginationWrapper #startRow').val('');
+				return;
+			}
+			if (startRow <= 0) {
+				startRow = 1;
+			}
+			if (count == "Max") {
+				cookie.startRow = 1;
+				cookie.count = "Max";
+			} else {
+				cookie.startRow = startRow;
+				cookie.count = count;
+			}
+
+			if (scrollToTop) {
+				scrollToTopNavigation(id);
+			}
+			saveCookieAndUpdateNode(cookie, id);
+		},
+
+		navigate : function(id, direction){
+
+			var count = jq$("#" + id + " .count").val();
+			var startRow = jq$("#" + id + " .startRow").val();
+
+			switch (direction) {
+	            case "begin":
+	        		startRow = 1;
+	                break;
+	            case "back":
+					if (count == "Max") {
+						startRow = 1;
+					} 
+					else {
+						if (parseInt(startRow) - parseInt(count) < 1) {
+							startRow = 1;
+						} else {
+							startRow = parseInt(startRow) - parseInt(count);
+						}
+					}
+					break;
+				case "forward":
+					if (count == "Max") {
+						startRow = 1;
+					} else {
+						startRow = parseInt(startRow) + parseInt(count);
+					}
+					break;
+			}
+
+			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-"+ id));
+			if (cookie == null) {
+				cookie = {};
+			}
+			cookie.startRow = startRow;
+			cookie.count = count;
+			saveCookieAndUpdateNode(cookie, id);
+	        scrollToTopNavigation(id);	         
+		},
+
+		updateStartRow : function(selectedRow) {
+
+			var id = jq$(selectedRow).closest(".navigationPaginationWrapper")
+					.attr('id');
+			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-"
+					+ id));
+			if (cookie == null) {
+				cookie = {};
+			}
+			var count = jq$("#" + id + " .count").val();
+			var startRow = selectedRow.value;
+			var search = /^\d+$/;
+			var found = search.test(startRow);
+			if (!(found)) {
+				jq$("#" + id + " .startRow").val('');
+				return;
+			}
+			if (startRow <= 0) {
+				startRow = 1;
+			}
+			if (count == "Max") {
+				cookie.startRow = 1;
+				cookie.count = "Max";
+			} else {
+				cookie.startRow = startRow;
+				cookie.count = count;
+			}
+			saveCookieAndUpdateNode(cookie, id);
+			scrollToTopNavigation(id);
+		},
+
+		decorateTable : function() {
+			jq$(".navigationPaginationWrapper").each(
+					function() {
+						var sectionId = jq$(this).attr('id');
+
+						// register count selector
+						jq$(this).find(".count").on('change', function() {
+							KNOWWE.core.plugin.pagination.setCount(this);
+						});
+
+						// register start row change event
+						jq$(this).find('.startRow').on('change', function() {
+							KNOWWE.core.plugin.pagination.updateStartRow(this);
+						});
+
+						// make <th> clickable and therefore sortable except if
+						// it's stated explicitly otherwise
+						var tablePagination = jq$(this).find("table");
+						jq$(tablePagination).attr('sectionid', sectionId);
+						jq$(tablePagination).find("th").each(
+								function(i) {
+									if (!jq$(this).hasClass("notSortable")) {
+										jq$(this).addClass("paginationHeader");
+										this.addEventListener('click',
+												function(event) {
+													KNOWWE.core.plugin.pagination
+															.sort(this,
+																	sectionId);
+												}, true);
+									}
+								});
+
+						// render sorting symbol
+						var cookie = jq$.parseJSON(jq$
+								.cookie("PaginationDecoratingRenderer-"
+										+ sectionId));
+						if (cookie != null && cookie.sorting != null) {
+							var thToGetSortingSymbol = jq$("#" + sectionId
+									+ " th:contains('" + cookie.sorting + "')");
+							jq$(thToGetSortingSymbol).append(
+									getSortingSymbol(cookie.naturalOrder));
+						}
+
+					});
+		}
+	}
+}();
+
+// add clickable table headers to every table which is a sibling to a navigation
+// bar,
+// i.e. initialized by PaginationDecoratingRenderer
+KNOWWE.helper.observer.subscribe("navigationPaginationRendered", function() {
+	KNOWWE.core.plugin.pagination.decorateTable()
+});
+
 
 
 /* ############################################################### */
@@ -275,6 +495,7 @@ KNOWWE.treetable.setOverflow = function() {
 			KNOWWE.core.plugin.objectinfo.init();
 			KNOWWE.core.plugin.renderKDOM();
 			KNOWWE.treetable.setOverflow();
+			KNOWWE.core.plugin.pagination.decorateTable();
 		});
 	}
 	;

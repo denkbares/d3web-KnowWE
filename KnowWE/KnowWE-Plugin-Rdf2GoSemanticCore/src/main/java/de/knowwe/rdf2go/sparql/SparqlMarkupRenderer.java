@@ -98,7 +98,7 @@ public class SparqlMarkupRenderer implements Renderer {
 				RenderOptions renderOpts = new RenderOptions(sec.getID());
 
 				// Default values
-				String navigationOffset = "1";
+				String startRow = "1";
 				String navigationLimit = "20";
 				Map<String, String> sortMap = new LinkedHashMap<String, String>();
 				// Get values out of JSON Cookie
@@ -106,7 +106,7 @@ public class SparqlMarkupRenderer implements Renderer {
 					JSONObject json = new JSONObject(Strings.decodeURL(getJSONCookieString(sec,
 							user)));
 					if (!json.isNull("navigationOffset")) {
-						navigationOffset = json.getString("navigationOffset");
+						startRow = json.getString("navigationOffset");
 					}
 					if (!json.isNull("navigationLimit")) {
 						navigationLimit = json.getString("navigationLimit");
@@ -148,7 +148,7 @@ public class SparqlMarkupRenderer implements Renderer {
 					}
 					else {
 						renderOpts.setNavigationLimit(navigationLimit);
-						renderOpts.setNavigationOffset(navigationOffset);
+						renderOpts.setNavigationOffset(startRow);
 					}
 
 					QueryResultTable resultSet = core.sparqlSelect(
@@ -159,7 +159,7 @@ public class SparqlMarkupRenderer implements Renderer {
 					if (!renderOpts.isRawOutput()) {
 						renderTableSizeSelector(navigationLimit, sec.getID(),
 								resultEntry.getSize(), result);
-						renderNavigation(navigationOffset, navigationLimit,
+						renderNavigation(startRow, navigationLimit,
 								resultEntry.getSize(), sec.getID(), result);
 
 					}

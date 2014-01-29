@@ -352,6 +352,7 @@ KNOWWE.core.util = function(){
 					}
 				}
 			}
+			KNOWWE.helper.observer.notify('previewsLoaded');  
 		}
 	}
 }();

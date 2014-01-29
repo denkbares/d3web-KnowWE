@@ -60,7 +60,25 @@
 		<parameter id="scope" value="IRITermReference" />
 		<parameter id="scope" value="FlowchartOrderReference" />
 		<parameter id="scope" value="PackageTerm" />
+		<parameter id="script" value="UltimateEdit.js" />
+		<parameter id="css" value="ultimateEdit.css" />
 	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="UltimateEditSaveAction">
+		<parameter id="class" value="de.knowwe.core.objectinfo.UltimateEditSaveAction" />
+		<parameter id="name" value="UltimateEditSaveAction" />
+		<parameter id="description" value="Action UltimateEditSaveAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="UltimateEditAction">
+		<parameter id="class" value="de.knowwe.core.objectinfo.UltimateEditAction" />
+		<parameter id="name" value="UltimateEditAction" />
+		<parameter id="description" value="Action UltimateEditAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension> 
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="TagHandlerType">

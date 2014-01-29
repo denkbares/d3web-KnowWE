@@ -38,9 +38,9 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.objectinfo.ObjectInfoRenderer;
 import de.knowwe.core.preview.PreviewManager;
 import de.knowwe.core.preview.PreviewRenderer;
-import de.knowwe.core.taghandler.ObjectInfoTagHandler;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -114,7 +114,7 @@ public class RenderPreviewAction extends AbstractAction {
 		}
 		if (mode == Mode.list) {
 			RenderResult temp = new RenderResult(context);
-			ObjectInfoTagHandler.renderTermReferencesPreviews(sections, context, temp);
+			ObjectInfoRenderer.renderTermReferencesPreviews(sections, context, temp);
 			temp.append("\n");
 			result.put(handleWikiSyntax(context, temp));
 		}

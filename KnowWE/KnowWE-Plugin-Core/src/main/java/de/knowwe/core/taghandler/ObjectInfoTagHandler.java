@@ -526,7 +526,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		return section.getParent().get().getName();
 	}
 
-	private Map<Article, List<Section<?>>> groupByArticle(Set<Section<?>> references) {
+	public Map<Article, List<Section<?>>> groupByArticle(Set<Section<?>> references) {
 		Map<Article, List<Section<?>>> result =
 				new TreeMap<Article, List<Section<?>>>(ArticleComparator.getInstance());
 		for (Section<?> reference : references) {
