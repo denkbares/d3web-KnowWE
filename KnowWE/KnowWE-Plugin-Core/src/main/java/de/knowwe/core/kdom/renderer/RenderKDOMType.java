@@ -52,7 +52,7 @@ public class RenderKDOMType extends DefaultMarkupType {
 		@Override
 		protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
 			String html = "";
-			html += "<table class='renderKDOMTable wikitable' id='kdomTreeTable'>";
+			html += "<table class='renderKDOMTable wikitable' article='" + section.getTitle() +"'>";
 			html += "<tr>";
 			html += "<th>Type</th>";
 			html += "<th>ID</th>";
@@ -66,8 +66,6 @@ public class RenderKDOMType extends DefaultMarkupType {
 			renderSubtree(section.getArticle().getRootSection(), string, 1);
 
 			string.appendHtml("</table>");
-			string.appendHtml("<script type='text/javascript'>jq$('#kdomTreeTable').agikiTreeTable({expandable: true, clickableNodeNames: true, persist: true, article:'"
-					+ section.getTitle() + "' });</script>");
 		}
 
 		protected void renderSubtree(Section<?> s, RenderResult string, int count) {

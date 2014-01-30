@@ -242,9 +242,16 @@ KNOWWE.tooltips.enrich = function() {
 	});
 };
 
-KNOWWE.treetable = {};
+KNOWWE.kdomtreetable = {};
 
-KNOWWE.treetable.setOverflow = function() {
+KNOWWE.kdomtreetable.init = function() {
+	jq$('.renderKDOMTable').each(function() {
+		jq$(this).agikiTreeTable({expandable: true, clickableNodeNames: true, persist: true, article: jq$(this).attr('article') });
+	});
+	KNOWWE.kdomtreetable.setOverflow();
+}
+
+KNOWWE.kdomtreetable.setOverflow = function() {
 	jq$('.table_text').hover(function() {
 		var elem = jq$(this);
 		elem.data("stillin", "yes");
@@ -491,7 +498,7 @@ KNOWWE.helper.observer.subscribe("navigationPaginationRendered", function() {
 			KNOWWE.tooltips.enrich();
 			KNOWWE.core.plugin.objectinfo.init();
 			KNOWWE.core.plugin.renderKDOM();
-			KNOWWE.treetable.setOverflow();
+			KNOWWE.kdomtreetable.init();
 			KNOWWE.core.plugin.pagination.decorateTable();
 		});
 	}
