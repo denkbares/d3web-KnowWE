@@ -18,8 +18,6 @@
  */
 package de.knowwe.core.kdom.objects;
 
-import java.util.Collection;
-
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.DestroyScript;
@@ -29,6 +27,8 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+
+import java.util.Collection;
 
 /**
  * 
@@ -66,7 +66,7 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 	 * returns an empty collection or a collection of info messages.
 	 * 
 	 * @created 28.02.2012
-	 * @param article the compiling article
+	 * @param compiler the Compiler compiling this reference
 	 * @param section the section identifying the reference
 	 * @return result messages of validation
 	 */

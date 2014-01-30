@@ -352,4 +352,8 @@ public class TerminologyManager {
 		else return Collections.unmodifiableCollection(refLog.getTermClasses());
 	}
 
+	@Override
+	public String toString() {
+		return "Compilers: " + compilers + ", known terms: " + termLogManager.entrySet().size();
+	}
 }

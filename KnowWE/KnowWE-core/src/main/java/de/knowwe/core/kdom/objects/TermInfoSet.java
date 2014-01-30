@@ -43,11 +43,11 @@ public class TermInfoSet implements Collection<TermInfo> {
 		 * Returns if the specified identifier will match this {@link TermInfo},
 		 * according to the {@link Identifier} of this set and whether this set
 		 * is case sensitive or not.
-		 * 
-		 * @created 25.08.2013
+		 *
 		 * @param otherIdentifier the identifier to be checked if it matches
-		 *        this set
+		 *                        this set
 		 * @return if the identifier matches this set
+		 * @created 25.08.2013
 		 */
 		@Override
 		public boolean matches(Identifier otherIdentifier) {
@@ -57,9 +57,9 @@ public class TermInfoSet implements Collection<TermInfo> {
 		/**
 		 * Returns the key the to identify this {@link TermInfo} object. Is
 		 * considers the term's identifier and the case sensitivity flag.
-		 * 
-		 * @created 26.08.2013
+		 *
 		 * @return the key to be used by that term info
+		 * @created 26.08.2013
 		 */
 		@Override
 		public String getKey() {
@@ -102,7 +102,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 	public TermInfoSet(boolean caseSensitive, Class<?>... allowedTermClasses) {
 		this.caseSensitive = caseSensitive;
 		if (allowedTermClasses == null || allowedTermClasses.length == 0) {
-			allowedTermClasses = new Class[] { Object.class };
+			allowedTermClasses = new Class[]{ Object.class };
 		}
 		this.allowedTermClasses = allowedTermClasses;
 	}
@@ -110,10 +110,10 @@ public class TermInfoSet implements Collection<TermInfo> {
 	/**
 	 * Returns the key the to identify a {@link TermInfo} object for a specific
 	 * identifier and a case sensitivity flag.
-	 * 
-	 * @created 26.08.2013
+	 *
 	 * @param identifier the term identifier
 	 * @return the key to be used by that term info
+	 * @created 26.08.2013
 	 */
 	private String getKey(Identifier identifier) {
 		return caseSensitive
@@ -148,7 +148,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 
 	@Override
 	public Iterator<TermInfo> iterator() {
-		return Collections.<TermInfo> unmodifiableCollection(result.values()).iterator();
+		return Collections.<TermInfo>unmodifiableCollection(result.values()).iterator();
 	}
 
 	@Override
@@ -175,19 +175,21 @@ public class TermInfoSet implements Collection<TermInfo> {
 	}
 
 	private void addTermManagerIfMatches(Identifier termIdentifier, TerminologyManager termManager) {
-		Collection<Identifier> identifiers = caseSensitive
-				? Arrays.asList(termIdentifier)
-				: termManager.getAllTermsEqualIgnoreCase(termIdentifier);
+		Collection<Identifier> identifiers;
+		if (caseSensitive) {
+			identifiers = Arrays.asList(termIdentifier);
+		}
+		else if (termManager.isUndefinedTerm(termIdentifier)) {
+			// getAllTermsEqualIgnoreCase does not return undefined terms
+			// so we just use the current identifier
+			identifiers = Arrays.asList(termIdentifier);
+		}
+		else {
+			identifiers = termManager.getAllTermsEqualIgnoreCase(termIdentifier);
+		}
 		for (Identifier identifier : identifiers) {
 			// check if class is matched
-			boolean classMatched = false;
-			for (Class<?> clazz : allowedTermClasses) {
-				if (termManager.hasTermOfClass(identifier, clazz)) {
-					classMatched = true;
-					break;
-				}
-			}
-			if (!classMatched) continue;
+			if (!isMatchingIdentifier(identifier, termManager)) continue;
 
 			// add term manager
 			getTermInfoValid(identifier).addManager(termManager);
@@ -198,28 +200,35 @@ public class TermInfoSet implements Collection<TermInfo> {
 		ArticleManager articleManager = Environment.getInstance().getArticleManager(web);
 		for (Article article : articleManager.getArticles()) {
 			TerminologyManager termManager = KnowWEUtils.getTerminologyManager(article);
-			addAllMatchingTermInfos(result, termManager);
+			addAllMatchingTermInfos(termManager);
 		}
 		// add and enhance term infos also for global term manager
-		addAllMatchingTermInfos(result,
+		addAllMatchingTermInfos(
 				Environment.getInstance().getTerminologyManager(web, null));
 	}
 
-	private void addAllMatchingTermInfos(Map<String, DefaultTermInfo> result, TerminologyManager termManager) {
+	private void addAllMatchingTermInfos(TerminologyManager termManager) {
 		for (Identifier identifier : termManager.getAllDefinedTerms()) {
-			// check if class is matched
-			boolean classMatched = false;
-			for (Class<?> clazz : allowedTermClasses) {
-				if (termManager.hasTermOfClass(identifier, clazz)) {
-					classMatched = true;
-					break;
-				}
-			}
-			if (!classMatched) continue;
+			if (!isMatchingIdentifier(identifier, termManager)) continue;
 
 			// add term manager
 			getTermInfoValid(identifier).addManager(termManager);
 		}
+	}
+
+	private boolean isMatchingIdentifier(Identifier identifier, TerminologyManager termManager) {
+
+		// check if class is matched
+		for (Class<?> clazz : allowedTermClasses) {
+			if (termManager.hasTermOfClass(identifier, clazz)) {
+				return true;
+			}
+		}
+		// if the term has no definitions, there aren't any term classes either
+		// we still might want the references
+		if (termManager.isUndefinedTerm(identifier)) return true;
+
+		return false;
 	}
 
 	public TermInfo getTermInfo(Identifier identifier) {
