@@ -31,7 +31,6 @@ import de.knowwe.core.report.Messages;
 import java.util.Collection;
 
 /**
- * 
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 08.02.2012
  */

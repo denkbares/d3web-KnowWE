@@ -151,9 +151,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 									window.location.href = "Wiki.jsp?page=ObjectInfoPage&objectname="
 											+ encodeURIComponent(jsonResponse.newObjectName)
 											+ "&termIdentifier="
-											+ encodeURIComponent(jsonResponse.newTermIdentifier)
-											+ "&renamedArticles="
-											+ encodeURIComponent(jsonResponse.renamedArticles);
+											+ encodeURIComponent(jsonResponse.newTermIdentifier);
 								}
 							}
 							KNOWWE.core.util.updateProcessingState(-1);
