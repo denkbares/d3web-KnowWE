@@ -19,27 +19,6 @@
 
 package de.knowwe.ontology.kdom;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.ontoware.rdf2go.model.Statement;
-import org.ontoware.rdf2go.model.node.DatatypeLiteral;
-import org.ontoware.rdf2go.model.node.LanguageTagLiteral;
-import org.ontoware.rdf2go.model.node.Literal;
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.PlainLiteral;
-import org.ontoware.rdf2go.model.node.Resource;
-import org.ontoware.rdf2go.model.node.URI;
-import org.openrdf.rio.turtle.TurtleWriter;
-
 import de.d3web.strings.Strings;
 import de.d3web.utils.EqualsUtils;
 import de.d3web.utils.Pair;
@@ -47,7 +26,6 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -63,6 +41,26 @@ import de.knowwe.ontology.turtle.TurtleContent;
 import de.knowwe.ontology.turtle.TurtleMarkup;
 import de.knowwe.ontology.turtle.TurtleSentence;
 import de.knowwe.rdf2go.Rdf2GoCore;
+import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.node.DatatypeLiteral;
+import org.ontoware.rdf2go.model.node.LanguageTagLiteral;
+import org.ontoware.rdf2go.model.node.Literal;
+import org.ontoware.rdf2go.model.node.Node;
+import org.ontoware.rdf2go.model.node.PlainLiteral;
+import org.ontoware.rdf2go.model.node.Resource;
+import org.ontoware.rdf2go.model.node.URI;
+import org.openrdf.rio.turtle.TurtleWriter;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class allows to add and remove statements to/from the turtle markup of a
@@ -406,7 +404,7 @@ public class ArticleTurtleModifier {
 	 * @param indent the indent to be used for the turtle sentences
 	 * @param turtle the buffer to append the created turtle text
 	 */
-	private void createTurtle(Section<?> target, List<Statement> statements, String indent, StringBuilder turtle) {
+	private void createTurtle(List<Statement> statements, String indent, StringBuilder turtle) {
 		boolean first = true;
 		for (List<Statement> group : groupBySubject(statements)) {
 			if (first) first = false;
@@ -474,7 +472,6 @@ public class ArticleTurtleModifier {
 	 * Creates turtle markup for the specified node.
 	 * 
 	 * @created 26.11.2013
-	 * @param section the section to create the turtle markup for
 	 * @param node the node to create turtle markup for
 	 * @return the turtle markup to represent the node's value
 	 */
@@ -574,7 +571,7 @@ public class ArticleTurtleModifier {
 			}
 			// and append new turtle markup
 			buffer.append("\n\n%%Turtle\n");
-			createTurtle(article.getRootSection(), rest, preferredIndent, buffer);
+			createTurtle(rest, preferredIndent, buffer);
 			buffer.append(".\n%\n\n");
 		}
 	}
@@ -672,7 +669,7 @@ public class ArticleTurtleModifier {
 				new ArrayList<Pair<Type, String>>(children.size());
 		for (Section<?> child : children) {
 			StringBuilder part = new StringBuilder();
-			if (traverse(child, part) || child.get() instanceof PlainText) {
+			if (traverse(child, part) || isSeparator(child.get())) {
 				childResults.add(new Pair<Type, String>(child.get(), part.toString()));
 			}
 			else {
@@ -722,7 +719,7 @@ public class ArticleTurtleModifier {
 				}
 			}
 			result.append(compactMode ? "\n" : "\n\n").append(indent);
-			createTurtle(node, toInsert, indent, result);
+			createTurtle(toInsert, indent, result);
 			result.append(".");
 		}
 		else if (predSentence == null) {
@@ -745,7 +742,7 @@ public class ArticleTurtleModifier {
 	 * removed are added as "null" to the list.
 	 * 
 	 * @created 07.12.2013
-	 * @param childResults the list to be cleaned up
+	 * @param list the list to be cleaned up
 	 */
 	private void cleanChildResults(List<Pair<Type, String>> list) {
 		int index;
@@ -753,7 +750,7 @@ public class ArticleTurtleModifier {
 			if (index == 0) {
 				// for the first element remove the element
 				// and the succeeding separator (if there is any)
-				if (list.size() > 1 && list.get(1).getA() instanceof PlainText) {
+				if (list.size() > 1 && isSeparator(list.get(1).getA())) {
 					list.remove(1);
 				}
 				list.remove(0);
@@ -761,11 +758,15 @@ public class ArticleTurtleModifier {
 			else {
 				// otherwise remove the item and the separator before
 				list.remove(index);
-				if (list.get(index - 1).getA() instanceof PlainText) {
+				if (isSeparator(list.get(index - 1).getA())) {
 					list.remove(index - 1);
 				}
 			}
 		}
+	}
+
+	private boolean isSeparator(Type type) {
+		return type.getChildrenTypes().isEmpty();
 	}
 
 	private boolean hasSameSubject(Section<TurtleSentence> sentence, Statement statement) {
