@@ -18,9 +18,6 @@
  */
 package de.knowwe.core.taghandler;
 
-import java.util.Map;
-import java.util.Set;
-
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.TermInfo;
@@ -34,16 +31,19 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.tools.ToolSet;
 import de.knowwe.tools.ToolUtils;
 
+import java.util.Map;
+import java.util.Set;
+
 /**
  * ObjectInfo TagHandler
- * 
+ * <p/>
  * This TagHandler gathers information about a specified Object. The TagHanlder
  * shows the article in which the object is defined and all articles with
  * references to this object.
- * 
+ * <p/>
  * Additionally there is a possibility to rename this object in all articles and
  * to create a wiki page for this object.
- * 
+ *
  * @author Sebastian Furth
  * @created 01.12.2010
  */
@@ -76,7 +76,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 	@Override
 	public final synchronized void render(Section<?> section, UserContext userContext,
-			Map<String, String> parameters, RenderResult result) {
+										  Map<String, String> parameters, RenderResult result) {
 
 		RenderResult content = new RenderResult(userContext);
 
@@ -96,16 +96,25 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		result.appendJSPWikiMarkup(jspMasked);
 	}
 
+	private void renderHR(RenderResult result) {
+		result.appendHtml("<div style=\"margin-left:-4px; height:1px; width:102%; background-color:#DDDDDD;\"></div>");
+	}
+
 	private void renderContent(Identifier termIdentifier, UserContext user,
-			RenderResult result) {
+							   RenderResult result) {
 
-		ObjectInfoRenderer.renderHeader(termIdentifier, user, result);
-		ObjectInfoRenderer.renderLookUpForm(termIdentifier, user, result);
-		ObjectInfoRenderer.renderRenamingForm(termIdentifier, user, result);
-		ObjectInfoRenderer.renderTermDefinitions(termIdentifier, user, result);
-		ObjectInfoRenderer.renderTermReferences(termIdentifier, user, result);
-		ObjectInfoRenderer.renderPlainTextOccurrences(termIdentifier, user, result);
-
+		ObjectInfoRenderer.renderLookUpForm(user, result);
+		if (termIdentifier != null) {
+			ObjectInfoRenderer.renderHeader(termIdentifier, user, result);
+			renderHR(result);
+			ObjectInfoRenderer.renderRenamingForm(termIdentifier, user, result);
+			renderHR(result);
+			ObjectInfoRenderer.renderTermDefinitions(termIdentifier, user, result);
+			renderHR(result);
+			ObjectInfoRenderer.renderTermReferences(termIdentifier, user, result);
+			//renderHR(result);
+			//ObjectInfoRenderer.renderPlainTextOccurrences(termIdentifier, user, result);
+		}
 	}
 
 	protected void findTermSections(String web, Identifier termIdentifier, Set<Section<?>> definitions, Set<Section<?>> references) {
@@ -120,6 +129,5 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	protected String getRenamingAction() {
 		return "TermRenamingAction";
 	}
-
 
 }

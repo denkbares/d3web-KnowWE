@@ -18,17 +18,15 @@
  */
 package de.knowwe.core.objectinfo;
 
-import java.util.ResourceBundle;
-
-import de.d3web.strings.Identifier;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 
+import java.util.ResourceBundle;
+
 /**
- * 
  * @author stefan
  * @created 09.12.2013
  */
@@ -36,16 +34,14 @@ public class ObjectInfoLookUpFormRenderer implements Renderer {
 
 	private static ResourceBundle rb;
 
-
-
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
 		rb = Messages.getMessageBundle(user);
 
 	}
 
-	public static void renderLookUpForm(Identifier identifier, UserContext user, RenderResult result) {
-		ObjectInfoRenderer.renderLookUpForm(identifier, user, result);
+	public static void renderLookUpForm(UserContext user, RenderResult result) {
+		ObjectInfoRenderer.renderLookUpForm(user, result);
 	}
 
 }

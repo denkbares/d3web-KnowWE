@@ -18,22 +18,6 @@
  */
 package de.knowwe.core.objectinfo;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.UUID;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import de.d3web.collections.CountingSet;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
@@ -62,9 +46,23 @@ import de.knowwe.kdom.search.SearchEngine;
 import de.knowwe.kdom.search.SearchOption;
 import de.knowwe.tools.ToolSet;
 import de.knowwe.tools.ToolUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.UUID;
 
 /**
- * 
  * @author stefan
  * @created 09.12.2013
  */
@@ -102,13 +100,13 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	private void renderContent(Identifier termIdentifier, UserContext user,
-			RenderResult result) {
+							   RenderResult result) {
 
 		// renderLookUpForm(identifier, user, result);
 
 		// Render
 		ObjectInfoRenderer.renderHeader(termIdentifier, user, result);
-		ObjectInfoRenderer.renderLookUpForm(termIdentifier, user, result);
+		ObjectInfoRenderer.renderLookUpForm(user, result);
 		ObjectInfoRenderer.renderRenamingForm(termIdentifier, user, result);
 		ObjectInfoRenderer.renderTermDefinitions(termIdentifier, user, result);
 		ObjectInfoRenderer.renderTermReferences(termIdentifier, user, result);
@@ -128,11 +126,11 @@ public class ObjectInfoRenderer implements Renderer {
 	 * article). The method renders the previews of the specified sections,
 	 * grouped by their preview. Each preview may render one or multiple of the
 	 * specified sections.
-	 * 
-	 * @created 29.11.2013
+	 *
 	 * @param sections the section to be rendered in their previews
-	 * @param user the user context
-	 * @param result the buffer to render into
+	 * @param user     the user context
+	 * @param result   the buffer to render into
+	 * @created 29.11.2013
 	 */
 
 	public static void renderTermReferencesPreviews(List<Section<?>> sections, UserContext user, RenderResult result) {
@@ -165,14 +163,14 @@ public class ObjectInfoRenderer implements Renderer {
 		result.appendHtml("</ul>");
 	}
 
-	public static void renderLookUpForm(Identifier identifier, UserContext user, RenderResult result) {
+	public static void renderLookUpForm(UserContext user, RenderResult result) {
 		renderSectionStart("Look up object information", result);
 		result.appendHtml("<form action=\"\" method=\"get\" class=\"ui-widget\" >")
 				.appendHtml("<input type=\"hidden\" id=\"objectinfo-web-lookup\" value=\"")
 				.append(user.getWeb())
 				.appendHtml("\" />");
 		result.appendHtml("<input type=\"hidden\" name=\"page\" value=\"")
-				.append(Strings.encodeURL(identifier.toString()))
+				.append("ObjectInfoPage")
 				.appendHtml("\" />");
 		result.appendHtml("<div style=\"display:none\" id=\"objectinfo-terms\" name=\"terms\" >");
 		result.appendJSPWikiMarkup(ObjectInfoRenderer.getTerms(user).toString()
@@ -352,8 +350,7 @@ public class ObjectInfoRenderer implements Renderer {
 		return "TermRenamingAction";
 	}
 
-	private static Map<Article, List<Section<?>>>
-			groupByArticle(Set<Section<?>> references) {
+	private static Map<Article, List<Section<?>>> groupByArticle(Set<Section<?>> references) {
 		Map<Article, List<Section<?>>> result =
 				new TreeMap<Article, List<Section<?>>>(ArticleComparator.getInstance());
 		for (Section<?> reference : references) {
@@ -373,10 +370,10 @@ public class ObjectInfoRenderer implements Renderer {
 	 * Groups the specified sections by the ancestor section to be rendered as a
 	 * preview. If a section has no ancestor to be rendered, the section itself
 	 * will be used as a group with an empty collection of grouped sections.
-	 * 
-	 * @created 16.08.2013
+	 *
 	 * @param items list of sections to be grouped
 	 * @return the groups of sections
+	 * @created 16.08.2013
 	 */
 	private static Map<Section<?>, Collection<Section<?>>> groupByPreview(Collection<Section<?>> items) {
 		List<Section<?>> list = new ArrayList<Section<?>>(items);
@@ -386,7 +383,7 @@ public class ObjectInfoRenderer implements Renderer {
 			Section<?> previewSection = PreviewManager.getInstance().getPreviewAncestor(section);
 			// handle if the section has no preview renderer
 			if (previewSection == null) {
-				result.put(section, Collections.<Section<?>> emptyList());
+				result.put(section, Collections.<Section<?>>emptyList());
 				continue;
 			}
 			// otherwise add section to preview group
@@ -473,10 +470,10 @@ public class ObjectInfoRenderer implements Renderer {
 	 * specific markup, but it is the number of preview sections required to
 	 * display these sections (some preview sections may display multiple of the
 	 * specified sections).
-	 * 
-	 * @created 29.11.2013
+	 *
 	 * @param sections the section to get the markup names for
 	 * @return the counting set of markup names
+	 * @created 29.11.2013
 	 */
 	private static CountingSet<String> getSurroundingMarkupNames(List<Section<?>> sections) {
 		CountingSet<String> types = new CountingSet<String>();
@@ -578,7 +575,6 @@ public class ObjectInfoRenderer implements Renderer {
 		List<String> allTerms = new ArrayList<String>();
 
 		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(user.getArticleManager());
-		;
 		for (TerminologyManager terminologyManager : terminologyManagers) {
 			Collection<Identifier> allDefinedTerms = terminologyManager
 					.getAllDefinedTerms();
@@ -602,13 +598,6 @@ public class ObjectInfoRenderer implements Renderer {
 
 	}
 
-	/**
-	 * 
-	 * @created 10.12.2013
-	 * @param user
-	 * @param parameters
-	 * @return
-	 */
 	public static Identifier getTermIdentifier(UserContext user, Section<?> section) {
 		Map<String, String> urlParameters = user.getParameters();
 
