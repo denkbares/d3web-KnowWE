@@ -75,7 +75,6 @@ KNOWWE.core.plugin.objectinfo = function() {
 				success: function(html) {
 					KNOWWE.core.util.replaceElement(ids, html);
 				    ToolMenu.decorateToolMenus();
-				    KNOWWE.helper.observer.notify("previewsLoaded");
 				}
 			});
 		},

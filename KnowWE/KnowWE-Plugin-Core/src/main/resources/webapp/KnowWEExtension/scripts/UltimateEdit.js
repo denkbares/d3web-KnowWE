@@ -642,11 +642,6 @@ KNOWWE.plugin.ultimateEditTool = function() {
                 }
             });
 
-            KNOWWE.helper.observer.subscribe("previewsLoaded", function() {
-
-                KNOWWE.plugin.ultimateEditTool.enable('#ultimateEdit');
-
-            });
 
             var params = {
                 action : 'UltimateEditAction',
@@ -693,9 +688,18 @@ KNOWWE.plugin.ultimateEditTool = function() {
             };
             new _KA(options).send();
 
+
+            KNOWWE.helper.observer.subscribe("previewsLoaded", function() {
+
+                KNOWWE.plugin.ultimateEditTool.enable('#ultimateEdit');
+
+            });
+
             divDefaultMarkup.append(divMarkupText);
 
             jq$("body").append(divDefaultMarkup);
+
+
 
         }
 

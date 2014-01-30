@@ -84,7 +84,6 @@ public class ObjectInfoRenderer implements Renderer {
 	@Override
 	public final synchronized void render(Section<?> section, UserContext userContext, RenderResult result) {
 
-
 		RenderResult content = new RenderResult(userContext);
 
 		Identifier termIdentifier = getTermIdentifier(userContext, section);
@@ -147,9 +146,9 @@ public class ObjectInfoRenderer implements Renderer {
 		for (Entry<Section<?>, Collection<Section<?>>> entry : groupedByPreview.entrySet()) {
 			Section<?> previewSection = entry.getKey();
 			Collection<Section<?>> group = entry.getValue();
-	
+
 			result.appendHtml("<li><div id='" + previewSection.getID() + "'>");
-			// ObjectInfoRenderer.renderLinkToSection(previewSection, result);
+			ObjectInfoRenderer.renderLinkToSection(previewSection, result);
 			ObjectInfoRenderer.renderTermPreview(previewSection, group, user, "reference", result);
 			String clazz = "editanchor";
 			if (first) {
@@ -160,7 +159,7 @@ public class ObjectInfoRenderer implements Renderer {
 			}
 			result.appendHtml("<param class='" + clazz + "' sectionid='"
 					+ previewSection.getID() + "' />");
-			
+
 			result.appendHtml("</div></li>");
 		}
 		result.appendHtml("</ul>");
@@ -189,9 +188,6 @@ public class ObjectInfoRenderer implements Renderer {
 
 	public static void renderRenamingForm(Identifier identifier, UserContext user, RenderResult result) {
 
-		// Check if rendering is suppressed
-		// TODO: use annotation?
-		// if (checkParameter(HIDE_RENAME, parameters)) return;
 		renderSectionStart("Rename to", result);
 
 		String escapedExternalTermIdentifierForm = Strings.encodeHtml(identifier.toExternalForm());
@@ -206,12 +202,6 @@ public class ObjectInfoRenderer implements Renderer {
 		result.appendHtml("<input type=\"button\" id=\"objectinfo-replace-button\" value=\"rename\" />");
 		result.appendHtml("&nbsp;<span id=\"objectinfo-rename-result\">");
 
-		// render message of previous renaming if available...
-		// other solution?
-		// String renamingMessage = urlParameters.get(RENAMED_ARTICLES);
-		// if (renamingMessage != null) {
-		// renderRenamingMessage(result, renamingMessage);
-		// }
 		result.appendHtml("</span>");
 
 		renderSectionEnd(result);
@@ -292,19 +282,14 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	public static void renderSectionStart(String title, RenderResult result) {
-		// TODO: needs other solution for modular renderers
-		// result.appendHtml(sectionCounter > 0 ? renderHR() : "");
 		result.appendHtml("<div>");
 		result.appendHtml("<p><strong>");
 		result.appendHtml(title);
 		result.appendHtml("</strong></p>");
-		// lastResultLength = result.length();
 	}
 
 	public static void renderSectionEnd(RenderResult result) {
-		// if (lastResultLength == result.length()) result.append("N/A");
 		result.appendHtml("</div>\n");
-		// sectionCounter++;
 	}
 
 	protected static Set<Section<?>> findTermDefinitionSections(String web, Identifier termIdentifier) {
@@ -330,11 +315,6 @@ public class ObjectInfoRenderer implements Renderer {
 		}
 		return sections;
 	}
-
-	// private String renderHR() {
-	// return
-	// "<div style=\"margin-left:-4px; height:1px; width:102%; background-color:#DDDDDD;\"></div>";
-	// }
 
 	private static String getTermObjectClass(UserContext user, Identifier identifier) {
 		Set<Section<?>> definitions = findTermDefinitionSections(user.getWeb(), identifier);
@@ -372,12 +352,6 @@ public class ObjectInfoRenderer implements Renderer {
 		return "TermRenamingAction";
 	}
 
-	// private boolean checkParameter(String parameter,
-	// Map<String, String> parameters) {
-	// return parameters.get(parameter) != null ? Boolean
-	// .parseBoolean(parameters.get(parameter)) : false;
-	// }
-	//
 	private static Map<Article, List<Section<?>>>
 			groupByArticle(Set<Section<?>> references) {
 		Map<Article, List<Section<?>>> result =
@@ -438,7 +412,7 @@ public class ObjectInfoRenderer implements Renderer {
 		// html.append("\" >");
 		result.appendHtml("<a href='");
 		result.append(KnowWEUtils.getURLLink(reference));
-		result.appendHtml("'>");
+		result.appendHtml("' class='onlyObjectInfoPage'>");
 		// html.append(reference.getTitle());
 		// html.append(" (");
 		// Get a nice name
@@ -602,7 +576,6 @@ public class ObjectInfoRenderer implements Renderer {
 	public static JSONObject getTerms(UserContext user) {
 		// gathering all terms
 		List<String> allTerms = new ArrayList<String>();
-
 
 		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(user.getArticleManager());
 		;

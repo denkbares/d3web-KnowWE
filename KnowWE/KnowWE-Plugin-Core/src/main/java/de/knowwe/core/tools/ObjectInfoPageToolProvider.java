@@ -53,8 +53,7 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 			@SuppressWarnings("unchecked")
 			Section<? extends Term> s = (Section<? extends Term>) section;
 			return new Tool[] {
-					getObjectInfoPageTool(s, userContext) };
-			// getUltimateEditTool(s, userContext) };
+					getObjectInfoPageTool(s, userContext), getUltimateEditTool(s, userContext) };
 		}
 		return ToolUtils.emptyToolArray();
 	}
