@@ -20,6 +20,12 @@
 
 package de.knowwe.kdom.defaultMarkup;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
@@ -34,12 +40,6 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.MessageRenderer;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
 
 /**
  * This class represents a section of the top-level default markup. That markup
@@ -373,12 +373,12 @@ public class DefaultMarkupType extends AbstractType implements RenamableTerm {
 		return results;
 	}
 
-	private static List<Section<?>> findAnnotationContentTypes(Section<?> section) {
+	private static <T extends Type> List<Section<T>> findAnnotationContentTypes(Section<? extends Type> section) {
 		List<Class<? extends Type>> path = new ArrayList<Class<? extends Type>>(3);
 		path.add(section.get().getClass());
 		path.add(AnnotationType.class);
 		path.add(AnnotationContentType.class);
-		List<Section<?>> children = Sections.findSuccessorsWithTypePath(section, path, 0);
+		List<Section<T>> children = Sections.findSuccessorsWithTypePath(section, path, 0);
 		return children;
 	}
 

@@ -552,18 +552,19 @@ public class Sections {
 	 * <tt>index</tt> to the index of the ObjectType of this Section in the
 	 * path. </p> Stores found successors in a List of Sections
 	 */
-	public static List<Section<?>> findSuccessorsWithTypePath(Section<?> s,
+	public static <T extends Type> List<Section<T>> findSuccessorsWithTypePath(Section<?> s,
 			List<Class<? extends Type>> path,
 			int index) {
-		List<Section<?>> found = new LinkedList<Section<?>>();
+		List<Section<T>> found = new LinkedList<Section<T>>();
 		findSuccessorsWithTypePath(s, path, index, found);
 		return found;
 	}
 
-	private static void findSuccessorsWithTypePath(Section<?> s,
+	@SuppressWarnings("unchecked")
+	private static <T extends Type> void findSuccessorsWithTypePath(Section<? extends Type> s,
 			List<Class<? extends Type>> path,
 			int index,
-			List<Section<?>> found) {
+			List<Section<T>> found) {
 
 		if (index < path.size() - 1
 				&& path.get(index).isAssignableFrom(s.get().getClass())) {
@@ -573,7 +574,7 @@ public class Sections {
 		}
 		else if (index == path.size() - 1
 				&& path.get(index).isAssignableFrom(s.get().getClass())) {
-			found.add(s);
+			found.add((Section<T>) s);
 		}
 
 	}
