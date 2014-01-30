@@ -982,6 +982,18 @@
 			</dependencies>
 		</profile>
 
+        <profile>
+            <id>augmentationedit</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.denkbares</groupId>
+                    <artifactId>KnowWE-Plugin-AugmentationEdit</artifactId>
+                    <version>0.2-SNAPSHOT</version>
+                    <scope>compile</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+
 		<profile>
 			<id>d3web-homepage</id>
 			<dependencies>
