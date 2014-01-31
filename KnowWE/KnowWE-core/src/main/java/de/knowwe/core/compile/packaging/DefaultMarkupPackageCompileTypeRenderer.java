@@ -142,14 +142,16 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 		subString.appendHtml("<span style='color:rgb(121,79, 64);'>");
 		subString.append(packageName);
 		subString.appendHtml("</span>");
-		PackageRegistrationCompiler packageCompiler = Compilers.getCompilers(
-				section.getArticleManager(), PackageRegistrationCompiler.class).iterator().next();
+		PackageRegistrationCompiler packageCompiler = Compilers.getCompiler(
+				section.getArticleManager(), PackageRegistrationCompiler.class);
 		Section<?> termDefiningSection = packageCompiler.getTerminologyManager().getTermDefiningSection(
 				new Identifier(packageName));
 		Section<PackageTerm> packageTermSection = Sections.findSuccessor(termDefiningSection,
 				PackageTerm.class);
-		ToolMenuDecoratingRenderer.renderToolMenuDecorator(subString.toStringRaw(),
-				packageTermSection.getID(), true, string);
+		if (packageTermSection != null) {
+			ToolMenuDecoratingRenderer.renderToolMenuDecorator(subString.toStringRaw(),
+					packageTermSection.getID(), true, string);
+		}
 		if (hasErrors) {
 			string.append(" (").append(errorsCount).append(" errors in ");
 			string.append(errorArticles.size()).append(
