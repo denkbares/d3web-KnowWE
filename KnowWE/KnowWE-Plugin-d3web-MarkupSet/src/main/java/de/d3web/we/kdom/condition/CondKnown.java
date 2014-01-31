@@ -74,6 +74,7 @@ public class CondKnown extends D3webCondition<CondKnown> {
 			Question q = qRef.get().getTermObject(compiler, qRef);
 
 			if (q != null) {
+				Messages.clearMessages(compiler, section, getClass());
 				return createCond(q);
 			}
 			else {

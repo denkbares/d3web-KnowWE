@@ -127,7 +127,6 @@ public class FlowchartSubTreeHandler extends D3webCompileScript<FlowchartType> {
 			}
 
 			Condition condition;
-
 			Section<GuardType> guardSection = Sections.findSuccessor(section, GuardType.class);
 			if (guardSection != null) {
 
@@ -135,14 +134,14 @@ public class FlowchartSubTreeHandler extends D3webCompileScript<FlowchartType> {
 						guardSection, CompositeCondition.class);
 				condition = buildCondition(compiler, compositionConditionSection);
 
+				List<Message> msgs = new ArrayList<Message>();
 				if (condition == null) {
 					condition = ConditionTrue.INSTANCE;
 
-					Messages.storeMessage(compiler, guardSection, FlowchartSubTreeHandler.class,
-							Messages.warning("Could not parse condition: "
-									+ getXMLContentText(guardSection)));
+					msgs.add(Messages.error("Could not parse condition: "
+							+ getXMLContentText(guardSection)));
 				}
-
+				Messages.storeMessages(compiler, guardSection, FlowchartSubTreeHandler.class, msgs);
 			}
 			else {
 				condition = ConditionTrue.INSTANCE;
@@ -150,7 +149,6 @@ public class FlowchartSubTreeHandler extends D3webCompileScript<FlowchartType> {
 
 			Edge edge = FlowFactory.createEdge(id, origin, target, condition);
 			result.add(edge);
-
 		}
 
 		return result;
@@ -201,16 +199,14 @@ public class FlowchartSubTreeHandler extends D3webCompileScript<FlowchartType> {
 		ArrayList<Section<NodeType>> nodeSections = new ArrayList<Section<NodeType>>();
 		Section<XMLContent> flowcontent = AbstractXMLType.getContentChild(flowSection);
 		Sections.findSuccessorsOfType(flowcontent, NodeType.class, nodeSections);
-
 		for (Section<NodeType> nodeSection : nodeSections) {
 
 			NodeHandler handler = NodeHandlerManager.getInstance().findNodeHandler(compiler, kb,
 					nodeSection);
 
+			List<Message> msgs = new ArrayList<Message>();
 			if (handler == null) {
-				Messages.storeMessage(compiler, nodeSection, FlowchartSubTreeHandler.class,
-						Messages.error("No NodeHandler found for: "
-								+ nodeSection.getText()));
+				msgs.add(Messages.error("No NodeHandler found for: " + nodeSection.getText()));
 			}
 			else {// handler can in general handle NodeType
 				String id = AbstractXMLType.getAttributeMapFor(nodeSection).get("fcid");
@@ -223,9 +219,7 @@ public class FlowchartSubTreeHandler extends D3webCompileScript<FlowchartType> {
 							nodeSection, handler.get().getClass());
 					String text = getXMLContentText(nodeInfo);
 
-					Message msg = Messages.warning("Could not create node for: " + text);
-
-					Messages.storeMessage(compiler, nodeSection, FlowchartSubTreeHandler.class, msg);
+					msgs.add(Messages.error("Could not create node for: " + text));
 
 					node = new CommentNode(id, "Surrogate for node of type " + text);
 
@@ -233,6 +227,7 @@ public class FlowchartSubTreeHandler extends D3webCompileScript<FlowchartType> {
 
 				result.add(node);
 			}
+			Messages.storeMessages(compiler, nodeSection, FlowchartSubTreeHandler.class, msgs);
 
 		}
 

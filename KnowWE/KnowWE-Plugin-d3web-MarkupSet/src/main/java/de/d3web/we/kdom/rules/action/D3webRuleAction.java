@@ -70,12 +70,8 @@ public abstract class D3webRuleAction<T extends Type>
 
 		@Override
 		public void compile(D3webCompiler compiler, Section<T> section) {
-			if (section.hasErrorInSubtree()) {
-				return;
-			}
 			PSAction action = createAction(compiler, section);
 			storeAction(compiler, action, section);
-			// do not overwrite existing messages
 		}
 
 	}
