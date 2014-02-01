@@ -1069,8 +1069,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	// }
 
 	/**
-	 * Overrides type.
-	 * 
+	 * Overrides type. You can only set types that are singletons!
 	 * 
 	 * @created 03.03.2011
 	 * @deprecated we should get rid of this method, because it can cause

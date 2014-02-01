@@ -92,6 +92,11 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 
 	static class SetTypeHandler extends D3webCompileScript<AnonymousType> {
 
+		// we can only set singleton types as new types for section...
+		// we should get rid of these types all together
+		private static final QuestionReference questionRefType = new QuestionReference();
+		private static final QuestionnaireReference questionnaireRefType = new QuestionnaireReference();
+
 		@Override
 		public void compile(D3webCompiler compiler, Section<AnonymousType> s) throws CompilerMessage {
 			TerminologyManager terminologyHandler = compiler.getTerminologyManager();
@@ -103,12 +108,12 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 					Section<? extends Term> simpleDef = (Section<? extends Term>) termDefinitionSection;
 					Class<?> objectClazz = simpleDef.get().getTermObjectClass(simpleDef);
 					if (Question.class.isAssignableFrom(objectClazz)) {
-						s.setType(new QuestionReference());
+						s.setType(questionRefType);
 						Compilers.compile(compiler, s);
 						throw new CompilerMessage();
 					}
 					if (QContainer.class.isAssignableFrom(objectClazz)) {
-						s.setType(new QuestionnaireReference());
+						s.setType(questionnaireRefType);
 						Compilers.compile(compiler, s);
 						throw new CompilerMessage();
 					}

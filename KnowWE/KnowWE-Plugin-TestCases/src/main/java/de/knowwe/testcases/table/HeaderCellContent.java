@@ -80,7 +80,7 @@ public class HeaderCellContent extends TableCellContent {
 					return Messages.noMessage();
 				}
 				// otherwise it is a QuestionReference
-				s.setType(new HeaderQuestionReference());
+				s.setType(HeaderQuestionReference.getInstance());
 				Compilers.compile(compiler, s);
 
 				return Messages.noMessage();
@@ -91,6 +91,15 @@ public class HeaderCellContent extends TableCellContent {
 	}
 
 	private static class HeaderQuestionReference extends QuestionReference {
+
+		private static HeaderQuestionReference instance = null;
+
+		public static HeaderQuestionReference getInstance() {
+			if (instance == null) {
+				instance = new HeaderQuestionReference();
+			}
+			return instance;
+		}
 
 		private HeaderQuestionReference() {
 			setRenderer(new TableCellContentRenderer(false));

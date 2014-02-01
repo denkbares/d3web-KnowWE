@@ -24,6 +24,15 @@ import de.knowwe.kdom.table.TableUtils;
 
 public class CellTypeHandler extends D3webCompileScript<CellContent> {
 
+	// we can only set singleton types as new types for section...
+	// we should get rid of these types all together
+	private static final AnswerReferenceCell anserRefCellType = new AnswerReferenceCell();
+	private static final QuestionNumCell questionNumCellType = new QuestionNumCell();
+	private static final SolutionScoreCell solutionScoreCellType = new SolutionScoreCell();
+	private static final SolutionStateCell solutionStateCellType = new SolutionStateCell();
+	private static final QuestionReference questionRefType = new QuestionReference();
+	private static final SolutionReference solutionRefType = new SolutionReference();
+
 	@Override
 	public void compile(D3webCompiler compiler, Section<CellContent> section) throws CompilerMessage {
 
@@ -56,11 +65,11 @@ public class CellTypeHandler extends D3webCompileScript<CellContent> {
 				Question question = questionReference.get().getTermObject(compiler,
 						questionReference);
 				if (question instanceof QuestionChoice) {
-					content.setType(new AnswerReferenceCell());
+					content.setType(anserRefCellType);
 					Compilers.compile(compiler, content);
 				}
 				else if (question instanceof QuestionNum) {
-					content.setType(new QuestionNumCell());
+					content.setType(questionNumCellType);
 					Compilers.compile(compiler, content);
 				}
 				else {
@@ -73,11 +82,11 @@ public class CellTypeHandler extends D3webCompileScript<CellContent> {
 				int columns = TableUtils.getColumns(content);
 				int column = TableUtils.getColumn(content);
 				if (column == columns - 1) {
-					content.setType(new SolutionScoreCell());
+					content.setType(solutionScoreCellType);
 					Compilers.compile(compiler, content);
 				}
 				else {
-					content.setType(new SolutionStateCell());
+					content.setType(solutionStateCellType);
 					Compilers.compile(compiler, content);
 				}
 			}
@@ -100,12 +109,12 @@ public class CellTypeHandler extends D3webCompileScript<CellContent> {
 		}
 		for (Class<?> termClass : termClasses) {
 			if (Question.class.isAssignableFrom(termClass)) {
-				content.setType(new QuestionReference());
+				content.setType(questionRefType);
 				Compilers.compile(compiler, content);
 				throw CompilerMessage.info();
 			}
 			else if (Solution.class.isAssignableFrom(termClass)) {
-				content.setType(new SolutionReference());
+				content.setType(solutionRefType);
 				Compilers.compile(compiler, content);
 				throw CompilerMessage.info();
 			}

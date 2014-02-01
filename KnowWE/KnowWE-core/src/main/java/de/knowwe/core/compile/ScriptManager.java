@@ -42,6 +42,10 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 
 	private final Set<Type> subtreeTypesWithScripts = Collections.synchronizedSet(new HashSet<Type>());
 
+	private final Map<Class<? extends Type>, Set<Type>> typesOfSameClass = Collections.synchronizedMap(new HashMap<Class<? extends Type>, Set<Type>>());
+
+	private boolean initialized = false;
+
 	public ScriptManager(Class<C> compilerClass) {
 		this.compilerClass = compilerClass;
 		EventManager.getInstance().registerListener(this);
@@ -68,6 +72,28 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 		// add script to list
 		synchronized (list) {
 			list.add(priority, script);
+		}
+		if (initialized) {
+			addSubtreeTypesWithScripts(type);
+			handleNewTypesAfterInitialization(type);
+		}
+	}
+
+	private <T extends Type> void handleNewTypesAfterInitialization(T type) {
+		Set<Type> typesOfClass = typesOfSameClass.get(type.getClass());
+		if (typesOfClass == null) {
+			typesOfClass = new HashSet<Type>(4);
+			typesOfSameClass.put(type.getClass(), typesOfClass);
+		}
+		typesOfClass.add(type);
+		if (typesOfClass.size() > 1) {
+			// if we allow non-singleton types after initialization, we create a
+			// memory leak, because scripts and types are never removed
+			// maybe we should disallow changes to the ScriptManager and
+			// type tree all together after initialization?
+			throw new IllegalArgumentException(
+					"After initialization only scripts for singleton Types can be added " +
+							"to the ScriptManager. This is strong evidence of a faulty plugin.");
 		}
 	}
 
@@ -131,6 +157,7 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 			// we have to do this after type are initialized, because while
 			// scripts are added to the manager, not all parent-child-links may
 			// be established
+			initialized = true;
 			for (Type type : getTypes()) {
 				addSubtreeTypesWithScripts(type);
 			}
