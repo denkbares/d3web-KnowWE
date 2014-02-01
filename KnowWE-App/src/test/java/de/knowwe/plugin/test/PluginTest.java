@@ -17,14 +17,11 @@
  */
 package de.knowwe.plugin.test;
 
-import java.io.IOException;
-
+import junit.framework.Assert;
 import junit.framework.TestCase;
 import connector.DummyConnector;
 import de.d3web.plugin.test.InitPluginManager;
 import de.knowwe.core.Environment;
-import de.knowwe.core.kdom.RootType;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.plugin.Plugins;
 
 /**
@@ -36,22 +33,23 @@ public class PluginTest extends TestCase {
 
 	/**
 	 * Tries to load all extensions. Doesn't check anything, if a class is
-	 * missing, a ClassNotFoundException will be thrown
+	 * missing, an Exception will be thrown
 	 * 
-	 * @throws IOException
 	 */
-	public void testPlugins() throws IOException {
-		InitPluginManager.init();
-		Environment.initInstance(new DummyConnector());
-		Plugins.getInstantiations();
-		Plugins.getKnowWEAction();
-		Plugins.getPageAppendHandlers();
-		RootType root = RootType.getInstance();
-		Type[] path = new Type[] { root };
-		Plugins.addChildrenTypesToType(root, path);
-		Plugins.addRendererToType(root, path);
-		Plugins.addCompileScriptsToType(root, path);
-		Plugins.getTagHandlers();
+	public void testPlugins() {
+		try {
+			InitPluginManager.init();
+			Environment.initInstance(new DummyConnector());
+			Plugins.getKnowWEAction();
+			Plugins.getPageAppendHandlers();
+			// the other methods in Plugin are already called in
+			// Environment.initInstance()
+			// check again if you added new methods to Plugin
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
 	}
 
 }
