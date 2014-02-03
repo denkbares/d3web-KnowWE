@@ -20,13 +20,6 @@
 
 package de.knowwe.core.compile.packaging;
 
-import de.d3web.utils.Pair;
-import de.knowwe.core.compile.Compiler;
-import de.knowwe.core.event.EventManager;
-import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.Messages;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,6 +28,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
+import de.d3web.utils.Pair;
+import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.event.EventManager;
+import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.Messages;
 
 public class PackageManager {// implements EventListener {
 
@@ -124,8 +124,8 @@ public class PackageManager {// implements EventListener {
 
 	/**
 	 * Adds the given Section to the package with the given name.
-	 *
-	 * @param section     is the Section to add
+	 * 
+	 * @param section is the Section to add
 	 * @param packageName is the name of the package the Section is added to
 	 * @created 28.12.2010
 	 */
@@ -171,10 +171,10 @@ public class PackageManager {// implements EventListener {
 
 	/**
 	 * Removes the given Section from the package with the given name.
-	 *
-	 * @param section     is the Section to remove
+	 * 
+	 * @param section is the Section to remove
 	 * @param packageName is the name of the package from which the section is
-	 *                    removed
+	 *        removed
 	 * @return whether the Section was removed
 	 * @created 28.12.2010
 	 */
@@ -197,7 +197,7 @@ public class PackageManager {// implements EventListener {
 
 	/**
 	 * Removes the given Section from all packages it was added to.
-	 *
+	 * 
 	 * @param s is the Section to remove
 	 * @created 28.12.2010
 	 */
@@ -210,7 +210,7 @@ public class PackageManager {// implements EventListener {
 	/**
 	 * Returns an unmodifiable view on the sections of the given packages at the
 	 * time of calling this method.
-	 *
+	 * 
 	 * @param packageNames the package names to get the sections for
 	 * @return the sections of the given packages
 	 * @created 15.12.2013
@@ -236,7 +236,7 @@ public class PackageManager {// implements EventListener {
 	/**
 	 * Returns all sections added to the given packages since the changes were
 	 * last cleared with {@link #clearChangedPackages()}
-	 *
+	 * 
 	 * @param packageNames the package to return the added sections for
 	 * @return the sections last added to the given packages
 	 * @created 15.12.2013
@@ -255,7 +255,7 @@ public class PackageManager {// implements EventListener {
 	/**
 	 * Returns all sections removed from the given packages since the changes
 	 * were last cleared with {@link #clearChangedPackages()}
-	 *
+	 * 
 	 * @param packageNames the package to return the removed sections for
 	 * @return the sections last removed to the given packages
 	 * @created 15.12.2013
@@ -297,6 +297,7 @@ public class PackageManager {// implements EventListener {
 			String[] packagesToCompile = section.get().getPackagesToCompile(section);
 			for (String packageToCompile : packagesToCompile) {
 				HashSet<Section<? extends PackageCompileType>> compilingSections = packageToCompilingSections.get(packageToCompile);
+				compilingSections.remove(section);
 				if (compilingSections.isEmpty()) {
 					packageToCompilingSections.remove(packageToCompile);
 				}
@@ -321,7 +322,7 @@ public class PackageManager {// implements EventListener {
 	/**
 	 * Returns all the Sections of type {@link PackageCompileType}, that have a
 	 * package the given Section is part of.
-	 *
+	 * 
 	 * @param section the Section we want the compile Sections for
 	 * @return a Set of Sections compiling the given Section
 	 * @created 28.12.2010
@@ -337,17 +338,17 @@ public class PackageManager {// implements EventListener {
 	/**
 	 * Returns the a Set of all titles of articles that compile the package with
 	 * the given name.
-	 *
+	 * 
 	 * @param packageName is the name of the package
 	 * @return a Set of titles of articles compiling the package with the given
-	 * name.
+	 *         name.
 	 * @created 28.08.2010
 	 */
 	public Set<Section<? extends PackageCompileType>> getCompileSections(String packageName) {
 		HashSet<Section<? extends PackageCompileType>> compilingSections =
 				packageToCompilingSections.get(packageName);
 		return compilingSections == null
-				? Collections.<Section<? extends PackageCompileType>>emptySet()
+				? Collections.<Section<? extends PackageCompileType>> emptySet()
 				: Collections.unmodifiableSet(compilingSections);
 	}
 

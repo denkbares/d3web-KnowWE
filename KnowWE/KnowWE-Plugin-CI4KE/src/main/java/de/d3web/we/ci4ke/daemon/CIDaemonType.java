@@ -23,7 +23,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
- * The CI-Daemon can be connected to a dashbaord and renders the colored bubble
+ * The CI-Daemon can be connected to a dashboard and renders the colored bubble
  * according to the current dashboard build state. It can be inserted at a
  * highly visible location (e.g., left menu) to constantly display the quality
  * state of a dashboard.

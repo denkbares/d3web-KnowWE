@@ -382,7 +382,14 @@ public class TestCasePlayerRenderer implements Renderer {
 	private void appendValueCell(SessionDebugStatus status, TerminologyObject object, Date date, TableModel tableModel, int row, int column) {
 		Value value = status.getValue(object, date);
 		if (value != null) {
-			tableModel.addCell(row, column, value.toString(), value.toString().length());
+			String valueString = value.toString();
+			if (value.getValue() instanceof Date) {
+				Date dateValue = (Date) value.getValue();
+				if (dateValue.getTime() < TestCaseUtils.YEAR) {
+					valueString = TestCaseUtils.getTimeVerbalization(dateValue.getTime());
+				}
+			}
+			tableModel.addCell(row, column, valueString, valueString.length());
 		}
 	}
 
