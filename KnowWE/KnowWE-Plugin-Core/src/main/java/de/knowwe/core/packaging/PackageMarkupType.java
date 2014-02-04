@@ -30,7 +30,8 @@ public class PackageMarkupType extends DefaultMarkupType {
 
 	public PackageMarkupType() {
 		super(MARKUP);
-		addCompileScript(Priority.HIGH, new SetDefaultPackageHandler());
+		addCompileScript(Priority.HIGHEST, new SetDefaultPackageHandler());
+		addCompileScript(Priority.LOWEST, new RemoveDefaultPackageHandler());
 		addCompileScript(Priority.HIGH, new PackageTermDefinitionRegistrationHandler());
 		removeCompileScript(PackageRegistrationCompiler.class,
 				DefaultMarkupPackageTermReferenceRegistrationHandler.class);
@@ -87,6 +88,19 @@ public class PackageMarkupType extends DefaultMarkupType {
 				KnowWEUtils.getPackageManager(section).addDefaultPackage(
 						section.getArticle(), defaultPackage);
 			}
+		}
+
+		@Override
+		public void destroy(PackageRegistrationCompiler compiler, Section<PackageMarkupType> section) {
+
+		}
+	}
+
+	private static class RemoveDefaultPackageHandler extends PackageRegistrationScript<PackageMarkupType> {
+
+		@Override
+		public void compile(PackageRegistrationCompiler compiler, Section<PackageMarkupType> section) {
+
 		}
 
 		@Override
