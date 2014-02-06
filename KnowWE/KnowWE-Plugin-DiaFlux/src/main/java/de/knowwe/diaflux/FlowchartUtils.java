@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
@@ -49,6 +50,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.diaflux.kbinfo.JSPHelper;
 import de.knowwe.diaflux.type.DiaFluxType;
 import de.knowwe.diaflux.type.FlowchartType;
+import de.knowwe.kdom.xml.AbstractXMLType;
 
 /**
  * 
@@ -122,11 +124,15 @@ public class FlowchartUtils {
 		if (user.getWeb() == null) return "";
 
 		parentId = escapeHtmlId(parentId);
-		RenderResult result = prepareFlowchartRenderer(user, parentId, section.getID(), scope,
-				insertRessources);
-		result.appendHtml("<script>");
-		result.appendHtml("if ($('" + parentId + "').getElements('.FlowchartGroup').length == 0) ");
-		result.appendHtml("Flowchart.loadFlowchart('" + section.getID() + "', '" + parentId + "');");
+		RenderResult result = new RenderResult(user);
+		result.appendHtmlElement("span", "", "class",
+				"asynchronRenderer", "id", section.getID(), "style");
+		result.append(prepareFlowchartRenderer(user, parentId, section, scope,
+				insertRessources));
+		result.appendHtml("<script>\n");
+		result.appendHtml("if ($('" + parentId + "').getElements('.FlowchartGroup').length == 0)\n");
+		result.appendHtml("Flowchart.loadFlowchart('" + section.getID() + "', '" + parentId
+				+ "');\n");
 		result.appendHtml("</script>");
 
 		return result.toStringRaw();
@@ -138,12 +144,15 @@ public class FlowchartUtils {
 	 * @created 20.03.2013
 	 * @return
 	 */
-	public static RenderResult prepareFlowchartRenderer(UserContext user, String parentId, String flowchartSectionID, String scope, boolean insertRessources) {
+	public static RenderResult prepareFlowchartRenderer(UserContext user, String parentId, Section<FlowchartType> flowchartSection, String scope, boolean insertRessources) {
 		RenderResult result = new RenderResult(user);
-		result.appendHtml("<div class='flowchartContainer'>");
-
+		Map<String, String> attributeMap = AbstractXMLType.getAttributeMapFor(flowchartSection);
+		String height = attributeMap.get("height");
+		String heightAttribute = height == null ? "" : " style='position: relative; min-height: "
+				+ height + "px'";
+		result.appendHtml("<div class='flowchartContainer'" + heightAttribute + ">");
 		if (insertRessources) {
-			insertDiafluxRessources(result, user, flowchartSectionID);
+			insertDiafluxRessources(result, user, flowchartSection.getID());
 			addDisplayPlugins(result, user, scope);
 			result.append("\n");
 		}

@@ -34,6 +34,15 @@ Flowchart.parseXML = function(text) {
 
 Flowchart.loadFlowchart = function(kdomid, parent){
 	
+	var loader = jq$('#' + kdomid);
+	var headerMenu = loader.parents('.type_DiaFlux').find('.markupHeaderFrame');
+	
+	var showMenu = function() {
+		var parent = headerMenu.parent();
+		parent.parent().append(headerMenu);
+		parent.remove();
+	}
+	
 	var params = {
 		action : 'LoadFlowchartAction',
 		SectionID : kdomid
@@ -50,11 +59,15 @@ Flowchart.loadFlowchart = function(kdomid, parent){
 				if (!xml || xml.getElementsByTagName("flowchart").length == 0) {
 					xml = Flowchart.parseXML(this.responseText);
 				}
+				loader.remove();
 				Flowchart.update(parent, kdomid, xml);
+				showMenu();
 			},
 			onError : function() {
 				//TODO handle error
 				KNOWWE.core.util.updateProcessingState(-1);
+				loader.remove();
+				showMenu();
 			}
 		}
 	};
