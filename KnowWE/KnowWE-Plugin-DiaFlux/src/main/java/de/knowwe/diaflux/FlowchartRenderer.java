@@ -42,9 +42,18 @@ public class FlowchartRenderer implements Renderer {
 		// render anchor to be able to link to that flowchart
 		String anchorName = KnowWEUtils.getAnchor(sec);
 		string.appendHtml("<a name='" + anchorName + "'></a>");
+		
+		String loaderId = "loader" + section.getID();
+		string.appendHtmlElement("span", "", "class",
+				"asynchronRenderer", "id", loaderId, "style");
+
+		String script = "var fn = function() {\n"
+				+ "jq$('#" + loaderId + "').remove();\n"
+				+ "}\n"
+				+ "KNOWWE.helper.observer.subscribe('beforeflowchartrendered', fn);";
+		string.appendHtmlElement("script", script);
 
 		string.append(FlowchartUtils.createFlowchartRenderer(sec, user));
-
 	}
 
 }

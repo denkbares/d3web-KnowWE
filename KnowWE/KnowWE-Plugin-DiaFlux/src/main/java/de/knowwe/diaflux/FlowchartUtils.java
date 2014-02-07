@@ -122,13 +122,10 @@ public class FlowchartUtils {
 	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String parentId, String scope, boolean insertRessources) {
 
 		if (user.getWeb() == null) return "";
-
 		parentId = escapeHtmlId(parentId);
-		RenderResult result = new RenderResult(user);
-		result.appendHtmlElement("span", "", "class",
-				"asynchronRenderer", "id", section.getID(), "style");
-		result.append(prepareFlowchartRenderer(user, parentId, section, scope,
-				insertRessources));
+
+		RenderResult result = prepareFlowchartRenderer(user, parentId, section, scope,
+				insertRessources);
 		result.appendHtml("<script>\n");
 		result.appendHtml("if ($('" + parentId + "').getElements('.FlowchartGroup').length == 0)\n");
 		result.appendHtml("Flowchart.loadFlowchart('" + section.getID() + "', '" + parentId

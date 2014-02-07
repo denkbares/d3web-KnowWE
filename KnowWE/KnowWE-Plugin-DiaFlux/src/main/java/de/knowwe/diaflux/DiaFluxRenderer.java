@@ -28,10 +28,19 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer {
 			RenderResult temp) {
 
 		// we want to hide the header during loading to reduce the flicker
-		// this surrounding div gets removed in flowchart.js while loading the flowchart
-		temp.appendHtmlTag("div", "style", "display: none");
+		String hiderId = "menuHider" + sectionID;
+
+		temp.appendHtmlTag("div", "id", hiderId, "style", "display: none");
 		super.appendHeader(title, sectionID, tools, user, temp);
 		temp.appendHtmlTag("/div");
+
+		String script = "var fn = function() {\n"
+				+ "var hider =  jq$('#" + hiderId + "');\n"
+				+ "hider.parent().append(hider.children());\n"
+				+ "hider.remove();\n"
+				+ "}\n"
+				+ "KNOWWE.helper.observer.subscribe('beforeflowchartrendered', fn);";
+		temp.appendHtmlElement("script", script);
 
 	}
 
