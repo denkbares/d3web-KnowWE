@@ -587,40 +587,6 @@ public class Sections {
 	}
 
 	/**
-	 * Finds all successors of type <tt>class1</tt> in the KDOM at the end of
-	 * the given path of ancestors. If your <tt>path</tt> starts with the Type
-	 * of this Section, set <tt>index</tt> to <tt>0</tt>. Else set the
-	 * <tt>index</tt> to the index of the ObjectType of this Section in the
-	 * path. </p> Stores found successors in a List of Sections
-	 */
-	public static <T extends Type> List<Section<T>> findSuccessorsWithTypePath(Section<?> s,
-			List<Class<? extends Type>> path,
-			int index) {
-		List<Section<T>> found = new LinkedList<Section<T>>();
-		findSuccessorsWithTypePath(s, path, index, found);
-		return found;
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <T extends Type> void findSuccessorsWithTypePath(Section<? extends Type> s,
-			List<Class<? extends Type>> path,
-			int index,
-			List<Section<T>> found) {
-
-		if (index < path.size() - 1
-				&& path.get(index).isAssignableFrom(s.get().getClass())) {
-			for (Section<? extends Type> child : s.getChildren()) {
-				Sections.findSuccessorsWithTypePath(child, path, index + 1, found);
-			}
-		}
-		else if (index == path.size() - 1
-				&& path.get(index).isAssignableFrom(s.get().getClass())) {
-			found.add((Section<T>) s);
-		}
-
-	}
-
-	/**
 	 * @return a List of ObjectTypes beginning at the KnowWWEArticle and ending
 	 *         at the argument Section. Returns <tt>null</tt> if no path is
 	 *         found.

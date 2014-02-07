@@ -373,13 +373,8 @@ public class DefaultMarkupType extends AbstractType implements RenamableTerm {
 		return results;
 	}
 
-	private static <T extends Type> List<Section<T>> findAnnotationContentTypes(Section<? extends Type> section) {
-		List<Class<? extends Type>> path = new ArrayList<Class<? extends Type>>(3);
-		path.add(section.get().getClass());
-		path.add(AnnotationType.class);
-		path.add(AnnotationContentType.class);
-		List<Section<T>> children = Sections.findSuccessorsWithTypePath(section, path, 0);
-		return children;
+	private static List<Section<AnnotationContentType>> findAnnotationContentTypes(Section<? extends Type> section) {
+		return Sections.findSuccessorsOfType(section, AnnotationContentType.class);
 	}
 
 	/**
