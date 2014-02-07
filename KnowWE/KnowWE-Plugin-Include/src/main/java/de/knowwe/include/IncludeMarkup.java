@@ -19,36 +19,24 @@ package de.knowwe.include;
  * site: http://www.fsf.org.
  */
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 import de.d3web.strings.Strings;
-import de.knowwe.core.Environment;
-import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.kdom.rendering.Renderer;
-import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Message.Type;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.jspwiki.JSPWikiMarkupUtils;
-import de.knowwe.jspwiki.types.HeaderType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.tools.DefaultTool;
-import de.knowwe.tools.DefaultToolSet;
-import de.knowwe.tools.ToolSet;
 
 /**
+ * Markup to include several referenced articles or header sections (and their
+ * contents) into the wiki page.
  * 
- * @author Benedikt Kaemmerer
+ * @author Benedikt Kaemmerer, Volker Belli
  * @created 06.07.2012
  */
 
@@ -60,10 +48,13 @@ public class IncludeMarkup extends DefaultMarkupType {
 
 	public static final String ANNOTATION_ZOOM = "zoom";
 	public static final String ANNOTATION_FRAME = "frame";
+	public static final String ANNOTATION_DEFINITION = "definition";
 
 	static {
 		m = new DefaultMarkup(MARKUP_NAME);
-		m.addAnnotation(ANNOTATION_FRAME, false, "true", "false");
+		m.addContentType(new InterWikiReference());
+		m.addAnnotation(ANNOTATION_DEFINITION, false, "hide", "show");
+		m.addAnnotation(ANNOTATION_FRAME, false, "hide", "show");
 		m.addAnnotation(ANNOTATION_ZOOM, false);
 	}
 
@@ -72,187 +63,100 @@ public class IncludeMarkup extends DefaultMarkupType {
 		this.setRenderer(new IncludeRenderer());
 	}
 
-	static class IncludeRenderer implements Renderer {
+	private static class IncludeRenderer extends DefaultMarkupRenderer {
 
 		@Override
-		public void render(Section<?> section, UserContext user,
-				RenderResult string) {
+		public void render(Section<?> includeMarkup, UserContext user, RenderResult result) {
 
-			String target = "";
-			String targetKey = "";
-			String frame = "";
-			String zoom = "";
-			String subSectionKey = "";
-
-			target = Strings.trim(DefaultMarkupType.getContent(section));
-			String[] targetArray = target.split("#");
-			targetKey = targetArray[0];
-			if (targetArray.length > 1) {
-				subSectionKey = targetArray[1];
+			// check for errors in links and/or annotations
+			Section<IncludeMarkup> section = Sections.cast(includeMarkup, IncludeMarkup.class);
+			List<Section<InterWikiReference>> references =
+					Sections.successors(section, InterWikiReference.class);
+			for (Section<InterWikiReference> ref : references) {
+				ref.get().updateReferences(ref);
 			}
 
-			frame = DefaultMarkupType.getAnnotation(section,
-					ANNOTATION_FRAME);
+			// parse parameters
+			String frame = DefaultMarkupType.getAnnotation(section, ANNOTATION_FRAME);
+			boolean isFramed = Strings.equalsIgnoreCase(frame, "show")
+					// TODO: deprecated, remove 'true' here after 2014
+					|| Strings.equalsIgnoreCase(frame, "true");
 
-			zoom = DefaultMarkupType.getAnnotation(section,
-					ANNOTATION_ZOOM);
+			int zoom = 100;
+			Section<?> zoomSection =
+					DefaultMarkupType.getAnnotationContentSection(section, ANNOTATION_ZOOM);
+			if (zoomSection != null) {
+				try {
+					zoom = getZoomPercent(section);
+					Messages.clearMessages(null, zoomSection, getClass());
 
-			if (zoom != null) {
-				zoom = zoom.replaceAll("%", "").trim();
-			}
-
-			Article article = Environment.getInstance()
-					.getArticleManager(Environment.DEFAULT_WEB)
-					.getArticle(targetKey);
-
-			// warning if article not found
-			if (article == null) {
-				renderWarning(user, section, string, "Article '" + targetKey + "' not found!");
-			}
-			else {
-				// render article
-				Section<?> renderarticle = article.getRootSection();
-
-				if (targetArray.length > 1) {
-					List<Section<HeaderType>> secList = new ArrayList<Section<HeaderType>>();
-					Sections.findSuccessorsOfType(
-							article.getRootSection(), HeaderType.class, 2, secList);
-					Iterator<?> listIterator = secList.iterator();
-					while (listIterator.hasNext()) {
-						Section<?> listElement = (Section<?>) listIterator.next();
-						String text = listElement.getText();
-						while (text.startsWith("!")) {
-							text = text.substring(1);
-						}
-						text = text.trim();
-						if (text.startsWith(subSectionKey)) {
-							// renderarticle for single section
-							renderarticle = listElement;
-						}
-					}
-					// warning if section not found
-					if (renderarticle.equals(article.getRootSection())) {
-						renderWarning(user, section, string, "Section '" + subSectionKey
-								+ "' not found!");
-					}
-					else {
-						if (frame != null && frame.equals("true")) {
-							// render section, with frame
-							renderFrame(article, user, section, renderarticle, string, true,
-									targetKey, zoom, subSectionKey);
-						}
-						else {
-							// render section, no frame
-							renderNoFrame(user, renderarticle, string, zoom);
-						}
-					}
 				}
-				else {
-					if (frame != null && frame.equals("false")) {
-						// render whole article, no frame
-						renderNoFrame(user, renderarticle, string, zoom);
-					}
-					else {
-						// render whole article, with frame
-						renderFrame(article, user, section, renderarticle, string, false,
-								targetKey, zoom, subSectionKey);
-					}
+				catch (NumberFormatException e) {
+					Messages.storeMessage(
+							null, zoomSection, getClass(),
+							Messages.error("Zoom value of '" + zoom
+									+ "' is not a valid number or percentage"));
+				}
+			}
+
+			Section<?> showDefSection =
+					DefaultMarkupType.getAnnotationContentSection(section, ANNOTATION_DEFINITION);
+			String showDef = DefaultMarkupType.getAnnotation(section, ANNOTATION_DEFINITION);
+			boolean hasMessage = Messages.hasMessagesInSubtree(section, Type.ERROR, Type.WARNING);
+			// show warning if an error message
+			// forces a hidden definition to be shown
+			if (hasMessage && Strings.equalsIgnoreCase(showDef, "hide")) {
+				Messages.storeMessage(
+						null, showDefSection, getClass(),
+						Messages.warning("Annotation ignored due to error messages before"));
+			}
+			else if (showDefSection != null) {
+				Messages.clearMessages(null, showDefSection, getClass());
+			}
+
+			// render default markup if requested or if there are errors
+			if (hasMessage || Strings.equalsIgnoreCase(showDef, "show")) {
+				super.render(section, user, result);
+			}
+
+			// render included sections
+			for (Section<InterWikiReference> include : references) {
+				// find section and render it
+				Section<?> referencedSection = include.get().getReferencedSection(include);
+				if (referencedSection != null) {
+					renderIncludedSections(user, referencedSection, result, zoom, isFramed);
 				}
 			}
 		}
 
-		public void renderFrame(Article article, UserContext user, Section<?> section, Section<?> renderarticle, RenderResult string, Boolean rendersec, String targetKey, String zoom, String subSectionKey) {
+		private int getZoomPercent(Section<IncludeMarkup> section) throws NumberFormatException {
+			String zoom = DefaultMarkupType.getAnnotation(section, ANNOTATION_ZOOM);
+			if (Strings.isBlank(zoom)) return 100;
 
-			String link;
-			if (rendersec) {
-				// link for section
-				link = KnowWEUtils.getURLLink(article) + "#section-"
-						+ article.getTitle().replaceAll("\\s", "+")
-						+ "-" + subSectionKey.replaceAll("\\s", "");
+			// parse value
+			double factor = Double.parseDouble(zoom.replaceAll("%", "").trim());
+			// if value indicates a factor instead of percentage (< 5)
+			// and the percentage is not explicitly specified, correct
+			if (factor < 5d && !zoom.contains("%")) factor *= 100;
+			return (int) Math.round(factor);
+		}
+
+		public void renderIncludedSections(UserContext user, Section<?> targetSection, RenderResult result, int zoom, boolean framed) {
+			if (zoom != 100) {
+				result.appendHtml("<div style='zoom:" + zoom + "%; clear:both'>");
+			}
+			result.append("\n");
+			if (framed) {
+				// used the framing renderer
+				new FramedIncludedSectionRenderer().render(targetSection, user, result);
 			}
 			else {
-				// link for article
-				link = KnowWEUtils.getURLLink(article);
+				// or simply render the sections belonging to the header
+				FramedIncludedSectionRenderer.renderTargetSections(targetSection, user, result);
 			}
-
-			ToolSet tools = new DefaultToolSet(
-					new DefaultTool(null, "Open Page", "Opens page '" + article.getTitle()
-							+ "'", "window.location ='" + link + "'"));
-
-			RenderResult builder = new RenderResult(user);
-			String zoomStyle = "";
-			if (zoom != null) {
-				zoomStyle = "zoom: " + zoom + "%";
+			if (zoom != 100) {
+				result.appendHtml("</div>");
 			}
-			builder.appendHtml("<div style=\"white-space:normal;" + zoomStyle + "\">");
-			builder.append("\n");
-			renderTarget(user, renderarticle, builder);
-			builder.appendHtml("</div>");
-			new IncludeDefaultMarkupRenderer().renderDefaultMarkupStyled("Include",
-					builder.toStringRaw(),
-					section.getID(), "", tools, user,
-					string);
-
-		}
-
-		public void renderNoFrame(UserContext user, Section<?> renderarticle, RenderResult string, String zoom) {
-			if (zoom != null) {
-				string.appendHtml("<div style=\"zoom: " + zoom + "%\">");
-			}
-			string.append("\n");
-			renderTarget(user, renderarticle, string);
-			if (zoom != null) {
-				string.appendHtml("</div>");
-			}
-		}
-
-		/**
-		 * 
-		 * @created 22.11.2012
-		 * @param user
-		 * @param renderarticle
-		 * @param string
-		 */
-		private void renderTarget(UserContext user, Section<?> renderarticle, RenderResult string) {
-			if (renderarticle.get() instanceof HeaderType) {
-
-				// render header
-				DelegateRenderer.getInstance().render(renderarticle,
-						user, string);
-
-				// render content of the sub-chapter
-				List<Section<? extends Type>> content = JSPWikiMarkupUtils.getContent(Sections.cast(
-						renderarticle,
-						HeaderType.class));
-				for (Section<? extends Type> section : content) {
-					Renderer r = section.get().getRenderer();
-					if (r != null) {
-						r.render(section, user, string);
-					}
-					else {
-						DelegateRenderer.getInstance().render(section,
-								user, string);
-					}
-				}
-			}
-			else {
-				DelegateRenderer.getInstance().render(renderarticle,
-						user, string);
-			}
-		}
-
-		public void renderWarning(UserContext user, Section<?> section, RenderResult string, String warning) {
-			RenderResult builder = new RenderResult(string);
-			Message noSuchSection = new Message(Message.Type.WARNING,
-					warning);
-			Collection<Message> messages = new HashSet<Message>();
-			messages.add(noSuchSection);
-			DefaultMarkupRenderer.renderMessagesOfType(Message.Type.WARNING, messages,
-					builder);
-			new IncludeDefaultMarkupRenderer().renderDefaultMarkupStyled("include",
-					builder.toStringRaw(),
-					section.getID(), "", new DefaultToolSet(), user,
-					string);
 		}
 	}
 }

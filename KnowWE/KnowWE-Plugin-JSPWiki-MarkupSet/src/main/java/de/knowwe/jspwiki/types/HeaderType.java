@@ -65,6 +65,14 @@ public class HeaderType extends AbstractType {
 		return marker;
 	}
 
+	public String getHeaderText(Section<HeaderType> section) {
+		String text = section.getText().trim();
+		while (text.startsWith("!")) {
+			text = text.substring(1);
+		}
+		return text.trim();
+	}
+
 	class SectionBlockFinder implements SectionFinder {
 
 		String marker;

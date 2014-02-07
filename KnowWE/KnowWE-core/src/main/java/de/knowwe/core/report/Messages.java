@@ -20,18 +20,6 @@
 
 package de.knowwe.core.report;
 
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
-import de.knowwe.core.Environment;
-import de.knowwe.core.compile.CompileScript;
-import de.knowwe.core.compile.Compiler;
-import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,6 +33,18 @@ import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.TreeSet;
 
+import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
+import de.knowwe.core.Environment;
+import de.knowwe.core.compile.CompileScript;
+import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
+
 public final class Messages {
 
 	private static final String MESSAGE_KEY = "message_map_key";
@@ -52,7 +52,7 @@ public final class Messages {
 	/**
 	 * Wraps a single or more {@link Message}s into a Collection to be returned
 	 * by the {@link CompileScript} implementations. {@link Message}
-	 *
+	 * 
 	 * @created 16.08.2010
 	 * @param messages the {@link Message}(s) to be wrapped
 	 * @return the wrapped {@link Message}(s)
@@ -178,6 +178,46 @@ public final class Messages {
 	}
 
 	/**
+	 * Checks if there are any messages of the specified type or the specified
+	 * types sub-tree, for any compiler and/or independent of any compiler.
+	 * 
+	 * @created 06.02.2014
+	 * @param section the root section of the sub-tree to be checked
+	 * @param types the error messages considered
+	 * @return if there are any such messages
+	 */
+	public static boolean hasMessagesInSubtree(Section<? extends Type> section, Message.Type... types) {
+		List<Section<?>> subtreeSections = Sections.getSubtreePreOrder(section);
+		List<Compiler> compilers = new LinkedList<Compiler>();
+		compilers.add(null);
+		compilers.addAll(section.getArticleManager().getCompilerManager().getCompilers());
+		for (Section<?> subtreeSection : subtreeSections) {
+			for (Compiler compiler : compilers) {
+				if (!getMessages(compiler, subtreeSection, types).isEmpty()) return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Checks if there are any messages of the specified type, for any compiler
+	 * and/or independent of any compiler.
+	 * 
+	 * @created 06.02.2014
+	 * @param section the root section of the subtree to be checked
+	 * @param types the error messages considered
+	 * @return if there are any such messages
+	 */
+	public static boolean hasMessages(Section<? extends Type> section, Message.Type... types) {
+		if (!getMessages(null, section, types).isEmpty()) return true;
+		List<Compiler> compilers = section.getArticleManager().getCompilerManager().getCompilers();
+		for (Compiler compiler : compilers) {
+			if (!getMessages(compiler, section, types).isEmpty()) return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Returns an unmodifiable Collection containing all {@link Message}s of the
 	 * given {@link de.knowwe.core.report.Message.Type}s stored for this article
 	 * and Section.
@@ -294,7 +334,7 @@ public final class Messages {
 	 * Returns an unmodifiable Collection containing all {@link Message}s of the
 	 * given {@link de.knowwe.core.report.Message.Type}s of the KDOM subtree
 	 * with the given Section as root.
-	 *
+	 * 
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
 	 * @param section is the root of the KDOM subtree you want the messages from
 	 * @param types is the {@link de.knowwe.core.report.Message.Type} of
@@ -321,8 +361,7 @@ public final class Messages {
 	 * @param types is the {@link de.knowwe.core.report.Message.Type} of
 	 *        {@link Message} you want (set to <tt>null</tt> if you want all)
 	 */
-	public static Collection<Message> getMessagesFromSubtree(Section<?> section,
-			Message.Type... types) {
+	public static Collection<Message> getMessagesFromSubtree(Section<?> section, Message.Type... types) {
 
 		Collection<Message> msgsList = new ArrayList<Message>();
 		List<Section<?>> subtreeSections = Sections.getSubtreePreOrder(section);
@@ -492,7 +531,7 @@ public final class Messages {
 	 * only be used once for the given set of parameters. If you use this method
 	 * a second time with the same parameters, the first Message gets
 	 * overwritten!</b>
-	 *
+	 * 
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
 	 * @param section is the {@link Section} the {@link Message}s are stored for
 	 * @param source is the Class the message originate from
@@ -534,9 +573,10 @@ public final class Messages {
 	 * <b>ATTENTION: This method can only be used once for each article,
 	 * section, and source. If you use this Method a second time with the same
 	 * parameters, the first Collection gets overwritten!</b>
-	 *
+	 * 
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
-	 * @param section is the is the {@link Section} the {@link Message}s are stored for
+	 * @param section is the is the {@link Section} the {@link Message}s are
+	 *        stored for
 	 * @param source is the Class the messages originate from
 	 * @param msgs is the Collection of messages you want so store
 	 */
@@ -630,5 +670,4 @@ public final class Messages {
 		return getMessageBundle(Environment.getInstance().getWikiConnector().getLocale(
 				user.getRequest()));
 	}
-
 }

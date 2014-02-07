@@ -353,6 +353,26 @@ public class Sections {
 	}
 
 	/**
+	 * This method returns all the successors of the specified article matching
+	 * the specified class as their type. The class matches if the type object
+	 * of a section if an instance of the specified class or an instance of any
+	 * sub-class of the specified class or interface.
+	 * <p>
+	 * <b>Note:</b><br>
+	 * This is the modern version of the method
+	 * {@link #findSuccessorsOfType(Section, Class)} which is only kept for
+	 * compatibility reasons.
+	 * 
+	 * @created 09.12.2013
+	 * @param article the article to get the successor sections for
+	 * @param clazz the class of the successors to be matched
+	 * @return the list of all successor sections of the specified class
+	 */
+	public static <OT extends Type> List<Section<OT>> successors(Article article, Class<OT> clazz) {
+		return successors(article.getRootSection(), clazz);
+	}
+
+	/**
 	 * This method returns all the successors of the specified section matching
 	 * the specified class as their type. The class matches if the type object
 	 * of a section if an instance of the specified class or an instance of any
@@ -392,6 +412,27 @@ public class Sections {
 	 */
 	public static <OT extends Type> Section<OT> ancestor(Section<?> section, Class<OT> clazz) {
 		return findAncestorOfType(section, clazz);
+	}
+
+	/**
+	 * This method returns the first successor in depth-first-search of the
+	 * specified article matching the specified class as its type. The class
+	 * matches if the type object of a section if an instance of the specified
+	 * class or an instance of any sub-class of the specified class or
+	 * interface.
+	 * <p>
+	 * <b>Note:</b><br>
+	 * This is the modern version of the method
+	 * {@link #findSuccessor(Section, Class)} which is only kept for
+	 * compatibility reasons.
+	 * 
+	 * @created 09.12.2013
+	 * @param article the article to get the successor sections for
+	 * @param clazz the class of the successors to be matched
+	 * @return the first successor sections of the specified class
+	 */
+	public static <OT extends Type> Section<OT> successor(Article article, Class<OT> clazz) {
+		return findSuccessor(article.getRootSection(), clazz);
 	}
 
 	/**

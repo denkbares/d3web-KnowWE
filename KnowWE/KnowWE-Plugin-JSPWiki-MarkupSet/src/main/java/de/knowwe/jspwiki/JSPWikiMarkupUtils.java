@@ -55,7 +55,10 @@ public class JSPWikiMarkupUtils {
 	}
 
 	/**
-	 * Returns Content for given SectionHeader.
+	 * Returns the content sections that are below the specified SectionHeader.
+	 * These are all sections that a human naturally associated to be part of
+	 * the chapter that is spanned by the header title. This also includes any
+	 * sub-headers (and their content sections) of the specified header section.
 	 */
 	public static List<Section<? extends Type>> getContent(
 			Section<HeaderType> sh) {

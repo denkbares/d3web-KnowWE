@@ -76,7 +76,7 @@ public class DefaultMarkupRenderer implements Renderer {
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult buffer) {
 		String id = section.getID();
-		ToolSet tools = ToolUtils.getTools(section, user);
+		ToolSet tools = getTools(section, user);
 
 		// add an anchor to enable direct link to the section
 		RenderResult markupTitle = new RenderResult(buffer);
@@ -100,6 +100,10 @@ public class DefaultMarkupRenderer implements Renderer {
 				id, cssClassName, tools, user, buffer);
 	}
 
+	protected ToolSet getTools(Section<?> section, UserContext user) {
+		return ToolUtils.getTools(section, user);
+	}
+
 	protected void renderProgress(Section<?> section, UserContext user, RenderResult result) {
 		ProgressRenderer.getInstance().render(section, user, result);
 	}
@@ -107,7 +111,14 @@ public class DefaultMarkupRenderer implements Renderer {
 	protected void renderTitle(Section<?> section, UserContext user, RenderResult string) {
 		String icon = getTitleIcon(section, user);
 		String title = getTitleName(section, user);
-		string.appendHtml(renderTitle(icon, title));
+
+		// render icon
+		if (icon != null) {
+			string.appendHtml("<img class='markupIcon' src='" + icon + "' /> ");
+		}
+
+		// render heading
+		string.appendHtml("<span>").append(title).appendHtml("</span>");
 	}
 
 	protected String getTitleIcon(Section<?> section, UserContext user) {
@@ -116,18 +127,6 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	protected String getTitleName(Section<?> section, UserContext user) {
 		return section.get().getName();
-	}
-
-	protected String renderTitle(String iconPath, String title) {
-		String result = "";
-		// render icon
-		if (iconPath != null) {
-			result = "<img class='markupIcon' src='" + iconPath + "' /> ";
-		}
-
-		// render heading
-		result += "<span>" + title + "</span>";
-		return result;
 	}
 
 	public void renderMessages(Section<?> section, RenderResult string) {
@@ -244,16 +243,16 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	public static void renderContentSections(List<Section<?>> subSections, boolean listAnnotations, UserContext user, RenderResult result) {
 		if (subSections.size() == 0) return;
+		// find two sections that can possibly be skipped
 		Section<?> first = subSections.get(0);
 		Section<?> last = subSections.get(subSections.size() - 1);
+		// only skip them if they are plain text and empty
+		if (!isEmptyPlainText(first)) first = null;
+		if (!isEmptyPlainText(last)) last = null;
 		boolean listOpen = false;
 		for (Section<?> subsec : subSections) {
-			if (subsec == first && subsec.get() instanceof PlainText) {
-				continue;
-			}
-			if (subsec == last && subsec.get() instanceof PlainText) {
-				continue;
-			}
+			if (subsec == first) continue;
+			if (subsec == last) continue;
 			if (listAnnotations && subsec.get() instanceof AnnotationType) {
 				if (!listOpen) {
 					result.appendHtml("<ul class='defaultMarkupAnnotations'>");
@@ -270,6 +269,10 @@ public class DefaultMarkupRenderer implements Renderer {
 		if (listOpen) {
 			result.appendHtml("</ul>");
 		}
+	}
+
+	private static boolean isEmptyPlainText(Section<?> section) {
+		return section.get() instanceof PlainText;
 	}
 
 	public void renderDefaultMarkupStyled(String title,

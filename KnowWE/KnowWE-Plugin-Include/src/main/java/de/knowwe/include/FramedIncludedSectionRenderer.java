@@ -1,0 +1,107 @@
+/*
+ * Copyright (C) 2013 University Wuerzburg, Computer Science VI
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+package de.knowwe.include;
+
+import java.util.List;
+
+import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.DelegateRenderer;
+import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.jspwiki.JSPWikiMarkupUtils;
+import de.knowwe.jspwiki.types.HeaderType;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
+import de.knowwe.tools.DefaultTool;
+import de.knowwe.tools.DefaultToolSet;
+import de.knowwe.tools.ToolSet;
+
+/**
+ * Renderer to render an included section in default markup framed style.
+ * 
+ * @author Volker Belli (denkbares GmbH)
+ * @created 05.02.2014
+ */
+public class FramedIncludedSectionRenderer extends DefaultMarkupRenderer {
+
+	public FramedIncludedSectionRenderer() {
+		setPreFormattedStyle(false);
+	}
+
+	@Override
+	protected ToolSet getTools(Section<?> targetSection, UserContext user) {
+		Article article = targetSection.getArticle();
+		String link = KnowWEUtils.getURLLink(article);
+		if (targetSection.get() instanceof HeaderType) {
+			Section<HeaderType> header = Sections.cast(targetSection, HeaderType.class);
+			String targetHeaderName = header.get().getHeaderText(header);
+			// link for section
+			link += "#section-"
+					+ article.getTitle().replaceAll("\\s", "+")
+					+ "-" + targetHeaderName.replaceAll("\\s", "");
+		}
+
+		return new DefaultToolSet(
+				new DefaultTool(null, "Open Page", "Opens page '" + targetSection.getTitle()
+						+ "'", "window.location ='" + link + "'"));
+	}
+
+	@Override
+	protected void renderCompileWarning(Section<?> section, RenderResult string) {
+		// do nothing here
+	}
+
+	@Override
+	protected String getTitleName(Section<?> section, UserContext user) {
+		return "Included from '" + section.getTitle() + "'";
+	}
+
+	@Override
+	protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
+		renderTargetSections(section, user, string);
+	}
+
+	public static void renderTargetSections(Section<?> targetSection, UserContext user, RenderResult string) {
+		if (targetSection.get() instanceof HeaderType) {
+			Section<HeaderType> header = Sections.cast(targetSection, HeaderType.class);
+
+			// render header
+			DelegateRenderer.getInstance().render(targetSection, user, string);
+
+			// render content of the sub-chapter
+			List<Section<? extends Type>> content = JSPWikiMarkupUtils.getContent(header);
+			for (Section<? extends Type> section : content) {
+				Renderer r = section.get().getRenderer();
+				if (r != null) {
+					r.render(section, user, string);
+				}
+				else {
+					DelegateRenderer.getInstance().render(section, user, string);
+				}
+			}
+		}
+		else {
+			DelegateRenderer.getInstance().render(targetSection, user, string);
+		}
+	}
+}

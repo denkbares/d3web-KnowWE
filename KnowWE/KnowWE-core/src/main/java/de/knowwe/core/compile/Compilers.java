@@ -18,6 +18,14 @@
  */
 package de.knowwe.core.compile;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
 import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.packaging.PackageCompileType;
@@ -27,14 +35,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Utility methods needed while compiling.
@@ -166,8 +166,8 @@ public class Compilers {
 
 	private static <C extends Compiler> Collection<C> getCompilers(Section<?> section, Class<C> compilerClass, boolean firstOnly) {
 		Set<C> compilers = new TreeSet<C>(new CompilerComparator());
-		List<Compiler> allCmpilers = section.getArticleManager().getCompilerManager().getCompilers();
-		for (Compiler compiler : allCmpilers) {
+		List<Compiler> allCompilers = section.getArticleManager().getCompilerManager().getCompilers();
+		for (Compiler compiler : allCompilers) {
 			if (compilerClass.isAssignableFrom(compiler.getClass())
 					&& compiler.isCompiling(section)) {
 				compilers.add(compilerClass.cast(compiler));
@@ -181,7 +181,8 @@ public class Compilers {
 	 * Returns all {@link Compiler}s of a given ArticleManager and class.
 	 * 
 	 * @created 15.11.2013
-	 * @param manager the {@link ArticleManager} for which we want the {@link Compiler}
+	 * @param manager the {@link ArticleManager} for which we want the
+	 *        {@link Compiler}
 	 * @param compilerClass the type of the {@link Compiler} we want
 	 * @returns all {@link AbstractPackageCompiler}s compiling the given section
 	 */
