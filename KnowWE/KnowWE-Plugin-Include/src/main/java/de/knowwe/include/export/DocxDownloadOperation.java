@@ -22,6 +22,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.opc.PackageProperties;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+
 import de.d3web.core.io.progress.ProgressListener;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.progress.FileDownloadOperation;
@@ -42,10 +46,20 @@ public class DocxDownloadOperation extends FileDownloadOperation {
 
 	@Override
 	public void execute(File resultFile, ProgressListener listener) throws IOException, InterruptedException {
-		ExportManager export = new ExportManager();
 		FileOutputStream stream = new FileOutputStream(resultFile);
 		try {
-			export.createDocument(section).write(stream);
+			ExportManager export = new ExportManager();
+			XWPFDocument document = export.createDocument(section);
+
+			PackageProperties properties = document.getPackage().getPackageProperties();
+			properties.setRevisionProperty("13");
+			properties.setCreatorProperty("Volker POI");
+			properties.setTitleProperty("MMP Qatar Test Document");
+
+			document.write(stream);
+		}
+		catch (InvalidFormatException e) {
+			throw new IOException("invalid format", e);
 		}
 		finally {
 			stream.close();
