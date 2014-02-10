@@ -31,7 +31,7 @@ import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
  * @author volker_belli
  * @created 21.01.2011
  */
-public final class KeywordType extends AbstractType {
+public class KeywordType extends AbstractType {
 
 	private final String keyWord;
 	private static final StyleRenderer DEFAULT_RENDERER =

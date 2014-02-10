@@ -33,15 +33,15 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 
 	@Override
 	public void execute(final AjaxProgressListener listener) throws IOException, InterruptedException {
-		final File file = File.createTempFile("FileDownloadOperation", null);
+		File file = File.createTempFile(
+				"FileDownloadOperation-", null, DownloadFileAction.getTempDirectory());
 		tempFilePath = file.getAbsolutePath();
 		try {
 			execute(file, listener);
 			listener.updateProgress(1f, COMPLETE_MESSAGE);
 		}
 		catch (Exception e) {
-			file.delete();
-			file.deleteOnExit();
+			if (!file.delete()) file.deleteOnExit();
 			listener.updateProgress(1f, COMPLETE_MESSAGE);
 			Log.warning("Aborted execution of file download operation due to exception", e);
 		}
@@ -94,7 +94,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 						+ Strings.encodeHtml(fileName)
 						+ "\"'>" + fileName + "</a></span>";
 			}
-			if (report.isEmpty()) {
+			if (Strings.isBlank(report)) {
 				return message + " " + downloadButton;
 			}
 			else {

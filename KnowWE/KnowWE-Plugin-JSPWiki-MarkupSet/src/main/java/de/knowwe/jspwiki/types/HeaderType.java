@@ -37,6 +37,8 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 public class HeaderType extends AbstractType {
 
+	private final int markerCount;
+
 	/**
 	 * for the plugin framework to call
 	 */
@@ -49,6 +51,7 @@ public class HeaderType extends AbstractType {
 	 * children.
 	 */
 	public HeaderType(int count) {
+		this.markerCount = count;
 		this.setSectionFinder(new RegexSectionFinder("^" + createMarker(count)
 				+ ".*?(?=^|\\z)", Pattern.MULTILINE + Pattern.DOTALL));
 		addChildType(new BoldType());
@@ -71,6 +74,10 @@ public class HeaderType extends AbstractType {
 			text = text.substring(1);
 		}
 		return text.trim();
+	}
+
+	public int getMarkerCount() {
+		return markerCount;
 	}
 
 	class SectionBlockFinder implements SectionFinder {

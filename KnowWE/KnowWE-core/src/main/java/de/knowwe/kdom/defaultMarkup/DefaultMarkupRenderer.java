@@ -90,7 +90,7 @@ public class DefaultMarkupRenderer implements Renderer {
 
 		// render messages and content
 		renderMessages(section, content);
-		renderProgress(section, user, content);
+		renderProgress(section, user, tools, content);
 		renderContents(section, user, content);
 
 		String cssClassName = "type_" + section.get().getName();
@@ -104,7 +104,10 @@ public class DefaultMarkupRenderer implements Renderer {
 		return ToolUtils.getTools(section, user);
 	}
 
-	protected void renderProgress(Section<?> section, UserContext user, RenderResult result) {
+	protected void renderProgress(Section<?> section, UserContext user, ToolSet tools, RenderResult result) {
+		// we have to instantiate the tools first,
+		// to be sure that e.g. long operations are registered
+		tools.getTools();
 		ProgressRenderer.getInstance().render(section, user, result);
 	}
 

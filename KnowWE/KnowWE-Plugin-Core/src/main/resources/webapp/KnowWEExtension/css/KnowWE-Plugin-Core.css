@@ -154,7 +154,7 @@ span.markupMenuItem {
 .defaultMarkupFrame .progress-container .progress-bar {
 	display: inline-block;
 	width: 50%;
-	min-height: 14px;	
+	height: 12px;
 }
 .defaultMarkupFrame .progress-container .progress-bar .ui-progressbar-value {
 	height: 12px;

@@ -21,6 +21,10 @@ package de.knowwe.jspwiki.types;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.basicType.KeywordType;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 
 /**
@@ -30,9 +34,29 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
  */
 public class TableCell extends AbstractType {
 
+	private static class Declaration extends KeywordType {
+
+		public Declaration() {
+			super(Pattern.compile("^\\s*\\|\\|?"));
+			setRenderer(DefaultTextRenderer.getInstance());
+		}
+	}
+
 	public TableCell() {
 		this.setSectionFinder(new RegexSectionFinder("\\|?\\|[^|]+",
 				Pattern.DOTALL | Pattern.MULTILINE));
+		this.addChildType(new Declaration());
 		this.addChildType(new ParagraphTypeForLists());
+	}
+
+	/**
+	 * Returns if the specified cell is a header cell.
+	 * 
+	 * @created 10.02.2014
+	 * @param section the section to check to be a header cell
+	 * @return true if the cell is a header cell
+	 */
+	public boolean isHeader(Section<TableCell> section) {
+		return Sections.successor(section, Declaration.class).getText().contains("||");
 	}
 }

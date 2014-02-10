@@ -41,6 +41,7 @@ public abstract class LongOperationToolProvider implements ToolProvider {
 
 	@Override
 	public final boolean hasTools(Section<?> section, UserContext userContext) {
+		LongOperationUtils.registerLongOperation(section, getOperation(section));
 		return true;
 	}
 
