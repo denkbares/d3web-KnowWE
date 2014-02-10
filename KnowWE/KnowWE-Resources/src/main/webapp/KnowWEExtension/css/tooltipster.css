@@ -69,6 +69,7 @@ html {
 }
 .tooltipster-base .tooltipster-content {
 	overflow: hidden;
+	max-width: 400px;
 }
 
 
