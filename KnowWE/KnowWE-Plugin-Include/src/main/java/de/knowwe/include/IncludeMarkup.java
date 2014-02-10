@@ -52,7 +52,7 @@ public class IncludeMarkup extends DefaultMarkupType {
 
 	static {
 		m = new DefaultMarkup(MARKUP_NAME);
-		m.addContentType(new InterWikiReference());
+		m.addContentType(new InnerWikiReference());
 		m.addAnnotation(ANNOTATION_DEFINITION, false, "hide", "show");
 		m.addAnnotation(ANNOTATION_FRAME, false, "hide", "show");
 		m.addAnnotation(ANNOTATION_ZOOM, false);
@@ -70,9 +70,9 @@ public class IncludeMarkup extends DefaultMarkupType {
 
 			// check for errors in links and/or annotations
 			Section<IncludeMarkup> section = Sections.cast(includeMarkup, IncludeMarkup.class);
-			List<Section<InterWikiReference>> references =
-					Sections.successors(section, InterWikiReference.class);
-			for (Section<InterWikiReference> ref : references) {
+			List<Section<InnerWikiReference>> references =
+					Sections.successors(section, InnerWikiReference.class);
+			for (Section<InnerWikiReference> ref : references) {
 				ref.get().updateReferences(ref);
 			}
 
@@ -120,7 +120,7 @@ public class IncludeMarkup extends DefaultMarkupType {
 			}
 
 			// render included sections
-			for (Section<InterWikiReference> include : references) {
+			for (Section<InnerWikiReference> include : references) {
 				// find section and render it
 				Section<?> referencedSection = include.get().getReferencedSection(include);
 				if (referencedSection != null) {

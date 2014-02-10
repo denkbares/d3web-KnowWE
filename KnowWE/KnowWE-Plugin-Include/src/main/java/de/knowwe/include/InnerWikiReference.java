@@ -18,7 +18,9 @@
  */
 package de.knowwe.include;
 
-import java.util.NoSuchElementException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compiler;
@@ -34,6 +36,7 @@ import de.knowwe.core.report.Message.Type;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.jspwiki.JSPWikiMarkupUtils;
 import de.knowwe.jspwiki.types.HeaderType;
 
 /**
@@ -42,7 +45,7 @@ import de.knowwe.jspwiki.types.HeaderType;
  * @author Volker Belli (denkbares GmbH)
  * @created 05.02.2014
  */
-public class InterWikiReference extends AbstractType {
+public class InnerWikiReference extends AbstractType {
 
 	private static class ArticleReference extends AbstractType {
 
@@ -60,7 +63,7 @@ public class InterWikiReference extends AbstractType {
 
 	private static final String TARGET_SECTION_ID_KEY = "includedSectionID";
 
-	public InterWikiReference() {
+	public InnerWikiReference() {
 		// matches everything begins with a
 		// non-whitespace, non-enumeration char,
 		// is on one line and end with some printable character
@@ -83,7 +86,7 @@ public class InterWikiReference extends AbstractType {
 	 *        from
 	 * @return the referenced Section
 	 */
-	public Section<?> getReferencedSection(Section<InterWikiReference> section) throws NoSuchElementException {
+	public Section<?> getReferencedSection(Section<InnerWikiReference> section) {
 		String id = (String) KnowWEUtils.getStoredObject(section, TARGET_SECTION_ID_KEY);
 		if (id == null) {
 			// not initialized yet
@@ -100,7 +103,18 @@ public class InterWikiReference extends AbstractType {
 		return updateReferences(section);
 	}
 
-	private synchronized Section<?> findReferencedSection(Section<InterWikiReference> section) {
+	public List<Section<?>> getIncludedSections(Section<InnerWikiReference> section) {
+		Section<?> targetSection = getReferencedSection(section);
+		List<Section<?>> result = new ArrayList<Section<?>>();
+		result.add(targetSection);
+		if (targetSection.get() instanceof HeaderType) {
+			Section<HeaderType> header = Sections.cast(targetSection, HeaderType.class);
+			result.addAll(JSPWikiMarkupUtils.getContent(header));
+		}
+		return Collections.unmodifiableList(result);
+	}
+
+	private synchronized Section<?> findReferencedSection(Section<InnerWikiReference> section) {
 
 		Class<?> source = getClass();
 		Compiler compiler = null;
@@ -165,7 +179,7 @@ public class InterWikiReference extends AbstractType {
 		return Sections.successor(section, ArticleReference.class);
 	}
 
-	public synchronized Section<?> updateReferences(Section<InterWikiReference> section) {
+	public synchronized Section<?> updateReferences(Section<InnerWikiReference> section) {
 		Section<?> targetSection = findReferencedSection(section);
 		// we store the section id
 		// to easily recognize if the section has disappeared

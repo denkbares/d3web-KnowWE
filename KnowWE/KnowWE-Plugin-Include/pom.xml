@@ -22,5 +22,20 @@
   	<version>0.2-SNAPSHOT</version>
   	<scope>compile</scope>
   </dependency>
+  <dependency>
+  	<groupId>org.apache.poi</groupId>
+  	<artifactId>poi-ooxml</artifactId>
+  	<version>3.10-beta2</version>
+  </dependency>
+  <dependency>
+  	<groupId>de.uniwue.d3web</groupId>
+  	<artifactId>KnowWE-Plugin-Core</artifactId>
+  	<version>0.2-SNAPSHOT</version>
+  </dependency>
+  <dependency>
+  	<groupId>de.uniwue.d3web</groupId>
+  	<artifactId>KnowWE-Plugin-InstantEdit</artifactId>
+  	<version>0.2-SNAPSHOT</version>
+  </dependency>
   </dependencies>
 </project>

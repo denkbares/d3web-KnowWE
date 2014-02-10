@@ -26,4 +26,16 @@
 		<parameter id="scope" value="root" />
 	</extension>
 
-</plugin>
+    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+        id="DocxDownloadProvider">
+        <parameter id="class"
+            value="de.knowwe.include.export.DocxDownloadProvider" />
+        <parameter id="name" value="DocxDownloadProvider" />
+        <parameter id="description"
+            value="Offers a button for downloading a word document for the specific section." />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="5" />
+        <parameter id="scope" value="IncludeMarkup" />
+   </extension>
+ 
+ </plugin>
