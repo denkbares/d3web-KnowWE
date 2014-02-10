@@ -508,7 +508,7 @@ public class ObjectInfoRenderer implements Renderer {
 			result.append(" (").append(info).append(")");
 		}
 		result.appendHtml("</p>");
-		result.appendHtml("<div class=\"hidden\" style=\"display:inline\">");
+		result.appendHtml("<div class=\"hidden\" style=\"display:none\">");
 		result.append(content);
 		result.appendHtml("</div>");
 	}
