@@ -19,9 +19,8 @@
 package de.knowwe.include.export;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
 
+import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
@@ -53,15 +52,18 @@ public class DefaultBuilder implements DocumentBuilder {
 				"/de/knowwe/include/export/template.docx"));
 
 		// delete all undesired example content
-		Iterator<XWPFParagraph> iterator = new ArrayList<XWPFParagraph>(
-				document.getParagraphs()).iterator();
-		while (iterator.hasNext()) {
-			XWPFParagraph paragraph = iterator.next();
-			if (Strings.equalsIgnoreCase(paragraph.getStyle(), "StartDelete")) break;
+		int index = 0;
+		for (IBodyElement element : document.getBodyElements()) {
+			if (element instanceof XWPFParagraph) {
+				XWPFParagraph paragraph = (XWPFParagraph) element;
+				if (Strings.equalsIgnoreCase(paragraph.getStyle(), "StartDelete")) {
+					break;
+				}
+			}
+			index++;
 		}
-		while (iterator.hasNext()) {
-			XWPFParagraph paragraph = iterator.next();
-			document.removeBodyElement(document.getPosOfParagraph(paragraph));
+		while (document.getBodyElements().size() > index) {
+			document.removeBodyElement(index);
 		}
 	}
 
