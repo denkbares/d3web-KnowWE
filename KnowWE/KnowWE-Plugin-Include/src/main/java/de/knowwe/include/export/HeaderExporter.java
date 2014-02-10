@@ -45,7 +45,8 @@ public class HeaderExporter implements Exporter<HeaderType> {
 		Style style = marks == 3 ? Style.heading1 : marks == 2 ? Style.heading2 : Style.heading3;
 
 		manager.getNewParagraph(style);
-		manager.append(section.get().getHeaderText(section) + "\n\r");
+		manager.append(section.get().getHeaderText(section));
+		manager.closeParagraph();
 	}
 
 }

@@ -59,7 +59,7 @@ public class TableExporter implements Exporter<WikiTable> {
 
 		// create table with correct dimension
 		XWPFDocument doc = manager.getDocument();
-		XWPFTable table = doc.createTable(matrix.getColSize(), matrix.getRowSize());
+		XWPFTable table = doc.createTable(matrix.getRowSize(), matrix.getColSize());
 
 		for (int row = 0; row < matrix.getRowSize(); row++) {
 			for (int col = 0; col < matrix.getColSize(); col++) {
@@ -80,9 +80,14 @@ public class TableExporter implements Exporter<WikiTable> {
 				// fill cell contents
 				DocumentBuilder cellBuilder = new CellBuilder(manager, tableCell, isHeader);
 				Section<?> content = Sections.successor(cell, ParagraphTypeForLists.class);
-				cellBuilder.exportSection(content);
+				cellBuilder.export(content);
 			}
 		}
+
+		// append empty line after each table
+		manager.closeParagraph();
+		manager.append("\n\r");
+		manager.closeParagraph();
 	}
 
 	private Matrix<Section<TableCell>> toMatrix(Section<WikiTable> section) {

@@ -19,6 +19,7 @@
 package de.knowwe.include.export;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -40,6 +41,9 @@ public class DefaultBuilder implements DocumentBuilder {
 	private final ExportManager manager;
 	private final XWPFDocument document;
 	protected XWPFParagraph paragraph = null;
+
+	private boolean bold;
+	private boolean italic;
 
 	/**
 	 * Creates a new default builder for the default template.
@@ -67,6 +71,16 @@ public class DefaultBuilder implements DocumentBuilder {
 		}
 	}
 
+	@Override
+	public void setBold(boolean bold) {
+		this.bold = bold;
+	}
+
+	@Override
+	public void setItalic(boolean italic) {
+		this.italic = italic;
+	}
+
 	/**
 	 * Creates a new default builder that decorates the existing builder and
 	 * continues to write it's existing document.
@@ -90,7 +104,15 @@ public class DefaultBuilder implements DocumentBuilder {
 		return document;
 	}
 
-	public void exportSection(Section<?> section) throws ExportException {
+	@Override
+	public void export(Collection<Section<?>> sections) throws ExportException {
+		for (Section<?> section : sections) {
+			export(section);
+		}
+	}
+
+	@Override
+	public void export(Section<?> section) throws ExportException {
 		// try to export section
 		for (Exporter<?> export : getManager().getExporters()) {
 			if (exportSection(section, export)) return;
@@ -98,7 +120,7 @@ public class DefaultBuilder implements DocumentBuilder {
 
 		// if not, export all child sections
 		for (Section<?> child : section.getChildren()) {
-			exportSection(child);
+			export(child);
 		}
 	}
 
@@ -153,15 +175,19 @@ public class DefaultBuilder implements DocumentBuilder {
 	@Override
 	public XWPFRun append(String text) {
 		XWPFRun run = getParagraph().createRun();
-		run.setText(text);
-		return run;
+		return append(text, run);
 	}
 
 	@Override
 	public XWPFRun append(Style style, String text) {
 		XWPFRun run = getParagraph(style).createRun();
+		return append(text, run);
+	}
+
+	private XWPFRun append(String text, XWPFRun run) {
+		if (bold) run.setBold(true);
+		if (italic) run.setItalic(true);
 		run.setText(text);
 		return run;
 	}
-
 }

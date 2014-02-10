@@ -40,6 +40,8 @@ public class ExportManager {
 
 	public ExportManager() {
 		// add exporters
+		exporters.add(new BoldExporter());
+		exporters.add(new ItalicExporter());
 		exporters.add(new WikiTextExporter());
 		exporters.add(new PlainTextExporter());
 		exporters.add(new HeaderExporter());
@@ -59,7 +61,7 @@ public class ExportManager {
 
 	public XWPFDocument createDocument(Section<?> section) throws IOException {
 		DefaultBuilder builder = new DefaultBuilder(this);
-		builder.exportSection(section);
+		builder.export(section);
 		return builder.getDocument();
 	}
 

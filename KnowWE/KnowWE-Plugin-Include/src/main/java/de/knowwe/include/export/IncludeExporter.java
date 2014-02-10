@@ -49,10 +49,7 @@ public class IncludeExporter implements Exporter<IncludeMarkup> {
 				Sections.successors(section, InnerWikiReference.class);
 		for (Section<InnerWikiReference> reference : references) {
 			manager.closeParagraph();
-			List<Section<?>> included = reference.get().getIncludedSections(reference);
-			for (Section<?> child : included) {
-				manager.exportSection(child);
-			}
+			manager.export(reference.get().getIncludedSections(reference));
 		}
 	}
 }

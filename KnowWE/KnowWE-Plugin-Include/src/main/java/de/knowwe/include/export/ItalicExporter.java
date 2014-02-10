@@ -18,33 +18,31 @@
  */
 package de.knowwe.include.export;
 
-import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.jspwiki.types.ParagraphType;
+import de.knowwe.jspwiki.types.ItalicType;
 
 /**
  * 
  * @author Volker Belli (denkbares GmbH)
  * @created 07.02.2014
  */
-public class ParagraphExporter implements Exporter<ParagraphType> {
+public class ItalicExporter implements Exporter<ItalicType> {
 
 	@Override
-	public boolean canExport(Section<ParagraphType> section) {
+	public boolean canExport(Section<ItalicType> section) {
 		return true;
 	}
 
 	@Override
-	public Class<ParagraphType> getSectionType() {
-		return ParagraphType.class;
+	public Class<ItalicType> getSectionType() {
+		return ItalicType.class;
 	}
 
 	@Override
-	public void export(Section<ParagraphType> section, DocumentBuilder manager) throws ExportException {
-		manager.closeParagraph();
-		if (Strings.isBlank(section.getText())) return;
+	public void export(Section<ItalicType> section, DocumentBuilder manager) throws ExportException {
+		manager.setItalic(true);
 		manager.export(section.getChildren());
-		manager.append("\n\r");
+		manager.setItalic(false);
 	}
 
 }

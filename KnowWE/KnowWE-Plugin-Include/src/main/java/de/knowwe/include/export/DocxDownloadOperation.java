@@ -38,6 +38,7 @@ import de.knowwe.core.utils.progress.FileDownloadOperation;
 public class DocxDownloadOperation extends FileDownloadOperation {
 
 	private final Section<?> section;
+	private String report = null;
 
 	public DocxDownloadOperation(Section<?> section) {
 		super(section.getArticle(), section.getTitle() + ".docx");
@@ -68,7 +69,7 @@ public class DocxDownloadOperation extends FileDownloadOperation {
 
 	@Override
 	public String getReport() {
-		return null;
+		return report;
 	}
 
 }

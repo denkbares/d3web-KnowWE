@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2011 denkbares GmbH
-
+ * 
  * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -20,6 +20,7 @@
 package de.knowwe.jspwiki.types;
 
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.basicType.KeywordType;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 
 /**
@@ -30,8 +31,8 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 public class BoldType extends AbstractType {
 
 	public BoldType() {
-
-		this.setSectionFinder(new RegexSectionFinder("__.*?__"));
+		this.setSectionFinder(new RegexSectionFinder("__(.*?)__"));
+		this.addChildType(new KeywordType("__", true));
 		this.addChildType(new LinkType());
 		this.addChildType(new WikiTextType());
 	}

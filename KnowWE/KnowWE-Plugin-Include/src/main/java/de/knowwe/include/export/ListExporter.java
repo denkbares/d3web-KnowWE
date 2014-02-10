@@ -60,7 +60,6 @@ public class ListExporter implements Exporter<Type> {
 		BigInteger abstractID = section.get() instanceof OrderedListType
 				? ABSTRACT_ID_ORDERED : ABSTRACT_ID_UNORDERED;
 
-		// TODO: avoid using global variable here!
 		BigInteger numID = manager.getDocument().getNumbering().addNum(abstractID);
 		List<Section<DashTreeElement>> items = Sections.successors(section, DashTreeElement.class);
 		for (Section<DashTreeElement> item : items) {
@@ -79,7 +78,7 @@ public class ListExporter implements Exporter<Type> {
 		XWPFParagraph paragraph = manager.getNewParagraph(Style.list);
 		paragraph.setNumID(numID);
 		paragraph.getCTP().getPPr().getNumPr().addNewIlvl().setVal(BigInteger.valueOf(depth - 1));
-		manager.exportSection(Sections.successor(section, DashTreeElementContent.class));
+		manager.export(Sections.successor(section, DashTreeElementContent.class));
 		manager.closeParagraph();
 	}
 }

@@ -18,6 +18,7 @@
  */
 package de.knowwe.include.export;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.jspwiki.types.WikiTextType;
 
@@ -40,7 +41,17 @@ public class WikiTextExporter implements Exporter<WikiTextType> {
 
 	@Override
 	public void export(Section<WikiTextType> section, DocumentBuilder manager) throws ExportException {
-		manager.append(section.getText());
+		String text = section.getText().trim();
+		String[] lines = text.split("\\\\\\\\");
+		boolean first = true;
+		for (String line : lines) {
+			if (Strings.isBlank(line)) continue;
+			if (first) first = false;
+			else {
+				manager.closeParagraph();
+			}
+			manager.append(line);
+		}
 	}
 
 }

@@ -21,6 +21,8 @@ package de.knowwe.core.kdom.basicType;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
@@ -34,8 +36,9 @@ import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
 public class KeywordType extends AbstractType {
 
 	private final String keyWord;
-	private static final StyleRenderer DEFAULT_RENDERER =
+	private static final Renderer DEFAULT_RENDERER =
 			new StyleRenderer(StyleRenderer.KEYWORDS, MaskMode.htmlEntities);
+	private static final Renderer PLAIN_RENDERER = DefaultTextRenderer.getInstance();
 
 	/**
 	 * Creates a new keyword type for a specific keyword that if treated as a
@@ -46,21 +49,59 @@ public class KeywordType extends AbstractType {
 	 * @param literalKeyWord the literal keyword
 	 */
 	public KeywordType(String literalKeyWord) {
+		this(literalKeyWord, false);
+	}
+
+	/**
+	 * Creates a new keyword type for a specific keyword that if treated as a
+	 * literal string, not as a regular expression. Thus also characters may be
+	 * included in the terminalKeyWord that usually interpreted as regular
+	 * expression control characters.
+	 * 
+	 * @param literalKeyWord the literal keyword
+	 * @param renderPlain specified if the keyword shall be rendered plain
+	 */
+	public KeywordType(String literalKeyWord, boolean renderPlain) {
 		this.keyWord = literalKeyWord;
 		String regex = "\\s*(" + Pattern.quote(literalKeyWord) + ")\\s*";
 		Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
 		setSectionFinder(new RegexSectionFinder(pattern, 1));
-		setRenderer(DEFAULT_RENDERER);
+		setRenderer(renderPlain ? PLAIN_RENDERER : DEFAULT_RENDERER);
 	}
 
+	/**
+	 * Creates a new keyword type for a specific keyword interpreted as a
+	 * regular expression.
+	 * 
+	 * @param keyWordPattern the keyword pattern
+	 */
 	public KeywordType(Pattern keyWordPattern) {
 		this(keyWordPattern, 0);
 	}
 
+	/**
+	 * Creates a new keyword type for a specific keyword interpreted as a
+	 * regular expression.
+	 * 
+	 * @param keyWordPattern the keyword pattern
+	 * @param group the group to take the regular expression from
+	 */
 	public KeywordType(Pattern keyWordPattern, int group) {
+		this(keyWordPattern, group, false);
+	}
+
+	/**
+	 * Creates a new keyword type for a specific keyword interpreted as a
+	 * regular expression.
+	 * 
+	 * @param keyWordPattern the keyword pattern
+	 * @param group the group to take the regular expression from
+	 * @param renderPlain specified if the keyword shall be rendered plain
+	 */
+	public KeywordType(Pattern keyWordPattern, int group, boolean renderPlain) {
 		this.keyWord = keyWordPattern.pattern() + ".group(" + group + ")";
 		setSectionFinder(new RegexSectionFinder(keyWordPattern, group));
-		setRenderer(DEFAULT_RENDERER);
+		setRenderer(renderPlain ? PLAIN_RENDERER : DEFAULT_RENDERER);
 	}
 
 	@Override

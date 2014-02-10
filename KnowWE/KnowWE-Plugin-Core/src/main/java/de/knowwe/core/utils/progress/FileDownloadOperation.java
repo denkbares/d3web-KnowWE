@@ -2,6 +2,8 @@ package de.knowwe.core.utils.progress;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.UUID;
 
 import de.d3web.core.io.progress.ProgressListener;
@@ -15,6 +17,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	private final Article article;
 	private final String fileName;
 	private String tempFilePath = null;
+	private Exception error = null;
 	private UUID requestMarker = null;
 	private final String storeKey = FileDownloadOperation.class.getName();
 
@@ -37,6 +40,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 				"FileDownloadOperation-", null, DownloadFileAction.getTempDirectory());
 		tempFilePath = file.getAbsolutePath();
 		try {
+			error = null;
 			execute(file, listener);
 			listener.updateProgress(1f, COMPLETE_MESSAGE);
 		}
@@ -44,6 +48,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 			if (!file.delete()) file.deleteOnExit();
 			listener.updateProgress(1f, COMPLETE_MESSAGE);
 			Log.warning("Aborted execution of file download operation due to exception", e);
+			error = e;
 		}
 	}
 
@@ -95,7 +100,15 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 						+ "\"'>" + fileName + "</a></span>";
 			}
 			if (Strings.isBlank(report)) {
-				return message + " " + downloadButton;
+				if (error == null) {
+					return message + " " + downloadButton;
+				}
+				else {
+					StringWriter out = new StringWriter();
+					error.printStackTrace(new PrintWriter(out));
+					return "<p>Aborted execution of file download operation due to exception</p><pre>"
+							+ out.toString() + "</pre>";
+				}
 			}
 			else {
 				return "<p>" + message + "<p/>" + report + "<br/>" + downloadButton + "</p>";

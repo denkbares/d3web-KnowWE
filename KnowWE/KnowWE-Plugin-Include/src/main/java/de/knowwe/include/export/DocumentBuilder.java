@@ -18,6 +18,8 @@
  */
 package de.knowwe.include.export;
 
+import java.util.Collection;
+
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
@@ -58,6 +60,32 @@ public interface DocumentBuilder {
 	}
 
 	/**
+	 * Sets if all styles shall be additionally be bold face or not.
+	 * 
+	 * @created 10.02.2014
+	 * @param bold true if bold shall be on
+	 */
+	void setBold(boolean bold);
+
+	/**
+	 * Sets if all styles shall be additionally be italics or not.
+	 * 
+	 * @created 10.02.2014
+	 * @param italic true if italic shall be on
+	 */
+	void setItalic(boolean italic);
+
+	/**
+	 * Exports the specified sections and all contained sub-sections using the
+	 * exporters of this document writer
+	 * 
+	 * @created 07.02.2014
+	 * @param section the section to be exported
+	 * @throws ExportException
+	 */
+	public void export(Collection<Section<?>> sections) throws ExportException;
+
+	/**
 	 * Exports a section and all contained sub-sections using the exporters of
 	 * this document writer
 	 * 
@@ -65,7 +93,7 @@ public interface DocumentBuilder {
 	 * @param section the section to be exported
 	 * @throws ExportException
 	 */
-	public void exportSection(Section<?> section) throws ExportException;
+	public void export(Section<?> section) throws ExportException;
 
 	/**
 	 * Returns the document we are currently building

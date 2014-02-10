@@ -41,7 +41,7 @@ public class PlainTextExporter implements Exporter<PlainText> {
 	@Override
 	public void export(Section<PlainText> section, DocumentBuilder manager) throws ExportException {
 		// TODO: decide if required?! If not delete class
-		manager.append(section.getText());
+		// manager.append(section.getText());
 	}
 
 }

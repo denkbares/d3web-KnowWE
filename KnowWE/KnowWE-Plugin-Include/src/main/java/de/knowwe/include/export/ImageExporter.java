@@ -65,10 +65,15 @@ public class ImageExporter implements Exporter<PluginType> {
 			InputStream stream = attachment.getInputStream();
 			try {
 				XWPFRun run = manager.getNewParagraph(Style.image).createRun();
+				int width = intAttr(section, "width", 530);
+				// TODO: keep aspect ratio
+				int height = attr(section, "height") != null
+						? intAttr(section, "height", 380)
+						: (width * 380 / 530);
 				MyXWPFRun.addPicture(
 						run, stream, getFormat(path), file,
-						Units.toEMU(intAttr(section, "width", 530)),
-						Units.toEMU(intAttr(section, "height", 380)));
+						Units.toEMU(width),
+						Units.toEMU(height));
 			}
 			finally {
 				stream.close();
