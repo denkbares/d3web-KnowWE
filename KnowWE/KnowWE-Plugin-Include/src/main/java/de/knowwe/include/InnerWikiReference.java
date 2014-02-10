@@ -21,11 +21,13 @@ package de.knowwe.include;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.basicType.KeywordType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
@@ -46,6 +48,13 @@ import de.knowwe.jspwiki.types.HeaderType;
  * @created 05.02.2014
  */
 public class InnerWikiReference extends AbstractType {
+
+	private static class LinkName extends AbstractType {
+
+		public LinkName() {
+			setSectionFinder(new RegexSectionFinder("\\[\\s*([^\\n\\r]+?)\\s*\\|", 0, 1));
+		}
+	}
 
 	private static class ArticleReference extends AbstractType {
 
@@ -69,7 +78,10 @@ public class InnerWikiReference extends AbstractType {
 		// is on one line and end with some printable character
 		setSectionFinder(new RegexSectionFinder("[^#*\\s\\n\\r][^\\n\\r]*[^\\s\\n\\r]"));
 		setRenderer(new InterWikiReferenceRenderer());
-
+		// find link name
+		addChildType(new LinkName());
+		// grap all link characters with whitespaces
+		addChildType(new KeywordType(Pattern.compile("\\s*[\\[\\]\\|]\\s*")));
 		addChildType(new HeaderReference());
 		addChildType(new ArticleReference());
 	}
@@ -188,7 +200,7 @@ public class InnerWikiReference extends AbstractType {
 		return targetSection;
 	}
 
-	private static class InterWikiReferenceRenderer implements Renderer {
+	private class InterWikiReferenceRenderer implements Renderer {
 
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult result) {
@@ -207,8 +219,24 @@ public class InnerWikiReference extends AbstractType {
 			}
 			// otherwise use normal wiki rendering
 			result.append("[");
-			result.append(section.getText());
+			result.append(getLinkName(section));
+			result.append("|");
+			result.append(getLink(section));
 			result.append("]");
 		}
+	}
+
+	private String getLinkName(Section<?> section) {
+		Section<LinkName> nameSection = Sections.successor(section, LinkName.class);
+		if (nameSection != null) return nameSection.getText();
+		return getLink(section);
+	}
+
+	private String getLink(Section<?> section) {
+		Section<ArticleReference> articleReference = getArticleReference(section);
+		Section<HeaderReference> headerReference = getHeaderReference(section);
+		return headerReference == null
+				? articleReference.getText()
+				: articleReference.getText() + "#" + headerReference.getText();
 	}
 }
