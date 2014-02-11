@@ -19,7 +19,7 @@
 package de.knowwe.jspwiki.types;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.NestedBracketsFinder;
 
 /**
  * 
@@ -30,6 +30,6 @@ public class TableOfContentsType extends AbstractType {
 
 	public TableOfContentsType() {
 
-		this.setSectionFinder(new RegexSectionFinder("\\[\\{(TableOfContents)\\}\\](\n)+"));
+		this.setSectionFinder(new NestedBracketsFinder("[{", "TableOfContents", "}]"));
 	}
 }

@@ -103,9 +103,19 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="TableOfContentsType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.TableOfContentsType" />
+		<parameter id="name" value="TableOfContentsType" />
+		<parameter id="description" value="Type TableOfContentsType" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="8" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="TablePluginType">
 		<parameter id="class" value="de.knowwe.jspwiki.types.TablePluginType" />
-		<parameter id="name" value="JSPWikiPlugin" />
+		<parameter id="name" value="TablePluginType" />
 		<parameter id="description" value="Type for the brushed.jspwiki.tableplugin" />
 		<parameter id="version" value="0.2" />
 		<parameter id="priority" value="9" />
