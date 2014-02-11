@@ -112,6 +112,28 @@ public interface DocumentBuilder {
 	void setItalic(boolean italic);
 
 	/**
+	 * Sets if all headers shall be displayed without numbering, even if
+	 * specified in the styles of used template. Please note that specifying
+	 * "false" will not force numbering to be on, it only reverts to use the
+	 * style as defined in the template.
+	 * 
+	 * @created 11.02.2014
+	 * @param suppress if header numbering shall be suppressed
+	 */
+	void setSuppressHeaderNumbering(boolean suppress);
+
+	/**
+	 * Returns if all headers shall be displayed without numbering, even if
+	 * specified in the styles of used template. Please note that a value of
+	 * "false" will not force numbering to be on, it then uses the style as
+	 * defined in the template.
+	 * 
+	 * @created 11.02.2014
+	 * @return if header numbering shall be suppressed
+	 */
+	boolean isSuppressHeaderNumbering();
+
+	/**
 	 * Increases the header level (or decreases if delta is negative) by the
 	 * delta level. So all created heading sections will be of a modified level.
 	 * If delta is set to 2 a heading of 3 will become a heading of 5.

@@ -50,14 +50,15 @@ public class IncludeExporter implements Exporter<IncludeMarkup> {
 		for (Section<InnerWikiReference> reference : references) {
 			manager.closeParagraph();
 			int delta = getHeadingDelta(reference);
+			boolean wasSuppressHeaderNumbering = manager.isSuppressHeaderNumbering();
 
 			// export article title if requested
 			String marks = reference.get().getListMarks(reference);
 			int listLevel = marks.length();
 			if (listLevel > 0) {
-				boolean suppressNumber = marks.endsWith("*");
+				manager.setSuppressHeaderNumbering(marks.endsWith("*"));
 				String title = reference.get().getLinkName(reference);
-				HeaderExporter.export(title, listLevel, suppressNumber, manager);
+				HeaderExporter.export(title, listLevel, manager);
 				delta += listLevel;
 			}
 
@@ -65,6 +66,7 @@ public class IncludeExporter implements Exporter<IncludeMarkup> {
 			manager.incHeaderLevel(delta);
 			manager.export(reference.get().getIncludedSections(reference));
 			manager.incHeaderLevel(-delta);
+			manager.setSuppressHeaderNumbering(wasSuppressHeaderNumbering);
 		}
 	}
 

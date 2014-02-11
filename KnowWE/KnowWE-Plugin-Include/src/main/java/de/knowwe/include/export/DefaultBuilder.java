@@ -44,6 +44,7 @@ public class DefaultBuilder implements DocumentBuilder {
 
 	private boolean bold;
 	private boolean italic;
+	private boolean suppressHeaderNumbering = false;
 	private int level = 0;
 
 	/**
@@ -80,6 +81,16 @@ public class DefaultBuilder implements DocumentBuilder {
 	@Override
 	public void setItalic(boolean italic) {
 		this.italic = italic;
+	}
+
+	@Override
+	public void setSuppressHeaderNumbering(boolean suppressHeaderNumbering) {
+		this.suppressHeaderNumbering = suppressHeaderNumbering;
+	}
+
+	@Override
+	public boolean isSuppressHeaderNumbering() {
+		return suppressHeaderNumbering;
 	}
 
 	@Override
@@ -147,7 +158,7 @@ public class DefaultBuilder implements DocumentBuilder {
 	public XWPFParagraph getParagraph() {
 		if (paragraph == null) {
 			paragraph = createParagraph();
-			paragraph.setStyle(mapStyle(getDefaultStyle()).getStyleName());
+			applyStyle(getDefaultStyle());
 		}
 		return paragraph;
 	}
@@ -163,11 +174,7 @@ public class DefaultBuilder implements DocumentBuilder {
 
 	@Override
 	public XWPFParagraph getParagraph(Style style) {
-		String styleName = paragraph == null ? null : paragraph.getStyle();
-		if (Strings.equalsIgnoreCase(styleName, mapStyle(style).getStyleName())) {
-			return paragraph;
-		}
-		return getNewParagraph(style);
+		return hasStyle(style) ? paragraph : getNewParagraph(style);
 	}
 
 	@Override
@@ -179,8 +186,21 @@ public class DefaultBuilder implements DocumentBuilder {
 	@Override
 	public XWPFParagraph getNewParagraph(Style style) {
 		getNewParagraph();
-		paragraph.setStyle(mapStyle(style).getStyleName());
+		applyStyle(style);
 		return paragraph;
+	}
+
+	private boolean hasStyle(Style style) {
+		String currentStyleName = paragraph == null ? null : paragraph.getStyle();
+		String otherStyleName = mapStyle(style).getStyleName();
+		return Strings.equalsIgnoreCase(currentStyleName, otherStyleName);
+	}
+
+	protected void applyStyle(Style style) {
+		paragraph.setStyle(mapStyle(style).getStyleName());
+		if (suppressHeaderNumbering) {
+			paragraph.setNumID(null);
+		}
 	}
 
 	@Override

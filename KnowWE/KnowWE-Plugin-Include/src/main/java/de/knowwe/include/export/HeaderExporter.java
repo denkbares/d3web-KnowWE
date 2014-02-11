@@ -42,16 +42,13 @@ public class HeaderExporter implements Exporter<HeaderType> {
 	@Override
 	public void export(Section<HeaderType> section, DocumentBuilder manager) throws ExportException {
 		int marks = section.get().getMarkerCount();
-		export(section.get().getHeaderText(section), 4 - marks, false, manager);
+		export(section.get().getHeaderText(section), 4 - marks, manager);
 	}
 
-	public static void export(String headerText, int headingLevel, boolean suppressNumbering, DocumentBuilder manager) {
+	public static void export(String headerText, int headingLevel, DocumentBuilder manager) {
 		Style style = Style.heading(headingLevel);
 		manager.getNewParagraph(style);
 		manager.append(headerText);
-		if (suppressNumbering) {
-			manager.getParagraph().setNumID(null);
-		}
 		manager.closeParagraph();
 	}
 }
