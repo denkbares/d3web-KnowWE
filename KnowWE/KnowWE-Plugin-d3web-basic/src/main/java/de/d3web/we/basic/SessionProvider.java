@@ -38,14 +38,14 @@ import de.knowwe.core.event.EventManager;
 import de.knowwe.core.user.UserContext;
 
 /**
- * This class stores all {@link Sessions}. The class itself is stored in each
- * user's {@link HTTPSession} and is accessible by calling:
+ * This class stores all {@link Session}s. The class itself is stored in each
+ * user's HTTPSession and is accessible by calling:
  * 
  * <pre>
  * httpSession.getAttribute(Attributes.SESSIONPROVIDER)
  * </pre>
  * 
- * on a {@link HTTPSession} object. For convenience there exist two static
+ * on a HTTPSession object. For convenience there exist two static
  * utility methods:
  * 
  * <pre>
@@ -215,9 +215,6 @@ public class SessionProvider {
 	 * {@link KnowledgeBase}.
 	 * 
 	 * @created 22.03.2012
-	 * @param context
-	 * @param base
-	 * @return
 	 */
 	public static boolean hasOutDatedSession(UserContext context, KnowledgeBase base) {
 		Session session = getSession(context, base);

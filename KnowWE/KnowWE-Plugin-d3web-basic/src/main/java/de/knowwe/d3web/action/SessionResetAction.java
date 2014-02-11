@@ -32,25 +32,24 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.notification.NotificationManager;
 
 /**
- * This is a generic class for resetting d3web-Sessions using KnowWE's action
- * mechanism. Please use this action wherever possible to avoid duplicate code.
- * 
- * For a reset of a session the underlying knowledge base is necessary. For
- * getting a knowledge base the name of the compiling master article is needed.
- * This action will use the value of
- * 
+ * This is a generic class for resetting d3web-Sessions using KnowWE's action mechanism. Please use this action wherever
+ * possible to avoid duplicate code.
+ * <p/>
+ * For a reset of a session the underlying knowledge base is necessary. For getting a knowledge base the name of the
+ * compiling master article is needed. This action will use the value of
+ * <p/>
  * <pre>
  * UserActionContext.getTitle()
  * </pre>
- * 
+ * <p/>
  * except the parameter
- * 
+ * <p/>
  * <pre>
  * SessionResetAction.KBARTICLE
  * </pre>
- * 
+ * <p/>
  * is explicitly defined.
- * 
+ *
  * @author Sebastian Furth
  * @created 14.03.2012
  */
@@ -72,6 +71,6 @@ public class SessionResetAction extends AbstractAction {
 		SessionProvider.createSession(context, base);
 
 		// remove out dated session notification
-		NotificationManager.removeNotification(context, section.getTitle());
+		NotificationManager.removeNotification(context, section.getID());
 	}
 }
