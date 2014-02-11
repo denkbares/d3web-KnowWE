@@ -124,6 +124,14 @@ public class IncludeMarkup extends DefaultMarkupType {
 				// find section and render it
 				Section<?> referencedSection = include.get().getReferencedSection(include);
 				if (referencedSection != null) {
+					String marks = include.get().getListMarks(include);
+					int listLevel = marks.length();
+					if (listLevel > 0) {
+						String title = include.get().getLinkName(include);
+						result.appendHtml("<h" + listLevel + ">")
+								.append(title)
+								.appendHtml("</h" + listLevel + ">\n");
+					}
 					renderIncludedSections(user, referencedSection, result, zoom, isFramed);
 				}
 			}
