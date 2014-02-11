@@ -3,7 +3,8 @@
 <project name="KnowWE-App-Utils" default="update_resources denkbares">
 
 	<target name="update_properties">
-		<copy file="${basedir}/src/resources/local/WEB-INF/jspwiki.properties" tofile="${basedir}/target/KnowWE-App-0.2-SNAPSHOT/WEB-INF/jspwiki.properties" />
+		<copy file="${basedir}/src/resources/local/WEB-INF/jspwiki.properties"
+			tofile="${basedir}/target/KnowWE-App-0.2-SNAPSHOT/WEB-INF/jspwiki.properties" />
 	</target>
 
 	<!-- Updates all resources needed for the profile core-plugins -->
@@ -63,17 +64,17 @@
 			<cutdirsmapper dirs="6" />
 		</copy>
 	</target>
-	
+
 	<!-- Updates all resources needed for the profile denkbares (and denkbares and core-plugins) -->
-		<target name="update_resources knowsec" depends="update_resources denkbares">
-			<copy todir="${basedir}/target/KnowWE-App-0.2-SNAPSHOT">
-				<fileset dir="${basedir}/../">
-					<include name="KnowWE-Plugins/KnowWE-Plugin-KnowSEC/src/main/resources/webapp/" />
-					<include name="Research/KnowWE-Plugin-d3web-SimpleScoreTable/src/main/resources/webapp/" />
-					<include name="Research/KnowWE-Plugin-d3web-SparqlToExcel/src/main/resources/webapp/" />
-				</fileset>
-				<cutdirsmapper dirs="6" />
-			</copy>
-		</target>
+	<target name="update_resources knowsec" depends="update_resources denkbares">
+		<copy todir="${basedir}/target/KnowWE-App-0.2-SNAPSHOT">
+			<fileset dir="${basedir}/../">
+				<include name="KnowWE-Plugins/KnowWE-Plugin-KnowSEC/src/main/resources/webapp/" />
+				<include name="Research/KnowWE-Plugin-d3web-SimpleScoreTable/src/main/resources/webapp/" />
+				<include name="Research/KnowWE-Plugin-d3web-SparqlToExcel/src/main/resources/webapp/" />
+			</fileset>
+			<cutdirsmapper dirs="6" />
+		</copy>
+	</target>
 
 </project>
