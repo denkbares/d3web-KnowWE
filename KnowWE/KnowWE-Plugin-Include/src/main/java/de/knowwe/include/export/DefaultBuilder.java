@@ -40,6 +40,7 @@ public class DefaultBuilder implements DocumentBuilder {
 
 	private final ExportManager manager;
 	private final XWPFDocument document;
+
 	protected XWPFParagraph paragraph = null;
 
 	private boolean bold;

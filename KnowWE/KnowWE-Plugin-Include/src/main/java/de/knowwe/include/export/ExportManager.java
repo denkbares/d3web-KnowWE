@@ -23,9 +23,14 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.opc.PackageProperties;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Message.Type;
 
 /**
  * Manages the export of the included wiki pages into a specific export
@@ -37,9 +42,13 @@ import de.knowwe.core.kdom.parsing.Section;
 public class ExportManager {
 
 	private List<Exporter<?>> exporters = new LinkedList<Exporter<?>>();
+	private DefaultBuilder builder = null;
+	private List<Message> messages = new LinkedList<Message>();
 
 	public ExportManager() {
 		// add exporters
+		exporters.add(new WikiBookPropertyExporter());
+		exporters.add(new TOCExporter());
 		exporters.add(new BoldExporter());
 		exporters.add(new ItalicExporter());
 		exporters.add(new WikiTextExporter());
@@ -60,9 +69,60 @@ public class ExportManager {
 	}
 
 	public XWPFDocument createDocument(Section<?> section) throws IOException {
-		DefaultBuilder builder = new DefaultBuilder(this);
+		this.builder = new DefaultBuilder(this);
+		this.messages.clear();
 		builder.export(section);
+		// properties.setRevisionProperty("13");
+		// properties.setLastModifiedByProperty(lastModifiedBy);
+		// properties.setModifiedProperty(lastModified);
 		return builder.getDocument();
+	}
+
+	/**
+	 * Sets a document property of the currently exported document
+	 * 
+	 * @created 11.02.2014
+	 * @param key the property key to be set
+	 * @param value the property value to be set
+	 */
+	public void setProperty(String key, String value) {
+		XWPFDocument document = builder.getDocument();
+		try {
+			PackageProperties properties = document.getPackage().getPackageProperties();
+			if (Strings.equalsIgnoreCase("author", key)
+					|| Strings.equalsIgnoreCase("autor", key)) {
+				properties.setCreatorProperty(Strings.trim(value));
+			}
+			else if (Strings.equalsIgnoreCase("title", key)
+					|| Strings.equalsIgnoreCase("titel", key)) {
+				properties.setTitleProperty(Strings.trim(value));
+			}
+			else if (Strings.equalsIgnoreCase("project", key)
+					|| Strings.equalsIgnoreCase("projekt", key)) {
+				properties.setSubjectProperty(Strings.trim(value));
+			}
+			else if (Strings.equalsIgnoreCase("subject", key)
+					|| Strings.equalsIgnoreCase("betreff", key)) {
+				properties.setSubjectProperty(Strings.trim(value));
+			}
+			else {
+				addMessage(Type.WARNING, "unsupported document property '" + key + "'");
+			}
+		}
+		catch (InvalidFormatException e) {
+			addMessage(Type.WARNING, "unexpected format exception");
+		}
+	}
+
+	/**
+	 * Adds a new message to the protocol of this document export.
+	 * 
+	 * @created 11.02.2014
+	 * @param type the type of the message
+	 * @param text the message text
+	 */
+	public void addMessage(Type type, String text) {
+		messages.add(new Message(type, text));
 	}
 
 }

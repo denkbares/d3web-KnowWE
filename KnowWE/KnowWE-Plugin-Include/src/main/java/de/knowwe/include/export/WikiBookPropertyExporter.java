@@ -18,47 +18,41 @@
  */
 package de.knowwe.include.export;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-
-import de.d3web.core.io.progress.ProgressListener;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.utils.progress.FileDownloadOperation;
+import de.knowwe.jspwiki.types.CSSType;
 
 /**
  * 
  * @author Volker Belli (denkbares GmbH)
  * @created 07.02.2014
  */
-public class DocxDownloadOperation extends FileDownloadOperation {
+public class WikiBookPropertyExporter implements Exporter<CSSType> {
 
-	private final Section<?> section;
-	private String report = null;
+	private static final Pattern PATTERN = Pattern.compile(
+			"%%\\((?:.*;)?class:\\s*wikiBook-([\\w-_.:]+)\\s*(?:;[^)]*)?\\)\\s*(.*?)\\s*[/%]%",
+			Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
-	public DocxDownloadOperation(Section<?> section) {
-		super(section.getArticle(), section.getTitle() + ".docx");
-		this.section = section;
+	@Override
+	public boolean canExport(Section<CSSType> section) {
+		Matcher matcher = PATTERN.matcher(section.getText());
+		return matcher.find();
 	}
 
 	@Override
-	public void execute(File resultFile, ProgressListener listener) throws IOException, InterruptedException {
-		FileOutputStream stream = new FileOutputStream(resultFile);
-		try {
-			ExportManager export = new ExportManager();
-			XWPFDocument document = export.createDocument(section);
-			document.write(stream);
-		}
-		finally {
-			stream.close();
-		}
+	public Class<CSSType> getSectionType() {
+		return CSSType.class;
 	}
 
 	@Override
-	public String getReport() {
-		return report;
+	public void export(Section<CSSType> section, DocumentBuilder manager) throws ExportException {
+		Matcher matcher = PATTERN.matcher(section.getText());
+		if (matcher.find()) {
+			String property = matcher.group(1);
+			String value = matcher.group(2);
+			manager.getManager().setProperty(property, value);
+		}
 	}
-
 }

@@ -18,47 +18,29 @@
  */
 package de.knowwe.include.export;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-
-import de.d3web.core.io.progress.ProgressListener;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.utils.progress.FileDownloadOperation;
+import de.knowwe.jspwiki.types.TableOfContentsType;
 
 /**
  * 
  * @author Volker Belli (denkbares GmbH)
  * @created 07.02.2014
  */
-public class DocxDownloadOperation extends FileDownloadOperation {
+public class TOCExporter implements Exporter<TableOfContentsType> {
 
-	private final Section<?> section;
-	private String report = null;
-
-	public DocxDownloadOperation(Section<?> section) {
-		super(section.getArticle(), section.getTitle() + ".docx");
-		this.section = section;
+	@Override
+	public boolean canExport(Section<TableOfContentsType> section) {
+		return true;
 	}
 
 	@Override
-	public void execute(File resultFile, ProgressListener listener) throws IOException, InterruptedException {
-		FileOutputStream stream = new FileOutputStream(resultFile);
-		try {
-			ExportManager export = new ExportManager();
-			XWPFDocument document = export.createDocument(section);
-			document.write(stream);
-		}
-		finally {
-			stream.close();
-		}
+	public Class<TableOfContentsType> getSectionType() {
+		return TableOfContentsType.class;
 	}
 
 	@Override
-	public String getReport() {
-		return report;
+	public void export(Section<TableOfContentsType> section, DocumentBuilder manager) throws ExportException {
+		manager.getDocument().createTOC();
 	}
 
 }
