@@ -61,7 +61,6 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 		this.addCompileScript(new TerminologyLoopDetectionHandler<Question>());
 		this.addCompileScript(Priority.LOW, new TerminologyLoopResolveHandler<Question>());
 		this.setRenderer(new ValueTooltipRenderer(StyleRenderer.Question));
-		this.setOrderSensitive(true);
 	}
 
 	@Override
@@ -104,7 +103,8 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			Identifier identifier = section.get().getTermIdentifier(section);
 			Class<?> termObjectClass = section.get().getTermObjectClass(section);
 			TerminologyManager terminologyHandler = compiler.getTerminologyManager();
-			terminologyHandler.registerTermDefinition(compiler, section, termObjectClass, identifier);
+			terminologyHandler.registerTermDefinition(compiler, section, termObjectClass,
+					identifier);
 
 			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(compiler, section);
 			if (abortCheck.hasErrors()) return abortCheck.getErrors();

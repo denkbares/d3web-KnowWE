@@ -31,7 +31,6 @@ public class TextLine extends AbstractType {
 	}
 
 	public TextLine(Type lineContent) {
-		this.setNumberedType(true);
 		this.addChildType(new LineBreak());
 		this.addChildType(new EndLineComment());
 		this.addChildType(lineContent);

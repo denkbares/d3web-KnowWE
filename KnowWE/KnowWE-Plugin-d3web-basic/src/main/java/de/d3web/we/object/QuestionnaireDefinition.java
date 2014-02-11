@@ -50,7 +50,6 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 		this.addCompileScript(Priority.LOW, new TerminologyLoopDetectionHandler<QContainer>());
 		this.addCompileScript(Priority.LOWER, new TerminologyLoopResolveHandler<QContainer>());
 		setRenderer(StyleRenderer.Questionaire);
-		setOrderSensitive(true);
 	}
 
 	public abstract int getPosition(Section<QuestionnaireDefinition> s);

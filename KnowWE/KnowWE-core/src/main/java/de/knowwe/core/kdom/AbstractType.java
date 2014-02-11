@@ -71,18 +71,6 @@ public abstract class AbstractType implements Type, Sectionizable {
 	private final Set<Class<?>> successorTypes = new HashSet<Class<?>>();
 
 	/**
-	 * a flag to show, that this ObjectType is sensitive to the order its
-	 * Sections appears in the article
-	 */
-	private boolean isOrderSensitive = false;
-
-	/**
-	 * determines whether there is a enumeration of siblings defined for this
-	 * type (e.g., to add line numbers to line-based sections)
-	 */
-	private boolean isNumberedType = false;
-
-	/**
 	 * allows to set a custom renderer for a type (at initialization) if a
 	 * custom renderer is set, it is used to present the type content in the
 	 * wiki view
@@ -96,14 +84,6 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * @see Type#getSectionFinder()
 	 */
 	private SectionFinder sectionFinder;
-
-	public boolean isNumberedType() {
-		return isNumberedType;
-	}
-
-	public void setNumberedType(boolean isNumberedType) {
-		this.isNumberedType = isNumberedType;
-	}
 
 	/**
 	 * Allows to set a specific sectionFinder for this type
@@ -331,27 +311,4 @@ public abstract class AbstractType implements Type, Sectionizable {
 	protected Set<Class<?>> getPotentialSuccessorTypes() {
 		return Collections.unmodifiableSet(successorTypes);
 	}
-
-	@Override
-	public boolean isOrderSensitive() {
-		return isOrderSensitive;
-	}
-
-	public void setOrderSensitive(boolean orderSensitive) {
-		this.isOrderSensitive = orderSensitive;
-	}
-
-	// /**
-	// * If a type ignores package compile, all SubtreeHandlers registered to
-	// this
-	// * type will always compile, but only for the article the section is
-	// * directly hooked in.
-	// */
-	// public void setIgnorePackageCompile(boolean ignorePackageCompile) {
-	// this.setPackageCompile(!ignorePackageCompile);
-	// }
-	//
-	// public void setPackageCompile(boolean packageCompile) {
-	// this.packageCompile = packageCompile;
-	// }
 }

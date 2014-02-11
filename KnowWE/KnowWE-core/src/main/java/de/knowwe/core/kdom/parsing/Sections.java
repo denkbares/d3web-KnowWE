@@ -325,7 +325,6 @@ public class Sections {
 				Section<OT> s = Sections.findSuccessor(sec, clazz);
 				if (s != null) return s;
 			}
-
 		}
 		return null;
 	}
@@ -376,7 +375,9 @@ public class Sections {
 	 * This method returns all the successors of the specified section matching
 	 * the specified class as their type. The class matches if the type object
 	 * of a section if an instance of the specified class or an instance of any
-	 * sub-class of the specified class or interface.
+	 * sub-class of the specified class or interface. If the specified section
+	 * matches the specified class the specified section is contained in the
+	 * returned list.
 	 * <p>
 	 * <b>Note:</b><br>
 	 * This is the modern version of the method
@@ -390,6 +391,27 @@ public class Sections {
 	 */
 	public static <OT extends Type> List<Section<OT>> successors(Section<?> section, Class<OT> clazz) {
 		return findSuccessorsOfType(section, clazz);
+	}
+
+	/**
+	 * This method returns all the successors of the specified sections matching
+	 * the specified class as their type. The class matches if the type object
+	 * of a section if an instance of the specified class or an instance of any
+	 * sub-class of the specified class or interface. If any of the specified
+	 * sections matches the specified class the specified section contained in
+	 * the returned list.
+	 * 
+	 * @created 09.12.2013
+	 * @param sections the sections to get the successor sections for
+	 * @param clazz the class of the successors to be matched
+	 * @return the list of all successor sections of the specified class
+	 */
+	public static <OT extends Type> List<Section<OT>> successors(Collection<Section<?>> sections, Class<OT> clazz) {
+		List<Section<OT>> result = new ArrayList<Section<OT>>();
+		for (Section<?> section : sections) {
+			findSuccessorsOfType(section, clazz, result);
+		}
+		return result;
 	}
 
 	/**
@@ -420,6 +442,7 @@ public class Sections {
 	 * matches if the type object of a section if an instance of the specified
 	 * class or an instance of any sub-class of the specified class or
 	 * interface.
+	 * 
 	 * <p>
 	 * <b>Note:</b><br>
 	 * This is the modern version of the method
@@ -440,7 +463,8 @@ public class Sections {
 	 * specified section matching the specified class as its type. The class
 	 * matches if the type object of a section if an instance of the specified
 	 * class or an instance of any sub-class of the specified class or
-	 * interface.
+	 * interface. If the specified section matches the specified class the
+	 * specified section is returned.
 	 * <p>
 	 * <b>Note:</b><br>
 	 * This is the modern version of the method

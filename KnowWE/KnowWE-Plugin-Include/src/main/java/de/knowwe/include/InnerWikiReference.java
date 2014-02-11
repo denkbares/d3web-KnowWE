@@ -117,6 +117,8 @@ public class InnerWikiReference extends AbstractType {
 
 	public List<Section<?>> getIncludedSections(Section<InnerWikiReference> section) {
 		Section<?> targetSection = getReferencedSection(section);
+		if (targetSection == null) return Collections.emptyList();
+
 		List<Section<?>> result = new ArrayList<Section<?>>();
 		result.add(targetSection);
 		if (targetSection.get() instanceof HeaderType) {
@@ -124,6 +126,23 @@ public class InnerWikiReference extends AbstractType {
 			result.addAll(JSPWikiMarkupUtils.getContent(header));
 		}
 		return Collections.unmodifiableList(result);
+	}
+
+	/**
+	 * Returns the number of header marks of the most significant heading of the
+	 * included sections. It return 0 if no header is included.
+	 * 
+	 * @created 11.02.2014
+	 * @param sections the list of sections to be examined
+	 * @return the highest number of header marks of any included header
+	 */
+	public int getMaxHeaderMarkCount(Section<InnerWikiReference> section) {
+		List<Section<?>> included = getIncludedSections(section);
+		int marks = 0;
+		for (Section<HeaderType> header : Sections.successors(included, HeaderType.class)) {
+			marks = Math.max(marks, header.get().getMarkerCount());
+		}
+		return marks;
 	}
 
 	private synchronized Section<?> findReferencedSection(Section<InnerWikiReference> section) {
@@ -226,17 +245,32 @@ public class InnerWikiReference extends AbstractType {
 		}
 	}
 
-	private String getLinkName(Section<?> section) {
+	public String getLinkName(Section<?> section) {
 		Section<LinkName> nameSection = Sections.successor(section, LinkName.class);
 		if (nameSection != null) return nameSection.getText();
 		return getLink(section);
 	}
 
-	private String getLink(Section<?> section) {
+	public String getLink(Section<?> section) {
 		Section<ArticleReference> articleReference = getArticleReference(section);
 		Section<HeaderReference> headerReference = getHeaderReference(section);
 		return headerReference == null
 				? articleReference.getText()
 				: articleReference.getText() + "#" + headerReference.getText();
+	}
+
+	/**
+	 * Returns the level of the preceding enumeration marks or bullet marks ('#'
+	 * or '*') or "" if no such marks were specified.
+	 * 
+	 * @created 11.02.2014
+	 * @param reference the inner wiki reference to get the preceding marks for
+	 * @return the marks preceding the include link
+	 */
+	public String getListMarks(Section<InnerWikiReference> reference) {
+		String text = reference.getParent().getText();
+		int end = reference.getOffsetInParent();
+		int start = text.lastIndexOf("\n", end) + 1;
+		return Strings.trim(text.substring(start, end));
 	}
 }

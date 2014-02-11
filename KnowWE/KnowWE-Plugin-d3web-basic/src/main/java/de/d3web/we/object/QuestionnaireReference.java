@@ -37,7 +37,6 @@ public class QuestionnaireReference extends D3webTermReference<QContainer> {
 
 	public QuestionnaireReference() {
 		this.setRenderer(StyleRenderer.Questionaire);
-		this.setOrderSensitive(true);
 		this.addCompileScript(new SimpleReferenceRegistrationScript<D3webCompiler>(
 				D3webCompiler.class));
 	}

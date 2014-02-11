@@ -44,6 +44,7 @@ public class DefaultBuilder implements DocumentBuilder {
 
 	private boolean bold;
 	private boolean italic;
+	private int level = 0;
 
 	/**
 	 * Creates a new default builder for the default template.
@@ -79,6 +80,11 @@ public class DefaultBuilder implements DocumentBuilder {
 	@Override
 	public void setItalic(boolean italic) {
 		this.italic = italic;
+	}
+
+	@Override
+	public void incHeaderLevel(int delta) {
+		level += delta;
 	}
 
 	/**
@@ -141,7 +147,7 @@ public class DefaultBuilder implements DocumentBuilder {
 	public XWPFParagraph getParagraph() {
 		if (paragraph == null) {
 			paragraph = createParagraph();
-			paragraph.setStyle(getDefaultStyle().getStyleName());
+			paragraph.setStyle(mapStyle(getDefaultStyle()).getStyleName());
 		}
 		return paragraph;
 	}
@@ -150,10 +156,15 @@ public class DefaultBuilder implements DocumentBuilder {
 		return Style.text;
 	}
 
+	protected Style mapStyle(Style style) {
+		int l = style.getHeadingLevel();
+		return (l == 0) ? style : Style.heading(l + level);
+	}
+
 	@Override
 	public XWPFParagraph getParagraph(Style style) {
 		String styleName = paragraph == null ? null : paragraph.getStyle();
-		if (Strings.equalsIgnoreCase(styleName, style.getStyleName())) {
+		if (Strings.equalsIgnoreCase(styleName, mapStyle(style).getStyleName())) {
 			return paragraph;
 		}
 		return getNewParagraph(style);
@@ -168,7 +179,7 @@ public class DefaultBuilder implements DocumentBuilder {
 	@Override
 	public XWPFParagraph getNewParagraph(Style style) {
 		getNewParagraph();
-		paragraph.setStyle(style.getStyleName());
+		paragraph.setStyle(mapStyle(style).getStyleName());
 		return paragraph;
 	}
 

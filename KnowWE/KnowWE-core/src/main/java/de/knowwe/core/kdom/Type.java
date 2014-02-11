@@ -156,12 +156,4 @@ public interface Type {
 	 * @return the Collection of parent types
 	 */
 	Collection<Type> getParentTypes();
-
-	/*
-	 * Methods related to compilation
-	 */
-
-	// TODO: is this method really required?!
-	boolean isOrderSensitive();
-
 }

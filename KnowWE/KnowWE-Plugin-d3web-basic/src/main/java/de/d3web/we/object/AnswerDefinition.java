@@ -58,7 +58,6 @@ public abstract class AnswerDefinition
 	public AnswerDefinition() {
 		this.addCompileScript(Priority.HIGH, new CreateAnswerHandler());
 		this.setRenderer(StyleRenderer.CHOICE);
-		this.setOrderSensitive(true);
 	}
 
 	public abstract int getPosition(Section<? extends AnswerDefinition> s);
@@ -157,7 +156,8 @@ public abstract class AnswerDefinition
 			Class<?> termObjectClass = section.get().getTermObjectClass(section);
 
 			TerminologyManager terminologyHandler = compiler.getTerminologyManager();
-			terminologyHandler.registerTermDefinition(compiler, section, termObjectClass, termIdentifier);
+			terminologyHandler.registerTermDefinition(compiler, section, termObjectClass,
+					termIdentifier);
 
 			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(
 					compiler, section);

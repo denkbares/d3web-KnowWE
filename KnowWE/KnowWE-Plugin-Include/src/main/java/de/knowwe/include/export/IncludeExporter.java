@@ -49,7 +49,27 @@ public class IncludeExporter implements Exporter<IncludeMarkup> {
 				Sections.successors(section, InnerWikiReference.class);
 		for (Section<InnerWikiReference> reference : references) {
 			manager.closeParagraph();
+			int delta = getHeadingDelta(reference);
+
+			// export article title if requested
+			String marks = reference.get().getListMarks(reference);
+			int listLevel = marks.length();
+			if (listLevel > 0) {
+				boolean suppressNumber = marks.endsWith("*");
+				String title = reference.get().getLinkName(reference);
+				HeaderExporter.export(title, listLevel, suppressNumber, manager);
+				delta += listLevel;
+			}
+
+			// export included sections
+			manager.incHeaderLevel(delta);
 			manager.export(reference.get().getIncludedSections(reference));
+			manager.incHeaderLevel(-delta);
 		}
+	}
+
+	private int getHeadingDelta(Section<InnerWikiReference> reference) {
+		int marks = reference.get().getMaxHeaderMarkCount(reference);
+		return marks == 0 ? 0 : (marks - 3);
 	}
 }

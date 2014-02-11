@@ -40,6 +40,12 @@ public interface DocumentBuilder {
 		heading1("Heading1"),
 		heading2("Heading2"),
 		heading3("Heading3"),
+		heading4("Heading4"),
+		heading5("Heading5"),
+		heading6("Heading6"),
+		heading7("Heading7"),
+		heading8("Heading8"),
+		heading9("Heading9"),
 		text("TextBody"),
 		code("Code"),
 		caption("Caption"),
@@ -56,6 +62,36 @@ public interface DocumentBuilder {
 
 		public String getStyleName() {
 			return styleName;
+		}
+
+		/**
+		 * Returns the heading of the specified level. If there is no such
+		 * heading (<1 or >9) an {@link IllegalArgumentException} is thrown
+		 * 
+		 * @created 11.02.2014
+		 * @param headingLevel the level of the heading where 1 is the most
+		 *        significant one
+		 * @return the style of that heading
+		 */
+		public static Style heading(int headingLevel) {
+			if (headingLevel < 1 || headingLevel > 9) {
+				throw new IllegalArgumentException(
+						"heading level exceeded supported depth: " + headingLevel);
+			}
+			int ordinal = heading1.ordinal() - 1 + headingLevel;
+			return values()[ordinal];
+		}
+
+		/**
+		 * Returns the level of the heading style or 0 if the style is no
+		 * heading style.
+		 * 
+		 * @created 11.02.2014
+		 * @return the heading level
+		 */
+		public int getHeadingLevel() {
+			int l = ordinal() - heading1.ordinal() + 1;
+			return (l < 1 || l > 9) ? 0 : l;
 		}
 	}
 
@@ -74,6 +110,16 @@ public interface DocumentBuilder {
 	 * @param italic true if italic shall be on
 	 */
 	void setItalic(boolean italic);
+
+	/**
+	 * Increases the header level (or decreases if delta is negative) by the
+	 * delta level. So all created heading sections will be of a modified level.
+	 * If delta is set to 2 a heading of 3 will become a heading of 5.
+	 * 
+	 * @created 10.02.2014
+	 * @param delta the delta to be added to the headings
+	 */
+	void incHeaderLevel(int delta);
 
 	/**
 	 * Exports the specified sections and all contained sub-sections using the
