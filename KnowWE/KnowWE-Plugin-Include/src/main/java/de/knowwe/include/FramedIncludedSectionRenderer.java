@@ -18,7 +18,9 @@
  */
 package de.knowwe.include;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
@@ -43,6 +45,8 @@ import de.knowwe.tools.ToolSet;
  * @created 05.02.2014
  */
 public class FramedIncludedSectionRenderer extends DefaultMarkupRenderer {
+
+	private static final Set<Section<?>> cycleDetection = new HashSet<Section<?>>();
 
 	public FramedIncludedSectionRenderer() {
 		setPreFormattedStyle(false);
@@ -77,31 +81,48 @@ public class FramedIncludedSectionRenderer extends DefaultMarkupRenderer {
 	}
 
 	@Override
-	protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
-		renderTargetSections(section, user, string);
+	protected void renderContents(Section<?> section, UserContext user, RenderResult result) {
+		renderTargetSections(section, user, result);
 	}
 
-	public static void renderTargetSections(Section<?> targetSection, UserContext user, RenderResult string) {
+	// method must be synchronized due to using only
+	// a static cycle detection field
+	// --> otherwise multiple parallel renderings would interfere negatively
+	public synchronized static void renderTargetSections(Section<?> targetSection, UserContext user, RenderResult result) {
+		boolean isNew = cycleDetection.add(targetSection);
+		if (!isNew) {
+			result.append("\n\n%%error Cyclic include detected, please check you include declarations /%\n");
+			return;
+		}
+		try {
+			renderTargetSectionsSecure(targetSection, user, result);
+		}
+		finally {
+			cycleDetection.remove(targetSection);
+		}
+	}
+
+	private static void renderTargetSectionsSecure(Section<?> targetSection, UserContext user, RenderResult result) {
 		if (targetSection.get() instanceof HeaderType) {
 			Section<HeaderType> header = Sections.cast(targetSection, HeaderType.class);
 
 			// render header
-			DelegateRenderer.getInstance().render(targetSection, user, string);
+			DelegateRenderer.getInstance().render(targetSection, user, result);
 
 			// render content of the sub-chapter
 			List<Section<? extends Type>> content = JSPWikiMarkupUtils.getContent(header);
 			for (Section<? extends Type> section : content) {
 				Renderer r = section.get().getRenderer();
 				if (r != null) {
-					r.render(section, user, string);
+					r.render(section, user, result);
 				}
 				else {
-					DelegateRenderer.getInstance().render(section, user, string);
+					DelegateRenderer.getInstance().render(section, user, result);
 				}
 			}
 		}
 		else {
-			DelegateRenderer.getInstance().render(targetSection, user, string);
+			DelegateRenderer.getInstance().render(targetSection, user, result);
 		}
 	}
 }
