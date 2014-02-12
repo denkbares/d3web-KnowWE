@@ -16,30 +16,9 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.d3web.we.kdom.rule;
+package de.d3web.we.kdom.rules;
 
-import de.d3web.we.kdom.condition.CompositeCondition;
-import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.basicType.EndLineComment;
-import de.knowwe.kdom.renderer.StyleRenderer;
-
-/**
- * ConditionArea of the Condition-Action-Rule, instanciates the condition
- * composite
- * 
- * 
- * @author Jochen
- * 
- */
-public class ConditionArea extends AbstractType {
-
-	CompositeCondition compCond = null;
-
-	public ConditionArea() {
-		compCond = new CompositeCondition();
-		EndLineComment comment = new EndLineComment();
-		comment.setRenderer(StyleRenderer.COMMENT);
-		this.addChildType(comment);
-		this.addChildType(compCond);
-	}
+public class ExceptionConditionArea extends ConditionArea {
+	// as a marker for the compile-handler to find correct condition for the
+	// exception easier
 }

@@ -94,7 +94,9 @@ public class TimeStampType extends AbstractType {
 
 		long result = 0;
 		int index = 0;
+		boolean found = false;
 		while (matcher.find(index)) {
+			found = true;
 			String numString = matcher.group(1);
 			String unit = matcher.group(2);
 			double num = Double.parseDouble(numString);
@@ -110,7 +112,7 @@ public class TimeStampType extends AbstractType {
 			index = next;
 
 		}
-
+		if (!found) throw new NumberFormatException("No valid time found in '" + time + "'");
 		return result;
 	}
 

@@ -24,7 +24,7 @@ import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
-import de.d3web.we.kdom.rule.Indent;
+import de.d3web.we.kdom.rules.Indent;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.SolutionDefinition;
 import de.d3web.we.reviseHandler.D3webHandler;

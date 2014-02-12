@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.d3web.we.kdom.condition.CompositeCondition;
-import de.d3web.we.kdom.rules.RuleContentType;
+import de.d3web.we.kdom.rules.RuleType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
@@ -53,7 +53,7 @@ public class CellContent extends TableCellContent {
 				new TableNameConstraint("Name", Arrays.asList(0))));
 
 		CompositeCondition checkType = new CompositeCondition();
-		checkType.setAllowedTerminalConditions(RuleContentType.getTerminalConditions());
+		checkType.setAllowedTerminalConditions(RuleType.getTerminalConditions());
 		checkType.setSectionFinder(new ConstraintSectionFinder(AllTextSectionFinder.getInstance(),
 				new TableNameConstraint("Checks", null),
 				NoBlankSectionsConstraint.getInstance()));

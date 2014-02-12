@@ -18,36 +18,15 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.rule;
-
-import java.util.regex.Pattern;
+package de.d3web.we.kdom.rules;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 
-/**
- * @author Jochen
- * 
- *         Container for ConditionActionRule
- * 
- */
-public class ConditionActionRule extends AbstractType {
+public class ActionArea extends AbstractType {
 
-	public static final String RULE_START = "^\\s*(?:IF|WENN)";
+	public ActionArea(AbstractType action) {
 
-	public ConditionActionRule() {
-		this(null);
-	}
-
-	public ConditionActionRule(AbstractType action) {
-		// from the beginning of the rule until before the beginning of the next
-		// rule, an empty line or the end of the parent section
-		setSectionFinder(new RegexSectionFinder(
-				RULE_START + ".*?(?=\\s*?(" + RULE_START + "|^\\s*?$|\\z))",
-				Pattern.DOTALL + Pattern.MULTILINE));
-		if (action != null) {
-			this.addChildType(new ConditionActionRuleContent(action));
-		}
+		this.addChildType(new SingleAction(action));
 	}
 
 }

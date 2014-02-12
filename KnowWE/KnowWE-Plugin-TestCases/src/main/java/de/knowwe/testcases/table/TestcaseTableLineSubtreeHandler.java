@@ -40,11 +40,14 @@ final class TestcaseTableLineSubtreeHandler extends D3webHandler<TestcaseTableLi
 
 		RatedTestCase testCase = new RatedTestCase();
 		if (timeStamp != null) {
-			// returns 0 for illegal time stamp
-			// we could also return here, but then the Values are not
-			// checked
-			long time = TimeStampType.getTimeInMillis(timeStamp);
-			testCase.setTimeStamp(new Date(time));
+			try {
+				long time = TimeStampType.getTimeInMillis(timeStamp);
+				testCase.setTimeStamp(new Date(time));
+			}
+			catch (NumberFormatException e) {
+				// illegal timestamp... just continue, error message will be
+				// handled in TimeStampType
+			}
 		}
 
 		Section<NameType> nameSection = Sections.findSuccessor(s, NameType.class);

@@ -31,7 +31,7 @@ import de.d3web.core.session.Session;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
-import de.d3web.we.kdom.rules.RuleContentType;
+import de.d3web.we.kdom.rules.RuleType;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.SolutionDefinition;
 import de.d3web.we.reviseHandler.D3webHandler;
@@ -164,7 +164,7 @@ public class CoveringList extends AbstractType {
 			// termConds.add(new Finding());
 			// termConds.add(new NumericalFinding());
 			// termConds.add(new NumericalIntervallFinding());
-			List<Type> termConds = RuleContentType.getTerminalConditions();
+			List<Type> termConds = RuleType.getTerminalConditions();
 			cond.setAllowedTerminalConditions(termConds);
 
 			this.addChildType(cond);

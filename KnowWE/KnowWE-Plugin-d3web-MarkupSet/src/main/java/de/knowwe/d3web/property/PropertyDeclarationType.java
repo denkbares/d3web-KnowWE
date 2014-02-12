@@ -20,7 +20,7 @@ package de.knowwe.d3web.property;
 
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.rule.Indent;
+import de.d3web.we.kdom.rules.Indent;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.rendering.AnchorRenderer;

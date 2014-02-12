@@ -16,11 +16,13 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.d3web.we.kdom.rule;
+package de.d3web.we.kdom.rules;
 
 import java.util.List;
 
 import de.d3web.we.kdom.condition.CompositeCondition;
+import de.d3web.we.kdom.rules.action.RuleAction;
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.EndLineComment;
@@ -43,7 +45,7 @@ public class ConditionActionRuleContent extends AbstractType {
 	ConditionArea condArea = new ConditionArea();
 	ExceptionConditionArea exceptionCond = new ExceptionConditionArea();
 
-	public ConditionActionRuleContent(AbstractType action) {
+	public ConditionActionRuleContent() {
 		this.setSectionFinder(new AllTextFinderTrimmed(true));
 		this.addChildType(new If());
 		Then then = new Then();
@@ -58,7 +60,10 @@ public class ConditionActionRuleContent extends AbstractType {
 		endLineComment.setRenderer(StyleRenderer.COMMENT);
 		this.addChildType(endLineComment);
 
-		ActionArea ae = new ActionArea(action);
+		RuleAction ruleAction = new RuleAction();
+		// add handler to create the rules in the d3web knowledge base
+		ruleAction.addCompileScript(Priority.LOW, new RuleCompileScript());
+		ActionArea ae = new ActionArea(ruleAction);
 		ConstraintSectionFinder constraintFinderAction = new ConstraintSectionFinder(
 				new AllTextFinderTrimmed());
 		constraintFinderAction.addConstraint(SingleChildConstraint.getInstance());

@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.rule;
+package de.d3web.we.kdom.rules;
 
 import java.util.regex.Pattern;
 
@@ -26,20 +26,12 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
-/**
- * Simple type that captures the indent of a line. Use careful, because it will
- * also match whitespaces in the middle of the line if there has been any
- * sectionizing before.
- * 
- * @author Volker Belli (denkbares GmbH)
- * @created 16.08.2013
- */
-public class Indent extends AbstractType {
+public class Then extends AbstractType {
 
-	public Indent() {
-		setSectionFinder(new RegexSectionFinder(
-				"^([ \t\u00A0]+)[^\\s]", Pattern.MULTILINE, 1));
-		this.setRenderer(new StyleRenderer("indent", (String) null));
+	public Then() {
+		setSectionFinder(new RegexSectionFinder("\\s*(DANN|THEN)", Pattern.MULTILINE));
+		this.setRenderer(StyleRenderer.KEYWORDS);
+		addChildType(new Indent());
 	}
 
 }

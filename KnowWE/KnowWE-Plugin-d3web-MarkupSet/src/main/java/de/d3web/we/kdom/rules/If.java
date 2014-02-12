@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.rule;
+package de.d3web.we.kdom.rules;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
@@ -27,7 +27,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class If extends AbstractType {
 
 	public If() {
-		setSectionFinder(new RegexSectionFinder(ConditionActionRule.RULE_START));
+		setSectionFinder(new RegexSectionFinder(RuleType.RULE_START));
 		this.setRenderer(StyleRenderer.KEYWORDS);
 		addChildType(new Indent());
 	}

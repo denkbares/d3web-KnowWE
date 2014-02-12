@@ -51,7 +51,6 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.DefaultTestCaseStorage;
 import de.knowwe.testcases.SingleTestCaseProvider;
 import de.knowwe.testcases.TestCaseProvider;
-import de.knowwe.testcases.TestCaseProviderStorage;
 import de.knowwe.testcases.TestCaseUtils;
 import de.knowwe.testcases.TimeStampType;
 
@@ -281,10 +280,13 @@ public class TestCaseContent extends AbstractType {
 					TimeStampType.class);
 
 			if (timestamp == null) return;
-
-			long timeInMillis = TimeStampType.getTimeInMillis(timestamp);
-
-			rtc.setTimeStamp(new Date(timeInMillis));
+			try {
+				long timeInMillis = TimeStampType.getTimeInMillis(timestamp);
+				rtc.setTimeStamp(new Date(timeInMillis));
+			}
+			catch (NumberFormatException e) {
+				// nothing to do here, not timestamp is ok
+			}
 
 		}
 
