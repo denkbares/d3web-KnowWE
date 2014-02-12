@@ -73,9 +73,8 @@ import de.knowwe.core.wikiConnector.WikiConnector;
 
 /**
  * For code documentation look at the WikiConnector interface definition
- * 
+ *
  * @author Jochen
- * 
  */
 public class JSPWikiConnector implements WikiConnector {
 
@@ -101,11 +100,10 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	/**
-	 * We need this method, because there is the possibility of an
-	 * IllegalThreadStateException while initializing the lock reaper of the
-	 * PageManager, if the first call of lockPage is done in parallel by two
-	 * threads. To avoid this, we call this directly at startup in a safe way.
-	 * 
+	 * We need this method, because there is the possibility of an IllegalThreadStateException while initializing the
+	 * lock reaper of the PageManager, if the first call of lockPage is done in parallel by two threads. To avoid this,
+	 * we call this directly at startup in a safe way.
+	 *
 	 * @created 26.10.2012
 	 */
 	private void initPageLocking() {
@@ -262,7 +260,7 @@ public class JSPWikiConnector implements WikiConnector {
 				InputStream attachmentStream = attachmentManager.getAttachmentStream(attachment);
 				ZipInputStream zipStream = new ZipInputStream(attachmentStream);
 				boolean found = false;
-				for (ZipEntry e; (e = zipStream.getNextEntry()) != null;) {
+				for (ZipEntry e; (e = zipStream.getNextEntry()) != null; ) {
 					if (e.getName().equals(entry)) {
 						found = true;
 						break;
@@ -280,8 +278,7 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	/**
-	 * Removes zip attachments of zip files that are no longer attached
-	 * themselves.
+	 * Removes zip attachments of zip files that are no longer attached themselves.
 	 */
 	private void cleanZipAttachmentCache() {
 		// We call this method quite often, so we skip most of the
@@ -342,7 +339,7 @@ public class JSPWikiConnector implements WikiConnector {
 
 			InputStream attachmentStream = attachmentManager.getAttachmentStream(attachment);
 			ZipInputStream zipStream = new ZipInputStream(attachmentStream);
-			for (ZipEntry e; (e = zipStream.getNextEntry()) != null;) {
+			for (ZipEntry e; (e = zipStream.getNextEntry()) != null; ) {
 				zipEntryAttachments.add(new JSPWikiZipAttachment(e.getName(), attachment,
 						attachmentManager));
 			}
@@ -517,7 +514,7 @@ public class JSPWikiConnector implements WikiConnector {
 		int versionMax = context.getPage().getVersion();
 
 		int versionForDate = -1; // -1 represents the current/newest version of
-									// article
+		// article
 		for (int v = 1; v <= versionMax; v++) {
 			WikiPage wikiPage = null;
 			try {
@@ -585,10 +582,9 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	/**
-	 * Checks if the current page has an access lock. If TRUE no user other then
-	 * the lock owner can edit the page. If FALSE the current page has no lock
-	 * and can be edited by anyone.
-	 * 
+	 * Checks if the current page has an access lock. If TRUE no user other then the lock owner can edit the page. If
+	 * FALSE the current page has no lock and can be edited by anyone.
+	 *
 	 * @param title the title of the article to check
 	 */
 	@Override
@@ -600,11 +596,10 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	/**
-	 * Checks if the current page has been locked by the current user. Returns
-	 * TRUE if yes, FALSE otherwise.
-	 * 
+	 * Checks if the current page has been locked by the current user. Returns TRUE if yes, FALSE otherwise.
+	 *
 	 * @param title the title of the article to check
-	 * @param user the user to check for
+	 * @param user  the user to check for
 	 */
 	@Override
 	public boolean isArticleLockedCurrentUser(String title, String user) {
@@ -671,7 +666,7 @@ public class JSPWikiConnector implements WikiConnector {
 			Attachment attachment = new Attachment(engine, title, filename);
 			attachment.setAuthor(user);
 			attachmentManager.storeAttachment(attachment, stream);
-
+			Log.info("Stored attachment '" + title + "/" + filename + "'");
 			if (!wasLocked) unlockArticle(title, user);
 			return getAttachment(title + "/" + filename);
 		}
