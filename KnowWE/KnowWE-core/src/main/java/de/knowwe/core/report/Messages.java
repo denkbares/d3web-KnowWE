@@ -129,6 +129,18 @@ public final class Messages {
 	}
 
 	/**
+	 * Creates and returns a {@link Message} of the
+	 * {@link de.knowwe.core.report.Message.Type} ERROR with the given
+	 * exception.
+	 * 
+	 * @created 01.12.2011
+	 * @param e the exception to take the message text from
+	 */
+	public static Message error(Exception e) {
+		return new Message(Message.Type.ERROR, e.getMessage());
+	}
+
+	/**
 	 * Filters the given Collection of {@link Message}s and returns a new
 	 * Collection containing only {@link Message}s of the
 	 * {@link de.knowwe.core.report.Message.Type} ERROR.
