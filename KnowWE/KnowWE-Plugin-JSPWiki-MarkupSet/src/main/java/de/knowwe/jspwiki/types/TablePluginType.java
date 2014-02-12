@@ -18,6 +18,8 @@
  */
 package de.knowwe.jspwiki.types;
 
+import java.util.regex.Pattern;
+
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.sectionFinder.NestedBracketsFinder;
 
@@ -28,11 +30,15 @@ import de.knowwe.core.kdom.sectionFinder.NestedBracketsFinder;
  */
 public class TablePluginType extends AbstractType {
 
+	// private static final String SPACES = "[ \t\u00A0]*";
+	// non-breaking whitespaces are not allowed by the plugin either...
+	private static final String SPACES = "[ \t]*";
+
 	public TablePluginType() {
-		// setSectionFinder(new RegexSectionFinder(
-		// "\\[\\{Table.*?\\}\\]",
-		// Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
-		this.setSectionFinder(new NestedBracketsFinder("[{", "Table", "}]"));
+		// before and after the keyword "Table" whitespaces are allowed
+		// also, after the keyword, two returns are expected
+		Pattern tablePattern = Pattern.compile(SPACES + "Table(?=" + SPACES + "?(?:\\r?\\n" + SPACES + "){2})");
+		this.setSectionFinder(new NestedBracketsFinder("[{", tablePattern, "}]"));
 	}
 
 }

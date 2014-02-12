@@ -27,22 +27,15 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
- * Finds Sections starting with the opening and ending with the closing String
- * (given in the constructor). If there are nested sections with the same
- * opening and closing, they are ignored.
- * <p>
+ * Finds Sections starting with the opening and ending with the closing String (given in the constructor). If there are
+ * nested sections with the same opening and closing, they are ignored.
+ * <p/>
  * <b>Example:</b>
- * <p>
- * 
- * In the Text:<br>
- * <br>
- * "Calculation 5 - (2 * (4 / 2)) = 1"<br>
- * <br>
- * a new {@link NestedBracketsFinder}("(", ")") will find the Section<br>
- * <br>
- * "(2 * (4 / 2))"
- * 
- * 
+ * <p/>
+ * <p/>
+ * In the Text:<br> <br> "Calculation 5 - (2 * (4 / 2)) = 1"<br> <br> a new {@link NestedBracketsFinder}("(", ")") will
+ * find the Section<br> <br> "(2 * (4 / 2))"
+ *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 24.04.2013
  */
@@ -50,16 +43,28 @@ public class NestedBracketsFinder implements SectionFinder {
 
 	private final Pattern pattern;
 
-	public NestedBracketsFinder(String opening, String optionalOpeningSuffix, String closing) {
+	/**
+	 * There are some restrictions when using this constructor: <b>You are not allowed to create new capture-groups in
+	 * the given regex. Only us (?: ... ), which does create a group but not captured group.</b>
+	 */
+	public NestedBracketsFinder(String opening, Pattern optionalOpeningSuffix, String closing) {
 		String optionalOpeningSuffixRegex = optionalOpeningSuffix == null ?
-				"" : "(" + Pattern.quote(optionalOpeningSuffix) + ")?";
+				"" : "(" + optionalOpeningSuffix.pattern() + ")?";
 		String regex = "(" + Pattern.quote(opening) + ")" + optionalOpeningSuffixRegex + "|("
 				+ Pattern.quote(closing) + "(?:\\r?\\n)?)";
 		this.pattern = Pattern.compile(regex);
 	}
 
+	public NestedBracketsFinder(String opening, String optionalOpeningSuffix, String closing) {
+		this(opening,
+				optionalOpeningSuffix == null ?
+						null :
+						Pattern.compile(Pattern.quote(optionalOpeningSuffix)),
+				closing);
+	}
+
 	public NestedBracketsFinder(String opening, String closing) {
-		this(opening, null, closing);
+		this(opening, (Pattern) null, closing);
 	}
 
 	@Override

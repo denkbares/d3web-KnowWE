@@ -142,7 +142,8 @@
 		<parameter id="name" value="WikiTable" />
 		<parameter id="description" value="Type to match a wiki-style table." />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="6" />
+		<!--  Needs to be lower in the priority than the TablePlugin, otherwise it will destroy it -->
+		<parameter id="priority" value="9.1" />
 		<parameter id="scope" value="root" />	
 	</extension>
 	
