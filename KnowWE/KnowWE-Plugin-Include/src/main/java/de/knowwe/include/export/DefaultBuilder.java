@@ -20,7 +20,12 @@ package de.knowwe.include.export;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.opc.PackageProperties;
 import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -30,6 +35,8 @@ import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 
 /**
  * 
@@ -40,6 +47,7 @@ public class DefaultBuilder implements DocumentBuilder {
 
 	private final ExportManager manager;
 	private final XWPFDocument document;
+	private final List<Message> messages = new LinkedList<Message>();
 
 	protected XWPFParagraph paragraph = null;
 
@@ -72,6 +80,45 @@ public class DefaultBuilder implements DocumentBuilder {
 		while (document.getBodyElements().size() > index) {
 			document.removeBodyElement(index);
 		}
+	}
+
+	@Override
+	public List<Message> getMessages() {
+		return Collections.unmodifiableList(messages);
+	}
+
+	@Override
+	public void setProperty(String key, String value) {
+		try {
+			PackageProperties properties = document.getPackage().getPackageProperties();
+			if (Strings.equalsIgnoreCase("author", key)
+					|| Strings.equalsIgnoreCase("autor", key)) {
+				properties.setCreatorProperty(Strings.trim(value));
+			}
+			else if (Strings.equalsIgnoreCase("title", key)
+					|| Strings.equalsIgnoreCase("titel", key)) {
+				properties.setTitleProperty(Strings.trim(value));
+			}
+			else if (Strings.equalsIgnoreCase("project", key)
+					|| Strings.equalsIgnoreCase("projekt", key)) {
+				properties.setSubjectProperty(Strings.trim(value));
+			}
+			else if (Strings.equalsIgnoreCase("subject", key)
+					|| Strings.equalsIgnoreCase("betreff", key)) {
+				properties.setSubjectProperty(Strings.trim(value));
+			}
+
+			// always add as custom property
+			document.getProperties().getCustomProperties().addProperty(key, value);
+		}
+		catch (InvalidFormatException e) {
+			addMessage(Messages.warning("unexpected format exception"));
+		}
+	}
+
+	@Override
+	public void addMessage(Message message) {
+		messages.add(message);
 	}
 
 	@Override
@@ -130,10 +177,15 @@ public class DefaultBuilder implements DocumentBuilder {
 	}
 
 	@Override
-	public void export(Section<?> section) throws ExportException {
+	public void export(Section<?> section) {
 		// try to export section
 		for (Exporter<?> export : getManager().getExporters()) {
-			if (exportSection(section, export)) return;
+			try {
+				if (exportSection(section, export)) return;
+			}
+			catch (ExportException e) {
+				addMessage(Messages.error(e));
+			}
 		}
 
 		// if not, export all child sections

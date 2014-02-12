@@ -52,7 +52,7 @@ public class WikiBookPropertyExporter implements Exporter<CSSType> {
 		if (matcher.find()) {
 			String property = matcher.group(1);
 			String value = matcher.group(2);
-			manager.getManager().setProperty(property, value);
+			manager.setProperty(property, value);
 		}
 	}
 }

@@ -18,6 +18,12 @@
  */
 package de.knowwe.include.export;
 
+import org.apache.xmlbeans.impl.xb.xmlschema.SpaceAttribute.Space;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFldChar;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STFldCharType;
+
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.jspwiki.types.TableOfContentsType;
 
@@ -40,7 +46,27 @@ public class TOCExporter implements Exporter<TableOfContentsType> {
 
 	@Override
 	public void export(Section<TableOfContentsType> section, DocumentBuilder manager) throws ExportException {
-		manager.getDocument().createTOC();
+		manager.closeParagraph();
+		CTR ctr = manager.getParagraph().createRun().getCTR();
+		CTFldChar fldChar = ctr.addNewFldChar();
+		fldChar.setFldCharType(STFldCharType.BEGIN);
+
+		ctr = manager.getParagraph().createRun().getCTR();
+		CTText instrText = ctr.addNewInstrText();
+		instrText.setSpace(Space.PRESERVE);
+		instrText.setStringValue(" TOC \\o \"1-3\" ");
+
+		ctr = manager.getParagraph().createRun().getCTR();
+		fldChar = ctr.addNewFldChar();
+		fldChar.setFldCharType(STFldCharType.SEPARATE);
+		manager.getParagraph().createRun().setText("<toc will come here>");
+		ctr = manager.getParagraph().createRun().getCTR();
+		fldChar = ctr.addNewFldChar();
+		fldChar.setFldCharType(STFldCharType.SEPARATE);
+
+		ctr = manager.getParagraph().createRun().getCTR();
+		fldChar = ctr.addNewFldChar();
+		fldChar.setFldCharType(STFldCharType.END);
 	}
 
 }
