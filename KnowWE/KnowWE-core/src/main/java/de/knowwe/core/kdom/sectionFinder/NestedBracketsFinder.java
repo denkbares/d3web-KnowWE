@@ -87,7 +87,7 @@ public class NestedBracketsFinder implements SectionFinder {
 			if (foundNesting && start > -1) {
 				depth++;
 			}
-			if (foundClosing) {
+			if (foundClosing && start > -1) {
 				depth--;
 				if (depth == 0) {
 					results.add(new SectionFinderResult(start, matcher.end(groupCount)));
