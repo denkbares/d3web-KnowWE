@@ -24,6 +24,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
+        <parameter id="css" value="KnowWE-Plugin-Include.css" />
 	</extension>
 
     <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"

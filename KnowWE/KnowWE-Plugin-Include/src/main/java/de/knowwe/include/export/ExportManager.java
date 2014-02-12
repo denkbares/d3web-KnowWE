@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.renderer.RenderKDOMType;
 
 /**
  * Manages the export of the included wiki pages into a specific export
@@ -44,6 +45,7 @@ public class ExportManager {
 		exporters.add(new TOCExporter());
 		exporters.add(new BoldExporter());
 		exporters.add(new ItalicExporter());
+		exporters.add(new LinkExporter());
 		exporters.add(new WikiTextExporter());
 		exporters.add(new PlainTextExporter());
 		exporters.add(new HeaderExporter());
@@ -53,6 +55,8 @@ public class ExportManager {
 		exporters.add(new TableExporter());
 		exporters.add(new ImageExporter());
 
+		// some types to be skipped
+		exporters.add(new HideExporter<RenderKDOMType>(RenderKDOMType.class));
 		// default exporter
 		exporters.add(new DefaultMarkupExporter());
 	}

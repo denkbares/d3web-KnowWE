@@ -55,8 +55,8 @@ public class IncludeExporter implements Exporter<IncludeMarkup> {
 			// export article title if requested
 			String marks = reference.get().getListMarks(reference);
 			int listLevel = marks.length();
-			if (listLevel > 0) {
-				manager.setSuppressHeaderNumbering(marks.endsWith("*"));
+			if (listLevel > 0 && !reference.get().isSuppressHeader(reference)) {
+				manager.setSuppressHeaderNumbering(reference.get().isSuppressNumbering(reference));
 				String title = reference.get().getLinkName(reference);
 				HeaderExporter.export(title, listLevel, manager);
 				delta += listLevel;
@@ -64,7 +64,7 @@ public class IncludeExporter implements Exporter<IncludeMarkup> {
 
 			// export included sections
 			manager.incHeaderLevel(delta);
-			manager.export(reference.get().getIncludedSections(reference));
+			manager.export(reference.get().getIncludedSections(reference, listLevel > 0));
 			manager.incHeaderLevel(-delta);
 			manager.setSuppressHeaderNumbering(wasSuppressHeaderNumbering);
 		}

@@ -200,7 +200,7 @@ public class DefaultMarkupRenderer implements Renderer {
 			for (String messageString : messages) {
 				string.append(messageString).append("\n");
 			}
-			string.appendHtml("</span>\n");
+			string.appendHtml("</span>");
 		}
 	}
 

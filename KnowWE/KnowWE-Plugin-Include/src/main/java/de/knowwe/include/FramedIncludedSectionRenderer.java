@@ -47,8 +47,10 @@ import de.knowwe.tools.ToolSet;
 public class FramedIncludedSectionRenderer extends DefaultMarkupRenderer {
 
 	private static final Set<Section<?>> cycleDetection = new HashSet<Section<?>>();
+	private final boolean skipHeader;
 
-	public FramedIncludedSectionRenderer() {
+	public FramedIncludedSectionRenderer(boolean skipHeader) {
+		this.skipHeader = skipHeader;
 		setPreFormattedStyle(false);
 	}
 
@@ -82,32 +84,34 @@ public class FramedIncludedSectionRenderer extends DefaultMarkupRenderer {
 
 	@Override
 	protected void renderContents(Section<?> section, UserContext user, RenderResult result) {
-		renderTargetSections(section, user, result);
+		renderTargetSections(section, skipHeader, user, result);
 	}
 
 	// method must be synchronized due to using only
 	// a static cycle detection field
 	// --> otherwise multiple parallel renderings would interfere negatively
-	public synchronized static void renderTargetSections(Section<?> targetSection, UserContext user, RenderResult result) {
+	public synchronized static void renderTargetSections(Section<?> targetSection, boolean skipHeader, UserContext user, RenderResult result) {
 		boolean isNew = cycleDetection.add(targetSection);
 		if (!isNew) {
 			result.append("\n\n%%error Cyclic include detected, please check you include declarations /%\n");
 			return;
 		}
 		try {
-			renderTargetSectionsSecure(targetSection, user, result);
+			renderTargetSectionsSecure(targetSection, skipHeader, user, result);
 		}
 		finally {
 			cycleDetection.remove(targetSection);
 		}
 	}
 
-	private static void renderTargetSectionsSecure(Section<?> targetSection, UserContext user, RenderResult result) {
+	private static void renderTargetSectionsSecure(Section<?> targetSection, boolean skipHeader, UserContext user, RenderResult result) {
 		if (targetSection.get() instanceof HeaderType) {
 			Section<HeaderType> header = Sections.cast(targetSection, HeaderType.class);
 
-			// render header
-			DelegateRenderer.getInstance().render(targetSection, user, result);
+			if (!skipHeader) {
+				// render header
+				DelegateRenderer.getInstance().render(targetSection, user, result);
+			}
 
 			// render content of the sub-chapter
 			List<Section<? extends Type>> content = JSPWikiMarkupUtils.getContent(header);

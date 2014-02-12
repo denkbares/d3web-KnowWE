@@ -59,7 +59,7 @@ public class TOCExporter implements Exporter<TableOfContentsType> {
 		ctr = manager.getParagraph().createRun().getCTR();
 		fldChar = ctr.addNewFldChar();
 		fldChar.setFldCharType(STFldCharType.SEPARATE);
-		manager.getParagraph().createRun().setText("<toc will come here>");
+		manager.getParagraph().createRun().setText("<table of contents>");
 		ctr = manager.getParagraph().createRun().getCTR();
 		fldChar = ctr.addNewFldChar();
 		fldChar.setFldCharType(STFldCharType.SEPARATE);

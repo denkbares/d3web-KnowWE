@@ -204,7 +204,7 @@ hr, .hr, .clearbox {
 	font-weight:bold;
 	margin-bottom:0.5em;
 }
-h2, h3, h4 {
+#pagecontent h1, h2, h3, h4 {
 	clear:left;
 	margin:1em 0 0.5em 0;
 	padding:0.25em 0;

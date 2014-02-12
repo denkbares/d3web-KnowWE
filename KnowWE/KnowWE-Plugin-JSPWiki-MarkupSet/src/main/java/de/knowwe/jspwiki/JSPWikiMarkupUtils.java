@@ -60,8 +60,7 @@ public class JSPWikiMarkupUtils {
 	 * the chapter that is spanned by the header title. This also includes any
 	 * sub-headers (and their content sections) of the specified header section.
 	 */
-	public static List<Section<? extends Type>> getContent(
-			Section<HeaderType> sh) {
+	public static List<Section<? extends Type>> getContent(Section<HeaderType> sh) {
 		int level = countHeaderMarks(sh.getText());
 		Section<RootType> s = Sections.findAncestorOfType(sh, RootType.class);
 		List<Section<? extends Type>> list = s.getChildren();

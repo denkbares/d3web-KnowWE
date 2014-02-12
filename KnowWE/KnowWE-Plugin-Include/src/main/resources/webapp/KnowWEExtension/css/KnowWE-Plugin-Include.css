@@ -1,0 +1,41 @@
+.type_Include .defaultMarkup .markupText .defaultMarkupAnnotations {
+	list-style: none;
+	list-style-position: outside;
+}
+
+.type_Include .defaultMarkup .markupText .include-suppressedHeader {
+	text-decoration: line-through;
+}
+
+.type_Include .defaultMarkup .markupText .include-allowHeader {
+	text-decoration: none;
+}
+
+.wikiBook-author:BEFORE,.wikiBook-autor:BEFORE,.wikiBook-creator:BEFORE
+	{
+	content: "Author: "
+}
+
+.wikiBook-author,.wikiBook-autor,.wikiBook-creator {
+	text-align: center;
+	font-size: 15pt;
+	font-style: italic;
+	line-height: 18pt;
+	display: block;
+	color: #444;
+}
+
+.wikiBook-title,.wikiBook-titel {
+	text-align: center;
+	font-size: 20pt;
+	font-weight: bold; line-height : 24pt;
+	display: block;
+	line-height: 24pt
+}
+
+.wikiBook-project,.wikiBook-projekt {
+	text-align: center;
+	font-size: 20pt;
+	line-height: 24pt;
+	display: block;
+}

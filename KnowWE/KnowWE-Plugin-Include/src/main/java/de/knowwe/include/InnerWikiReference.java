@@ -40,6 +40,10 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.jspwiki.JSPWikiMarkupUtils;
 import de.knowwe.jspwiki.types.HeaderType;
+import de.knowwe.kdom.constraint.ConstraintSectionFinder;
+import de.knowwe.kdom.constraint.HasChildrenOfTypeConstraint;
+import de.knowwe.kdom.constraint.NoChildrenOfTypeConstraint;
+import de.knowwe.kdom.constraint.SingleChildConstraint;
 
 /**
  * KDOM type that references an article or a headed section of an article.
@@ -49,17 +53,38 @@ import de.knowwe.jspwiki.types.HeaderType;
  */
 public class InnerWikiReference extends AbstractType {
 
+	private static class Indent extends AbstractType {
+
+		public Indent() {
+			setSectionFinder(new RegexSectionFinder(
+					"^([ \t\u00A0]+)[^\\s]", Pattern.MULTILINE, 1));
+		}
+	}
+
 	private static class LinkName extends AbstractType {
 
-		public LinkName() {
-			setSectionFinder(new RegexSectionFinder("\\[\\s*([^\\n\\r]+?)\\s*\\|", 0, 1));
+		public static LinkName matchLinkName() {
+			LinkName instance = new LinkName();
+			instance.setSectionFinder(new RegexSectionFinder(
+					"^\\s*\\[\\s*([^\\n\\r]+?)\\s*\\|", 0, 1));
+			return instance;
+		}
+
+		public static LinkName matchStaticText() {
+			LinkName instance = new LinkName();
+			instance.setSectionFinder(new ConstraintSectionFinder(
+					new RegexSectionFinder("^\\s*([^\\n\\r]+?)\\s*$", 0, 1),
+					new HasChildrenOfTypeConstraint(ListMarks.class),
+					new NoChildrenOfTypeConstraint(KeywordType.class)
+					));
+			return instance;
 		}
 	}
 
 	private static class ArticleReference extends AbstractType {
 
 		public ArticleReference() {
-			setSectionFinder(new RegexSectionFinder("[^#\\n\\r]+"));
+			setSectionFinder(new RegexSectionFinder("[^#\\s][^#\\n\\r]+"));
 		}
 	}
 
@@ -70,18 +95,37 @@ public class InnerWikiReference extends AbstractType {
 		}
 	}
 
+	private static class ListMarks extends AbstractType {
+
+		public ListMarks() {
+			setSectionFinder(new ConstraintSectionFinder(
+					new RegexSectionFinder("^[#*\\-]+"),
+					SingleChildConstraint.getInstance()));
+		}
+	}
+
 	private static final String TARGET_SECTION_ID_KEY = "includedSectionID";
 
 	public InnerWikiReference() {
 		// matches everything begins with a
 		// non-whitespace, non-enumeration char,
 		// is on one line and end with some printable character
-		setSectionFinder(new RegexSectionFinder("[^#*\\s\\n\\r][^\\n\\r]*[^\\s\\n\\r]"));
+		// (after the optional list marks)
+		setSectionFinder(new RegexSectionFinder(
+				"^[ \t\u00A0]*([#*\\-]+[^\\n\\r]*)?[^#*\\-\\s\\n\\r][^\\n\\r]*[^\\s\\n\\r]",
+				Pattern.MULTILINE));
 		setRenderer(new InterWikiReferenceRenderer());
+
+		// grab list marks
+		addChildType(new Indent());
+		addChildType(new ListMarks());
+
 		// find link name
-		addChildType(new LinkName());
-		// grap all link characters with whitespaces
+		addChildType(LinkName.matchLinkName());
 		addChildType(new KeywordType(Pattern.compile("\\s*[\\[\\]\\|]\\s*")));
+		addChildType(LinkName.matchStaticText());
+
+		// grap all link characters with whitespaces
 		addChildType(new HeaderReference());
 		addChildType(new ArticleReference());
 	}
@@ -115,13 +159,38 @@ public class InnerWikiReference extends AbstractType {
 		return updateReferences(section);
 	}
 
+	/**
+	 * return a list of all included sections. If the include line used header
+	 * suppression, but including a specific header, the header section is also
+	 * not part of the list.
+	 * 
+	 * @created 12.02.2014
+	 * @param section the section defines the include
+	 * @return the list of sections to be included
+	 */
 	public List<Section<?>> getIncludedSections(Section<InnerWikiReference> section) {
+		return getIncludedSections(section, false);
+	}
+
+	/**
+	 * return a list of all included sections. If the include line used header
+	 * suppression, but including a specific header, the header section is also
+	 * not part of the list.
+	 * 
+	 * @created 12.02.2014
+	 * @param section the section defines the include
+	 * @return the list of sections to be included
+	 */
+	public List<Section<?>> getIncludedSections(Section<InnerWikiReference> section, boolean forceSkipHeader) {
 		Section<?> targetSection = getReferencedSection(section);
 		if (targetSection == null) return Collections.emptyList();
 
 		List<Section<?>> result = new ArrayList<Section<?>>();
-		result.add(targetSection);
-		if (targetSection.get() instanceof HeaderType) {
+		boolean isHeader = targetSection.get() instanceof HeaderType;
+		if (!isHeader || (!forceSkipHeader && !isSuppressHeader(section))) {
+			result.add(targetSection);
+		}
+		if (isHeader) {
 			Section<HeaderType> header = Sections.cast(targetSection, HeaderType.class);
 			result.addAll(JSPWikiMarkupUtils.getContent(header));
 		}
@@ -167,6 +236,11 @@ public class InnerWikiReference extends AbstractType {
 			Messages.clearMessages(compiler, headerReference, source);
 		}
 		Messages.clearMessages(compiler, section, source);
+
+		// we do not have an error if we use static text
+		if (getLink(section) == null && getListMarks(section).length() > 0) {
+			return null;
+		}
 
 		// warning if not article specified
 		if (Strings.isBlank(targetArticleName)) {
@@ -223,12 +297,33 @@ public class InnerWikiReference extends AbstractType {
 
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult result) {
+			Section<InnerWikiReference> innerRef = Sections.cast(section, InnerWikiReference.class);
+
+			// add break before first on
+			if (Sections.successor(innerRef.getParent(), InnerWikiReference.class) == innerRef) {
+				result.append("\n");
+			}
+
+			boolean suppressed = innerRef.get().isSuppressHeader(innerRef);
+			String cssName = suppressed ? "include-suppressedHeader" : "include-allowHeader";
+			Section<ListMarks> marks = Sections.successor(innerRef, ListMarks.class);
+			if (marks != null) {
+				String mark = marks.getText();
+				result.append(mark.replace('-', '*')).append(" ");
+			}
+
+			result.appendHtml("<span class='").append(cssName).appendHtml("'>");
+			renderLine(innerRef, user, result);
+			result.appendHtml("</span>");
+		}
+
+		private void renderLine(Section<InnerWikiReference> innerRef, UserContext user, RenderResult result) {
 			// if a header is specified, but it has an error
 			// then we know the article is ok, and therefore render differently
-			Section<HeaderReference> headerReference = getHeaderReference(section);
+			Section<HeaderReference> headerReference = getHeaderReference(innerRef);
 			if (headerReference != null) {
 				if (Messages.hasMessages(headerReference, Type.ERROR, Type.WARNING)) {
-					Section<ArticleReference> articleReference = getArticleReference(section);
+					Section<ArticleReference> articleReference = getArticleReference(innerRef);
 					result.append("[");
 					result.append(articleReference.getText());
 					result.append("]#");
@@ -236,27 +331,69 @@ public class InnerWikiReference extends AbstractType {
 					return;
 				}
 			}
+			// render as static text if there is no link defined
+			String link = getLink(innerRef);
+			if (link == null) {
+				result.append(getLinkName(innerRef));
+				return;
+			}
 			// otherwise use normal wiki rendering
 			result.append("[");
-			result.append(getLinkName(section));
+			result.append(getLinkName(innerRef));
 			result.append("|");
-			result.append(getLink(section));
+			result.append(link);
 			result.append("]");
 		}
 	}
 
-	public String getLinkName(Section<?> section) {
-		Section<LinkName> nameSection = Sections.successor(section, LinkName.class);
-		if (nameSection != null) return nameSection.getText();
-		return getLink(section);
+	/**
+	 * Returns if the header of the section shall be hidden. If this method
+	 * return "true", the eventually referenced header section will
+	 * automatically be removed from the list returned by
+	 * {@link #getIncludedSections()}.
+	 * 
+	 * @created 12.02.2014
+	 * @param section the section to check the header suppression for
+	 * @return if the header shall not be shown
+	 */
+	public boolean isSuppressHeader(Section<InnerWikiReference> section) {
+		return getListMarks(section).endsWith("-");
 	}
 
-	public String getLink(Section<?> section) {
+	/**
+	 * Returns if the numbering of the header of the section shall be hidden.
+	 * 
+	 * @created 12.02.2014
+	 * @param section the section to check the numbering suppression for
+	 * @return if the header's numbering shall not be shown
+	 */
+	public boolean isSuppressNumbering(Section<InnerWikiReference> section) {
+		return getListMarks(section).endsWith("*");
+	}
+
+	public String getLinkName(Section<InnerWikiReference> section) {
+		// if a name is specified use the name
+		Section<LinkName> nameSection = Sections.successor(section, LinkName.class);
+		if (nameSection != null) return nameSection.getText();
+		// if a specific header is included, use the name of the header
+		Section<HeaderReference> headerReference = getHeaderReference(section);
+		if (headerReference != null) return headerReference.getText();
+		// otherwise use article link
+		Section<ArticleReference> articleReference = getArticleReference(section);
+		if (articleReference != null) return articleReference.getText();
+		return section.getText();
+	}
+
+	public String getLink(Section<InnerWikiReference> section) {
 		Section<ArticleReference> articleReference = getArticleReference(section);
 		Section<HeaderReference> headerReference = getHeaderReference(section);
+		if (articleReference == null && headerReference == null) return null;
+		String article = (articleReference == null)
+				? section.getTitle()
+				: articleReference.getText();
 		return headerReference == null
-				? articleReference.getText()
-				: articleReference.getText() + "#" + headerReference.getText();
+				? article
+				: article + "#" + headerReference.getText();
 	}
 
 	/**
@@ -268,9 +405,9 @@ public class InnerWikiReference extends AbstractType {
 	 * @return the marks preceding the include link
 	 */
 	public String getListMarks(Section<InnerWikiReference> reference) {
-		String text = reference.getParent().getText();
-		int end = reference.getOffsetInParent();
-		int start = text.lastIndexOf("\n", end) + 1;
-		return Strings.trim(text.substring(start, end));
+		Section<ListMarks> marks = Sections.successor(reference, ListMarks.class);
+		if (marks == null) return "";
+		return marks.getText();
 	}
+
 }
