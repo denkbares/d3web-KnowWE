@@ -18,6 +18,22 @@
  */
 package de.knowwe.core.objectinfo;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.UUID;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import de.d3web.collections.CountingSet;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
@@ -46,21 +62,6 @@ import de.knowwe.kdom.search.SearchEngine;
 import de.knowwe.kdom.search.SearchOption;
 import de.knowwe.tools.ToolSet;
 import de.knowwe.tools.ToolUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.UUID;
 
 /**
  * @author stefan
@@ -122,10 +123,9 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	/**
-	 * Renders the specified list of term references (usually of one specific
-	 * article). The method renders the previews of the specified sections,
-	 * grouped by their preview. Each preview may render one or multiple of the
-	 * specified sections.
+	 * Renders the specified list of term references (usually of one specific article). The method renders the previews
+	 * of the specified sections, grouped by their preview. Each preview may render one or multiple of the specified
+	 * sections.
 	 *
 	 * @param sections the section to be rendered in their previews
 	 * @param user     the user context
@@ -179,7 +179,7 @@ public class ObjectInfoRenderer implements Renderer {
 		result.appendHtml("<input type=\"text\" size=\"60\" name=\"")
 				.append(ObjectInfoRenderer.OBJECT_NAME)
 				.appendHtml("\" id=\"objectinfo-search\" />&nbsp;");
-		result.appendHtml("<input type=\"submit\" value=\"go to\" />");
+		result.appendHtml("<input type=\"submit\" value=\"Go to\" />");
 		result.appendHtml("</form>");
 		renderSectionEnd(result);
 	}
@@ -197,7 +197,7 @@ public class ObjectInfoRenderer implements Renderer {
 		result.appendHtml("<input action=\"" + getRenamingAction()
 				+ "\" type=\"text\" size=\"60\" value=\"" + identifier.getLastPathElement()
 				+ "\" id=\"objectinfo-replacement\" />&nbsp;");
-		result.appendHtml("<input type=\"button\" id=\"objectinfo-replace-button\" value=\"rename\" />");
+		result.appendHtml("<input type=\"button\" id=\"objectinfo-replace-button\" value=\"Rename\" />");
 		result.appendHtml("&nbsp;<span id=\"objectinfo-rename-result\">");
 
 		result.appendHtml("</span>");
@@ -367,9 +367,8 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	/**
-	 * Groups the specified sections by the ancestor section to be rendered as a
-	 * preview. If a section has no ancestor to be rendered, the section itself
-	 * will be used as a group with an empty collection of grouped sections.
+	 * Groups the specified sections by the ancestor section to be rendered as a preview. If a section has no ancestor
+	 * to be rendered, the section itself will be used as a group with an empty collection of grouped sections.
 	 *
 	 * @param items list of sections to be grouped
 	 * @return the groups of sections
@@ -465,11 +464,9 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	/**
-	 * Get a counting set of all markup names that surrounds the specified list
-	 * of sections. The count is not the number of sections contained in a
-	 * specific markup, but it is the number of preview sections required to
-	 * display these sections (some preview sections may display multiple of the
-	 * specified sections).
+	 * Get a counting set of all markup names that surrounds the specified list of sections. The count is not the number
+	 * of sections contained in a specific markup, but it is the number of preview sections required to display these
+	 * sections (some preview sections may display multiple of the specified sections).
 	 *
 	 * @param sections the section to get the markup names for
 	 * @return the counting set of markup names
