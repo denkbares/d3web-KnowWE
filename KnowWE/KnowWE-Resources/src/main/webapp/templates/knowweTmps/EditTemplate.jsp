@@ -23,7 +23,7 @@
   </title>
   <meta name="robots" content="noindex,follow" />
 <%--jquery will be added twice, because we need it for skin.js already, which is added in the commonheader.jsp  --%>
-  <script type="text/javascript" src="KnowWEExtension/scripts/jquery-1.7.1.js"></script>
+  <script type="text/javascript" src="KnowWEExtension/scripts/jquery-2.1.0.min.js"></script>
   <script type="text/javascript" src="KnowWEExtension/scripts/jquery-compatibility.js"></script>
   <wiki:Include page="commonheader.jsp"/>
 </head>

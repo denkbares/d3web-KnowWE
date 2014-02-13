@@ -33,7 +33,7 @@ import java.util.List;
  * @author smark
  * @since 2010/02/15
  */
-public class RessourceLoader {
+public class ResourceLoader {
 
 	/**
 	 * Requests a CSS to be inserted. Value is {@value} .
@@ -70,16 +70,16 @@ public class RessourceLoader {
 	/**
 	 * Instance of the Loader. The loader is implemented as a Singleton.
 	 */
-	private static RessourceLoader instance;
+	private static ResourceLoader instance;
 
 	/**
 	 * Returns the instance of the KnowWERessourceLoader.
 	 * 
 	 * @return instance The instance of the KnowWERessourceLoader
 	 */
-	public static synchronized RessourceLoader getInstance() {
+	public static synchronized ResourceLoader getInstance() {
 		if (instance == null) {
-			instance = new RessourceLoader();
+			instance = new ResourceLoader();
 		}
 		return instance;
 	}
@@ -88,7 +88,7 @@ public class RessourceLoader {
 	 * Creates a KnowWERessourceLoader instance by first loading the KnowWE
 	 * default resources.
 	 */
-	private RessourceLoader() {
+	private ResourceLoader() {
 		loadDefaultResources();
 	}
 
@@ -104,21 +104,21 @@ public class RessourceLoader {
 	 * @created 05.07.2010
 	 */
 	private void loadDefaultResources() {
-		addFirst("tooltipster.css", RessourceLoader.RESOURCE_STYLESHEET);
-		addFirst("jquery-autocomplete.css", RessourceLoader.RESOURCE_STYLESHEET);
-        addFirst("jquery-treeTable.css", RessourceLoader.RESOURCE_STYLESHEET);
-        addFirst("general.css", RessourceLoader.RESOURCE_STYLESHEET);
-        addFirst("KnowWE-notification.js", RessourceLoader.RESOURCE_SCRIPT);
-        addFirst("KnowWE.js", RessourceLoader.RESOURCE_SCRIPT);
-        addFirst("KnowWE-helper.js", RessourceLoader.RESOURCE_SCRIPT);
-        addFirst("jquery-compatibility.js", RessourceLoader.RESOURCE_SCRIPT);
-        addFirst("jquery.mousewheel.js", RessourceLoader.RESOURCE_SCRIPT);
-        addFirst("jquery-plugin-collection.js", RessourceLoader.RESOURCE_SCRIPT);
-        addFirst("jquery-tooltipster.js", RessourceLoader.RESOURCE_SCRIPT);
-        addFirst("jquery-treeTable.js", RessourceLoader.RESOURCE_SCRIPT);
-        addFirst("jquery-autosize.min.js", RessourceLoader.RESOURCE_SCRIPT);
-		addFirst("jquery-ui-1.8.23.custom.min.js", RessourceLoader.RESOURCE_SCRIPT);
-		addFirst("jquery-1.7.1.js", RessourceLoader.RESOURCE_SCRIPT);
+		addFirst("tooltipster.css", ResourceLoader.RESOURCE_STYLESHEET);
+		addFirst("jquery-autocomplete.css", ResourceLoader.RESOURCE_STYLESHEET);
+        addFirst("jquery-treeTable.css", ResourceLoader.RESOURCE_STYLESHEET);
+        addFirst("general.css", ResourceLoader.RESOURCE_STYLESHEET);
+        addFirst("KnowWE-notification.js", ResourceLoader.RESOURCE_SCRIPT);
+        addFirst("KnowWE.js", ResourceLoader.RESOURCE_SCRIPT);
+        addFirst("KnowWE-helper.js", ResourceLoader.RESOURCE_SCRIPT);
+        addFirst("jquery-compatibility.js", ResourceLoader.RESOURCE_SCRIPT);
+        addFirst("jquery.mousewheel.js", ResourceLoader.RESOURCE_SCRIPT);
+        addFirst("jquery-plugin-collection.js", ResourceLoader.RESOURCE_SCRIPT);
+        addFirst("jquery-tooltipster.js", ResourceLoader.RESOURCE_SCRIPT);
+        addFirst("jquery-treeTable.js", ResourceLoader.RESOURCE_SCRIPT);
+        addFirst("jquery-autosize.min.js", ResourceLoader.RESOURCE_SCRIPT);
+		addFirst("jquery-ui-1.10.4.custom.min.js", ResourceLoader.RESOURCE_SCRIPT);
+		addFirst("jquery-2.1.0.min.js", ResourceLoader.RESOURCE_SCRIPT);
 	}
 
 	/**

@@ -124,8 +124,8 @@
 	<script src="cc/flow/router.js" type="text/javascript"></script>
 	<script src="cc/flow/contextmenu.js" type="text/javascript"></script>
 
-	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-1.7.1.js'></script>
-	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-ui-1.8.23.custom.min.js'></script>
+	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-2.1.0.min.js'></script>
+	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-ui-1.10.4.custom.min.js'></script>
 	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-autosize.min.js'></script>
 	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-treeTable.js'></script>
 	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-tooltipster.js'></script>

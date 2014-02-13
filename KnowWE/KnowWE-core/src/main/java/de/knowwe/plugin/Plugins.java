@@ -28,7 +28,7 @@ import de.d3web.plugin.JPFExtension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.utils.Log;
 import de.knowwe.core.Environment;
-import de.knowwe.core.RessourceLoader;
+import de.knowwe.core.ResourceLoader;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.compile.CompileScript;
@@ -255,7 +255,7 @@ public class Plugins {
 		addScripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_KnowWEAction));
 		for (String s : files) {
-			RessourceLoader.getInstance().add(s, RessourceLoader.RESOURCE_SCRIPT);
+			ResourceLoader.getInstance().add(s, ResourceLoader.RESOURCE_SCRIPT);
 		}
 	}
 
@@ -274,7 +274,7 @@ public class Plugins {
 		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_KnowWEAction));
 		for (String s : files) {
-			RessourceLoader.getInstance().add(s, RessourceLoader.RESOURCE_STYLESHEET);
+			ResourceLoader.getInstance().add(s, ResourceLoader.RESOURCE_STYLESHEET);
 		}
 	}
 
@@ -282,13 +282,13 @@ public class Plugins {
 		PriorityList<Double, String> cssFiles = new PriorityList<Double, String>(5.0);
 		addCSS(cssFiles, extensions);
 		for (String s : cssFiles) {
-			RessourceLoader.getInstance().add(s, RessourceLoader.RESOURCE_STYLESHEET);
+			ResourceLoader.getInstance().add(s, ResourceLoader.RESOURCE_STYLESHEET);
 		}
 		PriorityList<Double, String> jsFiles = new PriorityList<Double, String>(5.0);
 		addScripts(jsFiles, extensions);
 		for (int i = 0; i < jsFiles.size(); i++) {
 			String filename = jsFiles.get(i);
-			RessourceLoader.getInstance().add(filename, RessourceLoader.RESOURCE_SCRIPT);
+			ResourceLoader.getInstance().add(filename, ResourceLoader.RESOURCE_SCRIPT);
 		}
 
 

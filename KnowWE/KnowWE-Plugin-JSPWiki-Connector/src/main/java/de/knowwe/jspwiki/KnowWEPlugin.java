@@ -59,7 +59,7 @@ import de.d3web.plugin.PluginManager;
 import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
-import de.knowwe.core.RessourceLoader;
+import de.knowwe.core.ResourceLoader;
 import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.event.EventManager;
@@ -468,7 +468,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	 */
 	private void includeDOMResources(WikiContext wikiContext) {
 		Object ctx = wikiContext.getVariable(TemplateManager.RESOURCE_INCLUDES);
-		RessourceLoader loader = RessourceLoader.getInstance();
+		ResourceLoader loader = ResourceLoader.getInstance();
 
 		List<String> script = loader.getScriptIncludes();
 		for (String resource : script) {
@@ -500,24 +500,24 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			if (ctx != null && !ctx.toString().contains(resource)) {
 				if (!resource.contains("://")) {
 					TemplateManager.addResourceRequest(wikiContext,
-							RessourceLoader.RESOURCE_SCRIPT,
-							RessourceLoader.defaultScript + resource);
+							ResourceLoader.RESOURCE_SCRIPT,
+							ResourceLoader.defaultScript + resource);
 				}
 				else {
 					TemplateManager.addResourceRequest(wikiContext,
-							RessourceLoader.RESOURCE_SCRIPT,
+							ResourceLoader.RESOURCE_SCRIPT,
 							resource);
 				}
 			}
 			else if (ctx == null) {
 				if (!resource.contains("://")) {
 					TemplateManager.addResourceRequest(wikiContext,
-							RessourceLoader.RESOURCE_SCRIPT,
-							RessourceLoader.defaultScript + resource);
+							ResourceLoader.RESOURCE_SCRIPT,
+							ResourceLoader.defaultScript + resource);
 				}
 				else {
 					TemplateManager.addResourceRequest(wikiContext,
-							RessourceLoader.RESOURCE_SCRIPT,
+							ResourceLoader.RESOURCE_SCRIPT,
 							resource);
 				}
 			}
@@ -527,13 +527,13 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		for (String resource : css) {
 			if (ctx != null && !ctx.toString().contains(resource)) {
 				TemplateManager.addResourceRequest(wikiContext,
-						RessourceLoader.RESOURCE_STYLESHEET,
-						RessourceLoader.defaultStylesheet + resource);
+						ResourceLoader.RESOURCE_STYLESHEET,
+						ResourceLoader.defaultStylesheet + resource);
 			}
 			else if (ctx == null) {
 				TemplateManager.addResourceRequest(wikiContext,
-						RessourceLoader.RESOURCE_STYLESHEET,
-						RessourceLoader.defaultStylesheet + resource);
+						ResourceLoader.RESOURCE_STYLESHEET,
+						ResourceLoader.defaultStylesheet + resource);
 			}
 		}
 	}

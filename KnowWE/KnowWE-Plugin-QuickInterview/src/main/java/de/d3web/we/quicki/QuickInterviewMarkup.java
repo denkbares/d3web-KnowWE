@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.knowwe.core.Environment;
-import de.knowwe.core.RessourceLoader;
+import de.knowwe.core.ResourceLoader;
 import de.knowwe.core.compile.packaging.MasterAnnotationWarningHandler;
 import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -91,10 +91,10 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 
 	public QuickInterviewMarkup(DefaultMarkup markup) {
 		super(markup);
-		RessourceLoader.getInstance().add("quickiNeutral.css",
-				RessourceLoader.RESOURCE_STYLESHEET);
-		RessourceLoader.getInstance().add("quicki.js",
-				RessourceLoader.RESOURCE_SCRIPT);
+		ResourceLoader.getInstance().add("quickiNeutral.css",
+				ResourceLoader.RESOURCE_STYLESHEET);
+		ResourceLoader.getInstance().add("quicki.js",
+				ResourceLoader.RESOURCE_SCRIPT);
 		this.setRenderer(new QuickInterviewMarkupRenderer());
 		this.addCompileScript(new MasterAnnotationWarningHandler());
 	}
