@@ -61,6 +61,7 @@ public class ExportManager {
 
 		// add special exporters
 		exporters.add(new InlineDefinitionExporter("RESP_?\\d*"));
+		exporters.add(new DefinitionExporter());
 
 		// some types to be skipped
 		exporters.add(new HideExporter<RenderKDOMType>(RenderKDOMType.class));

@@ -81,4 +81,13 @@ public class ListExporter implements Exporter<Type> {
 		manager.export(Sections.successor(section, DashTreeElementContent.class));
 		manager.closeParagraph();
 	}
+
+	public static BigInteger getAbstractIdOrdered() {
+		return ABSTRACT_ID_ORDERED;
+	}
+
+	public static BigInteger getAbstractIdUnordered() {
+		return ABSTRACT_ID_UNORDERED;
+	}
+
 }
