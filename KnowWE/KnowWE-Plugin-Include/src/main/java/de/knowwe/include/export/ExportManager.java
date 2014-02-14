@@ -59,8 +59,12 @@ public class ExportManager {
 		exporters.add(new TableExporter());
 		exporters.add(new ImageExporter());
 
+		// add special exporters
+		exporters.add(new InlineDefinitionExporter("RESP_?\\d*"));
+
 		// some types to be skipped
 		exporters.add(new HideExporter<RenderKDOMType>(RenderKDOMType.class));
+
 		// default exporter
 		exporters.add(new DefaultMarkupExporter());
 	}

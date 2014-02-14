@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 denkbares GmbH
+ * Copyright (C) 2014 denkbares GmbH
  * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -16,41 +16,32 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.jspwiki.types;
-
-import java.util.regex.Pattern;
-
-import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+package de.knowwe.include.export;
 
 /**
- * Markup type to detect jsp-wiki definitions.
+ * Some util methods to deal with export and documents.
  * 
  * @author Volker Belli (denkbares GmbH)
  * @created 14.02.2014
  */
-public class DefinitionType extends AbstractType {
+public class ExportUtils {
 
-	public static class DefinitionData extends AbstractType {
-
-		public DefinitionData() {
-			this.setSectionFinder(new RegexSectionFinder(":\\s*([^\n\r]+?)\\s*((\n\r?)|$)", 0, 1));
+	public static boolean requiresSpace(DocumentBuilder builder) {
+		boolean isFirst = builder.getParagraph().getRuns().isEmpty();
+		if (!isFirst) {
+			String text = builder.getParagraph().getRuns().get(0).getText(0);
+			if (text == null) return false;
+			char last = text.charAt(text.length() - 1);
+			if (" \t([{".indexOf(last) == -1) {
+				return true;
+			}
 		}
+		return false;
 	}
 
-	public static class DefinitionHead extends AbstractType {
-
-		public DefinitionHead() {
-			this.setSectionFinder(new RegexSectionFinder(";\\s*([^;:\n\r]+?)\\s*:", 0, 1));
+	public static void addRequiredSpace(DocumentBuilder manager) {
+		if (ExportUtils.requiresSpace(manager)) {
+			manager.append(" ");
 		}
-	}
-
-	public DefinitionType() {
-		this.setSectionFinder(new RegexSectionFinder(
-				"^;[^;:\n\r]+:[^\n\r]+((\n\r?)|$)",
-				Pattern.MULTILINE));
-
-		addChildType(new DefinitionData());
-		addChildType(new DefinitionHead());
 	}
 }
