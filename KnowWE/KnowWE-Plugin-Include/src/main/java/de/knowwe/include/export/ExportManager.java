@@ -25,8 +25,12 @@ import java.util.List;
 
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.renderer.RenderKDOMType;
+import de.knowwe.include.IncludeMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * Manages the export of the included wiki pages into a specific export
@@ -67,11 +71,25 @@ public class ExportManager {
 
 	public XWPFDocument createDocument(Section<?> section) throws IOException {
 		DefaultBuilder builder = new DefaultBuilder(this);
+		if (section.get() instanceof IncludeMarkup) {
+			updateDocumentInfo(Sections.cast(section, IncludeMarkup.class), builder);
+		}
 		builder.export(section);
-		// properties.setRevisionProperty("13");
-		// properties.setLastModifiedByProperty(lastModifiedBy);
-		// properties.setModifiedProperty(lastModified);
 		return builder.getDocument();
 	}
 
+	private void updateDocumentInfo(Section<IncludeMarkup> section, DefaultBuilder builder) {
+		String project = DefaultMarkupType.getAnnotation(section, IncludeMarkup.ANNOTATION_PROJECT);
+		if (!Strings.isBlank(project)) {
+			builder.setProperty("project", project);
+		}
+		String title = DefaultMarkupType.getAnnotation(section, IncludeMarkup.ANNOTATION_TITLE);
+		if (!Strings.isBlank(title)) {
+			builder.setProperty("title", title);
+		}
+		String author = DefaultMarkupType.getAnnotation(section, IncludeMarkup.ANNOTATION_AUTHOR);
+		if (!Strings.isBlank(author)) {
+			builder.setProperty("author", author);
+		}
+	}
 }
