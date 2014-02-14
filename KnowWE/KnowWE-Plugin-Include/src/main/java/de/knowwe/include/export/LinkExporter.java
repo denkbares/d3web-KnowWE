@@ -18,6 +18,7 @@
  */
 package de.knowwe.include.export;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.jspwiki.types.LinkType;
 
@@ -46,7 +47,7 @@ public class LinkExporter implements Exporter<LinkType> {
 		int from = text.indexOf('[');
 		int to = text.lastIndexOf('|');
 		if (to == -1) to = text.lastIndexOf(']');
-		manager.append(text.substring(from + 1, to).trim());
+		manager.append(Strings.trimBlankLines(text.substring(from + 1, to)));
 	}
 
 }

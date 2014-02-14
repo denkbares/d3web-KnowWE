@@ -41,7 +41,7 @@ public class WikiTextExporter implements Exporter<WikiTextType> {
 
 	@Override
 	public void export(Section<WikiTextType> section, DocumentBuilder manager) throws ExportException {
-		String text = section.getText().trim();
+		String text = Strings.trimBlankLines(section.getText());
 		String[] lines = text.split("\\\\\\\\");
 		boolean first = true;
 		for (String line : lines) {
