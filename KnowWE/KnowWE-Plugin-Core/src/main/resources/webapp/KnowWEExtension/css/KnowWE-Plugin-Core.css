@@ -155,6 +155,14 @@ span.markupMenuItem {
 	display: inline-block;
 	width: 50%;
 	height: 12px;
+	position: relative;
+}
+.defaultMarkupFrame .progress-container .progress-bar .progress-bar-percent {
+	position: absolute;
+	top: -2px;
+	left: 10px;
+	right: 10px;
+	text-align: center;
 }
 .defaultMarkupFrame .progress-container .progress-bar .ui-progressbar-value {
 	height: 12px;

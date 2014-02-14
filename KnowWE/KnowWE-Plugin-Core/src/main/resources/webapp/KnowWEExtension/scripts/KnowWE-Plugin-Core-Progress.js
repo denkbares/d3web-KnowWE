@@ -142,7 +142,7 @@ KNOWWE.core.plugin.progress = function() {
 								container.append("<div id='"+opID+"'>" +
 										"<div class='progress-state'></div>" +
 										"<div class='progress-bar'>" +
-										"<span class='progress-bar-percent' style='position: absolute; width: 100%; top: 3px; left: 25%;'>0 %</span>" +
+										"<span class='progress-bar-percent'>0 %</span>" +
 										"</div>" +
 										"<div class='progress-message'></div></div>");
 								bar = container.find("#"+opID);
