@@ -19,6 +19,7 @@ package de.knowwe.include;
  * site: http://www.fsf.org.
  */
 
+import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -104,10 +105,11 @@ public class IncludeMarkup extends DefaultMarkupType {
 		m.addAnnotation(ANNOTATION_DEFINITION, false, "hide", "show");
 		m.addAnnotation(ANNOTATION_FRAME, false, "hide", "show");
 		m.addAnnotation(ANNOTATION_ZOOM, false);
-		m.addAnnotation(ANNOTATION_TEMPLATE, false);
 		m.addAnnotation(ANNOTATION_TITLE, false);
 		m.addAnnotation(ANNOTATION_PROJECT, false);
 		m.addAnnotation(ANNOTATION_AUTHOR, false);
+		m.addAnnotation(ANNOTATION_TEMPLATE, false);
+		m.addAnnotationContentType(ANNOTATION_TEMPLATE, new AttachmentType());
 	}
 
 	public IncludeMarkup() {
