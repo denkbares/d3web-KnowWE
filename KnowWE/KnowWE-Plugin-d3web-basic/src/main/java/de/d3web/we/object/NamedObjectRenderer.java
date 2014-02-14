@@ -24,6 +24,7 @@ import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.strings.Identifier;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.basicType.PlainText;
@@ -35,7 +36,6 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
- * 
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 15.02.2012
  */
@@ -44,25 +44,25 @@ public class NamedObjectRenderer implements Renderer {
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult string) {
 		Identifier termIdentifier = KnowWEUtils.getTermIdentifier(section);
-		TerminologyManager tManager = D3webUtils.getCompiler(section).getTerminologyManager();
-		Renderer renderer;
-		if (tManager.hasTermOfClass(termIdentifier, Question.class)) {
-			renderer = new ValueTooltipRenderer(StyleRenderer.Question);
-		}
-		else if (tManager.hasTermOfClass(termIdentifier, QContainer.class)) {
-			renderer = StyleRenderer.Questionaire;
-		}
-		else if (tManager.hasTermOfClass(termIdentifier, Solution.class)) {
-			renderer = StyleRenderer.SOLUTION;
-		}
-		else if (tManager.hasTermOfClass(termIdentifier, Choice.class)) {
-			renderer = StyleRenderer.CHOICE;
-		}
-		else if (tManager.hasTermOfClass(termIdentifier, KnowledgeBase.class)) {
-			renderer = StyleRenderer.Questionaire;
-		}
-		else {
-			renderer = PlainText.getInstance().getRenderer();
+		Renderer renderer = PlainText.getInstance().getRenderer();
+		D3webCompiler compiler = D3webUtils.getCompiler(section);
+		if (compiler != null) {
+			TerminologyManager tManager = compiler.getTerminologyManager();
+			if (tManager.hasTermOfClass(termIdentifier, Question.class)) {
+				renderer = new ValueTooltipRenderer(StyleRenderer.Question);
+			}
+			else if (tManager.hasTermOfClass(termIdentifier, QContainer.class)) {
+				renderer = StyleRenderer.Questionaire;
+			}
+			else if (tManager.hasTermOfClass(termIdentifier, Solution.class)) {
+				renderer = StyleRenderer.SOLUTION;
+			}
+			else if (tManager.hasTermOfClass(termIdentifier, Choice.class)) {
+				renderer = StyleRenderer.CHOICE;
+			}
+			else if (tManager.hasTermOfClass(termIdentifier, KnowledgeBase.class)) {
+				renderer = StyleRenderer.Questionaire;
+			}
 		}
 		renderer.render(section, user, string);
 	}

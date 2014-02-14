@@ -45,9 +45,8 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
- * 
  * Type for the definition of solution
- * 
+ *
  * @author Jochen/Albrecht
  * @created 26.07.2010
  */
@@ -72,42 +71,41 @@ public abstract class SolutionDefinition
 	}
 
 	/**
-	 * 
 	 * @author Johannes Dienst
-	 * 
-	 *         Highlights the Solutions in CoveringList according to state. Also
-	 *         Includes the ObjectInfoLinkRenderer.
-	 * 
+	 *         <p/>
+	 *         Highlights the Solutions in CoveringList according to state. Also Includes the ObjectInfoLinkRenderer.
 	 */
 	class SolutionIDHighlightingRenderer implements Renderer {
 
 		@Override
 		public void render(Section<?> sec, UserContext user,
-				RenderResult string) {
+						   RenderResult string) {
 
 			D3webCompiler compiler = Compilers.getCompiler(sec, D3webCompiler.class);
 
-			KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
-			Session session = SessionProvider.getSession(user, kb);
+			if (compiler != null) {
+				KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
+				Session session = SessionProvider.getSession(user, kb);
 
-			if (session != null) {
-				@SuppressWarnings("unchecked")
-				Solution solution = getTermObject(compiler,
-						(Section<? extends D3webTerm<Solution>>) sec);
-				if (solution != null) {
-					Rating state = session.getBlackboard().getRating(solution);
+				if (session != null) {
+					@SuppressWarnings("unchecked")
+					Solution solution = getTermObject(compiler,
+							(Section<? extends D3webTerm<Solution>>) sec);
+					if (solution != null) {
+						Rating state = session.getBlackboard().getRating(solution);
 
-					string.appendHtml("<span style=\"background-color:");
-					if (state.hasState(State.ESTABLISHED)) {
-						string.append(StyleRenderer.CONDITION_FULLFILLED);
+						string.appendHtml("<span style=\"background-color:");
+						if (state.hasState(State.ESTABLISHED)) {
+							string.append(StyleRenderer.CONDITION_FULLFILLED);
+						}
+						else if (state.hasState(State.EXCLUDED)) {
+							string.append(StyleRenderer.CONDITION_FALSE);
+						}
+						else {
+							string.appendHtml(" rgb()");
+						}
+						string.appendHtml(";\">");
 					}
-					else if (state.hasState(State.EXCLUDED)) {
-						string.append(StyleRenderer.CONDITION_FALSE);
-					}
-					else {
-						string.appendHtml(" rgb()");
-					}
-					string.appendHtml(";\">");
 				}
 			}
 
@@ -120,7 +118,7 @@ public abstract class SolutionDefinition
 
 		@Override
 		public Collection<Message> create(D3webCompiler compiler,
-				Section<SolutionDefinition> section) {
+										  Section<SolutionDefinition> section) {
 
 			Identifier termIdentifier = section.get().getTermIdentifier(section);
 			String name = section.get().getTermName(section);
