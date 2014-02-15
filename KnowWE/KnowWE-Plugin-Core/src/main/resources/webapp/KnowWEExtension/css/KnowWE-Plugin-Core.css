@@ -409,6 +409,9 @@ smartedit + .objectinfo.preview:hover{
 .inline-definition-head:BEFORE {
 	content: "(";
 }
+.inline-definition-head:AFTER {
+	content: ": ";
+}
 .inline-definition-head {
 	font-size: 50%;
 	color: #888;

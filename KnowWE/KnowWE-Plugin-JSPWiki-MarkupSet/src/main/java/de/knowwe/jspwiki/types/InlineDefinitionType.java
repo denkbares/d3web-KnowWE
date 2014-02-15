@@ -45,11 +45,11 @@ public class InlineDefinitionType extends AbstractType {
 			result.appendHtml("<span class='inline-definition'>");
 
 			result.appendHtml("<span class='inline-definition-head'>");
-			result.append(Sections.ancestor(section, DefinitionHead.class), user);
+			result.append(Sections.successor(section, DefinitionHead.class), user);
 			result.appendHtml("</span>");
 
 			result.appendHtml("<span class='inline-definition-data'>");
-			result.append(Sections.ancestor(section, DefinitionHead.class), user);
+			result.append(Sections.successor(section, DefinitionData.class), user);
 			result.appendHtml("</span>");
 
 			result.appendHtml("</span>");
