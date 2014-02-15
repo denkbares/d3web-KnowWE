@@ -18,10 +18,14 @@
  */
 package de.knowwe.include.export;
 
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.imageio.ImageIO;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.util.Units;
@@ -30,6 +34,7 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -62,18 +67,14 @@ public class ImageExporter implements Exporter<PluginType> {
 			WikiConnector connector = Environment.getInstance().getWikiConnector();
 			WikiAttachment attachment = connector.getAttachment(path);
 
+			Dimension dim = getImageDimension(section, attachment);
 			InputStream stream = attachment.getInputStream();
 			try {
 				XWPFRun run = manager.getNewParagraph(Style.image).createRun();
-				int width = intAttr(section, "width", 530);
-				// TODO: keep aspect ratio
-				int height = attr(section, "height") != null
-						? intAttr(section, "height", 380)
-						: (width * 380 / 530);
 				MyXWPFRun.addPicture(
 						run, stream, getFormat(path), file,
-						Units.toEMU(width),
-						Units.toEMU(height));
+						Units.toEMU(dim.width),
+						Units.toEMU(dim.height));
 			}
 			finally {
 				stream.close();
@@ -91,6 +92,68 @@ public class ImageExporter implements Exporter<PluginType> {
 		catch (InvalidFormatException e) {
 			throw new ExportException("image has invalid format", e);
 		}
+	}
+
+	private Dimension getImageDimension(Section<PluginType> section, WikiAttachment attachment) {
+		final int maxW = 450;
+		final int maxH = 600;
+
+		int w = intAttr(section, "width", -maxW);
+		int h = intAttr(section, "height", -maxH);
+
+		// check if we have a scaling attribute (%)
+		// if one is specified, use for both directions
+		float scaleX = 1f, scaleY = 1f;
+		if (w < 0 && w > -maxW) {
+			scaleX = w / (float) -maxW;
+			w = 0;
+			if (attr(section, "height") == null) scaleY = scaleX;
+		}
+		if (h < 0 && h > -maxW) {
+			scaleY = h / (float) -maxH;
+			h = 0;
+			if (attr(section, "width") == null) scaleX = scaleY;
+		}
+
+		if (w <= 0 || h <= 0) {
+			Dimension dim = readImageDimension(attachment);
+			if (dim != null) {
+				// initialize from image only
+				if (w <= 0 && h <= 0) {
+					w = dim.width;
+					h = dim.height;
+				}
+				// initialize height if width is present
+				else if (w > 0) {
+					h = Math.round(w / (float) dim.width * dim.height);
+				}
+				// initialize width based on height
+				else {
+					w = Math.round(h / (float) dim.height * dim.width);
+				}
+			}
+			else {
+				// default initialize if image size could not been read
+				if (w <= 0) w = maxW;
+				if (h <= 0) h = maxH;
+			}
+		}
+
+		// apply scale
+		w = Math.round(w * scaleX);
+		h = Math.round(h * scaleY);
+
+		// make image smaller if exceeds page width or height
+		// but keep the aspect ratio!
+		if (w > maxW) {
+			h = Math.round(h / (w / (float) maxW));
+			w = maxW;
+		}
+		if (h > maxH) {
+			w = Math.round(w / (h / (float) maxH));
+			h = maxH;
+		}
+		return new Dimension(w, h);
 	}
 
 	private int getFormat(String path) throws InvalidFormatException {
@@ -145,5 +208,22 @@ public class ImageExporter implements Exporter<PluginType> {
 		if (matcher.find()) return matcher.group(1);
 
 		return null;
+	}
+
+	private Dimension readImageDimension(WikiAttachment attachment) {
+		try {
+			InputStream stream = attachment.getInputStream();
+			try {
+				BufferedImage bimg = ImageIO.read(stream);
+				return new Dimension(bimg.getWidth(), bimg.getHeight());
+			}
+			finally {
+				stream.close();
+			}
+		}
+		catch (IOException e) {
+			Log.warning("cannot read image size, using default size", e);
+			return null;
+		}
 	}
 }
