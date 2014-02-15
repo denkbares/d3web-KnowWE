@@ -26,7 +26,6 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.include.export.DocumentBuilder.Style;
 import de.knowwe.jspwiki.types.ListType;
 import de.knowwe.jspwiki.types.OrderedListType;
 import de.knowwe.kdom.dashtree.DashTreeElement;
@@ -64,22 +63,23 @@ public class ListExporter implements Exporter<Type> {
 		List<Section<DashTreeElement>> items = Sections.successors(section, DashTreeElement.class);
 		for (Section<DashTreeElement> item : items) {
 			exportItem(item, numID, manager);
-			manager.closeParagraph();
 		}
+		manager.closeParagraph();
 	}
 
-	public void exportItem(Section<DashTreeElement> section, BigInteger numID, DocumentBuilder manager) throws ExportException {
+	public void exportItem(Section<DashTreeElement> section, BigInteger numID, DocumentBuilder builder) throws ExportException {
 		String text = section.getText().trim();
 		int depth = 0;
 		while (depth < text.length() && "#*".indexOf(text.charAt(depth)) >= 0) {
 			depth++;
 		}
 
-		XWPFParagraph paragraph = manager.getNewParagraph(Style.list);
+		XWPFParagraph paragraph = builder.getNewParagraph();
 		paragraph.setNumID(numID);
 		paragraph.getCTP().getPPr().getNumPr().addNewIlvl().setVal(BigInteger.valueOf(depth - 1));
-		manager.export(Sections.successor(section, DashTreeElementContent.class));
-		manager.closeParagraph();
+		ListBuilder listBuilder = new ListBuilder(builder);
+		listBuilder.export(Sections.successor(section, DashTreeElementContent.class));
+		listBuilder.closeParagraph();
 	}
 
 	public static BigInteger getAbstractIdOrdered() {

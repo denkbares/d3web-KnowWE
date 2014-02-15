@@ -21,7 +21,14 @@ package de.knowwe.jspwiki.types;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.user.UserContext;
+import de.knowwe.jspwiki.types.DefinitionType.DefinitionData;
+import de.knowwe.jspwiki.types.DefinitionType.DefinitionHead;
 
 /**
  * Markup type to detect jsp-wiki definitions.
@@ -29,26 +36,31 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
  * @author Volker Belli (denkbares GmbH)
  * @created 14.02.2014
  */
-public class DefinitionType extends AbstractType {
+public class InlineDefinitionType extends AbstractType {
 
-	public static class DefinitionData extends AbstractType {
+	public static class InlineDefinitionRenderer implements Renderer {
 
-		public DefinitionData() {
-			this.setSectionFinder(new RegexSectionFinder(":\\s*([^\n\r]+?)\\s*((\n\r?)|$)", 0, 1));
+		@Override
+		public void render(Section<?> section, UserContext user, RenderResult result) {
+			result.appendHtml("<span class='inline-definition'>");
+
+			result.appendHtml("<span class='inline-definition-head'>");
+			result.append(Sections.ancestor(section, DefinitionHead.class), user);
+			result.appendHtml("</span>");
+
+			result.appendHtml("<span class='inline-definition-data'>");
+			result.append(Sections.ancestor(section, DefinitionHead.class), user);
+			result.appendHtml("</span>");
+
+			result.appendHtml("</span>");
 		}
 	}
 
-	public static class DefinitionHead extends AbstractType {
-
-		public DefinitionHead() {
-			this.setSectionFinder(new RegexSectionFinder(";;?\\s*([^;:\n\r]+?)\\s*:", 0, 1));
-		}
-	}
-
-	public DefinitionType() {
+	public InlineDefinitionType() {
 		this.setSectionFinder(new RegexSectionFinder(
-				"^;[^;:\n\r]+:[^\n\r]+((\n\r?)|$)",
+				"^;;[^;:\n\r]+:[^\n\r]+((\n\r?)|$)",
 				Pattern.MULTILINE));
+		setRenderer(new InlineDefinitionRenderer());
 
 		addChildType(new DefinitionData());
 		addChildType(new DefinitionHead());

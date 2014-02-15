@@ -348,7 +348,7 @@ smartedit + .objectinfo.preview:hover{
 }
 
 /* ################################################## */
-/* ------------Navigation Pagination Styles----------------- */
+/* -----------Navigation Pagination Styles----------- */
 /* ################################################## */
 
 .navigationPagination {
@@ -398,4 +398,25 @@ smartedit + .objectinfo.preview:hover{
     position: relative;
     top: 2px;
     float: right;
+}
+
+/* ################################################## */
+/* ------------- Inline Definition Lists ------------ */
+/* ################################################## */
+
+.inline-definition {
+}
+.inline-definition-head:BEFORE {
+	content: "(";
+}
+.inline-definition-head {
+	font-size: 50%;
+	color: #888;
+}
+.inline-definition-data {	
+}
+.inline-definition-data:AFTER {
+	content: ")";
+	font-size: 50%;
+	color: #888;
 }

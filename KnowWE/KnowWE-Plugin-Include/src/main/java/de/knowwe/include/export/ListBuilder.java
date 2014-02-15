@@ -18,33 +18,36 @@
  */
 package de.knowwe.include.export;
 
-import de.d3web.strings.Strings;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.jspwiki.types.ParagraphType;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 
 /**
+ * Special implementation of a document builder for building a cell inside of a
+ * table.
  * 
  * @author Volker Belli (denkbares GmbH)
- * @created 07.02.2014
+ * @created 09.02.2014
  */
-public class ParagraphExporter implements Exporter<ParagraphType> {
+public class ListBuilder extends DefaultBuilder {
 
-	@Override
-	public boolean canExport(Section<ParagraphType> section) {
-		return true;
+	private DocumentBuilder decorate;
+
+	public ListBuilder(DocumentBuilder decorate) {
+		super(decorate);
+		this.decorate = decorate;
+		this.paragraph = decorate.getParagraph();
 	}
 
 	@Override
-	public Class<ParagraphType> getSectionType() {
-		return ParagraphType.class;
+	protected XWPFParagraph createParagraph() {
+		// instead of creating a new paragraph we continue
+		// to use the one we are decorating, but add new CR.
+		paragraph = decorate.getParagraph();
+		paragraph.createRun().addCarriageReturn();
+		return paragraph;
 	}
 
 	@Override
-	public void export(Section<ParagraphType> section, DocumentBuilder manager) throws ExportException {
-		manager.closeParagraph();
-		if (Strings.isBlank(section.getText())) return;
-		manager.export(section.getChildren());
-		// manager.append("\n\r");
+	protected Style getDefaultStyle() {
+		return Style.list;
 	}
-
 }

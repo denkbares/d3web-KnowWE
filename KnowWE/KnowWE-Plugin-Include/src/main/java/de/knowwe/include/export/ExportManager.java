@@ -60,6 +60,7 @@ public class ExportManager {
 		exporters.add(new ImageExporter());
 
 		// add special exporters
+		exporters.add(new InlineDefinitionExporter());
 		exporters.add(new InlineDefinitionExporter("RESP_?\\d*"));
 		exporters.add(new DefinitionExporter());
 

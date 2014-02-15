@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 
 import de.d3web.strings.Strings;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -83,75 +84,93 @@ public class RenderResult {
 		}
 	}
 
-	public RenderResult append(boolean arg0) {
-		builder.append(arg0);
+	public RenderResult append(boolean bool) {
+		builder.append(bool);
 		return this;
 	}
 
-	public RenderResult append(char arg0) {
-		builder.append(arg0);
+	public RenderResult append(char c) {
+		builder.append(c);
 		return this;
 	}
 
-	public RenderResult append(char[] arg0) {
-		builder.append(arg0);
+	public RenderResult append(char[] str) {
+		builder.append(str);
 		return this;
 	}
 
-	public RenderResult append(char[] arg0, int arg1, int arg2) {
-		builder.append(arg0, arg1, arg2);
+	public RenderResult append(char[] str, int offset, int len) {
+		builder.append(str, offset, len);
 		return this;
 	}
 
-	public RenderResult append(CharSequence arg0) {
-		builder.append(arg0);
+	public RenderResult append(CharSequence str) {
+		builder.append(str);
 		return this;
 	}
 
-	public RenderResult append(CharSequence arg0, int arg1, int arg2) {
-		builder.append(arg0, arg1, arg2);
+	public RenderResult append(CharSequence str, int start, int end) {
+		builder.append(str, start, end);
 		return this;
 	}
 
-	public RenderResult append(double arg0) {
-		builder.append(arg0);
+	public RenderResult append(double d) {
+		builder.append(d);
 		return this;
 	}
 
-	public RenderResult append(float arg0) {
-		builder.append(arg0);
+	public RenderResult append(float f) {
+		builder.append(f);
 		return this;
 	}
 
-	public RenderResult append(int arg0) {
-		builder.append(arg0);
+	public RenderResult append(int i) {
+		builder.append(i);
 		return this;
 	}
 
-	public RenderResult append(long arg0) {
-		builder.append(arg0);
+	public RenderResult append(long l) {
+		builder.append(l);
 		return this;
 	}
 
-	public RenderResult append(Object arg0) {
-		builder.append(arg0);
+	public RenderResult append(Object object) {
+		builder.append(object);
 		return this;
 	}
 
-	public RenderResult append(RenderResult arg0) {
-		builder.append(arg0.builder);
+	public RenderResult append(RenderResult result) {
+		builder.append(result.builder);
 		return this;
 	}
 
-	public RenderResult appendAvoidParagraphs(RenderResult arg0) {
-		String raw = arg0.builder.toString();
+	/**
+	 * Appends the section to this render result. The section is rendered by
+	 * using the sections defined renderer. The method is a common shortcut for
+	 * <code>DelegateRenderer.getRenderer(section, user).render(section, user, result)</code>
+	 * . The method is nul-secure for the section. If null is specified as the
+	 * section, nothing is rendered.
+	 * 
+	 * @created 15.02.2014
+	 * @param section the section to be rendered
+	 * @return this render result
+	 */
+	public RenderResult append(Section<?> section, UserContext user) {
+		if (section != null) {
+			DelegateRenderer.getRenderer(section, user).render(section, user, this);
+		}
+		return this;
+	}
+
+	public RenderResult appendAvoidParagraphs(RenderResult result) {
+		String raw = result.builder.toString();
 		raw = raw.replaceAll("\n\n", "\n \n");
 		builder.append(raw);
 		return this;
 	}
 
-	public RenderResult append(String arg0) {
-		builder.append(arg0);
+	public RenderResult append(String text) {
+		builder.append(text);
 		return this;
 	}
 

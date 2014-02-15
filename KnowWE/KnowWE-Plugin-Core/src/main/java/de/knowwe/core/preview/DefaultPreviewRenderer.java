@@ -3,7 +3,6 @@ package de.knowwe.core.preview;
 import java.util.Collection;
 
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -21,7 +20,7 @@ public class DefaultPreviewRenderer implements PreviewRenderer {
 		}
 		else {
 			// or render the full markup
-			DelegateRenderer.getRenderer(section, user).render(section, user, result);
+			result.append(section, user);
 		}
 	}
 }

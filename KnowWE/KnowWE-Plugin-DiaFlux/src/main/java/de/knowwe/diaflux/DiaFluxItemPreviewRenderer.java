@@ -6,7 +6,6 @@ import java.util.Set;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.preview.PreviewRenderer;
 import de.knowwe.core.user.UserContext;
@@ -60,7 +59,7 @@ public class DiaFluxItemPreviewRenderer implements PreviewRenderer {
 		if (head != null) {
 			Section<FlowchartTermDef> term = Sections.findSuccessor(head, FlowchartTermDef.class);
 			if (term != null) {
-				DelegateRenderer.getRenderer(term, user).render(term, user, result);
+				result.append(term, user);
 				return;
 			}
 		}
@@ -71,9 +70,7 @@ public class DiaFluxItemPreviewRenderer implements PreviewRenderer {
 	private void renderEdge(Section<EdgeType> edge, UserContext user, RenderResult result) {
 		result.appendHtml("<div class='preview edge'>&nbsp;&nbsp;").append("- Edge ");
 		Section<GuardType> guard = Sections.findSuccessor(edge, GuardType.class);
-		if (guard != null) {
-			DelegateRenderer.getRenderer(guard, user).render(guard, user, result);
-		}
+		result.append(guard, user);
 		result.appendHtml("</div>");
 	}
 
@@ -99,19 +96,19 @@ public class DiaFluxItemPreviewRenderer implements PreviewRenderer {
 	private void renderNodePreviewHtml(Section<NodeContentType> nodeSection, UserContext user, RenderResult result) {
 		Section<?> section = Sections.findChildOfType(nodeSection, StartType.class);
 		if (section != null) {
-			DelegateRenderer.getRenderer(section, user).render(section, user, result);
+			result.append(section, user);
 			return;
 		}
 
 		section = Sections.findChildOfType(nodeSection, ExitType.class);
 		if (section != null) {
-			DelegateRenderer.getRenderer(section, user).render(section, user, result);
+			result.append(section, user);
 			return;
 		}
 
 		section = Sections.findChildOfType(nodeSection, ActionType.class);
 		if (section != null) {
-			DelegateRenderer.getRenderer(section, user).render(section, user, result);
+			result.append(section, user);
 			return;
 		}
 
@@ -129,7 +126,7 @@ public class DiaFluxItemPreviewRenderer implements PreviewRenderer {
 
 		section = Sections.findChildOfType(nodeSection, DecisionType.class);
 		if (section != null) {
-			DelegateRenderer.getRenderer(section, user).render(section, user, result);
+			result.append(section, user);
 			return;
 		}
 

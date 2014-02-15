@@ -22,11 +22,13 @@ import java.util.regex.Pattern;
 
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.jspwiki.types.DefinitionType;
 import de.knowwe.jspwiki.types.DefinitionType.DefinitionData;
 import de.knowwe.jspwiki.types.DefinitionType.DefinitionHead;
+import de.knowwe.jspwiki.types.InlineDefinitionType;
 
 /**
  * Exporter for exporting links. They will be exported in the same style as the
@@ -35,27 +37,48 @@ import de.knowwe.jspwiki.types.DefinitionType.DefinitionHead;
  * @author Volker Belli (denkbares GmbH)
  * @created 07.02.2014
  */
-public class InlineDefinitionExporter implements Exporter<DefinitionType> {
+public class InlineDefinitionExporter implements Exporter<Type> {
 
 	private final Pattern pattern;
 
+	/**
+	 * Create a new exporter that exports inline definitions.
+	 */
+	public InlineDefinitionExporter() {
+		this.pattern = null;
+	}
+
+	/**
+	 * Create a new exporter that exports normal definitions as inline
+	 * definitions if they match a special expression
+	 * 
+	 * @param regex the expression to be matched
+	 */
 	public InlineDefinitionExporter(String regex) {
 		this.pattern = Pattern.compile(regex);
 	}
 
 	@Override
-	public boolean canExport(Section<DefinitionType> section) {
-		Section<DefinitionHead> head = Sections.successor(section, DefinitionHead.class);
-		return pattern.matcher(head.getText()).matches();
+	public boolean canExport(Section<Type> section) {
+		if (pattern == null) {
+			return (section.get() instanceof InlineDefinitionType);
+		}
+		else if (section.get() instanceof DefinitionType) {
+			Section<DefinitionHead> head = Sections.successor(section, DefinitionHead.class);
+			return pattern.matcher(head.getText()).matches();
+		}
+		else {
+			return false;
+		}
 	}
 
 	@Override
-	public Class<DefinitionType> getSectionType() {
-		return DefinitionType.class;
+	public Class<Type> getSectionType() {
+		return Type.class;
 	}
 
 	@Override
-	public void export(Section<DefinitionType> section, DocumentBuilder manager) throws ExportException {
+	public void export(Section<Type> section, DocumentBuilder manager) throws ExportException {
 		ExportUtils.addRequiredSpace(manager);
 		XWPFRun run = manager.getParagraph().createRun();
 		run.setColor("606060");

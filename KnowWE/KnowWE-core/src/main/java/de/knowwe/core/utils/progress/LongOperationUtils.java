@@ -161,7 +161,10 @@ public class LongOperationUtils {
 					Log.info("Operation canceled by user.");
 					listener.setError("Canceled by user.");
 				}
-				catch (Exception e) {
+				catch (Throwable e) {
+					// use Throwable here, so that the user can see,
+					// even if there is an internal server error
+					// (like wrong linkage)
 					Log.severe("Cannot complete operation, unexpected internal error.", e);
 					listener.setError("Unexpected internal error: " + e.getMessage() + ".");
 				}

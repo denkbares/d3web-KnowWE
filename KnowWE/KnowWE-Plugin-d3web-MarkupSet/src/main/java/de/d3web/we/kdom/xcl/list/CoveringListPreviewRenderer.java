@@ -7,7 +7,6 @@ import java.util.List;
 import de.d3web.we.kdom.xcl.list.CoveringList.CoveringRelation;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.preview.PreviewRenderer;
 import de.knowwe.core.user.UserContext;
@@ -18,7 +17,7 @@ public class CoveringListPreviewRenderer implements PreviewRenderer {
 	public void render(Section<?> section, Collection<Section<?>> relevantSubSections, UserContext user, RenderResult result) {
 
 		Section<ListSolutionType> self = Sections.findChildOfType(section, ListSolutionType.class);
-		DelegateRenderer.getRenderer(self, user).render(self, user, result);
+		result.append(self, user);
 
 		boolean skipped = false;
 		for (Section<CoveringRelation> relation : Sections.findChildrenOfType(section,
@@ -33,7 +32,7 @@ public class CoveringListPreviewRenderer implements PreviewRenderer {
 					skipped = false;
 				}
 				result.appendHtml("<div class='relation'>");
-				DelegateRenderer.getRenderer(relation, user).render(relation, user, result);
+				result.append(relation, user);
 				result.appendHtml("</div>");
 			}
 		}

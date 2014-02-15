@@ -52,7 +52,7 @@ public interface DocumentBuilder {
 		code("Code"),
 		caption("Caption"),
 		image("Image"),
-		list("ListParagraph"),
+		list("ListBody"),
 		tableHeader("TableHeader"),
 		tableText("TableBody");
 

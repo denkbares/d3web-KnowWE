@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.dashtree.DashSubtree;
@@ -40,7 +39,7 @@ public class DashTreePreviewRenderer implements PreviewRenderer {
 		}
 	}
 
-	private void renderDashTreeElement(Section<DashTreeElement> self, UserContext user, RenderResult string) {
-		DelegateRenderer.getRenderer(self, user).render(self, user, string);
+	private void renderDashTreeElement(Section<DashTreeElement> self, UserContext user, RenderResult result) {
+		result.append(self, user);
 	}
 }
