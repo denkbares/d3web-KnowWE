@@ -88,7 +88,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 	/**
 	 * To initialize KnowWE.
-	 * 
+	 *
 	 * @see KnowWE_config.properties
 	 */
 	@Override
@@ -217,7 +217,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 						.getArticle(Environment.DEFAULT_WEB, title);
 				if (supportArticle != null
 						&& supportArticle.getRootSection().getText().equals(
-								content)) {
+						content)) {
 					includeDOMResources(wikiContext);
 					return renderKDOM(content, userContext, supportArticle);
 				}
@@ -361,11 +361,10 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	}
 
 	/**
-	 * Loads ALL articles stored in the pageDir (which is specified in
-	 * jspwiki.properties).
-	 * 
-	 * @created 07.06.2010
+	 * Loads ALL articles stored in the pageDir (which is specified in jspwiki.properties).
+	 *
 	 * @param engine
+	 * @created 07.06.2010
 	 */
 	private void initializeAllArticles(WikiEngine engine) {
 
@@ -411,7 +410,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	}
 
 	private String renderKDOM(String content, UserContext userContext,
-			Article article) {
+							  Article article) {
 		if (article != null) {
 			RenderResult articleString = new RenderResult(userContext.getRequest());
 			article.getRootType().getRenderer().render(article.getRootSection(), userContext,
@@ -463,7 +462,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 	/**
 	 * Adds the CSS and JS files to the current page.
-	 * 
+	 *
 	 * @param wikiContext
 	 */
 	private void includeDOMResources(WikiContext wikiContext) {
