@@ -98,50 +98,27 @@ public class ImageExporter implements Exporter<PluginType> {
 		final int maxW = 450;
 		final int maxH = 600;
 
-		int w = intAttr(section, "width", -maxW);
-		int h = intAttr(section, "height", -maxH);
+		int w = intAttr(section, "width", -1000);
+		int h = intAttr(section, "height", -1000);
 
-		// check if we have a scaling attribute (%)
-		// if one is specified, use for both directions
-		float scaleX = 1f, scaleY = 1f;
-		if (w < 0 && w > -maxW) {
-			scaleX = w / (float) -maxW;
-			w = 0;
-			if (attr(section, "height") == null) scaleY = scaleX;
-		}
-		if (h < 0 && h > -maxW) {
-			scaleY = h / (float) -maxH;
-			h = 0;
-			if (attr(section, "width") == null) scaleX = scaleY;
-		}
+		// read dimension or use default dimension in 4:3 ratio
+		Dimension dim = readImageDimension(attachment);
+		if (dim == null) dim = new Dimension(640, 480);
 
-		if (w <= 0 || h <= 0) {
-			Dimension dim = readImageDimension(attachment);
-			if (dim != null) {
-				// initialize from image only
-				if (w <= 0 && h <= 0) {
-					w = dim.width;
-					h = dim.height;
-				}
-				// initialize height if width is present
-				else if (w > 0) {
-					h = Math.round(w / (float) dim.width * dim.height);
-				}
-				// initialize width based on height
-				else {
-					w = Math.round(h / (float) dim.height * dim.width);
-				}
-			}
-			else {
-				// default initialize if image size could not been read
-				if (w <= 0) w = maxW;
-				if (h <= 0) h = maxH;
-			}
-		}
+		// if size is negative, scale image as per-mille
+		// if size is not specified, leave unchanged
+		// is size is positive, scale compared to real size
+		float fx = (w < 0) ? -w / 1000f : (w == 0) ? 1f : w / (float) dim.width;
+		float fy = (h < 0) ? -h / 1000f : (h == 0) ? 1f : h / (float) dim.height;
 
-		// apply scale
-		w = Math.round(w * scaleX);
-		h = Math.round(h * scaleY);
+		// if only one attribute has been specified,
+		// use same scale factor for both directions
+		if (w == 0) fx = fy;
+		if (h == 0) fy = fx;
+
+		// scale image by detected scale
+		w = Math.round(dim.width * fx);
+		h = Math.round(dim.height * fy);
 
 		// make image smaller if exceeds page width or height
 		// but keep the aspect ratio!
