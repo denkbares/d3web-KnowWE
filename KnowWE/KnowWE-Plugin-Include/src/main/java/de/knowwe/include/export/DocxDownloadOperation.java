@@ -26,6 +26,9 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
 import de.d3web.core.io.progress.ProgressListener;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Message.Type;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.progress.FileDownloadOperation;
 
 /**
@@ -36,7 +39,8 @@ import de.knowwe.core.utils.progress.FileDownloadOperation;
 public class DocxDownloadOperation extends FileDownloadOperation {
 
 	private final Section<?> section;
-	private String report = null;
+	private StringBuilder report = null;
+	private boolean hasError = false;
 
 	public DocxDownloadOperation(Section<?> section) {
 		super(section.getArticle(), section.getTitle() + ".docx");
@@ -45,20 +49,43 @@ public class DocxDownloadOperation extends FileDownloadOperation {
 
 	@Override
 	public void execute(File resultFile, ProgressListener listener) throws IOException, InterruptedException {
+		this.report = null;
+		this.hasError = false;
+
+		ExportManager export = new ExportManager();
 		FileOutputStream stream = new FileOutputStream(resultFile);
 		try {
-			ExportManager export = new ExportManager();
 			XWPFDocument document = export.createDocument(section);
 			document.write(stream);
 		}
-		finally {
-			stream.close();
+		catch (ExportException e) {
+			appendMessage(Messages.error(e.getMessage()));
 		}
+		finally {
+			for (Message message : export.getMessages()) {
+				appendMessage(message);
+			}
+			stream.close();
+			if (hasError) throw new InterruptedException();
+		}
+	}
+
+	private void appendMessage(Message msg) {
+		if (report == null) {
+			report = new StringBuilder();
+		}
+		else {
+			report.append("\n<br>");
+		}
+		report.append(msg.getType().name()).append(": ");
+		report.append(msg.getVerbalization());
+		hasError |= msg.getType().equals(Type.ERROR);
 	}
 
 	@Override
 	public String getReport() {
-		return report;
+		if (report == null) return null;
+		return report.toString();
 	}
 
 }

@@ -42,13 +42,14 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 		try {
 			error = null;
 			execute(file, listener);
-			listener.updateProgress(1f, COMPLETE_MESSAGE);
 		}
 		catch (Exception e) {
 			if (!file.delete()) file.deleteOnExit();
-			listener.updateProgress(1f, COMPLETE_MESSAGE);
 			Log.warning("Aborted execution of file download operation due to exception", e);
 			error = e;
+		}
+		finally {
+			listener.updateProgress(1f, COMPLETE_MESSAGE);
 		}
 	}
 

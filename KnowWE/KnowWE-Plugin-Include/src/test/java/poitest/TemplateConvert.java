@@ -39,7 +39,8 @@ public class TemplateConvert {
 
 	public static void main(String[] args) throws Exception {
 		ExportManager export = new ExportManager();
-		DocumentBuilder builder = new DefaultBuilder(export);
+		DocumentBuilder builder = new DefaultBuilder(export,
+				ExportManager.createDefaultTemplateStream());
 
 		XWPFRun run = builder.getParagraph(Style.text).createRun();
 		run.setText("Hallo Welt!\n");

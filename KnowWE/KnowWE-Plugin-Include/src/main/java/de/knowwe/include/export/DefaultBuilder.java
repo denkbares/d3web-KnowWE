@@ -19,6 +19,7 @@
 package de.knowwe.include.export;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -59,12 +60,11 @@ public class DefaultBuilder implements DocumentBuilder {
 	/**
 	 * Creates a new default builder for the default template.
 	 */
-	public DefaultBuilder(ExportManager manager) throws IOException {
+	public DefaultBuilder(ExportManager manager, InputStream templateStream) throws IOException {
 		this.manager = manager;
 
 		// create new document based on template
-		this.document = new XWPFDocument(getClass().getResourceAsStream(
-				"/de/knowwe/include/export/template.docx"));
+		this.document = new XWPFDocument(templateStream);
 
 		// delete all undesired example content
 		int index = 0;

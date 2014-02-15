@@ -19,6 +19,7 @@
 package de.knowwe.include.export;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,9 +27,12 @@ import java.util.List;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
 import de.d3web.strings.Strings;
+import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.renderer.RenderKDOMType;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.include.IncludeMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -42,6 +46,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 public class ExportManager {
 
 	private List<Exporter<?>> exporters = new LinkedList<Exporter<?>>();
+	private List<Message> messages = Collections.emptyList();
 
 	public ExportManager() {
 		// add exporters
@@ -76,12 +81,41 @@ public class ExportManager {
 	}
 
 	public XWPFDocument createDocument(Section<?> section) throws IOException {
-		DefaultBuilder builder = new DefaultBuilder(this);
-		if (section.get() instanceof IncludeMarkup) {
-			updateDocumentInfo(Sections.cast(section, IncludeMarkup.class), builder);
+		// detect stream for word template
+		Section<AttachmentType> attach = Sections.successor(section, AttachmentType.class);
+		InputStream stream = (attach == null)
+				? createDefaultTemplateStream()
+				: createAttachmentStream(attach);
+
+		// create builder and export the section
+		try {
+			DefaultBuilder builder = new DefaultBuilder(this, stream);
+			if (section.get() instanceof IncludeMarkup) {
+				updateDocumentInfo(Sections.cast(section, IncludeMarkup.class), builder);
+			}
+			builder.export(section);
+			messages = builder.getMessages();
+			return builder.getDocument();
 		}
-		builder.export(section);
-		return builder.getDocument();
+		finally {
+			stream.close();
+		}
+	}
+
+	public List<Message> getMessages() {
+		return messages;
+	}
+
+	public static InputStream createAttachmentStream(Section<AttachmentType> attachment) throws IOException {
+		WikiAttachment attach = AttachmentType.getAttachment(attachment);
+		if (attach == null) {
+			throw new ExportException("Attachment '" + attachment.getText() + "' not found");
+		}
+		return attach.getInputStream();
+	}
+
+	public static InputStream createDefaultTemplateStream() {
+		return ExportManager.class.getResourceAsStream("/de/knowwe/include/export/template.docx");
 	}
 
 	private void updateDocumentInfo(Section<IncludeMarkup> section, DefaultBuilder builder) {
