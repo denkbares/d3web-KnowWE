@@ -23,7 +23,6 @@ import de.d3web.core.inference.condition.Conditions;
 import de.d3web.core.session.Session;
 import de.d3web.testcase.model.Check;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 
@@ -65,6 +64,6 @@ public class ConditionCheck implements Check {
 	}
 
 	public void render(UserContext context, RenderResult result) {
-		DelegateRenderer.getRenderer(section, context).render(section, context, result);
+		result.append(section, context);
 	}
 }
