@@ -18,7 +18,9 @@
  */
 package de.knowwe.include.export;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -33,6 +35,8 @@ import de.knowwe.include.InnerWikiReference;
  */
 public class IncludeExporter implements Exporter<IncludeMarkup> {
 
+	private final Set<Section<IncludeMarkup>> visited = new HashSet<Section<IncludeMarkup>>();
+
 	@Override
 	public Class<IncludeMarkup> getSectionType() {
 		return IncludeMarkup.class;
@@ -45,29 +49,40 @@ public class IncludeExporter implements Exporter<IncludeMarkup> {
 
 	@Override
 	public void export(Section<IncludeMarkup> section, DocumentBuilder manager) throws ExportException {
-		List<Section<InnerWikiReference>> references =
-				Sections.successors(section, InnerWikiReference.class);
-		for (Section<InnerWikiReference> reference : references) {
-			manager.closeParagraph();
-			int delta = getHeadingDelta(reference);
-			boolean wasSuppressHeaderNumbering = manager.isSuppressHeaderNumbering();
-
-			// export article title if requested
-			String marks = reference.get().getListMarks(reference);
-			int listLevel = marks.length();
-			if (listLevel > 0 && !reference.get().isSuppressHeader(reference)) {
-				manager.setSuppressHeaderNumbering(reference.get().isSuppressNumbering(reference));
-				String title = reference.get().getLinkName(reference);
-				HeaderExporter.export(title, listLevel, manager);
-				delta += listLevel;
+		boolean isNew = visited.add(section);
+		if (!isNew) return;
+		try {
+			List<Section<InnerWikiReference>> references =
+					Sections.successors(section, InnerWikiReference.class);
+			for (Section<InnerWikiReference> reference : references) {
+				exportReference(reference, manager);
 			}
-
-			// export included sections
-			manager.incHeaderLevel(delta);
-			manager.export(reference.get().getIncludedSections(reference, listLevel > 0));
-			manager.incHeaderLevel(-delta);
-			manager.setSuppressHeaderNumbering(wasSuppressHeaderNumbering);
 		}
+		finally {
+			visited.remove(section);
+		}
+	}
+
+	private void exportReference(Section<InnerWikiReference> reference, DocumentBuilder manager) throws ExportException {
+		manager.closeParagraph();
+		int delta = getHeadingDelta(reference);
+		boolean wasSuppressHeaderNumbering = manager.isSuppressHeaderNumbering();
+
+		// export article title if requested
+		String marks = reference.get().getListMarks(reference);
+		int listLevel = marks.length();
+		if (listLevel > 0 && !reference.get().isSuppressHeader(reference)) {
+			manager.setSuppressHeaderNumbering(reference.get().isSuppressNumbering(reference));
+			String title = reference.get().getLinkName(reference);
+			HeaderExporter.export(title, listLevel, manager);
+			delta += listLevel;
+		}
+
+		// export included sections
+		manager.incHeaderLevel(delta);
+		manager.export(reference.get().getIncludedSections(reference, listLevel > 0));
+		manager.incHeaderLevel(-delta);
+		manager.setSuppressHeaderNumbering(wasSuppressHeaderNumbering);
 	}
 
 	private int getHeadingDelta(Section<InnerWikiReference> reference) {
