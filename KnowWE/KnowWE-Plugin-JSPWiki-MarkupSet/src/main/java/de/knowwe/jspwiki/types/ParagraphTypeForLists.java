@@ -31,12 +31,12 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 public class ParagraphTypeForLists extends AbstractType {
 
 	public ParagraphTypeForLists() {
-		Pattern pattern = Pattern.compile("^.+?([\n\r]{4,}|\\z)",
+		Pattern pattern = Pattern.compile("^\\s*(.+?(?:[\n\r]{4,}|\\z))",
 				Pattern.MULTILINE + Pattern.DOTALL);
-		this.setSectionFinder(new RegexSectionFinder(pattern));
+		this.setSectionFinder(new RegexSectionFinder(pattern, 1));
 
 		// placeholder for lists
-		// --
+		// -- defined in sub-class ParagraphType
 
 		this.addChildType(6d, new CSSType());
 		this.addChildType(6d, new CSSDanglingType());
