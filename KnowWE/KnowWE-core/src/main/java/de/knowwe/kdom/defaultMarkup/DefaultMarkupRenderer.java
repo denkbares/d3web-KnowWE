@@ -258,7 +258,7 @@ public class DefaultMarkupRenderer implements Renderer {
 			if (subsec == last) continue;
 			if (listAnnotations && subsec.get() instanceof AnnotationType) {
 				if (!listOpen) {
-					result.appendHtml("<ul class='defaultMarkupAnnotations'>");
+					result.appendHtml("\n\n<ul class='defaultMarkupAnnotations'>");
 					listOpen = true;
 				}
 				result.appendHtml("<li>");

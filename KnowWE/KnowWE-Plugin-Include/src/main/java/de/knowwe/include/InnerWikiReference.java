@@ -314,7 +314,7 @@ public class InnerWikiReference extends AbstractType {
 
 			result.appendHtml("<span class='").append(cssName).appendHtml("'>");
 			renderLine(innerRef, user, result);
-			result.appendHtml("</span>");
+			result.appendHtml("</span><br>");
 		}
 
 		private void renderLine(Section<InnerWikiReference> innerRef, UserContext user, RenderResult result) {

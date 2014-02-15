@@ -1,6 +1,7 @@
 .type_Include .defaultMarkup .markupText .defaultMarkupAnnotations {
 	list-style: none;
 	list-style-position: outside;
+	padding-left: 1em;
 }
 
 .type_Include .defaultMarkup .markupText .include-suppressedHeader {

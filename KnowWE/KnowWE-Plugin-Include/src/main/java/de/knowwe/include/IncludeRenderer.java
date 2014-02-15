@@ -33,6 +33,8 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 class IncludeRenderer extends DefaultMarkupRenderer {
 
 	public IncludeRenderer() {
+		setPreFormattedStyle(false);
+		setListAnnotations(true);
 	}
 
 	@Override
