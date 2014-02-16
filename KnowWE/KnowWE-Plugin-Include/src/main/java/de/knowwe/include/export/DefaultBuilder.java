@@ -18,16 +18,8 @@
  */
 package de.knowwe.include.export;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.openxml4j.opc.PackageProperties;
-import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
@@ -36,7 +28,6 @@ import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
 /**
@@ -46,10 +37,7 @@ import de.knowwe.core.report.Messages;
  */
 public class DefaultBuilder implements DocumentBuilder {
 
-	private final ExportManager manager;
-	private final XWPFDocument document;
-	private final List<Message> messages = new LinkedList<Message>();
-
+	private final ExportModel model;
 	protected XWPFParagraph paragraph = null;
 
 	private boolean bold;
@@ -60,65 +48,13 @@ public class DefaultBuilder implements DocumentBuilder {
 	/**
 	 * Creates a new default builder for the default template.
 	 */
-	public DefaultBuilder(ExportManager manager, InputStream templateStream) throws IOException {
-		this.manager = manager;
-
-		// create new document based on template
-		this.document = new XWPFDocument(templateStream);
-
-		// delete all undesired example content
-		int index = 0;
-		for (IBodyElement element : document.getBodyElements()) {
-			if (element instanceof XWPFParagraph) {
-				XWPFParagraph paragraph = (XWPFParagraph) element;
-				if (Strings.equalsIgnoreCase(paragraph.getStyle(), "StartDelete")) {
-					break;
-				}
-			}
-			index++;
-		}
-		while (document.getBodyElements().size() > index) {
-			document.removeBodyElement(index);
-		}
+	public DefaultBuilder(ExportModel model) {
+		this.model = model;
 	}
 
 	@Override
-	public List<Message> getMessages() {
-		return Collections.unmodifiableList(messages);
-	}
-
-	@Override
-	public void setProperty(String key, String value) {
-		try {
-			PackageProperties properties = document.getPackage().getPackageProperties();
-			if (Strings.equalsIgnoreCase("author", key)
-					|| Strings.equalsIgnoreCase("autor", key)) {
-				properties.setCreatorProperty(Strings.trim(value));
-			}
-			else if (Strings.equalsIgnoreCase("title", key)
-					|| Strings.equalsIgnoreCase("titel", key)) {
-				properties.setTitleProperty(Strings.trim(value));
-			}
-			else if (Strings.equalsIgnoreCase("project", key)
-					|| Strings.equalsIgnoreCase("projekt", key)) {
-				properties.setSubjectProperty(Strings.trim(value));
-			}
-			else if (Strings.equalsIgnoreCase("subject", key)
-					|| Strings.equalsIgnoreCase("betreff", key)) {
-				properties.setSubjectProperty(Strings.trim(value));
-			}
-
-			// always add as custom property
-			document.getProperties().getCustomProperties().addProperty(key, value);
-		}
-		catch (InvalidFormatException e) {
-			addMessage(Messages.warning("unexpected format exception"));
-		}
-	}
-
-	@Override
-	public void addMessage(Message message) {
-		messages.add(message);
+	public ExportModel getModel() {
+		return model;
 	}
 
 	@Override
@@ -146,27 +82,13 @@ public class DefaultBuilder implements DocumentBuilder {
 		level += delta;
 	}
 
-	/**
-	 * Creates a new default builder that decorates the existing builder and
-	 * continues to write it's existing document.
-	 */
-	protected DefaultBuilder(DocumentBuilder decorated) {
-		this.manager = decorated.getManager();
-		this.document = decorated.getDocument();
-	}
-
 	protected XWPFParagraph createParagraph() {
 		return getDocument().createParagraph();
 	}
 
 	@Override
-	public ExportManager getManager() {
-		return manager;
-	}
-
-	@Override
 	public XWPFDocument getDocument() {
-		return document;
+		return model.getDocument();
 	}
 
 	@Override
@@ -178,13 +100,16 @@ public class DefaultBuilder implements DocumentBuilder {
 
 	@Override
 	public void export(Section<?> section) {
+		// update date
+		model.updateModifiedDate(section.getArticle());
+
 		// try to export section
-		for (Exporter<?> export : getManager().getExporters()) {
+		for (Exporter<?> export : model.getExporters()) {
 			try {
 				if (exportSection(section, export)) return;
 			}
 			catch (ExportException e) {
-				addMessage(Messages.error(e));
+				model.addMessage(Messages.error(e));
 			}
 		}
 

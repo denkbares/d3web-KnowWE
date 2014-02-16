@@ -32,7 +32,7 @@ public class ListBuilder extends DefaultBuilder {
 	private DocumentBuilder decorate;
 
 	public ListBuilder(DocumentBuilder decorate) {
-		super(decorate);
+		super(decorate.getModel());
 		this.decorate = decorate;
 		this.paragraph = decorate.getParagraph();
 	}

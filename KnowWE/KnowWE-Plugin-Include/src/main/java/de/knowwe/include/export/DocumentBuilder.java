@@ -19,14 +19,12 @@
 package de.knowwe.include.export;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.Message;
 
 /**
  * Interface to specify a document builder that is responsible to create a
@@ -166,7 +164,7 @@ public interface DocumentBuilder {
 	public void export(Section<?> section) throws ExportException;
 
 	/**
-	 * Returns the document we are currently building
+	 * Returns the document we are currently building.
 	 * 
 	 * @created 09.02.2014
 	 * @return the document of this builder
@@ -244,36 +242,11 @@ public interface DocumentBuilder {
 	public XWPFRun append(Style style, String text);
 
 	/**
-	 * Returns the export manager that is responsible for this document builder.
+	 * Returns the export model this document builder shall be update.
 	 * 
 	 * @created 10.02.2014
 	 * @return the export manager
 	 */
-	public ExportManager getManager();
-
-	/**
-	 * Adds a new message to the protocol of this document export.
-	 * 
-	 * @created 11.02.2014
-	 * @param message the message to be added
-	 */
-	void addMessage(Message message);
-
-	/**
-	 * Returns the messages of this document export.
-	 * 
-	 * @created 12.02.2014
-	 * @return the list of all messages
-	 */
-	public List<Message> getMessages();
-
-	/**
-	 * Sets a document property of the currently exported document
-	 * 
-	 * @created 11.02.2014
-	 * @param key the property key to be set
-	 * @param value the property value to be set
-	 */
-	public void setProperty(String key, String value);
+	public ExportModel getModel();
 
 }

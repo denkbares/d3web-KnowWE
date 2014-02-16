@@ -34,7 +34,7 @@ public class CellBuilder extends DefaultBuilder {
 	private final boolean isHeader;
 
 	public CellBuilder(DocumentBuilder decorate, XWPFTableCell cell, boolean isHeader) {
-		super(decorate);
+		super(decorate.getModel());
 		this.cell = cell;
 		this.isHeader = isHeader;
 

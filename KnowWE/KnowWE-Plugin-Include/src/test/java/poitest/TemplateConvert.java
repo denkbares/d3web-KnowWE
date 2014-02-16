@@ -26,9 +26,9 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 import de.d3web.utils.Exec;
 import de.knowwe.include.export.DefaultBuilder;
-import de.knowwe.include.export.DocumentBuilder;
 import de.knowwe.include.export.DocumentBuilder.Style;
 import de.knowwe.include.export.ExportManager;
+import de.knowwe.include.export.ExportModel;
 
 /**
  * 
@@ -39,8 +39,8 @@ public class TemplateConvert {
 
 	public static void main(String[] args) throws Exception {
 		ExportManager export = new ExportManager();
-		DocumentBuilder builder = new DefaultBuilder(export,
-				ExportManager.createDefaultTemplateStream());
+		ExportModel model = new ExportModel(export, ExportManager.createDefaultTemplateStream());
+		DefaultBuilder builder = new DefaultBuilder(model);
 
 		XWPFRun run = builder.getParagraph(Style.text).createRun();
 		run.setText("Hallo Welt!\n");

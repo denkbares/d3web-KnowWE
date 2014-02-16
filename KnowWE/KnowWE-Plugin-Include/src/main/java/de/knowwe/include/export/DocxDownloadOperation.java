@@ -22,9 +22,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-
 import de.d3web.core.io.progress.ProgressListener;
+import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Message.Type;
@@ -41,6 +40,7 @@ public class DocxDownloadOperation extends FileDownloadOperation {
 	private final Section<?> section;
 	private StringBuilder report = null;
 	private boolean hasError = false;
+	private ExportManager export = null;
 
 	public DocxDownloadOperation(Section<?> section) {
 		super(section.getArticle(), section.getTitle() + ".docx");
@@ -48,23 +48,35 @@ public class DocxDownloadOperation extends FileDownloadOperation {
 	}
 
 	@Override
-	public void execute(File resultFile, ProgressListener listener) throws IOException, InterruptedException {
+	public void before(UserActionContext user) throws IOException {
+		super.before(user);
+
 		this.report = null;
 		this.hasError = false;
+		this.export = new ExportManager();
+		try {
+			export.checkViewPersmission(section, user);
+		}
+		catch (SecurityException e) {
+			appendMessage(Messages.error(e.getMessage()));
+		}
+	}
 
-		ExportManager export = new ExportManager();
+	@Override
+	public void execute(File resultFile, ProgressListener listener) throws IOException, InterruptedException {
+
 		FileOutputStream stream = new FileOutputStream(resultFile);
 		try {
-			XWPFDocument document = export.createDocument(section);
-			document.write(stream);
+			ExportModel model = export.createExport(section);
+			for (Message message : model.getMessages()) {
+				appendMessage(message);
+			}
+			model.getDocument().write(stream);
 		}
 		catch (ExportException e) {
 			appendMessage(Messages.error(e.getMessage()));
 		}
 		finally {
-			for (Message message : export.getMessages()) {
-				appendMessage(message);
-			}
 			stream.close();
 			if (hasError) throw new InterruptedException();
 		}

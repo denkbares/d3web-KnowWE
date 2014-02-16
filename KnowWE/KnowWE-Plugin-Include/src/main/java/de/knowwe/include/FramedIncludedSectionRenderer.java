@@ -91,13 +91,24 @@ public class FramedIncludedSectionRenderer extends DefaultMarkupRenderer {
 	// a static cycle detection field
 	// --> otherwise multiple parallel renderings would interfere negatively
 	public synchronized static void renderTargetSections(Section<?> targetSection, boolean skipHeader, UserContext user, RenderResult result) {
+
+		// check for cycles
 		boolean isNew = cycleDetection.add(targetSection);
 		if (!isNew) {
 			result.append("\n\n%%error Cyclic include detected, please check you include declarations /%\n");
 			return;
 		}
+
+		// render the target section
+		// but don't forget to check the user access rights
 		try {
-			renderTargetSectionsSecure(targetSection, skipHeader, user, result);
+			if (KnowWEUtils.canView(targetSection, user)) {
+				renderTargetSectionsSecure(targetSection, skipHeader, user, result);
+			}
+			else {
+				result.append("\n\n%%error you are not allowed to view the referenced article '" +
+						targetSection.getTitle() + "' /%\n");
+			}
 		}
 		finally {
 			cycleDetection.remove(targetSection);
