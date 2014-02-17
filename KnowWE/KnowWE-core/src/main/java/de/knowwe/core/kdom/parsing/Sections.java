@@ -65,7 +65,7 @@ public class Sections {
 			int depth) {
 		sections.add(section);
 		if (depth > 0) {
-			for (Section<? extends Type> child : section.getChildren()) {
+			for (Section<?> child : section.getChildren()) {
 				Sections.getSubtreePreOrderToDepth(child, sections,
 						child.getTitle().equals(section.getTitle()) ? --depth : depth);
 			}
@@ -111,7 +111,7 @@ public class Sections {
 
 	private static void getSubtreePreOrder(Section<?> section, List<Section<?>> sections) {
 		sections.add(section);
-		for (Section<? extends Type> child : section.getChildren()) {
+		for (Section<?> child : section.getChildren()) {
 			Sections.getSubtreePreOrder(child, sections);
 		}
 	}
@@ -123,17 +123,17 @@ public class Sections {
 	}
 
 	private static void getSubtreePostOrder(Section<?> section, List<Section<?>> sections) {
-		for (Section<? extends Type> child : section.getChildren()) {
+		for (Section<?> child : section.getChildren()) {
 			Sections.getSubtreePostOrder(child, sections);
 		}
 		sections.add(section);
 	}
 
-	public static List<Section<? extends Type>> getChildrenExceptExactType(Section<?> section, Class<?>[] classes) {
+	public static List<Section<?>> getChildrenExceptExactType(Section<?> section, Class<?>[] classes) {
 		List<Class<?>> classesList = Arrays.asList(classes);
-		List<Section<? extends Type>> list = new LinkedList<Section<? extends Type>>(
+		List<Section<?>> list = new LinkedList<Section<?>>(
 				section.getChildren());
-		Iterator<Section<? extends Type>> i = list.iterator();
+		Iterator<Section<?>> i = list.iterator();
 		while (i.hasNext()) {
 			Section<? extends Type> sec = i.next();
 			if (classesList.contains(sec.get().getClass())) {
@@ -148,7 +148,7 @@ public class Sections {
 		int nodeStart = section.getOffsetInArticle();
 		if (nodeStart <= start && nodeStart + section.getText().length() >= end) {
 			s = section;
-			for (Section<? extends Type> sec : section.getChildren()) {
+			for (Section<?> sec : section.getChildren()) {
 				Section<? extends Type> sub = Sections.findSmallestSectionContaining(
 						sec, start, end);
 				if (sub != null) {
@@ -519,7 +519,7 @@ public class Sections {
 			found.add(section);
 		}
 		if (canHaveSuccessorOfType(section, clazz)) {
-			for (Section<? extends Type> sec : section.getChildren()) {
+			for (Section<?> sec : section.getChildren()) {
 				Sections.findSuccessorsOfTypeUntyped(sec, clazz, found);
 			}
 		}
@@ -812,7 +812,6 @@ public class Sections {
 	 * {@link ReplaceResult#sendErrors(UserActionContext)}.
 	 * 
 	 * @param context the user context to use for modifying the articles
-	 * @param sectionsID section id for the section to be replaced
 	 * @param text the new text for the specified section
 	 * @returns a result object containing some information about the
 	 *          replacement success or the errors occurred
