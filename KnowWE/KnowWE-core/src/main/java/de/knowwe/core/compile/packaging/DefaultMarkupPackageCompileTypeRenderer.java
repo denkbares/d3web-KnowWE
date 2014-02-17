@@ -47,7 +47,7 @@ import de.knowwe.tools.ToolMenuDecoratingRenderer;
 
 /**
  * Renders a {@link DefaultMarkupType} section the does package compilation.
- * 
+ *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.10.2010
  */
@@ -144,13 +144,16 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 		subString.appendHtml("</span>");
 		PackageRegistrationCompiler packageCompiler = Compilers.getCompiler(
 				section.getArticleManager(), PackageRegistrationCompiler.class);
-		Section<?> termDefiningSection = packageCompiler.getTerminologyManager().getTermDefiningSection(
-				new Identifier(packageName));
-		Section<PackageTerm> packageTermSection = Sections.findSuccessor(termDefiningSection,
-				PackageTerm.class);
-		if (packageTermSection != null) {
-			ToolMenuDecoratingRenderer.renderToolMenuDecorator(subString.toStringRaw(),
-					packageTermSection.getID(), true, string);
+		Collection<Section<?>> termDefiningSections = packageCompiler.getTerminologyManager()
+				.getTermDefiningSections(new Identifier(packageName));
+		for (Section<?> termDefiningSection : termDefiningSections) {
+			Section<PackageTerm> packageTermSection = Sections.findSuccessor(termDefiningSection,
+					PackageTerm.class);
+			if (packageTermSection != null) {
+				ToolMenuDecoratingRenderer.renderToolMenuDecorator(subString.toStringRaw(),
+						packageTermSection.getID(), true, string);
+				break;
+			}
 		}
 		if (hasErrors) {
 			string.append(" (").append(errorsCount).append(" errors in ");
