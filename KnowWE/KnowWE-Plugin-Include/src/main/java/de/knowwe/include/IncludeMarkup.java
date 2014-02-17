@@ -19,6 +19,8 @@ package de.knowwe.include;
  * site: http://www.fsf.org.
  */
 
+import java.util.regex.Pattern;
+
 import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -98,6 +100,7 @@ public class IncludeMarkup extends DefaultMarkupType {
 	public static final String ANNOTATION_AUTHOR = "author";
 	public static final String ANNOTATION_PROJECT = "project";
 	public static final String ANNOTATION_TITLE = "title";
+	public static final String ANNOTATION_VERSION = "version";
 
 	static {
 		m = new DefaultMarkup(MARKUP_NAME);
@@ -109,6 +112,7 @@ public class IncludeMarkup extends DefaultMarkupType {
 		m.addAnnotation(ANNOTATION_PROJECT, false);
 		m.addAnnotation(ANNOTATION_AUTHOR, false);
 		m.addAnnotation(ANNOTATION_TEMPLATE, false);
+		m.addAnnotation(ANNOTATION_VERSION, false, Pattern.compile("\\d+"));
 		m.addAnnotationContentType(ANNOTATION_TEMPLATE, new AttachmentType());
 	}
 

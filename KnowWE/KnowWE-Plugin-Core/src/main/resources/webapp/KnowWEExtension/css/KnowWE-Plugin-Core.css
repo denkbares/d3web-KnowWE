@@ -331,6 +331,31 @@ smartedit + .objectinfo.preview:hover{
 	vertical-align:	-7px;
 }
 
+.defaultMarkup .markupText .progress-message a.action {
+	position: relative;
+	display: inline-block;
+	padding: 0.25em 0.5em;
+	margin: 2px 0.3em;
+	min-width: 80px;
+	text-decoration: none;
+	text-align: center;
+	line-height: normal;
+	border: 1px solid #DDD;
+	background: #F9F9F9;
+	white-space: nowrap;
+	box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	-ms-box-sizing: content-box;
+	-webkit-box-sizing: content-box;
+}
+
+.defaultMarkup .markupText .progress-message a.action img {
+	position: relative;
+	top: -1px;
+	padding-right: 5px;
+	margin-bottom: -4px;
+}
+
 /* ################################################## */
 /* ------------Packaging Styles----------------- */
 /* ################################################## */

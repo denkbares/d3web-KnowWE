@@ -30,7 +30,7 @@ import de.knowwe.core.utils.progress.LongOperationToolProvider;
 public class DocxDownloadProvider extends LongOperationToolProvider {
 
 	public DocxDownloadProvider() {
-		super("KnowWEExtension/icon/word.png", "Download MS-Word",
+		super("KnowWEExtension/icons/word.png", "Download MS-Word",
 				"Downloads the contents in Microsoft Word 2007+ format");
 	}
 

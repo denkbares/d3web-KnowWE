@@ -21,14 +21,22 @@ package de.knowwe.include.export;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import de.d3web.core.io.progress.ProgressListener;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Message.Type;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.progress.FileDownloadOperation;
+import de.knowwe.include.IncludeMarkup;
+import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.tools.DefaultTool;
+import de.knowwe.tools.Tool;
 
 /**
  * 
@@ -38,8 +46,6 @@ import de.knowwe.core.utils.progress.FileDownloadOperation;
 public class DocxDownloadOperation extends FileDownloadOperation {
 
 	private final Section<?> section;
-	private StringBuilder report = null;
-	private boolean hasError = false;
 	private ExportManager export = null;
 
 	public DocxDownloadOperation(Section<?> section) {
@@ -50,54 +56,99 @@ public class DocxDownloadOperation extends FileDownloadOperation {
 	@Override
 	public void before(UserActionContext user) throws IOException {
 		super.before(user);
+		this.export = new ExportManager(section);
 
-		this.report = null;
-		this.hasError = false;
-		this.export = new ExportManager();
-		try {
-			export.checkViewPersmission(section, user);
+		// check read access for all articles
+		for (Article article : export.getIncludedArticles()) {
+			if (!KnowWEUtils.canView(article, user)) {
+				addMessage(Messages.error(
+						"User is not allowed to view article '" +
+								article.getTitle() + "'"));
+			}
 		}
-		catch (SecurityException e) {
-			appendMessage(Messages.error(e.getMessage()));
+
+		// increase version if available and required
+		// export.incVersionIfRequired(user);
+		Article article = user.getArticle();
+		if (KnowWEUtils.getLastModified(article).before(export.getLastModified())) {
+			addMessage(Messages.warning("The version number appears to be out-dated. " +
+					"Please update and download the word file again."));
+		}
+	}
+
+	@Override
+	public List<Tool> getActions(UserActionContext context) {
+		List<Tool> actions = super.getActions(context);
+		if (export == null) return actions;
+		if (hasError()) return actions;
+		if (!export.isNewVersionRequired()) return actions;
+
+		// check if next version is available
+		String nextVersion = getNextVersion();
+		if (nextVersion == null) return actions;
+
+		// create update tool action
+		String versionSectionID = DefaultMarkupType.getAnnotationContentSection(section,
+				IncludeMarkup.ANNOTATION_VERSION).getID();
+		String jsAction = "KNOWWE.plugin.include.updateVersion(" +
+				"'" + versionSectionID + "', " + nextVersion + ");";
+
+		// make a copy and add update tool
+		actions = new LinkedList<Tool>(actions);
+		actions.add(new DefaultTool(
+				"KnowWEExtension/images/pencil.png",
+				"Update Version to " + nextVersion,
+				"Increments the version number of the document to be downloaded.",
+				jsAction));
+		return actions;
+	}
+
+	@Override
+	public String getFileIcon() {
+		return "KnowWEExtension/icons/word.png";
+	}
+
+	/**
+	 * Creates the increased version number. The method return null if no
+	 * updated number can be provided.
+	 * 
+	 * @created 16.02.2014
+	 * @return the next version number
+	 */
+	private String getNextVersion() {
+		// if we passed the previous check, we know there is a version available
+		Section<? extends AnnotationContentType> versionSection =
+				DefaultMarkupType.getAnnotationContentSection(section,
+						IncludeMarkup.ANNOTATION_VERSION);
+		if (versionSection == null) return null;
+
+		// if update is required inc version and write back to wiki
+		try {
+			int version = Integer.parseInt(versionSection.getText());
+			return String.valueOf(version + 1);
+		}
+		catch (NumberFormatException e) {
+			return null;
 		}
 	}
 
 	@Override
 	public void execute(File resultFile, ProgressListener listener) throws IOException, InterruptedException {
-
+		if (hasError()) return;
 		FileOutputStream stream = new FileOutputStream(resultFile);
 		try {
-			ExportModel model = export.createExport(section);
+			ExportModel model = export.createExport();
 			for (Message message : model.getMessages()) {
-				appendMessage(message);
+				addMessage(message);
 			}
 			model.getDocument().write(stream);
 		}
 		catch (ExportException e) {
-			appendMessage(Messages.error(e.getMessage()));
+			addMessage(Messages.error(e.getMessage()));
 		}
 		finally {
 			stream.close();
-			if (hasError) throw new InterruptedException();
 		}
-	}
-
-	private void appendMessage(Message msg) {
-		if (report == null) {
-			report = new StringBuilder();
-		}
-		else {
-			report.append("\n<br>");
-		}
-		report.append(msg.getType().name()).append(": ");
-		report.append(msg.getVerbalization());
-		hasError |= msg.getType().equals(Type.ERROR);
-	}
-
-	@Override
-	public String getReport() {
-		if (report == null) return null;
-		return report.toString();
 	}
 
 }

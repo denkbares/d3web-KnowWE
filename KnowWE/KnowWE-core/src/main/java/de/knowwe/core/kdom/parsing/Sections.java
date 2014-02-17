@@ -802,6 +802,30 @@ public class Sections {
 	}
 
 	/**
+	 * Replaces a section with the specified text, but not in the KDOMs
+	 * themselves. It collects the texts deep through the KDOM and appends the
+	 * new text (instead of the original text) for the Sections with an ID in
+	 * the sectionsMap. Finally the article is saved with this new content.
+	 * <p>
+	 * If working on an action the resulting object may be used to send the
+	 * errors during replacement back to the caller using
+	 * {@link ReplaceResult#sendErrors(UserActionContext)}.
+	 * 
+	 * @param context the user context to use for modifying the articles
+	 * @param sectionsID section id for the section to be replaced
+	 * @param text the new text for the specified section
+	 * @returns a result object containing some information about the
+	 *          replacement success or the errors occurred
+	 * @throws IOException if an io error occurred during replacing the sections
+	 */
+
+	public static ReplaceResult replaceSection(UserContext context, String sectionID, String text) throws IOException {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put(sectionID, text);
+		return replaceSections(context, map);
+	}
+
+	/**
 	 * Replaces Sections with the given texts, but not in the KDOMs themselves.
 	 * It collects the texts deep through the KDOM and appends the new text
 	 * (instead of the original text) for the Sections with an ID in the

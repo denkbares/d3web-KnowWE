@@ -192,17 +192,24 @@ public class CasesZipOperation extends FileDownloadOperation {
 	}
 
 	@Override
-	public String getReport() {
-		String report = "";
+	public String getReport(UserActionContext context) {
+		String report = super.getReport(context);
+		if (report == null) report = "";
+
 		String skipped = this.skipped.toString();
 		if (!skipped.isEmpty()) {
-			report += "Skipped:<br/>" + skipped;
+			report += "<p>Skipped:<br/>" + skipped + "</p>";
 		}
 		String errors = this.errors.toString();
 		if (!errors.isEmpty()) {
-			report += (skipped.isEmpty() ? "" : "<br/>") + "Error:<br/>" + errors;
+			report += "<p>Error:<br/>" + errors + "</p>";
 		}
 		return report;
+	}
+
+	@Override
+	public String getFileIcon() {
+		return "KnowWEExtension/images/zip.jpg";
 	}
 
 }

@@ -12,8 +12,7 @@
 	text-decoration: none;
 }
 
-.wikiBook-author:BEFORE,.wikiBook-autor:BEFORE,.wikiBook-creator:BEFORE
-	{
+.wikiBook-author:BEFORE,.wikiBook-autor:BEFORE,.wikiBook-creator:BEFORE {
 	content: "Author: "
 }
 

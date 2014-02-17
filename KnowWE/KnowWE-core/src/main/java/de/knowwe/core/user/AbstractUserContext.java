@@ -21,6 +21,7 @@ package de.knowwe.core.user;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
@@ -71,6 +72,11 @@ public abstract class AbstractUserContext implements UserContext {
 			page = this.getParameter("page");
 		}
 		return page;
+	}
+
+	@Override
+	public Article getArticle() {
+		return getArticleManager().getArticle(getTitle());
 	}
 
 	/**

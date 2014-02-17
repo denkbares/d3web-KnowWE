@@ -20,6 +20,11 @@
 
 package de.knowwe.core.kdom;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
@@ -29,11 +34,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.event.ArticleCreatedEvent;
 import de.knowwe.event.KDOMCreatedEvent;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 
@@ -107,7 +107,7 @@ public class Article {
 
 	/**
 	 * Constructor: starts recursive parsing by creating new Section object
-     */
+	 */
 	private Article(String text, String title, String web, boolean fullParse) {
 
 		currentlyBuildingArticles.put(getArticleKey(web, title), this);

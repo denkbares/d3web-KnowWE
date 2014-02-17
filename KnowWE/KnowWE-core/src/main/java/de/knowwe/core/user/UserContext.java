@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.kdom.Article;
 
 /**
  * UserContext which represents the users interaction with the server.
@@ -70,6 +71,13 @@ public interface UserContext {
 	 * @created 14.10.2010 s
 	 */
 	public String getTitle();
+
+	/**
+	 * Returns the Article the user is currently visiting.
+	 * 
+	 * @created 14.10.2010 s
+	 */
+	public Article getArticle();
 
 	/**
 	 * Returns the web of the user's is currently visiting. It is the web the
@@ -128,7 +136,7 @@ public interface UserContext {
 	public ServletContext getServletContext();
 
 	/**
-	 * Returns the ARticleManager belonging to this context
+	 * Returns the ArticleManager belonging to this context
 	 * 
 	 * @created 14.01.2014
 	 */

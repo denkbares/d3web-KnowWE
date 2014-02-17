@@ -22,21 +22,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.poi.POIXMLProperties.CoreProperties;
 import org.apache.poi.openxml4j.util.Nullable;
 
 import de.d3web.strings.Strings;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.renderer.RenderKDOMType;
-import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.include.IncludeMarkup;
 import de.knowwe.include.InnerWikiReference;
+import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
@@ -48,7 +52,11 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  */
 public class ExportManager {
 
-	public ExportManager() {
+	private Section<?> section;
+	private Set<Article> includedArticles = null;
+
+	public ExportManager(Section<?> section) {
+		this.section = section;
 	}
 
 	List<Exporter<?>> createExporters() {
@@ -84,38 +92,83 @@ public class ExportManager {
 	}
 
 	/**
-	 * Returns if the specified user can view the specified section and all
-	 * other sections included by the specified section or any sub-sections of
-	 * the specified sections. If the specified section (or any of it's
-	 * sub-section) include an other include the indirectly included sections
-	 * are also checked iteratively to any depth. If this method returns, the
-	 * user has the rights to see the whole result provided by the
-	 * {@link #createExport(Section)} method. Otherwise an
-	 * {@link SecurityException} is thrown.
+	 * Returns the articles of the the specified section and all other sections
+	 * included by the specified section or any sub-sections of the specified
+	 * sections. If the specified section (or any of it's sub-section) include
+	 * an other include the indirectly included sections of articles are also
+	 * checked iteratively to any depth.
 	 * 
 	 * @created 16.02.2014
-	 * @param section the section to check for view access rights recursively
-	 * @param context the user to check the vier permissions for
-	 * @throws SecurityException if the user is missing the view rights for any
-	 *         of the effected articles
+	 * @return all articles used by this export
 	 */
-	public void checkViewPersmission(Section<?> section, UserContext context) throws SecurityException {
-		if (!KnowWEUtils.canView(section, context)) {
-			throw new SecurityException("User is not allowed to view article '" +
-					section.getTitle() + "'");
-		}
+	public Set<Article> getIncludedArticles() {
+		if (includedArticles == null) {
+			// for security reasons we have to check all visited
+			// sections instead of only the articles
+			// because there might be multiple different includes
+			// in one single article
+			Set<Section<?>> visited = new HashSet<Section<?>>();
+			initIncludedArticles(section, visited);
 
-		List<Section<InnerWikiReference>> references =
-				Sections.successors(section, InnerWikiReference.class);
-		for (Section<InnerWikiReference> reference : references) {
-			List<Section<?>> targets = reference.get().getIncludedSections(reference);
-			for (Section<?> target : targets) {
-				checkViewPersmission(target, context);
+			// but after that we take only the sections' articles
+			includedArticles = Sections.getArticles(visited);
+		}
+		return Collections.unmodifiableSet(includedArticles);
+	}
+
+	private void initIncludedArticles(Section<?> section, Set<Section<?>> visited) {
+		if (visited.add(section)) {
+			List<Section<InnerWikiReference>> references =
+					Sections.successors(section, InnerWikiReference.class);
+			for (Section<InnerWikiReference> reference : references) {
+				List<Section<?>> targets = reference.get().getIncludedSections(reference);
+				for (Section<?> target : targets) {
+					initIncludedArticles(target, visited);
+				}
 			}
 		}
 	}
 
-	public ExportModel createExport(Section<?> section) throws IOException {
+	/**
+	 * Returns the most recent date the root section's article or any of the
+	 * included articles will have been modified.
+	 * 
+	 * @created 16.02.2014
+	 * @return the last modified date of the inclusion of all affected sections
+	 */
+	public Date getLastModified() {
+		Date maxDate = null;
+		for (Article article : getIncludedArticles()) {
+			Date date = KnowWEUtils.getLastModified(article);
+			if (maxDate == null || date.after(maxDate)) {
+				maxDate = date;
+			}
+		}
+		return maxDate;
+	}
+
+	/**
+	 * Checks if the version number requires an update, because a version number
+	 * is specified but this article is older than the newest article that will
+	 * be included.
+	 * 
+	 * @created 16.02.2014
+	 */
+	public boolean isNewVersionRequired() {
+		if (!(section.get() instanceof IncludeMarkup)) return false;
+		Section<IncludeMarkup> include = Sections.cast(section, IncludeMarkup.class);
+		Section<? extends AnnotationContentType> versionSection =
+				DefaultMarkupType.getAnnotationContentSection(include,
+						IncludeMarkup.ANNOTATION_VERSION);
+		if (versionSection == null) return false;
+
+		// check dates if update is required
+		Date thisDate = KnowWEUtils.getLastModified(section.getArticle());
+		Date lastDate = getLastModified();
+		return thisDate.before(lastDate);
+	}
+
+	public ExportModel createExport() throws IOException {
 		// detect stream for word template
 		Section<AttachmentType> attach = Sections.successor(section, AttachmentType.class);
 		InputStream stream = (attach == null)
@@ -130,8 +183,9 @@ public class ExportManager {
 				updateDocumentInfo(Sections.cast(section, IncludeMarkup.class), model);
 			}
 			builder.export(section);
-			builder.getDocument().getProperties().getCoreProperties().setModified(
-					new Nullable<Date>(model.getModifiedDate()));
+			// initialize some core properties
+			CoreProperties coreProperties = builder.getDocument().getProperties().getCoreProperties();
+			coreProperties.setModified(new Nullable<Date>(getLastModified()));
 			return model;
 		}
 		finally {
@@ -163,6 +217,10 @@ public class ExportManager {
 		String author = DefaultMarkupType.getAnnotation(section, IncludeMarkup.ANNOTATION_AUTHOR);
 		if (!Strings.isBlank(author)) {
 			model.setProperty("author", author);
+		}
+		String version = DefaultMarkupType.getAnnotation(section, IncludeMarkup.ANNOTATION_VERSION);
+		if (!Strings.isBlank(version)) {
+			model.setProperty("version", version);
 		}
 	}
 }

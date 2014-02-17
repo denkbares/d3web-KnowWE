@@ -100,9 +100,6 @@ public class DefaultBuilder implements DocumentBuilder {
 
 	@Override
 	public void export(Section<?> section) {
-		// update date
-		model.updateModifiedDate(section.getArticle());
-
 		// try to export section
 		for (Exporter<?> export : model.getExporters()) {
 			try {

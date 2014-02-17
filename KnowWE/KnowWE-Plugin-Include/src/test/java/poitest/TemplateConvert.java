@@ -38,7 +38,7 @@ import de.knowwe.include.export.ExportModel;
 public class TemplateConvert {
 
 	public static void main(String[] args) throws Exception {
-		ExportManager export = new ExportManager();
+		ExportManager export = new ExportManager(null);
 		ExportModel model = new ExportModel(export, ExportManager.createDefaultTemplateStream());
 		DefaultBuilder builder = new DefaultBuilder(model);
 

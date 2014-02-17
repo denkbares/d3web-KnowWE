@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -57,6 +58,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.core.wikiConnector.WikiConnector;
 
 public class KnowWEUtils {
 
@@ -843,6 +845,41 @@ public class KnowWEUtils {
 
 	public static Object getStoredObject(Compiler compiler, Section<?> s, String key) {
 		return s.getSectionStore().getObject(compiler, key);
+	}
+
+	/**
+	 * Returns the date the specified article has been modified the last time.
+	 * This method also works if the specified article is not the latest one.
+	 * Therefore this method does NOT (!) return the modification date of the
+	 * specified article, but the modification date of the specified article's
+	 * name within the corresponding article manager.
+	 * 
+	 * @created 16.02.2014
+	 * @param article the article to get the latest modification date for
+	 * @return the last modification date
+	 */
+	public static Date getLastModified(Article article) {
+		WikiConnector connector = Environment.getInstance().getWikiConnector();
+		String title = article.getTitle();
+		int version = connector.getVersion(title);
+		return connector.getLastModifiedDate(title, version);
+	}
+
+	/**
+	 * Returns the version number of the latest version of the specified
+	 * article. This method also works if the specified article is not the
+	 * latest instance. Therefore this method does NOT (!) return the version of
+	 * the specified article, but the latest version of the specified article's
+	 * name within the corresponding article manager.
+	 * 
+	 * @created 16.02.2014
+	 * @param article the article to get the latest version for
+	 * @return the latest version
+	 */
+	public static int getLatestVersion(Article article) {
+		WikiConnector connector = Environment.getInstance().getWikiConnector();
+		String title = article.getTitle();
+		return connector.getVersion(title);
 	}
 
 }

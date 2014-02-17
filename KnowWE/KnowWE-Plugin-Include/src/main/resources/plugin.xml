@@ -25,6 +25,7 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
         <parameter id="css" value="KnowWE-Plugin-Include.css" />
+        <parameter id="script" value="KnowWE-Plugin-Include.js" />
 	</extension>
 
     <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"

@@ -21,7 +21,6 @@ package de.knowwe.include.export;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,11 +31,8 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 
 import de.d3web.strings.Strings;
-import de.knowwe.core.Environment;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.wikiConnector.WikiConnector;
 
 /**
  * Class that contains some common information about the current export that is
@@ -51,7 +47,6 @@ public class ExportModel {
 	private final XWPFDocument document;
 	private final List<Exporter<?>> exporters;
 
-	private Date maxDate = null;
 	private final List<Message> messages = new LinkedList<Message>();
 
 	public ExportModel(ExportManager manager, InputStream templateStream) throws IOException {
@@ -121,32 +116,6 @@ public class ExportModel {
 	}
 
 	/**
-	 * Updates the modified date with the date the specified Article is modified
-	 * 
-	 * @created 16.02.2014
-	 * @param section
-	 */
-	public void updateModifiedDate(Article article) {
-		WikiConnector connector = Environment.getInstance().getWikiConnector();
-		String title = article.getTitle();
-		int version = connector.getVersion(title);
-		Date date = connector.getLastModifiedDate(title, version);
-		if (maxDate == null || date.after(maxDate)) {
-			maxDate = date;
-		}
-	}
-
-	/**
-	 * Returns the date of the latest change of all exported sections' articles.
-	 * 
-	 * @created 16.02.2014
-	 * @return the last modified date of the whole exported content
-	 */
-	public Date getModifiedDate() {
-		return maxDate;
-	}
-
-	/**
 	 * Sets a document property of the currently exported document
 	 * 
 	 * @created 11.02.2014
@@ -163,6 +132,11 @@ public class ExportModel {
 			else if (Strings.equalsIgnoreCase("title", key)
 					|| Strings.equalsIgnoreCase("titel", key)) {
 				properties.setTitleProperty(Strings.trim(value));
+			}
+			else if (Strings.equalsIgnoreCase("version", key)
+					|| Strings.equalsIgnoreCase("revision", key)) {
+				properties.setRevisionProperty(Strings.trim(value));
+				document.getProperties().getCoreProperties().setRevision(value);
 			}
 			else if (Strings.equalsIgnoreCase("project", key)
 					|| Strings.equalsIgnoreCase("projekt", key)

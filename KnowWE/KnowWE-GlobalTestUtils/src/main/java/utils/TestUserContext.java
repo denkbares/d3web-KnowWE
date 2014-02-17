@@ -211,6 +211,11 @@ public class TestUserContext implements UserContext, UserActionContext {
 		return article.getArticleManager();
 	}
 
+	@Override
+	public Article getArticle() {
+		return article;
+	}
+
 	public String getResponseText() {
 		try {
 			writer.flush();
