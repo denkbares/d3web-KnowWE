@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
@@ -81,7 +80,7 @@ public class DefaultMarkupPreviewRenderer implements PreviewRenderer {
 	 * 
 	 * @created 26.08.2013
 	 * @param scope the sub-scope to be shown
-	 * @param forceVisible if the are always shown or only if the contain
+	 * @param selector if the are always shown or only if the contain
 	 *        relevant items
 	 */
 	public void addPreviewItem(Scope scope, Select selector) {
@@ -134,7 +133,7 @@ public class DefaultMarkupPreviewRenderer implements PreviewRenderer {
 			case afterSelected:
 			case beforeSelected:
 				for (Section<?> match : matches) {
-					List<Section<? extends Type>> siblings = match.getParent().getChildren();
+					List<Section<?>> siblings = match.getParent().getChildren();
 					int index = siblings.indexOf(match);
 					if (index == -1) continue;
 					// move index to the sibling that has to be included

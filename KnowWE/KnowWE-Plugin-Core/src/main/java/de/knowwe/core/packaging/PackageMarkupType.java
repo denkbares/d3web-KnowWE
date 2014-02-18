@@ -9,7 +9,6 @@ import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScr
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageTerm;
-import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -21,7 +20,6 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageRegistrationScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageTermReferenceRegistrationHandler;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.kdom.sectionFinder.LineSectionFinder;
 
 public class PackageMarkupType extends DefaultMarkupType {
 
@@ -29,7 +27,11 @@ public class PackageMarkupType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("Package");
-		MARKUP.addContentType(new PackageTermLine());
+		PackageTerm packageTerm = new PackageTerm();
+		packageTerm.addCompileScript(Priority.HIGHEST, new SetDefaultPackageHandler());
+		packageTerm.addCompileScript(Priority.LOWEST, new RemoveDefaultPackageHandler());
+		packageTerm.addCompileScript(Priority.HIGH, new PackageTermDefinitionRegistrationHandler());
+		MARKUP.addContentType(packageTerm);
 	}
 
 	public PackageMarkupType() {
@@ -39,20 +41,6 @@ public class PackageMarkupType extends DefaultMarkupType {
 		removeCompileScript(PackageRegistrationCompiler.class,
 				DefaultMarkupPackageRegistrationScript.class);
 		setRenderer(new PackageMarkupRenderer());
-	}
-
-	private static class PackageTermLine extends AbstractType {
-
-		public PackageTermLine() {
-			this.setSectionFinder(new LineSectionFinder());
-			PackageTerm packageTerm = new PackageTerm();
-			packageTerm.addCompileScript(Priority.HIGHEST, new SetDefaultPackageHandler());
-			packageTerm.addCompileScript(Priority.LOWEST, new RemoveDefaultPackageHandler());
-			packageTerm.addCompileScript(Priority.HIGH, new PackageTermDefinitionRegistrationHandler());
-			addChildType(packageTerm);
-		}
-
-
 	}
 
 	private static class PackageMarkupRenderer extends DefaultMarkupRenderer {

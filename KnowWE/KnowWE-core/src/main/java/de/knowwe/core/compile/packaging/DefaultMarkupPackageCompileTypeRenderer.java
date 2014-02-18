@@ -146,14 +146,19 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 				section.getArticleManager(), PackageRegistrationCompiler.class);
 		Collection<Section<?>> termDefiningSections = packageCompiler.getTerminologyManager()
 				.getTermDefiningSections(new Identifier(packageName));
+		boolean rendered = false;
 		for (Section<?> termDefiningSection : termDefiningSections) {
 			Section<PackageTerm> packageTermSection = Sections.findSuccessor(termDefiningSection,
 					PackageTerm.class);
 			if (packageTermSection != null) {
 				ToolMenuDecoratingRenderer.renderToolMenuDecorator(subString.toStringRaw(),
 						packageTermSection.getID(), true, string);
+				rendered = true;
 				break;
 			}
+		}
+		if (!rendered) {
+			string.append(subString);
 		}
 		if (hasErrors) {
 			string.append(" (").append(errorsCount).append(" errors in ");

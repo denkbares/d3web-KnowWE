@@ -58,7 +58,7 @@ public class RenderKDOMVisitor implements Visitor {
 												// >
 												// 10000)
 		i++;
-		List<Section<? extends Type>> children = s.getChildren();
+		List<Section<?>> children = s.getChildren();
 		if (!(children.size() == 1 && children.get(0).get() instanceof PlainText)) {
 			for (Section<? extends Type> section : children) {
 				renderSubtree(section, i, buffi);

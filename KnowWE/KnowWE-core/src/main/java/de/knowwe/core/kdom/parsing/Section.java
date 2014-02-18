@@ -151,8 +151,6 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 * @param text the part of (article-source) text of the node
 	 * @param objectType type of the node
 	 * @param father
-	 * @param beginIndexFather
-	 * @param article is the article this section is hooked in
 	 */
 	private Section(String text, T objectType, Section<?> father) {
 		this.parent = father;
@@ -308,7 +306,6 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 * TODO: Important - propagate changes through the whole tree OR ReIinit
 	 * tree!
 	 * 
-	 * @param text
 	 */
 	public void setText(String newText) {
 		this.text = newText;
@@ -379,7 +376,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	/**
 	 * @return the list of child nodes
 	 */
-	public List<Section<? extends Type>> getChildren() {
+	public List<Section<?>> getChildren() {
 		return Collections.unmodifiableList(children);
 
 	}
@@ -390,9 +387,9 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 * @return
 	 * @param filter the filter to be matched
 	 */
-	public List<Section<? extends Type>> getChildren(SectionFilter filter) {
+	public List<Section<?>> getChildren(SectionFilter filter) {
 		ArrayList<Section<? extends Type>> list = new ArrayList<Section<? extends Type>>();
-		for (Section<? extends Type> current : getChildren()) {
+		for (Section<?> current : getChildren()) {
 			if (filter.accept(current)) list.add(current);
 		}
 		return list;
@@ -751,7 +748,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 */
 	public void setReusedByRecursively(String title, boolean reused) {
 		setReusedBy(title, reused);
-		for (Section<? extends Type> child : getChildren()) {
+		for (Section<?> child : getChildren()) {
 			child.setReusedByRecursively(title, reused);
 		}
 	}
@@ -795,7 +792,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 */
 	public void clearReusedSuccessorRecursively() {
 		this.isOrHasReusedSuccessor = false;
-		for (Section<? extends Type> child : getChildren()) {
+		for (Section<?> child : getChildren()) {
 			if (child.getTitle().equals(getTitle())) {
 				child.clearReusedSuccessorRecursively();
 			}
@@ -917,7 +914,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		Section<?> temp = this;
 		Section<?> tempFather = temp.getParent();
 		while (temp != end && tempFather != null) {
-			List<Section<? extends Type>> childrenList = tempFather.getChildren();
+			List<Section<?>> childrenList = tempFather.getChildren();
 			int indexOf = getIndex(temp, childrenList);
 			positions.addFirst(indexOf);
 			temp = tempFather;
@@ -935,7 +932,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 * @param childrenList
 	 * @return
 	 */
-	private int getIndex(Section<?> temp, List<Section<? extends Type>> childrenList) {
+	private int getIndex(Section<?> temp, List<Section<?>> childrenList) {
 		int index = 0;
 		for (Section<? extends Type> section : childrenList) {
 			// this == comparator is on purpose on this place as this method is

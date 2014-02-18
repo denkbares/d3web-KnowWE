@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
@@ -106,8 +105,8 @@ public class AbstractXMLType extends AbstractType {
 			return s;
 		}
 
-		List<Section<? extends Type>> children = s.getChildren();
-		for (Section<? extends Type> section : children) {
+		List<Section<?>> children = s.getChildren();
+		for (Section<?> section : children) {
 			if (section.get() instanceof XMLContent) {
 				List<Section<AbstractXMLType>> nodes = Sections
 						.findChildrenOfType(section, AbstractXMLType.class);
@@ -131,7 +130,7 @@ public class AbstractXMLType extends AbstractType {
 
 			c.add(s);
 		}
-		List<Section<? extends Type>> children = s.getChildren();
+		List<Section<?>> children = s.getChildren();
 		for (Section<?> section : children) {
 			if (section.get() instanceof XMLContent) {
 				Section<XMLContent> conSec = (Section<XMLContent>) section;

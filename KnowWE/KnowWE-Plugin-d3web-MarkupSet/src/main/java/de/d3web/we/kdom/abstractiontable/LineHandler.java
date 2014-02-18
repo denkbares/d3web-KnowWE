@@ -54,7 +54,7 @@ public class LineHandler extends D3webCompileScript<TableLine> {
 
 		for (; cellIter.hasNext();) {
 			Section<CellContent> cell = cellIter.next();
-			Section<? extends Type> knowledgeSection = cell.getChildren().get(0);
+			Section<?> knowledgeSection = cell.getChildren().get(0);
 			if (cellIter.hasNext()) {
 				// it's a condition cell
 				Condition condition = createCondition(compiler, knowledgeSection);

@@ -19,7 +19,9 @@
 
 package de.knowwe.core.compile.packaging;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import de.d3web.strings.Identifier;
@@ -33,14 +35,14 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
- * Implementation of a compile type to handle the uses-annotations of a default
- * markup. This Type does not add a specific compiler, add a Compiler when you
- * add this Type to your parent type with a new
- * {@link PackageRegistrationScript}.
- * 
+ * Implementation of a compile type to handle the uses-annotations of a default markup. This Type does not add a
+ * specific compiler, add a Compiler when you add this Type to your parent type with a new {@link
+ * PackageRegistrationScript}.
+ *
  * @author Albrecht Striffler, Volker Belli (denkbares GmbH)
  * @created 13.10.2010
  */
@@ -102,8 +104,8 @@ public class DefaultMarkupPackageCompileType extends PackageCompileType {
 						boolean emptyPackages = sectionsOfPackages.isEmpty()
 								// the parents markup section does not count
 								|| (sectionsOfPackages.size() == 1
-										&& markupSection != null
-										&& sectionsOfPackages.contains(markupSection));
+								&& markupSection != null
+								&& sectionsOfPackages.contains(markupSection));
 						if (emptyPackages) {
 							String packagesString = Strings.concat(" ,", packagesToCompile);
 							if (packagesToCompile.length > 1) {
@@ -132,8 +134,15 @@ public class DefaultMarkupPackageCompileType extends PackageCompileType {
 	public String[] getPackagesToCompile(Section<? extends PackageCompileType> section) {
 		Section<DefaultMarkupType> markupSection = Sections.findAncestorOfType(section,
 				DefaultMarkupType.class);
-		String[] uses = DefaultMarkupType.getAnnotations(markupSection,
-				PackageManager.COMPILE_ATTRIBUTE_NAME);
+		List<Section<? extends AnnotationContentType>> usesSections = DefaultMarkupType.getAnnotationContentSections(markupSection, PackageManager.COMPILE_ATTRIBUTE_NAME);
+		List<Section<PackageTerm>> termSections = new ArrayList<Section<PackageTerm>>();
+		for (Section<? extends AnnotationContentType> usesSection : usesSections) {
+			termSections.addAll(Sections.findSuccessorsOfType(usesSection, PackageTerm.class));
+		}
+		String[] uses = new String[termSections.size()];
+		for (int i = 0; i < termSections.size(); i++) {
+			uses[i] = termSections.get(i).getText();
+		}
 		if (uses.length == 0) {
 			return KnowWEUtils.getPackageManager(section).getDefaultPackages(
 					section.getArticle());

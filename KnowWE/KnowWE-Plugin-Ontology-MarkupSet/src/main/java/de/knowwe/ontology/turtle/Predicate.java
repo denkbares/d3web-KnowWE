@@ -24,7 +24,6 @@ import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.URI;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
@@ -53,8 +52,8 @@ public class Predicate extends AbstractType implements URIProvider<Predicate> {
 			"rawtypes", "unchecked" })
 	public Node getNode(Section<Predicate> section, Rdf2GoCore core) {
 		// there should be exactly one NodeProvider successor
-		List<Section<? extends Type>> children = section.getChildren();
-		for (Section<? extends Type> child : children) {
+		List<Section<?>> children = section.getChildren();
+		for (Section<?> child : children) {
 			// explicitly iterating children because Sections.findSuccessor()
 			// returns 'this' otherwise
 			Section<NodeProvider> nodeProviderChild = Sections.findSuccessor(child,

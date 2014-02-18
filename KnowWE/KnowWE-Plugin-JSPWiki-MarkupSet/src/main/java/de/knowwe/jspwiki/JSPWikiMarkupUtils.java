@@ -23,12 +23,12 @@ public class JSPWikiMarkupUtils {
 	 * toplevelsections are all sections with root as their father in the
 	 * treestructure.
 	 */
-	public static List<Section<? extends Type>> getTopLevelSections(
+	public static List<Section<?>> getTopLevelSections(
 			Article article) {
 		Section<RootType> s = article.getRootSection();
 		int i = 0;
-		List<Section<? extends Type>> topLevelSections = new ArrayList<Section<? extends Type>>();
-		for (Section<? extends Type> tlt : s.getChildren().get(0).getChildren()) {
+		List<Section<?>> topLevelSections = new ArrayList<Section<?>>();
+		for (Section<?> tlt : s.getChildren().get(0).getChildren()) {
 			if (countHeaderMarks(tlt.getText()) >= i) {
 				topLevelSections.add(tlt);
 				i = countHeaderMarks(tlt.getText());
@@ -63,7 +63,7 @@ public class JSPWikiMarkupUtils {
 	public static List<Section<? extends Type>> getContent(Section<HeaderType> sh) {
 		int level = countHeaderMarks(sh.getText());
 		Section<RootType> s = Sections.findAncestorOfType(sh, RootType.class);
-		List<Section<? extends Type>> list = s.getChildren();
+		List<Section<?>> list = s.getChildren();
 		int i = list.indexOf(sh) + 1;
 		List<Section<? extends Type>> contentSections = new ArrayList<Section<? extends Type>>();
 		for (; i < list.size(); i++) {

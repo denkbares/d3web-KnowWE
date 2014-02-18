@@ -19,6 +19,27 @@
 
 package de.knowwe.ontology.kdom;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.node.DatatypeLiteral;
+import org.ontoware.rdf2go.model.node.LanguageTagLiteral;
+import org.ontoware.rdf2go.model.node.Literal;
+import org.ontoware.rdf2go.model.node.Node;
+import org.ontoware.rdf2go.model.node.PlainLiteral;
+import org.ontoware.rdf2go.model.node.Resource;
+import org.ontoware.rdf2go.model.node.URI;
+import org.openrdf.rio.turtle.TurtleWriter;
+
 import de.d3web.strings.Strings;
 import de.d3web.utils.EqualsUtils;
 import de.d3web.utils.Pair;
@@ -41,26 +62,6 @@ import de.knowwe.ontology.turtle.TurtleContent;
 import de.knowwe.ontology.turtle.TurtleMarkup;
 import de.knowwe.ontology.turtle.TurtleSentence;
 import de.knowwe.rdf2go.Rdf2GoCore;
-import org.ontoware.rdf2go.model.Statement;
-import org.ontoware.rdf2go.model.node.DatatypeLiteral;
-import org.ontoware.rdf2go.model.node.LanguageTagLiteral;
-import org.ontoware.rdf2go.model.node.Literal;
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.PlainLiteral;
-import org.ontoware.rdf2go.model.node.Resource;
-import org.ontoware.rdf2go.model.node.URI;
-import org.openrdf.rio.turtle.TurtleWriter;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * This class allows to add and remove statements to/from the turtle markup of a
@@ -713,7 +714,7 @@ public class ArticleTurtleModifier {
 			String indent = preferredIndent;
 			if (!isFirst) {
 				// check if last "." is missing and insert if required
-				List<Section<? extends Type>> siblings = node.getChildren();
+				List<Section<?>> siblings = node.getChildren();
 				if (!siblings.get(siblings.size() - 1).getText().trim().equals(".")) {
 					result.append(".");
 				}

@@ -51,7 +51,7 @@ public class CellTypeHandler extends D3webCompileScript<CellContent> {
 		if (columnHeader == null) {
 			throw CompilerMessage.error("Header is missing");
 		}
-		Section<? extends Type> d3webReference = columnHeader.getChildren().get(0)
+		Section<?> d3webReference = columnHeader.getChildren().get(0)
 				.getChildren().get(0);
 		if (Strings.isBlank(content.getText())) {
 			Messages.clearMessages(compiler, content, this.getClass());

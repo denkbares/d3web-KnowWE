@@ -65,7 +65,7 @@ public class CreateTextVisitor implements Visitor {
 		if (s.get() instanceof PlainText) {
 			buffi.append(s.getText());
 		}
-		List<Section<? extends Type>> children = s.getChildren();
+		List<Section<?>> children = s.getChildren();
 
 		for (Section<? extends Type> section : children) {
 			renderSubtree(section, buffi);
