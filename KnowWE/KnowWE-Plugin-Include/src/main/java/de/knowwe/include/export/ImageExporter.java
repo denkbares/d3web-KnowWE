@@ -98,8 +98,11 @@ public class ImageExporter implements Exporter<PluginType> {
 		final int maxW = 450;
 		final int maxH = 600;
 
-		int w = intAttr(section, "width", -1000);
-		int h = intAttr(section, "height", -1000);
+		boolean hasW = attr(section, "width") != null;
+		boolean hasH = attr(section, "height") != null;
+
+		int w = hasW ? intAttr(section, "width", -1000) : 0;
+		int h = hasH ? intAttr(section, "height", -1000) : 0;
 
 		// read dimension or use default dimension in 4:3 ratio
 		Dimension dim = readImageDimension(attachment);
@@ -113,8 +116,8 @@ public class ImageExporter implements Exporter<PluginType> {
 
 		// if only one attribute has been specified,
 		// use same scale factor for both directions
-		if (w == 0) fx = fy;
-		if (h == 0) fy = fx;
+		if (!hasW) fx = fy;
+		if (!hasH) fy = fx;
 
 		// scale image by detected scale
 		w = Math.round(dim.width * fx);
@@ -157,7 +160,7 @@ public class ImageExporter implements Exporter<PluginType> {
 		boolean percent = text.endsWith("%");
 		text = text.replace("%", "").trim();
 		float d = Float.valueOf(text);
-		return Math.round(percent ? defaultValue * d : d);
+		return Math.round(percent ? (defaultValue * d / 100) : d);
 	}
 
 	private String attr(Section<PluginType> section, String attribute) {
