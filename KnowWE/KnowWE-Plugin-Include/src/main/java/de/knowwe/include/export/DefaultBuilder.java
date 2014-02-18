@@ -40,6 +40,7 @@ public class DefaultBuilder implements DocumentBuilder {
 	private final ExportModel model;
 	protected XWPFParagraph paragraph = null;
 
+	private boolean code;
 	private boolean bold;
 	private boolean italic;
 	private boolean suppressHeaderNumbering = false;
@@ -65,6 +66,11 @@ public class DefaultBuilder implements DocumentBuilder {
 	@Override
 	public void setItalic(boolean italic) {
 		this.italic = italic;
+	}
+
+	@Override
+	public void setCode(boolean code) {
+		this.code = code;
 	}
 
 	@Override
@@ -193,6 +199,7 @@ public class DefaultBuilder implements DocumentBuilder {
 	private XWPFRun append(String text, XWPFRun run) {
 		if (bold) run.setBold(true);
 		if (italic) run.setItalic(true);
+		if (code) run.setFontFamily("Courier New");
 		run.setText(text);
 		return run;
 	}

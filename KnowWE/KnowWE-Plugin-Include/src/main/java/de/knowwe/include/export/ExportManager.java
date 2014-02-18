@@ -67,6 +67,7 @@ public class ExportManager {
 		exporters.add(new TOCExporter());
 		exporters.add(new BoldExporter());
 		exporters.add(new ItalicExporter());
+		exporters.add(new CodeStyleExporter());
 		exporters.add(new LinkExporter());
 		exporters.add(new WikiTextExporter());
 		exporters.add(new PlainTextExporter());

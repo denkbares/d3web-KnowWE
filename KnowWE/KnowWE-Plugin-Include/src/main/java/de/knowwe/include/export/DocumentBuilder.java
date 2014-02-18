@@ -112,6 +112,14 @@ public interface DocumentBuilder {
 	void setItalic(boolean italic);
 
 	/**
+	 * Sets if all styles shall be additionally using a code styled font or not.
+	 * 
+	 * @created 10.02.2014
+	 * @param italic true if code style font shall be forced
+	 */
+	void setCode(boolean code);
+
+	/**
 	 * Sets if all headers shall be displayed without numbering, even if
 	 * specified in the styles of used template. Please note that specifying
 	 * "false" will not force numbering to be on, it only reverts to use the

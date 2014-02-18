@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 denkbares GmbH
+ * Copyright (C) 2014 denkbares GmbH
  * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -16,31 +16,33 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.jspwiki.types;
+package de.knowwe.include.export;
 
-import java.util.regex.Pattern;
-
-import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.basicType.KeywordType;
-import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.jspwiki.types.TTType;
 
 /**
  * 
- * @author Stefan Plehn
- * @created 12.05.2011
+ * @author Volker Belli (denkbares GmbH)
+ * @created 07.02.2014
  */
-public class TTType extends AbstractType {
+public class CodeStyleExporter implements Exporter<TTType> {
 
-	public TTType() {
-		this.setSectionFinder(new RegexSectionFinder("\\{\\{(.*?)\\}\\}"));
-
-		this.addChildType(new KeywordType(Pattern.compile("^\\{\\{"), 0, true));
-		this.addChildType(new KeywordType(Pattern.compile("\\}\\}$"), 0, true));
-
-		this.addChildType(new BoldType());
-		this.addChildType(new ItalicType());
-		this.addChildType(new StrikeThroughType());
-		this.addChildType(new LinkType());
-		this.addChildType(new WikiTextType());
+	@Override
+	public boolean canExport(Section<TTType> section) {
+		return true;
 	}
+
+	@Override
+	public Class<TTType> getSectionType() {
+		return TTType.class;
+	}
+
+	@Override
+	public void export(Section<TTType> section, DocumentBuilder manager) throws ExportException {
+		manager.setCode(true);
+		manager.export(section.getChildren());
+		manager.setCode(false);
+	}
+
 }

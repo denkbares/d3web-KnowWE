@@ -42,6 +42,7 @@ public class ParagraphTypeForLists extends AbstractType {
 		this.addChildType(6d, new CSSDanglingType());
 		this.addChildType(6d, new InlineDefinitionType());
 		this.addChildType(6d, new DefinitionType());
+		this.addChildType(6d, new TTType());
 		this.addChildType(6d, new BoldType());
 		this.addChildType(6d, new ItalicType());
 		this.addChildType(6d, new StrikeThroughType());
