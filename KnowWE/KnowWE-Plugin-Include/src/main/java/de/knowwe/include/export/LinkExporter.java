@@ -33,7 +33,8 @@ public class LinkExporter implements Exporter<LinkType> {
 
 	@Override
 	public boolean canExport(Section<LinkType> section) {
-		return true;
+		// export everything except footnote references
+		return !LinkType.isFootnote(section);
 	}
 
 	@Override
@@ -49,5 +50,4 @@ public class LinkExporter implements Exporter<LinkType> {
 		if (to == -1) to = text.lastIndexOf(']');
 		manager.append(Strings.trimBlankLines(text.substring(from + 1, to)));
 	}
-
 }

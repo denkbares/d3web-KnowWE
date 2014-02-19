@@ -22,12 +22,12 @@ package de.knowwe.core.report;
 
 import java.io.Serializable;
 
+import de.d3web.strings.Strings;
+
 /**
- * 
  * Message tied to Sections in the KDOM.
  * 
- * 
- * @author Jochen
+ * @author Jochen Reutelshöfer (denkbares GmbH)
  * @author Albrecht Striffler (denkbares GmbH)
  * 
  */
@@ -39,13 +39,24 @@ public final class Message implements Comparable<Message>, Serializable {
 		INFO, WARNING, ERROR
 	}
 
-	private final String text;
-
 	private final Type type;
+	private final String text;
+	private final String details;
 
 	public Message(Type type, String text) {
+		this(type, text, (String) null);
+	}
+
+	public Message(Type type, String text, String details) {
 		this.type = type;
 		this.text = text;
+		this.details = details;
+	}
+
+	public Message(Type type, String text, Throwable e) {
+		this.type = type;
+		this.text = text;
+		this.details = Strings.getStackTrace(e);
 	}
 
 	/**
@@ -63,6 +74,22 @@ public final class Message implements Comparable<Message>, Serializable {
 	 */
 	public String getVerbalization() {
 		return this.text;
+	}
+
+	/**
+	 * Returns the details text of this message. Please note that the details
+	 * are rarely used, mostly for exception information if an unexpected error
+	 * has occurred. Therefore this information is not the primary interest of
+	 * the normal user and shall only be displayed if the user requests these
+	 * information. All normal/essential message information shall be placed in
+	 * the message verbalization text.
+	 * 
+	 * @created 19.02.2014
+	 * @return the message details
+	 * @see #getVerbalization()
+	 */
+	public String getDetails() {
+		return details;
 	}
 
 	@Override

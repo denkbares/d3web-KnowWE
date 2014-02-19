@@ -60,6 +60,9 @@ public class ExportManager {
 	}
 
 	List<Exporter<?>> createExporters() {
+		// please note that it is essential to create new instances
+		// for each export process, because the exporters may
+		// store information about the export process or the document
 		List<Exporter<?>> exporters = new LinkedList<Exporter<?>>();
 
 		// add exporters
@@ -69,6 +72,8 @@ public class ExportManager {
 		exporters.add(new ItalicExporter());
 		exporters.add(new CodeStyleExporter());
 		exporters.add(new LinkExporter());
+		exporters.add(new FootnoteExporter());
+		exporters.add(new FootnoteReferenceExporter());
 		exporters.add(new WikiTextExporter());
 		exporters.add(new PlainTextExporter());
 		exporters.add(new HeaderExporter());

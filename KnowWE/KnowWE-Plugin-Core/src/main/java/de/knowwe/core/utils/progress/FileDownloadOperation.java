@@ -2,7 +2,6 @@ package de.knowwe.core.utils.progress;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,8 +28,6 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	private File tempFile = null;
 	private UUID requestMarker = null;
 	private final String storeKey = FileDownloadOperation.class.getName();
-
-	private Exception error = null;
 	private List<Message> messages = new LinkedList<Message>();
 
 	public static String COMPLETE_MESSAGE = "Done.";
@@ -42,7 +39,6 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 
 	@Override
 	public void before(UserActionContext user) throws IOException {
-		this.error = null;
 		this.messages.clear();
 		this.requestMarker = UUID.randomUUID();
 		user.getSession().setAttribute(storeKey, requestMarker);
@@ -56,10 +52,22 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 		try {
 			execute(file, listener);
 		}
+		catch (IOException e) {
+			if (!file.delete()) file.deleteOnExit();
+			String msg = "Aborted execution due to io exception";
+			Log.warning(msg, e);
+			addMessage(new Message(Type.ERROR, msg, e));
+		}
+		catch (InterruptedException e) {
+			String msg = "Operation canceled by user.";
+			Log.info(msg);
+			addMessage(new Message(Type.INFO, msg));
+		}
 		catch (Exception e) {
 			if (!file.delete()) file.deleteOnExit();
-			Log.warning("Aborted execution of file download operation due to exception", e);
-			error = e;
+			String msg = "Aborted execution due to unexpected exception";
+			Log.warning(msg, e);
+			addMessage(new Message(Type.ERROR, msg + ": " + e, e));
 		}
 		finally {
 			listener.updateProgress(1f, COMPLETE_MESSAGE);
@@ -100,7 +108,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	}
 
 	public boolean hasError() {
-		return error != null || hasMessage(Type.ERROR);
+		return hasMessage(Type.ERROR);
 	}
 
 	public boolean hasMessage(Type type) {
@@ -125,13 +133,19 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 		StringBuilder other = new StringBuilder();
 		for (Message msg : messages) {
 			Type type = msg.getType();
+			String details = msg.getDetails();
 			StringBuilder builder = (type.equals(Type.ERROR)) ? errors :
 					(type.equals(Type.WARNING)) ? warnings : other;
 			if (builder.length() > 0) {
 				builder.append("\n<br>");
 			}
-			builder.append(msg.getType().name()).append(": ");
+			builder.append(type.name()).append(": ");
 			builder.append(Strings.encodeHtml(msg.getVerbalization()));
+			if (!Strings.isBlank(details)) {
+				builder.append(" <span title='")
+						.append(Strings.encodeHtml(details))
+						.append("'><img src='KnowWEExtension/images/dt_icon_q_description_small.png'></img></span>");
+			}
 		}
 
 		StringBuilder result = new StringBuilder();
@@ -209,11 +223,6 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 		}
 		if (!Strings.isBlank(actions)) {
 			out.append("<p>").append(actions).append("</p>");
-		}
-		if (error != null) {
-			out.append("<p>Aborted execution of file download operation due to exception.</p><pre>");
-			error.printStackTrace(new PrintWriter(out));
-			out.append("</pre>");
 		}
 
 		return out.toString();

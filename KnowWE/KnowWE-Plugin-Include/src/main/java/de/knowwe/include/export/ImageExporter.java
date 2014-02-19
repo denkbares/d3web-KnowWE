@@ -95,6 +95,7 @@ public class ImageExporter implements Exporter<PluginType> {
 	}
 
 	private Dimension getImageDimension(Section<PluginType> section, WikiAttachment attachment) {
+		// use approx. document client width / height
 		final int maxW = 450;
 		final int maxH = 600;
 

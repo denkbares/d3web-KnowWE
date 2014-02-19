@@ -26,6 +26,8 @@ package de.knowwe.jspwiki.types;
 public class ParagraphType extends ParagraphTypeForLists {
 
 	public ParagraphType() {
+		this.addChildType(1d, new FootnoteType());
+
 		this.addChildType(2d, new ListType());
 		this.addChildType(2d, new OrderedListType());
 	}

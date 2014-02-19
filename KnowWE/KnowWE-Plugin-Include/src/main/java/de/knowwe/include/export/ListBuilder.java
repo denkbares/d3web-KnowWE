@@ -21,33 +21,39 @@ package de.knowwe.include.export;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 
 /**
- * Special implementation of a document builder for building a cell inside of a
- * table.
+ * Special implementation of a document builder for building text without
+ * creating new paragraphs.
  * 
  * @author Volker Belli (denkbares GmbH)
  * @created 09.02.2014
  */
 public class ListBuilder extends DefaultBuilder {
 
-	private DocumentBuilder decorate;
+	private final XWPFParagraph paragraphToBuild;
+	private final Style defaultStyle;
 
 	public ListBuilder(DocumentBuilder decorate) {
+		this(decorate, decorate.getParagraph(), Style.list);
+	}
+
+	public ListBuilder(DocumentBuilder decorate, XWPFParagraph paragraphToBuild, Style defaultStyle) {
 		super(decorate.getModel());
-		this.decorate = decorate;
-		this.paragraph = decorate.getParagraph();
+		this.paragraphToBuild = paragraphToBuild;
+		this.paragraph = paragraphToBuild;
+		this.defaultStyle = defaultStyle;
 	}
 
 	@Override
 	protected XWPFParagraph createParagraph() {
 		// instead of creating a new paragraph we continue
 		// to use the one we are decorating, but add new CR.
-		paragraph = decorate.getParagraph();
+		paragraph = paragraphToBuild;
 		paragraph.createRun().addCarriageReturn();
 		return paragraph;
 	}
 
 	@Override
 	protected Style getDefaultStyle() {
-		return Style.list;
+		return defaultStyle;
 	}
 }

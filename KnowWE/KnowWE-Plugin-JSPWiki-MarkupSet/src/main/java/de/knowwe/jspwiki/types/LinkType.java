@@ -40,7 +40,7 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
  */
 public class LinkType extends AbstractType {
 
-	//most important external protocols.
+	// most important external protocols.
 	public static final String[] EXTERNAL_PROTOCOLS = {
 			"http:", "ftp:", "ftps:", "mailto:", "https:", "news:" };
 
@@ -64,7 +64,8 @@ public class LinkType extends AbstractType {
 		Matcher matcher = PATTERN.matcher(link.getText());
 		if (!matcher.matches()) return null; // shouldn't happen
 
-		if (matcher.group(Patterns.LINK_GROUP_LINK) != null) return matcher.group(Patterns.LINK_GROUP_LINK).trim();
+		if (matcher.group(Patterns.LINK_GROUP_LINK) != null) return matcher.group(
+				Patterns.LINK_GROUP_LINK).trim();
 		else return matcher.group(Patterns.LINK_GROUP_TEXT).trim();
 	}
 
@@ -125,27 +126,33 @@ public class LinkType extends AbstractType {
 	}
 
 	public static boolean isExternal(Section<LinkType> link) {
-		Matcher matcher = PATTERN.matcher(link.getText());
-		if (!matcher.matches()) return false; // shouldn't happen
-
 		return isExternalForm(getLink(link));
 	}
 
-	public static boolean isInterWiki(Section<LinkType> link) {
-		Matcher matcher = PATTERN.matcher(link.getText());
-		if (!matcher.matches()) return false; // shouldn't happen
+	public static boolean isFootnote(Section<LinkType> link) {
+		return isFootnote(getLink(link));
+	}
 
+	public static boolean isInterWiki(Section<LinkType> link) {
 		return isInterWikiForm(getLink(link));
 	}
 
 	public static boolean isExternalForm(String link) {
+		if (link == null) return false;
+		String lowerLink = link.trim().toLowerCase();
 		for (String protocol : EXTERNAL_PROTOCOLS) {
-			if (link.trim().toLowerCase().startsWith(protocol)) return true;
+			if (lowerLink.startsWith(protocol)) return true;
 		}
 		return false;
 	}
 
+	public static boolean isFootnote(String link) {
+		if (link == null) return false;
+		return link.trim().matches("\\d+");
+	}
+
 	public static boolean isInterWikiForm(String link) {
+		if (link == null) return false;
 		// if we want to support interwiki links, it would be best to check
 		// jspwiki.properties for defined interwiki links
 		return !isExternalForm(link) && link.contains(":");
@@ -172,6 +179,5 @@ public class LinkType extends AbstractType {
 		return result;
 
 	}
-
 
 }
