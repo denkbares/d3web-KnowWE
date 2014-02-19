@@ -132,7 +132,7 @@ KNOWWE.editCommons = function() {
                         window.onunload = null;
                         $(window).removeEvents('beforeunload');
                         $(window).removeEvents('unload');
-                        fn();
+                        if (fn) fn();
                         _EC.hideAjaxLoader();
                     },
                     onError: _EC.onErrorBehavior
