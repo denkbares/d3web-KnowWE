@@ -18,7 +18,11 @@
  */
 package de.knowwe.include.export;
 
-import de.d3web.strings.Strings;
+import org.apache.poi.xwpf.usermodel.XWPFHyperlinkRun;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
+
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.jspwiki.types.LinkType;
 
@@ -31,6 +35,8 @@ import de.knowwe.jspwiki.types.LinkType;
  */
 public class LinkExporter implements Exporter<LinkType> {
 
+	private static boolean isLinkExportDisabled = true;
+
 	@Override
 	public boolean canExport(Section<LinkType> section) {
 		// export everything except footnote references
@@ -42,12 +48,42 @@ public class LinkExporter implements Exporter<LinkType> {
 		return LinkType.class;
 	}
 
+	/**
+	 * Returns if the link can be exported as a cross reference. We do not
+	 * export as a cross reference in one of the following cases:
+	 * <ol>
+	 * <li>the linked header or definition is not part of the export
+	 * <li>the linked header or definition is not found at all
+	 * </ol>
+	 * 
+	 * @created 19.02.2014
+	 * @param manager the export manager of this export
+	 * @param section the link section
+	 * @return if the link can be exported as real reference
+	 */
+	private boolean canExportAsReference(ExportManager manager, Section<LinkType> section) {
+		if (isLinkExportDisabled) return false;
+
+		// find the target section to be linked
+		Section<?> target = LinkType.getReferencedSection(section);
+		if (target == null) return false;
+		return manager.isContained(target);
+	}
+
 	@Override
-	public void export(Section<LinkType> section, DocumentBuilder manager) throws ExportException {
-		String text = section.getText();
-		int from = text.indexOf('[');
-		int to = text.lastIndexOf('|');
-		if (to == -1) to = text.lastIndexOf(']');
-		manager.append(Strings.trimBlankLines(text.substring(from + 1, to)));
+	public void export(Section<LinkType> section, DocumentBuilder builder) throws ExportException {
+		ExportUtils.addRequiredSpace(builder);
+		if (canExportAsReference(builder.getModel().getManager(), section)) {
+			String refID = HeaderExporter.getCrossReferenceID(section);
+			XWPFParagraph paragraph = builder.getParagraph();
+			CTP ctp = paragraph.getCTP();
+			CTHyperlink hyperlink = ctp.addNewHyperlink();
+			hyperlink.setAnchor(refID);
+			XWPFHyperlinkRun run = new XWPFHyperlinkRun(hyperlink, hyperlink.addNewR(), paragraph);
+			run.setText(LinkType.getDisplayText(section));
+		}
+		else {
+			builder.append(LinkType.getDisplayText(section));
+		}
 	}
 }

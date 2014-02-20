@@ -194,7 +194,7 @@ public class KnowWEUtils {
 	 * 
 	 * @created 16.08.2013
 	 * @param section the section to create the anchor for
-	 * @param result the output target to be wriotten to
+	 * @param result the output target to be written to
 	 */
 	public static void renderAnchor(Section<?> section, RenderResult result) {
 		String anchorName = KnowWEUtils.getAnchor(section);

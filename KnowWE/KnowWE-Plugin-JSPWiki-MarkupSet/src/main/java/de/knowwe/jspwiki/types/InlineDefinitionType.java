@@ -20,15 +20,12 @@ package de.knowwe.jspwiki.types;
 
 import java.util.regex.Pattern;
 
-import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.jspwiki.types.DefinitionType.DefinitionData;
-import de.knowwe.jspwiki.types.DefinitionType.DefinitionHead;
 
 /**
  * Markup type to detect jsp-wiki definitions.
@@ -36,12 +33,13 @@ import de.knowwe.jspwiki.types.DefinitionType.DefinitionHead;
  * @author Volker Belli (denkbares GmbH)
  * @created 14.02.2014
  */
-public class InlineDefinitionType extends AbstractType {
+public class InlineDefinitionType extends DefinitionType {
 
 	public static class InlineDefinitionRenderer implements Renderer {
 
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult result) {
+			renderJSPWikiAnchor(Sections.cast(section, DefinitionType.class), result);
 			result.appendHtml("<span class='inline-definition'>");
 
 			result.appendHtml("<span class='inline-definition-head'>");
@@ -61,8 +59,5 @@ public class InlineDefinitionType extends AbstractType {
 				"^;;[^;:\n\r]+:[^\n\r]+((\n\r?)|$)",
 				Pattern.MULTILINE));
 		setRenderer(new InlineDefinitionRenderer());
-
-		addChildType(new DefinitionData());
-		addChildType(new DefinitionHead());
 	}
 }

@@ -53,6 +53,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 public class ExportManager {
 
 	private Section<?> section;
+	private Set<Section<?>> includedSections = null;
 	private Set<Article> includedArticles = null;
 
 	public ExportManager(Section<?> section) {
@@ -85,7 +86,6 @@ public class ExportManager {
 
 		// add special exporters
 		exporters.add(new InlineDefinitionExporter());
-		exporters.add(new InlineDefinitionExporter("RESP_?\\d*"));
 		exporters.add(new DefinitionExporter());
 
 		// some types to be skipped
@@ -113,26 +113,74 @@ public class ExportManager {
 			// sections instead of only the articles
 			// because there might be multiple different includes
 			// in one single article
-			Set<Section<?>> visited = new HashSet<Section<?>>();
-			initIncludedArticles(section, visited);
-
 			// but after that we take only the sections' articles
-			includedArticles = Sections.getArticles(visited);
+			includedArticles = Sections.getArticles(getIncludedSections());
 		}
 		return Collections.unmodifiableSet(includedArticles);
 	}
 
-	private void initIncludedArticles(Section<?> section, Set<Section<?>> visited) {
+	/**
+	 * Returns the Sections of the this import and all other sections included
+	 * by that section. If any included (sub-)section includes another include
+	 * the indirectly included sections are also checked iteratively to any
+	 * depth.
+	 * <p>
+	 * In the contained set there are only that sections that are directly
+	 * included. Therefore, e.g. to check if a section is contained in the
+	 * exported result, check if the section or any ancestor section is on the
+	 * set of included sections.
+	 * 
+	 * @created 16.02.2014
+	 * @return all sections included in this export
+	 * @see #isContained(Section)
+	 */
+	public Set<Section<?>> getIncludedSections() {
+		if (includedSections == null) {
+			// for security reasons we have to check all visited
+			// sections instead of only the articles
+			// because there might be multiple different includes
+			// in one single article
+			Set<Section<?>> visited = new HashSet<Section<?>>();
+			initIncludedSections(section, visited);
+
+			// but after that we take only the sections' articles
+			includedSections = visited;
+		}
+		return Collections.unmodifiableSet(includedSections);
+	}
+
+	private void initIncludedSections(Section<?> section, Set<Section<?>> visited) {
 		if (visited.add(section)) {
 			List<Section<InnerWikiReference>> references =
 					Sections.successors(section, InnerWikiReference.class);
 			for (Section<InnerWikiReference> reference : references) {
 				List<Section<?>> targets = reference.get().getIncludedSections(reference);
 				for (Section<?> target : targets) {
-					initIncludedArticles(target, visited);
+					initIncludedSections(target, visited);
 				}
 			}
 		}
+	}
+
+	/**
+	 * Returns if the specified section is contained in this export and
+	 * therefore will be part of the exported document.
+	 * <p>
+	 * Please note, that depending on the section and it's ancestor sections,
+	 * the exporter of the section may not directly be called, but some ancestor
+	 * exporter will export the whole section subtree without delegate this to
+	 * it's successors. This will not been examined by this method.
+	 * 
+	 * @created 20.02.2014
+	 * @param section the section to be check if exported
+	 * @return if the section will be part of the export
+	 */
+	public boolean isContained(Section<?> section) {
+		Set<Section<?>> included = getIncludedSections();
+		for (Section<?> s = section; s != null; s = s.getParent()) {
+			if (included.contains(s)) return true;
+		}
+		return false;
 	}
 
 	/**

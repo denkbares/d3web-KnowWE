@@ -18,11 +18,17 @@
  */
 package de.knowwe.include.export;
 
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBookmark;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
+
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.include.export.DocumentBuilder.Style;
 import de.knowwe.jspwiki.types.HeaderType;
 
 /**
+ * Exports header of the document for any level.
  * 
  * @author Volker Belli (denkbares GmbH)
  * @created 07.02.2014
@@ -41,14 +47,35 @@ public class HeaderExporter implements Exporter<HeaderType> {
 
 	@Override
 	public void export(Section<HeaderType> section, DocumentBuilder manager) throws ExportException {
+		String headerText = section.get().getHeaderText(section);
 		int marks = section.get().getMarkerCount();
-		export(section.get().getHeaderText(section), 4 - marks, manager);
+		export(headerText, 4 - marks, getCrossReferenceID(section), manager);
 	}
 
-	public static void export(String headerText, int headingLevel, DocumentBuilder manager) {
+	public static void export(String headerText, int headingLevel, String refID, DocumentBuilder manager) {
 		Style style = Style.heading(headingLevel);
 		manager.getNewParagraph(style);
-		manager.append(headerText);
+		createCrossReferenceRun(refID, manager).setText(headerText);
 		manager.closeParagraph();
+	}
+
+	public static XWPFRun createCrossReferenceRun(String refID, DocumentBuilder builder) {
+		XWPFParagraph paragraph = builder.getParagraph();
+		if (refID == null) {
+			return paragraph.createRun();
+		}
+		else {
+			CTP ctp = paragraph.getCTP();
+			CTBookmark start = ctp.addNewBookmarkStart();
+			start.setName(refID);
+			XWPFRun run = paragraph.createRun();
+			ctp.addNewBookmarkEnd();
+			return run;
+		}
+	}
+
+	public static String getCrossReferenceID(Section<?> headerOrRootSection) {
+		if (headerOrRootSection == null) return null;
+		return "_Ref" + Long.parseLong(headerOrRootSection.getID(), 16);
 	}
 }

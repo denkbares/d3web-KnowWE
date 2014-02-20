@@ -18,16 +18,9 @@
  */
 package de.knowwe.include.export;
 
-import java.util.regex.Pattern;
-
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.jspwiki.types.DefinitionType;
-import de.knowwe.jspwiki.types.DefinitionType.DefinitionData;
-import de.knowwe.jspwiki.types.DefinitionType.DefinitionHead;
 import de.knowwe.jspwiki.types.InlineDefinitionType;
 
 /**
@@ -37,73 +30,50 @@ import de.knowwe.jspwiki.types.InlineDefinitionType;
  * @author Volker Belli (denkbares GmbH)
  * @created 07.02.2014
  */
-public class InlineDefinitionExporter implements Exporter<Type> {
-
-	private final Pattern pattern;
+public class InlineDefinitionExporter implements Exporter<InlineDefinitionType> {
 
 	/**
 	 * Create a new exporter that exports inline definitions.
 	 */
 	public InlineDefinitionExporter() {
-		this.pattern = null;
-	}
-
-	/**
-	 * Create a new exporter that exports normal definitions as inline
-	 * definitions if they match a special expression
-	 * 
-	 * @param regex the expression to be matched
-	 */
-	public InlineDefinitionExporter(String regex) {
-		this.pattern = Pattern.compile(regex);
 	}
 
 	@Override
-	public boolean canExport(Section<Type> section) {
-		if (pattern == null) {
-			return (section.get() instanceof InlineDefinitionType);
-		}
-		else if (section.get() instanceof DefinitionType) {
-			Section<DefinitionHead> head = Sections.successor(section, DefinitionHead.class);
-			return pattern.matcher(head.getText()).matches();
-		}
-		else {
-			return false;
-		}
+	public boolean canExport(Section<InlineDefinitionType> section) {
+		return true;
 	}
 
 	@Override
-	public Class<Type> getSectionType() {
-		return Type.class;
+	public Class<InlineDefinitionType> getSectionType() {
+		return InlineDefinitionType.class;
 	}
 
 	@Override
-	public void export(Section<Type> section, DocumentBuilder manager) throws ExportException {
+	public void export(Section<InlineDefinitionType> section, DocumentBuilder manager) throws ExportException {
+		String head = section.get().getHeadText(section);
+		String data = section.get().getDataText(section);
+
 		ExportUtils.addRequiredSpace(manager);
-		XWPFRun run = manager.getParagraph().createRun();
+		// XWPFRun run = manager.getParagraph().createRun();
+		String refID = HeaderExporter.getCrossReferenceID(section);
+		XWPFRun run = HeaderExporter.createCrossReferenceRun(refID, manager);
 		run.setColor("606060");
 		run.setFontSize(7);
-		// run.setSubscript(VerticalAlign.SUBSCRIPT);
 
-		Section<DefinitionHead> head = Sections.successor(section, DefinitionHead.class);
 		run.setText("(");
-		run.setText(head.getText());
+		run.setText(head);
 		run.setText(": ");
 
 		run = manager.getParagraph().createRun();
-
-		Section<DefinitionData> data = Sections.successor(section, DefinitionData.class);
-		run.setText(data.getText());
+		run.setText(data);
 
 		run = manager.getParagraph().createRun();
 		run.setColor("606060");
 		run.setFontSize(7);
 		// run.setSubscript(VerticalAlign.SUBSCRIPT);
-
 		run.setText(")");
 
 		run = manager.getParagraph().createRun();
-
 		run.setText(" ");
 	}
 }

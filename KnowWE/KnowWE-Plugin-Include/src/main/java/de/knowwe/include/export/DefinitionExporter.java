@@ -21,13 +21,11 @@ package de.knowwe.include.export;
 import java.math.BigInteger;
 
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.include.export.DocumentBuilder.Style;
 import de.knowwe.jspwiki.types.DefinitionType;
-import de.knowwe.jspwiki.types.DefinitionType.DefinitionData;
-import de.knowwe.jspwiki.types.DefinitionType.DefinitionHead;
 
 /**
  * Class to export definitions as unordered list with bold definition text.
@@ -39,7 +37,7 @@ public class DefinitionExporter implements Exporter<DefinitionType> {
 
 	@Override
 	public boolean canExport(Section<DefinitionType> section) {
-		return true;
+		return section.get().getClass() == getSectionType();
 	}
 
 	@Override
@@ -49,8 +47,8 @@ public class DefinitionExporter implements Exporter<DefinitionType> {
 
 	@Override
 	public void export(Section<DefinitionType> section, DocumentBuilder manager) {
-		Section<DefinitionHead> head = Sections.successor(section, DefinitionHead.class);
-		Section<DefinitionData> data = Sections.successor(section, DefinitionData.class);
+		String head = section.get().getHeadText(section);
+		String data = section.get().getDataText(section);
 
 		BigInteger abstractID = ListExporter.getAbstractIdUnordered();
 		BigInteger numID = manager.getDocument().getNumbering().addNum(abstractID);
@@ -58,13 +56,15 @@ public class DefinitionExporter implements Exporter<DefinitionType> {
 		paragraph.setNumID(numID);
 		paragraph.getCTP().getPPr().getNumPr().addNewIlvl().setVal(BigInteger.valueOf(0));
 
-		manager.setBold(true);
-		manager.append(head.getText());
+		String refID = HeaderExporter.getCrossReferenceID(section);
+		XWPFRun run = HeaderExporter.createCrossReferenceRun(refID, manager);
+		run.setText(head);
+		run.setBold(true);
+		// manager.append(head);
 		manager.append(": ");
 		manager.getParagraph().createRun().addCarriageReturn();
 
-		manager.setBold(false);
-		manager.append(data.getText());
+		manager.append(data);
 		manager.closeParagraph();
 	}
 }

@@ -28,7 +28,9 @@ import java.util.regex.Pattern;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.utils.Patterns;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -122,11 +124,11 @@ public class LinkType extends AbstractType {
 	}
 
 	public static boolean isInternal(Section<LinkType> link) {
-		return !isExternal(link) && !isInterWiki(link);
+		return isInternal(getLink(link));
 	}
 
 	public static boolean isExternal(Section<LinkType> link) {
-		return isExternalForm(getLink(link));
+		return isExternal(getLink(link));
 	}
 
 	public static boolean isFootnote(Section<LinkType> link) {
@@ -134,10 +136,91 @@ public class LinkType extends AbstractType {
 	}
 
 	public static boolean isInterWiki(Section<LinkType> link) {
-		return isInterWikiForm(getLink(link));
+		return isInterWiki(getLink(link));
 	}
 
-	public static boolean isExternalForm(String link) {
+	/**
+	 * Returns the section that is referenced by this link or null if the
+	 * section does not exist or if it is not an internal link. The returned
+	 * section (if there is any) is either the root section, a header section, a
+	 * (inline/normal) definition section or a footnote section.
+	 * 
+	 * @created 20.02.2014
+	 * @param section the link to get the referenced (target) section for
+	 * @return the referenced sections
+	 */
+	public static Section<?> getReferencedSection(Section<LinkType> section) {
+		return getReferencedSection(section.getArticle(), getLink(section));
+	}
+
+	/**
+	 * Returns the section that is referenced by this link or null if the
+	 * section does not exist or if it is not an internal link. The returned
+	 * section (if there is any) is either the root section, a header section, a
+	 * (inline/normal) definition section or a footnote section.
+	 * 
+	 * @created 20.02.2014
+	 * @param sourceArticle the article the link is located on
+	 * @param link the link to get the referenced (target) section for
+	 * @return the referenced sections
+	 */
+	public static Section<?> getReferencedSection(Article sourceArticle, String link) {
+		if (isFootnote(link)) {
+			// check for footnote section
+			for (Section<FootnoteType> footnote : Sections.successors(sourceArticle,
+					FootnoteType.class)) {
+				String id = footnote.get().getFootnoteID(footnote);
+				// if footnote matches, return if the footnote
+				// is included in the export (if not, footnote will go wrong)
+				if (link.equals(id)) return footnote;
+			}
+		}
+
+		if (isInternal(link)) {
+			// split link to article and header
+			Article article;
+			String headerName;
+			int index = link.indexOf("#");
+			if (index == 0) {
+				article = sourceArticle;
+				headerName = link.substring(1);
+			}
+			else if (link.contains("#")) {
+				String articleName = link.substring(0, index);
+				headerName = link.substring(index + 1);
+				article = sourceArticle.getArticleManager().getArticle(articleName);
+			}
+			else {
+				article = sourceArticle.getArticleManager().getArticle(link);
+				headerName = null;
+			}
+
+			// if article not found, stop searching
+			if (article == null) return null;
+			// or article is the thing we are looking for (no header)
+			if (headerName == null) return article.getRootSection();
+
+			// search article for header or definition
+			// otherwise search for the header sections
+			for (Section<HeaderType> header : Sections.successors(article, HeaderType.class)) {
+				String text = header.get().getHeaderText(header);
+				if (text.equalsIgnoreCase(headerName)) {
+					return header;
+				}
+			}
+			// and for the definition sections
+			for (Section<DefinitionType> def : Sections.successors(article, DefinitionType.class)) {
+				String text = def.get().getHeadText(def);
+				if (text.equalsIgnoreCase(headerName)) {
+					return def;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	public static boolean isExternal(String link) {
 		if (link == null) return false;
 		String lowerLink = link.trim().toLowerCase();
 		for (String protocol : EXTERNAL_PROTOCOLS) {
@@ -151,12 +234,15 @@ public class LinkType extends AbstractType {
 		return link.trim().matches("\\d+");
 	}
 
-	public static boolean isInterWikiForm(String link) {
+	public static boolean isInterWiki(String link) {
 		if (link == null) return false;
 		// if we want to support interwiki links, it would be best to check
 		// jspwiki.properties for defined interwiki links
-		return !isExternalForm(link) && link.contains(":");
+		return !isExternal(link) && link.contains(":");
+	}
 
+	public static boolean isInternal(String link) {
+		return !isExternal(link) && !isInterWiki(link);
 	}
 
 	public static Map<String, String> getAttributes(Section<LinkType> link) {

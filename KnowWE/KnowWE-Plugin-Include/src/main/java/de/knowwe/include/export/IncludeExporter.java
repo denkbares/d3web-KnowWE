@@ -74,7 +74,9 @@ public class IncludeExporter implements Exporter<IncludeMarkup> {
 		if (listLevel > 0 && !reference.get().isSuppressHeader(reference)) {
 			manager.setSuppressHeaderNumbering(reference.get().isSuppressNumbering(reference));
 			String title = reference.get().getLinkName(reference);
-			HeaderExporter.export(title, listLevel, manager);
+			String refID = HeaderExporter.getCrossReferenceID(
+					reference.get().getReferencedSection(reference));
+			HeaderExporter.export(title, listLevel, refID, manager);
 			delta += listLevel;
 		}
 

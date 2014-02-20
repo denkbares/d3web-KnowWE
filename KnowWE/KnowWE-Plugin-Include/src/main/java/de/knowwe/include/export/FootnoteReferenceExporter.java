@@ -56,7 +56,7 @@ public class FootnoteReferenceExporter implements Exporter<LinkType> {
 
 	/**
 	 * Returns if the footnote can be exported as a real reference. We do not
-	 * export as a reference in on of the following cases:
+	 * export as a reference in one of the following cases:
 	 * <ol>
 	 * <li>the footnote is used more than once and already be exported (word or
 	 * poi does not support this, leads to corrupt document)
@@ -65,11 +65,12 @@ public class FootnoteReferenceExporter implements Exporter<LinkType> {
 	 * </ol>
 	 * 
 	 * @created 19.02.2014
+	 * @param manager the export manager of this export
 	 * @param article the current article
 	 * @param refNumber the wiki footnote number
-	 * @return
+	 * @return if the footnote-reference can be exported as real reference
 	 */
-	private boolean canExportAsReference(Article article, String refNumber) {
+	private boolean canExportAsReference(ExportManager manager, Article article, String refNumber) {
 		// check if this is the first occurrence
 		Pair<Article, String> key = new Pair<Article, String>(article, refNumber.trim());
 		boolean isNew = exportedIDs.add(key);
@@ -78,7 +79,9 @@ public class FootnoteReferenceExporter implements Exporter<LinkType> {
 		// check for footnote section
 		for (Section<FootnoteType> footnote : Sections.successors(article, FootnoteType.class)) {
 			String id = footnote.get().getFootnoteID(footnote);
-			if (refNumber.equals(id)) return true;
+			// if footnote matches, return if the footnote
+			// is included in the export (if not, footnote will go wrong)
+			if (refNumber.equals(id)) return manager.isContained(footnote);
 		}
 		// otherwise do not export
 		return false;
@@ -93,7 +96,7 @@ public class FootnoteReferenceExporter implements Exporter<LinkType> {
 		// add reference to text
 		XWPFRun run = manager.getParagraph().createRun();
 		run.setSubscript(VerticalAlign.SUPERSCRIPT);
-		if (canExportAsReference(section.getArticle(), refNumber)) {
+		if (canExportAsReference(manager.getModel().getManager(), section.getArticle(), refNumber)) {
 			// add reference to footnote
 			CTFtnEdnRef textRef = run.getCTR().addNewFootnoteReference();
 			textRef.setId(noteId);

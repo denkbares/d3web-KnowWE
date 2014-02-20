@@ -39,6 +39,7 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.jspwiki.JSPWikiMarkupUtils;
+import de.knowwe.jspwiki.types.DefinitionType;
 import de.knowwe.jspwiki.types.HeaderType;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.HasChildrenOfTypeConstraint;
@@ -264,11 +265,18 @@ public class InnerWikiReference extends AbstractType {
 			return targetArticle.getRootSection();
 		}
 
-		// otherwise search for the section
+		// otherwise search for the header sections
 		for (Section<HeaderType> header : Sections.successors(targetArticle, HeaderType.class)) {
 			String text = header.get().getHeaderText(header);
 			if (text.equalsIgnoreCase(targetHeaderName)) {
 				return header;
+			}
+		}
+		// and for the definition sections
+		for (Section<DefinitionType> def : Sections.successors(targetArticle, DefinitionType.class)) {
+			String text = def.get().getHeadText(def);
+			if (text.equalsIgnoreCase(targetHeaderName)) {
+				return def;
 			}
 		}
 		Messages.storeMessage(compiler, headerReference, source,
