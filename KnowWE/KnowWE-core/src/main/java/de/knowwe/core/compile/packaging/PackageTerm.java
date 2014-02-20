@@ -18,8 +18,6 @@
  */
 package de.knowwe.core.compile.packaging;
 
-import java.util.regex.Pattern;
-
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.AbstractType;
@@ -27,6 +25,8 @@ import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.renderer.StyleRenderer;
+
+import java.util.regex.Pattern;
 
 /**
  * 
@@ -40,7 +40,7 @@ public class PackageTerm extends AbstractType implements Term, RenamableTerm {
 
 	public PackageTerm() {
 
-		this.setSectionFinder(new RegexSectionFinder(Pattern.compile("\\s*(.+?)\\s*(?:\r?\n|\\z)"), 1));
+		this.setSectionFinder(new RegexSectionFinder(Pattern.compile("\\s*((?=\\s*\\S).+?)\\s*(?:\r?\n|\\z)"), 1));
 
 		setRenderer(StyleRenderer.PACKAGE);
 
