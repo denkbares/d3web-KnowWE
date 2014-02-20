@@ -41,14 +41,9 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
- * Action which renames all Definitions and References of a given Term. The
- * following parameters are mandatory!
- * <ul>
- * <li>termname</li>
- * <li>termreplacement</li>
- * <li>web</li>
- * </ul>
- * 
+ * Action which renames all Definitions and References of a given Term. The following parameters are mandatory! <ul>
+ * <li>termname</li> <li>termreplacement</li> <li>web</li> </ul>
+ *
  * @author Sebastian Furth
  * @created Dec 15, 2010
  */
@@ -66,12 +61,17 @@ public class TermRenamingAction extends AbstractAction {
 		String replacement = context.getParameter(REPLACEMENT);
 		String force = context.getParameter("force");
 
+		Identifier termIdentifierOld = Identifier.fromExternalForm(context.getParameter("termIdentifier"));
+		String[] pathElements = termIdentifierOld.getPathElements();
+		pathElements[pathElements.length - 1] = replacement;
+		Identifier replacementIdentifier = new Identifier(pathElements);
+
 		if (force.equals("false")
-				&& getTerms(web).contains(new Identifier(replacement))) {
+				&& getTerms(web).contains(replacementIdentifier)) {
 			JSONObject response = new JSONObject();
 			try {
 				response.append("alreadyexists", "true");
-				boolean sameTerm = new Identifier(replacement).toExternalForm().equals(
+				boolean sameTerm = replacementIdentifier.toExternalForm().equals(
 						new Identifier(term).toExternalForm());
 				response.append("same", String.valueOf(sameTerm));
 				response.write(context.getWriter());
@@ -130,7 +130,7 @@ public class TermRenamingAction extends AbstractAction {
 	}
 
 	private Set<Section<? extends RenamableTerm>> getTermSet(String title,
-			Map<String, Set<Section<? extends RenamableTerm>>> allTerms) {
+															 Map<String, Set<Section<? extends RenamableTerm>>> allTerms) {
 		Set<Section<? extends RenamableTerm>> terms = allTerms.get(title);
 		if (terms == null) {
 			terms = new HashSet<Section<? extends RenamableTerm>>();
@@ -140,8 +140,8 @@ public class TermRenamingAction extends AbstractAction {
 	}
 
 	private void writeResponse(Set<String> failures, Set<String> success,
-			Identifier termIdentifier, Identifier replacement,
-			UserActionContext context) throws IOException {
+							   Identifier termIdentifier, Identifier replacement,
+							   UserActionContext context) throws IOException {
 
 		JSONObject response = new JSONObject();
 		try {
@@ -217,19 +217,11 @@ public class TermRenamingAction extends AbstractAction {
 	public Set<Identifier> getTerms(String web) {
 		// gathering all terms
 		Set<Identifier> allTerms = new HashSet<Identifier>();
-		Iterator<Article> iter = Environment.getInstance()
-				.getArticleManager(web).getArticleIterator();
-		Article currentArticle;
-
-		TerminologyManager terminologyManager;
-		while (iter.hasNext()) {
-			currentArticle = iter.next();
-			terminologyManager = KnowWEUtils
-					.getTerminologyManager(currentArticle);
+		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(KnowWEUtils.getArticleManager(web));
+		for (TerminologyManager terminologyManager : terminologyManagers) {
 			Collection<Identifier> allDefinedTerms = terminologyManager
 					.getAllDefinedTerms();
 			allTerms.addAll(allDefinedTerms);
-
 		}
 		return allTerms;
 	}
