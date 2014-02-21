@@ -49,8 +49,10 @@ public class LinkExporter implements Exporter<LinkType> {
 	}
 
 	/**
-	 * Returns if the link can be exported as a cross reference. We do not
-	 * export as a cross reference in one of the following cases:
+	 * Returns if the link can be exported as a cross reference to a specific
+	 * section. If there is a section we shall export as link, the target
+	 * section is returned. Otherwise null is returned. We do not export as a
+	 * cross reference in one of the following cases:
 	 * <ol>
 	 * <li>the linked header or definition is not part of the export
 	 * <li>the linked header or definition is not found at all
@@ -61,26 +63,63 @@ public class LinkExporter implements Exporter<LinkType> {
 	 * @param section the link section
 	 * @return if the link can be exported as real reference
 	 */
-	private boolean canExportAsReference(ExportManager manager, Section<LinkType> section) {
-		if (isLinkExportDisabled) return false;
+	private Section<?> canExportAsReference(ExportManager manager, Section<LinkType> section) {
+		// TODO: due to not working doc-links, we never export, please correct
+		if (isLinkExportDisabled) return null;
 
 		// find the target section to be linked
 		Section<?> target = LinkType.getReferencedSection(section);
-		if (target == null) return false;
-		return manager.isContained(target);
+		if (target == null) return null;
+		return manager.isContained(target) ? target : null;
 	}
 
 	@Override
 	public void export(Section<LinkType> section, DocumentBuilder builder) throws ExportException {
 		ExportUtils.addRequiredSpace(builder);
-		if (canExportAsReference(builder.getModel().getManager(), section)) {
-			String refID = HeaderExporter.getCrossReferenceID(section);
+		Section<?> target = canExportAsReference(builder.getModel().getManager(), section);
+		if (target != null) {
+			String refID = HeaderExporter.getCrossReferenceID(target);
+
+			// Variant 1:
+			// Export as hyperlinks to anchor
+			// --> Text of link is defined as by wiki user
+
 			XWPFParagraph paragraph = builder.getParagraph();
 			CTP ctp = paragraph.getCTP();
 			CTHyperlink hyperlink = ctp.addNewHyperlink();
 			hyperlink.setAnchor(refID);
-			XWPFHyperlinkRun run = new XWPFHyperlinkRun(hyperlink, hyperlink.addNewR(), paragraph);
+			XWPFHyperlinkRun run = new XWPFHyperlinkRun(hyperlink,
+					hyperlink.addNewR(), paragraph);
 			run.setText(LinkType.getDisplayText(section));
+
+			// Variant 2:
+			// Export as word-field (REF ... \h)
+			// --> More word-like,
+			// but reference text is always updated to the header title
+
+			// CTP p = builder.getParagraph().getCTP();
+			// p.addNewPPr();
+			// CTR run = p.addNewR();
+			// run.addNewRPr().addNewNoProof();
+			// run.addNewFldChar().setFldCharType(STFldCharType.BEGIN);
+			// // pageref run
+			// run = p.addNewR();
+			// run.addNewRPr().addNewNoProof();
+			// CTText text = run.addNewInstrText();
+			// text.setSpace(Space.PRESERVE);
+			// // bookmark reference
+			// text.setStringValue(" REF " + refID + " \\h ");
+			// p.addNewR().addNewRPr().addNewNoProof();
+			// run = p.addNewR();
+			// run.addNewRPr().addNewNoProof();
+			// run.addNewFldChar().setFldCharType(STFldCharType.SEPARATE);
+			// // page number run
+			// run = p.addNewR();
+			// run.addNewRPr().addNewNoProof();
+			// run.addNewT().setStringValue(LinkType.getDisplayText(section));
+			// run = p.addNewR();
+			// run.addNewRPr().addNewNoProof();
+			// run.addNewFldChar().setFldCharType(STFldCharType.END);
 		}
 		else {
 			builder.append(LinkType.getDisplayText(section));

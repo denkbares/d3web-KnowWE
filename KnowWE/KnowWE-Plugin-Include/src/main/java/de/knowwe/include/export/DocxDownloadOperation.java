@@ -67,10 +67,11 @@ public class DocxDownloadOperation extends FileDownloadOperation {
 			}
 		}
 
-		// increase version if available and required
-		// export.incVersionIfRequired(user);
+		// check if increase of version is required:
+		// version is available and article is older that included ones
 		Article article = user.getArticle();
-		if (KnowWEUtils.getLastModified(article).before(export.getLastModified())) {
+		if (KnowWEUtils.getLastModified(article).before(export.getLastModified())
+				&& getNextVersion() != null) {
 			addMessage(Messages.warning("The version number appears to be out-dated. " +
 					"Please update and download the word file again."));
 		}
