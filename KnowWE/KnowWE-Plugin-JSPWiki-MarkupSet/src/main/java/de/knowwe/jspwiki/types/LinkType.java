@@ -57,6 +57,8 @@ public class LinkType extends AbstractType {
 			if (target == null) {
 				// render as plain wiki markup only
 				result.append(section.getText());
+				// special case: if anchor link,
+				// but only anchor does not exist, render anchor as error
 			}
 			else {
 				// render also as plain wiki markup,
@@ -67,11 +69,6 @@ public class LinkType extends AbstractType {
 						+ "&" + Attributes.WEB + "=" + target.getWeb()
 						+ "&" + RenderPreviewAction.ATTR_MODE + "=" + Mode.plain.name()
 						+ "&" + Attributes.SECTION_ID + "=" + target.getID();
-				// String previewSrc = "action/ReRenderContentPartAction"
-				// + "?" + Attributes.TITLE + "=" +
-				// Strings.encodeURL(target.getTitle())
-				// + "&" + Attributes.WEB + "=" + target.getWeb()
-				// + "&" + "KdomNodeId" + "=" + target.getID();
 				result.appendHtml("<span class='tooltipster ajax'")
 						.appendHtml(" data-tooltip-src='" + previewSrc + "'>")
 						.append(section.getText())

@@ -43,8 +43,7 @@ public class TableCell extends AbstractType {
 	}
 
 	public TableCell() {
-		this.setSectionFinder(new RegexSectionFinder("\\|?\\|[^|]+",
-				Pattern.DOTALL | Pattern.MULTILINE));
+		this.setSectionFinder(new RegexSectionFinder("\\|\\|?((\\[[^\\]]*\\])|[^|\\[]+)+"));
 		this.addChildType(new Declaration());
 		this.addChildType(new ParagraphTypeForLists());
 	}

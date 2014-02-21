@@ -31,7 +31,11 @@ public final class TableRenderer implements Renderer {
 		out.append(section.getID());
 		out.appendHtml("'>");
 		out.append("\n");
-		out.append(section.getText());
+
+		for (Section<?> child : section.getChildren()) {
+			out.append(child, user);
+		}
+
 		out.appendHtml("<div class='tablePopupIcon'>");
 		popupRenderer.render(section, user, out);
 		out.appendHtml("</div>");

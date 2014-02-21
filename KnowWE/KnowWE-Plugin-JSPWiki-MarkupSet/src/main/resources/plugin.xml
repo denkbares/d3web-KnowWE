@@ -185,4 +185,14 @@
         <parameter id="scope" value="DefinitionType"/>
     </extension>
 
+    <extension plugin-id="KnowWE-Plugin-Core" point-id="PreviewRenderer"
+               id="FootnotePreviewRenderer">
+        <parameter id="class" value="de.knowwe.jspwiki.types.preview.FootnotePreviewRenderer"/>
+        <parameter id="name" value="FootnotePreviewRenderer"/>
+        <parameter id="description" value="Renders a preview of a footnote"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="FootnoteType"/>
+    </extension>
+
 </plugin>
