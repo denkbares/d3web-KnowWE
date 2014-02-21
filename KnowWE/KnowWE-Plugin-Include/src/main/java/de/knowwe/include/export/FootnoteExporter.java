@@ -60,14 +60,8 @@ public class FootnoteExporter implements Exporter<FootnoteType> {
 	}
 
 	public static BigInteger getFootnoteID(DocumentBuilder builder, Article article, String footnoteNumber) {
-		// find our first instance
-		for (Exporter<?> exporter : builder.getModel().getExporters()) {
-			if (exporter instanceof FootnoteExporter) {
-				FootnoteExporter foot = (FootnoteExporter) exporter;
-				return foot.getFootnoteIDInternal(builder, article, footnoteNumber);
-			}
-		}
-		throw new IllegalStateException();
+		FootnoteExporter foot = builder.getModel().getExporter(FootnoteExporter.class);
+		return foot.getFootnoteIDInternal(builder, article, footnoteNumber);
 	}
 
 	private BigInteger getFootnoteIDInternal(DocumentBuilder builder, Article article, String footnoteNumber) {
