@@ -38,6 +38,9 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.report.DefaultMessageRenderer;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Patterns;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -53,12 +56,35 @@ public class LinkType extends AbstractType {
 
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult result) {
-			Section<?> target = LinkType.getReferencedSection(Sections.cast(section, LinkType.class));
+			Section<LinkType> linkSection = Sections.cast(section, LinkType.class);
+			Section<?> target = getReferencedSection(linkSection);
 			if (target == null) {
-				// render as plain wiki markup only
-				result.append(section.getText());
 				// special case: if anchor link,
 				// but only anchor does not exist, render anchor as error
+				String link = getLink(linkSection);
+				int index = link.indexOf('#');
+				if (index > 0) {
+					String articleName = link.substring(0, index);
+					String headerName = link.substring(index + 1);
+					if (user.getArticleManager().getArticle(articleName) != null
+							&& !Strings.isBlank(headerName)) {
+						result.append("&#91;");
+						if (section.getText().contains("|")) {
+							result.append(getDisplayText(linkSection)).append(" &#124; ");
+						}
+						result.append("[").append(articleName).append("]").appendJSPWikiMarkup("#");
+						Message msg = Messages.error(
+								"No section '" + headerName + "' in article '" + articleName + "'");
+						DefaultMessageRenderer errorRenderer = DefaultMessageRenderer.ERROR_RENDERER;
+						errorRenderer.preRenderMessage(msg, user, null, result);
+						result.append(headerName);
+						errorRenderer.postRenderMessage(msg, user, null, result);
+						result.append("&#93;");
+						return;
+					}
+				}
+				// render as plain wiki markup only
+				result.append(section.getText());
 			}
 			else {
 				// render also as plain wiki markup,
