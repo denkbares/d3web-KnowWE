@@ -126,6 +126,12 @@ public class TermRenamingAction extends AbstractAction {
 		Set<String> failures = new HashSet<String>();
 		Set<String> success = new HashSet<String>();
 		renameTerms(allTerms, termIdentifier, replacmentIdentifier, mgr, context, failures, success);
+		try {
+			mgr.getCompilerManager().awaitTermination();
+		}
+		catch (InterruptedException e) {
+			throw new IOException(e.getMessage());
+		}
 		writeResponse(failures, success, termIdentifier, replacmentIdentifier, context);
 	}
 
