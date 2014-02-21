@@ -143,22 +143,26 @@ public class RenderPreviewAction extends AbstractAction {
 			for (Entry<Section<?>, Collection<Section<?>>> entry : groupedByPreview.entrySet()) {
 				Section<?> previewSection = entry.getKey();
 				Collection<Section<?>> group = entry.getValue();
-
 				renderPlainPreview(previewSection, group, user, temp);
 			}
 		}
 		else {
 			temp.appendHtml("<i>You are not allowed to view this article.</i>");
-			result.put(handleWikiSyntax(user, temp));
 		}
+		if (temp.length() == 0) {
+			temp.appendHtml("<i>No preview available.</i>");
+		}
+		result.put(handleWikiSyntax(user, temp));
 	}
 
 	private static void renderPlainPreview(Section<?> previewSection, Collection<Section<?>> relevantSubSections, UserContext user, RenderResult result) {
+		PreviewManager previewManager = PreviewManager.getInstance();
+		PreviewRenderer renderer = previewManager.getPreviewRenderer(previewSection);
+		if (renderer == null) return;
+
 		result.appendHtml("<div class='preview reference'>");
 		result.appendHtml("<div class='type_")
 				.append(previewSection.get().getName()).appendHtml("'>");
-		PreviewManager previewManager = PreviewManager.getInstance();
-		PreviewRenderer renderer = previewManager.getPreviewRenderer(previewSection);
 		renderer.render(previewSection, relevantSubSections, user, result);
 		result.appendHtml("</div>");
 		result.appendHtml("</div>");

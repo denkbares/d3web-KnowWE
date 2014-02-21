@@ -8,10 +8,10 @@ import de.d3web.we.kdom.xcl.list.CoveringList.CoveringRelation;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.preview.PreviewRenderer;
+import de.knowwe.core.preview.AbstractPreviewRenderer;
 import de.knowwe.core.user.UserContext;
 
-public class CoveringListPreviewRenderer implements PreviewRenderer {
+public class CoveringListPreviewRenderer extends AbstractPreviewRenderer {
 
 	@Override
 	public void render(Section<?> section, Collection<Section<?>> relevantSubSections, UserContext user, RenderResult result) {

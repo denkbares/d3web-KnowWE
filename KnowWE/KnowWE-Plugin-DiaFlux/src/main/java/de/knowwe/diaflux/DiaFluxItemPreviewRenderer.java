@@ -7,7 +7,7 @@ import java.util.Set;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.preview.PreviewRenderer;
+import de.knowwe.core.preview.AbstractPreviewRenderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.diaflux.type.ActionType;
 import de.knowwe.diaflux.type.CommentType;
@@ -23,7 +23,7 @@ import de.knowwe.diaflux.type.NodeType;
 import de.knowwe.diaflux.type.SnapshotType;
 import de.knowwe.diaflux.type.StartType;
 
-public class DiaFluxItemPreviewRenderer implements PreviewRenderer {
+public class DiaFluxItemPreviewRenderer extends AbstractPreviewRenderer {
 
 	@Override
 	public void render(Section<?> section, Collection<Section<?>> relevantSubSections, UserContext user, RenderResult result) {

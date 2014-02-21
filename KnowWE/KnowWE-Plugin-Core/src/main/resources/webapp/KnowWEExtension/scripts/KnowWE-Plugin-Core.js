@@ -228,9 +228,12 @@ KNOWWE.tooltips.enrich = function() {
 			// show ajax-spinner until request is arriving
 			origin.tooltipster('update', '<span class="ajaxLoader">loading tooltip...</span>');
 			continueTooltip();
-			// request new content
+			// request new contejq$.nt
 			jq$.ajax(src, {
-				success: function(html) {
+				success: function(json) {
+					var html = json;
+					var obj = jq$.parseJSON(json);
+					if (jq$.isArray(obj)) html = obj[0];
 					origin.tooltipster('update', html).tooltipster('reposition');
 				},
 				error: function(request, status, error) {

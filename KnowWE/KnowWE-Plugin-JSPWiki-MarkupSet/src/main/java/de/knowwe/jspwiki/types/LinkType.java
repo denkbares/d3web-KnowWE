@@ -26,12 +26,19 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.d3web.strings.Strings;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
+import de.knowwe.core.action.RenderPreviewAction;
+import de.knowwe.core.action.RenderPreviewAction.Mode;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Patterns;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 
@@ -42,6 +49,37 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
  */
 public class LinkType extends AbstractType {
 
+	private static class LinkRenderer implements Renderer {
+
+		@Override
+		public void render(Section<?> section, UserContext user, RenderResult result) {
+			Section<?> target = LinkType.getReferencedSection(Sections.cast(section, LinkType.class));
+			if (target == null) {
+				// render as plain wiki markup only
+				result.append(section.getText());
+			}
+			else {
+				// render also as plain wiki markup,
+				// but decorate with tooltipster-based ajax preview
+				String previewSrc = "action/RenderPreviewAction"
+						+ "?" + Attributes.TITLE + "=" +
+						Strings.encodeURL(target.getTitle())
+						+ "&" + Attributes.WEB + "=" + target.getWeb()
+						+ "&" + RenderPreviewAction.ATTR_MODE + "=" + Mode.plain.name()
+						+ "&" + Attributes.SECTION_ID + "=" + target.getID();
+				// String previewSrc = "action/ReRenderContentPartAction"
+				// + "?" + Attributes.TITLE + "=" +
+				// Strings.encodeURL(target.getTitle())
+				// + "&" + Attributes.WEB + "=" + target.getWeb()
+				// + "&" + "KdomNodeId" + "=" + target.getID();
+				result.appendHtml("<span class='tooltipster ajax'")
+						.appendHtml(" data-tooltip-src='" + previewSrc + "'>")
+						.append(section.getText())
+						.appendHtml("</span>");
+			}
+		}
+	}
+
 	// most important external protocols.
 	public static final String[] EXTERNAL_PROTOCOLS = {
 			"http:", "ftp:", "ftps:", "mailto:", "https:", "news:" };
@@ -51,7 +89,8 @@ public class LinkType extends AbstractType {
 	public static final Pattern ATTRIBUTES_PATTERN = Pattern.compile("(\\w+)\\s*=\\s*'([^']*)'");
 
 	public LinkType() {
-		this.setSectionFinder(new RegexSectionFinder(PATTERN));
+		setSectionFinder(new RegexSectionFinder(PATTERN));
+		setRenderer(new LinkRenderer());
 	}
 
 	/**

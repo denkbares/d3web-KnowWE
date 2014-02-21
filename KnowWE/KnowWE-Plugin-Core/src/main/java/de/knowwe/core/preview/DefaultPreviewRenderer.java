@@ -7,7 +7,7 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
-public class DefaultPreviewRenderer implements PreviewRenderer {
+public class DefaultPreviewRenderer extends AbstractPreviewRenderer {
 
 	public DefaultPreviewRenderer() {
 	}

@@ -61,7 +61,8 @@ public class PreviewManager {
 			for (Scope scope : previewRenderers.keySet()) {
 				if (scope.matches(previewSection)) {
 					// we found the closest section
-					return previewSection;
+					PreviewRenderer renderer = previewRenderers.get(scope);
+					if (renderer.matches(section)) return previewSection;
 				}
 			}
 			previewSection = previewSection.getParent();
@@ -85,7 +86,8 @@ public class PreviewManager {
 		for (Scope scope : previewRenderers.keySet()) {
 			if (scope.matches(section)) {
 				// we found the closest section
-				return previewRenderers.get(scope);
+				PreviewRenderer renderer = previewRenderers.get(scope);
+				if (renderer.matches(section)) return renderer;
 			}
 		}
 		return null;
@@ -112,7 +114,7 @@ public class PreviewManager {
 			}
 			else {
 				Log.warning("extension of class '" + object.getClass().getName() +
-								"' is not of the expected type " + Renderer.class.getName());
+						"' is not of the expected type " + Renderer.class.getName());
 			}
 		}
 		Plugins.initResources(extensions);

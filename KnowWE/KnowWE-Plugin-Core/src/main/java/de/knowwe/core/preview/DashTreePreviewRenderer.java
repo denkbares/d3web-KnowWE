@@ -16,7 +16,7 @@ import de.knowwe.kdom.dashtree.DashTreeElement;
  * @author Volker Belli (denkbares GmbH)
  * @created 16.08.2013
  */
-public class DashTreePreviewRenderer implements PreviewRenderer {
+public class DashTreePreviewRenderer extends AbstractPreviewRenderer {
 
 	private static final String ELLIPSE = " [...]";
 	private static final int maxChildren = 3;

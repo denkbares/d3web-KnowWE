@@ -11,7 +11,6 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.ScopeUtils;
 import de.knowwe.jspwiki.types.HeaderType;
 import de.knowwe.plugin.Plugins;
@@ -59,13 +58,32 @@ public class JSPWikiMarkupUtils {
 	 * These are all sections that a human naturally associated to be part of
 	 * the chapter that is spanned by the header title. This also includes any
 	 * sub-headers (and their content sections) of the specified header section.
+	 * The header section itself is not included.
+	 * 
+	 * @param header the header section to get the content for
 	 */
-	public static List<Section<? extends Type>> getContent(Section<HeaderType> sh) {
-		int level = countHeaderMarks(sh.getText());
-		Section<RootType> s = Sections.findAncestorOfType(sh, RootType.class);
-		List<Section<?>> list = s.getChildren();
-		int i = list.indexOf(sh) + 1;
+	public static List<Section<? extends Type>> getContent(Section<HeaderType> header) {
+		return getContent(header, false);
+	}
+
+	/**
+	 * Returns the content sections that are below the specified SectionHeader.
+	 * These are all sections that a human naturally associated to be part of
+	 * the chapter that is spanned by the header title. This also includes any
+	 * sub-headers (and their content sections) of the specified header section.
+	 * The parameter "includeHeader" specified if the header section itself is
+	 * included as the first element of the returned list.
+	 * 
+	 * @param header the header section to get the content for
+	 * @param includeHeader if the header section shall be included or not
+	 */
+	public static List<Section<? extends Type>> getContent(Section<HeaderType> header, boolean includeHeader) {
+		int level = countHeaderMarks(header.getText());
+		List<Section<?>> list = header.getArticle().getRootSection().getChildren();
+		int i = list.indexOf(header) + 1;
+
 		List<Section<? extends Type>> contentSections = new ArrayList<Section<? extends Type>>();
+		if (includeHeader) contentSections.add(header);
 		for (; i < list.size(); i++) {
 			if (countHeaderMarks(list.get(i).getText()) < level) {
 				contentSections.add(list.get(i));

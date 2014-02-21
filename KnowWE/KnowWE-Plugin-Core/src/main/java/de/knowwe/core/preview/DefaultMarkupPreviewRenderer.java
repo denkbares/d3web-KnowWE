@@ -32,7 +32,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
  * @author Volker Belli (denkbares GmbH)
  * @created 26.08.2013
  */
-public class DefaultMarkupPreviewRenderer implements PreviewRenderer {
+public class DefaultMarkupPreviewRenderer extends AbstractPreviewRenderer {
 
 	public static enum Select {
 		/**
@@ -80,8 +80,8 @@ public class DefaultMarkupPreviewRenderer implements PreviewRenderer {
 	 * 
 	 * @created 26.08.2013
 	 * @param scope the sub-scope to be shown
-	 * @param selector if the are always shown or only if the contain
-	 *        relevant items
+	 * @param selector if the are always shown or only if the contain relevant
+	 *        items
 	 */
 	public void addPreviewItem(Scope scope, Select selector) {
 		previewItems.put(scope, selector);

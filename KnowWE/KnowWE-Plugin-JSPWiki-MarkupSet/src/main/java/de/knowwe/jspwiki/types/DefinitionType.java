@@ -56,7 +56,7 @@ public class DefinitionType extends AbstractType {
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult result) {
 			renderJSPWikiAnchor(Sections.cast(section, DefinitionType.class), result);
-			result.append(section.getText());
+			result.append("\n").append(section.getText());
 		}
 
 	}
