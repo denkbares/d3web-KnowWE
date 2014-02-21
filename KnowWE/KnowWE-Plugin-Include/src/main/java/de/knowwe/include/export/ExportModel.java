@@ -81,8 +81,31 @@ public class ExportModel {
 		return manager;
 	}
 
+	/**
+	 * Returns the exporters currently used.
+	 * 
+	 * @created 21.02.2014
+	 * @return the exporters
+	 */
 	List<Exporter<?>> getExporters() {
 		return exporters;
+	}
+
+	/**
+	 * Returns the first exporter instance of the specified class.
+	 * 
+	 * @created 21.02.2014
+	 * @param clazz the class of the exporter to look for
+	 * @return the exporter of the specified class or null if there is no such
+	 *         exporter
+	 */
+	public <T extends Exporter<?>> T getExporter(Class<T> clazz) {
+		for (Exporter<?> exporter : exporters) {
+			if (clazz.isInstance(exporter)) {
+				return clazz.cast(exporter);
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -152,4 +175,5 @@ public class ExportModel {
 			addMessage(Messages.warning("unexpected format exception"));
 		}
 	}
+
 }

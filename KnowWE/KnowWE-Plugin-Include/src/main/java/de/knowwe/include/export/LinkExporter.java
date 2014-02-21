@@ -35,8 +35,6 @@ import de.knowwe.jspwiki.types.LinkType;
  */
 public class LinkExporter implements Exporter<LinkType> {
 
-	private static boolean isLinkExportDisabled = true;
-
 	@Override
 	public boolean canExport(Section<LinkType> section) {
 		// export everything except footnote references
@@ -64,9 +62,6 @@ public class LinkExporter implements Exporter<LinkType> {
 	 * @return if the link can be exported as real reference
 	 */
 	private Section<?> canExportAsReference(ExportManager manager, Section<LinkType> section) {
-		// TODO: due to not working doc-links, we never export, please correct
-		if (isLinkExportDisabled) return null;
-
 		// find the target section to be linked
 		Section<?> target = LinkType.getReferencedSection(section);
 		if (target == null) return null;
@@ -88,8 +83,7 @@ public class LinkExporter implements Exporter<LinkType> {
 			CTP ctp = paragraph.getCTP();
 			CTHyperlink hyperlink = ctp.addNewHyperlink();
 			hyperlink.setAnchor(refID);
-			XWPFHyperlinkRun run = new XWPFHyperlinkRun(hyperlink,
-					hyperlink.addNewR(), paragraph);
+			XWPFHyperlinkRun run = new XWPFHyperlinkRun(hyperlink, hyperlink.addNewR(), paragraph);
 			run.setText(LinkType.getDisplayText(section));
 
 			// Variant 2:

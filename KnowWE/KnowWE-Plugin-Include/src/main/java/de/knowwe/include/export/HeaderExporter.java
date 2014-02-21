@@ -18,9 +18,12 @@
  */
 package de.knowwe.include.export;
 
+import java.math.BigInteger;
+
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBookmark;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTMarkupRange;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 
 import de.knowwe.core.kdom.parsing.Section;
@@ -34,6 +37,8 @@ import de.knowwe.jspwiki.types.HeaderType;
  * @created 07.02.2014
  */
 public class HeaderExporter implements Exporter<HeaderType> {
+
+	private long bookmarkIndex = 0;
 
 	@Override
 	public Class<HeaderType> getSectionType() {
@@ -65,11 +70,15 @@ public class HeaderExporter implements Exporter<HeaderType> {
 			return paragraph.createRun();
 		}
 		else {
+			HeaderExporter self = builder.getModel().getExporter(HeaderExporter.class);
+			BigInteger id = BigInteger.valueOf(self.bookmarkIndex++);
 			CTP ctp = paragraph.getCTP();
 			CTBookmark start = ctp.addNewBookmarkStart();
+			start.setId(id);
 			start.setName(refID);
 			XWPFRun run = paragraph.createRun();
-			ctp.addNewBookmarkEnd();
+			CTMarkupRange end = ctp.addNewBookmarkEnd();
+			end.setId(id);
 			return run;
 		}
 	}
