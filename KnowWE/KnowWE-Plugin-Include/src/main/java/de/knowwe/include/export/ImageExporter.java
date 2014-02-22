@@ -18,7 +18,7 @@
  */
 package de.knowwe.include.export;
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;

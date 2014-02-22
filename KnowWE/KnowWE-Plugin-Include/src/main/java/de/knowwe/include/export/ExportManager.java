@@ -89,6 +89,9 @@ public class ExportManager {
 		exporters.add(new TableExporter());
 		exporters.add(new ImageExporter());
 
+		// Some known markups
+		exporters.add(new TodoExporter());
+
 		// add special exporters
 		exporters.add(new InlineDefinitionExporter());
 		exporters.add(new DefinitionExporter());
