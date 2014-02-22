@@ -18,7 +18,6 @@
  */
 package de.knowwe.include.export;
 
-import cc.knowwe.todo.TodoType;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHighlight;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
@@ -27,26 +26,30 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STHighlightColor;
 
 import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
+ * Class to export Todo Markup. Unfortunately we do not have access to that
+ * markup here, cause it is not open source yet. To avoid any conflicts we
+ * handle this as a special kind of formatted default markup.
  * 
  * @author Volker Belli (denkbares GmbH)
  * @created 07.02.2014
  */
-public class TodoExporter implements Exporter<TodoType> {
+public class TodoExporter implements Exporter<DefaultMarkupType> {
 
 	@Override
-	public boolean canExport(Section<TodoType> section) {
-		return true;
+	public boolean canExport(Section<DefaultMarkupType> section) {
+		return section.get().getName().equalsIgnoreCase("Todo");
 	}
 
 	@Override
-	public Class<TodoType> getSectionType() {
-		return TodoType.class;
+	public Class<DefaultMarkupType> getSectionType() {
+		return DefaultMarkupType.class;
 	}
 
 	@Override
-	public void export(Section<TodoType> section, DocumentBuilder manager) throws ExportException {
+	public void export(Section<DefaultMarkupType> section, DocumentBuilder manager) throws ExportException {
 		// preformatted code: make each line a paragraph
 		String[] lines = Strings.trim(section.getText()).split("\n\r?");
 		for (String line : lines) {
@@ -57,7 +60,6 @@ public class TodoExporter implements Exporter<TodoType> {
 			ctHighlight.setVal(STHighlightColor.YELLOW);
 			ctrPr.setHighlight(ctHighlight);
 			ctr.addNewT().setStringValue(line + "\n\r");
-			//manager.append(line + "\n\r");
 			manager.closeParagraph();
 		}
 	}
