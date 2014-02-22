@@ -115,7 +115,7 @@ public interface DocumentBuilder {
 	 * Sets if all styles shall be additionally using a code styled font or not.
 	 * 
 	 * @created 10.02.2014
-	 * @param italic true if code style font shall be forced
+	 * @param code true if code style font shall be forced
 	 */
 	void setCode(boolean code);
 
@@ -153,18 +153,18 @@ public interface DocumentBuilder {
 
 	/**
 	 * Exports the specified sections and all contained sub-sections using the
-	 * exporters of this document writer
+	 * exporters of this document writer.
 	 * 
 	 * @created 07.02.2014
-	 * @param section the section to be exported
+	 * @param sections the sections to be exported
 	 * @throws ExportException
 	 */
 	public void export(Collection<Section<?>> sections) throws ExportException;
 
 	/**
 	 * Exports a section and all contained sub-sections using the exporters of
-	 * this document writer
-	 * 
+	 * this document writer.
+	 *
 	 * @created 07.02.2014
 	 * @param section the section to be exported
 	 * @throws ExportException
@@ -233,7 +233,7 @@ public interface DocumentBuilder {
 	 * 
 	 * @created 09.02.2014
 	 * @param text the text to be appended
-	 * @return
+	 * @return the run created to append the specified text
 	 */
 	public XWPFRun append(String text);
 

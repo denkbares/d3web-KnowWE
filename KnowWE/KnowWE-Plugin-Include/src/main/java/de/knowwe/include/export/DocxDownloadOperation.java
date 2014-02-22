@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.d3web.core.io.progress.ParallelProgress;
 import de.d3web.core.io.progress.ProgressListener;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
@@ -135,14 +136,18 @@ public class DocxDownloadOperation extends FileDownloadOperation {
 
 	@Override
 	public void execute(File resultFile, ProgressListener listener) throws IOException, InterruptedException {
+		ParallelProgress progress = new ParallelProgress(listener, 4f, 4f);
+		progress.updateProgress(0, 0.2f, ExportManager.MSG_CREATE);
 		if (hasError()) return;
 		FileOutputStream stream = new FileOutputStream(resultFile);
 		try {
-			ExportModel model = export.createExport();
+			ExportModel model = export.createExport(progress.getSubTaskProgressListener(1));
 			for (Message message : model.getMessages()) {
 				addMessage(message);
 			}
+			progress.updateProgress(0, 0.2f, ExportManager.MSG_SAVE);
 			model.getDocument().write(stream);
+			progress.updateProgress(0, 1f);
 		}
 		catch (ExportException e) {
 			addMessage(Messages.error(e.getMessage()));

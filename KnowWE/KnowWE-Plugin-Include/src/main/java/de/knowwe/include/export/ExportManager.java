@@ -30,6 +30,8 @@ import java.util.Set;
 import org.apache.poi.POIXMLProperties.CoreProperties;
 import org.apache.poi.openxml4j.util.Nullable;
 
+import de.d3web.core.io.progress.ParallelProgress;
+import de.d3web.core.io.progress.ProgressListener;
 import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.AttachmentType;
@@ -51,6 +53,9 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * @created 07.02.2014
  */
 public class ExportManager {
+
+	static final String MSG_CREATE = "Creating word file";
+	static final String MSG_SAVE = "Saving word file";
 
 	private Section<?> section;
 	private Set<Section<?>> includedSections = null;
@@ -205,7 +210,7 @@ public class ExportManager {
 	 * Checks if the version number requires an update, because a version number
 	 * is specified but this article is older than the newest article that will
 	 * be included.
-	 * 
+	 *
 	 * @created 16.02.2014
 	 */
 	public boolean isNewVersionRequired() {
@@ -222,7 +227,10 @@ public class ExportManager {
 		return thisDate.before(lastDate);
 	}
 
-	public ExportModel createExport() throws IOException {
+	public ExportModel createExport(ProgressListener listener) throws IOException {
+		ParallelProgress progress = new ParallelProgress(listener, 3f, 7f);
+		progress.updateProgress(0, 0f, MSG_CREATE);
+
 		// detect stream for word template
 		Section<AttachmentType> attach = Sections.successor(section, AttachmentType.class);
 		InputStream stream = (attach == null)
@@ -231,15 +239,18 @@ public class ExportManager {
 
 		// create builder and export the section
 		try {
-			ExportModel model = new ExportModel(this, stream);
+			ExportModel model = new ExportModel(this, stream, progress.getSubTaskProgressListener(1));
 			DefaultBuilder builder = new DefaultBuilder(model);
+			progress.updateProgress(0, 0.2f);
 			if (section.get() instanceof IncludeMarkup) {
 				updateDocumentInfo(Sections.cast(section, IncludeMarkup.class), model);
 			}
+			progress.updateProgress(0, 0.9f);
 			builder.export(section);
 			// initialize some core properties
 			CoreProperties coreProperties = builder.getDocument().getProperties().getCoreProperties();
 			coreProperties.setModified(new Nullable<Date>(getLastModified()));
+			progress.updateProgress(1f, MSG_SAVE);
 			return model;
 		}
 		finally {

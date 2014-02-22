@@ -105,11 +105,14 @@ public class DefaultBuilder implements DocumentBuilder {
 	}
 
 	@Override
-	public void export(Section<?> section) {
+	public void export(Section<?> section) throws ExportException {
 		// try to export section
 		for (Exporter<?> export : model.getExporters()) {
 			try {
-				if (exportSection(section, export)) return;
+				if (exportSection(section, export)) {
+					model.notifyExported(section);
+					return;
+				}
 			}
 			catch (ExportException e) {
 				model.addMessage(Messages.error(e));
@@ -117,9 +120,8 @@ public class DefaultBuilder implements DocumentBuilder {
 		}
 
 		// if not, export all child sections
-		for (Section<?> child : section.getChildren()) {
-			export(child);
-		}
+		export(section.getChildren());
+		model.notifyExported(section);
 	}
 
 	private <T extends Type> boolean exportSection(Section<?> section, Exporter<T> export) throws ExportException {

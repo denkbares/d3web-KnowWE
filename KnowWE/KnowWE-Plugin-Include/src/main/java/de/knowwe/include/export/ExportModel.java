@@ -21,8 +21,10 @@ package de.knowwe.include.export;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.PackageProperties;
@@ -30,7 +32,9 @@ import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 
+import de.d3web.core.io.progress.ProgressListener;
 import de.d3web.strings.Strings;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
@@ -47,13 +51,22 @@ public class ExportModel {
 	private final XWPFDocument document;
 	private final List<Exporter<?>> exporters;
 
+	// observe progress
+	private final ProgressListener progressListener;
+	private final Set<Section<?>> exportedSections = new HashSet<Section<?>>();
+
 	private final List<Message> messages = new LinkedList<Message>();
 
 	public ExportModel(ExportManager manager, InputStream templateStream) throws IOException {
+		this(manager, templateStream, null);
+	}
+
+	public ExportModel(ExportManager manager, InputStream templateStream, ProgressListener progressListener) throws IOException {
 		// create new document based on template
 		this.manager = manager;
 		this.exporters = manager.createExporters();
 		this.document = new XWPFDocument(templateStream);
+		this.progressListener = progressListener;
 
 		// delete all undesired example content
 		int index = 0;
@@ -68,6 +81,16 @@ public class ExportModel {
 		}
 		while (document.getBodyElements().size() > index) {
 			document.removeBodyElement(index);
+		}
+	}
+
+	void notifyExported(Section<?> section) {
+		Set<Section<?>> includedSections = manager.getIncludedSections();
+		if (!includedSections.contains(section)) return;
+		exportedSections.add(section);
+		if (progressListener != null) {
+			float percent = exportedSections.size() / (float) includedSections.size();
+			progressListener.updateProgress(percent, ExportManager.MSG_CREATE);
 		}
 	}
 
