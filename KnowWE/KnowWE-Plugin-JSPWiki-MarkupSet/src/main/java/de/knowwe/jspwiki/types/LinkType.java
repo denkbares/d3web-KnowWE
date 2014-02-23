@@ -92,9 +92,9 @@ public class LinkType extends AbstractType {
 				String previewSrc = "action/RenderPreviewAction"
 						+ "?" + Attributes.TITLE + "=" +
 						Strings.encodeURL(target.getTitle())
-						+ "&" + Attributes.WEB + "=" + target.getWeb()
-						+ "&" + RenderPreviewAction.ATTR_MODE + "=" + Mode.plain.name()
-						+ "&" + Attributes.SECTION_ID + "=" + target.getID();
+						+ "&amp;" + Attributes.WEB + "=" + target.getWeb()
+						+ "&amp;" + RenderPreviewAction.ATTR_MODE + "=" + Mode.plain.name()
+						+ "&amp;" + Attributes.SECTION_ID + "=" + target.getID();
 				result.appendHtml("<span class='tooltipster ajax'")
 						.appendHtml(" data-tooltip-src='" + previewSrc + "'>")
 						.append(section.getText())
@@ -117,10 +117,10 @@ public class LinkType extends AbstractType {
 	}
 
 	/**
-	 * 
+	 * Returns the link text of the specified link type.
 	 * 
 	 * @created 22.05.2013
-	 * @param link
+	 * @param link the link type to get the link text part from
 	 * @return s the target of the link. This is an article or attachment link
 	 *         for internal links, an URL for for external links.
 	 */
@@ -138,8 +138,8 @@ public class LinkType extends AbstractType {
 	 * returns the link text.
 	 * 
 	 * @created 22.05.2013
-	 * @param link
-	 * @return
+	 * @param link the link type section to get the display text from
+	 * @return the display text of this link
 	 */
 	public static String getDisplayText(Section<LinkType> link) {
 		Matcher matcher = PATTERN.matcher(link.getText());
@@ -151,11 +151,11 @@ public class LinkType extends AbstractType {
 	}
 
 	/**
-	 * Checks, if a link is internal and points to an attachment.
+	 * Checks, if the specified link is internal and points to an attachment.
 	 * 
 	 * @created 22.05.2013
-	 * @param link
-	 * @return
+	 * @param link the link type section to check
+	 * @return if the link references an attachment
 	 */
 	public static boolean isAttachment(Section<LinkType> link) {
 		Matcher matcher = PATTERN.matcher(link.getText());
@@ -185,18 +185,48 @@ public class LinkType extends AbstractType {
 
 	}
 
+	/**
+	 * Checks, if the specified link type is an inner-wiki link, referencing
+	 * an other page (and/or header) in this wiki.
+	 *
+	 * @created 22.05.2013
+	 * @param link the link type section to check
+	 * @return if the link references this wiki
+	 */
 	public static boolean isInternal(Section<LinkType> link) {
 		return isInternal(getLink(link));
 	}
 
+	/**
+	 * Checks, if the specified link type is a link to a global url.
+	 *
+	 * @created 22.05.2013
+	 * @param link the link type section to check
+	 * @return if the link references a global url
+	 */
 	public static boolean isExternal(Section<LinkType> link) {
 		return isExternal(getLink(link));
 	}
 
+	/**
+	 * Checks, if the specified link type points to a footnote.
+	 *
+	 * @created 22.05.2013
+	 * @param link the link type section to check
+	 * @return if the link references a footnote
+	 */
 	public static boolean isFootnote(Section<LinkType> link) {
 		return isFootnote(getLink(link));
 	}
 
+	/**
+	 * Checks, if the specified link type is an inter-wiki link, referencing
+	 * an other wiki (and not a global url).
+	 *
+	 * @created 22.05.2013
+	 * @param link the link section to check
+	 * @return if the link references another this wiki
+	 */
 	public static boolean isInterWiki(Section<LinkType> link) {
 		return isInterWiki(getLink(link));
 	}
@@ -282,6 +312,13 @@ public class LinkType extends AbstractType {
 		return null;
 	}
 
+	/**
+	 * Checks, if the specified link is a link to a global url.
+	 *
+	 * @created 22.05.2013
+	 * @param link the link to check
+	 * @return if the link references a global url
+	 */
 	public static boolean isExternal(String link) {
 		if (link == null) return false;
 		String lowerLink = link.trim().toLowerCase();
@@ -291,11 +328,25 @@ public class LinkType extends AbstractType {
 		return false;
 	}
 
+	/**
+	 * Checks, if the specified link points to a footnote.
+	 *
+	 * @created 22.05.2013
+	 * @param link the link to check
+	 * @return if the link references a footnote
+	 */
 	public static boolean isFootnote(String link) {
-		if (link == null) return false;
-		return link.trim().matches("\\d+");
+		return link != null && link.trim().matches("\\d+");
 	}
 
+	/**
+	 * Checks, if the specified link type is an inter-wiki link, referencing
+	 * an other wiki (and not a global url).
+	 *
+	 * @created 22.05.2013
+	 * @param link the link to check
+	 * @return if the link references another this wiki
+	 */
 	public static boolean isInterWiki(String link) {
 		if (link == null) return false;
 		// if we want to support interwiki links, it would be best to check
@@ -303,6 +354,14 @@ public class LinkType extends AbstractType {
 		return !isExternal(link) && link.contains(":");
 	}
 
+	/**
+	 * Checks, if the specified link is an inner-wiki link, referencing
+	 * an other page (and/or header) in this wiki.
+	 *
+	 * @created 22.05.2013
+	 * @param link the link to check
+	 * @return if the link references this wiki
+	 */
 	public static boolean isInternal(String link) {
 		return !isExternal(link) && !isInterWiki(link);
 	}
