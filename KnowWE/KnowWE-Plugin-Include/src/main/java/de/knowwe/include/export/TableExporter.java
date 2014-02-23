@@ -19,13 +19,17 @@
 package de.knowwe.include.export;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTShd;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 
+import de.d3web.strings.Strings;
 import de.d3web.utils.Pair;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -81,6 +85,15 @@ public class TableExporter implements Exporter<WikiTable> {
 				DocumentBuilder cellBuilder = new CellBuilder(manager, tableCell, isHeader);
 				Section<?> content = Sections.successor(cell, ParagraphTypeForLists.class);
 				cellBuilder.export(content);
+
+				// clean trailing white-spaces of each cell
+				List<CTR> runs = cellBuilder.getParagraph().getCTP().getRList();
+				if (runs.isEmpty()) continue;
+				CTR ctr = runs.get(runs.size() - 1);
+				List<CTText> texts = ctr.getTList();
+				if (texts.isEmpty()) continue;
+				CTText ctText = texts.get(texts.size() - 1);
+				ctText.setStringValue(Strings.trimRight(ctText.getStringValue()));
 			}
 		}
 
