@@ -18,7 +18,7 @@
  */
 package de.knowwe.include.export;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,8 +62,13 @@ public class ImageExporter implements Exporter<PluginType> {
 	@Override
 	public void export(Section<PluginType> section, DocumentBuilder manager) throws ExportException {
 		try {
+			String title = section.getTitle();
 			String file = attr(section, "src");
-			String path = section.getTitle() + "/" + file;
+			String path = title + "/" + file;
+			if (file.startsWith("attach/")) {
+				// image tag uses verbose image url
+				path = file.substring(file.indexOf('/') + 1);
+			}
 			WikiConnector connector = Environment.getInstance().getWikiConnector();
 			WikiAttachment attachment = connector.getAttachment(path);
 
