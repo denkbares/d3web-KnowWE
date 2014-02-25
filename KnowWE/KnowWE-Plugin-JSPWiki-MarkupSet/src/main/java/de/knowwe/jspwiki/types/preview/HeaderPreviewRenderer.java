@@ -18,9 +18,6 @@
  */
 package de.knowwe.jspwiki.types.preview;
 
-import java.util.Collection;
-import java.util.List;
-
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -28,6 +25,9 @@ import de.knowwe.core.preview.AbstractPreviewRenderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.jspwiki.JSPWikiMarkupUtils;
 import de.knowwe.jspwiki.types.HeaderType;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Renders the preview of a header, including the subsequent sections that
@@ -46,7 +46,7 @@ public class HeaderPreviewRenderer extends AbstractPreviewRenderer {
 	}
 
 	public static void render(List<Section<?>> contentSections, UserContext user, RenderResult result) {
-		result.appendHtml("<div style='max-height:250px; overflow:scroll;'>");
+		result.appendHtml("<div style='max-height:250px; overflow:scroll;'>\n");
 		for (Section<?> content : contentSections) {
 			result.append(content, user);
 		}
