@@ -24,12 +24,12 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
- * Interface to specify a document builder that is responsible to create a
- * printed media artifact.
- * 
+ * Interface to specify a document builder that is responsible to create a printed media artifact.
+ *
  * @author Volker Belli (denkbares GmbH)
  * @created 09.02.2014
  */
@@ -60,18 +60,33 @@ public interface DocumentBuilder {
 			this.styleName = styleName;
 		}
 
+		/**
+		 * Returns the style that is associated to the specified word template style name. If no such style is found,
+		 * null is returned. The style names are matched case insensitive.
+		 *
+		 * @param styleName the style name to get the style for
+		 * @return the style with the specified style name or null
+		 */
+		public static Style getByStyleName(String styleName) {
+			for (Style style : values()) {
+				if (Strings.equalsIgnoreCase(styleName, style.getStyleName())) {
+					return style;
+				}
+			}
+			return null;
+		}
+
 		public String getStyleName() {
 			return styleName;
 		}
 
 		/**
-		 * Returns the heading of the specified level. If there is no such
-		 * heading (<1 or >9) an {@link IllegalArgumentException} is thrown
-		 * 
-		 * @created 11.02.2014
-		 * @param headingLevel the level of the heading where 1 is the most
-		 *        significant one
+		 * Returns the heading of the specified level. If there is no such heading (<1 or >9) an {@link
+		 * IllegalArgumentException} is thrown
+		 *
+		 * @param headingLevel the level of the heading where 1 is the most significant one
 		 * @return the style of that heading
+		 * @created 11.02.2014
 		 */
 		public static Style heading(int headingLevel) {
 			if (headingLevel < 1 || headingLevel > 9) {
@@ -83,125 +98,116 @@ public interface DocumentBuilder {
 		}
 
 		/**
-		 * Returns the level of the heading style or 0 if the style is no
-		 * heading style.
-		 * 
-		 * @created 11.02.2014
+		 * Returns the level of the heading style or 0 if the style is no heading style.
+		 *
 		 * @return the heading level
+		 * @created 11.02.2014
 		 */
 		public int getHeadingLevel() {
-			int l = ordinal() - heading1.ordinal() + 1;
-			return (l < 1 || l > 9) ? 0 : l;
+			int level = ordinal() - heading1.ordinal() + 1;
+			return (level < 1 || level > 9) ? 0 : level;
 		}
 	}
 
 	/**
 	 * Sets if all styles shall be additionally be bold face or not.
-	 * 
-	 * @created 10.02.2014
+	 *
 	 * @param bold true if bold shall be on
+	 * @created 10.02.2014
 	 */
 	void setBold(boolean bold);
 
 	/**
 	 * Sets if all styles shall be additionally be italics or not.
-	 * 
-	 * @created 10.02.2014
+	 *
 	 * @param italic true if italic shall be on
+	 * @created 10.02.2014
 	 */
 	void setItalic(boolean italic);
 
 	/**
 	 * Sets if all styles shall be additionally using a code styled font or not.
-	 * 
-	 * @created 10.02.2014
+	 *
 	 * @param code true if code style font shall be forced
+	 * @created 10.02.2014
 	 */
 	void setCode(boolean code);
 
 	/**
-	 * Sets if all headers shall be displayed without numbering, even if
-	 * specified in the styles of used template. Please note that specifying
-	 * "false" will not force numbering to be on, it only reverts to use the
-	 * style as defined in the template.
-	 * 
-	 * @created 11.02.2014
+	 * Sets if all headers shall be displayed without numbering, even if specified in the styles of used template.
+	 * Please note that specifying "false" will not force numbering to be on, it only reverts to use the style as
+	 * defined in the template.
+	 *
 	 * @param suppress if header numbering shall be suppressed
+	 * @created 11.02.2014
 	 */
 	void setSuppressHeaderNumbering(boolean suppress);
 
 	/**
-	 * Returns if all headers shall be displayed without numbering, even if
-	 * specified in the styles of used template. Please note that a value of
-	 * "false" will not force numbering to be on, it then uses the style as
-	 * defined in the template.
-	 * 
-	 * @created 11.02.2014
+	 * Returns if all headers shall be displayed without numbering, even if specified in the styles of used template.
+	 * Please note that a value of "false" will not force numbering to be on, it then uses the style as defined in the
+	 * template.
+	 *
 	 * @return if header numbering shall be suppressed
+	 * @created 11.02.2014
 	 */
 	boolean isSuppressHeaderNumbering();
 
 	/**
-	 * Increases the header level (or decreases if delta is negative) by the
-	 * delta level. So all created heading sections will be of a modified level.
-	 * If delta is set to 2 a heading of 3 will become a heading of 5.
-	 * 
-	 * @created 10.02.2014
+	 * Increases the header level (or decreases if delta is negative) by the delta level. So all created heading
+	 * sections will be of a modified level. If delta is set to 2 a heading of 3 will become a heading of 5.
+	 *
 	 * @param delta the delta to be added to the headings
+	 * @created 10.02.2014
 	 */
 	void incHeaderLevel(int delta);
 
 	/**
-	 * Exports the specified sections and all contained sub-sections using the
-	 * exporters of this document writer.
-	 * 
-	 * @created 07.02.2014
+	 * Exports the specified sections and all contained sub-sections using the exporters of this document writer.
+	 *
 	 * @param sections the sections to be exported
 	 * @throws ExportException
+	 * @created 07.02.2014
 	 */
 	public void export(Collection<Section<?>> sections) throws ExportException;
 
 	/**
-	 * Exports a section and all contained sub-sections using the exporters of
-	 * this document writer.
+	 * Exports a section and all contained sub-sections using the exporters of this document writer.
 	 *
-	 * @created 07.02.2014
 	 * @param section the section to be exported
 	 * @throws ExportException
+	 * @created 07.02.2014
 	 */
 	public void export(Section<?> section) throws ExportException;
 
 	/**
 	 * Returns the document we are currently building.
-	 * 
-	 * @created 09.02.2014
+	 *
 	 * @return the document of this builder
+	 * @created 09.02.2014
 	 */
 	public XWPFDocument getDocument();
 
 	/**
-	 * Closes a paragraph. If it is already closed, nothing happens. After
-	 * closing the paragraph, the methods like {@link #getParagraph()} will
-	 * create a new one.
-	 * 
+	 * Closes a paragraph. If it is already closed, nothing happens. After closing the paragraph, the methods like
+	 * {@link #getParagraph()} will create a new one.
+	 *
 	 * @created 07.02.2014
 	 */
 	public void closeParagraph();
 
 	/**
-	 * Returns the current paragraph or creates a new one if no current one
-	 * exists.
-	 * 
+	 * Returns the current paragraph or creates a new one if no current one exists.
+	 *
 	 * @return the current paragraph
 	 * @created 07.02.2014
 	 */
 	public XWPFParagraph getParagraph();
 
 	/**
-	 * Returns the current paragraph of the specified style. It creates a new
-	 * paragraph if there is no current one or if the current one has the wrong
-	 * style.
-	 * 
+	 * Returns the current paragraph of the specified style. It creates a new paragraph if there is no current one or if
+	 * the current one has the wrong style.
+	 *
 	 * @param style the style the paragraph shall have
 	 * @return the current paragraph of the specified style
 	 * @created 07.02.2014
@@ -209,18 +215,17 @@ public interface DocumentBuilder {
 	public XWPFParagraph getParagraph(Style style);
 
 	/**
-	 * Returns a newly created paragraph. If there has been any paragraph opened
-	 * before the previous one is closed.
-	 * 
+	 * Returns a newly created paragraph. If there has been any paragraph opened before the previous one is closed.
+	 *
 	 * @return a newly created paragraph
 	 * @created 07.02.2014
 	 */
 	public XWPFParagraph getNewParagraph();
 
 	/**
-	 * Returns a newly created paragraph with the specified style. If there has
-	 * been any paragraph opened before the previous one is closed.
-	 * 
+	 * Returns a newly created paragraph with the specified style. If there has been any paragraph opened before the
+	 * previous one is closed.
+	 *
 	 * @param style the style the paragraph shall have
 	 * @return a newly created paragraph
 	 * @created 07.02.2014
@@ -228,32 +233,39 @@ public interface DocumentBuilder {
 	public XWPFParagraph getNewParagraph(Style style);
 
 	/**
-	 * Appends a new text run to the actual section. If currently no paragraph
-	 * is available, a new one is created.
-	 * 
-	 * @created 09.02.2014
+	 * Appends a new text run to the actual section. If currently no paragraph is available, a new one is created.
+	 *
 	 * @param text the text to be appended
 	 * @return the run created to append the specified text
+	 * @created 09.02.2014
 	 */
 	public XWPFRun append(String text);
 
 	/**
-	 * Appends a new text run to the current paragraph with the specified style.
-	 * If currently no paragraph is available, or if the current paragraph's
-	 * style is not the specified style, a new one is created.
-	 * 
-	 * @created 09.02.2014
+	 * Appends a new text run to the current paragraph with the specified style. If currently no paragraph is available,
+	 * or if the current paragraph's style is not the specified style, a new one is created.
+	 *
 	 * @param style the style the paragraph shall have
 	 * @param text the text to be appended
 	 * @return the run created for the text, may be used for further formatting
+	 * @created 09.02.2014
 	 */
 	public XWPFRun append(Style style, String text);
 
 	/**
+	 * Appends a forced line break to the current text. If currently no paragraph is available, the method call is
+	 * ignored. Please note that this method may created different types of breaks, even may create new paragraphs,
+	 * depending of where the break is inserted (text, table, ...)
+	 *
+	 * @created 09.02.2014
+	 */
+	public void appendLineBreak();
+
+	/**
 	 * Returns the export model this document builder shall be update.
-	 * 
-	 * @created 10.02.2014
+	 *
 	 * @return the export manager
+	 * @created 10.02.2014
 	 */
 	public ExportModel getModel();
 

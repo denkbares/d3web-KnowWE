@@ -88,17 +88,6 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	 */
 	public abstract void execute(File resultFile, ProgressListener listener) throws IOException, InterruptedException;
 
-	/**
-	 * Returns the file name to be used for the attachment. The attachment name
-	 * does not contain the article's name.
-	 * 
-	 * @created 30.07.2013
-	 * @return
-	 */
-	public String getAttachmentFileName() {
-		return fileName;
-	}
-
 	public Article getArticle() {
 		return article;
 	}
@@ -139,7 +128,6 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 			if (builder.length() > 0) {
 				builder.append("\n<br>");
 			}
-			builder.append(type.name()).append(": ");
 			builder.append(Strings.encodeHtml(msg.getVerbalization()));
 			if (!Strings.isBlank(details)) {
 				builder.append(" <span title='")
@@ -234,13 +222,13 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 
 		StringBuilder result = new StringBuilder();
 		String id = UUID.randomUUID().toString();
-		result.append("<div id='" + id + "'><p>");
+		result.append("<div id='").append(id).append("'><p>");
 		for (Tool tool : actions) {
 			String icon = tool.getIconPath();
 			String descr = tool.getDescription();
 			result.append("<div>");
 			result.append("<a class='action' href='javascript:")
-					.append("jq$(\"#" + id + "\").remove();")
+					.append("jq$(\"#").append(id).append("\").remove();")
 					.append(Strings.encodeHtml(tool.getJSAction()))
 					.append("'");
 			if (!Strings.isBlank(descr)) {

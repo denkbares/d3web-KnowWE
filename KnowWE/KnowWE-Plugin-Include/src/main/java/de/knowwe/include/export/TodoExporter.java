@@ -18,6 +18,9 @@
  */
 package de.knowwe.include.export;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHighlight;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
@@ -29,14 +32,24 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
- * Class to export Todo Markup. Unfortunately we do not have access to that
- * markup here, cause it is not open source yet. To avoid any conflicts we
- * handle this as a special kind of formatted default markup.
- * 
+ * Class to export to-do Markup. Unfortunately we do not have access to that markup here, cause it is not open source
+ * yet. To avoid any conflicts we handle this as a special kind of formatted default markup.
+ *
  * @author Volker Belli (denkbares GmbH)
  * @created 07.02.2014
  */
 public class TodoExporter implements Exporter<DefaultMarkupType> {
+
+	private static final STHighlightColor.Enum[] colors = new STHighlightColor.Enum[] {
+			STHighlightColor.YELLOW,
+			STHighlightColor.GREEN,
+			STHighlightColor.CYAN,
+			STHighlightColor.RED,
+			STHighlightColor.BLUE,
+			STHighlightColor.MAGENTA
+	};
+
+	private final List<String> users = new LinkedList<String>();
 
 	@Override
 	public boolean canExport(Section<DefaultMarkupType> section) {
@@ -57,10 +70,20 @@ public class TodoExporter implements Exporter<DefaultMarkupType> {
 			CTR ctr = paragraph.getCTP().addNewR();
 			CTRPr ctrPr = ctr.addNewRPr();
 			CTHighlight ctHighlight = CTHighlight.Factory.newInstance();
-			ctHighlight.setVal(STHighlightColor.YELLOW);
+			ctHighlight.setVal(getUserColor(section));
 			ctrPr.setHighlight(ctHighlight);
 			ctr.addNewT().setStringValue(line + "\n\r");
 			manager.closeParagraph();
 		}
+	}
+
+	private STHighlightColor.Enum getUserColor(Section<DefaultMarkupType> section) {
+		String user = DefaultMarkupType.getAnnotation(section, "user");
+		int index = users.indexOf(user);
+		if (index == -1) {
+			index = users.size();
+			users.add(user);
+		}
+		return colors[index % colors.length];
 	}
 }

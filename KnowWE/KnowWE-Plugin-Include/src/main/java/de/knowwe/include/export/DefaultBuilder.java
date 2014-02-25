@@ -31,7 +31,6 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Messages;
 
 /**
- * 
  * @author Volker Belli (denkbares GmbH)
  * @created 09.02.2014
  */
@@ -196,6 +195,11 @@ public class DefaultBuilder implements DocumentBuilder {
 	public XWPFRun append(Style style, String text) {
 		XWPFRun run = getParagraph(style).createRun();
 		return append(text, run);
+	}
+
+	@Override
+	public void appendLineBreak() {
+		getParagraph().createRun().addCarriageReturn();
 	}
 
 	private XWPFRun append(String text, XWPFRun run) {

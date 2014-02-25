@@ -26,19 +26,22 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBookmark;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTMarkupRange;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.Messages;
 import de.knowwe.include.export.DocumentBuilder.Style;
 import de.knowwe.jspwiki.types.HeaderType;
 
 /**
  * Exports header of the document for any level.
- * 
+ *
  * @author Volker Belli (denkbares GmbH)
  * @created 07.02.2014
  */
 public class HeaderExporter implements Exporter<HeaderType> {
 
 	private long bookmarkIndex = 0;
+	private int lastUsedHeadingLevel = 0;
 
 	@Override
 	public Class<HeaderType> getSectionType() {
@@ -51,17 +54,43 @@ public class HeaderExporter implements Exporter<HeaderType> {
 	}
 
 	@Override
-	public void export(Section<HeaderType> section, DocumentBuilder manager) throws ExportException {
+	public void export(Section<HeaderType> section, DocumentBuilder builder) throws ExportException {
 		String headerText = section.get().getHeaderText(section);
 		int marks = section.get().getMarkerCount();
-		export(headerText, 4 - marks, getCrossReferenceID(section), manager);
+		exportHeading(headerText, 4 - marks, getCrossReferenceID(section),
+				section.getArticle(), builder);
 	}
 
-	public static void export(String headerText, int headingLevel, String refID, DocumentBuilder manager) {
+	public static void export(String headerText, int headingLevel, String refID, Article article, DocumentBuilder builder) {
+		HeaderExporter exporter = builder.getModel().getExporter(HeaderExporter.class);
+		exporter.exportHeading(headerText, headingLevel, refID, article, builder);
+	}
+
+	private void exportHeading(String headerText, int headingLevel, String refID, Article article, DocumentBuilder builder) {
 		Style style = Style.heading(headingLevel);
-		manager.getNewParagraph(style);
-		createCrossReferenceRun(refID, manager).setText(headerText);
-		manager.closeParagraph();
+		builder.getNewParagraph(style);
+		checkHeaderLevel(headerText, article, builder);
+		createCrossReferenceRun(refID, builder).setText(headerText);
+		builder.closeParagraph();
+	}
+
+	private void checkHeaderLevel(String headerText, Article article, DocumentBuilder builder) {
+		// if we are using a header style, check that the
+		// level increase does not produce a gap by
+		// adding multiple levels at one
+		Style style = Style.getByStyleName(builder.getParagraph().getStyle());
+		int level = style.getHeadingLevel();
+		if (level != 0) {
+			// the level max decrease by any number,
+			// but increasing at a max of one
+			if (lastUsedHeadingLevel != 0 && level > lastUsedHeadingLevel + 1) {
+				builder.getModel().addMessage(Messages.warning("" +
+						"The heading '" + headerText + "' " +
+						"of article '" + article.getTitle() + "' " +
+						"increases multiple levels at once."));
+			}
+			lastUsedHeadingLevel = level;
+		}
 	}
 
 	public static XWPFRun createCrossReferenceRun(String refID, DocumentBuilder builder) {

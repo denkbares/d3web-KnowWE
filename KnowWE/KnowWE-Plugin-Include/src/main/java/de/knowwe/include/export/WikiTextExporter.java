@@ -23,7 +23,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.jspwiki.types.WikiTextType;
 
 /**
- * 
  * @author Volker Belli (denkbares GmbH)
  * @created 07.02.2014
  */
@@ -42,13 +41,14 @@ public class WikiTextExporter implements Exporter<WikiTextType> {
 	@Override
 	public void export(Section<WikiTextType> section, DocumentBuilder manager) throws ExportException {
 		String text = Strings.trimBlankLines(section.getText());
-		String[] lines = text.split("\\\\\\\\");
+		// Split lines by two or more '\' characters
+		// Also ignore trailing and leading whitespaces surrounding the returns
+		String[] lines = text.split("[\\s\u00A0]*\\\\\\\\+[\\s ]*");
 		boolean first = true;
 		for (String line : lines) {
-			if (Strings.isBlank(line)) continue;
 			if (first) first = false;
 			else {
-				manager.closeParagraph();
+				manager.appendLineBreak();
 			}
 			manager.append(line);
 		}

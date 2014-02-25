@@ -29,7 +29,7 @@ import de.knowwe.include.InnerWikiReference;
 
 /**
  * Export handler for exporting sections included by the include markup.
- * 
+ *
  * @author Volker Belli (denkbares GmbH)
  * @created 08.02.2014
  */
@@ -76,7 +76,7 @@ public class IncludeExporter implements Exporter<IncludeMarkup> {
 			String title = reference.get().getLinkName(reference);
 			String refID = HeaderExporter.getCrossReferenceID(
 					reference.get().getReferencedSection(reference));
-			HeaderExporter.export(title, listLevel, refID, manager);
+			HeaderExporter.export(title, listLevel, refID, reference.getArticle(), manager);
 			delta += listLevel;
 		}
 

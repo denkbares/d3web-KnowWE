@@ -22,9 +22,8 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 
 /**
- * Special implementation of a document builder for building a cell inside of a
- * table.
- * 
+ * Special implementation of a document builder for building a cell inside of a table.
+ *
  * @author Volker Belli (denkbares GmbH)
  * @created 09.02.2014
  */
@@ -47,6 +46,11 @@ public class CellBuilder extends DefaultBuilder {
 	@Override
 	protected XWPFParagraph createParagraph() {
 		return cell.addParagraph();
+	}
+
+	@Override
+	public void appendLineBreak() {
+		closeParagraph();
 	}
 
 	@Override
