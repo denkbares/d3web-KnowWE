@@ -18,6 +18,8 @@
  */
 package de.knowwe.jspwiki.types;
 
+import java.util.regex.Pattern;
+
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.KeywordType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -55,7 +57,7 @@ public class FootnoteType extends AbstractType {
 	}
 
 	public FootnoteType() {
-		this.setSectionFinder(new RegexSectionFinder(INTRO + ".*$"));
+		this.setSectionFinder(new RegexSectionFinder(INTRO + ".*$", Pattern.MULTILINE));
 
 		this.addChildType(new FootnoteIntro());
 		this.addChildType(new ParagraphTypeForLists());
