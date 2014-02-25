@@ -41,7 +41,6 @@ import static de.knowwe.include.export.DocumentBuilder.Style;
  */
 public class ListExporter implements Exporter<Type> {
 
-	// TODO: find abstract ids by list style names
 	private static BigInteger ABSTRACT_ID_ORDERED = null;
 	private static BigInteger ABSTRACT_ID_UNORDERED = null;
 
@@ -58,12 +57,12 @@ public class ListExporter implements Exporter<Type> {
 
 	@Override
 	public void export(Section<Type> section, DocumentBuilder manager) throws ExportException {
-		// TODO start a new list here (number shall not been continued)
 		XWPFDocument document = manager.getDocument();
 		BigInteger abstractID = section.get() instanceof OrderedListType
 				? getAbstractIdOrdered(document)
 				: getAbstractIdUnordered(document);
 
+		// TODO start a new list here (number shall not been continued): no idea why this does not work
 		BigInteger numID = document.getNumbering().addNum(abstractID);
 		List<Section<DashTreeElement>> items = Sections.successors(section, DashTreeElement.class);
 		for (Section<DashTreeElement> item : items) {
