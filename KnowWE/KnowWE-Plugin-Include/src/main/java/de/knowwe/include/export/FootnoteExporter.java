@@ -28,6 +28,7 @@ import org.apache.poi.xwpf.usermodel.XWPFFootnotes;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFtnEdn;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STFtnEdn;
 
 import de.d3web.utils.Pair;
@@ -37,9 +38,8 @@ import de.knowwe.include.export.DocumentBuilder.Style;
 import de.knowwe.jspwiki.types.FootnoteType;
 
 /**
- * Exporter for exporting links. They will be exported in the same style as the
- * surrounding text.
- * 
+ * Exporter for exporting links. They will be exported in the same style as the surrounding text.
+ *
  * @author Volker Belli (denkbares GmbH)
  * @created 07.02.2014
  */
@@ -94,7 +94,8 @@ public class FootnoteExporter implements Exporter<FootnoteType> {
 		XWPFFootnote footnote = footnotes.addFootnote(ctNote);
 
 		// add contents to footer
-		XWPFParagraph footPara = footnote.addNewParagraph(footnote.getCTFtnEdn().addNewP());
+		XWPFParagraph footPara = footnote.addNewParagraph(CTP.Factory.newInstance());
+		footPara.setStyle(Style.footnote.getStyleName());
 		XWPFRun footRun = footPara.createRun();
 		footRun.setSubscript(VerticalAlign.SUPERSCRIPT);
 		footRun.setText(String.valueOf(noteId.intValue()));

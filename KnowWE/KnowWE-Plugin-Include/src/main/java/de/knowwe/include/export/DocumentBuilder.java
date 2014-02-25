@@ -52,7 +52,8 @@ public interface DocumentBuilder {
 		image("Image"),
 		list("ListBody"),
 		tableHeader("TableHeader"),
-		tableText("TableBody");
+		tableText("TableBody"),
+		footnote("Footnote");
 
 		private final String styleName;
 
