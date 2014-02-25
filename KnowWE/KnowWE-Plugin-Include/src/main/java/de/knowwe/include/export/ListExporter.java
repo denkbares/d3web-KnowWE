@@ -33,6 +33,8 @@ import de.knowwe.jspwiki.types.OrderedListType;
 import de.knowwe.kdom.dashtree.DashTreeElement;
 import de.knowwe.kdom.dashtree.DashTreeElementContent;
 
+import static de.knowwe.include.export.DocumentBuilder.Style;
+
 /**
  * @author Volker Belli (denkbares GmbH)
  * @created 07.02.2014
@@ -77,7 +79,7 @@ public class ListExporter implements Exporter<Type> {
 			depth++;
 		}
 
-		XWPFParagraph paragraph = builder.getNewParagraph();
+		XWPFParagraph paragraph = builder.getNewParagraph(Style.list);
 		paragraph.setNumID(numID);
 		paragraph.getCTP().getPPr().getNumPr().addNewIlvl().setVal(BigInteger.valueOf(depth - 1));
 		ListBuilder listBuilder = new ListBuilder(builder);
