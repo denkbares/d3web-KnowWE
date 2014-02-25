@@ -105,6 +105,7 @@ public class TableExporter implements Exporter<WikiTable> {
 			if (headerCellsOnly) {
 				tableRow.setRepeatHeader(true);
 			}
+			tableRow.setCantSplitRow(true);
 		}
 
 		// append empty line after each table
