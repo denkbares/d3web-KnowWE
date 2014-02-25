@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
+import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTShd;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
@@ -64,18 +65,22 @@ public class TableExporter implements Exporter<WikiTable> {
 		// create table with correct dimension
 		XWPFDocument doc = manager.getDocument();
 		XWPFTable table = doc.createTable(matrix.getRowSize(), matrix.getColSize());
+		boolean headerCellsOnly = true;
 
 		for (int row = 0; row < matrix.getRowSize(); row++) {
+			XWPFTableRow tableRow = table.getRow(row);
 			for (int col = 0; col < matrix.getColSize(); col++) {
 				Section<TableCell> cell = matrix.get(row, col);
 				boolean isHeader = cell.get().isHeader(cell);
 				boolean isZebra = row % 2 == 0;
+				headerCellsOnly &= isHeader;
 
 				// prepare cell shading
-				XWPFTableCell tableCell = table.getRow(row).getCell(col);
+				XWPFTableCell tableCell = tableRow.getCell(col);
 				CTShd shade = tableCell.getCTTc().addNewTcPr().addNewShd();
 				if (isHeader) {
 					shade.setFill("D0D0D0");
+					tableCell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
 				}
 				else if (isZebra) {
 					shade.setFill("F2F2F2");
@@ -94,6 +99,11 @@ public class TableExporter implements Exporter<WikiTable> {
 				if (texts.isEmpty()) continue;
 				CTText ctText = texts.get(texts.size() - 1);
 				ctText.setStringValue(Strings.trimRight(ctText.getStringValue()));
+			}
+			// check if the first row(s) have only headers,
+			// repeat those headers until a non-header cell has come
+			if (headerCellsOnly) {
+				tableRow.setRepeatHeader(true);
 			}
 		}
 
