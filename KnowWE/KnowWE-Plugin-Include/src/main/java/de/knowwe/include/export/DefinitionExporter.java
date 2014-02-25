@@ -20,6 +20,7 @@ package de.knowwe.include.export;
 
 import java.math.BigInteger;
 
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 
@@ -50,8 +51,9 @@ public class DefinitionExporter implements Exporter<DefinitionType> {
 		String head = section.get().getHeadText(section);
 		String data = section.get().getDataText(section);
 
-		BigInteger abstractID = ListExporter.getAbstractIdUnordered();
-		BigInteger numID = manager.getDocument().getNumbering().addNum(abstractID);
+		XWPFDocument document = manager.getDocument();
+		BigInteger abstractID = ListExporter.getAbstractIdUnordered(document);
+		BigInteger numID = document.getNumbering().addNum(abstractID);
 		XWPFParagraph paragraph = manager.getNewParagraph(Style.list);
 		paragraph.setNumID(numID);
 		paragraph.getCTP().getPPr().getNumPr().addNewIlvl().setVal(BigInteger.valueOf(0));

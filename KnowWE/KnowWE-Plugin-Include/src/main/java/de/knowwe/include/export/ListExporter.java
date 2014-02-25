@@ -21,6 +21,8 @@ package de.knowwe.include.export;
 import java.math.BigInteger;
 import java.util.List;
 
+import org.apache.poi.xwpf.usermodel.MyXWPFNumbering;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 
 import de.knowwe.core.kdom.Type;
@@ -32,15 +34,14 @@ import de.knowwe.kdom.dashtree.DashTreeElement;
 import de.knowwe.kdom.dashtree.DashTreeElementContent;
 
 /**
- * 
  * @author Volker Belli (denkbares GmbH)
  * @created 07.02.2014
  */
 public class ListExporter implements Exporter<Type> {
 
 	// TODO: find abstract ids by list style names
-	private static final BigInteger ABSTRACT_ID_ORDERED = BigInteger.valueOf(15);
-	private static final BigInteger ABSTRACT_ID_UNORDERED = BigInteger.valueOf(14);
+	private static BigInteger ABSTRACT_ID_ORDERED = null;
+	private static BigInteger ABSTRACT_ID_UNORDERED = null;
 
 	@Override
 	public boolean canExport(Section<Type> section) {
@@ -56,10 +57,12 @@ public class ListExporter implements Exporter<Type> {
 	@Override
 	public void export(Section<Type> section, DocumentBuilder manager) throws ExportException {
 		// TODO start a new list here (number shall not been continued)
+		XWPFDocument document = manager.getDocument();
 		BigInteger abstractID = section.get() instanceof OrderedListType
-				? ABSTRACT_ID_ORDERED : ABSTRACT_ID_UNORDERED;
+				? getAbstractIdOrdered(document)
+				: getAbstractIdUnordered(document);
 
-		BigInteger numID = manager.getDocument().getNumbering().addNum(abstractID);
+		BigInteger numID = document.getNumbering().addNum(abstractID);
 		List<Section<DashTreeElement>> items = Sections.successors(section, DashTreeElement.class);
 		for (Section<DashTreeElement> item : items) {
 			exportItem(item, numID, manager);
@@ -82,11 +85,17 @@ public class ListExporter implements Exporter<Type> {
 		listBuilder.closeParagraph();
 	}
 
-	public static BigInteger getAbstractIdOrdered() {
+	public static BigInteger getAbstractIdOrdered(XWPFDocument document) {
+		if (ABSTRACT_ID_ORDERED == null) {
+			ABSTRACT_ID_ORDERED = MyXWPFNumbering.findAbstractID(document.getNumbering(), "OrderedList");
+		}
 		return ABSTRACT_ID_ORDERED;
 	}
 
-	public static BigInteger getAbstractIdUnordered() {
+	public static BigInteger getAbstractIdUnordered(XWPFDocument document) {
+		if (ABSTRACT_ID_UNORDERED == null) {
+			ABSTRACT_ID_UNORDERED = MyXWPFNumbering.findAbstractID(document.getNumbering(), "UnorderedList");
+		}
 		return ABSTRACT_ID_UNORDERED;
 	}
 
