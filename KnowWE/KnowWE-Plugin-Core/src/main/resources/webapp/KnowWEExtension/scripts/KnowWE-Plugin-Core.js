@@ -129,7 +129,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 					termreplacement : replacement.val(),
 					KWikiWeb : web.val(),
 					KWikiChangeNote : changeNote,
-					force : forceRename ? "true" : "false",
+					force: forceRename ? "true" : "false"
 				}
 				var options = {
 					url : KNOWWE.core.util.getURL(params),
@@ -279,6 +279,7 @@ KNOWWE.core.plugin.pagination = function() {
 		jq$.cookie("PaginationDecoratingRenderer-" + id, cookieStr);
 		KNOWWE.plugin.d3webbasic.actions.updateNode(jq$("#" + id).first().attr(
 				"id"), KNOWWE.helper.gup('page'), null);
+
 	}
 
 	function scrollToTopNavigation(id) {
@@ -485,7 +486,11 @@ KNOWWE.core.plugin.pagination = function() {
 // bar,
 // i.e. initialized by PaginationDecoratingRenderer
 KNOWWE.helper.observer.subscribe("navigationPaginationRendered", function() {
-	KNOWWE.core.plugin.pagination.decorateTable()
+	KNOWWE.core.plugin.pagination.decorateTable();
+	jq$("table.termReview").each(function () {
+		KNOWWE.plugin.semanticservicecore.initReviewTable(this);
+
+	});
 });
 
 
