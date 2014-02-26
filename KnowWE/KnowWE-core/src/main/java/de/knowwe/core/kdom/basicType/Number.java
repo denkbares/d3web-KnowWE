@@ -65,7 +65,7 @@ public class Number extends AbstractType {
 	 * @param section the section to parse the number from
 	 * @return the parsed number
 	 */
-	public static Double getNumber(Section<Number> section) {
+	public static Double getNumber(Section<? extends Number> section) {
 		try {
 			return Double.parseDouble(section.getText().trim());
 		}

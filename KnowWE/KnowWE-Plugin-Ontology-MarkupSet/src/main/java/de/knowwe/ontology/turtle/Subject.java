@@ -75,9 +75,10 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 		@Override
 		public Collection<Message> create(OntologyCompiler compiler, Section<SimpleReference> s) {
 
-			Section<TurtleSentence> sentence = Sections.findAncestorOfType(s, TurtleSentence.class);
-			List<Section<Predicate>> predicates = Sections.findSuccessorsOfType(sentence,
-					Predicate.class);
+			Section<TurtleSentence> sentence = Sections.ancestor(s, TurtleSentence.class);
+			if (sentence == null) return Messages.noMessage();
+
+			List<Section<Predicate>> predicates = Sections.successors(sentence, Predicate.class);
 			boolean hasTypePredicate = false;
 			for (Section<Predicate> section : predicates) {
 				if (section.getText().matches("[\\w]*?:type")) {
