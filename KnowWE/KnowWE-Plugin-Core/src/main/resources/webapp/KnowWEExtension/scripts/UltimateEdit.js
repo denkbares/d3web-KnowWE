@@ -153,11 +153,11 @@ KNOWWE.plugin.renaming = function () {
 				});
 				jq$('.click').trigger("click");
 				//replace edit field value with sectionText for encoding reasons
-				var inputField = jq$(clickedTerm).find("input").val(jsonResponse.sectionText);
+				var inputField = jq$(clickedTerm).find("input").val(jsonResponse.lastPathElement);
 				jq$(inputField).autoGrow(5);
 
 				sectionIds = jsonResponse.sectionIds;
-				showCurrentEditOnOtherOccurences(jsonResponse.sectionText);
+				showCurrentEditOnOtherOccurences(jsonResponse.lastPathElement);
 
 				jq$(".click input").keyup(function () {
 					showCurrentEditOnOtherOccurences(jq$(this).val());
