@@ -26,7 +26,6 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 
 /**
- * 
  * @author volker_belli
  * @created 30.11.2010
  */
@@ -46,28 +45,22 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 
 		RenderResult subResult = new RenderResult(string);
 		decoratedRenderer.render(sec, user, subResult);
-		renderToolMenuDecorator(subResult.toStringRaw(), sec.getID(), hasTools, string);
+		renderToolMenuDecorator(subResult.toStringRaw(), sec.getID(), null, hasTools, string);
+	}
+
+	public Renderer getDecoratedRenderer() {
+		return decoratedRenderer;
 	}
 
 	public static void renderToolMenuDecorator(String innerText, String toolMenuID, boolean hasTools, RenderResult string) {
 		renderToolMenuDecorator(innerText, toolMenuID, null, hasTools, string);
 	}
 
-	public static void renderToolMenuDecorator(String innerText, String toolMenuID, boolean hasTools, RenderResult string, boolean allowWrap) {
-		renderToolMenuDecorator(innerText, toolMenuID, null, hasTools, string, allowWrap);
-	}
-
 	public static void renderToolMenuDecorator(String innerText, String toolMenuID, String toolMenuAction, boolean hasTools, RenderResult string) {
-		renderToolMenuDecorator(innerText, toolMenuID, toolMenuAction, hasTools, string, false);
-	}
-
-	public static void renderToolMenuDecorator(String innerText, String toolMenuID, String toolMenuAction, boolean hasTools, RenderResult string, boolean allowWrap) {
 
 		if (hasTools) {
 			String headerID = "tool_menu_" + toolMenuID + "_" + UUID.randomUUID().toString();
-			string.appendHtmlTag("span", "style", allowWrap
-					? "position:relative"
-					: "position:relative; white-space: nowrap;");
+			string.appendHtmlTag("span", "class", "toolMenuDecorated");
 
 			String[] attributes = new String[toolMenuAction == null ? 8 : 10];
 			attributes[0] = "style";

@@ -12,7 +12,7 @@
 
 .defaultMarkup {
 	position:		relative;
-	background-color: #F9F9F9; 
+	background-color: #F9F9F9;
 	margin-right:	0em;
 	margin-left:	0em;
 	min-height:		30px;
@@ -34,12 +34,12 @@
 
 .defaultMarkupFrame .headerMenu .markupHeader {
 	overflow: 		hidden;
-	padding:		3px 10px 3px 10px; 
+	padding:		3px 10px 3px 10px;
 }
 
 .defaultMarkupFrame .headerToolbar .markupHeader {
 	overflow: 		hidden;
-	padding:		3px; 
+	padding:		3px;
 }
 
 .headerToolbar .markupHeader span {
@@ -57,7 +57,7 @@
 }
 
 .defaultMarkupFrame .markupHeaderFrame {
-	top:			1px; 
+	top:			1px;
 	white-space:	nowrap;
 	z-index:		1000;
 	overflow: 		visible;
@@ -67,18 +67,18 @@
 	opacity: 0.3;
 	z-index: 1000;
 	max-width: 35px;
-	background-color: white; 
-	right:			1px; 
-	position:		absolute; 
+	background-color: white;
+	right:			1px;
+	position:		absolute;
 	border-left:	1px solid #DDD;
-	border-bottom:	1px solid #DDD; 
+	border-bottom:	1px solid #DDD;
 	border-bottom-left-radius: 10px;
 	-moz-border-radius-bottomleft: 10px;
 }
 
 .defaultMarkupFrame .headerToolbar {
-	background-color: #DDD; 
-	left:			1px; 
+	background-color: #DDD;
+	left:			1px;
 }
 
 .defaultMarkupFrame .markupTools {
@@ -95,8 +95,8 @@
 	display: none;
 	position:	absolute;
 	border:		2px solid #DDD;
-	background-color: white; 
-	right:		0px; 
+	background-color: white;
+	right:		0px;
 	z-index:	2000;
 	right:		-1px;
 }
@@ -240,6 +240,11 @@ smartedit + .objectinfo.preview:hover{
 /* ------------Tool Menu Styles----------------- */
 /* ################################################## */
 
+.toolMenuDecorated {
+	position: relative;
+	white-space: nowrap;
+}
+
 .toolsMenuDecorator {
 	top:-1px;
 	bottom:-1px;
@@ -262,18 +267,18 @@ smartedit + .objectinfo.preview:hover{
 
 .toolMenuFrame .markupHeader {
 	overflow: 		hidden;
-	padding:		3px 10px 3px 10px; 
+	padding:		3px 10px 3px 10px;
 }
 
 .toolMenuFrame .markupHeaderFrame {
-	position:		absolute; 
-	top:			1px; 
-	right:			1px; 
-	border-left:	1px solid #DDD; 
-	border-bottom:	1px solid #DDD; 
+	position:		absolute;
+	top:			1px;
+	right:			1px;
+	border-left:	1px solid #DDD;
+	border-bottom:	1px solid #DDD;
 	border-bottom-left-radius: 10px;
 	-moz-border-radius-bottomleft: 10px;
-	background-color: white; 
+	background-color: white;
 	white-space:	nowrap;
 	z-index:		1000;
 	overflow: 		visible;
@@ -292,8 +297,8 @@ smartedit + .objectinfo.preview:hover{
 .toolMenuFrame .markupMenu {
 	position:	absolute;
 	border:		2px solid #DDD;
-	background-color: white; 
-	right:		0px; 
+	background-color: white;
+	right:		0px;
 	z-index:	2000;
 	right:		-1px;
 }
@@ -441,7 +446,7 @@ smartedit + .objectinfo.preview:hover{
 	font-size: 50%;
 	color: #888;
 }
-.inline-definition-data {	
+.inline-definition-data {
 }
 .inline-definition-data:AFTER {
 	content: ")";
