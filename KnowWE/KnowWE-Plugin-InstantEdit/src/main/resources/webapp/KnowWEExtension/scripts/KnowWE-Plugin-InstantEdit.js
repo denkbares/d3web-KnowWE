@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2014 denkbares GmbH, Germany
+ *
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+
 /**
  * The KNOWWE global namespace object. If KNOWWE is already defined, the
  * existing KNOWWE object will not be overwritten so that defined namespaces are
@@ -77,8 +96,9 @@ KNOWWE.plugin.instantEdit = function() {
                         }
                         _IE.enabled = true;
 
-                        var locked = JSON.parse(this.responseText).locked;
-                        var html = toolNameSpace.generateHTML(id);
+						var json = JSON.parse(this.responseText);
+						var locked = json.locked;
+						var html = toolNameSpace.generateHTML(id);
                         html += _IE.getChangeNoteField();
                         html += toolNameSpace.generateButtons(id);
                         html = _EC.wrapHTML(id, locked, html);
@@ -90,8 +110,8 @@ KNOWWE.plugin.instantEdit = function() {
                         _EC.hideTools();
                         _EC.registerSaveCancelEvents(jq$('#' + id), _IE.save, _IE.cancel, id);
                     },
-                    onError: _EC.onErrorBehavior,
-                }
+					onError: _EC.onErrorBehavior
+				}
             };
             new _KA(options).send();
 
@@ -230,8 +250,8 @@ KNOWWE.plugin.instantEdit = function() {
         },
         
         getChangeNoteField: function(){
-        	return "<div class='changenotearea'><span>Change note: </span><input class='changenote' type='text' maxLength=100 size=100></input></div>";
-        },
+			return "<div class='changenotearea'><span>Change note: </span><input class='changenote' type='text' maxLength=100 size=100></div>";
+		},
         
         getChangeNote: function(id) {
         	var note = jq$('#' + id + ' .changenote').val();

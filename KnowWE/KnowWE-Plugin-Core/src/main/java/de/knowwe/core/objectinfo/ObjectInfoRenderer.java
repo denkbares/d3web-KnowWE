@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2013 University Wuerzburg, Computer Science VI
- * 
+ * Copyright (C) 2014 denkbares GmbH, Germany
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -72,11 +72,6 @@ public class ObjectInfoRenderer implements Renderer {
 	// Parameter used in the request
 	public static final String OBJECT_NAME = "objectname";
 	public static final String TERM_IDENTIFIER = "termIdentifier";
-	// private static final String HIDE_DEF = "hideDefinition";
-	// private static final String HIDE_REFS = "hideReferences";
-	// private static final String HIDE_PLAIN = "hidePlainTextOccurrences";
-	// private static final String HIDE_RENAME = "hideRename";
-	// private static final String RENAMED_ARTICLES = "renamedArticles";
 
 	private static DefaultMarkupRenderer defaultMarkupRenderer = new DefaultMarkupRenderer();
 
@@ -102,34 +97,28 @@ public class ObjectInfoRenderer implements Renderer {
 
 	private void renderContent(Identifier termIdentifier, UserContext user,
 							   RenderResult result) {
-
-		// renderLookUpForm(identifier, user, result);
-
-		// Render
-		ObjectInfoRenderer.renderHeader(termIdentifier, user, result);
-		ObjectInfoRenderer.renderLookUpForm(user, result);
-		ObjectInfoRenderer.renderRenamingForm(termIdentifier, user, result);
-		ObjectInfoRenderer.renderTermDefinitions(termIdentifier, user, result);
-		ObjectInfoRenderer.renderTermReferences(termIdentifier, user, result);
-		ObjectInfoRenderer.renderPlainTextOccurrences(termIdentifier, user, result);
-		// renderHeader(identifier.toExternalForm(),
-		// getTermObjectClass(user, identifier), result);
-		// renderRenamingForm(identifier,
-		// user, result);
-		// renderObjectInfo(identifier, user, result);
-		// renderPlainTextOccurrences(identifier.getLastPathElement(),
-		// user.getWeb(), result);
-		// result.append("\n");
+		if (termIdentifier != null) {
+			// Render
+			ObjectInfoRenderer.renderHeader(termIdentifier, user, result);
+			//ObjectInfoRenderer.renderLookUpForm(user, result);
+			//ObjectInfoRenderer.renderRenamingForm(termIdentifier, user, result);
+			ObjectInfoRenderer.renderTermDefinitions(termIdentifier, user, result);
+			ObjectInfoRenderer.renderTermReferences(termIdentifier, user, result);
+			//ObjectInfoRenderer.renderPlainTextOccurrences(termIdentifier, user, result);
+		}
+		else {
+			ObjectInfoRenderer.renderLookUpForm(user, result);
+		}
 	}
 
 	/**
-	 * Renders the specified list of term references (usually of one specific article). The method
-	 * renders the previews of the specified sections, grouped by their preview. Each preview may
-	 * render one or multiple of the specified sections.
+	 * Renders the specified list of term references (usually of one specific article). The method renders the previews
+	 * of the specified sections, grouped by their preview. Each preview may render one or multiple of the specified
+	 * sections.
 	 *
 	 * @param sections the section to be rendered in their previews
-	 * @param user the user context
-	 * @param result the buffer to render into
+	 * @param user     the user context
+	 * @param result   the buffer to render into
 	 * @created 29.11.2013
 	 */
 
@@ -138,14 +127,13 @@ public class ObjectInfoRenderer implements Renderer {
 			result.appendHtml("<i>You are not allowed to view this article.</i>");
 			return;
 		}
-		result.appendHtmlTag("ul", "class", "nodisc");
 		Map<Section<?>, Collection<Section<?>>> groupedByPreview = ObjectInfoRenderer.groupByPreview(sections);
 		boolean first = true;
 		for (Entry<Section<?>, Collection<Section<?>>> entry : groupedByPreview.entrySet()) {
 			Section<?> previewSection = entry.getKey();
 			Collection<Section<?>> group = entry.getValue();
 
-			result.appendHtml("<li><div id='" + previewSection.getID() + "'>");
+			result.appendHtml("<div class='previewItem'>");
 			ObjectInfoRenderer.renderLinkToSection(previewSection, result);
 			ObjectInfoRenderer.renderTermPreview(previewSection, group, user, "reference", result);
 			String clazz = "editanchor";
@@ -155,17 +143,16 @@ public class ObjectInfoRenderer implements Renderer {
 				clazz += " first";
 				first = false;
 			}
+
+			result.appendHtml("</div>");
 			result.appendHtml("<param class='" + clazz + "' sectionid='"
 					+ previewSection.getID() + "' />");
-
-			result.appendHtml("</div></li>");
 		}
-		result.appendHtml("</ul>");
 	}
 
 	public static void renderLookUpForm(UserContext user, RenderResult result) {
-		renderSectionStart("Look up object information", result);
-		result.appendHtml("<form action=\"\" method=\"get\" class=\"ui-widget\" >")
+		result.appendHtml("<div>");
+		result.appendHtml("<form action=\"\" method=\"get\" class=\"ui-widget lookUpForm\" >")
 				.appendHtml("<input type=\"hidden\" id=\"objectinfo-web-lookup\" value=\"")
 				.append(user.getWeb())
 				.appendHtml("\" />");
@@ -176,10 +163,10 @@ public class ObjectInfoRenderer implements Renderer {
 		result.appendJSPWikiMarkup(ObjectInfoRenderer.getTerms(user).toString()
 				.replaceAll("([^\\\\]\\\"),\\\"", "$1,\n\""));
 		result.appendHtml("</div>");
-		result.appendHtml("<input type=\"text\" size=\"60\" name=\"")
+		result.appendHtml("<input type=\"text\" placeholder=\"Look up terms\" size=\"20\" name=\"")
 				.append(ObjectInfoRenderer.OBJECT_NAME)
 				.appendHtml("\" id=\"objectinfo-search\" />&nbsp;");
-		result.appendHtml("<input type=\"submit\" value=\"Go to\" />");
+		result.appendHtml("<input type=\"submit\" value=\"Go to\" style=\"display:none\"/>");
 		result.appendHtml("</form>");
 		renderSectionEnd(result);
 	}
@@ -210,30 +197,18 @@ public class ObjectInfoRenderer implements Renderer {
 		Set<Section<?>> definitions = findTermDefinitionSections(user.getWeb(), identifier);
 		renderSectionStart("Definition", result);
 		if (definitions.size() > 0) {
-			result.appendHtml("<p>");
-			if (definitions.size() > 1) result.appendHtmlTag("ul", "class", "nodisc");
-
 			Map<Section<?>, Collection<Section<?>>> groupedByPreview =
 					groupByPreview(definitions);
 			for (Entry<Section<?>, Collection<Section<?>>> entry : groupedByPreview.entrySet()) {
 				Section<?> previewSection = entry.getKey();
 				Collection<Section<?>> group = entry.getValue();
-
-				if (definitions.size() > 1) result.appendHtml("<li>");
-				result.appendHtml("<div>");
-				result.appendHtml("<strong>");
-				result.append("Article '[").append(previewSection.getTitle()).append("]' ");
-				result.appendHtml("</strong>");
-				result.append("(");
-				renderLinkToSection(previewSection, result);
-				result.append(")");
+				result.appendHtml("<div class='articleName'>");
+				result.appendHtml(KnowWEUtils.getLinkHTMLToSection(previewSection));
+				result.appendHtml("</div>");
+				result.appendHtml("<div class=\"previewItem\">");
 				renderTermPreview(previewSection, group, user, "definition", result);
 				result.appendHtml("</div>");
-				if (definitions.size() > 1) result.appendHtml("</li>");
 			}
-
-			if (definitions.size() > 1) result.appendHtml("</ul>");
-			result.appendHtml("</p>");
 		}
 		else {
 			Set<Section<?>> references = findTermReferenceSections(user.getWeb(), identifier);
@@ -253,6 +228,7 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	public static void renderTermReferences(Identifier identifier, UserContext user, RenderResult result) {
+		Set<Section<?>> definitions = findTermDefinitionSections(user.getWeb(), identifier);
 		Set<Section<?>> references = findTermReferenceSections(user.getWeb(), identifier);
 
 		renderSectionStart("References", result);
@@ -263,7 +239,7 @@ public class ObjectInfoRenderer implements Renderer {
 				RenderResult innerResult = new RenderResult(result);
 				renderTermReferencesPreviewsAsync(referencesGroup, user, innerResult);
 				wrapInExtendPanel(
-						"Article '" + article.getTitle() + "'",
+						KnowWEUtils.getLinkHTMLToArticle(article.getTitle()),
 						getSurroundingMarkupNames(referencesGroup),
 						innerResult, result);
 			}
@@ -291,9 +267,9 @@ public class ObjectInfoRenderer implements Renderer {
 
 	public static void renderSectionStart(String title, RenderResult result) {
 		result.appendHtml("<div>");
-		result.appendHtml("<p><strong>");
+		result.appendHtml("<div class='sectionStart'>");
 		result.appendHtml(title);
-		result.appendHtml("</strong></p>");
+		result.appendHtml("</div>");
 	}
 
 	public static void renderSectionEnd(RenderResult result) {
@@ -347,7 +323,7 @@ public class ObjectInfoRenderer implements Renderer {
 
 	public static void renderHeader(Identifier identifier, UserContext user, RenderResult result) {
 		result.appendHtml("<h3><span id=\"objectinfo-src\">");
-		result.append(identifier.getLastPathElement());
+		result.append(identifier.toExternalForm());
 		result.appendHtml("</span>");
 		// Render type of (first) TermDefinition
 		result.appendHtml(" <em>(");
@@ -377,9 +353,8 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	/**
-	 * Groups the specified sections by the ancestor section to be rendered as a preview. If a
-	 * section has no ancestor to be rendered, the section itself will be used as a group with an
-	 * empty collection of grouped sections.
+	 * Groups the specified sections by the ancestor section to be rendered as a preview. If a section has no ancestor
+	 * to be rendered, the section itself will be used as a group with an empty collection of grouped sections.
 	 *
 	 * @param items list of sections to be grouped
 	 * @return the groups of sections
@@ -475,10 +450,9 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	/**
-	 * Get a counting set of all markup names that surrounds the specified list of sections. The
-	 * count is not the number of sections contained in a specific markup, but it is the number of
-	 * preview sections required to display these sections (some preview sections may display
-	 * multiple of the specified sections).
+	 * Get a counting set of all markup names that surrounds the specified list of sections. The count is not the number
+	 * of sections contained in a specific markup, but it is the number of preview sections required to display these
+	 * sections (some preview sections may display multiple of the specified sections).
 	 *
 	 * @param sections the section to get the markup names for
 	 * @return the counting set of markup names
@@ -501,6 +475,8 @@ public class ObjectInfoRenderer implements Renderer {
 			if (count > 1) info.append(count).append("&times; ");
 			info.append(string);
 		}
+		//for the moment deactivated
+		info = new StringBuilder();
 		wrapInExtendPanel(title, info.toString(), content, result);
 	}
 
@@ -509,14 +485,16 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	private static void wrapInExtendPanel(String title, String info, RenderResult content, RenderResult result) {
-		result.appendHtml("<p class=\"show-extend pointer extend-panel-right\" >");
-		result.appendHtml("<strong>");
-		result.append(title);
-		result.appendHtml("</strong>");
+		//result.appendHtml("<p class=\"show-extend pointer extend-panel-right\" >");
+		result.appendHtml("<div class='articleName'>");
+		result.appendHtml(title);
+		result.appendHtml("</div>");
 		if (!Strings.isBlank(info)) {
+			result.appendHtml("<span class='typeInfo'>");
 			result.append(" (").append(info).append(")");
+			result.appendHtml("</span>");
 		}
-		result.appendHtml("</p>");
+		//result.appendHtml("</p>");
 		result.appendHtml("<div class=\"hidden\" style=\"display:none\">");
 		result.append(content);
 		result.appendHtml("</div>");

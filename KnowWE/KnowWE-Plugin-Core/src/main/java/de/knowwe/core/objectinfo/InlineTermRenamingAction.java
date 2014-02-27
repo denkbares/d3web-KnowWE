@@ -16,7 +16,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.core.action;
+package de.knowwe.core.objectinfo;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -31,8 +31,9 @@ import org.json.JSONObject;
 
 import de.d3web.strings.Identifier;
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
+import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
@@ -47,7 +48,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @author Sebastian Furth
  * @created Dec 15, 2010
  */
-public class TermRenamingAction extends AbstractAction {
+public class InlineTermRenamingAction extends AbstractAction {
 
 	public static final String TERMNAME = "termname";
 	public static final String REPLACEMENT = "termreplacement";
@@ -56,22 +57,17 @@ public class TermRenamingAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String web = context.getParameter(Attributes.WEB);
+		String web = context.getWeb();
 		String term = context.getParameter(TERMNAME);
 		String replacement = context.getParameter(REPLACEMENT);
 		String force = context.getParameter("force");
 
-		Identifier termIdentifierOld = Identifier.fromExternalForm(term);
-		String[] pathElements = termIdentifierOld.getPathElements();
-		pathElements[pathElements.length - 1] = replacement;
-		Identifier replacementIdentifier = new Identifier(pathElements);
-
 		if (force.equals("false")
-				&& getTerms(web).contains(replacementIdentifier)) {
+				&& getTerms(web).contains(new Identifier(replacement))) {
 			JSONObject response = new JSONObject();
 			try {
 				response.append("alreadyexists", "true");
-				boolean sameTerm = replacementIdentifier.toExternalForm().equals(
+				boolean sameTerm = new Identifier(replacement).toExternalForm().equals(
 						new Identifier(term).toExternalForm());
 				response.append("same", String.valueOf(sameTerm));
 				response.write(context.getWriter());
@@ -126,12 +122,6 @@ public class TermRenamingAction extends AbstractAction {
 		Set<String> failures = new HashSet<String>();
 		Set<String> success = new HashSet<String>();
 		renameTerms(allTerms, termIdentifier, replacmentIdentifier, mgr, context, failures, success);
-		try {
-			mgr.getCompilerManager().awaitTermination();
-		}
-		catch (InterruptedException e) {
-			throw new IOException(e.getMessage());
-		}
 		writeResponse(failures, success, termIdentifier, replacmentIdentifier, context);
 	}
 
@@ -223,11 +213,19 @@ public class TermRenamingAction extends AbstractAction {
 	public Set<Identifier> getTerms(String web) {
 		// gathering all terms
 		Set<Identifier> allTerms = new HashSet<Identifier>();
-		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(KnowWEUtils.getArticleManager(web));
-		for (TerminologyManager terminologyManager : terminologyManagers) {
+		Iterator<Article> iter = Environment.getInstance()
+				.getArticleManager(web).getArticleIterator();
+		Article currentArticle;
+
+		TerminologyManager terminologyManager;
+		while (iter.hasNext()) {
+			currentArticle = iter.next();
+			terminologyManager = KnowWEUtils
+					.getTerminologyManager(currentArticle);
 			Collection<Identifier> allDefinedTerms = terminologyManager
 					.getAllDefinedTerms();
 			allTerms.addAll(allDefinedTerms);
+
 		}
 		return allTerms;
 	}

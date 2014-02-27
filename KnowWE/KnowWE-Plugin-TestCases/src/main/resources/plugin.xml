@@ -1,7 +1,26 @@
-<?xml version="1.0" ?>
-<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<?xml version="1.0" ?><!--
+  ~ Copyright (C) 2014 denkbares GmbH, Germany
+  ~
+  ~ This is free software; you can redistribute it and/or modify it under the
+  ~ terms of the GNU Lesser General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option) any
+  ~ later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  ~ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+  ~ details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public License
+  ~ along with this software; if not, write to the Free Software Foundation,
+  ~ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+  ~ site: http://www.fsf.org.
+  -->
+
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0"
+	"http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="KnowWE-Plugin-TestCases" version="0.0.1">
-	
+
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
 		<import plugin-id="KnowWE-Plugin-Core" />
@@ -9,7 +28,7 @@
 		<import plugin-id="KnowWE-Plugin-d3web-basic" />
 		<import plugin-id="KnowWE-Plugin-d3web-MarkupSet" />
 	</requires>
-	
+
 	<runtime>
 		<library id="de.knowwe" path="." type="code">
 			<export prefix="*" />
@@ -18,21 +37,18 @@
 			<export prefix="*" />
 		</library>
 	</runtime>
-	
-	<extension plugin-id="KnowWE-Plugin-Core" point-id="PreviewRenderer"
-		id="TestcaseTablePreviewRenderer">
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="TestcaseTablePreviewRenderer">
 		<parameter id="class" value="de.knowwe.core.preview.DefaultPreviewRenderer" />
 		<parameter id="name" value="TestcaseTablePreviewRenderer" />
 		<parameter id="description" value="Renders a preview of a test-case-table." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="TestCaseTable/ContentType" />
-	</extension>	
+	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="TestCasePlayerType">
-		<parameter id="class"
-			value="de.knowwe.testcases.TestCasePlayerType" />
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="TestCasePlayerType">
+		<parameter id="class" value="de.knowwe.testcases.TestCasePlayerType" />
 		<parameter id="name" value="TestCasePlayerType" />
 		<parameter id="description" value="Type TestCasePlayerType" />
 		<parameter id="version" value="1.0" />
@@ -41,52 +57,43 @@
 		<parameter id="script" value="KnowWE-Plugin-TestCases.js" />
 		<parameter id="css" value="KnowWE-Plugin-TestCases.css" />
 	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="TestCaseSTCType">
-		<parameter id="class"
-			value="de.knowwe.testcases.stc.TestCaseSTCType" />
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="TestCaseSTCType">
+		<parameter id="class" value="de.knowwe.testcases.stc.TestCaseSTCType" />
 		<parameter id="name" value="TestCaseSTCType" />
 		<parameter id="description" value="Type TestCaseSTCType" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="TestCaseSessionRecordType">
-		<parameter id="class"
-			value="de.knowwe.testcases.record.TestCaseSessionRecordType" />
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="TestCaseSessionRecordType">
+		<parameter id="class" value="de.knowwe.testcases.record.TestCaseSessionRecordType" />
 		<parameter id="name" value="TestCaseSessionRecordType" />
 		<parameter id="description" value="Type TestCaseSessionRecordType" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="ExecuteCasesAction">
-		<parameter id="class"
-			value="de.knowwe.testcases.ExecuteCasesAction" />
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="ExecuteCasesAction">
+		<parameter id="class" value="de.knowwe.testcases.ExecuteCasesAction" />
 		<parameter id="name" value="ExecuteCasesAction" />
 		<parameter id="description" value="Action ExecuteCasesAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="CheckDownloadCaseAction">
-		<parameter id="class"
-			value="de.knowwe.testcases.download.CheckDownloadCaseAction" />
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="CheckDownloadCaseAction">
+		<parameter id="class" value="de.knowwe.testcases.download.CheckDownloadCaseAction" />
 		<parameter id="name" value="CheckDownloadCaseAction" />
 		<parameter id="description" value="Action CheckDownloadCaseAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
-		id="CasesZipToolProvider">
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="CasesZipToolProvider">
 		<parameter id="class" value="de.knowwe.testcases.download.CasesZipToolProvider" />
 		<parameter id="name" value="CasesZipToolProvider" />
 		<parameter id="description" value="Providers CasesZipToolProvider" />
@@ -95,80 +102,68 @@
 		<parameter id="scope" value="TestCasePlayerType" />
 	</extension>
 
-    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
-        id="InstantEditToolProvider">
-        <parameter id="class"
-            value="de.knowwe.instantedit.tools.InstantEditToolProvider" />
-        <parameter id="name" value="InstantEditToolProvider" />
-        <parameter id="description"
-            value="Offers a button for quick editing a test case sections." />
-        <parameter id="version" value="1.0" />
-        <parameter id="priority" value="4" />
-        <parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
-        <parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
-        <parameter id="script" value="TextArea.js" />
-        <parameter id="script" value="DefaultEditTool.js" />
-        <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
-        <parameter id="css" value="KnowWE-Plugin-AutoComplete.css" />
-        <parameter id="css" value="DefaultEditTool.css" />
-	    <parameter id="scope" value="TestCasePlayerType" />
-	    <parameter id="scope" value="TestCaseSTCType" />
-	    <parameter id="scope" value="TestCaseSessionRecordType" />
-	    <parameter id="scope" value="TestCaseTableType" />
-    </extension>
-    
-    <extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="TestcaseTableType">
-		<parameter id="class"
-			value="de.knowwe.testcases.table.TestcaseTableType" />
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="InstantEditToolProvider">
+		<parameter id="class" value="de.knowwe.instantedit.tools.InstantEditToolProvider" />
+		<parameter id="name" value="InstantEditToolProvider" />
+		<parameter id="description" value="Offers a button for quick editing a test case sections." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+		<parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
+		<parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
+		<parameter id="script" value="TextArea.js" />
+		<parameter id="script" value="DefaultEditTool.js" />
+		<parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
+		<parameter id="css" value="KnowWE-Plugin-AutoComplete.css" />
+		<parameter id="css" value="DefaultEditTool.css" />
+		<parameter id="scope" value="TestCasePlayerType" />
+		<parameter id="scope" value="TestCaseSTCType" />
+		<parameter id="scope" value="TestCaseSessionRecordType" />
+		<parameter id="scope" value="TestCaseTableType" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="TestcaseTableType">
+		<parameter id="class" value="de.knowwe.testcases.table.TestcaseTableType" />
 		<parameter id="name" value="TestcaseTableType" />
 		<parameter id="description" value=" TestcaseTableXMLType" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
-		id="GoToPlayerToolProvider">
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="GoToPlayerToolProvider">
 		<parameter id="class" value="de.knowwe.testcases.tools.GoToPlayerToolProvider" />
 		<parameter id="name" value="GoToPlayerToolProvider" />
-		<parameter id="description"
-			value="Switches to a player section and opens the testcase of the section." />
+		<parameter id="description" value="Switches to a player section and opens the testcase of the section." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="TestCaseTableType" />
 	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
-		id="TestCasePlayerToolProvider">
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="TestCasePlayerToolProvider">
 		<parameter id="class" value="de.knowwe.testcases.tools.TestCasePlayerToolProvider" />
 		<parameter id="name" value="TestCasePlayerToolProvider" />
-		<parameter id="description"
-			value="Providers various tools for the TestCasePlayer." />
+		<parameter id="description" value="Providers various tools for the TestCasePlayer." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="TestCasePlayerType" />
 	</extension>
-	
-	
+
+
 	<!--  Table Editor -->
-    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
-        id="TableEditToolProvider">
-        <parameter id="class"
-            value="de.knowwe.testcases.tools.TableEditToolProvider" />
-        <parameter id="name" value="TableEditToolProvider" />
-        <parameter id="description"
-            value="Offers a tool for a spreadsheet-like table editor." />
-        <parameter id="version" value="1.0" />
-        <parameter id="priority" value="3" />
-        <parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
-        <parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
-        <parameter id="script" value="DefaultTableEditTool.js" />
-        <parameter id="script" value="KnowWE-Plugin-TestCases.js" />
-        <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
-        <parameter id="css" value="KnowWE-Plugin-AutoComplete.css" />
-        <parameter id="css" value="DefaultTableEditTool.css" />       
-        <parameter id="scope" value="TestCaseTable" />
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="TableEditToolProvider">
+		<parameter id="class" value="de.knowwe.testcases.tools.TableEditToolProvider" />
+		<parameter id="name" value="TableEditToolProvider" />
+		<parameter id="description" value="Offers a tool for a spreadsheet-like table editor." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="3" />
+		<parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
+		<parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
+		<parameter id="script" value="DefaultTableEditTool.js" />
+		<parameter id="script" value="KnowWE-Plugin-TestCases.js" />
+		<parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
+		<parameter id="css" value="KnowWE-Plugin-AutoComplete.css" />
+		<parameter id="css" value="DefaultTableEditTool.css" />
+		<parameter id="scope" value="TestCaseTable" />
 	</extension>
-    
+
 </plugin>

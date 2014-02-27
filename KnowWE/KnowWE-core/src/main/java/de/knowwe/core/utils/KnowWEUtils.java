@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- * Computer Science VI, University of Wuerzburg
- * 
+ * Copyright (C) 2014 denkbares GmbH, Germany
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -550,6 +549,21 @@ public class KnowWEUtils {
 	 * rendered with an anchor (see method {@link #getAnchor(Section)}) the page
 	 * is also scrolled to the section.
 	 * 
+	 * @param section the section to create the link for
+	 * @return the created link
+	 * @see #getURLLink(Article)
+	 * @see #getWikiLink(Section)
+	 */
+	public static String getLinkHTMLToSection(Section<?> section) {
+		return "<a href='Wiki.jsp?page=" + Strings.encodeURL(section.getTitle()) + "#" + getAnchor(section) + "'>" + section
+				.getTitle() + "</a>";
+	}
+
+	/**
+	 * Creates a &lt;a href="..."&gt; styled link to this section. The created link navigates the user to the article of
+	 * the section. If the section is rendered with an anchor (see method {@link #getAnchor(Section)}) the page is also
+	 * scrolled to the section.
+	 *
 	 * @param section the section to create the link for
 	 * @return the created link
 	 * @see #getURLLink(Article)

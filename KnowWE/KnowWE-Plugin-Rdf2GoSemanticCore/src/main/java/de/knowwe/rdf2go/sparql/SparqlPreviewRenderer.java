@@ -16,31 +16,28 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.core.objectinfo;
 
-import java.util.ResourceBundle;
+package de.knowwe.rdf2go.sparql;
+
+import java.util.Collection;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.preview.DefaultPreviewRenderer;
 import de.knowwe.core.user.UserContext;
 
 /**
- * @author stefan
- * @created 09.12.2013
+ * Created by stefan on 10.02.14.
  */
-public class ObjectInfoLookUpFormRenderer implements Renderer {
+public class SparqlPreviewRenderer extends DefaultPreviewRenderer {
 
-	private static ResourceBundle rb;
+	public SparqlPreviewRenderer() {
+
+	}
 
 	@Override
-	public void render(Section<?> section, UserContext user, RenderResult result) {
-		ObjectInfoRenderer.renderLookUpForm(user, result);
+	public void render(Section<?> section, Collection<Section<?>> relevantSubSections, UserContext user, RenderResult result) {
+		result.append(section.getText());
 
 	}
-
-	public static void renderLookUpForm(UserContext user, RenderResult result) {
-
-	}
-
 }

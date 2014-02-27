@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2010 denkbares GmbH, Germany
- * 
+ * Copyright (C) 2014 denkbares GmbH, Germany
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -30,7 +30,6 @@ import de.knowwe.tools.ToolProvider;
 import de.knowwe.tools.ToolUtils;
 
 /**
- * 
  * @author volker_belli
  * @created 01.12.2010
  */
@@ -53,7 +52,7 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 			@SuppressWarnings("unchecked")
 			Section<? extends Term> s = (Section<? extends Term>) section;
 			return new Tool[] {
-					getObjectInfoPageTool(s, userContext), getUltimateEditTool(s, userContext) };
+					getObjectInfoPageTool(s, userContext), getUltimateEditTool(s, userContext), getRenamingTool(s, userContext) };
 		}
 		return ToolUtils.emptyToolArray();
 	}
@@ -69,9 +68,17 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 	protected Tool getUltimateEditTool(Section<? extends Term> section, UserContext userContext) {
 		return new DefaultTool(
 				"http://localhost:8080/KnowWE/KnowWEExtension/images/pencil.png",
-				"Open Ultimate Edit",
-				"Opens the ultra edit mode.",
+				"Composite Edit",
+				"Opens the composite edit mode.",
 				createUltimateEditModeAction(section));
+	}
+
+	protected Tool getRenamingTool(Section<? extends Term> section, UserContext userContext) {
+		return new DefaultTool(
+				"http://localhost:8080/KnowWE/KnowWEExtension/images/textfield_rename.png",
+				"Rename",
+				"Rename this term wiki wide.",
+				createRenamingAction(section));
 	}
 
 	public static String createObjectInfoJSAction(Section<? extends Term> section) {
@@ -99,7 +106,12 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 	public static String createUltimateEditModeAction(Identifier termIdentifier) {
 		String externalTermIdentifierForm = termIdentifier.toExternalForm();
 		String jsAction = "KNOWWE.plugin.ultimateEditTool.createDialogDiv('"
-				+ externalTermIdentifierForm + "')";
+				+ maskTermForHTML(externalTermIdentifierForm) + "')";
+		return jsAction;
+	}
+
+	public static String createRenamingAction(Section<? extends Term> section) {
+		String jsAction = "KNOWWE.plugin.renaming.renameTerm('" + section.getID() + "')";
 		return jsAction;
 	}
 
