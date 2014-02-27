@@ -69,8 +69,9 @@ public class CIDashboardType extends DefaultMarkupType {
 		MARKUP = new DefaultMarkup("CIDashboard");
 		MARKUP.addAnnotation(NAME_KEY, true);
 		MARKUP.addAnnotation(TEST_KEY, true);
-		MARKUP.addAnnotation(TRIGGER_KEY, true);
-		MARKUP.addAnnotation(VERBOSE_PERSISTENCE_KEY, false, Pattern.compile("^(true|false)$"));
+		MARKUP.addAnnotation(TRIGGER_KEY, true, Pattern.compile(
+				"^(onDemand|onSave\\s*(\".+?\"|[^\\s]+))$"));
+		MARKUP.addAnnotation(VERBOSE_PERSISTENCE_KEY, false, "true", "false");
 		MARKUP.addAnnotationContentType(TEST_KEY, new TestIgnoreType());
 		MARKUP.addAnnotationContentType(TEST_KEY, new TestDeclarationType());
 	}
@@ -134,7 +135,7 @@ public class CIDashboardType extends DefaultMarkupType {
 					}
 				}
 
-				if (trigger.equals(CIBuildTriggers.onSave) && monitoredArticles.isEmpty()) {
+				if (CIBuildTriggers.onSave.equals(trigger) && monitoredArticles.isEmpty()) {
 					msgs.add(Messages.error("Invalid trigger: " + CIBuildTriggers.onSave
 							+ " requires attached articles to monitor."));
 				}

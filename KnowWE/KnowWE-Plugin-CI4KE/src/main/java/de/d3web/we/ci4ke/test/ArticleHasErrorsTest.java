@@ -24,7 +24,7 @@ import java.util.Map;
 
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
-import de.d3web.testing.Utils;
+import de.d3web.testing.TestingUtils;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.report.Message.Type;
 import de.knowwe.core.report.Messages;
@@ -52,7 +52,7 @@ public class ArticleHasErrorsTest extends AbstractTest<Article> {
 			messages.addAll(allMessagesMap.get(s));
 		}
 
-		Utils.checkInterrupt();
+		TestingUtils.checkInterrupt();
 
 		buffy.append(" errors found:");
 		for (de.knowwe.core.report.Message message : messages) {
@@ -63,7 +63,6 @@ public class ArticleHasErrorsTest extends AbstractTest<Article> {
 			// buffy.append("Error on monitored article: ");
 			buffy.append("\n* " + message.getVerbalization());
 		}
-		// Utils.slowDowntest(this.getClass(), 10000, true);
 		if (hasError) {
 			return new Message(
 					Message.Type.FAILURE, buffy.toString());

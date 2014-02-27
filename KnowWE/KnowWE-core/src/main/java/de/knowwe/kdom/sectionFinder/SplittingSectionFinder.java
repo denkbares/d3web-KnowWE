@@ -30,19 +30,24 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 /**
- * A sectionfinder that uses a regex to split the section. Each
- * SectionFinderResult contains the text up to the first match.
- * 
+ * A sectionfinder that uses a regex to split the section. Each SectionFinderResult contains the
+ * text up to the next match (including or excluding the match, depending if includeSeperator is set
+ * to true or false).
+ *
  * @author Reinhard Hatko Created on: 10.12.2009
  */
 public class SplittingSectionFinder implements SectionFinder {
 
+	private final boolean includeSeperator;
 	private final Pattern pattern;
 
 	public SplittingSectionFinder(String patternString) {
+		this(true, patternString);
+	}
 
+	public SplittingSectionFinder(boolean includeSeperator, String patternString) {
+		this.includeSeperator = includeSeperator;
 		this.pattern = Pattern.compile(patternString);
-
 	}
 
 	@Override
@@ -50,18 +55,17 @@ public class SplittingSectionFinder implements SectionFinder {
 
 		Matcher tagMatcher = pattern.matcher(text);
 		List<SectionFinderResult> resultRegex = new ArrayList<SectionFinderResult>();
-		int lastStart = 0;
+		int nextStart = 0;
 		while (tagMatcher.find()) {
-			resultRegex.add(new SectionFinderResult(lastStart, tagMatcher.end()));
-			lastStart = tagMatcher.end();
+			resultRegex.add(new SectionFinderResult(nextStart,
+					includeSeperator ? tagMatcher.end() : tagMatcher.start()));
+			nextStart = tagMatcher.end();
 		}
 		// append section result after last split character / substring
 		// also adds the total text, if there is no match (!)
-		if (lastStart < text.length()) {
-			resultRegex.add(new SectionFinderResult(lastStart, text.length()));
+		if (nextStart < text.length()) {
+			resultRegex.add(new SectionFinderResult(nextStart, text.length()));
 		}
 		return resultRegex;
-
 	}
-
 }

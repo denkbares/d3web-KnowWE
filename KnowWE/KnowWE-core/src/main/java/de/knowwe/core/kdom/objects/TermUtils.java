@@ -75,7 +75,7 @@ public class TermUtils {
 	 * 
 	 * @created 25.08.2013
 	 * @param web the web to collect the definitions for
-	 * @param identifier the identifier to get the term managers for
+	 * @param termIdentifier the identifier to get the term managers for
 	 * @param caseSensitive whether the managers are collected case insensitive
 	 *        of case sensitive
 	 * @param allowedTermClasses a set of classes the matched definitions shall

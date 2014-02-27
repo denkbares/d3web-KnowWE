@@ -27,7 +27,7 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
-		<extension plugin-id="d3web-Plugin-TestingFramework" point-id="TestObjectProvider"
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="TestObjectProvider"
 		id="WikiTestCaseProvider">
 		<parameter id="class"
 			value="de.d3web.we.ci4ke.WikiTestCaseProvider" />

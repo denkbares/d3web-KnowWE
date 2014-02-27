@@ -123,13 +123,13 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	/**
-	 * Renders the specified list of term references (usually of one specific article). The method renders the previews
-	 * of the specified sections, grouped by their preview. Each preview may render one or multiple of the specified
-	 * sections.
+	 * Renders the specified list of term references (usually of one specific article). The method
+	 * renders the previews of the specified sections, grouped by their preview. Each preview may
+	 * render one or multiple of the specified sections.
 	 *
 	 * @param sections the section to be rendered in their previews
-	 * @param user     the user context
-	 * @param result   the buffer to render into
+	 * @param user the user context
+	 * @param result the buffer to render into
 	 * @created 29.11.2013
 	 */
 
@@ -235,23 +235,28 @@ public class ObjectInfoRenderer implements Renderer {
 			if (definitions.size() > 1) result.appendHtml("</ul>");
 			result.appendHtml("</p>");
 		}
+		else {
+			Set<Section<?>> references = findTermReferenceSections(user.getWeb(), identifier);
+			if (references.isEmpty()) {
+				result.appendHtml("<p style=\"color:#888;font-style:italic\">");
+				result.append("Term not defined");
+				result.appendHtml("</p>");
+			}
+			else {
+				// Render a warning if there is no definition for the references
+				result.appendHtml("<p style=\"color:red;\">");
+				result.append("Term is used, but missing a proper definition!");
+				result.appendHtml("</p>");
+			}
+		}
 		renderSectionEnd(result);
 	}
 
 	public static void renderTermReferences(Identifier identifier, UserContext user, RenderResult result) {
-		Set<Section<?>> definitions = findTermDefinitionSections(user.getWeb(), identifier);
 		Set<Section<?>> references = findTermReferenceSections(user.getWeb(), identifier);
 
 		renderSectionStart("References", result);
 		if (references.size() > 0) {
-
-			// Render a warning if there is no definition for the references
-			if (definitions.size() == 0) {
-				result.appendHtml("<p style=\"color:red;\">");
-				result.append("no Definition Available");
-				result.appendHtml("</p>");
-			}
-
 			Map<Article, List<Section<?>>> groupedReferences = groupByArticle(references);
 			for (Article article : groupedReferences.keySet()) {
 				List<Section<?>> referencesGroup = groupedReferences.get(article);
@@ -262,6 +267,11 @@ public class ObjectInfoRenderer implements Renderer {
 						getSurroundingMarkupNames(referencesGroup),
 						innerResult, result);
 			}
+		}
+		else {
+			result.appendHtml("<p style=\"color:#888;font-style:italic\">");
+			result.append("Term not used");
+			result.appendHtml("</p>");
 		}
 		renderSectionEnd(result);
 
@@ -367,8 +377,9 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	/**
-	 * Groups the specified sections by the ancestor section to be rendered as a preview. If a section has no ancestor
-	 * to be rendered, the section itself will be used as a group with an empty collection of grouped sections.
+	 * Groups the specified sections by the ancestor section to be rendered as a preview. If a
+	 * section has no ancestor to be rendered, the section itself will be used as a group with an
+	 * empty collection of grouped sections.
 	 *
 	 * @param items list of sections to be grouped
 	 * @return the groups of sections
@@ -464,9 +475,10 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	/**
-	 * Get a counting set of all markup names that surrounds the specified list of sections. The count is not the number
-	 * of sections contained in a specific markup, but it is the number of preview sections required to display these
-	 * sections (some preview sections may display multiple of the specified sections).
+	 * Get a counting set of all markup names that surrounds the specified list of sections. The
+	 * count is not the number of sections contained in a specific markup, but it is the number of
+	 * preview sections required to display these sections (some preview sections may display
+	 * multiple of the specified sections).
 	 *
 	 * @param sections the section to get the markup names for
 	 * @return the counting set of markup names
@@ -552,7 +564,8 @@ public class ObjectInfoRenderer implements Renderer {
 					innerResult.appendHtml("</a>");
 					String textAfter = r.getAdditionalContext(40).replaceAll("(\\{|\\})", "");
 					innerResult.append(textAfter);
-					if (!article.getRootSection().getText().endsWith(textAfter)) innerResult.appendHtml("...");
+					if (!article.getRootSection().getText().endsWith(textAfter))
+						innerResult.appendHtml("...");
 					innerResult.appendHtml("</pre>");
 					innerResult.appendHtml("</li>");
 				}
@@ -571,7 +584,8 @@ public class ObjectInfoRenderer implements Renderer {
 		// gathering all terms
 		List<String> allTerms = new ArrayList<String>();
 
-		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(user.getArticleManager());
+		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(user
+				.getArticleManager());
 		for (TerminologyManager terminologyManager : terminologyManagers) {
 			Collection<Identifier> allDefinedTerms = terminologyManager
 					.getAllDefinedTerms();

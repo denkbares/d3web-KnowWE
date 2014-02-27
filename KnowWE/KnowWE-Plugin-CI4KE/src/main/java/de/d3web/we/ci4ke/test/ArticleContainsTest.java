@@ -63,7 +63,6 @@ public class ArticleContainsTest extends AbstractTest<Article> {
 				}
 			}
 		}
-		// Utils.slowDowntest(this.getClass(), 250, true);
 		if (contains) {
 			String message = "Forbidden text found in article.";
 			return new Message(Message.Type.FAILURE, message);

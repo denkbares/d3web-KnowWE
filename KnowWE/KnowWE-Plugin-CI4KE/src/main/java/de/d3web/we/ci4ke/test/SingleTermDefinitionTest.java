@@ -28,7 +28,7 @@ import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.TestParameter.Mode;
 import de.d3web.testing.TestParameter.Type;
-import de.d3web.testing.Utils;
+import de.d3web.testing.TestingUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
@@ -58,11 +58,11 @@ public class SingleTermDefinitionTest extends AbstractTest<Article> {
 		
 		Map<String, Collection<Section<?>>> multipleDefs = new HashMap<String, Collection<Section<?>>>();
 		
-		Collection<Pattern> ignorePatterns = Utils.compileIgnores(ignores);
+		Collection<Pattern> ignorePatterns = TestingUtils.compileIgnores(ignores);
 
 		for (Identifier termIdentifier : terms) {
 
-			if (Utils.isIgnored(termIdentifier.toString(), ignorePatterns)) continue;
+			if (TestingUtils.isIgnored(termIdentifier.toString(), ignorePatterns)) continue;
 
 			Collection<Section<?>> sections = manager.getTermDefiningSections(termIdentifier);
 			
@@ -76,8 +76,9 @@ public class SingleTermDefinitionTest extends AbstractTest<Article> {
 			return Message.SUCCESS;
 		}
 		
-		return Utils.createErrorMessage(multipleDefs.keySet(),
-				"The following objects are defined more than once:", Identifier.class);
+		return TestingUtils.createFailure("The following objects are defined more than once:", multipleDefs
+				.keySet(),
+				Identifier.class);
 	}
 
 	@Override

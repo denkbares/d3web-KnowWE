@@ -273,9 +273,12 @@ public class CIRenderer {
 			renderResult.appendHtml("<p></p>");
 			renderResult.append("__" + messageType.toString() + "__: ");
 			appendMessageText(web, message, renderResult);
-			renderResult.appendHtml("<br>\n(test object: ");
-			renderObjectName(web, testObjectName, testObjectClass, renderResult);
-			renderResult.appendHtml(")\n");
+			renderResult.appendHtml("<br>\n");
+			if (!message.getText().contains(testObjectName)) {
+				renderResult.appendHtml("(test object: ");
+				renderObjectName(web, testObjectName, testObjectClass, renderResult);
+				renderResult.appendHtml(")<br>\n");
+			}
 		}
 		renderResult.appendHtml("<span>" + successes + " test objects tested successfully</span>");
 	}

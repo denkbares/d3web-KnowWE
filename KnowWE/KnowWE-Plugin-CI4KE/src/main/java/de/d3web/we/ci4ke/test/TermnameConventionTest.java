@@ -27,7 +27,7 @@ import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.TestParameter.Mode;
 import de.d3web.testing.TestParameter.Type;
-import de.d3web.testing.Utils;
+import de.d3web.testing.TestingUtils;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.objects.TermDefinition;
@@ -66,7 +66,7 @@ public class TermnameConventionTest extends AbstractTest<Article> {
 			if (!pattern.matcher(termName).matches()) {
 				invalidTerms.add(termName);
 			}
-			Utils.checkInterrupt();
+			TestingUtils.checkInterrupt();
 		}
 
 		if (invalidTerms.size() > 0) {
