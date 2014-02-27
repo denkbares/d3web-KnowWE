@@ -104,11 +104,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		//ObjectInfoRenderer.renderLookUpForm(user, result);
 		if (termIdentifier != null) {
 			ObjectInfoRenderer.renderHeader(termIdentifier, user, result);
-			renderHR(result);
-			ObjectInfoRenderer.renderRenamingForm(termIdentifier, user, result);
-			renderHR(result);
+			//ObjectInfoRenderer.renderRenamingForm(termIdentifier, user, result);
 			ObjectInfoRenderer.renderTermDefinitions(termIdentifier, user, result);
-			renderHR(result);
 			ObjectInfoRenderer.renderTermReferences(termIdentifier, user, result);
 			//renderHR(result);
 			//ObjectInfoRenderer.renderPlainTextOccurrences(termIdentifier, user, result);
