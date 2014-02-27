@@ -5,7 +5,7 @@
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE</artifactId>
 	<packaging>pom</packaging>
-	<name>KnowWE Parent</name>
+	<name>KnowWE</name>
 	<version>0.2-SNAPSHOT</version>
 	<url>http://www.d3web.de/</url>
 	<issueManagement>
