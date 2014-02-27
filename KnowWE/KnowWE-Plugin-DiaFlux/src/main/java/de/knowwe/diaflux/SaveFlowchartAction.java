@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
@@ -44,9 +45,8 @@ import de.knowwe.diaflux.type.DiaFluxType;
 import de.knowwe.diaflux.type.FlowchartType;
 
 /**
- * Receives a xml-encoded flowchart from the editor and replaces the old kdom
- * node with the new content
- * 
+ * Receives a xml-encoded flowchart from the editor and replaces the old kdom node with the new content
+ *
  * @author Reinhard Hatko
  * @created 24.11.2010
  */
@@ -71,14 +71,8 @@ public class SaveFlowchartAction extends AbstractAction {
 
 	/**
 	 * Saves a flowchart when the surrounding %%DiaFlux markup exists.
-	 * 
+	 *
 	 * @created 23.02.2011
-	 * @param map
-	 * @param web
-	 * @param nodeID
-	 * @param topic
-	 * @param newText
-	 * @throws IOException
 	 */
 	@SuppressWarnings("unchecked")
 	private void replaceExistingFlowchart(UserActionContext context, String web, String nodeID, String topic, String newText) throws IOException {
@@ -168,16 +162,11 @@ public class SaveFlowchartAction extends AbstractAction {
 	}
 
 	/**
-	 * Saves a flowchart for which no section exists in the article yet.
-	 * Currently only used, when extracting a module with
-	 * DiaFlux-Refactoring-Plugin.
-	 * 
-	 * @created 23.02.2011
-	 * @param map
-	 * @param web
-	 * @param topic
-	 * @param newText
+	 * Saves a flowchart for which no section exists in the article yet. Currently only used, when extracting a module
+	 * with DiaFlux-Refactoring-Plugin.
+	 *
 	 * @throws IOException
+	 * @created 23.02.2011
 	 */
 	private void saveNewFlowchart(UserActionContext context, String web, String topic, String newText) throws IOException {
 		ArticleManager mgr = Environment.getInstance().getArticleManager(
@@ -198,7 +187,12 @@ public class SaveFlowchartAction extends AbstractAction {
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(nodeID, newText);
 		Sections.replaceSections(context, nodesMap).sendErrors(context);
-
+		try {
+			context.getArticleManager().getCompilerManager().awaitTermination();
+		}
+		catch (InterruptedException e) {
+			Log.warning(e.getMessage(), e);
+		}
 	}
 
 }
