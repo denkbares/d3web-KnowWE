@@ -81,7 +81,8 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 			List<Section<Predicate>> predicates = Sections.successors(sentence, Predicate.class);
 			boolean hasTypePredicate = false;
 			for (Section<Predicate> section : predicates) {
-				if (section.getText().matches("[\\w]*?:type")) {
+				if (section.getText().matches("[\\w]*?:type")
+						|| section.getText().matches("rdfs:subClassOf")) {
 					hasTypePredicate = true;
 				}
 			}
