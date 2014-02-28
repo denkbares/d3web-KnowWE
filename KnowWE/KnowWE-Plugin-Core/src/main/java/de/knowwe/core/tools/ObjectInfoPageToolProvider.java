@@ -105,7 +105,7 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 
 	public static String createCompositeEditModeAction(Identifier termIdentifier) {
 		String externalTermIdentifierForm = termIdentifier.toExternalForm();
-		String jsAction = "KNOWWE.plugin.compositeEditTool.openDialog('"
+		String jsAction = "KNOWWE.plugin.compositeEditTool.openCompositeEditDialog('"
 				+ maskTermForHTML(externalTermIdentifierForm) + "')";
 		return jsAction;
 	}

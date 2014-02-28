@@ -132,7 +132,7 @@ KNOWWE.editCommons = function () {
 							forbiddenFN();
 						}
 					},
-					onError: _EC.onErrorBehavior,
+					onError: _EC.onErrorBehavior
 				}
 			}
 			new _KA(options).send();
@@ -296,7 +296,7 @@ KNOWWE.editCommons.elements = function () {
 		getSaveCancelDeleteButtons: function (id, additionalButtonArray) {
 			var buttons = _EC.mode.getSaveCancelDeleteButtons(id, additionalButtonArray);
 			return _EC.mode.getButtonsTable(buttons);
-		},
+		}
 
 	}
 
