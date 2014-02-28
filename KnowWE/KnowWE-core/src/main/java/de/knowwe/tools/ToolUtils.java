@@ -141,4 +141,26 @@ public class ToolUtils {
 		}
 		return result;
 	}
+
+	public static String getActionAttribute(Tool tool) {
+		return getActionAttributeName(tool) + "=\"" + getActionAttributeValue(tool) + "\"";
+	}
+
+	public static String getActionAttributeName(Tool tool) {
+		switch (tool.getActionType()) {
+			case HREF: return "href";
+			case HREF_SCRIPT: return "href";
+			case ONCLICK: return "onclick";
+			default: return null;
+		}
+	}
+
+	public static String getActionAttributeValue(Tool tool) {
+		switch (tool.getActionType()) {
+			case HREF: return tool.getAction();
+			case HREF_SCRIPT: return "javascript:" + tool.getAction();
+			case ONCLICK: return tool.getAction();
+			default: return null;
+		}
+	}
 }

@@ -75,16 +75,14 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	}
 
 	/**
-	 * Executes the long operation and writes it's results to the specified
-	 * result file. The method must not return before the file has been created
-	 * (and closed) properly.
-	 * 
-	 * @created 30.07.2013
+	 * Executes the long operation and writes it's results to the specified result file. The method must not return
+	 * before the file has been created (and closed) properly.
+	 *
 	 * @param resultFile the file to be written by this method
-	 * @param listener the progress listener used to indicate the progress of
-	 *        the operation
-	 * @throws IOException if the result file cannot be created
+	 * @param listener   the progress listener used to indicate the progress of the operation
+	 * @throws IOException          if the result file cannot be created
 	 * @throws InterruptedException if the operation has been interrupted
+	 * @created 30.07.2013
 	 */
 	public abstract void execute(File resultFile, ProgressListener listener) throws IOException, InterruptedException;
 
@@ -108,13 +106,12 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	}
 
 	/**
-	 * Returns the report of the current operation. As the default
-	 * implementation this method returns the list of messages added to this
-	 * operation since the last start of the operation.
-	 * 
-	 * @created 17.02.2014
+	 * Returns the report of the current operation. As the default implementation this method returns the list of
+	 * messages added to this operation since the last start of the operation.
+	 *
 	 * @param context the current user viewing the messages
 	 * @return this operations report
+	 * @created 17.02.2014
 	 */
 	public String getReport(UserActionContext context) {
 		StringBuilder errors = new StringBuilder();
@@ -150,13 +147,12 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	}
 
 	/**
-	 * Returns the actions that shall be offered to the user. This default
-	 * implementation returns a single action that allows the user to download
-	 * the created file, if there is such a file and no error has been reported.
-	 * 
-	 * @created 17.02.2014
+	 * Returns the actions that shall be offered to the user. This default implementation returns a single action that
+	 * allows the user to download the created file, if there is such a file and no error has been reported.
+	 *
 	 * @param context the current user requesting the actions.
 	 * @return the list of actions
+	 * @created 17.02.2014
 	 */
 	public List<Tool> getActions(UserActionContext context) {
 		// no action if no file has been created
@@ -167,7 +163,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 		if (hasError()) {
 			return Collections.emptyList();
 		}
-		return Arrays.<Tool> asList(new DefaultTool(
+		return Arrays.<Tool>asList(new DefaultTool(
 				getFileIcon(),
 				fileName,
 				"Download the created file from the server.",
@@ -178,11 +174,10 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	}
 
 	/**
-	 * Returns the icon of the filename created by this action. Overwrite this
-	 * method to provide an icon.
-	 * 
-	 * @created 17.02.2014
+	 * Returns the icon of the filename created by this action. Overwrite this method to provide an icon.
+	 *
 	 * @return the icon or null if no icon is displayed
+	 * @created 17.02.2014
 	 */
 	public String getFileIcon() {
 		return null;
@@ -224,12 +219,19 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 		String id = UUID.randomUUID().toString();
 		result.append("<div id='").append(id).append("'><p>");
 		for (Tool tool : actions) {
+			if (tool.getActionType() != Tool.ActionType.HREF_SCRIPT) {
+				Log.warning(FileDownloadOperation.class.getSimpleName() + " only supports Tools with "
+						+ Tool.ActionType.class.getSimpleName() + " " + Tool.ActionType.HREF_SCRIPT.toString()
+						+ ". Skipped " + tool.getClass().getSimpleName() + " with "
+						+ Tool.ActionType.class.getSimpleName() + " " + tool.getActionType().toString());
+				continue;
+			}
 			String icon = tool.getIconPath();
 			String descr = tool.getDescription();
 			result.append("<div>");
 			result.append("<a class='action' href='javascript:")
 					.append("jq$(\"#").append(id).append("\").remove();")
-					.append(Strings.encodeHtml(tool.getJSAction()))
+					.append(Strings.encodeHtml(tool.getAction()))
 					.append("'");
 			if (!Strings.isBlank(descr)) {
 				result.append(" title='").append(Strings.encodeHtml(descr)).append("'");

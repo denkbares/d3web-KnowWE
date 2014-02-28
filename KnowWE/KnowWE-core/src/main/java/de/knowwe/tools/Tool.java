@@ -20,71 +20,84 @@
 package de.knowwe.tools;
 
 /**
- * This interface provides a definition of a javascript tool that can be
- * integrated into the rendered wiki pages.
- * 
+ * This interface provides a definition of a javascript tool that can be integrated into the rendered wiki pages.
+ *
  * @author volker_belli
  * @created 23.09.2010
  */
 public interface Tool {
 
+	public enum ActionType {
+		/**
+		 * The action is added as a href="javascript:..."<br/> This is the default (for historical reasons).
+		 */
+		HREF_SCRIPT,
+		/**
+		 * The action is added as a normal href="..."
+		 */
+		HREF,
+		/**
+		 * The action is added as onclick="..."
+		 */
+		ONCLICK
+	}
+
 	/**
-	 * Returns the icon for the tool. The icon should have a height of 24 pixels
-	 * and based on a transparent background.
-	 * 
-	 * @created 23.09.2010
+	 * Returns the icon for the tool. The icon should have a height of 24 pixels and based on a transparent background.
+	 *
 	 * @return the path to the icon
+	 * @created 23.09.2010
 	 */
 	String getIconPath();
 
 	/**
-	 * Returns the title of the tool's action. The title is used e.g. as the
-	 * menu item text for the tool's menu entry.
-	 * 
-	 * @created 23.09.2010
+	 * Returns the title of the tool's action. The title is used e.g. as the menu item text for the tool's menu entry.
+	 *
 	 * @return the tools title
+	 * @created 23.09.2010
 	 */
 	String getTitle();
 
 	/**
-	 * Returns the description of the tool's action. The description is used
-	 * e.g. as the tooltip text item text for the tool's menu entry. it sould
-	 * only consists of plain text.
-	 * 
-	 * @created 23.09.2010
+	 * Returns the description of the tool's action. The description is used e.g. as the tooltip text item text for the
+	 * tool's menu entry. it sould only consists of plain text.
+	 *
 	 * @return the tools description
+	 * @created 23.09.2010
 	 */
 	String getDescription();
 
 	/**
-	 * Returns a javascript action that should be executed if the tool is
-	 * selected by the user. The javascript should not contain any double
-	 * quotes, because they may be used to integrate the action into the html
-	 * dom tree.
-	 * 
+	 * Returns an action that should be executed if the tool is selected by the user. The javascript should not contain
+	 * any double quotes, because they may be used to integrate the action into the html dom tree. How the action is
+	 * integrated is also determined by the ActionType!
+	 *
+	 * @return the action to be executed
 	 * @created 23.09.2010
-	 * @return the javascript action to be executed
 	 */
-	String getJSAction();
+	String getAction();
+
+	/**
+	 * Returns what type of action is used in this tool. The action of this tool will be integrated depending on this
+	 * action. As the default ActionType.HREF_SCRIPT will be used.
+	 *
+	 * @return the type of the action
+	 */
+	ActionType getActionType();
 
 	/**
 	 * Returns the category of the tool.
-	 * 
-	 * Three types of categories are possible:
-	 * <ul>
-	 * <li><i>(null/empty):</i> Item will not be grouped.</li>
-	 * <li><tt>category</tt>: Item belongs to group <em>category</em> and will
-	 * be on top of this category (likely used for group headers).</li>
-	 * <li><tt>category/subcategory</tt>: Item belongs to group
-	 * <em>category</em> and will be sorted according to <em>subcategory</em>.</li>
-	 * </ul>
-	 * 
-	 * Generally, tools are displayed in alphabetical order of their category,
-	 * then subcategory and then in order as given by the getTools() method of
-	 * {@link ToolUtils}.
-	 * 
-	 * @created 20.02.2011
+	 * <p/>
+	 * Three types of categories are possible: <ul> <li><i>(null/empty):</i> Item will not be grouped.</li>
+	 * <li><tt>category</tt>: Item belongs to group <em>category</em> and will be on top of this category (likely used
+	 * for group headers).</li> <li><tt>category/subcategory</tt>: Item belongs to group <em>category</em> and will be
+	 * sorted according to <em>subcategory</em>.</li> </ul>
+	 * <p/>
+	 * Generally, tools are displayed in alphabetical order of their category, then subcategory and then in order as
+	 * given by the getTools() method of {@link ToolUtils}.
+	 *
 	 * @return The category of the tool
+	 * @created 20.02.2011
 	 */
 	String getCategory();
 

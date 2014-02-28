@@ -183,8 +183,8 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	public static void renderMessageBlock(Section<?> rootSection,
-			RenderResult string,
-			Message.Type... types) {
+										  RenderResult string,
+										  Message.Type... types) {
 
 		for (Type type : types) {
 			Collection<String> messages = getMessageStrings(rootSection, type);
@@ -279,12 +279,12 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	public void renderDefaultMarkupStyled(String title,
-			String content,
-			String sectionID,
-			String cssClassName,
-			ToolSet tools,
-			UserContext user,
-			RenderResult string) {
+										  String content,
+										  String sectionID,
+										  String cssClassName,
+										  ToolSet tools,
+										  UserContext user,
+										  RenderResult string) {
 
 		String cssClass = "defaultMarkupFrame";
 		if (cssClassName != null) cssClass += " " + cssClassName;
@@ -323,10 +323,10 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	protected void appendHeader(String title,
-			String sectionID,
-			ToolSet tools,
-			UserContext user,
-			RenderResult temp) {
+								String sectionID,
+								ToolSet tools,
+								UserContext user,
+								RenderResult temp) {
 
 		String renderModerClass = renderMode == ToolsRenderMode.TOOLBAR
 				? " headerToolbar"
@@ -357,17 +357,15 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	protected void appendToolbar(ToolSet tools, UserContext user, RenderResult result) {
-		result.appendHtml("<div class='markupTools'> ");
+		result.appendHtmlTag("div", "class", "markupTools");
 		for (Tool tool : tools) {
-			result.appendHtml("<div class=\""
-					+ tool.getClass().getSimpleName() + "\" >" +
-					"<a href=\"javascript:" + tool.getJSAction() + ";undefined;\">" +
-					"<img " +
-					"title=\"" + tool.getDescription() + "\" " +
-					"src=\"" + tool.getIconPath() + "\" \n/>" +
-					"</a></div>");
+			result.appendHtmlTag("div", "class", tool.getClass().getSimpleName());
+			result.appendHtmlTag("a", ToolUtils.getActionAttributeName(tool), ToolUtils.getActionAttributeValue(tool));
+			result.appendHtmlElement("img", "", "title", tool.getDescription(), "src", tool.getIconPath());
+			result.appendHtmlTag("/a");
+			result.appendHtmlTag("/div");
 		}
-		result.appendHtml("</div>");
+		result.appendHtmlTag("/div");
 	}
 
 	public void appendMenu(ToolSet tools, String id, UserContext user, RenderResult result) {
@@ -403,25 +401,19 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	protected void appendToolAsMenuItem(Tool tool, RenderResult result) {
 		String icon = tool.getIconPath();
-		String jsAction = tool.getJSAction();
+		String jsAction = tool.getAction();
 		boolean hasIcon = icon != null && !icon.trim().isEmpty();
-
-		result.appendHtml("<div class=\""
-				+ tool.getClass().getSimpleName()
-				+ "\" >"
-				+ "<div class=\"markupMenuItem\">"
-				+ "<"
-				+ (jsAction == null ? "span" : "a")
-				+ " class=\"markupMenuItem\""
-				+ (jsAction != null
-						? " href=\"javascript:" + tool.getJSAction()
-								+ ";ToolMenu.hideToolsPopupMenu();undefined;\""
-						: "") +
-				" title=\"" + Strings.encodeHtml(tool.getDescription()) + "\">" +
-				(hasIcon ? ("<img src=\"" + icon + "\" />") : "") +
-				" <span>" + tool.getTitle() + "</span>" +
-				"</" + (jsAction == null ? "span" : "a") + ">" +
-				"</div></div>");
+		result.appendHtmlTag("div", "class", tool.getClass().getSimpleName());
+		result.appendHtmlTag("div", "class", "markupMenuItem");
+		result.appendHtmlTag("a", "class", "markupMenuItem",
+				"title", tool.getDescription(),
+				ToolUtils.getActionAttributeName(tool),
+				ToolUtils.getActionAttributeValue(tool) + ";ToolMenu.hideToolsPopupMenu()");
+		if (hasIcon) result.appendHtmlElement("img", " ", "src", icon);
+		result.appendHtmlElement("span", tool.getTitle());
+		result.appendHtmlTag("/a");
+		result.appendHtmlTag("/div");
+		result.appendHtmlTag("/div");
 	}
 
 	public ToolsRenderMode getRenderMode() {
@@ -441,24 +433,21 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	/**
-	 * Returns if the annotations shall be rendered as an unordered list,
-	 * instead of plain rendering.
-	 * 
-	 * @created 28.01.2014
+	 * Returns if the annotations shall be rendered as an unordered list, instead of plain rendering.
+	 *
 	 * @return if the annotation-as-list mode is enabled
+	 * @created 28.01.2014
 	 */
 	public boolean isListAnnotations() {
 		return listAnnotations;
 	}
 
 	/**
-	 * Specified if the annotations shall be rendered as an unordered list. The
-	 * default behavior for this renderer is "false", rendering annotations as
-	 * their plain section content using their specific renderer(s).
-	 * 
+	 * Specified if the annotations shall be rendered as an unordered list. The default behavior for this renderer is
+	 * "false", rendering annotations as their plain section content using their specific renderer(s).
+	 *
+	 * @param listAnnotations if the annotation-as-list mode shall be enabled (true) or disabled (false)
 	 * @created 28.01.2014
-	 * @param listAnnotations if the annotation-as-list mode shall be enabled
-	 *        (true) or disabled (false)
 	 */
 	public void setListAnnotations(boolean listAnnotations) {
 		this.listAnnotations = listAnnotations;

@@ -409,7 +409,6 @@ public class RenderResult {
 	 * 
 	 * 
 	 * @created 05.02.2013
-	 * @param result the {@link RenderResult} the tag will be appended to
 	 * @param tag the tag name of the HTML element
 	 * @param attributes the attributes of the HTML element: the odd elements
 	 *        are the attribute names and the even elements the attribute
@@ -428,7 +427,6 @@ public class RenderResult {
 	 * 
 	 * 
 	 * @created 05.02.2013
-	 * @param result the {@link RenderResult} the tag will be appended to
 	 * @param tag the tag name of the HTML element
 	 * @param encode decides whether the attributes will be html encoded or not
 	 * @param attributes the attributes of the HTML element: the odd elements
@@ -440,7 +438,11 @@ public class RenderResult {
 		StringBuilder html = new StringBuilder();
 		html.append("<" + tag);
 		for (int i = 0; i + 2 <= attributes.length; i += 2) {
-			html.append(getAttribute(encode, attributes[i], attributes[i + 1]));
+			String attributeName = attributes[i];
+			String attributeValue = attributes[i + 1];
+			if (attributeName == null) continue;
+			if (attributeValue == null) continue;
+			html.append(getAttribute(encode, attributeName, attributeValue));
 		}
 		html.append(">");
 		appendHtml(html.toString());
@@ -460,7 +462,6 @@ public class RenderResult {
 	 * 
 	 * 
 	 * @created 05.02.2013
-	 * @param result the {@link RenderResult} the element will be appended to
 	 * @param tag the tag name of the HTML element
 	 * @param content the content of the HTML element
 	 * @param attributes the attributes of the HTML element: the odd elements

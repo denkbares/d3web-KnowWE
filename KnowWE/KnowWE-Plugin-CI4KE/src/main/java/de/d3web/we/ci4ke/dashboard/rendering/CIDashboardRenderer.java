@@ -39,6 +39,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.tools.Tool;
+import de.knowwe.tools.ToolUtils;
 
 /**
  * 
@@ -98,9 +99,6 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	 * pane)
 	 * 
 	 * @created 02.12.2010
-	 * @param web the web of the dashboard
-	 * @param dashboardArticleTitle the name of the article of the dashboard
-	 * @param dashboardName the name of the dashboard
 	 */
 	public static String renderDashboardContents(UserContext user, CIDashboard dashboard) {
 		String dashboardName = dashboard.getDashboardName();
@@ -181,8 +179,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			warningString.appendHtml("<div id='" + id
 					+ "' style='display:inline;' class=\""
 					+ buildTool.getClass().getSimpleName() + "\" >" +
-					"<a href=\"javascript:" + buildTool.getJSAction()
-					+ ";\">" +
+					"<a " + ToolUtils.getActionAttribute(buildTool) + ">" +
 					"<img height='14'" +
 					"title=\"" + buildTool.getDescription() + "\" " +
 					"src=\"" + buildTool.getIconPath() + "\" />" +

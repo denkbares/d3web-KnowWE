@@ -36,7 +36,6 @@ import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
 
 /**
- * 
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 16.10.2013
  */
@@ -93,15 +92,15 @@ public class FlowchartGoToToolProvider implements ToolProvider {
 		String link = KnowWEUtils.getURLLink(flowchartSection);
 		String title = "Open '" + FlowchartType.getFlowchartName(flowchartSection) + "'";
 		return new OpenFlowTool("KnowWEExtension/testcaseplayer/icon/testcaselink.png",
-				title, title, "window.location = '" + link + "'");
+				title, title, link, Tool.ActionType.HREF);
 	}
 
 	private class OpenFlowTool extends DefaultTool implements Comparable<OpenFlowTool> {
 
 		private final String jsAction;
 
-		public OpenFlowTool(String iconPath, String title, String description, String jsAction) {
-			super(iconPath, title, description, jsAction);
+		public OpenFlowTool(String iconPath, String title, String description, String jsAction, ActionType actionType) {
+			super(iconPath, title, description, jsAction, actionType, null);
 			this.jsAction = jsAction;
 		}
 
