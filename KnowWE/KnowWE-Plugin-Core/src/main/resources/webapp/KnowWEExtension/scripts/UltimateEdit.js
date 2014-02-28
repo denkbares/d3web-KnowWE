@@ -37,7 +37,7 @@ if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
 
 KNOWWE.plugin.renaming = function () {
 
-	var sectionIds = [];
+	var sectionsCache = new Object();
 
 	/**
 	 * Renames all occurrences of a specific term.
@@ -112,44 +112,70 @@ KNOWWE.plugin.renaming = function () {
 		new _KA(options).send();
 	}
 
-	function cancelEdit(settings, original) {
+	function restoreOriginal(original) {
 		jq$(original).removeClass("click");
-		jq$(original).prev(".toolsMenuDecorator").css("display", "block");
-		jq$(original).closest("span.toolMenuDecorated").css("padding-right", "0px");
+		jq$(original).unbind();
+		jq$(original).css("min-width", "");
+		jq$(original).css("padding-right", "");
+		jq$(original).css("width", "");
+	}
+
+	function cancelEdit(settings, original) {
+		restoreOriginal(original);
+
+		for (var sectionId in sectionsCache) {
+			var section = sectionsCache[sectionId];
+			var occurence = jq$(".defaultMarkupFrame span[sectionOccurenceId=" + sectionId + "]");
+			jq$(occurence).replaceWith(section);
+		}
+
+
+	}
+
+	function afterCancelEdit(setting, original) {
+		ToolMenu.decorateToolMenus(original);
+	}
+
+	function showCurrentEditOnOtherOccurences(text) {
 		for (var i = 0; i < sectionIds.length; i++) {
-			var occurence = jq$(".defaultMarkupFrame span[toolmenuidentifier=" + sectionIds[i] + "]").siblings("span");
-			jq$(occurence).text(original.revert);
-			jq$(occurence).css("background-color", "transparent");
+			var sectionId = sectionIds[i];
+			var occurence = jq$(".defaultMarkupFrame span[sectionOccurenceId=" + sectionId + "]");
+			jq$(occurence).first().text(text);
 		}
 
 	}
 
-	function showCurrentEditOnOtherOccurences(text) {
-
+	function saveOriginalsAndPrepareForEdit(lastPathElement) {
 		for (var i = 0; i < sectionIds.length; i++) {
 			var sectionId = sectionIds[i];
-			var occurence = jq$(".defaultMarkupFrame span[toolmenuidentifier=" + sectionId + "]").siblings("span");
-			jq$(occurence).first().text(text);
-			jq$(occurence).first().css("background-color", "yellow");
+			var toolMenuIdentifier = jq$(".defaultMarkupFrame span[toolmenuidentifier=" + sectionId + "]");
+			if (toolMenuIdentifier.length > 0) {
+				var toolMenuDecorated = toolMenuIdentifier[0].parentNode;
+				sectionsCache[sectionId] = jq$(toolMenuDecorated).clone();
+				jq$(toolMenuDecorated).attr("sectionOccurenceId", sectionId);
+				jq$(toolMenuDecorated).empty();
+				jq$(toolMenuDecorated).css("background-color", "yellow");
+				jq$(toolMenuDecorated).text(lastPathElement);
+			}
 		}
-
 	}
 
 	return {
 		renameTerm: function (toolmenuidentifier) {
 			var callback = function (jsonResponse) {
-
-				var clickedTerm = jq$("span[toolmenuidentifier=" + toolmenuidentifier + "]").siblings('span:contains("' + jsonResponse.lastPathElement + '")');
+				var clickedTerm = jq$("span[toolmenuidentifier=" + toolmenuidentifier + "]")[0].parentNode;
 
 				//get edit field
 				jq$(clickedTerm).addClass("click");
-				jq$(clickedTerm).prev(".toolsMenuDecorator").css("display", "none");
+				//jq$(clickedTerm).css("display", "none");
 				jq$(".click").editable(function (value, settings) {
 					renameTerms(jsonResponse.termIdentifier, value, false);
 					return(value)
 				}, {
 					style: "inherit",
-					onreset: cancelEdit
+					onreset: cancelEdit,
+					afterreset: afterCancelEdit
+
 				});
 				jq$('.click').trigger("click");
 				//replace edit field value with sectionText for encoding reasons
@@ -157,7 +183,8 @@ KNOWWE.plugin.renaming = function () {
 				jq$(inputField).autoGrow(5);
 
 				sectionIds = jsonResponse.sectionIds;
-				showCurrentEditOnOtherOccurences(jsonResponse.lastPathElement);
+
+				saveOriginalsAndPrepareForEdit(jsonResponse.lastPathElement);
 
 				jq$(".click input").keyup(function () {
 					showCurrentEditOnOtherOccurences(jq$(this).val());

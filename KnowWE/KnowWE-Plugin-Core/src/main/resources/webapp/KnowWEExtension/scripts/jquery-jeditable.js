@@ -54,6 +54,7 @@
  *
  * @param Function options[onsubmit] function(settings, original) { ... } called before submit
  * @param Function options[onreset]  function(settings, original) { ... } called before reset
+ * @param Function options[afterreset]  function(settings, original) { ... } called after reset
  * @param Function options[onerror]  function(settings, original, xhr) { ... } called on error
  *
  * @param Hash    options[ajaxoptions]  jQuery Ajax options. See docs.jquery.com.
@@ -102,6 +103,8 @@
 		var onsubmit = settings.onsubmit || function () {
 		};
 		var onreset = settings.onreset || function () {
+		};
+		var afterreset = settings.afterreset || function () {
 		};
 		var onerror = settings.onerror || reset;
 
@@ -400,6 +403,9 @@
 							jq$(self).attr('title', settings.tooltip);
 						}
 					}
+					if (false !== afterreset.apply(form, [settings, self])) {
+					}
+					;
 				}
 			};
 		});
@@ -411,7 +417,7 @@
 		types: {
 			defaults: {
 				element: function (settings, original) {
-					var input = jq$('<input type="hidden"></input>');
+					var input = jq$('<input type="hidden">');
 					jq$(this).append(input);
 					return(input);
 				},
