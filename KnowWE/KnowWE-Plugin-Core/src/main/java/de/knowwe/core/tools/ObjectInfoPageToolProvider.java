@@ -52,7 +52,7 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 			@SuppressWarnings("unchecked")
 			Section<? extends Term> s = (Section<? extends Term>) section;
 			return new Tool[] {
-					getObjectInfoPageTool(s, userContext), getUltimateEditTool(s, userContext), getRenamingTool(s, userContext) };
+					getObjectInfoPageTool(s, userContext), getCompositEditTool(s, userContext), getRenamingTool(s, userContext) };
 		}
 		return ToolUtils.emptyToolArray();
 	}
@@ -65,12 +65,12 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 				createObjectInfoJSAction(section));
 	}
 
-	protected Tool getUltimateEditTool(Section<? extends Term> section, UserContext userContext) {
+	protected Tool getCompositEditTool(Section<? extends Term> section, UserContext userContext) {
 		return new DefaultTool(
 				"http://localhost:8080/KnowWE/KnowWEExtension/images/pencil.png",
 				"Composite Edit",
 				"Opens the composite edit mode.",
-				createUltimateEditModeAction(section));
+				createCompositeEditModeAction(section));
 	}
 
 	protected Tool getRenamingTool(Section<? extends Term> section, UserContext userContext) {
@@ -98,14 +98,14 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 		return jsAction;
 	}
 
-	public static String createUltimateEditModeAction(Section<? extends Term> section) {
+	public static String createCompositeEditModeAction(Section<? extends Term> section) {
 		Identifier termIdentifier = section.get().getTermIdentifier(section);
-		return createUltimateEditModeAction(termIdentifier);
+		return createCompositeEditModeAction(termIdentifier);
 	}
 
-	public static String createUltimateEditModeAction(Identifier termIdentifier) {
+	public static String createCompositeEditModeAction(Identifier termIdentifier) {
 		String externalTermIdentifierForm = termIdentifier.toExternalForm();
-		String jsAction = "KNOWWE.plugin.ultimateEditTool.createDialogDiv('"
+		String jsAction = "KNOWWE.plugin.compositeEditTool.openDialog('"
 				+ maskTermForHTML(externalTermIdentifierForm) + "')";
 		return jsAction;
 	}
