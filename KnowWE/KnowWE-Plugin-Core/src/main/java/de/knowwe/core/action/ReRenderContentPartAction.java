@@ -22,7 +22,8 @@ package de.knowwe.core.action;
 
 import java.io.IOException;
 
-import de.d3web.utils.Log;
+import javax.servlet.http.HttpServletResponse;
+
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -33,30 +34,14 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
- * ReRenderContentPartAction. Renders a given section again. Often used in
- * combination with AJAX request, to refresh a certain section of an article due
- * to user interaction.
- * 
+ * ReRenderContentPartAction. Renders a given section again. Often used in combination with AJAX
+ * request, to refresh a certain section of an article due to user interaction.
+ *
  * @author smark
  */
 public class ReRenderContentPartAction extends AbstractAction {
 
-	private String perform(UserActionContext context) {
-
-		String nodeID = context.getParameter("KdomNodeId");
-
-		Section<? extends Type> section = Sections.getSection(nodeID);
-
-		if (section == null) {
-			String message = "Section not found: " + nodeID;
-			Log.warning(message);
-			return message;
-
-		}
-
-		if (!KnowWEUtils.canView(section, context)) {
-			return "You are not allowed to view this content";
-		}
+	private static String perform(UserActionContext context, Section<?> section) {
 
 		RenderResult b = new RenderResult(context);
 
@@ -84,11 +69,27 @@ public class ReRenderContentPartAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		String result = perform(context);
-		if (result != null && context.getWriter() != null) {
-			context.setContentType("text/html; charset=UTF-8");
-			context.getWriter().write(result);
-		}
+		String nodeID = context.getParameter("KdomNodeId");
+		Section<?> section = Sections.getSection(nodeID);
+		execute(context, section);
+	}
 
+	public static void execute(UserActionContext context, Section<?> section) throws IOException {
+		if (section == null) {
+			context.sendError(HttpServletResponse.SC_NOT_FOUND,
+					"The requested section not found on the server. " +
+							"Maybe the page content is outdated. Please reload.");
+		}
+		else if (!KnowWEUtils.canView(section, context)) {
+			context.sendError(HttpServletResponse.SC_FORBIDDEN,
+					"You are not allowed to view this content.");
+		}
+		else {
+			String result = perform(context, section);
+			if (result != null && context.getWriter() != null) {
+				context.setContentType("text/html; charset=UTF-8");
+				context.getWriter().write(result);
+			}
+		}
 	}
 }

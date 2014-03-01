@@ -35,6 +35,7 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.renderer.TooltipRenderer;
 
 /**
  * Renders a D3webTerm section by adding the current value(s) as a tooltip.
@@ -42,23 +43,14 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @author volker_belli
  * @created 30.11.2010
  */
-public class ValueTooltipRenderer implements Renderer {
-
-	private final Renderer decoratedRenderer;
+public class ValueTooltipRenderer extends TooltipRenderer {
 
 	public ValueTooltipRenderer(Renderer decoratedRenderer) {
-		this.decoratedRenderer = decoratedRenderer;
+		super(decoratedRenderer);
 	}
 
 	@Override
-	public void render(Section<?> section, UserContext user, RenderResult string) {
-		String tooltip = createTooltip(section, user);
-		preRenderTooltip(tooltip, string);
-		decoratedRenderer.render(section, user, string);
-		postRenderTooltip(tooltip, string);
-	}
-
-	private String createTooltip(Section<?> section, UserContext user) {
+	protected String getTooltip(Section<?> section, UserContext user) {
 		if (!(section.get() instanceof D3webTerm<?>)) return null;
 
 		@SuppressWarnings("unchecked")
@@ -84,19 +76,4 @@ public class ValueTooltipRenderer implements Renderer {
 		if (buffer.length() == 0) return null;
 		return buffer.toString();
 	}
-
-	private void preRenderTooltip(String tooltip, RenderResult string) {
-		if (tooltip == null) return;
-		tooltip = KnowWEUtils.maskJSPWikiMarkup(tooltip.replace('\'', '"'));
-
-		string.appendHtml("<span");
-		string.append(" title='").append(tooltip).append("'");
-		string.appendHtml(">");
-	}
-
-	private void postRenderTooltip(String tooltip, RenderResult string) {
-		if (tooltip == null) return;
-		string.appendHtml("</span>");
-	}
-
 }

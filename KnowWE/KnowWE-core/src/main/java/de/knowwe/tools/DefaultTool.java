@@ -19,9 +19,12 @@
 
 package de.knowwe.tools;
 
+import de.d3web.strings.Strings;
+import de.knowwe.core.user.UserContext;
+
 /**
  * This class is a default implementation of the {@link Tool} interface.
- * 
+ *
  * @author volker_belli
  * @created 23.09.2010
  */
@@ -81,4 +84,26 @@ public class DefaultTool implements Tool {
 		return category;
 	}
 
+	/**
+	 * Creates a new tool action that calls a server action by its name for the current user.
+	 * It allows to additionally specify parameters as alternative key and value pairs. The
+	 * parameters must not be encoded this is done by this method automatically.
+	 *
+	 * @param user the user to create the action for
+	 * @param actionName the name of the plugged action
+	 * @param parameters the additional parameters
+	 * @return the created action
+	 */
+	public static String createServerAction(UserContext user, String actionName, String... parameters) {
+		String jsAction =
+				"window.location='action/" + actionName +
+						"?KWiki_Topic=" + Strings.encodeURL(user.getTitle()) +
+						"&amp;web=" + Strings.encodeURL(user.getWeb());
+		for (int i=0; i<parameters.length; ) {
+			String key = Strings.encodeURL(parameters[i++]);
+			String value = Strings.encodeURL(parameters[i++]);
+			jsAction += "&amp;"+key+"="+value;
+		}
+		return jsAction+"'";
+	}
 }
