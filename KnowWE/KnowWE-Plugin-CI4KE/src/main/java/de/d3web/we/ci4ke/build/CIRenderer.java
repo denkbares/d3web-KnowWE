@@ -44,7 +44,6 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
- * 
  * @author volker_belli
  * @created 19.05.2012
  */
@@ -58,7 +57,6 @@ public class CIRenderer {
 
 	/**
 	 * Creates a new CIBuildRenderer for the specified Dashboard.
-	 * 
 	 */
 	public CIRenderer(CIDashboard dashboard) {
 		this.dashboard = dashboard;
@@ -68,9 +66,8 @@ public class CIRenderer {
 
 	/**
 	 * Calculates a "quality forecast", based on the 5 last builds
-	 * 
+	 *
 	 * @created 27.05.2010
-	 * @return
 	 */
 	public void renderBuildHealthReport(RenderResult result) {
 
@@ -166,9 +163,8 @@ public class CIRenderer {
 
 	/**
 	 * Renders the current build status (status of the last build)
-	 * 
+	 *
 	 * @created 27.05.2010
-	 * @return
 	 */
 	public void renderCurrentBuildStatus(RenderResult result) {
 		BuildResult build = dashboard.getLatestBuild();
@@ -186,10 +182,8 @@ public class CIRenderer {
 		if (build != null) {
 			apppendBuildHeadline(build, result);
 
-			int index = 0;
 			for (TestResult testResult : build.getResults()) {
-				appendTestResult(web, testResult, index, dashboardNameEncoded, result);
-				index++;
+				appendTestResult(web, testResult, result);
 			}
 		}
 		else {
@@ -198,16 +192,17 @@ public class CIRenderer {
 		result.appendHtml("</div>\n");
 	}
 
-	private void appendTestResult(String web, TestResult testResult, int index, String dashboardName, RenderResult renderResult) {
+	private void appendTestResult(String web, TestResult testResult, RenderResult renderResult) {
 
 		// ruling out special characters (which are causing problems)
-		dashboardName = Integer.toString(dashboardName.hashCode());
 		String name = testResult.getTestName();
 
 		renderResult.appendHtml("<div class='ci-collapsible-box'>");
 
 		// render buttons
-		Type type = testResult.getType();
+		Message summary = testResult.getSummary();
+		Type type = (summary == null) ? Type.ERROR : summary.getType();
+		String text = (summary == null) ? null : summary.getText();
 
 		String styleExpand = type == Type.SUCCESS ? "" : "style='display:none' ";
 		renderResult.appendHtml("<span " + styleExpand
@@ -228,28 +223,38 @@ public class CIRenderer {
 		}
 
 		// render test-name
-		renderResult.appendHtml("<span class='ci-test-title' title='" + title
-				+ "'>");
+		renderResult.appendHtml("<span class='ci-test-title' title='" + title + "'>");
 		renderResult.append(name);
 
 		// render test-configuration (if existent)
 		String[] config = testResult.getConfiguration();
-		if (config != null && !(config.length == 0)) {
+		boolean hasConfig = config != null && !(config.length == 0);
+		boolean hasText = !Strings.isBlank(text);
+		if (hasConfig || hasText) {
 			renderResult.appendHtml("<span class='ci-configuration'>");
-			renderResult.append(KnowWEUtils.maskJSPWikiMarkup(TestParser.concatParameters(config)));
+			if (hasConfig) {
+				renderResult.append("( ")
+						.appendJSPWikiMarkup(TestParser.concatParameters(config))
+						.append(" )");
+			}
+			if (hasText) {
+				renderResult.appendHtml(": ").appendJSPWikiMarkup(text);
+			}
 			renderResult.appendHtml("</span>");
 		}
 		renderResult.appendHtml("</span>");
 
 		// render test-message (if exists)
-		appendMessageBlock(web, testResult, index, dashboardName, renderResult);
+		appendMessageBlock(web, testResult, renderResult);
 
 		renderResult.appendHtml("</div>\n");
 	}
 
-	private void appendMessageBlock(String web, TestResult testResult, int index, String dashboardName, RenderResult renderResult) {
+	private void appendMessageBlock(String web, TestResult testResult, RenderResult renderResult) {
 		// not visible at beginning
-		String styleCollapse = testResult.getType() == Type.SUCCESS ? "style='display:none' " : "";
+		Message summary = testResult.getSummary();
+		String styleCollapse = (summary == null || summary.getType() == Type.SUCCESS)
+				? "style='display:none' " : "";
 		renderResult.appendHtml("<div " + styleCollapse + "class='ci-message'>");
 		appendMessage(web, testResult, renderResult);
 		renderResult.appendHtml("</div>");
@@ -365,16 +370,16 @@ public class CIRenderer {
 		}
 		else {
 			switch (resultType) {
-			case SUCCESS:
-				imgBulb = String.format(imgBulb, "green" + imageSuffix + ".png",
-						"Build successful: " + Strings.encodeHtml(dashboardName));
-			case FAILURE:
-				imgBulb = String.format(imgBulb, "red" + imageSuffix + ".png", "Build failed: "
-						+ Strings.encodeHtml(dashboardName));
-			case ERROR:
-				imgBulb = String.format(imgBulb, "grey" + imageSuffix + ".png",
-						"Build has errors: "
-								+ Strings.encodeHtml(dashboardName));
+				case SUCCESS:
+					imgBulb = String.format(imgBulb, "green" + imageSuffix + ".png",
+							"Build successful: " + Strings.encodeHtml(dashboardName));
+				case FAILURE:
+					imgBulb = String.format(imgBulb, "red" + imageSuffix + ".png", "Build failed: "
+							+ Strings.encodeHtml(dashboardName));
+				case ERROR:
+					imgBulb = String.format(imgBulb, "grey" + imageSuffix + ".png",
+							"Build has errors: "
+									+ Strings.encodeHtml(dashboardName));
 			}
 		}
 
@@ -418,7 +423,7 @@ public class CIRenderer {
 				+ dashboard.getDashboardArticle()
 				+ "', '"
 				+ KnowWEUtils.getURLLink(dashboard.getDashboardArticle() + "#"
-						+ dashboardNameEncoded)
+				+ dashboardNameEncoded)
 				+ "')\"><img class='ci-abort-build' height='16' title='Stops the current build' " +
 				"src='KnowWEExtension/images/cross.png' /></a>");
 
@@ -426,7 +431,7 @@ public class CIRenderer {
 
 	public void renderForecastIcon(int buildCount, int failedCount, RenderResult result) {
 
-		int score = (buildCount > 0) ? score = (100 * (buildCount - failedCount)) / buildCount : 0;
+		int score = (buildCount > 0) ? (100 * (buildCount - failedCount)) / buildCount : 0;
 		String imgForecast = "<img class='ci-forecast' src='KnowWEExtension/ci4ke/images/22x22/%s.png' "
 				+ "align='absmiddle' alt='%<s' title='%s'>";
 

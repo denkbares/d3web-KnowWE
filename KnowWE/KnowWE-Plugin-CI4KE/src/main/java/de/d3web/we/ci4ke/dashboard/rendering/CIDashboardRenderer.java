@@ -99,6 +99,8 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	 * pane)
 	 * 
 	 * @created 02.12.2010
+	 * @param user the current user context to render the dashboard for
+	 * @param dashboard the dashboard to be rendered
 	 */
 	public static String renderDashboardContents(UserContext user, CIDashboard dashboard) {
 		String dashboardName = dashboard.getDashboardName();
