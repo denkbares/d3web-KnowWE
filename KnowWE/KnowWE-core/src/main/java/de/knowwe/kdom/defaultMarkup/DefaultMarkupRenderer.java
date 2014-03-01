@@ -409,7 +409,10 @@ public class DefaultMarkupRenderer implements Renderer {
 				"title", tool.getDescription(),
 				ToolUtils.getActionAttributeName(tool),
 				ToolUtils.getActionAttributeValue(tool) + ";ToolMenu.hideToolsPopupMenu()");
-		if (hasIcon) result.appendHtmlElement("img", " ", "src", icon);
+		if (hasIcon) {
+			result.appendHtmlElement("img", "", "src", icon);
+			result.append(" ");
+		}
 		result.appendHtmlElement("span", tool.getTitle());
 		result.appendHtmlTag("/a");
 		result.appendHtmlTag("/div");

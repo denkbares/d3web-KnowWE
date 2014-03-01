@@ -469,9 +469,13 @@ public class RenderResult {
 	 *        contents
 	 */
 	public void appendHtmlElement(String tag, String content, String... attributes) {
-		appendHtmlTag(tag, attributes);
-		append(content);
-		appendHtml("</" + tag + ">");
+		if (tag.equals("img") && Strings.isBlank(content)) {
+			appendHtmlTag(tag, attributes);
+		} else {
+			appendHtmlTag(tag, attributes);
+			append(content);
+			appendHtml("</" + tag + ">");
+		}
 	}
 
 }
