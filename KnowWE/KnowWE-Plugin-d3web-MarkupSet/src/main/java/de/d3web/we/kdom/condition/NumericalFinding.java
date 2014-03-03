@@ -48,7 +48,7 @@ import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
-import de.knowwe.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
+import de.knowwe.kdom.sectionFinder.OneOfStringUnquotedFinder;
 
 /**
  * A type implementing a cond-num TerminalCondition {@link TerminalCondition} It
@@ -69,7 +69,7 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 
 		// comparator
 		Comparator comparator = new Comparator();
-		comparator.setSectionFinder(new OneOfStringEnumUnquotedFinder(comparators));
+		comparator.setSectionFinder(new OneOfStringUnquotedFinder(comparators));
 		comparator.setRenderer(new StyleRenderer(StyleRenderer.OPERATOR, MaskMode.htmlEntities));
 		this.addChildType(comparator);
 

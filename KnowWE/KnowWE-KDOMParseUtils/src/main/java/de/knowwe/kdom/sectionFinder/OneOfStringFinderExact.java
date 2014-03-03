@@ -17,16 +17,33 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
+package de.knowwe.kdom.sectionFinder;
 
-package de.d3web.we.kdom.rules;
+import java.util.Arrays;
+import java.util.List;
 
-import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.kdom.sectionFinder.SectionFinder;
+import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
-public class ActionArea extends AbstractType {
+public class OneOfStringFinderExact implements SectionFinder {
 
-	public ActionArea(AbstractType action) {
+	private final String[] strings;
 
-		this.addChildType(new SingleAction(action));
+	public OneOfStringFinderExact(String... values) {
+		strings = Arrays.copyOf(values, values.length);
 	}
 
+	@Override
+	public List<SectionFinderResult> lookForSections(String text,
+			Section<?> father, Type type) {
+		for (String string : strings) {
+			if (text.replaceAll("\\xA0", " ").trim().equals(string)) {
+				return new AllTextFinderTrimmed().lookForSections(text, father, type);
+			}
+		}
+		return null;
+	}
 }

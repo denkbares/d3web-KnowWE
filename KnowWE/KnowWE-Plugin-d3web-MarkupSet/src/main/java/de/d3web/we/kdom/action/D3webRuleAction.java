@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.rules.action;
+package de.d3web.we.kdom.action;
 
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;

@@ -23,12 +23,12 @@ package de.knowwe.kdom.table;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 
 public class TableCellContent extends AbstractType {
 
 	public TableCellContent() {
-		this.setSectionFinder(AllTextSectionFinder.getInstance());
+		this.setSectionFinder(AllTextFinder.getInstance());
 		this.setRenderer(new TableCellContentRenderer());
 	}
 

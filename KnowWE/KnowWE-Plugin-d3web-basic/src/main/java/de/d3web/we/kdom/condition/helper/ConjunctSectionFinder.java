@@ -37,7 +37,7 @@ public class ConjunctSectionFinder implements SectionFinder {
 			// any word-chars
 			boolean isWord = hasWordChars(symbol);
 
-			List<Integer> indicesOfUnbraced = Strings.findIndicesOfUnbraced(text,
+			List<Integer> indicesOfUnbraced = Strings.indicesOfUnbraced(text,
 					symbol,
 					CompositeCondition.BRACE_OPEN, CompositeCondition.BRACE_CLOSED);
 			// store all found operator sign oc indices and its length

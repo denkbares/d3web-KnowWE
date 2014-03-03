@@ -12,7 +12,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
-import de.knowwe.kdom.sectionFinder.OneOfStringEnumFinder;
+import de.knowwe.kdom.sectionFinder.OneOfStringFinder;
 
 /**
  * @author Jochen
@@ -31,7 +31,7 @@ public class NegatedExpression extends NonTerminalCondition {
 
 		AnonymousType negationSign = new AnonymousType("NegationSign");
 		ConstraintSectionFinder finder = new ConstraintSectionFinder(
-				new OneOfStringEnumFinder(negationKeywords),
+				new OneOfStringFinder(negationKeywords),
 				AtMostOneFindingConstraint.getInstance());
 		negationSign.setSectionFinder(finder);
 		this.addChildType(negationSign);

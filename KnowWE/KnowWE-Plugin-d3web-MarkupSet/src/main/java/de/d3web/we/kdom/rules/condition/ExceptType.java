@@ -16,9 +16,20 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.d3web.we.kdom.rules;
+package de.d3web.we.kdom.rules.condition;
 
-public class ExceptionConditionArea extends ConditionArea {
-	// as a marker for the compile-handler to find correct condition for the
-	// exception easier
+import de.d3web.we.kdom.rules.Indent;
+import de.d3web.we.kdom.rules.RuleTokenFinder;
+import de.d3web.we.kdom.rules.RuleType;
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.kdom.renderer.StyleRenderer;
+
+public class ExceptType extends AbstractType {
+
+	public ExceptType() {
+		setSectionFinder(new RuleTokenFinder(RuleType.EXCEPT_TOKENS));
+		this.setRenderer(StyleRenderer.KEYWORDS);
+		addChildType(new Indent());
+	}
+
 }

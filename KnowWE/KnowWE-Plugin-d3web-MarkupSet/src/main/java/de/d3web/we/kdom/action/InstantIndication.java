@@ -16,7 +16,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.d3web.we.kdom.rules.action;
+package de.d3web.we.kdom.action;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +24,8 @@ import java.util.List;
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.terminology.QASet;
+import de.d3web.indication.ActionInstantIndication;
 import de.d3web.indication.inference.PSMethodStrategic;
-import de.d3web.interview.indication.ActionRepeatedIndication;
-import de.d3web.we.kdom.rules.action.ContraIndicationAction.QASetReferenceInBrackets;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QASetReference;
 import de.knowwe.core.kdom.Type;
@@ -35,33 +34,32 @@ import de.knowwe.core.kdom.parsing.Sections;
 
 /**
  * 
- * @author Reinhard Hatko
- * @author Jochen Reutelshoefer
- * @created 19.11.2010
+ * @author Jochen
+ * @created 30.07.2010
  */
-public class RepeatedIndication extends BracketsAction<RepeatedIndication> {
+public class InstantIndication extends BracketsAction<InstantIndication> {
 
-	public RepeatedIndication() {
+	public InstantIndication() {
 		super(new String[] {
-				"ALWAYS", "IMMER" });
+				"INSTANT", "SOFORT" });
 
 	}
 
 	@Override
 	protected Type getObjectReference() {
-		return new QASetReferenceInBrackets();
+		return new ContraIndicationAction.QASetReferenceInBrackets();
 	}
 
 	@Override
-	public PSAction createAction(D3webCompiler compiler, Section<RepeatedIndication> s) {
+	public PSAction createAction(D3webCompiler compiler, Section<InstantIndication> s) {
 		Section<QASetReference> qSec = Sections.findSuccessor(s, QASetReference.class);
 		QASet termObject = qSec.get().getTermObject(compiler, qSec);
 
-		ActionRepeatedIndication repInd = new ActionRepeatedIndication();
+		ActionInstantIndication actionContraIndication = new ActionInstantIndication();
 		List<QASet> obs = new ArrayList<QASet>();
 		obs.add(termObject);
-		repInd.setQASets(obs);
-		return repInd;
+		actionContraIndication.setQASets(obs);
+		return actionContraIndication;
 	}
 
 	@Override

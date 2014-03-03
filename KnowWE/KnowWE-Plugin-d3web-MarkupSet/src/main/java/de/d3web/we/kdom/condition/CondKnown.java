@@ -60,7 +60,7 @@ public class CondKnown extends D3webCondition<CondKnown> {
 
 			@Override
 			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-				return SectionFinderResult.createSingleItemList(new SectionFinderResult(
+				return SectionFinderResult.singleItemList(new SectionFinderResult(
 						text.indexOf('[') + 1, text.indexOf(']')));
 			}
 		});

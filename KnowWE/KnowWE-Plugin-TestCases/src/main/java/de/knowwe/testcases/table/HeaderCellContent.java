@@ -56,7 +56,7 @@ public class HeaderCellContent extends TableCellContent {
 				String trim = text.trim();
 				int start = text.indexOf(trim);
 				if (trim.length() > 0) {
-					return SectionFinderResult.createSingleItemList(new SectionFinderResult(
+					return SectionFinderResult.singleItemList(new SectionFinderResult(
 							start,
 							start + trim.length()));
 				}

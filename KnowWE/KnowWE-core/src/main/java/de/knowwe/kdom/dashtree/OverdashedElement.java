@@ -87,7 +87,7 @@ public class OverdashedElement extends AbstractType {
 			Matcher m = pattern.matcher(text);
 			if (m.find()) {
 
-				return SectionFinderResult.createSingleItemList(new SectionFinderResult(
+				return SectionFinderResult.singleItemList(new SectionFinderResult(
 						m.start(1), m.start(1) + level));
 			}
 			return null;

@@ -20,26 +20,25 @@
 
 package de.d3web.we.kdom.rules.action;
 
+import java.util.List;
+
+import de.d3web.we.kdom.rules.RuleType;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.EndLineComment;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 public class RuleAction extends AbstractType {
 
 	public RuleAction() {
-		setSectionFinder(AllTextSectionFinder.getInstance());
+		setSectionFinder(AllTextFinder.getInstance());
 		EndLineComment comment = new EndLineComment();
 		comment.setRenderer(StyleRenderer.COMMENT);
 		this.addChildType(comment);
-		this.addChildType(new SolutionValueAssignment());
-		this.addChildType(new SetQuestionNumValueAction());
-		this.addChildType(new SetQNumFormulaAction());
-		this.addChildType(new SetQuestionValue());
-		this.addChildType(new ContraIndicationAction());
-		this.addChildType(new InstantIndication());
-		this.addChildType(new RepeatedIndication());
-		this.addChildType(new QASetIndicationAction());
-
+		List<Type> actions = RuleType.getActions();
+		for (Type action : actions) {
+			this.addChildType(action);
+		}
 	}
 }

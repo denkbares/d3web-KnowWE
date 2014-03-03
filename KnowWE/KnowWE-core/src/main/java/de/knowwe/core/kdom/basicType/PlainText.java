@@ -22,7 +22,7 @@ package de.knowwe.core.kdom.basicType;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 
 /**
  * This type is the terminal-type of the Knowledge-DOM. All leafs and only the
@@ -45,7 +45,7 @@ public class PlainText extends AbstractType {
 
 	public PlainText() {
 		this.setRenderer(DefaultTextRenderer.getInstance());
-		this.setSectionFinder(AllTextSectionFinder.getInstance());
+		this.setSectionFinder(AllTextFinder.getInstance());
 	}
 
 	/**

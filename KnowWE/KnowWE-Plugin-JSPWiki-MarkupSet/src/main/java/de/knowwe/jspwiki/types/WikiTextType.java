@@ -19,7 +19,7 @@
 package de.knowwe.jspwiki.types;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 
 /**
  * 
@@ -29,7 +29,7 @@ import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 public class WikiTextType extends AbstractType {
 
 	public WikiTextType() {
-		this.setSectionFinder(AllTextSectionFinder.getInstance());
+		this.setSectionFinder(AllTextFinder.getInstance());
 
 	}
 }

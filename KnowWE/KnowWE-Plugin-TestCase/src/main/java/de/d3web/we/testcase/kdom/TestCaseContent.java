@@ -44,7 +44,7 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.Number;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -63,7 +63,7 @@ import de.knowwe.testcases.TimeStampType;
 public class TestCaseContent extends AbstractType {
 
 	protected TestCaseContent() {
-		this.setSectionFinder(AllTextSectionFinder.getInstance());
+		this.setSectionFinder(AllTextFinder.getInstance());
 		this.addChildType(new SequentialTestCase());
 		this.addCompileScript(Priority.LOWEST, new TestSuiteSubTreeHandler());
 	}

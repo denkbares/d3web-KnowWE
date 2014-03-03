@@ -51,21 +51,21 @@ public class SectionFinderResult implements Comparable<SectionFinderResult> {
 		return this.parameterMap;
 	}
 
-	public static List<SectionFinderResult> createSingleItemList(SectionFinderResult s) {
+	public static List<SectionFinderResult> singleItemList(SectionFinderResult s) {
 		if (s == null) return null;
 		List<SectionFinderResult> resultList = new ArrayList<SectionFinderResult>(1);
 		resultList.add(s);
 		return resultList;
 	}
 
-	public static List<SectionFinderResult> createSingleItemResultList(int begin, int end) {
+	public static List<SectionFinderResult> singleItemList(int begin, int end) {
 		SectionFinderResult s = new SectionFinderResult(begin, end);
 		List<SectionFinderResult> resultList = new ArrayList<SectionFinderResult>();
 		resultList.add(s);
 		return resultList;
 	}
 
-	public static List<SectionFinderResult> createResultList(List<StringFragment> fragments) {
+	public static List<SectionFinderResult> resultList(List<StringFragment> fragments) {
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 		for (StringFragment stringFragment : fragments) {
 			result.add(new SectionFinderResult(stringFragment.getStartTrimmed(),

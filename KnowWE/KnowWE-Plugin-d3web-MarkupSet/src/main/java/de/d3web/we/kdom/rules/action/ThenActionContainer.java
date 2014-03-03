@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2010 University Wuerzburg, Computer Science VI
+ * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
+ * Computer Science VI, University of Wuerzburg
  * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -16,30 +17,20 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.d3web.we.kdom.rules;
 
-import de.d3web.we.kdom.condition.CompositeCondition;
-import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.basicType.EndLineComment;
-import de.knowwe.kdom.renderer.StyleRenderer;
+package de.d3web.we.kdom.rules.action;
 
-/**
- * ConditionArea of the Condition-Action-Rule, instanciates the condition
- * composite
- * 
- * 
- * @author Jochen
- * 
- */
-public class ConditionArea extends AbstractType {
+import de.d3web.we.kdom.action.SingleAction;
+import de.d3web.we.kdom.rules.RuleContainerFinder;
+import de.d3web.we.kdom.rules.RuleType;
+import de.knowwe.core.kdom.TypePriorityList;
 
-	CompositeCondition compCond = null;
+public class ThenActionContainer extends ActionContainer {
 
-	public ConditionArea() {
-		compCond = new CompositeCondition();
-		EndLineComment comment = new EndLineComment();
-		comment.setRenderer(StyleRenderer.COMMENT);
-		this.addChildType(comment);
-		this.addChildType(compCond);
+	public ThenActionContainer() {
+		setSectionFinder(new RuleContainerFinder(RuleType.THEN_TOKENS, RuleType.INNER_TOKENS));
+		addChildType(TypePriorityList.DEFAULT_PRIORITY - 1, new ThenType());
+		addChildType(new SingleAction(new RuleAction()));
 	}
+
 }

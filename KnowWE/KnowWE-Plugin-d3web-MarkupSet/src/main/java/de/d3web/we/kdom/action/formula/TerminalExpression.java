@@ -1,4 +1,4 @@
-package de.d3web.we.kdom.rules.action.formula;
+package de.d3web.we.kdom.action.formula;
 
 import de.d3web.we.kdom.condition.TerminalCondition;
 

@@ -43,8 +43,8 @@ import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
@@ -56,7 +56,7 @@ import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
 import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
 import de.knowwe.kdom.sectionFinder.EmbracedContentFinder;
 import de.knowwe.kdom.sectionFinder.MatchUntilEndFinder;
-import de.knowwe.kdom.sectionFinder.OneOfStringEnumFinder;
+import de.knowwe.kdom.sectionFinder.OneOfStringFinder;
 import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
 
 /**
@@ -72,7 +72,7 @@ public class QuestionLine extends AbstractType {
 	public QuestionLine() {
 
 		// every line containing [...] (unquoted) is recognized as QuestionLine
-		this.setSectionFinder(new ConditionalSectionFinder(AllTextSectionFinder.getInstance()) {
+		this.setSectionFinder(new ConditionalSectionFinder(AllTextFinder.getInstance()) {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {
@@ -373,7 +373,7 @@ public class QuestionLine extends AbstractType {
 	static class AbstractFlag extends AbstractType {
 
 		public AbstractFlag() {
-			this.setSectionFinder(new OneOfStringEnumFinder(new String[] {
+			this.setSectionFinder(new OneOfStringFinder(new String[] {
 					"<abstract>", "<abstrakt>" }));
 			this.setRenderer(new StyleRenderer(StyleRenderer.KEYWORDS, MaskMode.htmlEntities));
 

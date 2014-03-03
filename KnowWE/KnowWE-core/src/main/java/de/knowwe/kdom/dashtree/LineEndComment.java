@@ -58,7 +58,7 @@ public class LineEndComment extends AbstractType {
 				// interpreting links (http://) and so on as comments
 				if (prefix.matches(".+?\\s$")) {
 					// if found return section from start to the end of the line
-					return SectionFinderResult.createSingleItemList(new SectionFinderResult(start,
+					return SectionFinderResult.singleItemList(new SectionFinderResult(start,
 							text.length()));
 				}
 			}

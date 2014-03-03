@@ -22,16 +22,17 @@ import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.manage.RuleFactory;
+import de.d3web.we.kdom.action.D3webRuleAction;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
-import de.d3web.we.kdom.rules.action.D3webRuleAction;
-import de.d3web.we.kdom.rules.action.RuleAction;
+import de.d3web.we.kdom.rules.condition.ExceptionConditionContainer;
 import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -46,16 +47,13 @@ import de.knowwe.core.utils.KnowWEUtils;
  * 
  * @author Jochen
  */
-public class RuleCompileScript extends D3webCompileScript<RuleAction> {
+public class RuleCompileScript extends D3webCompileScript<RuleType> {
 
 	public static final String RULE_STORE_KEY = "RULE_STORE_KEY";
 
 	@Override
-	public void compile(D3webCompiler compiler, Section<RuleAction> section) throws CompilerMessage {
+	public void compile(D3webCompiler compiler, Section<RuleType> ruleSection) throws CompilerMessage {
 
-		Section<ConditionActionRuleContent> ruleSection = Sections
-				.findAncestorOfType(section,
-						ConditionActionRuleContent.class);
 
 		if (ruleSection.hasErrorInSubtree(compiler)) {
 			throw new CompilerMessage(
@@ -70,21 +68,22 @@ public class RuleCompileScript extends D3webCompileScript<RuleAction> {
 
 		// create action
 		@SuppressWarnings("rawtypes")
-		Section<D3webRuleAction> action = Sections.findSuccessor(section,
+		Section<D3webRuleAction> action = Sections.findSuccessor(ruleSection,
 				D3webRuleAction.class);
 		if (action == null) {
+			Message message = Messages.creationFailedWarning(
+					D3webUtils.getD3webBundle().getString(
+							"KnowWE.rulesNew.notcreated")
+							+ " : no valid action found");
 			throw new CompilerMessage(
-					Messages.creationFailedWarning(
-							D3webUtils.getD3webBundle().getString(
-									"KnowWE.rulesNew.notcreated")
-									+ " : no valid action found"));
+					message);
 		}
 		@SuppressWarnings("unchecked")
 		PSAction d3action = action.get().getAction(compiler, action);
 
 		// create exception (if exists)
-		Section<ExceptionConditionArea> exceptionCondSec = Sections
-				.findSuccessor(ruleSection, ExceptionConditionArea.class);
+		Section<ExceptionConditionContainer> exceptionCondSec = Sections
+				.findSuccessor(ruleSection, ExceptionConditionContainer.class);
 		Condition exceptionCond = null;
 		if (exceptionCondSec != null) {
 			Section<CompositeCondition> exceptionCompCondSec = Sections
@@ -102,7 +101,7 @@ public class RuleCompileScript extends D3webCompileScript<RuleAction> {
 			Rule rule = RuleFactory.createRule(d3action, d3Cond,
 					exceptionCond, action.get().getActionPSContext());
 			if (rule != null) {
-				KnowWEUtils.storeObject(compiler, section, RULE_STORE_KEY, rule);
+				KnowWEUtils.storeObject(compiler, ruleSection, RULE_STORE_KEY, rule);
 				throw new CompilerMessage(
 						Messages.objectCreatedNotice(
 								"Rule"));
@@ -116,7 +115,7 @@ public class RuleCompileScript extends D3webCompileScript<RuleAction> {
 	}
 
 	@Override
-	public void destroy(D3webCompiler compiler, Section<RuleAction> section) {
+	public void destroy(D3webCompiler compiler, Section<RuleType> section) {
 		Rule kbr = (Rule) section.getSectionStore().getObject(compiler,
 				RULE_STORE_KEY);
 		if (kbr != null) {

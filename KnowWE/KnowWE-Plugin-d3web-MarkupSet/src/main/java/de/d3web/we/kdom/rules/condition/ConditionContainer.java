@@ -16,18 +16,31 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.d3web.we.kdom.rules;
+package de.d3web.we.kdom.rules.condition;
 
+import de.d3web.we.kdom.condition.CompositeCondition;
+import de.d3web.we.kdom.rules.RuleType;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.kdom.basicType.EndLineComment;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
-public class Except extends AbstractType {
+/**
+ * ConditionContainer of the Rule, instanciates the condition
+ * composite
+ * 
+ * 
+ * @author Jochen
+ * 
+ */
+public class ConditionContainer extends AbstractType {
 
-	public Except() {
-		setSectionFinder(new RegexSectionFinder("\\s*(AUSSER|EXCEPT)\\s+"));
-		this.setRenderer(StyleRenderer.KEYWORDS);
-		addChildType(new Indent());
+
+	public ConditionContainer() {
+		EndLineComment comment = new EndLineComment();
+		comment.setRenderer(StyleRenderer.COMMENT);
+		this.addChildType(comment);
+		CompositeCondition compositeCondition = new CompositeCondition();
+		compositeCondition.setAllowedTerminalConditions(RuleType.getTerminalConditions());
+		this.addChildType(compositeCondition);
 	}
-
 }

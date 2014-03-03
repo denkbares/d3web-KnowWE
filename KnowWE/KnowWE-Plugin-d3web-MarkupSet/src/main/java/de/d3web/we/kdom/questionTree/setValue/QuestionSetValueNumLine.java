@@ -41,7 +41,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.CompilerMessage;
@@ -60,14 +60,14 @@ public class QuestionSetValueNumLine extends AbstractType {
 	private static final String CLOSE = ")";
 
 	public QuestionSetValueNumLine() {
-		this.setSectionFinder(new ConditionalSectionFinder(AllTextSectionFinder.getInstance()) {
+		this.setSectionFinder(new ConditionalSectionFinder(AllTextFinder.getInstance()) {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {
 				int open = Strings.indexOfUnquoted(text, (OPEN));
 				if (open == -1) return false;
 
-				int close = Strings.findIndexOfClosingBracket(text, open, OPEN.charAt(0),
+				int close = Strings.indexOfClosingBracket(text, open, OPEN.charAt(0),
 						CLOSE.charAt(0));
 
 				if (close == -1) return false;
@@ -102,7 +102,7 @@ public class QuestionSetValueNumLine extends AbstractType {
 					Section<?> father, Type type) {
 
 				return SectionFinderResult
-						.createSingleItemList(new SectionFinderResult(
+						.singleItemList(new SectionFinderResult(
 								Strings.indexOfUnquoted(text, OPEN),
 								Strings.indexOfUnquoted(text, CLOSE) + 1));
 			}

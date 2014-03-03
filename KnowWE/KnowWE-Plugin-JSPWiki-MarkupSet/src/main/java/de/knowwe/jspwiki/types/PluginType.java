@@ -19,7 +19,7 @@
 package de.knowwe.jspwiki.types;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.sectionFinder.NestedBracketsFinder;
+import de.knowwe.kdom.sectionFinder.NestedBracketsFinder;
 
 /**
  * A type that represents an included JSPWikiPlugin, ie [{Pluginname ...}]. This

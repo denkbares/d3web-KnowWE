@@ -17,33 +17,32 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
+
 package de.knowwe.kdom.sectionFinder;
 
-import java.util.Arrays;
 import java.util.List;
 
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.kdom.sectionFinder.MultiSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
-public class OneOfStringEnumFinderExact implements SectionFinder {
+public class OneOfStringFinder implements SectionFinder {
 
-	private final String[] strings;
+	MultiSectionFinder msf;
 
-	public OneOfStringEnumFinderExact(String[] values) {
-		strings = Arrays.copyOf(values, values.length);
+	public OneOfStringFinder(String... values) {
+		msf = new MultiSectionFinder();
+		for (int i = 0; i < values.length; i++) {
+			msf.addSectionFinder(new RegexSectionFinder(values[i]));
+		}
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text,
-			Section<?> father, Type type) {
-		for (String string : strings) {
-			if (text.replaceAll("\\xA0", " ").trim().equals(string)) {
-				return new AllTextFinderTrimmed().lookForSections(text, father, type);
-			}
-		}
-		return null;
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
+		return msf.lookForSections(text, father, type);
 	}
+
 }

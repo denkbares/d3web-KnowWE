@@ -29,7 +29,7 @@ import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -49,7 +49,7 @@ public class NamespaceFileAnnotationType extends AbstractType {
 	public NamespaceFileAnnotationType() {
 		this.addChildType(new AbbreviationPrefixReference());
 		this.addChildType(new FileNameType());
-		this.setSectionFinder(AllTextSectionFinder.getInstance());
+		this.setSectionFinder(AllTextFinder.getInstance());
 		this.addCompileScript(Priority.HIGH, new ReadOntologyFileHandler());
 	}
 
@@ -140,7 +140,7 @@ public class NamespaceFileAnnotationType extends AbstractType {
 	private static class FileNameType extends AbstractType {
 
 		public FileNameType() {
-			this.setSectionFinder(AllTextSectionFinder.getInstance());
+			this.setSectionFinder(AllTextFinder.getInstance());
 		}
 	}
 

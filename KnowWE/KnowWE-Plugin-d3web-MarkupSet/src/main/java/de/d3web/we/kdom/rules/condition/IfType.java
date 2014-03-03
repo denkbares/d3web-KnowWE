@@ -18,18 +18,18 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.rules;
+package de.d3web.we.kdom.rules.condition;
 
-import java.util.regex.Pattern;
-
+import de.d3web.we.kdom.rules.Indent;
+import de.d3web.we.kdom.rules.RuleTokenFinder;
+import de.d3web.we.kdom.rules.RuleType;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
-public class Then extends AbstractType {
+public class IfType extends AbstractType {
 
-	public Then() {
-		setSectionFinder(new RegexSectionFinder("\\s*(DANN|THEN)", Pattern.MULTILINE));
+	public IfType() {
+		setSectionFinder(new RuleTokenFinder(RuleType.IF_TOKENS));
 		this.setRenderer(StyleRenderer.KEYWORDS);
 		addChildType(new Indent());
 	}

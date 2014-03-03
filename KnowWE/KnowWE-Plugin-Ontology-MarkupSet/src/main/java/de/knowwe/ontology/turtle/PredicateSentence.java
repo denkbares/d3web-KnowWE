@@ -44,7 +44,7 @@ public class PredicateSentence extends AbstractType {
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 			List<StringFragment> sentences = Strings.splitUnquoted(text, ";", true,
 					TurtleMarkup.TURTLE_QUOTES);
-			return SectionFinderResult.createResultList(sentences);
+			return SectionFinderResult.resultList(sentences);
 		}
 
 	}

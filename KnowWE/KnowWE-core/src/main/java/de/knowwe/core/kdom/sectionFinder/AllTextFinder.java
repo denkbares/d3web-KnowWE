@@ -18,18 +18,39 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.rules;
+package de.knowwe.core.kdom.sectionFinder;
 
-import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.kdom.renderer.StyleRenderer;
+import java.util.List;
 
-public class If extends AbstractType {
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
 
-	public If() {
-		setSectionFinder(new RegexSectionFinder(RuleType.RULE_START));
-		this.setRenderer(StyleRenderer.KEYWORDS);
-		addChildType(new Indent());
+/**
+ * This SectionFinder simple takes all the text given for a section
+ *
+ * @author Jochen
+ */
+public class AllTextFinder implements SectionFinder {
+
+	private static final AllTextFinder instance = new AllTextFinder();
+
+	/**
+	 * @deprecated use {@link AllTextFinder#getInstance()} instead
+	 */
+	@Deprecated
+	public AllTextFinder() {
 	}
 
+	public static AllTextFinder getInstance() {
+		return instance;
+	}
+
+	@Override
+	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
+		if (text.length() > 0) {
+			return SectionFinderResult.singleItemList(new SectionFinderResult(0,
+					text.length()));
+		}
+		return null;
+	}
 }

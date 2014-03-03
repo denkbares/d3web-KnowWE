@@ -28,7 +28,7 @@ import de.knowwe.core.kdom.objects.SimpleDefinition;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.xml.AbstractXMLType;
 import de.knowwe.kdom.xml.XMLContent;
@@ -63,7 +63,7 @@ public class StartType extends AbstractXMLType {
 
 		public StartNodeDef() {
 			super(D3webCompiler.class, StartNode.class);
-			setSectionFinder(AllTextSectionFinder.getInstance());
+			setSectionFinder(AllTextFinder.getInstance());
 			setRenderer(StyleRenderer.FlowchartStart);
 		}
 

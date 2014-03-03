@@ -21,7 +21,7 @@
 package de.knowwe.core.kdom.basicType;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 
 public class LineContent extends AbstractType {
 
@@ -37,6 +37,6 @@ public class LineContent extends AbstractType {
 	}
 
 	protected LineContent() {
-		this.setSectionFinder(AllTextSectionFinder.getInstance());
+		this.setSectionFinder(AllTextFinder.getInstance());
 	}
 }

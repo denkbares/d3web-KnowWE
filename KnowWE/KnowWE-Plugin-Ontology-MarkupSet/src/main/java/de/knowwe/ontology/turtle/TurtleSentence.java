@@ -37,7 +37,7 @@ public class TurtleSentence extends AbstractType {
 
 			@Override
 			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-				return SectionFinderResult.createResultList(Strings.splitUnquoted(text, ".", false,
+				return SectionFinderResult.resultList(Strings.splitUnquoted(text, ".", false,
 						TurtleMarkup.TURTLE_QUOTES));
 			}
 		});

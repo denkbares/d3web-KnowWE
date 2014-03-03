@@ -31,7 +31,7 @@ import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.dashtree.DashTreeElement;
@@ -42,7 +42,7 @@ import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
 public class NumericCondLine extends AbstractType {
 
 	public NumericCondLine() {
-		this.setSectionFinder(new ConditionalSectionFinder(AllTextSectionFinder.getInstance()) {
+		this.setSectionFinder(new ConditionalSectionFinder(AllTextFinder.getInstance()) {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {

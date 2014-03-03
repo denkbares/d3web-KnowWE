@@ -1,4 +1,4 @@
-package de.d3web.we.kdom.rules.action.formula;
+package de.d3web.we.kdom.action.formula;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.we.kdom.condition.NonTerminalCondition;
 import de.d3web.we.kdom.condition.QuestionNumReference;
 import de.d3web.we.kdom.condition.TerminalCondition;
-import de.d3web.we.kdom.rules.action.formula.CompositeFormula.CalcMethodType;
+import de.d3web.we.kdom.action.formula.CompositeFormula.CalcMethodType;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -24,18 +24,13 @@ import de.knowwe.core.kdom.parsing.Sections;
  * @author Jochen
  * @created 16.10.2010
  */
-public class KDOMFormulaNumberElementFactory {
+public class FormulaNumberElementFactory {
 
 	/**
-	 * 
 	 * Creates a FormulaNumberElement from some CompositeFormula-Section
 	 * (recursively)
 	 * 
 	 * @created 16.10.2010
-	 * @param compiler
-	 * @param c
-	 * @return
-	 * @throws Exception
 	 */
 	public static FormulaNumberElement createExpression(D3webCompiler compiler, Section<CompositeFormula> c) throws Exception {
 		if (c == null) return null;

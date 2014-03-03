@@ -28,7 +28,7 @@ import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.d3web.property.PropertyType;
@@ -60,7 +60,7 @@ public class PropertyTableType extends DefaultMarkupType {
 
 		PropertyType propertyType = new PropertyType();
 		propertyType.setSectionFinder(new ConstraintSectionFinder(
-				AllTextSectionFinder.getInstance(),
+				AllTextFinder.getInstance(),
 				new TableIndexConstraint(1, Integer.MAX_VALUE, 0, 1)));
 
 		propertyType.addCompileScript(new D3webHandler<PropertyType>() {
@@ -83,7 +83,7 @@ public class PropertyTableType extends DefaultMarkupType {
 		content.injectTableCellContentChildtype(propertyType);
 
 		NamedObjectReference qRef = new NamedObjectReference();
-		qRef.setSectionFinder(new ConstraintSectionFinder(AllTextSectionFinder.getInstance(),
+		qRef.setSectionFinder(new ConstraintSectionFinder(AllTextFinder.getInstance(),
 				new TableIndexConstraint(0, 1, 1, Integer.MAX_VALUE)));
 
 		content.injectTableCellContentChildtype(qRef);

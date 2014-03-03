@@ -22,8 +22,8 @@ package de.d3web.we.kdom.questionTree.indication;
 import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
@@ -37,7 +37,7 @@ public class QuestionRefLine extends AbstractType {
 	public QuestionRefLine() {
 
 		// every line containing [...] (unquoted) is recognized as QuestionLine
-		this.setSectionFinder(new ConditionalSectionFinder(AllTextSectionFinder.getInstance()) {
+		this.setSectionFinder(new ConditionalSectionFinder(AllTextFinder.getInstance()) {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {

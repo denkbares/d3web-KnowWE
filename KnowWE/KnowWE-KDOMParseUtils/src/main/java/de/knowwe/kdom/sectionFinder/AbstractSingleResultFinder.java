@@ -31,7 +31,7 @@ public abstract class AbstractSingleResultFinder implements SectionFinder {
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-		return SectionFinderResult.createSingleItemList(lookForSection(text, father, type));
+		return SectionFinderResult.singleItemList(lookForSection(text, father, type));
 	}
 
 	public abstract SectionFinderResult lookForSection(String text, Section<?> father, Type type);

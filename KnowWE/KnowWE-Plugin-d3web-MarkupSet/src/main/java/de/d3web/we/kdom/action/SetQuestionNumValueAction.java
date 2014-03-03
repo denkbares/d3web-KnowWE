@@ -1,4 +1,4 @@
-package de.d3web.we.kdom.rules.action;
+package de.d3web.we.kdom.action;
 
 import java.util.List;
 

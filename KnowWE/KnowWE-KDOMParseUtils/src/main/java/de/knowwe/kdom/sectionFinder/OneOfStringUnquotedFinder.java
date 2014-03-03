@@ -25,18 +25,24 @@ import java.util.List;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.MultiSectionFinder;
-import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
-public class OneOfStringEnumFinder implements SectionFinder {
+/**
+ * This SectionFinder is created with an array of Strings. It looks for unquoted
+ * occurrences of these Strings and creates Sections from it.
+ * 
+ * @author Jochen
+ * 
+ */
+public class OneOfStringUnquotedFinder implements SectionFinder {
 
-	MultiSectionFinder msf;
+	private final MultiSectionFinder msf;
 
-	public OneOfStringEnumFinder(String... values) {
+	public OneOfStringUnquotedFinder(String[] values) {
 		msf = new MultiSectionFinder();
 		for (int i = 0; i < values.length; i++) {
-			msf.addSectionFinder(new RegexSectionFinder(values[i]));
+			msf.addSectionFinder(new UnquotedExpressionFinder(values[i]));
 		}
 	}
 
@@ -44,5 +50,4 @@ public class OneOfStringEnumFinder implements SectionFinder {
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		return msf.lookForSections(text, father, type);
 	}
-
 }

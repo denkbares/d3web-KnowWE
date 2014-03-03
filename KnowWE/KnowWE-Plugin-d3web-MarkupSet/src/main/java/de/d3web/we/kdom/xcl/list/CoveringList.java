@@ -50,8 +50,8 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -79,7 +79,7 @@ public class CoveringList extends AbstractType {
 	private static final String RELATION_STORE_KEY = "XCLRELATION_STORE_KEY";
 
 	public CoveringList() {
-		this.setSectionFinder(AllTextSectionFinder.getInstance());
+		this.setSectionFinder(AllTextFinder.getInstance());
 		this.addChildType(new ListSolutionType());
 
 		// cut the optional closing }

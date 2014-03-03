@@ -47,7 +47,7 @@ public class MatchUntilEndFinder implements SectionFinder {
 
 		SectionFinderResult res = startFinder.lookForSection(text, father, type);
 		if (res != null) {
-			return SectionFinderResult.createSingleItemResultList(res.getStart(),
+			return SectionFinderResult.singleItemList(res.getStart(),
 					text.length());
 		}
 

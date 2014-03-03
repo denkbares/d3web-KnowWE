@@ -67,7 +67,7 @@ public class ValueType extends AbstractType {
 				Sections.findSuccessorsOfType(table, TableLine.class, lines);
 				if (lines.size() > 1) {
 					if (text.trim().length() > 0) {
-						return SectionFinderResult.createSingleItemList(new SectionFinderResult(0,
+						return SectionFinderResult.singleItemList(new SectionFinderResult(0,
 								text.length()));
 					}// no text to match
 					else {

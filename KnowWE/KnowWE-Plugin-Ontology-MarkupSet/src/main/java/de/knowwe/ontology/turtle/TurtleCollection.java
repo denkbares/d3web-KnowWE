@@ -99,7 +99,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 
 					@Override
 					public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-						return SectionFinderResult.createResultList(Strings.splitUnquoted(text,
+						return SectionFinderResult.resultList(Strings.splitUnquoted(text,
 								" ",
 								false,
 								TurtleMarkup.TURTLE_QUOTES));

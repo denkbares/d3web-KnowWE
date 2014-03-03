@@ -40,7 +40,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.Message;
@@ -74,7 +74,7 @@ public class SolutionSetValueLine extends AbstractType {
 	class SolutionSetValueFinder extends ConditionalSectionFinder {
 
 		public SolutionSetValueFinder() {
-			super(AllTextSectionFinder.getInstance());
+			super(AllTextFinder.getInstance());
 		}
 
 		@Override
@@ -82,7 +82,7 @@ public class SolutionSetValueLine extends AbstractType {
 			int open = Strings.indexOfUnquoted(text, (OPEN));
 			if (open == -1) return false;
 
-			int close = Strings.findIndexOfClosingBracket(text, open, OPEN.charAt(0),
+			int close = Strings.indexOfClosingBracket(text, open, OPEN.charAt(0),
 					CLOSE.charAt(0));
 
 			if (close == -1) return false;
@@ -118,7 +118,7 @@ public class SolutionSetValueLine extends AbstractType {
 					Section<?> father, Type type) {
 
 				return SectionFinderResult
-						.createSingleItemList(new SectionFinderResult(
+						.singleItemList(new SectionFinderResult(
 								Strings.indexOfUnquoted(text, OPEN),
 								Strings.indexOfUnquoted(text, CLOSE) + 1));
 			}

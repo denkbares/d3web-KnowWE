@@ -16,15 +16,15 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.d3web.we.kdom.rules.action;
+package de.d3web.we.kdom.action;
 
 import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
-import de.knowwe.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
+import de.knowwe.kdom.sectionFinder.OneOfStringUnquotedFinder;
 
 /**
  * 
@@ -38,7 +38,7 @@ public abstract class BracketsAction<T extends Type> extends D3webRuleAction<T> 
 	protected static final String CLOSE = "]";
 
 	public BracketsAction(final String[] alternativeKeys) {
-		this.setSectionFinder(new ConditionalSectionFinder(AllTextSectionFinder.getInstance()) {
+		this.setSectionFinder(new ConditionalSectionFinder(AllTextFinder.getInstance()) {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {
@@ -56,7 +56,7 @@ public abstract class BracketsAction<T extends Type> extends D3webRuleAction<T> 
 		});
 
 		AnonymousType negKey = new AnonymousType(this.getClass().getSimpleName() + "key");
-		negKey.setSectionFinder(new OneOfStringEnumUnquotedFinder(alternativeKeys));
+		negKey.setSectionFinder(new OneOfStringUnquotedFinder(alternativeKeys));
 		this.addChildType(negKey);
 
 		this.addChildType(getObjectReference());

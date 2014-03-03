@@ -26,7 +26,7 @@ import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 
@@ -39,7 +39,7 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
 public class AttachmentType extends AbstractType {
 
 	public AttachmentType() {
-		setSectionFinder(AllTextSectionFinder.getInstance());
+		setSectionFinder(AllTextFinder.getInstance());
 		addCompileScript(Priority.HIGHER, new DefaultGlobalScript<AttachmentType>() {
 
 			@Override

@@ -25,7 +25,7 @@ import de.knowwe.core.kdom.basicType.Number;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
 
@@ -38,7 +38,7 @@ import de.knowwe.kdom.constraint.SingleChildConstraint;
 public class ValueType extends AbstractType {
 
 	public ValueType() {
-		setSectionFinder(AllTextSectionFinder.getInstance());
+		setSectionFinder(AllTextFinder.getInstance());
 
 		Number number = new Number();
 		number.setRenderer(DefaultTextRenderer.getInstance());
@@ -56,7 +56,7 @@ public class ValueType extends AbstractType {
 		};
 
 		// aRef.setCustomRenderer(DefaultTextRenderer.getInstance());
-		aRef.setSectionFinder(AllTextSectionFinder.getInstance());
+		aRef.setSectionFinder(AllTextFinder.getInstance());
 
 		addChildType(aRef);
 	}

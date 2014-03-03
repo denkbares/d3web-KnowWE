@@ -20,7 +20,7 @@
 package de.d3web.we.object;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.kdom.sectionFinder.OneOfStringEnumFinder;
+import de.knowwe.kdom.sectionFinder.OneOfStringFinder;
 
 public class ScoreValue extends AbstractType {
 
@@ -37,7 +37,7 @@ public class ScoreValue extends AbstractType {
 			values[i] = ScoreKey.values()[i].toString();
 		}
 
-		this.setSectionFinder(new OneOfStringEnumFinder(values));
+		this.setSectionFinder(new OneOfStringFinder(values));
 	}
 
 }

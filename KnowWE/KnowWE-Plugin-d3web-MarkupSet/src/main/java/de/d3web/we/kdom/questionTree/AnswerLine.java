@@ -37,8 +37,8 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.dashtree.DashTreeElement;
@@ -46,7 +46,7 @@ import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
 import de.knowwe.kdom.sectionFinder.MatchUntilEndFinder;
-import de.knowwe.kdom.sectionFinder.OneOfStringEnumFinder;
+import de.knowwe.kdom.sectionFinder.OneOfStringFinder;
 import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
 
 /**
@@ -60,7 +60,7 @@ import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
 public class AnswerLine extends AbstractType {
 
 	public AnswerLine() {
-		this.setSectionFinder(new ConditionalSectionFinder(AllTextSectionFinder.getInstance()) {
+		this.setSectionFinder(new ConditionalSectionFinder(AllTextFinder.getInstance()) {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {
@@ -102,7 +102,7 @@ public class AnswerLine extends AbstractType {
 	static class InitFlag extends AbstractType {
 
 		public InitFlag() {
-			this.setSectionFinder(new OneOfStringEnumFinder("<init>"));
+			this.setSectionFinder(new OneOfStringFinder("<init>"));
 			this.setRenderer(StyleRenderer.KEYWORDS);
 
 			this.addCompileScript(new D3webCompileScript<InitFlag>() {

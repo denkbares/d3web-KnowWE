@@ -27,7 +27,7 @@ import de.d3web.core.inference.PSAction;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.ActionNode;
 import de.d3web.diaFlux.flow.Node;
-import de.d3web.we.kdom.rules.action.D3webRuleAction;
+import de.d3web.we.kdom.action.D3webRuleAction;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;

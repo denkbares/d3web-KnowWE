@@ -21,7 +21,7 @@ package de.knowwe.jspwiki.types;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.sectionFinder.NestedBracketsFinder;
+import de.knowwe.kdom.sectionFinder.NestedBracketsFinder;
 
 /**
  * 

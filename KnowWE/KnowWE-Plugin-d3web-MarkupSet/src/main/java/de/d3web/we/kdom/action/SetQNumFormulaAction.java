@@ -1,4 +1,4 @@
-package de.d3web.we.kdom.rules.action;
+package de.d3web.we.kdom.action;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +13,8 @@ import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.d3web.we.kdom.auxiliary.Equals;
 import de.d3web.we.kdom.condition.QuestionNumReference;
-import de.d3web.we.kdom.rules.action.formula.CompositeFormula;
-import de.d3web.we.kdom.rules.action.formula.KDOMFormulaNumberElementFactory;
+import de.d3web.we.kdom.action.formula.CompositeFormula;
+import de.d3web.we.kdom.action.formula.FormulaNumberElementFactory;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.kdom.Type;
@@ -85,7 +85,7 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 		if (formulaSection == null) return null;
 		FormulaNumberElement formular = null;
 		try {
-			formular = KDOMFormulaNumberElementFactory.createExpression(
+			formular = FormulaNumberElementFactory.createExpression(
 					compiler, formulaSection);
 		}
 		catch (Exception e) {

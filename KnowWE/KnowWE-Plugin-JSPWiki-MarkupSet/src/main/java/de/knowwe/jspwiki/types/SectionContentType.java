@@ -23,7 +23,7 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.Types;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 
 /**
  * 
@@ -33,7 +33,7 @@ import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
 public class SectionContentType extends AbstractType {
 
 	public SectionContentType() {
-		this.setSectionFinder(AllTextSectionFinder.getInstance());
+		this.setSectionFinder(AllTextFinder.getInstance());
 	}
 
 	@Override

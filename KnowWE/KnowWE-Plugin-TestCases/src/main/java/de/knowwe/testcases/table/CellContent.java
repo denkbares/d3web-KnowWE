@@ -25,7 +25,7 @@ import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.rules.RuleType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.NoBlankSectionsConstraint;
@@ -49,12 +49,12 @@ public class CellContent extends TableCellContent {
 				new TableNameConstraint("Time", Arrays.asList(0, 1))));
 
 		NameType nameType = new NameType();
-		nameType.setSectionFinder(new ConstraintSectionFinder(AllTextSectionFinder.getInstance(),
+		nameType.setSectionFinder(new ConstraintSectionFinder(AllTextFinder.getInstance(),
 				new TableNameConstraint("Name", Arrays.asList(0))));
 
 		CompositeCondition checkType = new CompositeCondition();
 		checkType.setAllowedTerminalConditions(RuleType.getTerminalConditions());
-		checkType.setSectionFinder(new ConstraintSectionFinder(AllTextSectionFinder.getInstance(),
+		checkType.setSectionFinder(new ConstraintSectionFinder(AllTextFinder.getInstance(),
 				new TableNameConstraint("Checks", null),
 				NoBlankSectionsConstraint.getInstance()));
 

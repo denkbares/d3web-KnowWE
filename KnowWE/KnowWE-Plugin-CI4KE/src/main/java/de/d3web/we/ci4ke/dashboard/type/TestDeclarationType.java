@@ -19,7 +19,7 @@
 package de.d3web.we.ci4ke.dashboard.type;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
@@ -38,7 +38,7 @@ public class TestDeclarationType extends AbstractType {
 		addChildType(new ParameterType());
 
 		// add finder to get the whole text before the first ignore
-		ConstraintSectionFinder finder = new ConstraintSectionFinder(AllTextSectionFinder.getInstance());
+		ConstraintSectionFinder finder = new ConstraintSectionFinder(AllTextFinder.getInstance());
 		finder.addConstraint(SingleChildConstraint.getInstance());
 		finder.addConstraint(AtMostOneFindingConstraint.getInstance());
 		setSectionFinder(finder);

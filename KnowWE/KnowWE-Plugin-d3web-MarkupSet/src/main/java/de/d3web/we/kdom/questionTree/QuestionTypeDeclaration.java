@@ -81,7 +81,7 @@ public class QuestionTypeDeclaration extends
 					Section<?> father, Type type) {
 
 				return SectionFinderResult
-						.createSingleItemList(new SectionFinderResult(
+						.singleItemList(new SectionFinderResult(
 								Strings.indexOfUnquoted(text, "["),
 								Strings.indexOfUnquoted(text, "]") + 1));
 			}

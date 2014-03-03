@@ -16,7 +16,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.core.kdom.sectionFinder;
+package de.knowwe.kdom.sectionFinder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +25,8 @@ import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.sectionFinder.SectionFinder;
+import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 /**
  * Finds Sections starting with the opening and ending with the closing String (given in the constructor). If there are

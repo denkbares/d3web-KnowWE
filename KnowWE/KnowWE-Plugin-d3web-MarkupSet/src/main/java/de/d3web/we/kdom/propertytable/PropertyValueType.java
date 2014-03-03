@@ -30,7 +30,7 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.d3web.property.PropertyType;
@@ -48,7 +48,7 @@ import de.knowwe.kdom.table.TableUtils;
 public class PropertyValueType extends AbstractType {
 
 	public PropertyValueType() {
-		setSectionFinder(new ConstraintSectionFinder(AllTextSectionFinder.getInstance(),
+		setSectionFinder(new ConstraintSectionFinder(AllTextFinder.getInstance(),
 				new TableIndexConstraint(1, Integer.MAX_VALUE, 1, Integer.MAX_VALUE)));
 
 		addCompileScript(new D3webHandler<Type>() {

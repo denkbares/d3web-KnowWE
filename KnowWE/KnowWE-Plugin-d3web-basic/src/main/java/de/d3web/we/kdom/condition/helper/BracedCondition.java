@@ -49,7 +49,7 @@ class EmbracedExpressionFinder implements SectionFinder {
 		int leadingSpaces = text.indexOf(trimmed);
 		int followingSpaces = text.length() - trimmed.length() - leadingSpaces;
 		boolean startsWithOpen = trimmed.startsWith(Character.toString(CompositeCondition.BRACE_OPEN));
-		int closingBracket = Strings.findIndexOfClosingBracket(trimmed, 0,
+		int closingBracket = Strings.indexOfClosingBracket(trimmed, 0,
 				CompositeCondition.BRACE_OPEN, CompositeCondition.BRACE_CLOSED);
 
 		// if it doesnt start with an opening bracket
@@ -73,7 +73,7 @@ class EmbracedExpressionFinder implements SectionFinder {
 				&& trimmed.endsWith(Character.toString(CompositeCondition.BRACE_CLOSED))) {
 			// and the ending ')' needs to close the opening
 			if (closingBracket == trimmed.length() - 1) {
-				return SectionFinderResult.createSingleItemList(new SectionFinderResult(
+				return SectionFinderResult.singleItemList(new SectionFinderResult(
 						leadingSpaces, text.length() - followingSpaces));
 			}
 
@@ -89,7 +89,7 @@ class EmbracedExpressionFinder implements SectionFinder {
 				// TODO fix: < 3 is inaccurate
 				// better check that there is no other expression in between
 				if (lastEndLineCommentSymbol - closingBracket < 3) {
-					return SectionFinderResult.createSingleItemList(new SectionFinderResult(
+					return SectionFinderResult.singleItemList(new SectionFinderResult(
 							leadingSpaces, text.length()));
 				}
 			}

@@ -28,7 +28,7 @@ import de.knowwe.core.kdom.basicType.KeywordType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
-import de.knowwe.core.kdom.sectionFinder.AllTextSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.user.UserContext;
 
 public class XMLContent extends AbstractType {
@@ -45,7 +45,7 @@ public class XMLContent extends AbstractType {
 	private static final String CDATA_END = "(" + Pattern.quote("]]>") + "\\s*)\\z";
 
 	public XMLContent() {
-		setSectionFinder(AllTextSectionFinder.getInstance());
+		setSectionFinder(AllTextFinder.getInstance());
 
 		KeywordType endCData = new KeywordType(
 				Pattern.compile(CDATA_START + ".*" + CDATA_END, Pattern.DOTALL), 2);

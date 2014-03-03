@@ -73,7 +73,7 @@ public class EmbracedContentFinder implements SectionFinder {
 		int start = Strings.indexOfUnquoted(
 				text.substring(firstIndex), String.valueOf(open)) + firstIndex;
 		if (start >= firstIndex) {
-			int end = Strings.findIndexOfClosingBracket(text, start,
+			int end = Strings.indexOfClosingBracket(text, start,
 					open, close);
 			if (end < 0) return null;
 
@@ -86,14 +86,14 @@ public class EmbracedContentFinder implements SectionFinder {
 
 			// if chains restriction uninitialized, take all
 			if (chains == -1) {
-				return SectionFinderResult.createSingleItemResultList(startIndex,
+				return SectionFinderResult.singleItemList(startIndex,
 						endIndex);
 			}
 			else {
 				// else check chain restriction
 				String content = text.substring(startIndex, endIndex);
 				if (Strings.getCharacterChains(content).length == chains) {
-					return SectionFinderResult.createSingleItemResultList(startIndex,
+					return SectionFinderResult.singleItemList(startIndex,
 							endIndex);
 				}
 				// if not matches, try to find an other one after these brackets

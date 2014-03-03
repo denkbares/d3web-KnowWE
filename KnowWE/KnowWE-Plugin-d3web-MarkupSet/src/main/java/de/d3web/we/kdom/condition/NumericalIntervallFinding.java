@@ -158,7 +158,7 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 								Strings.lastIndexOfUnquoted(rest, "["),
 								Strings.lastIndexOfUnquoted(rest, "]"));
 
-						return SectionFinderResult.createSingleItemList(new SectionFinderResult(
+						return SectionFinderResult.singleItemList(new SectionFinderResult(
 								bracketsStart,
 								trimmed.length()));
 					}

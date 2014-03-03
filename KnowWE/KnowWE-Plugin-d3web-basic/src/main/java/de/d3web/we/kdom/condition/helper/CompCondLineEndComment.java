@@ -56,7 +56,7 @@ public class CompCondLineEndComment extends AbstractType {
 				if (lineBreak == -1) {
 
 					return SectionFinderResult
-							.createSingleItemList(new SectionFinderResult(start,
+							.singleItemList(new SectionFinderResult(start,
 									text.length()));
 				} // linebreak check whether it is before or after the
 					// endline-comment
@@ -67,7 +67,7 @@ public class CompCondLineEndComment extends AbstractType {
 					}
 					else {
 						return SectionFinderResult
-								.createSingleItemList(new SectionFinderResult(start,
+								.singleItemList(new SectionFinderResult(start,
 										lineBreak));
 					}
 

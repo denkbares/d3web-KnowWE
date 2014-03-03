@@ -30,10 +30,10 @@ public class BracedConditionContent extends NonTerminalCondition {
 			String trimmed = text.trim();
 			int leadingSpaces = text.indexOf(trimmed);
 			if (trimmed.startsWith(Character.toString(CompositeCondition.BRACE_OPEN))) {
-				int closingBracket = Strings.findIndexOfClosingBracket(trimmed, 0,
+				int closingBracket = Strings.indexOfClosingBracket(trimmed, 0,
 						CompositeCondition.BRACE_OPEN, CompositeCondition.BRACE_CLOSED);
 
-				return SectionFinderResult.createSingleItemList(new SectionFinderResult(
+				return SectionFinderResult.singleItemList(new SectionFinderResult(
 						leadingSpaces + 1, closingBracket));
 
 			}

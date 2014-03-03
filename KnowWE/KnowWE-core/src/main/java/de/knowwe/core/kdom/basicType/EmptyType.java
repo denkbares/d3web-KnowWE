@@ -41,7 +41,7 @@ public class EmptyType extends AbstractType {
 			@Override
 			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 				if (isEmpty(text)) {
-					return SectionFinderResult.createSingleItemResultList(0, text.length());
+					return SectionFinderResult.singleItemList(0, text.length());
 				}
 				return null;
 			}
