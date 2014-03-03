@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2014 denkbares GmbH, Germany
+ *
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+
 /**
  * The KNOWWE global namespace object. If KNOWWE is already defined, the
  * existing KNOWWE object will not be overwritten so that defined namespaces are
@@ -191,6 +210,167 @@ KNOWWE.core.plugin.objectinfo = function() {
 					});
 		}
 	}
+}();
+
+KNOWWE.plugin.renaming = function () {
+
+	var sectionsCache = new Object();
+
+	/**
+	 * Renames all occurrences of a specific term.
+	 */
+	function renameTerms(oldValue, replacement, forceRename) {
+		if (forceRename == null)
+			forceRename = false;
+		if (oldValue && replacement) {
+			var changeNote = 'Renaming: "' + oldValue + '" -> "'
+				+ replacement + '"';
+			var params = {
+				action: "TermRenamingAction",
+				termname: oldValue,
+				termreplacement: replacement,
+				force: forceRename ? "true" : "false"
+			}
+			var options = {
+				url: KNOWWE.core.util.getURL(params),
+				response: {
+					action: 'none',
+					fn: function () {
+						var jsonResponse = JSON.parse(this.responseText);
+						var alreadyexists = jsonResponse.alreadyexists;
+						var same = jsonResponse.same;
+						if (same == 'true') {
+							alert('The term has not changed.');
+						} else {
+							if (alreadyexists == 'true') {
+								if (confirm('A term with this name already exists, are you sure you want to merge both terms?')) {
+									renameTerms(oldValue, replacement, true);
+								}
+								else {
+									_IE.disable(_CEWT.rootID, true);
+								}
+							} else {
+								_IE.disable(_CEWT.rootID, true);
+							}
+						}
+						KNOWWE.core.util.updateProcessingState(-1);
+
+					},
+					onError: function () {
+						KNOWWE.core.util.updateProcessingState(-1);
+					}
+				}
+			}
+			KNOWWE.core.util.updateProcessingState(1);
+			new _KA(options).send();
+		}
+
+	}
+
+	function getOldTermIdentifierAndMatchingSections(sectionId, callback) {
+		var params = {
+			action: "GetInfosForInlineTermRenamingAction",
+			sectionId: sectionId
+		}
+		var options = {
+			url: KNOWWE.core.util.getURL(params),
+			response: {
+				action: 'none',
+				fn: function () {
+					var jsonResponse = JSON.parse(this.responseText);
+					callback(jsonResponse);
+				},
+				onError: function () {
+					KNOWWE.core.util.updateProcessingState(-1);
+				}
+			}
+		}
+
+		new _KA(options).send();
+	}
+
+	function restoreOriginal(original) {
+		jq$(original).removeClass("click");
+		jq$(original).unbind();
+		jq$(original).css("min-width", "");
+		jq$(original).css("padding-right", "");
+		jq$(original).css("width", "");
+	}
+
+	function cancelEdit(settings, original) {
+		restoreOriginal(original);
+
+		for (var sectionId in sectionsCache) {
+			var section = sectionsCache[sectionId];
+			var occurence = jq$(".defaultMarkupFrame span[sectionOccurenceId=" + sectionId + "]");
+			jq$(occurence).replaceWith(section);
+		}
+	}
+
+	function afterCancelEdit(setting, original) {
+		ToolMenu.decorateToolMenus(original);
+	}
+
+	function showCurrentEditOnOtherOccurences(text) {
+		for (var i = 0; i < sectionIds.length; i++) {
+			var sectionId = sectionIds[i];
+			var occurence = jq$(".defaultMarkupFrame span[sectionOccurenceId=" + sectionId + "]");
+			jq$(occurence).first().text(text);
+		}
+
+	}
+
+	function saveOriginalsAndPrepareForEdit(lastPathElement) {
+		for (var i = 0; i < sectionIds.length; i++) {
+			var sectionId = sectionIds[i];
+			var toolMenuIdentifier = jq$(".defaultMarkupFrame span[toolmenuidentifier=" + sectionId + "]");
+			if (toolMenuIdentifier.length > 0) {
+				var toolMenuDecorated = toolMenuIdentifier[0].parentNode;
+				sectionsCache[sectionId] = jq$(toolMenuDecorated).clone();
+				jq$(toolMenuDecorated).attr("sectionOccurenceId", sectionId);
+				jq$(toolMenuDecorated).empty();
+				jq$(toolMenuDecorated).css("background-color", "yellow");
+				jq$(toolMenuDecorated).text(lastPathElement);
+			}
+		}
+	}
+
+	return {
+		renameTerm: function (toolmenuidentifier) {
+			var callback = function (jsonResponse) {
+				var clickedTerm = jq$("span[toolmenuidentifier=" + toolmenuidentifier + "]")[0].parentNode;
+
+				//get edit field
+				jq$(clickedTerm).addClass("click");
+				//jq$(clickedTerm).css("display", "none");
+				jq$(".click").editable(function (value, settings) {
+					renameTerms(jsonResponse.termIdentifier, value, false);
+					return(value)
+				}, {
+					style: "inherit",
+					onreset: cancelEdit,
+					afterreset: afterCancelEdit
+
+				});
+				jq$('.click').trigger("click");
+				//replace edit field value with sectionText for encoding reasons
+				var inputField = jq$(clickedTerm).find("input").val(jsonResponse.lastPathElement);
+				jq$(inputField).autoGrow(5);
+
+				sectionIds = jsonResponse.sectionIds;
+
+				saveOriginalsAndPrepareForEdit(jsonResponse.lastPathElement);
+
+				jq$(".click input").keyup(function () {
+					showCurrentEditOnOtherOccurences(jq$(this).val());
+				});
+			}
+			getOldTermIdentifierAndMatchingSections(toolmenuidentifier, callback);
+
+		}
+
+	}
+
 }();
 
 KNOWWE.core.plugin.renderKDOM = function() {
@@ -494,6 +674,78 @@ KNOWWE.helper.observer.subscribe("navigationPaginationRendered", function() {
 });
 
 
+//jquery-autogrow for automatic input field resizing (customized for KnowWE)
+(function () {
+
+	(function (jq$) {
+		var inherit;
+		inherit = ['font', 'letter-spacing'];
+		return jq$.fn.autoGrow = function (options) {
+			var comfortZone, remove, _ref;
+			remove = (options === 'remove' || options === false) || !!(options != null ? options.remove : void 0);
+			comfortZone = (_ref = options != null ? options.comfortZone : void 0) != null ? _ref : options;
+			if (comfortZone != null) {
+				comfortZone = +comfortZone;
+			}
+			return this.each(function () {
+				var check, cz, input, growWithSpan, prop, styles, testSubject, _i, _j, _len, _len1;
+				input = jq$(this);
+				growWithSpan = input.closest("span.toolMenuDecorated");
+				testSubject = input.next().filter('div.autogrow');
+				if (testSubject.length && remove) {
+					input.unbind('input.autogrow');
+					return testSubject.remove();
+				} else if (testSubject.length) {
+					styles = {};
+					for (_i = 0, _len = inherit.length; _i < _len; _i++) {
+						prop = inherit[_i];
+						styles[prop] = input.css(prop);
+					}
+					testSubject.css(styles);
+					if (comfortZone != null) {
+						check = function () {
+							testSubject.text(input.val());
+							growWithSpan.width(testSubject.width() + comfortZone);
+							return input.width(testSubject.width() + comfortZone);
+						};
+						input.unbind('input.autogrow');
+						input.bind('input.autogrow', check);
+						return check();
+					}
+				} else if (!remove) {
+
+					input.css('min-width', '15px');
+					growWithSpan.css('min-width', '15px');
+					growWithSpan.css('padding-right', '10px');
+
+					styles = {
+						position: 'absolute',
+						top: -99999,
+						left: -99999,
+						width: 'auto',
+						visibility: 'hidden'
+					};
+					for (_j = 0, _len1 = inherit.length; _j < _len1; _j++) {
+						prop = inherit[_j];
+						styles[prop] = input.css(prop);
+					}
+					testSubject = jq$('<div class="autogrow"/>').css(styles);
+					testSubject.insertAfter(input);
+					cz = comfortZone != null ? comfortZone : 70;
+					check = function () {
+						testSubject.text(input.val());
+						growWithSpan.width(testSubject.width() + cz);
+						return input.width(testSubject.width() + cz);
+					};
+					input.bind('input.autogrow', check);
+					return check();
+				}
+			});
+		};
+	})(typeof Zepto !== "undefined" && Zepto !== null ? Zepto : jQuery);
+
+}).call(this);
+
 
 /* ############################################################### */
 /* ------------- Onload Events ---------------------------------- */
@@ -512,3 +764,4 @@ KNOWWE.helper.observer.subscribe("navigationPaginationRendered", function() {
 	}
 	;
 }());
+

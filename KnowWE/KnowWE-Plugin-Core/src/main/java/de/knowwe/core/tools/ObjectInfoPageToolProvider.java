@@ -52,7 +52,7 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 			@SuppressWarnings("unchecked")
 			Section<? extends Term> s = (Section<? extends Term>) section;
 			return new Tool[] {
-					getObjectInfoPageTool(s, userContext), getCompositEditTool(s, userContext), getRenamingTool(s, userContext) };
+					getObjectInfoPageTool(s, userContext), getRenamingTool(s, userContext) };
 		}
 		return ToolUtils.emptyToolArray();
 	}
@@ -63,14 +63,6 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 				"Show Info Page",
 				"Opens the information page for the specific object to show its usage inside this wiki.",
 				createObjectInfoJSAction(section));
-	}
-
-	protected Tool getCompositEditTool(Section<? extends Term> section, UserContext userContext) {
-		return new DefaultTool(
-				"http://localhost:8080/KnowWE/KnowWEExtension/images/pencil.png",
-				"Composite Edit",
-				"Opens the composite edit mode.",
-				createCompositeEditModeAction(section));
 	}
 
 	protected Tool getRenamingTool(Section<? extends Term> section, UserContext userContext) {
@@ -98,24 +90,12 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 		return jsAction;
 	}
 
-	public static String createCompositeEditModeAction(Section<? extends Term> section) {
-		Identifier termIdentifier = section.get().getTermIdentifier(section);
-		return createCompositeEditModeAction(termIdentifier);
-	}
-
-	public static String createCompositeEditModeAction(Identifier termIdentifier) {
-		String externalTermIdentifierForm = termIdentifier.toExternalForm();
-		String jsAction = "KNOWWE.plugin.compositeEditTool.openCompositeEditDialog('"
-				+ maskTermForHTML(externalTermIdentifierForm) + "')";
-		return jsAction;
-	}
-
 	public static String createRenamingAction(Section<? extends Term> section) {
 		String jsAction = "KNOWWE.plugin.renaming.renameTerm('" + section.getID() + "')";
 		return jsAction;
 	}
 
-	private static String maskTermForHTML(String string) {
+	public static String maskTermForHTML(String string) {
 		string = string.replace("\\", "\\\\").replace("'", "\\'");
 		string = Strings.encodeHtml(string);
 		// in some strange wiki pages we got terms with linebreaks,
