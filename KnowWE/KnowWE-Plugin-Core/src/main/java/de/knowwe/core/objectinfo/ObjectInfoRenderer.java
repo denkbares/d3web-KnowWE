@@ -220,7 +220,7 @@ public class ObjectInfoRenderer implements Renderer {
 			else {
 				// Render a warning if there is no definition for the references
 				result.appendHtml("<p style=\"color:red;\">");
-				result.append("Term is used, but missing a proper definition!");
+				result.append("No definitions found!");
 				result.appendHtml("</p>");
 			}
 		}
@@ -246,7 +246,7 @@ public class ObjectInfoRenderer implements Renderer {
 		}
 		else {
 			result.appendHtml("<p style=\"color:#888;font-style:italic\">");
-			result.append("Term not used");
+			result.append("No references found!");
 			result.appendHtml("</p>");
 		}
 		renderSectionEnd(result);
