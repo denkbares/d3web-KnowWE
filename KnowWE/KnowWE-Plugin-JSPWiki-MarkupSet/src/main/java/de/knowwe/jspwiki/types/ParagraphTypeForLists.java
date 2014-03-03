@@ -24,14 +24,13 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 
 /**
- * 
  * @author Lukas Brehl
  * @created 26.09.2012
  */
 public class ParagraphTypeForLists extends AbstractType {
 
 	public ParagraphTypeForLists() {
-		Pattern pattern = Pattern.compile("^\\s*(.+?(?:[\n\r]{4,}|\\z))",
+		Pattern pattern = Pattern.compile("^\\s*([^\\s].*?(?:(?:\r?\n){2,}|\\z))",
 				Pattern.MULTILINE + Pattern.DOTALL);
 		this.setSectionFinder(new RegexSectionFinder(pattern, 1));
 
