@@ -262,7 +262,7 @@ public class CIRenderer {
 
 	private void appendMessage(String web, TestResult testResult, RenderResult renderResult) {
 		Collection<String> testObjectNames = testResult.getTestObjectsWithUnexpectedOutcome();
-		int successes = testResult.getSuccessfullTestObjectRuns();
+		int successes = testResult.getSuccessfullyTestedObjects();
 		for (String testObjectName : testObjectNames) {
 			de.d3web.testing.Message message = testResult.getMessageForTestObject(testObjectName);
 			if (message == null) continue;
