@@ -41,7 +41,7 @@
 		<parameter id="description" value="Renders a preview of a paricular rule." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="scope" value="ConditionActionRuleContent" />
+		<parameter id="scope" value="RuleType" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="KnowledgeBaseDownloadProvider">
