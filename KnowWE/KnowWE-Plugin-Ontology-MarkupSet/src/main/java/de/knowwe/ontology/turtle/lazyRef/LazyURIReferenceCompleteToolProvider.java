@@ -1,13 +1,15 @@
-package de.knowwe.ontology.turtle;
+package de.knowwe.ontology.turtle.lazyRef;
 
 import java.util.Collection;
 import java.util.Iterator;
 
 import de.d3web.strings.Identifier;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
@@ -16,7 +18,9 @@ public class LazyURIReferenceCompleteToolProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		Collection<Identifier> potentiallyMatchingIdentifiers = LazyURIReference.getPotentiallyMatchingIdentifiers(section);
+		OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
+		Collection<Identifier> potentiallyMatchingIdentifiers = LazyURIReference.getPotentiallyMatchingIdentifiers(
+				compiler, section);
 		Tool[] tools = new Tool[potentiallyMatchingIdentifiers.size()];
 		Iterator<Identifier> iterator = potentiallyMatchingIdentifiers.iterator();
 		for (int i = 0; i < potentiallyMatchingIdentifiers.size(); i++) {
@@ -44,7 +48,9 @@ public class LazyURIReferenceCompleteToolProvider implements ToolProvider {
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
-		return LazyURIReference.getPotentiallyMatchingIdentifiers(section).size() > 0;
+		Collection<Identifier> potentiallyMatchingIdentifiers = LazyURIReference.getPotentiallyMatchingIdentifiers(
+				Compilers.getCompiler(section, OntologyCompiler.class), section);
+		return potentiallyMatchingIdentifiers != null && potentiallyMatchingIdentifiers.size() > 0;
 	}
 
 }

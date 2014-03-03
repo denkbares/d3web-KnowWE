@@ -18,6 +18,8 @@
  */
 package de.knowwe.ontology.compile;
 
+import java.util.Collection;
+
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.IncrementalCompiler;
@@ -33,8 +35,6 @@ import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.RuleSet;
 
-import java.util.Collection;
-
 /**
  * 
  * @author Albrecht Striffler (denkbares GmbH)
@@ -47,7 +47,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 	private boolean completeCompilation;
 	private ScriptCompiler<OntologyCompiler> scriptCompiler;
 	private ScriptCompiler<OntologyCompiler> destroyScriptCompiler;
-	private RuleSet ruleSet;
+	private final RuleSet ruleSet;
 
 	public OntologyCompiler(PackageManager manager, Section<? extends PackageCompileType> compileSection, RuleSet ruleSet) {
 		super(manager, compileSection);
@@ -139,6 +139,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 
 	@Override
 	public void addSectionsToCompile(Collection<Section<?>> sections) {
+		System.out.println(sections.size());
 		for (Section<?> section : sections) {
 			scriptCompiler.addSection(section);
 		}

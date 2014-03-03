@@ -18,6 +18,8 @@
  */
 package de.knowwe.core.kdom.objects;
 
+import java.util.Collection;
+
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.DestroyScript;
@@ -27,8 +29,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-
-import java.util.Collection;
 
 /**
  * @author Albrecht Striffler (denkbares GmbH)
@@ -53,8 +53,10 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 		TerminologyManager tHandler = compiler.getTerminologyManager();
 		Identifier termIdentifier = section.get().getTermIdentifier(section);
 
-		tHandler.registerTermReference(compiler,
+		if (termIdentifier != null) {
+			tHandler.registerTermReference(compiler,
 				section, section.get().getTermObjectClass(section), termIdentifier);
+		}
 
 		throw new CompilerMessage(validateReference(compiler, section));
 	}

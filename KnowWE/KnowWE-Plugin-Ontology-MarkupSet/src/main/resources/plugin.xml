@@ -131,7 +131,7 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="LazyURIReferenceToolProvider">
-		<parameter id="class" value="de.knowwe.ontology.turtle.LazyURIReferenceCompleteToolProvider" />
+		<parameter id="class" value="de.knowwe.ontology.turtle.lazyRef.LazyURIReferenceCompleteToolProvider" />
 		<parameter id="name" value="LazyURIReferenceToolProvider" />
 		<parameter id="description" value="Offers options to expand a lazy URI Reference." />
 		<parameter id="version" value="1.0" />

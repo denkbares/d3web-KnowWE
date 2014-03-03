@@ -39,6 +39,7 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.StatementProvider;
 import de.knowwe.ontology.turtle.compile.StatementProviderResult;
+import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class Object extends AbstractType implements NodeProvider<Object>, StatementProvider<Object> {

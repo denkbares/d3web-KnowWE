@@ -1,14 +1,13 @@
-package de.knowwe.ontology.turtle;
+package de.knowwe.ontology.turtle.lazyRef;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Set;
 
 import org.ontoware.rdf2go.model.node.Node;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compilers;
-import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
@@ -17,8 +16,8 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.ontology.compile.OntologyCompiler;
-import de.knowwe.ontology.kdom.OntologyUtils;
 import de.knowwe.ontology.kdom.resource.Resource;
+import de.knowwe.ontology.turtle.TurtleURI;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
@@ -53,23 +52,14 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 		return identifier;
 	}
 
-	public static Collection<Identifier> getPotentiallyMatchingIdentifiers(Section<?> section) {
-		Collection<Identifier> identifiers = new HashSet<Identifier>();
-		OntologyCompiler ontologyCompiler = OntologyUtils.getOntologyCompiler(section);
-		if (ontologyCompiler != null) {
-			TerminologyManager terminologyManager = ontologyCompiler.getTerminologyManager();
-			Collection<Identifier> allDefinedTerms = terminologyManager.getAllDefinedTerms();
-			for (Identifier identifier : allDefinedTerms) {
-				String[] pathElements = identifier.getPathElements();
-				if (pathElements.length == 2) {
-					if (pathElements[1].equals(section.getText())) {
-						// found match
-						identifiers.add(identifier);
-					}
-				}
-			}
-		}
-		return identifiers;
+	public static Collection<Identifier> getPotentiallyMatchingIdentifiers(de.knowwe.core.compile.Compiler c, Section<?> section) {
+		
+		String lazyRefText = section.getText();
+
+		Set<Identifier> potentialMatches = LazyReferenceManager.getInstance().getData(c,
+				lazyRefText);
+
+		return potentialMatches;
 	}
 
 	private class LazyURIReferenceHandler extends SimpleReferenceRegistrationScript<OntologyCompiler> {
@@ -80,9 +70,11 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 
 		@Override
 		public void compile(OntologyCompiler compiler, Section<Term> section) throws CompilerMessage {
-			Collection<Identifier> potentiallyMatchingIdentifiers = getPotentiallyMatchingIdentifiers(section);
+			Collection<Identifier> potentiallyMatchingIdentifiers = getPotentiallyMatchingIdentifiers(
+					compiler, section);
 
-			if (potentiallyMatchingIdentifiers.size() == 0) {
+			if (potentiallyMatchingIdentifiers == null
+					|| potentiallyMatchingIdentifiers.size() == 0) {
 				throw CompilerMessage.error("Term '"
 						+ section.get().getTermName(section)
 						+ "' not found. A term either needs a namespace or to be defined unambiguously.");

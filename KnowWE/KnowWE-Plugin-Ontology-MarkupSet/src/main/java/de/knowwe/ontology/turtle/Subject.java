@@ -43,6 +43,7 @@ import de.knowwe.ontology.edit.DropTargetRenderer;
 import de.knowwe.ontology.kdom.resource.ResourceReference;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.ResourceProvider;
+import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class Subject extends AbstractType implements ResourceProvider<Subject> {

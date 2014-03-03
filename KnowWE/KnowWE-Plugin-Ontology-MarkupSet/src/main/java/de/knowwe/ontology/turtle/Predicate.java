@@ -31,6 +31,7 @@ import de.knowwe.kdom.renderer.CompositeRenderer;
 import de.knowwe.ontology.edit.DropTargetRenderer;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.URIProvider;
+import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class Predicate extends AbstractType implements URIProvider<Predicate> {
