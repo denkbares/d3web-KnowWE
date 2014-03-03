@@ -360,7 +360,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		result.appendHtmlTag("div", "class", "markupTools");
 		for (Tool tool : tools) {
 			result.appendHtmlTag("div", "class", tool.getClass().getSimpleName());
-			result.appendHtmlTag("a", ToolUtils.getActionAttributeName(tool), ToolUtils.getActionAttributeValue(tool));
+			result.appendHtmlTag("a", false, ToolUtils.getActionAttributeName(tool), ToolUtils.getActionAttributeValue(tool));
 			result.appendHtmlElement("img", "", "title", tool.getDescription(), "src", tool.getIconPath());
 			result.appendHtmlTag("/a");
 			result.appendHtmlTag("/div");
@@ -405,8 +405,8 @@ public class DefaultMarkupRenderer implements Renderer {
 		boolean hasIcon = icon != null && !icon.trim().isEmpty();
 		result.appendHtmlTag("div", "class", tool.getClass().getSimpleName());
 		result.appendHtmlTag("div", "class", "markupMenuItem");
-		result.appendHtmlTag("a", "class", "markupMenuItem",
-				"title", tool.getDescription(),
+		result.appendHtmlTag("a", false, "class", "markupMenuItem",
+				"title", Strings.encodeHtml(tool.getDescription()),
 				ToolUtils.getActionAttributeName(tool),
 				ToolUtils.getActionAttributeValue(tool) + ";ToolMenu.hideToolsPopupMenu()");
 		if (hasIcon) {

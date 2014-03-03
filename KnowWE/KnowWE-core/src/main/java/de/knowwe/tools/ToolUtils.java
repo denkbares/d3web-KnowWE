@@ -14,8 +14,8 @@ import de.knowwe.core.utils.ScopeExtensions;
 public class ToolUtils {
 
 	/**
-	 * Special string for the empty category. The spaces in front make it be the
-	 * first item in a sorted list (assuming the others use regular letters).
+	 * Special string for the empty category. The spaces in front make it be the first item in a sorted list (assuming
+	 * the others use regular letters).
 	 */
 	public final static String EMPTY_CATEGORY = "  empty_category";
 
@@ -51,12 +51,12 @@ public class ToolUtils {
 
 	/**
 	 * This method sorts the tool list by the category string.
-	 * 
+	 * <p/>
 	 * The category string can contain at most one forward slash (/)
-	 * 
-	 * @created 03.03.2011
+	 *
 	 * @param tools
 	 * @return
+	 * @created 03.03.2011
 	 */
 	public static Map<String, Map<String, List<Tool>>> groupTools(ToolSet tools) {
 		Map<String, Map<String, List<Tool>>> toolMap = new HashMap<String, Map<String, List<Tool>>>();
@@ -112,13 +112,12 @@ public class ToolUtils {
 	}
 
 	/**
-	 * The method returns the array of tools, being null-secure and removing all
-	 * null entries from the specified tools. Therefore, calling this method
-	 * with any numbers of null will result in an empty tool array.
-	 * 
-	 * @created 30.11.2013
+	 * The method returns the array of tools, being null-secure and removing all null entries from the specified tools.
+	 * Therefore, calling this method with any numbers of null will result in an empty tool array.
+	 *
 	 * @param tools
 	 * @return the tool array with no null tools
+	 * @created 30.11.2013
 	 */
 	public static Tool[] asArray(Tool... tools) {
 		if (tools == null) return emptyToolArray();
@@ -148,19 +147,27 @@ public class ToolUtils {
 
 	public static String getActionAttributeName(Tool tool) {
 		switch (tool.getActionType()) {
-			case HREF: return "href";
-			case HREF_SCRIPT: return "href";
-			case ONCLICK: return "onclick";
-			default: return null;
+			case HREF:
+				return "href";
+			case HREF_SCRIPT:
+				return "href";
+			case ONCLICK:
+				return "onclick";
+			default:
+				return null;
 		}
 	}
 
 	public static String getActionAttributeValue(Tool tool) {
 		switch (tool.getActionType()) {
-			case HREF: return tool.getAction();
-			case HREF_SCRIPT: return "javascript:" + tool.getAction();
-			case ONCLICK: return tool.getAction();
-			default: return null;
+			case HREF:
+				return tool.getAction();
+			case HREF_SCRIPT:
+				return "javascript:" + tool.getAction();
+			case ONCLICK:
+				return tool.getAction();
+			default:
+				return null;
 		}
 	}
 }
