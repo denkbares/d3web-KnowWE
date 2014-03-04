@@ -139,7 +139,6 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 
 	@Override
 	public void addSectionsToCompile(Collection<Section<?>> sections) {
-		System.out.println(sections.size());
 		for (Section<?> section : sections) {
 			scriptCompiler.addSection(section);
 		}
