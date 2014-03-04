@@ -1,9 +1,20 @@
 /*
- * jQuery treeTable Plugin 3.0.0
- * http://ludo.cubicphuse.nl/jquery-treetable
+ * Copyright (C) 2014 denkbares GmbH, Germany
  *
- * Copyright 2013, Ludo van den Boom
- * Dual licensed under the MIT or GPL Version 2 licenses.
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 (function() {
 	var jq$, Node, Tree, methods;
@@ -527,9 +538,10 @@
 		// table.addClass('treeTable');
 		var persistStore;
 
-		var cookieStr = $.cookie("KdomPersistance-"+options.article);
-		if (cookieStr != null)
-			persistStore = $.parseJSON(cookieStr);
+
+		var storageString = simpleStorage.get("TreeTablePersistance-"+options.article);
+		if (storageString != null)
+			persistStore = $.parseJSON(storageString);
 
 		if (persistStore == null) {
 			persistStore = {
@@ -564,8 +576,8 @@
 				}
 				var stop;
 			}
-			var cookieStr = JSON.stringify(persistStore);
-			$.cookie("KdomPersistance-"+options.article, cookieStr);
+			var storageString = JSON.stringify(persistStore);
+			simpleStorage.set("TreeTablePersistance-" + options.article, storageString);
 		}
 
 		//necessary because node ids change after a new build of the site
@@ -716,7 +728,7 @@
 		options.onInitialized = $.wrapCallbacks(updateNodeStates,
 				options.onInitialized);
 		table.treetable($.extend({
-			expandable : true,
+			expandable: true
 		}, options));
 		return this;
 	};
