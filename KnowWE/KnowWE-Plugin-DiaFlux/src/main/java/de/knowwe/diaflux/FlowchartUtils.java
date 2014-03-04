@@ -20,14 +20,12 @@
 package de.knowwe.diaflux;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.WeakHashMap;
 
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -36,9 +34,11 @@ import de.d3web.diaFlux.flow.Flow;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.JPFPluginManager;
 import de.d3web.strings.Strings;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
@@ -46,14 +46,12 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.diaflux.kbinfo.JSPHelper;
 import de.knowwe.diaflux.type.DiaFluxType;
 import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.kdom.xml.AbstractXMLType;
 
 /**
- * 
  * @author Reinhard Hatko
  * @created 09.12.2009
  */
@@ -137,9 +135,9 @@ public class FlowchartUtils {
 
 	/**
 	 * Prepares a div to render a flowchart in later on using JS.
-	 * 
-	 * @created 20.03.2013
+	 *
 	 * @return
+	 * @created 20.03.2013
 	 */
 	public static RenderResult prepareFlowchartRenderer(UserContext user, String parentId, Section<FlowchartType> flowchartSection, String scope, boolean insertRessources) {
 		RenderResult result = new RenderResult(user);
@@ -195,16 +193,15 @@ public class FlowchartUtils {
 	}
 
 	/**
-	 * 
-	 * @created 26.05.2011
 	 * @param result
 	 * @param user
-	 * @param section
+	 * @created 26.05.2011
 	 */
 	public static void addDisplayPlugins(RenderResult result, UserContext user, String scope) {
 		Extension[] extensions = JPFPluginManager.getInstance().getExtensions(
 				DiaFluxDisplayEnhancement.PLUGIN_ID, DiaFluxDisplayEnhancement.EXTENSION_POINT_ID);
-		next: for (Extension extension : extensions) {
+		next:
+		for (Extension extension : extensions) {
 
 			List<String> scopes = extension.getParameters("scope");
 
@@ -253,15 +250,15 @@ public class FlowchartUtils {
 
 	/**
 	 * Returns the first flowchart in the given web with the provided name
-	 * 
-	 * @created 02.03.2011
+	 *
 	 * @param flowName The name of the flowchart
 	 * @return
+	 * @created 02.03.2011
 	 */
 	public static Section<FlowchartType> findFlowchartSection(String web, String flowName) {
 		ArticleManager manager = Environment.getInstance().getArticleManager(web);
 
-		for (Iterator<Article> iterator = manager.getArticleIterator(); iterator.hasNext();) {
+		for (Iterator<Article> iterator = manager.getArticleIterator(); iterator.hasNext(); ) {
 			Article article = iterator.next();
 			List<Section<FlowchartType>> matches = new LinkedList<Section<FlowchartType>>();
 			Sections.findSuccessorsOfType(article.getRootSection(), FlowchartType.class, matches);
@@ -278,57 +275,51 @@ public class FlowchartUtils {
 	}
 
 	/**
-	 * Returns the corresponding Flowchart section of the given name, that is
-	 * called by the provided section.
-	 * 
-	 * @created 11.04.2012
+	 * Returns the corresponding Flowchart section of the given name, that is called by the provided section.
+	 *
 	 * @param section
 	 * @param calledFlowName
 	 * @return
+	 * @created 11.04.2012
 	 */
 	public static Section<FlowchartType> findFlowchartSection(
 			Section<FlowchartType> section, String calledFlowName) {
-		// get all articles compiling this flowchart that will be containing the
-		// link
-		PackageManager pkgManager =
-				KnowWEUtils.getPackageManager(section.getArticleManager());
-		Set<Section<? extends PackageCompileType>> compileSections = pkgManager.getCompileSections(section);
-		// get all packages that are compiled by these articles
-		Collection<String> allPossiblePackageNames = new ArrayList<String>();
-		for (Section<? extends PackageCompileType> compilingSection : compileSections) {
-			allPossiblePackageNames.addAll(Arrays.asList(compilingSection.get().getPackagesToCompile(
-					compilingSection)));
-		}
+		// get all articles compiling this flowchart that will be containing the link
+		Collection<D3webCompiler> compilers = Compilers.getCompilers(section, D3webCompiler.class);
 
 		// get all sections compiled by these articles
 		Collection<Section<?>> allPossibleSections = new ArrayList<Section<?>>();
-		for (String packageName : allPossiblePackageNames) {
-			allPossibleSections.addAll(pkgManager.getSectionsOfPackage(packageName));
-		}
-		// look for flowcharts with the given name in these compiled sections
 		Collection<Section<FlowchartType>> matches = new ArrayList<Section<FlowchartType>>();
-		for (Section<?> possibleSection : allPossibleSections) {
-			if (!(possibleSection.get() instanceof DiaFluxType)) continue;
-			Section<FlowchartType> flowchart = Sections.findSuccessor(
-					possibleSection, FlowchartType.class);
-			if (flowchart == null) continue;
-			String flowName = FlowchartType.getFlowchartName(flowchart);
-			if (calledFlowName.equalsIgnoreCase(flowName)) {
-				matches.add(flowchart);
+		outer:
+		for (D3webCompiler compiler : compilers) {
+			PackageManager packageManager = compiler.getPackageManager();
+			Section<? extends PackageCompileType> compileSection = compiler.getCompileSection();
+			Collection<Section<?>> sectionsOfPackage = packageManager.getSectionsOfPackage(compileSection
+					.get().getPackagesToCompile(compileSection));
+			for (Section<?> possibleSection : sectionsOfPackage) {
+				if (!(possibleSection.get() instanceof DiaFluxType)) continue;
+				Section<FlowchartType> flowchart = Sections.findSuccessor(
+						possibleSection, FlowchartType.class);
+				if (flowchart == null) continue;
+				String flowName = FlowchartType.getFlowchartName(flowchart);
+				if (calledFlowName.equalsIgnoreCase(flowName)) {
+					matches.add(flowchart);
+					if (matches.size() > 1) break outer;
+				}
 			}
 		}
+
 		// only if there is exactly one match, we know it is the correct one
 		if (matches.size() == 1) return matches.iterator().next();
 		return null;
 	}
 
 	/**
-	 * Return the first KB, that is compiling the given flowchart, of none, if
-	 * it is not compiled by any article.
-	 * 
-	 * @created 11.04.2012
+	 * Return the first KB, that is compiling the given flowchart, of none, if it is not compiled by any article.
+	 *
 	 * @param s
 	 * @return
+	 * @created 11.04.2012
 	 */
 	public static KnowledgeBase getKB(Section<DiaFluxType> s) {
 		return D3webUtils.getKnowledgeBase(s);
