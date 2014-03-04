@@ -61,7 +61,6 @@ public class GetSubflowLinksAction extends AbstractAction {
 		String string = getSubFlowLinks(kb, flowchart);
 
 		Highlight.write(context, string);
-
 	}
 
 	// copied from FlowchartRenderers
