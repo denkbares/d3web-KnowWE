@@ -276,23 +276,6 @@
 		</profile>
 
 		<profile>
-			<id>calendar</id>
-			<activation>
-				<property>
-					<name>calendar</name>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Calendar</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
 			<id>drools</id>
 			<activation>
 				<property>
