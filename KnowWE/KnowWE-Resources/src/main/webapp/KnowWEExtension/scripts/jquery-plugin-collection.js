@@ -71,8 +71,11 @@
     });
 })(jQuery);
 
-jQuery.fn.exists = function(){return this.length>0;}
-
+(function (jq$) {
+	jQuery.fn.exists = function () {
+		return this.length > 0;
+	}
+})(jQuery);
 
 /**
  * Version 1.7.1
@@ -617,3 +620,4 @@ jQuery.fn.exists = function(){return this.length>0;}
 	};
 
 })(jQuery);
+
