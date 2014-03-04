@@ -54,7 +54,7 @@ public class TOCExporter implements Exporter<TableOfContentsType> {
 		ctr = manager.getParagraph().createRun().getCTR();
 		CTText instrText = ctr.addNewInstrText();
 		instrText.setSpace(Space.PRESERVE);
-		instrText.setStringValue(" TOC \\o \"1-3\" ");
+		instrText.setStringValue(" TOC \\o \"1-3\" \\h \\z ");
 
 		ctr = manager.getParagraph().createRun().getCTR();
 		fldChar = ctr.addNewFldChar();

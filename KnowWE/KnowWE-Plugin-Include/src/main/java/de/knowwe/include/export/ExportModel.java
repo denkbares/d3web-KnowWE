@@ -31,6 +31,8 @@ import org.apache.poi.openxml4j.opc.PackageProperties;
 import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.openxmlformats.schemas.officeDocument.x2006.customProperties.CTProperties;
+import org.openxmlformats.schemas.officeDocument.x2006.customProperties.CTProperty;
 
 import de.d3web.core.io.progress.ProgressListener;
 import de.d3web.strings.Strings;
@@ -181,7 +183,6 @@ public class ExportModel {
 			}
 			else if (Strings.equalsIgnoreCase("version", key)
 					|| Strings.equalsIgnoreCase("revision", key)) {
-				properties.setRevisionProperty(Strings.trim(value));
 				document.getProperties().getCoreProperties().setRevision(value);
 			}
 			else if (Strings.equalsIgnoreCase("project", key)
@@ -192,11 +193,26 @@ public class ExportModel {
 			}
 
 			// always add as custom property
-			document.getProperties().getCustomProperties().addProperty(key, value);
+			setCustomProperty(key, value);
 		}
 		catch (InvalidFormatException e) {
 			addMessage(Messages.warning("unexpected format exception"));
 		}
 	}
 
+	private void setCustomProperty(String key, String value) {
+		// first check if the property is already be available,
+		// to avoid exception on duplicate properties
+		CTProperties props =
+				document.getProperties().getCustomProperties().getUnderlyingProperties();
+		for(CTProperty p : props.getPropertyList()){
+			if(p.getName().equalsIgnoreCase(key)) {
+				// update property with same name
+				p.setLpwstr(value);
+				return;
+			}
+		}
+		// add the property as usual if not already exists
+		document.getProperties().getCustomProperties().addProperty(key, value);
+	}
 }

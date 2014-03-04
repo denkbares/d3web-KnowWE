@@ -40,7 +40,6 @@ import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 
 /**
- * 
  * @author Volker Belli (denkbares GmbH)
  * @created 07.02.2014
  */
@@ -111,11 +110,11 @@ public class DocxDownloadOperation extends FileDownloadOperation {
 	}
 
 	/**
-	 * Creates the increased version number. The method return null if no
-	 * updated number can be provided.
-	 * 
-	 * @created 16.02.2014
+	 * Creates the increased version number. The method return null if no updated number can be
+	 * provided.
+	 *
 	 * @return the next version number
+	 * @created 16.02.2014
 	 */
 	private String getNextVersion() {
 		// if we passed the previous check, we know there is a version available
@@ -126,8 +125,11 @@ public class DocxDownloadOperation extends FileDownloadOperation {
 
 		// if update is required inc version and write back to wiki
 		try {
-			int version = Integer.parseInt(versionSection.getText());
-			return String.valueOf(version + 1);
+			String version = versionSection.getText();
+			int dot = version.lastIndexOf('.');
+			String major = version.substring(0, dot + 1);
+			String minor = version.substring(dot + 1);
+			return major + String.valueOf(Integer.parseInt(minor) + 1);
 		}
 		catch (NumberFormatException e) {
 			return null;

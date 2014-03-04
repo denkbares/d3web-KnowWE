@@ -112,7 +112,7 @@ public class IncludeMarkup extends DefaultMarkupType {
 		m.addAnnotation(ANNOTATION_PROJECT, false);
 		m.addAnnotation(ANNOTATION_AUTHOR, false);
 		m.addAnnotation(ANNOTATION_TEMPLATE, false);
-		m.addAnnotation(ANNOTATION_VERSION, false, Pattern.compile("\\d+"));
+		m.addAnnotation(ANNOTATION_VERSION, false, Pattern.compile("\\d+(\\.\\d+)*"));
 		m.addAnnotationContentType(ANNOTATION_TEMPLATE, new AttachmentType());
 	}
 
