@@ -39,9 +39,14 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 public class UnquotedExpressionFinder implements SectionFinder {
 
 	private final String symbol;
+	private final int flags;
 
-	public UnquotedExpressionFinder(String symbol) {
+	public UnquotedExpressionFinder(String symbol, int flags) {
 		this.symbol = symbol;
+		this.flags = flags;
+	}
+	public UnquotedExpressionFinder(String symbol) {
+		this(symbol, Strings.UNQUOTED);
 	}
 
 	@Override

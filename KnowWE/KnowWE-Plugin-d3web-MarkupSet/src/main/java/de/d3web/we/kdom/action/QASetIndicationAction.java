@@ -86,7 +86,7 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 	}
 
 	@Override
-	public Class<? extends PSMethod> getActionPSContext() {
+	public Class<? extends PSMethod> getProblemSolverContext() {
 		return PSMethodStrategic.class;
 	}
 

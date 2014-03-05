@@ -110,7 +110,7 @@ public class SetQuestionNumValueAction extends D3webRuleAction<SolutionValueAssi
 	}
 
 	@Override
-	public Class<? extends PSMethod> getActionPSContext() {
+	public Class<? extends PSMethod> getProblemSolverContext() {
 		return PSMethodAbstraction.class;
 	}
 

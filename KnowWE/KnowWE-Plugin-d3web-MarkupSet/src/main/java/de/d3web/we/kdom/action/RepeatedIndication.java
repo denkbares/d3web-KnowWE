@@ -64,7 +64,7 @@ public class RepeatedIndication extends BracketsAction<RepeatedIndication> {
 	}
 
 	@Override
-	public Class<? extends PSMethod> getActionPSContext() {
+	public Class<? extends PSMethod> getProblemSolverContext() {
 		return PSMethodStrategic.class;
 	}
 

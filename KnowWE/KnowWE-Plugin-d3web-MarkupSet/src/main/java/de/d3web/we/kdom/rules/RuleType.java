@@ -46,8 +46,9 @@ import de.d3web.we.kdom.condition.NumericalFinding;
 import de.d3web.we.kdom.condition.NumericalIntervallFinding;
 import de.d3web.we.kdom.condition.SolutionStateCond;
 import de.d3web.we.kdom.condition.UserRatingConditionType;
-import de.d3web.we.kdom.rules.action.RuleAction;
+import de.d3web.we.kdom.rules.action.ElseActionContainer;
 import de.d3web.we.kdom.rules.action.ThenActionContainer;
+import de.d3web.we.kdom.rules.action.UnknownActionContainer;
 import de.d3web.we.kdom.rules.condition.ExceptionConditionContainer;
 import de.d3web.we.kdom.rules.condition.IfConditionContainer;
 import de.d3web.we.knowledgebase.D3webCompiler;
@@ -63,7 +64,6 @@ import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
@@ -91,9 +91,12 @@ public class RuleType extends AbstractType {
 		setRenderer(new ReRenderSectionMarkerRenderer(new RuleHighlightingRenderer()));
 
 		this.addChildType(new IfConditionContainer());
-		this.addChildType(new ExceptionConditionContainer());
 
 		this.addChildType(new ThenActionContainer());
+		this.addChildType(new ElseActionContainer());
+		this.addChildType(new UnknownActionContainer());
+
+		this.addChildType(new ExceptionConditionContainer());
 
 		this.addChildType(new EndLineComment());
 
@@ -112,15 +115,10 @@ public class RuleType extends AbstractType {
 						   UserContext user, RenderResult string) {
 
 			D3webCompiler compiler = Compilers.getCompiler(sec, D3webCompiler.class);
-			Rule rule = null;
+			Rule rule = RuleCompileScript.getRule(compiler, Sections.cast(sec, RuleType.class));
 			Session session = null;
 
-			Section<RuleAction> ruleAction = Sections.findSuccessor(sec,
-					RuleAction.class);
-			if (ruleAction != null) {
-				rule = (Rule) KnowWEUtils.getStoredObject(compiler, ruleAction,
-						RuleCompileScript.RULE_STORE_KEY);
-			}
+
 
 			string.appendHtml("<span id='" + sec.getID() + "'>");
 

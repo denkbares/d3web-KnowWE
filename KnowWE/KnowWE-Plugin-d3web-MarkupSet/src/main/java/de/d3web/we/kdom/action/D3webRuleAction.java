@@ -31,8 +31,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 
-public abstract class D3webRuleAction<T extends Type>
-		extends AbstractType {
+public abstract class D3webRuleAction<T extends Type> extends AbstractType {
 
 	private static final String ACTION_STORE_KEY = "action-store-key";
 
@@ -40,7 +39,7 @@ public abstract class D3webRuleAction<T extends Type>
 		this.addCompileScript(new ActionCreateHandler());
 	}
 
-	public abstract Class<? extends PSMethod> getActionPSContext();
+	public abstract Class<? extends PSMethod> getProblemSolverContext();
 
 	public final PSAction getAction(PackageCompiler compiler, Section<T> s) {
 		return (PSAction) KnowWEUtils.getStoredObject(compiler, s, ACTION_STORE_KEY);
@@ -54,7 +53,7 @@ public abstract class D3webRuleAction<T extends Type>
 	 * Creates the action for the requested section in the specified article.
 	 * 
 	 * @created 02.10.2010
-	 * @param article to create the action for
+	 * @param compiler to create the action for
 	 * @param section the section of this action
 	 * @return the newly created action
 	 */

@@ -34,7 +34,6 @@ import de.knowwe.kdom.renderer.StyleRenderer;
  */
 public class ConditionContainer extends AbstractType {
 
-
 	public ConditionContainer() {
 		EndLineComment comment = new EndLineComment();
 		comment.setRenderer(StyleRenderer.COMMENT);

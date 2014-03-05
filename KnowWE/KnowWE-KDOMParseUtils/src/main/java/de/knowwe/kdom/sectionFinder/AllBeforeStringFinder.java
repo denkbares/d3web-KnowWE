@@ -47,7 +47,10 @@ public class AllBeforeStringFinder extends AbstractSingleResultFinder {
 	@Override
 	public SectionFinderResult lookForSection(String text, Section<?> father, Type type) {
 		int start = 0;
-		int end = Strings.indexOf(text, unquoted, noComment, tokens);
+		int flags = 0;
+		if (unquoted) flags += Strings.UNQUOTED;
+		if (noComment) flags += Strings.SKIP_COMMENTS;
+		int end = Strings.indexOf(text, flags, tokens);
 		if (trimmed) {
 			start = Strings.trimLeft(text, start, end);
 			end = Strings.trimRight(text, start, end);

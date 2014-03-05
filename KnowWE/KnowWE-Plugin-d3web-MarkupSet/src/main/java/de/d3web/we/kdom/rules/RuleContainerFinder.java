@@ -26,16 +26,17 @@ public class RuleContainerFinder implements SectionFinder {
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-		int start = Strings.indexOf(text, true, true, startTokens);
+		int flags = Strings.UNQUOTED | Strings.SKIP_COMMENTS;
+		int start = Strings.indexOf(text, flags, startTokens);
 		List<SectionFinderResult> results = new ArrayList<SectionFinderResult>();
 		int end = start;
 		while (start != -1 && end != -1 && end != text.length()) {
 			int startOffset = AllBeforeStringFinder.addTokenLengthToOffset(text, start, startTokens);
-			end = Strings.indexOf(text, startOffset, true, true, endTokens);
+			end = Strings.indexOf(text, startOffset, flags, endTokens);
 			if (end == -1) end = text.length();
 			Pair<Integer, Integer> trimmed = Strings.trim(text, start, end);
 			results.add(new SectionFinderResult(trimmed.getA(), trimmed.getB()));
-			start = Strings.indexOf(text, end, true, true, startTokens);
+			start = Strings.indexOf(text, end, flags, startTokens);
 		}
 		return results;
 	}

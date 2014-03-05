@@ -102,7 +102,7 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 	}
 
 	@Override
-	public Class<? extends PSMethod> getActionPSContext() {
+	public Class<? extends PSMethod> getProblemSolverContext() {
 		return PSMethodAbstraction.class;
 	}
 }

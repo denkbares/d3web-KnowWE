@@ -63,7 +63,7 @@ public class InstantIndication extends BracketsAction<InstantIndication> {
 	}
 
 	@Override
-	public Class<? extends PSMethod> getActionPSContext() {
+	public Class<? extends PSMethod> getProblemSolverContext() {
 		return PSMethodStrategic.class;
 	}
 

@@ -18,11 +18,10 @@
  */
 package de.d3web.we.object;
 
-import java.util.regex.Pattern;
-
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.renderer.StyleRenderer;
+import de.knowwe.kdom.sectionFinder.UnquotedExpressionFinder;
 
 /**
  * Type representing the value 'Unknown'.
@@ -32,12 +31,8 @@ import de.knowwe.kdom.renderer.StyleRenderer;
  */
 public class UnknownValueType extends AbstractType {
 
-	private static final String REGEX = "unknown";
-
-	private static final Pattern PATTERN = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE);
-
 	public UnknownValueType() {
-		setSectionFinder(new RegexSectionFinder(PATTERN));
+		setSectionFinder(new UnquotedExpressionFinder("unknown", Strings.CASE_INSENSITIVE | Strings.UNQUOTED | Strings.SKIP_COMMENTS));
 		setRenderer(StyleRenderer.OPERATOR);
 	}
 

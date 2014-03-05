@@ -96,7 +96,7 @@ public class ContraIndicationAction extends BracketsAction<ContraIndicationActio
 	}
 
 	@Override
-	public Class<? extends PSMethod> getActionPSContext() {
+	public Class<? extends PSMethod> getProblemSolverContext() {
 		return PSMethodStrategic.class;
 	}
 

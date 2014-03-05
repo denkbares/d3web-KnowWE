@@ -158,7 +158,7 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 	}
 
 	@Override
-	public Class<? extends PSMethod> getActionPSContext() {
+	public Class<? extends PSMethod> getProblemSolverContext() {
 		return PSMethodHeuristic.class;
 	}
 }
