@@ -106,7 +106,7 @@ public class Compilers {
 	 * @created 15.11.2013
 	 * @param master the master article for which we want the {@link Compiler}
 	 * @param compilerClass the type of the {@link Compiler} we want
-	 * @returns the first {@link Compiler} that compiles the given section.
+	 * @return the first {@link Compiler} that compiles the given section.
 	 */
 	@Deprecated
 	public static <C extends PackageCompiler> C getCompiler(Article master, Class<C> compilerClass) {
@@ -126,7 +126,7 @@ public class Compilers {
 	 * @created 15.11.2013
 	 * @param section the section for which we want the {@link Compiler}s
 	 * @param compilerClass the type of the {@link Compiler} we want
-	 * @returns the first {@link Compiler} that compiles the given section.
+	 * @return the first {@link Compiler} that compiles the given section.
 	 */
 	public static <C extends Compiler> C getCompiler(Section<?> section, Class<C> compilerClass) {
 		Collection<C> compilers = getCompilers(section, compilerClass, true);
@@ -142,7 +142,7 @@ public class Compilers {
 	 * @param manager the {@link ArticleManager} for which we want the
 	 *        {@link Compiler}s
 	 * @param compilerClass the type of the {@link Compiler} we want
-	 * @returns the first {@link Compiler}s of a given ArticleManager and Class.
+	 * @return the first {@link Compiler}s of a given ArticleManager and Class.
 	 */
 	public static <C extends Compiler> C getCompiler(ArticleManager manager, Class<C> compilerClass) {
 		Collection<C> compilers = getCompilers(manager, compilerClass, true);
@@ -158,7 +158,7 @@ public class Compilers {
 	 * @created 15.11.2013
 	 * @param section the section for which we want the {@link Compiler}s
 	 * @param compilerClass the type of the {@link Compiler} we want
-	 * @returns all {@link Compiler}s compiling the given section
+	 * @return all {@link Compiler}s compiling the given section
 	 */
 	public static <C extends Compiler> Collection<C> getCompilers(Section<?> section, Class<C> compilerClass) {
 		return getCompilers(section, compilerClass, false);
@@ -184,7 +184,7 @@ public class Compilers {
 	 * @param manager the {@link ArticleManager} for which we want the
 	 *        {@link Compiler}
 	 * @param compilerClass the type of the {@link Compiler} we want
-	 * @returns all {@link AbstractPackageCompiler}s compiling the given section
+	 * @return all {@link AbstractPackageCompiler}s compiling the given section
 	 */
 	public static <C extends Compiler> Collection<C> getCompilers(ArticleManager manager, Class<C> compilerClass) {
 		return getCompilers(manager, compilerClass, false);
