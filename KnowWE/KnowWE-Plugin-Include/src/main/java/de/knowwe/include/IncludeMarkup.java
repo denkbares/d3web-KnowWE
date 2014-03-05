@@ -22,6 +22,7 @@ package de.knowwe.include;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.basicType.AttachmentType;
+import de.knowwe.core.kdom.basicType.CommentLineType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -104,6 +105,7 @@ public class IncludeMarkup extends DefaultMarkupType {
 
 	static {
 		m = new DefaultMarkup(MARKUP_NAME);
+		m.addContentType(new CommentLineType());
 		m.addContentType(new InnerWikiReference());
 		m.addAnnotation(ANNOTATION_DEFINITION, false, "hide", "show");
 		m.addAnnotation(ANNOTATION_FRAME, false, "hide", "show");
