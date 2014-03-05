@@ -21,22 +21,40 @@ package de.knowwe.core.kdom.basicType;
 
 import java.util.regex.Pattern;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Patterns;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
- * 
  * @author Reinhard Hatko Created on: 19.11.2009
  */
 public class CommentLineType extends AbstractType {
 
-	public CommentLineType() {
-
-		setSectionFinder(new RegexSectionFinder(Patterns.COMMENTLINE, Pattern.MULTILINE));
-		setRenderer(StyleRenderer.COMMENT);
-
+	private static class CommentLineRenderer implements Renderer {
+		@Override
+		public void render(Section<?> section, UserContext user, RenderResult result) {
+			// renders only the trimmed text in style-spans,
+			// but render the rest outside.
+			// This is required, because comment lines consume the trailing whitespaces
+			// and therefore following jsp-wiki-markups will be effected, e.g. (un-)ordered lists
+			String text = section.getText();
+			String trim = Strings.trim(text);
+			int start = text.indexOf(trim);
+			int end = trim.length() + start;
+			result.append(text.substring(0, start));
+			StyleRenderer.COMMENT.renderText(trim, user, result);
+			result.append(text.substring(end));
+		}
 	}
 
+	public CommentLineType() {
+		setSectionFinder(new RegexSectionFinder(Patterns.COMMENTLINE, Pattern.MULTILINE));
+		setRenderer(new CommentLineRenderer());
+	}
 }

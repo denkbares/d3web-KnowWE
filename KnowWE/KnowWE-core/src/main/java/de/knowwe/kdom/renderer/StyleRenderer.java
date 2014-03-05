@@ -67,9 +67,9 @@ public class StyleRenderer implements Renderer {
 	/**
 	 * When normal functionality as in FontColorRenderer: Set background null;
 	 * 
-	 * @param color
-	 * @param background
-	 * @return
+	 * @param color the foreground color to be used or "null"
+	 * @param background the background color to be used or "null"
+	 * @return the style renderer
 	 */
 	public static StyleRenderer getRenderer(String color, String background) {
 		return new StyleRenderer(generateCSSStyle(color, background));
@@ -78,10 +78,10 @@ public class StyleRenderer implements Renderer {
 	/**
 	 * Allows for setting the class attribute.
 	 * 
-	 * @param cssClass
-	 * @param color
-	 * @param background
-	 * @return
+	 * @param cssClass the css class to be used or "null"
+	 * @param color the foreground color to be used or "null"
+	 * @param background the background color to be used or "null"
+	 * @return the style renderer
 	 */
 	public static StyleRenderer getRenderer(String cssClass, String color, String background) {
 		return new StyleRenderer(cssClass, generateCSSStyle(color, background));
@@ -159,7 +159,6 @@ public class StyleRenderer implements Renderer {
 	 * You may overwrite it for special purposes.
 	 * 
 	 * @created 06.10.2010
-	 * @param article the article to render for
 	 * @param section the section to be rendered
 	 * @param user the user to render for
 	 * @param string the buffer to render into
