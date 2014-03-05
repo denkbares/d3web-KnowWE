@@ -57,7 +57,7 @@ public class RenderPreviewAction extends AbstractAction {
 
 	public static enum Mode {
 		plain, list
-	};
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

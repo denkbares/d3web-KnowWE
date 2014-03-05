@@ -4,7 +4,6 @@
 
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
-        <import plugin-id="KnowWE-Plugin-Core"/>
 	</requires>
 
 	<!-- <runtime> <library id="" path="." type="code"> <export prefix="*" /> 
@@ -155,7 +154,7 @@
 
 	<!-- previews -->
 	
-    <extension plugin-id="KnowWE-Plugin-Core" point-id="PreviewRenderer"
+    <extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer"
                id="ArticlePreviewRenderer">
         <parameter id="class" value="de.knowwe.jspwiki.types.preview.ArticlePreviewRenderer"/>
         <parameter id="name" value="ArticlePreviewRenderer"/>
@@ -165,7 +164,7 @@
         <parameter id="scope" value="root"/>
     </extension>
 
-    <extension plugin-id="KnowWE-Plugin-Core" point-id="PreviewRenderer"
+    <extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer"
                id="HeaderPreviewRenderer">
         <parameter id="class" value="de.knowwe.jspwiki.types.preview.HeaderPreviewRenderer"/>
         <parameter id="name" value="HeaderPreviewRenderer"/>
@@ -175,7 +174,7 @@
         <parameter id="scope" value="HeaderType"/>
     </extension>
 
-    <extension plugin-id="KnowWE-Plugin-Core" point-id="PreviewRenderer"
+    <extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer"
                id="DefinitionPreviewRenderer">
         <parameter id="class" value="de.knowwe.jspwiki.types.preview.DefinitionPreviewRenderer"/>
         <parameter id="name" value="DefinitionPreviewRenderer"/>
@@ -185,7 +184,7 @@
         <parameter id="scope" value="DefinitionType"/>
     </extension>
 
-    <extension plugin-id="KnowWE-Plugin-Core" point-id="PreviewRenderer"
+    <extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer"
                id="FootnotePreviewRenderer">
         <parameter id="class" value="de.knowwe.jspwiki.types.preview.FootnotePreviewRenderer"/>
         <parameter id="name" value="FootnotePreviewRenderer"/>
