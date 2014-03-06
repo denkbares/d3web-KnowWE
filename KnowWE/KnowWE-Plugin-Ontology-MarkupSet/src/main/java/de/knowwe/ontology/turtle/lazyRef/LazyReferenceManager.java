@@ -51,6 +51,7 @@ public class LazyReferenceManager implements EventListener {
 	}
 
 	public Set<Identifier> getData(de.knowwe.core.compile.Compiler c, String lazyTermName) {
+		if (c == null) return null;
 		if (!data.containsKey(c)) {
 			/*
 			 * build up cache once

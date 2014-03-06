@@ -18,24 +18,34 @@
  */
 package de.knowwe.ontology.turtle;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 
+import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.Types;
+import de.knowwe.core.kdom.objects.SimpleReference;
+import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.ontology.compile.OntologyCompiler;
+import de.knowwe.ontology.compile.OntologyHandler;
+import de.knowwe.ontology.kdom.resource.ResourceReference;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.StatementProvider;
 import de.knowwe.ontology.turtle.compile.StatementProviderResult;
@@ -46,9 +56,9 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 
 	/*
 	 * With strict compilation mode on, triples are not inserted into the
-	 * repository when corresponding term have errors, i.e., do not have a valid
-	 * definition. With strict compilation mode off, triples are always inserted
-	 * into the triple store, not caring about type definitions.
+	 * repository when corresponding terms have errors, i.e., do not have a
+	 * valid definition. With strict compilation mode off, triples are always
+	 * inserted into the triple store, not caring about type definitions.
 	 */
 	private static boolean STRICT_COMPILATTION = false;
 
@@ -66,8 +76,62 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		this.addChildType(TurtleCollection.getInstance());
 		this.addChildType(new TurtleLiteralType());
 		this.addChildType(new TurtleLongURI());
-		this.addChildType(new TurtleURI());
+		this.addChildType(createObjectURIWithDefinition());
 		this.addChildType(new LazyURIReference());
+	}
+	
+	@SuppressWarnings("unchecked")
+	private Type createObjectURIWithDefinition() {
+		TurtleURI turtleURI = new TurtleURI();
+		SimpleReference reference = Types.findSuccessorType(turtleURI, ResourceReference.class);
+		reference.addCompileScript(Priority.HIGH, new RDFInstanceDefinitionHandler());
+		reference.removeCompileScript(OntologyCompiler.class,
+				SimpleReferenceRegistrationScript.class);
+		return turtleURI;
+	}
+
+	class RDFInstanceDefinitionHandler extends OntologyHandler<SimpleReference> {
+
+		@Override
+		public Collection<Message> create(OntologyCompiler compiler, Section<SimpleReference> s) {
+
+			Section<PredicateObjectSentenceList> predSentence = Sections.ancestor(s,
+					PredicateObjectSentenceList.class);
+			if (predSentence == null) return Messages.noMessage();
+
+			List<Section<Predicate>> predicates = Sections.successors(predSentence, Predicate.class);
+			boolean hasInstancePredicate = false;
+			for (Section<Predicate> section : predicates) {
+				if (section.getText().matches("[\\w]*?:instance")) {
+					hasInstancePredicate = true;
+				}
+			}
+
+			// we jump out if no instance predicate was found
+			if (!hasInstancePredicate) return Messages.noMessage();
+
+			Identifier termIdentifier = s.get().getTermIdentifier(s);
+			if (termIdentifier != null) {
+				compiler.getTerminologyManager().registerTermDefinition(compiler, s,
+						s.get().getTermObjectClass(s),
+						termIdentifier);
+			}
+			else {
+				/*
+				 * termIdentifier is null, obviously section chose not to define
+				 * a term, however so we can ignore this case
+				 */
+			}
+
+			return Messages.noMessage();
+		}
+
+		@Override
+		public void destroy(OntologyCompiler compiler, Section<SimpleReference> s) {
+			compiler.getTerminologyManager().unregisterTermDefinition(compiler, s,
+					s.get().getTermObjectClass(s), s.get().getTermIdentifier(s));
+		}
+
 	}
 
 	@Override
@@ -101,6 +165,11 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 				PredicateSentence.class);
 		Section<Predicate> predicateSection = Sections.findChildOfType(predSentenceSection,
 				Predicate.class);
+
+		if (predicateSection == null) {
+			result.addMessage(Messages.error("No predicate section found: " + section.toString()));
+			return result;
+		}
 
 		URI predicate = predicateSection.get().getURI(predicateSection, core);
 
@@ -182,11 +251,16 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 	public Node getNode(Section<Object> section, Rdf2GoCore core) {
 		// there should be exactly one NodeProvider child (while potentially
 		// many successors)
-		Section<NodeProvider> nodeProviderChild = Sections.findChildOfType(section,
+		List<Section<NodeProvider>> nodeProviderSections = Sections.findChildrenOfType(section,
 				NodeProvider.class);
-		if (nodeProviderChild != null) {
+		if (nodeProviderSections != null) {
+			if (nodeProviderSections.size() == 1) {
 
-			return nodeProviderChild.get().getNode(nodeProviderChild, core);
+				Section<NodeProvider> nodeProvider = nodeProviderSections.get(0);
+				return nodeProvider.get().getNode(
+						nodeProvider, core);
+			}
+			// if there are more NodeProvider we return null to force an error
 		}
 		return null;
 	}

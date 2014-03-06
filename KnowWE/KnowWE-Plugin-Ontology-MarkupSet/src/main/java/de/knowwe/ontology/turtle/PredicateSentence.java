@@ -35,6 +35,7 @@ public class PredicateSentence extends AbstractType {
 		this.setSectionFinder(new PredicateSentenceSectionFinder());
 		this.addChildType(new Predicate());
 		this.addChildType(new ObjectList());
+
 	}
 
 	class PredicateSentenceSectionFinder implements SectionFinder {

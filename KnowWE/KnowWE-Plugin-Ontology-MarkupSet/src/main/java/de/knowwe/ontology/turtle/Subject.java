@@ -83,7 +83,8 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 			boolean hasTypePredicate = false;
 			for (Section<Predicate> section : predicates) {
 				if (section.getText().matches("[\\w]*?:type")
-						|| section.getText().matches("rdfs:subClassOf")) {
+						|| section.getText().matches("rdfs:subClassOf")
+						|| section.getText().matches("rdfs:subPropertyOf")) {
 					hasTypePredicate = true;
 				}
 			}
