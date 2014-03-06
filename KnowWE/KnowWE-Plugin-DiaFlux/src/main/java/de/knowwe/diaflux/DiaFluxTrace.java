@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Map;
 
 import de.d3web.core.inference.PSMethod;
 import de.d3web.core.inference.PropagationEntry;
@@ -125,14 +124,14 @@ public class DiaFluxTrace implements SessionObject {
 	}
 
 	public static Collection<Node> collectActiveNodes(DiaFluxCaseObject caseObject, Collection<SnapshotNode> enteredSnapshots) {
-		Map<FlowRun, Collection<SnapshotNode>> snappyFlows = FluxSolver.getFlowRunsWithEnteredSnapshot(
+		Collection<FlowRun> snappyFlows = FluxSolver.getFlowRunsWithEnteredSnapshot(
 				enteredSnapshots, caseObject);
 
 		Collection<Node> snappyNodes = new HashSet<Node>();
 		for (SnapshotNode snapshotNode : enteredSnapshots) {
 			snappyNodes.addAll(
 					FluxSolver.getActiveNodesLeadingToSnapshopNode(snapshotNode,
-							snappyFlows.keySet()));
+							snappyFlows));
 		}
 		return snappyNodes;
 	}
@@ -143,7 +142,6 @@ public class DiaFluxTrace implements SessionObject {
 	 * @created 01.03.2011
 	 * @param session the current session
 	 * @param enteredSnapshots
-	 * @param snappyNodes the active nodes to be traced
 	 */
 	private void traceNodesAndEdges(Session session, Collection<Node> tracedNodes, Collection<SnapshotNode> enteredSnapshots) {
 
