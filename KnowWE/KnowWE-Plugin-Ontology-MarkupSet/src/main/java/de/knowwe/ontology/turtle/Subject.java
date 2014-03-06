@@ -21,16 +21,20 @@ package de.knowwe.ontology.turtle;
 import java.util.Collection;
 import java.util.List;
 
+import com.sun.tools.javac.resources.compiler;
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
 
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.TermCompiler;
+import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
@@ -65,56 +69,26 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 	private Type createSubjectURIWithDefinition() {
 		TurtleURI turtleURI = new TurtleURI();
 		SimpleReference reference = Types.findSuccessorType(turtleURI, ResourceReference.class);
-		reference.addCompileScript(Priority.HIGH, new RDFTypeDefinitionHandler());
+		reference.addCompileScript(Priority.HIGH, new SubjectPredicateKeywordDefinitionHandler(new String[]{"[\\w]*?:type","rdfs:subClassOf","rdfs:subPropertyOf"}));
 		reference.removeCompileScript(OntologyCompiler.class,
 				SimpleReferenceRegistrationScript.class);
 		return turtleURI;
 	}
 
-	class RDFTypeDefinitionHandler extends OntologyHandler<SimpleReference> {
+	class SubjectPredicateKeywordDefinitionHandler extends PredicateKeywordDefinitionHandler {
 
-		@Override
-		public Collection<Message> create(OntologyCompiler compiler, Section<SimpleReference> s) {
-
-			Section<TurtleSentence> sentence = Sections.ancestor(s, TurtleSentence.class);
-			if (sentence == null) return Messages.noMessage();
-
-			List<Section<Predicate>> predicates = Sections.successors(sentence, Predicate.class);
-			boolean hasTypePredicate = false;
-			for (Section<Predicate> section : predicates) {
-				if (section.getText().matches("[\\w]*?:type")
-						|| section.getText().matches("rdfs:subClassOf")
-						|| section.getText().matches("rdfs:subPropertyOf")) {
-					hasTypePredicate = true;
-				}
-			}
-
-			// we jump out if no type predicate was found
-			if (!hasTypePredicate) return Messages.noMessage();
-
-			Identifier termIdentifier = s.get().getTermIdentifier(s);
-			if (termIdentifier != null) {
-				compiler.getTerminologyManager().registerTermDefinition(compiler, s,
-						s.get().getTermObjectClass(s),
-						termIdentifier);
-			}
-			else {
-				/*
-				 * termIdentifier is null, obviously section chose not to define
-				 * a term, however so we can ignore this case
-				 */
-			}
-
-			return Messages.noMessage();
+		public SubjectPredicateKeywordDefinitionHandler(String[] matchExpressions) {
+			super(matchExpressions);
 		}
 
 		@Override
-		public void destroy(OntologyCompiler compiler, Section<SimpleReference> s) {
-			compiler.getTerminologyManager().unregisterTermDefinition(compiler, s,
-					s.get().getTermObjectClass(s), s.get().getTermIdentifier(s));
+		protected List<Section<Predicate>> getPredicates(Section<SimpleReference> s) {
+			// finds all predicates of the turtle sentence
+			Section<TurtleSentence> sentence = Sections.findAncestorOfType(s, TurtleSentence.class);
+			return Sections.findSuccessorsOfType(sentence, Predicate.class);
 		}
-
 	}
+
 
 	@Override
 	@SuppressWarnings({

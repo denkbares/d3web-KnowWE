@@ -18,14 +18,12 @@
  */
 package de.knowwe.ontology.turtle;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 
-import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.Priority;
@@ -41,10 +39,8 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.ontology.compile.OntologyCompiler;
-import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.ontology.kdom.resource.ResourceReference;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.StatementProvider;
@@ -84,54 +80,26 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 	private Type createObjectURIWithDefinition() {
 		TurtleURI turtleURI = new TurtleURI();
 		SimpleReference reference = Types.findSuccessorType(turtleURI, ResourceReference.class);
-		reference.addCompileScript(Priority.HIGH, new RDFInstanceDefinitionHandler());
+		reference.addCompileScript(Priority.HIGH, new ObjectPredicateKeywordDefinitionHandler(new String[]{"[\\w]*?:instance"}));
 		reference.removeCompileScript(OntologyCompiler.class,
 				SimpleReferenceRegistrationScript.class);
 		return turtleURI;
 	}
 
-	class RDFInstanceDefinitionHandler extends OntologyHandler<SimpleReference> {
+	class ObjectPredicateKeywordDefinitionHandler extends PredicateKeywordDefinitionHandler {
+
+		public ObjectPredicateKeywordDefinitionHandler(String[] matchExpressions) {
+			super(matchExpressions);
+		}
 
 		@Override
-		public Collection<Message> create(OntologyCompiler compiler, Section<SimpleReference> s) {
-
+		protected List<Section<Predicate>> getPredicates(Section<SimpleReference> s) {
+			// find the one predicate relevant for this turtle object
 			Section<PredicateObjectSentenceList> predSentence = Sections.ancestor(s,
 					PredicateObjectSentenceList.class);
-			if (predSentence == null) return Messages.noMessage();
 
-			List<Section<Predicate>> predicates = Sections.successors(predSentence, Predicate.class);
-			boolean hasInstancePredicate = false;
-			for (Section<Predicate> section : predicates) {
-				if (section.getText().matches("[\\w]*?:instance")) {
-					hasInstancePredicate = true;
-				}
-			}
-
-			// we jump out if no instance predicate was found
-			if (!hasInstancePredicate) return Messages.noMessage();
-
-			Identifier termIdentifier = s.get().getTermIdentifier(s);
-			if (termIdentifier != null) {
-				compiler.getTerminologyManager().registerTermDefinition(compiler, s,
-						s.get().getTermObjectClass(s),
-						termIdentifier);
-			}
-			else {
-				/*
-				 * termIdentifier is null, obviously section chose not to define
-				 * a term, however so we can ignore this case
-				 */
-			}
-
-			return Messages.noMessage();
+			return Sections.successors(predSentence, Predicate.class);
 		}
-
-		@Override
-		public void destroy(OntologyCompiler compiler, Section<SimpleReference> s) {
-			compiler.getTerminologyManager().unregisterTermDefinition(compiler, s,
-					s.get().getTermObjectClass(s), s.get().getTermIdentifier(s));
-		}
-
 	}
 
 	@Override
