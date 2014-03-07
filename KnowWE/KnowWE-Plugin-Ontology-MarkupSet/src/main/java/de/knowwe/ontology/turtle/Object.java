@@ -56,7 +56,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 	 * valid definition. With strict compilation mode off, triples are always
 	 * inserted into the triple store, not caring about type definitions.
 	 */
-	private static boolean STRICT_COMPILATTION = false;
+	static boolean STRICT_COMPILATION = false;
 
 	public Object() {
 		this.setSectionFinder(new SectionFinder() {
@@ -112,7 +112,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		 */
 		Node object = section.get().getNode(section, core);
 		Section<TurtleURI> turtleURITermObject = Sections.findChildOfType(section, TurtleURI.class);
-		if (turtleURITermObject != null && STRICT_COMPILATTION == true) {
+		if (turtleURITermObject != null && STRICT_COMPILATION) {
 			boolean isDefined = checkTurtleURIDefinition(turtleURITermObject);
 			if (!isDefined) {
 				// error message is already rendered by term reference renderer
@@ -143,7 +143,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 
 		// check term definition
 		Section<TurtleURI> turtleURITerm = Sections.findSuccessor(predicateSection, TurtleURI.class);
-		if (turtleURITerm != null && STRICT_COMPILATTION == true) {
+		if (turtleURITerm != null && STRICT_COMPILATION) {
 			boolean isDefined = checkTurtleURIDefinition(turtleURITerm);
 			if (!isDefined) {
 				// error message is already rendered by term reference renderer
@@ -160,7 +160,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		/*
 		 * Handle SUBJECT
 		 */
-		Resource subject = null;
+		Resource subject;
 		// the subject can either be a normal turtle sentence subject
 		// OR a blank node
 		Section<BlankNode> blankNodeSection = Sections.findAncestorOfType(predSentenceSection,
@@ -182,7 +182,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			// check term definition
 			Section<TurtleURI> turtleURITermSubject = Sections.findChildOfType(subjectSection,
 					TurtleURI.class);
-			if (turtleURITermSubject != null && STRICT_COMPILATTION == true) {
+			if (turtleURITermSubject != null && STRICT_COMPILATION) {
 				boolean isDefined = checkTurtleURIDefinition(turtleURITermSubject);
 				if (!isDefined) {
 					// error message is already rendered by term reference

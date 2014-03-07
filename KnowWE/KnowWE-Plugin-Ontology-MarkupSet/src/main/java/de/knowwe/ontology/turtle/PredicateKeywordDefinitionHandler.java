@@ -23,24 +23,22 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import com.sun.corba.se.spi.ior.iiop.IIOPFactories;
-
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.OntologyHandler;
 
 /**
-* Created by jochenreutelshofer on 06.03.14.
-*/
-public abstract class  PredicateKeywordDefinitionHandler extends OntologyHandler<SimpleReference> {
+ * @author Jochen Reutelshofer (denkbares GmbH)
+ * @created 06.03.14.
+ */
+public abstract class PredicateKeywordDefinitionHandler extends OntologyHandler<SimpleReference> {
 
 	private List<String> matchExpressions;
 
@@ -50,37 +48,30 @@ public abstract class  PredicateKeywordDefinitionHandler extends OntologyHandler
 
 	protected abstract List<Section<Predicate>> getPredicates(Section<SimpleReference> s);
 
-
 	@Override
 	public Collection<Message> create(OntologyCompiler compiler, Section<SimpleReference> s) {
 
-
-		List<Section<Predicate>> predicates =  getPredicates(s);
+		List<Section<Predicate>> predicates = getPredicates(s);
 		boolean hasInstancePredicate = false;
 		for (Section<Predicate> section : predicates) {
 			for (String exp : matchExpressions) {
 
-
-			if (section.getText().matches(exp)) {
-				hasInstancePredicate = true;
-			}
+				if (section.getText().matches(exp)) {
+					hasInstancePredicate = true;
+				}
 			}
 		}
 
 		// we jump out if no matching predicate was found
-		if (!hasInstancePredicate) return validateReference((TermCompiler) compiler, s);
+		if (!hasInstancePredicate) return validateReference(compiler, s);
 
+		// If termIdentifier is null, obviously section chose not to define
+		// a term, however so we can ignore this case
 		Identifier termIdentifier = s.get().getTermIdentifier(s);
 		if (termIdentifier != null) {
 			compiler.getTerminologyManager().registerTermDefinition(compiler, s,
 					s.get().getTermObjectClass(s),
 					termIdentifier);
-		}
-		else {
-			/*
-			 * termIdentifier is null, obviously section chose not to define
-			 * a term, however so we can ignore this case
-			 */
 		}
 
 		return Messages.noMessage();

@@ -18,31 +18,22 @@
  */
 package de.knowwe.ontology.turtle;
 
-import java.util.Collection;
 import java.util.List;
 
-import com.sun.tools.javac.resources.compiler;
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
 
-import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.terminology.TermCompiler;
-import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
-import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.renderer.CompositeRenderer;
 import de.knowwe.ontology.compile.OntologyCompiler;
-import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.ontology.edit.DropTargetRenderer;
 import de.knowwe.ontology.kdom.resource.ResourceReference;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
@@ -69,7 +60,7 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 	private Type createSubjectURIWithDefinition() {
 		TurtleURI turtleURI = new TurtleURI();
 		SimpleReference reference = Types.findSuccessorType(turtleURI, ResourceReference.class);
-		reference.addCompileScript(Priority.HIGH, new SubjectPredicateKeywordDefinitionHandler(new String[]{"[\\w]*?:type","rdfs:subClassOf","rdfs:subPropertyOf"}));
+		reference.addCompileScript(Priority.HIGH, new SubjectPredicateKeywordDefinitionHandler(new String[] { "[\\w]*?:type", "rdfs:subClassOf", "rdfs:subPropertyOf" }));
 		reference.removeCompileScript(OntologyCompiler.class,
 				SimpleReferenceRegistrationScript.class);
 		return turtleURI;
@@ -88,7 +79,6 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 			return Sections.findSuccessorsOfType(sentence, Predicate.class);
 		}
 	}
-
 
 	@Override
 	@SuppressWarnings({
