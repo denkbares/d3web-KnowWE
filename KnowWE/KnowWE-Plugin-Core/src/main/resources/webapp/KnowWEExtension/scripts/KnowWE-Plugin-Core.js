@@ -75,7 +75,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 		/**
 		 * Load the ajax-previews
 		 */
-		loadPreviews : function(web, title, root) {
+		loadPreviews: function (root) {
 			var select = (root == undefined) 
 					? jq$('.asynchronPreviewRenderer') 
 					: jq$(root).find('.asynchronPreviewRenderer');
@@ -87,13 +87,16 @@ KNOWWE.core.plugin.objectinfo = function() {
 			});
 			jq$.ajax("action/RenderPreviewAction", {
 				data: {
-	                KWikiWeb: web,
-	                KWiki_Topic: title,
 	                data: JSON.stringify(json)
 				},
 				success: function(html) {
 					KNOWWE.core.util.replaceElement(ids, html);
-				    ToolMenu.decorateToolMenus();
+					if (jq$(root).parents('#compositeEdit').length) {
+						_CE.waitForPreviewsToLoad(root);
+						KNOWWE.core.actions.init();
+					}
+					ToolMenu.decorateToolMenus(root);
+
 				}
 			});
 		},
@@ -246,14 +249,20 @@ KNOWWE.plugin.renaming = function () {
 								if (confirm('A term with this name already exists, are you sure you want to merge both terms?')) {
 									renameTerms(oldValue, replacement, true);
 								}
-								else {
-									_IE.disable(_CEWT.rootID, true);
+							}
+							else {
+								if (jsonResponse.objectinfopage === true) {
+									window.location.href = "Wiki.jsp?page=ObjectInfoPage&objectname="
+										+ encodeURIComponent(jsonResponse.newObjectName)
+										+ "&termIdentifier="
+										+ encodeURIComponent(jsonResponse.newTermIdentifier);
 								}
-							} else {
-								_IE.disable(_CEWT.rootID, true);
+								else {
+									KNOWWE.core.util.reloadPage();
+								}
 							}
 						}
-						KNOWWE.core.util.updateProcessingState(-1);
+						KNOWWE.core.util.updateProcessingState(1);
 
 					},
 					onError: function () {
@@ -429,7 +438,7 @@ KNOWWE.kdomtreetable = {};
 
 KNOWWE.kdomtreetable.init = function() {
 	jq$('.renderKDOMTable').each(function() {
-		jq$(this).agikiTreeTable({expandable: true, clickableNodeNames: true, persist: true, article: jq$(this).attr('article') });
+		jq$(this).agikiTreeTable({expandable: true, clickableNodeNames: true, persist: true, article: jq$(this).closest(".defaultMarkupFrame").attr("id") });
 	});
 	KNOWWE.kdomtreetable.setOverflow();
 }
@@ -643,6 +652,15 @@ KNOWWE.core.plugin.pagination = function() {
 															.sort(this,
 																	sectionId);
 												}, true);
+									}
+									if (!jq$(this).hasClass("filterable")) {
+										jq$(this).addClass("paginationHeader");
+										this.addEventListener('click',
+											function (event) {
+												KNOWWE.core.plugin.pagination
+													.sort(this,
+														sectionId);
+											}, true);
 									}
 								});
 

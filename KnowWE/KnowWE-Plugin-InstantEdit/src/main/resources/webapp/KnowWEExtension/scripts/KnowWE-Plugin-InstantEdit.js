@@ -138,9 +138,9 @@ KNOWWE.plugin.instantEdit = function() {
             new _KA(options).send();
 
             if (reload) {
-            	_EC.reloadPage();
-            }
-        },
+				KNOWWE.core.util.reloadPage();
+			}
+		},
         
         /**
 		 * Save the changes to the article.

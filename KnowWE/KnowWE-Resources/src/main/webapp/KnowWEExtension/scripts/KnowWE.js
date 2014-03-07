@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2014 denkbares GmbH, Germany
+ *
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+
 /**
  * Title: KnowWE-core
  * Contains javascript functions the KnowWE core needs to functions properly.
@@ -352,7 +371,25 @@ KNOWWE.core.util = function(){
 					}
 				}
 			}
-			KNOWWE.helper.observer.notify('previewsLoaded');  
+		},
+
+		reloadPage: function () {
+			// reload page. remove version attribute if there
+			var hrefSplit = window.location.href.split('?');
+			if (hrefSplit.length == 1) {
+				window.location.reload();
+				return;
+			}
+			var path = hrefSplit[0];
+			var args = hrefSplit[1].split('&');
+			var newLocation = path;
+			for (var i = 0; i < args.length; i++) {
+				if (args[i].indexOf('version=') == 0) continue;
+				newLocation += i == 0 ? '?' : '&';
+				newLocation += args[i];
+			}
+			window.location = newLocation;
+			window.location.reload(true);
 		}
 	}
 }();
