@@ -33,12 +33,10 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
+ * This singleton contains the algorithm which parses the KDOM. The algorithm searches occurrences
+ * that match certain types.
+ *
  * @author Jochen, Albrecht
- * 
- *         This singleton contains the algorithm which parses the KDOM. The
- *         algorithm searches occurrences that match certain types.
- * @see splitToSections
- * 
  */
 public class Sectionizer implements Parser {
 
@@ -132,9 +130,9 @@ public class Sectionizer implements Parser {
 				if (r.getStart() < lastEnd || r.getStart() > r.getEnd()
 						|| r.getStart() < 0 || r.getEnd() > text.length()) {
 					Log.warning("Invalid SectionFinderResults for the Type '"
-									+ type.getName() + "'. Results: " + results
-									+ ". Result " + r
-									+ " will be skipped.");
+							+ type.getName() + "'. Results: " + results
+							+ ". Result " + r
+							+ " will be skipped.");
 					continue;
 				}
 
@@ -152,8 +150,7 @@ public class Sectionizer implements Parser {
 					if (child != null) break;
 				}
 				if (child == null) {
-					child = defaultSectionizerModule.createSection(sectionText, type,
-							father, r);
+					defaultSectionizerModule.createSection(sectionText, type, father, r);
 				}
 				createdSection = true;
 				lastEnd = r.getEnd();
@@ -162,8 +159,8 @@ public class Sectionizer implements Parser {
 		if (lastEnd < text.length()) {
 			splitToSections(text.substring(lastEnd, text.length()), father,
 					types, type instanceof ExclusiveType && createdSection
-							? types.size()
-							: posInTypes);
+					? types.size()
+					: posInTypes);
 		}
 	}
 

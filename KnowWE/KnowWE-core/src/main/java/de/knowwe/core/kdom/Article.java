@@ -211,9 +211,7 @@ public class Article {
 	}
 
 	public String collectTextsFromLeaves() {
-		StringBuilder builder = new StringBuilder();
-		this.rootSection.collectTextsFromLeaves(builder);
-		return builder.toString();
+		return this.rootSection.collectTextsFromLeaves();
 	}
 
 	/**
