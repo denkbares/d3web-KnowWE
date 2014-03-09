@@ -32,9 +32,8 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 /**
  * This SectionFinder finds the _all_ unquoted occurrence of the 'symbol' in the
  * text and creates a section from it.
- * 
+ *
  * @author Jochen
- * 
  */
 public class UnquotedExpressionFinder implements SectionFinder {
 
@@ -45,6 +44,7 @@ public class UnquotedExpressionFinder implements SectionFinder {
 		this.symbol = symbol;
 		this.flags = flags;
 	}
+
 	public UnquotedExpressionFinder(String symbol) {
 		this(symbol, Strings.UNQUOTED);
 	}
@@ -52,7 +52,7 @@ public class UnquotedExpressionFinder implements SectionFinder {
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
-		int index = Strings.indexOfUnquoted(text, symbol);
+		int index = Strings.indexOf(text, flags, symbol);
 
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 		int counter = 0;
@@ -65,7 +65,7 @@ public class UnquotedExpressionFinder implements SectionFinder {
 
 			text = text.substring(index + 1);
 			counter += index + 1;
-			index = Strings.indexOfUnquoted(text, symbol);
+			index = Strings.indexOf(text, flags, symbol);
 		}
 
 		return result;

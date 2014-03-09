@@ -75,12 +75,12 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		this.addChildType(createObjectURIWithDefinition());
 		this.addChildType(new LazyURIReference());
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private Type createObjectURIWithDefinition() {
 		TurtleURI turtleURI = new TurtleURI();
 		SimpleReference reference = Types.findSuccessorType(turtleURI, ResourceReference.class);
-		reference.addCompileScript(Priority.HIGH, new ObjectPredicateKeywordDefinitionHandler(new String[]{"[\\w]*?:instance"}));
+		reference.addCompileScript(Priority.HIGH, new ObjectPredicateKeywordDefinitionHandler(new String[] { "[\\w]*?:instance" }));
 		reference.removeCompileScript(OntologyCompiler.class,
 				SimpleReferenceRegistrationScript.class);
 		return turtleURI;
@@ -122,7 +122,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			}
 		}
 		if (object == null && !termError) {
-			result.addMessage(Messages.error("'" + section.getText()
+			result.addMessage(Messages.error("'" + section.getText().replaceAll("\\s+", " ")
 					+ "' is not a valid object."));
 		}
 

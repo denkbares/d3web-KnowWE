@@ -27,6 +27,10 @@ public class RuleContainerFinder implements SectionFinder {
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		int flags = Strings.UNQUOTED | Strings.SKIP_COMMENTS;
+		// if we have rules with multiple lines, tokens are only searched for at the start of the line
+		if (father.getText().contains("\n")) {
+			flags |= Strings.FIRST_IN_LINE;
+		}
 		int start = Strings.indexOf(text, flags, startTokens);
 		List<SectionFinderResult> results = new ArrayList<SectionFinderResult>();
 		int end = start;
@@ -40,6 +44,5 @@ public class RuleContainerFinder implements SectionFinder {
 		}
 		return results;
 	}
-
 
 }

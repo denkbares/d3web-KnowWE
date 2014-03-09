@@ -9,7 +9,7 @@
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE-GlobalTestUtils</artifactId>
 	<version>0.2-SNAPSHOT</version>
-	<name>KnowWE: GlobalTestUtils</name>
+	<name>KnowWE-GlobalTestUtils</name>
 	<description>The purpose of this project is to offer some often needed util classes for JUNIT Tests</description>
 
 	<build>

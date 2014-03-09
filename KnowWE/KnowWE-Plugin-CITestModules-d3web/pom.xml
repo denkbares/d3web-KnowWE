@@ -8,7 +8,7 @@
   <groupId>de.uniwue.d3web</groupId>
   <artifactId>KnowWE-Plugin-CITestModules-d3web</artifactId>
   <version>0.2-SNAPSHOT</version>
-  <name>KnowWE-Plugin: CITestModules-d3web</name>
+  <name>KnowWE-Plugin-CITestModules-d3web</name>
   <description>KnowWE-Plugin that provides CITestModules for d3web</description>
   
   	<dependencies>

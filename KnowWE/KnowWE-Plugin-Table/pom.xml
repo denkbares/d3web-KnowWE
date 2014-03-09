@@ -12,7 +12,7 @@
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE-Plugin-Table</artifactId>
 	<version>0.2-SNAPSHOT</version>
-	<name>KnowWE-Plugin: Table</name>
+	<name>KnowWE-Plugin-Table</name>
 	<description>Table description</description>
 
 	<build>

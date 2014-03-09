@@ -29,7 +29,7 @@
 	<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
 	<groupId>de.uniwue.d3web</groupId>
 	<version>0.2-SNAPSHOT</version>
-	<name>KnowWE-Plugin: JSPWiki-MarkupSet</name>
+	<name>KnowWE-Plugin-JSPWiki-MarkupSet</name>
 	<description>Contains the JSPWiki Markups and handles their correct instantiation</description>
 	<dependencies>
 		<dependency>

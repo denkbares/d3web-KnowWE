@@ -9,7 +9,7 @@
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE-Plugin-Tagging</artifactId>
 	<version>0.2-SNAPSHOT</version>
-	<name>KnowWE-Plugin: Tagging</name>
+	<name>KnowWE-Plugin-Tagging</name>
 	<description>Project for the tagging mechanism</description>
 
 
