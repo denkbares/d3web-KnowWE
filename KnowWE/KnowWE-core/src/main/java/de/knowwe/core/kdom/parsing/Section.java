@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.Compiler;
@@ -471,14 +472,14 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 * @return the node information as text
 	 */
 	public String verbalize() {
-		StringBuilder buffi = new StringBuilder();
+		StringBuilder result = new StringBuilder();
 		String simpleName = this.get().getClass().getSimpleName();
-		if (simpleName.contains("anonymous")) {
+		if (Strings.containsIgnoreCase(simpleName, "anonymous")) {
 			simpleName += "(" + this.get().getName() + ")";
 		}
-		buffi.append(simpleName);
-		buffi.append(", ID: ").append(getID());
-		buffi.append(", length: ")
+		result.append(simpleName);
+		result.append(", ID: ").append(getID());
+		result.append(", length: ")
 				.append(this.getText().length())
 				.append(" (")
 				.append(getOffsetInParent())
@@ -487,9 +488,9 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 				.append(getChildren().size());
 		String ot = this.getText().length() < 50 ? text : text.substring(0, 50) + "...";
 		ot = ot.replaceAll("\\n", "\\\\n");
-		buffi.append(", \"").append(ot);
-		buffi.append("\"");
-		return buffi.toString();
+		result.append(", \"").append(ot);
+		result.append("\"");
+		return result.toString();
 	}
 
 	public String getID() {

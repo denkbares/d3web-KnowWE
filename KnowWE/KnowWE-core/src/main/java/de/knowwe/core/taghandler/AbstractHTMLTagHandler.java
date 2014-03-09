@@ -28,10 +28,9 @@ import de.knowwe.core.user.UserContext;
 
 /**
  * @author Jochen
- * 
- *         An abstract implementation of the TagHandler Interface handling the
- *         tagName in lowercase.
- * 
+ *         <p/>
+ *         An abstract implementation of the TagHandler Interface handling the tagName in
+ *         lowercase.
  */
 public abstract class AbstractHTMLTagHandler extends AbstractTagHandler {
 
@@ -49,8 +48,7 @@ public abstract class AbstractHTMLTagHandler extends AbstractTagHandler {
 	public final void render(Section<?> section, UserContext userContext, Map<String, String> parameters, RenderResult result) {
 
 		RenderResult handlerResult = new RenderResult(result);
-		renderHTML(section.getWeb(), section.getTitle(), userContext,
-				parameters, handlerResult);
+		renderHTML(section.getWeb(), section.getTitle(), userContext, parameters, handlerResult);
 		if (maskJSPWikiSyntax) {
 			result.appendJSPWikiMarkup(handlerResult);
 		}
@@ -60,10 +58,10 @@ public abstract class AbstractHTMLTagHandler extends AbstractTagHandler {
 	}
 
 	/**
-	 * Renders the tag handler into a html string. The resulting html string is
-	 * rendered into the wiki page as html. This method mus be overwritten by
-	 * the deriving classes to produce their output html.
-	 * 
+	 * Renders the tag handler into a html string. The resulting html string is rendered into the
+	 * wiki page as html. This method mus be overwritten by the deriving classes to produce their
+	 * output html.
+	 *
 	 * @param web the web where the tag handler is included.
 	 * @param title the title of the page where the tag handler is included.
 	 * @param user the user context for this request

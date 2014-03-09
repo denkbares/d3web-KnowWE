@@ -32,8 +32,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.sun.tools.javac.comp.Env;
+
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
@@ -55,21 +58,30 @@ public class TestUserContext implements UserContext, UserActionContext {
 	private final Article article;
 	private final Map<String, String> parameterMap = new HashMap<String, String>();
 	private final ByteArrayOutputStream out = new ByteArrayOutputStream();
-	private final Writer writer = new OutputStreamWriter(out);
 
-	private final TestHttpServletRequest request;
-	private final TestHttpSession session;
+	private final Writer writer = new OutputStreamWriter(out);
+	private final TestHttpSession session = new TestHttpSession();
+	private final TestHttpServletRequest request = new TestHttpServletRequest(session);
 
 	public TestUserContext(Article article) {
 		this(article, false, false);
+	}
+
+	/**
+	 * Creates a test user for an article that does not really exists as an object.
+	 * If possible, prefer to use the constructor #TestUserContext(Article), because it
+	 * will provide much more capabilities to the created object.
+	 *
+	 * @param articleName the name of the article to be created.
+	 */
+	public TestUserContext(String articleName) {
+		this(Article.createEmptyArticle(articleName, Environment.DEFAULT_WEB));
 	}
 
 	public TestUserContext(Article article, boolean isAdmin, boolean isAsserted) {
 		this.article = article;
 		this.isAdmin = isAdmin;
 		this.isAsserted = isAsserted;
-		this.session = new TestHttpSession();
-		this.request = new TestHttpServletRequest(session);
 		addParameter(Attributes.WEB, getWeb());
 		addParameter(Attributes.TOPIC, getTopic());
 		addParameter(Attributes.USER, getUserName());

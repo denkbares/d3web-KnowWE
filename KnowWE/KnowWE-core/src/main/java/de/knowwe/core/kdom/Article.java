@@ -79,6 +79,10 @@ public class Article {
 		return createArticle(text, title, web, false);
 	}
 
+	public static Article createEmptyArticle(String title, String web) {
+		return new Article(title, web);
+	}
+
 	public static Article createArticle(String text, String title,
 			String web, boolean fullParse) {
 
@@ -124,6 +128,20 @@ public class Article {
 
 		Log.info("Sectionized article '" + title + "' in "
 				+ (System.currentTimeMillis() - startTimeOverall) + "ms");
+	}
+
+	/**
+	 * Constructor to create an empty article. This constructor is intended to be used
+	 * in test scenarios. Under normally "user edits' an article" conditions, this
+	 * constructor shall not be used.
+	 */
+	private Article(String title, String web) {
+		this.title = title;
+		this.web = web;
+		this.lastVersion = null;
+		this.fullParse = false;
+		this.rootSection = Section.createSection("", getRootType(), null);
+		this.rootSection.setArticle(this);
 	}
 
 	public void clearLastVersion() {

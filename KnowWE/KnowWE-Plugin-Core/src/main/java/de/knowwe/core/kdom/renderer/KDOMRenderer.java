@@ -24,6 +24,8 @@ import java.util.Map;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.RootType;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
@@ -44,19 +46,31 @@ public class KDOMRenderer extends AbstractHTMLTagHandler {
 	}
 
 	@Override
-	public void renderHTML(String web, String topic, UserContext user, Map<String, String> values, RenderResult result) {
+	public void renderHTML(String web, String title, UserContext user, Map<String, String> parameters, RenderResult result) {
+		Article article = Environment.getInstance().getArticle(web, title);
+		renderHTML(article, user, result);
+	}
+
+	public static void renderHTML(Article article, UserContext user, RenderResult result) {
+		Section<RootType> section = article.getRootSection();
+		renderHTML(section, user, result);
+	}
+
+	public static void renderHTML(Section<?> section, UserContext user, RenderResult result) {
 		RenderKDOMVisitor v = new RenderKDOMVisitor(user);
-		v.visit(Environment.getInstance().getArticle(web, topic)
-				.getRootSection());
+		v.visit(section);
 		result.appendHtml("<div><h3>KDOM:</h3><tt>");
-		result.append(v.getRenderedKDOM());
+		result.append(v.getRenderedKDOMRaw());
 		result.appendHtml("</tt></div>");
 	}
 
 	public static String renderPlain(Article article, UserContext user) {
+		return renderPlain(article.getRootSection(), user);
+	}
+
+	public static String renderPlain(Section<?> section, UserContext user) {
 		RenderKDOMVisitor v = new RenderKDOMVisitor(user);
-		v.visit(article.getRootSection());
-		String plain = v.getRenderedKDOM().replaceAll("<[^>]*>", "").replace("&quot;", "\"");
-		return plain;
+		v.visit(section);
+		return v.getRenderedKDOMHtml().replaceAll("<[^>]*>", "").replace("&quot;", "\"");
 	}
 }
