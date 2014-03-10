@@ -51,6 +51,7 @@ public class OntologyDownloadProvider implements ToolProvider {
 		String jsAction = "window.location='action/OntologyDownloadAction" +
 				"?" + Attributes.TOPIC + "=" + section.getTitle() +
 				"&amp;" + Attributes.WEB + "=" + section.getWeb() +
+				"&amp;" + Attributes.SECTION_ID + "=" + section.getID() +
 				"&amp;" + OntologyDownloadAction.PARAM_FILENAME + "=" + ontologyName + ".rdf'";
 
 		// assemble download tool

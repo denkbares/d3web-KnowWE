@@ -3,13 +3,17 @@
  */
 package de.knowwe.ontology.action;
 
+import java.io.IOException;
+import java.io.StringWriter;
+
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
-
-import java.io.IOException;
-import java.io.StringWriter;
 
 /**
  * 
@@ -24,15 +28,17 @@ public class OntologyDownloadAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 
 		String filename = context.getParameter(PARAM_FILENAME);
-		String title = context.getParameter(Attributes.TOPIC);
-		String web = context.getParameter(Attributes.WEB);
+		String secID = context.getParameter(Attributes.SECTION_ID);
+		Section<?> section = Sections.getSection(secID);
+		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
+		Rdf2GoCore rdf2GoCore = compiler.getRdf2GoCore();
 
 		String mimetype = "application/rdf+xml; charset=UTF-8";
 		context.setContentType(mimetype);
 		context.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
 		StringWriter writer = new StringWriter();
-		Rdf2GoCore.getInstance(web, title).writeModel(writer);
+		rdf2GoCore.writeModel(writer);
 		String content = writer.toString();
         byte[] contentBytes = content.getBytes("UTF-8");
 		context.setContentLength(contentBytes.length);
