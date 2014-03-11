@@ -21,7 +21,6 @@ package de.knowwe.d3web;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -42,6 +41,10 @@ import de.knowwe.kdom.dashtree.DashTreeElement;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 
 /**
+ * This abstract class allows to get a stable order of children for a DashTreeElement if the definition of the children
+ * is distributed over multiple DashTrees.<p>
+ * Example: A d3web Questionnaire is defined in multiple locations in the wiki with a different list of children.
+ * <p/>
  * Created by Albrecht Striffler (denkbares GmbH) on 10.03.14.
  */
 public abstract class DashTreeObjectRelationScript extends D3webCompileScript<D3webTermDefinition<NamedObject>> {
@@ -91,7 +94,7 @@ public abstract class DashTreeObjectRelationScript extends D3webCompileScript<D3
 
 		// we try to merge them into one correct and stable order
 		List<NamedObject> orderedChildren = new ArrayList<NamedObject>();
-		Set<NamedObject> checked = new LinkedHashSet<NamedObject>();
+		Set<NamedObject> checked = new TreeSet<NamedObject>(new NamedObjectComparator());
 		TreeSet<NamedObject> candidatesWithoutConflict = new TreeSet<NamedObject>(new NamedObjectComparator());
 		outer:
 		while (!childrenSets.isEmpty()) {
@@ -118,7 +121,7 @@ public abstract class DashTreeObjectRelationScript extends D3webCompileScript<D3
 				}
 				// we add the winner to the ordered list of children and clear the sets
 				orderedChildren.add(winner);
-				checked = new HashSet<NamedObject>();
+				checked = new TreeSet<NamedObject>(new NamedObjectComparator());
 				candidatesWithoutConflict = new TreeSet<NamedObject>(new NamedObjectComparator());
 			}
 			else {
