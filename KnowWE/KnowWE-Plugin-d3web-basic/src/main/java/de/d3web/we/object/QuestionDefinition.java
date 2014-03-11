@@ -21,7 +21,7 @@ package de.d3web.we.object;
 
 import java.util.Collection;
 
-import de.d3web.core.knowledge.terminology.QASet;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionDate;
 import de.d3web.core.knowledge.terminology.QuestionMC;
@@ -106,7 +106,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			if (abortCheck.termExist()) {
 				section.get().storeTermObject(compiler, section, (Question) abortCheck.getNamedObject());
 			} else {
-				QASet rootQASet = getKB(compiler).getRootQASet();
+				KnowledgeBase kb = getKB(compiler);
 
 				String name = section.get().getTermName(section);
 
@@ -118,25 +118,25 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 
 				Question question = null;
 				if (questionType.equals(QuestionType.OC)) {
-					question = new QuestionOC(rootQASet, name);
+					question = new QuestionOC(kb, name);
 				}
 				else if (questionType.equals(QuestionType.MC)) {
-					question = new QuestionMC(rootQASet, name);
+					question = new QuestionMC(kb, name);
 				}
 				else if (questionType.equals(QuestionType.NUM)) {
-					question = new QuestionNum(rootQASet, name);
+					question = new QuestionNum(kb, name);
 				}
 				else if (questionType.equals(QuestionType.YN)) {
-					question = new QuestionYN(rootQASet, name);
+					question = new QuestionYN(kb, name);
 				}
 				else if (questionType.equals(QuestionType.DATE)) {
-					question = new QuestionDate(rootQASet, name);
+					question = new QuestionDate(kb, name);
 				}
 				else if (questionType.equals(QuestionType.INFO)) {
-					question = new QuestionZC(rootQASet, name);
+					question = new QuestionZC(kb, name);
 				}
 				else if (questionType.equals(QuestionType.TEXT)) {
-					question = new QuestionText(rootQASet, name);
+					question = new QuestionText(kb, name);
 				}
 				else {
 					return Messages.asList(Messages.error(

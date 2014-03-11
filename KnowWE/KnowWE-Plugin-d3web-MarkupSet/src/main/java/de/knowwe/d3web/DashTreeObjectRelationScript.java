@@ -37,6 +37,8 @@ import de.d3web.we.object.D3webTermDefinition;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.dashtree.DashTreeElement;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 
@@ -69,7 +71,7 @@ public abstract class DashTreeObjectRelationScript extends D3webCompileScript<D3
 	public void compile(D3webCompiler compiler, Section<D3webTermDefinition<NamedObject>> section) throws CompilerMessage {
 
 		NamedObject parentObject = section.get().getTermObject(compiler, section);
-
+		Collection<Message> msgs = new ArrayList<Message>();
 		if (parentObject == null) return;
 
 		// we collect all children lists given for the current definition by getting all definitions
@@ -90,12 +92,11 @@ public abstract class DashTreeObjectRelationScript extends D3webCompileScript<D3
 			if (childrenSet.isEmpty()) continue;
 			childrenSets.add(childrenSet);
 		}
-		if (childrenSets.isEmpty()) return;
 
 		// we try to merge them into one correct and stable order
 		List<NamedObject> orderedChildren = new ArrayList<NamedObject>();
-		Set<NamedObject> checked = new TreeSet<NamedObject>(new NamedObjectComparator());
-		TreeSet<NamedObject> candidatesWithoutConflict = new TreeSet<NamedObject>(new NamedObjectComparator());
+		Set<NamedObject> checked = newNamedObjectSet();
+		TreeSet<NamedObject> candidatesWithoutConflict = newNamedObjectSet();
 		outer:
 		while (!childrenSets.isEmpty()) {
 			NamedObject candidate = getNextCandidate(childrenSets, checked);
@@ -103,26 +104,30 @@ public abstract class DashTreeObjectRelationScript extends D3webCompileScript<D3
 				// no more candidates, we checked all of them already
 				// lets see if we found some with no conflicts
 				// if there are multiple, we choose the lexicographically first
-				NamedObject winner = null;
+				Set<NamedObject> winners;
 				if (candidatesWithoutConflict.isEmpty()) {
-					// no new winner was found, apparently we have a conflict
-					throw CompilerMessage.error("The order of the following objects is in conflict: "
+					// no new candidate without conflict was found, apparently we have a conflict
+					msgs.add(Messages.warning("The order of the following objects is in conflict: "
 							+ Strings.concat(", ", checked)
-							+ ". Check all places where these objects are defined to resolve the conflict.");
+							+ ". Check all places where these objects are defined to resolve the conflict."));
+					// we fail gracefully and just add all checked as winners...
+					winners = checked;
+				} else {
+					winners = newNamedObjectSet();
+					winners.add(candidatesWithoutConflict.first());
 				}
-				winner = candidatesWithoutConflict.first();
-				// we remove the winner from all sets
+				// we remove the winners from all sets
 				for (Iterator<LinkedHashSet<NamedObject>> iterator = childrenSets.iterator(); iterator.hasNext(); ) {
 					LinkedHashSet<NamedObject> childrenSet = iterator.next();
-					childrenSet.remove(winner);
+					childrenSet.removeAll(winners);
 					if (childrenSet.isEmpty()) {
 						iterator.remove();
 					}
 				}
 				// we add the winner to the ordered list of children and clear the sets
-				orderedChildren.add(winner);
-				checked = new TreeSet<NamedObject>(new NamedObjectComparator());
-				candidatesWithoutConflict = new TreeSet<NamedObject>(new NamedObjectComparator());
+				orderedChildren.addAll(winners);
+				checked = newNamedObjectSet();
+				candidatesWithoutConflict = newNamedObjectSet();
 			}
 			else {
 				// we have a new candidate, check for conflicts
@@ -138,6 +143,11 @@ public abstract class DashTreeObjectRelationScript extends D3webCompileScript<D3
 		}
 
 		createObjectRelations(parentObject, orderedChildren);
+		throw new CompilerMessage(msgs);
+	}
+
+	private TreeSet<NamedObject> newNamedObjectSet() {
+		return new TreeSet<NamedObject>(new NamedObjectComparator());
 	}
 
 	protected List<Section<DashTreeElement>> getChildrenDashtreeElements(Section<?> termDefiningSection) {

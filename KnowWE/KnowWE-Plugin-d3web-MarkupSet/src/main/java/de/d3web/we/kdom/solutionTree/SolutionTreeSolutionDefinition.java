@@ -22,6 +22,7 @@ package de.d3web.we.kdom.solutionTree;
 
 import java.util.List;
 
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.object.SolutionDefinition;
@@ -35,13 +36,16 @@ public class SolutionTreeSolutionDefinition extends SolutionDefinition {
 			@Override
 			protected void createObjectRelations(NamedObject parentObject, List<NamedObject> orderedChildren) {
 				Solution parentSolution = (Solution) parentObject;
+				TerminologyObject[] parents = parentSolution.getParents();
+				if (parents.length == 0) {
+					parentSolution.getKnowledgeBase().getRootSolution().addChild(parentSolution);
+				}
 				for (NamedObject orderedChild : orderedChildren) {
 					if (orderedChild instanceof Solution) {
 						Solution childSolution = (Solution) orderedChild;
 						parentSolution.getKnowledgeBase().getRootSolution().removeChild(childSolution);
 						parentSolution.addChild(childSolution);
 					}
-
 				}
 			}
 		});

@@ -148,7 +148,7 @@ public abstract class SolutionDefinition
 				return Messages.asList();
 			}
 
-			section.get().storeTermObject(compiler, section, new Solution(kb.getRootSolution(), name));
+			section.get().storeTermObject(compiler, section, new Solution(kb, name));
 
 			return Messages.asList(Messages.objectCreatedNotice(
 					termObjectClass.getSimpleName() + " '" + name + "'"));

@@ -89,7 +89,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 				return Messages.asList();
 			}
 
-			section.get().storeTermObject(compiler, section, new QContainer(kb.getRootQASet(), name));
+			section.get().storeTermObject(compiler, section, new QContainer(kb, name));
 
 			return Messages.asList(Messages.objectCreatedNotice(termObjectClass.getSimpleName() + " '" + name + "'"));
 		}

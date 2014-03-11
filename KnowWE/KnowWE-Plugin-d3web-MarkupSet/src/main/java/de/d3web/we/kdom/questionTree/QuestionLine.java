@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
@@ -119,6 +120,10 @@ public class QuestionLine extends AbstractType {
 				@Override
 				protected void createObjectRelations(NamedObject parentObject, List<NamedObject> orderedChildren) {
 					Question parentQuestion = (Question) parentObject;
+					TerminologyObject[] parents = parentQuestion.getParents();
+					if (parents.length == 0) {
+						parentQuestion.getKnowledgeBase().getRootQASet().addChild(parentQuestion);
+					}
 					for (NamedObject orderedChild : orderedChildren) {
 						if (orderedChild instanceof Question) {
 							Question childQuestion = (Question) orderedChild;
@@ -128,10 +133,7 @@ public class QuestionLine extends AbstractType {
 						else if (parentQuestion instanceof QuestionChoice && orderedChild instanceof Choice) {
 							// nothing to to for QuestionYN, answers are already there and immutable
 							if (parentQuestion instanceof QuestionYN) continue;
-							Choice choice = (Choice) orderedChild;
-							QuestionChoice questionChoice = (QuestionChoice) parentQuestion;
-							questionChoice.removeAlternative(choice);
-							questionChoice.addAlternative(choice);
+							((QuestionChoice) parentQuestion).addAlternative((Choice) orderedChild);
 						}
 					}
 

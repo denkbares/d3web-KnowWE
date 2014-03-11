@@ -22,6 +22,7 @@ package de.d3web.we.kdom.questionTree;
 import java.util.Collection;
 import java.util.List;
 
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
@@ -73,6 +74,10 @@ public class QClassLine extends AbstractType {
 				@Override
 				protected void createObjectRelations(NamedObject parentObject, List<NamedObject> orderedChildren) {
 					QASet parentQASet = (QASet) parentObject;
+					TerminologyObject[] parents = parentQASet.getParents();
+					if (parents.length == 0) {
+						parentQASet.getKnowledgeBase().getRootQASet().addChild(parentQASet);
+					}
 					for (NamedObject orderedChild : orderedChildren) {
 						QASet childQASet = (QASet) orderedChild;
 						parentQASet.getKnowledgeBase().getRootQASet().removeChild(childQASet);
