@@ -19,22 +19,25 @@
  */
 package de.d3web.we.object;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
-import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.terminology.RenamableTerm;
+import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.objects.TermUtils;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * 
@@ -48,6 +51,8 @@ import java.util.Collection;
 public abstract class D3webTermDefinition<TermObject extends NamedObject>
 		extends AbstractType
 		implements TermDefinition, D3webTerm<TermObject>, RenamableTerm {
+
+	private static final String TERM_OBJECT_STORE_KEY = "termObjectStoreKey";
 
 	/**
 	 * Checks whether the creation of the term object can be aborted.
@@ -65,19 +70,21 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 			check.setHasErrors(true);
 			return check;
 		}
-		Collection<NamedObject> termObjectsIgnoreTermObjectClass =
-				D3webUtils.getTermObjectsIgnoreTermObjectClass(compiler, section);
+		AbortCheck check = new AbortCheck();
+		Collection<NamedObject> termObjectsIgnoreTermObjectClass =	getAllTermObjects(compiler, section);
 		if (termObjectsIgnoreTermObjectClass.isEmpty()) {
 			// object does not yet exist, so just return null to continue
 			// creating the terminology object
-			return new AbortCheck();
+			return check;
 		}
 		else {
 			for (NamedObject termObject : termObjectsIgnoreTermObjectClass) {
-				if (!section.get().getTermObjectClass(section).isAssignableFrom(
+				if (section.get().getTermObjectClass(section).isAssignableFrom(
 						termObject.getClass())) {
-					// other object already exist... return addition error if
-					// one of them has another type
+					// other object already exist, we return it in the check
+					check.setNamedObject(termObject);
+				} else {
+					// return addition error if one of them has another type
 					msgs.add(Messages.error("The term '" + section.get().getTermIdentifier(section)
 							+ "' is already occupied by an object of the type '"
 							+ termObject.getClass().getSimpleName() + "' (probably by the system)"));
@@ -85,10 +92,24 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 				}
 			}
 		}
-		AbortCheck check = new AbortCheck();
 		check.setMessages(msgs);
 		check.setTermExists(true);
 		return check;
+	}
+
+
+	private <TermObject extends NamedObject> Collection<NamedObject> getAllTermObjects(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
+		Set<NamedObject> foundTermObjects = new HashSet<NamedObject>();
+		TerminologyManager terminologyHandler = compiler.getTerminologyManager();
+		Identifier termIdentifier = section.get().getTermIdentifier(section);
+		Collection<Section<?>> termDefiningSections = terminologyHandler.getTermDefiningSections(termIdentifier);
+		for (Section<?> potentialDefSection : termDefiningSections) {
+			if (!(section.get() instanceof D3webTermDefinition)) continue;
+			Section<D3webTermDefinition> termDefiningSection = Sections.cast(potentialDefSection, D3webTermDefinition.class);
+			NamedObject termObject = termDefiningSection.get().getTermObject(compiler, termDefiningSection);
+			if (termObject != null) foundTermObjects.add(termObject);
+		}
+		return foundTermObjects;
 	}
 
 	@Override
@@ -99,7 +120,12 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 
 	@Override
 	public TermObject getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
-		return D3webUtils.getTermObjectDefaultImplementation(compiler, section);
+		assert section.get() instanceof D3webTermDefinition;
+		return (TermObject) section.getSectionStore().getObject(compiler, TERM_OBJECT_STORE_KEY);
+	}
+
+	public void storeTermObject(D3webCompiler compiler, Section<? extends D3webTermDefinition<TermObject>> section, TermObject object) {
+		section.getSectionStore().storeObject(compiler, TERM_OBJECT_STORE_KEY, object);
 	}
 
 	@Override

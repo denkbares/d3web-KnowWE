@@ -81,12 +81,6 @@ public class InlineChoiceAnswerDefinition extends AbstractType {
 	class InlineAnswerDef extends AnswerDefinition {
 
 		@Override
-		public int getPosition(Section<? extends AnswerDefinition> s) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
 		public Section<? extends QuestionDefinition> getQuestionSection(Section<? extends AnswerDefinition> s) {
 			return Sections.findSuccessor(
 					Sections.findAncestorOfType(s, DashTreeElementContent.class),

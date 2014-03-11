@@ -23,7 +23,6 @@ import java.util.Collection;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.strings.Identifier;
 import de.d3web.we.knowledgebase.D3webCompiler;
@@ -37,9 +36,9 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
- * 
- * Abstract Type for the definition of questionnaires
- * 
+ * Abstract Type for the definition of questionnaires. A questionnaire is created and hooked into the root QASet
+ * of the knowledge base. The hierarchical position in the terminology needs to be handled the subclass.
+ *
  * @author Jochen/Albrecht
  * @created 26.07.2010
  */
@@ -52,8 +51,6 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 		setRenderer(StyleRenderer.Questionaire);
 	}
 
-	public abstract int getPosition(Section<QuestionnaireDefinition> s);
-
 	@Override
 	public Class<?> getTermObjectClass(Section<? extends Term> section) {
 		return QContainer.class;
@@ -64,7 +61,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 
 		@Override
 		public Collection<Message> create(D3webCompiler compiler,
-				Section<QuestionnaireDefinition> section) {
+										  Section<QuestionnaireDefinition> section) {
 
 			Identifier termIdentifier = section.get().getTermIdentifier(section);
 			String name = section.get().getTermName(section);
@@ -74,7 +71,12 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 					termIdentifier);
 
 			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(compiler, section);
-			if (abortCheck.hasErrors() || abortCheck.termExist()) return abortCheck.getErrors();
+			if (abortCheck.hasErrors()) return abortCheck.getErrors();
+
+			if (abortCheck.termExist()) {
+				section.get().storeTermObject(compiler, section, (QContainer) abortCheck.getNamedObject());
+				return abortCheck.getErrors();
+			}
 
 			KnowledgeBase kb = getKB(compiler);
 
@@ -87,12 +89,9 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 				return Messages.asList();
 			}
 
-			QASet parent = kb.getRootQASet();
-			new QContainer(parent, name);
+			section.get().storeTermObject(compiler, section, new QContainer(kb.getRootQASet(), name));
 
-			return Messages.asList(Messages.objectCreatedNotice(
-					termObjectClass.getSimpleName()
-							+ " '" + name + "'"));
+			return Messages.asList(Messages.objectCreatedNotice(termObjectClass.getSimpleName() + " '" + name + "'"));
 		}
 	}
 

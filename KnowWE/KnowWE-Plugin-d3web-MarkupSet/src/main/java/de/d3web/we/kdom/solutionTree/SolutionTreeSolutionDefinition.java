@@ -20,8 +20,31 @@
 
 package de.d3web.we.kdom.solutionTree;
 
+import java.util.List;
+
+import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.object.SolutionDefinition;
+import de.knowwe.core.compile.Priority;
+import de.knowwe.d3web.DashTreeObjectRelationScript;
 
 public class SolutionTreeSolutionDefinition extends SolutionDefinition {
+
+	public SolutionTreeSolutionDefinition() {
+		this.addCompileScript(Priority.ABOVE_DEFAULT, new DashTreeObjectRelationScript() {
+			@Override
+			protected void createObjectRelations(NamedObject parentObject, List<NamedObject> orderedChildren) {
+				Solution parentSolution = (Solution) parentObject;
+				for (NamedObject orderedChild : orderedChildren) {
+					if (orderedChild instanceof Solution) {
+						Solution childSolution = (Solution) orderedChild;
+						parentSolution.getKnowledgeBase().getRootSolution().removeChild(childSolution);
+						parentSolution.addChild(childSolution);
+					}
+
+				}
+			}
+		});
+	}
 
 }

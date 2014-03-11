@@ -49,13 +49,13 @@ import de.knowwe.kdom.visitor.Visitor;
 /**
  * @author Jochen
  *         <p/>
- *         This class represents a node in the Knowledge-DOM of KnowWE. Basically it has some text,
- *         one type and a list of children.
+ *         This class represents a node in the Knowledge-DOM of KnowWE. Basically it has some text, one type and a list
+ *         of children.
  *         <p/>
  *         Further, it has a reference to its father and a positionOffset to its fathers text.
  *         <p/>
- *         Further information can be attached to a node (TypeInformation), to connect the
- *         text-parts with external resources, e.g. knowledge bases, OWL, User-feedback-DBs etc.
+ *         Further information can be attached to a node (TypeInformation), to connect the text-parts with external
+ *         resources, e.g. knowledge bases, OWL, User-feedback-DBs etc.
  */
 public final class Section<T extends Type> implements Visitable, Comparable<Section<? extends Type>> {
 
@@ -110,8 +110,8 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	private Section<? extends Type> parent;
 
 	/**
-	 * the position the text of this node starts related to the text of the parent node. Thus: for
-	 * first child always 0, for 2nd firstChild.length() etc.
+	 * the position the text of this node starts related to the text of the parent node. Thus: for first child always 0,
+	 * for 2nd firstChild.length() etc.
 	 */
 	private int offsetInParent = -1;
 
@@ -140,9 +140,9 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 * <p/>
 	 * Important: parses itself recursively by getting the allowed childrenTypes of the local type
 	 *
-	 * @param text the part of (article-source) text of the node
+	 * @param text       the part of (article-source) text of the node
 	 * @param objectType type of the node
-	 * @param parent the parent section
+	 * @param parent     the parent section
 	 */
 	private Section(String text, T objectType, Section<?> parent) {
 		this.parent = parent;
@@ -172,11 +172,10 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	/**
-	 * If the compared Sections are from different articles, a value less than 0 will be returned,
-	 * if the title of this Section is lexicographically less than the title of the arguments
-	 * Section, greater than 0 if the title of arguments Section is lexicographically greater.<br/>
-	 * If the Sections are from the same article, a value less than 0 will be returned, if the
-	 * Section is textually located above the argument Section, a value greater than 0, if
+	 * If the compared Sections are from different articles, a value less than 0 will be returned, if the title of this
+	 * Section is lexicographically less than the title of the arguments Section, greater than 0 if the title of
+	 * arguments Section is lexicographically greater.<br/> If the Sections are from the same article, a value less than
+	 * 0 will be returned, if the Section is textually located above the argument Section, a value greater than 0, if
 	 * below.<br/> If a Sections is compared with itself, 0 will be returned.
 	 */
 	@Override
@@ -212,12 +211,11 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	/**
-	 * Compares the KDOM subtree of this Section with the KDOM subtree of given Section. Types,
-	 * originalText and structure of the tree are checked.
+	 * Compares the KDOM subtree of this Section with the KDOM subtree of given Section. Types, originalText and
+	 * structure of the tree are checked.
 	 *
 	 * @param sec is the Section to compare with this Section
-	 * @return true, if both KDOM subtrees equal in terms of type, originalText and structure. False
-	 * else.
+	 * @return true, if both KDOM subtrees equal in terms of type, originalText and structure. False else.
 	 * @created 04.02.2011
 	 */
 	public boolean equalsAsKDOMSubtree(Section<?> sec) {
@@ -278,8 +276,8 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	/**
-	 * Sets the text of this node. This IS an article source edit operation! TODO: Important -
-	 * propagate changes through the whole tree OR ReIinit tree!
+	 * Sets the text of this node. This IS an article source edit operation! TODO: Important - propagate changes through
+	 * the whole tree OR ReIinit tree!
 	 */
 	public void setText(String newText) {
 		this.text = newText;
@@ -590,16 +588,15 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	/**
-	 * Method that looks (recursively down) for this section whether some message of the specified
-	 * type has been stored in that subtree.
+	 * Method that looks (recursively down) for this section whether some message of the specified type has been stored
+	 * in that subtree.
 	 */
 	public boolean hasErrorInSubtree() {
 		return hasMessageInSubtree(Message.Type.ERROR);
 	}
 
 	/**
-	 * Method that looks (recursively down) for this section whether some errors has been stored in
-	 * that subtree.
+	 * Method that looks (recursively down) for this section whether some errors has been stored in that subtree.
 	 */
 	public boolean hasMessageInSubtree(Message.Type type) {
 		Map<Compiler, Collection<Message>> errors = Messages.getMessagesMap(
@@ -615,20 +612,22 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	/**
-	 * Method that looks (recursively down) for this section whether some messages of the specified
-	 * type has been stored in that subtree for the given article.
+	 * Method that looks (recursively down) for this section whether some messages of the specified type has been stored
+	 * in that subtree for the given article.
 	 */
 	public boolean hasErrorInSubtree(Compiler compiler) {
 		return hasMessageInSubtree(compiler, Message.Type.ERROR);
 	}
 
 	/**
-	 * Method that looks (recursively down) for this section whether some errors has been stored in
-	 * that subtree for the given article.
+	 * Method that looks (recursively down) for this section whether some errors has been stored in that subtree for the
+	 * given compiler or compiler independent.
 	 */
 	public boolean hasMessageInSubtree(Compiler compiler, Message.Type type) {
-		Collection<Message> errors = Messages.getMessages(compiler, this, type);
-		if (!errors.isEmpty()) return true;
+		Map<Compiler, Collection<Message>> errors = Messages.getMessagesMap(
+				this, type);
+		if (errors.get(compiler) != null) return true;
+		if (errors.get(null) != null) return true;
 		for (Section<?> child : children) {
 			boolean err = child.hasErrorInSubtree(compiler);
 			if (err) {
@@ -767,9 +766,9 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	/**
-	 * This method has the purpose to clear the reused states of all Sections that could not be
-	 * reused by the incremental update. Call this method on the root Section of the old article
-	 * with the new article as the argument.
+	 * This method has the purpose to clear the reused states of all Sections that could not be reused by the
+	 * incremental update. Call this method on the root Section of the old article with the new article as the
+	 * argument.
 	 *
 	 * @param article the new article
 	 * @created 13.09.2010
@@ -924,11 +923,10 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	/**
-	 * Calculates the index of a contained object without using the equals-method but using object
-	 * identity instead.
+	 * Calculates the index of a contained object without using the equals-method but using object identity instead.
 	 *
 	 * @param object the object to get the index for
-	 * @param list the list of objects to search in
+	 * @param list   the list of objects to search in
 	 * @return the index or -1 if the section is not contained in the list
 	 * @created 10.07.2012
 	 */
@@ -1070,8 +1068,8 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	 *
 	 * @param newType the new type to be set
 	 * @created 03.03.2011
-	 * @deprecated we should get rid of this method, because it can cause problems with methods
-	 * depending on a static type tree (like the methods in {@link Sections} and ScriptManager)
+	 * @deprecated we should get rid of this method, because it can cause problems with methods depending on a static
+	 * type tree (like the methods in {@link Sections} and ScriptManager)
 	 */
 	@Deprecated
 	@SuppressWarnings("unchecked")

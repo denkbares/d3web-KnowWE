@@ -29,11 +29,6 @@ import de.knowwe.kdom.dashtree.DashTreeUtils;
 public class QuestionTreeAnswerDefinition extends AnswerDefinition {
 
 	@Override
-	public int getPosition(Section<? extends AnswerDefinition> s) {
-		return DashTreeUtils.getPositionInFatherDashSubtree(s);
-	}
-
-	@Override
 	public Section<? extends QuestionDefinition> getQuestionSection(Section<? extends AnswerDefinition> s) {
 		return Sections.findSuccessor(
 				DashTreeUtils.getFatherDashTreeElementContent(s), QuestionDefinition.class);

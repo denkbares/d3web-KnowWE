@@ -45,7 +45,8 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
- * Type for the definition of solution
+ * Abstract Type for the definition of solutions. A solution is created and hooked into the root solution
+ * of the knowledge base. The hierarchical position in the terminology needs to be handled the subclass.
  *
  * @author Jochen/Albrecht
  * @created 26.07.2010
@@ -128,7 +129,12 @@ public abstract class SolutionDefinition
 					termIdentifier);
 
 			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(compiler, section);
-			if (abortCheck.hasErrors() || abortCheck.termExist()) return abortCheck.getErrors();
+			if (abortCheck.hasErrors()) return abortCheck.getErrors();
+
+			if (abortCheck.termExist()) {
+				section.get().storeTermObject(compiler, section, (Solution) abortCheck.getNamedObject());
+				return abortCheck.getErrors();
+			}
 
 			KnowledgeBase kb = getKB(compiler);
 
@@ -142,7 +148,7 @@ public abstract class SolutionDefinition
 				return Messages.asList();
 			}
 
-			new Solution(kb.getRootSolution(), name);
+			section.get().storeTermObject(compiler, section, new Solution(kb.getRootSolution(), name));
 
 			return Messages.asList(Messages.objectCreatedNotice(
 					termObjectClass.getSimpleName() + " '" + name + "'"));

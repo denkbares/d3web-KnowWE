@@ -27,25 +27,18 @@ import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
-import de.knowwe.core.compile.PackageCompiler;
-import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
- * 
- * This is the type to be used in markup for referencing (d3web-)
- * Choice-Answers. It checks whether the referenced object is existing. In case
- * it creates the Answer object in the knowledge base.
- * 
+ * This is the type to be used in markup for referencing (d3web-) Choice-Answers. It checks whether the referenced
+ * object is existing. In case it creates the Answer object in the knowledge base.
+ *
  * @author Jochen Reutelshöfer (denkbares GmbH)
  * @author Albrecht Striffler (denkbares GmbH)
- * 
  * @created 26.07.2010
- * 
  */
 public abstract class AnswerReference
 		extends D3webTermReference<Choice> {
@@ -53,6 +46,19 @@ public abstract class AnswerReference
 	public AnswerReference() {
 		this.setRenderer(StyleRenderer.CHOICE);
 		this.addCompileScript(new AnswerReferenceRegistrationHandler());
+	}
+
+	@Override
+	public Choice getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<Choice>> section) {
+		Choice choice = super.getTermObject(compiler, section);
+		if (choice == null) {
+			Section<QuestionReference> questionSection = getQuestionSection(Sections.cast(section, AnswerReference.class));
+			if (questionSection == null) return null;
+			Question question = questionSection.get().getTermObject(compiler, questionSection);
+			if (question == null || !(question instanceof QuestionChoice)) return null;
+			choice = KnowledgeBaseUtils.findChoice((QuestionChoice) question, getTermName(section), false);
+		}
+		return choice;
 	}
 
 	@Override
@@ -64,7 +70,7 @@ public abstract class AnswerReference
 			Identifier questionIdentifier = questionSection == null
 					? new Identifier("")
 					: questionSection.get().getTermIdentifier(
-							questionSection);
+					questionSection);
 
 			return questionIdentifier.append(new Identifier(answerSection.get().getTermName(
 					answerSection)));
@@ -79,44 +85,12 @@ public abstract class AnswerReference
 		return Choice.class;
 	}
 
-	@Override
-	public Choice getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<Choice>> section) {
-
-		Choice choice = null;
-		if (section.get() instanceof AnswerReference) {
-			TerminologyManager terminologyManager = compiler.getTerminologyManager();
-			Identifier termIdentifier = getTermIdentifier(section);
-			Section<?> answerDef = terminologyManager.getTermDefiningSection(termIdentifier);
-			if (answerDef != null) {
-				choice = (Choice) KnowWEUtils.getStoredObject((PackageCompiler) compiler, answerDef,
-						AnswerDefinition.ANSWER_STORE_KEY);
-				if (choice != null) return choice;
-			}
-			if (answerDef == null || choice == null) {
-				Identifier questionIdentifier = new Identifier(
-						termIdentifier.getPathElementAt(0));
-				Section<?> termDef = terminologyManager.getTermDefiningSection(questionIdentifier);
-				if (termDef != null && termDef.get() instanceof QuestionDefinition) {
-					Section<QuestionDefinition> questionDef = Sections.cast(termDef,
-							QuestionDefinition.class);
-					Question question = questionDef.get().getTermObject(compiler, questionDef);
-					if (question instanceof QuestionChoice) {
-						choice = KnowledgeBaseUtils.findChoice((QuestionChoice) question,
-								termIdentifier.getLastPathElement(), false);
-					}
-				}
-			}
-		}
-		return choice;
-	}
-
 	/**
-	 * returns the section of the corresponding question-reference for this
-	 * answer.
-	 * 
-	 * @created 26.07.2010
+	 * returns the section of the corresponding question-reference for this answer.
+	 *
 	 * @param section the section of this choice
 	 * @return the section of the question
+	 * @created 26.07.2010
 	 */
 	public abstract Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> section);
 

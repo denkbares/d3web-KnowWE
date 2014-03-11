@@ -40,17 +40,34 @@ public class DashTreeUtils {
 	protected DashTreeUtils() {
 	}
 
-	public static List<Section<DashTreeElement>> findSuccessorDashtreeElements(Section<? extends DashTreeElement> element) {
-		List<Section<DashTreeElement>> found = new ArrayList<Section<DashTreeElement>>();
-		Sections.findSuccessorsOfType(element.getParent(), DashTreeElement.class, found);
-		found.remove(element); // remove self
-		return found;
+	public static List<Section<DashTreeElement>> findSuccessorDashtreeElements(Section<?> section) {
+		return findSuccessorDashtreeElements(section, -1);
 	}
 
-	public static List<Section<DashTreeElement>> findChildrenDashtreeElements(Section<? extends DashTreeElement> element) {
+	public static List<Section<DashTreeElement>> findChildrenDashtreeElements(Section<?> section) {
+		return findSuccessorDashtreeElements(section, 2);
+	}
+
+	private static List<Section<DashTreeElement>> findSuccessorDashtreeElements(Section<?> section, int depth) {
+		Section<DashTreeElement> element;
+		if (section.get() instanceof DashTreeElement) {
+			element = Sections.cast(section, DashTreeElement.class);
+		}
+		else {
+			element = Sections.findAncestorOfType(section, DashTreeElement.class);
+			if (element == null) {
+				throw new IllegalArgumentException("Given section neither is nor has an ancestor of type "
+						+ DashTreeElement.class.getSimpleName());
+			}
+		}
 		List<Section<DashTreeElement>> found = new ArrayList<Section<DashTreeElement>>();
-		Sections.findSuccessorsOfType(element.getParent(), DashTreeElement.class, 2, found);
-		found.remove(element); // remove self
+		if (depth >= 0) {
+			Sections.findSuccessorsOfType(element.getParent(), DashTreeElement.class, depth, found);
+		}
+		else {
+			Sections.findSuccessorsOfType(element.getParent(), DashTreeElement.class, found);
+		}
+		found.remove(element);
 		return found;
 	}
 
@@ -86,7 +103,7 @@ public class DashTreeUtils {
 
 	/**
 	 * Delegates the getDashTreeFather-operation to DashTreeElement
-	 * 
+	 *
 	 * @param s
 	 * @return
 	 */
@@ -130,29 +147,31 @@ public class DashTreeUtils {
 
 	/**
 	 * Delivers the (dash-)level of the element by counting leading '-'
-	 * 
+	 *
 	 * @param s Only works for DashSubtree oder DashTreeElement sections
 	 * @return
 	 */
 	public static int getDashLevel(Section<?> s) {
 
 		if (s == null) return -1;
-		
-		char key ='-';
-		
-		if(s.get() instanceof DashSubtree) {
-			key = ((DashSubtree)s.get()).getKey();
-		} else if(s.get() instanceof DashTreeElement) {
+
+		char key = '-';
+
+		if (s.get() instanceof DashSubtree) {
+			key = ((DashSubtree) s.get()).getKey();
+		}
+		else if (s.get() instanceof DashTreeElement) {
 			Section<DashSubtree> subtree = Sections.findAncestorOfType(s, DashSubtree.class);
 			key = subtree.get().getKey();
-		} else {
+		}
+		else {
 			throw new IllegalArgumentException("Only DashSubtree and DashTreeElement are allowed");
 		}
 
 		String text = s.getText().trim();
 
 		int index = 0;
-		while (index < text.length() && text.charAt(index) == key){
+		while (index < text.length() && text.charAt(index) == key) {
 			index++;
 		}
 		return index;

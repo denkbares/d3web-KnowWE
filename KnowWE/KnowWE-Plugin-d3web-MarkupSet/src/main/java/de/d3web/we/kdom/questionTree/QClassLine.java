@@ -20,14 +20,16 @@
 package de.d3web.we.kdom.questionTree;
 
 import java.util.Collection;
+import java.util.List;
 
-import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
-import de.d3web.utils.Log;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webHandler;
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -36,11 +38,11 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.d3web.DashTreeObjectRelationScript;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
 import de.knowwe.kdom.constraint.UnquotedConstraint;
 import de.knowwe.kdom.dashtree.DashTreeElement;
-import de.knowwe.kdom.dashtree.DashTreeElementContent;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
 
@@ -56,7 +58,7 @@ public class QClassLine extends AbstractType {
 
 		// finally the rest is QuestionniareDefinition
 		this.addChildType(new QuestionTreeQuestionnaireDefinition());
-		this.addCompileScript(new CreateSubQuestionnaireRelationHandler());
+//		this.addCompileScript(new CreateSubQuestionnaireRelationHandler());
 
 	}
 
@@ -67,85 +69,19 @@ public class QClassLine extends AbstractType {
 					new AllTextFinderTrimmed());
 			csf.addConstraint(SingleChildConstraint.getInstance());
 			setSectionFinder(csf);
-		}
-
-		@Override
-		public int getPosition(Section<QuestionnaireDefinition> s) {
-			return DashTreeUtils.getPositionInFatherDashSubtree(s);
-		}
-
-	}
-
-	/**
-	 * This handler establishes sub-questionnaire-relations defined by the
-	 * questionTree in the knowledge base i.e., if a questionnaire is a
-	 * dashTree-child of another questionnaire we add it as child in the
-	 * knowledge base
-	 * 
-	 * @author Jochen
-	 */
-	static class CreateSubQuestionnaireRelationHandler extends D3webHandler<QClassLine> {
-
-		@Override
-		public void destroy(D3webCompiler article, Section<QClassLine> s) {
-			// will be destroyed by QuestionniareDefinition#destroy()
-
-		}
-
-		@Override
-		public Collection<Message> create(D3webCompiler compiler, Section<QClassLine> s) {
-			Section<? extends DashTreeElementContent> fatherContent = DashTreeUtils.getFatherDashTreeElementContent(
-					s);
-
-			Section<QuestionnaireDefinition> localQuestionniareDef = Sections.findSuccessor(s,
-					QuestionnaireDefinition.class);
-			QContainer localQuestionnaire = localQuestionniareDef.get().getTermObject(
-					compiler,
-					localQuestionniareDef);
-
-			if (fatherContent != null && localQuestionnaire != null) {
-
-				Section<QuestionnaireDefinition> superQuestionnaireDef = Sections.findSuccessor(
-						fatherContent, QuestionnaireDefinition.class);
-				if (superQuestionnaireDef != null) {
-					QContainer superQuestionnaire = superQuestionnaireDef.get().getTermObject(
-							compiler,
-							superQuestionnaireDef);
-
-					KnowledgeBase kb = getKB(compiler);
-					if (superQuestionnaire == null) {
-						superQuestionnaire = kb.getManager().searchQContainer(
-								superQuestionnaireDef.get().getTermIdentifier(superQuestionnaireDef).toString());
-					}
-
-					if (superQuestionnaire != null) {
-						int position = localQuestionniareDef.get().getPosition(
-								localQuestionniareDef);
-						int childrenCount = superQuestionnaire.getChildren().length;
-						if (position <= childrenCount) {
-							// in case it was connected to the root, remove this
-							// connection
-							kb.getRootQASet().removeChild(localQuestionnaire);
-
-							// here the actual taxonomic relation is established
-							superQuestionnaire.addChild(localQuestionnaire,
-									position);
-						}
-						else {
-							String msg = "Unable to add sub-questionnaire at desired position.\nDesired position: "
-									+ position + ", children count in parent: "
-									+ childrenCount + ", questionnaire: '"
-									+ localQuestionnaire + "', parent: '"
-									+ superQuestionnaire + "'.\n This is likely because one of the"
-									+ " sibling questionnaires could not be added due to an error.";
-							Log.warning(msg);
-						}
+			this.addCompileScript(Priority.ABOVE_DEFAULT, new DashTreeObjectRelationScript() {
+				@Override
+				protected void createObjectRelations(NamedObject parentObject, List<NamedObject> orderedChildren) {
+					QASet parentQASet = (QASet) parentObject;
+					for (NamedObject orderedChild : orderedChildren) {
+						QASet childQASet = (QASet) orderedChild;
+						parentQASet.getKnowledgeBase().getRootQASet().removeChild(childQASet);
+						parentQASet.addChild(childQASet);
 					}
 				}
-			}
-
-			return Messages.asList();
+			});
 		}
+
 	}
 
 	private void initSectionFinder() {

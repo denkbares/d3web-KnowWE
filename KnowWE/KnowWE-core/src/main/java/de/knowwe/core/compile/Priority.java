@@ -37,7 +37,11 @@ public class Priority implements Comparable<Priority> {
 
 	public static final Priority HIGH = new Priority(-100);
 
+	public static final Priority ABOVE_DEFAULT = new Priority(-1);
+
 	public static final Priority DEFAULT = new Priority(0);
+
+	public static final Priority BELOW_DEFAULT = new Priority(1);
 
 	public static final Priority LOW = new Priority(100);
 

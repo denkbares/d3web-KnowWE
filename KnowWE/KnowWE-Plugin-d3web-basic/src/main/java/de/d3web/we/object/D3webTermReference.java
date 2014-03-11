@@ -19,17 +19,19 @@
  */
 package de.d3web.we.object;
 
+import java.util.Collection;
+
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
-import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.objects.TermUtils;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 
 /**
  * Abstract type for referencing d3web-objects, such as solutions, questions,
@@ -56,16 +58,16 @@ public abstract class D3webTermReference<TermObject extends NamedObject>
 
 	@Override
 	public TermObject getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
-		return D3webUtils.getTermObjectDefaultImplementation(compiler, section);
+		Collection<Section<?>> termDefiningSections = compiler.getTerminologyManager()
+				.getTermDefiningSections(section.get().getTermIdentifier(section));
+		for (Section<?> potentiallyDefiningSection : termDefiningSections) {
+			if (!(potentiallyDefiningSection.get() instanceof D3webTermDefinition)) continue;
+			Section<D3webTermDefinition> termDefiningSection = Sections.cast(potentiallyDefiningSection, D3webTermDefinition.class);
+			NamedObject termObject = termDefiningSection.get().getTermObject(compiler, termDefiningSection);
+			if (section.get().getTermObjectClass(section).isInstance(termObject)) return (TermObject) termObject;
+		}
+		return null;
 	}
-
-	// @Override
-	// @Deprecated
-	// public TermObject getTermObject(Article article, Section<? extends
-	// D3webTerm<TermObject>> section) {
-	// // TODO Auto-generated method stub
-	// return getTermObject(Compilers.getPackageCompiler(article), section);
-	// }
 
 	@Override
 	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
@@ -82,7 +84,7 @@ public abstract class D3webTermReference<TermObject extends NamedObject>
 	 * 
 	 * @created 21.03.2012
 	 * @param <TermObject>
-	 * @param article the compiling article
+	 * @param compiler the compiler for which we want the object
 	 * @param section the referencing section
 	 * @return the NamedObject referenced by the section
 	 */

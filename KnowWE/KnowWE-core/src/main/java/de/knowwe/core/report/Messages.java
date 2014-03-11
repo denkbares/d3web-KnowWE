@@ -159,8 +159,8 @@ public final class Messages {
 	 * Returns an unmodifiable {@link Map} with Collections of all
 	 * {@link Message}s of the given {@link de.knowwe.core.report.Message.Type}s
 	 * stored for the given {@link Section}. The Collections are mapped by the
-	 * title of the {@link Article} the {@link Message}s were stored for. If
-	 * {@link Message}s were stored without an argument {@link Article} , the
+	 * {@link Compiler} the {@link Message}s were stored for. If
+	 * {@link Message}s were stored without an argument {@link Compiler} , the
 	 * {@link Map} will contain this {@link Collection} with <tt>null</tt> as
 	 * the <tt>key</tt>.
 	 * 

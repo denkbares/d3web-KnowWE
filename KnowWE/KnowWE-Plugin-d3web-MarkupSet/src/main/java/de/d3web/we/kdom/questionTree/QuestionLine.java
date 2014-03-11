@@ -21,9 +21,15 @@
 package de.d3web.we.kdom.questionTree;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
+import de.d3web.core.knowledge.terminology.Choice;
+import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
+import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
@@ -32,10 +38,8 @@ import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.we.kdom.questionTree.indication.IndicationHandler;
 import de.d3web.we.knowledgebase.D3webCompiler;
-import de.d3web.we.object.QASetDefinition;
+import de.d3web.we.object.AnswerDefinition;
 import de.d3web.we.object.QuestionDefinition;
-import de.d3web.we.object.QuestionDefinition.QuestionType;
-import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Priority;
@@ -47,9 +51,10 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.d3web.DashTreeObjectRelationScript;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
-import de.knowwe.kdom.dashtree.DashTreeElementContent;
+import de.knowwe.kdom.dashtree.DashTreeElement;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
@@ -61,11 +66,9 @@ import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
 
 /**
  * QuestionLine of the QuestionTree, here Questions can be defined
- * 
- * @see QuestionTypeDeclaration
- * 
+ *
  * @author Jochen
- * 
+ * @see QuestionTypeDeclaration
  */
 public class QuestionLine extends AbstractType {
 
@@ -101,9 +104,8 @@ public class QuestionLine extends AbstractType {
 
 	/**
 	 * A QuestionDef type to define questions in the questiontree
-	 * 
+	 *
 	 * @author Jochen
-	 * 
 	 */
 	static class QuestionTreeQuestionDefinition extends QuestionDefinition {
 
@@ -111,8 +113,54 @@ public class QuestionLine extends AbstractType {
 			ConstraintSectionFinder f = new ConstraintSectionFinder(new AllTextFinderTrimmed());
 			f.addConstraint(SingleChildConstraint.getInstance());
 			this.setSectionFinder(f);
-			// this.addSubtreeHandler(new CreateIndicationHandler());
 			this.addCompileScript(IndicationHandler.getInstance());
+			this.addCompileScript(Priority.ABOVE_DEFAULT, new DashTreeObjectRelationScript() {
+
+				@Override
+				protected void createObjectRelations(NamedObject parentObject, List<NamedObject> orderedChildren) {
+					Question parentQuestion = (Question) parentObject;
+					for (NamedObject orderedChild : orderedChildren) {
+						if (orderedChild instanceof Question) {
+							Question childQuestion = (Question) orderedChild;
+							parentQuestion.getKnowledgeBase().getRootQASet().removeChild(childQuestion);
+							parentQuestion.addChild(childQuestion);
+						}
+						else if (parentQuestion instanceof QuestionChoice && orderedChild instanceof Choice) {
+							// nothing to to for QuestionYN, answers are already there and immutable
+							if (parentQuestion instanceof QuestionYN) continue;
+							Choice choice = (Choice) orderedChild;
+							QuestionChoice questionChoice = (QuestionChoice) parentQuestion;
+							questionChoice.removeAlternative(choice);
+							questionChoice.addAlternative(choice);
+						}
+					}
+
+				}
+
+				/**
+				 * In QuestionTreeQuestionDefinitions, we have followup questions not only directly as children of the
+				 * current question, but also as children of the answers of the question.
+				 */
+				@Override
+				protected List<Section<DashTreeElement>> getChildrenDashtreeElements(Section<?> termDefiningSection) {
+					List<Section<DashTreeElement>> childrenList = super.getChildrenDashtreeElements(termDefiningSection);
+					LinkedList<Section<DashTreeElement>> augmentedChildrenList = new LinkedList();
+					for (Section<DashTreeElement> child : childrenList) {
+						augmentedChildrenList.add(child);
+						Section<AnswerDefinition> answerDef = Sections.findSuccessor(child, AnswerDefinition.class);
+						Section<NumericCondLine> numCondLine = Sections.findSuccessor(child, NumericCondLine.class);
+						if (answerDef == null && numCondLine == null) continue;
+						// if we have a AnswerDefinition, look for Questions below
+						List<Section<DashTreeElement>> followUpQuestions = DashTreeUtils.findChildrenDashtreeElements(child);
+						for (Section<DashTreeElement> followUpQuestion : followUpQuestions) {
+							// we ignore &REF sections
+							if (Sections.findSuccessor(child, QuestionDefinition.class) != null) continue;
+							augmentedChildrenList.addAll(followUpQuestions);
+						}
+					}
+					return augmentedChildrenList;
+				}
+			});
 		}
 
 		@Override
@@ -122,44 +170,16 @@ public class QuestionLine extends AbstractType {
 							s.getParent(), QuestionTypeDeclaration.class));
 		}
 
-		@Override
-		public int getPosition(Section<QuestionDefinition> s) {
-			return DashTreeUtils.getPositionInFatherDashSubtree(s);
-		}
-
-		@SuppressWarnings("rawtypes")
-		@Override
-		public Section<? extends QASetDefinition> getParentQASetSection(Section<? extends QuestionDefinition> qdef) {
-			Section<? extends DashTreeElementContent> fdtec = DashTreeUtils.getFatherDashTreeElementContent(qdef);
-			if (fdtec != null) {
-				Section<? extends QASetDefinition> qasetDef = Sections.findSuccessor(fdtec,
-						QASetDefinition.class);
-				if (qasetDef == null) {
-					fdtec = DashTreeUtils.getFatherDashTreeElementContent(fdtec);
-					qasetDef = Sections.findSuccessor(fdtec, QASetDefinition.class);
-				}
-				if (qasetDef != null) {
-					if (qasetDef.get() instanceof QuestionnaireDefinition
-							|| qasetDef.get() instanceof QuestionDefinition) {
-						return qasetDef;
-					}
-				}
-			}
-			return null;
-		}
-
 	}
 
 	/**
-	 * A type allowing for the definition of numerical ranges/boundaries for
-	 * numerical questions
-	 * 
+	 * A type allowing for the definition of numerical ranges/boundaries for numerical questions
+	 * <p/>
 	 * example:
-	 * 
+	 * <p/>
 	 * - height [num] (100 220)
-	 * 
+	 *
 	 * @author Jochen
-	 * 
 	 */
 	static class NumBounds extends AbstractType {
 
@@ -174,7 +194,7 @@ public class QuestionLine extends AbstractType {
 
 				/**
 				 * creates the bound-property for a bound-definition
-				 * 
+				 *
 				 * @param article
 				 * @param s
 				 * @return
@@ -236,9 +256,8 @@ public class QuestionLine extends AbstractType {
 		}
 
 		/**
-		 * returns the lower bound of the interval as Double if correctly
-		 * defined
-		 * 
+		 * returns the lower bound of the interval as Double if correctly defined
+		 *
 		 * @param s
 		 * @return
 		 */
@@ -263,9 +282,8 @@ public class QuestionLine extends AbstractType {
 		}
 
 		/**
-		 * returns the upper bound of the interval as Double if correctly
-		 * defined
-		 * 
+		 * returns the upper bound of the interval as Double if correctly defined
+		 *
 		 * @param s
 		 * @return
 		 */
@@ -291,14 +309,11 @@ public class QuestionLine extends AbstractType {
 	}
 
 	/**
-	 * A type that allows for the definition of units for numerical questions by
-	 * embracing it with '{' and '}'
-	 * 
-	 * The subtreehandler creates the corresponding property for the
-	 * question-object in the knowledge base
-	 * 
+	 * A type that allows for the definition of units for numerical questions by embracing it with '{' and '}'
+	 * <p/>
+	 * The subtreehandler creates the corresponding property for the question-object in the knowledge base
+	 *
 	 * @author Jochen
-	 * 
 	 */
 	static class NumUnit extends AbstractType {
 
@@ -321,7 +336,7 @@ public class QuestionLine extends AbstractType {
 
 				/**
 				 * creates the unit-property for a unit-definition
-				 * 
+				 *
 				 * @param article
 				 * @param s
 				 * @return
@@ -360,15 +375,11 @@ public class QuestionLine extends AbstractType {
 	}
 
 	/**
-	 * Allows for the definition of abstract-flagged questions Syntax is:
-	 * "<abstract>" or "<abstrakt>"
-	 * 
-	 * The subtreehandler creates the corresponding
-	 * ABSTRACTION_QUESTION-property in the knoweldge base
-	 * 
-	 * 
+	 * Allows for the definition of abstract-flagged questions Syntax is: "<abstract>" or "<abstrakt>"
+	 * <p/>
+	 * The subtreehandler creates the corresponding ABSTRACTION_QUESTION-property in the knoweldge base
+	 *
 	 * @author Jochen
-	 * 
 	 */
 	static class AbstractFlag extends AbstractType {
 
@@ -410,14 +421,11 @@ public class QuestionLine extends AbstractType {
 	}
 
 	/**
-	 * A type to allow for the definition of (extended) question-text for a
-	 * question leaded by '~'
-	 * 
-	 * the subtreehandler creates the corresponding DCMarkup using
-	 * MMInfoSubject.PROMPT for the question object
-	 * 
+	 * A type to allow for the definition of (extended) question-text for a question leaded by '~'
+	 * <p/>
+	 * the subtreehandler creates the corresponding DCMarkup using MMInfoSubject.PROMPT for the question object
+	 *
 	 * @author Jochen
-	 * 
 	 */
 	static class QuestionText extends AbstractType {
 
@@ -474,7 +482,7 @@ public class QuestionLine extends AbstractType {
 
 		@Override
 		public Collection<Message> create(D3webCompiler compiler, Section<QuestionTypeDeclaration> section) {
-			QuestionType thisQuestionType = QuestionTypeDeclaration.getQuestionType(section);
+			QuestionDefinition.QuestionType thisQuestionType = QuestionTypeDeclaration.getQuestionType(section);
 			if (thisQuestionType == null) return Messages.asList();
 			TerminologyManager terminologyHandler = compiler.getTerminologyManager();
 			Section<QuestionDefinition> thisQuestionDef = section.get().getQuestionDefinition(
@@ -486,7 +494,7 @@ public class QuestionLine extends AbstractType {
 					&& termDefiningSection.get() instanceof QuestionDefinition) {
 				@SuppressWarnings("unchecked")
 				Section<QuestionDefinition> actualQuestionDef = (Section<QuestionDefinition>) termDefiningSection;
-				QuestionType actualQuestionType = actualQuestionDef.get().getQuestionType(
+				QuestionDefinition.QuestionType actualQuestionType = actualQuestionDef.get().getQuestionType(
 						actualQuestionDef);
 				String actualTypeString = actualQuestionType == null
 						? "undefined"
@@ -498,13 +506,8 @@ public class QuestionLine extends AbstractType {
 					String questionText = actualQuestionDef.get().getTermIdentifier(
 							actualQuestionDef).toString();
 					questionText = Strings.trimQuotes(questionText);
-					String warningText = "The question '"
-							+ questionText
-							+ "' is already defined with the type '"
-							+ actualTypeString
-							+ "'. This type definition '"
-							+ thisTypeString
-							+ "' will be ignored.";
+					String warningText = "The question '" + questionText + "' is already defined with the type '"
+							+ actualTypeString + "'. This type definition '" + thisTypeString + "' will be ignored.";
 					return Messages.asList(Messages.error(warningText));
 				}
 			}

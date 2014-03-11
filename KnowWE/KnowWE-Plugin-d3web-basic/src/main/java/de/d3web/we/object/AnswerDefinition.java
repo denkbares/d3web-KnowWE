@@ -26,12 +26,10 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionYN;
-import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webHandler;
-import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.Term;
@@ -39,7 +37,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -53,14 +50,10 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public abstract class AnswerDefinition
 		extends D3webTermDefinition<Choice> {
 
-	public static final String ANSWER_STORE_KEY = "answerStoreKey";
-
 	public AnswerDefinition() {
 		this.addCompileScript(Priority.HIGH, new CreateAnswerHandler());
 		this.setRenderer(StyleRenderer.CHOICE);
 	}
-
-	public abstract int getPosition(Section<? extends AnswerDefinition> s);
 
 	/**
 	 * 
@@ -72,37 +65,6 @@ public abstract class AnswerDefinition
 	 */
 	public abstract Section<? extends QuestionDefinition> getQuestionSection(Section<? extends AnswerDefinition> s);
 
-	@Override
-	public Choice getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<Choice>> section) {
-
-		Choice choice = null;
-		if (section.get() instanceof AnswerDefinition) {
-			TerminologyManager terminologyManager = compiler.getTerminologyManager();
-			Section<?> def = terminologyManager.getTermDefiningSection(getTermIdentifier(section));
-			if (def != null) {
-				choice = (Choice) KnowWEUtils.getStoredObject((PackageCompiler) compiler, def,
-						ANSWER_STORE_KEY);
-			}
-
-			if (choice == null) {
-				Section<AnswerDefinition> answerDef = Sections.cast(section, AnswerDefinition.class);
-				Section<? extends QuestionDefinition> ref = answerDef.get().getQuestionSection(
-						answerDef);
-				if (ref != null) {
-					Question question = ref.get().getTermObject(compiler, ref);
-					if (question != null && question instanceof QuestionChoice) {
-						String answerName = answerDef.get().getTermName(answerDef);
-						choice = KnowledgeBaseUtils.findChoice((QuestionChoice) question,
-								answerName, false);
-						KnowWEUtils.storeObject((PackageCompiler) compiler, answerDef,
-								ANSWER_STORE_KEY, choice);
-					}
-				}
-			}
-		}
-
-		return choice;
-	}
 
 	@Override
 	public Identifier getTermIdentifier(Section<? extends Term> s) {
@@ -161,7 +123,11 @@ public abstract class AnswerDefinition
 
 			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(
 					compiler, section);
-			if (abortCheck.hasErrors() || abortCheck.termExist()) return abortCheck.getErrors();
+			if (abortCheck.hasErrors()) return abortCheck.getErrors();
+			if (abortCheck.termExist()) {
+				section.get().storeTermObject(compiler, section, (Choice) abortCheck.getNamedObject());
+				return Messages.noMessage();
+			}
 
 			Question q = qDef.get().getTermObject(compiler, qDef);
 
@@ -188,12 +154,10 @@ public abstract class AnswerDefinition
 					}
 				}
 				else {
-					choice = KnowledgeBaseUtils.addChoiceAnswer((QuestionChoice) q,
-							section.get().getTermName(section),
-							section.get().getPosition(section));
+					choice = new Choice(section.get().getTermName(section));
 				}
 
-				KnowWEUtils.storeObject(compiler, section, ANSWER_STORE_KEY, choice);
+				section.get().storeTermObject(compiler, section, choice);
 
 				return Messages.asList(Messages.objectCreatedNotice(
 						choice.getClass().getSimpleName() + "  "

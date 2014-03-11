@@ -20,6 +20,24 @@
 
 package de.d3web.we.utils;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+
 import de.d3web.core.inference.LoopTerminator;
 import de.d3web.core.inference.LoopTerminator.LoopStatus;
 import de.d3web.core.inference.SessionTerminatedException;
@@ -28,10 +46,8 @@ import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.ValueObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.records.SessionConversionFactory;
 import de.d3web.core.records.SessionRecord;
 import de.d3web.core.records.io.SessionPersistenceManager;
@@ -47,8 +63,8 @@ import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.d3web.we.knowledgebase.D3webCompiler;
-import de.d3web.we.object.AnswerDefinition;
 import de.d3web.we.object.D3webTerm;
+import de.d3web.we.object.D3webTermDefinition;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
@@ -66,21 +82,6 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.d3web.event.FindingSetEvent;
 import de.knowwe.notification.NotificationManager;
 import de.knowwe.notification.StandardNotification;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.ConcurrentModificationException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
 
 public class D3webUtils {
 
@@ -242,53 +243,6 @@ public class D3webUtils {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <TermObject extends NamedObject> TermObject getTermObjectDefaultImplementation(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
-		Identifier termIdentifier = section.get().getTermIdentifier(section);
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
-		NamedObject termObject = kb.getManager().search(termIdentifier.getLastPathElement());
-		if (termObject != null) {
-			if (section.get().getTermObjectClass(section).isAssignableFrom(termObject.getClass())) {
-				return (TermObject) termObject;
-			}
-			else {
-				return null;
-			}
-		}
-		Collection<NamedObject> foundTermObjects = getTermObjectsIgnoreTermObjectClass(
-				compiler, section);
-		if (foundTermObjects.size() == 1) {
-			termObject = foundTermObjects.iterator().next();
-			if (section.get().getTermObjectClass(section).isAssignableFrom(termObject.getClass())) {
-				return (TermObject) termObject;
-			}
-		}
-		return null;
-	}
-
-	public static <TermObject extends NamedObject> Collection<NamedObject> getTermObjectsIgnoreTermObjectClass(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
-		Identifier termIdentifier = section.get().getTermIdentifier(section);
-		TerminologyManager terminologyHandler = compiler.getTerminologyManager();
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
-		Collection<Identifier> allTermsEqualIgnoreCase = terminologyHandler.getAllTermsEqualIgnoreCase(termIdentifier);
-		List<NamedObject> foundTermObjects = new ArrayList<NamedObject>();
-		for (Identifier termEqualIgnoreCase : allTermsEqualIgnoreCase) {
-			NamedObject termObject = null;
-			if (section.get() instanceof AnswerDefinition) {
-				String[] pathElements = termEqualIgnoreCase.getPathElements();
-				if (pathElements.length != 2) continue;
-				TerminologyObject question = kb.getManager().search(pathElements[0]);
-				if (question == null || !(question instanceof QuestionChoice)) continue;
-				QuestionChoice questionChoice = (QuestionChoice) question;
-				termObject = KnowledgeBaseUtils.findChoice(questionChoice, pathElements[1], false);
-			}
-			else {
-				termObject = kb.getManager().search(termEqualIgnoreCase.getLastPathElement());
-			}
-			if (termObject != null) foundTermObjects.add(termObject);
-		}
-		return foundTermObjects;
-	}
 
 	/**
 	 * Returns the current value of a specific {@link ValueObject} within the

@@ -32,14 +32,11 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 
 /**
- * 
- * this class offers a method to create a (d3web-) Condition from a
- * CompositeCondition KDOM.
- * 
- * @see CompositeCondition
- * 
+ * this class offers a method to create a (d3web-) Condition from a CompositeCondition KDOM.
+ *
  * @author Jochen
  * @created 26.07.2010
+ * @see CompositeCondition
  */
 public class KDOMConditionFactory {
 
@@ -56,15 +53,13 @@ public class KDOMConditionFactory {
 
 		// create conjuncts
 		if (c.get().isConjunction(c)) {
-			List<Section<? extends NonTerminalCondition>> conjuncts = c.get().getConjuncts(
-					c);
+			List<Section<? extends NonTerminalCondition>> conjuncts = c.get().getConjuncts(c);
 
 			List<Condition> conds = new ArrayList<Condition>();
 			for (Section<? extends NonTerminalCondition> conjunct : conjuncts) {
 				Section<? extends CompositeCondition> subCondSection = Sections.findChildOfType(
 						conjunct, CompositeCondition.class);
-				Condition subCond = createCondition(compiler,
-						(Section<CompositeCondition>) subCondSection);
+				Condition subCond = createCondition(compiler, (Section<CompositeCondition>) subCondSection);
 				if (subCond == null) return null;
 				conds.add(subCond);
 			}

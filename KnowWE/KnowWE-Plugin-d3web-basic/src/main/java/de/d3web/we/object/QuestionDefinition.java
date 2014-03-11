@@ -21,7 +21,6 @@ package de.d3web.we.object;
 
 import java.util.Collection;
 
-import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionDate;
@@ -44,9 +43,9 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
- * 
- * Abstract Type for the definition of questions
- * 
+ * Abstract Type for the definition of questions. A question with a given type is created and hooked into the root QASet
+ * of the knowledge base. The hierarchical position in the terminology needs to be handled by the subclass.
+ *
  * @author Jochen/Albrecht
  * @created 26.07.2010
  */
@@ -58,8 +57,8 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 
 	public QuestionDefinition() {
 		this.addCompileScript(Priority.HIGHER, new CreateQuestionHandler());
-		this.addCompileScript(new TerminologyLoopDetectionHandler<Question>());
-		this.addCompileScript(Priority.LOW, new TerminologyLoopResolveHandler<Question>());
+		this.addCompileScript(Priority.LOW, new TerminologyLoopDetectionHandler<Question>());
+		this.addCompileScript(Priority.LOWER, new TerminologyLoopResolveHandler<Question>());
 		this.setRenderer(new ValueTooltipRenderer(StyleRenderer.Question));
 	}
 
@@ -68,37 +67,32 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 		QuestionType questionType = getQuestionType(Sections.cast(section, QuestionDefinition.class));
 		if (questionType == null) return Question.class;
 		switch (questionType) {
-		case DATE:
-			return QuestionDate.class;
-		case INFO:
-			return QuestionZC.class;
-		case MC:
-			return QuestionMC.class;
-		case NUM:
-			return QuestionNum.class;
-		case OC:
-			return QuestionOC.class;
-		case TEXT:
-			return QuestionText.class;
-		case YN:
-			return QuestionYN.class;
+			case DATE:
+				return QuestionDate.class;
+			case INFO:
+				return QuestionZC.class;
+			case MC:
+				return QuestionMC.class;
+			case NUM:
+				return QuestionNum.class;
+			case OC:
+				return QuestionOC.class;
+			case TEXT:
+				return QuestionText.class;
+			case YN:
+				return QuestionYN.class;
 		}
 		return Question.class;
 	}
 
 	public abstract QuestionType getQuestionType(Section<QuestionDefinition> s);
 
-	@SuppressWarnings("rawtypes")
-	public abstract Section<? extends QASetDefinition> getParentQASetSection(Section<? extends QuestionDefinition> qdef);
-
-	public abstract int getPosition(Section<QuestionDefinition> s);
-
 	static class CreateQuestionHandler extends D3webHandler<QuestionDefinition> {
 
 		@Override
 		@SuppressWarnings("unchecked")
 		public Collection<Message> create(D3webCompiler compiler,
-				Section<QuestionDefinition> section) {
+										  Section<QuestionDefinition> section) {
 
 			Identifier identifier = section.get().getTermIdentifier(section);
 			Class<?> termObjectClass = section.get().getTermObjectClass(section);
@@ -109,30 +103,12 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(compiler, section);
 			if (abortCheck.hasErrors()) return abortCheck.getErrors();
 
-			KnowledgeBase kb = getKB(compiler);
-
-			@SuppressWarnings("rawtypes")
-			Section<? extends QASetDefinition> parentQASetSection =
-					section.get().getParentQASetSection(section);
-
-			QASet parent = null;
-			if (parentQASetSection != null) {
-				parent = (QASet) parentQASetSection.get().getTermObject(compiler,
-						parentQASetSection);
-			}
-			if (parent == null) {
-				parent = kb.getRootQASet();
-			}
-
-			String name = section.get().getTermName(section);
-
 			if (abortCheck.termExist()) {
-				// if the question already exists, we just hook it into the new
-				// questionnaire
-				Question existingQuestion = section.get().getTermObject(compiler, section);
-				parent.addChild(existingQuestion);
-			}
-			else {
+				section.get().storeTermObject(compiler, section, (Question) abortCheck.getNamedObject());
+			} else {
+				QASet rootQASet = getKB(compiler).getRootQASet();
+
+				String name = section.get().getTermName(section);
 
 				QuestionType questionType = section.get().getQuestionType(section);
 				if (questionType == null) {
@@ -140,31 +116,33 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 							"No type found for question '" + name + "'"));
 				}
 
+				Question question = null;
 				if (questionType.equals(QuestionType.OC)) {
-					new QuestionOC(parent, name);
+					question = new QuestionOC(rootQASet, name);
 				}
 				else if (questionType.equals(QuestionType.MC)) {
-					new QuestionMC(parent, name);
+					question = new QuestionMC(rootQASet, name);
 				}
 				else if (questionType.equals(QuestionType.NUM)) {
-					new QuestionNum(parent, name);
+					question = new QuestionNum(rootQASet, name);
 				}
 				else if (questionType.equals(QuestionType.YN)) {
-					new QuestionYN(parent, name);
+					question = new QuestionYN(rootQASet, name);
 				}
 				else if (questionType.equals(QuestionType.DATE)) {
-					new QuestionDate(parent, name);
+					question = new QuestionDate(rootQASet, name);
 				}
 				else if (questionType.equals(QuestionType.INFO)) {
-					new QuestionZC(parent, name);
+					question = new QuestionZC(rootQASet, name);
 				}
 				else if (questionType.equals(QuestionType.TEXT)) {
-					new QuestionText(parent, name);
+					question = new QuestionText(rootQASet, name);
 				}
 				else {
 					return Messages.asList(Messages.error(
 							"No valid question type found for question '" + identifier + "'"));
 				}
+				section.get().storeTermObject(compiler, section, question);
 			}
 
 			// return success message

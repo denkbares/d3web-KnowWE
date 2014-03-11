@@ -19,45 +19,29 @@
  */
 package de.d3web.we.kdom.solutionTree;
 
-import java.util.Collection;
-
-import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.kdom.questionTree.ObjectDescription;
-import de.d3web.we.knowledgebase.D3webCompiler;
-import de.d3web.we.object.SolutionDefinition;
-import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
 import de.knowwe.kdom.dashtree.DashTreeElementContent;
-import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 
 /**
+ * A DashTreeElementContent for the Solution-DashTree. It is injected into a dash-tree @see {@link SolutionsDashTree} It
+ * contains a SolutionDef type (which itself internally creates a solution object) and CreateSubSolutionRelationHandler
+ * which established the hierarchical relations defined by the dashtree
+ *
  * @author Jochen
- * 
- *         A DashTreeElementContent for the Solution-DashTree. It is injected
- *         into a dash-tree @see {@link SolutionsDashTree} It contains a
- *         SolutionDef type (which itself internally creates a solution object)
- *         and CreateSubSolutionRelationHandler which established the
- *         hierarchical relations defined by the dashtree
- * 
- * 
  */
 public class SolutionDashTreeElementContent extends DashTreeElementContent {
 
 	public SolutionDashTreeElementContent() {
-		this.addCompileScript(new CreateSubSolutionRelationHandler());
 
 		// add description-type via '~'
 		this.addChildType(new ObjectDescription(MMInfo.DESCRIPTION));
@@ -73,7 +57,6 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent {
 	}
 
 	/**
-	 * 
 	 * @author volker_belli
 	 * @created 08.12.2010
 	 */
@@ -85,54 +68,6 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent {
 			DelegateRenderer.getInstance().render(sec, user, string);
 			string.appendHtml("</span>");
 		}
-	}
-
-	/**
-	 * @author Jochen
-	 * 
-	 *         This handler establishes sub-solution-relations defined by the
-	 *         solutionDashTree in the knowledge base i.e., if a solution is a
-	 *         dashTree-child of another solution we add it as child in the
-	 *         knowledge base
-	 * 
-	 */
-	class CreateSubSolutionRelationHandler extends D3webHandler<SolutionDashTreeElementContent> {
-
-		@Override
-		public Collection<Message> create(D3webCompiler compiler, Section<SolutionDashTreeElementContent> s) {
-			Section<? extends DashTreeElementContent> fatherSolutionContent = DashTreeUtils.getFatherDashTreeElementContent(
-					s);
-			Section<SolutionDefinition> localSolutionDef = Sections.findSuccessor(s,
-					SolutionDefinition.class);
-			Solution localSolution = localSolutionDef.get().getTermObject(compiler, localSolutionDef);
-
-			if (fatherSolutionContent != null && localSolution != null) {
-
-				Section<SolutionDefinition> solutionDef = Sections.findSuccessor(
-						fatherSolutionContent, SolutionDefinition.class);
-				if (solutionDef != null) {
-					Solution superSolution = solutionDef.get().getTermObject(compiler, solutionDef);
-					if (superSolution != null) {
-						// here the actual taxonomic relation is established
-
-						// remove this solution if already registered as child
-						// of
-						// root
-						KnowledgeBase kb = getKB(compiler);
-						kb.getRootSolution().removeChild(localSolution);
-						superSolution.addChild(localSolution);
-
-						return Messages.asList(Messages.relationCreatedNotice(
-								s.getClass().getSimpleName()
-										+ " " + localSolution.getName() + "sub-solution of "
-										+ superSolution.getName()));
-					}
-				}
-			}
-
-			return null;
-		}
-
 	}
 
 }
