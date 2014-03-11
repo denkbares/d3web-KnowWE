@@ -55,6 +55,7 @@ import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.LanguageTagLiteralImpl;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
 
 import de.d3web.collections.MultiMap;
 import de.d3web.collections.MultiMaps;
@@ -235,7 +236,7 @@ public class Rdf2GoCore {
 	 * is the full namespace, e.g. rdf and
 	 * http://www.w3.org/1999/02/22-rdf-syntax-ns#
 	 */
-	private final Map<String, String> namespaces = new HashMap<String, String>();;
+	private final Map<String, String> namespaces = new HashMap<String, String>();
 
 	private Set<Statement> insertCache;
 	private Set<Statement> removeCache;
@@ -309,6 +310,18 @@ public class Rdf2GoCore {
 	 * @param uri the uri to be de-resolved
 	 * @return the short uri name
 	 */
+	public URI toShortURI(java.net.URI uri) {
+		return toShortURI(new URIImpl(uri.toString()));
+	}
+
+	/**
+	 * De-resolves a specified uri to a short uri name. If there is no matching
+	 * namespace, the full uri is returned.
+	 *
+	 * @created 13.11.2013
+	 * @param uri the uri to be de-resolved
+	 * @return the short uri name
+	 */
 	public URI toShortURI(URI uri) {
 		String uriText = uri.toString();
 		int length = 0;
@@ -339,6 +352,19 @@ public class Rdf2GoCore {
 	}
 
 	/**
+	 * Returns the terminology manager's identifier for the specified uri. The
+	 * uri's identifier is usually based on the short version of the uri, if
+	 * there is any.
+	 *
+	 * @created 13.11.2013
+	 * @param uri the uri to create the identifier for
+	 * @return the identifier for the specified uri
+	 */
+	public Identifier toIdentifier(java.net.URI uri) {
+		return ShortURIImpl.toIdentifier(toShortURI(uri));
+	}
+
+	/**
 	 * Creates a {@link Statement} for the given objects and adds it to the
 	 * triple store. The {@link Section} is used for caching.
 	 * <p/>
@@ -361,7 +387,7 @@ public class Rdf2GoCore {
 	 * is compiled again, all {@link Statement}s added for this article are
 	 * removed before the new {@link Statement}s are added again. You don't need
 	 * to remove the {@link Statement}s yourself. This method works best when
-	 * used in a {@link SubtreeHandler}.
+	 * used in a {@link de.knowwe.core.compile.CompileScript}.
 	 * 
 	 * @created 11.06.2012
 	 * @param compiler the article for which the statements are added and for
@@ -649,7 +675,7 @@ public class Rdf2GoCore {
 	 * 
 	 * @throws ModelRuntimeException
 	 */
-	private void initModel(RuleSet ruleSet) throws ModelRuntimeException, ReasoningNotSupportedException {
+	private void initModel(RuleSet ruleSet) throws ModelRuntimeException {
 
 		try {
 			String model;
@@ -726,12 +752,12 @@ public class Rdf2GoCore {
 		if (!Log.logger().isLoggable(Level.FINE)) return;
 
 		// sort statements at this point using tree map
-		StringBuffer buffy = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		for (Statement statement : statements) {
-			buffy.append("* " + verbalizeStatement(statement) + "\n");
+			buffer.append("* ").append(verbalizeStatement(statement)).append("\n");
 		}
-		buffy.append("Done after " + (System.currentTimeMillis() - start) + "ms");
-		Log.fine(caption + ":\n" + buffy.toString());
+		buffer.append("Done after ").append(System.currentTimeMillis() - start).append("ms");
+		Log.fine(caption + ":\n" + buffer.toString());
 	}
 
 	public void readFrom(InputStream in, Syntax syntax) throws IOException {
@@ -772,10 +798,11 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Removes
-	 * 
+	 * Removes the specified statements if they have been added to this core and if they are added
+	 * without specifying a specific source like a compiler or a section.
+	 *
 	 * @created 13.06.2012
-	 * @param statements
+	 * @param statements the statements to be removed
 	 */
 	public void removeStatements(Collection<Statement> statements) {
 		removeStatements((StatementSource) null, statements);
@@ -819,12 +846,11 @@ public class Rdf2GoCore {
 	 * normally you shouldn't need to call this method yourself.
 	 * <p/>
 	 * <b>Attention</b>: This method only removes {@link Statement}s that were
-	 * added (and cached) in connection with an {@link Article} using methods
-	 * like {@link Rdf2GoCore#addStatements(Article, Collection)} or
-	 * {@link Rdf2GoCore#addStatement(Article, Statement)}.
+	 * added (and cached) in connection with an {@link de.knowwe.core.compile.Compiler} using the method
+	 * {@link Rdf2GoCore#addStatements(de.knowwe.core.compile.PackageCompiler, Statement...)}.
 	 * 
 	 * @created 13.06.2012
-	 * @param article the article for which you want to remove all
+	 * @param compiler the article for which you want to remove all
 	 *        {@link Statement}s
 	 */
 	public void removeStatementsOfCompiler(PackageCompiler compiler) {
@@ -866,34 +892,26 @@ public class Rdf2GoCore {
 		return list.iterator().next().getArticle();
 	}
 
-	public boolean sparqlAsk(String query) throws ModelRuntimeException, MalformedQueryException {
-
+	public boolean sparqlAsk(String query) throws ModelRuntimeException {
 		String sparqlNamespaceShorts = Rdf2GoUtils.getSparqlNamespaceShorts(this);
 		if (query.startsWith(sparqlNamespaceShorts)) {
 			return model.sparqlAsk(query);
 		}
-		boolean result = model.sparqlAsk(sparqlNamespaceShorts + query);
-
-		return result;
+		return model.sparqlAsk(sparqlNamespaceShorts + query);
 	}
 
-	public ClosableIterable<Statement> sparqlConstruct(String query) throws ModelRuntimeException, MalformedQueryException {
-
+	public ClosableIterable<Statement> sparqlConstruct(String query) throws ModelRuntimeException {
 		if (query.startsWith(Rdf2GoUtils.getSparqlNamespaceShorts(this))) {
 			return model.sparqlConstruct(query);
 		}
-		ClosableIterable<Statement> result = model.sparqlConstruct(Rdf2GoUtils.getSparqlNamespaceShorts(this)
-				+ query);
-
-		return result;
+		return model.sparqlConstruct(Rdf2GoUtils.getSparqlNamespaceShorts(this) + query);
 	}
 
-	public QueryResultTable sparqlSelect(SparqlQuery query) throws ModelRuntimeException, MalformedQueryException {
+	public QueryResultTable sparqlSelect(SparqlQuery query) throws ModelRuntimeException {
 		return sparqlSelect(query.toSparql(this));
 	}
 
-	public QueryResultTable sparqlSelect(String query) throws ModelRuntimeException, MalformedQueryException {
-
+	public QueryResultTable sparqlSelect(String query) throws ModelRuntimeException {
 		String completeQuery;
 		if (!query.startsWith(Rdf2GoUtils.getSparqlNamespaceShorts(this))) {
 			completeQuery = Rdf2GoUtils.getSparqlNamespaceShorts(this) + query;
@@ -901,18 +919,10 @@ public class Rdf2GoCore {
 		else {
 			completeQuery = query;
 		}
-		// long start = System.currentTimeMillis();
-
-		QueryResultTable resultTable = model.sparqlSelect(completeQuery);
-
-		// long time = System.currentTimeMillis() - start;
-		// if (time > 5) {
-		// Log.warning(// "Slow SPARQ query (" + time + "ms):\n" + query);
-		// }
-		return resultTable;
+		return model.sparqlSelect(completeQuery);
 	}
 
-	public ClosableIterator<QueryRow> sparqlSelectIt(String query) throws ModelRuntimeException, MalformedQueryException {
+	public ClosableIterator<QueryRow> sparqlSelectIt(String query) throws ModelRuntimeException {
 		return sparqlSelect(query).iterator();
 	}
 
@@ -932,7 +942,7 @@ public class Rdf2GoCore {
 	 * format.
 	 * 
 	 * @created 03.02.2012
-	 * @param out
+	 * @param out the target to write the model to
 	 * @throws ModelRuntimeException
 	 * @throws IOException
 	 */
