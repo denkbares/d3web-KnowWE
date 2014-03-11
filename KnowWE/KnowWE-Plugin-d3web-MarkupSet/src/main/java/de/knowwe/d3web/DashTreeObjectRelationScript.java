@@ -103,7 +103,7 @@ public abstract class DashTreeObjectRelationScript extends D3webCompileScript<D3
 				NamedObject winner = null;
 				if (candidatesWithoutConflict.isEmpty()) {
 					// no new winner was found, apparently we have a conflict
-					throw CompilerMessage.error("The order of the following objects are in conflict: "
+					throw CompilerMessage.error("The order of the following objects is in conflict: "
 							+ Strings.concat(", ", checked)
 							+ ". Check all places where these objects are defined to resolve the conflict.");
 				}
@@ -120,7 +120,8 @@ public abstract class DashTreeObjectRelationScript extends D3webCompileScript<D3
 				orderedChildren.add(winner);
 				checked = new HashSet<NamedObject>();
 				candidatesWithoutConflict = new TreeSet<NamedObject>(new NamedObjectComparator());
-			} else {
+			}
+			else {
 				// we have a new candidate, check for conflicts
 				for (LinkedHashSet<NamedObject> childrenSet : childrenSets) {
 					if (childrenSet.contains(candidate) && childrenSet.iterator().next() != candidate) {
