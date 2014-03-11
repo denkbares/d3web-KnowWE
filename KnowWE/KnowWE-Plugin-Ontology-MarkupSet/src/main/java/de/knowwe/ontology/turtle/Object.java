@@ -18,12 +18,14 @@
  */
 package de.knowwe.ontology.turtle;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 
+import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.Priority;
@@ -39,6 +41,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.resource.ResourceReference;
@@ -100,6 +103,36 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 
 			return Sections.successors(predSentence, Predicate.class);
 		}
+
+		@Override
+		public Collection<Message> create(OntologyCompiler compiler, Section<SimpleReference> s) {
+
+			List<Section<Predicate>> predicates = getPredicates(s);
+			boolean hasInstancePredicate = false;
+			Section<Predicate> predicate = null;
+			for (Section<Predicate> section : predicates) {
+				for (String exp : matchExpressions) {
+
+					if (section.getText().matches(exp)) {
+						hasInstancePredicate = true;
+						predicate = section;
+					}
+				}
+			}
+
+			// we jump out if no matching predicate was found
+			if (!hasInstancePredicate) return validateReference(compiler, s);
+
+			// If termIdentifier is null, obviously section chose not to define
+			// a term, however so we can ignore this case
+			Identifier termIdentifier = s.get().getTermIdentifier(s);
+			if (termIdentifier != null) {
+				compiler.getTerminologyManager().registerTermDefinition(compiler, s, Resource.class,
+						termIdentifier);
+			}
+
+			return Messages.noMessage();
+		}
 	}
 
 	@Override
@@ -147,7 +180,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			boolean isDefined = checkTurtleURIDefinition(turtleURITerm);
 			if (!isDefined) {
 				// error message is already rendered by term reference renderer
-				// we do not insert statment in this case
+				// we do not insert statement in this case
 				predicate = null;
 				termError = true;
 			}

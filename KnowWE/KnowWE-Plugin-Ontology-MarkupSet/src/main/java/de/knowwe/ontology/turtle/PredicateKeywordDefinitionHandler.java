@@ -24,15 +24,20 @@ import java.util.Collection;
 import java.util.List;
 
 import de.d3web.strings.Identifier;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.OntologyHandler;
+import de.knowwe.ontology.kdom.resource.Resource;
+import de.knowwe.ontology.kdom.resource.ResourceReference;
+import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
 
 /**
  * @author Jochen Reutelshofer (denkbares GmbH)
@@ -40,7 +45,7 @@ import de.knowwe.ontology.compile.OntologyHandler;
  */
 public abstract class PredicateKeywordDefinitionHandler extends OntologyHandler<SimpleReference> {
 
-	private List<String> matchExpressions;
+	protected List<String> matchExpressions;
 
 	public PredicateKeywordDefinitionHandler(String[] matchExpressions) {
 		this.matchExpressions = Arrays.asList(matchExpressions); //""
@@ -53,11 +58,13 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyHandler<
 
 		List<Section<Predicate>> predicates = getPredicates(s);
 		boolean hasInstancePredicate = false;
+		Section<Predicate> predicate = null;
 		for (Section<Predicate> section : predicates) {
 			for (String exp : matchExpressions) {
 
 				if (section.getText().matches(exp)) {
 					hasInstancePredicate = true;
+					predicate = section;
 				}
 			}
 		}
@@ -69,8 +76,41 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyHandler<
 		// a term, however so we can ignore this case
 		Identifier termIdentifier = s.get().getTermIdentifier(s);
 		if (termIdentifier != null) {
-			compiler.getTerminologyManager().registerTermDefinition(compiler, s,
-					s.get().getTermObjectClass(s),
+			Section<PredicateSentence> predSentence = Sections.findAncestorOfType(predicate, PredicateSentence.class);
+			Section<Object> object = Sections.findSuccessor(predSentence, Object.class);
+			Section<ResourceReference> objectResource = Sections.findSuccessor(object, ResourceReference.class);
+			Class<?> termObjectClass = null;
+
+			if (objectResource == null) {
+				Section<LazyURIReference> lazyRef = Sections.findSuccessor(object, LazyURIReference.class);
+				Identifier id = lazyRef.get().getTermIdentifier(lazyRef);
+				if (id != null) {
+
+					TermCompiler termCompiler = Compilers.getCompiler(s, TermCompiler.class);
+					Section<?> def = termCompiler.getTerminologyManager().getTermDefiningSection(id);
+					if (def != null) {
+						termObjectClass = ((Section<? extends Term>) def).get()
+								.getTermObjectClass(((Section<? extends Term>) def));
+					}
+					else {
+						return validateReference(compiler, s);
+					}
+				}
+				else {
+					return validateReference(compiler, s);
+				}
+			}
+			else {
+				Collection<Class<?>> termClasses = ((TermCompiler) compiler).getTerminologyManager()
+						.getTermClasses(objectResource.get().getTermIdentifier(objectResource));
+				if (termClasses.size() > 0) {
+					termObjectClass = termClasses.iterator().next();
+				}
+				else {
+					termObjectClass = Resource.class;
+				}
+			}
+			compiler.getTerminologyManager().registerTermDefinition(compiler, s, termObjectClass,
 					termIdentifier);
 		}
 
@@ -79,6 +119,7 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyHandler<
 
 	public Collection<Message> validateReference(TermCompiler compiler, Section<? extends Term> section) {
 		TerminologyManager tHandler = compiler.getTerminologyManager();
+
 		Identifier termIdentifier = section.get().getTermIdentifier(section);
 		if (!tHandler.isDefinedTerm(termIdentifier)) {
 			return Messages.asList(Messages.noSuchObjectError(

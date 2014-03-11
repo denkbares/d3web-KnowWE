@@ -55,26 +55,25 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 
 		if (termIdentifier != null) {
 			tHandler.registerTermReference(compiler,
-				section, section.get().getTermObjectClass(section), termIdentifier);
+					section, section.get().getTermObjectClass(section), termIdentifier);
 		}
 
 		throw new CompilerMessage(validateReference(compiler, section));
 	}
 
 	/**
-	 * Validates the reference and returns a collection of error or warning
-	 * messages if the reference is not correctly specified. Otherwise it
-	 * returns an empty collection or a collection of info messages.
-	 * 
-	 * @created 28.02.2012
+	 * Validates the reference and returns a collection of error or warning messages if the reference is not correctly
+	 * specified. Otherwise it returns an empty collection or a collection of info messages.
+	 *
 	 * @param compiler the Compiler compiling this reference
-	 * @param section the section identifying the reference
+	 * @param section  the section identifying the reference
 	 * @return result messages of validation
+	 * @created 28.02.2012
 	 */
 	public Collection<Message> validateReference(C compiler, Section<Term> section) {
 		TerminologyManager tHandler = compiler.getTerminologyManager();
 		Identifier termIdentifier = section.get().getTermIdentifier(section);
-		if (!tHandler.isDefinedTerm(termIdentifier)) {
+		if (termIdentifier == null || !tHandler.isDefinedTerm(termIdentifier)) {
 			return Messages.asList(Messages.noSuchObjectError(
 					section.get().getTermObjectClass(section).getSimpleName(),
 					section.get().getTermName(section)));
