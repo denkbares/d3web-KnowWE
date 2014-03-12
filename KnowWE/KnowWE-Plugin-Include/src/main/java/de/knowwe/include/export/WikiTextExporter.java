@@ -41,6 +41,7 @@ public class WikiTextExporter implements Exporter<WikiTextType> {
 	@Override
 	public void export(Section<WikiTextType> section, DocumentBuilder manager) throws ExportException {
 		String text = Strings.trimBlankLines(section.getText());
+		if (Strings.isBlank(text)) return;
 		// Split lines by two or more '\' characters
 		// Also ignore trailing and leading whitespaces surrounding the returns
 		String[] lines = text.split("[\\s\u00A0]*\\\\\\\\+[\\s ]*");

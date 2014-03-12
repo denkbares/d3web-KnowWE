@@ -22,7 +22,6 @@ import java.math.BigInteger;
 
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.include.export.DocumentBuilder.Style;
@@ -30,7 +29,7 @@ import de.knowwe.jspwiki.types.DefinitionType;
 
 /**
  * Class to export definitions as unordered list with bold definition text.
- * 
+ *
  * @author Volker Belli (denkbares GmbH)
  * @created 07.02.2014
  */
@@ -47,10 +46,7 @@ public class DefinitionExporter implements Exporter<DefinitionType> {
 	}
 
 	@Override
-	public void export(Section<DefinitionType> section, DocumentBuilder manager) {
-		String head = section.get().getHeadText(section);
-		String data = section.get().getDataText(section);
-
+	public void export(Section<DefinitionType> section, DocumentBuilder manager) throws ExportException {
 		XWPFDocument document = manager.getDocument();
 		BigInteger abstractID = ListExporter.getAbstractIdUnordered(document);
 		BigInteger numID = document.getNumbering().addNum(abstractID);
@@ -58,15 +54,15 @@ public class DefinitionExporter implements Exporter<DefinitionType> {
 		paragraph.setNumID(numID);
 		paragraph.getCTP().getPPr().getNumPr().addNewIlvl().setVal(BigInteger.valueOf(0));
 
-		String refID = HeaderExporter.getCrossReferenceID(section);
-		XWPFRun run = HeaderExporter.createCrossReferenceRun(refID, manager);
-		run.setText(head);
-		run.setBold(true);
-		// manager.append(head);
+		ListBuilder listBuilder = new ListBuilder(manager);
+
+		listBuilder.setBold(true);
+		listBuilder.export(section.get().getHeadSection(section));
+		listBuilder.setBold(false);
 		manager.append(": ");
 		manager.getParagraph().createRun().addCarriageReturn();
 
-		manager.append(data);
+		listBuilder.export(section.get().getDataSection(section));
 		manager.closeParagraph();
 	}
 }

@@ -40,14 +40,28 @@ public class DefinitionType extends AbstractType {
 	protected static class DefinitionData extends AbstractType {
 
 		public DefinitionData() {
-			this.setSectionFinder(new RegexSectionFinder(":\\s*([^\n\r]+?)\\s*((\n\r?)|$)", 0, 1));
+			setSectionFinder(new RegexSectionFinder(":\\s*([^\n\r]+?)\\s*((\n\r?)|$)", 0, 1));
+			this.addChildType(6d, new TTType());
+			this.addChildType(6d, new BoldType());
+			this.addChildType(6d, new ItalicType());
+			this.addChildType(6d, new StrikeThroughType());
+			this.addChildType(6d, new ImageType());
+			this.addChildType(6d, new LinkType());
+			this.addChildType(6d, new WikiTextType());
 		}
 	}
 
 	protected static class DefinitionHead extends AbstractType {
 
 		public DefinitionHead() {
-			this.setSectionFinder(new RegexSectionFinder(";;?\\s*([^;:\n\r]+?)\\s*:", 0, 1));
+			setSectionFinder(new RegexSectionFinder(";;?\\s*([^;:\n\r]+?)\\s*:", 0, 1));
+			this.addChildType(6d, new TTType());
+			this.addChildType(6d, new BoldType());
+			this.addChildType(6d, new ItalicType());
+			this.addChildType(6d, new StrikeThroughType());
+			this.addChildType(6d, new ImageType());
+			this.addChildType(6d, new LinkType());
+			this.addChildType(6d, new WikiTextType());
 		}
 	}
 
@@ -74,13 +88,25 @@ public class DefinitionType extends AbstractType {
 	public String getHeadText(Section<? extends DefinitionType> section) {
 		// due to the section finder, if this section is instantiated
 		// we always have both head and data children
-		return Sections.successor(section, DefinitionHead.class).getText();
+		return getHeadSection(section).getText();
+	}
+
+	public Section<?> getHeadSection(Section<? extends DefinitionType> section) {
+		// due to the section finder, if this section is instantiated
+		// we always have both head and data children
+		return Sections.successor(section, DefinitionHead.class);
 	}
 
 	public String getDataText(Section<? extends DefinitionType> section) {
 		// due to the section finder, if this section is instantiated
 		// we always have both head and data children
-		return Sections.successor(section, DefinitionData.class).getText();
+		return getDataSection(section).getText();
+	}
+
+	public Section<?> getDataSection(Section<? extends DefinitionType> section) {
+		// due to the section finder, if this section is instantiated
+		// we always have both head and data children
+		return Sections.successor(section, DefinitionData.class);
 	}
 
 	protected static void renderJSPWikiAnchor(Section<DefinitionType> section, RenderResult result) {
@@ -93,7 +119,7 @@ public class DefinitionType extends AbstractType {
 
 	public static String cleanLink(String link) {
 		final String allowedChars = "._";
-		StringBuffer clean = new StringBuffer(link.length());
+		StringBuilder clean = new StringBuilder(link.length());
 
 		// Remove non-alphanumeric characters that should not
 		// be put inside WikiNames. Note that all valid

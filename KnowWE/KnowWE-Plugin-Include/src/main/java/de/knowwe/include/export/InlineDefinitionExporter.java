@@ -50,27 +50,21 @@ public class InlineDefinitionExporter implements Exporter<InlineDefinitionType> 
 
 	@Override
 	public void export(Section<InlineDefinitionType> section, DocumentBuilder manager) throws ExportException {
-		String head = section.get().getHeadText(section);
-		String data = section.get().getDataText(section);
-
 		ExportUtils.addRequiredSpace(manager);
-		// XWPFRun run = manager.getParagraph().createRun();
 		String refID = HeaderExporter.getCrossReferenceID(section);
 		XWPFRun run = HeaderExporter.createCrossReferenceRun(refID, manager);
 		run.setColor("606060");
 		run.setFontSize(7);
 
 		run.setText("(");
-		run.setText(head);
+		run.setText(section.get().getHeadText(section));
 		run.setText(": ");
 
-		run = manager.getParagraph().createRun();
-		run.setText(data);
+		manager.export(section.get().getDataSection(section));
 
 		run = manager.getParagraph().createRun();
 		run.setColor("606060");
 		run.setFontSize(7);
-		// run.setSubscript(VerticalAlign.SUBSCRIPT);
 		run.setText(")");
 
 		run = manager.getParagraph().createRun();
