@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
@@ -40,13 +41,11 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
 /**
- * 
- * This is an abstract class for types defining objects in d3web, such as
- * solutions, questions, questionnaires...
- * 
+ * This is an abstract class for types defining objects in d3web, such as solutions, questions, questionnaires...
+ *
+ * @param <TermObject>
  * @author Jochen/Albrecht
  * @created 26.07.2010
- * @param <TermObject>
  */
 public abstract class D3webTermDefinition<TermObject extends NamedObject>
 		extends AbstractType
@@ -56,10 +55,10 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 
 	/**
 	 * Checks whether the creation of the term object can be aborted.
-	 * 
+	 *
+	 * @return null if the creation must not be aborted, an Collection containing addition Messages or non (if not
+	 * needed) else
 	 * @created 12.02.2012
-	 * @return null if the creation must not be aborted, an Collection
-	 *         containing addition Messages or non (if not needed) else
 	 */
 	public AbortCheck canAbortTermObjectCreation(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
 		Collection<Message> msgs = new ArrayList<Message>(1);
@@ -71,7 +70,7 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 			return check;
 		}
 		AbortCheck check = new AbortCheck();
-		Collection<NamedObject> termObjectsIgnoreTermObjectClass =	getAllTermObjects(compiler, section);
+		Collection<NamedObject> termObjectsIgnoreTermObjectClass = getAllTermObjects(compiler, section);
 		if (termObjectsIgnoreTermObjectClass.isEmpty()) {
 			// object does not yet exist, so just return null to continue
 			// creating the terminology object
@@ -83,7 +82,8 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 						termObject.getClass())) {
 					// other object already exist, we return it in the check
 					check.setNamedObject(termObject);
-				} else {
+				}
+				else {
 					// return addition error if one of them has another type
 					msgs.add(Messages.error("The term '" + section.get().getTermIdentifier(section)
 							+ "' is already occupied by an object of the type '"
@@ -97,7 +97,6 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 		return check;
 	}
 
-
 	private <TermObject extends NamedObject> Collection<NamedObject> getAllTermObjects(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
 		Set<NamedObject> foundTermObjects = new HashSet<NamedObject>();
 		TerminologyManager terminologyHandler = compiler.getTerminologyManager();
@@ -107,6 +106,9 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 			if (!(section.get() instanceof D3webTermDefinition)) continue;
 			Section<D3webTermDefinition> termDefiningSection = Sections.cast(potentialDefSection, D3webTermDefinition.class);
 			NamedObject termObject = termDefiningSection.get().getTermObject(compiler, termDefiningSection);
+			if (termObject instanceof TerminologyObject) {
+				if (((TerminologyObject) termObject).getKnowledgeBase() != compiler.getKnowledgeBase()) continue;
+			}
 			if (termObject != null) foundTermObjects.add(termObject);
 		}
 		return foundTermObjects;

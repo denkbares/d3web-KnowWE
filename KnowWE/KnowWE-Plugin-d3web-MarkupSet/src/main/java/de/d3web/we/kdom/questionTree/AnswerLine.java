@@ -68,7 +68,7 @@ public class AnswerLine extends AbstractType {
 				Section<?> dashTreeElement = father.getParent();
 				if (dashTreeElement.get() instanceof DashTreeElement) {
 					Section<? extends DashTreeElement> dashFather = DashTreeUtils
-							.getFatherDashTreeElement(dashTreeElement);
+							.getParentDashTreeElement(dashTreeElement);
 					if (dashFather != null
 							&& Sections.findSuccessor(dashFather, QuestionLine.class) != null) {
 						return true;

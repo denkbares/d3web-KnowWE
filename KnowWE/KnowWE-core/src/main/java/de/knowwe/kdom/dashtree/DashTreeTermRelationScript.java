@@ -133,7 +133,7 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 			}
 		}
 
-		createObjectRelations(compiler, parentIdentifier, orderedChildren);
+		createObjectRelations(parentSection, compiler, parentIdentifier, orderedChildren);
 		throw new CompilerMessage(msgs);
 	}
 
@@ -145,5 +145,5 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 		return DashTreeUtils.findChildrenDashtreeElements(termDefiningSection);
 	}
 
-	protected abstract void createObjectRelations(T compiler, Identifier parentIdentifier, List<Identifier> childrenIdentifier);
+	protected abstract void createObjectRelations(Section<TermDefinition> parentSection, T compiler, Identifier parentIdentifier, List<Identifier> childrenIdentifier);
 }

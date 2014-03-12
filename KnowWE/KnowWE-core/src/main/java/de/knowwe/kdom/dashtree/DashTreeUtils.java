@@ -71,8 +71,8 @@ public class DashTreeUtils {
 		return found;
 	}
 
-	public static Section<? extends DashTreeElement> getFatherDashTreeElement(Section<?> s) {
-		Section<? extends DashSubtree> dashSubtree = getFatherDashSubtree(s);
+	public static Section<? extends DashTreeElement> getParentDashTreeElement(Section<?> s) {
+		Section<? extends DashSubtree> dashSubtree = getParentDashSubtree(s);
 		if (dashSubtree != null) {
 			return Sections.findSuccessor(dashSubtree, DashTreeElement.class);
 		}
@@ -101,14 +101,8 @@ public class DashTreeUtils {
 		return ancestors;
 	}
 
-	/**
-	 * Delegates the getDashTreeFather-operation to DashTreeElement
-	 *
-	 * @param s
-	 * @return
-	 */
-	public static Section<? extends DashTreeElementContent> getFatherDashTreeElementContent(Section<?> s) {
-		Section<? extends DashTreeElement> dashTreeFatherElement = getFatherDashTreeElement(s);
+	public static Section<? extends DashTreeElementContent> getParentDashTreeElementContent(Section<?> s) {
+		Section<? extends DashTreeElement> dashTreeFatherElement = getParentDashTreeElement(s);
 		if (dashTreeFatherElement != null) {
 			return Sections.findChildOfType(dashTreeFatherElement,
 					DashTreeElementContent.class);
@@ -117,7 +111,7 @@ public class DashTreeUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static Section<? extends DashSubtree> getFatherDashSubtree(Section<?> s) {
+	public static Section<? extends DashSubtree> getParentDashSubtree(Section<?> s) {
 		Section<? extends DashSubtree> dashSubtree = Sections.findAncestorOfType(s,
 				DashSubtree.class);
 		if (dashSubtree != null) {

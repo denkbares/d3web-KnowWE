@@ -82,7 +82,7 @@ public class IndicationHandler extends D3webCompileScript<D3webTerm<NamedObject>
 		}
 
 		Section<? extends DashTreeElement> dashTreeFather = DashTreeUtils
-				.getFatherDashTreeElement(element);
+				.getParentDashTreeElement(element);
 
 		if (dashTreeFather == null) {
 			// In case, that the element is already root element, no indication

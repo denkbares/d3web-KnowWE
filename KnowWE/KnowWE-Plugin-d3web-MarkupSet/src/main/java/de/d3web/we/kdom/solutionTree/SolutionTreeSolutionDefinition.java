@@ -29,6 +29,8 @@ import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.SolutionDefinition;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.kdom.objects.TermDefinition;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.dashtree.DashTreeTermRelationScript;
 
 public class SolutionTreeSolutionDefinition extends SolutionDefinition {
@@ -36,7 +38,7 @@ public class SolutionTreeSolutionDefinition extends SolutionDefinition {
 	public SolutionTreeSolutionDefinition() {
 		this.addCompileScript(Priority.ABOVE_DEFAULT, new DashTreeTermRelationScript<D3webCompiler>() {
 			@Override
-			protected void createObjectRelations(D3webCompiler compiler, Identifier parentIdentifier, List<Identifier> childrenIdentifier) {
+			protected void createObjectRelations(Section<TermDefinition> parentSection, D3webCompiler compiler, Identifier parentIdentifier, List<Identifier> childrenIdentifier) {
 				Solution parentSolution = (Solution) D3webUtils.getTermObject(compiler, parentIdentifier);
 				if (parentSolution == null) return;
 				TerminologyObject[] parents = parentSolution.getParents();

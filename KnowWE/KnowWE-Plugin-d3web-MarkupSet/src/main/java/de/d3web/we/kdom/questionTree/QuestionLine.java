@@ -115,61 +115,7 @@ public class QuestionLine extends AbstractType {
 			f.addConstraint(SingleChildConstraint.getInstance());
 			this.setSectionFinder(f);
 			this.addCompileScript(IndicationHandler.getInstance());
-			this.addCompileScript(Priority.ABOVE_DEFAULT, new DashTreeTermRelationScript<D3webCompiler>() {
-
-				@Override
-				protected void createObjectRelations(D3webCompiler compiler, Identifier parentIdentifier, List<Identifier> childrenIdentifier) {
-					Question parentQuestion = (Question) D3webUtils.getTermObject(compiler, parentIdentifier);
-					if (parentQuestion == null) return;
-					TerminologyObject[] parents = parentQuestion.getParents();
-					if (parents.length == 0) {
-						parentQuestion.getKnowledgeBase().getRootQASet().addChild(parentQuestion);
-					}
-					for (Identifier childIdentifier : childrenIdentifier) {
-						NamedObject childObject = D3webUtils.getTermObject(compiler, childIdentifier);
-						if (childObject == null) continue;
-						if (childObject instanceof Question) {
-							Question childQuestion = (Question) childObject;
-							parentQuestion.getKnowledgeBase().getRootQASet().removeChild(childQuestion);
-							parentQuestion.addChild(childQuestion);
-						}
-						else if (parentQuestion instanceof QuestionChoice && childObject instanceof Choice) {
-							// nothing to to for QuestionYN, answers are already there and immutable
-							if (parentQuestion instanceof QuestionYN) continue;
-							((QuestionChoice) parentQuestion).addAlternative((Choice) childObject);
-						}
-					}
-				}
-
-				/**
-				 * In QuestionTreeQuestionDefinitions, we have followup questions not only directly as children of the
-				 * current question, but also as children of the answers of the question.
-				 */
-				@Override
-				protected List<Section<DashTreeElement>> getChildrenDashtreeElements(Section<?> termDefiningSection) {
-					List<Section<DashTreeElement>> childrenList = super.getChildrenDashtreeElements(termDefiningSection);
-					LinkedList<Section<DashTreeElement>> augmentedChildrenList = new LinkedList();
-					for (Section<DashTreeElement> child : childrenList) {
-						augmentedChildrenList.add(child);
-						Section<AnswerDefinition> answerDef = Sections.findSuccessor(child, AnswerDefinition.class);
-						Section<NumericCondLine> numCondLine = Sections.findSuccessor(child, NumericCondLine.class);
-						if (answerDef == null && numCondLine == null) continue;
-						// if we have a AnswerDefinition, look for Questions below
-						List<Section<DashTreeElement>> followUpQuestions = DashTreeUtils.findChildrenDashtreeElements(child);
-						for (Section<DashTreeElement> followUpQuestion : followUpQuestions) {
-							// we ignore &REF sections
-							if (Sections.findSuccessor(child, QuestionDefinition.class) != null) continue;
-							augmentedChildrenList.addAll(followUpQuestions);
-						}
-					}
-					return augmentedChildrenList;
-				}
-
-				@Override
-				public Class<D3webCompiler> getCompilerClass() {
-					return D3webCompiler.class;
-				}
-			});
+			this.addCompileScript(Priority.ABOVE_DEFAULT, new QuestionTreeQuestionRelationScript());
 		}
 
 		@Override

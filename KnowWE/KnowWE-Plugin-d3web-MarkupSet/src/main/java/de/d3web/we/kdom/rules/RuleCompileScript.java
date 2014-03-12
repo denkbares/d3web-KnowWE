@@ -86,7 +86,7 @@ public class RuleCompileScript extends D3webCompileScript<RuleType> {
 		createRules(compiler, ruleSection, ifCondition,
 				exceptCondition, thenActions, DEFAULT_RULE_STORE_KEY);
 
-		if (exceptCondition != null && (elseActions != null || unknownActions != null)) {
+		if (exceptCondition != null && (!elseActions.isEmpty() || !unknownActions.isEmpty())) {
 			throw CompilerMessage.error("Cannot define EXCEPT condition and ELSE or UNKNOWN action at the same time");
 		}
 

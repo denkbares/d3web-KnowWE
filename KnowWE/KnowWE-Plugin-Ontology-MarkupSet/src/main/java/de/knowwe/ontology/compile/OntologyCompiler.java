@@ -36,7 +36,6 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.RuleSet;
 
 /**
- * 
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.12.2013
  */
@@ -77,9 +76,6 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 
 		if (terminologyManager == null) createTerminologyManager();
 
-		destroyScriptCompiler = new ScriptCompiler<OntologyCompiler>(this);
-		scriptCompiler = new ScriptCompiler<OntologyCompiler>(this);
-
 		Collection<Section<?>> sectionsOfPackage;
 		if (!completeCompilation) {
 			sectionsOfPackage = getPackageManager().getRemovedSections(
@@ -110,6 +106,9 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 		rdf2GoCore.commit();
 
 		EventManager.getInstance().fireEvent(new OntologyCompilerFinishedEvent(this));
+
+		destroyScriptCompiler = new ScriptCompiler<OntologyCompiler>(this);
+		scriptCompiler = new ScriptCompiler<OntologyCompiler>(this);
 	}
 
 	private void createTerminologyManager() {
@@ -121,9 +120,8 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 	}
 
 	/**
-	 * Call this method while destroying, if the compilation can no longer be
-	 * done incrementally.
-	 * 
+	 * Call this method while destroying, if the compilation can no longer be done incrementally.
+	 *
 	 * @created 04.01.2014
 	 */
 	public void doCompleteCompilation() {

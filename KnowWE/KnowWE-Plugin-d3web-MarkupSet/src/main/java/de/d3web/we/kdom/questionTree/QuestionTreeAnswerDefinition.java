@@ -31,7 +31,7 @@ public class QuestionTreeAnswerDefinition extends AnswerDefinition {
 	@Override
 	public Section<? extends QuestionDefinition> getQuestionSection(Section<? extends AnswerDefinition> s) {
 		return Sections.findSuccessor(
-				DashTreeUtils.getFatherDashTreeElementContent(s), QuestionDefinition.class);
+				DashTreeUtils.getParentDashTreeElementContent(s), QuestionDefinition.class);
 	}
 
 }

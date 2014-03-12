@@ -33,6 +33,7 @@ import de.d3web.we.reviseHandler.D3webHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
@@ -73,7 +74,7 @@ public class QClassLine extends AbstractType {
 			setSectionFinder(csf);
 			this.addCompileScript(Priority.ABOVE_DEFAULT, new DashTreeTermRelationScript<D3webCompiler>() {
 				@Override
-				protected void createObjectRelations(D3webCompiler compiler, Identifier parentIdentifier, List<Identifier> childrenIdentifier) {
+				protected void createObjectRelations(Section<TermDefinition> parentSection, D3webCompiler compiler, Identifier parentIdentifier, List<Identifier> childrenIdentifier) {
 					QASet parentQASet = (QASet) D3webUtils.getTermObject(compiler, parentIdentifier);
 					if (parentQASet == null) return;
 					TerminologyObject[] parents = parentQASet.getParents();
@@ -110,7 +111,7 @@ public class QClassLine extends AbstractType {
 					return true;
 				}
 				Section<? extends DashTreeElement> dashTreeFather = DashTreeUtils
-						.getFatherDashTreeElement(s);
+						.getParentDashTreeElement(s);
 				if (dashTreeFather != null) {
 					// is child of a QClass declaration => also declaration
 					if (Sections.findSuccessor(dashTreeFather, QClassLine.class) != null) {

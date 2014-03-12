@@ -1,11 +1,13 @@
 package de.knowwe.core.compile;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 
 import de.d3web.utils.Log;
@@ -28,6 +30,8 @@ import de.knowwe.core.report.Messages;
 public class ScriptCompiler<C extends Compiler> {
 
 	private final TreeMap<Priority, LinkedHashSet<CompilePair>> priorityMap;
+
+	private final Set<Section<?>> allSections = new HashSet<Section<?>>(1024);
 
 	private Priority currentPriority;
 
@@ -79,6 +83,9 @@ public class ScriptCompiler<C extends Compiler> {
 	 * @param section the section you want to add
 	 */
 	public void addSection(Section<?> section) {
+		// each section can only be added once to a script compiler to avoid loops
+		if (!allSections.add(section)) return;
+
 		@SuppressWarnings("unchecked")
 		ScriptManager<C> scriptManager = CompilerManager.getScriptManager((Class<C>) compiler.getClass());
 		Map<Priority, List<CompileScript<C, Type>>> scripts =
