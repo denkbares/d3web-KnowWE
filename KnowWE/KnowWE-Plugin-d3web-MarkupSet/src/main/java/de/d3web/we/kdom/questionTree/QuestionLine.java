@@ -52,7 +52,7 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.d3web.DashTreeObjectRelationScript;
+import de.knowwe.kdom.dashtree.DashTreeTermRelationScript;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
 import de.knowwe.kdom.dashtree.DashTreeElement;
@@ -115,28 +115,30 @@ public class QuestionLine extends AbstractType {
 			f.addConstraint(SingleChildConstraint.getInstance());
 			this.setSectionFinder(f);
 			this.addCompileScript(IndicationHandler.getInstance());
-			this.addCompileScript(Priority.ABOVE_DEFAULT, new DashTreeObjectRelationScript() {
+			this.addCompileScript(Priority.ABOVE_DEFAULT, new DashTreeTermRelationScript<D3webCompiler>() {
 
 				@Override
-				protected void createObjectRelations(NamedObject parentObject, List<NamedObject> orderedChildren) {
-					Question parentQuestion = (Question) parentObject;
+				protected void createObjectRelations(D3webCompiler compiler, Identifier parentIdentifier, List<Identifier> childrenIdentifier) {
+					Question parentQuestion = (Question) D3webUtils.getTermObject(compiler, parentIdentifier);
+					if (parentQuestion == null) return;
 					TerminologyObject[] parents = parentQuestion.getParents();
 					if (parents.length == 0) {
 						parentQuestion.getKnowledgeBase().getRootQASet().addChild(parentQuestion);
 					}
-					for (NamedObject orderedChild : orderedChildren) {
-						if (orderedChild instanceof Question) {
-							Question childQuestion = (Question) orderedChild;
+					for (Identifier childIdentifier : childrenIdentifier) {
+						NamedObject childObject = D3webUtils.getTermObject(compiler, childIdentifier);
+						if (childObject == null) continue;
+						if (childObject instanceof Question) {
+							Question childQuestion = (Question) childObject;
 							parentQuestion.getKnowledgeBase().getRootQASet().removeChild(childQuestion);
 							parentQuestion.addChild(childQuestion);
 						}
-						else if (parentQuestion instanceof QuestionChoice && orderedChild instanceof Choice) {
+						else if (parentQuestion instanceof QuestionChoice && childObject instanceof Choice) {
 							// nothing to to for QuestionYN, answers are already there and immutable
 							if (parentQuestion instanceof QuestionYN) continue;
-							((QuestionChoice) parentQuestion).addAlternative((Choice) orderedChild);
+							((QuestionChoice) parentQuestion).addAlternative((Choice) childObject);
 						}
 					}
-
 				}
 
 				/**
@@ -161,6 +163,11 @@ public class QuestionLine extends AbstractType {
 						}
 					}
 					return augmentedChildrenList;
+				}
+
+				@Override
+				public Class<D3webCompiler> getCompilerClass() {
+					return D3webCompiler.class;
 				}
 			});
 		}

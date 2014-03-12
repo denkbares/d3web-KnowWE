@@ -23,13 +23,14 @@ import java.util.Collection;
 import java.util.List;
 
 import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
+import de.d3web.strings.Identifier;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webHandler;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -39,11 +40,11 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.d3web.DashTreeObjectRelationScript;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
 import de.knowwe.kdom.constraint.UnquotedConstraint;
 import de.knowwe.kdom.dashtree.DashTreeElement;
+import de.knowwe.kdom.dashtree.DashTreeTermRelationScript;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
 
@@ -70,19 +71,26 @@ public class QClassLine extends AbstractType {
 					new AllTextFinderTrimmed());
 			csf.addConstraint(SingleChildConstraint.getInstance());
 			setSectionFinder(csf);
-			this.addCompileScript(Priority.ABOVE_DEFAULT, new DashTreeObjectRelationScript() {
+			this.addCompileScript(Priority.ABOVE_DEFAULT, new DashTreeTermRelationScript<D3webCompiler>() {
 				@Override
-				protected void createObjectRelations(NamedObject parentObject, List<NamedObject> orderedChildren) {
-					QASet parentQASet = (QASet) parentObject;
+				protected void createObjectRelations(D3webCompiler compiler, Identifier parentIdentifier, List<Identifier> childrenIdentifier) {
+					QASet parentQASet = (QASet) D3webUtils.getTermObject(compiler, parentIdentifier);
+					if (parentQASet == null) return;
 					TerminologyObject[] parents = parentQASet.getParents();
 					if (parents.length == 0) {
 						parentQASet.getKnowledgeBase().getRootQASet().addChild(parentQASet);
 					}
-					for (NamedObject orderedChild : orderedChildren) {
-						QASet childQASet = (QASet) orderedChild;
+					for (Identifier childIdentifier : childrenIdentifier) {
+						QASet childQASet = (QASet) D3webUtils.getTermObject(compiler, childIdentifier);
+						if (childQASet == null) continue;
 						parentQASet.getKnowledgeBase().getRootQASet().removeChild(childQASet);
 						parentQASet.addChild(childQASet);
 					}
+				}
+
+				@Override
+				public Class<D3webCompiler> getCompilerClass() {
+					return D3webCompiler.class;
 				}
 			});
 		}

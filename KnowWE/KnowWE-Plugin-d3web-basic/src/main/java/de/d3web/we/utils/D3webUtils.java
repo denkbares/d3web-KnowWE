@@ -29,12 +29,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -63,14 +61,12 @@ import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.d3web.we.knowledgebase.D3webCompiler;
-import de.d3web.we.object.D3webTerm;
 import de.d3web.we.object.D3webTermDefinition;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageCompileType;
-import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -107,6 +103,20 @@ public class D3webUtils {
 			possibleScorePoints.add("suggested");
 		}
 		return possibleScorePoints;
+	}
+
+	public static NamedObject getTermObject(D3webCompiler compiler, Identifier identifier) {
+		Collection<Section<?>> definingSections = compiler.getTerminologyManager()
+				.getTermDefiningSections(identifier);
+		for (Section<?> definingSection : definingSections) {
+			if (definingSection.get() instanceof D3webTermDefinition) {
+				Section<D3webTermDefinition> d3webDefinitionSection =
+						Sections.cast(definingSection, D3webTermDefinition.class);
+				NamedObject termObject = d3webDefinitionSection.get().getTermObject(compiler, d3webDefinitionSection);
+				if (termObject != null) return termObject;
+			}
+		}
+		return null;
 	}
 
 	public static D3webCompiler getCompiler(Section<?> section) {
@@ -162,7 +172,7 @@ public class D3webUtils {
 	 * Deletes a terminology object and all potential children from the
 	 * knowledge base. Before the deletion the corresponding knowledge instances
 	 * (KnowledgeSlices) are also removed.
-	 * 
+	 *
 	 * @param object the object to be removed
 	 */
 	public static void removeRecursively(TerminologyObject object) {
@@ -187,7 +197,7 @@ public class D3webUtils {
 
 	/**
 	 * Utility method to get a {@link KnowledgeBase} for a specified article.
-	 * 
+	 *
 	 * @created 15.12.2010
 	 * @param article the article the knowledge base is compiled
 	 * @return the knowledge base if such one exists, null otherwise
@@ -202,7 +212,7 @@ public class D3webUtils {
 	 * Utility method to get a {@link KnowledgeBase} for an article specified by
 	 * its web and topic. If no such knowledge base exists, a new knowledge base
 	 * is created for the article and returned.
-	 * 
+	 *
 	 * @created 15.12.2010
 	 * @param web the web of the article the knowledge base is compiled
 	 * @param title the title of the article the knowledge base is compiled
@@ -231,7 +241,7 @@ public class D3webUtils {
 	 * base markup, the knowledge base of the right {@link D3webCompiler} is
 	 * returned. If a {@link TagHandlerType} is given, the {@link KnowledgeBase}
 	 * of the same article is returned for compatibility reasons.
-	 * 
+	 *
 	 * @created 06.01.2014
 	 */
 	public static KnowledgeBase getKnowledgeBase(Section<?> section) {
@@ -249,7 +259,7 @@ public class D3webUtils {
 	 * specified {@link Session}. If the value is currently being calculated,
 	 * the method immediately returns with "null" as value, instead of waiting
 	 * for the results of the current propagation.
-	 * 
+	 *
 	 * @created 05.10.2012
 	 * @param session the session to read the value from
 	 * @param object the object to read the value for
@@ -296,7 +306,7 @@ public class D3webUtils {
 	 * specified {@link Session}. If the value is currently being calculated,
 	 * the method immediately returns with "null" as value, instead of waiting
 	 * for the results of the current propagation.
-	 * 
+	 *
 	 * @created 05.10.2012
 	 * @param session the session to read the value from
 	 * @param solution the object to read the value for
@@ -330,7 +340,7 @@ public class D3webUtils {
 	 * currently is being calculated, the method immediately returns with "null"
 	 * instead of the list, not waiting for the results of the current
 	 * propagation.
-	 * 
+	 *
 	 * @param session the session to read the current values from
 	 * @param state the Rating the diagnoses must have to be returned
 	 * @return a list of diagnoses in this case that have the state 'state' or
@@ -351,7 +361,7 @@ public class D3webUtils {
 	 * solution currently is being calculated, the method immediately returns
 	 * with "null" instead of the list, not waiting for the results of the
 	 * current propagation.
-	 * 
+	 *
 	 * @param session the session to read the current answers from
 	 * @return a list of diagnoses in this case that have the state 'state' or
 	 *         null if any of these solutions is currently being calculated
@@ -472,7 +482,7 @@ public class D3webUtils {
 	 * If it is equal but Unknown, <tt>null</tt> is returned since there is
 	 * nothing to change.<br/>
 	 * If it is a different Value, the Value is returned unaltered.
-	 * 
+	 *
 	 * @created 11.08.2012
 	 * @param newValue the newly created Value for the dialog
 	 * @param existingValue the existing Value in the dialog
@@ -493,7 +503,7 @@ public class D3webUtils {
 	 * Checks if the knowledge base is empty. A knowledge base is empty, if
 	 * there are no knowledge slices. no questions and at most one solution
 	 * (root solution).
-	 * 
+	 *
 	 * @created 19.04.2013
 	 * @param kb
 	 * @return
