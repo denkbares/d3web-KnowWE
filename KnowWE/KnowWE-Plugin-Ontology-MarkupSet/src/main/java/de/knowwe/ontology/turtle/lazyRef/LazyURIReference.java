@@ -46,9 +46,15 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 
 	@Override
 	public Identifier getTermIdentifier(Section<? extends Term> section) {
-		Identifier identifier = (Identifier) section.getSectionStore().getObject(
-				Compilers.getCompiler(section, OntologyCompiler.class),
-				IDENTIFIER_KEY);
+		OntologyCompiler c = Compilers.getCompiler(section, OntologyCompiler.class);
+		Identifier identifier = (Identifier) section.getSectionStore().getObject(c, IDENTIFIER_KEY);
+		if (identifier == null) {
+			Collection<Identifier> potentiallyMatchingIdentifiers = getPotentiallyMatchingIdentifiers(c, section);
+			if (potentiallyMatchingIdentifiers.size() == 1) {
+				identifier = potentiallyMatchingIdentifiers.iterator().next();
+				section.getSectionStore().storeObject(c, IDENTIFIER_KEY, identifier);
+			}
+		}
 		return identifier;
 	}
 

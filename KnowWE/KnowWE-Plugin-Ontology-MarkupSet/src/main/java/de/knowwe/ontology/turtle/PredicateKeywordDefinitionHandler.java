@@ -88,12 +88,19 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyHandler<
 
 					TermCompiler termCompiler = Compilers.getCompiler(s, TermCompiler.class);
 					Section<?> def = termCompiler.getTerminologyManager().getTermDefiningSection(id);
+					/*
+					Problem is that the definition might not yet have been compiled
+					 */
 					if (def != null) {
 						termObjectClass = ((Section<? extends Term>) def).get()
 								.getTermObjectClass(((Section<? extends Term>) def));
 					}
 					else {
-						return validateReference(compiler, s);
+						/*
+						 * we just set Resource in this case (definition might not yet be available)
+						 */
+						termObjectClass = Resource.class;
+						//return validateReference(compiler, s);
 					}
 				}
 				else {
@@ -113,7 +120,6 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyHandler<
 			compiler.getTerminologyManager().registerTermDefinition(compiler, s, termObjectClass,
 					termIdentifier);
 		}
-
 		return Messages.noMessage();
 	}
 
