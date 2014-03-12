@@ -50,7 +50,7 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 		Identifier identifier = (Identifier) section.getSectionStore().getObject(c, IDENTIFIER_KEY);
 		if (identifier == null) {
 			Collection<Identifier> potentiallyMatchingIdentifiers = getPotentiallyMatchingIdentifiers(c, section);
-			if (potentiallyMatchingIdentifiers.size() == 1) {
+			if (potentiallyMatchingIdentifiers != null && potentiallyMatchingIdentifiers.size() == 1) {
 				identifier = potentiallyMatchingIdentifiers.iterator().next();
 				section.getSectionStore().storeObject(c, IDENTIFIER_KEY, identifier);
 			}
