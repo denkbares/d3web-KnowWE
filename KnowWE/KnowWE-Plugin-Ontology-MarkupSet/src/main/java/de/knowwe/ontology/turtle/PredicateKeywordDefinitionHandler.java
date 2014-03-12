@@ -26,7 +26,6 @@ import java.util.List;
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TermCompiler;
-import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
@@ -70,7 +69,7 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyHandler<
 		}
 
 		// we jump out if no matching predicate was found
-		if (!hasInstancePredicate) return validateReference(compiler, s);
+		if (!hasInstancePredicate) return Messages.noMessage();
 
 		// If termIdentifier is null, obviously section chose not to define
 		// a term, however so we can ignore this case
@@ -100,11 +99,11 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyHandler<
 						 * we just set Resource in this case (definition might not yet be available)
 						 */
 						termObjectClass = Resource.class;
-						//return validateReference(compiler, s);
+						//return Messages.noMessage();
 					}
 				}
 				else {
-					return validateReference(compiler, s);
+					return Messages.noMessage();
 				}
 			}
 			else {
@@ -119,18 +118,6 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyHandler<
 			}
 			compiler.getTerminologyManager().registerTermDefinition(compiler, s, termObjectClass,
 					termIdentifier);
-		}
-		return Messages.noMessage();
-	}
-
-	public Collection<Message> validateReference(TermCompiler compiler, Section<? extends Term> section) {
-		TerminologyManager tHandler = compiler.getTerminologyManager();
-
-		Identifier termIdentifier = section.get().getTermIdentifier(section);
-		if (!tHandler.isDefinedTerm(termIdentifier)) {
-			return Messages.asList(Messages.noSuchObjectError(
-					section.get().getTermObjectClass(section).getSimpleName(),
-					section.get().getTermName(section)));
 		}
 		return Messages.noMessage();
 	}

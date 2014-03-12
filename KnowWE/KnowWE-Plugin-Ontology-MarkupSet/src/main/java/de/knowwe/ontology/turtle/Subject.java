@@ -28,12 +28,10 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.objects.SimpleReference;
-import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.kdom.renderer.CompositeRenderer;
-import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.edit.DropTargetRenderer;
 import de.knowwe.ontology.kdom.resource.ResourceReference;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
@@ -61,8 +59,6 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 		TurtleURI turtleURI = new TurtleURI();
 		SimpleReference reference = Types.findSuccessorType(turtleURI, ResourceReference.class);
 		reference.addCompileScript(Priority.HIGH, new SubjectPredicateKeywordDefinitionHandler(new String[] { "[\\w]*?:type", "rdfs:subClassOf", "rdfs:subPropertyOf" }));
-		reference.removeCompileScript(OntologyCompiler.class,
-				SimpleReferenceRegistrationScript.class);
 		return turtleURI;
 	}
 

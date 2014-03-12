@@ -35,7 +35,6 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.objects.SimpleReference;
-import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -84,8 +83,6 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		TurtleURI turtleURI = new TurtleURI();
 		SimpleReference reference = Types.findSuccessorType(turtleURI, ResourceReference.class);
 		reference.addCompileScript(Priority.HIGH, new ObjectPredicateKeywordDefinitionHandler(new String[] { "[\\w]*?:instance" }));
-		reference.removeCompileScript(OntologyCompiler.class,
-				SimpleReferenceRegistrationScript.class);
 		return turtleURI;
 	}
 
@@ -121,14 +118,15 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			}
 
 			// we jump out if no matching predicate was found
-			if (!hasInstancePredicate) return validateReference(compiler, s);
+			if (!hasInstancePredicate) return Messages.noMessage();
 
 			// If termIdentifier is null, obviously section chose not to define
 			// a term, however so we can ignore this case
 			Identifier termIdentifier = s.get().getTermIdentifier(s);
 			if (termIdentifier != null) {
-				compiler.getTerminologyManager().registerTermDefinition(compiler, s, Resource.class,
-						termIdentifier);
+				compiler.getTerminologyManager()
+						.registerTermDefinition(compiler, s, de.knowwe.ontology.kdom.resource.Resource.class,
+								termIdentifier);
 			}
 
 			return Messages.noMessage();
