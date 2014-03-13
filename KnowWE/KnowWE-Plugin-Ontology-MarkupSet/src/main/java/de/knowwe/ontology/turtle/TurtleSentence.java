@@ -47,7 +47,7 @@ public class TurtleSentence extends AbstractType {
 		this.addChildType(PredicateObjectSentenceList.getInstance());
 
 		// create triples for each sentence
-		this.addCompileScript(Priority.LOW, new TurtleCompileHandler());
+		this.addCompileScript(Priority.LOWEST, new TurtleCompileHandler());
 
 	}
 

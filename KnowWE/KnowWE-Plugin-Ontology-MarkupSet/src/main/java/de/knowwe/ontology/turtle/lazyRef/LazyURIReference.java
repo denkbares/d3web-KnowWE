@@ -8,6 +8,7 @@ import org.ontoware.rdf2go.model.node.Node;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
@@ -31,7 +32,7 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 		this.setSectionFinder(new AllTextFinderTrimmed());
 		this.setRenderer(StyleRenderer.Question);
 		this.removeCompileScript(OntologyCompiler.class, SimpleReferenceRegistrationScript.class);
-		this.addCompileScript(new LazyURIReferenceHandler(OntologyCompiler.class));
+		this.addCompileScript(Priority.LOWER, new LazyURIReferenceHandler(OntologyCompiler.class));
 	}
 
 	@Override
@@ -59,7 +60,7 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 	}
 
 	public static Collection<Identifier> getPotentiallyMatchingIdentifiers(de.knowwe.core.compile.Compiler c, Section<?> section) {
-		
+
 		String lazyRefText = section.getText();
 
 		Set<Identifier> potentialMatches = LazyReferenceManager.getInstance().getData(c,

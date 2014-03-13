@@ -62,14 +62,17 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyHandler<
 			for (String exp : matchExpressions) {
 
 				if (section.getText().matches(exp)) {
-					hasInstancePredicate = true;
 					predicate = section;
+					break;
 				}
+			}
+			if (predicate != null) {
+				break;
 			}
 		}
 
 		// we jump out if no matching predicate was found
-		if (!hasInstancePredicate) return Messages.noMessage();
+		if (predicate == null) return Messages.noMessage();
 
 		// If termIdentifier is null, obviously section chose not to define
 		// a term, however so we can ignore this case
@@ -99,11 +102,13 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyHandler<
 						 * we just set Resource in this case (definition might not yet be available)
 						 */
 						termObjectClass = Resource.class;
-						//return Messages.noMessage();
 					}
 				}
 				else {
-					return Messages.noMessage();
+					/*
+						 * we just set Resource in this case (definition might not yet be available)
+						 */
+					termObjectClass = Resource.class;
 				}
 			}
 			else {
