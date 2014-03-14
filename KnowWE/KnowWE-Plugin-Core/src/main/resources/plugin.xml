@@ -34,6 +34,17 @@
 		</library>
 	</runtime>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="KnowledgeBaseDownloadProvider">
+		<parameter id="class" value="de.knowwe.core.tools.RefreshToolProvider" />
+		<parameter id="name" value="RefreshToolProvider" />
+		<parameter id="description"
+			value="Offers a refresh button (fullParse)." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="KnowledgeBase" />
+		<parameter id="scope" value="Ontology" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="DownloadFileAction">
 		<parameter id="class" value="de.knowwe.core.utils.progress.DownloadFileAction" />
 		<parameter id="name" value="DownloadFileAction" />

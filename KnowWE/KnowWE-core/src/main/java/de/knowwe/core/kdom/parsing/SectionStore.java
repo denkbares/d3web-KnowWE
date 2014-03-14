@@ -29,8 +29,7 @@ import de.knowwe.core.kdom.Article;
 
 /**
  * Container class to store and retrieve arbitrary objects for this Section.
- * 
- * 
+ *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 08.07.2011
  */

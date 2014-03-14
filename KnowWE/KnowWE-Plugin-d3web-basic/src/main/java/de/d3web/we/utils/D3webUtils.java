@@ -509,7 +509,7 @@ public class D3webUtils {
 	 * @return
 	 */
 	public static boolean isEmpty(KnowledgeBase kb) {
-		if (kb.getAllKnowledgeSlices().size() == 0
+		if (kb.getAllKnowledgeSlices().size() <= 1
 				&& kb.getManager().getQContainers().size() <= 1
 				&& kb.getManager().getSolutions().size() <= 1) {
 			return true;

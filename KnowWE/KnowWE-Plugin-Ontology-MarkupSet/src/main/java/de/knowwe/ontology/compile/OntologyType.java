@@ -80,6 +80,7 @@ public class OntologyType extends DefaultMarkupType {
 
 			@Override
 			public void destroy(de.knowwe.core.compile.PackageRegistrationCompiler compiler, Section<PackageCompileType> section) {
+				// we just remove the no longer used compiler... we do not need to destroy the s
 				compiler.getPackageManager().unregisterPackageCompileSection(section);
 				for (PackageCompiler packageCompiler : section.get().getPackageCompilers(section)) {
 					if (packageCompiler instanceof OntologyCompiler) {

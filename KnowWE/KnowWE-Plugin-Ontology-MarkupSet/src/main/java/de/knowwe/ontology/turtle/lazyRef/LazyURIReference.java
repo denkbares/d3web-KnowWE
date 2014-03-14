@@ -9,6 +9,7 @@ import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
@@ -59,12 +60,11 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 		return identifier;
 	}
 
-	public static Collection<Identifier> getPotentiallyMatchingIdentifiers(de.knowwe.core.compile.Compiler c, Section<?> section) {
+	public static Collection<Identifier> getPotentiallyMatchingIdentifiers(TermCompiler termCompiler, Section<?> section) {
 
 		String lazyRefText = section.getText();
 
-		Set<Identifier> potentialMatches = LazyReferenceManager.getInstance().getData(c,
-				lazyRefText);
+		Set<Identifier> potentialMatches = LazyReferenceManager.getInstance().getData(termCompiler, lazyRefText);
 
 		return potentialMatches;
 	}

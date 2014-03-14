@@ -43,7 +43,8 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 
 	private Rdf2GoCore rdf2GoCore;
 	private TerminologyManager terminologyManager;
-	private boolean completeCompilation;
+	private boolean completeCompilation = true;
+	private boolean firstCompilation = true;
 	private ScriptCompiler<OntologyCompiler> scriptCompiler;
 	private ScriptCompiler<OntologyCompiler> destroyScriptCompiler;
 	private final RuleSet ruleSet;
@@ -52,7 +53,6 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 		super(manager, compileSection);
 		this.scriptCompiler = new ScriptCompiler<OntologyCompiler>(this);
 		this.destroyScriptCompiler = new ScriptCompiler<OntologyCompiler>(this);
-		this.completeCompilation = true;
 		this.ruleSet = ruleSet;
 	}
 
@@ -74,11 +74,24 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 	public void compilePackages(String[] packagesToCompile) {
 		EventManager.getInstance().fireEvent(new OntologyCompilerStartEvent(this));
 
-		if (terminologyManager == null) createTerminologyManager();
+		if (firstCompilation) createTerminologyManager();
 
 		Collection<Section<?>> sectionsOfPackage;
-		if (!completeCompilation) {
-			sectionsOfPackage = getPackageManager().getRemovedSections(
+		// If this is the first compilation of this compiler, we do not need to destroy, because the compiler
+		// has not created yet.
+		if (!firstCompilation) {
+			sectionsOfPackage = getPackageManager().getRemovedSections(packagesToCompile);
+			for (Section<?> section : sectionsOfPackage) {
+				destroyScriptCompiler.addSubtree(section);
+			}
+			destroyScriptCompiler.destroy();
+		}
+		// While destroying, perhaps a complete compilation was requested...
+		if (completeCompilation && !firstCompilation) {
+			// Since we we later compile all sections in the compile step, we first have to destroy all of them.
+			// This is different from just removing and adding a new compiler to the CompilerManager without
+			// destroying in case of a full parse, because we still want to continue using the current compiler
+			sectionsOfPackage = getPackageManager().getSectionsOfPackage(
 					packagesToCompile);
 			for (Section<?> section : sectionsOfPackage) {
 				destroyScriptCompiler.addSubtree(section);
@@ -86,13 +99,15 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 			destroyScriptCompiler.destroy();
 		}
 
+		// a complete compilation... we reset TerminologyManager and Rdf2GoCore
+		// we compile all sections of the compiled packages, not just the added ones
 		if (completeCompilation) {
 			this.rdf2GoCore = new Rdf2GoCore(ruleSet);
 			createTerminologyManager();
-
 			sectionsOfPackage = getPackageManager().getSectionsOfPackage(packagesToCompile);
-			completeCompilation = false;
+
 		}
+		// an incremental compilation... just compile the added sections
 		else {
 			if (this.rdf2GoCore == null) this.rdf2GoCore = new Rdf2GoCore(ruleSet);
 			sectionsOfPackage = getPackageManager().getAddedSections(packagesToCompile);
@@ -107,6 +122,8 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 
 		EventManager.getInstance().fireEvent(new OntologyCompilerFinishedEvent(this));
 
+		firstCompilation = false;
+		completeCompilation = false;
 		destroyScriptCompiler = new ScriptCompiler<OntologyCompiler>(this);
 		scriptCompiler = new ScriptCompiler<OntologyCompiler>(this);
 	}

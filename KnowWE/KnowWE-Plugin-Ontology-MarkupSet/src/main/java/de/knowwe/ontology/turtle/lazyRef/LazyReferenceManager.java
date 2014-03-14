@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import de.d3web.strings.Identifier;
-import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.CompilerFinishedEvent;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TermDefinitionRegisteredEvent;
@@ -35,7 +35,8 @@ public class LazyReferenceManager implements EventListener {
 		return instance;
 	}
 
-	private final Map<de.knowwe.core.compile.Compiler, Map<String, Set<Identifier>>> data = new HashMap<de.knowwe.core.compile.Compiler, Map<String, Set<Identifier>>>();
+	private final Map<TermCompiler, Map<String, Set<Identifier>>> data
+			= new WeakHashMap<TermCompiler, Map<String, Set<Identifier>>>();
 
 	@Override
 	public Collection<Class<? extends Event>> getEvents() {
@@ -67,22 +68,22 @@ public class LazyReferenceManager implements EventListener {
 		this.addedIdentifiers.add(identifier);
 	}
 
-	public synchronized Set<Identifier> getData(de.knowwe.core.compile.Compiler c, String lazyTermName) {
-		if (c == null) return null;
-		if (!data.containsKey(c)) {
+	public synchronized Set<Identifier> getData(TermCompiler termCompiler, String lazyTermName) {
+		if (termCompiler == null) return null;
+		if (!data.containsKey(termCompiler)) {
 			/*
 			 * build up cache once
 			 */
-			createCache(c);
+			createCache(termCompiler);
 		}
 		else if (this.addedIdentifiers.size() > 0) {
-			updateCache(c);
+			updateCache(termCompiler);
 
 		}
-		return data.get(c).get(lazyTermName);
+		return data.get(termCompiler).get(lazyTermName);
 	}
 
-	private void updateCache(Compiler c) {
+	private void updateCache(TermCompiler c) {
 		Map<String, Set<Identifier>> termData = data.get(c);
 		for (Identifier identifier : addedIdentifiers) {
 			if (identifier.getPathElements().length == 2) {
@@ -92,19 +93,17 @@ public class LazyReferenceManager implements EventListener {
 		addedIdentifiers.clear();
 	}
 
-	private void createCache(de.knowwe.core.compile.Compiler c) {
-		if (c instanceof TermCompiler) {
-			TerminologyManager terminologyManager = ((TermCompiler) c).getTerminologyManager();
-			Collection<Identifier> allDefinedTerms = terminologyManager.getAllDefinedTerms();
-			Map<String, Set<Identifier>> map = data.get(c);
-			if (map == null) {
-				map = new HashMap<String, Set<Identifier>>();
-				data.put(c, map);
-			}
-			for (Identifier identifier : allDefinedTerms) {
-				if (identifier.getPathElements().length == 2) {
-					insertTerm(map, identifier);
-				}
+	private void createCache(TermCompiler termCompiler) {
+		TerminologyManager terminologyManager = termCompiler.getTerminologyManager();
+		Collection<Identifier> allDefinedTerms = terminologyManager.getAllDefinedTerms();
+		Map<String, Set<Identifier>> map = data.get(termCompiler);
+		if (map == null) {
+			map = new HashMap<String, Set<Identifier>>();
+			data.put(termCompiler, map);
+		}
+		for (Identifier identifier : allDefinedTerms) {
+			if (identifier.getPathElements().length == 2) {
+				insertTerm(map, identifier);
 			}
 		}
 	}

@@ -48,30 +48,13 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		// and provide both download and refresh as tools
-		Tool refresh = getRefreshTool(section, userContext);
+		// and provide both download as tools
 		Tool download = getDownloadTool(section, userContext);
 		if (download == null) {
-			return new Tool[] { refresh };
+			return new Tool[0];
 		}
 		Tool qrCode = getQRCodeTool(section, userContext);
-		return new Tool[] {
-				refresh, download, qrCode };
-	}
-
-	protected Tool getRefreshTool(Section<?> section, UserContext userContext) {
-		// tool to execute a full-parse onto the knowledge base
-		// may be removed in later releases (after moneypenny)
-		String jsAction = "var url = window.location.href;" +
-				"url = url.replace(/&amp;parse=full/g, '');" +
-				"if (url.indexOf('?') == -1) {url += '?';}" +
-				"url += '&amp;parse=full';" +
-				"window.location = url;";
-		return new DefaultTool(
-				"KnowWEExtension/d3web/icon/refresh16.png",
-				"Refresh",
-				"Performs a fresh rebuild of the knowledge base from the wiki content.",
-				jsAction);
+		return new Tool[] { download, qrCode };
 	}
 
 	protected Tool getDownloadTool(Section<?> section, UserContext userContext) {
