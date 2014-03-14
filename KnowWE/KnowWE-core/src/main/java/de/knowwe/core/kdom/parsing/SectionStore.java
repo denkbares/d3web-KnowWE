@@ -36,12 +36,12 @@ import de.knowwe.core.kdom.Article;
  */
 public class SectionStore {
 
-	private WeakHashMap<Compiler, HashMap<String, Object>> store = null;
+	private Map<Compiler, Map<String, Object>> store = null;
 
 	/**
-	 * Has the same behavior as {@link SectionStore#getObject(Article, String)}
-	 * with <tt>null</tt> as the {@link Article} argument. Use this if the
-	 * Object was stored the same way (<tt>null</tt> as the {@link Article}
+	 * Has the same behavior as {@link SectionStore#getObject(Compiler, String)}
+	 * with <tt>null</tt> as the {@link Compiler} argument. Use this if the
+	 * Object was stored the same way (<tt>null</tt> as the {@link Compiler}
 	 * argument or the method {@link SectionStore#storeObject(String, Object)}.
 	 * 
 	 * @created 08.07.2011
@@ -50,6 +50,7 @@ public class SectionStore {
 	 *         Object was stored
 	 */
 	public Object getObject(String key) {
+		//noinspection RedundantCast
 		return getObject((Compiler) null, key);
 	}
 
@@ -68,7 +69,7 @@ public class SectionStore {
 				store == null
 						? 2 : store.size());
 		if (store != null) {
-			for (Entry<Compiler, HashMap<String, Object>> entry : store.entrySet()) {
+			for (Entry<Compiler, Map<String, Object>> entry : store.entrySet()) {
 				Compiler compiler = entry.getKey();
 				if (compiler != null && !compiler.getCompilerManager().contains(compiler)) continue;
 				Object object = entry.getValue().get(key);
@@ -87,7 +88,7 @@ public class SectionStore {
 	 */
 	public Object getObject(Compiler compiler, String key) {
 		if (compiler != null && !compiler.getCompilerManager().contains(compiler)) return null;
-		HashMap<String, Object> storeForArticle = getStoreForCompiler(compiler);
+		Map<String, Object> storeForArticle = getStoreForCompiler(compiler);
 		if (storeForArticle == null) return null;
 		return storeForArticle.get(key);
 	}
@@ -95,19 +96,20 @@ public class SectionStore {
 	/**
 	 * Stores the given Object for the given key.<br/>
 	 * <b>Attention:</b> Be aware, that some times an Object should only be
-	 * stored in the context of a certain {@link Article}. Example: An Object
+	 * stored in the context of a certain {@link Compiler}. Example: An Object
 	 * was created, because the Section was compiled for a certain
 	 * {@link Article}. If the Section however gets compiled again for another
 	 * {@link Article}, the Object would not be created or a different
 	 * {@link Object} would be created. In this case you have to use the method
-	 * {@link SectionStore#storeObject(Article, String, Object)} to be able to
-	 * differentiate between the {@link Article}s.
+	 * {@link SectionStore#storeObject(Compiler, String, Object)} to be able to
+	 * differentiate between the {@link Compiler}s.
 	 * 
 	 * @created 08.07.2011
 	 * @param key is the key for which the Object should be stored
 	 * @param object is the object to be stored
 	 */
 	public void storeObject(String key, Object object) {
+		//noinspection RedundantCast
 		storeObject((Compiler) null, key, object);
 	}
 
@@ -121,26 +123,30 @@ public class SectionStore {
 	 * applies for retrieving the Object later via the getObject - methods).
 	 * 
 	 * @created 08.07.2011
-	 * @param compiler
-	 * @param key
-	 * @param object
+	 * @param compiler the compiler to get the store for
+	 * @param key the key to store the object for
+	 * @param object the object to be stored
 	 */
 	public void storeObject(Compiler compiler, String key, Object object) {
-		HashMap<String, Object> storeForArticle = getStoreForCompiler(compiler);
-		if (storeForArticle == null) {
-			storeForArticle = new HashMap<String, Object>();
-			putStoreForCompiler(compiler, storeForArticle);
+		Map<String, Object> storeForCompiler = getStoreForCompiler(compiler);
+		if (storeForCompiler == null) {
+			storeForCompiler = Collections.synchronizedMap(
+					new HashMap<String, Object>());
+			putStoreForCompiler(compiler, storeForCompiler);
 		}
-		storeForArticle.put(key, object);
+		storeForCompiler.put(key, object);
 	}
 
-	private HashMap<String, Object> getStoreForCompiler(Compiler compiler) {
+	private Map<String, Object> getStoreForCompiler(Compiler compiler) {
 		if (store == null) return null;
 		return store.get(compiler);
 	}
 
-	private void putStoreForCompiler(Compiler compiler, HashMap<String, Object> storeForArticle) {
-		if (store == null) store = new WeakHashMap<Compiler, HashMap<String, Object>>();
+	private void putStoreForCompiler(Compiler compiler, Map<String, Object> storeForArticle) {
+		if (store == null) {
+			store = Collections.synchronizedMap(
+					new WeakHashMap<Compiler, Map<String, Object>>());
+		}
 		store.put(compiler, storeForArticle);
 	}
 
