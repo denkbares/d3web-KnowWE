@@ -37,14 +37,14 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.strings.Identifier;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.utils.KnowWEUtils;
 
 public class SearchInfoObjects extends AbstractAction {
 
@@ -106,9 +106,11 @@ public class SearchInfoObjects extends AbstractAction {
 		Environment env = Environment.getInstance();
 
 		// the examine objects inside the articles
-		Set<String> compilingArticles = getCompilingArticles(flowchartSectionID);
-		for (String title : compilingArticles) {
-			TerminologyManager manager = env.getTerminologyManager(web, title);
+		Section<?> flowSection = Sections.getSection(flowchartSectionID);
+		if (flowSection == null) return result;
+		Collection<D3webCompiler> compilers = Compilers.getCompilers(flowSection, D3webCompiler.class);
+		for (D3webCompiler compiler : compilers) {
+			TerminologyManager manager = compiler.getTerminologyManager();
 
 			// add article for a knowledge base
 			if (classes.contains("article")) {
@@ -145,7 +147,7 @@ public class SearchInfoObjects extends AbstractAction {
 			for (Identifier identifier : identifiers) {
 				String name = identifier.getLastPathElement();
 				if (matches(name.toLowerCase(), phrases)) {
-					result.add(new Identifier(title, name));
+					result.add(new Identifier(compiler.getCompileSection().getTitle(), name));
 				}
 			}
 
@@ -165,21 +167,6 @@ public class SearchInfoObjects extends AbstractAction {
 				result.add(term);
 			}
 		}
-	}
-
-	private static Set<String> getCompilingArticles(String flowchartSectionID) {
-		Set<String> compilingArticles = new HashSet<String>();
-		Section<?> section = Sections.getSection(flowchartSectionID);
-		PackageManager packageManager = KnowWEUtils.getPackageManager(section);
-		if (section != null) {
-			for (String packageName : section.getPackageNames()) {
-				compilingArticles.addAll(packageManager.getCompilingArticles(packageName));
-			}
-		}
-		if (compilingArticles.isEmpty()) {
-			compilingArticles.addAll(packageManager.getCompilingArticles());
-		}
-		return compilingArticles;
 	}
 
 	private static boolean matches(String text, String[] phrases) {

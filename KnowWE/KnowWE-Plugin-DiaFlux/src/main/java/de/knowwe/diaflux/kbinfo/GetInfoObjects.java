@@ -50,10 +50,12 @@ import de.d3web.diaFlux.flow.StartNode;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.diaFlux.inference.FluxSolver;
 import de.d3web.strings.Identifier;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.TermDefinition;
@@ -148,7 +150,6 @@ public class GetInfoObjects extends AbstractAction {
 
 		Environment env = Environment.getInstance();
 		Article article = env.getArticle(web, title);
-		PackageManager packages = KnowWEUtils.getPackageManager(web);
 		String id = createArticleIdentifier(title).toExternalForm();
 
 		bob.append("\t<article");
@@ -181,10 +182,11 @@ public class GetInfoObjects extends AbstractAction {
 			nextTerm: for (Section<TermDefinition> section : defSections) {
 				Identifier identifier = section.get().getTermIdentifier(section);
 				String objectName = identifier.getLastPathElement();
-				for (String compilingArticle : packages.getCompilingArticles(section)) {
-					KnowledgeBase base = D3webUtils.getKnowledgeBase(web, compilingArticle);
+				for (D3webCompiler compiler : Compilers.getCompilers(section, D3webCompiler.class)) {
+					KnowledgeBase base = compiler.getKnowledgeBase();
 					// append if TerminologyObject
 					TerminologyObject object = base.getManager().search(objectName);
+					String compilingArticle = compiler.getCompileSection().getTitle();
 					if ((object instanceof Solution)
 							|| (object instanceof QContainer)
 							|| (object instanceof Question)) {
