@@ -41,9 +41,7 @@ import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.Reasoning;
-import org.ontoware.rdf2go.exception.MalformedQueryException;
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
-import org.ontoware.rdf2go.exception.ReasoningNotSupportedException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.QueryResultTable;
 import org.ontoware.rdf2go.model.QueryRow;
@@ -201,12 +199,11 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * @deprecated use {@link Rdf2GoCore#getInstance(Rdf2GoCompiler)} instead.
-	 *             Using the global instance will cause problems with different
-	 *             webs or different article managers
-	 * 
-	 * @created 14.12.2013
 	 * @return one global instance for all webs an compilers
+	 * @created 14.12.2013
+	 * @deprecated use {@link Rdf2GoCore#getInstance(Rdf2GoCompiler)} instead.
+	 * Using the global instance will cause problems with different
+	 * webs or different article managers
 	 */
 	@Deprecated
 	public static Rdf2GoCore getInstance() {
@@ -228,8 +225,8 @@ public class Rdf2GoCore {
 
 	private final MultiMap<StatementSource, Statement> statementCache =
 			new N2MMap<Rdf2GoCore.StatementSource, Statement>(
-					MultiMaps.<StatementSource> hashMinimizedFactory(),
-					MultiMaps.<Statement> hashMinimizedFactory());
+					MultiMaps.<StatementSource>hashMinimizedFactory(),
+					MultiMaps.<Statement>hashMinimizedFactory());
 
 	/**
 	 * All namespaces known to KnowWE. Key is the namespace abbreviation, value
@@ -237,6 +234,11 @@ public class Rdf2GoCore {
 	 * http://www.w3.org/1999/02/22-rdf-syntax-ns#
 	 */
 	private final Map<String, String> namespaces = new HashMap<String, String>();
+
+	/**
+	 * For optimization reasons, we hold a map of all namespacePrefixes as they are used e.g. in Turtle and SPARQL
+	 */
+	private final Map<String, String> namespacePrefixes = new HashMap<String, String>();
 
 	private Set<Statement> insertCache;
 	private Set<Statement> removeCache;
@@ -268,10 +270,9 @@ public class Rdf2GoCore {
 	 * that the RuleSet argument only has an effekt if OWLIM is used as underlying
 	 * implementation.
 	 *
-	 *
-	 * @param lns the uri used as local namespace
-	 * @param bns the uri used as base namespace
-	 * @param model the underlying model
+	 * @param lns     the uri used as local namespace
+	 * @param bns     the uri used as base namespace
+	 * @param model   the underlying model
 	 * @param ruleSet the rule set (only relevant for OWLIM model)
 	 */
 	public Rdf2GoCore(String lns, String bns, Model model, RuleSet ruleSet) {
@@ -293,22 +294,23 @@ public class Rdf2GoCore {
 
 	/**
 	 * Add a namespace to the model.
-	 * 
+	 *
 	 * @param abbreviation the short version of the namespace
-	 * @param namespace the namespace (URL)
+	 * @param namespace    the namespace (URL)
 	 */
 	public void addNamespace(String abbreviation, String namespace) {
 		namespaces.put(abbreviation, namespace);
+		namespacePrefixes.put(Rdf2GoUtils.toNamespacePrefix(abbreviation), namespace);
 		model.setNamespace(abbreviation, namespace);
 	}
 
 	/**
 	 * De-resolves a specified uri to a short uri name. If there is no matching
 	 * namespace, the full uri is returned.
-	 * 
-	 * @created 13.11.2013
+	 *
 	 * @param uri the uri to be de-resolved
 	 * @return the short uri name
+	 * @created 13.11.2013
 	 */
 	public URI toShortURI(java.net.URI uri) {
 		return toShortURI(new URIImpl(uri.toString()));
@@ -318,9 +320,9 @@ public class Rdf2GoCore {
 	 * De-resolves a specified uri to a short uri name. If there is no matching
 	 * namespace, the full uri is returned.
 	 *
-	 * @created 13.11.2013
 	 * @param uri the uri to be de-resolved
 	 * @return the short uri name
+	 * @created 13.11.2013
 	 */
 	public URI toShortURI(URI uri) {
 		String uriText = uri.toString();
@@ -342,10 +344,10 @@ public class Rdf2GoCore {
 	 * Returns the terminology manager's identifier for the specified uri. The
 	 * uri's identifier is usually based on the short version of the uri, if
 	 * there is any.
-	 * 
-	 * @created 13.11.2013
+	 *
 	 * @param uri the uri to create the identifier for
 	 * @return the identifier for the specified uri
+	 * @created 13.11.2013
 	 */
 	public Identifier toIdentifier(URI uri) {
 		return ShortURIImpl.toIdentifier(toShortURI(uri));
@@ -356,9 +358,9 @@ public class Rdf2GoCore {
 	 * uri's identifier is usually based on the short version of the uri, if
 	 * there is any.
 	 *
-	 * @created 13.11.2013
 	 * @param uri the uri to create the identifier for
 	 * @return the identifier for the specified uri
+	 * @created 13.11.2013
 	 */
 	public Identifier toIdentifier(java.net.URI uri) {
 		return ShortURIImpl.toIdentifier(toShortURI(uri));
@@ -370,13 +372,13 @@ public class Rdf2GoCore {
 	 * <p/>
 	 * You can remove the {@link Statement} using the method
 	 * {@link Rdf2GoCore#removeStatementsForSection(Section)}.
-	 * 
-	 * @created 06.12.2010
-	 * @param subject the subject of the statement/triple
+	 *
+	 * @param subject   the subject of the statement/triple
 	 * @param predicate the predicate of the statement/triple
-	 * @param object the object of the statement/triple
-	 * @param sec the {@link Section} for which the {@link Statement}s are added
-	 *        and cached
+	 * @param object    the object of the statement/triple
+	 * @param sec       the {@link Section} for which the {@link Statement}s are added
+	 *                  and cached
+	 * @created 06.12.2010
 	 */
 	public void addStatement(Section<?> sec, Resource subject, URI predicate, Node object) {
 		addStatements(sec, createStatement(subject, predicate, object));
@@ -388,11 +390,11 @@ public class Rdf2GoCore {
 	 * removed before the new {@link Statement}s are added again. You don't need
 	 * to remove the {@link Statement}s yourself. This method works best when
 	 * used in a {@link de.knowwe.core.compile.CompileScript}.
-	 * 
-	 * @created 11.06.2012
-	 * @param compiler the article for which the statements are added and for
-	 *        which they are removed at full parse
+	 *
+	 * @param compiler   the article for which the statements are added and for
+	 *                   which they are removed at full parse
 	 * @param statements the statements to add to the triple store
+	 * @created 11.06.2012
 	 */
 	public void addStatements(PackageCompiler compiler, Statement... statements) {
 		addStatements(new CompilerSource(compiler), Arrays.asList(statements));
@@ -413,11 +415,11 @@ public class Rdf2GoCore {
 	 * <p/>
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatementsForSection(Section)}.
-	 * 
-	 * @created 06.12.2010
-	 * @param section the {@link Section} for which the {@link Statement}s are
-	 *        added and cached
+	 *
+	 * @param section    the {@link Section} for which the {@link Statement}s are
+	 *                   added and cached
 	 * @param statements the {@link Statement}s to add
+	 * @created 06.12.2010
 	 */
 	public void addStatements(Section<?> section, Statement... statements) {
 		addStatements(new SectionSource(section), Arrays.asList(statements));
@@ -429,11 +431,11 @@ public class Rdf2GoCore {
 	 * <p/>
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatementsForSection(Section)}.
-	 * 
-	 * @created 06.12.2010
-	 * @param section the {@link Section} for which the {@link Statement}s are
-	 *        added and cached
+	 *
+	 * @param section    the {@link Section} for which the {@link Statement}s are
+	 *                   added and cached
 	 * @param statements the {@link Statement}s to add
+	 * @created 06.12.2010
 	 */
 	public void addStatements(Section<?> section, Collection<Statement> statements) {
 		addStatements(new SectionSource(section), statements);
@@ -447,9 +449,9 @@ public class Rdf2GoCore {
 	 * {@link Statement}s in case they are not longer valid. You can remove
 	 * these {@link Statement}s with the method
 	 * {@link Rdf2GoCore#removeStatements(Collection)}.
-	 * 
-	 * @created 13.06.2012
+	 *
 	 * @param statements the statements you want to add to the triple store
+	 * @created 13.06.2012
 	 */
 	public void addStatements(Statement... statements) {
 		addStatements((StatementSource) null, Arrays.asList(statements));
@@ -460,7 +462,7 @@ public class Rdf2GoCore {
 	 * compiling. When commit is called, all {@link Statement}s that were cached
 	 * to be removed from the triple store are removed and all {@link Statement}
 	 * s that were cached to be added to the triple store are added.
-	 * 
+	 *
 	 * @created 12.06.2012
 	 */
 	public synchronized void commit() {
@@ -491,13 +493,17 @@ public class Rdf2GoCore {
 		long startInsert = System.currentTimeMillis();
 		model.addAll(insertCache.iterator());
 		EventManager.getInstance().fireEvent(new InsertStatementsEvent(insertCache, this));
-		if (verboseLog) logStatements(new TreeSet<Statement>(insertCache), startInsert,
-				"Inserted statements:\n");
+		if (verboseLog) {
+			logStatements(new TreeSet<Statement>(insertCache), startInsert,
+					"Inserted statements:\n");
+		}
 
-		if (!verboseLog) Log.info("Removed " + removeSize + " statements from and added "
-				+ insertSize
-				+ " statements to " + Rdf2GoCore.class.getSimpleName() + " in "
-				+ (System.currentTimeMillis() - startRemove) + "ms.");
+		if (!verboseLog) {
+			Log.info("Removed " + removeSize + " statements from and added "
+					+ insertSize
+					+ " statements to " + Rdf2GoCore.class.getSimpleName() + " in "
+					+ (System.currentTimeMillis() - startRemove) + "ms.");
+		}
 
 		removeCache = new HashSet<Statement>();
 		insertCache = new HashSet<Statement>();
@@ -586,8 +592,7 @@ public class Rdf2GoCore {
 		return createURI(lns, value);
 	}
 
-	public Statement createStatement(Resource subject, URI predicate,
-			Node object) {
+	public Statement createStatement(Resource subject, URI predicate, Node object) {
 		return model.createStatement(subject, predicate, object);
 	}
 
@@ -598,14 +603,14 @@ public class Rdf2GoCore {
 
 	public URI createURI(String ns, String value) {
 		// in case ns is just the abbreviation
-		String fullNs = getNameSpaces().get(ns);
+		String fullNs = getNamespaces().get(ns);
 
 		return createURI((fullNs == null ? ns : fullNs) + Rdf2GoUtils.cleanUp(value));
 	}
 
 	/**
 	 * Dumps the whole content of the model via System.out
-	 * 
+	 *
 	 * @created 05.01.2011
 	 */
 	public void dumpModel() {
@@ -624,8 +629,23 @@ public class Rdf2GoCore {
 		return this.modelType;
 	}
 
-	public Map<String, String> getNameSpaces() {
+	/**
+	 * Returns a map of all namespaces mapped by their abbreviation.<br>
+	 * <b>Example:</b> rdf -> http://www.w3.org/1999/02/22-rdf-syntax-ns#
+	 */
+	public Map<String, String> getNamespaces() {
 		return namespaces;
+	}
+
+	/**
+	 * Returns a map of all namespaces mapped by their prefixes as they are used e.g. in Turtle and
+	 * SPARQL.<br>
+	 * <b>Example:</b> rdf: -> http://www.w3.org/1999/02/22-rdf-syntax-ns#
+	 * <p>
+	 * Although this map seems trivial, it is helpful for optimization reasons.
+	 */
+	public Map<String, String> getNamespacePrefixes() {
+		return namespacePrefixes;
 	}
 
 	public URI getRDF(String prop) {
@@ -641,8 +661,8 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * @created 15.07.2012
 	 * @return all {@link Statement}s of the Rdf2GoCore.
+	 * @created 15.07.2012
 	 */
 	public Set<Statement> getStatements() {
 		Set<Statement> result = new HashSet<Statement>();
@@ -672,7 +692,7 @@ public class Rdf2GoCore {
 
 	/**
 	 * Registers and opens the specified model.
-	 * 
+	 *
 	 * @throws ModelRuntimeException
 	 */
 	private void initModel(RuleSet ruleSet) throws ModelRuntimeException {
@@ -702,42 +722,42 @@ public class Rdf2GoCore {
 
 		synchronized (RDF2Go.class) {
 			switch (modelType) {
-			case JENA:
-				// Jena dependency currently commented out because of clashing
-				// lucene version in jspwiki
+				case JENA:
+					// Jena dependency currently commented out because of clashing
+					// lucene version in jspwiki
 
-				// RDF2Go.register(new
-				// org.ontoware.rdf2go.impl.jena26.ModelFactoryImpl());
-				break;
-			case BIGOWLIM:
-				// registers the customized model factory (in memory, owl-max)
-				// RDF2Go.register(new
-				// de.d3web.we.core.semantic.rdf2go.modelfactory.BigOwlimInMemoryModelFactory());
+					// RDF2Go.register(new
+					// org.ontoware.rdf2go.impl.jena26.ModelFactoryImpl());
+					break;
+				case BIGOWLIM:
+					// registers the customized model factory (in memory, owl-max)
+					// RDF2Go.register(new
+					// de.d3web.we.core.semantic.rdf2go.modelfactory.BigOwlimInMemoryModelFactory());
 
-				// standard bigowlim model factory:
-				// RDF2Go.register(new
-				// com.ontotext.trree.rdf2go.OwlimModelFactory());
-				break;
-			case SESAME:
-				RDF2Go.register(new org.openrdf.rdf2go.RepositoryModelFactory());
-				break;
-			case SWIFTOWLIM:
-				RDF2Go.register(new de.knowwe.rdf2go.modelfactory.SesameSwiftOwlimModelFactory(ruleSet));
-				break;
-			default:
-				throw new ModelRuntimeException("Model not supported");
+					// standard bigowlim model factory:
+					// RDF2Go.register(new
+					// com.ontotext.trree.rdf2go.OwlimModelFactory());
+					break;
+				case SESAME:
+					RDF2Go.register(new org.openrdf.rdf2go.RepositoryModelFactory());
+					break;
+				case SWIFTOWLIM:
+					RDF2Go.register(new de.knowwe.rdf2go.modelfactory.SesameSwiftOwlimModelFactory(ruleSet));
+					break;
+				default:
+					throw new ModelRuntimeException("Model not supported");
 			}
 
 			switch (reasoningType) {
-			case OWL:
-				model = RDF2Go.getModelFactory().createModel(Reasoning.owl);
-				break;
-			case RDFS:
-				model = RDF2Go.getModelFactory().createModel(Reasoning.rdfs);
-				break;
-			default:
-				model = RDF2Go.getModelFactory().createModel();
-				break;
+				case OWL:
+					model = RDF2Go.getModelFactory().createModel(Reasoning.owl);
+					break;
+				case RDFS:
+					model = RDF2Go.getModelFactory().createModel(Reasoning.rdfs);
+					break;
+				default:
+					model = RDF2Go.getModelFactory().createModel();
+					break;
 			}
 		}
 
@@ -792,17 +812,18 @@ public class Rdf2GoCore {
 		statementCache.clear();
 	}
 
-	public void removeNamespace(String sh) {
-		namespaces.remove(sh);
-		model.removeNamespace(sh);
+	public void removeNamespace(String abbreviation) {
+		namespaces.remove(abbreviation);
+		namespacePrefixes.remove(Rdf2GoUtils.toNamespacePrefix(abbreviation));
+		model.removeNamespace(abbreviation);
 	}
 
 	/**
 	 * Removes the specified statements if they have been added to this core and if they are added
 	 * without specifying a specific source like a compiler or a section.
 	 *
-	 * @created 13.06.2012
 	 * @param statements the statements to be removed
+	 * @created 13.06.2012
 	 */
 	public void removeStatements(Collection<Statement> statements) {
 		removeStatements((StatementSource) null, statements);
@@ -830,10 +851,10 @@ public class Rdf2GoCore {
 	 * added (and cached) in connection with a {@link Section} using methods
 	 * like {@link Rdf2GoCore#addStatements(Section, Collection)} or
 	 * {@link Rdf2GoCore#addStatement(Section, Resource, URI, Node)}.
-	 * 
-	 * @created 06.12.2010
+	 *
 	 * @param section the {@link Section} for which the {@link Statement}s
-	 *        should be removed
+	 *                should be removed
+	 * @created 06.12.2010
 	 */
 	public void removeStatementsForSection(Section<? extends Type> section) {
 		removeStatements(new SectionSource(section));
@@ -848,10 +869,10 @@ public class Rdf2GoCore {
 	 * <b>Attention</b>: This method only removes {@link Statement}s that were
 	 * added (and cached) in connection with an {@link de.knowwe.core.compile.Compiler} using the method
 	 * {@link Rdf2GoCore#addStatements(de.knowwe.core.compile.PackageCompiler, Statement...)}.
-	 * 
-	 * @created 13.06.2012
+	 *
 	 * @param compiler the article for which you want to remove all
-	 *        {@link Statement}s
+	 *                 {@link Statement}s
+	 * @created 13.06.2012
 	 */
 	public void removeStatementsOfCompiler(PackageCompiler compiler) {
 		removeStatements(new CompilerSource(compiler));
@@ -861,10 +882,10 @@ public class Rdf2GoCore {
 	 * Returns the articles the statement has been created on. The method may
 	 * return an empty list if the statement has not been added by a markup and
 	 * cannot be associated to an article.
-	 * 
-	 * @created 13.12.2013
+	 *
 	 * @param statement the statement to get the articles for
 	 * @return the articles that defines that statement
+	 * @created 13.12.2013
 	 */
 	public Set<Article> getSourceArticles(Statement statement) {
 		Collection<StatementSource> list = statementCache.getKeys(statement);
@@ -881,10 +902,10 @@ public class Rdf2GoCore {
 	 * return null if the statement has not been added by a markup and cannot be
 	 * associated to an article. If there are multiple articles defining that
 	 * statement one of the articles are returned.
-	 * 
-	 * @created 13.12.2013
+	 *
 	 * @param statement the statement to get the article for
 	 * @return the article that defines that statement
+	 * @created 13.12.2013
 	 */
 	public Article getSourceArticle(Statement statement) {
 		Collection<StatementSource> list = statementCache.getKeys(statement);
@@ -940,11 +961,11 @@ public class Rdf2GoCore {
 	/**
 	 * Writes the current repository model to the given writer in RDF/XML
 	 * format.
-	 * 
-	 * @created 03.02.2012
+	 *
 	 * @param out the target to write the model to
 	 * @throws ModelRuntimeException
 	 * @throws IOException
+	 * @created 03.02.2012
 	 */
 	public void writeModel(Writer out) throws ModelRuntimeException, IOException {
 		model.writeTo(out);
@@ -953,9 +974,9 @@ public class Rdf2GoCore {
 	/**
 	 * Returns true if this instance is empty. An instance is empty, if the
 	 * method commit hasn't been called yet.
-	 * 
-	 * @created 19.04.2013
+	 *
 	 * @return true if instance is empty, else false.
+	 * @created 19.04.2013
 	 */
 	public boolean isEmpty() {
 		return statementCache.isEmpty();

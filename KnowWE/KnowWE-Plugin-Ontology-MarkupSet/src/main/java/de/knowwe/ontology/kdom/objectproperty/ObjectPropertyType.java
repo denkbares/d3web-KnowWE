@@ -80,7 +80,7 @@ public class ObjectPropertyType extends DefaultMarkupType {
 		@Override
 		public Collection<Message> create(OntologyCompiler compiler, Section<AbbreviatedPropertyDefinition> section) {
 			Rdf2GoCore core = Rdf2GoCore.getInstance(compiler);
-			String namespace = core.getNameSpaces().get(section.get().getAbbreviation(section));
+			String namespace = core.getNamespaces().get(section.get().getAbbreviation(section));
 			if (namespace == null) return Messages.noMessage();
 			String property = section.get().getResource(section);
 			URI propertyURI = core.createURI(namespace, property);

@@ -256,8 +256,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			if (nodeProviderSections.size() == 1) {
 
 				Section<NodeProvider> nodeProvider = nodeProviderSections.get(0);
-				return nodeProvider.get().getNode(
-						nodeProvider, core);
+				return nodeProvider.get().getNode(nodeProvider, core);
 			}
 			// if there are more NodeProvider we return null to force an error
 		}

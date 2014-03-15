@@ -19,6 +19,23 @@
  */
 package de.knowwe.rdf2go.utils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.Syntax;
+import org.ontoware.rdf2go.model.node.Literal;
+import org.ontoware.rdf2go.model.node.Node;
+import org.ontoware.rdf2go.model.node.Resource;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.util.RDFTool;
+import org.ontoware.rdf2go.vocabulary.RDFS;
+
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compilers;
@@ -29,22 +46,6 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.Rdf2GoCore.Rdf2GoReasoning;
-import org.ontoware.rdf2go.model.Statement;
-import org.ontoware.rdf2go.model.Syntax;
-import org.ontoware.rdf2go.model.node.Literal;
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.Resource;
-import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.util.RDFTool;
-import org.ontoware.rdf2go.vocabulary.RDFS;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Rdf2GoUtils {
 
@@ -81,14 +82,14 @@ public class Rdf2GoUtils {
 	/**
 	 * If the string starts with a known namespace or its abbreviation, the
 	 * namespace is removed (only from the start of the string).
-	 * 
-	 * @created 12.07.2012
+	 *
 	 * @param string the string where the namespace or its abbreviation needs to
-	 *        be removed
+	 *               be removed
 	 * @return the string without the namespace prefix
+	 * @created 12.07.2012
 	 */
 	public static String trimNamespace(Rdf2GoCore core, String string) {
-		for (Entry<String, String> namespaceEntry : core.getNameSpaces().entrySet()) {
+		for (Entry<String, String> namespaceEntry : core.getNamespaces().entrySet()) {
 			String ns = namespaceEntry.getValue();
 			if (string.startsWith(ns)) {
 				string = string.substring(ns.length());
@@ -105,13 +106,13 @@ public class Rdf2GoUtils {
 
 	/**
 	 * Reduces to full URI prefix to the abbreviation of the URI.
-	 * 
-	 * @created 06.12.2010
+	 *
 	 * @param string the string where the namespace needs to be reduced
 	 * @return the string with the prefix instead of the full namespace
+	 * @created 06.12.2010
 	 */
 	public static String reduceNamespace(Rdf2GoCore core, String string) {
-		for (Entry<String, String> cur : core.getNameSpaces().entrySet()) {
+		for (Entry<String, String> cur : core.getNamespaces().entrySet()) {
 			string = string.replaceAll(Pattern.quote(cur.getValue()),
 					toNamespacePrefix(cur.getKey()));
 		}
@@ -125,14 +126,14 @@ public class Rdf2GoUtils {
 	/**
 	 * Creates and returns the namespace prefixes (with the namespaces known to
 	 * the {@link Rdf2GoCore}) needed for a SPARQL query.
-	 * 
-	 * @created 15.07.2012
+	 *
 	 * @return the namespace prefixes for a SPARQL query.
+	 * @created 15.07.2012
 	 */
 	public static String getSparqlNamespaceShorts(Rdf2GoCore core) {
 		StringBuilder buffy = new StringBuilder();
 
-		for (Entry<String, String> cur : core.getNameSpaces().entrySet()) {
+		for (Entry<String, String> cur : core.getNamespaces().entrySet()) {
 			buffy.append("PREFIX " + toNamespacePrefix(cur.getKey()) + " <" + cur.getValue()
 					+ "> \n");
 		}
@@ -142,10 +143,10 @@ public class Rdf2GoUtils {
 	/**
 	 * A prefix is the abbreviation of the namespace plus a colon. This method
 	 * makes sure the given String has the colon at the end.
-	 * 
-	 * @created 15.07.2012
+	 *
 	 * @param namespaceAbbreviation the abbreviation with possibly no colon
 	 * @return a proper prefix (abbreviation + colon)
+	 * @created 15.07.2012
 	 */
 	public static String toNamespacePrefix(String namespaceAbbreviation) {
 		if (!namespaceAbbreviation.endsWith(":")) {
@@ -155,21 +156,19 @@ public class Rdf2GoUtils {
 	}
 
 	/**
-	 * Checks whether the given string starts with an prefix consisting of a
-	 * known namespace abbreviation. If it does, the abbreviation is returned
-	 * (without the colon).
-	 * 
+	 * Checks whether the given string starts with an prefix of a known namespace abbreviation. If it does, the
+	 * abbreviation is returned (including the colon).
+	 *
+	 * @param string the string to be parsed for a known prefix abbreviation
+	 * @return the prefix of the namespace found at the start of the given
+	 * string
 	 * @created 15.07.2012
-	 * @param string the string to be parsed for a known abbreviation
-	 * @return the abbreviation of the namespace found at the start of the given
-	 *         string
 	 */
-	public static String parseKnownAbbreviation(Rdf2GoCore core, String string) {
+	public static String parseKnownNamespacePrefix(Rdf2GoCore core, String string) {
 		if (core != null) {
-			for (String nsAbbreviation : core.getNameSpaces().keySet()) {
-				String prefix = toNamespacePrefix(nsAbbreviation);
+			for (String prefix : core.getNamespacePrefixes().keySet()) {
 				if (string.startsWith(prefix)) {
-					return nsAbbreviation;
+					return prefix;
 				}
 			}
 		}
@@ -180,16 +179,15 @@ public class Rdf2GoUtils {
 	 * Expands the namespace abbreviation prefix in the given string to a full
 	 * URL prefix (if the abbreviation is known to the {@link Rdf2GoCore}). If
 	 * no valid abbreviation is found, the string is returned.
-	 * 
-	 * @created 04.01.2011
+	 *
 	 * @param string the string with the namespace abbreviation to expand
 	 * @return the string with an expanded namespace
+	 * @created 04.01.2011
 	 */
 	public static String expandNamespace(Rdf2GoCore core, String string) {
-		String knownAbbreviation = parseKnownAbbreviation(core, string);
-		if (knownAbbreviation == null) return string;
-		return string.replaceFirst(Pattern.quote(toNamespacePrefix(knownAbbreviation)),
-				core.getNameSpaces().get(knownAbbreviation));
+		String prefix = parseKnownNamespacePrefix(core, string);
+		if (prefix == null) return string;
+		return core.getNamespacePrefixes().get(prefix) + string.substring(prefix.length());
 	}
 
 	/**
@@ -212,14 +210,18 @@ public class Rdf2GoUtils {
 		sparqlString = sparqlString.replaceAll("\n", " ");
 		sparqlString = sparqlString.replaceAll("\r", "");
 
-		Map<String, String> nameSpaces = core.getNameSpaces();
+		Map<String, String> nameSpaces = core.getNamespaces();
 
 		StringBuilder newSparqlString = new StringBuilder();
 		StringBuilder pattern = new StringBuilder("[\\s\n\r()]<((");
 		boolean first = true;
 		for (String nsShort : nameSpaces.keySet()) {
-			if (first) first = false;
-			else pattern.append("|");
+			if (first) {
+				first = false;
+			}
+			else {
+				pattern.append("|");
+			}
 			pattern.append(nsShort);
 		}
 		pattern.append("):)[^ /]");
@@ -251,8 +253,6 @@ public class Rdf2GoUtils {
 	 * Creates a statement and adds it to the list of statements. Additionally,
 	 * in case of RDF reasoning, the rdfs label of the object is created and
 	 * added.
-	 * 
-	 * 
 	 */
 	public static void addStatement(Rdf2GoCore core, String subject, String predicate, String object, Collection<Statement> statements) {
 		URI subjectUri = core.createlocalURI(subject);
@@ -264,8 +264,6 @@ public class Rdf2GoUtils {
 	 * Creates a statement and adds it to the list of statements. Additionally,
 	 * in case of RDF reasoning, the rdfs label of the object is created and
 	 * added.
-	 * 
-	 * 
 	 */
 	public static void addStatement(Rdf2GoCore core, Resource subject, URI predicate, String object, Collection<Statement> statements) {
 		URI objectUri = core.createlocalURI(object);

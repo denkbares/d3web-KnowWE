@@ -30,6 +30,8 @@ import de.knowwe.ontology.compile.OntologyCompiler;
 
 public class ResourceReference extends SimpleReference {
 
+	private static final String IDENTIFIER_KEY = "identifierKey";
+
 	public ResourceReference(Class<?> termClass) {
 		super(OntologyCompiler.class, termClass);
 		this.setSectionFinder(new AllTextFinderTrimmed());
@@ -43,10 +45,15 @@ public class ResourceReference extends SimpleReference {
 
 	@Override
 	public Identifier getTermIdentifier(Section<? extends Term> section) {
-		Section<AbbreviatedResourceReference> abbResDef = Sections.findAncestorOfType(section,
-				AbbreviatedResourceReference.class);
-		String abbreviation = abbResDef.get().getAbbreviation(abbResDef);
-		return new Identifier(abbreviation, getTermName(section));
+		Identifier identifier = (Identifier) section.getSectionStore().getObject(IDENTIFIER_KEY);
+		if (identifier == null) {
+			Section<AbbreviatedResourceReference> abbResDef = Sections.findAncestorOfType(section,
+					AbbreviatedResourceReference.class);
+			String abbreviation = abbResDef.get().getAbbreviation(abbResDef);
+			identifier = new Identifier(abbreviation, getTermName(section));
+			section.getSectionStore().storeObject(IDENTIFIER_KEY, identifier);
+		}
+		return identifier;
 	}
 
 }

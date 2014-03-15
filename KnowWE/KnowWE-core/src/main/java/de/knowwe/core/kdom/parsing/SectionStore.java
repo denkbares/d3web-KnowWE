@@ -129,8 +129,7 @@ public class SectionStore {
 	public void storeObject(Compiler compiler, String key, Object object) {
 		Map<String, Object> storeForCompiler = getStoreForCompiler(compiler);
 		if (storeForCompiler == null) {
-			storeForCompiler = Collections.synchronizedMap(
-					new HashMap<String, Object>());
+			storeForCompiler = Collections.synchronizedMap(new HashMap<String, Object>(8));
 			putStoreForCompiler(compiler, storeForCompiler);
 		}
 		storeForCompiler.put(key, object);

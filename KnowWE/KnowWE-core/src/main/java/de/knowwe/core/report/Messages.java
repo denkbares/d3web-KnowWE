@@ -172,8 +172,7 @@ public final class Messages {
 	public static Map<Compiler, Collection<Message>> getMessagesMap(Section<? extends Type> section, Message.Type... types) {
 		if (section.getSectionStore().isEmpty()) return Collections.emptyMap();
 		Map<Compiler, Collection<Message>> allMsgsOfTitle = new HashMap<Compiler, Collection<Message>>();
-		Map<Compiler, Object> msgsOfAllTypesBySourceByTitle = section.getSectionStore().getObjects(
-				MESSAGE_KEY);
+		Map<Compiler, Object> msgsOfAllTypesBySourceByTitle = section.getSectionStore().getObjects(MESSAGE_KEY);
 		for (Entry<Compiler, Object> entry : msgsOfAllTypesBySourceByTitle.entrySet()) {
 			@SuppressWarnings("unchecked")
 			Map<Compiler, Collection<Message>> msgsOfAllTypesBySource = (Map<Compiler, Collection<Message>>) entry.getValue();
@@ -325,21 +324,24 @@ public final class Messages {
 	 *        {@link Message} you want (set to <tt>null</tt> if you want all)
 	 */
 	public static Map<Compiler, Collection<Message>> getMessagesMapFromSubtree(Section<?> section, Message.Type... types) {
-		Map<Compiler, Collection<Message>> allMsgsByTitle = new HashMap<Compiler, Collection<Message>>();
-		List<Section<?>> sections = Sections.getSubtreePreOrder(section);
-		for (Section<?> subTreeSection : sections) {
-			Map<Compiler, Collection<Message>> messagesOfSectionByTitle =
-					getMessagesMap(subTreeSection, types);
-			for (Entry<Compiler, Collection<Message>> entry : messagesOfSectionByTitle.entrySet()) {
-				Collection<Message> allMsgsOfTitle = allMsgsByTitle.get(entry.getKey());
-				if (allMsgsOfTitle == null) {
-					allMsgsOfTitle = new LinkedList<Message>();
-					allMsgsByTitle.put(entry.getKey(), allMsgsOfTitle);
-				}
-				allMsgsOfTitle.addAll(entry.getValue());
+		Map<Compiler, Collection<Message>> allMessages = new HashMap<Compiler, Collection<Message>>();
+		getMessagesMapFromSubtree(allMessages, section, types);
+		return Collections.unmodifiableMap(allMessages);
+	}
+
+	private static void getMessagesMapFromSubtree(Map<Compiler, Collection<Message>> allMessages, Section<?> section, Message.Type... types) {
+		Map<Compiler, Collection<Message>> messagesOfSectionByTitle = getMessagesMap(section, types);
+		for (Entry<Compiler, Collection<Message>> entry : messagesOfSectionByTitle.entrySet()) {
+			Collection<Message> allMsgsOfTitle = allMessages.get(entry.getKey());
+			if (allMsgsOfTitle == null) {
+				allMsgsOfTitle = new LinkedList<Message>();
+				allMessages.put(entry.getKey(), allMsgsOfTitle);
 			}
+			allMsgsOfTitle.addAll(entry.getValue());
 		}
-		return Collections.unmodifiableMap(allMsgsByTitle);
+		for (Section<?> child : section.getChildren()) {
+			getMessagesMapFromSubtree(allMessages, child, types);
+		}
 	}
 
 	/**
@@ -353,15 +355,18 @@ public final class Messages {
 	 *        {@link Message} you want (set to <tt>null</tt> if you want all)
 	 */
 	public static Collection<Message> getMessagesFromSubtree(Compiler compiler,
-			Section<?> section,
-			Message.Type... types) {
+			Section<?> section,	Message.Type... types) {
 
-		Collection<Message> msgsList = new ArrayList<Message>();
-		List<Section<?>> subtreeSections = Sections.getSubtreePreOrder(section);
-		for (Section<?> subtreeSection : subtreeSections) {
-			msgsList.addAll(getMessages(compiler, subtreeSection, types));
+		Collection<Message> messages = new ArrayList<Message>();
+		getMessagesFromSubtree(messages, compiler, section, types);
+		return Collections.unmodifiableCollection(messages);
+	}
+
+	private static void getMessagesFromSubtree(Collection<Message> messages, Compiler compiler, Section<?> section, Message.Type... types) {
+		messages.addAll(getMessages(compiler, section, types));
+		for (Section<?> child : section.getChildren()) {
+			getMessagesFromSubtree(messages, compiler, child, types);
 		}
-		return Collections.unmodifiableCollection(msgsList);
 	}
 
 	/**
@@ -375,12 +380,9 @@ public final class Messages {
 	 */
 	public static Collection<Message> getMessagesFromSubtree(Section<?> section, Message.Type... types) {
 
-		Collection<Message> msgsList = new ArrayList<Message>();
-		List<Section<?>> subtreeSections = Sections.getSubtreePreOrder(section);
-		for (Section<?> subtreeSection : subtreeSections) {
-			msgsList.addAll(getMessages(subtreeSection, types));
-		}
-		return Collections.unmodifiableCollection(msgsList);
+		Collection<Message> messages = new ArrayList<Message>();
+		getMessagesFromSubtree(messages, null, section, types);
+		return Collections.unmodifiableCollection(messages);
 	}
 
 	// /**

@@ -39,8 +39,9 @@ public class ExpressionInBracketsFinder implements SectionFinder {
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-		if (text.trim().startsWith(Character.toString(open))
-				&& Strings.endsWithUnescaped(text.trim(), close)) {
+		String trimmed = text.trim();
+		if (trimmed.startsWith(Character.toString(open))
+				&& Strings.endsWithUnescaped(trimmed, close)) {
 			return new AllTextFinderTrimmed().lookForSections(text, father, type);
 		}
 		return null;
