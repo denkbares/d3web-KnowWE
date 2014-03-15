@@ -22,6 +22,7 @@ import java.util.Collection;
 
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.AbstractPackageCompiler;
+import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.ScriptCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
@@ -146,16 +147,16 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 	}
 
 	@Override
-	public void addSectionsToDestroy(Collection<Section<?>> sections) {
+	public void addSectionsToDestroy(Collection<Section<?>> sections, Class<? extends CompileScript>... scriptFilter) {
 		for (Section<?> section : sections) {
-			destroyScriptCompiler.addSection(section);
+			destroyScriptCompiler.addSection(section, scriptFilter);
 		}
 	}
 
 	@Override
-	public void addSectionsToCompile(Collection<Section<?>> sections) {
+	public void addSectionsToCompile(Collection<Section<?>> sections, Class<? extends CompileScript>... scriptFilter) {
 		for (Section<?> section : sections) {
-			scriptCompiler.addSection(section);
+			scriptCompiler.addSection(section, scriptFilter);
 		}
 	}
 

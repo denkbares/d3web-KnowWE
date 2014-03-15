@@ -26,7 +26,7 @@ import de.knowwe.core.kdom.parsing.Section;
  * Interface for incremental {@link Compiler}s allowing to add depending
  * {@link Section}s for recompilation (destroy and compile) during an ongoing
  * compilation;
- * 
+ *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 04.01.2014
  */
@@ -35,21 +35,27 @@ public interface IncrementalCompiler extends Compiler {
 	/**
 	 * Adds the given {@link Section}s to also be destroyed in the current
 	 * compilation. The implementing {@link Compiler} must allow to call this
-	 * method during an ongoing compilation.
-	 * 
+	 * method during an ongoing compilation.<p>
+	 * Optionally you can add a filter to only add scripts of the given classes. If no filter is given, all scripts
+	 * available for the type of the section and the compiler are added.
+	 *
+	 * @param sections     the sections to additionally destroy
+	 * @param scriptFilter the classes of the scripts you want to add
 	 * @created 04.01.2014
-	 * @param sections the sections to additionally destroy
 	 */
-	public void addSectionsToDestroy(Collection<Section<?>> sections);
+	public void addSectionsToDestroy(Collection<Section<?>> sections, Class<? extends CompileScript>... scriptFilter);
 
 	/**
 	 * Adds the given {@link Section}s to also be compiled in the current
 	 * compilation. The implementing {@link Compiler} must allow to call this
-	 * method during an ongoing compilation.
-	 * 
+	 * method during an ongoing compilation.<p>
+	 * Optionally you can add a filter to only add scripts of the given classes. If no filter is given, all scripts
+	 * available for the type of the section and the compiler are added.
+	 *
+	 * @param sections     the sections to additionally compile
+	 * @param scriptFilter the classes of the scripts you want to add
 	 * @created 04.01.2014
-	 * @param sections the sections to additionally compile
 	 */
-	public void addSectionsToCompile(Collection<Section<?>> sections);
+	public void addSectionsToCompile(Collection<Section<?>> sections, Class<? extends CompileScript>... scriptFilter);
 
 }
