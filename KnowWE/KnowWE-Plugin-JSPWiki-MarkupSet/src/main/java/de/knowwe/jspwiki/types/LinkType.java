@@ -33,6 +33,7 @@ import de.knowwe.core.action.RenderPreviewAction;
 import de.knowwe.core.action.RenderPreviewAction.Mode;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -58,6 +59,7 @@ public class LinkType extends AbstractType {
 		public void render(Section<?> section, UserContext user, RenderResult result) {
 			Section<LinkType> linkSection = Sections.cast(section, LinkType.class);
 			Section<?> target = getReferencedSection(linkSection);
+			String linkMarkup = section.getText();
 			if (target == null) {
 				// special case: if anchor link,
 				// but only anchor does not exist, render anchor as error
@@ -69,7 +71,7 @@ public class LinkType extends AbstractType {
 					if (user.getArticleManager().getArticle(articleName) != null
 							&& !Strings.isBlank(headerName)) {
 						result.append("&#91;");
-						if (section.getText().contains("|")) {
+						if (linkMarkup.contains("|")) {
 							result.append(getDisplayText(linkSection)).append(" &#124; ");
 						}
 						result.append("[").append(articleName).append("]").appendJSPWikiMarkup("#");
@@ -84,7 +86,7 @@ public class LinkType extends AbstractType {
 					}
 				}
 				// render as plain wiki markup only
-				result.append(section.getText());
+				result.append(linkMarkup);
 			}
 			else {
 				// render also as plain wiki markup,
@@ -95,10 +97,17 @@ public class LinkType extends AbstractType {
 						+ "&amp;" + Attributes.WEB + "=" + target.getWeb()
 						+ "&amp;" + RenderPreviewAction.ATTR_MODE + "=" + Mode.plain.name()
 						+ "&amp;" + Attributes.SECTION_ID + "=" + target.getID();
-				result.appendHtml("<span class='tooltipster ajax'")
-						.appendHtml(" data-tooltip-src='" + previewSrc + "'>")
-						.append(section.getText())
-						.appendHtml("</span>");
+				if (target.get() instanceof RootType) {
+					// render all plain wiki-pages links normally
+					result.append(linkMarkup);
+				}
+				else {
+					// render anchor links (to headers, definitions, footnotes, ...) with preview
+					result.appendHtml("<span class='tooltipster ajax'")
+							.appendHtml(" data-tooltip-src='" + previewSrc + "'>")
+							.append(linkMarkup)
+							.appendHtml("</span>");
+				}
 			}
 		}
 	}
