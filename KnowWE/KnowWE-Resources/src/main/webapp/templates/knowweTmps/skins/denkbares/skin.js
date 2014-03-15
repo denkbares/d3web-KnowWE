@@ -83,7 +83,7 @@ if (SearchBox) {
 				this.hover.start(0.9);
 			}.bind(this));
 		}
-	}
+	};
 
 	SearchBox.ajaxQuickSearch = function() {
 		// capture original text before first search
@@ -98,7 +98,7 @@ if (SearchBox) {
 			Wiki.locatemenu($("query"), $("searchboxMenu"));
 		}
 	}
-};
+}
 
 var DenkbaresSkin = {};
 
@@ -139,7 +139,7 @@ DenkbaresSkin.getDocHeight = function() {
 			D.documentElement.scrollHeight), Math.max(D.body.offsetHeight,
 			D.documentElement.offsetHeight), Math.max(D.body.clientHeight,
 			D.documentElement.clientHeight));
-}
+};
 
 /**
  * Adapt the left menu favorites to the screen so that the display size is
@@ -186,7 +186,7 @@ DenkbaresSkin.cleanTrail = function() {
 	var crumbs = breadcrumbs.find('a.wikipage');
 	if (crumbs.length == 0)
 		return;
-	var crumbsCheck = new Object();
+	var crumbsCheck = {};
 	var removeBecauseLeadingComma = false;
 	// remove duplicate entries
 	for ( var i = crumbs.length - 1; i >= 0; i--) {
@@ -215,7 +215,7 @@ DenkbaresSkin.cleanTrail = function() {
 
 	}
 	var text = jq$(breadcrumbs.first());
-}
+};
 
 if (typeof jq$ != 'undefined') {
 	jq$(window).ready(function() {
@@ -229,11 +229,28 @@ DenkbaresSkin.resizeFlows = function() {
 		newWidth = (Math.round(newWidth / 10) * 10) - 9;
 		jq$(this).css('min-width', newWidth);
 	});
-}
+};
 
 KNOWWE.helper.observer.subscribe("flowchartrendered", DenkbaresSkin.resizeFlows);
 window.onresize = function() {
 	DenkbaresSkin.checkFavScroll();
 	DenkbaresSkin.resizeFlows();
-}
+};
 window.onscroll = DenkbaresSkin.checkFavScroll;
+
+// add auto-resize to edit page
+if (KNOWWE.helper.loadCheck([ 'Edit.jsp' ])) {
+	jq$(document).ready(function() {
+		var editPane = jq$('form #editorarea');
+		editPane.autosize();
+		for (var time=100; time<=500; time+=100) {
+			window.setTimeout(function() {
+				editPane.trigger('autosize.resize');
+				if (Wiki && Wiki.prefs && Wiki.prefs.set) {
+					Wiki.prefs.set("EditorSize", null);
+				}
+			}, time);
+		}
+	});
+}
+

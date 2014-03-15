@@ -379,7 +379,7 @@ img.attlink {
 	margin-left:auto;
 	margin-right:auto;
 	text-indent:-1000px;
-	background:url(../../../../KnowWEExtension/images/knowwe_logo.png) +10px 0 no-repeat;
+	background:url(../../../../KnowWEExtension/images/knowwe_logo.png) 10px 0px no-repeat;
 }
 .applicationlogo a:hover {
 }
@@ -609,6 +609,7 @@ body.comment {
 
 /* +++ 430 Edit/EditContent +++ */
 .textarea-resizer {
+	display: none;
 }
 
 #toolbuttons, #toolextra, #searchbar {
@@ -634,7 +635,7 @@ a.tool {
 a.tool:hover, .btn:hover {
 	background-color:#ddd !important;
 }
-*/
+
 .editor {
 	font:110% Monaco, "Courier New", Courier, monospace;
 	padding:4px;
