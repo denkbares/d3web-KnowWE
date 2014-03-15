@@ -22,8 +22,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
+import de.d3web.collections.CountingSet;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
+import de.d3web.testing.MessageObject;
 import de.d3web.testing.TestingUtils;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.report.Message.Type;
@@ -31,7 +33,7 @@ import de.knowwe.core.report.Messages;
 
 /**
  * This tests checks, if
- * 
+ *
  * @author Marc-Oliver Ochlast
  * @created 29.05.2010
  */
@@ -41,7 +43,7 @@ public class ArticleHasErrorsTest extends AbstractTest<Article> {
 	public Message execute(Article moni, String[] args2, String[]... ignores) throws InterruptedException {
 
 		boolean hasError = false;
-		StringBuffer buffy = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 
 		Collection<de.knowwe.core.report.Message> messages = new LinkedList<de.knowwe.core.report.Message>();
 		Type[] typeArray = new de.knowwe.core.report.Message.Type[] { de.knowwe.core.report.Message.Type.ERROR };
@@ -54,18 +56,27 @@ public class ArticleHasErrorsTest extends AbstractTest<Article> {
 
 		TestingUtils.checkInterrupt();
 
-		buffy.append(" errors found:");
-		for (de.knowwe.core.report.Message message : messages) {
+		buffer.append(" errors found in article '").append(moni.getTitle()).append("'");
+		if (!messages.isEmpty()) {
 			// This finds only messages, that are explicitly stored
 			// as Message.ERROR, because the Type Message.UNKNOWN_ERROR
 			// is not public!
 			hasError = true;
-			// buffy.append("Error on monitored article: ");
-			buffy.append("\n* " + message.getVerbalization());
+			CountingSet<de.knowwe.core.report.Message> msgSet =
+					new CountingSet<de.knowwe.core.report.Message>();
+			for (de.knowwe.core.report.Message message : messages) {
+				msgSet.add(message);
+			}
+			for (de.knowwe.core.report.Message message : msgSet) {
+				buffer.append("\n* ").append(message.getVerbalization());
+				int count = msgSet.getCount(message);
+				if (count > 1) buffer.append(" (").append(count).append("&times;)");
+			}
 		}
 		if (hasError) {
 			return new Message(
-					Message.Type.FAILURE, buffy.toString());
+					Message.Type.FAILURE, buffer.toString(),
+					new MessageObject(moni.getTitle(), Article.class));
 		}
 		else {
 			return new Message(
