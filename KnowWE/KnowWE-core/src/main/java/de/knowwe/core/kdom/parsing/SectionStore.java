@@ -42,11 +42,11 @@ public class SectionStore {
 	 * with <tt>null</tt> as the {@link Compiler} argument. Use this if the
 	 * Object was stored the same way (<tt>null</tt> as the {@link Compiler}
 	 * argument or the method {@link SectionStore#storeObject(String, Object)}.
-	 * 
-	 * @created 08.07.2011
+	 *
 	 * @param key is the key for which the object was stored
 	 * @return the previously stored Object for this key or <tt>null</tt>, if no
-	 *         Object was stored
+	 * Object was stored
+	 * @created 08.07.2011
 	 */
 	public Object getObject(String key) {
 		//noinspection RedundantCast
@@ -59,14 +59,12 @@ public class SectionStore {
 	 * the {@link Article} they were stored for. If an object was stored without
 	 * an argument {@link Article} (article independent), the returned
 	 * {@link Map} contains this object with <tt>null</tt> as the key.
-	 * 
-	 * @created 16.02.2012
+	 *
 	 * @param key is the key for which the objects were stored
+	 * @created 16.02.2012
 	 */
 	public Map<Compiler, Object> getObjects(String key) {
-		Map<Compiler, Object> objects = new HashMap<Compiler, Object>(
-				store == null
-						? 2 : store.size());
+		Map<Compiler, Object> objects = new HashMap<Compiler, Object>(store == null ? 2 : store.size());
 		if (store != null) {
 			for (Entry<Compiler, Map<String, Object>> entry : store.entrySet()) {
 				Compiler compiler = entry.getKey();
@@ -79,11 +77,11 @@ public class SectionStore {
 	}
 
 	/**
-	 * @created 08.07.2011
 	 * @param compiler is the {@link Article} for which the Object was stored
-	 * @param key is the key, for which the Object was stored
+	 * @param key      is the key, for which the Object was stored
 	 * @return the previously stored Object for the given key and article, or
-	 *         <tt>null</tt>, if no Object was stored
+	 * <tt>null</tt>, if no Object was stored
+	 * @created 08.07.2011
 	 */
 	public Object getObject(Compiler compiler, String key) {
 		if (compiler != null && !compiler.getCompilerManager().contains(compiler)) return null;
@@ -102,10 +100,10 @@ public class SectionStore {
 	 * {@link Object} would be created. In this case you have to use the method
 	 * {@link SectionStore#storeObject(Compiler, String, Object)} to be able to
 	 * differentiate between the {@link Compiler}s.
-	 * 
-	 * @created 08.07.2011
-	 * @param key is the key for which the Object should be stored
+	 *
+	 * @param key    is the key for which the Object should be stored
 	 * @param object is the object to be stored
+	 * @created 08.07.2011
 	 */
 	public void storeObject(String key, Object object) {
 		//noinspection RedundantCast
@@ -113,18 +111,29 @@ public class SectionStore {
 	}
 
 	/**
-	 * Stores the given Object for the given key and {@link Article}.
+	 * Removes the Object stored for the given key.<br/>
+	 *
+	 * @param key is the key for which the Object should be removed
+	 * @created 16.03.2014
+	 */
+	public void removeObject(String key) {
+		//noinspection RedundantCast
+		removeObject((Compiler) null, key);
+	}
+
+	/**
+	 * Stores the given Object for the given key and {@link Compiler}.
 	 * <b>Attention:</b> If the Object you want to store is independent from the
-	 * {@link Article} that will or has compiled this {@link SectionStore} 's
-	 * {@link Section}, you can either set the {@link Article} argument to
+	 * {@link Compiler} that will or has compiled this {@link SectionStore} 's
+	 * {@link Section}, you can either set the {@link Compiler} argument to
 	 * <tt>null</tt> or use the method
 	 * {@link SectionStore#storeObject(String, Object)} instead (same for
 	 * applies for retrieving the Object later via the getObject - methods).
-	 * 
+	 *
+	 * @param compiler the compiler to store the object for
+	 * @param key      the key to store the object for
+	 * @param object   the object to be stored
 	 * @created 08.07.2011
-	 * @param compiler the compiler to get the store for
-	 * @param key the key to store the object for
-	 * @param object the object to be stored
 	 */
 	public void storeObject(Compiler compiler, String key, Object object) {
 		Map<String, Object> storeForCompiler = getStoreForCompiler(compiler);
@@ -135,17 +144,36 @@ public class SectionStore {
 		storeForCompiler.put(key, object);
 	}
 
+	/**
+	 * Removes the Object stored for the given key and {@link Compiler}.
+	 * <b>Attention:</b> If the Object you want to remove is independent from the
+	 * {@link Compiler} that will or has compiled this {@link SectionStore} 's
+	 * {@link Section}, you can either set the {@link Compiler} argument to
+	 * <tt>null</tt> or use the method
+	 * {@link SectionStore#removeObject(String)} instead.
+	 *
+	 * @param compiler the compiler to store the object for
+	 * @param key      is the key for which the Object should be removed
+	 * @created 16.03.2014
+	 */
+	public void removeObject(Compiler compiler, String key) {
+		Map<String, Object> storeForCompiler = getStoreForCompiler(compiler);
+		if (storeForCompiler == null) return;
+		storeForCompiler.remove(key);
+		if (storeForCompiler.isEmpty()) store.remove(compiler);
+		if (store.isEmpty()) store = null;
+	}
+
 	private Map<String, Object> getStoreForCompiler(Compiler compiler) {
 		if (store == null) return null;
 		return store.get(compiler);
 	}
 
-	private void putStoreForCompiler(Compiler compiler, Map<String, Object> storeForArticle) {
+	private void putStoreForCompiler(Compiler compiler, Map<String, Object> storeForCompiler) {
 		if (store == null) {
-			store = Collections.synchronizedMap(
-					new WeakHashMap<Compiler, Map<String, Object>>());
+			store = Collections.synchronizedMap(new WeakHashMap<Compiler, Map<String, Object>>());
 		}
-		store.put(compiler, storeForArticle);
+		store.put(compiler, storeForCompiler);
 	}
 
 	public boolean isEmpty() {

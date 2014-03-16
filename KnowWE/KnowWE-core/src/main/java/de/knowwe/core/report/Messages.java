@@ -25,14 +25,18 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.TreeSet;
 
+import de.d3web.collections.DefaultMultiMap;
+import de.d3web.collections.MultiMap;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.Environment;
@@ -41,7 +45,6 @@ import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -50,12 +53,17 @@ public final class Messages {
 	private static final String MESSAGE_KEY = "message_map_key";
 
 	/**
+	 * This set holds all Sections with Messages.
+	 */
+	private static final MultiMap<Message.Type, Section<?>> sectionsWithMessages = new DefaultMultiMap<Message.Type, Section<?>>();
+
+	/**
 	 * Wraps a single or more {@link Message}s into a Collection to be returned
 	 * by the {@link CompileScript} implementations. {@link Message}
-	 * 
-	 * @created 16.08.2010
+	 *
 	 * @param messages the {@link Message}(s) to be wrapped
 	 * @return the wrapped {@link Message}(s)
+	 * @created 16.08.2010
 	 */
 	public static Collection<Message> asList(Message... messages) {
 		return Arrays.asList(messages);
@@ -64,11 +72,11 @@ public final class Messages {
 	/**
 	 * Removes all {@link Message}s from the given source stored for this
 	 * Section and article.
-	 * 
-	 * @created 01.12.2011
+	 *
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
-	 * @param section the {@link Section} the {@link Message}s are stored for
-	 * @param source the source the {@link Message}s are stored for
+	 * @param section  the {@link Section} the {@link Message}s are stored for
+	 * @param source   the source the {@link Message}s are stored for
+	 * @created 01.12.2011
 	 */
 	public static void clearMessages(Compiler compiler, Section<? extends Type> section, Class<?> source) {
 		storeMessages(compiler, section, source, Messages.noMessage());
@@ -77,10 +85,10 @@ public final class Messages {
 	/**
 	 * Removes all {@link Message}s from the given source stored for this
 	 * Section and compiler independently.
-	 * 
-	 * @created 01.12.2011
+	 *
 	 * @param section is the Section the {@link Message}s are stored for
-	 * @param source is the source the {@link Message}s are stored for
+	 * @param source  is the source the {@link Message}s are stored for
+	 * @created 01.12.2011
 	 */
 	public static void clearMessages(Section<? extends Type> section, Class<?> source) {
 		storeMessages(null, section, source, Messages.noMessage());
@@ -89,22 +97,20 @@ public final class Messages {
 	/**
 	 * Removes all {@link Message}s from all sources for stored for this Section
 	 * and article.
-	 * 
-	 * @created 01.12.2011
+	 *
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
-	 * @param section is the {@link Section} the {@link Message}s are stored for
+	 * @param section  is the {@link Section} the {@link Message}s are stored for
+	 * @created 01.12.2011
 	 */
 	public static void clearMessages(Compiler compiler, Section<?> section) {
-		if (section.getSectionStore().isEmpty()) return;
-		Map<String, Collection<Message>> msgsMap = getMessagesMapModifiable(compiler, section);
-		if (msgsMap != null) msgsMap.clear();
+		removeMessagesMap(compiler, section);
 	}
 
 	/**
 	 * Clears all {@link Message}s for the given article and subtree.
-	 * 
+	 *
 	 * @param compiler is the article you want to clear the message for
-	 * @param sec is the root of the subtree you want to clear the message for
+	 * @param sec      is the root of the subtree you want to clear the message for
 	 */
 	public static void clearMessagesRecursively(Compiler compiler, Section<?> sec) {
 		clearMessages(compiler, sec);
@@ -120,9 +126,9 @@ public final class Messages {
 	/**
 	 * Creates and returns a {@link Message} of the
 	 * {@link de.knowwe.core.report.Message.Type} ERROR with the given text.
-	 * 
-	 * @created 01.12.2011
+	 *
 	 * @param message is the text content of the created {@link Message}
+	 * @created 01.12.2011
 	 */
 	public static Message error(String message) {
 		return new Message(Message.Type.ERROR, message);
@@ -132,9 +138,9 @@ public final class Messages {
 	 * Creates and returns a {@link Message} of the
 	 * {@link de.knowwe.core.report.Message.Type} ERROR with the given
 	 * exception.
-	 * 
-	 * @created 01.12.2011
+	 *
 	 * @param e the exception to take the message text from
+	 * @created 01.12.2011
 	 */
 	public static Message error(Exception e) {
 		return new Message(Message.Type.ERROR, e.getMessage());
@@ -144,7 +150,7 @@ public final class Messages {
 	 * Filters the given Collection of {@link Message}s and returns a new
 	 * Collection containing only {@link Message}s of the
 	 * {@link de.knowwe.core.report.Message.Type} ERROR.
-	 * 
+	 *
 	 * @created 01.12.2011
 	 */
 	public static Collection<Message> getErrors(Collection<Message> messages) {
@@ -163,49 +169,43 @@ public final class Messages {
 	 * {@link Message}s were stored without an argument {@link Compiler} , the
 	 * {@link Map} will contain this {@link Collection} with <tt>null</tt> as
 	 * the <tt>key</tt>.
-	 * 
-	 * @created 16.02.2012
+	 *
 	 * @param section is the {@link Section} the {@link Message}s are stored for
-	 * @param types is the {@link de.knowwe.core.report.Message.Type} of
-	 *        {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @param types   is the {@link de.knowwe.core.report.Message.Type} of
+	 *                {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @created 16.02.2012
 	 */
 	public static Map<Compiler, Collection<Message>> getMessagesMap(Section<? extends Type> section, Message.Type... types) {
 		if (section.getSectionStore().isEmpty()) return Collections.emptyMap();
-		Map<Compiler, Collection<Message>> allMsgsOfTitle = new HashMap<Compiler, Collection<Message>>();
-		Map<Compiler, Object> msgsOfAllTypesBySourceByTitle = section.getSectionStore().getObjects(MESSAGE_KEY);
-		for (Entry<Compiler, Object> entry : msgsOfAllTypesBySourceByTitle.entrySet()) {
+		Map<Compiler, Collection<Message>> allMassagesOfCompiler = new HashMap<Compiler, Collection<Message>>();
+		Map<Compiler, Object> messagesOfAllTypesBySourceByTitle = section.getSectionStore().getObjects(MESSAGE_KEY);
+		for (Entry<Compiler, Object> entry : messagesOfAllTypesBySourceByTitle.entrySet()) {
 			@SuppressWarnings("unchecked")
-			Map<Compiler, Collection<Message>> msgsOfAllTypesBySource = (Map<Compiler, Collection<Message>>) entry.getValue();
-			Collection<Message> msgsOfGivenTypesOfAllSourcesOfTitle = new ArrayList<Message>();
-			for (Collection<Message> msgsOfAllTypesOfSource : msgsOfAllTypesBySource.values()) {
-				addAllMessagesOfTypes(msgsOfAllTypesOfSource, msgsOfGivenTypesOfAllSourcesOfTitle,
-						types);
+			Map<Compiler, Collection<Message>> messagesOfAllTypesBySource = (Map<Compiler, Collection<Message>>) entry.getValue();
+			Collection<Message> messagesOfGivenTypesOfAllSourcesOfTitle = new ArrayList<Message>();
+			for (Collection<Message> messagesOfAllTypesOfSource : messagesOfAllTypesBySource.values()) {
+				addAllMessagesOfTypes(messagesOfAllTypesOfSource, messagesOfGivenTypesOfAllSourcesOfTitle, types);
 			}
-			if (!msgsOfGivenTypesOfAllSourcesOfTitle.isEmpty()) {
-				allMsgsOfTitle.put(entry.getKey(), msgsOfGivenTypesOfAllSourcesOfTitle);
+			if (!messagesOfGivenTypesOfAllSourcesOfTitle.isEmpty()) {
+				allMassagesOfCompiler.put(entry.getKey(), messagesOfGivenTypesOfAllSourcesOfTitle);
 			}
 		}
-		return Collections.unmodifiableMap(allMsgsOfTitle);
+		return Collections.unmodifiableMap(allMassagesOfCompiler);
 	}
 
 	/**
 	 * Checks if there are any messages of the specified type or the specified
 	 * types sub-tree, for any compiler and/or independent of any compiler.
-	 * 
-	 * @created 06.02.2014
+	 *
 	 * @param section the root section of the sub-tree to be checked
-	 * @param types the error messages considered
+	 * @param types   the error messages considered
 	 * @return if there are any such messages
+	 * @created 06.02.2014
 	 */
 	public static boolean hasMessagesInSubtree(Section<? extends Type> section, Message.Type... types) {
-		List<Section<?>> subtreeSections = Sections.getSubtreePreOrder(section);
-		List<Compiler> compilers = new LinkedList<Compiler>();
-		compilers.add(null);
-		compilers.addAll(section.getArticleManager().getCompilerManager().getCompilers());
-		for (Section<?> subtreeSection : subtreeSections) {
-			for (Compiler compiler : compilers) {
-				if (!getMessages(compiler, subtreeSection, types).isEmpty()) return true;
-			}
+		if (hasMessages(section, types)) return true;
+		for (Section<?> child : section.getChildren()) {
+			if (hasMessages(child, types)) return true;
 		}
 		return false;
 	}
@@ -213,17 +213,15 @@ public final class Messages {
 	/**
 	 * Checks if there are any messages of the specified type, for any compiler
 	 * and/or independent of any compiler.
-	 * 
-	 * @created 06.02.2014
+	 *
 	 * @param section the root section of the subtree to be checked
-	 * @param types the error messages considered
+	 * @param types   the error messages considered
 	 * @return if there are any such messages
+	 * @created 06.02.2014
 	 */
 	public static boolean hasMessages(Section<? extends Type> section, Message.Type... types) {
-		if (!getMessages(null, section, types).isEmpty()) return true;
-		List<Compiler> compilers = section.getArticleManager().getCompilerManager().getCompilers();
-		for (Compiler compiler : compilers) {
-			if (!getMessages(compiler, section, types).isEmpty()) return true;
+		for (Message.Type type : types) {
+			if (sectionsWithMessages.contains(type, section)) return true;
 		}
 		return false;
 	}
@@ -232,40 +230,37 @@ public final class Messages {
 	 * Returns an unmodifiable Collection containing all {@link Message}s of the
 	 * given {@link de.knowwe.core.report.Message.Type}s stored for this article
 	 * and Section.
-	 * 
-	 * @created 01.12.2011
+	 *
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
-	 * @param section is the {@link Section} the {@link Message}s are stored for
-	 * @param types is the {@link de.knowwe.core.report.Message.Type} of
-	 *        {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @param section  is the {@link Section} the {@link Message}s are stored for
+	 * @param types    is the {@link de.knowwe.core.report.Message.Type} of
+	 *                 {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @created 01.12.2011
 	 */
-	public static Collection<Message> getMessages(Compiler compiler,
-			Section<?> section,
-			Message.Type... types) {
+	public static Collection<Message> getMessages(Compiler compiler, Section<?> section, Message.Type... types) {
 		if (section.getSectionStore().isEmpty()) return Collections.emptyList();
-		Collection<Message> allMsgs = new ArrayList<Message>();
-		Map<String, Collection<Message>> msgMapModifiable = getMessagesMapModifiable(compiler,
-				section);
+		Collection<Message> allMessages = new ArrayList<Message>();
+		Map<String, Collection<Message>> msgMapModifiable = getMessagesMapModifiable(compiler, section);
 		if (msgMapModifiable != null) {
-			for (Collection<Message> msgs : msgMapModifiable.values()) {
-				addAllMessagesOfTypes(msgs, allMsgs, types);
+			for (Collection<Message> messages : msgMapModifiable.values()) {
+				addAllMessagesOfTypes(messages, allMessages, types);
 			}
 		}
-		return Collections.unmodifiableCollection(allMsgs);
+		return Collections.unmodifiableCollection(allMessages);
 	}
 
 	/**
 	 * Returns an unmodifiable Collection containing all {@link Message}s of the
 	 * given {@link de.knowwe.core.report.Message.Type}s stored for this article
 	 * and Section.
-	 * 
-	 * @created 01.12.2011
+	 *
 	 * @param section is the {@link Section} the {@link Message}s are stored for
-	 * @param types is the {@link de.knowwe.core.report.Message.Type} of
-	 *        {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @param types   is the {@link de.knowwe.core.report.Message.Type} of
+	 *                {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @created 01.12.2011
 	 */
 	public static Collection<Message> getMessages(Section<?> section,
-			Message.Type... types) {
+												  Message.Type... types) {
 		return getMessages(null, section, types);
 	}
 
@@ -273,16 +268,16 @@ public final class Messages {
 	 * Returns an unmodifiable Collection containing all {@link Message}s of the
 	 * given {@link de.knowwe.core.report.Message.Type}s stored for this
 	 * article, section, and source.
-	 * 
-	 * @created 01.12.2011
+	 *
 	 * @param compiler is the article the {@link Message}s are stored for
-	 * @param section is the Section the {@link Message}s are stored for
-	 * @param source is the source the {@link Message}s are stored for
-	 * @param types is the {@link de.knowwe.core.report.Message.Type} of
-	 *        {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @param section  is the Section the {@link Message}s are stored for
+	 * @param source   is the source the {@link Message}s are stored for
+	 * @param types    is the {@link de.knowwe.core.report.Message.Type} of
+	 *                 {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @created 01.12.2011
 	 */
 	public static Collection<Message> getMessages(Compiler compiler, Section<?> section,
-			Class<?> source, Message.Type... types) {
+												  Class<?> source, Message.Type... types) {
 		if (section.getSectionStore().isEmpty()) return Collections.emptyList();
 		Map<String, Collection<Message>> msgsMap = getMessagesMapModifiable(compiler, section);
 		List<Message> allMsgs = new ArrayList<Message>();
@@ -297,15 +292,15 @@ public final class Messages {
 	 * Returns an unmodifiable Collection containing all {@link Message}s of the
 	 * given {@link de.knowwe.core.report.Message.Type}s stored for this section
 	 * and source, independently of any {@link Compiler}
-	 * 
-	 * @created 01.12.2011
+	 *
 	 * @param section is the Section the {@link Message}s are stored for
-	 * @param source is the source the {@link Message}s are stored for
-	 * @param types is the {@link de.knowwe.core.report.Message.Type} of
-	 *        {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @param source  is the source the {@link Message}s are stored for
+	 * @param types   is the {@link de.knowwe.core.report.Message.Type} of
+	 *                {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @created 01.12.2011
 	 */
 	public static Collection<Message> getMessages(Section<?> section,
-			Class<?> source, Message.Type... types) {
+												  Class<?> source, Message.Type... types) {
 		return getMessages(null, section, source, types);
 	}
 
@@ -317,11 +312,11 @@ public final class Messages {
 	 * {@link Message}s were stored for. If {@link Message}s were stored without
 	 * an argument {@link Article}, the {@link Map} will contain this
 	 * {@link Collection} with <tt>null</tt> as the <tt>key</tt>.
-	 * 
-	 * @created 16.02.2012
+	 *
 	 * @param section is the {@link Section} the {@link Message}s are stored for
-	 * @param types is the {@link de.knowwe.core.report.Message.Type} of
-	 *        {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @param types   is the {@link de.knowwe.core.report.Message.Type} of
+	 *                {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @created 16.02.2012
 	 */
 	public static Map<Compiler, Collection<Message>> getMessagesMapFromSubtree(Section<?> section, Message.Type... types) {
 		Map<Compiler, Collection<Message>> allMessages = new HashMap<Compiler, Collection<Message>>();
@@ -348,14 +343,14 @@ public final class Messages {
 	 * Returns an unmodifiable Collection containing all {@link Message}s of the
 	 * given {@link de.knowwe.core.report.Message.Type}s of the KDOM subtree
 	 * with the given Section as root.
-	 * 
+	 *
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
-	 * @param section is the root of the KDOM subtree you want the messages from
-	 * @param types is the {@link de.knowwe.core.report.Message.Type} of
-	 *        {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @param section  is the root of the KDOM subtree you want the messages from
+	 * @param types    is the {@link de.knowwe.core.report.Message.Type} of
+	 *                 {@link Message} you want (set to <tt>null</tt> if you want all)
 	 */
 	public static Collection<Message> getMessagesFromSubtree(Compiler compiler,
-			Section<?> section,	Message.Type... types) {
+															 Section<?> section, Message.Type... types) {
 
 		Collection<Message> messages = new ArrayList<Message>();
 		getMessagesFromSubtree(messages, compiler, section, types);
@@ -373,10 +368,10 @@ public final class Messages {
 	 * Returns an unmodifiable Collection containing all {@link Message}s of the
 	 * given {@link de.knowwe.core.report.Message.Type}s of the KDOM subtree
 	 * with the given Section as root, independently of any compiler.
-	 * 
+	 *
 	 * @param section is the root of the KDOM subtree you want the messages from
-	 * @param types is the {@link de.knowwe.core.report.Message.Type} of
-	 *        {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @param types   is the {@link de.knowwe.core.report.Message.Type} of
+	 *                {@link Message} you want (set to <tt>null</tt> if you want all)
 	 */
 	public static Collection<Message> getMessagesFromSubtree(Section<?> section, Message.Type... types) {
 
@@ -407,10 +402,12 @@ public final class Messages {
 	 * Collections are mapped by the String <tt>source.getName()</tt>.
 	 */
 	@SuppressWarnings("unchecked")
-	private static Map<String, Collection<Message>> getMessagesMapModifiable(Compiler compiler,
-			Section<?> sec) {
-		return (Map<String, Collection<Message>>) sec.getSectionStore().getObject(compiler,
-				MESSAGE_KEY);
+	private static Map<String, Collection<Message>> getMessagesMapModifiable(Compiler compiler, Section<?> sec) {
+		return (Map<String, Collection<Message>>) sec.getSectionStore().getObject(compiler, MESSAGE_KEY);
+	}
+
+	private static void removeMessagesMap(Compiler compiler, Section<?> sec) {
+		sec.getSectionStore().removeObject(compiler, MESSAGE_KEY);
 	}
 
 	private static void addAllMessagesOfTypes(Collection<Message> source, Collection<Message> target, Message.Type... types) {
@@ -432,7 +429,7 @@ public final class Messages {
 	 * Filters the given Collection of {@link Message}s and returns a new
 	 * Collection containing only {@link Message}s of the
 	 * {@link de.knowwe.core.report.Message.Type} INFO.
-	 * 
+	 *
 	 * @created 01.12.2011
 	 */
 	public static Collection<Message> getNotices(Collection<Message> messages) {
@@ -447,7 +444,7 @@ public final class Messages {
 	 * Filters the given Collection of {@link Message}s and returns a new
 	 * Collection containing only {@link Message}s of the
 	 * {@link de.knowwe.core.report.Message.Type} WARNING.
-	 * 
+	 *
 	 * @created 01.12.2011
 	 */
 	public static Collection<Message> getWarnings(Collection<Message> messages) {
@@ -481,9 +478,9 @@ public final class Messages {
 	/**
 	 * Creates and returns a {@link Message} of the
 	 * {@link de.knowwe.core.report.Message.Type} INFO with the given text.
-	 * 
-	 * @created 01.12.2011
+	 *
 	 * @param message is the text content of the created {@link Message}
+	 * @created 01.12.2011
 	 */
 	public static Message notice(String message) {
 		return new Message(Message.Type.INFO, message);
@@ -545,14 +542,14 @@ public final class Messages {
 	 * only be used once for the given set of parameters. If you use this method
 	 * a second time with the same parameters, the first Message gets
 	 * overwritten!</b>
-	 * 
+	 *
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
-	 * @param section is the {@link Section} the {@link Message}s are stored for
-	 * @param source is the Class the message originate from
-	 * @param msg is the message you want so store
+	 * @param section  is the {@link Section} the {@link Message}s are stored for
+	 * @param source   is the Class the message originate from
+	 * @param msg      is the message you want so store
 	 */
 	public static void storeMessage(Compiler compiler, Section<?> section,
-			Class<?> source, Message msg) {
+									Class<?> source, Message msg) {
 		if (msg != null) {
 			storeMessages(compiler, section, source, Messages.asList(msg));
 		}
@@ -567,13 +564,13 @@ public final class Messages {
 	 * only be used once for the given set of parameters. If you use this method
 	 * a second time with the same parameters, the first Message gets
 	 * overwritten!</b>
-	 * 
+	 *
 	 * @param section is the section you want to store the message for
-	 * @param source is the Class the message originate from
-	 * @param msg is the message you want so store
+	 * @param source  is the Class the message originate from
+	 * @param msg     is the message you want so store
 	 */
 	public static void storeMessage(Section<?> section,
-			Class<?> source, Message msg) {
+									Class<?> source, Message msg) {
 		if (msg != null) {
 			storeMessages(null, section, source, Messages.asList(msg));
 		}
@@ -587,23 +584,77 @@ public final class Messages {
 	 * <b>ATTENTION: This method can only be used once for each article,
 	 * section, and source. If you use this Method a second time with the same
 	 * parameters, the first Collection gets overwritten!</b>
-	 * 
+	 *
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
-	 * @param section is the is the {@link Section} the {@link Message}s are
-	 *        stored for
-	 * @param source is the Class the messages originate from
-	 * @param msgs is the Collection of messages you want so store
+	 * @param section  is the is the {@link Section} the {@link Message}s are
+	 *                 stored for
+	 * @param source   is the Class the messages originate from
+	 * @param messages is the Collection of messages you want so store
 	 */
-	public static void storeMessages(Compiler compiler, Section<?> section,
-			Class<?> source, Collection<Message> msgs) {
-		if (msgs != null) {
-			Map<String, Collection<Message>> msgsMap = getMessagesMapModifiable(compiler, section);
-			if (msgsMap == null) {
-				msgsMap = new HashMap<String, Collection<Message>>(4);
-				KnowWEUtils.storeObject(compiler, section, MESSAGE_KEY, msgsMap);
+	public static void storeMessages(Compiler compiler, Section<?> section, Class<?> source, Collection<Message> messages) {
+		Map<String, Collection<Message>> messagesMap = getMessagesMapModifiable(compiler, section);
+		String key = source.getName();
+		// we have messages to store
+		if (messages != null && !messages.isEmpty()) {
+			// create map if not already present
+			if (messagesMap == null) {
+				messagesMap = new HashMap<String, Collection<Message>>(4);
+				KnowWEUtils.storeObject(compiler, section, MESSAGE_KEY, messagesMap);
 			}
-			msgsMap.put(source.getName(), Collections.unmodifiableCollection(msgs));
+			// store messages in map
+			messagesMap.put(key, Collections.unmodifiableCollection(messages));
+			// store section for type collections
+			for (Message message : messages) {
+				sectionsWithMessages.put(message.getType(), section);
+			}
 		}
+		// we have no messages, which means that we want to delete existing messages
+		else {
+			// if no message map is present, we don't need do anything
+			if (messagesMap == null) return;
+			Collection<Message> removedMessages = messagesMap.remove(key);
+			// we did not remove anything, no cleanup needed
+			if (removedMessages == null || removedMessages.isEmpty()) return;
+			// we removed messages, cleanup!
+			// no more more messages for this section, easy cleanup...
+			if (messagesMap.isEmpty()) {
+				removeMessagesMap(compiler, section);
+				for (Message.Type type : Message.Type.values()) {
+					sectionsWithMessages.remove(type, section);
+				}
+			}
+			// there are still messages
+			else {
+				// remove section from type collections where no messages of that type remain
+				Map<Compiler, Collection<Message>> messagesByCompiler = getMessagesMap(section);
+				Set<Message.Type> availableTypes = new HashSet<Message.Type>();
+				for (Collection<Message> messagesOfCompiler : messagesByCompiler.values()) {
+					for (Message message : messagesOfCompiler) {
+						availableTypes.add(message.getType());
+					}
+				}
+				for (Message.Type type : Message.Type.values()) {
+					if (!availableTypes.contains(type)) {
+						sectionsWithMessages.remove(type, section);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Returns all Sections that currently have stored Messages either of Type ERROR or WARNING.
+	 */
+	public static Collection<Section<?>> getSectionsWithMessages(Message.Type... types) {
+		int size = 0;
+		for (Message.Type type : types) {
+			size += sectionsWithMessages.getValues(type).size();
+		}
+		Set<Section<?>> sections = new HashSet<Section<?>>(size);
+		for (Message.Type type : types) {
+			sections.addAll(sectionsWithMessages.getValues(type));
+		}
+		return Collections.unmodifiableCollection(sections);
 	}
 
 	/**
@@ -613,22 +664,21 @@ public final class Messages {
 	 * <b>ATTENTION: This method can only be used once for each article,††
 	 * section, and source. If you use this Method a second time with the same
 	 * parameters, the first Collection gets overwritten!</b>
-	 * 
-	 * @param section is the section you want to store the messages for
-	 * @param source is the Class the messages originate from
-	 * @param msgs is the Collection of messages you want so store
+	 *
+	 * @param section  is the section you want to store the messages for
+	 * @param source   is the Class the messages originate from
+	 * @param messages is the Collection of messages you want so store
 	 */
-	public static void storeMessages(Section<?> section,
-			Class<?> source, Collection<Message> msgs) {
-		storeMessages(null, section, source, msgs);
+	public static void storeMessages(Section<?> section, Class<?> source, Collection<Message> messages) {
+		storeMessages(null, section, source, messages);
 	}
 
 	/**
 	 * Returns a {@link Message} to be used when a SubtreeHandler recognizes an
 	 * syntactical error within its markup.
-	 * 
-	 * @created 18.08.2010
+	 *
 	 * @param message the {@link Message} of the syntax error
+	 * @created 18.08.2010
 	 */
 	public static Message syntaxError(String message) {
 		return Messages.error("Syntax Error: " + message);
@@ -638,10 +688,10 @@ public final class Messages {
 	 * Returns a {@link Message} to be used when a SubtreeHandler recognizes an
 	 * unexpected internal error based on an exception. The error will also be
 	 * logged as a warning.
-	 * 
-	 * @created 18.08.2010
+	 *
 	 * @param message the message of the error
-	 * @param e the exception occurred
+	 * @param e       the exception occurred
+	 * @created 18.08.2010
 	 */
 	public static Message internalError(String message, Throwable e) {
 		Log.warning(message, e);
@@ -651,9 +701,9 @@ public final class Messages {
 	/**
 	 * Creates and returns a {@link Message} of the
 	 * {@link de.knowwe.core.report.Message.Type} WARNING with the given text.
-	 * 
-	 * @created 01.12.2011
+	 *
 	 * @param message is the text content of the created {@link Message}
+	 * @created 01.12.2011
 	 */
 	public static Message warning(String message) {
 		return new Message(Message.Type.WARNING, message);
@@ -664,9 +714,9 @@ public final class Messages {
 
 	/**
 	 * Creates an empty collection of messages.
-	 * 
-	 * @created 28.02.2012
+	 *
 	 * @return collection of no message at all
+	 * @created 28.02.2012
 	 */
 	public static Collection<Message> noMessage() {
 		return Collections.emptyList();
@@ -683,5 +733,11 @@ public final class Messages {
 	public static ResourceBundle getMessageBundle(UserContext user) {
 		return getMessageBundle(Environment.getInstance().getWikiConnector().getLocale(
 				user.getRequest()));
+	}
+
+	public static void unregisterMessagesSection(Section<?> section) {
+		for (Message.Type type : Message.Type.values()) {
+			sectionsWithMessages.remove(type, section);
+		}
 	}
 }

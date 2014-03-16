@@ -32,6 +32,7 @@ import de.knowwe.core.Environment.CompilationMode;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.Messages;
 import de.knowwe.event.ArticleCreatedEvent;
 import de.knowwe.event.KDOMCreatedEvent;
 
@@ -162,16 +163,17 @@ public class Article {
 
 		if (lastVersion != null) {
 			// lastVersion.getRootSection().clearReusedOfOldSectionsRecursively(this);
-			unregisterSectionIDRecursively(lastVersion.getRootSection());
+			unregisterSectionRecursively(lastVersion.getRootSection());
 		}
 
 		EventManager.getInstance().fireEvent(new KDOMCreatedEvent(this));
 	}
 
-	private void unregisterSectionIDRecursively(Section<?> section) {
+	private void unregisterSectionRecursively(Section<?> section) {
+		Messages.unregisterMessagesSection(section);
 		Sections.unregisterOrUpdateSectionID(section, this);
 		for (Section<?> childSection : section.getChildren()) {
-			unregisterSectionIDRecursively(childSection);
+			unregisterSectionRecursively(childSection);
 		}
 	}
 

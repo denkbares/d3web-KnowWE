@@ -84,9 +84,7 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 
 	private void renderPackage(Section<? extends PackageCompileType> compileSection, Section<?> section, String packageName, RenderResult string, UserContext user) {
 
-		PackageManager packageManager =
-				KnowWEUtils.getPackageManager(section);
-		Collection<Section<?>> sectionsOfPackage = packageManager.getSectionsOfPackage(packageName);
+		PackageManager packageManager =	KnowWEUtils.getPackageManager(section);
 
 		Collection<Message> kdomErrors = new LinkedList<Message>();
 		Collection<Message> kdomWarnings = new LinkedList<Message>();
@@ -94,14 +92,13 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 		Set<Article> errorArticles = new HashSet<Article>();
 		Set<Article> warningArticles = new HashSet<Article>();
 
-		for (Section<?> sectionOfPackage : sectionsOfPackage) {
-			Collection<PackageCompiler> packageCompilers = compileSection.get().getPackageCompilers(
-					compileSection);
+		for (Section<?> sectionWithMessage : Messages.getSectionsWithMessages(Message.Type.WARNING, Message.Type.ERROR)) {
+			if (!section.getPackageNames().contains(packageName)) continue;
+			Collection<PackageCompiler> packageCompilers = compileSection.get().getPackageCompilers(compileSection);
 			Collection<Message> errors = new ArrayList<Message>();
 			Collection<Message> warnings = new ArrayList<Message>();
-			Map<Compiler, Collection<Message>> allmsgs = Messages.getMessagesMapFromSubtree(
-					sectionOfPackage, Message.Type.ERROR,
-					Message.Type.WARNING);
+			Map<Compiler, Collection<Message>> allmsgs = Messages.getMessagesMap(
+					sectionWithMessage, Message.Type.ERROR,	Message.Type.WARNING);
 			for (PackageCompiler packageCompiler : packageCompilers) {
 				Collection<Message> compileMessages = allmsgs.get(packageCompiler);
 				if (compileMessages == null) continue;
@@ -110,11 +107,11 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 			}
 			if (errors != null && errors.size() > 0) {
 				kdomErrors.addAll(errors);
-				errorArticles.add(sectionOfPackage.getArticle());
+				errorArticles.add(sectionWithMessage.getArticle());
 			}
 			if (warnings != null && warnings.size() > 0) {
 				kdomWarnings.addAll(warnings);
-				warningArticles.add(sectionOfPackage.getArticle());
+				warningArticles.add(sectionWithMessage.getArticle());
 			}
 		}
 
