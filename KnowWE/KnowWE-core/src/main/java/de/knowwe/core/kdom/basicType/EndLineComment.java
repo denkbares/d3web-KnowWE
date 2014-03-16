@@ -20,6 +20,8 @@
 
 package de.knowwe.core.kdom.basicType;
 
+import java.util.regex.Pattern;
+
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.renderer.StyleRenderer;
@@ -27,7 +29,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class EndLineComment extends AbstractType {
 
 	public EndLineComment() {
-		this.setSectionFinder(new RegexSectionFinder("[\\s^]//.*$"));
+		this.setSectionFinder(new RegexSectionFinder("(\\s|^)//[^\n\r]*$", Pattern.MULTILINE));
 		setRenderer(StyleRenderer.COMMENT);
 	}
 
