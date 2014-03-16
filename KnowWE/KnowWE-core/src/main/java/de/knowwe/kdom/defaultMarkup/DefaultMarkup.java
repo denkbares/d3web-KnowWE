@@ -88,7 +88,7 @@ public class DefaultMarkup {
 		 * expression instead of name string.
 		 * 
 		 * @created 05.06.2013
-		 * @return
+		 * @return if the annotation is a regex
 		 */
 		public boolean isRegex() {
 			return isRegex;
@@ -101,6 +101,7 @@ public class DefaultMarkup {
 		 * @param annotationContent the content string to be checked
 		 * @return whether the annotations pattern is matched
 		 */
+		@SuppressWarnings("SimplifiableIfStatement")
 		public boolean matches(String annotationContent) {
 			if (pattern == null) return true;
 			if (annotationContent == null) return false;
@@ -115,7 +116,7 @@ public class DefaultMarkup {
 		 * <p>
 		 * The annotation may also contain any other text. It will be recognized
 		 * as {@link PlainText}, such in any other section or wiki-page. It is
-		 * in responsibility of the {@link SubtreeHandler} of the
+		 * in responsibility of the {@link de.knowwe.core.compile.CompileScript} of the
 		 * {@link DefaultMarkupType} instance to check for non-allowed content.
 		 * 
 		 * @return the Types of this annotation
@@ -156,7 +157,6 @@ public class DefaultMarkup {
 	 * Adds a non mandatory new annotation to the markup.
 	 * 
 	 * @param name the name of the annotation to be added
-	 * @param mandatory if the annotation is required for the markup
 	 */
 	public void addAnnotation(String name) {
 		this.addAnnotation(name, false, (Pattern) null);
@@ -181,6 +181,7 @@ public class DefaultMarkup {
 	 * @param mandatory if the annotation is required for the markup
 	 */
 	public void addRegexAnnotation(String regex, boolean mandatory) {
+		//noinspection RedundantCast
 		this.addAnnotation(regex, mandatory, true, (Pattern) null);
 	}
 
@@ -284,8 +285,7 @@ public class DefaultMarkup {
 	private Annotation getAnnotationHandleIAE(String name) {
 		Annotation annotation = getAnnotation(name);
 		if (annotation == null) {
-			throw new IllegalArgumentException("no such annotation defined: "
-					+ name);
+			throw new IllegalArgumentException("no such annotation defined: " + name);
 		}
 		return annotation;
 	}
@@ -302,7 +302,7 @@ public class DefaultMarkup {
 	 * <p>
 	 * The mark-up may also contain any other text. It will be recognized as
 	 * {@link PlainText}, such in any other section or wiki-page. It is in
-	 * responsibility of the {@link SubtreeHandler} of the
+	 * responsibility of the {@link de.knowwe.core.compile.CompileScript} of the
 	 * {@link DefaultMarkupType} instance to check for non-allowed content.
 	 * 
 	 * @return the Types of this mark-up
