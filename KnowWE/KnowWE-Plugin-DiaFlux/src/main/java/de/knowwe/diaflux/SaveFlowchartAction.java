@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
@@ -35,7 +34,6 @@ import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -89,8 +87,7 @@ public class SaveFlowchartAction extends AbstractAction {
 		if (flowchartSection != null) {
 			Set<String> articles = KnowWEUtils.getPackageManager(flowchartSection).getCompilingArticles(
 					flowchartSection);
-			save(context, topic, flowchartSection.getID(), newText);
-			id = getSectionID(web, newText, articles);
+			id = save(context, topic, flowchartSection.getID(), newText);
 		}
 		else { // no flowchart, insert flowchart
 			StringBuilder builder = new StringBuilder("%%DiaFlux");
@@ -106,7 +103,7 @@ public class SaveFlowchartAction extends AbstractAction {
 				builder.append("\r\n");
 				builder.append("%\r\n");
 			}
-			else { // TODO this adds all content, just extract annotations
+			else { // this adds all content, just extract annotations
 				builder.append(diaFluxSection.getText().substring(9));
 			}
 
@@ -117,49 +114,8 @@ public class SaveFlowchartAction extends AbstractAction {
 		if (id != null) {
 			context.getWriter().write(id);
 		}
-		// else {
-		// TODO
-		// This happens, if now flowchart section was found, i.e. if it was
-		// created with this saving OR if it is not compiled in any article.
-		// Then, the editor can not be reused and must be closed and opened
-		// again.
-		// ATM, the workaround was, to remove the "save-only" button in the
-		// editor
-		// it can be activated again, if the new section id can be found in
-		// any case.
-		// }
 	}
 
-	/*
-	 * TODO returns the new ID of the section to deliver it to the editor. There
-	 * should be a cleaner way.
-	 */
-	private String getSectionID(String web, String newText, Set<String> articles) {
-		if (articles.isEmpty()) {
-			// TODO
-			return null;
-		}
-
-		Matcher matcher = Pattern.compile("name=\"([^\"]*)\"", Pattern.CASE_INSENSITIVE).matcher(
-				newText);
-		if (!matcher.find()) {
-			// TODO what now??
-			return null;
-		}
-
-		String flowname = Strings.decodeHtml(matcher.group(1));
-
-		String title = articles.iterator().next();
-		Article article = Environment.getInstance().getArticle(web, title);
-
-		TerminologyManager handler = KnowWEUtils.getTerminologyManager(article);
-		Section<?> section = handler.getTermDefiningSection(new Identifier(flowname));
-
-		Section<DiaFluxType> diafluxSec = Sections.findAncestorOfExactType(section,
-				DiaFluxType.class);
-
-		return diafluxSec.getID();
-	}
 
 	/**
 	 * Saves a flowchart for which no section exists in the article yet. Currently only used, when extracting a module
@@ -183,16 +139,19 @@ public class SaveFlowchartAction extends AbstractAction {
 
 	}
 
-	private void save(UserActionContext context, String topic, String nodeID, String newText) throws IOException {
+	private String save(UserActionContext context, String topic, String nodeID, String newText) throws IOException {
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(nodeID, newText);
-		Sections.replaceSections(context, nodesMap).sendErrors(context);
+		Sections.ReplaceResult replaceResult = Sections.replaceSections(context, nodesMap);
+		String newId = replaceResult.getSectionMapping().get(nodeID);
+		replaceResult.sendErrors(context);
 		try {
 			context.getArticleManager().getCompilerManager().awaitTermination();
 		}
 		catch (InterruptedException e) {
 			Log.warning(e.getMessage(), e);
 		}
+		return newId;
 	}
 
 }
