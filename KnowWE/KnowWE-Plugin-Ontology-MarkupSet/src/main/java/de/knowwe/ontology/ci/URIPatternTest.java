@@ -18,19 +18,18 @@
  */
 package de.knowwe.ontology.ci;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 import de.d3web.strings.Identifier;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
+import de.d3web.testing.TestParameter;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.namespace.NamespaceAbbreviationDefinition;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
-
 /**
- * 
  * @author Sebastian Furth (denkbares GmbH)
  * @created 10.01.2014
  */
@@ -42,6 +41,14 @@ public class URIPatternTest extends AbstractTest<OntologyCompiler> {
 	private static final String VERSION_NUMBER = ".*(v|V|version|Version)\\d+(\\.?\\d+)*.*";
 	private static final String QUERY_STRING = ".*\\?.+=.+(&.+=.+)?.*";
 
+	public URIPatternTest() {
+		addIgnoreParameter("Ignore-Pattern",
+				TestParameter.Type.Regex, TestParameter.Mode.Mandatory,
+				"Specifies a regular expression of all terms to be ignored. " +
+						"Please note that the term is similar to the abbreviated uri used" +
+						"in turtle markups, but uses '#' as a separator.");
+	}
+
 	@Override
 	public Message execute(OntologyCompiler testObject, String[] args, String[]... ignores) throws InterruptedException {
 
@@ -49,7 +56,16 @@ public class URIPatternTest extends AbstractTest<OntologyCompiler> {
 		Collection<Identifier> identifiers = manager.getAllDefinedTerms();
 		Collection<Message> messages = new LinkedList<Message>();
 		for (Identifier identifier : identifiers) {
-			if (!isNamespaceDefinition(identifier, manager)) {
+			// check ignore patterns
+			boolean isIgnored = false;
+			for (String[] ignore : ignores) {
+				if (ignore.length != 1) continue;
+				if (identifier.toExternalForm().matches(ignore[0])) {
+					isIgnored = true;
+					break;
+				}
+			}
+			if (!isIgnored && !isNamespaceDefinition(identifier, manager)) {
 				// TODO: avoid using auto-increment
 				if (matchesPattern(URI_CHARS, identifier.getPathElements())) {
 					messages.add(new Message(Message.Type.FAILURE, "URI contains characters that will be encoded: " + identifier));
@@ -110,5 +126,4 @@ public class URIPatternTest extends AbstractTest<OntologyCompiler> {
 	public String getDescription() {
 		return "Checks for all Terms (URIs) whether they follow best practice URL patterns.";
 	}
-
 }
