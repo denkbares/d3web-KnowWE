@@ -983,7 +983,7 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Destroyes this Rdf2GoCore and its underlying model.
+	 * Destroys this Rdf2GoCore and its underlying model.
 	 */
 	public void destroy() {
 		this.model.close();

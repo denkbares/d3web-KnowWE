@@ -25,7 +25,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
@@ -105,11 +107,15 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 		for (Section<?> potentialDefSection : termDefiningSections) {
 			if (!(section.get() instanceof D3webTermDefinition)) continue;
 			Section<D3webTermDefinition> termDefiningSection = Sections.cast(potentialDefSection, D3webTermDefinition.class);
-			NamedObject termObject = termDefiningSection.get().getTermObject(compiler, termDefiningSection);
-			if (termObject instanceof TerminologyObject) {
-				if (((TerminologyObject) termObject).getKnowledgeBase() != compiler.getKnowledgeBase()) continue;
+			NamedObject namedObject = termDefiningSection.get().getTermObject(compiler, termDefiningSection);
+			if (namedObject instanceof TerminologyObject) {
+				if (((TerminologyObject) namedObject).getKnowledgeBase() != compiler.getKnowledgeBase()) continue;
 			}
-			if (termObject != null) foundTermObjects.add(termObject);
+			else if (namedObject instanceof Choice) {
+				Question question = ((Choice) namedObject).getQuestion();
+				if (question != null && question.getKnowledgeBase() != compiler.getKnowledgeBase()) continue;
+			}
+			if (namedObject != null) foundTermObjects.add(namedObject);
 		}
 		return foundTermObjects;
 	}
