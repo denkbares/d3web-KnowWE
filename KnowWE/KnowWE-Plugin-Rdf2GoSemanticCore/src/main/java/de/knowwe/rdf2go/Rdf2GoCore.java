@@ -986,6 +986,7 @@ public class Rdf2GoCore {
 	 * Destroys this Rdf2GoCore and its underlying model.
 	 */
 	public void destroy() {
+		EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
 		this.model.close();
 		// right now produces crazy exceptions in ssp.core.inference, so its commented out.
 //		if (this.model instanceof SesameSwiftOwlimModelFactory.ShutdownableRepositoryModel) {
