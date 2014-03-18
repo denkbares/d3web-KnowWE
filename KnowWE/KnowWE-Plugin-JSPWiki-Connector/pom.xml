@@ -10,7 +10,7 @@
 	
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
-	<name>KnowWE Plugin: JSPWiki-Connector</name>
+	<name>KnowWE-Plugin-JSPWiki-Connector</name>
 	<version>0.2-SNAPSHOT</version>
 	
 	<dependencies>

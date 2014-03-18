@@ -11,7 +11,7 @@
   <groupId>de.uniwue.d3web</groupId>
   <artifactId>KnowWE-Plugin-TestCase</artifactId>
   <version>0.2-SNAPSHOT</version>
-  <name>KnowWE Plugin: TestCase</name>
+  <name>KnowWE-Plugin-TestCase</name>
   <description>KnowWE-Plugin for the EmpiricalTesting project</description>
   
   	

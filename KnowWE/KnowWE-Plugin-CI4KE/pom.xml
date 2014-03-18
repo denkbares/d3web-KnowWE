@@ -12,7 +12,7 @@
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE-Plugin-CI4KE</artifactId>
 	<version>0.2-SNAPSHOT</version>
-	<name>KnowWE Plugin: Continuous Integration</name>
+	<name>KnowWE-Plugin-CI4KE</name>
 	<description>KnowWE-Plugin: Continuous Integration for Knowledge Engineering</description>
 
 	<build>
