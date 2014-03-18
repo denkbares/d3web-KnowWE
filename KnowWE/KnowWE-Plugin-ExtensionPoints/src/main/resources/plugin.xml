@@ -63,6 +63,7 @@
 		<parameter-def id="version" />
 		<parameter-def id="priority" type="number" />
 		<parameter-def id="scope" multiplicity="one-or-more" />
+		<parameter-def id="exclude" multiplicity="any" />
 		<parameter-def id="script" multiplicity="any" />
 		<parameter-def id="css" multiplicity="any" />
 	</extension-point>
@@ -74,6 +75,7 @@
 		<parameter-def id="version" />
 		<parameter-def id="priority" type="number" />
 		<parameter-def id="scope" multiplicity="one-or-more" />
+		<parameter-def id="exclude" multiplicity="any" />
 		<parameter-def id="script" multiplicity="any" />
 		<parameter-def id="css" multiplicity="any" />
 	</extension-point>
@@ -86,6 +88,7 @@
 		<parameter-def id="priority" type="number" />
 		<parameter-def id="handlerpriority" type="number" />
 		<parameter-def id="scope" multiplicity="one-or-more" />
+		<parameter-def id="exclude" multiplicity="any" />
 	</extension-point>
 
 	<extension-point id="CompileScript">
@@ -96,6 +99,7 @@
 		<parameter-def id="priority" type="number" />
 		<parameter-def id="compilepriority" type="number" />
 		<parameter-def id="scope" multiplicity="one-or-more" />
+		<parameter-def id="exclude" multiplicity="any" />
 	</extension-point>
 
 
@@ -105,6 +109,7 @@
 		<parameter-def id="description" />
 		<parameter-def id="version" />
 		<parameter-def id="scope" multiplicity="one-or-more" />
+		<parameter-def id="exclude" multiplicity="any" />
 		<parameter-def id="priority" type="number" />
 		<parameter-def id="script" multiplicity="any" />
 		<parameter-def id="css" multiplicity="any" />
@@ -168,6 +173,7 @@
 		<parameter-def id="description" />
 		<parameter-def id="version" />
 		<parameter-def id="scope" multiplicity="one-or-more" />
+		<parameter-def id="exclude" multiplicity="any" />
 		<parameter-def id="priority" type="number" />
 	</extension-point>
 
@@ -177,6 +183,7 @@
 		<parameter-def id="description" />
 		<parameter-def id="version" />
 		<parameter-def id="scope" multiplicity="one-or-more" />
+		<parameter-def id="exclude" multiplicity="any" />
 		<parameter-def id="priority" type="number" />
 	</extension-point>
 
@@ -203,6 +210,7 @@
 		<parameter-def id="description" />
 		<parameter-def id="version" />
 		<parameter-def id="scope" multiplicity="one" />
+		<parameter-def id="exclude" multiplicity="any" />
 		<parameter-def id="priority" type="number" />
 		<parameter-def id="renderer" multiplicity="any" />
 	</extension-point>
@@ -221,6 +229,7 @@
 		<parameter-def id="version" />
 		<parameter-def id="priority" type="number" />
 		<parameter-def id="scope" multiplicity="one-or-more" />
+		<parameter-def id="exclude" multiplicity="any" />
 		<parameter-def id="script" multiplicity="any" />
 		<parameter-def id="css" multiplicity="any" />
 	</extension-point>
