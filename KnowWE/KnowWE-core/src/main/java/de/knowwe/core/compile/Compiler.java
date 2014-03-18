@@ -6,11 +6,9 @@ import de.knowwe.core.kdom.parsing.Section;
 
 /**
  * Interface that defines a compiler that compiles a special artifact instance.
- * 
+ *
  * @author Volker Belli (denkbares GmbH)
  * @created 30.10.2013
- * @param <Artifact> the artifact that will be compiled as the result of this
- *        compiler
  */
 public interface Compiler {
 
@@ -25,21 +23,21 @@ public interface Compiler {
 	 * Global Compilers will mostly return true here, {@link PackageCompiler}s
 	 * will only return true, if the Section is part of a package they are
 	 * compiling.
-	 * 
-	 * @created 13.12.2013
+	 *
 	 * @param section the section we want to check.
 	 * @return whether this Compiler compiles this section or would compile it,
-	 *         if it had a CompileScript
+	 * if it had a CompileScript
+	 * @created 13.12.2013
 	 */
 	boolean isCompiling(Section<?> section);
 
 	/**
 	 * This method is called once to initialize the compiler right after it has
 	 * been added to the specified compiler manager.
-	 * 
-	 * @created 31.10.2013
+	 *
 	 * @param compilerManager the {@link CompilerManager} this compiler has been
-	 *        added to
+	 *                        added to
+	 * @created 31.10.2013
 	 */
 	void init(CompilerManager compilerManager);
 
@@ -47,11 +45,17 @@ public interface Compiler {
 	 * When this method is called, the compiler shall compile its artifact. The
 	 * specified changes sections may be used to optimize the compilation as the
 	 * compiler is capable to incrementally compile changes or not.
-	 * 
-	 * @created 31.10.2013
-	 * @param added the sections added to the wiki
+	 *
+	 * @param added   the sections added to the wiki
 	 * @param removed the sections removed from the wiki
+	 * @created 31.10.2013
 	 */
 	void compile(Collection<Section<?>> added, Collection<Section<?>> removed);
+
+	/**
+	 * Destroys this compiler and frees its resources. This method will called if the compiler is unregistered from the
+	 * CompilerManager.
+	 */
+	void destroy();
 
 }

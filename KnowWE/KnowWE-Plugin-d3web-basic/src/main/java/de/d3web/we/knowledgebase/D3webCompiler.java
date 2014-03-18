@@ -50,6 +50,11 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	}
 
 	@Override
+	public void destroy() {
+		// nothing to do
+	}
+
+	@Override
 	public TerminologyManager getTerminologyManager() {
 		return terminologyManager;
 	}

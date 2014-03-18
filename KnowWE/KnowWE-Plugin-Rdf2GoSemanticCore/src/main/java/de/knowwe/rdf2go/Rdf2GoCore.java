@@ -641,7 +641,7 @@ public class Rdf2GoCore {
 	 * Returns a map of all namespaces mapped by their prefixes as they are used e.g. in Turtle and
 	 * SPARQL.<br>
 	 * <b>Example:</b> rdf: -> http://www.w3.org/1999/02/22-rdf-syntax-ns#
-	 * <p>
+	 * <p/>
 	 * Although this map seems trivial, it is helpful for optimization reasons.
 	 */
 	public Map<String, String> getNamespacePrefixes() {
@@ -980,6 +980,22 @@ public class Rdf2GoCore {
 	 */
 	public boolean isEmpty() {
 		return statementCache.isEmpty();
+	}
+
+	/**
+	 * Destroyes this Rdf2GoCore and its underlying model.
+	 */
+	public void destroy() {
+		this.model.close();
+		// right now produces crazy exceptions in ssp.core.inference, so its commented out.
+//		if (this.model instanceof SesameSwiftOwlimModelFactory.ShutdownableRepositoryModel) {
+//			try {
+//				((SesameSwiftOwlimModelFactory.ShutdownableRepositoryModel) this.model).shutdown();
+//			}
+//			catch (RepositoryException e) {
+//				Log.severe("Unable to properly shutdown model", e);
+//			}
+//		}
 	}
 
 }

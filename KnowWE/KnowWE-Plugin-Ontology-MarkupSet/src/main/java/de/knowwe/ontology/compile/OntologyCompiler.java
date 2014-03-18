@@ -62,6 +62,11 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 	}
 
 	@Override
+	public void destroy() {
+		this.rdf2GoCore.destroy();
+	}
+
+	@Override
 	public Rdf2GoCore getRdf2GoCore() {
 		return rdf2GoCore;
 	}

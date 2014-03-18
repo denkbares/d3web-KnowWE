@@ -5,7 +5,14 @@
  */
 package de.knowwe.rdf2go.modelfactory;
 
-import de.knowwe.rdf2go.RuleSet;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.Properties;
+
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.impl.AbstractModelFactory;
 import org.ontoware.rdf2go.model.Model;
@@ -22,6 +29,7 @@ import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.rdf2go.RepositoryModel;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.config.RepositoryConfig;
 import org.openrdf.repository.config.RepositoryConfigSchema;
 import org.openrdf.repository.config.RepositoryConfigUtil;
@@ -34,13 +42,7 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.turtle.TurtleParserFactory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.Properties;
+import de.knowwe.rdf2go.RuleSet;
 
 public class SesameSwiftOwlimModelFactory extends AbstractModelFactory {
 
@@ -57,13 +59,13 @@ public class SesameSwiftOwlimModelFactory extends AbstractModelFactory {
 	@Override
 	public Model createModel(Properties properties)
 			throws ModelRuntimeException {
-		return new RepositoryModel(createRepository(properties));
+		return new ShutdownableRepositoryModel(createRepository(properties));
 	}
 
 	@Override
 	public Model createModel(URI contextURI)
 			throws ModelRuntimeException {
-		return new RepositoryModel(contextURI, createRepository(null));
+		return new ShutdownableRepositoryModel(contextURI, createRepository(null));
 	}
 
 	private Repository createRepository(Properties properties)
@@ -173,5 +175,20 @@ public class SesameSwiftOwlimModelFactory extends AbstractModelFactory {
 	@Override
 	public QueryResultTable sparqlSelect(String arg0, String arg1) {
 		throw new UnsupportedOperationException();
+	}
+
+	public static class ShutdownableRepositoryModel extends RepositoryModel {
+
+		public ShutdownableRepositoryModel(URI context, Repository repository) {
+			super(context, repository);
+		}
+		
+		public ShutdownableRepositoryModel(Repository repository) throws ModelRuntimeException {
+			super(repository);
+		}
+
+		public void shutdown() throws RepositoryException {
+			this.repository.shutDown();
+		}
 	}
 }

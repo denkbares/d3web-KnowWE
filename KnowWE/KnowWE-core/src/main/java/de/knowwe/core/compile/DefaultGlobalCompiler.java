@@ -33,6 +33,11 @@ public class DefaultGlobalCompiler implements TermCompiler {
 	}
 
 	@Override
+	public void destroy() {
+		// nothing to do
+	}
+
+	@Override
 	public void compile(Collection<Section<?>> added, Collection<Section<?>> removed) {
 		ScriptCompiler<DefaultGlobalCompiler> helper = new ScriptCompiler<DefaultGlobalCompiler>(
 				this);
