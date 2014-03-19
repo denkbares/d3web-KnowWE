@@ -222,11 +222,11 @@ public class CIRenderer {
 			title = test.getDescription();
 		}
 
-		// render test-name
+		// render test name
 		renderResult.appendHtml("<span class='ci-test-title' title='" + title + "'>");
 		renderResult.append(name);
 
-		// render test-configuration (if existent)
+		// render test configuration (if exists)
 		String[] config = testResult.getConfiguration();
 		boolean hasConfig = config != null && !(config.length == 0);
 		boolean hasText = !Strings.isBlank(text);
@@ -379,7 +379,8 @@ public class CIRenderer {
 				case ERROR:
 					imgBulb = String.format(imgBulb, "grey" + imageSuffix + ".png",
 							"Build has errors: "
-									+ Strings.encodeHtml(dashboardName));
+									+ Strings.encodeHtml(dashboardName)
+					);
 			}
 		}
 
