@@ -18,8 +18,6 @@
  */
 package de.knowwe.core.compile;
 
-import java.util.Collection;
-
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
@@ -33,29 +31,29 @@ import de.knowwe.core.kdom.parsing.Section;
 public interface IncrementalCompiler extends Compiler {
 
 	/**
-	 * Adds the given {@link Section}s to also be destroyed in the current
+	 * Adds the given {@link Section} to also be destroyed in the current
 	 * compilation. The implementing {@link Compiler} must allow to call this
 	 * method during an ongoing compilation.<p>
 	 * Optionally you can add a filter to only add scripts of the given classes. If no filter is given, all scripts
 	 * available for the type of the section and the compiler are added.
 	 *
-	 * @param sections     the sections to additionally destroy
+	 * @param section     the section to additionally destroy
 	 * @param scriptFilter the classes of the scripts you want to add
 	 * @created 04.01.2014
 	 */
-	public void addSectionsToDestroy(Collection<Section<?>> sections, Class<? extends CompileScript>... scriptFilter);
+	public void addSectionToDestroy(Section<?> section, Class<? extends CompileScript>... scriptFilter);
 
 	/**
-	 * Adds the given {@link Section}s to also be compiled in the current
+	 * Adds the given {@link Section} to also be compiled in the current
 	 * compilation. The implementing {@link Compiler} must allow to call this
 	 * method during an ongoing compilation.<p>
 	 * Optionally you can add a filter to only add scripts of the given classes. If no filter is given, all scripts
 	 * available for the type of the section and the compiler are added.
 	 *
-	 * @param sections     the sections to additionally compile
+	 * @param section     the section to additionally compile
 	 * @param scriptFilter the classes of the scripts you want to add
 	 * @created 04.01.2014
 	 */
-	public void addSectionsToCompile(Collection<Section<?>> sections, Class<? extends CompileScript>... scriptFilter);
+	public void addSectionToCompile(Section<?> section, Class<? extends CompileScript>... scriptFilter);
 
 }

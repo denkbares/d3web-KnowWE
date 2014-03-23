@@ -22,6 +22,7 @@ import java.util.Collection;
 
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.CompileScript;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DestroyScript;
 import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.Priority;
@@ -92,8 +93,11 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 					termIdentifier);
 
 			if (compiler instanceof IncrementalCompiler) {
+				Collection<Section<?>> termDefiningSections = terminologyManager.getTermDefiningSections(termIdentifier);
+				IncrementalCompiler incrementalCompiler = (IncrementalCompiler) compiler;
+				Compilers.addSectionsToCompile(incrementalCompiler, termDefiningSections);
 				Collection<Section<?>> termReferenceSections = terminologyManager.getTermReferenceSections(termIdentifier);
-				((IncrementalCompiler) compiler).addSectionsToCompile(termReferenceSections);
+				Compilers.addSectionsToCompile(incrementalCompiler, termReferenceSections);
 			}
 
 		}
@@ -107,10 +111,12 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 					termIdentifier);
 
 			if (compiler instanceof IncrementalCompiler) {
+				Collection<Section<?>> termDefiningSections = terminologyManager.getTermDefiningSections(termIdentifier);
+				IncrementalCompiler incrementalCompiler = (IncrementalCompiler) compiler;
+				Compilers.addSectionsToDestroyAndCompile(incrementalCompiler, termDefiningSections);
 				Collection<Section<?>> termReferenceSections = terminologyManager.getTermReferenceSections(termIdentifier);
-				((IncrementalCompiler) compiler).addSectionsToDestroy(termReferenceSections);
+				Compilers.addSectionsToDestroyAndCompile(incrementalCompiler, termReferenceSections);
 			}
-
 		}
 	}
 

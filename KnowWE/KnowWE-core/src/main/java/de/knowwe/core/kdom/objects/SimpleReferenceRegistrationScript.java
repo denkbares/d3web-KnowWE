@@ -52,12 +52,7 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 
 		TerminologyManager tHandler = compiler.getTerminologyManager();
 		Identifier termIdentifier = section.get().getTermIdentifier(section);
-
-		if (termIdentifier != null) {
-			tHandler.registerTermReference(compiler,
-					section, section.get().getTermObjectClass(section), termIdentifier);
-		}
-
+		tHandler.registerTermReference(compiler, section, section.get().getTermObjectClass(section), termIdentifier);
 		throw new CompilerMessage(validateReference(compiler, section));
 	}
 

@@ -47,15 +47,16 @@ import de.knowwe.kdom.visitor.Visitable;
 import de.knowwe.kdom.visitor.Visitor;
 
 /**
+ * <p/>
+ * This class represents a node in the Knowledge-DOM of KnowWE. Basically it has some text, one type and a list
+ * of children.
+ * <p/>
+ * Further, it has a reference to its father and a positionOffset to its fathers text.
+ * <p/>
+ * Further information can be attached to a node (TypeInformation), to connect the text-parts with external
+ * resources, e.g. knowledge bases, OWL, User-feedback-DBs etc.
+ *
  * @author Jochen
- *         <p/>
- *         This class represents a node in the Knowledge-DOM of KnowWE. Basically it has some text, one type and a list
- *         of children.
- *         <p/>
- *         Further, it has a reference to its father and a positionOffset to its fathers text.
- *         <p/>
- *         Further information can be attached to a node (TypeInformation), to connect the text-parts with external
- *         resources, e.g. knowledge bases, OWL, User-feedback-DBs etc.
  */
 public final class Section<T extends Type> implements Visitable, Comparable<Section<? extends Type>> {
 
@@ -110,7 +111,8 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	private Section<? extends Type> parent;
 
 	/**
-	 * the position the text of this node starts related to the text of the parent node. Thus: for first child always 0,
+	 * the position the text of this node starts related to the text of the parent node. Thus: for first child always
+	 * 0,
 	 * for 2nd firstChild.length() etc.
 	 */
 	private int offsetInParent = -1;
@@ -174,18 +176,19 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	/**
 	 * If the compared Sections are from different articles, a value less than 0 will be returned, if the title of this
 	 * Section is lexicographically less than the title of the arguments Section, greater than 0 if the title of
-	 * arguments Section is lexicographically greater.<br/> If the Sections are from the same article, a value less than
+	 * arguments Section is lexicographically greater.<br/> If the Sections are from the same article, a value less
+	 * than
 	 * 0 will be returned, if the Section is textually located above the argument Section, a value greater than 0, if
 	 * below.<br/> If a Sections is compared with itself, 0 will be returned.
 	 */
 	@Override
-	public int compareTo(Section<? extends Type> o) {
-		if (this == o) return 0;
-		if (o == null) return -1;
-		int comp = getTitle().compareTo(o.getTitle());
+	public int compareTo(Section<? extends Type> section) {
+		if (this == section) return 0;
+		if (section == null) return -1;
+		int comp = getTitle().compareTo(section.getTitle());
 		if (comp == 0) {
 			List<Integer> thisPos = getPositionInKDOM();
-			List<Integer> otherPos = o.getPositionInKDOM();
+			List<Integer> otherPos = section.getPositionInKDOM();
 			Iterator<Integer> thisIter = thisPos.iterator();
 			Iterator<Integer> otherIter = otherPos.iterator();
 
@@ -210,29 +213,6 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 
 	}
 
-	/**
-	 * Compares the KDOM subtree of this Section with the KDOM subtree of given Section. Types, originalText and
-	 * structure of the tree are checked.
-	 *
-	 * @param sec is the Section to compare with this Section
-	 * @return true, if both KDOM subtrees equal in terms of type, originalText and structure. False else.
-	 * @created 04.02.2011
-	 */
-	public boolean equalsAsKDOMSubtree(Section<?> sec) {
-		if (this.type.equals(sec.type)
-				&& this.text.equals(sec.text)
-				&& this.getChildren().size() == sec.getChildren().size()) {
-			Iterator<Section<?>> thisIter = this.getChildren().iterator();
-			Iterator<Section<?>> secIter = sec.getChildren().iterator();
-			while (thisIter.hasNext()) {
-				if (!thisIter.next().equalsAsKDOMSubtree(secIter.next())) {
-					return false;
-				}
-			}
-			return true;
-		}
-		return false;
-	}
 
 	/**
 	 * Adds a child to this node. Use for KDOM creation and editing only!
@@ -247,7 +227,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	public void addChild(int index, Section<?> child) {
 		this.children.add(index, child);
 		if (get() instanceof AbstractType && !(child.get() instanceof RootType)) {
-			Class<? extends Type> childTypeClass = ((Type) child.get()).getClass();
+			Class<?> childTypeClass = child.get().getClass();
 			if (!Types.canHaveSuccessorOfType((AbstractType) type, childTypeClass)) {
 				Log.severe("Added section of type '"
 						+ childTypeClass.getSimpleName()
@@ -276,7 +256,8 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	/**
-	 * Sets the text of this node. This IS an article source edit operation! TODO: Important - propagate changes through
+	 * Sets the text of this node. This IS an article source edit operation! TODO: Important - propagate changes
+	 * through
 	 * the whole tree OR ReIinit tree!
 	 */
 	public void setText(String newText) {
@@ -331,7 +312,6 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	/**
 	 * Use for KDOM creation and editing only!
 	 *
-	 * @param children
 	 * @created 26.08.2010
 	 */
 	public void setChildren(List<Section<? extends Type>> children) {
@@ -396,7 +376,7 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	/**
-	 * @return the title of the article this section belongs to.
+	 * Returns the title of the article this section belongs to.
 	 */
 	public String getTitle() {
 		return article == null ? null : article.getTitle();
@@ -423,12 +403,18 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 
 	public Set<String> getPackageNames() {
 		if (parent == null) {
-			if (packageNames == null) return Collections.emptySet();
-			else return Collections.unmodifiableSet(packageNames);
+			if (packageNames == null) {
+				return Collections.emptySet();
+			}
+			else {
+				return Collections.unmodifiableSet(packageNames);
+			}
 		}
 		else {
 			Set<String> fatherPackageNames = parent.getPackageNames();
-			if (packageNames == null) return fatherPackageNames;
+			if (packageNames == null) {
+				return fatherPackageNames;
+			}
 			else {
 				if (fatherPackageNames.isEmpty()) {
 					return Collections.unmodifiableSet(packageNames);
@@ -612,16 +598,16 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 	}
 
 	/**
-	 * Method that looks (recursively down) for this section whether some messages of the specified type has been stored
-	 * in that subtree for the given article.
+	 * Method that looks (recursively down) for this section whether some messages of the specified type has been
+	 * stored in that subtree for the given article.
 	 */
 	public boolean hasErrorInSubtree(Compiler compiler) {
 		return hasMessageInSubtree(compiler, Message.Type.ERROR);
 	}
 
 	/**
-	 * Method that looks (recursively down) for this section whether some errors has been stored in that subtree for the
-	 * given compiler or compiler independent.
+	 * Method that looks (recursively down) for this section whether some errors has been stored in that subtree for
+	 * the given compiler or compiler independent.
 	 */
 	public boolean hasMessageInSubtree(Compiler compiler, Message.Type type) {
 		Map<Compiler, Collection<Message>> errors = Messages.getMessagesMap(
@@ -682,58 +668,6 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		}
 	}
 
-	//
-	// /**
-	// * Checks whether this Section or a successor is not reused. Sections and
-	// * successors with a Type contained in the Set of classes will be ignored.
-	// *
-	// * @created 10.07.2010
-	// * @param title is the article, for which to check.
-	// * @param filteredTypes if this Section has one of the filtered types,
-	// false
-	// * is returned.
-	// * @return a boolean with the result of the check
-	// */
-	// public boolean isOrHasChangedSuccessor(String title, Collection<Class<?
-	// extends Type>> filteredTypes) {
-	// if (isChanged(title, filteredTypes)) {
-	// return true;
-	// }
-	// else {
-	// for (Section<?> child : this.getChildren()) {
-	// if (child.isOrHasChangedSuccessor(title, filteredTypes)) return true;
-	// }
-	// return false;
-	// }
-	// }
-
-	// /**
-	// * Checks, whether this Section has changed since the last version of the
-	// * article.
-	// *
-	// * @created 08.12.2010
-	// * @param title is the article, for which to check.
-	// * @param filteredTypes if this Section has one of the filtered types,
-	// false
-	// * is returned.
-	// * @return a boolean with the result of the check
-	// */
-	// public boolean isChanged(String title, Collection<Class<? extends Type>>
-	// filteredTypes) {
-	// if (filteredTypes != null) {
-	// for (Class<?> c : filteredTypes) {
-	// if (c.isAssignableFrom(type.getClass())) {
-	// return false;
-	// }
-	// }
-	// }
-	// if (!isReusedBy(title) || (type.isOrderSensitive() &&
-	// hasPositionChanged())) {
-	// return true;
-	// }
-	// return false;
-	// }
-	//
 	public void setReusedBy(String title, boolean reused) {
 		if (reused) {
 			if (reusedBy == null) reusedBy = new HashSet<String>(4);

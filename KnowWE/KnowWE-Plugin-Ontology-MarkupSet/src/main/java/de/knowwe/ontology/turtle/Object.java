@@ -18,7 +18,6 @@
  */
 package de.knowwe.ontology.turtle;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.ontoware.rdf2go.model.node.Node;
@@ -40,7 +39,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.resource.ResourceReference;
@@ -82,7 +80,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 	private Type createObjectURIWithDefinition() {
 		TurtleURI turtleURI = new TurtleURI();
 		SimpleReference reference = Types.findSuccessorType(turtleURI, ResourceReference.class);
-		reference.addCompileScript(Priority.HIGH, new ObjectPredicateKeywordDefinitionHandler(new String[] { "[\\w]*?:instance" }));
+		reference.addCompileScript(Priority.HIGHER, new ObjectPredicateKeywordDefinitionHandler(new String[] { "[\\w]*?:instance" }));
 		return turtleURI;
 	}
 
@@ -102,7 +100,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		}
 
 		@Override
-		public Collection<Message> create(OntologyCompiler compiler, Section<SimpleReference> s) {
+		public void compile(OntologyCompiler compiler, Section<SimpleReference> s) {
 
 			List<Section<Predicate>> predicates = getPredicates(s);
 			boolean hasInstancePredicate = false;
@@ -118,7 +116,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			}
 
 			// we jump out if no matching predicate was found
-			if (!hasInstancePredicate) return Messages.noMessage();
+			if (!hasInstancePredicate) return;
 
 			// If termIdentifier is null, obviously section chose not to define
 			// a term, however so we can ignore this case
@@ -128,8 +126,6 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 						.registerTermDefinition(compiler, s, de.knowwe.ontology.kdom.resource.Resource.class,
 								termIdentifier);
 			}
-
-			return Messages.noMessage();
 		}
 	}
 

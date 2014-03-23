@@ -39,10 +39,9 @@ public class TurtleURI extends AbbreviatedResourceReference implements NodeProvi
 
 		ConstraintSectionFinder c = new ConstraintSectionFinder(
 				new RegexSectionFinder("\\w*:.+"));
-		setSectionFinder(c);
 		c.addConstraint(AtMostOneFindingConstraint.getInstance());
+		setSectionFinder(c);
 	}
-
 
 	@Override
 	public Node getNode(Section<TurtleURI> section, Rdf2GoCore core) {
@@ -54,23 +53,22 @@ public class TurtleURI extends AbbreviatedResourceReference implements NodeProvi
 		}
 		else {
 
-		if (turtleURIText.startsWith(":")) {
-			turtleURIText = "lns:" + turtleURIText;
-		}
-		String uri = Rdf2GoUtils.expandNamespace(core, turtleURIText);
-		return core.createURI(uri);
+			if (turtleURIText.startsWith(":")) {
+				turtleURIText = "lns:" + turtleURIText;
+			}
+			String uri = Rdf2GoUtils.expandNamespace(core, turtleURIText);
+			return core.createURI(uri);
 		}
 	}
-
 
 	public static Node getNodeForIdentifier(Rdf2GoCore core, Identifier identifier) {
 		if (identifier == null) return null;
 		String shortURI = Strings.encodeURL(identifier.toExternalForm());
 		String[] idPath = identifier.getPathElements();
-			if (idPath.length == 2) {
-				String suffix = Strings.encodeURL(idPath[1]);
-				shortURI = idPath[0] + ":" + suffix;
-			}
+		if (idPath.length == 2) {
+			String suffix = Strings.encodeURL(idPath[1]);
+			shortURI = idPath[0] + ":" + suffix;
+		}
 		String longURI = Rdf2GoUtils.expandNamespace(core, shortURI);
 		return core.createURI(longURI);
 	}

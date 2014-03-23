@@ -1,11 +1,13 @@
 package de.knowwe.core.compile;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -22,6 +24,9 @@ import de.knowwe.core.report.Messages;
  * For the given {@link Section}s and {@link Compiler} it gets all
  * {@link CompileScript}s and then compiles all Sections in the order, given by
  * Priority of the scripts and position in the KDOM (Article).
+ * The ScriptCompiler acts like a set, so you can add combinations of Sections and CompileScripts multiple times, but
+ * after the first time, it no longer has any effect and each combination will only be compiled once to avoid
+ * loops.
  *
  * @param <C> the Compiler for which we want to compile
  * @author Albrecht Striffler (denkbares GmbH)
@@ -29,30 +34,29 @@ import de.knowwe.core.report.Messages;
  */
 public class ScriptCompiler<C extends Compiler> {
 
-	private final TreeMap<Priority, LinkedHashSet<CompilePair>> priorityMap;
+	private final TreeMap<Priority, LinkedHashSet<CompilePair>> compileMap =
+			new TreeMap<Priority, LinkedHashSet<CompilePair>>();
+
+	private final Set<CompilePair> pairSet = new HashSet<CompilePair>();
 
 	private Priority currentPriority;
 
 	private Iterator<CompilePair> currentIterator = null;
 
-	@SuppressWarnings("rawtypes")
-	private final Class[] typeFilter;
+	private final Class<?>[] typeFilter;
 
 	private final C compiler;
 
-	public ScriptCompiler(C compiler) {
-		this(compiler, null);
-
-	}
+	private final ScriptManager<C> scriptManager;
 
 	@SuppressWarnings("unchecked")
 	public ScriptCompiler(C compiler, Class<? extends Type>... filter) {
 		this.compiler = compiler;
-		this.typeFilter = filter;
-		if (this.typeFilter == null) {
+		scriptManager = CompilerManager.getScriptManager((Class<C>) compiler.getClass());
+		if (filter.length == 0) {
 			// if no typeFilter is given, we create one automatically by using the
 			// types compiled by the given compiler
-			Collection<Type> types = CompilerManager.getScriptManager(compiler).getTypes();
+			Collection<Type> types = scriptManager.getTypes();
 			// my guess is that, if we have more than 20 types, the filtering is
 			// no longer efficient and we can just traverse the complete KDOM
 			if (types.size() < 20) {
@@ -63,9 +67,9 @@ public class ScriptCompiler<C extends Compiler> {
 				}
 			}
 		}
-		priorityMap = new TreeMap<Priority, LinkedHashSet<CompilePair>>();
+		this.typeFilter = filter;
 		for (Priority p : Priority.getRegisteredPriorities()) {
-			priorityMap.put(p, new LinkedHashSet<CompilePair>());
+			compileMap.put(p, new LinkedHashSet<CompilePair>());
 		}
 		currentPriority = Priority.getRegisteredPriorities().first();
 	}
@@ -77,24 +81,29 @@ public class ScriptCompiler<C extends Compiler> {
 	 * available for the type of the section and the compiler are added.<p>
 	 * You can use this method while the article of this iterator is compiled.
 	 * The iterator will continue iterating over its sections in the correct
-	 * order also considering the newly added.
+	 * order also considering the newly added.<p>
+	 * The ScriptCompiler acts like a set, so you can add combinations of Sections and CompileScripts multiple times,
+	 * but
+	 * after the first time, it no longer has any effect and each combination will only be compiled once to avoid
+	 * loops.
 	 *
 	 * @param section      the section you want to add
 	 * @param scriptFilter the classes of the scripts you want to add
 	 * @created 27.07.2012
 	 */
 	public void addSection(Section<?> section, Class<? extends CompileScript>... scriptFilter) {
-		@SuppressWarnings("unchecked")
-		ScriptManager<C> scriptManager = CompilerManager.getScriptManager((Class<C>) compiler.getClass());
 		Map<Priority, List<CompileScript<C, Type>>> scripts =
 				scriptManager.getScripts(Sections.cast(section, Type.class).get());
 		for (Entry<Priority, List<CompileScript<C, Type>>> entry : scripts.entrySet()) {
 			Priority priority = entry.getKey();
-			LinkedHashSet<CompilePair> prioritySet = priorityMap.get(priority);
+			LinkedHashSet<CompilePair> compileSet = compileMap.get(priority);
 			for (CompileScript<C, Type> script : entry.getValue()) {
 				if (scriptFilter.length > 0 && !ArrayUtils.contains(scriptFilter, script.getClass())) continue;
 				CompilePair pair = new CompilePair(Sections.cast(section, Type.class), script);
-				if (prioritySet.add(pair)) {
+				// we only add pairs that are not already added before (e.g. during incremental compilation)
+				if (pairSet.add(pair)) {
+					compileSet.add(pair);
+					// we reset the iterator and priority in case we added
 					currentIterator = null;
 					if (priority.compareTo(currentPriority) > 0) currentPriority = priority;
 				}
@@ -109,17 +118,18 @@ public class ScriptCompiler<C extends Compiler> {
 	 * order also considering the newly added.<p>
 	 * Optionally you can add a filter to only add scripts of the given classes. If no filter is given, all scripts
 	 * available for the type of the sections and the compiler are added.<p>
+	 * The ScriptCompiler acts like a set, so you can add combinations of Sections and CompileScripts multiple times,
+	 * but after the first time, it no longer has any effect and each combination will only be compiled once to avoid
+	 * loops.
 	 *
-	 * @param section the section and its successors you want to add
+	 * @param section      the section and its successors you want to add
 	 * @param scriptFilter the classes of the scripts you want to add
 	 */
 	public void addSubtree(Section<?> section, Class<? extends CompileScript>... scriptFilter) {
-		@SuppressWarnings("unchecked")
-		ScriptManager<C> scriptManager = CompilerManager.getScriptManager((Class<C>) compiler.getClass());
 		if (scriptManager.hasScriptsForSubtree(section.get())) {
 			// do we still need the typeFilter if we already check if there are
 			// scripts for this compiler?
-			if (typeFilter == null || Sections.canHaveSuccessorOfType(section, typeFilter)) {
+			if (typeFilter.length == 0 || Sections.canHaveSuccessorOfType(section, typeFilter)) {
 				for (Section<?> child : section.getChildren()) {
 					addSubtree(child, scriptFilter);
 				}
@@ -129,14 +139,14 @@ public class ScriptCompiler<C extends Compiler> {
 	}
 
 	private boolean hasNext() {
-		if (priorityMap.isEmpty()) return false;
-		if (!priorityMap.get(currentPriority).isEmpty()) return true;
+		if (compileMap.isEmpty()) return false;
+		if (!compileMap.get(currentPriority).isEmpty()) return true;
 
 		// switch to lower priority if possible
 		while (Priority.decrement(currentPriority) != null) {
 			currentPriority = Priority.decrement(currentPriority);
 			currentIterator = null;
-			if (!priorityMap.get(currentPriority).isEmpty()) return true;
+			if (!compileMap.get(currentPriority).isEmpty()) return true;
 		}
 
 		return false;
@@ -144,15 +154,11 @@ public class ScriptCompiler<C extends Compiler> {
 
 	private CompilePair next() {
 		if (currentIterator == null) {
-			currentIterator = priorityMap.get(currentPriority).iterator();
+			currentIterator = compileMap.get(currentPriority).iterator();
 		}
 		CompilePair next = currentIterator.next();
 		currentIterator.remove();
 		return next;
-	}
-
-	public Priority getCurrentPriority() {
-		return Priority.getPriority(currentPriority.intValue());
 	}
 
 	public void compile() {

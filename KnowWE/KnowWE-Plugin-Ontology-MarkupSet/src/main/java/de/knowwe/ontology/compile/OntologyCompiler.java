@@ -152,17 +152,13 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 	}
 
 	@Override
-	public void addSectionsToDestroy(Collection<Section<?>> sections, Class<? extends CompileScript>... scriptFilter) {
-		for (Section<?> section : sections) {
-			destroyScriptCompiler.addSection(section, scriptFilter);
-		}
+	public void addSectionToDestroy(Section<?> section, Class<? extends CompileScript>... scriptFilter) {
+		destroyScriptCompiler.addSection(section, scriptFilter);
 	}
 
 	@Override
-	public void addSectionsToCompile(Collection<Section<?>> sections, Class<? extends CompileScript>... scriptFilter) {
-		for (Section<?> section : sections) {
-			scriptCompiler.addSection(section, scriptFilter);
-		}
+	public void addSectionToCompile(Section<?> section, Class<? extends CompileScript>... scriptFilter) {
+		scriptCompiler.addSection(section, scriptFilter);
 	}
 
 }

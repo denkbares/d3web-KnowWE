@@ -275,4 +275,27 @@ public class Compilers {
 
 	}
 
+	public static void addSectionsToDestroyAndCompile(IncrementalCompiler compiler, Collection<Section<?>> sections, Class<? extends CompileScript>... scriptFilter) {
+		for (Section<?> section : sections) {
+			compiler.addSectionToDestroy(section);
+			Article currentArticle = section.getArticleManager().getArticle(section.getTitle());
+			if (section.getArticle() == currentArticle) {
+				// the sections that have not been removed from the wiki are also compiled again
+				compiler.addSectionToCompile(section);
+			}
+		}
+	}
+
+	public static void addSectionsToCompile(IncrementalCompiler compiler, Collection<Section<?>> sections, Class<? extends CompileScript>... scriptFilter) {
+		for (Section<?> section : sections) {
+			compiler.addSectionToCompile(section, scriptFilter);
+		}
+	}
+
+	public static void addSectionsToDestroy(IncrementalCompiler compiler, Collection<Section<?>> sections, Class<? extends CompileScript>... scriptFilter) {
+		for (Section<?> section : sections) {
+			compiler.addSectionToDestroy(section, scriptFilter);
+		}
+	}
+
 }

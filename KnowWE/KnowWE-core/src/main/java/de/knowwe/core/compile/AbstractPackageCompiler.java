@@ -20,7 +20,6 @@ package de.knowwe.core.compile;
 
 import java.util.Collection;
 
-import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -28,7 +27,7 @@ import de.knowwe.core.kdom.parsing.Section;
 
 /**
  * Abstract class for PackageCompilers.
- * 
+ *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 14.11.2013
  */
@@ -90,7 +89,7 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 		String[] packagesToCompile = getCompileSection().get().getPackagesToCompile(
 				getCompileSection());
 		return this.getClass().getSimpleName() + " ("
-				+ Strings.concat(",  ", packagesToCompile) + ")";
+				+ compileSection.getTitle() + ")";
 	}
 
 }

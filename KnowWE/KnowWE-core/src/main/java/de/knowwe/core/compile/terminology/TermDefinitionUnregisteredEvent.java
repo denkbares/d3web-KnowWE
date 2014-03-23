@@ -22,14 +22,11 @@ package de.knowwe.core.compile.terminology;
 import de.d3web.strings.Identifier;
 import de.knowwe.core.event.CompilerEvent;
 
-/**
- * Created by jochenreutelshofer on 13.03.14.
- */
-public class TermDefinitionRegisteredEvent extends CompilerEvent {
+public class TermDefinitionUnregisteredEvent extends CompilerEvent {
 
 	private Identifier identifier;
 
-	public TermDefinitionRegisteredEvent(TermCompiler compiler, Identifier identifier) {
+	public TermDefinitionUnregisteredEvent(TermCompiler compiler, Identifier identifier) {
 		super(compiler);
 		this.identifier = identifier;
 	}
