@@ -32,6 +32,7 @@ import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -278,8 +279,7 @@ public class Compilers {
 	public static void addSectionsToDestroyAndCompile(IncrementalCompiler compiler, Collection<Section<?>> sections, Class<?>... scriptFilter) {
 		for (Section<?> section : sections) {
 			compiler.addSectionToDestroy(section);
-			Article currentArticle = section.getArticleManager().getArticle(section.getTitle());
-			if (section.getArticle() == currentArticle) {
+			if (Sections.isLive(section)) {
 				// the sections that have not been removed from the wiki are also compiled again
 				compiler.addSectionToCompile(section);
 			}

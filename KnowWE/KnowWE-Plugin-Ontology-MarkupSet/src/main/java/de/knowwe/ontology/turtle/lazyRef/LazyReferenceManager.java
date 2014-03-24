@@ -22,7 +22,6 @@ import de.knowwe.core.event.CompilerEvent;
 import de.knowwe.core.event.Event;
 import de.knowwe.core.event.EventListener;
 import de.knowwe.core.event.EventManager;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 
 public class LazyReferenceManager implements EventListener {
@@ -70,15 +69,7 @@ public class LazyReferenceManager implements EventListener {
 	private void destroyLazyReferences(TermCompiler compiler, Identifier identifier) {
 		if (compiler instanceof IncrementalCompiler) {
 			Collection<Section<?>> termReferenceSections = getTermReferenceSections(compiler, identifier);
-			IncrementalCompiler incrementalCompiler = (IncrementalCompiler) compiler;
-			for (Section<?> termReferenceSection : termReferenceSections) {
-				incrementalCompiler.addSectionToDestroy(termReferenceSection);
-				Article currentArticle = termReferenceSection.getArticleManager().getArticle(termReferenceSection.getTitle());
-				if (termReferenceSection.getArticle() == currentArticle) {
-					// the sections that have not been removed from the wiki also need to be compiled again
-					incrementalCompiler.addSectionToCompile(termReferenceSection);
-				}
-			}
+			Compilers.addSectionsToDestroyAndCompile((IncrementalCompiler) compiler, termReferenceSections);
 		}
 	}
 
