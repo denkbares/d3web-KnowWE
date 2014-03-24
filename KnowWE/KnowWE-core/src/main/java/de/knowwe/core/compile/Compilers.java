@@ -262,10 +262,10 @@ public class Compilers {
 				return ((PackageCompiler) o1).getCompileSection().compareTo(
 						((PackageCompiler) o2).getCompileSection());
 			}
-			else if (o1 instanceof PackageCompiler && !(o2 instanceof PackageCompiler)) {
+			else if (o1 instanceof PackageCompiler) {
 				return -1;
 			}
-			else if (!(o1 instanceof PackageCompiler) && o2 instanceof PackageCompiler) {
+			else if (o2 instanceof PackageCompiler) {
 				return 1;
 			}
 			else {
@@ -275,7 +275,7 @@ public class Compilers {
 
 	}
 
-	public static void addSectionsToDestroyAndCompile(IncrementalCompiler compiler, Collection<Section<?>> sections, Class<? extends CompileScript>... scriptFilter) {
+	public static void addSectionsToDestroyAndCompile(IncrementalCompiler compiler, Collection<Section<?>> sections, Class<?>... scriptFilter) {
 		for (Section<?> section : sections) {
 			compiler.addSectionToDestroy(section);
 			Article currentArticle = section.getArticleManager().getArticle(section.getTitle());
@@ -286,13 +286,13 @@ public class Compilers {
 		}
 	}
 
-	public static void addSectionsToCompile(IncrementalCompiler compiler, Collection<Section<?>> sections, Class<? extends CompileScript>... scriptFilter) {
+	public static void addSectionsToCompile(IncrementalCompiler compiler, Collection<Section<?>> sections, Class<?>... scriptFilter) {
 		for (Section<?> section : sections) {
 			compiler.addSectionToCompile(section, scriptFilter);
 		}
 	}
 
-	public static void addSectionsToDestroy(IncrementalCompiler compiler, Collection<Section<?>> sections, Class<? extends CompileScript>... scriptFilter) {
+	public static void addSectionsToDestroy(IncrementalCompiler compiler, Collection<Section<?>> sections, Class<?>... scriptFilter) {
 		for (Section<?> section : sections) {
 			compiler.addSectionToDestroy(section, scriptFilter);
 		}

@@ -41,7 +41,7 @@ public interface IncrementalCompiler extends Compiler {
 	 * @param scriptFilter the classes of the scripts you want to add
 	 * @created 04.01.2014
 	 */
-	public void addSectionToDestroy(Section<?> section, Class<? extends CompileScript>... scriptFilter);
+	public void addSectionToDestroy(Section<?> section, Class<?>... scriptFilter);
 
 	/**
 	 * Adds the given {@link Section} to also be compiled in the current
@@ -54,6 +54,6 @@ public interface IncrementalCompiler extends Compiler {
 	 * @param scriptFilter the classes of the scripts you want to add
 	 * @created 04.01.2014
 	 */
-	public void addSectionToCompile(Section<?> section, Class<? extends CompileScript>... scriptFilter);
+	public void addSectionToCompile(Section<?> section, Class<?>... scriptFilter);
 
 }

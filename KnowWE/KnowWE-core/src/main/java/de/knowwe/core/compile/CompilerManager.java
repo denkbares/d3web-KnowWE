@@ -59,8 +59,7 @@ public class CompilerManager {
 		this.articleManager = articleManager;
 		this.compilerCache = new HashSet<Compiler>();
 		this.compilers = new PriorityList<Double, Compiler>(5d);
-		ExecutorService pool = createExecutorService();
-		this.threadPool = pool;
+		this.threadPool = createExecutorService();
 	}
 
 	private static ExecutorService createExecutorService() {
@@ -69,8 +68,7 @@ public class CompilerManager {
 
 			@Override
 			public Thread newThread(Runnable r) {
-				Thread thread = new Thread(r, "KnowWE-Compiler");
-				return thread;
+				return new Thread(r, "KnowWE-Compiler");
 			}
 		});
 		Log.fine("created multicore thread pool of size " + threadCount);

@@ -7,7 +7,6 @@ import org.ontoware.rdf2go.model.node.Node;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compilers;
-import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.SimpleReference;
@@ -34,8 +33,7 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 		this.setSectionFinder(new AllTextFinderTrimmed());
 		this.setRenderer(StyleRenderer.Question);
 		this.removeCompileScript(OntologyCompiler.class, SimpleReferenceRegistrationScript.class);
-		// we register lazy URIs as references after all ontology term definitions are registered with HIGHER
-		this.addCompileScript(Priority.HIGH, new LazyURIReferenceHandler());
+		this.addCompileScript(new LazyURIReferenceHandler());
 	}
 
 	@Override

@@ -50,24 +50,24 @@ public class ScriptCompiler<C extends Compiler> {
 	private final ScriptManager<C> scriptManager;
 
 	@SuppressWarnings("unchecked")
-	public ScriptCompiler(C compiler, Class<? extends Type>... filter) {
+	public ScriptCompiler(C compiler, Class<?>... typeFilter) {
 		this.compiler = compiler;
 		scriptManager = CompilerManager.getScriptManager((Class<C>) compiler.getClass());
-		if (filter.length == 0) {
+		if (typeFilter.length == 0) {
 			// if no typeFilter is given, we create one automatically by using the
 			// types compiled by the given compiler
 			Collection<Type> types = scriptManager.getTypes();
 			// my guess is that, if we have more than 20 types, the filtering is
 			// no longer efficient and we can just traverse the complete KDOM
 			if (types.size() < 20) {
-				filter = new Class[types.size()];
+				typeFilter = new Class[types.size()];
 				int i = 0;
 				for (Type type : types) {
-					filter[i++] = type.getClass();
+					typeFilter[i++] = type.getClass();
 				}
 			}
 		}
-		this.typeFilter = filter;
+		this.typeFilter = typeFilter;
 		for (Priority p : Priority.getRegisteredPriorities()) {
 			compileMap.put(p, new LinkedHashSet<CompilePair>());
 		}
@@ -91,7 +91,7 @@ public class ScriptCompiler<C extends Compiler> {
 	 * @param scriptFilter the classes of the scripts you want to add
 	 * @created 27.07.2012
 	 */
-	public void addSection(Section<?> section, Class<? extends CompileScript>... scriptFilter) {
+	public void addSection(Section<?> section, Class<?>... scriptFilter) {
 		Map<Priority, List<CompileScript<C, Type>>> scripts =
 				scriptManager.getScripts(Sections.cast(section, Type.class).get());
 		for (Entry<Priority, List<CompileScript<C, Type>>> entry : scripts.entrySet()) {
@@ -125,7 +125,7 @@ public class ScriptCompiler<C extends Compiler> {
 	 * @param section      the section and its successors you want to add
 	 * @param scriptFilter the classes of the scripts you want to add
 	 */
-	public void addSubtree(Section<?> section, Class<? extends CompileScript>... scriptFilter) {
+	public void addSubtree(Section<?> section, Class<?>... scriptFilter) {
 		if (scriptManager.hasScriptsForSubtree(section.get())) {
 			// do we still need the typeFilter if we already check if there are
 			// scripts for this compiler?
