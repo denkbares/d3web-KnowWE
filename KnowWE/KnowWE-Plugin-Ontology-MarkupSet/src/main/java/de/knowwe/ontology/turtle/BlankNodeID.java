@@ -30,7 +30,7 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
-import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 public class BlankNodeID extends AbstractType implements NodeProvider<BlankNodeID> {
 
@@ -50,9 +50,9 @@ public class BlankNodeID extends AbstractType implements NodeProvider<BlankNodeI
 	}
 
 	@Override
-	public Node getNode(Section<BlankNodeID> section, Rdf2GoCore core) {
+	public Node getNode(Section<BlankNodeID> section, Rdf2GoCompiler core) {
 		Section<TurtleContent> content = Sections.findAncestorOfExactType(section,
 				TurtleContent.class);
-		return core.createBlankNode(content.getID() + "_" + section.getText());
+		return core.getRdf2GoCore().createBlankNode(content.getID() + "_" + section.getText());
 	}
 }

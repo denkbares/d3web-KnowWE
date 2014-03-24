@@ -29,7 +29,7 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.ontology.turtle.compile.ResourceProvider;
-import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 public class BlankNode extends AbstractType implements ResourceProvider<BlankNode> {
 
@@ -64,12 +64,12 @@ public class BlankNode extends AbstractType implements ResourceProvider<BlankNod
 	}
 
 	@Override
-	public Node getNode(Section<BlankNode> section, Rdf2GoCore core) {
-		return core.createBlankNode(section.getID());
+	public Node getNode(Section<BlankNode> section, Rdf2GoCompiler core) {
+		return core.getRdf2GoCore().createBlankNode(section.getID());
 	}
 
 	@Override
-	public Resource getResource(Section<BlankNode> section, Rdf2GoCore core) {
+	public Resource getResource(Section<BlankNode> section, Rdf2GoCompiler core) {
 		return (Resource) getNode(section, core);
 	}
 

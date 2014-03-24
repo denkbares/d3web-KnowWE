@@ -32,7 +32,7 @@ import de.knowwe.ontology.edit.DropTargetRenderer;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.URIProvider;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
-import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 public class Predicate extends AbstractType implements URIProvider<Predicate> {
 
@@ -47,11 +47,10 @@ public class Predicate extends AbstractType implements URIProvider<Predicate> {
 				new DropTargetRenderer()));
 	}
 
-
 	@Override
 	@SuppressWarnings({
 			"rawtypes", "unchecked" })
-	public Node getNode(Section<Predicate> section, Rdf2GoCore core) {
+	public Node getNode(Section<Predicate> section, Rdf2GoCompiler core) {
 		// there should be exactly one NodeProvider successor
 		List<Section<?>> children = section.getChildren();
 		for (Section<?> child : children) {
@@ -67,7 +66,7 @@ public class Predicate extends AbstractType implements URIProvider<Predicate> {
 	}
 
 	@Override
-	public URI getURI(Section<Predicate> section, Rdf2GoCore core) {
+	public URI getURI(Section<Predicate> section, Rdf2GoCompiler core) {
 		return (URI) getNode(section, core);
 	}
 }

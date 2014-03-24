@@ -27,7 +27,7 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
-import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 public class TurtleLongURI extends AbstractType implements NodeProvider<TurtleLongURI> {
 
@@ -42,15 +42,13 @@ public class TurtleLongURI extends AbstractType implements NodeProvider<TurtleLo
 		});
 	}
 
-
-
 	private String getURI(Section<TurtleLongURI> section) {
 		return section.getText().substring(1, section.getText().length() - 1);
 	}
 
 	@Override
-	public Node getNode(Section<TurtleLongURI> section, Rdf2GoCore core) {
+	public Node getNode(Section<TurtleLongURI> section, Rdf2GoCompiler core) {
 		String uri = getURI(section);
-		return core.createURI(uri);
+		return core.getRdf2GoCore().createURI(uri);
 	}
 }

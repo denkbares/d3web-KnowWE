@@ -6,7 +6,6 @@ import org.ontoware.rdf2go.model.node.Node;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.SimpleReference;
@@ -22,7 +21,7 @@ import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.resource.Resource;
 import de.knowwe.ontology.turtle.TurtleURI;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
-import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 public class LazyURIReference extends SimpleReference implements NodeProvider<LazyURIReference> {
 
@@ -37,18 +36,18 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 	}
 
 	@Override
-	public Node getNode(Section<LazyURIReference> section, Rdf2GoCore core) {
-		return TurtleURI.getNodeForIdentifier(core, getTermIdentifier(section));
-	}
-
-	@Override
-	public Identifier getTermIdentifier(Section<? extends Term> section) {
-		OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
+	public Node getNode(Section<LazyURIReference> section, Rdf2GoCompiler compiler) {
 		Identifier identifier = (Identifier) section.getSectionStore().getObject(compiler, IDENTIFIER_KEY);
 		if (identifier == null) {
 			throw new IllegalStateException("Cannot get identifier before compilation");
 		}
-		return identifier;
+		return TurtleURI.getNodeForIdentifier(compiler.getRdf2GoCore(), identifier);
+	}
+
+	@Override
+	public Identifier getTermIdentifier(Section<? extends Term> section) {
+		return new Identifier(getTermName(section));
+
 	}
 
 	public static Collection<Identifier> getPotentiallyMatchingIdentifiers(TermCompiler termCompiler, Section<?> section) {
@@ -91,7 +90,6 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 			// we always also register the section as a reference to the name to be able to update if new identifiers with
 			// the same name are registered
 			manager.registerTermReference(compiler, section, getTermObjectClass(section), new Identifier(termName));
-			manager.registerTermReference(compiler, section, getTermObjectClass(section), identifier);
 
 			if (message == null) {
 				// we overwrite existing messages
@@ -106,8 +104,6 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 		public void destroy(OntologyCompiler compiler, Section<LazyURIReference> section) {
 			compiler.getTerminologyManager().unregisterTermReference(compiler,
 					section, getTermObjectClass(section), new Identifier(getTermName(section)));
-			compiler.getTerminologyManager().unregisterTermReference(compiler,
-					section, getTermObjectClass(section), getTermIdentifier(section));
 			section.getSectionStore().removeObject(compiler, IDENTIFIER_KEY);
 		}
 	}

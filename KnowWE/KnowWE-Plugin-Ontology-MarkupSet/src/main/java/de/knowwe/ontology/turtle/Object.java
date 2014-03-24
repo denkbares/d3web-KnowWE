@@ -46,7 +46,7 @@ import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.StatementProvider;
 import de.knowwe.ontology.turtle.compile.StatementProviderResult;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
-import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 public class Object extends AbstractType implements NodeProvider<Object>, StatementProvider<Object> {
 
@@ -104,13 +104,11 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 
 			List<Section<Predicate>> predicates = getPredicates(s);
 			boolean hasInstancePredicate = false;
-			Section<Predicate> predicate = null;
 			for (Section<Predicate> section : predicates) {
 				for (String exp : matchExpressions) {
 
 					if (section.getText().matches(exp)) {
 						hasInstancePredicate = true;
-						predicate = section;
 					}
 				}
 			}
@@ -130,7 +128,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 	}
 
 	@Override
-	public StatementProviderResult getStatements(Section<Object> section, Rdf2GoCore core) {
+	public StatementProviderResult getStatements(Section<Object> section, Rdf2GoCompiler core) {
 
 		StatementProviderResult result = new StatementProviderResult();
 		boolean termError = false;
@@ -228,7 +226,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 
 		// create statement if all nodes are present
 		if (object != null && predicate != null && subject != null) {
-			result.addStatement(core.createStatement(subject, predicate, object));
+			result.addStatement(core.getRdf2GoCore().createStatement(subject, predicate, object));
 		}
 		return result;
 	}
@@ -243,7 +241,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 	@Override
 	@SuppressWarnings({
 			"rawtypes", "unchecked" })
-	public Node getNode(Section<Object> section, Rdf2GoCore core) {
+	public Node getNode(Section<Object> section, Rdf2GoCompiler core) {
 		// there should be exactly one NodeProvider child (while potentially
 		// many successors)
 		List<Section<NodeProvider>> nodeProviderSections = Sections.findChildrenOfType(section,

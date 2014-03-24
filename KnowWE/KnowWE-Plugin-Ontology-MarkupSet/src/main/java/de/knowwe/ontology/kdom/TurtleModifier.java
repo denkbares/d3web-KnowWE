@@ -32,6 +32,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.parsing.Sections.ReplaceResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 /**
@@ -50,7 +51,7 @@ import de.knowwe.rdf2go.Rdf2GoCore;
  */
 public class TurtleModifier {
 
-	private final Rdf2GoCore core;
+	private final Rdf2GoCompiler compiler;
 	private final boolean compactMode;
 	private final String preferredIndent;
 	private final Map<Article, ArticleTurtleModifier> modifiers = new HashMap<Article, ArticleTurtleModifier>();
@@ -70,7 +71,7 @@ public class TurtleModifier {
 	 * 
 	 * @param core the core that compiles the turtle to be modified
 	 */
-	public TurtleModifier(Rdf2GoCore core) {
+	public TurtleModifier(Rdf2GoCompiler core) {
 		this(core, true);
 	}
 
@@ -93,7 +94,7 @@ public class TurtleModifier {
 	 *        readability with line-breaks for each property and value, using
 	 *        indenting).
 	 */
-	public TurtleModifier(Rdf2GoCore core, boolean compactMode) {
+	public TurtleModifier(Rdf2GoCompiler core, boolean compactMode) {
 		this(core, compactMode, "  ");
 	}
 
@@ -115,8 +116,8 @@ public class TurtleModifier {
 	 * @param preferredIndent the preferred indent to be used, should consist of
 	 *        spaces and tab characters only
 	 */
-	public TurtleModifier(Rdf2GoCore core, boolean compactMode, String preferredIndent) {
-		this.core = core;
+	public TurtleModifier(Rdf2GoCompiler core, boolean compactMode, String preferredIndent) {
+		this.compiler = core;
 		this.compactMode = compactMode;
 		this.preferredIndent = preferredIndent;
 	}
@@ -127,7 +128,7 @@ public class TurtleModifier {
 	 * @param modifier the turtle modifier to be copied
 	 */
 	public TurtleModifier(TurtleModifier modifier) {
-		this(modifier.core, modifier.compactMode, modifier.preferredIndent);
+		this(modifier.compiler, modifier.compactMode, modifier.preferredIndent);
 		addAll(modifier);
 	}
 
@@ -138,7 +139,7 @@ public class TurtleModifier {
 	 * @return the core of this modifier
 	 */
 	public Rdf2GoCore getCore() {
-		return core;
+		return compiler.getRdf2GoCore();
 	}
 
 	/**
@@ -205,7 +206,7 @@ public class TurtleModifier {
 		if (statements == null) return;
 		if (statements.isEmpty()) return;
 		for (Statement statement : statements) {
-			for (Article article : core.getSourceArticles(statement)) {
+			for (Article article : compiler.getRdf2GoCore().getSourceArticles(statement)) {
 				getModifier(article).addDelete(statement);
 			}
 		}
@@ -220,7 +221,7 @@ public class TurtleModifier {
 	private ArticleTurtleModifier getModifier(Article article) {
 		ArticleTurtleModifier modifier = modifiers.get(article);
 		if (modifier == null) {
-			modifier = new ArticleTurtleModifier(core, article, compactMode, preferredIndent);
+			modifier = new ArticleTurtleModifier(compiler, article, compactMode, preferredIndent);
 			modifiers.put(article, modifier);
 		}
 		return modifier;
@@ -278,6 +279,6 @@ public class TurtleModifier {
 	 */
 	public Set<Article> getArticles() {
 		return modifiers.keySet();
-	};
+	}
 
 }

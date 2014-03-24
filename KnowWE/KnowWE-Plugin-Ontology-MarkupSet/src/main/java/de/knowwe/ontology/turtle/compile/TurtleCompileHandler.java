@@ -25,7 +25,7 @@ public class TurtleCompileHandler extends OntologyHandler<TurtleSentence> {
 		for (Section<StatementProvider> statementSection : statementProviders) {
 
 			StatementProviderResult providerResult = statementSection.get().getStatements(
-					statementSection, compiler.getRdf2GoCore());
+					statementSection, compiler);
 			if (providerResult != null) {
 				compiler.getRdf2GoCore().addStatements(section, providerResult.getStatments());
 				messages.addAll(providerResult.getMessages());

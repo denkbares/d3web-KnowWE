@@ -33,6 +33,7 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.utils.Patterns;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class TurtleLiteralType extends AbstractType implements NodeProvider<TurtleLiteralType> {
@@ -42,8 +43,7 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 	public static final String LITERAL_SUFFIX = "(?:" + LANGUAGE_TAG + "|" + XSD_PATTERN + ")";
 
 	/**
-	 * Either single quoted word and optionally xsd type or normal quote and
-	 * mandatory xsd type.
+	 * Either single quoted word and optionally xsd type or normal quote and mandatory xsd type.
 	 */
 	private static final String LITERAL_PATTERN =
 			Patterns.SINGLE_QUOTED + LITERAL_SUFFIX + "?"
@@ -140,8 +140,8 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 	}
 
 	@Override
-	public Node getNode(Section<TurtleLiteralType> section, Rdf2GoCore core) {
-		return getLiteral(core, section);
+	public Node getNode(Section<TurtleLiteralType> section, Rdf2GoCompiler core) {
+		return getLiteral(core.getRdf2GoCore(), section);
 	}
 
 }

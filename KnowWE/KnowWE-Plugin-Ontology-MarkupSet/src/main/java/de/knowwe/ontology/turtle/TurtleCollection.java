@@ -40,7 +40,7 @@ import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.ResourceProvider;
 import de.knowwe.ontology.turtle.compile.StatementProvider;
 import de.knowwe.ontology.turtle.compile.StatementProviderResult;
-import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 public class TurtleCollection extends AbstractType implements ResourceProvider<TurtleCollection>, StatementProvider<TurtleCollection> {
 
@@ -111,12 +111,12 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 	}
 
 	@Override
-	public Node getNode(Section<TurtleCollection> section, Rdf2GoCore core) {
-		return core.createBlankNode(section.getID());
+	public Node getNode(Section<TurtleCollection> section, Rdf2GoCompiler core) {
+		return core.getRdf2GoCore().createBlankNode(section.getID());
 	}
 
 	@Override
-	public StatementProviderResult getStatements(Section<TurtleCollection> section, Rdf2GoCore core) {
+	public StatementProviderResult getStatements(Section<TurtleCollection> section, Rdf2GoCompiler core) {
 		StatementProviderResult result = new StatementProviderResult();
 		List<Section<CollectionItem>> listItems = new ArrayList<Section<CollectionItem>>();
 		Sections.findSuccessorsOfType(section,
@@ -126,7 +126,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 			addListStatements(listNode, 0, listItems, result, core, section);
 		}
 		else {
-			result.addStatement(core.createStatement(listNode, RDF.rest,
+			result.addStatement(core.getRdf2GoCore().createStatement(listNode, RDF.rest,
 					RDF.nil));
 		}
 
@@ -135,7 +135,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 
 	@SuppressWarnings({
 			"unchecked", "rawtypes" })
-	private void addListStatements(Resource subject, int listIndex, List<Section<CollectionItem>> subList, StatementProviderResult result, Rdf2GoCore core, Section<TurtleCollection> collectionSection) {
+	private void addListStatements(Resource subject, int listIndex, List<Section<CollectionItem>> subList, StatementProviderResult result, Rdf2GoCompiler core, Section<TurtleCollection> collectionSection) {
 
 		Section<CollectionItem> dataSection = subList.get(0);
 
@@ -144,21 +144,22 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 				NodeProvider.class);
 
 		// add data triple
-		result.addStatement(core.createStatement(subject, RDF.first,
+		result.addStatement(core.getRdf2GoCore().createStatement(subject, RDF.first,
 				dataNodeSection.get().getNode(dataNodeSection, core)));
 
 		// go on to next list element
 		List<Section<CollectionItem>> nextSublist = subList.subList(1, subList.size());
 		if (nextSublist.size() == 0) {
 			// end of list and end of recursion
-			result.addStatement(core.createStatement(subject, RDF.rest, RDF.nil));
+			result.addStatement(core.getRdf2GoCore().createStatement(subject, RDF.rest, RDF.nil));
 
 		}
 		else {
 			listIndex++;
-			org.ontoware.rdf2go.model.node.BlankNode nextListNode = core.createBlankNode(collectionSection.getID()
-					+ "_" + listIndex);
-			result.addStatement(core.createStatement(subject, RDF.rest, nextListNode));
+			org.ontoware.rdf2go.model.node.BlankNode nextListNode = core.getRdf2GoCore()
+					.createBlankNode(collectionSection.getID()
+							+ "_" + listIndex);
+			result.addStatement(core.getRdf2GoCore().createStatement(subject, RDF.rest, nextListNode));
 
 			addListStatements(nextListNode, listIndex,
 					nextSublist, result, core, collectionSection);
@@ -167,7 +168,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 	}
 
 	@Override
-	public Resource getResource(Section<TurtleCollection> section, Rdf2GoCore core) {
+	public Resource getResource(Section<TurtleCollection> section, Rdf2GoCompiler core) {
 		return (Resource) getNode(section, core);
 	}
 

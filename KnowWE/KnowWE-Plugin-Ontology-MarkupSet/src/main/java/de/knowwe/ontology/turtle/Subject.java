@@ -37,7 +37,7 @@ import de.knowwe.ontology.kdom.resource.ResourceReference;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.ResourceProvider;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
-import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 public class Subject extends AbstractType implements ResourceProvider<Subject> {
 
@@ -58,8 +58,7 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 	private Type createSubjectURIWithDefinition() {
 		TurtleURI turtleURI = new TurtleURI();
 		SimpleReference reference = Types.findSuccessorType(turtleURI, ResourceReference.class);
-		reference.addCompileScript(Priority.HIGH,
-				new SubjectPredicateKeywordDefinitionHandler(new String[] { "[\\w]*?:type", "rdfs:subClassOf", "rdfs:subPropertyOf" }));
+		reference.addCompileScript(Priority.HIGH, new SubjectPredicateKeywordDefinitionHandler(new String[] { "[\\w]*?:type", "[\\w]*?:subClassOf", "[\\w]*?:subPropertyOf" }));
 		return turtleURI;
 	}
 
@@ -80,19 +79,19 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 	@Override
 	@SuppressWarnings({
 			"rawtypes", "unchecked" })
-	public Node getNode(Section<Subject> section, Rdf2GoCore core) {
+	public Node getNode(Section<Subject> section, Rdf2GoCompiler compiler) {
 		// there should be exactly one NodeProvider child (while potentially
 		// many successors)
 		Section<NodeProvider> nodeProviderChild = Sections.findChildOfType(section,
 				NodeProvider.class);
 		if (nodeProviderChild != null) {
-			return nodeProviderChild.get().getNode(nodeProviderChild, core);
+			return nodeProviderChild.get().getNode(nodeProviderChild, compiler);
 		}
 		return null;
 	}
 
 	@Override
-	public Resource getResource(Section<Subject> section, Rdf2GoCore core) {
+	public Resource getResource(Section<Subject> section, Rdf2GoCompiler core) {
 		return (Resource) getNode(section, core);
 
 	}

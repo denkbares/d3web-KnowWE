@@ -61,7 +61,7 @@ import de.knowwe.ontology.turtle.Subject;
 import de.knowwe.ontology.turtle.TurtleContent;
 import de.knowwe.ontology.turtle.TurtleMarkup;
 import de.knowwe.ontology.turtle.TurtleSentence;
-import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 /**
  * This class allows to add and remove statements to/from the turtle markup of a
@@ -114,7 +114,7 @@ public class ArticleTurtleModifier {
 	/*
 	 * Statements to be modified
 	 */
-	private final Rdf2GoCore core;
+	private final Rdf2GoCompiler compiler;
 	private final List<Statement> insertStatements = new LinkedList<Statement>();
 	private final List<Statement> deleteStatements = new LinkedList<Statement>();
 
@@ -171,13 +171,13 @@ public class ArticleTurtleModifier {
 	 * Returns an instance that compiles any section in this article (taking the
 	 * terms as a basis)
 	 */
-	private static Rdf2GoCore findCore(Article article) {
+	private static Rdf2GoCompiler findCore(Article article) {
 		for (Section<?> section : Sections.successors(article.getRootSection(), Term.class)) {
 			OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
 			if (compiler == null) continue;
-			return compiler.getRdf2GoCore();
+			return compiler;
 		}
-		return Rdf2GoCore.getInstance();
+		return null;
 	}
 
 	/**
@@ -194,8 +194,8 @@ public class ArticleTurtleModifier {
 	 * @param preferredIndent the preferred indent to be used, should consist of
 	 *        spaces and tab characters only
 	 */
-	public ArticleTurtleModifier(Rdf2GoCore core, Article article, boolean compactMode, String preferredIndent) {
-		this.core = core;
+	public ArticleTurtleModifier(Rdf2GoCompiler core, Article article, boolean compactMode, String preferredIndent) {
+		this.compiler = core;
 		this.article = article;
 		this.compactMode = compactMode;
 		this.preferredIndent = preferredIndent;
@@ -478,13 +478,13 @@ public class ArticleTurtleModifier {
 	 */
 	private String toTurtle(Node node) {
 		if (node instanceof URI) {
-			String text = core.toShortURI(node.asURI()).toString();
+			String text = compiler.getRdf2GoCore().toShortURI(node.asURI()).toString();
 			if (text.startsWith("lns:")) text = text.substring(3);
 			return text;
 		}
 		if (node instanceof DatatypeLiteral) {
 			DatatypeLiteral literal = node.asDatatypeLiteral();
-			URI datatype = core.toShortURI(literal.getDatatype());
+			URI datatype = compiler.getRdf2GoCore().toShortURI(literal.getDatatype());
 			return Strings.quote(literal.getValue()) + "^^" + datatype;
 		}
 		if (node instanceof LanguageTagLiteral) {
@@ -774,7 +774,7 @@ public class ArticleTurtleModifier {
 		if (sentence == null) return false;
 		Section<Subject> subject = Sections.successor(sentence, Subject.class);
 		if (subject == null) return false;
-		Resource resource = subject.get().getResource(subject, core);
+		Resource resource = subject.get().getResource(subject, compiler);
 		return resource.equals(statement.getSubject());
 	}
 
@@ -782,13 +782,13 @@ public class ArticleTurtleModifier {
 		if (predicateSentence == null) return false;
 		Section<Predicate> predicate = Sections.successor(predicateSentence, Predicate.class);
 		if (predicate == null) return false;
-		URI uri = predicate.get().getURI(predicate, core);
+		URI uri = predicate.get().getURI(predicate, compiler);
 		return uri.equals(statement.getPredicate());
 	}
 
 	private boolean hasSameObject(Section<Object> object, Statement statement) {
 		if (object == null) return false;
-		Node node = object.get().getNode(object, core);
+		Node node = object.get().getNode(object, compiler);
 		return node.equals(statement.getObject());
 	}
 

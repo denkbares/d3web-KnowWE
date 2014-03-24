@@ -28,13 +28,12 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.table.Table;
 import de.knowwe.kdom.table.TableLine;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
-import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.utils.ResultTableModel;
 import de.knowwe.rdf2go.utils.SimpleTableRow;
 import de.knowwe.rdf2go.utils.TableRow;
 
 /**
- * 
  * @author jochenreutelshofer
  * @created 10.01.2014
  */
@@ -44,11 +43,11 @@ public class ExpectedSparqlResultTable extends Table {
 		this.injectTableCellContentChildtype(new ExpectedSparqlResultTableCellContent());
 	}
 
-	public static ResultTableModel getResultTableModel(Section<ExpectedSparqlResultTable> table, List<String> variables, Rdf2GoCore core) {
+	public static ResultTableModel getResultTableModel(Section<ExpectedSparqlResultTable> table, List<String> variables, Rdf2GoCompiler c) {
 		List<TableRow> rows = new ArrayList<TableRow>();
 		List<Section<TableLine>> lines = Sections.findSuccessorsOfType(table, TableLine.class);
 		for (Section<TableLine> line : lines) {
-			SimpleTableRow row = createResultRow(line, variables, core);
+			SimpleTableRow row = createResultRow(line, variables, c);
 			rows.add(row);
 		}
 
@@ -57,7 +56,7 @@ public class ExpectedSparqlResultTable extends Table {
 
 	@SuppressWarnings({
 			"rawtypes", "unchecked" })
-	private static SimpleTableRow createResultRow(Section<TableLine> line, List<String> variables, Rdf2GoCore core) {
+	private static SimpleTableRow createResultRow(Section<TableLine> line, List<String> variables, Rdf2GoCompiler core) {
 		List<Section<NodeProvider>> nodeProviders = Sections.findSuccessorsOfType(line,
 				NodeProvider.class);
 		SimpleTableRow row = new SimpleTableRow();

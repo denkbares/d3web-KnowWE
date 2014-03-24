@@ -28,18 +28,19 @@ import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
 import de.d3web.testing.TestParameter.Mode;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.ontology.ci.provider.SparqlExpectedResultSection;
 import de.knowwe.ontology.ci.provider.SparqlTestObjectProviderUtils;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.SparqlContentType;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.rdf2go.utils.ResultTableModel;
 
 /**
- * 
  * @author jochenreutelshofer
  * @created 10.01.2014
  */
@@ -83,7 +84,8 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 		}
 
 		Section<SparqlContentType> querySection = querySections.iterator().next();
-		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCoreForDefaultMarkupSubSection(querySection);
+		Rdf2GoCompiler compiler = Compilers.getCompiler(querySection, Rdf2GoCompiler.class);
+		Rdf2GoCore core = compiler.getRdf2GoCore();
 
 		if (core == null) {
 			return new Message(Message.Type.ERROR,
@@ -99,7 +101,7 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 		List<String> variables = actualResultTable.getVariables();
 
 		ResultTableModel expectedResultTable = ExpectedSparqlResultTable.getResultTableModel(
-				expectedResultTableSection, variables, core);
+				expectedResultTableSection, variables, compiler);
 
 		boolean atLeastFlag = false;
 		if (args.length > 0) {
