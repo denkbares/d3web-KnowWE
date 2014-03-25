@@ -116,9 +116,9 @@ public class SectionStore {
 	 * @param key is the key for which the Object should be removed
 	 * @created 16.03.2014
 	 */
-	public void removeObject(String key) {
+	public Object removeObject(String key) {
 		//noinspection RedundantCast
-		removeObject((Compiler) null, key);
+		return removeObject((Compiler) null, key);
 	}
 
 	/**
@@ -156,12 +156,13 @@ public class SectionStore {
 	 * @param key      is the key for which the Object should be removed
 	 * @created 16.03.2014
 	 */
-	public void removeObject(Compiler compiler, String key) {
+	public Object removeObject(Compiler compiler, String key) {
 		Map<String, Object> storeForCompiler = getStoreForCompiler(compiler);
-		if (storeForCompiler == null) return;
-		storeForCompiler.remove(key);
+		if (storeForCompiler == null) return null;
+		Object removed = storeForCompiler.remove(key);
 		if (storeForCompiler.isEmpty()) store.remove(compiler);
 		if (store.isEmpty()) store = null;
+		return removed;
 	}
 
 	private Map<String, Object> getStoreForCompiler(Compiler compiler) {
