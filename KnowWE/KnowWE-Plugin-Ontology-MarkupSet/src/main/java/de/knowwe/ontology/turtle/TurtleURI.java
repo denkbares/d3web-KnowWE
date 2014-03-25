@@ -22,16 +22,12 @@ import org.ontoware.rdf2go.model.node.Node;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
-import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
+import de.knowwe.kdom.renderer.CompositeRenderer;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
 import de.knowwe.ontology.kdom.resource.ResourceReference;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
@@ -47,21 +43,9 @@ public class TurtleURI extends AbbreviatedResourceReference implements NodeProvi
 				new RegexSectionFinder("\\w*:.+"));
 		c.addConstraint(AtMostOneFindingConstraint.getInstance());
 		setSectionFinder(c);
-		this.setRenderer(new TurtleURIDragRenderer());
+		this.setRenderer(new CompositeRenderer(new TermDragSurroundingRenderer()));
 	}
 
-	private class TurtleURIDragRenderer implements Renderer {
-		@Override
-		public void render(Section<?> section, UserContext user, RenderResult result) {
-			Section<Term> termSection = Sections.findSuccessor(section, Term.class);
-			String identifier = termSection.get().getTermIdentifier(termSection).toExternalForm();
-			result.appendHtml("<div id='draggable' style='display:inline;' class='dragMarkupTerm'>");
-			result.appendHtml("<div class='termID'>" + identifier + "</div>");
-			DelegateRenderer.getInstance().render(section, user, result);
-			result.appendHtml("</div>");
-		}
-
-	}
 
 	@Override
 	public Node getNode(Section<TurtleURI> section, Rdf2GoCompiler compiler) {

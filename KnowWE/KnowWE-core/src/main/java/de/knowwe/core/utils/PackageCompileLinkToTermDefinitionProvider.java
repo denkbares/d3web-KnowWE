@@ -33,7 +33,6 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
- * 
  * @author jochenreutelshofer
  * @created 24.04.2013
  */
@@ -51,7 +50,7 @@ public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDef
 			return null;
 		}
 
-		return createBaseURL() + "?page=" + targetArticle;
+		return KnowWEUtils.getURLLink(targetArticle);
 	}
 
 	public static TerminologyManager getTerminologyManager(String master) {
@@ -72,9 +71,8 @@ public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDef
 	}
 
 	/**
-	 * 
-	 * @created 29.11.2012
 	 * @return
+	 * @created 29.11.2012
 	 */
 	public String createBaseURL() {
 		return Environment.getInstance().getWikiConnector().getBaseUrl() + "Wiki.jsp";
