@@ -26,9 +26,11 @@ import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.omg.CosNaming._BindingIteratorImplBase;
 
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -44,7 +46,8 @@ public class GetInfosForInlineTermRenamingAction extends AbstractAction {
 		Section<?> section = Sections.getSection(sectionid);
 		Identifier termIdentifier = ((Term) section.get()).getTermIdentifier((Section<? extends Term>) section);
 
-		Set<String> allTermOccurences = getAllTermOccurences(section, termIdentifier);
+		Set<String> allTermOccurences = getAllTermOccurencesOnThisArticle(section, termIdentifier, context.getArticle());
+
 
 		JSONObject json = new JSONObject();
 		try {
@@ -60,7 +63,7 @@ public class GetInfosForInlineTermRenamingAction extends AbstractAction {
 
 	}
 
-	private Set<String> getAllTermOccurences(Section<?> section, Identifier termIdentifier) {
+	private Set<String> getAllTermOccurencesOnThisArticle(Section<?> section, Identifier termIdentifier, Article article) {
 		Set<Section<?>> sections = new HashSet<Section<?>>();
 		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(section.getArticleManager());
 		for (TerminologyManager terminologyManager : terminologyManagers) {
@@ -69,7 +72,7 @@ public class GetInfosForInlineTermRenamingAction extends AbstractAction {
 		}
 		Set<String> ids = new HashSet<String>();
 		for (Section<?> occurenceSection : sections) {
-			if (!occurenceSection.getID().equals(section.getID())) {
+			if (occurenceSection.getArticle().equals(article) && !occurenceSection.getID().equals(section.getID())) {
 				ids.add(occurenceSection.getID());
 			}
 		}
