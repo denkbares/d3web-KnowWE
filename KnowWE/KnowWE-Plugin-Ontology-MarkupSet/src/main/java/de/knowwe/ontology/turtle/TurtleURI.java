@@ -27,7 +27,6 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
-import de.knowwe.kdom.renderer.CompositeRenderer;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
 import de.knowwe.ontology.kdom.resource.ResourceReference;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
@@ -43,9 +42,7 @@ public class TurtleURI extends AbbreviatedResourceReference implements NodeProvi
 				new RegexSectionFinder("\\w*:.+"));
 		c.addConstraint(AtMostOneFindingConstraint.getInstance());
 		setSectionFinder(c);
-		this.setRenderer(new CompositeRenderer(new TermDragSurroundingRenderer()));
 	}
-
 
 	@Override
 	public Node getNode(Section<TurtleURI> section, Rdf2GoCompiler compiler) {
