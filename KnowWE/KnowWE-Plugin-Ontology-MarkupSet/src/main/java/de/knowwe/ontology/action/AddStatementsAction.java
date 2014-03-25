@@ -20,29 +20,30 @@ import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.objects.Term;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.OntologyUtils;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.tools.Tool;
 
 /**
- * Action to add a set of statements to a specified wiki page. The action
- * requires its arguments as a json expression. The arguments consists of a page
- * name where the statements shall be inserted and an array of statements. Each
- * statement is a javascript object with a 'subject', 'predicate' and 'object'
- * property. Additionally the following optional properties are available:
- * <ul>
- * <li><b>compact</b>:<br>
- * A boolean to determine if the created markup be kept compact (if
- * <code>true</code>) or more structured using line breaks and intends (if
- * <code>false</code>). Default value is false.
- * </ul>
- * 
+ * Action to add a set of statements to a specified wiki page. The action requires its arguments as
+ * a json expression. The arguments consists of a page name where the statements shall be inserted
+ * and an array of statements. Each statement is a javascript object with a 'subject', 'predicate'
+ * and 'object' property. Additionally the following optional properties are available: <ul>
+ * <li><b>compact</b>:<br> A boolean to determine if the created markup be kept compact (if
+ * <code>true</code>) or more structured using line breaks and intends (if <code>false</code>).
+ * Default value is false. </ul>
+ * <p/>
  * Here some example json:
- * 
+ * <p/>
  * <pre>
  * {
  *   article: "&lt;article-title&gt;",
@@ -54,7 +55,7 @@ import de.knowwe.tools.Tool;
  *   compactMode: &lt;boolean&gt;
  * }
  * </pre>
- * 
+ *
  * @author Volker Belli (denkbares GmbH)
  * @created 25.11.2013
  */
@@ -65,26 +66,35 @@ public class AddStatementsAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String web = context.getParameter(Attributes.WEB);
 		String jsonText = context.getParameter(PARAM_DATA);
 		if (Strings.isBlank(jsonText)) {
 			context.sendError(HttpServletResponse.SC_BAD_REQUEST, "no data to be inserted");
 			return;
 		}
 
-		Rdf2GoCore core = Rdf2GoCore.getInstance();
-
 		try {
 			JSONObject json = new JSONObject(jsonText);
 			String articleName = (String) json.get("article");
 			boolean compactMode = json.optBoolean("compact");
-			Statement[] statementsToAdd = toStatements(core, json.getJSONArray("add"));
-			Statement[] statementsToRemove = toStatements(core, json.getJSONArray("remove"));
-
-			ArticleManager manager = Environment.getInstance().getArticleManager(web);
+			ArticleManager manager = context.getArticleManager();
 			Article article = manager.getArticle(articleName);
+			if (article == null) {
+				context.sendError(HttpServletResponse.SC_NOT_FOUND,
+						"article '" + articleName + "' not available");
+				return;
+			}
+			Rdf2GoCompiler compiler = findCompiler(article);
+			if (compiler == null) {
+				context.sendError(HttpServletResponse.SC_NOT_FOUND,
+						"Article '" + articleName + "' is not compiled in an ontology");
+				return;
+			}
+
+			Statement[] statementsToAdd = toStatements(compiler.getRdf2GoCore(), json.getJSONArray("add"));
+			Statement[] statementsToRemove = toStatements(compiler.getRdf2GoCore(), json.getJSONArray("remove"));
+
 			String newText = OntologyUtils.modifyTurtle(
-					article, compactMode, statementsToAdd, statementsToRemove);
+					compiler, article, compactMode, statementsToAdd, statementsToRemove);
 
 			context.setContentType("text/plain; charset=UTF-8");
 			context.getWriter().append(newText);
@@ -92,6 +102,18 @@ public class AddStatementsAction extends AbstractAction {
 		catch (JSONException e) {
 			context.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
 		}
+	}
+
+	/**
+	 * Returns an instance that compiles any section in this article (taking the terms as a basis)
+	 */
+	private static Rdf2GoCompiler findCompiler(Article article) {
+		for (Section<?> section : Sections.successors(article.getRootSection(), Term.class)) {
+			OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
+			if (compiler == null) continue;
+			return compiler;
+		}
+		return null;
 	}
 
 	private static Statement[] toStatements(Rdf2GoCore core, JSONArray array) throws JSONException {
@@ -108,51 +130,48 @@ public class AddStatementsAction extends AbstractAction {
 	}
 
 	/**
-	 * Creates a JavaScript action that can be used as a tool action which will
-	 * add the specified statements to the specified article if the action will
-	 * be executed.
-	 * 
-	 * @created 25.11.2013
+	 * Creates a JavaScript action that can be used as a tool action which will add the specified
+	 * statements to the specified article if the action will be executed.
+	 *
 	 * @param source the article to place the JavaScript action
 	 * @param targetArticle the article to add the statements to
 	 * @param statements the statements to be added
 	 * @return the JavaScript action to be included in a {@link Tool}
+	 * @created 25.11.2013
 	 */
 	public static String getJSAction(Article source, String targetArticle, Statement... statements) {
 		return getJSAction(source, targetArticle, true, statements);
 	}
 
 	/**
-	 * Creates a JavaScript action that can be used as a tool action which will
-	 * add the specified statements to the specified article if the action will
-	 * be executed.
-	 * 
-	 * @created 25.11.2013
+	 * Creates a JavaScript action that can be used as a tool action which will add the specified
+	 * statements to the specified article if the action will be executed.
+	 *
 	 * @param source the article to place the JavaScript action
 	 * @param targetArticle the article to add the statements to
-	 * @param compactMode Shall the created markup be kept compact or more
-	 *        structured using line breaks and intends.
+	 * @param compactMode Shall the created markup be kept compact or more structured using line
+	 * breaks and intends.
 	 * @param statement the statements to be added
 	 * @return the JavaScript action to be included in a {@link Tool}
+	 * @created 25.11.2013
 	 */
 	public static String getJSAction(Article source, String targetArticle, boolean compactMode, Statement... statement) {
 		return getJSAction(source, targetArticle, compactMode,
-				Arrays.asList(statement), Collections.<Statement> emptyList());
+				Arrays.asList(statement), Collections.<Statement>emptyList());
 	}
 
 	/**
-	 * Creates a JavaScript action that can be used as a tool action which will
-	 * add the specified statements to the specified article if the action will
-	 * be executed.
-	 * 
-	 * @created 25.11.2013
+	 * Creates a JavaScript action that can be used as a tool action which will add the specified
+	 * statements to the specified article if the action will be executed.
+	 *
 	 * @param source the article to place the JavaScript action
 	 * @param targetArticle the article to add the statements to
-	 * @param compactMode Shall the created markup be kept compact or more
-	 *        structured using line breaks and intends.
+	 * @param compactMode Shall the created markup be kept compact or more structured using line
+	 * breaks and intends.
 	 * @param statementToAdd the statements to be added
 	 * @param statementToRemove the statements to be removed
 	 * @return the JavaScript action to be included in a {@link Tool}
+	 * @created 25.11.2013
 	 */
 	public static String getJSAction(Article source, String targetArticle, boolean compactMode, List<Statement> statementToAdd, List<Statement> statementToRemove) {
 		try {

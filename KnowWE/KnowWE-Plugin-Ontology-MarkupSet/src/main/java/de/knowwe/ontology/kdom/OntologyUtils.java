@@ -47,6 +47,7 @@ import de.knowwe.ontology.turtle.PredicateSentence;
 import de.knowwe.ontology.turtle.Subject;
 import de.knowwe.ontology.turtle.TurtleMarkup;
 import de.knowwe.ontology.turtle.TurtleSentence;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 /**
  * 
@@ -76,7 +77,6 @@ public class OntologyUtils {
 					return (OntologyCompiler) packageCompiler;
 				}
 			}
-
 		}
 		return compiler;
 	}
@@ -96,14 +96,15 @@ public class OntologyUtils {
 	 * returned.
 	 * 
 	 * @created 23.11.2013
+	 * @param compiler the compiler to be used to compile the modified turtle contents
 	 * @param article the article to integrate the statements into
 	 * @param compactMode specifies if the created markup shall be kept compact
 	 *        or more structured using line breaks and intends.
 	 * @param statements the statements to be integrated
 	 * @return the article's content, extended with the statements
 	 */
-	public static String addTurtle(Article article, boolean compactMode, Statement... statements) {
-		return modifyTurtle(article, compactMode,
+	public static String addTurtle(Rdf2GoCompiler compiler, Article article, boolean compactMode, Statement... statements) {
+		return modifyTurtle(compiler, article, compactMode,
 				Arrays.asList(statements), Collections.<Statement> emptyList());
 	}
 
@@ -135,8 +136,8 @@ public class OntologyUtils {
 	 * @param statementsToRemove the statements to be deleted from the article
 	 * @return the article's content, extended with the statements
 	 */
-	public static String modifyTurtle(Article article, boolean compactMode, Statement[] statementsToAdd, Statement[] statementsToRemove) {
-		return modifyTurtle(article, compactMode,
+	public static String modifyTurtle(Rdf2GoCompiler compiler, Article article, boolean compactMode, Statement[] statementsToAdd, Statement[] statementsToRemove) {
+		return modifyTurtle(compiler, article, compactMode,
 				Arrays.asList(statementsToAdd), Arrays.asList(statementsToRemove));
 	}
 
@@ -168,8 +169,8 @@ public class OntologyUtils {
 	 * @param statementsToRemove the statements to be deleted from the article
 	 * @return the article's content, extended with the statements
 	 */
-	public static String modifyTurtle(Article article, boolean compactMode, List<Statement> statementsToAdd, List<Statement> statementsToRemove) {
-		ArticleTurtleModifier writer = new ArticleTurtleModifier(article, compactMode);
+	public static String modifyTurtle(Rdf2GoCompiler compiler, Article article, boolean compactMode, List<Statement> statementsToAdd, List<Statement> statementsToRemove) {
+		ArticleTurtleModifier writer = new ArticleTurtleModifier(compiler, article, compactMode);
 		writer.addInsert(statementsToAdd);
 		writer.addDelete(statementsToRemove);
 		return writer.getResultText();

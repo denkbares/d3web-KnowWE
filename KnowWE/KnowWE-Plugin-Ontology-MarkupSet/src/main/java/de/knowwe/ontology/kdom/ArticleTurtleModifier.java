@@ -43,14 +43,11 @@ import org.openrdf.rio.turtle.TurtleWriter;
 import de.d3web.strings.Strings;
 import de.d3web.utils.EqualsUtils;
 import de.d3web.utils.Pair;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.turtle.BlankNode;
 import de.knowwe.ontology.turtle.Object;
 import de.knowwe.ontology.turtle.ObjectList;
@@ -64,13 +61,12 @@ import de.knowwe.ontology.turtle.TurtleSentence;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 /**
- * This class allows to add and remove statements to/from the turtle markup of a
- * specific wiki article. The class is capable to collect a set of desired
- * changes and apply it to the wiki text of the article in a seamless manner. As
- * a result the configured object is capable to return the newly created wiki
- * article text and the statements changes that could not been applied to the
+ * This class allows to add and remove statements to/from the turtle markup of a specific wiki
+ * article. The class is capable to collect a set of desired changes and apply it to the wiki text
+ * of the article in a seamless manner. As a result the configured object is capable to return the
+ * newly created wiki article text and the statements changes that could not been applied to the
  * wiki page.
- * 
+ *
  * @author Volker Belli (denkbares GmbH)
  * @created 17.12.2013
  */
@@ -128,86 +124,56 @@ public class ArticleTurtleModifier {
 	private final transient List<Statement> ignoredStatements = new LinkedList<Statement>();
 
 	/**
-	 * Creates a new {@link TurtleWriter} to modify the turtle statements of the
-	 * specified wiki article.
-	 * 
+	 * Creates a new {@link TurtleWriter} to modify the turtle statements of the specified wiki
+	 * article.
+	 *
+	 * @param compiler the compiler to be used to compile the modified turtle contents
 	 * @param article the wiki article to be modified
 	 */
-	public ArticleTurtleModifier(Article article) {
-		this(article, true);
+	public ArticleTurtleModifier(Rdf2GoCompiler compiler, Article article) {
+		this(compiler, article, true);
 	}
 
 	/**
-	 * Creates a new {@link TurtleWriter} to modify the turtle statements of the
-	 * specified wiki article.
-	 * 
+	 * Creates a new {@link TurtleWriter} to modify the turtle statements of the specified wiki
+	 * article.
+	 *
+	 * @param compiler the compiler to be used to compile the modified turtle contents
 	 * @param article the wiki article to be modified
-	 * @param compactMode if the turtle markup should be created compact (prefer
-	 *        single-line-mode) or verbose (prefer readability with line-breaks
-	 *        for each property and value, using indenting).
+	 * @param compactMode if the turtle markup should be created compact (prefer single-line-mode)
+	 * or verbose (prefer readability with line-breaks for each property and value, using
+	 * indenting).
 	 */
-	public ArticleTurtleModifier(Article article, boolean compactMode) {
-		this(article, compactMode, "  ");
+	public ArticleTurtleModifier(Rdf2GoCompiler compiler, Article article, boolean compactMode) {
+		this(compiler, article, compactMode, "  ");
 	}
 
 	/**
-	 * Creates a new {@link TurtleWriter} to modify the turtle statements of the
-	 * specified wiki article. You can specify if the output shall be compact or
-	 * expressive/verbose and how to indent the particular turtle sentences if
-	 * newly created.
-	 * 
+	 * Creates a new {@link TurtleWriter} to modify the turtle statements of the specified wiki
+	 * article. You can specify if the output shall be compact or expressive/verbose and how to
+	 * indent the particular turtle sentences if newly created.
+	 *
+	 * @param compiler the compiler to be used to compile the modified turtle contents
 	 * @param article the wiki article to be modified
-	 * @param compactMode if the turtle markup should be created compact (prefer
-	 *        single-line-mode) or verbose (prefer readability with line-breaks
-	 *        for each property and value, using indenting).
-	 * @param preferredIndent the preferred indent to be used, should consist of
-	 *        spaces and tab characters only
+	 * @param compactMode if the turtle markup should be created compact (prefer single-line-mode)
+	 * or verbose (prefer readability with line-breaks for each property and value, using
+	 * indenting).
+	 * @param preferredIndent the preferred indent to be used, should consist of spaces and tab
+	 * characters only
 	 */
-	public ArticleTurtleModifier(Article article, boolean compactMode, String preferredIndent) {
-		this(findCore(article), article, compactMode, preferredIndent);
-	}
-
-	/**
-	 * Returns an instance that compiles any section in this article (taking the
-	 * terms as a basis)
-	 */
-	private static Rdf2GoCompiler findCore(Article article) {
-		for (Section<?> section : Sections.successors(article.getRootSection(), Term.class)) {
-			OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
-			if (compiler == null) continue;
-			return compiler;
-		}
-		return null;
-	}
-
-	/**
-	 * Creates a new {@link TurtleWriter} to modify the turtle statements of the
-	 * specified wiki article. You can specify if the output shall be compact or
-	 * expressive/verbose and how to indent the particular turtle sentences if
-	 * newly created.
-	 * 
-	 * @param core the core to be used to compile the modified turtle contents
-	 * @param article the wiki article to be modified
-	 * @param compactMode if the turtle markup should be created compact (prefer
-	 *        single-line-mode) or verbose (prefer readability with line-breaks
-	 *        for each property and value, using indenting).
-	 * @param preferredIndent the preferred indent to be used, should consist of
-	 *        spaces and tab characters only
-	 */
-	public ArticleTurtleModifier(Rdf2GoCompiler core, Article article, boolean compactMode, String preferredIndent) {
-		this.compiler = core;
+	public ArticleTurtleModifier(Rdf2GoCompiler compiler, Article article, boolean compactMode, String preferredIndent) {
+		this.compiler = compiler;
 		this.article = article;
 		this.compactMode = compactMode;
 		this.preferredIndent = preferredIndent;
 	}
 
 	/**
-	 * Adds all the statements to be inserted and to be deleted from the
-	 * specified turtle modifier to this modifier. The specified modifier
-	 * remains unchanged.
-	 * 
-	 * @created 20.12.2013
+	 * Adds all the statements to be inserted and to be deleted from the specified turtle modifier
+	 * to this modifier. The specified modifier remains unchanged.
+	 *
 	 * @param other the turtle modifier to add all statements from
+	 * @created 20.12.2013
 	 */
 	public void addAll(ArticleTurtleModifier other) {
 		insertStatements.addAll(other.insertStatements);
@@ -216,11 +182,11 @@ public class ArticleTurtleModifier {
 	}
 
 	/**
-	 * Adds a number of statements that shall be inserted into the turtle
-	 * markups the the wiki article of this turtle writer.
-	 * 
-	 * @created 09.12.2013
+	 * Adds a number of statements that shall be inserted into the turtle markups the the wiki
+	 * article of this turtle writer.
+	 *
 	 * @param statements the statements to be added to the article
+	 * @created 09.12.2013
 	 */
 	public void addInsert(Statement... statements) {
 		if (statements != null && statements.length > 0) {
@@ -230,11 +196,11 @@ public class ArticleTurtleModifier {
 	}
 
 	/**
-	 * Adds a number of statements that shall be inserted into the turtle
-	 * markups the the wiki article of this turtle writer.
-	 * 
-	 * @created 09.12.2013
+	 * Adds a number of statements that shall be inserted into the turtle markups the the wiki
+	 * article of this turtle writer.
+	 *
 	 * @param statements the statements to be added to the article
+	 * @created 09.12.2013
 	 */
 	public void addInsert(List<Statement> statements) {
 		if (statements != null && !statements.isEmpty()) {
@@ -244,11 +210,11 @@ public class ArticleTurtleModifier {
 	}
 
 	/**
-	 * Defines a number of statements that shall be deleted from the turtle
-	 * markups the the wiki article of this turtle writer.
-	 * 
-	 * @created 09.12.2013
+	 * Defines a number of statements that shall be deleted from the turtle markups the the wiki
+	 * article of this turtle writer.
+	 *
 	 * @param statements the statements to be deleted from the article
+	 * @created 09.12.2013
 	 */
 	public void addDelete(Statement... statements) {
 		if (statements != null && statements.length > 0) {
@@ -258,11 +224,11 @@ public class ArticleTurtleModifier {
 	}
 
 	/**
-	 * Defines a number of statements that shall be deleted from the turtle
-	 * markups the the wiki article of this turtle writer.
-	 * 
-	 * @created 09.12.2013
+	 * Defines a number of statements that shall be deleted from the turtle markups the the wiki
+	 * article of this turtle writer.
+	 *
 	 * @param statements the statements to be deleted from the article
+	 * @created 09.12.2013
 	 */
 	public void addDelete(List<Statement> statements) {
 		if (statements != null && !statements.isEmpty()) {
@@ -272,13 +238,12 @@ public class ArticleTurtleModifier {
 	}
 
 	/**
-	 * Returns the indent of the line within this turtle writer's article text,
-	 * pointed to by the specified index.
-	 * 
-	 * @created 26.11.2013
-	 * @param index the character position to identify the line to get the
-	 *        indent for
+	 * Returns the indent of the line within this turtle writer's article text, pointed to by the
+	 * specified index.
+	 *
+	 * @param index the character position to identify the line to get the indent for
 	 * @return the indent of the line specified by the index
+	 * @created 26.11.2013
 	 */
 	private String getIndent(int index) {
 		if (article == null) return preferredIndent;
@@ -294,18 +259,16 @@ public class ArticleTurtleModifier {
 	}
 
 	/**
-	 * Create turtle markup for a set of statements that share the same subject
-	 * and predicate. The markup will be generated as a list of objects to be
-	 * injected into an existing subject+predicate sentence.
-	 * <p>
-	 * Depending on 'compactMode' the objects will be separated by a line-break
-	 * or not.
-	 * 
-	 * @created 26.11.2013
-	 * @param statements the statements to be inserted, sharing the same subject
-	 *        and predicate
+	 * Create turtle markup for a set of statements that share the same subject and predicate. The
+	 * markup will be generated as a list of objects to be injected into an existing
+	 * subject+predicate sentence.
+	 * <p/>
+	 * Depending on 'compactMode' the objects will be separated by a line-break or not.
+	 *
+	 * @param statements the statements to be inserted, sharing the same subject and predicate
 	 * @param indent the indent to be used if not in compact mode
 	 * @param turtle the buffer to append the created turtle text
+	 * @created 26.11.2013
 	 */
 	private void createObjectTurtle(List<Statement> statements, String indent, StringBuilder turtle) {
 		boolean first = true;
@@ -320,18 +283,17 @@ public class ArticleTurtleModifier {
 	}
 
 	/**
-	 * Create turtle markup for a set of statements that share the same subject
-	 * and predicate. The markup will be generated as a predicate and a list of
-	 * objects to be injected into an existing subject sentence.
-	 * <p>
-	 * Depending on 'compactMode' the objects of the statement will be separated
-	 * by a line-break or not.
-	 * 
-	 * @created 26.11.2013
-	 * @param statements the statements to be inserted, sharing the same subject
-	 *        and predicate
+	 * Create turtle markup for a set of statements that share the same subject and predicate. The
+	 * markup will be generated as a predicate and a list of objects to be injected into an existing
+	 * subject sentence.
+	 * <p/>
+	 * Depending on 'compactMode' the objects of the statement will be separated by a line-break or
+	 * not.
+	 *
+	 * @param statements the statements to be inserted, sharing the same subject and predicate
 	 * @param indent the indent to be used if not in compact mode
 	 * @param turtle the buffer to append the created turtle text
+	 * @created 26.11.2013
 	 */
 	private void createPredicateTurtle(List<Statement> statements, String indent, StringBuilder turtle) {
 		String objectIndent = indent + "  ";
@@ -354,18 +316,17 @@ public class ArticleTurtleModifier {
 	// }
 
 	/**
-	 * Create turtle markup for a set of statements that share the same subject.
-	 * The markup will be generated as a list of predicates and a list of
-	 * objects for each predicate. The result is intended to be injected into an
-	 * existing turtle markup.
-	 * <p>
-	 * Depending on 'compactMode' the predicates and objects of the statement
-	 * will be separated by a line-break or not.
-	 * 
-	 * @created 26.11.2013
+	 * Create turtle markup for a set of statements that share the same subject. The markup will be
+	 * generated as a list of predicates and a list of objects for each predicate. The result is
+	 * intended to be injected into an existing turtle markup.
+	 * <p/>
+	 * Depending on 'compactMode' the predicates and objects of the statement will be separated by a
+	 * line-break or not.
+	 *
 	 * @param statements the statements to be inserted, sharing the same subject
 	 * @param indent the indent to be used for turtle sentences
 	 * @param turtle the buffer to append the created turtle text
+	 * @created 26.11.2013
 	 */
 	private void createSubjectTurtle(List<Statement> statements, String indent, StringBuilder turtle) {
 		String predicateIndent = indent + "  ";
@@ -388,22 +349,19 @@ public class ArticleTurtleModifier {
 	}
 
 	/**
-	 * Create turtle markup for a set of statements. The statements will be
-	 * grouped by subjects and predicates to create minimal verbose turtle
-	 * markup. The markup will be generated as a list of turtle sentences. Each
-	 * sentence has a list of predicates and a list of objects for each
-	 * predicate. The result is intended to be injected into an existing turtle
-	 * markup.
-	 * <p>
-	 * Depending on 'compactMode' the predicates and objects of the statement
-	 * will be separated by a line-break or not. Each turtle sentence is created
-	 * in a new line, but 'compactMode' also influences the spacing between the
-	 * individual lines.
-	 * 
-	 * @created 26.11.2013
+	 * Create turtle markup for a set of statements. The statements will be grouped by subjects and
+	 * predicates to create minimal verbose turtle markup. The markup will be generated as a list of
+	 * turtle sentences. Each sentence has a list of predicates and a list of objects for each
+	 * predicate. The result is intended to be injected into an existing turtle markup.
+	 * <p/>
+	 * Depending on 'compactMode' the predicates and objects of the statement will be separated by a
+	 * line-break or not. Each turtle sentence is created in a new line, but 'compactMode' also
+	 * influences the spacing between the individual lines.
+	 *
 	 * @param statements the statements to be inserted
 	 * @param indent the indent to be used for the turtle sentences
 	 * @param turtle the buffer to append the created turtle text
+	 * @created 26.11.2013
 	 */
 	private void createTurtle(List<Statement> statements, String indent, StringBuilder turtle) {
 		boolean first = true;
@@ -417,11 +375,10 @@ public class ArticleTurtleModifier {
 
 	/**
 	 * Group a set of statements by their predicates.
-	 * 
-	 * @created 26.11.2013
+	 *
 	 * @param statements the statements to be grouped
-	 * @return a collection of non-empty statement lists sharing the same
-	 *         predicate
+	 * @return a collection of non-empty statement lists sharing the same predicate
+	 * @created 26.11.2013
 	 */
 	private Collection<List<Statement>> groupByPredicate(Collection<Statement> statements) {
 		Map<Resource, List<Statement>> result = mapByPredicate(statements);
@@ -444,11 +401,10 @@ public class ArticleTurtleModifier {
 
 	/**
 	 * Group a collection of statements by their subject.
-	 * 
-	 * @created 26.11.2013
+	 *
 	 * @param statements the statements to be grouped
-	 * @return a collection of non-empty statement lists sharing the same
-	 *         subject
+	 * @return a collection of non-empty statement lists sharing the same subject
+	 * @created 26.11.2013
 	 */
 	private Collection<List<Statement>> groupBySubject(Collection<Statement> statements) {
 		Map<Resource, List<Statement>> result = mapBySubject(statements);
@@ -471,10 +427,10 @@ public class ArticleTurtleModifier {
 
 	/**
 	 * Creates turtle markup for the specified node.
-	 * 
-	 * @created 26.11.2013
+	 *
 	 * @param node the node to create turtle markup for
 	 * @return the turtle markup to represent the node's value
+	 * @created 26.11.2013
 	 */
 	private String toTurtle(Node node) {
 		if (node instanceof URI) {
@@ -502,12 +458,11 @@ public class ArticleTurtleModifier {
 	}
 
 	/**
-	 * Processes the article of this writer and the statements to be added and
-	 * deleted to create a new wiki page content.
-	 * 
+	 * Processes the article of this writer and the statements to be added and deleted to create a
+	 * new wiki page content.
+	 *
+	 * @return the page content after inserting and deleting the specified statements
 	 * @created 09.12.2013
-	 * @return the page content after inserting and deleting the specified
-	 *         statements
 	 */
 	public String getResultText() {
 		process();
@@ -515,18 +470,17 @@ public class ArticleTurtleModifier {
 	}
 
 	/**
-	 * Returns a list of statements that have not been considered when creating
-	 * the result wiki text using {@link #getResultText()}. These statements are
-	 * always a (hopefully empty) subset of the Statements to be removed,
-	 * because no statements to be added will be ignored. If a statement is
-	 * ignored, the reason is that the particular statement is not found on this
-	 * turtle writer's article.
-	 * <p>
-	 * To check if all statements are implemented into the resulting wiki page
-	 * the returned list must be empty!
-	 * 
-	 * @created 06.12.2013
+	 * Returns a list of statements that have not been considered when creating the result wiki text
+	 * using {@link #getResultText()}. These statements are always a (hopefully empty) subset of the
+	 * Statements to be removed, because no statements to be added will be ignored. If a statement
+	 * is ignored, the reason is that the particular statement is not found on this turtle writer's
+	 * article.
+	 * <p/>
+	 * To check if all statements are implemented into the resulting wiki page the returned list
+	 * must be empty!
+	 *
 	 * @return the list the non-removed statements that should have been removed
+	 * @created 06.12.2013
 	 */
 	public List<Statement> getIgnoredStatements() {
 		process();
@@ -591,15 +545,16 @@ public class ArticleTurtleModifier {
 	}
 
 	/**
-	 * Traverses the tree, building the result text. The method returns if it
-	 * contains at least one object on interest that is not removed: object,
-	 * predicate, subject; depending on the tree traversal level
-	 * 
+	 * Traverses the tree, building the result text. The method returns if it contains at least one
+	 * object on interest that is not removed: object, predicate, subject; depending on the tree
+	 * traversal level
+	 *
 	 * @created 07.12.2013
 	 */
 	private boolean traverse(Section<?> node, StringBuilder result) {
 		// check if we are reached an object to delete
 		// the skip this node and tell that the node is not if interest
+		//noinspection SuspiciousMethodCalls
 		if (objectsToRemove.contains(node)) return false;
 
 		// check for some special nodes we only include
@@ -645,7 +600,7 @@ public class ArticleTurtleModifier {
 
 	/**
 	 * Traverses and appends all children recursively.
-	 * 
+	 *
 	 * @created 07.12.2013
 	 */
 	private boolean traverseChildren(Section<?> node, StringBuilder result) {
@@ -657,11 +612,10 @@ public class ArticleTurtleModifier {
 	}
 
 	/**
-	 * Traverses and appends all children recursively. Skips the children that
-	 * tells that they are not of interest. Also normalizes the separators in
-	 * between the children if any are removed, by skipping the unnecessary
-	 * ones.
-	 * 
+	 * Traverses and appends all children recursively. Skips the children that tells that they are
+	 * not of interest. Also normalizes the separators in between the children if any are removed,
+	 * by skipping the unnecessary ones.
+	 *
 	 * @created 07.12.2013
 	 */
 	private boolean traverseChildrenSkipping(Section<?> node, StringBuilder result) {
@@ -695,12 +649,12 @@ public class ArticleTurtleModifier {
 	}
 
 	/**
-	 * Appends the statements to add to the specified node in the turtle kdom.
-	 * The Node is one of the list-sections containing either TurtleSentence,
-	 * PredicateSentence or Object as their children.
-	 * 
-	 * @created 09.12.2013
+	 * Appends the statements to add to the specified node in the turtle kdom. The Node is one of
+	 * the list-sections containing either TurtleSentence, PredicateSentence or Object as their
+	 * children.
+	 *
 	 * @return returns if any statements were appended to the specified node
+	 * @created 09.12.2013
 	 */
 	private boolean appendAddedStatements(Section<?> node, boolean isFirst, StringBuilder result) {
 		Section<PredicateSentence> predSentence = Sections.ancestor(node,
@@ -739,11 +693,11 @@ public class ArticleTurtleModifier {
 	}
 
 	/**
-	 * Cleans up a list of section and plain text separators. The sections to be
-	 * removed are added as "null" to the list.
-	 * 
-	 * @created 07.12.2013
+	 * Cleans up a list of section and plain text separators. The sections to be removed are added
+	 * as "null" to the list.
+	 *
 	 * @param list the list to be cleaned up
+	 * @created 07.12.2013
 	 */
 	private void cleanChildResults(List<Pair<Type, String>> list) {
 		int index;
@@ -822,9 +776,9 @@ public class ArticleTurtleModifier {
 
 	/**
 	 * Returns the article this turtle modifier is working on.
-	 * 
-	 * @created 17.12.2013
+	 *
 	 * @return the article of this modifier
+	 * @created 17.12.2013
 	 */
 	public Article getArticle() {
 		return this.article;
