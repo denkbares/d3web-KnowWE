@@ -87,8 +87,9 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 			sorted.add(0, home.getTitle());
 		}
 
-		// and remove the current article
+		// and remove the current article and restrict to max number of items
 		sorted.remove(userContext.getTitle());
+		if (sorted.size() > 5) sorted = sorted.subList(0, 5);
 
 		// create tools for edit, rename and definitions
 		Tool[] tools = new Tool[sorted.size() + 2];
@@ -103,7 +104,7 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 			tools[index++] = new DefaultTool(
 					"KnowWEExtension/images/article16.png",
 					"Open '" + title + "'", description,
-					"window.location.href = '" + Strings.encodeHtml(link) + "'");
+					link, Tool.ActionType.HREF, Tool.CATEGORY_INFO);
 		}
 		return tools;
 	}
@@ -158,7 +159,8 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 				"KnowWEExtension/d3web/icon/infoPage16.png",
 				"Show Info Page",
 				"Opens the information page for the specific object to show its usage inside this wiki.",
-				createObjectInfoJSAction(section));
+				createObjectInfoJSAction(section),
+				Tool.CATEGORY_INFO);
 	}
 
 	protected Tool getRenamingTool(Section<? extends Term> section) {
@@ -166,7 +168,8 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 				"http://localhost:8080/KnowWE/KnowWEExtension/images/textfield_rename.png",
 				"Rename",
 				"Rename this term wiki wide.",
-				createRenamingAction(section));
+				createRenamingAction(section),
+				Tool.CATEGORY_EDIT);
 	}
 
 	public static String createObjectInfoJSAction(Section<? extends Term> section) {

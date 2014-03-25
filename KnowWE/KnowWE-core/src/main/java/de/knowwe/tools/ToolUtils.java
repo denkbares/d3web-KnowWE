@@ -14,8 +14,8 @@ import de.knowwe.core.utils.ScopeExtensions;
 public class ToolUtils {
 
 	/**
-	 * Special string for the empty category. The spaces in front make it be the first item in a sorted list (assuming
-	 * the others use regular letters).
+	 * Special string for the empty category. The spaces in front make it be the first item in a
+	 * sorted list (assuming the others use regular letters).
 	 */
 	public final static String EMPTY_CATEGORY = "  empty_category";
 
@@ -112,8 +112,9 @@ public class ToolUtils {
 	}
 
 	/**
-	 * The method returns the array of tools, being null-secure and removing all null entries from the specified tools.
-	 * Therefore, calling this method with any numbers of null will result in an empty tool array.
+	 * The method returns the array of tools, being null-secure and removing all null entries from
+	 * the specified tools. Therefore, calling this method with any numbers of null will result in
+	 * an empty tool array.
 	 *
 	 * @param tools
 	 * @return the tool array with no null tools
@@ -163,9 +164,9 @@ public class ToolUtils {
 			case HREF:
 				return tool.getAction();
 			case HREF_SCRIPT:
-				return "javascript:" + tool.getAction();
+				return "javascript:" + tool.getAction() + ";ToolMenu.hideToolsPopupMenu()";
 			case ONCLICK:
-				return tool.getAction();
+				return tool.getAction() + ";ToolMenu.hideToolsPopupMenu()";
 			default:
 				return null;
 		}

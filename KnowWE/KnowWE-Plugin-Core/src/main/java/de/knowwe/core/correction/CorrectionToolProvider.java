@@ -41,13 +41,11 @@ import de.knowwe.tools.ToolProvider;
 import de.knowwe.tools.ToolUtils;
 
 /**
- * This ToolProvider provides quick fixes for correcting small mistakes (typos)
- * in term references.
- * 
- * @see CorrectionProvider
- * 
+ * This ToolProvider provides quick fixes for correcting small mistakes (typos) in term references.
+ *
  * @author Alex Legler
  * @created 19.12.2010
+ * @see CorrectionProvider
  */
 public class CorrectionToolProvider implements ToolProvider {
 
@@ -68,8 +66,8 @@ public class CorrectionToolProvider implements ToolProvider {
 				Messages.getMessageBundle().getString("KnowWE.Correction.do"),
 				"",
 				null,
-				"correct"
-				);
+				Tool.CATEGORY_CORRECT
+		);
 
 		for (int i = 0; i < suggestions.size(); i++) {
 			tools[i + 1] = new DefaultTool(
@@ -78,8 +76,8 @@ public class CorrectionToolProvider implements ToolProvider {
 					"",
 					"KNOWWE.plugin.correction.doCorrection('" + section.getID() + "', '"
 							+ suggestions.get(i).getSuggestion() + "');",
-					"correct/item"
-					);
+					Tool.CATEGORY_CORRECT + "/item"
+			);
 		}
 
 		return tools;

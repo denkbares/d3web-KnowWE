@@ -408,7 +408,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		result.appendHtmlTag("a", false, "class", "markupMenuItem",
 				"title", Strings.encodeHtml(tool.getDescription()),
 				ToolUtils.getActionAttributeName(tool),
-				ToolUtils.getActionAttributeValue(tool) + ";ToolMenu.hideToolsPopupMenu()");
+				ToolUtils.getActionAttributeValue(tool));
 		if (hasIcon) {
 			result.appendHtmlElement("img", "", "src", icon);
 			result.append(" ");
