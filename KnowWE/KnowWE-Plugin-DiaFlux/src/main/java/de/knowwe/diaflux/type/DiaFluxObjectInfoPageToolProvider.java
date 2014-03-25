@@ -37,7 +37,7 @@ public class DiaFluxObjectInfoPageToolProvider extends ObjectInfoPageToolProvide
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		Section<FlowchartTermDef> termDef = Sections.findSuccessor(section, FlowchartTermDef.class);
 		if (termDef != null) {
-			return new Tool[] { getObjectInfoPageTool(termDef, userContext) };
+			return new Tool[] { getObjectInfoPageTool(termDef) };
 		}
 		else {
 			return new Tool[] {};

@@ -75,7 +75,7 @@ public class DefaultArticleManager implements ArticleManager {
 	 */
 	@Override
 	public Article getArticle(String title) {
-		return articleMap.get(title);
+		return articleMap.get(title.toLowerCase());
 	}
 
 	@Override
@@ -86,11 +86,6 @@ public class DefaultArticleManager implements ArticleManager {
 	@Override
 	public Collection<Article> getArticles() {
 		return Collections.unmodifiableCollection(articleMap.values());
-	}
-
-	@Override
-	public Set<String> getTitles() {
-		return Collections.unmodifiableSet(articleMap.keySet());
 	}
 
 	/**
@@ -115,7 +110,7 @@ public class DefaultArticleManager implements ArticleManager {
 			Article lastVersion = getArticle(title);
 			if (lastVersion != null) removed.add(lastVersion.getRootSection());
 
-			articleMap.put(title, article);
+			articleMap.put(title.toLowerCase(), article);
 			article.setArticleManager(this);
 
 			EventManager.getInstance().fireEvent(
@@ -142,7 +137,7 @@ public class DefaultArticleManager implements ArticleManager {
 		Environment.getInstance().buildAndRegisterArticle(web,
 				article.getTitle(), "", true);
 
-		articleMap.remove(article.getTitle());
+		articleMap.remove(article.getTitle().toLowerCase());
 
 		Log.info("-> Deleted article '" + article.getTitle() + "'" + " from " + web);
 	}

@@ -28,14 +28,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 
 import com.ecyrd.jspwiki.PageManager;
 import com.ecyrd.jspwiki.WikiContext;
@@ -53,6 +49,8 @@ import com.ecyrd.jspwiki.plugin.PluginException;
 import com.ecyrd.jspwiki.plugin.WikiPlugin;
 import com.ecyrd.jspwiki.providers.ProviderException;
 import com.ecyrd.jspwiki.ui.TemplateManager;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 import de.d3web.plugin.Plugin;
 import de.d3web.plugin.PluginManager;
@@ -88,8 +86,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 	/**
 	 * To initialize KnowWE.
-	 *
-	 * @see KnowWE_config.properties
 	 */
 	@Override
 	public void initialize(WikiEngine engine, Properties properties)
@@ -104,7 +100,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			try {
 				BufferedReader in = new BufferedReader(new FileReader(
 						KnowWEUtils.getApplicationRootPath() + "/WEB-INF/jspwiki.properties"));
-				String line = null;
+				String line;
 				File pagedir = null;
 				while ((line = in.readLine()) != null) {
 					if (!line.contains("#")
@@ -117,14 +113,16 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 					}
 				}
 
-				if (pagedir.exists()) {
+				if (pagedir != null && pagedir.exists()) {
 					File coreDir = new File(KnowWEUtils.getApplicationRootPath()
 							+ "/WEB-INF/resources/core-pages");
-					for (File corePage : coreDir.listFiles()) {
-						if (!corePage.getName().endsWith(".txt")) continue;
-						File newFile = new File(pagedir.getPath() + "/"
-								+ corePage.getName());
-						if (!newFile.exists()) FileUtils.copyFile(corePage, newFile);
+					File[] files = coreDir.listFiles();
+					if (files != null) {
+						for (File corePage : files) {
+							if (!corePage.getName().endsWith(".txt")) continue;
+							File newFile = new File(pagedir.getPath() + "/" + corePage.getName());
+							if (!newFile.exists()) FileUtils.copyFile(corePage, newFile);
+						}
 					}
 				}
 			}
@@ -229,24 +227,21 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		}
 
 		WikiEngine engine = wikiContext.getEngine();
-		String pureText = "";
 		if (engine != null) {
-			pureText = engine.getPureText(title,
-					wikiContext.getPage().getVersion());
+			String pureText = engine.getPureText(title, wikiContext.getPage().getVersion());
 			if (!content.equals(pureText)) return content;
 		}
-		Set<String> titles = Environment.getInstance().getArticleManager(
-				Environment.DEFAULT_WEB).getTitles();
-		if (!titles.contains(title)) {
-			for (String availableTitle : titles) {
-				if (title.equalsIgnoreCase(availableTitle)) {
-					return "The page \"" + title + "\" does not exist, did you mean \"["
-							+ availableTitle + "]\"?";
-				}
-			}
+		ArticleManager articleManager =
+				Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		Article existingArticle = articleManager.getArticle(title);
+		// if we have an existing article but having another case of the title,
+		// we suggest a link to correct article name
+		if (existingArticle != null && !existingArticle.getTitle().equals(title)) {
+			return "The page \"" + title + "\" does not exist, did you mean \"["
+					+ existingArticle.getTitle() + "]\"?";
 		}
-		try {
 
+		try {
 			String stringRaw = (String) httpRequest.getAttribute("renderresult");
 			if (stringRaw != null) return stringRaw;
 
@@ -254,7 +249,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 			RenderResult renderResult = new RenderResult(userContext.getRequest());
 
-			if (article != null && httpRequest != null) {
+			if (article != null) {
 				List<PageAppendHandler> appendhandlers = Environment.getInstance()
 						.getAppendHandlers();
 
@@ -363,26 +358,17 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	/**
 	 * Loads ALL articles stored in the pageDir (which is specified in jspwiki.properties).
 	 *
-	 * @param engine
+	 * @param engine the wiki engine to get the articles from
 	 * @created 07.06.2010
 	 */
 	private void initializeAllArticles(WikiEngine engine) {
 
-		ArticleManager articleManager = Environment.getInstance().getArticleManager(
-				Environment.DEFAULT_WEB);
+		ArticleManager articleManager =
+				Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
 		articleManager.open();
-
 		try {
 			PageManager mgr = engine.getPageManager();
-			Collection<?> wikipages = null;
-
-			try {
-				wikipages = mgr.getAllPages();
-			}
-			catch (ProviderException e1) {
-				Log.warning("Unable to load all articles, maybe some articles won't be initialized!");
-			}
-
+			Collection<?> wikipages = mgr.getAllPages();
 			for (Object o : wikipages) {
 				WikiPage wp = (WikiPage) o;
 				Article article = Environment.getInstance().getArticle(
@@ -393,6 +379,9 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 							Environment.DEFAULT_WEB);
 				}
 			}
+		}
+		catch (ProviderException e1) {
+			Log.warning("Unable to load all articles, maybe some articles won't be initialized!");
 		}
 		finally {
 			articleManager.commit();
@@ -462,8 +451,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 	/**
 	 * Adds the CSS and JS files to the current page.
-	 *
-	 * @param wikiContext
 	 */
 	private void includeDOMResources(WikiContext wikiContext) {
 		Object ctx = wikiContext.getVariable(TemplateManager.RESOURCE_INCLUDES);

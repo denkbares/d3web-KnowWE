@@ -18,12 +18,26 @@
  */
 package de.knowwe.core.tools;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.terminology.TermCompiler;
+import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.taghandler.ObjectInfoTagHandler;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
@@ -37,27 +51,109 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
-		return hasObjectInfoPage(section);
+		return getIdentifier(section) != null;
 	}
 
-	@SuppressWarnings("unchecked")
-	private boolean hasObjectInfoPage(Section<?> section) {
-		return section.get() instanceof Term
-				&& ((Term) section.get()).getTermIdentifier((Section<? extends Term>) section) != null;
+	private Identifier getIdentifier(Section<?> section) {
+		if (section.get() instanceof Term) {
+			Term termType = (Term) section.get();
+			return termType.getTermIdentifier(Sections.cast(section, Term.class));
+		}
+		return null;
 	}
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		if (hasObjectInfoPage(section)) {
-			@SuppressWarnings("unchecked")
-			Section<? extends Term> s = (Section<? extends Term>) section;
-			return new Tool[] {
-					getObjectInfoPageTool(s, userContext), getRenamingTool(s, userContext) };
+		Identifier identifier = getIdentifier(section);
+		if (identifier == null) return ToolUtils.emptyToolArray();
+		Section<? extends Term> term = Sections.cast(section, Term.class);
+
+		// get sorted list of all defining articles
+		Set<String> articleNames = new HashSet<String>();
+		for (TermCompiler termCompiler : Compilers.getCompilers(section, TermCompiler.class)) {
+			TerminologyManager manager = termCompiler.getTerminologyManager();
+			Collection<Section<?>> definitions = manager.getTermDefiningSections(identifier);
+			for (Section<?> definition : definitions) {
+				articleNames.add(definition.getTitle());
+			}
 		}
-		return ToolUtils.emptyToolArray();
+		List<String> sorted = new ArrayList<String>(articleNames);
+		Collections.sort(sorted);
+
+		// check if we have a home page for that term (article that has the same title)
+		Article home = getHomeArticle(section.getArticleManager(), identifier);
+		if (home != null) {
+			sorted.remove(home.getTitle());
+			sorted.add(0, home.getTitle());
+		}
+
+		// and remove the current article
+		sorted.remove(userContext.getTitle());
+
+		// create tools for edit, rename and definitions
+		Tool[] tools = new Tool[sorted.size() + 2];
+		int index = 0;
+		tools[index++] = getObjectInfoPageTool(term);
+		tools[index++] = getRenamingTool(term);
+		for (String title : sorted) {
+			String link = KnowWEUtils.getURLLink(title);
+			String description = (home != null && title.equals(home.getTitle()))
+					? "Opens the home page for the specific object."
+					: "Opens the definition page for the specific object to show its usage inside this wiki.";
+			tools[index++] = new DefaultTool(
+					"KnowWEExtension/images/article16.png",
+					"Open '" + title + "'", description,
+					"window.location.href = '" + Strings.encodeHtml(link) + "'");
+		}
+		return tools;
 	}
 
-	protected Tool getObjectInfoPageTool(Section<? extends Term> section, UserContext userContext) {
+	private Article getHomeArticle(ArticleManager manager, Identifier identifier) {
+		String[] prefixes = { "", "Info ", "About " };
+		for (String prefix : prefixes) {
+			Article article = getHomeArticle(manager, identifier, prefix);
+			if (article != null) return article;
+		}
+		return null;
+	}
+
+	private Article getHomeArticle(ArticleManager manager, Identifier identifier, String prefix) {
+		// check for original name
+		Article article = manager.getArticle(prefix + identifier.toExternalForm());
+		if (article != null) return article;
+
+		// check if concatenated with space
+		article = manager.getArticle(prefix + Strings.concat(" ", identifier.getPathElements()));
+		if (article != null) return article;
+
+		// check if concatenated with "-"
+		article = manager.getArticle(prefix + Strings.concat("-", identifier.getPathElements()));
+		if (article != null) return article;
+
+		// check if concatenated with " - "
+		article = manager.getArticle(prefix + Strings.concat(" - ", identifier.getPathElements()));
+		if (article != null) return article;
+
+		// check if concatenated with "#"
+		article = manager.getArticle(prefix + Strings.concat("#", identifier.getPathElements()));
+		if (article != null) return article;
+
+		// check if concatenated with " # "
+		article = manager.getArticle(prefix + Strings.concat(" # ", identifier.getPathElements()));
+		if (article != null) return article;
+
+		// check if concatenated with ":"
+		article = manager.getArticle(prefix + Strings.concat(":", identifier.getPathElements()));
+		if (article != null) return article;
+
+		// check if concatenated with " : "
+		article = manager.getArticle(prefix + Strings.concat(" : ", identifier.getPathElements()));
+		if (article != null) return article;
+
+		return null;
+	}
+
+	protected Tool getObjectInfoPageTool(Section<? extends Term> section) {
 		return new DefaultTool(
 				"KnowWEExtension/d3web/icon/infoPage16.png",
 				"Show Info Page",
@@ -65,7 +161,7 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 				createObjectInfoJSAction(section));
 	}
 
-	protected Tool getRenamingTool(Section<? extends Term> section, UserContext userContext) {
+	protected Tool getRenamingTool(Section<? extends Term> section) {
 		return new DefaultTool(
 				"http://localhost:8080/KnowWE/KnowWEExtension/images/textfield_rename.png",
 				"Rename",
@@ -81,18 +177,16 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 	public static String createObjectInfoPageJSAction(Identifier termIdentifier) {
 		String lastPathElementExternalForm = new Identifier(termIdentifier.getLastPathElement()).toExternalForm();
 		String externalTermIdentifierForm = termIdentifier.toExternalForm();
-		String jsAction = "window.location.href = "
+		return "window.location.href = "
 				+ "'Wiki.jsp?page=ObjectInfoPage&amp;" + ObjectInfoTagHandler.TERM_IDENTIFIER
 				+ "=' + encodeURIComponent('"
 				+ maskTermForHTML(externalTermIdentifierForm)
 				+ "') + '&amp;" + ObjectInfoTagHandler.OBJECT_NAME + "=' + encodeURIComponent('"
 				+ maskTermForHTML(lastPathElementExternalForm) + "')";
-		return jsAction;
 	}
 
 	public static String createRenamingAction(Section<? extends Term> section) {
-		String jsAction = "KNOWWE.plugin.renaming.renameTerm('" + section.getID() + "')";
-		return jsAction;
+		return "KNOWWE.plugin.renaming.renameTerm('" + section.getID() + "')";
 	}
 
 	public static String maskTermForHTML(String string) {
