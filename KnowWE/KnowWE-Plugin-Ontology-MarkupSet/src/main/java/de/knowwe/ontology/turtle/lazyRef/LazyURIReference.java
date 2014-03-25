@@ -20,12 +20,10 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.CompilerMessage;
-import de.knowwe.kdom.renderer.CompositeRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.ontology.compile.OntologyCompileScript;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.resource.Resource;
-import de.knowwe.ontology.turtle.TermDragSurroundingRenderer;
 import de.knowwe.ontology.turtle.TurtleURI;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
@@ -37,7 +35,7 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 	public LazyURIReference() {
 		super(OntologyCompiler.class, Resource.class);
 		this.setSectionFinder(new AllTextFinderTrimmed());
-		this.setRenderer(new CompositeRenderer(StyleRenderer.Question, new TermDragSurroundingRenderer()));
+		this.setRenderer(StyleRenderer.Question);
 		this.removeCompileScript(OntologyCompiler.class, SimpleReferenceRegistrationScript.class);
 		this.addCompileScript(new LazyURIReferenceHandler());
 	}
