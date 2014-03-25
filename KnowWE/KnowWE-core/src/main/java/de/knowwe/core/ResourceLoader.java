@@ -23,12 +23,11 @@ import java.util.List;
 
 /**
  * KnowWERessourceLoader.
- * 
- * The KnowWERessourceLoader stores the JS and CSS files used to extend KNOWWE.
- * Please use the Loader to register your own JS and CSS files. The
- * KnowWERessourceLoader was introduced to ensure the correct order of the JS
- * files, because the KnowWE-helper and KnowWE-core files should loaded first.
- * 
+ * <p/>
+ * The KnowWERessourceLoader stores the JS and CSS files used to extend KNOWWE. Please use the Loader to register your
+ * own JS and CSS files. The KnowWERessourceLoader was introduced to ensure the correct order of the JS files, because
+ * the KnowWE-helper and KnowWE-core files should loaded first.
+ *
  * @author smark
  * @since 2010/02/15
  */
@@ -45,14 +44,14 @@ public class ResourceLoader {
 	public static final String RESOURCE_SCRIPT = "script";
 
 	/**
-	 * The default path were the scripts are stored on the server. Used to
-	 * minimize typing when adding new scripts to the loader.
+	 * The default path were the scripts are stored on the server. Used to minimize typing when adding new scripts to
+	 * the loader.
 	 */
 	public static final String defaultScript = "KnowWEExtension/scripts/";
 
 	/**
-	 * The default path were the CSS are stored on the server. Used to minimize
-	 * typing when adding new CSS to the loader.
+	 * The default path were the CSS are stored on the server. Used to minimize typing when adding new CSS to the
+	 * loader.
 	 */
 	public static final String defaultStylesheet = "KnowWEExtension/css/";
 
@@ -73,7 +72,7 @@ public class ResourceLoader {
 
 	/**
 	 * Returns the instance of the KnowWERessourceLoader.
-	 * 
+	 *
 	 * @return instance The instance of the KnowWERessourceLoader
 	 */
 	public static synchronized ResourceLoader getInstance() {
@@ -84,8 +83,7 @@ public class ResourceLoader {
 	}
 
 	/**
-	 * Creates a KnowWERessourceLoader instance by first loading the KnowWE
-	 * default resources.
+	 * Creates a KnowWERessourceLoader instance by first loading the KnowWE default resources.
 	 */
 	private ResourceLoader() {
 		loadDefaultResources();
@@ -93,39 +91,38 @@ public class ResourceLoader {
 
 	/**
 	 * Loads the KnowWE standard Resources:
-	 * 
+	 * <p/>
 	 * - KnowWE.js
-	 * 
+	 * <p/>
 	 * - KnowWE-helper.js
-	 * 
+	 * <p/>
 	 * - general.css
-	 * 
+	 *
 	 * @created 05.07.2010
 	 */
 	private void loadDefaultResources() {
-		addFirst("tooltipster.css", ResourceLoader.RESOURCE_STYLESHEET);
-		addFirst("jquery-autocomplete.css", ResourceLoader.RESOURCE_STYLESHEET);
-        addFirst("jquery-treeTable.css", ResourceLoader.RESOURCE_STYLESHEET);
-        addFirst("general.css", ResourceLoader.RESOURCE_STYLESHEET);
-        addFirst("KnowWE-notification.js", ResourceLoader.RESOURCE_SCRIPT);
-        addFirst("KnowWE.js", ResourceLoader.RESOURCE_SCRIPT);
-        addFirst("KnowWE-helper.js", ResourceLoader.RESOURCE_SCRIPT);
-        addFirst("jquery-compatibility.js", ResourceLoader.RESOURCE_SCRIPT);
+		add("tooltipster.css", ResourceLoader.RESOURCE_STYLESHEET);
+		add("jquery-autocomplete.css", ResourceLoader.RESOURCE_STYLESHEET);
+		add("jquery-treeTable.css", ResourceLoader.RESOURCE_STYLESHEET);
+		add("general.css", ResourceLoader.RESOURCE_STYLESHEET);
+		addFirst("KnowWE-notification.js", ResourceLoader.RESOURCE_SCRIPT);
+		addFirst("KnowWE.js", ResourceLoader.RESOURCE_SCRIPT);
+		addFirst("KnowWE-helper.js", ResourceLoader.RESOURCE_SCRIPT);
+		addFirst("jquery-compatibility.js", ResourceLoader.RESOURCE_SCRIPT);
 		addFirst("simpleStorage.min.js", ResourceLoader.RESOURCE_SCRIPT);
 		addFirst("jquery.mousewheel.js", ResourceLoader.RESOURCE_SCRIPT);
-        addFirst("jquery-plugin-collection.js", ResourceLoader.RESOURCE_SCRIPT);
-        addFirst("jquery-tooltipster.js", ResourceLoader.RESOURCE_SCRIPT);
-        addFirst("jquery-treeTable.js", ResourceLoader.RESOURCE_SCRIPT);
-        addFirst("jquery-autosize.min.js", ResourceLoader.RESOURCE_SCRIPT);
+		addFirst("jquery-plugin-collection.js", ResourceLoader.RESOURCE_SCRIPT);
+		addFirst("jquery-tooltipster.js", ResourceLoader.RESOURCE_SCRIPT);
+		addFirst("jquery-treeTable.js", ResourceLoader.RESOURCE_SCRIPT);
+		addFirst("jquery-autosize.min.js", ResourceLoader.RESOURCE_SCRIPT);
 		addFirst("jquery-ui-1.10.4.custom.min.js", ResourceLoader.RESOURCE_SCRIPT);
 		addFirst("jquery-2.1.0.min.js", ResourceLoader.RESOURCE_SCRIPT);
 	}
 
 	/**
-	 * Adds a resource file to the loader. Note: Only the file name has to be
-	 * added. The KnowWERessourceLoader knows the default resource file
-	 * location.
-	 * 
+	 * Adds a resource file to the loader. Note: Only the file name has to be added. The KnowWERessourceLoader knows the
+	 * default resource file location.
+	 *
 	 * @param file The resource file that should be added.
 	 * @param type the type of the file
 	 */
@@ -138,10 +135,9 @@ public class ResourceLoader {
 	}
 
 	/**
-	 * Adds a resource file to the loader as first element. Note: Only the file
-	 * name has to be added. The KnowWERessourceLoader knows the default
-	 * resource file location.
-	 * 
+	 * Adds a resource file to the loader as first element. Note: Only the file name has to be added. The
+	 * KnowWERessourceLoader knows the default resource file location.
+	 *
 	 * @param file The resource file that should be added.
 	 */
 	public void addFirst(String file, String type) {
@@ -160,7 +156,7 @@ public class ResourceLoader {
 
 	/**
 	 * Removes a formerly added resource file.
-	 * 
+	 *
 	 * @param file The resource file that should be removed.
 	 */
 	public void remove(String file, String type) {
@@ -172,7 +168,7 @@ public class ResourceLoader {
 
 	/**
 	 * Returns the script files the loader knows.
-	 * 
+	 *
 	 * @return String The script files.
 	 */
 	public List<String> getScriptIncludes() {
@@ -181,7 +177,7 @@ public class ResourceLoader {
 
 	/**
 	 * Returns the CSS files the loader knows.
-	 * 
+	 *
 	 * @return String The CSS files.
 	 */
 	public List<String> getStylesheetIncludes() {
@@ -189,7 +185,6 @@ public class ResourceLoader {
 	}
 
 	/**
-	 * 
 	 * @param type
 	 * @return
 	 */

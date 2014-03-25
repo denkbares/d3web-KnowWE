@@ -86,8 +86,8 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Masks [, ], ----, {{{, }}} and %% so that JSPWiki will render and not interpret them, if the
-	 * characters are already escaped, it will do nothing
+	 * Masks [, ], ----, {{{, }}} and %% so that JSPWiki will render and not interpret them, if the characters are
+	 * already escaped, it will do nothing
 	 *
 	 * @created 03.03.2011
 	 */
@@ -110,8 +110,8 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Masks [, ], ----, {{{, }}} and %% so that JSPWiki will render and not interpret them, if the
-	 * characters are already escaped, it will do nothing
+	 * Masks [, ], ----, {{{, }}} and %% so that JSPWiki will render and not interpret them, if the characters are
+	 * already escaped, it will do nothing
 	 *
 	 * @param builder the builder to destructively mask its contents
 	 * @created 03.03.2011
@@ -170,8 +170,8 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Creates a unique anchor name for the section to link to. See method {@link
-	 * #getWikiLink(Section)} for more details on how to use this method.
+	 * Creates a unique anchor name for the section to link to. See method {@link #getWikiLink(Section)} for more
+	 * details on how to use this method.
 	 *
 	 * @param section the section to create the anchor for.
 	 * @return the unique anchor name
@@ -184,12 +184,11 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Renders a unique anchor name for the section to link to. See method {@link
-	 * #getWikiLink(Section)} and {@link #getURLLink(Section)} for more details on how to use this
-	 * method.
+	 * Renders a unique anchor name for the section to link to. See method {@link #getWikiLink(Section)} and {@link
+	 * #getURLLink(Section)} for more details on how to use this method.
 	 *
 	 * @param section the section to create the anchor for
-	 * @param result the output target to be written to
+	 * @param result  the output target to be written to
 	 * @created 16.08.2013
 	 */
 	public static void renderAnchor(Section<?> section, RenderResult result) {
@@ -198,14 +197,13 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns the ConnectorAttachment for a specified filename on a specified article. Either the
-	 * title matches the article and the fileName matches the filename of the attachment or the
-	 * filename matches the complete path for the attachment.
+	 * Returns the ConnectorAttachment for a specified filename on a specified article. Either the title matches the
+	 * article and the fileName matches the filename of the attachment or the filename matches the complete path for the
+	 * attachment.
 	 *
-	 * @param title the title of the article of the attachment
+	 * @param title    the title of the article of the attachment
 	 * @param fileName the filename of the attachment
-	 * @return {@link WikiAttachment} fulfilling the specified parameters or null, if no such
-	 * attachment exists
+	 * @return {@link WikiAttachment} fulfilling the specified parameters or null, if no such attachment exists
 	 * @created 27.01.2012
 	 */
 	public static WikiAttachment getAttachment(String title, String fileName) throws IOException {
@@ -225,8 +223,8 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns all {@link WikiAttachment}s which full name fits to the regex or which filename
-	 * matches to the regexp and which parent has the specified title
+	 * Returns all {@link WikiAttachment}s which full name fits to the regex or which filename matches to the regexp and
+	 * which parent has the specified title
 	 *
 	 * @param title the title of the article
 	 * @param regex regular expression the attachments should match to
@@ -296,7 +294,7 @@ public class KnowWEUtils {
 	 * Returns if the user has the read access rights to the specified article.
 	 *
 	 * @param article the article to check the access rights for
-	 * @param user the user context
+	 * @param user    the user context
 	 * @return true if the user has the read access rights to the article
 	 * @created 29.11.2013
 	 */
@@ -309,7 +307,7 @@ public class KnowWEUtils {
 	 * Returns if the user has the read access rights to all of the specified articles.
 	 *
 	 * @param articles the articles to check the access rights for
-	 * @param user the user context
+	 * @param user     the user context
 	 * @return true if the user has the read access rights to all of the articles
 	 * @created 29.11.2013
 	 */
@@ -321,12 +319,11 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns if the user has the read access rights to the specified section. To be more specific,
-	 * it checks if the user has the read access rights to the article that contains the specified
-	 * section.
+	 * Returns if the user has the read access rights to the specified section. To be more specific, it checks if the
+	 * user has the read access rights to the article that contains the specified section.
 	 *
 	 * @param section the section to check the access rights for
-	 * @param user the user context
+	 * @param user    the user context
 	 * @return true if the user has the read access rights to the section
 	 * @created 29.11.2013
 	 */
@@ -335,12 +332,11 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns if the user has the read access rights to all of the specified sections. To be more
-	 * specific, it checks if the user has the read access rights to the set of all articles that
-	 * contain the specified sections.
+	 * Returns if the user has the read access rights to all of the specified sections. To be more specific, it checks
+	 * if the user has the read access rights to the set of all articles that contain the specified sections.
 	 *
 	 * @param sections the sections to check the access rights for
-	 * @param user the user context
+	 * @param user     the user context
 	 * @return true if the user has the read access rights to all of the sections
 	 * @created 29.11.2013
 	 */
@@ -352,7 +348,7 @@ public class KnowWEUtils {
 	 * Returns if the user has the write access rights to the specified article.
 	 *
 	 * @param article the article to check the access rights for
-	 * @param user the user context
+	 * @param user    the user context
 	 * @return true if the user has the write access rights to the article
 	 * @created 29.11.2013
 	 */
@@ -365,7 +361,7 @@ public class KnowWEUtils {
 	 * Returns if the user has the write access rights to all of the specified articles.
 	 *
 	 * @param articles the articles to check the access rights for
-	 * @param user the user context
+	 * @param user     the user context
 	 * @return true if the user has the write access rights to all of the articles
 	 * @created 29.11.2013
 	 */
@@ -377,12 +373,11 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns if the user has the write access rights to the specified section. To be more
-	 * specific, it checks if the user has the write access rights to the article that contains the
-	 * specified section.
+	 * Returns if the user has the write access rights to the specified section. To be more specific, it checks if the
+	 * user has the write access rights to the article that contains the specified section.
 	 *
 	 * @param section the section to check the access rights for
-	 * @param user the user context
+	 * @param user    the user context
 	 * @return true if the user has the write access rights to the section
 	 * @created 29.11.2013
 	 */
@@ -391,12 +386,11 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns if the user has the write access rights to all of the specified sections. To be more
-	 * specific, it checks if the user has the write access rights to the set of all articles that
-	 * contain the specified sections.
+	 * Returns if the user has the write access rights to all of the specified sections. To be more specific, it checks
+	 * if the user has the write access rights to the set of all articles that contain the specified sections.
 	 *
 	 * @param sections the sections to check the access rights for
-	 * @param user the user context
+	 * @param user     the user context
 	 * @return true if the user has the write access rights to all of the sections
 	 * @created 29.11.2013
 	 */
@@ -420,8 +414,7 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns the term identifier if the given Section has the type SimpleTerm, the text of the
-	 * Section else.
+	 * Returns the term identifier if the given Section has the type SimpleTerm, the text of the Section else.
 	 *
 	 * @param termSection the Section which should implement the interface SimpleTerm
 	 * @created 08.02.2012
@@ -439,8 +432,7 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns the term identifier if the given Section has the type SimpleTerm, the text of the
-	 * Section else.
+	 * Returns the term identifier if the given Section has the type SimpleTerm, the text of the Section else.
 	 *
 	 * @param termSection the Section which should implement the interface SimpleTerm
 	 * @created 06.05.2012
@@ -457,8 +449,7 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Creates a &lt;a href="..."&gt; styled link to the specified article including the HTML-anchor
-	 * tag.
+	 * Creates a &lt;a href="..."&gt; styled link to the specified article including the HTML-anchor tag.
 	 *
 	 * @param title the article title to create the link for
 	 * @return the created link
@@ -470,10 +461,9 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Creates a &lt;a href="..."&gt; styled link to the specified article including the HTML-anchor
-	 * tag.
+	 * Creates a &lt;a href="..."&gt; styled link to the specified article including the HTML-anchor tag.
 	 *
-	 * @param title the article title to create the link for
+	 * @param title    the article title to create the link for
 	 * @param linkText the text for the link
 	 * @return the created link
 	 * @see #getURLLink(Section)
@@ -484,8 +474,7 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Creates a url link that can be placed e.g. into a &lt;a href="..."&gt; tag to reference the
-	 * specified article.
+	 * Creates a url link that can be placed e.g. into a &lt;a href="..."&gt; tag to reference the specified article.
 	 *
 	 * @param title the article title to create the link for
 	 * @return the created link
@@ -497,10 +486,9 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Creates a &lt;a href="..."&gt; styled link to the specified article in the specified
-	 * version.
+	 * Creates a &lt;a href="..."&gt; styled link to the specified article in the specified version.
 	 *
-	 * @param title the article title to create the link for
+	 * @param title   the article title to create the link for
 	 * @param version the article version to link to
 	 * @return the created link
 	 * @see #getURLLink(Section)
@@ -524,10 +512,9 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Creates a &lt;a href="..."&gt; styled link to the specified attachment of the specified
-	 * article.
+	 * Creates a &lt;a href="..."&gt; styled link to the specified attachment of the specified article.
 	 *
-	 * @param article the article to create the link for
+	 * @param article    the article to create the link for
 	 * @param attachment the attachment to create the link for
 	 * @return the created link
 	 */
@@ -536,9 +523,9 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Creates a &lt;a href="..."&gt; styled link to this section. The created link navigates the
-	 * user to the article of the section. If the section is rendered with an anchor (see method
-	 * {@link #getAnchor(Section)}) the page is also scrolled to the section.
+	 * Creates a &lt;a href="..."&gt; styled link to this section. The created link navigates the user to the article of
+	 * the section. If the section is rendered with an anchor (see method {@link #getAnchor(Section)}) the page is also
+	 * scrolled to the section.
 	 *
 	 * @param section the section to create the link for
 	 * @return the created link
@@ -546,14 +533,14 @@ public class KnowWEUtils {
 	 * @see #getWikiLink(Section)
 	 */
 	public static String getLinkHTMLToSection(Section<?> section) {
-		return "<a href='Wiki.jsp?page=" + Strings.encodeURL(section.getTitle()) + "#" + getAnchor(section) + "'>" + section
+		return "<a href=" + getURLLink(section) + "'>" + section
 				.getTitle() + "</a>";
 	}
 
 	/**
-	 * Creates a &lt;a href="..."&gt; styled link to this section. The created link navigates the
-	 * user to the article of the section. If the section is rendered with an anchor (see method
-	 * {@link #getAnchor(Section)}) the page is also scrolled to the section.
+	 * Creates a &lt;a href="..."&gt; styled link to this section. The created link navigates the user to the article of
+	 * the section. If the section is rendered with an anchor (see method {@link #getAnchor(Section)}) the page is also
+	 * scrolled to the section.
 	 *
 	 * @param section the section to create the link for
 	 * @return the created link
@@ -565,10 +552,10 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Creates a &lt;a href="..."&gt; styled link to the diff of the specified article. Usually,
-	 * version1 is the newer version and version2 the older one.
+	 * Creates a &lt;a href="..."&gt; styled link to the diff of the specified article. Usually, version1 is the newer
+	 * version and version2 the older one.
 	 *
-	 * @param title the article title to create the link for
+	 * @param title    the article title to create the link for
 	 * @param version1 the version containing the changes
 	 * @param version2 the base version
 	 * @return the created link
@@ -610,10 +597,10 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns the String stored as a cookies with the given name from the UserContext. If no cookie
-	 * exists, null is returned.
+	 * Returns the String stored as a cookies with the given name from the UserContext. If no cookie exists, null is
+	 * returned.
 	 *
-	 * @param name the name of the cookie
+	 * @param name    the name of the cookie
 	 * @param context the user context
 	 * @return the stored cookie or null, if no cookie with the given name exists
 	 * @created 11.02.2013
@@ -633,14 +620,14 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Convenience method to get the value of the cookie. This method does the same as the Method
-	 * {@link KnowWEUtils#getCookie(String, UserContext)}, but never returns null, except null is
-	 * given as the default value. The default value will not be set as the cookie, but returned, if
-	 * no cookie is given yet (for example with new users).
+	 * Convenience method to get the value of the cookie. This method does the same as the Method {@link
+	 * KnowWEUtils#getCookie(String, UserContext)}, but never returns null, except null is given as the default value.
+	 * The default value will not be set as the cookie, but returned, if no cookie is given yet (for example with new
+	 * users).
 	 *
-	 * @param name the name of the cookie
+	 * @param name         the name of the cookie
 	 * @param defaultValue the value to be returned, if the cookie could not be found
-	 * @param context the user context
+	 * @param context      the user context
 	 * @return the stored cookie or null, if no cookie with the given name exists
 	 * @created 11.02.2013
 	 */
@@ -658,12 +645,12 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Creates a wiki-markup-styled link to this section. The created link navigates the user to the
-	 * article of the section. If the section is rendered with an anchor (see method {@link
-	 * #getAnchor(Section)}) the page is also scrolled to the section.
+	 * Creates a wiki-markup-styled link to this section. The created link navigates the user to the article of the
+	 * section. If the section is rendered with an anchor (see method {@link #getAnchor(Section)}) the page is also
+	 * scrolled to the section.
 	 * <p/>
-	 * Please not that the link will only work if it is put into "[" ... "]" brackets and rendered
-	 * through the wiki rendering pipeline.
+	 * Please not that the link will only work if it is put into "[" ... "]" brackets and rendered through the wiki
+	 * rendering pipeline.
 	 *
 	 * @param section the section to create the link for
 	 * @return the created link
@@ -725,8 +712,7 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns the TerminologyManagers of the {@link TermCompiler}s compiling the give compile
-	 * Section.
+	 * Returns the TerminologyManagers of the {@link TermCompiler}s compiling the give compile Section.
 	 *
 	 * @param section the section to get the TerminologyManagers for
 	 * @return the {@link TerminologyManager}s of the given section
@@ -750,12 +736,11 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns all TerminologyManagers of the given {@link ArticleManager} that are from {@link
-	 * Compiler} of the given compiler class.
+	 * Returns all TerminologyManagers of the given {@link ArticleManager} that are from {@link Compiler} of the given
+	 * compiler class.
 	 *
-	 * @param manager the {@link ArticleManager} to get the TerminologyManagers for
-	 * @param compilerClass the type of the {@link Compiler}s we want the {@link
-	 * TerminologyManager}s from
+	 * @param manager       the {@link ArticleManager} to get the TerminologyManagers for
+	 * @param compilerClass the type of the {@link Compiler}s we want the {@link TerminologyManager}s from
 	 * @return the {@link TerminologyManager}s of the given manager
 	 * @created 15.11.2013
 	 */
@@ -843,10 +828,9 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns the date the specified article has been modified the last time. This method also
-	 * works if the specified article is not the latest one. Therefore this method does NOT (!)
-	 * return the modification date of the specified article, but the modification date of the
-	 * specified article's name within the corresponding article manager.
+	 * Returns the date the specified article has been modified the last time. This method also works if the specified
+	 * article is not the latest one. Therefore this method does NOT (!) return the modification date of the specified
+	 * article, but the modification date of the specified article's name within the corresponding article manager.
 	 *
 	 * @param article the article to get the latest modification date for
 	 * @return the last modification date
@@ -860,10 +844,10 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns the version number of the latest version of the specified article. This method also
-	 * works if the specified article is not the latest instance. Therefore this method does NOT (!)
-	 * return the version of the specified article, but the latest version of the specified
-	 * article's name within the corresponding article manager.
+	 * Returns the version number of the latest version of the specified article. This method also works if the
+	 * specified article is not the latest instance. Therefore this method does NOT (!) return the version of the
+	 * specified article, but the latest version of the specified article's name within the corresponding article
+	 * manager.
 	 *
 	 * @param article the article to get the latest version for
 	 * @return the latest version

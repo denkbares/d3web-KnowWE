@@ -1,17 +1,16 @@
 /*
- * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
- * Computer Science VI, University of Wuerzburg / denkbares GmbH
- * 
+ * Copyright (C) 2014 denkbares GmbH, Germany
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -47,7 +46,7 @@ import de.knowwe.kdom.defaultMarkup.UnknownAnnotationType;
 
 /**
  * Provides utilities methods for Plugins used in KnowWE
- * 
+ *
  * @author Jochen Reutelshöfer, Volker Belli & Markus Friedrich (denkbares GmbH)
  */
 public class Plugins {
@@ -84,7 +83,7 @@ public class Plugins {
 
 	/**
 	 * Returns all plugged Instantiations These are used to initialize plugins.
-	 * 
+	 *
 	 * @return List of all Instantiations
 	 */
 	public static List<Instantiation> getInstantiations() {
@@ -93,7 +92,7 @@ public class Plugins {
 
 	/**
 	 * Returns all plugged Instantiations These are used to initialize plugins.
-	 * 
+	 *
 	 * @return List of all Instantiations
 	 */
 	public static PriorityList<Double, Compiler> getCompilers() {
@@ -108,8 +107,8 @@ public class Plugins {
 	}
 
 	/**
-	 * Returns a list of all plugged actions. Actions can be executed from the
-	 * web. Usually be clicking on pregenerated links on the wiki pages.
+	 * Returns a list of all plugged actions. Actions can be executed from the web. Usually be clicking on pregenerated
+	 * links on the wiki pages.
 	 */
 	public static List<Action> getKnowWEAction() {
 		return getSingeltons(EXTENDED_POINT_KnowWEAction, Action.class);
@@ -138,9 +137,9 @@ public class Plugins {
 			}
 			else {
 				Log.warning("Tried to plug CompileScript '"
-								+ extension.getSingleton().getClass().getSimpleName()
-								+ "' into an type '" + type.getClass().getSimpleName()
-								+ "' which is not an AbstractType");
+						+ extension.getSingleton().getClass().getSimpleName()
+						+ "' into an type '" + type.getClass().getSimpleName()
+						+ "' which is not an AbstractType");
 			}
 		}
 	}
@@ -203,11 +202,10 @@ public class Plugins {
 
 	/**
 	 * Returns a List of all plugged TagHandlers
-	 * 
-	 * COMMENT: Alternatively, those taghandlers can also be introduced
-	 * separately using the taghandler.text file. There the class of the
-	 * taghandler is listed and will be loaded on KnowWE initialization.
-	 * 
+	 * <p/>
+	 * COMMENT: Alternatively, those taghandlers can also be introduced separately using the taghandler.text file. There
+	 * the class of the taghandler is listed and will be loaded on KnowWE initialization.
+	 *
 	 * @return List of TagHandlers
 	 */
 	public static List<TagHandler> getTagHandlers() {
@@ -216,11 +214,10 @@ public class Plugins {
 
 	/**
 	 * Returns a list of all plugged PageAppendHandlers.
-	 * 
-	 * These handlers allow a module to append some content to the wiki-page
-	 * content. There are 2 kinds of appendHandlers one append content at top of
-	 * the page, the other appends at the bottom
-	 * 
+	 * <p/>
+	 * These handlers allow a module to append some content to the wiki-page content. There are 2 kinds of
+	 * appendHandlers one append content at top of the page, the other appends at the bottom
+	 *
 	 * @return List of PageAppendHandlers
 	 */
 	public static List<PageAppendHandler> getPageAppendHandlers() {
@@ -229,9 +226,9 @@ public class Plugins {
 
 	/**
 	 * Returns a list of all plugged Annotations
-	 * 
-	 * @created 31/07/2012
+	 *
 	 * @return List of Annotations
+	 * @created 31/07/2012
 	 */
 	public static List<Annotation> getAnnotations() {
 		return getSingeltons(EXTENDED_POINT_Annotation, Annotation.class);
@@ -274,7 +271,7 @@ public class Plugins {
 		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_KnowWEAction));
 		for (String s : files) {
-			ResourceLoader.getInstance().add(s, ResourceLoader.RESOURCE_STYLESHEET);
+			ResourceLoader.getInstance().addFirst(s, ResourceLoader.RESOURCE_STYLESHEET);
 		}
 	}
 
@@ -282,7 +279,7 @@ public class Plugins {
 		PriorityList<Double, String> cssFiles = new PriorityList<Double, String>(5.0);
 		addCSS(cssFiles, extensions);
 		for (String s : cssFiles) {
-			ResourceLoader.getInstance().add(s, ResourceLoader.RESOURCE_STYLESHEET);
+			ResourceLoader.getInstance().addFirst(s, ResourceLoader.RESOURCE_STYLESHEET);
 		}
 		PriorityList<Double, String> jsFiles = new PriorityList<Double, String>(5.0);
 		addScripts(jsFiles, extensions);
@@ -290,7 +287,6 @@ public class Plugins {
 			String filename = jsFiles.get(i);
 			ResourceLoader.getInstance().add(filename, ResourceLoader.RESOURCE_SCRIPT);
 		}
-
 
 	}
 

@@ -21,19 +21,19 @@ function ToolMenu() {
 	this.cache = {};
 }
 
-ToolMenu.prototype.decorateToolMenus = function(parent) {
+ToolMenu.prototype.decorateToolMenus = function (parent) {
 	parent = jq$(parent);
 	var decorators = parent ? parent.find('.toolsMenuDecorator') : jq$('.toolsMenuDecorator');
-	jq$('.toolsMenuDecorator').each(function() {
+	jq$('.toolsMenuDecorator').each(function () {
 		var a = jq$(this);
 		if (a.data('toolMenuDecorated') === 'true') return;
-		a.parent().mouseenter(function() {
+		a.parent().mouseenter(function () {
 			a.css('visibility', 'visible');
 		});
-		a.parent().mouseleave(function() {
+		a.parent().mouseleave(function () {
 			a.css('visibility', 'hidden');
 		});
-		a.click(function() {
+		a.click(function () {
 			ToolMenu.showToolPopupMenu(a);
 		});
 		a.data('toolMenuDecorated', 'true');
@@ -44,49 +44,52 @@ ToolMenu.prototype.decorateToolMenus = function(parent) {
 	});
 }
 
-ToolMenu.prototype.showToolPopupMenu = function($node) {
+ToolMenu.prototype.showToolPopupMenu = function (node) {
 	this.hideToolsPopupMenu();
-	var node = $node[0];
+	var node = node[0];
 	var pos = node.getPosition();
 	var w = node.offsetWidth, h = node.offsetHeight;
+	//needed for correct position in compositeEdit
+	var s = jq$('#compositeEdit').scrollTop();
+
 	var par = new Element('div', {
-		'id' : 'toolPopupMenuID',
-		'styles' : {
-			'top' : pos.y + 'px',
-			'left' : pos.x + 'px',
-			'z-index' : '10000',
-			'position' : 'absolute'
+		'id': 'toolPopupMenuID',
+		'styles': {
+			'top': pos.y - s + 'px',
+			'left': pos.x + 'px',
+			'z-index': '10000',
+			'position': 'absolute'
 		},
-		'events' : {
-			'mouseleave' : ToolMenu.hideToolsPopupMenu
+		'events': {
+			'mouseleave': ToolMenu.hideToolsPopupMenu
 		}
 	});
 	document.body.appendChild(par);
 	par.innerHTML = "<div class='toolMenuFrame'>" + "<div style='width:" + w
-			+ "px;height:" + h + "px;' onclick='ToolMenu.hideToolsPopupMenu();'></div>"
-			+ this.getToolMenuHtml($node) + "</div>";
+		+ "px;height:" + h + "px;' onclick='ToolMenu.hideToolsPopupMenu();'></div>"
+		+ this.getToolMenuHtml(node) + "</div>";
 }
 
-ToolMenu.prototype.getToolMenuHtml = function($node) {
-	
-	var toolMenuIdentifier = $node.attr('toolMenuIdentifier');
-	
+ToolMenu.prototype.getToolMenuHtml = function (node) {
+
+	var toolMenuIdentifier = jq$(node).attr('toolMenuIdentifier');
+
 	if (!this.cache[toolMenuIdentifier]) {
 		var toolMenuAction = 'GetToolMenuAction';
-		var specialAction = $node.attr('toolMenuAction');
+		var specialAction = jq$(node).attr('toolMenuAction');
 		if (specialAction) {
 			toolMenuAction = specialAction;
 		}
 
 		var params = {
-			action : toolMenuAction,
-			identifier : toolMenuIdentifier
+			action: toolMenuAction,
+			identifier: toolMenuIdentifier
 		}
 
 		var options = {
-			url : KNOWWE.core.util.getURL(params),
-			async : false,
-			response : {
+			url: KNOWWE.core.util.getURL(params),
+			async: false,
+			response: {
 				onError: _EC.onErrorBehavior
 			}
 		}
@@ -98,7 +101,7 @@ ToolMenu.prototype.getToolMenuHtml = function($node) {
 	return this.cache[toolMenuIdentifier];
 }
 
-ToolMenu.prototype.hideToolsPopupMenu = function() {
+ToolMenu.prototype.hideToolsPopupMenu = function () {
 	var old = $('toolPopupMenuID');
 	if (old) {
 		old.remove();
@@ -107,8 +110,10 @@ ToolMenu.prototype.hideToolsPopupMenu = function() {
 
 var ToolMenu = new ToolMenu();
 
-jq$(document).ready(function() {
+jq$(document).ready(function () {
 	ToolMenu.decorateToolMenus();
 });
 
-KNOWWE.helper.observer.subscribe("flowchartrendered", function() {ToolMenu.decorateToolMenus(jq$('.Flowchart'))});
+KNOWWE.helper.observer.subscribe("flowchartrendered", function () {
+	ToolMenu.decorateToolMenus(jq$('.Flowchart'))
+});

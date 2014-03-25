@@ -17,31 +17,50 @@
  * site: http://www.fsf.org.
  */
 
+/*
+ * Copyright (C) 2014 denkbares GmbH, Germany
+ *
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+
 /* ################################################## */
 /* ------------Default Markup Styles----------------- */
 /* ################################################## */
 
 .defaultMarkupFrame {
-	border: 		1px solid #DDD;
-	position:		relative;
-	margin:			0px 0px 5px 0px;
-	padding:		0px 0px 0px 0px;
-	clear:			left;
+	border: 1px solid #DDD;
+	position: relative;
+	margin: 0px 0px 5px 0px;
+	padding: 0px 0px 0px 0px;
+	clear: left;
 }
 
 .defaultMarkup {
-	position:		relative;
+	position: relative;
 	background-color: #F9F9F9;
-	margin-right:	0em;
-	margin-left:	0em;
-	min-height:		30px;
-	overflow-x:		hidden;
-	overflow-y:		visible;
+	margin-right: 0em;
+	margin-left: 0em;
+	min-height: 30px;
+	overflow-x: hidden;
+	overflow-y: visible;
 }
 
 .defaultMarkup .markupText {
-	white-space:	pre-wrap;
-	padding:		3px 3px 3px 3px;
+	white-space: pre-wrap;
+	padding: 3px 3px 3px 3px;
 }
 
 .defaultMarkup .markupText .header {
@@ -52,34 +71,34 @@
 }
 
 .defaultMarkupFrame .headerMenu .markupHeader {
-	overflow: 		hidden;
-	padding:		3px 10px 3px 10px;
+	overflow: hidden;
+	padding: 3px 10px 3px 10px;
 }
 
 .defaultMarkupFrame .headerToolbar .markupHeader {
-	overflow: 		hidden;
-	padding:		3px;
+	overflow: hidden;
+	padding: 3px;
 }
 
 .headerToolbar .markupHeader span {
-	font-weight: 	bold;
-	padding-left: 	5px;
+	font-weight: bold;
+	padding-left: 5px;
 }
 
 .headerToolbar .markupHeader .markupTools {
-	margin-left: 	10px;
+	margin-left: 10px;
 }
 
 .headerToolbar .markupHeader .markupTools div {
-	display: 		inline;
-	padding: 		3px;
+	display: inline;
+	padding: 3px;
 }
 
 .defaultMarkupFrame .markupHeaderFrame {
-	top:			1px;
-	white-space:	nowrap;
+	top: 1px;
+	white-space: nowrap;
 	z-index: 500;
-	overflow: 		visible;
+	overflow: visible;
 }
 
 .defaultMarkupFrame .headerMenu {
@@ -87,22 +106,22 @@
 	z-index: 500;
 	max-width: 35px;
 	background-color: white;
-	right:			1px;
-	position:		absolute;
-	border-left:	1px solid #DDD;
-	border-bottom:	1px solid #DDD;
+	right: 1px;
+	position: absolute;
+	border-left: 1px solid #DDD;
+	border-bottom: 1px solid #DDD;
 	border-bottom-left-radius: 10px;
 	-moz-border-radius-bottomleft: 10px;
 }
 
 .defaultMarkupFrame .headerToolbar {
 	background-color: #DDD;
-	left:			1px;
+	left: 1px;
 }
 
 .defaultMarkupFrame .markupTools {
-	display:		inline;
-	vertical-align:	-3px;
+	display: inline;
+	vertical-align: -3px;
 }
 
 .defaultMarkupFrame .markupMenuIndicator {
@@ -112,49 +131,50 @@
 
 .defaultMarkupFrame .markupMenu {
 	display: none;
-	position:	absolute;
-	border:		2px solid #DDD;
+	position: absolute;
+	border: 2px solid #DDD;
 	background-color: white;
-	right:		0px;
+	right: 0px;
 	z-index: 750;
-	right:		-1px;
+	right: -1px;
 }
 
 .defaultMarkupFrame .markupMenuItem {
-	display:	block;
+	display: block;
 	list-style: none;
-	padding:	0.25em;
+	padding: 0.25em;
 	white-space: nowrap;
 }
 
 .defaultMarkupFrame .markupMenuItem > img {
-	vertical-align:		-3px;
-	color:				#036;
+	vertical-align: -3px;
+	padding-right: 3px;
 }
 
 .defaultMarkupFrame .markupMenuItem a.markupMenuItem {
-	padding:	0.25em;
-	margin:		-0.25em;
+	padding: 0.25em;
+	margin: -0.25em;
+	color: #036;
 }
 
 .defaultMarkupFrame .customMenuItem a.markupMenuItem {
-	margin:				0em;
-	margin-left:		-0.25em;
-	margin-right:		-0.25em;
+	margin: 0em;
+	margin-left: -0.25em;
+	margin-right: -0.25em;
 }
 
 .defaultMarkupFrame a.markupMenuItem:hover {
-	background-color:	#EEE;
-	text-decoration:	none;
-	color:				#003DF5;
+	background-color: #EEE;
+	text-decoration: none;
+	color: #003DF5;
 }
 
 .defaultMarkupFrame .headerMenu .markupIcon {
-	vertical-align:	-7px;
+	vertical-align: -7px;
 }
 
 .defaultMarkupFrame .headerToolbar .markupIcon {
-	vertical-align:	-3.5px;
+	vertical-align: -3.5px;
 }
 
 .markupMenuDivider {
@@ -176,6 +196,7 @@ span.markupMenuItem {
 	height: 12px;
 	position: relative;
 }
+
 .defaultMarkupFrame .progress-container .progress-bar .progress-bar-percent {
 	position: absolute;
 	top: -2px;
@@ -183,6 +204,7 @@ span.markupMenuItem {
 	right: 10px;
 	text-align: center;
 }
+
 .defaultMarkupFrame .progress-container .progress-bar .ui-progressbar-value {
 	height: 12px;
 }
@@ -223,19 +245,21 @@ span.markupMenuItem {
 	.defaultMarkupFrame .markupMenu {
 		opacity: 0 !important;
 	}
+
 	.defaultMarkupFrame .headerMenu {
 		max-width: 250px !important;
 		border-width: 0px !important;
 	}
+
 	.defaultMarkupFrame .headerMenu .markupHeader {
 		padding: 3px 0px 0px 0px !important;
 	}
+
 	.defaultMarkupFrame .markupMenuIndicator {
 		padding-right: 0px;
 		visibility: hidden;
 	}
 }
-
 
 .objectinfo.preview {
 	display: block; /* inline-block;*/
@@ -243,7 +267,7 @@ span.markupMenuItem {
 	margin-bottom: 0.5em;
 }
 
-smartedit + .objectinfo.preview:hover{
+smartedit + .objectinfo.preview:hover {
 	display: block;
 }
 
@@ -265,10 +289,10 @@ smartedit + .objectinfo.preview:hover{
 }
 
 .toolsMenuDecorator {
-	top:-1px;
-	bottom:-1px;
-	left:-1px;
-	right:-15px;
+	top: -1px;
+	bottom: -1px;
+	left: -1px;
+	right: -15px;
 	border: 1px dotted gray;
 	border-radius: 4px;
 	-moz-border-radius: 4px;
@@ -279,33 +303,33 @@ smartedit + .objectinfo.preview:hover{
 }
 
 .toolMenuFrame {
-	position:		relative;
-	margin:			0px 0px 0px 0px;
-	padding:		0px 0px 0px 0px;
+	position: relative;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
 }
 
 .toolMenuFrame .markupHeader {
-	overflow: 		hidden;
-	padding:		3px 10px 3px 10px;
+	overflow: hidden;
+	padding: 3px 10px 3px 10px;
 }
 
 .toolMenuFrame .markupHeaderFrame {
-	position:		absolute;
-	top:			1px;
-	right:			1px;
-	border-left:	1px solid #DDD;
-	border-bottom:	1px solid #DDD;
+	position: absolute;
+	top: 1px;
+	right: 1px;
+	border-left: 1px solid #DDD;
+	border-bottom: 1px solid #DDD;
 	border-bottom-left-radius: 10px;
 	-moz-border-radius-bottomleft: 10px;
 	background-color: white;
-	white-space:	nowrap;
+	white-space: nowrap;
 	z-index: 500;
-	overflow: 		visible;
+	overflow: visible;
 }
 
 .toolMenuFrame .markupTools {
-	display:		inline;
-	vertical-align:	-3px;
+	display: inline;
+	vertical-align: -3px;
 }
 
 .toolMenuFrame .markupMenuIndicator {
@@ -314,45 +338,45 @@ smartedit + .objectinfo.preview:hover{
 }
 
 .toolMenuFrame .markupMenu {
-	position:	absolute;
-	border:		2px solid #DDD;
+	position: absolute;
+	border: 2px solid #DDD;
 	background-color: white;
-	right:		0px;
+	right: 0px;
 	z-index: 750;
-	right:		-1px;
+	right: -1px;
 }
 
 .toolMenuFrame .markupMenuItem {
-	display:	block;
+	display: block;
 	list-style: none;
-	padding:	0.25em;
+	padding: 0.25em;
 	white-space: nowrap;
 }
 
 .toolMenuFrame .markupMenuItem > img {
-	vertical-align:		-3px;
-	color:				#036;
+	vertical-align: -3px;
+	color: #036;
 }
 
 .toolMenuFrame .markupMenuItem a.markupMenuItem {
-	padding:	0.25em;
-	margin:		-0.25em;
+	padding: 0.25em;
+	margin: -0.25em;
 }
 
 .toolMenuFrame .customMenuItem a.markupMenuItem {
-	margin:				0em;
-	margin-left:		-0.25em;
-	margin-right:		-0.25em;
+	margin: 0em;
+	margin-left: -0.25em;
+	margin-right: -0.25em;
 }
 
 .toolMenuFrame a.markupMenuItem:hover {
-	background-color:	#EEE;
-	text-decoration:	none;
-	color:				#003DF5;
+	background-color: #EEE;
+	text-decoration: none;
+	color: #003DF5;
 }
 
 .toolMenuFrame .markupHeader .markupIcon {
-	vertical-align:	-7px;
+	vertical-align: -7px;
 }
 
 .defaultMarkup .markupText .progress-message a.action {
@@ -401,52 +425,52 @@ smartedit + .objectinfo.preview:hover{
 /* ################################################## */
 
 .navigationPagination {
-    display: inline;
+	display: inline;
 }
 
 .navigationPagination .toolBar {
-    position: relative;
-    white-space: nowrap;
-    display: inline;
+	position: relative;
+	white-space: nowrap;
+	display: inline;
 }
 
 .navigationPagination .tableSize {
-    margin-left: 20px;
+	margin-left: 20px;
 }
 
 .navigationPagination .toolButton {
-    position: relative;
-    top: 3px;
+	position: relative;
+	top: 3px;
 }
 
 .paginationHeader {
-    cursor: pointer;
+	cursor: pointer;
 }
 
 .navigationPaginationWrapper th {
-    color: #036;
-    text-decoration: none;
+	color: #036;
+	text-decoration: none;
 }
 
 .navigationPaginationWrapper th:hover {
-    color: #036;
-    text-decoration: underline;
+	color: #036;
+	text-decoration: underline;
 }
 
 .navigationPaginationWrapper .notSortable {
-    color: black !important;
-    text-decoration: none !important;
+	color: black !important;
+	text-decoration: none !important;
 }
 
 .navigationPaginationWrapper .notSortable:hover {
-    color: black !important;
-    text-decoration: none !important;
+	color: black !important;
+	text-decoration: none !important;
 }
 
 .navigationPaginationWrapper th img {
-    position: relative;
-    top: 2px;
-    float: right;
+	position: relative;
+	top: 2px;
+	float: right;
 }
 
 /* ################################################## */
@@ -455,18 +479,23 @@ smartedit + .objectinfo.preview:hover{
 
 .inline-definition {
 }
+
 .inline-definition-head:BEFORE {
 	content: "(";
 }
+
 .inline-definition-head:AFTER {
 	content: ": ";
 }
+
 .inline-definition-head {
 	font-size: 50%;
 	color: #888;
 }
+
 .inline-definition-data {
 }
+
 .inline-definition-data:AFTER {
 	content: ")";
 	font-size: 50%;

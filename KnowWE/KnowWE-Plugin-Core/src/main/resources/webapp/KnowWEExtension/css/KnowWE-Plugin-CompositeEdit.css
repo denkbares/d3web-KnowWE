@@ -1,0 +1,241 @@
+/*
+ * Copyright (C) 2014 denkbares GmbH, Germany
+ *
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+
+/*
+ * Copyright (C) 2014 denkbares GmbH, Germany
+ *
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+
+.ui-dialog {
+	border: 1px solid #9ACBFB !important;
+	padding: 0 0 0 0 !important;
+	z-index: 1000 !important;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+	padding: .4em 1em;
+	position: relative;
+	background-image: none !important;
+	background-color: rgba(193, 206, 226, 0.65) !important;
+	color: #036 !important;
+}
+
+.ui-dialog-titlebar h3 {
+	margin: 0 0 0 0;
+	padding: 0 0 0 0;
+}
+
+#maximizeCompositeView {
+	float: right;
+	position: relative;
+	right: -8px;
+	top: -1px;
+	cursor: pointer;
+	background: url('../images/maximize_minimize.png') no-repeat;
+
+}
+
+#maximizeCompositeView.minimized {
+	background-position: 0 0;
+	width: 16px;
+	height: 16px;
+}
+
+#maximizeCompositeView.maximized {
+	background-position: 0 -66px;
+	width: 16px;
+	height: 16px;
+}
+
+.type_ObjectInfo h3 {
+	margin: 0 0 0 0;
+	padding: 0 0 0 0;
+	font-weight: bold;
+	font-size: 140%;
+}
+
+.type_ObjectInfo .lookUpForm {
+	margin-top: 0.8em;
+}
+
+.sectionStart {
+	font-size: 125%;
+	border-bottom: 1px solid #aaa;
+	font-weight: bold;
+	margin-left: 0px !important;
+}
+
+.articleName {
+	font-size: 110%;
+	margin-bottom: 0.7em !important;
+	margin-top: 0.85em;
+	font-weight: bold;
+}
+
+.articleName a {
+	color: #036 !important;
+}
+
+.articleName a:hover {
+	color: blue !important;
+}
+
+.type_ObjectInfo .articleName {
+	margin-left: 0.8em;
+}
+
+#compositeEdit .defaultMarkupFrame .markupText {
+	padding: 0 0 0 0;
+}
+
+#compositeEdit .markupText > div {
+	margin-left: 0.4em;
+}
+
+#compositeEdit .markupText > div > div {
+	margin-left: 10px;
+	margin-bottom: 10px;
+}
+
+#compositeEdit .defaultEditTool {
+	margin: 0 0 0 0 !important;
+	padding: 0 5px 0 5px !important;
+}
+
+#compositeEdit .defaultMarkupFrame {
+	margin-bottom: 10px;
+}
+
+.type_ObjectInfo .previewItem {
+	margin-left: 1em;
+}
+
+.type_ObjectInfo .objectinfo.preview.reference {
+	margin-left: 1em;
+}
+
+#compositeEdit .objectinfo.preview {
+	margin-bottom: 0 !important;
+	white-space: pre-wrap;
+	border: 1px solid #DDD;
+	border-right: 1px solid white;
+	border-left: 1px solid white;
+	border-bottom: 1px solid white;
+}
+
+#compositeEdit .objectinfo.preview:hover {
+	border-right: 1px solid #DDD;
+	border-left: 1px solid #DDD;
+	border-bottom: 1px solid #DDD;
+	background-color: #F9F9F9;
+}
+
+#compositeEdit .onlyObjectInfoPage {
+	display: none;
+}
+
+.hidden {
+	margin-bottom: 0px !important;
+	margin-left: 0px !important;
+}
+
+#compositeEdit .hidden > div {
+	margin-left: 10px;
+	margin-bottom: 10px;
+}
+
+#compositeEdit .ueeditmarker {
+	background-color: #9ACBFB;
+	position: absolute;
+	width: 3px;
+	left: -9px;
+	top: 0px;
+	z-index: 1000;
+}
+
+#compositeEdit .ueeditmarker:after {
+	content: url(../images/pencil.png);
+	display: block;
+	position: relative;
+	left: -20px;
+}
+
+.click input {
+	background-color: #F5FAFF;
+	transition: width 100ms linear;
+}
+
+.ui-widget-overlay {
+	position: fixed !important;
+	top: 0 !important;
+	left: 0 !important;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: #aaaaaa !important;
+	opacity: 0.7 !important;
+	z-index: 999 !important;
+}
+
+/*
+.ui-dialog { z-index: 0 !important ;}
+*/
+
+.ui-dialog .ui-dialog-buttonpane {
+	text-align: left;
+	border-width: 1px 0 0 0;
+	background-image: none;
+	margin: 0 0 0 0;
+	padding: .4em 1em !important;
+	background-color: rgba(193, 206, 226, 0.65) !important;
+	position: absolute;
+	bottom: 0px;
+	right: 0px;
+	left: 0px;
+}
+
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
+	float: left !important;
+}
+
+.ui-dialog .ui-button {
+	margin-right: 5px !important;
+	margin-top: 0px !important;
+	margin-bottom: 0px !important;
+	color: #036 !important;
+}
+
+.no-close .ui-dialog-titlebar-close {
+	display: none !important;
+}

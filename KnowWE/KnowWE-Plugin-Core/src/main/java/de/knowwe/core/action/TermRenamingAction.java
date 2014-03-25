@@ -38,7 +38,10 @@ import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.notification.NotificationManager;
+import de.knowwe.notification.StandardNotification;
 
 /**
  * Action which renames all Definitions and References of a given Term. The following parameters are mandatory! <ul>
@@ -125,14 +128,43 @@ public class TermRenamingAction extends AbstractAction {
 		ArticleManager mgr = Environment.getInstance().getArticleManager(web);
 		Set<String> failures = new HashSet<String>();
 		Set<String> success = new HashSet<String>();
-		renameTerms(allTerms, termIdentifier, replacmentIdentifier, mgr, context, failures, success);
-		try {
-			mgr.getCompilerManager().awaitTermination();
+		if (getArticlesWithoutEditRights(allTerms, context).isEmpty()) {
+			renameTerms(allTerms, termIdentifier, replacmentIdentifier, mgr, context, failures, success);
+			try {
+				mgr.getCompilerManager().awaitTermination();
+			}
+			catch (InterruptedException e) {
+				throw new IOException(e.getMessage());
+			}
+			writeResponse(failures, success, termIdentifier, replacmentIdentifier, context);
 		}
-		catch (InterruptedException e) {
-			throw new IOException(e.getMessage());
+		else {
+			Set<String> articlesWithoutEditRights = getArticlesWithoutEditRights(allTerms, context);
+			StringBuilder sb = new StringBuilder();
+			for (String articleWithoutEditRights : articlesWithoutEditRights) {
+				if (sb.length() != 0) {
+					sb.append(", ");
+				}
+				sb.append(articlesWithoutEditRights);
+			}
+			String errorMessage = "You are not allowed to rename this term, because you do not have permission to edit all articles on which this term occurs:You are not allowed to rename this term, because you do not have permission to edit all articles on which this term occurs: \n" +
+					sb;
+			NotificationManager.addNotification(context, new StandardNotification(errorMessage, Message.Type.ERROR));
+			context.sendError(403, errorMessage);
 		}
-		writeResponse(failures, success, termIdentifier, replacmentIdentifier, context);
+	}
+
+	private Set<String> getArticlesWithoutEditRights(Map<String, Set<Section<? extends RenamableTerm>>> allTerms, UserActionContext context) {
+		Set<String> noEditRightsOnThisArticles = new HashSet<String>();
+		for (Map.Entry<String, Set<Section<? extends RenamableTerm>>> sectionsMap : allTerms.entrySet()) {
+			Set<Section<? extends RenamableTerm>> sectionsSet = sectionsMap.getValue();
+			for (Section<? extends RenamableTerm> section : sectionsSet) {
+				if (!KnowWEUtils.canWrite(section, context)) {
+					noEditRightsOnThisArticles.add(section.getTitle());
+				}
+			}
+		}
+		return noEditRightsOnThisArticles;
 	}
 
 	private Set<Section<? extends RenamableTerm>> getTermSet(String title,
@@ -155,12 +187,17 @@ public class TermRenamingAction extends AbstractAction {
 			String[] pathElements = termIdentifier.getPathElements();
 			String newLastPathElement = replacement.getLastPathElement();
 			pathElements[pathElements.length - 1] = newLastPathElement;
-			response.append("newTermIdentifier", new Identifier(
+			response.put("newTermIdentifier", new Identifier(
 					pathElements).toExternalForm());
 
 			// the new object name
-			response.append("newObjectName", new Identifier(
+			response.put("newObjectName", new Identifier(
 					newLastPathElement).toExternalForm());
+
+			String title = context.getTitle();
+			if (title.equals("ObjectInfoPage")) {
+				response.put("objectinfopage", true);
+			}
 
 			// renamed Articles
 			StringBuilder renamedArticles = new StringBuilder();

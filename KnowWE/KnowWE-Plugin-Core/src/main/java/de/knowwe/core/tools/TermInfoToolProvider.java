@@ -47,7 +47,7 @@ import de.knowwe.tools.ToolUtils;
  * @author volker_belli
  * @created 01.12.2010
  */
-public class ObjectInfoPageToolProvider implements ToolProvider {
+public class TermInfoToolProvider implements ToolProvider {
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
@@ -92,10 +92,10 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 		if (sorted.size() > 5) sorted = sorted.subList(0, 5);
 
 		// create tools for edit, rename and definitions
-		Tool[] tools = new Tool[sorted.size() + 2];
+		Tool[] tools = new Tool[sorted.size() + 1];
 		int index = 0;
-		tools[index++] = getObjectInfoPageTool(term);
-		tools[index++] = getRenamingTool(term);
+		tools[index++] = getCompositeEditTool(term);
+		//tools[index++] = getRenamingTool(term);b
 		for (String title : sorted) {
 			String link = KnowWEUtils.getURLLink(title);
 			String description = (home != null && title.equals(home.getTitle()))
@@ -170,6 +170,26 @@ public class ObjectInfoPageToolProvider implements ToolProvider {
 				"Rename this term wiki wide.",
 				createRenamingAction(section),
 				Tool.CATEGORY_EDIT);
+	}
+
+	protected Tool getCompositeEditTool(Section<? extends Term> section) {
+		return new DefaultTool(
+				"KnowWEExtension/images/pencil.png",
+				"Show Info",
+				"Opens the composite edit mode.",
+				createCompositeEditModeAction(section));
+	}
+
+	public static String createCompositeEditModeAction(Section<? extends Term> section) {
+		Identifier termIdentifier = section.get().getTermIdentifier(section);
+		return createCompositeEditModeAction(termIdentifier);
+	}
+
+	public static String createCompositeEditModeAction(Identifier termIdentifier) {
+		String externalTermIdentifierForm = termIdentifier.toExternalForm();
+		String jsAction = "KNOWWE.plugin.compositeEditTool.openCompositeEditDialog('"
+				+ TermInfoToolProvider.maskTermForHTML(externalTermIdentifierForm) + "')";
+		return jsAction;
 	}
 
 	public static String createObjectInfoJSAction(Section<? extends Term> section) {

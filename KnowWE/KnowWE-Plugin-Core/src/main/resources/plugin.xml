@@ -53,9 +53,50 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="ObjectInfoPageToolProvider">
-		<parameter id="class" value="de.knowwe.core.tools.ObjectInfoPageToolProvider" />
-		<parameter id="name" value="ObjectInfoPageToolProvider" />
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="TermInfoToolProvider">
+		<parameter id="class" value="de.knowwe.core.tools.TermInfoToolProvider" />
+		<parameter id="name" value="TermInfoToolProvider" />
+		<parameter id="description" value="Offers Renaming, Show Info etc. for terms" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="10" />
+		<parameter id="scope" value="QuestionDefinition" />
+		<parameter id="scope" value="QuestionnaireDefinition" />
+		<parameter id="scope" value="SolutionDefinition" />
+		<parameter id="scope" value="QuestionReference" />
+		<parameter id="scope" value="QuestionnaireReference" />
+		<parameter id="scope" value="QASetReference" />
+		<parameter id="scope" value="QASetDefinition" />
+		<parameter id="scope" value="AnswerReference" />
+		<parameter id="scope" value="AnswerDefinition" />
+		<parameter id="scope" value="SolutionReference" />
+		<parameter id="scope" value="NamedObjectReference" />
+		<parameter id="scope" value="AbstractIRITermDefinition" />
+		<parameter id="scope" value="IRITermReference" />
+		<parameter id="scope" value="FlowchartOrderReference" />
+		<parameter id="scope" value="PackageTerm" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="CompositeEditOpenDialogAction">
+		<parameter id="class" value="de.knowwe.core.showinfo.CompositeEditOpenDialogAction" />
+		<parameter id="name" value="CompositeEditOpenDialogAction" />
+		<parameter id="description" value="Action CompositeEditOpenDialogAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-Core-CompositeEdit.js" />
+		<parameter id="css" value="KnowWE-Plugin-CompositeEdit.css" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="CompositeEditSaveAction">
+		<parameter id="class" value="de.knowwe.core.showinfo.CompositeEditSaveAction" />
+		<parameter id="name" value="CompositeEditSaveAction" />
+		<parameter id="description" value="Action CompositeEditSaveAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="RenamingToolProvider">
+		<parameter id="class" value="de.knowwe.core.tools.RenamingToolProvider" />
+		<parameter id="name" value="RenamingToolProvider" />
 		<parameter id="description"
 			value="Offer a button to navigate to the object information page of an selected object." />
 		<parameter id="version" value="1.0" />
@@ -75,6 +116,8 @@
 		<parameter id="scope" value="IRITermReference" />
 		<parameter id="scope" value="FlowchartOrderReference" />
 		<parameter id="scope" value="PackageTerm" />
+		<parameter id="exclude" value="Diaflux/**/Term" />
+
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="TagHandlerType">

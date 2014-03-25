@@ -163,7 +163,7 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OntologyMarkupObjectInfoPageToolProvider">
-		<parameter id="class" value="de.knowwe.core.tools.ObjectInfoPageToolProvider" />
+		<parameter id="class" value="de.knowwe.core.tools.TermInfoToolProvider" />
 		<parameter id="name" value="OntologyMarkupObjectInfoPageToolProvider" />
 		<parameter id="description"
 			value="Offer a button to navigate to the object information page of an selected object." />
@@ -176,7 +176,21 @@
 		<parameter id="scope" value="AbbreviationDefinition" />
 		<parameter id="scope" value="AbbreviationReference" />
 		<parameter id="scope" value="LazyURIReference" />
+	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OntologyMarkupRenamingToolProvider">
+		<parameter id="class" value="de.knowwe.core.tools.RenamingToolProvider" />
+		<parameter id="name" value="RenamingToolProvider" />
+		<parameter id="description" value="Offer a button to rename this term." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="ResourceDefinition" />
+		<parameter id="scope" value="ResourceReference" />
+		<parameter id="scope" value="NamespaceDefinition" />
+		<parameter id="scope" value="NamespaceReference" />
+		<parameter id="scope" value="AbbreviationDefinition" />
+		<parameter id="scope" value="AbbreviationReference" />
+		<parameter id="scope" value="LazyURIReference" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="OntologyDownloadAction">
