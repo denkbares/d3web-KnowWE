@@ -18,37 +18,35 @@
  */
 package de.knowwe.core.compile.packaging;
 
+import java.util.Collection;
+import java.util.regex.Pattern;
+
 import de.d3web.strings.Identifier;
+import de.knowwe.core.compile.PackageRegistrationCompiler;
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
-import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.objects.SimpleReference;
+import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
-import java.util.regex.Pattern;
-
 /**
- * 
- * 
- * @author Stefan Plehn
+ * @author Stefan Plehn, Albrecht Striffler (denkbares GmbH)
  * @created 08.05.2013
- * 
- * 
  */
-public class PackageTerm extends AbstractType implements Term, RenamableTerm {
+public class PackageTerm extends SimpleReference {
 
 	public PackageTerm() {
-
+		super(PackageRegistrationCompiler.class, Package.class);
 		this.setSectionFinder(new RegexSectionFinder(Pattern.compile("\\s*((?=\\s*\\S).+?)\\s*(?:\r?\n|\\z)"), 1));
-
 		setRenderer(StyleRenderer.PACKAGE);
-
-	}
-
-	@Override
-	public Class<?> getTermObjectClass(Section<? extends Term> section) {
-		return PackageTerm.class;
+		this.removeCompileScript(PackageRegistrationCompiler.class, SimpleReferenceRegistrationScript.class);
+		this.addCompileScript(Priority.BELOW_DEFAULT, new PackageTermReferenceRegistrationScript());
+		this.addCompileScript(Priority.LOW, new PackageNotCompiledWarningScript());
 	}
 
 	@Override
@@ -64,6 +62,18 @@ public class PackageTerm extends AbstractType implements Term, RenamableTerm {
 	@Override
 	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
 		return newIdentifier.getLastPathElement();
+	}
+
+	private static class PackageTermReferenceRegistrationScript extends SimpleReferenceRegistrationScript<PackageRegistrationCompiler> {
+
+		public PackageTermReferenceRegistrationScript() {
+			super(PackageRegistrationCompiler.class);
+		}
+
+		@Override
+		public Collection<Message> validateReference(PackageRegistrationCompiler compiler, Section<Term> section) {
+			return Messages.noMessage();
+		}
 	}
 
 }

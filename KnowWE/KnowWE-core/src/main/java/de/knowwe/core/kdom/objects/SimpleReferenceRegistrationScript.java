@@ -68,12 +68,16 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 	public Collection<Message> validateReference(C compiler, Section<Term> section) {
 		TerminologyManager tHandler = compiler.getTerminologyManager();
 		Identifier termIdentifier = section.get().getTermIdentifier(section);
-		if (termIdentifier == null || !tHandler.isDefinedTerm(termIdentifier)) {
-			return Messages.asList(Messages.noSuchObjectError(
-					section.get().getTermObjectClass(section).getSimpleName(),
-					section.get().getTermName(section)));
+		if (!tHandler.isDefinedTerm(termIdentifier)) {
+			return Messages.asList(getInvalidTermMessage(section));
 		}
 		return Messages.noMessage();
+	}
+
+	private Message getInvalidTermMessage(Section<Term> section) {
+		return Messages.noSuchObjectError(
+				section.get().getTermObjectClass(section).getSimpleName(),
+				section.get().getTermName(section));
 	}
 
 	@Override

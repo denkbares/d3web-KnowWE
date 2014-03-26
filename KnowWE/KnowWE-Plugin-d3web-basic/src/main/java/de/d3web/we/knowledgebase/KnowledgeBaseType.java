@@ -40,15 +40,15 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageReferenceRegistrationHandler;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageRegistrationScript;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageTermReferenceRegistrationHandler;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * This class defines the knowledge base markup. With this, you can specify a
  * knowledge base that will be compiled from names package definitions, found on
  * of all wiki articles.
- * <p>
+ * <p/>
  * As the content of the markup you must specify the knowledge base name. The
  * markup also supports the following annotations.
  * <ul>
@@ -66,7 +66,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * The package name "default" may be used to compile all wiki content that have
  * no explicitly defined package. The package name "this" may be used to compile
  * the contents of this article, ignoring their package declaration.
- * 
+ *
  * @author volker_belli
  * @created 13.10.2010
  */
@@ -94,27 +94,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_AFFILIATION, false);
 		DefaultMarkupPackageCompileType compileType = new DefaultMarkupPackageCompileType();
 		compileType.addChildType(new KnowledgeBaseNameType());
-		compileType.addCompileScript(new PackageRegistrationScript<PackageCompileType>() {
-
-			@Override
-			public void compile(de.knowwe.core.compile.PackageRegistrationCompiler compiler, Section<PackageCompileType> section) {
-				compiler.getPackageManager().registerPackageCompileSection(section);
-				compiler.getCompilerManager().addCompiler(5,
-						new D3webCompiler(compiler.getPackageManager(), section));
-
-			}
-
-			@Override
-			public void destroy(de.knowwe.core.compile.PackageRegistrationCompiler compiler, Section<PackageCompileType> section) {
-				compiler.getPackageManager().unregisterPackageCompileSection(section);
-				for (PackageCompiler packageCompiler : section.get().getPackageCompilers(section)) {
-					if (packageCompiler instanceof D3webCompiler) {
-						compiler.getCompilerManager().removeCompiler(packageCompiler);
-					}
-				}
-			}
-
-		});
+		compileType.addCompileScript(new D3webCompilerRegistrationScript());
 		MARKUP.addContentType(compileType);
 
 		MARKUP.addAnnotationContentType(PackageManager.COMPILE_ATTRIBUTE_NAME,
@@ -125,7 +105,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 		super(MARKUP);
 
 		this.removeCompileScript(PackageRegistrationCompiler.class,
-				DefaultMarkupPackageTermReferenceRegistrationHandler.class);
+				DefaultMarkupPackageReferenceRegistrationHandler.class);
 
 		this.setRenderer(new KnowledgeBaseTypeRenderer());
 		this.addCompileScript(Priority.HIGHER, new D3webHandler<KnowledgeBaseType>() {
@@ -158,8 +138,10 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 				if (version != null) infoStore.addValue(BasicProperties.VERSION, version);
 				if (filename != null) infoStore.addValue(BasicProperties.FILENAME, filename);
 				if (status != null) infoStore.addValue(BasicProperties.STATUS, status);
-				if (affiliation != null) infoStore.addValue(BasicProperties.AFFILIATION,
-						affiliation);
+				if (affiliation != null) {
+					infoStore.addValue(BasicProperties.AFFILIATION,
+							affiliation);
+				}
 				return null;
 			}
 
@@ -191,4 +173,21 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 		});
 	}
 
+	private static class D3webCompilerRegistrationScript extends PackageRegistrationScript<PackageCompileType> {
+
+		@Override
+		public void compile(PackageRegistrationCompiler compiler, Section<PackageCompileType> section) {
+			compiler.getCompilerManager().addCompiler(5, new D3webCompiler(compiler.getPackageManager(), section));
+		}
+
+		@Override
+		public void destroy(PackageRegistrationCompiler compiler, Section<PackageCompileType> section) {
+			for (PackageCompiler packageCompiler : section.get().getPackageCompilers(section)) {
+				if (packageCompiler instanceof D3webCompiler) {
+					compiler.getCompilerManager().removeCompiler(packageCompiler);
+				}
+			}
+		}
+
+	}
 }

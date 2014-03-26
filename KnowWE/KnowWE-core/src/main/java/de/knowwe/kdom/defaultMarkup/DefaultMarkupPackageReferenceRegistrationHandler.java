@@ -32,7 +32,7 @@ import de.knowwe.core.kdom.parsing.Section;
  * @author Stefan Plehn, Albrecht Striffler (denkbares GmbH)
  * @created 12.07.2013
  */
-public class DefaultMarkupPackageTermReferenceRegistrationHandler extends PackageRegistrationScript<DefaultMarkupType> {
+public class DefaultMarkupPackageReferenceRegistrationHandler extends PackageRegistrationScript<DefaultMarkupType> {
 
 	private static final String PACKAGE_REFERENCES_KEY = "packageReferences";
 
@@ -43,9 +43,9 @@ public class DefaultMarkupPackageTermReferenceRegistrationHandler extends Packag
 		// while destroying, the default packages will already be removed, so we
 		// have to store artificially
 		section.getSectionStore().storeObject(compiler, PACKAGE_REFERENCES_KEY, packageNames);
-		for (String annotationString : packageNames) {
+		for (String packageName : packageNames) {
 			compiler.getTerminologyManager().registerTermReference(compiler,
-					section, Package.class, new Identifier(annotationString));
+					section, Package.class, new Identifier(packageName));
 		}
 
 	}

@@ -1,6 +1,5 @@
 package de.knowwe.core.compile;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -53,20 +52,6 @@ public class ScriptCompiler<C extends Compiler> {
 	public ScriptCompiler(C compiler, Class<?>... typeFilter) {
 		this.compiler = compiler;
 		scriptManager = CompilerManager.getScriptManager((Class<C>) compiler.getClass());
-		if (typeFilter.length == 0) {
-			// if no typeFilter is given, we create one automatically by using the
-			// types compiled by the given compiler
-			Collection<Type> types = scriptManager.getTypes();
-			// my guess is that, if we have more than 20 types, the filtering is
-			// no longer efficient and we can just traverse the complete KDOM
-			if (types.size() < 20) {
-				typeFilter = new Class[types.size()];
-				int i = 0;
-				for (Type type : types) {
-					typeFilter[i++] = type.getClass();
-				}
-			}
-		}
 		this.typeFilter = typeFilter;
 		for (Priority p : Priority.getRegisteredPriorities()) {
 			compileMap.put(p, new LinkedHashSet<CompilePair>());
@@ -127,8 +112,6 @@ public class ScriptCompiler<C extends Compiler> {
 	 */
 	public void addSubtree(Section<?> section, Class<?>... scriptFilter) {
 		if (scriptManager.hasScriptsForSubtree(section.get())) {
-			// do we still need the typeFilter if we already check if there are
-			// scripts for this compiler?
 			if (typeFilter.length == 0 || Sections.canHaveSuccessorOfType(section, typeFilter)) {
 				for (Section<?> child : section.getChildren()) {
 					addSubtree(child, scriptFilter);

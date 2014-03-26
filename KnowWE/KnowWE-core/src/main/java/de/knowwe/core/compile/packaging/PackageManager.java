@@ -271,7 +271,7 @@ public class PackageManager {// implements EventListener {
 		return Collections.unmodifiableSet(addedSections);
 	}
 
-	public void registerPackageCompileSection(Section<PackageCompileType> section) {
+	public void registerPackageCompileSection(Section<? extends PackageCompileType> section) {
 
 		String[] packagesToCompile = section.get().getPackagesToCompile(section);
 
@@ -288,7 +288,7 @@ public class PackageManager {// implements EventListener {
 		EventManager.getInstance().fireEvent(new RegisteredPackageCompileSectionEvent(section));
 	}
 
-	public boolean unregisterPackageCompileSection(Section<PackageCompileType> section) {
+	public boolean unregisterPackageCompileSection(Section<? extends PackageCompileType> section) {
 
 		boolean removed = packageCompileSections.remove(section);
 		if (removed) {

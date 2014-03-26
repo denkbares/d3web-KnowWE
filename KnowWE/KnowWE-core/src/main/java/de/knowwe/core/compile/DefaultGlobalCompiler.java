@@ -16,10 +16,17 @@ import de.knowwe.core.report.Messages;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.11.2013
  */
-public class DefaultGlobalCompiler implements TermCompiler {
+public class DefaultGlobalCompiler implements TermCompiler, IncrementalCompiler {
 
 	private TerminologyManager terminologyManager;
 	private CompilerManager compilerManager;
+	private ScriptCompiler<DefaultGlobalCompiler> scriptCompiler;
+	private ScriptCompiler<DefaultGlobalCompiler> destroyScriptCompiler;
+
+	public DefaultGlobalCompiler() {
+		this.scriptCompiler = new ScriptCompiler<DefaultGlobalCompiler>(this);
+		this.destroyScriptCompiler = new ScriptCompiler<DefaultGlobalCompiler>(this);
+	}
 
 	@Override
 	public TerminologyManager getTerminologyManager() {
@@ -39,22 +46,34 @@ public class DefaultGlobalCompiler implements TermCompiler {
 
 	@Override
 	public void compile(Collection<Section<?>> added, Collection<Section<?>> removed) {
-		ScriptCompiler<DefaultGlobalCompiler> helper = new ScriptCompiler<DefaultGlobalCompiler>(
-				this);
+
 		for (Section<?> section : removed) {
-			helper.addSubtree(section);
+			destroyScriptCompiler.addSubtree(section);
 		}
-		helper.destroy();
-		helper = new ScriptCompiler<DefaultGlobalCompiler>(this);
+		destroyScriptCompiler.destroy();
+
 		for (Section<?> section : added) {
-			helper.addSubtree(section);
+			scriptCompiler.addSubtree(section);
 		}
-		helper.compile();
+		scriptCompiler.compile();
+
+		this.scriptCompiler = new ScriptCompiler<DefaultGlobalCompiler>(this);
+		this.destroyScriptCompiler = new ScriptCompiler<DefaultGlobalCompiler>(this);
 	}
 
 	@Override
 	public CompilerManager getCompilerManager() {
 		return this.compilerManager;
+	}
+
+	@Override
+	public void addSectionToDestroy(Section<?> section, Class<?>... scriptFilter) {
+		destroyScriptCompiler.addSection(section, scriptFilter);
+	}
+
+	@Override
+	public void addSectionToCompile(Section<?> section, Class<?>... scriptFilter) {
+		scriptCompiler.addSection(section, scriptFilter);
 	}
 
 	public static abstract class DefaultGlobalScript<T extends Type>

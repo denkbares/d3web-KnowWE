@@ -29,7 +29,6 @@ import de.knowwe.core.compile.packaging.MasterAnnotationWarningHandler;
 import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
-import de.knowwe.core.compile.packaging.RegisterPackageTermHandler;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
@@ -85,8 +84,6 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 
 	public QuickInterviewMarkup() {
 		this(m);
-		this.addCompileScript(new RegisterPackageTermHandler());
-
 	}
 
 	public QuickInterviewMarkup(DefaultMarkup markup) {

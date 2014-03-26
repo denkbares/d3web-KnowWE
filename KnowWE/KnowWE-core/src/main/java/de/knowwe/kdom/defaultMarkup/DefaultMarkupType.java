@@ -21,15 +21,10 @@
 package de.knowwe.kdom.defaultMarkup;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
-import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.packaging.PackageTerm;
-import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -103,7 +98,7 @@ import de.knowwe.tools.ToolMenuDecoratingRenderer;
  * @author Volker Belli
  * 
  */
-public class DefaultMarkupType extends AbstractType implements RenamableTerm {
+public class DefaultMarkupType extends AbstractType {
 
 	private final static int FLAGS =
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL;
@@ -156,7 +151,7 @@ public class DefaultMarkupType extends AbstractType implements RenamableTerm {
 		this.addChildType(10, new UnknownAnnotationType());
 		this.addCompileScript(new DefaultMarkupPackageRegistrationScript());
 		this.addCompileScript(new DefaultMarkupCompileScript(markup));
-		this.addCompileScript(new DefaultMarkupPackageTermReferenceRegistrationHandler());
+		this.addCompileScript(new DefaultMarkupPackageReferenceRegistrationHandler());
 	}
 
 	@Override
@@ -395,21 +390,4 @@ public class DefaultMarkupType extends AbstractType implements RenamableTerm {
 		return null;
 	}
 
-	@Override
-	public String getSectionTextAfterRename(Section<? extends RenamableTerm>
-			section, Identifier oldValue, Identifier replacement) {
-
-		Map<String, String> nodesMap = new HashMap<String, String>();
-		List<Section<PackageTerm>> packageTermSections = Sections.findSuccessorsOfType(section,
-				PackageTerm.class);
-		for (Section<PackageTerm> packageTermSection : packageTermSections) {
-			if (packageTermSection.getText().equals(oldValue.toString())) {
-				nodesMap.put(packageTermSection.getID(), replacement.toString());
-				break;
-			}
-		}
-		StringBuffer collectedText = Sections.collectTextAndReplaceNode(section, nodesMap);
-
-		return collectedText.toString();
-	}
 }

@@ -73,11 +73,6 @@ public class FramedIncludedSectionRenderer extends DefaultMarkupRenderer {
 	}
 
 	@Override
-	protected void renderCompileWarning(Section<?> section, RenderResult string) {
-		// do nothing here
-	}
-
-	@Override
 	protected String getTitleName(Section<?> section, UserContext user) {
 		return "Included from '" + section.getTitle() + "'";
 	}

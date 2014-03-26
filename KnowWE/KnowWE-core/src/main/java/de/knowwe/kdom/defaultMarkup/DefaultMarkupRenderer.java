@@ -32,8 +32,6 @@ import java.util.Map.Entry;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Compilers;
-import de.knowwe.core.compile.packaging.PackageCompileType;
-import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -133,27 +131,7 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	public void renderMessages(Section<?> section, RenderResult string) {
-		renderCompileWarning(section, string);
 		renderMessageBlock(section, string, Message.Type.ERROR, Message.Type.WARNING);
-	}
-
-	protected void renderCompileWarning(Section<?> section, RenderResult string) {
-
-		String[] packages = DefaultMarkupType.getAnnotations(section,
-				PackageManager.PACKAGE_ATTRIBUTE_NAME);
-		List<Message> msgs = new ArrayList<Message>();
-		for (String packageName : packages) {
-
-			Collection<Section<? extends PackageCompileType>> compileSections = KnowWEUtils.getPackageManager(
-					section.getArticleManager()).getCompileSections(packageName);
-
-			// add warning if section is not compiled
-			if (compileSections.isEmpty()) {
-				msgs.add(Messages.warning("The package '" + packageName
-						+ "' is not used to compile any knowledge."));
-			}
-		}
-		if (!msgs.isEmpty()) Messages.storeMessages(section, getClass(), msgs);
 	}
 
 	private static Map<Section<?>, Map<Message, Collection<Compiler>>> getMessageSectionsOfSubtree(Section<?> rootSection, Type messageType) {

@@ -154,7 +154,6 @@ public class QuickInterviewRenderer {
 	 * Returns the Plugin Header As String
 	 * 
 	 * @created 15.07.2010
-	 * @return the plugin header HTML String
 	 */
 	private void getInterviewPluginHeader(RenderResult html) {
 		// assemble JS string
@@ -179,8 +178,6 @@ public class QuickInterviewRenderer {
 	 * @param buffer the StringBuffer
 	 * @param processedTOs already processed TerminologyObjects
 	 * @param depth recursion depth; used to calculate identation
-	 * @param indicated flag for signaling whether the processed element was is
-	 *        indicated or not
 	 */
 	private void getInterviewElementsRenderingRecursively(
 			TerminologyObject questionnaire, RenderResult buffer,
@@ -238,8 +235,6 @@ public class QuickInterviewRenderer {
 	 * @param processedTOs already processed elements
 	 * @param depth the recursion depth
 	 * @param parent the parent element
-	 * @param init flag for displaying whether processed element is contained in
-	 *        an init questionnaire
 	 */
 	private void getQuestionsRecursively(Question topQuestion, RenderResult sb,
 			Set<TerminologyObject> processedTOs, int depth,
@@ -294,8 +289,6 @@ public class QuickInterviewRenderer {
 	 * @created 16.08.2010
 	 * @param container the qcontainer to be rendered
 	 * @param depth recursion depth
-	 * @param show flag that indicates whether questionnaire is expanded (show)
-	 *        or not; for appropriately displaying corresponding triangles
 	 * @param buffi
 	 * @return the HTML of a questionnaire div
 	 */
@@ -677,13 +670,6 @@ public class QuickInterviewRenderer {
 	 * choice answers.
 	 * 
 	 * @created 01.09.2010
-	 * @param session
-	 * @param q
-	 * @param sb
-	 * @param choices
-	 * @param web
-	 * @param namespace
-	 * @return
 	 */
 	private void renderMCChoiceAnswers(QuestionChoice q,
 			MultipleChoiceValue mcval, RenderResult sb) {
@@ -743,10 +729,6 @@ public class QuickInterviewRenderer {
 	 * Assembles the HTML representation for rendering answer unknown
 	 * 
 	 * @created 22.07.2010
-	 * @param web the web context
-	 * @param namespace the namespace
-	 * @param q the question, to which unknown is added
-	 * @return the HTML representation
 	 */
 	private void renderAnswerUnknown(Question q, String type, RenderResult sb) {
 
@@ -845,7 +827,6 @@ public class QuickInterviewRenderer {
 	 * 
 	 * @created 30.10.2010
 	 * @param to the TerminologyObject to be checked.
-	 * @param bb
 	 * @return true, if the given TerminologyObject is indicated.
 	 */
 	private boolean isVisible(TerminologyObject to) {

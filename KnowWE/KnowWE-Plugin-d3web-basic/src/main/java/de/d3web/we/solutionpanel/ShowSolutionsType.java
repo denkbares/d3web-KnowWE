@@ -23,7 +23,6 @@ import de.knowwe.core.compile.packaging.MasterAnnotationWarningHandler;
 import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
-import de.knowwe.core.compile.packaging.RegisterPackageTermHandler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -51,15 +50,13 @@ public class ShowSolutionsType extends DefaultMarkupType {
 
 	public enum BoolValue {
 		TRUE, FALSE
-	};
+	}
 
 	private static final DefaultMarkup MARKUP;
 
 	static {
 		MARKUP = new DefaultMarkup("ShowSolutions");
 		MARKUP.addAnnotation(ANNOTATION_ESTABLISHED, false, BoolValue.values());
-		MARKUP.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-
 		MARKUP.addAnnotation(PackageManager.MASTER_ATTRIBUTE_NAME, false);
 		MARKUP.addAnnotationRenderer(PackageManager.MASTER_ATTRIBUTE_NAME,
 				NothingRenderer.getInstance());
@@ -77,6 +74,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		qc.setSectionFinder(new AllTextFinderTrimmed());
 		MARKUP.addAnnotationContentType(ONLY_DERIVATIONS, qc);
 
+		MARKUP.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 		MARKUP.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
 				new PackageAnnotationNameType());
 		MARKUP.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
@@ -89,31 +87,24 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		DefaultMarkupType.getContentType(this).setRenderer(
 				new ReRenderSectionMarkerRenderer(new ShowSolutionsContentRenderer()));
 		this.addCompileScript(new MasterAnnotationWarningHandler());
-		this.addCompileScript(new RegisterPackageTermHandler());
 	}
 
 	public static String getText(Section<ShowSolutionsType> sec) {
-		assert sec.get() instanceof ShowSolutionsType;
 		return DefaultMarkupType.getContent(sec);
 	}
 
 	public static String getEndUserModeFlag(Section<ShowSolutionsType> sec) {
-		assert sec.get() instanceof ShowSolutionsType;
 		return DefaultMarkupType.getAnnotation(sec, END_USER_MODE);
 	}
 
 	public static String getPackageName(Section<ShowSolutionsType> section) {
-		assert section.get() instanceof ShowSolutionsType;
 		String packageName = DefaultMarkupType.getAnnotation(section,
 				PackageManager.PACKAGE_ATTRIBUTE_NAME);
 		if (packageName != null) {
 			return packageName;
 		}
-		String[] defaultPackages = new String[0];
-		if (packageName == null) {
-			PackageManager packageManager = KnowWEUtils.getPackageManager(section.getArticleManager());
-			defaultPackages = packageManager.getDefaultPackages(section.getArticle());
-		}
+		PackageManager packageManager = KnowWEUtils.getPackageManager(section.getArticleManager());
+		String[] defaultPackages = packageManager.getDefaultPackages(section.getArticle());
 		for (String defaultPackage : defaultPackages) {
 			packageName = defaultPackage;
 			break;
@@ -122,35 +113,24 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	}
 
 	public static String getMaster(Section<ShowSolutionsType> section) {
-		assert section.get() instanceof ShowSolutionsType;
 		return DefaultMarkupType.getAnnotation(section, PackageManager.MASTER_ATTRIBUTE_NAME);
 	}
 
 	public static String[] getAllowedParents(Section<ShowSolutionsType> section) {
-		assert section.get() instanceof ShowSolutionsType;
 		return DefaultMarkupType.getAnnotations(section, ONLY_DERIVATIONS);
 	}
 
 	public static String[] getExcludedParents(Section<ShowSolutionsType> section) {
-		assert section.get() instanceof ShowSolutionsType;
 		return DefaultMarkupType.getAnnotations(section, EXCEPT_DERIVATIONS);
 	}
 
 	public static boolean shouldShowEstablished(Section<ShowSolutionsType> section) {
-		if (foundAnnotation(section, ANNOTATION_ESTABLISHED)) {
-			return shouldShow(section, ANNOTATION_ESTABLISHED);
-		}
-		// show established solutions by default, when no option was selected
-		else {
-			return true;
-		}
+		return !foundAnnotation(section, ANNOTATION_ESTABLISHED) || shouldShow(section, ANNOTATION_ESTABLISHED);
 	}
 
 	private static boolean foundAnnotation(Section<ShowSolutionsType> section, String annotation) {
-		assert section.get() instanceof ShowSolutionsType;
 		String value = DefaultMarkupType.getAnnotation(section, annotation);
-		if (!MARKUP.getAnnotation(annotation).matches(value)) return false;
-		else return true;
+		return MARKUP.getAnnotation(annotation).matches(value);
 	}
 
 	public static boolean shouldShowSuggested(Section<ShowSolutionsType> section) {
@@ -166,7 +146,6 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	}
 
 	public static int numberOfShownDigits(Section<ShowSolutionsType> section) {
-		assert section.get() instanceof ShowSolutionsType;
 		String val = DefaultMarkupType.getAnnotation(section, SHOW_DIGITS);
 		int iVal = 10;
 		try {
@@ -179,19 +158,13 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	}
 
 	private static boolean shouldShow(Section<ShowSolutionsType> section, String annotation) {
-		assert section.get() instanceof ShowSolutionsType;
 		String value = DefaultMarkupType.getAnnotation(section, annotation);
 		if (!MARKUP.getAnnotation(annotation).matches(value)) return false;
 		else return convert(BoolValue.valueOf(value.toUpperCase()));
 	}
 
 	private static boolean convert(BoolValue value) {
-		if (value == BoolValue.TRUE) {
-			return true;
-		}
-		else {
-			return false;
-		}
+		return value == BoolValue.TRUE;
 
 	}
 

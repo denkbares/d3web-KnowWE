@@ -30,7 +30,7 @@ import de.knowwe.core.kdom.parsing.Section;
  */
 public class UnregisteredPackageCompileSectionEvent extends SectionEvent<PackageCompileType> {
 
-	public UnregisteredPackageCompileSectionEvent(Section<PackageCompileType> section) {
+	public UnregisteredPackageCompileSectionEvent(Section<? extends PackageCompileType> section) {
 		super(section);
 	}
 

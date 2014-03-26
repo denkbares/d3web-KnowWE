@@ -31,7 +31,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageTermReferenceRegistrationHandler;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageReferenceRegistrationHandler;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.ontology.kdom.InitTerminologyHandler;
 import de.knowwe.rdf2go.RuleSet;
@@ -55,53 +55,52 @@ public class OntologyType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_RULESET, false, RuleSet.values());
 		DefaultMarkupPackageCompileType compileType = new DefaultMarkupPackageCompileType();
 		compileType.addCompileScript(Priority.HIGHEST, new InitTerminologyHandler());
-		compileType.addCompileScript(new PackageRegistrationScript<PackageCompileType>() {
-
-			@Override
-			public void compile(de.knowwe.core.compile.PackageRegistrationCompiler compiler, Section<PackageCompileType> section) throws CompilerMessage {
-				Section<DefaultMarkupType> ontologyType = Sections.findAncestorOfType(section, DefaultMarkupType.class);
-				compiler.getPackageManager().registerPackageCompileSection(section);
-				String ruleSetValue = DefaultMarkupType.getAnnotation(ontologyType, ANNOTATION_RULESET);
-				RuleSet ruleSet = getRuleSet(ruleSetValue);
-				OntologyCompiler ontologyCompiler = new OntologyCompiler(
-						compiler.getPackageManager(), section, ruleSet);
-				compiler.getCompilerManager().addCompiler(5, ontologyCompiler);
-				if (ruleSetValue != null && ruleSet == null) {
-					throw CompilerMessage.warning("The rule set \"" + ruleSetValue + "\" does not exist.");
-				}
-			}
-
-			private RuleSet getRuleSet(String ruleSetValue) {
-				if (ruleSetValue != null) {
-					return RuleSet.valueOf(ruleSetValue);
-				}
-				return null;
-			}
-
-			@Override
-			public void destroy(de.knowwe.core.compile.PackageRegistrationCompiler compiler, Section<PackageCompileType> section) {
-				// we just remove the no longer used compiler... we do not need to destroy the s
-				compiler.getPackageManager().unregisterPackageCompileSection(section);
-				for (PackageCompiler packageCompiler : section.get().getPackageCompilers(section)) {
-					if (packageCompiler instanceof OntologyCompiler) {
-						compiler.getCompilerManager().removeCompiler(packageCompiler);
-					}
-				}
-			}
-
-		});
+		compileType.addCompileScript(new OntologyCompilerRegistrationScript());
 		MARKUP.addContentType(compileType);
 
-		MARKUP.addAnnotationContentType(PackageManager.COMPILE_ATTRIBUTE_NAME,
-				new PackageTerm());
+		MARKUP.addAnnotationContentType(PackageManager.COMPILE_ATTRIBUTE_NAME, new PackageTerm());
 	}
 
 	public OntologyType() {
 		super(MARKUP);
 
 		this.removeCompileScript(PackageRegistrationCompiler.class,
-				DefaultMarkupPackageTermReferenceRegistrationHandler.class);
+				DefaultMarkupPackageReferenceRegistrationHandler.class);
 		this.setRenderer(new DefaultMarkupPackageCompileTypeRenderer());
+
+	}
+
+	private static class OntologyCompilerRegistrationScript extends PackageRegistrationScript<PackageCompileType> {
+
+		@Override
+		public void compile(PackageRegistrationCompiler compiler, Section<PackageCompileType> section) throws CompilerMessage {
+			Section<DefaultMarkupType> ontologyType = Sections.findAncestorOfType(section, DefaultMarkupType.class);
+			String ruleSetValue = DefaultMarkupType.getAnnotation(ontologyType, ANNOTATION_RULESET);
+			RuleSet ruleSet = getRuleSet(ruleSetValue);
+			OntologyCompiler ontologyCompiler = new OntologyCompiler(
+					compiler.getPackageManager(), section, ruleSet);
+			compiler.getCompilerManager().addCompiler(5, ontologyCompiler);
+			if (ruleSetValue != null && ruleSet == null) {
+				throw CompilerMessage.warning("The rule set \"" + ruleSetValue + "\" does not exist.");
+			}
+		}
+
+		private RuleSet getRuleSet(String ruleSetValue) {
+			if (ruleSetValue != null) {
+				return RuleSet.valueOf(ruleSetValue);
+			}
+			return null;
+		}
+
+		@Override
+		public void destroy(PackageRegistrationCompiler compiler, Section<PackageCompileType> section) {
+			// we just remove the no longer used compiler... we do not need to destroy the s
+			for (PackageCompiler packageCompiler : section.get().getPackageCompilers(section)) {
+				if (packageCompiler instanceof OntologyCompiler) {
+					compiler.getCompilerManager().removeCompiler(packageCompiler);
+				}
+			}
+		}
 
 	}
 }
