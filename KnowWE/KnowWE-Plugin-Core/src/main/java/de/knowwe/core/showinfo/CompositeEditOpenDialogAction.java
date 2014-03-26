@@ -24,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.d3web.strings.Identifier;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -50,11 +51,10 @@ public class CompositeEditOpenDialogAction extends AbstractAction {
 		ObjectInfoRenderer.renderTermReferences(identifier, context, result);
 
 		JSONObject response = new JSONObject();
-
 		try {
-			response.accumulate("header", header.toString());
-			response.accumulate("result", result.toString());
-			response.accumulate("plainText", plainText.toString());
+			response.accumulate("header", toHtml(context, header));
+			response.accumulate("result", toHtml(context, result));
+			response.accumulate("plainText", toHtml(context, plainText));
 			context.setContentType("text/html; charset=UTF-8");
 			response.write(context.getWriter());
 
@@ -63,6 +63,11 @@ public class CompositeEditOpenDialogAction extends AbstractAction {
 			throw new IOException(e);
 		}
 
+	}
+
+	private String toHtml(UserActionContext context, RenderResult result) {
+		String html = Environment.getInstance().getWikiConnector().renderWikiSyntax(result.toStringRaw());
+		return RenderResult.unmask(html, context);
 	}
 
 }
