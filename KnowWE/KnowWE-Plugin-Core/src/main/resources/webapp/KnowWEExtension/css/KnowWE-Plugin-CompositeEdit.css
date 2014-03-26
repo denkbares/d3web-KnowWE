@@ -219,10 +219,10 @@
 	margin: 0 0 0 0;
 	padding: .4em 1em !important;
 	background-color: rgba(193, 206, 226, 0.65) !important;
-	position: absolute;
-	bottom: 0px;
-	right: 0px;
-	left: 0px;
+	position: relative;
+	/* bottom: 0px; */
+	/* right: 0px; */
+	/* left: 0px; */
 }
 
 .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {

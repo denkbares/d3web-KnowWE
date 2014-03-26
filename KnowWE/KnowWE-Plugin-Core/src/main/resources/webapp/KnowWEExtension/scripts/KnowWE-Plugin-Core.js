@@ -219,6 +219,8 @@ KNOWWE.plugin.renaming = function () {
 
 	var sectionsCache = new Object();
 
+	var otherOccurencesHashMap = new Object();
+
 	var viewRoot = new Object();
 
 	/**
@@ -236,6 +238,7 @@ KNOWWE.plugin.renaming = function () {
 				termreplacement: replacement,
 				force: forceRename ? "true" : "false"
 			}
+			KNOWWE.core.util.updateProcessingState(1);
 			var request = jq$.ajax({
 				type: "post", url: KNOWWE.core.util.getURL(params),
 				success: function (data, text) {
@@ -263,7 +266,7 @@ KNOWWE.plugin.renaming = function () {
 							}
 						}
 					}
-					KNOWWE.core.util.updateProcessingState(1);
+
 
 				},
 
@@ -290,14 +293,20 @@ KNOWWE.plugin.renaming = function () {
 				fn: function () {
 					var jsonResponse = JSON.parse(this.responseText);
 					callback(jsonResponse);
+
+
+
 				},
 				onError: function () {
 					KNOWWE.core.util.updateProcessingState(-1);
 				}
-			}
-		}
 
+			}
+
+		}
 		new _KA(options).send();
+		KNOWWE.core.util.updateProcessingState(1);
+		KNOWWE.core.util.updateProcessingIndicator();
 	}
 
 	function restoreOriginal(original) {
@@ -311,11 +320,11 @@ KNOWWE.plugin.renaming = function () {
 	function cancelEdit(settings, original) {
 		restoreOriginal(original);
 
-		for (var sectionId in sectionsCache) {
-			var section = sectionsCache[sectionId];
-			var occurence = jq$(viewRoot + ".defaultMarkupFrame span[sectionOccurenceId=" + sectionId + "]");
-			jq$(occurence).replaceWith(section);
+		for (var occurence in otherOccurencesHashMap) {
+			var section = sectionsCache[occurence];
+			jq$(otherOccurencesHashMap[occurence]).replaceWith(section);
 		}
+
 	}
 
 	function afterCancelEdit(setting, original) {
@@ -323,27 +332,20 @@ KNOWWE.plugin.renaming = function () {
 	}
 
 	function showCurrentEditOnOtherOccurences(text) {
-		for (var i = 0; i < sectionIds.length; i++) {
-			var sectionId = sectionIds[i];
-			var occurence = jq$(viewRoot + ".defaultMarkupFrame span[sectionOccurenceId=" + sectionId + "]");
-			jq$(occurence).first().text(text);
+		for (var occurence in otherOccurencesHashMap) {
+			jq$(otherOccurencesHashMap[occurence]).first().text(text);
 		}
-
 	}
 
 	function saveOriginalsAndPrepareForEdit(lastPathElement) {
-		for (var i = 0; i < sectionIds.length; i++) {
-			var sectionId = sectionIds[i];
-			var toolMenuIdentifier = jq$(viewRoot + ".defaultMarkupFrame span[toolmenuidentifier=" + sectionId + "]");
-			if (toolMenuIdentifier.length > 0) {
-				var toolMenuDecorated = toolMenuIdentifier[0].parentNode;
-				sectionsCache[sectionId] = jq$(toolMenuDecorated).clone();
-				jq$(toolMenuDecorated).attr("sectionOccurenceId", sectionId);
-				jq$(toolMenuDecorated).empty();
-				jq$(toolMenuDecorated).css("background-color", "yellow");
-				jq$(toolMenuDecorated).text(lastPathElement);
-			}
+		for (var occurence in otherOccurencesHashMap) {
+				sectionsCache[occurence] = otherOccurencesHashMap[occurence].clone();
+				jq$(otherOccurencesHashMap[occurence]).attr("sectionOccurenceId", occurence);
+				jq$(otherOccurencesHashMap[occurence]).empty();
+				jq$(otherOccurencesHashMap[occurence]).css("background-color", "yellow");
+				jq$(otherOccurencesHashMap[occurence]).text(lastPathElement);
 		}
+		KNOWWE.core.util.updateProcessingState(-1);
 	}
 
 	function setViewRoot() {
@@ -355,6 +357,17 @@ KNOWWE.plugin.renaming = function () {
 			viewRoot = "#pagecontent ";
 		}
 
+	}
+
+	function initializeOtherOccurencesHashMap(sectionsIds) {
+		for (var i = 0; i < sectionIds.length; i++) {
+			var sectionId = sectionIds[i];
+			var toolMenuIdentifier = jq$(viewRoot + ".defaultMarkupFrame span[toolmenuidentifier=" + sectionId + "]");
+			if (toolMenuIdentifier.length > 0) {
+				var toolMenuDecorated = toolMenuIdentifier[0].parentNode;
+				otherOccurencesHashMap[sectionId] = toolMenuDecorated;
+			}
+		}
 	}
 
 	return {
@@ -380,7 +393,10 @@ KNOWWE.plugin.renaming = function () {
 				var inputField = jq$(clickedTerm).find("input").val(jsonResponse.lastPathElement);
 				jq$(inputField).autoGrow(5);
 
+
 				sectionIds = jsonResponse.sectionIds;
+
+				initializeOtherOccurencesHashMap(sectionIds);
 
 				saveOriginalsAndPrepareForEdit(jsonResponse.lastPathElement);
 

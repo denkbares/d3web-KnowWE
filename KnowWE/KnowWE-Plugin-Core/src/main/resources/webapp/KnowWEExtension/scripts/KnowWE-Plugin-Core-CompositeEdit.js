@@ -568,7 +568,7 @@ KNOWWE.plugin.compositeEditTool = function () {
 							},
 							closeOnEscape: false,
 							dialogClass: "no-close",
-							height: jq$(window).height() * .9,
+							height: (jq$(window).height() * .9),
 							width: jq$(document).width() * .6,
 							title: parsed.header,
 							resizable: true,
@@ -660,6 +660,8 @@ KNOWWE.plugin.compositeEditTool = function () {
 						jq$(_CE.dialogDiv).dialog('option', 'position', 'center');
 					}
 				});
+				jq$(_CE.dialogDiv).dialog( "option", "height", window.innerHeight);
+				jq$(_CE.dialogDiv).dialog( "option", "width", window.innerHeight);
 			}
 			else {
 				image.removeClass("maximized").addClass("minimized");
@@ -672,6 +674,8 @@ KNOWWE.plugin.compositeEditTool = function () {
 						jq$(_CE.dialogDiv).dialog('option', 'position', 'center');
 					}
 				});
+				jq$(_CE.dialogDiv).dialog( "option", "height", window.innerHeight *.9);
+				jq$(_CE.dialogDiv).dialog( "option", "width", window.innerHeight *.6);
 			}
 		});
 	}
