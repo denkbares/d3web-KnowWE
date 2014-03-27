@@ -21,19 +21,19 @@ package de.d3web.we.ci4ke.test;
 import de.knowwe.core.report.Message.Type;
 
 /**
- * This tests checks, if article have errors.
+ * This tests checks, if
  *
  * @author Marc-Oliver Ochlast
  * @created 29.05.2010
  */
-public class ArticleHasErrorsTest extends ArticleHasMessagesTest {
+public class ArticleHasWarningsTest extends ArticleHasMessagesTest {
 
-	public ArticleHasErrorsTest() {
-		super(Type.ERROR);
+	public ArticleHasWarningsTest() {
+		super(Type.WARNING);
 	}
 
 	@Override
 	public String getDescription() {
-		return "Checks, that the specified articles reports no compile errors.";
+		return "Checks, that the specified articles reports no compile warnings.";
 	}
 }
