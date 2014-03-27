@@ -278,10 +278,10 @@ public class Compilers {
 
 	public static void addSectionsToDestroyAndCompile(IncrementalCompiler compiler, Collection<Section<?>> sections, Class<?>... scriptFilter) {
 		for (Section<?> section : sections) {
-			compiler.addSectionToDestroy(section);
+			compiler.addSectionToDestroy(section, scriptFilter);
 			if (Sections.isLive(section)) {
 				// the sections that have not been removed from the wiki are also compiled again
-				compiler.addSectionToCompile(section);
+				compiler.addSectionToCompile(section, scriptFilter);
 			}
 		}
 	}
