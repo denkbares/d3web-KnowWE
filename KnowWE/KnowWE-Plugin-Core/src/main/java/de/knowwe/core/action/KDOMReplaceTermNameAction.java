@@ -30,11 +30,12 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * This Action replaces a term name contained in a single KDOM node. Before
  * performing the change, the users privileges are checked.
- * 
+ * <p/>
  * <p>
  * Needed Parameters:
  * </p>
@@ -44,7 +45,7 @@ import de.knowwe.core.kdom.parsing.Sections;
  * <li><tt>{@link KnowWEAtrributes.TEXT}:</tt> The new term reference inside the
  * node</li>
  * </ul>
- * 
+ *
  * @author Alex Legler
  * @created 05.01.2011
  */
@@ -88,7 +89,12 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 
 		nodesMap.put(nodeID, newNodeText);
 		Sections.replaceSections(context, nodesMap).sendErrors(context);
-
+		try {
+			KnowWEUtils.getArticleManager(context.getWeb()).getCompilerManager().awaitTermination();
+		}
+		catch (InterruptedException e) {
+			throw new IOException(e.getMessage());
+		}
 		context.setContentType("text/html; charset=UTF-8");
 		context.getWriter().write("done");
 	}
