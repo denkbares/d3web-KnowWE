@@ -452,7 +452,10 @@ public class ObjectInfoRenderer implements Renderer {
 
 	public static void renderTermPreview(Section<?> previewSection, Collection<Section<?>> relevantSubSections, UserContext user, String cssClass, RenderResult result) {
 		int count = relevantSubSections.size();
-		if (count == 0) return;
+		if (count == 0) {
+			result.appendHtml(KnowWEUtils.getLinkHTMLToSection(previewSection));
+			return;
+		}
 
 		// if (count > 1) {
 		// result.append(" (").append(count).append(" occurences)");
@@ -499,7 +502,8 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	/**
-	 * Get a counting set of all markup names that surrounds the specified list of sections. The count is not the number
+	 * Get a counting set of all markup names that surrounds the specified list of sections. The count is not the
+	 * number
 	 * of sections contained in a specific markup, but it is the number of preview sections required to display these
 	 * sections (some preview sections may display multiple of the specified sections).
 	 *
@@ -593,8 +597,9 @@ public class ObjectInfoRenderer implements Renderer {
 					innerResult.appendHtml("</a>");
 					String textAfter = r.getAdditionalContext(40).replaceAll("(\\{|\\})", "");
 					innerResult.append(textAfter);
-					if (!article.getRootSection().getText().endsWith(textAfter))
+					if (!article.getRootSection().getText().endsWith(textAfter)) {
 						innerResult.appendHtml("...");
+					}
 					innerResult.appendHtml("</pre>");
 					innerResult.appendHtml("</li>");
 				}
