@@ -18,7 +18,6 @@
  */
 package de.knowwe.diaflux.type;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.core.inference.condition.Condition;
@@ -27,10 +26,10 @@ import de.d3web.we.kdom.condition.D3webCondition;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.basicType.KeywordType;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 
 /**
- * 
  * @author Reinhard Hatko
  * @created 15.11.2010
  */
@@ -54,18 +53,15 @@ public class FlowchartProcessedConditionType extends D3webCondition<FlowchartPro
 
 	@Override
 	protected Condition createCondition(D3webCompiler compiler, Section<FlowchartProcessedConditionType> section) {
+		Section<FlowchartReference> flowRefSection = Sections.findSuccessor(section, FlowchartReference.class);
 
-		Matcher matcher = PATTERN.matcher(section.getText());
-
-		if (!matcher.matches()) {
+		if (flowRefSection == null) {
 			return null;
 		}
 		else {
-			String flowName = matcher.group(1);
-
+			String flowName = flowRefSection.get().getTermName(flowRefSection);
 			return new FlowchartProcessedCondition(flowName);
 		}
-
 	}
 
 }
