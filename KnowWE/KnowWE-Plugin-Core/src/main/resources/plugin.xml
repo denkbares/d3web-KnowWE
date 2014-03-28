@@ -84,6 +84,7 @@
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="KnowWE-Plugin-Core-CompositeEdit.js" />
 		<parameter id="css" value="KnowWE-Plugin-CompositeEdit.css" />
+		<parameter id="css" value="jquery-ui.css" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="CompositeEditSaveAction">
@@ -459,6 +460,16 @@
 		<parameter id="description" value="Compiler to handle package definitions and defining the package manager." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="2" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer"
+		id="DefaultPreviewRenderer">
+		<parameter id="class" value="de.knowwe.core.preview.DefaultPreviewRenderer"/>
+		<parameter id="name" value="DefaultPreviewRenderer"/>
+		<parameter id="description" value="Renders a default preview for types which don't have an own preview renderer"/>
+		<parameter id="version" value="1.0"/>
+		<parameter id="priority" value="20"/>
+		<parameter id="scope" value="root/DefaultMarkupType"/>
 	</extension>
 
 </plugin>
