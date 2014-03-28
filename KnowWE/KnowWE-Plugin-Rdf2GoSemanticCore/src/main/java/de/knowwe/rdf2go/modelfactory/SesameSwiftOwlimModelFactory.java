@@ -13,7 +13,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Properties;
 
+import org.ontoware.rdf2go.Reasoning;
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
+import org.ontoware.rdf2go.exception.ReasoningNotSupportedException;
 import org.ontoware.rdf2go.impl.AbstractModelFactory;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.ModelSet;
@@ -57,6 +59,11 @@ public class SesameSwiftOwlimModelFactory extends AbstractModelFactory {
 	}
 
 	@Override
+	public Model createModel(Reasoning reasoning) throws ModelRuntimeException, ReasoningNotSupportedException {
+		return super.createModel(reasoning);
+	}
+
+	@Override
 	public Model createModel(Properties properties)
 			throws ModelRuntimeException {
 		return new ShutdownableRepositoryModel(createRepository(properties));
@@ -78,26 +85,24 @@ public class SesameSwiftOwlimModelFactory extends AbstractModelFactory {
 				+ "repository" + System.nanoTime();
 		File rfile = new File(reppath);
 		delete(rfile);
+		rfile.deleteOnExit();
 		rfile.mkdir();
 
 		try {
-			Repository systemRepo = null;
 			RepositoryManager man = new LocalRepositoryManager(new File(reppath));
 			man.initialize();
-			systemRepo = man.getSystemRepository();
-			String configFile = ruleSet != null ? ruleSet.getConfigFile() : "owlim.ttl";
+			Reasoning reasoning = getReasoning(properties);
+			String defaultConfigFile = reasoning == Reasoning.none ? "owlim-rdf.ttl" : "owlim.ttl";
+			String configFile = ruleSet != null ? ruleSet.getConfigFile() : defaultConfigFile;
 			Graph graph = parseConfigFile(configFile, RDFFormat.TURTLE,
 					RepositoryConfigSchema.NAMESPACE);
 
-			Resource repositoryNode = GraphUtil.getUniqueSubject(graph,
-					RDF.TYPE, RepositoryConfigSchema.REPOSITORY);
-			RepositoryConfig repConfig = RepositoryConfig.create(graph,
-					repositoryNode);
-
-
+			Resource repositoryNode = GraphUtil.getUniqueSubject(graph,	RDF.TYPE, RepositoryConfigSchema.REPOSITORY);
+			RepositoryConfig repConfig = RepositoryConfig.create(graph,	repositoryNode);
 
 			repConfig.validate();
-			RepositoryConfigUtil.updateRepositoryConfigs(systemRepo, repConfig);
+
+			RepositoryConfigUtil.updateRepositoryConfigs(man.getSystemRepository(), repConfig);
 			Literal _id = GraphUtil.getUniqueObjectLiteral(graph,
 					repositoryNode, RepositoryConfigSchema.REPOSITORYID);
 			repository = man.getRepository(_id.getLabel());

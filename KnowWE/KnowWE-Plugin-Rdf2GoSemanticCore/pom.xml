@@ -69,13 +69,13 @@
 				<checksumPolicy>fail</checksumPolicy>
 			</snapshots>
 		</repository>
-   		<repository>
-	        <id>isci</id>
-	        <name>isci-releases</name>
-	        <url>https://isci.informatik.uni-wuerzburg.de/artifactory/infovi-contrib</url>
-    	</repository>
+		<repository>
+			<id>isci</id>
+			<name>isci-releases</name>
+			<url>https://isci.informatik.uni-wuerzburg.de/artifactory/infovi-contrib</url>
+		</repository>
 	</repositories>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
@@ -99,8 +99,24 @@
 			<artifactId>sesame-runtime</artifactId>
 			<version>2.6.10</version>
 		</dependency>
-		<!-- 
+		<!-- Older version of sesame, some SPARQLs are faster! (factor 5-6)-->
+		<!--dependency>
+			<groupId>org.semweb4j</groupId>
+			<artifactId>rdf2go.api</artifactId>
+			<version>4.7.4</version>
+		</dependency>
 		<dependency>
+			<groupId>org.semweb4j</groupId>
+			<artifactId>rdf2go.impl.sesame25</artifactId>
+			<version>4.7.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-runtime</artifactId>
+			<version>2.5.1</version>
+		</dependency-->
+
+		<!--dependency>
 			<groupId>com.ontotext</groupId>
 			<artifactId>owlim</artifactId>
 			<version>3.3</version>
@@ -109,8 +125,7 @@
 			<groupId>com.ontotext</groupId>
 			<artifactId>trree</artifactId>
 			<version>3.3</version>
-		</dependency>
-		-->
+		</dependency-->
 		<dependency>
 			<groupId>com.ontotext</groupId>
 			<artifactId>owlim-lite</artifactId>
@@ -142,7 +157,7 @@
 			<version>1.0</version>
 		</dependency>
 	 	-->
-		
+
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>org.json</artifactId>
