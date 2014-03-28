@@ -18,9 +18,7 @@
  */
 package de.knowwe.include.export;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
@@ -30,8 +28,8 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTShd;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 
+import de.d3web.collections.Matrix;
 import de.d3web.strings.Strings;
-import de.d3web.utils.Pair;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.instantedit.table.WikiTable;
@@ -128,44 +126,4 @@ public class TableExporter implements Exporter<WikiTable> {
 		return matrix;
 	}
 
-	public static class Matrix<E> {
-
-		private final Map<Pair<Integer, Integer>, E> elements =
-				new HashMap<Pair<Integer, Integer>, E>();
-		private int rows = 0;
-		private int cols = 0;
-
-		/**
-		 * Replaces the element at the specified position in this matrix with
-		 * the specified element (optional operation).
-		 * 
-		 * @param row row of the element to replace
-		 * @param col col of the element to replace
-		 * @param element element to be stored at the specified position
-		 * @return the element previously at the specified position
-		 */
-		public E set(int row, int col, E element) {
-			rows = Math.max(rows, row + 1);
-			cols = Math.max(cols, col + 1);
-			return elements.put(getKey(row, col), element);
-		}
-
-		public E get(int row, int col) {
-			return elements.get(getKey(row, col));
-		}
-
-		public int getRowSize() {
-			return rows;
-		}
-
-		public int getColSize() {
-			return cols;
-		}
-
-		private Pair<Integer, Integer> getKey(int row, int col) {
-			if (row < 0) throw new IndexOutOfBoundsException("row must not be negative");
-			if (col < 0) throw new IndexOutOfBoundsException("col must not be negative");
-			return new Pair<Integer, Integer>(row, col);
-		}
-	}
 }
