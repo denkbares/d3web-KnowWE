@@ -58,7 +58,7 @@ public class DefaultMarkupCompileScript extends DefaultGlobalScript<DefaultMarku
 			}
 			if (annotation.isDeprecated() && annotationSection != null) {
 				Message message = Messages.warning("The annotation @" + name
-						+ " is decrepated.");
+						+ " is deprecated.");
 				msgs.add(message);
 			}
 		}
