@@ -234,8 +234,7 @@ public class KnowWEUtils {
 	public static Collection<WikiAttachment> getAttachments(String title, String regex) throws IOException {
 		Collection<WikiAttachment> result = new LinkedList<WikiAttachment>();
 		Collection<WikiAttachment> attachments = Environment.getInstance()
-				.getWikiConnector()
-				.getAttachments();
+				.getWikiConnector().getAttachments();
 		Pattern pattern;
 		try {
 			pattern = Pattern.compile(regex);

@@ -133,11 +133,8 @@ public class LongOperationUtils {
 	 * Starts the given {@link LongOperation} in its own thread.
 	 * 
 	 * @created 13.09.2013
-	 * @param context the context of the user requesting the start of the
-	 *        operation
+	 * @param context the context of the user requesting the start of the operation
 	 * @param operation the operation to be started
-	 * @param doFinally a function that will be called after the operation is
-	 *        done (can be null if there is nothing to do)
 	 */
 	public static void startLongOperation(final UserActionContext context, final LongOperation operation) throws IOException {
 

@@ -44,13 +44,15 @@ KNOWWE.core.plugin.progress = function() {
 	
 	return {
 
-		startLongOperation: function(sectionID, operationID) {
+		startLongOperation: function(sectionID, operationID, parameters) {
 
 			var params = {
 				action : 'StartOperationAction',
 				SectionID : sectionID,
-				OperationID : operationID,
+				OperationID : operationID
 			}
+
+			jq$.extend(params, parameters);
 			
 			var options = {
 				url : KNOWWE.core.util.getURL(params),
@@ -78,7 +80,7 @@ KNOWWE.core.plugin.progress = function() {
 			var params = {
 				action : 'CancelOperationAction',
 				SectionID : sectionID,
-				OperationID : operationID,
+				OperationID : operationID
 			}
 			
 			var options = {
@@ -99,7 +101,7 @@ KNOWWE.core.plugin.progress = function() {
 			var params = {
 				action : 'RemoveOperationAction',
 				SectionID : sectionID,
-				OperationID : operationID,
+				OperationID : operationID
 			}
 			
 			var options = {
@@ -116,11 +118,11 @@ KNOWWE.core.plugin.progress = function() {
 			new _KA(options).send();
 		},
 		
-		updateProgressBar : function(sectionID) {
+		updateProgressBar : function(sectionId) {
 
 			var params = {
 				action : 'GetProgressAction',
-				SectionID : sectionID,
+				SectionID : sectionId
 			}
 			
 			var options = {
@@ -129,7 +131,7 @@ KNOWWE.core.plugin.progress = function() {
 				response : {
 					fn : function() {
 						var json = eval(this.responseText);
-						var container = jq$("#"+sectionID+" .progress-container");
+						var container = jq$("#"+sectionId+" .progress-container");
 						var refresh = false;
 						for (var i=0; i<json.length; i++) {
 							var opID = json[i].operationID;
@@ -147,7 +149,7 @@ KNOWWE.core.plugin.progress = function() {
 										"<div class='progress-message'></div></div>");
 								bar = container.find("#"+opID);
 								bar.find(".progress-state").attr('title', "click to cancel").click(function () {
-									KNOWWE.core.plugin.progress.cancelLongOperation(sectionID, opID);
+									KNOWWE.core.plugin.progress.cancelLongOperation(sectionId, opID);
 								});
 							}
 							bar.removeClass("progress-error progress-success");
@@ -162,7 +164,7 @@ KNOWWE.core.plugin.progress = function() {
 							if (!running) {
 								var closeFunction = function () {
 									bar.remove();
-									KNOWWE.core.plugin.progress.removeLongOperation(sectionID, opID);
+									KNOWWE.core.plugin.progress.removeLongOperation(sectionId, opID);
 									removeAllErrors();
 								};
 								bar.find(".progress-state").unbind("click").click(closeFunction);
@@ -178,18 +180,20 @@ KNOWWE.core.plugin.progress = function() {
 								if (error) {
 									bar.addClass("progress-error");
 									bar.find(".progress-message").html(error);
-									bar.find(".progress-state").attr("title", "aborted, click to hide");								
+									bar.find(".progress-state").attr("title", "aborted, click to hide");
+									KNOWWE.helper.observer.notify('longOperationAborted', {sectionId: sectionId});
 								}
 								else {
 									bar.addClass("progress-success");
-									bar.find(".progress-state").attr("title", "succeeded, click to hide");								
+									bar.find(".progress-state").attr("title", "succeeded, click to hide");
+									KNOWWE.helper.observer.notify('longOperationSuccessful', {sectionId: sectionId});
 								}
 							}
 							refresh |= running;
 						}
 						if (refresh) {
 							window.setTimeout(function () {
-							KNOWWE.core.plugin.progress.updateProgressBar(sectionID);
+							KNOWWE.core.plugin.progress.updateProgressBar(sectionId);
 							}, 100);
 						}
 					},
