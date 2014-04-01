@@ -28,6 +28,7 @@ import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.CondNonTerminalUnknown;
 import de.d3web.core.inference.condition.CondNot;
+import de.d3web.core.inference.condition.CondOr;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.we.kdom.action.D3webRuleAction;
@@ -47,15 +48,10 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
+ * This script compiles a parsed rule into the d3web knowledge base.
  *
- * @author Albrecht Striffler (denkbares GmbH)
+ * @author Jochen Reutelshöfer, Albrecht Striffler (denkbares GmbH)
  * @created 11.02.2014
- */
-
-/**
- * This handler compiles a parsed rule into the d3web knowledge base (if it doesn't have errors)
- *
- * @author Jochen
  */
 public class RuleCompileScript extends D3webCompileScript<RuleType> {
 
@@ -83,17 +79,27 @@ public class RuleCompileScript extends D3webCompileScript<RuleType> {
 			throw CompilerMessage.error("No condition found.");
 		}
 
-		createRules(compiler, ruleSection, ifCondition,
-				exceptCondition, thenActions, DEFAULT_RULE_STORE_KEY);
+		// create default IF - THEN - EXCEPT rules
+		createRules(compiler, ruleSection, ifCondition, exceptCondition, thenActions, DEFAULT_RULE_STORE_KEY);
 
+		// if there is an EXCEPT, we disallow ELSE and UNKNOWN, because the semantics are weird
 		if (exceptCondition != null && (!elseActions.isEmpty() || !unknownActions.isEmpty())) {
 			throw CompilerMessage.error("Cannot define EXCEPT condition and ELSE or UNKNOWN action at the same time");
 		}
 
-		createRules(compiler, ruleSection, new CondNot(ifCondition),
-				exceptCondition, elseActions, ELSE_RULE_STORE_KEY);
-		createRules(compiler, ruleSection, new CondNonTerminalUnknown(Arrays.asList(ifCondition)),
-				exceptCondition, unknownActions, UNKNOWN_RULE_STORE_KEY);
+		Condition elseCondition = new CondNot(ifCondition);
+		Condition ntUnknownCondition = new CondNonTerminalUnknown(Arrays.asList(ifCondition));
+
+		// if there is a else action but no unknown action, we assume the user wants else to also include unknown
+		if (!elseActions.isEmpty() && unknownActions.isEmpty()) {
+			elseCondition = new CondOr(Arrays.<Condition>asList(elseCondition, ntUnknownCondition));
+		}
+
+		// create IF - THEN - ELSE rules
+		createRules(compiler, ruleSection, elseCondition, exceptCondition, elseActions, ELSE_RULE_STORE_KEY);
+
+		// create IF - THEN - [ELSE] - UNKNOWN rules
+		createRules(compiler, ruleSection, ntUnknownCondition, exceptCondition, unknownActions, UNKNOWN_RULE_STORE_KEY);
 	}
 
 	private void createRules(D3webCompiler compiler, Section<RuleType> ruleSection, Condition condition, Condition exceptCondition, Collection<RuleAction> thenAction, String key) {
@@ -187,8 +193,12 @@ public class RuleCompileScript extends D3webCompileScript<RuleType> {
 	 */
 	public static Rule getRule(D3webCompiler compiler, Section<RuleType> section) {
 		Collection<Rule> defaultRules = getDefaultRules(compiler, section);
-		if (defaultRules.isEmpty()) return null;
-		else return defaultRules.iterator().next();
+		if (defaultRules.isEmpty()) {
+			return null;
+		}
+		else {
+			return defaultRules.iterator().next();
+		}
 	}
 
 	/**
@@ -214,8 +224,12 @@ public class RuleCompileScript extends D3webCompileScript<RuleType> {
 
 	private static Collection<Rule> getRules(D3webCompiler compiler, Section<RuleType> section, String ruleStoreKey) {
 		Collection<Rule> rules = (Collection<Rule>) section.getSectionStore().getObject(compiler, ruleStoreKey);
-		if (rules == null) return Collections.emptyList();
-		else return rules;
+		if (rules == null) {
+			return Collections.emptyList();
+		}
+		else {
+			return rules;
+		}
 	}
 
 	private static class RuleAction {
