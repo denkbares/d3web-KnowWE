@@ -18,6 +18,7 @@
  */
 package de.knowwe.core.utils.progress;
 
+import de.d3web.core.io.progress.ExtendedProgressListener;
 import de.d3web.core.io.progress.ProgressListener;
 import de.knowwe.core.user.UserContext;
 
@@ -28,7 +29,7 @@ import de.knowwe.core.user.UserContext;
  * @author Jochen Reutelshöfer (denkbares GmbH)
  * @created 18.07.2012
  */
-public interface AjaxProgressListener extends ProgressListener {
+public interface AjaxProgressListener extends ExtendedProgressListener {
 
 	/**
 	 * Allows to pull the current message of this ProgressListener.
@@ -36,15 +37,8 @@ public interface AjaxProgressListener extends ProgressListener {
 	 * @created 19.07.2012
 	 * @return the current message
 	 */
-	public String getCurrentMessage();
+	public String getMessage();
 
-	/**
-	 * Allows to pull the current progress state of this ProgressListener.
-	 * 
-	 * @created 19.07.2012
-	 * @return the current progress as a value between 0.0 and 1.0
-	 */
-	public float getCurrentProgress();
 
 	/**
 	 * Returns the user that has started this progress.

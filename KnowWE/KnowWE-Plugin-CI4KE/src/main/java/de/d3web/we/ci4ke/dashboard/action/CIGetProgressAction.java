@@ -63,8 +63,8 @@ public class CIGetProgressAction extends AbstractAction {
 		String message = FINISHED;
 		if (listener != null) {
 			if (listener instanceof AjaxProgressListener) {
-				progress = ((AjaxProgressListener) listener).getCurrentProgress();
-				message = ((AjaxProgressListener) listener).getCurrentMessage();
+				progress = ((AjaxProgressListener) listener).getProgress();
+				message = ((AjaxProgressListener) listener).getMessage();
 				if (message == null || message.isEmpty()) {
 					message = "Initializing...";
 				}

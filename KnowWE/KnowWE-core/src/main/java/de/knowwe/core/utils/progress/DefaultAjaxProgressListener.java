@@ -42,12 +42,12 @@ public class DefaultAjaxProgressListener implements AjaxProgressListener {
 	}
 
 	@Override
-	public String getCurrentMessage() {
+	public String getMessage() {
 		return currentMessage;
 	}
 
 	@Override
-	public float getCurrentProgress() {
+	public float getProgress() {
 		return currentProgress;
 	}
 
