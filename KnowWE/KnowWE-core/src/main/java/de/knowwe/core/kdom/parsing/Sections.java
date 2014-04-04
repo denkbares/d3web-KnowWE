@@ -997,8 +997,7 @@ public class Sections {
 			UserContext context) {
 
 		StringBuffer newText = new StringBuffer();
-		Article article = Environment.getInstance().getArticle(context.getWeb(),
-				title);
+		Article article = Environment.getInstance().getArticle(context.getWeb(), title);
 		collectTextAndReplaceNode(article.getRootSection(), sectionsMapForCurrentTitle, newText);
 		trimSuperfluousLineBreaks(newText);
 		return newText.toString();
@@ -1019,8 +1018,7 @@ public class Sections {
 		}
 	}
 
-	private static void collectTextAndReplaceNode(Section<?> sec,
-												  Map<String, String> nodesMap, StringBuffer newText) {
+	private static void collectTextAndReplaceNode(Section<?> sec, Map<String, String> nodesMap, StringBuffer newText) {
 
 		String text = nodesMap.get(sec.getID());
 		if (text != null) {
@@ -1038,8 +1036,7 @@ public class Sections {
 		}
 	}
 
-	public static StringBuffer collectTextAndReplaceNode(Section<?> sec,
-														 Map<String, String> nodesMap) {
+	public static StringBuffer collectTextAndReplaceNode(Section<?> sec, Map<String, String> nodesMap) {
 		StringBuffer newText = new StringBuffer();
 		collectTextAndReplaceNode(sec, nodesMap, newText);
 		return newText;

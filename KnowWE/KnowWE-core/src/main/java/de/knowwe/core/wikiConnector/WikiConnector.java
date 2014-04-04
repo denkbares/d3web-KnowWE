@@ -279,16 +279,15 @@ public interface WikiConnector {
 	 * @param request the request of the user. May be null is not available.
 	 * @return the rendered article text
 	 */
-	public String renderWikiSyntax(String pagedata, HttpServletRequest request);
+	public String renderWikiSyntax(String articleText, HttpServletRequest request);
 
 	/**
 	 * Renders given wiki mark-up to html. Use only if no http request is
 	 * available.
 	 * 
-	 * @param articleText the current text of the article.
 	 * @return the rendered article text
 	 */
-	public String renderWikiSyntax(String pagedata);
+	public String renderWikiSyntax(String articleText);
 
 	/**
 	 * Creates a new wiki attachment of the specified path and the specified
@@ -298,7 +297,7 @@ public interface WikiConnector {
 	 * attachment will be created. Otherwise a new attachment will be created.
 	 * In both cases you can use the returned {@link WikiAttachment} to access
 	 * the attachment.
-	 * 
+	 *
 	 * @param title the title of the article, for which this attachment should
 	 *        be stored
 	 * @param user is the user wanting to store the attachment
