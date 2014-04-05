@@ -25,13 +25,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.d3web.core.io.progress.ParallelProgress;
-import de.d3web.core.io.progress.ProgressListener;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.progress.AjaxProgressListener;
 import de.knowwe.core.utils.progress.FileDownloadOperation;
 import de.knowwe.include.IncludeMarkup;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
@@ -53,9 +53,7 @@ public class DocxDownloadOperation extends FileDownloadOperation {
 		this.section = section;
 	}
 
-	@Override
-	public void before(UserActionContext user) throws IOException {
-		super.before(user);
+	private void before(UserActionContext user, AjaxProgressListener listener) throws IOException {
 		this.export = new ExportManager(section);
 
 		// check read access for all articles
@@ -137,7 +135,8 @@ public class DocxDownloadOperation extends FileDownloadOperation {
 	}
 
 	@Override
-	public void execute(File resultFile, ProgressListener listener) throws IOException, InterruptedException {
+	public void execute(UserActionContext context, File resultFile, AjaxProgressListener listener) throws IOException, InterruptedException {
+		before(context, listener);
 		ParallelProgress progress = new ParallelProgress(listener, 4f, 4f);
 		progress.updateProgress(0, 0.2f, ExportManager.MSG_CREATE);
 		if (hasError()) return;

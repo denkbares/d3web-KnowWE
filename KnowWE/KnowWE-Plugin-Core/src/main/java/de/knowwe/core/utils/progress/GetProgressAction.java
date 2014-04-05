@@ -31,7 +31,6 @@ import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.user.UserContext;
 
 /**
  * This action handles the ajax upate request of the ci-build progress bar on
@@ -69,8 +68,7 @@ public class GetProgressAction extends AbstractAction {
 				progress.put("message", message);
 				progress.put("error", listener.getError());
 				progress.put("running", listener.isRunning());
-				UserContext user = listener.getUserContext();
-				if (user != null) progress.put("user", user.getUserName());
+				progress.put("user", listener.getUserName());
 				result.put(progress);
 			}
 			result.write(context.getWriter());

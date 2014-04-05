@@ -20,7 +20,6 @@ package de.knowwe.core.utils.progress;
 
 import de.d3web.core.io.progress.ExtendedProgressListener;
 import de.d3web.core.io.progress.ProgressListener;
-import de.knowwe.core.user.UserContext;
 
 /**
  * A simple ProgressListener that stores the updated values to be pulled by ajax
@@ -40,13 +39,7 @@ public interface AjaxProgressListener extends ExtendedProgressListener {
 	public String getMessage();
 
 
-	/**
-	 * Returns the user that has started this progress.
-	 * 
-	 * @created 30.07.2013
-	 * @return the user
-	 */
-	public UserContext getUserContext();
+	public String getUserName();
 
 	/**
 	 * Cancels the current operation indicated by this progress. This is done by
@@ -91,9 +84,17 @@ public interface AjaxProgressListener extends ExtendedProgressListener {
 	 * Sets the indicator so specify whether this progress is running or not.
 	 * 
 	 * @created 31.07.2013
-	 * @param running
-	 * @return
 	 */
 	public void setRunning(boolean running);
+
+	/**
+	 * Sets an ID for the this listener.
+	 */
+	public void setId(String id);
+
+	/**
+	 * Returns the ID for the this listener.
+	 */
+	public String getId();
 
 }

@@ -15,7 +15,6 @@ public abstract class AttachmentOperation extends AbstractLongOperation {
 
 	private final Article article;
 	private final String attachmentFileName;
-	private String userName = null;
 
 	public AttachmentOperation(Article article, String attachmentFileName) {
 		this.article = article;
@@ -23,12 +22,8 @@ public abstract class AttachmentOperation extends AbstractLongOperation {
 	}
 
 	@Override
-	public void before(UserActionContext user) throws IOException {
-		this.userName = user.getUserName();
-	}
+	public void execute(UserActionContext context, final AjaxProgressListener listener) throws IOException, InterruptedException {
 
-	@Override
-	public void execute(final AjaxProgressListener listener) throws IOException, InterruptedException {
 		final File folder = Files.createTempDir();
 		final File file = new File(folder, attachmentFileName);
 
@@ -37,11 +32,11 @@ public abstract class AttachmentOperation extends AbstractLongOperation {
 			ProgressListener executeListener = parallel.getSubTaskProgressListener(0);
 			ProgressListener attachListener = parallel.getSubTaskProgressListener(1);
 
-			execute(file, executeListener);
+			execute(context, file, executeListener);
 
 			attachListener.updateProgress(0f, "Attaching file " + attachmentFileName + ".");
 			Environment.getInstance().getWikiConnector().storeAttachment(
-					article.getTitle(), userName, file);
+					article.getTitle(), context.getUserName(), file);
 
 			attachListener.updateProgress(1f, "Done, file <a href='"
 					+ KnowWEUtils.getURLLink(getArticle(), attachmentFileName)
@@ -68,7 +63,7 @@ public abstract class AttachmentOperation extends AbstractLongOperation {
 	 * @throws IOException if the result file cannot be created
 	 * @throws InterruptedException if the operation has been interrupted
 	 */
-	public abstract void execute(File resultFile, ProgressListener listener) throws IOException, InterruptedException;
+	public abstract void execute(UserActionContext context, File resultFile, ProgressListener listener) throws IOException, InterruptedException;
 
 	/**
 	 * Returns the file name to be used for the attachment. The attachment name

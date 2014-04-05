@@ -42,10 +42,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class CIBuildManager {
 
-	public static final String ACTUAL_BUILD_STATUS = "actualBuildStatus";
-	public static final String BUILD_RESULT = "result";
-
-	private static Map<CIDashboard, TestExecutor> runningBuilds = Collections.synchronizedMap(new HashMap<CIDashboard, TestExecutor>());
+	private static final Map<CIDashboard, TestExecutor> runningBuilds = Collections.synchronizedMap(new HashMap<CIDashboard, TestExecutor>());
 
 	/**
 	 * Runs a build for the given dashboard, but does not . Waits until the
@@ -61,7 +58,7 @@ public class CIBuildManager {
 		List<TestObjectProvider> pluggedProviders = TestObjectProviderManager.getTestObjectProviders();
 		providers.addAll(pluggedProviders);
 
-		AjaxProgressListener listener = new DefaultAjaxProgressListener(null);
+		AjaxProgressListener listener = new DefaultAjaxProgressListener(CIBuildManager.class.getSimpleName());
 		ProgressListenerManager.getInstance().setProgressListener(
 				Integer.toString(dashboard.hashCode()), listener);
 
@@ -100,7 +97,7 @@ public class CIBuildManager {
 					}
 				}
 
-			};
+			}
 		}.start();
 	}
 
@@ -108,17 +105,13 @@ public class CIBuildManager {
 		Section<CIDashboardType> ciDashboardSection = dashboard.getDashboardSection();
 		String flagString = DefaultMarkupType.getAnnotation(ciDashboardSection,
 				CIDashboardType.VERBOSE_PERSISTENCE_KEY);
-		if (flagString != null && flagString.equalsIgnoreCase("true")) {
-			return true;
-		}
-		return false;
+		return flagString != null && flagString.equalsIgnoreCase("true");
 	}
 
 	/**
 	 * Terminates the build of the given dashboard (if there is one).
 	 * 
 	 * @created 31.12.2013
-	 * @param dashboardName the name of the dashboard to terminate
 	 */
 	public static void terminate(CIDashboard dashboard) {
 		TestExecutor executor = runningBuilds.get(dashboard);
@@ -172,8 +165,6 @@ public class CIBuildManager {
 	 * dashboard
 	 * 
 	 * @created 16.08.2012
-	 * @param dashboardName
-	 * @return
 	 */
 	public static boolean isRunning(CIDashboard dashboard) {
 		return runningBuilds.get(dashboard) != null;

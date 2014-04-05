@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import de.d3web.core.io.progress.ProgressListener;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.action.UserActionContext;
@@ -38,19 +37,16 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	}
 
 	@Override
-	public void before(UserActionContext user) throws IOException {
+	public void execute(UserActionContext context, final AjaxProgressListener listener) throws IOException, InterruptedException {
 		this.messages.clear();
 		this.requestMarker = UUID.randomUUID();
-		user.getSession().setAttribute(storeKey, requestMarker);
-	}
+		context.getSession().setAttribute(storeKey, requestMarker);
 
-	@Override
-	public void execute(final AjaxProgressListener listener) throws IOException, InterruptedException {
 		File file = File.createTempFile(
 				"FileDownloadOperation-", null, DownloadFileAction.getTempDirectory());
 		tempFile = file;
 		try {
-			execute(file, listener);
+			execute(context, file, listener);
 		}
 		catch (IOException e) {
 			if (!file.delete()) file.deleteOnExit();
@@ -84,7 +80,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	 * @throws InterruptedException if the operation has been interrupted
 	 * @created 30.07.2013
 	 */
-	public abstract void execute(File resultFile, ProgressListener listener) throws IOException, InterruptedException;
+	public abstract void execute(UserActionContext context, File resultFile, AjaxProgressListener listener) throws IOException, InterruptedException;
 
 	public Article getArticle() {
 		return article;

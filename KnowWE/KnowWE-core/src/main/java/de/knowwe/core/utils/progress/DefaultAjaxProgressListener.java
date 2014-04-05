@@ -18,8 +18,6 @@
  */
 package de.knowwe.core.utils.progress;
 
-import de.knowwe.core.user.UserContext;
-
 /**
  * A simple ProgressListener that stores the updated values to be pulled by ajax
  * requests.
@@ -29,16 +27,17 @@ import de.knowwe.core.user.UserContext;
  */
 public class DefaultAjaxProgressListener implements AjaxProgressListener {
 
-	private final UserContext context;
+	private final String userName;
 
 	private String currentMessage = "";
 	private float currentProgress = 0;
 	private boolean canceled;
 	private String error = null;
 	private boolean running = true;
+	private String id;
 
-	public DefaultAjaxProgressListener(UserContext context) {
-		this.context = context;
+	public DefaultAjaxProgressListener(String userName) {
+		this.userName = userName;
 	}
 
 	@Override
@@ -78,8 +77,8 @@ public class DefaultAjaxProgressListener implements AjaxProgressListener {
 	}
 
 	@Override
-	public UserContext getUserContext() {
-		return context;
+	public String getUserName() {
+		return userName;
 	}
 
 	@Override
@@ -90,6 +89,16 @@ public class DefaultAjaxProgressListener implements AjaxProgressListener {
 	@Override
 	public void setRunning(boolean running) {
 		this.running = running;
+	}
+
+	@Override
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	@Override
+	public String getId() {
+		return this.id;
 	}
 
 }

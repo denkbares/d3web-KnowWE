@@ -42,6 +42,7 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.progress.AjaxProgressListener;
 import de.knowwe.core.utils.progress.FileDownloadOperation;
 import de.knowwe.testcases.ProviderTriple;
 import de.knowwe.testcases.TestCasePlayerType;
@@ -63,9 +64,7 @@ public class CasesZipOperation extends FileDownloadOperation {
 		super(article, attachmentFileName);
 	}
 
-	@Override
-	public void before(UserActionContext user) throws IOException {
-		super.before(user);
+	public void before(UserActionContext user, AjaxProgressListener listener) throws IOException {
 		Section<?> section = CheckDownloadCaseAction.getPlayerSection(user);
 		List<ProviderTriple> providers =
 				TestCaseUtils.getTestCaseProviders(Sections.cast(section.getParent(),
@@ -109,7 +108,8 @@ public class CasesZipOperation extends FileDownloadOperation {
 	}
 
 	@Override
-	public void execute(File resultFile, ProgressListener listener) throws IOException, InterruptedException {
+	public void execute(UserActionContext context, File resultFile, AjaxProgressListener listener) throws IOException, InterruptedException {
+		before(context, listener);
 		ParallelProgress parallel = new ParallelProgress(listener, 50f, 50f);
 		ProgressListener executeListener = parallel.getSubTaskProgressListener(0);
 		ProgressListener zipListener = parallel.getSubTaskProgressListener(1);

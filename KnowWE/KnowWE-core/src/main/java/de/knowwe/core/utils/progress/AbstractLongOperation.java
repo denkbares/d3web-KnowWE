@@ -18,8 +18,6 @@
  */
 package de.knowwe.core.utils.progress;
 
-import java.io.IOException;
-
 import de.knowwe.core.action.UserActionContext;
 
 /**
@@ -37,11 +35,6 @@ public abstract class AbstractLongOperation implements LongOperation {
 
 	@Override
 	public void doFinally() {
-		// default implementation doing nothing
-	}
-
-	@Override
-	public void before(UserActionContext user) throws IOException {
 		// default implementation doing nothing
 	}
 

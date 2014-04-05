@@ -46,11 +46,14 @@ KNOWWE.core.plugin.progress = function() {
 
 		startLongOperation: function(sectionID, operationID, parameters) {
 
+			var progressID = new Date().getMilliseconds() + Math.floor((Math.random() * 10) + 1);
+
 			var params = {
 				action : 'StartOperationAction',
 				SectionID : sectionID,
-				OperationID : operationID
-			}
+				OperationID : operationID,
+				ProgressID : progressID
+			};
 
 			jq$.extend(params, parameters);
 			
@@ -59,11 +62,10 @@ KNOWWE.core.plugin.progress = function() {
 				loader : false,
 				response : {
 					fn : function() {
-						KNOWWE.core.plugin.progress.updateProgressBar(sectionID);
 					},
 					onError : handleErrResponse
 				}
-			}
+			};
 
 			// remove old errors
 			removeAllErrors();
@@ -72,6 +74,28 @@ KNOWWE.core.plugin.progress = function() {
 			var container = jq$("#"+sectionID+" .progress-container");
 			container.find("#"+operationID).remove();
 			
+			new _KA(options).send();
+
+			params = {
+				action : 'StartProgressAction',
+				SectionID : sectionID,
+				OperationID : operationID,
+				ProgressID : progressID
+			};
+
+			jq$.extend(params, parameters);
+
+			options = {
+				url : KNOWWE.core.util.getURL(params),
+				loader : false,
+				response : {
+					fn : function() {
+						KNOWWE.core.plugin.progress.updateProgressBar(sectionID);
+					},
+					onError : handleErrResponse
+				}
+			};
+
 			new _KA(options).send();
 		},
 		
@@ -118,7 +142,7 @@ KNOWWE.core.plugin.progress = function() {
 			new _KA(options).send();
 		},
 		
-		updateProgressBar : function(sectionId) {
+		updateProgressBar : function(sectionId, refreshTilProgress) {
 
 			var params = {
 				action : 'GetProgressAction',
