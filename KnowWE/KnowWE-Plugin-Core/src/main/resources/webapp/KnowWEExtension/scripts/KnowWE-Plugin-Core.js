@@ -713,11 +713,10 @@ KNOWWE.core.plugin.pagination = function () {
 // add clickable table headers to every table which is a sibling to a navigation
 // bar,
 // i.e. initialized by PaginationDecoratingRenderer
-KNOWWE.helper.observer.subscribe("navigationPaginationRendered", function () {
+KNOWWE.helper.observer.subscribe("afterRerender", function () {
 	KNOWWE.core.plugin.pagination.decorateTable();
 	jq$("table.termReview").each(function () {
 		KNOWWE.plugin.semanticservicecore.initReviewTable(this);
-
 	});
 });
 

@@ -604,7 +604,7 @@ KNOWWE.core.rerendercontent = function(){
 			        	}
 			        	catch (e) { /*ignore*/ }
 			        	if (indicateProcess) KNOWWE.core.util.updateProcessingState(-1);
-                        KNOWWE.helper.observer.notify("navigationPaginationRendered");
+						KNOWWE.helper.observer.notify("afterRerender");
                     },
                     onError : function () {
 			        	if (indicateProcess) KNOWWE.core.util.updateProcessingState(-1);                    	
@@ -612,6 +612,7 @@ KNOWWE.core.rerendercontent = function(){
                 }
             }
             if (indicateProcess) KNOWWE.core.util.updateProcessingState(1);
+			KNOWWE.helper.observer.notify("beforeRerender");
             new _KA( options ).send();
         },
         

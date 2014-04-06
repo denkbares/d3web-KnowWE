@@ -11,9 +11,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.CompilerMessage;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.utils.KnowWEUtils;
 
 public class LongOperationUtils {
@@ -136,7 +139,7 @@ public class LongOperationUtils {
 	 * @param operation the operation to be started
 	 * @created 13.09.2013
 	 */
-	public static void startLongOperation(final UserActionContext context, final LongOperation operation) throws IOException {
+	public static void startLongOperation(final UserActionContext context, final LongOperation operation) {
 
 		final AjaxProgressListener listener =
 				ProgressListenerManager.getInstance().createProgressListener(context, operation);
@@ -148,6 +151,12 @@ public class LongOperationUtils {
 		catch (IOException e) {
 			Log.warning("Cannot complete operation.", e);
 			listener.setError("Error occured: " + e.getMessage() + ".");
+		}
+		catch (CompilerMessage e) {
+			Log.warning("Cannot complete operation.", e);
+			Collection<Message> messages = e.getMessages();
+			listener.updateProgress(1f, listener.getMessage());
+			listener.setError("Error" + (messages.size() > 1 ? "s" : "") + " occured: " + Strings.concat("\n ", messages));
 		}
 		catch (InterruptedException e) {
 			Log.info("Operation canceled by user.");
