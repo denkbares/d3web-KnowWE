@@ -58,6 +58,16 @@ public class Rdf2GoUtils {
 		return getRdf2GoCore(defaultMarkup);
 	}
 
+	public static boolean isClass(Rdf2GoCore core, URI resource) {
+		String query = "ASK { " + resource.toSPARQL() + " rdf:type rdfs:Class .}";
+		return core.sparqlAsk(query);
+	}
+
+	public static boolean isProperty(Rdf2GoCore core, URI resource) {
+		String query = "ASK { " + resource.toSPARQL() + " rdf:type rdf:Property .}";
+		return core.sparqlAsk(query);
+	}
+
 	public static Rdf2GoCore getRdf2GoCore(Section<? extends DefaultMarkupType> section) {
 		String globalAnnotation = DefaultMarkupType.getAnnotation(section, Rdf2GoCore.GLOBAL);
 		if (globalAnnotation != null && globalAnnotation.equals("true")) {
@@ -80,11 +90,10 @@ public class Rdf2GoUtils {
 	}
 
 	/**
-	 * If the string starts with a known namespace or its abbreviation, the
-	 * namespace is removed (only from the start of the string).
+	 * If the string starts with a known namespace or its abbreviation, the namespace is removed (only from the start of
+	 * the string).
 	 *
-	 * @param string the string where the namespace or its abbreviation needs to
-	 *               be removed
+	 * @param string the string where the namespace or its abbreviation needs to be removed
 	 * @return the string without the namespace prefix
 	 * @created 12.07.2012
 	 */
@@ -124,8 +133,8 @@ public class Rdf2GoUtils {
 	}
 
 	/**
-	 * Creates and returns the namespace prefixes (with the namespaces known to
-	 * the {@link Rdf2GoCore}) needed for a SPARQL query.
+	 * Creates and returns the namespace prefixes (with the namespaces known to the {@link Rdf2GoCore}) needed for a
+	 * SPARQL query.
 	 *
 	 * @return the namespace prefixes for a SPARQL query.
 	 * @created 15.07.2012
@@ -141,8 +150,8 @@ public class Rdf2GoUtils {
 	}
 
 	/**
-	 * A prefix is the abbreviation of the namespace plus a colon. This method
-	 * makes sure the given String has the colon at the end.
+	 * A prefix is the abbreviation of the namespace plus a colon. This method makes sure the given String has the colon
+	 * at the end.
 	 *
 	 * @param namespaceAbbreviation the abbreviation with possibly no colon
 	 * @return a proper prefix (abbreviation + colon)
@@ -160,8 +169,7 @@ public class Rdf2GoUtils {
 	 * abbreviation is returned (including the colon).
 	 *
 	 * @param string the string to be parsed for a known prefix abbreviation
-	 * @return the prefix of the namespace found at the start of the given
-	 * string
+	 * @return the prefix of the namespace found at the start of the given string
 	 * @created 15.07.2012
 	 */
 	public static String parseKnownNamespacePrefix(Rdf2GoCore core, String string) {
@@ -171,14 +179,18 @@ public class Rdf2GoUtils {
 					return prefix;
 				}
 			}
+
+			// also checking local namespace
+			if (string.startsWith(":")) {
+				return Rdf2GoCore.LNS_ABBREVIATION + ":";
+			}
 		}
 		return null;
 	}
 
 	/**
-	 * Expands the namespace abbreviation prefix in the given string to a full
-	 * URL prefix (if the abbreviation is known to the {@link Rdf2GoCore}). If
-	 * no valid abbreviation is found, the string is returned.
+	 * Expands the namespace abbreviation prefix in the given string to a full URL prefix (if the abbreviation is known
+	 * to the {@link Rdf2GoCore}). If no valid abbreviation is found, the string is returned.
 	 *
 	 * @param string the string with the namespace abbreviation to expand
 	 * @return the string with an expanded namespace
@@ -250,9 +262,8 @@ public class Rdf2GoUtils {
 	}
 
 	/**
-	 * Creates a statement and adds it to the list of statements. Additionally,
-	 * in case of RDF reasoning, the rdfs label of the object is created and
-	 * added.
+	 * Creates a statement and adds it to the list of statements. Additionally, in case of RDF reasoning, the rdfs label
+	 * of the object is created and added.
 	 */
 	public static void addStatement(Rdf2GoCore core, String subject, String predicate, String object, Collection<Statement> statements) {
 		URI subjectUri = core.createlocalURI(subject);
@@ -261,9 +272,8 @@ public class Rdf2GoUtils {
 	}
 
 	/**
-	 * Creates a statement and adds it to the list of statements. Additionally,
-	 * in case of RDF reasoning, the rdfs label of the object is created and
-	 * added.
+	 * Creates a statement and adds it to the list of statements. Additionally, in case of RDF reasoning, the rdfs label
+	 * of the object is created and added.
 	 */
 	public static void addStatement(Rdf2GoCore core, Resource subject, URI predicate, String object, Collection<Statement> statements) {
 		URI objectUri = core.createlocalURI(object);
