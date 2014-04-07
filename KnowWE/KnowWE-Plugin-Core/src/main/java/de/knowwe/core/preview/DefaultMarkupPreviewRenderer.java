@@ -1,5 +1,6 @@
 package de.knowwe.core.preview;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -241,8 +242,9 @@ public class DefaultMarkupPreviewRenderer extends AbstractPreviewRenderer {
 	}
 
 	static void renderSections(List<Section<?>> previews, UserContext user, RenderResult result) {
-		Collections.sort(previews);
-		DefaultMarkupRenderer.renderContentSections(previews, false, user, result);
+		List<Section<?>> list = new ArrayList<Section<?>>(previews);
+		Collections.sort(list);
+		DefaultMarkupRenderer.renderContentSections(list, false, user, result);
 	}
 
 	/**

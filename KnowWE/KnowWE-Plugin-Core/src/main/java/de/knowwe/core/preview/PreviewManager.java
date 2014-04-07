@@ -26,6 +26,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
@@ -49,7 +51,7 @@ import de.knowwe.plugin.Plugins;
  */
 public class PreviewManager {
 
-	private final Map<Scope, PreviewRenderer> previewRenderers = new LinkedHashMap<Scope, PreviewRenderer>();
+	private final Map<Scope, TreeMap<Integer, PreviewRenderer>> previewRenderers = new LinkedHashMap<Scope, TreeMap<Integer, PreviewRenderer>>();
 
 	private static final PreviewManager INSTANCE = new PreviewManager();
 
@@ -76,9 +78,9 @@ public class PreviewManager {
 		while (previewSection != null) {
 			for (Scope scope : previewRenderers.keySet()) {
 				if (scope.matches(previewSection)) {
-					// we found the closest section
-					PreviewRenderer renderer = previewRenderers.get(scope);
-					if (renderer.matches(section)) return previewSection;
+					SortedMap<Integer, PreviewRenderer> priorityPreviewRendererMap = previewRenderers.get(scope);
+					PreviewRenderer previewRenderer = priorityPreviewRendererMap.get(priorityPreviewRendererMap.firstKey());
+					if (previewRenderer.matches(section)) return previewSection;
 				}
 			}
 			previewSection = previewSection.getParent();
@@ -99,8 +101,9 @@ public class PreviewManager {
 		for (Scope scope : previewRenderers.keySet()) {
 			if (scope.matches(section)) {
 				// we found the closest section
-				PreviewRenderer renderer = previewRenderers.get(scope);
-				if (renderer.matches(section)) return renderer;
+				SortedMap<Integer, PreviewRenderer> priorityPreviewRendererMap = previewRenderers.get(scope);
+				PreviewRenderer previewRenderer = priorityPreviewRendererMap.get(priorityPreviewRendererMap.firstKey());
+				if (previewRenderer.matches(section)) return previewRenderer;
 			}
 		}
 		return null;
@@ -116,12 +119,15 @@ public class PreviewManager {
 			if (object instanceof PreviewRenderer) {
 				// add the renderer for every scope
 				List<String> scopes = extension.getParameters("scope");
+				int priority = Integer.parseInt(extension.getParameter("priority"));
 				for (String scopeString : scopes) {
 					Scope scope = Scope.getScope(scopeString);
 					// but take care not overwrite an existing scope,
 					// because it has the higher priority
 					if (!previewRenderers.containsKey(scope)) {
-						previewRenderers.put(scope, (PreviewRenderer) object);
+						TreeMap<Integer, PreviewRenderer> priorityMap = new TreeMap<Integer, PreviewRenderer>();
+						priorityMap.put(priority, (PreviewRenderer) object);
+						previewRenderers.put(scope, priorityMap);
 					}
 				}
 			}
