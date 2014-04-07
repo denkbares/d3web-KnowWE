@@ -550,9 +550,11 @@ public final class Messages {
 	 */
 	public static void storeMessage(Compiler compiler, Section<?> section,
 									Class<?> source, Message msg) {
+		Collection<Message> messages = Collections.emptyList();
 		if (msg != null) {
-			storeMessages(compiler, section, source, Messages.asList(msg));
+			messages = Messages.asList(msg);
 		}
+		storeMessages(compiler, section, source, messages);
 	}
 
 	/**
@@ -571,9 +573,7 @@ public final class Messages {
 	 */
 	public static void storeMessage(Section<?> section,
 									Class<?> source, Message msg) {
-		if (msg != null) {
-			storeMessages(null, section, source, Messages.asList(msg));
-		}
+		storeMessage(null, section, source, msg);
 	}
 
 	/**
