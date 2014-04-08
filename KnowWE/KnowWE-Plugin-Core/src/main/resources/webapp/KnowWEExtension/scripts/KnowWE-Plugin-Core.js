@@ -515,17 +515,18 @@ KNOWWE.core.plugin.pagination = function () {
 			file = "arrow_up.png";
 		}
 		return jq$('<img/>', {
-			"src": 'KnowWEExtension/images/' + file
+			"src": 'KnowWEExtension/images/' + file,
+			"class": 'sorting'
 		});
 	}
 
 	return {
 
-		sort: function (th, id) {
+		sort: function (element, id) {
 
 			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-"
 				+ id));
-			var sorting = th.innerText;
+			var sorting = element.innerText;
 			if (cookie) {
 				if (cookie.sorting == sorting) {
 					cookie.naturalOrder = !cookie.naturalOrder;
@@ -653,6 +654,45 @@ KNOWWE.core.plugin.pagination = function () {
 			scrollToTopNavigation(id);
 		},
 
+		filter: function (checkbox, sectionId) {
+			var key = jq$(checkbox).attr("filterkey");
+			var value = jq$(checkbox).attr("filtervalue");
+			var checked = checkbox.checked;
+
+			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-" + sectionId));
+			if (cookie == null) {
+				cookie = {};
+			}
+			if(typeof cookie.filters == "undefined"){
+				cookie.filters = new Object();
+				cookie.filters[key] = new Array();
+				if(checked === true){
+					cookie.filters[key].push(value);
+				}
+				else {
+					cookie.filters[key].splice(cookie.filters[key].indexOf(value), 1)
+				}
+			}
+			else if (typeof cookie.filters[key] == "undefined"){
+				cookie.filters[key] = new Array();
+				if(checked === true){
+					cookie.filters[key].push(value);
+				}
+				else {
+					cookie.filters[key].splice(cookie.filters[key].indexOf(value), 1)
+				}
+			}
+			else {
+				if(checked === true){
+					cookie.filters[key].push(value);
+				}
+				else {
+					cookie.filters[key].splice(cookie.filters[key].indexOf(value), 1)
+				}
+			}
+			saveCookieAndUpdateNode(cookie, sectionId);
+		},
+
 		decorateTable: function () {
 			jq$(".navigationPaginationWrapper").each(
 				function () {
@@ -674,23 +714,29 @@ KNOWWE.core.plugin.pagination = function () {
 					jq$(tablePagination).attr('sectionid', sectionId);
 					jq$(tablePagination).find("th").each(
 						function (i) {
+							var text = jq$(this).text();
+							jq$(this.firstChild).wrap('<span></span>');
 							if (!jq$(this).hasClass("notSortable")) {
-								jq$(this).addClass("paginationHeader");
-								this.addEventListener('click',
+								jq$(this).find("span").bind('click',
 									function (event) {
 										KNOWWE.core.plugin.pagination
 											.sort(this,
 												sectionId);
-									}, true);
+									}
+								);
 							}
-							if (!jq$(this).hasClass("filterable")) {
-								jq$(this).addClass("paginationHeader");
-								this.addEventListener('click',
-									function (event) {
-										KNOWWE.core.plugin.pagination
-											.sort(this,
-												sectionId);
-									}, true);
+							if (jq$(this).hasClass("filterable")) {
+								var filterIcon = jq$('<img/>', {
+									"src": 'KnowWEExtension/images/filter.png',
+									"class": 'filter'
+								});
+								jq$(this).prepend(filterIcon);
+								var preparedFilter = jq$("#paginationFilters div[filtername="+text+"]").detach();
+								jq$(filterIcon).tooltipster({
+									content: jq$(preparedFilter).html(),
+									interactive: true,
+									interactiveTolerance: 1000
+								});
 							}
 						});
 
@@ -700,7 +746,7 @@ KNOWWE.core.plugin.pagination = function () {
 							+ sectionId));
 					if (cookie != null && cookie.sorting != null) {
 						var thToGetSortingSymbol = jq$("#" + sectionId
-							+ " th:contains('" + cookie.sorting + "')");
+							+ " th:contains('" + cookie.sorting + "') span");
 						jq$(thToGetSortingSymbol).append(
 							getSortingSymbol(cookie.naturalOrder));
 					}
