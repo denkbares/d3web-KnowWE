@@ -42,8 +42,8 @@ import de.knowwe.core.report.Messages;
  */
 public class TimeStampType extends AbstractType {
 
-	private static final String DURATION = "\\s*(\\d+)\\s*(ms|s|min|h|d)\\s*";
-	private static final String TIMESTAMP = "(" + DURATION + ")+";
+	public static final String DURATION = "\\s*(\\d+)\\s*(ms|s|min|h|d)\\s*";
+	public static final String TIMESTAMP = "(" + DURATION + ")+";
 
 	private static final long[] TIME_FACTORS = {
 			1, 1000, 60 * 1000, 60 * 60 * 1000, 24 * 60 * 60 * 1000 };
@@ -52,11 +52,11 @@ public class TimeStampType extends AbstractType {
 			"ms", "s", "min", "h", "d" };
 
 	// TODO does not work with isvalid
-	private static final Pattern DURATION_PATTERN = Pattern.compile(
+	public static final Pattern DURATION_PATTERN = Pattern.compile(
 			DURATION,
 			Pattern.CASE_INSENSITIVE);
 
-	private static final Pattern TIMESTAMP_PATTERN = Pattern.compile(
+	public static final Pattern TIMESTAMP_PATTERN = Pattern.compile(
 			TIMESTAMP,
 			Pattern.CASE_INSENSITIVE);
 
