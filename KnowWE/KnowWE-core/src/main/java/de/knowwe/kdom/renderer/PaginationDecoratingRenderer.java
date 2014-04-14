@@ -351,7 +351,7 @@ public class PaginationDecoratingRenderer implements Renderer {
 		List<Pair<String, List<String>>> filterList = (List<Pair<String, List<String>>>) context.getSession()
 				.getAttribute(FILTER);
 		if(filterList == null){
-			return new LinkedList<Pair<String, List<String>>>(filterList);
+			return new LinkedList<Pair<String, List<String>>>();
 		}
 		return filterList;
 	}
