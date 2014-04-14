@@ -37,6 +37,7 @@ import java.util.TreeSet;
 
 import de.d3web.collections.DefaultMultiMap;
 import de.d3web.collections.MultiMap;
+import de.d3web.collections.MultiMaps;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.Environment;
@@ -55,7 +56,7 @@ public final class Messages {
 	/**
 	 * This set holds all Sections with Messages.
 	 */
-	private static final MultiMap<Message.Type, Section<?>> sectionsWithMessages = new DefaultMultiMap<Message.Type, Section<?>>();
+	private static final MultiMap<Message.Type, Section<?>> sectionsWithMessages = MultiMaps.synchronizedMultiMap(new DefaultMultiMap());
 
 	/**
 	 * Wraps a single or more {@link Message}s into a Collection to be returned
