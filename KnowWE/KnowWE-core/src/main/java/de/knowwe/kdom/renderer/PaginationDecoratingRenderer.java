@@ -348,7 +348,12 @@ public class PaginationDecoratingRenderer implements Renderer {
 	}
 
 	private static List<Pair<String, List<String>>> getFilterList(UserContext context) {
-		return (List<Pair<String, List<String>>>) context.getSession().getAttribute(FILTER);
+		List<Pair<String, List<String>>> filterList = (List<Pair<String, List<String>>>) context.getSession()
+				.getAttribute(FILTER);
+		if(filterList == null){
+			return new LinkedList<Pair<String, List<String>>>(filterList);
+		}
+		return filterList;
 	}
 
 	private static void renderHiddenFilterDiv(UserContext context, RenderResult result, Section<?> section) {
