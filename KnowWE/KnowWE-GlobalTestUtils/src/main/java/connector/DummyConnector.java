@@ -59,7 +59,7 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public String createArticle(String title, String content, String author) {
+	public String createArticle(String title, String author, String content) {
 		Environment.getInstance().buildAndRegisterArticle(content, title, Environment.DEFAULT_WEB);
 		if (dummyPageProvider == null) {
 			throw new NullPointerException(

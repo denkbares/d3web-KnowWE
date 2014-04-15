@@ -70,8 +70,8 @@ public class TestArticleManager {
 		if (article == null) {
 			// Read File containing content
 			String content = KnowWEUtils.readFile(filename);
-			Environment.getInstance().getWikiConnector().createArticle(articleName, content,
-					TestArticleManager.class.getSimpleName());
+			Environment.getInstance().getWikiConnector().createArticle(articleName, TestArticleManager.class.getSimpleName(), content
+			);
 			article = KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB).getArticle(
 					articleName);
 		}

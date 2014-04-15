@@ -55,7 +55,7 @@ public class CreateObjectHomePageAction extends AbstractAction {
 				String content = "[{KnowWEPlugin objectInfo , objectname=" + objectName
 							+ "}]";
 				Environment.getInstance().getWikiConnector().createArticle(objectName,
-							content, context.getUserName());
+						context.getUserName(), content);
 			}
 
 		}

@@ -65,12 +65,11 @@ public interface WikiConnector {
 	/**
 	 * Creates a new wiki page with given title and content and author in the
 	 * connected wiki.
-	 * 
-	 * @param title the title of the new article
-	 * @param content the content of the new article
+	 *  @param title the title of the new article
 	 * @param author the author of the new article
+	 * @param content the content of the new article
 	 */
-	public String createArticle(String title, String content, String author);
+	public String createArticle(String title, String author, String content);
 
 	/**
 	 * Tests if a article with the given title exists.

@@ -114,20 +114,26 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public String createArticle(String title, String content, String author) {
+	public String createArticle(String title, String author, String content) {
+		return createArticle(title, author, content, true);
+	}
+
+	public String createArticle(String title, String author, String content, boolean updateReferences) {
 
 		WikiPage wp = new WikiPage(this.engine, title);
 
 		try {
-			// References Updaten.
-			this.engine.getReferenceManager().updateReferences(title,
-					this.engine.getReferenceManager().findCreated());
+			if (updateReferences) {
+				this.engine.getReferenceManager().updateReferences(title,
+						this.engine.getReferenceManager().findCreated());
+			}
 			wp.setAuthor(author);
 			this.engine.getPageManager().putPageText(wp, content);
 			this.engine.getSearchManager().reindexPage(wp);
 
 		}
 		catch (ProviderException e) {
+			Log.severe(e.getMessage(), e);
 			return null;
 		}
 		catch (NullPointerException e) {

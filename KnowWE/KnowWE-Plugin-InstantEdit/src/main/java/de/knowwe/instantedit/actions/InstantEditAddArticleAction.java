@@ -46,8 +46,8 @@ public class InstantEditAddArticleAction extends AbstractAction {
 		Article article = Environment.getInstance().getArticle(web, title);
 		if (article == null) {
 
-			Environment.getInstance().getWikiConnector().createArticle(title, "",
-					context.getUserName());
+			Environment.getInstance().getWikiConnector().createArticle(title, context.getUserName(), ""
+			);
 		}
 
 		boolean written = Environment.getInstance().getWikiConnector()
