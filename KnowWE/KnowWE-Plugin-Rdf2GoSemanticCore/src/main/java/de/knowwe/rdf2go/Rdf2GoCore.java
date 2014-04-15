@@ -605,7 +605,7 @@ public class Rdf2GoCore {
 		// in case ns is just the abbreviation
 		String fullNs = getNamespaces().get(ns);
 
-		return createURI((fullNs == null ? ns : fullNs) + Rdf2GoUtils.cleanUp(value));
+		return createURI((fullNs == null ? ns : fullNs) + Strings.encodeURL(value));
 	}
 
 	/**

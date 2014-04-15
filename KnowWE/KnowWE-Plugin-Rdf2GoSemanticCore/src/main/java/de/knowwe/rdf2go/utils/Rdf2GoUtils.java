@@ -19,8 +19,6 @@
  */
 package de.knowwe.rdf2go.utils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -219,21 +217,6 @@ public class Rdf2GoUtils {
 		String prefix = parseKnownNamespacePrefix(core, string);
 		if (prefix == null) return string;
 		return core.getNamespacePrefixes().get(prefix) + string.substring(prefix.length());
-	}
-
-	/**
-	 * Ensures a properly URL encoded string.
-	 */
-	public static String cleanUp(String string) {
-		String temp = string;
-		try {
-			temp = URLDecoder.decode(string, "UTF-8");
-		}
-		catch (IllegalArgumentException e) {
-		}
-		catch (UnsupportedEncodingException e) {
-		}
-		return Strings.encodeURL(temp);
 	}
 
 	public static String createSparqlString(Rdf2GoCore core, String sparqlString) {
