@@ -21,12 +21,17 @@ package de.knowwe.rdf2go.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.ontoware.aifbcommons.collection.ClosableIterator;
+import org.ontoware.rdf2go.model.QueryResultTable;
+import org.ontoware.rdf2go.model.QueryRow;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.Literal;
@@ -66,6 +71,20 @@ public class Rdf2GoUtils {
 	public static boolean isProperty(Rdf2GoCore core, URI resource) {
 		String query = "ASK { " + resource.toSPARQL() + " rdf:type rdf:Property .}";
 		return core.sparqlAsk(query);
+	}
+
+	public static Collection<URI> getClasses(Rdf2GoCore core, URI instance) {
+		String query = "SELECT ?class WHERE { " + instance.toSPARQL() + " rdf:type ?class .}";
+		List<URI> resultCollection = new ArrayList<URI>();
+		QueryResultTable result = core.sparqlSelect(query);
+		ClosableIterator<QueryRow> iterator = result.iterator();
+		while (iterator.hasNext()) {
+			QueryRow row = iterator.next();
+			Node aClassNode = row.getValue("class");
+			URI uri = aClassNode.asURI();
+			resultCollection.add(uri);
+		}
+		return resultCollection;
 	}
 
 	public static Rdf2GoCore getRdf2GoCore(Section<? extends DefaultMarkupType> section) {
