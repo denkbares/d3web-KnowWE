@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,14 +41,29 @@ import de.d3web.testing.Message.Type;
 public class ResultTableModel {
 
 	public Map<Node, Set<TableRow>> getData() {
-		return data;
+		if (groupedRows == null) {
+			Map<Node, Set<TableRow>> data = new LinkedHashMap<Node, Set<TableRow>>();
+			for (TableRow row : rows) {
+				Node firstNode = row.getValue(variables.get(0));
+				Set<TableRow> nodeRows = data.get(firstNode);
+				if (nodeRows == null) {
+					nodeRows = new HashSet<TableRow>();
+					data.put(firstNode, nodeRows);
+				}
+				nodeRows.add(row);
+			}
+			groupedRows = data;
+		}
+		return groupedRows;
 	}
 
-	private final Map<Node, Set<TableRow>> data = new LinkedHashMap<Node, Set<TableRow>>();
+	private final Collection<TableRow> rows = new LinkedHashSet<TableRow>();
 	private final List<String> variables;
 
+	private Map<Node, Set<TableRow>> groupedRows = null;
+
 	public int getSize() {
-		return data.size();
+		return rows.size();
 	}
 
 	public ResultTableModel(QueryResultTable result) {
@@ -67,81 +83,47 @@ public class ResultTableModel {
 	}
 
 	public boolean contains(TableRow row) {
-		Node subjectValue = row.getValue(variables.get(0));
-		Set<TableRow> subjectRows = data.get(subjectValue);
-		if (subjectRows == null) return false;
-		for (TableRow tableRow : subjectRows) {
-			if(row.equals(tableRow)) return true;
-		}
-		return false;
+		return rows.contains(row);
 	}
-	
-
 
 	public Iterator<TableRow> iterator() {
-		List<TableRow> result = new ArrayList<TableRow>();
-		for (Set<TableRow> list : data.values()) {
-			result.addAll(list);
-		}
-		return result.iterator();
+		return rows.iterator();
 	}
 
 	private void populateTable(QueryResultTable result) {
 		ClosableIterator<QueryRow> iterator = result.iterator();
 		while (iterator.hasNext()) {
 			QueryRow queryRow = iterator.next();
-
 			importRow(queryRow);
-
 		}
 		iterator.close();
 	}
 
 	private void importRow(TableRow row) {
-		Node firstNode = row.getValue(variables.get(0));
-		Set<TableRow> nodeRows = data.get(firstNode);
-		if (nodeRows == null) {
-			nodeRows = new HashSet<TableRow>();
-			data.put(firstNode, nodeRows);
-		}
-		nodeRows.add(row);
-
+		rows.add(row);
+		groupedRows = null;
 	}
 
 	@Override
 	public String toString() {
-		Set<Node> keySet = data.keySet();
 		StringBuffer buffy = new StringBuffer();
 		buffy.append("Variables: " + variables.toString() + "\n");
-		for (Node node : keySet) {
-			Set<TableRow> set = data.get(node);
-			for (TableRow tableRow : set) {
-				buffy.append(tableRow.toString() + "\n");
-			}
+		for (TableRow tableRow : rows) {
+			buffy.append(tableRow.toString() + "\n");
 		}
 		return buffy.toString();
 	}
 
 	private void importRow(QueryRow queryRow) {
-
-		Node firstNode = queryRow.getValue(variables.get(0));
-		Set<TableRow> nodeRows = data.get(firstNode);
-		if (nodeRows == null) {
-			nodeRows = new HashSet<TableRow>();
-			data.put(firstNode, nodeRows);
-		}
-		nodeRows.add(new QueryRowTableRow(queryRow, variables));
-
+		rows.add(new QueryRowTableRow(queryRow, variables));
 	}
-
-
 
 	public List<String> getVariables() {
 		return variables;
 	}
 
 	public Collection<TableRow> findRowFor(Node ascendorParent) {
-		return data.get(ascendorParent);
+		return getData().get(ascendorParent);
 	}
 
 	public void addTableRow(TableRow artificialTopLevelRow) {
@@ -149,20 +131,19 @@ public class ResultTableModel {
 	}
 
 	/**
-	 * Compares the two sparql result data tables with each other. Equality is
-	 * checked if the atLeast-flag is set false. If the atLeast-flag is set to
-	 * true, only the subset relation of expected to actual data is checked.
-	 * 
-	 * CAUTION: result rows with blank nodes are ignored from consideration
-	 * (graph isomorphism problem)
-	 * 
-	 * 
-	 * @created 20.01.2014
+	 * Compares the two sparql result data tables with each other. Equality is checked if the
+	 * atLeast-flag is set false. If the atLeast-flag is set to true, only the subset relation of
+	 * expected to actual data is checked.
+	 * <p/>
+	 * CAUTION: result rows with blank nodes are ignored from consideration (graph isomorphism
+	 * problem)
+	 *
 	 * @param expectedResultTable
 	 * @param actualResultTable
-	 * @param atLeast false: equality of data is required; true: expectedData
-	 *        SUBSET-OF actualData is required
+	 * @param atLeast false: equality of data is required; true: expectedData SUBSET-OF actualData
+	 * is required
 	 * @return
+	 * @created 20.01.2014
 	 */
 	public static List<Message> checkEquality(ResultTableModel expectedResultTable, ResultTableModel actualResultTable, boolean atLeast) {
 		List<Message> errorMessages = new ArrayList<Message>();

@@ -49,7 +49,9 @@ public class SimpleTableRow implements TableRow {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((values == null) ? 0 : values.hashCode());
+		for (Node value : values.values()) {
+			result = prime * result + value.hashCode();
+		}
 		return result;
 	}
 

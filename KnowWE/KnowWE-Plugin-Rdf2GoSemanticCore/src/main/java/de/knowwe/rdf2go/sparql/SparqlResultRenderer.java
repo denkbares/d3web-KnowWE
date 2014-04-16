@@ -2,10 +2,12 @@ package de.knowwe.rdf2go.sparql;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.ontoware.rdf2go.model.QueryResultTable;
@@ -62,11 +64,10 @@ public class SparqlResultRenderer {
 	}
 
 	/**
-	 * 
-	 * @created 06.12.2010
 	 * @param qrt
 	 * @param opts TODO
 	 * @return html table with all results of qrt and size of qrt
+	 * @created 06.12.2010
 	 */
 	public SparqlRenderResult renderQueryResult(QueryResultTable qrt, RenderOptions opts, UserContext user) {
 		boolean tablemode = false;
@@ -81,7 +82,6 @@ public class SparqlResultRenderer {
 
 		List<String> variables = qrt.getVariables();
 		tablemode = variables.size() > 1;
-
 
 		// BEGIN: collapse tree mode code
 		// tree table init
@@ -142,6 +142,7 @@ public class SparqlResultRenderer {
 
 		Iterator<TableRow> iterator = table.iterator();
 		List<String> classNames = new LinkedList<String>();
+		Set<String> usedIDs = new HashSet<String>();
 		while (iterator.hasNext()) {
 			i++;
 			if ((opts.isNavigation() && i >= opts.getNavigationOffset() && i < (opts.getNavigationOffset()
@@ -171,15 +172,18 @@ public class SparqlResultRenderer {
 					{// BEGIN: collapse tree mode code
 						if (isTree) {
 							String valueID = valueToID(idVariable, row);
-							String id = valueID;
-							result.append(" data-tt-id='sparql-id-").append(id).append("'");
+							boolean isNew = usedIDs.add(valueID);
+							if (!isNew) {
+//								result.append(" style='color:red'");
+								valueID = UUID.randomUUID().toString();
+							}
+							result.append(" data-tt-id='sparql-id-").append(valueID).append("'");
 							String parentID = valueToID(parentVariable, row);
-							if (parentID != null
-									&& !parentID.equals(valueID)) {
+							if (!Strings.isBlank(parentID) && !parentID.equals(valueID)) {
 								// parentID.equals(valueID): hack for skipping
 								// top level rows
-								result.append(" data-tt-parent-id='sparql-id-").append(parentID).append(
-										"'");
+								result.append(" data-tt-parent-id='sparql-id-")
+										.append(parentID).append("'");
 							}
 						}
 					}// END: collapse tree mode code
@@ -234,7 +238,8 @@ public class SparqlResultRenderer {
 							.append(tableID)
 							.appendHtml(
 									"');\ntable.agikiTreeTable({expandable: true, clickableNodeNames: true, persist: true, article:'"
-											+ user.getTitle() + "' });</script>");
+											+ user.getTitle() + "' });</script>"
+							);
 				}
 			}// END: collapse tree mode code
 
@@ -250,7 +255,7 @@ public class SparqlResultRenderer {
 		// creating hierarchy order using PartialHierarchyTree
 		PartialHierarchyTree<TableRow> tree = new
 				PartialHierarchyTree<TableRow>(
-						new ResultTableHierarchy(table));
+				new ResultTableHierarchy(table));
 
 		// add all nodes to create the tree
 		Iterator<TableRow> iterator = table.iterator();
@@ -357,7 +362,9 @@ public class SparqlResultRenderer {
 	private String valueToID(String variable, TableRow row) {
 		Node value = row.getValue(variable);
 		if (value == null) return null;
-		return Integer.toString(value.toString().replaceAll("[\\s\"]+", "").hashCode());
+		int code = value.toString().replaceAll("[\\s\"]+", "").hashCode();
+		System.out.println("::: " + value.toString() + " --> " + code);
+		return Integer.toString(code);
 	}
 
 	public String renderNode(Node node, String var, boolean rawOutput, UserContext user, Rdf2GoCore core, RenderMode mode) {

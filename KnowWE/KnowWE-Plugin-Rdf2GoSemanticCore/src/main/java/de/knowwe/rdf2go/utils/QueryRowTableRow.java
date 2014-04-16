@@ -80,7 +80,10 @@ public class QueryRowTableRow implements TableRow {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((row == null) ? 0 : row.hashCode());
+		for (String variable : variables) {
+			Node value = row.getValue(variable);
+			result = prime * result + value.hashCode();
+		}
 		return result;
 	}
 
