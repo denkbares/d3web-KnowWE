@@ -59,7 +59,7 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 	public static void renderToolMenuDecorator(String innerText, String toolMenuID, String toolMenuAction, boolean hasTools, RenderResult string) {
 
 		if (hasTools) {
-			String headerID = "tool_menu_" + toolMenuID + "_" + UUID.randomUUID().toString();
+			String headerID = UUID.randomUUID().toString();
 			string.appendHtmlTag("span", "class", "toolMenuDecorated");
 
 			String[] attributes = new String[toolMenuAction == null ? 8 : 10];
