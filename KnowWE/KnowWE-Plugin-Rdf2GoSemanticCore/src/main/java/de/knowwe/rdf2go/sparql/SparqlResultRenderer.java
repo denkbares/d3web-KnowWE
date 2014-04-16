@@ -64,13 +64,12 @@ public class SparqlResultRenderer {
 	}
 
 	/**
-	 * @param qrt
-	 * @param opts TODO
+	 * @param qrt the query result to render
+	 * @param opts the options to control the rendered output
 	 * @return html table with all results of qrt and size of qrt
 	 * @created 06.12.2010
 	 */
 	public SparqlRenderResult renderQueryResult(QueryResultTable qrt, RenderOptions opts, UserContext user) {
-		boolean tablemode = false;
 		boolean empty = true;
 		boolean zebraMode = opts.isZebraMode();
 		boolean rawOutput = opts.isRawOutput();
@@ -81,7 +80,7 @@ public class SparqlResultRenderer {
 		RenderResult result = new RenderResult(user);
 
 		List<String> variables = qrt.getVariables();
-		tablemode = variables.size() > 1;
+		boolean tablemode = variables.size() > 1;
 
 		// BEGIN: collapse tree mode code
 		// tree table init
@@ -363,7 +362,6 @@ public class SparqlResultRenderer {
 		Node value = row.getValue(variable);
 		if (value == null) return null;
 		int code = value.toString().replaceAll("[\\s\"]+", "").hashCode();
-		System.out.println("::: " + value.toString() + " --> " + code);
 		return Integer.toString(code);
 	}
 
@@ -400,9 +398,6 @@ public class SparqlResultRenderer {
 	}
 
 	private boolean hasSorting(String value, Map<String, String> map) {
-		if (map.containsKey(value)) {
-			return true;
-		}
-		return false;
+		return map.containsKey(value);
 	}
 }
