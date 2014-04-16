@@ -115,21 +115,22 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public String createArticle(String title, String author, String content) {
-		return createArticle(title, author, content, true);
+		return createArticle(title, author, content, true, true);
 	}
 
-	public String createArticle(String title, String author, String content, boolean updateReferences) {
+	public String createArticle(String title, String author, String content, boolean updateReferences, boolean reindex) {
 
 		WikiPage wp = new WikiPage(this.engine, title);
 
 		try {
 			if (updateReferences) {
-				this.engine.getReferenceManager().updateReferences(title,
-						this.engine.getReferenceManager().findCreated());
+				updateReferences(title);
 			}
 			wp.setAuthor(author);
 			this.engine.getPageManager().putPageText(wp, content);
-			this.engine.getSearchManager().reindexPage(wp);
+			if (reindex) {
+				reindex(title);
+			}
 
 		}
 		catch (ProviderException e) {
@@ -142,6 +143,16 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 		Environment.getInstance().buildAndRegisterArticle(content, title, Environment.DEFAULT_WEB);
 		return this.engine.getPureText(wp);
+	}
+
+	public void reindex(String title) {
+		WikiPage wp = this.engine.getPage(title);
+		this.engine.getSearchManager().reindexPage(wp);
+	}
+
+	public void updateReferences(String title) {
+		this.engine.getReferenceManager().updateReferences(title,
+				this.engine.getReferenceManager().findCreated());
 	}
 
 	@Override
