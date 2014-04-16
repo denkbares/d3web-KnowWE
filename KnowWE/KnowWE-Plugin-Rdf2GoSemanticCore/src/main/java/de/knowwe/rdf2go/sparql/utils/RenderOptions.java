@@ -22,11 +22,11 @@ public class RenderOptions {
 
 	public RenderOptions(String id) {
 		super();
-		this.zebraMode = false;
+		this.zebraMode = true;
 		this.rawOutput = false;
 		this.sorting = false;
 		this.navigation = false;
-		this.border = false;
+		this.border = true;
 		sortingOrder = new LinkedHashMap<String, String>();
 		this.id = id;
 		showAll = false;

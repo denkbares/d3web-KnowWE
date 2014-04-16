@@ -127,8 +127,10 @@ public class SparqlMarkupRenderer implements Renderer {
 				setRenderOptions(markupSection, renderOpts);
 
 				if (renderOpts.isBorder()) result.appendHtml("<div class='border'>");
-				if (renderOpts.isSorting()) sparqlString = modifyOrderByInSparqlString(sortMap,
-						sparqlString);
+				if (renderOpts.isSorting()) {
+					sparqlString = modifyOrderByInSparqlString(sortMap,
+							sparqlString);
+				}
 
 				SparqlRenderResult resultEntry;
 
@@ -174,7 +176,6 @@ public class SparqlMarkupRenderer implements Renderer {
 				result.appendHtml(resultEntry.getHTML());
 				if (renderOpts.isBorder()) result.appendHtml("</div>");
 
-
 				if (showQueryFlag != null && showQueryFlag.equalsIgnoreCase("true")) {
 					/*
 					 * we need an opening html element around all the content as
@@ -199,10 +200,10 @@ public class SparqlMarkupRenderer implements Renderer {
 		renderOpts.setRawOutput(checkAnnotation(markupSection, SparqlMarkupType.RAW_OUTPUT));
 		renderOpts.setSorting(checkSortingAnnotation(markupSection,
 				SparqlMarkupType.SORTING));
-		renderOpts.setZebraMode(checkAnnotation(markupSection, SparqlMarkupType.ZEBRAMODE));
+		renderOpts.setZebraMode(checkAnnotation(markupSection, SparqlMarkupType.ZEBRAMODE, true));
 		renderOpts.setTree(Boolean.valueOf(DefaultMarkupType.getAnnotation(markupSection,
 				SparqlMarkupType.TREE)));
-		renderOpts.setBorder(checkAnnotation(markupSection, SparqlMarkupType.BORDER));
+		renderOpts.setBorder(checkAnnotation(markupSection, SparqlMarkupType.BORDER, true));
 		renderOpts.setNavigation(checkAnnotation(markupSection, SparqlMarkupType.NAVIGATION));
 	}
 
@@ -212,11 +213,14 @@ public class SparqlMarkupRenderer implements Renderer {
 		return annotationString == null || annotationString.equals("true");
 	}
 
-	private boolean checkAnnotation(Section<?> markupSection, String annotationName) {
+	private boolean checkAnnotation(Section<?> markupSection, String annotationName, boolean defaultValue) {
 		String annotationString = DefaultMarkupType.getAnnotation(markupSection,
 				annotationName);
-		return annotationString != null && annotationString.equals("true");
+		return annotationString == null ? defaultValue : annotationString.equals("true");
+	}
 
+	private boolean checkAnnotation(Section<?> markupSection, String annotationName) {
+		return checkAnnotation(markupSection, annotationName, false);
 	}
 
 	private String modifyOrderByInSparqlString(Map<String, String> sortOrder, String sparqlString) {
@@ -229,10 +233,18 @@ public class SparqlMarkupRenderer implements Renderer {
 		int limit = sparqlTempString.indexOf("limit", orderBy);
 		int offset = sparqlTempString.indexOf("offset", orderBy);
 		int nextStatement;
-		if (limit > 0 && offset > 0) nextStatement = (limit < offset) ? limit : offset;
-		else if (limit > 0 && offset < 0) nextStatement = limit;
-		else if (limit < 0 && offset > 0) nextStatement = offset;
-		else nextStatement = -1;
+		if (limit > 0 && offset > 0) {
+			nextStatement = (limit < offset) ? limit : offset;
+		}
+		else if (limit > 0 && offset < 0) {
+			nextStatement = limit;
+		}
+		else if (limit < 0 && offset > 0) {
+			nextStatement = offset;
+		}
+		else {
+			nextStatement = -1;
+		}
 
 		StringBuilder sbOrder = new StringBuilder();
 		Collection<String> keyCollection = sortOrder.keySet();
@@ -304,11 +316,13 @@ public class SparqlMarkupRenderer implements Renderer {
 		renderToolbarButton(
 				"begin.png", "KNOWWE.plugin.semantic.actions.begin('"
 						+ id + "')",
-				(fromInt > 1), result);
+				(fromInt > 1), result
+		);
 		renderToolbarButton(
 				"back.png", "KNOWWE.plugin.semantic.actions.back('"
 						+ id + "')",
-				(fromInt > 1), result);
+				(fromInt > 1), result
+		);
 		result.appendHtml("<span class=fillText> Lines </span>");
 		result.appendHtml("<input size=3 id='fromLine' type=\"field\" onchange=\"KNOWWE.plugin.semantic.actions.refreshSparqlRenderer('"
 				+ id + "');\" value='"
@@ -317,11 +331,13 @@ public class SparqlMarkupRenderer implements Renderer {
 		renderToolbarButton(
 				"forward.png", "KNOWWE.plugin.semantic.actions.forward('"
 						+ id + "')",
-				(!selectedSize.equals("All") && (fromInt + selectedSizeInt - 1 < max)), result);
+				(!selectedSize.equals("All") && (fromInt + selectedSizeInt - 1 < max)), result
+		);
 		renderToolbarButton(
 				"end.png", "KNOWWE.plugin.semantic.actions.end('"
 						+ id + "','" + max + "')",
-				(!selectedSize.equals("All") && (fromInt + selectedSizeInt - 1 < max)), result);
+				(!selectedSize.equals("All") && (fromInt + selectedSizeInt - 1 < max)), result
+		);
 		result.appendHtml("</div>");
 
 	}
