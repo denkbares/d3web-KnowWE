@@ -82,10 +82,10 @@ public class QueryRowTableRow implements TableRow {
 		int result = 1;
 		for (String variable : variables) {
 			Node value = row.getValue(variable);
-			result = prime * result + value.hashCode();
+			int valueHash = value == null ? 0 : value.hashCode();
+			result = prime * result + valueHash;
 		}
 		return result;
 	}
-
 
 }
