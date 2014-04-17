@@ -45,13 +45,23 @@ public class JSPActionDispatcher extends ActionDispatcher {
 		String action = context.getParameter("action");
 		context.getParameters().put("env", "JSPWiki");
 		context.getParameters().put("KWikiWeb", "default_web");
-
-		if (action != null) {
+		if (action == null) {
+			String message = "Action " + action + " not found. plugin.xml configured correctly?";
+			Log.severe(message);
+			context.sendError(500, message);
+			return;
+		}
+		try {
 			executeAction(context);
 		}
-		else {
-			context.getResponse().getWriter().write("no action found");
-			throw new NullPointerException("Action is null!");
+		catch (IOException e) {
+			Log.severe("IOException while executing action " + action, e);
+			throw e;
+		}
+		catch (Exception e) {
+			String message = e.getClass().getSimpleName() + " while executing action " + action;
+			Log.severe(message, e);
+			context.sendError(500, message);
 		}
 	}
 
@@ -86,7 +96,8 @@ public class JSPActionDispatcher extends ActionDispatcher {
 		else {
 			context.sendError(HttpServletResponse.SC_FORBIDDEN,
 					"You need to be admin to execute the action: \""
-							+ context.getActionName() + "\"");
+							+ context.getActionName() + "\""
+			);
 			context.getWriter().write("You need to be admin to execute the action: \""
 					+ context.getActionName() + "\"");
 			Log.warning("Unauthorized user tried to execute action: \"" + context.getActionName()
