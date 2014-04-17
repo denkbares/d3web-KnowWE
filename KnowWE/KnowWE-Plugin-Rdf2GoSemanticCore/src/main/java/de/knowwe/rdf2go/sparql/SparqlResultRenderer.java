@@ -64,20 +64,23 @@ public class SparqlResultRenderer {
 	}
 
 	/**
-	 * @param qrt the query result to render
+	 * @param qrt  the query result to render
 	 * @param opts the options to control the rendered output
 	 * @return html table with all results of qrt and size of qrt
 	 * @created 06.12.2010
 	 */
 	public SparqlRenderResult renderQueryResult(QueryResultTable qrt, RenderOptions opts, UserContext user) {
-		boolean empty = true;
+		RenderResult result = new RenderResult(user);
+		int i = 0;
+		if (!qrt.iterator().hasNext()) {
+			result.append(Messages.getMessageBundle().getString(
+					"KnowWE.owl.query.no_result"));
+			return new SparqlRenderResult(result.toStringRaw(), i);
+		}
 		boolean zebraMode = opts.isZebraMode();
 		boolean rawOutput = opts.isRawOutput();
 		boolean isTree = opts.isTree();
-		int i = 0;
 		String tableID = UUID.randomUUID().toString();
-
-		RenderResult result = new RenderResult(user);
 
 		List<String> variables = qrt.getVariables();
 		boolean tablemode = variables.size() > 1;
@@ -148,7 +151,6 @@ public class SparqlResultRenderer {
 					+ opts.getNavigationLimit()))
 					|| (opts.isNavigation() && opts.isShowAll()) || !opts.isNavigation()) {
 
-				empty = false;
 				classNames.clear();
 
 				TableRow row = iterator.next();
@@ -226,10 +228,6 @@ public class SparqlResultRenderer {
 
 		}
 
-		if (empty) {
-			result.append(Messages.getMessageBundle().getString(
-					"KnowWE.owl.query.no_result"));
-		}
 		if (tablemode) {
 			{// BEGIN: collapse tree mode code
 				if (isTree) {
