@@ -35,14 +35,14 @@ KNOWWE.plugin.semantic = function() {
 KNOWWE.plugin.semantic.actions = function() {
 
 	return {
-		refreshSparqlRenderer : function(id) {
+		refreshSparqlRenderer : function(id, element) {
 		
 			var root = jq$.parseJSON(jq$.cookie("SparqlRenderer-"+id));
 			if(root == null){
 				root = {};
 			}
-			var showLines = jq$('#showLines').val();
-			var fromLine = jq$('#fromLine').val();
+			var showLines = jq$('#showLines' + id).val();
+			var fromLine = jq$('#fromLine' + id).val();
 			var search = /^\d+$/;
 			var found = search.test(fromLine);
 			if(!(found)){
@@ -62,18 +62,18 @@ KNOWWE.plugin.semantic.actions = function() {
 			}
 			cookieStr = JSON.stringify(root);
 			jq$.cookie("SparqlRenderer-"+id, cookieStr);   
-			KNOWWE.plugin.d3webbasic.actions.updateNode(jq$('.type_Sparql').first().attr("id"), KNOWWE.helper.gup('page'), null);	
+			KNOWWE.plugin.d3webbasic.actions.updateNode(jq$(element).parents('.type_Sparql').first().attr("id"), KNOWWE.helper.gup('page'), null);
         	
 		},
 		
-		forward : function(id){
+		forward : function(id, element){
 
 			var root = jq$.parseJSON(jq$.cookie("SparqlRenderer-"+id));
 			if(root == null){
 				root = {};
 			}
-			var showLines = jq$('#showLines').val();
-			var fromLine = jq$('#fromLine').val();
+			var showLines = jq$('#showLines' + id).val();
+			var fromLine = jq$('#fromLine' + id).val();
 			
 			var newFromLine;
 			if (showLines == "All"){
@@ -86,15 +86,15 @@ KNOWWE.plugin.semantic.actions = function() {
 			root.navigationLimit = showLines;
 			cookieStr = JSON.stringify(root);
 			jq$.cookie("SparqlRenderer-"+id, cookieStr);   
-			KNOWWE.plugin.d3webbasic.actions.updateNode(jq$('.type_Sparql').first().attr("id"), KNOWWE.helper.gup('page'), null);	
+			KNOWWE.plugin.d3webbasic.actions.updateNode(jq$(element).parents('.type_Sparql').first().attr("id"), KNOWWE.helper.gup('page'), null);
 		},
 		
-		end : function(id, maximum){
+		end : function(id, maximum, element){
 			var root = jq$.parseJSON(jq$.cookie("SparqlRenderer-"+id));
 			if(root == null){
 				root = {};
 			}
-			var showLines = jq$('#showLines').val();
+			var showLines = jq$('#showLines' + id).val();
 			
 			if (showLines == "All"){
 				root.navigationOffset = 1;
@@ -107,18 +107,18 @@ KNOWWE.plugin.semantic.actions = function() {
 			}
 			cookieStr = JSON.stringify(root);
 			jq$.cookie("SparqlRenderer-"+id, cookieStr);   
-			KNOWWE.plugin.d3webbasic.actions.updateNode(jq$('.type_Sparql').first().attr("id"), KNOWWE.helper.gup('page'), null);
+			KNOWWE.plugin.d3webbasic.actions.updateNode(jq$(element).parents('.type_Sparql').first().attr("id"), KNOWWE.helper.gup('page'), null);
 		},
 		
-		back : function(id){
+		back : function(id, element){
 
 			var root = jq$.parseJSON(jq$.cookie("SparqlRenderer-"+id));
 			if(root == null){
 				root = {};
 			}
-			var showLines = jq$('#showLines').val();
+			var showLines = jq$('#showLines' + id).val();
 			
-			var fromLine = jq$('#fromLine').val();
+			var fromLine = jq$('#fromLine' + id).val();
 			var newFromLine;
 			if (showLines == "All"){
 				newFromLine = 1;
@@ -136,25 +136,25 @@ KNOWWE.plugin.semantic.actions = function() {
 			root.navigationLimit = showLines;
 			cookieStr = JSON.stringify(root);
 			jq$.cookie("SparqlRenderer-"+id, cookieStr);   
-			KNOWWE.plugin.d3webbasic.actions.updateNode(jq$('.type_Sparql').first().attr("id"), KNOWWE.helper.gup('page'), null);
+			KNOWWE.plugin.d3webbasic.actions.updateNode(jq$(element).parents('.type_Sparql').first().attr("id"), KNOWWE.helper.gup('page'), null);
 		},
 		
-		begin : function(id){
+		begin : function(id, element){
 			var root = jq$.parseJSON(jq$.cookie("SparqlRenderer-"+id));
 			if(root == null){
 				root = {};
 			}
-			var showLines = jq$('#showLines').val();
+			var showLines = jq$('#showLines' + id).val();
 
 			var fromLine = 1;
 			root.navigationOffset = fromLine;
 			root.navigationLimit = showLines;
 			cookieStr = JSON.stringify(root);
 			jq$.cookie("SparqlRenderer-"+id, cookieStr);   
-			KNOWWE.plugin.d3webbasic.actions.updateNode(jq$('.type_Sparql').first().attr("id"), KNOWWE.helper.gup('page'), null);
+			KNOWWE.plugin.d3webbasic.actions.updateNode(jq$(element).parents('.type_Sparql').first().attr("id"), KNOWWE.helper.gup('page'), null);
 		},
 		
-		sortResultsBy : function(newSorting, id){
+		sortResultsBy : function(newSorting, id, element){
 			
 			var root = jq$.parseJSON(jq$.cookie("SparqlRenderer-"+id));
 			
@@ -201,8 +201,8 @@ KNOWWE.plugin.semantic.actions = function() {
 			}
 			cookieStr = JSON.stringify(root);
 			jq$.cookie("SparqlRenderer-"+id, cookieStr);    
-			KNOWWE.plugin.d3webbasic.actions.updateNode(jq$('.type_Sparql').first().attr("id"), KNOWWE.helper.gup('page'), null);	
-		},  
+			KNOWWE.plugin.d3webbasic.actions.updateNode(jq$(element).parents('.type_Sparql').first().attr("id"), KNOWWE.helper.gup('page'), null);
+		}
 	} 
 }();
 

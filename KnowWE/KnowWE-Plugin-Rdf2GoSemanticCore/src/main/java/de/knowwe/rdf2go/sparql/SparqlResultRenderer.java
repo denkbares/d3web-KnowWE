@@ -118,7 +118,7 @@ public class SparqlResultRenderer {
 				result.appendHtml("<td><b>");
 				result.appendHtml("<a href='#/' onclick=\"KNOWWE.plugin.semantic.actions.sortResultsBy('"
 						+ var + "', '"
-						+ opts.getId() + "');\">");
+						+ opts.getId() + "', this);\">");
 				result.append(var);
 				result.appendHtml("</a>");
 				if (hasSorting(var, opts.getSortingMap())) {

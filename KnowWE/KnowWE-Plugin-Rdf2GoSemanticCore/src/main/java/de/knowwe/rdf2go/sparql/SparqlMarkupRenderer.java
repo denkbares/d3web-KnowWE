@@ -283,7 +283,7 @@ public class SparqlMarkupRenderer implements Renderer {
 		String[] sizeArray = getReasonableSizeChoices(max);
 
 		result.appendHtml("<span class=fillText>Show </span>"
-				+ "<select id='showLines'"
+				+ "<select id='showLines" + id + "'"
 				+ " onchange=\"KNOWWE.plugin.semantic.actions.refreshSparqlRenderer('"
 				+ id + "');\">");
 		for (String size : sizeArray) {
@@ -315,27 +315,27 @@ public class SparqlMarkupRenderer implements Renderer {
 		result.appendHtml("<div class='toolBar avoidMenu'>");
 		renderToolbarButton(
 				"begin.png", "KNOWWE.plugin.semantic.actions.begin('"
-						+ id + "')",
+						+ id + "', this)",
 				(fromInt > 1), result
 		);
 		renderToolbarButton(
 				"back.png", "KNOWWE.plugin.semantic.actions.back('"
-						+ id + "')",
+						+ id + "', this)",
 				(fromInt > 1), result
 		);
 		result.appendHtml("<span class=fillText> Lines </span>");
-		result.appendHtml("<input size=3 id='fromLine' type=\"field\" onchange=\"KNOWWE.plugin.semantic.actions.refreshSparqlRenderer('"
-				+ id + "');\" value='"
+		result.appendHtml("<input size=3 id='fromLine" + id + "' type=\"field\" onchange=\"KNOWWE.plugin.semantic.actions.refreshSparqlRenderer('"
+				+ id + "', this);\" value='"
 				+ from + "'>");
 		result.appendHtml("<span class=fillText> to </span>" + (fromInt + selectedSizeInt - 1));
 		renderToolbarButton(
 				"forward.png", "KNOWWE.plugin.semantic.actions.forward('"
-						+ id + "')",
+						+ id + "', this)",
 				(!selectedSize.equals("All") && (fromInt + selectedSizeInt - 1 < max)), result
 		);
 		renderToolbarButton(
 				"end.png", "KNOWWE.plugin.semantic.actions.end('"
-						+ id + "','" + max + "')",
+						+ id + "','" + max + "', this)",
 				(!selectedSize.equals("All") && (fromInt + selectedSizeInt - 1 < max)), result
 		);
 		result.appendHtml("</div>");
