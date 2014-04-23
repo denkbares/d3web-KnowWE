@@ -108,7 +108,11 @@ KNOWWE.plugin.instantEdit = function() {
                         toolNameSpace.postProcessHTML(id);
                         bindUnloadFunctions(id);
                         _EC.hideTools();
-                        _EC.registerSaveCancelEvents(jq$('#' + id), _IE.save, _IE.cancel, id);
+
+						var save = toolNameSpace.save ? toolNameSpace.save : _IE.save;
+						var cancel = toolNameSpace.cancel ? toolNameSpace.cancel : _IE.cancel;
+
+                        _EC.registerSaveCancelEvents(jq$('#' + id), save, cancel, id);
                     },
 					onError: _EC.onErrorBehavior
 				}

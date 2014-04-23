@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.d3web.utils.Log;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
@@ -29,7 +30,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 
 /**
  * Saves the changed Section.
- * 
+ *
  * @author Stefan Mark
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 15.06.2011
@@ -54,6 +55,7 @@ public class InstantEditSaveAction extends AbstractAction {
 			Compilers.getCompilerManager(context.getWeb()).awaitTermination();
 		}
 		catch (InterruptedException e) {
+			Log.warning("Interrupted waiting for compilation", e);
 		}
 	}
 }
