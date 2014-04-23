@@ -25,6 +25,8 @@ import org.ontoware.rdf2go.model.QueryRow;
 import org.ontoware.rdf2go.model.node.BlankNode;
 import org.ontoware.rdf2go.model.node.Node;
 
+import de.d3web.utils.EqualsUtils;
+
 public class QueryRowTableRow implements TableRow {
 
 	private final QueryRow row;
@@ -68,7 +70,7 @@ public class QueryRowTableRow implements TableRow {
 		if (getVariables().size() != other.getVariables().size()) return false;
 
 		for (String variable : variables) {
-			if (!other.getValue(variable).equals(row.getValue(variable))) {
+			if (!EqualsUtils.equals(other.getValue(variable), row.getValue(variable))) {
 				return false;
 			}
 		}
