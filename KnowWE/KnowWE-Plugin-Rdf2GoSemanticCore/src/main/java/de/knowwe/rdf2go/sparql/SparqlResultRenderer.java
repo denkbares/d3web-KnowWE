@@ -114,6 +114,7 @@ public class SparqlResultRenderer {
 		// END: collapse tree mode code
 
 		if (tablemode) {
+			result.appendHtmlTag("div", "style", "overflow-x: auto");
 			result.appendHtml("<table id='").append(tableID).appendHtml("' class='sparqltable'>");
 			result.appendHtml(!zebraMode ? "<tr>" : "<tr class='odd'>");
 			int index = 0;
@@ -253,6 +254,7 @@ public class SparqlResultRenderer {
 			}// END: collapse tree mode code
 
 			result.appendHtml("</table>");
+			result.appendHtml("</div>");
 		}
 		else {
 			result.appendHtml("</ul>");
