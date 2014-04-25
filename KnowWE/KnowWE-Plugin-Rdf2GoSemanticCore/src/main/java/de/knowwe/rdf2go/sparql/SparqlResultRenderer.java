@@ -24,6 +24,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.sparql.utils.SparqlRenderResult;
+import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.rdf2go.utils.ResultTableModel;
 import de.knowwe.rdf2go.utils.SimpleTableRow;
 import de.knowwe.rdf2go.utils.TableRow;
@@ -70,6 +71,16 @@ public class SparqlResultRenderer {
 	 * @created 06.12.2010
 	 */
 	public SparqlRenderResult renderQueryResult(QueryResultTable qrt, RenderOptions opts, UserContext user) {
+		Rdf2GoUtils.lock(qrt);
+		try {
+			return renderQueryResultLocked(qrt, opts, user);
+		}
+		finally {
+			Rdf2GoUtils.unlock(qrt);
+		}
+	}
+
+	private SparqlRenderResult renderQueryResultLocked(QueryResultTable qrt, RenderOptions opts, UserContext user) {
 		RenderResult result = new RenderResult(user);
 		int i = 0;
 		if (!qrt.iterator().hasNext()) {
@@ -145,6 +156,7 @@ public class SparqlResultRenderer {
 		Iterator<TableRow> iterator = table.iterator();
 		List<String> classNames = new LinkedList<String>();
 		Set<String> usedIDs = new HashSet<String>();
+
 		while (iterator.hasNext()) {
 			i++;
 			if ((opts.isNavigation() && i >= opts.getNavigationOffset() && i < (opts.getNavigationOffset()

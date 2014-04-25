@@ -35,6 +35,7 @@ import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 
 import org.ontoware.aifbcommons.collection.ClosableIterable;
@@ -173,6 +174,13 @@ public class Rdf2GoCore {
 
 	public static final String GLOBAL = "GLOBAL";
 
+	/**
+	 * Some models have extreme slow downs if during a SPARQL query new statements are added or removed. Concurrent
+	 * SPARQLs however are no problem. Therefore we use a lock that locks exclusively for writing but shared for
+	 * reading.
+	 */
+	public final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
 	public static Rdf2GoCore getInstance(Rdf2GoCompiler compiler) {
 		return compiler.getRdf2GoCore();
 	}
@@ -261,8 +269,9 @@ public class Rdf2GoCore {
 	 */
 	public Rdf2GoCore(RuleSet ruleSet) {
 		this(Environment.getInstance().getWikiConnector().getBaseUrl()
-				+ "Wiki.jsp?page=", "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#",
-				null, ruleSet);
+						+ "Wiki.jsp?page=", "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#",
+				null, ruleSet
+		);
 	}
 
 	/**
@@ -288,7 +297,14 @@ public class Rdf2GoCore {
 		insertCache = new HashSet<Statement>();
 		removeCache = new HashSet<Statement>();
 
-		namespaces.putAll(this.model.getNamespaces());
+		// lock probably not necessary here, just to make sure...
+		this.lock.readLock().lock();
+		try {
+			namespaces.putAll(this.model.getNamespaces());
+		}
+		finally {
+			this.lock.readLock().unlock();
+		}
 		initDefaultNamespaces();
 	}
 
@@ -301,7 +317,13 @@ public class Rdf2GoCore {
 	public void addNamespace(String abbreviation, String namespace) {
 		namespaces.put(abbreviation, namespace);
 		namespacePrefixes.put(Rdf2GoUtils.toNamespacePrefix(abbreviation), namespace);
-		model.setNamespace(abbreviation, namespace);
+		this.lock.writeLock().lock();
+		try {
+			model.setNamespace(abbreviation, namespace);
+		}
+		finally {
+			this.lock.writeLock().unlock();
+		}
 	}
 
 	/**
@@ -465,48 +487,55 @@ public class Rdf2GoCore {
 	 *
 	 * @created 12.06.2012
 	 */
-	public synchronized void commit() {
+	public void commit() {
 
-		int removeSize = removeCache.size();
-		int insertSize = insertCache.size();
-		boolean verboseLog = removeSize + insertSize < 50;
+		lock.writeLock().lock();
 
-		// For logging...
-		TreeSet<Statement> sortedRemoveCache = new TreeSet<Statement>();
-		if (verboseLog) sortedRemoveCache.addAll(removeCache);
+		try {
+			int removeSize = removeCache.size();
+			int insertSize = insertCache.size();
+			boolean verboseLog = removeSize + insertSize < 50;
 
-		// Hazard Filter:
-		// Since removing statements is expansive, we do not remove statements
-		// that are inserted again anyway.
-		// Since inserting a statement is cheap and the fact that a statement in
-		// the remove cache has not necessarily been committed to the model
-		// before (e.g. compiling the same sections multiple times before the
-		// first commit), we do not remove statements from the insert cache.
-		// Duplicate statements are ignored by the model anyway.
-		removeCache.removeAll(insertCache);
+			// For logging...
+			TreeSet<Statement> sortedRemoveCache = new TreeSet<Statement>();
+			if (verboseLog) sortedRemoveCache.addAll(removeCache);
 
-		long startRemove = System.currentTimeMillis();
-		model.removeAll(removeCache.iterator());
-		EventManager.getInstance().fireEvent(new RemoveStatementsEvent(removeCache, this));
-		if (verboseLog) logStatements(sortedRemoveCache, startRemove, "Removed statements");
+			// Hazard Filter:
+			// Since removing statements is expansive, we do not remove statements
+			// that are inserted again anyway.
+			// Since inserting a statement is cheap and the fact that a statement in
+			// the remove cache has not necessarily been committed to the model
+			// before (e.g. compiling the same sections multiple times before the
+			// first commit), we do not remove statements from the insert cache.
+			// Duplicate statements are ignored by the model anyway.
+			removeCache.removeAll(insertCache);
 
-		long startInsert = System.currentTimeMillis();
-		model.addAll(insertCache.iterator());
-		EventManager.getInstance().fireEvent(new InsertStatementsEvent(insertCache, this));
-		if (verboseLog) {
-			logStatements(new TreeSet<Statement>(insertCache), startInsert,
-					"Inserted statements:\n");
+			long startRemove = System.currentTimeMillis();
+			model.removeAll(removeCache.iterator());
+			EventManager.getInstance().fireEvent(new RemoveStatementsEvent(removeCache, this));
+			if (verboseLog) logStatements(sortedRemoveCache, startRemove, "Removed statements");
+
+			long startInsert = System.currentTimeMillis();
+			model.addAll(insertCache.iterator());
+			EventManager.getInstance().fireEvent(new InsertStatementsEvent(insertCache, this));
+			if (verboseLog) {
+				logStatements(new TreeSet<Statement>(insertCache), startInsert,
+						"Inserted statements:\n");
+			}
+
+			if (!verboseLog) {
+				Log.info("Removed " + removeSize + " statements from and added "
+						+ insertSize
+						+ " statements to " + Rdf2GoCore.class.getSimpleName() + " in "
+						+ (System.currentTimeMillis() - startRemove) + "ms.");
+			}
+
+			removeCache = new HashSet<Statement>();
+			insertCache = new HashSet<Statement>();
 		}
-
-		if (!verboseLog) {
-			Log.info("Removed " + removeSize + " statements from and added "
-					+ insertSize
-					+ " statements to " + Rdf2GoCore.class.getSimpleName() + " in "
-					+ (System.currentTimeMillis() - startRemove) + "ms.");
+		finally {
+			lock.writeLock().unlock();
 		}
-
-		removeCache = new HashSet<Statement>();
-		insertCache = new HashSet<Statement>();
 	}
 
 	public URI createBasensURI(String value) {
@@ -614,7 +643,13 @@ public class Rdf2GoCore {
 	 * @created 05.01.2011
 	 */
 	public void dumpModel() {
-		model.dump();
+		this.lock.readLock().lock();
+		try {
+			model.dump();
+		}
+		finally {
+			this.lock.readLock().unlock();
+		}
 	}
 
 	public String getBaseNamespace() {
@@ -785,7 +820,13 @@ public class Rdf2GoCore {
 			readFrom(in);
 		}
 		else {
-			model.readFrom(in, syntax);
+			lock.writeLock().lock();
+			try {
+				model.readFrom(in, syntax);
+			}
+			finally {
+				lock.writeLock().unlock();
+			}
 		}
 	}
 
@@ -794,16 +835,34 @@ public class Rdf2GoCore {
 			readFrom(in);
 		}
 		else {
-			model.readFrom(in, syntax);
+			lock.writeLock().lock();
+			try {
+				model.readFrom(in, syntax);
+			}
+			finally {
+				lock.writeLock().unlock();
+			}
 		}
 	}
 
 	public void readFrom(InputStream in) throws ModelRuntimeException, IOException {
-		model.readFrom(in);
+		lock.writeLock().lock();
+		try {
+			model.readFrom(in);
+		}
+		finally {
+			lock.writeLock().unlock();
+		}
 	}
 
 	public void readFrom(Reader in) throws ModelRuntimeException, IOException {
-		model.readFrom(in);
+		lock.writeLock().lock();
+		try {
+			model.readFrom(in);
+		}
+		finally {
+			lock.writeLock().unlock();
+		}
 	}
 
 	public void removeAllCachedStatements() {
@@ -815,7 +874,13 @@ public class Rdf2GoCore {
 	public void removeNamespace(String abbreviation) {
 		namespaces.remove(abbreviation);
 		namespacePrefixes.remove(Rdf2GoUtils.toNamespacePrefix(abbreviation));
-		model.removeNamespace(abbreviation);
+		lock.writeLock().lock();
+		try {
+			model.removeNamespace(abbreviation);
+		}
+		finally {
+			lock.writeLock().unlock();
+		}
 	}
 
 	/**
@@ -915,17 +980,29 @@ public class Rdf2GoCore {
 
 	public boolean sparqlAsk(String query) throws ModelRuntimeException {
 		String sparqlNamespaceShorts = Rdf2GoUtils.getSparqlNamespaceShorts(this);
-		if (query.startsWith(sparqlNamespaceShorts)) {
-			return model.sparqlAsk(query);
+		lock.readLock().lock();
+		try {
+			if (query.startsWith(sparqlNamespaceShorts)) {
+				return model.sparqlAsk(query);
+			}
+			return model.sparqlAsk(sparqlNamespaceShorts + query);
 		}
-		return model.sparqlAsk(sparqlNamespaceShorts + query);
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	public ClosableIterable<Statement> sparqlConstruct(String query) throws ModelRuntimeException {
-		if (query.startsWith(Rdf2GoUtils.getSparqlNamespaceShorts(this))) {
-			return model.sparqlConstruct(query);
+		lock.readLock().lock();
+		try {
+			if (query.startsWith(Rdf2GoUtils.getSparqlNamespaceShorts(this))) {
+				return new LockableClosableIterable<Statement>(this, model.sparqlConstruct(query));
+			}
+			return new LockableClosableIterable<Statement>(this, model.sparqlConstruct(Rdf2GoUtils.getSparqlNamespaceShorts(this) + query));
 		}
-		return model.sparqlConstruct(Rdf2GoUtils.getSparqlNamespaceShorts(this) + query);
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	public QueryResultTable sparqlSelect(SparqlQuery query) throws ModelRuntimeException {
@@ -933,6 +1010,7 @@ public class Rdf2GoCore {
 	}
 
 	public QueryResultTable sparqlSelect(String query) throws ModelRuntimeException {
+
 		String completeQuery;
 		if (!query.startsWith(Rdf2GoUtils.getSparqlNamespaceShorts(this))) {
 			completeQuery = Rdf2GoUtils.getSparqlNamespaceShorts(this) + query;
@@ -940,7 +1018,13 @@ public class Rdf2GoCore {
 		else {
 			completeQuery = query;
 		}
-		return model.sparqlSelect(completeQuery);
+		lock.readLock().lock();
+		try {
+			return new LockableResultTable(lock.readLock(), model.sparqlSelect(completeQuery));
+		}
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	public ClosableIterator<QueryRow> sparqlSelectIt(String query) throws ModelRuntimeException {
@@ -968,7 +1052,13 @@ public class Rdf2GoCore {
 	 * @created 03.02.2012
 	 */
 	public void writeModel(Writer out) throws ModelRuntimeException, IOException {
-		model.writeTo(out);
+		this.lock.readLock().lock();
+		try {
+			model.writeTo(out);
+		}
+		finally {
+			this.lock.readLock().unlock();
+		}
 	}
 
 	/**
@@ -997,6 +1087,22 @@ public class Rdf2GoCore {
 //				Log.severe("Unable to properly shutdown model", e);
 //			}
 //		}
+	}
+
+	class LockableClosableIterable<E> implements ClosableIterable<E> {
+
+		private Rdf2GoCore core;
+		private final ClosableIterable<E> iterable;
+
+		public LockableClosableIterable(Rdf2GoCore core, ClosableIterable<E> iterable) {
+			this.core = core;
+			this.iterable = iterable;
+		}
+
+		@Override
+		public ClosableIterator<E> iterator() {
+			return new LockableClosableIterator<E>(lock.readLock(), iterable.iterator());
+		}
 	}
 
 }

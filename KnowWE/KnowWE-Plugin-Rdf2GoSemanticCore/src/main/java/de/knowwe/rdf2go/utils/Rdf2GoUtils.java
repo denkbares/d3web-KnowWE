@@ -46,11 +46,73 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.rdf2go.LockableClosableIterator;
+import de.knowwe.rdf2go.LockableResultTable;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.Rdf2GoCore.Rdf2GoReasoning;
 
 public class Rdf2GoUtils {
+
+	/**
+	 * Locks the Rdf2GoCore of the given SPARQL iterator, so the underlying ontology model cannot change during
+	 * iteration. Be sure to always also unlock (in a try-finally block)! If you do not unlock, nobody can write to the
+	 * model again. Ever.
+	 * <p><b>Explanation:</b><br>
+	 * Some Rdf2Go models have extreme slow downs, if during a SPARQL query new statements are added or removed.
+	 * Concurrent SPARQLs however are no problem. Therefore we use a lock that locks exclusively for writing but shared
+	 * for reading.
+	 * <p/>
+	 * Created by Albrecht Striffler (denkbares GmbH) on 25.04.14.
+	 */
+	public static void lock(ClosableIterator<?> iterator) {
+		if (iterator instanceof LockableClosableIterator) ((LockableClosableIterator) iterator).lock();
+	}
+
+	/**
+	 * Unlocks the Rdf2GoCore of the given SPARQL iterator, so the underlying ontology model can change again.
+	 * Be sure to always unlock in a try-finally block! If the unlock fails due to an exception, nobody can write to
+	 * the model again. Ever.
+	 * <p><b>Explanation:</b><br>
+	 * Some Rdf2Go models have extreme slow downs, if during a SPARQL query new statements are added or removed.
+	 * Concurrent SPARQLs however are no problem. Therefore we use a lock that locks exclusively for writing but shared
+	 * for reading.
+	 * <p/>
+	 * Created by Albrecht Striffler (denkbares GmbH) on 25.04.14.
+	 */
+	public static void unlock(ClosableIterator<?> iterator) {
+		if (iterator instanceof LockableClosableIterator) ((LockableClosableIterator) iterator).unlock();
+	}
+
+	/**
+	 * Locks the Rdf2GoCore of the given QueryResultTable, so the underlying ontology model cannot change during
+	 * iteration. Be sure to always also unlock (in a try-finally block)! If you do not unlock, nobody can write to the
+	 * model again. Ever.
+	 * <p><b>Explanation:</b><br>
+	 * Some Rdf2Go models have extreme slow downs, if during a SPARQL query new statements are added or removed.
+	 * Concurrent SPARQLs however are no problem. Therefore we use a lock that locks exclusively for writing but shared
+	 * for reading.
+	 * <p/>
+	 * Created by Albrecht Striffler (denkbares GmbH) on 25.04.14.
+	 */
+	public static void lock(QueryResultTable table) {
+		if (table instanceof LockableResultTable) ((LockableResultTable) table).lock();
+	}
+
+	/**
+	 * Unlocks the Rdf2GoCore of the QueryResultTable, so the underlying ontology model can change again.
+	 * Be sure to always unlock in a try-finally block! If the unlock fails due to an exception, nobody can write to
+	 * the model again. Ever.
+	 * <p><b>Explanation:</b><br>
+	 * Some Rdf2Go models have extreme slow downs, if during a SPARQL query new statements are added or removed.
+	 * Concurrent SPARQLs however are no problem. Therefore we use a lock that locks exclusively for writing but shared
+	 * for reading.
+	 * <p/>
+	 * Created by Albrecht Striffler (denkbares GmbH) on 25.04.14.
+	 */
+	public static void unlock(QueryResultTable table) {
+		if (table instanceof LockableResultTable) ((LockableResultTable) table).unlock();
+	}
 
 	public static Rdf2GoCore getRdf2GoCoreForDefaultMarkupSubSection(Section<? extends Type> section) {
 		Section<DefaultMarkupType> defaultMarkup = Sections.findAncestorOfType(section,
@@ -107,7 +169,8 @@ public class Rdf2GoUtils {
 	}
 
 	/**
-	 * If the string starts with a known namespace or its abbreviation, the namespace is removed (only from the start of
+	 * If the string starts with a known namespace or its abbreviation, the namespace is removed (only from the start
+	 * of
 	 * the string).
 	 *
 	 * @param string the string where the namespace or its abbreviation needs to be removed
@@ -167,7 +230,8 @@ public class Rdf2GoUtils {
 	}
 
 	/**
-	 * A prefix is the abbreviation of the namespace plus a colon. This method makes sure the given String has the colon
+	 * A prefix is the abbreviation of the namespace plus a colon. This method makes sure the given String has the
+	 * colon
 	 * at the end.
 	 *
 	 * @param namespaceAbbreviation the abbreviation with possibly no colon
@@ -264,7 +328,8 @@ public class Rdf2GoUtils {
 	}
 
 	/**
-	 * Creates a statement and adds it to the list of statements. Additionally, in case of RDF reasoning, the rdfs label
+	 * Creates a statement and adds it to the list of statements. Additionally, in case of RDF reasoning, the rdfs
+	 * label
 	 * of the object is created and added.
 	 */
 	public static void addStatement(Rdf2GoCore core, String subject, String predicate, String object, Collection<Statement> statements) {
@@ -274,7 +339,8 @@ public class Rdf2GoUtils {
 	}
 
 	/**
-	 * Creates a statement and adds it to the list of statements. Additionally, in case of RDF reasoning, the rdfs label
+	 * Creates a statement and adds it to the list of statements. Additionally, in case of RDF reasoning, the rdfs
+	 * label
 	 * of the object is created and added.
 	 */
 	public static void addStatement(Rdf2GoCore core, Resource subject, URI predicate, String object, Collection<Statement> statements) {
