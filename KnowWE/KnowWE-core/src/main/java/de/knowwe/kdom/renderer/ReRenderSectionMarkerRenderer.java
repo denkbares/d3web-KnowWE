@@ -26,11 +26,10 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
+ * Renders a marker as <b>div</b> around the section, so the
+ * content is automatically updated when answers are set.
+ *
  * @author Johannes Dienst
- * 
- *         Renders a marker as <b>div</b> around the CoveringList, so the
- *         content is automatically updated when answers are set.
- * 
  */
 public class ReRenderSectionMarkerRenderer implements Renderer {
 
@@ -48,13 +47,13 @@ public class ReRenderSectionMarkerRenderer implements Renderer {
 		boolean ajaxAction = user.getParameters().containsKey("action");
 		if (!ajaxAction) {
 			KnowWEUtils.renderAnchor(sec, string);
-			string.appendHtml("<span class=\"ReRenderSectionMarker\" style=\"display: inline;\" rel=\"{id:'"
+			string.appendHtml("<div class=\"ReRenderSectionMarker\" style=\"display: inline;\" rel=\"{id:'"
 					+ sec.getID()
 					+ "'}\">");
 		}
 		renderer.render(sec, user, string);
 		if (!ajaxAction) {
-			string.appendHtml("</span>");
+			string.appendHtml("</div>");
 		}
 	}
 
