@@ -64,7 +64,7 @@ public class ExpectedSparqlResultTable extends Table {
 		for (Section<NodeProvider> section : nodeProviders) {
 			String variable = variables.get(column);
 			Node node = section.get().getNode(section, core);
-			row.addValue(variable, node);
+			if (node != null) row.addValue(variable, node);
 			column++;
 		}
 		return row;

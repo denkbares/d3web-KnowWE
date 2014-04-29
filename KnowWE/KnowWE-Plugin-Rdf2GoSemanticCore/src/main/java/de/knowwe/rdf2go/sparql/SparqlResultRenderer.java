@@ -284,9 +284,9 @@ public class SparqlResultRenderer {
 			TableRow row = node.getData();
 			Node topLevelConcept = row.getValue(table.getVariables().get(1));
 
-			if (topLevelConcept == null
-					|| !topLevelConcept.equals(row.getValue(table.getVariables().get(1)))) {
-				// check whether an artifical root node is needed
+			if (topLevelConcept != null
+					&& !topLevelConcept.equals(row.getValue(table.getVariables().get(1)))) {
+				// check whether an artificial root node is needed
 				SimpleTableRow artificialTopLevelRow = new SimpleTableRow();
 				artificialTopLevelRow.addValue(table.getVariables().get(0), topLevelConcept);
 				artificialTopLevelRow.addValue(table.getVariables().get(1), topLevelConcept);
