@@ -71,7 +71,7 @@ import de.knowwe.testcases.table.ConditionCheck;
 
 /**
  * Renderer for TestCasePlayerType
- * 
+ *
  * @author Markus Friedrich (denkbares GmbH)
  * @created 19.01.2012
  */
@@ -195,7 +195,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		if (base != null) {
 			if (SessionProvider.hasOutDatedSession(user, base)) {
 				NotificationManager.addNotification(user,
-						new OutDatedSessionNotification(selectedTriple.getC().getID()));
+						new OutDatedSessionNotification(section.getID()));
 			}
 		}
 
@@ -243,7 +243,8 @@ public class TestCasePlayerRenderer implements Renderer {
 
 		string.append(
 				renderTableSizeSelector(section, user, navigatorParameters.size,
-						chronology.size()));
+						chronology.size())
+		);
 		string.append(renderNavigation(section, navigatorParameters.from,
 				navigatorParameters.size, chronology.size(), user));
 	}
@@ -260,7 +261,8 @@ public class TestCasePlayerRenderer implements Renderer {
 	private TerminologyObject renderTableHeader(Section<?> section, UserContext user, Section<? extends PackageCompileType> kbsection, Collection<String> additionalQuestions, Collection<Question> usedQuestions, TerminologyManager manager, TableModel tableModel) {
 		String stopButton = renderToolbarButton("stop12.png",
 				"KNOWWE.plugin.d3webbasic.actions.resetSession('" + kbsection.getID()
-						+ "', TestCasePlayer.init);", user);
+						+ "', TestCasePlayer.init);", user
+		);
 		RenderResult stopButtonResult = new RenderResult(tableModel.getUserContext());
 		stopButtonResult.appendHtml(stopButton);
 		tableModel.addCell(0, 0, stopButtonResult, 1);
@@ -321,10 +323,12 @@ public class TestCasePlayerRenderer implements Renderer {
 		String additionalQuestions = null;
 		String cookiename = "additionalQuestions" + section.getTitle();
 		Cookie[] cookies = user.getRequest().getCookies();
-		if (cookies != null) for (Cookie cookie : cookies) {
-			if (Strings.decodeURL(cookie.getName(), Encoding.ISO_8859_1).equals(cookiename)) {
-				additionalQuestions = Strings.decodeURL(cookie.getValue(), Encoding.ISO_8859_1);
-				break;
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if (Strings.decodeURL(cookie.getName(), Encoding.ISO_8859_1).equals(cookiename)) {
+					additionalQuestions = Strings.decodeURL(cookie.getValue(), Encoding.ISO_8859_1);
+					break;
+				}
 			}
 		}
 		return additionalQuestions;
@@ -418,8 +422,12 @@ public class TestCasePlayerRenderer implements Renderer {
 		StringBuilder builder = new StringBuilder();
 		boolean first = true;
 		for (String question : additionalQuestions) {
-			if (first) first = false;
-			else builder.append(QUESTIONS_SEPARATOR);
+			if (first) {
+				first = false;
+			}
+			else {
+				builder.append(QUESTIONS_SEPARATOR);
+			}
 			builder.append(Strings.encodeHtml(question.replace("\\", "\\\\")));
 		}
 		return builder.toString();
@@ -740,7 +748,7 @@ public class TestCasePlayerRenderer implements Renderer {
 
 	/**
 	 * Encapsules parameters for the table
-	 * 
+	 *
 	 * @author Markus Friedrich (denkbares GmbH)
 	 * @created 29.02.2012
 	 */

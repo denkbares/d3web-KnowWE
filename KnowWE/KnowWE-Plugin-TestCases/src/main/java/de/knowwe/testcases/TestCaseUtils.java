@@ -70,7 +70,6 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.table.ConditionCheck;
 
 /**
- * 
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.09.2012
  */
@@ -134,13 +133,13 @@ public class TestCaseUtils {
 	}
 
 	/**
-	 * Returns all {@link TestCaseProviders} the given user is allowed to see
+	 * Returns all {@link TestCaseProvider}s the given user is allowed to see
 	 * and that are in the same package as the given section.
-	 * 
-	 * @created 07.10.2013
+	 *
 	 * @param context the context of the user
 	 * @param section the section used as a reference for the package
 	 * @return all {@link TestCaseProvider} visible to this user
+	 * @created 07.10.2013
 	 */
 	public static List<ProviderTriple> getTestCaseProviders(UserContext context, Section<TestCasePlayerType> section) {
 		List<ProviderTriple> testCaseProviders = getTestCaseProviders(section);
@@ -156,13 +155,13 @@ public class TestCaseUtils {
 	}
 
 	/**
-	 * Returns all {@link TestCaseProviders} in the packages the given section
+	 * Returns all {@link TestCaseProvider}s in the packages the given section
 	 * is in.
-	 * 
-	 * @created 07.10.2013
+	 *
 	 * @param section the section used as a reference for the package
 	 * @return all {@link TestCaseProvider} in the packages the given section is
-	 *         in
+	 * in
+	 * @created 07.10.2013
 	 */
 	public static List<ProviderTriple> getTestCaseProviders(Section<TestCasePlayerType> section) {
 		String[] kbpackages = DefaultMarkupType.getPackages(section,
@@ -177,21 +176,19 @@ public class TestCaseUtils {
 		for (String kbpackage : kbpackages) {
 			Collection<Section<?>> sectionsInPackage = packageManager.getSectionsOfPackage(kbpackage);
 			Set<Section<? extends PackageCompileType>> compileSections = packageManager.getCompileSections(kbpackage);
-			for (Section<? extends PackageCompileType> compileSection : compileSections) {
-				for (Section<?> section : sectionsInPackage) {
 
-					if (!(section.get() instanceof DefaultMarkupType)) continue;
+			for (Section<?> section : sectionsInPackage) {
 
-					D3webCompiler compiler = D3webUtils.getCompiler(section);
-					TestCaseProviderStorage testCaseProviderStorage = getTestCaseProviderStorage(
-							compiler, section);
+				if (!(section.get() instanceof DefaultMarkupType)) continue;
 
-					if (testCaseProviderStorage == null) continue;
+				D3webCompiler compiler = D3webUtils.getCompiler(section);
+				TestCaseProviderStorage testCaseProviderStorage = getTestCaseProviderStorage(
+						compiler, section);
 
-					for (TestCaseProvider testCaseProvider : testCaseProviderStorage.getTestCaseProviders()) {
-						providers.add(new ProviderTriple(testCaseProvider, section,
-								compileSection));
-					}
+				if (testCaseProviderStorage == null) continue;
+
+				for (TestCaseProvider testCaseProvider : testCaseProviderStorage.getTestCaseProviders()) {
+					providers.add(new ProviderTriple(testCaseProvider, section, compiler.getCompileSection()));
 				}
 			}
 		}
@@ -331,7 +328,8 @@ public class TestCaseUtils {
 	private static void throwUntransformableObjectException(Object object) {
 		throw new TransformationException(
 				"The given test case contains a '" + object.getClass().getSimpleName()
-						+ "' which is not compatible with a SequentialTestCase.");
+						+ "' which is not compatible with a SequentialTestCase."
+		);
 	}
 
 }
