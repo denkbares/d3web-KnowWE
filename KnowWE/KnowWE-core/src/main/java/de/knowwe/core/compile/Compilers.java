@@ -298,4 +298,18 @@ public class Compilers {
 		}
 	}
 
+	/**
+	 * Waits for the CompilerManager to finish and handles the InterruptException by logging it.
+	 *
+	 * @param manager the manager for which you want to await termination
+	 */
+	public static void awaitTermination(CompilerManager manager) {
+		try {
+			manager.awaitTermination();
+		}
+		catch (InterruptedException e) {
+			Log.warning("Interrupted while waiting for compiler to finish", e);
+		}
+	}
+
 }

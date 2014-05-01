@@ -19,7 +19,6 @@
 package de.knowwe.core;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.kdom.Article;
@@ -31,21 +30,19 @@ import de.knowwe.core.kdom.Article;
 public interface ArticleManager {
 
 	/**
-	 * Returns the Article for a given article name. The case of the article is ignored.
+	 * Returns the Article for a given article name or title. The case of the article is ignored.
 	 *
 	 * @param title the title of the article to return
 	 */
 	public abstract Article getArticle(String title);
 
-	public abstract Iterator<Article> getArticleIterator();
-
 	public abstract Collection<Article> getArticles();
 
 	/**
-	 * Registers an changed article in the manager and also updates depending articles.
+	 * Registers a changed or new article in the manager and also compiles it.
 	 *
-	 * @param article is the changed article to register
-	 * @created 14.12.2010
+	 * @param article is the changed or new article to register
+	 * @created 20.12.2013
 	 */
 	public abstract void registerArticle(Article article);
 
@@ -56,10 +53,23 @@ public interface ArticleManager {
 	public abstract void deleteArticle(Article article);
 
 	/**
+	 * Opens the manager for registration of articles. Only after calling the method {@link ArticleManager#commit()}
+	 * the added articles will be compiled. Make sure to always call commit in an try-finally block!<p>
+	 * <b>Attention:</b> Do not call this method synchronously using a compilation thread, because it will cause a dead
+	 * lock waiting for the compilation to finish.
+	 *
 	 * @created 20.12.2013
 	 */
 	void open();
 
+
+	/**
+	 * Calls this method after opening with {@link ArticleManager#open()}. It causes the compilation of articles
+	 * registered since calling the method {@link ArticleManager#open()}. Make sure to always call commit in an
+	 * try-finally block!
+	 *
+	 * @created 20.12.2013
+	 */
 	void commit();
 
 }

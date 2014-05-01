@@ -100,7 +100,7 @@ public class Sections {
 	public static <T extends Type> List<Section<? extends Type>> findSectionsOfTypeGlobal(Class<T>[] classes, ArticleManager articles) {
 		List<Section<? extends Type>> result = new ArrayList<Section<? extends Type>>();
 
-		Iterator<Article> articleIterator = articles.getArticleIterator();
+		Iterator<Article> articleIterator = articles.getArticles().iterator();
 		while (articleIterator.hasNext()) {
 			Article next = articleIterator.next();
 			for (Class<T> clazz : classes) {

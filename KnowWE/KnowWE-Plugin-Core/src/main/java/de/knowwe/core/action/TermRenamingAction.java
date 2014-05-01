@@ -91,7 +91,7 @@ public class TermRenamingAction extends AbstractAction {
 		Map<String, Set<Section<? extends RenamableTerm>>> allTerms = new HashMap<String, Set<Section<? extends RenamableTerm>>>();
 
 		Iterator<Article> iter = Environment.getInstance()
-				.getArticleManager(web).getArticleIterator();
+				.getArticleManager(web).getArticles().iterator();
 		Article currentArticle;
 
 		while (iter.hasNext()) {

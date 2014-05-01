@@ -119,11 +119,13 @@ KNOWWE.editCommons = function () {
 			new _KA(options).send();
 		},
 
-		sendChanges: function (newWikiText, params, fn) {
+		sendChanges: function (newWikiText, params, fn, async) {
+			if (typeof async == "undefined") async = true;
 			_EC.showAjaxLoader();
 			var options = {
 				url: KNOWWE.core.util.getURL(params),
 				data: newWikiText,
+				async : async,
 				response: {
 					action: 'none',
 					fn: function () {
@@ -137,7 +139,7 @@ KNOWWE.editCommons = function () {
 					},
 					onError: _EC.onErrorBehavior
 				}
-			}
+			};
 			new _KA(options).send();
 		},
 

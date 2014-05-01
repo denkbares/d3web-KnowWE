@@ -23,10 +23,10 @@ import java.io.IOException;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
 
 /**
- * 
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 07.10.2011
  */
@@ -39,24 +39,27 @@ public class InstantEditAddArticleAction extends AbstractAction {
 		String web = context.getWeb();
 		String value = context.getParameter("data");
 
+		boolean canWrite = Environment.getInstance().getWikiConnector().userCanEditArticle(
+				title, context.getRequest());
+		if (!canWrite) {
+			context.sendError(403, "You are not allowed to write this article");
+			return;
+		}
+
 		if (value.equals("POST\n")) {
 			value = "";
 		}
 
+		// we wait in case this thread (reused via the thread pool) has already a compilation going
+		Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
+
 		Article article = Environment.getInstance().getArticle(web, title);
 		if (article == null) {
-
-			Environment.getInstance().getWikiConnector().createArticle(title, context.getUserName(), ""
-			);
+			Environment.getInstance().getWikiConnector().createArticle(title, context.getUserName(), value);
 		}
-
-		boolean written = Environment.getInstance().getWikiConnector()
-				.writeArticleToWikiPersistence(title, value, context);
-
-		if (!written) {
-			context.sendError(500, "Unable to perform request.");
+		else {
+			Environment.getInstance().getWikiConnector().writeArticleToWikiPersistence(title, value, context);
 		}
-
 	}
 
 }

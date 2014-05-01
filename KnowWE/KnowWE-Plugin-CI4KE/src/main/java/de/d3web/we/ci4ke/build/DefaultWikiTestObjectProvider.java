@@ -34,7 +34,6 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
- * 
  * @author jochenreutelshofer
  * @created 16.05.2012
  */
@@ -90,7 +89,10 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 				Environment.DEFAULT_WEB);
 		Pattern pattern = Pattern.compile(s);
 		List<Article> matchingArticles = new ArrayList<Article>();
-		for (Article article : mgr.getArticles()) {
+		// we are asynchronous here, so we need a copy of the collection
+		// the collection returned from the manager is synchronized, so creating
+		// the new collection also happens synchronous
+		for (Article article : new ArrayList<Article>(mgr.getArticles())) {
 			String articleName = article.getTitle();
 			if (pattern.matcher(articleName).matches()) {
 				matchingArticles.add(article);

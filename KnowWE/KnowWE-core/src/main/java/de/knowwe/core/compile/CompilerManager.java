@@ -21,7 +21,6 @@ import de.knowwe.core.ArticleManager;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Messages;
 
 /**
@@ -29,19 +28,19 @@ import de.knowwe.core.report.Messages;
  * {@link ArticleManager}. It is responsible to manage every compile process for
  * all articles and section of the {@link ArticleManager}. Therefore all compile
  * code has been removed out of sections and articles and placed here.
- * <p>
+ * <p/>
  * The compile manager holds a set of compilers. The compilers can be plugged
  * into the manager using the defined extension point. Each compiler may
  * implement its own compilation procedure. If the compiler uses the package
  * mechanism to define certain compiling bundles (such as d3web does for
  * knowledge bases or owl for triple stores) the compiler usually have multiple
  * subsequent compilers for each such individual bundle.
- * <p>
+ * <p/>
  * To enhance performance, each compiler top level compiles individually, maybe
  * in parallel. Nevertheless, if the compilers have different priorities
  * (defined through the compiler's extension), they are ordered by these
  * priorities. Only compilers with same priority may compile in parallel.
- * <p>
+ * <p/>
  */
 public class CompilerManager {
 
@@ -105,9 +104,9 @@ public class CompilerManager {
 
 	/**
 	 * Returns the web this compiler belongs to.
-	 * 
-	 * @created 30.10.2013
+	 *
 	 * @return the web of this compiler
+	 * @created 30.10.2013
 	 */
 	public String getWeb() {
 		return articleManager.getWeb();
@@ -122,9 +121,9 @@ public class CompilerManager {
 	 * method returns true if the compilation can be started. The method returns
 	 * false if the request is ignored, e.g. because of an already ongoing
 	 * compilation.
-	 * 
-	 * @created 30.10.2013
+	 *
 	 * @return if the compilation has been started
+	 * @created 30.10.2013
 	 */
 	public boolean startCompile(final Collection<Section<?>> added, final Collection<Section<?>> removed) {
 		synchronized (this) {
@@ -213,15 +212,16 @@ public class CompilerManager {
 
 			// we wait until all have been terminated
 			synchronized (lock) {
-				while (!activeCompilers.isEmpty())
+				while (!activeCompilers.isEmpty()) {
 					lock.wait();
+				}
 			}
 		}
 	}
 
 	/**
 	 * Returns the number of compilations since
-	 * 
+	 *
 	 * @created 07.01.2014
 	 */
 	public int getCompilationCount() {
@@ -232,9 +232,9 @@ public class CompilerManager {
 	 * Returns if this compiler manager is currently compiling any changes. You
 	 * may use {@link #awaitTermination()} or {@link #awaitTermination(long)} to
 	 * wait for the compilation to complete.
-	 * 
-	 * @created 30.10.2013
+	 *
 	 * @return if a compilation is ongoing
+	 * @created 30.10.2013
 	 */
 	public synchronized boolean isCompiling() {
 		return running != null;
@@ -243,9 +243,9 @@ public class CompilerManager {
 	/**
 	 * Returns the priority-sorted list of compilers that are currently defined
 	 * for the web this CompilerManager is created for.
-	 * 
-	 * @created 31.10.2013
+	 *
 	 * @return the currently defined compilers
+	 * @created 31.10.2013
 	 */
 	public List<Compiler> getCompilers() {
 		return Collections.unmodifiableList(compilers);
@@ -253,16 +253,16 @@ public class CompilerManager {
 
 	/**
 	 * Adds a new compiler with the specific priority.
-	 * <p>
+	 * <p/>
 	 * Please note that it is allowed that compilers are added and removed while
 	 * compiling the wiki. Usually a more prioritized compiler may add or remove
 	 * sub-sequential Compilers depending on specific markups, e.g. defining a
 	 * knowledge base or triple store for specific package combination to be
 	 * compiled.
-	 * 
-	 * @created 31.10.2013
+	 *
 	 * @param priority the priority of the compiler
 	 * @param compiler the instance to be added
+	 * @created 31.10.2013
 	 */
 	public void addCompiler(double priority, Compiler compiler) {
 		// debug code: check that we only add items
@@ -280,15 +280,15 @@ public class CompilerManager {
 
 	/**
 	 * Removes an existing compiler with the specific priority.
-	 * <p>
+	 * <p/>
 	 * Please not that it is allowed that compilers are added and removed while
 	 * compiling the wiki. Usually a more prioritized compiler may add or remove
 	 * sub-sequential Compilers depending on specific markups, e.g. defining a
 	 * knowledge base or triple store for specific package combination to be
 	 * compiled.
-	 * 
-	 * @created 31.10.2013
+	 *
 	 * @param compiler the instance to be removed
+	 * @created 31.10.2013
 	 */
 	public void removeCompiler(Compiler compiler) {
 		// debug code: check that we only remove items
@@ -315,7 +315,7 @@ public class CompilerManager {
 	 * Blocks until all compilers have completed after a compile request, or the
 	 * current thread is interrupted, whichever happens first. The method
 	 * returns immediately if the compilers are currently idle (not compiling).
-	 * 
+	 *
 	 * @throws InterruptedException if interrupted while waiting
 	 * @see #compile
 	 */
@@ -330,10 +330,10 @@ public class CompilerManager {
 	 * timeout occurs, or the current thread is interrupted, whichever happens
 	 * first. The method returns immediately if the compilers are currently idle
 	 * (not compiling).
-	 * 
+	 *
 	 * @param timeoutMilliSeconds the maximum time to wait
 	 * @return <tt>true</tt> if the compilation has finished and <tt>false</tt>
-	 *         if the timeout elapsed before termination
+	 * if the timeout elapsed before termination
 	 * @throws InterruptedException if interrupted while waiting
 	 * @see #compile
 	 */
@@ -358,7 +358,7 @@ public class CompilerManager {
 	 * Convenience method which compiles the given sections. Since for now only
 	 * one compilation operation can happen at the same time, this methods wait
 	 * until the current operation finishes before it starts the next.
-	 * 
+	 *
 	 * @created 16.11.2013
 	 */
 	public void compile(List<Section<?>> added, List<Section<?>> removed) {

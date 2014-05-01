@@ -28,6 +28,7 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Returns the text content of a Section.
@@ -48,6 +49,11 @@ public class GetWikiTextAction extends AbstractAction {
 			context.sendError(409, "Section '" + sectionID
 					+ "' could not be found, possibly because somebody else"
 					+ " has edited the page.");
+			return;
+		}
+
+		if (!KnowWEUtils.canView(sec, context)) {
+			context.sendError(403, "You are not allowed to view this section");
 			return;
 		}
 

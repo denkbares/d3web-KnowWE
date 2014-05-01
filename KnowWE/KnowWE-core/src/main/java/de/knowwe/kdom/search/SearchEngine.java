@@ -72,7 +72,7 @@ public class SearchEngine {
 	 * @return Map containing the results for each article.
 	 */
 	public <T extends Type> Map<Article, Collection<Result>> search(String query, Class<T> clazz) {
-		Iterator<Article> iter = articleManager.getArticleIterator();
+		Iterator<Article> iter = articleManager.getArticles().iterator();
 		Map<Article, Collection<Result>> results = new HashMap<Article, Collection<Result>>();
 
 		while (iter.hasNext()) {

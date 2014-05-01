@@ -33,7 +33,7 @@ public class LookUpAction extends AbstractAction {
 		// gathering all terms
 		List<String> allTerms = new ArrayList<String>();
 		Iterator<Article> iter = Environment.getInstance()
-				.getArticleManager(web).getArticleIterator();
+				.getArticleManager(web).getArticles().iterator();
 		Article currentArticle;
 
 		TerminologyManager terminologyManager;

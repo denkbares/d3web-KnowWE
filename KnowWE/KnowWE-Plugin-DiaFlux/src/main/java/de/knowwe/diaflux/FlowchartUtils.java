@@ -258,7 +258,7 @@ public class FlowchartUtils {
 	public static Section<FlowchartType> findFlowchartSection(String web, String flowName) {
 		ArticleManager manager = Environment.getInstance().getArticleManager(web);
 
-		for (Iterator<Article> iterator = manager.getArticleIterator(); iterator.hasNext(); ) {
+		for (Iterator<Article> iterator = manager.getArticles().iterator(); iterator.hasNext(); ) {
 			Article article = iterator.next();
 			List<Section<FlowchartType>> matches = new LinkedList<Section<FlowchartType>>();
 			Sections.findSuccessorsOfType(article.getRootSection(), FlowchartType.class, matches);

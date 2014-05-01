@@ -20,6 +20,25 @@
 
 package de.knowwe.core;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.ResourceBundle;
+import java.util.logging.LogManager;
+
+import javax.servlet.ServletContext;
+
 import de.d3web.collections.PriorityList;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.JPFPluginManager;
@@ -49,24 +68,6 @@ import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.event.InitEvent;
 import de.knowwe.plugin.Instantiation;
 import de.knowwe.plugin.Plugins;
-
-import javax.servlet.ServletContext;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.logging.LogManager;
 
 /**
  * This is the core class of KnowWE. It manages the {@link ArticleManager} and
@@ -529,7 +530,7 @@ public class Environment {
 	public ArticleManager getArticleManager(String web) {
 		ArticleManager mgr = this.articleManagers.get(web);
 		if (mgr == null) {
-			mgr = new DefaultArticleManager(this, web);
+			mgr = new DefaultArticleManager(web);
 			articleManagers.put(web, mgr);
 		}
 		return mgr;
