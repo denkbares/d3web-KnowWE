@@ -1014,15 +1014,6 @@ KNOWWE.plugin.compositeEditTool.wikiText = function () {
 var _CE = KNOWWE.plugin.compositeEditTool;
 var _CEWT = KNOWWE.plugin.compositeEditTool.wikiText;
 
-(function init() {
-
-	if (KNOWWE.helper.loadCheck([ 'Wiki.jsp' ])) {
-		window.addEvent('domready', function () {
-			KNOWWE.core.init();
-		});
-	}
-}());
-
 //fixing jquery(version 2.1) bug where HTML code is not parsed in titlebar
 jq$.widget("ui.dialog", jq$.extend({}, jq$.ui.dialog.prototype, {
 	_title: function (title) {
