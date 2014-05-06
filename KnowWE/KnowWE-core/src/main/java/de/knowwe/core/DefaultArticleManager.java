@@ -86,10 +86,7 @@ public class DefaultArticleManager implements ArticleManager {
 	 * Registers a changed or new article in the manager and also compiles it. If you opened a registration frame by
 	 * calling {@link ArticleManager#open()}, the added articles since then will not be compiled before calling {@link
 	 * ArticleManager#commit()}.<p>
-	 * <b>Attention:</b> Do not call this method synchronously from within a compilation thread, because it will cause
-	 * a
-	 * dead
-	 * lock waiting for the compilation to finish.
+	 * <b>Attention:</b> Do not call this method synchronously from within a compilation thread.
 	 *
 	 * @param article is the changed or new article to register
 	 * @created 20.12.2013
@@ -145,12 +142,13 @@ public class DefaultArticleManager implements ArticleManager {
 	/**
 	 * Opens the manager for registration of articles. Only after calling the method {@link ArticleManager#commit()}
 	 * the added articles will be compiled. Make sure to always call commit in an try-finally block!<p>
-	 * <b>Attention:</b> Do not call this method synchronously from within a compilation thread, because it will cause
-	 * a
-	 * dead lock waiting for the compilation to finish.
+	 * <b>Attention:</b> Do not call this method synchronously from within a compilation thread.
 	 */
 	@Override
 	public void open() {
+		if (CompilerManager.isCompileThread()) {
+			throw new IllegalStateException("Cannot register articles during compilation");
+		}
 		mainLock.lock();
 		// Since we only start the compilation during the lock and compilation then happens asynchronously,
 		// it is possible that a threads runs to this point while compilation is still ongoing from the last lock.

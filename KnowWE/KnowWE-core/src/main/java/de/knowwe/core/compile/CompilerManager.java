@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -54,12 +55,21 @@ public class CompilerManager {
 	private Iterator<Group<Double, Compiler>> running = null;
 	private final ExecutorService threadPool;
 	private final Object lock = new Object();
+	private static final Map<Thread, Object> compileThreads = Collections.synchronizedMap(new WeakHashMap<Thread, Object>());
 
 	public CompilerManager(ArticleManager articleManager) {
 		this.articleManager = articleManager;
 		this.compilerCache = new HashSet<Compiler>();
 		this.compilers = new PriorityList<Double, Compiler>(5d);
 		this.threadPool = createExecutorService();
+
+	}
+
+	/**
+	 * Checks whether the current thread is created by a CompilerManager to compile articles.
+	 */
+	public static boolean isCompileThread() {
+		return compileThreads.containsKey(Thread.currentThread());
 	}
 
 	private static ExecutorService createExecutorService() {
@@ -68,7 +78,9 @@ public class CompilerManager {
 
 			@Override
 			public Thread newThread(Runnable r) {
-				return new Thread(r, "KnowWE-Compiler");
+				Thread thread = new Thread(r, "KnowWE-Compiler");
+				compileThreads.put(thread, null);
+				return thread;
 			}
 		});
 		Log.fine("created multicore thread pool of size " + threadCount);
