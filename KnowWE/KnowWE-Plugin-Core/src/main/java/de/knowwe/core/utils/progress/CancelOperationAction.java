@@ -27,9 +27,7 @@ public class CancelOperationAction extends OperationAction {
 
 	@Override
 	public void execute(UserActionContext context, Section<?> section, LongOperation operation) throws IOException {
-		AjaxProgressListener listener =
-				ProgressListenerManager.getInstance().getProgressListener(operation);
-		if (listener != null) listener.cancel();
+		operation.cancel();
 	}
 
 }

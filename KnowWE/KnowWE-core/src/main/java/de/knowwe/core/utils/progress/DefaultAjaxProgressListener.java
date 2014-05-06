@@ -31,7 +31,6 @@ public class DefaultAjaxProgressListener implements AjaxProgressListener {
 
 	private String currentMessage = "";
 	private float currentProgress = 0;
-	private boolean canceled;
 	private String error = null;
 	private boolean running = true;
 	private String id;
@@ -54,16 +53,6 @@ public class DefaultAjaxProgressListener implements AjaxProgressListener {
 	public void updateProgress(float percent, String message) {
 		this.currentMessage = message;
 		this.currentProgress = percent;
-		if (isCanceled()) Thread.currentThread().interrupt();
-	}
-
-	@Override
-	public void cancel() {
-		this.canceled = true;
-	}
-
-	public boolean isCanceled() {
-		return canceled;
 	}
 
 	@Override

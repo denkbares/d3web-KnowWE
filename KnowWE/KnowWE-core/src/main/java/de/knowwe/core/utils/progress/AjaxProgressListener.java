@@ -19,7 +19,6 @@
 package de.knowwe.core.utils.progress;
 
 import de.d3web.core.io.progress.ExtendedProgressListener;
-import de.d3web.core.io.progress.ProgressListener;
 
 /**
  * A simple ProgressListener that stores the updated values to be pulled by ajax
@@ -41,17 +40,6 @@ public interface AjaxProgressListener extends ExtendedProgressListener {
 
 	public String getUserName();
 
-	/**
-	 * Cancels the current operation indicated by this progress. This is done by
-	 * setting the interruped flag in the thread calling the
-	 * {@link ProgressListener#updateProgress(float, String)} method. The
-	 * operation itself is responsible to interrupt its operation on this flag.
-	 * 
-	 * @see Thread#interrupt()
-	 * @see Thread#isInterrupted()
-	 * @created 29.07.2013
-	 */
-	public void cancel();
 
 	/**
 	 * Sets an error, occurred during executing this progress.

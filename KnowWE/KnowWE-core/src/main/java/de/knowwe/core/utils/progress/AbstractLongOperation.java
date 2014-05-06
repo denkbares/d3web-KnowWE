@@ -27,6 +27,8 @@ import de.knowwe.core.action.UserActionContext;
  */
 public abstract class AbstractLongOperation implements LongOperation {
 
+	private boolean canceled = false;
+
 	@Override
 	public String renderMessage(UserActionContext context, float percent, String message) {
 		// default implementation doing nothing
@@ -43,4 +45,12 @@ public abstract class AbstractLongOperation implements LongOperation {
 		// default implementation doing nothing
 	}
 
+	@Override
+	public void cancel() {
+		canceled = true;
+	}
+
+	public boolean isCanceled() {
+		return canceled;
+	}
 }

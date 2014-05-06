@@ -29,6 +29,12 @@ public interface LongOperation {
 	void execute(UserActionContext context, AjaxProgressListener listener) throws IOException, CompilerMessage, InterruptedException;
 
 	/**
+	 * Cancels the current operation indicated by this progress. The
+	 * operation itself is responsible to interrupt its operation on this flag.
+	 */
+	public void cancel();
+
+	/**
 	 * This method will be run after the method
 	 * {@link LongOperation#execute(de.knowwe.core.action.UserActionContext, AjaxProgressListener)} in a finally block.
 	 * This way it will also run, if the execution fails due to an exception.
