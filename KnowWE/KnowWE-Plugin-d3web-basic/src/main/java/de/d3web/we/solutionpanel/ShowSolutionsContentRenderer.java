@@ -56,7 +56,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
  * <li>@show_digits: 0..NUMBER of fractional digits to be shown
  * <li>@master: Name of the article with the knowledge base
  * </ul>
- * 
+ *
  * @author Joachim Baumeister (denkbares GmbH)
  * @created 15.10.2010
  */
@@ -216,7 +216,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		}
 		if (title == null) return null;
 
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(user.getWeb(), title);
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(section);
 		return SessionProvider.getSession(user, kb);
 	}
 
