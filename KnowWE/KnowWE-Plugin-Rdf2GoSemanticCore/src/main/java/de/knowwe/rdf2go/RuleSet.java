@@ -27,10 +27,10 @@ package de.knowwe.rdf2go;
 public enum RuleSet {
 
 	RDFS("owlim-rdfs.ttl"),
-	OWL_HORST("owlim-owl-horst.ttl"),
-	OWL_MAX("owlim-owl-max.ttl"),
-	OWL2_RL_CONF("owlim-owl2-rl-conf.ttl"),
-	OWL2_RL_REDUCED("owlim-owl2-rl-reduced.ttl"),
+	//OWL_HORST("owlim-owl-horst.ttl"),
+	//OWL_MAX("owlim-owl-max.ttl"),
+	//OWL2_RL_CONF("owlim-owl2-rl-conf.ttl"),
+	//OWL2_RL_REDUCED("owlim-owl2-rl-reduced.ttl"),
 	RDFS_OPTIMIZED("owlim-rdfs-optimized.ttl"),
 	OWL_HORST_OPTIMIZED("owlim-owl-horst-optimized.ttl"),
 	OWL_MAX_OPTIMIZED("owlim-owl-max-optimized.ttl"),

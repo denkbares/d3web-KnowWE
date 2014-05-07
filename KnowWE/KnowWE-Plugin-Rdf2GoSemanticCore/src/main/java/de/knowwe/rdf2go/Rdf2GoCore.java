@@ -74,6 +74,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.event.ArticleRegisteredEvent;
+import de.knowwe.rdf2go.modelfactory.OWLIMLiteModelFactory;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
@@ -489,6 +490,7 @@ public class Rdf2GoCore {
 	 */
 	public void commit() {
 
+		// we need a connection without autocommit here, otherwise OWLIM dies...
 		lock.writeLock().lock();
 
 		try {
@@ -534,6 +536,7 @@ public class Rdf2GoCore {
 			insertCache = new HashSet<Statement>();
 		}
 		finally {
+			// outside of commit an auto committing connection seems to be ok
 			lock.writeLock().unlock();
 		}
 	}
@@ -777,7 +780,7 @@ public class Rdf2GoCore {
 					RDF2Go.register(new org.openrdf.rdf2go.RepositoryModelFactory());
 					break;
 				case SWIFTOWLIM:
-					RDF2Go.register(new de.knowwe.rdf2go.modelfactory.SesameSwiftOwlimModelFactory(ruleSet));
+					RDF2Go.register(new OWLIMLiteModelFactory(ruleSet));
 					break;
 				default:
 					throw new ModelRuntimeException("Model not supported");
@@ -1079,9 +1082,9 @@ public class Rdf2GoCore {
 		EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
 		this.model.close();
 		// right now produces crazy exceptions in ssp.core.inference, so its commented out.
-//		if (this.model instanceof SesameSwiftOwlimModelFactory.ShutdownableRepositoryModel) {
+//		if (this.model instanceof OWLIMLiteModelFactory.ShutdownableRepositoryModel) {
 //			try {
-//				((SesameSwiftOwlimModelFactory.ShutdownableRepositoryModel) this.model).shutdown();
+//				((OWLIMLiteModelFactory.ShutdownableRepositoryModel) this.model).shutdown();
 //			}
 //			catch (RepositoryException e) {
 //				Log.severe("Unable to properly shutdown model", e);

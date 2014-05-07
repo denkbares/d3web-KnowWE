@@ -17,8 +17,8 @@
          owlim:ruleset "owl-horst-optimized" ;
 	 	 owlim:partialRDFS "false";
          owlim:noPersist "true" ;
-         owlim:entity-index-size "200000" ;
-         owlim:jobsize "200" ;
+         owlim:entity-index-size "1000000" ;
+         owlim:jobsize "1000" ;
 		 owlim:repository-type "in-memory-repository" ;		 		          
       ]
    ].
