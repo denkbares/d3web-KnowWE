@@ -15,6 +15,7 @@ public abstract class AttachmentOperation extends AbstractLongOperation {
 
 	private final Article article;
 	private final String attachmentFileName;
+	private Thread operationThread;
 
 	public AttachmentOperation(Article article, String attachmentFileName) {
 		this.article = article;
@@ -23,6 +24,7 @@ public abstract class AttachmentOperation extends AbstractLongOperation {
 
 	@Override
 	public void execute(UserActionContext context, final AjaxProgressListener listener) throws IOException, InterruptedException {
+		operationThread = Thread.currentThread();
 
 		final File folder = Files.createTempDir();
 		final File file = new File(folder, attachmentFileName);
@@ -107,4 +109,9 @@ public abstract class AttachmentOperation extends AbstractLongOperation {
 		return true;
 	}
 
+	@Override
+	public void cancel() {
+		super.cancel();
+		if (operationThread != null) operationThread.interrupt();
+	}
 }

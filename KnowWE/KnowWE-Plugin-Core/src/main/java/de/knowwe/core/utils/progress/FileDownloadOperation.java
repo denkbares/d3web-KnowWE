@@ -23,6 +23,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	// basic attributes for the operation
 	private final Article article;
 	private final String fileName;
+	private Thread operationThread;
 
 	private File tempFile = null;
 	private UUID requestMarker = null;
@@ -38,6 +39,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 
 	@Override
 	public void execute(UserActionContext context, final AjaxProgressListener listener) throws IOException, InterruptedException {
+		this.operationThread = Thread.currentThread();
 		this.messages.clear();
 		this.requestMarker = UUID.randomUUID();
 		context.getSession().setAttribute(storeKey, requestMarker);
@@ -275,6 +277,12 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 		}
 		else if (!fileName.equals(other.fileName)) return false;
 		return true;
+	}
+
+	@Override
+	public void cancel() {
+		super.cancel();
+		if (operationThread != null) operationThread.interrupt();
 	}
 
 }

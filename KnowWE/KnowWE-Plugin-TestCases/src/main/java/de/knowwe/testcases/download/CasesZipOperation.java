@@ -44,6 +44,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.progress.AjaxProgressListener;
 import de.knowwe.core.utils.progress.FileDownloadOperation;
+import de.knowwe.core.utils.progress.LongOperationUtils;
 import de.knowwe.testcases.ProviderTriple;
 import de.knowwe.testcases.TestCasePlayerType;
 import de.knowwe.testcases.TestCaseProvider;
@@ -118,10 +119,11 @@ public class CasesZipOperation extends FileDownloadOperation {
 
 	}
 
-	private List<SequentialTestCase> transform(ProgressListener listener) {
+	private List<SequentialTestCase> transform(ProgressListener listener) throws InterruptedException {
 		List<SequentialTestCase> stcs = new ArrayList<SequentialTestCase>();
 		int i = 0;
 		for (Triple<String, KnowledgeBase, TestCase> triple : casesToWrite) {
+			LongOperationUtils.checkCancel();
 			String testCaseName = triple.getA();
 			KnowledgeBase kb = triple.getB();
 			TestCase testCase = triple.getC();
@@ -146,28 +148,31 @@ public class CasesZipOperation extends FileDownloadOperation {
 		return stcs;
 	}
 
-	private void zipSTCs(File resultFile, List<SequentialTestCase> stcs, ProgressListener listener) throws IOException {
+	private void zipSTCs(File resultFile, List<SequentialTestCase> stcs, ProgressListener listener) throws IOException, InterruptedException {
 
 		if (!stcs.isEmpty()) {
 
 			ZipOutputStream out = new ZipOutputStream(new FileOutputStream(resultFile));
-			int i = 0;
-			Set<String> usedEntryNames = new HashSet<String>();
-			for (SequentialTestCase sequentialTestCase : stcs) {
-				String testCaseName = getNewEntryName(usedEntryNames, sequentialTestCase);
-				listener.updateProgress((float) i++ / (float) casesToWrite.size(),
-						"Zipping test case '" + testCaseName + ".xml'");
-				String fileName = CheckDownloadCaseAction.toXMLFileName(testCaseName);
-				ZipEntry e = new ZipEntry(fileName);
-				out.putNextEntry(e);
-				TestPersistence.getInstance().writeCases(out,
-						Arrays.asList(sequentialTestCase), false);
+			try {
+				int i = 0;
+				Set<String> usedEntryNames = new HashSet<String>();
+				for (SequentialTestCase sequentialTestCase : stcs) {
+					LongOperationUtils.checkCancel();
+					String testCaseName = getNewEntryName(usedEntryNames, sequentialTestCase);
+					listener.updateProgress((float) i++ / (float) casesToWrite.size(),
+							"Zipping test case '" + testCaseName + ".xml'");
+					String fileName = CheckDownloadCaseAction.toXMLFileName(testCaseName);
+					ZipEntry e = new ZipEntry(fileName);
+					out.putNextEntry(e);
+					TestPersistence.getInstance().writeCases(out,
+							Arrays.asList(sequentialTestCase), false);
 
-				out.closeEntry();
+					out.closeEntry();
+				}
+			} finally {
+				out.flush();
+				out.close();
 			}
-
-			out.flush();
-			out.close();
 		}
 		else {
 			errors.append("There are not test cases to download.<br/>");
