@@ -357,7 +357,7 @@ public class DefaultMarkup {
 	 * Specifies if this markup shall be used as an inline markup, which means
 	 * that the markup is used in a line containing other wiki text. In this
 	 * case the markup still starts with a "%%" and is terminated either with
-	 * "%%" oder "/%" (sourrounded by white spaces).
+	 * "%%" or "/%" (sourrounded by white spaces).
 	 * 
 	 * @created 11.11.2013
 	 * @param isInline if the markup shall be used inline

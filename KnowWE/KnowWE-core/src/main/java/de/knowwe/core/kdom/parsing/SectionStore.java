@@ -63,7 +63,7 @@ public class SectionStore {
 	 * @param key is the key for which the objects were stored
 	 * @created 16.02.2012
 	 */
-	public Map<Compiler, Object> getObjects(String key) {
+	public synchronized Map<Compiler, Object> getObjects(String key) {
 		Map<Compiler, Object> objects = new HashMap<Compiler, Object>(store == null ? 2 : store.size());
 		if (store != null) {
 			for (Entry<Compiler, Map<String, Object>> entry : store.entrySet()) {
@@ -83,7 +83,7 @@ public class SectionStore {
 	 * <tt>null</tt>, if no Object was stored
 	 * @created 08.07.2011
 	 */
-	public Object getObject(Compiler compiler, String key) {
+	public synchronized Object getObject(Compiler compiler, String key) {
 		if (compiler != null && !compiler.getCompilerManager().contains(compiler)) return null;
 		Map<String, Object> storeForArticle = getStoreForCompiler(compiler);
 		if (storeForArticle == null) return null;
@@ -135,7 +135,7 @@ public class SectionStore {
 	 * @param object   the object to be stored
 	 * @created 08.07.2011
 	 */
-	public void storeObject(Compiler compiler, String key, Object object) {
+	public synchronized void storeObject(Compiler compiler, String key, Object object) {
 		Map<String, Object> storeForCompiler = getStoreForCompiler(compiler);
 		if (storeForCompiler == null) {
 			storeForCompiler = Collections.synchronizedMap(new HashMap<String, Object>(8));
@@ -156,7 +156,7 @@ public class SectionStore {
 	 * @param key      is the key for which the Object should be removed
 	 * @created 16.03.2014
 	 */
-	public Object removeObject(Compiler compiler, String key) {
+	public synchronized Object removeObject(Compiler compiler, String key) {
 		Map<String, Object> storeForCompiler = getStoreForCompiler(compiler);
 		if (storeForCompiler == null) return null;
 		Object removed = storeForCompiler.remove(key);
