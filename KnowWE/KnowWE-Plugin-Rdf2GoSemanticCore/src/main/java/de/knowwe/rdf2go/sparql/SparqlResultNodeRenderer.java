@@ -43,15 +43,13 @@ public interface SparqlResultNodeRenderer {
 	 * @param text the text of the node to render or alter
 	 * @param variable the name of the variable of this node (or the column name
 	 *        in the table)
-	 * @param user TODO
-	 * @param core TODO
 	 * @return an altered/rendered version of the given text
 	 */
 	String renderNode(String text, String variable, UserContext user, Rdf2GoCore core, RenderMode mode);
 
 	/**
 	 * If the method returns <tt>false</tt>, the returned String of the method
-	 * {@link #renderNode(String, String, UserContext, Rdf2GoCore)} is not given to further
+	 * {@link #renderNode(String, String, UserContext, Rdf2GoCore, RenderMode)} is not given to further
 	 * {@link SparqlResultNodeRenderer}, but only of the text was changed in the
 	 * current renderer. If the method returns <tt>true</tt>, it is given to the
 	 * next {@link SparqlResultNodeRenderer}, whether or not the text has
@@ -59,7 +57,7 @@ public interface SparqlResultNodeRenderer {
 	 * 
 	 * @created 13.07.2012
 	 * @return if other renderer are allowed to further alter the returned text
-	 *         of the method {@link #renderNode(String, String, UserContext, Rdf2GoCore)}
+	 *         of the method {@link #renderNode(String, String, UserContext, Rdf2GoCore, RenderMode)}
 	 */
 	boolean allowFollowUpRenderer();
 
