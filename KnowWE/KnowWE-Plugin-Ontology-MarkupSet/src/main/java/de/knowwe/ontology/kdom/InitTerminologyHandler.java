@@ -44,7 +44,7 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 	public Collection<Message> create(OntologyCompiler compiler, Section<PackageCompileType> section) {
 
 		String query = new SparqlQuery().SELECT("?resource")
-				.WHERE("?resource rdf:type rdfs:Resource MINUS { ?resource rdf:type rdf:Property }")
+				.WHERE("{ ?resource rdf:type rdfs:Resource } UNION { ?resource rdf:type rdfs:Class } MINUS { ?resource rdf:type rdf:Property }")
 				.AND_WHERE(
 						"FILTER(REGEX(STR(?resource), \"^http://www.w3.org/(1999/02/22-rdf-syntax-ns#|2000/01/rdf-schema#|2002/07/owl#)\"))").toString();
 		Class<? extends Resource> termClass = Resource.class;
