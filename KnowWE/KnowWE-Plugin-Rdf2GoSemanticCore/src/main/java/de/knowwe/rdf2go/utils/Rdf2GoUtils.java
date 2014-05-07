@@ -194,6 +194,17 @@ public class Rdf2GoUtils {
 	}
 
 	/**
+	 * If the string ends with a known namespace data type (like ^^xsd:int...), this data type is removed from the string.
+	 *
+	 * @param string the string where the data type is removed
+	 * @return the string without the data type
+	 * @created 12.07.2012
+	 */
+	public static String trimDataType(Rdf2GoCore core, String string) {
+		return string.replaceAll("(?:\\.0)?\\^\\^\\w+:.+$", "");
+	}
+
+	/**
 	 * Reduces to full URI prefix to the abbreviation of the URI.
 	 *
 	 * @param string the string where the namespace needs to be reduced
