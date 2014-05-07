@@ -20,12 +20,13 @@ package de.knowwe.rdf2go.sparql;
 
 import de.knowwe.core.user.UserContext;
 import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 public class TrimDataTypeNodeRenderer implements SparqlResultNodeRenderer {
 
 	@Override
 	public String renderNode(String text, String variable, UserContext user, Rdf2GoCore core, RenderMode mode) {
-		return text.replaceAll("(?:\\.0)?\\^\\^\\w+:.+$", "");
+		return Rdf2GoUtils.trimDataType(core, text);
 	}
 
 	@Override
