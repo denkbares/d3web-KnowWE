@@ -194,7 +194,8 @@ public class Rdf2GoUtils {
 	}
 
 	/**
-	 * If the string ends with a known namespace data type (like ^^xsd:int...), this data type is removed from the string.
+	 * If the string ends with a known namespace data type (like ^^xsd:int...), this data type is removed from the
+	 * string.
 	 *
 	 * @param string the string where the data type is removed
 	 * @return the string without the data type
@@ -202,6 +203,18 @@ public class Rdf2GoUtils {
 	 */
 	public static String trimDataType(Rdf2GoCore core, String string) {
 		return string.replaceAll("(?:\\.0)?\\^\\^\\w+:.+$", "");
+	}
+
+	/**
+	 * Normally, SPARQL supports comments using # at the start of the line. If the used repository does not support
+	 * this, we can use this method instead.
+	 *
+	 * @param query the query where the comments should be removed
+	 * @return the string without the comment
+	 * @created 12.07.2012
+	 */
+	public static String removeSparqlComments(String query) {
+		return query.replaceAll("(?m)^\\s*#.*?$", "");
 	}
 
 	/**
@@ -295,7 +308,8 @@ public class Rdf2GoUtils {
 	}
 
 	public static String createSparqlString(Rdf2GoCore core, String sparqlString) {
-		sparqlString = sparqlString.trim();
+		sparqlString = removeSparqlComments(sparqlString);
+		sparqlString = Strings.trim(sparqlString);
 		sparqlString = sparqlString.replaceAll("\n", " ");
 		sparqlString = sparqlString.replaceAll("\r", "");
 

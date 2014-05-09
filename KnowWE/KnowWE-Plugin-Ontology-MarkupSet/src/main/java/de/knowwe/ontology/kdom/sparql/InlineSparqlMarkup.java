@@ -69,6 +69,7 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 
 				if (compiler != null) {
 					de.knowwe.rdf2go.Rdf2GoCore core = (de.knowwe.rdf2go.Rdf2GoCore) compiler.getRdf2GoCore();
+					query = Rdf2GoUtils.createSparqlString(core, query);
 					org.ontoware.rdf2go.model.QueryResultTable resultTable = (org.ontoware.rdf2go.model.QueryResultTable) core.sparqlSelect(query);
 
 					ClosableIterator<QueryRow> rowIterator = resultTable.iterator();
