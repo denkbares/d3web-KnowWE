@@ -12,7 +12,8 @@ if (typeof KNOWWE == "undefined" || !KNOWWE) {
 	 * are preserved.
 	 */
 	var KNOWWE = {};
-};
+}
+;
 
 /**
  * Class: KNOWWE.notification functions and variables for the notification
@@ -43,7 +44,8 @@ KNOWWE.notification = function() {
 
 				// message
 				message = jq$('<div></div>').attr({
-					id : 'KnowWENotificationMessage'
+					id : 'KnowWENotificationMessage',
+					style : 'width: 95%;'
 				});
 
 				// title + message -> wrapper
@@ -53,19 +55,19 @@ KNOWWE.notification = function() {
 
 				// counter
 				counter = jq$('<div></div>').attr(
-						{
-							id : 'KnowWENotificationCounter',
-							style : 'padding: 5px; ' + 'position: fixed; '
-									+ 'top: 0px; ' + 'right: 25px;'
-						});
+					{
+						id : 'KnowWENotificationCounter',
+						style : 'padding: 5px; ' + 'position: fixed; '
+							+ 'top: 0px; ' + 'right: 25px;'
+					});
 
 				// quit
 				quit = jq$('<div></div>').attr(
-						{
-							id : 'KnowWENotificationQuit',
-							style : 'padding: 5px; ' + 'position: fixed; '
-									+ 'top: 0px; ' + 'right: 0px;'
-						});
+					{
+						id : 'KnowWENotificationQuit',
+						style : 'padding: 5px; ' + 'position: fixed; '
+							+ 'top: 0px; ' + 'right: 10px;'
+					});
 
 				// dom
 				dom = jq$('<div></div>').attr({
@@ -87,7 +89,7 @@ KNOWWE.notification = function() {
 				id : id
 			});
 			KNOWWE.notification
-					._select(KNOWWE.notification.messages.length - 1);
+				._select(KNOWWE.notification.messages.length - 1);
 		},
 
 		/**
@@ -109,15 +111,15 @@ KNOWWE.notification = function() {
 
 			// css
 			dom.attr({
-				style : 'opacity:0.95;' + 'position:fixed;' + 'z-index:2000;' 
-						+ 'border-bottom:1px solid #7a7a7a;' + 'top:0px;' + 'left:0px;' 
-						+ 'right:0px;' + 'width:100%;' + 'padding:5px;' + 'background-color: #f9eba5;'
-						+ 'background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(' + startColor 
-						+ '), to(' + endColor + '));' + 'background-image: -webkit-linear-gradient(top, ' 
-						+ startColor + ',' + endColor + ');' + 'background-image: -moz-linear-gradient(top, '
-						+ startColor + ',' + endColor + ');' + 'background-image: -ms-linear-gradient(top, ' 
-						+ startColor + ',' + endColor + ');' + 'background-image: -o-linear-gradient(top, '
-						+ startColor + ',' + endColor + ');'
+				style : 'opacity:0.95;' + 'position:fixed;' + 'z-index:2000;'
+					+ 'border-bottom:1px solid #7a7a7a;' + 'top:0px;' + 'left:0px;'
+					+ 'right:0px;' + 'width:100%;' + 'padding:5px;' + 'background-color: #f9eba5;'
+					+ 'background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(' + startColor
+					+ '), to(' + endColor + '));' + 'background-image: -webkit-linear-gradient(top, '
+					+ startColor + ',' + endColor + ');' + 'background-image: -moz-linear-gradient(top, '
+					+ startColor + ',' + endColor + ');' + 'background-image: -ms-linear-gradient(top, '
+					+ startColor + ',' + endColor + ');' + 'background-image: -o-linear-gradient(top, '
+					+ startColor + ',' + endColor + ');'
 			});
 
 			// title
@@ -133,16 +135,16 @@ KNOWWE.notification = function() {
 			if (KNOWWE.notification.messages.length > 1) {
 				var counterHTML = "";
 				var counter = '&nbsp;<span>(' + (index + 1) + '/'
-						+ KNOWWE.notification.messages.length + ')</span>';
+					+ KNOWWE.notification.messages.length + ')</span>';
 				var next = '&nbsp;<a href="#" onclick="KNOWWE.notification._select('
-						+ (index + 1) + ');">&gt;</a>';
+					+ (index + 1) + ');">&gt;</a>';
 				var prev = '&nbsp;<a href="#" onclick="KNOWWE.notification._select('
-						+ (index - 1) + ');">&lt;</a>';
+					+ (index - 1) + ');">&lt;</a>';
 				if (index == 0) {
 					counterHTML += counter;
 					counterHTML += next;
 				} else if (index >= 0
-						&& index < KNOWWE.notification.messages.length - 1) {
+					&& index < KNOWWE.notification.messages.length - 1) {
 					counterHTML += prev;
 					counterHTML += counter;
 					counterHTML += next;
@@ -156,9 +158,9 @@ KNOWWE.notification = function() {
 			}
 
 			jq$('#KnowWENotificationQuit')
-					.html(
-							'<span><a href="#" onclick="javascript:KNOWWE.notification.removeNotification(\''
-									+ message.id + '\')' + '">X</a></span>');
+				.html(
+					'<span><a href="#" onclick="javascript:KNOWWE.notification.removeNotification(\''
+					+ message.id + '\')' + '">X</a></span>');
 
 			// show notification bar
 			jq$('#KnowWENotificationDom').show();
@@ -175,14 +177,14 @@ KNOWWE.notification = function() {
 			if (index > 0) {
 				KNOWWE.notification._select(index - 1);
 			} else if (index == 0
-					&& KNOWWE.notification.messages.length > 1) {
+				&& KNOWWE.notification.messages.length > 1) {
 				KNOWWE.notification._select(index);
 				// quit: no other notifications? hide notification
 				// bar!
 			} else {
 				jq$('#KnowWENotificationDom').hide();
 			}
-			
+
 			var params = {
 				action : 'RemoveNotificationAction',
 				notificationid : id
@@ -214,16 +216,16 @@ KNOWWE.notification = function() {
 					fn : function() {
 						var notifications = JSON.parse(this.responseText);
 						if (notifications.length > 0) {
-							for ( var i = 0; i < notifications.length; i++) {
+							for (var i = 0; i < notifications.length; i++) {
 								var notification = notifications[i];
 								if (notification.type == "error") {
 									KNOWWE.notification.error(null,
-											notification.message,
-											notification.id);
+										notification.message,
+										notification.id);
 								} else {
 									KNOWWE.notification.warn(null,
-											notification.message,
-											notification.id);
+										notification.message,
+										notification.id);
 								}
 							}
 						} else {
@@ -245,7 +247,7 @@ KNOWWE.notification = function() {
 		window.addEvent('domready', function() {
 			KNOWWE.notification.loadNotifications();
 			KNOWWE.helper.observer.subscribe('update',
-					KNOWWE.notification.loadNotifications);
+				KNOWWE.notification.loadNotifications);
 		});
 	}
 }());

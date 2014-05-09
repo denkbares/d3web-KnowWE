@@ -204,8 +204,7 @@ KNOWWE.plugin.d3webbasic.actions = function() {
 		resetSession : function(sectionId, fnAfter) {
 			var params = {
 				action : 'SessionResetAction',
-				SectionID : sectionId,
-					
+				SectionID : sectionId
 			}
 
 			var options = {
@@ -226,6 +225,7 @@ KNOWWE.plugin.d3webbasic.actions = function() {
 			}
 			KNOWWE.core.util.updateProcessingState(1);
 			new _KA(options).send();
+
 		}
 		
 	}

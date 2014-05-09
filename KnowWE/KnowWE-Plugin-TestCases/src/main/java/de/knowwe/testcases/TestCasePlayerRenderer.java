@@ -195,7 +195,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		if (base != null) {
 			if (SessionProvider.hasOutDatedSession(user, base)) {
 				NotificationManager.addNotification(user,
-						new OutDatedSessionNotification(section.getID()));
+						new OutDatedSessionNotification(selectedTriple.getKbSection().getID()));
 			}
 		}
 
