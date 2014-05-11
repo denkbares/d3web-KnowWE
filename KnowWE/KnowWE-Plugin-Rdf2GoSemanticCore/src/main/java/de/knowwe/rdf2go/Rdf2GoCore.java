@@ -994,8 +994,9 @@ public class Rdf2GoCore {
 				else {
 					cachedResult = model.sparqlAsk(query);
 				}
-				resultCache.put(query, cachedResult);
-				resultCacheSize += getResultSize(cachedResult);
+				if (resultCache.put(query, cachedResult) == null) {
+					resultCacheSize += getResultSize(cachedResult);
+				}
 				assureMaxCacheSize();
 			}
 			finally {
