@@ -32,7 +32,7 @@ import org.ontoware.aifbcommons.collection.ClosableIterator;
  *
  * Created by Albrecht Striffler (denkbares GmbH) on 25.04.14.
  */
-public class LockableClosableIterator<E> implements ClosableIterator<E> {
+public class LockableClosableIterator<E> implements ClosableIterator<E>, Lockable {
 
 	private final ClosableIterator<E> iterator;
 	private final ReentrantReadWriteLock.ReadLock readLock;

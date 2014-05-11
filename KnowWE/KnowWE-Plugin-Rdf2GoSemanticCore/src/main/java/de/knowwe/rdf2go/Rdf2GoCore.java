@@ -29,6 +29,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -80,83 +82,6 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 public class Rdf2GoCore {
 
-	private interface StatementSource {
-
-		Article getArticle();
-	}
-
-	private static class CompilerSource implements StatementSource {
-
-		private final Article article;
-
-		public CompilerSource(PackageCompiler compiler) {
-			this.article = compiler.getCompileSection().getArticle();
-		}
-
-		@Override
-		public Article getArticle() {
-			return article;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((article == null) ? 0 : article.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) return true;
-			if (obj == null) return false;
-			if (getClass() != obj.getClass()) return false;
-			CompilerSource other = (CompilerSource) obj;
-			if (article == null) {
-				if (other.article != null) return false;
-			}
-			else if (!article.equals(other.article)) return false;
-			return true;
-		}
-
-	}
-
-	private class SectionSource implements StatementSource {
-
-		private final String sectionID;
-
-		public SectionSource(Section<?> section) {
-			this.sectionID = section.getID();
-		}
-
-		@Override
-		public Article getArticle() {
-			Section<?> section = Sections.getSection(sectionID);
-			return section.getArticle();
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((sectionID == null) ? 0 : sectionID.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) return true;
-			if (obj == null) return false;
-			if (getClass() != obj.getClass()) return false;
-			SectionSource other = (SectionSource) obj;
-			if (sectionID == null) {
-				if (other.sectionID != null) return false;
-			}
-			else if (!sectionID.equals(other.sectionID)) return false;
-			return true;
-		}
-	}
-
 	public static final String LNS_ABBREVIATION = "lns";
 
 	public enum Rdf2GoModel {
@@ -167,6 +92,10 @@ public class Rdf2GoCore {
 		RDF, RDFS, OWL
 	}
 
+	private enum SparqlType {
+		SELECT, CONSTRUCT, ASK
+	}
+
 	private static Rdf2GoCore globaleInstance;
 
 	private static final String MODEL_CONFIG_POINT_ID = "Rdf2GoModelConfig";
@@ -174,6 +103,13 @@ public class Rdf2GoCore {
 	public static final String PLUGIN_ID = "KnowWE-Plugin-Rdf2GoSemanticCore";
 
 	public static final String GLOBAL = "GLOBAL";
+
+	private static final int DEFAULT_MAX_CACHE_SIZE = 1000000; // should be below 100 MB of cache (we count each cell)
+
+	private final Map<String, Object> resultCache
+			= Collections.synchronizedMap(new LinkedHashMap<String, Object>());
+
+	private int resultCacheSize = 0;
 
 	/**
 	 * Some models have extreme slow downs if during a SPARQL query new statements are added or removed. Concurrent
@@ -497,6 +433,11 @@ public class Rdf2GoCore {
 			int removeSize = removeCache.size();
 			int insertSize = insertCache.size();
 			boolean verboseLog = removeSize + insertSize < 50;
+
+			if (removeSize > 0 || insertSize > 0) {
+				resultCache.clear();
+				resultCacheSize = 0;
+			}
 
 			// For logging...
 			TreeSet<Statement> sortedRemoveCache = new TreeSet<Statement>();
@@ -981,52 +922,164 @@ public class Rdf2GoCore {
 		return list.iterator().next().getArticle();
 	}
 
-	public boolean sparqlAsk(String query) throws ModelRuntimeException {
-		String sparqlNamespaceShorts = Rdf2GoUtils.getSparqlNamespaceShorts(this);
-		lock.readLock().lock();
-		try {
-			if (query.startsWith(sparqlNamespaceShorts)) {
-				return model.sparqlAsk(query);
-			}
-			return model.sparqlAsk(sparqlNamespaceShorts + query);
-		}
-		finally {
-			lock.readLock().unlock();
-		}
-	}
-
-	public ClosableIterable<Statement> sparqlConstruct(String query) throws ModelRuntimeException {
-		lock.readLock().lock();
-		try {
-			if (query.startsWith(Rdf2GoUtils.getSparqlNamespaceShorts(this))) {
-				return new LockableClosableIterable<Statement>(this, model.sparqlConstruct(query));
-			}
-			return new LockableClosableIterable<Statement>(this, model.sparqlConstruct(Rdf2GoUtils.getSparqlNamespaceShorts(this) + query));
-		}
-		finally {
-			lock.readLock().unlock();
-		}
-	}
-
 	public QueryResultTable sparqlSelect(SparqlQuery query) throws ModelRuntimeException {
 		return sparqlSelect(query.toSparql(this));
 	}
 
 	public QueryResultTable sparqlSelect(String query) throws ModelRuntimeException {
+		return sparqlSelect(query, true);
+	}
 
-		String completeQuery;
-		if (!query.startsWith(Rdf2GoUtils.getSparqlNamespaceShorts(this))) {
-			completeQuery = Rdf2GoUtils.getSparqlNamespaceShorts(this) + query;
+	public boolean sparqlAsk(String query) throws ModelRuntimeException {
+		return sparqlAsk(query, true);
+	}
+
+	public ClosableIterable<Statement> sparqlConstruct(String query) throws ModelRuntimeException {
+		return sparqlConstruct(query, true);
+	}
+
+	public QueryResultTable sparqlSelect(String query, boolean cache) throws ModelRuntimeException {
+		return (QueryResultTable) sparql(query, cache, SparqlType.SELECT);
+	}
+
+	public boolean sparqlAsk(String query, boolean cache) throws ModelRuntimeException {
+		return (Boolean) sparql(query, cache, SparqlType.ASK);
+	}
+
+	@SuppressWarnings("unchecked")
+	public ClosableIterable<Statement> sparqlConstruct(String query, boolean cache) throws ModelRuntimeException {
+		return (ClosableIterable<Statement>) sparql(query, cache, SparqlType.CONSTRUCT);
+	}
+
+	private Object sparql(String query, boolean cache, SparqlType type) {
+		String completeQuery = completeQuery(query);
+		Object result;
+		if (cache) {
+			result = cachedSparql(completeQuery, type);
+		} else {
+			lock.readLock().lock();
+			try {
+				result = uncachedSparql(completeQuery, type);
+			}
+			finally {
+				lock.readLock().unlock();
+			}
 		}
-		else {
-			completeQuery = query;
+		return result;
+	}
+
+	private Object uncachedSparql(String completeQuery, SparqlType type) {
+		Object result;
+		if (type == SparqlType.CONSTRUCT) {
+			result = new LockableClosableIterable<Statement>(lock.readLock(), model.sparqlConstruct(completeQuery));
+		} else if (type == SparqlType.SELECT) {
+			result = new LockableResultTable(lock.readLock(), model.sparqlSelect(completeQuery));
+		} else {
+			result = model.sparqlAsk(completeQuery);
 		}
+		return result;
+	}
+
+	private Object cachedSparql(String query, SparqlType type) {
+		Object cachedResult = resultCache.get(query);
+		if (cachedResult == null) {
+			lock.readLock().lock();
+			try {
+				if (type == SparqlType.CONSTRUCT) {
+					cachedResult = toCachedClosableIterable(model.sparqlConstruct(query));
+				}
+				else if (type == SparqlType.SELECT) {
+					cachedResult = toCachedQueryResult(model.sparqlSelect(query));
+				}
+				else {
+					cachedResult = model.sparqlAsk(query);
+				}
+				resultCache.put(query, cachedResult);
+				resultCacheSize += getResultSize(cachedResult);
+				assureMaxCacheSize();
+			}
+			finally {
+				lock.readLock().unlock();
+			}
+		}
+		return cachedResult;
+	}
+
+	private CachedClosableIterable<Statement> toCachedClosableIterable(ClosableIterable<Statement> result) {
+		CachedClosableIterable<Statement> cachedResult;
 		lock.readLock().lock();
 		try {
-			return new LockableResultTable(lock.readLock(), model.sparqlSelect(completeQuery));
+			ArrayList<Statement> statements = new ArrayList<Statement>();
+			ClosableIterator<Statement> iterator = result.iterator();
+			for (; iterator.hasNext(); ) {
+				Statement statement = iterator.next();
+				statements.add(statement);
+			}
+			iterator.close();
+			statements.trimToSize();
+			cachedResult = new CachedClosableIterable<Statement>(statements);
 		}
 		finally {
 			lock.readLock().unlock();
+		}
+		return cachedResult;
+	}
+
+	private String completeQuery(String query) {
+		String completeQuery;
+		if (query.startsWith(Rdf2GoUtils.getSparqlNamespaceShorts(this))) {
+			completeQuery = query;
+		}
+		else {
+			completeQuery = Rdf2GoUtils.getSparqlNamespaceShorts(this) + query;
+		}
+		return completeQuery;
+	}
+
+	private CachedQueryResultTable toCachedQueryResult(QueryResultTable result) {
+		CachedQueryResultTable cachedResult;
+		lock.readLock().lock();
+		try {
+			ArrayList<QueryRow> rows = new ArrayList<QueryRow>();
+			ClosableIterator<QueryRow> iterator = result.iterator();
+			for (; iterator.hasNext(); ) {
+				QueryRow queryRow = iterator.next();
+				rows.add(queryRow);
+			}
+			iterator.close();
+			rows.trimToSize();
+			List<String> variables = result.getVariables();
+			cachedResult = new CachedQueryResultTable(variables, rows);
+		}
+		finally {
+			lock.readLock().unlock();
+		}
+		return cachedResult;
+	}
+
+	private void assureMaxCacheSize() {
+		if (resultCacheSize > DEFAULT_MAX_CACHE_SIZE) {
+			synchronized (resultCache) {
+				Iterator<Entry<String, Object>> iterator = resultCache.entrySet().iterator();
+				while (iterator.hasNext() && resultCacheSize > DEFAULT_MAX_CACHE_SIZE) {
+					Entry<String, Object> next = iterator.next();
+					iterator.remove();
+					resultCacheSize -= getResultSize(next.getValue());
+				}
+			}
+		}
+	}
+
+	private int getResultSize(Object cachedResult) {
+		if (cachedResult instanceof CachedQueryResultTable) {
+			CachedQueryResultTable cacheResult = (CachedQueryResultTable) cachedResult;
+			return cacheResult.variables.size() * cacheResult.result.size();
+		}
+		else if (cachedResult instanceof CachedClosableIterable) {
+			return ((CachedClosableIterable) cachedResult).delegate.size();
+		}
+		else {
+			return 1;
 		}
 	}
 
@@ -1092,19 +1145,144 @@ public class Rdf2GoCore {
 //		}
 	}
 
-	class LockableClosableIterable<E> implements ClosableIterable<E> {
+	class CachedClosableIterable<E> implements ClosableIterable<E> {
 
-		private Rdf2GoCore core;
-		private final ClosableIterable<E> iterable;
+		private final List<E> delegate;
 
-		public LockableClosableIterable(Rdf2GoCore core, ClosableIterable<E> iterable) {
-			this.core = core;
-			this.iterable = iterable;
+		public CachedClosableIterable(List<E> delegate) {
+			this.delegate = delegate;
 		}
 
 		@Override
 		public ClosableIterator<E> iterator() {
-			return new LockableClosableIterator<E>(lock.readLock(), iterable.iterator());
+			return new DelegateClosableIterator<E>(delegate.iterator());
+		}
+	}
+
+	class DelegateClosableIterator<E> implements ClosableIterator<E> {
+
+		private final Iterator<E> delegate;
+
+		public DelegateClosableIterator(Iterator<E> delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return delegate.hasNext();
+		}
+
+		@Override
+		public E next() {
+			return delegate.next();
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void close() {
+			// nothing to do here
+		}
+	}
+
+	class CachedQueryResultTable implements QueryResultTable {
+
+		private final List<String> variables;
+		private final List<QueryRow> result;
+
+		CachedQueryResultTable(List<String> variables, List<QueryRow> result) {
+			this.variables = variables;
+			this.result = result;
+		}
+
+		@Override
+		public List<String> getVariables() {
+			return variables;
+		}
+
+		@Override
+		public ClosableIterator<QueryRow> iterator() {
+			return new DelegateClosableIterator<QueryRow>(result.iterator());
+		}
+	}
+
+	private interface StatementSource {
+
+		Article getArticle();
+	}
+
+	private static class CompilerSource implements StatementSource {
+
+		private final Article article;
+
+		public CompilerSource(PackageCompiler compiler) {
+			this.article = compiler.getCompileSection().getArticle();
+		}
+
+		@Override
+		public Article getArticle() {
+			return article;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((article == null) ? 0 : article.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) return true;
+			if (obj == null) return false;
+			if (getClass() != obj.getClass()) return false;
+			CompilerSource other = (CompilerSource) obj;
+			if (article == null) {
+				if (other.article != null) return false;
+			}
+			else if (!article.equals(other.article)) return false;
+			return true;
+		}
+
+	}
+
+	private class SectionSource implements StatementSource {
+
+		private final String sectionID;
+
+		public SectionSource(Section<?> section) {
+			this.sectionID = section.getID();
+		}
+
+		@Override
+		public Article getArticle() {
+			Section<?> section = Sections.getSection(sectionID);
+			return section.getArticle();
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((sectionID == null) ? 0 : sectionID.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) return true;
+			if (obj == null) return false;
+			if (getClass() != obj.getClass()) return false;
+			SectionSource other = (SectionSource) obj;
+			if (sectionID == null) {
+				if (other.sectionID != null) return false;
+			}
+			else if (!sectionID.equals(other.sectionID)) return false;
+			return true;
 		}
 	}
 

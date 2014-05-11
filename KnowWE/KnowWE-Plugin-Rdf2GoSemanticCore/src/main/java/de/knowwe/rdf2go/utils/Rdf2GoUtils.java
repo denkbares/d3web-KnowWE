@@ -27,6 +27,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.model.QueryResultTable;
 import org.ontoware.rdf2go.model.QueryRow;
@@ -46,8 +47,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.rdf2go.LockableClosableIterator;
-import de.knowwe.rdf2go.LockableResultTable;
+import de.knowwe.rdf2go.Lockable;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.Rdf2GoCore.Rdf2GoReasoning;
@@ -66,7 +66,7 @@ public class Rdf2GoUtils {
 	 * Created by Albrecht Striffler (denkbares GmbH) on 25.04.14.
 	 */
 	public static void lock(ClosableIterator<?> iterator) {
-		if (iterator instanceof LockableClosableIterator) ((LockableClosableIterator) iterator).lock();
+		if (iterator instanceof Lockable) ((Lockable) iterator).lock();
 	}
 
 	/**
@@ -81,11 +81,11 @@ public class Rdf2GoUtils {
 	 * Created by Albrecht Striffler (denkbares GmbH) on 25.04.14.
 	 */
 	public static void unlock(ClosableIterator<?> iterator) {
-		if (iterator instanceof LockableClosableIterator) ((LockableClosableIterator) iterator).unlock();
+		if (iterator instanceof Lockable) ((Lockable) iterator).unlock();
 	}
 
 	/**
-	 * Locks the Rdf2GoCore of the given QueryResultTable, so the underlying ontology model cannot change during
+	 * Locks the Rdf2GoCore of the given QueryResultTable (or ClosableIterable), so the underlying ontology model cannot change during
 	 * iteration. Be sure to always also unlock (in a try-finally block)! If you do not unlock, nobody can write to the
 	 * model again. Ever.
 	 * <p><b>Explanation:</b><br>
@@ -95,12 +95,12 @@ public class Rdf2GoUtils {
 	 * <p/>
 	 * Created by Albrecht Striffler (denkbares GmbH) on 25.04.14.
 	 */
-	public static void lock(QueryResultTable table) {
-		if (table instanceof LockableResultTable) ((LockableResultTable) table).lock();
+	public static void lock(ClosableIterable table) {
+		if (table instanceof Lockable) ((Lockable) table).lock();
 	}
 
 	/**
-	 * Unlocks the Rdf2GoCore of the QueryResultTable, so the underlying ontology model can change again.
+	 * Unlocks the Rdf2GoCore of the QueryResultTable (or ClosableIterable), so the underlying ontology model can change again.
 	 * Be sure to always unlock in a try-finally block! If the unlock fails due to an exception, nobody can write to
 	 * the model again. Ever.
 	 * <p><b>Explanation:</b><br>
@@ -110,8 +110,8 @@ public class Rdf2GoUtils {
 	 * <p/>
 	 * Created by Albrecht Striffler (denkbares GmbH) on 25.04.14.
 	 */
-	public static void unlock(QueryResultTable table) {
-		if (table instanceof LockableResultTable) ((LockableResultTable) table).unlock();
+	public static void unlock(ClosableIterable table) {
+		if (table instanceof Lockable) ((Lockable) table).unlock();
 	}
 
 	public static Rdf2GoCore getRdf2GoCoreForDefaultMarkupSubSection(Section<? extends Type> section) {

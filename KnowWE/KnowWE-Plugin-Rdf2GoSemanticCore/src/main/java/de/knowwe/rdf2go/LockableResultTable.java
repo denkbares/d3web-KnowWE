@@ -29,7 +29,7 @@ import org.ontoware.rdf2go.model.QueryRow;
 /**
 * Created by Albrecht Striffler (denkbares GmbH) on 25.04.14.
 */
-public class LockableResultTable implements QueryResultTable {
+public class LockableResultTable implements QueryResultTable, Lockable {
 
 	private ReentrantReadWriteLock.ReadLock lock;
 	private final QueryResultTable table;
