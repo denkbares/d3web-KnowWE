@@ -285,7 +285,6 @@ TestCasePlayer.update = function(adjustLeft) {
 			if (scrollInfo.restoreScroll) {
 				var tableDiv = jq$("#" + id).find('.' + "wikitable").parent();
 				var scrollWidthAfter = tableDiv[0].scrollWidth;
-				console.log("adjustLeft " + adjustLeft);
 				if (adjustLeft && scrollInfo.width < scrollWidthAfter) {
 					scrollInfo.left += scrollWidthAfter - scrollInfo.width;
 				}
