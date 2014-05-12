@@ -19,6 +19,7 @@
 package de.knowwe.diaflux;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
@@ -35,7 +36,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.diaflux.type.FlowchartType;
 
 /**
- * 
  * @author Reinhard Hatko
  * @created 08.06.2011
  */
@@ -53,8 +53,16 @@ public class GetTraceHighlightAction extends AbstractHighlightAction {
 	@Override
 	public void insertHighlighting(Section<FlowchartType> flowchart, Highlight highlight, UserActionContext context) throws IOException {
 
-		Collection<Session> sessions = SessionProvider.getSessions(context);
+		Collection<Session> allSessions = SessionProvider.getSessions(context);
+		Collection<Session> sessions = new ArrayList<Session>();
+		// ignore sessions that do not even contain the flow
+		for (Session session : allSessions) {
+			if (findFlow(flowchart, session.getKnowledgeBase()) != null) {
+				sessions.add(session);
+			}
+		}
 
+		// if there are still multiple sessions, use the on with the newest change
 		Session session = null;
 		Date latest = null;
 		boolean untouched = true;
