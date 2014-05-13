@@ -130,7 +130,7 @@ public class DiaFluxTrace implements SessionObject {
 		Collection<Node> snappyNodes = new HashSet<Node>();
 		for (SnapshotNode snapshotNode : enteredSnapshots) {
 			snappyNodes.addAll(
-					FluxSolver.getActiveNodesLeadingToSnapshopNode(snapshotNode,
+					FluxSolver.getAllActiveNodesOfRunsWithSnapshot(snapshotNode,
 							snappyFlows));
 		}
 		return snappyNodes;
