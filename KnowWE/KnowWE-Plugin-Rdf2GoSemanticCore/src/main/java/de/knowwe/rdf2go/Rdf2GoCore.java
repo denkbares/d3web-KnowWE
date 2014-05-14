@@ -57,6 +57,7 @@ import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.LanguageTagLiteralImpl;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.openrdf.repository.RepositoryException;
 
 import de.d3web.collections.MultiMap;
 import de.d3web.collections.MultiMaps;
@@ -1135,15 +1136,18 @@ public class Rdf2GoCore {
 	public void destroy() {
 		EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
 		this.model.close();
-		// right now produces crazy exceptions in ssp.core.inference, so its commented out.
-//		if (this.model instanceof OWLIMLiteModelFactory.ShutdownableRepositoryModel) {
-//			try {
-//				((OWLIMLiteModelFactory.ShutdownableRepositoryModel) this.model).shutdown();
-//			}
-//			catch (RepositoryException e) {
-//				Log.severe("Unable to properly shutdown model", e);
-//			}
-//		}
+
+		// It was previously reported that this causes "crazy exceptions in ssp.core.inference"
+		// please fix these "crazy exceptions" there - we need to shutdown OWLIM properly
+		// otherwise tomcat doesn't release the memory on redeployments...
+		if (this.model instanceof OWLIMLiteModelFactory.ShutDownableRepositoryModel) {
+			try {
+				((OWLIMLiteModelFactory.ShutDownableRepositoryModel) this.model).shutdown();
+			}
+			catch (RepositoryException e) {
+				Log.severe("Unable to properly shutdown model", e);
+			}
+		}
 	}
 
 	class CachedClosableIterable<E> implements ClosableIterable<E> {

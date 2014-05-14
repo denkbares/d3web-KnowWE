@@ -63,11 +63,11 @@ public class OWLIMLiteModelFactory extends AbstractModelFactory {
 	}
 
 	public Model createModel(Properties properties) throws ModelRuntimeException {
-		return new RepositoryModel(createRepository(properties));
+		return new ShutDownableRepositoryModel(createRepository(properties));
 	}
 
 	public Model createModel(URI contextURI) throws ModelRuntimeException {
-		return new RepositoryModel(contextURI, createRepository(null));
+		return new ShutDownableRepositoryModel(contextURI, createRepository(null));
 	}
 
 	public ModelSet createModelSet(Properties properties) throws ModelRuntimeException {
@@ -184,5 +184,21 @@ public class OWLIMLiteModelFactory extends AbstractModelFactory {
 		}
 
 	}
+
+	public static class ShutDownableRepositoryModel extends RepositoryModel {
+
+		public ShutDownableRepositoryModel(URI context, Repository repository) {
+			super(context, repository);
+		}
+
+		public ShutDownableRepositoryModel(Repository repository) throws ModelRuntimeException {
+			super(repository);
+		}
+
+		public void shutdown() throws RepositoryException {
+			this.repository.shutDown();
+		}
+	}
+
 
 }
