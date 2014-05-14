@@ -129,7 +129,7 @@
 	overflow:visible; 
 	width:14px;
 	height:14px;
-	z-index: 200; 
+	z-index: 1010;
 	cursor: crosshair;
 	background-image: url(../image/tool_routing.gif);
 }
@@ -139,7 +139,7 @@
 	overflow:visible; 
 	width:14px;
 	height:14px;
-	z-index: 200; 
+	z-index: 1005;
 	cursor: crosshair;
 	background-image: url(../image/tool_routing_gray.gif);
 }
