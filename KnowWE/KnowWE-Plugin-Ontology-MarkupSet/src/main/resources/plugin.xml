@@ -56,6 +56,17 @@
 	</extension>
 
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript" id="SparqlNameRegistrationScript">
+		<parameter id="class" value="de.knowwe.ontology.compile.SparqlNameRegistrationScript" />
+		<parameter id="name" value="SparqlNameRegistrationScript" />
+		<parameter id="description" value="Type SparqlNameRegistrationScript" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="compilepriority" value="0" />
+		<parameter id="scope" value="SparqlMarkupType" />
+	</extension>
+
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="InlineSparql">
 		<parameter id="class"
