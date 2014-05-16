@@ -293,6 +293,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			article = Environment.getInstance().buildAndRegisterArticle(
 					Environment.DEFAULT_WEB, title, content, fullParse);
 			Compilers.getCompilerManager(Environment.DEFAULT_WEB).awaitTermination();
+			if (fullParse) EventManager.getInstance().fireEvent(new FullParseFinishedEvent());
 		}
 		return article;
 	}
