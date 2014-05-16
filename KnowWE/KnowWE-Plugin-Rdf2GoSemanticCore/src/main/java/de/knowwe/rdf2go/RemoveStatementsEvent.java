@@ -6,9 +6,9 @@ import org.ontoware.rdf2go.model.Statement;
 
 public class RemoveStatementsEvent extends ModifiedCoreDataEvent {
 
-	public RemoveStatementsEvent(Collection<Statement> statements, Rdf2GoCore core) {
-		super(statements, core);
-		// TODO Auto-generated constructor stub
+	public RemoveStatementsEvent(Collection<Statement> actual, Collection<Statement> implicit, Rdf2GoCore core) {
+		super(actual, implicit, core);
 	}
+
 
 }

@@ -7,8 +7,8 @@ import org.ontoware.rdf2go.model.Statement;
 
 public class InsertStatementsEvent extends ModifiedCoreDataEvent {
 
-	public InsertStatementsEvent(Collection<Statement> statements, Rdf2GoCore core) {
-		super(statements, core);
+	public InsertStatementsEvent(Collection<Statement> actual, Collection<Statement> implicit, Rdf2GoCore core) {
+		super(actual, implicit, core);
 	}
 
 }

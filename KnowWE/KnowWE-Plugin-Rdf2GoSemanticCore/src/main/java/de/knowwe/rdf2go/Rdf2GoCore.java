@@ -169,6 +169,8 @@ public class Rdf2GoCore {
 
 	private Rdf2GoReasoning reasoningType = Rdf2GoReasoning.RDF;
 
+	private RuleSet ruleSet;
+
 	private final MultiMap<StatementSource, Statement> statementCache =
 			new N2MMap<Rdf2GoCore.StatementSource, Statement>(
 					MultiMaps.<StatementSource>hashMinimizedFactory(),
@@ -231,6 +233,7 @@ public class Rdf2GoCore {
 		else {
 			this.model = model;
 		}
+		this.ruleSet = ruleSet;
 
 		insertCache = new HashSet<Statement>();
 		removeCache = new HashSet<Statement>();
@@ -456,12 +459,14 @@ public class Rdf2GoCore {
 
 			long startRemove = System.currentTimeMillis();
 			model.removeAll(removeCache.iterator());
-			EventManager.getInstance().fireEvent(new RemoveStatementsEvent(removeCache, this));
+			EventManager.getInstance().fireEvent(new RemoveStatementsEvent(removeCache, sortedRemoveCache, this));
 			if (verboseLog) logStatements(sortedRemoveCache, startRemove, "Removed statements");
 
 			long startInsert = System.currentTimeMillis();
 			model.addAll(insertCache.iterator());
-			EventManager.getInstance().fireEvent(new InsertStatementsEvent(insertCache, this));
+			Collection<Statement> actuallyAdded = new TreeSet<Statement>(insertCache);
+			actuallyAdded.removeAll(sortedRemoveCache);
+			EventManager.getInstance().fireEvent(new InsertStatementsEvent(actuallyAdded, insertCache, this));
 			if (verboseLog) {
 				logStatements(new TreeSet<Statement>(insertCache), startInsert,
 						"Inserted statements:\n");
@@ -1148,6 +1153,10 @@ public class Rdf2GoCore {
 				Log.severe("Unable to properly shutdown model", e);
 			}
 		}
+	}
+
+	public RuleSet getRuleSet() {
+		return ruleSet;
 	}
 
 	class CachedClosableIterable<E> implements ClosableIterable<E> {
