@@ -41,8 +41,10 @@ public class SparqlMarkupType extends DefaultMarkupType {
 	public static final String RENDER_QUERY = "showQuery";
 	private static DefaultMarkup m = null;
 
+	public static final String MARKUP_NAME = "Sparql";
+
 	static {
-		m = new DefaultMarkup("Sparql");
+		m = new DefaultMarkup(MARKUP_NAME);
 		m.addContentType(new SparqlContentType());
 		m.addAnnotation(RAW_OUTPUT, false, "true", "false");
 		m.addAnnotation(NAVIGATION, false, "true", "false");
