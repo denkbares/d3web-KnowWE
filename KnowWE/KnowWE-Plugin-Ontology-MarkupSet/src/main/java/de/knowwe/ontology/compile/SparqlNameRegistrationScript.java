@@ -33,6 +33,10 @@ public class SparqlNameRegistrationScript extends OntologyCompileScript<SparqlMa
 
 	@Override
 	public void destroy(OntologyCompiler compiler, Section<SparqlMarkupType> section) {
-		compiler.getTerminologyManager().unregisterTermDefinition(compiler, section, SparqlMarkupType.class, getIdentifier(section));
+		Identifier nameIdentifier = getIdentifier(section);
+		if (nameIdentifier != null) {
+			compiler.getTerminologyManager()
+					.unregisterTermDefinition(compiler, section, SparqlMarkupType.class, getIdentifier(section));
+		}
 	}
 }
