@@ -455,6 +455,8 @@ public class Rdf2GoCore {
 			// before (e.g. compiling the same sections multiple times before the
 			// first commit), we do not remove statements from the insert cache.
 			// Duplicate statements are ignored by the model anyway.
+			Collection<Statement> actuallyAdded = new TreeSet<Statement>(insertCache);
+			actuallyAdded.removeAll(removeCache);
 			removeCache.removeAll(insertCache);
 
 			long startRemove = System.currentTimeMillis();
@@ -464,8 +466,6 @@ public class Rdf2GoCore {
 
 			long startInsert = System.currentTimeMillis();
 			model.addAll(insertCache.iterator());
-			Collection<Statement> actuallyAdded = new TreeSet<Statement>(insertCache);
-			actuallyAdded.removeAll(sortedRemoveCache);
 			EventManager.getInstance().fireEvent(new InsertStatementsEvent(actuallyAdded, insertCache, this));
 			if (verboseLog) {
 				logStatements(new TreeSet<Statement>(insertCache), startInsert,
