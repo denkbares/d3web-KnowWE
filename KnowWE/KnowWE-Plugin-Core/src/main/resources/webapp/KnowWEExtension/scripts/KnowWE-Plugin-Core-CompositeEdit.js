@@ -566,7 +566,7 @@ KNOWWE.plugin.compositeEditTool = function () {
 									event.stopPropagation();
 								});
 							},
-							closeOnEscape: false,
+							closeOnEscape: jq$('#compositeEdit .closeButton').click(),
 							dialogClass: "no-close",
 							height: (jq$(window).height() * .9),
 							width: jq$(document).width() * .6,
