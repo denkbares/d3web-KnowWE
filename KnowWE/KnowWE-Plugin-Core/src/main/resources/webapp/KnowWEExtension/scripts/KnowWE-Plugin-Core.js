@@ -205,12 +205,19 @@ KNOWWE.core.plugin.objectinfo = function () {
 			jq$('#objectinfo-search').on(
 				"autocompleteselect",
 				function (event, ui) {
-					jq$('#objectinfo-search').val(ui.item.value);
-					var t = jq$('#objectinfo-search').parent().children(
-						'[type="submit"]');
-					jq$('#objectinfo-search').parent().children(
-						'[type="submit"]').click();
+					KNOWWE.plugin.compositeEditTool.openCompositeEditDialog(ui.item.value);
 				});
+
+			//Open "Show Info" on Enter key press only if term exists - otherwise do nothing
+			jq$('#objectinfo-search').keyup(function (e) {
+				if (e.keyCode == 13) {
+					var val = jq$('#objectinfo-search').val();
+					if(jq$.inArray(val, a) != -1){
+						KNOWWE.plugin.compositeEditTool.openCompositeEditDialog(val);
+					}
+
+				}
+			});
 		}
 	}
 }();

@@ -155,13 +155,6 @@ public class ObjectInfoRenderer implements Renderer {
 
 	public static void renderLookUpForm(UserContext user, RenderResult result) {
 		result.appendHtml("<div>");
-		result.appendHtml("<form action=\"\" method=\"get\" class=\"ui-widget lookUpForm\" >")
-				.appendHtml("<input type=\"hidden\" id=\"objectinfo-web-lookup\" value=\"")
-				.append(user.getWeb())
-				.appendHtml("\" />");
-		result.appendHtml("<input type=\"hidden\" name=\"page\" value=\"")
-				.append("ObjectInfoPage")
-				.appendHtml("\" />");
 		result.appendHtml("<div style=\"display:none\" id=\"objectinfo-terms\" name=\"terms\" >");
 		result.appendJSPWikiMarkup(ObjectInfoRenderer.getTerms(user).toString()
 				.replaceAll("([^\\\\]\\\"),\\\"", "$1,\n\""));
@@ -169,31 +162,8 @@ public class ObjectInfoRenderer implements Renderer {
 		result.appendHtml("<input type=\"text\" placeholder=\"Look up terms\" size=\"20\" name=\"")
 				.append(ObjectInfoRenderer.OBJECT_NAME)
 				.appendHtml("\" id=\"objectinfo-search\" />&nbsp;");
-		result.appendHtml("<input type=\"submit\" value=\"Go to\" style=\"display:none\"/>");
-		result.appendHtml("</form>");
+		//result.appendHtml("<input type=\"submit\" value=\"Go to\" style=\"display:none\"/>");
 		renderSectionEnd(result);
-	}
-
-	public static void renderRenamingForm(Identifier identifier, UserContext user, RenderResult result) {
-
-		renderSectionStart("Rename to", result);
-
-		String escapedExternalTermIdentifierForm = Strings.encodeHtml(identifier.toExternalForm());
-
-		result.appendHtml("<input type=\"hidden\" id=\"objectinfo-target\" value=\""
-				+ escapedExternalTermIdentifierForm + "\" />");
-		result.appendHtml("<input type=\"hidden\" id=\"objectinfo-web-rename\" value=\""
-				+ user.getWeb() + "\" />");
-		result.appendHtml("<input action=\"" + getRenamingAction()
-				+ "\" type=\"text\" size=\"60\" value=\"" + identifier.getLastPathElement()
-				+ "\" id=\"objectinfo-replacement\" />&nbsp;");
-		result.appendHtml("<input type=\"button\" id=\"objectinfo-replace-button\" value=\"Rename\" />");
-		result.appendHtml("&nbsp;<span id=\"objectinfo-rename-result\">");
-
-		result.appendHtml("</span>");
-
-		renderSectionEnd(result);
-
 	}
 
 	public static void renderTermDefinitions(Identifier identifier, UserContext user, RenderResult result) {
