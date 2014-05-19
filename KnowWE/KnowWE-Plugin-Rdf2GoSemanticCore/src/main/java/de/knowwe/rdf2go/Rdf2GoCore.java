@@ -108,7 +108,7 @@ public class Rdf2GoCore {
 	private static final int DEFAULT_MAX_CACHE_SIZE = 1000000; // should be below 100 MB of cache (we count each cell)
 
 	private final Map<String, Object> resultCache
-			= Collections.synchronizedMap(new LinkedHashMap<String, Object>());
+			= Collections.synchronizedMap(new LinkedHashMap<String, Object>(16, 0.75f, true));
 
 	private int resultCacheSize = 0;
 
