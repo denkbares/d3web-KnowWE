@@ -99,7 +99,7 @@ public class SparqlMarkupRenderer implements Renderer {
 
 				// Default values
 				String startRow = "1";
-				String navigationLimit = "20";
+				String navigationLimit = "100";
 				Map<String, String> sortMap = new LinkedHashMap<String, String>();
 				// Get values out of JSON Cookie
 				if (getJSONCookieString(sec, user) != null) {
