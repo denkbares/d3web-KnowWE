@@ -30,6 +30,7 @@ import de.d3web.core.session.Session;
 import de.d3web.core.session.SessionObjectSource;
 import de.d3web.core.session.blackboard.SessionObject;
 import de.d3web.diaFlux.flow.DiaFluxCaseObject;
+import de.d3web.diaFlux.flow.DiaFluxElement;
 import de.d3web.diaFlux.flow.Edge;
 import de.d3web.diaFlux.flow.FlowRun;
 import de.d3web.diaFlux.flow.Node;
@@ -44,6 +45,10 @@ import de.d3web.diaFlux.inference.FluxSolver;
  * @created 02.04.2012
  */
 public class DiaFluxTrace implements SessionObject {
+
+	public enum State {
+		active, traced, none
+	}
 
 	public static final PropagationListener LISTENER = new PropagationListener() {
 
@@ -202,6 +207,26 @@ public class DiaFluxTrace implements SessionObject {
 	 */
 	public Collection<Node> getTracedNodes() {
 		return Collections.unmodifiableCollection(this.tracedActiveNodes);
+	}
+
+	public static State getState(DiaFluxElement element, Session session) {
+		DiaFluxTrace trace = FlowchartUtils.getTrace(session);
+		DiaFluxCaseObject diaFluxCaseObject = DiaFluxUtils.getDiaFluxCaseObject(session);
+		if (element instanceof Node) {
+			for (FlowRun run : diaFluxCaseObject.getRuns()) {
+				if (run.isActive((Node) element)) return State.active;
+			}
+			if (trace.getTracedNodes().contains(element)) return State.traced;
+
+		}
+		else {
+			for (FlowRun run : diaFluxCaseObject.getRuns()) {
+				if (run.isActivated((Edge) element)) return State.active;
+			}
+			if (trace.getTracedEdges().contains(element)) return State.traced;
+		}
+		return State.none;
+
 	}
 
 }

@@ -9,6 +9,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.preview.AbstractPreviewRenderer;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.diaflux.DiaFluxTrace.State;
 import de.knowwe.diaflux.type.ActionType;
 import de.knowwe.diaflux.type.CommentType;
 import de.knowwe.diaflux.type.DecisionType;
@@ -22,6 +23,7 @@ import de.knowwe.diaflux.type.NodeContentType;
 import de.knowwe.diaflux.type.NodeType;
 import de.knowwe.diaflux.type.SnapshotType;
 import de.knowwe.diaflux.type.StartType;
+import de.knowwe.kdom.xml.AbstractXMLType;
 
 public class DiaFluxItemPreviewRenderer extends AbstractPreviewRenderer {
 
@@ -68,19 +70,28 @@ public class DiaFluxItemPreviewRenderer extends AbstractPreviewRenderer {
 	}
 
 	private void renderEdge(Section<EdgeType> edge, UserContext user, RenderResult result) {
-		result.appendHtml("<div class='preview edge'>&nbsp;&nbsp;").append("- Edge ");
+		result.appendHtml("<div class='preview edge ")
+				.append(getSessionStateCSS(edge, user))
+				.appendHtml("'>&nbsp;&nbsp;").append("- Edge ");
 		Section<GuardType> guard = Sections.findSuccessor(edge, GuardType.class);
 		result.append(guard, user);
 		result.appendHtml("</div>");
 	}
 
+
 	private void renderNode(Section<NodeType> node, UserContext user, RenderResult result) {
 		Section<NodeContentType> action = Sections.findSuccessor(node, NodeContentType.class);
 		result.appendHtml("<div class='preview node ")
 				.append(getNodeCSS(action))
+				.append(" ")
+				.append(getSessionStateCSS(node, user))
 				.appendHtml("'>&nbsp;&nbsp;").append("- Node ");
 		renderNodePreviewHtml(action, user, result);
 		result.appendHtml("</div>");
+	}
+
+	private static String getSessionStateCSS(Section<? extends AbstractXMLType> elem, UserContext user) {
+		return FlowchartUtils.getElementState(elem, user).toString();
 	}
 
 	private String getNodeCSS(Section<NodeContentType> action) {

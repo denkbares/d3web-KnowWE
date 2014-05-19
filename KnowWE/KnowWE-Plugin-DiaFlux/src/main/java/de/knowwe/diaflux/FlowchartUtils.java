@@ -30,10 +30,13 @@ import java.util.WeakHashMap;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
+import de.d3web.diaFlux.flow.DiaFluxElement;
 import de.d3web.diaFlux.flow.Flow;
+import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.JPFPluginManager;
 import de.d3web.strings.Strings;
+import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.ArticleManager;
@@ -46,6 +49,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.diaflux.DiaFluxTrace.State;
 import de.knowwe.diaflux.kbinfo.JSPHelper;
 import de.knowwe.diaflux.type.DiaFluxType;
 import de.knowwe.diaflux.type.FlowchartType;
@@ -288,7 +292,6 @@ public class FlowchartUtils {
 		Collection<D3webCompiler> compilers = Compilers.getCompilers(section, D3webCompiler.class);
 
 		// get all sections compiled by these articles
-		Collection<Section<?>> allPossibleSections = new ArrayList<Section<?>>();
 		Collection<Section<FlowchartType>> matches = new ArrayList<Section<FlowchartType>>();
 		outer:
 		for (D3webCompiler compiler : compilers) {
@@ -323,6 +326,39 @@ public class FlowchartUtils {
 	 */
 	public static KnowledgeBase getKB(Section<DiaFluxType> s) {
 		return D3webUtils.getKnowledgeBase(s);
+	}
+
+	/**
+	 * Finds the corresponding kb-Element of the supplied NodeType or EdgeType
+	 * section.
+	 * 
+	 * @created 02.05.2014
+	 */
+	public static DiaFluxElement findObject(Section<? extends AbstractXMLType> node, KnowledgeBase kb) {
+		Section<FlowchartType> flowType = Sections.findAncestorOfType(node, FlowchartType.class);
+
+		String id = AbstractXMLType.getAttributeMapFor(node).get("fcid");
+		String flowName = FlowchartType.getFlowchartName(flowType);
+		Flow flow = DiaFluxUtils.findFlow(kb, flowName);
+		DiaFluxElement nodeObj = DiaFluxUtils.findObjectById(flow, id);
+
+		return nodeObj;
+	}
+
+	/**
+	 * Returns the state of the supplied NodeType or EdgeType section.
+	 * 
+	 * @created 02.05.2014
+	 */
+	public static State getElementState(Section<? extends AbstractXMLType> node, UserContext user) {
+		D3webCompiler compiler = Compilers.getCompiler(node, D3webCompiler.class);
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
+		Session session = SessionProvider.getSession(user, kb);
+
+		DiaFluxElement el = FlowchartUtils.findObject(node, kb);
+
+		State state = DiaFluxTrace.getState(el, session);
+		return state;
 	}
 
 }
