@@ -70,19 +70,7 @@ public class TimeStampType extends AbstractType {
 	}
 
 	public static String createTimeAsTimeStamp(long time) {
-		if (time == 0) return "0s";
-
-		String t = "";
-		for (int i = TIME_FACTORS.length - 1; i >= 0; i--) {
-			long factor = TIME_FACTORS[i];
-			long amount = (time / factor);
-			if (amount >= 1) {
-				if (!t.isEmpty()) t += " ";
-				t += amount + TIME_UNITS[i];
-				time -= amount * factor;
-			}
-		}
-		return t;
+		return de.d3web.testcase.TestCaseUtils.getTimeVerbalization(time);
 	}
 
 	public static long getTimeInMillis(Section<TimeStampType> sec) {

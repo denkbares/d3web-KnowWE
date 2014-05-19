@@ -390,7 +390,7 @@ public class TestCasePlayerRenderer implements Renderer {
 			if (value.getValue() instanceof Date) {
 				Date dateValue = (Date) value.getValue();
 				if (dateValue.getTime() < TestCaseUtils.YEAR) {
-					valueString = TestCaseUtils.getTimeVerbalization(dateValue.getTime());
+					valueString = TimeStampType.createTimeAsTimeStamp(dateValue.getTime());
 				}
 			}
 			tableModel.addCell(row, column, valueString, valueString.length());
