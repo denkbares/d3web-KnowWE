@@ -47,8 +47,10 @@ public class QuestionTreeQuestionRelationScript extends DashTreeTermRelationScri
 
 	@Override
 	protected void createObjectRelations(Section<TermDefinition> parentSection, D3webCompiler compiler, Identifier parentIdentifier, List<Identifier> childrenIdentifier) {
-		Question parentQuestion = (Question) D3webUtils.getTermObject(compiler, parentIdentifier);
-		if (parentQuestion == null) return;
+		NamedObject termObject = D3webUtils.getTermObject(compiler, parentIdentifier);
+		// this can happen in certain error scenarios...
+		if (!(termObject instanceof Question)) return;
+		Question parentQuestion = (Question) termObject;
 		TerminologyObject[] parents = parentQuestion.getParents();
 		if (parents.length == 0) {
 			parentQuestion.getKnowledgeBase().getRootQASet().addChild(parentQuestion);
