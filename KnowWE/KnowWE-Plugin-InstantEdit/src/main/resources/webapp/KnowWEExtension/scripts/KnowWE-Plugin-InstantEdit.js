@@ -73,6 +73,12 @@ KNOWWE.plugin.instantEdit = function() {
                 enabledWarning();
                 return;
             }
+			if (KNOWWE.helper.gup('version')) {
+				alert("Unable to edit while restoring versions.");
+				return;
+			}
+
+			KNOWWE.core.u
 
             _EC.showAjaxLoader(id);
             
