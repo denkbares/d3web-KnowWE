@@ -34,7 +34,7 @@ public class QuestionNumCell extends AbstractType {
 
 			@Override
 			protected void renderContent(Section<?> section, UserContext user, RenderResult string) {
-				string.appendJSPWikiMarkup(section.getText().replace("~", ""));
+				string.appendJSPWikiMarkup(Strings.encodeHtml(section.getText().replace("~", "")));
 			}
 
 		};
