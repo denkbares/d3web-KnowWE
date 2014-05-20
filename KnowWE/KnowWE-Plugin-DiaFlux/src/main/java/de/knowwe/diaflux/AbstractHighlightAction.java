@@ -22,6 +22,7 @@ import java.io.IOException;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.Flow;
+import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
@@ -34,7 +35,7 @@ import de.knowwe.diaflux.type.FlowchartType;
 /**
  * This class provides some basic functionalities to highlight flowchart
  * elements.
- * 
+ *
  * @author Reinhard Hatko
  * @created 26.10.2012
  */
@@ -64,7 +65,8 @@ public abstract class AbstractHighlightAction extends AbstractAction {
 
 	public static Flow findFlow(Section<FlowchartType> flowchart, KnowledgeBase kb) {
 		String flowchartName = FlowchartType.getFlowchartName(flowchart);
-		return DiaFluxUtils.getFlowSet(kb).get(flowchartName);
+		FlowSet flowSet = DiaFluxUtils.getFlowSet(kb);
+		return flowSet == null ? null : flowSet.get(flowchartName);
 	}
 
 	protected KnowledgeBase getKB(Section<FlowchartType> flowchart) {
@@ -74,25 +76,24 @@ public abstract class AbstractHighlightAction extends AbstractAction {
 		return FlowchartUtils.getKB(diaFluxSec);
 	}
 
-
 	/**
 	 * Returns the prefix of CSS classes to be removed, if highlighting is
 	 * updated without reloading the page, e.g. the execution trace. If the
 	 * highlighting is just updated on page load, this doesn't matter.
-	 * 
-	 * @created 26.10.2012
+	 *
 	 * @return
+	 * @created 26.10.2012
 	 */
 	public abstract String getPrefix();
 
 	/**
 	 * This method has to implement the logic for highlighting.
-	 * 
-	 * @created 26.10.2012
+	 *
 	 * @param flowchart
 	 * @param highlight
 	 * @param context
 	 * @throws IOException
+	 * @created 26.10.2012
 	 */
 	public abstract void insertHighlighting(Section<FlowchartType> flowchart, Highlight highlight, UserActionContext context) throws IOException;
 
