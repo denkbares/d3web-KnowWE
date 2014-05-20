@@ -47,11 +47,6 @@
 			<name>Bibsonomy</name>
 			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/bibsonomy</url>
 		</repository>
-		<repository>
-			<id>Aduna-Software</id>
-			<name>Aduna-Software</name>
-			<url>http://repo.aduna-software.org/maven2/releases/</url>
-		</repository>
 	</repositories>
 
 	<dependencies>
