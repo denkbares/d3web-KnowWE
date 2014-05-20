@@ -129,7 +129,11 @@ public abstract class SolutionDefinition
 					termIdentifier);
 
 			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(compiler, section);
-			if (abortCheck.hasErrors()) return abortCheck.getErrors();
+			if (abortCheck.hasErrors()) {
+				// we clear term objects from previous compilations that didn't have errors
+				section.get().storeTermObject(compiler, section, null);
+				return abortCheck.getErrors();
+			}
 
 			if (abortCheck.termExist()) {
 				section.get().storeTermObject(compiler, section, (Solution) abortCheck.getNamedObject());

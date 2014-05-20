@@ -43,7 +43,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
  * This is the type to be used for markup defining new (d3web-) Choice-Answers.
  * It checks whether the corresponding question is existing and is compatible.
  * In case it creates the Answer object in the knowledge base.
- * 
+ *
  * @author Jochen/Albrecht
  * @created 26.07.2010
  */
@@ -56,15 +56,13 @@ public abstract class AnswerDefinition
 	}
 
 	/**
-	 * 
 	 * returns the section of the question this answer belongs to
-	 * 
-	 * @created 26.07.2010
+	 *
 	 * @param s
 	 * @return
+	 * @created 26.07.2010
 	 */
 	public abstract Section<? extends QuestionDefinition> getQuestionSection(Section<? extends AnswerDefinition> s);
-
 
 	@Override
 	public Identifier getTermIdentifier(Section<? extends Term> s) {
@@ -89,18 +87,17 @@ public abstract class AnswerDefinition
 	}
 
 	/**
-	 * 
 	 * @author Jochen
 	 * @created 26.07.2010
-	 * 
-	 *          This handler actually creates the Answer as an object of the
-	 *          knowledge base
+	 * <p/>
+	 * This handler actually creates the Answer as an object of the
+	 * knowledge base
 	 */
 	static class CreateAnswerHandler extends D3webHandler<AnswerDefinition> {
 
 		@Override
 		public Collection<Message> create(D3webCompiler compiler,
-				Section<AnswerDefinition> section) {
+										  Section<AnswerDefinition> section) {
 
 			String name = section.get().getTermName(section);
 
@@ -123,7 +120,11 @@ public abstract class AnswerDefinition
 
 			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(
 					compiler, section);
-			if (abortCheck.hasErrors()) return abortCheck.getErrors();
+			if (abortCheck.hasErrors()) {
+				// we clear term objects from previous compilations that didn't have errors
+				section.get().storeTermObject(compiler, section, null);
+				return abortCheck.getErrors();
+			}
 			if (abortCheck.termExist()) {
 				section.get().storeTermObject(compiler, section, (Choice) abortCheck.getNamedObject());
 				return Messages.noMessage();
@@ -150,7 +151,8 @@ public abstract class AnswerDefinition
 						return Messages.asList(Messages.syntaxError(
 								"Only '" + qyn.getAnswerChoiceYes().getName() + "' and '"
 										+ qyn.getAnswerChoiceNo().getName()
-										+ "' is allowed for this question type"));
+										+ "' is allowed for this question type"
+						));
 					}
 				}
 				else {
@@ -161,7 +163,8 @@ public abstract class AnswerDefinition
 
 				return Messages.asList(Messages.objectCreatedNotice(
 						choice.getClass().getSimpleName() + "  "
-								+ choice.getName()));
+								+ choice.getName()
+				));
 
 			}
 			return Messages.asList(Messages.objectCreationError(
