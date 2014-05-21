@@ -62,13 +62,8 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 				String rowSeparator = DefaultMarkupType.getAnnotation(section, ROW_SEPARATOR);
 				String countString = DefaultMarkupType.getAnnotation(section, COUNT);
 
-				boolean count;
+				boolean count = !(countString == null || countString.equals("false"));
 
-				if (countString == null || countString == "false") {
-					count = false;
-				} else {
-					count = true;
-				}
 
 				if (separator == null) {
 					separator = ", ";
