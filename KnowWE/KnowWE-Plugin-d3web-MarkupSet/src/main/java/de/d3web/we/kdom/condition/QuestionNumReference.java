@@ -17,7 +17,6 @@ import de.knowwe.core.report.Messages;
 public class QuestionNumReference extends QuestionReference {
 
 	public QuestionNumReference() {
-		super(false);
 		this.addCompileScript(Priority.HIGH, new QuestionNumRegistrationHandler());
 
 	}
