@@ -41,11 +41,14 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 
 	public static final String MARKUP_NAME = "InlineSparql";
 
+	public static final String COUNT = "count";
+
 	static {
 		MARKUP = new DefaultMarkup(MARKUP_NAME);
 		MARKUP.setInline(true);
 		MARKUP.addAnnotation(SEPARATOR, true);
 		MARKUP.addAnnotation(ROW_SEPARATOR, true);
+		MARKUP.addAnnotation(COUNT);
 	}
 
 	public InlineSparqlMarkup() {
@@ -57,6 +60,16 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 				String sparqlName = DefaultMarkupType.getContent(section);
 				String separator = DefaultMarkupType.getAnnotation(section, SEPARATOR);
 				String rowSeparator = DefaultMarkupType.getAnnotation(section, ROW_SEPARATOR);
+				String countString = DefaultMarkupType.getAnnotation(section, COUNT);
+
+				boolean count;
+
+				if (countString == null || countString == "false") {
+					count = false;
+				} else {
+					count = true;
+				}
+
 				if (separator == null) {
 					separator = ", ";
 				}
@@ -107,8 +120,12 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 					String line = "";
 					String cell;
 
+					int lines = 0;
+
+
 					while (rowIterator.hasNext()) {
 						QueryRow row = rowIterator.next();
+						lines++;
 						for (Iterator<String> variableIterator = variables.iterator(); variableIterator.hasNext(); ) {
 							String variable = variableIterator.next();
 							Node x = row.getValue(variable);
@@ -124,7 +141,12 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 							line += rowSeparator;
 						}
 					}
-					result.append(line);
+
+					if (count) {
+					result.append(lines);
+					} else {
+						result.append(line);
+					}
 				}
 			}
 
