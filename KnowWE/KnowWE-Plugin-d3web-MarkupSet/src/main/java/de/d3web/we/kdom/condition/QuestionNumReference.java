@@ -1,6 +1,5 @@
 package de.d3web.we.kdom.condition;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.Question;
@@ -18,7 +17,6 @@ public class QuestionNumReference extends QuestionReference {
 
 	public QuestionNumReference() {
 		this.addCompileScript(Priority.HIGH, new QuestionNumRegistrationHandler());
-
 	}
 
 	@Override
@@ -35,8 +33,8 @@ public class QuestionNumReference extends QuestionReference {
 
 			String name = section.get().getTermName(section);
 			if (question == null) {
-				return Messages.asList(Messages.noSuchObjectError(
-						section.get().getName(), name));
+				// there will already be a message from QuestionReference..
+				return Messages.noMessage();
 			}
 
 			// check for QuestionNum
@@ -45,7 +43,7 @@ public class QuestionNumReference extends QuestionReference {
 						+ name + "' is of the type '" + question.getClass().getSimpleName() + "'"));
 			}
 
-			return new ArrayList<Message>(0);
+			return Messages.noMessage();
 		}
 	}
 }
