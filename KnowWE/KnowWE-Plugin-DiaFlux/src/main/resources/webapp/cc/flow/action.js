@@ -285,6 +285,15 @@ Action.prototype._extractParameters = function(string) {
 		object: IdentifierUtils.unquote(matches[1]),
 		value: IdentifierUtils.unquote(matches[2])
 	};
+
+	// for compatibility reasons, try with identifier string that did not yet consider white spaces
+	var compatibilityIdentifierString = IdentifierUtils.IDENTIFIER_STRING.replace(/ /, "");
+	var regex = new RegExp("^("+ compatibilityIdentifierString+")\\s*=\\s*("+compatibilityIdentifierString+")$");
+	var matches = regex.exec(string);
+	if (matches) return {
+		object: IdentifierUtils.unquote(matches[1]),
+		value: IdentifierUtils.unquote(matches[2])
+	};
 	
 	// otherwise go for backward compatibility 
 	// (use old and deprecated methods)
