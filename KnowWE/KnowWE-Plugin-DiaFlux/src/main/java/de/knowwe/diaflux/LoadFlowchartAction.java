@@ -35,7 +35,7 @@ import de.knowwe.kdom.xml.AbstractXMLType;
 
 /**
  * @author Reinhard Hatko
- * 
+ *         <p/>
  *         Created: 18.06.2010
  */
 public class LoadFlowchartAction extends AbstractAction {
@@ -54,10 +54,9 @@ public class LoadFlowchartAction extends AbstractAction {
 	}
 
 	/**
-	 * 
-	 * @created 25.10.2012
 	 * @param child
 	 * @return
+	 * @created 25.10.2012
 	 */
 	public static <T extends AbstractXMLType> String getFlowchartId(Section<T> child) {
 		return AbstractXMLType.getAttributeMapFor(child).get("fcid");
@@ -78,18 +77,17 @@ public class LoadFlowchartAction extends AbstractAction {
 	//
 	public static Section<RootType> sectionizeArticle(String text) {
 		Section<RootType> rootSection = Section.createSection(text, RootType.getInstance(), null);
-		Article article = Article.createArticle("", "fakeArticleforDiff", "default_web", true);
+		Article article = Article.createArticle("", "DiaFluxHelper", "default_web", true);
 		rootSection.setArticle(article);
 		RootType.getInstance().getParser().parse(text, rootSection);
 		return rootSection;
 	}
 
 	/**
-	 * 
-	 * @created 23.10.2012
 	 * @param context
 	 * @param section
 	 * @throws IOException
+	 * @created 23.10.2012
 	 */
 	private static void writeSource(UserActionContext context, String flowSource) throws IOException {
 		String source = FlowchartUtils.removePreview(flowSource);

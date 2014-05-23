@@ -31,6 +31,11 @@ import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
+import com.ecyrd.jspwiki.NoRequiredPropertyException;
+import com.ecyrd.jspwiki.TextUtil;
+import com.ecyrd.jspwiki.WikiContext;
+import com.ecyrd.jspwiki.WikiEngine;
+import com.ecyrd.jspwiki.i18n.InternationalizationManager;
 import org.apache.commons.jrcs.diff.AddDelta;
 import org.apache.commons.jrcs.diff.ChangeDelta;
 import org.apache.commons.jrcs.diff.Chunk;
@@ -40,12 +45,6 @@ import org.apache.commons.jrcs.diff.DifferentiationFailedException;
 import org.apache.commons.jrcs.diff.Revision;
 import org.apache.commons.jrcs.diff.RevisionVisitor;
 import org.apache.commons.jrcs.diff.myers.MyersDiff;
-
-import com.ecyrd.jspwiki.NoRequiredPropertyException;
-import com.ecyrd.jspwiki.TextUtil;
-import com.ecyrd.jspwiki.WikiContext;
-import com.ecyrd.jspwiki.WikiEngine;
-import com.ecyrd.jspwiki.i18n.InternationalizationManager;
 
 import de.d3web.utils.Pair;
 import de.knowwe.core.kdom.RootType;
@@ -62,8 +61,6 @@ import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.jspwiki.JSPWikiUserContext;
 
 /**
- * 
- * 
  * @author Reinhard Hatko
  * @created 26.10.2012
  */
@@ -81,9 +78,9 @@ public class FlowchartDiffProvider implements DiffProvider {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see com.ecyrd.jspwiki.WikiProvider#initialize(com.ecyrd.jspwiki.WikiEngine,
-	 *      java.util.Properties)
+	 * java.util.Properties)
 	 */
 	@Override
 	public void initialize(WikiEngine engine, Properties properties)
@@ -93,23 +90,21 @@ public class FlowchartDiffProvider implements DiffProvider {
 	/**
 	 * Makes a diff using the BMSI utility package. We use our own diff printer,
 	 * which makes things easier.
-	 * 
+	 *
 	 * @param ctx The WikiContext in which the diff should be made.
-	 * @param p1 The first string
-	 * @param p2 The second string.
-	 * 
+	 * @param p1  The first string
+	 * @param p2  The second string.
 	 * @return Full HTML diff.
 	 */
 	@Override
 	public String makeDiffHtml(WikiContext ctx, String p1, String p2) {
 
 		// first version is empty page. Diff is called when article is created
-		if (p1.equals("")) {
+		if (p1.equals("") || !ctx.getJSP().equals("DiffContent.jsp")) {
 			return "";
 		}
 		UserContext user = new JSPWikiUserContext(ctx,
 				UserContextUtil.getParameters(ctx.getHttpRequest()));
-
 		StringBuffer buffy = new StringBuffer();
 
 		List<Section<FlowchartType>> leftFlows = getFlowsFrom(p1);
@@ -174,12 +169,11 @@ public class FlowchartDiffProvider implements DiffProvider {
 	}
 
 	/**
-	 * 
-	 * @created 26.10.2012
 	 * @param user
 	 * @param b
 	 * @param buffy
 	 * @param insert
+	 * @created 26.10.2012
 	 */
 	private void renderAddedFlow(UserContext user, Section<FlowchartType> flow, StringBuffer buffy, boolean insert) {
 		renderFlow(user, flow, buffy, insert, "flowAdded");
@@ -208,10 +202,9 @@ public class FlowchartDiffProvider implements DiffProvider {
 	}
 
 	/**
-	 * 
-	 * @created 25.10.2012
 	 * @param articleSource
 	 * @return
+	 * @created 25.10.2012
 	 */
 	public List<Section<FlowchartType>> getFlowsFrom(String articleSource) {
 		Section<RootType> root = LoadFlowchartAction.sectionizeArticle(articleSource);
@@ -236,7 +229,8 @@ public class FlowchartDiffProvider implements DiffProvider {
 			}
 		}
 
-		nextFlow: for (int i = 0, size = rightFlows.size(); i < size; i++) {
+		nextFlow:
+		for (int i = 0, size = rightFlows.size(); i < size; i++) {
 			Section<FlowchartType> rightFlow = rightFlows.get(i);
 
 			Section<FlowchartType> leftFlow = LoadFlowchartAction.findFlowInDifferentVersion(
@@ -357,10 +351,10 @@ public class FlowchartDiffProvider implements DiffProvider {
 			m_result.append(CSS_DIFF_UNCHANGED);
 
 			String[] choiceString =
-			{
-					m_rb.getString("diff.traditional.oneline"),
-					m_rb.getString("diff.traditional.lines")
-			};
+					{
+							m_rb.getString("diff.traditional.oneline"),
+							m_rb.getString("diff.traditional.lines")
+					};
 			double[] choiceLimits = {
 					1, 2 };
 
