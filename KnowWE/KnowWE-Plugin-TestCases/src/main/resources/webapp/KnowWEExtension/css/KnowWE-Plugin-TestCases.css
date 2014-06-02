@@ -42,12 +42,12 @@
 .type_TestCasePlayer .wikitable * TH {
 	vertical-align: middle;
 	text-align: left;
-	white-space: nowrap;
 }
 
 .type_TestCasePlayer .wikitable * TH SELECT, .type_TestCasePlayer .wikitable * TH INPUT {
 	margin-top: 0px;
 	margin-bottom: 0px;
+	max-width: 200px;
 }
 
 .type_TestCasePlayer .wikitable * TH IMG {
@@ -66,9 +66,15 @@
 .type_TestCasePlayer .wikitable .collapsedcolumn {
 	max-width: 7px;
 	overflow: hidden;
+	white-space: nowrap;
 	padding-right: 0px;
 }
 
 .type_TestCasePlayer .wikitable .collapsedcolumn div {
 	max-height: 20px;
+}
+
+.type_TestCasePlayer .wikitable th input {
+	padding: 0px 3px 0px 3px;
+	margin-top: 2px;
 }

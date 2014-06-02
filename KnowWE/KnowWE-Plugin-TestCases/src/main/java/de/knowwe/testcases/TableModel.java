@@ -37,7 +37,6 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
- * 
  * @author Volker Belli & Markus Friedrich (denkbares GmbH)
  * @created 20.02.2012
  */
@@ -95,11 +94,11 @@ public class TableModel {
 	 * 			        [...],
 	 * 			        [...],
 	 * 			       ],
-	 * 		}
+	 *        }
 	 * </pre>
-	 * 
-	 * @created 20.02.2012
+	 *
 	 * @return
+	 * @created 20.02.2012
 	 */
 	public String toJSON() {
 		StringBuilder sb = new StringBuilder();

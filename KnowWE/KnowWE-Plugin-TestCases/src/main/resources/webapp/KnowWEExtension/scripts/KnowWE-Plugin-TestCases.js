@@ -3,24 +3,24 @@ var TestCasePlayer = {};
 TestCasePlayer.init = function() {
 	TestCasePlayer.setLastSelected();
 	jq$(".type_TestCasePlayer").find(".wikitable").find("th").unbind('click')
-			.click(TestCasePlayer.registerClickableColumnHeaders);
+		.click(TestCasePlayer.registerClickableColumnHeaders);
 	jq$(".type_TestCasePlayer").find(".wikitable").find(".collapsedcolumn")
-			.each(function() {
-				TestCasePlayer.addToolTip(jq$(this));
-			});
+		.each(function() {
+			TestCasePlayer.addToolTip(jq$(this));
+		});
 }
 
 TestCasePlayer.toggleFindings = function(id, action) {
 	jq$('#' + id).find('.wikitable').find('th').filter('[type="finding"]')
-			.each(function() {
-				var collapse = action == "collapse";
-				var th = jq$(this);
-				if (collapse && !th.hasClass("collapsedcolumn")) {
-					TestCasePlayer.collapseColumn(th);
-				} else if (!collapse && th.hasClass("collapsedcolumn")) {
-					TestCasePlayer.expandColumn(th);
-				}
-			});
+		.each(function() {
+			var collapse = action == "collapse";
+			var th = jq$(this);
+			if (collapse && !th.hasClass("collapsedcolumn")) {
+				TestCasePlayer.collapseColumn(th);
+			} else if (!collapse && th.hasClass("collapsedcolumn")) {
+				TestCasePlayer.expandColumn(th);
+			}
+		});
 }
 
 TestCasePlayer.registerClickableColumnHeaders = function() {
@@ -33,9 +33,9 @@ TestCasePlayer.toggelColumnStatus = function(th) {
 	var isCollapsed = th.hasClass("collapsedcolumn");
 
 	if (isCollapsed) {
-		TestCasePlayer.expandColumn(th, true);
+		TestCasePlayer.expandColumn(th);
 	} else {
-		TestCasePlayer.collapseColumn(th, true);
+		TestCasePlayer.collapseColumn(th);
 	}
 
 }
@@ -52,7 +52,7 @@ TestCasePlayer.downloadCase = function(sectionID) {
 				var parsed = JSON.parse(this.responseText);
 				if (parsed.path) {
 					window.location = 'action/DownloadFileAction?file='
-							+ parsed.path + '&name=' + parsed.file;
+						+ parsed.path + '&name=' + parsed.file;
 				} else {
 					KNOWWE.notification.error(null, parsed.error, "tcp-error");
 				}
@@ -78,10 +78,10 @@ TestCasePlayer.downloadCasesZip = function(sectionID) {
 				if (parsed.path) {
 					if (parsed.skipped) {
 						KNOWWE.notification.warn(null, parsed.skipped,
-								"tcp-note");
+							"tcp-note");
 					}
 					window.location = 'action/DownloadFileAction?file='
-							+ parsed.path + '&name=' + parsed.file;
+						+ parsed.path + '&name=' + parsed.file;
 				} else {
 					KNOWWE.notification.error(null, parsed.error, "tcp-error");
 				}
@@ -107,7 +107,7 @@ TestCasePlayer.getCollapseStatus = function(th) {
 TestCasePlayer.writeCollapseStatus = function(th, collapsed) {
 	var id = th.parents(".TestCasePlayerContent").attr("id");
 	var testCase = jq$("#selector" + id).find('[selected="selected"]').attr(
-			"value");
+		"value");
 	if (!testCase)
 		testCase = jq$("#selector" + id).val();
 	testCase = TestCasePlayer.encodeCookieValue(testCase);
@@ -121,18 +121,14 @@ TestCasePlayer.collapseColumn = function(th, animated) {
 	var column = th.attr("column");
 
 	var tds = th.parents(".wikitable").first()
-			.find('[column="' + column + '"]');
+		.find('[column="' + column + '"]');
 
 	var collapsed = TestCasePlayer.getCollapseStatus(th);
 	collapsed += column;
 	TestCasePlayer.writeCollapseStatus(th, collapsed);
 
-	if (tds.length < 12 && animated) {
-		// for performance reasons
-		tds.addClass("collapsedcolumn", 150, "linear");
-	} else {
-		tds.addClass("collapsedcolumn");
-	}
+	tds.addClass("collapsedcolumn");
+
 	TestCasePlayer.addToolTip(th);
 	tds.filter("td").each(function() {
 		TestCasePlayer.addToolTip(jq$(this));
@@ -149,8 +145,8 @@ TestCasePlayer.addToolTip = function(element) {
 		data.find('script').remove();
 		data.find('br').replaceWith('\n');
 		title = th.text() + "\n" + data.text().trim().replace(
-				/[ \t]*(\r?\n)[ \t]*/g, '$1');
-		if (title) {			
+			/[ \t]*(\r?\n)[ \t]*/g, '$1');
+		if (title) {
 			TestCasePlayer.setToolTip(element, title);
 		}
 	}
@@ -175,20 +171,17 @@ TestCasePlayer.removeToolTip = function(element) {
 	element.data('hasToolTip', 'disabled');
 }
 
-TestCasePlayer.expandColumn = function(th, animated) {
+TestCasePlayer.expandColumn = function(th) {
 	if (th.find("input").length > 0)
 		return;
 
 	var column = th.attr("column");
 
 	var tds = th.parents(".wikitable").first()
-			.find('[column="' + column + '"]');
+		.find('[column="' + column + '"]');
 
-	if (tds.length < 12 && animated) {
-		tds.removeClass("collapsedcolumn", 150, "linear");
-	} else {
-		tds.removeClass("collapsedcolumn");
-	}
+	tds.removeClass("collapsedcolumn");
+
 	TestCasePlayer.setToolTip(th, "Collapse");
 	tds.filter("td").each(function() {
 		TestCasePlayer.removeToolTip(jq$(this));
@@ -241,7 +234,7 @@ TestCasePlayer.setLastSelected = function() {
 TestCasePlayer.change = function(key_sessionid, selectedvalue) {
 	var topic = KNOWWE.helper.gup('page');
 	document.cookie = key_sessionid + "="
-			+ TestCasePlayer.encodeCookieValue(selectedvalue);
+		+ TestCasePlayer.encodeCookieValue(selectedvalue);
 	// KNOWWE.helper.observer.notify('update');
 	TestCasePlayer.update();
 }
@@ -249,8 +242,8 @@ TestCasePlayer.change = function(key_sessionid, selectedvalue) {
 TestCasePlayer.addCookie = function(cookievalue) {
 	var topic = KNOWWE.helper.gup('page');
 	document.cookie = "additionalQuestions"
-			+ TestCasePlayer.encodeCookieValue(topic) + "="
-			+ TestCasePlayer.encodeCookieValue(cookievalue);
+		+ TestCasePlayer.encodeCookieValue(topic) + "="
+		+ TestCasePlayer.encodeCookieValue(cookievalue);
 	// KNOWWE.helper.observer.notify('update');
 	TestCasePlayer.update(true);
 }
@@ -280,7 +273,7 @@ TestCasePlayer.update = function(adjustLeft) {
 	});
 
 	var fn = function() {
-		for ( var id in scrollInfos) {
+		for (var id in scrollInfos) {
 			var scrollInfo = scrollInfos[id];
 			if (scrollInfo.restoreScroll) {
 				var tableDiv = jq$("#" + id).find('.' + "wikitable").parent();
@@ -303,60 +296,59 @@ if (!KNOWWE.plugin.testCases.testCaseTable)
 	KNOWWE.plugin.testCases.testCaseTable = {};
 
 jq$(document)
-		.ready(
-				function() {
-					// Prepare for instant table editor with custom
-					// auto-complete
-					KNOWWE.plugin.testCases.testCaseTable.editTool = KNOWWE.plugin.tableEditTool
-							.create(function(callback, prefix, spreadsheet,
-									row, col) {
-								var ajaxFun, ajaxPrefix = prefix;
-								var otherItems = [];
-								// prepare object name
-								var colName = spreadsheet.getCellTextTrimmed(0,
-										col);
-								// prepare ajax
-								if (row == 0) {
-									ajaxFun = AutoComplete.sendD3webValueObjectCompletionAction;
-									if (prefix
-											.match(/^\s*"?(t(i(m(e)?)?)?)?"?\s*$/i))
-										otherItems
-												.push({
-													insertText : "Time",
-													replaceLength : prefix.length,
-													description : "Column for entering the reasoning time of the specific row."
-												});
-									if (prefix
-											.match(/^\s*"?(c(h(e(c(k(s)?)?)?)?)?)?"?\s*$/i))
-										otherItems
-												.push({
-													insertText : "Checks",
-													replaceLength : prefix.length,
-													description : "Column for entering some conditions. The condition must be true after executing the row. Otherwise the test case fails."
-												});
-								} else if (colName === 'Time') {
-									ajaxFun = function(callback, prefix) {
-										callback([]);
-									};
-								} else if (colName === 'Checks') {
-									ajaxFun = AutoComplete.sendD3webConditionCompletionAction;
-								} else {
-									colName = AutoComplete
-											.unquoteTermIdentifier(colName);
-									if (AutoComplete
-											.termRequiresQuotes(colName))
-										colName = '"' + colName + '"';
-									ajaxFun = AutoComplete.sendD3webActionCompletionAction;
-									ajaxPrefix = colName + ' = ' + prefix;
-								}
-								ajaxFun(
-										function(byAjax) {
-											AutoComplete
-													.unquoteTermIdentifiers(byAjax);
-											callback(otherItems.concat(byAjax));
-										}, ajaxPrefix);
+	.ready(
+	function() {
+		// Prepare for instant table editor with custom
+		// auto-complete
+		KNOWWE.plugin.testCases.testCaseTable.editTool = KNOWWE.plugin.tableEditTool
+			.create(function(callback, prefix, spreadsheet, row, col) {
+				var ajaxFun, ajaxPrefix = prefix;
+				var otherItems = [];
+				// prepare object name
+				var colName = spreadsheet.getCellTextTrimmed(0,
+					col);
+				// prepare ajax
+				if (row == 0) {
+					ajaxFun = AutoComplete.sendD3webValueObjectCompletionAction;
+					if (prefix
+						.match(/^\s*"?(t(i(m(e)?)?)?)?"?\s*$/i))
+						otherItems
+							.push({
+								insertText : "Time",
+								replaceLength : prefix.length,
+								description : "Column for entering the reasoning time of the specific row."
 							});
+					if (prefix
+						.match(/^\s*"?(c(h(e(c(k(s)?)?)?)?)?)?"?\s*$/i))
+						otherItems
+							.push({
+								insertText : "Checks",
+								replaceLength : prefix.length,
+								description : "Column for entering some conditions. The condition must be true after executing the row. Otherwise the test case fails."
+							});
+				} else if (colName === 'Time') {
+					ajaxFun = function(callback, prefix) {
+						callback([]);
+					};
+				} else if (colName === 'Checks') {
+					ajaxFun = AutoComplete.sendD3webConditionCompletionAction;
+				} else {
+					colName = AutoComplete
+						.unquoteTermIdentifier(colName);
+					if (AutoComplete
+						.termRequiresQuotes(colName))
+						colName = '"' + colName + '"';
+					ajaxFun = AutoComplete.sendD3webActionCompletionAction;
+					ajaxPrefix = colName + ' = ' + prefix;
+				}
+				ajaxFun(
+					function(byAjax) {
+						AutoComplete
+							.unquoteTermIdentifiers(byAjax);
+						callback(otherItems.concat(byAjax));
+					}, ajaxPrefix);
+			});
 
-					// init test case player
-					TestCasePlayer.init();
-				});
+		// init test case player
+		TestCasePlayer.init();
+	});
