@@ -20,6 +20,7 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.renderer.AsynchronRenderer;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -53,7 +54,7 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 
 	public InlineSparqlMarkup() {
 		super(MARKUP);
-		this.setRenderer(new Renderer() {
+		this.setRenderer(new AsynchronRenderer(new Renderer() {
 
 			@Override
 			public void render(Section<?> section, UserContext user, RenderResult result) {
@@ -139,13 +140,14 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 							line += rowSeparator;
 						}
 					}
-
+					result.appendHtmlTag("span");
 					if (count) {
 						result.append(lines);
 					}
 					else {
 						result.appendJSPWikiMarkup(line);
 					}
+					result.appendHtmlTag("/span");
 				}
 			}
 
@@ -156,6 +158,6 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 				return string;
 			}
 
-		});
+		}, true));
 	}
 }

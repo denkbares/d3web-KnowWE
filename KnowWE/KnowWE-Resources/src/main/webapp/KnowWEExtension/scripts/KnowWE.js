@@ -348,6 +348,7 @@ KNOWWE.core.util = function() {
 			var jsonArray = null;
 			try {
 				var jsonArray = JSON.parse(htmlText);
+				if (!jq$.isArray(jsonArray)) throw EventException;
 			} catch (e) {
 				var temp = document.createElement("div");
 				temp.innerHTML = htmlText;
