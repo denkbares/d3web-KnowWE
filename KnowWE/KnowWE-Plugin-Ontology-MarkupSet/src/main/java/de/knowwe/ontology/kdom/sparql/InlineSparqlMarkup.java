@@ -46,9 +46,9 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 	static {
 		MARKUP = new DefaultMarkup(MARKUP_NAME);
 		MARKUP.setInline(true);
-		MARKUP.addAnnotation(SEPARATOR, true);
-		MARKUP.addAnnotation(ROW_SEPARATOR, true);
-		MARKUP.addAnnotation(COUNT);
+		MARKUP.addAnnotation(SEPARATOR);
+		MARKUP.addAnnotation(ROW_SEPARATOR);
+		MARKUP.addAnnotation(COUNT, false, "true", "false");
 	}
 
 	public InlineSparqlMarkup() {
@@ -64,17 +64,20 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 
 				boolean count = !(countString == null || countString.equals("false"));
 
-
 				if (separator == null) {
 					separator = ", ";
+				}
+				else {
+					separator = clean(separator);
+					separator = Strings.unquote(separator);
 				}
 				if (rowSeparator == null) {
 					rowSeparator = separator;
 				}
-				separator = clean(separator);
-				rowSeparator = clean(rowSeparator);
-				separator = Strings.unquote(separator);
-				rowSeparator = Strings.unquote(rowSeparator);
+				else {
+					rowSeparator = clean(rowSeparator);
+					rowSeparator = Strings.unquote(rowSeparator);
+				}
 
 				sparqlName = clean(sparqlName);
 				Collection<TermCompiler> compilers = Compilers.getCompilers(section, TermCompiler.class);
@@ -117,14 +120,14 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 
 					int lines = 0;
 
-
 					while (rowIterator.hasNext()) {
 						QueryRow row = rowIterator.next();
 						lines++;
 						for (Iterator<String> variableIterator = variables.iterator(); variableIterator.hasNext(); ) {
 							String variable = variableIterator.next();
-							Node x = row.getValue(variable);
-							cell = x.toString();
+							Node node = row.getValue(variable);
+							if (node == null) continue;
+							cell = node.toString();
 							cell = Rdf2GoUtils.trimDataType(core, cell);
 							cell = Rdf2GoUtils.trimNamespace(core, cell);
 							line += cell;
@@ -138,9 +141,10 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 					}
 
 					if (count) {
-					result.append(lines);
-					} else {
-						result.append(line);
+						result.append(lines);
+					}
+					else {
+						result.appendJSPWikiMarkup(line);
 					}
 				}
 			}
