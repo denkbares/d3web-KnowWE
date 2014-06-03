@@ -138,7 +138,7 @@ public class CompilerManager {
 	 * @created 30.10.2013
 	 */
 	public boolean startCompile(final Collection<Section<?>> added, final Collection<Section<?>> removed) {
-		synchronized (this) {
+		synchronized (lock) {
 			if (isCompiling()) return false;
 			running = compilers.groupIterator();
 		}
@@ -173,7 +173,7 @@ public class CompilerManager {
 		while (true) {
 			// get the current compilers
 			List<Compiler> simultaneousCompilers;
-			synchronized (this) {
+			synchronized (lock) {
 				if (!running.hasNext()) {
 					break;
 				}
@@ -248,8 +248,10 @@ public class CompilerManager {
 	 * @return if a compilation is ongoing
 	 * @created 30.10.2013
 	 */
-	public synchronized boolean isCompiling() {
-		return running != null;
+	public boolean isCompiling() {
+		synchronized (lock) {
+			return running != null;
+		}
 	}
 
 	/**
