@@ -31,15 +31,13 @@ import de.d3web.we.solutionpanel.SolutionPanelUtils;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.TooltipRenderer;
 
 /**
  * Renders a D3webTerm section by adding the current value(s) as a tooltip.
- * 
+ *
  * @author volker_belli
  * @created 30.11.2010
  */
@@ -47,6 +45,10 @@ public class ValueTooltipRenderer extends TooltipRenderer {
 
 	public ValueTooltipRenderer(Renderer decoratedRenderer) {
 		super(decoratedRenderer);
+	}
+
+	protected int getTooltipDelay(Section<?> section, UserContext user) {
+		return 200;
 	}
 
 	@Override
@@ -69,8 +71,12 @@ public class ValueTooltipRenderer extends TooltipRenderer {
 				if (buffer.length() > 0) buffer.append('\n');
 				String name = knowledgeBase.getName();
 				if (name == null) name = compiler.getCompileSection().getTitle();
-				buffer.append("current value in '").append(name).append("': ");
-				buffer.append(SolutionPanelUtils.formatValue(value, 2));
+				buffer.append("Current value");
+				if (compilers.size() > 1) {
+					buffer.append(" in '").append(name).append("'");
+				}
+				buffer.append(": ");
+				buffer.append(SolutionPanelUtils.formatValue(value, -1));
 			}
 		}
 		if (buffer.length() == 0) return null;

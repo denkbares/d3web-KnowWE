@@ -49,7 +49,7 @@ public abstract class TooltipRenderer implements Renderer {
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
 		String tooltip = getTooltip(section, user);
-		preRenderTooltip(tooltip, result);
+		preRenderTooltip(tooltip, getTooltipDelay(section, user), result);
 		if (delegate != null) {
 			delegate.render(section, user, result);
 		}
@@ -61,11 +61,21 @@ public abstract class TooltipRenderer implements Renderer {
 
 	protected abstract String getTooltip(Section<?> section, UserContext user);
 
-	private void preRenderTooltip(String tooltip, RenderResult string) {
+	/**
+	 * Set the delay in milliseconds after which the tooltip will be shown. Do not overwrite if you want default delay.
+	 */
+	protected int getTooltipDelay(Section<?> section, UserContext user) {
+		return -1;
+	}
+
+	private void preRenderTooltip(String tooltip, int delay, RenderResult string) {
 		if (Strings.isBlank(tooltip)) return;
 		tooltip = KnowWEUtils.maskJSPWikiMarkup(tooltip.replace('\'', '"'));
 
-		string.appendHtml("<span");
+		string.appendHtml("<span class='tooltipster'");
+		if (delay >= 0) {
+			string.append(" delay='").append(delay).append("'");
+		}
 		string.append(" title='").append(tooltip).append("'");
 		string.appendHtml(">");
 	}

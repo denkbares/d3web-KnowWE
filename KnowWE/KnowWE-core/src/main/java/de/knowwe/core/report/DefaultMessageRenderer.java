@@ -26,12 +26,11 @@ import de.knowwe.core.user.UserContext;
 
 /**
  * Default renderer for error messages
- * 
+ * <p/>
  * To have your own customized ErrorRenderer overwrite getErrorRenderer in your
  * Type and return a (custom) MessageRenderer of your choice
- * 
+ *
  * @author Jochen
- * 
  */
 public class DefaultMessageRenderer implements MessageRenderer {
 
@@ -69,6 +68,7 @@ public class DefaultMessageRenderer implements MessageRenderer {
 			result.append(" title='").appendEntityEncoded(
 					tooltip.replace('\'', '"')).append("'");
 		}
+		String cssClass = "tooltipster " + this.cssClass;
 		if (cssClass != null) {
 			result.append(" class='").append(cssClass).append("'");
 		}
