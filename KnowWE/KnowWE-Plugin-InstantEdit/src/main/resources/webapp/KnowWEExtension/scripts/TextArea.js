@@ -54,7 +54,7 @@ TextArea.prototype.handleKeyDown = function(event) {
 	var isAltOnly = !event.ctrlKey && !event.metaKey && event.altKey;
 	var isCmdOnly = (!event.ctrlKey && event.metaKey && !event.altKey)
 		|| (event.ctrlKey && !event.metaKey && !event.altKey);
-	var isLongerSelection = this.getSelection().length > 0;
+	var isLongerSelection = this.getSelection().length > 0 && this.getSelection().contains('\n');
 	if (event.which == 38 && isAltOnly) { // alt + UP
 		event.stopPropagation();
 		event.preventDefault();
