@@ -20,6 +20,7 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.progress.DownloadFileAction;
 import de.knowwe.kdom.defaultMarkup.ContentType;
 import de.knowwe.testcases.ProviderTriple;
 import de.knowwe.testcases.TestCasePlayerRenderer;
@@ -72,7 +73,9 @@ public class CheckDownloadCaseAction extends AbstractAction {
 			return;
 		}
 
-		File caseFile = File.createTempFile("TestCase", null);
+		File tempDirectory = DownloadFileAction.getTempDirectory();
+		// we already have a temp directory, so the file name no longer matters
+		File caseFile = new File(tempDirectory.getAbsolutePath() + File.separator + System.currentTimeMillis());
 		caseFile.deleteOnExit();
 
 		FileOutputStream out = new FileOutputStream(caseFile);
