@@ -1,4 +1,3 @@
-
 function TextArea(area) {
 	if (area.textarea != null) {
 		return area.textarea;
@@ -10,7 +9,7 @@ function TextArea(area) {
 	jq$(this.area).keydown(jq$.proxy(function(event) {
 		this.handleKeyDown(event);
 	}, this));
-	jq$(this.area).select(jq$.proxy(function(){
+	jq$(this.area).select(jq$.proxy(function() {
 		this.snapshot();
 	}, this));
 	this.snapshot();
@@ -36,24 +35,26 @@ TextArea.replaceSelection = function(a, g) {
 }
 TextArea.prototype.handleKeyDown = function(event) {
 	event = jq$.event.fix(event);
+	console.log(event.which);
 	if (_EC.isModifier(event)) {
 		if (event.which == 89 || (event.which == 90 && event.shiftKey)) { // Y
 			event.stopPropagation();
 			event.preventDefault();
 			this.redo();
-			return;	
+			return;
 		}
 		if (event.which == 90) { // Z
 			event.stopPropagation();
 			event.preventDefault();
 			this.snapshot();
 			this.undo();
-			return;	
+			return;
 		}
 	}
 	var isAltOnly = !event.ctrlKey && !event.metaKey && event.altKey;
 	var isCmdOnly = (!event.ctrlKey && event.metaKey && !event.altKey)
-				 || (event.ctrlKey && !event.metaKey && !event.altKey);
+		|| (event.ctrlKey && !event.metaKey && !event.altKey);
+	var isLongerSelection = this.getSelection().length > 0;
 	if (event.which == 38 && isAltOnly) { // alt + UP
 		event.stopPropagation();
 		event.preventDefault();
@@ -66,6 +67,63 @@ TextArea.prototype.handleKeyDown = function(event) {
 		event.preventDefault();
 		this.snapshot();
 		this.moveLines("down");
+		return;
+	}
+	if ((event.which == 189 || event.which == 173) && isLongerSelection) { // - + selection length > 0
+		event.stopPropagation();
+		event.preventDefault();
+		this.snapshot();
+		this.moveLines("minusRight");
+		return;
+	}
+	if ((event.which == 191 || event.which == 163) && isLongerSelection) { // # + selection length > 0
+		event.stopPropagation();
+		event.preventDefault();
+		this.snapshot();
+		this.moveLines("hashRight");
+		return;
+	}
+	if ((event.which == 187 || event.which == 171) && event.shiftKey && isLongerSelection) { // * + selection length > 0
+		event.stopPropagation();
+		event.preventDefault();
+		this.snapshot();
+		this.moveLines("starRight");
+		return;
+	}
+	if (event.which == 9 && isLongerSelection && !event.shiftKey) { // TAB + selection length > 0 + !SHIFT
+		if(/chrom(e|ium)/.test(navigator.userAgent.toLowerCase())){
+			return;
+		}
+		event.stopPropagation();
+		event.preventDefault();
+		event.stopImmediatePropagation();
+		console.log(event.isDefaultPrevented());
+		this.snapshot();
+		this.moveLines("tab");
+		return;
+	}
+	if (event.which == 9 && event.shiftKey) { // TAB + SHIFT
+		if(/chrom(e|ium)/.test(navigator.userAgent.toLowerCase())){
+			return;
+		}
+		event.stopPropagation();
+		event.preventDefault();
+		this.snapshot();
+		this.moveLines("tabShift");
+		return;
+	}
+	if (event.which == 32 && isLongerSelection && !event.shiftKey) { // SPACE + selection length > 0 + !SHIFT
+		event.stopPropagation();
+		event.preventDefault();
+		this.snapshot();
+		this.moveLines("space");
+		return;
+	}
+	if (event.which == 32 && event.shiftKey) { // SPACE + SHIFT
+		event.stopPropagation();
+		event.preventDefault();
+		this.snapshot();
+		this.moveLines("spaceShift");
 		return;
 	}
 	if (event.which == 68 && (isAltOnly || isCmdOnly)) { // alt + D, cmd + D
@@ -86,7 +144,7 @@ TextArea.prototype.handleKeyDown = function(event) {
 		// late processing the intend, after events have completed
 		// to avoid conflict with e.g. auto-complete
 		var intend = this.getIntend();
-		setTimeout(jq$.proxy(function () {
+		setTimeout(jq$.proxy(function() {
 			if (!this.isSelectionAtStartOfLine()) return;
 			this.insertText(intend);
 		}, this));
@@ -101,25 +159,25 @@ TextArea.prototype.handleKeyDown = function(event) {
 		this.snapshot();
 	}
 }
-TextArea.prototype.onSave = function () {
-	
+TextArea.prototype.onSave = function() {
+
 }
-TextArea.prototype.onCancel = function () {
-	
+TextArea.prototype.onCancel = function() {
+
 }
-TextArea.prototype.moveLines = function (direction) {
+TextArea.prototype.moveLines = function(direction) {
 	var area = this.area;
 	this.extendSelectionToFullLines(area);
 	// get lines and
 	var lines = this.getSelection();
 	// make sure that we have a "\n" at the end (not happens in last line)
-	var missingLF = lines.charCodeAt(lines.length-1) != 10;
+	var missingLF = lines.charCodeAt(lines.length - 1) != 10;
 	if (missingLF) {
 		// add a line break
 		lines = lines + "\n";
 		// but the also remove one additional line break before
 		var sel = this.getSelectionCoordinates();
-		if (sel.start > 0) this.setSelection(sel.start-1, sel.end);
+		if (sel.start > 0) this.setSelection(sel.start - 1, sel.end);
 	}
 	this.insertText("");
 	if (direction == "delete") {
@@ -128,20 +186,110 @@ TextArea.prototype.moveLines = function (direction) {
 	var text = area.getValue();
 	var curPos = this.getCursor(area);
 	if (missingLF) curPos++;
-	
+
 	missingLF = false;
 	var newPos;
 	if (direction == "up") {
-		newPos = text.substring(0, curPos-1).lastIndexOf('\n')+1;
+		newPos = text.substring(0, curPos - 1).lastIndexOf('\n') + 1;
 	}
 	else if (direction == "down") {
 		newPos = text.substring(curPos).indexOf('\n');
 		if (newPos == -1) {
 			missingLF = true;
 			newPos = text.length;
-			lines = "\n" + lines.substring(0, lines.length-1);
+			lines = "\n" + lines.substring(0, lines.length - 1);
 		}
 		else newPos += curPos + 1;
+	}
+	else if (direction == "minusRight") {
+		var splitLines = lines.split("\n");
+		lines = "";
+		for (var line = 0; line < splitLines.length - 1; line++) {
+			lines = lines + "-" + splitLines[line] + "\n";
+		}
+		newPos = curPos;
+	}
+	else if (direction == "hashRight") {
+		var splitLines = lines.split("\n");
+		lines = "";
+		for (var line = 0; line < splitLines.length - 1; line++) {
+			lines = lines + "#" + splitLines[line] + "\n";
+		}
+		newPos = curPos;
+	}
+	else if (direction == "starRight") {
+		var splitLines = lines.split("\n");
+		lines = "";
+		for (var line = 0; line < splitLines.length - 1; line++) {
+			lines = lines + "*" + splitLines[line] + "\n";
+		}
+		newPos = curPos;
+	}
+	else if (direction == "tab") {
+		var splitLines = lines.split("\n");
+		lines = "";
+		for (var line = 0; line < splitLines.length - 1; line++) {
+			lines = lines + "  " + splitLines[line] + "\n";
+		}
+		newPos = curPos;
+	}
+	else if (direction == "tabShift") {
+		var splitLines = lines.split("\n");
+		lines = "";
+		for (line = 0; line < splitLines.length - 1; line++) {
+			if (splitLines[line].substring(0, 1) == "-") {
+				lines = lines + splitLines[line].substring(1) + "\n";
+			}
+			else if (splitLines[line].substring(0, 1) == "#") {
+				lines = lines + splitLines[line].substring(1) + "\n";
+			}
+			else if (splitLines[line].substring(0, 1) == "*") {
+				lines = lines + splitLines[line].substring(1) + "\n";
+			}
+			else if (splitLines[line].substring(0, 2) == "  ") {
+				lines = lines + splitLines[line].substring(2) + "\n";
+			}
+			else if (splitLines[line].substring(0, 1) == "\t") {
+				lines = lines + splitLines[line].substring(1) + "\n";
+			}
+			else {
+				lines = lines + splitLines[line] + "\n";
+			}
+		}
+		newPos = curPos;
+	}
+	else if (direction == "space") {
+		var splitLines = lines.split("\n");
+		lines = "";
+		for (var line = 0; line < splitLines.length - 1; line++) {
+			lines = lines + " " + splitLines[line] + "\n";
+		}
+		newPos = curPos;
+	}
+	else if (direction == "spaceShift") {
+		var splitLines = lines.split("\n");
+		lines = "";
+		for (line = 0; line < splitLines.length - 1; line++) {
+			if (splitLines[line].substring(0, 1) == "-") {
+				lines = lines + splitLines[line].substring(1) + "\n";
+			}
+			else if (splitLines[line].substring(0, 1) == "#") {
+				lines = lines + splitLines[line].substring(1) + "\n";
+			}
+			else if (splitLines[line].substring(0, 1) == "*") {
+				lines = lines + splitLines[line].substring(1) + "\n";
+			}
+			else if (splitLines[line].substring(0, 1) == " ") {
+				lines = lines + splitLines[line].substring(1) + "\n";
+			}
+			else if (splitLines[line].substring(0, 1) == "\t") {
+				lines = lines + splitLines[line].substring(1) + "\n";
+			}
+			else {
+				lines = lines + splitLines[line] + "\n";
+			}
+		}
+		newPos = curPos;
 	}
 	this.setSelection(newPos);
 	this.insertText(lines);
@@ -158,7 +306,7 @@ TextArea.prototype.extendSelectionToFullLines = function() {
 	var sel = this.getSelectionCoordinates();
 	var sel1 = Math.min(sel.start, sel.end);
 	var sel2 = Math.max(sel.start, sel.end);
-	if (sel2 > sel1 && text.charCodeAt(sel2-1) == 10) sel2--;
+	if (sel2 > sel1 && text.charCodeAt(sel2 - 1) == 10) sel2--;
 	var start = text.substring(0, sel1).lastIndexOf("\n") + 1;
 	var end = text.substring(sel2).indexOf("\n");
 	if (end == -1) end = text.length;
@@ -175,7 +323,7 @@ TextArea.prototype.undo = function() {
 	}
 	this.restoreSnapshot(shot);
 }
-TextArea.prototype.redo= function() {
+TextArea.prototype.redo = function() {
 	var area = this.area;
 	while (true) {
 		if (area.redoHistory.length == 0) return;
@@ -185,12 +333,12 @@ TextArea.prototype.redo= function() {
 	}
 	this.restoreSnapshot(shot);
 }
-TextArea.prototype.snapshot= function() {
+TextArea.prototype.snapshot = function() {
 	var area = this.area;
 	var text = area.getValue();
 	// avoid duplicate entries
-	if (area.undoHistory.length > 0 && area.undoHistory[area.undoHistory.length-1].text == text) return; 
-	if (area.redoHistory.length > 0 && area.redoHistory[area.redoHistory.length-1].text == text) return; 
+	if (area.undoHistory.length > 0 && area.undoHistory[area.undoHistory.length - 1].text == text) return;
+	if (area.redoHistory.length > 0 && area.redoHistory[area.redoHistory.length - 1].text == text) return;
 	var sel = this.getSelectionCoordinates();
 	// if we have a redo history, we take the recent element back to the undo history,
 	// because it was the text fields original state before editing again
@@ -200,13 +348,13 @@ TextArea.prototype.snapshot= function() {
 		area.redoHistory = [];
 	}
 	area.undoHistory.push({
-		text: text,
-		start: sel.start,
-		end: sel.end,
-		scroll: area.scrollTop
-		});
+		text : text,
+		start : sel.start,
+		end : sel.end,
+		scroll : area.scrollTop
+	});
 }
-TextArea.prototype.restoreSnapshot= function(shot) {
+TextArea.prototype.restoreSnapshot = function(shot) {
 	var area = this.area;
 	area.value = shot.text;
 	var sel = this.setSelection(shot.start, shot.end);
@@ -233,7 +381,7 @@ TextArea.prototype.setSelection = function(f, a) {
 		b.moveStart("character", f);
 		b.select()
 	}
-	
+
 	// scroll to the new cursor position
 	var lineNumber = area.value.substr(0, area.selectionStart).split("\n").length;
 	var lineHeight = parseInt(jq$(area).css('line-height'));
@@ -242,7 +390,7 @@ TextArea.prototype.setSelection = function(f, a) {
 	var windowScroll = jq$(window).scrollTop();
 	var cursorOffset = lineHeight * lineNumber;
 	var totalCursorOffset = areaOffset + cursorOffset;
-	if (totalCursorOffset - lineHeight  < windowScroll) {
+	if (totalCursorOffset - lineHeight < windowScroll) {
 		jq$(window).scrollTop(totalCursorOffset - lineHeight);
 	}
 	if (totalCursorOffset > windowScroll + windowHeight) {
@@ -285,7 +433,7 @@ TextArea.prototype.getSelectionCoordinates = function() {
 			return e
 		}
 		var c = a.duplicate(), b = f.value, d = b.length
-				- b.match(/[\n\r]*$/)[0].length;
+			- b.match(/[\n\r]*$/)[0].length;
 		c.moveToElementText(f);
 		c.setEndPoint("StartToEnd", a);
 		e.end = d - c.text.length;
