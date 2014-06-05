@@ -34,8 +34,12 @@ TextArea.replaceSelection = function(a, g) {
 	return new TextArea(a).replaceSelection(g);
 }
 TextArea.prototype.handleKeyDown = function(event) {
+	// with this line, we remove a hack of jspwiki-edit.js,
+	// that is no longer needed but instead messes with keydown
+	// events of tab (keycode == 9) in chrome/webkit
+	if ($('editorarea')) $('editorarea').removeEvents('keydown');
+
 	event = jq$.event.fix(event);
-	console.log(event.which);
 	if (_EC.isModifier(event)) {
 		if (event.which == 89 || (event.which == 90 && event.shiftKey)) { // Y
 			event.stopPropagation();
@@ -91,21 +95,14 @@ TextArea.prototype.handleKeyDown = function(event) {
 		return;
 	}
 	if (event.which == 9 && isLongerSelection && !event.shiftKey) { // TAB + selection length > 0 + !SHIFT
-		if(/chrom(e|ium)/.test(navigator.userAgent.toLowerCase())){
-			return;
-		}
 		event.stopPropagation();
 		event.preventDefault();
 		event.stopImmediatePropagation();
-		console.log(event.isDefaultPrevented());
 		this.snapshot();
 		this.moveLines("tab");
 		return;
 	}
 	if (event.which == 9 && event.shiftKey) { // TAB + SHIFT
-		if(/chrom(e|ium)/.test(navigator.userAgent.toLowerCase())){
-			return;
-		}
 		event.stopPropagation();
 		event.preventDefault();
 		this.snapshot();
