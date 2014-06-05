@@ -198,10 +198,10 @@ public class D3webUtils {
 	/**
 	 * Utility method to get a {@link KnowledgeBase} for a specified article.
 	 *
-	 * @created 15.12.2010
 	 * @param article the article the knowledge base is compiled
 	 * @return the knowledge base if such one exists, null otherwise
 	 * @throws NullPointerException if the article is null
+	 * @created 15.12.2010
 	 */
 	@Deprecated
 	public static KnowledgeBase getKnowledgeBase(Article article) {
@@ -213,14 +213,14 @@ public class D3webUtils {
 	 * its web and topic. If no such knowledge base exists, a new knowledge base
 	 * is created for the article and returned.
 	 *
-	 * @created 15.12.2010
-	 * @param web the web of the article the knowledge base is compiled
+	 * @param web   the web of the article the knowledge base is compiled
 	 * @param title the title of the article the knowledge base is compiled
 	 * @return the knowledge base if such one exists, null otherwise
 	 * @throws NullPointerException if web or topic is null
+	 * @created 15.12.2010
 	 * @deprecated it is possible that there are multiple knowledge bases on one
-	 *             page, this method will always only return the first one. You
-	 *             can use
+	 * page, this method will always only return the first one. You
+	 * can use
 	 */
 	@Deprecated
 	public static KnowledgeBase getKnowledgeBase(String web, String title) {
@@ -253,17 +253,16 @@ public class D3webUtils {
 		}
 	}
 
-
 	/**
 	 * Returns the current value of a specific {@link ValueObject} within the
 	 * specified {@link Session}. If the value is currently being calculated,
 	 * the method immediately returns with "null" as value, instead of waiting
 	 * for the results of the current propagation.
 	 *
-	 * @created 05.10.2012
 	 * @param session the session to read the value from
-	 * @param object the object to read the value for
+	 * @param object  the object to read the value for
 	 * @return the value of the value object
+	 * @created 05.10.2012
 	 */
 	public static Value getValueNonBlocking(Session session, ValueObject object) {
 		// variant 1: conservative
@@ -295,7 +294,7 @@ public class D3webUtils {
 		}
 		catch (SessionTerminatedException e) {
 			Log.warning("Unable to set fact, because the current session is " +
-					"terminated (possibly due to a detected propagation loop).",
+							"terminated (possibly due to a detected propagation loop).",
 					e);
 		}
 		EventManager.getInstance().fireEvent(new FindingSetEvent(fact, session, context));
@@ -307,10 +306,10 @@ public class D3webUtils {
 	 * the method immediately returns with "null" as value, instead of waiting
 	 * for the results of the current propagation.
 	 *
-	 * @created 05.10.2012
-	 * @param session the session to read the value from
+	 * @param session  the session to read the value from
 	 * @param solution the object to read the value for
 	 * @return the value of the value object
+	 * @created 05.10.2012
 	 */
 	public static Rating getRatingNonBlocking(Session session, Solution solution) {
 		// variant 1: conservative
@@ -342,9 +341,9 @@ public class D3webUtils {
 	 * propagation.
 	 *
 	 * @param session the session to read the current values from
-	 * @param state the Rating the diagnoses must have to be returned
+	 * @param state   the Rating the diagnoses must have to be returned
 	 * @return a list of diagnoses in this case that have the state 'state' or
-	 *         null if any of these solutions is currently being calculated
+	 * null if any of these solutions is currently being calculated
 	 */
 	public static List<Solution> getSolutionsNonBlocking(Session session, Rating.State state) {
 		try {
@@ -364,7 +363,7 @@ public class D3webUtils {
 	 *
 	 * @param session the session to read the current answers from
 	 * @return a list of diagnoses in this case that have the state 'state' or
-	 *         null if any of these solutions is currently being calculated
+	 * null if any of these solutions is currently being calculated
 	 */
 	public static List<Question> getAnsweredQuestionsNonBlocking(Session session) {
 		try {
@@ -426,7 +425,7 @@ public class D3webUtils {
 	}
 
 	public static void handleLoopDetectionNotification(ArticleManager manager, UserContext context,
-			Session session) {
+													   Session session) {
 		LoopStatus loopStatus =
 				LoopTerminator.getInstance().getLoopStatus(session);
 		if (loopStatus.hasTerminated()) {
@@ -483,10 +482,10 @@ public class D3webUtils {
 	 * nothing to change.<br/>
 	 * If it is a different Value, the Value is returned unaltered.
 	 *
-	 * @created 11.08.2012
-	 * @param newValue the newly created Value for the dialog
+	 * @param newValue      the newly created Value for the dialog
 	 * @param existingValue the existing Value in the dialog
 	 * @return the Value you should set to the dialog
+	 * @created 11.08.2012
 	 */
 	public static Value handleEqualChoiceValues(Value newValue, Value existingValue) {
 		if (newValue instanceof ChoiceValue && newValue.equals(existingValue)) {
@@ -504,13 +503,14 @@ public class D3webUtils {
 	 * there are no knowledge slices. no questions and at most one solution
 	 * (root solution).
 	 *
-	 * @created 19.04.2013
 	 * @param kb
 	 * @return
+	 * @created 19.04.2013
 	 */
 	public static boolean isEmpty(KnowledgeBase kb) {
 		if (kb.getAllKnowledgeSlices().size() <= 1
 				&& kb.getManager().getQContainers().size() <= 1
+				&& kb.getManager().getQuestions().size() == 0
 				&& kb.getManager().getSolutions().size() <= 1) {
 			return true;
 		}
