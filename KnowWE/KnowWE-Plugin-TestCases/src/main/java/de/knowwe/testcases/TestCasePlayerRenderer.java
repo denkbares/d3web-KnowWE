@@ -67,7 +67,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.notification.NotificationManager;
 import de.knowwe.notification.OutDatedSessionNotification;
-import de.knowwe.testcases.table.ConditionCheck;
+import de.knowwe.testcases.table.KnowWEConditionCheck;
 
 /**
  * Renderer for TestCasePlayerType
@@ -509,8 +509,8 @@ public class TestCasePlayerRenderer implements Renderer {
 	}
 
 	private void renderCheck(Check check, UserContext user, RenderResult sb) {
-		if (check instanceof ConditionCheck) {
-			((ConditionCheck) check).render(user, sb);
+		if (check instanceof KnowWEConditionCheck) {
+			((KnowWEConditionCheck) check).render(user, sb);
 		}
 		else {
 			sb.append(check.getCondition());

@@ -19,9 +19,7 @@
 package de.knowwe.testcases.table;
 
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.inference.condition.Conditions;
-import de.d3web.core.session.Session;
-import de.d3web.testcase.model.Check;
+import de.d3web.testcase.model.ConditionCheck;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
@@ -32,9 +30,8 @@ import de.knowwe.core.user.UserContext;
  * @author volker_belli
  * @created 22.04.2012
  */
-public class ConditionCheck implements Check {
+public class KnowWEConditionCheck extends ConditionCheck {
 
-	private final Condition condition;
 	private final Section<?> section;
 
 	/**
@@ -44,23 +41,14 @@ public class ConditionCheck implements Check {
 	 * @param condition the condition to be checked
 	 * @param section the section defining the condition
 	 */
-	public ConditionCheck(Condition condition, Section<?> section) {
-		this.condition = condition;
+	public KnowWEConditionCheck(Condition condition, Section<?> section) {
+		super(condition);
 		this.section = section;
-	}
-
-	@Override
-	public boolean check(Session session) {
-		return Conditions.isTrue(condition, session);
 	}
 
 	@Override
 	public String getCondition() {
 		return section.getText();
-	}
-
-	public Condition getConditionObject() {
-		return condition;
 	}
 
 	public void render(UserContext context, RenderResult result) {

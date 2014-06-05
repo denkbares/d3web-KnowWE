@@ -36,6 +36,7 @@ import de.d3web.core.inference.condition.CondDate;
 import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.inference.condition.CondNum;
 import de.d3web.core.inference.condition.CondQuestion;
+import de.d3web.core.inference.condition.CondRegex;
 import de.d3web.core.inference.condition.CondUnknown;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -49,6 +50,7 @@ import de.d3web.core.session.values.Unknown;
 import de.d3web.empiricaltesting.Finding;
 import de.d3web.empiricaltesting.RatedSolution;
 import de.d3web.empiricaltesting.RatedTestCase;
+import de.d3web.empiricaltesting.RegexFinding;
 import de.d3web.empiricaltesting.SequentialTestCase;
 import de.d3web.empiricaltesting.StateRating;
 import de.d3web.testcase.model.Check;
@@ -67,7 +69,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.testcases.table.ConditionCheck;
+import de.knowwe.testcases.table.KnowWEConditionCheck;
 
 /**
  * @author Albrecht Striffler (denkbares GmbH)
@@ -247,8 +249,8 @@ public class TestCaseUtils {
 			else if (check instanceof DerivedQuestionCheck) {
 				addDerivedQuestionCheck(rtc, (DerivedQuestionCheck) check);
 			}
-			else if (check instanceof ConditionCheck) {
-				addConditionCheck(rtc, (ConditionCheck) check);
+			else if (check instanceof KnowWEConditionCheck) {
+				addConditionCheck(rtc, (KnowWEConditionCheck) check);
 			}
 			else {
 				throwUntransformableObjectException(check);
@@ -271,7 +273,7 @@ public class TestCaseUtils {
 		rtc.addExpectedFinding(new Finding(question, value));
 	}
 
-	private static void addConditionCheck(RatedTestCase rtc, ConditionCheck check) {
+	private static void addConditionCheck(RatedTestCase rtc, KnowWEConditionCheck check) {
 		Condition condition = check.getConditionObject();
 		handleCondition(rtc, condition);
 	}
@@ -291,6 +293,10 @@ public class TestCaseUtils {
 		}
 	}
 
+	private static void addCondRegex(RatedTestCase rtc, CondRegex condition) {
+		rtc.addExpectedRegexFinding(new RegexFinding(condition.getQuestion(), condition.getRegex()));
+	}
+
 	private static void addCondQuestion(RatedTestCase rtc, CondQuestion condition) {
 		Question question = condition.getQuestion();
 		if (condition instanceof CondEqual) {
@@ -307,6 +313,9 @@ public class TestCaseUtils {
 		else if (condition instanceof CondDate) {
 			QuestionValue value = ((CondDate) condition).getValue();
 			rtc.addExpectedFinding(new Finding(question, value));
+		}
+		else if (condition instanceof CondRegex) {
+			addCondRegex(rtc, (CondRegex) condition);
 		}
 		else {
 			throwUntransformableObjectException(condition);

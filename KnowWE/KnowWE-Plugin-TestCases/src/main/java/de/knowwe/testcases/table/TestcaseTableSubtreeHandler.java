@@ -47,7 +47,6 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.DefaultTestCaseStorage;
 import de.knowwe.testcases.SingleTestCaseProvider;
 import de.knowwe.testcases.TestCaseProvider;
-import de.knowwe.testcases.TestCaseProviderStorage;
 import de.knowwe.testcases.TestCaseUtils;
 
 /**
@@ -91,14 +90,14 @@ public class TestcaseTableSubtreeHandler extends D3webHandler<TestcaseTable> {
 				List<Condition> terms = ((CondAnd) condition).getTerms();
 				if (parts.size() == terms.size()) {
 					for (int i = 0; i < terms.size(); i++) {
-						checks.add(new ConditionCheck(terms.get(i), parts.get(i)));
+						checks.add(new KnowWEConditionCheck(terms.get(i), parts.get(i)));
 					}
 				}
 			}
 
 			// add one check if we have not added multiple ones
 			if (checks.isEmpty()) {
-				checks.add(new ConditionCheck(condition, condSec));
+				checks.add(new KnowWEConditionCheck(condition, condSec));
 			}
 		}
 
