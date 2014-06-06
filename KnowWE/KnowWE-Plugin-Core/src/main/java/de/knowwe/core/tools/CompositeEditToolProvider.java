@@ -19,6 +19,7 @@
 
 package de.knowwe.core.tools;
 
+import de.d3web.strings.Identifier;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -32,13 +33,13 @@ import de.knowwe.tools.ToolUtils;
 /**
  * Created by Stefan Plehn on 10.03.14.
  */
-public class RenamingToolProvider implements ToolProvider {
+public class CompositeEditToolProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		if (hasTools(section, userContext)) {
 			return new Tool[] {
-					getRenamingTool(Sections.cast(section, Term.class)) };
+					getCompositeEditTool(Sections.cast(section, Term.class)) };
 		}
 		return ToolUtils.emptyToolArray();
 	}
@@ -49,16 +50,24 @@ public class RenamingToolProvider implements ToolProvider {
 				&& ((Term) section.get()).getTermIdentifier(Sections.cast(section, Term.class)) != null && KnowWEUtils.canWrite(section, userContext);
 	}
 
-	protected Tool getRenamingTool(Section<? extends Term> section) {
+	protected Tool getCompositeEditTool(Section<? extends Term> section) {
 		return new DefaultTool(
-				"http://localhost:8080/KnowWE/KnowWEExtension/images/textfield_rename.png",
-				"Rename",
-				"Rename this term wiki wide.",
-				createRenamingAction(section));
+				"KnowWEExtension/images/pencil.png",
+				"Show Info",
+				"Opens the composite edit mode.",
+				createCompositeEditModeAction(section));
 	}
 
-	public static String createRenamingAction(Section<? extends Term> section) {
-		return "KNOWWE.plugin.renaming.renameTerm('" + section.getID() + "')";
+	public static String createCompositeEditModeAction(Section<? extends Term> section) {
+		Identifier termIdentifier = section.get().getTermIdentifier(section);
+		return createCompositeEditModeAction(termIdentifier);
 	}
+
+	public static String createCompositeEditModeAction(Identifier termIdentifier) {
+		String externalTermIdentifierForm = termIdentifier.toExternalForm();
+		return "KNOWWE.plugin.compositeEditTool.openCompositeEditDialog('"
+				+ TermInfoToolProvider.maskTermForHTML(externalTermIdentifierForm) + "')";
+	}
+
 }
 

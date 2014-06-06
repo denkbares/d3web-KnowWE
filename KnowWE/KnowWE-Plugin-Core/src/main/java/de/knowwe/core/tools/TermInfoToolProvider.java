@@ -92,10 +92,10 @@ public class TermInfoToolProvider implements ToolProvider {
 		if (sorted.size() > 5) sorted = sorted.subList(0, 5);
 
 		// create tools for edit, rename and definitions
-		Tool[] tools = new Tool[sorted.size() + 1];
+		Tool[] tools = new Tool[sorted.size()];
 		int index = 0;
-		tools[index++] = getCompositeEditTool(term);
-		//tools[index++] = getRenamingTool(term);b
+		//tools[index++] = getCompositeEditTool(term);
+		//tools[index++] = getRenamingTool(term);
 		for (String title : sorted) {
 			String link = KnowWEUtils.getURLLink(title);
 			String description = (home != null && title.equals(home.getTitle()))
@@ -154,44 +154,6 @@ public class TermInfoToolProvider implements ToolProvider {
 		return null;
 	}
 
-	protected Tool getObjectInfoPageTool(Section<? extends Term> section) {
-		return new DefaultTool(
-				"KnowWEExtension/d3web/icon/infoPage16.png",
-				"Show Info Page",
-				"Opens the information page for the specific object to show its usage inside this wiki.",
-				createObjectInfoJSAction(section),
-				Tool.CATEGORY_INFO);
-	}
-
-	protected Tool getRenamingTool(Section<? extends Term> section) {
-		return new DefaultTool(
-				"http://localhost:8080/KnowWE/KnowWEExtension/images/textfield_rename.png",
-				"Rename",
-				"Rename this term wiki wide.",
-				createRenamingAction(section),
-				Tool.CATEGORY_EDIT);
-	}
-
-	protected Tool getCompositeEditTool(Section<? extends Term> section) {
-		return new DefaultTool(
-				"KnowWEExtension/images/pencil.png",
-				"Show Info",
-				"Opens the composite edit mode.",
-				createCompositeEditModeAction(section));
-	}
-
-	public static String createCompositeEditModeAction(Section<? extends Term> section) {
-		Identifier termIdentifier = section.get().getTermIdentifier(section);
-		return createCompositeEditModeAction(termIdentifier);
-	}
-
-	public static String createCompositeEditModeAction(Identifier termIdentifier) {
-		String externalTermIdentifierForm = termIdentifier.toExternalForm();
-		String jsAction = "KNOWWE.plugin.compositeEditTool.openCompositeEditDialog('"
-				+ TermInfoToolProvider.maskTermForHTML(externalTermIdentifierForm) + "')";
-		return jsAction;
-	}
-
 	public static String createObjectInfoJSAction(Section<? extends Term> section) {
 		Identifier termIdentifier = section.get().getTermIdentifier(section);
 		return createObjectInfoPageJSAction(termIdentifier);
@@ -206,10 +168,6 @@ public class TermInfoToolProvider implements ToolProvider {
 				+ maskTermForHTML(externalTermIdentifierForm)
 				+ "') + '&amp;" + ObjectInfoTagHandler.OBJECT_NAME + "=' + encodeURIComponent('"
 				+ maskTermForHTML(lastPathElementExternalForm) + "')";
-	}
-
-	public static String createRenamingAction(Section<? extends Term> section) {
-		return "KNOWWE.plugin.renaming.renameTerm('" + section.getID() + "')";
 	}
 
 	public static String maskTermForHTML(String string) {

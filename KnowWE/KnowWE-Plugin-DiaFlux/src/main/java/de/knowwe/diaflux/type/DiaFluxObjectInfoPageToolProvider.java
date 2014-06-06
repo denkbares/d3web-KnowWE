@@ -20,7 +20,7 @@ package de.knowwe.diaflux.type;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.tools.TermInfoToolProvider;
+import de.knowwe.core.tools.CompositeEditToolProvider;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.diaflux.type.FlowchartXMLHeadType.FlowchartTermDef;
 import de.knowwe.tools.Tool;
@@ -31,7 +31,7 @@ import de.knowwe.tools.Tool;
  * @author Reinhard Hatko
  * @created 21.05.2013
  */
-public class DiaFluxObjectInfoPageToolProvider extends TermInfoToolProvider {
+public class DiaFluxObjectInfoPageToolProvider extends CompositeEditToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
