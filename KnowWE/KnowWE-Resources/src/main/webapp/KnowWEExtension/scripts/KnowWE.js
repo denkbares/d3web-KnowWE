@@ -683,6 +683,11 @@ var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
 	if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
 		window.addEvent('domready', function() {
 			KNOWWE.core.init();
+			jq$(document).keydown(function(event) {
+				if (event.altKey && event.which == 82) { // ALT + R -> Quick Rerender
+					KNOWWE.helper.observer.notify('update');
+				}
+			})
 		});
 	}
 	;
