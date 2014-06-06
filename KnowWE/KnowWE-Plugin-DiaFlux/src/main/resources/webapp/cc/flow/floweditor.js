@@ -542,7 +542,7 @@ Flowchart.prototype.copySelectionToClipboard = function() {
 	for (var i=0; i<this.rules.length; i++) {
 		var rule = this.rules[i];
 		if (sel.contains(rule)) continue;
-		if (sel.contains(rule.getSourceNode()) || sel.contains(rule.getTargetNode())) {
+		if (sel.contains(rule.getSourceNode()) && sel.contains(rule.getTargetNode())) {
 			sel.push(rule);
 		}
 	}
