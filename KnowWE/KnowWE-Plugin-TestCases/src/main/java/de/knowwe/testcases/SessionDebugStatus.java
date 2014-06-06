@@ -34,7 +34,7 @@ import de.d3web.utils.Pair;
 
 /**
  * Represents the status of an SessionDebuggerSection
- * 
+ *
  * @author Markus Friedrich (denkbares GmbH)
  * @created 19.01.2012
  */
@@ -44,6 +44,7 @@ public class SessionDebugStatus {
 	private Date lastExecuted = null;
 	private Map<Date, Collection<Pair<Check, Boolean>>> checkResults = new HashMap<Date, Collection<Pair<Check, Boolean>>>();
 	private Map<Date, Map<TerminologyObject, Value>> timeValues = new HashMap<Date, Map<TerminologyObject, Value>>();
+	private int failedChecks = 0;
 
 	public SessionDebugStatus(Session session) {
 		super();
@@ -57,15 +58,16 @@ public class SessionDebugStatus {
 	/**
 	 * Sets the session to a new session, clears the results of the checks and
 	 * resets the date of the lastExecuted
-	 * 
-	 * @created 25.01.2012
+	 *
 	 * @param session new Session
+	 * @created 25.01.2012
 	 */
 	public void setSession(Session session) {
 		this.session = session;
 		checkResults.clear();
 		timeValues.clear();
 		lastExecuted = null;
+		failedChecks = 0;
 	}
 
 	public Date getLastExecuted() {
@@ -78,11 +80,11 @@ public class SessionDebugStatus {
 
 	/**
 	 * Adds the result of a check to this status
-	 * 
-	 * @created 25.01.2012
-	 * @param date Date of the check
-	 * @param check executed {@link Check}
+	 *
+	 * @param date   Date of the check
+	 * @param check  executed {@link Check}
 	 * @param result result of the check
+	 * @created 25.01.2012
 	 */
 	public void addCheckResult(Date date, Check check, boolean result) {
 		Collection<Pair<Check, Boolean>> pairCollection = checkResults.get(date);
@@ -91,14 +93,19 @@ public class SessionDebugStatus {
 			checkResults.put(date, pairCollection);
 		}
 		pairCollection.add(new Pair<Check, Boolean>(check, result));
+		if (!result) failedChecks++;
+	}
+
+	public int getFailureCount() {
+		return this.failedChecks;
 	}
 
 	/**
 	 * Gets the result of all checks on a specified date
-	 * 
-	 * @created 25.01.2012
+	 *
 	 * @param date specified date
 	 * @return Collection of pairs representing checks and their results
+	 * @created 25.01.2012
 	 */
 	public Collection<Pair<Check, Boolean>> getCheckResults(Date date) {
 		return checkResults.get(date);
@@ -107,9 +114,9 @@ public class SessionDebugStatus {
 	/**
 	 * Needs to be called when all findings of a date are set to the session.
 	 * This method saves all values of questions, the user wants to observe.
-	 * 
-	 * @created 31.01.2012
+	 *
 	 * @param date specified Date
+	 * @created 31.01.2012
 	 */
 	public void finished(Date date) {
 		Map<TerminologyObject, Value> values = timeValues.get(date);
@@ -129,12 +136,12 @@ public class SessionDebugStatus {
 	 * Returns the value of a question at a specified time. The question must
 	 * have been added by the method addQuestionsToObserve before finishing the
 	 * date. If no value is found, null is returned.
-	 * 
-	 * @created 01.02.2012
+	 *
 	 * @param object specified {@link Question}
-	 * @param d specified {@link Date}
+	 * @param d      specified {@link Date}
 	 * @return Value of the Question at the Date or null, if no value has been
-	 *         saved
+	 * saved
+	 * @created 01.02.2012
 	 */
 	public Value getValue(TerminologyObject object, Date d) {
 		Map<TerminologyObject, Value> values = timeValues.get(d);

@@ -101,14 +101,36 @@ public class TestCasePlayerRenderer implements Renderer {
 			renderNoProviderWarning(playerSection, string);
 		}
 		else {
+			RenderResult caseSelectionResult = new RenderResult(string);
 			ProviderTriple selectedTriple = getAndRenderTestCaseSelection(
-					section, user, providers, string);
+					section, user, providers, caseSelectionResult);
+			renderOverallStatus(selectedTriple, user, string);
+			string.append(caseSelectionResult);
 			if (selectedTriple != null) {
 				renderSelectedTestCase(section, user, selectedTriple, string);
 			}
 		}
 		string.appendHtml("</div>");
 		result.append(string.toStringRaw());
+	}
+
+	private void renderOverallStatus(ProviderTriple selectedTriple, UserContext user, RenderResult string) {
+		int failureCount = selectedTriple.getProvider().getDebugStatus(user).getFailureCount();
+		string.appendHtmlTag("div", "style",
+				"display:inline-block; vertical-align:middle; text-align:center; padding-right: 5px");
+		if (failureCount == 0) {
+			string.appendHtmlElement("img", "", "src",
+					"KnowWEExtension/images/green_bulb.png", "title", "No check failures");
+		}
+		else if (failureCount == 1) {
+			string.appendHtmlElement("img", "", "src",
+					"KnowWEExtension/images/red_bulb.png", "title", "There is one failed check failure");
+		}
+		else {
+			string.appendHtmlElement("img", "", "src",
+					"KnowWEExtension/images/red_bulb.png", "title", "There are " + failureCount + " failed checks");
+		}
+		string.appendHtmlTag("/div");
 	}
 
 	private void renderSelectedTestCase(Section<?> section, UserContext user, ProviderTriple selectedTriple, RenderResult string) {
@@ -620,7 +642,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		}
 		selectsb.appendHtml("</select>");
 		if (selectedTriple != null) {
-			string.append(selectsb.toStringRaw());
+			string.append(selectsb);
 		}
 		else {
 			Message notValidTestCaseError = Messages.warning(

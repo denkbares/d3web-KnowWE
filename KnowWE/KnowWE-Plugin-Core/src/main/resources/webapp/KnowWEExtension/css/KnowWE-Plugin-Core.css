@@ -199,11 +199,11 @@ span.markupMenuItem {
 }
 
 .defaultMarkupFrame .progress-container .progress-error .progress-state {
-	background-image: url("../images/red_bulb.gif");
+	background-image: url("../images/red_bulb.png");
 }
 
 .defaultMarkupFrame .progress-container .progress-success .progress-state {
-	background-image: url("../images/green_bulb.gif");
+	background-image: url("../images/green_bulb.png");
 }
 
 .defaultMarkupFrame .progress-container .progress-message,
