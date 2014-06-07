@@ -57,7 +57,7 @@ public class RenamingToolProvider implements ToolProvider {
 				createRenamingAction(section));
 	}
 
-	public static String createRenamingAction(Section<? extends Term> section) {
+	protected String createRenamingAction(Section<? extends Term> section) {
 		return "KNOWWE.plugin.renaming.renameTerm('" + section.getID() + "')";
 	}
 }

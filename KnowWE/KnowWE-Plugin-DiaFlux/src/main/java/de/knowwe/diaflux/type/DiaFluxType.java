@@ -48,9 +48,6 @@ public class DiaFluxType extends DefaultMarkupType {
 
 	}
 
-	/**
-	 * @param markup
-	 */
 	public DiaFluxType() {
 		super(MARKUP);
 		setRenderer(new DiaFluxRenderer());

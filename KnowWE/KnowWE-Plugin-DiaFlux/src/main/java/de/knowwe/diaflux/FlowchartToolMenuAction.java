@@ -47,6 +47,10 @@ public class FlowchartToolMenuAction extends GetToolMenuAction {
 
 	@Override
 	protected Section<? extends Type> getSection(UserActionContext context, String identifier) {
+		return getSection(identifier);
+	}
+
+	public static Section<? extends Type> getSection(String identifier) {
 		try {
 			JSONObject json = new JSONObject(identifier);
 			String title = (String) json.get("pagename");

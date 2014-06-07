@@ -28,6 +28,7 @@ import org.json.JSONObject;
 
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Sections;
 
 /**
@@ -57,6 +58,7 @@ public class CompositeEditSaveAction extends AbstractAction {
 
 			//
 			Sections.replaceSections(context, nodesMap).sendErrors(context);
+			Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
 		}
 		catch (JSONException e) {
 			// TODO Auto-generated catch block

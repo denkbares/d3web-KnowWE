@@ -47,12 +47,13 @@ public class CompositeEditToolProvider implements ToolProvider {
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
 		return section.get() instanceof Term
-				&& ((Term) section.get()).getTermIdentifier(Sections.cast(section, Term.class)) != null && KnowWEUtils.canWrite(section, userContext);
+				&& ((Term) section.get()).getTermIdentifier(Sections.cast(section, Term.class)) != null
+				&& KnowWEUtils.canWrite(section, userContext);
 	}
 
 	protected Tool getCompositeEditTool(Section<? extends Term> section) {
 		return new DefaultTool(
-				"KnowWEExtension/images/pencil.png",
+				"KnowWEExtension/d3web/icon/infoPage16.png",
 				"Show Info",
 				"Opens the composite edit mode.",
 				createCompositeEditModeAction(section));

@@ -21,9 +21,9 @@ package de.knowwe.core.tools;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
@@ -35,6 +35,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.preview.PreviewManager;
 import de.knowwe.core.taghandler.ObjectInfoTagHandler;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -69,15 +70,16 @@ public class TermInfoToolProvider implements ToolProvider {
 		Section<? extends Term> term = Sections.cast(section, Term.class);
 
 		// get sorted list of all defining articles
-		Set<String> articleNames = new HashSet<String>();
+		Map<String, Section<?>> articles = new HashMap<String, Section<?>>();
 		for (TermCompiler termCompiler : Compilers.getCompilers(section, TermCompiler.class)) {
 			TerminologyManager manager = termCompiler.getTerminologyManager();
 			Collection<Section<?>> definitions = manager.getTermDefiningSections(identifier);
 			for (Section<?> definition : definitions) {
-				articleNames.add(definition.getTitle());
+				Section<?> previewAncestor = PreviewManager.getInstance().getPreviewAncestor(definition);
+				articles.put(definition.getTitle(), previewAncestor == null ? definition : previewAncestor);
 			}
 		}
-		List<String> sorted = new ArrayList<String>(articleNames);
+		List<String> sorted = new ArrayList<String>(articles.keySet());
 		Collections.sort(sorted);
 
 		// check if we have a home page for that term (article that has the same title)
@@ -97,7 +99,14 @@ public class TermInfoToolProvider implements ToolProvider {
 		//tools[index++] = getCompositeEditTool(term);
 		//tools[index++] = getRenamingTool(term);
 		for (String title : sorted) {
-			String link = KnowWEUtils.getURLLink(title);
+			Section<?> definition = articles.get(title);
+			String link;
+			if (definition == null) {
+				link = KnowWEUtils.getURLLink(title);
+			}
+			else {
+				link = KnowWEUtils.getURLLink(definition);
+			}
 			String description = (home != null && title.equals(home.getTitle()))
 					? "Opens the home page for the specific object."
 					: "Opens the definition page for the specific object to show its usage inside this wiki.";

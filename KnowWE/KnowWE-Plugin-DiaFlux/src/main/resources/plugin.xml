@@ -90,6 +90,31 @@
 		<parameter id="scope" value="FlowchartReference" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="RenamingToolProvider">
+		<parameter id="class" value="de.knowwe.core.tools.RenamingToolProvider" />
+		<parameter id="name" value="RenamingToolProvider" />
+		<parameter id="description"
+			value="Offer a button to navigate to the object information page of an selected object." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="StartNodeDef" />
+		<parameter id="scope" value="ExitNodeDef" />
+		<parameter id="scope" value="FlowchartTermDef" />
+		<parameter id="scope" value="StartNodeReference" />
+		<parameter id="scope" value="ExitNodeReference" />
+		<parameter id="scope" value="FlowchartReference" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="DiaFluxRenamingToolProvider">
+		<parameter id="class" value="de.knowwe.diaflux.type.DiaFluxRenamingToolProvider" />
+		<parameter id="name" value="DiaFluxRenamingToolProvider" />
+		<parameter id="description"
+			value="Offer a button to navigate to the object information page of an selected object." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="DiaFlux" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="DiaFluxItemPreviewRenderer">
 		<parameter id="class" value="de.knowwe.diaflux.DiaFluxItemPreviewRenderer" />
 		<parameter id="name" value="DiaFluxItemPreviewRenderer" />

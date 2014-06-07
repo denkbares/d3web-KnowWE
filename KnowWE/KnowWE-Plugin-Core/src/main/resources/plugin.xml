@@ -140,8 +140,6 @@
 		<parameter id="scope" value="IRITermReference" />
 		<parameter id="scope" value="FlowchartOrderReference" />
 		<parameter id="scope" value="PackageTerm" />
-		<parameter id="exclude" value="Diaflux/**/Term" />
-
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="TagHandlerType">
@@ -300,7 +298,7 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="GetInfosForInlineTermRenamingAction">
-		<parameter id="class" value="de.knowwe.core.action.GetInfosForInlineTermRenamingAction" />
+		<parameter id="class" value="de.knowwe.core.action.GetRenamingInfoAction" />
 		<parameter id="name" value="GetInfosForInlineTermRenamingAction" />
 		<parameter id="description" value="Action GetInfosForInlineTermRenamingAction" />
 		<parameter id="version" value="1.0" />

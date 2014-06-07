@@ -26,9 +26,9 @@ import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.omg.CosNaming._BindingIteratorImplBase;
 
 import de.d3web.strings.Identifier;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
@@ -39,19 +39,19 @@ import de.knowwe.core.utils.KnowWEUtils;
 /**
  * Created by stefan on 20.02.14.
  */
-public class GetInfosForInlineTermRenamingAction extends AbstractAction {
+public class GetRenamingInfoAction extends AbstractAction {
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		String sectionid = context.getParameter("sectionId");
-		Section<?> section = Sections.getSection(sectionid);
-		Identifier termIdentifier = ((Term) section.get()).getTermIdentifier((Section<? extends Term>) section);
+		String sectionId = context.getParameter(Attributes.SECTION_ID);
+		Section<?> section = Sections.getSection(sectionId);
+		Identifier termIdentifier = ((Term) section.get()).getTermIdentifier(Sections.cast(section, Term.class));
 
-		Set<String> allTermOccurences = getAllTermOccurencesOnThisArticle(section, termIdentifier, context.getArticle());
-
+		Set<String> allTermOccurrences = getAllTermOccurencesOnThisArticle(section, termIdentifier, context.getArticle());
 
 		JSONObject json = new JSONObject();
 		try {
-			json.put("sectionIds", allTermOccurences);
+			json.put("sectionIds", allTermOccurrences);
 			json.put("termIdentifier", termIdentifier.toExternalForm());
 			json.put("lastPathElement", termIdentifier.getLastPathElement());
 			json.put("sectionText", section.getText());
@@ -61,6 +61,10 @@ public class GetInfosForInlineTermRenamingAction extends AbstractAction {
 			e.printStackTrace();
 		}
 
+	}
+
+	protected Section<?> getSection(String identifier) {
+		return Sections.getSection(identifier);
 	}
 
 	private Set<String> getAllTermOccurencesOnThisArticle(Section<?> section, Identifier termIdentifier, Article article) {

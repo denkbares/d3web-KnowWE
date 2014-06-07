@@ -21,9 +21,9 @@ package de.knowwe.diaflux.type;
 import java.util.Collection;
 import java.util.TreeSet;
 
-import de.knowwe.core.compile.Compilers;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
@@ -34,6 +34,7 @@ import de.knowwe.diaflux.type.StartType.StartNodeDef;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.tools.ToolUtils;
 
 /**
  * @author Albrecht Striffler (denkbares GmbH)
@@ -45,8 +46,9 @@ public class FlowchartGoToToolProvider implements ToolProvider {
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 
 		TreeSet<Tool> tools = new TreeSet<Tool>();
-		Article compilingArticle = Compilers.getCompilingArticles(section).iterator().next();
-		TerminologyManager terminologyManager = KnowWEUtils.getTerminologyManager(compilingArticle);
+		D3webCompiler compiler = D3webUtils.getCompiler(section);
+		if (compiler == null) return ToolUtils.emptyToolArray();
+		TerminologyManager terminologyManager = compiler.getTerminologyManager();
 		if (section.get() instanceof StartNodeDef || section.get() instanceof ExitNodeDef) {
 			Collection<Section<?>> termRefSections = terminologyManager.getTermReferenceSections(KnowWEUtils.getTermIdentifier(section));
 			for (Section<?> termSection : termRefSections) {
@@ -91,7 +93,7 @@ public class FlowchartGoToToolProvider implements ToolProvider {
 				termSection, FlowchartType.class);
 		String link = KnowWEUtils.getURLLink(flowchartSection);
 		String title = "Open '" + FlowchartType.getFlowchartName(flowchartSection) + "'";
-		return new OpenFlowTool("KnowWEExtension/testcaseplayer/icon/testcaselink.png",
+		return new OpenFlowTool("KnowWEExtension/images/article16.png",
 				title, title, link, Tool.ActionType.HREF);
 	}
 

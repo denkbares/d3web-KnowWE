@@ -779,7 +779,7 @@ KNOWWE.plugin.compositeEditTool = function () {
 			jsonObj = [];
 			jq$('#compositeEdit .editarea').each(function () {
 
-				var id = jq$(this).attr("id");
+				var id = jq$(this).attr("sectionid");
 				var text = _CEWT.getSectionText(id);
 
 				item = {}

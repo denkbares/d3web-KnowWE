@@ -6,11 +6,11 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.diaflux.type.FlowchartEditProvider;
 import de.knowwe.diaflux.type.FlowchartType;
+import de.knowwe.diaflux.type.FlowchartXMLHeadType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.tools.ToolSet;
 
 /**
- * 
  * @author Reinhard Hatko
  * @created 24.11.2010
  */
@@ -22,10 +22,10 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer {
 
 	@Override
 	protected void appendHeader(String title,
-			String sectionID,
-			ToolSet tools,
-			UserContext user,
-			RenderResult temp) {
+								String sectionID,
+								ToolSet tools,
+								UserContext user,
+								RenderResult temp) {
 
 		// we want to hide the header during loading to reduce the flicker
 		String hiderId = "menuHider" + sectionID;
@@ -75,5 +75,20 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer {
 		if (flowchart == null) {
 			string.append(" %%\n");
 		}
+	}
+
+	protected void renderTitle(Section<?> section, UserContext user, RenderResult string) {
+		String icon = getTitleIcon(section, user);
+		String title = getTitleName(section, user);
+
+		// render icon
+		if (icon != null) {
+			string.appendHtml("<img class='markupIcon' src='" + icon + "' /> ");
+		}
+		Section<FlowchartXMLHeadType.FlowchartTermDef> termDefSection
+				= Sections.findSuccessor(section, FlowchartXMLHeadType.FlowchartTermDef.class);
+		// render heading
+		string.appendHtml("<span><span toolmenuidentifier='" + termDefSection.getID() + "'>")
+				.append(title).appendHtml("</span></span>");
 	}
 }

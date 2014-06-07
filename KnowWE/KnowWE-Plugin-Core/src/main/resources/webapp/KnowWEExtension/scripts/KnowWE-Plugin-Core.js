@@ -291,7 +291,7 @@ KNOWWE.plugin.renaming = function() {
 	function getOldTermIdentifierAndMatchingSections(sectionId, callback) {
 		var params = {
 			action : "GetInfosForInlineTermRenamingAction",
-			sectionId : sectionId
+			SectionID : sectionId
 		}
 		var options = {
 			url : KNOWWE.core.util.getURL(params),
@@ -377,10 +377,10 @@ KNOWWE.plugin.renaming = function() {
 	}
 
 	return {
-		renameTerm : function(toolmenuidentifier) {
+		renameTerm : function(toolMenuIdentifier) {
 			setViewRoot();
 			var callback = function(jsonResponse) {
-				var clickedTerm = jq$(viewRoot + "span[toolmenuidentifier=" + toolmenuidentifier + "]")[0].parentNode;
+				var clickedTerm = jq$(viewRoot + "[toolmenuidentifier=" + toolMenuIdentifier + "]")[0].parentNode;
 
 				//get edit field
 				jq$(clickedTerm).addClass("click");
@@ -410,7 +410,7 @@ KNOWWE.plugin.renaming = function() {
 					showCurrentEditOnOtherOccurences(jq$(this).val());
 				});
 			}
-			getOldTermIdentifierAndMatchingSections(toolmenuidentifier, callback);
+			getOldTermIdentifierAndMatchingSections(toolMenuIdentifier, callback);
 
 		}
 

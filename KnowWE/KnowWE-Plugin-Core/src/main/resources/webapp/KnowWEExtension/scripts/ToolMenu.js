@@ -96,7 +96,12 @@ ToolMenu.prototype.getToolMenuHtml = function (node) {
 		var ajaxCall = new _KA(options);
 		ajaxCall.send();
 		var parsedResponse = JSON.parse(ajaxCall.getResponse());
-		this.cache[toolMenuIdentifier] = parsedResponse.menuHTML;
+		this.cache[ parsedResponse.sectionId] = parsedResponse.menuHTML;
+		if (specialAction) {
+			jq$(node).removeAttr('toolMenuAction');
+			jq$(node).attr('toolMenuIdentifier', parsedResponse.sectionId);
+			toolMenuIdentifier = parsedResponse.sectionId;
+		}
 	}
 	return this.cache[toolMenuIdentifier];
 }

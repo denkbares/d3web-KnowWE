@@ -35,7 +35,7 @@ import de.knowwe.tools.ToolUtils;
 
 /**
  * Returns the HTML of tool menu for a certain section.
- * 
+ *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 02.10.2013
  */
@@ -50,7 +50,8 @@ public class GetToolMenuAction extends AbstractAction {
 
 		String identifier = context.getParameter(IDENTIFIER);
 
-		ToolSet tools = getTools(context, identifier);
+		Section<? extends Type> section = getSection(context, identifier);
+		ToolSet tools = getTools(context, section);
 		if (!tools.hasTools()) return;
 
 		RenderResult string = new RenderResult(context);
@@ -59,13 +60,14 @@ public class GetToolMenuAction extends AbstractAction {
 		JSONObject response = new JSONObject();
 		try {
 			response.accumulate("menuHTML", string.toString());
+			response.accumulate("sectionId", section.getID());
 			if (context.getWriter() != null) {
 				context.setContentType("text/html; charset=UTF-8");
 				response.write(context.getWriter());
 			}
 		}
 		catch (JSONException e) {
-			new IOException(e);
+			throw new IOException(e);
 		}
 
 	}
@@ -75,36 +77,35 @@ public class GetToolMenuAction extends AbstractAction {
 	 * usually identifies a particular section). You may return null if there
 	 * are no such tools available. In this case you may write some response
 	 * error to the context.
-	 * <p>
+	 * <p/>
 	 * This method may be overwritten to provide tools for some identifier that
 	 * do NOT denote a section.
-	 * 
-	 * @created 10.11.2013
+	 *
 	 * @param context the user context of the request
-	 * @param identifier the identifier
+	 * @param section the section of which we want the tools
 	 * @return the Tools for the identifier
 	 * @throws IOException
+	 * @created 10.11.2013
 	 */
-	protected ToolSet getTools(UserActionContext context, String identifier) throws IOException {
-		Section<? extends Type> sec = getSection(context, identifier);
-		if (sec == null) {
+	protected ToolSet getTools(UserActionContext context, Section<? extends Type> section) throws IOException {
+		if (section == null) {
 			context.sendError(409, "Section could not be found, "
 					+ "possibly because somebody else"
 					+ " has edited the page.");
 			return ToolUtils.emptyTools();
 		}
-		return ToolUtils.getTools(sec, context);
+		return ToolUtils.getTools(section, context);
 	}
 
 	/**
 	 * Returns the section that is denoted by a particular identifier. You may
 	 * override this method if a custom method to find the section by the
 	 * identifier is required.
-	 * 
-	 * @created 10.11.2013
-	 * @param context the context of the user
+	 *
+	 * @param context    the context of the user
 	 * @param identifier the identifier to get the section for
 	 * @return the section for that identifier
+	 * @created 10.11.2013
 	 */
 	protected Section<? extends Type> getSection(UserActionContext context, String identifier) throws IOException {
 		return Sections.getSection(identifier);
