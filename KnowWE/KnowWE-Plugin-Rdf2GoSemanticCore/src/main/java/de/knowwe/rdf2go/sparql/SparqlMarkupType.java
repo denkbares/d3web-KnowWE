@@ -20,6 +20,8 @@
 
 package de.knowwe.rdf2go.sparql;
 
+import java.util.regex.Pattern;
+
 import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
@@ -39,6 +41,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 	public static final String BORDER = "border";
 	public static final String NAME = "name";
 	public static final String RENDER_QUERY = "showQuery";
+	public static final String TIMEOUT = "timeout";
 	private static DefaultMarkup m = null;
 
 	public static final String MARKUP_NAME = "Sparql";
@@ -48,8 +51,8 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		m.addContentType(new SparqlContentType());
 		m.addAnnotation(RAW_OUTPUT, false, "true", "false");
 		m.addAnnotation(NAVIGATION, false, "true", "false");
-		m.addAnnotation(RENDER_QUERY, false, "true", "false");
 		m.addAnnotationRenderer(NAVIGATION, NothingRenderer.getInstance());
+		m.addAnnotation(RENDER_QUERY, false, "true", "false");
 		m.addAnnotation(ZEBRAMODE, false, "true", "false");
 		m.addAnnotationRenderer(ZEBRAMODE, NothingRenderer.getInstance());
 		m.addAnnotation(TREE, false, "true", "false");
@@ -60,6 +63,8 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		m.addAnnotationRenderer(BORDER, NothingRenderer.getInstance());
 		m.addAnnotation(AsynchronRenderer.ASYNCHRONOUS, false, "true", "false");
 		m.addAnnotationRenderer(AsynchronRenderer.ASYNCHRONOUS, NothingRenderer.getInstance());
+		m.addAnnotation(TIMEOUT, false, Pattern.compile("\\d+(\\.\\d+)?"));
+		m.addAnnotationRenderer(TIMEOUT, NothingRenderer.getInstance());
 		m.addAnnotation(Rdf2GoCore.GLOBAL, false, "true", "false");
 		m.addAnnotationRenderer(Rdf2GoCore.GLOBAL, NothingRenderer.getInstance());
 		m.addAnnotation(NAME, false);

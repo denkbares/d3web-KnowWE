@@ -37,6 +37,15 @@ import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 
@@ -84,6 +93,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 public class Rdf2GoCore {
 
 	public static final String LNS_ABBREVIATION = "lns";
+	public static final int DEFAULT_TIMEOUT = 5000;
 
 	public enum Rdf2GoModel {
 		JENA, BIGOWLIM, SESAME, SWIFTOWLIM
@@ -105,10 +115,12 @@ public class Rdf2GoCore {
 
 	public static final String GLOBAL = "GLOBAL";
 
+	private static final ExecutorService sparqlDaemonPool = createThreadPool();
+
 	private static final int DEFAULT_MAX_CACHE_SIZE = 1000000; // should be below 100 MB of cache (we count each cell)
 
-	private final Map<String, Object> resultCache
-			= Collections.synchronizedMap(new LinkedHashMap<String, Object>(16, 0.75f, true));
+	private final Map<String, SparqlTask> resultCache
+			= new LinkedHashMap<String, SparqlTask>(16, 0.75f, true);
 
 	private int resultCacheSize = 0;
 
@@ -137,6 +149,17 @@ public class Rdf2GoCore {
 			}
 		}
 		return null;
+	}
+
+	private static ExecutorService createThreadPool() {
+		int threadCount = Runtime.getRuntime().availableProcessors() * 3 / 2 + 1;
+		return Executors.newFixedThreadPool(threadCount, new ThreadFactory() {
+
+			@Override
+			public Thread newThread(Runnable runnable) {
+				return new Thread(runnable, "KnowWE-Sparql-Deamon");
+			}
+		});
 	}
 
 	@Deprecated
@@ -439,7 +462,9 @@ public class Rdf2GoCore {
 			boolean verboseLog = removeSize + insertSize < 50;
 
 			if (removeSize > 0 || insertSize > 0) {
-				resultCache.clear();
+				synchronized (resultCache) {
+					resultCache.clear();
+				}
 				resultCacheSize = 0;
 			}
 
@@ -932,84 +957,193 @@ public class Rdf2GoCore {
 		return sparqlSelect(query.toSparql(this));
 	}
 
-	public QueryResultTable sparqlSelect(String query) throws ModelRuntimeException {
-		return sparqlSelect(query, true);
+	/**
+	 * Performs a cached SPARQL select query with the default timeout of 5 seconds.
+	 *
+	 * @param query the SPARQL query to perform
+	 * @return the result of the query
+	 */
+	public QueryResultTable sparqlSelect(String query) {
+		return sparqlSelect(query, true, DEFAULT_TIMEOUT);
 	}
 
-	public boolean sparqlAsk(String query) throws ModelRuntimeException {
-		return sparqlAsk(query, true);
+	/**
+	 * Performs a cached SPARQL ask query with the default timeout of 5 seconds.
+	 *
+	 * @param query the SPARQL query to perform
+	 * @return the result of the query
+	 */
+	public boolean sparqlAsk(String query) {
+		return sparqlAsk(query, true, DEFAULT_TIMEOUT);
 	}
 
-	public ClosableIterable<Statement> sparqlConstruct(String query) throws ModelRuntimeException {
-		return sparqlConstruct(query, true);
+	/**
+	 * Performs a cached SPARQL construct query with the default timeout of 5 seconds.
+	 *
+	 * @param query the SPARQL query to perform
+	 * @return the result of the query
+	 */
+	public ClosableIterable<Statement> sparqlConstruct(String query) {
+		return sparqlConstruct(query, true, DEFAULT_TIMEOUT);
 	}
 
-	public QueryResultTable sparqlSelect(String query, boolean cache) throws ModelRuntimeException {
-		return (QueryResultTable) sparql(query, cache, SparqlType.SELECT);
+	/**
+	 * Performs a SPARQL select query with the given parameters. Be aware that, in case of an uncached query, the
+	 * timeout only effects the process of creating the iterator. Retrieving elements from the iterator might again
+	 * take a long time not covered by the timeout.
+	 *
+	 * @param query         the SPARQL query to perform
+	 * @param cached        sets whether the SPARQL query is to be cached or not
+	 * @param timeOutMillis the timeout of the query
+	 * @return the result of the query
+	 */
+	public QueryResultTable sparqlSelect(String query, boolean cached, long timeOutMillis) {
+		return (QueryResultTable) sparql(query, cached, timeOutMillis, SparqlType.SELECT);
 	}
 
-	public boolean sparqlAsk(String query, boolean cache) throws ModelRuntimeException {
-		return (Boolean) sparql(query, cache, SparqlType.ASK);
+	/**
+	 * Performs a SPARQL ask query with the given parameters. Be aware that, in case of an uncached query, the
+	 * timeout only effects the process of creating the iterator. Retrieving elements from the iterator might again
+	 * take a long time not covered by the timeout.
+	 *
+	 * @param query         the SPARQL query to perform
+	 * @param cached        sets whether the SPARQL query is to be cached or not
+	 * @param timeOutMillis the timeout of the query
+	 * @return the result of the query
+	 */
+	public boolean sparqlAsk(String query, boolean cached, long timeOutMillis) {
+		return (Boolean) sparql(query, cached, timeOutMillis, SparqlType.ASK);
 	}
 
+	/**
+	 * Performs a SPARQL construct query with the given parameters. Be aware that, in case of an uncached query, the
+	 * timeout only effects the process of creating the iterator. Retrieving elements from the iterator might again
+	 * take a long time not covered by the timeout.
+	 *
+	 * @param query         the SPARQL query to perform
+	 * @param cached        sets whether the SPARQL query is to be cached or not
+	 * @param timeOutMillis the timeout of the query
+	 * @return the result of the query
+	 */
 	@SuppressWarnings("unchecked")
-	public ClosableIterable<Statement> sparqlConstruct(String query, boolean cache) throws ModelRuntimeException {
-		return (ClosableIterable<Statement>) sparql(query, cache, SparqlType.CONSTRUCT);
+	public ClosableIterable<Statement> sparqlConstruct(String query, boolean cached, long timeOutMillis) {
+		return (ClosableIterable<Statement>) sparql(query, cached, timeOutMillis, SparqlType.CONSTRUCT);
 	}
 
-	private Object sparql(String query, boolean cache, SparqlType type) {
+	private Object sparql(String query, boolean cached, long timeOutMillis, SparqlType type) {
 		String completeQuery = completeQuery(query);
-		Object result;
-		if (cache) {
-			result = cachedSparql(completeQuery, type);
-		} else {
-			lock.readLock().lock();
-			try {
-				result = uncachedSparql(completeQuery, type);
-			}
-			finally {
-				lock.readLock().unlock();
+		SparqlTask sparqlTask;
+		if (cached) {
+			synchronized (resultCache) {
+				sparqlTask = resultCache.get(completeQuery);
+				if (sparqlTask == null || sparqlTask.getTimeOutMillis() != timeOutMillis) {
+					sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, true), timeOutMillis);
+					resultCache.put(completeQuery, sparqlTask);
+					sparqlDaemonPool.execute(sparqlTask);
+				}
 			}
 		}
-		return result;
-	}
-
-	private Object uncachedSparql(String completeQuery, SparqlType type) {
-		Object result;
-		if (type == SparqlType.CONSTRUCT) {
-			result = new LockableClosableIterable<Statement>(lock.readLock(), model.sparqlConstruct(completeQuery));
-		} else if (type == SparqlType.SELECT) {
-			result = new LockableResultTable(lock.readLock(), model.sparqlSelect(completeQuery));
-		} else {
-			result = model.sparqlAsk(completeQuery);
+		else {
+			sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, false), timeOutMillis);
+			sparqlDaemonPool.execute(sparqlTask);
 		}
-		return result;
+		String timeOutMessage = "SPARQL took more than " + Strings.getDurationVerbalization(timeOutMillis, true)
+				+ " and was therefore canceled.";
+		try {
+			Object result = sparqlTask.get(timeOutMillis, TimeUnit.MILLISECONDS);
+			resultCacheSize += getResultSize(sparqlTask);
+			assureMaxCacheSize();
+			return result;
+		}
+		catch (TimeoutException toe) {
+			sparqlTask.cancel(true);
+			Log.warning(timeOutMessage, toe);
+			throw new RuntimeException(timeOutMessage);
+		}
+		catch (CancellationException ce) {
+			throw new RuntimeException(timeOutMessage);
+		}
+		catch (InterruptedException e) {
+			Log.warning("Interrupted while retrieving SPARQL", e);
+		}
+		catch (ExecutionException e) {
+			// it is very likely a (Model)RuntimeException anyway, we avoid adding throws everywhere
+			throw new RuntimeException(e.getCause());
+		}
+
+		return getEmptySparqlResult(type);
 	}
 
-	private Object cachedSparql(String query, SparqlType type) {
-		Object cachedResult = resultCache.get(query);
-		if (cachedResult == null) {
+	private Object getEmptySparqlResult(SparqlType type) {
+		if (type == SparqlType.SELECT) {
+			return new CachedQueryResultTable(Collections.<String>emptyList(), Collections.<QueryRow>emptyList());
+		}
+		else if (type == SparqlType.CONSTRUCT) {
+			return new CachedClosableIterable<Statement>(Collections.<Statement>emptyList());
+		}
+		else {
+			return false;
+		}
+	}
+
+	private class SparqlTask extends FutureTask<Object> {
+
+		private final long timeOutMillis;
+
+		public SparqlTask(Callable<Object> callable, long timeOutMillis) {
+			super(callable);
+			this.timeOutMillis = timeOutMillis;
+		}
+
+		public long getTimeOutMillis() {
+			return timeOutMillis;
+		}
+	}
+
+	private class SparqlCallable implements Callable<Object> {
+
+		private final String query;
+		private final SparqlType type;
+		private final boolean cached;
+
+		private SparqlCallable(String query, SparqlType type, boolean cached) {
+			this.query = query;
+			this.type = type;
+			this.cached = cached;
+		}
+
+		@Override
+		public Object call() {
+			Object result;
 			lock.readLock().lock();
 			try {
 				if (type == SparqlType.CONSTRUCT) {
-					cachedResult = toCachedClosableIterable(model.sparqlConstruct(query));
+					ClosableIterable<Statement> constructResult = model.sparqlConstruct(query);
+					if (cached) {
+						result = toCachedClosableIterable(constructResult);
+					}
+					else {
+						result = new LockableClosableIterable<Statement>(lock.readLock(), constructResult);
+					}
 				}
 				else if (type == SparqlType.SELECT) {
-					cachedResult = toCachedQueryResult(model.sparqlSelect(query));
+					QueryResultTable selectResult = model.sparqlSelect(query);
+					if (cached) {
+						result = toCachedQueryResult(selectResult);
+					}
+					else {
+						result = new LockableResultTable(lock.readLock(), selectResult);
+					}
 				}
 				else {
-					cachedResult = model.sparqlAsk(query);
+					result = model.sparqlAsk(query);
 				}
-				if (resultCache.put(query, cachedResult) == null) {
-					resultCacheSize += getResultSize(cachedResult);
-				}
-				assureMaxCacheSize();
 			}
 			finally {
 				lock.readLock().unlock();
 			}
+			return result;
 		}
-		return cachedResult;
 	}
 
 	private CachedClosableIterable<Statement> toCachedClosableIterable(ClosableIterable<Statement> result) {
@@ -1064,12 +1198,12 @@ public class Rdf2GoCore {
 		return cachedResult;
 	}
 
-	private void assureMaxCacheSize() {
+	private void assureMaxCacheSize() throws ExecutionException, InterruptedException {
 		if (resultCacheSize > DEFAULT_MAX_CACHE_SIZE) {
 			synchronized (resultCache) {
-				Iterator<Entry<String, Object>> iterator = resultCache.entrySet().iterator();
+				Iterator<Entry<String, SparqlTask>> iterator = resultCache.entrySet().iterator();
 				while (iterator.hasNext() && resultCacheSize > DEFAULT_MAX_CACHE_SIZE) {
-					Entry<String, Object> next = iterator.next();
+					Entry<String, SparqlTask> next = iterator.next();
 					iterator.remove();
 					resultCacheSize -= getResultSize(next.getValue());
 				}
@@ -1077,13 +1211,15 @@ public class Rdf2GoCore {
 		}
 	}
 
-	private int getResultSize(Object cachedResult) {
-		if (cachedResult instanceof CachedQueryResultTable) {
-			CachedQueryResultTable cacheResult = (CachedQueryResultTable) cachedResult;
+	private int getResultSize(SparqlTask sparqlTask) throws ExecutionException, InterruptedException {
+		if (!sparqlTask.isDone()) return 0;
+		Object result = sparqlTask.get();
+		if (result instanceof CachedQueryResultTable) {
+			CachedQueryResultTable cacheResult = (CachedQueryResultTable) result;
 			return cacheResult.variables.size() * cacheResult.result.size();
 		}
-		else if (cachedResult instanceof CachedClosableIterable) {
-			return ((CachedClosableIterable) cachedResult).delegate.size();
+		else if (result instanceof CachedClosableIterable) {
+			return ((CachedClosableIterable) result).delegate.size();
 		}
 		else {
 			return 1;

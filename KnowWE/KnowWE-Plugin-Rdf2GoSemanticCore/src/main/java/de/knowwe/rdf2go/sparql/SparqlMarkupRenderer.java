@@ -25,16 +25,17 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.Cookie;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.QueryResultTable;
 
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
@@ -51,9 +52,9 @@ public class SparqlMarkupRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> sec, UserContext user, RenderResult result) {
-		Section<DefaultMarkupType> defaultMarkup = Sections.findAncestorOfType(sec,
-				DefaultMarkupType.class);
-		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(defaultMarkup);
+		Section<SparqlMarkupType> markupSection = Sections.findAncestorOfType(sec,
+				SparqlMarkupType.class);
+		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(markupSection);
 		if (core == null) {
 			// we render an empty div, otherwise the ajax rerendering does not
 			// work properly
@@ -64,7 +65,7 @@ public class SparqlMarkupRenderer implements Renderer {
 		/*
 		 * Show query text above of query result
 		 */
-		String showQueryFlag = DefaultMarkupType.getAnnotation(defaultMarkup,
+		String showQueryFlag = DefaultMarkupType.getAnnotation(markupSection,
 				SparqlMarkupType.RENDER_QUERY);
 		if (showQueryFlag != null && showQueryFlag.equalsIgnoreCase("true")) {
 			/*
@@ -91,9 +92,6 @@ public class SparqlMarkupRenderer implements Renderer {
 				result.appendHtml("</tt>");
 			}
 			else {
-
-				Section<SparqlMarkupType> markupSection = Sections.findAncestorOfType(sec,
-						SparqlMarkupType.class);
 
 				RenderOptions renderOpts = new RenderOptions(sec.getID());
 
@@ -145,34 +143,24 @@ public class SparqlMarkupRenderer implements Renderer {
 					// navigationOffset, navigationLimit);
 
 					if (navigationLimit.equals("All")) {
-
 						renderOpts.setShowAll(true);
 					}
 					else {
 						renderOpts.setNavigationLimit(navigationLimit);
 						renderOpts.setNavigationOffset(startRow);
 					}
-
-					QueryResultTable resultSet = core.sparqlSelect(
-							sparqlString);
-					resultEntry = SparqlResultRenderer.getInstance().renderQueryResult(
-							resultSet,
-							renderOpts, user);
-					if (!renderOpts.isRawOutput()) {
-						renderTableSizeSelector(navigationLimit, sec.getID(),
-								resultEntry.getSize(), result);
-						renderNavigation(startRow, navigationLimit,
-								resultEntry.getSize(), sec.getID(), result);
-
-					}
+				}
+				QueryResultTable resultSet = core.sparqlSelect(sparqlString, true, getTimeout(markupSection));
+				resultEntry = SparqlResultRenderer.getInstance().renderQueryResult(
+						resultSet, renderOpts, user);
+				if (renderOpts.isNavigation() && !renderOpts.isRawOutput()) {
+					renderTableSizeSelector(navigationLimit, sec.getID(),
+							resultEntry.getSize(), result);
+					renderNavigation(startRow, navigationLimit,
+							resultEntry.getSize(), sec.getID(), result);
 
 				}
-				else {
-					QueryResultTable resultSet = core.sparqlSelect(
-							sparqlString);
-					resultEntry = SparqlResultRenderer.getInstance().renderQueryResult(
-							resultSet, renderOpts, user);
-				}
+
 				result.appendHtml(resultEntry.getHTML());
 				if (renderOpts.isBorder()) result.appendHtml("</div>");
 
@@ -187,13 +175,22 @@ public class SparqlMarkupRenderer implements Renderer {
 
 			}
 		}
-		catch (ModelRuntimeException e) {
+		catch (RuntimeException e) {
 			result.appendHtml("<span class='warning'>"
 					+ e.getMessage() + "</span>");
 		}
 		catch (JSONException e) {
-			e.printStackTrace();
+			Log.severe("JSONException while rendering SPARQL", e);
 		}
+	}
+
+	private long getTimeout(Section<SparqlMarkupType> markupSection) {
+		String timeoutString = DefaultMarkupType.getAnnotation(markupSection, SparqlMarkupType.TIMEOUT);
+		long timeOutMillis = Rdf2GoCore.DEFAULT_TIMEOUT;
+		if (timeoutString != null) {
+			timeOutMillis = (long) (Double.parseDouble(timeoutString) * TimeUnit.SECONDS.toMillis(1));
+		}
+		return timeOutMillis;
 	}
 
 	private void setRenderOptions(Section<SparqlMarkupType> markupSection, RenderOptions renderOpts) {
