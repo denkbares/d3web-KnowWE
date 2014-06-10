@@ -221,7 +221,7 @@ TestCasePlayer.send = function(sessionid, casedate, name, topic) {
 	new _KA(options).send();
 }
 
-TestCasePlayer.lastSelected = new Object();
+TestCasePlayer.lastSelected = {};
 
 TestCasePlayer.setLastSelected = function() {
 	jq$('.type_TestCasePlayer').find(".ReRenderSectionMarker").each(function() {

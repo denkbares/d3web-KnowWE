@@ -48,6 +48,7 @@ import de.d3web.testcase.TestCaseUtils;
 import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.Finding;
 import de.d3web.testcase.model.TestCase;
+import de.d3web.testcase.stc.CommentedTestCase;
 import de.d3web.utils.Pair;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
@@ -226,9 +227,8 @@ public class TestCasePlayerRenderer implements Renderer {
 		Collection<Question> usedQuestions = TestCaseUtils.getUsedQuestions(testCase,
 				session.getKnowledgeBase());
 
-		TerminologyObject selectedObject = renderTableHeader(section, user, selectedTriple.getC(),
-				additionalQuestions, usedQuestions, manager,
-				tableModel);
+		TerminologyObject selectedObject = renderHeader(section, user, selectedTriple,
+				additionalQuestions, usedQuestions, manager, tableModel);
 		int row = 1;
 		for (Date date : chronology) {
 			if (row < navigatorParameters.from) {
@@ -236,7 +236,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				continue;
 			}
 			if (row > navigatorParameters.to) break;
-			renderTableLine(user, selectedTriple, testCase, status, additionalQuestions,
+			renderRow(user, selectedTriple, status, additionalQuestions,
 					usedQuestions, manager, selectedObject, date,
 					row - navigatorParameters.from + 1, tableModel);
 			row++;
@@ -264,7 +264,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		string.appendHtml(renderToolSeparator());
 
 		string.append(
-				renderTableSizeSelector(section, user, navigatorParameters.size,
+				renderSizeSelector(section, user, navigatorParameters.size,
 						chronology.size())
 		);
 		string.append(renderNavigation(section, navigatorParameters.from,
@@ -276,22 +276,25 @@ public class TestCasePlayerRenderer implements Renderer {
 	}
 
 	private String createSizeKey(Section<?> section) {
-		String sizeKey = SIZE_SELECTOR_KEY + "_" + section.getID();
-		return sizeKey;
+		return SIZE_SELECTOR_KEY + "_" + section.getID();
 	}
 
-	private TerminologyObject renderTableHeader(Section<?> section, UserContext user, Section<? extends PackageCompileType> kbsection, Collection<String> additionalQuestions, Collection<Question> usedQuestions, TerminologyManager manager, TableModel tableModel) {
+	private TerminologyObject renderHeader(Section<?> section, UserContext user, ProviderTriple selectedTriple, Collection<String> additionalQuestions, Collection<Question> usedQuestions, TerminologyManager manager, TableModel tableModel) {
+		Section<? extends PackageCompileType> kbsection = selectedTriple.getC();
 		String stopButton = renderToolbarButton("stop12.png",
 				"KNOWWE.plugin.d3webbasic.actions.resetSession('" + kbsection.getID()
 						+ "', TestCasePlayer.init);", user
 		);
 		RenderResult stopButtonResult = new RenderResult(tableModel.getUserContext());
 		stopButtonResult.appendHtml(stopButton);
-		tableModel.addCell(0, 0, stopButtonResult, 1);
-		tableModel.addCell(0, 1, "Time", "Time".length());
-		tableModel.addCell(0, 2, "Checks", "Checks".length());
-		int column = 3;
-		tableModel.setFirstFinding(3);
+		int column = 0;
+		tableModel.addCell(0, column++, stopButtonResult, 1);
+		tableModel.addCell(0, column++, "Time", "Time".length());
+		if (selectedTriple.getProvider().getTestCase() instanceof CommentedTestCase) {
+			tableModel.addCell(0, column++, "Name", "Name".length());
+		}
+		tableModel.addCell(0, column++, "Checks", "Checks".length());
+		tableModel.setFirstFinding(column);
 		for (Question q : usedQuestions) {
 			tableModel.addCell(0, column++, q.getName(), q.getName().length());
 		}
@@ -299,10 +302,8 @@ public class TestCasePlayerRenderer implements Renderer {
 		renderObservationQuestionsHeader(additionalQuestions,
 				manager, tableModel, column);
 		column += additionalQuestions.size();
-		TerminologyObject selectedObject = renderObservationQuestionAdder(section,
-				user, manager, additionalQuestions,
-				tableModel, column++);
-		return selectedObject;
+		return renderObservationQuestionAdder(section,
+				user, manager, additionalQuestions, tableModel, column);
 	}
 
 	private NavigationParameters getNavigationParameters(Section<?> section, UserContext user, Collection<Date> chronology) {
@@ -356,7 +357,8 @@ public class TestCasePlayerRenderer implements Renderer {
 		return additionalQuestions;
 	}
 
-	private void renderTableLine(UserContext user, ProviderTriple selectedTriple, TestCase testCase, SessionDebugStatus status, Collection<String> additionalQuestions, Collection<Question> usedQuestions, TerminologyManager manager, TerminologyObject selectedObject, Date date, int row, TableModel tableModel) {
+	private void renderRow(UserContext user, ProviderTriple selectedTriple, SessionDebugStatus status, Collection<String> additionalQuestions, Collection<Question> usedQuestions, TerminologyManager manager, TerminologyObject selectedObject, Date date, int row, TableModel tableModel) {
+		TestCase testCase = selectedTriple.getProvider().getTestCase();
 		String dateString = String.valueOf(date.getTime());
 		renderRunTo(selectedTriple, status, date, dateString, tableModel, row);
 		int column = 1;
@@ -364,6 +366,12 @@ public class TestCasePlayerRenderer implements Renderer {
 		String timeAsTimeStamp = TimeStampType.createTimeAsTimeStamp(date.getTime()
 				- testCase.getStartDate().getTime());
 		tableModel.addCell(row, column++, timeAsTimeStamp, timeAsTimeStamp.length());
+		if (testCase instanceof CommentedTestCase) {
+			RenderResult sb = new RenderResult(tableModel.getUserContext());
+			sb.appendHtml("<br />");
+			String comment = ((CommentedTestCase) testCase).getComment(date).replace("\n", sb.toStringRaw());
+			tableModel.addCell(row, column++, comment, comment.length());
+		}
 		renderCheckResults(user, testCase, status, date, tableModel, row, column++);
 		// render values of questions
 		for (Question q : usedQuestions) {
@@ -401,7 +409,7 @@ public class TestCasePlayerRenderer implements Renderer {
 			column++;
 		}
 		if (selectedObject != null) {
-			appendValueCell(status, selectedObject, date, tableModel, row, column++);
+			appendValueCell(status, selectedObject, date, tableModel, row, column);
 		}
 	}
 
@@ -495,13 +503,14 @@ public class TestCasePlayerRenderer implements Renderer {
 		Collection<Pair<Check, Boolean>> checkResults = status.getCheckResults(date);
 		int max = 0;
 		RenderResult sb = new RenderResult(tableModel.getUserContext());
+		sb.appendHtmlTag("div", "style", "white-space: nowrap");
 		if (checkResults == null) {
 			boolean first = true;
 			for (Check c : testCase.getChecks(date, status.getSession().getKnowledgeBase())) {
 				if (!first) sb.appendHtml("<br />");
 				first = false;
 				renderCheck(c, user, sb);
-				max = Math.max(max, c.getCondition().toString().length());
+				max = Math.max(max, c.getCondition().length());
 			}
 		}
 		else {
@@ -510,7 +519,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				for (Pair<Check, Boolean> p : checkResults) {
 					Check check = p.getA();
 					boolean success = p.getB();
-					max = Math.max(max, check.getCondition().toString().length());
+					max = Math.max(max, check.getCondition().length());
 					if (!first) sb.appendHtml("<br />");
 					first = false;
 					String color;
@@ -527,6 +536,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				}
 			}
 		}
+		sb.appendHtmlTag("/div");
 		tableModel.addCell(row, column, sb.toStringRaw(), max);
 	}
 
@@ -559,7 +569,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		int max = 0;
 		for (TerminologyObject q : objects) {
 			if (!alreadyAddedQuestions.contains(q.getName())) {
-				max = Math.max(max, q.getName().toString().length());
+				max = Math.max(max, q.getName().length());
 				if (q.getName().equals(selectedQuestion)) {
 					selectsb2.appendHtml("<option selected='selected' value='"
 							+ Strings.encodeHtml(q.getName()) + "' \n>"
@@ -679,7 +689,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		return SELECTOR_KEY + "_" + Strings.encodeURL(section.getTitle()) + i;
 	}
 
-	private String renderTableSizeSelector(Section<?> section, UserContext user, int selectedSize, int maxSize) {
+	private String renderSizeSelector(Section<?> section, UserContext user, int selectedSize, int maxSize) {
 
 		String sizeKey = createSizeKey(section);
 		RenderResult builder = new RenderResult(user);

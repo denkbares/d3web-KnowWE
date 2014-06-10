@@ -79,9 +79,9 @@ public class FlowchartSubTreeHandler extends D3webCompileScript<FlowchartType> {
 
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article);
 
-		Section<XMLContent> flowcontent = AbstractXMLType.getContentChild(s);
+		Section<XMLContent> flowContent = AbstractXMLType.getContentChild(s);
 
-		if (kb == null || flowcontent == null
+		if (kb == null || flowContent == null
 				|| Sections.findSuccessor(s, FlowchartXMLHeadType.class).hasErrorInSubtree()) {
 			return;
 		}
