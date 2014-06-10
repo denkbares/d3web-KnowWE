@@ -1184,6 +1184,7 @@ public class Rdf2GoCore {
 			ArrayList<QueryRow> rows = new ArrayList<QueryRow>();
 			ClosableIterator<QueryRow> iterator = result.iterator();
 			for (; iterator.hasNext(); ) {
+				if (Thread.currentThread().isInterrupted()) break;
 				QueryRow queryRow = iterator.next();
 				rows.add(queryRow);
 			}

@@ -150,18 +150,27 @@ public class SparqlMarkupRenderer implements Renderer {
 						renderOpts.setNavigationOffset(startRow);
 					}
 				}
-				QueryResultTable resultSet = core.sparqlSelect(sparqlString, true, getTimeout(markupSection));
-				resultEntry = SparqlResultRenderer.getInstance().renderQueryResult(
-						resultSet, renderOpts, user);
-				if (renderOpts.isNavigation() && !renderOpts.isRawOutput()) {
-					renderTableSizeSelector(navigationLimit, sec.getID(),
-							resultEntry.getSize(), result);
-					renderNavigation(startRow, navigationLimit,
-							resultEntry.getSize(), sec.getID(), result);
-
+				QueryResultTable resultSet = null;
+				try {
+					resultSet = core.sparqlSelect(sparqlString, true, getTimeout(markupSection));
 				}
+				catch (RuntimeException e) {
+					result.appendHtml("<span class='warning'>"
+							+ e.getMessage() + "</span>");
+				}
+				if (resultSet != null) {
+					resultEntry = SparqlResultRenderer.getInstance().renderQueryResult(
+							resultSet, renderOpts, user);
+					if (renderOpts.isNavigation() && !renderOpts.isRawOutput()) {
+						renderTableSizeSelector(navigationLimit, sec.getID(),
+								resultEntry.getSize(), result);
+						renderNavigation(startRow, navigationLimit,
+								resultEntry.getSize(), sec.getID(), result);
 
-				result.appendHtml(resultEntry.getHTML());
+					}
+
+					result.appendHtml(resultEntry.getHTML());
+				}
 				if (renderOpts.isBorder()) result.appendHtml("</div>");
 
 				if (showQueryFlag != null && showQueryFlag.equalsIgnoreCase("true")) {
@@ -174,10 +183,6 @@ public class SparqlMarkupRenderer implements Renderer {
 				}
 
 			}
-		}
-		catch (RuntimeException e) {
-			result.appendHtml("<span class='warning'>"
-					+ e.getMessage() + "</span>");
 		}
 		catch (JSONException e) {
 			Log.severe("JSONException while rendering SPARQL", e);
