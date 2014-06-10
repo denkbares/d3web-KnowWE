@@ -28,6 +28,7 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.ConditionTrue;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.CommentNode;
+import de.d3web.diaFlux.flow.ComposedNode;
 import de.d3web.diaFlux.flow.Edge;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowFactory;
@@ -58,8 +59,6 @@ import de.knowwe.kdom.xml.AbstractXMLType;
 import de.knowwe.kdom.xml.XMLContent;
 
 /**
- * 
- * 
  * @author Reinhard Hatko
  * @created on: 12.10.2009
  */
@@ -128,24 +127,25 @@ public class FlowchartSubTreeHandler extends D3webCompileScript<FlowchartType> {
 
 			Condition condition;
 			Section<GuardType> guardSection = Sections.findSuccessor(section, GuardType.class);
+			List<Message> msgs = new ArrayList<Message>();
 			if (guardSection != null) {
 
 				Section<CompositeCondition> compositionConditionSection = Sections.findSuccessor(
 						guardSection, CompositeCondition.class);
 				condition = buildCondition(compiler, compositionConditionSection);
 
-				List<Message> msgs = new ArrayList<Message>();
 				if (condition == null) {
-					condition = ConditionTrue.INSTANCE;
-
 					msgs.add(Messages.error("Could not parse condition: "
 							+ getXMLContentText(guardSection)));
 				}
-				Messages.storeMessages(compiler, guardSection, FlowchartSubTreeHandler.class, msgs);
 			}
 			else {
+				if (origin instanceof ComposedNode) {
+					msgs.add(Messages.error("Outgoing condition missing for node " + origin.toString()));
+				}
 				condition = ConditionTrue.INSTANCE;
 			}
+			Messages.storeMessages(compiler, section, FlowchartSubTreeHandler.class, msgs);
 
 			Edge edge = FlowFactory.createEdge(id, origin, target, condition);
 			result.add(edge);
@@ -187,9 +187,13 @@ public class FlowchartSubTreeHandler extends D3webCompileScript<FlowchartType> {
 
 	public static String getXMLContentText(Section<? extends AbstractXMLType> s) {
 		Section<XMLContent> contentChild = AbstractXMLType.getContentChild(s);
-		if (contentChild == null) return "";
-		else return contentChild.getText().replaceAll("^<!\\[CDATA\\[", "").replaceAll("\\]\\]>$",
-				"");
+		if (contentChild == null) {
+			return "";
+		}
+		else {
+			return contentChild.getText().replaceAll("^<!\\[CDATA\\[", "").replaceAll("\\]\\]>$",
+					"");
+		}
 	}
 
 	@SuppressWarnings("unchecked")
