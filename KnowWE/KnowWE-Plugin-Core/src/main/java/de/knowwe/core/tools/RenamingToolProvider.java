@@ -51,7 +51,7 @@ public class RenamingToolProvider implements ToolProvider {
 
 	protected Tool getRenamingTool(Section<? extends Term> section) {
 		return new DefaultTool(
-				"http://localhost:8080/KnowWE/KnowWEExtension/images/textfield_rename.png",
+				"KnowWEExtension/images/textfield_rename.png",
 				"Rename",
 				"Rename this term wiki wide.",
 				createRenamingAction(section));
