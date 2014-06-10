@@ -1,5 +1,6 @@
 package de.knowwe.rdf2go.sparql;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -43,15 +44,35 @@ public class SparqlResultRenderer {
 	}
 
 	private SparqlResultRenderer() {
-		nodeRenderers = getNodeRenderer();
+		List<SparqlResultNodeRenderer> nodeRenderer = getNodeRenderer();
+		optimizeNodeRenderer(nodeRenderer);
+		nodeRenderers = nodeRenderer.toArray(new SparqlResultNodeRenderer[nodeRenderer.size()]);
 	}
 
-	public SparqlResultNodeRenderer[] getNodeRenderer() {
+	/**
+	 * If we trim the namespace, we do not need to reduce it first... improves performance to remove
+	 * ReduceNamespaceNodeRenderer
+	 */
+	private void optimizeNodeRenderer(List<SparqlResultNodeRenderer> nodeRenderer) {
+		ReduceNamespaceNodeRenderer rnnRenderer = null;
+		boolean containsBoth = false;
+		for (SparqlResultNodeRenderer sparqlResultNodeRenderer : nodeRenderer) {
+			if (sparqlResultNodeRenderer instanceof ReduceNamespaceNodeRenderer) {
+				rnnRenderer = (ReduceNamespaceNodeRenderer) sparqlResultNodeRenderer;
+			}
+			else if (sparqlResultNodeRenderer instanceof TrimNamespaceNodeRenderer) {
+				containsBoth = true;
+			}
+		}
+		if (containsBoth) nodeRenderer.remove(rnnRenderer);
+	}
+
+	public List<SparqlResultNodeRenderer> getNodeRenderer() {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(
 				Rdf2GoCore.PLUGIN_ID, POINT_ID);
-		SparqlResultNodeRenderer[] renderers = new SparqlResultNodeRenderer[extensions.length];
+		List<SparqlResultNodeRenderer> renderers = new ArrayList<SparqlResultNodeRenderer>();
 		for (int i = 0; i < extensions.length; i++) {
-			renderers[i] = ((SparqlResultNodeRenderer) extensions[i].getSingleton());
+			renderers.add((SparqlResultNodeRenderer) extensions[i].getSingleton());
 		}
 		return renderers;
 	}

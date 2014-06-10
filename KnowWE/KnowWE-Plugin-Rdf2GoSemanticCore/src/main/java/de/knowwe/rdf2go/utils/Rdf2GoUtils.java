@@ -85,7 +85,8 @@ public class Rdf2GoUtils {
 	}
 
 	/**
-	 * Locks the Rdf2GoCore of the given QueryResultTable (or ClosableIterable), so the underlying ontology model cannot change during
+	 * Locks the Rdf2GoCore of the given QueryResultTable (or ClosableIterable), so the underlying ontology model cannot
+	 * change during
 	 * iteration. Be sure to always also unlock (in a try-finally block)! If you do not unlock, nobody can write to the
 	 * model again. Ever.
 	 * <p><b>Explanation:</b><br>
@@ -100,7 +101,8 @@ public class Rdf2GoUtils {
 	}
 
 	/**
-	 * Unlocks the Rdf2GoCore of the QueryResultTable (or ClosableIterable), so the underlying ontology model can change again.
+	 * Unlocks the Rdf2GoCore of the QueryResultTable (or ClosableIterable), so the underlying ontology model can change
+	 * again.
 	 * Be sure to always unlock in a try-finally block! If the unlock fails due to an exception, nobody can write to
 	 * the model again. Ever.
 	 * <p><b>Explanation:</b><br>
@@ -226,7 +228,7 @@ public class Rdf2GoUtils {
 	 */
 	public static String reduceNamespace(Rdf2GoCore core, String string) {
 		for (Entry<String, String> cur : core.getNamespaces().entrySet()) {
-			string = string.replaceAll(Pattern.quote(cur.getValue()),
+			string = string.replaceAll("^" + Pattern.quote(cur.getValue()),
 					toNamespacePrefix(cur.getKey()));
 		}
 		// also checking local namespace

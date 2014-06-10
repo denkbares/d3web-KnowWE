@@ -46,9 +46,6 @@ public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 							.append(article.getTitle()).toStringRaw();
 				}
 			}
-			else {
-				articleLinks[i] = Rdf2GoUtils.reduceNamespace(core, statement);
-			}
 		}
 		if (foundArticle) {
 			boolean first = true;
