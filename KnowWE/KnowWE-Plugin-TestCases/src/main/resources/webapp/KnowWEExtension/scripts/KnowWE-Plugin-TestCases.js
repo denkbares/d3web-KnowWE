@@ -58,7 +58,7 @@ TestCasePlayer.downloadCase = function(sectionID) {
 				}
 				KNOWWE.core.util.updateProcessingState(-1);
 			},
-			onError : _EC.onErrorBehavior,
+			onError : _EC.onErrorBehavior
 		}
 	}
 	KNOWWE.core.util.updateProcessingState(1);
@@ -256,11 +256,11 @@ TestCasePlayer.encodeCookieValue = function(cookievalue) {
 }
 
 TestCasePlayer.update = function(adjustLeft) {
-	var scrollInfos = new Object();
+	var scrollInfos = {};
 	jq$('.type_TestCasePlayer').find(".ReRenderSectionMarker").each(function() {
 		var id = jq$(this).children().first().attr('id');
 		var selected = jq$('#selector' + id).val();
-		var scrollInfo = new Object();
+		var scrollInfo = {};
 		if (selected != TestCasePlayer.lastSelected[id]) {
 			TestCasePlayer.lastSelected[id] = selected;
 		} else {
@@ -285,7 +285,6 @@ TestCasePlayer.update = function(adjustLeft) {
 			}
 
 		}
-		TestCasePlayer.init();
 	}
 	KNOWWE.helper.observer.notify('update', fn);
 }
@@ -350,5 +349,7 @@ jq$(document)
 			});
 
 		// init test case player
+		TestCasePlayer.init();
+		KNOWWE.helper.observer.subscribe("afterRerender", TestCasePlayer.init);
 		TestCasePlayer.init();
 	});
