@@ -102,7 +102,7 @@ TextArea.prototype.handleKeyDown = function(event) {
 		this.moveLines("tab");
 		return;
 	}
-	if (event.which == 9 && event.shiftKey) { // TAB + SHIFT
+	if (event.which == 9 && isLongerSelection && event.shiftKey) { // TAB + selection length > 0 + SHIFT
 		event.stopPropagation();
 		event.preventDefault();
 		this.snapshot();
@@ -116,7 +116,7 @@ TextArea.prototype.handleKeyDown = function(event) {
 		this.moveLines("space");
 		return;
 	}
-	if (event.which == 32 && event.shiftKey) { // SPACE + SHIFT
+	if (event.which == 32 && isLongerSelection && event.shiftKey) { // SPACE + selection length > 0 + SHIFT
 		event.stopPropagation();
 		event.preventDefault();
 		this.snapshot();
