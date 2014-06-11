@@ -390,6 +390,44 @@
 		<parameter id="scope" value="DefaultMarkupType" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OffToolProvider">
+		<parameter id="class" value="de.knowwe.core.tools.OffToolProvider" />
+		<parameter id="name" value="OffToolProvider" />
+		<parameter id="description" value="Offers quick access to set activationstatus = off." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="9" />
+		<parameter id="scope" value="DefaultMarkupType" />
+		<parameter id="exclude" value="OffMarkup" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OnToolProvider">
+		<parameter id="class" value="de.knowwe.core.tools.OnToolProvider" />
+		<parameter id="name" value="OnToolProvider" />
+		<parameter id="description" value="Offers quick access to set activationstatus = on." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="9" />
+		<parameter id="scope" value="OffMarkup" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="OffMarkup">
+		<parameter id="class" value="de.knowwe.core.tools.OffMarkup" />
+		<parameter id="name" value="OffMarkup" />
+		<parameter id="description" value="Markup with activationstatus 'off'." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="9" />
+		<parameter id="scope" value="root" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="SetMarkupActivationStatus">
+		<parameter id="class" value="de.knowwe.core.tools.SetMarkupActivationStatus" />
+		<parameter id="name" value="SetMarkupActivationStatus" />
+		<parameter id="description"
+			value="Action set the activationstatus of a markup." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-Core.js" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="RootTypeExportAction">
 		<parameter id="class" value="de.knowwe.kdom.export.RootTypeExportAction" />
 		<parameter id="name" value="RootTypeExportAction" />

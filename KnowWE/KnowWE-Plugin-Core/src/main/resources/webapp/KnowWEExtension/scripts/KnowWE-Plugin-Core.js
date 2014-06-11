@@ -432,6 +432,25 @@ KNOWWE.core.plugin.renderKDOM = function() {
 	);
 };
 
+KNOWWE.core.plugin.setMarkupSectionActivationStatus = function(id, status) {
+	var params = {
+		action : 'SetMarkupActivationStatus',
+		SectionID : id,
+		status : status
+	}
+
+	var options = {
+		url : KNOWWE.core.util.getURL(params),
+		response : {
+			action : 'none',
+			fn : function() {
+				window.location.reload();
+			}
+		}
+	}
+	new _KA(options).send();
+}
+
 KNOWWE.tooltips = {};
 
 KNOWWE.tooltips.enrich = function() {
