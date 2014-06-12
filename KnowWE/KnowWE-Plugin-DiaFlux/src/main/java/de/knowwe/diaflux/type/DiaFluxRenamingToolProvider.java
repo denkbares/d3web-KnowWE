@@ -16,14 +16,16 @@ public class DiaFluxRenamingToolProvider extends RenamingToolProvider {
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		if (hasTools(section, userContext)) {
-			return new Tool[] {	getRenamingTool(getFlowchartTermDef(section)) };
+			return new Tool[] { getRenamingTool(getFlowchartTermDef(section)) };
 		}
 		return ToolUtils.emptyToolArray();
 	}
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
-		return KnowWEUtils.canWrite(section, userContext);
+		Section<FlowchartXMLHeadType.FlowchartTermDef> termDefSection
+				= Sections.findSuccessor(section, FlowchartXMLHeadType.FlowchartTermDef.class);
+		return termDefSection != null && KnowWEUtils.canWrite(section, userContext);
 	}
 
 	private Section<FlowchartXMLHeadType.FlowchartTermDef> getFlowchartTermDef(Section<?> section) {

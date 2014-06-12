@@ -87,8 +87,10 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer {
 		}
 		Section<FlowchartXMLHeadType.FlowchartTermDef> termDefSection
 				= Sections.findSuccessor(section, FlowchartXMLHeadType.FlowchartTermDef.class);
-		// render heading
-		string.appendHtml("<span><span toolmenuidentifier='" + termDefSection.getID() + "'>")
-				.append(title).appendHtml("</span></span>");
+		if (termDefSection != null) {
+			// render heading
+			string.appendHtml("<span><span toolmenuidentifier='" + termDefSection.getID() + "'>")
+					.append(title).appendHtml("</span></span>");
+		}
 	}
 }
