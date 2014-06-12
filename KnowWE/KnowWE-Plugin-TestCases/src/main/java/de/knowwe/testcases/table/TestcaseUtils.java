@@ -67,7 +67,7 @@ public class TestcaseUtils {
 		// }
 
 		// line ist null weil falsche abfrage
-		if (s.get() instanceof TableCellContent) {
+		if (s.get() != null) {
 			if (row == 0) {
 				return getHeaderAlternatives(s, questions, solutions);
 			}

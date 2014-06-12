@@ -7,8 +7,12 @@ import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.QuestionValue;
+import de.d3web.core.session.Value;
+import de.d3web.core.session.ValueFactory;
 import de.d3web.empiricaltesting.Finding;
 import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.strings.Strings;
@@ -25,7 +29,6 @@ import de.knowwe.testcases.NameType;
 import de.knowwe.testcases.TimeStampType;
 
 /**
- * 
  * @author Reinhard Hatko
  * @created 16.03.2011
  */
@@ -38,11 +41,11 @@ final class TestcaseTableLineSubtreeHandler extends D3webHandler<TestcaseTableLi
 
 		Section<TimeStampType> timeStamp = Sections.findSuccessor(s, TimeStampType.class);
 
-		RatedTestCase testCase = new RatedTestCase();
+		RatedTestCase ratedTestCase = new RatedTestCase();
 		if (timeStamp != null) {
 			try {
 				long time = TimeStampType.getTimeInMillis(timeStamp);
-				testCase.setTimeStamp(new Date(time));
+				ratedTestCase.setTimeStamp(new Date(time));
 			}
 			catch (NumberFormatException e) {
 				// illegal timestamp... just continue, error message will be
@@ -53,7 +56,7 @@ final class TestcaseTableLineSubtreeHandler extends D3webHandler<TestcaseTableLi
 		Section<NameType> nameSection = Sections.findSuccessor(s, NameType.class);
 		if (nameSection != null) {
 			String rtcName = nameSection.get().getRTCName(nameSection);
-			testCase.setName(rtcName);
+			ratedTestCase.setName(rtcName);
 		}
 
 		List<Section<ValueType>> values = Sections.findSuccessorsOfType(s, ValueType.class);
@@ -80,14 +83,29 @@ final class TestcaseTableLineSubtreeHandler extends D3webHandler<TestcaseTableLi
 			Question question = kb.getManager().searchQuestion(qName);
 			if (question == null) continue;
 
-			QuestionValue value = KnowledgeBaseUtils.findValue(question, valueString, false);
+			Value value = KnowledgeBaseUtils.findValue(question, valueString, false);
 			if (value != null) {
-				Finding finding = new Finding(question, value);
-				testCase.add(finding);
+				Finding existingFinding = null;
+				if (question instanceof QuestionMC) {
+					List<Finding> findings = ratedTestCase.getFindings();
+					for (Finding finding : findings) {
+						if (finding.getQuestion() == question) {
+							existingFinding = finding;
+							break;
+						}
+					}
+					if (existingFinding != null) {
+						QuestionValue existingValue = existingFinding.getValue();
+						Value newValue = ValueFactory.createQuestionChoiceValue((QuestionChoice) question, valueString, existingValue);
+						existingFinding.setValue((QuestionValue) newValue);
+					}
+				}
+				if (existingFinding == null) ratedTestCase.add(new Finding(question, (QuestionValue) value));
+
 			}
 		}
 
-		KnowWEUtils.storeObject(article, s, TestcaseTableLine.TESTCASE_KEY, testCase);
+		KnowWEUtils.storeObject(article, s, TestcaseTableLine.TESTCASE_KEY, ratedTestCase);
 		return Collections.emptyList();
 	}
 }

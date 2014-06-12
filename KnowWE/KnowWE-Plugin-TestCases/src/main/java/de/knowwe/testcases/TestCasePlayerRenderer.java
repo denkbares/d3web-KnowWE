@@ -289,10 +289,10 @@ public class TestCasePlayerRenderer implements Renderer {
 		stopButtonResult.appendHtml(stopButton);
 		int column = 0;
 		tableModel.addCell(0, column++, stopButtonResult, 1);
-		tableModel.addCell(0, column++, "Time", "Time".length());
 		if (selectedTriple.getProvider().getTestCase() instanceof CommentedTestCase) {
 			tableModel.addCell(0, column++, "Name", "Name".length());
 		}
+		tableModel.addCell(0, column++, "Time", "Time".length());
 		tableModel.addCell(0, column++, "Checks", "Checks".length());
 		tableModel.setFirstFinding(column);
 		for (Question q : usedQuestions) {
@@ -365,13 +365,13 @@ public class TestCasePlayerRenderer implements Renderer {
 		// render date cell
 		String timeAsTimeStamp = TimeStampType.createTimeAsTimeStamp(date.getTime()
 				- testCase.getStartDate().getTime());
-		tableModel.addCell(row, column++, timeAsTimeStamp, timeAsTimeStamp.length());
 		if (testCase instanceof CommentedTestCase) {
 			RenderResult sb = new RenderResult(tableModel.getUserContext());
 			sb.appendHtml("<br />");
 			String comment = ((CommentedTestCase) testCase).getComment(date).replace("\n", sb.toStringRaw());
 			tableModel.addCell(row, column++, comment, comment.length());
 		}
+		tableModel.addCell(row, column++, timeAsTimeStamp, timeAsTimeStamp.length());
 		renderCheckResults(user, testCase, status, date, tableModel, row, column++);
 		// render values of questions
 		for (Question q : usedQuestions) {
