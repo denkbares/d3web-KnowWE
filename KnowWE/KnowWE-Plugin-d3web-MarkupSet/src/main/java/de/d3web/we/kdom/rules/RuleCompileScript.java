@@ -82,24 +82,24 @@ public class RuleCompileScript extends D3webCompileScript<RuleType> {
 		// create default IF - THEN - EXCEPT rules
 		createRules(compiler, ruleSection, ifCondition, exceptCondition, thenActions, DEFAULT_RULE_STORE_KEY);
 
-		// if there is an EXCEPT, we disallow ELSE and UNKNOWN, because the semantics are weird
-		if (exceptCondition != null && (!elseActions.isEmpty() || !unknownActions.isEmpty())) {
-			throw CompilerMessage.error("Cannot define EXCEPT condition and ELSE or UNKNOWN action at the same time");
-		}
-
 		Condition elseCondition = new CondNot(ifCondition);
 		Condition ntUnknownCondition = new CondNonTerminalUnknown(Arrays.asList(ifCondition));
+
+		// the else action has to also fire if except is true
+		if (exceptCondition != null) {
+			elseCondition = new CondOr(Arrays.asList(elseCondition, exceptCondition));
+		}
 
 		// if there is a else action but no unknown action, we assume the user wants else to also include unknown
 		if (!elseActions.isEmpty() && unknownActions.isEmpty()) {
 			elseCondition = new CondOr(Arrays.<Condition>asList(elseCondition, ntUnknownCondition));
 		}
 
-		// create IF - THEN - ELSE rules
-		createRules(compiler, ruleSection, elseCondition, exceptCondition, elseActions, ELSE_RULE_STORE_KEY);
+		// create IF - ELSE - EXCEPT rules
+		createRules(compiler, ruleSection, elseCondition, null, elseActions, ELSE_RULE_STORE_KEY);
 
-		// create IF - THEN - [ELSE] - UNKNOWN rules
-		createRules(compiler, ruleSection, ntUnknownCondition, exceptCondition, unknownActions, UNKNOWN_RULE_STORE_KEY);
+		// create IF - [ELSE] - UNKNOWN - EXCEPT rules
+		createRules(compiler, ruleSection, ntUnknownCondition, null, unknownActions, UNKNOWN_RULE_STORE_KEY);
 	}
 
 	private void createRules(D3webCompiler compiler, Section<RuleType> ruleSection, Condition condition, Condition exceptCondition, Collection<RuleAction> thenAction, String key) {
