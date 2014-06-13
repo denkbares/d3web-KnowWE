@@ -34,10 +34,9 @@ import java.util.Map;
  * an object in a specified format (Plain Text/HTML/XML). The manager chooses
  * the registered verbalizer with the highest priority, that can perform this
  * task. Verbalizers can be registered/deregistered in the VerbalizationManager.
- * 
+ *
  * @author lemmerich
  * @date june 2008
- * 
  */
 public final class VerbalizationManager {
 
@@ -77,7 +76,9 @@ public final class VerbalizationManager {
 	 */
 	public enum RenderingFormat {
 		HTML, XML, PLAIN_TEXT
-	};
+	}
+
+	;
 
 	/**
 	 * The singleton instance of VerbalizationManager
@@ -113,7 +114,7 @@ public final class VerbalizationManager {
 	/**
 	 * Returns the singleton instance of VerbalizationManager. Lazy
 	 * instantiation on demand.
-	 * 
+	 *
 	 * @return the singleton instance of VerbalizationManager
 	 */
 	public static VerbalizationManager getInstance() {
@@ -126,7 +127,7 @@ public final class VerbalizationManager {
 
 	/**
 	 * registers a verbalizer in the Manager with medium Priority
-	 * 
+	 *
 	 * @param verbalizer the verbalizer to be registered
 	 */
 	public void register(Verbalizer verbalizer) {
@@ -135,7 +136,7 @@ public final class VerbalizationManager {
 
 	/**
 	 * registers a verbalizer in the Manager with given priority
-	 * 
+	 *
 	 * @param verbalizer the verbalizer to be registered
 	 */
 	public void register(Verbalizer verbalizer, int priority) {
@@ -146,7 +147,7 @@ public final class VerbalizationManager {
 
 	/**
 	 * removes a verbalizer from the Manager
-	 * 
+	 *
 	 * @param verbalizer the verbalizer to be deregistered
 	 */
 	public void deregister(Verbalizer verbalizer) {
@@ -157,10 +158,10 @@ public final class VerbalizationManager {
 	/**
 	 * returns the priority of v in the VerbalizationManager, -1, if not
 	 * registered
-	 * 
+	 *
 	 * @param v
 	 * @return the priority of v in the VerbalizationManager, -1, if not
-	 *         registered
+	 * registered
 	 */
 	public int getPriority(Verbalizer v) {
 		if (!priorityHash.containsKey(v)) {
@@ -193,11 +194,10 @@ public final class VerbalizationManager {
 	 * Returns a verbalization (String representation) of the given object in
 	 * the target format without using additional parameters by calling an
 	 * appropriate Verbalizer
-	 * 
-	 * 
-	 * @param o the Object to be verbalized
+	 *
+	 * @param o            the Object to be verbalized
 	 * @param targetFormat The output format of the verbalization
-	 *        (HTML/XML/PlainText...)
+	 *                     (HTML/XML/PlainText...)
 	 * @return A String representation of given object o in the target format
 	 */
 	public String verbalize(Object o, RenderingFormat renderingTargetFormat) {
@@ -208,13 +208,12 @@ public final class VerbalizationManager {
 	 * Returns a verbalization (String representation) of the given object in
 	 * the target format using additional parameters by calling an appropriate
 	 * Verbalizer.
-	 * 
-	 * 
-	 * @param o the Object to be verbalized
+	 *
+	 * @param o            the Object to be verbalized
 	 * @param targetFormat The output format of the verbalization
-	 *        (HTML/XML/PlainText...)
-	 * @param parameter additional parameters used to adapt the verbalization
-	 *        (e.g., singleLine, etc...)
+	 *                     (HTML/XML/PlainText...)
+	 * @param parameter    additional parameters used to adapt the verbalization
+	 *                     (e.g., singleLine, etc...)
 	 * @return A String representation of given object o in the target format
 	 */
 	public String verbalize(Object o, RenderingFormat renderingTargetFormat, Map<String, Object> parameter) {
@@ -245,9 +244,8 @@ public final class VerbalizationManager {
 	/**
 	 * A private comparator, that compares Verbalizers: compares the priority of
 	 * both verbalizers in the VerbalizerManager
-	 * 
+	 *
 	 * @author lemmerich
-	 * 
 	 */
 	private class VerbalizerComparator implements Comparator<Verbalizer> {
 

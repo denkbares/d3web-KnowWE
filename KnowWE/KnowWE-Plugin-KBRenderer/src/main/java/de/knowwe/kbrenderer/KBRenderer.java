@@ -93,7 +93,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 
 	@Override
 	public void renderHTML(String web, String topic,
-			UserContext user, Map<String, String> values, RenderResult result) {
+						   UserContext user, Map<String, String> values, RenderResult result) {
 		renderedRulesCache = new HashMap<Rule, String>();
 		KnowledgeBase kb = null;
 		if (values.containsKey(KB_NAME)) {
@@ -278,10 +278,10 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 						text.append(type.getName() + weight + ": ");
 						text.append("&nbsp;&nbsp;&nbsp;"
 								+ VerbalizationManager.getInstance()
-										.verbalize(
-												cond,
-												VerbalizationManager.RenderingFormat.PLAIN_TEXT,
-												parameterMap));
+								.verbalize(
+										cond,
+										VerbalizationManager.RenderingFormat.PLAIN_TEXT,
+										parameterMap));
 						text.appendHtml(" <br/>\n");
 					}
 				}
@@ -301,19 +301,14 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 		if (renderedRule == null) {
 
 			RenderResult text = new RenderResult(result);
-			text.append("Rule: "
-					+ VerbalizationManager.getInstance().verbalize(
-							r.getCondition(), VerbalizationManager.RenderingFormat.PLAIN_TEXT));
-			text.append(" --> ");
-			text.append(VerbalizationManager.getInstance().verbalize(
-					r.getAction(), VerbalizationManager.RenderingFormat.HTML, parameterMap));
-
+			text.append("Rule: " + r.getCondition());
 			if (r.getException() != null) {
 				text.append(" EXCEPT ");
-				text.append(VerbalizationManager.getInstance().verbalize(
-						r.getException(), VerbalizationManager.RenderingFormat.PLAIN_TEXT,
-						parameterMap));
+				text.append(r.getException());
 			}
+			text.append(" THEN ");
+			text.append(r.getAction());
+
 			text.appendHtml("<br/>\n");
 
 			renderedRule = text.toStringRaw();
@@ -325,20 +320,19 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 	}
 
 	/**
-	 * 
 	 * Returns all children in an hierarchically view from a given list of
 	 * terminology objects.
-	 * 
+	 *
 	 * @param nodes the nodes from which you want to have all children
-	 *        displayed.
-	 * @param save List for saving already visited nodes, to avoid an infinite
-	 *        loop in case of periodic appearing objects
+	 *              displayed.
+	 * @param save  List for saving already visited nodes, to avoid an infinite
+	 *              loop in case of periodic appearing objects
 	 * @param depth the depth of the recursion, which is needed for the
-	 *        hierarchically view.
+	 *              hierarchically view.
 	 * @return all children from the given objects, including their properties.
 	 */
 	private String getAll(TerminologyObject[] nodes,
-			ArrayList<TerminologyObject> save, int depth, String title, UserContext user) {
+						  ArrayList<TerminologyObject> save, int depth, String title, UserContext user) {
 		RenderResult result = new RenderResult(user);
 		StringBuffer prompt = new StringBuffer();
 		StringBuffer property = new StringBuffer();
@@ -435,7 +429,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 
 	/**
 	 * See above.
-	 * 
+	 *
 	 * @param nodes
 	 * @param depth
 	 * @return String
