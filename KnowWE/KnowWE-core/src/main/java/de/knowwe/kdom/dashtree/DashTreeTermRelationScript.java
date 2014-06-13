@@ -21,6 +21,7 @@ package de.knowwe.kdom.dashtree;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -30,6 +31,7 @@ import java.util.TreeSet;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
+import de.d3web.utils.Pair;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.objects.TermDefinition;
@@ -48,12 +50,12 @@ import de.knowwe.core.report.Messages;
  */
 public abstract class DashTreeTermRelationScript<T extends TermCompiler> implements CompileScript<T, TermDefinition> {
 
-	private Identifier getNextCandidate(LinkedList<LinkedHashSet<Identifier>> childrenSets, Set<Identifier> checked) throws CompilerMessage {
+	private Pair<Identifier, Set<Identifier>> getNextCandidate(LinkedList<LinkedHashSet<Identifier>> childrenSets, Set<Identifier> checked) throws CompilerMessage {
 		for (LinkedHashSet<Identifier> childrenSet : childrenSets) {
 			Identifier next = childrenSet.iterator().next();
 			if (!checked.contains(next)) {
 				checked.add(next);
-				return next;
+				return new Pair(next, childrenSet);
 			}
 		}
 		return null;
@@ -85,12 +87,13 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 
 		// we try to merge them into one correct and stable order
 		List<Identifier> orderedChildren = new ArrayList<Identifier>();
-		Set<Identifier> checked = newNamedObjectSet();
-		TreeSet<Identifier> candidatesWithoutConflict = newNamedObjectSet();
+		Set<Identifier> checked = newTermSet();
+		TreeSet<Pair<Identifier, Set<Identifier>>> candidatesWithoutConflict = newCandidatesSet();
+		Set<Identifier> lastUsedSet = null;
 		outer:
 		while (!childrenSets.isEmpty()) {
-			Identifier candidate = getNextCandidate(childrenSets, checked);
-			if (candidate == null) {
+			Pair<Identifier, Set<Identifier>> candidateInfo = getNextCandidate(childrenSets, checked);
+			if (candidateInfo == null) {
 				// no more candidates, we checked all of them already
 				// lets see if we found some with no conflicts
 				// if there are multiple, we choose the lexicographically first
@@ -104,8 +107,19 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 					winners = checked;
 				}
 				else {
-					winners = newNamedObjectSet();
-					winners.add(candidatesWithoutConflict.first());
+					winners = newTermSet();
+					Pair<Identifier, Set<Identifier>> winner = null;
+					// To keep the different children lists together as good as possible, we remember which list we
+					// used last time. If we have multiple candidates without conflict, we use the one from the list
+					// we used last time adding a winner
+					for (Pair<Identifier, Set<Identifier>> currentCandidateInfo : candidatesWithoutConflict) {
+						if (currentCandidateInfo.getB() == lastUsedSet) {
+							winner = currentCandidateInfo;
+						}
+					}
+					if (winner == null) winner = candidatesWithoutConflict.first();
+					lastUsedSet = winner.getB();
+					winners.add(winner.getA());
 				}
 				// we remove the winners from all sets
 				for (Iterator<LinkedHashSet<Identifier>> iterator = childrenSets.iterator(); iterator.hasNext(); ) {
@@ -117,10 +131,11 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 				}
 				// we add the winner to the ordered list of children and clear the sets
 				orderedChildren.addAll(winners);
-				checked = newNamedObjectSet();
-				candidatesWithoutConflict = newNamedObjectSet();
+				checked = newTermSet();
+				candidatesWithoutConflict = newCandidatesSet();
 			}
 			else {
+				Identifier candidate = candidateInfo.getA();
 				// we have a new candidate, check for conflicts
 				for (LinkedHashSet<Identifier> childrenSet : childrenSets) {
 					if (childrenSet.contains(candidate) && !childrenSet.iterator().next().equals(candidate)) {
@@ -129,7 +144,7 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 					}
 				}
 				// no conflict for the current candidate
-				candidatesWithoutConflict.add(candidate);
+				candidatesWithoutConflict.add(candidateInfo);
 			}
 		}
 
@@ -137,7 +152,16 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 		throw new CompilerMessage(msgs);
 	}
 
-	private TreeSet<Identifier> newNamedObjectSet() {
+	private TreeSet<Pair<Identifier, Set<Identifier>>> newCandidatesSet() {
+		return new TreeSet<Pair<Identifier, Set<Identifier>>>(new Comparator<Pair<Identifier, Set<Identifier>>>() {
+			@Override
+			public int compare(Pair<Identifier, Set<Identifier>> o1, Pair<Identifier, Set<Identifier>> o2) {
+				return o1.getA().compareTo(o2.getA());
+			}
+		});
+	}
+
+	private TreeSet<Identifier> newTermSet() {
 		return new TreeSet<Identifier>();
 	}
 
