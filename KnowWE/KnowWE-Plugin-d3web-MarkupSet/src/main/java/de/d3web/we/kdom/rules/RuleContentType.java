@@ -23,7 +23,7 @@ package de.d3web.we.kdom.rules;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.CommentLineType;
 import de.knowwe.core.kdom.basicType.UnrecognizedSyntaxType;
-import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 
 /**
  * A type for the content of the RuleMarkup-block. It allocates all the text
@@ -41,7 +41,7 @@ public class RuleContentType extends AbstractType {
 	 */
 	public RuleContentType() {
 		// take nearly all the text that is passed (kind of trimmed)
-		this.setSectionFinder(new AllTextFinderTrimmed());
+		this.setSectionFinder(AllTextFinder.getInstance());
 		this.addChildType(new CommentLineType());
 		this.addChildType(new RuleType());
 

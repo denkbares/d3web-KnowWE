@@ -63,6 +63,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
@@ -87,7 +88,7 @@ public class RuleType extends AbstractType {
 
 	public RuleType() {
 
-		setSectionFinder(new RuleContainerFinder(IF_TOKENS, IF_TOKENS));
+		setSectionFinder(new RuleFinder());
 		setRenderer(new ReRenderSectionMarkerRenderer(new RuleHighlightingRenderer()));
 
 		this.addChildType(new IfConditionContainer());
@@ -117,8 +118,6 @@ public class RuleType extends AbstractType {
 			D3webCompiler compiler = Compilers.getCompiler(sec, D3webCompiler.class);
 			Rule rule = RuleCompileScript.getRule(compiler, Sections.cast(sec, RuleType.class));
 			Session session = null;
-
-
 
 			string.appendHtml("<span id='" + sec.getID() + "'>");
 
@@ -201,4 +200,29 @@ public class RuleType extends AbstractType {
 		return actions;
 	}
 
+	private static class RuleFinder extends RuleContainerFinder {
+
+		public RuleFinder() {
+			super(RuleType.IF_TOKENS, RuleType.IF_TOKENS);
+		}
+
+		@Override
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
+			// we need the indent/whitespaces in front of the first IF to be part of the RuleType
+			// this way, it can also be shown in previews
+			List<SectionFinderResult> sectionFinderResults = super.lookForSections(text, father, type);
+			for (SectionFinderResult sectionFinderResult : sectionFinderResults) {
+				int start = sectionFinderResult.getStart();
+				while (start > 0) {
+					start--;
+					if (text.charAt(start) == '\n') {
+						start++;
+						break;
+					}
+				}
+				sectionFinderResult.setStart(start);
+			}
+			return sectionFinderResults;
+		}
+	}
 }
