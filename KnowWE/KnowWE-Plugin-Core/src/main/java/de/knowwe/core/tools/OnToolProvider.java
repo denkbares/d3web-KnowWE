@@ -19,9 +19,6 @@
 
 package de.knowwe.core.tools;
 
-import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
@@ -39,7 +36,7 @@ public class OnToolProvider implements ToolProvider {
 
 		String js = "KNOWWE.core.plugin.setMarkupSectionActivationStatus('" + section.getID() + "', 'on')";
 		Tool help = new DefaultTool(
-				"KnowWEExtension/d3web/icon/help16.gif",
+				"KnowWEExtension/images/on.png",
 				"Activate",
 				"Activates this section.",
 				js);
@@ -51,17 +48,4 @@ public class OnToolProvider implements ToolProvider {
 		return true;
 	}
 
-	private Article getArticle(Section<?> section, UserContext userContext) {
-		ArticleManager articleManager =
-				Environment.getInstance().getArticleManager(userContext.getWeb());
-		String markupName = section.get().getName();
-		markupName = markupName.replace("^Off: ", "");
-
-		// looking for possible help articles
-		Article article = articleManager.getArticle(markupName);
-		if (article == null) {
-			article = articleManager.getArticle(markupName + "s");
-		}
-		return article;
-	}
 }

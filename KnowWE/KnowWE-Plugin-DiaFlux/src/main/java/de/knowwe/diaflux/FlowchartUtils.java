@@ -130,11 +130,14 @@ public class FlowchartUtils {
 				insertRessources);
 		result.appendHtml("<script>\n");
 		result.appendHtml("if ($('" + parentId + "').getElements('.FlowchartGroup').length == 0)\n");
-		result.appendHtml("Flowchart.loadFlowchart('" + section.getID() + "', '" + parentId
-				+ "');\n");
+		appendLoadFlowchartScript(section, parentId, result);
 		result.appendHtml("</script>");
 
 		return result.toStringRaw();
+	}
+
+	private static void appendLoadFlowchartScript(Section<FlowchartType> section, String parentId, RenderResult result) {
+		result.appendHtml("Flowchart.loadFlowchart('" + section.getID() + "', '" + parentId + "');\n");
 	}
 
 	/**

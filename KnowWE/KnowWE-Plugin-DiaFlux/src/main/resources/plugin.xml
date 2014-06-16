@@ -61,17 +61,6 @@
 		<parameter-def id="scope" multiplicity="one-or-more" />
 	</extension-point>
 
-
-	<extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer"
-		id="ArticlePreviewRenderer">
-		<parameter id="class" value="de.knowwe.jspwiki.types.preview.ArticlePreviewRenderer"/>
-		<parameter id="name" value="ArticlePreviewRenderer"/>
-		<parameter id="description" value="Renders a preview of an article."/>
-		<parameter id="version" value="1.0"/>
-		<parameter id="priority" value="5"/>
-		<parameter id="scope" value="DiaFlux"/>
-	</extension>
-
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="ObjectInfoPageToolProvider">
 		<parameter id="class" value="de.knowwe.core.tools.TermInfoToolProvider" />
 		<parameter id="name" value="ObjectInfoPageToolProvider" />
@@ -131,7 +120,7 @@
 		<parameter id="description" value="Renders a preview of a node or egde of a diaflux flowchart." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="scope" value="FlowchartType" />
+		<parameter id="scope" value="DiaFluxType" />
 		<parameter id="css" value="KnowWE-Plugin-DiaFlux-preview.css" />
 	</extension>
 

@@ -29,7 +29,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 /**
  * Markup for another deactivated markup section.
  * Sectionizes markups like %%Off:Rule...
- *
+ * <p/>
  * Created by Veronika Sehne on 11.06.14.
  */
 public class OffMarkup extends DefaultMarkupType {
@@ -45,13 +45,11 @@ public class OffMarkup extends DefaultMarkupType {
 
 	public OffMarkup() {
 		super(MARKUP);
-		this.setRenderer(new DefaultMarkupRenderer() {
+		this.setRenderer(new DefaultMarkupRenderer("KnowWEExtension/images/inactive.png") {
 
 			@Override
 			protected String getTitleName(Section<?> section, UserContext user) {
-
-				String text = section.getText();
-				return text.substring(0, text.indexOf("\n")).replaceAll("^%%Off:", "");
+				return getOriginalMarkupName(section);
 			}
 
 			@Override
@@ -65,4 +63,13 @@ public class OffMarkup extends DefaultMarkupType {
 		});
 	}
 
+	public static String getOriginalMarkupName(Section<?> section) {
+		String text = section.getText();
+		return text.substring(0, text.indexOf("\n")).replaceAll("^%%Off:", "");
+	}
+
+	@Override
+	public String getName() {
+		return "Inactive";
+	}
 }

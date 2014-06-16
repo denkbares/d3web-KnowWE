@@ -9,7 +9,6 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.preview.AbstractPreviewRenderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.diaflux.DiaFluxTrace.State;
 import de.knowwe.diaflux.type.ActionType;
 import de.knowwe.diaflux.type.CommentType;
 import de.knowwe.diaflux.type.DecisionType;
@@ -29,12 +28,16 @@ public class DiaFluxItemPreviewRenderer extends AbstractPreviewRenderer {
 
 	@Override
 	public void render(Section<?> section, Collection<Section<?>> relevantSubSections, UserContext user, RenderResult result) {
-		Section<FlowchartType> self = Sections.cast(section, FlowchartType.class);
+		Section<FlowchartType> self = Sections.findSuccessor(section, FlowchartType.class);
 		renderFlowchartName(self, user, result);
 
 		// build sets first to avoid duplicates
 		Set<Section<NodeType>> nodes = new LinkedHashSet<Section<NodeType>>();
 		Set<Section<EdgeType>> edges = new LinkedHashSet<Section<EdgeType>>();
+		if (relevantSubSections.size() <= 1) {
+			relevantSubSections.addAll(Sections.findSuccessorsOfType(section, StartType.class));
+			relevantSubSections.addAll(Sections.findSuccessorsOfType(section, ExitType.class));
+		}
 		for (Section<?> item : relevantSubSections) {
 			Section<NodeType> node = Sections.findAncestorOfType(item, NodeType.class);
 			if (node != null) {
@@ -78,14 +81,20 @@ public class DiaFluxItemPreviewRenderer extends AbstractPreviewRenderer {
 		result.appendHtml("</div>");
 	}
 
-
 	private void renderNode(Section<NodeType> node, UserContext user, RenderResult result) {
 		Section<NodeContentType> action = Sections.findSuccessor(node, NodeContentType.class);
+		String nodeTypeName = "Node";
+		if (Sections.findSuccessor(node, StartType.class) != null) {
+			nodeTypeName = "StartNode";
+		}
+		else if (Sections.findSuccessor(node, ExitType.class) != null) {
+			nodeTypeName = "ExitNode";
+		}
 		result.appendHtml("<div class='preview node ")
 				.append(getNodeCSS(action))
 				.append(" ")
 				.append(getSessionStateCSS(node, user))
-				.appendHtml("'>&nbsp;&nbsp;").append("- Node ");
+				.appendHtml("'>&nbsp;&nbsp;").append("- " + nodeTypeName + " ");
 		renderNodePreviewHtml(action, user, result);
 		result.appendHtml("</div>");
 	}
