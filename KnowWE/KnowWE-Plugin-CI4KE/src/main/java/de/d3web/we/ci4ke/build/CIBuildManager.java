@@ -21,6 +21,7 @@
 package de.d3web.we.ci4ke.build;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -34,15 +35,21 @@ import de.d3web.testing.TestObjectProviderManager;
 import de.d3web.utils.Log;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
+import de.knowwe.core.event.Event;
+import de.knowwe.core.event.EventListener;
+import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.progress.AjaxProgressListener;
 import de.knowwe.core.utils.progress.DefaultAjaxProgressListener;
 import de.knowwe.core.utils.progress.ProgressListenerManager;
+import de.knowwe.event.ArticleManagerOpenedEvent;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class CIBuildManager {
 
 	private static final Map<CIDashboard, TestExecutor> runningBuilds = Collections.synchronizedMap(new HashMap<CIDashboard, TestExecutor>());
+
+	private static boolean terminatorRegistered = false;
 
 	/**
 	 * Runs a build for the given dashboard, but does not . Waits until the
@@ -51,7 +58,10 @@ public class CIBuildManager {
 	 */
 	public static void startBuild(final CIDashboard dashboard) {
 
-		Log.info("Executing new CI build for dashboard '" + dashboard + "'");
+		if (!terminatorRegistered) {
+			EventManager.getInstance().registerListener(new BuildTerminator());
+			terminatorRegistered = true;
+		}
 
 		List<TestObjectProvider> providers = new ArrayList<TestObjectProvider>();
 		providers.add(DefaultWikiTestObjectProvider.getInstance());
@@ -75,6 +85,9 @@ public class CIBuildManager {
 			@Override
 			public void run() {
 				try {
+
+					Log.info("Executing new CI build for dashboard '" + dashboard + "'");
+
 					executor.run();
 
 					BuildResult build = executor.getBuildResult();
@@ -110,7 +123,7 @@ public class CIBuildManager {
 
 	/**
 	 * Terminates the build of the given dashboard (if there is one).
-	 * 
+	 *
 	 * @created 31.12.2013
 	 */
 	public static void terminate(CIDashboard dashboard) {
@@ -124,9 +137,24 @@ public class CIBuildManager {
 	}
 
 	/**
+	 * Terminates all currently running builds;
+	 *
+	 * @created 31.12.2013
+	 */
+	public static void terminate() {
+		TestExecutor executor = getNextExecutor();
+		while (executor != null) {
+			if (executor.isRunning()) {
+				System.out.println("Terminated");
+				executor.terminate();
+			}
+		}
+	}
+
+	/**
 	 * Blocks/waits until all running tests of the given dashboard are done,
 	 * tests are not aborted by calling this method.
-	 * 
+	 *
 	 * @created 17.12.2013
 	 */
 	public static void awaitTermination(CIDashboard dashboard) {
@@ -139,7 +167,7 @@ public class CIBuildManager {
 	/**
 	 * Blocks/waits until all running tests of all registered dashboards are
 	 * done. Tests are not aborted by calling this method.
-	 * 
+	 *
 	 * @created 17.12.2013
 	 */
 	public static void awaitTermination() {
@@ -163,10 +191,27 @@ public class CIBuildManager {
 	/**
 	 * Looks up whether there is currently a build process running for this
 	 * dashboard
-	 * 
+	 *
 	 * @created 16.08.2012
 	 */
 	public static boolean isRunning(CIDashboard dashboard) {
 		return runningBuilds.get(dashboard) != null;
+	}
+
+	private static class BuildTerminator implements EventListener {
+
+		@Override
+		public Collection<Class<? extends Event>> getEvents() {
+			List<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(1);
+			events.add(ArticleManagerOpenedEvent.class);
+			return events;
+		}
+
+		@Override
+		public void notify(Event event) {
+			terminate();
+			awaitTermination();
+		}
+
 	}
 }

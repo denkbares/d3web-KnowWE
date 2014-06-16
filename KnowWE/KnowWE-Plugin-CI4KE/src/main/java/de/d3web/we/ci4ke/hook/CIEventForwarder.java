@@ -22,7 +22,12 @@ package de.d3web.we.ci4ke.hook;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
+import de.knowwe.core.compile.CompilationFinishedEvent;
 import de.knowwe.core.compile.CompilerFinishedEvent;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.event.Event;
@@ -31,10 +36,13 @@ import de.knowwe.core.kdom.Article;
 
 public class CIEventForwarder implements EventListener {
 
+	private final Map<String, Article> articlesToTrigger = Collections.synchronizedMap(new HashMap<String, Article>());
+
 	@Override
 	public Collection<Class<? extends Event>> getEvents() {
 		ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(4);
 		events.add(CompilerFinishedEvent.class);
+		events.add(CompilationFinishedEvent.class);
 		return events;
 	}
 
@@ -44,8 +52,19 @@ public class CIEventForwarder implements EventListener {
 			de.knowwe.core.compile.Compiler compiler = ((CompilerFinishedEvent<?>) event).getCompiler();
 			if (compiler instanceof PackageCompiler) {
 				Article article = ((PackageCompiler) compiler).getCompileSection().getArticle();
-				CIHookManager.triggerHooks(article);
+				articlesToTrigger.put(article.getTitle().toLowerCase(), article);
 			}
+		}
+		if (event instanceof CompilationFinishedEvent) {
+			synchronized (articlesToTrigger) {
+				for (Iterator<Map.Entry<String, Article>> iterator = articlesToTrigger.entrySet()
+						.iterator(); iterator.hasNext(); ) {
+					Map.Entry<String, Article> articleEntry = iterator.next();
+					CIHookManager.triggerHooks(articleEntry.getValue());
+					iterator.remove();
+				}
+			}
+
 		}
 	}
 }

@@ -29,9 +29,7 @@ import de.d3web.we.ci4ke.build.CIBuildManager;
 import de.knowwe.core.kdom.Article;
 
 /**
- * 
  * @author Marc-Oliver Ochlast, Albrecht Striffler
- * 
  */
 public class CIHookManager {
 
@@ -55,7 +53,7 @@ public class CIHookManager {
 
 	/**
 	 * Triggers the registered hooks for a given Article.
-	 * 
+	 *
 	 * @param monitoredArticle the article to trigger hooks for
 	 */
 	public static synchronized void triggerHooks(Article monitoredArticle) {

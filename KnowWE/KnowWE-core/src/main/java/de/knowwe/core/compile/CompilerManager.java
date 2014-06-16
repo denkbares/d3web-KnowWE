@@ -163,6 +163,7 @@ public class CompilerManager {
 								+ "ms");
 						lock.notifyAll();
 					}
+					EventManager.getInstance().fireEvent(new CompilationFinishedEvent(CompilerManager.this));
 				}
 			}
 		});

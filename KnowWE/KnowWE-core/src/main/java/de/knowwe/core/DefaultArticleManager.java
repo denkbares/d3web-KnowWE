@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
@@ -34,6 +36,7 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.event.ArticleManagerOpenedEvent;
 import de.knowwe.event.ArticleRegisteredEvent;
 
 /**
@@ -48,12 +51,13 @@ public class DefaultArticleManager implements ArticleManager {
 	 */
 	private Map<String, Article> articleMap = Collections.synchronizedMap(new HashMap<String, Article>());
 
+	private final Collection<String> deleteAfterCompile = Collections.synchronizedSet(new HashSet<String>());
+
 	private final String web;
 
 	private final CompilerManager compilerManager;
 
 	private final ReentrantLock mainLock = new ReentrantLock(true);
-
 	private List<Section<?>> added = new ArrayList<Section<?>>();
 	private List<Section<?>> removed = new ArrayList<Section<?>>();
 
@@ -107,6 +111,9 @@ public class DefaultArticleManager implements ArticleManager {
 			if (lastVersion != null) removed.add(lastVersion.getRootSection());
 
 			articleMap.put(title.toLowerCase(), article);
+			// in case an article with the same name gets added in the same compilation window
+			deleteAfterCompile.remove(title.toLowerCase());
+
 			article.setArticleManager(this);
 
 			EventManager.getInstance().fireEvent(
@@ -126,10 +133,12 @@ public class DefaultArticleManager implements ArticleManager {
 	 */
 	@Override
 	public void deleteArticle(Article article) {
-		Environment.getInstance().buildAndRegisterArticle(web,
-				article.getTitle(), "", true);
 
-		articleMap.remove(article.getTitle().toLowerCase());
+		open();
+		registerArticle(Article.createArticle("", article.getTitle(), web));
+
+		deleteAfterCompile.add(article.getTitle().toLowerCase());
+		commit();
 
 		Log.info("-> Deleted article '" + article.getTitle() + "'" + " from " + web);
 	}
@@ -150,6 +159,7 @@ public class DefaultArticleManager implements ArticleManager {
 			throw new IllegalStateException("Cannot register articles during compilation");
 		}
 		mainLock.lock();
+		EventManager.getInstance().fireEvent(new ArticleManagerOpenedEvent(this));
 		// Since we only start the compilation during the lock and compilation then happens asynchronously,
 		// it is possible that a threads runs to this point while compilation is still ongoing from the last lock.
 		// Since the next compilation process has to wait for the last one to finish anyway and adding new articles to
@@ -170,6 +180,12 @@ public class DefaultArticleManager implements ArticleManager {
 				compilerManager.compile(added, removed);
 				added = new ArrayList<Section<?>>();
 				removed = new ArrayList<Section<?>>();
+				synchronized (deleteAfterCompile) {
+					for (Iterator<String> iterator = deleteAfterCompile.iterator(); iterator.hasNext(); ) {
+						articleMap.remove(iterator.next());
+						iterator.remove();
+					}
+				}
 			}
 		}
 		finally {

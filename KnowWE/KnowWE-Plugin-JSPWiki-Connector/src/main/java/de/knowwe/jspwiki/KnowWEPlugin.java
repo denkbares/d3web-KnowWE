@@ -289,9 +289,11 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		String parse = UserContextUtil.getParameters(httpRequest).get("parse");
 		boolean fullParse = parse != null && (parse.equals("full") || parse.equals("true"));
 		if (fullParse || !originalText.equals(content)) {
+			Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB).open();
 			deleteRenamedArticles(title);
 			article = Environment.getInstance().buildAndRegisterArticle(
 					Environment.DEFAULT_WEB, title, content, fullParse);
+			Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB).commit();
 			Compilers.getCompilerManager(Environment.DEFAULT_WEB).awaitTermination();
 			if (fullParse) EventManager.getInstance().fireEvent(new FullParseFinishedEvent());
 		}

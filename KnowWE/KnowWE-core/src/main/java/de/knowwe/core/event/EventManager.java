@@ -59,7 +59,7 @@ public class EventManager {
 
 	}
 
-	public void registerListener(EventListener listener) {
+	public synchronized void registerListener(EventListener listener) {
 		// Get the classes of the events
 		Collection<Class<? extends Event>> eventClasses = listener.getEvents();
 
@@ -74,7 +74,7 @@ public class EventManager {
 		}
 	}
 
-	public void unregister(EventListener listener) {
+	public synchronized void unregister(EventListener listener) {
 		// Get the classes of the events
 		Collection<Class<? extends Event>> eventClasses = listener.getEvents();
 
@@ -94,13 +94,15 @@ public class EventManager {
 	public void fireEvent(Event event) {
 
 		ArrayList<EventListener> allListeners = new ArrayList<EventListener>();
-		Class<?> eventClass = event.getClass();
-		while (!eventClass.equals(Event.class)) {
-			WeakHashMap<EventListener, Object> listeners = this.listenerMap.get(eventClass);
-			if (listeners != null) {
-				allListeners.addAll(listeners.keySet());
+		synchronized (this) {
+			Class<?> eventClass = event.getClass();
+			while (!eventClass.equals(Event.class)) {
+				WeakHashMap<EventListener, Object> listeners = this.listenerMap.get(eventClass);
+				if (listeners != null) {
+					allListeners.addAll(listeners.keySet());
+				}
+				eventClass = eventClass.getSuperclass();
 			}
-			eventClass = eventClass.getSuperclass();
 		}
 		for (EventListener eventListener : allListeners) {
 			try {
