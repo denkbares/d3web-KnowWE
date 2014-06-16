@@ -20,29 +20,23 @@
 package de.d3web.we.kdom.questionnaireTree;
 
 import de.d3web.we.kdom.questionTree.QuestionDashTree;
-import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class QuestionnaireTreeMarkup extends DefaultMarkupType {
 
-	private static DefaultMarkup m = null;
+	private static DefaultMarkup MARKUP = null;
 
 	static {
-		m = new DefaultMarkup("Questionnaire");
-		m.addContentType(new QuestionDashTree());
-		m.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-		m.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageAnnotationNameType());
-		m.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm());
-		m.setDeprecated("%%Question");
+		MARKUP = new DefaultMarkup("Questionnaire");
+		MARKUP.addContentType(new QuestionDashTree());
+		PackageManager.addPackageAnnotation(MARKUP);
+		MARKUP.setDeprecated("%%Question");
 	}
 
 	public QuestionnaireTreeMarkup() {
-		super(m);
+		super(MARKUP);
 	}
 
 }

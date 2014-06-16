@@ -18,9 +18,7 @@
  */
 package de.knowwe.testcases.record;
 
-import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.MatchingAttachmentsRenderer;
@@ -43,11 +41,7 @@ public class TestCaseSessionRecordType extends DefaultMarkupType {
 	static {
 		MARKUP = new DefaultMarkup("TestCaseSessionRecord");
 		MARKUP.addAnnotation(ANNOTATION_FILE, true);
-		MARKUP.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-		MARKUP.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageAnnotationNameType());
-		MARKUP.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm());
+		PackageManager.addPackageAnnotation(MARKUP);
 		MARKUP.addAnnotation(PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME, false);
 	}
 

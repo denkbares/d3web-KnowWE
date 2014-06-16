@@ -19,9 +19,7 @@
 package de.d3web.we.testcase.kdom;
 
 import de.d3web.we.testcase.renderer.TestCaseRenderer;
-import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.objectinfo.TermIsHiddenInCompositeEdit;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -43,11 +41,7 @@ public class TestCaseType extends DefaultMarkupType implements TermIsHiddenInCom
 		m = new DefaultMarkup("TestCase");
 		m.addContentType(new TestCaseContent());
 		m.addAnnotation(PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME, false);
-		m.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-		m.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageAnnotationNameType());
-		m.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm());
+		PackageManager.addPackageAnnotation(m);
 	}
 
 	public TestCaseType() {

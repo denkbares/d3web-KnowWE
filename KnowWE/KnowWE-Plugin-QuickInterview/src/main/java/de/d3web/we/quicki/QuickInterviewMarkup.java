@@ -26,9 +26,7 @@ import java.util.Map;
 import de.knowwe.core.Environment;
 import de.knowwe.core.ResourceLoader;
 import de.knowwe.core.compile.packaging.MasterAnnotationWarningHandler;
-import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
@@ -74,11 +72,7 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 		m.addAnnotation(SAVE_KEY, false);
 		m.addAnnotationRenderer(SAVE_KEY, NothingRenderer.getInstance());
 
-		m.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-		m.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageAnnotationNameType());
-		m.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm());
+		PackageManager.addPackageAnnotation(m);
 
 	}
 

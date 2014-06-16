@@ -35,6 +35,7 @@ import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 
 public class PackageManager {// implements EventListener {
 
@@ -88,6 +89,14 @@ public class PackageManager {// implements EventListener {
 	public <C extends Compiler> PackageManager(C compiler) {
 		this.compiler = compiler;
 		// EventManager.getInstance().registerListener(this);
+	}
+
+	public static void addPackageAnnotation(DefaultMarkup markup) {
+		markup.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
+		markup.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
+				new PackageAnnotationNameType());
+		markup.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
+				new PackageTerm());
 	}
 
 	private boolean isDisallowedPackageName(String packageName) {

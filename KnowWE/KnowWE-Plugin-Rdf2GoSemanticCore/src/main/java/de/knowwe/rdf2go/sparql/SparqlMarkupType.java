@@ -22,9 +22,7 @@ package de.knowwe.rdf2go.sparql;
 
 import java.util.regex.Pattern;
 
-import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -69,12 +67,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		m.addAnnotationRenderer(Rdf2GoCore.GLOBAL, NothingRenderer.getInstance());
 		m.addAnnotation(NAME, false);
 		m.addAnnotationRenderer(NAME, NothingRenderer.getInstance());
-		m.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-
-		m.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageAnnotationNameType());
-		m.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm());
+		PackageManager.addPackageAnnotation(m);
 	}
 
 	public SparqlMarkupType(DefaultMarkup markup) {

@@ -147,8 +147,10 @@ public class FlowchartSubTreeHandler extends D3webCompileScript<FlowchartType> {
 			}
 			Messages.storeMessages(compiler, section, FlowchartSubTreeHandler.class, msgs);
 
-			Edge edge = FlowFactory.createEdge(id, origin, target, condition);
-			result.add(edge);
+			if (condition != null) {
+				Edge edge = FlowFactory.createEdge(id, origin, target, condition);
+				result.add(edge);
+			}
 		}
 
 		return result;

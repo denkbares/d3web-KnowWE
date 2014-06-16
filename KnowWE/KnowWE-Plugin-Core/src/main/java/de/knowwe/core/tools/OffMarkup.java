@@ -45,11 +45,14 @@ public class OffMarkup extends DefaultMarkupType {
 
 	public OffMarkup() {
 		super(MARKUP);
-		this.setRenderer(new DefaultMarkupRenderer("KnowWEExtension/images/inactive.png") {
+		this.setRenderer(new DefaultMarkupRenderer() {
 
 			@Override
-			protected String getTitleName(Section<?> section, UserContext user) {
-				return getOriginalMarkupName(section);
+			protected void renderTitle(Section<?> section, UserContext user, RenderResult string) {
+				String titleName = getOriginalMarkupName(section);
+				string.appendHtml("<span style='text-decoration: line-through'>")
+						.append(titleName)
+						.appendHtml("</span>");
 			}
 
 			@Override

@@ -18,9 +18,7 @@
  */
 package de.knowwe.d3web.property;
 
-import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -37,11 +35,7 @@ public class PropertyMarkup extends DefaultMarkupType {
 	static {
 		m = new DefaultMarkup("Property");
 		m.addContentType(new PropertyDeclarationType());
-		m.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-		m.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageAnnotationNameType());
-		m.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm());
+		PackageManager.addPackageAnnotation(m);
 	}
 
 	public PropertyMarkup() {

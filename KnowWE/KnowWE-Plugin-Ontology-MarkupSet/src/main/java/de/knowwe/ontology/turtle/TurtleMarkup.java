@@ -19,9 +19,7 @@
 package de.knowwe.ontology.turtle;
 
 import de.d3web.strings.QuoteCharSet;
-import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -41,11 +39,7 @@ public class TurtleMarkup extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("Turtle");
-		MARKUP.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-		MARKUP.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageAnnotationNameType());
-		MARKUP.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm());
+		PackageManager.addPackageAnnotation(MARKUP);
 		TurtleContent markupN3Content = new TurtleContent();
 		MARKUP.addContentType(markupN3Content);
 	}

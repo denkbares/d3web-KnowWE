@@ -24,9 +24,7 @@ import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.NamedObjectReference;
 import de.d3web.we.reviseHandler.D3webHandler;
-import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.report.Message;
@@ -40,23 +38,19 @@ import de.knowwe.kdom.table.TableIndexConstraint;
 
 /**
  * A table for defining property values for objects.
- * 
+ *
  * @author Reinhard Hatko
  * @created 11.06.2013
  */
 public class PropertyTableType extends DefaultMarkupType {
 
-	private static DefaultMarkup markup = null;
+	private static DefaultMarkup MARKUP = null;
 
 	static {
-		markup = new DefaultMarkup("PropertyTable");
+		MARKUP = new DefaultMarkup("PropertyTable");
 		Table content = new Table();
-		markup.addContentType(content);
-		markup.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-		markup.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageAnnotationNameType());
-		markup.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm());
+		MARKUP.addContentType(content);
+		PackageManager.addPackageAnnotation(MARKUP);
 
 		PropertyType propertyType = new PropertyType();
 		propertyType.setSectionFinder(new ConstraintSectionFinder(
@@ -92,7 +86,7 @@ public class PropertyTableType extends DefaultMarkupType {
 	}
 
 	public PropertyTableType() {
-		super(markup);
+		super(MARKUP);
 	}
 
 }

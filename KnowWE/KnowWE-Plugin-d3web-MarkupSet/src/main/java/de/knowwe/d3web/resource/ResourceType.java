@@ -20,9 +20,7 @@
 package de.knowwe.d3web.resource;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
@@ -64,11 +62,7 @@ public class ResourceType extends DefaultMarkupType {
 		MARKUP = new DefaultMarkup(MARKUP_NAME);
 		MARKUP.addAnnotation(ANNOTATION_PATH, false);
 		MARKUP.addAnnotation(ANNOTATION_SRC, false);
-		MARKUP.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-		MARKUP.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageAnnotationNameType());
-		MARKUP.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm());
+		PackageManager.addPackageAnnotation(MARKUP);
 		MARKUP.addAnnotation(ANNOTATION_XMLSCHEMA);
 		AttachmentType schemaAttachment = new AttachmentType();
 		schemaAttachment.addCompileScript(new XMLValidationHandler());

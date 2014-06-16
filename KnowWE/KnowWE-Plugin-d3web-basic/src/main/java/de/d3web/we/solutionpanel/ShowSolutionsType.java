@@ -20,9 +20,7 @@ package de.d3web.we.solutionpanel;
 
 import de.d3web.we.object.QuestionnaireReference;
 import de.knowwe.core.compile.packaging.MasterAnnotationWarningHandler;
-import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -74,11 +72,8 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		qc.setSectionFinder(new AllTextFinderTrimmed());
 		MARKUP.addAnnotationContentType(ONLY_DERIVATIONS, qc);
 
-		MARKUP.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-		MARKUP.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageAnnotationNameType());
-		MARKUP.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm());
+		PackageManager.addPackageAnnotation(MARKUP);
+
 	}
 
 	public ShowSolutionsType() {
