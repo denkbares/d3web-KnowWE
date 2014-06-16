@@ -142,7 +142,7 @@ KNOWWE.plugin.compositeEditTool = function () {
 	}
 
 	function initWikiText() {
-		var ids = _CE.editableSections.join(";")
+		var ids = _CE.editableSections.join(";");
 
 		var params = {
 			action: 'InitEditModeAction'
@@ -190,7 +190,7 @@ KNOWWE.plugin.compositeEditTool = function () {
 		}
 		_EC.wikiText[lastEditElementId] = combinedText;
 
-		_CEWT.order = new Array();
+		_CEWT.order = [];
 		jq$('.editelement').each(function () {
 			var sectionId = jq$(this).attr('sectionId');
 			if (sectionId)

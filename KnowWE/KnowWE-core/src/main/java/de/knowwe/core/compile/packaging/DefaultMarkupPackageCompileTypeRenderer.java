@@ -28,11 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.Compiler;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
-import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -40,7 +37,6 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
@@ -84,8 +80,6 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 
 	private void renderPackage(Section<? extends PackageCompileType> compileSection, Section<?> section, String packageName, RenderResult string, UserContext user) {
 
-		PackageManager packageManager = KnowWEUtils.getPackageManager(section);
-
 		Collection<Message> kdomErrors = new LinkedList<Message>();
 		Collection<Message> kdomWarnings = new LinkedList<Message>();
 
@@ -105,11 +99,11 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 				errors.addAll(Messages.getErrors(compileMessages));
 				warnings.addAll(Messages.getWarnings(compileMessages));
 			}
-			if (errors != null && errors.size() > 0) {
+			if (errors.size() > 0) {
 				kdomErrors.addAll(errors);
 				errorArticles.add(sectionWithMessage.getArticle());
 			}
-			if (warnings != null && warnings.size() > 0) {
+			if (warnings.size() > 0) {
 				kdomWarnings.addAll(warnings);
 				warningArticles.add(sectionWithMessage.getArticle());
 			}
@@ -139,15 +133,11 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 		subString.appendHtml("<span style='color:rgb(121,79, 64);'>");
 		subString.append(packageName);
 		subString.appendHtml("</span>");
-		PackageRegistrationCompiler packageCompiler = Compilers.getCompiler(
-				section.getArticleManager(), PackageRegistrationCompiler.class);
-		Collection<Section<?>> termDefiningSections = packageCompiler.getTerminologyManager()
-				.getTermDefiningSections(new Identifier(packageName));
 		boolean rendered = false;
-		for (Section<?> termDefiningSection : termDefiningSections) {
-			Section<PackageTerm> packageTermSection = Sections.findSuccessor(termDefiningSection,
-					PackageTerm.class);
-			if (packageTermSection != null) {
+		List<Section<PackageTerm>> packageTermSections = Sections.findSuccessorsOfType(
+				compileSection.getArticle().getRootSection(), PackageTerm.class);
+		for (Section<PackageTerm> packageTermSection : packageTermSections) {
+			if (packageTermSection.get().getTermName(packageTermSection).equals(packageName)) {
 				ToolMenuDecoratingRenderer.renderToolMenuDecorator(subString.toStringRaw(),
 						packageTermSection.getID(), true, string);
 				rendered = true;

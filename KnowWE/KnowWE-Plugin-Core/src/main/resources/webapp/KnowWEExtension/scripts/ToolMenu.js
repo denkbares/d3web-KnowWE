@@ -46,7 +46,7 @@ ToolMenu.prototype.decorateToolMenus = function (parent) {
 
 ToolMenu.prototype.showToolPopupMenu = function (node) {
 	this.hideToolsPopupMenu();
-	var node = node[0];
+	node = node[0];
 	var pos = node.getPosition();
 	var w = node.offsetWidth, h = node.offsetHeight;
 	//needed for correct position in compositeEdit

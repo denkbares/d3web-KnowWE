@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import org.json.JSONException;
@@ -44,7 +45,6 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.ArticleComparator;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.PlainText;
-import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.TermInfo;
 import de.knowwe.core.kdom.objects.TermUtils;
 import de.knowwe.core.kdom.parsing.KDOMPositionComparator;
@@ -169,21 +169,7 @@ public class ObjectInfoRenderer implements Renderer {
 	public static void renderTermDefinitions(Identifier identifier, UserContext user, RenderResult result) {
 		Set<Section<?>> definitions = findTermDefinitionSections(user.getWeb(), identifier);
 		renderSectionStart("Definition", result);
-		if (definitions.size() > 0) {
-			Map<Section<?>, Collection<Section<?>>> groupedByPreview =
-					groupByPreview(definitions);
-			for (Entry<Section<?>, Collection<Section<?>>> entry : groupedByPreview.entrySet()) {
-				Section<?> previewSection = entry.getKey();
-				Collection<Section<?>> group = entry.getValue();
-				result.appendHtml("<div class='articleName'>");
-				result.appendHtml(getSurroundingMarkupName(previewSection).getName());
-				result.appendHtml("</div>");
-				result.appendHtml("<div class=\"previewItem\">");
-				renderTermPreview(previewSection, group, user, "definition", result);
-				result.appendHtml("</div>");
-			}
-		}
-		else {
+		if (definitions.isEmpty()) {
 			Set<Section<?>> references = findTermReferenceSections(user.getWeb(), identifier);
 			if (references.isEmpty()) {
 				result.appendHtml("<p style=\"color:#888;font-style:italic\">");
@@ -197,54 +183,68 @@ public class ObjectInfoRenderer implements Renderer {
 				result.appendHtml("</p>");
 			}
 		}
+		else {
+			Map<Section<?>, Collection<Section<?>>> groupedByPreview =
+					groupByPreview(definitions);
+			for (Entry<Section<?>, Collection<Section<?>>> entry : groupedByPreview.entrySet()) {
+				Section<?> previewSection = entry.getKey();
+				Collection<Section<?>> group = entry.getValue();
+				result.appendHtml("<div class='articleName'>");
+				result.appendHtml(getSurroundingMarkupName(previewSection).getName());
+				result.appendHtml("</div>");
+				result.appendHtml("<div class=\"previewItem\">");
+				renderTermPreview(previewSection, group, user, "definition", result);
+				result.appendHtml("</div>");
+			}
+		}
 		renderSectionEnd(result);
 	}
 
 	public static void renderTermReferences(Identifier identifier, UserContext user, RenderResult result) {
 		Set<Section<?>> references = findTermReferenceSections(user.getWeb(), identifier);
+		Collection<Class<?>> termObjectClasses = getTermObjectClasses(user, identifier);
 		renderSectionStart("References", result);
-		if (references.size() > 0) {
-//			Map<Article, List<Section<?>>> groupedReferences = groupByArticle(references);
-//			for (Article article : groupedReferences.keySet()) {
-//				List<Section<?>> referencesGroup = groupedReferences.get(article);
-//				RenderResult innerResult = new RenderResult(result);
-//				renderTermReferencesPreviewsAsync(referencesGroup, user, innerResult);
-//				wrapInExtendPanel(
-//						KnowWEUtils.getLinkHTMLToArticle(article.getTitle()),
-//						getSurroundingMarkupNames(referencesGroup),
-//						innerResult, result);
-//			}
-			Map<Type, List<Section<?>>> groupedReferences = groupByType(references);
-			for (Type markupType : groupedReferences.keySet()) {
-				List<Section<?>> referencesGroup = groupedReferences.get(markupType);
-				RenderResult innerResult = new RenderResult(result);
-				renderTermReferencesPreviewsAsync(referencesGroup, user, innerResult);
-				wrapInExtendPanel(
-						markupType,
-						getSurroundingMarkupNames(referencesGroup),
-						innerResult, result);
-			}
-
-		}
-		else {
+		if (references.isEmpty()) {
 			result.appendHtml("<p style=\"color:#888;font-style:italic\">");
 			result.append("No references found!");
 			result.appendHtml("</p>");
 		}
+		else {
+			if (termObjectClasses.contains(Package.class)) {
+				renderGroupedByArticle(references, user, result);
+			}
+			else {
+				renderGroupedByType(user, result, references);
+			}
+		}
 		renderSectionEnd(result);
 
-		// render some js to update the async previews
-//		result.appendHtml(
-//				"<script>jq$('.extend-panel-right').click(function() {KNOWWE.core.plugin.objectinfo.loadPreviews(jq$(this).next('div'));});</script>");		// render some js to update the async previews
-//		result.appendHtml(
-//				"<script>jq$('.extend-panel-down').each(function() {KNOWWE.core.plugin.objectinfo.loadPreviews(jq$(this).next('div'));});</script>");
+	}
 
-		// the following statement will preload all previews in the background
-		// instead of using ajax mode only. Comment in/out to change behaviour
-//		result.appendHtml(
-//				"<script>jq$(document).ready(function() {KNOWWE.core.plugin.objectinfo.loadPreviews("
-//						+ Strings.quote(user.getWeb()) + "," + Strings.quote(user.getTitle())
-//						+ ");});</script>");
+	private static void renderGroupedByType(UserContext user, RenderResult result, Set<Section<?>> references) {
+		Map<Type, List<Section<?>>> groupedReferences = groupByType(references);
+		for (Type markupType : groupedReferences.keySet()) {
+			RenderResult innerResult = new RenderResult(result);
+			List<Section<?>> referencesGroup = groupedReferences.get(markupType);
+			renderTermReferencesPreviewsAsync(referencesGroup, user, innerResult);
+			int count = referencesGroup.size();
+			String info = count > 1 ? String.valueOf(count) : null;
+			wrapInExtendPanel(markupType.getName(), info, innerResult, result);
+		}
+	}
+
+	private static void renderGroupedByArticle(Set<Section<?>> references, UserContext user, RenderResult result) {
+		Map<Article, List<Section<?>>> articleGroups = groupByArticle(references);
+		for (Entry<Article, List<Section<?>>> articleListEntry : articleGroups.entrySet()) {
+			RenderResult innerResult = new RenderResult(result);
+			Map<Type, List<Section<?>>> groupedReferences = groupByType(articleListEntry.getValue());
+			for (Type markupType : groupedReferences.keySet()) {
+				List<Section<?>> referencesGroup = groupedReferences.get(markupType);
+				renderTermReferencesPreviewsAsync(referencesGroup, user, innerResult);
+			}
+			wrapInExtendPanel(articleListEntry.getKey().getTitle(),
+					getSurroundingMarkupNames(articleListEntry.getValue()), innerResult, result);
+		}
 	}
 
 	public static void renderSectionStart(String title, RenderResult result) {
@@ -282,40 +282,36 @@ public class ObjectInfoRenderer implements Renderer {
 		return sections;
 	}
 
-	private static String getTermObjectClass(UserContext user, Identifier identifier) {
-		Set<Section<?>> definitions = findTermDefinitionSections(user.getWeb(), identifier);
-		Set<Section<?>> references = findTermReferenceSections(user.getWeb(), identifier);
-		String termObjectClassString = "Object";
-		Section<?> termSection = null;
-		if (!definitions.isEmpty()) {
-			termSection = definitions.iterator().next();
+	private static String getTermObjectClassesVerbalization(UserContext user, Identifier identifier) {
+		TreeSet<String> termClasses = new TreeSet<String>();
+		for (Class<?> termObjectClass : getTermObjectClasses(user, identifier)) {
+			termClasses.add(termObjectClass.getSimpleName());
 		}
-		else if (!references.isEmpty()) {
-			termSection = references.iterator().next();
+		return Strings.concat(", ", termClasses);
+	}
+
+	private static Collection<Class<?>> getTermObjectClasses(UserContext user, Identifier identifier) {
+		Set<Class<?>> termClasses = new HashSet<Class<?>>();
+		for (TerminologyManager manager : KnowWEUtils.getTerminologyManagers(KnowWEUtils.getArticleManager(user.getWeb()))) {
+			termClasses.addAll(manager.getTermClasses(identifier));
 		}
-		if (termSection != null && termSection.get() instanceof Term) {
-			Section<Term> simpleTermSection = Sections.cast(termSection,
-					Term.class);
-			Class<?> termObjectClass = simpleTermSection.get()
-					.getTermObjectClass(simpleTermSection);
-			termObjectClassString = termObjectClass.getSimpleName();
-		}
-		return termObjectClassString;
+		return termClasses;
 	}
 
 	public static void renderHeader(Identifier identifier, UserContext user, RenderResult result) {
-		result.appendHtml("<h3><span id=\"objectinfo-src\">");
+		result.appendHtmlTag("span", "id", "objectinfo-src", "class", "objectinfo-header-name");
 		result.append(identifier.toExternalForm());
-		result.appendHtml("</span>");
-		// Render type of (first) TermDefinition
-		result.appendHtml("</h3>\n");
+		result.appendHtmlTag("/span");
+		result.appendHtmlTag("span", "class", "objectinfo-header-class");
+		result.append("(" + getTermObjectClassesVerbalization(user, identifier) + ")");
+		result.appendHtmlTag("/span");
 	}
 
 	protected static String getRenamingAction() {
 		return "TermRenamingAction";
 	}
 
-	private static Map<Article, List<Section<?>>> groupByArticle(Set<Section<?>> references) {
+	private static Map<Article, List<Section<?>>> groupByArticle(Collection<Section<?>> references) {
 		Map<Article, List<Section<?>>> result =
 				new TreeMap<Article, List<Section<?>>>(ArticleComparator.getInstance());
 		for (Section<?> reference : references) {
@@ -331,7 +327,7 @@ public class ObjectInfoRenderer implements Renderer {
 		return result;
 	}
 
-	private static Map<Type, List<Section<? extends Type>>> groupByType(Set<Section<?>> references) {
+	private static Map<Type, List<Section<? extends Type>>> groupByType(Collection<Section<?>> references) {
 		Map<Type, List<Section<? extends Type>>> result =
 				new TreeMap<Type, List<Section<? extends Type>>>(new Comparator<Type>() {
 					@Override
@@ -448,8 +444,7 @@ public class ObjectInfoRenderer implements Renderer {
 		result.appendHtml("</div>");
 
 		// render the preview content part, avoiding double returns
-		PreviewManager previewManager = PreviewManager.getInstance();
-		PreviewRenderer renderer = previewManager.getPreviewRenderer(previewSection);
+		PreviewRenderer renderer = PreviewManager.getInstance().getPreviewRenderer(previewSection);
 		RenderResult part = new RenderResult(result);
 		renderer.render(previewSection, relevantSubSections, user, part);
 		result.appendAvoidParagraphs(part);
@@ -490,38 +485,35 @@ public class ObjectInfoRenderer implements Renderer {
 		return types;
 	}
 
-	private static void wrapInExtendPanel(Type surroundingMarkupType, CountingSet<Type> occurences, RenderResult content, RenderResult result) {
+	private static void wrapInExtendPanel(String surroundingMarkupType, CountingSet<Type> occurrences, RenderResult content, RenderResult result) {
 		StringBuilder info = new StringBuilder();
-//		for (String string : occurences) {
-//			if (info.length() > 0) info.append(", ");
-//			int count = occurences.getCount(string);
-//			if (count > 1) info.append(count).append("&times; ");
-//			info.append(string);
-//		}
-
-		info = new StringBuilder();
+		for (Type occurrence : occurrences) {
+			if (info.length() > 0) info.append(", ");
+			int count = occurrences.getCount(occurrence);
+			if (count > 1) info.append(count).append("&times; ");
+			info.append(occurrence.getName());
+		}
 		wrapInExtendPanel(surroundingMarkupType, info.toString(), content, result);
 	}
 
-	private static void wrapInExtendPanel(Type surroundingMarkupType, RenderResult content, RenderResult result) {
+	private static void wrapInExtendPanel(String surroundingMarkupType, RenderResult content, RenderResult result) {
 		wrapInExtendPanel(surroundingMarkupType, (String) null, content, result);
 	}
 
-	private static void wrapInExtendPanel(Type surroundingMarkupType, String info, RenderResult content, RenderResult result) {
+	private static void wrapInExtendPanel(String surroundingMarkupType, String info, RenderResult content, RenderResult result) {
 		result.appendHtml("<p class=\"show-extend pointer extend-panel-right\" >");
 		result.appendHtml("<strong>");
-		result.appendHtml(surroundingMarkupType.getName());
+		result.appendHtml(surroundingMarkupType);
 		result.appendHtml("</strong>");
+		if (!Strings.isBlank(info)) {
+			result.appendHtml("<span class='typeInfo'>");
+			result.append(" (").append(info).append(")");
+			result.appendHtml("</span>");
+		}
 		result.appendHtml("</p>");
 		result.appendHtml("<div class=\"hidden\" style=\"display:none\">");
 		result.append(content);
 		result.appendHtml("</div>");
-
-//		if (!Strings.isBlank(info)) {
-//			result.appendHtml("<span class='typeInfo'>");
-//			result.append(" (").append(info).append(")");
-//			result.appendHtml("</span>");
-//		}
 
 	}
 

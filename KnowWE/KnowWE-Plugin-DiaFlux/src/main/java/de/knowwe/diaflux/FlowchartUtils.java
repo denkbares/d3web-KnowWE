@@ -331,7 +331,7 @@ public class FlowchartUtils {
 	/**
 	 * Finds the corresponding kb-Element of the supplied NodeType or EdgeType
 	 * section.
-	 * 
+	 *
 	 * @created 02.05.2014
 	 */
 	public static DiaFluxElement findObject(Section<? extends AbstractXMLType> node, KnowledgeBase kb) {
@@ -347,7 +347,7 @@ public class FlowchartUtils {
 
 	/**
 	 * Returns the state of the supplied NodeType or EdgeType section.
-	 * 
+	 *
 	 * @created 02.05.2014
 	 */
 	public static State getElementState(Section<? extends AbstractXMLType> node, UserContext user) {

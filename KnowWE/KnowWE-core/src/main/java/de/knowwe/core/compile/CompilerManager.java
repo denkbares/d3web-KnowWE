@@ -215,6 +215,7 @@ public class CompilerManager {
 								Log.fine(compiler.getClass().getSimpleName()
 										+ " finished after "
 										+ (System.currentTimeMillis() - startTime) + "ms");
+								// 2 - notify the waiting caller of doCompile() in the synchronized block below (1)
 								lock.notifyAll();
 							}
 						}
@@ -225,6 +226,9 @@ public class CompilerManager {
 			// we wait until all have been terminated
 			synchronized (lock) {
 				while (!activeCompilers.isEmpty()) {
+					// 1 - Every time we are awoken by a finished compiler above (2), we check if it was the last
+					// one of the current group of compilers. If it was, we do the next group... until we are done
+					// completely
 					lock.wait();
 				}
 			}

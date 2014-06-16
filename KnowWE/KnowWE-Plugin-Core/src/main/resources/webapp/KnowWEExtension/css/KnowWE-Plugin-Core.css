@@ -248,16 +248,23 @@ span.markupMenuItem {
 	margin-bottom: 0.5em;
 }
 
-smartedit + .objectinfo.preview:hover {
-	display: block;
-}
-
 .objectinfo.preview .indent {
 	display: none;
 }
 
 .objectinfo.preview .type_CoveringList .relation, .objectinfo.preview .type_CoveringList .ellipse {
 	margin-left: 1em;
+}
+
+.objectinfo-header-name {
+	font-size: 18px;
+	line-height: 1.2;
+}
+
+.objectinfo-header-class {
+	margin-left: 5px;
+	font-size: 18px;
+	font-weight: normal;
 }
 
 /* ################################################## */
@@ -462,7 +469,6 @@ smartedit + .objectinfo.preview:hover {
 .navigationPaginationWrapper th img.filter:hover {
 	cursor: pointer;
 }
-
 
 /* ################################################## */
 /* ------------- Inline Definition Lists ------------ */
