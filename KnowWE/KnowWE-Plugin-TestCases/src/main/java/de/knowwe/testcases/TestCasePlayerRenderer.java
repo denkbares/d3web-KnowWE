@@ -30,11 +30,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyManager;
@@ -55,7 +53,6 @@ import de.d3web.testcase.stc.CommentedTestCase;
 import de.d3web.utils.Pair;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
@@ -97,7 +94,9 @@ public class TestCasePlayerRenderer implements Renderer {
 		if (user == null || user.getSession() == null) {
 			return;
 		}
-		cleanupOutDatedTestCasePlayerCookies(user);
+		for (Pattern cookiePattern : cookiePatterns) {
+			KnowWEUtils.cleanupSectionCookies(user, cookiePattern, 1);
+		}
 		Section<TestCasePlayerType> playerSection =
 				Sections.cast(section.getParent(), TestCasePlayerType.class);
 		List<ProviderTriple> providers =
@@ -120,30 +119,6 @@ public class TestCasePlayerRenderer implements Renderer {
 		}
 		string.appendHtml("</div>");
 		result.append(string.toStringRaw());
-	}
-
-	/**
-	 * Cleans cookies for Sections that do no longer exist.
-	 */
-	private void cleanupOutDatedTestCasePlayerCookies(UserContext context) {
-		if (!(context instanceof UserActionContext)) return;
-		HttpServletRequest request = context.getRequest();
-		if (request == null) return;
-		Cookie[] cookies = request.getCookies();
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				String name = cookie.getName();
-				for (Pattern cookiePattern : cookiePatterns) {
-					Matcher matcher = cookiePattern.matcher(name);
-					if (!matcher.find()) continue;
-					String sectionId = matcher.group(1);
-					Section<?> section = Sections.getSection(sectionId);
-					if (section != null) continue;
-					cookie.setMaxAge(0);
-					((UserActionContext) context).getResponse().addCookie(cookie);
-				}
-			}
-		}
 	}
 
 	private void renderOverallStatus(ProviderTriple selectedTriple, UserContext user, RenderResult string) {

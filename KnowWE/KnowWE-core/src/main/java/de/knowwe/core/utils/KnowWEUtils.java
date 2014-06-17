@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -42,6 +43,7 @@ import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
@@ -198,7 +200,8 @@ public class KnowWEUtils {
 
 	/**
 	 * Returns the ConnectorAttachment for a specified filename on a specified article. Either the title matches the
-	 * article and the fileName matches the filename of the attachment or the filename matches the complete path for the
+	 * article and the fileName matches the filename of the attachment or the filename matches the complete path for
+	 * the
 	 * attachment.
 	 *
 	 * @param title    the title of the article of the attachment
@@ -223,7 +226,8 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns all {@link WikiAttachment}s which full name fits to the regex or which filename matches to the regexp and
+	 * Returns all {@link WikiAttachment}s which full name fits to the regex or which filename matches to the regexp
+	 * and
 	 * which parent has the specified title
 	 *
 	 * @param title the title of the article
@@ -522,7 +526,8 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Creates a &lt;a href="..."&gt; styled link to this section. The created link navigates the user to the article of
+	 * Creates a &lt;a href="..."&gt; styled link to this section. The created link navigates the user to the article
+	 * of
 	 * the section. If the section is rendered with an anchor (see method {@link #getAnchor(Section)}) the page is also
 	 * scrolled to the section.
 	 *
@@ -537,7 +542,8 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Creates a &lt;a href="..."&gt; styled link to this section. The created link navigates the user to the article of
+	 * Creates a &lt;a href="..."&gt; styled link to this section. The created link navigates the user to the article
+	 * of
 	 * the section. If the section is rendered with an anchor (see method {@link #getAnchor(Section)}) the page is also
 	 * scrolled to the section.
 	 *
@@ -616,6 +622,32 @@ public class KnowWEUtils {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Cleans cookies for Sections that do no longer exist. This only works, if the section is sometime called from
+	 * within an ajax Action (like RerenderContentPartAction), because an ActionContext is needed.
+	 *
+	 * @param cookieNamePattern a pattern that matches the name for the cookie to be cleaned up exactly
+	 * @param sectionIdGroup    the capture group in the pattern that contains the section id.
+	 */
+	public static void cleanupSectionCookies(UserContext context, Pattern cookieNamePattern, int sectionIdGroup) {
+		if (!(context instanceof UserActionContext)) return;
+		HttpServletRequest request = context.getRequest();
+		if (request == null) return;
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				String name = cookie.getName();
+				Matcher matcher = cookieNamePattern.matcher(name);
+				if (!matcher.find()) continue;
+				String sectionId = matcher.group(sectionIdGroup);
+				Section<?> section = Sections.getSection(sectionId);
+				if (section != null) continue;
+				cookie.setMaxAge(0);
+				((UserActionContext) context).getResponse().addCookie(cookie);
+			}
+		}
 	}
 
 	/**
