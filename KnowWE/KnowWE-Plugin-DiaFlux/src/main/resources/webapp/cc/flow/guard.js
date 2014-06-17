@@ -151,7 +151,8 @@ Guard.createFromXML = function(flowchart, xmlDom, pasteOptions, sourceNode) {
 		var infoObject = sourceNode.getBaseObject();
 		if (infoObject) {
 			var name = DiaFluxUtils.escapeRegex(infoObject.getName());
-			var regexString = "^eval\\(" + name + "\\s*(<|<=|>|>=|!=|=)(.*)\\)";
+			var quotedName = DiaFluxUtils.escapeRegex(IdentifierUtils.quote(infoObject.getName()));
+			var regexString = "^eval\\((?:" + name + "|" + quotedName + ")\\s*(<|<=|>|>=|!=|=)(.*)\\)";
 			var regex = new RegExp(regexString, "i");
 			var match = regex.exec(conditionString);
 
