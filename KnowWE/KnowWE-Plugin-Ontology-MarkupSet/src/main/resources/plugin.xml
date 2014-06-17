@@ -258,7 +258,7 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="TurtlePreviewRenderer">
-		<parameter id="class" value="de.knowwe.ontology.kdom.preview.TurtlePreviewRenderer" />
+		<parameter id="class" value="de.knowwe.core.preview.DefaultPreviewRenderer" />
 		<parameter id="name" value="TurtlePreviewRenderer" />
 		<parameter id="description" value="Renders a preview of a turtle ontology markup." />
 		<parameter id="version" value="1.0" />
