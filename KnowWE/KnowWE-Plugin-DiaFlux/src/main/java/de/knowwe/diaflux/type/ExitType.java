@@ -34,8 +34,6 @@ import de.knowwe.kdom.xml.AbstractXMLType;
 import de.knowwe.kdom.xml.XMLContent;
 
 /**
- * 
- * 
  * @author Reinhard Hatko
  * @created on: 09.10.2009
  */
@@ -77,7 +75,7 @@ public class ExitType extends AbstractXMLType {
 
 		@Override
 		public String getTermName(Section<? extends Term> s) {
-			return Strings.decodeHtml(s.getText());
+			return Strings.unquote(Strings.decodeHtml(s.getText()));
 		}
 
 	}

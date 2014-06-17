@@ -21,6 +21,7 @@ package de.knowwe.core.kdom.objects;
 import java.util.Collection;
 
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DestroyScript;
@@ -55,7 +56,7 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 
 	@Override
 	public String getTermName(Section<? extends Term> section) {
-		return section.getText();
+		return Strings.unquote(section.getText());
 	}
 
 	@Override

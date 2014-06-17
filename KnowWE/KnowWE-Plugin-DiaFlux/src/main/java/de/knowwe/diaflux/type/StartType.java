@@ -77,7 +77,7 @@ public class StartType extends AbstractXMLType {
 
 		@Override
 		public String getTermName(Section<? extends Term> s) {
-			return Strings.decodeHtml(s.getText());
+			return Strings.unquote(Strings.decodeHtml(s.getText()));
 		}
 
 	}
