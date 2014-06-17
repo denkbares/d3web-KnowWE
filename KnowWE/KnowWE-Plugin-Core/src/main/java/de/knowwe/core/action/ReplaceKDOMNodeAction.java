@@ -27,6 +27,7 @@ import java.util.Map;
 import de.d3web.strings.Strings;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.parsing.Sections.ReplaceResult;
 
@@ -38,9 +39,9 @@ import de.knowwe.core.kdom.parsing.Sections.ReplaceResult;
  * Needed Parameters:
  * </p>
  * <ul>
- * <li><tt>{@link Attributes.TARGET}:</tt> The KDOM node of which the content
+ * <li><tt>{@link Attributes#TARGET}:</tt> The KDOM node of which the content
  * will be replaced</li>
- * <li><tt>{@link KnowWEAtrributes.TEXT}:</tt> The new node content</li>
+ * <li><tt>{@link Attributes#TEXT}:</tt> The new node content</li>
  * </ul>
  */
 public class ReplaceKDOMNodeAction extends AbstractAction {
@@ -74,6 +75,7 @@ public class ReplaceKDOMNodeAction extends AbstractAction {
 			result = newSectionIDs.values().iterator().next();
 
 		}
+		Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
 		return result;
 	}
 
