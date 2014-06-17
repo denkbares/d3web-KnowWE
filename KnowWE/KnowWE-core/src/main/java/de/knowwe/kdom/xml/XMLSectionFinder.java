@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
@@ -37,7 +38,6 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 /**
  * @author astriffler
- * 
  */
 public class XMLSectionFinder implements SectionFinder {
 
@@ -45,9 +45,9 @@ public class XMLSectionFinder implements SectionFinder {
 
 	/**
 	 * RegEx-Description 1:
-	 * 
+	 * <p/>
 	 * For this example, tagNamePattern = Test
-	 * 
+	 * <p/>
 	 * - Has to start with '<Test' - Optionally after '<Test' there can be
 	 * attributes (-> RegEx-Description 2) - The first '>' after '<Test'
 	 * terminates the attributes part and start the content part - The first
@@ -57,9 +57,9 @@ public class XMLSectionFinder implements SectionFinder {
 
 	/**
 	 * RegEx-Description 2:
-	 * 
+	 * <p/>
 	 * Attribute format: attributeName="value"
-	 * 
+	 * <p/>
 	 * - Delimiter for attributes are white space characters - Inside the
 	 * attributeName and value (between the quotes) no white space characters,
 	 * quotes and equals signs are allowed - Around the '=' and before and after
@@ -105,7 +105,7 @@ public class XMLSectionFinder implements SectionFinder {
 
 		int depth = 0;
 		int sectionStart = 0;
-		String foundTagName = new String();
+		String foundTagName = "";
 
 		while (tagMatcher.find()) {
 
@@ -113,7 +113,7 @@ public class XMLSectionFinder implements SectionFinder {
 			if (tagMatcher.group(1) == null) {
 
 				// its the first tag with this name
-				if (depth == 0 && foundTagName.equals(new String())) {
+				if (depth == 0 && foundTagName.equals("")) {
 
 					parameterMap.put(AbstractXMLType.HEAD, tagMatcher.group());
 					parameterMap.put(AbstractXMLType.TAGNAME, tagMatcher.group(2));
@@ -124,7 +124,7 @@ public class XMLSectionFinder implements SectionFinder {
 					if (tagMatcher.group(3) != null) {
 						Matcher attributeMatcher = attributePattern.matcher(tagMatcher.group(3));
 						while (attributeMatcher.find()) {
-							parameterMap.put(attributeMatcher.group(1), attributeMatcher.group(2));
+							parameterMap.put(attributeMatcher.group(1), Strings.decodeHtml(attributeMatcher.group(2)));
 						}
 					}
 
@@ -133,7 +133,7 @@ public class XMLSectionFinder implements SectionFinder {
 						result.add(makeSectionFinderResult(sectionStart, tagMatcher.end(),
 								parameterMap));
 						parameterMap = new HashMap<String, String>();
-						foundTagName = new String();
+						foundTagName = "";
 						continue;
 					}
 				}
@@ -158,7 +158,7 @@ public class XMLSectionFinder implements SectionFinder {
 				// new HashMap for next Result...
 				if (depth == 0) {
 					parameterMap = new HashMap<String, String>();
-					foundTagName = new String();
+					foundTagName = "";
 				}
 			}
 		}
@@ -167,7 +167,7 @@ public class XMLSectionFinder implements SectionFinder {
 	}
 
 	protected SectionFinderResult makeSectionFinderResult(int start, int end,
-			Map<String, String> parameterMap) {
+														  Map<String, String> parameterMap) {
 		return new SectionFinderResult(start, end, parameterMap);
 	}
 
@@ -205,7 +205,7 @@ public class XMLSectionFinder implements SectionFinder {
 
 	@SuppressWarnings("unused")
 	private static String readTxtFile(String fileName) {
-		StringBuffer inContent = new StringBuffer();
+		StringBuilder inContent = new StringBuilder();
 		try {
 			BufferedReader bufferedReader = new BufferedReader(
 					new InputStreamReader(new FileInputStream(fileName), "UTF8"));

@@ -31,19 +31,18 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.utils.Patterns;
 
 /**
- * 
  * @author Reinhard Hatko
  * @created 15.11.2010
  */
 public class NodeActiveConditionType extends D3webCondition<NodeActiveConditionType> {
 
 	private static final int EXITNODE_GROUP = 1;
-	private static final String REGEX_EXITNDOE = "\\(([^()\"]*|" + Patterns.QUOTED + ")\\)";
-	private static final Pattern PATTERN_EXITNDOE = Pattern.compile(REGEX_EXITNDOE);
+	private static final String REGEX_EXITNODE = "\\(([^()\"]*|" + Patterns.QUOTED + ")\\)";
+	private static final Pattern PATTERN_EXITNODE = Pattern.compile(REGEX_EXITNODE);
 
 	private static final int CONDITION_GROUP = 1;
 	private static final int FLOWCHART_GROUP = 2;
-	private static final String REGEX = "^\\s*(IS_ACTIVE\\[(.*)" + REGEX_EXITNDOE + "\\])\\s*$";
+	private static final String REGEX = "^\\s*(IS_ACTIVE\\[(.*)" + REGEX_EXITNODE + "\\])\\s*$";
 	private static final Pattern PATTERN = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE);
 
 	public NodeActiveConditionType() {
@@ -54,7 +53,7 @@ public class NodeActiveConditionType extends D3webCondition<NodeActiveConditionT
 		addChildType(flowchartReference);
 
 		ExitNodeReference exitNodeReference = new ExitNodeReference();
-		exitNodeReference.setSectionFinder(new RegexSectionFinder(PATTERN_EXITNDOE, EXITNODE_GROUP));
+		exitNodeReference.setSectionFinder(new RegexSectionFinder(PATTERN_EXITNODE, EXITNODE_GROUP));
 		addChildType(exitNodeReference);
 
 		addChildType(new KeywordType("["));
