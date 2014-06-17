@@ -129,7 +129,7 @@ public class CIBuildManager {
 	public static void terminate(CIDashboard dashboard) {
 		TestExecutor executor = runningBuilds.get(dashboard);
 		if (executor != null) {
-			if (executor.isRunning()) {
+			if (!executor.isShutdown()) {
 				executor.terminate();
 				executor.awaitTermination(5, TimeUnit.SECONDS);
 			}
@@ -144,10 +144,10 @@ public class CIBuildManager {
 	public static void terminate() {
 		TestExecutor executor = getNextExecutor();
 		while (executor != null) {
-			if (executor.isRunning()) {
-				System.out.println("Terminated");
+			if (!executor.isShutdown()) {
 				executor.terminate();
 			}
+			executor = getNextExecutor();
 		}
 	}
 
@@ -160,7 +160,7 @@ public class CIBuildManager {
 	public static void awaitTermination(CIDashboard dashboard) {
 		TestExecutor executor = runningBuilds.get(dashboard);
 		if (executor != null) {
-			executor.awaitTermination();
+			executor.awaitTermination(5, TimeUnit.SECONDS);
 		}
 	}
 
@@ -173,7 +173,7 @@ public class CIBuildManager {
 	public static void awaitTermination() {
 		TestExecutor executor = getNextExecutor();
 		while (executor != null) {
-			executor.awaitTermination();
+			executor.awaitTermination(5, TimeUnit.SECONDS);
 			executor = getNextExecutor();
 		}
 	}
