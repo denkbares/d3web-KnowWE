@@ -124,6 +124,8 @@ public class KnowWEUtils {
 		mask(builder, "----");
 		mask(builder, "{{{");
 		mask(builder, "}}}");
+		mask(builder, "{{");
+		mask(builder, "}}");
 		mask(builder, "%%");
 		mask(builder, "\\");
 		mask(builder, "__");
@@ -141,6 +143,8 @@ public class KnowWEUtils {
 		unmask(builder, "----");
 		unmask(builder, "{{{");
 		unmask(builder, "}}}");
+		unmask(builder, "{{");
+		unmask(builder, "}}");
 		unmask(builder, "%%");
 		unmask(builder, "\\");
 	}

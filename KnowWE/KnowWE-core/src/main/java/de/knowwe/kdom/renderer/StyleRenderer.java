@@ -20,6 +20,8 @@
 
 package de.knowwe.kdom.renderer;
 
+import org.apache.commons.lang.ArrayUtils;
+
 import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
@@ -34,32 +36,34 @@ public class StyleRenderer implements Renderer {
 	public static final StyleRenderer OPERATOR = new StyleRenderer("color:rgb(40, 40, 160)");
 	public static final StyleRenderer PROPERTY = new StyleRenderer("color:rgb(30, 40, 100)");
 	public static final StyleRenderer CONDITION = new StyleRenderer("color:rgb(0, 128, 0)");
-	public static final StyleRenderer PROMPT = new StyleRenderer("color:rgb(0, 128, 0)");
+	public static final StyleRenderer PROMPT = new StyleRenderer("color:rgb(0, 128, 0)",
+			MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
 	public static final StyleRenderer NUMBER = new StyleRenderer("color:rgb(125, 80, 102)");
-	public static final StyleRenderer COMMENT = new StyleRenderer("color:rgb(160, 160, 160)");
+	public static final StyleRenderer COMMENT = new StyleRenderer("color:rgb(160, 160, 160)",
+			MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
 	public static final StyleRenderer CONTENT = new StyleRenderer("color:rgb(80, 80, 80)");
 	public static final StyleRenderer LOCALE = new StyleRenderer("color:rgb(0, 128, 128)");
 	public static final StyleRenderer ANNOTATION = COMMENT;
 
 	public static final Renderer CHOICE = new ToolMenuDecoratingRenderer(
-			new StyleRenderer("color:rgb(40, 40, 160)", MaskMode.htmlEntities));
+			new StyleRenderer("color:rgb(40, 40, 160)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 	public static final Renderer SOLUTION = new ToolMenuDecoratingRenderer(
-			new StyleRenderer("color:rgb(150, 110, 120)", MaskMode.htmlEntities));
+			new StyleRenderer("color:rgb(150, 110, 120)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 	public static final Renderer Question = new ToolMenuDecoratingRenderer(
-			new StyleRenderer("color:rgb(0, 128, 0)", MaskMode.htmlEntities));
+			new StyleRenderer("color:rgb(0, 128, 0)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 	public static final Renderer Questionaire = new ToolMenuDecoratingRenderer(
-			new StyleRenderer("color:rgb(128, 128, 0)", MaskMode.htmlEntities));
+			new StyleRenderer("color:rgb(128, 128, 0)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 
 	public static final Renderer Flowchart = new ToolMenuDecoratingRenderer(
-			new StyleRenderer("color:rgb(128, 128, 0)", MaskMode.htmlEntities));
+			new StyleRenderer("color:rgb(128, 128, 0)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 	public static final Renderer FlowchartStart = new ToolMenuDecoratingRenderer(
-			new StyleRenderer("color:rgb(0, 80, 40)", MaskMode.htmlEntities));
+			new StyleRenderer("color:rgb(0, 80, 40)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 	public static final Renderer FlowchartExit = new ToolMenuDecoratingRenderer(
-			new StyleRenderer("color:rgb(80, 0, 40)", MaskMode.htmlEntities));
+			new StyleRenderer("color:rgb(80, 0, 40)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 
 	public static final Renderer PACKAGE = new ToolMenuDecoratingRenderer(new StyleRenderer(
 			"packageOpacity",
-			"color:rgb(121,79, 64);"));
+			"color:rgb(121,79, 64);", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 
 	public static final String CONDITION_FULLFILLED = "#CFFFCF";
 	public static final String CONDITION_FALSE = "#FFCFCF";
@@ -98,7 +102,7 @@ public class StyleRenderer implements Renderer {
 
 	private final String cssClass;
 	private final String cssStyle;
-	private MaskMode maskMode = MaskMode.jspwikiMarkup;
+	private MaskMode[] maskMode = new MaskMode[] {MaskMode.jspwikiMarkup };
 
 	public StyleRenderer(String cssStyle) {
 		this(null, cssStyle);
@@ -109,19 +113,19 @@ public class StyleRenderer implements Renderer {
 		this.cssStyle = cssStyle;
 	}
 
-	public StyleRenderer(MaskMode maskMode) {
+	public StyleRenderer(MaskMode... maskMode) {
 		this(null, null, maskMode);
 	}
 
-	public StyleRenderer(String cssStyle, MaskMode maskMode) {
+	public StyleRenderer(String cssStyle, MaskMode... maskMode) {
 		this(null, cssStyle, maskMode);
 	}
 
-	public StyleRenderer(StyleRenderer lookAlike, MaskMode maskMode) {
+	public StyleRenderer(StyleRenderer lookAlike, MaskMode... maskMode) {
 		this(lookAlike.cssClass, lookAlike.cssStyle, maskMode);
 	}
 
-	public StyleRenderer(String cssClass, String cssStyle, MaskMode maskMode) {
+	public StyleRenderer(String cssClass, String cssStyle, MaskMode... maskMode) {
 		this.cssClass = cssClass;
 		this.cssStyle = cssStyle;
 		this.maskMode = maskMode;
@@ -166,16 +170,15 @@ public class StyleRenderer implements Renderer {
 	protected void renderContent(Section<?> section, UserContext user, RenderResult string) {
 		RenderResult builder = new RenderResult(user);
 		DelegateRenderer.getInstance().render(section, user, builder);
-		switch (maskMode) {
-		case jspwikiMarkup:
+		if (ArrayUtils.contains(maskMode, MaskMode.jspwikiMarkup)
+				&& ArrayUtils.contains(maskMode, MaskMode.htmlEntities)) {
+			string.appendJSPWikiMarkup(Strings.encodeHtml(builder.toStringRaw()));
+		} else if (ArrayUtils.contains(maskMode, MaskMode.jspwikiMarkup)) {
 			string.appendJSPWikiMarkup(builder);
-			break;
-		case htmlEntities:
+		} else if (ArrayUtils.contains(maskMode, MaskMode.htmlEntities)) {
 			string.append(Strings.encodeHtml(builder.toStringRaw()));
-			break;
-		case none:
+		} else {
 			string.append(builder);
-			break;
 		}
 	}
 
@@ -187,7 +190,7 @@ public class StyleRenderer implements Renderer {
 		return this.cssClass;
 	}
 
-	public void setMaskMode(MaskMode maskMode) {
+	public void setMaskMode(MaskMode... maskMode) {
 		this.maskMode = maskMode;
 	}
 }
