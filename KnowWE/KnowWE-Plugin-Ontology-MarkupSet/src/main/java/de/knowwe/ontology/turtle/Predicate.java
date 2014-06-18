@@ -18,11 +18,6 @@
  */
 package de.knowwe.ontology.turtle;
 
-import java.util.List;
-
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.URI;
-
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -33,14 +28,19 @@ import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.URIProvider;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
+import org.ontoware.rdf2go.model.node.Node;
+import org.ontoware.rdf2go.model.node.URI;
+
+import java.util.List;
 
 public class Predicate extends AbstractType implements URIProvider<Predicate> {
 
 	public Predicate() {
 		this.setSectionFinder(new FirstWordFinder());
 
-		this.addChildType(new TurtleLongURI());
-		this.addChildType(new TurtleURI());
+        this.addChildType(new PredicateAType());
+        this.addChildType(new TurtleLongURI());
+        this.addChildType(new TurtleURI());
 		this.addChildType(new LazyURIReference());
 
 		this.setRenderer(new CompositeRenderer(DelegateRenderer.getInstance(),

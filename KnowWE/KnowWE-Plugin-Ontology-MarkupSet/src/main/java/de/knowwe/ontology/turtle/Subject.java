@@ -18,11 +18,6 @@
  */
 package de.knowwe.ontology.turtle;
 
-import java.util.List;
-
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.Resource;
-
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
@@ -38,6 +33,10 @@ import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.ResourceProvider;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
+import org.ontoware.rdf2go.model.node.Node;
+import org.ontoware.rdf2go.model.node.Resource;
+
+import java.util.List;
 
 public class Subject extends AbstractType implements ResourceProvider<Subject> {
 
@@ -58,9 +57,9 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 	private Type createSubjectURIWithDefinition() {
 		TurtleURI turtleURI = new TurtleURI();
 		SimpleReference reference = Types.findSuccessorType(turtleURI, ResourceReference.class);
-		reference.addCompileScript(Priority.HIGH, new SubjectPredicateKeywordDefinitionHandler(new String[] { "[\\w]*?:type", "[\\w]*?:subClassOf", "[\\w]*?:subPropertyOf" }));
-		return turtleURI;
-	}
+        reference.addCompileScript(Priority.HIGH, new SubjectPredicateKeywordDefinitionHandler(new String[]{"^" + PredicateAType.a + "$", "[\\w]*?:type", "[\\w]*?:subClassOf", "[\\w]*?:subPropertyOf"}));
+        return turtleURI;
+    }
 
 	class SubjectPredicateKeywordDefinitionHandler extends PredicateKeywordDefinitionHandler {
 
