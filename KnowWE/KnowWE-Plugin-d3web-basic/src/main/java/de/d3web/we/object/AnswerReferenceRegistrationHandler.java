@@ -13,7 +13,6 @@ import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.values.DateValue;
-import de.d3web.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
@@ -71,8 +70,7 @@ public class AnswerReferenceRegistrationHandler extends SimpleReferenceRegistrat
 			}
 			catch (IllegalArgumentException e) {
 				return Messages.asList(Messages.error("The value '"
-						+ value + "' does not apply to any supported date format:\n  - "
-						+ Strings.concat("\n  - ", DateValue.getAllowedFormatStrings())));
+						+ value + "' does not apply to any supported date format"));
 			}
 		}
 		return super.validateReference(compiler, simpleTermSection);

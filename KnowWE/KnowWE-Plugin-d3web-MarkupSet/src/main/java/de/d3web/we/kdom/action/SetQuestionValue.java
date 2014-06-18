@@ -27,6 +27,10 @@ import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionDate;
+import de.d3web.core.knowledge.terminology.QuestionText;
+import de.d3web.core.session.values.DateValue;
+import de.d3web.core.session.values.TextValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.strings.Strings;
 import de.d3web.we.kdom.auxiliary.Equals;
@@ -41,11 +45,11 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 
 /**
  * @author Johannes Dienst
- * 
  */
 public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 
@@ -84,29 +88,52 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 	}
 
 	@Override
-	public PSAction createAction(D3webCompiler compiler, Section<SetQuestionValue> s) {
+	public PSAction createAction(D3webCompiler compiler, Section<SetQuestionValue> section) throws CompilerMessage {
 
 		Object value;
+		Section<AnswerReference> answerReferenceSection = null;
 
-		if (Sections.findSuccessor(s, UnknownValueType.class) != null) {
+		if (Sections.findSuccessor(section, UnknownValueType.class) != null) {
 			value = Unknown.getInstance();
 		}
 		else {
-			Section<AnswerReference> aref = Sections.findSuccessor(s,
+			answerReferenceSection = Sections.findSuccessor(section,
 					AnswerReference.class);
-			if (aref == null) return null;
-			value = aref.get().getTermObject(compiler, aref);
+			if (answerReferenceSection == null) return null;
+			value = answerReferenceSection.get().getTermObject(compiler, answerReferenceSection);
 		}
 
-		Section<QuestionReference> qref = Sections.findSuccessor(s, QuestionReference.class);
-		Question q = qref.get().getTermObject(compiler, qref);
-		if (q != null && value != null) {
-			ActionSetQuestion a = new ActionSetQuestion();
-			a.setQuestion(q);
-			a.setValue(value);
-			return a;
+		Section<QuestionReference> questionReferenceSection = Sections.findSuccessor(section, QuestionReference.class);
+		Question question = questionReferenceSection.get().getTermObject(compiler, questionReferenceSection);
+		if (question instanceof QuestionDate && answerReferenceSection != null) {
+			ActionSetQuestion actionSetQuestion = new ActionSetQuestion();
+			actionSetQuestion.setQuestion(question);
+			String text = answerReferenceSection.getText();
+			try {
+				DateValue dateValue = DateValue.createDateValue(text);
+				actionSetQuestion.setValue(dateValue);
+			}
+			catch (IllegalArgumentException e) {
+				return null;
+			}
+			return actionSetQuestion;
+		}
+		if (question instanceof QuestionText && answerReferenceSection != null) {
+			ActionSetQuestion actionSetQuestion = new ActionSetQuestion();
+			actionSetQuestion.setQuestion(question);
+			String text = answerReferenceSection.getText();
+			TextValue textValue = new TextValue(Strings.unquote(text));
+			actionSetQuestion.setValue(textValue);
+			return actionSetQuestion;
+		}
+		if (question != null && value != null) {
+			ActionSetQuestion actionSetQuestion = new ActionSetQuestion();
+			actionSetQuestion.setQuestion(question);
+			actionSetQuestion.setValue(value);
+			return actionSetQuestion;
 		}
 		else {
+			//throw CompilerMessage.error("Unable create action from " + section.getText());
 			return null;
 		}
 	}

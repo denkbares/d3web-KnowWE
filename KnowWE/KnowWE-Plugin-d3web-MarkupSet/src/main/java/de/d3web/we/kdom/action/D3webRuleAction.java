@@ -28,6 +28,7 @@ import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -57,7 +58,7 @@ public abstract class D3webRuleAction<T extends Type> extends AbstractType {
 	 * @param section the section of this action
 	 * @return the newly created action
 	 */
-	protected abstract PSAction createAction(D3webCompiler compiler, Section<T> section);
+	protected abstract PSAction createAction(D3webCompiler compiler, Section<T> section) throws CompilerMessage;
 
 	private class ActionCreateHandler extends D3webCompileScript<T> {
 
@@ -68,7 +69,7 @@ public abstract class D3webRuleAction<T extends Type> extends AbstractType {
 		}
 
 		@Override
-		public void compile(D3webCompiler compiler, Section<T> section) {
+		public void compile(D3webCompiler compiler, Section<T> section) throws CompilerMessage {
 			PSAction action = createAction(compiler, section);
 			storeAction(compiler, action, section);
 		}
