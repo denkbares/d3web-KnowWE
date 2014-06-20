@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
@@ -12,6 +14,8 @@ import de.d3web.core.session.SessionFactory;
 import de.d3web.testcase.TestCaseUtils;
 import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.TestCase;
+import de.d3web.utils.Log;
+import de.d3web.utils.Pair;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.Article;
@@ -29,7 +33,7 @@ public class TestCaseScanner implements Scanner {
 		List<Section<TestCasePlayerType>> players = Sections.
 				findSuccessorsOfType(article.getRootSection(), TestCasePlayerType.class);
 		if (players.isEmpty()) return;
-
+		Log.info("Scanning cases on " + article.getTitle());
 		PrintStream out = new PrintStream(target);
 		try {
 			for (Section<TestCasePlayerType> player : players) {
@@ -50,18 +54,32 @@ public class TestCaseScanner implements Scanner {
 		}
 	}
 
-	private void execute(KnowledgeBase base, TestCase testCase, PrintStream out) {
-		Session session = SessionFactory.createSession(base, testCase.getStartDate());
-		for (Date date : testCase.chronology()) {
-			out.printf("- %s:\n", (date.getTime() < 1000)
-					? ("line " + date.getTime()) : ("time " + date));
+	private final Map<Pair<KnowledgeBase, TestCase>, String> cache = new HashMap<Pair<KnowledgeBase, TestCase>, String>();
 
-			TestCaseUtils.applyFindings(session, testCase, date);
-			for (Check check : testCase.getChecks(date, session.getKnowledgeBase())) {
-				out.printf("  check '%s': %s\n", check.getCondition().trim(),
-						check.check(session) ? "ok" : "failed");
+	private void execute(KnowledgeBase base, TestCase testCase, PrintStream out) {
+		Pair<KnowledgeBase, TestCase> key = new Pair<KnowledgeBase, TestCase>(base, testCase);
+		String result = cache.get(key);
+		if (result == null) {
+			StringBuilder builder = new StringBuilder();
+			Session session = SessionFactory.createSession(base, testCase.getStartDate());
+			for (Date date : testCase.chronology()) {
+				builder.append("- " + ((date.getTime() < 1000)
+						? ("line " + date.getTime()) : ("time " + date)) + ":\n");
+//				out.printf("- %s:\n", (date.getTime() < 1000)
+//						? ("line " + date.getTime()) : ("time " + date));
+
+				TestCaseUtils.applyFindings(session, testCase, date);
+				for (Check check : testCase.getChecks(date, session.getKnowledgeBase())) {
+					builder.append("  check '" + check.getCondition()
+							.trim() + "': " + (check.check(session) ? "ok" : "failed") + "\n");
+//					out.printf("  check '%s': %s\n", check.getCondition().trim(),
+//							check.check(session) ? "ok" : "failed");
+				}
 			}
+			result = builder.toString();
+			cache.put(key, result);
 		}
+		out.print(result);
 	}
 
 	@Override

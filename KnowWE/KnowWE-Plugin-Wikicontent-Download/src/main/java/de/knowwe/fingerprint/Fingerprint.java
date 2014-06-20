@@ -213,12 +213,17 @@ public class Fingerprint {
 	}
 
 	static void compareText(String text1, String text2, LineFilter filter, Diff result) {
-		String[] lines1 = text1.split("\\n");
-		String[] lines2 = text2.split("\\n");
+		String[] lines1 = text1.split("\\r?\\n");
+		String[] lines2 = text2.split("\\r?\\n");
 
 		// number of lines of each file
 		int count1 = lines1.length;
 		int count2 = lines2.length;
+
+		if (count1 > 15000 || count2 > 15000) {
+			result.fail("Files to big to make detailed diff. Please compare manually.\n");
+			return;
+		}
 
 		// opt[i][j] = length of LCS of x[i..M] and y[j..N]
 		int[][] opt = new int[count1 + 1][count2 + 1];
