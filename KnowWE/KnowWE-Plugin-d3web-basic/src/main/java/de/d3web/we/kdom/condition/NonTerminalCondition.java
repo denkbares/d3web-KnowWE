@@ -22,8 +22,8 @@ package de.d3web.we.kdom.condition;
 import de.knowwe.core.kdom.AbstractType;
 
 /**
- * 
- * Abstract Class for a NonTerminalCondition in the Conditino-Framework
+ *
+ * Abstract Class for a NonTerminalCondition in the Condition-Framework
  * 
  * @see CompositeCondition
  * 

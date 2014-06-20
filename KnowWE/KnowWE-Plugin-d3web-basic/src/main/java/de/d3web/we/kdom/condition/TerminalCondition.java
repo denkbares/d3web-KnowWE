@@ -20,9 +20,6 @@
 
 package de.d3web.we.kdom.condition;
 
-import java.util.Collection;
-import java.util.List;
-
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.AbstractType;
@@ -32,6 +29,9 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.AnonymousType;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * The TerminalCondition type of the CompositeCondition
@@ -56,12 +56,12 @@ public class TerminalCondition extends AbstractType {
 		this(DEFAULT_typeName, DEFAULT_messageText);
 	}
 
-	public TerminalCondition(String typename, final String messageText) {
-		this.setSectionFinder(new AllTextFinderTrimmed());
+    public TerminalCondition(String typeName, final String messageText) {
+        this.setSectionFinder(new AllTextFinderTrimmed());
 
 		// last: Anything left is an UnrecognizedTC throwing an error
-		AnonymousType unrecognizedCond = new AnonymousType(typename);
-		unrecognizedCond.setSectionFinder(new AllTextFinderTrimmed());
+        AnonymousType unrecognizedCond = new AnonymousType(typeName);
+        unrecognizedCond.setSectionFinder(new AllTextFinderTrimmed());
 		unrecognizedCond.addCompileScript(new D3webHandler<TerminalCondition>() {
 
 			@Override

@@ -1,7 +1,5 @@
 package de.d3web.we.kdom.condition.helper;
 
-import java.util.List;
-
 import de.d3web.strings.Strings;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.NonTerminalCondition;
@@ -11,6 +9,8 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
+
+import java.util.List;
 
 /**
  * @author Jochen
@@ -52,8 +52,8 @@ class EmbracedExpressionFinder implements SectionFinder {
 		int closingBracket = Strings.indexOfClosingBracket(trimmed, 0,
 				CompositeCondition.BRACE_OPEN, CompositeCondition.BRACE_CLOSED);
 
-		// if it doesnt start with an opening bracket
-		if (!startsWithOpen) {
+        // if it does not start with an opening bracket
+        if (!startsWithOpen) {
 			// its not an embraced expression for sure => return null
 			return null;
 		}
@@ -81,8 +81,8 @@ class EmbracedExpressionFinder implements SectionFinder {
 
 		// OR an embracedExpression can be concluded with a lineEnd-comment
 		int lastEndLineCommentSymbol = Strings.lastIndexOfUnquoted(text, "//");
-		// so has to start with '(' and have a lineend-comment-sign after
-		// the closing bracket but nothing in between!
+        // so has to start with '(' and have a line-end-comment-sign after
+        // the closing bracket but nothing in between!
 		if (trimmed.startsWith(Character.toString(CompositeCondition.BRACE_OPEN))) {
 			if (lastEndLineCommentSymbol > -1
 					&& !CompositeCondition.hasLineBreakAfterComment(trimmed)) {

@@ -20,11 +20,6 @@
 
 package de.d3web.we.kdom.condition;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import de.d3web.strings.Strings;
 import de.d3web.we.kdom.condition.helper.BracedCondition;
 import de.d3web.we.kdom.condition.helper.BracedConditionContent;
@@ -35,227 +30,221 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * This class defines a KDOM-Schema to parse composite conditions as known from
  * proposition logics, using 'AND', 'OR', 'NOT' as keywords and brackets '(' and
  * ')' for to express association boundaries
- * 
- * 
+ *
  * @author Jochen
- * 
  */
 public class CompositeCondition extends AbstractType {
 
-	protected final TerminalCondition terminalCondition = new TerminalCondition();
+    protected final TerminalCondition terminalCondition = new TerminalCondition();
 
-	public static char BRACE_OPEN = '(';
-	public static char BRACE_CLOSED = ')';
+    public static char BRACE_OPEN = '(';
+    public static char BRACE_CLOSED = ')';
 
-	public CompositeCondition() {
-		this(new String[] {
-				"AND", "UND", "&" },
-				new String[] {
-						"OR", "ODER", "|" },
-				new String[] {
-						"NOT", "NICHT", "!" });
-	}
+    public CompositeCondition() {
+        this(new String[]{
+                        "AND", "UND", "&"},
+                new String[]{
+                        "OR", "ODER", "|"},
+                new String[]{
+                        "NOT", "NICHT", "!"});
+    }
 
-	public CompositeCondition(String[] keys_and, String[] keys_or, String[] keys_not) {
+    public CompositeCondition(String[] keys_and, String[] keys_or, String[] keys_not) {
 
-		// this composite takes everything it gets => needs suitable wrapper
-		// type as father
-		this.setSectionFinder(new AllTextFinderTrimmed());
-		// this.setCustomRenderer(new
-		// de.d3web.we.kdom.renderer.KDOMDepthFontSizeRenderer());
+        // this composite takes everything it gets => needs suitable wrapper
+        // type as father
+        this.setSectionFinder(new AllTextFinderTrimmed());
 
-		// a composite condition may either be a BracedCondition,...
-		BracedCondition braced = new BracedCondition(); // contains the brackets
-		// and the
-		// endline-comments
-		this.addChildType(braced);
-		BracedConditionContent bracedContent = new BracedConditionContent(); // without
-		// brackets
-		// and
-		// comments
-		braced.addChildType(bracedContent);
-		braced.addChildType(new CompCondLineEndComment()); // explicit nodes for
-		// the
-		// endline-comments
-		bracedContent.addChildType(this);
+        // a composite condition may either be a BracedCondition,...
+        BracedCondition braced = new BracedCondition();
+        /*
+        contains the brackets and the endline-comments
+         */
+        this.addChildType(braced);
+        BracedConditionContent bracedContent = new BracedConditionContent();
+        /*
+        braced content without brackets and comments
+         */
+        braced.addChildType(bracedContent);
+        // explicit nodes for the endline-comments
+        braced.addChildType(new CompCondLineEndComment());
+        bracedContent.addChildType(this);
 
-		// ... a disjuctive expression,...
-		Disjunct disj = new Disjunct(keys_or);
-		this.addChildType(disj);
-		disj.addChildType(this); // Disjuncts again allow for a
-		// CompositeCondition
+        // ... a disjunctive expression,...
+        Disjunct disj = new Disjunct(keys_or);
+        this.addChildType(disj);
+        // Disjuncts again allow for a CompositeCondition
+        disj.addChildType(this);
 
-		// ...a conjuctive expression,...
-		Conjunct conj = new Conjunct(keys_and);
-		this.addChildType(conj);
-		conj.addChildType(this); // Conjuncts again allow for a
-		// CompositeCondition
+        // ...a conjunctive expression,...
+        Conjunct conj = new Conjunct(keys_and);
+        this.addChildType(conj);
+        // Conjuncts again allow for a CompositeCondition
+        conj.addChildType(this);
 
-		// ... a negated expression,...
-		NegatedExpression negatedExpression = new NegatedExpression(keys_not);
-		this.addChildType(negatedExpression);
-		negatedExpression.addChildType(this); // a NegatedExpression again
-		// allows for a
-		// CompositeCondition
+        // ... a negated expression,...
+        NegatedExpression negatedExpression = new NegatedExpression(keys_not);
+        this.addChildType(negatedExpression);
+        // a NegatedExpression again allows for a CompositeCondition
+        negatedExpression.addChildType(this);
 
-		// ... or finally a TerminalCondition which stops the recursive descent
-		this.addChildType(terminalCondition);
-	}
+        // ... or finally a TerminalCondition which stops the recursive descent
+        this.addChildType(terminalCondition);
+    }
 
-	/**
-	 * Sets the set of terminalConditions for this CompositeCondition
-	 * 
-	 * Any terminal that is not accepted by one of these will be marked by an
-	 * UnrecognizedTerminalCondition causing an error
-	 * 
-	 * @param types
-	 */
-	public void setAllowedTerminalConditions(List<Type> types) {
-		terminalCondition.setAllowedTerminalConditions(types);
-	}
+    /**
+     * Sets the set of terminalConditions for this CompositeCondition
+     * <p/>
+     * Any terminal that is not accepted by one of these will be marked by an
+     * UnrecognizedTerminalCondition causing an error
+     *
+     * @param types
+     */
+    public void setAllowedTerminalConditions(List<Type> types) {
+        terminalCondition.setAllowedTerminalConditions(types);
+    }
 
-	/**
-	 * tells whether a CompositeCondition is a disjunction
-	 * 
-	 * @param c
-	 * @return
-	 */
-	public boolean isDisjunction(Section<? extends CompositeCondition> c) {
-		return getDisjuncts(c).size() > 0;
-	}
+    /**
+     * tells whether a CompositeCondition is a disjunction
+     *
+     * @param c
+     * @return
+     */
+    public boolean isDisjunction(Section<? extends CompositeCondition> c) {
+        return getDisjuncts(c).size() > 0;
+    }
 
-	/**
-	 * returns the disjuncts of a disjunction
-	 * 
-	 * @param c
-	 * @return
-	 */
-	public List<Section<? extends NonTerminalCondition>> getDisjuncts(Section<? extends CompositeCondition> c) {
+    /**
+     * returns the disjuncts of a disjunction
+     *
+     * @param c
+     * @return
+     */
+    public List<Section<? extends NonTerminalCondition>> getDisjuncts(Section<? extends CompositeCondition> c) {
 
-		List<Section<? extends NonTerminalCondition>> result = new ArrayList<Section<? extends NonTerminalCondition>>();
-		List<Section<Disjunct>> childrenOfType = Sections.findChildrenOfType(c, Disjunct.class);
+        List<Section<? extends NonTerminalCondition>> result = new ArrayList<Section<? extends NonTerminalCondition>>();
+        List<Section<Disjunct>> childrenOfType = Sections.findChildrenOfType(c, Disjunct.class);
 
-		result.addAll(childrenOfType);
-		return result;
-	}
+        result.addAll(childrenOfType);
+        return result;
+    }
 
-	/**
-	 * tells whether a CompositeCondition is a Conjunction
-	 * 
-	 * @param c
-	 * @return
-	 */
-	public boolean isConjunction(Section<? extends CompositeCondition> c) {
-		return getConjuncts(c).size() > 0;
-	}
+    /**
+     * tells whether a CompositeCondition is a Conjunction
+     *
+     * @param c
+     * @return
+     */
+    public boolean isConjunction(Section<? extends CompositeCondition> c) {
+        return getConjuncts(c).size() > 0;
+    }
 
-	/**
-	 * returns the conjunts of a conjunction
-	 * 
-	 * @param c
-	 * @return
-	 */
-	public List<Section<? extends NonTerminalCondition>> getConjuncts(Section<? extends CompositeCondition> c) {
+    /**
+     * returns the conjuncts of a conjunction
+     *
+     * @param c
+     * @return
+     */
+    public List<Section<? extends NonTerminalCondition>> getConjuncts(Section<? extends CompositeCondition> c) {
 
-		List<Section<? extends NonTerminalCondition>> result = new ArrayList<Section<? extends NonTerminalCondition>>();
-		List<Section<Conjunct>> childrenOfType = Sections.findChildrenOfType(c, Conjunct.class);
+        List<Section<? extends NonTerminalCondition>> result = new ArrayList<Section<? extends NonTerminalCondition>>();
+        List<Section<Conjunct>> childrenOfType = Sections.findChildrenOfType(c, Conjunct.class);
 
-		result.addAll(childrenOfType);
-		return result;
-	}
+        result.addAll(childrenOfType);
+        return result;
+    }
 
-	/**
-	 * tells whether a CompositeCondition is a bracedexpression
-	 * 
-	 * @param c
-	 * @return
-	 */
-	public boolean isBraced(Section<? extends CompositeCondition> c) {
-		return getBraced(c) != null;
-	}
+    /**
+     * tells whether a CompositeCondition is a braced-expression
+     *
+     * @param c
+     * @return
+     */
+    public boolean isBraced(Section<? extends CompositeCondition> c) {
+        return getBraced(c) != null;
+    }
 
-	/**
-	 * returns the BracedCondition
-	 * 
-	 * @param c
-	 * @return
-	 */
-	public Section<? extends NonTerminalCondition> getBraced(Section<? extends CompositeCondition> c) {
+    /**
+     * returns the BracedCondition
+     *
+     * @param c
+     * @return
+     */
+    public Section<? extends NonTerminalCondition> getBraced(Section<? extends CompositeCondition> c) {
+        return Sections.findChildOfType(c,
+                BracedCondition.class);
+    }
 
-		Section<? extends BracedCondition> childrenOfType = Sections.findChildOfType(c,
-				BracedCondition.class);
-		return childrenOfType;
-	}
+    /**
+     * tells whether a CompositeCondition is a NegatedExpression
+     *
+     * @param c
+     * @return
+     */
+    public boolean isNegation(Section<? extends CompositeCondition> c) {
+        return getNegation(c) != null;
+    }
 
-	/**
-	 * tells whether a CompositeCondition is a NegatedExpression
-	 * 
-	 * @param c
-	 * @return
-	 */
-	public boolean isNegation(Section<? extends CompositeCondition> c) {
-		return getNegation(c) != null;
-	}
+    /**
+     * returns the NegatedExpression of a Negation
+     *
+     * @param c
+     * @return
+     */
+    public Section<? extends NonTerminalCondition> getNegation(Section<? extends CompositeCondition> c) {
+        return Sections.findChildOfType(c,
+                NegatedExpression.class);
+    }
 
-	/**
-	 * returns the NegatedExpression of a Negation
-	 * 
-	 * @param c
-	 * @return
-	 */
-	public Section<? extends NonTerminalCondition> getNegation(Section<? extends CompositeCondition> c) {
-		Section<? extends NonTerminalCondition> negEx = Sections.findChildOfType(c,
-				NegatedExpression.class);
-		return negEx;
-	}
+    /**
+     * tells whether this CompositeCondition is a TerminalCondition
+     *
+     * @param c
+     * @return
+     */
+    public boolean isTerminal(Section<? extends CompositeCondition> c) {
+        return getTerminal(c) != null;
+    }
 
-	/**
-	 * tells whether this CompositeCondition is a TerminalCondition
-	 * 
-	 * @param c
-	 * @return
-	 */
-	public boolean isTerminal(Section<? extends CompositeCondition> c) {
-		return getTerminal(c) != null;
-	}
+    /**
+     * returns the TerminalCondition of a (terminal-)CompositeCondition
+     *
+     * @param c
+     * @return
+     */
+    public Section<? extends TerminalCondition> getTerminal(Section<? extends CompositeCondition> c) {
+        return Sections.findChildOfType(c, TerminalCondition.class);
+    }
 
-	/**
-	 * returns the TerminalCondition of a (terminal-)CompositeCondition
-	 * 
-	 * @param c
-	 * @return
-	 */
-	public Section<? extends TerminalCondition> getTerminal(Section<? extends CompositeCondition> c) {
-		Section<? extends TerminalCondition> terminal = Sections.findChildOfType(c,
-				TerminalCondition.class);
-		return terminal;
-	}
-
-	/**
-	 * 
-	 * @created 03.08.2010
-	 * @param trimmed
-	 * @return
-	 */
-	public static boolean hasLineBreakAfterComment(String text) {
-		int start = Strings.lastIndexOfUnquoted(text, "//");
-		if (start != -1) {
-			Pattern pattern = Pattern.compile("\\r?\\n");
-			Matcher matcher = pattern.matcher(text);
-			int lineBreak = -1;
-			while (matcher.find()) {
-				// attempts to find the last line break
-				lineBreak = matcher.start();
-			}
-			if (lineBreak > start) {
-				return true;
-			}
-		}
-		return false;
-	}
+    /**
+     * @param text
+     * @return
+     * @created 03.08.2010
+     */
+    public static boolean hasLineBreakAfterComment(String text) {
+        int start = Strings.lastIndexOfUnquoted(text, "//");
+        if (start != -1) {
+            Pattern pattern = Pattern.compile("\\r?\\n");
+            Matcher matcher = pattern.matcher(text);
+            int lineBreak = -1;
+            while (matcher.find()) {
+                // attempts to find the last line break
+                lineBreak = matcher.start();
+            }
+            if (lineBreak > start) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

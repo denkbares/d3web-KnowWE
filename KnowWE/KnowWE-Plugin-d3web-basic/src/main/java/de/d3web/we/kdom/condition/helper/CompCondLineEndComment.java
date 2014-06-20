@@ -1,9 +1,5 @@
 package de.d3web.we.kdom.condition.helper;
 
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import de.d3web.strings.Strings;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.knowwe.core.kdom.AbstractType;
@@ -12,6 +8,10 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.kdom.renderer.StyleRenderer;
+
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 
@@ -52,15 +52,15 @@ public class CompCondLineEndComment extends AbstractType {
 					lineBreak = matcher.start();
 				}
 
-				// if no linebreak, then everthing from '//'
-				if (lineBreak == -1) {
+                // if no linebreak, then everything from '//'
+                if (lineBreak == -1) {
 
 					return SectionFinderResult
 							.singleItemList(new SectionFinderResult(start,
 									text.length()));
 				} // linebreak check whether it is before or after the
-					// endline-comment
-				else {
+                // end-line-comment
+                else {
 					if (CompositeCondition.hasLineBreakAfterComment(text)) {
 						// not comment for current expression
 						return null;

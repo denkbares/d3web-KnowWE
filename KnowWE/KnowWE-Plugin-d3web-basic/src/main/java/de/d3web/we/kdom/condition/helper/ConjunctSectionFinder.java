@@ -1,11 +1,5 @@
 package de.d3web.we.kdom.condition.helper;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import de.d3web.strings.Strings;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.knowwe.core.kdom.Type;
@@ -13,9 +7,11 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
+import java.util.*;
+
 public class ConjunctSectionFinder implements SectionFinder {
 
-	public static final String KEYWORD_SEPERATE_CHARS = "()\"! \t\n\r\u00A0";
+    public static final String KEYWORD_SEPARATE_CHARS = "()\"! \t\n\r\u00A0";
 
 	private final String[] signs;
 
@@ -68,8 +64,8 @@ public class ConjunctSectionFinder implements SectionFinder {
 
 		}
 
-		// without any found conj-sings we dont create any conjuncts
-		if (allFoundOps.size() == 0) return null;
+        // without any found conj-sings we do not create any conjuncts
+        if (allFoundOps.size() == 0) return null;
 
 		Integer[] keys = allFoundOps.keySet().toArray(
 				new Integer[allFoundOps.keySet().size()]);
@@ -94,6 +90,6 @@ public class ConjunctSectionFinder implements SectionFinder {
 	}
 
 	public static boolean isSeparatorChar(char charAt) {
-		return KEYWORD_SEPERATE_CHARS.indexOf(charAt) >= 0;
-	}
+        return KEYWORD_SEPARATE_CHARS.indexOf(charAt) >= 0;
+    }
 }
