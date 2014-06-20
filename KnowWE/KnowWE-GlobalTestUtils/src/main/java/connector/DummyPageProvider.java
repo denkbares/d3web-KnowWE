@@ -135,7 +135,7 @@ public class DummyPageProvider {
 	}
 
 	private Integer getVersion(String versionFileName) {
-		return Integer.parseInt(versionFileName.replaceAll("(?<=\\d+).*", ""));
+		return Integer.parseInt(versionFileName.replaceAll("(?<=\\d++).*", ""));
 	}
 
 	private boolean isArticleFile(File wikiFile) {
