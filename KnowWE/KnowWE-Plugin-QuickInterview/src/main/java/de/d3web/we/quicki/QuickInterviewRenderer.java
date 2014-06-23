@@ -65,7 +65,7 @@ import de.knowwe.core.user.UserContext;
 
 /**
  * Render the quick interview -aka QuickI- in KnowWE --- HTML / JS / CSS based
- * 
+ *
  * @author Martina Freiberg
  * @created 15.07.2010
  */
@@ -152,7 +152,7 @@ public class QuickInterviewRenderer {
 
 	/**
 	 * Returns the Plugin Header As String
-	 * 
+	 *
 	 * @created 15.07.2010
 	 */
 	private void getInterviewPluginHeader(RenderResult html) {
@@ -172,12 +172,12 @@ public class QuickInterviewRenderer {
 	 * Assembles the HTML representation of QContainers and Questions, starting
 	 * from the root QASet of the KB, recursively, and writes them into the
 	 * given StringBuffer
-	 * 
-	 * @created 14.07.2010
+	 *
 	 * @param questionnaire the root container
-	 * @param buffer the StringBuffer
-	 * @param processedTOs already processed TerminologyObjects
-	 * @param depth recursion depth; used to calculate identation
+	 * @param buffer        the StringBuffer
+	 * @param processedTOs  already processed TerminologyObjects
+	 * @param depth         recursion depth; used to calculate identation
+	 * @created 14.07.2010
 	 */
 	private void getInterviewElementsRenderingRecursively(
 			TerminologyObject questionnaire, RenderResult buffer,
@@ -228,17 +228,17 @@ public class QuickInterviewRenderer {
 	/**
 	 * Recursively walks through the questions of the hierarchy and calls
 	 * methods for appending their rendering
-	 * 
-	 * @created 17.08.2010
-	 * @param topQuestion the root question
-	 * @param sb the StringBuffer
+	 *
+	 * @param topQuestion  the root question
+	 * @param sb           the StringBuffer
 	 * @param processedTOs already processed elements
-	 * @param depth the recursion depth
-	 * @param parent the parent element
+	 * @param depth        the recursion depth
+	 * @param parent       the parent element
+	 * @created 17.08.2010
 	 */
 	private void getQuestionsRecursively(Question topQuestion, RenderResult sb,
-			Set<TerminologyObject> processedTOs, int depth,
-			TerminologyObject parent) {
+										 Set<TerminologyObject> processedTOs, int depth,
+										 TerminologyObject parent) {
 
 		// if already contained in interview, get already-defined rendering and
 		// return for
@@ -266,14 +266,14 @@ public class QuickInterviewRenderer {
 	/**
 	 * Assembles an own div for indicating questions/questionnaires that have
 	 * already been answered
-	 * 
-	 * @created 26.08.2010
+	 *
 	 * @param element the element that was already been answered
-	 * @param sb StringBuffer to append the div to
-	 * @param depth indicator for the indentation depth
+	 * @param sb      StringBuffer to append the div to
+	 * @param depth   indicator for the indentation depth
+	 * @created 26.08.2010
 	 */
 	private void getAlreadyDefinedRendering(TerminologyObject element,
-			RenderResult sb, int depth) {
+											RenderResult sb, int depth) {
 
 		int margin = 30 + depth * 20;
 		sb.appendHtml("<div "
@@ -285,15 +285,15 @@ public class QuickInterviewRenderer {
 
 	/**
 	 * Assembles the div that displays icon and name of questionnaires
-	 * 
-	 * @created 16.08.2010
+	 *
 	 * @param container the qcontainer to be rendered
-	 * @param depth recursion depth
+	 * @param depth     recursion depth
 	 * @param buffi
 	 * @return the HTML of a questionnaire div
+	 * @created 16.08.2010
 	 */
 	private void getQuestionnaireRendering(QASet container, int depth,
-			RenderResult buffi, String id) {
+										   RenderResult buffi, String id) {
 
 		int margin = 10 + depth * 20; // calculate identation
 
@@ -323,16 +323,16 @@ public class QuickInterviewRenderer {
 	/**
 	 * Assembles the HTML-string representation for one QA-Block, that is, one
 	 * question first, and the answers afterwards.
-	 * 
-	 * @created 20.07.2010
+	 *
 	 * @param question the question to be rendered
-	 * @param depth the depth of the recursion - for calculating identation
-	 * @param parent the parent element
+	 * @param depth    the depth of the recursion - for calculating identation
+	 * @param parent   the parent element
 	 * @param sb
 	 * @return HTML-String representation for one QA-Block
+	 * @created 20.07.2010
 	 */
 	private void getQABlockRendering(Question question, int depth,
-			TerminologyObject parent, RenderResult sb) {
+									 TerminologyObject parent, RenderResult sb) {
 
 		// calculate indentation depth & resulting width of the question display
 		// 10 for standard margin and 30 for indenting further than the triangle
@@ -407,7 +407,7 @@ public class QuickInterviewRenderer {
 		return question.getInfoStore().getValue(
 				BasicProperties.ABSTRACTION_QUESTION) != null
 				&& question.getInfoStore().getValue(
-						BasicProperties.ABSTRACTION_QUESTION);
+				BasicProperties.ABSTRACTION_QUESTION);
 	}
 
 	private final String[] defaultParams = {
@@ -466,14 +466,14 @@ public class QuickInterviewRenderer {
 
 	/**
 	 * Assembles the HTML for rendering a one choice question
-	 * 
-	 * @created 21.08.2010
-	 * @param q the question
+	 *
+	 * @param q    the question
 	 * @param list the list of possible choices
 	 * @return the HTML representation of one choice questions
+	 * @created 21.08.2010
 	 */
 	private void renderOCChoiceAnswers(Question q, List<Choice> list,
-			RenderResult sb) {
+									   RenderResult sb) {
 
 		// go through all choices = answer alternatives
 		boolean first = true;
@@ -505,7 +505,7 @@ public class QuickInterviewRenderer {
 			}
 
 			String label = getLabel(choice);
-			appendEnclosingTagOnClick("div", label, cssclass,
+			appendEnclosingTagOnClick("span", label, cssclass,
 					jscall, null, spanid,
 					choice.getInfoStore().getValue(MMInfo.DESCRIPTION), sb);
 
@@ -522,10 +522,10 @@ public class QuickInterviewRenderer {
 
 	/**
 	 * Assembles the HTML needed for displaying the (numerical) answer field
-	 * 
-	 * @created 20.07.2010
+	 *
 	 * @param q the question to which numerical answers are attached
 	 * @return the String for rendering numerical answer field
+	 * @created 20.07.2010
 	 */
 	private void renderNumAnswers(Question q, RenderResult sb) {
 
@@ -622,12 +622,13 @@ public class QuickInterviewRenderer {
 	}
 
 	// TODO: check Date input format
+
 	/**
 	 * Assembles the HTML representation of a date answer input
-	 * 
-	 * @created 01.09.2010
-	 * @param q the date-question
+	 *
+	 * @param q  the date-question
 	 * @param sb the String Buffer, the HTML is attached to
+	 * @created 01.09.2010
 	 */
 	private void renderDateAnswers(Question q, RenderResult sb) {
 
@@ -668,13 +669,13 @@ public class QuickInterviewRenderer {
 	/**
 	 * Creates the HTML needed for displaying the answer alternatives of mc
 	 * choice answers.
-	 * 
+	 *
 	 * @created 01.09.2010
 	 */
 	private void renderMCChoiceAnswers(QuestionChoice q,
-			MultipleChoiceValue mcval, RenderResult sb) {
+									   MultipleChoiceValue mcval, RenderResult sb) {
 
-		sb.appendHtml("<div class='answers' style='display: inline;'\n>");
+		sb.appendHtml("<div class='answers'>");
 		boolean first = true;
 		for (Choice choice : mcval.asChoiceList(q)) {
 			if (first) {
@@ -700,7 +701,7 @@ public class QuickInterviewRenderer {
 
 			String label = getLabel(choice);
 			String spanid = q.getName() + "_" + choice.getName();
-			appendEnclosingTagOnClick("div", "" + label + "", cssclass,
+			appendEnclosingTagOnClick("span", "" + label + "", cssclass,
 					jscall, null, spanid,
 					choice.getInfoStore().getValue(MMInfo.DESCRIPTION), sb);
 
@@ -727,7 +728,7 @@ public class QuickInterviewRenderer {
 
 	/**
 	 * Assembles the HTML representation for rendering answer unknown
-	 * 
+	 *
 	 * @created 22.07.2010
 	 */
 	private void renderAnswerUnknown(Question q, String type, RenderResult sb) {
@@ -765,21 +766,21 @@ public class QuickInterviewRenderer {
 
 	/**
 	 * Assembles the HTML representation for a given Tag
-	 * 
-	 * @created 22.07.2010
-	 * @param tag The String representation of the tag
-	 * @param text The text to be placed inside the tag
-	 * @param cssclass The css class to style the resulting tag
-	 * @param onclick The String representation of the onclick action, i.e., a
-	 *        JS call
+	 *
+	 * @param tag         The String representation of the tag
+	 * @param text        The text to be placed inside the tag
+	 * @param cssclass    The css class to style the resulting tag
+	 * @param onclick     The String representation of the onclick action, i.e., a
+	 *                    JS call
 	 * @param onmouseover Something to happen regarding the onmouseover
-	 * @param id The id of the object represented , i.e., answer alternative,
-	 *        here
-	 * @param result TODO
+	 * @param id          The id of the object represented , i.e., answer alternative,
+	 *                    here
+	 * @param result      TODO
+	 * @created 22.07.2010
 	 */
 	private void appendEnclosingTagOnClick(String tag, String text,
-			String cssclass, String onclick, String onmouseover, String id,
-			String title, RenderResult result) {
+										   String cssclass, String onclick, String onmouseover, String id,
+										   String title, RenderResult result) {
 		result.appendHtml("<" + tag);
 		if (id != null && id.length() > 0) {
 			result.appendHtml(" id='" + Strings.encodeHtml(id) + "' ");
@@ -805,12 +806,12 @@ public class QuickInterviewRenderer {
 	/**
 	 * Checks, whether an answer value was already processed in the current
 	 * session
-	 * 
-	 * @created 27.08.2010
+	 *
 	 * @param sessionValue the sessionValue
-	 * @param value the value to be checked
+	 * @param value        the value to be checked
 	 * @return true if the given session value contains the checked value (MC
-	 *         Questions) or if the session value equals the value
+	 * Questions) or if the session value equals the value
+	 * @created 27.08.2010
 	 */
 	private boolean isAnsweredinCase(Value sessionValue, Value value) {
 		// test for MC values separately
@@ -824,10 +825,10 @@ public class QuickInterviewRenderer {
 
 	/**
 	 * Checks, whether the given TerminologyObject is currently visible or not.
-	 * 
-	 * @created 30.10.2010
+	 *
 	 * @param to the TerminologyObject to be checked.
 	 * @return true, if the given TerminologyObject is indicated.
+	 * @created 30.10.2010
 	 */
 	private boolean isVisible(TerminologyObject to) {
 
