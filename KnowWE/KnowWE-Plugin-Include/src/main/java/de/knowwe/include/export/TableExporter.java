@@ -39,7 +39,7 @@ import de.knowwe.jspwiki.types.TableRow;
 
 /**
  * Exports a wiki table to word document
- * 
+ *
  * @author Volker Belli (denkbares GmbH)
  * @created 07.02.2014
  */
@@ -87,7 +87,9 @@ public class TableExporter implements Exporter<WikiTable> {
 				// fill cell contents
 				DocumentBuilder cellBuilder = new CellBuilder(manager, tableCell, isHeader);
 				Section<?> content = Sections.successor(cell, ParagraphTypeForLists.class);
-				cellBuilder.export(content);
+				if (content != null) {
+					cellBuilder.export(content);
+				}
 
 				// clean trailing white-spaces of each cell
 				List<CTR> runs = cellBuilder.getParagraph().getCTP().getRList();
