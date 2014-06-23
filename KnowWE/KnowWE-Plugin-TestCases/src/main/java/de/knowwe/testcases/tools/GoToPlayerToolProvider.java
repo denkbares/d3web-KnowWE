@@ -39,7 +39,7 @@ import de.knowwe.tools.ToolProvider;
  * Provides a Tool creating a tool opening a player and loading one of the
  * TestCases of this section. This tool should only be used with markups, just
  * creating one TestCaseProvider, otherwise one provider is chosen randomly.
- * 
+ *
  * @author Markus Friedrich (denkbares GmbH)
  * @created 13.03.2012
  */
@@ -74,7 +74,7 @@ public class GoToPlayerToolProvider implements ToolProvider {
 	private Tool[] createTools(String value, Section<?> sectionInPackage) {
 		String testCaseSection = TestCasePlayerRenderer.generateSelectedTestCaseCookieKey(DefaultMarkupType.getContentSection(sectionInPackage));
 		return new Tool[] { new DefaultTool(
-				null,
+				"KnowWEExtension/testcaseplayer/icon/testcaselink.png",
 				"Show in Player",
 				"Opens this test case in an associated test case player",
 				"TestCasePlayer.change('"
