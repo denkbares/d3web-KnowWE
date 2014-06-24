@@ -35,7 +35,7 @@ if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
 	KNOWWE.plugin = {};
 }
 
-KNOWWE.plugin.compositeEditTool = function () {
+KNOWWE.plugin.compositeEditTool = function() {
 
 	var recentlyDragged = false;
 
@@ -56,12 +56,12 @@ KNOWWE.plugin.compositeEditTool = function () {
 		// some of the child nodes in the page content are just text, but we
 		// need
 		// actual html elements
-		jq$(id).contents().filter(function () {
+		jq$(id).contents().filter(function() {
 			return this.nodeType === 3 && !/^\s*$/.test(this.nodeValue);
 		}).wrap('<div/>');
 		// add id, sectionId, and class attributes to correct html elements
 		jq$(id).find('.editanchor').each(
-			function () {
+			function() {
 				var editAnchor = jq$(this);
 				var sectionId = editAnchor.attr('sectionid');
 				var topLvlAnchorElement = editAnchor;
@@ -108,7 +108,7 @@ KNOWWE.plugin.compositeEditTool = function () {
 	function prepareEditElementContents(id) {
 		var beforeFirstElement = true;
 		var afterLastElement = false;
-		jq$(id).find('.editelement').each(function () {
+		jq$(id).find('.editelement').each(function() {
 			var editElement = jq$(this);
 			if (editElement.hasClass('first')) {
 				beforeFirstElement = false;
@@ -132,7 +132,7 @@ KNOWWE.plugin.compositeEditTool = function () {
 			}
 			// if elements are aligned, they are not properly selectable
 			// for editing
-			editElement.children().each(function () {
+			editElement.children().each(function() {
 				var align = jq$(this).attr('align');
 				if (align != null) {
 					jq$(this).attr('align', null);
@@ -145,15 +145,15 @@ KNOWWE.plugin.compositeEditTool = function () {
 		var ids = _CE.editableSections.join(";");
 
 		var params = {
-			action: 'InitEditModeAction'
+			action : 'InitEditModeAction'
 		};
 
 		var options = {
-			url: KNOWWE.core.util.getURL(params),
-			async: false,
-			data: ids,
-			response: {
-				action: 'none'
+			url : KNOWWE.core.util.getURL(params),
+			async : false,
+			data : ids,
+			response : {
+				action : 'none'
 			}
 		};
 
@@ -191,7 +191,7 @@ KNOWWE.plugin.compositeEditTool = function () {
 		_EC.wikiText[lastEditElementId] = combinedText;
 
 		_CEWT.order = [];
-		jq$('.editelement').each(function () {
+		jq$('.editelement').each(function() {
 			var sectionId = jq$(this).attr('sectionId');
 			if (sectionId)
 				_CEWT.order.push(sectionId);
@@ -204,12 +204,12 @@ KNOWWE.plugin.compositeEditTool = function () {
 	function addEventListenerForEdit(root) {
 
 		var found = jq$(root).find('.editelement');
-		jq$(root).find('.editelement').each(function () {
+		jq$(root).find('.editelement').each(function() {
 			var editElement = jq$(this);
 			var sectionID = editElement.attr('sectionid');
 
 			if (jq$.inArray(sectionID, _CE.editableSections) > -1) {
-				editElement.unbind('click').click(function () {
+				editElement.unbind('click').click(function() {
 					if (_CE.enabled && !recentlyDragged) {
 						removeMarker('marker_' + sectionID);
 						enableEditArea(sectionID);
@@ -217,13 +217,13 @@ KNOWWE.plugin.compositeEditTool = function () {
 				});
 			}
 
-			editElement.unbind('mouseover').mouseover(function () {
+			editElement.unbind('mouseover').mouseover(function() {
 				if (_CE.enabled && !this.hasClass('editarea')) {
 					appendMarker('marker_' + sectionID, this);
 				}
 			});
 
-			editElement.unbind('mouseout').mouseout(function () {
+			editElement.unbind('mouseout').mouseout(function() {
 				if (_CE.enabled) {
 					removeMarker('marker_' + sectionID);
 				}
@@ -234,7 +234,7 @@ KNOWWE.plugin.compositeEditTool = function () {
 
 	function removeEventListenersForEdit(root) {
 		var found = jq$(root).find('.editelement');
-		jq$(root).find('.editelement').each(function () {
+		jq$(root).find('.editelement').each(function() {
 			var editElement = jq$(this);
 			editElement.unbind('click');
 			var sectionID = editElement.attr('sectionid');
@@ -260,15 +260,15 @@ KNOWWE.plugin.compositeEditTool = function () {
 		_EC.showAjaxLoader();
 
 		var params = {
-			action: 'InstantEditEnableAction',
-			KdomNodeId: sectionId
+			action : 'InstantEditEnableAction',
+			KdomNodeId : sectionId
 		};
 
 		var options = {
-			url: KNOWWE.core.util.getURL(params),
-			response: {
-				action: 'none',
-				fn: function () {
+			url : KNOWWE.core.util.getURL(params),
+			response : {
+				action : 'none',
+				fn : function() {
 
 					// store the current version of this section for restoring
 					_CE.cancelCache[sectionId] = getSection(sectionId);
@@ -290,11 +290,11 @@ KNOWWE.plugin.compositeEditTool = function () {
 
 					postProcessHTML(sectionId);
 
-					jq$('#compositeEdit div.defaultMarkupFrame[compositeedit=' + sectionId + ']').each(function (index, frame) {
+					jq$('#compositeEdit div.defaultMarkupFrame[compositeedit=' + sectionId + ']').each(function(index, frame) {
 						KNOWWE.core.rerendercontent.animateDefaultMarkupMenu(jq$(frame));
 					});
 				},
-				onError: _EC.onErrorBehavior
+				onError : _EC.onErrorBehavior
 			}
 		};
 		new _KA(options).send();
@@ -309,17 +309,17 @@ KNOWWE.plugin.compositeEditTool = function () {
 	function postProcessHTML(id) {
 		var textarea = $(createTextAreaID(id));
 		if (typeof AutoComplete != "undefined") {
-			new AutoComplete(textarea, function (callback, prefix) {
+			new AutoComplete(textarea, function(callback, prefix) {
 				var scope = "root";
-				var data = {sectionId: id, prefix: prefix, scope: scope};
+				var data = {sectionId : id, prefix : prefix, scope : scope};
 				if (KNOWWE && KNOWWE.helper) {
 					data.KWiki_Topic = KNOWWE.helper.gup('page');
 				}
 				jq$.ajax({
-					url: 'action/CompositeEditCompletionAction',
-					cache: false,
-					data: data
-				}).success(function (data) {
+					url : 'action/CompositeEditCompletionAction',
+					cache : false,
+					data : data
+				}).success(function(data) {
 					callback(eval(data));
 				});
 			});
@@ -327,7 +327,7 @@ KNOWWE.plugin.compositeEditTool = function () {
 		new TextArea(textarea);
 
 		textarea.focus();
-		jq$(textarea).autosize({append: "\n"});
+		jq$(textarea).autosize({append : "\n"});
 //	        while (textarea.clientHeight == textarea.scrollHeight) {
 //	        	var tempHeight = textarea.style.height;
 //	        	textarea.style.height = textarea.clientHeight - 5 + "px";
@@ -350,13 +350,13 @@ KNOWWE.plugin.compositeEditTool = function () {
 
 	function bindUnloadFunctions() {
 
-		$(window).addEvent('beforeunload', function () {
+		$(window).addEvent('beforeunload', function() {
 			if (_CEWT.hasChanged()) {
 				return "edit.areyousure".localize();
 			}
 		});
 
-		$(window).addEvent('unload', function () {
+		$(window).addEvent('unload', function() {
 			_IE.disable(_CEWT.rootID, true);
 		});
 	}
@@ -370,7 +370,7 @@ KNOWWE.plugin.compositeEditTool = function () {
 		var editField = jq$(".defaultMarkupFrame[compositeEdit=" + sectionId + "]");
 		editField.css('position', 'relative');
 		var headerMenu = jq$('<div/>', {
-			'class': 'ueedittoolbar markupHeaderFrame headerMenu'
+			'class' : 'ueedittoolbar markupHeaderFrame headerMenu'
 		});
 		var markupHeader = generateMarkUpHeader(sectionId)
 		var markUpMenu = generateMarkUpMenu(sectionId);
@@ -381,10 +381,10 @@ KNOWWE.plugin.compositeEditTool = function () {
 
 	function generateMarkUpHeader(sectionId) {
 		var markupHeader = jq$('<div/>', {
-			"class": 'markupHeader'
+			"class" : 'markupHeader'
 		});
 		var img = jq$('<img/>', {
-			"src": 'KnowWEExtension/images/arrow_down_lines.png'
+			"src" : 'KnowWEExtension/images/arrow_down_lines.png'
 		});
 		markupHeader.append(img);
 		return markupHeader;
@@ -392,7 +392,7 @@ KNOWWE.plugin.compositeEditTool = function () {
 
 	function generateMarkUpMenu(sectionId) {
 		var markupMenu = jq$('<div/>', {
-			"class": 'markupMenu'
+			"class" : 'markupMenu'
 		});
 		var cancel = generateMarkUpmenuItem("_CE.cancelSection(\'" + sectionId + "\')", "Revert", "undo.png");
 		var del = generateMarkUpmenuItem("_CE.deleteSection(\'" + sectionId + "\')", "Delete this section", "delete.png");
@@ -403,17 +403,17 @@ KNOWWE.plugin.compositeEditTool = function () {
 
 	function generateMarkUpmenuItem(js, text, icon) {
 		var markupMenuItemDiv = jq$('<div/>', {
-			"class": 'markupMenuItem'
+			"class" : 'markupMenuItem'
 		});
 		var varMenuItemA = jq$('<a/>', {
-			"class": 'markupMenuItem',
-			"href": "javascript:" + js
+			"class" : 'markupMenuItem',
+			"href" : "javascript:" + js
 		});
 		var img = jq$('<img/>', {
-			"src": "KnowWEExtension/images/" + icon
+			"src" : "KnowWEExtension/images/" + icon
 		});
 		var span = jq$('<span/>', {
-			"text": text
+			"text" : text
 		});
 		varMenuItemA.append(img);
 		varMenuItemA.append(span);
@@ -423,10 +423,10 @@ KNOWWE.plugin.compositeEditTool = function () {
 
 	function appendMarker(id, reference, color) {
 		var marker = new Element('div', {
-			'id': id,
-			'class': 'ueeditmarker',
-			'styles': {
-				'height': reference.offsetHeight
+			'id' : id,
+			'class' : 'ueeditmarker',
+			'styles' : {
+				'height' : reference.offsetHeight
 			}
 		});
 		if (color) {
@@ -454,13 +454,13 @@ KNOWWE.plugin.compositeEditTool = function () {
 
 	function buildDefaultMarkupStructure() {
 		_CE.dialogDiv = jq$('<div/>', {
-			id: 'compositeEdit',
-			"class": 'defaultMarkup',
-			text: ''
+			id : 'compositeEdit',
+			"class" : 'defaultMarkup',
+			text : ''
 		});
 		var divMarkupText = jq$('<div/>', {
-			"class": 'markupText',
-			text: ''
+			"class" : 'markupText',
+			text : ''
 		});
 		_CE.dialogDiv.append(divMarkupText);
 		return divMarkupText;
@@ -488,35 +488,44 @@ KNOWWE.plugin.compositeEditTool = function () {
 	function registerButtonEvents() {
 		var pane = jq$("#compositeEdit").next("div.ui-dialog-buttonpane");
 		if (_CE.mode == _CE.ModeEnum.VIEW) {
-			jq$(pane).find(".closeButton").unbind().on("click", function () {
+			unregisterSaveCancelEvents(document, _CE.save, enableCompositeViewMode);
+			jq$(pane).find(".closeButton").unbind().on("click", function() {
 				_CE.disable();
 			});
-			jq$(pane).find(".editButton").unbind().on("click", function () {
+			jq$(pane).find(".editButton").unbind().on("click", function() {
 				enableCompositeEditMode();
 			});
 		}
 		else {
-			jq$(pane).find(".saveButton").unbind().on("click", function () {
+			_EC.registerSaveCancelEvents(document, _CE.save, enableCompositeViewMode);
+			jq$(pane).find(".saveButton").unbind().on("click", function() {
 				_CE.save();
 			});
-			jq$(pane).find(".cancelEditButton").unbind().on("click", function () {
+			jq$(pane).find(".cancelEditButton").unbind().on("click", function() {
 				enableCompositeViewMode();
 			});
 		}
 	}
 
+	function unregisterSaveCancelEvents(element, saveFunction, cancelFunction) {
+		jq$(element).off("keydown", saveFunction);
+		jq$(element).off("keydown", cancelFunction);
+	}
+
 	function restoreDefaultKeybindings() {
 		jq$("#edit-source-button").attr("accesskey", "e");
 		jq$("#edit-mode-button").attr("accesskey", "d");
-		jq$(document).off('keydown', _CE.enableCompositeEditModeByKey).on('keydown', _EM.enableEditModes);
-		jq$(document).off('keydown', _CE.enableCompositeEditModeByKey).on('keydown', _EM.enableSourceEdit);
+		jq$(document).off('keydown', _CE.enableCompositeEditModeByKey)
+			.on('keydown', _EM.enableEditModes)
+			.on('keydown', _EM.enableSourceEdit);
 	}
 
 	function changeDefaultKeybindings() {
 		jq$("#edit-source-button").removeAttr("accesskey");
 		jq$("#edit-mode-button").removeAttr("accesskey");
-		jq$(document).off('keydown', _EM.enableEditModes).on('keydown', _CE.enableCompositeEditModeByKey);
-		jq$(document).off('keydown', _EM.enableSourceEdit).on('keydown', _CE.enableCompositeEditModeByKey);
+		jq$(document).off('keydown', _EM.enableEditModes)
+			.off('keydown', _EM.enableSourceEdit)
+			.on('keydown', _CE.enableCompositeEditModeByKey);
 	}
 
 	function enableInitialDialogState() {
@@ -531,57 +540,64 @@ KNOWWE.plugin.compositeEditTool = function () {
 			enableCompositeViewMode();
 		}
 		ToolMenu.decorateToolMenus('#compositeEdit .defaultMarkupFrame');
-		jq$(".toolsMenuDecorator").click(function (e) {
+		jq$(".toolsMenuDecorator").click(function(e) {
 			e.stopPropagation();
 		});
-		jq$('#compositeEdit div.defaultMarkupFrame').each(function (index, frame) {
+		jq$('#compositeEdit div.defaultMarkupFrame').each(function(index, frame) {
 			KNOWWE.core.rerendercontent.animateDefaultMarkupMenu(jq$(frame));
 		});
-		jq$(".extend-panel-right").click(function (e) {
+		jq$(".extend-panel-right").click(function(e) {
 			KNOWWE.core.plugin.objectinfo.loadPreviews(jq$(this).next('div'));
 			saveExpandState(this);
 		});
+		jq$(document).on('keydown', escapeFunction);
 		expandSavedStates();
+	}
+
+	function escapeFunction(event) {
+		if (event.keyCode === jq$.ui.keyCode.ESCAPE) {
+			_CE.disable();
+		}
 	}
 
 	function createCompositeEditDialog(identifier, divMarkupText) {
 		var params = {
-			action: 'CompositeEditOpenDialogAction',
-			termIdentifier: identifier
+			action : 'CompositeEditOpenDialogAction',
+			termIdentifier : identifier
 		}
 
 		var options = {
-			url: KNOWWE.core.util.getURL(params),
-			response: {
-				action: 'none',
-				fn: function () {
+			url : KNOWWE.core.util.getURL(params),
+			response : {
+				action : 'none',
+				fn : function() {
 					if (this.responseText) {
 						var parsed = JSON.parse(this.responseText);
 						divMarkupText.append(parsed.result);
 
 						_CE.dialogDiv.dialog({
 							//fix for strange behaviour (=scrolling to top) of dialog at first "mousedown" event
-							open: function (event, ui) {
-								jq$(this).mousedown(function (event) {
+							open : function(event, ui) {
+								jq$(this).mousedown(function(event) {
 									event.stopPropagation();
 								});
 							},
-							closeOnEscape: jq$('#compositeEdit .closeButton').click(),
-							dialogClass: "no-close",
-							height: (jq$(window).height() * .9),
-							width: jq$(document).width() * .6,
-							title: parsed.header,
-							resizable: true,
-							draggable: true,
-							modal: true,
-							buttons: [
+							closeOnEscape : false,
+							dialogClass : "no-close",
+							height : (jq$(window).height() * .9),
+							width : jq$(document).width() * .6,
+							title : parsed.header,
+							resizable : true,
+							draggable : true,
+							modal : true,
+							buttons : [
 								{
-									text: "Close",
-									'class': 'closeButton'
+									text : "Close",
+									'class' : 'closeButton'
 								},
 								{
-									text: "Edit",
-									'class': 'editButton'
+									text : "Edit",
+									'class' : 'editButton'
 								}
 							]
 						});
@@ -589,7 +605,7 @@ KNOWWE.plugin.compositeEditTool = function () {
 					enableInitialDialogState();
 					_EC.hideAjaxLoader();
 				},
-				onError: _EC.onErrorBehavior
+				onError : _EC.onErrorBehavior
 
 			}
 		};
@@ -598,10 +614,10 @@ KNOWWE.plugin.compositeEditTool = function () {
 
 	function enableCompositeViewToolMenus(id) {
 
-		jq$(id).find('.defaultMarkupFrame').each(function (index, frame) {
+		jq$(id).find('.defaultMarkupFrame').each(function(index, frame) {
 			KNOWWE.core.rerendercontent.animateDefaultMarkupMenu(jq$(frame));
 		});
-		jq$(id).find("a").click(function (e) {
+		jq$(id).find("a").click(function(e) {
 			e.stopPropagation();
 		});
 	}
@@ -636,9 +652,9 @@ KNOWWE.plugin.compositeEditTool = function () {
 		if (typeof typeArray !== "undefined") {
 			for (var i = 0; i < typeArray.length; i++) {
 				var type = typeArray[i];
-				var p = jq$(".extend-panel-right").filter(function () {
+				var p = jq$(".extend-panel-right strong").filter(function() {
 					return jq$(this).text() === type;
-				}).removeClass("extend-panel-right").addClass("extend-panel-down");
+				}).parent().removeClass("extend-panel-right").addClass("extend-panel-down");
 				var section = jq$(p).next('div');
 				jq$(section).css("display", "inline");
 				KNOWWE.core.plugin.objectinfo.loadPreviews(section);
@@ -648,42 +664,42 @@ KNOWWE.plugin.compositeEditTool = function () {
 
 	function registerMaximizeEvent(image) {
 		var image = jq$(image);
-		jq$(image).on("click", function () {
+		jq$(image).on("click", function() {
 			if (image.hasClass("minimized")) {
 				image.removeClass("minimized").addClass("maximized");
 				jq$(_CE.dialogDiv).parents(".ui-dialog:first").animate({
-					width: window.innerWidth,
-					height: window.innerHeight
+					width : window.innerWidth,
+					height : window.innerHeight
 				}, {
-					duration: 500,
-					step: function () {
+					duration : 500,
+					step : function() {
 						jq$(_CE.dialogDiv).dialog('option', 'position', 'center');
 					}
 				});
-				jq$(_CE.dialogDiv).dialog( "option", "height", window.innerHeight);
-				jq$(_CE.dialogDiv).dialog( "option", "width", window.innerHeight);
+				jq$(_CE.dialogDiv).dialog("option", "height", window.innerHeight);
+				jq$(_CE.dialogDiv).dialog("option", "width", window.innerHeight);
 			}
 			else {
 				image.removeClass("maximized").addClass("minimized");
 				jq$(_CE.dialogDiv).parents(".ui-dialog:first").animate({
-					width: window.innerWidth * .6,
-					height: window.innerHeight * .9
+					width : window.innerWidth * .6,
+					height : window.innerHeight * .9
 				}, {
-					duration: 500,
-					step: function () {
+					duration : 500,
+					step : function() {
 						jq$(_CE.dialogDiv).dialog('option', 'position', 'center');
 					}
 				});
-				jq$(_CE.dialogDiv).dialog( "option", "height", window.innerHeight *.9);
-				jq$(_CE.dialogDiv).dialog( "option", "width", window.innerHeight *.6);
+				jq$(_CE.dialogDiv).dialog("option", "height", window.innerHeight * .9);
+				jq$(_CE.dialogDiv).dialog("option", "width", window.innerHeight * .6);
 			}
 		});
 	}
 
 	function appendMaximizeButton() {
 		var image = jq$('<span/>', {
-			"id": 'maximizeCompositeView',
-			"class": 'minimized'
+			"id" : 'maximizeCompositeView',
+			"class" : 'minimized'
 		});
 		var titlebar = jq$(".ui-dialog-titlebar");
 		jq$(titlebar).append(image);
@@ -711,29 +727,29 @@ KNOWWE.plugin.compositeEditTool = function () {
 
 	return {
 
-		dialogDiv: null,
+		dialogDiv : null,
 
 		/** Indicates whether edit mode is enabled */
-		enabled: false,
+		enabled : false,
 
 		/** Caches the old sections for reuse */
-		cancelCache: new Object(),
+		cancelCache : new Object(),
 
 		/** The namespace for each section */
-		toolNameSpace: new Object(),
+		toolNameSpace : new Object(),
 
 		/** All sections that are compatible with edit mode */
-		editableSections: new Array(),
+		editableSections : new Array(),
 
-		ModeEnum: {
-			VIEW: "view",
-			EDIT: "edit"
+		ModeEnum : {
+			VIEW : "view",
+			EDIT : "edit"
 		},
 
-		mode: "view",
+		mode : "view",
 
 
-		enableCompositeEdit: function (id) {
+		enableCompositeEdit : function(id) {
 
 			if (_IE.enabled) {
 				alert("You are already editing the page. Please finish your current edit before entering composite edit.");
@@ -762,58 +778,65 @@ KNOWWE.plugin.compositeEditTool = function () {
 			_EC.hideAjaxLoader();
 		},
 
-		disable: function () {
+		disable : function() {
 			_CE.enabled = false;
-			unbindUnloadFunctions()
+			unbindUnloadFunctions();
 			_IE.disable(_CEWT.rootID, false);
 			_CE.dialogDiv.dialog("close");
 			_CE.dialogDiv.dialog('destroy').remove();
 			_CE.dialogDiv = undefined;
 			document.body.style.overflow = 'auto';
 			restoreDefaultKeybindings();
-
+			unregisterSaveCancelEvents(document, _CE.save, enableCompositeViewMode);
+			jq$(document).off('keydown', escapeFunction);
 		},
 
-		save: function () {
+		save : function() {
 
 			jsonObj = [];
-			jq$('#compositeEdit .editarea').each(function () {
+			jq$('#compositeEdit .editarea').each(function() {
 
 				var id = jq$(this).attr("sectionid");
 				var text = _CEWT.getSectionText(id);
 
-				item = {}
-				item["id"] = id;
-				item["text"] = text;
+				jsonObj.push({
+					id : id,
+					text : text});
+			});
 
-				jsonObj.push(item);
+			jq$.each(_CEWT.deletes, function(index, id) {
+
+				jsonObj.push({
+					id : id,
+					text : ""});
 			});
 
 			var params = {
-				action: 'CompositeEditSaveAction',
-				replaceSections: jsonObj
-			}
+				action : 'CompositeEditSaveAction',
+				replaceSections : jsonObj
+			};
 
 			var options = {
-				url: KNOWWE.core.util.getURL(params),
-				response: {
-					action: 'none',
-					fn: function () {
+				url : KNOWWE.core.util.getURL(params),
+				response : {
+					action : 'none',
+					fn : function() {
 						$(window).removeEvents('beforeunload');
 						$(window).removeEvents('unload');
 						_EC.hideAjaxLoader();
+						_CE.disable();
 						_IE.disable(_CEWT.rootID, true);
 					},
-					onError: _EC.onErrorBehavior
+					onError : _EC.onErrorBehavior
 				}
-			}
+			};
 			new _KA(options).send();
 
 		},
 
-		cancelSection: function (sectionId) {
+		cancelSection : function(sectionId) {
 			var sectionId = sectionId; // we need this -> JS closure
-			var fn = function () {
+			var fn = function() {
 				var cached = _CE.cancelCache[sectionId];
 				jq$('#compositeEdit div[sectionid=' + sectionId + ']').replaceWith(cached);
 				addEventListenerForEdit(jq$("#compositeEdit div[sectionid=" + sectionId + "]").parent());
@@ -823,7 +846,7 @@ KNOWWE.plugin.compositeEditTool = function () {
 			enableCompositeViewToolMenus(jq$('#compositeEdit div[sectionid=' + sectionId + ']'));
 		},
 
-		deleteSection: function (id) {
+		deleteSection : function(id) {
 			var del = confirm("Do you really want to delete this content?");
 			if (del) {
 				_CE.cancelSection(id);
@@ -832,7 +855,7 @@ KNOWWE.plugin.compositeEditTool = function () {
 			}
 		},
 
-		openCompositeEditDialog: function (identifier) {
+		openCompositeEditDialog : function(identifier) {
 			closeOldDialog();
 			resetVariables();
 			var divMarkupText = buildDefaultMarkupStructure();
@@ -841,14 +864,14 @@ KNOWWE.plugin.compositeEditTool = function () {
 			appendDialogToHtmlBody();
 		},
 
-		waitForPreviewsToLoad: function (id) {
+		waitForPreviewsToLoad : function(id) {
 			KNOWWE.plugin.compositeEditTool.enableCompositeEdit(id);
-			jq$(".toolsMenuDecorator").click(function (e) {
+			jq$(".toolsMenuDecorator").click(function(e) {
 				e.stopPropagation();
 			});
 		},
 
-		enableCompositeEditModeByKey: function (event) {
+		enableCompositeEditModeByKey : function(event) {
 			event = jq$.event.fix(event);
 			if (_EC.isModifier(event) || _EC.isDoubleModifier(event)) {
 				if (event.which == 68) { // D
@@ -869,7 +892,7 @@ KNOWWE.plugin.compositeEditTool = function () {
 	}
 }();
 
-KNOWWE.plugin.compositeEditTool.wikiText = function () {
+KNOWWE.plugin.compositeEditTool.wikiText = function() {
 
 	function fixLineBreaks(i, newText) {
 		var order = _CEWT.getOriginalOrder();
@@ -917,7 +940,7 @@ KNOWWE.plugin.compositeEditTool.wikiText = function () {
 
 	function getSectionOrder() {
 		var sectionOrder = new Array();
-		jq$('.editelement, .editarea').each(function () {
+		jq$('.editelement, .editarea').each(function() {
 			var id = jq$(this).attr('id');
 			if (id == null) {
 				id = jq$(this).attr('sectionId');
@@ -931,21 +954,21 @@ KNOWWE.plugin.compositeEditTool.wikiText = function () {
 	return {
 
 		/** ID of the root section */
-		rootID: null,
+		rootID : null,
 
 		/** Original Wiki-Text */
-		text: null,
+		text : null,
 
 		/** Original ordering of the sections */
-		order: null,
+		order : null,
 
 		/** Deleted sections */
-		deletes: new Array(),
+		deletes : new Array(),
 
 		/** is the article locked? */
-		locked: null,
+		locked : null,
 
-		hasChanged: function () {
+		hasChanged : function() {
 			if (_CEWT.deletes.length > 0) {
 				return true;
 			}
@@ -973,7 +996,7 @@ KNOWWE.plugin.compositeEditTool.wikiText = function () {
 			return false;
 		},
 
-		getSectionText: function (id) {
+		getSectionText : function(id) {
 
 			if (jq$.inArray(id, _CEWT.deletes) > -1) {
 				return "";
@@ -993,19 +1016,19 @@ KNOWWE.plugin.compositeEditTool.wikiText = function () {
 
 		},
 
-		getOriginalText: function () {
+		getOriginalText : function() {
 			return _CEWT.text;
 		},
 
-		getOriginalOrder: function () {
+		getOriginalOrder : function() {
 			return _CEWT.order;
 		},
 
-		isLocked: function () {
+		isLocked : function() {
 			return _CEWT.locked;
 		},
 
-		deleteSection: function (id) {
+		deleteSection : function(id) {
 			_CEWT.deletes.push(id);
 		}
 	}
@@ -1016,7 +1039,7 @@ var _CEWT = KNOWWE.plugin.compositeEditTool.wikiText;
 
 //fixing jquery(version 2.1) bug where HTML code is not parsed in titlebar
 jq$.widget("ui.dialog", jq$.extend({}, jq$.ui.dialog.prototype, {
-	_title: function (title) {
+	_title : function(title) {
 		if (!this.options.title) {
 			title.html("&#160;");
 		} else {
