@@ -1033,11 +1033,13 @@ public class Rdf2GoCore {
 	private Object sparql(String query, boolean cached, long timeOutMillis, SparqlType type) {
 		String completeQuery = completeQuery(query);
 		SparqlTask sparqlTask;
+		boolean newTask = false;
 		if (cached) {
 			synchronized (resultCache) {
 				sparqlTask = resultCache.get(completeQuery);
 				if (sparqlTask == null || sparqlTask.getTimeOutMillis() != timeOutMillis) {
 					sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, true), timeOutMillis);
+					newTask = true;
 					resultCache.put(completeQuery, sparqlTask);
 					sparqlDaemonPool.execute(sparqlTask);
 				}
@@ -1051,7 +1053,7 @@ public class Rdf2GoCore {
 				+ " and was therefore canceled.";
 		try {
 			Object result = sparqlTask.get(timeOutMillis, TimeUnit.MILLISECONDS);
-			resultCacheSize += getResultSize(sparqlTask);
+			if (newTask) resultCacheSize += getResultSize(sparqlTask);
 			assureMaxCacheSize();
 			return result;
 		}
