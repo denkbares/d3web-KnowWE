@@ -122,3 +122,9 @@ jq$(document).ready(function () {
 KNOWWE.helper.observer.subscribe("flowchartrendered", function () {
 	ToolMenu.decorateToolMenus(jq$('.Flowchart'))
 });
+
+KNOWWE.helper.observer.subscribe("afterRerender", function () {
+    var replacedElement = this;
+    KNOWWE.core.rerendercontent.animateDefaultMarkupMenu(jq$(replacedElement));
+});
+

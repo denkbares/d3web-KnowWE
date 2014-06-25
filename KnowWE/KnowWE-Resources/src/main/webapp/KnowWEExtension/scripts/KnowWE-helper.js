@@ -1779,7 +1779,7 @@ KNOWWE.helper.logger = function(){
 	                    var f = obName.getFunct();
 	                    for(var j = 0; j < f.length; j++){
 	                    	try {
-	                    		f[j].call( o );
+                                f[j].call(scope);
 	                    	} catch(ex) {
 	                    		if (console) console.exception(ex);
 	                    	}
