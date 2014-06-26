@@ -18,7 +18,7 @@
  */
 package de.knowwe.include.export;
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +43,6 @@ import de.knowwe.include.export.DocumentBuilder.Style;
 import de.knowwe.jspwiki.types.PluginType;
 
 /**
- * 
  * @author Volker Belli (denkbares GmbH)
  * @created 07.02.2014
  */
@@ -61,9 +60,10 @@ public class ImageExporter implements Exporter<PluginType> {
 
 	@Override
 	public void export(Section<PluginType> section, DocumentBuilder manager) throws ExportException {
+		String file = section.getText();
 		try {
 			String title = section.getTitle();
-			String file = attr(section, "src");
+			file = attr(section, "src");
 			String path = title + "/" + file;
 			if (file.startsWith("attach/")) {
 				// image tag uses verbose image url
@@ -91,11 +91,11 @@ public class ImageExporter implements Exporter<PluginType> {
 				run.setText(caption);
 			}
 		}
-		catch (IOException e) {
-			throw new ExportException("could not load image", e);
-		}
 		catch (InvalidFormatException e) {
-			throw new ExportException("image has invalid format", e);
+			throw new ExportException("Image has invalid format: " + file, e);
+		}
+		catch (Exception e) {
+			throw new ExportException("Could not load image: " + file, e);
 		}
 	}
 
@@ -144,18 +144,36 @@ public class ImageExporter implements Exporter<PluginType> {
 
 	private int getFormat(String path) throws InvalidFormatException {
 		path = path.toLowerCase();
-		if (path.endsWith(".emf")) return XWPFDocument.PICTURE_TYPE_EMF;
-		else if (path.endsWith(".wmf")) return XWPFDocument.PICTURE_TYPE_WMF;
-		else if (path.endsWith(".pict")) return XWPFDocument.PICTURE_TYPE_PICT;
+		if (path.endsWith(".emf")) {
+			return XWPFDocument.PICTURE_TYPE_EMF;
+		}
+		else if (path.endsWith(".wmf")) {
+			return XWPFDocument.PICTURE_TYPE_WMF;
+		}
+		else if (path.endsWith(".pict")) {
+			return XWPFDocument.PICTURE_TYPE_PICT;
+		}
 		else if (path.endsWith(".jpeg") || path.endsWith(".jpg")) {
 			return XWPFDocument.PICTURE_TYPE_JPEG;
 		}
-		else if (path.endsWith(".png")) return XWPFDocument.PICTURE_TYPE_PNG;
-		else if (path.endsWith(".dib")) return XWPFDocument.PICTURE_TYPE_DIB;
-		else if (path.endsWith(".gif")) return XWPFDocument.PICTURE_TYPE_GIF;
-		else if (path.endsWith(".tiff")) return XWPFDocument.PICTURE_TYPE_TIFF;
-		else if (path.endsWith(".eps")) return XWPFDocument.PICTURE_TYPE_EPS;
-		else if (path.endsWith(".bmp")) return XWPFDocument.PICTURE_TYPE_BMP;
+		else if (path.endsWith(".png")) {
+			return XWPFDocument.PICTURE_TYPE_PNG;
+		}
+		else if (path.endsWith(".dib")) {
+			return XWPFDocument.PICTURE_TYPE_DIB;
+		}
+		else if (path.endsWith(".gif")) {
+			return XWPFDocument.PICTURE_TYPE_GIF;
+		}
+		else if (path.endsWith(".tiff")) {
+			return XWPFDocument.PICTURE_TYPE_TIFF;
+		}
+		else if (path.endsWith(".eps")) {
+			return XWPFDocument.PICTURE_TYPE_EPS;
+		}
+		else if (path.endsWith(".bmp")) {
+			return XWPFDocument.PICTURE_TYPE_BMP;
+		}
 		else if (path.endsWith(".wpg")) return XWPFDocument.PICTURE_TYPE_WPG;
 		throw new InvalidFormatException("unrecognized format of " + path);
 	}
