@@ -87,7 +87,7 @@ TestCasePlayer.downloadCasesZip = function(sectionID) {
 				}
 				KNOWWE.core.util.updateProcessingState(-1);
 			},
-			onError : _EC.onErrorBehavior,
+			onError : _EC.onErrorBehavior
 		}
 	}
 	KNOWWE.core.util.updateProcessingState(1);
@@ -214,7 +214,7 @@ TestCasePlayer.send = function(sessionid, casedate, name, topic) {
 				}
 				KNOWWE.core.util.updateProcessingState(-1);
 			},
-			onError : _EC.onErrorBehavior,
+			onError : _EC.onErrorBehavior
 		}
 	}
 	KNOWWE.core.util.updateProcessingState(1);
@@ -351,5 +351,4 @@ jq$(document)
 		// init test case player
 		TestCasePlayer.init();
 		KNOWWE.helper.observer.subscribe("afterRerender", TestCasePlayer.init);
-		TestCasePlayer.init();
 	});
