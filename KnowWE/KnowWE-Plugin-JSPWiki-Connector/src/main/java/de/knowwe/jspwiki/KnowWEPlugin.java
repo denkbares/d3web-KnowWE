@@ -342,6 +342,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 	private void deleteRenamedArticles(String title) {
 		String changeNote = Environment.getInstance().getWikiConnector().getChangeNote(title, -1);
+		if (changeNote == null) return;
 		Pattern renamePattern = Pattern.compile("^(.+)" + Pattern.quote(" ==> " + title) + "$");
 		Matcher renameMatcher = renamePattern.matcher(changeNote);
 		if (renameMatcher.find()) {
