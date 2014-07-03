@@ -37,8 +37,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="KnowledgeBaseDownloadProvider">
 		<parameter id="class" value="de.knowwe.core.tools.RefreshToolProvider" />
 		<parameter id="name" value="RefreshToolProvider" />
-		<parameter id="description"
-			value="Offers a refresh button (fullParse)." />
+		<parameter id="description" value="Offers a refresh button (fullParse)." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="KnowledgeBase" />
@@ -398,6 +397,11 @@
 		<parameter id="priority" value="9" />
 		<parameter id="scope" value="DefaultMarkupType" />
 		<parameter id="exclude" value="OffMarkup" />
+		<parameter id="exclude" value="Identifier" />
+		<parameter id="exclude" value="Parts" />
+		<parameter id="exclude" value="Summary" />
+		<parameter id="exclude" value="Memolist" />
+		<parameter id="exclude" value="Memo" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OnToolProvider">
@@ -421,8 +425,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="SetMarkupActivationStatus">
 		<parameter id="class" value="de.knowwe.core.tools.SetMarkupActivationStatus" />
 		<parameter id="name" value="SetMarkupActivationStatus" />
-		<parameter id="description"
-			value="Action set the activationstatus of a markup." />
+		<parameter id="description" value="Action set the activationstatus of a markup." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="KnowWE-Plugin-Core.js" />
@@ -531,14 +534,14 @@
 		<parameter id="priority" value="2" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer"
-		id="DefaultPreviewRenderer">
-		<parameter id="class" value="de.knowwe.core.preview.DefaultPreviewRenderer"/>
-		<parameter id="name" value="DefaultPreviewRenderer"/>
-		<parameter id="description" value="Renders a default preview for types which don't have an own preview renderer"/>
-		<parameter id="version" value="1.0"/>
-		<parameter id="priority" value="20"/>
-		<parameter id="scope" value="root/DefaultMarkupType"/>
+	<extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="DefaultPreviewRenderer">
+		<parameter id="class" value="de.knowwe.core.preview.DefaultPreviewRenderer" />
+		<parameter id="name" value="DefaultPreviewRenderer" />
+		<parameter id="description"
+			value="Renders a default preview for types which don't have an own preview renderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="20" />
+		<parameter id="scope" value="root/DefaultMarkupType" />
 	</extension>
 
 </plugin>
