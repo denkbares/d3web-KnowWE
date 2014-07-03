@@ -249,7 +249,8 @@ public class D3webUtils {
 			return D3webUtils.getKnowledgeBase(section.getArticle());
 		}
 		else {
-			return getCompiler(section).getKnowledgeBase();
+			D3webCompiler compiler = getCompiler(section);
+			return compiler == null ? null : compiler.getKnowledgeBase();
 		}
 	}
 
@@ -503,20 +504,14 @@ public class D3webUtils {
 	 * there are no knowledge slices. no questions and at most one solution
 	 * (root solution).
 	 *
-	 * @param kb
-	 * @return
 	 * @created 19.04.2013
 	 */
 	public static boolean isEmpty(KnowledgeBase kb) {
-		if (kb.getAllKnowledgeSlices().size() <= 1
-				&& kb.getManager().getQContainers().size() <= 1
-				&& kb.getManager().getQuestions().size() == 0
-				&& kb.getManager().getSolutions().size() <= 1) {
-			return true;
-		}
-		else {
-			return false;
-		}
+		return kb == null
+				|| (kb.getAllKnowledgeSlices().size() <= 1
+						&& kb.getManager().getQContainers().size() <= 1
+						&& kb.getManager().getQuestions().size() == 0
+						&& kb.getManager().getSolutions().size() <= 1);
 	}
 
 }
