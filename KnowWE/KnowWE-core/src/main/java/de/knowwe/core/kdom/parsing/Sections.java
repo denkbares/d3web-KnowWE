@@ -238,7 +238,8 @@ public class Sections {
 
 	/**
 	 * Finds the ancestor for the given section for the given class. Note: Here, a section can't be its own ancestor.
-	 * Furthermore, if an ancestor is just a subtype of the given class, it will be ignored. For other purposes, use the
+	 * Furthermore, if an ancestor is just a subtype of the given class, it will be ignored. For other purposes, use
+	 * the
 	 * following method: {@link Sections#findAncestorOfType(Section, Class)}
 	 *
 	 * @author Franz Schwab
@@ -252,7 +253,8 @@ public class Sections {
 	}
 
 	/**
-	 * Finds the ancestor for the given section for a given collection of classes. The ancestor with the lowest distance
+	 * Finds the ancestor for the given section for a given collection of classes. The ancestor with the lowest
+	 * distance
 	 * to this section will be returned.
 	 *
 	 * @author Franz Schwab
@@ -371,7 +373,8 @@ public class Sections {
 	/**
 	 * This method returns all the successors of the specified section matching the specified class as their type. The
 	 * class matches if the type object of a section if an instance of the specified class or an instance of any
-	 * sub-class of the specified class or interface. If the specified section matches the specified class the specified
+	 * sub-class of the specified class or interface. If the specified section matches the specified class the
+	 * specified
 	 * section is contained in the returned list.
 	 * <p/>
 	 * <b>Note:</b><br> This is the modern version of the method {@link #findSuccessorsOfType(Section, Class)} which is
@@ -503,7 +506,8 @@ public class Sections {
 	}
 
 	/**
-	 * This method returns a list of all successor in depth-first-search of the specified article matching the specified
+	 * This method returns a list of all successor in depth-first-search of the specified article matching the
+	 * specified
 	 * type instance. The class matches if the type object of a section equals specified instance. If the specified
 	 * section matches the specified type instance the specified section is contained in the returned list.
 	 * <p/>
@@ -519,7 +523,8 @@ public class Sections {
 	}
 
 	/**
-	 * This method returns a list of all successor in depth-first-search of the specified section matching the specified
+	 * This method returns a list of all successor in depth-first-search of the specified section matching the
+	 * specified
 	 * type instance. The class matches if the type object of a section equals specified instance. If the specified
 	 * section matches the specified type instance the specified section is contained in the returned list.
 	 * <p/>
@@ -563,8 +568,10 @@ public class Sections {
 
 	/**
 	 * Finds all successors of the specified section-type in the KDOM below the given Section. Note that this method is
-	 * more specific as calling <code>findSuccessorsOfType(Section, Class&lt;OT&gt;, List&lt;...&gt;)</code>, because it
-	 * only collects sections that have the specified type instance instead (or an equal instance) of the specified type
+	 * more specific as calling <code>findSuccessorsOfType(Section, Class&lt;OT&gt;, List&lt;...&gt;)</code>, because
+	 * it
+	 * only collects sections that have the specified type instance instead (or an equal instance) of the specified
+	 * type
 	 * class.
 	 */
 	@SuppressWarnings("unchecked")
@@ -598,7 +605,8 @@ public class Sections {
 	}
 
 	/**
-	 * Finds all successors of type <code>class1</code> in the KDOM below the argument Section and stores them in a Map,
+	 * Finds all successors of type <code>class1</code> in the KDOM below the argument Section and stores them in a
+	 * Map,
 	 * using their originalText as key.
 	 */
 	@SuppressWarnings("unchecked")
@@ -731,7 +739,8 @@ public class Sections {
 	 * article gets an id. Since ids are created lazy while rendering and often the article is not rendered completely
 	 * again after changing just a few isolated spots in the article, those ids would otherwise be gone, although they
 	 * might stay the same and are still usable.<br/> We just look at the same spot/position in the KDOM. If we find a
-	 * Section and the Section also has the same type, we generate and register the id. Of course we will only catch the
+	 * Section and the Section also has the same type, we generate and register the id. Of course we will only catch
+	 * the
 	 * right Sections if the KDOM has not changed in this part, but if the KDOM has changed, also the ids will have
 	 * changed and therefore we don't need them anyway. We only do this, to allow already rendered tools to still work,
 	 * if it is possible.
@@ -771,7 +780,8 @@ public class Sections {
 	}
 
 	/**
-	 * Returns the section with the given id and casts it to the supplied class. For more information see getSection(id)
+	 * Returns the section with the given id and casts it to the supplied class. For more information see
+	 * getSection(id)
 	 * and cast(section, class);
 	 *
 	 * @param id        is the ID of the Section to be returned
@@ -813,7 +823,8 @@ public class Sections {
 	}
 
 	/**
-	 * This class contains some information about the replacement success or the errors occurred. It also allows to send
+	 * This class contains some information about the replacement success or the errors occurred. It also allows to
+	 * send
 	 * the detected error in a standardized manner to the http result of some action user context.
 	 *
 	 * @author Volker Belli (denkbares GmbH)
@@ -859,7 +870,8 @@ public class Sections {
 	 * the KDOM and appends the new text (instead of the original text) for the Sections with an ID in the sectionsMap.
 	 * Finally the article is saved with this new content.
 	 * <p/>
-	 * If working on an action the resulting object may be used to send the errors during replacement back to the caller
+	 * If working on an action the resulting object may be used to send the errors during replacement back to the
+	 * caller
 	 * using {@link ReplaceResult#sendErrors(UserActionContext)}.
 	 *
 	 * @param context the user context to use for modifying the articles
@@ -879,7 +891,8 @@ public class Sections {
 	 * KDOM and appends the new text (instead of the original text) for the Sections with an ID in the sectionsMap.
 	 * Finally the article is saved with this new content.
 	 * <p/>
-	 * If working on an action the resulting object may be used to send the errors during replacement back to the caller
+	 * If working on an action the resulting object may be used to send the errors during replacement back to the
+	 * caller
 	 * using {@link ReplaceResult#sendErrors(UserActionContext)}.
 	 *
 	 * @param context     the user context to use for modifying the articles
@@ -1096,7 +1109,8 @@ public class Sections {
 	 * it is checked if the section has the specified object type as its type. If not, a {@link ClassCastException} is
 	 * thrown (as usual).
 	 * <p/>
-	 * This method is required because it: <ol> <li>avoids a "unchecked cast" warning when compiling the code <li>does a
+	 * This method is required because it: <ol> <li>avoids a "unchecked cast" warning when compiling the code <li>does
+	 * a
 	 * runtime type check whether the cast is valid (java itself is not capable to do) </ol>
 	 *
 	 * @param <T>       the class to cast the generic section to
@@ -1122,7 +1136,8 @@ public class Sections {
 	}
 
 	/**
-	 * Checks if the specified section is an instance of the specified type class (technically the section has a section
+	 * Checks if the specified section is an instance of the specified type class (technically the section has a
+	 * section
 	 * {@link Type} which is of the specified type or is a class inherits or implements the specified type). The method
 	 * returns true if (and only if) the method {@link #cast(Section, Class)} would be successful and the specified
 	 * section is not null. If the specified section is null, false is returned.
