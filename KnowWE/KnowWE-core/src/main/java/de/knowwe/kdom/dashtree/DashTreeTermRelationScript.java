@@ -22,6 +22,7 @@ package de.knowwe.kdom.dashtree;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -55,7 +56,7 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 			Identifier next = childrenSet.iterator().next();
 			if (!checked.contains(next)) {
 				checked.add(next);
-				return new Pair(next, childrenSet);
+				return new Pair<Identifier, Set<Identifier>>(next, childrenSet);
 			}
 		}
 		return null;
@@ -71,6 +72,7 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 		Collection<Section<?>> parentDefiningSections = compiler.getTerminologyManager()
 				.getTermDefiningSections(parentIdentifier);
 		LinkedList<LinkedHashSet<Identifier>> childrenSets = new LinkedList<LinkedHashSet<Identifier>>();
+		LinkedHashSet<Identifier> singleChildren = new LinkedHashSet<Identifier>();
 		for (Section<?> parentDefiningSection : parentDefiningSections) {
 			// ignore definitions that are outside a DashTree (like XCL)
 			if (Sections.findAncestorOfType(parentDefiningSection, DashTreeElement.class) == null) continue;
@@ -82,12 +84,16 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 				childrenSet.add(childDefiningSection.get().getTermIdentifier(childDefiningSection));
 			}
 			if (childrenSet.isEmpty()) continue;
+			if (childrenSet.size() == 1) {
+				singleChildren.addAll(childrenSet);
+				continue;
+			}
 			childrenSets.add(childrenSet);
 		}
 
 		// we try to merge them into one correct and stable order
 		List<Identifier> orderedChildren = new ArrayList<Identifier>();
-		Set<Identifier> checked = newTermSet();
+		Set<Identifier> checked = new HashSet<Identifier>();
 		TreeSet<Pair<Identifier, Set<Identifier>>> candidatesWithoutConflict = newCandidatesSet();
 		Set<Identifier> lastUsedSet = null;
 		outer:
@@ -100,14 +106,14 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 				Set<Identifier> winners;
 				if (candidatesWithoutConflict.isEmpty()) {
 					// no new candidate without conflict was found, apparently we have a conflict
-					msgs.add(Messages.warning("The order of the following objects is in conflict: "
-							+ Strings.concat(", ", checked)
-							+ ". Check all places where these objects are defined to resolve the conflict."));
 					// we fail gracefully and just add all checked as winners...
-					winners = checked;
+					winners = new TreeSet<Identifier>(checked);
+					msgs.add(Messages.warning("The order of the following objects is in conflict: "
+							+ Strings.concat(", ", winners)
+							+ ". Check all places where these objects are defined to resolve the conflict."));
 				}
 				else {
-					winners = newTermSet();
+					winners = new TreeSet<Identifier>();
 					Pair<Identifier, Set<Identifier>> winner = null;
 					// To keep the different children lists together as good as possible, we remember which list we
 					// used last time. If we have multiple candidates without conflict, we use the one from the list
@@ -129,9 +135,10 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 						iterator.remove();
 					}
 				}
+				singleChildren.removeAll(winners);
 				// we add the winner to the ordered list of children and clear the sets
 				orderedChildren.addAll(winners);
-				checked = newTermSet();
+				checked = new HashSet<Identifier>();
 				candidatesWithoutConflict = newCandidatesSet();
 			}
 			else {
@@ -147,7 +154,7 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 				candidatesWithoutConflict.add(candidateInfo);
 			}
 		}
-
+		orderedChildren.addAll(singleChildren);
 		createObjectRelations(parentSection, compiler, parentIdentifier, orderedChildren);
 		throw new CompilerMessage(msgs);
 	}
@@ -159,10 +166,6 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 				return o1.getA().compareTo(o2.getA());
 			}
 		});
-	}
-
-	private TreeSet<Identifier> newTermSet() {
-		return new TreeSet<Identifier>();
 	}
 
 	protected List<Section<DashTreeElement>> getChildrenDashtreeElements(Section<?> termDefiningSection) {
