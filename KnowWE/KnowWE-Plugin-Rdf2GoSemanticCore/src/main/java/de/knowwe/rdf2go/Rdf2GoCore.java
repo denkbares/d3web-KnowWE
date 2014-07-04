@@ -1037,13 +1037,12 @@ public class Rdf2GoCore {
 	private Object sparql(String query, boolean cached, long timeOutMillis, SparqlType type) {
 		String completeQuery = completeQuery(query);
 		SparqlTask sparqlTask;
-		boolean newTask = false;
 		if (cached) {
 			synchronized (resultCache) {
 				sparqlTask = resultCache.get(completeQuery);
-				if (sparqlTask == null || sparqlTask.getTimeOutMillis() != timeOutMillis) {
+				if (sparqlTask == null
+						|| (sparqlTask.isCancelled() && sparqlTask.getTimeOutMillis() != timeOutMillis)) {
 					sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, true), timeOutMillis);
-					newTask = true;
 					resultCache.put(completeQuery, sparqlTask);
 					sparqlThreadPool.execute(sparqlTask);
 				}
@@ -1054,10 +1053,7 @@ public class Rdf2GoCore {
 			sparqlThreadPool.execute(sparqlTask);
 		}
 		try {
-			Object result = sparqlTask.get();
-			if (newTask) resultCacheSize += getResultSize(sparqlTask);
-			assureMaxCacheSize();
-			return result;
+			return sparqlTask.get();
 		}
 		catch (CancellationException c) {
 			String timeOutMessage = "SPARQL took more than " + Strings.getDurationVerbalization(timeOutMillis, true)
@@ -1118,7 +1114,7 @@ public class Rdf2GoCore {
 		private final SparqlType type;
 		private final boolean cached;
 		private Thread thread = null;
-		private long started = Long.MIN_VALUE;
+		private long startTime = Long.MIN_VALUE;
 
 		private SparqlCallable(String query, SparqlType type, boolean cached) {
 			this.query = query;
@@ -1138,18 +1134,22 @@ public class Rdf2GoCore {
 		}
 
 		public synchronized boolean hasStarted() {
-			return started != Long.MIN_VALUE;
+			return startTime != Long.MIN_VALUE;
 		}
 
 		public synchronized boolean isAlive() {
 			return !hasStarted() || (thread != null && thread.isAlive());
 		}
 
+		public synchronized long getRunDuration() {
+			return hasStarted() ? System.currentTimeMillis() - startTime : 0;
+		}
+
 		@Override
 		public Object call() {
 			synchronized (this) {
 				this.thread = Thread.currentThread();
-				started = System.currentTimeMillis();
+				startTime = System.currentTimeMillis();
 			}
 			sparqlDaemonPool.execute(new SparqlTaskDaemon(task));
 			Object result;
@@ -1163,12 +1163,30 @@ public class Rdf2GoCore {
 					thread = null;
 				}
 			}
-			long sparqlTime = System.currentTimeMillis() - started;
+			long sparqlTime = System.currentTimeMillis() - startTime;
 			if (sparqlTime > 1000) {
-				Log.info("Finished sparql " + query.replace("\n", " ")
-						.substring(0, 50) + "..." + " after " + Strings.getDurationVerbalization(sparqlTime, true));
+				Log.info("Finished sparql after "
+						+ Strings.getDurationVerbalization(sparqlTime)
+						+ ": " + getReadableQuery() + "...");
 			}
+
+			handleCacheSize(result);
 			return result;
+		}
+
+		private String getReadableQuery() {
+			int start = -1;
+			if (type == SparqlType.ASK) {
+				start = query.toLowerCase().indexOf("ask") - 4;
+			}
+			else if (type == SparqlType.SELECT) {
+				start = query.toLowerCase().indexOf("select") - 7;
+			}
+			else if (type == SparqlType.CONSTRUCT) {
+				start = query.toLowerCase().indexOf("construct") - 9;
+			}
+			if (start == -1) start = 0;
+			return query.replace("\n", " ").replaceAll("\t|\\s\\s+", " ").substring(start, start + 75);
 		}
 
 		private Object executeSparql() {
@@ -1220,6 +1238,9 @@ public class Rdf2GoCore {
 				catch (TimeoutException e) {
 					// we cancel
 					task.cancel(true);
+					Log.warning("Sparql timed out after "
+							+ Strings.getDurationVerbalization(task.callable.getRunDuration())
+							+ ": " + task.callable.getReadableQuery() + "...");
 					// if it does not die after the sleep, we kill it
 					// (not all repositories will react to cancel)
 					Thread.sleep(Math.max(task.timeOutMillis / 2, 1000));
@@ -1289,7 +1310,8 @@ public class Rdf2GoCore {
 		return cachedResult;
 	}
 
-	private void assureMaxCacheSize() throws ExecutionException, InterruptedException {
+	private void handleCacheSize(Object result) {
+		resultCacheSize += getResultSize(result);
 		if (resultCacheSize > DEFAULT_MAX_CACHE_SIZE) {
 			synchronized (resultCache) {
 				Iterator<Entry<String, SparqlTask>> iterator = resultCache.entrySet().iterator();
@@ -1302,9 +1324,7 @@ public class Rdf2GoCore {
 		}
 	}
 
-	private int getResultSize(SparqlTask sparqlTask) throws ExecutionException, InterruptedException {
-		if (!sparqlTask.isDone()) return 0;
-		Object result = sparqlTask.get();
+	private int getResultSize(Object result) {
 		if (result instanceof CachedQueryResultTable) {
 			CachedQueryResultTable cacheResult = (CachedQueryResultTable) result;
 			return cacheResult.variables.size() * cacheResult.result.size();
