@@ -18,6 +18,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.AsynchronRenderer;
@@ -107,47 +108,52 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 
 				String query = contentSection.getText();
 				OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
-
 				if (compiler != null) {
 					Rdf2GoCore core = compiler.getRdf2GoCore();
 					query = Rdf2GoUtils.createSparqlString(core, query);
-					QueryResultTable resultTable = core.sparqlSelect(query);
+					String sparqlResult;
+					try {
+						QueryResultTable resultTable = core.sparqlSelect(query);
 
-					ClosableIterator<QueryRow> rowIterator = resultTable.iterator();
-					List<String> variables = resultTable.getVariables();
+						ClosableIterator<QueryRow> rowIterator = resultTable.iterator();
+						List<String> variables = resultTable.getVariables();
 
-					String line = "";
-					String cell;
+						String line = "";
+						String cell;
 
-					int lines = 0;
+						int lines = 0;
 
-					while (rowIterator.hasNext()) {
-						QueryRow row = rowIterator.next();
-						lines++;
-						for (Iterator<String> variableIterator = variables.iterator(); variableIterator.hasNext(); ) {
-							String variable = variableIterator.next();
-							Node node = row.getValue(variable);
-							if (node == null) continue;
-							cell = node.toString();
-							cell = Rdf2GoUtils.trimDataType(core, cell);
-							cell = Rdf2GoUtils.trimNamespace(core, cell);
-							line += cell;
-							if (variableIterator.hasNext()) {
-								line += separator;
+						while (rowIterator.hasNext()) {
+							QueryRow row = rowIterator.next();
+							lines++;
+							if (count) continue;
+							for (Iterator<String> variableIterator = variables.iterator(); variableIterator.hasNext(); ) {
+								String variable = variableIterator.next();
+								Node node = row.getValue(variable);
+								if (node == null) continue;
+								cell = node.toString();
+								cell = Rdf2GoUtils.trimDataType(core, cell);
+								cell = Rdf2GoUtils.trimNamespace(core, cell);
+								line += cell;
+								if (variableIterator.hasNext()) {
+									line += separator;
+								}
+							}
+							if (rowIterator.hasNext()) {
+								line += rowSeparator;
 							}
 						}
-						if (rowIterator.hasNext()) {
-							line += rowSeparator;
+						if (count) {
+							sparqlResult = String.valueOf(lines);
+						}
+						else {
+							sparqlResult = line;
 						}
 					}
-					result.appendHtmlTag("span");
-					if (count) {
-						result.append(lines);
+					catch (Exception e) {
+						sparqlResult = "?";
 					}
-					else {
-						result.appendJSPWikiMarkup(line);
-					}
-					result.appendHtmlTag("/span");
+					result.appendHtmlElement("span", KnowWEUtils.maskJSPWikiMarkup(sparqlResult));
 				}
 			}
 
