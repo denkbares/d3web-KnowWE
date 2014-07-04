@@ -51,6 +51,8 @@ import de.knowwe.core.report.Messages;
  */
 public abstract class DashTreeTermRelationScript<T extends TermCompiler> implements CompileScript<T, TermDefinition> {
 
+	protected static final String RELATIONS_ADDED = "relationsAdded";
+
 	private Pair<Identifier, Set<Identifier>> getNextCandidate(LinkedList<LinkedHashSet<Identifier>> childrenSets, Set<Identifier> checked) throws CompilerMessage {
 		for (LinkedHashSet<Identifier> childrenSet : childrenSets) {
 			Identifier next = childrenSet.iterator().next();
@@ -64,6 +66,9 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 
 	@Override
 	public void compile(T compiler, Section<TermDefinition> parentSection) throws CompilerMessage {
+
+		// relations already added for one of the other defining sections of the current term
+		if (parentSection.getSectionStore().getObject(compiler, RELATIONS_ADDED) != null) return;
 
 		Collection<Message> msgs = new ArrayList<Message>();
 
@@ -156,6 +161,12 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 		}
 		orderedChildren.addAll(singleChildren);
 		createObjectRelations(parentSection, compiler, parentIdentifier, orderedChildren);
+
+		// mark other sections so the algorithm is not executed every time (will be the same result anyway)
+		for (Section<?> termDefiningSection : parentDefiningSections) {
+			termDefiningSection.getSectionStore().storeObject(compiler, RELATIONS_ADDED, true);
+		}
+
 		throw new CompilerMessage(msgs);
 	}
 
