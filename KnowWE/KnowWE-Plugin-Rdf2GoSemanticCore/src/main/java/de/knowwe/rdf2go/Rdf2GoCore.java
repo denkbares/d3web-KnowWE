@@ -1246,6 +1246,9 @@ public class Rdf2GoCore {
 					Thread.sleep(Math.max(task.timeOutMillis / 2, 1000));
 					if (task.callable.isAlive()) {
 						task.callable.stop();
+						Log.warning("Sparql stopped after "
+								+ Strings.getDurationVerbalization(task.callable.getRunDuration())
+								+ ": " + task.callable.getReadableQuery() + "...");
 					}
 				}
 				catch (Exception e) {
@@ -1318,7 +1321,12 @@ public class Rdf2GoCore {
 				while (iterator.hasNext() && resultCacheSize > DEFAULT_MAX_CACHE_SIZE) {
 					Entry<String, SparqlTask> next = iterator.next();
 					iterator.remove();
-					resultCacheSize -= getResultSize(next.getValue());
+					try {
+						resultCacheSize -= getResultSize(next.getValue().get());
+					}
+					catch (Exception e) {
+						// nothing to do, cache size wasn't increase either
+					}
 				}
 			}
 		}

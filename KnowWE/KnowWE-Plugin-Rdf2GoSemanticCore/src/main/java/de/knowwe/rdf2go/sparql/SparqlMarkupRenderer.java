@@ -162,6 +162,7 @@ public class SparqlMarkupRenderer implements Renderer {
 				catch (RuntimeException e) {
 					result.appendHtml("<span class='warning'>"
 							+ e.getMessage() + "</span>");
+					Log.warning("Exception while executing SPARQL", e);
 				}
 				if (resultSet != null) {
 					resultEntry = SparqlResultRenderer.getInstance().renderQueryResult(

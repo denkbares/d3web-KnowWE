@@ -348,40 +348,29 @@ public class Rdf2GoUtils {
 	}
 
 	public static void addStringLiteral(Rdf2GoCore core, String subject, String predicate, String literalText, Collection<Statement> statements) {
-		URI subjectUri = core.createlocalURI(subject);
-		URI predicateUri = core.createlocalURI(predicate);
-		Literal literal = core.createLiteral(literalText);
-		addStatement(core, subjectUri, predicateUri, literal, statements);
+		addStatement(core, core.createlocalURI(subject), core.createlocalURI(predicate), core.createLiteral(literalText), statements);
 	}
 
 	/**
 	 * Creates a statement and adds it to the list of statements. Additionally, in case of RDF reasoning, the rdfs
-	 * label
-	 * of the object is created and added.
+	 * label of the object is created and added.
 	 */
 	public static void addStatement(Rdf2GoCore core, String subject, String predicate, String object, Collection<Statement> statements) {
-		URI subjectUri = core.createlocalURI(subject);
-		URI predicateUri = core.createlocalURI(predicate);
-		addStatement(core, subjectUri, predicateUri, object, statements);
+		addStatement(core, core.createlocalURI(subject), core.createlocalURI(predicate), object, statements);
 	}
 
 	/**
 	 * Creates a statement and adds it to the list of statements. Additionally, in case of RDF reasoning, the rdfs
-	 * label
-	 * of the object is created and added.
+	 * label of the object is created and added.
 	 */
 	public static void addStatement(Rdf2GoCore core, Resource subject, URI predicate, String object, Collection<Statement> statements) {
-		URI objectUri = core.createlocalURI(object);
-		addStatement(core, subject, predicate, objectUri, statements);
-		if (core.getReasoningType().equals(Rdf2GoReasoning.RDF)) {
-			addStatement(core, objectUri, RDFS.label, core.createLiteral(object), statements);
-		}
+		addStatement(core, subject, predicate, core.createlocalURI(object), statements);
 	}
 
 	public static void addStatement(Rdf2GoCore core, Resource subject, URI predicate, Node object, Collection<Statement> statements) {
 		if (core.getReasoningType().equals(Rdf2GoReasoning.RDF)) {
 			createUriLabel(core, subject, statements);
-			createUriLabel(core, predicate, statements);
+			// createUriLabel(core, predicate, statements);
 			createUriLabel(core, object, statements);
 		}
 		statements.add(core.createStatement(subject, predicate, object));
