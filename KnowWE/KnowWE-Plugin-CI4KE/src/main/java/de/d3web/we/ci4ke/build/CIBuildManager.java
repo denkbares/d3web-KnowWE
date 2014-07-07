@@ -52,9 +52,8 @@ public class CIBuildManager {
 	private static boolean terminatorRegistered = false;
 
 	/**
-	 * Runs a build for the given dashboard, but does not . Waits until the
-	 * build is registered in the manager, but does not wait until the build is
-	 * done.
+	 * Runs a build for the given dashboard, but does not . Waits until the build is registered in
+	 * the manager, but does not wait until the build is done.
 	 */
 	public static void startBuild(final CIDashboard dashboard) {
 
@@ -152,8 +151,8 @@ public class CIBuildManager {
 	}
 
 	/**
-	 * Blocks/waits until all running tests of the given dashboard are done,
-	 * tests are not aborted by calling this method.
+	 * Blocks/waits until all running tests of the given dashboard are done, tests are not aborted
+	 * by calling this method.
 	 *
 	 * @created 17.12.2013
 	 */
@@ -165,8 +164,8 @@ public class CIBuildManager {
 	}
 
 	/**
-	 * Blocks/waits until all running tests of all registered dashboards are
-	 * done. Tests are not aborted by calling this method.
+	 * Blocks/waits until all running tests of all registered dashboards are done. Tests are not
+	 * aborted by calling this method.
 	 *
 	 * @created 17.12.2013
 	 */
@@ -189,8 +188,7 @@ public class CIBuildManager {
 	}
 
 	/**
-	 * Looks up whether there is currently a build process running for this
-	 * dashboard
+	 * Looks up whether there is currently a build process running for this dashboard
 	 *
 	 * @created 16.08.2012
 	 */

@@ -18,37 +18,36 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-.selectedBuildNR 
-	{
+.selectedBuildNR {
 	border: 1px solid #AAA;
-	}
+}
 
-.ci-column-left
-	{ 
-/*	border: thin solid #000000;  */
-/*	border-right: 1px solid #DDD; */
-/*	position:relative;
-	float: left; 
-	min-height: 100%;
-	margin-top: 10px;*/
-	padding-right: 10px; 
+.ci-column-left {
+	/*	border: thin solid #000000;  */
+	/*	border-right: 1px solid #DDD; */
+	/*	position:relative;
+		float: left;
+		min-height: 100%;
+		margin-top: 10px;*/
+	padding-right: 10px;
 	/* width: 24%; */
-	}
-.ci-build-details-wrapper
-	{ 
-/*	float: right; */ 
-/*	position:fixed;*/
-/*	border-left: 1px solid #DDD; */
-/*	margin-left: 100px; */	
-/*	margin-top: 10px;   */
+}
+
+.ci-build-details-wrapper {
+	/*	float: right; */
+	/*	position:fixed;*/
+	/*	border-left: 1px solid #DDD; */
+	/*	margin-left: 100px; */
+	/*	margin-top: 10px;   */
 	padding-left: 10px;
 	/* width: 75%; */
-	}
-.ci-column-middle
-	{ 
-	float: left; 
+}
+
+.ci-column-middle {
+	float: left;
 	width: 100%;
-	}
+}
+
 /*
 .ci-column-right
 	{ 
@@ -68,35 +67,42 @@
 	/*border-bottom: 1px solid #DDD;*/
 	padding: 0px 0px 6px 6px;
 	white-space: normal;
-	}
-	
+}
+
+.ci-test-title {
+	font-size: 12px;
+}
+
+.ci-test-group {
+	font-weight: bold;
+}
+
 .ci-header .ci-state {
 	width: 22px;
 }
 
 .ci-message {
-	margin-left: 17px;
-	padding-left: 10px;
+	margin-left: 8px;
+	padding-left: 20px;
 	padding-bottom: 3px;
-	border-left: 2px solid #88F;
+	border-left: 1px solid #ddd;
 	font-size: 10px;
-	}
+}
 
 .ci-configuration {
 	color: #888;
 	margin-left: 5px;
-	}
-	
+}
+
 .ci-no-details {
 	color: #888;
 	margin: 15px 0px 10px 10px;
-	}
+}
 
-.ci-collapsible-box
-	{
+.ci-collapsible-box {
 	/*border: thin solid #96BBD9;*/
 	padding: 3px 5px;
-	}
+}
 
 .ci-state {
 	margin: 0px 1px 0px 1px;
@@ -110,35 +116,32 @@
 	font-weight: bold;
 	font-size: 16px;
 }
-	
-.ci-collapsible-box h4 
-	{
-	color:#000000;
-	cursor:pointer;
+
+.ci-collapsible-box h4 {
+	color: #000000;
+	cursor: pointer;
 	/*margin:3px 0;*/
 	padding: 5px 0px 5px 5px;
-	}
+}
 
-.build-table a:hover
-	{
-	cursor:pointer;
-	text-decoration:underline;
-	}
+.build-table a:hover {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
 /* Span box showing the last editor of an article */
-#last-author-changed
-	{
+#last-author-changed {
 	padding: 10px;
-	}
+}
 
 /* easy clearing */
-.ci-content-wrapper:after
-	{
-	content: '[DO NOT LEAVE IT IS NOT REAL]'; 
-	display: block; 
-	height: 0; 
-	clear: both; 
+.ci-content-wrapper:after {
+	content: '[DO NOT LEAVE IT IS NOT REAL]';
+	display: block;
+	height: 0;
+	clear: both;
 	visibility: hidden;
-	}
+}
 
 /* end easy clearing */
 
@@ -159,5 +162,5 @@
 }
 
 .ci-progess-text {
-    padding: 0px 5px 0px 5px;
+	padding: 0px 5px 0px 5px;
 }

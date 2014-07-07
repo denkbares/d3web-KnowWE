@@ -36,6 +36,7 @@ import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.d3web.we.ci4ke.dashboard.rendering.CIDashboardRenderer;
 import de.d3web.we.ci4ke.hook.CIHook;
 import de.d3web.we.ci4ke.hook.CIHookManager;
+import de.d3web.we.ci4ke.test.TestGroup;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
@@ -55,6 +56,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 public class CIDashboardType extends DefaultMarkupType {
 
 	public static final String NAME_KEY = "name";
+	public static final String GROUP_KEY = "group";
 	public static final String TEST_KEY = "test";
 	public static final String TRIGGER_KEY = "trigger";
 	public static final String VERBOSE_PERSISTENCE_KEY = "persistenceVerbose";
@@ -71,6 +73,11 @@ public class CIDashboardType extends DefaultMarkupType {
 		MARKUP.addAnnotation(TEST_KEY, true);
 		MARKUP.addAnnotation(TRIGGER_KEY, true, Pattern.compile(
 				"^(onDemand|onSave\\s*(\".+?\"|[^\\s]+))$"));
+
+		// allow grouping of tests
+		MARKUP.addAnnotation(GROUP_KEY, false);
+
+		// add content for individual annotations
 		MARKUP.addAnnotation(VERBOSE_PERSISTENCE_KEY, false, "true", "false");
 		MARKUP.addAnnotationContentType(TEST_KEY, new TestIgnoreType());
 		MARKUP.addAnnotationContentType(TEST_KEY, new TestDeclarationType());
@@ -97,16 +104,12 @@ public class CIDashboardType extends DefaultMarkupType {
 		public void compile(DefaultGlobalCompiler compiler, Section<CIDashboardType> s) throws CompilerMessage {
 
 			List<Message> msgs = new ArrayList<Message>();
-
 			String triggerString = DefaultMarkupType.getAnnotation(s, TRIGGER_KEY);
-
 			CIBuildTriggers trigger = null;
 			Set<String> monitoredArticles = new HashSet<String>();
 
 			if (triggerString != null) {
-
 				Pattern pattern = Pattern.compile("(?:\".+?\"|[^\\s]+)");
-
 				Matcher matcher = pattern.matcher(triggerString);
 				if (matcher.find()) {
 					// get the name of the test
@@ -147,25 +150,28 @@ public class CIDashboardType extends DefaultMarkupType {
 			List<TestSpecification<?>> tests = new ArrayList<TestSpecification<?>>();
 
 			List<Section<? extends AnnotationContentType>> annotationSections =
-					DefaultMarkupType.getAnnotationContentSections(s, TEST_KEY);
+					DefaultMarkupType.getAnnotationContentSections(s, TEST_KEY, GROUP_KEY);
 
 			// iterate over all @test-Annotations
 			List<ArgsCheckResult> messages = new ArrayList<ArgsCheckResult>();
-			for (Section<?> annoSection : annotationSections) {
-				// Section<TestDeclarationType> testSection =
-				// Sections.findChildOfType(annoSection,
-				// TestDeclarationType.class);
-				// List<Section<TestIgnoreType>> ignoreSections =
-				// Sections.findChildrenOfType(annoSection,
-				// TestIgnoreType.class);
-
-				// parse test
-				TestParser testParser = new TestParser(annoSection.getText());
-				TestSpecification<?> executableTest = testParser.getTestSpecification();
-				messages.add(testParser.getParameterCheckResult());
-				messages.addAll(testParser.getIgnoreCheckResults());
-				if (executableTest != null) {
-					tests.add(executableTest);
+			for (Section<? extends AnnotationContentType> annoSection : annotationSections) {
+				String type = annoSection.get().getName(annoSection);
+				if (type.equalsIgnoreCase(GROUP_KEY)) {
+					// parse group
+					String text = annoSection.getText();
+					TestSpecification<?> group = new TestSpecification<Void>(
+							new TestGroup(), "void", new String[] { text }, new String[0][]);
+					tests.add(group);
+				}
+				else {
+					// parse test
+					TestParser testParser = new TestParser(annoSection.getText());
+					TestSpecification<?> executableTest = testParser.getTestSpecification();
+					messages.add(testParser.getParameterCheckResult());
+					messages.addAll(testParser.getIgnoreCheckResults());
+					if (executableTest != null) {
+						tests.add(executableTest);
+					}
 				}
 			}
 			convertMessages(compiler, s, messages);
@@ -216,13 +222,12 @@ public class CIDashboardType extends DefaultMarkupType {
 	}
 
 	/**
-	 * Checks if the name of the given CIDashboard-Section is not taken by any
-	 * other CIDashboard-Section in the wiki.
-	 * 
-	 * @created 12.11.2010
-	 * @param section the name of this CIDashboard-section is checked for
-	 *        uniqueness
+	 * Checks if the name of the given CIDashboard-Section is not taken by any other
+	 * CIDashboard-Section in the wiki.
+	 *
+	 * @param section the name of this CIDashboard-section is checked for uniqueness
 	 * @return true if the name of the section is unique in the wiki
+	 * @created 12.11.2010
 	 */
 	public static boolean dashboardNameIsUnique(Section<CIDashboardType> section) {
 

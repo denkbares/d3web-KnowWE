@@ -76,8 +76,8 @@ KNOWWE.plugin.ci4ke = function() {
 		
 		 expandMessage : function(button) {
 			 var $expandButton = jq$(button);
-			 var $collapseButton = $expandButton.parent().find('.collapseCIMessage');
-			 var $message = $expandButton.parent().find('.ci-message');
+			 var $collapseButton = $expandButton.parent().children('.collapseCIMessage');
+			 var $message = $expandButton.parent().children('.ci-message');
 			 $message.show('fast', function() {
 				$expandButton.hide();
 				$collapseButton.show();
@@ -86,8 +86,8 @@ KNOWWE.plugin.ci4ke = function() {
 		
 		collapseMessage : function(button) {
 			 var $collapseButton = jq$(button);
-			 var $expandButton = $collapseButton.parent().find('.expandCIMessage');
-			 var $message = $collapseButton.parent().find('.ci-message');
+			 var $expandButton = $collapseButton.parent().children('.expandCIMessage');
+			 var $message = $collapseButton.parent().children('.ci-message');
 			 $message.hide('fast', function() {
 				$collapseButton.hide();
 				$expandButton.show();

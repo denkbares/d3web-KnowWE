@@ -143,22 +143,26 @@ public class TestDocumentationMarkup extends DefaultMarkupType {
 
 		private String getTestObjectName(Test<?> test) {
 			String testObjectName = "Object";
-			if (Article.class.isAssignableFrom(test.getTestObjectClass())) {
+			Class<?> objectClass = test.getTestObjectClass();
+			if (objectClass == null) {
+				testObjectName = "Void";
+			}
+			if (Article.class.isAssignableFrom(objectClass)) {
 				testObjectName = "Article";
 			}
-			else if (PackageManager.class.isAssignableFrom(test.getTestObjectClass())) {
+			else if (PackageManager.class.isAssignableFrom(objectClass)) {
 				testObjectName = "Package";
 			}
-			else if (test.getTestObjectClass().getSimpleName().equals("KnowledgeBase")) {
+			else if (objectClass.getSimpleName().equals("KnowledgeBase")) {
 				testObjectName = "KnowledgeBase";
 			}
-			else if (test.getTestObjectClass().getSimpleName().equals("TestCase")) {
+			else if (objectClass.getSimpleName().equals("TestCase")) {
 				testObjectName = "TestCase";
 			}
-			else if (test.getTestObjectClass().getSimpleName().equals("OWLAPIConnector")) {
+			else if (objectClass.getSimpleName().equals("OWLAPIConnector")) {
 				testObjectName = "Ontology";
 			}
-			else if (test.getTestObjectClass().getSimpleName().equals("Rdf2GoCore")) {
+			else if (objectClass.getSimpleName().equals("Rdf2GoCore")) {
 				testObjectName = "Ontology";
 			}
 			return testObjectName;

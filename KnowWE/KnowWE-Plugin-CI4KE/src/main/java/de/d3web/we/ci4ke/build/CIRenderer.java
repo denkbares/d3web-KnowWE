@@ -24,9 +24,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
+import de.d3web.collections.DefaultMultiMap;
+import de.d3web.collections.MultiMap;
+import de.d3web.collections.MultiMaps;
 import de.d3web.strings.Strings;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message;
@@ -40,6 +44,7 @@ import de.d3web.utils.Log;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRenderer;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRendererManager;
+import de.d3web.we.ci4ke.test.TestGroup;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -181,9 +186,27 @@ public class CIRenderer {
 
 		if (build != null) {
 			apppendBuildHeadline(build, result);
-
-			for (TestResult testResult : build.getResults()) {
-				appendTestResult(web, testResult, result);
+			MultiMap<String, TestResult> groups = getTestGroups(build.getResults());
+			for (String group : groups.keySet()) {
+				Set<TestResult> groupResults = groups.getValues(group);
+				// open group if available
+				if (group != null) {
+					Type type = BuildResult.getOverallResult(groupResults);
+					openCollapse(type, result);
+					result.appendHtml("<span class='ci-test-title ci-test-group'>")
+							.append(group)
+							.appendHtml("</span>");
+					openMessageBlock(type, result);
+				}
+				// render the particular tests
+				for (TestResult testResult : groupResults) {
+					appendTestResult(web, testResult, result);
+				}
+				// close group if available
+				if (group != null) {
+					closeMessageBlock(result);
+					closeCollapse(result);
+				}
 			}
 		}
 		else {
@@ -192,35 +215,39 @@ public class CIRenderer {
 		result.appendHtml("</div>\n");
 	}
 
+	private MultiMap<String, TestResult> getTestGroups(List<TestResult> testResults) {
+		MultiMap<String, TestResult> groups = new DefaultMultiMap<String, TestResult>(
+				MultiMaps.<String>linkedFactory(), MultiMaps.<TestResult>linkedFactory());
+		String currentGroup = null;
+		for (TestResult testResult : testResults) {
+			if (TestGroup.TEST_GROUP_NAME.equals(testResult.getTestName())) {
+				currentGroup = testResult.getConfiguration()[1];
+			}
+			else {
+				groups.put(currentGroup, testResult);
+			}
+		}
+		return groups;
+	}
+
 	private void appendTestResult(String web, TestResult testResult, RenderResult renderResult) {
 
 		// ruling out special characters (which are causing problems)
 		String name = testResult.getTestName();
 
-		renderResult.appendHtml("<div class='ci-collapsible-box'>");
-
-		// render buttons
+		// prepare some information
 		Message summary = testResult.getSummary();
 		Type type = (summary == null) ? Type.ERROR : summary.getType();
 		String text = (summary == null) ? null : summary.getText();
-
-		String styleExpand = type == Type.SUCCESS ? "" : "style='display:none' ";
-		renderResult.appendHtml("<span " + styleExpand
-				+ "class='expandCIMessage' onclick='KNOWWE.plugin.ci4ke.expandMessage(this)'>");
-		renderBuildStatus(type, false, "_plus", renderResult);
-		renderResult.appendHtml("</span>");
-
-		String styleCollapse = type == Type.SUCCESS ? "style='display:none' " : "";
-		renderResult.appendHtml("<span " + styleCollapse
-				+ "class='collapseCIMessage' onclick='KNOWWE.plugin.ci4ke.collapseMessage(this)'>");
-		renderBuildStatus(type, false, "_minus", renderResult);
-		renderResult.appendHtml("</span>");
 
 		Test<?> test = TestManager.findTest(name);
 		String title = "";
 		if (test != null) {
 			title = test.getDescription();
 		}
+
+		// render buttons
+		openCollapse(type, renderResult);
 
 		// render test name
 		renderResult.appendHtml("<span class='ci-test-title' title='" + title + "'>");
@@ -245,18 +272,40 @@ public class CIRenderer {
 		renderResult.appendHtml("</span>");
 
 		// render test-message (if exists)
-		appendMessageBlock(web, testResult, renderResult);
+		openMessageBlock(type, renderResult);
+		appendMessage(web, testResult, renderResult);
+		closeMessageBlock(renderResult);
+		closeCollapse(renderResult);
+	}
 
+	private void openCollapse(Type type, RenderResult renderResult) {
+		renderResult.appendHtml("<div class='ci-collapsible-box'>");
+
+		String styleExpand = type == Type.SUCCESS ? "" : "style='display:none' ";
+		renderResult.appendHtml("<span " + styleExpand
+				+ "class='expandCIMessage' onclick='KNOWWE.plugin.ci4ke.expandMessage(this)'>");
+		renderBuildStatus(type, false, "_plus", renderResult);
+		renderResult.appendHtml("</span>");
+
+		String styleCollapse = type == Type.SUCCESS ? "style='display:none' " : "";
+		renderResult.appendHtml("<span " + styleCollapse
+				+ "class='collapseCIMessage' onclick='KNOWWE.plugin.ci4ke.collapseMessage(this)'>");
+		renderBuildStatus(type, false, "_minus", renderResult);
+		renderResult.appendHtml("</span>");
+	}
+
+	private void closeCollapse(RenderResult renderResult) {
 		renderResult.appendHtml("</div>\n");
 	}
 
-	private void appendMessageBlock(String web, TestResult testResult, RenderResult renderResult) {
+	private void openMessageBlock(Type type, RenderResult renderResult) {
 		// not visible at beginning
-		Message summary = testResult.getSummary();
-		String styleCollapse = (summary == null || summary.getType() == Type.SUCCESS)
+		String styleCollapse = (type == null || type == Type.SUCCESS)
 				? "style='display:none' " : "";
 		renderResult.appendHtml("<div " + styleCollapse + "class='ci-message'>");
-		appendMessage(web, testResult, renderResult);
+	}
+
+	private void closeMessageBlock(RenderResult renderResult) {
 		renderResult.appendHtml("</div>");
 	}
 
