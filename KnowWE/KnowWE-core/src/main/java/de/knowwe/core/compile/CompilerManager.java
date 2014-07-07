@@ -141,6 +141,7 @@ public class CompilerManager {
 		synchronized (lock) {
 			if (isCompiling()) return false;
 			running = compilers.groupIterator();
+			compilationCount++;
 		}
 		threadPool.execute(new Runnable() {
 
@@ -156,7 +157,6 @@ public class CompilerManager {
 				finally {
 					synchronized (lock) {
 						running = null;
-						compilationCount++;
 						Log.info("Compiled " + added.size() + " added and " + removed.size()
 								+ " removed section" + (removed.size() != 1 ? "s" : "")
 								+ " after " + (System.currentTimeMillis() - startTime)
@@ -237,11 +237,11 @@ public class CompilerManager {
 	}
 
 	/**
-	 * Returns the number of compilations since
+	 * Returns the unique id or count of the current compilation.
 	 *
 	 * @created 07.01.2014
 	 */
-	public int getCompilationCount() {
+	public int getCompilationId() {
 		return this.compilationCount;
 	}
 
