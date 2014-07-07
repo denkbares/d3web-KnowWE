@@ -29,7 +29,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class EndLineComment extends AbstractType {
 
 	public EndLineComment() {
-		this.setSectionFinder(new RegexSectionFinder("(\\s|^)//[^\n\r]*$", Pattern.MULTILINE));
+		this.setSectionFinder(new RegexSectionFinder("(\\s+|^\\s*)//[^\n\r]*$", Pattern.MULTILINE));
 		setRenderer(StyleRenderer.COMMENT);
 	}
 

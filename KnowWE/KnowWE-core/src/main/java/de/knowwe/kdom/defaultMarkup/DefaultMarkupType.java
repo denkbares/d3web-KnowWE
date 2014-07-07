@@ -37,44 +37,42 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
 
 /**
- * This class represents a section of the top-level default markup. That markup
- * always starts with "%%" followed by an alpha-numerical string. After that an
- * optional ":" is allowed. This is followed by either a one-line declaration or
- * a multiple-line-block terminated by an "/%" denoted in a line with no other
- * content. Because of backward-compatibility reasons, the multiple-line-block
- * can also be terminated by an single "%".
- * <p>
- * Within the block declaration you may use java-style end-line comments. Within
- * the single-line declaration you may also use this comments at the end of the
- * line. Note: there are no block comments ("/ * ... * /") allowed.
- * <p>
- * It is also allowed to define multiple additional annotations. An annotation
- * is denoted as "@", followed by its name without spacing. This
- * annotation-header may optionally followed by a ":" or "=". The content of the
- * parameter goes until a new parameter is defined or the markup block is
+ * This class represents a section of the top-level default markup. That markup always starts with
+ * "%%" followed by an alpha-numerical string. After that an optional ":" is allowed. This is
+ * followed by either a one-line declaration or a multiple-line-block terminated by an "/%" denoted
+ * in a line with no other content. Because of backward-compatibility reasons, the
+ * multiple-line-block can also be terminated by an single "%".
+ * <p/>
+ * Within the block declaration you may use java-style end-line comments. Within the single-line
+ * declaration you may also use this comments at the end of the line. Note: there are no block
+ * comments ("/ * ... * /") allowed.
+ * <p/>
+ * It is also allowed to define multiple additional annotations. An annotation is denoted as "@",
+ * followed by its name without spacing. This annotation-header may optionally followed by a ":" or
+ * "=". The content of the parameter goes until a new parameter is defined or the markup block is
  * terminated.
- * <p>
+ * <p/>
  * <b>Examples:</b>
- * 
+ * <p/>
  * <pre>
  * %%rule &lt;condition&gt; --> &lt;action&gt;
- * 
+ *
  * %%rule // define 2 rules in one block
  *   &lt;condition&gt; --> &lt;action&gt;
  *   &lt;condition&gt; --> &lt;action&gt;
  * /%
- * 
+ *
  * %%rule // use annotations
  *   &lt;condition&gt; --> &lt;action&gt;
  *   &lt;condition&gt; --> &lt;action&gt;
  *   &#64;lazy: create
  * /%
  * </pre>
- * 
- * <p>
- * The default mark-up forms a KDOM of the following structure. Please not that
- * there might be any PlainText section in between at any level:
- * 
+ * <p/>
+ * <p/>
+ * The default mark-up forms a KDOM of the following structure. Please not that there might be any
+ * PlainText section in between at any level:
+ * <p/>
  * <pre>
  * Section&lt;DefaultMarkupType&gt; // %%rule
  * |
@@ -94,9 +92,8 @@ import de.knowwe.tools.ToolMenuDecoratingRenderer;
  * |
  * +--...
  * </pre>
- * 
+ *
  * @author Volker Belli
- * 
  */
 public class DefaultMarkupType extends AbstractType {
 
@@ -164,15 +161,14 @@ public class DefaultMarkupType extends AbstractType {
 	}
 
 	/**
-	 * Returns the contents of the default content block of the specified
-	 * section. If the section is not of type "DefaultMarkup" an
-	 * IllegalArgumentException is thrown.
-	 * 
+	 * Returns the contents of the default content block of the specified section. If the section is
+	 * not of type "DefaultMarkup" an IllegalArgumentException is thrown.
+	 *
 	 * @param section the section to take the content block from
-	 * @return the contents of the content block, if the section is not null. An
-	 *         empty string otherwise.
-	 * @throws IllegalArgumentException if the specified section is not of
-	 *         {@link DefaultMarkupType}
+	 * @return the contents of the content block, if the section is not null. An empty string
+	 * otherwise.
+	 * @throws IllegalArgumentException if the specified section is not of {@link
+	 * DefaultMarkupType}
 	 */
 	public static String getContent(Section<?> section) {
 		Section<? extends ContentType> contentSection = getContentSection(section);
@@ -181,14 +177,13 @@ public class DefaultMarkupType extends AbstractType {
 	}
 
 	/**
-	 * Returns the contents section of the default content block of the
-	 * specified section. If the section is not of type "DefaultMarkup" an
-	 * IllegalArgumentException is thrown.
-	 * 
+	 * Returns the contents section of the default content block of the specified section. If the
+	 * section is not of type "DefaultMarkup" an IllegalArgumentException is thrown.
+	 *
 	 * @param section the section to take the content section from
 	 * @return the content section
-	 * @throws IllegalArgumentException if the specified section is not of
-	 *         {@link DefaultMarkupType}
+	 * @throws IllegalArgumentException if the specified section is not of {@link
+	 * DefaultMarkupType}
 	 */
 	public static Section<? extends ContentType> getContentSection(Section<?> section) {
 		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
@@ -199,11 +194,10 @@ public class DefaultMarkupType extends AbstractType {
 
 	/**
 	 * Returns the ContentType of a DefaultMarkupType
-	 * 
-	 * @created 13.03.2012
+	 *
 	 * @param defaultMarkupType {@link DefaultMarkupType}
-	 * @return {@link ContentType} or null, if there is no {@link ContentType}
-	 *         as childtype
+	 * @return {@link ContentType} or null, if there is no {@link ContentType} as childtype
+	 * @created 13.03.2012
 	 */
 	public static ContentType getContentType(DefaultMarkupType defaultMarkupType) {
 		for (Type type : defaultMarkupType.getChildrenTypes()) {
@@ -215,16 +209,15 @@ public class DefaultMarkupType extends AbstractType {
 	}
 
 	/**
-	 * Returns the content of the first annotation section of the specified
-	 * name. If the section is not of type "DefaultMarkup" an
-	 * IllegalArgumentException is thrown. If there is no annotation section
-	 * with the specified name, null is returned.
-	 * 
+	 * Returns the content of the first annotation section of the specified name. If the section is
+	 * not of type "DefaultMarkup" an IllegalArgumentException is thrown. If there is no annotation
+	 * section with the specified name, null is returned.
+	 *
 	 * @param section the section to be searched
 	 * @param name the name of the annotation
 	 * @return the content string of the annotation
-	 * @throws IllegalArgumentException if the specified section is not of
-	 *         {@link DefaultMarkupType}
+	 * @throws IllegalArgumentException if the specified section is not of {@link
+	 * DefaultMarkupType}
 	 */
 	public static String getAnnotation(Section<?> section, String name) {
 		Section<?> annotationSection = getAnnotationContentSection(section, name);
@@ -233,15 +226,14 @@ public class DefaultMarkupType extends AbstractType {
 	}
 
 	/**
-	 * Returns the content of the annotation sections using the specified name.
-	 * If the sections are not of type "DefaultMarkup" an
-	 * IllegalArgumentException is thrown. If there is no annotation section
-	 * with the specified name, an empty array is returned.
-	 * 
-	 * @created 26.01.2011
+	 * Returns the content of the annotation sections using the specified name. If the sections are
+	 * not of type "DefaultMarkup" an IllegalArgumentException is thrown. If there is no annotation
+	 * section with the specified name, an empty array is returned.
+	 *
 	 * @param section the section to be searched
 	 * @param name the name of the annotation
 	 * @return the content strings of the found annotation
+	 * @created 26.01.2011
 	 */
 	public static String[] getAnnotations(Section<?> section, String name) {
 		List<Section<? extends AnnotationContentType>> annotationSections = getAnnotationContentSections(
@@ -256,16 +248,15 @@ public class DefaultMarkupType extends AbstractType {
 	}
 
 	/**
-	 * Returns the content section of the first annotation with the specified
-	 * name. If the section is not of type "DefaultMarkup" an
-	 * IllegalArgumentException is thrown. If there is no annotation with the
-	 * specified name, null is returned.
-	 * 
+	 * Returns the content section of the first annotation with the specified name. If the section
+	 * is not of type "DefaultMarkup" an IllegalArgumentException is thrown. If there is no
+	 * annotation with the specified name, null is returned.
+	 *
 	 * @param section the section to be searched
 	 * @param name the name of the annotation
 	 * @return the annotation section
-	 * @throws IllegalArgumentException if the specified section is not of
-	 *         {@link DefaultMarkupType}
+	 * @throws IllegalArgumentException if the specified section is not of {@link
+	 * DefaultMarkupType}
 	 */
 	@SuppressWarnings("unchecked")
 	public static Section<? extends AnnotationContentType> getAnnotationContentSection(Section<? extends Type> section, String name) {
@@ -284,19 +275,34 @@ public class DefaultMarkupType extends AbstractType {
 	}
 
 	/**
-	 * Returns the content section of all annotations section of the specified
-	 * name. If the section is not of type "DefaultMarkup" an
-	 * IllegalArgumentException is thrown. If there is no annotation with the
-	 * specified name, an empty list is returned.
-	 * 
+	 * Returns the content section of all annotations section of the specified name. If the section
+	 * is not of type "DefaultMarkup" an IllegalArgumentException is thrown. If there is no
+	 * annotation with the specified name, an empty list is returned.
+	 *
 	 * @param section the section to be searched
 	 * @param name the name of the annotation
 	 * @return the list of annotation sections
-	 * @throws IllegalArgumentException if the specified section is not of
-	 *         {@link DefaultMarkupType}
+	 * @throws IllegalArgumentException if the specified section is not of {@link
+	 * DefaultMarkupType}
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Section<? extends AnnotationContentType>> getAnnotationContentSections(Section<?> section, String name) {
+		return getAnnotationContentSections(section, new String[] { name });
+	}
+
+	/**
+	 * Returns the content section of all annotations section of the specified name. If the section
+	 * is not of type "DefaultMarkup" an IllegalArgumentException is thrown. If there is no
+	 * annotation with the specified name, an empty list is returned.
+	 *
+	 * @param section the section to be searched
+	 * @param names the names of the annotations to be returned
+	 * @return the list of annotation sections
+	 * @throws IllegalArgumentException if the specified section is not of {@link
+	 * DefaultMarkupType}
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<Section<? extends AnnotationContentType>> getAnnotationContentSections(Section<?> section, String... names) {
 		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
 			throw new IllegalArgumentException("section not of type DefaultMarkupType");
 		}
@@ -304,20 +310,23 @@ public class DefaultMarkupType extends AbstractType {
 		for (Section<? extends Type> child : findAnnotationContentTypes(section)) {
 			Section<AnnotationContentType> annotationContent = (Section<AnnotationContentType>) child;
 			String annotationName = annotationContent.get().getName(annotationContent);
-			if (annotationName.equalsIgnoreCase(name)) {
-				results.add((Section<? extends AnnotationContentType>) child);
+			for (String name : names) {
+				if (annotationName.equalsIgnoreCase(name)) {
+					results.add((Section<? extends AnnotationContentType>) child);
+					break;
+				}
 			}
 		}
 		return results;
 	}
 
 	/**
-	 * Returns the packages the given default markup section belongs to
-	 * according to its @package annotations. If there are no such annotations,
-	 * the default packages for the article are returned.
-	 * 
-	 * @created 11.03.2012
+	 * Returns the packages the given default markup section belongs to according to its @package
+	 * annotations. If there are no such annotations, the default packages for the article are
+	 * returned.
+	 *
 	 * @param section the section to be check for packages
+	 * @created 11.03.2012
 	 */
 
 	public static String[] getPackages(Section<?> section) {
@@ -325,12 +334,12 @@ public class DefaultMarkupType extends AbstractType {
 	}
 
 	/**
-	 * Returns the packages the given default markup section belongs to
-	 * according to the defined annotations. If there are no such annotations,
-	 * the default packages for the article are returned.
-	 * 
-	 * @created 12.03.2012
+	 * Returns the packages the given default markup section belongs to according to the defined
+	 * annotations. If there are no such annotations, the default packages for the article are
+	 * returned.
+	 *
 	 * @param section the section to be check for packages
+	 * @created 12.03.2012
 	 */
 	public static String[] getPackages(Section<?> section, String annotation) {
 		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
@@ -346,14 +355,13 @@ public class DefaultMarkupType extends AbstractType {
 	}
 
 	/**
-	 * Returns the content section of all annotations sections in this section.
-	 * If the section is not of type "DefaultMarkup" an IllegalArgumentException
-	 * is thrown.
-	 * 
+	 * Returns the content section of all annotations sections in this section. If the section is
+	 * not of type "DefaultMarkup" an IllegalArgumentException is thrown.
+	 *
 	 * @param section the section to be searched
 	 * @return the list of annotation sections
-	 * @throws IllegalArgumentException if the specified section is not of
-	 *         {@link DefaultMarkupType}
+	 * @throws IllegalArgumentException if the specified section is not of {@link
+	 * DefaultMarkupType}
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Section<? extends AnnotationContentType>> getAllAnnotationContentSections(Section<?> section) {
@@ -373,9 +381,8 @@ public class DefaultMarkupType extends AbstractType {
 	}
 
 	/**
-	 * Returns the pattern to match a default mark-up section of a specified
-	 * name.
-	 * 
+	 * Returns the pattern to match a default mark-up section of a specified name.
+	 *
 	 * @param name the name of the section ("%%&lt;name&gt;")
 	 * @return the pattern to match the complete section
 	 */
