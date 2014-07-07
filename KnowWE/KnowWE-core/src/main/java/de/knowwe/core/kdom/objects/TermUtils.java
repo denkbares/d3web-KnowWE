@@ -8,10 +8,7 @@ import de.knowwe.core.compile.terminology.TerminologyManager;
 
 public class TermUtils {
 
-	private static final String CONTROL_CHARS = "()[]{}<>\"\'#=&|";
-	private static final Pattern CONTROL_PATTERN = Pattern.compile(
-			"(^&REF)|([" + Pattern.quote(CONTROL_CHARS) + "])",
-			Pattern.CASE_INSENSITIVE);
+	private static final Pattern CONTROL_PATTERN = Pattern.compile("(?:^&REF)");
 
 	/**
 	 * Returns if a specified term usually requires quotes. This method can only
