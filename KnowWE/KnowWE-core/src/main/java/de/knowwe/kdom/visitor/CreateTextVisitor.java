@@ -20,13 +20,13 @@
 
 package de.knowwe.kdom.visitor;
 
-import java.util.List;
-
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
 
-public class CreateTextVisitor implements Visitor {
+import java.util.List;
+
+public class CreateTextVisitor {
 
 	private static CreateTextVisitor instance;
 
@@ -50,7 +50,6 @@ public class CreateTextVisitor implements Visitor {
 
 	private StringBuffer buffi;
 
-	@Override
 	public void visit(Section<? extends Type> s) {
 		buffi = new StringBuffer();
 		renderSubtree(s, buffi);

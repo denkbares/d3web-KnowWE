@@ -20,8 +20,6 @@
 
 package de.knowwe.kdom.visitor;
 
-import java.util.List;
-
 import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.PlainText;
@@ -29,7 +27,9 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 
-public class RenderKDOMVisitor implements Visitor {
+import java.util.List;
+
+public class RenderKDOMVisitor {
 
 	private final RenderResult buffi;
 
@@ -37,7 +37,6 @@ public class RenderKDOMVisitor implements Visitor {
 		buffi = new RenderResult(user);
 	}
 
-	@Override
 	public void visit(Section<? extends Type> s) {
 		renderSubtree(s, 0, buffi);
 	}

@@ -20,31 +20,17 @@
 
 package de.knowwe.core.kdom.parsing;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.Compiler;
-import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.RootType;
-import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.Types;
+import de.knowwe.core.kdom.*;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.filter.SectionFilter;
-import de.knowwe.kdom.visitor.Visitable;
-import de.knowwe.kdom.visitor.Visitor;
+
+import java.util.*;
 
 /**
  * <p/>
@@ -58,7 +44,7 @@ import de.knowwe.kdom.visitor.Visitor;
  *
  * @author Jochen
  */
-public final class Section<T extends Type> implements Visitable, Comparable<Section<? extends Type>> {
+public final class Section<T extends Type> implements Comparable<Section<? extends Type>> {
 
 	public void setArticle(Article article) {
 		this.article = article;
@@ -202,16 +188,6 @@ public final class Section<T extends Type> implements Visitable, Comparable<Sect
 		return comp;
 	}
 
-	/**
-	 * part of the visitor pattern
-	 *
-	 * @see de.knowwe.kdom.visitor.Visitable#accept(de.knowwe.kdom.visitor.Visitor)
-	 */
-	@Override
-	public void accept(Visitor v) {
-		v.visit(this);
-
-	}
 
 
 	/**
