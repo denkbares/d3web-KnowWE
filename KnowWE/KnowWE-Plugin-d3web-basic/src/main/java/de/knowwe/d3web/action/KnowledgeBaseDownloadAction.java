@@ -18,6 +18,7 @@ import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
@@ -85,6 +86,7 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 			home = saveKnowledge(web, base);
 		}
 		catch (IOException e) {
+			Log.warning("Error while saving knowledge base", e);
 			context.sendError(410, e.getMessage());
 			return;
 		}
@@ -105,6 +107,7 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 		catch (IOException ioe) {
 			ioe.printStackTrace(System.out);
 			context.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, String.valueOf(ioe));
+			Log.warning("Error while writing knowledge base", ioe);
 		}
 		finally {
 			in.close();

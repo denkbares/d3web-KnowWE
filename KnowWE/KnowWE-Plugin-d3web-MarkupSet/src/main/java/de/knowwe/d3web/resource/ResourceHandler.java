@@ -38,7 +38,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * Adds a file defined by resource markup to the d3web knowledge base.
- * 
+ *
  * @author volker_belli
  * @created 13.10.2010
  */
@@ -74,15 +74,15 @@ public class ResourceHandler extends D3webHandler<ResourceType> {
 
 	/**
 	 * Adds a resource into the knowledge base resource storage.
-	 * 
-	 * @created 11.06.2011
-	 * @param article the article of the defining section
-	 * @param kb the knowledge base to store the resource into
-	 * @param content the content to be stored (or null if an attachment should
-	 *        be used)
-	 * @param sourcePath the wiki attachment path of the file to be stored
+	 *
+	 * @param article         the article of the defining section
+	 * @param kb              the knowledge base to store the resource into
+	 * @param content         the content to be stored (or null if an attachment should
+	 *                        be used)
+	 * @param sourcePath      the wiki attachment path of the file to be stored
 	 * @param destinationPath the resource path to store the content in
 	 * @return the errors occurred or null if successful
+	 * @created 11.06.2011
 	 */
 	private static Collection<Message> addResource(Article article, KnowledgeBase kb, String content, String sourcePath, String destinationPath) {
 		boolean hasContent = content != null && !content.trim().isEmpty();
@@ -131,7 +131,14 @@ public class ResourceHandler extends D3webHandler<ResourceType> {
 		}
 
 		// and add the resource to the knowledge base
-		kb.addResouce(resource);
+		Resource existingResource = kb.getResource(resource.getPathName());
+		if (existingResource == null) {
+			kb.addResouce(resource);
+		}
+		else {
+			return Messages.asList(Messages.notice("Resource " + existingResource.getPathName()
+					+ " already exists and will not be added again."));
+		}
 
 		// if we have both content and source, warn this
 		// (but adding was still successful!)
@@ -149,14 +156,14 @@ public class ResourceHandler extends D3webHandler<ResourceType> {
 	 * resource of this attachment will be constructed and returned. If no such
 	 * attachment is found, null is returned. Both, "attachmentName" and
 	 * "articleName" are treated case-insensitive.
-	 * 
-	 * @created 12.06.2011
-	 * @param path the pathname for the resource to be constructed
+	 *
+	 * @param path                  the pathname for the resource to be constructed
 	 * @param attachmentArticleName the article name of the attachment to be
-	 *        searched for
-	 * @param attachmentFilename the filename of the attachment to be searched
-	 *        for
+	 *                              searched for
+	 * @param attachmentFilename    the filename of the attachment to be searched
+	 *                              for
 	 * @return the constructed resource
+	 * @created 12.06.2011
 	 */
 	private static Resource getAttachmentResource(String path, String attachmentArticleName, String attachmentFilename) throws IOException {
 		WikiAttachment attachment = KnowWEUtils.getAttachment(attachmentArticleName,
