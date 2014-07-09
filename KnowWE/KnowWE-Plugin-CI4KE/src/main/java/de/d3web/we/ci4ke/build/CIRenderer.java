@@ -37,6 +37,7 @@ import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
 import de.d3web.testing.MessageObject;
 import de.d3web.testing.Test;
+import de.d3web.testing.TestGroup;
 import de.d3web.testing.TestManager;
 import de.d3web.testing.TestParser;
 import de.d3web.testing.TestResult;
@@ -44,7 +45,6 @@ import de.d3web.utils.Log;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRenderer;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRendererManager;
-import de.d3web.we.ci4ke.test.TestGroup;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.KnowWEUtils;
 

@@ -29,6 +29,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.testing.ArgsCheckResult;
+import de.d3web.testing.TestGroup;
 import de.d3web.testing.TestParser;
 import de.d3web.testing.TestSpecification;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
@@ -36,7 +37,6 @@ import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.d3web.we.ci4ke.dashboard.rendering.CIDashboardRenderer;
 import de.d3web.we.ci4ke.hook.CIHook;
 import de.d3web.we.ci4ke.hook.CIHookManager;
-import de.d3web.we.ci4ke.test.TestGroup;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
