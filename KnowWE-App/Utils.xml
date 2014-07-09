@@ -38,7 +38,6 @@
 				<exclude name="KnowWE-Plugin-KnowSEC-Import/**" />
 				<exclude name="KnowWE-Plugin-SemanticAutocompletion/**" />
 				<exclude name="KnowWE-Plugin-SemanticServiceCore/**" />
-				<exclude name="KnowWE-Plugin-TimeDBScript/**" />
 				<!-- for performance reasons... -->
 				<exclude name="KnowWE-Plugin-XSL/**" />
 			</fileset>
@@ -65,7 +64,7 @@
 		</copy>
 	</target>
 
-	<!-- Updates all resources needed for the profile denkbares (and denkbares and core-plugins) -->
+	<!-- Updates all resources needed for the profile knowsec (and denkbares and core-plugins) -->
 	<target name="update_resources knowsec" depends="update_resources denkbares">
 		<copy todir="${basedir}/target/KnowWE-App-0.2-SNAPSHOT">
 			<fileset dir="${basedir}/../">
