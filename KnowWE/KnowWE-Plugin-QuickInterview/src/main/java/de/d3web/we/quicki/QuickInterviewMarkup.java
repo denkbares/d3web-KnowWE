@@ -22,6 +22,7 @@ package de.d3web.we.quicki;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.ResourceLoader;
@@ -39,7 +40,6 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
- * 
  * @author Benedikt Kaemmerer
  * @created 28.07.2012
  */
@@ -58,6 +58,8 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 
 	public static final String SAVE_KEY = "save";
 
+	public static final String INPUT_SIZE_KEY = "inputSize";
+
 	static {
 		m = new DefaultMarkup(MARKUP_NAME);
 		m.addAnnotation(UNKNOWN_KEY, false, "true", "false");
@@ -66,11 +68,14 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 		m.addAnnotation(ABSTRACTIONS_KEY, false, "true", "false");
 		m.addAnnotationRenderer(ABSTRACTIONS_KEY, NothingRenderer.getInstance());
 
-		m.addAnnotation(ANSWERS_KEY, false);
+		m.addAnnotation(ANSWERS_KEY);
 		m.addAnnotationRenderer(ANSWERS_KEY, NothingRenderer.getInstance());
 
-		m.addAnnotation(SAVE_KEY, false);
+		m.addAnnotation(SAVE_KEY);
 		m.addAnnotationRenderer(SAVE_KEY, NothingRenderer.getInstance());
+
+		m.addAnnotation(INPUT_SIZE_KEY, false, Pattern.compile("\\d+"));
+		m.addAnnotationRenderer(INPUT_SIZE_KEY, NothingRenderer.getInstance());
 
 		PackageManager.addPackageAnnotation(m);
 
@@ -98,6 +103,7 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 			String abstractions = DefaultMarkupType.getAnnotation(section,
 					ABSTRACTIONS_KEY);
 			String answers = DefaultMarkupType.getAnnotation(section, ANSWERS_KEY);
+			String inputSize = DefaultMarkupType.getAnnotation(section, INPUT_SIZE_KEY);
 			Map<String, String> parameters = user.getParameters();
 			if (unknown != null) {
 				parameters.put(UNKNOWN_KEY, unknown);
@@ -107,6 +113,16 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 			}
 			if (answers != null) {
 				parameters.put(ANSWERS_KEY, answers);
+			}
+			if (inputSize != null) {
+				try {
+					//noinspection ResultOfMethodCallIgnored
+					Integer.parseInt(inputSize);
+					parameters.put(INPUT_SIZE_KEY, inputSize);
+				}
+				catch (Exception e) {
+					// just ignore it, message will be shown by markup because of Pattern
+				}
 			}
 
 			String annotation = DefaultMarkupType.getAnnotation(section,
@@ -155,9 +171,9 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 
 		/**
 		 * Finds previously saved QuickInterview Sessions
-		 * 
-		 * @created 30.11.2012
+		 *
 		 * @return String with html code containing options of .xml files
+		 * @created 30.11.2012
 		 */
 		private static String getSavedSessions(UserContext user) {
 			WikiConnector wikiConnector = Environment.getInstance()

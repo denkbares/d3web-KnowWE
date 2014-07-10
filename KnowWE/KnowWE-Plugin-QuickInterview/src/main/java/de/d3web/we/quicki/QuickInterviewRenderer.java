@@ -450,6 +450,8 @@ public class QuickInterviewRenderer {
 				+ "ns:'" + namespace + "'," + "type:'text', " + "qtext:'"
 				+ Strings.encodeURL(q.getName()) + "', " + "}\" ";
 
+		String inputSize = user.getParameter(QuickInterviewMarkup.INPUT_SIZE_KEY);
+		if (inputSize == null) inputSize = "18";
 		// assemble the input field
 		sb.appendHtml("<input class='inputtextvalue'  style='display: inline;' id='input_"
 				+ id
@@ -457,7 +459,7 @@ public class QuickInterviewRenderer {
 				+ "value='"
 				+ Strings.encodeHtml(valueString)
 				+ "' "
-				+ "size='18' " + jscall + " \n/>");
+				+ "size='" + inputSize + "' " + jscall + " \n/>");
 		// "<div class='dateformatdesc'>()</div>");
 
 		sb.appendHtml("<div class='separator'></div>");
@@ -524,7 +526,6 @@ public class QuickInterviewRenderer {
 	 * Assembles the HTML needed for displaying the (numerical) answer field
 	 *
 	 * @param q the question to which numerical answers are attached
-	 * @return the String for rendering numerical answer field
 	 * @created 20.07.2010
 	 */
 	private void renderNumAnswers(Question q, RenderResult sb) {
@@ -580,9 +581,11 @@ public class QuickInterviewRenderer {
 					+ trimPZ(range.getRight()) + "' ";
 		}
 
+		String inputSize = user.getParameter(QuickInterviewMarkup.INPUT_SIZE_KEY);
+		if (inputSize == null) inputSize = "7";
 		// assemble the input field
 		sb.appendHtml("<input class='numinput' id='input_" + id + "' type='text' "
-				+ rangeString + "value='" + valueString + "' " + "size='7' " + jscall + " />");
+				+ rangeString + "value='" + valueString + "' " + "size='" + inputSize + "' " + jscall + " />");
 
 		// print the units
 		sb.appendHtml("<div class='unit'>").append(Strings.encodeHtml(unit)).appendHtml("</div>");
