@@ -20,6 +20,8 @@
 
 package de.d3web.we.ci4ke.build;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,9 +34,11 @@ import de.d3web.testing.BuildResult;
 import de.d3web.testing.TestExecutor;
 import de.d3web.testing.TestObjectProvider;
 import de.d3web.testing.TestObjectProviderManager;
+import de.d3web.testing.TestResult;
 import de.d3web.utils.Log;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
+import de.knowwe.core.Environment;
 import de.knowwe.core.event.Event;
 import de.knowwe.core.event.EventListener;
 import de.knowwe.core.event.EventManager;
@@ -84,20 +88,19 @@ public class CIBuildManager {
 			@Override
 			public void run() {
 				try {
-
 					Log.info("Executing new CI build for dashboard '" + dashboard + "'");
-
 					executor.run();
-
 					BuildResult build = executor.getBuildResult();
 
 					// add resulting build to dashboard
 					if (build != null && !Thread.interrupted()) {
+						handleAttachments(dashboard, build);
 						// set verbose persistence flag, will be considered by
 						// persistence
 						build.setVerbosePersistence(lookUpVerboseFlag(dashboard));
 						dashboard.addNewBuild(build);
 					}
+					deleteAttachmentTempFiles(build);
 				}
 				finally {
 					try {
@@ -111,6 +114,26 @@ public class CIBuildManager {
 
 			}
 		}.start();
+	}
+
+	private static void handleAttachments(CIDashboard dashboard, BuildResult build) {
+		for (TestResult testResult : build.getResults()) {
+			for (File file : testResult.getAttachments()) {
+				try {
+					Environment.getInstance().getWikiConnector().storeAttachment(
+							dashboard.getDashboardArticle(), "ci-process", file);
+				}
+				catch (IOException e) {
+					Log.severe("cannot attach ci-attachment", e);
+				}
+			}
+		}
+	}
+
+	private static void deleteAttachmentTempFiles(BuildResult build) {
+		for (TestResult testResult : build.getResults()) {
+			testResult.handleAutoDelete();
+		}
 	}
 
 	private static boolean lookUpVerboseFlag(CIDashboard dashboard) {
