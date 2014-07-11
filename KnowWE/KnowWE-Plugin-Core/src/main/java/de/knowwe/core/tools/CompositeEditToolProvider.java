@@ -47,8 +47,7 @@ public class CompositeEditToolProvider implements ToolProvider {
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
 		return section.get() instanceof Term
-				&& ((Term) section.get()).getTermIdentifier(Sections.cast(section, Term.class)) != null
-				&& KnowWEUtils.canWrite(section, userContext);
+				&& ((Term) section.get()).getTermIdentifier(Sections.cast(section, Term.class)) != null;
 	}
 
 	protected Tool getCompositeEditTool(Section<? extends Term> section) {

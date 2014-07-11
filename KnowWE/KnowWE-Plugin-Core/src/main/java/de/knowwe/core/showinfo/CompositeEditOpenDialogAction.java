@@ -19,6 +19,7 @@
 package de.knowwe.core.showinfo;
 
 import java.io.IOException;
+import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,8 +28,10 @@ import de.d3web.strings.Identifier;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.objectinfo.ObjectInfoRenderer;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * @author stefan
@@ -50,11 +53,16 @@ public class CompositeEditOpenDialogAction extends AbstractAction {
 		ObjectInfoRenderer.renderTermDefinitions(identifier, context, result);
 		ObjectInfoRenderer.renderTermReferences(identifier, context, result);
 
+
+		Set<Section<?>> termReferenceSections = ObjectInfoRenderer.findTermReferenceSections(context.getWeb(), identifier);
+		boolean canWriteAllSections = KnowWEUtils.canWrite(termReferenceSections, context);
+
 		JSONObject response = new JSONObject();
 		try {
 			response.accumulate("header", toHtml(context, header));
 			response.accumulate("result", toHtml(context, result));
 			response.accumulate("plainText", toHtml(context, plainText));
+			response.accumulate("canWriteAll", canWriteAllSections);
 			context.setContentType("text/html; charset=UTF-8");
 			response.write(context.getWriter());
 

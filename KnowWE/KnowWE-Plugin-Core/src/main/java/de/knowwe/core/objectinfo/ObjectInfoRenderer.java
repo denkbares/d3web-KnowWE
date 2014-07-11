@@ -125,10 +125,10 @@ public class ObjectInfoRenderer implements Renderer {
 	 */
 
 	public static void renderTermReferencesPreviews(List<Section<?>> sections, UserContext user, RenderResult result) {
-		if (!KnowWEUtils.canView(sections, user)) {
-			result.appendHtml("<i>You are not allowed to view this article.</i>");
-			return;
-		}
+//		if (!KnowWEUtils.canView(sections, user)) {
+//			result.appendHtml("<i>You are not allowed to view this article.</i>");
+//			return;
+//		}
 		Map<Section<?>, Collection<Section<?>>> groupedByPreview = ObjectInfoRenderer.groupByPreview(sections);
 		boolean first = true;
 		for (Entry<Section<?>, Collection<Section<?>>> entry : groupedByPreview.entrySet()) {
@@ -270,7 +270,7 @@ public class ObjectInfoRenderer implements Renderer {
 		return sections;
 	}
 
-	protected static Set<Section<?>> findTermReferenceSections(String web, Identifier termIdentifier) {
+	public static Set<Section<?>> findTermReferenceSections(String web, Identifier termIdentifier) {
 		TermInfo termInfo = TermUtils.getTermInfo(web, termIdentifier, false);
 		Set<Section<?>> sections = new HashSet<Section<?>>();
 		if (termInfo == null) {
@@ -443,11 +443,16 @@ public class ObjectInfoRenderer implements Renderer {
 
 		result.appendHtml("</div>");
 
-		// render the preview content part, avoiding double returns
-		PreviewRenderer renderer = PreviewManager.getInstance().getPreviewRenderer(previewSection);
-		RenderResult part = new RenderResult(result);
-		renderer.render(previewSection, relevantSubSections, user, part);
-		result.appendAvoidParagraphs(part);
+		if (KnowWEUtils.canView(previewSection, user)) {
+			// render the preview content part, avoiding double returns
+			PreviewRenderer renderer = PreviewManager.getInstance().getPreviewRenderer(previewSection);
+			RenderResult part = new RenderResult(result);
+			renderer.render(previewSection, relevantSubSections, user, part);
+			result.appendAvoidParagraphs(part);
+		}
+		else {
+			result.appendHtml("<i>You don't have read access on the article containing this section.</i>");
+		}
 
 		result.appendHtml("</div>");
 	}
@@ -467,8 +472,7 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	/**
-	 * Get a counting set of all markup names that surrounds the specified list of sections. The count is not the
-	 * number
+	 * Get a counting set of all markup names that surrounds the specified list of sections. The count is not the number
 	 * of sections contained in a specific markup, but it is the number of preview sections required to display these
 	 * sections (some preview sections may display multiple of the specified sections).
 	 *

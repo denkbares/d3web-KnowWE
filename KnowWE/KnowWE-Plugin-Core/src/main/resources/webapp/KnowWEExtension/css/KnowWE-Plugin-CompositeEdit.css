@@ -210,6 +210,14 @@
 	float: left !important;
 }
 
+.ui-dialog button:disabled
+{
+	background:white;
+	color:gray;
+	cursor:default;
+	opacity:0.2;
+}
+
 .ui-dialog .ui-button {
 	margin-right: 5px !important;
 	margin-top: 0px !important;

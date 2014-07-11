@@ -530,7 +530,10 @@ KNOWWE.plugin.compositeEditTool = function() {
 
 	function enableInitialDialogState() {
 		KNOWWE.core.actions.init();
-
+		if(!_CE.userCanWriteAllSections){
+			var pane = jq$("#compositeEdit").next("div.ui-dialog-buttonpane");
+			jq$(pane).find(".editButton").attr('disabled', true).attr('title', "You can't edit these sections, because you don't have write permissions on all sections.");
+		}
 		document.body.style.overflow = 'hidden';
 		appendMaximizeButton();
 		if (_CE.mode == _CE.ModeEnum.EDIT) {
@@ -574,6 +577,8 @@ KNOWWE.plugin.compositeEditTool = function() {
 					if (this.responseText) {
 						var parsed = JSON.parse(this.responseText);
 						divMarkupText.append(parsed.result);
+						_CE.userCanWriteAllSections = parsed.canWriteAll;
+
 
 						_CE.dialogDiv.dialog({
 							//fix for strange behaviour (=scrolling to top) of dialog at first "mousedown" event
@@ -719,10 +724,12 @@ KNOWWE.plugin.compositeEditTool = function() {
 	}
 
 	function enableCompositeEditMode() {
-		_CE.mode = _CE.ModeEnum.EDIT;
-		changeButtons();
-		registerButtonEvents();
-		addEventListenerForEdit(jq$("#compositeEdit"));
+		if(_CE.userCanWriteAllSections){
+			_CE.mode = _CE.ModeEnum.EDIT;
+			changeButtons();
+			registerButtonEvents();
+			addEventListenerForEdit(jq$("#compositeEdit"));
+		}
 	}
 
 	return {
@@ -740,6 +747,9 @@ KNOWWE.plugin.compositeEditTool = function() {
 
 		/** All sections that are compatible with edit mode */
 		editableSections : new Array(),
+
+		/** User has write rights for all sections */
+		userCanWriteAllSections : true,
 
 		ModeEnum : {
 			VIEW : "view",
