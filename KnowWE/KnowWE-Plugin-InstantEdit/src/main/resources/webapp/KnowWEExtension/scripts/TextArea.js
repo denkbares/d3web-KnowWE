@@ -70,6 +70,7 @@ TextArea.prototype.handleKeyDown = function(event) {
 		this.moveLines("up");
 		return;
 	}
+	// alt + DOWN
 	if (event.which == 40 && isAltOnly) { // alt + DOWN
 		event.stopPropagation();
 		event.preventDefault();
@@ -77,28 +78,32 @@ TextArea.prototype.handleKeyDown = function(event) {
 		this.moveLines("down");
 		return;
 	}
-	if ((event.which == 189 || event.which == 173) && isLongerSelection) { // - + selection length > 0
+	// - + selection length > 0
+	if ((event.which == 189 || event.which == 173) && isLongerSelection) {
 		event.stopPropagation();
 		event.preventDefault();
 		this.snapshot();
 		this.moveLines("minusRight");
 		return;
 	}
-	if ((event.which == 191 || event.which == 163) && isLongerSelection) { // # + selection length > 0
+	// # + selection length > 0
+	if ((event.which == 191 || event.which == 163 || event.which == 220) && isLongerSelection) {
 		event.stopPropagation();
 		event.preventDefault();
 		this.snapshot();
 		this.moveLines("hashRight");
 		return;
 	}
-	if ((event.which == 187 || event.which == 171) && event.shiftKey && isLongerSelection) { // * + selection length > 0
+	// * + selection length > 0
+	if ((event.which == 187 || event.which == 171 || event.which == 221) && event.shiftKey && isLongerSelection) {
 		event.stopPropagation();
 		event.preventDefault();
 		this.snapshot();
 		this.moveLines("starRight");
 		return;
 	}
-	if (event.which == 9 && isLongerSelection && !event.shiftKey) { // TAB + selection length > 0 + !SHIFT
+	// TAB + selection length > 0 + !SHIFT
+	if (event.which == 9 && isLongerSelection && !event.shiftKey) {
 		event.stopPropagation();
 		event.preventDefault();
 		event.stopImmediatePropagation();
@@ -106,28 +111,32 @@ TextArea.prototype.handleKeyDown = function(event) {
 		this.moveLines("tab");
 		return;
 	}
-	if (event.which == 9 && isLongerSelection && event.shiftKey) { // TAB + selection length > 0 + SHIFT
+	// TAB + selection length > 0 + SHIFT
+	if (event.which == 9 && isLongerSelection && event.shiftKey) {
 		event.stopPropagation();
 		event.preventDefault();
 		this.snapshot();
 		this.moveLines("tabShift");
 		return;
 	}
-	if (event.which == 32 && isLongerSelection && !event.shiftKey) { // SPACE + selection length > 0 + !SHIFT
+	// SPACE + selection length > 0 + !SHIFT
+	if (event.which == 32 && isLongerSelection && !event.shiftKey) {
 		event.stopPropagation();
 		event.preventDefault();
 		this.snapshot();
 		this.moveLines("space");
 		return;
 	}
-	if (event.which == 32 && isLongerSelection && event.shiftKey) { // SPACE + selection length > 0 + SHIFT
+	// SPACE + selection length > 0 + SHIFT
+	if (event.which == 32 && isLongerSelection && event.shiftKey) {
 		event.stopPropagation();
 		event.preventDefault();
 		this.snapshot();
 		this.moveLines("spaceShift");
 		return;
 	}
-	if (event.which == 68 && (isAltOnly || isCmdOnly)) { // alt + D, cmd + D
+	// alt + D, cmd + D
+	if (event.which == 68 && (isAltOnly || isCmdOnly)) {
 		event.stopPropagation();
 		event.preventDefault();
 		this.snapshot();
