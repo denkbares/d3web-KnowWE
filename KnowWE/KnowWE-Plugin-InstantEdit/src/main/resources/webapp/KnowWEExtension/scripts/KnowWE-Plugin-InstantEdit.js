@@ -44,7 +44,6 @@ KNOWWE.plugin.instantEdit = function() {
     function enabledWarning() {
         if (_IE.enabled) {
             alert("You can only edit the page once at a time.")
-            return;
         }
     }
     
@@ -63,7 +62,7 @@ KNOWWE.plugin.instantEdit = function() {
 
     return {
 
-        toolNameSpace: new Object(),
+        toolNameSpace: {},
 
         enabled: false,
         
@@ -77,8 +76,6 @@ KNOWWE.plugin.instantEdit = function() {
 				alert("Unable to edit while restoring versions.");
 				return;
 			}
-
-			KNOWWE.core.u
 
             _EC.showAjaxLoader(id);
             
@@ -134,7 +131,7 @@ KNOWWE.plugin.instantEdit = function() {
             var params = {
                 action: 'InstantEditDisableAction',
                 KdomNodeId: id
-            }
+            };
 
             var options = {
                 url: KNOWWE.core.util.getURL(params),
@@ -144,7 +141,7 @@ KNOWWE.plugin.instantEdit = function() {
                     onError: _EC.onErrorBehavior,
                     fn: f
                 }
-            }
+            };
             new _KA(options).send();
 
             if (reload) {
@@ -155,8 +152,8 @@ KNOWWE.plugin.instantEdit = function() {
         /**
 		 * Save the changes to the article.
 		 * 
-		 * @param id
-		 *            is the id of the DOM element
+		 * @param id is the id of the DOM element
+		 * @param newWikiText is the optional new text for the section with the given id
 		 */
         save: function(id, newWikiText) {
 
@@ -168,7 +165,7 @@ KNOWWE.plugin.instantEdit = function() {
                 action: 'InstantEditSaveAction',
                 KdomNodeId: id,
                 KWikiChangeNote: _EC.mode.getChangeNote(id)
-            }
+            };
 
             _EC.sendChanges(newWikiText, params, function(id) { _IE.disable(id, true, null); });
         },
@@ -177,8 +174,10 @@ KNOWWE.plugin.instantEdit = function() {
 		 * Adds a new article with the given articleText. The title of the new
 		 * article is given by the current tools function getNewArticleTitle();
 		 * 
-		 * @param id
-		 *            is the id of the source DOM element
+		 * @param id is the id of the source DOM element
+		 * @param title is the optional title of the added article
+		 * @param newWikiText is the optional new text of the new article
+		 *
 		 */
         add: function(id, title, newWikiText) {
 
@@ -195,7 +194,7 @@ KNOWWE.plugin.instantEdit = function() {
                 action: 'InstantEditAddArticleAction',
                 KdomNodeId: id,
                 KWiki_Topic: title
-            }
+            };
 
             _EC.sendChanges(newWikiText, params, function(id) { _IE.disable(id, true, null); });
 
@@ -205,8 +204,7 @@ KNOWWE.plugin.instantEdit = function() {
         /**
 		 * Cancel the instant edit action. Restore the original text.
 		 * 
-		 * @param String
-		 *            id The id of the DOM element
+		 * @param id is the id of the DOM element
 		 */
         cancel: function(id) {
         	_IE.toolNameSpace[id].unloadCondition = null;
@@ -237,7 +235,7 @@ KNOWWE.plugin.instantEdit = function() {
         }, 
         
         getSaveCancelDeleteButtons: function(id, additionalButtonArray) {        
-            var array = new Array();
+            var array = [];
             array.push(_EC.elements.getSaveButton("_IE.save('" + id + "')"));
             array.push(_EC.elements.getCancelButton("_IE.cancel('" + id + "')"));
             array.push("&nbsp;");
@@ -264,8 +262,7 @@ KNOWWE.plugin.instantEdit = function() {
 		},
         
         getChangeNote: function(id) {
-        	var note = jq$('#' + id + ' .changenote').val();
-        	return note;
+			return jq$('#' + id + ' .changenote').val();
         }
         
     }

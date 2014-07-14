@@ -245,10 +245,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 
 	function isEditSourceKey(event) {
 		// E, but not with alt gr (= alt + ctrl) to allow for € in windows
-		if (event.which == 69 && (!event.altKey || !event.ctrlKey)) {
-			return true;
-		}
-		return false;
+		return event.which == 69 && (!event.altKey || !event.ctrlKey);
 	}
 
 	function getSection(sectionId) {
@@ -350,20 +347,20 @@ KNOWWE.plugin.compositeEditTool = function() {
 
 	function bindUnloadFunctions() {
 
-		$(window).addEvent('beforeunload', function() {
+		window.onbeforeunload = function() {
 			if (_CEWT.hasChanged()) {
 				return "edit.areyousure".localize();
 			}
-		});
+		};
 
-		$(window).addEvent('unload', function() {
+		window.onunload = function() {
 			_IE.disable(_CEWT.rootID, true);
-		});
+		};
 	}
 
 	function unbindUnloadFunctions() {
-		$(window).removeEvent('beforeunload');
-		$(window).removeEvent('unload');
+		window.onbeforeunload = null;
+		window.onunload = null;
 	}
 
 	function appendDefaultMarkupFrameToolMenu(sectionId) {
@@ -447,8 +444,8 @@ KNOWWE.plugin.compositeEditTool = function() {
 	}
 
 	function resetVariables() {
-		_CE.cancelCache = new Object();
-		_CE.editableSections = new Array();
+		_CE.cancelCache = {};
+		_CE.editableSections = [];
 		_CE.enabled = true;
 	}
 
@@ -567,7 +564,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 		var params = {
 			action : 'CompositeEditOpenDialogAction',
 			termIdentifier : identifier
-		}
+		};
 
 		var options = {
 			url : KNOWWE.core.util.getURL(params),
@@ -631,8 +628,9 @@ KNOWWE.plugin.compositeEditTool = function() {
 		var prefix = "CompositeEditCollapseState-";
 		var type = jq$(node).find("strong").text();
 		var term = jq$("#objectinfo-src").text();
+		var typeArray;
 		if (jq$(node).hasClass("extend-panel-down")) {
-			var typeArray = simpleStorage.get(prefix + term);
+			typeArray = simpleStorage.get(prefix + term);
 			if (typeof typeArray == "undefined") {
 				typeArray = new Array(type);
 				simpleStorage.set(prefix + term, typeArray);
@@ -643,7 +641,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 			}
 		}
 		else {
-			var typeArray = simpleStorage.get(prefix + term);
+			typeArray = simpleStorage.get(prefix + term);
 			typeArray.splice(typeArray.indexOf(type), 1);
 			simpleStorage.set(prefix + term, typeArray);
 		}
@@ -740,13 +738,13 @@ KNOWWE.plugin.compositeEditTool = function() {
 		enabled : false,
 
 		/** Caches the old sections for reuse */
-		cancelCache : new Object(),
+		cancelCache : {},
 
 		/** The namespace for each section */
-		toolNameSpace : new Object(),
+		toolNameSpace : {},
 
 		/** All sections that are compatible with edit mode */
-		editableSections : new Array(),
+		editableSections : [],
 
 		/** User has write rights for all sections */
 		userCanWriteAllSections : true,
@@ -771,8 +769,8 @@ KNOWWE.plugin.compositeEditTool = function() {
 			if (_CE.mode == _CE.ModeEnum.EDIT) {
 				addEventListenerForEdit(id);
 			}
-			//TODO: replace with dialog specific function
-			//bindUnloadFunctions();
+			// TODO: replace with dialog specific function
+			// bindUnloadFunctions();
 
 
 			if (_CEWT.locked) {
@@ -949,7 +947,7 @@ KNOWWE.plugin.compositeEditTool.wikiText = function() {
 	}
 
 	function getSectionOrder() {
-		var sectionOrder = new Array();
+		var sectionOrder = [];
 		jq$('.editelement, .editarea').each(function() {
 			var id = jq$(this).attr('id');
 			if (id == null) {
@@ -973,7 +971,7 @@ KNOWWE.plugin.compositeEditTool.wikiText = function() {
 		order : null,
 
 		/** Deleted sections */
-		deletes : new Array(),
+		deletes : [],
 
 		/** is the article locked? */
 		locked : null,
@@ -988,9 +986,9 @@ KNOWWE.plugin.compositeEditTool.wikiText = function() {
 			}
 			for (var i = 0; i < _CE.editableSections.length; i++) {
 				var id = _CE.editableSections[i];
-				var unloadCondition = _CE.toolNameSpace[id].unloadCondition
+				var unloadCondition = _CE.toolNameSpace[id].unloadCondition;
 				if (unloadCondition) {
-					var hasToolChanged = false;
+					var hasToolChanged = true;
 					try {
 						hasToolChanged = !unloadCondition(id);
 					} catch (err) {
@@ -1021,9 +1019,6 @@ KNOWWE.plugin.compositeEditTool.wikiText = function() {
 				wikiText = _EC.getWikiText(id)
 			}
 			return wikiText;
-
-			return getNonKDomSectionText(id);
-
 		},
 
 		getOriginalText : function() {

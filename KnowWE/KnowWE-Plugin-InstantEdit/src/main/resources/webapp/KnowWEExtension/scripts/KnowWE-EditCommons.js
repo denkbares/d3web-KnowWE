@@ -29,20 +29,15 @@ if (typeof KNOWWE == "undefined" || !KNOWWE) {
 /**
  * Namespace: KNOWWE.core.plugin.instantedit The KNOWWE instant edit namespace.
  */
-KNOWWE.editCommons = function () {
+KNOWWE.editCommons = function() {
 
 	return {
 
-		mode: null,
+		mode : null,
 
-		wikiText: new Object(),
+		wikiText : {},
 
-		sleep: function (ms) {
-			var startTime = new Date().getTime();
-			while (new Date().getTime() < startTime + ms);
-		},
-
-		wrapHTML: function (id, locked, html) {
+		wrapHTML : function(id, locked, html) {
 			var lockedHTML = "";
 			if (locked) {
 				lockedHTML = "<div class=\"error\">Another user has started to edit this page, but " + "hasn't yet saved it. You are allowed to further edit this page, but be " + "aware that the other user will not be pleased if you do so!</div>"
@@ -53,25 +48,25 @@ KNOWWE.editCommons = function () {
 			return openingDiv + lockedHTML + html + closingDiv;
 		},
 
-		encodeForHtml: function (text) {
+		encodeForHtml : function(text) {
 			if (text) return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 			return "";
 		},
 
-		hideTools: function () {
+		hideTools : function() {
 			$$('.markupTools').setStyle("display", "none");
 		},
 
-		showAjaxLoader: function () {
+		showAjaxLoader : function() {
 			KNOWWE.core.util.updateProcessingState(1);
 		},
 
-		hideAjaxLoader: function () {
+		hideAjaxLoader : function() {
 			KNOWWE.core.util.updateProcessingState(-1);
 		},
 
 		// Maybe return given messages instead
-		onErrorBehavior: function () {
+		onErrorBehavior : function() {
 			_EC.hideAjaxLoader();
 			var status = this.status;
 			if (status == null) return;
@@ -94,17 +89,17 @@ KNOWWE.editCommons = function () {
 			}
 		},
 
-		executeIfPrivileged: function (grantedFN, forbiddenFN) {
+		executeIfPrivileged : function(grantedFN, forbiddenFN) {
 			var params = {
-				action: 'CheckCanEditPageAction'
-			}
+				action : 'CheckCanEditPageAction'
+			};
 
 			var options = {
-				url: KNOWWE.core.util.getURL(params),
-				method: 'GET',
-				response: {
-					action: 'none',
-					fn: function () {
+				url : KNOWWE.core.util.getURL(params),
+				method : 'GET',
+				response : {
+					action : 'none',
+					fn : function() {
 						var canedit = JSON.parse(this.responseText).canedit;
 
 						if (canedit) {
@@ -113,38 +108,36 @@ KNOWWE.editCommons = function () {
 							forbiddenFN();
 						}
 					},
-					onError: _EC.onErrorBehavior
-				}
-			}
-			new _KA(options).send();
-		},
-
-		sendChanges: function (newWikiText, params, fn, async) {
-			if (typeof async == "undefined") async = true;
-			_EC.showAjaxLoader();
-			var options = {
-				url: KNOWWE.core.util.getURL(params),
-				data: newWikiText,
-				async : async,
-				response: {
-					action: 'none',
-					fn: function () {
-						// TODO: Remove?
-						window.onbeforeunload = null;
-						window.onunload = null;
-						$(window).removeEvents('beforeunload');
-						$(window).removeEvents('unload');
-						if (fn) fn();
-						_EC.hideAjaxLoader();
-					},
-					onError: _EC.onErrorBehavior
+					onError : _EC.onErrorBehavior
 				}
 			};
 			new _KA(options).send();
 		},
 
-		registerSaveCancelEvents: function (element, saveFunction, cancelFunction, argument) {
-			jq$(element).keydown(function (event) {
+		sendChanges : function(newWikiText, params, fn, async) {
+			if (typeof async == "undefined") async = true;
+			_EC.showAjaxLoader();
+			var options = {
+				url : KNOWWE.core.util.getURL(params),
+				data : newWikiText,
+				async : async,
+				response : {
+					action : 'none',
+					fn : function() {
+						// TODO: Remove?
+						window.onbeforeunload = null;
+						window.onunload = null;
+						if (fn) fn();
+						_EC.hideAjaxLoader();
+					},
+					onError : _EC.onErrorBehavior
+				}
+			};
+			new _KA(options).send();
+		},
+
+		registerSaveCancelEvents : function(element, saveFunction, cancelFunction, argument) {
+			jq$(element).keydown(function(event) {
 				event = _EC.toJQueryEvent(event);
 				if (_EC.isSaveKey(event)) {
 					event.stopPropagation();
@@ -159,7 +152,7 @@ KNOWWE.editCommons = function () {
 			});
 		},
 
-		isSaveKey: function (event) {
+		isSaveKey : function(event) {
 			event = _EC.toJQueryEvent(event);
 			if (_EC.isModifier(event) || _EC.isDoubleModifier(event)) {
 				if (event.which == 83) { // S
@@ -169,15 +162,15 @@ KNOWWE.editCommons = function () {
 			return false;
 		},
 
-		toJQueryEvent: function (event) {
+		toJQueryEvent : function(event) {
 			return jq$.event.fix(event.originalEvent || event.event || event);
 		},
 
-		isBlank: function (text) {
+		isBlank : function(text) {
 			return /^\s*$/.test(text);
 		},
 
-		isCancelKey: function (event) {
+		isCancelKey : function(event) {
 			event = _EC.toJQueryEvent(event);
 			if (_EC.isModifier(event) || _EC.isDoubleModifier(event)) {
 				// Q, but not with alt gr (= alt + ctrl)  to allow for @ in windows
@@ -191,30 +184,26 @@ KNOWWE.editCommons = function () {
 			return false;
 		},
 
-		isModifier: function (event) {
+		isModifier : function(event) {
 			event = _EC.toJQueryEvent(event);
-			if ((!event.metaKey && event.ctrlKey && !event.altKey)
+			return (!event.metaKey && event.ctrlKey && !event.altKey)
 				|| (!event.metaKey && !event.ctrlKey && event.altKey)
-				|| (event.metaKey && !event.ctrlKey && !event.altKey)) {
-				return true;
-			}
-			return false;
+				|| (event.metaKey && !event.ctrlKey && !event.altKey);
+
 		},
 
-		isDoubleModifier: function (event) {
+		isDoubleModifier : function(event) {
 			event = _EC.toJQueryEvent(event);
 			var mods = 0;
 			if (event.metaKey) mods++;
 			if (event.ctrlKey) mods++;
 			if (event.altKey) mods++;
 			if (event.shiftKey) mods++;
-			if (mods == 2) {
-				return true;
-			}
-			return false;
+			return mods == 2;
+
 		},
 
-		getWikiText: function (id, actionName) {
+		getWikiText : function(id, actionName) {
 
 			var tempWikiText = _EC.wikiText[id];
 
@@ -223,18 +212,18 @@ KNOWWE.editCommons = function () {
 			if (actionName == null) actionName = 'GetWikiTextAction';
 
 			var params = {
-				action: actionName,
-				KdomNodeId: id
+				action : actionName,
+				KdomNodeId : id
 			};
 
 			var options = {
-				url: KNOWWE.core.util.getURL(params),
-				async: false,
-				response: {
-					action: 'none',
+				url : KNOWWE.core.util.getURL(params),
+				async : false,
+				response : {
+					action : 'none',
 					// for FF 3.6 compatibility, we can't use the function fn
 					// in synchronous call (no onreadystatechange event fired)
-					onError: _EC.onErrorBehavior
+					onError : _EC.onErrorBehavior
 				}
 			};
 			var ajaxCall = new _KA(options);
@@ -243,20 +232,17 @@ KNOWWE.editCommons = function () {
 			return _EC.wikiText[id];
 		},
 
-		isKDomID: function (id) {
+		isKDomID : function(id) {
 			if (!id) {
 				return false;
 			}
 			// TODO: Check RegExp
 			var validID = new RegExp("^[0123456789abcdef]{1,8}$");
-			if (validID.test(id)) {
-				// TODO: Check also server-side
-				return true;
-			}
-			return false;
+			return validID.test(id);
+
 		},
 
-		isEmpty: function (str) {
+		isEmpty : function(str) {
 			return (!str || 0 === str.length);
 		}
 
@@ -264,23 +250,23 @@ KNOWWE.editCommons = function () {
 }();
 
 
-KNOWWE.editCommons.elements = function () {
+KNOWWE.editCommons.elements = function() {
 
 	return {
 
-		getSaveButton: function (jsFunction) {
+		getSaveButton : function(jsFunction) {
 			return "<a class=\"action save\" " + "href=\"javascript:" + jsFunction + "\"" + ">Save</a>";
 		},
 
-		getCancelButton: function (jsFunction) {
+		getCancelButton : function(jsFunction) {
 			return "<a class=\"action cancel\" href=\"javascript:" + jsFunction + "\"" + ">Cancel</a>";
 		},
 
-		getDeleteSectionButton: function (jsFunction) {
+		getDeleteSectionButton : function(jsFunction) {
 			return "<a class=\"action delete\" href=\"javascript:" + jsFunction + "\"" + ">Delete</a>";
 		},
 
-		getSaveCancelDeleteButtons: function (id, additionalButtonArray) {
+		getSaveCancelDeleteButtons : function(id, additionalButtonArray) {
 			var buttons = _EC.mode.getSaveCancelDeleteButtons(id, additionalButtonArray);
 			return _EC.mode.getButtonsTable(buttons);
 		}
