@@ -250,6 +250,9 @@ TextArea.prototype.moveLines = function(direction) {
 			else if (splitLines[line].substring(0, 2) == "  ") {
 				lines = lines + splitLines[line].substring(2) + "\n";
 			}
+			else if (splitLines[line].substring(0, 1) == " ") {
+				lines = lines + splitLines[line].substring(1) + "\n";
+			}
 			else if (splitLines[line].substring(0, 1) == "\t") {
 				lines = lines + splitLines[line].substring(1) + "\n";
 			}
