@@ -9,30 +9,34 @@ function TextArea(area) {
 	jq$(this.area).keydown(jq$.proxy(function(event) {
 		this.handleKeyDown(event);
 	}, this));
+	jq$(this.area).on('paste', jq$.proxy(function(event) {
+		this.snapshot();
+	}, this));
 	jq$(this.area).select(jq$.proxy(function() {
 		this.snapshot();
 	}, this));
 	this.snapshot();
 	return this
 }
+
 TextArea.initialize = function(area) {
 	return new TextArea(area);
-}
+};
 TextArea.getSelection = function(area) {
 	return new TextArea(area).getSelection();
-}
+};
 TextArea.getCursor = function(area) {
 	return new TextArea(area).getCursor();
-}
+};
 TextArea.getSelectionCoordinates = function(area) {
 	return new TextArea(area).getSelectionCoordinates();
-}
+};
 TextArea.isSelectionAtStartOfLine = function(area) {
 	return new TextArea(area).isSelectionAtStartOfLine();
-}
+};
 TextArea.replaceSelection = function(a, g) {
 	return new TextArea(a).replaceSelection(g);
-}
+};
 TextArea.prototype.handleKeyDown = function(event) {
 	// with this line, we remove a hack of jspwiki-edit.js,
 	// that is no longer needed but instead messes with keydown
@@ -155,13 +159,13 @@ TextArea.prototype.handleKeyDown = function(event) {
 	if (event.which >= 65 && event.which <= 90 && (event.control || event.alt || event.meta)) {
 		this.snapshot();
 	}
-}
+};
 TextArea.prototype.onSave = function() {
 
-}
+};
 TextArea.prototype.onCancel = function() {
 
-}
+};
 TextArea.prototype.moveLines = function(direction) {
 	var area = this.area;
 	this.extendSelectionToFullLines(area);
@@ -296,7 +300,7 @@ TextArea.prototype.moveLines = function(direction) {
 	else {
 		this.setSelection(newPos, newPos + lines.length);
 	}
-}
+};
 TextArea.prototype.extendSelectionToFullLines = function() {
 	var area = this.area;
 	var text = area.getValue();
@@ -309,7 +313,7 @@ TextArea.prototype.extendSelectionToFullLines = function() {
 	if (end == -1) end = text.length;
 	else end += 1 + sel2;
 	this.setSelection(start, end);
-}
+};
 TextArea.prototype.undo = function() {
 	var area = this.area;
 	while (true) {
@@ -319,7 +323,7 @@ TextArea.prototype.undo = function() {
 		if (shot.text != area.getValue()) break;
 	}
 	this.restoreSnapshot(shot);
-}
+};
 TextArea.prototype.redo = function() {
 	var area = this.area;
 	while (true) {
@@ -329,7 +333,7 @@ TextArea.prototype.redo = function() {
 		if (shot.text != area.getValue()) break;
 	}
 	this.restoreSnapshot(shot);
-}
+};
 TextArea.prototype.snapshot = function() {
 	var area = this.area;
 	var text = area.getValue();
@@ -350,18 +354,18 @@ TextArea.prototype.snapshot = function() {
 		end : sel.end,
 		scroll : area.scrollTop
 	});
-}
+};
 TextArea.prototype.restoreSnapshot = function(shot) {
 	var area = this.area;
 	area.value = shot.text;
 	var sel = this.setSelection(shot.start, shot.end);
 	area.scrollTop = shot.scroll;
-}
+};
 TextArea.prototype.getSelection = function() {
 	var b = this.getSelectionCoordinates();
 	var text = this.area.getValue().substring(b.start, b.end);
 	return text;
-}
+};
 TextArea.prototype.setSelection = function(f, a) {
 	var area = this.area;
 	if (!a) {
@@ -394,11 +398,11 @@ TextArea.prototype.setSelection = function(f, a) {
 		jq$(window).scrollTop(totalCursorOffset - windowHeight);
 	}
 	return this
-}
+};
 
 TextArea.prototype.getCursor = function() {
 	return this.getSelectionCoordinates().start
-}
+};
 
 TextArea.prototype.getIntend = function() {
 	var area = this.area;
@@ -411,7 +415,7 @@ TextArea.prototype.getIntend = function() {
 		else break;
 	}
 	return intend;
-}
+};
 TextArea.prototype.getSelectionCoordinates = function() {
 	var area = this.area;
 	var f = $(area), e = {
@@ -439,7 +443,7 @@ TextArea.prototype.getSelectionCoordinates = function() {
 	}
 	e.thin = (e.start == e.end);
 	return e
-}
+};
 TextArea.prototype.replaceSelection = function(g) {
 	var h = g.replace(/\r/g, ""), d = this.area, c = d.scrollTop;
 	if (d.selectionStart != undefined) {
@@ -458,13 +462,12 @@ TextArea.prototype.replaceSelection = function(g) {
 	d.focus();
 	d.scrollTop = c;
 	jq$(d).trigger("change");
-	return;
-}
+};
 TextArea.prototype.insertText = function(text) {
 	this.replaceSelection(text);
 	this.setSelection(this.getSelectionCoordinates().end);
-}
+};
 TextArea.prototype.isSelectionAtStartOfLine = function() {
 	var a = this.getCursor();
 	return ((a <= 0) || (this.area.value.charAt(a - 1).match(/[\n\r]/)));
-}
+};
