@@ -26,7 +26,7 @@
 }
 
 /* dont display a header for the quicki plugin */
-.quickinterview  h3 {
+.quickinterview h3 {
 	font-size: 1.25em;
 	line-height: 1.0em;
 }
@@ -54,15 +54,13 @@
 
 /* styling of the questionnaire div */
 .quickinterview .pointRight {
-	background: transparent url(../images/triangleRight.png) no-repeat 10px
-		5px;
+	background: transparent url(../images/triangleRight.png) no-repeat 10px 5px;
 	cursor: pointer;
 }
 
 /* styling of the questionnaire div */
 .quickinterview .pointDown {
-	background: transparent url(../images/triangleDown.png) no-repeat 10px
-		5px;
+	background: transparent url(../images/triangleDown.png) no-repeat 10px 5px;
 	cursor: pointer;
 }
 
@@ -76,7 +74,7 @@
 }
 
 .type_QuickInterview .defaultMarkup .markupText {
-	white-space: normal;	
+	white-space: normal;
 }
 
 /* abstraction questions */
@@ -85,7 +83,7 @@
 	margin-bottom: 3px;
 }
 
-.quickinterview .qablock:hover,.qablockHidden:hover {
+.quickinterview .qablock:hover, .qablockHidden:hover {
 	background: #f5f5f5;
 }
 
@@ -280,13 +278,13 @@
 	cursor: pointer;
 }
 
-.quickinterview #quickireset {
+.quickinterview .reset {
 	position: absolute;
 	right: 0px;
 	top: 3px;
 }
 
-.defaultMarkupFrame .quickinterview #quickireset {
+.defaultMarkupFrame .quickinterview .reset {
 	position: absolute;
 	right: 100px;
 	top: 3px;

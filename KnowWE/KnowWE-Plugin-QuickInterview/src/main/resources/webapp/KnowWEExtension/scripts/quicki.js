@@ -181,14 +181,6 @@ KNOWWE.plugin.quicki = function(){
         		});
             });
         	
-        	// select the element with id="quickireset"
-        	if ($('quickireset')) {
-	            _KE.add('click', _KS('#quickireset'),  
-	        		function(event) {
-	            		KNOWWE.plugin.d3webbasic.actions.resetSession(sectionId(event));
-	        		});
-        	}
-            
         	/*
 			 * restore visibility states of elements after reloading the page
 			 * (e.g. after sending answer val via AJAX)

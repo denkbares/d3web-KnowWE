@@ -120,7 +120,12 @@ public class D3webUtils {
 	}
 
 	public static D3webCompiler getCompiler(Section<?> section) {
-		return Compilers.getCompiler(section, D3webCompiler.class);
+		if (section.get() instanceof TagHandlerType) {
+			return D3webUtils.getCompiler(section.getArticle());
+		}
+		else {
+			return Compilers.getCompiler(section, D3webCompiler.class);
+		}
 	}
 
 	@Deprecated

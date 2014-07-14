@@ -62,6 +62,8 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.notification.NotificationManager;
+import de.knowwe.notification.OutDatedSessionNotification;
 
 /**
  * Render the quick interview -aka QuickI- in KnowWE --- HTML / JS / CSS based
@@ -81,6 +83,8 @@ public class QuickInterviewRenderer {
 
 	private final ResourceBundle rb;
 
+	private final String kbSectionId;
+
 	private Map<String, String> config = null;
 
 	private int counter = 0;
@@ -88,8 +92,6 @@ public class QuickInterviewRenderer {
 	private final UserContext user;
 
 	public static void renderInterview(Section<?> section, UserContext user, RenderResult result) {
-		KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(section);
-
 		Collection<D3webCompiler> compilers = Compilers.getCompilers(section,
 				D3webCompiler.class);
 		if (compilers.size() > 1) {
@@ -100,7 +102,7 @@ public class QuickInterviewRenderer {
 					"class", "warning");
 
 		}
-		knowledgeBase = D3webUtils.getKnowledgeBase(section);
+		KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(section);
 
 		if (knowledgeBase == null) {
 			result.appendHtmlElement(
@@ -110,15 +112,20 @@ public class QuickInterviewRenderer {
 			return;
 		}
 		Session session = SessionProvider.getSession(user, knowledgeBase);
-		new QuickInterviewRenderer(session, section.getWeb(), user).render(result);
+		if (SessionProvider.hasOutDatedSession(user, D3webUtils.getKnowledgeBase(section))) {
+			NotificationManager.addNotification(user,
+					new OutDatedSessionNotification(D3webUtils.getCompiler(section).getCompileSection().getID()));
+		}
+		new QuickInterviewRenderer(session, section, user).render(result);
 	}
 
-	private QuickInterviewRenderer(Session c, String webb, UserContext user) {
+	private QuickInterviewRenderer(Session c, Section<?> section, UserContext user) {
 		// insert specific CSS
 		// buffi.append("<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/quicki.css' />");
 		this.kb = c.getKnowledgeBase();
 		this.session = c;
-		this.web = webb;
+		this.web = section.getWeb();
+		this.kbSectionId = D3webUtils.getCompiler(section).getCompileSection().getID();
 		this.namespace = kb.getId();
 		this.rb = D3webUtils.getD3webBundle(user);
 		this.user = user;
@@ -157,15 +164,11 @@ public class QuickInterviewRenderer {
 	 */
 	private void getInterviewPluginHeader(RenderResult html) {
 		// assemble JS string
-		String relAt = "rel=\"{" + "web:'" + web + "', " + "ns:'" + namespace
-				+ "', " + renderConfigParams() + "}\" ";
-		html.appendHtml("<div style='position:relative'>");
-		html.appendHtml(
-				"<div id='quickireset' ")
-				.appendHtml("class='reset pointer' title='")
-				.appendHtml(rb.getString("KnowWE.quicki.reset")).appendHtml("' ")
-				.appendHtml(relAt).appendHtml("></div>\n");
-		html.appendHtml("</div>");
+		html.appendHtmlTag("div", "style", "position:relative");
+		html.appendHtmlElement("div", "",
+				"onclick", "KNOWWE.plugin.d3webbasic.actions.resetSession('" + kbSectionId + "')",
+				"class", "reset pointer", "title", rb.getString("KnowWE.quicki.reset"));
+		html.appendHtmlTag("/div");
 	}
 
 	/**
@@ -288,8 +291,6 @@ public class QuickInterviewRenderer {
 	 *
 	 * @param container the qcontainer to be rendered
 	 * @param depth     recursion depth
-	 * @param buffi
-	 * @return the HTML of a questionnaire div
 	 * @created 16.08.2010
 	 */
 	private void getQuestionnaireRendering(QASet container, int depth,
@@ -327,8 +328,6 @@ public class QuickInterviewRenderer {
 	 * @param question the question to be rendered
 	 * @param depth    the depth of the recursion - for calculating identation
 	 * @param parent   the parent element
-	 * @param sb
-	 * @return HTML-String representation for one QA-Block
 	 * @created 20.07.2010
 	 */
 	private void getQABlockRendering(Question question, int depth,
@@ -410,39 +409,13 @@ public class QuickInterviewRenderer {
 				BasicProperties.ABSTRACTION_QUESTION);
 	}
 
-	private final String[] defaultParams = {
-			"KWikiWeb", "page", "KWikiUser",
-			"data", "action", "env", "tstamp", "KWiki_Topic", "namespace",
-			"_cmdline" };
-
-	private String renderConfigParams() {
-		if (this.config == null) return "";
-		String result = " ";
-		for (String key : this.config.keySet()) {
-			boolean isDefault = false;
-			for (String p : defaultParams) {
-				if (key.equals(p)) {
-					isDefault = true;
-					break;
-				}
-			}
-			if (!isDefault) {
-				result += key + ":'" + config.get(key) + "', ";
-			}
-		}
-		if (result.endsWith(", ")) {
-			result = result.substring(0, result.length() - 2);
-		}
-		return result;
-	}
-
 	private void renderTextAnswers(Question q, RenderResult sb) {
 
 		// if answer has already been answered write value into the field
 		Value value = D3webUtils.getValueNonBlocking(session, q);
 		String valueString = "";
 		if (value instanceof TextValue) {
-			valueString = ((TextValue) value).toString();
+			valueString = value.toString();
 		}
 
 		String id = getID();
@@ -471,7 +444,6 @@ public class QuickInterviewRenderer {
 	 *
 	 * @param q    the question
 	 * @param list the list of possible choices
-	 * @return the HTML representation of one choice questions
 	 * @created 21.08.2010
 	 */
 	private void renderOCChoiceAnswers(Question q, List<Choice> list,
@@ -558,7 +530,7 @@ public class QuickInterviewRenderer {
 		}
 
 		// assemble the JS call
-		String jscall = "";
+		String jscall;
 		if (rangeMin != Double.MIN_VALUE && rangeMax != Double.MAX_VALUE) {
 			jscall = " rel=\"{oid: '" + id + "', " + "web:'" + web + "',"
 					+ "ns:'" + namespace + "'," + "type:'num', " + "rangeMin:'"
@@ -619,12 +591,9 @@ public class QuickInterviewRenderer {
 	}
 
 	private boolean suppressUnknown(Question question) {
-		if (!BasicProperties.isUnknownVisible(question)) return true;
-		return (this.config.containsKey("unknown") && this.config
-				.get("unknown").equals("false"));
+		return !BasicProperties.isUnknownVisible(question)
+				|| (this.config.containsKey("unknown") && this.config.get("unknown").equals("false"));
 	}
-
-	// TODO: check Date input format
 
 	/**
 	 * Assembles the HTML representation of a date answer input
@@ -778,7 +747,6 @@ public class QuickInterviewRenderer {
 	 * @param onmouseover Something to happen regarding the onmouseover
 	 * @param id          The id of the object represented , i.e., answer alternative,
 	 *                    here
-	 * @param result      TODO
 	 * @created 22.07.2010
 	 */
 	private void appendEnclosingTagOnClick(String tag, String text,
