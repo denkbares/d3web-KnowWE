@@ -727,6 +727,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 			changeButtons();
 			registerButtonEvents();
 			addEventListenerForEdit(jq$("#compositeEdit"));
+			bindUnloadFunctions()
 		}
 	}
 
