@@ -75,33 +75,10 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 			xsdType = xsdPartSection.get().getXSDType(xsdPartSection);
 		}
 		if (xsdType == null) {
-			// try to derive the type, but for plain strings create a plain
-			// literal
-			xsdType = deriveTypeFromLiteral(literal);
-			if (XSD._string.equals(xsdType)) {
-				return core.createLiteral(literal);
-			}
+			// sectionizer takes care that this has to be plain type
+			return core.createLiteral(literal);
 		}
 		return core.createLiteral(literal, xsdType);
-	}
-
-	private URI deriveTypeFromLiteral(String literal) {
-		try {
-			Integer.parseInt(literal);
-			return XSD._int;
-		}
-		catch (NumberFormatException e) {
-			// do nothing;
-		}
-		try {
-			Double.parseDouble(literal);
-			return XSD._double;
-		}
-		catch (NumberFormatException e) {
-			// do nothing;
-		}
-		// we don't know, just use string
-		return XSD._string;
 	}
 
 	private static class LiteralPart extends AbstractType {
@@ -112,7 +89,6 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 		}
 
 		public String getLiteral(Section<LiteralPart> section) {
-			// unquote single and double quotes
 			return Rdf2GoCore.unquoteTurtleLiteral(section.getText());
 		}
 	}
