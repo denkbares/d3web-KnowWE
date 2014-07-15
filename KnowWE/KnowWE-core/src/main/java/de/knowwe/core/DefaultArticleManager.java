@@ -135,10 +135,14 @@ public class DefaultArticleManager implements ArticleManager {
 	public void deleteArticle(Article article) {
 
 		open();
-		registerArticle(Article.createArticle("", article.getTitle(), web));
+		try {
+			registerArticle(Article.createArticle("", article.getTitle(), web));
 
-		deleteAfterCompile.add(article.getTitle().toLowerCase());
-		commit();
+			deleteAfterCompile.add(article.getTitle().toLowerCase());
+		}
+		finally {
+			commit();
+		}
 
 		Log.info("-> Deleted article '" + article.getTitle() + "'" + " from " + web);
 	}
