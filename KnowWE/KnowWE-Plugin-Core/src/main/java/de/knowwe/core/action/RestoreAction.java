@@ -26,7 +26,6 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
 /**
- * 
  * @author Benedikt Kaemmerer
  * @created 17.12.2012
  */
@@ -37,15 +36,17 @@ public class RestoreAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 
 		// restore old version
-		WikiConnector wikiConnector = Environment.getInstance()
-				.getWikiConnector();
-		wikiConnector.writeArticleToWikiPersistence(
-				context.getTitle(),
-				wikiConnector.getVersion(context.getTitle(),
-						Integer.parseInt(context.getParameter("restoreThisVersion"))), context);
+		String title = context.getTitle();
+		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		if (!wikiConnector.userCanEditArticle(title, context.getRequest())) {
+			context.sendError(403, "You are not allowed to change version of this article.");
+			return;
+		}
+		String versionToRestore = wikiConnector.getVersion(title, Integer.parseInt(context.getParameter("restoreThisVersion")));
+		wikiConnector.writeArticleToWikiPersistence(title, versionToRestore, context);
 
 		// write response with pagetitle in url format
-		String pageTitle = context.getTitle();
+		String pageTitle = title;
 		pageTitle = URLEncoder.encode(pageTitle, "UTF-8");
 		pageTitle = pageTitle.replaceAll("\\+", "%20");
 		context.getWriter().write(pageTitle);

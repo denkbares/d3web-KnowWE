@@ -28,8 +28,8 @@ function restoreActionScript() {
 	var version = document.getElementById('version').value
 	var params = {
 		restoreThisVersion : version,
-		action : 'RestoreAction',
-	}
+		action : 'RestoreAction'
+	};
 	var options = {
 		url : KNOWWE.core.util.getURL(params),
 		loader : true,
@@ -37,8 +37,9 @@ function restoreActionScript() {
 			fn : function() {
 				window.location = "Wiki.jsp?page=" + this.responseText
 			},
+			onError : _EC.onErrorBehavior
 		}
-	}
+	};
 	new _KA(options).send();
 
 }
