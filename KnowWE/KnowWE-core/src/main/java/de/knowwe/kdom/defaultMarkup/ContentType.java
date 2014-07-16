@@ -65,7 +65,7 @@ public class ContentType extends AbstractType {
 				"(?:(?!$LINESTART$\\p{Space}*@\\w+).)*?";
 
 		private final static String ENDTAG =
-				"(?:^\\p{Blank}*[/%]?%\\p{Blank}*$|\\z|$LINESTART$\\p{Space}*@\\w+)";
+				"(?:^\\p{Blank}*[/%]?%\\p{Blank}*$|\\z|$LINESTART$\\p{Space}*@\\w+$INLINEENDTAG$)";
 
 		private final static String REGEX = STARTTAG + "(" + CONTENT + ")" + ENDTAG;
 
@@ -74,7 +74,14 @@ public class ContentType extends AbstractType {
 		private final AdaptiveMarkupFinder adaptiveFinder;
 
 		public ContentFinder(DefaultMarkup markup) {
-			adaptiveFinder = new AdaptiveMarkupFinder(markup.getName(), REGEX, FLAGS, 1, true);
+			String regex_modified;
+			if (markup.isInline()) {
+				regex_modified = REGEX.replace("$INLINEENDTAG$", "|%%|/%");
+			}
+			else {
+				regex_modified = REGEX.replace("$INLINEENDTAG$", "");
+			}
+			adaptiveFinder = new AdaptiveMarkupFinder(markup.getName(), regex_modified, FLAGS, 1, true);
 			startPattern = Pattern.compile(STARTTAG.replace("$NAME$", markup.getName()), FLAGS);
 		}
 
