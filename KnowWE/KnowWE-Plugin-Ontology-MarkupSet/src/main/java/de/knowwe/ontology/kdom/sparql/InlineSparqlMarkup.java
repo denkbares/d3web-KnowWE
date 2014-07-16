@@ -122,9 +122,9 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 						String cell;
 
 						int lines = 0;
-
+						QueryRow row = null;
 						while (rowIterator.hasNext()) {
-							QueryRow row = rowIterator.next();
+							row = rowIterator.next();
 							lines++;
 							if (count) continue;
 							for (Iterator<String> variableIterator = variables.iterator(); variableIterator.hasNext(); ) {
@@ -144,6 +144,18 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 							}
 						}
 						if (count) {
+							if (lines == 1) {
+								// special case for SPARQLs with GROUP_CONCAT... they often contain one empty result
+								boolean foundContent = false;
+								for (String variable : variables) {
+									Node node = row.getValue(variable);
+									if (node != null && !Strings.isBlank(node.toString())) {
+										foundContent = true;
+									}
+								}
+								if (!foundContent) lines = 0;
+							}
+
 							sparqlResult = String.valueOf(lines);
 						}
 						else {
