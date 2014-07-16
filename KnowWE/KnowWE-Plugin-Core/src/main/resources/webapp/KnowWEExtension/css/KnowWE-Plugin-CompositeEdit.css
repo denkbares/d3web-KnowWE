@@ -141,6 +141,10 @@
 	background-color: #F9F9F9;
 }
 
+#compositeEdit a {
+	color: #036 !important;
+}
+
 #compositeEdit .onlyObjectInfoPage {
 	display: none;
 }
