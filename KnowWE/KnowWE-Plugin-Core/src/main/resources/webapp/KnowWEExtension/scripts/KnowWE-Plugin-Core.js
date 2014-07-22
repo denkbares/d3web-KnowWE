@@ -463,7 +463,6 @@ KNOWWE.tooltips.enrich = function() {
 		if (anscestor.exists()) {
 			anscestor.removeAttr('title');
 			anscestor.removeClass('tooltipster');
-			return;
 		}
 	});
 	jq$('.tooltipster').each(function() {
@@ -474,9 +473,10 @@ KNOWWE.tooltips.enrich = function() {
 			interactive : true,
 			multiple : true,
 			delay : delay,
+			contentAsHTML: true,
 			theme : ".tooltipster-knowwe",
 			functionBefore : function(origin, continueTooltip) {
-				// chech if we have an ajax-tooltip
+				// check if we have an ajax-tooltip
 				// and only do once for each tooltip
 				var src = origin.data('tooltip-src');
 				if (!src) {
@@ -487,7 +487,7 @@ KNOWWE.tooltips.enrich = function() {
 				// show ajax-spinner until request is arriving
 				origin.tooltipster('update', '<span class="ajaxLoader">loading tooltip...</span>');
 				continueTooltip();
-				// request new contejq$.nt
+				// request new content
 				jq$.ajax(src, {
 					success : function(json) {
 						var html = json;
