@@ -322,7 +322,7 @@ KNOWWE.core.util = function() {
 					oldDOM.parentNode.replaceChild(newDOM, oldDOM);
 				}
 			}
-            KNOWWE.helper.observer.notify("afterRerender", newDOM);
+			KNOWWE.helper.observer.notify("afterRerender", newDOM);
 		},
 		/**
 		 * Function: replaceElement
@@ -362,7 +362,7 @@ KNOWWE.core.util = function() {
 				});
 			}
 
-            for (var j = ids.length - 1; j >= 0; j--) {
+			for (var j = ids.length - 1; j >= 0; j--) {
 				oldDOM = document.getElementById(ids[j]);
 				if (oldDOM) {
 					if (jsonArray) {
@@ -371,16 +371,16 @@ KNOWWE.core.util = function() {
 						jq$(oldDOM).replaceWith(temp.children);
 						evalAddedScripts(temp.children);
 					} else if (domChildNodes) {
-                        var node = domChildNodes[j];
+						var node = domChildNodes[j];
 						jq$(oldDOM).replaceWith(domChildNodes[j]);
-                        KNOWWE.helper.observer.notify("afterRerender", node);
+						KNOWWE.helper.observer.notify("afterRerender", node);
 						evalAddedScripts(domChildNodes[j]);
 					}
 				}
 			}
 
 
-        },
+		},
 
 		reloadPage : function() {
 			// reload page. remove version attribute if there
@@ -613,12 +613,12 @@ KNOWWE.core.rerendercontent = function() {
 						catch (e) { /*ignore*/
 						}
 						if (indicateProcess) KNOWWE.core.util.updateProcessingState(-1);
-                        if (action) {
-                            // afterRerender event thrown in respective action
-                        } else {
-                            // we throw event here
-                            KNOWWE.helper.observer.notify("afterRerender");
-                        }
+						if (action) {
+							// afterRerender event thrown in respective action
+						} else {
+							// we throw event here
+							KNOWWE.helper.observer.notify("afterRerender");
+						}
 
 					},
 					onError : function() {
@@ -697,7 +697,10 @@ var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
 			KNOWWE.core.init();
 		});
 		jq$(window).focus(function() {
-			KNOWWE.helper.observer.notify('update');
+			var message = window.onbeforeunload();
+			if (!message) {
+				KNOWWE.helper.observer.notify('update');
+			}
 		});
 
 	}
