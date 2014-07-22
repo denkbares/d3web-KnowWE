@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -40,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
+import de.d3web.utils.Pair;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.Environment;
@@ -97,6 +99,44 @@ public class KnowWEUtils {
 		StringBuilder temp = new StringBuilder(string);
 		maskJSPWikiMarkup(temp);
 		return temp.toString();
+	}
+
+	/**
+	 * Masks JSPWiki links (like [ArticleName]), but only if the link is invalid. A link is invalid, if there is no
+	 * article with the given name and the links is also no to an external site or an attachment.
+	 * This method can be used to gracefully handle rendering of copy&pasted texts containing [ and ].
+	 */
+	public static String maskInvalidJSPWikiLinks(ArticleManager articleManager, String text) {
+		Pattern linkFinder = Pattern.compile("\\[(?:[^\\]\\|]+\\|)?([^\\]]+)\\]");
+		Matcher matcher = linkFinder.matcher(text);
+		List<Pair<Integer, Integer>> escapeIndices = new ArrayList<Pair<Integer, Integer>>();
+		while (matcher.find()) {
+			String link = matcher.group(1);
+			if (articleManager.getArticle(link.replaceAll("#.*$", "")) == null
+					&& !link.startsWith("http")
+					&& !link.startsWith("file")
+					&& !link.startsWith("attach")) {
+				escapeIndices.add(new Pair<Integer, Integer>(matcher.start(), matcher.end()));
+			}
+		}
+		StringBuilder builder = new StringBuilder(text);
+		int shift = 0;
+		for (Pair<Integer, Integer> indices : escapeIndices) {
+			int start = indices.getA();
+			int end = indices.getB();
+			builder.insert(indices.getA() + shift++, "~");
+			// also escape opening brackets after the first one, but before the closing one
+			// if they are not escaped, JSPWiki will also make links fore these accidental link subsection
+			char[] chars = new char[end - start - 1];
+			builder.getChars(start + shift + 1, end + shift, chars, 0);
+			for (int i = 0; i < chars.length; i++) {
+				char aChar = chars[i];
+				if (aChar == '[') {
+					builder.insert(start + i + 1 + shift++, "~");
+				}
+			}
+		}
+		return builder.toString();
 	}
 
 	/**
