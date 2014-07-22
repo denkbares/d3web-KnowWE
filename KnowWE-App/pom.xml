@@ -47,7 +47,6 @@
 							<goal>build-classpath</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>target/dependencies</outputDirectory>
 							<overWriteReleases>false</overWriteReleases>
 							<overWriteSnapshots>false</overWriteSnapshots>
 							<overWriteIfNewer>true</overWriteIfNewer>
@@ -269,23 +268,6 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-OphtoVisD3</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
-			<id>drools</id>
-			<activation>
-				<property>
-					<name>drools</name>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Drools</artifactId>
 					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
