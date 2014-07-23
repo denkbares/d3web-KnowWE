@@ -1186,7 +1186,8 @@ public class Rdf2GoCore {
 				start = query.toLowerCase().indexOf("construct") - 9;
 			}
 			if (start == -1) start = 0;
-			return query.replace("\n", " ").replaceAll("\t|\\s\\s+", " ").substring(start, start + 75);
+            final int endIndex = query.length() - start > 75 ? start + 75 : query.length();
+            return query.replace("\n", " ").replaceAll("\t|\\s\\s+", " ").substring(start, endIndex);
 		}
 
 		private Object executeSparql() {
