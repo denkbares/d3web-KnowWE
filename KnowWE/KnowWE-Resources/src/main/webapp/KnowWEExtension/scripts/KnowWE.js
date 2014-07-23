@@ -697,7 +697,10 @@ var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
 			KNOWWE.core.init();
 		});
 		jq$(window).focus(function() {
-			var message = window.onbeforeunload();
+			var message = null;
+			if (window.onbeforeunload) {
+				message = window.onbeforeunload();
+			}
 			if (!message) {
 				KNOWWE.helper.observer.notify('update');
 			}
