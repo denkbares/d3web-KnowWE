@@ -28,7 +28,6 @@
 		<relativePath>.../KnowWE/pom.xml</relativePath>
 	</parent>
 
-	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE-App</artifactId>
 	<packaging>war</packaging>
 	<name>KnowWE-App</name>
