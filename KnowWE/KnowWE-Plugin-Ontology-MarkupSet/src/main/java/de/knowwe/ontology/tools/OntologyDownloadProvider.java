@@ -3,6 +3,8 @@
  */
 package de.knowwe.ontology.tools;
 
+import org.ontoware.rdf2go.model.Syntax;
+
 import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
@@ -29,11 +31,12 @@ public class OntologyDownloadProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		Tool download = getDownloadTool(section, userContext);
-		return ToolUtils.asArray(download);
+		Tool downloadXML = getDownloadTool(section, Syntax.RdfXml, "Download XML");
+		Tool downloadTurtle = getDownloadTool(section, Syntax.Turtle, "Download Turtle");
+		return ToolUtils.asArray(downloadXML, downloadTurtle);
 	}
 
-	protected Tool getDownloadTool(Section<?> section, UserContext userContext) {
+	protected Tool getDownloadTool(Section<?> section, Syntax syntax, String title) {
 
 		// check if ontology is empty
 		Rdf2GoCore ontology = Rdf2GoCore.getInstance(OntologyUtils.getOntologyCompiler(section));
@@ -47,17 +50,19 @@ public class OntologyDownloadProvider implements ToolProvider {
 			ontologyName = "ontology";
 		}
 
+		String extension = syntax.getFilenameExtension();
+
 		// JavaScript action
 		String jsAction = "window.location='action/OntologyDownloadAction" +
 				"?" + Attributes.TOPIC + "=" + section.getTitle() +
 				"&amp;" + Attributes.WEB + "=" + section.getWeb() +
 				"&amp;" + Attributes.SECTION_ID + "=" + section.getID() +
-				"&amp;" + OntologyDownloadAction.PARAM_FILENAME + "=" + ontologyName + ".rdf'";
+				"&amp;" + OntologyDownloadAction.PARAM_FILENAME + "=" + ontologyName + extension + "'";
 
 		// assemble download tool
 		return new DefaultTool(
 				"KnowWEExtension/d3web/icon/download16.gif",
-				"Download",
+				title,
 				"Download the entire ontology as single file for deployment.",
 				jsAction);
 	}

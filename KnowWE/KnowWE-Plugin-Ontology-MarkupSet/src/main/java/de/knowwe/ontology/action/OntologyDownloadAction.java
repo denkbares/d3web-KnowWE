@@ -6,6 +6,8 @@ package de.knowwe.ontology.action;
 import java.io.IOException;
 import java.io.StringWriter;
 
+import org.ontoware.rdf2go.model.Syntax;
+
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
@@ -33,12 +35,19 @@ public class OntologyDownloadAction extends AbstractAction {
 		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
 		Rdf2GoCore rdf2GoCore = compiler.getRdf2GoCore();
 
-		String mimetype = "application/rdf+xml; charset=UTF-8";
-		context.setContentType(mimetype);
+		Syntax syntax = null;
+		for (Syntax s : Syntax.collection()) {
+			if (filename.toLowerCase().endsWith(s.getFilenameExtension())) {
+				syntax = s;
+			}
+		}
+
+		String mimeType = syntax.getMimeType() + "; charset=UTF-8";
+		context.setContentType(mimeType);
 		context.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
 		StringWriter writer = new StringWriter();
-		rdf2GoCore.writeModel(writer);
+		rdf2GoCore.writeModel(writer, syntax);
 		String content = writer.toString();
         byte[] contentBytes = content.getBytes("UTF-8");
 		context.setContentLength(contentBytes.length);

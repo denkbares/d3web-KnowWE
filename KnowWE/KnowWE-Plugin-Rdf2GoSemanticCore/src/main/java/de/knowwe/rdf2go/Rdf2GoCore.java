@@ -1371,9 +1371,23 @@ public class Rdf2GoCore {
 	 * @created 03.02.2012
 	 */
 	public void writeModel(Writer out) throws ModelRuntimeException, IOException {
+		writeModel(out, Syntax.RdfXml);
+	}
+
+	/**
+	 * Writes the current repository model to the given writer in the specified
+	 * syntax.
+	 *
+	 * @param out the target to write the model to
+	 * @param syntax the syntax of the target file
+	 * @throws ModelRuntimeException
+	 * @throws IOException
+	 * @created 28.07.2014
+	 */
+	public void writeModel(Writer out, Syntax syntax) throws ModelRuntimeException, IOException {
 		this.lock.readLock().lock();
 		try {
-			model.writeTo(out);
+			model.writeTo(out, syntax);
 		}
 		finally {
 			this.lock.readLock().unlock();
