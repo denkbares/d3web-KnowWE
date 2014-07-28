@@ -24,9 +24,9 @@ import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import com.ecyrd.jspwiki.attachment.Attachment;
-import com.ecyrd.jspwiki.attachment.AttachmentManager;
-import com.ecyrd.jspwiki.providers.ProviderException;
+import org.apache.wiki.api.exceptions.ProviderException;
+import org.apache.wiki.attachment.Attachment;
+import org.apache.wiki.attachment.AttachmentManager;
 
 import de.knowwe.core.wikiConnector.WikiAttachment;
 

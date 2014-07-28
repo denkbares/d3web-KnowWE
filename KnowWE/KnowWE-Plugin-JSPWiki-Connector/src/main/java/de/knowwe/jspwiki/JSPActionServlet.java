@@ -21,8 +21,8 @@ package de.knowwe.jspwiki;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ecyrd.jspwiki.WikiContext;
-import com.ecyrd.jspwiki.WikiEngine;
+import org.apache.wiki.WikiContext;
+import org.apache.wiki.WikiEngine;
 
 import de.knowwe.core.action.AbstractActionServlet;
 import de.knowwe.core.action.ActionContext;

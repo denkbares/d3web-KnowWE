@@ -1,4 +1,4 @@
-<%@ page import="com.ecyrd.jspwiki.*" %>
+<%@ page import="org.apache.wiki.*" %>
 <%@ page import="de.knowwe.jspwiki.*" %>
 <%@ page import="de.knowwe.core.user.*" %>
 <%@ page import="de.knowwe.core.action.*" %>
@@ -9,7 +9,7 @@
 <%@ page import="de.knowwe.core.*" %>
 <%@ page import="de.knowwe.utils.*" %>
 <%@ page import="de.knowwe.user.*" %>
-<%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%!
 String findParam( PageContext ctx, String key )
     {

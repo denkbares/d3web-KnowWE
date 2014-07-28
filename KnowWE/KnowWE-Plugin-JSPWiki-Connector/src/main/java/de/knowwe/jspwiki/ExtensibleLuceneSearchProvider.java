@@ -3,9 +3,9 @@ package de.knowwe.jspwiki;
 import java.util.Collection;
 import java.util.List;
 
-import com.ecyrd.jspwiki.SearchResult;
-import com.ecyrd.jspwiki.providers.ProviderException;
-import com.ecyrd.jspwiki.search.LuceneSearchProvider;
+import org.apache.wiki.api.exceptions.ProviderException;
+import org.apache.wiki.search.LuceneSearchProvider;
+import org.apache.wiki.search.SearchResult;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;

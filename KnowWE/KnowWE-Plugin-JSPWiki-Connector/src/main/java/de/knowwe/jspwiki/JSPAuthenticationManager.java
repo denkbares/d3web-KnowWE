@@ -20,7 +20,7 @@ package de.knowwe.jspwiki;
 
 import java.security.Principal;
 
-import com.ecyrd.jspwiki.WikiContext;
+import org.apache.wiki.WikiContext;
 
 import de.knowwe.core.user.AuthenticationManager;
 

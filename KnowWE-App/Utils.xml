@@ -3,7 +3,7 @@
 <project name="KnowWE-App-Utils" default="update_resources denkbares">
 
 	<target name="update_properties">
-		<copy file="${basedir}/src/resources/local/WEB-INF/jspwiki.properties"
+		<copy file="/WEB-INF/jspwiki-custom.properties"
 			tofile="${basedir}/target/KnowWE-App-0.2-SNAPSHOT/WEB-INF/jspwiki.properties" />
 	</target>
 

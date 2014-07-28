@@ -9,7 +9,6 @@
 		<version>0.2-SNAPSHOT</version>
 	</parent>
 
-	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE-core</artifactId>
 	<packaging>jar</packaging>
 	<name>KnowWE-core</name>
@@ -28,7 +27,6 @@
 							<goal>build-classpath</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>target/dependencies</outputDirectory>
 							<overWriteReleases>false</overWriteReleases>
 							<overWriteSnapshots>false</overWriteSnapshots>
 							<overWriteIfNewer>true</overWriteIfNewer>
@@ -40,14 +38,6 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<repositories>
-		<repository>
-			<id>Bibsonomy</id>
-			<name>Bibsonomy</name>
-			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/bibsonomy</url>
-		</repository>
-	</repositories>
 
 	<dependencies>
 		<dependency>

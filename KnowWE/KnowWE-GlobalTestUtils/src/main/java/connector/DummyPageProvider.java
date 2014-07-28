@@ -35,7 +35,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-import com.ecyrd.jspwiki.providers.BasicAttachmentProvider;
+import org.apache.wiki.providers.BasicAttachmentProvider;
 
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;

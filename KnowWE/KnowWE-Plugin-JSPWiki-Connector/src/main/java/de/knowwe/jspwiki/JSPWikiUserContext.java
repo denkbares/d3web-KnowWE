@@ -26,7 +26,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import com.ecyrd.jspwiki.WikiContext;
+import org.apache.wiki.WikiContext;
 
 import de.knowwe.core.Attributes;
 import de.knowwe.core.user.AbstractUserContext;

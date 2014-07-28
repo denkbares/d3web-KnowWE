@@ -28,7 +28,6 @@
 							<goal>build-classpath</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>target/dependencies</outputDirectory>
 							<overWriteReleases>false</overWriteReleases>
 							<overWriteSnapshots>false</overWriteSnapshots>
 							<overWriteIfNewer>true</overWriteIfNewer>
@@ -45,8 +44,8 @@
 				<configuration>
 					<overlays>
 						<overlay>
-							<groupId>com.ecryd.jspwiki</groupId>
-							<artifactId>jspwiki</artifactId>
+							<groupId>org.apache.jspwiki</groupId>
+							<artifactId>jspwiki-war</artifactId>
 							<excludes>
 								<exclude>WEB-INF/lib/commons-*.jar</exclude>
 							</excludes>
@@ -121,9 +120,9 @@
 			of KnowWE. For that to work properly, it is important, that "<scope>runtime</scope>" 
 			stays in place. -->
 		<dependency>
-			<groupId>com.ecryd.jspwiki</groupId>
-			<artifactId>jspwiki</artifactId>
-			<version>2.8.2</version>
+			<groupId>org.apache.jspwiki</groupId>
+			<artifactId>jspwiki-war</artifactId>
+			<version>2.10.1</version>
 			<type>war</type>
 			<scope>runtime</scope>
 		</dependency>

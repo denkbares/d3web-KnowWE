@@ -2,8 +2,8 @@ package de.knowwe.jspwiki;
 
 import java.util.Arrays;
 
-import com.ecyrd.jspwiki.SearchResult;
-import com.ecyrd.jspwiki.WikiPage;
+import org.apache.wiki.WikiPage;
+import org.apache.wiki.search.SearchResult;
 
 public class PluggedSearchResult implements SearchResult, Comparable<PluggedSearchResult> {
 

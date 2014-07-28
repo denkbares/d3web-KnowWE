@@ -3,10 +3,10 @@ package de.knowwe.jspwiki;
 import java.io.File;
 import java.net.URI;
 
-import com.ecyrd.jspwiki.TextUtil;
-import com.ecyrd.jspwiki.providers.AbstractFileProvider;
-import com.ecyrd.jspwiki.providers.BasicAttachmentProvider;
-import com.ecyrd.jspwiki.providers.ProviderException;
+import org.apache.wiki.api.exceptions.ProviderException;
+import org.apache.wiki.providers.AbstractFileProvider;
+import org.apache.wiki.providers.BasicAttachmentProvider;
+import org.apache.wiki.util.TextUtil;
 
 import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;

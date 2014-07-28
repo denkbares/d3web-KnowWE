@@ -1,9 +1,6 @@
 <?xml version="1.0"?>
 <pagefilters>
 	<filter>
-		<class>com.matteo.filters.Strikethrough</class>
-	</filter>
-	<filter>
 		<class>de.knowwe.jspwiki.KnowWEPlugin</class>
 	</filter>
 </pagefilters>

@@ -20,7 +20,7 @@ package de.knowwe.jspwiki;
 
 import java.util.List;
 
-import com.ecyrd.jspwiki.SearchResult;
+import org.apache.wiki.search.SearchResult;
 
 /**
  * 
