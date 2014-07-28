@@ -120,7 +120,7 @@ public class Rdf2GoCore {
 	private static final ThreadPoolExecutor sparqlDaemonPool = createThreadPool(
 			sparqlThreadPool.getMaximumPoolSize(), "KnowWE-Sparql-Deamon");
 
-	public static final int DEFAULT_TIMEOUT = 10000;
+	public static final int DEFAULT_TIMEOUT = 15000;
 
 	private static final int DEFAULT_MAX_CACHE_SIZE = 1000000; // should be below 100 MB of cache (we count each cell)
 
