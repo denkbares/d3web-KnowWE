@@ -39,7 +39,6 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<testFailureIgnore>true</testFailureIgnore>
-					<argLine>-XX:-UseSplitVerifier</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
