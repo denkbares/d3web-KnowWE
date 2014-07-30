@@ -81,7 +81,7 @@ public class TestCaseUtils {
 
 	public static Collection<TestCaseProviderStorage> getTestCaseProviderStorages(Section<?> section) {
 		checkSection(section);
-		Collection<TestCaseProviderStorage> storages = new ArrayList<TestCaseProviderStorage>();
+		Collection<TestCaseProviderStorage> storages = new ArrayList<>();
 		Collection<D3webCompiler> compilers = Compilers.getCompilers(section, D3webCompiler.class);
 		for (D3webCompiler compiler : compilers) {
 			TestCaseProviderStorage storage = getTestCaseProviderStorage(compiler, section);
@@ -92,9 +92,7 @@ public class TestCaseUtils {
 
 	public static TestCaseProviderStorage getTestCaseProviderStorage(D3webCompiler compiler, Section<?> section) {
 		checkSection(section);
-		TestCaseProviderStorage storage = (TestCaseProviderStorage) section.getSectionStore().getObject(
-				compiler, PROVIDER_STORAGE_KEY);
-		return storage;
+		return (TestCaseProviderStorage) section.getSectionStore().getObject(compiler, PROVIDER_STORAGE_KEY);
 	}
 
 	public static TestCaseProviderStorage getTestCaseProviderStorage(Section<?> section) {
@@ -124,7 +122,7 @@ public class TestCaseUtils {
 		String[] packages = packageNames.toArray(new String[packageNames.size()]);
 		List<ProviderTriple> testCaseProviders = TestCaseUtils.getTestCaseProviders(
 				web, packages);
-		List<TestCaseProvider> found = new LinkedList<TestCaseProvider>();
+		List<TestCaseProvider> found = new LinkedList<>();
 		for (Triple<TestCaseProvider, Section<?>, Section<? extends PackageCompileType>> triple : testCaseProviders) {
 			TestCaseProvider provider = triple.getA();
 			if (nameRegex.matcher(provider.getName()).matches()) {
@@ -145,7 +143,7 @@ public class TestCaseUtils {
 	 */
 	public static List<ProviderTriple> getTestCaseProviders(UserContext context, Section<TestCasePlayerType> section) {
 		List<ProviderTriple> testCaseProviders = getTestCaseProviders(section);
-		List<ProviderTriple> filtered = new ArrayList<ProviderTriple>();
+		List<ProviderTriple> filtered = new ArrayList<>();
 		for (ProviderTriple triple : testCaseProviders) {
 			boolean userCanViewCase = Environment.getInstance().getWikiConnector().userCanViewArticle(
 					triple.getB().getTitle(), context.getRequest());
@@ -166,18 +164,16 @@ public class TestCaseUtils {
 	 * @created 07.10.2013
 	 */
 	public static List<ProviderTriple> getTestCaseProviders(Section<TestCasePlayerType> section) {
-		String[] kbpackages = DefaultMarkupType.getPackages(section,
+		String[] kbPackages = DefaultMarkupType.getPackages(section,
 				PackageManager.COMPILE_ATTRIBUTE_NAME);
-		String web = section.getWeb();
-		return de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(web, kbpackages);
+		return de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(section.getWeb(), kbPackages);
 	}
 
-	public static List<ProviderTriple> getTestCaseProviders(String web, String... kbpackages) {
+	public static List<ProviderTriple> getTestCaseProviders(String web, String... kbPackages) {
 		PackageManager packageManager = KnowWEUtils.getPackageManager(web);
-		List<ProviderTriple> providers = new LinkedList<ProviderTriple>();
-		for (String kbpackage : kbpackages) {
-			Collection<Section<?>> sectionsInPackage = packageManager.getSectionsOfPackage(kbpackage);
-			Set<Section<? extends PackageCompileType>> compileSections = packageManager.getCompileSections(kbpackage);
+		List<ProviderTriple> providers = new LinkedList<>();
+		for (String kbPackage : kbPackages) {
+			Collection<Section<?>> sectionsInPackage = packageManager.getSectionsOfPackage(kbPackage);
 
 			for (Section<?> section : sectionsInPackage) {
 
@@ -199,7 +195,7 @@ public class TestCaseUtils {
 
 	public static SequentialTestCase transformToSTC(TestCase testCase, String testCaseName, KnowledgeBase kb) {
 		SequentialTestCase stc = new SequentialTestCase();
-		Map<Date, String> rtcNames = new HashMap<Date, String>();
+		Map<Date, String> rtcNames = new HashMap<>();
 		if (testCase instanceof STCWrapper) {
 			// we just use the names given in the stc, because the TestCase
 			// interface does not support names

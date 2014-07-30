@@ -25,7 +25,6 @@ import java.net.URLDecoder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.d3web.core.io.progress.ProgressListener;
 import de.d3web.utils.Log;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
@@ -38,7 +37,7 @@ import de.knowwe.core.utils.progress.ProgressListenerManager;
 /**
  * This action handles the ajax upate request of the ci-build progress bar on
  * the dashboard.
- * 
+ *
  * @author Jochen Reutelshöfer (denkbares GmbH)
  * @created 18.07.2012
  */
@@ -54,7 +53,7 @@ public class CIGetProgressAction extends AbstractAction {
 		CIDashboard dashboard = CIDashboardManager.getDashboard(
 				KnowWEUtils.getArticleManager(web),
 				name);
-		ProgressListener listener = ProgressListenerManager.getInstance().getProgressListener(
+		AjaxProgressListener listener = ProgressListenerManager.getInstance().getProgressListener(
 				Integer.toString(dashboard.hashCode()));
 
 		float progress = 0;
@@ -62,12 +61,10 @@ public class CIGetProgressAction extends AbstractAction {
 		// ProgressListener already deregistered
 		String message = FINISHED;
 		if (listener != null) {
-			if (listener instanceof AjaxProgressListener) {
-				progress = ((AjaxProgressListener) listener).getProgress();
-				message = ((AjaxProgressListener) listener).getMessage();
-				if (message == null || message.isEmpty()) {
-					message = "Initializing...";
-				}
+			progress = listener.getProgress();
+			message = listener.getMessage();
+			if (message == null || message.isEmpty()) {
+				message = "Initializing...";
 			}
 		}
 		if (message.equals(FINISHED)) {

@@ -20,14 +20,11 @@
 
 package de.d3web.we.ci4ke.build;
 
-import de.d3web.testing.BuildResult;
-import de.d3web.testing.BuildResultPersistenceHandler;
-import de.d3web.we.ci4ke.dashboard.CIDashboard;
-import de.knowwe.core.Environment;
-import de.knowwe.core.wikiConnector.WikiAttachment;
-import de.knowwe.core.wikiConnector.WikiConnector;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.text.ParseException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -39,11 +36,16 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.text.ParseException;
+
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import de.d3web.testing.BuildResult;
+import de.d3web.testing.BuildResultPersistenceHandler;
+import de.d3web.we.ci4ke.dashboard.CIDashboard;
+import de.knowwe.core.Environment;
+import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.core.wikiConnector.WikiConnector;
 
 public class CIPersistence {
 
@@ -70,8 +72,7 @@ public class CIPersistence {
 			// nothing to do, 0 will be returned
 		}
 		if (attachment != null) {
-			int version = attachment.getVersion();
-			return version;
+			return attachment.getVersion();
 		}
 		return 0;
 	}
@@ -82,13 +83,7 @@ public class CIPersistence {
 			// we write the document as an attachment
 			write(document);
 		}
-		catch (TransformerFactoryConfigurationError e) {
-			throwUnecpectedWriterError(e);
-		}
-		catch (ParserConfigurationException e) {
-			throwUnecpectedWriterError(e);
-		}
-		catch (TransformerException e) {
+		catch (TransformerFactoryConfigurationError | ParserConfigurationException | TransformerException e) {
 			throwUnecpectedWriterError(e);
 		}
 	}
@@ -137,16 +132,7 @@ public class CIPersistence {
 			build = read(in);
 			build.setBuildNumber(buildVersion);
 		}
-		catch (ParserConfigurationException e) {
-			throwUnecpectedReadError(e);
-		}
-		catch (SAXException e) {
-			throwUnecpectedReadError(e);
-		}
-		catch (ParseException e) {
-			throwUnecpectedReadError(e);
-		}
-		catch (IllegalArgumentException e) {
+		catch (ParserConfigurationException | SAXException | ParseException | IllegalArgumentException e) {
 			throwUnecpectedReadError(e);
 		}
 		finally {
@@ -174,8 +160,7 @@ public class CIPersistence {
 	 */
 	public WikiAttachment getAttachment() throws IOException {
 		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
-		WikiAttachment attachment = wikiConnector.getAttachment(getAttachmentPath());
-		return attachment;
+		return wikiConnector.getAttachment(getAttachmentPath());
 	}
 
 	private String getAttachmentPath() {

@@ -28,8 +28,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -50,6 +48,7 @@ import org.apache.wiki.event.WikiEventListener;
 import org.apache.wiki.event.WikiEventUtils;
 import org.apache.wiki.event.WikiPageEvent;
 import org.apache.wiki.event.WikiPageRenameEvent;
+import org.apache.wiki.providers.WikiPageProvider;
 import org.apache.wiki.ui.TemplateManager;
 
 import de.d3web.plugin.Plugin;
@@ -66,7 +65,6 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.user.UserContextUtil;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.event.InitializedArticlesEvent;
 import de.knowwe.event.PageRenderedEvent;
 
@@ -232,7 +230,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 		WikiEngine engine = wikiContext.getEngine();
 		if (engine != null) {
-			String pureText = engine.getPureText(title, wikiContext.getPage().getVersion());
+			String pureText = engine.getPureText(title, WikiPageProvider.LATEST_VERSION);
 			if (!content.equals(pureText)) return content;
 		}
 		ArticleManager articleManager =
@@ -246,7 +244,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		}
 
 		try {
-			String stringRaw = (String) httpRequest.getAttribute("renderresult");
+			String stringRaw = (String) httpRequest.getAttribute("renderresult" + title);
 			if (stringRaw != null) return stringRaw;
 
 			Article article = updateArticle(wikiContext, content);
@@ -266,7 +264,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				includeDOMResources(wikiContext);
 			}
 			stringRaw = renderResult.toStringRaw();
-			userContext.getRequest().setAttribute("renderresult", stringRaw);
+			userContext.getRequest().setAttribute("renderresult" + title, stringRaw);
 			return stringRaw;
 		}
 		catch (UpdateNotAllowedException e) {
@@ -288,7 +286,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			return null;
 		}
 
-		String title = wikiContext.getPage().getName();
+		String title = wikiContext.getRealPage().getName();
 
 		String originalText = "";
 		Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
@@ -304,7 +302,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
 			articleManager.open();
 			try {
-				deleteRenamedArticles(title);
+				//deleteRenamedArticles(title);
 				article = Environment.getInstance().buildAndRegisterArticle(
 						Environment.DEFAULT_WEB, title, content, fullParse);
 			}
@@ -362,25 +360,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		renderResult.appendHtmlElement("div", message, "style",
 				"white-space: pre; overflow: hidden");
 		return renderResult.toStringRaw();
-	}
-
-	private void deleteRenamedArticles(String title) {
-		String changeNote = Environment.getInstance().getWikiConnector().getChangeNote(title, -1);
-		if (changeNote == null) return;
-		Pattern renamePattern = Pattern.compile("^(.+)" + Pattern.quote(" ==> " + title) + "$");
-		Matcher renameMatcher = renamePattern.matcher(changeNote);
-		if (renameMatcher.find()) {
-			// from the change note we get the hint, that an article was renamed
-			String oldTitle = renameMatcher.group(1);
-			WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
-			ArticleManager articleManager = Environment.getInstance().getArticleManager(
-					Environment.DEFAULT_WEB);
-			Article oldArticle = articleManager.getArticle(oldTitle);
-			// only delete in KnowWE if it exists in KnowWE but not JSPWiki
-			if (!wikiConnector.doesArticleExist(oldTitle) && oldArticle != null) {
-				articleManager.deleteArticle(oldArticle);
-			}
-		}
 	}
 
 	/**
@@ -460,12 +439,19 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 		}
 		else if (event instanceof WikiPageRenameEvent) {
-			WikiPageRenameEvent e = (WikiPageRenameEvent) event;
+			WikiPageRenameEvent renameEvent = (WikiPageRenameEvent) event;
 
-			ArticleManager amgr = Environment.getInstance()
-					.getArticleManager(Environment.DEFAULT_WEB);
-
-			amgr.deleteArticle(amgr.getArticle(e.getOldPageName()));
+			ArticleManager manager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+			Article oldArticle = manager.getArticle(renameEvent.getOldPageName());
+			manager.open();
+			try {
+				manager.deleteArticle(oldArticle);
+				Environment.getInstance().buildAndRegisterArticle(
+						Environment.DEFAULT_WEB, renameEvent.getNewPageName(), oldArticle.getText(), false);
+			}
+			finally {
+				manager.commit();
+			}
 		}
 		else if (event instanceof WikiEngineEvent) {
 			if (event.getType() == WikiEngineEvent.INITIALIZED) {

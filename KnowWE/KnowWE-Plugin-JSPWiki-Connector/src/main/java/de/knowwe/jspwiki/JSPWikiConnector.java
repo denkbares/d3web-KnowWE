@@ -271,8 +271,12 @@ public class JSPWikiConnector implements WikiConnector {
 			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
 			Attachment attachment = attachmentManager.getAttachmentInfo(actualPath);
 
-			if (attachment == null) return null;
-			else if (entry == null) return new JSPWikiAttachment(attachment, attachmentManager);
+			if (attachment == null) {
+				return null;
+			}
+			else if (entry == null) {
+				return new JSPWikiAttachment(attachment, attachmentManager);
+			}
 			else {
 				InputStream attachmentStream = attachmentManager.getAttachmentStream(attachment);
 				ZipInputStream zipStream = new ZipInputStream(attachmentStream);
@@ -608,8 +612,12 @@ public class JSPWikiConnector implements WikiConnector {
 	public boolean isArticleLocked(String title) {
 		PageManager mgr = engine.getPageManager();
 		WikiPage page = new WikiPage(engine, title);
-		if (mgr.getCurrentLock(page) == null) return false;
-		else return true;
+		if (mgr.getCurrentLock(page) == null) {
+			return false;
+		}
+		else {
+			return true;
+		}
 	}
 
 	/**
@@ -648,7 +656,7 @@ public class JSPWikiConnector implements WikiConnector {
 	@Override
 	public String renderWikiSyntax(String content, HttpServletRequest request) {
 		try {
-			WikiContext context = engine.createContext(request, WikiContext.VIEW);
+			WikiContext context = engine.createContext(null, WikiContext.VIEW);
 			content = engine.textToHTML(context, content);
 		}
 		catch (InternalWikiException e) {
