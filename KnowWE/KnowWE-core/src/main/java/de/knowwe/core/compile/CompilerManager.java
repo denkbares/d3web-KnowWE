@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 import de.d3web.collections.PriorityList;
 import de.d3web.collections.PriorityList.Group;
@@ -45,7 +44,7 @@ import de.knowwe.core.report.Messages;
  */
 public class CompilerManager {
 
-	private static final Map<Class<? extends Compiler>, ScriptManager<? extends Compiler>> scriptManagers = new HashMap<Class<? extends Compiler>, ScriptManager<? extends Compiler>>();
+	private static final Map<Class<? extends Compiler>, ScriptManager<? extends Compiler>> scriptManagers = new HashMap<>();
 
 	private int compilationCount = 0;
 	private final PriorityList<Double, Compiler> compilers;
@@ -55,12 +54,12 @@ public class CompilerManager {
 	private Iterator<Group<Double, Compiler>> running = null;
 	private final ExecutorService threadPool;
 	private final Object lock = new Object();
-	private static final Map<Thread, Object> compileThreads = Collections.synchronizedMap(new WeakHashMap<Thread, Object>());
+	private static final Map<Thread, Object> compileThreads = Collections.synchronizedMap(new WeakHashMap<>());
 
 	public CompilerManager(ArticleManager articleManager) {
 		this.articleManager = articleManager;
-		this.compilerCache = new HashSet<Compiler>();
-		this.compilers = new PriorityList<Double, Compiler>(5d);
+		this.compilerCache = new HashSet<>();
+		this.compilers = new PriorityList<>(5d);
 		this.threadPool = createExecutorService();
 
 	}
@@ -74,14 +73,10 @@ public class CompilerManager {
 
 	private static ExecutorService createExecutorService() {
 		int threadCount = Runtime.getRuntime().availableProcessors() * 3 / 2 + 1;
-		ExecutorService pool = Executors.newFixedThreadPool(threadCount, new ThreadFactory() {
-
-			@Override
-			public Thread newThread(Runnable r) {
-				Thread thread = new Thread(r, "KnowWE-Compiler");
-				compileThreads.put(thread, null);
-				return thread;
-			}
+		ExecutorService pool = Executors.newFixedThreadPool(threadCount, runnable -> {
+			Thread thread = new Thread(runnable, "KnowWE-Compiler");
+			compileThreads.put(thread, null);
+			return thread;
 		});
 		Log.fine("created multicore thread pool of size " + threadCount);
 		return pool;
@@ -100,7 +95,7 @@ public class CompilerManager {
 		@SuppressWarnings("unchecked")
 		ScriptManager<C> result = (ScriptManager<C>) scriptManagers.get(compilerClass);
 		if (result == null) {
-			result = new ScriptManager<C>(compilerClass);
+			result = new ScriptManager<>(compilerClass);
 			scriptManagers.put(compilerClass, result);
 		}
 		return result;
@@ -143,28 +138,24 @@ public class CompilerManager {
 			running = compilers.groupIterator();
 			compilationCount++;
 		}
-		threadPool.execute(new Runnable() {
-
-			@Override
-			public void run() {
-				long startTime = System.currentTimeMillis();
-				try {
-					doCompile(added, removed);
+		threadPool.execute(() -> {
+			long startTime = System.currentTimeMillis();
+			try {
+				doCompile(added, removed);
+			}
+			catch (Throwable e) {
+				Log.severe("Unexpected internal error while starting compilation.", e);
+			}
+			finally {
+				synchronized (lock) {
+					running = null;
+					Log.info("Compiled " + added.size() + " added and " + removed.size()
+							+ " removed section" + (removed.size() != 1 ? "s" : "")
+							+ " after " + (System.currentTimeMillis() - startTime)
+							+ "ms");
+					lock.notifyAll();
 				}
-				catch (Throwable e) {
-					Log.severe("Unexpected internal error while starting compilation.", e);
-				}
-				finally {
-					synchronized (lock) {
-						running = null;
-						Log.info("Compiled " + added.size() + " added and " + removed.size()
-								+ " removed section" + (removed.size() != 1 ? "s" : "")
-								+ " after " + (System.currentTimeMillis() - startTime)
-								+ "ms");
-						lock.notifyAll();
-					}
-					EventManager.getInstance().fireEvent(new CompilationFinishedEvent(CompilerManager.this));
-				}
+				EventManager.getInstance().fireEvent(new CompilationFinishedEvent(CompilerManager.this));
 			}
 		});
 		return true;
@@ -184,7 +175,7 @@ public class CompilerManager {
 
 			// start all simultaneous compilers and
 			// observe the active ones until they all have terminated
-			final Set<Compiler> activeCompilers = new LinkedHashSet<Compiler>(simultaneousCompilers);
+			final Set<Compiler> activeCompilers = new LinkedHashSet<>(simultaneousCompilers);
 			for (final Compiler compiler : simultaneousCompilers) {
 				// wait until we are allowed to compile
 				threadPool.execute(new Runnable() {

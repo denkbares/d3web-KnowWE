@@ -49,17 +49,17 @@ public class DefaultArticleManager implements ArticleManager {
 	/**
 	 * Stores Articles for article-names
 	 */
-	private Map<String, Article> articleMap = Collections.synchronizedMap(new HashMap<String, Article>());
+	private Map<String, Article> articleMap = Collections.synchronizedMap(new HashMap<>());
 
-	private final Collection<String> deleteAfterCompile = Collections.synchronizedSet(new HashSet<String>());
+	private final Collection<String> deleteAfterCompile = Collections.synchronizedSet(new HashSet<>());
 
 	private final String web;
 
 	private final CompilerManager compilerManager;
 
 	private final ReentrantLock mainLock = new ReentrantLock(true);
-	private List<Section<?>> added = new ArrayList<Section<?>>();
-	private List<Section<?>> removed = new ArrayList<Section<?>>();
+	private List<Section<?>> added = new ArrayList<>();
+	private List<Section<?>> removed = new ArrayList<>();
 
 	public DefaultArticleManager(String web) {
 		this.web = web;
@@ -182,8 +182,8 @@ public class DefaultArticleManager implements ArticleManager {
 		try {
 			if (mainLock.getHoldCount() == 1) {
 				compilerManager.compile(added, removed);
-				added = new ArrayList<Section<?>>();
-				removed = new ArrayList<Section<?>>();
+				added = new ArrayList<>();
+				removed = new ArrayList<>();
 				synchronized (deleteAfterCompile) {
 					for (Iterator<String> iterator = deleteAfterCompile.iterator(); iterator.hasNext(); ) {
 						articleMap.remove(iterator.next());
