@@ -32,7 +32,7 @@ import de.knowwe.testcases.TimeStampType;
  * @author Reinhard Hatko
  * @created 16.03.2011
  */
-final class TestcaseTableLineSubtreeHandler extends D3webHandler<TestcaseTableLine> {
+final class TestcaseTableLineSubtreeHandler implements D3webHandler<TestcaseTableLine> {
 
 	@Override
 	public Collection<Message> create(D3webCompiler article, Section<TestcaseTableLine> s) {

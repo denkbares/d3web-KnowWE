@@ -10,7 +10,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
-public class TerminologyLoopDetectionHandler<TermObject extends TerminologyObject> extends D3webHandler<D3webTermDefinition<TermObject>> {
+public class TerminologyLoopDetectionHandler<TermObject extends TerminologyObject> implements D3webHandler<D3webTermDefinition<TermObject>> {
 
 	public static final String LOOP_DETECTED = "loopDetected";
 	public static final String REMOVE_PARENTS = "removeParents";

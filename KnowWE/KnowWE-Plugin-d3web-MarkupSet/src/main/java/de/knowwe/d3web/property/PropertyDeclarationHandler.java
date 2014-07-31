@@ -48,7 +48,7 @@ import de.knowwe.d3web.property.PropertyObjectReference.PropertyAnswerReference;
  * @author Markus Friedrich, Albrecht Striffler (denkbares GmbH)
  * @created 10.11.2010
  */
-public class PropertyDeclarationHandler extends D3webHandler<PropertyDeclarationType> {
+public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarationType> {
 
 	@Override
 	public Collection<Message> create(D3webCompiler compiler, Section<PropertyDeclarationType> section) {

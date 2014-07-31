@@ -66,7 +66,7 @@ public class NumericCondLine extends AbstractType {
 	 * @author Jochen
 	 * @created 03.08.2010
 	 */
-	static class CheckConditionHandler extends D3webHandler<NumericCondLine> {
+	static class CheckConditionHandler implements D3webHandler<NumericCondLine> {
 
 		@Override
 		public Collection<Message> create(D3webCompiler compiler, Section<NumericCondLine> s) {

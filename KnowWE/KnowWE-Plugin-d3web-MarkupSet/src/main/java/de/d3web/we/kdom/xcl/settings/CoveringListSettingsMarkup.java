@@ -73,7 +73,7 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 		this.addCompileScript(Priority.HIGHEST, new CoveringListSettingsHandler());
 	}
 
-	public class CoveringListSettingsHandler extends D3webHandler<CoveringListSettingsMarkup> {
+	public class CoveringListSettingsHandler implements D3webHandler<CoveringListSettingsMarkup> {
 
 		@Override
 		public Collection<Message> create(D3webCompiler compiler, Section<CoveringListSettingsMarkup> s) {

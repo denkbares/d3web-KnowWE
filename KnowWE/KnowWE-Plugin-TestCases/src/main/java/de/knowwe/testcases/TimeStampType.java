@@ -105,7 +105,7 @@ public class TimeStampType extends AbstractType {
 		return result;
 	}
 
-	class TimeStampSubtreeHandler extends D3webHandler<TimeStampType> {
+	class TimeStampSubtreeHandler implements D3webHandler<TimeStampType> {
 
 		@Override
 		public Collection<Message> create(D3webCompiler compiler, Section<TimeStampType> s) {

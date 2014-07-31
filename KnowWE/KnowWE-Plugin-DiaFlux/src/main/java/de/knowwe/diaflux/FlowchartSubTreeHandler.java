@@ -62,7 +62,7 @@ import de.knowwe.kdom.xml.XMLContent;
  * @author Reinhard Hatko
  * @created on: 12.10.2009
  */
-public class FlowchartSubTreeHandler extends D3webCompileScript<FlowchartType> {
+public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType> {
 
 	public static final String ORIGIN_KEY = "diafluxorigin";
 	public static final String ICON_KEY = "diafluxicon";

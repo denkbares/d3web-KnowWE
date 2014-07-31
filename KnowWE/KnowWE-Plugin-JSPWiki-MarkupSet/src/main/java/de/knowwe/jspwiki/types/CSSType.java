@@ -21,11 +21,7 @@ package de.knowwe.jspwiki.types;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.user.UserContext;
 
 /**
  * 
@@ -39,18 +35,14 @@ public class CSSType extends AbstractType {
 				Pattern.DOTALL | Pattern.MULTILINE));
 		addChildType(new SectionHeaderType());
 		addChildType(new SectionContentType());
-		this.setRenderer(new Renderer() {
-
-			@Override
-			public void render(Section<?> section, UserContext user, RenderResult result) {
-				String text = section.getText();
-				String customStyle = CustomStyleMatcher.getCustomStyle(text);
-				if (customStyle != null) {
-					result.append(text.replaceFirst("%%\\(class:([^)]+)\\)", "%%" + customStyle));
-				}
-				else {
-					result.append(text);
-				}
+		this.setRenderer((section, user, result) -> {
+			String text = section.getText();
+			String customStyle = CustomStyleMatcher.getCustomStyle(text);
+			if (customStyle != null) {
+				result.append(text.replaceFirst("%%\\(class:([^)]+)\\)", "%%" + customStyle));
+			}
+			else {
+				result.append(text);
 			}
 		});
 	}

@@ -20,8 +20,6 @@
 
 package de.d3web.we.kdom.questionTree;
 
-import java.util.Collection;
-
 import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
@@ -29,7 +27,6 @@ import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompileScript;
-import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.AnswerDefinition;
 import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.reviseHandler.D3webHandler;
@@ -39,7 +36,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.dashtree.DashTreeElement;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
@@ -105,37 +101,28 @@ public class AnswerLine extends AbstractType {
 			this.setSectionFinder(new OneOfStringFinder("<init>"));
 			this.setRenderer(StyleRenderer.KEYWORDS);
 
-			this.addCompileScript(new D3webCompileScript<InitFlag>() {
+			this.addCompileScript((D3webCompileScript<InitFlag>) (compiler, section) -> {
+				Section<AnswerDefinition> aDef = Sections.findSuccessor(
+						section.getParent(), AnswerDefinition.class);
 
-				@Override
-				public void compile(D3webCompiler compiler, Section<InitFlag> section) {
-					Section<AnswerDefinition> aDef = Sections.findSuccessor(
-							section.getParent(), AnswerDefinition.class);
+				Section<? extends QuestionDefinition> qdef = aDef.get().getQuestionSection(aDef);
 
-					Section<? extends QuestionDefinition> qdef = aDef.get().getQuestionSection(
-							aDef);
+				if (qdef != null) {
+					Question question = qdef.get().getTermObject(compiler, qdef);
 
-					if (qdef != null) {
+					String answerName = aDef.get().getTermObject(compiler, aDef).getName();
 
-						Question question = qdef.get().getTermObject(compiler, qdef);
+					InfoStore infoStore = question.getInfoStore();
+					String p = infoStore.getValue(BasicProperties.INIT);
 
-						String answerName = aDef.get().getTermObject(compiler, aDef).getName();
-
-						InfoStore infoStore = question.getInfoStore();
-						Object p = infoStore.getValue(BasicProperties.INIT);
-
-						if (p == null) {
-							infoStore.addValue(BasicProperties.INIT, answerName);
-						}
-						else {
-							if (p instanceof String) {
-								String newValue = ((String) p).concat(";" + answerName);
-								infoStore.addValue(BasicProperties.INIT, newValue);
-							}
-
-						}
-
+					if (p == null) {
+						infoStore.addValue(BasicProperties.INIT, answerName);
 					}
+					else {
+						String newValue = p.concat(";" + answerName);
+						infoStore.addValue(BasicProperties.INIT, newValue);
+					}
+
 				}
 			});
 		}
@@ -160,37 +147,28 @@ public class AnswerLine extends AbstractType {
 					QTEXT_START_SYMBOL)));
 
 			this.setRenderer(StyleRenderer.PROMPT);
-			this.addCompileScript(new D3webHandler<AnswerText>() {
+			this.addCompileScript((D3webHandler<AnswerText>) (compiler, sec) -> {
 
-				@Override
-				public Collection<Message> create(D3webCompiler compiler, Section<AnswerText> sec) {
+				Section<AnswerDefinition> aDef = Sections.findSuccessor(
+						sec.getParent(), AnswerDefinition.class);
 
-					Section<AnswerDefinition> aDef = Sections.findSuccessor(
-							sec.getParent(), AnswerDefinition.class);
+				Section<? extends QuestionDefinition> qSec = aDef.get().getQuestionSection(aDef);
 
-					Section<? extends QuestionDefinition> qSec = aDef.get().getQuestionSection(aDef);
+				if (qSec != null) {
 
-					if (aDef != null && qSec != null) {
+					Question question = qSec.get().getTermObject(compiler, qSec);
+					Choice choice = aDef.get().getTermObject(compiler, aDef);
 
-						Question question = qSec.get().getTermObject(compiler, qSec);
-						Choice choice = aDef.get().getTermObject(compiler, aDef);
-
-						if (question != null && choice != null) {
-							choice.getInfoStore().addValue(MMInfo.PROMPT,
-									AnswerText.getAnswerText(sec));
-							return Messages.asList(Messages.objectCreatedNotice(
-									"Answer text set"));
-						}
+					if (question != null && choice != null) {
+						choice.getInfoStore().addValue(MMInfo.PROMPT,
+								AnswerText.getAnswerText(sec));
+						return Messages.asList(Messages.objectCreatedNotice(
+								"Answer text set"));
 					}
-					return Messages.asList(Messages.objectCreationError(
-							D3webUtils.getD3webBundle()
-									.getString("KnowWE.questiontree.questiontext")));
 				}
-
-				@Override
-				public void destroy(D3webCompiler article, Section<AnswerText> sec) {
-					// text is destroyed together with object
-				}
+				return Messages.asList(Messages.objectCreationError(
+						D3webUtils.getD3webBundle()
+								.getString("KnowWE.questiontree.questiontext")));
 			});
 		}
 

@@ -21,16 +21,9 @@
 package de.d3web.we.kdom.questionTree;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
-import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.terminology.Choice;
-import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
-import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
@@ -39,7 +32,6 @@ import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.we.kdom.questionTree.indication.IndicationHandler;
 import de.d3web.we.knowledgebase.D3webCompiler;
-import de.d3web.we.object.AnswerDefinition;
 import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.d3web.we.utils.D3webUtils;
@@ -52,11 +44,8 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.kdom.dashtree.DashTreeTermRelationScript;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
-import de.knowwe.kdom.dashtree.DashTreeElement;
-import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
 import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
@@ -145,76 +134,57 @@ public class QuestionLine extends AbstractType {
 			this.setRenderer(StyleRenderer.NUMBER);
 			this.setSectionFinder(new EmbracedContentFinder(BOUNDS_OPEN, BOUNDS_CLOSE));
 
-			this.addCompileScript(Priority.HIGH, new D3webHandler<NumBounds>() {
+			this.addCompileScript(Priority.HIGH, (D3webHandler<NumBounds>) (article, s) -> {
 
-				/**
-				 * creates the bound-property for a bound-definition
-				 *
-				 * @param article
-				 * @param s
-				 * @return
-				 */
-				@Override
-				public Collection<Message> create(D3webCompiler article, Section<NumBounds> s) {
-
-					Double lower = s.get().getLowerBound(s);
-					Double upper = s.get().getUpperBound(s);
-					if (lower == null || upper == null) {
-						// if the numbers cannot be found throw error
-						return Messages.asList(Messages.objectCreationError(
-								D3webUtils.getD3webBundle()
-										.getString("KnowWE.questiontree.incorrectinterval")));
-					}
-
-					Section<QuestionDefinition> qDef = Sections.findSuccessor(
-							s.getParent(), QuestionDefinition.class);
-
-					if (qDef != null) {
-
-						Question question = qDef.get().getTermObject(article, qDef);
-						if (!(question instanceof QuestionNum)) {
-							// if not numerical question throw error
-							return Messages.asList(Messages.objectCreationError(
-									D3webUtils.getD3webBundle()
-											.getString("KnowWE.questiontree.onlyfornumerical")));
-						}
-						try {
-							// trying to create interval
-							// --> throws IntervalException if
-							// for example lower > upper
-							NumericalInterval interval = new NumericalInterval(lower,
-									upper);
-							interval.checkValidity();
-							question.getInfoStore().addValue(BasicProperties.QUESTION_NUM_RANGE,
-									interval);
-							return Messages.asList(Messages.objectCreatedNotice(
-									D3webUtils.getD3webBundle()
-											.getString("KnowWE.questiontree.setnumerical")));
-						}
-						catch (IntervalException e) {
-							return Messages.asList(Messages.objectCreationError(
-									D3webUtils.getD3webBundle()
-											.getString("KnowWE.questiontree.invalidinterval")));
-						}
-
-					}
+				Double lower = s.get().getLowerBound(s);
+				Double upper = s.get().getUpperBound(s);
+				if (lower == null || upper == null) {
+					// if the numbers cannot be found throw error
 					return Messages.asList(Messages.objectCreationError(
 							D3webUtils.getD3webBundle()
-									.getString("KnowWE.questiontree.numerical")));
+									.getString("KnowWE.questiontree.incorrectinterval")));
 				}
 
-				@Override
-				public void destroy(D3webCompiler article, Section<NumBounds> sec) {
-					// bounds are destroyed together with question
+				Section<QuestionDefinition> qDef = Sections.findSuccessor(
+						s.getParent(), QuestionDefinition.class);
+
+				if (qDef != null) {
+
+					Question question = qDef.get().getTermObject(article, qDef);
+					if (!(question instanceof QuestionNum)) {
+						// if not numerical question throw error
+						return Messages.asList(Messages.objectCreationError(
+								D3webUtils.getD3webBundle()
+										.getString("KnowWE.questiontree.onlyfornumerical")));
+					}
+					try {
+						// trying to create interval
+						// --> throws IntervalException if
+						// for example lower > upper
+						NumericalInterval interval = new NumericalInterval(lower,
+								upper);
+						interval.checkValidity();
+						question.getInfoStore().addValue(BasicProperties.QUESTION_NUM_RANGE,
+								interval);
+						return Messages.asList(Messages.objectCreatedNotice(
+								D3webUtils.getD3webBundle()
+										.getString("KnowWE.questiontree.setnumerical")));
+					}
+					catch (IntervalException e) {
+						return Messages.asList(Messages.objectCreationError(
+								D3webUtils.getD3webBundle()
+										.getString("KnowWE.questiontree.invalidinterval")));
+					}
+
 				}
+				return Messages.asList(Messages.objectCreationError(
+						D3webUtils.getD3webBundle()
+								.getString("KnowWE.questiontree.numerical")));
 			});
 		}
 
 		/**
-		 * returns the lower bound of the interval as Double if correctly defined
-		 *
-		 * @param s
-		 * @return
+		 * Returns the lower bound of the interval as Double if correctly defined
 		 */
 		public Double getLowerBound(Section<NumBounds> s) {
 			String originalText = s.getText();
@@ -227,7 +197,7 @@ public class QuestionLine extends AbstractType {
 					d = Double.parseDouble(numbers[0]);
 					return d;
 				}
-				catch (Exception e) {
+				catch (Exception ignored) {
 
 				}
 
@@ -237,10 +207,7 @@ public class QuestionLine extends AbstractType {
 		}
 
 		/**
-		 * returns the upper bound of the interval as Double if correctly defined
-		 *
-		 * @param s
-		 * @return
+		 * Returns the upper bound of the interval as Double if correctly defined
 		 */
 		public Double getUpperBound(Section<NumBounds> s) {
 			String originalText = s.getText();
@@ -253,7 +220,7 @@ public class QuestionLine extends AbstractType {
 					d = Double.parseDouble(numbers[1]);
 					return d;
 				}
-				catch (Exception e) {
+				catch (Exception ignored) {
 
 				}
 
@@ -287,43 +254,27 @@ public class QuestionLine extends AbstractType {
 
 			this.setSectionFinder(new EmbracedContentFinder(UNIT_OPEN, UNIT_CLOSE));
 
-			this.addCompileScript(Priority.HIGH, new D3webHandler<NumUnit>() {
+			this.addCompileScript(Priority.HIGH, (D3webHandler<NumUnit>) (article, s) -> {
+				Section<QuestionDefinition> qDef = Sections.findSuccessor(
+						s.getParent(), QuestionDefinition.class);
 
-				/**
-				 * creates the unit-property for a unit-definition
-				 *
-				 * @param article
-				 * @param s
-				 * @return
-				 */
-				@Override
-				public Collection<Message> create(D3webCompiler article, Section<NumUnit> s) {
-					Section<QuestionDefinition> qDef = Sections.findSuccessor(
-							s.getParent(), QuestionDefinition.class);
+				if (qDef != null) {
 
-					if (qDef != null) {
-
-						Question question = qDef.get().getTermObject(article, qDef);
-						if (!(question instanceof QuestionNum)) {
-							return Messages.asList(Messages.objectCreationError(
-									D3webUtils.getD3webBundle()
-											.getString("KnowWE.questiontree.onlyfornumerical")));
-						}
-						question.getInfoStore().addValue(MMInfo.UNIT, s.get().getUnit(s));
-						return Messages.asList(Messages.objectCreatedNotice(
+					Question question = qDef.get().getTermObject(article, qDef);
+					if (!(question instanceof QuestionNum)) {
+						return Messages.asList(Messages.objectCreationError(
 								D3webUtils.getD3webBundle()
-										.getString("KnowWE.questiontree.setunit")));
-
+										.getString("KnowWE.questiontree.onlyfornumerical")));
 					}
-					return Messages.asList(Messages.objectCreationError(
+					question.getInfoStore().addValue(MMInfo.UNIT, s.get().getUnit(s));
+					return Messages.asList(Messages.objectCreatedNotice(
 							D3webUtils.getD3webBundle()
-									.getString("KnowWE.questiontree.unit")));
-				}
+									.getString("KnowWE.questiontree.setunit")));
 
-				@Override
-				public void destroy(D3webCompiler article, Section<NumUnit> sec) {
-					// unit is destroyed together with question
 				}
+				return Messages.asList(Messages.objectCreationError(
+						D3webUtils.getD3webBundle()
+								.getString("KnowWE.questiontree.unit")));
 			});
 		}
 
@@ -339,38 +290,28 @@ public class QuestionLine extends AbstractType {
 	static class AbstractFlag extends AbstractType {
 
 		public AbstractFlag() {
-			this.setSectionFinder(new OneOfStringFinder(new String[] {
-					"<abstract>", "<abstrakt>" }));
+			this.setSectionFinder(new OneOfStringFinder("<abstract>", "<abstrakt>"));
 			this.setRenderer(new StyleRenderer(StyleRenderer.KEYWORDS, MaskMode.htmlEntities));
 
-			this.addCompileScript(Priority.HIGH, new D3webHandler<AbstractFlag>() {
+			this.addCompileScript(Priority.HIGH, (D3webHandler<AbstractFlag>) (compiler, s) -> {
 
-				@Override
-				public Collection<Message> create(D3webCompiler compiler, Section<AbstractFlag> s) {
+				Section<QuestionDefinition> qDef = Sections.findSuccessor(
+						s.getParent(), QuestionDefinition.class);
 
-					Section<QuestionDefinition> qDef = Sections.findSuccessor(
-							s.getParent(), QuestionDefinition.class);
-
-					if (qDef != null) {
-						Question question = qDef.get().getTermObject(compiler, qDef);
-						if (question != null) {
-							question.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION,
-									Boolean.TRUE);
-							return Messages.asList(Messages.objectCreatedNotice(
-									D3webUtils.getD3webBundle()
-											.getString("KnowWE.questiontree.abstractquestion")));
-						}
-
+				if (qDef != null) {
+					Question question = qDef.get().getTermObject(compiler, qDef);
+					if (question != null) {
+						question.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION,
+								Boolean.TRUE);
+						return Messages.asList(Messages.objectCreatedNotice(
+								D3webUtils.getD3webBundle()
+										.getString("KnowWE.questiontree.abstractquestion")));
 					}
-					return Messages.asList(Messages.objectCreationError(
-							D3webUtils.getD3webBundle()
-									.getString("KnowWE.questiontree.abstractflag")));
-				}
 
-				@Override
-				public void destroy(D3webCompiler article, Section<AbstractFlag> sec) {
-					// flag is destroyed together with question
 				}
+				return Messages.asList(Messages.objectCreationError(
+						D3webUtils.getD3webBundle()
+								.getString("KnowWE.questiontree.abstractflag")));
 			});
 		}
 	}
@@ -391,35 +332,26 @@ public class QuestionLine extends AbstractType {
 					QTEXT_START_SYMBOL)));
 
 			this.setRenderer(StyleRenderer.PROMPT);
-			this.addCompileScript(Priority.HIGH, new D3webHandler<QuestionText>() {
+			this.addCompileScript(Priority.HIGH, (D3webHandler<QuestionText>) (compiler, sec) -> {
 
-				@Override
-				public Collection<Message> create(D3webCompiler compiler, Section<QuestionText> sec) {
+				Section<QuestionDefinition> qDef = Sections.findSuccessor(
+						sec.getParent(), QuestionDefinition.class);
 
-					Section<QuestionDefinition> qDef = Sections.findSuccessor(
-							sec.getParent(), QuestionDefinition.class);
+				if (qDef != null) {
 
-					if (qDef != null) {
+					Question question = qDef.get().getTermObject(compiler, qDef);
 
-						Question question = qDef.get().getTermObject(compiler, qDef);
-
-						if (question != null) {
-							question.getInfoStore().addValue(MMInfo.PROMPT,
-									QuestionText.getQuestionText(sec));
-							return Messages.asList(Messages.objectCreatedNotice(
-									D3webUtils.getD3webBundle()
-											.getString("KnowWE.questiontree.questiontextcreated")));
-						}
+					if (question != null) {
+						question.getInfoStore().addValue(MMInfo.PROMPT,
+								QuestionText.getQuestionText(sec));
+						return Messages.asList(Messages.objectCreatedNotice(
+								D3webUtils.getD3webBundle()
+										.getString("KnowWE.questiontree.questiontextcreated")));
 					}
-					return Messages.asList(Messages.objectCreationError(
-							D3webUtils.getD3webBundle()
-									.getString("KnowWE.questiontree.questiontext")));
 				}
-
-				@Override
-				public void destroy(D3webCompiler article, Section<QuestionText> sec) {
-					// text is destroyed together with question
-				}
+				return Messages.asList(Messages.objectCreationError(
+						D3webUtils.getD3webBundle()
+								.getString("KnowWE.questiontree.questiontext")));
 			});
 		}
 
@@ -433,7 +365,7 @@ public class QuestionLine extends AbstractType {
 		}
 	}
 
-	static class QuestionTypeChecker extends D3webHandler<QuestionTypeDeclaration> {
+	static class QuestionTypeChecker implements D3webHandler<QuestionTypeDeclaration> {
 
 		@Override
 		public Collection<Message> create(D3webCompiler compiler, Section<QuestionTypeDeclaration> section) {

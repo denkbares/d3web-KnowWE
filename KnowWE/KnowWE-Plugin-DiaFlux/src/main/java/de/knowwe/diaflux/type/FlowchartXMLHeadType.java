@@ -72,7 +72,7 @@ public class FlowchartXMLHeadType extends XMLHead {
 		}
 	}
 
-	static class FlowchartRegistrationHandler extends D3webHandler<FlowchartTermDef> {
+	static class FlowchartRegistrationHandler implements D3webHandler<FlowchartTermDef> {
 
 		@Override
 		public Collection<Message> create(D3webCompiler compiler, Section<FlowchartTermDef> s) {

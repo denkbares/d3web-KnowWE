@@ -11,7 +11,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
-public class TerminologyLoopResolveHandler<TermObject extends TerminologyObject> extends D3webHandler<D3webTermDefinition<TermObject>> {
+public class TerminologyLoopResolveHandler<TermObject extends TerminologyObject> implements D3webHandler<D3webTermDefinition<TermObject>> {
 
 	@Override
 	public Collection<Message> create(D3webCompiler compiler, Section<D3webTermDefinition<TermObject>> section) {

@@ -54,7 +54,7 @@ import de.knowwe.testcases.TestCaseUtils;
  * @author Reinhard Hatko
  * @created 27.05.2011
  */
-public class TestcaseTableSubtreeHandler extends D3webHandler<TestcaseTable> {
+public class TestcaseTableSubtreeHandler implements D3webHandler<TestcaseTable> {
 
 	@Override
 	public Collection<Message> create(D3webCompiler compiler, Section<TestcaseTable> section) {

@@ -88,7 +88,7 @@ public class PropertyObjectReference extends D3webTermReference<NamedObject> {
 		return null;
 	}
 
-	static class WildcardQuestionErrorRemover extends D3webCompileScript<QuestionReference> {
+	static class WildcardQuestionErrorRemover implements D3webCompileScript<QuestionReference> {
 
 		@Override
 		public void compile(D3webCompiler compiler, Section<QuestionReference> section) {
@@ -112,7 +112,7 @@ public class PropertyObjectReference extends D3webTermReference<NamedObject> {
 
 	}
 
-	static class WildcardAnswerErrorRemover extends D3webCompileScript<PropertyAnswerReference> {
+	static class WildcardAnswerErrorRemover implements D3webCompileScript<PropertyAnswerReference> {
 
 		@Override
 		public void compile(D3webCompiler compiler, Section<PropertyAnswerReference> section) {

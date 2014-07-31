@@ -136,7 +136,7 @@ public class QuestionSetValueNumLine extends AbstractType {
 
 	}
 
-	static class CreateSetValueNumRuleHandler extends D3webCompileScript<QuestionReference> {
+	static class CreateSetValueNumRuleHandler implements D3webCompileScript<QuestionReference> {
 
 		@Override
 		public void destroy(D3webCompiler compiler, Section<QuestionReference> section) {

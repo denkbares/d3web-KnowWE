@@ -36,7 +36,7 @@ import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableLine;
 import de.knowwe.kdom.table.TableUtils;
 
-public class LineHandler extends D3webCompileScript<TableLine> {
+public class LineHandler implements D3webCompileScript<TableLine> {
 
 	@Override
 	public void compile(D3webCompiler compiler, Section<TableLine> section) throws CompilerMessage {

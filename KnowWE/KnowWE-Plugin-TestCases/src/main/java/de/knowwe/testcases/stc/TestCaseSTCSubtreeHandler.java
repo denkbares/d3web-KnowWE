@@ -34,7 +34,7 @@ import de.knowwe.testcases.TestCaseUtils;
  * @author Markus Friedrich (denkbares GmbH)
  * @created 25.01.2012
  */
-public class TestCaseSTCSubtreeHandler extends D3webHandler<TestCaseSTCType> {
+public class TestCaseSTCSubtreeHandler implements D3webHandler<TestCaseSTCType> {
 
 	@Override
 	public Collection<Message> create(D3webCompiler compiler, Section<TestCaseSTCType> section) {

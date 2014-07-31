@@ -144,7 +144,7 @@ public class SolutionSetValueLine extends AbstractType {
 
 	}
 
-	static class CreateScoringRuleHandler extends D3webHandler<SolutionReference> {
+	static class CreateScoringRuleHandler implements D3webHandler<SolutionReference> {
 
 		@Override
 		public void destroy(D3webCompiler compiler, Section<SolutionReference> s) {

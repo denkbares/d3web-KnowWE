@@ -90,7 +90,7 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 		return PSMethodStrategic.class;
 	}
 
-	static class SetTypeHandler extends D3webCompileScript<AnonymousType> {
+	static class SetTypeHandler implements D3webCompileScript<AnonymousType> {
 
 		// we can only set singleton types as new types for section...
 		// we should get rid of these types all together

@@ -60,24 +60,20 @@ public class CSSDanglingType extends AbstractType {
 	
 	public CSSDanglingType() {
 		this.setSectionFinder(new RegexSectionFinder("(?:%|/)%[^\\s]*"));
-		this.setRenderer(new Renderer() {
-
-			@Override
-			public void render(Section<?> section, UserContext user, RenderResult result) {
-				String text = section.getText();
-				String customSyle = CustomStyleMatcher.getCustomStyle(text);
-				if (customSyle != null) {
-					result.append("%%");
-					result.append(customSyle);
-					result.append("\n");
-				}
-				else if (text.startsWith("%%(") || text.equals("%%") 
-						|| text.equals("/%") || text.matches(PATTERN_STYLES)) {
-					result.append(text);
-				}
-				else {
-					result.appendJSPWikiMarkup(text);
-				}
+		this.setRenderer((section, user, result) -> {
+			String text = section.getText();
+			String customSyle = CustomStyleMatcher.getCustomStyle(text);
+			if (customSyle != null) {
+				result.append("%%");
+				result.append(customSyle);
+				result.append("\n");
+			}
+			else if (text.startsWith("%%(") || text.equals("%%")
+					|| text.equals("/%") || text.matches(PATTERN_STYLES)) {
+				result.append(text);
+			}
+			else {
+				result.appendJSPWikiMarkup(text);
 			}
 		});
 	}

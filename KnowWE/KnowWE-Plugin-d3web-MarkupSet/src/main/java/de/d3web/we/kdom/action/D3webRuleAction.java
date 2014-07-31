@@ -60,7 +60,7 @@ public abstract class D3webRuleAction<T extends Type> extends AbstractType {
 	 */
 	protected abstract PSAction createAction(D3webCompiler compiler, Section<T> section) throws CompilerMessage;
 
-	private class ActionCreateHandler extends D3webCompileScript<T> {
+	private class ActionCreateHandler implements D3webCompileScript<T> {
 
 		@Override
 		public void destroy(D3webCompiler compiler, Section<T> section) {

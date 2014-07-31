@@ -70,7 +70,7 @@ public abstract class D3webCondition<T extends D3webCondition<T>>
 	 */
 	protected abstract Condition createCondition(D3webCompiler compiler, Section<T> section);
 
-	private class CondCreateHandler extends D3webCompileScript<T> {
+	private class CondCreateHandler implements D3webCompileScript<T> {
 
 		@Override
 		public void destroy(D3webCompiler compiler, Section<T> section) {

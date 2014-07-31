@@ -44,7 +44,7 @@ import de.knowwe.d3web.property.PropertyType;
  * @author Albrecht Striffler
  * @created 20.09.2011
  */
-public class InitPropertyHandler extends D3webHandler<PropertyDeclarationType> {
+public class InitPropertyHandler implements D3webHandler<PropertyDeclarationType> {
 
 	@Override
 	public Collection<Message> create(D3webCompiler article, Section<PropertyDeclarationType> s) {

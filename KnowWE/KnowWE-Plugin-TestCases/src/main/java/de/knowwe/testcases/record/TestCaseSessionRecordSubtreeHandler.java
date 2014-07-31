@@ -35,7 +35,7 @@ import de.knowwe.testcases.TestCaseUtils;
  * @author Markus Friedrich (denkbares GmbH)
  * @created 26.01.2012
  */
-public class TestCaseSessionRecordSubtreeHandler extends D3webHandler<TestCaseSessionRecordType> {
+public class TestCaseSessionRecordSubtreeHandler implements D3webHandler<TestCaseSessionRecordType> {
 
 	@Override
 	public Collection<Message> create(D3webCompiler compiler, Section<TestCaseSessionRecordType> section) {

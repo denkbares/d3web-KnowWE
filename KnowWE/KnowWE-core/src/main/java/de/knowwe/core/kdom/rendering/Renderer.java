@@ -30,6 +30,7 @@ import de.knowwe.core.user.UserContext;
  * @author Volker Belli (denkbares GmbH)
  * @created 16.08.2013
  */
+@FunctionalInterface
 public interface Renderer {
 
 	/**

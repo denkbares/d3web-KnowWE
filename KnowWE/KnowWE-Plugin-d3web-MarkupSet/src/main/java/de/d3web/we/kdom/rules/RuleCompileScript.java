@@ -53,7 +53,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @author Jochen Reutelshöfer, Albrecht Striffler (denkbares GmbH)
  * @created 11.02.2014
  */
-public class RuleCompileScript extends D3webCompileScript<RuleType> {
+public class RuleCompileScript implements D3webCompileScript<RuleType> {
 
 	private static final String DEFAULT_RULE_STORE_KEY = "DEFAULT_RULE_STORE_KEY";
 	private static final String ELSE_RULE_STORE_KEY = "ELSE_RULE_STORE_KEY";

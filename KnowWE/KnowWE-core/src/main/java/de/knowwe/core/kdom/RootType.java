@@ -23,14 +23,10 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
-import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.user.UserContext;
 
 /**
  * 
@@ -46,25 +42,21 @@ public class RootType extends AbstractType {
 
 	private RootType() {
 		this.setSectionFinder(AllTextFinder.getInstance());
-		this.setRenderer(new Renderer() {
-
-			@Override
-			public void render(Section<?> section, UserContext user, RenderResult string) {
-				Map<de.knowwe.core.compile.Compiler, Collection<Message>> messages = Messages.getMessagesMap(section);
-				for (Entry<de.knowwe.core.compile.Compiler, Collection<Message>> entry : messages.entrySet()) {
-					for (Message message : entry.getValue()) {
-						String tag = (message.getType() == Message.Type.ERROR)
-								? "error"
-								: (message.getType() == Message.Type.WARNING)
-										? "warning"
-										: "information";
-						string.append("\n%%").append(tag).append("\n");
-						string.append(message.getVerbalization());
-						string.append("\n/%\n\n");
-					}
+		this.setRenderer((section, user, string) -> {
+			Map<de.knowwe.core.compile.Compiler, Collection<Message>> messages = Messages.getMessagesMap(section);
+			for (Entry<de.knowwe.core.compile.Compiler, Collection<Message>> entry : messages.entrySet()) {
+				for (Message message : entry.getValue()) {
+					String tag = (message.getType() == Message.Type.ERROR)
+							? "error"
+							: (message.getType() == Message.Type.WARNING)
+									? "warning"
+									: "information";
+					string.append("\n%%").append(tag).append("\n");
+					string.append(message.getVerbalization());
+					string.append("\n/%\n\n");
 				}
-				DelegateRenderer.getInstance().render(section, user, string);
 			}
+			DelegateRenderer.getInstance().render(section, user, string);
 		});
 
 	}

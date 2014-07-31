@@ -20,18 +20,14 @@
 
 package de.d3web.we.kdom.condition;
 
-import de.d3web.we.knowledgebase.D3webCompiler;
+import java.util.List;
+
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.AnonymousType;
-
-import java.util.Collection;
-import java.util.List;
 
 /**
  * The TerminalCondition type of the CompositeCondition
@@ -62,14 +58,8 @@ public class TerminalCondition extends AbstractType {
 		// last: Anything left is an UnrecognizedTC throwing an error
         AnonymousType unrecognizedCond = new AnonymousType(typeName);
         unrecognizedCond.setSectionFinder(new AllTextFinderTrimmed());
-		unrecognizedCond.addCompileScript(new D3webHandler<TerminalCondition>() {
-
-			@Override
-			public Collection<Message> create(D3webCompiler compiler, Section<TerminalCondition> s) {
-				return Messages.asList(Messages.syntaxError(
-						messageText + s.getText()));
-			}
-		});
+		unrecognizedCond.addCompileScript((D3webHandler<TerminalCondition>) (compiler, s) ->
+						Messages.asList(Messages.syntaxError(messageText + s.getText())));
 
 		this.addChildType(unrecognizedCond);
 	}

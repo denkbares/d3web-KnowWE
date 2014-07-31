@@ -23,19 +23,21 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
- * 
+ * CompileScript for the D3webCompiler.
+ *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 17.11.2013
  */
-public abstract class D3webCompileScript<T extends Type> implements PackageCompileScript<D3webCompiler, T> {
+@FunctionalInterface
+public interface D3webCompileScript<T extends Type> extends PackageCompileScript<D3webCompiler, T> {
 
 	@Override
-	public final Class<D3webCompiler> getCompilerClass() {
+	default Class<D3webCompiler> getCompilerClass() {
 		return D3webCompiler.class;
 	}
 
 	@Override
-	public void destroy(D3webCompiler compiler, Section<T> section) {
+	default void destroy(D3webCompiler compiler, Section<T> section) {
 		// nothing to do for now...
 	}
 }

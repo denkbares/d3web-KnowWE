@@ -115,7 +115,7 @@ public abstract class SolutionDefinition
 		}
 	}
 
-	static class CreateSolutionHandler extends D3webHandler<SolutionDefinition> {
+	static class CreateSolutionHandler implements D3webHandler<SolutionDefinition> {
 
 		@Override
 		public Collection<Message> create(D3webCompiler compiler,
@@ -140,7 +140,7 @@ public abstract class SolutionDefinition
 				return abortCheck.getErrors();
 			}
 
-			KnowledgeBase kb = getKB(compiler);
+			KnowledgeBase kb = getKnowledgeBase(compiler);
 
 			TerminologyObject o = kb.getManager().search(name);
 

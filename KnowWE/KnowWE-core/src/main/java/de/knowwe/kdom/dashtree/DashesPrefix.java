@@ -26,27 +26,19 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
-import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.user.UserContext;
 
 public class DashesPrefix extends AbstractType {
 
 	public DashesPrefix(final char key) {
 		this.setSectionFinder(new DashesPrefixFinder(key));
-		this.setRenderer(new Renderer() {
-
-			@Override
-			public void render(Section<?> sec, UserContext user,
-					RenderResult string) {
-				// to suppress horizontal line in case of more than three dashes
-				if (sec.getText().trim().startsWith("" + key) && key == '-') {
-					string.append('~');
-				}
-				DefaultTextRenderer.getInstance().render(sec, user, string);
+		this.setRenderer((sec, user, string) -> {
+			// to suppress horizontal line in case of more than three dashes
+			if (sec.getText().trim().startsWith("" + key) && key == '-') {
+				string.append('~');
 			}
+			DefaultTextRenderer.getInstance().render(sec, user, string);
 		});
 	}
 

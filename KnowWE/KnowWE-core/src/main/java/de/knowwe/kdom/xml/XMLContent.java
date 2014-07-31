@@ -25,20 +25,13 @@ import java.util.regex.Pattern;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.KeywordType;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
-import de.knowwe.core.user.UserContext;
 
 public class XMLContent extends AbstractType {
 
 	// render nothing for CData keywords
-	private static final Renderer EMPTY_RENDERER = new Renderer() {
-
-		@Override
-		public void render(Section<?> section, UserContext user, RenderResult result) {
-		}
+	private static final Renderer EMPTY_RENDERER = (section, user, result) -> {
 	};
 
 	private static final String CDATA_START = "\\A(\\s*" + Pattern.quote("<![CDATA[") + ")";

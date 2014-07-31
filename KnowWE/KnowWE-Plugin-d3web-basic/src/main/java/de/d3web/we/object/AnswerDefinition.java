@@ -93,7 +93,7 @@ public abstract class AnswerDefinition
 	 * This handler actually creates the Answer as an object of the
 	 * knowledge base
 	 */
-	static class CreateAnswerHandler extends D3webHandler<AnswerDefinition> {
+	static class CreateAnswerHandler implements D3webHandler<AnswerDefinition> {
 
 		@Override
 		public Collection<Message> create(D3webCompiler compiler,

@@ -176,7 +176,7 @@ public class CoveringList extends AbstractType {
 		 * 
 		 * @author Jochen
 		 */
-		class CreateXCLRelationHandler extends D3webHandler<CoveringRelation> {
+		class CreateXCLRelationHandler implements D3webHandler<CoveringRelation> {
 
 			private Section<SolutionDefinition> getCorrespondingSolutionDef(Section<CoveringRelation> s) {
 				return Sections.findSuccessor(s.getParent().getParent(), SolutionDefinition.class);
@@ -258,7 +258,7 @@ public class CoveringList extends AbstractType {
 
 								// Insert the Relation into the currentModel
 								XCLRelation relation = XCLModel.insertAndReturnXCLRelation(
-										getKB(compiler),
+										getKnowledgeBase(compiler),
 										condition,
 										solution, type, w);
 

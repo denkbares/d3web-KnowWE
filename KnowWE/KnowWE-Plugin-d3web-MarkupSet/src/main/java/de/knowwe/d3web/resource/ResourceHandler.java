@@ -42,11 +42,11 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * @author volker_belli
  * @created 13.10.2010
  */
-public class ResourceHandler extends D3webHandler<ResourceType> {
+public class ResourceHandler implements D3webHandler<ResourceType> {
 
 	@Override
 	public Collection<Message> create(D3webCompiler compiler, Section<ResourceType> section) {
-		KnowledgeBase kb = getKB(compiler);
+		KnowledgeBase kb = getKnowledgeBase(compiler);
 		if (kb == null) return null;
 
 		String content = DefaultMarkupType.getContent(section);

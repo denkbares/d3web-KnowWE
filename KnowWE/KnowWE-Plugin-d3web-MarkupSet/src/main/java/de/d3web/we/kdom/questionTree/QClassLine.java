@@ -138,10 +138,6 @@ public class QClassLine extends AbstractType {
 
 				/**
 				 * creates the bound-property for a bound-definition
-				 * 
-				 * @param compiler
-				 * @param s
-				 * @return
 				 */
 				@Override
 				public Collection<Message> create(D3webCompiler compiler, Section<InitNumber> s) {
@@ -151,7 +147,7 @@ public class QClassLine extends AbstractType {
 						return Messages.asList(Messages.objectCreationError(
 								"Invalid number"));
 					}
-					Integer number = new Integer((originalnumber.intValue()));
+					Integer number = (originalnumber.intValue());
 
 					Section<QuestionnaireDefinition> qDef = Sections.findSuccessor(
 							s.getParent(), QuestionnaireDefinition.class);
@@ -161,7 +157,7 @@ public class QClassLine extends AbstractType {
 						QContainer questionnaire = qDef.get().getTermObject(compiler, qDef);
 
 						if (questionnaire != null) {
-							boolean alreadyInitDefined = getKB(compiler).removeInitQuestion(
+							boolean alreadyInitDefined = getKnowledgeBase(compiler).removeInitQuestion(
 									questionnaire);
 							// check whether there is already some init-number
 							// registered for this QASet
@@ -172,7 +168,7 @@ public class QClassLine extends AbstractType {
 							}
 							else {
 								// else register init value
-								getKB(compiler).addInitQuestion(
+								getKnowledgeBase(compiler).addInitQuestion(
 										questionnaire,
 										number);
 
@@ -195,7 +191,7 @@ public class QClassLine extends AbstractType {
 						// remove init number value from registration in KB
 						QContainer questionnaire = qDef.get().getTermObject(article,
 								qDef);
-						getKB(article).removeInitQuestion(
+						getKnowledgeBase(article).removeInitQuestion(
 								questionnaire);
 					}
 				}
@@ -212,10 +208,8 @@ public class QClassLine extends AbstractType {
 				d = Double.parseDouble(content);
 				return d;
 			}
-			catch (Exception e) {
-
+			catch (Exception ignored) {
 			}
-
 			return null;
 		}
 

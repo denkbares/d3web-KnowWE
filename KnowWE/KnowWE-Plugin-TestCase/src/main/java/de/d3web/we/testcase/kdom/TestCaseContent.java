@@ -68,13 +68,13 @@ public class TestCaseContent extends AbstractType {
 		this.addCompileScript(Priority.LOWEST, new TestSuiteSubTreeHandler());
 	}
 
-	public class TestSuiteSubTreeHandler extends D3webHandler<TestCaseContent> {
+	public class TestSuiteSubTreeHandler implements D3webHandler<TestCaseContent> {
 
 		@Override
 		public Collection<Message> create(D3webCompiler compiler, Section<TestCaseContent> s) {
 
 			List<Message> messages = new LinkedList<Message>();
-			KnowledgeBase kb = getKB(compiler);
+			KnowledgeBase kb = getKnowledgeBase(compiler);
 			if (kb != null) {
 
 				List<de.d3web.empiricaltesting.SequentialTestCase> repository =

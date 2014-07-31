@@ -18,11 +18,9 @@
  */
 package de.knowwe.testcases.table;
 
-import java.util.Collection;
 import java.util.List;
 
 import de.d3web.strings.Strings;
-import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.compile.Compilers;
@@ -30,7 +28,6 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableCellContentRenderer;
@@ -67,25 +64,20 @@ public class HeaderCellContent extends TableCellContent {
 			}
 		});
 
-		this.addCompileScript(new D3webHandler<HeaderCellContent>() {
+		this.addCompileScript((D3webHandler<HeaderCellContent>) (compiler, s) -> {
 
-			@Override
-			public Collection<Message> create(D3webCompiler compiler, Section<HeaderCellContent> s) {
-
-				int column = TableUtils.getColumn(s);
-				String questionName = Strings.trimQuotes(s.getText());
-				if ((column == 0 && questionName.equalsIgnoreCase("Name"))
-						|| ((column == 0 || column == 1) && questionName.equalsIgnoreCase("Time"))
-						|| questionName.equalsIgnoreCase("Checks")) {
-					return Messages.noMessage();
-				}
-				// otherwise it is a QuestionReference
-				s.setType(HeaderQuestionReference.getInstance());
-				Compilers.compile(compiler, s);
-
+			int column = TableUtils.getColumn(s);
+			String questionName = Strings.trimQuotes(s.getText());
+			if ((column == 0 && questionName.equalsIgnoreCase("Name"))
+					|| ((column == 0 || column == 1) && questionName.equalsIgnoreCase("Time"))
+					|| questionName.equalsIgnoreCase("Checks")) {
 				return Messages.noMessage();
 			}
+			// otherwise it is a QuestionReference
+			s.setType(HeaderQuestionReference.getInstance());
+			Compilers.compile(compiler, s);
 
+			return Messages.noMessage();
 		});
 
 	}

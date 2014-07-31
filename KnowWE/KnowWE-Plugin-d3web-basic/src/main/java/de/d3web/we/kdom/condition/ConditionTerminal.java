@@ -20,30 +20,25 @@
 
 package de.d3web.we.kdom.condition;
 
-import java.util.Collection;
 import java.util.List;
 
-import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.AnonymousType;
 
 /**
  * The TerminalCondition type of the CompositeCondition
  * {@link CompositeCondition}
- * 
+ * <p/>
  * A section of this type is instantiated for each leaf of the
  * CompositeCondition tree. Various allowed concrete terminal-conditions can be
  * registered as child-types. Section which are not accepted by one of the
  * registered terminal-conditions are automatically labeled with an error as
  * "unrecognized-terminal-condition".
- * 
+ *
  * @author Jochen
- * 
  */
 public class ConditionTerminal extends AbstractType {
 
@@ -54,27 +49,19 @@ public class ConditionTerminal extends AbstractType {
 		AnonymousType unrecognizedCond = new AnonymousType(
 				"UnrecognizedTerminalCondition");
 		unrecognizedCond.setSectionFinder(new AllTextFinderTrimmed());
-		unrecognizedCond.addCompileScript(new D3webHandler<ConditionTerminal>() {
-
-			@Override
-			public Collection<Message> create(D3webCompiler compiler, Section<ConditionTerminal> section) {
-				return Messages.asList(Messages.syntaxError(
-						"no valid TerminalCondition: "
-								+ section.getText()));
-			}
-		});
+		unrecognizedCond.addCompileScript((D3webHandler<ConditionTerminal>) (compiler, section) ->
+				Messages.asList(Messages.syntaxError("no valid TerminalCondition: " + section.getText())));
 
 		this.addChildType(unrecognizedCond);
 	}
 
 	/**
-	 * 
 	 * Via this method all valid TerminalConditions are registered. The
 	 * KDOM-types of these allowed TerminalConditions are registered as children
 	 * types of this type
-	 * 
-	 * @created 26.07.2010
+	 *
 	 * @param types
+	 * @created 26.07.2010
 	 */
 	public void setAllowedTerminalConditions(List<? extends ConditionTerminal> types) {
 		for (ConditionTerminal conditionTerminal : types) {

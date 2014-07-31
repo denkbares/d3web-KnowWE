@@ -84,7 +84,7 @@ public class ListSolutionType extends AbstractType {
 	 *         covering-model
 	 * 
 	 */
-	class XCLModelCreator extends D3webHandler<ListSolutionType> {
+	class XCLModelCreator implements D3webHandler<ListSolutionType> {
 
 		@Override
 		public Collection<Message> create(D3webCompiler article, Section<ListSolutionType> s) {

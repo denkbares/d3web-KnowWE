@@ -24,7 +24,7 @@ public class QuestionNumReference extends QuestionReference {
 		return QuestionNum.class;
 	}
 
-	class QuestionNumRegistrationHandler extends D3webHandler<QuestionNumReference> {
+	class QuestionNumRegistrationHandler implements D3webHandler<QuestionNumReference> {
 
 		@Override
 		public Collection<Message> create(D3webCompiler compiler, Section<QuestionNumReference> section) {

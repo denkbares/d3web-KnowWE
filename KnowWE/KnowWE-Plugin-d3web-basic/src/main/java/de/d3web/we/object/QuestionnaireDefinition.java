@@ -57,7 +57,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 	}
 
 	static class CreateQuestionnaireHandler
-			extends D3webHandler<QuestionnaireDefinition> {
+			implements D3webHandler<QuestionnaireDefinition> {
 
 		@Override
 		public Collection<Message> create(D3webCompiler compiler,
@@ -82,7 +82,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 				return abortCheck.getErrors();
 			}
 
-			KnowledgeBase kb = getKB(compiler);
+			KnowledgeBase kb = getKnowledgeBase(compiler);
 
 			TerminologyObject termObject = kb.getManager().search(name);
 			if (termObject != null) {

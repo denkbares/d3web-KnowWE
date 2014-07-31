@@ -9,7 +9,7 @@ import de.knowwe.core.report.CompilerMessage;
  * of wiki markup to enhance the artifact of the compiler or have any other side
  * effects to the compiler itself.
  * <p>
- * This interface replaces the previously used {@link SubtreeHandler}.
+ * This interface replaces the previously used SubtreeHandler.
  * 
  * @author Volker Belli (denkbares GmbH)
  * @created 30.10.2013

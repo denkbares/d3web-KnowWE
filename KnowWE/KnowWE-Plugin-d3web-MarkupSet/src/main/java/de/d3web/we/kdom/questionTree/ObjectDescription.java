@@ -1,20 +1,17 @@
 package de.d3web.we.kdom.questionTree;
 
 import java.util.Arrays;
-import java.util.Collection;
 
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.strings.Strings;
-import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.D3webTermDefinition;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.MatchUntilEndFinder;
@@ -39,51 +36,47 @@ public class ObjectDescription extends AbstractType {
 				QTEXT_START_SYMBOL)));
 
 		this.setRenderer(StyleRenderer.PROMPT);
-		this.addCompileScript(new D3webHandler<ObjectDescription>() {
+		this.addCompileScript((D3webHandler<ObjectDescription>) (compiler, section) -> {
 
-			@Override
-			public Collection<Message> create(D3webCompiler compiler, Section<ObjectDescription> section) {
+			@SuppressWarnings("rawtypes")
+			Section<D3webTermDefinition> qDef = Sections.findSuccessor(
+					section.getParent(), D3webTermDefinition.class);
 
-				@SuppressWarnings("rawtypes")
-				Section<D3webTermDefinition> qDef = Sections.findSuccessor(
-						section.getParent(), D3webTermDefinition.class);
+			if (qDef != null) {
 
-				if (qDef != null) {
+				// get the object the information should be stored for
+				@SuppressWarnings("unchecked")
+				Object ob = qDef.get().getTermObject(compiler, qDef);
+				TerminologyObject object = null;
+				if (ob instanceof TerminologyObject) {
+					object = (TerminologyObject) ob;
+				}
 
-					// get the object the information should be stored for
-					@SuppressWarnings("unchecked")
-					Object ob = qDef.get().getTermObject(compiler, qDef);
-					TerminologyObject object = null;
-					if (ob instanceof TerminologyObject) {
-						object = (TerminologyObject) ob;
-					}
-
-					if (object != null) {
-						// if its MMINFO then it a question, so set text as
-						// prompt
-						String objectDescriptionText = ObjectDescription.getObjectDescriptionText(section);
-						if (prop.equals(MMInfo.PROMPT)) {
-							object.getInfoStore().addValue(MMInfo.PROMPT, objectDescriptionText);
-							return Arrays.asList(Messages.objectCreatedNotice(
-									D3webUtils.getD3webBundle()
-											.getString(
-													"KnowWE.questiontree.questiontextcreated")
-											+ " " + objectDescriptionText));
-						} // for any other properties (than MMINFO) set
-							// information normally
-						else {
-							object.getInfoStore().addValue(
-									prop,
-									objectDescriptionText);
-							return Messages.asList(Messages.objectCreatedNotice(
-									"Explanation set: " + objectDescriptionText));
-						}
+				if (object != null) {
+					// if its MMINFO then it a question, so set text as
+					// prompt
+					String objectDescriptionText = ObjectDescription.getObjectDescriptionText(section);
+					if (prop.equals(MMInfo.PROMPT)) {
+						object.getInfoStore().addValue(MMInfo.PROMPT, objectDescriptionText);
+						return Arrays.asList(Messages.objectCreatedNotice(
+								D3webUtils.getD3webBundle()
+										.getString(
+												"KnowWE.questiontree.questiontextcreated")
+										+ " " + objectDescriptionText));
+					} // for any other properties (than MMINFO) set
+						// information normally
+					else {
+						object.getInfoStore().addValue(
+								prop,
+								objectDescriptionText);
+						return Messages.asList(Messages.objectCreatedNotice(
+								"Explanation set: " + objectDescriptionText));
 					}
 				}
-				return Messages.asList(Messages.objectCreationError(
-						D3webUtils.getD3webBundle()
-								.getString("KnowWE.questiontree.questiontext")));
 			}
+			return Messages.asList(Messages.objectCreationError(
+					D3webUtils.getD3webBundle()
+							.getString("KnowWE.questiontree.questiontext")));
 		});
 	}
 

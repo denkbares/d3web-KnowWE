@@ -18,12 +18,9 @@
  */
 package de.d3web.we.kdom.propertytable;
 
-import java.util.Collection;
-
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.strings.Strings;
-import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.NamedObjectReference;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.AbstractType;
@@ -31,7 +28,6 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
-import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.d3web.property.PropertyType;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
@@ -51,63 +47,58 @@ public class PropertyValueType extends AbstractType {
 		setSectionFinder(new ConstraintSectionFinder(AllTextFinder.getInstance(),
 				new TableIndexConstraint(1, Integer.MAX_VALUE, 1, Integer.MAX_VALUE)));
 
-		addCompileScript(new D3webHandler<Type>() {
+		addCompileScript((D3webHandler<Type>) (compiler, section) -> {
+			Section<TableCellContent> header = TableUtils.getColumnHeader(section);
 
-			@Override
-			public Collection<Message> create(D3webCompiler compiler, Section<Type> section) {
-				Section<TableCellContent> header = TableUtils.getColumnHeader(section);
+			if (header == null) {
+				return Messages.asList(Messages.creationFailedWarning("No property name defined for this column."));
+			}
 
-				if (header == null) {
-					return Messages.asList(Messages.creationFailedWarning("No property name defined for this column."));
-				}
+			Section<PropertyType> propType = Sections.findSuccessor(header, PropertyType.class);
 
-				Section<PropertyType> propType = Sections.findSuccessor(header, PropertyType.class);
+			Property<?> property = propType.get().getProperty(propType);
+			if (property == null) {
+				// do nothing, results in an error for header
+				return Messages.noMessage();
+			}
 
-				Property<?> property = propType.get().getProperty(propType);
-				if (property == null) {
-					// do nothing, results in an error for header
-					return Messages.noMessage();
-				}
+			if (!property.canParseValue()) {
+				// do nothing, results in an error for header
+				return Messages.noMessage();
+			}
 
-				if (!property.canParseValue()) {
-					// do nothing, results in an error for header
-					return Messages.noMessage();
-				}
+			Object parsedValue;
+			String value = section.getText().trim();
+			if (Strings.isBlank(value)) return Messages.noMessage();
 
-				Object parsedValue;
-				String value = section.getText().trim();
-				if (Strings.isBlank(value)) return Messages.noMessage();
-
-				try {
-					parsedValue = property.parseValue(value);
-				}
-				catch (Exception e) {
-					return Messages.asList(Messages.objectCreationError("Could not parse as property value: "
-							+ value));
-
-				}
-
-				Section<TableCellContent> rowHeader = TableUtils.getRowHeader(section);
-
-				NamedObject object = NamedObjectReference.getObject(compiler,
-						Sections.findSuccessor(rowHeader, NamedObjectReference.class));
-
-				if (object == null) {
-					return Messages.noMessage();
-				}
-
-				if (object.getInfoStore().contains(property)) {
-					return Messages.asList(Messages.objectAlreadyDefinedWarning("Property '"
-							+ property.getName()
-							+ "' for object '"
-							+ object.getName() + "'"));
-				}
-
-				object.getInfoStore().addValue(property, parsedValue);
-				return Messages.asList(Messages.objectCreatedNotice("Defined value of property '"
-						+ property.getName() + "' for object '" + object.getName() + "'."));
+			try {
+				parsedValue = property.parseValue(value);
+			}
+			catch (Exception e) {
+				return Messages.asList(Messages.objectCreationError("Could not parse as property value: "
+						+ value));
 
 			}
+
+			Section<TableCellContent> rowHeader = TableUtils.getRowHeader(section);
+
+			NamedObject object = NamedObjectReference.getObject(compiler,
+					Sections.findSuccessor(rowHeader, NamedObjectReference.class));
+
+			if (object == null) {
+				return Messages.noMessage();
+			}
+
+			if (object.getInfoStore().contains(property)) {
+				return Messages.asList(Messages.objectAlreadyDefinedWarning("Property '"
+						+ property.getName()
+						+ "' for object '"
+						+ object.getName() + "'"));
+			}
+
+			object.getInfoStore().addValue(property, parsedValue);
+			return Messages.asList(Messages.objectCreatedNotice("Defined value of property '"
+					+ property.getName() + "' for object '" + object.getName() + "'."));
 
 		});
 	}

@@ -32,13 +32,13 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
-public class PluginConfigReviseSubtreeHandler extends D3webHandler<PluginConfigType> {
+public class PluginConfigReviseSubtreeHandler implements D3webHandler<PluginConfigType> {
 
 	@Override
 	public Collection<Message> create(D3webCompiler compiler, Section<PluginConfigType> s) {
 		String xmlText = "<settings><plugins /><psmethods>" + s.getText()
 				+ "</psmethods></settings>";
-		KnowledgeBase kb = getKB(compiler);
+		KnowledgeBase kb = getKnowledgeBase(compiler);
 		if (kb == null) {
 			return Messages.asList(Messages.error(
 					"No knowledgebase available."));

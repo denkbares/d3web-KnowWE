@@ -87,7 +87,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 
 	public abstract QuestionType getQuestionType(Section<QuestionDefinition> s);
 
-	static class CreateQuestionHandler extends D3webHandler<QuestionDefinition> {
+	static class CreateQuestionHandler implements D3webHandler<QuestionDefinition> {
 
 		@Override
 		@SuppressWarnings("unchecked")
@@ -110,7 +110,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			if (abortCheck.termExist()) {
 				section.get().storeTermObject(compiler, section, (Question) abortCheck.getNamedObject());
 			} else {
-				KnowledgeBase kb = getKB(compiler);
+				KnowledgeBase kb = getKnowledgeBase(compiler);
 
 				String name = section.get().getTermName(section);
 

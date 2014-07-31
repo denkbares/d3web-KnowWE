@@ -20,6 +20,8 @@
 
 package de.d3web.we.reviseHandler;
 
+import java.util.Collection;
+
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.knowledgebase.D3webCompiler;
@@ -29,18 +31,17 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
 
-import java.util.Collection;
+@FunctionalInterface
+public interface D3webHandler<T extends Type> extends D3webCompileScript<T> {
 
-public abstract class D3webHandler<T extends Type> extends D3webCompileScript<T> {
-
-	public abstract Collection<Message> create(D3webCompiler compiler, Section<T> section);
+	public Collection<Message> create(D3webCompiler compiler, Section<T> section);
 
 	@Override
-	public void compile(D3webCompiler compiler, Section<T> section) throws CompilerMessage {
+	default void compile(D3webCompiler compiler, Section<T> section) throws CompilerMessage {
 		throw new CompilerMessage(create(compiler, section));
 	}
 
-	public KnowledgeBase getKB(D3webCompiler compiler) {
+	default KnowledgeBase getKnowledgeBase(D3webCompiler compiler) {
 		return D3webUtils.getKnowledgeBase(compiler);
 	}
 

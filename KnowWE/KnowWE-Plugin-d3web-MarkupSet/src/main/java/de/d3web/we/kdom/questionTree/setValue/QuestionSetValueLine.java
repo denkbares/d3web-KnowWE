@@ -81,7 +81,7 @@ public class QuestionSetValueLine extends AbstractType {
 		return qid;
 	}
 
-	static class CreateSetValueRuleHandler extends D3webCompileScript<QuestionReference> {
+	static class CreateSetValueRuleHandler implements D3webCompileScript<QuestionReference> {
 
 		@Override
 		public void destroy(D3webCompiler compiler, Section<QuestionReference> section) {

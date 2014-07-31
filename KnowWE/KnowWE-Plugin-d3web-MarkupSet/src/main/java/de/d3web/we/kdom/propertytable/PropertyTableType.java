@@ -18,16 +18,11 @@
  */
 package de.d3web.we.kdom.propertytable;
 
-import java.util.Collection;
-
 import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.NamedObjectReference;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
-import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.d3web.property.PropertyType;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
@@ -57,21 +52,17 @@ public class PropertyTableType extends DefaultMarkupType {
 				AllTextFinder.getInstance(),
 				new TableIndexConstraint(1, Integer.MAX_VALUE, 0, 1)));
 
-		propertyType.addCompileScript(new D3webHandler<PropertyType>() {
-
-			@Override
-			public Collection<Message> create(D3webCompiler compiler, Section<PropertyType> section) {
-				Property<?> property = section.get().getProperty(section);
-				if (property == null) {
-					return Messages.asList(Messages.noSuchObjectError("Property", section.getText()));
-				}
-				else if (!property.canParseValue()) {
-					return Messages.asList(Messages.error("Unable to parse values for property '"
-							+ section.getText() + "'."));
-				}
-
-				return Messages.noMessage();
+		propertyType.addCompileScript((D3webHandler<PropertyType>) (compiler, section) -> {
+			Property<?> property = section.get().getProperty(section);
+			if (property == null) {
+				return Messages.asList(Messages.noSuchObjectError("Property", section.getText()));
 			}
+			else if (!property.canParseValue()) {
+				return Messages.asList(Messages.error("Unable to parse values for property '"
+						+ section.getText() + "'."));
+			}
+
+			return Messages.noMessage();
 		});
 
 		content.injectTableCellContentChildtype(propertyType);

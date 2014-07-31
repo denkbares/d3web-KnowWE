@@ -19,14 +19,12 @@
 
 package de.d3web.we.knowledgebase;
 
-import java.util.Collection;
-
 import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.strings.Identifier;
-import de.d3web.we.reviseHandler.D3webHandler;
+import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScript;
@@ -38,7 +36,6 @@ import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.Message;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageReferenceRegistrationHandler;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageRegistrationScript;
@@ -108,43 +105,37 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 				DefaultMarkupPackageReferenceRegistrationHandler.class);
 
 		this.setRenderer(new KnowledgeBaseTypeRenderer());
-		this.addCompileScript(Priority.HIGHER, new D3webHandler<KnowledgeBaseType>() {
+		this.addCompileScript(Priority.HIGHER, (D3webCompileScript<KnowledgeBaseType>) (compiler, section) -> {
+			// get required information
+			KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
 
-			@Override
-			public Collection<Message> create(D3webCompiler compiler, Section<KnowledgeBaseType> section) {
-				// get required information
-				KnowledgeBase kb = getKB(compiler);
+			// prepare the items to be set into the knowledge base
+			String id = getAnnotation(section, ANNOTATION_ID);
+			String author = getAnnotation(section, ANNOTATION_AUTHOR);
+			String comment = getAnnotation(section, ANNOTATION_COMMENT);
+			String version = getAnnotation(section, ANNOTATION_VERSION);
+			String filename = getAnnotation(section, ANNOTATION_FILENAME);
+			String status = getAnnotation(section, ANNOTATION_STATUS);
+			String affiliation = getAnnotation(section, ANNOTATION_AFFILIATION);
 
-				// prepare the items to be set into the knowledge base
-				String id = getAnnotation(section, ANNOTATION_ID);
-				String author = getAnnotation(section, ANNOTATION_AUTHOR);
-				String comment = getAnnotation(section, ANNOTATION_COMMENT);
-				String version = getAnnotation(section, ANNOTATION_VERSION);
-				String filename = getAnnotation(section, ANNOTATION_FILENAME);
-				String status = getAnnotation(section, ANNOTATION_STATUS);
-				String affiliation = getAnnotation(section, ANNOTATION_AFFILIATION);
+			// register package defintion
+			TerminologyManager terminologyManager = compiler.getTerminologyManager();
+			terminologyManager.registerTermDefinition(compiler, section,
+					KnowledgeBase.class, new Identifier("KNOWLEDGEBASE"));
 
-				// register package defintion
-				TerminologyManager terminologyManager = compiler.getTerminologyManager();
-				terminologyManager.registerTermDefinition(compiler, section,
-						KnowledgeBase.class, new Identifier("KNOWLEDGEBASE"));
+			// and write it to the knowledge base
+			if (id != null) kb.setId(id);
+			InfoStore infoStore = kb.getInfoStore();
 
-				// and write it to the knowledge base
-				if (id != null) kb.setId(id);
-				InfoStore infoStore = kb.getInfoStore();
-
-				if (author != null) infoStore.addValue(BasicProperties.AUTHOR, author);
-				if (comment != null) infoStore.addValue(MMInfo.DESCRIPTION, comment);
-				if (version != null) infoStore.addValue(BasicProperties.VERSION, version);
-				if (filename != null) infoStore.addValue(BasicProperties.FILENAME, filename);
-				if (status != null) infoStore.addValue(BasicProperties.STATUS, status);
-				if (affiliation != null) {
-					infoStore.addValue(BasicProperties.AFFILIATION,
-							affiliation);
-				}
-				return null;
+			if (author != null) infoStore.addValue(BasicProperties.AUTHOR, author);
+			if (comment != null) infoStore.addValue(MMInfo.DESCRIPTION, comment);
+			if (version != null) infoStore.addValue(BasicProperties.VERSION, version);
+			if (filename != null) infoStore.addValue(BasicProperties.FILENAME, filename);
+			if (status != null) infoStore.addValue(BasicProperties.STATUS, status);
+			if (affiliation != null) {
+				infoStore.addValue(BasicProperties.AFFILIATION,
+						affiliation);
 			}
-
 		});
 
 		// for the scripts to be compiled in a package we also have to register

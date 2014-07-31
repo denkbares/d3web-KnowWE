@@ -58,8 +58,7 @@ public class AsynchronRenderer implements Renderer {
 				defaultMarkupSection, ASYNCHRONOUS);
 		if (asynchronousString == null) return true;
 		asynchronousString = asynchronousString.trim().toLowerCase();
-		if (asynchronousString.equals("false")) return false;
-		return true;
+		return !asynchronousString.equals("false");
 	}
 
 	private Section<DefaultMarkupType> getDefaultMarkupSection(Section<?> section) {

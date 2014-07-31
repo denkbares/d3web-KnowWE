@@ -45,7 +45,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.dashtree.DashTreeElement;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 
-public class IndicationHandler extends D3webCompileScript<D3webTerm<NamedObject>> {
+public class IndicationHandler implements D3webCompileScript<D3webTerm<NamedObject>> {
 
 	private final String indicationStoreKey = "INDICATION_STORE_KEY";
 

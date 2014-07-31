@@ -22,7 +22,7 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableUtils;
 
-public class CellTypeHandler extends D3webCompileScript<CellContent> {
+public class CellTypeHandler implements D3webCompileScript<CellContent> {
 
 	// we can only set singleton types as new types for section...
 	// we should get rid of these types all together
