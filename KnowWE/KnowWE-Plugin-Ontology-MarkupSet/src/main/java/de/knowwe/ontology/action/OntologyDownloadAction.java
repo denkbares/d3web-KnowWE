@@ -25,6 +25,7 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 public class OntologyDownloadAction extends AbstractAction {
 
 	public static final String PARAM_FILENAME = "filename";
+	public static final String PARAM_SYNTAX = "syntax";
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -35,12 +36,7 @@ public class OntologyDownloadAction extends AbstractAction {
 		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
 		Rdf2GoCore rdf2GoCore = compiler.getRdf2GoCore();
 
-		Syntax syntax = null;
-		for (Syntax s : Syntax.collection()) {
-			if (filename.toLowerCase().endsWith(s.getFilenameExtension())) {
-				syntax = s;
-			}
-		}
+		Syntax syntax = Syntax.forName(context.getParameter(PARAM_SYNTAX));
 
 		String mimeType = syntax.getMimeType() + "; charset=UTF-8";
 		context.setContentType(mimeType);

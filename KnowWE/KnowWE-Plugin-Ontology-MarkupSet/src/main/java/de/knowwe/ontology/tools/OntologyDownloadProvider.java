@@ -3,6 +3,9 @@
  */
 package de.knowwe.ontology.tools;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.ontoware.rdf2go.model.Syntax;
 
 import de.knowwe.core.Attributes;
@@ -15,7 +18,6 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
-import de.knowwe.tools.ToolUtils;
 
 /**
  * 
@@ -31,16 +33,21 @@ public class OntologyDownloadProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		Tool downloadXML = getDownloadTool(section, Syntax.RdfXml, "Download XML");
-		Tool downloadTurtle = getDownloadTool(section, Syntax.Turtle, "Download Turtle");
-		return ToolUtils.asArray(downloadXML, downloadTurtle);
+		List<Tool> tools = new LinkedList<>();
+		for (Syntax syntax : Syntax.collection()) {
+			Tool tool = getDownloadTool(section, syntax);
+			if (tool != null) tools.add(tool);
+		}
+		return tools.toArray(new Tool[tools.size()]);
 	}
 
-	protected Tool getDownloadTool(Section<?> section, Syntax syntax, String title) {
+	protected Tool getDownloadTool(Section<?> section, Syntax syntax) {
 
 		// check if ontology is empty
 		Rdf2GoCore ontology = Rdf2GoCore.getInstance(OntologyUtils.getOntologyCompiler(section));
-		if (ontology == null || ontology.isEmpty()) {
+		if (ontology == null || ontology.isEmpty()
+				//|| !ontology.getAvailableSyntaxes().contains(syntax)
+				) {
 			return null;
 		}
 
@@ -57,13 +64,14 @@ public class OntologyDownloadProvider implements ToolProvider {
 				"?" + Attributes.TOPIC + "=" + section.getTitle() +
 				"&amp;" + Attributes.WEB + "=" + section.getWeb() +
 				"&amp;" + Attributes.SECTION_ID + "=" + section.getID() +
+				"&amp;" + OntologyDownloadAction.PARAM_SYNTAX + "=" + syntax.getName() +
 				"&amp;" + OntologyDownloadAction.PARAM_FILENAME + "=" + ontologyName + extension + "'";
 
 		// assemble download tool
 		return new DefaultTool(
 				"KnowWEExtension/d3web/icon/download16.gif",
-				title,
-				"Download the entire ontology as single file for deployment.",
+				"Download " + syntax.getName().toUpperCase(),
+				"Download the entire ontology in " + syntax.getName() + " format for deployment.",
 				jsAction);
 	}
 

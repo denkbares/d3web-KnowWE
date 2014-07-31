@@ -18,6 +18,8 @@
  */
 package de.knowwe.rdf2go;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -31,6 +33,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -274,6 +277,31 @@ public class Rdf2GoCore {
 			this.lock.readLock().unlock();
 		}
 		initDefaultNamespaces();
+		initAvailableSyntaxes();
+	}
+
+	private void initAvailableSyntaxes() {
+		List<Syntax> syntaxes = new LinkedList<Syntax>();
+		syntaxes.addAll(Syntax.collection());
+		for (Syntax syntax : syntaxes) {
+			try {
+				File tempFile = File.createTempFile("rdf2go_" + syntax, ".tmp");
+				FileWriter writer = new FileWriter(tempFile);
+				try {
+					writeModel(writer, syntax);
+				}
+				catch (Exception e) {
+					// we unregister the syntax that causes errors...
+					Syntax.unregister(syntax);
+				}
+				finally {
+					writer.close();
+					tempFile.delete();
+				}
+			} catch (IOException e) {
+					Log.warning("Unable to test available syntax, as model can't be written to temp file.", e);
+			}
+		}
 	}
 
 	/**
