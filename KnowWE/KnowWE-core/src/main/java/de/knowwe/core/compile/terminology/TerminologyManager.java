@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
@@ -210,7 +211,7 @@ public class TerminologyManager {
 		if (refLog != null) {
 			return Collections.unmodifiableSet(refLog.getRedundantDefinitions());
 		}
-		return Collections.unmodifiableSet(new HashSet<Section<?>>(0));
+		return Collections.emptySet();
 	}
 
 	/**
@@ -290,12 +291,10 @@ public class TerminologyManager {
 	}
 
 	public synchronized Collection<Identifier> getAllDefinedTerms(Class<?> termClass) {
-		Collection<TermLog> termLogEntries = getAllDefinedTermLogEntries(termClass);
-		Collection<Identifier> terms = new HashSet<Identifier>();
-		for (TermLog logEntry : termLogEntries) {
-			terms.addAll(logEntry.getTermIdentifiers());
-		}
-		return terms;
+		return getAllDefinedTermLogEntries(termClass).stream()
+				.map(TermLog::getTermIdentifiers)
+				.flatMap(Collection::stream)
+				.collect(Collectors.toSet());
 	}
 
 	private synchronized Collection<TermLog> getAllDefinedTermLogEntries(Class<?> termClass) {

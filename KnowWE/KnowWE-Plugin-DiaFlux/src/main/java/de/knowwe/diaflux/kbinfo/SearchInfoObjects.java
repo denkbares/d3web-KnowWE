@@ -74,7 +74,7 @@ public class SearchInfoObjects extends AbstractAction {
 
 		// build the page for the found matches
 		int count = Math.min(maxCount, matches.size());
-		StringBuffer page = new StringBuffer();
+		StringBuilder page = new StringBuilder();
 		page.append("<matches");
 		page.append(" count='").append(count).append("'");
 		page.append(" hasmore='").append(matches.size() > count).append("'");
@@ -103,7 +103,6 @@ public class SearchInfoObjects extends AbstractAction {
 
 		Set<Identifier> result = new HashSet<Identifier>();
 		Set<Section<?>> processed = new HashSet<Section<?>>();
-		Environment env = Environment.getInstance();
 
 		// the examine objects inside the articles
 		Section<?> flowSection = Sections.getSection(flowchartSectionID);
@@ -170,8 +169,8 @@ public class SearchInfoObjects extends AbstractAction {
 	}
 
 	private static boolean matches(String text, String[] phrases) {
-		for (int i = 0; i < phrases.length; i++) {
-			if (text.indexOf(phrases[i]) == -1) {
+		for (String phrase : phrases) {
+			if (!text.contains(phrase)) {
 				return false;
 			}
 		}

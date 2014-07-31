@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -826,12 +827,7 @@ public class KnowWEUtils {
 	}
 
 	private static Collection<TerminologyManager> getTerminologyManagers(Collection<? extends TermCompiler> compilers) {
-		Collection<TerminologyManager> managers = new ArrayList<TerminologyManager>(
-				compilers.size());
-		for (TermCompiler packageCompiler : compilers) {
-			managers.add(packageCompiler.getTerminologyManager());
-		}
-		return managers;
+		return compilers.stream().map(TermCompiler::getTerminologyManager).collect(Collectors.toList());
 	}
 
 	/**
