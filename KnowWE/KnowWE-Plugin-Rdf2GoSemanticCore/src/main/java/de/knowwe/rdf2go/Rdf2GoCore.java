@@ -45,7 +45,6 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -127,8 +126,7 @@ public class Rdf2GoCore {
 
 	private static final int DEFAULT_MAX_CACHE_SIZE = 1000000; // should be below 100 MB of cache (we count each cell)
 
-	private final Map<String, SparqlTask> resultCache
-			= new LinkedHashMap<String, SparqlTask>(16, 0.75f, true);
+	private final Map<String, SparqlTask> resultCache = new LinkedHashMap<>(16, 0.75f, true);
 
 	private int resultCacheSize = 0;
 
@@ -160,13 +158,8 @@ public class Rdf2GoCore {
 	}
 
 	private static ThreadPoolExecutor createThreadPool(int threadCount, final String threadName) {
-		return (ThreadPoolExecutor) Executors.newFixedThreadPool(threadCount, new ThreadFactory() {
-
-			@Override
-			public Thread newThread(Runnable runnable) {
-				return new Thread(runnable, threadName);
-			}
-		});
+		return (ThreadPoolExecutor) Executors.newFixedThreadPool(threadCount,
+				runnable -> new Thread(runnable, threadName));
 	}
 
 	@Deprecated
@@ -202,7 +195,7 @@ public class Rdf2GoCore {
 	private RuleSet ruleSet;
 
 	private final MultiMap<StatementSource, Statement> statementCache =
-			new N2MMap<Rdf2GoCore.StatementSource, Statement>(
+			new N2MMap<>(
 					MultiMaps.<StatementSource>hashMinimizedFactory(),
 					MultiMaps.<Statement>hashMinimizedFactory());
 
@@ -211,12 +204,12 @@ public class Rdf2GoCore {
 	 * is the full namespace, e.g. rdf and
 	 * http://www.w3.org/1999/02/22-rdf-syntax-ns#
 	 */
-	private final Map<String, String> namespaces = new HashMap<String, String>();
+	private final Map<String, String> namespaces = new HashMap<>();
 
 	/**
 	 * For optimization reasons, we hold a map of all namespacePrefixes as they are used e.g. in Turtle and SPARQL
 	 */
-	private final Map<String, String> namespacePrefixes = new HashMap<String, String>();
+	private final Map<String, String> namespacePrefixes = new HashMap<>();
 
 	private Set<Statement> insertCache;
 	private Set<Statement> removeCache;
@@ -265,8 +258,8 @@ public class Rdf2GoCore {
 		}
 		this.ruleSet = ruleSet;
 
-		insertCache = new HashSet<Statement>();
-		removeCache = new HashSet<Statement>();
+		insertCache = new HashSet<>();
+		removeCache = new HashSet<>();
 
 		// lock probably not necessary here, just to make sure...
 		this.lock.readLock().lock();
@@ -281,13 +274,12 @@ public class Rdf2GoCore {
 	}
 
 	private void initAvailableSyntaxes() {
-		List<Syntax> syntaxes = new LinkedList<Syntax>();
+		List<Syntax> syntaxes = new LinkedList<>();
 		syntaxes.addAll(Syntax.collection());
 		for (Syntax syntax : syntaxes) {
 			try {
 				File tempFile = File.createTempFile("rdf2go_" + syntax, ".tmp");
-				FileWriter writer = new FileWriter(tempFile);
-				try {
+				try (FileWriter writer = new FileWriter(tempFile)) {
 					writeModel(writer, syntax);
 				}
 				catch (Exception e) {
@@ -295,11 +287,11 @@ public class Rdf2GoCore {
 					Syntax.unregister(syntax);
 				}
 				finally {
-					writer.close();
 					tempFile.delete();
 				}
-			} catch (IOException e) {
-					Log.warning("Unable to test available syntax, as model can't be written to temp file.", e);
+			}
+			catch (IOException e) {
+				Log.warning("Unable to test available syntax, as model can't be written to temp file.", e);
 			}
 		}
 	}
@@ -501,7 +493,7 @@ public class Rdf2GoCore {
 			}
 
 			// For logging...
-			TreeSet<Statement> sortedRemoveCache = new TreeSet<Statement>();
+			TreeSet<Statement> sortedRemoveCache = new TreeSet<>();
 			if (verboseLog) sortedRemoveCache.addAll(removeCache);
 
 			// Hazard Filter:
@@ -512,7 +504,7 @@ public class Rdf2GoCore {
 			// before (e.g. compiling the same sections multiple times before the
 			// first commit), we do not remove statements from the insert cache.
 			// Duplicate statements are ignored by the model anyway.
-			Collection<Statement> actuallyAdded = new TreeSet<Statement>(insertCache);
+			Collection<Statement> actuallyAdded = new TreeSet<>(insertCache);
 			actuallyAdded.removeAll(removeCache);
 			removeCache.removeAll(insertCache);
 
@@ -525,7 +517,7 @@ public class Rdf2GoCore {
 			model.addAll(insertCache.iterator());
 			EventManager.getInstance().fireEvent(new InsertStatementsEvent(actuallyAdded, insertCache, this));
 			if (verboseLog) {
-				logStatements(new TreeSet<Statement>(insertCache), startInsert,
+				logStatements(new TreeSet<>(insertCache), startInsert,
 						"Inserted statements:\n");
 			}
 
@@ -536,8 +528,8 @@ public class Rdf2GoCore {
 						+ (System.currentTimeMillis() - startRemove) + "ms.");
 			}
 
-			removeCache = new HashSet<Statement>();
-			insertCache = new HashSet<Statement>();
+			removeCache = new HashSet<>();
+			insertCache = new HashSet<>();
 		}
 		finally {
 			// outside of commit an auto committing connection seems to be ok
@@ -707,7 +699,7 @@ public class Rdf2GoCore {
 	 * @created 15.07.2012
 	 */
 	public Set<Statement> getStatements() {
-		Set<Statement> result = new HashSet<Statement>();
+		Set<Statement> result = new HashSet<>();
 
 		for (Statement s : model) {
 			result.add(s);
@@ -962,7 +954,7 @@ public class Rdf2GoCore {
 	public Set<Article> getSourceArticles(Statement statement) {
 		Collection<StatementSource> list = statementCache.getKeys(statement);
 		if (list.isEmpty()) return Collections.emptySet();
-		Set<Article> result = new HashSet<Article>();
+		Set<Article> result = new HashSet<>();
 		for (StatementSource source : list) {
 			result.add(source.getArticle());
 		}
@@ -1071,7 +1063,10 @@ public class Rdf2GoCore {
 				if (sparqlTask == null
 						|| (sparqlTask.isCancelled() && sparqlTask.getTimeOutMillis() != timeOutMillis)) {
 					sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, true), timeOutMillis);
-					resultCache.put(completeQuery, sparqlTask);
+					SparqlTask previous = resultCache.put(completeQuery, sparqlTask);
+					if (previous != null) {
+						resultCacheSize -= previous.getSize();
+					}
 					sparqlThreadPool.execute(sparqlTask);
 				}
 			}
@@ -1080,46 +1075,36 @@ public class Rdf2GoCore {
 			sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, false), timeOutMillis);
 			sparqlThreadPool.execute(sparqlTask);
 		}
+		String timeOutMessage = "SPARQL took more than " + Strings.getDurationVerbalization(timeOutMillis, true)
+				+ " and was therefore canceled.";
 		try {
 			return sparqlTask.get();
 		}
-		catch (CancellationException c) {
-			String timeOutMessage = "SPARQL took more than " + Strings.getDurationVerbalization(timeOutMillis, true)
-					+ " and was therefore canceled.";
+		catch (CancellationException | InterruptedException c) {
 			throw new RuntimeException(timeOutMessage);
 		}
-		catch (InterruptedException e) {
-			Log.warning("Interrupted while retrieving SPARQL", e);
-		}
 		catch (ExecutionException e) {
-			// it is very likely a (Model)RuntimeException anyway, we avoid adding throws everywhere
+			if (e.getCause() instanceof ThreadDeath) {
+				throw new RuntimeException(timeOutMessage);
+			}
 			throw new RuntimeException(e.getCause());
 		}
-
-		return getEmptySparqlResult(type);
 	}
 
-	private Object getEmptySparqlResult(SparqlType type) {
-		if (type == SparqlType.SELECT) {
-			return new CachedQueryResultTable(Collections.<String>emptyList(), Collections.<QueryRow>emptyList());
-		}
-		else if (type == SparqlType.CONSTRUCT) {
-			return new CachedClosableIterable<Statement>(Collections.<Statement>emptyList());
-		}
-		else {
-			return false;
-		}
-	}
-
+	/**
+	 * Future for SPARQL queries with some addition control to stop it and get info about state.
+	 */
 	private class SparqlTask extends FutureTask<Object> {
 
 		private final long timeOutMillis;
+		private long startTime = Long.MIN_VALUE;
 		private SparqlCallable callable;
+		private Thread thread = null;
+		private int size = 1;
 
 		public SparqlTask(SparqlCallable callable, long timeOutMillis) {
 			super(callable);
 			this.callable = callable;
-			this.callable.setTask(this);
 			this.timeOutMillis = timeOutMillis;
 		}
 
@@ -1127,38 +1112,16 @@ public class Rdf2GoCore {
 			return timeOutMillis;
 		}
 
-		public void stop() {
-			callable.stop();
-		}
-	}
-
-	/**
-	 * Does the work and retrieves the SPARQL result.
-	 */
-	private class SparqlCallable implements Callable<Object> {
-
-		private SparqlTask task;
-		private final String query;
-		private final SparqlType type;
-		private final boolean cached;
-		private Thread thread = null;
-		private long startTime = Long.MIN_VALUE;
-
-		private SparqlCallable(String query, SparqlType type, boolean cached) {
-			this.query = query;
-			this.type = type;
-			this.cached = cached;
+		public synchronized void setSize(int size) {
+			this.size = size;
 		}
 
-		private void setTask(SparqlTask task) {
-			this.task = task;
+		public synchronized int getSize() {
+			return size;
 		}
 
-		public synchronized void stop() {
-			if (thread != null) {
-				this.thread.stop();
-				this.thread = null;
-			}
+		public synchronized long getRunDuration() {
+			return hasStarted() ? System.currentTimeMillis() - startTime : 0;
 		}
 
 		public synchronized boolean hasStarted() {
@@ -1169,81 +1132,173 @@ public class Rdf2GoCore {
 			return !hasStarted() || (thread != null && thread.isAlive());
 		}
 
-		public synchronized long getRunDuration() {
-			return hasStarted() ? System.currentTimeMillis() - startTime : 0;
+		public synchronized void stop() {
+			if (thread != null) {
+				this.thread.stop();
+				this.thread = null;
+			}
 		}
 
 		@Override
-		public Object call() {
+		public void run() {
 			synchronized (this) {
 				this.thread = Thread.currentThread();
 				startTime = System.currentTimeMillis();
 			}
-			sparqlDaemonPool.execute(new SparqlTaskDaemon(task));
-			Object result;
-			lock.readLock().lock();
 			try {
-				result = executeSparql();
+				sparqlDaemonPool.execute(new SparqlTaskDaemon(this));
+				super.run();
 			}
 			finally {
-				lock.readLock().unlock();
 				synchronized (this) {
 					thread = null;
 				}
 			}
+			if (callable.cached) {
+				handleCacheSize(this);
+			}
 			long sparqlTime = System.currentTimeMillis() - startTime;
-			if (sparqlTime > 1000) {
+			if (sparqlTime > 1000 && !isCancelled()) {
 				Log.info("Finished sparql after "
 						+ Strings.getDurationVerbalization(sparqlTime)
-						+ ": " + getReadableQuery() + "...");
+						+ ": " + callable.getReadableQuery() + "...");
 			}
+		}
 
-			handleCacheSize(result);
+		@Override
+		protected void set(Object o) {
+			super.set(o);
+			if (callable.cached) {
+				setSize(getResultSize(o));
+			}
+		}
+	}
+
+	/**
+	 * Does the work and retrieves the SPARQL result.
+	 */
+	private class SparqlCallable implements Callable<Object> {
+
+		private final String query;
+		private final SparqlType type;
+		private final boolean cached;
+
+		private ClosableIterator<?> iterator;
+
+		private SparqlCallable(String query, SparqlType type, boolean cached) {
+			this.query = query;
+			this.type = type;
+			this.cached = cached;
+		}
+
+		@Override
+		public Object call() {
+			Object result;
+			lock.readLock().lock();
+			try {
+				if (type == SparqlType.CONSTRUCT) {
+					ClosableIterable<Statement> constructResult = model.sparqlConstruct(query);
+					if (cached) {
+						result = toCachedClosableIterable(constructResult);
+					}
+					else {
+						result = new LockableClosableIterable<>(lock.readLock(), constructResult);
+					}
+				}
+				else if (type == SparqlType.SELECT) {
+					QueryResultTable selectResult = model.sparqlSelect(query);
+					if (cached) {
+						result = toCachedQueryResult(selectResult);
+					}
+					else {
+						result = new LockableResultTable(lock.readLock(), selectResult);
+					}
+				}
+				else {
+					result = model.sparqlAsk(query);
+				}
+			}
+			finally {
+				lock.readLock().unlock();
+			}
+			if (Thread.currentThread().isInterrupted()) {
+				// not need to waste cache size
+				result = null;
+			}
 			return result;
+		}
+
+		private CachedClosableIterable<Statement> toCachedClosableIterable(ClosableIterable<Statement> result) {
+			CachedClosableIterable<Statement> cachedResult;
+			lock.readLock().lock();
+			try {
+				ArrayList<Statement> statements = new ArrayList<>();
+				ClosableIterator<Statement> iterator = result.iterator();
+				synchronized (this) {
+					this.iterator = iterator;
+				}
+				for (; !Thread.currentThread().isInterrupted() && iterator.hasNext(); ) {
+					Statement statement = iterator.next();
+					statements.add(statement);
+				}
+				iterator.close();
+				statements.trimToSize();
+				cachedResult = new CachedClosableIterable<>(statements);
+			}
+			finally {
+				lock.readLock().unlock();
+			}
+			return cachedResult;
+		}
+
+		private CachedQueryResultTable toCachedQueryResult(QueryResultTable result) {
+			CachedQueryResultTable cachedResult;
+			lock.readLock().lock();
+			try {
+				ArrayList<QueryRow> rows = new ArrayList<>();
+				ClosableIterator<QueryRow> iterator = result.iterator();
+				synchronized (this) {
+					this.iterator = iterator;
+				}
+				for (; !Thread.currentThread().isInterrupted() && iterator.hasNext(); ) {
+					QueryRow queryRow = iterator.next();
+					rows.add(queryRow);
+				}
+				iterator.close();
+				rows.trimToSize();
+				List<String> variables = result.getVariables();
+				cachedResult = new CachedQueryResultTable(variables, rows);
+			}
+			finally {
+				lock.readLock().unlock();
+			}
+			return cachedResult;
 		}
 
 		private String getReadableQuery() {
+			String query = this.query.replace("\n", " ").replaceAll("\t|\\s\\s+", " ");
 			int start = -1;
 			if (type == SparqlType.ASK) {
-				start = query.toLowerCase().indexOf("ask") - 4;
+				start = query.toLowerCase().indexOf("ask");
 			}
 			else if (type == SparqlType.SELECT) {
-				start = query.toLowerCase().indexOf("select") - 7;
+				start = query.toLowerCase().indexOf("select");
 			}
 			else if (type == SparqlType.CONSTRUCT) {
-				start = query.toLowerCase().indexOf("construct") - 9;
+				start = query.toLowerCase().indexOf("construct");
 			}
 			if (start == -1) start = 0;
-            final int endIndex = query.length() - start > 75 ? start + 75 : query.length();
-            return query.replace("\n", " ").replaceAll("\t|\\s\\s+", " ").substring(start, endIndex);
+			final int endIndex = query.length() - start > 75 ? start + 75 : query.length();
+			return query.substring(start, endIndex);
 		}
 
-		private Object executeSparql() {
-			Object result;
-			if (type == SparqlType.CONSTRUCT) {
-				ClosableIterable<Statement> constructResult = model.sparqlConstruct(query);
-				if (cached) {
-					result = toCachedClosableIterable(constructResult);
-				}
-				else {
-					result = new LockableClosableIterable<Statement>(lock.readLock(), constructResult);
+		public void close() {
+			synchronized (this) {
+				if (this.iterator != null) {
+					iterator.close();
 				}
 			}
-			else if (type == SparqlType.SELECT) {
-				QueryResultTable selectResult = model.sparqlSelect(query);
-				if (cached) {
-					result = toCachedQueryResult(selectResult);
-				}
-				else {
-					result = new LockableResultTable(lock.readLock(), selectResult);
-				}
-			}
-			else {
-				result = model.sparqlAsk(query);
-			}
-			return result;
 		}
-
 	}
 
 	/**
@@ -1261,53 +1316,42 @@ public class Rdf2GoCore {
 		@Override
 		public void run() {
 			try {
-				try {
-					task.get(task.timeOutMillis, TimeUnit.MILLISECONDS);
-				}
-				catch (TimeoutException e) {
-					// we cancel
-					task.cancel(true);
-					Log.warning("Sparql timed out after "
-							+ Strings.getDurationVerbalization(task.callable.getRunDuration())
-							+ ": " + task.callable.getReadableQuery() + "...");
-					// if it does not die after the sleep, we kill it
-					// (not all repositories will react to cancel)
-					Thread.sleep(Math.max(task.timeOutMillis / 2, 1000));
-					if (task.callable.isAlive()) {
-						task.callable.stop();
-						Log.warning("Sparql stopped after "
-								+ Strings.getDurationVerbalization(task.callable.getRunDuration())
-								+ ": " + task.callable.getReadableQuery() + "...");
-					}
-				}
-				catch (Exception e) {
-					// nothing to do
-				}
+				task.get(task.timeOutMillis, TimeUnit.MILLISECONDS);
 			}
-			catch (InterruptedException e) {
-				Log.warning(Thread.currentThread().getName() + " was interrupted", e);
-			}
-		}
-	}
+			catch (TimeoutException e) {
 
-	private CachedClosableIterable<Statement> toCachedClosableIterable(ClosableIterable<Statement> result) {
-		CachedClosableIterable<Statement> cachedResult;
-		lock.readLock().lock();
-		try {
-			ArrayList<Statement> statements = new ArrayList<Statement>();
-			ClosableIterator<Statement> iterator = result.iterator();
-			for (; !Thread.currentThread().isInterrupted() && iterator.hasNext(); ) {
-				Statement statement = iterator.next();
-				statements.add(statement);
+				// we cancel the task
+				// OWLIM doesn't handel interrupting well, so we don't
+				boolean mayInterruptIfRunning = modelType != Rdf2GoModel.SWIFTOWLIM;
+				if (task.cancel(mayInterruptIfRunning)) {
+					Log.warning("Sparql timed out after "
+							+ Strings.getDurationVerbalization(task.getRunDuration())
+							+ ": " + task.callable.getReadableQuery() + "...");
+				}
+
+				// if it has not died after the sleep, we kill it
+				// (not all repositories will react to cancel)
+				if (mayInterruptIfRunning) sleep(task.timeOutMillis / 2);
+				if (task.isAlive()) {
+					task.stop();
+					Log.warning("Sparql stopped after "
+							+ Strings.getDurationVerbalization(task.getRunDuration())
+							+ ": " + task.callable.getReadableQuery() + "...");
+				}
 			}
-			iterator.close();
-			statements.trimToSize();
-			cachedResult = new CachedClosableIterable<Statement>(statements);
+			catch (Exception ignore) {
+				// nothing to do
+			}
 		}
-		finally {
-			lock.readLock().unlock();
+
+		private void sleep(long timeout) {
+			try {
+				Thread.sleep(Math.max(timeout, 1000));
+			}
+			catch (InterruptedException ie) {
+				Log.warning(Thread.currentThread().getName() + " was interrupted", ie);
+			}
 		}
-		return cachedResult;
 	}
 
 	private String completeQuery(String query) {
@@ -1321,29 +1365,8 @@ public class Rdf2GoCore {
 		return completeQuery;
 	}
 
-	private CachedQueryResultTable toCachedQueryResult(QueryResultTable result) {
-		CachedQueryResultTable cachedResult;
-		lock.readLock().lock();
-		try {
-			ArrayList<QueryRow> rows = new ArrayList<QueryRow>();
-			ClosableIterator<QueryRow> iterator = result.iterator();
-			for (; !Thread.currentThread().isInterrupted() && iterator.hasNext(); ) {
-				QueryRow queryRow = iterator.next();
-				rows.add(queryRow);
-			}
-			iterator.close();
-			rows.trimToSize();
-			List<String> variables = result.getVariables();
-			cachedResult = new CachedQueryResultTable(variables, rows);
-		}
-		finally {
-			lock.readLock().unlock();
-		}
-		return cachedResult;
-	}
-
-	private void handleCacheSize(Object result) {
-		resultCacheSize += getResultSize(result);
+	private void handleCacheSize(SparqlTask task) {
+		resultCacheSize += task.getSize();
 		if (resultCacheSize > DEFAULT_MAX_CACHE_SIZE) {
 			synchronized (resultCache) {
 				Iterator<Entry<String, SparqlTask>> iterator = resultCache.entrySet().iterator();
@@ -1351,7 +1374,7 @@ public class Rdf2GoCore {
 					Entry<String, SparqlTask> next = iterator.next();
 					iterator.remove();
 					try {
-						resultCacheSize -= getResultSize(next.getValue().get());
+						resultCacheSize -= next.getValue().getSize();
 					}
 					catch (Exception e) {
 						// nothing to do, cache size wasn't increase either
@@ -1406,7 +1429,7 @@ public class Rdf2GoCore {
 	 * Writes the current repository model to the given writer in the specified
 	 * syntax.
 	 *
-	 * @param out the target to write the model to
+	 * @param out    the target to write the model to
 	 * @param syntax the syntax of the target file
 	 * @throws ModelRuntimeException
 	 * @throws IOException
@@ -1467,7 +1490,7 @@ public class Rdf2GoCore {
 
 		@Override
 		public ClosableIterator<E> iterator() {
-			return new DelegateClosableIterator<E>(delegate.iterator());
+			return new DelegateClosableIterator<>(delegate.iterator());
 		}
 	}
 
@@ -1517,7 +1540,7 @@ public class Rdf2GoCore {
 
 		@Override
 		public ClosableIterator<QueryRow> iterator() {
-			return new DelegateClosableIterator<QueryRow>(result.iterator());
+			return new DelegateClosableIterator<>(result.iterator());
 		}
 	}
 
