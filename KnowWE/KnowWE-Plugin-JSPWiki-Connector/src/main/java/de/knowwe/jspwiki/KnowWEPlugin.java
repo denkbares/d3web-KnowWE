@@ -55,6 +55,7 @@ import de.d3web.plugin.Plugin;
 import de.d3web.plugin.PluginManager;
 import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.ResourceLoader;
 import de.knowwe.core.append.PageAppendHandler;
@@ -304,7 +305,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			try {
 				//deleteRenamedArticles(title);
 				article = Environment.getInstance().buildAndRegisterArticle(
-						Environment.DEFAULT_WEB, title, content, fullParse);
+						Environment.DEFAULT_WEB, title, content);
 			}
 			finally {
 				articleManager.commit();
@@ -369,23 +370,20 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	 * @created 07.06.2010
 	 */
 	private void initializeAllArticles(WikiEngine engine) {
-
 		ArticleManager articleManager =
 				Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
 		articleManager.open();
 		try {
 			PageManager mgr = engine.getPageManager();
-			Collection<?> wikipages = mgr.getAllPages();
-			for (Object o : wikipages) {
+			Collection<?> wikiPages = mgr.getAllPages();
+			long start = System.currentTimeMillis();
+			wikiPages.parallelStream().forEach(o -> {
 				WikiPage wp = (WikiPage) o;
-				Article article = Environment.getInstance().getArticle(
-						Environment.DEFAULT_WEB, wp.getName());
-				if (article == null) {
-					String content = engine.getPureText(wp.getName(), wp.getVersion());
-					Environment.getInstance().buildAndRegisterArticle(content, wp.getName(),
-							Environment.DEFAULT_WEB);
-				}
-			}
+				String content = engine.getPureText(wp.getName(), wp.getVersion());
+				Article article = Article.createArticle(content, wp.getName(), Environment.DEFAULT_WEB);
+				((DefaultArticleManager)articleManager).queueArticle(article);
+			});
+			Log.info("Sectionized all articles in " + (System.currentTimeMillis() - start) + "ms");
 		}
 		catch (ProviderException e1) {
 			Log.warning("Unable to load all articles, maybe some articles won't be initialized!");
@@ -447,7 +445,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			try {
 				manager.deleteArticle(oldArticle);
 				Environment.getInstance().buildAndRegisterArticle(
-						Environment.DEFAULT_WEB, renameEvent.getNewPageName(), oldArticle.getText(), false);
+						Environment.DEFAULT_WEB, renameEvent.getNewPageName(), oldArticle.getText());
 			}
 			finally {
 				manager.commit();

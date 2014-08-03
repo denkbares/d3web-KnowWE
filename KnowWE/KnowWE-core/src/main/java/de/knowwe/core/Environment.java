@@ -74,7 +74,7 @@ import de.knowwe.plugin.Plugins;
  * provides methods to access {@link Article}s and other Managers. Further it is
  * connected to the used Wiki-engine, holding an instance of
  * {@link WikiConnector} and allows page saves.
- * 
+ *
  * @author Jochen
  */
 
@@ -148,10 +148,9 @@ public class Environment {
 
 	/**
 	 * private contructor
-	 * 
-	 * @see #getInstance()
-	 * 
+	 *
 	 * @param wiki Connector to the used core wiki engine
+	 * @see #getInstance()
 	 */
 	private Environment(WikiConnector wiki) {
 		this.wikiConnector = wiki;
@@ -379,7 +378,7 @@ public class Environment {
 	 * Initialize all types by decorating them. The method makes sure that each
 	 * instance is decorated only once. To do this a breath-first-search is
 	 * used. Thus each item is initialized with the shortest path towards it.
-	 * 
+	 *
 	 * @created 24.10.2013
 	 */
 	private void decorateTypeTree() {
@@ -451,11 +450,11 @@ public class Environment {
 	 * the renderer positioned next in the priority list after the given
 	 * renderer. If the passed renderer is not contained in the given list, the
 	 * first renderer of the list is returned.
-	 * 
-	 * @created 04.11.2013
-	 * @param type the type we want the next renderer for
+	 *
+	 * @param type            the type we want the next renderer for
 	 * @param currentRenderer the current renderer
 	 * @return the next renderer
+	 * @created 04.11.2013
 	 */
 	public Renderer getNextRendererForType(Type type, Renderer currentRenderer) {
 		if (additionalRenderers.containsKey(type)) {
@@ -489,20 +488,7 @@ public class Environment {
 	/**
 	 * Builds an {@link Article} and registers it in the {@link ArticleManager}.
 	 */
-	public Article buildAndRegisterArticle(String content,
-			String title, String web) {
-		return buildAndRegisterArticle(web, title, content, false);
-	}
-
-	/**
-	 * Builds an {@link Article} and registers it in the {@link ArticleManager}.
-	 */
-	public Article buildAndRegisterArticle(String web,
-			String title, String content, boolean fullParse) {
-
-		if (Article.isArticleCurrentlyBuilding(web, title)) {
-			return Article.getCurrentlyBuildingArticle(web, title);
-		}
+	public Article buildAndRegisterArticle(String web, String title, String content) {
 
 		// create article with the new content
 		Article article = Article.createArticle(content, title, web);
@@ -514,8 +500,8 @@ public class Environment {
 
 	/**
 	 * Returns the {@link Article} object for a given web and title
-	 * 
-	 * @param web the web of the {@link Article}
+	 *
+	 * @param web   the web of the {@link Article}
 	 * @param title the title of the {@link Article}
 	 */
 	public Article getArticle(String web, String title) {
@@ -524,7 +510,7 @@ public class Environment {
 
 	/**
 	 * Returns the {@link ArticleManager} for a given web.
-	 * 
+	 *
 	 * @param web the web of the {@link ArticleManager}
 	 */
 	public ArticleManager getArticleManager(String web) {
@@ -542,7 +528,7 @@ public class Environment {
 
 	/**
 	 * grants access on the default tag handlers of KnowWE
-	 * 
+	 *
 	 * @return HashMap holding the default tag handlers of KnowWE
 	 */
 	public Map<String, TagHandler> getDefaultTagHandlers() {
@@ -570,21 +556,20 @@ public class Environment {
 	}
 
 	/**
-	 * @deprecated
 	 * @created 15.11.2013
+	 * @deprecated
 	 */
 	@Deprecated
 	public TerminologyManager getTerminologyManager(String defaultWeb, String master) {
 		return KnowWEUtils.getTerminologyManager(master == null
 				? null
 				: KnowWEUtils.getArticleManager(
-						defaultWeb).getArticle(master));
+				defaultWeb).getArticle(master));
 	}
 
 	/**
-	 * 
 	 * TODO: How about having a 'UserContext.getArticleManager()'?
-	 * 
+	 *
 	 * @deprecated remove this method after merging with trunk
 	 */
 	@Deprecated

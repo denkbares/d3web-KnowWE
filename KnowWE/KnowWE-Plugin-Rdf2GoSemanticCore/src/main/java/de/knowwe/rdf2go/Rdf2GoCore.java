@@ -464,7 +464,23 @@ public class Rdf2GoCore {
 	 * @created 13.06.2012
 	 */
 	public void addStatements(Statement... statements) {
-		addStatements((StatementSource) null, Arrays.asList(statements));
+		addStatements(Arrays.asList(statements));
+	}
+
+	/**
+	 * Adds the given {@link Statement}s directly to the triple store.
+	 * <p/>
+	 * <b>Attention</b>: The added {@link Statement}s are not cached in the
+	 * {@link Rdf2GoCore}, so you are yourself responsible to remove the right
+	 * {@link Statement}s in case they are not longer valid. You can remove
+	 * these {@link Statement}s with the method
+	 * {@link Rdf2GoCore#removeStatements(Collection)}.
+	 *
+	 * @param statements the statements you want to add to the triple store
+	 * @created 13.06.2012
+	 */
+	public void addStatements(Collection<Statement> statements) {
+		addStatements((StatementSource) null, statements);
 	}
 
 	/**

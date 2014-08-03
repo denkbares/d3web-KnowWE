@@ -60,7 +60,7 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public String createArticle(String title, String author, String content) {
-		Environment.getInstance().buildAndRegisterArticle(content, title, Environment.DEFAULT_WEB);
+		Environment.getInstance().buildAndRegisterArticle(Environment.DEFAULT_WEB, title, content);
 		if (dummyPageProvider == null) {
 			throw new NullPointerException(
 					"PageProvider is null, so additional wiki pages cannot be added");
@@ -321,7 +321,7 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public boolean writeArticleToWikiPersistence(String title, String content, UserContext context) {
-		Environment.getInstance().buildAndRegisterArticle(content, title, Environment.DEFAULT_WEB);
+		Environment.getInstance().buildAndRegisterArticle(Environment.DEFAULT_WEB, title, content);
 		if (dummyPageProvider == null) {
 			Log.warning("No PageProvider given, so additional wiki pages cannot be added");
 			return true;

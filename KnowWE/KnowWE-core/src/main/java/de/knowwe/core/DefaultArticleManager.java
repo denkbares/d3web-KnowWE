@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 
 import de.d3web.utils.Log;
@@ -99,30 +100,40 @@ public class DefaultArticleManager implements ArticleManager {
 	public void registerArticle(Article article) {
 		open();
 		try {
-			if (article == null) {
-				throw new NullPointerException("Article is cannot be null");
-			}
-
-			String title = article.getTitle();
-
-			added.add(article.getRootSection());
-
-			Article lastVersion = getArticle(title);
-			if (lastVersion != null) removed.add(lastVersion.getRootSection());
-
-			articleMap.put(title.toLowerCase(), article);
-			// in case an article with the same name gets added in the same compilation window
-			deleteAfterCompile.remove(title.toLowerCase());
-
-			article.setArticleManager(this);
-
-			EventManager.getInstance().fireEvent(
-					new ArticleRegisteredEvent(article));
-			article.clearLastVersion();
+			queueArticle(article);
 		}
 		finally {
 			commit();
 		}
+	}
+
+	/**
+	 * Queues up an article for registration (and compilation). The article will be compiled the next time {@link
+	 * #open()} and {@link #commit()} are called.<p>
+	 * This method can be used, to queue up multiple articles using different threads. {@link
+	 * #registerArticle(Article)}
+	 * does not allow that, because a deadlock will happen at the internal call of {@link #open()}.<p>
+	 * To compile directly after using this method (in a try-block!), you need to call {@link #open()} before, and
+	 * {@link #commit()} afterwards (in the finally-block!).
+	 */
+	public void queueArticle(Article article) {
+		Objects.requireNonNull(article);
+
+		String title = article.getTitle();
+
+		added.add(article.getRootSection());
+
+		Article lastVersion = getArticle(title);
+		if (lastVersion != null) removed.add(lastVersion.getRootSection());
+
+		articleMap.put(title.toLowerCase(), article);
+		// in case an article with the same name gets added in the same compilation window
+		deleteAfterCompile.remove(title.toLowerCase());
+
+		article.setArticleManager(this);
+
+		EventManager.getInstance().fireEvent(new ArticleRegisteredEvent(article));
+		article.clearLastVersion();
 	}
 
 	/**
@@ -174,8 +185,8 @@ public class DefaultArticleManager implements ArticleManager {
 
 	/**
 	 * Calls this method after opening with {@link ArticleManager#open()}. It causes the compilation of articles
-	 * registered since calling the method {@link ArticleManager#open()}. Make sure to always call commit in an
-	 * try-finally block!
+	 * registered or queued since calling the method {@link ArticleManager#open()}. Make sure to always call commit in
+	 * a try-finally block!
 	 */
 	@Override
 	public void commit() {

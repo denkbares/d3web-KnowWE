@@ -62,7 +62,7 @@ public class TableTest extends TestCase {
 		 */
 		String content = "!!Table\n\n%%Table\n| |Apple|Lemon|Coconut\n|sweetness|+|-|hm\n|grows in central europe|+|+|-\n|size|-|+|+\n%";
 		String title = "Test_Article";
-		env.buildAndRegisterArticle(web, title, content, false);
+		env.buildAndRegisterArticle(web, title, content);
 		Article article = env.getArticle(web, title);
 
 		/**

@@ -20,7 +20,6 @@
 
 package de.knowwe.core.kdom;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,18 +61,8 @@ public class Article {
 
 	private final boolean fullParse;
 
-	private static Map<String, Article> currentlyBuildingArticles = Collections.synchronizedMap(new HashMap<String, Article>());
-
 	private static String getArticleKey(String web, String title) {
 		return web + title;
-	}
-
-	public static boolean isArticleCurrentlyBuilding(String web, String title) {
-		return currentlyBuildingArticles.containsKey(getArticleKey(web, title));
-	}
-
-	public static Article getCurrentlyBuildingArticle(String web, String title) {
-		return currentlyBuildingArticles.get(getArticleKey(web, title));
 	}
 
 	public static Article createArticle(String text, String title, String web) {
@@ -86,16 +75,7 @@ public class Article {
 
 	public static Article createArticle(String text, String title,
 			String web, boolean fullParse) {
-
-		if (isArticleCurrentlyBuilding(web, title)) {
-			Log.severe("The article '"
-					+ title
-					+ "' is build more than once at the same time, "
-					+ "this should not be done! Developer please check with "
-					+ "Article#isArticleCurrentlyBuilding(String) first!");
-		}
 		Article article = null;
-		currentlyBuildingArticles.put(getArticleKey(web, title), null);
 		try {
 			article = new Article(text, title, web, fullParse);
 			EventManager.getInstance().fireEvent(new ArticleCreatedEvent(article));
@@ -103,10 +83,6 @@ public class Article {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		finally {
-			currentlyBuildingArticles.remove(getArticleKey(web, title));
-		}
-
 		return article;
 	}
 
@@ -115,7 +91,6 @@ public class Article {
 	 */
 	private Article(String text, String title, String web, boolean fullParse) {
 
-		currentlyBuildingArticles.put(getArticleKey(web, title), this);
 		long startTimeOverall = System.currentTimeMillis();
 		this.title = title;
 		this.web = web;
