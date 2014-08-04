@@ -46,6 +46,8 @@ import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.records.SessionConversionFactory;
 import de.d3web.core.records.SessionRecord;
 import de.d3web.core.records.io.SessionPersistenceManager;
@@ -484,16 +486,18 @@ public class D3webUtils {
 	 * {@link Value} you should set to the {@link Blackboard} if the Value
 	 * already exists:<br/>
 	 * If it is the same value, {@link Unknown} is returned.<br/>
-	 * If it is equal but Unknown, <tt>null</tt> is returned since there is
+	 * If it is equal but Unknown, {@link UndefinedValue} is returned since there is
 	 * nothing to change.<br/>
 	 * If it is a different Value, the Value is returned unaltered.
+	 * If {@link Unknown} is not visible for the given question, instead of {@link Unknown}, {@link UndefinedValue} is
+	 * returned.
 	 *
 	 * @param newValue      the newly created Value for the dialog
 	 * @param existingValue the existing Value in the dialog
 	 * @return the Value you should set to the dialog
 	 * @created 11.08.2012
 	 */
-	public static Value handleEqualChoiceValues(Value newValue, Value existingValue) {
+	public static Value handleEqualChoiceValues(Question question, Value newValue, Value existingValue) {
 		if (newValue instanceof ChoiceValue && newValue.equals(existingValue)) {
 			newValue = Unknown.getInstance();
 		}
@@ -501,7 +505,19 @@ public class D3webUtils {
 				&& Unknown.getInstance().equals(existingValue)) {
 			newValue = UndefinedValue.getInstance();
 		}
+		if (Unknown.getInstance().equals(newValue) && !isUnknownVisible(question)) {
+			newValue = UndefinedValue.getInstance();
+		}
 		return newValue;
+	}
+
+	public static boolean isUnknownVisible(Question question) {
+		List<TerminologyObject> ancestors = KnowledgeBaseUtils.getAncestors(question);
+		for (TerminologyObject ancestor : ancestors) {
+			Boolean visible = ancestor.getInfoStore().getValue(BasicProperties.UNKNOWN_VISIBLE);
+			if (visible != null) return visible;
+		}
+		return true;
 	}
 
 	/**
@@ -514,9 +530,9 @@ public class D3webUtils {
 	public static boolean isEmpty(KnowledgeBase kb) {
 		return kb == null
 				|| (kb.getAllKnowledgeSlices().size() <= 1
-						&& kb.getManager().getQContainers().size() <= 1
-						&& kb.getManager().getQuestions().size() == 0
-						&& kb.getManager().getSolutions().size() <= 1);
+				&& kb.getManager().getQContainers().size() <= 1
+				&& kb.getManager().getQuestions().size() == 0
+				&& kb.getManager().getSolutions().size() <= 1);
 	}
 
 }
