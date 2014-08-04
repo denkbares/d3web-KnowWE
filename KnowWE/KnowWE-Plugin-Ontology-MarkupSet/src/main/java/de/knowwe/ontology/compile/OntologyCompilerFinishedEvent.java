@@ -27,15 +27,9 @@ import de.knowwe.core.compile.CompilerFinishedEvent;
  * @created 13.12.2013
  */
 public class OntologyCompilerFinishedEvent extends CompilerFinishedEvent<OntologyCompiler> {
-	private OntologyCompiler compiler;
 
 	public OntologyCompilerFinishedEvent(OntologyCompiler compiler) {
 		super(compiler);
-		this.compiler = compiler;
-	}
-
-	public OntologyCompiler getCompiler() {
-		return compiler;
 	}
 
 }
