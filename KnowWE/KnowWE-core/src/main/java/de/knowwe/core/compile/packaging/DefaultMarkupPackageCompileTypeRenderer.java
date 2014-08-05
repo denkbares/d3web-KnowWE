@@ -37,6 +37,7 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
@@ -181,7 +182,7 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 		string.appendHtml("<ul>");
 		for (String name : names) {
 			string.appendHtml("<li>");
-			string.append("[").append(name).append("]");
+			string.appendHtmlElement("a", name, "href", KnowWEUtils.getURLLink(name));
 			string.append("\n");
 		}
 		string.appendHtml("</ul>");
