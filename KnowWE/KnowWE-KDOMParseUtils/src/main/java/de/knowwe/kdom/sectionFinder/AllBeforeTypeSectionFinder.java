@@ -34,7 +34,8 @@ public class AllBeforeTypeSectionFinder implements SectionFinder {
 
 	Sectionizable markerType = null;
 
-	LinkedList<String> findThese = new LinkedList<String>();
+	ThreadLocal<LinkedList<String>> findThese = new ThreadLocal<>();
+
 
 	/**
 	 * To use this SectionFinder, the argument type has to be added as an
@@ -64,20 +65,23 @@ public class AllBeforeTypeSectionFinder implements SectionFinder {
 		type.setSectionFinder(new AllBeforeTypeSectionFinderWrapper(type.getSectionFinder(), this));
 	}
 
-	public void addStringToFind(String findThis) {
-		findThese.add(findThis);
+	private LinkedList<String> findThese() {
+		if (findThese.get() == null) {
+			findThese.set(new LinkedList<>());
+		}
+		return findThese.get();
 	}
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-		if (!findThese.isEmpty()) {
-			List<SectionFinderResult> results = new ArrayList<SectionFinderResult>(1);
-			int start = text.indexOf(findThese.getFirst());
+		if (!findThese().isEmpty()) {
+			List<SectionFinderResult> results = new ArrayList<>(1);
+			int start = text.indexOf(findThese().getFirst());
 			if (start >= 0) {
 				results.add(new SectionFinderResult(start, start
-						+ findThese.getFirst().length()));
+						+ findThese().getFirst().length()));
 			}
-			findThese.removeFirst();
+			findThese().removeFirst();
 			return results;
 		}
 		return null;
@@ -102,7 +106,7 @@ public class AllBeforeTypeSectionFinder implements SectionFinder {
 				int lastEnd = 0;
 				for (SectionFinderResult result : found) {
 					if (lastEnd < result.getStart()) {
-						getsAllBefore.addStringToFind(text.substring(lastEnd, result.getStart()).trim());
+						getsAllBefore.findThese().add(text.substring(lastEnd, result.getStart()).trim());
 					}
 					lastEnd = result.getEnd();
 				}
