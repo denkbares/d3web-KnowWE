@@ -870,7 +870,7 @@ jspwiki.use.external.logconfig = false
 log4j.appender.FileLog = org.apache.log4j.RollingFileAppender
 log4j.appender.FileLog.MaxFileSize    = 10MB
 log4j.appender.FileLog.MaxBackupIndex = 14
-log4j.appender.FileLog.File = /denkbares/jspwiki.log
+log4j.appender.FileLog.File = jspwiki.log
 log4j.appender.FileLog.layout = org.apache.log4j.PatternLayout
 log4j.appender.FileLog.layout.ConversionPattern=%d [%t] %p %c %x - %m%n
 
