@@ -74,7 +74,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		int versionAtBuildDate = -1;
 
 		try {
-			versionAtBuildDate = Environment.getInstance().getWikiConnector().getVersionAtDate(
+			versionAtBuildDate = KnowWEUtils.getVersionAtDate(
 					title, buildDate);
 			// case for invalid buildDates (before corresponding page existed)
 			if (versionAtBuildDate < -1) return true;
@@ -83,7 +83,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			e.printStackTrace();
 		}
 
-		String sourceTextAtBuildTime = Environment.getInstance().getWikiConnector().getVersion(
+		String sourceTextAtBuildTime = Environment.getInstance().getWikiConnector().getArticleText(
 				section.getTitle(), versionAtBuildDate);
 
 		if (sourceTextAtBuildTime.contains(currentDashboardSourcetext)) {

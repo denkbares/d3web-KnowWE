@@ -89,7 +89,6 @@ public class OntologyType extends DefaultMarkupType {
                 } catch (IllegalArgumentException e) {
                     // no such rule set!
                     Log.warning("No owlim ruleset found for: "+ruleSetValue);
-                    return null;
                 }
             }
             return null;

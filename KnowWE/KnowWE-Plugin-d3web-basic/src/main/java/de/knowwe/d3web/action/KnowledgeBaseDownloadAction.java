@@ -143,7 +143,7 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 		List<String> wrongVersionTitles = new LinkedList<String>();
 		for (Article article : articlesOfKnowledgebase) {
 			String articleText = article.getRootSection().getText();
-			String connectorVersionOfArticleText = Environment.getInstance().getWikiConnector().getVersion(
+			String connectorVersionOfArticleText = Environment.getInstance().getWikiConnector().getArticleText(
 					article.getTitle(), -1);
 			if (!articleText.equals(connectorVersionOfArticleText)) {
 				wrongVersionTitles.add(article.getTitle());

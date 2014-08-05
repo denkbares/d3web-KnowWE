@@ -35,6 +35,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -58,7 +59,6 @@ import org.apache.wiki.auth.WikiSecurityException;
 import org.apache.wiki.auth.permissions.PagePermission;
 import org.apache.wiki.auth.permissions.PermissionFactory;
 import org.apache.wiki.preferences.Preferences;
-import org.apache.wiki.providers.BasicAttachmentProvider;
 import org.apache.wiki.providers.CachingAttachmentProvider;
 import org.apache.wiki.providers.WikiAttachmentProvider;
 import org.apache.wiki.util.TextUtil;
@@ -69,7 +69,9 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.core.wikiConnector.WikiAttachmentInfo;
 import de.knowwe.core.wikiConnector.WikiConnector;
+import de.knowwe.core.wikiConnector.WikiPageInfo;
 
 /**
  * For code documentation look at the WikiConnector interface definition
@@ -82,7 +84,7 @@ public class JSPWikiConnector implements WikiConnector {
 	private WikiEngine engine = null;
 
 	private static final Map<String, List<WikiAttachment>> zipAttachmentCache =
-			Collections.synchronizedMap(new HashMap<String, List<WikiAttachment>>());
+			Collections.synchronizedMap(new HashMap<>());
 
 	private static int skipCount = 0;
 	private static final int skipAfter = 10;
@@ -150,6 +152,7 @@ public class JSPWikiConnector implements WikiConnector {
 		this.engine.getSearchManager().reindexPage(wp);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void updateReferences(String title) {
 		this.engine.getReferenceManager().updateReferences(title,
 				this.engine.getReferenceManager().findCreated());
@@ -159,18 +162,17 @@ public class JSPWikiConnector implements WikiConnector {
 	public boolean doesArticleExist(String title) {
 
 		// Check if a Page with the chosen title already exists.
-		if (this.engine.pageExists(title)) return true;
-		return false;
+		return this.engine.pageExists(title);
 	}
 
 	@Override
 	public String[] getAllActiveUsers() {
-		String[] activeUsers = null;
+		String[] activeUsers;
 
-		Principal[] princ = SessionMonitor.getInstance(engine).userPrincipals();
-		activeUsers = new String[princ.length];
-		for (int i = 0; i < princ.length; i++) {
-			activeUsers[i] = princ[i].getName();
+		Principal[] principals = SessionMonitor.getInstance(engine).userPrincipals();
+		activeUsers = new String[principals.length];
+		for (int i = 0; i < principals.length; i++) {
+			activeUsers[i] = principals[i].getName();
 		}
 
 		return activeUsers;
@@ -178,8 +180,8 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public java.util.Map<String, String> getAllArticles(String web) {
-		Map<String, String> result = new HashMap<String, String>();
+	public Map<String, String> getAllArticles(String web) {
+		Map<String, String> result = new HashMap<>();
 		Collection<WikiPage> pages = null;
 		PageManager pageManager = this.engine.getPageManager();
 		try {
@@ -238,7 +240,7 @@ public class JSPWikiConnector implements WikiConnector {
 		try {
 			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
 			Collection<?> attachments = attachmentManager.getAllAttachments();
-			Collection<WikiAttachment> wikiAttachments = new ArrayList<WikiAttachment>(
+			Collection<WikiAttachment> wikiAttachments = new ArrayList<>(
 					attachments.size());
 			for (Object o : attachments) {
 				if (o instanceof Attachment) {
@@ -259,6 +261,11 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public WikiAttachment getAttachment(String path) throws IOException {
+		return getAttachment(path, -1);
+	}
+
+	@Override
+	public WikiAttachment getAttachment(String path, int version) throws IOException {
 		try {
 			Pattern zipPattern = Pattern.compile("^([^/]+/[^/]+\\.zip)/(.+$)");
 			Matcher matcher = zipPattern.matcher(path);
@@ -269,7 +276,7 @@ public class JSPWikiConnector implements WikiConnector {
 				entry = matcher.group(2);
 			}
 			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
-			Attachment attachment = attachmentManager.getAttachmentInfo(actualPath);
+			Attachment attachment = attachmentManager.getAttachmentInfo(actualPath, version);
 
 			if (attachment == null) {
 				return null;
@@ -310,7 +317,7 @@ public class JSPWikiConnector implements WikiConnector {
 		else {
 			skipCount = 0;
 		}
-		List<String> remove = new ArrayList<String>();
+		List<String> remove = new ArrayList<>();
 		for (String path : zipAttachmentCache.keySet()) {
 			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
 			try {
@@ -340,7 +347,7 @@ public class JSPWikiConnector implements WikiConnector {
 			if (currentProvider instanceof CachingAttachmentProvider) {
 				currentProvider = ((CachingAttachmentProvider) currentProvider).getRealProvider();
 			}
-			Attachment attachmentInfo = ((BasicAttachmentProvider) currentProvider).getAttachmentInfo(
+			Attachment attachmentInfo = currentProvider.getAttachmentInfo(
 					new WikiPage(engine, attachment.getParentName()),
 					attachment.getFileName(), WikiProvider.LATEST_VERSION);
 			// this attachmentInfo will have the correct version number, so
@@ -356,7 +363,7 @@ public class JSPWikiConnector implements WikiConnector {
 			}
 		}
 		if (zipEntryAttachments == null) {
-			zipEntryAttachments = new ArrayList<WikiAttachment>();
+			zipEntryAttachments = new ArrayList<>();
 
 			InputStream attachmentStream = attachmentManager.getAttachmentStream(attachment);
 			ZipInputStream zipStream = new ZipInputStream(attachmentStream);
@@ -389,7 +396,7 @@ public class JSPWikiConnector implements WikiConnector {
 			Collection<Attachment> attList = attachmentManager.
 					listAttachments(page);
 
-			List<WikiAttachment> attachmentList = new ArrayList<WikiAttachment>(attList.size());
+			List<WikiAttachment> attachmentList = new ArrayList<>(attList.size());
 			for (Attachment att : attList) {
 				attachmentList.add(new JSPWikiAttachment(att, attachmentManager));
 				attachmentList.addAll(getZipEntryAttachments(att));
@@ -406,7 +413,7 @@ public class JSPWikiConnector implements WikiConnector {
 	@Override
 	public String getAuthor(String title, int version) {
 		// Surrounded this because getPage()
-		// caused a Nullpointer on first KnowWE startup
+		// caused a NullPointer on first KnowWE startup
 		try {
 			if ((this.engine == null) || (this.engine.getPage(title) == null)) return null;
 		}
@@ -420,7 +427,7 @@ public class JSPWikiConnector implements WikiConnector {
 				return context.getEngine().getPage(context.getPage().getName(), version).getAuthor();
 			}
 		}
-		catch (ProviderException e) {
+		catch (ProviderException ignored) {
 		}
 		return null;
 	}
@@ -439,7 +446,7 @@ public class JSPWikiConnector implements WikiConnector {
 	@Override
 	public Date getLastModifiedDate(String title, int version) {
 		// Surrounded this because getPage()
-		// caused a Nullpointer on first KnowWE startup
+		// caused a NullPointer on first KnowWE startup
 		try {
 			if ((this.engine == null) || (this.engine.getPage(title) == null)) return null;
 		}
@@ -454,7 +461,7 @@ public class JSPWikiConnector implements WikiConnector {
 						version).getLastModified();
 			}
 		}
-		catch (ProviderException e) {
+		catch (ProviderException ignored) {
 		}
 		return null;
 	}
@@ -478,8 +485,7 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public String getSavePath() {
-		String path = (String) engine.getWikiProperties().get("var.basedir");
-		return path;
+		return (String) engine.getWikiProperties().get("var.basedir");
 	}
 
 	@Override
@@ -495,7 +501,12 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public String getVersion(String title, int version) {
+	public String getArticleText(String title) {
+		return getAuthor(title, -1);
+	}
+
+	@Override
+	public String getArticleText(String title, int version) {
 
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
@@ -527,56 +538,34 @@ public class JSPWikiConnector implements WikiConnector {
 		return pagedata;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public int getVersionAtDate(String title, Date d) throws IOException {
-		WikiContext context = new WikiContext(this.engine, this.engine
-				.getPage(title));
-
-		int versionMax = context.getPage().getVersion();
-
-		int versionForDate = -1; // -1 represents the current/newest version of
-		// article
-		for (int v = 1; v <= versionMax; v++) {
-			WikiPage wikiPage = null;
-			try {
-				wikiPage = engine.getPageManager().getPageInfo(title, v);
-				Date lastModified = wikiPage.getLastModified();
-
-				// fix for invalid dates d
-				if (v == 1 && lastModified.after(d)) {
-					// version 1 is the creation of the page
-					// in the ridiculous case (corrupted persistence file) that
-					// the build date is before the date of page creation, we
-					// return the current version
-					versionForDate = -2;
-					break;
-				}
-
-				if (lastModified.after(d)) {
-					versionForDate = v - 1;
-					break;
-				}
-			}
-			catch (ProviderException e) {
-				String message = "cannot access wiki page info due to provider error";
-				throw new IOException(message, e);
-			}
-		}
-
-		return versionForDate;
-
-	}
-
-	@Override
-	public int getVersionCount(String title) {
-		PageManager pm = engine.getPageManager();
+	public List<WikiPageInfo> getArticleHistory(String title) throws IOException {
 		try {
-			return pm.getVersionHistory(title).size();
+			List<WikiPage> versionHistory = this.engine.getPageManager().getVersionHistory(title);
+			return versionHistory.stream()
+					.map(page -> new WikiPageInfo(page.getName(), page.getAuthor(), page.getVersion(),
+							page.getLastModified()))
+					.collect(Collectors.toList());
 		}
 		catch (ProviderException e) {
-			e.printStackTrace();
+			throw new IOException("Cannot access wiki page history of '" + title + "' due to provider error", e);
 		}
-		return 0;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<WikiAttachmentInfo> getAttachmentHistory(String name) throws IOException {
+		try {
+			List<Attachment> versionHistory = this.engine.getAttachmentManager().getVersionHistory(name);
+			return versionHistory.stream()
+					.map(page -> new WikiAttachmentInfo(page.getName(), page.getAuthor(), page.getVersion(),
+							page.getLastModified()))
+					.collect(Collectors.toList());
+		}
+		catch (ProviderException e) {
+			throw new IOException("Cannot access attachment history of '" + name + "' due to provider error", e);
+		}
 	}
 
 	@Override
@@ -598,8 +587,7 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	public String getWikiProperty(String property) {
-		String path = (String) engine.getWikiProperties().get(property);
-		return path;
+		return (String) engine.getWikiProperties().get(property);
 	}
 
 	/**
@@ -612,12 +600,7 @@ public class JSPWikiConnector implements WikiConnector {
 	public boolean isArticleLocked(String title) {
 		PageManager mgr = engine.getPageManager();
 		WikiPage page = new WikiPage(engine, title);
-		if (mgr.getCurrentLock(page) == null) {
-			return false;
-		}
-		else {
-			return true;
-		}
+		return mgr.getCurrentLock(page) != null;
 	}
 
 	/**
@@ -631,11 +614,8 @@ public class JSPWikiConnector implements WikiConnector {
 		PageManager mgr = engine.getPageManager();
 		WikiPage page = new WikiPage(engine, title);
 		PageLock lock = mgr.getCurrentLock(page);
+		return lock != null && lock.getLocker().equals(user);
 
-		if (lock == null) return false;
-
-		if (lock.getLocker().equals(user)) return true;
-		return false;
 	}
 
 	@Override
@@ -643,9 +623,7 @@ public class JSPWikiConnector implements WikiConnector {
 		PageManager mgr = engine.getPageManager();
 		WikiPage page = new WikiPage(engine, title);
 		PageLock lock = mgr.lockPage(page, user);
-
-		if (lock != null) return true;
-		return false;
+		return lock != null;
 	}
 
 	@Override
@@ -672,12 +650,8 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public WikiAttachment storeAttachment(String title, String user, File attachmentFile) throws IOException {
-		FileInputStream in = new FileInputStream(attachmentFile);
-		try {
+		try (FileInputStream in = new FileInputStream(attachmentFile)) {
 			return storeAttachment(title, attachmentFile.getName(), user, in);
-		}
-		finally {
-			in.close();
 		}
 	}
 
@@ -729,6 +703,7 @@ public class JSPWikiConnector implements WikiConnector {
 				this.engine.getPage(title));
 
 		AuthorizationManager authmgr = engine.getAuthorizationManager();
+		//noinspection SynchronizationOnLocalVariableOrMethodParameter
 		synchronized (authmgr) {
 			PagePermission pp = PermissionFactory.getPagePermission(page,
 					"edit");
@@ -743,6 +718,7 @@ public class JSPWikiConnector implements WikiConnector {
 				.getPage(title));
 
 		AuthorizationManager authmgr = engine.getAuthorizationManager();
+		//noinspection SynchronizationOnLocalVariableOrMethodParameter
 		synchronized (authmgr) {
 			PagePermission pp = PermissionFactory.getPagePermission(page, "view");
 			return authmgr.checkPermission(context.getWikiSession(), pp);

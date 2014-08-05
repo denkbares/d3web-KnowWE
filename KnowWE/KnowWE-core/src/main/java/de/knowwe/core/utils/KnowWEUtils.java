@@ -20,7 +20,6 @@
 package de.knowwe.core.utils;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,6 +62,7 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
+import de.knowwe.core.wikiConnector.WikiPageInfo;
 
 public class KnowWEUtils {
 
@@ -446,10 +446,6 @@ public class KnowWEUtils {
 		return canWrite(Sections.getArticles(sections), user);
 	}
 
-	public static String getPageChangeLogPath() {
-		return getVersionsSavePath() + "PageChangeLog.txt";
-	}
-
 	public static String getRealPath(String varPath) {
 		if (varPath.contains("$root_path$")) {
 			String rootPath = Environment.getInstance().getWikiConnector()
@@ -713,11 +709,15 @@ public class KnowWEUtils {
 		return cookie;
 	}
 
-	public static String getVersionsSavePath() {
-		String path = Environment.getInstance().getWikiConnector().getSavePath();
-		if (path != null && !path.endsWith(File.pathSeparator)) path += File.separator;
-		path += "OLD/";
-		return path;
+	public static int getVersionAtDate(String title, Date date) throws IOException {
+		List<WikiPageInfo> articleHistory = Environment.getInstance().getWikiConnector().getArticleHistory(title);
+		return articleHistory.stream()
+				// get the first that was safe before the given date
+				.filter(pageInfo -> pageInfo.getSaveDate().before(date))
+				.findFirst()
+				.map(WikiPageInfo::getVersion)
+				// if non was found, get the first version (last in the list)
+				.orElseGet(() -> articleHistory.get(articleHistory.size() - 1).getVersion());
 	}
 
 	/**

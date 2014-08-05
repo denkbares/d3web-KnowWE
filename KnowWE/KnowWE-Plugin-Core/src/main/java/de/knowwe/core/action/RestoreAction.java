@@ -42,7 +42,7 @@ public class RestoreAction extends AbstractAction {
 			context.sendError(403, "You are not allowed to change version of this article.");
 			return;
 		}
-		String versionToRestore = wikiConnector.getVersion(title, Integer.parseInt(context.getParameter("restoreThisVersion")));
+		String versionToRestore = wikiConnector.getArticleText(title, Integer.parseInt(context.getParameter("restoreThisVersion")));
 		wikiConnector.writeArticleToWikiPersistence(title, versionToRestore, context);
 
 		// write response with pagetitle in url format
