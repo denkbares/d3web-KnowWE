@@ -59,8 +59,8 @@ public class DefaultArticleManager implements ArticleManager {
 	private final CompilerManager compilerManager;
 
 	private final ReentrantLock mainLock = new ReentrantLock(true);
-	private List<Section<?>> added = new ArrayList<>();
-	private List<Section<?>> removed = new ArrayList<>();
+	private List<Section<?>> added = Collections.synchronizedList(new ArrayList<>());
+	private List<Section<?>> removed = Collections.synchronizedList(new ArrayList<>());
 
 	public DefaultArticleManager(String web) {
 		this.web = web;
