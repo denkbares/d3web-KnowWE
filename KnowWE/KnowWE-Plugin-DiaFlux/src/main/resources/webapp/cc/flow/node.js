@@ -72,7 +72,7 @@ Node.wrapToolMenu = function(flowname, nodeID, childToWrap) {
 			className : 'toolsMenuDecorator',
 			toolMenuIdentifier : JSON.stringify(identifier),
 			toolMenuAction : 'FlowchartToolMenuAction',
-			style : 'position:absolute; right: -3px'
+			style : 'position:absolute; right: -5px'
 		}),
 			childToWrap
 		]
