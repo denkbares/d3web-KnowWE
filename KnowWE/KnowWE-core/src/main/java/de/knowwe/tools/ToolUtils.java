@@ -164,9 +164,9 @@ public class ToolUtils {
 			case HREF:
 				return tool.getAction();
 			case HREF_SCRIPT:
-				return "javascript:" + tool.getAction() + ";ToolMenu.hideToolsPopupMenu()";
+				return "javascript:" + tool.getAction() + ";_TM.hideToolsPopupMenu()";
 			case ONCLICK:
-				return tool.getAction() + ";ToolMenu.hideToolsPopupMenu()";
+				return tool.getAction() + ";_TM.hideToolsPopupMenu()";
 			default:
 				return null;
 		}

@@ -34,7 +34,7 @@ ToolMenu.prototype.decorateToolMenus = function (parent) {
 			a.css('visibility', 'hidden');
 		});
 		a.click(function () {
-			ToolMenu.showToolPopupMenu(a);
+			_TM.showToolPopupMenu(a);
 		});
 		a.data('toolMenuDecorated', 'true');
 		//prevent "click through" in composite edit
@@ -42,7 +42,7 @@ ToolMenu.prototype.decorateToolMenus = function (parent) {
 			e.stopPropagation();
 		});
 	});
-}
+};
 
 ToolMenu.prototype.showToolPopupMenu = function (node) {
 	this.hideToolsPopupMenu();
@@ -61,14 +61,14 @@ ToolMenu.prototype.showToolPopupMenu = function (node) {
 			'position': 'absolute'
 		},
 		'events': {
-			'mouseleave': ToolMenu.hideToolsPopupMenu
+			'mouseleave': _TM.hideToolsPopupMenu
 		}
 	});
 	document.body.appendChild(par);
 	par.innerHTML = "<div class='toolMenuFrame'>" + "<div style='width:" + w
-		+ "px;height:" + h + "px;' onclick='ToolMenu.hideToolsPopupMenu();'></div>"
+		+ "px;height:" + h + "px;' onclick='_TM.hideToolsPopupMenu();'></div>"
 		+ this.getToolMenuHtml(node) + "</div>";
-}
+};
 
 ToolMenu.prototype.getToolMenuHtml = function (node) {
 
@@ -84,7 +84,7 @@ ToolMenu.prototype.getToolMenuHtml = function (node) {
 		var params = {
 			action: toolMenuAction,
 			identifier: toolMenuIdentifier
-		}
+		};
 
 		var options = {
 			url: KNOWWE.core.util.getURL(params),
@@ -92,7 +92,7 @@ ToolMenu.prototype.getToolMenuHtml = function (node) {
 			response: {
 				onError: _EC.onErrorBehavior
 			}
-		}
+		};
 		var ajaxCall = new _KA(options);
 		ajaxCall.send();
 		var parsedResponse = JSON.parse(ajaxCall.getResponse());
@@ -104,23 +104,23 @@ ToolMenu.prototype.getToolMenuHtml = function (node) {
 		}
 	}
 	return this.cache[toolMenuIdentifier];
-}
+};
 
 ToolMenu.prototype.hideToolsPopupMenu = function () {
 	var old = $('toolPopupMenuID');
 	if (old) {
 		old.remove();
 	}
-}
+};
 
-var ToolMenu = new ToolMenu();
+var _TM = new ToolMenu();
 
 jq$(document).ready(function () {
-	ToolMenu.decorateToolMenus();
+	_TM.decorateToolMenus();
 });
 
 KNOWWE.helper.observer.subscribe("flowchartrendered", function () {
-	ToolMenu.decorateToolMenus(jq$('.Flowchart'))
+	_TM.decorateToolMenus(jq$('.Flowchart'))
 });
 
 KNOWWE.helper.observer.subscribe("afterRerender", function () {

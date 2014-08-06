@@ -95,7 +95,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 						_CE.waitForPreviewsToLoad(root);
 						KNOWWE.core.actions.init();
 					}
-					ToolMenu.decorateToolMenus(root);
+					_TM.decorateToolMenus(root);
 
 				}
 			});
@@ -334,7 +334,7 @@ KNOWWE.plugin.renaming = function() {
 	}
 
 	function afterCancelEdit(setting, original) {
-		ToolMenu.decorateToolMenus(original);
+		_TM.decorateToolMenus(original);
 	}
 
 	function showCurrentEditOnOtherOccurences(text) {

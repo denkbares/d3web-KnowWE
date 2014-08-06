@@ -539,7 +539,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 		else {
 			enableCompositeViewMode();
 		}
-		ToolMenu.decorateToolMenus('#compositeEdit .defaultMarkupFrame');
+		_TM.decorateToolMenus('#compositeEdit .defaultMarkupFrame');
 		jq$(".toolsMenuDecorator").click(function(e) {
 			e.stopPropagation();
 		});
@@ -851,7 +851,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 				addEventListenerForEdit(jq$("#compositeEdit div[sectionid=" + sectionId + "]").parent());
 			};
 			_IE.disable(sectionId, false, fn)
-			ToolMenu.decorateToolMenus('#compositeEdit div[sectionid=' + sectionId + '] .defaultMarkupFrame');
+			_TM.decorateToolMenus('#compositeEdit div[sectionid=' + sectionId + '] .defaultMarkupFrame');
 			enableCompositeViewToolMenus(jq$('#compositeEdit div[sectionid=' + sectionId + ']'));
 		},
 
