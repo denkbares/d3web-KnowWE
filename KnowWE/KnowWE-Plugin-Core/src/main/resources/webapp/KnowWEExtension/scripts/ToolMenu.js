@@ -51,12 +51,12 @@ ToolMenu.prototype.showToolPopupMenu = function (node) {
 	var w = node.offsetWidth, h = node.offsetHeight;
 	//needed for correct position in compositeEdit
 	var s = jq$('#compositeEdit').scrollTop();
-
+    var l = jq$(node).parents('.FlowchartGroup').scrollLeft();
 	var par = new Element('div', {
 		'id': 'toolPopupMenuID',
 		'styles': {
 			'top': pos.y - s + 'px',
-			'left': pos.x + 'px',
+			'left': pos.x - l + 'px',
 			'z-index': '10000',
 			'position': 'absolute'
 		},
