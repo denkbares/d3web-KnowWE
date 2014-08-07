@@ -89,29 +89,6 @@
 		</plugins>
 	</build>
 
-	<profiles>
-		<profile>
-			<id>local</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-war-plugin</artifactId>
-						<configuration>
-							<webResources>
-								<resource>
-									<directory>src/resources/local</directory>
-									<targetPath>/</targetPath>
-								</resource>
-							</webResources>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
-	</profiles>
-
 	<dependencies>
 		<!-- Short explanation for JSPWiki: They don't really use Maven, so, the 
 			build is done by calling the `war' task of the Ant stuff that builds JSPWiki, 
