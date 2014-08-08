@@ -416,5 +416,61 @@ Flowchart.prototype.getUsedArea = function() {
 }
 
 
+Flowchart.get = function(sectionId) {
+	return jq$('#' + sectionId).find('.Flowchart');
+}
+
+Flowchart.getScale = function(sectionId) {
+	var scale = "1.0";
+	var flowchart = Flowchart.get(sectionId);
+	jq$('#' + sectionId).find('.Flowchart');
+	var transform = flowchart.css('transform');
+	if (transform != "none") {
+		scale = /^matrix\((\d+(\.\d+)?), .+$/.exec(transform)[1];
+	}
+	return parseFloat(scale);
+}
+
+Flowchart.zoom = function(sectionId, diff) {
+	var scale = Flowchart.getScale(sectionId) + diff;
+	var flowchart = Flowchart.get(sectionId);
+	var width = parseInt(flowchart.css('width'));
+	var height = parseInt(flowchart.css('height'));
+	var marginLR = -(width - width * scale) / 2;
+	var marginTB = -(height - height * scale) / 2;
+	var pageWidth = parseInt(jq$('#pagecontent').css('width'));
+	if (pageWidth - (width * scale) > 0.001) return;
+	flowchart.css('transform', 'scale(' + scale + ')');
+	flowchart.css('margin', marginTB + "px " + marginLR + "px " + marginTB + "px " + marginLR + "px");
+	var index = Flowchart.flowsToFit.indexOf(sectionId);
+	if (index > -1) {
+		Flowchart.flowsToFit.splice(index, 1);
+	}
+}
+
+Flowchart.zoom100 = function(sectionId) {
+	Flowchart.zoom(sectionId, 1 - Flowchart.getScale(sectionId));
+}
+
+Flowchart.zoomToFit = function(sectionId) {
+	var scale = Flowchart.getScale(sectionId);
+	var width = parseInt(Flowchart.get(sectionId).css('width'));
+	var pageWidth = parseInt(jq$('#pagecontent').css('width'));
+	var diff = pageWidth / width - scale;
+	if (scale + diff > 1.001) return;
+	Flowchart.zoom(sectionId, diff);
+	Flowchart.flowsToFit.push(sectionId);
+}
+
+Flowchart.flowsToFit = [];
+
+jq$(window).resize(function() {
+	KNOWWE.helper.waitForFinalEvent(function() {
+		jq$.each(Flowchart.flowsToFit, function(key, sectionId) {
+			Flowchart.zoomToFit(sectionId);
+		});
+	}, 300, "Flowchart ZoomToFitResizing");
+});
+
 
 

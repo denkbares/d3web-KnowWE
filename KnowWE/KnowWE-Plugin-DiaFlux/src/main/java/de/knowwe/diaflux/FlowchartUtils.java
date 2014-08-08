@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.WeakHashMap;
 
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -148,17 +147,12 @@ public class FlowchartUtils {
 	 */
 	public static RenderResult prepareFlowchartRenderer(UserContext user, String parentId, Section<FlowchartType> flowchartSection, String scope, boolean insertRessources) {
 		RenderResult result = new RenderResult(user);
-		Map<String, String> attributeMap = AbstractXMLType.getAttributeMapFor(flowchartSection);
-		String height = attributeMap.get("height");
-		String heightAttribute = height == null ? "" : " style='position: relative; min-height: "
-				+ height + "px'";
-		result.appendHtml("<div class='flowchartContainer'" + heightAttribute + ">");
+		result.appendHtml("<div class='flowchartContainer'>");
 		if (insertRessources) {
 			insertDiafluxRessources(result, user, flowchartSection.getID());
 			addDisplayPlugins(result, user, scope);
 			result.append("\n");
 		}
-
 		result.appendHtml("<div id='" + parentId + "'>");
 		result.appendHtml("</div></div>\n");
 		return result;

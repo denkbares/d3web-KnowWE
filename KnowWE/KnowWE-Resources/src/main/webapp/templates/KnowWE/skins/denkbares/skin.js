@@ -220,11 +220,10 @@ DenkbaresSkin.resizeFlows = function() {
 };
 
 KNOWWE.helper.observer.subscribe("flowchartrendered", DenkbaresSkin.resizeFlows);
-window.onresize = function() {
-	DenkbaresSkin.checkFavScroll();
-	DenkbaresSkin.resizeFlows();
-};
-window.onscroll = DenkbaresSkin.checkFavScroll;
+
+jq$(window).scroll(DenkbaresSkin.checkFavScroll);
+jq$(window).resize(DenkbaresSkin.checkFavScroll);
+jq$(window).resize(DenkbaresSkin.resizeFlows);
 
 // add auto-resize to edit page
 if (KNOWWE.helper.loadCheck([ 'Edit.jsp' ])) {
