@@ -351,6 +351,17 @@ span.markupMenuItem {
 	margin: -0.25em;
 }
 
+.InlineTool a.markupMenuInlineSpacer {
+	padding: 0px 1px 0px 1px;
+}
+
+.InlineTool a.markupMenuInlineItem {
+	padding: 0px 3px 0px 3px;
+	margin: 0px 1px 0px 1px;
+	border: 1px solid grey;
+	border-radius: 3px;
+}
+
 .toolMenuFrame .customMenuItem a.markupMenuItem {
 	margin: 0em;
 	margin-left: -0.25em;

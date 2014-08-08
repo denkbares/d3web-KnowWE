@@ -364,8 +364,14 @@ public class DefaultMarkupRenderer implements Renderer {
 			Collections.sort(levelTwoCategories);
 
 			for (String subcategory : levelTwoCategories) {
-				for (Tool t : groupedTools.get(category).get(subcategory)) {
-					appendToolAsMenuItem(t, result);
+				List<Tool> subTools = groupedTools.get(category).get(subcategory);
+				if (Tool.CATEGORY_INLINE.equals(subcategory)) {
+					appendAsInlineTools(subTools, result);
+				}
+				else {
+					for (Tool tool : subTools) {
+						appendToolAsMenuItem(tool, result);
+					}
 				}
 			}
 
@@ -377,9 +383,28 @@ public class DefaultMarkupRenderer implements Renderer {
 		result.appendHtml("</div>");
 	}
 
+	private void appendAsInlineTools(List<Tool> subTools, RenderResult result) {
+		result.appendHtmlTag("div", "class", "InlineTool");
+		result.appendHtmlTag("div", "class", "markupMenuItem");
+		for (Tool tool : subTools) {
+			appendToolAsInlineItem(tool, result);
+		}
+		result.appendHtmlTag("/div");
+		result.appendHtmlTag("/div");
+	}
+
+	protected void appendToolAsInlineItem(Tool tool, RenderResult result) {
+		String clazz = Strings.isBlank(tool.getAction()) ? "markupMenuInlineSpacer" : "markupMenuInlineItem";
+		result.appendHtmlTag("a", false, "class", clazz,
+				"title", Strings.encodeHtml(tool.getDescription()),
+				ToolUtils.getActionAttributeName(tool),
+				ToolUtils.getActionAttributeValue(tool));
+		result.appendHtmlElement("span", tool.getTitle());
+		result.appendHtmlTag("/a");
+	}
+
 	protected void appendToolAsMenuItem(Tool tool, RenderResult result) {
 		String icon = tool.getIconPath();
-		String jsAction = tool.getAction();
 		boolean hasIcon = icon != null && !icon.trim().isEmpty();
 		result.appendHtmlTag("div", "class", tool.getClass().getSimpleName());
 		result.appendHtmlTag("div", "class", "markupMenuItem");

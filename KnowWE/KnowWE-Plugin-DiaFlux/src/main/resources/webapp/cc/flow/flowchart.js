@@ -433,6 +433,7 @@ Flowchart.getScale = function(sectionId) {
 
 Flowchart.zoom = function(sectionId, diff) {
 	var scale = Flowchart.getScale(sectionId) + diff;
+	if (scale > 1) return;
 	var flowchart = Flowchart.get(sectionId);
 	var width = parseInt(flowchart.css('width'));
 	var height = parseInt(flowchart.css('height'));

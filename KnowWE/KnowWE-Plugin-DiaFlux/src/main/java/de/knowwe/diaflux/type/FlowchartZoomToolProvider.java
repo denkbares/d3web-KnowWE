@@ -34,15 +34,17 @@ public class FlowchartZoomToolProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		DefaultTool zoomOut = new DefaultTool(null, "Zoom Out", "Zooms out the current flowchart", "Flowchart.zoom('" + section
-				.getID() + "', -0.1)");
-		DefaultTool zoomIn = new DefaultTool(null, "Zoom In", "Zooms in the current flowchart", "Flowchart.zoom('" + section
-				.getID() + "', 0.1)");
-		DefaultTool zoomToFit = new DefaultTool(null, "Zoom To Fit", "Zooms to flowchart to fit the width of the current page", "Flowchart.zoomToFit('" + section
-				.getID() + "')");
-		DefaultTool zoom100 = new DefaultTool(null, "Zoom 100%", "Zooms to flowchart back to 100% size", "Flowchart.zoom100('" + section
-				.getID() + "')");
-		return new Tool[] { zoomToFit, zoomOut, zoomIn, zoom100 };
+		String category = "FlowZoom/" + Tool.CATEGORY_INLINE;
+		DefaultTool zoomOut = new DefaultTool(null, "-", "Zooms out the current flowchart", "Flowchart.zoom('" + section
+				.getID() + "', -0.1)", category);
+		DefaultTool zoomIn = new DefaultTool(null, "+", "Zooms in the current flowchart", "Flowchart.zoom('" + section
+				.getID() + "', 0.1)", category);
+		DefaultTool zoomToFit = new DefaultTool(null, "Fit", "Zooms to flowchart to fit the width of the current page", "Flowchart.zoomToFit('" + section
+				.getID() + "')", category);
+		DefaultTool spacer = new DefaultTool("", "", "", "", category);
+		DefaultTool zoom100 = new DefaultTool(null, "100%", "Zooms to flowchart back to 100% size", "Flowchart.zoom100('" + section
+				.getID() + "')", category);
+		return new Tool[] { zoomOut, zoom100, zoomIn, spacer, zoomToFit };
 	}
 
 	@Override

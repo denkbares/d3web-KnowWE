@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.d3web.plugin.Extension;
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.ScopeExtensions;
@@ -160,6 +161,7 @@ public class ToolUtils {
 	}
 
 	public static String getActionAttributeValue(Tool tool) {
+		if (Strings.isBlank(tool.getAction())) return null;
 		switch (tool.getActionType()) {
 			case HREF:
 				return tool.getAction();

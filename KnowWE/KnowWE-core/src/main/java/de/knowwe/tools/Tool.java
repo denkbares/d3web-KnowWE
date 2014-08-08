@@ -47,6 +47,7 @@ public interface Tool {
 	public static final String CATEGORY_INFO = "01-info";
 	public static final String CATEGORY_EDIT = "02-edit";
 	public static final String CATEGORY_CORRECT = "03-correct";
+	public static final String CATEGORY_INLINE = "inline";
 
 	/**
 	 * Returns the icon for the tool. The icon should have a height of 24 pixels and based on a
