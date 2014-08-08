@@ -75,6 +75,19 @@
 	jQuery.fn.exists = function () {
 		return this.length > 0;
 	}
+
+	jQuery.fn.scale = function (scale) {
+		if (scale) {
+			this.css('transform', 'scale(' + scale + ')');
+		} else {
+			scale = "1.0";
+			var transform = this.css('transform');
+			if (transform != "none") {
+				scale = /^matrix\((\d+(\.\d+)?), .+$/.exec(transform)[1];
+			}
+			return parseFloat(scale);
+		}
+	}
 })(jQuery);
 
 /**

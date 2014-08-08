@@ -421,14 +421,7 @@ Flowchart.get = function(sectionId) {
 }
 
 Flowchart.getScale = function(sectionId) {
-	var scale = "1.0";
-	var flowchart = Flowchart.get(sectionId);
-	jq$('#' + sectionId).find('.Flowchart');
-	var transform = flowchart.css('transform');
-	if (transform != "none") {
-		scale = /^matrix\((\d+(\.\d+)?), .+$/.exec(transform)[1];
-	}
-	return parseFloat(scale);
+	return jq$('#' + sectionId).find('.Flowchart').scale();
 }
 
 Flowchart.zoom = function(sectionId, diff) {
@@ -441,7 +434,7 @@ Flowchart.zoom = function(sectionId, diff) {
 	var marginTB = -(height - height * scale) / 2;
 	var pageWidth = parseInt(jq$('#pagecontent').css('width'));
 	if (pageWidth - (width * scale) > 0.001) return;
-	flowchart.css('transform', 'scale(' + scale + ')');
+	flowchart.scale(scale);
 	flowchart.css('margin', marginTB + "px " + marginLR + "px " + marginTB + "px " + marginLR + "px");
 	var index = Flowchart.flowsToFit.indexOf(sectionId);
 	if (index > -1) {

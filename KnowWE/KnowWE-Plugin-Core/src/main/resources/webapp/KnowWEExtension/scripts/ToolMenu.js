@@ -21,63 +21,58 @@ function ToolMenu() {
 	this.cache = {};
 }
 
-ToolMenu.prototype.decorateToolMenus = function (parent) {
+ToolMenu.prototype.decorateToolMenus = function(parent) {
 	parent = jq$(parent);
 	var decorators = parent ? parent.find('.toolsMenuDecorator') : jq$('.toolsMenuDecorator');
-	jq$('.toolsMenuDecorator').each(function () {
+	jq$('.toolsMenuDecorator').each(function() {
 		var a = jq$(this);
 		if (a.data('toolMenuDecorated') === 'true') return;
-		a.parent().mouseenter(function () {
+		a.parent().mouseenter(function() {
 			a.css('visibility', 'visible');
 		});
-		a.parent().mouseleave(function () {
+		a.parent().mouseleave(function() {
 			a.css('visibility', 'hidden');
 		});
-		a.click(function () {
+		a.click(function() {
 			_TM.showToolPopupMenu(a);
 		});
 		a.data('toolMenuDecorated', 'true');
 		//prevent "click through" in composite edit
-		a.click(function (e) {
+		a.click(function(e) {
 			e.stopPropagation();
 		});
 	});
 };
 
-ToolMenu.prototype.showToolPopupMenu = function (node) {
+ToolMenu.prototype.showToolPopupMenu = function(node) {
 	this.hideToolsPopupMenu();
 	node = node[0];
-	var pos = node.getPosition();
-	var w = node.offsetWidth, h = node.offsetHeight;
-	//needed for correct position in compositeEdit
-	var scrollTop = 0;
-	var scrollLeft = 0;
-	jq$(node).parentsUntil('#pagecontent').each(function() {
-		scrollTop += jq$(this).scrollTop();
-		scrollLeft += jq$(this).scrollLeft();
-	});
 	var par = new Element('div', {
-		'id': 'toolPopupMenuID',
-		'styles': {
-			'top': pos.y - scrollTop + 'px',
-			'left': pos.x - scrollLeft + 'px',
-			'z-index': '10000',
-			'position': 'absolute'
+		'id' : 'toolPopupMenuID',
+		'styles' : {
+			'top' : jq$(node).offset().top + 'px',
+			'left' : jq$(node).offset().left + 'px',
+			'z-index' : '10000',
+			'position' : 'absolute'
 		},
-		'events': {
-			'mouseleave': _TM.hideToolsPopupMenu
+		'events' : {
+			'mouseleave' : _TM.hideToolsPopupMenu
 		}
 	});
+	var scale = 1;
+	jq$(node).parentsUntil('#pagecontent').each(function() {
+		if (scale == 1) scale = jq$(this).scale();
+	});
 	document.body.appendChild(par);
-	par.innerHTML = "<div class='toolMenuFrame'>" + "<div style='width:" + w
-		+ "px;height:" + h + "px;' onclick='_TM.hideToolsPopupMenu();'></div>"
+	par.innerHTML = "<div class='toolMenuFrame'>" + "<div style='width:" + node.offsetWidth * scale
+		+ "px;height:" + node.offsetHeight * scale + "px;' onclick='_TM.hideToolsPopupMenu();'></div>"
 		+ this.getToolMenuHtml(node) + "</div>";
 };
 
-ToolMenu.prototype.getToolMenuHtml = function (node) {
+ToolMenu.prototype.getToolMenuHtml = function(node) {
+
 
 	var toolMenuIdentifier = jq$(node).attr('toolMenuIdentifier');
-
 	if (!this.cache[toolMenuIdentifier]) {
 		var toolMenuAction = 'GetToolMenuAction';
 		var specialAction = jq$(node).attr('toolMenuAction');
@@ -86,15 +81,15 @@ ToolMenu.prototype.getToolMenuHtml = function (node) {
 		}
 
 		var params = {
-			action: toolMenuAction,
-			identifier: toolMenuIdentifier
+			action : toolMenuAction,
+			identifier : toolMenuIdentifier
 		};
 
 		var options = {
-			url: KNOWWE.core.util.getURL(params),
-			async: false,
-			response: {
-				onError: _EC.onErrorBehavior
+			url : KNOWWE.core.util.getURL(params),
+			async : false,
+			response : {
+				onError : _EC.onErrorBehavior
 			}
 		};
 		var ajaxCall = new _KA(options);
@@ -110,7 +105,7 @@ ToolMenu.prototype.getToolMenuHtml = function (node) {
 	return this.cache[toolMenuIdentifier];
 };
 
-ToolMenu.prototype.hideToolsPopupMenu = function () {
+ToolMenu.prototype.hideToolsPopupMenu = function() {
 	var old = $('toolPopupMenuID');
 	if (old) {
 		old.remove();
@@ -119,16 +114,16 @@ ToolMenu.prototype.hideToolsPopupMenu = function () {
 
 var _TM = new ToolMenu();
 
-jq$(document).ready(function () {
+jq$(document).ready(function() {
 	_TM.decorateToolMenus();
 });
 
-KNOWWE.helper.observer.subscribe("flowchartrendered", function () {
+KNOWWE.helper.observer.subscribe("flowchartrendered", function() {
 	_TM.decorateToolMenus(jq$('.Flowchart'))
 });
 
-KNOWWE.helper.observer.subscribe("afterRerender", function () {
-    var replacedElement = this;
-    KNOWWE.core.rerendercontent.animateDefaultMarkupMenu(jq$(replacedElement));
+KNOWWE.helper.observer.subscribe("afterRerender", function() {
+	var replacedElement = this;
+	KNOWWE.core.rerendercontent.animateDefaultMarkupMenu(jq$(replacedElement));
 });
 
