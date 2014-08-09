@@ -142,12 +142,12 @@ DenkbaresSkin.checkFavScroll = function() {
 	var wHeight = window.getHeight();
 	var docHeight = DenkbaresSkin.getDocHeight();
 	var favHeight = element.clientHeight;
-	var favBottom = originY + favHeight;
 	var scrollY = window.getScrollTop();
 	var scrollMax = docHeight - wHeight;
 	var favToScroll = favHeight - wHeight;
-	var disableFixing = ($("actionsBottom") == null
-		|| favHeight >= $("actionsBottom").offsetTop + $("actionsBottom").clientHeight);
+	var actionsBottom = $("actionsBottom");
+	var disableFixing = (actionsBottom == null
+		|| favHeight >= actionsBottom.offsetTop + actionsBottom.clientHeight);
 	if (scrollY <= originY || disableFixing) {
 		// when reaching top of page or if page height is made by leftMenu
 		// align fav originally to page
@@ -191,7 +191,7 @@ DenkbaresSkin.cleanTrail = function() {
 	}
 	// remove superfluous commas
 	var lastNodeText = "";
-	for (var i = 0; i < breadcrumbs[0].childNodes.length; i++) {
+	for (i = 0; i < breadcrumbs[0].childNodes.length; i++) {
 		var childNode = breadcrumbs[0].childNodes[i];
 		var tempValue = childNode.nodeValue;
 		if ((lastNodeText == ", " || removeBecauseLeadingComma == true)
@@ -202,7 +202,6 @@ DenkbaresSkin.cleanTrail = function() {
 		lastNodeText = tempValue;
 
 	}
-	var text = jq$(breadcrumbs.first());
 };
 
 if (typeof jq$ != 'undefined') {
@@ -219,11 +218,59 @@ DenkbaresSkin.resizeFlows = function() {
 	});
 };
 
+DenkbaresSkin.favoriteStatus = {
+	status : 'expanded'
+};
+
+DenkbaresSkin.toggleFavorites = function() {
+	var favorites = jq$('#favorites');
+	var body = jq$('body.view');
+	var page = jq$('#page');
+	if (DenkbaresSkin.favoriteStatus.status == 'expanded') {
+		DenkbaresSkin.favoriteStatus.padding = favorites.css('padding');
+		DenkbaresSkin.favoriteStatus.width = favorites.css('width', '0px');
+		DenkbaresSkin.favoriteStatus.backgroundimage = body.css('background-image');
+		DenkbaresSkin.favoriteStatus.left = page.css('left');
+		favorites.css('padding', '0px');
+		favorites.css('width', '0px');
+		body.css('background-image', 'none');
+		page.css('left', '5px');
+		DenkbaresSkin.favoriteStatus.status = 'collapsed';
+		jq$('#favorites-toggle').css('#favorites-toggle', 'e-resize');
+	} else {
+		favorites.css('padding', DenkbaresSkin.favoriteStatus.padding);
+		favorites.css('width', DenkbaresSkin.favoriteStatus.width);
+		body.css('background-image', DenkbaresSkin.favoriteStatus.backgroundimage);
+		page.css('left', DenkbaresSkin.favoriteStatus.left);
+		DenkbaresSkin.favoriteStatus.status = 'expanded';
+		jq$('#favorites-toggle').css('#favorites-toggle', 'w-resize');
+	}
+	jq$(window).trigger('resize');
+};
+
+DenkbaresSkin.addFavoriteToggle = function() {
+	jq$('#actionsTop').before(new Element('div', {
+		'id' : 'favorites-toggle',
+		'styles' : {
+			position: 'absolute',
+			cursor: 'w-resize',
+			width: '5px',
+			left: '-5px',
+			height: '100%'
+		}
+	}));
+	jq$('#favorites-toggle').unbind('click').click(DenkbaresSkin.toggleFavorites);
+};
+
 KNOWWE.helper.observer.subscribe("flowchartrendered", DenkbaresSkin.resizeFlows);
 
 jq$(window).scroll(DenkbaresSkin.checkFavScroll);
 jq$(window).resize(DenkbaresSkin.checkFavScroll);
 jq$(window).resize(DenkbaresSkin.resizeFlows);
+
+jq$(document).ready(function() {
+	DenkbaresSkin.addFavoriteToggle();
+});
 
 // add auto-resize to edit page
 if (KNOWWE.helper.loadCheck([ 'Edit.jsp' ])) {
