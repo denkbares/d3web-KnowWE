@@ -716,8 +716,9 @@ public class KnowWEUtils {
 				.filter(pageInfo -> pageInfo.getSaveDate().before(date))
 				.findFirst()
 				.map(WikiPageInfo::getVersion)
-				// if non was found, get the first version (last in the list)
-				.orElseGet(() -> articleHistory.get(articleHistory.size() - 1).getVersion());
+						// if non was found, get the first version (last in the list)
+				.orElseGet(() -> articleHistory.isEmpty() ? -1
+						: articleHistory.get(articleHistory.size() - 1).getVersion());
 	}
 
 	/**
