@@ -205,14 +205,18 @@
 	</extension-point>
 
 	<extension-point id="Annotation">
-		<parameter-def id="class" />
+		<!-- optional: class of the type to be set as child of the annotation section -->
+		<parameter-def id="class" multiplicity="any" />
+		<!-- name of the annotation -->
 		<parameter-def id="name" />
+		<!-- optional: regular expression that defines the possible values of the annotation -->
+		<parameter-def id="regex" multiplicity="none-or-one"/>
 		<parameter-def id="description" />
 		<parameter-def id="version" />
 		<parameter-def id="scope" multiplicity="one" />
 		<parameter-def id="exclude" multiplicity="any" />
 		<parameter-def id="priority" type="number" />
-		<parameter-def id="renderer" multiplicity="any" />
+		<parameter-def id="renderer" multiplicity="none-or-one" />
 	</extension-point>
 
 	<extension-point id="SearchProvider">
