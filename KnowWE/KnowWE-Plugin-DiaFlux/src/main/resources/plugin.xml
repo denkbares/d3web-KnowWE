@@ -17,7 +17,8 @@
   ~ site: http://www.fsf.org.
   -->
 
-<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0"
+	"http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="KnowWE-Plugin-DiaFlux" version="0.0.1">
 
 	<requires>
@@ -61,19 +62,24 @@
 		<parameter-def id="scope" multiplicity="one-or-more" />
 	</extension-point>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Annotation" id="PotentialSolutionsAnnotation">
-		<parameter id="name" value="PotentialSolutions" />
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Annotation"
+		id="PotentialSolutionsAnnotation">
+		<parameter id="name" value="diaflux-PotentialSolutions" />
 		<parameter id="regex" value="suggest|ignore" />
-		<parameter id="description"
-			value="Allows to activate that potential solutions within the processed flowcharts will be suggested, until it is known if they are established or not." />
+		<parameter id="description" value="The annotation configures the DiaFlux problem solver.
+			If 'suggest' is specified, the DiaFlux problem solver will suggest all remaining
+			potential solutions of the processed flowcharts, until it is known if the solutions
+			will be established or not. If 'ignore' is specified, the DiaFlux problem solver
+			will not rate any solution until a node is reached that explicitly rates the particular
+			solution. The default value is 'ignore'." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="KnowledgeBaseType" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript"
-		id="PotentialSolutionsAnnotationCompileScript">
-		<parameter id="class" value="de.knowwe.diaflux.type.PotentialSolutionsAnnotationCompileScript" />
+		id="ConfigureDiaFluxCompileScript">
+		<parameter id="class" value="de.knowwe.diaflux.type.ConfigureDiaFluxCompileScript" />
 		<parameter id="name" value="PotentialSolutionsAnnotationCompileScript" />
 		<parameter id="description" value="Subtree handler to set the potential solutions flag" />
 		<parameter id="version" value="1.0" />
@@ -83,7 +89,8 @@
 	</extension>
 
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="ObjectInfoPageToolProvider">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="ObjectInfoPageToolProvider">
 		<parameter id="class" value="de.knowwe.core.tools.TermInfoToolProvider" />
 		<parameter id="name" value="ObjectInfoPageToolProvider" />
 		<parameter id="description"
@@ -97,7 +104,8 @@
 		<parameter id="scope" value="ExitNodeReference" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="CompositeEditToolProvider">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="CompositeEditToolProvider">
 		<parameter id="class" value="de.knowwe.core.tools.CompositeEditToolProvider" />
 		<parameter id="name" value="CompositeEditToolProvider" />
 		<parameter id="description" value="Offers Renaming, Show Info etc. for terms" />
@@ -126,7 +134,8 @@
 		<parameter id="scope" value="FlowchartReference" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="DiaFluxRenamingToolProvider">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="DiaFluxRenamingToolProvider">
 		<parameter id="class" value="de.knowwe.diaflux.type.DiaFluxRenamingToolProvider" />
 		<parameter id="name" value="DiaFluxRenamingToolProvider" />
 		<parameter id="description"
@@ -136,17 +145,20 @@
 		<parameter id="scope" value="DiaFlux" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="DiaFluxItemPreviewRenderer">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer"
+		id="DiaFluxItemPreviewRenderer">
 		<parameter id="class" value="de.knowwe.diaflux.DiaFluxItemPreviewRenderer" />
 		<parameter id="name" value="DiaFluxItemPreviewRenderer" />
-		<parameter id="description" value="Renders a preview of a node or egde of a diaflux flowchart." />
+		<parameter id="description"
+			value="Renders a preview of a node or egde of a diaflux flowchart." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="DiaFluxType" />
 		<parameter id="css" value="KnowWE-Plugin-DiaFlux-preview.css" />
 	</extension>
 
-	<extension plugin-id="KnowWE-Plugin-DiaFlux" point-id="DiaFluxDisplayEnhancement" id="DiaFluxTraceHighlight">
+	<extension plugin-id="KnowWE-Plugin-DiaFlux" point-id="DiaFluxDisplayEnhancement"
+		id="DiaFluxTraceHighlight">
 		<parameter id="class" value="de.knowwe.diaflux.DiaFluxTraceHighlight" />
 		<parameter id="name" value="DiaFluxTraceHighlight" />
 		<parameter id="description" value="DiaFluxTraceHighlight" />
@@ -155,7 +167,8 @@
 		<parameter id="scope" value="diaflux" />
 	</extension>
 
-	<extension plugin-id="KnowWE-Plugin-DiaFlux" point-id="DiaFluxDisplayEnhancement" id="SubflowLinkifier">
+	<extension plugin-id="KnowWE-Plugin-DiaFlux" point-id="DiaFluxDisplayEnhancement"
+		id="SubflowLinkifier">
 		<parameter id="class" value="de.knowwe.diaflux.SubflowLinkifier" />
 		<parameter id="name" value="SubflowLinkifier" />
 		<parameter id="description" value="SubflowLinkifier" />
@@ -164,7 +177,8 @@
 		<parameter id="scope" value="diaflux" />
 	</extension>
 
-	<extension plugin-id="KnowWE-Plugin-DiaFlux" point-id="DiaFluxDisplayEnhancement" id="DiaFluxDiffDisplay">
+	<extension plugin-id="KnowWE-Plugin-DiaFlux" point-id="DiaFluxDisplayEnhancement"
+		id="DiaFluxDiffDisplay">
 		<parameter id="class" value="de.knowwe.diaflux.DiaFluxDiffDisplay" />
 		<parameter id="name" value="DiaFluxDiffDisplay" />
 		<parameter id="description" value="DiaFluxDiffDisplay" />
@@ -173,7 +187,8 @@
 		<parameter id="scope" value="diafluxdiff" />
 	</extension>
 
-	<extension plugin-id="KnowWE-Plugin-DiaFlux" point-id="DiaFluxDisplayEnhancement" id="ErrorHighlight">
+	<extension plugin-id="KnowWE-Plugin-DiaFlux" point-id="DiaFluxDisplayEnhancement"
+		id="ErrorHighlight">
 		<parameter id="class" value="de.knowwe.diaflux.ErrorHighlight" />
 		<parameter id="name" value="ErrorHighlight" />
 		<parameter id="description" value="ErrorHighlight" />
@@ -266,7 +281,8 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="FlowchartEditProvider">
 		<parameter id="class" value="de.knowwe.diaflux.type.FlowchartEditProvider" />
 		<parameter id="name" value="FlowchartEditProvider" />
-		<parameter id="description" value="Offers a button to grapically edit the flowchart in a new window." />
+		<parameter id="description"
+			value="Offers a button to grapically edit the flowchart in a new window." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="DiaFluxType" />
@@ -281,7 +297,8 @@
 		<parameter id="scope" value="DiaFlux" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="DiaFluxObjectInfoPageToolProvider">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="DiaFluxObjectInfoPageToolProvider">
 		<parameter id="class" value="de.knowwe.diaflux.type.DiaFluxObjectInfoPageToolProvider" />
 		<parameter id="name" value="DiaFluxObjectInfoPageToolProvider" />
 		<parameter id="description" value="DiaFluxObjectInfoPageToolProvider" />
@@ -290,16 +307,19 @@
 		<parameter id="scope" value="DiaFlux" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="FlowchartGoToToolProvider">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="FlowchartGoToToolProvider">
 		<parameter id="class" value="de.knowwe.diaflux.type.FlowchartGoToToolProvider" />
 		<parameter id="name" value="FlowchartGoToToolProvider" />
-		<parameter id="description" value="Provides goto tools for start, exit and subflow notes." />
+		<parameter id="description"
+			value="Provides goto tools for start, exit and subflow notes." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5.1" />
 		<parameter id="scope" value="DiaFluxType/**/Term" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="FlowchartZoomToolProvider">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="FlowchartZoomToolProvider">
 		<parameter id="class" value="de.knowwe.diaflux.type.FlowchartZoomToolProvider" />
 		<parameter id="name" value="FlowchartZoomToolProvider" />
 		<parameter id="description" value="Provides zoom tools flowcharts." />

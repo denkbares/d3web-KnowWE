@@ -34,13 +34,18 @@ import de.knowwe.core.report.Message;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
+ * Allows to configure the FluxSolver directly at the knowledge base markup.
+ *
  * @author Volker Belli (denkbares GmbH)
  * @created 10.08.14.
  */
-public class PotentialSolutionsAnnotationCompileScript implements D3webCompileScript<KnowledgeBaseType> {
+public class ConfigureDiaFluxCompileScript implements D3webCompileScript<KnowledgeBaseType> {
+
+	public static final String POTENTIAL_SOLUTIONS_ANNOTATION = "diaflux-PotentialSolutions";
+
 	@Override
 	public void compile(D3webCompiler compiler, Section<KnowledgeBaseType> section) throws CompilerMessage {
-		String suggest = DefaultMarkupType.getAnnotation(section, "PotentialSolutions");
+		String suggest = DefaultMarkupType.getAnnotation(section, POTENTIAL_SOLUTIONS_ANNOTATION);
 		if (Strings.isBlank(suggest)) return;
 
 		KnowledgeBase base = D3webUtils.getCompiler(section).getKnowledgeBase();
@@ -56,6 +61,9 @@ public class PotentialSolutionsAnnotationCompileScript implements D3webCompileSc
 	}
 
 	private FluxSolver getSolver(KnowledgeBase base) {
+		// Unlikely, the PSConfigs will be initialized first when creating a session
+		// therefore we create a session and ask it for the solver, returning the
+		// instance also added to the knowledge base to configure it
 		Session session = SessionFactory.createSession(base);
 		return session.getPSMethodInstance(FluxSolver.class);
 	}
