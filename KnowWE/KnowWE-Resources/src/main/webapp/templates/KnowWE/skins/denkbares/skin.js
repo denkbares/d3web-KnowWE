@@ -256,7 +256,8 @@ DenkbaresSkin.addFavoriteToggle = function() {
 			cursor: 'w-resize',
 			width: '5px',
 			left: '-5px',
-			height: '100%'
+			height: '100%',
+			'z-index': 20
 		}
 	}));
 	jq$('#favorites-toggle').unbind('click').click(DenkbaresSkin.toggleFavorites);
