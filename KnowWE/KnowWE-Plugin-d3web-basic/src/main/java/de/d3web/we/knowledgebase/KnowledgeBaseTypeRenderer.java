@@ -19,14 +19,20 @@
 
 package de.d3web.we.knowledgebase;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileTypeRenderer;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.kdom.defaultMarkup.AnnotationType;
 
 /**
  * Renders a knowledge base markup into the wiki page.
- * 
+ *
  * @author Volker Belly (denkbares GmbH)
  * @created 13.10.2010
  */
@@ -82,6 +88,28 @@ public final class KnowledgeBaseTypeRenderer extends DefaultMarkupPackageCompile
 
 		super.renderContents(section, user, string);
 
+		List<Section<?>> additionalAnnotations = new LinkedList<>();
+		List<Section<AnnotationType>> annotations =
+				Sections.successors(section, AnnotationType.class);
+		for (Section<AnnotationType> annotation : annotations) {
+			String name = annotation.get().getName();
+			if (KnowledgeBaseType.ANNOTATION_ID.equalsIgnoreCase(name)) continue;
+			if (KnowledgeBaseType.ANNOTATION_AUTHOR.equalsIgnoreCase(name)) continue;
+			if (KnowledgeBaseType.ANNOTATION_COMMENT.equalsIgnoreCase(name)) continue;
+			if (KnowledgeBaseType.ANNOTATION_VERSION.equalsIgnoreCase(name)) continue;
+			if (KnowledgeBaseType.ANNOTATION_FILENAME.equalsIgnoreCase(name)) continue;
+			additionalAnnotations.add(annotation);
+		}
+
+		if (additionalAnnotations.size() > 0) {
+			string.appendHtml("<div style='padding-top:1em;'>");
+			for (Section<?> annotation : additionalAnnotations) {
+				string.appendHtml("<div>");
+				DelegateRenderer.getRenderer(annotation, user).render(annotation, user, string);
+				string.appendHtml("</div>");
+			}
+			string.appendHtml("</div>");
+		}
 	}
 
 }
