@@ -400,9 +400,9 @@ public class Environment {
 
 			// initialize plugged items
 			Plugins.addChildrenTypesToType(type, path);
-			Plugins.addCompileScriptsToType(type, path);
-			Plugins.addRendererToType(type, path);
 			Plugins.addAnnotations(type, path);
+			Plugins.addRendererToType(type, path);
+			Plugins.addCompileScriptsToType(type, path);
 
 			// initialize type itself
 			type.init(path);

@@ -25,6 +25,7 @@ import de.d3web.collections.PriorityList;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.JPFExtension;
 import de.d3web.plugin.PluginManager;
+import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.ResourceLoader;
@@ -40,6 +41,7 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.taghandler.TagHandler;
 import de.knowwe.core.utils.ScopeUtils;
 import de.knowwe.kdom.defaultMarkup.AnnotationType;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup.Annotation;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.defaultMarkup.UnknownAnnotationType;
@@ -107,8 +109,8 @@ public class Plugins {
 	}
 
 	/**
-	 * Returns a list of all plugged actions. Actions can be executed from the web. Usually be clicking on pregenerated
-	 * links on the wiki pages.
+	 * Returns a list of all plugged actions. Actions can be executed from the web. Usually be
+	 * clicking on pregenerated links on the wiki pages.
 	 */
 	public static List<Action> getKnowWEAction() {
 		return getSingeltons(EXTENDED_POINT_KnowWEAction, Action.class);
@@ -166,34 +168,49 @@ public class Plugins {
 		if (type instanceof DefaultMarkupType) {
 
 			DefaultMarkupType markupType = (DefaultMarkupType) type;
+			List<Type> childrenTypes = markupType.getChildrenTypes();
+			DefaultMarkup markup = markupType.getMarkup();
+
 			Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 					EXTENDED_POINT_Annotation);
-
 			for (Extension extension : ScopeUtils.getMatchingExtensions(extensions, path)) {
 
-				List<Type> childrenTypes = markupType.getChildrenTypes();
-				markupType.getMarkup().addAnnotation(extension.getName());
+				// add the annotation itself to the markup
+				String regex = extension.getParameter("regex");
+				String name = extension.getName();
+				if (Strings.isBlank(regex)) {
+					markup.addAnnotation(name, false);
+				}
+				else {
+					markup.addAnnotation(name, false, regex);
+				}
 
-				JPFExtension jpfEx = (JPFExtension) extension;
-				Renderer pluggedRenderer = (Renderer) jpfEx.getNewInstance(jpfEx.getParameter("renderer"));
+				// add children type(s) defined as class attribute(s)
+				for (String subTypeClass : extension.getParameters("class")) {
+					Type subType = (Type) getNewInstance(extension, subTypeClass);
+					markup.addAnnotationContentType(name, subType);
+				}
 
-				markupType.getMarkup().addAnnotationRenderer(extension.getName(),
-						pluggedRenderer);
+				// set renderer for the annotation
+				String renderer = extension.getParameter("renderer");
+				if (!Strings.isBlank(renderer)) {
+					Renderer pluggedRenderer = (Renderer) getNewInstance(extension, renderer);
+					markup.addAnnotationRenderer(name, pluggedRenderer);
+				}
 
 				for (Type childTyp : childrenTypes) {
-
 					if (childTyp.getClass().equals(UnknownAnnotationType.class)) {
-						Annotation annotation = markupType.getMarkup().getAnnotation(
-								extension.getName());
+						Annotation annotation = markup.getAnnotation(name);
 						type.addChildType(new AnnotationType(annotation));
-
 						break;
 					}
 				}
-
 			}
 		}
+	}
 
+	private static Object getNewInstance(Extension extension, String clazz) {
+		return ((JPFExtension) extension).getNewInstance(clazz);
 	}
 
 	public static List<SectionizerModule> getSectionizerModules() {
@@ -203,8 +220,9 @@ public class Plugins {
 	/**
 	 * Returns a List of all plugged TagHandlers
 	 * <p/>
-	 * COMMENT: Alternatively, those taghandlers can also be introduced separately using the taghandler.text file. There
-	 * the class of the taghandler is listed and will be loaded on KnowWE initialization.
+	 * COMMENT: Alternatively, those taghandlers can also be introduced separately using the
+	 * taghandler.text file. There the class of the taghandler is listed and will be loaded on
+	 * KnowWE initialization.
 	 *
 	 * @return List of TagHandlers
 	 */
@@ -215,8 +233,9 @@ public class Plugins {
 	/**
 	 * Returns a list of all plugged PageAppendHandlers.
 	 * <p/>
-	 * These handlers allow a module to append some content to the wiki-page content. There are 2 kinds of
-	 * appendHandlers one append content at top of the page, the other appends at the bottom
+	 * These handlers allow a module to append some content to the wiki-page content. There are 2
+	 * kinds of appendHandlers one append content at top of the page, the other appends at the
+	 * bottom
 	 *
 	 * @return List of PageAppendHandlers
 	 */
