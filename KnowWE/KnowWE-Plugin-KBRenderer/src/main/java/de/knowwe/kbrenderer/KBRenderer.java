@@ -215,7 +215,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			 * Questions
 			 */
 			List<QContainer> questions = new ArrayList<QContainer>(kb.getManager().getQContainers());
-			KnowledgeBaseUtils.sortQContainers(questions);
+			KnowledgeBaseUtils.sortTerminologyObjects(questions);
 			boolean appendedQuestionHeadline = false;
 			for (QContainer q1 : questions) {
 				if (q1.getName() != null && !q1.getName().equals("Q000")) {
