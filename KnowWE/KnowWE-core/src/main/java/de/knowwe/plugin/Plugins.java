@@ -123,6 +123,14 @@ public class Plugins {
 			double priority = extension.getPriority();
 			Type pluggedType = (Type) extension.getNewInstance();
 			type.addChildType(priority, pluggedType);
+
+			// add documentation for default markups
+			if (pluggedType instanceof DefaultMarkupType) {
+				DefaultMarkup markup = ((DefaultMarkupType) pluggedType).getMarkup();
+				if (Strings.isBlank(markup.getDocumentation())) {
+					markup.setDocumentation(extension.getParameter("description"));
+				}
+			}
 		}
 	}
 
@@ -184,6 +192,9 @@ public class Plugins {
 				else {
 					markup.addAnnotation(name, false, regex);
 				}
+
+				// add the documentation from the plugin definition
+				markup.getAnnotation(name).setDocumentation(extension.getParameter("description"));
 
 				// add children type(s) defined as class attribute(s)
 				for (String subTypeClass : extension.getParameters("class")) {

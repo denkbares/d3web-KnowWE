@@ -41,6 +41,8 @@ public class DefaultMarkup {
 		private final boolean isRegex;
 		private boolean deprecated;
 
+		private String documentation = null;
+
 		private final Collection<Type> nameTypes = new LinkedList<Type>();
 		private final Collection<Type> types = new LinkedList<Type>();
 
@@ -62,6 +64,25 @@ public class DefaultMarkup {
 		 */
 		public String getName() {
 			return this.name;
+		}
+
+		/**
+		 * Returns the documentation of the annotation. Returns 'null' if no specific
+		 * documentation for that annotation is defined.
+		 *
+		 * @return the name of the annotation
+		 */
+		public String getDocumentation() {
+			return documentation;
+		}
+
+		/**
+		 * Sets the documentation for this annotation. Set 'null' to remove the documentation.
+		 *
+		 * @param documentation the documentation to be set
+		 */
+		public void setDocumentation(String documentation) {
+			this.documentation = documentation;
 		}
 
 		/**
@@ -144,13 +165,40 @@ public class DefaultMarkup {
 	private String deprecatedAlternative = null;
 	private boolean isInline = false;
 
+	private String documentation = null;
+
 	public DefaultMarkup(String name) {
 		super();
 		this.name = name;
 	}
 
+	/**
+	 * Returns the name of this markup.
+	 *
+	 * @return the markup's name
+	 */
 	public String getName() {
 		return this.name;
+	}
+
+	/**
+	 * Sets some documentation text for this markup. Set the documentation to 'null' to
+	 * remove the documentation.
+	 *
+	 * @param documentation the documentation to be set
+	 */
+	public void setDocumentation(String documentation) {
+		this.documentation = documentation;
+	}
+
+	/**
+	 * Returns the documentation of this markup instance. It returns 'null' if no specific documentation
+	 * is available.
+	 *
+	 * @return the documentation of this markup
+	 */
+	public String getDocumentation() {
+		return documentation;
 	}
 
 	/**
