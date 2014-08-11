@@ -61,6 +61,28 @@
 		<parameter-def id="scope" multiplicity="one-or-more" />
 	</extension-point>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Annotation" id="PotentialSolutionsAnnotation">
+		<parameter id="name" value="PotentialSolutions" />
+		<parameter id="regex" value="suggest|ignore" />
+		<parameter id="description"
+			value="Allows to activate that potential solutions within the processed flowcharts will be suggested, until it is known if they are established or not." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="KnowledgeBaseType" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript"
+		id="PotentialSolutionsAnnotationCompileScript">
+		<parameter id="class" value="de.knowwe.diaflux.type.PotentialSolutionsAnnotationCompileScript" />
+		<parameter id="name" value="PotentialSolutionsAnnotationCompileScript" />
+		<parameter id="description" value="Subtree handler to set the potential solutions flag" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="compilepriority" value="10" />
+		<parameter id="scope" value="KnowledgeBaseType" />
+	</extension>
+
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="ObjectInfoPageToolProvider">
 		<parameter id="class" value="de.knowwe.core.tools.TermInfoToolProvider" />
 		<parameter id="name" value="ObjectInfoPageToolProvider" />

@@ -113,7 +113,7 @@ public class DiaFluxTrace implements SessionObject {
 			tracedActiveEdges.clear();
 		}
 
-		Collection<SnapshotNode> enteredSnapshots = caseObject.getActivatedSnapshots(session);
+		Collection<SnapshotNode> enteredSnapshots = caseObject.getActivatedSnapshots();
 		if (enteredSnapshots.isEmpty()) {
 			return;
 		}

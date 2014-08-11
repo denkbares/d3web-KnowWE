@@ -133,7 +133,7 @@ public class DiaFluxValueTrace implements SessionObject {
 		}
 
 		// Do not trace, if no snapshots have been entered
-		Collection<SnapshotNode> enteredSnapshots = caseObject.getActivatedSnapshots(session);
+		Collection<SnapshotNode> enteredSnapshots = caseObject.getActivatedSnapshots();
 		if (enteredSnapshots.isEmpty()) {
 			return;
 		}
