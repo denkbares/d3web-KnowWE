@@ -22,6 +22,7 @@ import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
 /**
@@ -39,14 +40,15 @@ public class PageInfoAppendHandler implements PageAppendHandler {
 		int version = connector.getVersion(title);
 		long modDate = connector.getLastModifiedDate(title, -1).getTime();
 		String userName = user.getUserName();
+		String overallStatus = KnowWEUtils.getOverallStatus(user);
 
 		html.appendHtml("<input type='hidden' id='knowWEInfoWeb' value='" + web + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoPageName' value="
 				+ Strings.quote(title) + ">");
 		html.appendHtml("<input type='hidden' id='knowWEInfoPageVersion' value='" + version + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoPageDate' value='" + modDate + "'>");
-		html.appendHtml("<input type='hidden' id='knowWEInfoUser' value="
-				+ Strings.quote(userName) + ">");
+		html.appendHtml("<input type='hidden' id='knowWEInfoUser' value=" + Strings.quote(userName) + ">");
+		html.appendHtml("<input type='hidden' id='knowWEInfoStatus' value='" + overallStatus + "'>");
 	}
 
 	@Override

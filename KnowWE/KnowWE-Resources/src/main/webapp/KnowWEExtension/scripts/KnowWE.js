@@ -310,6 +310,10 @@ KNOWWE.core.util = function() {
 		 *     htmlText - The html text of elements used for replacement.
 		 */
 		replace : function(htmlText) {
+			try {
+				htmlText = JSON.parse(htmlText).html;
+			} catch (e) {/*nothing to do */}
+
 			var newDOMwrapper = document.createElement("div");
 			newDOMwrapper.innerHTML = htmlText;
 
@@ -580,6 +584,9 @@ KNOWWE.core.rerendercontent = function() {
 						KdomNodeId : rel.id,
 						ajaxToHTML : "render",
 						inPre : KNOWWE.helper.tagParent(_KS('#' + rel.id), 'pre') != document
+					};
+					if (this.wikiStatus) {
+						params.status = this.wikiStatus;
 					}
 					var url = KNOWWE.core.util.getURL(params);
 					KNOWWE.core.rerendercontent.execute(url, rel.id, action, fn, true);
@@ -609,6 +616,7 @@ KNOWWE.core.rerendercontent = function() {
 							if (typeof(fn) == "function") {
 								fn();
 							}
+							jq$('#knowWEInfoStatus').val(JSON.parse(this.response).status);
 						}
 						catch (e) { /*ignore*/
 						}
@@ -702,7 +710,7 @@ var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
 				message = window.onbeforeunload();
 			}
 			if (!message) {
-				KNOWWE.helper.observer.notify('update');
+				KNOWWE.helper.observer.notify('update', {wikiStatus : jq$('#knowWEInfoStatus').val()});
 			}
 		});
 

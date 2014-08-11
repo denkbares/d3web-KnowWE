@@ -24,8 +24,10 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import de.knowwe.core.Environment;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
@@ -41,37 +43,9 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class ReRenderContentPartAction extends AbstractAction {
 
-	private static String perform(UserActionContext context, Section<?> section) {
-
-		RenderResult b = new RenderResult(context);
-
-		Type type = section.get();
-		Renderer renderer = type.getRenderer();
-		if (renderer != null) {
-			renderer.render(section, context, b);
-		}
-		else {
-			DelegateRenderer.getInstance().render(section, context, b);
-		}
-
-		// If the node is in <pre> than do not
-		// render it through the JSPWikiPipeline
-		String inPre = context.getParameter("inPre");
-		String pagedata = b.toStringRaw();
-
-		if (inPre == null) pagedata = Environment.getInstance().getWikiConnector()
-				.renderWikiSyntax(pagedata, context.getRequest());
-		if (inPre != null) if (inPre.equals("false")) pagedata = Environment.getInstance()
-				.getWikiConnector().renderWikiSyntax(pagedata, context.getRequest());
-
-		return RenderResult.unmask(pagedata, context);
-	}
-
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		String nodeID = context.getParameter("KdomNodeId");
-		Section<?> section = Sections.getSection(nodeID);
-		execute(context, section);
+		execute(context, Sections.getSection(context.getParameter("KdomNodeId")));
 	}
 
 	public static void execute(UserActionContext context, Section<?> section) throws IOException {
@@ -84,12 +58,69 @@ public class ReRenderContentPartAction extends AbstractAction {
 			context.sendError(HttpServletResponse.SC_FORBIDDEN,
 					"You are not allowed to view this content.");
 		}
+		else if (handleStatusChanges(context)) {
+			context.sendError(HttpServletResponse.SC_NOT_MODIFIED,
+					"No change on the server, no need to update.");
+		}
 		else {
-			String result = perform(context, section);
-			if (result != null && context.getWriter() != null) {
+			String renderResult = reRender(context, section);
+			if (renderResult != null && context.getWriter() != null) {
 				context.setContentType("text/html; charset=UTF-8");
-				context.getWriter().write(result);
+				JSONObject response = new JSONObject();
+				try {
+					response.put("html", renderResult);
+					response.put("status", KnowWEUtils.getOverallStatus(context));
+					response.write(context.getWriter());
+				}
+				catch (JSONException e) {
+					throw new IOException(e);
+				}
 			}
 		}
 	}
+
+	/**
+	 * Returns true if a status from the client is given and it is the same as the current server status.
+	 */
+	private static boolean handleStatusChanges(UserActionContext context) {
+		String status = context.getParameter("status");
+		if (status == null) {
+			// no status was given, we disregard status
+			return false;
+		}
+		else {
+			// we have a status from the client and compare it with the status from the server
+			return status.equals(KnowWEUtils.getOverallStatus(context));
+		}
+	}
+
+	private static String reRender(UserActionContext context, Section<?> section) {
+
+		RenderResult result = new RenderResult(context);
+
+		Renderer renderer = section.get().getRenderer();
+		if (renderer != null) {
+			renderer.render(section, context, result);
+		}
+		else {
+			DelegateRenderer.getInstance().render(section, context, result);
+		}
+
+		// If the node is in <pre> than do not
+		// render it through the JSPWikiPipeline
+		String inPre = context.getParameter("inPre");
+		String rawResult = result.toStringRaw();
+
+		if (inPre != null && inPre.equals("false")) {
+			rawResult = Environment.getInstance()
+					.getWikiConnector().renderWikiSyntax(rawResult, context.getRequest());
+		}
+		else {
+			rawResult = Environment.getInstance().getWikiConnector()
+					.renderWikiSyntax(rawResult, context.getRequest());
+		}
+
+		return RenderResult.unmask(rawResult, context);
+	}
+
 }

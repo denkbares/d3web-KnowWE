@@ -72,6 +72,7 @@ public class Plugins {
 	public static final String EXTENDED_POINT_Annotation = "Annotation";
 	public static final String EXTENDED_POINT_SearchProvider = "SearchProvider";
 	public static final String EXTENDED_POINT_Compiler = "Compiler";
+	public static final String EXTENDED_POINT_StatusProvider = "StatusProvider";
 
 	private static <T> List<T> getSingeltons(String point, Class<T> clazz) {
 		PluginManager pm = PluginManager.getInstance();
@@ -90,6 +91,15 @@ public class Plugins {
 	 */
 	public static List<Instantiation> getInstantiations() {
 		return getSingeltons(EXTENDED_POINT_Instantiation, Instantiation.class);
+	}
+
+	/**
+	 * Returns all plugged Instantiations These are used to initialize plugins.
+	 *
+	 * @return List of all Instantiations
+	 */
+	public static List<StatusProvider> getStatusProviders() {
+		return getSingeltons(EXTENDED_POINT_StatusProvider, StatusProvider.class);
 	}
 
 	/**

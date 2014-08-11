@@ -63,6 +63,8 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.core.wikiConnector.WikiPageInfo;
+import de.knowwe.plugin.Plugins;
+import de.knowwe.plugin.StatusProvider;
 
 public class KnowWEUtils {
 
@@ -929,6 +931,21 @@ public class KnowWEUtils {
 		WikiConnector connector = Environment.getInstance().getWikiConnector();
 		String title = article.getTitle();
 		return connector.getVersion(title);
+	}
+
+	/**
+	 * Returns a unique hash or integer for the status of the wiki for a given user. The hash should stay the same as
+	 * long as the status does not change, but change if the status changes.
+	 *
+	 * @param context context of the user
+	 * @return current wiki status for a user
+	 */
+	public static String getOverallStatus(UserContext context) {
+		int overAllStatus = 0;
+		for (StatusProvider statusProvider : Plugins.getStatusProviders()) {
+			overAllStatus += statusProvider.getStatus(context);
+		}
+		return Integer.toHexString(overAllStatus);
 	}
 
 }

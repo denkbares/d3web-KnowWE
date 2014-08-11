@@ -253,14 +253,14 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			RenderResult renderResult = new RenderResult(userContext.getRequest());
 
 			if (article != null) {
-				List<PageAppendHandler> appendhandlers = Environment.getInstance()
+				List<PageAppendHandler> appendHandlers = Environment.getInstance()
 						.getAppendHandlers();
 
-				renderPrePageAppendHandler(userContext, title, renderResult, appendhandlers);
+				renderPrePageAppendHandler(userContext, title, renderResult, appendHandlers);
 
 				renderPage(userContext, article, renderResult);
 
-				renderPostPageAppendHandler(userContext, title, renderResult, appendhandlers);
+				renderPostPageAppendHandler(userContext, title, renderResult, appendHandlers);
 
 				includeDOMResources(wikiContext);
 			}

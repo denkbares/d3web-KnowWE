@@ -69,7 +69,7 @@ public class GetWikiTextAction extends AbstractAction {
 			}
 		}
 		catch (JSONException e) {
-			new IOException(e);
+			throw new IOException(e);
 		}
 
 	}

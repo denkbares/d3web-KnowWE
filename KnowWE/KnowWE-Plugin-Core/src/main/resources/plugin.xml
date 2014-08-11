@@ -544,4 +544,13 @@
 		<parameter id="scope" value="root/DefaultMarkupType" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="StatusProvider"
+		id="CompileStatusProvider">
+		<parameter id="class" value="de.knowwe.core.action.CompileStatusProvider" />
+		<parameter id="name" value="CompileStatusProvider" />
+		<parameter id="description" value="Provides a compile status" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 </plugin>
