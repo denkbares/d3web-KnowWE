@@ -80,8 +80,8 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript"
 		id="ConfigureDiaFluxCompileScript">
 		<parameter id="class" value="de.knowwe.diaflux.type.ConfigureDiaFluxCompileScript" />
-		<parameter id="name" value="PotentialSolutionsAnnotationCompileScript" />
-		<parameter id="description" value="Subtree handler to set the potential solutions flag" />
+		<parameter id="name" value="ConfigureDiaFluxCompileScript" />
+		<parameter id="description" value="Subtree handler to configure the DiaFlux problem solver." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="compilepriority" value="10" />
