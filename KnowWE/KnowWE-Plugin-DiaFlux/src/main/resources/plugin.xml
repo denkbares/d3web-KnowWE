@@ -65,13 +65,16 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Annotation"
 		id="PotentialSolutionsAnnotation">
 		<parameter id="name" value="diaflux-PotentialSolutions" />
-		<parameter id="regex" value="suggest|ignore" />
+		<parameter id="regex" value="ignore|suggest|precise" />
 		<parameter id="description" value="The annotation configures the DiaFlux problem solver.
 			If 'suggest' is specified, the DiaFlux problem solver will suggest all remaining
 			potential solutions of the processed flowcharts, until it is known if the solutions
-			will be established or not. If 'ignore' is specified, the DiaFlux problem solver
-			will not rate any solution until a node is reached that explicitly rates the particular
-			solution. The default value is 'ignore'." />
+			will be established or not. If 'suggest' is specified the potential solution will also
+			be suggested, but a more precise (and slower) algorithm is used to detect these
+			solutions. If 'ignore' is specified, the DiaFlux problem solver will not rate any
+			solution until a node is reached that explicitly rates the particular solution.
+			For most circumstances the 'precise' method is the best choice.
+			The default value is 'ignore'." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="KnowledgeBaseType" />
@@ -88,13 +91,12 @@
 		<parameter id="scope" value="KnowledgeBaseType" />
 	</extension>
 
-
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
 		id="ObjectInfoPageToolProvider">
 		<parameter id="class" value="de.knowwe.core.tools.TermInfoToolProvider" />
 		<parameter id="name" value="ObjectInfoPageToolProvider" />
 		<parameter id="description"
-			value="Offer a button to navigate to the object information page of an selected flowcharts and nodes." />
+			value="Offer a button to navigate to the object information page of a selected flowchart or node." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="StartNodeDef" />

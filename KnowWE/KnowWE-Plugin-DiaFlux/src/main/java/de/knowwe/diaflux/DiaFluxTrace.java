@@ -40,7 +40,7 @@ import de.d3web.diaFlux.inference.FluxSolver;
 
 /**
  * This class traces the currently active nodes and edges.
- * 
+ *
  * @author Reinhard Hatko
  * @created 02.04.2012
  */
@@ -62,7 +62,9 @@ public class DiaFluxTrace implements SessionObject {
 
 		@Override
 		public void propagating(Session session, PSMethod psMethod, Collection<PropagationEntry> entries) {
-		};
+		}
+
+		;
 
 		@Override
 		public void postPropagationStarted(Session session, Collection<PropagationEntry> entries) {
@@ -143,10 +145,10 @@ public class DiaFluxTrace implements SessionObject {
 
 	/**
 	 * Traces the Nodes and active outgoing edges.
-	 * 
-	 * @created 01.03.2011
+	 *
 	 * @param session the current session
 	 * @param enteredSnapshots
+	 * @created 01.03.2011
 	 */
 	private void traceNodesAndEdges(Session session, Collection<Node> tracedNodes, Collection<SnapshotNode> enteredSnapshots) {
 
@@ -164,46 +166,44 @@ public class DiaFluxTrace implements SessionObject {
 	}
 
 	/**
-	 * Adds a set of edges to the traced edges before the snapshot will be
-	 * taken. The traced information are intended to describe the state before
-	 * the last snapshot has been taken.
-	 * 
-	 * @created 01.03.2011
+	 * Adds a set of edges to the traced edges before the snapshot will be taken. The traced
+	 * information are intended to describe the state before the last snapshot has been taken.
+	 *
 	 * @param edges the edges to be added.
+	 * @created 01.03.2011
 	 */
 	private void traceEdges(Edge... edges) {
 		Collections.addAll(this.tracedActiveEdges, edges);
 	}
 
 	/**
-	 * Adds a set of nodes to the traced nodes before the snapshot will be
-	 * taken. The traced information are intended to describe the state before
-	 * the last snapshot has been taken.
-	 * 
-	 * @created 01.03.2011
+	 * Adds a set of nodes to the traced nodes before the snapshot will be taken. The traced
+	 * information are intended to describe the state before the last snapshot has been taken.
+	 *
 	 * @param nodes the nodes to be added.
+	 * @created 01.03.2011
 	 */
 	private void traceNodes(Node... nodes) {
 		Collections.addAll(this.tracedActiveNodes, nodes);
 	}
 
 	/**
-	 * Returns the set of traced edges. These are the active edges before the
-	 * snapshot has been taken.
-	 * 
-	 * @created 01.03.2011
+	 * Returns the set of traced edges. These are the active edges before the snapshot has been
+	 * taken.
+	 *
 	 * @return the traced edges
+	 * @created 01.03.2011
 	 */
 	public Collection<Edge> getTracedEdges() {
 		return Collections.unmodifiableCollection(this.tracedActiveEdges);
 	}
 
 	/**
-	 * Returns the set of traced nodes. These are the active nodes before the
-	 * snapshot has been taken.
-	 * 
-	 * @created 01.03.2011
+	 * Returns the set of traced nodes. These are the active nodes before the snapshot has been
+	 * taken.
+	 *
 	 * @return the traced nodes
+	 * @created 01.03.2011
 	 */
 	public Collection<Node> getTracedNodes() {
 		return Collections.unmodifiableCollection(this.tracedActiveNodes);
@@ -219,7 +219,7 @@ public class DiaFluxTrace implements SessionObject {
 			if (trace.getTracedNodes().contains(element)) return State.traced;
 
 		}
-		else {
+		else if (element instanceof Edge) {
 			for (FlowRun run : diaFluxCaseObject.getRuns()) {
 				if (run.isActivated((Edge) element)) return State.active;
 			}

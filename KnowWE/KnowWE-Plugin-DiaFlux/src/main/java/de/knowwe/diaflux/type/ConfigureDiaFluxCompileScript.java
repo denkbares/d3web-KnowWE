@@ -33,6 +33,8 @@ import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
+import static de.d3web.diaFlux.inference.FluxSolver.SuggestMode;
+
 /**
  * Allows to configure the FluxSolver directly at the knowledge base markup.
  *
@@ -51,8 +53,8 @@ public class ConfigureDiaFluxCompileScript implements D3webCompileScript<Knowled
 		KnowledgeBase base = D3webUtils.getCompiler(section).getKnowledgeBase();
 		FluxSolver solver = getSolver(base);
 		if (solver != null) {
-			boolean flag = Strings.equalsIgnoreCase(suggest, "suggest");
-			solver.setSuggestPotentialSolutions(flag);
+			SuggestMode mode = Strings.parseEnum(suggest, SuggestMode.ignore);
+			solver.setSuggestMode(mode);
 		}
 		else {
 			throw new CompilerMessage(new Message(Message.Type.WARNING,

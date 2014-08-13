@@ -22,7 +22,6 @@ package de.knowwe.diaflux;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.ConditionTrue;
@@ -34,6 +33,7 @@ import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.io.DiaFluxPersistenceHandler;
+import de.d3web.strings.Strings;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.d3web.we.knowledgebase.D3webCompileScript;
@@ -87,8 +87,8 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 		}
 
 		String name = FlowchartType.getFlowchartName(s);
-		Map<String, String> attributeMap = AbstractXMLType.getAttributeMapFor(s);
-		boolean autostart = Boolean.parseBoolean(attributeMap.get("autostart"));
+		String icon = FlowchartType.getIcon(s);
+		boolean autostart = FlowchartType.isAutoStart(s);
 
 		if (name == null || name.equals("")) {
 			name = "unnamed";
@@ -100,8 +100,7 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 		flow.setAutostart(autostart);
 
 		FlowchartUtils.storeFlowProperty(flow, ORIGIN_KEY, s.getID());
-		String icon = attributeMap.get("icon");
-		if (icon != null) {
+		if (!Strings.isBlank(icon)) {
 			FlowchartUtils.storeFlowProperty(flow, ICON_KEY, icon);
 		}
 
@@ -215,8 +214,7 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 				msgs.add(Messages.error("No NodeHandler found for: " + nodeSection.getText()));
 			}
 			else {// handler can in general handle NodeType
-				String id = AbstractXMLType.getAttributeMapFor(nodeSection).get("fcid");
-
+				String id = getNodeID(nodeSection);
 				Node node = handler.createNode(compiler, kb, nodeSection, flowSection, id);
 
 				// handler could not generate a node for the supplied section
@@ -238,6 +236,10 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 		}
 
 		return result;
+	}
+
+	public static String getNodeID(Section<NodeType> nodeSection) {
+		return AbstractXMLType.getAttributeMapFor(nodeSection).get("fcid");
 	}
 
 }

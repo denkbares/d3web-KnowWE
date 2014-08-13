@@ -33,6 +33,7 @@ import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.sectionFinder.MultiSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -40,7 +41,6 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.xml.XMLHead;
 
 /**
- * 
  * @author Reinhard Hatko
  * @created 08.12.2010
  */
@@ -54,8 +54,9 @@ public class FlowchartXMLHeadType extends XMLHead {
 
 		public FlowchartTermDef() {
 			super(D3webCompiler.class, Flow.class);
-			Pattern pattern = Pattern.compile("name=\"\\s*([^\"]*?)\\s*\"");
-			setSectionFinder(new RegexSectionFinder(pattern, 1));
+			setSectionFinder(new MultiSectionFinder(
+					new RegexSectionFinder(Pattern.compile("name=\"\\s*([^\"]*?)\\s*\""), 1),
+					new RegexSectionFinder(Pattern.compile("name=\'\\s*([^\']*?)\\s*\'"), 1)));
 			setRenderer(StyleRenderer.Flowchart);
 			clearCompileScripts();
 			addCompileScript(Priority.HIGHER, new FlowchartRegistrationHandler());

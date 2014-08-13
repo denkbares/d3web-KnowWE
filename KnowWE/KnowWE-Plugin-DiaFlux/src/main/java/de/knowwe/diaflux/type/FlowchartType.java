@@ -20,7 +20,10 @@
 
 package de.knowwe.diaflux.type;
 
+import java.util.Map;
+
 import de.d3web.core.session.SessionFactory;
+import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.parsing.Section;
@@ -65,6 +68,21 @@ public class FlowchartType extends AbstractXMLType {
 		Section<FlowchartTermDef> definition = Sections.findSuccessor(sec, FlowchartTermDef.class);
 		if (definition == null) return "Unnamed Flowchart";
 		return Strings.decodeHtml(definition.getText());
+	}
+
+	public static Identifier getFlowchartTermIdentifier(Section<FlowchartType> sec) {
+		Section<FlowchartTermDef> definition = Sections.findSuccessor(sec, FlowchartTermDef.class);
+		if (definition == null) return null;
+		return definition.get().getTermIdentifier(definition);
+	}
+
+	public static boolean isAutoStart(Section<FlowchartType> sec) {
+		Map<String, String> attributeMap = AbstractXMLType.getAttributeMapFor(sec);
+		return Boolean.parseBoolean(attributeMap.get("autostart"));
+	}
+
+	public static String getIcon(Section<FlowchartType> sec) {
+		return AbstractXMLType.getAttributeMapFor(sec).get("icon");
 	}
 
 }
