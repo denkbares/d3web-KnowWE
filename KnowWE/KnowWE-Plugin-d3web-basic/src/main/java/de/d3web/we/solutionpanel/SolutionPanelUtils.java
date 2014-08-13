@@ -91,14 +91,8 @@ public class SolutionPanelUtils {
 			// show solution in developer mode
 			if (!tooltip.isEmpty()) tooltip = "title='" + tooltip.replace('\'', '"') + "' ";
 			content.appendHtml("<a href='" + Strings.encodeHtml(infoLink) + "'>");
-			content.append(label);
+			content.append(solution.getName());
 			content.appendHtml("</a>");
-
-			if (link != null) {
-				content.appendHtml(" (" + "<a href='" + Strings.encodeHtml(link)
-						+ "' target='solutionLink'>link</a>"
-						+ ")");
-			}
 		}
 		content.appendHtml("</span>\n");
 	}
@@ -154,13 +148,12 @@ public class SolutionPanelUtils {
 	}
 
 	/**
-	 * Renders the string representation of the specified value. For a
-	 * {@link NumValue} the float is truncated to its integer value, when
-	 * possible.
-	 * 
-	 * @created 19.10.2010
+	 * Renders the string representation of the specified value. For a {@link NumValue} the float is
+	 * truncated to its integer value, when possible.
+	 *
 	 * @param value the specified value
 	 * @return A string representation of the specified value.
+	 * @created 19.10.2010
 	 */
 	public static String formatValue(Value value, int digits) {
 		if (value instanceof NumValue) {
