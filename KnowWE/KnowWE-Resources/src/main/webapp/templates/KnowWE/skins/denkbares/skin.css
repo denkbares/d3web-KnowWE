@@ -116,6 +116,7 @@ body.view, body.edit {
 #page > .tabs {
 	border-right: 0px;
 	border-bottom: 0px;
+	margin-bottom: 0px;
 }
 #wikibody.fav-slide #page {
 	width:100%;
@@ -132,7 +133,9 @@ body.view, body.edit {
 }
 #actionsBottom {
 	text-align:right;
-	margin-bottom:0.5em;
+	margin-bottom: 0px;
+	border-left: 1px solid #9ACBFB;
+	padding-top: 0.5em;
 }
 * html #header, * html .userbox {
 	height:1% /*hasLayout:true; --ie peekaboo/layout hack */
