@@ -31,31 +31,38 @@ import de.knowwe.ontology.kdom.resource.Resource;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 
 /**
- * SELECT DISTINCT ?resource WHERE { ?resource rdf:type rdfs:Resource .
- * FILTER(REGEX(STR(?resource ), "^http://www.w3.org/1999/02/22-rdf-syntax-ns"))
- * . }
- * 
+ * SELECT DISTINCT ?resource WHERE { ?resource rdf:type rdfs:Resource . FILTER(REGEX(STR(?resource
+ * ), "^http://www.w3.org/1999/02/22-rdf-syntax-ns")) . }
+ *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 04.03.2013
  */
 public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> {
 
+	private static final String NAMESPACE_FILTER = "FILTER(REGEX(STR(?resource), " +
+			"\"^http://www.w3.org/(" +
+			"1999/02/22-rdf-syntax-ns#|2000/01/rdf-schema#|2002/07/owl#|2001/XMLSchema#|2005/xpath-functions#)\"))";
+
 	@Override
 	public Collection<Message> create(OntologyCompiler compiler, Section<PackageCompileType> section) {
 
+		InitTerminologyHelper helper = new InitTerminologyHelper();
 		String query = new SparqlQuery().SELECT("?resource")
 				.WHERE("{ ?resource rdf:type rdfs:Resource } UNION { ?resource rdf:type rdfs:Class } MINUS { ?resource rdf:type rdf:Property }")
 				.AND_WHERE(
-						"FILTER(REGEX(STR(?resource), \"^http://www.w3.org/(1999/02/22-rdf-syntax-ns#|2000/01/rdf-schema#|2002/07/owl#)\"))").toString();
-		Class<? extends Resource> termClass = Resource.class;
-		new InitTerminologyHelper().registerTerminology(compiler, section, query, termClass);
+						NAMESPACE_FILTER).toString();
+		helper.registerTerminology(compiler, section, query, Resource.class);
 
 		query = new SparqlQuery().SELECT("?resource")
 				.WHERE("?resource rdf:type rdf:Property")
 				.AND_WHERE(
-						"FILTER(REGEX(STR(?resource), \"^http://www.w3.org/(1999/02/22-rdf-syntax-ns#|2000/01/rdf-schema#|2002/07/owl#)\"))").toString();
-		termClass = Property.class;
-		new InitTerminologyHelper().registerTerminology(compiler, section, query, termClass);
+						NAMESPACE_FILTER).toString();
+		helper.registerTerminology(compiler, section, query, Property.class);
+
+		// TODO: @albi: please check and discuss --> remove or extend as appropriate
+		helper.registerTerm(compiler, section, "http://www.w3.org/2005/xpath-functions#string-length", Resource.class);
+		helper.registerTerm(compiler, section, "http://www.w3.org/2001/XMLSchema#decimal", Resource.class);
+
 		return Messages.noMessage();
 	}
 
@@ -75,6 +82,12 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 			}
 			else if (string.startsWith("http://www.w3.org/2000/01/rdf-schema#")) {
 				abbreviation = "rdfs";
+			}
+			else if (string.startsWith("http://www.w3.org/2001/XMLSchema#")) {
+				abbreviation = "xsd";
+			}
+			else if (string.startsWith("http://www.w3.org/2005/xpath-functions#")) {
+				abbreviation = "fn";
 			}
 			else {
 				abbreviation = "owl";

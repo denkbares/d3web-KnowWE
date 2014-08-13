@@ -32,7 +32,6 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 
 /**
- * 
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 05.03.2013
  */
@@ -44,33 +43,35 @@ public abstract class TerminologyHelper {
 				.AND_WHERE(
 						"FILTER(REGEX(STR(?resource), \"^" + namespace + "\"))").toString();
 		Class<? extends Resource> termClass = Resource.class;
-		registerTerminology(compiler, section, query, termClass);
+		registerTerminology((OntologyCompiler) compiler, (Section<?>) section, (String) query, (Class<? extends Resource>) termClass);
 
 		query = new SparqlQuery().SELECT("?resource")
 				.WHERE("?resource rdf:type rdf:Property")
 				.AND_WHERE("FILTER(REGEX(STR(?resource), \"^" + namespace + "\"))").toString();
 		termClass = Property.class;
-		registerTerminology(compiler, section, query, termClass);
+		registerTerminology((OntologyCompiler) compiler, (Section<?>) section, (String) query, (Class<? extends Resource>) termClass);
 	}
 
 	public void registerTerminology(OntologyCompiler compiler, Section<?> section, String query, Class<? extends Resource> termClass) {
-		// long currentTimeMillis = System.currentTimeMillis();
 		ClosableIterator<QueryRow> iterator =
 				Rdf2GoCore.getInstance(compiler).sparqlSelectIt(query);
 		while (iterator.hasNext()) {
 			QueryRow row = iterator.next();
 			String value = row.getValue("resource").toString();
-			String abbreviation = getAbbreviation(value);
-			String resource = value.substring(value.indexOf("#") + 1);
-			TerminologyManager terminologyManager = compiler.getTerminologyManager();
-			Identifier abbrIdentifier = new Identifier(abbreviation, resource);
-			terminologyManager.registerTermDefinition(compiler, section,
-					AbbreviationDefinition.class, new Identifier(abbreviation));
-			terminologyManager.registerTermDefinition(
-					compiler, section, termClass, abbrIdentifier);
+			registerTerm(compiler, section, value, termClass);
 
 		}
-		// System.out.println(System.currentTimeMillis() - currentTimeMillis);
+	}
+
+	public void registerTerm(OntologyCompiler compiler, Section<?> section, String uri, Class<?> termClass) {
+		String resource = uri.substring(uri.indexOf("#") + 1);
+		String abbreviation = getAbbreviation(uri);
+		TerminologyManager terminologyManager = compiler.getTerminologyManager();
+		Identifier abbrIdentifier = new Identifier(abbreviation, resource);
+		terminologyManager.registerTermDefinition(compiler, section,
+				AbbreviationDefinition.class, new Identifier(abbreviation));
+		terminologyManager.registerTermDefinition(
+				compiler, section, termClass, abbrIdentifier);
 	}
 
 	protected abstract String getAbbreviation(String string);
