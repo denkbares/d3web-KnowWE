@@ -565,6 +565,36 @@ public class Rdf2GoCore {
 		return model.createBlankNode(internalID);
 	}
 
+	/**
+	 * Creates a xsd:boolean datatype literal with the specified boolean value.
+	 *
+	 * @param boolValue the value of the literal
+	 * @return a datatype literal for the specified value
+	 */
+	public Literal createDatatypeLiteral(boolean boolValue) {
+		return createDatatypeLiteral(String.valueOf(boolValue), "xsd:boolean");
+	}
+
+	/**
+	 * Creates a xsd:integer datatype literal with the specified int value.
+	 *
+	 * @param intValue the value of the literal
+	 * @return a datatype literal for the specified value
+	 */
+	public Literal createDatatypeLiteral(int intValue) {
+		return createDatatypeLiteral(String.valueOf(intValue), "xsd:integer");
+	}
+
+	/**
+	 * Creates a xsd:double datatype literal with the specified double value.
+	 *
+	 * @param doubleValue the value of the literal
+	 * @return a datatype literal for the specified value
+	 */
+	public Literal createDatatypeLiteral(double doubleValue) {
+		return createDatatypeLiteral(String.valueOf(doubleValue), "xsd:double");
+	}
+
 	public Literal createDatatypeLiteral(String literal, String datatype) {
 		return createDatatypeLiteral(literal, createURI(datatype));
 	}
@@ -632,8 +662,14 @@ public class Rdf2GoCore {
 		return Strings.unquote(turtle);
 	}
 
-	public URI createlocalURI(String value) {
-		return createURI(lns, value);
+	/**
+	 * Creates a uri with the given relative uri for the local namespace "lns:".
+	 *
+	 * @param name the relative uri (or simple name) to create a lns-uri for
+	 * @return an uri of the local namespace
+	 */
+	public URI createlocalURI(String name) {
+		return createURI(lns, name);
 	}
 
 	public Statement createStatement(Resource subject, URI predicate, Node object) {
@@ -738,6 +774,7 @@ public class Rdf2GoCore {
 		addNamespace("owl", "http://www.w3.org/2002/07/owl#");
 		addNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
 		addNamespace("xsd", "http://www.w3.org/2001/XMLSchema#");
+		addNamespace("fn", "http://www.w3.org/2005/xpath-functions#");
 	}
 
 	/**
