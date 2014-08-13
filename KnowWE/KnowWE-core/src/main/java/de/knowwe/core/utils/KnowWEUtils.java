@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -349,8 +350,20 @@ public class KnowWEUtils {
 	 * @created 29.11.2013
 	 */
 	public static boolean canView(Article article, UserContext user) {
-		return Environment.getInstance().getWikiConnector().userCanViewArticle(
-				article.getTitle(), user.getRequest());
+		WikiConnector connector = Environment.getInstance().getWikiConnector();
+		// try nine times with catching unexpected exception from AuthorizationManager
+		for (int i=0; i<9; i++) {
+			try {
+				return connector.userCanViewArticle(article.getTitle(), user.getRequest());
+			}
+			catch (ConcurrentModificationException e) {
+				// do nothing a few times, because we have no influence here
+				Thread.yield();
+			}
+		}
+		// finally, if not passed successfully,
+		// try last time throwing the exception
+		return connector.userCanViewArticle(article.getTitle(), user.getRequest());
 	}
 
 	/**
