@@ -15,6 +15,7 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
@@ -27,6 +28,8 @@ import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.SparqlContentType;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
+
+import static de.knowwe.kdom.renderer.AsynchronRenderer.ASYNCHRONOUS;
 
 /**
  * Shows contents of references of SparqlQueryInline.
@@ -51,6 +54,8 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotation(SEPARATOR);
 		MARKUP.addAnnotation(ROW_SEPARATOR);
 		MARKUP.addAnnotation(COUNT, false, "true", "false");
+		MARKUP.addAnnotation(ASYNCHRONOUS, false, "true", "false");
+		MARKUP.addAnnotationRenderer(ASYNCHRONOUS, NothingRenderer.getInstance());
 	}
 
 	public InlineSparqlMarkup() {
