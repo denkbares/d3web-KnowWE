@@ -67,6 +67,12 @@ ToolMenu.prototype.showToolPopupMenu = function(node) {
 	par.innerHTML = "<div class='toolMenuFrame'>" + "<div style='width:" + node.offsetWidth * scale
 		+ "px;height:" + node.offsetHeight * scale + "px;' onclick='_TM.hideToolsPopupMenu();'></div>"
 		+ this.getToolMenuHtml(node) + "</div>";
+
+	// make sure to place menu on screen
+	// move to right if menu exceeds the left border
+	var menu = jq$(par).find(".markupMenu");
+	var menuLeft = menu.offset().left;
+	if (menuLeft < 0) menu.css('right', menuLeft+'px');
 };
 
 ToolMenu.prototype.getToolMenuHtml = function(node) {
