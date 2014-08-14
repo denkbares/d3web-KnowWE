@@ -310,10 +310,6 @@ KNOWWE.core.util = function() {
 		 *     htmlText - The html text of elements used for replacement.
 		 */
 		replace : function(htmlText) {
-			try {
-				htmlText = JSON.parse(htmlText).html;
-			} catch (e) {/*nothing to do */}
-
 			var newDOMwrapper = document.createElement("div");
 			newDOMwrapper.innerHTML = htmlText;
 

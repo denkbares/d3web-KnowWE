@@ -574,31 +574,35 @@ KNOWWE.helper.ajax = function ( options ) {
 			if (http.status == 200) {
 	            var ids = oDefault.response.ids;
 	            var action = oDefault.response.action;
-	            
-	            switch ( action ) {
+				var htmlText = http.responseText;
+				try {
+					htmlText = JSON.parse(htmlText).html;
+				} catch (e) {/*nothing to do */}
+
+				switch ( action ) {
 	                case 'insert':
 	                    var max = ids.length;
 	                    for ( var i = 0; i < max; i++ ) {
 	                    	var d = document.getElementById(ids[i]);
 	                    	if( d ) {
-	                            document.getElementById(ids[i]).innerHTML = http.responseText;
+	                            document.getElementById(ids[i]).innerHTML = htmlText;
 	                    	}
 	                    }
 	                    break;
 	                case 'create':
 	                    if( oDefault.create ){
 	                        var el = oDefault.create.fn.call();
-	                        el.innerHTML = http.responseText;
+	                        el.innerHTML = htmlText;
 	                        document.getElementById( oDefault.create.id ).insertBefore( el, document.getElementById( oDefault.create.id ).childNodes[0]);
 	                    } 
 	                    break;
 	                case 'replaceElement':
 	                	window.setTimeout(function() {
-	                		KNOWWE.core.util.replaceElement( ids, http.responseText);
+	                		KNOWWE.core.util.replaceElement( ids, htmlText);
 	                	});
 	                    break;                    
 	                case 'replace':
-	                    KNOWWE.core.util.replace(http.responseText);
+	                    KNOWWE.core.util.replace(htmlText);
 	                    break;                    
 	                case 'string':
 	                    if( http.responseText.startsWith('@info@')){
@@ -606,8 +610,8 @@ KNOWWE.helper.ajax = function ( options ) {
 	                         info._setHTML( http.responseText.replace(/@info@/, '') );
 	                         info._injectTop(document.getElementById( ids[0]));
 	                    } 
-	                    if( http.responseText.startsWith('@replace@')){
-	                        var html = http.responseText.replace(/@replace@/, '');
+	                    if( htmlText.startsWith('@replace@')){
+	                        var html = htmlText.replace(/@replace@/, '');
 	                        KNOWWE.core.util.replace( ids, html );    
 	                    }
 	                    break;
