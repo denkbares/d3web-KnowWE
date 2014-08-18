@@ -333,8 +333,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				new PageRenderedEvent(article.getTitle(), userContext));
 	}
 
-	private void renderPrePageAppendHandler(JSPWikiUserContext userContext, String title, RenderResult renderResult, List<PageAppendHandler> appendhandlers) {
-		for (PageAppendHandler pageAppendHandler : appendhandlers) {
+	private void renderPrePageAppendHandler(JSPWikiUserContext userContext, String title, RenderResult renderResult, List<PageAppendHandler> appendHandlers) {
+		for (PageAppendHandler pageAppendHandler : appendHandlers) {
 			if (pageAppendHandler.isPre()) {
 				pageAppendHandler.append(
 						Environment.DEFAULT_WEB, title,
