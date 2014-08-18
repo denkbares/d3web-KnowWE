@@ -23,7 +23,7 @@ import java.util.Date;
 
 import de.knowwe.core.Environment;
 
-public class WikiPageInfo {
+public class WikiPageInfo implements WikiObjectInfo {
 
 	private final String name;
 	private final String author;
@@ -31,7 +31,6 @@ public class WikiPageInfo {
 	private final Date date;
 
 	public WikiPageInfo(String name, String author, int version, Date date) {
-
 		this.name = name;
 		this.author = author;
 		this.version = version;
@@ -42,18 +41,22 @@ public class WikiPageInfo {
 		return Environment.getInstance().getWikiConnector().getArticleText(name, version);
 	}
 
+	@Override
 	public int getVersion() {
 		return version;
 	}
 
+	@Override
 	public Date getSaveDate() {
 		return date;
 	}
 
+	@Override
 	public String getAuthor() {
 		return author;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

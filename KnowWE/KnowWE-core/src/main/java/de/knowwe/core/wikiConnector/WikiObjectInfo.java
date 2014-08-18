@@ -19,46 +19,20 @@
 
 package de.knowwe.core.wikiConnector;
 
-import java.io.IOException;
 import java.util.Date;
 
-import de.knowwe.core.Environment;
+/**
+ * Provides basic information about a wiki object like a page or an attachment.
+ *
+ * Created by Albrecht Striffler (denkbares GmbH) on 18.08.14.
+ */
+public interface WikiObjectInfo {
 
-public class WikiAttachmentInfo implements WikiObjectInfo {
+	int getVersion();
 
-	private final String name;
-	private final String author;
-	private final int version;
-	private final Date date;
+	Date getSaveDate();
 
-	public WikiAttachmentInfo(String name, String author, int version, Date date) {
-		this.name = name;
-		this.author = author;
-		this.version = version;
-		this.date = date;
-	}
+	String getAuthor();
 
-	public WikiAttachment getAttachment() throws IOException {
-		return Environment.getInstance().getWikiConnector().getAttachment(name);
-	}
-
-	@Override
-	public int getVersion() {
-		return version;
-	}
-
-	@Override
-	public Date getSaveDate() {
-		return date;
-	}
-
-	@Override
-	public String getAuthor() {
-		return author;
-	}
-
-	@Override
-	public String getName() {
-		return name;
-	}
+	String getName();
 }

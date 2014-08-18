@@ -74,7 +74,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		int versionAtBuildDate = -1;
 
 		try {
-			versionAtBuildDate = KnowWEUtils.getVersionAtDate(
+			versionAtBuildDate = KnowWEUtils.getArticleVersionAtDate(
 					title, buildDate);
 			// case for invalid buildDates (before corresponding page existed)
 			if (versionAtBuildDate < -1) return true;

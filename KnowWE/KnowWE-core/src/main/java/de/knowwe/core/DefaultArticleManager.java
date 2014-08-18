@@ -136,6 +136,10 @@ public class DefaultArticleManager implements ArticleManager {
 		article.clearLastVersion();
 	}
 
+	public boolean isQueuedArticle(Article article) {
+		return added.contains(article.getRootSection());
+	}
+
 	/**
 	 * Deletes the given article from the article map and invalidates all
 	 * knowledge content that was in the article.
@@ -193,8 +197,8 @@ public class DefaultArticleManager implements ArticleManager {
 		try {
 			if (mainLock.getHoldCount() == 1) {
 				compilerManager.compile(added, removed);
-				added = new ArrayList<>();
-				removed = new ArrayList<>();
+				added = Collections.synchronizedList(new ArrayList<>());
+				removed = Collections.synchronizedList(new ArrayList<>());
 				synchronized (deleteAfterCompile) {
 					for (Iterator<String> iterator = deleteAfterCompile.iterator(); iterator.hasNext(); ) {
 						articleMap.remove(iterator.next());

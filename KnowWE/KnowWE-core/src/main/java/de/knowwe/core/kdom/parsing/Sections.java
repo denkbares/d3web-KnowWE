@@ -25,7 +25,6 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.Types;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.wikiConnector.WikiConnector;
 
 public class Sections {
 
@@ -913,11 +912,9 @@ public class Sections {
 			for (String title : idsByTitle.keySet()) {
 				Collection<String> idsForCurrentTitle = idsByTitle.get(title);
 				boolean errorsForThisTitle = handleErrors(title, idsForCurrentTitle, context,
-						missingIDs,
-						forbiddenArticles);
+						missingIDs,	forbiddenArticles);
 				if (!errorsForThisTitle) {
-					replaceSectionsForTitle(title,
-							getSectionsMapForCurrentTitle(idsForCurrentTitle,
+					replaceSectionsForTitle(title, getSectionsMapForCurrentTitle(idsForCurrentTitle,
 									sectionsMap), context);
 				}
 			}
@@ -997,11 +994,8 @@ public class Sections {
 	private static void replaceSectionsForTitle(String title,
 												Map<String, String> sectionsMapForCurrentTitle,
 												UserContext context) {
-
-		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
-
 		String newArticleText = getNewArticleText(title, sectionsMapForCurrentTitle, context);
-		wikiConnector.writeArticleToWikiPersistence(title, newArticleText, context);
+		Environment.getInstance().getWikiConnector().writeArticleToWikiPersistence(title, newArticleText, context);
 	}
 
 	private static String getNewArticleText(

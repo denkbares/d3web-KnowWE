@@ -252,7 +252,13 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 			RenderResult renderResult = new RenderResult(userContext.getRequest());
 
-			if (article != null) {
+			// this can happen, if the article was registered to the manager in a compilation frame opened
+			// before the call of this preTranslate method, e.g. in an action with Sections#replaceSection(...).
+			// in this case, the article will not be compiled at this moment and rendering does not make sense and can
+			// cause exceptions.
+			boolean isQueuedForCompilation = ((DefaultArticleManager) articleManager).isQueuedArticle(article);
+
+			if (article != null && !isQueuedForCompilation) {
 				List<PageAppendHandler> appendHandlers = Environment.getInstance()
 						.getAppendHandlers();
 
@@ -300,16 +306,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			if (!Environment.getInstance().getWikiConnector().userCanEditArticle(title, httpRequest)) {
 				throw new UpdateNotAllowedException();
 			}
-			ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
-			articleManager.open();
-			try {
-				//deleteRenamedArticles(title);
-				article = Environment.getInstance().buildAndRegisterArticle(
-						Environment.DEFAULT_WEB, title, content);
-			}
-			finally {
-				articleManager.commit();
-			}
+			article = Environment.getInstance().buildAndRegisterArticle(Environment.DEFAULT_WEB, title, content);
 			Compilers.getCompilerManager(Environment.DEFAULT_WEB).awaitTermination();
 			if (fullParse) EventManager.getInstance().fireEvent(new FullParseFinishedEvent());
 		}

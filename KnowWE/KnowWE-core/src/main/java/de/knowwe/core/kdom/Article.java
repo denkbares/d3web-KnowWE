@@ -61,10 +61,6 @@ public class Article {
 
 	private final boolean fullParse;
 
-	private static String getArticleKey(String web, String title) {
-		return web + title;
-	}
-
 	public static Article createArticle(String text, String title, String web) {
 		return createArticle(text, title, web, false);
 	}

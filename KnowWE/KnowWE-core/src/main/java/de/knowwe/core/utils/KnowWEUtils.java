@@ -62,7 +62,9 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.core.wikiConnector.WikiAttachmentInfo;
 import de.knowwe.core.wikiConnector.WikiConnector;
+import de.knowwe.core.wikiConnector.WikiObjectInfo;
 import de.knowwe.core.wikiConnector.WikiPageInfo;
 import de.knowwe.plugin.Plugins;
 import de.knowwe.plugin.StatusProvider;
@@ -728,18 +730,27 @@ public class KnowWEUtils {
 		return cookie;
 	}
 
-	public static int getVersionAtDate(String title, Date date) throws IOException {
-		List<WikiPageInfo> articleHistory = Environment.getInstance()
-				.getWikiConnector()
-				.getArticleHistory(title);
-		return articleHistory.stream()
+	public static int getArticleVersionAtDate(String title, Date date) throws IOException {
+		WikiPageInfo articleVersionInfoAtDate = getArticleVersionInfoAtDate(title, date);
+		return articleVersionInfoAtDate == null ? -1 : articleVersionInfoAtDate.getVersion();
+	}
+
+	public static WikiPageInfo getArticleVersionInfoAtDate(String title, Date date) throws IOException {
+		return getObjectInfoAtDate(Environment.getInstance().getWikiConnector().getArticleHistory(title), title, date);
+	}
+
+	public static WikiAttachmentInfo getAttachmentVersionInfoAtDate(String title, Date date) throws IOException {
+		return getObjectInfoAtDate(Environment.getInstance().getWikiConnector().getAttachmentHistory(title), title, date);
+	}
+
+	private static <T extends WikiObjectInfo> T getObjectInfoAtDate(List<T> objectHistory, String name, Date date) throws IOException {
+		return objectHistory.stream()
 				// get the first that was safe before the given date
 				.filter(pageInfo -> pageInfo.getSaveDate().before(date))
 				.findFirst()
-				.map(WikiPageInfo::getVersion)
-						// if non was found, get the first version (last in the list)
-				.orElseGet(() -> articleHistory.isEmpty() ? -1
-						: articleHistory.get(articleHistory.size() - 1).getVersion());
+				// if non was found, get the first version (last in the list)
+				.orElseGet(() -> objectHistory.isEmpty() ? null
+						: objectHistory.get(objectHistory.size() - 1));
 	}
 
 	/**
