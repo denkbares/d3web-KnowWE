@@ -22,8 +22,11 @@ package de.knowwe.rdf2go.sparql;
 
 import java.util.regex.Pattern;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.AsynchronRenderer;
@@ -70,13 +73,18 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		PackageManager.addPackageAnnotation(m);
 	}
 
-	public SparqlMarkupType(DefaultMarkup markup) {
-		super(markup);
-		this.setRenderer(new Rdf2GoCoreCheckRenderer());
-	}
-
 	public SparqlMarkupType() {
-		this(m);
+		super(m);
+		this.setRenderer(new SparqlMarkupRenderer());
 	}
 
+	private static class SparqlMarkupRenderer extends Rdf2GoCoreCheckRenderer {
+		@Override
+		protected String getTitleName(Section<?> section, UserContext user) {
+			String title = super.getTitleName(section, user);
+			String name = getAnnotation(section, NAME);
+			if (!Strings.isBlank(name)) title += ": " + name;
+			return title;
+		}
+	}
 }

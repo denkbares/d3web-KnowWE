@@ -50,7 +50,7 @@ import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.sparql.utils.SparqlRenderResult;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
-public class SparqlMarkupRenderer implements Renderer {
+public class SparqlContentRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> sec, UserContext user, RenderResult result) {
