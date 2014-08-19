@@ -330,4 +330,12 @@
 		<parameter id="scope" value="DiaFluxType" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="PageAppendHandler" id="DiaFluxResourceAppender">
+		<parameter id="class" value="de.knowwe.diaflux.DiaFluxResourceAppender" />
+		<parameter id="name" value="DiaFluxResourceAppender" />
+		<parameter id="description" value="Pre appends DiaFlux resources to article" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 </plugin>

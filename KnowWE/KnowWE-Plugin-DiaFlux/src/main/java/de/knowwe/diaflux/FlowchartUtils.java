@@ -22,7 +22,6 @@ package de.knowwe.diaflux;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.WeakHashMap;
@@ -71,8 +70,7 @@ public class FlowchartUtils {
 			"cc/flow/flowchart.css", "cc/flow/guard.css", "cc/flow/node.css",
 			"cc/flow/rule.css" };
 
-	private static final HashMap<String, WeakHashMap<Flow, HashMap<String, Object>>> flowPropertyStore =
-			new HashMap<String, WeakHashMap<Flow, HashMap<String, Object>>>();
+	private static final HashMap<String, WeakHashMap<Flow, HashMap<String, Object>>> flowPropertyStore = new HashMap<>();
 
 	private FlowchartUtils() {
 	}
@@ -96,7 +94,7 @@ public class FlowchartUtils {
 	private static HashMap<String, Object> getPropertyMapForFlow(String web, Flow flow) {
 		HashMap<String, Object> propertyMapForFlow = getFlowPropertyMapForWeb(web).get(flow);
 		if (propertyMapForFlow == null) {
-			propertyMapForFlow = new HashMap<String, Object>();
+			propertyMapForFlow = new HashMap<>();
 			getFlowPropertyMapForWeb(web).put(flow, propertyMapForFlow);
 		}
 		return propertyMapForFlow;
@@ -105,28 +103,22 @@ public class FlowchartUtils {
 	private static WeakHashMap<Flow, HashMap<String, Object>> getFlowPropertyMapForWeb(String web) {
 		WeakHashMap<Flow, HashMap<String, Object>> webMap = flowPropertyStore.get(web);
 		if (webMap == null) {
-			webMap = new WeakHashMap<Flow, HashMap<String, Object>>();
+			webMap = new WeakHashMap<>();
 			flowPropertyStore.put(web, webMap);
 		}
 		return webMap;
 	}
 
-	public static String createFlowchartRenderer(Section<FlowchartType> flowSection, UserContext user) {
-		return createFlowchartRenderer(flowSection, user, DIAFLUX_SCOPE);
+	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, boolean insertResources) {
+		return createFlowchartRenderer(section, user, FlowchartType.getFlowchartName(section), DIAFLUX_SCOPE, insertResources);
 	}
 
-	private static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String scope) {
-		return createFlowchartRenderer(section, user, FlowchartType.getFlowchartName(section),
-				scope, isInsertRessources(section));
-	}
-
-	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String parentId, String scope, boolean insertRessources) {
+	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String parentId, String scope, boolean insertResources) {
 
 		if (user.getWeb() == null) return "";
 		parentId = escapeHtmlId(parentId);
 
-		RenderResult result = prepareFlowchartRenderer(user, parentId, section, scope,
-				insertRessources);
+		RenderResult result = prepareFlowchartRenderer(section, parentId, user, scope, insertResources);
 		result.appendHtml("<script>\n");
 		result.appendHtml("if ($('" + parentId + "').getElements('.FlowchartGroup').length == 0)\n");
 		appendLoadFlowchartScript(section, parentId, result);
@@ -142,16 +134,13 @@ public class FlowchartUtils {
 	/**
 	 * Prepares a div to render a flowchart in later on using JS.
 	 *
-	 * @return
 	 * @created 20.03.2013
 	 */
-	public static RenderResult prepareFlowchartRenderer(UserContext user, String parentId, Section<FlowchartType> flowchartSection, String scope, boolean insertRessources) {
+	public static RenderResult prepareFlowchartRenderer(Section<FlowchartType> flowchartSection, String parentId, UserContext user, String scope, boolean insertRessources) {
 		RenderResult result = new RenderResult(user);
 		result.appendHtml("<div class='flowchartContainer'>");
 		if (insertRessources) {
-			insertDiafluxRessources(result, user, flowchartSection.getID());
-			addDisplayPlugins(result, user, scope);
-			result.append("\n");
+			insertDiaFluxResources(flowchartSection, user, scope, result);
 		}
 		result.appendHtml("<div id='" + parentId + "'>");
 		result.appendHtml("</div></div>\n");
@@ -169,7 +158,11 @@ public class FlowchartUtils {
 		return text;
 	}
 
-	public static void insertDiafluxRessources(RenderResult result, UserContext user, String flowchartSectionID) {
+	public static void insertDiaFluxResources(Section<FlowchartType> flowchart, UserContext user, RenderResult result) {
+		insertDiaFluxResources(flowchart, user, DIAFLUX_SCOPE, result);
+	}
+
+	public static void insertDiaFluxResources(Section<FlowchartType> flowchart, UserContext user, String scope, RenderResult result) {
 
 		for (String cssfile : CSS) {
 			result.appendHtml("<link rel='stylesheet' type='text/css' href='" + cssfile + "' />");
@@ -179,25 +172,15 @@ public class FlowchartUtils {
 			result.appendHtml("<script src='" + jsfile + "' type='text/javascript'></script>");
 		}
 
-		result.appendHtml("<data id='referredKBInfo' style='display:none;'>");
-		result.appendHtml(JSPHelper.getReferrdInfoObjectsAsXML(user.getWeb(), flowchartSectionID));
-		result.appendHtml("</data>\n");
+		result.appendHtml("<div id='referredKBInfo' style='display:none;'>");
+		result.appendHtml(JSPHelper.getReferrdInfoObjectsAsXML(user.getWeb(), flowchart.getID()));
+		result.appendHtml("\n</div>\n");
 		result.appendHtml("<script>KBInfo._updateCache($('referredKBInfo'));</script>");
+
+		addDisplayPlugins(result, user, scope);
+		result.append("\n");
 	}
 
-	private static boolean isInsertRessources(Section<FlowchartType> section) {
-		// load JS and CSS only for first Flowchart section (not
-		// DiaFluxSection!) in page
-		return Sections.findSuccessorsOfType(section.getArticle().getRootSection(),
-				FlowchartType.class).indexOf(
-				section) <= 0;
-	}
-
-	/**
-	 * @param result
-	 * @param user
-	 * @created 26.05.2011
-	 */
 	public static void addDisplayPlugins(RenderResult result, UserContext user, String scope) {
 		Extension[] extensions = JPFPluginManager.getInstance().getExtensions(
 				DiaFluxDisplayEnhancement.PLUGIN_ID, DiaFluxDisplayEnhancement.EXTENSION_POINT_ID);
@@ -253,15 +236,13 @@ public class FlowchartUtils {
 	 * Returns the first flowchart in the given web with the provided name
 	 *
 	 * @param flowName The name of the flowchart
-	 * @return
 	 * @created 02.03.2011
 	 */
 	public static Section<FlowchartType> findFlowchartSection(String web, String flowName) {
 		ArticleManager manager = Environment.getInstance().getArticleManager(web);
 
-		for (Iterator<Article> iterator = manager.getArticles().iterator(); iterator.hasNext(); ) {
-			Article article = iterator.next();
-			List<Section<FlowchartType>> matches = new LinkedList<Section<FlowchartType>>();
+		for (Article article : manager.getArticles()) {
+			List<Section<FlowchartType>> matches = new LinkedList<>();
 			Sections.findSuccessorsOfType(article.getRootSection(), FlowchartType.class, matches);
 			for (Section<FlowchartType> match : matches) {
 				if (flowName.equalsIgnoreCase(FlowchartType.getFlowchartName(match))) {
@@ -278,9 +259,6 @@ public class FlowchartUtils {
 	/**
 	 * Returns the corresponding Flowchart section of the given name, that is called by the provided section.
 	 *
-	 * @param section
-	 * @param calledFlowName
-	 * @return
 	 * @created 11.04.2012
 	 */
 	public static Section<FlowchartType> findFlowchartSection(
@@ -289,7 +267,7 @@ public class FlowchartUtils {
 		Collection<D3webCompiler> compilers = Compilers.getCompilers(section, D3webCompiler.class);
 
 		// get all sections compiled by these articles
-		Collection<Section<FlowchartType>> matches = new ArrayList<Section<FlowchartType>>();
+		Collection<Section<FlowchartType>> matches = new ArrayList<>();
 		outer:
 		for (D3webCompiler compiler : compilers) {
 			PackageManager packageManager = compiler.getPackageManager();
@@ -317,8 +295,6 @@ public class FlowchartUtils {
 	/**
 	 * Return the first KB, that is compiling the given flowchart, of none, if it is not compiled by any article.
 	 *
-	 * @param s
-	 * @return
 	 * @created 11.04.2012
 	 */
 	public static KnowledgeBase getKB(Section<DiaFluxType> s) {
@@ -337,9 +313,8 @@ public class FlowchartUtils {
 		String id = AbstractXMLType.getAttributeMapFor(node).get("fcid");
 		String flowName = FlowchartType.getFlowchartName(flowType);
 		Flow flow = DiaFluxUtils.findFlow(kb, flowName);
-		DiaFluxElement nodeObj = DiaFluxUtils.findObjectById(flow, id);
 
-		return nodeObj;
+		return DiaFluxUtils.findObjectById(flow, id);
 	}
 
 	/**
@@ -351,11 +326,8 @@ public class FlowchartUtils {
 		D3webCompiler compiler = Compilers.getCompiler(node, D3webCompiler.class);
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
 		Session session = SessionProvider.getSession(user, kb);
-
 		DiaFluxElement el = FlowchartUtils.findObject(node, kb);
-
-		State state = DiaFluxTrace.getState(el, session);
-		return state;
+		return DiaFluxTrace.getState(el, session);
 	}
 
 }

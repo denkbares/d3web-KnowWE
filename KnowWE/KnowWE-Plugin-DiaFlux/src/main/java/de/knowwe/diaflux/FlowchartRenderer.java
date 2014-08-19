@@ -53,7 +53,7 @@ public class FlowchartRenderer implements Renderer {
 				+ "KNOWWE.helper.observer.subscribe('beforeflowchartrendered', fn);";
 		string.appendHtmlElement("script", script);
 
-		string.append(FlowchartUtils.createFlowchartRenderer(sec, user));
+		string.append(FlowchartUtils.createFlowchartRenderer(sec, user, false));
 	}
 
 }

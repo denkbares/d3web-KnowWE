@@ -206,18 +206,18 @@ public class FlowchartDiffProvider implements DiffProvider {
 	}
 
 	private static Collection<Pair<Section<FlowchartType>, Section<FlowchartType>>> alignFlows(List<Section<FlowchartType>> leftFlows, List<Section<FlowchartType>> rightFlows) {
-		List<Pair<Section<FlowchartType>, Section<FlowchartType>>> alignments = new LinkedList<Pair<Section<FlowchartType>, Section<FlowchartType>>>();
+		List<Pair<Section<FlowchartType>, Section<FlowchartType>>> alignments = new LinkedList<>();
 
 		for (Section<FlowchartType> leftFlow : leftFlows) {
 			Section<FlowchartType> rightFlow = LoadFlowchartAction.findFlowInDifferentVersion(
 					leftFlow, rightFlows);
 
 			if (rightFlow != null) {
-				alignments.add(createPair(leftFlow, rightFlow));
+				alignments.add(new Pair<>(leftFlow, rightFlow));
 
 			}
 			else {
-				alignments.add(createPair(leftFlow, null));
+				alignments.add(new Pair<>(leftFlow, null));
 			}
 		}
 
@@ -240,13 +240,13 @@ public class FlowchartDiffProvider implements DiffProvider {
 					if (pair.getB() != null) index++;
 
 					if (index == i) {
-						alignments.add(index, createPair(null, rightFlow));
+						alignments.add(index, new Pair<>(null, rightFlow));
 						continue nextFlow;
 					}
 
 				}
 				// we reached the end of the alignments, so just add it
-				alignments.add(createPair(null, rightFlow));
+				alignments.add(new Pair<>(null, rightFlow));
 
 			}
 			// other this flow must have been found before, so do nothing
@@ -254,11 +254,6 @@ public class FlowchartDiffProvider implements DiffProvider {
 		}
 
 		return alignments;
-	}
-
-	private static Pair<Section<FlowchartType>, Section<FlowchartType>> createPair(Section<FlowchartType> leftFlow, Section<FlowchartType> rightFlow) {
-		return new Pair<Section<FlowchartType>, Section<FlowchartType>>(leftFlow,
-				rightFlow);
 	}
 
 	private static boolean compareFlows(Section<FlowchartType> left, Section<FlowchartType> right) {
@@ -351,7 +346,7 @@ public class FlowchartDiffProvider implements DiffProvider {
 					1, 2 };
 
 			MessageFormat fmt = new MessageFormat("");
-			fmt.setLocale( Preferences.getLocale(m_context));
+			fmt.setLocale(Preferences.getLocale(m_context));
 			ChoiceFormat cfmt = new ChoiceFormat(choiceLimits, choiceString);
 			fmt.applyPattern(type);
 			Format[] formats = {

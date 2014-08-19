@@ -52,8 +52,7 @@ public class JSPHelper {
 	private static Collection<Identifier> getAllMatches(String className, String web, String flowchartSectionID) {
 		return SearchInfoObjects.searchObjects(
 				Environment.getInstance(),
-				web,
-				null, className, 65535, flowchartSectionID);
+				web, null, className, 65535, flowchartSectionID);
 	}
 
 	public String getArticleIDsAsArray(String flowchartSectionID) {

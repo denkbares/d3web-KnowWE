@@ -46,7 +46,7 @@ public interface PageAppendHandler {
 	 * @param user
 	 * @param result
 	 */
-	public void append(String web, String title, UserContext user, RenderResult result);
+	void append(String web, String title, UserContext user, RenderResult result);
 
 	/**
 	 * Specifies whether the content should be inserted at the top/beginning
@@ -55,6 +55,8 @@ public interface PageAppendHandler {
 	 * @created 17.08.2010
 	 * @return
 	 */
-	public boolean isPre();
+	default boolean isPre() {
+		return false;
+	}
 
 }
