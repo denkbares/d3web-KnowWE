@@ -144,7 +144,7 @@ public final class Messages {
 	 * @created 01.12.2011
 	 */
 	public static Message error(Exception e) {
-		return new Message(Message.Type.ERROR, e.getMessage());
+		return error(e.getMessage());
 	}
 
 	/**
@@ -537,7 +537,7 @@ public final class Messages {
 
 	/**
 	 * Stores a single Message for the given Section and source.
-	 * <p/>
+	 * <p>
 	 * <b>ATTENTION: For this method applies the same as for the method
 	 * KnowWEUtils#storeMessages(Section, Class, Class, Collection) . It can
 	 * only be used once for the given set of parameters. If you use this method
@@ -561,7 +561,7 @@ public final class Messages {
 	/**
 	 * Stores a single Message for the given Section and source independent from
 	 * any compiler.
-	 * <p/>
+	 * <p>
 	 * <b>ATTENTION: For this method applies the same as for the method
 	 * KnowWEUtils#storeMessages(Section, Class, Class, Collection) . It can
 	 * only be used once for the given set of parameters. If you use this method
@@ -581,7 +581,7 @@ public final class Messages {
 	 * Stores the given Collection of {@link Message}s <tt>m</tt> from the Class
 	 * <tt>source</tt> for the Article <tt>article</tt> and the Section
 	 * <tt>s</tt>.
-	 * <p/>
+	 * <p>
 	 * <b>ATTENTION: This method can only be used once for each article,
 	 * section, and source. If you use this Method a second time with the same
 	 * parameters, the first Collection gets overwritten!</b>
@@ -661,7 +661,7 @@ public final class Messages {
 	/**
 	 * Stores the given Collection of {@link Message}s for the given Class in
 	 * the given Section independently from any {@link Compiler}s.
-	 * <p/>
+	 * <p>
 	 * <b>ATTENTION: This method can only be used once for each article,††
 	 * section, and source. If you use this Method a second time with the same
 	 * parameters, the first Collection gets overwritten!</b>

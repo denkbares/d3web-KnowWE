@@ -71,7 +71,7 @@ public class UserContextUtil {
 						StringBuilder bob = new StringBuilder();
 
 						while ((line = br.readLine()) != null) {
-							bob.append(line.toString()).append("\n");
+							bob.append(line).append("\n");
 						}
 
 						parameters.put("data", bob.toString());
