@@ -458,7 +458,7 @@ Flowchart.zoomToFit = function(sectionId) {
 Flowchart.flowsToFit = [];
 
 jq$(window).resize(function() {
-	KNOWWE.helper.waitForFinalEvent(function() {
+	jq$.waitForFinalEvent(function() {
 		jq$.each(Flowchart.flowsToFit, function(key, sectionId) {
 			Flowchart.zoomToFit(sectionId);
 		});
