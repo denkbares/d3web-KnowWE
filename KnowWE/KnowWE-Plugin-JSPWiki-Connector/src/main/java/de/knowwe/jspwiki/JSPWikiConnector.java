@@ -745,23 +745,21 @@ public class JSPWikiConnector implements WikiConnector {
 	@Override
 	public boolean writeArticleToWikiPersistence(String title, String content, UserContext user) {
 		try {
-			HttpServletRequest req = user.getRequest();
-			WikiContext context = engine.createContext(req, WikiContext.EDIT);
-			context.setPage(engine.getPage(title));
-
-			WikiPage page = context.getPage();
+			WikiContext context = engine.createContext(null, WikiContext.EDIT);
+			WikiPage page = engine.getPage(title);
 			page.setAuthor(context.getCurrentUser().getName());
 			String changeNote = user.getParameter(Attributes.CHANGE_NOTE);
 			if (changeNote != null) {
 				page.setAttribute(WikiPage.CHANGENOTE, changeNote);
 			}
+			context.setPage(page);
+			context.setRealPage(page);
 
 			engine.saveText(context, content);
-			// engine.saveText(map.getContext(), text);
 			return true;
 		}
 		catch (WikiException e) {
-			e.printStackTrace();
+			Log.severe("Failed to write article changes to wiki persistence", e);
 			return false;
 		}
 	}
