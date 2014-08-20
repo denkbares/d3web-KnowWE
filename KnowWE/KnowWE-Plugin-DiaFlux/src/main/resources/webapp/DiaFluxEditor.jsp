@@ -187,11 +187,11 @@
 	<ul class="toolbar">
 		<li class="icon" id="saveClose" title="Save and Close Editor"
 			style="position:relative; background-image:url(cc/image/toolbar/saveclose.png);width:80px"><span
-				style="position:absolute;left: 45px;top:12px;">Save</span></li>
+				style="position:absolute;left: 45px;top:12px;">Save</span>
 		<!--li class="icon" id="save" title="Save flowchart" style="background-image:url(cc/image/toolbar/save_flowchart_32.png);"></li-->
 		<li class="icon" id="cancel" title="Cancel"
 			style="position:relative; background-image:url(cc/image/toolbar/cancel.png);;width:80px"><span
-				style="position:absolute;left:38px;top:12px;">Cancel</span></li>
+				style="position:absolute;left:38px;top:12px;">Cancel</span>
 	</ul>
 	<div class="propertyArea">
 		<div>
@@ -203,20 +203,20 @@
 		</div>
 	</div>
 	<ul class="toolbar">
-		<li class="icon" id="undo" title="Undo" style="background-image:url(cc/image/toolbar/undo.png);"></li>
-		<li class="icon" id="redo" title="Redo" style="background-image:url(cc/image/toolbar/redo.png);"></li>
+		<li class="icon" id="undo" title="Undo" style="background-image:url(cc/image/toolbar/undo.png);">
+		<li class="icon" id="redo" title="Redo" style="background-image:url(cc/image/toolbar/redo.png);">
 	</ul>
 	<ul class="toolbar">
 		<li class="icon NodePrototype" id="decision_prototype" title="Action node"
-			style="background-image:url(cc/image/node_decorators/decision_32.png);"></li>
+			style="background-image:url(cc/image/node_decorators/decision_32.png);">
 		<li class="icon NodePrototype" id="start_prototype" title="Start node"
-			style="background-image:url(cc/image/node_decorators/start_32.png);"></li>
+			style="background-image:url(cc/image/node_decorators/start_32.png);">
 		<li class="icon NodePrototype" id="exit_prototype" title="Exit node"
-			style="background-image:url(cc/image/node_decorators/exit_32.png);"></li>
+			style="background-image:url(cc/image/node_decorators/exit_32.png);">
 		<li class="icon NodePrototype" id="comment_prototype" title="Comment node"
-			style="background-image:url(cc/image/node_decorators/comment_32.png);"></li>
+			style="background-image:url(cc/image/node_decorators/comment_32.png);">
 		<li class="icon NodePrototype" id="snapshot_prototype" title="Snapshot node"
-			style="background-image:url(cc/image/node_decorators/snapshot_32.png);"></li>
+			style="background-image:url(cc/image/node_decorators/snapshot_32.png);">
 	</ul>
 	<div class="propertyArea">
 		<div>
