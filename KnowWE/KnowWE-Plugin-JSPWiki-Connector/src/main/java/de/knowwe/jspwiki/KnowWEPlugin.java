@@ -229,9 +229,18 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			}
 		}
 
+		int version = WikiPageProvider.LATEST_VERSION;
+		String versionString = userContext.getParameter("version");
+		if (versionString != null) {
+			try {
+				version = Integer.parseInt(versionString);
+			}
+			catch (NumberFormatException ignore) {
+			}
+		}
 		WikiEngine engine = wikiContext.getEngine();
 		if (engine != null) {
-			String pureText = engine.getPureText(title, WikiPageProvider.LATEST_VERSION);
+			String pureText = engine.getPureText(title, version);
 			if (!content.equals(pureText)) return content;
 		}
 		ArticleManager articleManager =
@@ -247,7 +256,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		try {
 			String stringRaw = (String) httpRequest.getAttribute("renderresult" + title);
 			if (stringRaw != null) return stringRaw;
-
 			Article article = updateArticle(wikiContext, content);
 
 			RenderResult renderResult = new RenderResult(userContext.getRequest());
@@ -378,7 +386,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				WikiPage wp = (WikiPage) o;
 				String content = engine.getPureText(wp.getName(), wp.getVersion());
 				Article article = Article.createArticle(content, wp.getName(), Environment.DEFAULT_WEB);
-				((DefaultArticleManager)articleManager).queueArticle(article);
+				((DefaultArticleManager) articleManager).queueArticle(article);
 			});
 			Log.info("Sectionized all articles in " + (System.currentTimeMillis() - start) + "ms");
 		}
