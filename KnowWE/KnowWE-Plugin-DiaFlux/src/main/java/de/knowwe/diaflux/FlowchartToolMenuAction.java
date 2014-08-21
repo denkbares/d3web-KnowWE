@@ -39,7 +39,6 @@ import de.knowwe.diaflux.type.NodeType;
 import de.knowwe.kdom.xml.AbstractXMLType;
 
 /**
- * 
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 10.10.2013
  */
@@ -66,7 +65,7 @@ public class FlowchartToolMenuAction extends GetToolMenuAction {
 				Section<FlowchartType> flowchart = Sections.findSuccessor(section,
 						FlowchartType.class);
 				if (flowchart == null) continue;
-				String name = AbstractXMLType.getAttributeMapFor(flowchart).get("name");
+				String name = DiaFluxType.getFlowchartName(section);
 				if (name.equals(flowname)) {
 					correctFlow = flowchart;
 					break;
