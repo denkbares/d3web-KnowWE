@@ -512,26 +512,51 @@ public class Rdf2GoCore {
 			TreeSet<Statement> sortedRemoveCache = new TreeSet<>();
 			if (verboseLog) sortedRemoveCache.addAll(removeCache);
 
-			// Hazard Filter:
-			// Since removing statements is expansive, we do not remove statements
-			// that are inserted again anyway.
-			// Since inserting a statement is cheap and the fact that a statement in
-			// the remove cache has not necessarily been committed to the model
-			// before (e.g. compiling the same sections multiple times before the
-			// first commit), we do not remove statements from the insert cache.
-			// Duplicate statements are ignored by the model anyway.
-			Collection<Statement> actuallyAdded = new TreeSet<>(insertCache);
-			actuallyAdded.removeAll(removeCache);
+            /*
+			Hazard Filter:
+			Since removing statements is expansive, we do not remove statements
+			that are inserted again anyway.
+			Since inserting a statement is cheap and the fact that a statement in
+			the remove cache has not necessarily been committed to the model
+			before (e.g. compiling the same sections multiple times before the
+			first commit), we do not remove statements from the insert cache.
+			Duplicate statements are ignored by the model anyway.
+			*/
+
 			removeCache.removeAll(insertCache);
 
+
+            /*
+            Do actual changes on the model
+             */
 			long startRemove = System.currentTimeMillis();
 			model.removeAll(removeCache.iterator());
-			EventManager.getInstance().fireEvent(new RemoveStatementsEvent(removeCache, sortedRemoveCache, this));
-			if (verboseLog) logStatements(sortedRemoveCache, startRemove, "Removed statements");
 
 			long startInsert = System.currentTimeMillis();
 			model.addAll(insertCache.iterator());
-			EventManager.getInstance().fireEvent(new InsertStatementsEvent(actuallyAdded, insertCache, this));
+
+
+            /*
+            Fire events
+             */
+            boolean removedStatements = false;
+            if(removeCache.size() > 0) {
+                EventManager.getInstance().fireEvent(new RemoveStatementsEvent(Collections.unmodifiableCollection(removeCache), this));
+                if (verboseLog) logStatements(sortedRemoveCache, startRemove, "Removed statements");
+                removedStatements = true;
+            }
+            boolean insertedStatements = false;
+            if(insertCache.size() > 0) {
+                EventManager.getInstance().fireEvent(new InsertStatementsEvent(Collections.unmodifiableCollection(removeCache), Collections.unmodifiableCollection(insertCache), this));
+                insertedStatements = true;
+            }
+            if(removedStatements || insertedStatements) {
+                EventManager.getInstance().fireEvent(new ChangedStatementsEvent(this));
+            }
+
+            /*
+            Logging
+             */
 			if (verboseLog) {
 				logStatements(new TreeSet<>(insertCache), startInsert,
 						"Inserted statements:\n");
@@ -544,6 +569,9 @@ public class Rdf2GoCore {
 						+ (System.currentTimeMillis() - startRemove) + "ms.");
 			}
 
+            /*
+            Reset caches
+             */
 			removeCache = new HashSet<>();
 			insertCache = new HashSet<>();
 		}
