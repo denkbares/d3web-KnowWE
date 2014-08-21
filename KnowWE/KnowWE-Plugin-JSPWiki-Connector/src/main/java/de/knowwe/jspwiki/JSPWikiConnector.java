@@ -745,8 +745,8 @@ public class JSPWikiConnector implements WikiConnector {
 	@Override
 	public boolean writeArticleToWikiPersistence(String title, String content, UserContext user) {
 		try {
-			WikiContext context = engine.createContext(null, WikiContext.EDIT);
 			WikiPage page = engine.getPage(title);
+			WikiContext context = engine.createContext(user.getRequest(), WikiContext.EDIT);
 			page.setAuthor(context.getCurrentUser().getName());
 			String changeNote = user.getParameter(Attributes.CHANGE_NOTE);
 			if (changeNote != null) {
