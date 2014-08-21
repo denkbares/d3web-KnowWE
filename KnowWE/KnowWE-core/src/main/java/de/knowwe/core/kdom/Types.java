@@ -118,15 +118,15 @@ public class Types {
 	public static boolean replaceType(Type typeHierarchy, Class<? extends Type> c, Type newType) {
 		List<Type> childrenTypes = typeHierarchy.getChildrenTypes();
 		int index = -1;
+        boolean found = false;
 		for (Type child : childrenTypes) {
 			if (c.isInstance(child)) {
 				index = childrenTypes.indexOf(child);
 				// we only replace first occurrence
+                found = true;
 				break;
 			}
-			else {
-				return replaceType(child, c, newType);
-			}
+
 		}
 		if (index != -1) {
 			// some overhead to actually replace type in children list
@@ -138,9 +138,16 @@ public class Types {
 			for (Type type : listCopy) {
 				typeHierarchy.addChildType(type);
 			}
-			return true;
-		}
-		return false;
+		}else {
+
+            for (Type child : childrenTypes) {
+                if(replaceType(child, c, newType)) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+		return found;
 	}
 
 	/**
