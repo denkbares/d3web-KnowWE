@@ -81,7 +81,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		Identifier termIdentifier = ObjectInfoRenderer.getTermIdentifier(userContext, section);
 		renderContent(termIdentifier, userContext, content);
 
-		Section<TagHandlerTypeContent> tagNameSection = Sections.findSuccessor(
+		Section<TagHandlerTypeContent> tagNameSection = Sections.successor(
 				section, TagHandlerTypeContent.class);
 		String sectionID = section.getID();
 		ToolSet tools = ToolUtils.getTools(tagNameSection, userContext);

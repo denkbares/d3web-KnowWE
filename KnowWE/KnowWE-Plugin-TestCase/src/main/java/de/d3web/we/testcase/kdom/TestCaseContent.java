@@ -82,7 +82,7 @@ public class TestCaseContent extends AbstractType {
 
 				// Get all SequentialTestCase sections
 				List<Section<SequentialTestCase>> stcSections = new LinkedList<Section<SequentialTestCase>>();
-				Sections.findSuccessorsOfType(s, SequentialTestCase.class, stcSections);
+				Sections.successors(s, SequentialTestCase.class, stcSections);
 
 				// Process each SequentialTestCase section
 				for (Section<SequentialTestCase> stcSection : stcSections) {
@@ -108,14 +108,14 @@ public class TestCaseContent extends AbstractType {
 					testSuite.setKb(kb);
 					testSuite.setRepository(repository);
 					List<TestCaseProvider> providers = new LinkedList<TestCaseProvider>();
-					Section<DefaultMarkupType> markupSection = Sections.findAncestorOfType(s,
+					Section<DefaultMarkupType> markupSection = Sections.ancestor(s,
 							DefaultMarkupType.class);
 					for (de.d3web.empiricaltesting.SequentialTestCase stc : testSuite.getRepository()) {
 						providers.add(new SingleTestCaseProvider(compiler, markupSection,
 								new STCWrapper(stc), s.getArticle().getTitle() + "/"
 										+ stc.getName()));
 					}
-					Section<DefaultMarkupType> defaultMarkupSection = Sections.findAncestorOfType(
+					Section<DefaultMarkupType> defaultMarkupSection = Sections.ancestor(
 							s, DefaultMarkupType.class);
 					TestCaseUtils.storeTestCaseProviderStorage(compiler, defaultMarkupSection,
 							new DefaultTestCaseStorage(providers));
@@ -136,7 +136,7 @@ public class TestCaseContent extends AbstractType {
 		}
 
 		private void createSTCName(Section<SequentialTestCase> stcSection, int index, de.d3web.empiricaltesting.SequentialTestCase stc, List<Message> messages) {
-			Section<SequentialTestCaseName> stcName = Sections.findSuccessor(stcSection,
+			Section<SequentialTestCaseName> stcName = Sections.successor(stcSection,
 					SequentialTestCaseName.class);
 			if (stcName == null) {
 				messages.add(Messages.error("There is no name for STC" + index));
@@ -150,7 +150,7 @@ public class TestCaseContent extends AbstractType {
 
 			// Get all RatedTestCase sections
 			List<Section<RatedTestCase>> rtcSections = new LinkedList<Section<RatedTestCase>>();
-			Sections.findSuccessorsOfType(stcSection, RatedTestCase.class, rtcSections);
+			Sections.successors(stcSection, RatedTestCase.class, rtcSections);
 
 			// Process each RatedTestCase section
 			for (Section<RatedTestCase> rtcSection : rtcSections) {
@@ -180,13 +180,13 @@ public class TestCaseContent extends AbstractType {
 
 			// Get all Finding sections
 			List<Section<RatedFinding>> findingSections = new LinkedList<Section<RatedFinding>>();
-			Sections.findSuccessorsOfType(rtcSection, RatedFinding.class, findingSections);
+			Sections.successors(rtcSection, RatedFinding.class, findingSections);
 
 			// Process each Finding section
 			for (Section<RatedFinding> findingSection : findingSections) {
 
 				// Get the QuestionReference section
-				Section<QuestionReference> questionSection = Sections.findSuccessor(findingSection,
+				Section<QuestionReference> questionSection = Sections.successor(findingSection,
 						QuestionReference.class);
 
 				// Get the real Question
@@ -206,7 +206,7 @@ public class TestCaseContent extends AbstractType {
 						// Check if the question is a QuestionNum
 						if (question instanceof QuestionNum) {
 
-							Section<Number> valueSection = Sections.findSuccessor(
+							Section<Number> valueSection = Sections.successor(
 									findingSection, Number.class);
 
 							if (valueSection == null) {
@@ -233,7 +233,7 @@ public class TestCaseContent extends AbstractType {
 						else {
 
 							// Get the value
-							Section<AnswerReference> valueSection = Sections.findSuccessor(
+							Section<AnswerReference> valueSection = Sections.successor(
 									findingSection, AnswerReference.class);
 
 							// Create error message if there is no value defined
@@ -276,7 +276,7 @@ public class TestCaseContent extends AbstractType {
 		 */
 		private void setTimeStamp(Section<RatedTestCase> rtcSection, de.d3web.empiricaltesting.RatedTestCase rtc) {
 
-			Section<TimeStampType> timestamp = Sections.findSuccessor(rtcSection,
+			Section<TimeStampType> timestamp = Sections.successor(rtcSection,
 					TimeStampType.class);
 
 			if (timestamp == null) return;
@@ -294,13 +294,13 @@ public class TestCaseContent extends AbstractType {
 
 			// Get all Finding sections
 			List<Section<Finding>> findingSections = new LinkedList<Section<Finding>>();
-			Sections.findSuccessorsOfType(rtcSection, Finding.class, findingSections);
+			Sections.successors(rtcSection, Finding.class, findingSections);
 
 			// Process each Finding section
 			for (Section<Finding> findingSection : findingSections) {
 
 				// Get the QuestionReference section
-				Section<QuestionReference> questionSection = Sections.findSuccessor(findingSection,
+				Section<QuestionReference> questionSection = Sections.successor(findingSection,
 						QuestionReference.class);
 
 				// Get the real Question
@@ -318,7 +318,7 @@ public class TestCaseContent extends AbstractType {
 					else {
 
 						// Get the value
-						Section<AnswerReference> valueSection = Sections.findSuccessor(
+						Section<AnswerReference> valueSection = Sections.successor(
 								findingSection, AnswerReference.class);
 
 						// Create error message if there is no value defined
@@ -370,7 +370,7 @@ public class TestCaseContent extends AbstractType {
 
 			// Get all RatedSolution sections
 			List<Section<RatedSolution>> ratedSolutionSections = new LinkedList<Section<RatedSolution>>();
-			Sections.findSuccessorsOfType(rtcSection, RatedSolution.class, ratedSolutionSections);
+			Sections.successors(rtcSection, RatedSolution.class, ratedSolutionSections);
 
 			// Process each RatedSolution section
 			for (Section<RatedSolution> ratedSolutionSection : ratedSolutionSections) {
@@ -378,7 +378,7 @@ public class TestCaseContent extends AbstractType {
 				Solution solution = null;
 
 				// Get the SolutionReference section
-				Section<SolutionReference> solutionSection = Sections.findSuccessor(
+				Section<SolutionReference> solutionSection = Sections.successor(
 						ratedSolutionSection, SolutionReference.class);
 
 				// Get the real Solution
@@ -403,7 +403,7 @@ public class TestCaseContent extends AbstractType {
 				}
 
 				// Get the StateRating section
-				Section<StateRating> stateSection = Sections.findSuccessor(ratedSolutionSection,
+				Section<StateRating> stateSection = Sections.successor(ratedSolutionSection,
 						StateRating.class);
 
 				// Create a real StateRating

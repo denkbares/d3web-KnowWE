@@ -27,7 +27,7 @@ final class CellAnswerRef extends AnswerReference {
 
 		Section<? extends Type> headerCell = TestcaseTable.findHeaderCell(s);
 
-		Section<QuestionReference> questionRef = Sections.findSuccessor(headerCell,
+		Section<QuestionReference> questionRef = Sections.successor(headerCell,
 				QuestionReference.class);
 
 		return questionRef;

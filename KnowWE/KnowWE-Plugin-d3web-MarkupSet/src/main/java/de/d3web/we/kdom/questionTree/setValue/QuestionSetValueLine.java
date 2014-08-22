@@ -94,7 +94,7 @@ public class QuestionSetValueLine extends AbstractType {
 
 			Question q = section.get().getTermObject(compiler, section);
 
-			Section<AnswerReference> answerSec = Sections.findSuccessor(
+			Section<AnswerReference> answerSec = Sections.successor(
 					section.getParent(), AnswerReference.class);
 
 			String answerName = answerSec.get().getTermName(answerSec);
@@ -192,7 +192,7 @@ public class QuestionSetValueLine extends AbstractType {
 
 			@Override
 			public Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s) {
-				return Sections.findSuccessor(s.getParent().getParent(),
+				return Sections.successor(s.getParent().getParent(),
 						QuestionReference.class);
 			}
 

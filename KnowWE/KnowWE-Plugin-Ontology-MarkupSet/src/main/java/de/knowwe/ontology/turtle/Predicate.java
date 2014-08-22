@@ -56,7 +56,7 @@ public class Predicate extends AbstractType implements URIProvider<Predicate> {
 		for (Section<?> child : children) {
 			// explicitly iterating children because Sections.findSuccessor()
 			// returns 'this' otherwise
-			Section<NodeProvider> nodeProviderChild = Sections.findSuccessor(child,
+			Section<NodeProvider> nodeProviderChild = Sections.successor(child,
 					NodeProvider.class);
 			if (nodeProviderChild != null) {
 				return nodeProviderChild.get().getNode(nodeProviderChild, core);

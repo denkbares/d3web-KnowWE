@@ -143,7 +143,7 @@ public class Rdf2GoCore {
 
 	@Deprecated
 	public static Rdf2GoCore getInstance(Article master) {
-		List<Section<PackageCompileType>> compileSections = Sections.findSuccessorsOfType(
+		List<Section<PackageCompileType>> compileSections = Sections.successors(
 				master.getRootSection(), PackageCompileType.class);
 		for (Section<PackageCompileType> section : compileSections) {
 			Collection<PackageCompiler> packageCompilers = section.get().getPackageCompilers(
@@ -1676,7 +1676,7 @@ public class Rdf2GoCore {
 
 		@Override
 		public Article getArticle() {
-			Section<?> section = Sections.getSection(sectionID);
+			Section<?> section = Sections.get(sectionID);
 			return section.getArticle();
 		}
 

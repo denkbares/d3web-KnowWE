@@ -81,11 +81,11 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 		LinkedHashSet<Identifier> singleChildren = new LinkedHashSet<Identifier>();
 		for (Section<?> parentDefiningSection : parentDefiningSections) {
 			// ignore definitions that are outside a DashTree (like XCL)
-			if (Sections.findAncestorOfType(parentDefiningSection, DashTreeElement.class) == null) continue;
+			if (Sections.ancestor(parentDefiningSection, DashTreeElement.class) == null) continue;
 			List<Section<DashTreeElement>> childrenDashtreeElements = getChildrenDashtreeElements(parentDefiningSection);
 			LinkedHashSet<Identifier> childrenSet = new LinkedHashSet<Identifier>();
 			for (Section<DashTreeElement> childrenDashtreeElement : childrenDashtreeElements) {
-				Section<TermDefinition> childDefiningSection = Sections.findSuccessor(childrenDashtreeElement, TermDefinition.class);
+				Section<TermDefinition> childDefiningSection = Sections.successor(childrenDashtreeElement, TermDefinition.class);
 				if (childDefiningSection == null) continue;
 				childrenSet.add(childDefiningSection.get().getTermIdentifier(childDefiningSection));
 			}

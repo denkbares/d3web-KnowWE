@@ -57,14 +57,14 @@ public class NamespaceFileAnnotationType extends AbstractType {
 
 		@Override
 		public Collection<Message> create(OntologyCompiler compiler, Section<NamespaceFileAnnotationType> section) {
-			Section<FileNameType> fileNameSection = Sections.findChildOfType(section,
+			Section<FileNameType> fileNameSection = Sections.child(section,
 					FileNameType.class);
 			if (fileNameSection == null) {
 				return Messages.asList(Messages.error("No file name found in annotation '"
 						+ section.getText()
 						+ "'"));
 			}
-			Section<AbbreviationReference> abbrevSection = Sections.findSuccessor(section,
+			Section<AbbreviationReference> abbrevSection = Sections.successor(section,
 					AbbreviationReference.class);
 			if (abbrevSection == null) {
 				return Messages.asList(Messages.error("No namespace abbreviation found in annotation '"
@@ -114,7 +114,7 @@ public class NamespaceFileAnnotationType extends AbstractType {
 			if (abbrevDefSection == null) {
 				return Messages.noMessage();
 			}
-			Section<NamespaceAbbreviationDefinition> nsAbbrevDefSection = Sections.findAncestorOfType(
+			Section<NamespaceAbbreviationDefinition> nsAbbrevDefSection = Sections.ancestor(
 					abbrevDefSection, NamespaceAbbreviationDefinition.class);
 			String namespace = nsAbbrevDefSection.get().getNamespace(nsAbbrevDefSection);
 

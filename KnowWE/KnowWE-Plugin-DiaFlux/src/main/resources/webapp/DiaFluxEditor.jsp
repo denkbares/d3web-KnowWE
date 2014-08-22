@@ -37,7 +37,7 @@
 	}
 
 	String kdomID = parameters.get("kdomID");
-	Section<DiaFluxType> diafluxSection = Sections.getSection(kdomID, DiaFluxType.class);
+	Section<DiaFluxType> diafluxSection = Sections.get(kdomID, DiaFluxType.class);
 
 	if (diafluxSection == null) {
 		out.println("<h3>Flowchart not found. Please try opening the editor again.</h3>");

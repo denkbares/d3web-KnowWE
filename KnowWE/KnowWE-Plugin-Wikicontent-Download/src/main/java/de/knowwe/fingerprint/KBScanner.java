@@ -25,7 +25,7 @@ public class KBScanner implements Scanner {
 	@Override
 	public void scan(Article article, File target) throws IOException {
 		// check if this article compiles a base
-		Section<DefaultMarkupPackageCompileType> kbType = Sections.findSuccessor(
+		Section<DefaultMarkupPackageCompileType> kbType = Sections.successor(
 				article.getRootSection(), DefaultMarkupPackageCompileType.class);
 		if (kbType == null) return;
 

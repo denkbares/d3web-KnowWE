@@ -64,9 +64,9 @@ public class NodeActiveConditionType extends D3webCondition<NodeActiveConditionT
 	@Override
 	protected Condition createCondition(D3webCompiler compiler, Section<NodeActiveConditionType> section) {
 		Section<FlowchartReference> flowRef =
-				Sections.findSuccessor(section, FlowchartReference.class);
+				Sections.successor(section, FlowchartReference.class);
 		Section<ExitNodeReference> nodeRef =
-				Sections.findSuccessor(section, ExitNodeReference.class);
+				Sections.successor(section, ExitNodeReference.class);
 
 		if (flowRef == null || nodeRef == null) return null;
 

@@ -60,7 +60,7 @@ public class SessionResetAction extends AbstractAction {
 
 		// get knowledge base
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
-		Section<?> section = Sections.getSection(sectionId);
+		Section<?> section = Sections.get(sectionId);
 		if (section == null || !KnowWEUtils.canView(section, context)) {
 			return;
 		}

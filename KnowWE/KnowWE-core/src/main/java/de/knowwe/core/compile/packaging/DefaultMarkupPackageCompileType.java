@@ -61,12 +61,12 @@ public class DefaultMarkupPackageCompileType extends PackageCompileType {
 
 	@Override
 	public String[] getPackagesToCompile(Section<? extends PackageCompileType> section) {
-		Section<DefaultMarkupType> markupSection = Sections.findAncestorOfType(section,
+		Section<DefaultMarkupType> markupSection = Sections.ancestor(section,
 				DefaultMarkupType.class);
 		List<Section<? extends AnnotationContentType>> usesSections = DefaultMarkupType.getAnnotationContentSections(markupSection, PackageManager.COMPILE_ATTRIBUTE_NAME);
 		List<Section<PackageTerm>> termSections = new ArrayList<Section<PackageTerm>>();
 		for (Section<? extends AnnotationContentType> usesSection : usesSections) {
-			termSections.addAll(Sections.findSuccessorsOfType(usesSection, PackageTerm.class));
+			termSections.addAll(Sections.successors(usesSection, PackageTerm.class));
 		}
 		String[] uses = new String[termSections.size()];
 		for (int i = 0; i < termSections.size(); i++) {
@@ -88,7 +88,7 @@ public class DefaultMarkupPackageCompileType extends PackageCompileType {
 
 		@Override
 		public void compile(PackageRegistrationCompiler compiler, Section<DefaultMarkupPackageCompileType> section) {
-			Section<DefaultMarkupType> markupSection = Sections.findAncestorOfType(section, DefaultMarkupType.class);
+			Section<DefaultMarkupType> markupSection = Sections.ancestor(section, DefaultMarkupType.class);
 			String[] packageNames = DefaultMarkupType.getPackages(markupSection, PackageManager.COMPILE_ATTRIBUTE_NAME);
 			// while destroying, the default packages will already
 			// be removed, so we have to store artificially
@@ -105,7 +105,7 @@ public class DefaultMarkupPackageCompileType extends PackageCompileType {
 
 		@Override
 		public void destroy(PackageRegistrationCompiler compiler, Section<DefaultMarkupPackageCompileType> section) {
-			Section<DefaultMarkupType> markupSection = Sections.findAncestorOfType(
+			Section<DefaultMarkupType> markupSection = Sections.ancestor(
 					section, DefaultMarkupType.class);
 			String[] packageNames = (String[]) markupSection.getSectionStore().getObject(
 					compiler, PACKAGE_DEFINITIONS_KEY);
@@ -144,7 +144,7 @@ public class DefaultMarkupPackageCompileType extends PackageCompileType {
 			String[] packagesToCompile = getPackagesToCompile(section);
 			Collection<Section<?>> sectionsOfPackages = compiler.getPackageManager().getSectionsOfPackage(
 					packagesToCompile);
-			Section<DefaultMarkupType> markupSection = Sections.findAncestorOfType(
+			Section<DefaultMarkupType> markupSection = Sections.ancestor(
 					section, DefaultMarkupType.class);
 			boolean emptyPackages = sectionsOfPackages.isEmpty()
 					// the parents markup section does not count

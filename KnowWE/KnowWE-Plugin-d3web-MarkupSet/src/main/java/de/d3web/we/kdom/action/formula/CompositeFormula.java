@@ -102,7 +102,7 @@ public class CompositeFormula extends AbstractType {
 	 * @return
 	 */
 	public Section<? extends NonTerminalCondition> getBraced(Section<CompositeFormula> c) {
-		return Sections.findChildOfType(c, BracedCondition.class);
+		return Sections.child(c, BracedCondition.class);
 	}
 
 	/**
@@ -113,7 +113,7 @@ public class CompositeFormula extends AbstractType {
 	 */
 	public List<Section<? extends CalcMethodType>> getMultiplicationElements(Section<CompositeFormula> c) {
 		List<Section<? extends CalcMethodType>> result = new ArrayList<Section<? extends CalcMethodType>>();
-		List<Section<Multiplication>> childrenOfType = Sections.findChildrenOfType(c,
+		List<Section<Multiplication>> childrenOfType = Sections.children(c,
 				Multiplication.class);
 		result.addAll(childrenOfType);
 		return result;
@@ -147,7 +147,7 @@ public class CompositeFormula extends AbstractType {
 	 */
 	public List<Section<? extends CalcMethodType>> getSubtractionElements(Section<CompositeFormula> c) {
 		List<Section<? extends CalcMethodType>> result = new ArrayList<Section<? extends CalcMethodType>>();
-		List<Section<Subtraction>> childrenOfType = Sections.findChildrenOfType(c,
+		List<Section<Subtraction>> childrenOfType = Sections.children(c,
 				Subtraction.class);
 		result.addAll(childrenOfType);
 		return result;
@@ -171,7 +171,7 @@ public class CompositeFormula extends AbstractType {
 	 */
 	public List<Section<? extends CalcMethodType>> getAdditionElements(Section<CompositeFormula> c) {
 		List<Section<? extends CalcMethodType>> result = new ArrayList<Section<? extends CalcMethodType>>();
-		List<Section<Addition>> childrenOfType = Sections.findChildrenOfType(c, Addition.class);
+		List<Section<Addition>> childrenOfType = Sections.children(c, Addition.class);
 		result.addAll(childrenOfType);
 		return result;
 	}
@@ -194,7 +194,7 @@ public class CompositeFormula extends AbstractType {
 	 */
 	public List<Section<? extends CalcMethodType>> getDivisionElements(Section<CompositeFormula> c) {
 		List<Section<? extends CalcMethodType>> result = new ArrayList<Section<? extends CalcMethodType>>();
-		List<Section<Division>> childrenOfType = Sections.findChildrenOfType(c, Division.class);
+		List<Section<Division>> childrenOfType = Sections.children(c, Division.class);
 		result.addAll(childrenOfType);
 		return result;
 	}
@@ -218,7 +218,7 @@ public class CompositeFormula extends AbstractType {
 	public Section<? extends TerminalExpression> getTerminal(Section<CompositeFormula> c) {
 		// List<Section<? extends TerminalExpression>> result = new
 		// ArrayList<Section<? extends TerminalExpression>>();
-		Section<? extends TerminalExpression> terminal = Sections.findChildOfType(c,
+		Section<? extends TerminalExpression> terminal = Sections.child(c,
 				TerminalExpression.class);
 		return terminal;
 	}

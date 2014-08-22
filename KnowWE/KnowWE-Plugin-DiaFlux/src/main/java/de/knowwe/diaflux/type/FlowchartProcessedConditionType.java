@@ -53,7 +53,7 @@ public class FlowchartProcessedConditionType extends D3webCondition<FlowchartPro
 
 	@Override
 	protected Condition createCondition(D3webCompiler compiler, Section<FlowchartProcessedConditionType> section) {
-		Section<FlowchartReference> flowRefSection = Sections.findSuccessor(section, FlowchartReference.class);
+		Section<FlowchartReference> flowRefSection = Sections.successor(section, FlowchartReference.class);
 
 		if (flowRefSection == null) {
 			return null;

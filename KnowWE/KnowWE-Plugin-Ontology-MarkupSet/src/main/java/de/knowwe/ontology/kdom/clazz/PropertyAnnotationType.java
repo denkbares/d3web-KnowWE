@@ -61,15 +61,15 @@ public class PropertyAnnotationType extends AbstractType {
 		@Override
 		public Collection<Message> create(OntologyCompiler compiler, Section<PropertyAnnotationType> section) {
 
-			Section<DefaultMarkupType> classTypeSection = Sections.findAncestorOfType(section,
+			Section<DefaultMarkupType> classTypeSection = Sections.ancestor(section,
 					DefaultMarkupType.class);
 
-			Section<ContentType> contentSection = Sections.findSuccessor(classTypeSection,
+			Section<ContentType> contentSection = Sections.successor(classTypeSection,
 					ContentType.class);
-			List<Section<AbbreviatedClassDefinition>> classSections = Sections.findSuccessorsOfType(
+			List<Section<AbbreviatedClassDefinition>> classSections = Sections.successors(
 					contentSection, AbbreviatedClassDefinition.class);
 
-			Section<AbbreviatedPropertyDefinition> propertySection = Sections.findChildOfType(
+			Section<AbbreviatedPropertyDefinition> propertySection = Sections.child(
 					section, AbbreviatedPropertyDefinition.class);
 
 			if (propertySection.hasErrorInSubtree()) return Messages.noMessage();
@@ -78,7 +78,7 @@ public class PropertyAnnotationType extends AbstractType {
 
 			URI propertyURI = propertySection.get().getPropertyURI(core, propertySection);
 
-			Section<AbbreviatedResourceReference> rangeSection = Sections.findChildOfType(section,
+			Section<AbbreviatedResourceReference> rangeSection = Sections.child(section,
 					AbbreviatedResourceReference.class);
 
 			for (Section<AbbreviatedClassDefinition> classSection : classSections) {

@@ -58,11 +58,11 @@ public class FlowchartToolMenuAction extends GetToolMenuAction {
 			if (title == null || flowname == null || nodeID == null) return null;
 			title = Strings.decodeURL(title);
 			Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
-			List<Section<DiaFluxType>> diafluxSections = Sections.findChildrenOfType(
+			List<Section<DiaFluxType>> diafluxSections = Sections.children(
 					article.getRootSection(), DiaFluxType.class);
 			Section<FlowchartType> correctFlow = null;
 			for (Section<DiaFluxType> section : diafluxSections) {
-				Section<FlowchartType> flowchart = Sections.findSuccessor(section,
+				Section<FlowchartType> flowchart = Sections.successor(section,
 						FlowchartType.class);
 				if (flowchart == null) continue;
 				String name = DiaFluxType.getFlowchartName(section);
@@ -72,12 +72,12 @@ public class FlowchartToolMenuAction extends GetToolMenuAction {
 				}
 			}
 			if (correctFlow == null) return null;
-			List<Section<NodeType>> nodeSections = Sections.findSuccessorsOfType(correctFlow,
+			List<Section<NodeType>> nodeSections = Sections.successors(correctFlow,
 					NodeType.class);
 			for (Section<NodeType> section : nodeSections) {
 				String fcid = AbstractXMLType.getAttributes(section).get("fcid");
 				if (fcid.equals(nodeID)) {
-					return Sections.findSuccessor(section, Term.class);
+					return Sections.successor(section, Term.class);
 				}
 			}
 

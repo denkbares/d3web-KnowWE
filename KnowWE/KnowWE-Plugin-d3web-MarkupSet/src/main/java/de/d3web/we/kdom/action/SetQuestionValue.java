@@ -93,17 +93,17 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 		Object value;
 		Section<AnswerReference> answerReferenceSection = null;
 
-		if (Sections.findSuccessor(section, UnknownValueType.class) != null) {
+		if (Sections.successor(section, UnknownValueType.class) != null) {
 			value = Unknown.getInstance();
 		}
 		else {
-			answerReferenceSection = Sections.findSuccessor(section,
+			answerReferenceSection = Sections.successor(section,
 					AnswerReference.class);
 			if (answerReferenceSection == null) return null;
 			value = answerReferenceSection.get().getTermObject(compiler, answerReferenceSection);
 		}
 
-		Section<QuestionReference> questionReferenceSection = Sections.findSuccessor(section, QuestionReference.class);
+		Section<QuestionReference> questionReferenceSection = Sections.successor(section, QuestionReference.class);
 		Question question = questionReferenceSection.get().getTermObject(compiler, questionReferenceSection);
 		if (question instanceof QuestionDate && answerReferenceSection != null) {
 			ActionSetQuestion actionSetQuestion = new ActionSetQuestion();

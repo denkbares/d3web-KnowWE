@@ -44,13 +44,13 @@ public class GetSubflowLinksAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		String kdomid = context.getParameter("kdomid");
 
-		Section<FlowchartType> flowchart = Sections.getSection(kdomid, FlowchartType.class);
+		Section<FlowchartType> flowchart = Sections.get(kdomid, FlowchartType.class);
 		if (flowchart == null) {
 			Highlight.writeEmpty(context);
 			return;
 		}
 
-		KnowledgeBase kb = FlowchartUtils.getKB(Sections.findAncestorOfType(flowchart,
+		KnowledgeBase kb = FlowchartUtils.getKB(Sections.ancestor(flowchart,
 				DiaFluxType.class));
 
 		if (kb == null) {

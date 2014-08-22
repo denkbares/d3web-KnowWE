@@ -61,13 +61,13 @@ public class CallFlowActionType extends AbstractType {
 	}
 
 	public static String getStartNodeName(Section<CallFlowActionType> action) {
-		Section<StartNodeReference> nodeSection = Sections.findChildOfType(action,
+		Section<StartNodeReference> nodeSection = Sections.child(action,
 				StartNodeReference.class);
 		return nodeSection.get().getTermName(nodeSection);
 	}
 
 	public static String getFlowName(Section<CallFlowActionType> action) {
-		Section<FlowchartReference> flowRefSection = Sections.findChildOfType(action,
+		Section<FlowchartReference> flowRefSection = Sections.child(action,
 				FlowchartReference.class);
 		return flowRefSection.get().getTermName(flowRefSection);
 	}

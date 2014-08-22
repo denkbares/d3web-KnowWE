@@ -179,7 +179,7 @@ public class QuestionSetValueNumLine extends AbstractType {
 		private static String getArgumentString(Section<QuestionReference> s) {
 			String argument = null;
 			List<Section<AnonymousType>> children = new ArrayList<Section<AnonymousType>>();
-			Sections.findSuccessorsOfType(s.getParent(), AnonymousType.class, children);
+			Sections.successors(s.getParent(), AnonymousType.class, children);
 			for (Section<AnonymousType> section : children) {
 				if (section.get().getName().equals(SETVALUE_ARGUMENT)) {
 					argument = section.getText().substring(1,

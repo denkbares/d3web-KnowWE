@@ -89,12 +89,12 @@ public class ListSolutionType extends AbstractType {
 		@Override
 		public Collection<Message> create(D3webCompiler article, Section<ListSolutionType> s) {
 
-			Section<SolutionDefinition> solutionDef = Sections.findSuccessor(s,
+			Section<SolutionDefinition> solutionDef = Sections.successor(s,
 					SolutionDefinition.class);
 
 			Solution solution = solutionDef.get().getTermObject(article, solutionDef);
 
-			Section<CoveringListMarkup> defaultMarkupType = Sections.findAncestorOfType(s,
+			Section<CoveringListMarkup> defaultMarkupType = Sections.ancestor(s,
 					CoveringListMarkup.class);
 
 			if (solution != null) {

@@ -29,7 +29,7 @@ public class AnswerReferenceImpl extends AnswerReference {
 
 	@Override
 	public Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s) {
-		return Sections.findSuccessor(s.getParent(), QuestionReference.class);
+		return Sections.successor(s.getParent(), QuestionReference.class);
 	}
 
 }

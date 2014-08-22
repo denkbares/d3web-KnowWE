@@ -69,7 +69,7 @@ public class CondKnown extends D3webCondition<CondKnown> {
 
 	@Override
 	protected Condition createCondition(D3webCompiler compiler, de.knowwe.core.kdom.parsing.Section<CondKnown> section) {
-		Section<QuestionReference> qRef = Sections.findSuccessor(section, QuestionReference.class);
+		Section<QuestionReference> qRef = Sections.successor(section, QuestionReference.class);
 		if (qRef != null) {
 			Question q = qRef.get().getTermObject(compiler, qRef);
 

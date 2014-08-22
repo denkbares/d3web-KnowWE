@@ -22,7 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.EmptyType;
 import de.knowwe.core.kdom.basicType.KeywordType;
 import de.knowwe.core.kdom.basicType.Number;
@@ -30,7 +29,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
@@ -57,28 +55,23 @@ public class ValueType extends AbstractType {
 		aRef.setRenderer(DefaultTextRenderer.getInstance());
 		addChildType(aRef);
 
-		aRef.setSectionFinder(new SectionFinder() {
-
-			@Override
-			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-				Section<TestcaseTable> table = Sections.findAncestorOfExactType(father,
-						TestcaseTable.class);
-				List<Section<TableLine>> lines = new LinkedList<Section<TableLine>>();
-				Sections.findSuccessorsOfType(table, TableLine.class, lines);
-				if (lines.size() > 1) {
-					if (text.trim().length() > 0) {
-						return SectionFinderResult.singleItemList(new SectionFinderResult(0,
-								text.length()));
-					}// no text to match
-					else {
-						return null;
-					}
-				}// in the first line of the table, there are no values
+		aRef.setSectionFinder((text, father, type) -> {
+			Section<TestcaseTable> table = Sections.ancestor(father, TestcaseTable.class);
+			List<Section<TableLine>> lines = new LinkedList<>();
+			Sections.successors(table, TableLine.class, lines);
+			if (lines.size() > 1) {
+				if (text.trim().length() > 0) {
+					return SectionFinderResult.singleItemList(new SectionFinderResult(0,
+							text.length()));
+				}// no text to match
 				else {
 					return null;
 				}
-
+			}// in the first line of the table, there are no values
+			else {
+				return null;
 			}
+
 		});
 	}
 }

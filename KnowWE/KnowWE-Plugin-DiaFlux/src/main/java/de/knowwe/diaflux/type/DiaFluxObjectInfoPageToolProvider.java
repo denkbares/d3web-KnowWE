@@ -35,7 +35,7 @@ public class DiaFluxObjectInfoPageToolProvider extends CompositeEditToolProvider
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		Section<FlowchartTermDef> termDef = Sections.findSuccessor(section, FlowchartTermDef.class);
+		Section<FlowchartTermDef> termDef = Sections.successor(section, FlowchartTermDef.class);
 		if (termDef != null) {
 			return new Tool[] { getCompositeEditTool(termDef) };
 		}

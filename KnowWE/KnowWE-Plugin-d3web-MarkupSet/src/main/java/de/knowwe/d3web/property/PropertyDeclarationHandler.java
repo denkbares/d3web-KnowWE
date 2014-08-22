@@ -54,7 +54,7 @@ public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarat
 	public Collection<Message> create(D3webCompiler compiler, Section<PropertyDeclarationType> section) {
 		if (Strings.isBlank(section.getText())) return Messages.noMessage();
 		// get NamedObject
-		Section<PropertyObjectReference> namendObjectSection = Sections.findSuccessor(section,
+		Section<PropertyObjectReference> namendObjectSection = Sections.successor(section,
 				PropertyObjectReference.class);
 		if (namendObjectSection == null) {
 			return Messages.asList(Messages.syntaxError("No NamedObject found."));
@@ -66,7 +66,7 @@ public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarat
 		}
 
 		// get Property
-		Section<PropertyType> propertySection = Sections.findSuccessor(section,
+		Section<PropertyType> propertySection = Sections.successor(section,
 				PropertyType.class);
 		if (propertySection == null) {
 			return Messages.asList(Messages.syntaxError("No property found."));
@@ -81,7 +81,7 @@ public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarat
 		Locale locale = getLocale(section);
 
 		// get content
-		Section<PropertyContentType> contentSection = Sections.findSuccessor(section,
+		Section<PropertyContentType> contentSection = Sections.successor(section,
 				PropertyContentType.class);
 		if (contentSection == null) {
 			return Messages.asList(Messages.syntaxError("No property value found for property '"
@@ -126,7 +126,7 @@ public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarat
 	}
 
 	public static Locale getLocale(Section<PropertyDeclarationType> s) {
-		Section<LocaleType> localeSection = Sections.findSuccessor(s, LocaleType.class);
+		Section<LocaleType> localeSection = Sections.successor(s, LocaleType.class);
 		Locale locale = InfoStore.NO_LANGUAGE;
 		if (localeSection != null) {
 			locale = localeSection.get().getLocale(localeSection);
@@ -138,13 +138,13 @@ public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarat
 		List<NamedObject> objects = new ArrayList<NamedObject>(1);
 		NamedObject object = namendObjectSection.get().getTermObject(compiler, namendObjectSection);
 		if (object == null) {
-			Section<QuestionReference> questionReferenceSection = Sections.findChildOfType(
+			Section<QuestionReference> questionReferenceSection = Sections.child(
 					namendObjectSection, QuestionReference.class);
 			if (questionReferenceSection != null && questionReferenceSection.getText().isEmpty()) {
 				// question is a wild card, get all questions with the given
 				// answer.
 				Section<PropertyAnswerReference> answerReferenceSection =
-						Sections.findChildOfType(namendObjectSection, PropertyAnswerReference.class);
+						Sections.child(namendObjectSection, PropertyAnswerReference.class);
 				objects = getAllChoices(compiler, answerReferenceSection);
 			}
 		}
@@ -171,9 +171,9 @@ public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarat
 
 	@Override
 	public void destroy(D3webCompiler compiler, Section<PropertyDeclarationType> s) {
-		Section<PropertyObjectReference> idobjectSection = Sections.findSuccessor(s,
+		Section<PropertyObjectReference> idobjectSection = Sections.successor(s,
 				PropertyObjectReference.class);
-		Section<PropertyType> propertySection = Sections.findSuccessor(s,
+		Section<PropertyType> propertySection = Sections.successor(s,
 				PropertyType.class);
 		if (idobjectSection == null) return;
 		NamedObject object = idobjectSection.get().getTermObject(compiler, idobjectSection);
@@ -181,8 +181,8 @@ public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarat
 		if (propertySection == null) return;
 		Property<?> property = propertySection.get().getProperty(propertySection);
 		if (property == null) return;
-		Section<LocaleType> localeSection = Sections.findSuccessor(s, LocaleType.class);
-		Section<PropertyContentType> contentSection = Sections.findSuccessor(s,
+		Section<LocaleType> localeSection = Sections.successor(s, LocaleType.class);
+		Section<PropertyContentType> contentSection = Sections.successor(s,
 				PropertyContentType.class);
 		if (contentSection == null) return;
 		String content = contentSection.getText();

@@ -115,9 +115,9 @@ public class CheckDownloadCaseAction extends AbstractAction {
 			playerid = context.getParameter("SectionID");
 		}
 
-		Section<?> section = Sections.getSection(playerid);
+		Section<?> section = Sections.get(playerid);
 		if (section != null) {
-			section = Sections.findChildOfType(section, ContentType.class);
+			section = Sections.child(section, ContentType.class);
 		}
 		if (section == null || !(section.getParent().get() instanceof TestCasePlayerType)) {
 

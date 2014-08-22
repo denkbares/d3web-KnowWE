@@ -267,7 +267,7 @@ public class TurtleModifier {
 		}
 
 		// apply all changes to the articles
-		return Sections.replaceSections(context, replaceMap);
+		return Sections.replace(context, replaceMap);
 	}
 
 	/**

@@ -109,7 +109,7 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 					result.appendHtml("</span>");
 					return;
 				}
-				Section<SparqlContentType> contentSection = Sections.findSuccessor(sparqlSection, SparqlContentType.class);
+				Section<SparqlContentType> contentSection = Sections.successor(sparqlSection, SparqlContentType.class);
 
 				String query = contentSection.getText();
 				OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);

@@ -71,7 +71,7 @@ public class NumericCondLine extends AbstractType {
 		@Override
 		public Collection<Message> create(D3webCompiler compiler, Section<NumericCondLine> s) {
 
-			Section<DashTreeElement> dte = Sections.findAncestorOfType(s, DashTreeElement.class);
+			Section<DashTreeElement> dte = Sections.ancestor(s, DashTreeElement.class);
 			Section<? extends DashTreeElement> fatherDashTreeElement = DashTreeUtils.getParentDashTreeElement(dte);
 
 			Condition simpleCondition = QuestionDashTreeUtils.createSimpleCondition(compiler, dte,

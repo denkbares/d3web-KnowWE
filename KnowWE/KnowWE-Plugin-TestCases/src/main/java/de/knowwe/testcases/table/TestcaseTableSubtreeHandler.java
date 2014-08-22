@@ -67,7 +67,7 @@ public class TestcaseTableSubtreeHandler implements D3webHandler<TestcaseTable> 
 		Map<RatedTestCase, List<Check>> conditionsForRTC =
 				new IdentityHashMap<RatedTestCase, List<Check>>();
 		List<Section<TestcaseTableLine>> lines =
-				Sections.findSuccessorsOfType(section, TestcaseTableLine.class);
+				Sections.successors(section, TestcaseTableLine.class);
 		for (Section<TestcaseTableLine> line : lines) {
 			// check for an rated test case of that line
 			RatedTestCase rtc = (RatedTestCase) KnowWEUtils.getStoredObject(compiler, line,
@@ -77,7 +77,7 @@ public class TestcaseTableSubtreeHandler implements D3webHandler<TestcaseTable> 
 
 			// also check for additional check conditions
 			Section<CompositeCondition> condSec =
-					Sections.findSuccessor(line, CompositeCondition.class);
+					Sections.successor(line, CompositeCondition.class);
 			if (condSec == null) continue;
 			Condition condition = KDOMConditionFactory.createCondition(compiler, condSec);
 			if (condition == null) continue;
@@ -86,7 +86,7 @@ public class TestcaseTableSubtreeHandler implements D3webHandler<TestcaseTable> 
 			List<Check> checks = new ArrayList<Check>();
 			conditionsForRTC.put(rtc, checks);
 			if (condition instanceof CondAnd) {
-				List<Section<Conjunct>> parts = Sections.findChildrenOfType(condSec, Conjunct.class);
+				List<Section<Conjunct>> parts = Sections.children(condSec, Conjunct.class);
 				List<Condition> terms = ((CondAnd) condition).getTerms();
 				if (parts.size() == terms.size()) {
 					for (int i = 0; i < terms.size(); i++) {
@@ -101,7 +101,7 @@ public class TestcaseTableSubtreeHandler implements D3webHandler<TestcaseTable> 
 			}
 		}
 
-		List<Section<TestcaseTable>> sections = Sections.findSuccessorsOfType(
+		List<Section<TestcaseTable>> sections = Sections.successors(
 				section.getArticle().getRootSection(), TestcaseTable.class);
 		int i = 1;
 		for (Section<TestcaseTable> table : new TreeSet<Section<TestcaseTable>>(sections)) {
@@ -128,7 +128,7 @@ public class TestcaseTableSubtreeHandler implements D3webHandler<TestcaseTable> 
 			wrapper.addChecks(rtc, checks.toArray(new Check[checks.size()]));
 		}
 		SingleTestCaseProvider provider = new SingleTestCaseProvider(
-				compiler, Sections.findAncestorOfType(section, DefaultMarkupType.class), wrapper,
+				compiler, Sections.ancestor(section, DefaultMarkupType.class), wrapper,
 				name);
 
 		// append Storage of the TestCaseProvider

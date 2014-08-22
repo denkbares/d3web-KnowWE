@@ -51,9 +51,9 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 
 	@Override
 	protected Condition createCondition(D3webCompiler compiler, Section<NumericalFinding> s) {
-		Section<QuestionReference> qRef = Sections.findSuccessor(s, QuestionReference.class);
+		Section<QuestionReference> qRef = Sections.successor(s, QuestionReference.class);
 
-		Section<Intervall> intervall = Sections.findSuccessor(s, Intervall.class);
+		Section<Intervall> intervall = Sections.successor(s, Intervall.class);
 
 		Double number1 = intervall.get().getFirstNumber(intervall);
 		Double number2 = intervall.get().getSecondNumber(intervall);

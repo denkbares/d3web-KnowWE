@@ -57,7 +57,7 @@ public class CompositeEditSaveAction extends AbstractAction {
 			}
 
 			//
-			Sections.replaceSections(context, nodesMap).sendErrors(context);
+			Sections.replace(context, nodesMap).sendErrors(context);
 			Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
 		}
 		catch (JSONException e) {

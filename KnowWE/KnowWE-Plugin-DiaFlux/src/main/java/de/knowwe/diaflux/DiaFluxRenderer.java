@@ -46,7 +46,7 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer {
 
 	@Override
 	protected String getTitleName(Section<?> section, UserContext user) {
-		Section<FlowchartType> flowchart = Sections.findSuccessor(section, FlowchartType.class);
+		Section<FlowchartType> flowchart = Sections.successor(section, FlowchartType.class);
 
 		if (flowchart == null) {
 			return "New flowchart";
@@ -59,7 +59,7 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer {
 	@Override
 	protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
 
-		Section<FlowchartType> flowchart = Sections.findSuccessor(section, FlowchartType.class);
+		Section<FlowchartType> flowchart = Sections.successor(section, FlowchartType.class);
 
 		if (flowchart == null) {
 			string.append("%%information ");
@@ -86,7 +86,7 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer {
 			string.appendHtml("<img class='markupIcon' src='" + icon + "' /> ");
 		}
 		Section<FlowchartXMLHeadType.FlowchartTermDef> termDefSection
-				= Sections.findSuccessor(section, FlowchartXMLHeadType.FlowchartTermDef.class);
+				= Sections.successor(section, FlowchartXMLHeadType.FlowchartTermDef.class);
 		if (termDefSection != null) {
 			// render heading
 			string.appendHtml("<span><span toolmenuidentifier='" + termDefSection.getID() + "'>")

@@ -89,14 +89,14 @@ public class PropertiesTest extends TestCase {
 	}
 
 	public Section<PropertyDeclarationType> getPropertyDeclarationSection(String name) {
-		List<Section<PropertyObjectReference>> namendObjectRefs = Sections.findSuccessorsOfType(
+		List<Section<PropertyObjectReference>> namendObjectRefs = Sections.successors(
 				getArticle().getRootSection(), PropertyObjectReference.class);
 		for (Section<PropertyObjectReference> namedObjectRef : namendObjectRefs) {
 			NamedObject termObject = namedObjectRef.get().getTermObject(
 					Compilers.getCompiler(namedObjectRef.getArticle(), D3webCompiler.class),
 					namedObjectRef);
 			if (termObject.getName().equals(name)) {
-				return Sections.findAncestorOfType(namedObjectRef,
+				return Sections.ancestor(namedObjectRef,
 						PropertyDeclarationType.class);
 			}
 		}

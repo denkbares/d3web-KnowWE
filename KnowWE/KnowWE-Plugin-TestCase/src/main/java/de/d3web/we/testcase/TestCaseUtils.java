@@ -49,7 +49,7 @@ public class TestCaseUtils {
 		TestCase testSuite = null;
 
 		if (a != null) {
-			s = Sections.findSuccessor(a.getRootSection(), TestCaseContent.class);
+			s = Sections.successor(a.getRootSection(), TestCaseContent.class);
 		}
 		if (s != null) {
 			testSuite = (TestCase) s.getSectionStore().getObject(TestCaseType.TESTCASEKEY);

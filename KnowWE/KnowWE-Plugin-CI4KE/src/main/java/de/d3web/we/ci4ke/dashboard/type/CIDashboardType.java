@@ -236,7 +236,7 @@ public class CIDashboardType extends DefaultMarkupType {
 		List<Section<CIDashboardType>> sectionList = new ArrayList<Section<CIDashboardType>>();
 		for (Article article : Environment.getInstance().
 				getArticleManager(section.getWeb()).getArticles()) {
-			Sections.findSuccessorsOfType(article.getRootSection(), CIDashboardType.class,
+			Sections.successors(article.getRootSection(), CIDashboardType.class,
 					sectionList);
 		}
 

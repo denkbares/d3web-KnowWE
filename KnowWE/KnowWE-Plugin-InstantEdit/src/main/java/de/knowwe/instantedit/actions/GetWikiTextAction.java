@@ -43,7 +43,7 @@ public class GetWikiTextAction extends AbstractAction {
 
 		String sectionID = context.getParameter("KdomNodeId");
 
-		Section<? extends Type> sec = Sections.getSection(sectionID);
+		Section<? extends Type> sec = Sections.get(sectionID);
 
 		if (sec == null) {
 			context.sendError(409, "Section '" + sectionID

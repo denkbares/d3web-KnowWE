@@ -46,7 +46,7 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 			return;
 		}
 
-		List<Section<CellContent>> cells = Sections.findSuccessorsOfType(section, CellContent.class);
+		List<Section<CellContent>> cells = Sections.successors(section, CellContent.class);
 		Iterator<Section<CellContent>> cellIter = cells.iterator();
 
 		List<Condition> conditions = new ArrayList<Condition>(cells.size());
@@ -185,7 +185,7 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 
 	private Solution getSolution(D3webCompiler compiler, Section<? extends Type> knowledgeSection) {
 		Section<TableCellContent> columnHeader = TableUtils.getColumnHeader(knowledgeSection);
-		Section<SolutionReference> solutionReference = Sections.findSuccessor(columnHeader,
+		Section<SolutionReference> solutionReference = Sections.successor(columnHeader,
 				SolutionReference.class);
 		if (solutionReference == null) return null;
 		Solution solution = solutionReference.get().getTermObject(compiler, solutionReference);
@@ -194,7 +194,7 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 
 	private Question getQuestion(D3webCompiler compiler, Section<? extends Type> knowledgeSection) {
 		Section<TableCellContent> columnHeader = TableUtils.getColumnHeader(knowledgeSection);
-		Section<QuestionReference> questionReference = Sections.findSuccessor(columnHeader,
+		Section<QuestionReference> questionReference = Sections.successor(columnHeader,
 				QuestionReference.class);
 		if (questionReference == null) return null;
 		Question question = questionReference.get().getTermObject(compiler, questionReference);

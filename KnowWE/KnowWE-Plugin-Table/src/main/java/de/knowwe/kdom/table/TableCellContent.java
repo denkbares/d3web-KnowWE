@@ -33,7 +33,7 @@ public class TableCellContent extends AbstractType {
 	}
 
 	public static boolean isTableHeadContent(Section<?> s) {
-		Section<? extends TableCell> cell = Sections.findAncestorOfType(s, TableCell.class);
+		Section<? extends TableCell> cell = Sections.ancestor(s, TableCell.class);
 		return TableCell.isTableHead(cell);
 	}
 

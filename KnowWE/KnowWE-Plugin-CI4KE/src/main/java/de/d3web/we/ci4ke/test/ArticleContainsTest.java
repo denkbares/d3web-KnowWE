@@ -20,7 +20,7 @@
 
 package de.d3web.we.ci4ke.test;
 
-import java.util.Collection;
+import java.util.List;
 
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
@@ -54,10 +54,10 @@ public class ArticleContainsTest extends AbstractTest<Article> {
 		if (article.getRootSection().getText().contains(searchForKeyword)) {
 			// exclude findings from the CIDashboard because it will always
 			// contain the searched string, because it is defined there.
-			Collection<Section<?>> smallestSectionsContaining = Sections.findSmallestSectionsContaining(
+			List<Section<?>> smallestSectionsContaining = Sections.smallestSectionsContaining(
 					article.getRootSection(), searchForKeyword);
 			for (Section<?> containingSection : smallestSectionsContaining) {
-				if (Sections.findAncestorOfType(containingSection, CIDashboardType.class) == null) {
+				if (Sections.ancestor(containingSection, CIDashboardType.class) == null) {
 					contains = true;
 					break;
 				}

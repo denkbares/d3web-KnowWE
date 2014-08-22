@@ -57,7 +57,7 @@ public class TermnameConventionTest extends AbstractTest<Article> {
 	public Message execute(Article testObject, String[] args, String[]... ignores) throws InterruptedException {
 		Pattern pattern = Pattern.compile(args[0]);
 		Section<RootType> rootSection = testObject.getRootSection();
-		List<Section<TermDefinition>> terms = Sections.findSuccessorsOfType(rootSection,
+		List<Section<TermDefinition>> terms = Sections.successors(rootSection,
 				TermDefinition.class);
 		Set<String> invalidTerms = new HashSet<String>(); // using set to filter
 															// duplicates

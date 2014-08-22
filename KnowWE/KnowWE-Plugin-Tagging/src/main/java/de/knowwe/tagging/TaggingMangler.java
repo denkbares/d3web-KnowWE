@@ -113,14 +113,14 @@ public class TaggingMangler {
 				Environment.DEFAULT_WEB, pagename);
 
 		// Look for <tags> sections
-		List<Section<Tags>> tagsSections = Sections.findSuccessorsOfType(
+		List<Section<Tags>> tagsSections = Sections.successors(
 				article.getRootSection(), Tags.class);
 		Set<String> tags = new HashSet<String>();
 
 		if (tagsSections.size() > 0) {
 
 			for (Section<?> section : tagsSections) {
-				Section<TagsContent> content = Sections.findSuccessor(section, TagsContent.class);
+				Section<TagsContent> content = Sections.successor(section, TagsContent.class);
 				for (String temptag : content.getText().split(TAG_SEPARATOR)) {
 					tags.add(temptag.trim());
 				}
@@ -137,7 +137,7 @@ public class TaggingMangler {
 			for (Section<Tags> section : tagsSections) {
 				nodesMap.put(section.getID(), "");
 			}
-			Sections.replaceSections(context, nodesMap).sendErrors(context);
+			Sections.replace(context, nodesMap).sendErrors(context);
 		}
 		else {
 			addNewTagSection(pagename, tag, context);
@@ -158,7 +158,7 @@ public class TaggingMangler {
 
 		// Look for <tags> sections
 		List<Section<TagsContent>> tagsSections = new ArrayList<Section<TagsContent>>();
-		Sections.findSuccessorsOfType(article.getRootSection(), TagsContent.class, tagsSections);
+		Sections.successors(article.getRootSection(), TagsContent.class, tagsSections);
 		Set<String> tags = new HashSet<String>();
 
 		for (Section<TagsContent> cur : tagsSections) {
@@ -181,7 +181,7 @@ public class TaggingMangler {
 
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(keep.getID(), output);
-		Sections.replaceSections(context, nodesMap).sendErrors(context);
+		Sections.replace(context, nodesMap).sendErrors(context);
 	}
 
 	/**
@@ -325,7 +325,7 @@ public class TaggingMangler {
 	public void setTags(String topic, String tags, UserActionContext context) throws IOException {
 		Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB,
 				topic);
-		List<Section<Tags>> tagslist = Sections.findSuccessorsOfType(
+		List<Section<Tags>> tagslist = Sections.successors(
 				article.getRootSection(), Tags.class);
 		String tagSectionString = createTagSectionString(tags);
 
@@ -337,7 +337,7 @@ public class TaggingMangler {
 			for (Section<Tags> section : tagslist) {
 				nodesMap.put(section.getID(), "");
 			}
-			Sections.replaceSections(context, nodesMap).sendErrors(context);
+			Sections.replace(context, nodesMap).sendErrors(context);
 		}
 		else {
 			addNewTagSection(topic, tags, context);
@@ -361,7 +361,7 @@ public class TaggingMangler {
 
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(rootSection.getID(), articleText);
-		Sections.replaceSections(context, nodesMap).sendErrors(context);
+		Sections.replace(context, nodesMap).sendErrors(context);
 	}
 
 	private String createTagSectionString(String content) {

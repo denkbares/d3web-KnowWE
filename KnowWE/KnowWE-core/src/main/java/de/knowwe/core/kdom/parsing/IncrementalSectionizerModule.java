@@ -20,9 +20,14 @@
 
 package de.knowwe.core.kdom.parsing;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
@@ -49,7 +54,7 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 
 	private Section<?> adaptSectionToNewArticle(Section<?> father, Section<?> match) {
 
-		// mark ancestors, that they have an reused
+		// mark ancestorOneOf, that they have an reused
 		// successor
 		Section<?> ancestor = match;
 		while (ancestor != null) {
@@ -70,7 +75,7 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 
 		// perform necessary actions on complete reused
 		// KDOM subtree
-		List<Section<?>> newNodes = Sections.getSubtreePreOrder(match);
+		List<Section<?>> newNodes = Sections.successors(match);
 		for (Section<?> node : newNodes) {
 
 			List<Integer> lastPositions = node.calcPositionTil(match);
@@ -95,7 +100,7 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 	private Section<?> findMatchingSection(Section<?> father, Type type, String text) {
 		// get path of of types the Section to be
 		// created would have
-		List<Class<? extends Type>> path = Sections.getTypePathFromRootToSection(father);
+		List<Class<? extends Type>> path = getTypePathFromRootToSection(father);
 		// while sectionizing, the article has still two root sections
 		// the last article does not have the second one, so we remove it from
 		// the path.
@@ -104,8 +109,9 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 
 		// find all Sections with same path of Types
 		// in the last version of the article
-		Map<String, List<Section<?>>> sectionsOfSameType = father.getArticle().getLastVersionOfArticle()
-				.findSectionsWithTypePathCached(path);
+		Map<String, List<Section<?>>> sectionsOfSameType = findSectionsWithTypePathCached(
+				father.getArticle().getLastVersionOfArticle(), path);
+
 
 		List<Section<?>> matches = sectionsOfSameType.remove(text);
 
@@ -124,10 +130,99 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 		return match;
 	}
 
+	/**
+	 * @return a List of ObjectTypes beginning at the KnowWWEArticle and ending at the argument Section. Returns
+	 * <tt>null</tt> if no path is found.
+	 */
+	public static List<Class<? extends Type>> getTypePathFromRootToSection(Section<? extends Type> section) {
+		LinkedList<Class<? extends Type>> path = new LinkedList<>();
+
+		path.add(section.get().getClass());
+		Section<? extends Type> father = section.getParent();
+		while (father != null) {
+			path.addFirst(father.get().getClass());
+			father = father.getParent();
+		}
+
+		if (path.getFirst().isAssignableFrom(RootType.class)) {
+			return path;
+		}
+		else {
+			return null;
+		}
+	}
 	private boolean isAllowedToReuse(Section<?> father, Type type, SectionFinderResult result) {
 		return !father.getArticle().isFullParse()
 				&& result.getClass().equals(SectionFinderResult.class)
 				&& !Types.isLeafType(type);
+	}
+
+	@SuppressWarnings("unchecked")
+	private Map<String, Map<String, List<Section<?>>>> getCache(Article article) {
+		String key = "TypePathSearchCache";
+		Object typePathSearchCache = article.getRootSection().getSectionStore().getObject(key);
+		if (typePathSearchCache == null) {
+			typePathSearchCache = new HashMap<String, Map<String, List<Section<?>>>>();
+			article.getRootSection().getSectionStore().storeObject(key, typePathSearchCache);
+		}
+		return (Map<String, Map<String, List<Section<?>>>>) typePathSearchCache;
+	}
+
+	/**
+	 * Finds all children with the same path of Types in the KDOM. The
+	 * <tt>path</tt> has to start with the type Article and end with the Type of
+	 * the Sections you are looking for.
+	 *
+	 * @return Map of Sections, using their originalText as key.
+	 */
+	private Map<String, List<Section<?>>> findSectionsWithTypePathCached(Article article, List<Class<? extends Type>> path) {
+		String stringPath = path.toString();
+		Map<String, Map<String, List<Section<?>>>> cache = getCache(article);
+		Map<String, List<Section<?>>> foundChildren = cache.get(stringPath);
+		if (foundChildren == null) {
+			foundChildren = findSuccessorsWithTypePathAsMap(article.getRootSection(), path, 0);
+			cache.put(stringPath, foundChildren);
+		}
+		return foundChildren;
+	}
+
+	/**
+	 * Finds all successors of type <tt>class1</tt> in the KDOM at the end of the given path of ancestorOneOf. If your
+	 * <tt>path</tt> starts with the Type of the given Section, set <tt>index</tt> to <tt>0</tt>. Else set the
+	 * <tt>index</tt> to the index of the Type of this Section in the path. </p> Stores found successors in a Map of
+	 * Sections, using their texts as key.
+	 */
+	private Map<String, List<Section<?>>> findSuccessorsWithTypePathAsMap(
+			Section<?> section,
+			List<Class<? extends Type>> path,
+			int index) {
+		Map<String, List<Section<?>>> found = new HashMap<>();
+		findSuccessorsWithTypePathAsMap(section, path, index, found);
+		return found;
+
+	}
+
+	private void findSuccessorsWithTypePathAsMap(
+			Section<?> section,
+			List<Class<? extends Type>> path,
+			int index, Map<String, List<Section<?>>> found) {
+
+		if (index < path.size() - 1
+				&& path.get(index).isAssignableFrom(section.get().getClass())) {
+			for (Section<? extends Type> sec : section.getChildren()) {
+				findSuccessorsWithTypePathAsMap(sec, path, index + 1, found);
+			}
+		}
+		else if (index == path.size() - 1
+				&& path.get(index).isAssignableFrom(section.get().getClass())) {
+			List<Section<?>> equalSections = found.get(section.getText());
+			if (equalSections == null) {
+				equalSections = new ArrayList<>();
+				found.put(section.getText(), equalSections);
+			}
+			equalSections.add(section);
+		}
+
 	}
 
 }

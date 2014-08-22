@@ -39,7 +39,7 @@ final class TestcaseTableLineSubtreeHandler implements D3webHandler<TestcaseTabl
 
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article);
 
-		Section<TimeStampType> timeStamp = Sections.findSuccessor(s, TimeStampType.class);
+		Section<TimeStampType> timeStamp = Sections.successor(s, TimeStampType.class);
 
 		RatedTestCase ratedTestCase = new RatedTestCase();
 		if (timeStamp != null) {
@@ -53,13 +53,13 @@ final class TestcaseTableLineSubtreeHandler implements D3webHandler<TestcaseTabl
 			}
 		}
 
-		Section<NameType> nameSection = Sections.findSuccessor(s, NameType.class);
+		Section<NameType> nameSection = Sections.successor(s, NameType.class);
 		if (nameSection != null) {
 			String rtcName = nameSection.get().getRTCName(nameSection);
 			ratedTestCase.setName(rtcName);
 		}
 
-		List<Section<ValueType>> values = Sections.findSuccessorsOfType(s, ValueType.class);
+		List<Section<ValueType>> values = Sections.successors(s, ValueType.class);
 		for (Section<ValueType> valueSec : values) {
 			// if value is unchanged, ignore it
 			String valueString = Strings.trimQuotes(valueSec.getText());
@@ -76,7 +76,7 @@ final class TestcaseTableLineSubtreeHandler implements D3webHandler<TestcaseTabl
 			}
 
 			Section<QuestionReference> qRef =
-					Sections.findSuccessor(headerCell, QuestionReference.class);
+					Sections.successor(headerCell, QuestionReference.class);
 			if (qRef == null) continue;
 
 			String qName = Strings.trimQuotes(qRef.getText().trim());

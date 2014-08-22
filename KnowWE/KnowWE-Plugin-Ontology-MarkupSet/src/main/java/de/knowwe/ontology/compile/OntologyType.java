@@ -71,7 +71,7 @@ public class OntologyType extends DefaultMarkupType {
 
         @Override
         public void compile(PackageRegistrationCompiler compiler, Section<PackageCompileType> section) throws CompilerMessage {
-            Section<DefaultMarkupType> ontologyType = Sections.findAncestorOfType(section, DefaultMarkupType.class);
+            Section<DefaultMarkupType> ontologyType = Sections.ancestor(section, DefaultMarkupType.class);
             String ruleSetValue = DefaultMarkupType.getAnnotation(ontologyType, ANNOTATION_RULESET);
             RuleSet ruleSet = getRuleSet(ruleSetValue);
             OntologyCompiler ontologyCompiler = new OntologyCompiler(

@@ -34,7 +34,7 @@ public class AbbreviatedIndividualDefinition extends AbbreviatedResourceDefiniti
 
 			URI resourceURI = section.get().getResourceURI(core, section);
 
-			Section<DefaultMarkupType> individualMarkup = Sections.findAncestorOfType(section,
+			Section<DefaultMarkupType> individualMarkup = Sections.ancestor(section,
 					DefaultMarkupType.class);
 			List<Section<? extends AnnotationContentType>> contentTypeSections = DefaultMarkupType.getAnnotationContentSections(
 					individualMarkup, IndividualType.TYPE_ANNOTATION_NAME);
@@ -44,7 +44,7 @@ public class AbbreviatedIndividualDefinition extends AbbreviatedResourceDefiniti
 			}
 			else {
 				for (Section<? extends AnnotationContentType> contentTypeSection : contentTypeSections) {
-					Section<AbbreviatedResourceReference> resourceSection = Sections.findChildOfType(
+					Section<AbbreviatedResourceReference> resourceSection = Sections.child(
 							contentTypeSection, AbbreviatedResourceReference.class);
 					if (resourceSection.hasErrorInSubtree()) return Messages.noMessage();
 					URI typeURI = resourceSection.get().getResourceURI(core, resourceSection);

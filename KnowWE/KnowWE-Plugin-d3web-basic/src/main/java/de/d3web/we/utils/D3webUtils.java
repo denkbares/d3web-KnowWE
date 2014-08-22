@@ -233,7 +233,7 @@ public class D3webUtils {
 	public static KnowledgeBase getKnowledgeBase(String web, String title) {
 		Article article = Environment.getInstance().getArticle(web, title);
 		if (article == null) return null;
-		Section<PackageCompileType> compileSection = Sections.findSuccessor(
+		Section<PackageCompileType> compileSection = Sections.successor(
 				article.getRootSection(),
 				PackageCompileType.class);
 		if (compileSection == null) return null;

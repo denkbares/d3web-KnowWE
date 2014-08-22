@@ -41,7 +41,7 @@ public class AbbreviatedResourceReference extends AbstractType {
 	}
 
 	public String getResource(Section<? extends AbbreviatedResourceReference> section) {
-		Section<ResourceReference> resourceSection = Sections.findChildOfType(section,
+		Section<ResourceReference> resourceSection = Sections.child(section,
 				ResourceReference.class);
 		if (resourceSection == null) {
 			return null;
@@ -51,14 +51,14 @@ public class AbbreviatedResourceReference extends AbstractType {
 	}
 
 	public String getAbbreviation(Section<? extends AbbreviatedResourceReference> section) {
-		Section<AbbreviationPrefixReference> abbreviationPrefixSection = Sections.findChildOfType(
+		Section<AbbreviationPrefixReference> abbreviationPrefixSection = Sections.child(
 				section, AbbreviationPrefixReference.class);
 		String abbreviation;
 		if (abbreviationPrefixSection == null) {
 			abbreviation = Rdf2GoCore.LNS_ABBREVIATION;
 		}
 		else {
-			Section<AbbreviationReference> abbreviationSection = Sections.findChildOfType(
+			Section<AbbreviationReference> abbreviationSection = Sections.child(
 					abbreviationPrefixSection, AbbreviationReference.class);
 			if (abbreviationSection == null) {
 				return Rdf2GoCore.LNS_ABBREVIATION;

@@ -36,7 +36,7 @@ public class TagRenderer implements Renderer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void render(Section<?> sec, UserContext user, RenderResult string) {
-		Section<TagHandlerTypeContent> attrContent = Sections.findChildOfType(sec,
+		Section<TagHandlerTypeContent> attrContent = Sections.child(sec,
 				TagHandlerTypeContent.class);
 		if (attrContent == null) {
 			string.appendHtml("<div><p class='info box'>");

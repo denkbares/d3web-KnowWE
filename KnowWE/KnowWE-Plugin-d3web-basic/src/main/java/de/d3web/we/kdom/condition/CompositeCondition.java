@@ -132,7 +132,7 @@ public class CompositeCondition extends AbstractType {
     public List<Section<? extends NonTerminalCondition>> getDisjuncts(Section<? extends CompositeCondition> c) {
 
         List<Section<? extends NonTerminalCondition>> result = new ArrayList<Section<? extends NonTerminalCondition>>();
-        List<Section<Disjunct>> childrenOfType = Sections.findChildrenOfType(c, Disjunct.class);
+        List<Section<Disjunct>> childrenOfType = Sections.children(c, Disjunct.class);
 
         result.addAll(childrenOfType);
         return result;
@@ -157,7 +157,7 @@ public class CompositeCondition extends AbstractType {
     public List<Section<? extends NonTerminalCondition>> getConjuncts(Section<? extends CompositeCondition> c) {
 
         List<Section<? extends NonTerminalCondition>> result = new ArrayList<Section<? extends NonTerminalCondition>>();
-        List<Section<Conjunct>> childrenOfType = Sections.findChildrenOfType(c, Conjunct.class);
+        List<Section<Conjunct>> childrenOfType = Sections.children(c, Conjunct.class);
 
         result.addAll(childrenOfType);
         return result;
@@ -180,8 +180,8 @@ public class CompositeCondition extends AbstractType {
      * @return
      */
     public Section<? extends NonTerminalCondition> getBraced(Section<? extends CompositeCondition> c) {
-        return Sections.findChildOfType(c,
-                BracedCondition.class);
+        return Sections.child(c,
+				BracedCondition.class);
     }
 
     /**
@@ -201,8 +201,8 @@ public class CompositeCondition extends AbstractType {
      * @return
      */
     public Section<? extends NonTerminalCondition> getNegation(Section<? extends CompositeCondition> c) {
-        return Sections.findChildOfType(c,
-                NegatedExpression.class);
+        return Sections.child(c,
+				NegatedExpression.class);
     }
 
     /**
@@ -222,7 +222,7 @@ public class CompositeCondition extends AbstractType {
      * @return
      */
     public Section<? extends TerminalCondition> getTerminal(Section<? extends CompositeCondition> c) {
-        return Sections.findChildOfType(c, TerminalCondition.class);
+        return Sections.child(c, TerminalCondition.class);
     }
 
     /**

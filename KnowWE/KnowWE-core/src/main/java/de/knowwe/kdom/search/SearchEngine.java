@@ -129,7 +129,7 @@ public class SearchEngine {
 		}
 
 		List<Section<T>> sectionsWithType = new LinkedList<Section<T>>();
-		Sections.findSuccessorsOfType(section, clazz, sectionsWithType);
+		Sections.successors(section, clazz, sectionsWithType);
 
 		Collection<Result> results = new LinkedList<Result>();
 		for (Section<T> sectionWithType : sectionsWithType) {

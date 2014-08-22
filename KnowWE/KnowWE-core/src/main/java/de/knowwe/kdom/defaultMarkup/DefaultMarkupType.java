@@ -189,7 +189,7 @@ public class DefaultMarkupType extends AbstractType {
 		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
 			throw new IllegalArgumentException("section not of type DefaultMarkupType");
 		}
-		return Sections.findChildOfType(section, ContentType.class);
+		return Sections.child(section, ContentType.class);
 	}
 
 	/**
@@ -377,7 +377,7 @@ public class DefaultMarkupType extends AbstractType {
 	}
 
 	private static List<Section<AnnotationContentType>> findAnnotationContentTypes(Section<? extends Type> section) {
-		return Sections.findSuccessorsOfType(section, AnnotationContentType.class);
+		return Sections.successors(section, AnnotationContentType.class);
 	}
 
 	/**

@@ -35,7 +35,7 @@ public class QuickInterviewAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
-		Section<?> section = Sections.getSection(sectionId);
+		Section<?> section = Sections.get(sectionId);
 		if (section != null && KnowWEUtils.canView(section, context)) {
 			RenderResult result = new RenderResult(context);
 			QuickInterviewRenderer.renderInterview(section, context, result);

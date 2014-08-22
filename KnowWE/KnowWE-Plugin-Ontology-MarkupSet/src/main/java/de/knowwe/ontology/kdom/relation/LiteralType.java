@@ -58,10 +58,10 @@ public class LiteralType extends AbstractType {
 	}
 
 	public Literal getLiteral(Rdf2GoCore core, Section<LiteralType> section) {
-		Section<LiteralPart> literalPartSection = Sections.findChildOfType(section,
+		Section<LiteralPart> literalPartSection = Sections.child(section,
 				LiteralPart.class);
-		Section<XSDPart> xsdPartSection = Sections.findChildOfType(section, XSDPart.class);
-		Section<LanguageTagPart> langTagPartSection = Sections.findChildOfType(section,
+		Section<XSDPart> xsdPartSection = Sections.child(section, XSDPart.class);
+		Section<LanguageTagPart> langTagPartSection = Sections.child(section,
 				LanguageTagPart.class);
 		String literal = literalPartSection.get()
 				.getLiteral(literalPartSection);

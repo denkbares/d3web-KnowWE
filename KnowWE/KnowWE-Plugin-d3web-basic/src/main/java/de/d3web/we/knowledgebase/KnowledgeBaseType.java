@@ -147,7 +147,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 
 			@Override
 			public void compile(PackageRegistrationCompiler compiler, Section<KnowledgeBaseType> section) {
-				Section<DefaultMarkupPackageCompileType> compileSection = Sections.findSuccessor(
+				Section<DefaultMarkupPackageCompileType> compileSection = Sections.successor(
 						section, DefaultMarkupPackageCompileType.class);
 				String[] packagesToCompile = compileSection.get().getPackagesToCompile(
 						compileSection);

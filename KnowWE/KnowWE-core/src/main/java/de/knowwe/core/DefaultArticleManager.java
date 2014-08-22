@@ -50,7 +50,7 @@ public class DefaultArticleManager implements ArticleManager {
 	/**
 	 * Stores Articles for article-names
 	 */
-	private Map<String, Article> articleMap = Collections.synchronizedMap(new HashMap<>());
+	private final Map<String, Article> articleMap = Collections.synchronizedMap(new HashMap<>());
 
 	private final Collection<String> deleteAfterCompile = Collections.synchronizedSet(new HashSet<>());
 

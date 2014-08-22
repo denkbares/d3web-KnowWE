@@ -44,7 +44,7 @@ public class LoadFlowchartAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 
 		String nodeID = context.getParameter(Attributes.SECTION_ID);
-		Section<FlowchartType> section = Sections.getSection(nodeID, FlowchartType.class);
+		Section<FlowchartType> section = Sections.get(nodeID, FlowchartType.class);
 
 		if (section != null) {
 			writeSource(context, section.getText());

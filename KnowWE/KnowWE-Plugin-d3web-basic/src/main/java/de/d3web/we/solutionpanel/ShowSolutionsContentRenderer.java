@@ -89,7 +89,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 	}
 
 	private static Section<ShowSolutionsType> getShowSolutionsSection(Section<?> section) {
-		return Sections.findAncestorOfType(section, ShowSolutionsType.class);
+		return Sections.ancestor(section, ShowSolutionsType.class);
 	}
 
 	/**
@@ -184,7 +184,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		}
 
 		boolean endUserMode = false;
-		Section<ShowSolutionsType> markup = Sections.findAncestorOfType(section,
+		Section<ShowSolutionsType> markup = Sections.ancestor(section,
 				ShowSolutionsType.class);
 		String flagString = ShowSolutionsType.getEndUserModeFlag(markup);
 		if ("true".equalsIgnoreCase(flagString)) {

@@ -85,14 +85,14 @@ public class QuestionTreeQuestionRelationScript extends DashTreeTermRelationScri
 		LinkedList<Section<DashTreeElement>> augmentedChildrenList = new LinkedList();
 		for (Section<DashTreeElement> child : childrenList) {
 			augmentedChildrenList.add(child);
-			Section<AnswerDefinition> answerDef = Sections.findSuccessor(child, AnswerDefinition.class);
-			Section<NumericCondLine> numCondLine = Sections.findSuccessor(child, NumericCondLine.class);
+			Section<AnswerDefinition> answerDef = Sections.successor(child, AnswerDefinition.class);
+			Section<NumericCondLine> numCondLine = Sections.successor(child, NumericCondLine.class);
 			if (answerDef == null && numCondLine == null) continue;
 			// if we have a AnswerDefinition, look for Questions below
 			List<Section<DashTreeElement>> followUpQuestions = DashTreeUtils.findChildrenDashtreeElements(child);
 			for (Section<DashTreeElement> followUpQuestion : followUpQuestions) {
 				// we ignore &REF sections
-				if (Sections.findSuccessor(child, QuestionDefinition.class) != null) continue;
+				if (Sections.successor(child, QuestionDefinition.class) != null) continue;
 				augmentedChildrenList.addAll(followUpQuestions);
 			}
 		}

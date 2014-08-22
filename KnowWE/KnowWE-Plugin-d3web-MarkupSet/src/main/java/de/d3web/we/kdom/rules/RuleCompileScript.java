@@ -125,11 +125,11 @@ public class RuleCompileScript implements D3webCompileScript<RuleType> {
 	}
 
 	private <T extends ActionContainer> Collection<RuleAction> getRuleAction(D3webCompiler compiler, Section<RuleType> ruleSection, Class<T> containerClass) {
-		List<Section<T>> actionContainerSections = Sections.findSuccessorsOfType(ruleSection, containerClass);
+		List<Section<T>> actionContainerSections = Sections.successors(ruleSection, containerClass);
 		Collection<RuleAction> actions = new ArrayList<RuleAction>();
 		for (Section<T> actionContainerSection : actionContainerSections) {
 			@SuppressWarnings("rawtypes")
-			List<Section<D3webRuleAction>> actionSections = Sections.findSuccessorsOfType(actionContainerSection,
+			List<Section<D3webRuleAction>> actionSections = Sections.successors(actionContainerSection,
 					D3webRuleAction.class);
 			for (Section<D3webRuleAction> actionSection : actionSections) {
 				@SuppressWarnings("unchecked")
@@ -142,14 +142,14 @@ public class RuleCompileScript implements D3webCompileScript<RuleType> {
 	}
 
 	private Condition getCondition(D3webCompiler compiler, Section<RuleType> ruleSection) {
-		Section<CompositeCondition> conditionSection = Sections.findSuccessor(ruleSection,
+		Section<CompositeCondition> conditionSection = Sections.successor(ruleSection,
 				CompositeCondition.class);
 		return KDOMConditionFactory.createCondition(compiler, conditionSection);
 	}
 
 	private Condition getExceptConditions(D3webCompiler compiler, Section<RuleType> ruleSection) throws CompilerMessage {
 		List<Section<ExceptionConditionContainer>> exceptConditionSection = Sections
-				.findSuccessorsOfType(ruleSection, ExceptionConditionContainer.class);
+				.successors(ruleSection, ExceptionConditionContainer.class);
 		if (exceptConditionSection.size() > 1) {
 			throw CompilerMessage.error("There can only be one EXCEPT condition fore each rule");
 		}
@@ -157,7 +157,7 @@ public class RuleCompileScript implements D3webCompileScript<RuleType> {
 			return null;
 		}
 		Section<CompositeCondition> conditionSection = Sections
-				.findSuccessor(exceptConditionSection.get(0), CompositeCondition.class);
+				.successor(exceptConditionSection.get(0), CompositeCondition.class);
 		if (conditionSection == null) return null;
 		return KDOMConditionFactory.createCondition(compiler, conditionSection);
 	}

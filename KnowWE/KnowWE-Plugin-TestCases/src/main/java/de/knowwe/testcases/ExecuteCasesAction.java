@@ -33,7 +33,6 @@ import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * Action that gets called when cases should be executed with the
@@ -56,7 +55,7 @@ public class ExecuteCasesAction extends AbstractAction {
 			throw new IOException(e);
 		}
 
-		Section<?> section = Sections.getSection(sectionid);
+		Section<?> section = Sections.get(sectionid);
 		if (section == null) {
 			context.sendError(409, "Section '" + sectionid
 					+ "' could not be found, possibly because somebody else"

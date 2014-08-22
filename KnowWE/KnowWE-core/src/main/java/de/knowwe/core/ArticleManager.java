@@ -30,19 +30,19 @@ import de.knowwe.core.kdom.Article;
 public interface ArticleManager {
 
 	/**
-	 * Returns the Article for a given article name or title. The case of the article is ignored.
-	 *
-	 * @param title the title of the article to return
+	 * Returns the Article for a given article name/title. The case of the article is ignored.
 	 */
 	public abstract Article getArticle(String title);
 
+	/**
+	 * Returns all articles currently registered in this ArticleManager. The returned collection is unmodifiable and is
+	 * not sorted.
+	 */
 	public abstract Collection<Article> getArticles();
 
 	/**
-	 * Registers a changed or new article in the manager and also compiles it.
-	 *
-	 * @param article is the changed or new article to register
-	 * @created 20.12.2013
+	 * Registers a changed or new article in the manager and also compiles it. If this manager already contains an
+	 * article with the same name/title, the existing article will be replaced by the new one.
 	 */
 	public abstract void registerArticle(Article article);
 
@@ -61,7 +61,6 @@ public interface ArticleManager {
 	 * @created 20.12.2013
 	 */
 	void open();
-
 
 	/**
 	 * Calls this method after opening with {@link ArticleManager#open()}. It causes the compilation of articles

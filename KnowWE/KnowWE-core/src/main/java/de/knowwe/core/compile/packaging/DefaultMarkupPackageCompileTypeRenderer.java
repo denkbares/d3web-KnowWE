@@ -67,7 +67,7 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 		// render used packages and their erroneous pages
 		string.appendHtml("<div style='padding-top:1em;'>");
 		// string.append(KnowWEUtils.maskHTML("<hr>\n"));
-		Section<DefaultMarkupPackageCompileType> compileSection = Sections.findSuccessor(section,
+		Section<DefaultMarkupPackageCompileType> compileSection = Sections.successor(section,
 				DefaultMarkupPackageCompileType.class);
 		String[] packagesToCompile = compileSection.get().getPackagesToCompile(
 				compileSection);
@@ -135,7 +135,7 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 		subString.append(packageName);
 		subString.appendHtml("</span>");
 		boolean rendered = false;
-		List<Section<PackageTerm>> packageTermSections = Sections.findSuccessorsOfType(
+		List<Section<PackageTerm>> packageTermSections = Sections.successors(
 				compileSection.getArticle().getRootSection(), PackageTerm.class);
 		for (Section<PackageTerm> packageTermSection : packageTermSections) {
 			if (packageTermSection.get().getTermName(packageTermSection).equals(packageName)) {

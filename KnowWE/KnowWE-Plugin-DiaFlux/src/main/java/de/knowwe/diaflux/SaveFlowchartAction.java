@@ -74,10 +74,10 @@ public class SaveFlowchartAction extends AbstractAction {
 	 */
 	@SuppressWarnings("unchecked")
 	private void replaceExistingFlowchart(UserActionContext context, String web, String nodeID, String topic, String newText) throws IOException {
-		Section<DiaFluxType> diaFluxSection = (Section<DiaFluxType>) Sections.getSection(
+		Section<DiaFluxType> diaFluxSection = (Section<DiaFluxType>) Sections.get(
 				nodeID);
 
-		Section<FlowchartType> flowchartSection = Sections.findSuccessor(diaFluxSection,
+		Section<FlowchartType> flowchartSection = Sections.successor(diaFluxSection,
 				FlowchartType.class);
 
 		// new ID for section to be transmitted to the editor
@@ -142,7 +142,7 @@ public class SaveFlowchartAction extends AbstractAction {
 	private String save(UserActionContext context, String topic, String nodeID, String newText) throws IOException {
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(nodeID, newText);
-		Sections.ReplaceResult replaceResult = Sections.replaceSections(context, nodesMap);
+		Sections.ReplaceResult replaceResult = Sections.replace(context, nodesMap);
 		String newId = replaceResult.getSectionMapping().get(nodeID);
 		replaceResult.sendErrors(context);
 		try {

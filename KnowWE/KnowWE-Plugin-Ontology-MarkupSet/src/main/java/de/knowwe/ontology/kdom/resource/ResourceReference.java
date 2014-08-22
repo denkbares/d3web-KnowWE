@@ -47,7 +47,7 @@ public class ResourceReference extends SimpleReference {
 	public Identifier getTermIdentifier(Section<? extends Term> section) {
 		Identifier identifier = (Identifier) section.getSectionStore().getObject(IDENTIFIER_KEY);
 		if (identifier == null) {
-			Section<AbbreviatedResourceReference> abbResDef = Sections.findAncestorOfType(section,
+			Section<AbbreviatedResourceReference> abbResDef = Sections.ancestor(section,
 					AbbreviatedResourceReference.class);
 			String abbreviation = abbResDef.get().getAbbreviation(abbResDef);
 			identifier = new Identifier(abbreviation, getTermName(section));

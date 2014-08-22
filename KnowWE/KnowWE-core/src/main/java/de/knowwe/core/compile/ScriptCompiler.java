@@ -108,7 +108,7 @@ public class ScriptCompiler<C extends Compiler> {
 	 */
 	public void addSubtree(Section<?> section, Class<?>... scriptFilter) {
 		if (scriptManager.hasScriptsForSubtree(section.get())) {
-			if (typeFilter.length == 0 || Sections.canHaveSuccessorOfType(section, typeFilter)) {
+			if (typeFilter.length == 0 || Sections.canHaveSuccessor(section, typeFilter)) {
 				for (Section<?> child : section.getChildren()) {
 					addSubtree(child, scriptFilter);
 				}

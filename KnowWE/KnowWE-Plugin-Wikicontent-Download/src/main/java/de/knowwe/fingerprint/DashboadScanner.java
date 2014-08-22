@@ -25,7 +25,7 @@ public class DashboadScanner implements Scanner {
 		CIHookManager.triggerHooks(article);
 		CIBuildManager.awaitTermination();
 
-		List<Section<CIDashboardType>> dashboardTypes = Sections.findSuccessorsOfType(
+		List<Section<CIDashboardType>> dashboardTypes = Sections.successors(
 				article.getRootSection(), CIDashboardType.class);
 
 		if (dashboardTypes.isEmpty()) return;

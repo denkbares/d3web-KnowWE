@@ -108,7 +108,7 @@ public class GetToolMenuAction extends AbstractAction {
 	 * @created 10.11.2013
 	 */
 	protected Section<? extends Type> getSection(UserActionContext context, String identifier) throws IOException {
-		return Sections.getSection(identifier);
+		return Sections.get(identifier);
 	}
 
 }

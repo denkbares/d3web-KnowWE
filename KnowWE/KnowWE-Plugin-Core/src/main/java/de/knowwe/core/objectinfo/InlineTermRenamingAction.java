@@ -191,7 +191,7 @@ public class InlineTermRenamingAction extends AbstractAction {
 								termSection.get().getSectionTextAfterRename(termSection, term,
 										replacement));
 					}
-					Sections.replaceSections(context, nodesMap).sendErrors(context);
+					Sections.replace(context, nodesMap).sendErrors(context);
 					success.add(title);
 				}
 				else {

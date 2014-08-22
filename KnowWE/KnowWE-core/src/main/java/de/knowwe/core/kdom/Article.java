@@ -20,10 +20,6 @@
 
 package de.knowwe.core.kdom;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
@@ -36,11 +32,10 @@ import de.knowwe.event.ArticleCreatedEvent;
 import de.knowwe.event.KDOMCreatedEvent;
 
 /**
- * 
  * This class is the representation of one wiki article in KnowWE. It is a Type
  * that always forms the root node and only the root node of each KDOM
  * document-parse-tree.
- * 
+ *
  * @author Jochen
  */
 public class Article {
@@ -70,7 +65,7 @@ public class Article {
 	}
 
 	public static Article createArticle(String text, String title,
-			String web, boolean fullParse) {
+										String web, boolean fullParse) {
 		Article article = null;
 		try {
 			article = new Article(text, title, web, fullParse);
@@ -127,7 +122,7 @@ public class Article {
 		Section<?> dummySection = Section.createSection(text, getRootType(), null);
 		dummySection.setArticle(this);
 		getRootType().getParser().parse(text, dummySection);
-		rootSection = Sections.findChildOfType(dummySection, RootType.class);
+		rootSection = Sections.child(dummySection, RootType.class);
 		rootSection.setParent(null);
 
 		// rootSection.clearReusedSuccessorRecursively();
@@ -142,7 +137,7 @@ public class Article {
 
 	private void unregisterSectionRecursively(Section<?> section) {
 		Messages.unregisterMessagesSection(section);
-		Sections.unregisterOrUpdateSectionID(section, this);
+		Section.unregisterOrUpdateSectionID(section, this);
 		for (Section<?> childSection : section.getChildren()) {
 			unregisterSectionRecursively(childSection);
 		}
@@ -179,27 +174,7 @@ public class Article {
 		return rootSection;
 	}
 
-	private final Map<String, Map<String, List<Section<?>>>> knownResults =
-			new HashMap<String, Map<String, List<Section<?>>>>();
-
 	private ArticleManager articleManager;
-
-	/**
-	 * Finds all children with the same path of Types in the KDOM. The
-	 * <tt>path</tt> has to start with the type Article and end with the Type of
-	 * the Sections you are looking for.
-	 * 
-	 * @return Map of Sections, using their originalText as key.
-	 */
-	public Map<String, List<Section<?>>> findSectionsWithTypePathCached(List<Class<? extends Type>> path) {
-		String stringPath = path.toString();
-		Map<String, List<Section<?>>> foundChildren = knownResults.get(stringPath);
-		if (foundChildren == null) {
-			foundChildren = Sections.findSuccessorsWithTypePathAsMap(rootSection, path, 0);
-			knownResults.put(stringPath, foundChildren);
-		}
-		return foundChildren;
-	}
 
 	public String collectTextsFromLeaves() {
 		return this.rootSection.collectTextsFromLeaves();
@@ -207,9 +182,9 @@ public class Article {
 
 	/**
 	 * Returns the full text this article is build from.
-	 * 
-	 * @created 25.11.2013
+	 *
 	 * @return the full text of this article
+	 * @created 25.11.2013
 	 */
 	public String getText() {
 		return getRootSection().getText();

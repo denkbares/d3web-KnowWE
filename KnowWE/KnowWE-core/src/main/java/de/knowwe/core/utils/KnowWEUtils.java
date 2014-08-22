@@ -409,7 +409,7 @@ public class KnowWEUtils {
 	 * @created 29.11.2013
 	 */
 	public static boolean canView(Collection<Section<?>> sections, UserContext user) {
-		return canView(Sections.getArticles(sections), user);
+		return canView(Sections.collectArticles(sections), user);
 	}
 
 	/**
@@ -465,7 +465,7 @@ public class KnowWEUtils {
 	 * @created 29.11.2013
 	 */
 	public static boolean canWrite(Collection<Section<?>> sections, UserContext user) {
-		return canWrite(Sections.getArticles(sections), user);
+		return canWrite(Sections.collectArticles(sections), user);
 	}
 
 	public static String getRealPath(String varPath) {
@@ -704,7 +704,7 @@ public class KnowWEUtils {
 				Matcher matcher = cookieNamePattern.matcher(name);
 				if (!matcher.find()) continue;
 				String sectionId = matcher.group(sectionIdGroup);
-				Section<?> section = Sections.getSection(sectionId);
+				Section<?> section = Sections.get(sectionId);
 				if (section != null) continue;
 				cookie.setMaxAge(0);
 				((UserActionContext) context).getResponse().addCookie(cookie);
@@ -810,7 +810,7 @@ public class KnowWEUtils {
 			return Compilers.getCompiler(KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB),
 					DefaultGlobalCompiler.class).getTerminologyManager();
 		}
-		Section<PackageCompileType> compileSection = Sections.findSuccessor(
+		Section<PackageCompileType> compileSection = Sections.successor(
 				article.getRootSection(), PackageCompileType.class);
 		// to emulate old behavior (not return null) we return an empty
 		// TerminologyManager

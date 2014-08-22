@@ -68,7 +68,7 @@ public class ReplaceKDOMNodeAction extends AbstractAction {
 
 		String result = "done";
 
-		ReplaceResult replaceResult = Sections.replaceSections(context, nodesMap);
+		ReplaceResult replaceResult = Sections.replace(context, nodesMap);
 		replaceResult.sendErrors(context);
 		Map<String, String> newSectionIDs = replaceResult.getSectionMapping();
 		if (newSectionIDs != null && newSectionIDs.size() > 1) {

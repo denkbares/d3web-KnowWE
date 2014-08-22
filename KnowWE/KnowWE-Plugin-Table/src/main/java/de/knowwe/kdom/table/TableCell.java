@@ -68,7 +68,7 @@ public class TableCell extends AbstractType {
 	 * @return true if table head, otherwise false.
 	 */
 	public static boolean isTableHead(Section<? extends TableCell> tableCell) {
-		return Sections.findChildOfType(tableCell, TableHeadStart.class) != null;
+		return Sections.child(tableCell, TableHeadStart.class) != null;
 	}
 
 	/**

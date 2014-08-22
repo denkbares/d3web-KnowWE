@@ -87,9 +87,9 @@ public class SolutionStateCond extends D3webCondition<SolutionStateCond> {
 
 	@Override
 	protected Condition createCondition(D3webCompiler compiler, Section<SolutionStateCond> s) {
-		Section<SolutionReference> sRef = Sections.findSuccessor(s,
+		Section<SolutionReference> sRef = Sections.successor(s,
 				SolutionReference.class);
-		Section<SolutionStateType> state = Sections.findSuccessor(s,
+		Section<SolutionStateType> state = Sections.successor(s,
 				SolutionStateType.class);
 		if (sRef != null && state != null) {
 			Solution solution = sRef.get().getTermObject(compiler, sRef);

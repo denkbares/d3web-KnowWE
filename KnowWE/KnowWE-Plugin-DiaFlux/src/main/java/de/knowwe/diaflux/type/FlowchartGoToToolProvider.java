@@ -57,16 +57,16 @@ public class FlowchartGoToToolProvider implements ToolProvider {
 			if (section.get() instanceof ExitNodeDef) {
 				// if the outgoing edge of the calling node uses processed
 				// instead of an exit node, we also want to show the parent flow
-				Section<FlowchartType> flowchartSection = Sections.findAncestorOfType(
+				Section<FlowchartType> flowchartSection = Sections.ancestor(
 						section, FlowchartType.class);
-				Section<FlowchartTermDef> flowTermDef = Sections.findSuccessor(flowchartSection,
+				Section<FlowchartTermDef> flowTermDef = Sections.successor(flowchartSection,
 						FlowchartTermDef.class);
 				// we get all references to the owner flow of this exit node
 				Collection<Section<?>> flowReferenceSections = terminologyManager.getTermReferenceSections(KnowWEUtils.getTermIdentifier(flowTermDef));
 				for (Section<?> flowReference : flowReferenceSections) {
 					// now we look for the references that are processed
 					// conditions
-					Section<FlowchartProcessedConditionType> processed = Sections.findAncestorOfType(
+					Section<FlowchartProcessedConditionType> processed = Sections.ancestor(
 							flowReference, FlowchartProcessedConditionType.class);
 					if (processed != null) {
 						tools.add(createGoToTool(flowReference));
@@ -89,7 +89,7 @@ public class FlowchartGoToToolProvider implements ToolProvider {
 	}
 
 	private OpenFlowTool createGoToTool(Section<?> termSection) {
-		Section<FlowchartType> flowchartSection = Sections.findAncestorOfType(
+		Section<FlowchartType> flowchartSection = Sections.ancestor(
 				termSection, FlowchartType.class);
 		String link = KnowWEUtils.getURLLink(flowchartSection);
 		String title = "Open '" + FlowchartType.getFlowchartName(flowchartSection) + "'";

@@ -15,7 +15,7 @@ public abstract class OperationAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String sectionID = context.getParameter(Attributes.SECTION_ID);
-		Section<?> section = Sections.getSection(sectionID);
+		Section<?> section = Sections.get(sectionID);
 		if (section == null) {
 			context.sendError(404, "no such section");
 			return;

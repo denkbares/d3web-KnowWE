@@ -67,14 +67,14 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 		List<QASet> qasets = new ArrayList<QASet>();
 		a.setQASets(qasets);
 
-		Section<QuestionReference> questionRef = Sections.findSuccessor(s, QuestionReference.class);
+		Section<QuestionReference> questionRef = Sections.successor(s, QuestionReference.class);
 		if (questionRef != null) {
 
 			Question object = questionRef.get().getTermObject(compiler, questionRef);
 			qasets.add(object);
 		}
 
-		Section<QuestionnaireReference> questionnaireRef = Sections.findSuccessor(s,
+		Section<QuestionnaireReference> questionnaireRef = Sections.successor(s,
 				QuestionnaireReference.class);
 		if (questionnaireRef != null) {
 

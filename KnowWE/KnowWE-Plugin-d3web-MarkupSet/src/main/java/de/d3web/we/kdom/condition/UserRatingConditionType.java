@@ -106,8 +106,8 @@ public class UserRatingConditionType extends D3webCondition<UserRatingConditionT
 
 	@Override
 	protected Condition createCondition(D3webCompiler compiler, Section<UserRatingConditionType> s) {
-		Section<SolutionReference> sRef = Sections.findSuccessor(s, SolutionReference.class);
-		Section<UserRatingType> ratingSec = Sections.findSuccessor(s, UserRatingType.class);
+		Section<SolutionReference> sRef = Sections.successor(s, SolutionReference.class);
+		Section<UserRatingType> ratingSec = Sections.successor(s, UserRatingType.class);
 		if (sRef != null && ratingSec != null) {
 			Solution solution = sRef.get().getTermObject(compiler, sRef);
 			UserEvaluation eval = UserRatingType.getUserEvaluationType(ratingSec);

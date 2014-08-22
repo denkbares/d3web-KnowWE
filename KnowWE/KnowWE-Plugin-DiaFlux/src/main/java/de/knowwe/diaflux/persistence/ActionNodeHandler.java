@@ -50,7 +50,7 @@ public class ActionNodeHandler extends AbstractNodeHandler<ActionType> {
 	public boolean canCreateNode(D3webCompiler compiler, KnowledgeBase kb, Section<NodeType> nodeSection) {
 
 		@SuppressWarnings("rawtypes")
-		Section<D3webRuleAction> actionSection = Sections.findSuccessor(nodeSection,
+		Section<D3webRuleAction> actionSection = Sections.successor(nodeSection,
 				D3webRuleAction.class);
 
 		return actionSection != null;
@@ -61,7 +61,7 @@ public class ActionNodeHandler extends AbstractNodeHandler<ActionType> {
 			Section<FlowchartType> flowSection, String id) {
 
 		@SuppressWarnings("rawtypes")
-		Section<D3webRuleAction> ruleAction = Sections.findSuccessor(nodeSection,
+		Section<D3webRuleAction> ruleAction = Sections.successor(nodeSection,
 				D3webRuleAction.class);
 
 		@SuppressWarnings("unchecked")

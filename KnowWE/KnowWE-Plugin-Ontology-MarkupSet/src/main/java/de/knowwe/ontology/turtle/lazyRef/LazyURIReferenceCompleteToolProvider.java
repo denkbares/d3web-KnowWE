@@ -31,7 +31,7 @@ public class LazyURIReferenceCompleteToolProvider implements ToolProvider {
 	}
 
 	private Tool createModificationTool(Section<?> section, Identifier identifier) {
-		Section<DefaultMarkupType> defaultMarkup = Sections.findAncestorOfType(section,
+		Section<DefaultMarkupType> defaultMarkup = Sections.ancestor(section,
 				DefaultMarkupType.class);
 		String defaultMarkupID = defaultMarkup.getID();
 

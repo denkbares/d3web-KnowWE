@@ -243,7 +243,7 @@ public class FlowchartUtils {
 
 		for (Article article : manager.getArticles()) {
 			List<Section<FlowchartType>> matches = new LinkedList<>();
-			Sections.findSuccessorsOfType(article.getRootSection(), FlowchartType.class, matches);
+			Sections.successors(article.getRootSection(), FlowchartType.class, matches);
 			for (Section<FlowchartType> match : matches) {
 				if (flowName.equalsIgnoreCase(FlowchartType.getFlowchartName(match))) {
 					// simply return the first matching flowchart in we found in
@@ -276,7 +276,7 @@ public class FlowchartUtils {
 					.get().getPackagesToCompile(compileSection));
 			for (Section<?> possibleSection : sectionsOfPackage) {
 				if (!(possibleSection.get() instanceof DiaFluxType)) continue;
-				Section<FlowchartType> flowchart = Sections.findSuccessor(
+				Section<FlowchartType> flowchart = Sections.successor(
 						possibleSection, FlowchartType.class);
 				if (flowchart == null) continue;
 				String flowName = FlowchartType.getFlowchartName(flowchart);
@@ -308,7 +308,7 @@ public class FlowchartUtils {
 	 * @created 02.05.2014
 	 */
 	public static DiaFluxElement findObject(Section<? extends AbstractXMLType> node, KnowledgeBase kb) {
-		Section<FlowchartType> flowType = Sections.findAncestorOfType(node, FlowchartType.class);
+		Section<FlowchartType> flowType = Sections.ancestor(node, FlowchartType.class);
 
 		String id = AbstractXMLType.getAttributes(node).get("fcid");
 		String flowName = FlowchartType.getFlowchartName(flowType);

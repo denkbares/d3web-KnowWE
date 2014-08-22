@@ -66,7 +66,7 @@ public class AnswerLine extends AbstractType {
 					Section<? extends DashTreeElement> dashFather = DashTreeUtils
 							.getParentDashTreeElement(dashTreeElement);
 					if (dashFather != null
-							&& Sections.findSuccessor(dashFather, QuestionLine.class) != null) {
+							&& Sections.successor(dashFather, QuestionLine.class) != null) {
 						return true;
 					}
 				}
@@ -102,7 +102,7 @@ public class AnswerLine extends AbstractType {
 			this.setRenderer(StyleRenderer.KEYWORDS);
 
 			this.addCompileScript((D3webCompileScript<InitFlag>) (compiler, section) -> {
-				Section<AnswerDefinition> aDef = Sections.findSuccessor(
+				Section<AnswerDefinition> aDef = Sections.successor(
 						section.getParent(), AnswerDefinition.class);
 
 				Section<? extends QuestionDefinition> qdef = aDef.get().getQuestionSection(aDef);
@@ -149,7 +149,7 @@ public class AnswerLine extends AbstractType {
 			this.setRenderer(StyleRenderer.PROMPT);
 			this.addCompileScript((D3webHandler<AnswerText>) (compiler, sec) -> {
 
-				Section<AnswerDefinition> aDef = Sections.findSuccessor(
+				Section<AnswerDefinition> aDef = Sections.successor(
 						sec.getParent(), AnswerDefinition.class);
 
 				Section<? extends QuestionDefinition> qSec = aDef.get().getQuestionSection(aDef);

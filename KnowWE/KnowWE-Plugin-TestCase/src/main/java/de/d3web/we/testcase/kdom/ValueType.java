@@ -50,8 +50,8 @@ public class ValueType extends AbstractType {
 
 			@Override
 			public Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s) {
-				Section<RatedFinding> finding = Sections.findAncestorOfType(s, RatedFinding.class);
-				return Sections.findChildOfType(finding, QuestionReference.class);
+				Section<RatedFinding> finding = Sections.ancestor(s, RatedFinding.class);
+				return Sections.child(finding, QuestionReference.class);
 			}
 		};
 

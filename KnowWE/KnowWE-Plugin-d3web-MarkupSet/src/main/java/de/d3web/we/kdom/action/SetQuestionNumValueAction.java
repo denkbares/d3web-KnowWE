@@ -78,12 +78,12 @@ public class SetQuestionNumValueAction extends D3webRuleAction<SolutionValueAssi
 	public PSAction createAction(D3webCompiler compiler, Section<SolutionValueAssignment> s) {
 		Object value;
 
-		if (Sections.findSuccessor(s, UnknownValueType.class) != null) {
+		if (Sections.successor(s, UnknownValueType.class) != null) {
 			value = Unknown.getInstance();
 		}
 		else {
 			Section<de.knowwe.core.kdom.basicType.Number> numberSec = Sections
-					.findSuccessor(s, de.knowwe.core.kdom.basicType.Number.class);
+					.successor(s, de.knowwe.core.kdom.basicType.Number.class);
 
 			if (numberSec == null) return null;
 
@@ -91,7 +91,7 @@ public class SetQuestionNumValueAction extends D3webRuleAction<SolutionValueAssi
 					de.knowwe.core.kdom.basicType.Number.getNumber(numberSec));
 		}
 
-		Section<QuestionReference> qRef = Sections.findSuccessor(s, QuestionReference.class);
+		Section<QuestionReference> qRef = Sections.successor(s, QuestionReference.class);
 
 		if (qRef == null) return null;
 

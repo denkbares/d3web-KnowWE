@@ -66,7 +66,7 @@ public class QuickInterviewLoadAction extends AbstractAction {
 		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
 
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
-		Section<?> section = Sections.getSection(sectionId);
+		Section<?> section = Sections.get(sectionId);
 		if (section != null && KnowWEUtils.canView(section, context)) {
 
 			KnowledgeBase kb = D3webUtils.getKnowledgeBase(section);

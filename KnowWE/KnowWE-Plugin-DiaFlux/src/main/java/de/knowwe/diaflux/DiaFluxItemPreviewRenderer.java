@@ -28,22 +28,22 @@ public class DiaFluxItemPreviewRenderer extends AbstractPreviewRenderer {
 
 	@Override
 	public void render(Section<?> section, Collection<Section<?>> relevantSubSections, UserContext user, RenderResult result) {
-		Section<FlowchartType> self = Sections.findSuccessor(section, FlowchartType.class);
+		Section<FlowchartType> self = Sections.successor(section, FlowchartType.class);
 		renderFlowchartName(self, user, result);
 
 		// build sets first to avoid duplicates
 		Set<Section<NodeType>> nodes = new LinkedHashSet<Section<NodeType>>();
 		Set<Section<EdgeType>> edges = new LinkedHashSet<Section<EdgeType>>();
 		if (relevantSubSections.size() <= 1) {
-			relevantSubSections.addAll(Sections.findSuccessorsOfType(section, StartType.class));
-			relevantSubSections.addAll(Sections.findSuccessorsOfType(section, ExitType.class));
+			relevantSubSections.addAll(Sections.successors(section, StartType.class));
+			relevantSubSections.addAll(Sections.successors(section, ExitType.class));
 		}
 		for (Section<?> item : relevantSubSections) {
-			Section<NodeType> node = Sections.findAncestorOfType(item, NodeType.class);
+			Section<NodeType> node = Sections.ancestor(item, NodeType.class);
 			if (node != null) {
 				nodes.add(node);
 			}
-			Section<EdgeType> edge = Sections.findAncestorOfType(item, EdgeType.class);
+			Section<EdgeType> edge = Sections.ancestor(item, EdgeType.class);
 			if (edge != null) {
 				edges.add(edge);
 			}
@@ -60,9 +60,9 @@ public class DiaFluxItemPreviewRenderer extends AbstractPreviewRenderer {
 
 	private void renderFlowchartName(Section<FlowchartType> self, UserContext user, RenderResult result) {
 		Section<FlowchartXMLHeadType> head =
-				Sections.findSuccessor(self, FlowchartXMLHeadType.class);
+				Sections.successor(self, FlowchartXMLHeadType.class);
 		if (head != null) {
-			Section<FlowchartTermDef> term = Sections.findSuccessor(head, FlowchartTermDef.class);
+			Section<FlowchartTermDef> term = Sections.successor(head, FlowchartTermDef.class);
 			if (term != null) {
 				result.append(term, user);
 				return;
@@ -76,18 +76,18 @@ public class DiaFluxItemPreviewRenderer extends AbstractPreviewRenderer {
 		result.appendHtml("<div class='preview edge ")
 				.append(getSessionStateCSS(edge, user))
 				.appendHtml("'>&nbsp;&nbsp;").append("- Edge ");
-		Section<GuardType> guard = Sections.findSuccessor(edge, GuardType.class);
+		Section<GuardType> guard = Sections.successor(edge, GuardType.class);
 		result.append(guard, user);
 		result.appendHtml("</div>");
 	}
 
 	private void renderNode(Section<NodeType> node, UserContext user, RenderResult result) {
-		Section<NodeContentType> action = Sections.findSuccessor(node, NodeContentType.class);
+		Section<NodeContentType> action = Sections.successor(node, NodeContentType.class);
 		String nodeTypeName = "Node";
-		if (Sections.findSuccessor(node, StartType.class) != null) {
+		if (Sections.successor(node, StartType.class) != null) {
 			nodeTypeName = "StartNode";
 		}
-		else if (Sections.findSuccessor(node, ExitType.class) != null) {
+		else if (Sections.successor(node, ExitType.class) != null) {
 			nodeTypeName = "ExitNode";
 		}
 		result.appendHtml("<div class='preview node ")
@@ -104,47 +104,47 @@ public class DiaFluxItemPreviewRenderer extends AbstractPreviewRenderer {
 	}
 
 	private String getNodeCSS(Section<NodeContentType> action) {
-		if (Sections.findChildOfType(action, StartType.class) != null) return "type_Start";
-		if (Sections.findChildOfType(action, ExitType.class) != null) return "type_Exit";
-		if (Sections.findChildOfType(action, ActionType.class) != null) return "type_Action";
-		if (Sections.findChildOfType(action, CommentType.class) != null) return "type_Comment";
-		if (Sections.findChildOfType(action, SnapshotType.class) != null) return "type_Snapshot";
-		if (Sections.findChildOfType(action, DecisionType.class) != null) return "type_Decision";
+		if (Sections.child(action, StartType.class) != null) return "type_Start";
+		if (Sections.child(action, ExitType.class) != null) return "type_Exit";
+		if (Sections.child(action, ActionType.class) != null) return "type_Action";
+		if (Sections.child(action, CommentType.class) != null) return "type_Comment";
+		if (Sections.child(action, SnapshotType.class) != null) return "type_Snapshot";
+		if (Sections.child(action, DecisionType.class) != null) return "type_Decision";
 		return "type_Unexpected";
 	}
 
 	private void renderNodePreviewHtml(Section<NodeContentType> nodeSection, UserContext user, RenderResult result) {
-		Section<?> section = Sections.findChildOfType(nodeSection, StartType.class);
+		Section<?> section = Sections.child(nodeSection, StartType.class);
 		if (section != null) {
 			result.append(section, user);
 			return;
 		}
 
-		section = Sections.findChildOfType(nodeSection, ExitType.class);
+		section = Sections.child(nodeSection, ExitType.class);
 		if (section != null) {
 			result.append(section, user);
 			return;
 		}
 
-		section = Sections.findChildOfType(nodeSection, ActionType.class);
+		section = Sections.child(nodeSection, ActionType.class);
 		if (section != null) {
 			result.append(section, user);
 			return;
 		}
 
-		section = Sections.findChildOfType(nodeSection, CommentType.class);
+		section = Sections.child(nodeSection, CommentType.class);
 		if (section != null) {
 			renderPrefixedXMLContent("Comment: ", section, user, result);
 			return;
 		}
 
-		section = Sections.findChildOfType(nodeSection, SnapshotType.class);
+		section = Sections.child(nodeSection, SnapshotType.class);
 		if (section != null) {
 			renderPrefixedXMLContent("", section, user, result);
 			return;
 		}
 
-		section = Sections.findChildOfType(nodeSection, DecisionType.class);
+		section = Sections.child(nodeSection, DecisionType.class);
 		if (section != null) {
 			result.append(section, user);
 			return;

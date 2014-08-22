@@ -49,7 +49,7 @@ public class InstantEditEnableAction extends AbstractAction {
 			return;
 		}
 
-		if (Sections.getSection(id) == null) {
+		if (Sections.get(id) == null) {
 			context.sendError(409, "Section '" + id
 					+ "' could not be found, possibly because somebody else"
 					+ " has edited the page.");

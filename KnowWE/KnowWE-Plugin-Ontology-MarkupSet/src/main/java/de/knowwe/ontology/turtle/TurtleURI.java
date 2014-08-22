@@ -48,7 +48,7 @@ public class TurtleURI extends AbbreviatedResourceReference implements NodeProvi
 	public Node getNode(Section<TurtleURI> section, Rdf2GoCompiler compiler) {
 		Rdf2GoCore core = compiler.getRdf2GoCore();
 		String turtleURIText = section.getText();
-		Section<ResourceReference> ref = Sections.findSuccessor(section, ResourceReference.class);
+		Section<ResourceReference> ref = Sections.successor(section, ResourceReference.class);
 		if (ref != null) {
 			Identifier identifier = ref.get().getTermIdentifier(ref);
 			return getNodeForIdentifier(core, identifier);

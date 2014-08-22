@@ -145,8 +145,8 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 
 	@Override
 	public PSAction createAction(D3webCompiler compiler, Section<SolutionValueAssignment> s) {
-		Section<SolutionReference> solutionRef = Sections.findSuccessor(s, SolutionReference.class);
-		Section<ScorePoint> scoreRef = Sections.findSuccessor(s, ScorePoint.class);
+		Section<SolutionReference> solutionRef = Sections.successor(s, SolutionReference.class);
+		Section<ScorePoint> scoreRef = Sections.successor(s, ScorePoint.class);
 		if (scoreRef == null || solutionRef == null) return null;
 		Solution solution = solutionRef.get().getTermObject(compiler, solutionRef);
 		Score score = D3webUtils.getScoreForString(scoreRef.getText());

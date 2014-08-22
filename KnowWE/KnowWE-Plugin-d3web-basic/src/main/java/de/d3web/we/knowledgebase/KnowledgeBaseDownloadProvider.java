@@ -58,7 +58,7 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 	}
 
 	protected Tool getDownloadTool(Section<?> section, UserContext userContext) {
-		Section<PackageCompileType> compileSection = Sections.findSuccessor(section,
+		Section<PackageCompileType> compileSection = Sections.successor(section,
 				PackageCompileType.class);
 		if (compileSection == null) {
 			return null;
@@ -86,7 +86,7 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 	}
 
 	protected Tool getQRCodeTool(Section<?> section, UserContext userContext) {
-		Section<PackageCompileType> compileSection = Sections.findSuccessor(section,
+		Section<PackageCompileType> compileSection = Sections.successor(section,
 				PackageCompileType.class);
 		if (compileSection == null) {
 			return null;

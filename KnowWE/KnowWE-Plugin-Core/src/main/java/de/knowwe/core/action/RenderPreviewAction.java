@@ -105,7 +105,7 @@ public class RenderPreviewAction extends AbstractAction {
 		String[] ids = nodeIDs.split(",");
 		List<Section<?>> sections = new LinkedList<Section<?>>();
 		for (String sectionID : ids) {
-			Section<? extends Type> section = Sections.getSection(sectionID);
+			Section<? extends Type> section = Sections.get(sectionID);
 			if (section == null) {
 				result.put(OUTDATED);
 				return;

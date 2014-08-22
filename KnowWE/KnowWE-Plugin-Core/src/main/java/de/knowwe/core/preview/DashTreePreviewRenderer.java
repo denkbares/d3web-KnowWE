@@ -26,15 +26,15 @@ public class DashTreePreviewRenderer extends AbstractPreviewRenderer {
 
 	@Override
 	public void render(Section<?> section, Collection<Section<?>> relevantSubSections, UserContext user, RenderResult result) {
-		Section<DashTreeElement> self = Sections.findChildOfType(section, DashTreeElement.class);
+		Section<DashTreeElement> self = Sections.child(section, DashTreeElement.class);
 		renderDashTreeElement(self, user, result);
 		int count = 0;
-		for (Section<DashSubtree> child : Sections.findChildrenOfType(section, DashSubtree.class)) {
+		for (Section<DashSubtree> child : Sections.children(section, DashSubtree.class)) {
 			if (++count > maxChildren) {
 				result.appendJSPWikiMarkup(ELLIPSE);
 				break;
 			}
-			Section<DashTreeElement> item = Sections.findChildOfType(child, DashTreeElement.class);
+			Section<DashTreeElement> item = Sections.child(child, DashTreeElement.class);
 			renderDashTreeElement(item, user, result);
 		}
 	}

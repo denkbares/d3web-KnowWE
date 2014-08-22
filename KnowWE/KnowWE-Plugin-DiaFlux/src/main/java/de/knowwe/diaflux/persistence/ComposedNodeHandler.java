@@ -48,7 +48,7 @@ public class ComposedNodeHandler extends AbstractNodeHandler<ActionType> {
 	@Override
 	public boolean canCreateNode(D3webCompiler compiler, KnowledgeBase kb, Section<NodeType> nodeSection) {
 		return super.canCreateNode(compiler, kb, nodeSection)
-				&& Sections.findSuccessor(nodeSection, CallFlowActionType.class) != null;
+				&& Sections.successor(nodeSection, CallFlowActionType.class) != null;
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class ComposedNodeHandler extends AbstractNodeHandler<ActionType> {
 			Section<FlowchartType> flowSection, String id) {
 
 		Section<CallFlowActionType> section =
-				Sections.findSuccessor(nodeSection, CallFlowActionType.class);
+				Sections.successor(nodeSection, CallFlowActionType.class);
 
 		String flowName = CallFlowActionType.getFlowName(section);
 		String nodeName = CallFlowActionType.getStartNodeName(section);

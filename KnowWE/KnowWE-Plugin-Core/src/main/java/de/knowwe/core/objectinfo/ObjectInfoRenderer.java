@@ -85,7 +85,7 @@ public class ObjectInfoRenderer implements Renderer {
 		Identifier termIdentifier = getTermIdentifier(userContext, section);
 		renderContent(termIdentifier, userContext, content);
 
-		Section<ObjectInfoType> tagNameSection = Sections.findSuccessor(
+		Section<ObjectInfoType> tagNameSection = Sections.successor(
 				section, ObjectInfoType.class);
 		String sectionID = section.getID();
 		ToolSet tools = ToolUtils.getTools(tagNameSection, userContext);
@@ -409,9 +409,9 @@ public class ObjectInfoRenderer implements Renderer {
 
 	private static Type getSurroundingMarkupName(Section<?> section) {
 		if (section.get() instanceof DefaultMarkupType) return section.get();
-		Section<?> root = Sections.findAncestorOfType(section, DefaultMarkupType.class);
+		Section<?> root = Sections.ancestor(section, DefaultMarkupType.class);
 		if (root != null) return root.get();
-		root = Sections.findAncestorOfType(section, TagHandlerType.class);
+		root = Sections.ancestor(section, TagHandlerType.class);
 		if (root != null) return root.get();
 		return section.getParent().get();
 	}

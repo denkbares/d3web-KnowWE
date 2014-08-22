@@ -50,7 +50,7 @@ public abstract class D3webCondition<T extends D3webCondition<T>>
 
 	public static Condition findCondition(D3webCompiler compiler, Section<?> parent) {
 		@SuppressWarnings("rawtypes")
-		Section<D3webCondition> section = Sections.findSuccessor(parent, D3webCondition.class);
+		Section<D3webCondition> section = Sections.successor(parent, D3webCondition.class);
 		@SuppressWarnings("unchecked")
 		Condition condition = section.get().getCondition(compiler, section);
 		return condition;

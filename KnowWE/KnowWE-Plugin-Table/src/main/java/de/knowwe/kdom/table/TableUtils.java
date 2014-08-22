@@ -37,15 +37,15 @@ public class TableUtils {
 	 */
 	public static boolean isHeaderRow(Section<?> tableSection) {
 		Section<?> tableLine = getTableLine(tableSection);
-		Section<Table> table = Sections.findAncestorOfType(tableLine, Table.class);
-		Section<TableLine> headerLine = Sections.findSuccessor(table, TableLine.class);
+		Section<Table> table = Sections.ancestor(tableLine, Table.class);
+		Section<TableLine> headerLine = Sections.successor(table, TableLine.class);
 		return headerLine == tableLine;
 	}
 
 	public static Section<?> getTableLine(Section<?> tableSection) {
 		Section<?> tableLine = tableSection.get() instanceof TableLine
 				? tableSection
-				: Sections.findAncestorOfType(tableSection, TableLine.class);
+				: Sections.ancestor(tableSection, TableLine.class);
 		return tableLine;
 	}
 
@@ -58,7 +58,7 @@ public class TableUtils {
 	public static int getColumn(Section<?> columnSection) {
 		Section<?> tableCell = getTableCell(columnSection);
 		Section<?> tableLine = getTableLine(tableCell);
-		List<Section<TableCell>> tableCells = Sections.findSuccessorsOfType(tableLine,
+		List<Section<TableCell>> tableCells = Sections.successors(tableLine,
 				TableCell.class);
 		return tableCells.indexOf(tableCell);
 	}
@@ -66,20 +66,20 @@ public class TableUtils {
 	public static Section<?> getTableCell(Section<?> columnSection) {
 		Section<?> tableCell = columnSection.get() instanceof TableCell
 				? columnSection
-				: Sections.findAncestorOfType(columnSection, TableCell.class);
+				: Sections.ancestor(columnSection, TableCell.class);
 		return tableCell;
 	}
 
 	public static int getColumns(Section<?> tableSection) {
 		Section<?> tableLine = getTableLine(tableSection);
-		List<Section<TableCell>> tableCells = Sections.findSuccessorsOfType(tableLine,
+		List<Section<TableCell>> tableCells = Sections.successors(tableLine,
 				TableCell.class);
 		return tableCells.size();
 	}
 
 	public static int getRows(Section<?> tableSection) {
-		Section<Table> table = Sections.findAncestorOfType(tableSection, Table.class);
-		List<Section<TableLine>> rows = Sections.findSuccessorsOfType(table, TableLine.class);
+		Section<Table> table = Sections.ancestor(tableSection, Table.class);
+		List<Section<TableLine>> rows = Sections.successors(table, TableLine.class);
 		return rows.size();
 	}
 
@@ -91,8 +91,8 @@ public class TableUtils {
 	 */
 	public static int getRow(Section<?> rowSection) {
 		Section<?> tableLine = getTableLine(rowSection);
-		Section<Table> table = Sections.findAncestorOfType(tableLine, Table.class);
-		List<Section<TableLine>> lines = Sections.findSuccessorsOfType(table, TableLine.class);
+		Section<Table> table = Sections.ancestor(tableLine, Table.class);
+		List<Section<TableLine>> lines = Sections.successors(table, TableLine.class);
 		return lines.indexOf(tableLine);
 	}
 
@@ -129,7 +129,7 @@ public class TableUtils {
 	 */
 	public static boolean sortOption(Section<?> sec) {
 		boolean sortable = false;
-		Section<Table> tableType = Sections.findAncestorOfType(sec, Table.class);
+		Section<Table> tableType = Sections.ancestor(sec, Table.class);
 		if (sec.get() instanceof Table) {
 			Table table = (Table) sec.get();
 			sortable = table.isSortable();
@@ -153,7 +153,7 @@ public class TableUtils {
 		boolean sortable = sortOption(s);
 		boolean isHeaderLine = false;
 
-		Section<TableLine> tableLine = Sections.findAncestorOfType(s, TableLine.class);
+		Section<TableLine> tableLine = Sections.ancestor(s, TableLine.class);
 		if (tableLine != null) {
 			isHeaderLine = TableLine.isHeaderLine(tableLine);
 		}
@@ -162,7 +162,7 @@ public class TableUtils {
 	}
 
 	public static Type getTableType(Section<?> s) {
-		Section<? extends Table> table = Sections.findAncestorOfType(s, Table.class);
+		Section<? extends Table> table = Sections.ancestor(s, Table.class);
 		return table != null ? table.get() : null;
 	}
 
@@ -178,9 +178,9 @@ public class TableUtils {
 	public static Section<TableCellContent> getColumnHeader(Section<?> columnSection) {
 		int column = getColumn(columnSection);
 		if (column == -1) return null;
-		Section<Table> table = Sections.findAncestorOfType(columnSection, Table.class);
-		Section<TableLine> line = Sections.findSuccessor(table, TableLine.class);
-		List<Section<TableCellContent>> cells = Sections.findSuccessorsOfType(line,
+		Section<Table> table = Sections.ancestor(columnSection, Table.class);
+		Section<TableLine> line = Sections.successor(table, TableLine.class);
+		List<Section<TableCellContent>> cells = Sections.successors(line,
 				TableCellContent.class);
 		if (cells.size() <= column) return null;
 		return cells.get(column);
@@ -202,8 +202,8 @@ public class TableUtils {
 	}
 
 	public static Section<TableCellContent> getRowHeader(Section<?> cell) {
-		Section<TableLine> line = Sections.findAncestorOfType(cell, TableLine.class);
-		return Sections.findSuccessor(line, TableCellContent.class);
+		Section<TableLine> line = Sections.ancestor(cell, TableLine.class);
+		return Sections.successor(line, TableCellContent.class);
 
 	}
 }

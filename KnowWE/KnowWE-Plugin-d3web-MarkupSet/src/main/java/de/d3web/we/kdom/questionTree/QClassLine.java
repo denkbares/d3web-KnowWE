@@ -104,7 +104,7 @@ public class QClassLine extends AbstractType {
 			@Override
 			protected boolean condition(String text, Section<?> father) {
 
-				Section<DashTreeElement> s = Sections.findAncestorOfType(father,
+				Section<DashTreeElement> s = Sections.ancestor(father,
 						DashTreeElement.class);
 				if (DashTreeUtils.getDashLevel(s) == 0) {
 					// is root level
@@ -114,7 +114,7 @@ public class QClassLine extends AbstractType {
 						.getParentDashTreeElement(s);
 				if (dashTreeFather != null) {
 					// is child of a QClass declaration => also declaration
-					if (Sections.findSuccessor(dashTreeFather, QClassLine.class) != null) {
+					if (Sections.successor(dashTreeFather, QClassLine.class) != null) {
 						return true;
 					}
 				}
@@ -149,7 +149,7 @@ public class QClassLine extends AbstractType {
 					}
 					Integer number = (originalnumber.intValue());
 
-					Section<QuestionnaireDefinition> qDef = Sections.findSuccessor(
+					Section<QuestionnaireDefinition> qDef = Sections.successor(
 							s.getParent(), QuestionnaireDefinition.class);
 
 					if (qDef != null) {
@@ -184,7 +184,7 @@ public class QClassLine extends AbstractType {
 
 				@Override
 				public void destroy(D3webCompiler article, Section<InitNumber> s) {
-					Section<QuestionnaireDefinition> qDef = Sections.findSuccessor(
+					Section<QuestionnaireDefinition> qDef = Sections.successor(
 							s.getParent(), QuestionnaireDefinition.class);
 
 					if (qDef != null) {

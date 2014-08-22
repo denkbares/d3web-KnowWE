@@ -105,7 +105,7 @@ public class SearchInfoObjects extends AbstractAction {
 		Set<Section<?>> processed = new HashSet<Section<?>>();
 
 		// the examine objects inside the articles
-		Section<?> flowSection = Sections.getSection(flowchartSectionID);
+		Section<?> flowSection = Sections.get(flowchartSectionID);
 		if (flowSection == null) return result;
 		Collection<D3webCompiler> compilers = Compilers.getCompilers(flowSection, D3webCompiler.class);
 		for (D3webCompiler compiler : compilers) {

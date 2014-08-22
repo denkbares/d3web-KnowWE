@@ -178,7 +178,7 @@ public class GetInfoObjects extends AbstractAction {
 			// use the objects defined on the particular page
 			// and display them in a "flat" mode
 			List<Section<TermDefinition>> defSections =
-					Sections.findSuccessorsOfType(article.getRootSection(), TermDefinition.class);
+					Sections.successors(article.getRootSection(), TermDefinition.class);
 			nextTerm: for (Section<TermDefinition> section : defSections) {
 				Identifier identifier = section.get().getTermIdentifier(section);
 				String objectName = identifier.getLastPathElement();

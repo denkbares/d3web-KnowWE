@@ -23,6 +23,7 @@ package de.knowwe.core.kdom.parsing;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -58,15 +59,11 @@ import de.knowwe.kdom.filter.SectionFilter;
  */
 public final class Section<T extends Type> implements Comparable<Section<? extends Type>> {
 
-	public void setArticle(Article article) {
-		this.article = article;
-	}
+	/**
+	 * Stores Sections by their IDs.
+	 */
+	private static final Map<String, Section<?>> sectionMap = new HashMap<>(2048);
 
-	private HashSet<String> reusedBy = null;
-
-	// @SuppressWarnings("rawtypes")
-	// private HashMap<String, HashSet<Class<? extends SubtreeHandler>>>
-	// compiledBy = null;
 	private List<Integer> position = null;
 
 	private List<Integer> lastPositions = null;
@@ -76,8 +73,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	protected Article article;
 
 	private HashSet<String> packageNames = null;
-
-	protected boolean isExpanded = false;
 
 	/**
 	 * Store for this Section. Can be used to store infos or Objects for this Section.
@@ -102,7 +97,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	/**
 	 * The child-nodes of this KDOM-node. This forms the tree-structure of KDOM.
 	 */
-	protected List<Section<? extends Type>> children = new ArrayList<Section<? extends Type>>(5);
+	protected List<Section<? extends Type>> children = new ArrayList<>(5);
 	/**
 	 * The father section of this KDOM-node. Used for upwards navigation through the tree
 	 */
@@ -132,7 +127,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	public static <T extends Type> Section<T> createSection(String text, T o, Section<? extends Type> father) {
-		return new Section<T>(text, o, father);
+		return new Section<>(text, o, father);
 	}
 
 	/**
@@ -244,9 +239,8 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	/**
-	 * Sets the text of this node. This IS an article source edit operation! TODO: Important - propagate changes
-	 * through
-	 * the whole tree OR ReIinit tree!
+	 * Sets the text of this node. This IS an article source edit operation!
+	 * through the whole tree OR initialize tree again!
 	 */
 	public void setText(String newText) {
 		this.text = newText;
@@ -259,6 +253,11 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 			ancestor.setDirty(true);
 			ancestor = ancestor.getParent();
 		}
+	}
+
+
+	public void setArticle(Article article) {
+		this.article = article;
 	}
 
 	/**
@@ -327,7 +326,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @return the filtered list
 	 */
 	public List<Section<?>> getChildren(SectionFilter filter) {
-		ArrayList<Section<? extends Type>> list = new ArrayList<Section<? extends Type>>();
+		ArrayList<Section<? extends Type>> list = new ArrayList<>();
 		for (Section<?> current : getChildren()) {
 			if (filter.accept(current)) list.add(current);
 		}
@@ -376,7 +375,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		}
 		else {
 			if (packageNames == null) {
-				packageNames = new HashSet<String>(4);
+				packageNames = new HashSet<>(4);
 			}
 			packageNames.add(packageName);
 			return true;
@@ -408,7 +407,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 					return Collections.unmodifiableSet(packageNames);
 				}
 				else {
-					Set<String> tempNamespaces = new HashSet<String>(fatherPackageNames.size()
+					Set<String> tempNamespaces = new HashSet<>(fatherPackageNames.size()
 							+ packageNames.size());
 					tempNamespaces.addAll(packageNames);
 					tempNamespaces.addAll(fatherPackageNames);
@@ -467,7 +466,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 
 	public String getID() {
 		if (id == null) {
-			id = Sections.generateAndRegisterSectionID(this);
+			id = generateAndRegisterSectionID(this);
 		}
 		return id;
 	}
@@ -618,180 +617,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		return text.length() == 0;
 	}
 
-	public boolean isExpanded() {
-		return isExpanded;
-	}
-
-	public boolean isReusedBy(String title) {
-		return reusedBy != null && reusedBy.contains(title);
-	}
-
-	public Set<String> getReusedBySet() {
-		return reusedBy == null
-				? Collections.<String>emptySet()
-				: Collections.unmodifiableSet(reusedBy);
-	}
-
-	public boolean isOrHasSuccessorReusedBy(String title) {
-		if (isReusedBy(title)) {
-			return true;
-		}
-		else {
-			for (Section<?> child : this.getChildren()) {
-				if (child.isOrHasSuccessorReusedBy(title)) return true;
-			}
-			return false;
-		}
-	}
-
-	public boolean isOrHasSuccessorNotReusedBy(String title) {
-		if (!isReusedBy(title)) {
-			return true;
-		}
-		else {
-			for (Section<?> child : this.getChildren()) {
-				if (child.isOrHasSuccessorNotReusedBy(title)) return true;
-			}
-			return false;
-		}
-	}
-
-	public void setReusedBy(String title, boolean reused) {
-		if (reused) {
-			if (reusedBy == null) reusedBy = new HashSet<String>(4);
-			reusedBy.add(title);
-		}
-		else {
-			if (reusedBy != null) reusedBy.remove(title);
-		}
-	}
-
-	/**
-	 * Affects all Sections this Section is connected to (also included Sections).
-	 */
-	public void setReusedByRecursively(String title, boolean reused) {
-		setReusedBy(title, reused);
-		for (Section<?> child : getChildren()) {
-			child.setReusedByRecursively(title, reused);
-		}
-	}
-
-	public void clearReusedBySet() {
-		this.reusedBy = null;
-	}
-
-	public void clearReusedBySetRecursively() {
-		clearReusedBySet();
-		for (Section<?> child : getChildren()) {
-			child.clearReusedBySetRecursively();
-		}
-	}
-
-	/**
-	 * This method has the purpose to clear the reused states of all Sections that could not be reused by the
-	 * incremental update. Call this method on the root Section of the old article with the new article as the
-	 * argument.
-	 *
-	 * @param article the new article
-	 * @created 13.09.2010
-	 */
-	public void clearReusedOfOldSectionsRecursively(Article article) {
-		// skip included Sections
-		if (article.getTitle().equals(getTitle())) {
-			// only old Sections can have old child Sections
-			if (this.article != article) {
-				for (Section<?> child : children) {
-					child.clearReusedOfOldSectionsRecursively(article);
-				}
-				reusedBy = null;
-			}
-		}
-	}
-
-	/**
-	 * Set reusedSuccessor state to false... only used for incremental KDOM update.
-	 */
-	public void clearReusedSuccessorRecursively() {
-		this.isOrHasReusedSuccessor = false;
-		for (Section<?> child : getChildren()) {
-			if (child.getTitle().equals(getTitle())) {
-				child.clearReusedSuccessorRecursively();
-			}
-		}
-	}
-
-	//
-	// @SuppressWarnings("rawtypes")
-	// public boolean isCompiledBy(String title, SubtreeHandler handler) {
-	// if (compiledBy == null) return false;
-	// HashSet<Class<? extends SubtreeHandler>> compiledByHandlerSet =
-	// compiledBy.get(title);
-	// if (compiledByHandlerSet == null) return false;
-	// return compiledByHandlerSet.contains(handler.getClass());
-	// }
-	//
-	// public boolean isCompiledBy(String title) {
-	// if (compiledBy == null) return false;
-	// return compiledBy.containsKey(title);
-	// }
-	//
-	// @SuppressWarnings("rawtypes")
-	// public Map<String, HashSet<Class<? extends SubtreeHandler>>>
-	// getCompiledByMap() {
-	// return compiledBy == null
-	// ? Collections.unmodifiableMap(
-	// new HashMap<String, HashSet<Class<? extends SubtreeHandler>>>(
-	// 0))
-	// : Collections.unmodifiableMap(compiledBy);
-	// }
-	//
-	// @SuppressWarnings("rawtypes")
-	// public void setCompiledBy(String title, SubtreeHandler handler, boolean
-	// compiled) {
-	// if (compiled) {
-	// if (compiledBy == null) {
-	// compiledBy = new HashMap<String, HashSet<Class<? extends
-	// SubtreeHandler>>>(4);
-	// }
-	// HashSet<Class<? extends SubtreeHandler>> reusedByArticleSet =
-	// compiledBy.get(title);
-	// if (reusedByArticleSet == null) {
-	// reusedByArticleSet = new HashSet<Class<? extends SubtreeHandler>>(4);
-	// compiledBy.put(title, reusedByArticleSet);
-	// }
-	// reusedByArticleSet.add(handler.getClass());
-	// }
-	// else {
-	// if (compiledBy != null) {
-	// HashSet<Class<? extends SubtreeHandler>> compiledByHandlerSet =
-	// compiledBy.get(title);
-	// if (compiledByHandlerSet != null) {
-	// compiledByHandlerSet.remove(handler.getClass());
-	// if (compiledByHandlerSet.isEmpty()) compiledBy.remove(title);
-	// }
-	// }
-	// }
-	// }
-	//
-	// public void setNotCompiledBy(String title) {
-	// if (compiledBy != null) compiledBy.remove(title);
-	// }
-	//
-	// /**
-	// * Affects all Sections this Section is connected to (also included
-	// * Sections).
-	// */
-	// public void setNotCompiledByRecursively(String title) {
-	// setNotCompiledBy(title);
-	// for (Section<? extends Type> child : getChildren()) {
-	// child.setNotCompiledByRecursively(title);
-	// }
-	// }
-
-	// public boolean hasPositionChanged() {
-	// if (lastPositions == null) return false;
-	// return !lastPositions.equals(getPositionInKDOM());
-	// }
 
 	protected void setPositionInKDOM(List<Integer> positionInKDOM) {
 		position = positionInKDOM;
@@ -817,12 +642,12 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 				Collections.unmodifiableList(lastPositions);
 	}
 
-	public List<Integer> calcPositionInKDOM() {
+	private List<Integer> calcPositionInKDOM() {
 
 		// this can only occur in the exceptional case
 		// when Sections are created independently of articles
 		if (getArticle() == null || getArticle().getRootSection() == null) {
-			LinkedList<Integer> positions = new LinkedList<Integer>();
+			LinkedList<Integer> positions = new LinkedList<>();
 			positions.add(0);
 			return positions;
 		}
@@ -831,7 +656,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	public List<Integer> calcPositionTil(Section<?> end) {
-		LinkedList<Integer> positions = new LinkedList<Integer>();
+		LinkedList<Integer> positions = new LinkedList<>();
 		Section<?> temp = this;
 		Section<?> tempFather = temp.getParent();
 		while (temp != end && tempFather != null) {
@@ -865,125 +690,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		return -1;
 	}
 
-	// private boolean isMatchingPackageName(Article article, SubtreeHandler<?>
-	// h) {
-	//
-	// // ignore: compile always but only for the article of this section
-	// if (!h.isPackageCompile() || !type.isPackageCompile()) {
-	// return article.getTitle().equals(getTitle());
-	// }
-	// // auto: compile always
-	// else if (PackageManager.isAutocompileArticleEnabled()) {
-	// return true;
-	// }
-	// else {
-	// Set<String> referencedPackages =
-	// Environment.getInstance().getPackageManager(
-	// article.getWeb()).getCompiledPackages(article.getTitle());
-	//
-	// if (referencedPackages.contains(PackageManager.THIS)) return true;
-	//
-	// for (String name : getPackageNames()) {
-	// if (referencedPackages.contains(name)) return true;
-	// }
-	// return false;
-	// }
-	// }
-	//
-	// /*
-	// * (non-Javadoc)
-	// *
-	// * Templates aren't working for us here, since getSubtreeHandlers() can
-	// not
-	// * have any knowledge of the template T specified by the Section =>
-	// * SuppressWarning...
-	// *
-	// * @see SubtreeHandler#create(Article, Section)
-	// */
-	// public final void letSubtreeHandlersCreate(Article article, Priority p) {
-	// List<SubtreeHandler<? extends Type>> handlerList =
-	// type.getSubtreeHandlers().get(
-	// p);
-	// if (handlerList != null) {
-	// for (@SuppressWarnings("rawtypes")
-	// SubtreeHandler handler : handlerList) {
-	// if (handler != null) letSubtreeHandlerCreate(article, handler);
-	// }
-	// }
-	//
-	// }
-
-	// @SuppressWarnings({
-	// "unchecked", "rawtypes" })
-	// public final void letSubtreeHandlerCreate(Article article, SubtreeHandler
-	// handler) {
-	// if (handler.needsToCreate(article, this)
-	// && isMatchingPackageName(article, handler)) {
-	// try {
-	// // long time = System.currentTimeMillis();
-	// Collection<Message> msgs = handler.create(article, this);
-	// Messages.storeMessages(article, this, handler.getClass(), msgs);
-	// setCompiledBy(article.getTitle(), handler, true);
-	// }
-	// catch (Exception e) {
-	// e.printStackTrace();
-	// String text = "Unexpected internal error in subtree handler '"
-	// + handler.getClass().getName()
-	// + "' while creating for '" + get().getClass().getSimpleName()
-	// + "' section '"
-	// + getID() + "' in article '"
-	// + getTitle() + "': " + e.toString();
-	// Message msg = Messages.error(text);
-	//
-	// Logging.getInstance().severe(text);
-	// Messages.storeMessage(getArticle(), this, getClass(), msg);
-	//
-	// }
-	// }
-	// }
-	//
-	// /*
-	// * (non-Javadoc)
-	// *
-	// * Templates aren't working for us here, since getSubtreeHandlers() can
-	// not
-	// * have any knowledge of the template T specified by the Section =>
-	// * SuppressWarning...
-	// *
-	// * @see SubtreeHandler#destroy(Article, Section)
-	// */
-	// public final void letSubtreeHandlersDestroy(Article article, Priority p)
-	// {
-	// List<SubtreeHandler<? extends Type>> handlerList =
-	// type.getSubtreeHandlers().get(p);
-	// if (handlerList != null) {
-	// for (@SuppressWarnings("rawtypes")
-	// SubtreeHandler handler : handlerList) {
-	// if (handler != null) letSubtreeHandlerDestroy(article, handler);
-	// }
-	// }
-	//
-	// }
-	//
-	// @SuppressWarnings({
-	// "unchecked", "rawtypes" })
-	// public final void letSubtreeHandlerDestroy(Article article,
-	// SubtreeHandler handler) {
-	// if (handler.needsToDestroy(article, this)) {
-	// try {
-	// handler.destroy(article, this);
-	// setCompiledBy(article.getTitle(), handler, false);
-	// }
-	// catch (Exception e) {
-	// e.printStackTrace();
-	// Logging.getInstance().severe(
-	// "Unexpected internal error in subtree handler '" + handler
-	// + "' while destroying for section '" + getID() + "' in article '"
-	// + getTitle() + "': " + e.toString());
-	//
-	// }
-	// }
-	// }
 
 	/**
 	 * Overrides type. You can only set types that are singletons!
@@ -1007,5 +713,79 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 
 	public ArticleManager getArticleManager() {
 		return article.getArticleManager();
+	}
+
+
+	/**
+	 * Generates an ID for the given Section and also registers the Section in a HashMap to allow searches for this
+	 * Section later. The ID is the hash code of the following String: Title of the Article containing the Section, the
+	 * position in the KDOM and the content of the Section. Hash collisions are resolved.
+	 *
+	 * @param section is the Section for which the ID is generated and which is then registered
+	 * @return the ID for the given Section
+	 * @created 05.09.2011
+	 */
+	private static String generateAndRegisterSectionID(Section<?> section) {
+		int hashCode = section.getSignatureString().hashCode();
+		String id = Integer.toHexString(hashCode);
+		synchronized (sectionMap) {
+			Section<?> existingSection = sectionMap.get(id);
+			while (existingSection != null) {
+				id = Integer.toHexString(++hashCode);
+				existingSection = sectionMap.get(id);
+			}
+			sectionMap.put(id, section);
+		}
+		return id;
+	}
+
+
+	/**
+	 * This method removes the entries of sections in the section map, if the sections are no longer used - for example
+	 * after an article is changed and build again.<br/> This method also takes care, that the equal section in the new
+	 * article gets an id. Since ids are created lazy while rendering and often the article is not rendered completely
+	 * again after changing just a few isolated spots in the article, those ids would otherwise be gone, although they
+	 * might stay the same and are still usable.<br/> We just look at the same spot/position in the KDOM. If we find a
+	 * Section and the Section also has the same type, we generate and register the id. Of course we will only catch
+	 * the
+	 * right Sections if the KDOM has not changed in this part, but if the KDOM has changed, also the ids will have
+	 * changed and therefore we don't need them anyway. We only do this, to allow already rendered tools to still work,
+	 * if it is possible.
+	 *
+	 * @param section    the old, no longer used Section
+	 * @param newArticle the new article which potentially contains an equal section
+	 * @created 04.12.2012
+	 */
+	public static void unregisterOrUpdateSectionID(Section<?> section, Article newArticle) {
+		if (section.hasID()) {
+			unregisterID(section);
+			Section<?> newSection = Sections.get(newArticle, section.getPositionInKDOM());
+			if (newSection != null
+					&& newSection.get().getClass().equals(section.get().getClass())) {
+				// to not add ids to completely different sections if the
+				// article changed a lot, we only generate section ids for the
+				// same type of sections that had ids in the old article
+				newSection.getID();
+			}
+		}
+	}
+
+	private static void unregisterID(Section<?> section) {
+		synchronized (sectionMap) {
+			sectionMap.remove(section.getID());
+		}
+	}
+
+
+	/**
+	 * This method is protected, use {@link Sections#get(String)} instead.
+	 *
+	 * @param id is the ID of the Section to be returned
+	 * @return the Section for the given ID or null if no Section exists for this ID.
+	 */
+	protected static Section<?> get(String id) {
+		synchronized (sectionMap) {
+			return sectionMap.get(id);
+		}
 	}
 }

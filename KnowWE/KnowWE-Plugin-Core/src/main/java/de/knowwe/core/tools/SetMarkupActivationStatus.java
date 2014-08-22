@@ -38,7 +38,7 @@ public class SetMarkupActivationStatus extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		String sectionID = context.getParameter(Attributes.SECTION_ID);
 		String status = context.getParameter("status");
-		Section<?> section = Sections.getSection(sectionID);
+		Section<?> section = Sections.get(sectionID);
 
 		String text = section.getText();
 		String newText = "";
@@ -50,7 +50,7 @@ public class SetMarkupActivationStatus extends AbstractAction {
 			newText = text.replaceFirst("Off:", "");
 		}
 
-		Sections.replaceSection(context, sectionID, newText);
+		Sections.replace(context, sectionID, newText);
 
 		Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
 	}

@@ -51,40 +51,26 @@ public class PackageManager {// implements EventListener {
 	 * For each article title, you get all default packages used in this
 	 * article.
 	 */
-	private final Map<String, HashSet<String>> articleToDefaultPackages =
-			new HashMap<String, HashSet<String>>();
+	private final Map<String, HashSet<String>> articleToDefaultPackages =	new HashMap<>();
 
 	/**
 	 * For each packageName, you get all Sections in the wiki belonging to this
 	 * packageName.
 	 */
-	private final Map<String, TreeSet<Section<?>>> packageToSectionsOfPackage =
-			new HashMap<String, TreeSet<Section<?>>>();
+	private final Map<String, TreeSet<Section<?>>> packageToSectionsOfPackage = new HashMap<>();
 
-	/**
-	 * For each article title, you get all Sections of type
-	 * {@link PackageManager} defined in this article.
-	 */
-	// private final Map<String, HashSet<Section<? extends PackageCompiler>>>
-	// articleToPackageCompileSections =
-	// new HashMap<String, HashSet<Section<? extends PackageCompiler>>>();
 
-	private final Set<Section<? extends PackageCompileType>> packageCompileSections = new HashSet<Section<? extends PackageCompileType>>();
-	/**
-	 * For each article title, you get all packages compiled in this article by
-	 * Sections of the type {@link PackageCompiler}.
-	 */
-	// private final Map<String, HashSet<String>> articleToCompiledPackages =
-	// new HashMap<String, HashSet<String>>();
+	private final Set<Section<? extends PackageCompileType>> packageCompileSections = new HashSet<>();
+
 
 	/**
 	 * For each package, you get all articles compiling this package.
 	 */
 	private final Map<String, HashSet<Section<? extends PackageCompileType>>> packageToCompilingSections =
-			new HashMap<String, HashSet<Section<? extends PackageCompileType>>>();
+			new HashMap<>();
 
 	private final Map<String, Pair<TreeSet<Section<?>>, TreeSet<Section<?>>>> changedPackages =
-			new HashMap<String, Pair<TreeSet<Section<?>>, TreeSet<Section<?>>>>();
+			new HashMap<>();
 
 	public <C extends Compiler> PackageManager(C compiler) {
 		this.compiler = compiler;
@@ -106,7 +92,7 @@ public class PackageManager {// implements EventListener {
 	public void addDefaultPackage(Article article, String defaultPackage) {
 		HashSet<String> defaultPackages = articleToDefaultPackages.get(article.getTitle());
 		if (defaultPackages == null) {
-			defaultPackages = new HashSet<String>(4);
+			defaultPackages = new HashSet<>(4);
 			articleToDefaultPackages.put(article.getTitle(), defaultPackages);
 		}
 		defaultPackages.add(defaultPackage);
@@ -125,7 +111,7 @@ public class PackageManager {// implements EventListener {
 	public String[] getDefaultPackages(Article article) {
 		HashSet<String> defaultPackages = articleToDefaultPackages.get(article.getTitle());
 		if (defaultPackages == null) {
-			defaultPackages = new HashSet<String>(4);
+			defaultPackages = new HashSet<>(4);
 			defaultPackages.add(DEFAULT_PACKAGE);
 		}
 		return defaultPackages.toArray(new String[defaultPackages.size()]);
@@ -148,7 +134,7 @@ public class PackageManager {// implements EventListener {
 		}
 		TreeSet<Section<?>> packageList = packageToSectionsOfPackage.get(packageName);
 		if (packageList == null) {
-			packageList = new TreeSet<Section<?>>();
+			packageList = new TreeSet<>();
 			packageToSectionsOfPackage.put(packageName, packageList);
 		}
 		packageList.add(section);
@@ -159,8 +145,7 @@ public class PackageManager {// implements EventListener {
 	private void addSectionToChangedPackagesAsAdded(Section<?> section, String packageName) {
 		Pair<TreeSet<Section<?>>, TreeSet<Section<?>>> pair = changedPackages.get(packageName);
 		if (pair == null) {
-			pair = new Pair<TreeSet<Section<?>>, TreeSet<Section<?>>>(
-					new TreeSet<Section<?>>(), new TreeSet<Section<?>>());
+			pair = new Pair<>(new TreeSet<>(), new TreeSet<>());
 			changedPackages.put(packageName, pair);
 		}
 		TreeSet<Section<?>> added = pair.getA();
@@ -170,8 +155,7 @@ public class PackageManager {// implements EventListener {
 	private void addSectionToChangedPackagesAsRemoved(Section<?> section, String packageName) {
 		Pair<TreeSet<Section<?>>, TreeSet<Section<?>>> pair = changedPackages.get(packageName);
 		if (pair == null) {
-			pair = new Pair<TreeSet<Section<?>>, TreeSet<Section<?>>>(
-					new TreeSet<Section<?>>(), new TreeSet<Section<?>>());
+			pair = new Pair<>(new TreeSet<>(), new TreeSet<>());
 			changedPackages.put(packageName, pair);
 		}
 		TreeSet<Section<?>> removed = pair.getB();
@@ -211,7 +195,7 @@ public class PackageManager {// implements EventListener {
 	 * @created 28.12.2010
 	 */
 	public void removeSectionFromAllPackages(Section<?> s) {
-		for (String packageName : new ArrayList<String>(s.getPackageNames())) {
+		for (String packageName : new ArrayList<>(s.getPackageNames())) {
 			removeSectionFromPackage(s, packageName);
 		}
 	}
@@ -225,7 +209,7 @@ public class PackageManager {// implements EventListener {
 	 * @created 15.12.2013
 	 */
 	public Collection<Section<?>> getSectionsOfPackage(String... packageNames) {
-		TreeSet<Section<?>> sectionsOfPackage = new TreeSet<Section<?>>();
+		TreeSet<Section<?>> sectionsOfPackage = new TreeSet<>();
 		for (String packageName : packageNames) {
 			TreeSet<Section<?>> sections = packageToSectionsOfPackage.get(packageName);
 			if (sections != null) {
@@ -251,7 +235,7 @@ public class PackageManager {// implements EventListener {
 	 * @created 15.12.2013
 	 */
 	public Collection<Section<?>> getAddedSections(String... packageNames) {
-		TreeSet<Section<?>> addedSections = new TreeSet<Section<?>>();
+		TreeSet<Section<?>> addedSections = new TreeSet<>();
 		for (String packageName : packageNames) {
 			Pair<TreeSet<Section<?>>, TreeSet<Section<?>>> pair = changedPackages.get(packageName);
 			if (pair != null) {
@@ -270,7 +254,7 @@ public class PackageManager {// implements EventListener {
 	 * @created 15.12.2013
 	 */
 	public Collection<Section<?>> getRemovedSections(String... packageNames) {
-		TreeSet<Section<?>> addedSections = new TreeSet<Section<?>>();
+		TreeSet<Section<?>> addedSections = new TreeSet<>();
 		for (String packageName : packageNames) {
 			Pair<TreeSet<Section<?>>, TreeSet<Section<?>>> pair = changedPackages.get(packageName);
 			if (pair != null) {
@@ -289,7 +273,7 @@ public class PackageManager {// implements EventListener {
 		for (String packageToCompile : packagesToCompile) {
 			HashSet<Section<? extends PackageCompileType>> compilingSections = packageToCompilingSections.get(packageToCompile);
 			if (compilingSections == null) {
-				compilingSections = new HashSet<Section<? extends PackageCompileType>>();
+				compilingSections = new HashSet<>();
 				packageToCompilingSections.put(packageToCompile, compilingSections);
 			}
 			compilingSections.add(section);
@@ -337,7 +321,7 @@ public class PackageManager {// implements EventListener {
 	 * @created 28.12.2010
 	 */
 	public Set<Section<? extends PackageCompileType>> getCompileSections(Section<?> section) {
-		Set<Section<? extends PackageCompileType>> compileSections = new HashSet<Section<? extends PackageCompileType>>();
+		Set<Section<? extends PackageCompileType>> compileSections = new HashSet<>();
 		for (String packageName : section.getPackageNames()) {
 			compileSections.addAll(getCompileSections(packageName));
 		}
@@ -368,7 +352,7 @@ public class PackageManager {// implements EventListener {
 	@Deprecated
 	public Set<String> getCompilingArticles(Section<?> section) {
 		Set<Section<? extends PackageCompileType>> compileSections = getCompileSections(section);
-		Set<String> titles = new HashSet<String>();
+		Set<String> titles = new HashSet<>();
 		for (Section<? extends PackageCompileType> sections : compileSections) {
 			titles.add(sections.getTitle());
 		}
@@ -382,7 +366,7 @@ public class PackageManager {// implements EventListener {
 	@Deprecated
 	public Set<String> getCompilingArticles() {
 		Collection<Section<? extends PackageCompileType>> compileSections = getCompileSections();
-		Set<String> titles = new HashSet<String>();
+		Set<String> titles = new HashSet<>();
 		for (Section<? extends PackageCompileType> sections : compileSections) {
 			titles.add(sections.getTitle());
 		}
@@ -396,146 +380,11 @@ public class PackageManager {// implements EventListener {
 	@Deprecated
 	public Set<String> getCompilingArticles(String packageName) {
 		Collection<Section<? extends PackageCompileType>> compileSections = getCompileSections(packageName);
-		Set<String> titles = new HashSet<String>();
+		Set<String> titles = new HashSet<>();
 		for (Section<? extends PackageCompileType> sections : compileSections) {
 			titles.add(sections.getTitle());
 		}
 		return titles;
 	}
-
-	//
-	// /**
-	// * Returns the a Set of all titles of articles that compile any package.
-	// *
-	// * @created 28.08.2010
-	// * @return a Set of titles of articles compiling
-	// */
-	// public Set<String> getCompilingArticles() {
-	// // get articles compiling a package
-	// HashSet<String> compilingArticles = new HashSet<String>();
-	// for (String packageName : getAllPackageNames()) {
-	// compilingArticles.addAll(getCompilingArticles(packageName));
-	// }
-	// // get articles compiling "this"
-	// for (HashSet<Section<? extends PackageCompiler>> compileSections :
-	// articleToPackageCompileSections.values()) {
-	// for (Section<? extends PackageCompiler> compileSection : compileSections)
-	// {
-	// Collection<String> packagesToCompile =
-	// compileSection.get().getPackagesToCompile(
-	// compileSection);
-	// if (packagesToCompile.contains(THIS)) {
-	// compilingArticles.add(compileSection.getTitle());
-	// }
-	// }
-	// }
-	// return compilingArticles;
-	// }
-	//
-	// /**
-	// * Returns all titles of articles, that compile the given Section via
-	// * packages.
-	// *
-	// * @created 28.12.2010
-	// * @param section
-	// * @return a Set of titles of articles compiling the given Section
-	// */
-	// public Set<String> getCompilingArticles(Section<?> section) {
-	// Set<String> matchingArticles = new HashSet<String>();
-	// for (String packageName : section.getPackageNames()) {
-	// matchingArticles.addAll(getCompilingArticles(packageName));
-	// }
-	// HashSet<String> compilingPackages =
-	// articleToCompiledPackages.get(section.getTitle());
-	// if (autocompileArticleEnabled
-	// || (compilingPackages != null && compilingPackages.contains(THIS))) {
-	// matchingArticles.add(section.getTitle());
-	// }
-	// return Collections.unmodifiableSet(matchingArticles);
-	// }
-	//
-	// /**
-	// * Returns all packages the given article compiles via his Sections of the
-	// * type {@link PackageCompiler}.
-	// *
-	// * @created 29.08.2010
-	// * @param title the title of the article to check
-	// */
-	// public Set<String> getCompiledPackages(String title) {
-	// Set<String> referencedPackages = articleToCompiledPackages.get(title);
-	// return referencedPackages == null
-	// ? Collections.<String> emptySet()
-	// : Collections.unmodifiableSet(
-	// referencedPackages);
-	// }
-
-	// public void updateReusedStates(Article article) {
-	// // TODO: not that fast... probably use own map sorted by article
-	// // maybe only do this for changed sections of the package... take care
-	// // of multiuser-scenarios
-	// for (LinkedList<Section<?>> sectionsOfPackageList :
-	// packageToSectionsOfPackage.values()) {
-	// for (Section<?> sectionOfPackage : sectionsOfPackageList) {
-	// if (sectionOfPackage.getTitle().equals(article.getTitle())) {
-	// Set<String> compilingArticles = getCompilingArticles(sectionOfPackage);
-	// List<Section<?>> nodes = Sections.getSubtreePostOrder(sectionOfPackage);
-	// for (Section<?> node : nodes) {
-	// if (!node.get().isPackageCompile()) continue;
-	// for (String title : new LinkedList<String>(node.getReusedBySet())) {
-	// if (!compilingArticles.contains(title)) {
-	// node.setReusedBy(title, false);
-	// Messages.clearMessages(article, node);
-	// }
-	// }
-	// }
-	// }
-	// }
-	// }
-	// }
-
-	// public void updateReferringArticles(Article article) {
-	//
-	// for (HashSet<Section<? extends PackageCompiler>> packageCompileSections :
-	// articleToPackageCompileSections.values()) {
-	// for (Section<? extends PackageCompiler> packageCompileSection :
-	// packageCompileSections) {
-	// Collection<String> packagesToCompile =
-	// packageCompileSection.get().getPackagesToCompile(
-	// packageCompileSection);
-	// for (String packageName : packagesToCompile) {
-	// if (changedPackages.contains(packageName)) {
-	// Environment.getInstance().getArticleManager(article.getWeb()).addArticleToUpdate(
-	// packageCompileSection.getTitle());
-	// }
-	// }
-	// }
-	// }
-	//
-	// changedPackages.clear();
-	// }
-
-	// @Override
-	// public Collection<Class<? extends Event>> getEvents() {
-	// ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends
-	// Event>>(3);
-	// events.add(FullParseEvent.class);
-	// events.add(UpdatingDependenciesEvent.class);
-	// events.add(PreCompileFinishedEvent.class);
-	// return events;
-	// }
-
-	// @Override
-	// public void notify(Event event) {
-	// if (event instanceof FullParseEvent) {
-	// cleanForArticle(((FullParseEvent) event).getArticle());
-	// }
-	// else if (event instanceof UpdatingDependenciesEvent) {
-	// updateReferringArticles(((UpdatingDependenciesEvent)
-	// event).getArticle());
-	// }
-	// else if (event instanceof PreCompileFinishedEvent) {
-	// updateReusedStates(((PreCompileFinishedEvent) event).getArticle());
-	// }
-	// }
 
 }

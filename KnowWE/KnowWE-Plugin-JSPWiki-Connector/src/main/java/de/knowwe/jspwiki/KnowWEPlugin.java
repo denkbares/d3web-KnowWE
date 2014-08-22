@@ -261,7 +261,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			RenderResult renderResult = new RenderResult(userContext.getRequest());
 
 			// this can happen, if the article was registered to the manager in a compilation frame opened
-			// before the call of this preTranslate method, e.g. in an action with Sections#replaceSection(...).
+			// before the call of this preTranslate method, e.g. in an action with Sections#replace(...).
 			// in this case, the article will not be compiled at this moment and rendering does not make sense and can
 			// cause exceptions.
 			boolean isQueuedForCompilation = ((DefaultArticleManager) articleManager).isQueuedArticle(article);

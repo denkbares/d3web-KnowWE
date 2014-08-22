@@ -108,9 +108,9 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 
 	@Override
 	protected Condition createCondition(D3webCompiler compiler, Section<NumericalFinding> s) {
-		Section<QuestionReference> qRef = Sections.findSuccessor(s, QuestionReference.class);
+		Section<QuestionReference> qRef = Sections.successor(s, QuestionReference.class);
 
-		Section<Number> numberSec = Sections.findSuccessor(s, Number.class);
+		Section<Number> numberSec = Sections.successor(s, Number.class);
 
 		if (numberSec == null) {
 			Message error = Messages.invalidNumberError(
@@ -119,7 +119,7 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 			return null;
 		}
 
-		String comparator = Sections.findSuccessor(s, Comparator.class).getText();
+		String comparator = Sections.successor(s, Comparator.class).getText();
 
 		Double number = Number.getNumber(numberSec);
 

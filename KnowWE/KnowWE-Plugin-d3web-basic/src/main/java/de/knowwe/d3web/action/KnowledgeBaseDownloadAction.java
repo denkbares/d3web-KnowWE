@@ -40,10 +40,10 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 		String filename = context.getParameter(PARAM_FILENAME);
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
 
-		Section<?> section = Sections.getSection(sectionId);
+		Section<?> section = Sections.get(sectionId);
 		Section<PackageCompileType> compileSection = null;
 		if (section != null) {
-			compileSection = Sections.findSuccessor(section, PackageCompileType.class);
+			compileSection = Sections.successor(section, PackageCompileType.class);
 		}
 		if (compileSection == null) {
 			context.sendError(409, "The Sections '" + sectionId

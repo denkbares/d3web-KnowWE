@@ -110,7 +110,7 @@ public class QuestionLine extends AbstractType {
 		@Override
 		public QuestionDefinition.QuestionType getQuestionType(Section<QuestionDefinition> s) {
 			return QuestionTypeDeclaration
-					.getQuestionType(Sections.findSuccessor(
+					.getQuestionType(Sections.successor(
 							s.getParent(), QuestionTypeDeclaration.class));
 		}
 
@@ -145,7 +145,7 @@ public class QuestionLine extends AbstractType {
 									.getString("KnowWE.questiontree.incorrectinterval")));
 				}
 
-				Section<QuestionDefinition> qDef = Sections.findSuccessor(
+				Section<QuestionDefinition> qDef = Sections.successor(
 						s.getParent(), QuestionDefinition.class);
 
 				if (qDef != null) {
@@ -255,7 +255,7 @@ public class QuestionLine extends AbstractType {
 			this.setSectionFinder(new EmbracedContentFinder(UNIT_OPEN, UNIT_CLOSE));
 
 			this.addCompileScript(Priority.HIGH, (D3webHandler<NumUnit>) (article, s) -> {
-				Section<QuestionDefinition> qDef = Sections.findSuccessor(
+				Section<QuestionDefinition> qDef = Sections.successor(
 						s.getParent(), QuestionDefinition.class);
 
 				if (qDef != null) {
@@ -295,7 +295,7 @@ public class QuestionLine extends AbstractType {
 
 			this.addCompileScript(Priority.HIGH, (D3webHandler<AbstractFlag>) (compiler, s) -> {
 
-				Section<QuestionDefinition> qDef = Sections.findSuccessor(
+				Section<QuestionDefinition> qDef = Sections.successor(
 						s.getParent(), QuestionDefinition.class);
 
 				if (qDef != null) {
@@ -334,7 +334,7 @@ public class QuestionLine extends AbstractType {
 			this.setRenderer(StyleRenderer.PROMPT);
 			this.addCompileScript(Priority.HIGH, (D3webHandler<QuestionText>) (compiler, sec) -> {
 
-				Section<QuestionDefinition> qDef = Sections.findSuccessor(
+				Section<QuestionDefinition> qDef = Sections.successor(
 						sec.getParent(), QuestionDefinition.class);
 
 				if (qDef != null) {

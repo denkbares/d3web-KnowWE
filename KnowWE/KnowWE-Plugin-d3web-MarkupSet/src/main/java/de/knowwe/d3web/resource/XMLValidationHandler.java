@@ -63,7 +63,7 @@ public class XMLValidationHandler extends DefaultGlobalHandler<AttachmentType> {
 			return Messages.noMessage();
 		}
 
-		Section<ResourceType> resourceSection = Sections.findAncestorOfType(section,
+		Section<ResourceType> resourceSection = Sections.ancestor(section,
 				ResourceType.class);
 
 		String schemaName = DefaultMarkupType.getAnnotation(resourceSection,

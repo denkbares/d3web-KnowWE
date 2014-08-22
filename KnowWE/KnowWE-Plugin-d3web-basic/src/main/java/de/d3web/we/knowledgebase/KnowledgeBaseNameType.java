@@ -25,7 +25,7 @@ public class KnowledgeBaseNameType extends AbstractType implements D3webTerm<Kno
 			KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
 			InfoStore infoStore = kb.getInfoStore();
 			Section<KnowledgeBaseNameType> titleSection =
-					Sections.findSuccessor(section, KnowledgeBaseNameType.class);
+					Sections.successor(section, KnowledgeBaseNameType.class);
 			if (titleSection != null) {
 				String title = titleSection.get().getTermName(titleSection);
 				infoStore.addValue(MMInfo.PROMPT, title);

@@ -53,7 +53,7 @@ public class RepeatedIndication extends BracketsAction<RepeatedIndication> {
 
 	@Override
 	public PSAction createAction(D3webCompiler compiler, Section<RepeatedIndication> s) {
-		Section<QASetReference> qSec = Sections.findSuccessor(s, QASetReference.class);
+		Section<QASetReference> qSec = Sections.successor(s, QASetReference.class);
 		QASet termObject = qSec.get().getTermObject(compiler, qSec);
 
 		ActionRepeatedIndication repInd = new ActionRepeatedIndication();

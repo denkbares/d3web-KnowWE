@@ -51,7 +51,7 @@ public class GetErrorHighlightAction extends AbstractHighlightAction {
 
 	@Override
 	public void insertHighlighting(Section<FlowchartType> flowchart, Highlight highlight, UserActionContext context) throws IOException {
-		List<Section<NodeType>> nodes = Sections.findSuccessorsOfType(flowchart, NodeType.class);
+		List<Section<NodeType>> nodes = Sections.successors(flowchart, NodeType.class);
 
 		for (Section<NodeType> section : nodes) {
 			if (section.hasErrorInSubtree()) {
@@ -85,7 +85,7 @@ public class GetErrorHighlightAction extends AbstractHighlightAction {
 			}
 
 		}
-		List<Section<EdgeType>> edges = Sections.findSuccessorsOfType(flowchart, EdgeType.class);
+		List<Section<EdgeType>> edges = Sections.successors(flowchart, EdgeType.class);
 
 		for (Section<EdgeType> section : edges) {
 			if (section.hasErrorInSubtree()) {

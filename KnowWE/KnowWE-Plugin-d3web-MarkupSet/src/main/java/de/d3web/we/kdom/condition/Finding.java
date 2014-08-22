@@ -82,10 +82,10 @@ public class Finding extends D3webCondition<Finding> {
 	@Override
 	protected Condition createCondition(D3webCompiler compiler, Section<Finding> s) {
 
-		Section<QuestionReference> qRef = Sections.findSuccessor(s,
+		Section<QuestionReference> qRef = Sections.successor(s,
 				QuestionReference.class);
 
-		Section<AnswerReference> aRef = Sections.findSuccessor(s, AnswerReference.class);
+		Section<AnswerReference> aRef = Sections.successor(s, AnswerReference.class);
 
 		if (qRef != null && aRef != null) {
 			Choice answer = aRef.get().getTermObject(compiler, aRef);

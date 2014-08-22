@@ -56,7 +56,7 @@ public class TestcaseTable extends Table {
 			tCell = Sections.cast(section, TableCell.class);
 		}
 		else {
-			tCell = Sections.findAncestorOfType(section, TableCell.class);
+			tCell = Sections.ancestor(section, TableCell.class);
 		}
 		if (tCell == null) {
 			throw new IllegalArgumentException("Specified section is not part of this table");
@@ -76,8 +76,8 @@ public class TestcaseTable extends Table {
 
 	public static Section<? extends HeaderCell> findHeaderCell(Section<?> s) {
 
-		Section<Table> table = Sections.findAncestorOfType(s, Table.class);
-		Section<TableLine> hLine = Sections.findSuccessor(table, TableLine.class);
+		Section<Table> table = Sections.ancestor(s, Table.class);
+		Section<TableLine> hLine = Sections.successor(table, TableLine.class);
 
 		int index = getColumnIndex(s);
 

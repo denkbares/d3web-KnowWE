@@ -48,7 +48,7 @@ public class SingleChildConstraint implements SectionFinderConstraint {
 	}
 
 	private static <T extends Type> boolean satisfiesConstraint(List<SectionFinderResult> found, Section<?> father, Class<T> type, String text) {
-		List<Section<T>> findChildrenOfType = Sections.findChildrenOfType(father, type);
+		List<Section<T>> findChildrenOfType = Sections.children(father, type);
 		if (findChildrenOfType != null && findChildrenOfType.size() > 0) {
 			return false;
 		}

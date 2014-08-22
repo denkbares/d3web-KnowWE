@@ -18,7 +18,7 @@ public class DiaFluxResourceAppender implements PageAppendHandler {
 	@Override
 	public void append(String web, String title, UserContext user, RenderResult result) {
 		Article article = user.getArticleManager().getArticle(title);
-		Section<FlowchartType> flowchart = Sections.findSuccessor(article.getRootSection(), FlowchartType.class);
+		Section<FlowchartType> flowchart = Sections.successor(article.getRootSection(), FlowchartType.class);
 		if (flowchart != null) {
 			FlowchartUtils.insertDiaFluxResources(flowchart, user, result);
 		}

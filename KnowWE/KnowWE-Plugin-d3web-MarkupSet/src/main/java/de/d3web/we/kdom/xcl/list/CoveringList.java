@@ -179,7 +179,7 @@ public class CoveringList extends AbstractType {
 		class CreateXCLRelationHandler implements D3webHandler<CoveringRelation> {
 
 			private Section<SolutionDefinition> getCorrespondingSolutionDef(Section<CoveringRelation> s) {
-				return Sections.findSuccessor(s.getParent().getParent(), SolutionDefinition.class);
+				return Sections.successor(s.getParent().getParent(), SolutionDefinition.class);
 			}
 
 			/*
@@ -194,7 +194,7 @@ public class CoveringList extends AbstractType {
 
 				List<Message> result = new ArrayList<Message>();
 
-				Section<CompositeCondition> cond = Sections.findSuccessor(s,
+				Section<CompositeCondition> cond = Sections.successor(s,
 						CompositeCondition.class);
 				if (cond == null) {
 					// no valid relation, do not revise
@@ -232,7 +232,7 @@ public class CoveringList extends AbstractType {
 
 								// check the weight/relation type in square
 								// brackets
-								Section<XCLWeight> weight = Sections.findSuccessor(
+								Section<XCLWeight> weight = Sections.successor(
 										s, XCLWeight.class);
 								XCLRelationType type = XCLRelationType.explains;
 								Double w = 1.0;

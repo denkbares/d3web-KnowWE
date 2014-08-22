@@ -52,7 +52,7 @@ public class LinkTypeTest {
 		Article art = TestArticleManager
 				.getArticle(FILE);
 
-		links = Sections.findSuccessorsOfType(art.getRootSection(),
+		links = Sections.successors(art.getRootSection(),
 				LinkType.class);
 	}
 

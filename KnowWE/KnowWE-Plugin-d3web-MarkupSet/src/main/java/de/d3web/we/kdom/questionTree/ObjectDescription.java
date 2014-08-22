@@ -39,7 +39,7 @@ public class ObjectDescription extends AbstractType {
 		this.addCompileScript((D3webHandler<ObjectDescription>) (compiler, section) -> {
 
 			@SuppressWarnings("rawtypes")
-			Section<D3webTermDefinition> qDef = Sections.findSuccessor(
+			Section<D3webTermDefinition> qDef = Sections.successor(
 					section.getParent(), D3webTermDefinition.class);
 
 			if (qDef != null) {

@@ -54,7 +54,7 @@ public class PropertyValueType extends AbstractType {
 				return Messages.asList(Messages.creationFailedWarning("No property name defined for this column."));
 			}
 
-			Section<PropertyType> propType = Sections.findSuccessor(header, PropertyType.class);
+			Section<PropertyType> propType = Sections.successor(header, PropertyType.class);
 
 			Property<?> property = propType.get().getProperty(propType);
 			if (property == null) {
@@ -83,7 +83,7 @@ public class PropertyValueType extends AbstractType {
 			Section<TableCellContent> rowHeader = TableUtils.getRowHeader(section);
 
 			NamedObject object = NamedObjectReference.getObject(compiler,
-					Sections.findSuccessor(rowHeader, NamedObjectReference.class));
+					Sections.successor(rowHeader, NamedObjectReference.class));
 
 			if (object == null) {
 				return Messages.noMessage();

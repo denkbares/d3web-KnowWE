@@ -65,13 +65,13 @@ public class FlowchartType extends AbstractXMLType {
 	}
 
 	public static String getFlowchartName(Section<FlowchartType> sec) {
-		Section<FlowchartTermDef> definition = Sections.findSuccessor(sec, FlowchartTermDef.class);
+		Section<FlowchartTermDef> definition = Sections.successor(sec, FlowchartTermDef.class);
 		if (definition == null) return "Unnamed Flowchart";
 		return Strings.decodeHtml(definition.getText());
 	}
 
 	public static Identifier getFlowchartTermIdentifier(Section<FlowchartType> sec) {
-		Section<FlowchartTermDef> definition = Sections.findSuccessor(sec, FlowchartTermDef.class);
+		Section<FlowchartTermDef> definition = Sections.successor(sec, FlowchartTermDef.class);
 		if (definition == null) return null;
 		return definition.get().getTermIdentifier(definition);
 	}

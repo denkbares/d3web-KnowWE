@@ -45,7 +45,7 @@ public class ExpectedSparqlResultTable extends Table {
 
 	public static ResultTableModel getResultTableModel(Section<ExpectedSparqlResultTable> table, List<String> variables, Rdf2GoCompiler c) {
 		List<TableRow> rows = new ArrayList<TableRow>();
-		List<Section<TableLine>> lines = Sections.findSuccessorsOfType(table, TableLine.class);
+		List<Section<TableLine>> lines = Sections.successors(table, TableLine.class);
 		for (Section<TableLine> line : lines) {
 			SimpleTableRow row = createResultRow(line, variables, c);
 			rows.add(row);
@@ -57,7 +57,7 @@ public class ExpectedSparqlResultTable extends Table {
 	@SuppressWarnings({
 			"rawtypes", "unchecked" })
 	private static SimpleTableRow createResultRow(Section<TableLine> line, List<String> variables, Rdf2GoCompiler core) {
-		List<Section<NodeProvider>> nodeProviders = Sections.findSuccessorsOfType(line,
+		List<Section<NodeProvider>> nodeProviders = Sections.successors(line,
 				NodeProvider.class);
 		SimpleTableRow row = new SimpleTableRow();
 		int column = 0;

@@ -103,8 +103,8 @@ public class QuestionDashTreeUtils {
 		}
 
 		Section<QuestionTreeAnswerDefinition> answerSec =
-				Sections.findSuccessor(father, QuestionTreeAnswerDefinition.class);
-		Section<QuestionDefinition> qSec = Sections.findSuccessor(grandFather,
+				Sections.successor(father, QuestionTreeAnswerDefinition.class);
+		Section<QuestionDefinition> qSec = Sections.successor(grandFather,
 				QuestionDefinition.class);
 
 		if (qSec == null) {
@@ -123,7 +123,7 @@ public class QuestionDashTreeUtils {
 		}
 
 		Section<NumericCondLine> numCondSec =
-				Sections.findSuccessor(father, NumericCondLine.class);
+				Sections.successor(father, NumericCondLine.class);
 
 		if (numCondSec != null && q instanceof QuestionNum) {
 			if (NumericCondLine.isIntervall(numCondSec)) {
@@ -175,11 +175,11 @@ public class QuestionDashTreeUtils {
 
 		Section<DashSubtree> rootQuestionSubtree = null;
 
-		Section<DashTreeElement> thisElement = Sections.findAncestorOfType(s,
+		Section<DashTreeElement> thisElement = Sections.ancestor(s,
 				DashTreeElement.class);
 		if (s.get() instanceof QuestionDefinition
 				&& DashTreeUtils.getDashLevel(thisElement) == 0) {
-			rootQuestionSubtree = Sections.findAncestorOfType(thisElement,
+			rootQuestionSubtree = Sections.ancestor(thisElement,
 					DashSubtree.class);
 		}
 
@@ -187,9 +187,9 @@ public class QuestionDashTreeUtils {
 			Section<DashSubtree> lvl1SubtreeAncestor = DashTreeUtils.getAncestorDashSubtree(
 					s, 1);
 			if (lvl1SubtreeAncestor != null) {
-				Section<DashTreeElement> lvl1Element = Sections.findChildOfType(
+				Section<DashTreeElement> lvl1Element = Sections.child(
 						lvl1SubtreeAncestor, DashTreeElement.class);
-				Section<? extends Term> termRefSection = Sections.findSuccessor(
+				Section<? extends Term> termRefSection = Sections.successor(
 						lvl1Element,
 						Term.class);
 

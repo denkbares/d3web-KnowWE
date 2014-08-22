@@ -153,7 +153,7 @@ public class InnerWikiReference extends AbstractType {
 		}
 
 		// check for stored section
-		Section<?> target = Sections.getSection(id);
+		Section<?> target = Sections.get(id);
 		if (target != null) return target;
 
 		// if stored id is deprecated, refresh it

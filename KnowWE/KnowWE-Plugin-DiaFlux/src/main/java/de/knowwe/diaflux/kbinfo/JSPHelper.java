@@ -80,7 +80,7 @@ public class JSPHelper {
 	}
 
 	public String getSectionText(String id) {
-		Section<?> sec = Sections.getSection(id);
+		Section<?> sec = Sections.get(id);
 		String data = "Section not found: " + id;
 		if (sec != null) {
 			data = sec.getText();
@@ -130,14 +130,14 @@ public class JSPHelper {
 	@SuppressWarnings("unchecked")
 	public String loadFlowchart(String kdomID) {
 
-		Section<DefaultMarkupType> diaFluxSection = (Section<DefaultMarkupType>) Sections.getSection(kdomID);
+		Section<DefaultMarkupType> diaFluxSection = (Section<DefaultMarkupType>) Sections.get(kdomID);
 
 		if (diaFluxSection == null) {
 			throw new IllegalArgumentException("Could not find flowchart at: "
 					+ kdomID);
 		}
 
-		Section<FlowchartType> flowchart = Sections.findSuccessor(diaFluxSection,
+		Section<FlowchartType> flowchart = Sections.successor(diaFluxSection,
 				FlowchartType.class);
 
 		if (flowchart == null) {
@@ -182,8 +182,8 @@ public class JSPHelper {
 	}
 
 	private String getFlowchartAttributeValue(String attributeName) {
-		Section<FlowchartType> section = Sections.findSuccessor(
-				Sections.getSection(userContext.getParameter("kdomID")), FlowchartType.class);
+		Section<FlowchartType> section = Sections.successor(
+				Sections.get(userContext.getParameter("kdomID")), FlowchartType.class);
 
 		return AbstractXMLType.getAttributes(section).get(attributeName);
 	}

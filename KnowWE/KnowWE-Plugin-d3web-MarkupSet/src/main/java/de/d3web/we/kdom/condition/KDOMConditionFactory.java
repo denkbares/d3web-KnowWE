@@ -48,7 +48,7 @@ public class KDOMConditionFactory {
 		if (c.get().isBraced(c)) {
 			Section<? extends NonTerminalCondition> braced = c.get().getBraced(c);
 			return createCondition(compiler,
-					Sections.findSuccessor(braced, CompositeCondition.class));
+					Sections.successor(braced, CompositeCondition.class));
 		}
 
 		// create conjuncts
@@ -57,7 +57,7 @@ public class KDOMConditionFactory {
 
 			List<Condition> conds = new ArrayList<Condition>();
 			for (Section<? extends NonTerminalCondition> conjunct : conjuncts) {
-				Section<? extends CompositeCondition> subCondSection = Sections.findChildOfType(
+				Section<? extends CompositeCondition> subCondSection = Sections.child(
 						conjunct, CompositeCondition.class);
 				Condition subCond = createCondition(compiler, (Section<CompositeCondition>) subCondSection);
 				if (subCond == null) return null;
@@ -75,7 +75,7 @@ public class KDOMConditionFactory {
 
 			List<Condition> conds = new ArrayList<Condition>();
 			for (Section<? extends NonTerminalCondition> disjunct : disjuncts) {
-				Section<? extends CompositeCondition> subCondSection = Sections.findChildOfType(
+				Section<? extends CompositeCondition> subCondSection = Sections.child(
 						disjunct, CompositeCondition.class);
 				Condition subCond = createCondition(compiler,
 						(Section<CompositeCondition>) subCondSection);
@@ -92,7 +92,7 @@ public class KDOMConditionFactory {
 			// can only be one
 			Section<? extends NonTerminalCondition> neg = c.get().getNegation(
 					c);
-			Section<? extends CompositeCondition> subCondSection = Sections.findChildOfType(neg,
+			Section<? extends CompositeCondition> subCondSection = Sections.child(neg,
 					CompositeCondition.class);
 			Condition subCond = createCondition(compiler,
 					(Section<CompositeCondition>) subCondSection);
@@ -107,7 +107,7 @@ public class KDOMConditionFactory {
 
 			@SuppressWarnings("rawtypes")
 			Section<D3webCondition> termChild =
-					Sections.findChildOfType(terminal, D3webCondition.class);
+					Sections.child(terminal, D3webCondition.class);
 
 			if (termChild == null) {
 				Log.warning("Could not create Condition for: " + terminal.getParent());

@@ -42,7 +42,8 @@ public class AbstractXMLType extends AbstractType {
 
 	public static Section<XMLContent> getContentChild(Section<?> s) {
 		if (s.get() instanceof AbstractXMLType) {
-			return Sections.findSuccessor(s, XMLContent.class);
+			Section<XMLContent> content = Sections.successor(s, XMLContent.class);
+			return content;
 		}
 		return null;
 	}
@@ -55,16 +56,20 @@ public class AbstractXMLType extends AbstractType {
 	@SuppressWarnings("unchecked")
 	public static Map<String, String> getAttributes(Section<?> section) {
 		if (!(section.get() instanceof AbstractXMLType)) {
-			section = Sections.findAncestorOfType(section, AbstractXMLType.class);
+			section = Sections.ancestor(section, AbstractXMLType.class);
 		}
 		return Collections.unmodifiableMap((Map<String, String>) KnowWEUtils.getStoredObject(section,
 				ATTRIBUTE_MAP_STORE_KEY));
 
 	}
 
-	public static String getAttribute(Section<?> section, String attributeName) {
-		return getAttributes(section).get(attributeName);
-	}
+	// public static Map<String, String> getAttributeMapFor(
+	// Section<? extends AbstractXMLObjectType> s) {
+	// return (Map<String, String>) KnowWEUtils.getStoredObject(s.getWeb(), s
+	// .getTitle(), s.getId(),
+	// XMLSectionFinder.ATTRIBUTE_MAP_STORE_KEY);
+	//
+	// }
 
 	public static String getTagName(Section<? extends AbstractXMLType> s) {
 		Map<String, String> attributeMapFor = getAttributes(s);
@@ -77,7 +82,7 @@ public class AbstractXMLType extends AbstractType {
 	}
 
 	public static Section<AbstractXMLType> getXMLFatherElement(Section<? extends AbstractXMLType> s) {
-		return Sections.findAncestorOfType(s, AbstractXMLType.class);
+		return Sections.ancestor(s, AbstractXMLType.class);
 	}
 
 	public static int getXMLDepth(Section<?> xmlSection) {
@@ -85,7 +90,7 @@ public class AbstractXMLType extends AbstractType {
 	}
 
 	private static int getXMLDepth(Section<?> xmlSection, int depth) {
-		Section<AbstractXMLType> xmlFather = Sections.findAncestorOfType(xmlSection,
+		Section<AbstractXMLType> xmlFather = Sections.ancestor(xmlSection,
 				AbstractXMLType.class);
 		if (xmlFather != null) {
 			return getXMLDepth(xmlFather, ++depth);
@@ -107,7 +112,7 @@ public class AbstractXMLType extends AbstractType {
 		for (Section<?> section : children) {
 			if (section.get() instanceof XMLContent) {
 				List<Section<AbstractXMLType>> nodes = Sections
-						.findChildrenOfType(section, AbstractXMLType.class);
+						.children(section, AbstractXMLType.class);
 				for (Section<? extends AbstractXMLType> section2 : nodes) {
 					Section<? extends AbstractXMLType> found = findSubSectionOfTag(
 							tagname, section2);
@@ -133,7 +138,7 @@ public class AbstractXMLType extends AbstractType {
 			if (section.get() instanceof XMLContent) {
 				Section<XMLContent> conSec = (Section<XMLContent>) section;
 				List<Section<AbstractXMLType>> nodes = Sections
-						.findChildrenOfType(conSec, AbstractXMLType.class);
+						.children(conSec, AbstractXMLType.class);
 				for (Section<AbstractXMLType> section2 : nodes) {
 					findSubSectionsOfTag(
 							tagname, section2, c);

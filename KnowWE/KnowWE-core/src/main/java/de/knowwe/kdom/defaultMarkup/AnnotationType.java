@@ -77,7 +77,7 @@ public class AnnotationType extends AbstractType {
 
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<AnnotationType> section) {
-			Section<AnnotationContentType> content = Sections.findSuccessor(section,
+			Section<AnnotationContentType> content = Sections.successor(section,
 					AnnotationContentType.class);
 			if (content == null) {
 				Messages.storeMessage(section, this.getClass(),

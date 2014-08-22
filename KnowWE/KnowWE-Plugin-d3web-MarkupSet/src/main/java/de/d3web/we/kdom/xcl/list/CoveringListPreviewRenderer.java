@@ -16,13 +16,13 @@ public class CoveringListPreviewRenderer extends AbstractPreviewRenderer {
 	@Override
 	public void render(Section<?> section, Collection<Section<?>> relevantSubSections, UserContext user, RenderResult result) {
 
-		Section<ListSolutionType> self = Sections.findChildOfType(section, ListSolutionType.class);
+		Section<ListSolutionType> self = Sections.child(section, ListSolutionType.class);
 		result.append(self, user);
 
 		boolean skipped = false;
-		for (Section<CoveringRelation> relation : Sections.findChildrenOfType(section,
+		for (Section<CoveringRelation> relation : Sections.children(section,
 				CoveringRelation.class)) {
-			List<Section<?>> all = Sections.getSubtreePreOrder(relation);
+			List<Section<?>> all = Sections.successors(relation);
 			if (Collections.disjoint(all, relevantSubSections)) {
 				skipped = true;
 			}

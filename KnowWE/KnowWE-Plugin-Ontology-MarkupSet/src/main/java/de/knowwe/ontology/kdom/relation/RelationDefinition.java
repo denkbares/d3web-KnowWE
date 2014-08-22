@@ -78,9 +78,9 @@ public class RelationDefinition extends AbstractType {
 		public Collection<Message> create(OntologyCompiler compiler, Section<RelationDefinition> section) {
 
 			if (section.hasErrorInSubtree()) {
-				Section<LiteralType> literalSection = Sections.findChildOfType(section,
+				Section<LiteralType> literalSection = Sections.child(section,
 						LiteralType.class);
-				Section<ObjectType> objectSection = Sections.findChildOfType(section,
+				Section<ObjectType> objectSection = Sections.child(section,
 						ObjectType.class);
 				if (literalSection != null && objectSection != null) {
 					return Messages.asList(Messages.error("Multiple objects found. Only one object is allowed per relation."));
@@ -90,40 +90,40 @@ public class RelationDefinition extends AbstractType {
 
 			Rdf2GoCore core = Rdf2GoCore.getInstance(compiler);
 
-			Section<SubjectType> subjectSection = Sections.findChildOfType(section,
+			Section<SubjectType> subjectSection = Sections.child(section,
 					SubjectType.class);
 			if (subjectSection == null) {
 				return Messages.asList(Messages.error("No subject found for relation definition '"
 						+ section.getText() + "'."));
 			}
-			Section<AbbreviatedResourceReference> abbrSubjectSection = Sections.findSuccessor(
+			Section<AbbreviatedResourceReference> abbrSubjectSection = Sections.successor(
 					subjectSection, AbbreviatedResourceReference.class);
 
 			URI subjectURI = abbrSubjectSection.get().getResourceURI(core, abbrSubjectSection);
 
-			Section<PredicateType> predicateSection = Sections.findChildOfType(section,
+			Section<PredicateType> predicateSection = Sections.child(section,
 					PredicateType.class);
 			if (predicateSection == null) {
 				return Messages.asList(Messages.error("No predicate found for relation definition '"
 						+ section.getText() + "'."));
 			}
-			Section<AbbreviatedPropertyReference> abbrObjPropSection = Sections.findSuccessor(
+			Section<AbbreviatedPropertyReference> abbrObjPropSection = Sections.successor(
 					predicateSection, AbbreviatedPropertyReference.class);
 
 			URI predicatedURI = abbrObjPropSection.get().getPropertyURI(core, abbrObjPropSection);
 
-			Section<ObjectType> objectSection = Sections.findChildOfType(section,
+			Section<ObjectType> objectSection = Sections.child(section,
 					ObjectType.class);
 
 			if (objectSection == null) {
-				Section<LiteralType> literalSection = Sections.findChildOfType(section,
+				Section<LiteralType> literalSection = Sections.child(section,
 						LiteralType.class);
 				Literal literal = literalSection.get().getLiteral(core, literalSection);
 				core.addStatements(section,
 						core.createStatement(subjectURI, predicatedURI, literal));
 			}
 			else {
-				Section<AbbreviatedResourceReference> abbrObjectSection = Sections.findSuccessor(
+				Section<AbbreviatedResourceReference> abbrObjectSection = Sections.successor(
 						objectSection, AbbreviatedResourceReference.class);
 				URI objectURI = abbrObjectSection.get().getResourceURI(core, abbrObjectSection);
 

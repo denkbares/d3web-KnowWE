@@ -79,7 +79,7 @@ public class RetractSingleFindingAction extends AbstractAction {
 			return null;
 		}
 
-		Section<?> section = Sections.getSection(sectionId);
+		Section<?> section = Sections.get(sectionId);
 		if (section == null || !KnowWEUtils.canView(section, context)) {
 			return null;
 		}

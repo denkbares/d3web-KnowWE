@@ -79,9 +79,9 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 
 	@Override
 	protected PSAction createAction(D3webCompiler compiler, Section<SetQuestionValue> s) {
-		Section<QuestionReference> qref = Sections.findSuccessor(s, QuestionReference.class);
+		Section<QuestionReference> qref = Sections.successor(s, QuestionReference.class);
 		Question q = qref.get().getTermObject(compiler, qref);
-		Section<CompositeFormula> formulaSection = Sections.findSuccessor(s, CompositeFormula.class);
+		Section<CompositeFormula> formulaSection = Sections.successor(s, CompositeFormula.class);
 		if (formulaSection == null) return null;
 		FormulaNumberElement formular = null;
 		try {

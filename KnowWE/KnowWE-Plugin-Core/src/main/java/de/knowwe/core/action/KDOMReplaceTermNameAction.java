@@ -76,7 +76,7 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 
 		Map<String, String> nodesMap = new HashMap<String, String>();
 
-		Section<?> section = Sections.getSection(nodeID);
+		Section<?> section = Sections.get(nodeID);
 
 		if (!(section.get() instanceof Term)) {
 			context.sendError(500, "Invalid section type");
@@ -88,7 +88,7 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 		String newNodeText = originalText.replace(oldTermName, newText);
 
 		nodesMap.put(nodeID, newNodeText);
-		Sections.replaceSections(context, nodesMap).sendErrors(context);
+		Sections.replace(context, nodesMap).sendErrors(context);
 		try {
 			KnowWEUtils.getArticleManager(context.getWeb()).getCompilerManager().awaitTermination();
 		}

@@ -61,7 +61,7 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 	@Override
 	public Message execute(SparqlExpectedResultSection testObject, String[] args, String[]... ignores) throws InterruptedException {
 		Section<ExpectedSparqlResultTable> expectedResultTableSection = testObject.getSection();
-		Section<DefaultMarkupType> defaultMarkup = Sections.findAncestorOfType(
+		Section<DefaultMarkupType> defaultMarkup = Sections.ancestor(
 				expectedResultTableSection,
 				DefaultMarkupType.class);
 		String sparqlName = DefaultMarkupType.getAnnotation(defaultMarkup,

@@ -68,7 +68,7 @@ public class OntologyUtils {
 	public static OntologyCompiler getOntologyCompiler(Section<?> section) {
 		OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
 		if (compiler == null && section.get() instanceof OntologyType) {
-			Section<DefaultMarkupPackageCompileType> compileSection = Sections.findSuccessor(
+			Section<DefaultMarkupPackageCompileType> compileSection = Sections.successor(
 					section, DefaultMarkupPackageCompileType.class);
 			Collection<PackageCompiler> packageCompilers = compileSection.get().getPackageCompilers(
 					compileSection);
@@ -210,9 +210,9 @@ public class OntologyUtils {
 		// check all sentences of the specified subject
 		for (Section<TurtleSentence> sentence : findSentences(article, subject)) {
 			// check all predicate sentences within these sentences
-			for (Section<PredicateSentence> predSentence : Sections.findSuccessorsOfType(sentence,
+			for (Section<PredicateSentence> predSentence : Sections.successors(sentence,
 					PredicateSentence.class)) {
-				Section<Predicate> otherPredicate = Sections.findSuccessor(predSentence,
+				Section<Predicate> otherPredicate = Sections.successor(predSentence,
 						Predicate.class);
 				if (otherPredicate == null) continue;
 				if (otherPredicate.getText().equals(predicate.toString())) {
@@ -255,14 +255,14 @@ public class OntologyUtils {
 		List<Section<TurtleSentence>> result = new LinkedList<Section<TurtleSentence>>();
 
 		// check each turtle markup
-		List<Section<TurtleMarkup>> turtles = Sections.findSuccessorsOfType(
+		List<Section<TurtleMarkup>> turtles = Sections.successors(
 				article.getRootSection(), TurtleMarkup.class);
 		for (Section<TurtleMarkup> turtle : turtles) {
 			// check each sentence of each markup
 			List<Section<TurtleSentence>> sentences =
-					Sections.findSuccessorsOfType(turtle, TurtleSentence.class);
+					Sections.successors(turtle, TurtleSentence.class);
 			for (Section<TurtleSentence> sentence : sentences) {
-				Section<Subject> otherSubject = Sections.findSuccessor(sentence,
+				Section<Subject> otherSubject = Sections.successor(sentence,
 						Subject.class);
 				if (otherSubject == null) continue;
 				if (otherSubject.getText().equals(subject.toString())) {

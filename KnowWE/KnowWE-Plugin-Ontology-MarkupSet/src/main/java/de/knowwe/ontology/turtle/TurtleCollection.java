@@ -119,7 +119,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 	public StatementProviderResult getStatements(Section<TurtleCollection> section, Rdf2GoCompiler core) {
 		StatementProviderResult result = new StatementProviderResult();
 		List<Section<CollectionItem>> listItems = new ArrayList<Section<CollectionItem>>();
-		Sections.findSuccessorsOfType(section,
+		Sections.successors(section,
 				CollectionItem.class, 2, listItems);
 		Resource listNode = getResource(section, core);
 		if (listItems.size() > 0) {
@@ -140,7 +140,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 		Section<CollectionItem> dataSection = subList.get(0);
 
 		// search data value node
-		Section<NodeProvider> dataNodeSection = Sections.findSuccessor(dataSection,
+		Section<NodeProvider> dataNodeSection = Sections.successor(dataSection,
 				NodeProvider.class);
 
 		// add data triple

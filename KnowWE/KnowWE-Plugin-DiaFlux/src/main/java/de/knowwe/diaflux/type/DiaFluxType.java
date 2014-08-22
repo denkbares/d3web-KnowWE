@@ -49,7 +49,7 @@ public class DiaFluxType extends DefaultMarkupType {
 
 	public static String getFlowchartName(Section<DiaFluxType> diaFluxSection) {
 
-		Section<FlowchartType> flowchart = Sections.findSuccessor(diaFluxSection,
+		Section<FlowchartType> flowchart = Sections.successor(diaFluxSection,
 				FlowchartType.class);
 
 		if (flowchart == null) {

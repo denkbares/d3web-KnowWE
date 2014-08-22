@@ -70,7 +70,7 @@ public class DefaultMarkupCompileScript extends DefaultGlobalScript<DefaultMarku
 		}
 
 		// check unrecognized annotations
-		List<Section<UnknownAnnotationType>> unknownSections = Sections.findChildrenOfType(
+		List<Section<UnknownAnnotationType>> unknownSections = Sections.children(
 				markupSection, UnknownAnnotationType.class);
 		for (Section<UnknownAnnotationType> annotationSection : unknownSections) {
 			String name = UnknownAnnotationType.getName(annotationSection);

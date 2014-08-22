@@ -52,7 +52,7 @@ public class InstantIndication extends BracketsAction<InstantIndication> {
 
 	@Override
 	public PSAction createAction(D3webCompiler compiler, Section<InstantIndication> s) {
-		Section<QASetReference> qSec = Sections.findSuccessor(s, QASetReference.class);
+		Section<QASetReference> qSec = Sections.successor(s, QASetReference.class);
 		QASet termObject = qSec.get().getTermObject(compiler, qSec);
 
 		ActionInstantIndication actionContraIndication = new ActionInstantIndication();

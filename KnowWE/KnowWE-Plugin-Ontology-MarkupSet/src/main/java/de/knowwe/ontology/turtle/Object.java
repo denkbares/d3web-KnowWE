@@ -95,7 +95,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
         protected List<Section<Predicate>> getPredicates(Section<SimpleReference> s) {
             // find the one predicate relevant for this turtle object
             Section<PredicateObjectSentenceList> predSentence = Sections.ancestor(s,
-                    PredicateObjectSentenceList.class);
+					PredicateObjectSentenceList.class);
 
             return Sections.successors(predSentence, Predicate.class);
         }
@@ -137,7 +137,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
          * Handle OBJECT
 		 */
         Node object = section.get().getNode(section, core);
-        Section<TurtleURI> turtleURITermObject = Sections.findChildOfType(section, TurtleURI.class);
+        Section<TurtleURI> turtleURITermObject = Sections.child(section, TurtleURI.class);
         if (turtleURITermObject != null && STRICT_COMPILATION) {
             boolean isDefined = checkTurtleURIDefinition(turtleURITermObject);
             if (!isDefined) {
@@ -155,10 +155,10 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		/*
 		 * Handle PREDICATE
 		 */
-        Section<PredicateSentence> predSentenceSection = Sections.findAncestorOfType(section,
-                PredicateSentence.class);
-        Section<Predicate> predicateSection = Sections.findChildOfType(predSentenceSection,
-                Predicate.class);
+        Section<PredicateSentence> predSentenceSection = Sections.ancestor(section,
+				PredicateSentence.class);
+        Section<Predicate> predicateSection = Sections.child(predSentenceSection,
+				Predicate.class);
 
         if (predicateSection == null) {
             result.addMessage(Messages.error("No predicate section found: " + section.toString()));
@@ -168,7 +168,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
         URI predicate = predicateSection.get().getURI(predicateSection, core);
 
         // check term definition
-        Section<TurtleURI> turtleURITerm = Sections.findSuccessor(predicateSection, TurtleURI.class);
+        Section<TurtleURI> turtleURITerm = Sections.successor(predicateSection, TurtleURI.class);
         if (turtleURITerm != null && STRICT_COMPILATION) {
             boolean isDefined = checkTurtleURIDefinition(turtleURITerm);
             if (!isDefined) {
@@ -189,8 +189,8 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
         Resource subject;
         // the subject can either be a normal turtle sentence subject
         // OR a blank node
-        Section<BlankNode> blankNodeSection = Sections.findAncestorOfType(predSentenceSection,
-                BlankNode.class);
+        Section<BlankNode> blankNodeSection = Sections.ancestor(predSentenceSection,
+				BlankNode.class);
         if (blankNodeSection != null) {
             subject = blankNodeSection.get().getResource(blankNodeSection, core);
             if (subject == null) {
@@ -198,15 +198,15 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
                         + "' is not a valid subject."));
             }
         } else {
-            Section<TurtleSentence> sentence = Sections.findAncestorOfType(predSentenceSection,
-                    TurtleSentence.class);
-            Section<Subject> subjectSection = Sections.findSuccessor(sentence,
-                    Subject.class);
+            Section<TurtleSentence> sentence = Sections.ancestor(predSentenceSection,
+					TurtleSentence.class);
+            Section<Subject> subjectSection = Sections.successor(sentence,
+					Subject.class);
             subject = subjectSection.get().getResource(subjectSection, core);
 
             // check term definition
-            Section<TurtleURI> turtleURITermSubject = Sections.findChildOfType(subjectSection,
-                    TurtleURI.class);
+            Section<TurtleURI> turtleURITermSubject = Sections.child(subjectSection,
+					TurtleURI.class);
             if (turtleURITermSubject != null && STRICT_COMPILATION) {
                 boolean isDefined = checkTurtleURIDefinition(turtleURITermSubject);
                 if (!isDefined) {
@@ -234,7 +234,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
     private boolean checkTurtleURIDefinition(Section<TurtleURI> turtleURITerm) {
         TermCompiler compiler = Compilers.getCompiler(turtleURITerm, TermCompiler.class);
         TerminologyManager terminologyManager = compiler.getTerminologyManager();
-        Section<TermReference> term = Sections.findSuccessor(turtleURITerm, TermReference.class);
+        Section<TermReference> term = Sections.successor(turtleURITerm, TermReference.class);
         return terminologyManager.isDefinedTerm(term.get().getTermIdentifier(term));
     }
 
@@ -244,8 +244,8 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
     public Node getNode(Section<Object> section, Rdf2GoCompiler core) {
         // there should be exactly one NodeProvider child (while potentially
         // many successors)
-        List<Section<NodeProvider>> nodeProviderSections = Sections.findChildrenOfType(section,
-                NodeProvider.class);
+        List<Section<NodeProvider>> nodeProviderSections = Sections.children(section,
+				NodeProvider.class);
         if (nodeProviderSections != null) {
             if (nodeProviderSections.size() == 1) {
 

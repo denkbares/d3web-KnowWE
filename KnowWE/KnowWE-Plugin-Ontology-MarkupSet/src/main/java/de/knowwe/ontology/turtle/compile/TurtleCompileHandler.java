@@ -20,7 +20,7 @@ public class TurtleCompileHandler extends OntologyHandler<TurtleSentence> {
 
 		List<Message> messages = new ArrayList<Message>();
 
-		List<Section<StatementProvider>> statementProviders = Sections.findSuccessorsOfType(
+		List<Section<StatementProvider>> statementProviders = Sections.successors(
 				section, StatementProvider.class);
 		for (Section<StatementProvider> statementSection : statementProviders) {
 

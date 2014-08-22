@@ -53,7 +53,7 @@ public class ExitType extends AbstractXMLType {
 	}
 
 	public String getTermName(Section<? extends ExitType> section) {
-		Section<ExitNodeDef> term = Sections.findSuccessor(section, ExitNodeDef.class);
+		Section<ExitNodeDef> term = Sections.successor(section, ExitNodeDef.class);
 		return term.get().getTermName(term);
 	}
 
@@ -67,7 +67,7 @@ public class ExitType extends AbstractXMLType {
 
 		@Override
 		public Identifier getTermIdentifier(Section<? extends Term> section) {
-			Section<FlowchartType> flowchart = Sections.findAncestorOfType(section,
+			Section<FlowchartType> flowchart = Sections.ancestor(section,
 					FlowchartType.class);
 			String flowchartName = FlowchartType.getFlowchartName(flowchart);
 			return new Identifier(flowchartName, getTermName(section));

@@ -82,7 +82,7 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 		Section<XMLContent> flowContent = AbstractXMLType.getContentChild(s);
 
 		if (kb == null || flowContent == null
-				|| Sections.findSuccessor(s, FlowchartXMLHeadType.class).hasErrorInSubtree()) {
+				|| Sections.successor(s, FlowchartXMLHeadType.class).hasErrorInSubtree()) {
 			return;
 		}
 
@@ -111,7 +111,7 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 
 		List<Section<EdgeType>> edgeSections = new ArrayList<Section<EdgeType>>();
 		Section<XMLContent> flowcontent = AbstractXMLType.getContentChild(flowSection);
-		Sections.findSuccessorsOfType(flowcontent, EdgeType.class, edgeSections);
+		Sections.successors(flowcontent, EdgeType.class, edgeSections);
 
 		for (Section<EdgeType> section : edgeSections) {
 
@@ -125,11 +125,11 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 			}
 
 			Condition condition;
-			Section<GuardType> guardSection = Sections.findSuccessor(section, GuardType.class);
+			Section<GuardType> guardSection = Sections.successor(section, GuardType.class);
 			List<Message> msgs = new ArrayList<Message>();
 			if (guardSection != null) {
 
-				Section<CompositeCondition> compositionConditionSection = Sections.findSuccessor(
+				Section<CompositeCondition> compositionConditionSection = Sections.successor(
 						guardSection, CompositeCondition.class);
 				condition = buildCondition(compiler, compositionConditionSection);
 
@@ -156,7 +156,7 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 	}
 
 	private static <T extends AbstractXMLType> Node findNodeForEdge(PackageCompiler compiler, Section<EdgeType> edge, Class<T> childType, List<Node> nodes) {
-		Section<T> targetSection = Sections.findSuccessor(edge, childType);
+		Section<T> targetSection = Sections.successor(edge, childType);
 
 		if (targetSection == null) {
 			String id = AbstractXMLType.getAttributes(edge).get("fcid");
@@ -203,7 +203,7 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 		List<Node> result = new ArrayList<Node>();
 		ArrayList<Section<NodeType>> nodeSections = new ArrayList<Section<NodeType>>();
 		Section<XMLContent> flowcontent = AbstractXMLType.getContentChild(flowSection);
-		Sections.findSuccessorsOfType(flowcontent, NodeType.class, nodeSections);
+		Sections.successors(flowcontent, NodeType.class, nodeSections);
 		for (Section<NodeType> nodeSection : nodeSections) {
 
 			NodeHandler handler = NodeHandlerManager.getInstance().findNodeHandler(compiler, kb,
@@ -219,7 +219,7 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 
 				// handler could not generate a node for the supplied section
 				if (node == null) {
-					Section<AbstractXMLType> nodeInfo = (Section<AbstractXMLType>) Sections.findSuccessor(
+					Section<AbstractXMLType> nodeInfo = (Section<AbstractXMLType>) Sections.successor(
 							nodeSection, handler.get().getClass());
 					String text = getXMLContentText(nodeInfo);
 

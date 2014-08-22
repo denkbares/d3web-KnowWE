@@ -36,7 +36,7 @@ public class OutDatedSessionNotification implements Notification {
 	private final String title;
 
 	public OutDatedSessionNotification(String sectionId) {
-		this.title = Sections.getSection(sectionId).getTitle();
+		this.title = Sections.get(sectionId).getTitle();
 		this.id = sectionId;
 	}
 

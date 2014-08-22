@@ -57,7 +57,7 @@ public abstract class AbstractNodeHandler<T extends AbstractXMLType> implements 
 
 	protected Section<T> getNodeInfo(Section<?> nodeSection) {
 		@SuppressWarnings("unchecked")
-		Section<T> child = (Section<T>) Sections.findSuccessor(nodeSection, type.getClass());
+		Section<T> child = (Section<T>) Sections.successor(nodeSection, type.getClass());
 
 		if (child == null) {
 			return null; // no child of expected type

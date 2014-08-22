@@ -49,7 +49,7 @@ public class InitPropertyHandler implements D3webHandler<PropertyDeclarationType
 	@Override
 	public Collection<Message> create(D3webCompiler article, Section<PropertyDeclarationType> s) {
 		// get Property
-		Section<PropertyType> propertySection = Sections.findSuccessor(s,
+		Section<PropertyType> propertySection = Sections.successor(s,
 				PropertyType.class);
 		if (propertySection == null) {
 			return Messages.asList();
@@ -60,7 +60,7 @@ public class InitPropertyHandler implements D3webHandler<PropertyDeclarationType
 		}
 
 		// get NamedObject
-		Section<PropertyObjectReference> namendObjectSection = Sections.findSuccessor(s,
+		Section<PropertyObjectReference> namendObjectSection = Sections.successor(s,
 				PropertyObjectReference.class);
 		if (namendObjectSection == null) {
 			return Messages.asList();
@@ -71,7 +71,7 @@ public class InitPropertyHandler implements D3webHandler<PropertyDeclarationType
 		}
 
 		// get content
-		Section<PropertyContentType> contentSection = Sections.findSuccessor(s,
+		Section<PropertyContentType> contentSection = Sections.successor(s,
 				PropertyContentType.class);
 		if (contentSection == null) {
 			return Messages.asList();

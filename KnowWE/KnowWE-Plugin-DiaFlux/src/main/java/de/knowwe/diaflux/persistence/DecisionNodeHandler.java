@@ -48,7 +48,7 @@ public class DecisionNodeHandler extends AbstractNodeHandler<DecisionType> {
 	public Node createNode(D3webCompiler compiler, KnowledgeBase kb, Section<NodeType> nodeSection,
 			Section<FlowchartType> flowSection, String id) {
 
-		Section<NamedObjectReference> objectRef = Sections.findSuccessor(nodeSection,
+		Section<NamedObjectReference> objectRef = Sections.successor(nodeSection,
 				NamedObjectReference.class);
 		NamedObject object = NamedObjectReference.getObject(compiler, objectRef);
 		NOOPAction action;

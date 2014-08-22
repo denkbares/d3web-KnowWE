@@ -12,7 +12,7 @@ public class AnswerReferenceCell extends AnswerReference {
 	@Override
 	public Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> section) {
 		Section<TableCellContent> columnHeader = TableUtils.getColumnHeader(section);
-		return Sections.findSuccessor(columnHeader, QuestionReference.class);
+		return Sections.successor(columnHeader, QuestionReference.class);
 	}
 
 }

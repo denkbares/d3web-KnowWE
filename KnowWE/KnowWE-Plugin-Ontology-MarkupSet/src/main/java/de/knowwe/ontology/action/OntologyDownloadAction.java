@@ -32,7 +32,7 @@ public class OntologyDownloadAction extends AbstractAction {
 
 		String filename = context.getParameter(PARAM_FILENAME);
 		String secID = context.getParameter(Attributes.SECTION_ID);
-		Section<?> section = Sections.getSection(secID);
+		Section<?> section = Sections.get(secID);
 		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
 		Rdf2GoCore rdf2GoCore = compiler.getRdf2GoCore();
 

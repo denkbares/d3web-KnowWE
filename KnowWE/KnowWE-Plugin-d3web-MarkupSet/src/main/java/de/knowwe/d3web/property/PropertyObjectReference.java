@@ -75,12 +75,12 @@ public class PropertyObjectReference extends D3webTermReference<NamedObject> {
 
 	@Override
 	public NamedObject getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<NamedObject>> s) {
-		Section<PropertyAnswerReference> propertyAnswerReference = Sections.findChildOfType(s,
+		Section<PropertyAnswerReference> propertyAnswerReference = Sections.child(s,
 				PropertyAnswerReference.class);
 		if (propertyAnswerReference != null) {
 			return propertyAnswerReference.get().getTermObject(compiler, propertyAnswerReference);
 		}
-		Section<NamedObjectReference> namedObjectReference = Sections.findChildOfType(s,
+		Section<NamedObjectReference> namedObjectReference = Sections.child(s,
 				NamedObjectReference.class);
 		if (namedObjectReference != null) {
 			return namedObjectReference.get().getTermObject(compiler, namedObjectReference);
@@ -107,7 +107,7 @@ public class PropertyObjectReference extends D3webTermReference<NamedObject> {
 
 		@Override
 		public Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s) {
-			return Sections.findChildOfType(s.getParent(), QuestionReference.class);
+			return Sections.child(s.getParent(), QuestionReference.class);
 		}
 
 	}

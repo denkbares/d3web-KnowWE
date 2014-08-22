@@ -24,7 +24,7 @@ public class URITermCorrectionProvider implements CorrectionProvider {
 		Section<ResourceReference> ref = null;
 
 		if (!(section.get() instanceof ResourceReference)) {
-			section = Sections.findSuccessor(section, ResourceReference.class);
+			section = Sections.successor(section, ResourceReference.class);
 			if (section == null)
 				return null;
 		} else {

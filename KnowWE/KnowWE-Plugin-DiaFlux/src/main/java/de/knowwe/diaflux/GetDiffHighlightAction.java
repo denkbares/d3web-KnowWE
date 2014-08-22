@@ -58,8 +58,8 @@ public class GetDiffHighlightAction extends AbstractAction {
 		String parentid = context.getParameter(GetTraceHighlightAction.PARENTID);
 		parentid = parentid.substring(0, parentid.length() - 5);
 
-		Section<FlowchartType> leftFlow = Sections.getSection(leftkdomid, FlowchartType.class);
-		Section<FlowchartType> rightFlow = Sections.getSection(rightkdomid, FlowchartType.class);
+		Section<FlowchartType> leftFlow = Sections.get(leftkdomid, FlowchartType.class);
+		Section<FlowchartType> rightFlow = Sections.get(rightkdomid, FlowchartType.class);
 
 		Highlight leftHighlight = new Highlight(parentid + "-" + LEFT_PARENT, PREFIX);
 		Highlight rightHighlight = new Highlight(parentid + "-" + RIGHT_PARENT, PREFIX);
@@ -188,7 +188,7 @@ public class GetDiffHighlightAction extends AbstractAction {
 	}
 
 	private static <T extends AbstractXMLType> Collection<Section<T>> getOtherElements(Section<FlowchartType> flow, Collection<Section<T>> elements, Class<T> clazz) {
-		List<Section<T>> childs = Sections.findSuccessorsOfType(flow, clazz);
+		List<Section<T>> childs = Sections.successors(flow, clazz);
 		childs.removeAll(elements);
 		return childs;
 
@@ -204,8 +204,8 @@ public class GetDiffHighlightAction extends AbstractAction {
 	 * @return
 	 */
 	private static <T extends AbstractXMLType> Collection<Pair<Section<T>, Section<T>>> getCorrespondingElements(Section<FlowchartType> flow1, Section<FlowchartType> flow2, Class<T> clazz) {
-		List<Section<T>> childs1 = Sections.findSuccessorsOfType(flow1, clazz);
-		List<Section<T>> childs2 = Sections.findSuccessorsOfType(flow2, clazz);
+		List<Section<T>> childs1 = Sections.successors(flow1, clazz);
+		List<Section<T>> childs2 = Sections.successors(flow2, clazz);
 
 		Collection<Pair<Section<T>, Section<T>>> result = new LinkedList<Pair<Section<T>, Section<T>>>();
 		for (Section<T> child1 : childs1) {

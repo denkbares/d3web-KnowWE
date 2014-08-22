@@ -83,7 +83,7 @@ public class ObjectPropertyType extends DefaultMarkupType {
 			/*
 			 * set functional property if specified
 			 */
-			Section<DefaultMarkupType> markup = Sections.findAncestorOfType(section,
+			Section<DefaultMarkupType> markup = Sections.ancestor(section,
 					DefaultMarkupType.class);
 			String annotation = DefaultMarkupType.getAnnotation(markup, FUNCTIONAL_ANNOTATION_NAME);
 			if (annotation != null && annotation.equalsIgnoreCase("true")) {
@@ -116,9 +116,9 @@ public class ObjectPropertyType extends DefaultMarkupType {
 				@Override
 				public Collection<Message> create(OntologyCompiler compiler, Section<DomainRangeAnnotationType> section) {
 
-					Section<DefaultMarkupType> defaultMarkup = Sections.findAncestorOfType(section,
+					Section<DefaultMarkupType> defaultMarkup = Sections.ancestor(section,
 							DefaultMarkupType.class);
-					Section<AbbreviatedPropertyDefinition> propertySec = Sections.findSuccessor(
+					Section<AbbreviatedPropertyDefinition> propertySec = Sections.successor(
 							defaultMarkup, AbbreviatedPropertyDefinition.class);
 					Rdf2GoCore core = Rdf2GoCore.getInstance(compiler);
 					URI propertyURI = propertySec.get().getResourceURI(core, propertySec);

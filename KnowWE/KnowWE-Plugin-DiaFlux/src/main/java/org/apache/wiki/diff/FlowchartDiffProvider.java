@@ -156,7 +156,7 @@ public class FlowchartDiffProvider implements DiffProvider {
 	 * removes the source of the flow from the article
 	 */
 	private void remove(Section<FlowchartType> flow, StringBuilder bob) {
-		Section<DiaFluxType> diaFlux = Sections.findAncestorOfType(flow, DiaFluxType.class);
+		Section<DiaFluxType> diaFlux = Sections.ancestor(flow, DiaFluxType.class);
 		int start = diaFlux.getOffsetInArticle();
 		int end = start + diaFlux.getText().length();
 		bob.replace(start, end, "");
@@ -200,7 +200,7 @@ public class FlowchartDiffProvider implements DiffProvider {
 	 */
 	public List<Section<FlowchartType>> getFlowsFrom(String articleSource) {
 		Section<RootType> root = LoadFlowchartAction.sectionizeArticle(articleSource);
-		List<Section<FlowchartType>> flows = Sections.findSuccessorsOfType(root,
+		List<Section<FlowchartType>> flows = Sections.successors(root,
 				FlowchartType.class);
 		return flows;
 	}

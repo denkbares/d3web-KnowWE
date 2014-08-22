@@ -69,7 +69,7 @@ public class IndicationHandler implements D3webCompileScript<D3webTerm<NamedObje
 	@SuppressWarnings("unchecked")
 	public void compile(D3webCompiler compiler, Section<D3webTerm<NamedObject>> section) throws CompilerMessage {
 
-		Section<DashTreeElement> element = Sections.findAncestorOfType(section,
+		Section<DashTreeElement> element = Sections.ancestor(section,
 				DashTreeElement.class);
 
 		if (element == null) {
@@ -97,9 +97,9 @@ public class IndicationHandler implements D3webCompileScript<D3webTerm<NamedObje
 		}
 
 		Section<QuestionTreeAnswerDefinition> answerSec =
-				Sections.findSuccessor(dashTreeFather, QuestionTreeAnswerDefinition.class);
+				Sections.successor(dashTreeFather, QuestionTreeAnswerDefinition.class);
 		Section<NumericCondLine> numCondSec =
-				Sections.findSuccessor(dashTreeFather, NumericCondLine.class);
+				Sections.successor(dashTreeFather, NumericCondLine.class);
 
 		if (answerSec != null || numCondSec != null) {
 
@@ -114,7 +114,7 @@ public class IndicationHandler implements D3webCompileScript<D3webTerm<NamedObje
 			// use this handler
 			QASet qaset = null;
 			@SuppressWarnings("rawtypes")
-			Section<? extends D3webTerm> termRef = Sections.findSuccessor(element,
+			Section<? extends D3webTerm> termRef = Sections.successor(element,
 					D3webTerm.class);
 			if (termRef != null) {
 				if (termRef.get() instanceof QuestionnaireReference) {

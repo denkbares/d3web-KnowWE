@@ -117,7 +117,7 @@ public class Rdf2GoUtils {
 	}
 
 	public static Rdf2GoCore getRdf2GoCoreForDefaultMarkupSubSection(Section<? extends Type> section) {
-		Section<DefaultMarkupType> defaultMarkup = Sections.findAncestorOfType(section,
+		Section<DefaultMarkupType> defaultMarkup = Sections.ancestor(section,
 				DefaultMarkupType.class);
 		if (defaultMarkup == null) {
 			throw new IllegalArgumentException();

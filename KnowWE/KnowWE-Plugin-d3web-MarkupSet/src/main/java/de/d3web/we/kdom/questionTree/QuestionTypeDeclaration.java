@@ -99,7 +99,7 @@ public class QuestionTypeDeclaration extends
 	}
 
 	public Section<QuestionDefinition> getQuestionDefinition(Section<QuestionTypeDeclaration> typeDeclaration) {
-		return Sections.findSuccessor(typeDeclaration.getParent(),
+		return Sections.successor(typeDeclaration.getParent(),
 				QuestionDefinition.class);
 	}
 

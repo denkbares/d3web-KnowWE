@@ -39,7 +39,7 @@ public class FormulaNumberElementFactory {
 		if (c.get().isBraced(c)) {
 			Section<? extends NonTerminalCondition> braced = c.get().getBraced(c);
 			return createExpression(compiler,
-						Sections.findSuccessor(braced, CompositeFormula.class));
+						Sections.successor(braced, CompositeFormula.class));
 		}
 
 		// create division
@@ -54,13 +54,13 @@ public class FormulaNumberElementFactory {
 
 			// build first operand
 			Section<? extends CalcMethodType> div0 = divElements.get(0);
-			Section<CompositeFormula> compositeChild = Sections.findChildOfType(div0,
+			Section<CompositeFormula> compositeChild = Sections.child(div0,
 					CompositeFormula.class);
 			FormulaNumberElement operand0 = createExpression(compiler, compositeChild);
 
 			// build second operand
 			Section<? extends CalcMethodType> div1 = divElements.get(1);
-			Section<CompositeFormula> compositeChild1 = Sections.findChildOfType(div1,
+			Section<CompositeFormula> compositeChild1 = Sections.child(div1,
 					CompositeFormula.class);
 			FormulaNumberElement operand1 = createExpression(compiler, compositeChild1);
 
@@ -84,13 +84,13 @@ public class FormulaNumberElementFactory {
 
 			// build first operand
 			Section<? extends CalcMethodType> mult0 = multElems.get(0);
-			Section<CompositeFormula> compositeChild = Sections.findChildOfType(mult0,
+			Section<CompositeFormula> compositeChild = Sections.child(mult0,
 					CompositeFormula.class);
 			FormulaNumberElement operand0 = createExpression(compiler, compositeChild);
 
 			// build second operand
 			Section<? extends CalcMethodType> mult1 = multElems.get(1);
-			Section<CompositeFormula> compositeChild1 = Sections.findChildOfType(mult1,
+			Section<CompositeFormula> compositeChild1 = Sections.child(mult1,
 					CompositeFormula.class);
 			FormulaNumberElement operand1 = createExpression(compiler, compositeChild1);
 
@@ -114,13 +114,13 @@ public class FormulaNumberElementFactory {
 
 			// build first operand
 			Section<? extends CalcMethodType> add0 = addElems.get(0);
-			Section<CompositeFormula> compositeChild = Sections.findChildOfType(add0,
+			Section<CompositeFormula> compositeChild = Sections.child(add0,
 					CompositeFormula.class);
 			FormulaNumberElement operand0 = createExpression(compiler, compositeChild);
 
 			// build second operand
 			Section<? extends CalcMethodType> add1 = addElems.get(1);
-			Section<CompositeFormula> compositeChild1 = Sections.findChildOfType(add1,
+			Section<CompositeFormula> compositeChild1 = Sections.child(add1,
 					CompositeFormula.class);
 			FormulaNumberElement operand1 = createExpression(compiler, compositeChild1);
 
@@ -144,13 +144,13 @@ public class FormulaNumberElementFactory {
 
 			// build first operand
 			Section<? extends CalcMethodType> sub0 = subElems.get(0);
-			Section<CompositeFormula> compositeChild = Sections.findChildOfType(sub0,
+			Section<CompositeFormula> compositeChild = Sections.child(sub0,
 					CompositeFormula.class);
 			FormulaNumberElement operand0 = createExpression(compiler, compositeChild);
 
 			// build second operand
 			Section<? extends CalcMethodType> sub1 = subElems.get(1);
-			Section<CompositeFormula> compositeChild1 = Sections.findChildOfType(sub1,
+			Section<CompositeFormula> compositeChild1 = Sections.child(sub1,
 					CompositeFormula.class);
 			FormulaNumberElement operand1 = createExpression(compiler, compositeChild1);
 
@@ -167,13 +167,13 @@ public class FormulaNumberElementFactory {
 		if (c.get().isTerminal(c)) {
 			Section<? extends TerminalCondition> terminal = c.get().getTerminal(c);
 
-			Section<de.knowwe.core.kdom.basicType.Number> number = Sections.findChildOfType(terminal,
+			Section<de.knowwe.core.kdom.basicType.Number> number = Sections.child(terminal,
 					de.knowwe.core.kdom.basicType.Number.class);
 			if (number != null) {
 				return new FormulaNumber(
 						de.knowwe.core.kdom.basicType.Number.getNumber(number));
 			}
-			Section<QuestionNumReference> qref = Sections.findChildOfType(terminal,
+			Section<QuestionNumReference> qref = Sections.child(terminal,
 					QuestionNumReference.class);
 			if (qref != null) {
 				Question question = qref.get().getTermObject(compiler, qref);

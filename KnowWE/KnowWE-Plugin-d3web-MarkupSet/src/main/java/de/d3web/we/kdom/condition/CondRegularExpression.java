@@ -74,8 +74,8 @@ public class CondRegularExpression extends D3webCondition<CondRegularExpression>
 
 	@Override
 	protected Condition createCondition(D3webCompiler compiler, Section<CondRegularExpression> section) {
-		Section<QuestionReference> qRef = Sections.findSuccessor(section, QuestionReference.class);
-		Section<RegexType> valueSec = Sections.findSuccessor(section, RegexType.class);
+		Section<QuestionReference> qRef = Sections.successor(section, QuestionReference.class);
+		Section<RegexType> valueSec = Sections.successor(section, RegexType.class);
 
 		if (valueSec == null || qRef == null) {
 			// should not happen due to our regexp

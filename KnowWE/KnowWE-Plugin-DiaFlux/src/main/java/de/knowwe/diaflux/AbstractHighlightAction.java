@@ -48,7 +48,7 @@ public abstract class AbstractHighlightAction extends AbstractAction {
 
 		String parentid = context.getParameter(PARENTID);
 		String kdomid = context.getParameter(Attributes.SECTION_ID);
-		Section<FlowchartType> flowchart = Sections.getSection(kdomid, FlowchartType.class);
+		Section<FlowchartType> flowchart = Sections.get(kdomid, FlowchartType.class);
 
 		if (flowchart == null) {
 			Highlight.writeEmpty(context);
@@ -70,8 +70,7 @@ public abstract class AbstractHighlightAction extends AbstractAction {
 	}
 
 	protected KnowledgeBase getKB(Section<FlowchartType> flowchart) {
-		Section<DiaFluxType> diaFluxSec = Sections.findAncestorOfExactType(flowchart,
-				DiaFluxType.class);
+		Section<DiaFluxType> diaFluxSec = Sections.ancestor(flowchart, DiaFluxType.class);
 
 		return FlowchartUtils.getKB(diaFluxSec);
 	}

@@ -31,7 +31,7 @@ public class TestCaseScanner implements Scanner {
 		// checks if the article contains test cases
 		// if yes, execute them an check them all
 		List<Section<TestCasePlayerType>> players = Sections.
-				findSuccessorsOfType(article.getRootSection(), TestCasePlayerType.class);
+				successors(article.getRootSection(), TestCasePlayerType.class);
 		if (players.isEmpty()) return;
 		Log.info("Scanning cases on " + article.getTitle());
 		PrintStream out = new PrintStream(target);

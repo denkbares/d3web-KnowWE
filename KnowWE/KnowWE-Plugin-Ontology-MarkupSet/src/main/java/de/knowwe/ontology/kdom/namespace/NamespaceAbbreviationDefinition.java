@@ -50,14 +50,14 @@ public class NamespaceAbbreviationDefinition extends SimpleDefinition {
 	}
 
 	public String getNamespace(Section<? extends Term> section) {
-		Section<NamespaceDefinition> namespace = Sections.findChildOfType(section,
+		Section<NamespaceDefinition> namespace = Sections.child(section,
 				NamespaceDefinition.class);
 		String namespaceName = namespace.getText();
 		return namespaceName;
 	}
 
 	public String getAbbreviation(Section<? extends Term> section) {
-		Section<AbbreviationDefinition> abbreviation = Sections.findChildOfType(section,
+		Section<AbbreviationDefinition> abbreviation = Sections.child(section,
 				AbbreviationDefinition.class);
 		String abbreviationName = abbreviation.get().getTermName(abbreviation);
 		return abbreviationName;

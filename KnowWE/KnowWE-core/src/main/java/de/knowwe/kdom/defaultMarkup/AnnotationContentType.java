@@ -63,9 +63,9 @@ public class AnnotationContentType extends AbstractType {
 			throw new IllegalArgumentException("section must have the type "
 					+ AnnotationContentType.class.getSimpleName());
 		}
-		Section<AnnotationType> annotationSection = Sections.findAncestorOfType(section,
+		Section<AnnotationType> annotationSection = Sections.ancestor(section,
 				AnnotationType.class);
-		Section<AnnotationNameType> nameSection = Sections.findChildOfType(annotationSection,
+		Section<AnnotationNameType> nameSection = Sections.child(annotationSection,
 				AnnotationNameType.class);
 		return nameSection.get().getName(nameSection);
 	}

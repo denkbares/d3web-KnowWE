@@ -122,7 +122,7 @@ public class ExportManager {
 			// because there might be multiple different includes
 			// in one single article
 			// but after that we take only the sections' articles
-			includedArticles = Sections.getArticles(getIncludedSections());
+			includedArticles = Sections.collectArticles(getIncludedSections());
 		}
 		return Collections.unmodifiableSet(includedArticles);
 	}

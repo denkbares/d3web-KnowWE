@@ -78,8 +78,8 @@ public class CondKnownUnknown extends D3webCondition<CondKnownUnknown> {
 
 	@Override
 	protected Condition createCondition(D3webCompiler compiler, Section<CondKnownUnknown> section) {
-		Section<QuestionReference> qRef = Sections.findSuccessor(section, QuestionReference.class);
-		Section<AssignmentType> valueSec = Sections.findSuccessor(section, AssignmentType.class);
+		Section<QuestionReference> qRef = Sections.successor(section, QuestionReference.class);
+		Section<AssignmentType> valueSec = Sections.successor(section, AssignmentType.class);
 
 		if (valueSec == null || qRef == null) {
 			// should not happen due to our regexp

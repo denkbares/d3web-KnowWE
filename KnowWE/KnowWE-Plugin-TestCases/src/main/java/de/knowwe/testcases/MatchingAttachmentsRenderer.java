@@ -48,7 +48,7 @@ public class MatchingAttachmentsRenderer implements Renderer {
 			defaultMarkupSection = Sections.cast(section, DefaultMarkupType.class);
 		}
 		else {
-			defaultMarkupSection = Sections.findAncestorOfType(section,
+			defaultMarkupSection = Sections.ancestor(section,
 					DefaultMarkupType.class);
 		}
 		String[] annotations = DefaultMarkupType.getAnnotations(defaultMarkupSection,

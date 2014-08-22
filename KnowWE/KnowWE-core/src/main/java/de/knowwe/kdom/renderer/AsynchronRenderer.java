@@ -66,7 +66,7 @@ public class AsynchronRenderer implements Renderer {
 			return Sections.cast(section, DefaultMarkupType.class);
 		}
 		else {
-			return Sections.findAncestorOfType(section, DefaultMarkupType.class);
+			return Sections.ancestor(section, DefaultMarkupType.class);
 		}
 	}
 

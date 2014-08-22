@@ -45,7 +45,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		execute(context, Sections.getSection(context.getParameter("KdomNodeId")));
+		execute(context, Sections.get(context.getParameter("KdomNodeId")));
 	}
 
 	public static void execute(UserActionContext context, Section<?> section) throws IOException {

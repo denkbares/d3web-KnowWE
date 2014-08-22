@@ -70,8 +70,8 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 		@Override
 		protected List<Section<Predicate>> getPredicates(Section<SimpleReference> s) {
 			// finds all predicates of the turtle sentence
-			Section<TurtleSentence> sentence = Sections.findAncestorOfType(s, TurtleSentence.class);
-			return Sections.findSuccessorsOfType(sentence, Predicate.class);
+			Section<TurtleSentence> sentence = Sections.ancestor(s, TurtleSentence.class);
+			return Sections.successors(sentence, Predicate.class);
 		}
 	}
 
@@ -81,7 +81,7 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 	public Node getNode(Section<Subject> section, Rdf2GoCompiler compiler) {
 		// there should be exactly one NodeProvider child (while potentially
 		// many successors)
-		Section<NodeProvider> nodeProviderChild = Sections.findChildOfType(section,
+		Section<NodeProvider> nodeProviderChild = Sections.child(section,
 				NodeProvider.class);
 		if (nodeProviderChild != null) {
 			return nodeProviderChild.get().getNode(nodeProviderChild, compiler);
