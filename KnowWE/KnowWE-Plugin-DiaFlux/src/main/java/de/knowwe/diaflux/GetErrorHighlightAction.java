@@ -55,7 +55,7 @@ public class GetErrorHighlightAction extends AbstractHighlightAction {
 
 		for (Section<NodeType> section : nodes) {
 			if (section.hasErrorInSubtree()) {
-				String id = AbstractXMLType.getAttributeMapFor(section).get("fcid");
+				String id = AbstractXMLType.getAttributes(section).get("fcid");
 				highlight.addNode(id, Highlight.CSS_CLASS, ERROR_CLASS);
 
 				Map<de.knowwe.core.compile.Compiler, Collection<Message>> messages = Messages.getMessagesMapFromSubtree(
@@ -89,7 +89,7 @@ public class GetErrorHighlightAction extends AbstractHighlightAction {
 
 		for (Section<EdgeType> section : edges) {
 			if (section.hasErrorInSubtree()) {
-				String id = AbstractXMLType.getAttributeMapFor(section).get("fcid");
+				String id = AbstractXMLType.getAttributes(section).get("fcid");
 				highlight.addEdge(id, Highlight.CSS_CLASS, ERROR_CLASS);
 
 				Map<de.knowwe.core.compile.Compiler, Collection<Message>> messages = Messages.getMessagesMapFromSubtree(

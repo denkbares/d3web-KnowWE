@@ -77,12 +77,12 @@ public class FlowchartType extends AbstractXMLType {
 	}
 
 	public static boolean isAutoStart(Section<FlowchartType> sec) {
-		Map<String, String> attributeMap = AbstractXMLType.getAttributeMapFor(sec);
+		Map<String, String> attributeMap = AbstractXMLType.getAttributes(sec);
 		return Boolean.parseBoolean(attributeMap.get("autostart"));
 	}
 
 	public static String getIcon(Section<FlowchartType> sec) {
-		return AbstractXMLType.getAttributeMapFor(sec).get("icon");
+		return AbstractXMLType.getAttributes(sec).get("icon");
 	}
 
 }

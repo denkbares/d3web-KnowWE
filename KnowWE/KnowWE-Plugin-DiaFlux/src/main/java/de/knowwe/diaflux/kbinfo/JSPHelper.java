@@ -185,6 +185,6 @@ public class JSPHelper {
 		Section<FlowchartType> section = Sections.findSuccessor(
 				Sections.getSection(userContext.getParameter("kdomID")), FlowchartType.class);
 
-		return AbstractXMLType.getAttributeMapFor(section).get(attributeName);
+		return AbstractXMLType.getAttributes(section).get(attributeName);
 	}
 }

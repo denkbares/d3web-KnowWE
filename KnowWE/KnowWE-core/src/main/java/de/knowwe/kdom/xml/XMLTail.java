@@ -20,45 +20,30 @@
 
 package de.knowwe.kdom.xml;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
-import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 public class XMLTail extends AbstractType {
 
-	public static final String SEPARATOR = "/";
-	public static final String TAIL_SUFFIX = "_tail";
+	private static String patternString = XMLSectionFinder.getXMLTagPattern() + "$";
+	private static Pattern pattern = Pattern.compile(patternString);
+
 
 	public XMLTail() {
 		this.setRenderer(NothingRenderer.getInstance());
-		setSectionFinder(new XMLTailSectionFinder());
-	}
-
-	public class XMLTailSectionFinder implements SectionFinder {
-
-		@Override
-		public List<SectionFinderResult> lookForSections(String text2, Section<?> father, Type type) {
-
-			if (father.get() instanceof AbstractXMLType) {
-				String text = AbstractXMLType.getAttributeMapFor(father).get(
-						AbstractXMLType.TAIL);
-				if (text != null) {
-					int start = text2.lastIndexOf(text);
-					List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-					result.add(new SectionFinderResult(start, start + text.length()));
-					return result;
-				}
+		setSectionFinder((text, father, type) -> {
+			Matcher matcher = pattern.matcher(text);
+			if (matcher.find()) {
+				if (matcher.group(4) == null)
+				return Arrays.asList(new SectionFinderResult(matcher.start(), matcher.end()));
 			}
-
 			return null;
-		}
-
+		});
 	}
 
 }

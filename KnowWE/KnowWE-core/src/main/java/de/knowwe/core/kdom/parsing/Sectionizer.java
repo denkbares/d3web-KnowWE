@@ -22,7 +22,6 @@ package de.knowwe.core.kdom.parsing;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import de.d3web.utils.Log;
 import de.knowwe.core.kdom.ExclusiveType;
@@ -30,7 +29,6 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * This singleton contains the algorithm which parses the KDOM. The algorithm searches occurrences
@@ -40,11 +38,6 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class Sectionizer implements Parser {
 
-	private Map<String, String> parameterMap = null;
-
-	public void addParameterMap(Map<String, String> map) {
-		this.parameterMap = map;
-	}
 
 	private final Type type;
 
@@ -52,7 +45,7 @@ public class Sectionizer implements Parser {
 		this.type = type;
 	}
 
-	private static final List<SectionizerModule> sectionizerModules = new ArrayList<SectionizerModule>();
+	private static final List<SectionizerModule> sectionizerModules = new ArrayList<>();
 
 	private static SectionizerModule defaultSectionizerModule = new DefaultSectionizerModule();
 
@@ -69,13 +62,6 @@ public class Sectionizer implements Parser {
 	@Override
 	public Section<?> parse(String text, Section<? extends Type> father) {
 		Section<?> section = Section.createSection(text, type, father);
-
-		// small hack, should be removed soon...
-		if (parameterMap != null) {
-			KnowWEUtils.storeObject(section,
-					SectionFinderResult.ATTRIBUTE_MAP_STORE_KEY,
-					parameterMap);
-		}
 
 		// fetches the allowed children types of the local type
 		ArrayList<Type> types = new ArrayList<Type>();

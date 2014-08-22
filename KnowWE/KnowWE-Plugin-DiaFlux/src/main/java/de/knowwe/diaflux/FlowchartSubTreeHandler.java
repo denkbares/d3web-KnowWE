@@ -115,7 +115,7 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 
 		for (Section<EdgeType> section : edgeSections) {
 
-			String id = AbstractXMLType.getAttributeMapFor(section).get("fcid");
+			String id = AbstractXMLType.getAttributes(section).get("fcid");
 
 			Node origin = findNodeForEdge(compiler, section, OriginType.class, nodes);
 			Node target = findNodeForEdge(compiler, section, TargetType.class, nodes);
@@ -159,7 +159,7 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 		Section<T> targetSection = Sections.findSuccessor(edge, childType);
 
 		if (targetSection == null) {
-			String id = AbstractXMLType.getAttributeMapFor(edge).get("fcid");
+			String id = AbstractXMLType.getAttributes(edge).get("fcid");
 			String messageText = "No node of type '" + childType.getSimpleName()
 					+ "' specified in edge with id '" + id + "'.";
 			Messages.storeMessage(compiler, edge, FlowchartSubTreeHandler.class,
@@ -172,7 +172,7 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 		Node target = DiaFluxPersistenceHandler.getNodeByID(nodeID, nodes);
 
 		if (target == null) {
-			String id = AbstractXMLType.getAttributeMapFor(edge).get("fcid");
+			String id = AbstractXMLType.getAttributes(edge).get("fcid");
 			String messageText = "No node found with id '" + nodeID + "' (in edge '" + id + "').";
 			Messages.storeMessage(compiler, edge, FlowchartSubTreeHandler.class,
 					Messages.noSuchObjectError(messageText));
@@ -239,7 +239,7 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 	}
 
 	public static String getNodeID(Section<NodeType> nodeSection) {
-		return AbstractXMLType.getAttributeMapFor(nodeSection).get("fcid");
+		return AbstractXMLType.getAttributes(nodeSection).get("fcid");
 	}
 
 }

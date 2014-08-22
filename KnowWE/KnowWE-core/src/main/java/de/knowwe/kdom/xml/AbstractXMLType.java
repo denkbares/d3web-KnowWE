@@ -21,13 +21,13 @@
 package de.knowwe.kdom.xml;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.utils.KnowWEUtils;
 
 public class AbstractXMLType extends AbstractType {
@@ -36,12 +36,13 @@ public class AbstractXMLType extends AbstractType {
 	public static final String TAIL = "tail";
 	public static final String TAGNAME = "tagName";
 
+	public static final String ATTRIBUTE_MAP_STORE_KEY = "attributeMap";
+
 	private final String xmlTagName;
 
 	public static Section<XMLContent> getContentChild(Section<?> s) {
 		if (s.get() instanceof AbstractXMLType) {
-			Section<XMLContent> content = Sections.findSuccessor(s, XMLContent.class);
-			return content;
+			return Sections.findSuccessor(s, XMLContent.class);
 		}
 		return null;
 	}
@@ -52,22 +53,21 @@ public class AbstractXMLType extends AbstractType {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static Map<String, String> getAttributeMapFor(Section<?> s) {
-		return (Map<String, String>) KnowWEUtils.getStoredObject(s,
-				SectionFinderResult.ATTRIBUTE_MAP_STORE_KEY);
+	public static Map<String, String> getAttributes(Section<?> section) {
+		if (!(section.get() instanceof AbstractXMLType)) {
+			section = Sections.findAncestorOfType(section, AbstractXMLType.class);
+		}
+		return Collections.unmodifiableMap((Map<String, String>) KnowWEUtils.getStoredObject(section,
+				ATTRIBUTE_MAP_STORE_KEY));
 
 	}
 
-	// public static Map<String, String> getAttributeMapFor(
-	// Section<? extends AbstractXMLObjectType> s) {
-	// return (Map<String, String>) KnowWEUtils.getStoredObject(s.getWeb(), s
-	// .getTitle(), s.getId(),
-	// XMLSectionFinder.ATTRIBUTE_MAP_STORE_KEY);
-	//
-	// }
+	public static String getAttribute(Section<?> section, String attributeName) {
+		return getAttributes(section).get(attributeName);
+	}
 
 	public static String getTagName(Section<? extends AbstractXMLType> s) {
-		Map<String, String> attributeMapFor = getAttributeMapFor(s);
+		Map<String, String> attributeMapFor = getAttributes(s);
 		if (attributeMapFor != null) {
 			return attributeMapFor.get(AbstractXMLType.TAGNAME);
 		}
@@ -77,19 +77,17 @@ public class AbstractXMLType extends AbstractType {
 	}
 
 	public static Section<AbstractXMLType> getXMLFatherElement(Section<? extends AbstractXMLType> s) {
-		Section<AbstractXMLType> xmlFather = Sections.findAncestorOfType(s, AbstractXMLType.class);
-		return xmlFather;
+		return Sections.findAncestorOfType(s, AbstractXMLType.class);
 	}
 
 	public static int getXMLDepth(Section<?> xmlSection) {
-
 		return getXMLDepth(xmlSection, 0);
 	}
 
 	private static int getXMLDepth(Section<?> xmlSection, int depth) {
 		Section<AbstractXMLType> xmlFather = Sections.findAncestorOfType(xmlSection,
 				AbstractXMLType.class);
-		if (xmlFather != null && xmlFather.get() instanceof AbstractXMLType) {
+		if (xmlFather != null) {
 			return getXMLDepth(xmlFather, ++depth);
 		}
 		else {

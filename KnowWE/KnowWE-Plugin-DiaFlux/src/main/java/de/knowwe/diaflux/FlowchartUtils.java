@@ -310,7 +310,7 @@ public class FlowchartUtils {
 	public static DiaFluxElement findObject(Section<? extends AbstractXMLType> node, KnowledgeBase kb) {
 		Section<FlowchartType> flowType = Sections.findAncestorOfType(node, FlowchartType.class);
 
-		String id = AbstractXMLType.getAttributeMapFor(node).get("fcid");
+		String id = AbstractXMLType.getAttributes(node).get("fcid");
 		String flowName = FlowchartType.getFlowchartName(flowType);
 		Flow flow = DiaFluxUtils.findFlow(kb, flowName);
 

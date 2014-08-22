@@ -20,21 +20,23 @@
 
 package de.knowwe.core.kdom.parsing;
 
+import java.util.Map;
+
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-
+import de.knowwe.kdom.xml.AbstractXMLType;
 
 public class DefaultSectionizerModule implements SectionizerModule {
 
 	@Override
 	public Section<?> createSection(String text, Type type, Section<?> father, SectionFinderResult result) {
 		Parser parser = type.getParser();
-		// small hack, should be removed soon...
-		if (result.getParameterMap() != null && parser instanceof Sectionizer) {
-			((Sectionizer) parser).addParameterMap(result.getParameterMap());
+		Section<? extends Type> section = parser.parse(text, father);
+		Map<String, String> parameterMap = result.getParameterMap();
+		if (parameterMap != null) {
+			section.getSectionStore().storeObject(AbstractXMLType.ATTRIBUTE_MAP_STORE_KEY, parameterMap);
 		}
-		Section<?> s = parser.parse(text, father);
-		return s;
+		return section;
 	}
 
 }

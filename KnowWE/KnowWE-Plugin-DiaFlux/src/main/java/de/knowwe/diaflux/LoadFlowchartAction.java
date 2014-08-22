@@ -59,7 +59,7 @@ public class LoadFlowchartAction extends AbstractAction {
 	 * @created 25.10.2012
 	 */
 	public static <T extends AbstractXMLType> String getFlowchartId(Section<T> child) {
-		return AbstractXMLType.getAttributeMapFor(child).get("fcid");
+		return AbstractXMLType.getAttributes(child).get("fcid");
 	}
 
 	public static Section<FlowchartType> findFlowInDifferentVersion(Section<FlowchartType> flow, List<Section<FlowchartType>> flows) {

@@ -77,16 +77,22 @@ public class XMLSectionFinder implements SectionFinder {
 	 * Finds XML-Sections with name <code>tagName</code>.
 	 */
 	public XMLSectionFinder(String tagName) {
-		String tagNamePattern = getTagNamePatternString(tagName);
-
-		tagPattern = Pattern.compile("<(/)?(" + tagNamePattern + ")(\\s+[^>]*?)?(/)?>");
-
+		tagPattern = Pattern.compile(getXMLTagPattern(tagName));
 		attributePattern = Pattern.compile("([^=\"'\\s]+) *= *([\"'])(.*?)(?=\\2)");
 	}
 
-	private String getTagNamePatternString(String tagName) {
+
+	public static String getXMLTagPattern() {
+		return getXMLTagPattern(null);
+	}
+
+	public static String getXMLTagPattern(String tagName) {
+		return "<(/)?(" + getTagNamePatternString(tagName) + ")(\\s+[^>]*?)?(/)?>";
+	}
+
+	private static String getTagNamePatternString(String tagName) {
 		if (tagName == null) {
-			return "[^ >/]+";
+			return "\\w+";
 		}
 		else {
 			return Pattern.quote(tagName);

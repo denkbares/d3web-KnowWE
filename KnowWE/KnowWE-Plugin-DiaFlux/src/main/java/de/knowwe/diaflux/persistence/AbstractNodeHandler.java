@@ -79,7 +79,7 @@ public abstract class AbstractNodeHandler<T extends AbstractXMLType> implements 
 	}
 
 	protected String getMarkup(Section<T> child) {
-		return AbstractXMLType.getAttributeMapFor(child).get("markup");
+		return AbstractXMLType.getAttributes(child).get("markup");
 	}
 
 	@Override

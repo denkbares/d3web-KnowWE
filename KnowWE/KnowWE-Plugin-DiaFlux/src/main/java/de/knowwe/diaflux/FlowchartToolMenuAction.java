@@ -75,7 +75,7 @@ public class FlowchartToolMenuAction extends GetToolMenuAction {
 			List<Section<NodeType>> nodeSections = Sections.findSuccessorsOfType(correctFlow,
 					NodeType.class);
 			for (Section<NodeType> section : nodeSections) {
-				String fcid = AbstractXMLType.getAttributeMapFor(section).get("fcid");
+				String fcid = AbstractXMLType.getAttributes(section).get("fcid");
 				if (fcid.equals(nodeID)) {
 					return Sections.findSuccessor(section, Term.class);
 				}

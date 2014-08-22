@@ -35,8 +35,6 @@ public class SectionFinderResult implements Comparable<SectionFinderResult> {
 
 	protected Map<String, String> parameterMap = null;
 
-	public static final String ATTRIBUTE_MAP_STORE_KEY = "attributeMap";
-
 	public SectionFinderResult(int start, int end, Map<String, String> parameterMap) {
 		this(start, end);
 		this.parameterMap = parameterMap;
