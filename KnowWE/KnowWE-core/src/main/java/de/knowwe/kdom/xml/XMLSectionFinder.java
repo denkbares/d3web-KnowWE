@@ -41,8 +41,6 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
  */
 public class XMLSectionFinder implements SectionFinder {
 
-	private final String tagNamePattern;
-
 	/**
 	 * RegEx-Description 1:
 	 * <p/>
@@ -79,11 +77,11 @@ public class XMLSectionFinder implements SectionFinder {
 	 * Finds XML-Sections with name <code>tagName</code>.
 	 */
 	public XMLSectionFinder(String tagName) {
-		this.tagNamePattern = getTagNamePatternString(tagName);
+		String tagNamePattern = getTagNamePatternString(tagName);
 
 		tagPattern = Pattern.compile("<(/)?(" + tagNamePattern + ")(\\s+[^>]*?)?(/)?>");
 
-		attributePattern = Pattern.compile("([^=\"'\\s]+) *= *[\"']([^\"']*)[\"']");
+		attributePattern = Pattern.compile("([^=\"'\\s]+) *= *([\"'])(.*?)(?=\\2)");
 	}
 
 	private String getTagNamePatternString(String tagName) {
@@ -100,8 +98,8 @@ public class XMLSectionFinder implements SectionFinder {
 
 		Matcher tagMatcher = tagPattern.matcher(text);
 
-		ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-		Map<String, String> parameterMap = new HashMap<String, String>();
+		ArrayList<SectionFinderResult> result = new ArrayList<>();
+		Map<String, String> parameterMap = new HashMap<>();
 
 		int depth = 0;
 		int sectionStart = 0;
@@ -124,7 +122,7 @@ public class XMLSectionFinder implements SectionFinder {
 					if (tagMatcher.group(3) != null) {
 						Matcher attributeMatcher = attributePattern.matcher(tagMatcher.group(3));
 						while (attributeMatcher.find()) {
-							parameterMap.put(attributeMatcher.group(1), Strings.decodeHtml(attributeMatcher.group(2)));
+							parameterMap.put(attributeMatcher.group(1), Strings.decodeHtml(attributeMatcher.group(3)));
 						}
 					}
 
@@ -132,7 +130,7 @@ public class XMLSectionFinder implements SectionFinder {
 					if (tagMatcher.group(4) != null) {
 						result.add(makeSectionFinderResult(sectionStart, tagMatcher.end(),
 								parameterMap));
-						parameterMap = new HashMap<String, String>();
+						parameterMap = new HashMap<>();
 						foundTagName = "";
 						continue;
 					}
@@ -157,7 +155,7 @@ public class XMLSectionFinder implements SectionFinder {
 
 				// new HashMap for next Result...
 				if (depth == 0) {
-					parameterMap = new HashMap<String, String>();
+					parameterMap = new HashMap<>();
 					foundTagName = "";
 				}
 			}
@@ -166,15 +164,14 @@ public class XMLSectionFinder implements SectionFinder {
 		return result;
 	}
 
-	protected SectionFinderResult makeSectionFinderResult(int start, int end,
-														  Map<String, String> parameterMap) {
+	protected SectionFinderResult makeSectionFinderResult(int start, int end, Map<String, String> parameterMap) {
 		return new SectionFinderResult(start, end, parameterMap);
 	}
 
 	// Everything below this line is for testing only!
 	public static void main(String[] args) {
 		TestSectionFinder finder = new XMLSectionFinder(null).new TestSectionFinder(null, "include");
-		String text = "<include src='test' />";
+		String text = "<include src=\"test'\" />";
 		List<SectionFinderResult> results = finder.lookForSections(text, null, null);
 
 		for (SectionFinderResult result : results) {
