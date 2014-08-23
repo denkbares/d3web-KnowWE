@@ -97,7 +97,7 @@ public class DefaultBuilder implements DocumentBuilder {
 	}
 
 	@Override
-	public void export(Collection<Section<?>> sections) throws ExportException {
+	public void export(Collection<Section<? extends Type>> sections) throws ExportException {
 		for (Section<?> section : sections) {
 			export(section);
 		}

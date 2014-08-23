@@ -314,7 +314,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	/**
 	 * @return the list of child nodes
 	 */
-	public List<Section<?>> getChildren() {
+	public List<Section<? extends Type>> getChildren() {
 		return Collections.unmodifiableList(children);
 
 	}
@@ -325,7 +325,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @param filter the filter to be matched
 	 * @return the filtered list
 	 */
-	public List<Section<?>> getChildren(SectionFilter filter) {
+	public List<Section<? extends Type>> getChildren(SectionFilter filter) {
 		ArrayList<Section<? extends Type>> list = new ArrayList<>();
 		for (Section<?> current : getChildren()) {
 			if (filter.accept(current)) list.add(current);

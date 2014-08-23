@@ -138,7 +138,6 @@ public class InnerWikiReference extends AbstractType {
 	 * for the reference and update the link if the wiki has been changed.
 	 * 
 	 * @created 05.02.2014
-	 * @param user the user context to search the section for
 	 * @param section this include section to take the reference information
 	 *        from
 	 * @return the referenced Section
@@ -182,11 +181,11 @@ public class InnerWikiReference extends AbstractType {
 	 * @param section the section defines the include
 	 * @return the list of sections to be included
 	 */
-	public List<Section<?>> getIncludedSections(Section<InnerWikiReference> section, boolean forceSkipHeader) {
+	public List<Section<? extends de.knowwe.core.kdom.Type>> getIncludedSections(Section<InnerWikiReference> section, boolean forceSkipHeader) {
 		Section<?> targetSection = getReferencedSection(section);
 		if (targetSection == null) return Collections.emptyList();
 
-		List<Section<?>> result = new ArrayList<Section<?>>();
+		List<Section<? extends de.knowwe.core.kdom.Type>> result = new ArrayList<>();
 		boolean isHeader = targetSection.get() instanceof HeaderType;
 		if (!isHeader || (!forceSkipHeader && !isSuppressHeader(section))) {
 			result.add(targetSection);
@@ -203,7 +202,7 @@ public class InnerWikiReference extends AbstractType {
 	 * included sections. It return 0 if no header is included.
 	 * 
 	 * @created 11.02.2014
-	 * @param sections the list of sections to be examined
+	 * @param section the section to be examined
 	 * @return the highest number of header marks of any included header
 	 */
 	public int getMaxHeaderMarkCount(Section<InnerWikiReference> section) {
@@ -358,8 +357,7 @@ public class InnerWikiReference extends AbstractType {
 	 * Returns if the header of the section shall be hidden. If this method
 	 * return "true", the eventually referenced header section will
 	 * automatically be removed from the list returned by
-	 * {@link #getIncludedSections()}.
-	 * 
+	 *
 	 * @created 12.02.2014
 	 * @param section the section to check the header suppression for
 	 * @return if the header shall not be shown

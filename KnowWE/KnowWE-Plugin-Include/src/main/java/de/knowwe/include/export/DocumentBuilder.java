@@ -25,6 +25,7 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 import de.d3web.strings.Strings;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
@@ -170,7 +171,7 @@ public interface DocumentBuilder {
 	 * @throws ExportException
 	 * @created 07.02.2014
 	 */
-	public void export(Collection<Section<?>> sections) throws ExportException;
+	public void export(Collection<Section<? extends Type>> sections) throws ExportException;
 
 	/**
 	 * Exports a section and all contained sub-sections using the exporters of this document writer.
