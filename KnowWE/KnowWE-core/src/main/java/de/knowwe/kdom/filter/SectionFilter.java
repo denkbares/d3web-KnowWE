@@ -25,4 +25,8 @@ import de.knowwe.core.kdom.parsing.Section;
 public interface SectionFilter {
 
 	public boolean accept(Section<?> section);
+
+	public static SectionFilter ALL_SECTIONS = section -> true;
+
+	public static SectionFilter NO_SECTIONS = section -> false;
 }
