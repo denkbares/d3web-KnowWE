@@ -20,6 +20,10 @@
 
 package de.knowwe.kdom.filter;
 
+import java.util.Iterator;
+
+import de.d3web.collections.FilterIterator;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 
 public interface SectionFilter {
@@ -29,4 +33,13 @@ public interface SectionFilter {
 	public static SectionFilter ALL_SECTIONS = section -> true;
 
 	public static SectionFilter NO_SECTIONS = section -> false;
+
+	public static <T extends Type> Iterator<Section<T>> filter(Iterator<Section<T>> base, SectionFilter filter) {
+		return new FilterIterator<Section<T>>(base) {
+			@Override
+			public boolean accept(Section<T> item) {
+				return filter.accept(item);
+			}
+		};
+	}
 }

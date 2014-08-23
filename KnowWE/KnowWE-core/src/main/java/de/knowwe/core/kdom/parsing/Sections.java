@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import de.d3web.collections.FilterIterator;
 import de.d3web.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
@@ -63,6 +62,15 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 */
 	public Section<T> first() {
 		return nth(0);
+	}
+
+	/**
+	 * Returns true if this instance is empty and does not contain any sections.
+	 *
+	 * @return if the instance is empty
+	 */
+	public boolean isEmpty() {
+		return !sections.iterator().hasNext();
 	}
 
 	/**
@@ -125,9 +133,49 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Returns a new Sections instance containing all successors of this instance's sections that is
-	 * an instance the specified type. If any section of this instance does not have a successor of
-	 * the specified type, the section is not considered in the resulting Sections objects.
+	 * Returns a new Sections instance containing all successors of this object's sections that is
+	 * an instance the specified type. If any section of this object's sections matches the
+	 * specified class the section itself is contained. If any section of this instance is neither
+	 * of the specified type, nor does have a successor of the specified type, the section is not
+	 * considered in the resulting Sections objects.
+	 * <p/>
+	 * The successors will become truncated if they descent too far from the original sections of
+	 * this object. If maxDepth is '0' only the original sections will be contained. A value of '1'
+	 * allows only the original objects and their direct children, and so on. Any negative value
+	 * will be ignored, so all successors of any depth are allowed.
+	 * <p/>
+	 * Please note that there is no de-duplication. If a sections is contained, that is already a
+	 * successor of a defined section, the section and its successors may be contained duplicated in
+	 * the resulting sections.
+	 * <p/>
+	 * If a successor is an instance of the specified class, but also have sub-successors of the
+	 * specified class, both, the successor and the sub-successors are contained in the returned
+	 * instance.
+	 *
+	 * @param maxDepth the maximum level to descent from the sections
+	 * @param clazz the class to be matched by the successors
+	 * @param <R> the class to be matched by the successors
+	 * @return all successors for each section matching the type
+	 */
+	public <R extends Type> Sections<R> successor(int maxDepth, Class<R> clazz) {
+		return new Sections<>(() -> {
+			KDOMIterator depthFirst = KDOMIterator.depthFirst(
+					sections, section -> Sections.canHaveSuccessor(section, clazz));
+			depthFirst.setMaxDepth(maxDepth);
+			return FilterTypeIterator.create(depthFirst, clazz);
+		});
+	}
+
+	/**
+	 * Returns a new Sections instance containing all successors of this object's sections that is
+	 * an instance the specified type. If any section of this object's sections matches the
+	 * specified class the section itself is contained. If any section of this instance is neither
+	 * of the specified type, nor does have a successor of the specified type, the section is not
+	 * considered in the resulting Sections objects.
+	 * <p/>
+	 * Please note that there is no de-duplication. If a sections is contained, that is already a
+	 * successor of a defined section, the section and its successors may be contained duplicated in
+	 * the resulting sections.
 	 * <p/>
 	 * If a successor is an instance of the specified class, but also have sub-successors of the
 	 * specified class, both, the successor and the sub-successors are contained in the returned
@@ -138,11 +186,26 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return all successors for each section matching the type
 	 */
 	public <R extends Type> Sections<R> successor(Class<R> clazz) {
-		return new Sections<>(() -> {
-			Iterator<Section<? extends Type>> depthFirst = KDOMIterator.depthFirst(
-					sections, section -> Sections.canHaveSuccessor(section, clazz));
-			return FilterTypeIterator.create(depthFirst, clazz);
-		});
+		return successor(-1, clazz);
+	}
+
+	/**
+	 * Returns a new Sections instance containing all successors of this instance's sections. The
+	 * original sections are also still contained. The order of the resulting sections are defined
+	 * by the depth-first-search from each section of this Sections instance.
+	 * <p/>
+	 * Please note that there is no de-duplication. If a sections is contained, that is already a
+	 * successor of a defined section, the section and its successors will be contained duplicated
+	 * in the resulting sections.
+	 * <p/>
+	 * If a successor is an instance of the specified class, but also have sub-successors of the
+	 * specified class, both, the successor and the sub-successors are contained in the returned
+	 * instance.
+	 *
+	 * @return all successors for each section matching the type
+	 */
+	public Sections<Type> successor() {
+		return successor(Type.class);
 	}
 
 	/**
@@ -188,13 +251,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @param filter the filter to select the sections
 	 * @return the sections matching the filter
 	 */
-	public Sections<T> filter(final SectionFilter filter) {
-		return new Sections<>(() -> new FilterIterator<Section<T>>(sections.iterator()) {
-			@Override
-			public boolean accept(Section<T> item) {
-				return filter.accept(item);
-			}
-		});
+	public Sections<T> filter(SectionFilter filter) {
+		return new Sections<>(() -> SectionFilter.filter(sections.iterator(), filter));
 	}
 
 //	public Sections<T> select(Scope scope) {

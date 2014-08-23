@@ -31,7 +31,7 @@ import de.knowwe.kdom.filter.SectionFilter;
 /**
  * Implements a depth-first iterator through the KDOM. It visits a specified root node first and
  * then the depth-first order of all the successor nodes. A SectionFilter may be specified to skip
- * some branches from iteration.
+ * some branches from iteration. You may also specify a maximum depth that shall be considered.
  *
  * @author Volker Belli (denkbares GmbH)
  * @created 22.08.14.
@@ -45,13 +45,15 @@ public class KDOMIterator implements Iterator<Section<? extends Type>> {
 	private final Stack<Iterator> iterators = new Stack<>();
 	private final SectionFilter descentFilter;
 
+	private int maxDepth = -1;
+
 	/**
 	 * Creates a depth-first iterator that visits the specified root node first and then the
 	 * depth-first order of all the successor nodes.
 	 *
 	 * @param root the root node to start the iteration
 	 */
-	public static <T extends Type> Iterator<Section<? extends Type>> depthFirst(Section<T> root) {
+	public static <T extends Type> KDOMIterator depthFirst(Section<T> root) {
 		return depthFirst(root, SectionFilter.ALL_SECTIONS);
 	}
 
@@ -61,7 +63,7 @@ public class KDOMIterator implements Iterator<Section<? extends Type>> {
 	 *
 	 * @param roots the root nodes to start the iteration
 	 */
-	public static <T extends Type> Iterator<Section<? extends Type>> depthFirst(Iterable<Section<T>> roots) {
+	public static <T extends Type> KDOMIterator depthFirst(Iterable<Section<T>> roots) {
 		return depthFirst(roots.iterator(), SectionFilter.ALL_SECTIONS);
 	}
 
@@ -71,7 +73,7 @@ public class KDOMIterator implements Iterator<Section<? extends Type>> {
 	 *
 	 * @param roots the root nodes to start the iteration
 	 */
-	public static <T extends Type> Iterator<Section<? extends Type>> depthFirst(Iterator<Section<T>> roots) {
+	public static <T extends Type> KDOMIterator depthFirst(Iterator<Section<T>> roots) {
 		return depthFirst(roots, SectionFilter.ALL_SECTIONS);
 	}
 
@@ -86,7 +88,7 @@ public class KDOMIterator implements Iterator<Section<? extends Type>> {
 	 * @param descentFilter a filter that truncates branches if the parent node is not accepted
 	 * @see de.knowwe.kdom.filter.SectionFilter#accept(Section)
 	 */
-	public static <T extends Type> Iterator<Section<? extends Type>> depthFirst(Section<T> root, SectionFilter descentFilter) {
+	public static <T extends Type> KDOMIterator depthFirst(Section<T> root, SectionFilter descentFilter) {
 		return depthFirst(Arrays.asList(root).iterator(), descentFilter);
 	}
 
@@ -101,7 +103,7 @@ public class KDOMIterator implements Iterator<Section<? extends Type>> {
 	 * @param descentFilter a filter that truncates branches if the parent node is not accepted
 	 * @see de.knowwe.kdom.filter.SectionFilter#accept(Section)
 	 */
-	public static <T extends Type> Iterator<Section<? extends Type>> depthFirst(Iterable<Section<T>> roots, SectionFilter descentFilter) {
+	public static <T extends Type> KDOMIterator depthFirst(Iterable<Section<T>> roots, SectionFilter descentFilter) {
 		return depthFirst(roots.iterator(), descentFilter);
 	}
 	/**
@@ -115,7 +117,7 @@ public class KDOMIterator implements Iterator<Section<? extends Type>> {
 	 * @param descentFilter a filter that truncates branches if the parent node is not accepted
 	 * @see de.knowwe.kdom.filter.SectionFilter#accept(Section)
 	 */
-	public static <T extends Type> Iterator<Section<? extends Type>> depthFirst(Iterator<Section<T>> roots, SectionFilter descentFilter) {
+	public static <T extends Type> KDOMIterator depthFirst(Iterator<Section<T>> roots, SectionFilter descentFilter) {
 		return new KDOMIterator(roots, descentFilter);
 	}
 
@@ -136,21 +138,69 @@ public class KDOMIterator implements Iterator<Section<? extends Type>> {
 		Iterator iterator = iterators.peek();
 		Section next = (Section) iterator.next();
 
+		// initialize depth for this item is required
+		int depth = 0;
+		if (maxDepth >= 0) {
+			if (iterator instanceof DepthIterator) {
+				depth = ((DepthIterator) iterator).getDepth();
+			}
+		}
+
 		// remove iterator if it has become empty
 		if (!iterator.hasNext()) {
 			iterators.pop();
 		}
 
-		if (descentFilter.accept(next)) {
+		// add children if not reached the max level (works also well for maxDepth being negative)
+		// and if not denied by descentFilter
+		if (depth != maxDepth && descentFilter.accept(next)) {
 			// add children of the current element on top of the stack (will be processed next)
 			// but only if there are children available
 			@SuppressWarnings("unchecked")
 			List<Section> children = next.getChildren();
 			if (!children.isEmpty()) {
-				iterators.push(children.iterator());
+				Iterator<Section> childIterator = children.iterator();
+				if (maxDepth >= 0) childIterator = new DepthIterator<>(depth+1, childIterator);
+				iterators.push(childIterator);
 			}
 		}
 
 		return next;
+	}
+
+	/**
+	 * Specifies the maximum depth the iterator will descent from the original start node(s).
+	 * A value of "0" does not descent at all, a value of "1" also descent to the direct children of
+	 * the start nodes, while a negative value will have no limit at all. The default value is -1 for
+	 * no limitation.
+	 *
+	 * @param maxDepth the maximum depth to descent
+	 */
+	public void setMaxDepth(int maxDepth) {
+		this.maxDepth = maxDepth;
+	}
+
+	private static class DepthIterator<T> implements Iterator<T> {
+		private final int depth;
+		private final Iterator<T> base;
+
+		private DepthIterator(int depth, Iterator<T> base) {
+			this.depth = depth;
+			this.base = base;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return base.hasNext();
+		}
+
+		@Override
+		public T next() {
+			return base.next();
+		}
+
+		public int getDepth() {
+			return depth;
+		}
 	}
 }

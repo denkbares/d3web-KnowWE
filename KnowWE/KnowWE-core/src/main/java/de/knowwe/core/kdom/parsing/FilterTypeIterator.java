@@ -21,8 +21,8 @@ package de.knowwe.core.kdom.parsing;
 
 import java.util.Iterator;
 
-import de.d3web.collections.FilterIterator;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.kdom.filter.SectionFilter;
 
 /**
  * Class that decorates an section iterator and filter all instances that does not match a specified
@@ -31,7 +31,7 @@ import de.knowwe.core.kdom.Type;
  * @author Volker Belli (denkbares GmbH)
  * @created 22.08.14.
  */
-public class FilterTypeIterator<OT extends Type> implements Iterator<Section<OT>> {
+public class FilterTypeIterator<OT extends Type> implements Iterator<Section<OT>>, SectionFilter {
 
 	private final Class<OT> clazz;
 	private final Iterator base;
@@ -39,13 +39,7 @@ public class FilterTypeIterator<OT extends Type> implements Iterator<Section<OT>
 	@SuppressWarnings("unchecked")
 	private FilterTypeIterator(Iterator base, Class<OT> clazz) {
 		this.clazz = clazz;
-		this.base = new FilterIterator<Section>(base) {
-
-			@Override
-			public boolean accept(Section item) {
-				return clazz.isInstance(item.get());
-			}
-		};
+		this.base = SectionFilter.filter(base, this);
 	}
 
 	public static <T extends Type, OT extends Type> FilterTypeIterator<OT> create(Iterator<Section<? extends T>> base, Class<OT> clazz) {
@@ -60,5 +54,10 @@ public class FilterTypeIterator<OT extends Type> implements Iterator<Section<OT>
 	@Override
 	public Section<OT> next() {
 		return Sections.cast((Section) base.next(), clazz);
+	}
+
+	@Override
+	public boolean accept(Section<?> section) {
+		return clazz.isInstance(section.get());
 	}
 }
