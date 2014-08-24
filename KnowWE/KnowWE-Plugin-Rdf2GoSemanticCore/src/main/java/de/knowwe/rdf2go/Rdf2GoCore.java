@@ -1303,7 +1303,7 @@ public class Rdf2GoCore {
 				lock.readLock().unlock();
 			}
 			if (Thread.currentThread().isInterrupted()) {
-				// not need to waste cache size
+				// not need to waste cache size (e.g. in case of half done results that were aborted)
 				result = null;
 			}
 			return result;

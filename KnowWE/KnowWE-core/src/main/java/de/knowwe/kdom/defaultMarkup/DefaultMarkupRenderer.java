@@ -336,6 +336,11 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	protected void appendToolbar(ToolSet tools, UserContext user, RenderResult result) {
 		result.appendHtmlTag("div", "class", "markupTools");
+		appendToolbarTools(tools, user, result);
+		result.appendHtmlTag("/div");
+	}
+
+	protected void appendToolbarTools(ToolSet tools, UserContext user, RenderResult result) {
 		for (Tool tool : tools) {
 			result.appendHtmlTag("div", "class", tool.getClass().getSimpleName());
 			result.appendHtmlTag("a", false, ToolUtils.getActionAttributeName(tool), ToolUtils.getActionAttributeValue(tool));
@@ -343,7 +348,6 @@ public class DefaultMarkupRenderer implements Renderer {
 			result.appendHtmlTag("/a");
 			result.appendHtmlTag("/div");
 		}
-		result.appendHtmlTag("/div");
 	}
 
 	public void appendMenu(ToolSet tools, String id, UserContext user, RenderResult result) {

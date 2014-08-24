@@ -39,7 +39,7 @@ public class WikiAttachmentInfo implements WikiObjectInfo {
 	}
 
 	public WikiAttachment getAttachment() throws IOException {
-		return Environment.getInstance().getWikiConnector().getAttachment(name);
+		return Environment.getInstance().getWikiConnector().getAttachment(name, version);
 	}
 
 	@Override

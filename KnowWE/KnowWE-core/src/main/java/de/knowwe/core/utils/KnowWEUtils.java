@@ -736,17 +736,17 @@ public class KnowWEUtils {
 	}
 
 	public static WikiPageInfo getArticleVersionInfoAtDate(String title, Date date) throws IOException {
-		return getObjectInfoAtDate(Environment.getInstance().getWikiConnector().getArticleHistory(title), title, date);
+		return getObjectInfoAtDate(Environment.getInstance().getWikiConnector().getArticleHistory(title), date);
 	}
 
 	public static WikiAttachmentInfo getAttachmentVersionInfoAtDate(String title, Date date) throws IOException {
-		return getObjectInfoAtDate(Environment.getInstance().getWikiConnector().getAttachmentHistory(title), title, date);
+		return getObjectInfoAtDate(Environment.getInstance().getWikiConnector().getAttachmentHistory(title), date);
 	}
 
-	private static <T extends WikiObjectInfo> T getObjectInfoAtDate(List<T> objectHistory, String name, Date date) throws IOException {
+	private static <T extends WikiObjectInfo> T getObjectInfoAtDate(List<T> objectHistory, Date date) throws IOException {
 		return objectHistory.stream()
-				// get the first that was safe before the given date
-				.filter(pageInfo -> pageInfo.getSaveDate().before(date))
+				// get the first that was saved before or equal to the given date
+				.filter(pageInfo -> pageInfo.getSaveDate().before(date) || pageInfo.getSaveDate().equals(date))
 				.findFirst()
 				// if non was found, get the first version (last in the list)
 				.orElseGet(() -> objectHistory.isEmpty() ? null

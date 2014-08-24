@@ -26,7 +26,7 @@ import de.knowwe.core.user.UserContext;
 /**
  * ProgressListenerManager to manage progress listener, e.g., for ajax updates
  * which are triggered by the client.
- * 
+ *
  * @author Jochen Reutelshöfer (denkbares GmbH)
  * @created 18.07.2012
  */
@@ -66,7 +66,8 @@ public class ProgressListenerManager {
 	}
 
 	public synchronized AjaxProgressListener createProgressListener(UserContext context, LongOperation operation) {
-		AjaxProgressListener progressListener = new DefaultAjaxProgressListener(context.getUserName());
+		AjaxProgressListener progressListener = new DefaultAjaxProgressListener(
+				context == null ? "SYSTEM" : context.getUserName());
 		if (listenerCache.containsKey(operation)) {
 			for (Object oldOperation : listenerCache.keySet()) {
 				if (oldOperation.equals(operation)) {
@@ -85,10 +86,10 @@ public class ProgressListenerManager {
 
 	/**
 	 * Returns if the specified operation is still up and running.
-	 * 
-	 * @created 31.07.2013
+	 *
 	 * @param operation the operation to be checked
 	 * @return if the operation is running
+	 * @created 31.07.2013
 	 */
 	public boolean isRunning(LongOperation operation) {
 		AjaxProgressListener listener = getProgressListener(operation);
