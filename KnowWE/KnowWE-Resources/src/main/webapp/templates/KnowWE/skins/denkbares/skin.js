@@ -129,12 +129,53 @@ DenkbaresSkin.getDocHeight = function() {
 		D.documentElement.clientHeight));
 };
 
+
+/**
+ * if there is a TOC in the left menu, highlight the current visible chapter.
+ */
+DenkbaresSkin.highlightActiveTOC = function() {
+	var tocItems = jq$("#favorites > .leftmenu > .toc li");
+	if (tocItems.length == 0) return;
+
+	// find the first section that is visible on the screen, if there is no such section
+	// find the last section that is above the middle of the screen
+	var sections = Wiki.getSections();
+	var index = -1;
+	var top = window.getScrollTop();
+	var height = jq$(window).height();
+	var middle = top + height / 2;
+	var bottom = top + height;
+	for (var i=0; i<=sections.length; i++) {
+		// get position of the section
+		// (and add position for below document end at last element)
+		var pos = (i<sections.length)
+			? jq$(sections[i]).offset().top
+			: jq$(document).height()+height;
+
+		// use first one visible on screen
+		if (top <= pos+10 && pos+20 <= bottom) {
+			index = i;
+			break;
+		}
+		// use the one that comes before the first one that is below the screen middle
+		if (pos >= middle) {
+			index = i-1;
+			break;
+		}
+	}
+
+	// highlight the TOC entry that represents this section
+	tocItems.removeClass("active");
+	if (index >= 0) tocItems.eq(index).addClass("active");
+};
+
 /**
  * Adapt the left menu favorites to the screen so that the display size is
  * optimally used.
  */
 DenkbaresSkin.checkFavScroll = function() {
 	DenkbaresSkin.initFavScroll();
+	DenkbaresSkin.highlightActiveTOC();
 	var element = $("favorites");
 	if (!element)
 		return;
@@ -271,6 +312,10 @@ jq$(window).resize(DenkbaresSkin.resizeFlows);
 
 jq$(document).ready(function() {
 	DenkbaresSkin.addFavoriteToggle();
+	// workaround, because sometimes we are too early
+	window.setTimeout(function() {
+		DenkbaresSkin.checkFavScroll();
+	});
 });
 
 // add auto-resize to edit page
