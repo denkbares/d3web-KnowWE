@@ -254,6 +254,34 @@ dl dd {
 	margin-left:2em;
 }
 
+/* special minimized look for TOC in left menu */
+.leftmenu > .toc > .collapsebox {
+	border: none;
+	margin: -0.5em 0px 0px 0px;
+}
+.leftmenu > .toc > .collapsebox > h4 {
+	display: none;
+}
+.leftmenu > .toc > .collapsebox > .collapsebody {
+	padding: 0px;
+}
+.leftmenu > .toc > .collapsebox > .collapsebody > ul {
+	padding: 0px 0px 0px 2em;
+}
+.leftmenu > .toc > .collapsebox > .collapsebody > ul > li.toclevel-1 {
+	list-style-type: disc;
+	margin-left: 0em;
+}
+.leftmenu > .toc > .collapsebox > .collapsebody > ul > li.toclevel-2 {
+	list-style-type: circle;
+	margin-left: 2em;
+}
+.leftmenu > .toc > .collapsebox > .collapsebody > ul > li.toclevel-3 {
+	list-style-type: square;
+	margin-left: 4em;
+}
+
+
 /* +++ 225 Forms, Labels, form-values and form-help +++ */
 .wikiform {
 }
