@@ -543,6 +543,7 @@ public class JSPWikiConnector implements WikiConnector {
 	public List<WikiPageInfo> getArticleHistory(String title) throws IOException {
 		try {
 			List<WikiPage> versionHistory = this.engine.getPageManager().getVersionHistory(title);
+			if (versionHistory == null) return Collections.emptyList();
 			return versionHistory.stream()
 					.map(page -> new WikiPageInfo(page.getName(), page.getAuthor(), page.getVersion(),
 							page.getLastModified()))
@@ -558,6 +559,7 @@ public class JSPWikiConnector implements WikiConnector {
 	public List<WikiAttachmentInfo> getAttachmentHistory(String name) throws IOException {
 		try {
 			List<Attachment> versionHistory = this.engine.getAttachmentManager().getVersionHistory(name);
+			if (versionHistory == null) return Collections.emptyList();
 			return versionHistory.stream()
 					.map(page -> new WikiAttachmentInfo(page.getName(), page.getAuthor(), page.getVersion(),
 							page.getLastModified()))
