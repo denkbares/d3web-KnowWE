@@ -18,6 +18,8 @@
  */
 package de.knowwe.core.utils.progress;
 
+import java.util.UUID;
+
 import de.knowwe.core.action.UserActionContext;
 
 /**
@@ -28,6 +30,8 @@ import de.knowwe.core.action.UserActionContext;
 public abstract class AbstractLongOperation implements LongOperation {
 
 	private boolean canceled = false;
+
+	private String id;
 
 	@Override
 	public String renderMessage(UserActionContext context, float percent, String message) {
@@ -52,5 +56,13 @@ public abstract class AbstractLongOperation implements LongOperation {
 
 	public boolean isCanceled() {
 		return canceled;
+	}
+
+	@Override
+	public String getId() {
+		if (id == null) {
+			id = UUID.randomUUID().toString();
+		}
+		return id;
 	}
 }

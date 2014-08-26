@@ -63,4 +63,9 @@ public interface LongOperation {
 	 * @created 07.10.2013
 	 */
 	void cleanUp();
+
+	/**
+	 * Provides a unique id for this LongOperation instance.
+	 */
+	public String getId();
 }

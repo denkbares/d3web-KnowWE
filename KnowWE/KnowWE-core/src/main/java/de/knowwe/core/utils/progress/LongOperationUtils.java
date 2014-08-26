@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -43,8 +42,7 @@ public class LongOperationUtils {
 	}
 
 	/**
-	 * Checks if the operation of the current thread has been interrupted (e.g.
-	 * aborted by the user) through {@link AjaxProgressListener#cancel()}. If
+	 * Checks if the operation of the current thread has been interrupted. If
 	 * so, an {@link InterruptedException} is thrown and the threads interrupt
 	 * state is restored.
 	 *
@@ -69,7 +67,7 @@ public class LongOperationUtils {
 		if (key != null) return key;
 
 		Map<String, LongOperation> map = accessLongOperations(section, true);
-		key = UUID.randomUUID().toString();
+		key = operation.getId();
 		map.put(key, operation);
 		return key;
 	}
@@ -141,10 +139,7 @@ public class LongOperationUtils {
 	 */
 	public static void startLongOperation(final UserActionContext context, final LongOperation operation) {
 
-		final AjaxProgressListener listener =
-				ProgressListenerManager.getInstance().createProgressListener(context, operation);
-		listener.setId(context.getParameter("ProgressID"));
-
+		final AjaxProgressListener listener = ProgressListenerManager.getInstance().createProgressListener(context, operation);
 		try {
 			operation.execute(context, listener);
 		}
