@@ -1,6 +1,7 @@
 package de.knowwe.rdf2go.sparql;
 
 import de.d3web.strings.Strings;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
@@ -12,8 +13,17 @@ public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 
 	@Override
 	public String renderNode(String text, String variable, UserContext user, Rdf2GoCore core, RenderMode mode) {
-		boolean foundArticle = false;
-		String lns = core.getLocalNamespace();
+        /*
+        First, check for exact matches e.g, for plain Strings
+         */
+        if(Environment.getInstance().getWikiConnector().doesArticleExist(text)) {
+            return KnowWEUtils.getLinkHTMLToArticle(text);
+        }
+
+
+
+        boolean foundArticle = false;
+        String lns = core.getLocalNamespace();
 
 		String[] statements;
 		// We are only interested in statements from the local name space.
