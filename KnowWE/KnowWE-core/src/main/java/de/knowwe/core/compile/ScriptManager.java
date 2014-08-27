@@ -38,11 +38,11 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 	private final Class<C> compilerClass;
 
 	@SuppressWarnings("rawtypes")
-	private final Map<Type, ScriptList> scripts = Collections.synchronizedMap(new HashMap<Type, ScriptList>());
+	private final Map<Type, ScriptList> scripts = Collections.synchronizedMap(new HashMap<>());
 
-	private final Set<Type> subtreeTypesWithScripts = Collections.synchronizedSet(new HashSet<Type>());
+	private final Set<Type> subtreeTypesWithScripts = Collections.synchronizedSet(new HashSet<>());
 
-	private final Map<Class<? extends Type>, Set<Type>> typesOfSameClass = Collections.synchronizedMap(new HashMap<Class<? extends Type>, Set<Type>>());
+	private final Map<Class<? extends Type>, Set<Type>> typesOfSameClass = Collections.synchronizedMap(new HashMap<>());
 
 	private boolean initialized = false;
 
@@ -70,6 +70,7 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 		}
 
 		// add script to list
+		//noinspection SynchronizationOnLocalVariableOrMethodParameter
 		synchronized (list) {
 			list.add(priority, script);
 		}
@@ -82,7 +83,7 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 	private <T extends Type> void handleNewTypesAfterInitialization(T type) {
 		Set<Type> typesOfClass = typesOfSameClass.get(type.getClass());
 		if (typesOfClass == null) {
-			typesOfClass = new HashSet<Type>(4);
+			typesOfClass = new HashSet<>(4);
 			typesOfSameClass.put(type.getClass(), typesOfClass);
 		}
 		typesOfClass.add(type);
@@ -97,7 +98,7 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 		}
 	}
 
-	private <T extends Type> void addSubtreeTypesWithScripts(Type type) {
+	private void addSubtreeTypesWithScripts(Type type) {
 		if (!subtreeTypesWithScripts.add(type)) return;
 		for (Type parent : type.getParentTypes()) {
 			addSubtreeTypesWithScripts(parent);
@@ -109,6 +110,7 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 	public <T extends Type> Map<Priority, List<CompileScript<C, T>>> getScripts(T type) {
 		ScriptList list = scripts.get(type);
 		if (list == null) list = EMPTY_SCRIPT_LIST;
+		//noinspection SynchronizationOnLocalVariableOrMethodParameter
 		synchronized (list) {
 			return list.getPriorityMap();
 		}
@@ -125,7 +127,8 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 	public <T extends Type> void removeScript(T type, Class<? extends CompileScript<C, T>> clazz) {
 		@SuppressWarnings("unchecked")
 		ScriptList<C, T> scriptsOfType = scripts.get(type);
-		List<CompileScript<C, T>> remove = new ArrayList<CompileScript<C, T>>();
+		List<CompileScript<C, T>> remove = new ArrayList<>();
+		//noinspection SynchronizationOnLocalVariableOrMethodParameter
 		synchronized (scriptsOfType) {
 			for (CompileScript<C, T> compileScript : scriptsOfType) {
 				if (compileScript.getClass().equals(clazz)) {
@@ -146,7 +149,7 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 
 	@Override
 	public Collection<Class<? extends Event>> getEvents() {
-		List<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>();
+		List<Class<? extends Event>> events = new ArrayList<>();
 		events.add(InitEvent.class);
 		return events;
 	}

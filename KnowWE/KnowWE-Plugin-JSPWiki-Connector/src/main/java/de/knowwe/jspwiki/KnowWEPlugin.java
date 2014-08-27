@@ -444,17 +444,10 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		else if (event instanceof WikiPageRenameEvent) {
 			WikiPageRenameEvent renameEvent = (WikiPageRenameEvent) event;
 
-			ArticleManager manager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
-			Article oldArticle = manager.getArticle(renameEvent.getOldPageName());
-			manager.open();
-			try {
-				manager.deleteArticle(oldArticle);
-				Environment.getInstance().buildAndRegisterArticle(
-						Environment.DEFAULT_WEB, renameEvent.getNewPageName(), oldArticle.getText());
-			}
-			finally {
-				manager.commit();
-			}
+			String oldArticleTitle = renameEvent.getOldPageName();
+			String newArticleTitle = renameEvent.getNewPageName();
+
+			KnowWEUtils.renameArticle(oldArticleTitle, newArticleTitle);
 		}
 		else if (event instanceof WikiEngineEvent) {
 			if (event.getType() == WikiEngineEvent.INITIALIZED) {

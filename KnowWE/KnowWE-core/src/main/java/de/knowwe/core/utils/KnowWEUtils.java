@@ -983,4 +983,17 @@ public class KnowWEUtils {
 		return Integer.toHexString(overAllStatus);
 	}
 
+	public static void renameArticle(String oldArticleTitle, String newArticleTitle) {
+		ArticleManager manager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		Article oldArticle = manager.getArticle(oldArticleTitle);
+		manager.open();
+		try {
+			manager.deleteArticle(oldArticle);
+			Environment.getInstance().buildAndRegisterArticle(
+					Environment.DEFAULT_WEB, newArticleTitle, oldArticle.getText());
+		}
+		finally {
+			manager.commit();
+		}
+	}
 }

@@ -80,7 +80,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	private final SectionStore sectionStore = new SectionStore();
 
 	/**
-	 * Specifies whether the orignialText was changed without changing the ancestor ones
+	 * Specifies whether the originalText was changed without changing the ancestor ones
 	 */
 	private boolean isDirty = false;
 

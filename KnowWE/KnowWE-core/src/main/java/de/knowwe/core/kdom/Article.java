@@ -125,14 +125,18 @@ public class Article {
 		rootSection = Sections.child(dummySection, RootType.class);
 		rootSection.setParent(null);
 
-		// rootSection.clearReusedSuccessorRecursively();
-
 		if (lastVersion != null) {
-			// lastVersion.getRootSection().clearReusedOfOldSectionsRecursively(this);
-			unregisterSectionRecursively(lastVersion.getRootSection());
+			lastVersion.destroy();
 		}
 
 		EventManager.getInstance().fireEvent(new KDOMCreatedEvent(this));
+	}
+
+	/**
+	 * Destroy and cleans up stuff that was registered for the Sections of this article (like IDs and message caches).
+	 */
+	public void destroy() {
+		unregisterSectionRecursively(this.getRootSection());
 	}
 
 	private void unregisterSectionRecursively(Section<?> section) {
