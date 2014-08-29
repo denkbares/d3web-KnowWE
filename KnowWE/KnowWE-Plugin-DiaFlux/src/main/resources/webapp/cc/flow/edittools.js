@@ -75,7 +75,10 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 
 	var oneOrMore = function(flowEditor) {
 		var flow = flowEditor.getFlowchart();
-		return flow.selection.length > 0;
+		return flow.selection.length >= 1;
+	};
+	var twoOrMoreNodes = function(flowEditor) {
+		return flowEditor.getFlowchart().getSelectedNodes().length >= 2;
 	};
 	var oneComposed = function(flowEditor) {
 		var flow = flowEditor.getFlowchart();
@@ -128,10 +131,67 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		selectPath(flowEditor, true, false);
 	};
 
+	var align = function(flowEditor, horizontal, useMinMiddleMax) {
+		var getPos = function(node) {
+			var pos = horizontal ? node.getLeft() : node.getTop();
+			var size = horizontal ? node.getWidth() : node.getHeight();
+			return (useMinMiddleMax == "min") ? pos :
+				(useMinMiddleMax == "middle") ? pos + size / 2 : pos + size;
+		};
+		var setPos = function(node, pos) {
+			var size = horizontal ? node.getWidth() : node.getHeight();
+			if (useMinMiddleMax == "max")  pos -= size;
+			if (useMinMiddleMax == "middle")  pos -= size / 2;
+			if (horizontal) {
+				node.moveTo(pos, node.getTop());
+			}
+			else {
+				node.moveTo(node.getLeft(), pos);
+			}
+		};
+		var nodes = flowEditor.getFlowchart().getSelectedNodes();
+		var total = 0;
+		jq$.each(nodes, function(index, node) {
+			total += getPos(node);
+		});
+		jq$.each(nodes, function(index, node) {
+			setPos(node, total / nodes.length);
+		});
+	};
+
+	var alignTop = function(flowEditor) {
+		align(flowEditor, false, "min");
+	};
+	var alignMiddle = function(flowEditor) {
+		align(flowEditor, false, "middle");
+	};
+	var alignBottom = function(flowEditor) {
+		align(flowEditor, false, "max");
+	};
+
+	var alignLeft = function(flowEditor) {
+		align(flowEditor, true, "min");
+	};
+	var alignCenter = function(flowEditor) {
+		align(flowEditor, true, "middle");
+	};
+	var alignRight = function(flowEditor) {
+		align(flowEditor, true, "max");
+	};
+
 	this.editTools = [];
 	this.editTools.push(new FlowEditor.EditToolGroup("Select", [
 		new FlowEditor.EditTool("Path after node", selectPathAfter, oneOrMore),
 		new FlowEditor.EditTool("Path to node", selectPathBefore, oneOrMore)
+	]));
+	this.editTools.push(new FlowEditor.EditToolGroup("Align", [
+		new FlowEditor.EditTool("Top", alignTop, twoOrMoreNodes),
+		new FlowEditor.EditTool("Middle", alignMiddle, twoOrMoreNodes),
+		new FlowEditor.EditTool("Bottom", alignBottom, twoOrMoreNodes),
+		FlowEditor.EditTool.SEPARATOR,
+		new FlowEditor.EditTool("Left", alignLeft, twoOrMoreNodes),
+		new FlowEditor.EditTool("Middle", alignCenter, twoOrMoreNodes),
+		new FlowEditor.EditTool("Right", alignRight, twoOrMoreNodes)
 	]));
 	this.editTools.push(new FlowEditor.EditTool("Cleanup Flow", null, function() {
 		return false;
@@ -215,7 +275,7 @@ FlowEditor.EditToolGroup.prototype.render = function(toolMenu, flowEditor) {
 FlowEditor.EditToolGroup.prototype.isActive = function(flowEditor) {
 	var anyActive = false;
 	jq$.each(this.menuItems, function(index, item) {
-		anyActive |= item.isActive(flowEditor);
+		if (item.getTitle()) anyActive |= item.isActive(flowEditor);
 		return !anyActive;
 	});
 	return anyActive;

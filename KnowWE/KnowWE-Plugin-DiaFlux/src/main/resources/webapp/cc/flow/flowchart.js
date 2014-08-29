@@ -183,6 +183,26 @@ Flowchart.prototype.isSelected = function(nodeOrRule) {
 }
 
 /**
+ * Flowchart.getSelectedNodes
+ * returns the currently selected nodes as an array.
+ */
+Flowchart.prototype.getSelectedNodes = function() {
+	return jq$.grep(this.selection, function(item) {
+		return item instanceof Node;
+	});
+};
+
+/**
+ * Flowchart.getSelectedRules
+ * returns the currently selected rules as an array.
+ */
+Flowchart.prototype.getSelectedRules = function() {
+	return jq$.grep(this.selection, function(item) {
+		return item instanceof Rule;
+	});
+};
+
+/**
  * Flowchart.setSelection
  * Sets the selection to the specified Node(s) or Rule(s).
  * This method signals the selected elements to be highlighted.
