@@ -1,0 +1,15 @@
+.EditorToolMenu {
+	z-index: 10000;
+}
+
+.EditorToolMenu .closearea {
+	height: 40px;
+	width: 40px;
+}
+.EditorToolMenu .menuarea {
+	display: inline-block;
+}
+.EditorToolMenu .menuarea .ui-menu .ui-menu-item {
+	font-size: 0.8em;
+	margin: 0;
+}

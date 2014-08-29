@@ -1,22 +1,26 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<%@page import="de.knowwe.core.wikiConnector.WikiConnector" %>
+<%@page import="java.util.Map" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="org.apache.wiki.WikiContext" %>
+<%@ page import="org.apache.wiki.WikiEngine" %>
 <%@ page import="de.d3web.plugin.Extension" %>
 <%@ page import="de.d3web.plugin.JPFPluginManager" %>
+<%@ page import="de.knowwe.core.Attributes" %>
+<%@ page import="de.knowwe.core.Environment" %>
+<%@ page import="de.knowwe.core.action.AbstractActionServlet" %>
+<%@ page import="de.knowwe.core.action.ActionContext" %>
+<%@ page import="de.knowwe.core.action.UserActionContext" %>
+<%@ page import="de.knowwe.core.kdom.Article" %>
 <%@ page import="de.knowwe.core.kdom.parsing.Section" %>
 <%@ page import="de.knowwe.core.kdom.parsing.Sections" %>
-<%@ page import="de.knowwe.core.kdom.Article" %>
+<%@ page import="de.knowwe.core.user.AuthenticationManager" %>
+<%@ page import="de.knowwe.core.user.UserContextUtil" %>
+<%@ page import="de.knowwe.core.wikiConnector.WikiConnector" %>
+<%@ page import="de.knowwe.diaflux.DiaFluxEditorEnhancement" %>
+<%@ page import="de.knowwe.diaflux.kbinfo.JSPHelper" %>
 <%@ page import="de.knowwe.diaflux.type.DiaFluxType" %>
-<%@ page import="org.apache.wiki.*" %>
-<%@ page import="de.knowwe.jspwiki.*" %>
-<%@ page import="java.util.*" %>
-<%@ page import="de.knowwe.core.*" %>
-<%@ page import="de.knowwe.core.utils.*" %>
-<%@ page import="de.knowwe.core.action.*" %>
-<%@ page import="de.knowwe.diaflux.kbinfo.*" %>
-<%@ page import="de.knowwe.diaflux.*" %>
-<%@ page import="de.d3web.we.utils.*" %>
-<%@ page import="de.knowwe.core.user.*" %>
+<%@ page import="de.knowwe.jspwiki.JSPAuthenticationManager" %>
+<%@ page import="de.knowwe.jspwiki.JSPWikiConnector" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%
 	//Create wiki context; authorization check not needed
@@ -107,11 +111,14 @@
 	<script src="cc/scriptaculous-js/src/dragdrop.js" type="text/javascript"></script>
 
 	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-2.1.0.min.js'></script>
-	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-ui-1.10.4.custom.min.js'></script>
+	<script type='text/javascript'
+			src='KnowWEExtension/scripts/jquery-ui-1.10.4.custom.min.js'></script>
 	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-autosize.min.js'></script>
 	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-treeTable.js'></script>
 	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-tooltipster.js'></script>
-	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-plugin-collection.js'></script>
+	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-ui-1.10.4.custom.min.js'></script>
+	<script type='text/javascript'
+			src='KnowWEExtension/scripts/jquery-plugin-collection.js'></script>
 	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-compatibility.js'></script>
 
 	<script src="cc/kbinfo/kbinfo.js" type="text/javascript"></script>
@@ -132,10 +139,12 @@
 	<script src="cc/flow/nodeeditor.js" type="text/javascript"></script>
 	<script src="cc/flow/router.js" type="text/javascript"></script>
 	<script src="cc/flow/contextmenu.js" type="text/javascript"></script>
+	<script src="cc/flow/edittools.js" type="text/javascript"></script>
 
 	<script type='text/javascript' src='KnowWEExtension/scripts/TextArea.js'></script>
 	<script type='text/javascript' src='KnowWEExtension/scripts/KnowWE-EditCommons.js'></script>
-	<script type='text/javascript' src='KnowWEExtension/scripts/KnowWE-Plugin-AutoComplete.js'></script>
+	<script type='text/javascript'
+			src='KnowWEExtension/scripts/KnowWE-Plugin-AutoComplete.js'></script>
 
 	<%
 		Extension[] extensions = JPFPluginManager.getInstance()
@@ -163,9 +172,11 @@
 	<link rel="stylesheet" type="text/css" href="cc/flow/rule.css"></link>
 	<link rel="stylesheet" type="text/css" href="cc/flow/guard.css"></link>
 	<link rel="stylesheet" type="text/css" href="cc/flow/contextmenu.css"></link>
+	<link rel="stylesheet" type="text/css" href="cc/flow/edittools.css"></link>
 	<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/jquery-treeTable.css'/>
 	<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/jquery-autocomplete.css'/>
-	<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/KnowWE-Plugin-AutoComplete.css'/>
+	<link rel='stylesheet' type='text/css'
+		  href='KnowWEExtension/css/KnowWE-Plugin-AutoComplete.css'/>
 </head>
 <body onload="new FlowEditor(<%= jspHelper.getArticleIDsAsArray(kdomID).replace("\"", "&quot;") %>).showEditor();">
 
@@ -188,7 +199,7 @@
 		<li class="icon" id="saveClose" title="Save and Close Editor"
 			style="position:relative; background-image:url(cc/image/toolbar/saveclose.png);width:80px"><span
 				style="position:absolute;left: 45px;top:12px;">Save</span>
-		<!--li class="icon" id="save" title="Save flowchart" style="background-image:url(cc/image/toolbar/save_flowchart_32.png);"></li-->
+			<!--li class="icon" id="save" title="Save flowchart" style="background-image:url(cc/image/toolbar/save_flowchart_32.png);"></li-->
 		<li class="icon" id="cancel" title="Cancel"
 			style="position:relative; background-image:url(cc/image/toolbar/cancel.png);;width:80px"><span
 				style="position:absolute;left:38px;top:12px;">Cancel</span>
@@ -203,8 +214,12 @@
 		</div>
 	</div>
 	<ul class="toolbar">
-		<li class="icon" id="undo" title="Undo" style="background-image:url(cc/image/toolbar/undo.png);">
-		<li class="icon" id="redo" title="Redo" style="background-image:url(cc/image/toolbar/redo.png);">
+		<li class="icon" id="undo" title="Undo"
+			style="background-image:url(cc/image/toolbar/undo.png);">
+		<li class="icon" id="redo" title="Redo"
+			style="background-image:url(cc/image/toolbar/redo.png);">
+		<li class="icon" id="tools" title="More Tools..."
+			style="background-image:url(cc/image/toolbar/tools.png);">
 	</ul>
 	<ul class="toolbar">
 		<li class="icon NodePrototype" id="decision_prototype" title="Action node"

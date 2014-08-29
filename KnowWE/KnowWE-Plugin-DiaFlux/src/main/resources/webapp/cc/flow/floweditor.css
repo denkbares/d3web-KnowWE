@@ -70,7 +70,7 @@ ul.toolbar li.selected,ul.toolbar li:hover {
 	background-color: rgba(80, 80, 80, 0.25);
 }
 
-ul.toolbar li:active {
+ul.toolbar li:active, ul.toolbar li.active {
 	background-color: rgba(0, 0, 0, 0.3);
 }
 
