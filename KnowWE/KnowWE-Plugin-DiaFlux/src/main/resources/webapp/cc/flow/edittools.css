@@ -9,7 +9,59 @@
 .EditorToolMenu .menuarea {
 	display: inline-block;
 }
-.EditorToolMenu .menuarea .ui-menu .ui-menu-item {
+.EditorToolMenu .menuarea .ui-menu li.ui-menu-item {
 	font-size: 0.8em;
 	margin: 0;
+}
+.EditorToolMenu .menuarea .ui-menu li.ui-menu-item a {
+	padding-left: 20px;
+	padding-right: 20px;
+	position: relative;
+}
+.EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon {
+	display: inline-block;
+	position: absolute;
+	top: 2px;
+	left: 2px;
+}
+
+.EditorToolMenu .menuarea > ul.ui-menu > li.ui-menu-item > a > span.ui-icon {
+	top: 5px;
+}
+
+.EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-menu-icon.ui-icon.ui-icon-carat-1-e {
+	right: 0px;
+	left: auto;
+	background-position: -32px 0px;
+}
+
+.EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-align-left {
+	background-image: url(../image/toolbar/align_left.png);
+}
+.EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-align-center {
+	background-image: url(../image/toolbar/align_center.png);
+}
+.EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-align-right {
+	background-image: url(../image/toolbar/align_right.png);
+}
+.EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-align-top {
+	background-image: url(../image/toolbar/align_top.png);
+}
+.EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-align-middle {
+	background-image: url(../image/toolbar/align_middle.png);
+}
+.EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-align-bottom {
+	background-image: url(../image/toolbar/align_bottom.png);
+}
+.EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-extract-subflow {
+	background-image: url(../image/toolbar/extract_subflow.png);
+}
+.EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-unfold-subflow {
+	background-image: url(../image/toolbar/unfold_subflow.png);
+}
+.EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-path-to-node {
+	background-image: url(../image/toolbar/path_to_node.png);
+}
+.EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-path-after-node {
+	background-image: url(../image/toolbar/path_after_node.png);
 }

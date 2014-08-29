@@ -42,18 +42,6 @@ FlowEditor.EditorToolMenu.prototype.hideMenu = function() {
 
 FlowEditor.EditorToolMenu.prototype.showMenu = function() {
 	var editor = this.flowEditor;
-//	var html = "";
-//	for (var i = 0; i < this.editTools.length; i++) {
-//		var title = this.editTools[i].getTitle(editor);
-//		if (!title) html += "<li>-</li>";
-//		else {
-//			var active = this.editTools[i].isActive(editor);
-//			html += "<li" + (active ? "" : " class='ui-state-disabled'") +
-//				" data-menuitem='" + this.editTools[i].getId() + "'" +
-//				"><a href='#'>" +
-//				title + "</a></li>";
-//		}
-//	}
 	var html = jq$("<div class='EditorToolMenu' style='position;absolute'>" +
 		"<div class='closearea'></div>" +
 		"<div class='menuarea'><ul></ul></div></div>");
@@ -65,7 +53,7 @@ FlowEditor.EditorToolMenu.prototype.showMenu = function() {
 	jq$(this.menuButton).addClass('active');
 	jq$(this.menuButton).closest('body').append(html);
 	jq$('.EditorToolMenu').offset(jq$(this.menuButton).offset());
-	jq$('.EditorToolMenu .menuarea ul').menu({role : 'menuitem'});
+	jq$('.EditorToolMenu .menuarea ul').menu();
 	jq$('.EditorToolMenu .closearea').click(function() {
 		self.hideMenu();
 	});
@@ -181,24 +169,24 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 
 	this.editTools = [];
 	this.editTools.push(new FlowEditor.EditToolGroup("Select", [
-		new FlowEditor.EditTool("Path after node", selectPathAfter, oneOrMore),
-		new FlowEditor.EditTool("Path to node", selectPathBefore, oneOrMore)
+		new FlowEditor.EditTool("Path after node", selectPathAfter, oneOrMore, 'path-after-node'),
+		new FlowEditor.EditTool("Path to node", selectPathBefore, oneOrMore, 'path-to-node')
 	]));
 	this.editTools.push(new FlowEditor.EditToolGroup("Align", [
-		new FlowEditor.EditTool("Top", alignTop, twoOrMoreNodes),
-		new FlowEditor.EditTool("Middle", alignMiddle, twoOrMoreNodes),
-		new FlowEditor.EditTool("Bottom", alignBottom, twoOrMoreNodes),
+		new FlowEditor.EditTool("Top", alignTop, twoOrMoreNodes, 'align-top'),
+		new FlowEditor.EditTool("Middle", alignMiddle, twoOrMoreNodes, 'align-middle'),
+		new FlowEditor.EditTool("Bottom", alignBottom, twoOrMoreNodes, 'align-bottom'),
 		FlowEditor.EditTool.SEPARATOR,
-		new FlowEditor.EditTool("Left", alignLeft, twoOrMoreNodes),
-		new FlowEditor.EditTool("Middle", alignCenter, twoOrMoreNodes),
-		new FlowEditor.EditTool("Right", alignRight, twoOrMoreNodes)
+		new FlowEditor.EditTool("Left", alignLeft, twoOrMoreNodes, 'align-left'),
+		new FlowEditor.EditTool("Middle", alignCenter, twoOrMoreNodes, 'align-center'),
+		new FlowEditor.EditTool("Right", alignRight, twoOrMoreNodes, 'align-right')
 	]));
 	this.editTools.push(new FlowEditor.EditTool("Cleanup Flow", null, function() {
 		return false;
 	}));
 	this.editTools.push(FlowEditor.EditTool.SEPARATOR);
-	this.editTools.push(new FlowEditor.EditTool("Unfold Subflow", null, oneComposed));
-	this.editTools.push(new FlowEditor.EditTool("Create Subflow", null, oneComposed));
+	this.editTools.push(new FlowEditor.EditTool("Unfold Subflow", null, oneComposed, 'unfold-subflow'));
+	this.editTools.push(new FlowEditor.EditTool("Create Subflow", null, oneComposed, 'extract-subflow'));
 };
 
 
@@ -206,10 +194,11 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
  * Class for particular editor tools
  */
 
-FlowEditor.EditTool = function(title, actionFun, isActiveFun) {
+FlowEditor.EditTool = function(title, actionFun, isActiveFun, icon) {
 	this.title = title;
 	this.actionFun = actionFun;
 	this.isActiveFun = isActiveFun;
+	this.icon = icon;
 };
 
 FlowEditor.EditTool.SEPARATOR = new FlowEditor.EditTool();
@@ -218,13 +207,21 @@ FlowEditor.EditTool.prototype.getTitle = function() {
 	return this.title;
 };
 
+FlowEditor.EditTool.prototype.getIcon = function() {
+	return this.icon;
+};
+
 FlowEditor.EditTool.prototype.render = function(toolMenu, flowEditor) {
 	var title = this.getTitle();
 	if (!title) return jq$("<li>-</li>");
 
 	var self = this;
+	var a = jq$(document.createElement("a")).text(title);
+	if (this.getIcon()) {
+		a.prepend('<span class="ui-icon ui-icon-' + this.getIcon() + '"></span>');
+	}
 	var li = jq$(document.createElement("li"))
-		.append(jq$(document.createElement("a")).text(title))
+		.append(a)
 		.click(function() {
 			self.execute(flowEditor);
 			toolMenu.hideMenu();
@@ -247,9 +244,14 @@ FlowEditor.EditTool.prototype.execute = function(flowEditor) {
  * Class for sub-menus of EditTools
  */
 
-FlowEditor.EditToolGroup = function(title, menuItems) {
+FlowEditor.EditToolGroup = function(title, menuItems, icon) {
 	this.title = title;
 	this.menuItems = menuItems;
+	this.icon = icon;
+};
+
+FlowEditor.EditToolGroup.prototype.getIcon = function() {
+	return this.icon;
 };
 
 FlowEditor.EditToolGroup.prototype.getTitle = function() {
@@ -259,8 +261,8 @@ FlowEditor.EditToolGroup.prototype.getTitle = function() {
 FlowEditor.EditToolGroup.prototype.render = function(toolMenu, flowEditor) {
 	var li = jq$(document.createElement("li"))
 		.append(jq$(document.createElement("a")).text(this.getTitle()))
-		.click(function() {
-			window.event.stop()
+		.click(function(event) {
+			event.stopPropagation()
 		});
 	if (!this.isActive(flowEditor)) {
 		li.addClass("ui-state-disabled");

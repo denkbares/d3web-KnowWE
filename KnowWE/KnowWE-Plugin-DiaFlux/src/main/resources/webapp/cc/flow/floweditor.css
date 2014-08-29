@@ -25,7 +25,7 @@ body {
 	white-space: nowrap;
 }
 
-ul.toolbar {
+#toolbar ul.toolbar {
 	list-style-type: none;
 	margin: 0px;
 	padding: 0px;
@@ -39,7 +39,7 @@ ul.toolbar {
 	user-select: none;
 }
 
-ul.toolbar li {
+#toolbar ul.toolbar li {
 	display: inline-block;
 	margin: 0px;
 	padding: 3px 5px 3px 5px;
@@ -51,7 +51,7 @@ ul.toolbar li {
 	font-size: 10pt;
 }
 
-ul.toolbar li.icon {
+#toolbar ul.toolbar li.icon {
 	height: 32px;
 	min-width: 37px;
 	padding-right: 2px;
@@ -59,27 +59,27 @@ ul.toolbar li.icon {
 	background-position: 5px center;
 }
 
-ul.toolbar li.iconsmall {
+#toolbar ul.toolbar li.iconsmall {
 	height: 32px;
 	min-width: 37px;
 	background-repeat: no-repeat;
 	background-position: 12px center;
 }
 
-ul.toolbar li.selected,ul.toolbar li:hover {
+#toolbar ul.toolbar li.selected,ul.toolbar li:hover {
 	background-color: rgba(80, 80, 80, 0.25);
 }
 
-ul.toolbar li:active, ul.toolbar li.active {
+#toolbar ul.toolbar li:active, ul.toolbar li.active {
 	background-color: rgba(0, 0, 0, 0.3);
 }
 
-ul.toolbar li:first-child {
+#toolbar ul.toolbar li:first-child {
 	border-radius: 3px 0px 0px 3px;
 	-moz-border-radius: 3px 0px 0px 3px;
 }
 
-ul.toolbar li:last-child {
+#toolbar ul.toolbar li:last-child {
 	border-radius: 0px 3px 3px 0px;
 	-moz-border-radius: 0px 3px 3px 0px;
 	border-width: 1px;

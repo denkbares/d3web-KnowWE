@@ -181,12 +181,12 @@ FlowEditor.prototype.showEditor = function(xmlText) {
 	 *  install editor tool menu
 	 */
 	this.editToolsMenu = new FlowEditor.EditorToolMenu(this, jq$('#tools'));
-	var toolsClose = function() {
+	var toolsClose = function(event) {
 		EditorInstance.editToolsMenu.hideMenu();
 	};
 
-	var toolsOpen = function() {
-		window.event.stop();
+	var toolsOpen = function(event) {
+		event.stopPropagation();
 		EditorInstance.editToolsMenu.showMenu();
 	};
 	$('tools').observe('click', toolsOpen);
