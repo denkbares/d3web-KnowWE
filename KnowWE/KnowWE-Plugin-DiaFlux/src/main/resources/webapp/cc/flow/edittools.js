@@ -223,32 +223,124 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		spread(flowEditor, false, true)
 	};
 
-	this.editTools = [];
-	this.editTools.push(new FlowEditor.EditToolGroup("Select", [
-		new FlowEditor.EditTool("Path after node", selectPathAfter, oneOrMore, 'path-after-node'),
-		new FlowEditor.EditTool("Path to node", selectPathBefore, oneOrMore, 'path-to-node')
-	]));
-	this.editTools.push(new FlowEditor.EditToolGroup("Align", [
-		new FlowEditor.EditTool("Left", alignLeft, twoOrMoreNodes, 'align-left'),
-		new FlowEditor.EditTool("Middle", alignCenter, twoOrMoreNodes, 'align-center'),
-		new FlowEditor.EditTool("Right", alignRight, twoOrMoreNodes, 'align-right'),
+
+	var arrange = function(flowEditor, horizontal) {
+		var getPos = function(node) {
+			return horizontal ? node.getCenterX() : node.getCenterY();
+		};
+		var getOtherPos = function(node) {
+			return horizontal ? node.getCenterY() : node.getCenterX();
+		};
+		var getSize = function(node) {
+			return horizontal ? node.getWidth() : node.getHeight();
+		};
+		var setPos = function(node, pos) {
+			var size = getSize(node);
+			if (horizontal) {
+				node.moveTo(pos - size / 2, node.getTop());
+			}
+			else {
+				node.moveTo(node.getLeft(), pos - size / 2);
+			}
+		};
+		var canGroup = function(node1, node2) {
+			// we can group two nodes if they do not intersect
+			// or if they intersect, our used position (x or y)
+			// is closer than the other position
+			if (!node1.intersects(node2)) return true;
+			var dOther = Math.abs(getOtherPos(node1) - getOtherPos(node2));
+			return Math.abs(getPos(node1) - getPos(node2)) < dOther;
+		};
+		var groups = [];
+		var divideAndConquer = function(nodes) {
+			if (nodes.length == 0) return;
+			var pivot = nodes[Math.floor(nodes.length / 2)];
+			var ppos = getPos(pivot), psize = getSize(pivot);
+			var group = [], above = [], below = [];
+			jq$.each(nodes, function(index, node) {
+				// take the middle one and group all non-overlapping nodes
+				// that has roughly same position
+				var npos = getPos(node);
+				if (node == pivot || (canGroup(pivot, node) && Math.abs(ppos - npos) < psize / 2)) {
+					group.push(node);
+				}
+				else if (ppos > npos) {
+					above.push(node);
+				}
+				else {
+					below.push(node);
+				}
+			});
+			// group other ones recursively (and keep groups ordered
+			divideAndConquer(above);
+			groups.push(group.reverse());
+			divideAndConquer(below);
+		};
+
+		// sort nodes and split into groups
+		var nodes = flowEditor.getFlowchart().getSelectedNodes();
+		if (nodes.length == 0) {
+			// if no nodes selected, update all nodes (make a copy of the list)
+			nodes = jq$.map(flowEditor.getFlowchart().nodes, function(node) {
+				return node
+			});
+		}
+		nodes.sort(function(n1, n2) {
+			return getPos(n1) - getPos(n2);
+		});
+		divideAndConquer(nodes);
+
+		// iterate the groups (which are sill ordered ascending),
+		// rearrange all items of one group into the same position
+		// and spread the positions if required
+		var minPos = Number.MIN_VALUE;
+		jq$.each(groups, function(index, group) {
+			var pos = 0, size = 0;
+			jq$.each(group, function(index, node) {
+				pos += getPos(node);
+				size = Math.max(size, getSize(node));
+			});
+			pos = pos / group.length; // average pos
+			// make sure that we not intersect the previous line
+			if (pos < minPos + size / 2) pos = minPos + size / 2;
+			// align the nodes and update the minPos for the next group, including some spacing
+			jq$.each(group, function(index, node) {
+				setPos(node, pos);
+			});
+			minPos = pos + size / 2 + (horizontal ? 40 : 20);
+		});
+	};
+
+	var cleanup = function(flowEditor) {
+		arrange(flowEditor, false);
+		arrange(flowEditor, true);
+	};
+
+	this.editTools = [
+		new FlowEditor.EditToolGroup("Select", [
+			new FlowEditor.EditTool("Path after node", selectPathAfter, oneOrMore, 'path-after-node'),
+			new FlowEditor.EditTool("Path to node", selectPathBefore, oneOrMore, 'path-to-node')
+		]),
+		new FlowEditor.EditToolGroup("Align", [
+			new FlowEditor.EditTool("Left", alignLeft, twoOrMoreNodes, 'align-left'),
+			new FlowEditor.EditTool("Middle", alignCenter, twoOrMoreNodes, 'align-center'),
+			new FlowEditor.EditTool("Right", alignRight, twoOrMoreNodes, 'align-right'),
+			FlowEditor.EditTool.SEPARATOR,
+			new FlowEditor.EditTool("Top", alignTop, twoOrMoreNodes, 'align-top'),
+			new FlowEditor.EditTool("Middle", alignMiddle, twoOrMoreNodes, 'align-middle'),
+			new FlowEditor.EditTool("Bottom", alignBottom, twoOrMoreNodes, 'align-bottom'),
+			FlowEditor.EditTool.SEPARATOR,
+			new FlowEditor.EditTool("Balance horizontal", spreadDistanceX, twoOrMoreNodes, 'spread-distance-x'),
+			new FlowEditor.EditTool("Spread horizontal", spreadMiddleX, twoOrMoreNodes, 'spread-middle-x'),
+			FlowEditor.EditTool.SEPARATOR,
+			new FlowEditor.EditTool("Balance vertical", spreadDistanceY, twoOrMoreNodes, 'spread-distance-y'),
+			new FlowEditor.EditTool("Spread vertical", spreadMiddleY, twoOrMoreNodes, 'spread-middle-y')
+		]),
+		new FlowEditor.EditTool("Clean Up", cleanup, null, 'clean-up'),
 		FlowEditor.EditTool.SEPARATOR,
-		new FlowEditor.EditTool("Top", alignTop, twoOrMoreNodes, 'align-top'),
-		new FlowEditor.EditTool("Middle", alignMiddle, twoOrMoreNodes, 'align-middle'),
-		new FlowEditor.EditTool("Bottom", alignBottom, twoOrMoreNodes, 'align-bottom'),
-		FlowEditor.EditTool.SEPARATOR,
-		new FlowEditor.EditTool("Balance horizontal", spreadDistanceX, twoOrMoreNodes, 'spread-distance-x'),
-		new FlowEditor.EditTool("Spread horizontal", spreadMiddleX, twoOrMoreNodes, 'spread-middle-x'),
-		FlowEditor.EditTool.SEPARATOR,
-		new FlowEditor.EditTool("Balance vertical", spreadDistanceY, twoOrMoreNodes, 'spread-distance-y'),
-		new FlowEditor.EditTool("Spread vertical", spreadMiddleY, twoOrMoreNodes, 'spread-middle-y'),
-	]));
-	this.editTools.push(new FlowEditor.EditTool("Cleanup Flow", null, function() {
-		return false;
-	}));
-	this.editTools.push(FlowEditor.EditTool.SEPARATOR);
-	this.editTools.push(new FlowEditor.EditTool("Unfold Subflow", null, oneComposed, 'unfold-subflow'));
-	this.editTools.push(new FlowEditor.EditTool("Create Subflow", null, oneComposed, 'extract-subflow'));
+		new FlowEditor.EditTool("Unfold Subflow", null, oneComposed, 'unfold-subflow'),
+		new FlowEditor.EditTool("Create Subflow", null, oneComposed, 'extract-subflow')
+	];
 };
 
 

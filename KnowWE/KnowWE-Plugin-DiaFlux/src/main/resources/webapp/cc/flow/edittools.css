@@ -77,3 +77,6 @@
 .EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-spread-distance-y {
 	background-image: url(../image/toolbar/spread_distance-y.png);
 }
+.EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-clean-up {
+	background-image: url(../image/toolbar/clean-up.png);
+}

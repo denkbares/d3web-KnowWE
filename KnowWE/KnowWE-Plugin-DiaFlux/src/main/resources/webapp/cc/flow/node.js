@@ -65,7 +65,7 @@ Node.wrapToolMenu = function(flowname, nodeID, childToWrap) {
 		pagename : KNOWWE ? (KNOWWE.helper ? KNOWWE.helper.gup('page') : null ) : null,
 		flowname : flowname,
 		nodeID : nodeID
-	}
+	};
 	return Builder.node('div', {
 			style : 'position:relative; display: inline-block'
 		}, [Builder.node('div', {
@@ -77,36 +77,36 @@ Node.wrapToolMenu = function(flowname, nodeID, childToWrap) {
 			childToWrap
 		]
 	)
-}
+};
 
 
 Node.prototype.getDOM = function() {
 	return this.dom;
-}
+};
 
 Node.prototype.isVisible = function() {
 	return (this.dom != null);
-}
+};
 
 Node.prototype.getLeft = function() {
 	return this.nodeModel.position.left;
-}
+};
 
 Node.prototype.getTop = function() {
 	return this.nodeModel.position.top;
-}
+};
 
 Node.prototype.getWidth = function() {
 	return this.width;
-}
+};
 
 Node.prototype.getHeight = function() {
 	return this.height;
-}
+};
 
 Node.prototype.getNodeModel = function() {
 	return this.nodeModel;
-}
+};
 
 Node.prototype.setNodeModel = function(nodeModel) {
 	if (!nodeModel.fcid) {
@@ -122,7 +122,7 @@ Node.prototype.setNodeModel = function(nodeModel) {
 	for (var i = 0; i < rules.length; i++) {
 		rules[i].notifyNodeChanged();
 	}
-}
+};
 
 Node.prototype.getOutgoingRules = function() {
 	var result = [];
@@ -133,7 +133,7 @@ Node.prototype.getOutgoingRules = function() {
 		}
 	}
 	return result;
-}
+};
 
 Node.prototype.getIncomingRules = function() {
 	var result = [];
@@ -144,7 +144,7 @@ Node.prototype.getIncomingRules = function() {
 		}
 	}
 	return result;
-}
+};
 
 Node.prototype.moveTo = function(left, top) {
 	this.nodeModel.position.left = left;
@@ -158,14 +158,14 @@ Node.prototype.moveTo = function(left, top) {
 		this.arrowTool.setVisible(true);
 	}
 	this.flowchart.router.rerouteNodes([this]);
-}
+};
 
 Node.prototype.getPossibleGuards = function() {
 	if (!this._possibleGuardCache) {
 		this._possibleGuardCache = Guard.createPossibleGuards(this.getNodeModel());
 	}
 	return this._possibleGuardCache;
-}
+};
 
 Node.prototype.setVisible = function(visible) {
 	if (!this.isVisible() && visible) {
@@ -189,16 +189,16 @@ Node.prototype.setVisible = function(visible) {
 		this.flowchart.getContentPane().removeChild(this.dom);
 		this.dom = null;
 	}
-}
+};
 
 
 //only implemented for editor
 Node.prototype.destroyDraggable = function() {
-}
+};
 
 //only implemented for editor
 Node.prototype.createDraggable = function() {
-}
+};
 
 Node.prototype.updateFromView = function() {
 	if (this.getDOM() != null) {
@@ -206,16 +206,16 @@ Node.prototype.updateFromView = function() {
 		this.height = this.getDOM().offsetHeight;
 		this.moveTo(this.getDOM().offsetLeft, this.getDOM().offsetTop);
 	}
-}
+};
 
 
 Node.prototype.getCenterX = function() {
 	return this.getLeft() + this.width / 2;
-}
+};
 
 Node.prototype.getCenterY = function() {
 	return this.getTop() + this.height / 2;
-}
+};
 
 Node.prototype.getBaseObject = function() {
 	var nodeModel = this.getNodeModel();
@@ -223,7 +223,7 @@ Node.prototype.getBaseObject = function() {
 
 	var action = new Action(nodeModel.action.markup, nodeModel.action.expression);
 	return KBInfo.lookupInfoObject(action.getInfoObjectName());
-}
+};
 
 Node.prototype.render = function() {
 	var contentNode;
@@ -265,7 +265,7 @@ Node.prototype.render = function() {
 						infoObject && infoObject.getClassInstance() == KBInfo.Flowchart ? 'flowchart' :
 					'action';
 		this.actionPane = new ActionPane(contentNode, action,
-			function(actionPane) {
+			function() {
 				var rules = this.getOutgoingRules();
 				for (var i = 0; i < rules.length; i++) {
 					rules[i].notifyNodeChanged(this);
@@ -285,7 +285,7 @@ Node.prototype.render = function() {
 
 	dom.__node = this;
 	return dom;
-}
+};
 
 
 Node.prototype.select = function(multipleSelectionMode) {
@@ -295,7 +295,7 @@ Node.prototype.select = function(multipleSelectionMode) {
 	this.flowchart.setSelection(this,
 			multipleSelectionMode && !selected,
 			multipleSelectionMode && selected);
-}
+};
 
 Node.prototype.setSelectionVisible = function(isVisible) {
 	if (this.isVisible()) {
@@ -309,9 +309,16 @@ Node.prototype.setSelectionVisible = function(isVisible) {
 			this.arrowTool = null;
 		}
 	}
-}
+};
 
 Node.prototype.intersects = function(x1, y1, x2, y2) {
+	if (x1 instanceof Node) {
+		var node = x1;
+		x1 = node.getLeft();
+		y1 = node.getTop();
+		x2 = x1 + node.width;
+		y2 = y1 + node.height;
+	}
 	var xMin = Math.min(x1, x2);
 	var xMax = Math.max(x1, x2);
 	var yMin = Math.min(y1, y2);
@@ -320,7 +327,7 @@ Node.prototype.intersects = function(x1, y1, x2, y2) {
 		&& (yMin < this.getTop() + this.height)
 		&& (xMax > this.getLeft())
 		&& (yMax > this.getTop());
-}
+};
 
 Node.prototype.destroy = function() {
 	if (this._destroyed) return;
@@ -339,7 +346,7 @@ Node.prototype.destroy = function() {
 	this.setVisible(false);
 	this.flowchart.removeNode(this);
 	EditorInstance.snapshot();
-}
+};
 
 
 Node.createFromXML = function(flowchart, xmlDom, pasteOptions) {
@@ -379,6 +386,6 @@ Node.createFromXML = function(flowchart, xmlDom, pasteOptions) {
 
 
 	return new Node(flowchart, nodeModel);
-}
+};
 
 
