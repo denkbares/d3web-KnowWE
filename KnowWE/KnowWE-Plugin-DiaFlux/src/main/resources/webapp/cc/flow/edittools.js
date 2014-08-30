@@ -167,19 +167,81 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		align(flowEditor, true, "max");
 	};
 
+	var spread = function(flowEditor, horizontal, center) {
+		var getPos = function(node) {
+			return horizontal ? node.getCenterX() : node.getCenterY();
+		};
+		var getSize = function(node) {
+			return horizontal ? node.getWidth() : node.getHeight();
+		};
+		var getDistance = function(node1, node2) {
+			var p1 = getPos(node1), p2 = getPos(node2);
+			if (center) return Math.abs(p1 - p2);
+			var s1 = getSize(node1) / 2, s2 = getSize(node2) / 2;
+			var l1 = p1 - s1, r1 = p1 + s1, l2 = p2 - s2, r2 = p2 + s2;
+			return (p1 < p2) ? l2 - r1 : l1 - r2;
+		};
+		var setPos = function(node, pos) {
+			if (horizontal) {
+				node.moveTo(pos, node.getTop());
+			}
+			else {
+				node.moveTo(node.getLeft(), pos);
+			}
+		};
+		var nodes = flowEditor.getFlowchart().getSelectedNodes();
+		nodes.sort(function(n1, n2) {
+			return getPos(n1) - getPos(n2);
+		});
+		var min = getPos(nodes[0]), max = getPos(nodes[nodes.length - 1]);
+		var space = 0, previous = null;
+		jq$.each(nodes, function(index, node) {
+			if (previous) space += getDistance(previous, node);
+			previous = node;
+		});
+		var pos = min, delta = space / (nodes.length - 1);
+		jq$.each(nodes, function(index, node) {
+			var size = getSize(node);
+			if (!center && node != nodes[0]) pos += size / 2;
+			setPos(node, pos - size / 2);
+			pos += delta;
+			if (!center) pos += size / 2;
+		});
+	};
+
+	var spreadDistanceX = function(flowEditor) {
+		spread(flowEditor, true, false)
+	};
+	var spreadMiddleX = function(flowEditor) {
+		spread(flowEditor, true, true)
+	};
+
+	var spreadDistanceY = function(flowEditor) {
+		spread(flowEditor, false, false)
+	};
+	var spreadMiddleY = function(flowEditor) {
+		spread(flowEditor, false, true)
+	};
+
 	this.editTools = [];
 	this.editTools.push(new FlowEditor.EditToolGroup("Select", [
 		new FlowEditor.EditTool("Path after node", selectPathAfter, oneOrMore, 'path-after-node'),
 		new FlowEditor.EditTool("Path to node", selectPathBefore, oneOrMore, 'path-to-node')
 	]));
 	this.editTools.push(new FlowEditor.EditToolGroup("Align", [
+		new FlowEditor.EditTool("Left", alignLeft, twoOrMoreNodes, 'align-left'),
+		new FlowEditor.EditTool("Middle", alignCenter, twoOrMoreNodes, 'align-center'),
+		new FlowEditor.EditTool("Right", alignRight, twoOrMoreNodes, 'align-right'),
+		FlowEditor.EditTool.SEPARATOR,
 		new FlowEditor.EditTool("Top", alignTop, twoOrMoreNodes, 'align-top'),
 		new FlowEditor.EditTool("Middle", alignMiddle, twoOrMoreNodes, 'align-middle'),
 		new FlowEditor.EditTool("Bottom", alignBottom, twoOrMoreNodes, 'align-bottom'),
 		FlowEditor.EditTool.SEPARATOR,
-		new FlowEditor.EditTool("Left", alignLeft, twoOrMoreNodes, 'align-left'),
-		new FlowEditor.EditTool("Middle", alignCenter, twoOrMoreNodes, 'align-center'),
-		new FlowEditor.EditTool("Right", alignRight, twoOrMoreNodes, 'align-right')
+		new FlowEditor.EditTool("Balance horizontal", spreadDistanceX, twoOrMoreNodes, 'spread-distance-x'),
+		new FlowEditor.EditTool("Spread horizontal", spreadMiddleX, twoOrMoreNodes, 'spread-middle-x'),
+		FlowEditor.EditTool.SEPARATOR,
+		new FlowEditor.EditTool("Balance vertical", spreadDistanceY, twoOrMoreNodes, 'spread-distance-y'),
+		new FlowEditor.EditTool("Spread vertical", spreadMiddleY, twoOrMoreNodes, 'spread-middle-y'),
 	]));
 	this.editTools.push(new FlowEditor.EditTool("Cleanup Flow", null, function() {
 		return false;

@@ -65,3 +65,15 @@
 .EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-path-after-node {
 	background-image: url(../image/toolbar/path_after_node.png);
 }
+.EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-spread-middle-x {
+	background-image: url(../image/toolbar/spread_middle-x.png);
+}
+.EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-spread-distance-x {
+	background-image: url(../image/toolbar/spread_distance-x.png);
+}
+.EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-spread-middle-y {
+	background-image: url(../image/toolbar/spread_middle-y.png);
+}
+.EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-spread-distance-y {
+	background-image: url(../image/toolbar/spread_distance-y.png);
+}
