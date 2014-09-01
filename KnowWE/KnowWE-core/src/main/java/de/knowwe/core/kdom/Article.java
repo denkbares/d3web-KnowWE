@@ -40,6 +40,7 @@ import de.knowwe.event.KDOMCreatedEvent;
  */
 public class Article {
 
+	public static final int LOG_THRESHOLD = 50;
 	/**
 	 * Name of this article (topic-name)
 	 */
@@ -82,7 +83,7 @@ public class Article {
 	 */
 	private Article(String text, String title, String web, boolean fullParse) {
 
-		long startTimeOverall = System.currentTimeMillis();
+		long start = System.currentTimeMillis();
 		this.title = title;
 		this.web = web;
 		this.lastVersion = Environment.getInstance().getArticle(web, title);
@@ -93,8 +94,13 @@ public class Article {
 
 		sectionizeArticle(text);
 
-		Log.info("Sectionized article '" + title + "' in "
-				+ (System.currentTimeMillis() - startTimeOverall) + "ms");
+		long time = System.currentTimeMillis() - start;
+		if (time < LOG_THRESHOLD) {
+			Log.fine("Sectionized article '" + title + "' in " + time + "ms");
+		}
+		else {
+			Log.info("Sectionized article '" + title + "' in " + time + "ms");
+		}
 	}
 
 	/**

@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -544,6 +545,11 @@ public class JSPWikiConnector implements WikiConnector {
 		try {
 			List<WikiPage> versionHistory = this.engine.getPageManager().getVersionHistory(title);
 			if (versionHistory == null) return Collections.emptyList();
+			if (versionHistory.isEmpty()) {
+				// can happen in JSPWiki, of OLD was cleaned up manually
+				WikiPage currentVersion = this.engine.getPage(title);
+				versionHistory = Arrays.asList(currentVersion);
+			}
 			return versionHistory.stream()
 					.map(page -> new WikiPageInfo(page.getName(), page.getAuthor(), page.getVersion(),
 							page.getLastModified()))

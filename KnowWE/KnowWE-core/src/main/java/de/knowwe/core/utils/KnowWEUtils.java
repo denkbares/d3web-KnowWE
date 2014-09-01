@@ -242,7 +242,7 @@ public class KnowWEUtils {
 	 * method.
 	 *
 	 * @param section the section to create the anchor for
-	 * @param result the output target to be written to
+	 * @param result  the output target to be written to
 	 * @created 16.08.2013
 	 */
 	public static void renderAnchor(Section<?> section, RenderResult result) {
@@ -255,7 +255,7 @@ public class KnowWEUtils {
 	 * title matches the article and the fileName matches the filename of the attachment or the
 	 * filename matches the complete path for the attachment.
 	 *
-	 * @param title the title of the article of the attachment
+	 * @param title    the title of the article of the attachment
 	 * @param fileName the filename of the attachment
 	 * @return {@link WikiAttachment} fulfilling the specified parameters or null, if no such
 	 * attachment exists
@@ -348,7 +348,7 @@ public class KnowWEUtils {
 	 * Returns if the user has the read access rights to the specified article.
 	 *
 	 * @param article the article to check the access rights for
-	 * @param user the user context
+	 * @param user    the user context
 	 * @return true if the user has the read access rights to the article
 	 * @created 29.11.2013
 	 */
@@ -373,7 +373,7 @@ public class KnowWEUtils {
 	 * Returns if the user has the read access rights to all of the specified articles.
 	 *
 	 * @param articles the articles to check the access rights for
-	 * @param user the user context
+	 * @param user     the user context
 	 * @return true if the user has the read access rights to all of the articles
 	 * @created 29.11.2013
 	 */
@@ -390,7 +390,7 @@ public class KnowWEUtils {
 	 * section.
 	 *
 	 * @param section the section to check the access rights for
-	 * @param user the user context
+	 * @param user    the user context
 	 * @return true if the user has the read access rights to the section
 	 * @created 29.11.2013
 	 */
@@ -404,7 +404,7 @@ public class KnowWEUtils {
 	 * contain the specified sections.
 	 *
 	 * @param sections the sections to check the access rights for
-	 * @param user the user context
+	 * @param user     the user context
 	 * @return true if the user has the read access rights to all of the sections
 	 * @created 29.11.2013
 	 */
@@ -416,7 +416,7 @@ public class KnowWEUtils {
 	 * Returns if the user has the write access rights to the specified article.
 	 *
 	 * @param article the article to check the access rights for
-	 * @param user the user context
+	 * @param user    the user context
 	 * @return true if the user has the write access rights to the article
 	 * @created 29.11.2013
 	 */
@@ -429,7 +429,7 @@ public class KnowWEUtils {
 	 * Returns if the user has the write access rights to all of the specified articles.
 	 *
 	 * @param articles the articles to check the access rights for
-	 * @param user the user context
+	 * @param user     the user context
 	 * @return true if the user has the write access rights to all of the articles
 	 * @created 29.11.2013
 	 */
@@ -446,7 +446,7 @@ public class KnowWEUtils {
 	 * specified section.
 	 *
 	 * @param section the section to check the access rights for
-	 * @param user the user context
+	 * @param user    the user context
 	 * @return true if the user has the write access rights to the section
 	 * @created 29.11.2013
 	 */
@@ -460,7 +460,7 @@ public class KnowWEUtils {
 	 * contain the specified sections.
 	 *
 	 * @param sections the sections to check the access rights for
-	 * @param user the user context
+	 * @param user     the user context
 	 * @return true if the user has the write access rights to all of the sections
 	 * @created 29.11.2013
 	 */
@@ -533,7 +533,7 @@ public class KnowWEUtils {
 	 * Creates a &lt;a href="..."&gt; styled link to the specified article including the HTML-anchor
 	 * tag.
 	 *
-	 * @param title the article title to create the link for
+	 * @param title    the article title to create the link for
 	 * @param linkText the text for the link
 	 * @return the created link
 	 * @see #getURLLink(Section)
@@ -560,7 +560,7 @@ public class KnowWEUtils {
 	 * Creates a &lt;a href="..."&gt; styled link to the specified article in the specified
 	 * version.
 	 *
-	 * @param title the article title to create the link for
+	 * @param title   the article title to create the link for
 	 * @param version the article version to link to
 	 * @return the created link
 	 * @see #getURLLink(Section)
@@ -587,7 +587,7 @@ public class KnowWEUtils {
 	 * Creates a &lt;a href="..."&gt; styled link to the specified attachment of the specified
 	 * article.
 	 *
-	 * @param article the article to create the link for
+	 * @param article    the article to create the link for
 	 * @param attachment the attachment to create the link for
 	 * @return the created link
 	 */
@@ -628,7 +628,7 @@ public class KnowWEUtils {
 	 * Creates a &lt;a href="..."&gt; styled link to the diff of the specified article. Usually,
 	 * version1 is the newer version and version2 the older one.
 	 *
-	 * @param title the article title to create the link for
+	 * @param title    the article title to create the link for
 	 * @param version1 the version containing the changes
 	 * @param version2 the base version
 	 * @return the created link
@@ -665,7 +665,7 @@ public class KnowWEUtils {
 	 * Returns the String stored as a cookies with the given name from the UserContext. If no cookie
 	 * exists, null is returned.
 	 *
-	 * @param name the name of the cookie
+	 * @param name    the name of the cookie
 	 * @param context the user context
 	 * @return the stored cookie or null, if no cookie with the given name exists
 	 * @created 11.02.2013
@@ -690,8 +690,8 @@ public class KnowWEUtils {
 	 * ActionContext is needed.
 	 *
 	 * @param cookieNamePattern a pattern that matches the name for the cookie to be cleaned up
-	 * exactly
-	 * @param sectionIdGroup the capture group in the pattern that contains the section id.
+	 *                          exactly
+	 * @param sectionIdGroup    the capture group in the pattern that contains the section id.
 	 */
 	public static void cleanupSectionCookies(UserContext context, Pattern cookieNamePattern, int sectionIdGroup) {
 		if (!(context instanceof UserActionContext)) return;
@@ -718,9 +718,9 @@ public class KnowWEUtils {
 	 * given as the default value. The default value will not be set as the cookie, but returned, if
 	 * no cookie is given yet (for example with new users).
 	 *
-	 * @param name the name of the cookie
+	 * @param name         the name of the cookie
 	 * @param defaultValue the value to be returned, if the cookie could not be found
-	 * @param context the user context
+	 * @param context      the user context
 	 * @return the stored cookie or null, if no cookie with the given name exists
 	 * @created 11.02.2013
 	 */
@@ -730,15 +730,34 @@ public class KnowWEUtils {
 		return cookie;
 	}
 
+	/**
+	 * Returns the version of the article at the given date or the version saved closest before the given date. If
+	 * there
+	 * is no such version or article, -1 is returned. In JSPWiki -1 represents the latest version of an article.
+	 */
 	public static int getArticleVersionAtDate(String title, Date date) throws IOException {
 		WikiPageInfo articleVersionInfoAtDate = getArticleVersionInfoAtDate(title, date);
 		return articleVersionInfoAtDate == null ? -1 : articleVersionInfoAtDate.getVersion();
 	}
 
+	/**
+	 * Returns an info object representing the version of the article that was saved at the given date or the
+	 * version saved closest and before the given date. If there is no such version or the article does not exist,
+	 * null is returned.
+	 *
+	 * @return an info object of the article for the given date
+	 */
 	public static WikiPageInfo getArticleVersionInfoAtDate(String title, Date date) throws IOException {
 		return getObjectInfoAtDate(Environment.getInstance().getWikiConnector().getArticleHistory(title), date);
 	}
 
+	/**
+	 * Returns an info object representing the version of the attachment that was saved at the given date or the
+	 * version saved closest and before the given date. If there is no such version or the attachment does not exist,
+	 * null is returned.
+	 *
+	 * @return an info object of the attachment for the given date
+	 */
 	public static WikiAttachmentInfo getAttachmentVersionInfoAtDate(String title, Date date) throws IOException {
 		return getObjectInfoAtDate(Environment.getInstance().getWikiConnector().getAttachmentHistory(title), date);
 	}
@@ -748,9 +767,7 @@ public class KnowWEUtils {
 				// get the first that was saved before or equal to the given date
 				.filter(pageInfo -> pageInfo.getSaveDate().before(date) || pageInfo.getSaveDate().equals(date))
 				.findFirst()
-				// if non was found, get the first version (last in the list)
-				.orElseGet(() -> objectHistory.isEmpty() ? null
-						: objectHistory.get(objectHistory.size() - 1));
+				.orElseGet(() -> null);
 	}
 
 	/**
@@ -849,9 +866,9 @@ public class KnowWEUtils {
 	 * Returns all TerminologyManagers of the given {@link ArticleManager} that are from {@link
 	 * Compiler} of the given compiler class.
 	 *
-	 * @param manager the {@link ArticleManager} to get the TerminologyManagers for
+	 * @param manager       the {@link ArticleManager} to get the TerminologyManagers for
 	 * @param compilerClass the type of the {@link Compiler}s we want the {@link
-	 * TerminologyManager}s from
+	 *                      TerminologyManager}s from
 	 * @return the {@link TerminologyManager}s of the given manager
 	 * @created 15.11.2013
 	 */
