@@ -21,10 +21,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.terminology.TermCompiler;
+import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
@@ -48,6 +51,29 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 	public Sections(Iterable<Section<T>> sections) {
 		this.sections = sections;
+	}
+
+	public static <T extends Type> Sections<T> create(Iterable<Section<? extends T>> sections) {
+		//noinspection unchecked
+		return new Sections((Iterable) sections);
+	}
+
+	public static Sections<Type> definitions(TerminologyManager manager, Identifier identifier) {
+		return Sections.create(manager.getTermDefiningSections(identifier));
+	}
+
+	public static Sections<Type> definitions(TermCompiler compiler, Identifier identifier) {
+		TerminologyManager terminologyManager = compiler.getTerminologyManager();
+		return definitions(terminologyManager, identifier);
+	}
+
+	public static Sections<Type> references(TerminologyManager manager, Identifier identifier) {
+		return Sections.create(manager.getTermReferenceSections(identifier));
+	}
+
+	public static Sections<Type> references(TermCompiler compiler, Identifier identifier) {
+		TerminologyManager terminologyManager = compiler.getTerminologyManager();
+		return references(terminologyManager, identifier);
 	}
 
 	@Override

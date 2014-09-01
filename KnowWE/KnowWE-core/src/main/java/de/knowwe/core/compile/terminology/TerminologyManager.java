@@ -35,6 +35,7 @@ import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.event.EventManager;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
@@ -54,9 +55,9 @@ import de.knowwe.plugin.Plugins;
  */
 public class TerminologyManager {
 
-	private final Set<Compiler> compilers = new HashSet<Compiler>(4);
+	private final Set<Compiler> compilers = new HashSet<>(4);
 
-	private static final Set<Identifier> occupiedTerms = new HashSet<Identifier>();
+	private static final Set<Identifier> occupiedTerms = new HashSet<>();
 
 	private TermLogManager termLogManager = new TermLogManager();
 
@@ -179,7 +180,7 @@ public class TerminologyManager {
 	 * @param termIdentifier the {@link Identifier} for the defining Section you are looking for
 	 * @return the first defining Section for this term or <tt>null</tt> if the term is not defined
 	 */
-	public synchronized Section<?> getTermDefiningSection(Identifier termIdentifier) {
+	public synchronized Section<? extends Type> getTermDefiningSection(Identifier termIdentifier) {
 		TermLog refLog = termLogManager.getLog(termIdentifier);
 		if (refLog != null) {
 			return refLog.getDefiningSection();
@@ -194,8 +195,8 @@ public class TerminologyManager {
 	 * @param termIdentifier the {@link Identifier} for the defining Sections you are looking for
 	 * @return the defining Sections for this term or an empty Collection if the term is not defined
 	 */
-	public synchronized Collection<Section<?>> getTermDefiningSections(Identifier termIdentifier) {
-		Collection<Section<?>> definitions = new ArrayList<Section<?>>();
+	public synchronized Collection<Section<? extends Type>> getTermDefiningSections(Identifier termIdentifier) {
+		Collection<Section<? extends Type>> definitions = new ArrayList<>();
 		TermLog refLog = termLogManager.getLog(termIdentifier);
 		if (refLog != null) {
 			definitions = refLog.getDefinitions();
@@ -206,7 +207,7 @@ public class TerminologyManager {
 	/**
 	 * For an Identifier the redundant TermDefinition are returned.
 	 */
-	public synchronized Collection<Section<?>> getRedundantTermDefiningSections(Identifier termIdentifier) {
+	public synchronized Collection<Section<? extends Type>> getRedundantTermDefiningSections(Identifier termIdentifier) {
 		TermLog refLog = termLogManager.getLog(termIdentifier);
 		if (refLog != null) {
 			return Collections.unmodifiableSet(refLog.getRedundantDefinitions());
@@ -217,7 +218,7 @@ public class TerminologyManager {
 	/**
 	 * For an Identifier the {@link TermReference}s are returned.
 	 */
-	public synchronized Collection<Section<?>> getTermReferenceSections(Identifier termIdentifier) {
+	public synchronized Collection<Section<? extends Type>> getTermReferenceSections(Identifier termIdentifier) {
 
 		TermLog refLog = termLogManager.getLog(termIdentifier);
 
@@ -298,7 +299,7 @@ public class TerminologyManager {
 	}
 
 	private synchronized Collection<TermLog> getAllDefinedTermLogEntries(Class<?> termClass) {
-		Collection<TermLog> filteredLogEntries = new HashSet<TermLog>();
+		Collection<TermLog> filteredLogEntries = new HashSet<>();
 		for (Entry<Identifier, TermLog> managerEntry : termLogManager.entrySet()) {
 			Set<Class<?>> termClasses = managerEntry.getValue().getTermClasses();
 			if (termClasses.size() != 1) continue;

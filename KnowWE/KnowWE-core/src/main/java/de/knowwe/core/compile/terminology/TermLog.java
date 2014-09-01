@@ -18,13 +18,6 @@
  */
 package de.knowwe.core.compile.terminology;
 
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
-import de.knowwe.core.compile.Compiler;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,6 +29,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+
+import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
+import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 
 /**
  * This is an auxiliary data-structure to store the definitions and references
@@ -239,22 +240,22 @@ class TermLog {
 		}
 	}
 
-	public Section<?> getDefiningSection() {
+	public Section<? extends Type> getDefiningSection() {
 		if (this.termDefinitions.isEmpty()) return null;
 		return this.termDefinitions.first().getSection();
 	}
 
-	public Set<Section<?>> getRedundantDefinitions() {
+	public Set<Section<? extends Type>> getRedundantDefinitions() {
 		Set<Section<?>> result = getDefinitions();
 		result.remove(this.getDefiningSection());
 		return Collections.unmodifiableSet(result);
 	}
 
-	public Set<Section<?>> getDefinitions() {
+	public Set<Section<? extends Type>> getDefinitions() {
 		return Collections.unmodifiableSet(termDefinitionSections);
 	}
 
-	public Set<Section<?>> getReferences() {
+	public Set<Section<? extends Type>> getReferences() {
 		return Collections.unmodifiableSet(termReferenceSections);
 	}
 
