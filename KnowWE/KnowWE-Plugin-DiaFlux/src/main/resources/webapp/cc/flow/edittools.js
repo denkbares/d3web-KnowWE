@@ -61,6 +61,27 @@ FlowEditor.EditorToolMenu.prototype.showMenu = function() {
 
 FlowEditor.EditorToolMenu.prototype.initTools = function() {
 
+	/**
+	 * Some helper functions
+	 */
+	var getAction = function(node) {
+		var nodeModel = node.nodeModel;
+		if (!nodeModel) return null;
+		if (!nodeModel.action) return null;
+		return new Action(nodeModel.action.markup, nodeModel.action.expression);
+	};
+
+	var getInfoObject = function(node) {
+		var action = getAction(node);
+		if (!action) return null;
+		var objectName = action.getInfoObjectName();
+		if (!objectName) return null;
+		return KBInfo.lookupInfoObject(objectName);
+	};
+
+	/**
+	 * Predicates to specify when a menu item is active
+	 */
 	var oneOrMore = function(flowEditor) {
 		var flow = flowEditor.getFlowchart();
 		return flow.selection.length >= 1;
@@ -71,19 +92,20 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 	var oneComposed = function(flowEditor) {
 		var flow = flowEditor.getFlowchart();
 		if (flow.selection.length != 1) return false;
-		var nodeModel = flow.selection[0].nodeModel;
-		if (!nodeModel) return false;
-		if (!nodeModel.action) return false;
-		var action = new Action(nodeModel.action.markup, nodeModel.action.expression);
-		var objectName = action.getInfoObjectName();
-		if (!objectName) return false;
-		var infoObject = KBInfo.lookupInfoObject(objectName);
-		if (!infoObject) return false;
-		return infoObject instanceof KBInfo.Flowchart;
+		return getInfoObject(flow.selection[0]) instanceof KBInfo.Flowchart;
+	};
+	var disabled = function() {
+		return false;
 	};
 
-	var selectPath = function(flowEditor, backwards, includeRules) {
-		var flow = flowEditor.getFlowchart();
+	/**
+	 * Selecting actions
+	 */
+	var selectPath = function(flow, backwards, includeRules) {
+		if (flow instanceof FlowEditor) {
+			flow.snapshot();
+			flow = flow.getFlowchart();
+		}
 		var open = [];
 		jq$.each(flow.selection, function(index, item) {
 			if (item instanceof Node) {
@@ -119,7 +141,22 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		selectPath(flowEditor, true, false);
 	};
 
+	var selectEdges = function(flowEditor) {
+		flowEditor.snapshot();
+		var flow = flowEditor.getFlowchart();
+		var nodes = flow.getSelectedNodes();
+		flow.setSelection(
+			jq$.grep(flow.rules, function(rule) {
+				return nodes.contains(rule.sourceNode) && nodes.contains(rule.targetNode);
+			}),
+			true, false);
+	};
+
+	/**
+	 * Align actions
+	 */
 	var align = function(flowEditor, horizontal, useMinMiddleMax) {
+		flowEditor.snapshot();
 		var getPos = function(node) {
 			var pos = horizontal ? node.getLeft() : node.getTop();
 			var size = horizontal ? node.getWidth() : node.getHeight();
@@ -167,6 +204,9 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		align(flowEditor, true, "max");
 	};
 
+	/**
+	 * balance & spread actions
+	 */
 	var spread = function(flowEditor, horizontal, center) {
 		var getPos = function(node) {
 			return horizontal ? node.getCenterX() : node.getCenterY();
@@ -193,7 +233,7 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		nodes.sort(function(n1, n2) {
 			return getPos(n1) - getPos(n2);
 		});
-		var min = getPos(nodes[0]), max = getPos(nodes[nodes.length - 1]);
+		var min = getPos(nodes[0]);
 		var space = 0, previous = null;
 		jq$.each(nodes, function(index, node) {
 			if (previous) space += getDistance(previous, node);
@@ -223,7 +263,9 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		spread(flowEditor, false, true)
 	};
 
-
+	/**
+	 * Cleaning up
+	 */
 	var arrange = function(flowEditor, horizontal) {
 		var getPos = function(node) {
 			return horizontal ? node.getCenterX() : node.getCenterY();
@@ -312,14 +354,154 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 	};
 
 	var cleanup = function(flowEditor) {
+		flowEditor.snapshot();
 		arrange(flowEditor, false);
 		arrange(flowEditor, true);
 	};
 
+	/**
+	 * Refactor: inline sub-flow
+	 */
+	var inline = function(flowEditor) {
+		flowEditor.snapshot();
+		var flow = flowEditor.getFlowchart();
+		var composedNode = flowEditor.getFlowchart().selection[0];
+		var flowInfo = getInfoObject(composedNode);
+		var getExitName = function(rule) {
+			if (!rule.guard) return null;
+			var condition = rule.guard.conditionString;
+			if (!condition.startsWith("IS_ACTIVE[")) return null;
+			var matches = condition.match(new RegExp(
+					"\\(" + IdentifierUtils.IDENTIFIER_STRING + "\\)\\]$"));
+			if (!matches || matches.length == 0) return null;
+			var match = matches[matches.length - 1];
+			return IdentifierUtils.unquote(match.substring(1, match.length - 2));
+		};
+
+		// first check if we have only named, positive exits
+		var missingExit = "";
+		jq$.each(composedNode.getOutgoingRules(), function(index, rule) {
+			if (!getExitName(rule)) missingExit += "<li>" + rule.getGuard().getDisplayHTML() + "</li>";
+		});
+		if (missingExit.length > 0) {
+			jq$('<div id="dialog-confirm" title="Invalid Exit Conditions">' +
+				'<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>' +
+				'The selected composed node uses exit edge(s) that not explicit referencing a single ' +
+				'exit node, or is a negation. Before continue, please correct these edges first.</p>' +
+				'<p>The following condition(s) are invalid: <ul>' + missingExit + '</ul></p>' +
+				'</div>')
+				.appendTo(document.body)
+				.dialog({
+					resizable : false,
+					dialogClass : "no-close",
+					width : 440,
+					modal : true,
+					buttons : {
+						Close : function() {
+							jq$(this).dialog("close");
+						}
+					}
+				});
+			return;
+		}
+
+		var doIt = function(xml) {
+			// TODO: allow multiple composed nodes with the same flowchart, but multiple start nodes
+			// now we start to modify the inline flow so that is can replace the calling flow
+			// also remove all unreachable nodes (based on the called start node)
+			var inlineFlow = Flowchart.createFromXML(null, xml);
+
+			// first we replace start and exit nodes by comment nodes
+			var interfaceNodes = {};
+			jq$.each(inlineFlow.nodes, function(index, node) {
+				var model = node.getNodeModel();
+				if (model.start) {
+					interfaceNodes["start:" + model.start] = node;
+					model.comment = "Entering '" + model.start + "' of\n'" + flowInfo.getName() + "'";
+					model.start = null;
+				}
+				else if (model.exit) {
+					interfaceNodes["exit:" + model.exit] = node;
+					model.comment = "Exiting '" + model.exit + "' of\n'" + flowInfo.getName() + "'";
+					model.exit = null;
+				}
+			});
+
+			// then select start node and its follow-on-path
+			var startName = getAction(composedNode).getValueString();
+			var startNode = interfaceNodes["start:" + startName];
+			if (!startNode) {
+				throw "The requested start node has not been found in the called flowchart. Maybe this flowchart is outdated or the flowchart to be inlined has been changed during your edit, please save/reload and try again.";
+			}
+			inlineFlow.setSelection(startNode, false, false);
+			selectPathAfter(inlineFlow);
+
+			// copy the selection to an xml string and paste it to this flow
+			// with a translation that the called start node is at the same location as composed node
+			// (not knowing the size of the start node, we can only align the top/left edge)
+			var dx = composedNode.getLeft() - startNode.getLeft();
+			var dy = composedNode.getTop() - startNode.getTop();
+			var toAdd = inlineFlow.getSelectionAsXML();
+			var idMapper = flow.pasteXML(toAdd, dx, dy);
+
+			// remove the composed node
+			// #1: link its incoming edges to the called start node
+			// #2: link its outgoing edges to the exit nodes
+			jq$.each(composedNode.getIncomingRules(), function(index, rule) {
+				var pastedStart = flow.findNode(idMapper.getID(startNode.getNodeModel().fcid));
+				var newRule = new Rule(null, rule.getSourceNode(), rule.getGuard(), pastedStart);
+				newRule.routingPoints = rule.routingPoints;
+				rule.destroy();
+			});
+			jq$.each(composedNode.getOutgoingRules(), function(index, rule) {
+				var exitName = getExitName(rule);
+				var exitNode = interfaceNodes["exit:" + exitName];
+				if (!exitName || !exitNode) {
+					throw "The requested exit node '" + rule.getGuard().getDisplayHTML() +
+						"' has not been found in the called flowchart. " +
+						"Maybe this flowchart is outdated or the flowchart to be inlined " +
+						"has been changed during your edit, please save/reload and try again.";
+				}
+				var pastedExit = flow.findNode(idMapper.getID(exitNode.getNodeModel().fcid));
+				var newRule = new Rule(null, pastedExit, null, rule.getTargetNode());
+				newRule.routingPoints = rule.routingPoints;
+				rule.destroy();
+			});
+			composedNode.destroy();
+			flow.focus();
+			FlowEditor.autoResize();
+		};
+		jq$.ajax({
+			cache : false,
+			url : "action/LoadFlowchartAction",
+			data : {KWikiWeb : "default_web", FlowIdentifier : flowInfo.getID() },
+			success : function(data, textStatus, jqXHR) {
+				try {
+					doIt(jqXHR.responseXML);
+				}
+				catch (e) {
+					CCMessage.warn("Refactoring aborted", e);
+					flowEditor.undo();
+				}
+			},
+			error : function(jqXHR, textStatus, errorThrown) {
+				CCMessage.warn(
+					'AJAX error while requesting flowchart to inline.',
+					'Cannot perform flowchart inline. Maybe this flowchart is outdated or the flowchart to be inlined has been changed during your edit, please save/reload and try again.')
+			}
+		});
+	};
+
+	/**
+	 * Finally:
+	 * define the edit tools and tool sub-menus
+	 */
 	this.editTools = [
 		new FlowEditor.EditToolGroup("Select", [
-			new FlowEditor.EditTool("Path after node", selectPathAfter, oneOrMore, 'path-after-node'),
-			new FlowEditor.EditTool("Path to node", selectPathBefore, oneOrMore, 'path-to-node')
+			new FlowEditor.EditTool("Path Beyond Node", selectPathAfter, oneOrMore, 'path-after-node'),
+			new FlowEditor.EditTool("Path To Node", selectPathBefore, oneOrMore, 'path-to-node'),
+			FlowEditor.EditTool.SEPARATOR,
+			new FlowEditor.EditTool("Edges Between", selectEdges, twoOrMoreNodes, 'edges-between')
 		]),
 		new FlowEditor.EditToolGroup("Align", [
 			new FlowEditor.EditTool("Left", alignLeft, twoOrMoreNodes, 'align-left'),
@@ -330,16 +512,18 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 			new FlowEditor.EditTool("Middle", alignMiddle, twoOrMoreNodes, 'align-middle'),
 			new FlowEditor.EditTool("Bottom", alignBottom, twoOrMoreNodes, 'align-bottom'),
 			FlowEditor.EditTool.SEPARATOR,
-			new FlowEditor.EditTool("Balance horizontal", spreadDistanceX, twoOrMoreNodes, 'spread-distance-x'),
-			new FlowEditor.EditTool("Spread horizontal", spreadMiddleX, twoOrMoreNodes, 'spread-middle-x'),
+			new FlowEditor.EditTool("Balance Horizontal", spreadDistanceX, twoOrMoreNodes, 'spread-distance-x'),
+			new FlowEditor.EditTool("Spread Horizontal", spreadMiddleX, twoOrMoreNodes, 'spread-middle-x'),
 			FlowEditor.EditTool.SEPARATOR,
-			new FlowEditor.EditTool("Balance vertical", spreadDistanceY, twoOrMoreNodes, 'spread-distance-y'),
-			new FlowEditor.EditTool("Spread vertical", spreadMiddleY, twoOrMoreNodes, 'spread-middle-y')
+			new FlowEditor.EditTool("Balance Vertical", spreadDistanceY, twoOrMoreNodes, 'spread-distance-y'),
+			new FlowEditor.EditTool("Spread Vertical", spreadMiddleY, twoOrMoreNodes, 'spread-middle-y')
 		]),
 		new FlowEditor.EditTool("Clean Up", cleanup, null, 'clean-up'),
 		FlowEditor.EditTool.SEPARATOR,
-		new FlowEditor.EditTool("Unfold Subflow", null, oneComposed, 'unfold-subflow'),
-		new FlowEditor.EditTool("Create Subflow", null, oneComposed, 'extract-subflow')
+		new FlowEditor.EditToolGroup("Refactor", [
+			new FlowEditor.EditTool("Inline Subflow", inline, oneComposed, 'unfold-subflow'),
+			new FlowEditor.EditTool("Extract New Subflow", null, disabled, 'extract-subflow')
+		])
 	];
 };
 

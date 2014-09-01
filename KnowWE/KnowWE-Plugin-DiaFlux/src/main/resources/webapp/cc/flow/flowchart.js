@@ -145,11 +145,20 @@ Flowchart.prototype.getLeft = function() {
  */
 Flowchart.prototype.getTop = function() {
 	return $(this.id).cumulativeOffset().top;
-}
+};
 
 Flowchart.prototype.addNode = function(node) {
 	this.nodes.push(node);
-}
+
+	// workaround: immediately increase flow size to avoid layout bug of node dom
+	if (this.dom) {
+		var div = this.dom.select('.Flowchart')[0];
+		this.width = Math.max(this.width, node.getLeft() + 500);
+		this.height = Math.max(this.height, node.getTop() + 500);
+		div.style.width = this.width + 'px';
+		div.style.height = this.height + 'px';
+	}
+};
 
 Flowchart.prototype.removeNode = function(node) {
 	this.nodes.remove(node);
@@ -345,28 +354,39 @@ Flowchart.prototype.addFromXML = function(xmlDom, dx, dy) {
 		return id;
 	}.bind(pasteOptions);
 
-	// nodes
-	var nodeDoms = xmlDom.getElementsByTagName('node');
-	for (var i = 0; i < nodeDoms.length; i++) {
-		Node.createFromXML(this, nodeDoms[i], pasteOptions);
-	}
+	try {
+		if (typeof FlowEditor !== 'undefined') FlowEditor.avoidAutoResize = true;
 
-	// rules
-	var ruleDoms = xmlDom.getElementsByTagName('edge');
-	for (var i = 0; i < ruleDoms.length; i++) {
-		Rule.createFromXML(this, ruleDoms[i], pasteOptions);
-	}
+		// nodes
+		var nodeDoms = xmlDom.getElementsByTagName('node');
+		for (var i = 0; i < nodeDoms.length; i++) {
+			Node.createFromXML(this, nodeDoms[i], pasteOptions);
+		}
 
-	// select paste objects
-	var sel = [];
-	for (var i = 0; i < pasteOptions.allIDs.length; i++) {
-		var item = this.findObject(pasteOptions.allIDs[i]);
-		if (item.isVisible()) {
-			sel.push(item);
+		// rules
+		var ruleDoms = xmlDom.getElementsByTagName('edge');
+		for (var i = 0; i < ruleDoms.length; i++) {
+			Rule.createFromXML(this, ruleDoms[i], pasteOptions);
+		}
+
+		// select paste objects
+		var sel = [];
+		for (var i = 0; i < pasteOptions.allIDs.length; i++) {
+			var item = this.findObject(pasteOptions.allIDs[i]);
+			if (item.isVisible()) {
+				sel.push(item);
+			}
 		}
 	}
-	this.setSelection(sel);
-}
+	finally {
+		if (typeof FlowEditor !== 'undefined') FlowEditor.avoidAutoResize = false;
+	}
+
+	this.setSelection(jq$.grep(sel, function(item) {
+		return item instanceof Node
+	}), false, false);
+	return pasteOptions;
+};
 
 Flowchart.createFromXML = function(parent, xmlDom) {
 	if (xmlDom.nodeName.toLowerCase() != 'flowchart') {
@@ -396,10 +416,9 @@ Flowchart.createFromXML = function(parent, xmlDom) {
 	}
 
 	flowchart.addFromXML(xmlDom, 0, 0);
-
-	flowchart.setVisible(true);
+	if (parent) flowchart.setVisible(true);
 	return flowchart;
-}
+};
 
 Flowchart.prototype.getUsedArea = function() {
 	var maxX = 0;

@@ -79,7 +79,6 @@ Node.wrapToolMenu = function(flowname, nodeID, childToWrap) {
 	)
 };
 
-
 Node.prototype.getDOM = function() {
 	return this.dom;
 };
@@ -173,9 +172,7 @@ Node.prototype.setVisible = function(visible) {
 		this.dom = this.render();
 		this.flowchart.getContentPane().appendChild(this.dom);
 		this.updateFromView();
-
 		this.createDraggable();
-
 	}
 	else if (this.isVisible() && !visible) {
 		// ==> hide Node

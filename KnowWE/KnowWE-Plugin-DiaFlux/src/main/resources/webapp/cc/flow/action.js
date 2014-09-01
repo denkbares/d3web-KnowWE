@@ -95,7 +95,7 @@ Action.prototype.isDecision = function() {
 Action.prototype.isFlowCall = function() {
 	return this.markup == 'KnOffice' && this.expression.startsWith('CALL[');
 
-}
+};
 
 Action._isFormulaString = function(string){
 	if (string.startsWith('(') && string.endsWith(')')) {

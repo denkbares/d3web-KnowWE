@@ -65,6 +65,9 @@
 .EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-path-after-node {
 	background-image: url(../image/toolbar/path_after_node.png);
 }
+.EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-edges-between {
+	background-image: url(../image/toolbar/edges_between.png);
+}
 .EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-spread-middle-x {
 	background-image: url(../image/toolbar/spread_middle-x.png);
 }
@@ -79,4 +82,40 @@
 }
 .EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-clean-up {
 	background-image: url(../image/toolbar/clean-up.png);
+}
+
+
+div.ui-widget-overlay.ui-front {
+	z-index: 10000;
+}
+div.ui-dialog.ui-front {
+	z-index: 10000;
+}
+
+div.ui-dialog-content.ui-widget-content > p:first-child {
+	padding-left: 0px;
+}
+div.ui-dialog-content.ui-widget-content > p {
+	font-size: 12px;
+	padding-left: 23px;
+}
+
+div.ui-dialog-content.ui-widget-content li {
+	font-size: 12px;
+}
+div.ui-dialog-buttonpane.ui-widget-content > div.ui-dialog-buttonset {
+	font-size: 12px;
+	text-align: right;
+}
+
+div.ui-dialog-titlebar.ui-widget-header {
+	padding: 2px 22px;
+	font-size: 15px;
+}
+
+div.ui-dialog.no-close button.ui-dialog-titlebar-close {
+	display: none;
+}
+span.ui-icon.ui-icon-alert {
+	background-position: 0 -144px;
 }

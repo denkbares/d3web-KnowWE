@@ -23,9 +23,16 @@ package de.knowwe.diaflux;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
+import de.d3web.strings.Identifier;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -44,20 +51,33 @@ public class LoadFlowchartAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 
 		String nodeID = context.getParameter(Attributes.SECTION_ID);
-		Section<FlowchartType> section = Sections.get(nodeID, FlowchartType.class);
+		Section<FlowchartType> section = null;
+
+		if (nodeID == null) {
+			// also allow to specify the flowchart by name, if no section id is specified
+			String web = context.getParameter(Attributes.WEB);
+			Identifier id = Identifier.fromExternalForm(context.getParameter("FlowIdentifier"));
+			ArticleManager articleManager = Environment.getInstance().getArticleManager(web);
+			Article master = articleManager.getArticle(id.getPathElementAt(0));
+			D3webCompiler compiler = Compilers.getCompiler(master, D3webCompiler.class);
+			section = Sections.definitions(compiler, id.rest(1))
+					.ancestor(FlowchartType.class)
+					.first();
+		}
+		else {
+			// otherwise fetch by section id
+			section = Sections.get(nodeID, FlowchartType.class);
+		}
 
 		if (section != null) {
 			writeSource(context, section.getText());
 		}
-		// TODO error handling
-
+		else {
+			context.sendError(HttpServletResponse.SC_NOT_FOUND,
+					"The requested flowchart is not available on this server.");
+		}
 	}
 
-	/**
-	 * @param child
-	 * @return
-	 * @created 25.10.2012
-	 */
 	public static <T extends AbstractXMLType> String getFlowchartId(Section<T> child) {
 		return AbstractXMLType.getAttributes(child).get("fcid");
 	}
@@ -83,12 +103,6 @@ public class LoadFlowchartAction extends AbstractAction {
 		return rootSection;
 	}
 
-	/**
-	 * @param context
-	 * @param section
-	 * @throws IOException
-	 * @created 23.10.2012
-	 */
 	private static void writeSource(UserActionContext context, String flowSource) throws IOException {
 		String source = FlowchartUtils.removePreview(flowSource);
 

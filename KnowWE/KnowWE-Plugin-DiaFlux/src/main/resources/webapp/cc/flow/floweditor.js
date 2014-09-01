@@ -100,18 +100,20 @@ function FlowEditor(articleIDs) {
 	var undo = function() {
 		if (typeof event != "undefined") event.stop();
 		if (EditorInstance.currentVersion > 0) {
-			EditorInstance.goToVersion(--EditorInstance.currentVersion);
+			EditorInstance.goToVersion(--EditorInstance.currentVersion, false);
 		}
 	};
 	var redo = function() {
 		if (typeof event != "undefined") event.stop();
 		if (EditorInstance.currentVersion < EditorInstance.maxVersion) {
-			EditorInstance.goToVersion(++EditorInstance.currentVersion);
+			EditorInstance.goToVersion(++EditorInstance.currentVersion, true);
 		}
 	};
 
 	$('undo').observe('click', undo);
 	$('redo').observe('click', redo);
+	this.undo = undo;
+	this.redo = redo;
 
 	Element.observe(window, 'keydown', function(event) {
 		// s
@@ -139,14 +141,14 @@ function FlowEditor(articleIDs) {
 	});
 
 	window.onbeforeunload = function() {
-		if (EditorInstance.theFlowchartVersions[0] !=
-			EditorInstance.theFlowchartVersions[EditorInstance.currentVersion]) {
+		if (EditorInstance.theFlowchartVersions[0].xml !=
+			EditorInstance.theFlowchartVersions[EditorInstance.currentVersion].xml) {
 			return "There are unsaved changes.";
 		}
 	};
 }
 
-FlowEditor.prototype.getFlowchart = function () {
+FlowEditor.prototype.getFlowchart = function() {
 	return this.theFlowchart;
 };
 
@@ -194,12 +196,28 @@ FlowEditor.prototype.showEditor = function(xmlText) {
 };
 
 FlowEditor.prototype.snapshot = function() {
-	var xml = this.theFlowchart.toXML();
-	if (this.theFlowchartVersions[this.currentVersion] === xml) return;
+	var snap = {
+		xml : this.theFlowchart.toXML(),
+		selected : jq$.map(this.getFlowchart().selection, function(item) {
+			return (item instanceof Node) ? item.getNodeModel().fcid : item.fcid;
+		}),
+		scroll : this.getFlowchart().getScroll(),
+		area : this.getFlowchart().getUsedArea()
+	};
+
+	var latestSnap = this.theFlowchartVersions[this.currentVersion];
+	if (latestSnap && latestSnap.xml === snap.xml) {
+		// update selection and scroll position always to be up-to-date
+		latestSnap.selected = snap.selected;
+		latestSnap.scroll = snap.scroll;
+		latestSnap.area = snap.area;
+		return;
+	}
 	if (this.currentVersion === this.theFlowchartVersions.length - 1) {
-		this.theFlowchartVersions.push(xml);
-	} else {
-		this.theFlowchartVersions[this.currentVersion + 1] = xml;
+		this.theFlowchartVersions.push(snap);
+	}
+	else {
+		this.theFlowchartVersions[this.currentVersion + 1] = snap;
 	}
 	this.currentVersion++;
 	this.maxVersion = this.currentVersion;
@@ -212,7 +230,16 @@ FlowEditor.prototype.goToVersion = function(version) {
 	jq$('#' + this.theFlowchart.id).remove();
 	Draggables.clear();
 	Droppables.clear();
-	this.showEditor(this.theFlowchartVersions[version]);
+	var snap = this.theFlowchartVersions[version];
+	this.showEditor(snap.xml);
+	var flow = this.getFlowchart();
+
+	// restore scroll position and selection
+	flow.setScroll(snap.scroll.left, snap.scroll.top);
+	var sel = jq$.map(snap.selected, function(id) {
+		return flow.findNode(id) || flow.findRule(id);
+	});
+	flow.setSelection(sel, false, false);
 };
 
 FlowEditor.checkFocus = function() {
@@ -601,6 +628,12 @@ Flowchart.prototype.handleKeyEvent = function(event) {
 };
 
 Flowchart.prototype.copySelectionToClipboard = function() {
+	var result = this.getSelectionAsXML();
+	CCClipboard.toClipboard(result);
+	this.focus();
+};
+
+Flowchart.prototype.getSelectionAsXML = function() {
 	var sel = this.selection.clone();
 	// add all interconnecting rules to clipboard as well
 	for (var i = 0; i < this.rules.length; i++) {
@@ -614,19 +647,21 @@ Flowchart.prototype.copySelectionToClipboard = function() {
 	for (var i = 0; i < sel.length; i++) {
 		result += sel[i].toXML();
 	}
-	CCClipboard.toClipboard(result);
-	this.focus();
+	return result;
 };
 
 Flowchart.prototype.pasteFromClipboard = function() {
-
 	// BUGFIX: when clipboard is empty CCClipboard is null
 	//         therefore this has to be checked to avoid NPE
-	if (CCClipboard.fromClipboard() == null)
-		return;
+	if (CCClipboard.fromClipboard() == null) return;
+	this.pasteXML(CCClipboard.fromClipboard());
+};
 
-	var xmlDom = CCClipboard.fromClipboard().parseXML();
-	this.addFromXML(xmlDom, 20, 20);
+Flowchart.prototype.pasteXML = function(xmlString, dx, dy) {
+	if (typeof dx === 'undefined') dx = 20;
+	if (typeof dy === 'undefined') dy = 20;
+	var xmlDom = xmlString.parseXML();
+	return this.addFromXML(xmlDom, dx, dy);
 };
 
 Flowchart.prototype.cut = function() {
