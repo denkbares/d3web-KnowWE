@@ -1,6 +1,7 @@
 body {
 	background-color: #eee;
 	overflow: hidden;
+	font-size: 12px;
 }
 
 #leftMenu {

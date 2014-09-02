@@ -1,7 +1,6 @@
 .EditorToolMenu {
-	z-index: 10000;
+	z-index: 9998;
 }
-
 .EditorToolMenu .closearea {
 	height: 40px;
 	width: 40px;
@@ -9,31 +8,27 @@
 .EditorToolMenu .menuarea {
 	display: inline-block;
 }
-.EditorToolMenu .menuarea .ui-menu li.ui-menu-item {
-	font-size: 0.8em;
+.EditorToolMenu .ui-menu .ui-state-disabled {
 	margin: 0;
 }
 .EditorToolMenu .menuarea .ui-menu li.ui-menu-item a {
 	padding-left: 20px;
 	padding-right: 20px;
-	position: relative;
+	white-space: nowrap;
 }
 .EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon {
 	display: inline-block;
 	position: absolute;
-	top: 2px;
+	top: 4px;
 	left: 2px;
 }
 
-.EditorToolMenu .menuarea > ul.ui-menu > li.ui-menu-item > a > span.ui-icon {
-	top: 5px;
+.EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-menu-icon.ui-icon.ui-icon-carat-1-e {
+	right: 0;
+	top: 3px;
+	left: auto;
 }
 
-.EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-menu-icon.ui-icon.ui-icon-carat-1-e {
-	right: 0px;
-	left: auto;
-	background-position: -32px 0px;
-}
 
 .EditorToolMenu .menuarea .ui-menu li.ui-menu-item a span.ui-icon-align-left {
 	background-image: url(../image/toolbar/align_left.png);
@@ -84,38 +79,12 @@
 	background-image: url(../image/toolbar/clean-up.png);
 }
 
-
 div.ui-widget-overlay.ui-front {
-	z-index: 10000;
+	z-index: 9999;
 }
 div.ui-dialog.ui-front {
-	z-index: 10000;
+	z-index: 9999;
 }
-
-div.ui-dialog-content.ui-widget-content > p:first-child {
-	padding-left: 0px;
-}
-div.ui-dialog-content.ui-widget-content > p {
-	font-size: 12px;
-	padding-left: 23px;
-}
-
-div.ui-dialog-content.ui-widget-content li {
-	font-size: 12px;
-}
-div.ui-dialog-buttonpane.ui-widget-content > div.ui-dialog-buttonset {
-	font-size: 12px;
-	text-align: right;
-}
-
-div.ui-dialog-titlebar.ui-widget-header {
-	padding: 2px 22px;
-	font-size: 15px;
-}
-
-div.ui-dialog.no-close button.ui-dialog-titlebar-close {
+.no-close .ui-dialog-titlebar-close {
 	display: none;
-}
-span.ui-icon.ui-icon-alert {
-	background-position: 0 -144px;
 }

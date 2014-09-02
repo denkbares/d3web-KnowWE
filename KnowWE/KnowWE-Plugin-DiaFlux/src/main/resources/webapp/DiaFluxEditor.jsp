@@ -116,7 +116,8 @@
 	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-autosize.min.js'></script>
 	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-treeTable.js'></script>
 	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-tooltipster.js'></script>
-	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-ui-1.10.4.custom.min.js'></script>
+	<script type='text/javascript'
+			src='KnowWEExtension/scripts/jquery-ui-1.10.4.custom.min.js'></script>
 	<script type='text/javascript'
 			src='KnowWEExtension/scripts/jquery-plugin-collection.js'></script>
 	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-compatibility.js'></script>
@@ -162,17 +163,18 @@
 		}
 	%>
 
-	<link rel="stylesheet" type="text/css" href="cc/kbinfo/dropdownlist.css"></link>
-	<link rel="stylesheet" type="text/css" href="cc/kbinfo/objectselect.css"></link>
-	<link rel="stylesheet" type="text/css" href="cc/kbinfo/objecttree.css"></link>
-	<link rel="stylesheet" type="text/css" href="cc/flow/floweditor.css"></link>
-	<link rel="stylesheet" type="text/css" href="cc/flow/flowchart.css"></link>
-	<link rel="stylesheet" type="text/css" href="cc/flow/nodeeditor.css"></link>
-	<link rel="stylesheet" type="text/css" href="cc/flow/node.css"></link>
-	<link rel="stylesheet" type="text/css" href="cc/flow/rule.css"></link>
-	<link rel="stylesheet" type="text/css" href="cc/flow/guard.css"></link>
-	<link rel="stylesheet" type="text/css" href="cc/flow/contextmenu.css"></link>
-	<link rel="stylesheet" type="text/css" href="cc/flow/edittools.css"></link>
+	<link rel="stylesheet" type="text/css" href="KnowWEExtension/css/jquery-ui.css"/>
+	<link rel="stylesheet" type="text/css" href="cc/kbinfo/dropdownlist.css"/>
+	<link rel="stylesheet" type="text/css" href="cc/kbinfo/objectselect.css"/>
+	<link rel="stylesheet" type="text/css" href="cc/kbinfo/objecttree.css"/>
+	<link rel="stylesheet" type="text/css" href="cc/flow/floweditor.css"/>
+	<link rel="stylesheet" type="text/css" href="cc/flow/flowchart.css"/>
+	<link rel="stylesheet" type="text/css" href="cc/flow/nodeeditor.css"/>
+	<link rel="stylesheet" type="text/css" href="cc/flow/node.css"/>
+	<link rel="stylesheet" type="text/css" href="cc/flow/rule.css">
+	<link rel="stylesheet" type="text/css" href="cc/flow/guard.css"/>
+	<link rel="stylesheet" type="text/css" href="cc/flow/contextmenu.css"/>
+	<link rel="stylesheet" type="text/css" href="cc/flow/edittools.css"/>
 	<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/jquery-treeTable.css'/>
 	<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/jquery-autocomplete.css'/>
 	<link rel='stylesheet' type='text/css'
