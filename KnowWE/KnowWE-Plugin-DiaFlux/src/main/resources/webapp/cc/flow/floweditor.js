@@ -255,6 +255,18 @@ FlowEditor.checkFocus = function() {
 	flow.focus();
 };
 
+FlowEditor.withDelayedResize = function(fun) {
+	var oldFlag = FlowEditor.avoidAutoResize;
+	try {
+		FlowEditor.avoidAutoResize = true;
+		fun();
+	}
+	finally {
+		FlowEditor.avoidAutoResize = oldFlag;
+		FlowEditor.autoResize();
+	}
+};
+
 FlowEditor.autoResize = function() {
 	if (!EditorInstance) return;
 	var flow = EditorInstance.getFlowchart();

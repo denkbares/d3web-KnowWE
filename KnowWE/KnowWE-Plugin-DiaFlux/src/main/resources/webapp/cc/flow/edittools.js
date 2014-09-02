@@ -79,6 +79,33 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		return KBInfo.lookupInfoObject(objectName);
 	};
 
+	var median = function(array, mapper) {
+		var values = jq$.map(array, mapper);
+		values.sort();
+		return values[Math.floor(values.length / 2)];
+	};
+
+	var summarize = function(array, mapper) {
+		var total = 0;
+		jq$.each(array, function(index, item) {
+			total += mapper(item);
+		});
+		return total;
+	};
+
+	var average = function(array, mapper) {
+		return summarize(array, mapper) / array.length;
+	};
+
+	var maximize = function(array, mapper) {
+		var max = 0;
+		jq$.each(array, function(index, item) {
+			max = Math.max(max, mapper(item));
+		});
+		return max;
+	};
+
+
 	/**
 	 * Predicates to specify when a menu item is active
 	 */
@@ -175,12 +202,9 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 			}
 		};
 		var nodes = flowEditor.getFlowchart().getSelectedNodes();
-		var total = 0;
+		var medPos = median(nodes, getPos);
 		jq$.each(nodes, function(index, node) {
-			total += getPos(node);
-		});
-		jq$.each(nodes, function(index, node) {
-			setPos(node, total / nodes.length);
+			setPos(node, medPos);
 		});
 	};
 
@@ -324,7 +348,7 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		if (nodes.length == 0) {
 			// if no nodes selected, update all nodes (make a copy of the list)
 			nodes = jq$.map(flowEditor.getFlowchart().nodes, function(node) {
-				return node
+				return node;
 			});
 		}
 		nodes.sort(function(n1, n2) {
@@ -337,19 +361,15 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		// and spread the positions if required
 		var minPos = Number.MIN_VALUE;
 		jq$.each(groups, function(index, group) {
-			var pos = 0, size = 0;
-			jq$.each(group, function(index, node) {
-				pos += getPos(node);
-				size = Math.max(size, getSize(node));
-			});
-			pos = pos / group.length; // average pos
+			var size = maximize(group, getSize);
+			var medPos = median(group, getPos);
 			// make sure that we not intersect the previous line
-			if (pos < minPos + size / 2) pos = minPos + size / 2;
+			medPos = Math.max(medPos, minPos + size / 2);
 			// align the nodes and update the minPos for the next group, including some spacing
 			jq$.each(group, function(index, node) {
-				setPos(node, pos);
+				setPos(node, medPos);
 			});
-			minPos = pos + size / 2 + (horizontal ? 40 : 20);
+			minPos = medPos + size / 2 + (horizontal ? 40 : 20);
 		});
 	};
 
@@ -357,6 +377,146 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		flowEditor.snapshot();
 		arrange(flowEditor, false);
 		arrange(flowEditor, true);
+	};
+
+
+	/**
+	 * Layout:
+	 * Find dangling nodes (end nodes or compact subtrees) that can be moved closed to their one
+	 * or multiple incoming edge(s).
+	 */
+	var undangle = function(flowEditor) {
+		flowEditor.snapshot();
+		var countAnchors = function(node, direction, edgeToExclude) {
+			var count = 0;
+			jq$.each(node.getOutgoingRules(), function(index, edge) {
+				if (edge == edgeToExclude) return;
+				if (edge.getSourceAnchor().type == direction) count++;
+			});
+			jq$.each(node.getIncomingRules(), function(index, edge) {
+				if (edge == edgeToExclude) return;
+				if (edge.getTargetAnchor().type == direction) count++;
+			});
+			return count;
+		};
+		var createDeltas = function(nodeSet, gapX, gapY, diagonal) {
+			// get all edges that comes on or out
+			var edgeSet = [];
+			jq$.each(nodeSet, function(index, node) {
+				edgeSet = edgeSet.concat(node.getOutgoingRules(), node.getIncomingRules());
+			});
+			// for each make the edge go in any of the four direct directions that are not already occupied
+			var deltas = [];
+			edgeSet = jq$.each(edgeSet, function(index, edge) {
+					// make n1 inside and n2 outside the node set
+					var n1 = edge.getSourceNode(), n2 = edge.getTargetNode();
+					if (nodeSet.contains(n2)) {
+						if (nodeSet.contains(n1)) return;
+						var temp = n1;
+						n1 = n2;
+						n2 = temp;
+					}
+					// move n1 to be at n2 position
+					var addDelta = function(anchor1, anchor2, dx, dy) {
+						var allowed = diagonal ? 1 : 0;
+						if (countAnchors(n1, anchor1, edge) > allowed) return;
+						if (countAnchors(n2, anchor2, edge) > allowed) return;
+						deltas.push({dx : dx, dy : dy, edge : edge});
+					};
+					var dx = n2.getCenterX() - n1.getCenterX();
+					var dy = n2.getCenterY() - n1.getCenterY();
+					var ddx = (n1.getWidth() + n2.getWidth()) / 2;
+					var ddy = (n1.getHeight() + n2.getHeight()) / 2;
+					if (diagonal) {
+						addDelta('left', 'right', dx + ddx + gapX, dy - ddy * 0.75);
+						addDelta('right', 'left', dx - ddx - gapX, dy - ddy * 0.75);
+						addDelta('left', 'right', dx + ddx + gapX, dy + ddy * 0.75);
+						addDelta('right', 'left', dx - ddx - gapX, dy + ddy * 0.75);
+						addDelta('top', 'bottom', dx - ddx * 0.75, dy + ddy + gapY);
+						addDelta('bottom', 'top', dx - ddx * 0.75, dy - ddy - gapY);
+						addDelta('top', 'bottom', dx + ddx * 0.75, dy + ddy + gapY);
+						addDelta('bottom', 'top', dx + ddx * 0.75, dy - ddy - gapY);
+					}
+					else {
+						addDelta('left', 'right', dx + ddx + gapX, dy);
+						addDelta('right', 'left', dx - ddx - gapX, dy);
+						addDelta('top', 'bottom', dx, dy + ddy + gapY);
+						addDelta('bottom', 'top', dx, dy - ddy - gapY);
+					}
+					// todo: for nodes with multiple edges, also add intermediate positions
+					deltas.sort(function(a, b) {
+						return Math.sqrt(a.dx * a.dx + a.dy * a.dy) - Math.sqrt(b.dx * b.dx + b.dy * b.dy);
+					});
+				}
+			)
+			;
+			return deltas;
+		};
+		var isFree = function(nodes, dx, dy) {
+			var intersect = false;
+			jq$.each(nodes, function(index, n1) {
+				if (intersect) return;
+				jq$.each(flow.nodes, function(index, n2) {
+					if (intersect) return;
+					if (nodes.contains(n2)) return;
+					var x1 = n1.getLeft() + dx - 10, y1 = n1.getTop() + dy - 10;
+					var x2 = x1 + n1.width + 20, y2 = y1 + n1.height + 20;
+					if (n2.intersects(x1, y1, x2, y2))
+						intersect = true;
+				});
+			});
+			return !intersect;
+		};
+		var moveNodes = function(nodeSet, gapX, gapY, diagonal) {
+			var deltas = createDeltas(nodeSet, gapX, gapY, diagonal);
+			var hasMoved = false;
+			jq$.each(deltas, function(index, delta) {
+				if (hasMoved) return;
+				if (isFree(nodeSet, delta.dx, delta.dy)) {
+					hasMoved = true;
+					if (Math.abs(delta.dx) <= 1 && Math.abs(delta.dy) <= 1) return;
+					jq$.each(nodeSet, function(index, node) {
+						delta.edge.routingPoints = [];
+						node.moveBy(delta.dx, delta.dy);
+					});
+				}
+			});
+			return hasMoved;
+		};
+		// check deltas and move group to one that does not interfere with existing ones
+		// also minimize the distance between
+		var flow = flowEditor.getFlowchart();
+		var selectedNodes = flow.getSelectedNodes();
+		if (selectedNodes.length == 0) selectedNodes = flow.nodes;
+		var groups = [];
+		jq$.each(selectedNodes, function(index, node) {
+			if (node.getOutgoingRules().length + node.getIncomingRules().length != 1) return;
+			groups.push([node]);
+		});
+
+		FlowEditor.withDelayedResize(function() {
+			var anyGroupMoved = true;
+			var allowDiagonal = false;
+			while (anyGroupMoved && groups.length > 0) {
+				anyGroupMoved = false;
+				var openGroups = [];
+				jq$.each(groups, function(index, nodeSet) {
+					// first, only optimize single nodes
+					var moved = moveNodes(nodeSet, 80, 40, false);
+					if (!moved) moved = moveNodes(nodeSet, 50, 20, false);
+					if (!moved && allowDiagonal) moved = moveNodes(nodeSet, 80, 40, true);
+					if (!moved && allowDiagonal) moved = moveNodes(nodeSet, 50, 20, true);
+					if (!moved) openGroups.push(nodeSet);
+					anyGroupMoved |= moved;
+				});
+				groups = openGroups;
+				// if have have not allowed diagonal layout yet, try again, but allow
+				if (!anyGroupMoved && !allowDiagonal) {
+					allowDiagonal = true;
+					anyGroupMoved = true;
+				}
+			}
+		});
 	};
 
 	/**
@@ -519,13 +679,15 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 			new FlowEditor.EditTool("Spread Vertical", spreadMiddleY, twoOrMoreNodes, 'spread-middle-y')
 		]),
 		new FlowEditor.EditTool("Clean Up", cleanup, null, 'clean-up'),
+		new FlowEditor.EditTool("Pack Layout", undangle, null),
 		FlowEditor.EditTool.SEPARATOR,
 		new FlowEditor.EditToolGroup("Refactor", [
 			new FlowEditor.EditTool("Inline Subflow", inline, oneComposed, 'unfold-subflow'),
 			new FlowEditor.EditTool("Extract New Subflow", null, disabled, 'extract-subflow')
 		])
 	];
-};
+}
+;
 
 
 /**
