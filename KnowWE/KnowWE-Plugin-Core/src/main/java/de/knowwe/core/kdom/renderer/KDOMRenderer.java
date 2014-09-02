@@ -24,7 +24,6 @@ import java.util.Map;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Messages;
@@ -52,7 +51,7 @@ public class KDOMRenderer extends AbstractHTMLTagHandler {
 	}
 
 	public static void renderHTML(Article article, UserContext user, RenderResult result) {
-		Section<RootType> section = article.getRootSection();
+		Section<?> section = article.getRootSection();
 		renderHTML(section, user, result);
 	}
 

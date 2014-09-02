@@ -126,8 +126,8 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		return type;
 	}
 
-	public static <T extends Type> Section<T> createSection(String text, T o, Section<? extends Type> father) {
-		return new Section<>(text, o, father);
+	public static <T extends Type> Section<T> createSection(String text, T o, Section<? extends Type> parent) {
+		return new Section<>(text, o, parent);
 	}
 
 	/**

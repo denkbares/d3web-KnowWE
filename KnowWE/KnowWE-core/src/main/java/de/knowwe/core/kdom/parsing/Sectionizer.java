@@ -60,8 +60,8 @@ public class Sectionizer implements Parser {
 	}
 
 	@Override
-	public Section<?> parse(String text, Section<? extends Type> father) {
-		Section<?> section = Section.createSection(text, type, father);
+	public Section<?> parse(String text, Section<? extends Type> parent) {
+		Section<?> section = Section.createSection(text, type, parent);
 
 		// fetches the allowed children types of the local type
 		ArrayList<Type> types = new ArrayList<Type>();

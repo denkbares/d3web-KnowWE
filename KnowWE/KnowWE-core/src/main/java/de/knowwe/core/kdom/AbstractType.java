@@ -81,7 +81,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * The sectionFinder of this type, used to serve the getSectionFinder-method
 	 * of the Type interface
 	 * 
-	 * @see Type#getSectionFinder()
+	 * @see #getSectionFinder()
 	 */
 	private SectionFinder sectionFinder;
 

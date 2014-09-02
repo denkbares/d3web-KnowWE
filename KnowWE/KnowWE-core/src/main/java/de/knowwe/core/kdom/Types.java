@@ -3,6 +3,7 @@ package de.knowwe.core.kdom;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,7 +17,7 @@ public class Types {
 	 * Returns the last element of the type path that matches the specified class. If there is no
 	 * such type in the specified path, null is returned.
 	 *
-	 * @param path the path to be searched
+	 * @param path      the path to be searched
 	 * @param typeClass the class to be searched
 	 * @return the matched type
 	 * @created 28.10.2013
@@ -35,14 +36,13 @@ public class Types {
 	 * Returns the first element of the type path that matches the specified class. If there is no
 	 * such type in the specified path, null is returned.
 	 *
-	 * @param path the path to be searched
+	 * @param path      the path to be searched
 	 * @param typeClass the class to be searched
 	 * @return the matched type
 	 * @created 28.10.2013
 	 */
 	public static <T> T getFirstOfType(Type[] path, Class<T> typeClass) {
-		for (int i = 0; i < path.length; i++) {
-			Type type = path[i];
+		for (Type type : path) {
 			if (typeClass.isInstance(type)) {
 				return typeClass.cast(type);
 			}
@@ -65,8 +65,8 @@ public class Types {
 	/**
 	 * Injects a given renderer to all successors of the specified type in the type hierarchy.
 	 *
-	 * @param root the root of the hierarchy
-	 * @param clazz the class of the type to set the renderer for
+	 * @param root     the root of the hierarchy
+	 * @param clazz    the class of the type to set the renderer for
 	 * @param renderer the renderer to be set
 	 * @created 15.04.2011
 	 */
@@ -78,8 +78,8 @@ public class Types {
 	/**
 	 * Injects a given renderer to all direct children of the specified type.
 	 *
-	 * @param root the root type to take the children from
-	 * @param clazz the class of the type to set the renderer for
+	 * @param root     the root type to take the children from
+	 * @param clazz    the class of the type to set the renderer for
 	 * @param renderer the renderer to be set
 	 * @created 15.04.2011
 	 */
@@ -91,8 +91,8 @@ public class Types {
 	/**
 	 * Injects a given renderer to all the types of the collection matching the specified type.
 	 *
-	 * @param set the types to match against
-	 * @param clazz the class of the type to set the renderer for
+	 * @param set      the types to match against
+	 * @param clazz    the class of the type to set the renderer for
 	 * @param renderer the renderer to be set
 	 * @created 15.04.2011
 	 */
@@ -108,8 +108,6 @@ public class Types {
 	 * Replaces the FIRST occurrence of the target class type with the new type
 	 *
 	 * @param typeHierarchy the root of the hierarchy
-	 * @param c
-	 * @param newType
 	 * @created 02.07.2013
 	 */
 	public static boolean replaceType(Type typeHierarchy, Class<? extends Type> c, Type newType) {
@@ -127,11 +125,11 @@ public class Types {
 		}
 		if (index != -1) {
 			// some overhead to actually replace type in children list
-			List<Type> listCopy = new ArrayList<Type>();
+			List<Type> listCopy = new ArrayList<>();
 			listCopy.addAll(childrenTypes);
 			listCopy.add(index, newType);
 			listCopy.remove(index + 1);
-			((Type) typeHierarchy).clearChildrenTypes();
+			typeHierarchy.clearChildrenTypes();
 			for (Type type : listCopy) {
 				typeHierarchy.addChildType(type);
 			}
@@ -156,7 +154,7 @@ public class Types {
 	 * @return the list of all types
 	 */
 	public static Collection<Type> getAllChildrenTypesRecursive(Type type) {
-		LinkedHashSet<Type> set = new LinkedHashSet<Type>();
+		LinkedHashSet<Type> set = new LinkedHashSet<>();
 		getAllChildrenTypesRecursive(type, set);
 		return set;
 	}
@@ -179,19 +177,23 @@ public class Types {
 	 * class (or being a subclass or implementation of the specified class) in the specified
 	 * hierarchy. If no such type exists, null is returned
 	 *
-	 * @param <OT>
-	 * @param root the root of the hierarchy
+	 * @param type  the root of the type hierarchy to be fetched of the hierarchy
 	 * @param clazz the class to be searched for
 	 * @return the matched {@link Type} instance
 	 * @created 02.03.2011
 	 */
-	public static <OT extends Type> OT findSuccessorType(Type root, Class<OT> clazz) {
-		List<Type> childrenTypes = root.getChildrenTypes();
-		for (Type type : childrenTypes) {
-			if (clazz.isInstance(type)) {
-				return clazz.cast(type);
+	public static <T extends Type> T successor(Type type, Class<T> clazz) {
+		return successor(type, clazz, new HashSet<>());
+	}
+
+	private static <T extends Type> T successor(Type type, Class<T> clazz, Set<Type> visited) {
+		if (!visited.add(type)) return null;
+		if (type instanceof AbstractType && !canHaveSuccessorOfType((AbstractType) type, clazz)) return null;
+		for (Type child : type.getChildrenTypes()) {
+			if (clazz.isInstance(child)) {
+				return clazz.cast(child);
 			}
-			OT t = findSuccessorType(type, clazz);
+			T t = successor(child, clazz, visited);
 			if (t != null) return t;
 		}
 		return null;
@@ -202,13 +204,12 @@ public class Types {
 	 * implementation of the specified class) in the specified hierarchy. If no such type exists, an
 	 * empty collection is returned
 	 *
-	 * @param <OT>
-	 * @param root the root of the hierarchy
+	 * @param root  the root of the hierarchy
 	 * @param clazz the class to be searched for
 	 * @return the matched {@link Type} instance
 	 * @created 02.03.2011
 	 */
-	public static <OT extends Type> Collection<OT> findSuccessorTypes(Type root, Class<OT> clazz) {
+	public static <OT extends Type> Collection<OT> successors(Type root, Class<OT> clazz) {
 		Collection<Type> types = getAllChildrenTypesRecursive(root);
 		List<OT> result = new LinkedList<OT>();
 		for (Type type : types) {
@@ -223,7 +224,7 @@ public class Types {
 	 * Returns whether the given type potentially has a successor with the given class. If
 	 * <tt>false</tt> is returned, we can be sure, that there is no successor with the given class.
 	 * If it returns <tt>true</tt>, it is possible that there is a successor with the given class.
-	 * If needed, use {@link Types#findSuccessorType(Type, Class)} to be sure.
+	 * If needed, use {@link Types#successor(Type, Class)} to be sure.
 	 *
 	 * @param clazz the type class we look for in the successors
 	 * @return true if the type can have a successor with the given class, false if not

@@ -24,7 +24,7 @@ public class JSPWikiMarkupUtils {
 	 */
 	public static List<Section<?>> getTopLevelSections(
 			Article article) {
-		Section<RootType> s = article.getRootSection();
+		Section<?> s = article.getRootSection();
 		int i = 0;
 		List<Section<?>> topLevelSections = new ArrayList<Section<?>>();
 		for (Section<?> tlt : s.getChildren().get(0).getChildren()) {

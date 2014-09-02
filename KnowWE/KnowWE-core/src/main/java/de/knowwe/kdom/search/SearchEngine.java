@@ -31,7 +31,6 @@ import java.util.regex.Pattern;
 
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -123,7 +122,7 @@ public class SearchEngine {
 
 	}
 
-	private <T extends Type> Collection<Result> search(Pattern query, Section<RootType> section, Class<T> clazz) {
+	private <T extends Type> Collection<Result> search(Pattern query, Section<?> section, Class<T> clazz) {
 		if (section == null || query == null || clazz == null) {
 			throw new IllegalArgumentException("Need an article, a query and a class");
 		}

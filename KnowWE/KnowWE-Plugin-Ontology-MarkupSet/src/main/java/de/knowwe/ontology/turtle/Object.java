@@ -80,7 +80,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
     @SuppressWarnings("unchecked")
     private Type createObjectURIWithDefinition() {
         TurtleURI turtleURI = new TurtleURI();
-        SimpleReference reference = Types.findSuccessorType(turtleURI, ResourceReference.class);
+        SimpleReference reference = Types.successor(turtleURI, ResourceReference.class);
         reference.addCompileScript(Priority.HIGH, new ObjectPredicateKeywordDefinitionHandler(new String[]{"[\\w]*?:instance"}));
         return turtleURI;
     }
