@@ -189,7 +189,9 @@ ObjectTree.prototype.renderTreeItem = function(infoObject, className, isVisible)
 				position: {left: left, top: top-d2},
 				action: action
 			};
-			new Node(flowchart, model).select();
+			EditorInstance.withUndo("Add New Node", function() {
+				new Node(flowchart, model).select();
+			});
 		};
 		//TODO: avoid memory leak by remeber the Draggable and remove it on destroy
 		new Draggable(dragItem, { 

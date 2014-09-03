@@ -47,7 +47,8 @@ function FlowEditor(articleIDs) {
 	new Draggable('snapshot_prototype', dragOptions);
 
 	$('decision_prototype').createNode = function(flowchart, left, top) {
-		FlowEditor.createActionNode(flowchart, left, top, {action : { markup : 'KnOffice', expression : ''}});
+		FlowEditor.createActionNode(flowchart, left, top,
+			{action : { markup : 'KnOffice', expression : ''}}).edit();
 	};
 	$('start_prototype').createNode = function(flowchart, left, top) {
 		FlowEditor.createActionNode(flowchart, left, top, {start : 'Start'});
@@ -56,7 +57,7 @@ function FlowEditor(articleIDs) {
 		FlowEditor.createActionNode(flowchart, left, top, {exit : 'Exit'});
 	};
 	$('comment_prototype').createNode = function(flowchart, left, top) {
-		FlowEditor.createActionNode(flowchart, left, top, {comment : 'Comment'});
+		FlowEditor.createActionNode(flowchart, left, top, {comment : 'Comment'}).edit();
 	};
 	$('snapshot_prototype').createNode = function(flowchart, left, top) {
 		FlowEditor.createActionNode(flowchart, left, top, {snapshot : 'Snapshot'});
@@ -379,12 +380,12 @@ FlowEditor.lassoSelectUp = function(event) {
 };
 
 FlowEditor.createActionNode = function(flowchart, left, top, nodeModel) {
-	EditorInstance.withUndo("Added New Node", function() {
+	return EditorInstance.withUndo("Add New Node", function() {
 		nodeModel.position = {left : left, top : top};
 		var node = new Node(flowchart, nodeModel);
 		node.select();
-		node.edit();
-	});
+		return node;
+	}.bind(this));
 };
 
 FlowEditor.prototype.updateProperties = function() {
@@ -464,19 +465,17 @@ Flowchart.prototype.createDroppables = function(trashPane) {
 	});
 
 	// initialite drag from trees to the pane
-	var self = this;
 	Droppables.add($('contents'), {
 		accept : ['NodePrototype'],
 		hoverclass : 'contents_hover',
 		onDrop : function(draggable, droppable, event) {
-			EditorInstance.withUndo("Add Node", function() {
-				var p1 = draggable.cumulativeOffset();
-				var p2 = self.getContentPane().cumulativeOffset();
-				var scroll = self.getScroll();
-				var x = p1.left - p2.left + scroll.x;
-				var y = p1.top - p2.top + scroll.y;
-				draggable.createNode(self, x, y);
-			});
+			var flow = EditorInstance.getFlowchart();
+			var p1 = draggable.cumulativeOffset();
+			var p2 = flow.getContentPane().cumulativeOffset();
+			var scroll = flow.getScroll();
+			var x = p1.left - p2.left + scroll.x;
+			var y = p1.top - p2.top + scroll.y;
+			return draggable.createNode(flow, x, y);
 		}
 	});
 };
@@ -849,11 +848,8 @@ SelectTool.renderSelectionBox = function(x1, y1, x2, y2) {
  * @param y y coordinate of node position (relative to flowchart)
  */
 FlowEditor.newNode = function(flowchart, x, y, type) {
-
 	var nodeProt = $(type + '_prototype');
-
 	if (!nodeProt) return;
-
 	nodeProt.createNode(flowchart, x - flowchart.getLeft(), y - flowchart.getTop());
 };
 
