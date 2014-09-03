@@ -202,10 +202,10 @@ Rule.prototype.getGuardRoot = function() {
 
 Rule.prototype.setSelectionVisible = function(isSelected) {
 	if (!this.isVisible()) return;
-	var hightlight = this.dom.select('.rule_highlight')[0];
+	var highlight = this.dom.select('.rule_highlight')[0];
 	if (isSelected) {
 		// show highlight
-		hightlight.style.visibility = 'visible';
+		highlight.style.visibility = 'visible';
 		this.setGuardVisible(false, true);
 		this.arrowTool = new RuleArrowTool(this);
 		this.arrowTool.setVisible(true);
@@ -253,7 +253,7 @@ Rule.prototype.setSelectionVisible = function(isSelected) {
 		}
 	}
 	else {
-		hightlight.style.visibility = 'hidden';
+		highlight.style.visibility = 'hidden';
 		this.setGuardVisible(true, false);
 		if (this.arrowTool) {
 			this.arrowTool.destroy();
@@ -266,7 +266,7 @@ Rule.prototype.setSelectionVisible = function(isSelected) {
 			this.routingTools = null;
 		}
 	}
-}
+};
 
 Rule.prototype.setGuardVisible = function(paneVisible, editorVisible) {
 	if (this.guardPane) {
@@ -342,7 +342,7 @@ Rule.prototype.destroy = function() {
 	this._destroyed = true;
 	// deselect the item (if selected)
 	this.flowchart.removeFromSelection(this);
-	// this only works if there is no endeffekt in the draggable
+	// this only works if there is no endeffect in the draggable
 	// because the case that the div has been removed is not
 	// considered in the drag&drop framework.
 	this.draggable.options.endeffekt = null;

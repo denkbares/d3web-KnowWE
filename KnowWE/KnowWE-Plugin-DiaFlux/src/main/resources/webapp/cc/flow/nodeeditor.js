@@ -51,18 +51,18 @@ Node.prototype.edit = function() {
 			this.setNodeModel(nodeEditor.getNodeModel());
 		}.bind(this)
 	);
-}
+};
 
 Node.prototype.stopEdit = function() {
 	if (this.nodeEditor) {
 		this.nodeEditor.destroy();
 		this.nodeEditor = null;
 	}
-}
+};
 
 Node.prototype.moveBy = function(dLeft, dTop, noRouting) {
 	this.moveTo(this.getLeft() + dLeft, this.getTop() + dTop, noRouting);
-}
+};
 
 
 //overrides empty implementation node.js
@@ -149,7 +149,7 @@ Node.prototype.createDraggable = function() {
 			draggable.__arrowTool.createRule(droppable.__node);
 		}
 	});
-}
+};
 
 
 Node.prototype.moveTo = function(left, top, noRouting) {
@@ -167,7 +167,7 @@ Node.prototype.moveTo = function(left, top, noRouting) {
 		// TODO: + alle mit Regeln verbundenen Knoten!!!
 		this.flowchart.router.rerouteNodes([this]);
 	}
-}
+};
 
 
 Node.prototype.toXML = function(dx, dy) {
@@ -203,7 +203,7 @@ Node.prototype.toXML = function(dx, dy) {
 	}
 	xml += '\t</node>\n';
 	return xml;
-}
+};
 
 function NodeEditor(parent, nodeModel, style, onSuccess) {
 	this.parent = $(parent);
@@ -244,15 +244,15 @@ CCEvents.addClassListener('mouseup', 'NodeEditor', function(event) {
 
 NodeEditor.prototype.getDOM = function() {
 	return this.dom;
-}
+};
 
 NodeEditor.prototype.isVisible = function() {
 	return (this.dom != null);
-}
+};
 
 NodeEditor.prototype.getNodeModel = function() {
 	return this.nodeModel;
-}
+};
 
 
 NodeEditor.prototype.handleOk = function() {
@@ -302,7 +302,7 @@ NodeEditor.prototype.handleOk = function() {
 NodeEditor.prototype.handleCancel = function() {
 	this.setVisible(false);
 	FlowEditor.checkFocus();
-}
+};
 
 NodeEditor.prototype.handleKeyEvent = function(e) {
 	// if not, we can use the keys to commit/cancel the modal dialog
@@ -316,7 +316,7 @@ NodeEditor.prototype.handleKeyEvent = function(e) {
 	}
 	//default handling for cursor events
 	e.defaultHandler();
-}
+};
 
 NodeEditor.prototype.setVisible = function(visible) {
 	if (!this.isVisible() && visible) {
@@ -338,7 +338,7 @@ NodeEditor.prototype.setVisible = function(visible) {
 		this.parent.removeChild(this.dom);
 		this.dom = null;
 	}
-}
+};
 
 NodeEditor.prototype.selectTab = function(index) {
 	if (!this.tabItems) return;
@@ -374,7 +374,7 @@ NodeEditor.prototype.selectTab = function(index) {
 			this.tabPanes[i].hide();
 		}
 	}
-}
+};
 
 NodeEditor.prototype.render = function() {
 	this.tabItems = [
@@ -404,7 +404,7 @@ NodeEditor.prototype.render = function() {
 		]);
 	dom.__nodeEditor = this;
 	return dom;
-}
+};
 
 NodeEditor.prototype.renderActionPane = function() {
 	var dom = Builder.node('div', {
@@ -415,7 +415,7 @@ NodeEditor.prototype.renderActionPane = function() {
 			"Use object:"
 		]);
 	return dom;
-}
+};
 
 NodeEditor.prototype.renderStartPane = function() {
 	var dom = Builder.node('div', {
@@ -432,7 +432,7 @@ NodeEditor.prototype.renderStartPane = function() {
 			})
 		]);
 	return dom;
-}
+};
 
 NodeEditor.prototype.renderCommentPane = function() {
 	var dom = Builder.node('div', {
@@ -447,7 +447,7 @@ NodeEditor.prototype.renderCommentPane = function() {
 			)
 		]);
 	return dom;
-}
+};
 
 NodeEditor.prototype.renderExitPane = function() {
 	var dom = Builder.node('div', {
@@ -464,7 +464,7 @@ NodeEditor.prototype.renderExitPane = function() {
 			})
 		]);
 	return dom;
-}
+};
 
 NodeEditor.prototype.renderSnapshotPane = function() {
 	var dom = Builder.node('div', {
@@ -481,13 +481,13 @@ NodeEditor.prototype.renderSnapshotPane = function() {
 			})
 		]);
 	return dom;
-}
+};
 
 NodeEditor.prototype.destroy = function() {
 	if (this._destroyed) return;
 	this._destroyed = true;
 	this.setVisible(false);
-}
+};
 
 
 /**
@@ -505,11 +505,11 @@ function ArrowTool(node) {
 
 ArrowTool.prototype.getDOM = function() {
 	return this.dom;
-}
+};
 
 ArrowTool.prototype.isVisible = function() {
 	return (this.dom != null);
-}
+};
 
 ArrowTool.prototype.setVisible = function(visible) {
 	if (!this.isVisible() && visible) {
@@ -526,11 +526,11 @@ ArrowTool.prototype.setVisible = function(visible) {
 		this.dom = null;
 		this.draggable = null;
 	}
-}
+};
 
 ArrowTool.prototype.destroy = function() {
 	this.setVisible(false);
-}
+};
 
 ArrowTool.prototype.render = function() {
 	var dom = Builder.node('div', {
@@ -540,7 +540,7 @@ ArrowTool.prototype.render = function() {
 			"top:" + (this.node.getTop() + this.node.getHeight() - 13) + "px;"});
 	dom.__arrowTool = this;
 	return dom;
-}
+};
 
 ArrowTool.prototype.createDraggable = function() {
 	var newDrag = new Draggable(this.getDOM(), {
@@ -561,16 +561,16 @@ ArrowTool.prototype.createDraggable = function() {
 	});
 	newDrag.__arrowTool = this;
 	return newDrag;
-}
+};
 
 ArrowTool.prototype.createRule = function(targetNode) {
 	if (this.node != targetNode) {
-		var rule = new Rule(
-			/*this.flowchart.createID('rule')*/ null,
-			this.node, null, targetNode);
-		rule.select();
+		EditorInstance.withUndo("Create New Edge", function() {
+			var rule = new Rule(null, this.node, null, targetNode);
+			rule.select();
+		}.bind(this));
 	}
-}
+};
 
 ArrowTool.prototype.showLine = function(x, y) {
 	if (this.lineDOM) {
@@ -583,7 +583,7 @@ ArrowTool.prototype.showLine = function(x, y) {
 		this.lineDOM = DiaFluxUtils.createDottedLine(x1, y1, x + 13, y + 13, 2, 'red', 5, 100);
 		this.flowchart.getContentPane().appendChild(this.lineDOM);
 	}
-}
+};
 
 // -----
 // handle dragging
@@ -624,7 +624,7 @@ SnapManager.prototype.initializeSnapsForRoutingPoint = function(routingPoint) {
 	this.vSnaps.push(new Snap(offsetY, n1.getCenterY()));
 	this.hSnaps.push(new Snap(offsetX, n2.getCenterX()));
 	this.vSnaps.push(new Snap(offsetY, n2.getCenterY()));
-}
+};
 
 SnapManager.prototype.initializeSnapsForNode = function(node) {
 	// empty existing ones
@@ -665,7 +665,7 @@ SnapManager.prototype.initializeSnapsForNode = function(node) {
 		this.hSnaps.push(new Snap(offsetX, node.getCenterX()));
 		this.vSnaps.push(new Snap(offsetY, node.getCenterY()));
 	}
-}
+};
 
 SnapManager.prototype.snapIt = function(x, y) {
 	// snap to the middle of the object
@@ -676,7 +676,7 @@ SnapManager.prototype.snapIt = function(x, y) {
 		hSnap ? hSnap.getNodePosition() : x,
 		vSnap ? vSnap.getNodePosition() : y];
 
-}
+};
 
 SnapManager.prototype.findSnap = function(snaps, position) {
 	// iterate to find optimal snap with less than 5 pixels (= snapDistance pixels) away
@@ -691,7 +691,7 @@ SnapManager.prototype.findSnap = function(snaps, position) {
 		}
 	}
 	return bestSnap;
-}
+};
 
 SnapManager.prototype.showSnapLines = function(hSnap, vSnap) {
 	var hid = "dragHelpLine_" + this.flowchart.fcid + "_h";
@@ -730,7 +730,7 @@ SnapManager.prototype.showSnapLines = function(hSnap, vSnap) {
 		this.flowchart.getContentPane().appendChild(line);
 		this.hSnapLinePos = hSnap.snapPosition;
 	}
-}
+};
 
 
 function Snap(offset, snapPosition) {
@@ -740,8 +740,8 @@ function Snap(offset, snapPosition) {
 
 Snap.prototype.getDistance = function(position) {
 	return Math.abs((position + this.offset) - this.snapPosition);
-}
+};
 
 Snap.prototype.getNodePosition = function() {
 	return this.snapPosition - this.offset;
-}
+};
