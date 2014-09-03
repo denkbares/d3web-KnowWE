@@ -18,14 +18,15 @@ function FlowEditor(articleIDs) {
 
 	// TODO: only for backward compatibility, remove if not requires
 	theFlowchart = null;
-
 	this.theFlowchart = null;
-	this.currentVersion = -1;
-	this.maxVersion = -1;
-	this.theFlowchartVersions = [];
 
-	$('properties.editName').onchange = this.updateProperties;
-	$('properties.autostart').onchange = this.updateProperties;
+	this.undoSupport = new _EC.UndoSupport(
+		this._restoreData.bind(this),
+		this._getContentData.bind(this),
+		this._getMetaData.bind(this));
+
+	$('properties.editName').onchange = this.updateProperties.bind(this);
+	$('properties.autostart').onchange = this.updateProperties.bind(this);
 
 	$('saveClose').observe('click', function() {
 		this.saveFlowchart(true);
@@ -95,19 +96,14 @@ function FlowEditor(articleIDs) {
 		return !!((!event.metaKey && event.ctrlKey && !event.altKey)
 			|| (!event.metaKey && !event.ctrlKey && event.altKey)
 			|| (event.metaKey && !event.ctrlKey && !event.altKey));
-
 	};
 	var undo = function() {
 		if (typeof event != "undefined") event.stop();
-		if (EditorInstance.currentVersion > 0) {
-			EditorInstance.goToVersion(--EditorInstance.currentVersion, false);
-		}
+		EditorInstance.undoSupport.undo();
 	};
 	var redo = function() {
 		if (typeof event != "undefined") event.stop();
-		if (EditorInstance.currentVersion < EditorInstance.maxVersion) {
-			EditorInstance.goToVersion(++EditorInstance.currentVersion, true);
-		}
+		EditorInstance.undoSupport.redo();
 	};
 
 	$('undo').observe('click', undo);
@@ -141,8 +137,7 @@ function FlowEditor(articleIDs) {
 	});
 
 	window.onbeforeunload = function() {
-		if (EditorInstance.theFlowchartVersions[0].xml !=
-			EditorInstance.theFlowchartVersions[EditorInstance.currentVersion].xml) {
+		if (EditorInstance.undoSupport.hasContentChanged()) {
 			return "There are unsaved changes.";
 		}
 	};
@@ -150,6 +145,10 @@ function FlowEditor(articleIDs) {
 
 FlowEditor.prototype.getFlowchart = function() {
 	return this.theFlowchart;
+};
+
+FlowEditor.prototype.withUndo = function(name, action, combineId) {
+	return this.undoSupport.withUndo(name, action, combineId);
 };
 
 FlowEditor.prototype.showEditor = function(xmlText) {
@@ -175,10 +174,6 @@ FlowEditor.prototype.showEditor = function(xmlText) {
 	this.theFlowchart.setScroll(FlowEditor.borderSpacing - 19, FlowEditor.borderSpacing - 19);
 	this.theFlowchart.focus();
 
-	if (this.maxVersion == -1) {
-		this.snapshot();
-	}
-
 	/**
 	 *  install editor tool menu
 	 */
@@ -195,48 +190,30 @@ FlowEditor.prototype.showEditor = function(xmlText) {
 	$(document).observe('click', toolsClose);
 };
 
-FlowEditor.prototype.snapshot = function() {
-	var snap = {
-		xml : this.theFlowchart.toXML(),
+FlowEditor.prototype._getContentData = function() {
+	return this.theFlowchart.toXML();
+};
+
+FlowEditor.prototype._getMetaData = function() {
+	return {
 		selected : jq$.map(this.getFlowchart().selection, function(item) {
 			return (item instanceof Node) ? item.getNodeModel().fcid : item.fcid;
 		}),
 		scroll : this.getFlowchart().getScroll(),
 		area : this.getFlowchart().getUsedArea()
 	};
-
-	var latestSnap = this.theFlowchartVersions[this.currentVersion];
-	if (latestSnap && latestSnap.xml === snap.xml) {
-		// update selection and scroll position always to be up-to-date
-		latestSnap.selected = snap.selected;
-		latestSnap.scroll = snap.scroll;
-		latestSnap.area = snap.area;
-		return;
-	}
-	if (this.currentVersion === this.theFlowchartVersions.length - 1) {
-		this.theFlowchartVersions.push(snap);
-	}
-	else {
-		this.theFlowchartVersions[this.currentVersion + 1] = snap;
-	}
-	this.currentVersion++;
-	this.maxVersion = this.currentVersion;
-//	this.maxVersion = this.theFlowchartVersions.length - 1;
-//	this.currentVersion = this.maxVersion;
 };
 
-
-FlowEditor.prototype.goToVersion = function(version) {
+FlowEditor.prototype._restoreData = function(xml, metaData) {
 	jq$('#' + this.theFlowchart.id).remove();
 	Draggables.clear();
 	Droppables.clear();
-	var snap = this.theFlowchartVersions[version];
-	this.showEditor(snap.xml);
+	this.showEditor(xml);
 	var flow = this.getFlowchart();
 
 	// restore scroll position and selection
-	flow.setScroll(snap.scroll.left, snap.scroll.top);
-	var sel = jq$.map(snap.selected, function(id) {
+	flow.setScroll(metaData.scroll.left, metaData.scroll.top);
+	var sel = jq$.map(metaData.selected, function(id) {
 		return flow.findNode(id) || flow.findRule(id);
 	});
 	flow.setSelection(sel, false, false);
@@ -402,15 +379,25 @@ FlowEditor.lassoSelectUp = function(event) {
 };
 
 FlowEditor.createActionNode = function(flowchart, left, top, nodeModel) {
-	nodeModel.position = {left : left, top : top};
-	var node = new Node(flowchart, nodeModel);
-	node.select();
-	node.edit();
+	EditorInstance.withUndo("Added New Node", function() {
+		nodeModel.position = {left : left, top : top};
+		var node = new Node(flowchart, nodeModel);
+		node.select();
+		node.edit();
+	});
 };
 
 FlowEditor.prototype.updateProperties = function() {
-	this.theFlowchart.name = $('properties.editName').value;
-	this.theFlowchart.autostart = $('properties.autostart').checked;
+	if (this.theFlowchart.name != $('properties.editName').value) {
+		this.withUndo("Flowchart Name Changed", function() {
+			this.theFlowchart.name = $('properties.editName').value;
+		}.bind(this));
+	}
+	if (this.theFlowchart.autostart != $('properties.autostart').checked) {
+		this.withUndo("Autostart Option Changed", function() {
+			this.theFlowchart.autostart = $('properties.autostart').checked;
+		}.bind(this));
+	}
 };
 
 FlowEditor.prototype.revert = function() {
@@ -463,14 +450,16 @@ Flowchart.prototype.createDroppables = function(trashPane) {
 		accept : ['Node', 'Rule', 'RoutingTool'],
 		hoverclass : 'trash_hover',
 		onDrop : function(draggable, droppable, event) {
-			if (draggable.__node) {
-				var nodes = draggable.__node.__draggable.draggedNodes;
-				for (var i = 0; i < nodes.length; i++) {
-					nodes[i].destroy();
+			EditorInstance.withUndo("Trash Items", function() {
+				if (draggable.__node) {
+					var nodes = draggable.__node.__draggable.draggedNodes;
+					for (var i = 0; i < nodes.length; i++) {
+						nodes[i].destroy();
+					}
 				}
-			}
-			if (draggable.__rule) draggable.__rule.destroy();
-			if (draggable.__routingTool) draggable.__routingTool.routingPoint.destroy();
+				if (draggable.__rule) draggable.__rule.destroy();
+				if (draggable.__routingTool) draggable.__routingTool.routingPoint.destroy();
+			});
 		}
 	});
 
@@ -480,12 +469,14 @@ Flowchart.prototype.createDroppables = function(trashPane) {
 		accept : ['NodePrototype'],
 		hoverclass : 'contents_hover',
 		onDrop : function(draggable, droppable, event) {
-			var p1 = draggable.cumulativeOffset();
-			var p2 = self.getContentPane().cumulativeOffset();
-			var scroll = self.getScroll();
-			var x = p1.left - p2.left + scroll.x;
-			var y = p1.top - p2.top + scroll.y;
-			draggable.createNode(self, x, y);
+			EditorInstance.withUndo("Add Node", function() {
+				var p1 = draggable.cumulativeOffset();
+				var p2 = self.getContentPane().cumulativeOffset();
+				var scroll = self.getScroll();
+				var x = p1.left - p2.left + scroll.x;
+				var y = p1.top - p2.top + scroll.y;
+				draggable.createNode(self, x, y);
+			});
 		}
 	});
 };
@@ -528,10 +519,6 @@ FlowEditor.prototype._saveFlowchartText = function(xml, closeOnSuccess) {
 			if (closeOnSuccess) {
 				window.onbeforeunload = null;
 				window.close();
-			} else {
-				self.currentVersion = -1;
-				self.maxVersion = -1;
-				self.theFlowchartVersions = [];
 			}
 			//set Url according to new section id
 			if (transport.responseText) {
@@ -600,8 +587,7 @@ Flowchart.prototype.handleKeyEvent = function(event) {
 			break;
 		case 88: // [ctrl] + x
 			if (ctrlKey) {
-				this.copySelectionToClipboard();
-				this.trashSelection();
+				this.cut();
 				isHandled = true;
 			}
 			break;
@@ -666,7 +652,9 @@ Flowchart.prototype.pasteFromClipboard = function() {
 	// BUGFIX: when clipboard is empty CCClipboard is null
 	//         therefore this has to be checked to avoid NPE
 	if (CCClipboard.fromClipboard() == null) return;
-	this.pasteXML(CCClipboard.fromClipboard());
+	EditorInstance.withUndo("Paste Items", function() {
+		this.pasteXML(CCClipboard.fromClipboard());
+	}.bind(this));
 };
 
 Flowchart.prototype.pasteXML = function(xmlString, dx, dy) {
@@ -677,30 +665,41 @@ Flowchart.prototype.pasteXML = function(xmlString, dx, dy) {
 };
 
 Flowchart.prototype.cut = function() {
-	this.copySelectionToClipboard();
-	this.trashSelection();
+	if (this.selection.length == 0) return;
+	EditorInstance.withUndo("Cut Items", function() {
+		this.copySelectionToClipboard();
+		this.trashSelection();
+	}.bind(this));
 };
 
 Flowchart.prototype.trashSelection = function() {
-	var sel = this.selection.clone();
-	for (var i = 0; i < sel.length; i++) {
-		var item = sel[i];
-		item.destroy();
-	}
-	this.focus();
-	FlowEditor.autoResize();
+	if (this.selection.length == 0) return;
+	EditorInstance.withUndo("Delete Items", function() {
+		var sel = this.selection.clone();
+		for (var i = 0; i < sel.length; i++) {
+			var item = sel[i];
+			item.destroy();
+		}
+		this.focus();
+		FlowEditor.autoResize();
+	}.bind(this));
 };
 
 Flowchart.prototype.moveSelection = function(dx, dy) {
 	var isHandled = false;
-	for (var i = 0; i < this.selection.length; i++) {
-		var item = this.selection[i];
-		if (item.moveBy) {
-			item.moveBy(dx, dy);
-			isHandled = true;
+	EditorInstance.withUndo("Move Nodes", function() {
+		for (var i = 0; i < this.selection.length; i++) {
+			var item = this.selection[i];
+			if (item.moveBy) {
+				item.moveBy(dx, dy);
+				isHandled = true;
+			}
 		}
-	}
-	this.focus();
+		this.focus();
+	}.bind(this), "move_by_keys_" +
+		jq$.map(this.selection, function(item) {
+			return item.fcid || item.nodeModel.fcid;
+		}).join(","));
 	return isHandled;
 };
 

@@ -275,4 +275,172 @@ KNOWWE.editCommons.elements = function() {
 
 }();
 
+
+/**
+ * Class to instantiate for any editor that wants to implement undo / redo. By using this class,
+ * undo functionality is always provided by generating a persistent representation from the current
+ * state of the edit widget (e.g., nut not necessarily, creating the markup text). This persistent
+ * representation is called the content-data. Undo/Redo is implemented by restoring the widget's
+ * state from these data.
+ *
+ * Additionally the undo-/redoable widget should also provide a method to obtain the so-called
+ * meta-data. This is (in contrast to the content-data) information only relevant for user display
+ * and/or interaction, but have no influence on the content. This is e.g. scroll-positions,
+ * selections, etc. The reason is that for each snapshoted state of content-data, two states of the
+ * meta-data are created and stored, one right before and one right after the undoable action. When
+ * performing an undo, this class will restore the meta-data right before the action, while when
+ * performing a redo, we will restore the meta-data right after the action. This is the normal
+ * behaviour most user interface implementations will show.
+ *
+ * @param restoreDataFun a function(contentData, metaData) that shall restore the widgets state
+ * according to the specified content- and meta-data, given as function arguments.
+ * @param getContentDataFun a function() that returns the content-data of the widget as an object
+ * @param getMetaDataFun a function() that returns the meta-data of the widget as an object
+ * @constructor
+ */
+KNOWWE.editCommons.UndoSupport = function(restoreDataFun, getContentDataFun, getMetaDataFun) {
+	this.restoreDataFun = restoreDataFun;
+	this.getContentDataFun = getContentDataFun;
+	this.getMetaDataFun = getMetaDataFun;
+
+	this.snaps = [];
+	this.currentIndex = -1;
+	this.recording = false;
+};
+
+/**
+ * Method that will execute the specified action as a function without any arguments. When the
+ * action is performed, this method makes sure that the changes are recorded, updating the undo/redo
+ * stacks. So the next undo operation will revert the changes of the action. The method will return
+ * the result returned by the action.
+ *
+ * The method also makes sure that nested undoable actions will be handled correctly. This means,
+ * having an outer 'withUndo' action, all inner 'withUndo' will be ignored, as they are combined to
+ * the outer undo action.
+ *
+ * @param name the name of the user action (e.g. to be shown later in a undo/redo menu)
+ * @param action the user action to be performed
+ * @param combineId (optional) if specified, multiple recorded actions of the same combineId will be unified
+ * into one undo/redo operation. This is often useful when performing minimal changes by keyboard.
+ */
+KNOWWE.editCommons.UndoSupport.prototype.withUndo = function(name, action, combineId) {
+	// check for nested undoable actions
+	if (this.recording) return action();
+
+	// if called the first time, make an initial snapshot
+	if (this.currentIndex == -1) {
+		var meta = this.getMetaDataFun();
+		var content = this.getContentDataFun();
+		this.snaps.push({name : "", metaDataBefore : meta, metaDataAfter : meta, contentData : content});
+		this.currentIndex = 0;
+	}
+
+	var snap = {name : name, combineId : combineId};
+	var lastSnap = this.snaps[this.currentIndex];
+	var canCombine = combineId && combineId == lastSnap.combineId;
+	try {
+		this.recording = true;
+		// metadata before operation if only required if we will not combine
+		if (!canCombine) snap.metaDataBefore = this.getMetaDataFun();
+		return action();
+	}
+	finally {
+		// prepare data and remove all redo operations
+		snap.metaDataAfter = this.getMetaDataFun();
+		snap.contentData = this.getContentDataFun();
+		// if nothing has changed, ignore this snapshot, only perform if there are changes
+		if (lastSnap.contentData != snap.contentData) {
+			// remove future redo actions
+			this.snaps.splice(this.currentIndex + 1, this.snaps.length - (this.currentIndex + 1));
+			// update the snaps list
+			if (canCombine) {
+				// if we shall combine we update last snap
+				lastSnap.name = snap.name;
+				lastSnap.contentData = snap.contentData;
+				lastSnap.metaDataAfter = snap.metaDataAfter;
+			}
+			else {
+				// otherwise we add a the new snap
+				this.currentIndex++;
+				this.snaps.push(snap);
+			}
+		}
+		this.recording = false;
+	}
+};
+
+/**
+ * Records a given state for an undo point. In contrast to method {@link withUndo} this method
+ * cannot handle meta data well. So usually use {@link withUndo} is possible and this method only
+ * if the undoable operation cannot be stated in a single function.
+ *
+ * @param name the name of the user action (e.g. to be shown later in a undo/redo menu)
+ * @param combineId (optional) if specified, multiple recorded actions of the same combineId will be unified
+ * into one undo/redo operation. This is often useful when performing minimal changes by keyboard.
+ */
+KNOWWE.editCommons.UndoSupport.prototype.recordUndo = function(name, combineId) {
+	this.withUndo(name, function() {
+	}, combineId);
+};
+
+KNOWWE.editCommons.UndoSupport.prototype.canUndo = function() {
+	return this.currentIndex > 0;
+};
+
+KNOWWE.editCommons.UndoSupport.prototype.canRedo = function() {
+	return this.currentIndex < this.snaps.length - 1;
+};
+
+KNOWWE.editCommons.UndoSupport.prototype.undo = function(count) {
+	// check if undo is possible
+	if (this.recording) throw "Must not call undo during recording undoable action";
+	if (!this.canUndo()) return;
+	// check count parameter
+	if (typeof count === 'undefined') count = 1;
+	if (count <= 0) return;
+	// move currentIndex to new selected snap
+	this.currentIndex -= count;
+	if (this.currentIndex < 0) this.currentIndex = 0;
+	// perform the undo operation
+	this.restoreDataFun(
+		this.snaps[this.currentIndex].contentData,
+		this.snaps[this.currentIndex + 1].metaDataBefore);
+};
+
+KNOWWE.editCommons.UndoSupport.prototype.redo = function(count) {
+	// check if redo is possible
+	if (this.recording) throw "Must not call redo during recording undoable action";
+	if (!this.canRedo()) return;
+	// check count parameter and move count-1 items between the stacks, before performing the redo
+	if (typeof count === 'undefined') count = 1;
+	if (count <= 0) return;
+	// move currentIndex to new selected snap
+	this.currentIndex += count;
+	if (this.currentIndex >= this.snaps.length) this.currentIndex = this.snaps.length - 1;
+	// perform the redo operation
+	this.restoreDataFun(
+		this.snaps[this.currentIndex].contentData,
+		this.snaps[this.currentIndex].metaDataAfter);
+};
+
+KNOWWE.editCommons.UndoSupport.prototype.getUndoNames = function() {
+	return jq$.map(this.snaps.slice(1, this.currentIndex), function(snap) {
+		return snap.name;
+	}).reverse();
+};
+
+KNOWWE.editCommons.UndoSupport.prototype.getRedoNames = function() {
+	return jq$.map(this.snaps.slice(this.currentIndex + 1), function(snap) {
+		return snap.name;
+	});
+};
+
+/**
+ * Returns if the content of the supported editor has been changed since it's initial state.
+ */
+KNOWWE.editCommons.UndoSupport.prototype.hasContentChanged = function() {
+	if (this.currentIndex <= 0) return false;
+	return this.snaps[0].contentData !== this.snaps[this.currentIndex].contentData;
+};
+
 var _EC = KNOWWE.editCommons;

@@ -130,7 +130,6 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 	 */
 	var selectPath = function(flow, backwards, includeRules) {
 		if (flow instanceof FlowEditor) {
-			flow.snapshot();
 			flow = flow.getFlowchart();
 		}
 		var open = [];
@@ -169,7 +168,6 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 	};
 
 	var selectEdges = function(flowEditor) {
-		flowEditor.snapshot();
 		var flow = flowEditor.getFlowchart();
 		var nodes = flow.getSelectedNodes();
 		flow.setSelection(
@@ -183,7 +181,6 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 	 * Align actions
 	 */
 	var align = function(flowEditor, horizontal, useMinMiddleMax) {
-		flowEditor.snapshot();
 		var getPos = function(node) {
 			var pos = horizontal ? node.getLeft() : node.getTop();
 			var size = horizontal ? node.getWidth() : node.getHeight();
@@ -374,7 +371,6 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 	};
 
 	var cleanup = function(flowEditor) {
-		flowEditor.snapshot();
 		arrange(flowEditor, false);
 		arrange(flowEditor, true);
 	};
@@ -386,7 +382,6 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 	 * or multiple incoming edge(s).
 	 */
 	var undangle = function(flowEditor) {
-		flowEditor.snapshot();
 		var countAnchors = function(node, direction, edgeToExclude) {
 			var count = 0;
 			jq$.each(node.getOutgoingRules(), function(index, edge) {
@@ -508,6 +503,7 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 					if (!moved && allowDiagonal) moved = moveNodes(nodeSet, 50, 20, true);
 					if (!moved) openGroups.push(nodeSet);
 					anyGroupMoved |= moved;
+					// TODO: add groups of subtrees and move them too
 				});
 				groups = openGroups;
 				// if have have not allowed diagonal layout yet, try again, but allow
@@ -523,7 +519,6 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 	 * Refactor: inline sub-flow
 	 */
 	var inline = function(flowEditor) {
-		flowEditor.snapshot();
 		var flow = flowEditor.getFlowchart();
 		var composedNode = flowEditor.getFlowchart().selection[0];
 		var flowInfo = getInfoObject(composedNode);
@@ -737,7 +732,11 @@ FlowEditor.EditTool.prototype.isActive = function(flowEditor) {
 };
 
 FlowEditor.EditTool.prototype.execute = function(flowEditor) {
-	if (this.actionFun) this.actionFun(flowEditor);
+	if (this.actionFun) {
+		flowEditor.withUndo(this.getTitle(), function() {
+			this.actionFun(flowEditor);
+		}.bind(this));
+	}
 };
 
 /**

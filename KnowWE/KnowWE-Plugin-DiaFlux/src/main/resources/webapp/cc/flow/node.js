@@ -331,7 +331,7 @@ Node.prototype.destroy = function() {
 	this._destroyed = true;
 	// deselect the item (if selected)
 	this.flowchart.removeFromSelection(this);
-	// must destroy alle connected rules first
+	// must destroy all connected rules first
 	var rules = this.flowchart.findRulesForNode(this);
 	for (var i = 0; i < rules.length; i++) {
 		rules[i].destroy();
@@ -342,7 +342,6 @@ Node.prototype.destroy = function() {
 	this.draggable.options.endeffekt = null;
 	this.setVisible(false);
 	this.flowchart.removeNode(this);
-	EditorInstance.snapshot();
 };
 
 
