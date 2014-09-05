@@ -26,7 +26,6 @@ public class TurtleContent extends AbstractType {
 	public TurtleContent() {
 		this.setSectionFinder(new AllTextFinderTrimmed());
 		this.addChildType(new TurtleSentence());
-
 	}
 
 
