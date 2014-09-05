@@ -22,6 +22,21 @@
 	z-index: 0;
 }
 
+.Rule:hover {
+	z-index: 300;
+}
+.Rule.selectedRule {
+	z-index: 400;
+}
+.Rule:hover .guard .GuardPane {
+	background-color: white;
+}
+
+.Rule.unselectedRule:hover .h_line, .Rule.unselectedRule:hover .v_line  {
+	border: 1px solid black;
+	margin: -1px;
+}
+
 .Rule .rule_selector {
 	position: absolute;
 	z-index: 100;

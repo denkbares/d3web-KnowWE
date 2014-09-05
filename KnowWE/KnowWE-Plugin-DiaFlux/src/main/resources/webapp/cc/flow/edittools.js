@@ -483,6 +483,8 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		var flow = flowEditor.getFlowchart();
 		var selectedNodes = flow.getSelectedNodes();
 		if (selectedNodes.length == 0) selectedNodes = flow.nodes;
+
+		// build groups to optimize, but first, optimize single nodes only
 		var groups = [];
 		jq$.each(selectedNodes, function(index, node) {
 			if (node.getOutgoingRules().length + node.getIncomingRules().length != 1) return;
@@ -496,7 +498,6 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 				anyGroupMoved = false;
 				var openGroups = [];
 				jq$.each(groups, function(index, nodeSet) {
-					// first, only optimize single nodes
 					var moved = moveNodes(nodeSet, 80, 40, false);
 					if (!moved) moved = moveNodes(nodeSet, 50, 20, false);
 					if (!moved && allowDiagonal) moved = moveNodes(nodeSet, 80, 40, true);

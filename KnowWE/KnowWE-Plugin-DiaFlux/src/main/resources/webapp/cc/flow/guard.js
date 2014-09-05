@@ -3,6 +3,7 @@
  * @param {String} markup defines the used markup language
  * @param {String} conditionString textual rule condition on KnOffice format to be fulfilled, it may contain placeholders like ${num} or ${question:num}
  * @param {String} displayHTML (optional) name for pretty printing the guard
+ * @param {String} unit (optional) the unit of the values of guard
  */
 function Guard(markup, conditionString, displayHTML, unit) {
 	this.markup = markup;
@@ -30,17 +31,16 @@ Guard.prototype.isPatternFor = function(other, skipQuotes) {
 	regexp = new RegExp(string);
 	var otherCondition = other.getConditionString();
 	if (skipQuotes) otherCondition = otherCondition.replace(/"/g, "");
-	var test = regexp.test(otherCondition);
-	return test;
-}
+	return regexp.test(otherCondition);
+};
 
 Guard.prototype.getMarkup = function() {
 	return this.markup;
-}
+};
 
 Guard.prototype.getConditionString = function() {
 	return this.conditionString;
-}
+};
 
 Guard.prototype.getDisplayHTML = function(values) {
 	var text = this.displayHTML ? this.displayHTML :
@@ -49,7 +49,7 @@ Guard.prototype.getDisplayHTML = function(values) {
 		text = Guard.inject(text, values, true);
 	}
 	return text;
-}
+};
 
 Guard.prototype.lookupDisplayHTML = function(guardPatterns) {
 	if (!guardPatterns) return;
@@ -70,11 +70,11 @@ Guard.prototype.lookupDisplayHTML = function(guardPatterns) {
 	}
 	// not found, than we want to have the original expression a display name
 	this.displayHTML = this.getConditionString();
-}
+};
 
 Guard.prototype.countVariables = function() {
 	return this.getVariableTypes().length;
-}
+};
 
 Guard.prototype.getVariableTypes = function() {
 	var regexp = /\$\{([:\w]*)\}/gi;
@@ -86,7 +86,7 @@ Guard.prototype.getVariableTypes = function() {
 		result.push(match[1]);
 	}
 	return result;
-}
+};
 
 Guard.prototype.getValues = function(patternGuard, skipQuotes) {
 	var pattern = patternGuard.getConditionString();
@@ -109,12 +109,12 @@ Guard.prototype.getValues = function(patternGuard, skipQuotes) {
 	} else {
 		return result.slice(1);
 	}
-}
+};
 
 Guard.prototype.inject = function(values) {
 	this.conditionString = Guard.inject(this.conditionString, values);
 	this.displayHTML = Guard.inject(this.displayHTML, values, true);
-}
+};
 
 Guard.prototype.isFormula = function() {
 	if (this.markup == 'timeDB') {
@@ -124,7 +124,7 @@ Guard.prototype.isFormula = function() {
 	}
 
 	return false;
-}
+};
 
 Guard.inject = function(text, values, escapeHtml) {
 	var regexp = /\$\{[:\w]*\}/i;
@@ -134,7 +134,7 @@ Guard.inject = function(text, values, escapeHtml) {
 		text = text.replace(regexp, item);
 	}
 	return text;
-}
+};
 
 Guard.createFromXML = function(flowchart, xmlDom, pasteOptions, sourceNode) {
 
@@ -166,7 +166,7 @@ Guard.createFromXML = function(flowchart, xmlDom, pasteOptions, sourceNode) {
 	guard.lookupDisplayHTML(sourceNode.getPossibleGuards());
 
 	return guard;
-}
+};
 
 
 Guard.createPossibleGuards = function(nodeModel) {
@@ -218,7 +218,7 @@ Guard.createPossibleGuards = function(nodeModel) {
 				result.push(new Guard('timeDB', 'eval((now - ${duration}) <= ' + infoObject.getName() + ')', '&le; ${duration} ago'));
 				break;
 			case KBInfo.Question.TYPE_TEXT:
-				break
+				break;
 			case KBInfo.Question.TYPE_NUM:
 				result.push('Test value');
 				result.push(new Guard('KnOffice', '"' + infoObject.getName() + '" = ${num}', '= ${num}', unit));
@@ -278,7 +278,7 @@ Guard.createPossibleGuards = function(nodeModel) {
 	}
 
 	return result;
-}
+};
 
 
 /**
@@ -303,7 +303,7 @@ function GuardPane(parent, guard, rule) {
 
 GuardPane.prototype.getDOM = function() {
 	return this.dom;
-}
+};
 
 GuardPane.prototype.checkProblems = function(rule) {
 	this.problem = null;
@@ -360,15 +360,15 @@ GuardPane.prototype.checkProblems = function(rule) {
 
 
 	// TODO: check for problems with the guard for the source node here
-	if (this.isVisible) {
+	if (this.isVisible()) {
 		this.setVisible(false);
 		this.setVisible(true);
 	}
-}
+};
 
 GuardPane.prototype.isVisible = function() {
 	return (this.dom != null);
-}
+};
 
 GuardPane.prototype.setVisible = function(visible) {
 	if (!this.isVisible() && visible) {
@@ -381,7 +381,7 @@ GuardPane.prototype.setVisible = function(visible) {
 		this.parent.removeChild(this.dom);
 		this.dom = null;
 	}
-}
+};
 
 GuardPane.prototype.render = function() {
 	var childs = [];
@@ -403,9 +403,9 @@ GuardPane.prototype.render = function() {
 		},
 		childs);
 	return dom;
-}
+};
 
 GuardPane.prototype.destroy = function() {
 	this.setVisible(false);
-}
+};
 

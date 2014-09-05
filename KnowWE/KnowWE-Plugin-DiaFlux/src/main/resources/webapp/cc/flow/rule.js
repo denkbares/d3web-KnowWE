@@ -23,11 +23,11 @@ Rule.enableRouting = true;
 
 Rule.prototype.getDOM = function() {
 	return this.dom;
-}
+};
 
 Rule.prototype.isVisible = function() {
 	return (this.dom != null);
-}
+};
 
 Rule.prototype.setVisible = function(visible) {
 	if (!this.isVisible() && visible) {
@@ -45,7 +45,7 @@ Rule.prototype.setVisible = function(visible) {
 		this.flowchart.getContentPane().removeChild(this.dom);
 		this.dom = null;
 	}
-}
+};
 
 
 Rule.prototype.render = function() {
@@ -53,7 +53,7 @@ Rule.prototype.render = function() {
 		
 		var ruleDom = Builder.node('div', {
 			id: this.fcid,
-			className: 'Rule'
+			className: 'Rule unselectedRule'
 		},[highlightDom = Builder.node('div', {className :'rule_highlight'}), selectorDom = Builder.node('div', {className :'rule_selector_parent'})]);
 		
 		for (var i = 0; i < this.coordinates.length - 1; i++) {
@@ -133,13 +133,13 @@ Rule.prototype.render = function() {
 		ruleDom.appendChild(selectorDom);
 		ruleDom.__rule = this;
 		return ruleDom;
-}
+};
 
 // only implemented in editor
-Rule.prototype.createDraggable = function() {}
+Rule.prototype.createDraggable = function() {};
 
 // only implemented in editor
-Rule.prototype.destroyDraggable = function() {}
+Rule.prototype.destroyDraggable = function() {};
 
 Rule.prototype.intersects = function(x1, y1, x2, y2) {
 	var xMin = Math.min(x1, x2);
@@ -159,11 +159,11 @@ Rule.prototype.intersects = function(x1, y1, x2, y2) {
 			return true;
 		}
 	}
-}
+};
 
 Rule.prototype.getGuard = function() {
 	return this.guard;
-}
+};
 
 Rule.prototype.select = function(multipleSelectionMode, refresh) {
 	var selected = this.flowchart.isSelected(this);
@@ -175,14 +175,14 @@ Rule.prototype.select = function(multipleSelectionMode, refresh) {
 	this.flowchart.setSelection(this, 
 		multipleSelectionMode && !selected, 
 		multipleSelectionMode && selected);
-}
+};
 
 Rule.prototype.setGuard = function(guard) {
 	this.guard = guard;
 	if (this.guardPane) {
 		this.setGuardVisible(true, false);		
 	}
-}
+};
 
 Rule.prototype.notifyNodeChanged = function(node) {
 	var visible = this.isVisible();
@@ -194,11 +194,11 @@ Rule.prototype.notifyNodeChanged = function(node) {
 		this.guard.lookupDisplayHTML(this.sourceNode.getPossibleGuards());
 	}
 	this.setVisible(visible);
-}
+};
 
 Rule.prototype.getGuardRoot = function() {
 	return (this.dom ? this.guardRoot : null);
-}
+};
 
 Rule.prototype.setSelectionVisible = function(isSelected) {
 	if (!this.isVisible()) return;
@@ -251,6 +251,7 @@ Rule.prototype.setSelectionVisible = function(isSelected) {
 			tool.setVisible(true);
 			this.routingTools.push(tool);			
 		}
+		jq$(this.dom).addClass("selectedRule").removeClass("unselectedRule");
 	}
 	else {
 		highlight.style.visibility = 'hidden';
@@ -265,6 +266,7 @@ Rule.prototype.setSelectionVisible = function(isSelected) {
 			}
 			this.routingTools = null;
 		}
+		jq$(this.dom).removeClass("selectedRule").addClass("unselectedRule");
 	}
 };
 
@@ -287,39 +289,39 @@ Rule.prototype.setGuardVisible = function(paneVisible, editorVisible) {
 			this.sourceNode.getPossibleGuards(),
 			this.handleGuardSelected.bind(this));
 	}
-}
+};
 
 Rule.prototype.handleGuardSelected = function(guard) {
 	this.setGuard(guard);
-}
+};
 
 Rule.prototype.setSourceAnchor = function(anchor) {
 	this.sourceAnchor = anchor;
-}
+};
 
 Rule.prototype.getSourceAnchor = function() {
 	return this.sourceAnchor;
-}
+};
 
 Rule.prototype.getSourceNode = function() {
 	return this.sourceNode;
-}
+};
 
 Rule.prototype.setTargetAnchor = function(anchor) {
 	this.targetAnchor = anchor;
-}
+};
 
 Rule.prototype.getTargetAnchor = function() {
 	return this.targetAnchor;
-}
+};
 
 Rule.prototype.getTargetNode = function() {
 	return this.targetNode;
-}
+};
 
 Rule.prototype.getAnchor = function(node) {
 	return (this.targetNode == node) ? this.targetAnchor : this.sourceAnchor;
-}
+};
 
 Rule.prototype.setCoordinates = function(coordinates) {
 	// check if coordinates have changed
@@ -329,12 +331,11 @@ Rule.prototype.setCoordinates = function(coordinates) {
 		this.setVisible(false);
 		this.setVisible(true);
 	}
-}
+};
 
 Rule.prototype.getOtherNode = function(node) {
-	var result = (this.targetNode == node) ? this.sourceNode : this.targetNode;
-	return result;
-}
+	return (this.targetNode == node) ? this.sourceNode : this.targetNode;
+};
 
 
 Rule.prototype.destroy = function() {
@@ -348,7 +349,7 @@ Rule.prototype.destroy = function() {
 	this.draggable.options.endeffekt = null;
 	this.setVisible(false);
 	this.flowchart.removeRule(this);
-}
+};
 
 Rule.createFromXML = function(flowchart, xmlDom, pasteOptions) {
 	var id = pasteOptions.createID(xmlDom.getAttribute('fcid'));
@@ -360,18 +361,16 @@ Rule.createFromXML = function(flowchart, xmlDom, pasteOptions) {
 	if (!sourceNode) return null;
 	if (!targetNode) return null;
 	
-	var guard = null;
 	var guardDoms = xmlDom.getElementsByTagName('guard');
 	var guard = Guard.createFromXML(flowchart, guardDoms, pasteOptions, sourceNode);
 
 	var rule = new Rule(id, sourceNode, guard, targetNode);
 
 	var routingDoms = xmlDom.getElementsByTagName('routingPoint');
-	var routingPoints = RoutingPoint.createArrayFromXML(rule, routingDoms);
-	rule.routingPoints = routingPoints;
+	rule.routingPoints = RoutingPoint.createArrayFromXML(rule, routingDoms);
 	
 	return rule;
-}
+};
 
 //----
 //RoutingPoint
@@ -424,7 +423,7 @@ RoutingPoint.prototype.setCoordinates = function (x, y) {
 	var dy = y2 == y1 ? 1 : (y2 - y1);
 	this.percentX = px ? px : (x - x1) / dx;
 	this.percentY = py ? py : (y - y1) / dy;
-}
+};
 
 RoutingPoint.prototype.destroy = function() {
 	// delete this routing point from rule
@@ -438,7 +437,7 @@ RoutingPoint.prototype.destroy = function() {
 	var flowchart = this.rule.flowchart;
 	flowchart.router.rerouteNodes([this.rule.getSourceNode(), this.rule.getTargetNode()]);
 	this.rule.select(false, true);
-}
+};
 
 RoutingPoint.prototype.getX = function () {
 	var n1 = this.rule.getSourceNode();
@@ -452,7 +451,7 @@ RoutingPoint.prototype.getX = function () {
 	var dx = n2.getCenterX() - n1.getCenterX();
 	if (dx == 0) dx = 1;
 	return Math.floor(n1.getCenterX() + dx * this.percentX);
-}
+};
 
 RoutingPoint.prototype.getY = function () {
 	var n1 = this.rule.getSourceNode();
@@ -466,7 +465,7 @@ RoutingPoint.prototype.getY = function () {
 	var dy = n2.getCenterY() - n1.getCenterY();
 	if (dy == 0) dy = 1;
 	return Math.floor(n1.getCenterY() + dy * this.percentY);
-}
+};
 
 
 // ----
@@ -483,7 +482,7 @@ function Anchor(node, x, y, type, slide) {
 
 Anchor.prototype.isHorizontal = function() {
 	return this.type == 'left' || this.type == 'right';
-}
+};
 
 Anchor.prototype.getGuardPosition = function() {
 	if (this.type == 'top') {
@@ -498,4 +497,4 @@ Anchor.prototype.getGuardPosition = function() {
 	else {
 		return { left: 7, bottom: 0, height: 20 };
 	}
-}
+};
