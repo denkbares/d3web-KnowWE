@@ -105,6 +105,20 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		return max;
 	};
 
+	var getSelectedNodes = function(flow) {
+		var nodes = [];
+		jq$.each(flow.selection, function(index, item) {
+			if (item instanceof Rule) {
+				if (!nodes.contains(item.getSourceNode())) nodes.push(item.getSourceNode());
+				if (!nodes.contains(item.getTargetNode())) nodes.push(item.getTargetNode());
+			}
+			else if (item instanceof Node) {
+				if (!nodes.contains(item)) nodes.push(item);
+			}
+		});
+		return nodes;
+	};
+
 
 	/**
 	 * Predicates to specify when a menu item is active
@@ -114,7 +128,7 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		return flow.selection.length >= 1;
 	};
 	var twoOrMoreNodes = function(flowEditor) {
-		return flowEditor.getFlowchart().getSelectedNodes().length >= 2;
+		return getSelectedNodes(flowEditor.getFlowchart()).length >= 2;
 	};
 	var oneComposed = function(flowEditor) {
 		var flow = flowEditor.getFlowchart();
@@ -198,7 +212,7 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 				node.moveTo(node.getLeft(), pos);
 			}
 		};
-		var nodes = flowEditor.getFlowchart().getSelectedNodes();
+		var nodes = getSelectedNodes(flowEditor.getFlowchart());
 		var medPos = median(nodes, getPos);
 		jq$.each(nodes, function(index, node) {
 			setPos(node, medPos);
@@ -250,7 +264,7 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 				node.moveTo(node.getLeft(), pos);
 			}
 		};
-		var nodes = flowEditor.getFlowchart().getSelectedNodes();
+		var nodes = getSelectedNodes(flowEditor.getFlowchart());
 		nodes.sort(function(n1, n2) {
 			return getPos(n1) - getPos(n2);
 		});
@@ -341,7 +355,7 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		};
 
 		// sort nodes and split into groups
-		var nodes = flowEditor.getFlowchart().getSelectedNodes();
+		var nodes = getSelectedNodes(flowEditor.getFlowchart());
 		if (nodes.length == 0) {
 			// if no nodes selected, update all nodes (make a copy of the list)
 			nodes = jq$.map(flowEditor.getFlowchart().nodes, function(node) {
@@ -481,7 +495,7 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		// check deltas and move group to one that does not interfere with existing ones
 		// also minimize the distance between
 		var flow = flowEditor.getFlowchart();
-		var selectedNodes = flow.getSelectedNodes();
+		var selectedNodes = getSelectedNodes(flow);
 		if (selectedNodes.length == 0) selectedNodes = flow.nodes;
 
 		// build groups to optimize, but first, optimize single nodes only

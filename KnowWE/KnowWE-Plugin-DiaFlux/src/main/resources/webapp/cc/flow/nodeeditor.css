@@ -104,7 +104,7 @@
 	overflow:visible; 
 	width:26px;
 	height:26px;
-	z-index: 200; 
+	z-index: 400;
 	cursor: crosshair;
 }
 
