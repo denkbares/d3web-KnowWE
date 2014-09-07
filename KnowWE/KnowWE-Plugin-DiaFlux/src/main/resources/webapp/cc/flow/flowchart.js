@@ -70,7 +70,7 @@ Flowchart.update = function(parent, kdomid, xml) {
 	flow.kdomid = kdomid;
 	KNOWWE.helper.observer.notify('flowchartrendered', {flow : flow});
 	return flow;
-}
+};
 
 Flowchart.prototype.createID = function(prefix) {
 	this.idCounter++;
@@ -80,7 +80,29 @@ Flowchart.prototype.createID = function(prefix) {
 		id = '#' + (prefix || "XX") + "_" + this.idCounter;
 	}
 	return id;
-}
+};
+
+Flowchart.prototype.intersectsNode = function(x1, y1, x2, y2) {
+	var intersect = false;
+	for (var i = 0; i < this.nodes.length; i++) {
+		var node = this.nodes[i];
+		if (node.intersects(x1, y1, x2, y2)) {
+			return node;
+		}
+	}
+	return null;
+};
+
+Flowchart.prototype.getIntersectNodes = function(x1, y1, x2, y2) {
+	var nodes = [];
+	for (var i = 0; i < this.nodes.length; i++) {
+		var node = this.nodes[i];
+		if (node.intersects(x1, y1, x2, y2)) {
+			nodes.push(node);
+		}
+	}
+	return nodes;
+};
 
 Flowchart.prototype.setSize = function(width, height, exactSize) {
 	this.width = width;
@@ -103,23 +125,25 @@ Flowchart.prototype.setSize = function(width, height, exactSize) {
 
 Flowchart.prototype.getContentPane = function() {
 	return this.dom.firstChild;
-}
+};
 
 Flowchart.prototype.isVisible = function() {
 	return (this.dom != null);
-}
+};
 
 Flowchart.prototype.focus = function() {
-}
+};
 
 Flowchart.prototype.setVisible = function(visible) {
 	if (!this.isVisible() && visible) {
-		// ==> show Node
-		this.dom = this.render();
-		this.parent.appendChild(this.dom);
-		// before showing childs, parent must be visible to enable dragging library
-		for (var i = 0; i < this.nodes.length; i++) this.nodes[i].setVisible(visible);
-		for (var i = 0; i < this.rules.length; i++) this.rules[i].setVisible(visible);
+		this.router.withDelayedReroute(function() {
+			// ==> show Node
+			this.dom = this.render();
+			this.parent.appendChild(this.dom);
+			// before showing childs, parent must be visible to enable dragging library
+			for (var i = 0; i < this.nodes.length; i++) this.nodes[i].setVisible(visible);
+			for (var i = 0; i < this.rules.length; i++) this.rules[i].setVisible(visible);
+		}.bind(this));
 	}
 	else if (this.isVisible() && !visible) {
 		// ==> hide Node
@@ -128,7 +152,7 @@ Flowchart.prototype.setVisible = function(visible) {
 		for (var i = 0; i < this.rules.length; i++) this.rules[i].setVisible(visible);
 		this.dom = null;
 	}
-}
+};
 
 
 /**
@@ -137,7 +161,7 @@ Flowchart.prototype.setVisible = function(visible) {
  */
 Flowchart.prototype.getLeft = function() {
 	return $(this.id).cumulativeOffset().left;
-}
+};
 
 /**
  * Gets top cumulative offset of flowchart content pane.
@@ -263,21 +287,25 @@ Flowchart.prototype.setSelection = function(nodeOrRuleOrArray, addToSelection, r
 			newSelection[i].setSelectionVisible(true);
 		}
 	}
-}
+};
 
 Flowchart.prototype.findObject = function(id) {
 	return this.findNode(id) || this.findRule(id);
-}
+};
 
 Flowchart.prototype.addRule = function(rule) {
 	this.rules.push(rule);
-	this.router.rerouteNodes([rule.sourceNode, rule.targetNode]);
-}
+	if (this.isVisible()) {
+		this.router.rerouteNodes([rule.sourceNode, rule.targetNode]);
+	}
+};
 
 Flowchart.prototype.removeRule = function(rule) {
 	this.rules.remove(rule);
-	this.router.rerouteNodes([rule.sourceNode, rule.targetNode]);
-}
+	if (this.isVisible()) {
+		this.router.rerouteNodes([rule.sourceNode, rule.targetNode]);
+	}
+};
 
 
 Flowchart.prototype.render = function() {
@@ -327,10 +355,16 @@ Flowchart.prototype.findRulesForNode = function(node) {
 		}
 	}
 	return result;
-}
+};
 
 
 Flowchart.prototype.addFromXML = function(xmlDom, dx, dy) {
+	this.router.withDelayedReroute(function() {
+		this._addFromXML(xmlDom, dx, dy);
+	}.bind(this));
+};
+
+Flowchart.prototype._addFromXML = function(xmlDom, dx, dy) {
 	var pasteOptions = {
 		flowchart : this,
 		idMap : {},

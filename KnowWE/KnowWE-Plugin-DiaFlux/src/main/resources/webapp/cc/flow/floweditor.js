@@ -252,9 +252,10 @@ FlowEditor.autoResize = function() {
 
 	if (FlowEditor.avoidAutoResize) return;
 	var spacing = FlowEditor.borderSpacing;
+	var cPane = $('contents'), cWidth = cPane.offsetWidth, cHeight = cPane.offsetHeight;
 
 	// also adapt trash-can position
-	var delta = $('contents').offsetHeight - $('contents').clientHeight;
+	var delta = cHeight - cPane.clientHeight;
 	jq$('.trashParent .trash').css("top", (-delta) + "px");
 
 	// move objects to upper left corner with some spacing left/above
@@ -266,6 +267,12 @@ FlowEditor.autoResize = function() {
 	if (-dy > scroll.y) dy = -scroll.y;
 	dx = Math.round(dx / 10.0) * 10;
 	dy = Math.round(dy / 10.0) * 10;
+	// not scroll if flow is smaller than viewport, only reduce spacing a litte bit
+	if (area.right - area.left < cWidth && area.left >= spacing) {
+		dx = 0;
+	}
+	if (area.bottom - area.top < cHeight && area.top >= spacing) dy = 0;
+
 	var moveNodes = Math.abs(dx) > 1 || Math.abs(dy) > 1;
 	if (moveNodes) {
 		for (var i = 0; i < flow.nodes.length; i++) {
@@ -275,13 +282,13 @@ FlowEditor.autoResize = function() {
 
 	// resize flowchart to add some spacing on bottom right
 	// at least all visible space
-	var width = $('contents').offsetWidth - 3 + scroll.x + dx;
-	var height = $('contents').offsetHeight - 3 + scroll.y + dy;
+	var width = cWidth - 2 + scroll.x + dx;
+	var height = cHeight - 2 + scroll.y + dy;
 	// at least size of view panel
 	width = Math.max(area.right + spacing + dx, width);
 	height = Math.max(area.bottom + spacing + dy, height);
 	// set the new size
-	flow.setSize(width, height, true);
+	flow.setSize(Math.round(width / 10.0) * 10, Math.round(height / 10.0) * 10, true);
 
 	if (moveNodes) {
 		try {
