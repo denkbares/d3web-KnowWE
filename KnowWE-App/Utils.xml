@@ -36,8 +36,6 @@
 				<exclude name="KnowWE-Plugin-Insert-Section/**" />
 				<exclude name="KnowWE-Plugin-KnowSEC/**" />
 				<exclude name="KnowWE-Plugin-KnowSEC-Import/**" />
-				<exclude name="KnowWE-Plugin-SemanticAutocompletion/**" />
-				<exclude name="KnowWE-Plugin-SemanticServiceCore/**" />
 				<!-- for performance reasons... -->
 				<exclude name="KnowWE-Plugin-XSL/**" />
 			</fileset>
