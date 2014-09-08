@@ -180,6 +180,7 @@ public class Rdf2GoUtils {
 	 * @created 12.07.2012
 	 */
 	public static String trimNamespace(Rdf2GoCore core, String string) {
+		if (string.startsWith(":")) return string.substring(1);
 		for (Entry<String, String> namespaceEntry : core.getNamespaces().entrySet()) {
 			String ns = namespaceEntry.getValue();
 			if (string.startsWith(ns)) {
@@ -304,6 +305,7 @@ public class Rdf2GoUtils {
 	 * @created 04.01.2011
 	 */
 	public static String expandNamespace(Rdf2GoCore core, String string) {
+		if (string.startsWith(":")) string = Rdf2GoCore.LNS_ABBREVIATION + string;
 		String prefix = parseKnownNamespacePrefix(core, string);
 		if (prefix == null) return string;
 		return core.getNamespacePrefixes().get(prefix) + string.substring(prefix.length());
