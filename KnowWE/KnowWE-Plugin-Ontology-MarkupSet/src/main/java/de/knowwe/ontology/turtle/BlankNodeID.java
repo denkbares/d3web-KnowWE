@@ -51,8 +51,8 @@ public class BlankNodeID extends AbstractType implements NodeProvider<BlankNodeI
 
 	@Override
 	public Node getNode(Section<BlankNodeID> section, Rdf2GoCompiler core) {
-		Section<TurtleContent> content = Sections.ancestor(section,
-				TurtleContent.class);
+		Section<TurtleSentence> content = Sections.ancestor(section,
+				TurtleSentence.class);
 		return core.getRdf2GoCore().createBlankNode(content.getID() + "_" + section.getText());
 	}
 }
