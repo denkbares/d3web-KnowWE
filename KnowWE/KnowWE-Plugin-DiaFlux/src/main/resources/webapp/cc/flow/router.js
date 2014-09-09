@@ -2,6 +2,7 @@ function Router(flowchart) {
 	this.flowchart = flowchart;
 	this.delayReroute = false;
 	this.allowSingleBendRoute = false;
+	this.allowGuardOptimization = false;
 }
 
 Router.prototype.withDelayedReroute = function(fun) {
@@ -233,6 +234,13 @@ Router.prototype.rerouteAll = function() {
 	// add bendHints to Anchors
 	for (var i = 0; i < arrangements.length; i++) {
 		arrangements[i].addBendHints();
+	}
+
+	// add guard position hints to Anchors
+	if (this.allowGuardOptimization) {
+		for (var i = 0; i < arrangements.length; i++) {
+			arrangements[i].addGuardPositionHints();
+		}
 	}
 
 	for (var i = 0; i < this.flowchart.rules.length; i++) {
@@ -486,6 +494,47 @@ RuleArrangement.prototype.isHorizontal = function() {
 	return (this.anchorType == 'left' || this.anchorType == 'right');
 };
 
+RuleArrangement.prototype.addGuardPositionHints = function() {
+	// place first guard one above / left of the line
+	if (!(this.box.nodeOrRoutingPoint instanceof Node)) return;
+	var node = this.box.nodeOrRoutingPoint;
+	var rule = (this.lines.length > 0) && (this.lines[0].rule);
+	if (!rule || rule.getSourceNode() != node) return;
+
+	if (this.isHorizontal()) {
+		this.lines[0].sourceAnchor.hints.guardAbove = true;
+	}
+	else {
+		if (this.lines.length > 1) {
+			this.lines[0].sourceAnchor.hints.guardLeft = true;
+		}
+		//noinspection JSDuplicatedDeclaration
+		for (var i=0; i<this.lines.length; i++) {
+			var line = this.lines[i];
+			if (Math.abs(line.sourceAnchor.y - line.targetAnchor.y) > 25) {
+				line.sourceAnchor.hints.guardShift = true;
+			}
+		}
+	}
+
+	// place all following horizontal guards (despite the last one)
+	// also above if there is enough space between the lines
+	if (this.isHorizontal() && this.lines.length >= 3) {
+		//noinspection JSDuplicatedDeclaration
+		for (var i=1; i<this.lines.length-1; i++) {
+			var yBefore = this.lines[i-1].sourceAnchor.y;
+			var y = this.lines[i].sourceAnchor.y;
+			if (y - yBefore >= 10) {
+				this.lines[i].sourceAnchor.hints.guardAbove = true;
+				if (y - yBefore < 15) {
+					this.lines[i].sourceAnchor.y += 15 - (y - yBefore);
+					this.lines[i].targetAnchor.y += 15 - (y - yBefore);
+				}
+			}
+		}
+	}
+};
+
 RuleArrangement.prototype.addBendHints = function() {
 	if (this.lines.length < 2) return;
 	if (this.box.isRoutingPoint()) return;
@@ -494,6 +543,7 @@ RuleArrangement.prototype.addBendHints = function() {
 
 	var minBend = null, maxBend = null;
 	var lowLines = [], highLines = [];
+	//noinspection JSDuplicatedDeclaration
 	for (var i = 0; i < this.lines.length; i++) {
 		var line = this.lines[i];
 		var anchor1 = line.sourceAnchor;
@@ -530,11 +580,11 @@ RuleArrangement.prototype.addBendHints = function() {
 
 	// use available space but not more than 5px
 	var bendDelta = Math.min(5, Math.ceil((maxBend - minBend) / count));
-	var bendPos = (maxBend + minBend) / 2 - bendDelta * count * 0.5;
+	var pos = (maxBend + minBend) / 2 - bendDelta * count * 0.5;
 	// and finally apply bends
-	var pos = bendPos;
 	var highPrio = (highLines.length >= 2) ? 1.0 : 0.5;
 	var lowPrio = (lowLines.length >= 2) ? 1.0 : 0.5;
+	//noinspection JSDuplicatedDeclaration
 	for (var i = 0; i < count; i++) {
 		if (highLines.length - 1 - i >= 0) {
 			this.setBendHint(highLines[highLines.length - 1 - i].sourceAnchor, pos, highPrio);
