@@ -102,7 +102,11 @@ KNOWWE.plugin.instantEdit = function() {
 						var json = JSON.parse(this.responseText);
 						var locked = json.locked;
 						var html = toolNameSpace.generateHTML(id);
-                        html += _IE.getChangeNoteField();
+						if (toolNameSpace.getChangeNoteField) {
+							html += toolNameSpace.getChangeNoteField();
+						} else{
+							html += _IE.getChangeNoteField();
+						}
                         html += toolNameSpace.generateButtons(id);
                         html = _EC.wrapHTML(id, locked, html);
 
