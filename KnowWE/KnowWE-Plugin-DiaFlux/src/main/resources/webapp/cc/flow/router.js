@@ -1,8 +1,8 @@
 function Router(flowchart) {
 	this.flowchart = flowchart;
 	this.delayReroute = false;
-	this.allowSingleBendRoute = false;
-	this.allowGuardOptimization = false;
+	this.allowSingleBendRoute = true;
+	this.allowGuardOptimization = true;
 }
 
 Router.prototype.withDelayedReroute = function(fun) {
