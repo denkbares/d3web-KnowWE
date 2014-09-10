@@ -111,6 +111,7 @@ function FlowEditor(articleIDs) {
 	$('redo').observe('click', redo);
 	this.undo = undo;
 	this.redo = redo;
+	this.updateUndoRedo();
 
 	Element.observe(window, 'keydown', function(event) {
 		// s
@@ -149,7 +150,28 @@ FlowEditor.prototype.getFlowchart = function() {
 };
 
 FlowEditor.prototype.withUndo = function(name, action, combineId) {
-	return this.undoSupport.withUndo(name, action, combineId);
+	var result = this.undoSupport.withUndo(name, action, combineId);
+	this.updateUndoRedo();
+	return result;
+};
+
+FlowEditor.prototype.updateUndoRedo = function() {
+	var update = function(button, prefix, names) {
+		button = jq$(button);
+		if (names.length == 0) {
+			button.addClass("disabled");
+			button.attr("title", prefix + ": --");
+		}
+		else {
+			button.removeClass("disabled");
+			names = jq$.map(names, function(name, index) {
+				return (index + 1) + ". " + name;
+			});
+			button.attr("title", prefix + ":\n" + names.join("\n"));
+		}
+	};
+	update("#undo", "Undo", this.undoSupport.getUndoNames(10));
+	update("#redo", "Redo", this.undoSupport.getRedoNames(10));
 };
 
 FlowEditor.prototype.showEditor = function(xmlText) {
@@ -218,6 +240,7 @@ FlowEditor.prototype._restoreData = function(xml, metaData) {
 		return flow.findNode(id) || flow.findRule(id);
 	});
 	flow.setSelection(sel, false, false);
+	this.updateUndoRedo();
 };
 
 FlowEditor.checkFocus = function() {
@@ -232,6 +255,7 @@ FlowEditor.checkFocus = function() {
 	}
 	flow.focus();
 };
+
 
 FlowEditor.withDelayedResize = function(fun) {
 	var oldFlag = FlowEditor.avoidAutoResize;
@@ -267,10 +291,8 @@ FlowEditor.autoResize = function() {
 	if (-dy > scroll.y) dy = -scroll.y;
 	dx = Math.round(dx / 10.0) * 10;
 	dy = Math.round(dy / 10.0) * 10;
-	// not scroll if flow is smaller than viewport, only reduce spacing a litte bit
-	if (area.right - area.left < cWidth && area.left >= spacing) {
-		dx = 0;
-	}
+	// not scroll if flow is smaller than viewport, if we have enough spacing on top/left side
+	if (area.right - area.left < cWidth && area.left >= spacing) dx = 0;
 	if (area.bottom - area.top < cHeight && area.top >= spacing) dy = 0;
 
 	var moveNodes = Math.abs(dx) > 1 || Math.abs(dy) > 1;

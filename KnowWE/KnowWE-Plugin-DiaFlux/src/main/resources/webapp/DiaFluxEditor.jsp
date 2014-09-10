@@ -216,10 +216,8 @@
 		</div>
 	</div>
 	<ul class="toolbar">
-		<li class="icon" id="undo" title="Undo"
-			style="background-image:url(cc/image/toolbar/undo.png);">
-		<li class="icon" id="redo" title="Redo"
-			style="background-image:url(cc/image/toolbar/redo.png);">
+		<li class="icon disabled" id="undo" title="Undo">
+		<li class="icon disabled" id="redo" title="Redo">
 		<li class="icon" id="tools" title="More Tools..."
 			style="background-image:url(cc/image/toolbar/tools.png);">
 	</ul>

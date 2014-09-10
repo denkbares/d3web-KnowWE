@@ -423,14 +423,18 @@ KNOWWE.editCommons.UndoSupport.prototype.redo = function(count) {
 		this.snaps[this.currentIndex].metaDataAfter);
 };
 
-KNOWWE.editCommons.UndoSupport.prototype.getUndoNames = function() {
-	return jq$.map(this.snaps.slice(1, this.currentIndex), function(snap) {
+KNOWWE.editCommons.UndoSupport.prototype.getUndoNames = function(maxNames) {
+	var from = 1, to = this.currentIndex+1;
+	if (typeof maxNames !== 'undefined' && to - from > maxNames) from = to - maxNames;
+	return  jq$.map(this.snaps.slice(from, to), function(snap) {
 		return snap.name;
 	}).reverse();
 };
 
-KNOWWE.editCommons.UndoSupport.prototype.getRedoNames = function() {
-	return jq$.map(this.snaps.slice(this.currentIndex + 1), function(snap) {
+KNOWWE.editCommons.UndoSupport.prototype.getRedoNames = function(maxNames) {
+	var from = this.currentIndex + 1, to = this.snaps.length+1;
+	if (typeof maxNames !== 'undefined' && to - from > maxNames) to = from + maxNames;
+	return  jq$.map(this.snaps.slice(from, to), function(snap) {
 		return snap.name;
 	});
 };

@@ -417,7 +417,7 @@ Flowchart.prototype._addFromXML = function(xmlDom, dx, dy) {
 	}
 
 	this.setSelection(jq$.grep(sel, function(item) {
-		return item instanceof Node
+		return (item instanceof Node);
 	}), false, false);
 	return pasteOptions;
 };
@@ -449,8 +449,10 @@ Flowchart.createFromXML = function(parent, xmlDom) {
 		flowchart.autostart = false;
 	}
 
-	flowchart.addFromXML(xmlDom, 0, 0);
-	if (parent) flowchart.setVisible(true);
+	flowchart.router.withDelayedReroute(function() {
+		flowchart.addFromXML(xmlDom, 0, 0);
+		if (parent) flowchart.setVisible(true);
+	});
 	return flowchart;
 };
 

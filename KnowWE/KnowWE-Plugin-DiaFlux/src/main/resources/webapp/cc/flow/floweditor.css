@@ -70,9 +70,15 @@ body {
 #toolbar ul.toolbar li.selected,ul.toolbar li:hover {
 	background-color: rgba(80, 80, 80, 0.25);
 }
+#toolbar ul.toolbar li.selected,ul.toolbar li.disabled:hover {
+	background-color: transparent;
+}
 
 #toolbar ul.toolbar li:active, ul.toolbar li.active {
 	background-color: rgba(0, 0, 0, 0.3);
+}
+#toolbar ul.toolbar li:active, ul.toolbar li.disabled.active {
+	background-color: transparent;
 }
 
 #toolbar ul.toolbar li:first-child {
@@ -317,4 +323,17 @@ body {
 /* ie7 hack */
 *:first-child+html #findSuggestionMenu .hover {
 	background-color: black;
+}
+
+.toolbar #redo {
+	background-image: url(../image/toolbar/redo.png);
+}
+.toolbar #redo.disabled {
+	background-image: url(../image/toolbar/redo_disabled.png);
+}
+.toolbar #undo {
+	background-image: url(../image/toolbar/undo.png);
+}
+.toolbar #undo.disabled {
+	background-image: url(../image/toolbar/undo_disabled.png);
 }

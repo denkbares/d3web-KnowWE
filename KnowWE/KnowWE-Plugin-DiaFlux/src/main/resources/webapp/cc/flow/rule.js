@@ -35,7 +35,7 @@ Rule.prototype.setVisible = function(visible) {
 		this.flowchart.getContentPane().appendChild(this.dom);
 		this.createDraggable();
 		var selected = this.flowchart.isSelected(this);
-		this.setGuardVisible(!selected, selected);
+		if (this.guardRoot) this.setGuardVisible(!selected, selected);
 	}
 	else if (this.isVisible() && !visible) {
 		// ==> hide Node
