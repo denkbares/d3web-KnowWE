@@ -58,6 +58,24 @@
 .Rule .guard.vTopRight.shifted, .Rule .guard.vTopLeft.shifted {
 	bottom: 9px;
 }
+.Rule .guard.vTopRight.shifted1, .Rule .guard.vTopLeft.shifted1 {
+	bottom: 21px;
+}
+.Rule .guard.vTopRight.shifted2, .Rule .guard.vTopLeft.shifted2 {
+	bottom: 33px;
+}
+.Rule .guard.vTopRight.shifted3, .Rule .guard.vTopLeft.shifted3 {
+	bottom: 45px;
+}
+.Rule .guard.vTopRight.shifted4, .Rule .guard.vTopLeft.shifted4 {
+	bottom: 57px;
+}
+.Rule .guard.vTopRight.shifted5, .Rule .guard.vTopLeft.shifted5 {
+	bottom: 69px;
+}
+.Rule .guard.vTopRight.shifted6, .Rule .guard.vTopLeft.shifted6 {
+	bottom: 81px;
+}
 .Rule .guard.vBottomLeft {
 	position: absolute;
 	right: 3px;
@@ -70,6 +88,24 @@
 }
 .Rule .guard.vBottomRight.shifted, .Rule .guard.vBottomLeft.shifted {
 	top: 8px;
+}
+.Rule .guard.vBottomRight.shifted1, .Rule .guard.vBottomLeft.shifted1 {
+	top: 20px;
+}
+.Rule .guard.vBottomRight.shifted2, .Rule .guard.vBottomLeft.shifted2 {
+	top: 32px;
+}
+.Rule .guard.vBottomRight.shifted3, .Rule .guard.vBottomLeft.shifted3 {
+	top: 44px;
+}
+.Rule .guard.vBottomRight.shifted4, .Rule .guard.vBottomLeft.shifted4 {
+	top: 56px;
+}
+.Rule .guard.vBottomRight.shifted5, .Rule .guard.vBottomLeft.shifted5 {
+	top: 68px;
+}
+.Rule .guard.vBottomRight.shifted6, .Rule .guard.vBottomLeft.shifted6 {
+	top: 80px;
 }
 .Rule .guard.hLeftAbove {
 	position: absolute;

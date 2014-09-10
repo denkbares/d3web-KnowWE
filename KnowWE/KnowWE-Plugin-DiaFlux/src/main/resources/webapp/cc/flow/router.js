@@ -227,34 +227,37 @@ Router.prototype.rerouteAll = function() {
 	}
 
 	// rearrange the arrangements
-	for (var i = 0; i < arrangements.length; i++) {
-		arrangements[i].arrange();
-	}
+	jq$.each(arrangements, function(index, arrangement) {
+		arrangement.arrange();
+	});
 
 	// add bendHints to Anchors
-	for (var i = 0; i < arrangements.length; i++) {
-		arrangements[i].addBendHints();
-	}
+	jq$.each(arrangements, function(index, arrangement) {
+		arrangement.addBendHints();
+	});
 
 	// add guard position hints to Anchors
 	if (this.allowGuardOptimization) {
-		for (var i = 0; i < arrangements.length; i++) {
-			arrangements[i].addGuardPositionHints();
-		}
+		jq$.each(arrangements, function(index, arrangement) {
+			arrangement.addGuardPositionHints();
+		});
 	}
 
-	for (var i = 0; i < this.flowchart.rules.length; i++) {
-		var rule = this.flowchart.rules[i];
-		rule.setSourceAnchor(rule._linesForRule[0].sourceAnchor);
-		rule.setTargetAnchor(rule._linesForRule[rule._linesForRule.length - 1].targetAnchor);
-		this.setRuleCoordinates(rule);
-	}
+	jq$.each(this.flowchart.rules, function(index, rule) {
+		var sourceAnchor = rule._linesForRule[0].sourceAnchor;
+		var targetAnchor = rule._linesForRule[rule._linesForRule.length - 1].targetAnchor;
+		var forceUpdate = rule.lastHints && rule.lastHints.guardShift !== sourceAnchor.hints.guardShift;
+		rule.setSourceAnchor(sourceAnchor);
+		rule.setTargetAnchor(targetAnchor);
+		this.setRuleCoordinates(rule, forceUpdate);
+		rule.lastHints = sourceAnchor.hints;
+	}.bind(this));
 	if (typeof FlowEditor != "undefined" && FlowEditor && FlowEditor.autoResize) {
 		FlowEditor.autoResize();
 	}
 };
 
-Router.prototype.setRuleCoordinates = function(rule) {
+Router.prototype.setRuleCoordinates = function(rule, forceUpdate) {
 	var lines = rule._linesForRule;
 	var coordinates = [];
 
@@ -269,8 +272,7 @@ Router.prototype.setRuleCoordinates = function(rule) {
 		return;
 	}
 
-	for (var i = 0; i < lines.length; i++) {
-		var line = lines[i];
+	jq$.each(lines, function(index, line) {
 		var sourceAnchor = line.sourceAnchor;
 		var targetAnchor = line.targetAnchor;
 		var x1 = sourceAnchor.x;
@@ -283,18 +285,19 @@ Router.prototype.setRuleCoordinates = function(rule) {
 		var trailingAnchor = line.sourceBox.isRoutingPoint() ? sourceAnchor : targetAnchor;
 		var bendOnce = line.sourceBox.isRoutingPoint() || line.targetBox.isRoutingPoint();
 
+		var overlap, xMiddle, yMiddle;
 		if (leadingAnchor.isHorizontal()) {
-			var overlap = Math.min(y1 + s1, y2 + s2) - Math.max(y1 - s1, y2 - s2);
+			overlap = Math.min(y1 + s1, y2 + s2) - Math.max(y1 - s1, y2 - s2);
 			if (overlap >= 0) {
 				// draw straight line, using optimal source position if possible
 				// otherwise use overlap
-				var yMiddle = (y1 > y2 - s2 && y1 < y2 + s2) ? y1 : Math.max(y1 - s1, y2 - s2) + Math.floor(overlap / 2);
+				yMiddle = (y1 > y2 - s2 && y1 < y2 + s2) ? y1 : Math.max(y1 - s1, y2 - s2) + Math.floor(overlap / 2);
 				coordinates.push([x1, yMiddle]);
 				coordinates.push([x2, yMiddle]);
 			}
 			else {
 				// draw double bended line
-				var xMiddle = Math.floor((x1 + x2) / 2);
+				xMiddle = Math.floor((x1 + x2) / 2);
 				if (bendOnce) xMiddle = trailingAnchor.x;
 				else xMiddle = (sourceAnchor.__bendHint || targetAnchor.__bendHint || xMiddle);
 				coordinates.push([x1, y1]);
@@ -304,17 +307,17 @@ Router.prototype.setRuleCoordinates = function(rule) {
 			}
 		}
 		else {
-			var overlap = Math.min(x1 + s1, x2 + s2) - Math.max(x1 - s1, x2 - s2);
+			overlap = Math.min(x1 + s1, x2 + s2) - Math.max(x1 - s1, x2 - s2);
 			if (overlap >= 0) {
 				// draw straight line, using optimal source position if possible
 				// otherwise use overlap
-				var xMiddle = (x1 > x2 - s2 && x1 < x2 + s2) ? x1 : Math.max(x1 - s1, x2 - s2) + Math.floor(overlap / 2);
+				xMiddle = (x1 > x2 - s2 && x1 < x2 + s2) ? x1 : Math.max(x1 - s1, x2 - s2) + Math.floor(overlap / 2);
 				coordinates.push([xMiddle, y1]);
 				coordinates.push([xMiddle, y2]);
 			}
 			else {
 				// draw double bended line
-				var yMiddle = Math.floor((y1 + y2) / 2);
+				yMiddle = Math.floor((y1 + y2) / 2);
 				if (bendOnce) yMiddle = trailingAnchor.y;
 				else yMiddle = (sourceAnchor.__bendHint || targetAnchor.__bendHint || yMiddle);
 				coordinates.push([x1, y1]);
@@ -323,7 +326,7 @@ Router.prototype.setRuleCoordinates = function(rule) {
 				coordinates.push([x2, y2]);
 			}
 		}
-	}
+	});
 	// remove duplicate points
 	for (var i = 0; i < coordinates.length - 1; i++) {
 		if (coordinates[i][0] == coordinates[i + 1][0] && coordinates[i][1] == coordinates[i + 1][1]) {
@@ -331,7 +334,7 @@ Router.prototype.setRuleCoordinates = function(rule) {
 			i--;
 		}
 	}
-	rule.setCoordinates(coordinates);
+	rule.setCoordinates(coordinates, forceUpdate);
 };
 
 
@@ -501,6 +504,11 @@ RuleArrangement.prototype.addGuardPositionHints = function() {
 	var rule = (this.lines.length > 0) && (this.lines[0].rule);
 	if (!rule || rule.getSourceNode() != node) return;
 
+	// reset all hints
+	jq$.each(this.lines, function(index, line) {
+		line.sourceAnchor.hints = {};
+	});
+
 	if (this.isHorizontal()) {
 		this.lines[0].sourceAnchor.hints.guardAbove = true;
 	}
@@ -508,27 +516,52 @@ RuleArrangement.prototype.addGuardPositionHints = function() {
 		if (this.lines.length > 1) {
 			this.lines[0].sourceAnchor.hints.guardLeft = true;
 		}
-		//noinspection JSDuplicatedDeclaration
-		for (var i=0; i<this.lines.length; i++) {
-			var line = this.lines[i];
+		// shift edge a little more away from node if there is enough space to the target node
+		// this increases readability, especially if there are also guarded outgoing edges to left/right
+		jq$.each(this.lines, function(index, line) {
 			if (Math.abs(line.sourceAnchor.y - line.targetAnchor.y) > 25) {
 				line.sourceAnchor.hints.guardShift = true;
 			}
-		}
+		});
+
+		// if we have multiple guard placed on the right side (all but the first one)
+		// disorder them horizontally if they have enough space
+		var bestShift = 0, minShift = 0;
+		jq$.each(this.lines, function(index, line) {
+			if (index == 0) return;
+			// only consider lines that have guards at this (!) anchor
+			if (line.rule.getSourceNode() != node) return;
+			var guard = line.rule.getGuard();
+			if (!guard || !guard.conditionString || guard.conditionString.trim().length == 0) return;
+			// if there is not enough space, reset shift and start from 0 again
+			var vSpace = Math.abs(line.sourceAnchor.y - line.targetAnchor.y);
+			var shift = bestShift;
+			if (vSpace < shift * 12 + 25) shift = minShift;
+			if (vSpace < shift * 12 + 25) {
+				minShift = shift = 0;
+			}
+			if (!line.sourceAnchor.hints.guardShift) return;
+			// add shift class value, but do not add for '0'
+			if (shift > 0) line.sourceAnchor.hints.guardShift = shift;
+			if (shift == bestShift) bestShift = (bestShift + 1) % 7;
+			minShift = Math.min(minShift+1, bestShift);
+		});
 	}
 
 	// place all following horizontal guards (despite the last one)
 	// also above if there is enough space between the lines
 	if (this.isHorizontal() && this.lines.length >= 3) {
 		//noinspection JSDuplicatedDeclaration
-		for (var i=1; i<this.lines.length-1; i++) {
-			var yBefore = this.lines[i-1].sourceAnchor.y;
-			var y = this.lines[i].sourceAnchor.y;
+		for (var i = 1; i < this.lines.length - 1; i++) {
+			var yBefore = this.lines[i - 1].sourceAnchor.y;
+			//noinspection JSDuplicatedDeclaration
+			var line = this.lines[i];
+			var y = line.sourceAnchor.y;
 			if (y - yBefore >= 10) {
-				this.lines[i].sourceAnchor.hints.guardAbove = true;
+				line.sourceAnchor.hints.guardAbove = true;
 				if (y - yBefore < 15) {
-					this.lines[i].sourceAnchor.y += 15 - (y - yBefore);
-					this.lines[i].targetAnchor.y += 15 - (y - yBefore);
+					line.sourceAnchor.y += 15 - (y - yBefore);
+					line.targetAnchor.y += 15 - (y - yBefore);
 				}
 			}
 		}

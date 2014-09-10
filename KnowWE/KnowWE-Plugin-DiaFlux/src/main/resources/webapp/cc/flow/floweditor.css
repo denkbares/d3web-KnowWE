@@ -196,8 +196,11 @@ body {
 	cursor: move;
 }
 
-.Rule .rule_selector {
+.Rule .rule_selector, .guard {
 	cursor: crosshair;
+}
+.guard select {
+	cursor: default;
 }
 
 .trashParent {

@@ -312,11 +312,11 @@ Rule.prototype.getAnchor = function(node) {
 	return (this.targetNode == node) ? this.targetAnchor : this.sourceAnchor;
 };
 
-Rule.prototype.setCoordinates = function(coordinates) {
+Rule.prototype.setCoordinates = function(coordinates, forceUpdate) {
 	// check if coordinates have changed
-	if (this.coordinates.equals(coordinates)) return;
-	this.coordinates = coordinates;
-	if (this.isVisible()) {
+	var hasChanged = !this.coordinates.equals(coordinates);
+	if (hasChanged) this.coordinates = coordinates;
+	if (this.isVisible() && (hasChanged || forceUpdate)) {
 		this.setVisible(false);
 		this.setVisible(true);
 	}
@@ -490,6 +490,7 @@ Anchor.prototype.getGuardPositionClass = function() {
 	}
 	if (this.hints.guardShift) {
 		className += " shifted";
+		if (typeof this.hints.guardShift === 'number') className += this.hints.guardShift;
 	}
 	return className;
 };
