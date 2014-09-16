@@ -39,6 +39,39 @@ KNOWWE.plugin.compositeEditTool = function() {
 
 	var recentlyDragged = false;
 
+	function initCompositeEdit(id) {
+
+		if (!id) {
+			id = jq$('.objectInfoPanel');
+		}
+		
+		if (_IE.enabled) {
+			alert("You are already editing the page. Please finish your current edit before entering composite edit.");
+			return;
+		}
+		_EC.showAjaxLoader();
+
+		initSections(id);
+		if (_CE.mode == _CE.ModeEnum.EDIT) {
+			addEventListenerForEdit(id);
+		}
+		// TODO: replace with dialog specific function
+		// bindUnloadFunctions();
+
+
+		if (_CEWT.locked) {
+			var message = "Another user has started to edit this page, but "
+				+ "hasn't yet saved it. You are allowed to further edit this page, but be "
+				+ "aware that the other user will not be pleased if you do so!";
+			KNOWWE.notification.warn("Locked Article", message);
+		}
+
+		_EC.mode = _CE;
+		_CE.enabled = true;
+
+		_EC.hideAjaxLoader();
+	}
+
 	function initSections(id) {
 		createEditElements(id);
 		prepareEditElementContents(id);
@@ -527,7 +560,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 
 	function enableInitialDialogState() {
 		KNOWWE.core.actions.init();
-		if(!_CE.userCanWriteAllSections){
+		if (!_CE.userCanWriteAllSections) {
 			var pane = jq$("#compositeEdit").next("div.ui-dialog-buttonpane");
 			jq$(pane).find(".editButton").attr('disabled', true).attr('title', "You can't edit these sections, because you don't have write permissions on all sections.");
 		}
@@ -552,6 +585,8 @@ KNOWWE.plugin.compositeEditTool = function() {
 		});
 		jq$(document).on('keydown', escapeFunction);
 		expandSavedStates();
+
+		KNOWWE.tooltips.enrich();
 	}
 
 	function escapeFunction(event) {
@@ -722,8 +757,9 @@ KNOWWE.plugin.compositeEditTool = function() {
 	}
 
 	function enableCompositeEditMode() {
-		if(_CE.userCanWriteAllSections){
+		if (_CE.userCanWriteAllSections) {
 			_CE.mode = _CE.ModeEnum.EDIT;
+			initCompositeEdit();
 			changeButtons();
 			registerButtonEvents();
 			addEventListenerForEdit(jq$("#compositeEdit"));
@@ -756,36 +792,6 @@ KNOWWE.plugin.compositeEditTool = function() {
 		},
 
 		mode : "view",
-
-
-		enableCompositeEdit : function(id) {
-
-			if (_IE.enabled) {
-				alert("You are already editing the page. Please finish your current edit before entering composite edit.");
-				return;
-			}
-			_EC.showAjaxLoader();
-
-			initSections(id);
-			if (_CE.mode == _CE.ModeEnum.EDIT) {
-				addEventListenerForEdit(id);
-			}
-			// TODO: replace with dialog specific function
-			// bindUnloadFunctions();
-
-
-			if (_CEWT.locked) {
-				var message = "Another user has started to edit this page, but "
-					+ "hasn't yet saved it. You are allowed to further edit this page, but be "
-					+ "aware that the other user will not be pleased if you do so!";
-				KNOWWE.notification.warn("Locked Article", message);
-			}
-
-			_EC.mode = _CE;
-			_CE.enabled = true;
-
-			_EC.hideAjaxLoader();
-		},
 
 		disable : function() {
 			_CE.enabled = false;
@@ -873,11 +879,13 @@ KNOWWE.plugin.compositeEditTool = function() {
 			appendDialogToHtmlBody();
 		},
 
-		waitForPreviewsToLoad : function(id) {
-			KNOWWE.plugin.compositeEditTool.enableCompositeEdit(id);
-			jq$(".toolsMenuDecorator").click(function(e) {
-				e.stopPropagation();
-			});
+		afterPreviewsLoad : function(id) {
+			if (_CE.mode == _CE.ModeEnum.EDIT) {
+				initCompositeEdit(id);
+				jq$(".toolsMenuDecorator").click(function(e) {
+					e.stopPropagation();
+				});
+			}
 		},
 
 		enableCompositeEditModeByKey : function(event) {

@@ -348,10 +348,10 @@ KNOWWE.core.util = function() {
 			var domChildNodes = null;
 			var jsonArray = null;
 			try {
-				var jsonArray = JSON.parse(htmlText);
+				jsonArray = JSON.parse(htmlText);
 				if (!jq$.isArray(jsonArray)) throw EventException;
 			} catch (e) {
-				var temp = document.createElement("div");
+				temp = document.createElement("div");
 				temp.innerHTML = htmlText;
 				domChildNodes = temp.children;
 			}
@@ -360,26 +360,24 @@ KNOWWE.core.util = function() {
 				jq$(element).find('script').each(function() {
 					eval(this.innerHTML);
 				});
-			}
+			};
 
 			for (var j = ids.length - 1; j >= 0; j--) {
-				oldDOM = document.getElementById(ids[j]);
+				var oldDOM = jq$('#' + ids[j]);
+				var parent = oldDOM.parent();
 				if (oldDOM) {
 					if (jsonArray) {
-						var temp = document.createElement("div");
+						temp = document.createElement("div");
 						temp.innerHTML = jsonArray[j];
 						jq$(oldDOM).replaceWith(temp.children);
-						evalAddedScripts(temp.children);
 					} else if (domChildNodes) {
 						var node = domChildNodes[j];
 						jq$(oldDOM).replaceWith(domChildNodes[j]);
-						KNOWWE.helper.observer.notify("afterRerender", node);
-						evalAddedScripts(domChildNodes[j]);
 					}
+					evalAddedScripts(parent);
+					KNOWWE.helper.observer.notify("afterRerender", parent[0]);
 				}
 			}
-
-
 		},
 
 		reloadPage : function() {

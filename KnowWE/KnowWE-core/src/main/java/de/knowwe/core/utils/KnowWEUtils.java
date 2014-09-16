@@ -639,26 +639,8 @@ public class KnowWEUtils {
 		return "Diff.jsp?page=" + title + "&r1=" + version1 + "&r2=" + version2;
 	}
 
-	public static String getURLLinkToTermDefinition(ArticleManager manager, Identifier identifier) {
-		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(manager);
-		for (TerminologyManager terminologyManager : terminologyManagers) {
-			Collection<Section<?>> termDefiningSections = terminologyManager.getTermDefiningSections(identifier);
-			if (termDefiningSections.size() > 1) break;
-			if (termDefiningSections.size() == 1) {
-				return KnowWEUtils.getURLLink(termDefiningSections.iterator().next());
-			}
-		}
-		return getURLLinkToObjectInfoPage(identifier);
-	}
-
 	public static String getURLLinkToObjectInfoPage(Identifier identifier) {
-
-		String objectName = Strings.encodeURL(new Identifier(
-				identifier.getLastPathElement()).toExternalForm());
-		String termIdentifier = Strings.encodeURL(identifier.toExternalForm());
-		return "Wiki.jsp?page=ObjectInfoPage&amp;objectname="
-				+ objectName + "&amp;termIdentifier="
-				+ termIdentifier;
+		return "javascript:KNOWWE.plugin.compositeEditTool.openCompositeEditDialog(&quot;" + identifier.toExternalForm() + "&quot;);";
 	}
 
 	/**

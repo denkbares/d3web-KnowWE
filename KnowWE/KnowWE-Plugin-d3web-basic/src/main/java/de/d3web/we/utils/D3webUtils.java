@@ -451,12 +451,13 @@ public class D3webUtils {
 	private static String getLoopNotificationText(ArticleManager manager, UserContext user, Session session, Collection<TerminologyObject> loopObjects) {
 		String kbName = session.getKnowledgeBase().getName();
 		if (kbName == null) kbName = session.getKnowledgeBase().getId();
-		String kbUrlLink = KnowWEUtils.getURLLinkToTermDefinition(manager, new Identifier(kbName));
+
+		String kbUrlLink = KnowWEUtils.getURLLinkToObjectInfoPage(new Identifier(kbName));
 		kbName = "<a href=\"" + toAbsolutURL(kbUrlLink) + "\">" + kbName + "</a>";
 		Collection<String> renderedObjects = new ArrayList<String>(loopObjects.size());
 		for (TerminologyObject loopObject : loopObjects) {
-			String url = KnowWEUtils.getURLLinkToTermDefinition(manager, new Identifier(
-					loopObject.getName()));
+
+			String url = KnowWEUtils.getURLLinkToObjectInfoPage(new Identifier(loopObject.getName()));
 			renderedObjects.add("<a href=\"" + toAbsolutURL(url) + "\">" + loopObject.getName()
 					+ "</a>");
 		}

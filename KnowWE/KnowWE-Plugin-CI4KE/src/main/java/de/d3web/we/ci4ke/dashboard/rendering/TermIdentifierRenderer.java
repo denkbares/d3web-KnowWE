@@ -37,8 +37,8 @@ public class TermIdentifierRenderer implements ObjectNameRenderer {
 	}
 
 	public static void renderTermIdentifier(String web, String objectName, RenderResult result) {
-		String url = KnowWEUtils.getURLLinkToTermDefinition(
-				KnowWEUtils.getArticleManager(web), Identifier.fromExternalForm(objectName));
+
+		String url = KnowWEUtils.getURLLinkToObjectInfoPage(Identifier.fromExternalForm(objectName));
 		result.appendHtml("<a href='" + url + "'>");
 		result.append(objectName);
 		result.appendHtml("</a>");

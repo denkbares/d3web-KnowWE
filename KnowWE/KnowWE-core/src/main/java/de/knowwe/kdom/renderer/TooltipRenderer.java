@@ -76,7 +76,7 @@ public abstract class TooltipRenderer implements Renderer {
 		if (delay >= 0) {
 			string.append(" delay='").append(delay).append("'");
 		}
-		string.append(" title='").append(tooltip).append("'");
+		string.append(" title='").append(tooltip.replace("&", "&amp;").replace("'", "&#39;")).append("'");
 		string.appendHtml(">");
 	}
 

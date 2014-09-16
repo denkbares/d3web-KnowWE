@@ -472,7 +472,8 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	/**
-	 * Get a counting set of all markup names that surrounds the specified list of sections. The count is not the number
+	 * Get a counting set of all markup names that surrounds the specified list of sections. The count is not the
+	 * number
 	 * of sections contained in a specific markup, but it is the number of preview sections required to display these
 	 * sections (some preview sections may display multiple of the specified sections).
 	 *
@@ -515,7 +516,7 @@ public class ObjectInfoRenderer implements Renderer {
 			result.appendHtml("</span>");
 		}
 		result.appendHtml("</p>");
-		result.appendHtml("<div class=\"hidden\" style=\"display:none\">");
+		result.appendHtml("<div class=\"objectInfoPanel hidden\" style=\"display:none\">");
 		result.append(content);
 		result.appendHtml("</div>");
 

@@ -92,7 +92,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 				success : function(html) {
 					KNOWWE.core.util.replaceElement(ids, html);
 					if (jq$(root).parents('#compositeEdit').length) {
-						_CE.waitForPreviewsToLoad(root);
+						_CE.afterPreviewsLoad(root);
 						KNOWWE.core.actions.init();
 					}
 					_TM.decorateToolMenus(root);
@@ -453,19 +453,24 @@ KNOWWE.core.plugin.setMarkupSectionActivationStatus = function(id, status) {
 
 KNOWWE.tooltips = {};
 
-KNOWWE.tooltips.enrich = function() {
+KNOWWE.tooltips.enrich = function(element) {
 	// first, we filter nested tooltiped objects
 	// (e.g. a span with title contains another span with title)
 	// this way, tooltipser behaves with nested tooltips the same way
 	// normal tooltips behave: The most inner tooltips is shown exclusively
-	jq$('.tooltipster').each(function() {
+	if (element) {
+		element = jq$(element);
+	} else {
+		element = jq$(document);
+	}
+	element.find('.tooltipster').each(function() {
 		var anscestor = jq$(this).parents('.tooltipster');
 		if (anscestor.exists()) {
 			anscestor.removeAttr('title');
 			anscestor.removeClass('tooltipster');
 		}
 	});
-	jq$('.tooltipster').each(function() {
+	element.find('.tooltipster').each(function() {
 		var delay = jq$(this).attr('delay');
 		if (!delay) delay = 1300;
 		jq$(this).tooltipster({
@@ -896,6 +901,8 @@ KNOWWE.helper.observer.subscribe("afterRerender", function() {
 			KNOWWE.core.plugin.pagination.decorateTable();
 		});
 	}
-	;
 }());
 
+KNOWWE.helper.observer.subscribe("afterRerender", function() {
+	KNOWWE.tooltips.enrich(this);
+});

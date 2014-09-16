@@ -12,10 +12,11 @@ import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
+import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.taghandler.ObjectInfoTagHandler;
+import de.knowwe.core.utils.KnowWEUtils;
 
 public class SolutionPanelUtils {
 
@@ -53,9 +54,8 @@ public class SolutionPanelUtils {
 		String link = solution.getInfoStore().getValue(MMInfo.LINK);
 		String prompt = solution.getInfoStore().getValue(MMInfo.PROMPT);
 		String description = solution.getInfoStore().getValue(MMInfo.DESCRIPTION);
-		String infoLink = "Wiki.jsp?page=ObjectInfoPage" +
-				"&amp;" + ObjectInfoTagHandler.TERM_IDENTIFIER + "=" + solution.getName() +
-				"&amp;" + ObjectInfoTagHandler.OBJECT_NAME + "=" + solution.getName();
+
+		String infoLink = KnowWEUtils.getURLLinkToObjectInfoPage(new Identifier(solution.getName()));
 
 		String tooltip = "";
 		if (description != null) tooltip = description;
