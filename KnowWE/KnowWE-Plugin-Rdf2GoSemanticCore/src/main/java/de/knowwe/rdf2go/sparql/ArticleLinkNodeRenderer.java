@@ -1,7 +1,5 @@
 package de.knowwe.rdf2go.sparql;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,11 +22,8 @@ public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 			return KnowWEUtils.getLinkHTMLToArticle(text);
 		}
 
-		boolean foundArticle = false;
 		String lns = core.getLocalNamespace();
 
-		String separator = ", ";
-		List<String> statements = new ArrayList<>();
 		// We are only interested in statements from the local name space.
 		// Other name spaces or no name space (simple string) probably is not
 		// representing an article in the wiki.
