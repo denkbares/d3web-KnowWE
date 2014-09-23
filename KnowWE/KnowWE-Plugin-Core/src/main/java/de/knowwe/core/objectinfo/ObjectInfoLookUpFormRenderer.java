@@ -18,8 +18,6 @@
  */
 package de.knowwe.core.objectinfo;
 
-import java.util.ResourceBundle;
-
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -31,16 +29,9 @@ import de.knowwe.core.user.UserContext;
  */
 public class ObjectInfoLookUpFormRenderer implements Renderer {
 
-	private static ResourceBundle rb;
-
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
 		ObjectInfoRenderer.renderLookUpForm(user, result);
-
-	}
-
-	public static void renderLookUpForm(UserContext user, RenderResult result) {
-
 	}
 
 }

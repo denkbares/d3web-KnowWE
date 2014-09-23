@@ -155,13 +155,13 @@ public class ObjectInfoRenderer implements Renderer {
 
 	public static void renderLookUpForm(UserContext user, RenderResult result) {
 		result.appendHtml("<div>");
-		result.appendHtml("<div style=\"display:none\" id=\"objectinfo-terms\" name=\"terms\" >");
+		result.appendHtml("<div style=\"display:none\" class=\"objectinfo-terms\" name=\"terms\" >");
 		result.appendJSPWikiMarkup(ObjectInfoRenderer.getTerms(user).toString()
 				.replaceAll("([^\\\\]\\\"),\\\"", "$1,\n\""));
 		result.appendHtml("</div>");
 		result.appendHtml("<input type=\"text\" placeholder=\"Look up terms\" size=\"20\" name=\"")
 				.append(ObjectInfoRenderer.OBJECT_NAME)
-				.appendHtml("\" id=\"objectinfo-search\" />&nbsp;");
+				.appendHtml("\" class=\"objectinfo-search\" />&nbsp;");
 		//result.appendHtml("<input type=\"submit\" value=\"Go to\" style=\"display:none\"/>");
 		renderSectionEnd(result);
 	}

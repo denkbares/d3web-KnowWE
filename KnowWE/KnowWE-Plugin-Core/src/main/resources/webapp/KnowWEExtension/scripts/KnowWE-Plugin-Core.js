@@ -68,8 +68,6 @@ KNOWWE.core.plugin.objectinfo = function() {
 					}
 				}
 			});
-
-			KNOWWE.core.plugin.objectinfo.lookUp();
 		},
 
 		/**
@@ -192,24 +190,25 @@ KNOWWE.core.plugin.objectinfo = function() {
 		/**
 		 * shows a list of similar terms
 		 */
-		lookUp : function() {
-			var terms = jq$('#objectinfo-terms')
-			if (terms.length == 0)
-				return;
-			var response = terms.text();
-			var jsonResponse = JSON.parse(response);
-			var a = jsonResponse.allTerms;
-			jq$('#objectinfo-search').autocomplete({
+		lookUp : function(element) {
+			if (!element) element = document;
+			element = jq$(element);
+			var terms = element.find('.objectinfo-terms');
+			if (!terms.exists()) return;
+			var response = terms.first().text();
+			var termsJson = JSON.parse(response);
+			var a = termsJson.allTerms;
+			element.find('.objectinfo-search').autocomplete({
 				source : a
 			});
-			jq$('#objectinfo-search').on(
+			element.find('.objectinfo-search').on(
 				"autocompleteselect",
 				function(event, ui) {
 					KNOWWE.plugin.compositeEditTool.openCompositeEditDialog(ui.item.value);
 				});
 
 			//Open "Show Info" on Enter key press only if term exists - otherwise do nothing
-			jq$('#objectinfo-search').keyup(function(e) {
+			element.find('.objectinfo-search').keyup(function(e) {
 				if (e.keyCode == 13) {
 					var val = jq$('#objectinfo-search').val();
 					if (jq$.inArray(val, a) != -1) {
@@ -905,4 +904,5 @@ KNOWWE.helper.observer.subscribe("afterRerender", function() {
 
 KNOWWE.helper.observer.subscribe("afterRerender", function() {
 	KNOWWE.tooltips.enrich(this);
+	KNOWWE.core.plugin.objectinfo.lookUp(this);
 });
