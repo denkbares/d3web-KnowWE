@@ -39,6 +39,7 @@ import org.json.JSONObject;
 import de.d3web.collections.CountingSet;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
@@ -583,7 +584,7 @@ public class ObjectInfoRenderer implements Renderer {
 
 	public static JSONObject getTerms(UserContext user) {
 		// gathering all terms
-		List<String> allTerms = new ArrayList<String>();
+		Set<String> allTerms = new HashSet<>();
 
 		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(user
 				.getArticleManager());
@@ -604,7 +605,7 @@ public class ObjectInfoRenderer implements Renderer {
 			response.accumulate("allTerms", allTerms);
 		}
 		catch (JSONException e) {
-			e.printStackTrace();
+			Log.severe("Exception while writing available terms to JSON", e);
 		}
 		return response;
 
