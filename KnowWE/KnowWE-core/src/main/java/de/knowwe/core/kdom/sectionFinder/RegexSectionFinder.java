@@ -21,10 +21,12 @@
 package de.knowwe.core.kdom.sectionFinder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.d3web.utils.Log;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 
@@ -81,19 +83,29 @@ public class RegexSectionFinder implements SectionFinder {
 		 * the existing instances with "this.group > 0".
 		 */
 		int index = 0;
-		while (m.find(index)) {
-			if (m.group(group) != null) {
-				result.add(createSectionFinderResult(m));
+		try {
+
+			while (m.find(index)) {
+				if (m.group(group) != null) {
+					result.add(createSectionFinderResult(m));
+				}
+				int next = m.end(group);
+				// avoid endless iterations with "wrong" expressions
+				if (next <= index) break;
+				// detect if we reached the end,
+				// otherwise we get an IndexOutOfBoundsException from "m.find(...)"
+				if (next >= text.length()) break;
+				index = next;
 			}
-			int next = m.end(group);
-			// avoid endless iterations with "wrong" expressions
-			if (next <= index) break;
-			// detect if we reached the end,
-			// otherwise we get an IndexOutOfBoundsException from "m.find(...)"
-			if (next >= text.length()) break;
-			index = next;
+			return result;
 		}
-		return result;
+		catch (StackOverflowError e) {
+			String message = "Stack overflow in regex for type " + type.getClass()
+					.getSimpleName() + (father == null ? "" : " on article '" + father.getTitle() + "'");
+			Log.severe(message);
+			return Collections.emptyList();
+		}
+
 	}
 
 	protected SectionFinderResult createSectionFinderResult(Matcher m) {

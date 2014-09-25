@@ -39,15 +39,15 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 public class TurtleLiteralType extends AbstractType implements NodeProvider<TurtleLiteralType> {
 
 	public static final String XSD_PATTERN = "(?:\\^\\^xsd:(\\w+))";
+	public static final String TRIPLE_QUOTED = "(?:\"\"\"(?:(?!\"\"\")\\w|\\W)+\"\"\")";
 	public static final String LANGUAGE_TAG = "(?:@\\w+)";
 	public static final String LITERAL_SUFFIX = "(?:" + LANGUAGE_TAG + "|" + XSD_PATTERN + ")";
 
 	/**
 	 * Either single quoted word and optionally xsd type or normal quote and mandatory xsd type.
 	 */
-	private static final String LITERAL_PATTERN =
-			Patterns.SINGLE_QUOTED + LITERAL_SUFFIX + "?"
-					+ "|" + Patterns.QUOTED + LITERAL_SUFFIX + "?";
+	private static final String LITERAL_PATTERN = TRIPLE_QUOTED + LANGUAGE_TAG + "?|"
+			+ Patterns.SINGLE_QUOTED + LITERAL_SUFFIX + "?|" + Patterns.QUOTED + LITERAL_SUFFIX + "?";
 
 	public TurtleLiteralType() {
 		this.setSectionFinder(new RegexSectionFinder(
@@ -84,8 +84,7 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 	private static class LiteralPart extends AbstractType {
 
 		public LiteralPart() {
-			this.setSectionFinder(new RegexSectionFinder(Patterns.SINGLE_QUOTED + "|"
-					+ Patterns.QUOTED));
+			this.setSectionFinder(new RegexSectionFinder(TRIPLE_QUOTED + "|" + Patterns.SINGLE_QUOTED + "|" + Patterns.QUOTED));
 		}
 
 		public String getLiteral(Section<LiteralPart> section) {
