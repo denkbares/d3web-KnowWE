@@ -21,6 +21,7 @@ package de.knowwe.include.export;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.progress.LongOperation;
 import de.knowwe.core.utils.progress.LongOperationToolProvider;
+import de.knowwe.util.Icon;
 
 /**
  * 
@@ -30,7 +31,7 @@ import de.knowwe.core.utils.progress.LongOperationToolProvider;
 public class DocxDownloadProvider extends LongOperationToolProvider {
 
 	public DocxDownloadProvider() {
-		super("KnowWEExtension/icons/word.png", "Download MS-Word",
+		super(Icon.DOCUMENT_WORD.getPath(), "Download MS-Word",
 				"Downloads the contents in Microsoft Word 2007+ format");
 	}
 

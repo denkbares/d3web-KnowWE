@@ -24,7 +24,12 @@ public enum Icon {
 
 	// Entities
 	ARTICLE("templates/KnowWE/images/article.png"),
-	PACKAGE("KnowWEExtension/images/package.png");
+	PACKAGE("KnowWEExtension/images/package.png"),
+
+	// Files
+	DOCUMENT_WORD("templates/KnowWE/images/document-word.png"),
+	DOCUMENT_EXCEL("templates/KnowWE/images/document-excel.png"),
+	DOCUMENT_PDF("templates/KnowWE/images/document-pdf.png");
 
 	private final String path;
 
