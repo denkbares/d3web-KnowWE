@@ -149,15 +149,16 @@ public class Rdf2GoUtils {
 		return resultCollection;
 	}
 
-	public static Rdf2GoCore getRdf2GoCore(Section<? extends DefaultMarkupType> section) {
-		String globalAnnotation = DefaultMarkupType.getAnnotation(section, Rdf2GoCore.GLOBAL);
-		if (globalAnnotation != null && globalAnnotation.equals("true")) {
-			return Rdf2GoCore.getInstance();
+	public static Rdf2GoCore getRdf2GoCore(Section<?> section) {
+		if (section.get() instanceof DefaultMarkupType) {
+			String globalAnnotation = DefaultMarkupType.getAnnotation(section, Rdf2GoCore.GLOBAL);
+			if (globalAnnotation != null && globalAnnotation.equals("true")) {
+				return Rdf2GoCore.getInstance();
+			}
 		}
-		Collection<Rdf2GoCompiler> compilers = Compilers.getCompilers(section,
-				Rdf2GoCompiler.class);
-		if (!compilers.isEmpty()) {
-			return compilers.iterator().next().getRdf2GoCore();
+		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
+		if (compiler != null) {
+			return compiler.getRdf2GoCore();
 		}
 		return null;
 	}

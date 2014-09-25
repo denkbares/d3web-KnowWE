@@ -79,6 +79,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 	}
 
 	private static class SparqlMarkupRenderer extends Rdf2GoCoreCheckRenderer {
+
 		@Override
 		protected String getTitleName(Section<?> section, UserContext user) {
 			String title = super.getTitleName(section, user);

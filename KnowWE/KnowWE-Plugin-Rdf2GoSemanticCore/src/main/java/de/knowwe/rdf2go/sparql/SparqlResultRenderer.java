@@ -19,6 +19,7 @@ import de.d3web.collections.PartialHierarchyTree;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
@@ -71,18 +72,48 @@ public class SparqlResultRenderer {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(
 				Rdf2GoCore.PLUGIN_ID, POINT_ID);
 		List<SparqlResultNodeRenderer> renderers = new ArrayList<SparqlResultNodeRenderer>();
-		for (int i = 0; i < extensions.length; i++) {
-			renderers.add((SparqlResultNodeRenderer) extensions[i].getSingleton());
+		for (Extension extension : extensions) {
+			renderers.add((SparqlResultNodeRenderer) extension.getSingleton());
 		}
 		return renderers;
 	}
 
-	public SparqlRenderResult renderQueryResult(QueryResultTable qrt, UserContext user) {
-		// TODO
-		// is this a good idea?
-		RenderOptions opts = new RenderOptions("defaultID");
+	public void renderSparqlQuery(String query, RenderOptions opts, UserContext user, RenderResult result) {
+
+		if (opts.isBorder()) result.appendHtml("<div class='border'>");
+		if (opts.isSorting()) {
+			query = modifyOrderByInSparqlString(opts.getSortingMap(), query);
+		}
+
+		SparqlRenderResult renderResult;
+
+		QueryResultTable qrt = null;
+		try {
+			qrt = opts.getRdf2GoCore().sparqlSelect(query, true, opts.getTimeout());
+		}
+		catch (RuntimeException e) {
+			result.appendHtml("<span class='warning'>"
+					+ e.getMessage() + "</span>");
+			Log.warning("Exception while executing SPARQL", e);
+		}
+		if (qrt != null) {
+			renderResult = getSparqlRenderResult(qrt, opts, user);
+
+			if (opts.isNavigation() && !opts.isRawOutput()) {
+				renderTableSizeSelector(opts, opts.getId(), renderResult.getSize(), result);
+				renderNavigation(opts, renderResult.getSize(), opts.getId(), result);
+
+			}
+
+			result.appendHtml(renderResult.getHTML());
+		}
+		if (opts.isBorder()) result.appendHtml("</div>");
+	}
+
+	public SparqlRenderResult getSparqlRenderResult(QueryResultTable qrt, UserContext user) {
+		RenderOptions opts = new RenderOptions("defaultID", user);
 		opts.setRdf2GoCore(Rdf2GoCore.getInstance());
-		return renderQueryResult(qrt, opts, user);
+		return getSparqlRenderResult(qrt, opts, user);
 	}
 
 	/**
@@ -91,7 +122,7 @@ public class SparqlResultRenderer {
 	 * @return html table with all results of qrt and size of qrt
 	 * @created 06.12.2010
 	 */
-	public SparqlRenderResult renderQueryResult(QueryResultTable qrt, RenderOptions opts, UserContext user) {
+	public SparqlRenderResult getSparqlRenderResult(QueryResultTable qrt, RenderOptions opts, UserContext user) {
 		Rdf2GoUtils.lock(qrt);
 		try {
 			return renderQueryResultLocked(qrt, opts, user);
@@ -102,6 +133,7 @@ public class SparqlResultRenderer {
 	}
 
 	private SparqlRenderResult renderQueryResultLocked(QueryResultTable qrt, RenderOptions opts, UserContext user) {
+
 		RenderResult result = new RenderResult(user);
 		int i = 0;
 		if (!qrt.iterator().hasNext()) {
@@ -109,6 +141,7 @@ public class SparqlResultRenderer {
 					"KnowWE.owl.query.no_result"));
 			return new SparqlRenderResult(result.toStringRaw(), i);
 		}
+
 		boolean zebraMode = opts.isZebraMode();
 		boolean rawOutput = opts.isRawOutput();
 		boolean isTree = opts.isTree();
@@ -428,6 +461,162 @@ public class SparqlResultRenderer {
 		}
 		sb.append(".png");
 		return sb.toString().toLowerCase();
+	}
+
+	private String modifyOrderByInSparqlString(Map<String, String> sortOrder, String sparqlString) {
+		StringBuilder sb = new StringBuilder(sparqlString);
+		if (sortOrder.isEmpty()) {
+			return sb.toString();
+		}
+		String sparqlTempString = sparqlString.toLowerCase();
+		int orderBy = sparqlTempString.lastIndexOf("order by");
+		int limit = sparqlTempString.indexOf("limit", orderBy);
+		int offset = sparqlTempString.indexOf("offset", orderBy);
+		int nextStatement;
+		if (limit > 0 && offset > 0) {
+			nextStatement = (limit < offset) ? limit : offset;
+		}
+		else if (limit > 0 && offset < 0) {
+			nextStatement = limit;
+		}
+		else if (limit < 0 && offset > 0) {
+			nextStatement = offset;
+		}
+		else {
+			nextStatement = -1;
+		}
+
+		StringBuilder sbOrder = new StringBuilder();
+		Collection<String> keyCollection = sortOrder.keySet();
+		Iterator<String> keyIt = keyCollection.iterator();
+		Collection<String> valueCollection = sortOrder.values();
+		Iterator<String> valIt = valueCollection.iterator();
+
+		while (keyIt.hasNext()) {
+			sbOrder.append(" " + valIt.next() + "(?" + keyIt.next() + ")");
+		}
+
+		if (orderBy == -1) {
+			if (nextStatement == -1) {
+				sb.append(" ORDER BY" + sbOrder.toString());
+			}
+			else {
+				sb.replace(nextStatement, nextStatement, " ORDER BY" + sbOrder.toString());
+			}
+		}
+		else {
+			if (nextStatement != -1) {
+				sb.replace(orderBy, nextStatement, " ORDER BY" + sbOrder.toString());
+			}
+			else {
+				sb.replace(orderBy, sb.length(), " ORDER BY" + sbOrder.toString());
+			}
+		}
+
+		return sb.toString();
+	}
+
+	private void renderTableSizeSelector(RenderOptions options, String id, int max, RenderResult result) {
+
+		result.appendHtml("<div class='toolBar'>");
+
+		String[] sizeArray = getReasonableSizeChoices(max);
+
+		result.appendHtml("<span class=fillText>Show </span>"
+				+ "<select id='showLines" + id + "'"
+				+ " onchange=\"KNOWWE.plugin.semantic.actions.refreshSparqlRenderer('"
+				+ id + "', this);\">");
+		for (String size : sizeArray) {
+			if (size.equals(options.getNavigationLimit() + "")
+					|| options.isShowAll() && size.equals("All")) {
+				result.appendHtml("<option selected='selected' value='" + size + "'>" + size
+						+ "</option>");
+			}
+			else {
+				result.appendHtml("<option value='" + size + "'>" + size
+						+ "</option>");
+			}
+		}
+		result.appendHtml("</select><span class=fillText> lines of </span>  " + max);
+
+		result.appendHtml("<div class='toolSeparator'></div>");
+		result.appendHtml("</div>");
+
+	}
+
+	private void renderNavigation(RenderOptions options, int max, String id, RenderResult result) {
+		int from = options.getNavigationOffset();
+		int selectedSizeInt;
+		if (options.isShowAll()) {
+			selectedSizeInt = max;
+		}
+		else {
+			selectedSizeInt = options.getNavigationLimit();
+		}
+		result.appendHtml("<div class='toolBar avoidMenu'>");
+		renderToolbarButton(
+				"begin.png", "KNOWWE.plugin.semantic.actions.begin('"
+						+ id + "', this)",
+				(from > 1), result
+		);
+		renderToolbarButton(
+				"back.png", "KNOWWE.plugin.semantic.actions.back('"
+						+ id + "', this)",
+				(from > 1), result
+		);
+		result.appendHtml("<span class=fillText> Lines </span>");
+		result.appendHtml("<input size=3 id='fromLine" + id + "' type=\"field\" onchange=\"KNOWWE.plugin.semantic.actions.refreshSparqlRenderer('"
+				+ id + "', this);\" value='"
+				+ from + "'>");
+		result.appendHtml("<span class=fillText> to </span>" + (from + selectedSizeInt - 1));
+		renderToolbarButton(
+				"forward.png", "KNOWWE.plugin.semantic.actions.forward('"
+						+ id + "', this)",
+				(!options.isShowAll() && (from + selectedSizeInt - 1 < max)), result
+		);
+		renderToolbarButton(
+				"end.png", "KNOWWE.plugin.semantic.actions.end('"
+						+ id + "','" + max + "', this)",
+				(!options.isShowAll() && (from + selectedSizeInt - 1 < max)), result
+		);
+		result.appendHtml("</div>");
+
+	}
+
+	private void renderToolbarButton(String icon, String action, boolean enabled, RenderResult builder) {
+		int index = icon.lastIndexOf('.');
+		String suffix = icon.substring(index);
+		icon = icon.substring(0, index);
+		if (enabled) {
+			builder.appendHtml("<a onclick=\"");
+			builder.appendHtml(action);
+			builder.appendHtml(";\">");
+		}
+		builder.appendHtml("<span class='toolButton ");
+		builder.appendHtml(enabled ? "enabled" : "disabled");
+		builder.appendHtml("'>");
+		builder.appendHtml("<img src='KnowWEExtension/navigation_icons/");
+		builder.appendHtml(icon);
+		if (!enabled) builder.appendHtml("_deactivated");
+		builder.appendHtml(suffix).appendHtml("' /></span>");
+		if (enabled) {
+			builder.appendHtml("</a>");
+		}
+	}
+
+	private String[] getReasonableSizeChoices(int max) {
+		List<String> sizes = new LinkedList<String>();
+		String[] sizeArray = new String[] {
+				"10", "20", "50", "100", "1000" };
+		for (String size : sizeArray) {
+			if (Integer.parseInt(size) < max) {
+				sizes.add(size);
+			}
+		}
+		sizes.add("All");
+
+		return sizes.toArray(new String[sizes.size()]);
+
 	}
 
 	private boolean hasSorting(String value, Map<String, String> map) {

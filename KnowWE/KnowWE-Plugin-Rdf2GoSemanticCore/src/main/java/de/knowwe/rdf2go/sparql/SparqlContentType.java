@@ -20,7 +20,6 @@
 package de.knowwe.rdf2go.sparql;
 
 import org.ontoware.aifbcommons.collection.ClosableIterable;
-import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.model.Statement;
 
 import de.knowwe.core.compile.DefaultGlobalCompiler;
@@ -52,10 +51,9 @@ public class SparqlContentType extends AbstractType {
 				try {
 					ClosableIterable<Statement> sparqlConstruct = Rdf2GoCore.getInstance().sparqlConstruct(
 							sparqlString);
-					ClosableIterator<Statement> statementIterator = sparqlConstruct.iterator();
 
-					while (statementIterator.hasNext()) {
-						Rdf2GoCore.getInstance().addStatements(section, statementIterator.next());
+					for (Statement aSparqlConstruct : sparqlConstruct) {
+						Rdf2GoCore.getInstance().addStatements(section, aSparqlConstruct);
 					}
 				}
 				catch (Exception e) {

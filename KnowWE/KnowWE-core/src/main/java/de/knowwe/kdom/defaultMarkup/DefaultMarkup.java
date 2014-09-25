@@ -315,6 +315,15 @@ public class DefaultMarkup {
 				new Annotation[this.annotations.size()]);
 	}
 
+	/**
+	 * Add completed annotations. Should only be used to reuse annotations of other markups.
+	 */
+	public void addAnnotation(Annotation... annotations) {
+		for (Annotation annotation : annotations) {
+			this.annotations.put(annotation.getName().toLowerCase(), annotation);
+		}
+	}
+
 	public void addAnnotationContentType(String name, Type type) {
 		Annotation annotation = getAnnotationHandleIAE(name);
 		annotation.types.add(type);

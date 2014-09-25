@@ -1,8 +1,17 @@
 package de.knowwe.rdf2go.sparql.utils;
 
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
+import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class RenderOptions {
@@ -15,21 +24,57 @@ public class RenderOptions {
 	Map<String, String> sortingOrder;
 	String id;
 	private Rdf2GoCore core;
-	int navigationOffset;
-	int navigationLimit;
+	int navigationOffset = 0;
+	int navigationLimit = 50;
 	boolean showAll;
 	private boolean tree = false;
+	private long timeout = 10000;
 
-	public RenderOptions(String id) {
-		super();
+	public RenderOptions(String id, UserContext user) {
 		this.zebraMode = true;
 		this.rawOutput = false;
 		this.sorting = false;
 		this.navigation = false;
 		this.border = true;
-		sortingOrder = new LinkedHashMap<String, String>();
+		sortingOrder = new LinkedHashMap<>();
 		this.id = id;
 		showAll = false;
+
+		if (user == null) return;
+		// Default values from user cookie
+		Map<String, String> sortMap = new LinkedHashMap<>();
+		String cookie = KnowWEUtils.getCookie("SparqlRenderer-" + id, null, user);
+		try {
+			if (cookie != null) {
+				JSONObject json = new JSONObject(Strings.decodeURL(cookie));
+				if (!json.isNull("navigationOffset")) {
+					setNavigationOffset(json.getString("navigationOffset"));
+				}
+				if (!json.isNull("navigationLimit")) {
+					String navigationLimit = json.getString("navigationLimit");
+					if (navigationLimit.equals("All")) {
+						setShowAll(true);
+					}
+					else {
+						setNavigationLimit(navigationLimit);
+					}
+				}
+				if (!json.isNull("sorting")) {
+					JSONArray jsonArray = json.getJSONArray("sorting");
+					for (int i = 0; i < jsonArray.length(); i++) {
+						JSONObject sortPair = jsonArray.getJSONObject(i);
+						@SuppressWarnings("unchecked")
+						Iterator<String> it = sortPair.keys();
+						String key = it.next();
+						sortMap.put(key, sortPair.getString(key));
+					}
+					setSortingMap(sortMap);
+				}
+			}
+		}
+		catch (JSONException e) {
+			Log.severe("Exception while initializing render options", e);
+		}
 	}
 
 	public String getId() {
@@ -124,4 +169,11 @@ public class RenderOptions {
 		this.tree = tree;
 	}
 
+	public void setTimeout(long timeout) {
+		this.timeout = timeout;
+	}
+
+	public long getTimeout() {
+		return timeout;
+	}
 }
