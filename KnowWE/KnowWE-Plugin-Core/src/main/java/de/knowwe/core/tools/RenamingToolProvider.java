@@ -28,6 +28,7 @@ import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
 import de.knowwe.tools.ToolUtils;
+import de.knowwe.util.Icon;
 
 /**
  * Created by Stefan Plehn on 10.03.14.
@@ -51,7 +52,7 @@ public class RenamingToolProvider implements ToolProvider {
 
 	protected Tool getRenamingTool(Section<? extends Term> section) {
 		return new DefaultTool(
-				"KnowWEExtension/images/textfield_rename.png",
+				Icon.RENAME,
 				"Rename",
 				"Rename this term wiki wide.",
 				createRenamingAction(section));

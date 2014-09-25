@@ -24,11 +24,11 @@ import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
 import de.knowwe.tools.ToolUtils;
+import de.knowwe.util.Icon;
 
 /**
  * Created by Stefan Plehn on 10.03.14.
@@ -52,7 +52,7 @@ public class CompositeEditToolProvider implements ToolProvider {
 
 	protected Tool getCompositeEditTool(Section<? extends Term> section) {
 		return new DefaultTool(
-				"KnowWEExtension/d3web/icon/infoPage16.png",
+				Icon.INFORMATION,
 				"Show Info",
 				"Opens the composite edit mode.",
 				createCompositeEditModeAction(section));

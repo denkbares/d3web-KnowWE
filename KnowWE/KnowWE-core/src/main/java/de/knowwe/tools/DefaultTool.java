@@ -21,6 +21,7 @@ package de.knowwe.tools;
 
 import de.d3web.strings.Strings;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.util.Icon;
 
 /**
  * This class is a default implementation of the {@link Tool} interface.
@@ -46,12 +47,24 @@ public class DefaultTool implements Tool {
 		this.category = category;
 	}
 
+	public DefaultTool(Icon icon, String title, String description, String jsAction, ActionType type, String category) {
+		this(icon.getPath(), title, description, jsAction, type, category);
+	}
+
 	public DefaultTool(String iconPath, String title, String description, String jsAction, String category) {
 		this(iconPath, title, description, jsAction, ActionType.HREF_SCRIPT, category);
 	}
 
 	public DefaultTool(String iconPath, String title, String description, String jsAction) {
 		this(iconPath, title, description, jsAction, ActionType.HREF_SCRIPT, null);
+	}
+
+	public DefaultTool(Icon icon, String title, String description, String jsAction) {
+		this(icon.getPath(), title, description, jsAction, ActionType.HREF_SCRIPT, null);
+	}
+
+	public DefaultTool(Icon icon, String title, String description, String jsAction, String category) {
+		this(icon.getPath(), title, description, jsAction, ActionType.HREF_SCRIPT, category);
 	}
 
 	@Override
@@ -89,7 +102,7 @@ public class DefaultTool implements Tool {
 	 * It allows to additionally specify parameters as alternative key and value pairs. The
 	 * parameters must not be encoded this is done by this method automatically.
 	 *
-	 * @param user the user to create the action for
+	 * @param user       the user to create the action for
 	 * @param actionName the name of the plugged action
 	 * @param parameters the additional parameters
 	 * @return the created action
@@ -99,11 +112,11 @@ public class DefaultTool implements Tool {
 				"window.location='action/" + actionName +
 						"?KWiki_Topic=" + Strings.encodeURL(user.getTitle()) +
 						"&amp;web=" + Strings.encodeURL(user.getWeb());
-		for (int i=0; i<parameters.length; ) {
+		for (int i = 0; i < parameters.length; ) {
 			String key = Strings.encodeURL(parameters[i++]);
 			String value = Strings.encodeURL(parameters[i++]);
-			jsAction += "&amp;"+key+"="+value;
+			jsAction += "&amp;" + key + "=" + value;
 		}
-		return jsAction+"'";
+		return jsAction + "'";
 	}
 }

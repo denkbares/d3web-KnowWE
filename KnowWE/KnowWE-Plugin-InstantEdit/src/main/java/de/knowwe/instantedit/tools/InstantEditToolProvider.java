@@ -22,6 +22,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.util.Icon;
 
 /**
  * InstantEdit Tool.
@@ -44,7 +45,7 @@ public class InstantEditToolProvider implements ToolProvider {
 
 	protected Tool getQuickEditPageTool(Section<?> section, UserContext userContext) {
 		return new InstantEditTool(
-				"KnowWEExtension/images/pencil.png",
+				Icon.EDIT.getPath(),
 				"Edit Markup",
 				"Edit this markup in text mode",
 				section);

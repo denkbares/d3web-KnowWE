@@ -5,6 +5,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.util.Icon;
 
 /**
  * Created by Albrecht Striffler (denkbares GmbH) on 14.03.14.
@@ -28,7 +29,7 @@ public class RefreshToolProvider implements ToolProvider {
 				"url += '&amp;parse=full';" +
 				"window.location = url;";
 		return new DefaultTool(
-				"KnowWEExtension/d3web/icon/refresh16.png",
+				Icon.REFRESH,
 				"Refresh",
 				"Performs a fresh rebuild of the knowledge base from the wiki content.",
 				jsAction);

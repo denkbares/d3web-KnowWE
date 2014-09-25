@@ -41,6 +41,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
+import de.knowwe.util.Icon;
 
 /**
  * Renders a {@link DefaultMarkupType} section the does package compilation.
@@ -117,13 +118,13 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 
 		String icon;
 		if (hasErrors) {
-			icon = "KnowWEExtension/d3web/icon/uses_error16.gif";
+			icon = Icon.ERROR.getPath();
 		}
 		else if (hasWarnings) {
-			icon = "KnowWEExtension/d3web/icon/uses_warn16.gif";
+			icon = Icon.WARNING.getPath();
 		}
 		else {
-			icon = "KnowWEExtension/images/package_obj.gif";
+			icon = Icon.PACKAGE.getPath();
 		}
 
 		string.appendHtml("<img style='position:relative; top:2px;' class='packageOpacity' src='"

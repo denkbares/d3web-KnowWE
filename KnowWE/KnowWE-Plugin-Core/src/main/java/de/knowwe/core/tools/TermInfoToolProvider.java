@@ -43,6 +43,7 @@ import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
 import de.knowwe.tools.ToolUtils;
+import de.knowwe.util.Icon;
 
 /**
  * @author volker_belli
@@ -111,7 +112,7 @@ public class TermInfoToolProvider implements ToolProvider {
 					? "Opens the home page for the specific object."
 					: "Opens the definition page for the specific object to show its usage inside this wiki.";
 			tools[index++] = new DefaultTool(
-					"KnowWEExtension/images/article16.png",
+					Icon.ARTICLE,
 					"Open '" + title + "'", description,
 					link, Tool.ActionType.HREF, Tool.CATEGORY_INFO);
 		}

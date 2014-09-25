@@ -18,6 +18,7 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.util.Icon;
 
 /**
  * 
@@ -69,7 +70,7 @@ public class OntologyDownloadProvider implements ToolProvider {
 
 		// assemble download tool
 		return new DefaultTool(
-				"KnowWEExtension/d3web/icon/download16.gif",
+				Icon.DOWNLOAD,
 				"Download " + syntax.getName().toUpperCase(),
 				"Download the entire ontology in " + syntax.getName() + " format for deployment.",
 				jsAction);

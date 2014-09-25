@@ -38,6 +38,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.util.Icon;
 
 public class KnowledgeBaseDownloadProvider implements ToolProvider {
 
@@ -79,7 +80,7 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 				"&amp;" + Attributes.WEB + "=" + compileSection.getWeb() +
 				"&amp;" + KnowledgeBaseDownloadAction.PARAM_FILENAME + "=" + kbName + ".d3web'";
 		return new DefaultTool(
-				"KnowWEExtension/d3web/icon/download16.gif",
+				Icon.DOWNLOAD,
 				"Download",
 				"Download the entire knowledge base into a single file for deployment.",
 				jsAction);

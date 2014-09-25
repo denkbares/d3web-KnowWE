@@ -5,10 +5,11 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.util.Icon;
 
 /**
  * Tool for defining a menu item starting a long operation.
- * 
+ *
  * @author Volker Belli (denkbares GmbH)
  * @created 30.07.2013
  */
@@ -22,6 +23,10 @@ public abstract class LongOperationToolProvider implements ToolProvider {
 		this.iconPath = iconPath;
 		this.title = title;
 		this.description = description;
+	}
+
+	public LongOperationToolProvider(Icon icon, String title, String description) {
+		this(icon.getPath(), title, description);
 	}
 
 	private String createJSAction(Section<?> section) {
