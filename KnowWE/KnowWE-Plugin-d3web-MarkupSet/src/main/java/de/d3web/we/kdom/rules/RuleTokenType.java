@@ -4,7 +4,8 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
- * Created by Albrecht Striffler (denkbares GmbH) on 03.03.14.
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 03.03.2014
  */
 public class RuleTokenType extends AbstractType {
 

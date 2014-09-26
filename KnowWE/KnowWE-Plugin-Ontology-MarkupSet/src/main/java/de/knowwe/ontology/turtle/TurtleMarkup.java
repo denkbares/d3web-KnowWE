@@ -25,7 +25,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * 
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 08.07.2013
  */
 public class TurtleMarkup extends DefaultMarkupType {

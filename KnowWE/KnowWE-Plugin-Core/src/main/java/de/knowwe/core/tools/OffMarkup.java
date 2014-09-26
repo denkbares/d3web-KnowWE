@@ -30,7 +30,8 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * Markup for another deactivated markup section.
  * Sectionizes markups like %%Off:Rule...
  * <p/>
- * Created by Veronika Sehne on 11.06.14.
+ * @author Veronika Sehne
+ * @created 11.06.2014
  */
 public class OffMarkup extends DefaultMarkupType {
 

@@ -22,7 +22,7 @@ import de.d3web.strings.Identifier;
 
 /**
  * 
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 24.04.2013
  */
 public interface LinkToTermDefinitionProvider {

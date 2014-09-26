@@ -29,7 +29,7 @@ import de.knowwe.kdom.filter.SectionFilter;
  * type. Additionally it creates a generic typed iterator for the specified target class.
  *
  * @author Volker Belli (denkbares GmbH)
- * @created 22.08.14.
+ * @created 22.08.2014
  */
 public class FilterTypeIterator<OT extends Type> implements Iterator<Section<OT>>, SectionFilter {
 

@@ -27,7 +27,8 @@ import de.knowwe.core.preview.DefaultPreviewRenderer;
 import de.knowwe.core.user.UserContext;
 
 /**
- * Created by stefan on 10.02.14.
+ * @author stefan
+ * @created 10.02.2014
  */
 public class SparqlPreviewRenderer extends DefaultPreviewRenderer {
 

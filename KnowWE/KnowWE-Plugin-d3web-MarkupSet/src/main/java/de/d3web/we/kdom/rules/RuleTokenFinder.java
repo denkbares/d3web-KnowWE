@@ -11,7 +11,8 @@ import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.sectionFinder.OneOfStringFinder;
 
 /**
- * Created by Albrecht Striffler (denkbares GmbH) on 03.03.14.
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 03.03.2014
  */
 public class RuleTokenFinder implements SectionFinder {
 	private final ConstraintSectionFinder finder;

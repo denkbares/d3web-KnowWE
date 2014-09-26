@@ -24,7 +24,7 @@ import de.knowwe.ontology.ci.ExpectedSparqlResultTable;
 
 /**
  * 
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 10.01.2014
  */
 public class SparqlExpectedResultSection {

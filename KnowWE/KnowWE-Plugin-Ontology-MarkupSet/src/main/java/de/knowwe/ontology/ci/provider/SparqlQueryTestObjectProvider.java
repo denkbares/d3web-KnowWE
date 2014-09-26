@@ -30,7 +30,7 @@ import de.knowwe.rdf2go.sparql.SparqlContentType;
 
 /**
  * 
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 10.01.2014
  */
 public class SparqlQueryTestObjectProvider implements TestObjectProvider {

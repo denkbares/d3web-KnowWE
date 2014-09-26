@@ -23,7 +23,8 @@ import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.kdom.Article;
 
 /**
- * Created by jochenreutelshofer on 21.08.14.
+ * @author Jochen Reutelshöfer
+ * @created 21.08.2014
  */
 public class PageTitleReference  extends SimpleReference {
 

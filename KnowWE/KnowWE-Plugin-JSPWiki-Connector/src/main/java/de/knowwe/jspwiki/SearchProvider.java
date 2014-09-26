@@ -24,7 +24,7 @@ import org.apache.wiki.search.SearchResult;
 
 /**
  * 
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 17.04.2013
  */
 public interface SearchProvider {

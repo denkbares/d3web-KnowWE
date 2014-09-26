@@ -27,7 +27,7 @@ import de.knowwe.ontology.turtle.TurtleURI;
 
 /**
  * 
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 10.01.2014
  */
 public class ExpectedSparqlResultTableCellContent extends AbstractType {

@@ -9,7 +9,7 @@ import de.knowwe.rdf2go.sparql.SparqlMarkupType;
 
 /**
  * Register sparql name in terminolgy manager
- * Created by Veronika Sehne on 14.05.2014.
+ * @author Veronika Sehne on 14.05.2014.
  */
 public class SparqlNameRegistrationScript extends OntologyCompileScript<SparqlMarkupType> {
 

@@ -8,7 +8,8 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.TypePriorityList;
 
 /**
- * Created by Albrecht Striffler (denkbares GmbH) on 02.03.14.
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 02.03.2014
  */
 public class ActionContainer extends AbstractType {
 

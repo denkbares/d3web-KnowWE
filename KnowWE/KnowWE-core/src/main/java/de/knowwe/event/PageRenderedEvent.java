@@ -23,7 +23,7 @@ import de.knowwe.core.user.UserContext;
 
 /**
  * 
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 05.12.2012
  */
 public class PageRenderedEvent extends Event {

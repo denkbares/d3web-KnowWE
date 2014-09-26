@@ -28,7 +28,8 @@ import de.knowwe.plugin.StatusProvider;
 /**
  * Provides a status for the sessions of the user.
  *
- * Created by Albrecht Striffler (denkbares GmbH) on 11.08.14.
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 11.08.2014
  */
 public class SessionStatusProvider implements StatusProvider {
 

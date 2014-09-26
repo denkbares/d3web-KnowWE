@@ -63,7 +63,8 @@ public class Rdf2GoUtils {
 	 * Concurrent SPARQLs however are no problem. Therefore we use a lock that locks exclusively for writing but shared
 	 * for reading.
 	 * <p/>
-	 * Created by Albrecht Striffler (denkbares GmbH) on 25.04.14.
+	 * @author Albrecht Striffler (denkbares GmbH)
+ * @created 25.04.2014
 	 */
 	public static void lock(ClosableIterator<?> iterator) {
 		if (iterator instanceof Lockable) ((Lockable) iterator).lock();
@@ -78,7 +79,8 @@ public class Rdf2GoUtils {
 	 * Concurrent SPARQLs however are no problem. Therefore we use a lock that locks exclusively for writing but shared
 	 * for reading.
 	 * <p/>
-	 * Created by Albrecht Striffler (denkbares GmbH) on 25.04.14.
+	 * @author Albrecht Striffler (denkbares GmbH)
+ * @created 25.04.2014
 	 */
 	public static void unlock(ClosableIterator<?> iterator) {
 		if (iterator instanceof Lockable) ((Lockable) iterator).unlock();
@@ -94,7 +96,8 @@ public class Rdf2GoUtils {
 	 * Concurrent SPARQLs however are no problem. Therefore we use a lock that locks exclusively for writing but shared
 	 * for reading.
 	 * <p/>
-	 * Created by Albrecht Striffler (denkbares GmbH) on 25.04.14.
+	 * @author Albrecht Striffler (denkbares GmbH)
+ * @created 25.04.2014
 	 */
 	public static void lock(ClosableIterable table) {
 		if (table instanceof Lockable) ((Lockable) table).lock();
@@ -110,7 +113,8 @@ public class Rdf2GoUtils {
 	 * Concurrent SPARQLs however are no problem. Therefore we use a lock that locks exclusively for writing but shared
 	 * for reading.
 	 * <p/>
-	 * Created by Albrecht Striffler (denkbares GmbH) on 25.04.14.
+	 * @author Albrecht Striffler (denkbares GmbH)
+ * @created 25.04.2014
 	 */
 	public static void unlock(ClosableIterable table) {
 		if (table instanceof Lockable) ((Lockable) table).unlock();

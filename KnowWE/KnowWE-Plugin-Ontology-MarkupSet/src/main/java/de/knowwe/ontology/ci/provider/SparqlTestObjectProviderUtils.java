@@ -34,7 +34,7 @@ import de.knowwe.rdf2go.sparql.SparqlMarkupType;
 
 /**
  * 
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 10.01.2014
  */
 public class SparqlTestObjectProviderUtils {

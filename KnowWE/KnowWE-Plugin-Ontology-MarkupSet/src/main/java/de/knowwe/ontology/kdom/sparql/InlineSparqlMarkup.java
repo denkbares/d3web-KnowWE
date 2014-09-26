@@ -34,7 +34,7 @@ import static de.knowwe.kdom.renderer.AsynchronRenderer.ASYNCHRONOUS;
 /**
  * Shows contents of references of SparqlQueryInline.
  * <p/>
- * Created by Veronika Sehne on 30.04.2014.
+ * @author Veronika Sehne on 30.04.2014.
  */
 public class InlineSparqlMarkup extends DefaultMarkupType {
 

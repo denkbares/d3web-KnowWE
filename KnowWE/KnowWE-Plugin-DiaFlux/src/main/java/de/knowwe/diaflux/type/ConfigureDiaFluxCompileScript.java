@@ -39,7 +39,7 @@ import static de.d3web.diaFlux.inference.FluxSolver.SuggestMode;
  * Allows to configure the FluxSolver directly at the knowledge base markup.
  *
  * @author Volker Belli (denkbares GmbH)
- * @created 10.08.14.
+ * @created 10.08.2014
  */
 public class ConfigureDiaFluxCompileScript implements D3webCompileScript<KnowledgeBaseType> {
 

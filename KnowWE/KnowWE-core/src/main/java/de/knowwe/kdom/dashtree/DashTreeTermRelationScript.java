@@ -47,7 +47,8 @@ import de.knowwe.core.report.Messages;
  * is distributed over multiple DashTrees.<p>
  * Example: A d3web Questionnaire is defined in multiple locations in the wiki with a different list of children.
  * <p/>
- * Created by Albrecht Striffler (denkbares GmbH) on 10.03.14.
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 10.03.2014
  */
 public abstract class DashTreeTermRelationScript<T extends TermCompiler> implements CompileScript<T, TermDefinition> {
 

@@ -34,7 +34,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  * (referenced by name). In that way one for instance can ensure the an ontology
  * contains at least/at most/exactly x instances of some class.
  * 
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 08.01.2014
  */
 public class SparqlResultSizeTest extends AbstractTest<SparqlQuerySection> {

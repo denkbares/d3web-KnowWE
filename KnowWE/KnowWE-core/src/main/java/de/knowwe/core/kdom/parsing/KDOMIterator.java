@@ -34,7 +34,7 @@ import de.knowwe.kdom.filter.SectionFilter;
  * some branches from iteration. You may also specify a maximum depth that shall be considered.
  *
  * @author Volker Belli (denkbares GmbH)
- * @created 22.08.14.
+ * @created 22.08.2014
  * @see de.knowwe.kdom.filter.SectionFilter
  */
 public class KDOMIterator implements Iterator<Section<? extends Type>> {

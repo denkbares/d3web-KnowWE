@@ -8,7 +8,8 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 /**
  * Allocates all text before any of the given tokens is first found in the text.
  * <p/>
- * Created by Albrecht Striffler (denkbares GmbH) on 01.03.14.
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 01.03.2014
  */
 public class AllBeforeStringFinder extends AbstractSingleResultFinder {
 

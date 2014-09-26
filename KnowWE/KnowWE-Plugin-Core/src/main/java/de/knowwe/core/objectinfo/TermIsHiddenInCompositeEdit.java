@@ -20,7 +20,8 @@
 package de.knowwe.core.objectinfo;
 
 /**
- * Created by stefan on 04.03.14.
+ * @author stefan
+ * @created 04.03.2014
  */
 public interface TermIsHiddenInCompositeEdit {
 }

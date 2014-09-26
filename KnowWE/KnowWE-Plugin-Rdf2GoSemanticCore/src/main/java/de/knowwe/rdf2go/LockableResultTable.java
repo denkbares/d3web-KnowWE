@@ -27,7 +27,8 @@ import org.ontoware.rdf2go.model.QueryResultTable;
 import org.ontoware.rdf2go.model.QueryRow;
 
 /**
-* Created by Albrecht Striffler (denkbares GmbH) on 25.04.14.
+* @author Albrecht Striffler (denkbares GmbH)
+ * @created 25.04.2014
 */
 public class LockableResultTable implements QueryResultTable, Lockable {
 

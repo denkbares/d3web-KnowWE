@@ -40,7 +40,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * specified regular expression to allow enforcement of simple naming
  * conventions.
  * 
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 08.08.2012
  */
 public class TermnameConventionTest extends AbstractTest<Article> {

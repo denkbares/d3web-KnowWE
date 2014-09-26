@@ -23,7 +23,8 @@ import de.d3web.strings.Identifier;
 import de.knowwe.core.event.CompilerEvent;
 
 /**
- * Created by jochenreutelshofer on 13.03.14.
+ * @author Jochen Reutelshöfer
+ * @created 13.03.2014
  */
 public class TermDefinitionRegisteredEvent extends CompilerEvent {
 

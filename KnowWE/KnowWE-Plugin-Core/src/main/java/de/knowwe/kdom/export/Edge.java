@@ -20,7 +20,7 @@ package de.knowwe.kdom.export;
 
 /**
  * 
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 06.12.2012
  */
 public class Edge {

@@ -24,7 +24,8 @@ import de.d3web.core.io.progress.ProgressListener;
 /**
  * Decorating ProgressListener that can be set to interrupt the current thread if a certain flag is set during updating.
  *
- * Created by Albrecht Striffler (denkbares GmbH) on 07.05.14.
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 07.05.2014
  */
 public class InterruptibleProgressListener implements ProgressListener {
 

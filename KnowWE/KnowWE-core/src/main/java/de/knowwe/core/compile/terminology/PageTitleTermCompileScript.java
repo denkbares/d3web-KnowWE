@@ -30,7 +30,8 @@ import de.knowwe.core.report.CompilerMessage;
 import java.util.Collection;
 
 /**
- * Created by jochenreutelshofer on 21.08.14.
+ * @author Jochen Reutelshöfer
+ * @created 21.08.2014
  */
 public class PageTitleTermCompileScript extends DefaultGlobalCompiler.DefaultGlobalScript<RootType> {
 

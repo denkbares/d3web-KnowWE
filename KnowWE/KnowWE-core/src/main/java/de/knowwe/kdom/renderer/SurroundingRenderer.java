@@ -26,7 +26,7 @@ import de.knowwe.core.user.UserContext;
  * A renderer with pre- and post hook that can be used to embrace other content
  * (e.g., with an html-element).
  * 
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 28.11.2012
  */
 public interface SurroundingRenderer {

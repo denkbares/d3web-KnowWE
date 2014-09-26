@@ -24,7 +24,8 @@ import java.util.Date;
 /**
  * Provides basic information about a wiki object like a page or an attachment.
  *
- * Created by Albrecht Striffler (denkbares GmbH) on 18.08.14.
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 18.08.2014
  */
 public interface WikiObjectInfo {
 

@@ -11,7 +11,7 @@ import de.knowwe.diaflux.type.FlowchartType;
 /**
  * Pre appends DiaFlux resources to article.
  * <p>
- * Created by Albrecht Striffler (denkbares GmbH) on 19.08.2014.
+ * @author Albrecht Striffler (denkbares GmbH) on 19.08.2014.
  */
 public class DiaFluxResourceAppender implements PageAppendHandler {
 

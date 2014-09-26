@@ -5,7 +5,8 @@ import de.knowwe.core.event.Event;
 /**
  * Gets fired when a Rdf2GoCore is to be destroyed.
  *
- * Created by Albrecht Striffler (denkbares GmbH) on 18.03.14.
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 18.03.2014
  */
 public class Rdf2GoCoreDestroyEvent extends Event {
 

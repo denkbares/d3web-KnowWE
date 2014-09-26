@@ -31,7 +31,8 @@ import de.knowwe.tools.ToolUtils;
 import de.knowwe.util.Icon;
 
 /**
- * Created by Stefan Plehn on 10.03.14.
+ * @author Stefan Plehn
+ * @created 10.03.2014
  */
 public class RenamingToolProvider implements ToolProvider {
 

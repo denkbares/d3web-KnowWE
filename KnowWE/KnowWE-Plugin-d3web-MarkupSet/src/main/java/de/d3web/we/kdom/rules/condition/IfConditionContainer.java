@@ -6,7 +6,8 @@ import de.d3web.we.kdom.rules.RuleType;
 import de.knowwe.core.kdom.TypePriorityList;
 
 /**
- * Created by Albrecht Striffler (denkbares GmbH) on 02.03.14.
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 02.03.2014
  */
 public class IfConditionContainer extends ConditionContainer {
 

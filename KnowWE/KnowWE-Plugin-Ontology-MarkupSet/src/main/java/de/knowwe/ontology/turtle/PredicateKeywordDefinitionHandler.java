@@ -34,7 +34,7 @@ import de.knowwe.ontology.kdom.resource.Resource;
 
 /**
  * @author Jochen Reutelshofer (denkbares GmbH)
- * @created 06.03.14.
+ * @created 06.03.2014
  */
 public abstract class PredicateKeywordDefinitionHandler extends OntologyCompileScript<SimpleReference> {
 

@@ -24,7 +24,8 @@ import org.ontoware.rdf2go.model.Statement;
 import java.util.Collection;
 
 /**
- * Created by jochenreutelshofer on 21.08.14.
+ * @author Jochen Reutelshöfer
+ * @created 21.08.2014
  */
 public class ChangedStatementsEvent extends ModifiedCoreDataEvent {
 

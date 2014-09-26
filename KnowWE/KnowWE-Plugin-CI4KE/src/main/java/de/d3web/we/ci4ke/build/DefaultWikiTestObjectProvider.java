@@ -34,7 +34,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 16.05.2012
  */
 public class DefaultWikiTestObjectProvider implements TestObjectProvider {

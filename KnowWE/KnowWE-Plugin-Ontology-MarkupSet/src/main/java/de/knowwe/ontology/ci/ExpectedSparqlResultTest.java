@@ -41,7 +41,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.rdf2go.utils.ResultTableModel;
 
 /**
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 10.01.2014
  */
 public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultSection> {

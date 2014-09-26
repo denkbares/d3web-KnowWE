@@ -27,7 +27,8 @@ import de.knowwe.tools.ToolProvider;
 
 /**
  * ToolProvider for deactivating a markup
- * Created by Veronika Sehne (denkbares GmbH) on 11.06.14.
+ * @author Veronika Sehne (denkbares GmbH)
+ * @created 11.06.2014
  */
 public class OffToolProvider implements ToolProvider {
 

@@ -12,7 +12,8 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.kdom.sectionFinder.AllBeforeStringFinder;
 
 /**
- * Created by Albrecht Striffler (denkbares GmbH) on 02.03.14.
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 02.03.2014
  */
 public class RuleContainerFinder implements SectionFinder {
 

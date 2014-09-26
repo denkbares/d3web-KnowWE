@@ -9,7 +9,7 @@ import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolUtils;
 
 /**
- * Created by Albrecht Striffler (denkbares GmbH) on 07.06.2014.
+ * @author Albrecht Striffler (denkbares GmbH) on 07.06.2014.
  */
 public class DiaFluxRenamingToolProvider extends RenamingToolProvider {
 

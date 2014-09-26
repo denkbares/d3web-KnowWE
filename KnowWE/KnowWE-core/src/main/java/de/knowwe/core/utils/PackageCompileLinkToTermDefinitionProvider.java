@@ -33,7 +33,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 24.04.2013
  */
 public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDefinitionProvider {

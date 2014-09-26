@@ -25,7 +25,8 @@ import de.knowwe.plugin.StatusProvider;
 /**
  * Provides a status for the current compilation.
  *
- * Created by Albrecht Striffler (denkbares GmbH) on 11.08.14.
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 11.08.2014
  */
 public class CompileStatusProvider implements StatusProvider {
 	@Override

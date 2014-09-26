@@ -29,7 +29,7 @@ import de.knowwe.core.kdom.Type;
  * sections.
  *
  * @author Volker Belli (denkbares GmbH)
- * @created 22.08.14.
+ * @created 22.08.2014
  */
 public class FilterTypeIterable<OT extends Type> implements Iterable<Section<OT>> {
 	private final Class<OT> clazz;

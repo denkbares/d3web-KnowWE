@@ -31,7 +31,7 @@ import de.knowwe.ontology.compile.OntologyCompiler;
 
 /**
  * 
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 10.01.2014
  */
 public class OntologyCompilerTestObjectProvider implements TestObjectProvider {

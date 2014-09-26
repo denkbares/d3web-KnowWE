@@ -34,7 +34,7 @@ import de.knowwe.rdf2go.utils.SimpleTableRow;
 import de.knowwe.rdf2go.utils.TableRow;
 
 /**
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 10.01.2014
  */
 public class ExpectedSparqlResultTable extends Table {

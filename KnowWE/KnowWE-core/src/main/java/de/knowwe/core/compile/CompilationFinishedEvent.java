@@ -24,7 +24,8 @@ import de.knowwe.core.event.Event;
 /**
  * Gets fired after all Compilers of a compilation process have finished.
  *
- * Created by Albrecht Striffler (denkbares GmbH) on 16.06.14.
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 16.06.2014
  */
 public class CompilationFinishedEvent extends Event {
 

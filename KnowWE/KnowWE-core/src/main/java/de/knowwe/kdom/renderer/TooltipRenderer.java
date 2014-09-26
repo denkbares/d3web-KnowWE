@@ -32,7 +32,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * delegate-rendering of the sub-sections is used.
  *
  * @author Volker Belli (denkbares GmbH)
- * @created 01.03.14.
+ * @created 01.03.2014
  */
 public abstract class TooltipRenderer implements Renderer {
 

@@ -8,7 +8,8 @@ import de.knowwe.tools.ToolProvider;
 import de.knowwe.util.Icon;
 
 /**
- * Created by Albrecht Striffler (denkbares GmbH) on 14.03.14.
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 14.03.2014
  */
 public class RefreshToolProvider implements ToolProvider {
 	@Override

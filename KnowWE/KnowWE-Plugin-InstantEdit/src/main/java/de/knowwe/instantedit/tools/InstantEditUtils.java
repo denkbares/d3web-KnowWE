@@ -15,7 +15,7 @@ import de.knowwe.core.kdom.Article;
 /**
  * Util methods involving InstantEdit.
  * <p>
- * Created by Albrecht Striffler (denkbares GmbH) on 09.09.2014.
+ * @author Albrecht Striffler (denkbares GmbH) on 09.09.2014.
  */
 public class InstantEditUtils {
 

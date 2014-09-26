@@ -29,7 +29,8 @@ import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.vocabulary.XSD;
 
 /**
- * Created by jochenreutelshofer on 18.06.14.
+ * @author Jochen Reutelshöfer
+ * @created 18.06.2014
  */
 public class BooleanLiteral extends AbstractType implements NodeProvider<TurtleLiteralType> {
 

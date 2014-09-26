@@ -10,7 +10,7 @@ import de.knowwe.core.report.Messages;
 /**
  * Attaches a warning if the given package is never compiled.
  * <p/>
- * Created by Albrecht Striffler (denkbares GmbH) on 26.03.2014.
+ * @author Albrecht Striffler (denkbares GmbH) on 26.03.2014.
  */
 public class PackageNotCompiledWarningScript extends PackageRegistrationCompiler.PackageRegistrationScript<PackageTerm> {
 

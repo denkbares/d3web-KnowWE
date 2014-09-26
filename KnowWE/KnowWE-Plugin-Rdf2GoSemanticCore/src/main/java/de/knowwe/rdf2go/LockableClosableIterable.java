@@ -12,7 +12,7 @@ import org.ontoware.aifbcommons.collection.ClosableIterator;
  * This iterator provides the method to lock and unlock the model, so nobody can write while this iterator is used.
  * Be sure to always also unlock (in a try-finally block). If you do not unlock, nobody can write to the model again. Ever.
  *
- * Created by Albrecht Striffler (denkbares GmbH) on 11.05.2014.
+ * @author Albrecht Striffler (denkbares GmbH) on 11.05.2014.
  */
 public class LockableClosableIterable<E> implements ClosableIterable<E>, Lockable {
 

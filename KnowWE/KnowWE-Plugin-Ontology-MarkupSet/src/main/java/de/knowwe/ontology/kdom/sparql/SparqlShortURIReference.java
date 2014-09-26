@@ -24,7 +24,7 @@ import de.knowwe.ontology.turtle.TurtleURI;
 
 /**
  * 
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 14.01.2014
  */
 public class SparqlShortURIReference extends AbstractType {

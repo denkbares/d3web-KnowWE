@@ -23,7 +23,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 /**
  * A contraint that prevents the creation of sections of length 0.
  * 
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 28.11.2012
  */
 public class NoEmptySectionsConstraint extends AbstractFilterConstraint {

@@ -26,7 +26,7 @@ import de.knowwe.ontology.turtle.TurtleContent;
 
 /**
  * 
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 08.07.2013
  */
 @Deprecated

@@ -28,7 +28,7 @@ import de.knowwe.kdom.constraint.NoEmptySectionsConstraint;
  * * A SplitSectionFinder that does not create sections of length 0.
  * 
  * 
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 28.11.2012
  */
 public class SplitSectionFinderUnquotedNonEmpty extends ConstraintSectionFinder {

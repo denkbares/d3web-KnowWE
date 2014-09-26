@@ -30,7 +30,8 @@ import de.knowwe.core.kdom.parsing.Sections;
 
 /**
  * Action sets status of a markup section on/off
- * Created by Veronika Sehne (denkbares GmbH) on 11.06.14.
+ * @author Veronika Sehne (denkbares GmbH)
+ * @created 11.06.2014
  */
 public class SetMarkupActivationStatus extends AbstractAction {
 

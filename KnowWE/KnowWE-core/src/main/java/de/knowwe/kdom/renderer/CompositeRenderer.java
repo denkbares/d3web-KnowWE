@@ -30,7 +30,7 @@ import de.knowwe.core.user.UserContext;
 
 /**
  * 
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 28.11.2012
  */
 public class CompositeRenderer implements Renderer {

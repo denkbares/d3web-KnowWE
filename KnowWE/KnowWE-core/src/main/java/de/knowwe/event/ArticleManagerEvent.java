@@ -23,7 +23,8 @@ import de.knowwe.core.ArticleManager;
 import de.knowwe.core.event.Event;
 
 /**
- * Created by Albrecht Striffler (denkbares GmbH) on 16.06.14.
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 16.06.2014
  */
 public class ArticleManagerEvent extends Event {
 

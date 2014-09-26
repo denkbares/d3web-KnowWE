@@ -24,7 +24,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * 
- * @author jochenreutelshofer
+ * @author Jochen Reutelshöfer
  * @created 10.01.2014
  */
 public class ExpectedSparqlResultTableMarkup extends DefaultMarkupType {

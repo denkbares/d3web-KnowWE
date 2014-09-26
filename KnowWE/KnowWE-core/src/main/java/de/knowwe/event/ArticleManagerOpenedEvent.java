@@ -26,7 +26,8 @@ import de.knowwe.core.ArticleManager;
  * registered). It is fired, before the article manager is changed or anything is compiled. Use it to terminate
  * asynchronous tasks to avoid concurrent modifications and such.
  * <p/>
- * Created by Albrecht Striffler (denkbares GmbH) on 16.06.14.
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 16.06.2014
  */
 public class ArticleManagerOpenedEvent extends ArticleManagerEvent {
 

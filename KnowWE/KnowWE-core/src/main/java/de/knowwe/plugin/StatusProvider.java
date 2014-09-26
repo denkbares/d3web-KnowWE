@@ -24,7 +24,8 @@ import de.knowwe.core.user.UserContext;
 /**
  * Provides the current status of the wiki. If the status changes, getStatus must return a different integer.
  * <p/>
- * Created by Albrecht Striffler (denkbares GmbH) on 11.08.14.
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 11.08.2014
  */
 public interface StatusProvider {
 

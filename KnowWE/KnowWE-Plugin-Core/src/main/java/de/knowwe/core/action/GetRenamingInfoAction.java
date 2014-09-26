@@ -37,7 +37,8 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
- * Created by stefan on 20.02.14.
+ * @author stefan
+ * @created 20.02.2014
  */
 public class GetRenamingInfoAction extends AbstractAction {
 

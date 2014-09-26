@@ -41,7 +41,8 @@ import de.knowwe.kdom.dashtree.DashTreeTermRelationScript;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 
 /**
- * Created by Albrecht Striffler (denkbares GmbH) on 12.03.14.
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 12.03.2014
  */
 public class QuestionTreeQuestionRelationScript extends DashTreeTermRelationScript<D3webCompiler> {
 
