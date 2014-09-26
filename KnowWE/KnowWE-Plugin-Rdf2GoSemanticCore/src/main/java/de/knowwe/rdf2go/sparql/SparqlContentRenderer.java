@@ -82,7 +82,7 @@ public class SparqlContentRenderer implements Renderer {
 			result.appendHtml("</tt>");
 		}
 		else {
-			RenderOptions renderOpts = new RenderOptions(sec.getID(), user);
+			RenderOptions renderOpts = new RenderOptions(markupSection.getID(), user);
 			renderOpts.setRdf2GoCore(core);
 			setRenderOptions(markupSection, renderOpts);
 

@@ -24,7 +24,7 @@ public class RenderOptions {
 	Map<String, String> sortingOrder;
 	String id;
 	private Rdf2GoCore core;
-	int navigationOffset = 0;
+	int navigationOffset = 1;
 	int navigationLimit = 50;
 	boolean showAll;
 	private boolean tree = false;

@@ -526,11 +526,14 @@ public class SparqlResultRenderer {
 				+ "<select id='showLines" + id + "'"
 				+ " onchange=\"KNOWWE.plugin.semantic.actions.refreshSparqlRenderer('"
 				+ id + "', this);\">");
+		boolean selected = false;
+		String selectedByUser = options.getNavigationLimit() + "";
+		// if no limit was selected or
 		for (String size : sizeArray) {
-			if (size.equals(options.getNavigationLimit() + "")
-					|| options.isShowAll() && size.equals("All")) {
-				result.appendHtml("<option selected='selected' value='" + size + "'>" + size
-						+ "</option>");
+			if ((size.equals(selectedByUser) && !options.isShowAll())
+					|| (size.equals("All") && !selected)) {
+				selected = true;
+				result.appendHtml("<option selected='selected' value='" + size + "'>" + size + "</option>");
 			}
 			else {
 				result.appendHtml("<option value='" + size + "'>" + size
@@ -568,7 +571,7 @@ public class SparqlResultRenderer {
 		result.appendHtml("<input size=3 id='fromLine" + id + "' type=\"field\" onchange=\"KNOWWE.plugin.semantic.actions.refreshSparqlRenderer('"
 				+ id + "', this);\" value='"
 				+ from + "'>");
-		result.appendHtml("<span class=fillText> to </span>" + (from + selectedSizeInt - 1));
+		result.appendHtml("<span class=fillText> to </span>" + Math.min(from + selectedSizeInt - 1, max));
 		renderToolbarButton(
 				"forward.png", "KNOWWE.plugin.semantic.actions.forward('"
 						+ id + "', this)",
