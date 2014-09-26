@@ -1,0 +1,73 @@
+.sparqlTable .fillText {
+	color: grey;
+}
+
+.sparqlTable .toolBar {
+	display: inline-block;
+}
+
+.sparqlTable .toolBar.avoidMenu {
+	padding-right: 40px;
+}
+
+.sparqlTable .toolSeparator {
+	display: inline-block;
+	margin-left: 10px;
+	margin-right: 10px;
+	border-left: 2px solid #DDD;
+	height: 10px;
+}
+
+.sparqlTable .toolBar .toolButton {
+	position: relative;
+	border: 1px solid white;
+}
+
+.sparqlTable .toolBar .toolButton.enabled:hover {
+	border: 1px outset white;
+}
+
+.sparqlTable .toolButton IMG {
+	position: relative;
+	top: 3px;
+}
+
+.sparqlTable .border .sparqltable td {
+	border: 1px solid #DDD;
+}
+
+.sparqlTable TABLE.sparqltable {
+	margin: 0px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.sparqlTable TABLE.sparqltable * TD {
+	padding-bottom: 1px;
+}
+
+.sparqlTable .toolBar .toolButton {
+	position: relative;
+	border: 1px solid white;
+}
+
+.sparqlTable .border .sparqltable tr:first-child {
+	background-color: #EEE;
+}
+
+.sparqlTable .sparqltable * TR.odd {
+	background-color: #EEE;
+}
+
+.sparqlTable.defaultMarkupFrame:hover {
+	background: transparent;
+}
+
+.sparqlTable .sparqltable * TH {
+	vertical-align: middle;
+	text-align: left;
+}
+
+.type_Sparql .markupText {
+	white-space: normal;
+}

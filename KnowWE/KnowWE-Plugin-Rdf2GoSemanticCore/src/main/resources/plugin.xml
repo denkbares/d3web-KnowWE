@@ -150,7 +150,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="3" />
 		<parameter id="scope" value="root" />
-		<parameter id="css" value="sparql.css" />
+		<parameter id="css" value="KnowWE-Plugin-Rdf2GoSemanticCore.css" />
 	</extension>
 
 	<!-- extensions for basic preview rendering -->
@@ -175,6 +175,14 @@
 		<parameter id="class" value="de.knowwe.rdf2go.export.RDFXMLExportAction" />
 		<parameter id="name" value="RDFXMLExportAction" />
 		<parameter id="description" value="Action RDFXMLExportAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="RefreshSparqlAction">
+		<parameter id="class" value="de.knowwe.rdf2go.sparql.RefreshSparqlAction" />
+		<parameter id="name" value="RefreshSparqlAction" />
+		<parameter id="description" value="Action RefreshSparqlAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

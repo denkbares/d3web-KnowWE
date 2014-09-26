@@ -20,6 +20,7 @@ import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
@@ -78,8 +79,12 @@ public class SparqlResultRenderer {
 		return renderers;
 	}
 
-	public void renderSparqlQuery(String query, RenderOptions opts, UserContext user, RenderResult result) {
+	public void renderSparqlResult(Section<? extends SparqlType> section, UserContext user, RenderResult result) {
 
+		String query = section.get().getSparqlQuery(section, user);
+		RenderOptions opts = section.get().getRenderOptions(section, user);
+
+		result.appendHtml("<div class='sparqlTable' sparqlSectionId='" + opts.getId() + "' id='sparqlTable_" + opts.getId() + "'>");
 		if (opts.isBorder()) result.appendHtml("<div class='border'>");
 		if (opts.isSorting()) {
 			query = modifyOrderByInSparqlString(opts.getSortingMap(), query);
@@ -100,14 +105,15 @@ public class SparqlResultRenderer {
 			renderResult = getSparqlRenderResult(qrt, opts, user);
 
 			if (opts.isNavigation() && !opts.isRawOutput()) {
-				renderTableSizeSelector(opts, opts.getId(), renderResult.getSize(), result);
-				renderNavigation(opts, renderResult.getSize(), opts.getId(), result);
+				renderTableSizeSelector(opts, renderResult.getSize(), result);
+				renderNavigation(opts, renderResult.getSize(), result);
 
 			}
 
 			result.appendHtml(renderResult.getHTML());
 		}
 		if (opts.isBorder()) result.appendHtml("</div>");
+		result.appendHtml("</div>");
 	}
 
 	public SparqlRenderResult getSparqlRenderResult(QueryResultTable qrt, UserContext user) {
@@ -182,9 +188,9 @@ public class SparqlResultRenderer {
 				}// END: collapse tree mode code
 
 				result.appendHtml("<td><b>");
-				result.appendHtml("<a href='#/' onclick=\"KNOWWE.plugin.semantic.actions.sortResultsBy('"
+				result.appendHtml("<a href='#/' onclick=\"KNOWWE.plugin.sparql.sortResultsBy('"
 						+ var + "', '"
-						+ opts.getId() + "', this);\">");
+						+ opts.getId() + "');\">");
 				result.append(var);
 				result.appendHtml("</a>");
 				if (hasSorting(var, opts.getSortingMap())) {
@@ -516,16 +522,17 @@ public class SparqlResultRenderer {
 		return sb.toString();
 	}
 
-	private void renderTableSizeSelector(RenderOptions options, String id, int max, RenderResult result) {
+	private void renderTableSizeSelector(RenderOptions options, int max, RenderResult result) {
 
+		String id = options.getId();
 		result.appendHtml("<div class='toolBar'>");
 
 		String[] sizeArray = getReasonableSizeChoices(max);
 
 		result.appendHtml("<span class=fillText>Show </span>"
 				+ "<select id='showLines" + id + "'"
-				+ " onchange=\"KNOWWE.plugin.semantic.actions.refreshSparqlRenderer('"
-				+ id + "', this);\">");
+				+ " onchange=\"KNOWWE.plugin.sparql.refresh('"
+				+ id + "');\">");
 		boolean selected = false;
 		String selectedByUser = options.getNavigationLimit() + "";
 		// if no limit was selected or
@@ -547,7 +554,8 @@ public class SparqlResultRenderer {
 
 	}
 
-	private void renderNavigation(RenderOptions options, int max, String id, RenderResult result) {
+	private void renderNavigation(RenderOptions options, int max, RenderResult result) {
+		String id = options.getId();
 		int from = options.getNavigationOffset();
 		int selectedSizeInt;
 		if (options.isShowAll()) {
@@ -558,28 +566,28 @@ public class SparqlResultRenderer {
 		}
 		result.appendHtml("<div class='toolBar avoidMenu'>");
 		renderToolbarButton(
-				"begin.png", "KNOWWE.plugin.semantic.actions.begin('"
-						+ id + "', this)",
+				"begin.png", "KNOWWE.plugin.sparql.begin('"
+						+ id + "')",
 				(from > 1), result
 		);
 		renderToolbarButton(
-				"back.png", "KNOWWE.plugin.semantic.actions.back('"
-						+ id + "', this)",
+				"back.png", "KNOWWE.plugin.sparql.back('"
+						+ id + "')",
 				(from > 1), result
 		);
 		result.appendHtml("<span class=fillText> Lines </span>");
-		result.appendHtml("<input size=3 id='fromLine" + id + "' type=\"field\" onchange=\"KNOWWE.plugin.semantic.actions.refreshSparqlRenderer('"
-				+ id + "', this);\" value='"
+		result.appendHtml("<input size=3 id='fromLine" + id + "' type=\"field\" onchange=\"KNOWWE.plugin.sparql.refresh('"
+				+ id + "');\" value='"
 				+ from + "'>");
 		result.appendHtml("<span class=fillText> to </span>" + Math.min(from + selectedSizeInt - 1, max));
 		renderToolbarButton(
-				"forward.png", "KNOWWE.plugin.semantic.actions.forward('"
-						+ id + "', this)",
+				"forward.png", "KNOWWE.plugin.sparql.forward('"
+						+ id + "')",
 				(!options.isShowAll() && (from + selectedSizeInt - 1 < max)), result
 		);
 		renderToolbarButton(
-				"end.png", "KNOWWE.plugin.semantic.actions.end('"
-						+ id + "','" + max + "', this)",
+				"end.png", "KNOWWE.plugin.sparql.end('"
+						+ id + "','" + max + "')",
 				(!options.isShowAll() && (from + selectedSizeInt - 1 < max)), result
 		);
 		result.appendHtml("</div>");

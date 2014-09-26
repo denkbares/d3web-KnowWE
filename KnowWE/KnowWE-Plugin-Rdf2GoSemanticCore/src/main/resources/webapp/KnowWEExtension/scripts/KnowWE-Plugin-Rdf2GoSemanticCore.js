@@ -32,10 +32,26 @@ KNOWWE.plugin.semantic = function() {
  * Namespace: KNOWWE.plugin.semantic.action The namespace of the semantic things
  * in KNOWWE.
  */
-KNOWWE.plugin.semantic.actions = function() {
+KNOWWE.plugin.sparql = function() {
+
+	function rerender(id, parameters) {
+		if (!parameters) parameters = {};
+		parameters.SectionID = id;
+		jq$.ajax({
+			url : KNOWWE.core.util.getURL({
+				action : 'RefreshSparqlAction'
+			}),
+			data : parameters,
+			cache : false,
+			type : 'post'
+		}).success(function(result) {
+			jq$('#sparqlTable_' + id).replaceWith(result.trim());
+		});
+	}
 
 	return {
-		refreshSparqlRenderer : function(id, element) {
+
+		refresh : function(id, paremeters) {
 
 			var root = jq$.parseJSON(jq$.cookie("SparqlRenderer-" + id));
 			if (root == null) {
@@ -45,7 +61,7 @@ KNOWWE.plugin.semantic.actions = function() {
 			var fromLine = jq$('#fromLine' + id).val();
 			var search = /^\d+$/;
 			var found = search.test(fromLine);
-			if (!(found)) {
+			if (jq$('#fromLine' + id).exists() && !(found)) {
 				jq$('#fromLine').val('');
 				return;
 			}
@@ -62,99 +78,55 @@ KNOWWE.plugin.semantic.actions = function() {
 			}
 			var cookieStr = JSON.stringify(root);
 			jq$.cookie("SparqlRenderer-" + id, cookieStr);
-			KNOWWE.plugin.d3webbasic.actions.updateNode(jq$(element).parents('.type_Sparql').first().attr("id"), KNOWWE.helper.gup('page'), null);
-
+			rerender(id, paremeters);
 		},
 
 		forward : function(id, element) {
-
-			var root = jq$.parseJSON(jq$.cookie("SparqlRenderer-" + id));
-			if (root == null) {
-				root = {};
-			}
-			var showLines = jq$('#showLines' + id).val();
-			var fromLine = jq$('#fromLine' + id).val();
-
-			var newFromLine;
-			if (showLines == "All") {
-				newFromLine = 1;
+			var showInput = jq$('#showLines' + id);
+			var show = showInput.val();
+			var fromInput = jq$('#fromLine' + id);
+			if (show == "All") {
+				fromInput.val(1);
 			}
 			else {
-				newFromLine = parseInt(fromLine) + parseInt(showLines);
+				fromInput.val(parseInt(fromInput.val()) + parseInt(show));
 			}
-			root.navigationOffset = newFromLine;
-			root.navigationLimit = showLines;
-			var cookieStr = JSON.stringify(root);
-			jq$.cookie("SparqlRenderer-" + id, cookieStr);
-			KNOWWE.plugin.d3webbasic.actions.updateNode(jq$(element).parents('.type_Sparql').first().attr("id"), KNOWWE.helper.gup('page'), null);
+			KNOWWE.plugin.sparql.refresh(id);
 		},
 
-		end : function(id, maximum, element) {
-			var root = jq$.parseJSON(jq$.cookie("SparqlRenderer-" + id));
-			if (root == null) {
-				root = {};
-			}
-			var showLines = jq$('#showLines' + id).val();
-
-			if (showLines == "All") {
-				root.navigationOffset = 1;
-				root.navigationLimit = "All";
-
+		end : function(id, maximum) {
+			var showInput = jq$('#showLines' + id);
+			var show = showInput.val();
+			var fromInput = jq$('#fromLine' + id);
+			if (show == "All") {
+				fromInput.val(1);
 			}
 			else {
-				root.navigationLimit = showLines;
-				root.navigationOffset = maximum - showLines + 1;
+				fromInput.val(maximum - show + 1);
 			}
-			var cookieStr = JSON.stringify(root);
-			jq$.cookie("SparqlRenderer-" + id, cookieStr);
-			KNOWWE.plugin.d3webbasic.actions.updateNode(jq$(element).parents('.type_Sparql').first().attr("id"), KNOWWE.helper.gup('page'), null);
+			KNOWWE.plugin.sparql.refresh(id);
 		},
 
-		back : function(id, element) {
-
-			var root = jq$.parseJSON(jq$.cookie("SparqlRenderer-" + id));
-			if (root == null) {
-				root = {};
-			}
-			var showLines = jq$('#showLines' + id).val();
-
-			var fromLine = jq$('#fromLine' + id).val();
-			var newFromLine;
-			if (showLines == "All") {
-				newFromLine = 1;
+		back : function(id) {
+			var showInput = jq$('#showLines' + id);
+			var show = showInput.val();
+			var fromInput = jq$('#fromLine' + id);
+			var from = fromInput.val();
+			if (parseInt(from) - parseInt(show) < 1) {
+				fromInput.val(1);
 			}
 			else {
-				if (parseInt(fromLine) - parseInt(showLines) < 1) {
-					newFromLine = 1;
-				}
-				else {
-					newFromLine = parseInt(fromLine) - parseInt(showLines);
-				}
+				fromInput.val(parseInt(from) - parseInt(show));
 			}
-
-			root.navigationOffset = newFromLine;
-			root.navigationLimit = showLines;
-			var cookieStr = JSON.stringify(root);
-			jq$.cookie("SparqlRenderer-" + id, cookieStr);
-			KNOWWE.plugin.d3webbasic.actions.updateNode(jq$(element).parents('.type_Sparql').first().attr("id"), KNOWWE.helper.gup('page'), null);
+			KNOWWE.plugin.sparql.refresh(id);
 		},
 
-		begin : function(id, element) {
-			var root = jq$.parseJSON(jq$.cookie("SparqlRenderer-" + id));
-			if (root == null) {
-				root = {};
-			}
-			var showLines = jq$('#showLines' + id).val();
-
-			var fromLine = 1;
-			root.navigationOffset = fromLine;
-			root.navigationLimit = showLines;
-			var cookieStr = JSON.stringify(root);
-			jq$.cookie("SparqlRenderer-" + id, cookieStr);
-			KNOWWE.plugin.d3webbasic.actions.updateNode(jq$(element).parents('.type_Sparql').first().attr("id"), KNOWWE.helper.gup('page'), null);
+		begin : function(id) {
+			jq$('#fromLine' + id).val(1);
+			KNOWWE.plugin.sparql.refresh(id);
 		},
 
-		sortResultsBy : function(newSorting, id, element) {
+		sortResultsBy : function(newSorting, id) {
 
 			var root = jq$.parseJSON(jq$.cookie("SparqlRenderer-" + id));
 
@@ -187,7 +159,7 @@ KNOWWE.plugin.semantic.actions = function() {
 				}
 				else {
 					root.sorting = [];
-					var keyValueString = {}
+					var keyValueString = {};
 					keyValueString[newSorting] = "ASC";
 					root.sorting.push(keyValueString);
 				}
@@ -195,12 +167,12 @@ KNOWWE.plugin.semantic.actions = function() {
 			else {
 				root = {};
 				root.sorting = [];
-				var keyValueString = {}
+				var keyValueString = {};
 				root.sorting.push(keyValueString);
 			}
 			var cookieStr = JSON.stringify(root);
 			jq$.cookie("SparqlRenderer-" + id, cookieStr);
-			KNOWWE.plugin.d3webbasic.actions.updateNode(jq$(element).parents('.type_Sparql').first().attr("id"), KNOWWE.helper.gup('page'), null);
+			rerender(id);
 		}
 	}
 }();
