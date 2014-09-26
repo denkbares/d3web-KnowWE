@@ -37,6 +37,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.DefaultToolSet;
 import de.knowwe.tools.ToolSet;
+import de.knowwe.util.Icon;
 
 /**
  * Renderer to render an included section in default markup framed style.
@@ -68,7 +69,7 @@ public class FramedIncludedSectionRenderer extends DefaultMarkupRenderer {
 		}
 
 		return new DefaultToolSet(
-				new DefaultTool(null, "Open Page", "Opens page '" + targetSection.getTitle()
+				new DefaultTool(Icon.NONE, "Open Page", "Opens page '" + targetSection.getTitle()
 						+ "'", "window.location ='" + link + "'"));
 	}
 
