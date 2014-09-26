@@ -8,6 +8,11 @@ import de.knowwe.core.Environment;
  * @author Alex Legler
  */
 public enum Icon {
+	/**
+	 * Renders no icon.
+	 */
+	NONE(null),
+
 	// Message Types
 	INFORMATION("templates/KnowWE/images/information.png"),
 	WARNING("templates/KnowWE/images/warning.png"),
@@ -46,9 +51,14 @@ public enum Icon {
 	}
 
 	public String getURL() {
-		final String baseURL = Environment.getInstance().getWikiConnector().getBaseUrl();
+		if (getPath() == null) {
+			return null;
+		}
+		else {
+			final String baseURL = Environment.getInstance().getWikiConnector().getBaseUrl();
 
-		return baseURL + (baseURL.endsWith("/") ? "" : "/") + getPath();
+			return baseURL + (baseURL.endsWith("/") ? "" : "/") + getPath();
+		}
 	}
 
 	public String getImageTag() {
@@ -56,6 +66,11 @@ public enum Icon {
 	}
 
 	public String getImageTag(String title) {
-		return "<img src=\"" + getPath() + "\"" + (title != null ? " title=\"" + title + "\"" : "") + " />";
+		if (getPath() == null) {
+			return null;
+		}
+		else {
+			return "<img src=\"" + getPath() + "\"" + (title != null ? " title=\"" + title + "\"" : "") + " />";
+		}
 	}
 }

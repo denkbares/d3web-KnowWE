@@ -24,25 +24,26 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.util.Icon;
 
 /**
  * Provides tools to smoothly zoom flowcharts.
- * <p/>
- * Created by Albrecht Striffler (denkbares GmbH) on 08.08.14.
+ *
+ * @author Albrecht Striffler (denkbares GmbH)
  */
 public class FlowchartZoomToolProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		String category = "FlowZoom/" + Tool.CATEGORY_INLINE;
-		DefaultTool zoomOut = new DefaultTool(null, "-", "Zooms out the current flowchart", "Flowchart.zoom('" + section
+		DefaultTool zoomOut = new DefaultTool(Icon.NONE, "-", "Zooms out the current flowchart", "Flowchart.zoom('" + section
 				.getID() + "', -0.1)", category);
-		DefaultTool zoomIn = new DefaultTool(null, "+", "Zooms in the current flowchart", "Flowchart.zoom('" + section
+		DefaultTool zoomIn = new DefaultTool(Icon.NONE, "+", "Zooms in the current flowchart", "Flowchart.zoom('" + section
 				.getID() + "', 0.1)", category);
-		DefaultTool zoomToFit = new DefaultTool(null, "Fit", "Zooms to flowchart to fit the width of the current page", "Flowchart.zoomToFit('" + section
+		DefaultTool zoomToFit = new DefaultTool(Icon.NONE, "Fit", "Zooms to flowchart to fit the width of the current page", "Flowchart.zoomToFit('" + section
 				.getID() + "')", category);
 		DefaultTool spacer = new DefaultTool("", "", "", "", category);
-		DefaultTool zoom100 = new DefaultTool(null, "100%", "Zooms to flowchart back to 100% size", "Flowchart.zoom100('" + section
+		DefaultTool zoom100 = new DefaultTool(Icon.NONE, "100%", "Zooms to flowchart back to 100% size", "Flowchart.zoom100('" + section
 				.getID() + "')", category);
 		return new Tool[] { zoomOut, zoom100, zoomIn, spacer, zoomToFit };
 	}
