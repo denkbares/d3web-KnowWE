@@ -28,7 +28,7 @@ import de.knowwe.core.user.AuthenticationManager;
 import de.knowwe.core.user.UserContext;
 
 /**
- * UserActionContext interface which is a specialisied UserContext interface for Actions.
+ * UserActionContext interface which is a specialized UserContext interface for Actions.
  * <p/>
  * The UserActionContext of the execute method provides almost everything you need for your Actions. If you want to have
  * some textual output just use context.getWriter().write(...). In case you are developing a KnowWEAction your output
@@ -38,32 +38,30 @@ import de.knowwe.core.user.UserContext;
  * Simply use context.getOutputStream().
  *
  * @author Sebastian Furth (denkbares GmbH)
- * @created Mar 4, 2011
+ * @created 04.03.2011
  */
 public interface UserActionContext extends UserContext {
 
 	/**
-	 * Returns the action which is currently processed. Please note that this is an optional parameter and thus can be
-	 * null!
+	 * Returns the action which is currently processed.
+	 * Can be null.
 	 *
-	 * @return the action the user triggerd (if available)
-	 * @created Mar 4, 2011
+	 * @return the action the user triggered (if available)
 	 */
 	public Action getAction();
 
 	/**
-	 * Returns a special path concatenated to the action. Please note that this is an optional parameter and thus can be
-	 * null!
+	 * Returns a special path concatenated to the action.
+	 * Can be null.
 	 *
-	 * @return
-	 * @created Mar 4, 2011
+	 * @return special path
 	 */
 	public String getPath();
 
 	/**
-	 * Returns the http response.
+	 * Returns the HTTP response object.
 	 *
-	 * @return the user's http response
+	 * @return the current HTTP response object
 	 * @created 14.10.2010
 	 */
 	public HttpServletResponse getResponse();
@@ -71,16 +69,15 @@ public interface UserActionContext extends UserContext {
 	/**
 	 * Returns the name of the action.
 	 *
-	 * @return the name of the action.
-	 * @created Mar 4, 2011
+	 * @return the name of the action
 	 */
 	public String getActionName();
 
 	/**
-	 * Return the AuthenticationManager of the action.
+	 * Returns the AuthenticationManager of the action.
 	 *
-	 * @return
-	 * @created Feb 25, 2013
+	 * @return AuthenticationManager
+	 * @created 25.02.2013
 	 */
 	public AuthenticationManager getManager();
 
@@ -94,54 +91,49 @@ public interface UserActionContext extends UserContext {
 	public Writer getWriter() throws IOException;
 
 	/**
-	 * Returns the OutputStream of the http response.
+	 * Returns the OutputStream of the HTTP response.
 	 *
-	 * @return the outputstream of the http response.
+	 * @return the OutputStream of the HTTP response
 	 * @throws IOException
-	 * @created Mar 4, 2011
 	 */
 	public OutputStream getOutputStream() throws IOException;
 
 	/**
-	 * Allows to specify the content type of the http response.
+	 * Sets 'Content-Type' in the response.
 	 *
-	 * @param mimetype
-	 * @created Mar 4, 2011
+	 * @param mimetype MIME type to send
 	 */
 	public void setContentType(String mimetype);
 
 	/**
-	 * Allows to specify the length of the http response. The length is the number of bytes to be send.
+	 * Allows to specify the length of the HTTP response. The length is the number of bytes to be sent.
 	 *
-	 * @param length
-	 * @created Mar 4, 2011
+	 * @param length content length to set
 	 */
 	public void setContentLength(int length);
 
 	/**
-	 * Allows to set the redirect location of the http response.
+	 * Redirect the user to the specified location.
 	 *
-	 * @param location
-	 * @created Mar 4, 2011
+	 * @param location redirects the user to the given location
 	 */
 	public void sendRedirect(String location) throws IOException;
 
 	/**
-	 * Allows to specify the header of the http response.
+	 * Send an HTTP header with the response.
 	 *
-	 * @param name
-	 * @param value
-	 * @created Mar 4, 2011
+	 * @param name Header name
+	 * @param value value to set the header to
 	 */
 	public void setHeader(String name, String value) throws IOException;
 
 	/**
-	 * Allows to send an http error as response.
+	 * Sends an HTTP error as response.
+	 * Constants starting with SC_ in {@link javax.servlet.http.HttpServletResponse} are available to set HTTP error codes.
 	 *
-	 * @param sc
-	 * @param msg
-	 * @created Mar 4, 2011
+	 * @param sc HTTP status code
+	 * @param msg error message to display. If there's an error message configured in the servlet, this message is
+	 *            proposed as message
 	 */
 	public void sendError(int sc, String msg) throws IOException;
-
 }
