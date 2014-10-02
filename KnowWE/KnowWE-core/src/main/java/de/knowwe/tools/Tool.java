@@ -44,9 +44,34 @@ public interface Tool {
 		ONCLICK
 	}
 
+	/**
+	 * Category for all tools providing additional information for the tool-supporting item.
+	 */
 	public static final String CATEGORY_INFO = "01-info";
+
+	/**
+	 * Category for all tools that modify the content of the tool-supporting item, or provides edit
+	 * functionality to the user.
+	 */
 	public static final String CATEGORY_EDIT = "02-edit";
-	public static final String CATEGORY_CORRECT = "03-correct";
+
+	/**
+	 * Category for all tools that provides tha ability to download the content of the
+	 * tool-supporting item or any additionally generated content related to the item.
+	 */
+	public static final String CATEGORY_DOWNLOAD = "03-download";
+
+	/**
+	 * Category for correction suggestions to correct the item. Even this is also a form of editing
+	 * the item, they have their own category to place these (typically longish) list at the end of
+	 * the tool menu.
+	 */
+	public static final String CATEGORY_CORRECT = "04-correct";
+
+	/**
+	 * Special category to inline html functionality directly into the tool menu, e.g. for having
+	 * zoom buttons.
+	 */
 	public static final String CATEGORY_INLINE = "inline";
 
 	/**

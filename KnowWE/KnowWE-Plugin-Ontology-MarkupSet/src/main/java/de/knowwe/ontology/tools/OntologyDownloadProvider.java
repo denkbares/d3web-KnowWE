@@ -21,7 +21,6 @@ import de.knowwe.tools.ToolProvider;
 import de.knowwe.util.Icon;
 
 /**
- * 
  * @author Sebastian Furth (denkbares GmbH)
  * @created 19.04.2013
  */
@@ -47,7 +46,7 @@ public class OntologyDownloadProvider implements ToolProvider {
 		// check if ontology is empty
 		Rdf2GoCore ontology = Rdf2GoCore.getInstance(OntologyUtils.getOntologyCompiler(section));
 		if (ontology == null || ontology.isEmpty()
-				//|| !ontology.getAvailableSyntaxes().contains(syntax)
+			//|| !ontology.getAvailableSyntaxes().contains(syntax)
 				) {
 			return null;
 		}
@@ -73,7 +72,8 @@ public class OntologyDownloadProvider implements ToolProvider {
 				Icon.DOWNLOAD,
 				"Download " + syntax.getName().toUpperCase(),
 				"Download the entire ontology in " + syntax.getName() + " format for deployment.",
-				jsAction);
+				jsAction,
+				Tool.CATEGORY_DOWNLOAD);
 	}
 
 }
