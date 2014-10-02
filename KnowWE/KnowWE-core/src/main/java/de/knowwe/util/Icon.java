@@ -26,6 +26,7 @@ public enum Icon {
 	REFRESH("templates/KnowWE/images/refresh.png"),
 	SAVE("templates/KnowWE/images/save.png"),
 	DOWNLOAD("templates/KnowWE/images/download.png"),
+	ERASE("templates/KnowWE/images/erase.png"),
 
 	// Entities
 	ARTICLE("templates/KnowWE/images/article.png"),
