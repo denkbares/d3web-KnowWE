@@ -33,6 +33,8 @@ import de.d3web.collections.PriorityList;
  */
 public class TypePriorityList {
 
+    // TODO: shouldn't we use de.d3web.collections.PriorityList here ??
+
 	public static double DEFAULT_PRIORITY = 5;
 
 	/**
@@ -51,7 +53,6 @@ public class TypePriorityList {
 	 * @created 27.08.2013
 	 * @param newType type to be inserted
 	 * @param classToBeReplaced class to determine what type should be replaced
-	 * @throws InvalidKDOMSchemaModificationOperation
 	 * @return the replaced type if the replacement was successful, else
 	 *         <tt>null</tt> is returned
 	 */
@@ -92,7 +93,7 @@ public class TypePriorityList {
 	 * 
 	 * @created 27.08.2013
 	 * @param priority the priority with which the type is added
-	 * @param type the type to add
+	 * @param t the type to add
 	 */
 	public void addType(double priority, Type t) {
 		types.add(priority, t);
@@ -103,7 +104,7 @@ public class TypePriorityList {
 	 * (which is 5).
 	 * 
 	 * @created 27.08.2013
-	 * @param type the type to add
+	 * @param t the type to add
 	 */
 	public void addType(Type t) {
 		addType(DEFAULT_PRIORITY, t);
