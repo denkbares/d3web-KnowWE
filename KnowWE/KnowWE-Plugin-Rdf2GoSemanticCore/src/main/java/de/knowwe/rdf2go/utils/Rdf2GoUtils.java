@@ -23,6 +23,7 @@ import de.d3web.collections.PartialHierarchy;
 import de.d3web.collections.PartialHierarchyTree;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -42,9 +43,11 @@ import org.ontoware.rdf2go.model.node.Literal;
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.util.RDFTool;
 import org.ontoware.rdf2go.vocabulary.RDFS;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -157,6 +160,83 @@ public class Rdf2GoUtils {
         }
         return resultCollection;
     }
+
+    /**
+     * Returns a rdfs:label of the given concept in the given language, if existing.
+     *
+     * @param uri full uri of the concept to be labeled
+     * @param repo
+     * @param languageTag
+     * @return
+     */
+    public static String getLabelRDFS(String uri, Rdf2GoCore repo, String languageTag) {
+        try {
+            new java.net.URI(uri);
+        } catch (URISyntaxException e) {
+            Log.severe(e.getMessage());
+            return uri;
+        }
+        return getLabelRDFS(new URIImpl(uri), repo, languageTag);
+    }
+
+    /**
+     * Returns a rdfs:label of the given concept in the given language, if existing.
+     *
+     * @param concept
+     * @param repo
+     * @param languageTag
+     * @return
+     */
+    public static String getLabelRDFS(URI concept, Rdf2GoCore repo, String languageTag) {
+
+        //TODO: prefer skos:prefLabel
+
+        // try to find language specific label
+        String label = getLanguageSpecificLabel(concept, repo, languageTag);
+
+        // otherwise use standard label
+        if (label == null) {
+
+            String query = "SELECT ?x WHERE { " + concept.toSPARQL() + " rdfs:label ?x.}";
+            QueryResultTable resultTable = repo.sparqlSelect(query);
+            for (QueryRow queryRow : resultTable) {
+                Node node = queryRow.getValue("x");
+                String value = node.asLiteral().toString();
+                label = value;
+                break; // we assume there is only one label
+
+            }
+        }
+        return label;
+    }
+
+    /**
+     * @param concept
+     * @param repo
+     * @param languageTag
+     * @return
+     * @created 29.04.2013
+     */
+    private static String getLanguageSpecificLabel(URI concept, Rdf2GoCore repo, String languageTag) {
+        if (languageTag == null) return null;
+        String label = null;
+
+        String query = "SELECT ?x WHERE { " + concept.toSPARQL()
+                + " rdfs:label ?x. FILTER(LANGMATCHES(LANG(?x), \"" + languageTag + "\"))}";
+        QueryResultTable resultTable = repo.sparqlSelect(query);
+        for (QueryRow queryRow : resultTable) {
+            Node node = queryRow.getValue("x");
+            String value = node.asLiteral().toString();
+            label = value;
+            if (label.charAt(label.length() - 3) == '@') {
+                label = label.substring(0, label.length() - 3);
+            }
+            break; // we assume there is only one label
+
+        }
+        return label;
+    }
+
 
     public static Rdf2GoCore getRdf2GoCore(Section<?> section) {
         if (section.get() instanceof DefaultMarkupType) {
