@@ -48,10 +48,7 @@ import org.ontoware.rdf2go.util.RDFTool;
 import org.ontoware.rdf2go.vocabulary.RDFS;
 
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -412,6 +409,50 @@ public class Rdf2GoUtils {
      */
     public static PartialHierarchyTree<URI> getClassHierarchy(Rdf2GoCore core, URI concept) {
         return getClassHierarchy(core, concept, "rdfs:subClassOf", "rdf:type");
+    }
+
+    /**
+     * Returns the most specific class of the concept where '<concept> rdf:type <class>' holds.
+     * For most specific one is considered to be the leaf class which has the longest path (highest depth) in the tree of all classes of the concept.
+     * If there are multiple deepest classes with same depth, the result is one of those (randomly).
+     *
+     * @param core
+     * @param concept
+     * @return
+     */
+    public static URI findMostSpecificClass(Rdf2GoCore core, URI concept) {
+        return findMostSpecificClass(getClassHierarchy(core, concept));
+    }
+
+    /**
+     * Returns the most specific class the given hierarchy of classes.
+     * For most specific one is considered to be the leaf class which has the longest path (highest depth) in given hierarchy.
+     * If there are multiple deepest classes with same depth, the result is one of those (randomly).
+     *
+     * @param classHierarchy
+     * @return
+     */
+    public static URI findMostSpecificClass(PartialHierarchyTree<URI> classHierarchy) {
+        final Set<PartialHierarchyTree.Node<URI>> nodes = classHierarchy.getNodes();
+        int maxDepth = 0;
+        PartialHierarchyTree.Node<URI> deepestLeaf = classHierarchy.getRoot();
+        for (PartialHierarchyTree.Node<URI> node : nodes) {
+            int depth = getDepth(node);
+            if(depth >= maxDepth) {
+                maxDepth = depth;
+                deepestLeaf = node;
+            }
+        }
+        return deepestLeaf.getData();
+    }
+
+    private static int getDepth(PartialHierarchyTree.Node<URI> node) {
+        int depth = 0;
+        while(node.getParent() != null) {
+            depth++;
+            node = node.getParent();
+        }
+        return depth;
     }
 
 
