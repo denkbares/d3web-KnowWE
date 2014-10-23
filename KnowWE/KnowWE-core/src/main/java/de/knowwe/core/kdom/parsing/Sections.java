@@ -697,7 +697,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @param clazz Types to be searched
 	 * @created 08.01.2014
 	 */
-	public static <T extends Type> Collection<Section<? extends Type>> successors(ArticleManager articleManager, Class<T> clazz) {
+	public static <T extends Type> Collection<Section<T>> successors(ArticleManager articleManager, Class<T> clazz) {
 		return articleManager.getArticles().parallelStream()
 				.flatMap(article -> successors(article, clazz).stream())
 				.collect(Collectors.toList());

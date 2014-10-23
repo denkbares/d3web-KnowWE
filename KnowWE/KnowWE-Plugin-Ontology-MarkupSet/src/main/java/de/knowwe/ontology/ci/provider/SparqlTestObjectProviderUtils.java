@@ -61,9 +61,8 @@ public class SparqlTestObjectProviderUtils {
 	public static <T extends Type> Collection<Section<T>> getSectionsForNameGlobal(String sparqlName, Class<T> clazz) {
 		List<Section<T>> result = new ArrayList<Section<T>>();
 		
-		Collection<Section<? extends Type>> sparqlSections = Sections.successors(
-				Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB), clazz
-		);
+		Collection<Section<T>> sparqlSections = Sections.successors(
+				Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB), clazz);
 
 		for (Section<? extends Type> section : sparqlSections) {
 			String name = getName(section);

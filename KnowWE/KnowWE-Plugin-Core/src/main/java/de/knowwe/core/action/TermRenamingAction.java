@@ -33,19 +33,21 @@ import de.d3web.strings.Identifier;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.event.TermRenamingEvent;
 import de.knowwe.notification.NotificationManager;
 import de.knowwe.notification.StandardNotification;
 
 /**
- * Action which renames all Definitions and References of a given Term. The following parameters are mandatory! <ul>
- * <li>termname</li> <li>termreplacement</li> <li>web</li> </ul>
+ * Action which renames a term by e.g. renaming all definitions and references.
  *
  * @author Sebastian Furth
  * @created Dec 15, 2010
@@ -54,6 +56,13 @@ public class TermRenamingAction extends AbstractAction {
 
 	public static final String TERMNAME = "termname";
 	public static final String REPLACEMENT = "termreplacement";
+
+
+	private Identifier createReplacingIdentifier(Identifier oldIdentifier, String text) {
+		String[] pathElements = oldIdentifier.getPathElements();
+		pathElements[pathElements.length - 1] = text;
+		return new Identifier(pathElements);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -64,10 +73,8 @@ public class TermRenamingAction extends AbstractAction {
 		String replacement = context.getParameter(REPLACEMENT);
 		String force = context.getParameter("force");
 
-		Identifier termIdentifierOld = Identifier.fromExternalForm(term);
-		String[] pathElements = termIdentifierOld.getPathElements();
-		pathElements[pathElements.length - 1] = replacement;
-		Identifier replacementIdentifier = new Identifier(pathElements);
+		Identifier termIdentifier = Identifier.fromExternalForm(term);
+		Identifier replacementIdentifier = createReplacingIdentifier(termIdentifier, replacement);
 
 		if (force.equals("false")
 				&& getTerms(web).contains(replacementIdentifier)) {
@@ -84,9 +91,6 @@ public class TermRenamingAction extends AbstractAction {
 			}
 			return;
 		}
-
-		Identifier termIdentifier = Identifier.fromExternalForm(term);
-		Identifier replacmentIdentifier = createReplacingIdentifier(termIdentifier, replacement);
 
 		Map<String, Set<Section<? extends RenamableTerm>>> allTerms = new HashMap<String, Set<Section<? extends RenamableTerm>>>();
 
@@ -129,14 +133,10 @@ public class TermRenamingAction extends AbstractAction {
 		Set<String> failures = new HashSet<String>();
 		Set<String> success = new HashSet<String>();
 		if (getArticlesWithoutEditRights(allTerms, context).isEmpty()) {
-			renameTerms(allTerms, termIdentifier, replacmentIdentifier, mgr, context, failures, success);
-			try {
-				mgr.getCompilerManager().awaitTermination();
-			}
-			catch (InterruptedException e) {
-				throw new IOException(e.getMessage());
-			}
-			writeResponse(failures, success, termIdentifier, replacmentIdentifier, context);
+			renameTerms(allTerms, termIdentifier, replacementIdentifier, mgr, context, failures, success);
+			Compilers.awaitTermination(mgr.getCompilerManager());
+			EventManager.getInstance().fireEvent(new TermRenamingEvent(mgr, termIdentifier, replacementIdentifier));
+			writeResponse(failures, success, termIdentifier, replacementIdentifier, context);
 		}
 		else {
 			Set<String> articlesWithoutEditRights = getArticlesWithoutEditRights(allTerms, context);
@@ -145,7 +145,7 @@ public class TermRenamingAction extends AbstractAction {
 				if (sb.length() != 0) {
 					sb.append(", ");
 				}
-				sb.append(articlesWithoutEditRights);
+				sb.append(articleWithoutEditRights);
 			}
 			String errorMessage = "You are not allowed to rename this term, because you do not have permission to edit all articles on which this term occurs:You are not allowed to rename this term, because you do not have permission to edit all articles on which this term occurs: \n" +
 					sb;
@@ -249,12 +249,6 @@ public class TermRenamingAction extends AbstractAction {
 		finally {
 			mgr.commit();
 		}
-	}
-
-	private Identifier createReplacingIdentifier(Identifier oldIdentifier, String text) {
-		String[] elements = oldIdentifier.getPathElements();
-		elements[elements.length - 1] = text;
-		return new Identifier(elements);
 	}
 
 	public Set<Identifier> getTerms(String web) {
