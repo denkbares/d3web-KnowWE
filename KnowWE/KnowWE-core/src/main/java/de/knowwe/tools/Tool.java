@@ -45,6 +45,11 @@ public interface Tool {
 	}
 
 	/**
+	 * Category for tools that execute or run stuff.
+	 */
+	public static final String CATEGORY_EXECUTE = "00-execute";
+
+	/**
 	 * Category for all tools providing additional information for the tool-supporting item.
 	 */
 	public static final String CATEGORY_INFO = "01-info";
@@ -73,6 +78,11 @@ public interface Tool {
 	 * zoom buttons.
 	 */
 	public static final String CATEGORY_INLINE = "inline";
+
+	/**
+	 * Special category to sort Tools into the last category of the tool menu, probably because they are not important.
+	 */
+	public static final String CATEGORY_LAST = "last";
 
 	/**
 	 * Returns the icon for the tool. The icon should have a height of 24 pixels and based on a

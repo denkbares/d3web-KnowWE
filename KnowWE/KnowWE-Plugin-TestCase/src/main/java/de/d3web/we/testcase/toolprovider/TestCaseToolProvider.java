@@ -56,7 +56,8 @@ public class TestCaseToolProvider implements ToolProvider {
 				"KnowWEExtension/images/xml.png",
 				"Download XML",
 				"Download the whole test case into a single xml file.",
-				jsAction);
+				jsAction,
+				Tool.CATEGORY_DOWNLOAD);
 	}
 
 	protected Tool getDownloadTXTTool(String topic, String web, String id) {
@@ -68,7 +69,8 @@ public class TestCaseToolProvider implements ToolProvider {
 				"KnowWEExtension/images/txt.png",
 				"Download TXT",
 				"Download the whole test case into a single txt file.",
-				jsAction);
+				jsAction,
+				Tool.CATEGORY_DOWNLOAD);
 	}
 
 }

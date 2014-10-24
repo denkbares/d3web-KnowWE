@@ -81,7 +81,8 @@ public class GoToPlayerToolProvider implements ToolProvider {
 						+ testCaseSection
 						+ "', '" + value + "');"
 						+ " window.location='"
-						+ KnowWEUtils.getURLLink(sectionInPackage) + "';") };
+						+ KnowWEUtils.getURLLink(sectionInPackage) + "';",
+				Tool.CATEGORY_INFO) };
 	}
 
 }

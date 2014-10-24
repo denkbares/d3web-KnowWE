@@ -55,8 +55,9 @@ public class CompositeEditToolProvider implements ToolProvider {
 		return new DefaultTool(
 				Icon.INFORMATION,
 				"Show Info",
-				"Opens the composite edit mode.",
-				createCompositeEditModeAction(section));
+				"Shows information about this object",
+				createCompositeEditModeAction(section),
+				Tool.CATEGORY_INFO);
 	}
 
 	public static String createCompositeEditModeAction(Section<? extends Term> section) {

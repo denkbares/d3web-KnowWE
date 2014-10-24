@@ -22,9 +22,9 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.util.Icon;
 
 /**
- * 
  * @author Stefan Plehn
  * @created 17.07.2013
  */
@@ -32,7 +32,7 @@ public class PackageAnnotationNameTypeRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult string) {
-		string.appendHtml("<img style='position:relative; top:2px' class='packageOpacity' src='KnowWEExtension/images/package_obj.gif' />");
+		string.appendHtml("<img style='position:relative; top:2px' class='packageOpacity' src='" + Icon.PACKAGE.getPath() + "' />");
 	}
 
 }

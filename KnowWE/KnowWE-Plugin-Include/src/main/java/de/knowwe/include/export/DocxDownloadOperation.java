@@ -98,7 +98,7 @@ public class DocxDownloadOperation extends FileDownloadOperation {
 				"KnowWEExtension/images/pencil.png",
 				"Update Version to " + nextVersion,
 				"Increments the version number of the document to be downloaded.",
-				jsAction));
+				jsAction, Tool.CATEGORY_EXECUTE));
 		return actions;
 	}
 

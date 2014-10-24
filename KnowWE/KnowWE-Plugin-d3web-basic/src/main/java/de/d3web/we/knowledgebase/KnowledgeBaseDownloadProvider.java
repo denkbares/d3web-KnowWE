@@ -83,7 +83,8 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 				Icon.DOWNLOAD,
 				"Download",
 				"Download the entire knowledge base into a single file for deployment.",
-				jsAction);
+				jsAction,
+				Tool.CATEGORY_DOWNLOAD);
 	}
 
 	protected Tool getQRCodeTool(Section<?> section, UserContext userContext) {
@@ -132,7 +133,8 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 				"KnowWEExtension/d3web/icon/qrcode16.gif",
 				"QR-Code",
 				"Shows the QR-Code to download the knowledge base into mobile devices.",
-				jsAction);
+				jsAction,
+				Tool.CATEGORY_DOWNLOAD);
 	}
 
 }

@@ -53,14 +53,16 @@ public class HighlightProvider implements ToolProvider {
 		if (dohighlighting) {
 			return new DefaultTool(ICON, "Hide Trace",
 					"Highlights active nodes and edges in the flowchart.",
-					DiaFluxTraceHighlight.getDeactivationJSAction());
+					DiaFluxTraceHighlight.getDeactivationJSAction(),
+					Tool.CATEGORY_INFO);
 		}
 		else {
 			return new DefaultTool(
 					ICON,
 					"Show Trace",
 					"Highlights active nodes and edges in the flowchart.",
-					DiaFluxTraceHighlight.getActivationJSAction(DiaFluxTraceHighlight.TRACE_HIGHLIGHT));
+					DiaFluxTraceHighlight.getActivationJSAction(DiaFluxTraceHighlight.TRACE_HIGHLIGHT),
+					Tool.CATEGORY_INFO);
 		}
 	}
 }

@@ -62,6 +62,6 @@ public class CIDashboardToolProvider implements ToolProvider {
 				"KnowWEExtension/ci4ke/images/16x16/clock.png",
 				"Start a new build",
 				"Starts a new build.",
-				jsAction);
+				jsAction,Tool.CATEGORY_EXECUTE);
 	}
 }

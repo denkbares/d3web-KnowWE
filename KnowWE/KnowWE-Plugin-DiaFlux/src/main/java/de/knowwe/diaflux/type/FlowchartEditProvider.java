@@ -54,7 +54,8 @@ public class FlowchartEditProvider implements ToolProvider {
 				"KnowWEExtension/flowchart/icon/edit16.png",
 				"Visual Editor",
 				"Opens the visual editor for this flowchart.",
-				jsAction);
+				jsAction,
+				Tool.CATEGORY_EDIT);
 	}
 
 	private static String createEditAction(Section<?> section, UserContext userContext) {

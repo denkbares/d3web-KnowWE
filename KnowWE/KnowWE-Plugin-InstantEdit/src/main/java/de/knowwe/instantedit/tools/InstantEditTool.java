@@ -2,6 +2,7 @@ package de.knowwe.instantedit.tools;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.tools.DefaultTool;
+import de.knowwe.tools.Tool;
 
 public class InstantEditTool extends DefaultTool {
 
@@ -19,7 +20,7 @@ public class InstantEditTool extends DefaultTool {
 
 	public InstantEditTool(String iconPath, String title, String description, Section<?> section, String jsNameSpace, String additionalJSAction) {
 		super(iconPath, title, description, getJSAction(section.getID(), jsNameSpace,
-				additionalJSAction));
+				additionalJSAction), Tool.CATEGORY_EDIT);
 		if (jsNameSpace == null) {
 			throw new NullPointerException("jsNameSpace needs to be specified for InstantEditTools");
 		}

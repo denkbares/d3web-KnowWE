@@ -54,7 +54,8 @@ public class HelpToolProvider implements ToolProvider {
 				"KnowWEExtension/d3web/icon/help16.gif",
 				"Help: " + section.get().getName(),
 				"Open help page for this markup.",
-				js);
+				js,
+				Tool.CATEGORY_INFO);
 		return new Tool[] { help };
 	}
 

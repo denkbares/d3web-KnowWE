@@ -36,6 +36,7 @@ import de.knowwe.jspwiki.types.HeaderType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.DefaultToolSet;
+import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolSet;
 import de.knowwe.util.Icon;
 
@@ -70,7 +71,7 @@ public class FramedIncludedSectionRenderer extends DefaultMarkupRenderer {
 
 		return new DefaultToolSet(
 				new DefaultTool(Icon.NONE, "Open Page", "Opens page '" + targetSection.getTitle()
-						+ "'", "window.location ='" + link + "'"));
+						+ "'", "window.location ='" + link + "'",  Tool.CATEGORY_INFO));
 	}
 
 	@Override

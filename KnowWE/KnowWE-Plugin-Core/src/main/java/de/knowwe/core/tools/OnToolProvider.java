@@ -40,7 +40,8 @@ public class OnToolProvider implements ToolProvider {
 				"KnowWEExtension/images/on.png",
 				"Activate",
 				"Activates this section.",
-				js);
+				js,
+				Tool.CATEGORY_LAST);
 		return new Tool[] { help };
 	}
 

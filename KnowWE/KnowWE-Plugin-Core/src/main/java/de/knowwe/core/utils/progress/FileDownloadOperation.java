@@ -168,7 +168,8 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 				"window.location = \"action/DownloadFileAction?file="
 						+ Strings.encodeHtml(tempFile.getPath().replace("\\", "/")) + "&name="
 						+ Strings.encodeHtml(fileName)
-						+ "\""));
+						+ "\"",
+				Tool.CATEGORY_DOWNLOAD));
 	}
 
 	/**

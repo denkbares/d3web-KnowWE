@@ -40,10 +40,11 @@ public class LazyURIReferenceCompleteToolProvider implements ToolProvider {
 				+ "','" + insertString + "','" + defaultMarkupID + "')";
 		return new DefaultTool(
 				"KnowWEExtension/images/edit.png",
-				"change to '" + insertString + "'",
-				"expand current lazy identifier to '"
+				"Change to '" + insertString + "'",
+				"Expand current lazy identifier to '"
 						+ insertString + "'",
-				jsAction);
+				jsAction,
+				Tool.CATEGORY_CORRECT);
 	}
 
 	@Override

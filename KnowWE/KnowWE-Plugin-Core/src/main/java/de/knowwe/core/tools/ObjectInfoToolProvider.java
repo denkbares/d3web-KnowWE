@@ -56,7 +56,8 @@ public class ObjectInfoToolProvider implements ToolProvider {
 				"KnowWEExtension/images/new_file.gif",
 				rb.getString("KnowWE.ObjectInfoTagHandler.newPage"),
 				rb.getString("KnowWE.ObjectInfoTagHandler.newPageDetail"),
-				jsAction);
+				jsAction,
+				Tool.CATEGORY_INFO);
 	}
 
 }

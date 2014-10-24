@@ -56,7 +56,8 @@ public class RenamingToolProvider implements ToolProvider {
 				Icon.RENAME,
 				"Rename",
 				"Rename this term wiki wide.",
-				createRenamingAction(section));
+				createRenamingAction(section),
+				Tool.CATEGORY_EDIT);
 	}
 
 	protected String createRenamingAction(Section<? extends Term> section) {

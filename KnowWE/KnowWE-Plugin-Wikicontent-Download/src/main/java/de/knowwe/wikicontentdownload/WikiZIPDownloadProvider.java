@@ -67,7 +67,7 @@ public class WikiZIPDownloadProvider implements ToolProvider {
 				fingerprint
 						? "Download the entire Wiki as a Zip-File, including a finger-print for debug purposes, but no version history."
 						: "Download the entire Wiki as a Zip-File.",
-				jsAction);
+				jsAction, Tool.CATEGORY_DOWNLOAD);
 	}
 
 }

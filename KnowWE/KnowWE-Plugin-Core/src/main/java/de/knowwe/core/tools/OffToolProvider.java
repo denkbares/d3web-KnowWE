@@ -27,6 +27,7 @@ import de.knowwe.tools.ToolProvider;
 
 /**
  * ToolProvider for deactivating a markup
+ *
  * @author Veronika Sehne (denkbares GmbH)
  * @created 11.06.2014
  */
@@ -40,7 +41,8 @@ public class OffToolProvider implements ToolProvider {
 				"KnowWEExtension/images/off.png",
 				"Deactivate",
 				"Deactivates this section.",
-				js);
+				js,
+				Tool.CATEGORY_EDIT);
 		return new Tool[] { help };
 	}
 

@@ -60,7 +60,8 @@ public class StyledSolutionPanelToolProvider implements ToolProvider {
 				"KnowWEExtension/d3web/icon/refresh16.png",
 				label,
 				"Resets the values of the current session.",
-				jsAction);
+				jsAction,
+				Tool.CATEGORY_EXECUTE);
 	}
 
 }

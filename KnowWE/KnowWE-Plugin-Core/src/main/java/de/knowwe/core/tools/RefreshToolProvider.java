@@ -33,6 +33,6 @@ public class RefreshToolProvider implements ToolProvider {
 				Icon.REFRESH,
 				"Refresh",
 				"Performs a fresh rebuild of the knowledge base from the wiki content.",
-				jsAction);
+				jsAction, Tool.CATEGORY_LAST);
 	}
 }
