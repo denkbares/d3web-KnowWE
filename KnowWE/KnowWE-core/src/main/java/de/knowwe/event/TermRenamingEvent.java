@@ -21,6 +21,7 @@ package de.knowwe.event;
 
 import de.d3web.strings.Identifier;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.event.Event;
 
 /**
@@ -32,12 +33,14 @@ import de.knowwe.core.event.Event;
 public class TermRenamingEvent extends Event {
 
 	private ArticleManager articleManager;
+	private UserActionContext context;
 	private final Identifier term;
 	private final Identifier replacementTerm;
 
 
-	public TermRenamingEvent(ArticleManager articleManager, Identifier term, Identifier replacementTerm) {
+	public TermRenamingEvent(ArticleManager articleManager, UserActionContext context, Identifier term, Identifier replacementTerm) {
 		this.articleManager = articleManager;
+		this.context = context;
 		this.term = term;
 		this.replacementTerm = replacementTerm;
 	}
@@ -52,5 +55,9 @@ public class TermRenamingEvent extends Event {
 
 	public ArticleManager getArticleManager() {
 		return articleManager;
+	}
+
+	public UserActionContext getContext() {
+		return context;
 	}
 }

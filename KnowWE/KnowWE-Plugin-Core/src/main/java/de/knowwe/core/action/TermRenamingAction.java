@@ -135,7 +135,7 @@ public class TermRenamingAction extends AbstractAction {
 		if (getArticlesWithoutEditRights(allTerms, context).isEmpty()) {
 			renameTerms(allTerms, termIdentifier, replacementIdentifier, mgr, context, failures, success);
 			Compilers.awaitTermination(mgr.getCompilerManager());
-			EventManager.getInstance().fireEvent(new TermRenamingEvent(mgr, termIdentifier, replacementIdentifier));
+			EventManager.getInstance().fireEvent(new TermRenamingEvent(mgr, context, termIdentifier, replacementIdentifier));
 			writeResponse(failures, success, termIdentifier, replacementIdentifier, context);
 		}
 		else {
