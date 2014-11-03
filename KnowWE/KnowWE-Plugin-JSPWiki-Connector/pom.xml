@@ -22,15 +22,9 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.jspwiki</groupId>
-			<artifactId>jspwiki-war</artifactId>
-			<version>2.10.1</version>
+			<artifactId>jspwiki-knowwe-war</artifactId>
+			<version>2.10.2-SNAPSHOT</version>
 			<classifier>classes</classifier>
-			<exclusions>
-				<exclusion>
-					<groupId>net.sourceforge.nekohtml</groupId>
-					<artifactId>nekohtml</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
@@ -49,10 +43,10 @@
 		persistence code. Also having the newer version of those dependencies fixes the issues, the old version
 		will be ignored.
 		This should be removed, as soon as JSPWiki updates its dependency to nekothml.-->
-		<dependency>
+		<!--dependency>
 			<groupId>net.sourceforge.nekohtml</groupId>
 			<artifactId>nekohtml</artifactId>
 			<version>1.9.19</version>
-		</dependency>
+		</dependency-->
 	</dependencies>
 </project>
