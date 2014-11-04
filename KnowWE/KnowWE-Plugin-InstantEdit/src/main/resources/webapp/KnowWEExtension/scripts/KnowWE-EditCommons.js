@@ -75,7 +75,7 @@ KNOWWE.editCommons = function() {
 					KNOWWE.notification.error(null, "Server appears to be offline.", status);
 					break;
 				case 403:
-					KNOWWE.notification.error(null, "You are not authorized to change this page.", status);
+					KNOWWE.notification.error(null, "You are not authorized to do this.", status);
 					break;
 				case 404:
 					KNOWWE.notification.error(null, "This page no longer exists. Please reload.", status);
