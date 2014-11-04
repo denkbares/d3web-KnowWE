@@ -1122,6 +1122,18 @@
 		</profile>
 
 		<profile>
+			<id>defi</id>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Defi</artifactId>
+					<version>0.2-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
 			<id>wimvent</id>
 			<dependencies>
 				<dependency>
