@@ -6,7 +6,6 @@
 		<groupId>de.uniwue.d3web</groupId>
 		<version>0.2-SNAPSHOT</version>
 	</parent>
-	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE-GlobalTestUtils</artifactId>
 	<version>0.2-SNAPSHOT</version>
 	<name>KnowWE-GlobalTestUtils</name>
@@ -54,10 +53,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.apache.jspwiki</groupId>
-			<artifactId>jspwiki-war</artifactId>
-			<version>2.10.1</version>
-			<classifier>classes</classifier>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
+			<version>0.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
