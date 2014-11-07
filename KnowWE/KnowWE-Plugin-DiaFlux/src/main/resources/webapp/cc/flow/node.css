@@ -1,8 +1,8 @@
 .Node {
 	position: absolute;
 	overflow: visible;
-	font-family: Arial, Helvetica;
-	font-size:	10pt;
+	/*font-family: Arial, Helvetica;
+	font-size:	10pt;*/
 	background-color: black;
 	padding: 1px;
 	z-index: 100;
