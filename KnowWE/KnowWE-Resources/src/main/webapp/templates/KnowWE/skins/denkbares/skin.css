@@ -166,7 +166,7 @@ body {
 	background:white; 
 	margin: 0;
 	/*font: 12px/1.5 "Lucida Grande", Arial, Helvetica, Sans-Serif;*/
-	font:76%/140% Verdana,Arial,Helvetica,sans-serif;
+	font:80%/140% Helvetica Neue,Verdana,Arial,Helvetica,sans-serif;
 }
 table {	
 	border-collapse:collapse; 
@@ -1671,7 +1671,7 @@ a.slimbox:hover {
 	position:absolute;
 	left:50%;
 	overflow:hidden;
-	font: 90% Verdana, Helvetica, sans-serif;
+	font: 90%  Helvetica Neue, Verdana, Helvetica, sans-serif;
 	color:#666;
 	line-height:1.5;
 	text-align:left;
