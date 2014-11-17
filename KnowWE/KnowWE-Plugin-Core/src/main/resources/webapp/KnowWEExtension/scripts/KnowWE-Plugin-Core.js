@@ -808,10 +808,10 @@ KNOWWE.core.plugin.pagination = function() {
 
 
 /**
- * Namespace: KNOWWE.plugin.d3webbasic.debugger for debugging D3web expressions in KnowWE
+ * Namespace: KNOWWE.core.plugin.rightPanel for debugging D3web expressions in KnowWE
  *
  */
-KNOWWE.plugin.d3webbasic.rightPanel = function() {
+KNOWWE.core.plugin.rightPanel = function() {
 
 	var rightPanelStorageKey = "rightPanel";
 
@@ -977,8 +977,7 @@ KNOWWE.plugin.d3webbasic.rightPanel = function() {
 	}
 
 	function initRightPanelTools() {
-		KNOWWE.plugin.d3webbasic.rightPanel.watches.initWatchesTool();
-
+		KNOWWE.core.plugin.rightPanel.watches.initWatchesTool();
 	}
 
 	function setRightPanelCookie(b) {
@@ -1014,7 +1013,7 @@ KNOWWE.plugin.d3webbasic.rightPanel = function() {
 
 		function bindHideInMoreMenu() {
 			jq$("#morebutton .watches").prop("title", "Hide Right Panel");
-			jq$("#morebutton .watches").attr("onclick", "KNOWWE.plugin.d3webbasic.rightPanel.hideRightPanel()");
+			jq$("#morebutton .watches").attr("onclick", "KNOWWE.core.plugin.rightPanel.hideRightPanel()");
 			jq$("#morebutton .watches").text("Hide Right Panel");
 		}
 
@@ -1028,7 +1027,7 @@ KNOWWE.plugin.d3webbasic.rightPanel = function() {
 
 	function changeHideToShow() {
 		jq$("#morebutton .watches").prop("title", "Show Right Panel");
-		jq$("#morebutton .watches").attr("onclick", "KNOWWE.plugin.d3webbasic.rightPanel.showRightPanel()");
+		jq$("#morebutton .watches").attr("onclick", "KNOWWE.core.plugin.rightPanel.showRightPanel()");
 		jq$("#morebutton .watches").text("Show Right Panel");
 	}
 
@@ -1131,7 +1130,7 @@ KNOWWE.plugin.d3webbasic.rightPanel = function() {
 }
 ();
 
-KNOWWE.plugin.d3webbasic.rightPanel.watches = function() {
+KNOWWE.core.plugin.rightPanel.watches = function() {
 
 	var watchesStorageKey = "watches";
 
@@ -1502,7 +1501,7 @@ KNOWWE.plugin.d3webbasic.rightPanel.watches = function() {
 		jq$(watchcontent).append(watchesAddEntry);
 		jq$(watchcontent).append(watchesAddEntryFromSelection);
 
-		KNOWWE.plugin.d3webbasic.rightPanel.addToolToRightPanel("Watches", "watches", watchcontent);
+		KNOWWE.core.plugin.rightPanel.addToolToRightPanel("Watches", "watches", watchcontent);
 	}
 
 	function createDeleteButton() {
@@ -1664,7 +1663,7 @@ KNOWWE.helper.observer.subscribe("afterRerender", function() {
 			KNOWWE.core.plugin.renderKDOM();
 			KNOWWE.kdomtreetable.init();
 			KNOWWE.core.plugin.pagination.decorateTable();
-			KNOWWE.plugin.rightPanel.watches.init();
+			KNOWWE.core.plugin.rightPanel.init();
 		});
 	}
 }());
