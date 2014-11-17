@@ -19,8 +19,10 @@
 
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<fmt:setLocale value="${prefs.Language}"/>
+<%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
+<fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default"/>
+<%@ page import="org.apache.wiki.*" %>
 
 <div id="favorites">
 
@@ -73,7 +75,7 @@
 					<li>
 						<a class="action watches"
 						   title="Show Right Panel"
-						   onclick="KNOWWE.plugin.d3webbasic.rightPanel.showRightPanel()"
+						   onclick="KNOWWE.core.plugin.rightPanel.showRightPanel()"
 								>Show Right Panel
 						</a>
 					</li>
