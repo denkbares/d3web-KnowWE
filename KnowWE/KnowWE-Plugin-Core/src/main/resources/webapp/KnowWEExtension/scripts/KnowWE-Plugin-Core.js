@@ -117,7 +117,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 						action : 'none',
 						fn : function() {
 							window.location = "Wiki.jsp?page="
-								+ objectName.innerHTML
+							+ objectName.innerHTML
 						}
 					}
 				}
@@ -169,9 +169,9 @@ KNOWWE.core.plugin.objectinfo = function() {
 									}
 								} else {
 									window.location.href = "Wiki.jsp?page=ObjectInfoPage&objectname="
-										+ encodeURIComponent(jsonResponse.newObjectName)
-										+ "&termIdentifier="
-										+ encodeURIComponent(jsonResponse.newTermIdentifier);
+									+ encodeURIComponent(jsonResponse.newObjectName)
+									+ "&termIdentifier="
+									+ encodeURIComponent(jsonResponse.newTermIdentifier);
 								}
 							}
 							KNOWWE.core.util.updateProcessingState(-1);
@@ -263,9 +263,9 @@ KNOWWE.plugin.renaming = function() {
 						else {
 							if (jsonResponse.objectinfopage === true) {
 								window.location.href = "Wiki.jsp?page=ObjectInfoPage&objectname="
-									+ encodeURIComponent(jsonResponse.newObjectName)
-									+ "&termIdentifier="
-									+ encodeURIComponent(jsonResponse.newTermIdentifier);
+								+ encodeURIComponent(jsonResponse.newObjectName)
+								+ "&termIdentifier="
+								+ encodeURIComponent(jsonResponse.newTermIdentifier);
 							}
 							else {
 								KNOWWE.core.util.reloadPage();
@@ -386,7 +386,7 @@ KNOWWE.plugin.renaming = function() {
 				//jq$(clickedTerm).css("display", "none");
 				jq$(".click").editable(function(value, settings) {
 					renameTerms(jsonResponse.termIdentifier, value, false);
-					return(value)
+					return (value)
 				}, {
 					style : "inherit",
 					onreset : cancelEdit,
@@ -396,7 +396,7 @@ KNOWWE.plugin.renaming = function() {
 				jq$('.click').trigger("click");
 				//replace edit field value with sectionText for encoding reasons
 				var inputField = jq$(clickedTerm).find("input").val(jsonResponse.lastPathElement);
-				jq$(inputField).autoGrow(5);
+				jq$(inputField).autoGrowRenameField(5);
 
 
 				sectionIds = jsonResponse.sectionIds;
@@ -477,7 +477,7 @@ KNOWWE.tooltips.enrich = function(element) {
 			interactive : true,
 			multiple : true,
 			delay : delay,
-			contentAsHTML: true,
+			contentAsHTML : true,
 			theme : ".tooltipster-knowwe",
 			functionBefore : function(origin, continueTooltip) {
 				// check if we have an ajax-tooltip
@@ -513,7 +513,12 @@ KNOWWE.kdomtreetable = {};
 
 KNOWWE.kdomtreetable.init = function() {
 	jq$('.renderKDOMTable').each(function() {
-		jq$(this).agikiTreeTable({expandable : true, clickableNodeNames : true, persist : true, article : jq$(this).closest(".defaultMarkupFrame").attr("id") });
+		jq$(this).agikiTreeTable({
+			expandable : true,
+			clickableNodeNames : true,
+			persist : true,
+			article : jq$(this).closest(".defaultMarkupFrame").attr("id")
+		});
 	});
 	KNOWWE.kdomtreetable.setOverflow();
 }
@@ -570,7 +575,7 @@ KNOWWE.core.plugin.pagination = function() {
 		sort : function(element, id) {
 
 			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-"
-				+ id));
+			+ id));
 			var sorting = element.innerText;
 			if (cookie) {
 				if (cookie.sorting == sorting) {
@@ -593,7 +598,7 @@ KNOWWE.core.plugin.pagination = function() {
 				.attr('id');
 
 			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-"
-				+ id));
+			+ id));
 			if (cookie == null) {
 				cookie = {};
 			}
@@ -673,7 +678,7 @@ KNOWWE.core.plugin.pagination = function() {
 			var id = jq$(selectedRow).closest(".navigationPaginationWrapper")
 				.attr('id');
 			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-"
-				+ id));
+			+ id));
 			if (cookie == null) {
 				cookie = {};
 			}
@@ -788,10 +793,10 @@ KNOWWE.core.plugin.pagination = function() {
 					// render sorting symbol
 					var cookie = jq$.parseJSON(jq$
 						.cookie("PaginationDecoratingRenderer-"
-							+ sectionId));
+						+ sectionId));
 					if (cookie != null && cookie.sorting != null) {
 						var thToGetSortingSymbol = jq$("#" + sectionId
-							+ " th:contains('" + cookie.sorting + "') span");
+						+ " th:contains('" + cookie.sorting + "') span");
 						jq$(thToGetSortingSymbol).append(
 							getSortingSymbol(cookie.naturalOrder));
 					}
@@ -800,6 +805,767 @@ KNOWWE.core.plugin.pagination = function() {
 		}
 	}
 }();
+
+
+/**
+ * Namespace: KNOWWE.plugin.d3webbasic.debugger for debugging D3web expressions in KnowWE
+ *
+ */
+KNOWWE.plugin.d3webbasic.rightPanel = function() {
+
+	var rightPanelStorageKey = "rightPanel";
+
+	var rightPanel = null;
+
+	var showSidebar = false;
+
+	var globalFloatingTime = 500;
+
+	var initScrolling = null;
+
+	function getSelected() {
+		var t = '';
+		if (window.getSelection) {
+			t = window.getSelection();
+		} else if (document.getSelection) {
+			t = document.getSelection();
+		} else if (document.selection) {
+			t = document.selection.createRange().text;
+		}
+		return t;
+
+	}
+
+	function watchesFavScroll() {
+		var element = $("rightPanel");
+		if (!element)
+			return;
+		var originY = initScrolling;
+		var wHeight = window.getHeight();
+
+		var docHeight = getDocHeight();
+		var favHeight = element.clientHeight;
+		var scrollY = window.getScrollTop();
+		var scrollMax = docHeight - wHeight;
+		var favToScroll = favHeight - wHeight;
+		var actionsBottom = $("actionsBottom");
+		var disableFixing = (actionsBottom == null
+		|| favHeight >= actionsBottom.offsetTop + actionsBottom.clientHeight);
+		if (scrollY <= originY || disableFixing) {
+			// when reaching top of page or if page height is made by leftMenu
+			// align fav originally to page
+			element.style.position = "absolute";
+			element.style.top = originY + "px";
+		} else if (scrollMax - scrollY <= favToScroll) {
+			// when reaching end of page
+			// align bottom of fav to bottom of page
+			element.style.position = "absolute";
+			element.style.top = (docHeight - favHeight) + "px";
+		} else {
+			// otherwise fix fav to the top of the viewport
+			element.style.position = "fixed";
+			element.style.top = "0px";
+
+		}
+
+		function getDocHeight() {
+			var D = document;
+			return Math.max(Math.max(D.body.scrollHeight,
+				D.documentElement.scrollHeight), Math.max(D.body.offsetHeight,
+				D.documentElement.offsetHeight), Math.max(D.body.clientHeight,
+				D.documentElement.clientHeight));
+		};
+	}
+
+
+	function floatRightPanel() {
+
+		showSidebar = true;
+
+
+		var sidebar = jq$("#rightPanel");
+		var options = {right : '0px'}
+
+		sidebar.animate(options, globalFloatingTime, function() {
+			//"left" is needed for resizable to work properly - kind of a dirty hack but don't know how to compute that "311"
+			sidebar.css("left", (jq$(window).width() - 311) + "px");
+		});
+		initScrolling = jq$(".tabs").offset().top;
+		jq$(window).scroll(function() {
+
+			watchesFavScroll();
+		});
+
+		jq$(window).resize(function() {
+			var rt = (jq$(window).width() - (rightPanel.offset().left + rightPanel.outerWidth()));
+			var left = rightPanel.position().left;
+			jq$("#page").width(jq$("#page").width() + rt);
+			rightPanel.css("left", left + rt);
+
+		});
+
+
+	}
+
+
+	function shrinkPage() {
+		jq$("#page").animate({
+			'width' : "-=300px"
+		}, globalFloatingTime);
+		jq$("#pagecontent").css("margin-right", "5px");
+		jq$("#actionsBottom").css("margin-right", "5px");
+	}
+
+	function growPage() {
+		jq$("#page").animate({
+			'width' : "+=300px"
+		}, globalFloatingTime);
+		var sidebar = jq$("#rightPanel");
+		sidebar.animate({
+			left : ((jq$(window).width() + 311) + "px")
+		}, globalFloatingTime, function() {
+			sidebar.remove();
+		});
+		jq$("#pagecontent").css("margin-right", "auto");
+		jq$("#actionsBottom").css("margin-right", "auto");
+	}
+
+	function buildRightPanel() {
+		var offsetTop = jq$(".tabs").offset().top;
+		var scrollTop = jq$(window).scrollTop();
+		var rightPanel = jq$('<div/>', {
+			'id' : 'rightPanel',
+			'css' : {
+				'position' : 'absolute',
+				'top' : (offsetTop - scrollTop) + 'px',
+				'right' : '-300px',
+				'width' : "300px",
+				'overflow-x' : 'hidden',
+				'overflow-y' : 'hidden'
+			}
+		});
+
+		var rightPanelHide = jq$('<div/>', {
+			'class' : 'rightpanelhide'
+		});
+
+
+		var rightPanelHideText = jq$('<span/>', {
+			'text' : 'Hide'
+
+		});
+
+		var rightPanelHideIcon = jq$('<img/>', {
+			'src' : 'KnowWEExtension/images/arrow_right.png'
+
+		});
+
+		rightPanelHide.append(rightPanelHideText);
+		rightPanelHide.append(rightPanelHideIcon);
+		rightPanel.append(rightPanelHide);
+		jq$("#content").append(rightPanel);
+
+
+		//make sidebar resizable
+		var maxWidth = jq$(window).width() - jq$("#favorites").outerWidth();
+		rightPanel.resizable({
+			handles : "w",
+			minWidth : 300,
+			maxWidth : maxWidth,
+			alsoResize : "#watches textarea, #watches .watchlistline"
+		});
+	}
+
+	function initRightPanelTools() {
+		KNOWWE.plugin.d3webbasic.rightPanel.watches.initWatchesTool();
+
+	}
+
+	function setRightPanelCookie(b) {
+		var storage = simpleStorage.get(rightPanelStorageKey);
+		if (typeof storage == 'undefined') {
+			storage = {}
+		}
+
+		else {
+			simpleStorage.deleteKey(rightPanelStorageKey);
+		}
+		simpleStorage.set(rightPanelStorageKey, b);
+
+	}
+
+	function bindCollapseIcons() {
+		jq$("#rightPanel").on("click", ".tool .topbar", function() {
+			if (jq$(this).find("img").attr('src') == "KnowWEExtension/images/triangleDown.png") {
+				jq$(this).find("img").attr('src', 'KnowWEExtension/images/triangleRight.png');
+				jq$(this).parent().find(".content").first().slideUp();
+			}
+			else {
+				jq$(this).find("img").attr('src', 'KnowWEExtension/images/triangleDown.png');
+				jq$(this).parent().find(".content").first().slideDown();
+			}
+		});
+	}
+
+	function bindHideFunctions() {
+		bindHideInPanel();
+		bindHideInMoreMenu();
+
+
+		function bindHideInMoreMenu() {
+			jq$("#morebutton .watches").prop("title", "Hide Right Panel");
+			jq$("#morebutton .watches").attr("onclick", "KNOWWE.plugin.d3webbasic.rightPanel.hideRightPanel()");
+			jq$("#morebutton .watches").text("Hide Right Panel");
+		}
+
+
+		function bindHideInPanel() {
+			jq$("#rightPanel .rightpanelhide").on("click", function() {
+				terminateRightPanel();
+			})
+		}
+	}
+
+	function changeHideToShow() {
+		jq$("#morebutton .watches").prop("title", "Show Right Panel");
+		jq$("#morebutton .watches").attr("onclick", "KNOWWE.plugin.d3webbasic.rightPanel.showRightPanel()");
+		jq$("#morebutton .watches").text("Show Right Panel");
+	}
+
+	function bindUiActions() {
+		bindCollapseIcons();
+		bindHideFunctions();
+	}
+
+	function initRightPanel(fromCookie) {
+		showSidebar = true;
+		if (fromCookie) {
+			globalFloatingTime = 0;
+		}
+		else {
+			globalFloatingTime = 500;
+		}
+		shrinkPage();
+		buildRightPanel();
+		floatRightPanel();
+		rightPanel = jq$("#rightPanel");
+		setRightPanelCookie(true);
+		bindUiActions();
+		initRightPanelTools();
+	}
+
+	function terminateRightPanel() {
+		growPage();
+		changeHideToShow();
+		setRightPanelCookie(false);
+	}
+
+	function buildToolContainer(id) {
+		return tool = jq$('<div/>', {
+			'id' : id,
+			'class' : 'tool',
+			'css' : {
+				'position' : 'relative'
+			}
+		});
+
+
+	}
+
+	function buildTopBar(title) {
+		var toolTopbar = jq$('<div/>', {
+			'class' : 'topbar'
+		});
+		var collapseIcon = jq$('<img/>', {
+			'class' : 'collapseicon',
+			'src' : 'KnowWEExtension/images/triangleDown.png'
+		});
+		var toolTitle = jq$('<span/>', {
+			'class' : 'title',
+			'text' : title
+		});
+		toolTopbar.append(collapseIcon);
+		toolTopbar.append(toolTitle);
+		return toolTopbar;
+	}
+
+	function appendNewToolToRightPanel(tool, topbar, div) {
+		tool.append(topbar);
+		tool.append(div);
+		rightPanel.append(tool);
+	}
+
+	function buildToolContent(pluginDiv) {
+		var content = jq$('<div/>', {
+				'class' : 'content'
+			}
+		);
+		content.append(pluginDiv);
+		return content;
+	}
+
+	return {
+
+		showRightPanel : function() {
+			initRightPanel(false);
+		},
+
+		hideRightPanel : function() {
+			terminateRightPanel();
+		},
+
+		init : function() {
+			if (simpleStorage.get(rightPanelStorageKey) == true) {
+				initRightPanel(true);
+			}
+		},
+
+		addToolToRightPanel : function(title, id, pluginDiv) {
+			var tool = buildToolContainer(id);
+			var topbar = buildTopBar(title);
+			var content = buildToolContent(pluginDiv);
+			appendNewToolToRightPanel(tool, topbar, content);
+		}
+
+	}
+}
+();
+
+KNOWWE.plugin.d3webbasic.rightPanel.watches = function() {
+
+	var watchesStorageKey = "watches";
+
+	var watchesArray;
+
+	var watches;
+
+	var restorableEntries = {};
+
+	var watchlist;
+
+	function bindUiActions() {
+		watches.on("click", ".watchlistentry", function(e) {
+			editWatch(this);
+		})
+		watches.on("click", ".addwatch", function(e) {
+			addWatch();
+		});
+		watches.on("click", ".fromselection", function(e) {
+			addWatchFromSelection();
+		});
+		watches.on("keydown", "textarea", function(e) {
+			handleTextarea(this, e);
+		});
+		watches.on("click", ".deletewatch", function(e) {
+			e.stopPropagation();
+			removeWatch(this);
+		});
+	}
+
+	function handleResponse(data) {
+		var parsed = JSON.parse(data);
+		var expressionArrays = parsed.values;
+		var oldEntries = watchlist.find(".watchlistentry");
+		jq$.each(expressionArrays, function(index, value) {
+			var newEntry = createNewEntry(watchesArray[index], value);
+			jq$(oldEntries[index]).replaceWith(newEntry);
+		});
+		enableAddWatch();
+	}
+
+	function updateOldWatchesList(data) {
+		handleResponse(data);
+	}
+
+	function updateWatches() {
+		getExpressionValue(watchesArray).success(function(data) {
+			updateOldWatchesList(data);
+		});
+
+
+	}
+
+	function enableAddWatch() {
+		if (watches.find(".addwatch").prop("disabled") == true && watches.find(".newwatch").length == 0) {
+			watches.find(".addwatch").prop("disabled", false);
+			watches.find(".fromselection").prop("disabled", false);
+		}
+	}
+
+	function disableAddWatch() {
+		if (watches.find(".addwatch").prop("disabled") == false) {
+			watches.find(".addwatch").prop("disabled", true);
+			watches.find(".fromselection").prop("disabled", true);
+		}
+	}
+
+	function addWatch(text) {
+		var textarea = createTextarea(null, text);
+		watchlist.append(textarea);
+		jq$(textarea).find("textarea").focus();
+		//allow only one new textarea - disable Add Watch
+		disableAddWatch();
+	}
+
+	function addWatchFromSelection() {
+		var text = getSelectionText();
+		addWatch(text);
+	}
+
+	function removeWatch(that) {
+		var index = getWatchesIndex(jq$(that).parent())
+		watchesArray.splice(index, 1);
+		jq$(that).parent().remove();
+		updateCookies();
+	}
+
+	function saveOldEntry(index, that) {
+		var oldEntry = jq$(that);
+		restorableEntries[index] = oldEntry;
+	}
+
+	function editWatch(that) {
+		var index = getWatchesIndex(that);
+		saveOldEntry(index, that);
+		watchesArray.splice(index, 1);
+		var textarea = createTextarea(that);
+		jq$(that).replaceWith(textarea);
+		jq$(textarea).find("textarea").focus();
+		//allow only one new textarea - disable Add Watch
+		disableAddWatch();
+	}
+
+	function restoreEntry(entry, watchesIndex) {
+		var restorableEntry = restorableEntries[watchesIndex];
+		var restorableExpression = jq$(restorableEntry).find(".expression").text();
+		watchesArray.splice(watchesIndex, 0, restorableExpression);
+		jq$(entry).replaceWith(restorableEntry);
+		delete restorableEntries[watchesIndex];
+	}
+
+	function handleTextarea(that, e) {
+		var entry = jq$(that).parent();
+		var watchesIndex = getWatchesIndex(entry);
+
+		//escape
+		if (e.keyCode == 27) {
+			//is it an old element?
+			if (watchesIndex <= watchesArray.length) {
+				//restore it
+				restoreEntry(entry, watchesIndex);
+			}
+			else {
+				entry.remove();
+			}
+			enableAddWatch();
+		}
+
+		if (jq$(that).data('ui-tooltip') && jq$(that).val().trim() != "") {
+			jq$(that).tooltip("destroy");
+			jq$(that).attr("title", null);
+		}
+
+		var trimmedValue = jq$(that).val().trim()
+		//shift+enter = newline, enter=submit
+		if (e.keyCode == 13 && !e.shiftKey) {
+			if (trimmedValue == "") {
+				jq$(that).tooltip({position : {my : "right bottom", at : "left top"}});
+				jq$(that).attr("title", "Please enter an expression.");
+				jq$(that).trigger("mouseover");
+				// prevent default behavior
+				e.preventDefault();
+				//alert("ok");
+				return;
+			}
+			else {
+				if (watchesIndex < watchesArray.length) {
+					addExpression(jq$(that), watchesIndex);
+				}
+				else {
+					jq$(that).val(trimmedValue);
+					addExpression(jq$(that));
+				}
+
+			}
+		}
+
+	}
+
+	function getWatchesIndex(that) {
+		return jq$(that).index();
+	}
+
+	function getExpressionValue(expr, id) {
+		var data = {expressions : expr, page : KNOWWE.helper.gup('page'), id : id};
+		return jq$.ajax({
+			type : 'post',
+			url : 'action/GetExpressionValueAction',
+			data : JSON.stringify(data),
+			cache : false,
+			contentType : 'application/json, UTF-8'
+		});
+	}
+
+
+	function createTextarea(that, text) {
+		var watchesNewEntry = jq$('<div/>', {
+			'class' : 'newwatch watchlistline'
+		});
+		var textarea = jq$('<textarea>', {});
+
+		var textareaDom = textarea[0];
+
+		if (typeof AutoComplete != "undefined") {
+			new AutoComplete(textareaDom, function(callback, prefix) {
+				var scope = "$d3web/condition";
+				var data = {prefix : prefix, scope : scope};
+				if (KNOWWE && KNOWWE.helper) {
+					data.KWiki_Topic = KNOWWE.helper.gup('page');
+				}
+				jq$.ajax({
+					url : 'action/CompletionAction',
+					cache : false,
+					data : data
+				}).success(function(data) {
+					callback(eval(data));
+				});
+			});
+		}
+
+		if (that) {
+			var oldEntry = restorableEntries[getWatchesIndex(that)];
+			var oldText = jq$(oldEntry).find(".expression").text();
+			textarea.val(oldText);
+		}
+
+		if (typeof text != 'undefined') {
+			textarea.val(text);
+		}
+		textarea.autosize({minHeight : "22px"});
+		watchesNewEntry.append(textarea);
+		return watchesNewEntry;
+	}
+
+	function createWatchesEntryValueSpan(value) {
+		var watchesEntryValue = jq$('<span/>', {
+			'class' : 'value tooltip',
+			'text' : value.value,
+			'title' : value.kbname
+		});
+		return watchesEntryValue;
+	}
+
+
+	function createWatchesEntryHistoryValueSpan(title) {
+		var watchesEntryValue = jq$('<span/>', {
+			'class' : 'value tooltip history',
+			'title' : title
+		});
+		return watchesEntryValue;
+	}
+
+	function handleDefaultResponse(watchesEntry, responseObject) {
+
+		jq$.each(responseObject.kbsEntries, function iterateValuesFromDifferentKbs(index, value) {
+			var watchesEntryValue = createWatchesEntryValueSpan(value);
+			var tooltipcontent = jq$('<span><img src="KnowWEExtension/d3web/icon/knowledgebase24.png"></span><span>' + value.kbname + '  </span>');
+			jq$(watchesEntryValue).tooltipster({
+				content : tooltipcontent,
+				position : "top-left",
+				delay : 600,
+				theme : ".tooltipster-knowwe"
+			});
+			watchesEntry.append(watchesEntryValue);
+		});
+
+		return watchesEntry;
+
+	}
+
+	function handleHistoryResponse(watchesEntry, responseObject) {
+
+		jq$.each(responseObject.kbsEntries, function iterateValuesFromDifferentKbs(index, value) {
+			var watchesEntryValue = createWatchesEntryHistoryValueSpan(value.kbname);
+
+			jq$.each(value.value, function iterateValuesInHistory(index, value) {
+				var historyEntrySpan = jq$('<span/>', {
+					'class' : 'value tooltip historyentry',
+					'text' : value.value
+				});
+				createTimestampsToolTip.call(this, historyEntrySpan);
+				watchesEntryValue.append(historyEntrySpan);
+
+			});
+			watchesEntry.append(watchesEntryValue);
+		});
+
+		function createTimestampsToolTip(historyEntrySpan) {
+			var start = this.timestamps[0];
+			var end = this.timestamps[1];
+			var tooltipcontent;
+			if (start != end) {
+				tooltipcontent = jq$('<span>Start: ' + start + '</span><br><span>End: ' + end + '  </span>');
+			}
+			else {
+				tooltipcontent = jq$('<span>Start: ' + start + '</span>');
+			}
+			jq$(historyEntrySpan).tooltipster({
+				content : tooltipcontent,
+				position : "top-left",
+				delay : 600,
+				theme : ".tooltipster-knowwe"
+			});
+		}
+
+		return watchesEntry;
+	}
+
+	function createNewEntry(expression, responseObject) {
+
+		var watchesEntry = jq$('<div/>', {
+			'class' : 'watchlistline watchlistentry'
+
+		});
+		watchesEntry.uniqueId();
+		var watchesEntryExpression = jq$('<span/>', {
+			'class' : 'expression',
+			'text' : expression
+		});
+		watchesEntry.append(watchesEntryExpression);
+
+
+		var length = Object.keys(responseObject).length;
+		if (length > 0) {
+			switch (responseObject.info) {
+				case 'history':
+					handleHistoryResponse(watchesEntry, responseObject);
+					break;
+				default:
+					handleDefaultResponse(watchesEntry, responseObject);
+			}
+		}
+		else {
+			var watchesEntryValue = jq$('<span/>', {
+				'class' : 'value expressionerror',
+				'text' : '<not a valid expression>'
+			});
+			watchesEntry.append(watchesEntryValue);
+		}
+
+		watchesEntry.append(createDeleteButton());
+		return watchesEntry;
+	}
+
+	function addExpression(original, watchesIndex) {
+
+		var expression = original.val();
+
+		var watchesEntry = jq$('<div/>', {
+			'class' : 'watchlistline watchlistentry',
+			'text' : expression
+		});
+		jq$(original).parent().replaceWith(watchesEntry);
+
+		if (typeof watchesIndex != 'undefined') {
+			watchesArray.splice(watchesIndex, 0, expression);
+		}
+		else {
+			watchesArray.push(expression);
+		}
+		updateCookies();
+
+		getExpressionValue(watchesArray).success(function(data) {
+			updateOldWatchesList(data);
+		});
+	}
+
+	function buildBasicWatchesDiv() {
+
+		var watchcontent = jq$('<div/>', {});
+
+		var watchlist = jq$('<div/>', {
+			'class' : 'watchlist'
+		});
+
+		var watchesAddEntry = jq$('<button/>', {
+			'class' : 'addwatch',
+			'text' : 'Add Watch'
+		});
+
+		var watchesAddEntryFromSelection = jq$('<button/>', {
+			'class' : 'fromselection',
+			'text' : 'from Selection'
+		});
+
+
+		jq$(watchcontent).append(watchlist);
+		jq$(watchcontent).append(watchesAddEntry);
+		jq$(watchcontent).append(watchesAddEntryFromSelection);
+
+		KNOWWE.plugin.d3webbasic.rightPanel.addToolToRightPanel("Watches", "watches", watchcontent);
+	}
+
+	function createDeleteButton() {
+
+		var deleteContainer = jq$('<div/>', {
+			'class' : 'iconcontainer deletewatch select'
+		});
+		var deleteImage = jq$('<img/>', {
+			'class' : 'watchesButton',
+			'src' : 'KnowWEExtension/images/redminus.png'
+		});
+		return deleteContainer.append(deleteImage);
+	}
+
+	function loadWatchesFromCookies() {
+		watchesArray = simpleStorage.get(watchesStorageKey);
+		if (typeof watchesArray != 'undefined') {
+			getExpressionValue(watchesArray).success(function(data) {
+				var parsed = JSON.parse(data);
+				var expressionArrays = parsed.values;
+				jq$.each(expressionArrays, function(index, value) {
+					var newEntry = createNewEntry(watchesArray[index], value);
+					watchlist.append(newEntry);
+				});
+			});
+		}
+		else {
+			watchesArray = [];
+		}
+	}
+
+	function updateCookies() {
+		simpleStorage.set(watchesStorageKey, watchesArray);
+	}
+
+	function getSelectionText() {
+		var text = "";
+		if (window.getSelection) {
+			text = window.getSelection().toString();
+		} else if (document.selection && document.selection.type != "Control") {
+			text = document.selection.createRange().text;
+		}
+		return text;
+	}
+
+	function initVariables() {
+		watches = jq$("#watches");
+		watchlist = watches.find(".watchlist");
+	}
+
+	return {
+		initWatchesTool : function() {
+			buildBasicWatchesDiv();
+			loadWatchesFromCookies();
+			initVariables();
+			bindUiActions();
+			KNOWWE.helper.observer.subscribe("update", function() {
+				updateWatches();
+			});
+		}
+	}
+}
+();
 
 // add clickable table headers to every table which is a sibling to a navigation
 // bar,
@@ -812,13 +1578,13 @@ KNOWWE.helper.observer.subscribe("afterRerender", function() {
 });
 
 
-//jquery-autogrow for automatic input field resizing (customized for KnowWE)
+//jquery-autogrow for automatic input field resizing (customized for KnowWE renaming)
 (function() {
 
 	(function(jq$) {
 		var inherit;
 		inherit = ['font', 'letter-spacing'];
-		return jq$.fn.autoGrow = function(options) {
+		return jq$.fn.autoGrowRenameField = function(options) {
 			var comfortZone, remove, _ref;
 			remove = (options === 'remove' || options === false) || !!(options != null ? options.remove : void 0);
 			comfortZone = (_ref = options != null ? options.comfortZone : void 0) != null ? _ref : options;
@@ -891,13 +1657,14 @@ KNOWWE.helper.observer.subscribe("afterRerender", function() {
 (function init() {
 
 	window.addEvent('domready', _KL.setup);
-	if (KNOWWE.helper.loadCheck([ 'Wiki.jsp' ])) {
+	if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
 		window.addEvent('domready', function() {
 			KNOWWE.tooltips.enrich();
 			KNOWWE.core.plugin.objectinfo.init();
 			KNOWWE.core.plugin.renderKDOM();
 			KNOWWE.kdomtreetable.init();
 			KNOWWE.core.plugin.pagination.decorateTable();
+			KNOWWE.plugin.rightPanel.watches.init();
 		});
 	}
 }());

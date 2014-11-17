@@ -35,8 +35,7 @@
 		</library>
 	</runtime>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer"
-		id="RulePreviewRenderer">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="RulePreviewRenderer">
 		<parameter id="class" value="de.knowwe.core.preview.DefaultPreviewRenderer" />
 		<parameter id="name" value="RulePreviewRenderer" />
 		<parameter id="description" value="Renders a preview of a paricular rule." />
@@ -45,8 +44,7 @@
 		<parameter id="scope" value="RuleType" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
-		id="KnowledgeBaseDownloadProvider">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="KnowledgeBaseDownloadProvider">
 		<parameter id="class" value="de.d3web.we.knowledgebase.KnowledgeBaseDownloadProvider" />
 		<parameter id="name" value="KnowledgeBaseDownloadProvider" />
 		<parameter id="description"
@@ -116,8 +114,7 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="GetKnowledgeBaseResourceAction">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="GetKnowledgeBaseResourceAction">
 		<parameter id="class" value="de.knowwe.d3web.action.GetKnowledgeBaseResourceAction" />
 		<parameter id="name" value="GetKnowledgeBaseResourceAction" />
 		<parameter id="description"
@@ -134,8 +131,7 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="CorrectionProvider"
-		id="D3webCorrectionProvider">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CorrectionProvider" id="D3webCorrectionProvider">
 		<parameter id="class" value="de.knowwe.d3web.correction.D3webCorrectionProvider" />
 		<parameter id="name" value="D3webCorrectionProvider" />
 		<parameter id="description" value="Generates correction suggestions for d3web terms." />
@@ -145,19 +141,16 @@
 		<parameter id="scope" value="D3webTermDefinition" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="CorrectionProvider"
-		id="D3webAnswerCorrectionProvider">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CorrectionProvider" id="D3webAnswerCorrectionProvider">
 		<parameter id="class" value="de.knowwe.d3web.correction.D3webAnswerCorrectionProvider" />
 		<parameter id="name" value="D3webAnswerCorrectionProvider" />
-		<parameter id="description"
-			value="Generates correction suggestions for AnswerReferences." />
+		<parameter id="description" value="Generates correction suggestions for AnswerReferences." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="AnswerReference" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="EventListener"
-		id="PropagationLoopHandler">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="EventListener" id="PropagationLoopHandler">
 		<parameter id="class" value="de.d3web.we.utils.PropagationLoopHandler" />
 		<parameter id="name" value="PropagationLoopHandler" />
 		<parameter id="description" value="EventListener PropagationLoopHandler" />
@@ -165,13 +158,21 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="StatusProvider"
-		id="SessionStatusProvider">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="StatusProvider" id="SessionStatusProvider">
 		<parameter id="class" value="de.d3web.we.basic.SessionStatusProvider" />
 		<parameter id="name" value="SessionStatusProvider" />
 		<parameter id="description" value="Provides a status for the session of the user" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ExpressionResolver" id="GetValueObject">
+		<parameter id="class" value="de.d3web.we.watches.GetValueObject" />
+		<parameter id="name" value="GetValueObject" />
+		<parameter id="description" value="Gets the value of an expression which can be resolved to a ValueObject." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 
 </plugin>

@@ -210,7 +210,7 @@
 		<!-- name of the annotation -->
 		<parameter-def id="name" />
 		<!-- optional: regular expression that defines the possible values of the annotation -->
-		<parameter-def id="regex" multiplicity="none-or-one"/>
+		<parameter-def id="regex" multiplicity="none-or-one" />
 		<parameter-def id="description" />
 		<parameter-def id="version" />
 		<parameter-def id="scope" multiplicity="one" />
@@ -239,6 +239,14 @@
 	</extension-point>
 
 	<extension-point id="StatusProvider">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+	</extension-point>
+
+	<extension-point id="ExpressionResolver">
 		<parameter-def id="class" />
 		<parameter-def id="name" />
 		<parameter-def id="description" />

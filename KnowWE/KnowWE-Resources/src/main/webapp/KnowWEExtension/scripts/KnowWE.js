@@ -688,11 +688,11 @@ var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
 (function init() {
 
 	window.addEvent('domready', _KL.setup);
-	window.addEvent('domready', function() {
-		jq$('.defaultMarkupFrame').each(function(index, frame) {
-			KNOWWE.core.rerendercontent.animateDefaultMarkupMenu(jq$(frame));
+		window.addEvent('domready', function() {
+			jq$('.defaultMarkupFrame').each(function(index, frame) {
+				KNOWWE.core.rerendercontent.animateDefaultMarkupMenu(jq$(frame));
+			});
 		});
-	});
 
 	if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
 		window.addEvent('domready', function() {
