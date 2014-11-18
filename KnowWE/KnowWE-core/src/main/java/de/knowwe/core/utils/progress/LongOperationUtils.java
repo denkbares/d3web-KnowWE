@@ -10,12 +10,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.CompilerMessage;
-import de.knowwe.core.report.Message;
 import de.knowwe.core.utils.KnowWEUtils;
 
 public class LongOperationUtils {
@@ -143,15 +140,9 @@ public class LongOperationUtils {
 		try {
 			operation.execute(context, listener);
 		}
-		catch (IOException e) {
+		catch (IOException | LongOperationException e) {
 			Log.warning("Cannot complete operation.", e);
-			listener.setError("Error occured: " + e.getMessage() + ".");
-		}
-		catch (CompilerMessage e) {
-			Log.warning("Cannot complete operation.", e);
-			Collection<Message> messages = e.getMessages();
-			listener.updateProgress(1f, listener.getMessage());
-			listener.setError("Error" + (messages.size() > 1 ? "s" : "") + " occured: " + Strings.concat("\n ", messages));
+			listener.setError("Error occurred: " + e.getMessage() + ".");
 		}
 		catch (InterruptedException e) {
 			Log.info("Operation canceled by user.");

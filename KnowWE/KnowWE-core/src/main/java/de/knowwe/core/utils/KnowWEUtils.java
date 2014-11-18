@@ -262,10 +262,12 @@ public class KnowWEUtils {
 	 * @created 27.01.2012
 	 */
 	public static WikiAttachment getAttachment(String title, String fileName) throws IOException {
+		WikiAttachment actualAttachment = Environment.getInstance()
+				.getWikiConnector().getAttachment(title + "/" + fileName);
+		if (actualAttachment != null) return actualAttachment;
 		Collection<WikiAttachment> attachments = Environment.getInstance()
 				.getWikiConnector()
 				.getAttachments();
-		WikiAttachment actualAttachment = null;
 		for (WikiAttachment attachment : attachments) {
 			if ((attachment.getFileName().equals(fileName)
 					&& attachment.getParentName().equals(title))
