@@ -156,6 +156,10 @@ KNOWWE.core.plugin.progress = function() {
 			new _KA(options).send();
 		},
 
+		// we remember which bars are hidden/removed, otherwise they can be added again accidentally, because the ajax
+		// to remove and refresh could be timed unfortunately
+		hiddenProgress : {},
+
 		updateProgressBar : function(sectionId, refreshTilProgress) {
 
 			var params = {
@@ -172,27 +176,28 @@ KNOWWE.core.plugin.progress = function() {
 						var container = jq$("#" + sectionId + " .progress-container");
 						var refresh = false;
 						for (var i = 0; i < json.length; i++) {
-							var opID = json[i].operationID;
+							var opId = json[i].operationID;
+							if (KNOWWE.core.plugin.progress.hiddenProgress[opId]) continue;
 							var progress = json[i].progress;
 							var message = json[i].message;
 							var error = json[i].error;
 							var running = json[i].running;
-							var bar = container.find("#" + opID);
+							var bar = container.find("#" + opId);
 							if (bar.length == 0) {
-								container.append("<div id='" + opID + "'>" +
-									"<div class='progress-state'></div>" +
-									"<div class='progress-bar'>" +
-									"<span class='progress-bar-percent'>0 %</span>" +
-									"</div>" +
-									"<div class='progress-message'></div></div>");
-								bar = container.find("#" + opID);
+								container.append("<div id='" + opId + "'>" +
+								"<div class='progress-state'></div>" +
+								"<div class='progress-bar'>" +
+								"<span class='progress-bar-percent'>0 %</span>" +
+								"</div>" +
+								"<div class='progress-message'></div></div>");
+								bar = container.find("#" + opId);
 								bar.find(".progress-state").attr('title', "click to cancel").click(function() {
-									KNOWWE.core.plugin.progress.cancelLongOperation(sectionId, opID);
+									KNOWWE.core.plugin.progress.cancelLongOperation(sectionId, opId);
 								});
 							}
 							bar.removeClass("progress-error progress-success");
 							var percent = Math.floor(progress * 100);
-							bar.find(".progress-bar").progressbar({ value : percent });
+							bar.find(".progress-bar").progressbar({value : percent});
 							bar.find(".progress-bar-percent").text(percent + " %");
 							bar.find(".progress-message").html(message);
 							var hasLineBreaks = /<\/?(br|p)\/?>|\\n/.test(message);
@@ -200,9 +205,12 @@ KNOWWE.core.plugin.progress = function() {
 								bar.find(".progress-message").css('display', 'block');
 							}
 							if (!running) {
-								var closeFunction = function() {
+								var closeFunction = function(event) {
+									var bar = jq$(event.target).parent();
 									bar.remove();
-									KNOWWE.core.plugin.progress.removeLongOperation(sectionId, opID);
+									var barOpId = bar.attr('id');
+									KNOWWE.core.plugin.progress.hiddenProgress[barOpId] = true;
+									KNOWWE.core.plugin.progress.removeLongOperation(sectionId, barOpId);
 									removeAllErrors();
 								};
 								bar.find(".progress-state").unbind("click").click(closeFunction);
@@ -219,12 +227,18 @@ KNOWWE.core.plugin.progress = function() {
 									bar.addClass("progress-error");
 									bar.find(".progress-message").html(error);
 									bar.find(".progress-state").attr("title", "aborted, click to hide");
-									KNOWWE.helper.observer.notify('longOperationAborted', {sectionId : sectionId});
+									KNOWWE.helper.observer.notify('longOperationAborted', {
+										sectionId : sectionId,
+										opId : opId
+									});
 								}
 								else {
 									bar.addClass("progress-success");
 									bar.find(".progress-state").attr("title", "succeeded, click to hide");
-									KNOWWE.helper.observer.notify('longOperationSuccessful', {sectionId : sectionId});
+									KNOWWE.helper.observer.notify('longOperationSuccessful', {
+										sectionId : sectionId,
+										opId : opId
+									});
 								}
 							}
 							refresh |= running;

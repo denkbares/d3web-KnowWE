@@ -1,6 +1,7 @@
 package de.knowwe.core.utils.progress;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -8,12 +9,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 import de.d3web.utils.Log;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.kdom.parsing.SectionStore;
 
 public class LongOperationUtils {
 
@@ -23,14 +23,10 @@ public class LongOperationUtils {
 		// initialize thread pool if not exists
 		if (threadPool == null) {
 			int threadCount = Runtime.getRuntime().availableProcessors() * 3 / 2;
-			threadPool = Executors.newFixedThreadPool(threadCount, new ThreadFactory() {
-
-				@Override
-				public Thread newThread(Runnable r) {
-					Thread thread = new Thread(r, "long-operation-thread");
-					thread.setPriority(Thread.MIN_PRIORITY);
-					return thread;
-				}
+			threadPool = Executors.newFixedThreadPool(threadCount, runnable -> {
+				Thread thread = new Thread(runnable, "long-operation-thread");
+				thread.setPriority(Thread.MIN_PRIORITY);
+				return thread;
 			});
 			Log.fine("created multicore thread pool of size " + threadCount);
 		}
@@ -65,7 +61,10 @@ public class LongOperationUtils {
 
 		Map<String, LongOperation> map = accessLongOperations(section, true);
 		key = operation.getId();
-		map.put(key, operation);
+		//noinspection SynchronizationOnLocalVariableOrMethodParameter
+		synchronized (map) {
+			map.put(key, operation);
+		}
 		return key;
 	}
 
@@ -81,10 +80,13 @@ public class LongOperationUtils {
 	 */
 	public static String getRegistrationID(Section<?> section, LongOperation operation) {
 		Map<String, LongOperation> map = accessLongOperations(section, true);
-		for (Entry<String, LongOperation> entry : map.entrySet()) {
-			if (entry.getValue().equals(operation)) return entry.getKey();
+		//noinspection SynchronizationOnLocalVariableOrMethodParameter
+		synchronized (map) {
+			for (Entry<String, LongOperation> entry : map.entrySet()) {
+				if (entry.getValue().equals(operation)) return entry.getKey();
+			}
+			return null;
 		}
-		return null;
 	}
 
 	/**
@@ -97,7 +99,11 @@ public class LongOperationUtils {
 	 * @created 30.07.2013
 	 */
 	public static Collection<LongOperation> getLongOperations(Section<?> section) {
-		return Collections.unmodifiableCollection(accessLongOperations(section, false).values());
+		Map<String, LongOperation> loMap = accessLongOperations(section, false);
+		//noinspection SynchronizationOnLocalVariableOrMethodParameter
+		synchronized (loMap) {
+			return Collections.unmodifiableCollection(new ArrayList<>(loMap.values()));
+		}
 	}
 
 	/**
@@ -111,20 +117,28 @@ public class LongOperationUtils {
 	 * @created 30.07.2013
 	 */
 	public static LongOperation getLongOperation(Section<?> section, String operationID) {
-		return accessLongOperations(section, false).get(operationID);
+		Map<String, LongOperation> loMap = accessLongOperations(section, false);
+		//noinspection SynchronizationOnLocalVariableOrMethodParameter
+		synchronized (loMap) {
+			return loMap.get(operationID);
+		}
 	}
 
 	private static Map<String, LongOperation> accessLongOperations(Section<?> section, boolean create) {
 		String key = LongOperation.class.getName();
-		@SuppressWarnings("unchecked")
-		Map<String, LongOperation> storedObject =
-				(Map<String, LongOperation>) KnowWEUtils.getStoredObject(section, key);
-		if (storedObject == null) {
-			if (!create) return Collections.emptyMap();
-			storedObject = new LinkedHashMap<String, LongOperation>();
-			KnowWEUtils.storeObject(section, key, storedObject);
+		SectionStore sectionStore = section.getSectionStore();
+		//noinspection SynchronizationOnLocalVariableOrMethodParameter
+		synchronized (sectionStore) {
+			@SuppressWarnings("unchecked")
+			Map<String, LongOperation> storedObject =
+					(Map<String, LongOperation>) sectionStore.getObject(key);
+			if (storedObject == null) {
+				if (!create) return Collections.emptyMap();
+				storedObject = new LinkedHashMap<>();
+				sectionStore.storeObject(key, storedObject);
+			}
+			return storedObject;
 		}
-		return storedObject;
 	}
 
 	/**

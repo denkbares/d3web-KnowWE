@@ -20,6 +20,7 @@
 package de.knowwe.core.utils.progress;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,7 +54,7 @@ public class GetProgressAction extends AbstractAction {
 
 		try {
 			JSONArray result = new JSONArray();
-			for (LongOperation operation : LongOperationUtils.getLongOperations(section)) {
+			for (LongOperation operation : new ArrayList<>(LongOperationUtils.getLongOperations(section))) {
 				AjaxProgressListener listener =
 						ProgressListenerManager.getInstance().getProgressListener(operation);
 				if (listener == null) continue;
