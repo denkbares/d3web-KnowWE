@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * KnowWERessourceLoader.
- * <p/>
+ * <p>
  * The KnowWERessourceLoader stores the JS and CSS files used to extend KNOWWE. Please use the Loader to register your
  * own JS and CSS files. The KnowWERessourceLoader was introduced to ensure the correct order of the JS files, because
  * the KnowWE-helper and KnowWE-core files should loaded first.
@@ -91,11 +91,11 @@ public class ResourceLoader {
 
 	/**
 	 * Loads the KnowWE standard Resources:
-	 * <p/>
+	 * <p>
 	 * - KnowWE.js
-	 * <p/>
+	 * <p>
 	 * - KnowWE-helper.js
-	 * <p/>
+	 * <p>
 	 * - general.css
 	 *
 	 * @created 05.07.2010
@@ -105,6 +105,7 @@ public class ResourceLoader {
 		add("jquery-autocomplete.css", ResourceLoader.RESOURCE_STYLESHEET);
 		add("jquery-treeTable.css", ResourceLoader.RESOURCE_STYLESHEET);
 		add("general.css", ResourceLoader.RESOURCE_STYLESHEET);
+		add("font-awesome/css/font-awesome.min.css", ResourceLoader.RESOURCE_STYLESHEET);
 		addFirst("KnowWE-notification.js", ResourceLoader.RESOURCE_SCRIPT);
 		addFirst("KnowWE.js", ResourceLoader.RESOURCE_SCRIPT);
 		addFirst("KnowWE-helper.js", ResourceLoader.RESOURCE_SCRIPT);
@@ -120,7 +121,8 @@ public class ResourceLoader {
 	}
 
 	/**
-	 * Adds a resource file to the loader. Note: Only the file name has to be added. The KnowWERessourceLoader knows the
+	 * Adds a resource file to the loader. Note: Only the file name has to be added. The KnowWERessourceLoader knows
+	 * the
 	 * default resource file location.
 	 *
 	 * @param file The resource file that should be added.

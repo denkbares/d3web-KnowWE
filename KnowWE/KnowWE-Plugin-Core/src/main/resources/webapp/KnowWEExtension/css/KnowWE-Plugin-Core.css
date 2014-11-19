@@ -510,6 +510,10 @@ span.markupMenuItem {
 	color: #888;
 }
 
+/* ################################################## */
+/* ------------- Right Panel Plugin------------ */
+/* ################################################## */
+
 #rightPanel {
 	border-left: 1px solid #9ACBFB;
 	background-color: #f9f9f9;
@@ -654,22 +658,23 @@ span.markupMenuItem {
 	cursor: pointer;
 }
 
-#watches div.iconcontainer img {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	margin-right: -50%;
-	transform: translate(-50%, -50%);
-
+#watches div.iconcontainer i {
+	top: 5px;
+	left: 7px;
+	position: relative;
+	visibility: hidden;
+	opacity: 0;
+	transition: visibility 0s linear 1s, opacity 1s linear;
 }
 
-#watches div.deletewatch img {
-	display: block;
-	-webkit-transition: opacity 2s ease-out;
-	opacity: 0;
-	height: 0;
-	overflow: hidden;
-	width: 11px;
+#watches div.watchlistline:hover .icon {
+	visibility: visible;
+	opacity: 1;
+	transition-delay: 0.1s;
+}
+
+#watches div.iconcontainer:hover .icon {
+	color: blue;
 }
 
 #watches div.add img {
@@ -681,7 +686,6 @@ span.markupMenuItem {
 	position: relative;
 	color: #036 !important;
 	font-size: 12px !important;
-	padding-left: 26px;
 	margin-top: 5px;
 	margin-bottom: 8px;
 	cursor: pointer;
@@ -711,19 +715,16 @@ span.markupMenuItem {
 
 #watches button.addwatch {
 	width: 95px;
-	background-image: url(../images/greenplus.png);
-	background-position: 9px 50%;
-	background-size: 12px 12px;
-	background-repeat: no-repeat;
 	border-left: 0;
+}
+
+#watches button.addwatch i {
+	position: relative;
+	left: -4px;
 }
 
 #watches button.fromselection {
 	width: 110px;
-	background-image: url(../images/select-icon.png);
-	background-position: 9px 50%;
-	background-size: 12px 12px;
-	background-repeat: no-repeat;
 	margin-left: 8px;
 }
 

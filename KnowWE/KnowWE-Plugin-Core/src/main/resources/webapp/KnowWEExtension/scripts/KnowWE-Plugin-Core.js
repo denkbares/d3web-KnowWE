@@ -1486,20 +1486,14 @@ KNOWWE.core.plugin.rightPanel.watches = function() {
 			'class' : 'watchlist'
 		});
 
-		var watchesAddEntry = jq$('<button/>', {
-			'class' : 'addwatch',
-			'text' : 'Add Watch'
-		});
-
-		var watchesAddEntryFromSelection = jq$('<button/>', {
-			'class' : 'fromselection',
-			'text' : 'from Selection'
-		});
+		var watchesAddEntry = jq$("<button class='addwatch'><i class='fa fa-plus-square'></i>&nbsp;Add Watch</button>");
 
 
-		jq$(watchcontent).append(watchlist);
-		jq$(watchcontent).append(watchesAddEntry);
-		jq$(watchcontent).append(watchesAddEntryFromSelection);
+		var watchesAddEntryFromSelection = jq$("<button class='fromselection'><i class='fa fa-paragraph'></i>&nbsp;from Selection</button>");
+
+		watchcontent.append(watchlist);
+		watchcontent.append(watchesAddEntry);
+		watchcontent.append(watchesAddEntryFromSelection);
 
 		KNOWWE.core.plugin.rightPanel.addToolToRightPanel("Watches", "watches", watchcontent);
 	}
@@ -1509,11 +1503,11 @@ KNOWWE.core.plugin.rightPanel.watches = function() {
 		var deleteContainer = jq$('<div/>', {
 			'class' : 'iconcontainer deletewatch select'
 		});
-		var deleteImage = jq$('<img/>', {
-			'class' : 'watchesButton',
-			'src' : 'KnowWEExtension/images/redminus.png'
-		});
-		return deleteContainer.append(deleteImage);
+
+		var deleteIcon = jq$("<a class=''><i class='fa fa-times-circle icon'></i></a>");
+
+
+		return deleteContainer.append(deleteIcon);
 	}
 
 	function loadWatchesFromCookies() {
