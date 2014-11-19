@@ -547,7 +547,7 @@ public class SparqlResultRenderer {
 						+ "</option>");
 			}
 		}
-		result.appendHtml("</select><span class=fillText> lines of </span>  " + max);
+		result.appendHtml("</select><span class=fillText> lines of </span>" + max);
 
 		result.appendHtml("<div class='toolSeparator'></div>");
 		result.appendHtml("</div>");

@@ -18,7 +18,6 @@
  */
 package de.knowwe.kdom.renderer;
 
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -32,6 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.d3web.utils.Pair;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -47,7 +47,9 @@ import de.knowwe.core.user.UserContext;
  * getStartrow(..), getCount(..), getSorting(..) and getNaturalOrder(..).
  * <li>Optionally: You can exclude columns from
  * sorting by stating this explicitly like this: {@code<th class="notSortable">...</th>}
- * <li>Optionally: You can build filters for rows. First prepare your table header: {@code<th class="filterable">...</th>}. Second createFilter(..) and then setFilterList(..). To get the active filters use getFilters(..).
+ * <li>Optionally: You can build filters for rows. First prepare your table header: {@code<th
+ * class="filterable">...</th>}. Second createFilter(..) and then setFilterList(..). To get the active filters use
+ * getFilters(..).
  * <li>Optionally: If the
  * decorated renderer knows the size of its result it can use setResultSize(..) to enable further rendering at the
  * pagination bar.
@@ -83,10 +85,11 @@ public class PaginationDecoratingRenderer implements Renderer {
 		RenderResult navigation = new RenderResult(user);
 		navigation.appendHtmlTag("div", "class", "navigationPagination");
 
+		int count = getCount(section, user);
 		renderNavigation(getStartRow(section, user),
-				getCount(section, user), section.getID(),
+				count, section.getID(),
 				navigation);
-		renderTableSizeSelector(getCount(section, user), section.getID(),
+		renderTableSizeSelector(count, section.getID(),
 				navigation, user);
 		//renderHiddenFilterDiv(user, navigation);
 		navigation.appendHtml("</div>");
@@ -107,20 +110,11 @@ public class PaginationDecoratingRenderer implements Renderer {
 				+ "<select class='count'>");
 
 		for (Integer size : sizeArray) {
-			if (new Integer(count).equals(size)) {
-				result.appendHtml("<option selected='selected' value='" + size + "'>" + size
-						+ "</option>");
-			}
-			else {
-				result.appendHtml("<option value='" + size + "'>" + size
-						+ "</option>");
-			}
-		}
-		if (new Integer(count).equals(Integer.MAX_VALUE)) {
-			result.appendHtml("<option selected='selected' value='Max'>Max</option>");
-		}
-		else {
-			result.appendHtml("<option value='Max'>Max</option>");
+			result.appendHtml("<option "
+					+ (count == size ? "selected='selected' " : "")
+					+ "value='" + size + "'>"
+					+ (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
+					+ "</option>");
 		}
 		result.appendHtml("</select>");
 		result.appendHtml(getResultSize(user));
@@ -132,11 +126,11 @@ public class PaginationDecoratingRenderer implements Renderer {
 		result.appendHtml("<div class='toolBar avoidMenu'>");
 		renderToolbarButton(
 				"begin.png", "KNOWWE.core.plugin.pagination.navigate('"
-				+ id + "', 'begin')",
+						+ id + "', 'begin')",
 				(startRow > 1), result);
 		renderToolbarButton(
 				"back.png", "KNOWWE.core.plugin.pagination.navigate('"
-				+ id + "', 'back')",
+						+ id + "', 'back')",
 				(startRow > 1), result);
 		result.appendHtml("<span class=fillText> Lines </span>");
 		result.appendHtml("<input size=3 class='startRow' type=\"field\" value='"
@@ -150,7 +144,7 @@ public class PaginationDecoratingRenderer implements Renderer {
 		}
 		renderToolbarButton(
 				"forward.png", "KNOWWE.core.plugin.pagination.navigate('"
-				+ id + "', 'forward')", true, result);
+						+ id + "', 'forward')", true, result);
 		result.appendHtml("</div>");
 	}
 
@@ -178,7 +172,7 @@ public class PaginationDecoratingRenderer implements Renderer {
 	private static Integer[] getSizeChoices(UserContext user) {
 		List<Integer> sizes = new LinkedList<Integer>();
 		int[] sizeArray = new int[] {
-				10, 20, 50, 100 };
+				10, 20, 50, 100, Integer.MAX_VALUE };
 		for (int size : sizeArray) {
 			sizes.add(size);
 		}
@@ -193,7 +187,7 @@ public class PaginationDecoratingRenderer implements Renderer {
 						user)));
 			}
 			catch (JSONException e) {
-				e.printStackTrace();
+				Log.warning("Exception while parsing json", e);
 			}
 		}
 		return null;
@@ -219,12 +213,9 @@ public class PaginationDecoratingRenderer implements Renderer {
 			if (getJsonObject(sec, user) != null && getJsonObject(sec, user).has(STARTROW)) {
 				return getJsonObject(sec, user).getInt(STARTROW);
 			}
-			else {
-				return Integer.parseInt(STARTROW_DEFAULT);
-			}
 		}
 		catch (JSONException e) {
-			e.printStackTrace();
+			Log.warning("Exception while parsing start row", e);
 		}
 		return Integer.parseInt(STARTROW_DEFAULT);
 	}
@@ -240,15 +231,12 @@ public class PaginationDecoratingRenderer implements Renderer {
 	 */
 	public static int getCount(Section<?> sec, UserContext user) {
 		try {
-			if (getJsonObject(sec, user) != null && getJsonObject(sec, user).has(COUNT)){
+			if (getJsonObject(sec, user) != null && getJsonObject(sec, user).has(COUNT)) {
 				return getJsonObject(sec, user).getInt(COUNT);
-			}
-			else {
-				return Integer.parseInt(COUNT_DEFAULT);
 			}
 		}
 		catch (JSONException e) {
-			e.printStackTrace();
+			Log.warning("Exception while parsing count", e);
 		}
 		return Integer.parseInt(COUNT_DEFAULT);
 	}
@@ -258,12 +246,9 @@ public class PaginationDecoratingRenderer implements Renderer {
 			if (getJsonObject(sec, user) != null && getJsonObject(sec, user).has(SORTING)) {
 				return getJsonObject(sec, user).getString(SORTING);
 			}
-			else {
-				return SORTING_DEFAULT;
-			}
 		}
 		catch (JSONException e) {
-			e.printStackTrace();
+			Log.warning("Exception while parsing sorting", e);
 		}
 		return SORTING_DEFAULT;
 	}
@@ -288,7 +273,7 @@ public class PaginationDecoratingRenderer implements Renderer {
 			return activeFilters;
 		}
 		catch (JSONException e) {
-			e.printStackTrace();
+			Log.warning("Exception while parsing filters", e);
 		}
 		return activeFilters;
 	}
@@ -298,12 +283,9 @@ public class PaginationDecoratingRenderer implements Renderer {
 			if (getJsonObject(sec, user) != null && getJsonObject(sec, user).has(NATURALORDER)) {
 				return getJsonObject(sec, user).getBoolean(NATURALORDER);
 			}
-			else {
-				return Boolean.parseBoolean(NATURALORDER_DEFAULT);
-			}
 		}
 		catch (JSONException e) {
-			e.printStackTrace();
+			Log.warning("Exception while parsing order", e);
 		}
 		return Boolean.parseBoolean(NATURALORDER_DEFAULT);
 	}
@@ -322,8 +304,6 @@ public class PaginationDecoratingRenderer implements Renderer {
 	 * If the decorated Renderer knows about the size of its results it can set it here for an increase in information
 	 * at the rendering in the navigation bar.
 	 *
-	 * @param context
-	 * @param maxResult
 	 * @created 27.01.2014
 	 */
 	public static void setResultSize(UserContext context, int maxResult) {
@@ -350,7 +330,7 @@ public class PaginationDecoratingRenderer implements Renderer {
 	private static List<Pair<String, List<String>>> getFilterList(UserContext context) {
 		List<Pair<String, List<String>>> filterList = (List<Pair<String, List<String>>>) context.getSession()
 				.getAttribute(FILTER);
-		if(filterList == null){
+		if (filterList == null) {
 			return new LinkedList<Pair<String, List<String>>>();
 		}
 		return filterList;
@@ -367,12 +347,12 @@ public class PaginationDecoratingRenderer implements Renderer {
 				result.appendHtmlTag("div", "filterValue", filterValue);
 				result.appendHtmlTag("span");
 				String checked = "";
-				if(getFilters(section, context).containsKey(filter.getA()) &&
-					getFilters(section, context).get(filter.getA()).contains(filterValue)){
+				if (getFilters(section, context).containsKey(filter.getA()) &&
+						getFilters(section, context).get(filter.getA()).contains(filterValue)) {
 					checked = "checked";
 				}
 				result.appendHtml("<input type='checkbox' onchange='KNOWWE.core.plugin.pagination.filter(this, &#39;" + section
-						.getID() + "&#39;)' filterkey='"+filter.getA()+"' filtervalue='"+filterValue+"' "+checked+">");
+						.getID() + "&#39;)' filterkey='" + filter.getA() + "' filtervalue='" + filterValue + "' " + checked + ">");
 				result.appendHtml(filterValue);
 				result.appendHtml("</span>");
 				result.appendHtml("</div>");
