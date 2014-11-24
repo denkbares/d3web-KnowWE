@@ -527,7 +527,7 @@ public class Rdf2GoCore {
 
 
             /*
-            Do actual changes on the model
+			Do actual changes on the model
              */
 			long startRemove = System.currentTimeMillis();
 			model.removeAll(removeCache.iterator());
@@ -539,20 +539,23 @@ public class Rdf2GoCore {
             /*
             Fire events
              */
-            boolean removedStatements = false;
-            if(removeCache.size() > 0) {
-                EventManager.getInstance().fireEvent(new RemoveStatementsEvent(Collections.unmodifiableCollection(removeCache), this));
-                if (verboseLog) logStatements(sortedRemoveCache, startRemove, "Removed statements");
-                removedStatements = true;
-            }
-            boolean insertedStatements = false;
-            if(insertCache.size() > 0) {
-                EventManager.getInstance().fireEvent(new InsertStatementsEvent(Collections.unmodifiableCollection(removeCache), Collections.unmodifiableCollection(insertCache), this));
-                insertedStatements = true;
-            }
-            if(removedStatements || insertedStatements) {
-                EventManager.getInstance().fireEvent(new ChangedStatementsEvent(this));
-            }
+			boolean removedStatements = false;
+			if (removeCache.size() > 0) {
+				EventManager.getInstance()
+						.fireEvent(new RemoveStatementsEvent(Collections.unmodifiableCollection(removeCache), this));
+				if (verboseLog) logStatements(sortedRemoveCache, startRemove, "Removed statements");
+				removedStatements = true;
+			}
+			boolean insertedStatements = false;
+			if (insertCache.size() > 0) {
+				EventManager.getInstance()
+						.fireEvent(new InsertStatementsEvent(Collections.unmodifiableCollection(removeCache), Collections
+								.unmodifiableCollection(insertCache), this));
+				insertedStatements = true;
+			}
+			if (removedStatements || insertedStatements) {
+				EventManager.getInstance().fireEvent(new ChangedStatementsEvent(this));
+			}
 
             /*
             Logging
@@ -567,6 +570,8 @@ public class Rdf2GoCore {
 						+ insertSize
 						+ " statements to " + Rdf2GoCore.class.getSimpleName() + " in "
 						+ (System.currentTimeMillis() - startRemove) + "ms.");
+				Log.info("Current number of statements: " + statementCache.size());
+
 			}
 
             /*
