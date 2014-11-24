@@ -117,7 +117,7 @@ public class Rdf2GoCore {
 	public static final String GLOBAL = "GLOBAL";
 
 	private static final ThreadPoolExecutor sparqlThreadPool = createThreadPool(
-			Runtime.getRuntime().availableProcessors() * 3 / 2 + 1, "KnowWE-Sparql-Thread");
+			Math.max(Runtime.getRuntime().availableProcessors() - 1, 1), "KnowWE-Sparql-Thread");
 
 	private static final ThreadPoolExecutor sparqlDaemonPool = createThreadPool(
 			sparqlThreadPool.getMaximumPoolSize(), "KnowWE-Sparql-Deamon");
