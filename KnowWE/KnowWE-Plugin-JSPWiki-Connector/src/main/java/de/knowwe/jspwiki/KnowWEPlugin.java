@@ -286,7 +286,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			Log.fine("Somebody tried to update article " + title + " without appropriate rights", e);
 			return getExceptionRendering(userContext, e);
 		}
-		catch (Exception e) {
+		catch (Throwable e) { // NOSONAR
 			Log.severe("Exception while compiling and rendering article '" + title + "'", e);
 			return getExceptionRendering(userContext, e);
 		}
@@ -351,7 +351,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		}
 	}
 
-	private String getExceptionRendering(UserContext context, Exception e) {
+	private String getExceptionRendering(UserContext context, Throwable e) {
 		RenderResult renderResult = new RenderResult(context.getRequest());
 		String message;
 		if (e instanceof UpdateNotAllowedException) {
