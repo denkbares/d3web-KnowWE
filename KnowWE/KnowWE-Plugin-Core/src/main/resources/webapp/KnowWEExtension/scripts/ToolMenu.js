@@ -46,6 +46,8 @@ ToolMenu.prototype.decorateToolMenus = function(parent) {
 
 ToolMenu.prototype.showToolPopupMenu = function(node) {
 	this.hideToolsPopupMenu();
+	// we hide all open tooltipster tool tips to reduce clutter
+	jq$(document).find('.tooltipster').tooltipster('hide');
 	node = node[0];
 	var par = new Element('div', {
 		'id' : 'toolPopupMenuID',
