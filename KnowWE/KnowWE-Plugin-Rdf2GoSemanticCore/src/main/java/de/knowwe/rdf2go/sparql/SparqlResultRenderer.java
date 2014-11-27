@@ -84,7 +84,8 @@ public class SparqlResultRenderer {
 		String query = section.get().getSparqlQuery(section, user);
 		RenderOptions opts = section.get().getRenderOptions(section, user);
 
-		result.appendHtml("<div class='sparqlTable' sparqlSectionId='" + opts.getId() + "' id='sparqlTable_" + opts.getId() + "'>");
+		result.appendHtml("<div class='sparqlTable' sparqlSectionId='" + opts.getId() + "' id='sparqlTable_" + opts
+				.getId() + "'>");
 		if (opts.isBorder()) result.appendHtml("<div class='border'>");
 		if (opts.isSorting()) {
 			query = modifyOrderByInSparqlString(opts.getSortingMap(), query);
@@ -123,7 +124,7 @@ public class SparqlResultRenderer {
 	}
 
 	/**
-	 * @param qrt  the query result to render
+	 * @param qrt the query result to render
 	 * @param opts the options to control the rendered output
 	 * @return html table with all results of qrt and size of qrt
 	 * @created 06.12.2010
@@ -175,7 +176,9 @@ public class SparqlResultRenderer {
 
 		if (tablemode) {
 			result.appendHtmlTag("div", "style", "overflow-x: auto");
-			result.appendHtml("<table id='").append(tableID).appendHtml("' class='sparqltable'>");
+			result.appendHtml("<table id='").append(tableID).appendHtml("' class='")
+					.append(isTree ? "sparqltable sparqltreetable" : "sparqltable")
+					.append("'>");
 			result.appendHtml(!zebraMode ? "<tr>" : "<tr class='odd'>");
 			int index = 0;
 			for (String var : variables) {
@@ -302,17 +305,6 @@ public class SparqlResultRenderer {
 		}
 
 		if (tablemode) {
-			{// BEGIN: collapse tree mode code
-				if (isTree) {
-					result.appendHtml("<script type='text/javascript'>var table = jq$('#")
-							.append(tableID)
-							.appendHtml(
-									"');\ntable.agikiTreeTable({expandable: true, clickableNodeNames: true, persist: true, article:'"
-											+ user.getTitle() + "' });</script>"
-							);
-				}
-			}// END: collapse tree mode code
-
 			result.appendHtml("</table>");
 			result.appendHtml("</div>");
 		}

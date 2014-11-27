@@ -179,15 +179,23 @@ KNOWWE.plugin.sparql = function() {
 
 (function init() {
 	if (KNOWWE.helper.loadCheck([ 'Wiki.jsp' ])) {
-		window.addEvent('domready', function() {
-
+		jq$(window).ready(function() {
 			var ns = KNOWWE.plugin.semantic;
 			for (var i in ns) {
 				if (ns[i].init) {
 					ns[i].init();
 				}
 			}
-
 		});
+		var initTreeFunc = function() {
+			jq$(this).find(".sparqltreetable").agikiTreeTable({
+				expandable : true,
+				clickableNodeNames : true,
+				persist : true,
+				article : KNOWWE.helper.getPagename()
+			});
+		};
+		jq$(document).ready(initTreeFunc);
+		KNOWWE.helper.observer.subscribe('afterRerender', initTreeFunc);
 	}
 }());
