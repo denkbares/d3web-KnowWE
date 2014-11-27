@@ -19,7 +19,10 @@
 
 function ToolMenu() {
 	this.cache = {};
+	this.lastMenuId = null;
 }
+
+
 
 ToolMenu.prototype.decorateToolMenus = function(parent) {
 	parent = jq$(parent);
@@ -36,6 +39,10 @@ ToolMenu.prototype.decorateToolMenus = function(parent) {
 		a.click(function() {
 			_TM.showToolPopupMenu(a);
 		});
+		a.dblclick(function() {
+			_TM.hideToolsPopupMenu();
+			_TM.selectTerm(this);
+		});
 		a.data('toolMenuDecorated', 'true');
 		//prevent "click through" in composite edit
 		a.click(function(e) {
@@ -44,16 +51,36 @@ ToolMenu.prototype.decorateToolMenus = function(parent) {
 	});
 };
 
+ToolMenu.prototype.selectTerm = function(element) {
+	element = jq$(element).parent().find('.clickable-term')[0];
+	var selection = window.getSelection();
+	var range = document.createRange();
+	range.selectNodeContents(element);
+	selection.removeAllRanges();
+	selection.addRange(range);
+};
+
 ToolMenu.prototype.showToolPopupMenu = function(node) {
-	this.hideToolsPopupMenu();
 	// we hide all open tooltipster tool tips to reduce clutter
 	jq$(document).find('.tooltipster').tooltipster('hide');
+
+	// hide tool menus opened for other terms
+	var lastMenuId = this.lastMenuId;
+	this.hideToolsPopupMenu();
+	var currentMenuId = jq$(node).attr('id');
+	if (lastMenuId == currentMenuId) return;
+	this.lastMenuId = currentMenuId;
+
 	node = node[0];
-	var par = new Element('div', {
+	var scale = 1;
+	jq$(node).parentsUntil('#pagecontent').each(function() {
+		if (scale == 1) scale = jq$(this).scale();
+	});
+	var parent = new Element('div', {
 		'id' : 'toolPopupMenuID',
 		'styles' : {
-			'top' : jq$(node).offset().top + 'px',
-			'left' : jq$(node).offset().left + 'px',
+			'top' : jq$(node).offset().top + node.offsetHeight * scale + 'px',
+			'left' : jq$(node).offset().left + node.offsetWidth * scale + 'px',
 			'z-index' : '10000',
 			'position' : 'absolute'
 		},
@@ -61,20 +88,14 @@ ToolMenu.prototype.showToolPopupMenu = function(node) {
 			'mouseleave' : _TM.hideToolsPopupMenu
 		}
 	});
-	var scale = 1;
-	jq$(node).parentsUntil('#pagecontent').each(function() {
-		if (scale == 1) scale = jq$(this).scale();
-	});
-	document.body.appendChild(par);
-	par.innerHTML = "<div class='toolMenuFrame'>" + "<div style='width:" + node.offsetWidth * scale
-		+ "px;height:" + node.offsetHeight * scale + "px;' onclick='_TM.hideToolsPopupMenu();'></div>"
-		+ this.getToolMenuHtml(node) + "</div>";
+	document.body.appendChild(parent);
+	parent.innerHTML = "<div class='toolMenuFrame'>" + this.getToolMenuHtml(node) + "</div>";
 
 	// make sure to place menu on screen
 	// move to right if menu exceeds the left border
-	var menu = jq$(par).find(".markupMenu");
+	var menu = jq$(parent).find(".markupMenu");
 	var menuLeft = menu.offset().left;
-	if (menuLeft < 0) menu.css('right', menuLeft+'px');
+	if (menuLeft < 0) menu.css('right', menuLeft + 'px');
 };
 
 ToolMenu.prototype.getToolMenuHtml = function(node) {
@@ -103,7 +124,7 @@ ToolMenu.prototype.getToolMenuHtml = function(node) {
 		var ajaxCall = new _KA(options);
 		ajaxCall.send();
 		var parsedResponse = JSON.parse(ajaxCall.getResponse());
-		this.cache[ parsedResponse.sectionId] = parsedResponse.menuHTML;
+		this.cache[parsedResponse.sectionId] = parsedResponse.menuHTML;
 		if (specialAction) {
 			jq$(node).removeAttr('toolMenuAction');
 			jq$(node).attr('toolMenuIdentifier', parsedResponse.sectionId);
@@ -114,6 +135,7 @@ ToolMenu.prototype.getToolMenuHtml = function(node) {
 };
 
 ToolMenu.prototype.hideToolsPopupMenu = function() {
+	this.lastMenuId = null;
 	var old = $('toolPopupMenuID');
 	if (old) {
 		old.remove();

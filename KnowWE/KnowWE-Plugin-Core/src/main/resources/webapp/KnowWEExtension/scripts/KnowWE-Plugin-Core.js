@@ -223,11 +223,11 @@ KNOWWE.core.plugin.objectinfo = function() {
 
 KNOWWE.plugin.renaming = function() {
 
-	var sectionsCache = new Object();
+	var sectionsCache = {};
 
-	var otherOccurencesHashMap = new Object();
+	var otherOccurencesHashMap = {};
 
-	var viewRoot = new Object();
+	var viewRoot = {};
 
 	/**
 	 * Renames all occurrences of a specific term.
@@ -408,7 +408,7 @@ KNOWWE.plugin.renaming = function() {
 				jq$(".click input").keyup(function() {
 					showCurrentEditOnOtherOccurences(jq$(this).val());
 				});
-			}
+			};
 			getOldTermIdentifierAndMatchingSections(toolMenuIdentifier, callback);
 
 		}

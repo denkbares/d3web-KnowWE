@@ -45,21 +45,23 @@ public class StyleRenderer implements Renderer {
 	public static final StyleRenderer LOCALE = new StyleRenderer("color:rgb(0, 128, 128)");
 	public static final StyleRenderer ANNOTATION = COMMENT;
 
+	public static final String CLICKABLE_TERM_CLASS = "clickable-term";
+
 	public static final Renderer CHOICE = new ToolMenuDecoratingRenderer(
-			new StyleRenderer("color:rgb(40, 40, 160)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
+			new StyleRenderer(CLICKABLE_TERM_CLASS, "color:rgb(40, 40, 160)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 	public static final Renderer SOLUTION = new ToolMenuDecoratingRenderer(
-			new StyleRenderer("color:rgb(150, 110, 120)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
+			new StyleRenderer(CLICKABLE_TERM_CLASS, "color:rgb(150, 110, 120)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 	public static final Renderer Question = new ToolMenuDecoratingRenderer(
-			new StyleRenderer("color:rgb(0, 128, 0)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
+			new StyleRenderer(CLICKABLE_TERM_CLASS, "color:rgb(0, 128, 0)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 	public static final Renderer Questionaire = new ToolMenuDecoratingRenderer(
-			new StyleRenderer("color:rgb(128, 128, 0)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
+			new StyleRenderer(CLICKABLE_TERM_CLASS, "color:rgb(128, 128, 0)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 
 	public static final Renderer Flowchart = new ToolMenuDecoratingRenderer(
-			new StyleRenderer("color:rgb(128, 128, 0)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
+			new StyleRenderer(CLICKABLE_TERM_CLASS, "color:rgb(128, 128, 0)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 	public static final Renderer FlowchartStart = new ToolMenuDecoratingRenderer(
-			new StyleRenderer("color:rgb(0, 80, 40)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
+			new StyleRenderer(CLICKABLE_TERM_CLASS, "color:rgb(0, 80, 40)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 	public static final Renderer FlowchartExit = new ToolMenuDecoratingRenderer(
-			new StyleRenderer("color:rgb(80, 0, 40)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
+			new StyleRenderer(CLICKABLE_TERM_CLASS, "color:rgb(80, 0, 40)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 
 	public static final Renderer PACKAGE = new ToolMenuDecoratingRenderer(new StyleRenderer(
 			"packageOpacity",
@@ -70,8 +72,8 @@ public class StyleRenderer implements Renderer {
 
 	/**
 	 * When normal functionality as in FontColorRenderer: Set background null;
-	 * 
-	 * @param color the foreground color to be used or "null"
+	 *
+	 * @param color      the foreground color to be used or "null"
 	 * @param background the background color to be used or "null"
 	 * @return the style renderer
 	 */
@@ -81,9 +83,9 @@ public class StyleRenderer implements Renderer {
 
 	/**
 	 * Allows for setting the class attribute.
-	 * 
-	 * @param cssClass the css class to be used or "null"
-	 * @param color the foreground color to be used or "null"
+	 *
+	 * @param cssClass   the css class to be used or "null"
+	 * @param color      the foreground color to be used or "null"
 	 * @param background the background color to be used or "null"
 	 * @return the style renderer
 	 */
@@ -102,7 +104,7 @@ public class StyleRenderer implements Renderer {
 
 	private final String cssClass;
 	private final String cssStyle;
-	private MaskMode[] maskMode = new MaskMode[] {MaskMode.jspwikiMarkup };
+	private MaskMode[] maskMode = new MaskMode[] { MaskMode.jspwikiMarkup };
 
 	public StyleRenderer(String cssStyle) {
 		this(null, cssStyle);
@@ -133,19 +135,12 @@ public class StyleRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult string) {
-		string.appendHtml("<span");
-		if (cssClass != null) {
-			string.append(" class='").append(cssClass).append("'");
-		}
-		if (cssStyle != null) {
-			string.append(" style='").append(cssStyle).append("'");
-		}
-		string.appendHtml(">");
+		renderOpeningTag(string);
 		renderContent(section, user, string);
 		string.appendHtml("</span>");
 	}
 
-	public void renderText(String text, UserContext user, RenderResult string) {
+	private void renderOpeningTag(RenderResult string) {
 		string.appendHtml("<span");
 		if (cssClass != null) {
 			string.append(" class='").append(cssClass).append("'");
@@ -154,6 +149,10 @@ public class StyleRenderer implements Renderer {
 			string.append(" style='").append(cssStyle).append("'");
 		}
 		string.appendHtml(">");
+	}
+
+	public void renderText(String text, UserContext user, RenderResult string) {
+		renderOpeningTag(string);
 		string.append(text);
 		string.appendHtml("</span>");
 	}
@@ -161,11 +160,11 @@ public class StyleRenderer implements Renderer {
 	/**
 	 * Renders the content that will automatically be styled in the correct way.
 	 * You may overwrite it for special purposes.
-	 * 
-	 * @created 06.10.2010
+	 *
 	 * @param section the section to be rendered
-	 * @param user the user to render for
-	 * @param string the buffer to render into
+	 * @param user    the user to render for
+	 * @param string  the buffer to render into
+	 * @created 06.10.2010
 	 */
 	protected void renderContent(Section<?> section, UserContext user, RenderResult string) {
 		RenderResult builder = new RenderResult(user);
@@ -173,11 +172,14 @@ public class StyleRenderer implements Renderer {
 		if (ArrayUtils.contains(maskMode, MaskMode.jspwikiMarkup)
 				&& ArrayUtils.contains(maskMode, MaskMode.htmlEntities)) {
 			string.appendJSPWikiMarkup(Strings.encodeHtml(builder.toStringRaw()));
-		} else if (ArrayUtils.contains(maskMode, MaskMode.jspwikiMarkup)) {
+		}
+		else if (ArrayUtils.contains(maskMode, MaskMode.jspwikiMarkup)) {
 			string.appendJSPWikiMarkup(builder);
-		} else if (ArrayUtils.contains(maskMode, MaskMode.htmlEntities)) {
+		}
+		else if (ArrayUtils.contains(maskMode, MaskMode.htmlEntities)) {
 			string.append(Strings.encodeHtml(builder.toStringRaw()));
-		} else {
+		}
+		else {
 			string.append(builder);
 		}
 	}
