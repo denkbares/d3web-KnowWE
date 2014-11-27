@@ -652,35 +652,31 @@
 })(jQuery);
 
 jQuery.fn.insertAt = function(index, element) {
-	var lastIndex = this.children().size()
+	var lastIndex = this.children().size();
 	if (index < 0) {
 		index = Math.max(0, lastIndex + 1 + index)
 	}
-	this.append(element)
+	this.append(element);
 	if (index < lastIndex) {
 		this.children().eq(index).before(this.children().last())
 	}
 	return this;
-}
-
-
-;
-
+};
 
 /*!
- Autosize 1.18.13
+ Autosize 1.18.15
  license: MIT
  http://www.jacklmoore.com/autosize
  */
-(function($) {
+(function ($) {
 	var
 		defaults = {
-			className : 'autosizejs',
-			id : 'autosizejs',
-			append : '\n',
-			callback : false,
-			resizeDelay : 10,
-			placeholder : true
+			className: 'autosizejs',
+			id: 'autosizejs',
+			append: '\n',
+			callback: false,
+			resizeDelay: 10,
+			placeholder: true
 		},
 
 	// border:0 is unnecessary, but avoids a bug in Firefox on OSX
@@ -712,7 +708,7 @@ jQuery.fn.insertAt = function(index, element) {
 	}
 	mirror.style.lineHeight = '';
 
-	$.fn.autosize = function(options) {
+	$.fn.autosize = function (options) {
 		if (!this.length) {
 			return this;
 		}
@@ -723,7 +719,7 @@ jQuery.fn.insertAt = function(index, element) {
 			$(document.body).append(mirror);
 		}
 
-		return this.each(function() {
+		return this.each(function () {
 			var
 				ta = this,
 				$ta = $(ta),
@@ -732,11 +728,11 @@ jQuery.fn.insertAt = function(index, element) {
 				boxOffset = 0,
 				callback = $.isFunction(options.callback),
 				originalStyles = {
-					height : ta.style.height,
-					overflow : ta.style.overflow,
-					overflowY : ta.style.overflowY,
-					wordWrap : ta.style.wordWrap,
-					resize : ta.style.resize
+					height: ta.style.height,
+					overflow: ta.style.overflow,
+					overflowY: ta.style.overflowY,
+					wordWrap: ta.style.wordWrap,
+					resize: ta.style.resize
 				},
 				timeout,
 				width = $ta.width(),
@@ -748,21 +744,21 @@ jQuery.fn.insertAt = function(index, element) {
 			}
 			$ta.data('autosize', true);
 
-			if ($ta.css('box-sizing') === 'border-box' || $ta.css('-moz-box-sizing') === 'border-box' || $ta.css('-webkit-box-sizing') === 'border-box') {
+			if ($ta.css('box-sizing') === 'border-box' || $ta.css('-moz-box-sizing') === 'border-box' || $ta.css('-webkit-box-sizing') === 'border-box'){
 				boxOffset = $ta.outerHeight() - $ta.height();
 			}
 
 			// IE8 and lower return 'auto', which parses to NaN, if no min-height is set.
-			minHeight = Math.max(parseInt($ta.css('minHeight'), 10) - boxOffset || 0, $ta.height());
+			minHeight = Math.max(parseFloat($ta.css('minHeight')) - boxOffset || 0, $ta.height());
 
 			$ta.css({
-				overflow : 'hidden',
-				overflowY : 'hidden',
-				wordWrap : 'break-word' // horizontal overflow is hidden, so break-word is necessary for handling words longer than the textarea width
+				overflow: 'hidden',
+				overflowY: 'hidden',
+				wordWrap: 'break-word' // horizontal overflow is hidden, so break-word is necessary for handling words longer than the textarea width
 			});
 
 			if (taResize === 'vertical') {
-				$ta.css('resize', 'none');
+				$ta.css('resize','none');
 			} else if (taResize === 'both') {
 				$ta.css('resize', 'horizontal');
 			}
@@ -778,17 +774,17 @@ jQuery.fn.insertAt = function(index, element) {
 					width = ta.getBoundingClientRect().width;
 
 					if (width === 0 || typeof width !== 'number') {
-						width = parseInt(style.width, 10);
+						width = parseFloat(style.width);
 					}
 
-					$.each(['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'], function(i, val) {
-						width -= parseInt(style[val], 10);
+					$.each(['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'], function(i,val){
+						width -= parseFloat(style[val]);
 					});
 				} else {
 					width = $ta.width();
 				}
 
-				mirror.style.width = Math.max(width, 0) + 'px';
+				mirror.style.width = Math.max(width,0) + 'px';
 			}
 
 			function initMirror() {
@@ -797,14 +793,14 @@ jQuery.fn.insertAt = function(index, element) {
 				mirrored = ta;
 				mirror.className = options.className;
 				mirror.id = options.id;
-				maxHeight = parseInt($ta.css('maxHeight'), 10);
+				maxHeight = parseFloat($ta.css('maxHeight'));
 
 				// mirror is a duplicate textarea located off-screen that
 				// is automatically updated to contain the same text as the
 				// original textarea.  mirror always has a height of 0.
 				// This gives a cross-browser supported way getting the actual
 				// height of the text, through the scrollTop property.
-				$.each(typographyStyles, function(i, val) {
+				$.each(typographyStyles, function(i,val){
 					styles[val] = $ta.css(val);
 				});
 
@@ -845,7 +841,7 @@ jQuery.fn.insertAt = function(index, element) {
 
 				mirror.value += options.append || '';
 				mirror.style.overflowY = ta.style.overflowY;
-				original = parseInt(ta.style.height, 10);
+				original = parseFloat(ta.style.height);
 
 				// Setting scrollTop to zero is needed in IE8 and lower for the next step to be accurately applied
 				mirror.scrollTop = 0;
@@ -869,23 +865,27 @@ jQuery.fn.insertAt = function(index, element) {
 
 				if (original !== height) {
 					ta.style.height = height + 'px';
+
+					// Trigger a repaint for IE8 for when ta is nested 2 or more levels inside an inline-block
+					mirror.className = mirror.className;
+
 					if (callback) {
-						options.callback.call(ta, ta);
+						options.callback.call(ta,ta);
 					}
 					$ta.trigger('autosize.resized');
 				}
 			}
 
-			function resize() {
+			function resize () {
 				clearTimeout(timeout);
-				timeout = setTimeout(function() {
+				timeout = setTimeout(function(){
 					var newWidth = $ta.width();
 
 					if (newWidth !== width) {
 						width = newWidth;
 						adjust();
 					}
-				}, parseInt(options.resizeDelay, 10));
+				}, parseInt(options.resizeDelay,10));
 			}
 
 			if ('onpropertychange' in ta) {
@@ -896,8 +896,8 @@ jQuery.fn.insertAt = function(index, element) {
 					$ta.on('input.autosize keyup.autosize', adjust);
 				} else {
 					// IE7 / IE8
-					$ta.on('propertychange.autosize', function() {
-						if (event.propertyName === 'value') {
+					$ta.on('propertychange.autosize', function(){
+						if(event.propertyName === 'value'){
 							adjust();
 						}
 					});
@@ -925,7 +925,7 @@ jQuery.fn.insertAt = function(index, element) {
 				adjust();
 			});
 
-			$ta.on('autosize.destroy', function() {
+			$ta.on('autosize.destroy', function(){
 				mirrored = null;
 				clearTimeout(timeout);
 				$(window).off('resize', resize);

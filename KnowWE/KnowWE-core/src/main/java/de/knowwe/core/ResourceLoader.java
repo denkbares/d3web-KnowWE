@@ -115,7 +115,6 @@ public class ResourceLoader {
 		addFirst("jquery-plugin-collection.js", ResourceLoader.RESOURCE_SCRIPT);
 		addFirst("jquery-tooltipster.js", ResourceLoader.RESOURCE_SCRIPT);
 		addFirst("jquery-treeTable.js", ResourceLoader.RESOURCE_SCRIPT);
-		addFirst("jquery-autosize.min.js", ResourceLoader.RESOURCE_SCRIPT);
 		addFirst("jquery-ui-1.10.4.custom.min.js", ResourceLoader.RESOURCE_SCRIPT);
 		addFirst("jquery-2.1.0.min.js", ResourceLoader.RESOURCE_SCRIPT);
 	}
