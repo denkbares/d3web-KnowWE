@@ -64,14 +64,13 @@ public class SectionStore {
 	 * @created 16.02.2012
 	 */
 	public synchronized Map<Compiler, Object> getObjects(String key) {
-		Map<Compiler, Object> objects = new HashMap<>(store == null ? 2 : store.size());
-		if (store != null) {
-			for (Entry<Compiler, Map<String, Object>> entry : store.entrySet()) {
-				Compiler compiler = entry.getKey();
-				if (compiler != null && !compiler.getCompilerManager().contains(compiler)) continue;
-				Object object = entry.getValue().get(key);
-				if (object != null) objects.put(compiler, object);
-			}
+		if (store == null) return Collections.emptyMap();
+		Map<Compiler, Object> objects = new HashMap<>(store.size());
+		for (Entry<Compiler, Map<String, Object>> entry : store.entrySet()) {
+			Compiler compiler = entry.getKey();
+			if (compiler != null && !compiler.getCompilerManager().contains(compiler)) continue;
+			Object object = entry.getValue().get(key);
+			if (object != null) objects.put(compiler, object);
 		}
 		return Collections.unmodifiableMap(objects);
 	}
