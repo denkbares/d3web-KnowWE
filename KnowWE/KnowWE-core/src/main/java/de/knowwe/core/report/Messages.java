@@ -34,6 +34,7 @@ import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import de.d3web.collections.DefaultMultiMap;
 import de.d3web.collections.MultiMap;
@@ -56,7 +57,7 @@ public final class Messages {
 	/**
 	 * This set holds all Sections with Messages.
 	 */
-	private static final MultiMap<Message.Type, Section<?>> sectionsWithMessages = MultiMaps.synchronizedMultiMap(new DefaultMultiMap());
+	private static final MultiMap<Message.Type, Section<?>> sectionsWithMessages = MultiMaps.synchronizedMultiMap(new DefaultMultiMap<>());
 
 	/**
 	 * Wraps a single or more {@link Message}s into a Collection to be returned
@@ -155,11 +156,9 @@ public final class Messages {
 	 * @created 01.12.2011
 	 */
 	public static Collection<Message> getErrors(Collection<Message> messages) {
-		Collection<Message> errors = new ArrayList<Message>(messages.size());
-		for (Message msg : messages) {
-			if (msg.getType() == Message.Type.ERROR) errors.add(msg);
-		}
-		return errors;
+		return messages.stream()
+				.filter(msg -> msg.getType() == Message.Type.ERROR)
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -178,12 +177,12 @@ public final class Messages {
 	 */
 	public static Map<Compiler, Collection<Message>> getMessagesMap(Section<? extends Type> section, Message.Type... types) {
 		if (section.getSectionStore().isEmpty()) return Collections.emptyMap();
-		Map<Compiler, Collection<Message>> allMassagesOfCompiler = new HashMap<Compiler, Collection<Message>>();
+		Map<Compiler, Collection<Message>> allMassagesOfCompiler = new HashMap<>();
 		Map<Compiler, Object> messagesOfAllTypesBySourceByTitle = section.getSectionStore().getObjects(MESSAGE_KEY);
 		for (Entry<Compiler, Object> entry : messagesOfAllTypesBySourceByTitle.entrySet()) {
 			@SuppressWarnings("unchecked")
 			Map<Compiler, Collection<Message>> messagesOfAllTypesBySource = (Map<Compiler, Collection<Message>>) entry.getValue();
-			Collection<Message> messagesOfGivenTypesOfAllSourcesOfTitle = new ArrayList<Message>();
+			Collection<Message> messagesOfGivenTypesOfAllSourcesOfTitle = new ArrayList<>();
 			for (Collection<Message> messagesOfAllTypesOfSource : messagesOfAllTypesBySource.values()) {
 				addAllMessagesOfTypes(messagesOfAllTypesOfSource, messagesOfGivenTypesOfAllSourcesOfTitle, types);
 			}
@@ -240,7 +239,7 @@ public final class Messages {
 	 */
 	public static Collection<Message> getMessages(Compiler compiler, Section<?> section, Message.Type... types) {
 		if (section.getSectionStore().isEmpty()) return Collections.emptyList();
-		Collection<Message> allMessages = new ArrayList<Message>();
+		Collection<Message> allMessages = new ArrayList<>();
 		Map<String, Collection<Message>> msgMapModifiable = getMessagesMapModifiable(compiler, section);
 		if (msgMapModifiable != null) {
 			for (Collection<Message> messages : msgMapModifiable.values()) {
@@ -281,7 +280,7 @@ public final class Messages {
 												  Class<?> source, Message.Type... types) {
 		if (section.getSectionStore().isEmpty()) return Collections.emptyList();
 		Map<String, Collection<Message>> msgsMap = getMessagesMapModifiable(compiler, section);
-		List<Message> allMsgs = new ArrayList<Message>();
+		List<Message> allMsgs = new ArrayList<>();
 		if (msgsMap != null) {
 			Collection<Message> msgs = msgsMap.get(source.getName());
 			addAllMessagesOfTypes(msgs, allMsgs, types);
@@ -320,7 +319,7 @@ public final class Messages {
 	 * @created 16.02.2012
 	 */
 	public static Map<Compiler, Collection<Message>> getMessagesMapFromSubtree(Section<?> section, Message.Type... types) {
-		Map<Compiler, Collection<Message>> allMessages = new HashMap<Compiler, Collection<Message>>();
+		Map<Compiler, Collection<Message>> allMessages = new HashMap<>();
 		getMessagesMapFromSubtree(allMessages, section, types);
 		return Collections.unmodifiableMap(allMessages);
 	}
@@ -330,7 +329,7 @@ public final class Messages {
 		for (Entry<Compiler, Collection<Message>> entry : messagesOfSectionByTitle.entrySet()) {
 			Collection<Message> allMsgsOfTitle = allMessages.get(entry.getKey());
 			if (allMsgsOfTitle == null) {
-				allMsgsOfTitle = new LinkedList<Message>();
+				allMsgsOfTitle = new LinkedList<>();
 				allMessages.put(entry.getKey(), allMsgsOfTitle);
 			}
 			allMsgsOfTitle.addAll(entry.getValue());
@@ -353,7 +352,7 @@ public final class Messages {
 	public static Collection<Message> getMessagesFromSubtree(Compiler compiler,
 															 Section<?> section, Message.Type... types) {
 
-		Collection<Message> messages = new ArrayList<Message>();
+		Collection<Message> messages = new ArrayList<>();
 		getMessagesFromSubtree(messages, compiler, section, types);
 		return Collections.unmodifiableCollection(messages);
 	}
@@ -376,7 +375,7 @@ public final class Messages {
 	 */
 	public static Collection<Message> getMessagesFromSubtree(Section<?> section, Message.Type... types) {
 
-		Collection<Message> messages = new ArrayList<Message>();
+		Collection<Message> messages = new ArrayList<>();
 		getMessagesFromSubtree(messages, null, section, types);
 		return Collections.unmodifiableCollection(messages);
 	}
@@ -434,11 +433,9 @@ public final class Messages {
 	 * @created 01.12.2011
 	 */
 	public static Collection<Message> getNotices(Collection<Message> messages) {
-		Collection<Message> notices = new ArrayList<Message>(messages.size());
-		for (Message msg : messages) {
-			if (msg.getType() == Message.Type.INFO) notices.add(msg);
-		}
-		return notices;
+		return messages.stream()
+				.filter(msg -> msg.getType() == Message.Type.INFO)
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -449,11 +446,9 @@ public final class Messages {
 	 * @created 01.12.2011
 	 */
 	public static Collection<Message> getWarnings(Collection<Message> messages) {
-		Collection<Message> warnings = new ArrayList<Message>(messages.size());
-		for (Message msg : messages) {
-			if (msg.getType() == Message.Type.WARNING) warnings.add(msg);
-		}
-		return warnings;
+		return messages.stream()
+				.filter(msg -> msg.getType() == Message.Type.WARNING)
+				.collect(Collectors.toList());
 	}
 
 	public static Message invalidNumberError(String message) {
@@ -512,10 +507,9 @@ public final class Messages {
 	}
 
 	public static Message ambiguousTermClassesError(String origTerm, Collection<Class<?>> termClasses) {
-		TreeSet<String> termClassesString = new TreeSet<String>();
-		for (Class<?> termClass : termClasses) {
-			termClassesString.add(termClass.getSimpleName());
-		}
+		TreeSet<String> termClassesString = termClasses.stream()
+				.map(Class::getSimpleName)
+				.collect(Collectors.toCollection(TreeSet::new));
 		origTerm = Strings.trimQuotes(origTerm);
 		return Messages.error("The term '" + origTerm
 				+ "' is defined with ambiguous term classes: "
@@ -523,10 +517,9 @@ public final class Messages {
 	}
 
 	public static Message ambiguousTermCaseWarning(Collection<?> termObjects) {
-		TreeSet<String> sortedIdentifiers = new TreeSet<String>();
-		for (Object object : termObjects) {
-			sortedIdentifiers.add(object.toString());
-		}
+		TreeSet<String> sortedIdentifiers = termObjects.stream()
+				.map(Object::toString)
+				.collect(Collectors.toCollection(TreeSet::new));
 		return Messages.warning("There are different cases for the same term: "
 				+ sortedIdentifiers.toString());
 	}
@@ -599,7 +592,7 @@ public final class Messages {
 		if (messages != null && !messages.isEmpty()) {
 			// create map if not already present
 			if (messagesMap == null) {
-				messagesMap = new HashMap<String, Collection<Message>>(4);
+				messagesMap = new HashMap<>(4);
 				KnowWEUtils.storeObject(compiler, section, MESSAGE_KEY, messagesMap);
 			}
 			// store messages in map
@@ -628,7 +621,7 @@ public final class Messages {
 			else {
 				// remove section from type collections where no messages of that type remain
 				Map<Compiler, Collection<Message>> messagesByCompiler = getMessagesMap(section);
-				Set<Message.Type> availableTypes = new HashSet<Message.Type>();
+				Set<Message.Type> availableTypes = new HashSet<>();
 				for (Collection<Message> messagesOfCompiler : messagesByCompiler.values()) {
 					for (Message message : messagesOfCompiler) {
 						availableTypes.add(message.getType());
@@ -651,7 +644,7 @@ public final class Messages {
 		for (Message.Type type : types) {
 			size += sectionsWithMessages.getValues(type).size();
 		}
-		Set<Section<?>> sections = new HashSet<Section<?>>(size);
+		Set<Section<?>> sections = new HashSet<>(size);
 		for (Message.Type type : types) {
 			sections.addAll(sectionsWithMessages.getValues(type));
 		}

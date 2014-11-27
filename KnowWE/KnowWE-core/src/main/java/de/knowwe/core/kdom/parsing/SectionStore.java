@@ -64,7 +64,7 @@ public class SectionStore {
 	 * @created 16.02.2012
 	 */
 	public synchronized Map<Compiler, Object> getObjects(String key) {
-		Map<Compiler, Object> objects = new HashMap<Compiler, Object>(store == null ? 2 : store.size());
+		Map<Compiler, Object> objects = new HashMap<>(store == null ? 2 : store.size());
 		if (store != null) {
 			for (Entry<Compiler, Map<String, Object>> entry : store.entrySet()) {
 				Compiler compiler = entry.getKey();
@@ -138,7 +138,7 @@ public class SectionStore {
 	public synchronized void storeObject(Compiler compiler, String key, Object object) {
 		Map<String, Object> storeForCompiler = getStoreForCompiler(compiler);
 		if (storeForCompiler == null) {
-			storeForCompiler = new HashMap<String, Object>(8);
+			storeForCompiler = new HashMap<>(8);
 			putStoreForCompiler(compiler, storeForCompiler);
 		}
 		storeForCompiler.put(key, object);
@@ -172,7 +172,7 @@ public class SectionStore {
 
 	private void putStoreForCompiler(Compiler compiler, Map<String, Object> storeForCompiler) {
 		if (store == null) {
-			store = new WeakHashMap<Compiler, Map<String, Object>>();
+			store = new WeakHashMap<>();
 		}
 		store.put(compiler, storeForCompiler);
 	}
