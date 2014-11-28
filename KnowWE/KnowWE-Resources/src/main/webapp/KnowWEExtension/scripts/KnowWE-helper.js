@@ -324,21 +324,22 @@ KNOWWE.helper = function(){
         getPageDate : function() {
         	return document.getElementById('knowWEInfoPageDate').value;
         },
-        
-        /**
-         * Returns the name of the current user
-         */
-        getUsername : function() {
-        	return document.getElementById('knowWEInfoUser').value;
-        },
-        
-        /**
-         * Returns the name of the current article
-         * (This is also available, if no page is set in URL, e.g. on Main page)
-         */
-        getPagename : function() {
-        	return document.getElementById('knowWEInfoPageName').value;
-        },
+
+		/**
+		 * Returns the name of the current user
+		 */
+		getUsername : function() {
+			return jq$('head meta[name="wikiUserName"]').attr('content');
+		},
+
+		/**
+		 * Returns the name of the current article
+		 * (This is also available, if no page is set in URL, e.g. on Main page)
+		 */
+		getPagename : function() {
+            // this will always be there, even if the page wasn't created yet...
+			return jq$('head meta[name="wikiPageName"]').attr('content');
+		},
         
         /**
          * Returns the name of the current article

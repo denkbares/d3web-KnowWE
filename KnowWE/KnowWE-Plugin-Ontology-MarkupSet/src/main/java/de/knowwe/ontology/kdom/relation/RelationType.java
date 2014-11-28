@@ -29,6 +29,7 @@ public class RelationType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("Relation");
+		MARKUP.setDeprecated("Turtle");
 		PackageManager.addPackageAnnotation(MARKUP);
 		OntologyLineType lineType = new OntologyLineType();
 		lineType.addChildType(new RelationDefinition());
