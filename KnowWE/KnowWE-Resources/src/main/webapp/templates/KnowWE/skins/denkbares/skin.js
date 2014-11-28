@@ -189,22 +189,25 @@ DenkbaresSkin.checkFavScroll = function() {
 	var actionsBottom = $("actionsBottom");
 	var disableFixing = (actionsBottom == null
 		|| favHeight >= actionsBottom.offsetTop + actionsBottom.clientHeight);
+	var favLeft = DenkbaresSkin.favoriteStatus.status == 'expanded' ?
+		DenkbaresSkin.favoriteStatus.favLeftExpanded : DenkbaresSkin.favoriteStatus.favLeftCollapsed;
 	if (scrollY <= originY || disableFixing) {
 		// when reaching top of page or if page height is made by leftMenu
 		// align fav originally to page
-		element.style.position = "static";
+		element.style.position = "absolute";
 		element.style.top = originY + "px";
+		element.style.left = favLeft
 	} else if (scrollMax - scrollY <= favToScroll) {
 		// when reaching end of page
 		// align bottom of fav to bottom of page
 		element.style.position = "absolute";
 		element.style.top = (docHeight - favHeight) + "px";
-		element.style.left = "0px";
+		element.style.left = favLeft
 	} else {
 		// otherwise fix fav to the top of the viewport
 		element.style.position = "fixed";
 		element.style.top = "0px";
-		element.style.left = "-" + window.getScrollLeft() + "px";
+		element.style.left = "-" + (window.getScrollLeft() + parseInt(favLeft)) +  "px";
 	}
 };
 
@@ -259,48 +262,61 @@ DenkbaresSkin.resizeFlows = function() {
 	});
 };
 
-DenkbaresSkin.favoriteStatus = {
-	status : 'expanded'
-};
+DenkbaresSkin.favoriteStatus = {};
 
 DenkbaresSkin.toggleFavorites = function() {
 	var favorites = jq$('#favorites');
-	var body = jq$('body.view');
 	var page = jq$('#page');
+	var toggle = jq$('#favorites-toggle');
 	if (DenkbaresSkin.favoriteStatus.status == 'expanded') {
-		DenkbaresSkin.favoriteStatus.padding = favorites.css('padding');
-		DenkbaresSkin.favoriteStatus.width = favorites.css('width', '0px');
-		DenkbaresSkin.favoriteStatus.backgroundimage = body.css('background-image');
-		DenkbaresSkin.favoriteStatus.left = page.css('left');
-		favorites.css('padding', '0px');
-		favorites.css('width', '0px');
-		body.css('background-image', 'none');
-		page.css('left', '5px');
+		DenkbaresSkin.favoriteStatus.favLeft = favorites.css('left');
+		DenkbaresSkin.favoriteStatus.pageLeft = page.css('left');
+		DenkbaresSkin.favoriteStatus.toggleLeft = toggle.css('left');
+		favorites.animate({left: DenkbaresSkin.favoriteStatus.favLeftCollapsed}, DenkbaresSkin.resizeFlows);
+		page.animate({left: DenkbaresSkin.favoriteStatus.pageLeftCollapsed}, DenkbaresSkin.resizeFlows);
+		toggle.css({cursor: 'e-resize', left: DenkbaresSkin.favoriteStatus.toggleLeftCollapsed});
 		DenkbaresSkin.favoriteStatus.status = 'collapsed';
-		jq$('#favorites-toggle').css('#favorites-toggle', 'e-resize');
 	} else {
-		favorites.css('padding', DenkbaresSkin.favoriteStatus.padding);
-		favorites.css('width', DenkbaresSkin.favoriteStatus.width);
-		body.css('background-image', DenkbaresSkin.favoriteStatus.backgroundimage);
-		page.css('left', DenkbaresSkin.favoriteStatus.left);
+		favorites.animate({left: DenkbaresSkin.favoriteStatus.favLeftExpanded}, DenkbaresSkin.resizeFlows);
+		page.animate({left: DenkbaresSkin.favoriteStatus.pageLeftExpanded}, DenkbaresSkin.resizeFlows);
+		toggle.css({cursor: 'w-resize', left: DenkbaresSkin.favoriteStatus.toggleLeftExpanded});
 		DenkbaresSkin.favoriteStatus.status = 'expanded';
-		jq$('#favorites-toggle').css('#favorites-toggle', 'w-resize');
 	}
 	jq$(window).trigger('resize');
 };
 
 DenkbaresSkin.addFavoriteToggle = function() {
-	jq$('#actionsTop').before(new Element('div', {
+	jq$('#page').before(new Element('div', {
 		'id' : 'favorites-toggle',
 		'styles' : {
-			position: 'absolute',
+			position: 'fixed',
 			cursor: 'w-resize',
 			width: '5px',
-			left: '-5px',
-			height: '100%',
+			left: parseInt(jq$('#page').css('left')) - 5 + "px",
+			bottom: '0px',
 			'z-index': 20
 		}
 	}));
+	var setTogglePosition = function() {
+		var toggleLeft = DenkbaresSkin.favoriteStatus.status == 'expanded' ?
+			DenkbaresSkin.favoriteStatus.toggleLeftExpanded : DenkbaresSkin.favoriteStatus.toggleLeftCollapsed;
+		jq$('#favorites-toggle').css({
+			'top' : (jq$('#content').offset().top - jq$(window).scrollTop()) + "px",
+			'left' : (- window.getScrollLeft() + parseInt(toggleLeft)) +  "px"
+		});
+	};
+	DenkbaresSkin.favoriteStatus = {
+		status : 'expanded',
+		favLeftExpanded : jq$('#favorites').css('left'),
+	    pageLeftExpanded : jq$('#page').css('left'),
+		toggleLeftExpanded : jq$('#favorites-toggle').css('left'),
+		favLeftCollapsed : '-244px',
+		pageLeftCollapsed : '5px',
+		toggleLeftCollapsed : '0px'
+	};
+	jq$(window).scroll(setTogglePosition);
+	jq$(window).resize(setTogglePosition);
+	setTogglePosition();
 	jq$('#favorites-toggle').unbind('click').click(DenkbaresSkin.toggleFavorites);
 };
 
