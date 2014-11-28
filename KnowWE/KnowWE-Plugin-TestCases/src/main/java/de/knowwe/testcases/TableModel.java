@@ -132,7 +132,9 @@ public class TableModel {
 	public String toHtml(Section<?> section, UserContext user) {
 		RenderResult string = new RenderResult(user);
 		string.appendHtml("<div style='overflow:auto'>");
-		string.appendHtml("<table class='wikitable' border='1'>");
+		string.appendHtml("<table class='wikitable' border='1' pagination=")
+				.append(Strings.quoteSingle(section.getID()))
+				.appendHtml(">");
 		// headline
 		Set<Integer> collapsedColumns = getCollapsedColumns(section, user);
 		string.appendHtml("<tr>");

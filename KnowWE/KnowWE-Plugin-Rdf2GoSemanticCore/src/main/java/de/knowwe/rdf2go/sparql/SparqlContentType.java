@@ -34,6 +34,7 @@ import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.AsynchronRenderer;
+import de.knowwe.kdom.renderer.PaginationRenderer;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
@@ -42,7 +43,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 
 	public SparqlContentType() {
 		this.setSectionFinder(AllTextFinder.getInstance());
-		this.setRenderer(new AsynchronRenderer(new SparqlContentRenderer()));
+		this.setRenderer(new AsynchronRenderer(new PaginationRenderer(new SparqlContentRenderer())));
 		this.addCompileScript(new SparqlConstructHandler());
 	}
 
@@ -65,7 +66,6 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 
 		return renderOpts;
 	}
-
 
 	private void setRenderOptions(Section<SparqlMarkupType> markupSection, RenderOptions renderOpts) {
 		renderOpts.setRawOutput(checkAnnotation(markupSection, SparqlMarkupType.RAW_OUTPUT));
@@ -96,7 +96,6 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		return checkAnnotation(markupSection, annotationName, false);
 	}
 
-
 	private long getTimeout(Section<SparqlMarkupType> markupSection) {
 		String timeoutString = DefaultMarkupType.getAnnotation(markupSection, SparqlMarkupType.TIMEOUT);
 		long timeOutMillis = Rdf2GoCore.DEFAULT_TIMEOUT;
@@ -105,7 +104,6 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		}
 		return timeOutMillis;
 	}
-
 
 	private class SparqlConstructHandler extends DefaultGlobalScript<SparqlContentType> {
 

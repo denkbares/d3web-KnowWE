@@ -423,61 +423,61 @@ span.markupMenuItem {
 /* -----------Navigation Pagination Styles----------- */
 /* ################################################## */
 
-.navigationPagination {
-	display: inline;
+i.pagination_navigationIcons {
+	position: relative;
+	top: -1px;
+	margin-left: 5px;
+	margin-right: 5px;
 }
 
-.navigationPagination .toolBar {
+.pagination_toolSeparator {
+	display: inline-block;
+	margin-left: 10px;
+	margin-right: 10px;
+	border-left: 2px solid #DDD;
+	height: 10px;
+}
+
+.pagination_toolbar {
+	margin-left: 5px;
+	margin-right: 5px;
 	position: relative;
 	white-space: nowrap;
-	display: inline;
+	display: inline-block;
+	color: #808080;
 }
 
-.navigationPagination .tableSize {
-	margin-left: 20px;
-}
-
-.navigationPagination .toolButton {
-	position: relative;
-	top: 3px;
-}
-
-.navigationPaginationWrapper th span {
+table.pagination th.sortable span {
 	color: #036;
 	text-decoration: none;
 	cursor: pointer;
 }
 
-.navigationPaginationWrapper th span:hover {
-	color: #036;
+table.pagination th.sortable span:hover {
+	color: blue;
 	text-decoration: underline;
 	cursor: pointer;
 }
 
-.navigationPaginationWrapper .notSortable {
-	color: black !important;
-	text-decoration: none !important;
+table.pagination th.sortable i {
+	text-decoration: none;
+	margin-left: 5px;
 }
 
-.navigationPaginationWrapper .notSortable:hover {
-	color: black !important;
-	text-decoration: none !important;
-}
-
-.navigationPaginationWrapper th img {
+table.pagination th img {
 	position: relative;
 	top: 2px;
 }
 
-.navigationPaginationWrapper th img.sorting {
+table.pagination th img.sorting {
 	float: right;
 }
 
-.navigationPaginationWrapper th img.filter {
+table.pagination th img.filter {
 	float: left;
 }
 
-.navigationPaginationWrapper th img.filter:hover {
+table.pagination th img.filter:hover {
 	cursor: pointer;
 }
 

@@ -546,8 +546,7 @@ KNOWWE.core.plugin.pagination = function() {
 	function saveCookieAndUpdateNode(cookie, id) {
 		var cookieStr = JSON.stringify(cookie);
 		jq$.cookie("PaginationDecoratingRenderer-" + id, cookieStr);
-		KNOWWE.plugin.d3webbasic.actions.updateNode(jq$("#" + id).first().attr(
-			"id"), KNOWWE.helper.gup('page'), null);
+		KNOWWE.plugin.d3webbasic.actions.updateNode(id, KNOWWE.helper.gup('page'), null);
 
 	}
 
@@ -558,62 +557,117 @@ KNOWWE.core.plugin.pagination = function() {
 	}
 
 	function getSortingSymbol(naturalOrder) {
-		var file;
+		var cssClass;
 		if (naturalOrder) {
-			file = "arrow_down.png";
+			cssClass = "fa fa-caret-up fa-lg";
 		} else {
-			file = "arrow_up.png";
+			cssClass = "fa fa-caret-down fa-lg";
 		}
-		return jq$('<img/>', {
-			"src" : 'KnowWEExtension/images/' + file,
-			"class" : 'sorting'
+		return jq$('<i/>', {
+			"class" : cssClass
+		});
+	}
+
+	function renderSortingSymbols(sectionId, sortingMode) {
+		var cookie = jq$.parseJSON(jq$
+			.cookie("PaginationDecoratingRenderer-"
+			+ sectionId));
+		if (cookie != null && cookie.sorting != null) {
+			var sortLength;
+			if (sortingMode === 'multi') {
+				sortLength = cookie.sorting.length;
+			}
+			else {
+				sortLength = 1;
+			}
+			for (var i = 0; i < sortLength; i++) {
+				var thToGetSortingSymbol = jq$("[pagination=" + sectionId
+				+ "] th:contains('" + cookie.sorting[i].sort + "') span");
+				jq$(thToGetSortingSymbol).append(
+					getSortingSymbol(cookie.sorting[i].naturalOrder));
+			}
+		}
+	}
+
+	function enableSorting(sectionId) {
+		jq$(this.firstChild).wrap('<span></span>');
+		if (!jq$(this).hasClass("notSortable")) {
+			jq$(this).addClass("sortable");
+			jq$(this).find("span").bind('click',
+				function(event) {
+					KNOWWE.core.plugin.pagination
+						.sort(this,
+						sectionId);
+				}
+			);
+		}
+	}
+
+	function prepareFilterableElements() {
+		var filterIcon = jq$('<img/>', {
+			"src" : 'KnowWEExtension/images/filter.png',
+			"class" : 'filter'
+		});
+		jq$(this).prepend(filterIcon);
+		var text = jq$(this).text();
+		var preparedFilter = jq$("#paginationFilters div[filtername=" + text + "]").detach();
+		jq$(filterIcon).tooltipster({
+			content : jq$(preparedFilter).html(),
+			interactive : true,
+			interactiveTolerance : 1000
 		});
 	}
 
 	return {
 
 		sort : function(element, id) {
-
 			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-"
 			+ id));
-			var sorting = element.innerText;
-			if (cookie) {
-				if (cookie.sorting == sorting) {
-					cookie.naturalOrder = !cookie.naturalOrder;
-				} else {
-					cookie.sorting = sorting;
-					cookie.naturalOrder = "true";
-				}
-			} else {
+			if (cookie == null) {
 				cookie = {};
-				cookie.sorting = sorting;
-				cookie.naturalOrder = "true";
 			}
+			var sort = element.innerText;
+			var sorting;
+			if (typeof cookie.sorting != 'undefined') {
+				sorting = cookie.sorting;
+				var found = false;
+				for (var i = 0; i < sorting.length; i++) {
+					if (sorting[i].sort == sort) {
+						var naturalOrder = sorting[i].naturalOrder;
+						sorting[i].naturalOrder = !naturalOrder;
+						sorting.move(i, 0);
+						found = true;
+						break;
+					}
+				}
+				if (found == false) {
+					newSortObject = {sort : sort, naturalOrder : true};
+					sorting.unshift(newSortObject);
+				}
+			}
+			else {
+				sorting = [{sort : sort, naturalOrder : true}];
+			}
+			cookie.sorting = sorting;
 			saveCookieAndUpdateNode(cookie, id);
 		},
 
-		setCount : function(selected) {
+		setCount : function(selected, sectionId) {
 
-			var id = jq$(selected).closest(".navigationPaginationWrapper")
-				.attr('id');
+			var id = sectionId;
 
 			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-"
 			+ id));
 			if (cookie == null) {
 				cookie = {};
 			}
-			var scrollToTop = false;
-			if ((cookie.count)
-				&& parseInt(selected.value, 10) < parseInt(cookie.count, 10)) {
-				scrollToTop = true;
-			}
 
 			var count = selected.value;
-			var startRow = jq$("#" + id + " .startRow").val();
+			var startRow = jq$('div[pagination=' + id + '] .startRow').val();
 			var search = /^\d+$/;
 			var found = search.test(startRow);
 			if (!(found)) {
-				jq$('.navigationPaginationWrapper #startRow').val('');
+				jq$('div[pagination=' + id + '] .startRow').val('');
 				return;
 			}
 			if (startRow <= 0) {
@@ -627,9 +681,7 @@ KNOWWE.core.plugin.pagination = function() {
 				cookie.count = count;
 			}
 
-			if (scrollToTop) {
-				scrollToTopNavigation(id);
-			}
+
 			saveCookieAndUpdateNode(cookie, id);
 		},
 
@@ -670,13 +722,12 @@ KNOWWE.core.plugin.pagination = function() {
 			cookie.startRow = startRow;
 			cookie.count = count;
 			saveCookieAndUpdateNode(cookie, id);
-			scrollToTopNavigation(id);
+
 		},
 
-		updateStartRow : function(selectedRow) {
+		updateStartRow : function(selectedRow, sectionId) {
 
-			var id = jq$(selectedRow).closest(".navigationPaginationWrapper")
-				.attr('id');
+			var id = sectionId;
 			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-"
 			+ id));
 			if (cookie == null) {
@@ -701,7 +752,6 @@ KNOWWE.core.plugin.pagination = function() {
 				cookie.count = count;
 			}
 			saveCookieAndUpdateNode(cookie, id);
-			scrollToTopNavigation(id);
 		},
 
 		filter : function(checkbox, sectionId) {
@@ -744,63 +794,45 @@ KNOWWE.core.plugin.pagination = function() {
 		},
 
 		decorateTable : function() {
-			jq$(".navigationPaginationWrapper").each(
+			var wrappers = jq$("div.paginationWrapper");
+			wrappers.each(function() {
+				var id = jq$(this).attr('id');
+				jq$(this).find("table").attr('pagination', id);
+			});
+
+			jq$("table[pagination]").each(
 				function() {
-					var sectionId = jq$(this).attr('id');
+					var sectionId = jq$(this).attr('pagination');
+
+					//for css purposes
+					jq$(this).addClass('pagination');
 
 					// register count selector
-					jq$(this).find(".count").on('change', function() {
-						KNOWWE.core.plugin.pagination.setCount(this);
+					jq$('div[pagination=' + sectionId + '] .count').on('change', function() {
+						KNOWWE.core.plugin.pagination.setCount(this, sectionId);
 					});
 
 					// register start row change event
-					jq$(this).find('.startRow').on('change', function() {
-						KNOWWE.core.plugin.pagination.updateStartRow(this);
+					jq$('div[pagination=' + sectionId + '] .startRow').on('change', function() {
+						KNOWWE.core.plugin.pagination.updateStartRow(this, sectionId);
 					});
 
-					// make <th> clickable and therefore sortable except if
-					// it's stated explicitly otherwise
-					var tablePagination = jq$(this).find("table");
-					jq$(tablePagination).attr('sectionid', sectionId);
-					jq$(tablePagination).find("th").each(
+					var sortingMode = jq$(this).attr('sortable');
+
+					jq$(this).find("th").each(
 						function(i) {
-							var text = jq$(this).text();
-							jq$(this.firstChild).wrap('<span></span>');
-							if (!jq$(this).hasClass("notSortable")) {
-								jq$(this).find("span").bind('click',
-									function(event) {
-										KNOWWE.core.plugin.pagination
-											.sort(this,
-											sectionId);
-									}
-								);
+							// make <th> clickable and therefore sortable except if
+							// it's stated explicitly otherwise
+							if (typeof sortingMode != 'undefined') {
+								enableSorting.call(this, sectionId);
 							}
 							if (jq$(this).hasClass("filterable")) {
-								var filterIcon = jq$('<img/>', {
-									"src" : 'KnowWEExtension/images/filter.png',
-									"class" : 'filter'
-								});
-								jq$(this).prepend(filterIcon);
-								var preparedFilter = jq$("#paginationFilters div[filtername=" + text + "]").detach();
-								jq$(filterIcon).tooltipster({
-									content : jq$(preparedFilter).html(),
-									interactive : true,
-									interactiveTolerance : 1000
-								});
+								prepareFilterableElements.call(this);
 							}
 						});
 
 					// render sorting symbol
-					var cookie = jq$.parseJSON(jq$
-						.cookie("PaginationDecoratingRenderer-"
-						+ sectionId));
-					if (cookie != null && cookie.sorting != null) {
-						var thToGetSortingSymbol = jq$("#" + sectionId
-						+ " th:contains('" + cookie.sorting + "') span");
-						jq$(thToGetSortingSymbol).append(
-							getSortingSymbol(cookie.naturalOrder));
-					}
-
+					renderSortingSymbols(sectionId, sortingMode);
 				});
 		}
 	}
@@ -1665,4 +1697,16 @@ KNOWWE.helper.observer.subscribe("afterRerender", function() {
 KNOWWE.helper.observer.subscribe("afterRerender", function() {
 	KNOWWE.tooltips.enrich(this);
 	KNOWWE.core.plugin.objectinfo.lookUp(this);
+
 });
+
+Array.prototype.move = function(old_index, new_index) {
+	if (new_index >= this.length) {
+		var k = new_index - this.length;
+		while ((k--) + 1) {
+			this.push(undefined);
+		}
+	}
+	this.splice(new_index, 0, this.splice(old_index, 1)[0]);
+	return this; // for testing purposes
+};

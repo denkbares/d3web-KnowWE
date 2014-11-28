@@ -66,6 +66,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.renderer.PaginationRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.notification.NotificationManager;
 import de.knowwe.notification.OutDatedSessionNotification;
@@ -269,12 +270,9 @@ public class TestCasePlayerRenderer implements Renderer {
 		}
 		string.appendHtml(renderToolSeparator());
 
-		string.append(
-				renderSizeSelector(section, user, navigatorParameters.size,
-						chronology.size())
-		);
-		string.append(renderNavigation(section, navigatorParameters.from,
-				navigatorParameters.size, chronology.size(), user));
+		PaginationRenderer.setResultSize(user, chronology.size());
+		PaginationRenderer.renderTableSizeSelector(section, user, string);
+		PaginationRenderer.renderNavigation(section, user, string);
 	}
 
 	private String createFromKey(Section<?> section) {
@@ -313,38 +311,15 @@ public class TestCasePlayerRenderer implements Renderer {
 	}
 
 	private NavigationParameters getNavigationParameters(Section<?> section, UserContext user, Collection<Date> chronology) {
-		String sizeKey = createSizeKey(section);
-		String fromKey = createFromKey(section);
-		NavigationParameters tableParameters = new NavigationParameters();
-		String selectedSizeString = KnowWEUtils.getCookie(sizeKey, "10", user);
-		String fromString = KnowWEUtils.getCookie(fromKey, "1", user);
 
-		tableParameters.size = Integer.parseInt(selectedSizeString);
-		tableParameters.from = 1;
-		if (fromString != null) {
-			try {
-				tableParameters.from = Integer.parseInt(fromString);
-				if (tableParameters.from < 1) {
-					tableParameters.from = 1;
-				}
-			}
-			catch (NumberFormatException e) {
-				tableParameters.from = 1;
-			}
-		}
+		NavigationParameters tableParameters = new NavigationParameters();
+		int selectedSizeString = PaginationRenderer.getCount(section, user);
+		int fromString = PaginationRenderer.getStartRow(section, user);
+
+		tableParameters.size = selectedSizeString;
+		tableParameters.from = fromString;
 		tableParameters.to = tableParameters.from + tableParameters.size - 1;
-		if (tableParameters.to > chronology.size()) {
-			int tempfrom = tableParameters.from - (tableParameters.to - chronology.size());
-			if (tempfrom > 0) {
-				tableParameters.from = tempfrom;
-			}
-			else {
-				tableParameters.from = 1;
-			}
-			// user.getSession().setAttribute(fromKey,
-			// String.valueOf(tableParameters.from));
-			tableParameters.to = chronology.size();
-		}
+
 		return tableParameters;
 	}
 

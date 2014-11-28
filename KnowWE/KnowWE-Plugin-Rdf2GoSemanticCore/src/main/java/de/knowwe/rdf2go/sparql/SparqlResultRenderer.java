@@ -3,11 +3,11 @@ package de.knowwe.rdf2go.sparql;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -20,10 +20,12 @@ import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
+import de.d3web.utils.Pair;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.kdom.renderer.PaginationRenderer;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.sparql.utils.SparqlRenderResult;
@@ -88,7 +90,7 @@ public class SparqlResultRenderer {
 				.getId() + "'>");
 		if (opts.isBorder()) result.appendHtml("<div class='border'>");
 		if (opts.isSorting()) {
-			query = modifyOrderByInSparqlString(opts.getSortingMap(), query);
+			query = modifyOrderByInSparqlString(section, user, query);
 		}
 
 		SparqlRenderResult renderResult;
@@ -103,13 +105,13 @@ public class SparqlResultRenderer {
 			Log.warning("Exception while executing SPARQL", e);
 		}
 		if (qrt != null) {
-			renderResult = getSparqlRenderResult(qrt, opts, user);
+			renderResult = getSparqlRenderResult(qrt, opts, user, section);
 
-			if (opts.isNavigation() && !opts.isRawOutput()) {
-				renderTableSizeSelector(opts, renderResult.getSize(), result);
-				renderNavigation(opts, renderResult.getSize(), result);
-
-			}
+//			if (opts.isNavigation() && !opts.isRawOutput()) {
+//				renderTableSizeSelector(opts, renderResult.getSize(), result);
+//				renderNavigation(opts, renderResult.getSize(), result);
+//
+//			}
 
 			result.appendHtml(renderResult.getHTML());
 		}
@@ -117,10 +119,10 @@ public class SparqlResultRenderer {
 		result.appendHtml("</div>");
 	}
 
-	public SparqlRenderResult getSparqlRenderResult(QueryResultTable qrt, UserContext user) {
+	public SparqlRenderResult getSparqlRenderResult(QueryResultTable qrt, UserContext user, Section<?> section) {
 		RenderOptions opts = new RenderOptions("defaultID", user);
 		opts.setRdf2GoCore(Rdf2GoCore.getInstance());
-		return getSparqlRenderResult(qrt, opts, user);
+		return getSparqlRenderResult(qrt, opts, user, section);
 	}
 
 	/**
@@ -129,17 +131,17 @@ public class SparqlResultRenderer {
 	 * @return html table with all results of qrt and size of qrt
 	 * @created 06.12.2010
 	 */
-	public SparqlRenderResult getSparqlRenderResult(QueryResultTable qrt, RenderOptions opts, UserContext user) {
+	public SparqlRenderResult getSparqlRenderResult(QueryResultTable qrt, RenderOptions opts, UserContext user, Section section) {
 		Rdf2GoUtils.lock(qrt);
 		try {
-			return renderQueryResultLocked(qrt, opts, user);
+			return renderQueryResultLocked(qrt, opts, user, section);
 		}
 		finally {
 			Rdf2GoUtils.unlock(qrt);
 		}
 	}
 
-	private SparqlRenderResult renderQueryResultLocked(QueryResultTable qrt, RenderOptions opts, UserContext user) {
+	private SparqlRenderResult renderQueryResultLocked(QueryResultTable qrt, RenderOptions opts, UserContext user, Section<?> section) {
 
 		RenderResult result = new RenderResult(user);
 		int i = 0;
@@ -176,9 +178,12 @@ public class SparqlResultRenderer {
 
 		if (tablemode) {
 			result.appendHtmlTag("div", "style", "overflow-x: auto");
-			result.appendHtml("<table id='").append(tableID).appendHtml("' class='")
+			result.appendHtml("<table id='").append(tableID).appendHtml("' sortable='multi' class='")
 					.append(isTree ? "sparqltable sparqltreetable" : "sparqltable")
 					.append("'>");
+			result.appendHtml("<table id='")
+					.append(tableID)
+					.appendHtml("' class='sparqltable' sortable='multi'>");
 			result.appendHtml(!zebraMode ? "<tr>" : "<tr class='odd'>");
 			int index = 0;
 			for (String var : variables) {
@@ -190,18 +195,18 @@ public class SparqlResultRenderer {
 					}
 				}// END: collapse tree mode code
 
-				result.appendHtml("<td><b>");
-				result.appendHtml("<a href='#/' onclick=\"KNOWWE.plugin.sparql.sortResultsBy('"
-						+ var + "', '"
-						+ opts.getId() + "');\">");
+				result.appendHtml("<th>");
+//				result.appendHtml("<a href='#/' onclick=\"KNOWWE.plugin.sparql.sortResultsBy('"
+//						+ var + "', '"
+//						+ opts.getId() + "');\">");
 				result.append(var);
-				result.appendHtml("</a>");
-				if (hasSorting(var, opts.getSortingMap())) {
-					String symbol = getSortingSymbol(var, opts.getSortingMap());
-					result.appendHtml("<img src='KnowWEExtension/images/" + symbol
-							+ "' alt='Sort by '"
-							+ var + "border='0' /><b/></td>");
-				}
+//				result.appendHtml("</a>");
+//				if (hasSorting(var, opts.getSortingMap())) {
+//					String symbol = getSortingSymbol(var, opts.getSortingMap());
+//					result.appendHtml("<img src='KnowWEExtension/images/" + symbol
+//							+ "' alt='Sort by '"
+				result.appendHtml("</th>&nbsp;");
+//				}
 
 			}
 			result.appendHtml("</tr>");
@@ -221,11 +226,14 @@ public class SparqlResultRenderer {
 		List<String> classNames = new LinkedList<String>();
 		Set<String> usedIDs = new HashSet<String>();
 
+		int startRow = PaginationRenderer.getStartRow(section, user);
+		int count = PaginationRenderer.getCount(section, user);
+
 		while (iterator.hasNext()) {
 			i++;
-			if ((opts.isNavigation() && i >= opts.getNavigationOffset() && i < (opts.getNavigationOffset()
-					+ opts.getNavigationLimit()))
-					|| (opts.isNavigation() && opts.isShowAll()) || !opts.isNavigation()) {
+
+			if (count == Integer.MAX_VALUE || (i >= startRow && i < (startRow
+					+ count))) {
 
 				classNames.clear();
 
@@ -445,25 +453,10 @@ public class SparqlResultRenderer {
 		return rendered;
 	}
 
-	private String getSortingSymbol(String value, Map<String, String> map) {
-		StringBuilder sb = new StringBuilder();
-		if (map.containsKey(value)) {
-			sb.append("arrow");
-			sb.append("_");
-			if (map.get(value).equals("ASC")) {
-				sb.append("down");
-			}
-			else {
-				sb.append("up");
-			}
-		}
-		sb.append(".png");
-		return sb.toString().toLowerCase();
-	}
-
-	private String modifyOrderByInSparqlString(Map<String, String> sortOrder, String sparqlString) {
+	private String modifyOrderByInSparqlString(Section<?> sec, UserContext user, String sparqlString) {
 		StringBuilder sb = new StringBuilder(sparqlString);
-		if (sortOrder.isEmpty()) {
+		List<Pair<String, Boolean>> multipleSorting = PaginationRenderer.getMultiColumnSorting(sec, user);
+		if (multipleSorting.isEmpty()) {
 			return sb.toString();
 		}
 		String sparqlTempString = sparqlString.toLowerCase();
@@ -485,13 +478,13 @@ public class SparqlResultRenderer {
 		}
 
 		StringBuilder sbOrder = new StringBuilder();
-		Collection<String> keyCollection = sortOrder.keySet();
-		Iterator<String> keyIt = keyCollection.iterator();
-		Collection<String> valueCollection = sortOrder.values();
-		Iterator<String> valIt = valueCollection.iterator();
 
-		while (keyIt.hasNext()) {
-			sbOrder.append(" " + valIt.next() + "(?" + keyIt.next() + ")");
+		HashMap<Boolean, String> sortingKeyWord = new HashMap<>(2);
+		sortingKeyWord.put(true, "ASC");
+		sortingKeyWord.put(false, "DESC");
+
+		for (Pair pair : multipleSorting) {
+			sbOrder.append(" " + sortingKeyWord.get(pair.getB()) + "(?" + pair.getA() + ")");
 		}
 
 		if (orderBy == -1) {
@@ -622,7 +615,4 @@ public class SparqlResultRenderer {
 
 	}
 
-	private boolean hasSorting(String value, Map<String, String> map) {
-		return map.containsKey(value);
-	}
 }
