@@ -97,9 +97,7 @@ public class PropertyValueType extends AbstractType {
 			}
 
 			object.getInfoStore().addValue(property, parsedValue);
-			return Messages.asList(Messages.objectCreatedNotice("Defined value of property '"
-					+ property.getName() + "' for object '" + object.getName() + "'."));
-
+			return Messages.noMessage();
 		});
 	}
 

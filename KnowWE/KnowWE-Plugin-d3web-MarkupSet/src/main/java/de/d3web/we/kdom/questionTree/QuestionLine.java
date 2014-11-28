@@ -31,6 +31,7 @@ import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalExcept
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.we.kdom.questionTree.indication.IndicationHandler;
+import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.reviseHandler.D3webHandler;
@@ -42,6 +43,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
@@ -166,9 +168,7 @@ public class QuestionLine extends AbstractType {
 						interval.checkValidity();
 						question.getInfoStore().addValue(BasicProperties.QUESTION_NUM_RANGE,
 								interval);
-						return Messages.asList(Messages.objectCreatedNotice(
-								D3webUtils.getD3webBundle()
-										.getString("KnowWE.questiontree.setnumerical")));
+						return Messages.noMessage();
 					}
 					catch (IntervalException e) {
 						return Messages.asList(Messages.objectCreationError(
@@ -267,9 +267,7 @@ public class QuestionLine extends AbstractType {
 										.getString("KnowWE.questiontree.onlyfornumerical")));
 					}
 					question.getInfoStore().addValue(MMInfo.UNIT, s.get().getUnit(s));
-					return Messages.asList(Messages.objectCreatedNotice(
-							D3webUtils.getD3webBundle()
-									.getString("KnowWE.questiontree.setunit")));
+					return Messages.noMessage();
 
 				}
 				return Messages.asList(Messages.objectCreationError(
@@ -293,7 +291,7 @@ public class QuestionLine extends AbstractType {
 			this.setSectionFinder(new OneOfStringFinder("<abstract>", "<abstrakt>"));
 			this.setRenderer(new StyleRenderer(StyleRenderer.KEYWORDS, MaskMode.htmlEntities));
 
-			this.addCompileScript(Priority.HIGH, (D3webHandler<AbstractFlag>) (compiler, s) -> {
+			this.addCompileScript(Priority.HIGH, (D3webCompileScript<AbstractFlag>) (compiler, s) -> {
 
 				Section<QuestionDefinition> qDef = Sections.successor(
 						s.getParent(), QuestionDefinition.class);
@@ -301,17 +299,13 @@ public class QuestionLine extends AbstractType {
 				if (qDef != null) {
 					Question question = qDef.get().getTermObject(compiler, qDef);
 					if (question != null) {
-						question.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION,
-								Boolean.TRUE);
-						return Messages.asList(Messages.objectCreatedNotice(
-								D3webUtils.getD3webBundle()
-										.getString("KnowWE.questiontree.abstractquestion")));
+						question.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION, Boolean.TRUE);
+						return;
 					}
 
 				}
-				return Messages.asList(Messages.objectCreationError(
-						D3webUtils.getD3webBundle()
-								.getString("KnowWE.questiontree.abstractflag")));
+				throw new CompilerMessage(Messages.objectCreationError(
+						D3webUtils.getD3webBundle().getString("KnowWE.questiontree.abstractflag")));
 			});
 		}
 	}
@@ -344,9 +338,7 @@ public class QuestionLine extends AbstractType {
 					if (question != null) {
 						question.getInfoStore().addValue(MMInfo.PROMPT,
 								QuestionText.getQuestionText(sec));
-						return Messages.asList(Messages.objectCreatedNotice(
-								D3webUtils.getD3webBundle()
-										.getString("KnowWE.questiontree.questiontextcreated")));
+						return Messages.noMessage();
 					}
 				}
 				return Messages.asList(Messages.objectCreationError(

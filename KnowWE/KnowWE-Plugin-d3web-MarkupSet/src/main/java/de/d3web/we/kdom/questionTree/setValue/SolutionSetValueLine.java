@@ -171,8 +171,7 @@ public class SolutionSetValueLine extends AbstractType {
 						Rule r = RuleFactory.createHeuristicPSRule(sol, score, cond);
 						if (r != null) {
 							KnowWEUtils.storeObject(compiler, s, SETVALUE_ARGUMENT, r);
-							return Messages.asList(Messages.objectCreatedNotice(
-									r.getClass().toString()));
+							return Messages.noMessage();
 						}
 					}
 				}

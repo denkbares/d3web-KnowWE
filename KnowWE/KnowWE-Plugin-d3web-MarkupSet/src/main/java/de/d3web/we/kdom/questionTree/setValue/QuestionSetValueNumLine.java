@@ -165,9 +165,7 @@ public class QuestionSetValueNumLine extends AbstractType {
 					Rule r = RuleFactory.createRule(action, cond, null, PSMethodAbstraction.class);
 					if (r != null) {
 						KnowWEUtils.storeObject(compiler, section, SETVALUE_ARGUMENT, r);
-						throw new CompilerMessage(
-								Messages.objectCreatedNotice(
-										r.getClass().toString()));
+						return;
 					}
 				}
 			}

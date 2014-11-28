@@ -121,9 +121,6 @@ public class TestCaseContent extends AbstractType {
 							new DefaultTestCaseStorage(providers));
 					// Store the test suite
 					s.getSectionStore().storeObject(TestCaseType.TESTCASEKEY, testSuite);
-					messages.add(Messages.objectCreatedNotice(
-							"Test Suite successfully created with "
-									+ testSuite.getRepository().size() + " cases."));
 				}
 
 			}

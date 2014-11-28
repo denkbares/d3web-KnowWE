@@ -268,10 +268,7 @@ public class CoveringList extends AbstractType {
 								if (w > 0 && w != 1) {
 									wString = Double.toString(w);
 								}
-								result.add(Messages.relationCreatedNotice("XCL: "
-										+ type.toString() + " " + wString));
 								return result;
-
 							}
 						}
 					}
@@ -374,8 +371,6 @@ public class CoveringList extends AbstractType {
 		 * 
 		 * @param relationSection
 		 * @param user
-		 * @param web
-		 * @param topic
 		 * @param fulfilled
 		 * @param string
 		 * @return

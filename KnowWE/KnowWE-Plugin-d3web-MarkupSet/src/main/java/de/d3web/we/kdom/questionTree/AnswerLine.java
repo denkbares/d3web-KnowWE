@@ -162,8 +162,7 @@ public class AnswerLine extends AbstractType {
 					if (question != null && choice != null) {
 						choice.getInfoStore().addValue(MMInfo.PROMPT,
 								AnswerText.getAnswerText(sec));
-						return Messages.asList(Messages.objectCreatedNotice(
-								"Answer text set"));
+						return Messages.noMessage();
 					}
 				}
 				return Messages.asList(Messages.objectCreationError(

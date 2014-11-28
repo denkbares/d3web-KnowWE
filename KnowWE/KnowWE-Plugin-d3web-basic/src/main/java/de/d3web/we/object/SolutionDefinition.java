@@ -154,8 +154,7 @@ public abstract class SolutionDefinition
 
 			section.get().storeTermObject(compiler, section, new Solution(kb, name));
 
-			return Messages.asList(Messages.objectCreatedNotice(
-					termObjectClass.getSimpleName() + " '" + name + "'"));
+			return Messages.noMessage();
 
 		}
 

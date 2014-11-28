@@ -122,7 +122,7 @@ public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarat
 					"Property '" + propName + "' is deprecated. " +
 							"Use '" + property.getName() + "' instead."));
 		}
-		return Messages.asList(Messages.notice("Property declaration successful."));
+		return Messages.noMessage();
 	}
 
 	public static Locale getLocale(Section<PropertyDeclarationType> s) {

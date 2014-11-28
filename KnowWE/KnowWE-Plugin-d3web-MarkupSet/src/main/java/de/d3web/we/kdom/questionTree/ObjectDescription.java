@@ -1,7 +1,5 @@
 package de.d3web.we.kdom.questionTree;
 
-import java.util.Arrays;
-
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.Property;
@@ -20,12 +18,11 @@ import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
 /**
  * A type to allow for the definition of (extended) question-text for a question
  * leaded by '~'
- * 
+ * <p/>
  * the subtreehandler creates the corresponding DCMarkup using
  * MMInfoSubject.PROMPT for the question object
- * 
+ *
  * @author Jochen
- * 
  */
 public class ObjectDescription extends AbstractType {
 
@@ -58,19 +55,12 @@ public class ObjectDescription extends AbstractType {
 					String objectDescriptionText = ObjectDescription.getObjectDescriptionText(section);
 					if (prop.equals(MMInfo.PROMPT)) {
 						object.getInfoStore().addValue(MMInfo.PROMPT, objectDescriptionText);
-						return Arrays.asList(Messages.objectCreatedNotice(
-								D3webUtils.getD3webBundle()
-										.getString(
-												"KnowWE.questiontree.questiontextcreated")
-										+ " " + objectDescriptionText));
+						return Messages.noMessage();
 					} // for any other properties (than MMINFO) set
-						// information normally
+					// information normally
 					else {
-						object.getInfoStore().addValue(
-								prop,
-								objectDescriptionText);
-						return Messages.asList(Messages.objectCreatedNotice(
-								"Explanation set: " + objectDescriptionText));
+						object.getInfoStore().addValue(prop, objectDescriptionText);
+						return Messages.noMessage();
 					}
 				}
 			}

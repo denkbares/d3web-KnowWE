@@ -30,6 +30,7 @@ import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.Messages;
 
 /**
  * Compiles d3web knowledge bases.
@@ -66,7 +67,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	/**
 	 * FIXME: This method is currently only needed by the
 	 * AnnotationLoadKnowledgeBaseHandler where a knowledge base is loaded from
-	 * a file. The better way would be though to instead to fill an existing
+	 * a file. The better way would be though to instead fill an existing
 	 * knowledge base with the contents read from the file. We should implement
 	 * this later and then remove this method.
 	 * 
@@ -88,6 +89,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		EventManager.getInstance().fireEvent(new D3webCompilerStartEvent(this));
 
 		terminologyManager.removeTermsOfCompiler(this);
+		Messages.clearMessages(this);
 		ScriptCompiler<D3webCompiler> scriptCompiler = new ScriptCompiler<D3webCompiler>(this);
 		Collection<Section<?>> sectionsOfPackage = getPackageManager().getSectionsOfPackage(
 				packagesToCompile);

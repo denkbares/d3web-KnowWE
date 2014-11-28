@@ -172,8 +172,7 @@ public class QClassLine extends AbstractType {
 										questionnaire,
 										number);
 
-								return Messages.asList(Messages.objectCreatedNotice(
-										"Init property"));
+								return Messages.noMessage();
 							}
 						}
 

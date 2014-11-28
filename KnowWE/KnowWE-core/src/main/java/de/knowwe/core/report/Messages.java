@@ -113,6 +113,23 @@ public final class Messages {
 	}
 
 	/**
+	 * Removes all messages stored in any Section for the given Compiler. Should be pretty fast, because we know which
+	 * sections have messages.
+	 *
+	 * @param compiler the compiler for which the messages should be removed
+	 */
+	public static void clearMessages(Compiler compiler) {
+		synchronized (sectionsWithMessages) {
+			for (Message.Type type : Message.Type.values()) {
+				// would be better if we also hash by compiler... not sure if worth the effort though...
+				for (Section<?> section : new ArrayList<>(sectionsWithMessages.getValues(type))) {
+					clearMessages(compiler, section);
+				}
+			}
+		}
+	}
+
+	/**
 	 * Clears all {@link Message}s for the given article and subtree.
 	 *
 	 * @param compiler is the article you want to clear the message for
@@ -263,8 +280,7 @@ public final class Messages {
 	 *                {@link Message} you want (set to <tt>null</tt> if you want all)
 	 * @created 01.12.2011
 	 */
-	public static Collection<Message> getMessages(Section<?> section,
-												  Message.Type... types) {
+	public static Collection<Message> getMessages(Section<?> section, Message.Type... types) {
 		return getMessages(null, section, types);
 	}
 
@@ -280,8 +296,7 @@ public final class Messages {
 	 *                 {@link Message} you want (set to <tt>null</tt> if you want all)
 	 * @created 01.12.2011
 	 */
-	public static Collection<Message> getMessages(Compiler compiler, Section<?> section,
-												  Class<?> source, Message.Type... types) {
+	public static Collection<Message> getMessages(Compiler compiler, Section<?> section, Class<?> source, Message.Type... types) {
 		if (section.getSectionStore().isEmpty()) return Collections.emptyList();
 		Map<String, Collection<Message>> msgsMap = getMessagesMap(compiler, section);
 		List<Message> allMsgs = new ArrayList<>();
@@ -303,8 +318,7 @@ public final class Messages {
 	 *                {@link Message} you want (set to <tt>null</tt> if you want all)
 	 * @created 01.12.2011
 	 */
-	public static Collection<Message> getMessages(Section<?> section,
-												  Class<?> source, Message.Type... types) {
+	public static Collection<Message> getMessages(Section<?> section, Class<?> source, Message.Type... types) {
 		return getMessages(null, section, source, types);
 	}
 
@@ -487,10 +501,6 @@ public final class Messages {
 		return Messages.warning("Object already defined: " + text);
 	}
 
-	public static Message objectCreatedNotice(String text) {
-		return Messages.notice("Object created: " + text);
-	}
-
 	public static Message objectCreationError(String text) {
 		return Messages.error("Could not create Object: " + text);
 	}
@@ -513,13 +523,9 @@ public final class Messages {
 				+ sortedIdentifiers.toString());
 	}
 
-	public static Message relationCreatedNotice(String name) {
-		return Messages.notice("Created realation: " + name);
-	}
-
 	/**
 	 * Stores a single Message for the given Section and source.
-	 * <p>
+	 * <p/>
 	 * <b>ATTENTION: For this method applies the same as for the method
 	 * KnowWEUtils#storeMessages(Section, Class, Class, Collection) . It can
 	 * only be used once for the given set of parameters. If you use this method
@@ -531,8 +537,7 @@ public final class Messages {
 	 * @param source   is the Class the message originate from
 	 * @param msg      is the message you want so store
 	 */
-	public static void storeMessage(Compiler compiler, Section<?> section,
-									Class<?> source, Message msg) {
+	public static void storeMessage(Compiler compiler, Section<?> section, Class<?> source, Message msg) {
 		Collection<Message> messages = Collections.emptyList();
 		if (msg != null) {
 			messages = Messages.asList(msg);
@@ -543,7 +548,7 @@ public final class Messages {
 	/**
 	 * Stores a single Message for the given Section and source independent from
 	 * any compiler.
-	 * <p>
+	 * <p/>
 	 * <b>ATTENTION: For this method applies the same as for the method
 	 * KnowWEUtils#storeMessages(Section, Class, Class, Collection) . It can
 	 * only be used once for the given set of parameters. If you use this method
@@ -554,8 +559,7 @@ public final class Messages {
 	 * @param source  is the Class the message originate from
 	 * @param msg     is the message you want so store
 	 */
-	public static void storeMessage(Section<?> section,
-									Class<?> source, Message msg) {
+	public static void storeMessage(Section<?> section, Class<?> source, Message msg) {
 		storeMessage(null, section, source, msg);
 	}
 
@@ -563,7 +567,7 @@ public final class Messages {
 	 * Stores the given Collection of {@link Message}s <tt>m</tt> from the Class
 	 * <tt>source</tt> for the Article <tt>article</tt> and the Section
 	 * <tt>s</tt>.
-	 * <p>
+	 * <p/>
 	 * <b>ATTENTION: This method can only be used once for each article,
 	 * section, and source. If you use this Method a second time with the same
 	 * parameters, the first Collection gets overwritten!</b>
@@ -644,7 +648,7 @@ public final class Messages {
 	/**
 	 * Stores the given Collection of {@link Message}s for the given Class in
 	 * the given Section independently from any {@link Compiler}s.
-	 * <p>
+	 * <p/>
 	 * <b>ATTENTION: This method can only be used once for each article,††
 	 * section, and source. If you use this Method a second time with the same
 	 * parameters, the first Collection gets overwritten!</b>

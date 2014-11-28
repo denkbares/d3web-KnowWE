@@ -149,9 +149,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 				section.get().storeTermObject(compiler, section, question);
 			}
 
-			// return success message
-			return Messages.asList(Messages.objectCreatedNotice(
-					termObjectClass.getSimpleName() + " " + identifier));
+			return Messages.noMessage();
 
 		}
 	}

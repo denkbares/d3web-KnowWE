@@ -100,18 +100,18 @@ public class QuestionSetValueLine extends AbstractType {
 			String answerName = answerSec.get().getTermName(answerSec);
 
 			if (q != null) {
-				Choice a = null;
+				Choice choice = null;
 				if (q instanceof QuestionChoice) {
 					QuestionChoice qc = (QuestionChoice) q;
 					List<Choice> allAlternatives = qc.getAllAlternatives();
 					for (Choice answerChoice : allAlternatives) {
 						if (answerChoice.getName().equals(answerName)) {
-							a = answerChoice;
+							choice = answerChoice;
 							break;
 						}
 					}
 
-					if (a != null) {
+					if (choice != null) {
 						Condition cond = QuestionDashTreeUtils.createCondition(compiler,
 								DashTreeUtils.getAncestorDashTreeElements(section));
 						if (cond == null) {
@@ -120,23 +120,15 @@ public class QuestionSetValueLine extends AbstractType {
 											Rule.class.getSimpleName() + ": check condition"));
 						}
 
-						ActionSetQuestion ac = null;
-						if (q != null && a != null) {
-							ac = new ActionSetQuestion();
-							ac.setQuestion(q);
-							ac.setValue(a);
-						}
+						ActionSetQuestion ac = new ActionSetQuestion();
+						ac.setQuestion(q);
+						ac.setValue(choice);
 
-						Rule r = null;
-						if (ac != null) {
-							r = RuleFactory.createRule(ac, cond, null,
-									PSMethodAbstraction.class);
-						}
+						Rule rule = RuleFactory.createRule(ac, cond, null, PSMethodAbstraction.class);
 
-						if (r != null) {
-							KnowWEUtils.storeObject(compiler, section, SETVALUE_ARGUMENT, r);
-							throw new CompilerMessage(
-									Messages.objectCreatedNotice(r.getClass().toString()));
+						if (rule != null) {
+							KnowWEUtils.storeObject(compiler, section, SETVALUE_ARGUMENT, rule);
+							return;
 						}
 
 					}

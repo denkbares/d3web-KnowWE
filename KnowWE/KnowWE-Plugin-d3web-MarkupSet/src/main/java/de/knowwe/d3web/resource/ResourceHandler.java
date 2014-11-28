@@ -136,8 +136,7 @@ public class ResourceHandler implements D3webHandler<ResourceType> {
 			kb.addResouce(resource);
 		}
 		else {
-			return Messages.asList(Messages.notice("Resource " + existingResource.getPathName()
-					+ " already exists and will not be added again."));
+			return Messages.noMessage();
 		}
 
 		// if we have both content and source, warn this

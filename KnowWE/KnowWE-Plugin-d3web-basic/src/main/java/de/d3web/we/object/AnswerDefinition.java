@@ -161,10 +161,7 @@ public abstract class AnswerDefinition
 
 				section.get().storeTermObject(compiler, section, choice);
 
-				return Messages.asList(Messages.objectCreatedNotice(
-						choice.getClass().getSimpleName() + "  "
-								+ choice.getName()
-				));
+				return Messages.noMessage();
 
 			}
 			return Messages.asList(Messages.objectCreationError(

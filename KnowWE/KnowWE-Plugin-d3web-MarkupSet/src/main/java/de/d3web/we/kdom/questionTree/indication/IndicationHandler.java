@@ -141,8 +141,7 @@ public class IndicationHandler implements D3webCompileScript<D3webTerm<NamedObje
 
 					if (r != null) {
 						KnowWEUtils.storeObject(compiler, section, indicationStoreKey, r);
-						throw new CompilerMessage(Messages.objectCreatedNotice(
-								r.getClass().toString()));
+						return;
 					}
 				}
 			}
