@@ -105,7 +105,11 @@ public final class Messages {
 	 * @created 01.12.2011
 	 */
 	public static void clearMessages(Compiler compiler, Section<?> section) {
-		removeMessagesMap(compiler, section);
+		//noinspection SynchronizationOnLocalVariableOrMethodParameter
+		synchronized (section) {
+			Map<String, Collection<Message>> map = removeMessagesMap(compiler, section);
+			if (map != null) cleanUpSectionsWithMessagesMap(section);
+		}
 	}
 
 	/**
@@ -240,7 +244,7 @@ public final class Messages {
 	public static Collection<Message> getMessages(Compiler compiler, Section<?> section, Message.Type... types) {
 		if (section.getSectionStore().isEmpty()) return Collections.emptyList();
 		Collection<Message> allMessages = new ArrayList<>();
-		Map<String, Collection<Message>> msgMapModifiable = getMessagesMapModifiable(compiler, section);
+		Map<String, Collection<Message>> msgMapModifiable = getMessagesMap(compiler, section);
 		if (msgMapModifiable != null) {
 			for (Collection<Message> messages : msgMapModifiable.values()) {
 				addAllMessagesOfTypes(messages, allMessages, types);
@@ -279,7 +283,7 @@ public final class Messages {
 	public static Collection<Message> getMessages(Compiler compiler, Section<?> section,
 												  Class<?> source, Message.Type... types) {
 		if (section.getSectionStore().isEmpty()) return Collections.emptyList();
-		Map<String, Collection<Message>> msgsMap = getMessagesMapModifiable(compiler, section);
+		Map<String, Collection<Message>> msgsMap = getMessagesMap(compiler, section);
 		List<Message> allMsgs = new ArrayList<>();
 		if (msgsMap != null) {
 			Collection<Message> msgs = msgsMap.get(source.getName());
@@ -380,34 +384,19 @@ public final class Messages {
 		return Collections.unmodifiableCollection(messages);
 	}
 
-	// /**
-	// * Returns the an unmodifiable Map containing all {@link Message}s for the
-	// * given Section and article. The Collections are mapped by the String
-	// * <tt>source.getName()</tt> they were stored for.
-	// *
-	// * @param article is the article the {@link Message}s are stored for
-	// * @param section is the Section you want the messages from
-	// */
-	// public static Map<String, Collection<Message>>
-	// getMessagesMap(Compiler compiler,
-	// Section<?> section) {
-	// if (section.getSectionStore().isEmpty()) return Collections.emptyMap();
-	// return Collections.unmodifiableMap(getMessagesMapModifiable(compiler,
-	// section));
-	// }
-
 	/**
 	 * This method is private to avoid misuse (this map is modifiable). The map
 	 * contains all {@link Message}s for the given Section and article. The
 	 * Collections are mapped by the String <tt>source.getName()</tt>.
 	 */
 	@SuppressWarnings("unchecked")
-	private static Map<String, Collection<Message>> getMessagesMapModifiable(Compiler compiler, Section<?> sec) {
+	private static Map<String, Collection<Message>> getMessagesMap(Compiler compiler, Section<?> sec) {
 		return (Map<String, Collection<Message>>) sec.getSectionStore().getObject(compiler, MESSAGE_KEY);
 	}
 
-	private static void removeMessagesMap(Compiler compiler, Section<?> sec) {
-		sec.getSectionStore().removeObject(compiler, MESSAGE_KEY);
+	@SuppressWarnings("unchecked")
+	private static Map<String, Collection<Message>> removeMessagesMap(Compiler compiler, Section<?> sec) {
+		return (Map<String, Collection<Message>>) sec.getSectionStore().removeObject(compiler, MESSAGE_KEY);
 	}
 
 	private static void addAllMessagesOfTypes(Collection<Message> source, Collection<Message> target, Message.Type... types) {
@@ -586,52 +575,53 @@ public final class Messages {
 	 * @param messages is the Collection of messages you want so store
 	 */
 	public static void storeMessages(Compiler compiler, Section<?> section, Class<?> source, Collection<Message> messages) {
-		Map<String, Collection<Message>> messagesMap = getMessagesMapModifiable(compiler, section);
-		String key = source.getName();
-		// we have messages to store
-		if (messages != null && !messages.isEmpty()) {
-			// create map if not already present
-			if (messagesMap == null) {
-				messagesMap = new HashMap<>(4);
-				KnowWEUtils.storeObject(compiler, section, MESSAGE_KEY, messagesMap);
+		//noinspection SynchronizationOnLocalVariableOrMethodParameter
+		synchronized (section) {
+			Map<String, Collection<Message>> messagesMap = getMessagesMap(compiler, section);
+			String key = source.getName();
+			// we have messages to store
+			if (messages != null && !messages.isEmpty()) {
+				// create map if not already present
+				if (messagesMap == null) {
+					messagesMap = new HashMap<>(4);
+					KnowWEUtils.storeObject(compiler, section, MESSAGE_KEY, messagesMap);
+				}
+				// store messages in map
+				messagesMap.put(key, Collections.unmodifiableCollection(messages));
+				// store section for type collections
+				for (Message message : messages) {
+					sectionsWithMessages.put(message.getType(), section);
+				}
 			}
-			// store messages in map
-			messagesMap.put(key, Collections.unmodifiableCollection(messages));
-			// store section for type collections
-			for (Message message : messages) {
-				sectionsWithMessages.put(message.getType(), section);
+			// we have no messages, which means that we want to delete existing messages
+			else {
+				// if no message map is present, we don't need do anything
+				if (messagesMap == null) return;
+				Collection<Message> removedMessages = messagesMap.remove(key);
+				// we did not remove anything, no cleanup needed
+				if (removedMessages == null || removedMessages.isEmpty()) return;
+				// we removed messages, cleanup!
+				// no more more messages for this compiler and section
+				if (messagesMap.isEmpty()) {
+					removeMessagesMap(compiler, section);
+				}
+				// remove section from type collections where no messages of that type remain
+				cleanUpSectionsWithMessagesMap(section);
 			}
 		}
-		// we have no messages, which means that we want to delete existing messages
-		else {
-			// if no message map is present, we don't need do anything
-			if (messagesMap == null) return;
-			Collection<Message> removedMessages = messagesMap.remove(key);
-			// we did not remove anything, no cleanup needed
-			if (removedMessages == null || removedMessages.isEmpty()) return;
-			// we removed messages, cleanup!
-			// no more more messages for this section, easy cleanup...
-			if (messagesMap.isEmpty()) {
-				removeMessagesMap(compiler, section);
-				for (Message.Type type : Message.Type.values()) {
-					sectionsWithMessages.remove(type, section);
-				}
+	}
+
+	private static void cleanUpSectionsWithMessagesMap(Section<?> section) {
+		Map<Compiler, Collection<Message>> messagesByCompiler = getMessagesMap(section);
+		Set<Message.Type> availableTypes = new HashSet<>();
+		for (Collection<Message> messagesOfCompiler : messagesByCompiler.values()) {
+			for (Message message : messagesOfCompiler) {
+				availableTypes.add(message.getType());
 			}
-			// there are still messages
-			else {
-				// remove section from type collections where no messages of that type remain
-				Map<Compiler, Collection<Message>> messagesByCompiler = getMessagesMap(section);
-				Set<Message.Type> availableTypes = new HashSet<>();
-				for (Collection<Message> messagesOfCompiler : messagesByCompiler.values()) {
-					for (Message message : messagesOfCompiler) {
-						availableTypes.add(message.getType());
-					}
-				}
-				for (Message.Type type : Message.Type.values()) {
-					if (!availableTypes.contains(type)) {
-						sectionsWithMessages.remove(type, section);
-					}
-				}
+		}
+		for (Message.Type type : Message.Type.values()) {
+			if (!availableTypes.contains(type)) {
+				sectionsWithMessages.remove(type, section);
 			}
 		}
 	}

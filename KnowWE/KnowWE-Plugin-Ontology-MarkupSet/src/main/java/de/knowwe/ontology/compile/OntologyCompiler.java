@@ -51,8 +51,8 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 
 	public OntologyCompiler(PackageManager manager, Section<? extends PackageCompileType> compileSection, RuleSet ruleSet) {
 		super(manager, compileSection);
-		this.scriptCompiler = new ScriptCompiler<OntologyCompiler>(this);
-		this.destroyScriptCompiler = new ScriptCompiler<OntologyCompiler>(this);
+		this.scriptCompiler = new ScriptCompiler<>(this);
+		this.destroyScriptCompiler = new ScriptCompiler<>(this);
 		this.ruleSet = ruleSet;
 	}
 
@@ -129,8 +129,8 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 
 		firstCompilation = false;
 		completeCompilation = false;
-		destroyScriptCompiler = new ScriptCompiler<OntologyCompiler>(this);
-		scriptCompiler = new ScriptCompiler<OntologyCompiler>(this);
+		destroyScriptCompiler = new ScriptCompiler<>(this);
+		scriptCompiler = new ScriptCompiler<>(this);
 	}
 
 	private void createTerminologyManager() {
