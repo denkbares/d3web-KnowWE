@@ -272,13 +272,13 @@ DenkbaresSkin.toggleFavorites = function() {
 		DenkbaresSkin.favoriteStatus.favLeft = favorites.css('left');
 		DenkbaresSkin.favoriteStatus.pageLeft = page.css('left');
 		DenkbaresSkin.favoriteStatus.toggleLeft = toggle.css('left');
-		favorites.animate({left: DenkbaresSkin.favoriteStatus.favLeftCollapsed}, DenkbaresSkin.resizeFlows);
-		page.animate({left: DenkbaresSkin.favoriteStatus.pageLeftCollapsed}, DenkbaresSkin.resizeFlows);
+		favorites.css({left: DenkbaresSkin.favoriteStatus.favLeftCollapsed});
+		page.css({left: DenkbaresSkin.favoriteStatus.pageLeftCollapsed});
 		toggle.css({cursor: 'e-resize', left: DenkbaresSkin.favoriteStatus.toggleLeftCollapsed});
 		DenkbaresSkin.favoriteStatus.status = 'collapsed';
 	} else {
-		favorites.animate({left: DenkbaresSkin.favoriteStatus.favLeftExpanded}, DenkbaresSkin.resizeFlows);
-		page.animate({left: DenkbaresSkin.favoriteStatus.pageLeftExpanded}, DenkbaresSkin.resizeFlows);
+		favorites.css({left: DenkbaresSkin.favoriteStatus.favLeftExpanded});
+		page.css({left: DenkbaresSkin.favoriteStatus.pageLeftExpanded});
 		toggle.css({cursor: 'w-resize', left: DenkbaresSkin.favoriteStatus.toggleLeftExpanded});
 		DenkbaresSkin.favoriteStatus.status = 'expanded';
 	}
