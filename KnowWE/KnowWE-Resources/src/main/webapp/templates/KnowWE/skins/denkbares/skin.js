@@ -310,7 +310,7 @@ DenkbaresSkin.addFavoriteToggle = function() {
 		favLeftExpanded : jq$('#favorites').css('left'),
 	    pageLeftExpanded : jq$('#page').css('left'),
 		toggleLeftExpanded : jq$('#favorites-toggle').css('left'),
-		favLeftCollapsed : '-244px',
+		favLeftCollapsed : "-" + (parseInt(jq$('#page').css('left')) - 5) + "px",
 		pageLeftCollapsed : '5px',
 		toggleLeftCollapsed : '0px'
 	};
