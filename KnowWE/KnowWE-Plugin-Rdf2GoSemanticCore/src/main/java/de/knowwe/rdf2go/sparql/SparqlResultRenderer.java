@@ -181,9 +181,6 @@ public class SparqlResultRenderer {
 			result.appendHtml("<table id='").append(tableID).appendHtml("' sortable='multi' class='")
 					.append(isTree ? "sparqltable sparqltreetable" : "sparqltable")
 					.append("'>");
-			result.appendHtml("<table id='")
-					.append(tableID)
-					.appendHtml("' class='sparqltable' sortable='multi'>");
 			result.appendHtml(!zebraMode ? "<tr>" : "<tr class='odd'>");
 			int index = 0;
 			for (String var : variables) {
@@ -264,7 +261,7 @@ public class SparqlResultRenderer {
 							}
 							result.append(" data-tt-id='sparql-id-").append(valueID).append("'");
 							String parentID = valueToID(parentVariable, row);
-							if (!Strings.isBlank(parentID) && !parentID.equals(valueID)) {
+							if (!Strings.isBlank(parentID) && !parentID.equals(valueID) && usedIDs.contains(parentID)) {
 								// parentID.equals(valueID): hack for skipping
 								// top level rows
 								result.append(" data-tt-parent-id='sparql-id-")
