@@ -90,13 +90,14 @@ if (SearchBox) {
 
 var DenkbaresSkin = {};
 
+// we set
+DenkbaresSkin.scrollTransitionDuration = {'transition' : 'left', '-webkit-transition' : 'left'};
+DenkbaresSkin.toggleTransitionDuration = {'transition' : 'left 400ms', '-webkit-transition' : 'left 400ms'};
+
 /**
  * Initialize cutting edge favorite scrolling
  */
-DenkbaresSkin.initFavScroll = function() {
-	var element = $("favorites");
-	if (!element) return;
-	DenkbaresSkin.originY = element.offsetTop;
+DenkbaresSkin.initFavoritesScroll = function() {
 	// initialize some additional events
 	document.body.onclick = DenkbaresSkin.checkDocSizeScroll;
 };
@@ -111,18 +112,7 @@ DenkbaresSkin.checkDocSizeScroll = function() {
 	if (DenkbaresSkin.docHeight == docHeight)
 		return;
 	DenkbaresSkin.docHeight = docHeight;
-	DenkbaresSkin.checkFavScroll();
-};
-
-/**
- * Get the height of the document independent of the used browser.
- */
-DenkbaresSkin.getDocHeight = function() {
-	var doc = document;
-	return Math.max(Math.max(doc.body.scrollHeight,
-		doc.documentElement.scrollHeight), Math.max(doc.body.offsetHeight,
-		doc.documentElement.offsetHeight), Math.max(doc.body.clientHeight,
-		doc.documentElement.clientHeight));
+	DenkbaresSkin.scrollFavorites();
 };
 
 
@@ -169,38 +159,79 @@ DenkbaresSkin.highlightActiveTOC = function() {
  * Adapt the left menu favorites to the screen so that the display size is
  * optimally used.
  */
-DenkbaresSkin.checkFavScroll = function() {
-	var element = $("favorites");
+DenkbaresSkin.scrollFavorites = function() {
+	var element = jq$("#favorites");
 	if (!element) return;
-	var originY = DenkbaresSkin.originY;
-	var wHeight = window.getHeight();
-	var docHeight = DenkbaresSkin.getDocHeight();
-	var favHeight = element.clientHeight;
-	var scrollY = window.getScrollTop();
+	var wHeight = jq$(window).height();
+	var docHeight = jq$(document).height();
+	var favHeight = element.outerHeight();
+	var scrollY = DenkbaresSkin.scrollTop();
 	var scrollMax = docHeight - wHeight;
 	var favToScroll = favHeight - wHeight;
-	var actionsBottom = $("actionsBottom");
+	var actionsBottom = jq$("#actionsBottom");
 	var disableFixing = (actionsBottom == null
-	|| favHeight >= actionsBottom.offsetTop + actionsBottom.clientHeight);
+	|| favHeight >= actionsBottom.offset().top + actionsBottom.height());
 	var favLeft = DenkbaresSkin.favoriteStatus.status == 'expanded' ?
 		DenkbaresSkin.favoriteStatus.favLeftExpanded : DenkbaresSkin.favoriteStatus.favLeftCollapsed;
-	if (scrollY <= originY || disableFixing) {
+	jq$("#favorites").css(DenkbaresSkin.scrollTransitionDuration);
+	jq$("#page").css(DenkbaresSkin.scrollTransitionDuration);
+	jq$('#favorites-toggle').css(DenkbaresSkin.scrollTransitionDuration);
+	if (scrollY <= jq$('#header').outerHeight() || disableFixing) {
 		// when reaching top of page or if page height is made by leftMenu
 		// align fav originally to page
-		element.style.position = "absolute";
-		element.style.top = originY + "px";
-		element.style.left = favLeft
+		element.css({
+			position : "relative",
+			top : "auto",
+			left : favLeft + "px"
+		});
 	} else if (scrollMax - scrollY <= favToScroll) {
 		// when reaching end of page
 		// align bottom of fav to bottom of page
-		element.style.position = "absolute";
-		element.style.top = (docHeight - favHeight) + "px";
-		element.style.left = favLeft
+		element.css({
+			position : "absolute",
+			top : (docHeight - favHeight) + "px",
+			left : favLeft + "px"
+		});
 	} else {
 		// otherwise fix fav to the top of the viewport
-		element.style.position = "fixed";
-		element.style.top = "0px";
-		element.style.left = "-" + (window.getScrollLeft() + parseInt(favLeft)) + "px";
+		element.css({
+			position : "fixed",
+			top : "0px",
+			left : (favLeft - DenkbaresSkin.scrollLeft()) + "px"
+		});
+	}
+};
+
+DenkbaresSkin.initPageScroll = function() {
+	DenkbaresSkin.originalPageOffset = jq$("#page").offset().top;
+};
+
+DenkbaresSkin.scrollPage = function() {
+	var page = jq$("#page");
+	var body = jq$('body');
+	var scrollTop = DenkbaresSkin.scrollTop();
+	var windowHeight = jq$(window).height();
+	var actionHeight = jq$('#actionsTop').height();
+	var pageLeft = DenkbaresSkin.favoriteStatus.status == 'expanded' ?
+		DenkbaresSkin.favoriteStatus.pageLeftExpanded : DenkbaresSkin.favoriteStatus.pageLeftCollapsed;
+	if (page.height() < windowHeight
+		&& page.offset().top - scrollTop < -actionHeight) {
+		// setting the page position fixed will cause the document width to be reduced
+		// we set it manually to avoid odd behavior
+		body.width(jq$(document).width());
+		page.css({
+			position : 'fixed',
+			top : "0",
+			left : (pageLeft - DenkbaresSkin.scrollLeft()) + "px"
+		});
+	}
+	if (scrollTop < DenkbaresSkin.originalPageOffset + actionHeight) {
+		page.css({
+			position : 'absolute',
+			top : "auto",
+			left : pageLeft + "px"
+		});
+		body.width("auto");
 	}
 };
 
@@ -249,49 +280,62 @@ DenkbaresSkin.resizeFlows = function() {
 	});
 };
 
-DenkbaresSkin.favoriteStatus = {};
-
 DenkbaresSkin.toggleFavorites = function() {
 	var favorites = jq$('#favorites');
 	var page = jq$('#page');
 	var toggle = jq$('#favorites-toggle');
+	favorites.css(DenkbaresSkin.toggleTransitionDuration);
+	page.css(DenkbaresSkin.toggleTransitionDuration);
+	toggle.css(DenkbaresSkin.toggleTransitionDuration);
 	if (DenkbaresSkin.favoriteStatus.status == 'expanded') {
-		DenkbaresSkin.favoriteStatus.favLeft = favorites.css('left');
-		DenkbaresSkin.favoriteStatus.pageLeft = page.css('left');
-		DenkbaresSkin.favoriteStatus.toggleLeft = toggle.css('left');
-		favorites.css({left : DenkbaresSkin.favoriteStatus.favLeftCollapsed});
-		page.css({left : DenkbaresSkin.favoriteStatus.pageLeftCollapsed});
-		toggle.css({cursor : 'e-resize'});
+		favorites.css({left : DenkbaresSkin.favoriteStatus.favLeftCollapsed + "px"});
+		page.css({left : DenkbaresSkin.favoriteStatus.pageLeftCollapsed + "px"});
+		toggle.css({cursor : 'e-resize', left : DenkbaresSkin.favoriteStatus.pageLeftCollapsed + "px"});
 		toggle.find('i').removeClass('fa-angle-double-left').addClass('fa-angle-double-right');
 		DenkbaresSkin.favoriteStatus.status = 'collapsed';
 	} else {
-		favorites.css({left : DenkbaresSkin.favoriteStatus.favLeftExpanded});
-		page.css({left : DenkbaresSkin.favoriteStatus.pageLeftExpanded});
-		toggle.css({cursor : 'w-resize'});
+		favorites.css({left : DenkbaresSkin.favoriteStatus.favLeftExpanded + "px"});
+		page.css({left : DenkbaresSkin.favoriteStatus.pageLeftExpanded + "px"});
+		toggle.css({cursor : 'w-resize', left : DenkbaresSkin.favoriteStatus.pageLeftExpanded + "px"});
 		toggle.find('i').removeClass('fa-angle-double-right').addClass('fa-angle-double-left');
 		DenkbaresSkin.favoriteStatus.status = 'expanded';
 	}
-	jq$(window).trigger('resize');
+	jq$(page).bind('transitionend', function() {
+		jq$(window).resize();
+	});
+};
+
+// does not return "elastic scroll" values from OSX.
+DenkbaresSkin.scrollLeft = function() {
+	var maxScroll = jq$(document).width() - jq$(window).width();
+	var minScroll = 0;
+	return Math.min(Math.max(jq$(window).scrollLeft(), 0), maxScroll);
+};
+
+DenkbaresSkin.scrollTop = function() {
+	var maxScroll = jq$(document).height() - jq$(window).height();
+	var minScroll = 0;
+	return Math.min(Math.max(jq$(window).scrollTop(), 0), maxScroll);
 };
 
 DenkbaresSkin.addFavoriteToggle = function() {
 	jq$('#page').append("<div id='favorites-toggle'>" +
-			"<a id='favorites-toggle-button'>" +
-			"<i class='fa fa-angle-double-left'>" +
-			"</i></a></div>");
+	"<a id='favorites-toggle-button'>" +
+	"<i class='fa fa-angle-double-left'>" +
+	"</i></a></div>");
 	var setTogglePosition = function() {
 		jq$('#favorites-toggle').css({
-			'top' : (jq$('#content').offset().top - jq$(window).scrollTop()) + "px"
+			'left' : (jq$('#page').offset().left - DenkbaresSkin.scrollLeft()) + "px"
 		});
 	};
 	DenkbaresSkin.favoriteStatus = {
 		status : 'expanded',
-		favLeftExpanded : jq$('#favorites').css('left'),
-		pageLeftExpanded : jq$('#page').css('left'),
-		toggleLeftExpanded : jq$('#favorites-toggle').css('left'),
-		favLeftCollapsed : "-" + (parseInt(jq$('#page').css('left')) - 5) + "px",
-		pageLeftCollapsed : '5px',
-		toggleLeftCollapsed : '0px'
+		favLeftExpanded : jq$('#favorites').offset().left,
+		pageLeftExpanded : jq$('#page').offset().left,
+		toggleLeftExpanded : jq$('#favorites-toggle').offset().left,
+		favLeftCollapsed : -(jq$('#page').offset().left - 5),
+		pageLeftCollapsed : 5,
+		toggleLeftCollapsed : 5
 	};
 	jq$(window).scroll(setTogglePosition);
 	jq$(window).resize(setTogglePosition);
@@ -301,18 +345,21 @@ DenkbaresSkin.addFavoriteToggle = function() {
 
 KNOWWE.helper.observer.subscribe("flowchartrendered", DenkbaresSkin.resizeFlows);
 
-jq$(window).scroll(DenkbaresSkin.checkFavScroll);
+jq$(window).scroll(DenkbaresSkin.scrollFavorites);
 jq$(window).scroll(DenkbaresSkin.highlightActiveTOC);
-jq$(window).resize(DenkbaresSkin.checkFavScroll);
+jq$(window).scroll(DenkbaresSkin.scrollPage);
+jq$(window).resize(DenkbaresSkin.scrollFavorites);
 jq$(window).resize(DenkbaresSkin.resizeFlows);
 
 jq$(document).ready(function() {
 	DenkbaresSkin.addFavoriteToggle();
 	DenkbaresSkin.cleanTrail();
+	DenkbaresSkin.initPageScroll();
+
 	// workaround, because sometimes we are too early
 	window.setTimeout(function() {
-		DenkbaresSkin.initFavScroll();
-		DenkbaresSkin.checkFavScroll();
+		DenkbaresSkin.initFavoritesScroll();
+		DenkbaresSkin.scrollFavorites();
 	});
 
 	// add auto-resize to edit page

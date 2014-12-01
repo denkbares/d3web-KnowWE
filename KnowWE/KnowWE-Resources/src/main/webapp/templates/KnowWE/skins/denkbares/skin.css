@@ -76,8 +76,6 @@
 	border-bottom: 0;
 	background-color: #F5F5F5;
 	border-right: 1px solid #9ACBFB;
-	transition: left 400ms;
-	-webkit-transition: left 400ms;
 }
 
 #favorites .userbox {
@@ -96,6 +94,7 @@
 	cursor: w-resize;
 	margin-left: -5px;
 	width: 5px;
+	top: 0;
 	bottom: 0;
 	z-index: 20;
 }
@@ -151,8 +150,7 @@
 	right: 0px;
 	margin-top: -23px;
 	width: auto;
-	transition: left 400ms;
-	-webkit-transition: left 400ms;
+	z-index: 1;
 }
 
 #page > .tabs {
