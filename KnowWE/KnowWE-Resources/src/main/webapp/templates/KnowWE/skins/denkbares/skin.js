@@ -160,11 +160,11 @@ DenkbaresSkin.highlightActiveTOC = function() {
  * optimally used.
  */
 DenkbaresSkin.scrollFavorites = function() {
-	var element = jq$("#favorites");
-	if (!element) return;
+	var favorites = jq$("#favorites");
+	if (!favorites) return;
 	var wHeight = jq$(window).height();
 	var docHeight = jq$(document).height();
-	var favHeight = element.outerHeight();
+	var favHeight = favorites.outerHeight();
 	var scrollY = DenkbaresSkin.scrollTop();
 	var scrollMax = docHeight - wHeight;
 	var favToScroll = favHeight - wHeight;
@@ -179,7 +179,7 @@ DenkbaresSkin.scrollFavorites = function() {
 	if (scrollY <= jq$('#header').outerHeight() || disableFixing) {
 		// when reaching top of page or if page height is made by leftMenu
 		// align fav originally to page
-		element.css({
+		favorites.css({
 			position : "relative",
 			top : "auto",
 			left : favLeft + "px"
@@ -187,19 +187,21 @@ DenkbaresSkin.scrollFavorites = function() {
 	} else if (scrollMax - scrollY <= favToScroll) {
 		// when reaching end of page
 		// align bottom of fav to bottom of page
-		element.css({
+		favorites.css({
 			position : "absolute",
 			top : (docHeight - favHeight) + "px",
 			left : favLeft + "px"
 		});
 	} else {
 		// otherwise fix fav to the top of the viewport
-		element.css({
+		favorites.css({
 			position : "fixed",
 			top : "0px",
 			left : (favLeft - DenkbaresSkin.scrollLeft()) + "px"
 		});
 	}
+	var minHeight = wHeight - favorites.offset().top - (favHeight - favorites.height()) + scrollY;
+	favorites.css({'min-height' : minHeight + "px"});
 };
 
 DenkbaresSkin.initPageScroll = function() {
