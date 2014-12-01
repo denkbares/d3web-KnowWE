@@ -144,26 +144,25 @@ public class SparqlResultRenderer {
 	private SparqlRenderResult renderQueryResultLocked(QueryResultTable qrt, RenderOptions opts, UserContext user, Section<?> section) {
 
 		RenderResult result = new RenderResult(user);
-		int i = 0;
 		if (!qrt.iterator().hasNext()) {
 			result.append(Messages.getMessageBundle().getString(
 					"KnowWE.owl.query.no_result"));
-			return new SparqlRenderResult(result.toStringRaw(), i);
+			return new SparqlRenderResult(result.toStringRaw());
 		}
 
 		boolean zebraMode = opts.isZebraMode();
 		boolean rawOutput = opts.isRawOutput();
 		boolean isTree = opts.isTree();
+		boolean isNavigation = opts.isNavigation();
+
 		String tableID = UUID.randomUUID().toString();
 
 		List<String> variables = qrt.getVariables();
 		boolean tablemode = variables.size() > 1;
 
-		// BEGIN: collapse tree mode code
 		// tree table init
 		String idVariable = null;
 		String parentVariable = null;
-
 		if (isTree) {
 			if (qrt.getVariables().size() > 2) {
 				idVariable = qrt.getVariables().get(0);
@@ -171,28 +170,34 @@ public class SparqlResultRenderer {
 			}
 			else {
 				isTree = false;
-				result.append("%%warning The result table requires at least three columns.");
+				result.append("%%warning The result table requires at least three columns to enable tree mode.\n");
 			}
 		}
-		// END: collapse tree mode code
+
+		// navigation mode check
+		if (isNavigation) {
+			tablemode = true;
+			if (isTree) {
+				isNavigation = false;
+				result.append("%%warning The specified flags 'tree' and 'navigation' are not compatible.\n");
+			}
+		}
 
 		if (tablemode) {
 			result.appendHtmlTag("div", "style", "overflow-x: auto");
-			result.appendHtml("<table id='")
-					.append(tableID)
-					.appendHtml("' sortable='multi' class='")
-					.append(isTree ? "sparqltable sparqltreetable" : "sparqltable")
-					.append("'>");
+			result.appendHtml("<table id='").append(tableID).appendHtml("'")
+					.append(isTree
+							? " class='sparqltable sparqltreetable'"
+							: " class='sparqltable'")
+					.append(isNavigation ? " sortable='multi'" : "")
+					.append(">");
 			result.appendHtml(!zebraMode ? "<tr>" : "<tr class='odd'>");
-			int index = 0;
+			int column = 0;
 			for (String var : variables) {
-
-				{// BEGIN: collapse tree mode code
-					// ignore first two columns if we are in tree mode
-					if (isTree && index++ < 2) {
-						continue;
-					}
-				}// END: collapse tree mode code
+				// ignore first two columns if we are in tree mode
+				if (isTree && column++ < 2) {
+					continue;
+				}
 
 				result.appendHtml("<th>");
 //				result.appendHtml("<a href='#/' onclick=\"KNOWWE.plugin.sparql.sortResultsBy('"
@@ -214,101 +219,79 @@ public class SparqlResultRenderer {
 			result.appendHtml("<ul style='white-space: normal'>");
 		}
 		ResultTableModel table = new ResultTableModel(qrt);
+		if (isTree) {
+			table = createMagicallySortedTable(table);
+		}
 
-		{// BEGIN: collapse tree mode code
-			if (isTree) {
-				table = createMagicallySortedTable(table);
-			}
-		}// END: collapse tree mode code
+		Iterator<TableRow> iterator;
+		if (isNavigation) {
+			int startRow = PaginationRenderer.getStartRow(section, user);
+			int count = PaginationRenderer.getCount(section, user);
+			iterator = table.iterator(startRow, startRow + count);
+		}
+		else {
+			iterator = table.iterator();
+		}
 
-		Iterator<TableRow> iterator = table.iterator();
-		List<String> classNames = new LinkedList<String>();
-		Set<String> usedIDs = new HashSet<String>();
-
-		int startRow = PaginationRenderer.getStartRow(section, user);
-		int count = PaginationRenderer.getCount(section, user);
-
+		List<String> classNames = new LinkedList<>();
+		Set<String> usedIDs = new HashSet<>();
+		int line = -1;
 		while (iterator.hasNext()) {
-			i++;
-
-			if (count == Integer.MAX_VALUE || (i >= startRow && i < (startRow
-					+ count))) {
-
-				classNames.clear();
-
-				TableRow row = iterator.next();
-
-				if (tablemode) {
-					if (zebraMode && (i + 1) % 2 != 0) {
-						classNames.add("odd");
-					}
-
-					{// BEGIN: collapse tree mode code
-						if (isTree) {
-							classNames.add("treetr");
-						}
-					}// END: collapse tree mode code
-
-					result.appendHtml(classNames.isEmpty()
-							? "<tr"
-							: "<tr class='" + Strings.concat(" ", classNames) + "'");
-
-					{// BEGIN: collapse tree mode code
-						if (isTree) {
-							String valueID = valueToID(idVariable, row);
-							boolean isNew = usedIDs.add(valueID);
-							if (!isNew) {
-//								result.append(" style='color:red'");
-								valueID = UUID.randomUUID().toString();
-							}
-							result.append(" data-tt-id='sparql-id-").append(valueID).append("'");
-							String parentID = valueToID(parentVariable, row);
-							if (!Strings.isBlank(parentID) && !parentID.equals(valueID) && usedIDs.contains(parentID)) {
-								// parentID.equals(valueID): hack for skipping
-								// top level rows
-								result.append(" data-tt-parent-id='sparql-id-")
-										.append(parentID).append("'");
-							}
-						}
-					}// END: collapse tree mode code
-
-					result.append(">");
+			line++;
+			classNames.clear();
+			TableRow row = iterator.next();
+			if (tablemode) {
+				if (zebraMode && line % 2 != 0) {
+					classNames.add("odd");
 				}
-
-				int index = 0;
-				for (String var : variables) {
-
-					{// BEGIN: collapse tree mode code
-						// ignore first two columns if we are in tree mode
-						if (isTree && index++ < 2) {
-							continue;
-						}
-					}// END: collapse tree mode code
-
-					Node node = row.getValue(var);
-					String erg = renderNode(node, var, rawOutput, user, opts.getRdf2GoCore(),
-							RenderMode.HTML);
-
-					if (tablemode) {
-						result.appendHtml("<td>");
-						result.append(erg);
-						result.appendHtml("</td>\n");
-					}
-					else {
-						result.appendHtml("<li>");
-						result.append(erg);
-						result.appendHtml("</li>\n");
-					}
-
+				if (isTree) {
+					classNames.add("treetr");
 				}
-				if (tablemode) {
-					result.appendHtml("</tr>");
+				result.appendHtml(classNames.isEmpty()
+						? "<tr"
+						: "<tr class='" + Strings.concat(" ", classNames) + "'");
+
+				if (isTree) {
+					String valueID = valueToID(idVariable, row);
+					boolean isNew = usedIDs.add(valueID);
+					if (!isNew) {
+						valueID = UUID.randomUUID().toString();
+					}
+					result.append(" data-tt-id='sparql-id-").append(valueID).append("'");
+					String parentID = valueToID(parentVariable, row);
+					if (!Strings.isBlank(parentID) && !parentID.equals(valueID) && usedIDs.contains(parentID)) {
+						result.append(" data-tt-parent-id='sparql-id-")
+								.append(parentID).append("'");
+					}
 				}
-			}
-			else {
-				iterator.next();
+				result.append(">");
 			}
 
+			int column = 0;
+			for (String var : variables) {
+				// ignore first two columns if we are in tree mode
+				if (isTree && column++ < 2) {
+					continue;
+				}
+
+				Node node = row.getValue(var);
+				String erg = renderNode(node, var, rawOutput, user, opts.getRdf2GoCore(),
+						RenderMode.HTML);
+
+				if (tablemode) {
+					result.appendHtml("<td>");
+					result.append(erg);
+					result.appendHtml("</td>\n");
+				}
+				else {
+					result.appendHtml("<li>");
+					result.append(erg);
+					result.appendHtml("</li>\n");
+				}
+			}
+			if (tablemode) {
+				result.appendHtml("</tr>");
+			}
 		}
 
 		if (tablemode) {
@@ -318,13 +301,13 @@ public class SparqlResultRenderer {
 		else {
 			result.appendHtml("</ul>");
 		}
-		return new SparqlRenderResult(result.toStringRaw(), i);
+		return new SparqlRenderResult(result.toStringRaw());
 	}
 
 	private ResultTableModel createMagicallySortedTable(ResultTableModel table) {
 		// creating hierarchy order using PartialHierarchyTree
 		PartialHierarchyTree<TableRow> tree = new
-				PartialHierarchyTree<TableRow>(
+				PartialHierarchyTree<>(
 				new ResultTableHierarchy(table));
 
 		// add all nodes to create the tree
@@ -374,24 +357,20 @@ public class SparqlResultRenderer {
 	}
 
 	private Comparator<TableRow> getComparator(final ResultTableModel result) {
-		return new Comparator<TableRow>() {
-
-			@Override
-			public int compare(TableRow o1, TableRow o2) {
-				Node concept1 = o1.getValue(result.getVariables().get(0));
-				Node concept2 = o2.getValue(result.getVariables().get(0));
-				if (result.getVariables().size() >= 3) {
-					Node tmp1 = o1.getValue(result.getVariables().get(2));
-					Node tmp2 = o2.getValue(result.getVariables().get(2));
-					if (tmp1 != null && tmp2 != null) {
-						concept1 = o1.getValue(result.getVariables().get(2));
-						concept2 = o2.getValue(result.getVariables().get(2));
-					}
-
+		return (o1, o2) -> {
+			Node concept1 = o1.getValue(result.getVariables().get(0));
+			Node concept2 = o2.getValue(result.getVariables().get(0));
+			if (result.getVariables().size() >= 3) {
+				Node tmp1 = o1.getValue(result.getVariables().get(2));
+				Node tmp2 = o2.getValue(result.getVariables().get(2));
+				if (tmp1 != null && tmp2 != null) {
+					concept1 = o1.getValue(result.getVariables().get(2));
+					concept2 = o2.getValue(result.getVariables().get(2));
 				}
 
-				return concept1.toString().compareTo(concept2.toString());
 			}
+
+			return concept1.toString().compareTo(concept2.toString());
 		};
 	}
 
@@ -408,6 +387,7 @@ public class SparqlResultRenderer {
 			return checkSuccessorshipRecursively(row1, row2);
 		}
 
+		@SuppressWarnings("SimplifiableIfStatement")
 		private boolean checkSuccessorshipRecursively(TableRow ascendor, TableRow ancestor) {
 
 			Node ascendorNode = ascendor.getValue(data.getVariables().get(0));
@@ -424,9 +404,7 @@ public class SparqlResultRenderer {
 			if (parentRows == null || parentRows.size() == 0) return false;
 
 			return checkSuccessorshipRecursively(parentRows.iterator().next(), ancestor);
-
 		}
-
 	}
 
 	private String valueToID(String variable, TableRow row) {
@@ -482,13 +460,14 @@ public class SparqlResultRenderer {
 		sortingKeyWord.put(true, "ASC");
 		sortingKeyWord.put(false, "DESC");
 
-		for (Pair pair : multipleSorting) {
-			sbOrder.append(" " + sortingKeyWord.get(pair.getB()) + "(?" + pair.getA() + ")");
+		for (Pair<String, Boolean> pair : multipleSorting) {
+			sbOrder.append(" ").append(sortingKeyWord.get(pair.getB()))
+					.append("(?").append(pair.getA()).append(")");
 		}
 
 		if (orderBy == -1) {
 			if (nextStatement == -1) {
-				sb.append(" ORDER BY" + sbOrder.toString());
+				sb.append(" ORDER BY").append(sbOrder.toString());
 			}
 			else {
 				sb.replace(nextStatement, nextStatement, " ORDER BY" + sbOrder.toString());
@@ -600,7 +579,7 @@ public class SparqlResultRenderer {
 	}
 
 	private String[] getReasonableSizeChoices(int max) {
-		List<String> sizes = new LinkedList<String>();
+		List<String> sizes = new LinkedList<>();
 		String[] sizeArray = new String[] {
 				"10", "20", "50", "100", "1000" };
 		for (String size : sizeArray) {

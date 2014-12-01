@@ -22,19 +22,13 @@ package de.knowwe.rdf2go.sparql.utils;
 public class SparqlRenderResult {
 
 	private final String html;
-	private final int size;
 
-	public SparqlRenderResult(String html, int size) {
+	public SparqlRenderResult(String html) {
 		this.html = html;
-		this.size = size;
 	}
 
 	public String getHTML() {
 		return this.html;
-	}
-
-	public int getSize() {
-		return this.size;
 	}
 
 	@Override

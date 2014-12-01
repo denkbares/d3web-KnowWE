@@ -35,6 +35,7 @@ import org.ontoware.rdf2go.model.QueryRow;
 import org.ontoware.rdf2go.model.node.BlankNode;
 import org.ontoware.rdf2go.model.node.Node;
 
+import de.d3web.collections.SubSpanIterator;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
 
@@ -42,12 +43,12 @@ public class ResultTableModel {
 
 	public Map<Node, Set<TableRow>> getData() {
 		if (groupedRows == null) {
-			Map<Node, Set<TableRow>> data = new LinkedHashMap<Node, Set<TableRow>>();
+			Map<Node, Set<TableRow>> data = new LinkedHashMap<>();
 			for (TableRow row : rows) {
 				Node firstNode = row.getValue(variables.get(0));
 				Set<TableRow> nodeRows = data.get(firstNode);
 				if (nodeRows == null) {
-					nodeRows = new HashSet<TableRow>();
+					nodeRows = new HashSet<>();
 					data.put(firstNode, nodeRows);
 				}
 				nodeRows.add(row);
@@ -57,7 +58,7 @@ public class ResultTableModel {
 		return groupedRows;
 	}
 
-	private final Collection<TableRow> rows = new LinkedHashSet<TableRow>();
+	private final Collection<TableRow> rows = new LinkedHashSet<>();
 	private final List<String> variables;
 
 	private Map<Node, Set<TableRow>> groupedRows = null;
@@ -73,9 +74,7 @@ public class ResultTableModel {
 
 	public ResultTableModel(List<TableRow> rows, List<String> variables) {
 		this.variables = variables;
-		for (TableRow row : rows) {
-			importRow(row);
-		}
+		rows.forEach(this::importRow);
 	}
 
 	public ResultTableModel(List<String> variables) {
@@ -88,6 +87,20 @@ public class ResultTableModel {
 
 	public Iterator<TableRow> iterator() {
 		return rows.iterator();
+	}
+
+	/**
+	 * Returns an iterator for a subset of the rows, starting from row 'start' inclusively (where 0
+	 * is the first row) and end before row "end" (exclusively). If "start" is below 0, it will be
+	 * assumed as 0. If "end" is above the current number of rows or end is below 0, it will be
+	 * assumed to be the number of rows.
+	 *
+	 * @param start the first row to iterate
+	 * @param end the row to stop iteration before
+	 * @return an iterator for the sub-span of rows
+	 */
+	public Iterator<TableRow> iterator(int start, int end) {
+		return new SubSpanIterator<>(rows.iterator(), start, end);
 	}
 
 	private void populateTable(QueryResultTable result) {
@@ -106,10 +119,10 @@ public class ResultTableModel {
 
 	@Override
 	public String toString() {
-		StringBuffer buffy = new StringBuffer();
-		buffy.append("Variables: " + variables.toString() + "\n");
+		StringBuilder buffy = new StringBuilder();
+		buffy.append("Variables: ").append(variables.toString()).append("\n");
 		for (TableRow tableRow : rows) {
-			buffy.append(tableRow.toString() + "\n");
+			buffy.append(tableRow.toString()).append("\n");
 		}
 		return buffy.toString();
 	}
@@ -138,15 +151,15 @@ public class ResultTableModel {
 	 * CAUTION: result rows with blank nodes are ignored from consideration (graph isomorphism
 	 * problem)
 	 *
-	 * @param expectedResultTable
-	 * @param actualResultTable
+	 * @param expectedResultTable the expected data
+	 * @param actualResultTable the actual data
 	 * @param atLeast false: equality of data is required; true: expectedData SUBSET-OF actualData
 	 * is required
-	 * @return
+	 * @return if the expected data is equal to (or a subset of) the actual data
 	 * @created 20.01.2014
 	 */
 	public static List<Message> checkEquality(ResultTableModel expectedResultTable, ResultTableModel actualResultTable, boolean atLeast) {
-		List<Message> errorMessages = new ArrayList<Message>();
+		List<Message> errorMessages = new ArrayList<>();
 
 		/*
 		 * 2. Compare all result rows (except for those with blank nodes)
@@ -209,10 +222,10 @@ public class ResultTableModel {
 	}
 
 	public static String generateErrorsText(List<Message> errorMessages) {
-		StringBuffer buffy = new StringBuffer();
+		StringBuilder buffy = new StringBuilder();
 		buffy.append("The following test failures occured:\n");
 		for (Message message : errorMessages) {
-			buffy.append(message.getText() + "\n");
+			buffy.append(message.getText()).append("\n");
 		}
 		return buffy.toString();
 	}
