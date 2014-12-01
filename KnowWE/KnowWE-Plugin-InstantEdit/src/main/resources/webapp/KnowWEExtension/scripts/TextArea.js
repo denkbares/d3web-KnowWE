@@ -86,6 +86,14 @@ TextArea.prototype.handleKeyDown = function(event) {
 		this.moveLines("minusRight");
 		return;
 	}
+	// cmd + 7
+	if (event.which == 55 && isCmdOnly && isLongerSelection) {
+		event.stopPropagation();
+		event.preventDefault();
+		this.snapshot();
+		this.moveLines("commentRight");
+		return;
+	}
 	// # + selection length > 0
 	if ((event.which == 191 || event.which == 163 || event.which == 220) && isLongerSelection) {
 		event.stopPropagation();
@@ -227,6 +235,14 @@ TextArea.prototype.moveLines = function(direction) {
 		}
 		newPos = curPos;
 	}
+	else if (direction == "commentRight") {
+		var splitLines = lines.split("\n");
+		lines = "";
+		for (var line = 0; line < splitLines.length - 1; line++) {
+			lines = lines + "// " + splitLines[line] + "\n";
+		}
+		newPos = curPos;
+	}
 	else if (direction == "starRight") {
 		var splitLines = lines.split("\n");
 		lines = "";
@@ -257,6 +273,12 @@ TextArea.prototype.moveLines = function(direction) {
 				lines = lines + splitLines[line].substring(1) + "\n";
 			}
 			else if (splitLines[line].substring(0, 2) == "  ") {
+				lines = lines + splitLines[line].substring(2) + "\n";
+			}
+			else if (splitLines[line].substring(0, 3) == "// ") {
+				lines = lines + splitLines[line].substring(3) + "\n";
+			}
+			else if (splitLines[line].substring(0, 2) == "//") {
 				lines = lines + splitLines[line].substring(2) + "\n";
 			}
 			else if (splitLines[line].substring(0, 1) == " ") {
