@@ -178,7 +178,9 @@ public class SparqlResultRenderer {
 
 		if (tablemode) {
 			result.appendHtmlTag("div", "style", "overflow-x: auto");
-			result.appendHtml("<table id='").append(tableID).appendHtml("' sortable='multi' class='")
+			result.appendHtml("<table id='")
+					.append(tableID)
+					.appendHtml("' sortable='multi' class='")
 					.append(isTree ? "sparqltable sparqltreetable" : "sparqltable")
 					.append("'>");
 			result.appendHtml(!zebraMode ? "<tr>" : "<tr class='odd'>");
