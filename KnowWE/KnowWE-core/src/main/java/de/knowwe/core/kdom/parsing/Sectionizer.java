@@ -72,7 +72,7 @@ public class Sectionizer implements Parser {
 		if (!types.isEmpty()) {
 			splitToSections(section.getText(), section, types, 0);
 		}
-		section.children.trimToSize();
+		if (section.children != null) section.children.trimToSize();
 		return section;
 	}
 

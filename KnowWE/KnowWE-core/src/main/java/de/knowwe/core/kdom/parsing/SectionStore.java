@@ -137,7 +137,7 @@ public class SectionStore {
 	public synchronized void storeObject(Compiler compiler, String key, Object object) {
 		Map<String, Object> storeForCompiler = getStoreForCompiler(compiler);
 		if (storeForCompiler == null) {
-			storeForCompiler = new HashMap<>(8);
+			storeForCompiler = new HashMap<>(4);
 			putStoreForCompiler(compiler, storeForCompiler);
 		}
 		storeForCompiler.put(key, object);
@@ -171,7 +171,7 @@ public class SectionStore {
 
 	private void putStoreForCompiler(Compiler compiler, Map<String, Object> storeForCompiler) {
 		if (store == null) {
-			store = new WeakHashMap<>();
+			store = new WeakHashMap<>(4);
 		}
 		store.put(compiler, storeForCompiler);
 	}

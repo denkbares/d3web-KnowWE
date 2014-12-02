@@ -77,12 +77,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	/**
 	 * Store for this Section. Can be used to store infos or Objects for this Section.
 	 */
-	private final SectionStore sectionStore = new SectionStore();
-
-	/**
-	 * Specifies whether the originalText was changed without changing the ancestor ones
-	 */
-	private boolean isDirty = false;
+	private SectionStore sectionStore = null;
 
 	/**
 	 * The ID of this Section.
@@ -97,7 +92,8 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	/**
 	 * The child-nodes of this KDOM-node. This forms the tree-structure of KDOM.
 	 */
-	protected ArrayList<Section<? extends Type>> children = new ArrayList<>(5);
+	protected ArrayList<Section<? extends Type>> children;
+
 	/**
 	 * The father section of this KDOM-node. Used for upwards navigation through the tree
 	 */
@@ -201,14 +197,15 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * Adds a child to this node. Use for KDOM creation and editing only!
 	 */
 	public void addChild(Section<?> s) {
-		this.addChild(this.children.size(), s);
+		this.addChild(children == null ? 0 : children.size(), s);
 	}
 
 	/**
 	 * Adds a child to this node. Use for KDOM creation and editing only!
 	 */
 	public void addChild(int index, Section<?> child) {
-		this.children.add(index, child);
+		if (children == null) children = new ArrayList<>(5);
+		children.add(index, child);
 		if (get() instanceof AbstractType && !(child.get() instanceof RootType)) {
 			Class<?> childTypeClass = child.get().getClass();
 			if (!Types.canHaveSuccessorOfType((AbstractType) type, childTypeClass)) {
@@ -228,6 +225,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @created 08.07.2011
 	 */
 	public SectionStore getSectionStore() {
+		if (sectionStore == null) sectionStore = new SectionStore();
 		return sectionStore;
 	}
 
@@ -244,13 +242,8 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 */
 	public void setText(String newText) {
 		this.text = newText;
-		this.isDirty = true;
-		// setting the isDirty flag to true for all ancestor sections
-		// since they are also dirty (concatenation of leafs doesn't
-		// represent original text of the section, offsets don't fit...)
 		Section<? extends Type> ancestor = this.getParent();
 		while (ancestor != null) {
-			ancestor.setDirty(true);
 			ancestor = ancestor.getParent();
 		}
 	}
@@ -258,24 +251,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 
 	public void setArticle(Article article) {
 		this.article = article;
-	}
-
-	/**
-	 * Getter method for boolean variable isDirty.
-	 *
-	 * @return The section's actual value of isDirty
-	 */
-	public boolean isDirty() {
-		return isDirty;
-	}
-
-	/**
-	 * Setter method for boolean variable is Dirty.
-	 *
-	 * @param invalidated New value for section's variable isDirty
-	 */
-	public void setDirty(boolean invalidated) {
-		this.isDirty = invalidated;
 	}
 
 	/**
@@ -293,13 +268,14 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	public void removeAllChildren() {
-		this.children.clear();
+		if (children != null) children = null;
 	}
 
 	/**
 	 * @return the list of child nodes
 	 */
 	public List<Section<? extends Type>> getChildren() {
+		if (children == null) return Collections.emptyList();
 		return Collections.unmodifiableList(children);
 
 	}
@@ -508,9 +484,9 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 */
 	public void collectTextsFromLeaves(StringBuilder buffer) {
 		if (!this.getChildren().isEmpty()) {
-			for (Section<?> s : this.getChildren()) {
-				if (s != null) {
-					s.collectTextsFromLeaves(buffer);
+			for (Section<?> section : getChildren()) {
+				if (section != null) {
+					section.collectTextsFromLeaves(buffer);
 				}
 			}
 		}
@@ -560,7 +536,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		Map<Compiler, Collection<Message>> errors = Messages.getMessagesMap(
 				this, type);
 		if (!errors.isEmpty()) return true;
-		for (Section<?> child : children) {
+		for (Section<?> child : getChildren()) {
 			boolean err = child.hasErrorInSubtree();
 			if (err) {
 				return true;
@@ -586,7 +562,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 				this, type);
 		if (errors.get(compiler) != null) return true;
 		if (errors.get(null) != null) return true;
-		for (Section<?> child : children) {
+		for (Section<?> child : getChildren()) {
 			boolean err = child.hasErrorInSubtree(compiler);
 			if (err) {
 				return true;
@@ -632,7 +608,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		// this can only occur in the exceptional case
 		// when Sections are created independently of articles
 		if (getArticle() == null || getArticle().getRootSection() == null) {
-			LinkedList<Integer> positions = new LinkedList<>();
+			ArrayList<Integer> positions = new ArrayList<>(1);
 			positions.add(0);
 			return positions;
 		}

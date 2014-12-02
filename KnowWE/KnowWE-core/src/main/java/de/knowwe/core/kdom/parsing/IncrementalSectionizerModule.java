@@ -123,7 +123,7 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 			// the same section object would be hooked in the
 			// KDOM twice
 			// -> conflict with IDs an other stuff
-			if (!tempMatch.isOrHasReusedSuccessor && !tempMatch.isDirty()) {
+			if (!tempMatch.isOrHasReusedSuccessor) {
 				match = tempMatch;
 			}
 		}
