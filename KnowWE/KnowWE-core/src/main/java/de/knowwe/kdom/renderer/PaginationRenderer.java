@@ -75,7 +75,7 @@ import de.knowwe.util.FontAwesomeIcon;
  * {@link #setFilterList(de.knowwe.core.user.UserContext, de.d3web.utils.Pair[])}  }. To get the active filters use
  * {@link #getFilters(de.knowwe.core.kdom.parsing.Section, de.knowwe.core.user.UserContext)}<br><br>
  * Optionally: If the decorated renderer knows the size of its result it can use {@link
- * #setResultSize(de.knowwe.core.user.UserContext, int)} to render more
+ * #setResultSize(de.knowwe.core.user.UserContext, de.knowwe.core.kdom.parsing.Section, int)} to render more
  * information in the pagination bar.
  *
  * @author Stefan Plehn
@@ -327,7 +327,13 @@ public class PaginationRenderer implements Renderer {
 	 * (true is ascending)
 	 */
 	public static Pair<String, Boolean> getSingleColumnSorting(Section<?> sec, UserContext user) {
-		return getSorting(sec, user, true).stream().findFirst().get();
+		if (!getSorting(sec, user, true).isEmpty()) {
+			return getSorting(sec, user, true).stream().findFirst().get();
+		}
+		else {
+			return null;
+		}
+
 	}
 
 	/**
