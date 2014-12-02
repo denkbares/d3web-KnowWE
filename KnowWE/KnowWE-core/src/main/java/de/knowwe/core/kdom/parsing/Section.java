@@ -97,7 +97,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	/**
 	 * The child-nodes of this KDOM-node. This forms the tree-structure of KDOM.
 	 */
-	protected List<Section<? extends Type>> children = new ArrayList<>(5);
+	protected ArrayList<Section<? extends Type>> children = new ArrayList<>(5);
 	/**
 	 * The father section of this KDOM-node. Used for upwards navigation through the tree
 	 */
@@ -294,21 +294,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 
 	public void removeAllChildren() {
 		this.children.clear();
-	}
-
-	/**
-	 * Use for KDOM creation and editing only!
-	 *
-	 * @created 26.08.2010
-	 */
-	public void setChildren(List<Section<? extends Type>> children) {
-		if (children == null) {
-			throw new NullPointerException("Children of a Section cannot be null.");
-		}
-		for (Section<?> child : children) {
-			child.setParent(this);
-		}
-		this.children = children;
 	}
 
 	/**

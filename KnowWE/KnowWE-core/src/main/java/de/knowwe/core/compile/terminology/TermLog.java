@@ -47,19 +47,19 @@ import de.knowwe.core.report.Messages;
  */
 class TermLog {
 
-	private final TreeSet<TermLogEntry> termDefinitions = new TreeSet<TermLogEntry>();
+	private final TreeSet<TermLogEntry> termDefinitions = new TreeSet<>();
 
-	private final Set<TermLogEntry> termReferences = new HashSet<TermLogEntry>();
+	private final Set<TermLogEntry> termReferences = new HashSet<>();
 
-	private final Set<Section<?>> termDefinitionSections = new HashSet<Section<?>>();
+	private final Set<Section<?>> termDefinitionSections = new HashSet<>(4);
 
-	private final Set<Section<?>> termReferenceSections = new HashSet<Section<?>>();
+	private final Set<Section<?>> termReferenceSections = new HashSet<>();
 
 	private final Map<Class<?>, Set<TermLogEntry>> termClasses =
-			new HashMap<Class<?>, Set<TermLogEntry>>(2);
+			new HashMap<>(2);
 
 	private final Map<String, Set<TermLogEntry>> termIdentifiers =
-			new HashMap<String, Set<TermLogEntry>>(2);
+			new HashMap<>(2);
 
 	public void addTermDefinition(Compiler compiler,
 			Section<?> termDefinition,
