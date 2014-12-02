@@ -40,8 +40,9 @@ public class TestCasePlayerType extends DefaultMarkupType {
 	static {
 		MARKUP = new DefaultMarkup("TestCasePlayer");
 		MARKUP.addAnnotation(PackageManager.COMPILE_ATTRIBUTE_NAME, false);
-		MARKUP.addAnnotationRenderer(PackageManager.COMPILE_ATTRIBUTE_NAME,
-				StyleRenderer.ANNOTATION);
+		MARKUP.addAnnotationRenderer(PackageManager.COMPILE_ATTRIBUTE_NAME, StyleRenderer.ANNOTATION);
+		MARKUP.setAnnotationDeprecated(PackageManager.COMPILE_ATTRIBUTE_NAME);
+		PackageManager.addPackageAnnotation(MARKUP);
 	}
 
 	public TestCasePlayerType() {

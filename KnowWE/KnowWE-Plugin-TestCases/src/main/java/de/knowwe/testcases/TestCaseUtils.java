@@ -164,9 +164,20 @@ public class TestCaseUtils {
 	 * @created 07.10.2013
 	 */
 	public static List<ProviderTriple> getTestCaseProviders(Section<TestCasePlayerType> section) {
-		String[] kbPackages = DefaultMarkupType.getPackages(section,
-				PackageManager.COMPILE_ATTRIBUTE_NAME);
+		String[] kbPackages = getTestCasePackages(section);
 		return de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(section.getWeb(), kbPackages);
+	}
+
+	public static String[] getTestCasePackages(Section<TestCasePlayerType> section) {
+		// for compatibility reasons, we check if the @uses annotation is still used
+		String usesAnnotation = DefaultMarkupType.getAnnotation(section, PackageManager.COMPILE_ATTRIBUTE_NAME);
+		String packageAnnotation = DefaultMarkupType.getAnnotation(section, PackageManager.PACKAGE_ATTRIBUTE_NAME);
+		String packageAnnotationName = PackageManager.PACKAGE_ATTRIBUTE_NAME;
+		// only if @uses is used and not @package, we use the @uses packages
+		if (usesAnnotation != null && packageAnnotation == null) {
+			packageAnnotationName = PackageManager.COMPILE_ATTRIBUTE_NAME;
+		}
+		return DefaultMarkupType.getPackages(section, packageAnnotationName);
 	}
 
 	public static List<ProviderTriple> getTestCaseProviders(String web, String... kbPackages) {

@@ -54,7 +54,6 @@ import de.d3web.utils.Pair;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.packaging.PackageCompileType;
-import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -65,7 +64,6 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.notification.NotificationManager;
@@ -186,19 +184,9 @@ public class TestCasePlayerRenderer implements Renderer {
 	}
 
 	private void renderNoProviderWarning(Section<TestCasePlayerType> playerSection, RenderResult string) {
-		StringBuilder message = new StringBuilder();
-		message.append("No test cases found in the packages: ");
-		boolean first = true;
-		for (String s : DefaultMarkupType.getPackages(playerSection,
-				PackageManager.COMPILE_ATTRIBUTE_NAME)) {
-			if (!first) {
-				message.append(", ");
-			}
-			message.append(s);
-			first = false;
-		}
-		DefaultMarkupRenderer.renderMessagesOfType(Type.WARNING,
-				Arrays.asList(Messages.warning(message.toString())), string);
+		String message = "No test cases found in the packages: " + Strings.concat(", ", de.knowwe.testcases.TestCaseUtils
+				.getTestCasePackages(playerSection));
+		DefaultMarkupRenderer.renderMessagesOfType(Type.WARNING, Arrays.asList(Messages.warning(message)), string);
 	}
 
 	private void renderTestCase(Section<?> section, UserContext user, ProviderTriple selectedTriple, Session session, TestCase testCase, SessionDebugStatus status, RenderResult string) {
