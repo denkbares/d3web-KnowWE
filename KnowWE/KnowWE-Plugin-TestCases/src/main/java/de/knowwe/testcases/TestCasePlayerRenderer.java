@@ -441,8 +441,8 @@ public class TestCasePlayerRenderer implements Renderer {
 					+ selectedTriple.getB().getID()
 					+ "', '" + dateString
 					+ "', '" + selectedTriple.getA().getName()
-					+ "', '" + selectedTriple.getC().getTitle() + "');";
-			sb.appendHtml("<a href=\"javascript:" + js + ";undefined;\">");
+					+ "', '" + selectedTriple.getC().getTitle() + "', this);";
+			sb.appendHtml("<a onclick=\"" + js + "\">");
 			sb.appendHtml("<img src='KnowWEExtension/testcaseplayer/icon/runto.png'>");
 			sb.appendHtml("</a>");
 			tableModel.addCell(row, 0, sb.toStringRaw(), 2);

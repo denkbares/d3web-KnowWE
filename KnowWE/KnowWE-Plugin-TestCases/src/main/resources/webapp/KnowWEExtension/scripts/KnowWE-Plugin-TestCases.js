@@ -193,15 +193,16 @@ TestCasePlayer.expandColumn = function(th) {
 
 }
 
-TestCasePlayer.send = function(sessionid, casedate, name, topic) {
+TestCasePlayer.send = function(providerId, casedate, name, topic, element) {
 
 	var params = {
 		action : 'ExecuteCasesAction',
 		KWiki_Topic : topic,
-		id : sessionid,
+		providerId : providerId,
 		date : casedate,
-		testCaseName : name
-	}
+		testCaseName : name,
+		playerId : jq$(element).parents('.type_TestCasePlayer').attr('id')
+	};
 
 	var options = {
 		url : KNOWWE.core.util.getURL(params),
@@ -216,7 +217,7 @@ TestCasePlayer.send = function(sessionid, casedate, name, topic) {
 			},
 			onError : _EC.onErrorBehavior
 		}
-	}
+	};
 	KNOWWE.core.util.updateProcessingState(1);
 	new _KA(options).send();
 }

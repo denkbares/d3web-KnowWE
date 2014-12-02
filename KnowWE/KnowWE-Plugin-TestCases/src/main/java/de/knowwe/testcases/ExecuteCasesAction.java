@@ -45,7 +45,8 @@ public class ExecuteCasesAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		String sectionid = context.getParameter("id");
+		String providerId = context.getParameter("providerId");
+		String playerId = context.getParameter("playerId");
 		String testCaseName = context.getParameter("testCaseName");
 		Date endDate;
 		try {
@@ -54,16 +55,18 @@ public class ExecuteCasesAction extends AbstractAction {
 		catch (NumberFormatException e) {
 			throw new IOException(e);
 		}
-
-		Section<?> section = Sections.get(sectionid);
-		if (section == null) {
-			context.sendError(409, "Section '" + sectionid
+		Section<?> playerSection = Sections.get(playerId);
+		Section<?> providerSection = Sections.get(providerId);
+		if (providerSection == null || playerSection == null) {
+			context.sendError(409, "Section '" + providerId
+					+ "' and/or '" + playerId
 					+ "' could not be found, possibly because somebody else"
 					+ " has edited the page.");
 			return;
 		}
+		boolean ignoreNumValueOutOfRange = TestCasePlayerType.ignoreNumValueOutOfRange(playerSection);
 		TestCaseProviderStorage providerStorage = de.knowwe.testcases.TestCaseUtils.getTestCaseProviderStorage(
-				section);
+				providerSection);
 		TestCaseProvider provider = providerStorage.getTestCaseProvider(testCaseName);
 		Session session = provider.getActualSession(context);
 		SessionDebugStatus status = provider.getDebugStatus(context);
@@ -73,25 +76,26 @@ public class ExecuteCasesAction extends AbstractAction {
 			session = SessionFactory.createSession(session.getKnowledgeBase(),
 					testCase.getStartDate());
 			provider.storeSession(session, context);
-			runTo(session, testCase, null, endDate, status);
+			runTo(session, testCase, null, endDate, status, ignoreNumValueOutOfRange);
 			status.setLastExecuted(endDate);
 		}
 		else {
-			runTo(session, testCase, status.getLastExecuted(), endDate, status);
+			runTo(session, testCase, status.getLastExecuted(), endDate, status, ignoreNumValueOutOfRange);
 			status.setLastExecuted(endDate);
 		}
-		D3webUtils.handleLoopDetectionNotification(section.getArticleManager(), context, session);
+		D3webUtils.handleLoopDetectionNotification(providerSection.getArticleManager(), context, session);
 	}
 
-	private static void runTo(Session session, TestCase testCase, Date startDate, Date endDate, SessionDebugStatus status) {
+	private static void runTo(Session session,
+							  TestCase testCase, Date startDate, Date endDate,
+							  SessionDebugStatus status, boolean ignoreNumValueOutOfRange) {
 		try {
-
 			for (Date date : testCase.chronology()) {
 				if ((startDate == null || date.after(startDate))
 						&& (date.before(endDate) || date.equals(endDate))) {
-					TestCaseUtils.applyFindings(session, testCase, date);
-					for (Check c : testCase.getChecks(date, session.getKnowledgeBase())) {
-						status.addCheckResult(date, c, c.check(session));
+					TestCaseUtils.applyFindings(session, testCase, date, ignoreNumValueOutOfRange);
+					for (Check check : testCase.getChecks(date, session.getKnowledgeBase())) {
+						status.addCheckResult(date, check, check.check(session));
 					}
 					status.finished(date);
 				}

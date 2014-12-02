@@ -18,6 +18,7 @@
  */
 package de.knowwe.testcases;
 
+import de.d3web.testcase.TestCaseUtils;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScript;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -43,6 +44,13 @@ public class TestCasePlayerType extends DefaultMarkupType {
 		MARKUP.addAnnotationRenderer(PackageManager.COMPILE_ATTRIBUTE_NAME, StyleRenderer.ANNOTATION);
 		MARKUP.setAnnotationDeprecated(PackageManager.COMPILE_ATTRIBUTE_NAME);
 		PackageManager.addPackageAnnotation(MARKUP);
+		MARKUP.addAnnotation(TestCaseUtils.NUM_VALUE_OUT_OF_RANGE, false, "ignore", "set");
+		MARKUP.addAnnotationRenderer(TestCaseUtils.NUM_VALUE_OUT_OF_RANGE, StyleRenderer.ANNOTATION);
+	}
+
+	public static boolean ignoreNumValueOutOfRange(Section<?> playerSection) {
+		String ignoreAnnotation = DefaultMarkupType.getAnnotation(playerSection, TestCaseUtils.NUM_VALUE_OUT_OF_RANGE);
+		return "ignore".equals(ignoreAnnotation);
 	}
 
 	public TestCasePlayerType() {
