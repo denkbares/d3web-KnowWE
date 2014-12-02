@@ -618,6 +618,17 @@ KNOWWE.core.plugin.pagination = function() {
 		});
 	}
 
+	function shortTable(table) {
+		if (jq$(table).find("tr").length < 50) {
+			return true;
+		}
+		return false;
+	}
+
+	function toggleSecondNavigation(id, display) {
+		jq$("div[pagination=" + id + "]").slice(2).css("display", display);
+	}
+
 	return {
 
 		sort : function(element, id) {
@@ -794,7 +805,7 @@ KNOWWE.core.plugin.pagination = function() {
 		},
 
 		decorateTable : function() {
-			var wrappers = jq$("div.paginationWrapper");
+			var wrappers = jq$("div.knowwe-paginationWrapper");
 			wrappers.each(function() {
 				var id = jq$(this).attr('id');
 				jq$(this).find("table").attr('pagination', id);
@@ -805,7 +816,7 @@ KNOWWE.core.plugin.pagination = function() {
 					var sectionId = jq$(this).attr('pagination');
 
 					//for css purposes
-					jq$(this).addClass('pagination');
+					jq$(this).addClass('knowwe-pagination');
 
 					// register count selector
 					jq$('div[pagination=' + sectionId + '] .count').on('change', function() {
@@ -833,6 +844,13 @@ KNOWWE.core.plugin.pagination = function() {
 
 					// render sorting symbol
 					renderSortingSymbols(sectionId, sortingMode);
+
+					if (shortTable(this)) {
+						toggleSecondNavigation(sectionId, "none");
+					} else {
+						toggleSecondNavigation(sectionId, "inline-block");
+					}
+
 				});
 		}
 	}

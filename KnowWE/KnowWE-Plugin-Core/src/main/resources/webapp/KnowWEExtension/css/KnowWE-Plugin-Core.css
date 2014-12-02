@@ -420,17 +420,17 @@ span.markupMenuItem {
 }
 
 /* ################################################## */
-/* -----------Navigation Pagination Styles----------- */
+/* -----------Navigation knowwe-pagination Styles----------- */
 /* ################################################## */
 
-i.pagination_navigationIcons {
+i.knowwe-paginationNavigationIcons {
 	position: relative;
 	top: -1px;
 	margin-left: 5px;
 	margin-right: 5px;
 }
 
-.pagination_toolSeparator {
+.knowwe-paginationToolSeparator {
 	display: inline-block;
 	margin-left: 10px;
 	margin-right: 10px;
@@ -438,7 +438,7 @@ i.pagination_navigationIcons {
 	height: 10px;
 }
 
-.pagination_toolbar {
+.knowwe-paginationToolbar {
 	margin-left: 5px;
 	margin-right: 5px;
 	position: relative;
@@ -447,37 +447,37 @@ i.pagination_navigationIcons {
 	color: #808080;
 }
 
-table.pagination th.sortable span {
+table.knowwe-knowwe-pagination th.sortable span {
 	color: #036;
 	text-decoration: none;
 	cursor: pointer;
 }
 
-table.pagination th.sortable span:hover {
+table.knowwe-pagination th.sortable span:hover {
 	color: blue;
 	text-decoration: underline;
 	cursor: pointer;
 }
 
-table.pagination th.sortable i {
+table.knowwe-pagination th.sortable i {
 	text-decoration: none;
 	margin-left: 5px;
 }
 
-table.pagination th img {
+table.knowwe-pagination th img {
 	position: relative;
 	top: 2px;
 }
 
-table.pagination th img.sorting {
+table.knowwe-pagination th img.sorting {
 	float: right;
 }
 
-table.pagination th img.filter {
+table.knowwe-pagination th img.filter {
 	float: left;
 }
 
-table.pagination th img.filter:hover {
+table.knowwe-pagination th img.filter:hover {
 	cursor: pointer;
 }
 

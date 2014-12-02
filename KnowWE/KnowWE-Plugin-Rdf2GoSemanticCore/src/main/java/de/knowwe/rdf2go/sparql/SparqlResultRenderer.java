@@ -126,7 +126,7 @@ public class SparqlResultRenderer {
 	}
 
 	/**
-	 * @param qrt the query result to render
+	 * @param qrt  the query result to render
 	 * @param opts the options to control the rendered output
 	 * @return html table with all results of qrt and size of qrt
 	 * @created 06.12.2010
@@ -236,61 +236,71 @@ public class SparqlResultRenderer {
 		List<String> classNames = new LinkedList<>();
 		Set<String> usedIDs = new HashSet<>();
 		int line = -1;
+
+		int startRow = PaginationRenderer.getStartRow(section, user);
+		int count = PaginationRenderer.getCount(section, user);
+		
 		while (iterator.hasNext()) {
 			line++;
-			classNames.clear();
-			TableRow row = iterator.next();
-			if (tablemode) {
-				if (zebraMode && line % 2 != 0) {
-					classNames.add("odd");
-				}
-				if (isTree) {
-					classNames.add("treetr");
-				}
-				result.appendHtml(classNames.isEmpty()
-						? "<tr"
-						: "<tr class='" + Strings.concat(" ", classNames) + "'");
-
-				if (isTree) {
-					String valueID = valueToID(idVariable, row);
-					boolean isNew = usedIDs.add(valueID);
-					if (!isNew) {
-						valueID = UUID.randomUUID().toString();
-					}
-					result.append(" data-tt-id='sparql-id-").append(valueID).append("'");
-					String parentID = valueToID(parentVariable, row);
-					if (!Strings.isBlank(parentID) && !parentID.equals(valueID) && usedIDs.contains(parentID)) {
-						result.append(" data-tt-parent-id='sparql-id-")
-								.append(parentID).append("'");
-					}
-				}
-				result.append(">");
-			}
-
-			int column = 0;
-			for (String var : variables) {
-				// ignore first two columns if we are in tree mode
-				if (isTree && column++ < 2) {
-					continue;
-				}
-
-				Node node = row.getValue(var);
-				String erg = renderNode(node, var, rawOutput, user, opts.getRdf2GoCore(),
-						RenderMode.HTML);
-
+			if (line == Integer.MAX_VALUE || opts.isTree() || (line >= startRow && line < (startRow
+					+ count))) {
+				classNames.clear();
+				TableRow row = iterator.next();
 				if (tablemode) {
-					result.appendHtml("<td>");
-					result.append(erg);
-					result.appendHtml("</td>\n");
+					if (zebraMode && line % 2 != 0) {
+						classNames.add("odd");
+					}
+					if (isTree) {
+						classNames.add("treetr");
+					}
+					result.appendHtml(classNames.isEmpty()
+							? "<tr"
+							: "<tr class='" + Strings.concat(" ", classNames) + "'");
+
+					if (isTree) {
+						String valueID = valueToID(idVariable, row);
+						boolean isNew = usedIDs.add(valueID);
+						if (!isNew) {
+							valueID = UUID.randomUUID().toString();
+						}
+						result.append(" data-tt-id='sparql-id-").append(valueID).append("'");
+						String parentID = valueToID(parentVariable, row);
+						if (!Strings.isBlank(parentID) && !parentID.equals(valueID) && usedIDs.contains(parentID)) {
+							result.append(" data-tt-parent-id='sparql-id-")
+									.append(parentID).append("'");
+						}
+					}
+					result.append(">");
 				}
-				else {
-					result.appendHtml("<li>");
-					result.append(erg);
-					result.appendHtml("</li>\n");
+
+				int column = 0;
+				for (String var : variables) {
+					// ignore first two columns if we are in tree mode
+					if (isTree && column++ < 2) {
+						continue;
+					}
+
+					Node node = row.getValue(var);
+					String erg = renderNode(node, var, rawOutput, user, opts.getRdf2GoCore(),
+							RenderMode.HTML);
+
+					if (tablemode) {
+						result.appendHtml("<td>");
+						result.append(erg);
+						result.appendHtml("</td>\n");
+					}
+					else {
+						result.appendHtml("<li>");
+						result.append(erg);
+						result.appendHtml("</li>\n");
+					}
+				}
+				if (tablemode) {
+					result.appendHtml("</tr>");
 				}
 			}
-			if (tablemode) {
-				result.appendHtml("</tr>");
+			else {
+				iterator.next();
 			}
 		}
 

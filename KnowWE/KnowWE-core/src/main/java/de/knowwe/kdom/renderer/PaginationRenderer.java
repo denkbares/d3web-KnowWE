@@ -100,21 +100,27 @@ public class PaginationRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
+		result.appendHtmlTag("div", "class", "knowwe-paginationWrapper", "id", section.getID());
 		RenderResult table = new RenderResult(user);
 		decoratedRenderer.render(section, user, table);
 		RenderResult navigation = new RenderResult(user);
-		navigation.appendHtmlTag("div", "class", "paginationWrapper", "id", section.getID());
 		renderTableSizeSelector(section, user, navigation);
 		renderNavigation(section, user, navigation);
+
 		result.append(navigation);
 		result.append(table);
 		result.append(navigation);
 		renderHiddenFilterDiv(user, result, section);
-		navigation.appendHtml("</div>");
+		result.appendHtml("</div>");
+
 	}
 
 	public static void renderToolSeparator(RenderResult navigation) {
-		navigation.appendHtml("<div class='pagination_toolSeparator'>");
+		navigation.appendHtml("<div class='knowwe-paginationToolSeparator'>");
+	}
+
+	public static String getToolSeparator() {
+		return "<div class='knowwe-paginationToolSeparator'></div>";
 	}
 
 	/**
@@ -126,7 +132,7 @@ public class PaginationRenderer implements Renderer {
 	 */
 	public static void renderTableSizeSelector(Section<?> sec, UserContext user, RenderResult result) {
 		int count = getCount(sec, user);
-		result.appendHtml("<div class='pagination_toolbar' pagination=")
+		result.appendHtml("<div class='knowwe-paginationToolbar' pagination=")
 				.append(Strings.quoteSingle(sec.getID()))
 				.appendHtml(">");
 
@@ -161,7 +167,7 @@ public class PaginationRenderer implements Renderer {
 		String id = sec.getID();
 		int count = getCount(sec, user);
 		int startRow = getStartRow(sec, user);
-		result.appendHtml("<div class='pagination_toolbar avoidMenu' pagination=")
+		result.appendHtml("<div class='knowwe-paginationToolbar avoidMenu' pagination=")
 				.append(Strings.quoteSingle(sec.getID()))
 				.appendHtml(">");
 		if (count != Integer.MAX_VALUE) {
@@ -180,11 +186,21 @@ public class PaginationRenderer implements Renderer {
 
 			result.appendHtml("<span class=fillText> to </span>");
 
-			result.append((startRow + count - 1));
+			String resultSize = getResultSize(sec, user);
+			boolean forward = true;
+			if (!resultSize.equals("maximum lines")) {
+				if (Integer.parseInt(resultSize) < startRow + count - 1) {
+					forward = false;
+					result.append(resultSize);
+				}
+			}
+			else {
+				result.append((startRow + count - 1));
+			}
 
 			renderToolbarButton(
 					FontAwesomeIcon.NEXT, "KNOWWE.core.plugin.pagination.navigate('"
-							+ id + "', 'forward')", true, result);
+							+ id + "', 'forward')", forward, result);
 
 		}
 		if (count == Integer.MAX_VALUE) {
@@ -215,7 +231,7 @@ public class PaginationRenderer implements Renderer {
 			builder.appendHtml(action);
 			builder.appendHtml(";\">");
 		}
-		builder.appendHtml(icon.increaseSize(33, "pagination_navigationIcons"));
+		builder.appendHtml(icon.increaseSize(33, "knowwe-paginationNavigationIcons"));
 		if (enabled) {
 			builder.appendHtml("</a>");
 		}
@@ -273,8 +289,8 @@ public class PaginationRenderer implements Renderer {
 	}
 
 	private static String getResultSize(Section<?> sec, UserContext user) {
-		if (user.getSession().getAttribute(RESULTSIZE) != null) {
-			return user.getSession().getAttribute(RESULTSIZE).toString();
+		if (user.getSession().getAttribute(RESULTSIZE + sec.getID()) != null) {
+			return user.getSession().getAttribute(RESULTSIZE + sec.getID()).toString();
 		}
 		else {
 			return "maximum lines";
@@ -395,7 +411,7 @@ public class PaginationRenderer implements Renderer {
 
 	private static String getResultSizeTag(Section<?> sec, UserContext user) {
 		String maxResult = getResultSize(sec, user);
-		return "<span class=fillText> lines of </span>  " + maxResult;
+		return "<span class=fillText> lines of " + maxResult + "</span>";
 	}
 
 	/**
@@ -404,8 +420,8 @@ public class PaginationRenderer implements Renderer {
 	 *
 	 * @created 27.01.2014
 	 */
-	public static void setResultSize(UserContext context, int maxResult) {
-		context.getSession().setAttribute(RESULTSIZE, Integer.toString(maxResult));
+	public static void setResultSize(UserContext context, Section<?> sec, int maxResult) {
+		context.getSession().setAttribute(RESULTSIZE + sec.getID(), Integer.toString(maxResult));
 	}
 
 	/**

@@ -256,9 +256,9 @@ public class TestCasePlayerRenderer implements Renderer {
 		else {
 			string.append(dateFormat.format(testCase.getStartDate()));
 		}
-		string.appendHtml(renderToolSeparator());
+		string.appendHtml(PaginationRenderer.getToolSeparator());
 
-		PaginationRenderer.setResultSize(user, chronology.size());
+		PaginationRenderer.setResultSize(user, section, chronology.size());
 		PaginationRenderer.renderTableSizeSelector(section, user, string);
 		PaginationRenderer.renderNavigation(section, user, string);
 	}
@@ -656,68 +656,6 @@ public class TestCasePlayerRenderer implements Renderer {
 			}
 		}
 		return SELECTOR_KEY + "_" + Strings.encodeURL(section.getTitle()) + i;
-	}
-
-	private String renderSizeSelector(Section<?> section, UserContext user, int selectedSize, int maxSize) {
-
-		String sizeKey = createSizeKey(section);
-		RenderResult builder = new RenderResult(user);
-
-		int[] sizeArray = new int[] {
-				1, 2, 5, 10, 20, 50, 100 };
-		builder.appendHtml("<div class='toolBar'>");
-		builder.appendHtml("<span class=fillText>Show </span>"
-				+ "<select id=sizeSelector"
-				+ section.getID()
-				+ " onchange=\"TestCasePlayer.change('"
-				+ sizeKey
-				+ "', this.options[this.selectedIndex].value);\">");
-		for (int size : sizeArray) {
-			if (size == selectedSize) {
-				builder.appendHtml("<option selected='selected' value='" + size + "'>"
-						+ size + "</option>");
-			}
-			else {
-				builder.appendHtml("<option value='" + size + "'>" + size
-						+ "</option>");
-			}
-		}
-		builder.appendHtml("</select><span class=fillText> lines of </span>" + maxSize);
-		builder.appendHtml(renderToolSeparator());
-		builder.appendHtml("</div>");
-		return builder.toStringRaw();
-	}
-
-	private String renderToolSeparator() {
-		return "<div class='toolSeparator'></div>";
-	}
-
-	private Object renderNavigation(Section<?> section, int from, int selectedSize, int maxsize, UserContext user) {
-		String fromKey = createFromKey(section);
-		RenderResult builder = new RenderResult(user);
-		int previous = Math.max(1, from - selectedSize);
-		int next = from + selectedSize;
-
-		builder.appendHtml("<div class='toolBar avoidMenu'>");
-		renderToolbarButton(
-				"begin.png", "TestCasePlayer.change('" + fromKey + "', " + 1 + ")",
-				(from > 1), builder);
-		renderToolbarButton(
-				"back.png", "TestCasePlayer.change('" + fromKey + "', " + previous + ")",
-				(from > 1), builder);
-		builder.appendHtml("<span class=fillText> Lines </span>");
-		builder.appendHtml("<input size=3 type=\"field\" onchange=\"TestCasePlayer.change('"
-				+ fromKey
-				+ "', " + "this.value);\" value='" + from + "'>");
-		builder.appendHtml("<span class=fillText> to </span>" + (from + selectedSize - 1));
-		renderToolbarButton(
-				"forward.png", "TestCasePlayer.change('" + fromKey + "', " + next + ")",
-				(from + selectedSize <= maxsize), builder);
-		renderToolbarButton(
-				"end.png", "TestCasePlayer.change('" + fromKey + "', " + maxsize + ")",
-				(from + selectedSize <= maxsize), builder);
-		builder.appendHtml("</div>");
-		return builder.toStringRaw();
 	}
 
 	private String renderToolbarButton(String icon, String action, UserContext user) {

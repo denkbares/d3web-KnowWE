@@ -1,37 +1,3 @@
-.sparqlTable .fillText {
-	color: grey;
-}
-
-.sparqlTable .toolBar {
-	display: inline-block;
-}
-
-.sparqlTable .toolBar.avoidMenu {
-	padding-right: 40px;
-}
-
-.sparqlTable .toolSeparator {
-	display: inline-block;
-	margin-left: 10px;
-	margin-right: 10px;
-	border-left: 2px solid #DDD;
-	height: 10px;
-}
-
-.sparqlTable .toolBar .toolButton {
-	position: relative;
-	border: 1px solid white;
-}
-
-.sparqlTable .toolBar .toolButton.enabled:hover {
-	border: 1px outset white;
-}
-
-.sparqlTable .toolButton IMG {
-	position: relative;
-	top: 3px;
-}
-
 .sparqlTable .border .sparqltable td {
 	border: 1px solid #DDD;
 }
