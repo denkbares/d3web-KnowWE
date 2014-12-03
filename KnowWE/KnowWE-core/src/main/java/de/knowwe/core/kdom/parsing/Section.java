@@ -450,16 +450,11 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	// return signatureString.hashCode();
 	// }
 
-	private String signatureString = null;
 
-	protected String getSignatureString() {
-		if (signatureString != null) return signatureString;
+	private String getSignatureString() {
 		List<Integer> positionInKDOM = this.getPositionInKDOM();
 		String positionInKDOMString = positionInKDOM == null ? "" : positionInKDOM.toString();
-
-		String signatureString = getWeb() + getTitle() + positionInKDOMString + this.getText();
-		this.signatureString = signatureString;
-		return signatureString;
+		return getWeb() + getTitle() + positionInKDOMString + this.getText();
 	}
 
 	protected boolean hasID() {
@@ -627,7 +622,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 			temp = tempFather;
 			tempFather = temp.getParent();
 		}
-		return positions;
+		return new ArrayList<>(positions); // for a smaller memory footprint
 	}
 
 	/**
