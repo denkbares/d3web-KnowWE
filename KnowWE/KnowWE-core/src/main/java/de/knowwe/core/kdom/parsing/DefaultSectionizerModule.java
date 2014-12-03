@@ -34,7 +34,7 @@ public class DefaultSectionizerModule implements SectionizerModule {
 		Section<? extends Type> section = parser.parse(text, father);
 		Map<String, String> parameterMap = result.getParameterMap();
 		if (parameterMap != null) {
-			section.getSectionStore().storeObject(AbstractXMLType.ATTRIBUTE_MAP_STORE_KEY, parameterMap);
+			section.storeObject(AbstractXMLType.ATTRIBUTE_MAP_STORE_KEY, parameterMap);
 		}
 		return section;
 	}

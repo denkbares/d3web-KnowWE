@@ -69,7 +69,7 @@ public class TSUtil {
 	public TestCase findTestSuite(Article article) {
 		Section<TestCaseContent> s = Sections.successor(article.getRootSection(),
 				TestCaseContent.class);
-		return (TestCase) s.getSectionStore().getObject(TestCaseType.TESTCASEKEY);
+		return (TestCase) s.getObject(TestCaseType.TESTCASEKEY);
 	}
 
 	public KnowledgeBase getCreatedKB() {

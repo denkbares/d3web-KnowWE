@@ -223,7 +223,7 @@ public class RuleCompileScript implements D3webCompileScript<RuleType> {
 	}
 
 	private static Collection<Rule> getRules(D3webCompiler compiler, Section<RuleType> section, String ruleStoreKey) {
-		Collection<Rule> rules = (Collection<Rule>) section.getSectionStore().getObject(compiler, ruleStoreKey);
+		Collection<Rule> rules = (Collection<Rule>) section.getObject(compiler, ruleStoreKey);
 		if (rules == null) {
 			return Collections.emptyList();
 		}

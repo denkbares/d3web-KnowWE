@@ -52,7 +52,7 @@ public class TestCaseUtils {
 			s = Sections.successor(a.getRootSection(), TestCaseContent.class);
 		}
 		if (s != null) {
-			testSuite = (TestCase) s.getSectionStore().getObject(TestCaseType.TESTCASEKEY);
+			testSuite = (TestCase) s.getObject(TestCaseType.TESTCASEKEY);
 		}
 		return testSuite;
 	}

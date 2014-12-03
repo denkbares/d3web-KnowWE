@@ -291,7 +291,7 @@ public class CoveringList extends AbstractType {
 						XCLModel.KNOWLEDGE_KIND);
 
 				if (xclModel == null) return;
-				XCLRelation rel = (XCLRelation) s.getSectionStore().getObject(article,
+				XCLRelation rel = (XCLRelation) s.getObject(article,
 						RELATION_STORE_KEY);
 
 				if (rel == null) return;

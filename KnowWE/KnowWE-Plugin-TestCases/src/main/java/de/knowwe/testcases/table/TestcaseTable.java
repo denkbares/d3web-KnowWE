@@ -61,12 +61,12 @@ public class TestcaseTable extends Table {
 		if (tCell == null) {
 			throw new IllegalArgumentException("Specified section is not part of this table");
 		}
-		Object index = tCell.getSectionStore().getObject(INDEX_KEY);
+		Object index = tCell.getObject(INDEX_KEY);
 		if (index == null) {
 			int i = 0;
 			for (Section<?> child : tCell.getParent().getChildren()) {
 				if (!(child.get() instanceof TableCell)) continue;
-				child.getSectionStore().storeObject(INDEX_KEY, i);
+				child.storeObject(INDEX_KEY, i);
 				if (child == tCell) index = i;
 				i++;
 			}
@@ -82,7 +82,7 @@ public class TestcaseTable extends Table {
 		int index = getColumnIndex(s);
 
 		String key = HEADERCELL_KEY + index;
-		Object hCell = hLine.getSectionStore().getObject(key);
+		Object hCell = hLine.getObject(key);
 
 		if (hCell == null) {
 			int i = 0;
@@ -90,7 +90,7 @@ public class TestcaseTable extends Table {
 				if (!(child.get() instanceof TableCell)) continue;
 				if (i == index) {
 					hCell = child;
-					hLine.getSectionStore().storeObject(key, hCell);
+					hLine.storeObject(key, hCell);
 				}
 				i++;
 			}

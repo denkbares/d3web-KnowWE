@@ -69,7 +69,7 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 	public void compile(T compiler, Section<TermDefinition> parentSection) throws CompilerMessage {
 
 		// relations already added for one of the other defining sections of the current term
-		Object compilationCount = parentSection.getSectionStore().getObject(compiler, RELATIONS_ADDED);
+		Object compilationCount = parentSection.getObject(compiler, RELATIONS_ADDED);
 		if (compilationCount != null && compilationCount.equals(compiler.getCompilerManager().getCompilationId())) return;
 
 		Collection<Message> msgs = new ArrayList<Message>();
@@ -166,7 +166,7 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 
 		// mark other sections so the algorithm is not executed every time (will be the same result anyway)
 		for (Section<?> termDefiningSection : parentDefiningSections) {
-			termDefiningSection.getSectionStore().storeObject(compiler, RELATIONS_ADDED, compiler.getCompilerManager().getCompilationId());
+			termDefiningSection.storeObject(compiler, RELATIONS_ADDED, compiler.getCompilerManager().getCompilationId());
 		}
 
 		throw new CompilerMessage(msgs);

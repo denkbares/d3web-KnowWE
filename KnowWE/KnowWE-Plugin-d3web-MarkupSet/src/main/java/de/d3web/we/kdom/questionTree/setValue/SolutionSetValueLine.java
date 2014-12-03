@@ -148,7 +148,7 @@ public class SolutionSetValueLine extends AbstractType {
 
 		@Override
 		public void destroy(D3webCompiler compiler, Section<SolutionReference> s) {
-			Rule kbr = (Rule) s.getSectionStore().getObject(compiler,
+			Rule kbr = (Rule) s.getObject(compiler,
 					SETVALUE_ARGUMENT);
 			if (kbr != null) kbr.remove();
 		}

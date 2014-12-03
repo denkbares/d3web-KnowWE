@@ -140,7 +140,7 @@ public class QuestionSetValueNumLine extends AbstractType {
 
 		@Override
 		public void destroy(D3webCompiler compiler, Section<QuestionReference> section) {
-			Rule kbr = (Rule) section.getSectionStore().getObject(compiler,
+			Rule kbr = (Rule) section.getObject(compiler,
 					SETVALUE_ARGUMENT);
 			if (kbr != null) kbr.remove();
 		}

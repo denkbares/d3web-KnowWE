@@ -92,7 +92,7 @@ public class TestCaseUtils {
 
 	public static TestCaseProviderStorage getTestCaseProviderStorage(D3webCompiler compiler, Section<?> section) {
 		checkSection(section);
-		return (TestCaseProviderStorage) section.getSectionStore().getObject(compiler, PROVIDER_STORAGE_KEY);
+		return (TestCaseProviderStorage) section.getObject(compiler, PROVIDER_STORAGE_KEY);
 	}
 
 	public static TestCaseProviderStorage getTestCaseProviderStorage(Section<?> section) {
@@ -102,7 +102,7 @@ public class TestCaseUtils {
 
 	public static void storeTestCaseProviderStorage(D3webCompiler compiler, Section<?> section, TestCaseProviderStorage testCaseProviderStorage) {
 		checkSection(section);
-		section.getSectionStore().storeObject(compiler, PROVIDER_STORAGE_KEY,
+		section.storeObject(compiler, PROVIDER_STORAGE_KEY,
 				testCaseProviderStorage);
 	}
 

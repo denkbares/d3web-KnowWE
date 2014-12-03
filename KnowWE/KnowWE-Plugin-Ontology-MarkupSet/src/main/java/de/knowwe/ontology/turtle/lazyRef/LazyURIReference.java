@@ -42,7 +42,7 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 
 	@Override
 	public Node getNode(Section<LazyURIReference> section, Rdf2GoCompiler compiler) {
-		Identifier identifier = (Identifier) section.getSectionStore().getObject(compiler, IDENTIFIER_KEY);
+		Identifier identifier = (Identifier) section.getObject(compiler, IDENTIFIER_KEY);
 		if (identifier == null) {
 			throw new IllegalStateException("Cannot get Node before compilation");
 		}
@@ -54,7 +54,7 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 		// we just return the first identifier we can find
 		// this should only fail if the section is compiled by different compilers and the lazy uri is resolved
 		// differently by the compilers
-		Map<Compiler,Object> objects = section.getSectionStore().getObjects(IDENTIFIER_KEY);
+		Map<Compiler,Object> objects = section.getObjects(IDENTIFIER_KEY);
 		Set<Identifier> identifiers = new HashSet<Identifier>(objects.size());
 		for (Object identifier : objects.values()) {
 			if (identifier != null && identifier instanceof Identifier) {
@@ -106,7 +106,7 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 				// as a fail save we use the lns
 				identifier = new Identifier("lns", termName);
 			}
-			section.getSectionStore().storeObject(compiler, IDENTIFIER_KEY, identifier);
+			section.storeObject(compiler, IDENTIFIER_KEY, identifier);
 
 			TerminologyManager manager = compiler.getTerminologyManager();
 			// we always also register the section as a reference to the name to be able to update if new identifiers with
@@ -125,7 +125,7 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 
 		@Override
 		public void destroy(OntologyCompiler compiler, Section<LazyURIReference> section) {
-			Identifier identifier = (Identifier) section.getSectionStore().removeObject(compiler, IDENTIFIER_KEY);
+			Identifier identifier = (Identifier) section.removeObject(compiler, IDENTIFIER_KEY);
 			compiler.getTerminologyManager().unregisterTermReference(compiler,
 					section, getTermObjectClass(section), identifier);
 			compiler.getTerminologyManager().unregisterTermReference(compiler,

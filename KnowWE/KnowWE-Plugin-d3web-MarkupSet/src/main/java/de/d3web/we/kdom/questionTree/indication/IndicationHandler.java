@@ -60,7 +60,7 @@ public class IndicationHandler implements D3webCompileScript<D3webTerm<NamedObje
 
 	@Override
 	public void destroy(D3webCompiler compiler, Section<D3webTerm<NamedObject>> section) {
-		Rule kbr = (Rule) section.getSectionStore().getObject(compiler,
+		Rule kbr = (Rule) section.getObject(compiler,
 				indicationStoreKey);
 		if (kbr != null) kbr.remove();
 	}

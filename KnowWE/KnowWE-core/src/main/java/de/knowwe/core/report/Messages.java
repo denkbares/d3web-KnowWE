@@ -197,9 +197,9 @@ public final class Messages {
 	 * @created 16.02.2012
 	 */
 	public static Map<Compiler, Collection<Message>> getMessagesMap(Section<? extends Type> section, Message.Type... types) {
-		if (section.getSectionStore().isEmpty()) return Collections.emptyMap();
+		if (section.isEmpty()) return Collections.emptyMap();
 		Map<Compiler, Collection<Message>> allMassagesOfCompiler = new HashMap<>();
-		Map<Compiler, Object> messagesOfAllTypesBySourceByTitle = section.getSectionStore().getObjects(MESSAGE_KEY);
+		Map<Compiler, Object> messagesOfAllTypesBySourceByTitle = section.getObjects(MESSAGE_KEY);
 		for (Entry<Compiler, Object> entry : messagesOfAllTypesBySourceByTitle.entrySet()) {
 			@SuppressWarnings("unchecked")
 			Map<Compiler, Collection<Message>> messagesOfAllTypesBySource = (Map<Compiler, Collection<Message>>) entry.getValue();
@@ -259,7 +259,7 @@ public final class Messages {
 	 * @created 01.12.2011
 	 */
 	public static Collection<Message> getMessages(Compiler compiler, Section<?> section, Message.Type... types) {
-		if (section.getSectionStore().isEmpty()) return Collections.emptyList();
+		if (section.isEmpty()) return Collections.emptyList();
 		Collection<Message> allMessages = new ArrayList<>();
 		Map<String, Collection<Message>> msgMapModifiable = getMessagesMap(compiler, section);
 		if (msgMapModifiable != null) {
@@ -297,7 +297,7 @@ public final class Messages {
 	 * @created 01.12.2011
 	 */
 	public static Collection<Message> getMessages(Compiler compiler, Section<?> section, Class<?> source, Message.Type... types) {
-		if (section.getSectionStore().isEmpty()) return Collections.emptyList();
+		if (section.isEmpty()) return Collections.emptyList();
 		Map<String, Collection<Message>> msgsMap = getMessagesMap(compiler, section);
 		List<Message> allMsgs = new ArrayList<>();
 		if (msgsMap != null) {
@@ -405,12 +405,12 @@ public final class Messages {
 	 */
 	@SuppressWarnings("unchecked")
 	private static Map<String, Collection<Message>> getMessagesMap(Compiler compiler, Section<?> sec) {
-		return (Map<String, Collection<Message>>) sec.getSectionStore().getObject(compiler, MESSAGE_KEY);
+		return (Map<String, Collection<Message>>) sec.getObject(compiler, MESSAGE_KEY);
 	}
 
 	@SuppressWarnings("unchecked")
 	private static Map<String, Collection<Message>> removeMessagesMap(Compiler compiler, Section<?> sec) {
-		return (Map<String, Collection<Message>>) sec.getSectionStore().removeObject(compiler, MESSAGE_KEY);
+		return (Map<String, Collection<Message>>) sec.removeObject(compiler, MESSAGE_KEY);
 	}
 
 	private static void addAllMessagesOfTypes(Collection<Message> source, Collection<Message> target, Message.Type... types) {

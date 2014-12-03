@@ -16,7 +16,7 @@ public class TerminologyLoopResolveHandler<TermObject extends TerminologyObject>
 	@Override
 	public Collection<Message> create(D3webCompiler compiler, Section<D3webTermDefinition<TermObject>> section) {
 
-		Object object = section.getSectionStore().getObject(compiler,
+		Object object = section.getObject(compiler,
 				TerminologyLoopDetectionHandler.LOOP_DETECTED);
 		if (TerminologyLoopDetectionHandler.REMOVE_PARENTS.equals(object)) {
 			TermObject termObject = section.get().getTermObject(compiler, section);

@@ -129,11 +129,11 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 	@Override
 	public TermObject getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
 		assert section.get() instanceof D3webTermDefinition;
-		return (TermObject) section.getSectionStore().getObject(compiler, TERM_OBJECT_STORE_KEY);
+		return (TermObject) section.getObject(compiler, TERM_OBJECT_STORE_KEY);
 	}
 
 	public void storeTermObject(D3webCompiler compiler, Section<? extends D3webTermDefinition<TermObject>> section, TermObject object) {
-		section.getSectionStore().storeObject(compiler, TERM_OBJECT_STORE_KEY, object);
+		section.storeObject(compiler, TERM_OBJECT_STORE_KEY, object);
 	}
 
 	@Override

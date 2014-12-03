@@ -108,38 +108,38 @@ public class Sectionizer implements Parser {
 		int lastEnd = 0;
 		boolean createdSection = false;
 		if (results != null) {
-			for (SectionFinderResult r : results) {
-				if (r == null) {
+			for (SectionFinderResult result : results) {
+				if (result == null) {
 					continue;
 				}
 
-				if (r.getStart() < lastEnd || r.getStart() > r.getEnd()
-						|| r.getStart() < 0 || r.getEnd() > text.length()) {
+				if (result.getStart() < lastEnd || result.getStart() > result.getEnd()
+						|| result.getStart() < 0 || result.getEnd() > text.length()) {
 					Log.warning("Invalid SectionFinderResults for the Type '"
 							+ type.getName() + "'. Results: " + results
-							+ ". Result " + r
+							+ ". Result " + result
 							+ " will be skipped.");
 					continue;
 				}
 
-				if (lastEnd < r.getStart()) {
-					splitToSections(text.substring(lastEnd, r.getStart()), father, types,
+				if (lastEnd < result.getStart()) {
+					splitToSections(text.substring(lastEnd, result.getStart()), father, types,
 							type instanceof ExclusiveType
 									? types.size()
 									: posInTypes);
 				}
 
 				Section<?> child = null;
-				String sectionText = text.substring(r.getStart(), r.getEnd());
+				String sectionText = text.substring(result.getStart(), result.getEnd());
 				for (SectionizerModule sModule : sectionizerModules) {
-					child = sModule.createSection(sectionText, type, father, r);
+					child = sModule.createSection(sectionText, type, father, result);
 					if (child != null) break;
 				}
 				if (child == null) {
-					defaultSectionizerModule.createSection(sectionText, type, father, r);
+					defaultSectionizerModule.createSection(sectionText, type, father, result);
 				}
 				createdSection = true;
-				lastEnd = r.getEnd();
+				lastEnd = result.getEnd();
 			}
 		}
 		if (lastEnd < text.length()) {

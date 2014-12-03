@@ -13,7 +13,6 @@ import java.util.concurrent.Executors;
 import de.d3web.utils.Log;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.SectionStore;
 
 public class LongOperationUtils {
 
@@ -126,16 +125,15 @@ public class LongOperationUtils {
 
 	private static Map<String, LongOperation> accessLongOperations(Section<?> section, boolean create) {
 		String key = LongOperation.class.getName();
-		SectionStore sectionStore = section.getSectionStore();
 		//noinspection SynchronizationOnLocalVariableOrMethodParameter
-		synchronized (sectionStore) {
+		synchronized (section) {
 			@SuppressWarnings("unchecked")
 			Map<String, LongOperation> storedObject =
-					(Map<String, LongOperation>) sectionStore.getObject(key);
+					(Map<String, LongOperation>) section.getObject(key);
 			if (storedObject == null) {
 				if (!create) return Collections.emptyMap();
 				storedObject = new LinkedHashMap<>();
-				sectionStore.storeObject(key, storedObject);
+				section.storeObject(key, storedObject);
 			}
 			return storedObject;
 		}

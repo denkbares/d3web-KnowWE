@@ -42,7 +42,7 @@ public class DefaultMarkupPackageReferenceRegistrationHandler extends PackageReg
 		String[] packageNames = DefaultMarkupType.getPackages(section);
 		// while destroying, the default packages will already be removed, so we
 		// have to store artificially
-		section.getSectionStore().storeObject(compiler, PACKAGE_REFERENCES_KEY, packageNames);
+		section.storeObject(compiler, PACKAGE_REFERENCES_KEY, packageNames);
 		for (String packageName : packageNames) {
 			compiler.getTerminologyManager().registerTermReference(compiler,
 					section, Package.class, new Identifier(packageName));
@@ -52,7 +52,7 @@ public class DefaultMarkupPackageReferenceRegistrationHandler extends PackageReg
 
 	@Override
 	public void destroy(PackageRegistrationCompiler compiler, Section<DefaultMarkupType> section) {
-		String[] packageNames = (String[]) section.getSectionStore().getObject(compiler,
+		String[] packageNames = (String[]) section.getObject(compiler,
 				PACKAGE_REFERENCES_KEY);
 		for (String annotationString : packageNames) {
 			compiler.getTerminologyManager().unregisterTermReference(compiler, section,

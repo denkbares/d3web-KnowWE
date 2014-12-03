@@ -212,7 +212,7 @@ public class CIDashboardType extends DefaultMarkupType {
 
 		@Override
 		public void destroy(DefaultGlobalCompiler compiler, Section<CIDashboardType> section) {
-			CIHook ciHook = (CIHook) section.getSectionStore().getObject(CIHook.CIHOOK_STORE_KEY);
+			CIHook ciHook = (CIHook) section.getObject(CIHook.CIHOOK_STORE_KEY);
 			if (ciHook != null) {
 				CIHookManager.unregisterHook(ciHook);
 			}

@@ -45,13 +45,13 @@ public class ResourceReference extends SimpleReference {
 
 	@Override
 	public Identifier getTermIdentifier(Section<? extends Term> section) {
-		Identifier identifier = (Identifier) section.getSectionStore().getObject(IDENTIFIER_KEY);
+		Identifier identifier = (Identifier) section.getObject(IDENTIFIER_KEY);
 		if (identifier == null) {
 			Section<AbbreviatedResourceReference> abbResDef = Sections.ancestor(section,
 					AbbreviatedResourceReference.class);
 			String abbreviation = abbResDef.get().getAbbreviation(abbResDef);
 			identifier = new Identifier(abbreviation, getTermName(section));
-			section.getSectionStore().storeObject(IDENTIFIER_KEY, identifier);
+			section.storeObject(IDENTIFIER_KEY, identifier);
 		}
 		return identifier;
 	}

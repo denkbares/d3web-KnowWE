@@ -55,7 +55,7 @@ public class TagHandlerAttributeScript extends DefaultGlobalScript<TagHandlerTyp
 			}
 			values.put(tag.trim(), value.trim());
 		}
-		section.getParent().getSectionStore().storeObject(ATTRIBUTE_MAP, values);
+		section.getParent().storeObject(ATTRIBUTE_MAP, values);
 
 	}
 }

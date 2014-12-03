@@ -70,14 +70,14 @@ public class AnnotationNameType extends AbstractType {
 			throw new IllegalArgumentException("section must have the type "
 					+ AnnotationNameType.class.getSimpleName());
 		}
-		String name = (String) section.getSectionStore().getObject(ANNOTATION_NAME_KEY);
+		String name = (String) section.getObject(ANNOTATION_NAME_KEY);
 		if (name == null) {
 			Matcher matcher = namePattern.matcher(section.getText());
 			matcher.find();
 			// the has to be true/find something, because the
 			// section is parsed by the same regex
 			name = matcher.group(1);
-			section.getSectionStore().storeObject(ANNOTATION_NAME_KEY, name);
+			section.storeObject(ANNOTATION_NAME_KEY, name);
 		}
 		return name;
 	}

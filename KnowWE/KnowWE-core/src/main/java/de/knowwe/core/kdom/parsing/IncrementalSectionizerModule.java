@@ -160,10 +160,10 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 	@SuppressWarnings("unchecked")
 	private Map<String, Map<String, List<Section<?>>>> getCache(Article article) {
 		String key = "TypePathSearchCache";
-		Object typePathSearchCache = article.getRootSection().getSectionStore().getObject(key);
+		Object typePathSearchCache = article.getRootSection().getObject(key);
 		if (typePathSearchCache == null) {
 			typePathSearchCache = new HashMap<String, Map<String, List<Section<?>>>>();
-			article.getRootSection().getSectionStore().storeObject(key, typePathSearchCache);
+			article.getRootSection().storeObject(key, typePathSearchCache);
 		}
 		return (Map<String, Map<String, List<Section<?>>>>) typePathSearchCache;
 	}

@@ -25,7 +25,7 @@ public abstract class PackageCompileType extends AbstractType {
 	@SuppressWarnings("unchecked")
 	public Collection<PackageCompiler> getPackageCompilers(Section<? extends PackageCompileType> section) {
 		Collection<PackageCompiler> compilers = (Collection<PackageCompiler>)
-				section.getSectionStore().getObject(COMPILER_STORY_KEY);
+				section.getObject(COMPILER_STORY_KEY);
 		if (compilers == null) return Collections.emptyList();
 		else return Collections.unmodifiableCollection(compilers);
 	}
@@ -33,10 +33,10 @@ public abstract class PackageCompileType extends AbstractType {
 	public void registerPackageCompiler(PackageCompiler compiler, Section<? extends PackageCompileType> section) {
 		@SuppressWarnings("unchecked")
 		Collection<PackageCompiler> compilers = (Collection<PackageCompiler>)
-				section.getSectionStore().getObject(COMPILER_STORY_KEY);
+				section.getObject(COMPILER_STORY_KEY);
 		if (compilers == null) {
 			compilers = new ArrayList<PackageCompiler>(5);
-			section.getSectionStore().storeObject(COMPILER_STORY_KEY, compilers);
+			section.storeObject(COMPILER_STORY_KEY, compilers);
 		}
 		compilers.add(compiler);
 	}

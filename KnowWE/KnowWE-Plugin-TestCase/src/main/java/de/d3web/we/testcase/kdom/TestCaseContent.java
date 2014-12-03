@@ -120,7 +120,7 @@ public class TestCaseContent extends AbstractType {
 					TestCaseUtils.storeTestCaseProviderStorage(compiler, defaultMarkupSection,
 							new DefaultTestCaseStorage(providers));
 					// Store the test suite
-					s.getSectionStore().storeObject(TestCaseType.TESTCASEKEY, testSuite);
+					s.storeObject(TestCaseType.TESTCASEKEY, testSuite);
 				}
 
 			}

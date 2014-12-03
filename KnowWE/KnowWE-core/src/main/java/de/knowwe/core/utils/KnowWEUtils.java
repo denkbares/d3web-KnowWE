@@ -925,7 +925,7 @@ public class KnowWEUtils {
 	}
 
 	public static void storeObject(Compiler compiler, Section<?> s, String key, Object o) {
-		s.getSectionStore().storeObject(compiler, key, o);
+		s.storeObject(compiler, key, o);
 	}
 
 	public static Object getStoredObject(Section<?> s, String key) {
@@ -933,7 +933,7 @@ public class KnowWEUtils {
 	}
 
 	public static Object getStoredObject(Compiler compiler, Section<?> s, String key) {
-		return s.getSectionStore().getObject(compiler, key);
+		return s.getObject(compiler, key);
 	}
 
 	/**

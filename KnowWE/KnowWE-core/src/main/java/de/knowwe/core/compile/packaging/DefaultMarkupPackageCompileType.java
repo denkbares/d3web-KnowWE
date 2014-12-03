@@ -92,7 +92,7 @@ public class DefaultMarkupPackageCompileType extends PackageCompileType {
 			String[] packageNames = DefaultMarkupType.getPackages(markupSection, PackageManager.COMPILE_ATTRIBUTE_NAME);
 			// while destroying, the default packages will already
 			// be removed, so we have to store artificially
-			markupSection.getSectionStore().storeObject(compiler, PACKAGE_DEFINITIONS_KEY, packageNames);
+			markupSection.storeObject(compiler, PACKAGE_DEFINITIONS_KEY, packageNames);
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
 			for (String packageName : packageNames) {
 				Identifier termIdentifier = new Identifier(packageName);
@@ -107,7 +107,7 @@ public class DefaultMarkupPackageCompileType extends PackageCompileType {
 		public void destroy(PackageRegistrationCompiler compiler, Section<DefaultMarkupPackageCompileType> section) {
 			Section<DefaultMarkupType> markupSection = Sections.ancestor(
 					section, DefaultMarkupType.class);
-			String[] packageNames = (String[]) markupSection.getSectionStore().getObject(
+			String[] packageNames = (String[]) markupSection.getObject(
 					compiler, PACKAGE_DEFINITIONS_KEY);
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
 			for (String packageName : packageNames) {

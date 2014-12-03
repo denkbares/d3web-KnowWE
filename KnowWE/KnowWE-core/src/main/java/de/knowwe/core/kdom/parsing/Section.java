@@ -30,6 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
@@ -46,12 +47,12 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.filter.SectionFilter;
 
 /**
- * <p/>
+ * <p>
  * This class represents a node in the Knowledge-DOM of KnowWE. Basically it has some text, one type and a list
  * of children.
- * <p/>
+ * <p>
  * Further, it has a reference to its father and a positionOffset to its fathers text.
- * <p/>
+ * <p>
  * Further information can be attached to a node (TypeInformation), to connect the text-parts with external
  * resources, e.g. knowledge bases, OWL, User-feedback-DBs etc.
  *
@@ -73,11 +74,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	protected Article article;
 
 	private HashSet<String> packageNames = null;
-
-	/**
-	 * Store for this Section. Can be used to store infos or Objects for this Section.
-	 */
-	private SectionStore sectionStore = null;
 
 	/**
 	 * The ID of this Section.
@@ -112,6 +108,11 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	private int offsetInArticle = -1;
 
 	/**
+	 * Contains all the stored objects
+	 */
+	private Map<Compiler, Map<String, Object>> store = null;
+
+	/**
 	 * Type of this node.
 	 *
 	 * @see Type Each type has its own parser and renderer
@@ -128,7 +129,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 
 	/**
 	 * Constructor of a node
-	 * <p/>
+	 * <p>
 	 * Important: parses itself recursively by getting the allowed childrenTypes of the local type
 	 *
 	 * @param text       the part of (article-source) text of the node
@@ -191,8 +192,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		return comp;
 	}
 
-
-
 	/**
 	 * Adds a child to this node. Use for KDOM creation and editing only!
 	 */
@@ -221,15 +220,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	/**
-	 * @return the {@link SectionStore} for this {@link Section};
-	 * @created 08.07.2011
-	 */
-	public SectionStore getSectionStore() {
-		if (sectionStore == null) sectionStore = new SectionStore();
-		return sectionStore;
-	}
-
-	/**
 	 * @return the text of this Section/Node
 	 */
 	public String getText() {
@@ -247,7 +237,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 			ancestor = ancestor.getParent();
 		}
 	}
-
 
 	public void setArticle(Article article) {
 		this.article = article;
@@ -450,7 +439,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	// return signatureString.hashCode();
 	// }
 
-
 	private String getSignatureString() {
 		List<Integer> positionInKDOM = this.getPositionInKDOM();
 		String positionInKDOMString = positionInKDOM == null ? "" : positionInKDOM.toString();
@@ -567,13 +555,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		return false;
 	}
 
-	public boolean isEmpty() {
-		String text = getText();
-		text = text.replaceAll("\\s", "");
-		return text.length() == 0;
-	}
-
-
 	protected void setPositionInKDOM(List<Integer> positionInKDOM) {
 		position = positionInKDOM;
 	}
@@ -646,7 +627,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		return -1;
 	}
 
-
 	/**
 	 * Overrides type. You can only set types that are singletons!
 	 *
@@ -671,7 +651,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		return article.getArticleManager();
 	}
 
-
 	/**
 	 * Generates an ID for the given Section and also registers the Section in a HashMap to allow searches for this
 	 * Section later. The ID is the hash code of the following String: Title of the Article containing the Section, the
@@ -694,7 +673,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		}
 		return id;
 	}
-
 
 	/**
 	 * This method removes the entries of sections in the section map, if the sections are no longer used - for example
@@ -732,7 +710,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		}
 	}
 
-
 	/**
 	 * This method is protected, use {@link Sections#get(String)} instead.
 	 *
@@ -744,4 +721,147 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 			return sectionMap.get(id);
 		}
 	}
+
+	/**
+	 * Has the same behavior as {@link #getObject(Compiler, String)}
+	 * with <tt>null</tt> as the {@link Compiler} argument. Use this if the
+	 * Object was stored the same way (<tt>null</tt> as the {@link Compiler}
+	 * argument or the method {@link #storeObject(String, Object)}.
+	 *
+	 * @param key is the key for which the object was stored
+	 * @return the previously stored Object for this key or <tt>null</tt>, if no
+	 * Object was stored
+	 * @created 08.07.2011
+	 */
+	public Object getObject(String key) {
+		//noinspection RedundantCast
+		return getObject((Compiler) null, key);
+	}
+
+	/**
+	 * All objects stored in this {@link Section} with the given <tt>key</tt>
+	 * are collected and returned. The {@link Map} stores them by the title of
+	 * the {@link Article} they were stored for. If an object was stored without
+	 * an argument {@link Article} (article independent), the returned
+	 * {@link Map} contains this object with <tt>null</tt> as the key.
+	 *
+	 * @param key is the key for which the objects were stored
+	 * @created 16.02.2012
+	 */
+	public synchronized Map<Compiler, Object> getObjects(String key) {
+		if (store == null) return Collections.emptyMap();
+		Map<Compiler, Object> objects = new HashMap<>(store.size());
+		for (Map.Entry<Compiler, Map<String, Object>> entry : store.entrySet()) {
+			Compiler compiler = entry.getKey();
+			if (compiler != null && !compiler.getCompilerManager().contains(compiler)) continue;
+			Object object = entry.getValue().get(key);
+			if (object != null) objects.put(compiler, object);
+		}
+		return Collections.unmodifiableMap(objects);
+	}
+
+	/**
+	 * @param compiler is the {@link Article} for which the Object was stored
+	 * @param key      is the key, for which the Object was stored
+	 * @return the previously stored Object for the given key and article, or
+	 * <tt>null</tt>, if no Object was stored
+	 * @created 08.07.2011
+	 */
+	public synchronized Object getObject(Compiler compiler, String key) {
+		if (compiler != null && !compiler.getCompilerManager().contains(compiler)) return null;
+		Map<String, Object> storeForArticle = getStoreForCompiler(compiler);
+		if (storeForArticle == null) return null;
+		return storeForArticle.get(key);
+	}
+
+	/**
+	 * Stores the given Object for the given key.<br/>
+	 * <b>Attention:</b> Be aware, that some times an Object should only be
+	 * stored in the context of a certain {@link Compiler}. Example: An Object
+	 * was created, because the Section was compiled for a certain
+	 * {@link Article}. If the Section however gets compiled again for another
+	 * {@link Article}, the Object would not be created or a different
+	 * {@link Object} would be created. In this case you have to use the method
+	 * {@link #storeObject(Compiler, String, Object)} to be able to
+	 * differentiate between the {@link Compiler}s.
+	 *
+	 * @param key    is the key for which the Object should be stored
+	 * @param object is the object to be stored
+	 * @created 08.07.2011
+	 */
+	public void storeObject(String key, Object object) {
+		//noinspection RedundantCast
+		storeObject((Compiler) null, key, object);
+	}
+
+	/**
+	 * Removes the Object stored for the given key.<br/>
+	 *
+	 * @param key is the key for which the Object should be removed
+	 * @created 16.03.2014
+	 */
+	public Object removeObject(String key) {
+		//noinspection RedundantCast
+		return removeObject((Compiler) null, key);
+	}
+
+	/**
+	 * Stores the given Object for the given key and {@link Compiler}.
+	 * <b>Attention:</b> If the Object you want to store is independent from the
+	 * {@link Compiler} that will or has compiled this {@link Section},
+	 * you can either set the {@link Compiler} argument to
+	 * <tt>null</tt> or use the method
+	 * {@link #storeObject(String, Object)} instead (same for
+	 * applies for retrieving the Object later via the getObject - methods).
+	 *
+	 * @param compiler the compiler to store the object for
+	 * @param key      the key to store the object for
+	 * @param object   the object to be stored
+	 * @created 08.07.2011
+	 */
+	public synchronized void storeObject(Compiler compiler, String key, Object object) {
+		Map<String, Object> storeForCompiler = getStoreForCompiler(compiler);
+		if (storeForCompiler == null) {
+			storeForCompiler = new HashMap<>(4);
+			putStoreForCompiler(compiler, storeForCompiler);
+		}
+		storeForCompiler.put(key, object);
+	}
+
+	/**
+	 * Removes the Object stored for the given key and {@link Compiler}.
+	 * <b>Attention:</b> If the Object you want to remove is independent from the
+	 * {@link Compiler} that will or has compiled this {@link Section}, you can either
+	 * set the {@link Compiler} argument to  <tt>null</tt> or use the method
+	 * {@link #removeObject(String)} instead.
+	 *
+	 * @param compiler the compiler to store the object for
+	 * @param key      is the key for which the Object should be removed
+	 * @created 16.03.2014
+	 */
+	public synchronized Object removeObject(Compiler compiler, String key) {
+		Map<String, Object> storeForCompiler = getStoreForCompiler(compiler);
+		if (storeForCompiler == null) return null;
+		Object removed = storeForCompiler.remove(key);
+		if (storeForCompiler.isEmpty()) store.remove(compiler);
+		if (store.isEmpty()) store = null;
+		return removed;
+	}
+
+	private Map<String, Object> getStoreForCompiler(Compiler compiler) {
+		if (store == null) return null;
+		return store.get(compiler);
+	}
+
+	private void putStoreForCompiler(Compiler compiler, Map<String, Object> storeForCompiler) {
+		if (store == null) {
+			store = new WeakHashMap<>(4);
+		}
+		store.put(compiler, storeForCompiler);
+	}
+
+	public boolean isEmpty() {
+		return store == null;
+	}
+
 }

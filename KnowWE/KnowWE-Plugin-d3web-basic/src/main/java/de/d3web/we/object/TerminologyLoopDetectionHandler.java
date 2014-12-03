@@ -19,7 +19,7 @@ public class TerminologyLoopDetectionHandler<TermObject extends TerminologyObjec
 	public Collection<Message> create(D3webCompiler compiler, Section<D3webTermDefinition<TermObject>> section) {
 		TermObject termObject = section.get().getTermObject(compiler, section);
 		if (termObject != null && KnowledgeBaseUtils.isInLoop(termObject)) {
-			section.getSectionStore().storeObject(compiler, LOOP_DETECTED, REMOVE_PARENTS);
+			section.storeObject(compiler, LOOP_DETECTED, REMOVE_PARENTS);
 			return Messages.asList(Messages.error("Loop detected: The "
 					+ termObject.getClass().getSimpleName() + " '" + termObject.getName()
 					+ "' is an ancestor of itself."));
