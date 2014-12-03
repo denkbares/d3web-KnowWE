@@ -40,13 +40,12 @@ import de.knowwe.core.report.Messages;
  */
 public class D3webCompiler extends AbstractPackageCompiler implements TermCompiler {
 
-	private final TerminologyManager terminologyManager;
+	private TerminologyManager terminologyManager;
 	private KnowledgeBase knowledgeBase;
 	private final Section<? extends PackageCompileType> compileSection;
 
 	public D3webCompiler(PackageManager packageManager, Section<? extends PackageCompileType> compileSection) {
 		super(packageManager, compileSection);
-		this.terminologyManager = new TerminologyManager();
 		this.compileSection = compileSection;
 	}
 
@@ -88,7 +87,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		// the current compilation
 		EventManager.getInstance().fireEvent(new D3webCompilerStartEvent(this));
 
-		terminologyManager.removeTermsOfCompiler(this);
+		terminologyManager = new TerminologyManager();
 		Messages.clearMessages(this);
 		ScriptCompiler<D3webCompiler> scriptCompiler = new ScriptCompiler<D3webCompiler>(this);
 		Collection<Section<?>> sectionsOfPackage = getPackageManager().getSectionsOfPackage(

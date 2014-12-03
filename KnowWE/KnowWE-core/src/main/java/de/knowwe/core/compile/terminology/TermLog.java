@@ -23,10 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -37,6 +34,8 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+
+import static java.util.stream.Collectors.toSet;
 
 /**
  * This is an auxiliary data-structure to store the definitions and references
@@ -51,126 +50,66 @@ class TermLog {
 
 	private final Set<TermLogEntry> termReferences = new HashSet<>();
 
-	private final Set<Section<?>> termDefinitionSections = new HashSet<>(4);
-
-	private final Set<Section<?>> termReferenceSections = new HashSet<>();
-
-	private final Map<Class<?>, Set<TermLogEntry>> termClasses =
-			new HashMap<>(2);
-
-	private final Map<String, Set<TermLogEntry>> termIdentifiers =
-			new HashMap<>(2);
+//	private final Map<Class<?>, Set<TermLogEntry>> termClasses =
+//			new HashMap<>(2);
+//
+//	private final Map<String, Set<TermLogEntry>> termIdentifiers =
+//			new HashMap<>(2);
 
 	public void addTermDefinition(Compiler compiler,
-			Section<?> termDefinition,
-			Class<?> termClass,
-			Identifier termIdentifier) {
+								  Section<?> termDefinition,
+								  Class<?> termClass,
+								  Identifier termIdentifier) {
 
-		TermLogEntry termLogEntry = createAndRegisterTermLogEntry(true, compiler,
-				termDefinition, termClass, termIdentifier);
-		addTermLogEntryToMap(termLogEntry.getTermIdentifier().toExternalForm(), termLogEntry,
-				termIdentifiers);
-		addTermLogEntryToMap(termLogEntry.getTermClass(), termLogEntry, termClasses);
+		termDefinitions.add(new TermLogEntry(termDefinition, termClass, termIdentifier));
 		handleMessagesForDefinition(compiler);
-	}
-
-	private TermLogEntry createAndRegisterTermLogEntry(
-			boolean definition,
-			Compiler compiler,
-			Section<?> termSection,
-			Class<?> termClass,
-			Identifier termIdentifier) {
-
-		TermLogEntry logEntry = new TermLogEntry(compiler, termSection,
-				termClass, termIdentifier);
-		if (definition) {
-			termDefinitions.add(logEntry);
-			termDefinitionSections.add(termSection);
-		}
-		else {
-			termReferences.add(logEntry);
-			termReferenceSections.add(termSection);
-		}
-		return logEntry;
 	}
 
 	private void handleMessagesForDefinition(Compiler compiler) {
 
-		Collection<Message> msgs = new ArrayList<Message>(2);
-
-		if (termClasses.size() > 1) {
-			msgs.add(Messages.ambiguousTermClassesError(
-					termIdentifiers.keySet().iterator().next(), termClasses.keySet()));
-		}
-		if (termIdentifiers.size() > 1) {
-			msgs.add(Messages.ambiguousTermCaseWarning(termIdentifiers.keySet()));
-		}
-		storeMessagesForSections(compiler, msgs, getAllSectionsOfLog());
-	}
-
-	private Collection<Section<?>> getAllSectionsOfLog() {
-		Collection<Section<?>> sectionsOfLog = new ArrayList<Section<?>>(
-				termDefinitions.size() + termReferences.size());
-		sectionsOfLog.addAll(getDefinitions());
-		sectionsOfLog.addAll(getReferences());
-		return sectionsOfLog;
-	}
-
-	private void storeMessagesForSections(Compiler compiler, Collection<Message> msgs, Collection<Section<?>> sections) {
-		for (Section<?> section : sections) {
-			Messages.storeMessages(compiler,
-					section, this.getClass(), msgs);
-		}
-	}
-
-	private <MapKey> void addTermLogEntryToMap(MapKey key, TermLogEntry logEntry, Map<MapKey, Set<TermLogEntry>> entriesMap) {
-		Set<TermLogEntry> entriesForKey = entriesMap.get(key);
-		if (entriesForKey == null) {
-			entriesForKey = new HashSet<TermLogEntry>();
-			entriesMap.put(key, entriesForKey);
-		}
-		entriesForKey.add(logEntry);
-	}
-
-	private <MapKey> void removeLogEntriesWithSectionFromMap(Compiler compiler, Section<?> termSection, Map<MapKey, Set<TermLogEntry>> entriesMap) {
-		List<MapKey> keysToRemove = new LinkedList<MapKey>();
-		for (Entry<MapKey, Set<TermLogEntry>> mapEntry : entriesMap.entrySet()) {
-			List<TermLogEntry> logEntriesToRemove = new LinkedList<TermLogEntry>();
-			for (TermLogEntry logEntry : mapEntry.getValue()) {
-				if (logEntry.getSection().equals(termSection)
-						&& logEntry.getCompiler().equals(compiler)) {
-					logEntriesToRemove.add(logEntry);
-				}
+		Collection<Message> msgs = new ArrayList<>(2);
+		if (termDefinitions.size() > 1) {
+			Set<Class<?>> termClasses = getTermClasses();
+			if (termClasses.size() > 1) {
+				String term = termDefinitions.iterator()
+						.next().getTermIdentifier().toExternalForm();
+				msgs.add(Messages.ambiguousTermClassesError(term, termClasses));
 			}
-			mapEntry.getValue().removeAll(logEntriesToRemove);
-			if (mapEntry.getValue().isEmpty()) keysToRemove.add(mapEntry.getKey());
+			Collection<Identifier> termIdentifiers = getTermIdentifiers();
+			if (termIdentifiers.size() > 1) {
+				msgs.add(Messages.ambiguousTermCaseWarning(termIdentifiers));
+			}
 		}
-		for (MapKey keyToRemove : keysToRemove) {
-			entriesMap.remove(keyToRemove);
+		for (TermLogEntry termDefinition : termDefinitions) {
+			Messages.storeMessages(compiler, termDefinition.getSection(), this.getClass(), msgs);
+		}
+		for (TermLogEntry termReference : termReferences) {
+			Messages.storeMessages(compiler, termReference.getSection(), this.getClass(), msgs);
 		}
 	}
 
 	public void addTermReference(Compiler compiler,
-			Section<?> termReference,
-			Class<?> termClass, Identifier termIdentifier) {
+								 Section<?> termReference,
+								 Class<?> termClass, Identifier termIdentifier) {
 
-		createAndRegisterTermLogEntry(false, compiler, termReference, termClass, termIdentifier);
+		termReferences.add(new TermLogEntry(termReference, termClass, termIdentifier));
 		handleMessagesForReference(compiler, termReference, termIdentifier, termClass);
 	}
 
 	private void handleMessagesForReference(Compiler compiler,
-			Section<?> section,
-			Identifier termIdentifier, Class<?> termClass) {
+											Section<?> section,
+											Identifier termIdentifier, Class<?> termClass) {
 
-		Collection<Message> msgs = new ArrayList<Message>(2);
-		Set<String> termIdentifiersSet = new HashSet<String>(
-				termIdentifiers.keySet());
-		termIdentifiersSet.add(termIdentifier.toExternalForm());
-		if (termIdentifiersSet.size() > 1) {
-			msgs.add(Messages.ambiguousTermCaseWarning(termIdentifiersSet));
+		Collection<Message> msgs = new ArrayList<>(2);
+		String externalForm = termIdentifier.toExternalForm();
+		for (TermLogEntry termDefinition : termDefinitions) {
+			if (!termDefinition.getTermIdentifier().toExternalForm().equals(externalForm)) {
+				msgs.add(Messages.ambiguousTermCaseWarning(getTermIdentifiers()));
+				break;
+			}
 		}
-		if (termClasses.size() == 1) {
-			Class<?> termClassOfDefinition = termClasses.keySet().iterator().next();
+		if (termDefinitions.size() == 1) {
+			Class<?> termClassOfDefinition = termDefinitions.iterator().next().getTermClass();
 			boolean assignable = termClass.isAssignableFrom(termClassOfDefinition);
 			if (!assignable) {
 				msgs.add(Messages.error("The term '"
@@ -184,60 +123,19 @@ class TermLog {
 	}
 
 	public void removeTermDefinition(Compiler compiler,
-			Section<?> termDefinition,
-			Class<?> termClass,
-			Identifier termIdentifier) {
-		removeTermLogEntry(compiler, true, termDefinition, termClass, termIdentifier);
-		removeLogEntriesWithSectionFromMap(compiler, termDefinition, termClasses);
-		removeLogEntriesWithSectionFromMap(compiler, termDefinition, termIdentifiers);
+									 Section<?> termDefinition,
+									 Class<?> termClass,
+									 Identifier termIdentifier) {
+
+		termDefinitions.remove(new TermLogEntry(termDefinition, termClass, termIdentifier));
+		Messages.clearMessages(compiler, termDefinition, this.getClass());
 		handleMessagesForDefinition(compiler);
 	}
 
-	private void removeTermLogEntry(Compiler compiler,
-			boolean definition,
-			Section<?> termSection,
-			Class<?> termClass, Identifier termIdentifier) {
-
-		TermLogEntry logEntry = new TermLogEntry(compiler, termSection,
-				termClass, termIdentifier);
-		if (definition) {
-			termDefinitions.remove(logEntry);
-			termDefinitionSections.remove(termSection);
-		}
-		else {
-			termReferences.remove(logEntry);
-			termReferenceSections.remove(logEntry.getSection());
-		}
-		Messages.clearMessages(compiler, termSection, this.getClass());
-	}
-
 	public void removeTermReference(Compiler compiler, Section<?> termReference,
-			Class<?> termClass, Identifier termIdentifier) {
-		removeTermLogEntry(compiler, false, termReference, termClass, termIdentifier);
-	}
-
-	public void removeEntriesOfCompiler(Compiler compiler) {
-		Collection<TermLogEntry> toRemove = new ArrayList<TermLogEntry>(termReferences.size());
-		for (TermLogEntry entry : termReferences) {
-			if (entry.getCompiler().equals(compiler)) {
-				toRemove.add(entry);
-			}
-		}
-		for (TermLogEntry entry : toRemove) {
-			removeTermReference(entry.getCompiler(), entry.getSection(), entry.getTermClass(),
-					entry.getTermIdentifier());
-		}
-		toRemove = new ArrayList<TermLogEntry>(termDefinitions.size());
-		for (TermLogEntry entry : termDefinitions) {
-			if (entry.getCompiler().equals(compiler)) {
-				toRemove.add(entry);
-			}
-		}
-		for (TermLogEntry entry : toRemove) {
-			removeTermDefinition(entry.getCompiler(), entry.getSection(),
-					entry.getTermClass(),
-					entry.getTermIdentifier());
-		}
+									Class<?> termClass, Identifier termIdentifier) {
+		termReferences.remove(new TermLogEntry(termReference, termClass, termIdentifier));
+		Messages.clearMessages(compiler, termReference, this.getClass());
 	}
 
 	public Section<? extends Type> getDefiningSection() {
@@ -252,26 +150,24 @@ class TermLog {
 	}
 
 	public Set<Section<? extends Type>> getDefinitions() {
-		return Collections.unmodifiableSet(termDefinitionSections);
+		return Collections.unmodifiableSet(termDefinitions.stream().map(TermLogEntry::getSection).collect(toSet()));
 	}
 
 	public Set<Section<? extends Type>> getReferences() {
-		return Collections.unmodifiableSet(termReferenceSections);
+		return Collections.unmodifiableSet(termReferences.stream().map(TermLogEntry::getSection).collect(toSet()));
 	}
 
 	public Set<Class<?>> getTermClasses() {
-		return Collections.unmodifiableSet(termClasses.keySet());
+		return Collections.unmodifiableSet(termDefinitions.stream().map(TermLogEntry::getTermClass).collect(toSet()));
 	}
 
 	public Collection<Identifier> getTermIdentifiers() {
-		ArrayList<Identifier> termIdentifiers = new ArrayList<Identifier>(
-				this.termIdentifiers.size());
-		for (Entry<String, Set<TermLogEntry>> entry : this.termIdentifiers.entrySet()) {
-			Set<TermLogEntry> entrySet = entry.getValue();
-			if (entrySet.isEmpty()) continue;
-			termIdentifiers.add(entrySet.iterator().next().getTermIdentifier());
+		// Identifiers hash is case insensitive, here we are case sensitive and have to hash by external form first...
+		Map<String, Identifier> identifierMap = new HashMap<>(termDefinitions.size());
+		for (TermLogEntry termDefinition : termDefinitions) {
+			identifierMap.put(termDefinition.getTermIdentifier().toExternalForm(), termDefinition.getTermIdentifier());
 		}
-		return Collections.unmodifiableCollection(termIdentifiers);
+		return Collections.unmodifiableCollection(identifierMap.values());
 	}
 
 	public boolean isEmpty() {

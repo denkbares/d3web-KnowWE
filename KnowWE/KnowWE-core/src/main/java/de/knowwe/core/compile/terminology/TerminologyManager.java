@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -49,13 +48,10 @@ import de.knowwe.plugin.Plugins;
  * manager is, that for a given term the definition and the references can be asked for. Obviously,
  * this only works if the terms are registered here.
  * <p/>
- * TODO: Prevent ConcurrentModification for Collections returned in getters.
  *
  * @author Albrecht Striffler (denkbares GmbH)
  */
 public class TerminologyManager {
-
-	private final Set<Compiler> compilers = new HashSet<>(4);
 
 	private static final Set<Identifier> occupiedTerms = new HashSet<>();
 
@@ -104,7 +100,6 @@ public class TerminologyManager {
 		}
 
 		synchronized (this) {
-			compilers.add(compiler);
 			TermLog termRefLog = termLogManager.getLog(termIdentifier);
 			if (termRefLog == null) {
 				termRefLog = new TermLog();
@@ -148,7 +143,6 @@ public class TerminologyManager {
 			Section<?> termReference,
 			Class<?> termClass, Identifier termIdentifier) {
 
-		compilers.add(compiler);
 		TermLog termLog = termLogManager.getLog(termIdentifier);
 		if (termLog == null) {
 			termLog = new TermLog();
@@ -252,26 +246,6 @@ public class TerminologyManager {
 		}
 	}
 
-	public synchronized void removeTermsOfCompiler(Compiler compiler) {
-		// counting the compilers does not help if terms are unregistered
-		// normally... since this is just an optimization and will work
-		// correctly any way, we don't change it for now
-		compilers.remove(compiler);
-		if (compilers.isEmpty()) {
-			termLogManager = new TermLogManager();
-		}
-		else {
-			Iterator<Entry<Identifier, TermLog>> iterator = termLogManager.entrySet().iterator();
-			while (iterator.hasNext()) {
-				Entry<Identifier, TermLog> entry = iterator.next();
-				entry.getValue().removeEntriesOfCompiler(compiler);
-				if (entry.getValue().isEmpty()) {
-					iterator.remove();
-				}
-			}
-		}
-	}
-
 	/**
 	 * Returns all local terms of the given class (e.g. Question, String,...), that are compiled in
 	 * the article with the given title.
@@ -351,8 +325,4 @@ public class TerminologyManager {
 		}
 	}
 
-	@Override
-	public String toString() {
-		return "Compilers: " + compilers + ", known terms: " + termLogManager.entrySet().size();
-	}
 }

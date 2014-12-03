@@ -19,7 +19,6 @@
 package de.knowwe.core.compile.terminology;
 
 import de.d3web.strings.Identifier;
-import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.parsing.Section;
 
 class TermLogEntry implements Comparable<TermLogEntry> {
@@ -27,10 +26,8 @@ class TermLogEntry implements Comparable<TermLogEntry> {
 	private final Section<?> section;
 	private final Class<?> termClass;
 	private final Identifier termIdentifier;
-	private final Compiler compiler;
 
-	public TermLogEntry(Compiler compiler, Section<?> section, Class<?> termClass, Identifier termIdentifier) {
-		this.compiler = compiler;
+	public TermLogEntry(Section<?> section, Class<?> termClass, Identifier termIdentifier) {
 		this.section = section;
 		this.termClass = termClass;
 		this.termIdentifier = termIdentifier;
@@ -48,15 +45,10 @@ class TermLogEntry implements Comparable<TermLogEntry> {
 		return termIdentifier;
 	}
 
-	public Compiler getCompiler() {
-		return compiler;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((compiler == null) ? 0 : compiler.hashCode());
 		result = prime * result + ((section == null) ? 0 : section.hashCode());
 		result = prime * result + ((termClass == null) ? 0 : termClass.hashCode());
 		result = prime * result + ((termIdentifier == null) ? 0 : termIdentifier.hashCode());
@@ -69,10 +61,6 @@ class TermLogEntry implements Comparable<TermLogEntry> {
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		TermLogEntry other = (TermLogEntry) obj;
-		if (compiler == null) {
-			if (other.compiler != null) return false;
-		}
-		else if (!compiler.equals(other.compiler)) return false;
 		if (section == null) {
 			if (other.section != null) return false;
 		}
@@ -93,8 +81,7 @@ class TermLogEntry implements Comparable<TermLogEntry> {
 		if (this == o) return 0;
 		if (o == null) return -1;
 
-		int result = 0;
-
+		int result;
 		if (section == null) {
 			if (o.section != null) return 1;
 		}
