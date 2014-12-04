@@ -55,7 +55,7 @@ public class CIHookManager {
 	 * @param monitoredArticle the article to trigger hooks for
 	 */
 	public static synchronized void triggerHooks(Article monitoredArticle) {
-		Set<CIHook> hookSet = hooks.getValues(monitoredArticle);
+		Set<CIHook> hookSet = hooks.getValues(monitoredArticle.getTitle());
 		for (final CIHook hook : hookSet) {
 			CIBuildManager.startBuild(hook.getDashboard());
 		}
