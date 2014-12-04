@@ -20,11 +20,10 @@
 
 package de.d3web.we.ci4ke.hook;
 
-import java.util.Collection;
 import java.util.Set;
 
+import de.d3web.collections.DefaultMultiMap;
 import de.d3web.collections.MultiMap;
-import de.d3web.collections.N2MMap;
 import de.d3web.we.ci4ke.build.CIBuildManager;
 import de.knowwe.core.kdom.Article;
 
@@ -36,19 +35,18 @@ public class CIHookManager {
 	/**
 	 * Fore each monitored articles a list of hooks are stored.
 	 */
-	private static final MultiMap<Article, CIHook> hooks = new N2MMap<Article, CIHook>();
+	private static final MultiMap<String, CIHook> hooks = new DefaultMultiMap<>();
 
 	public static synchronized void registerHook(CIHook hook) {
-		Collection<String> monitoredArticles = hook.getMonitoredArticles();
-		for (String monitoredArticle : monitoredArticles) {
-			Article article = hook.getDashboard().getDashboardSection().getArticleManager().getArticle(
-					monitoredArticle);
-			hooks.put(article, hook);
+		for (String monitoredArticle : hook.getMonitoredArticles()) {
+			hooks.put(monitoredArticle, hook);
 		}
 	}
 
 	public static synchronized void unregisterHook(CIHook hook) {
-		hooks.removeValue(hook);
+		for (String monitoredArticle : hook.getMonitoredArticles()) {
+			hooks.removeKey(monitoredArticle);
+		}
 	}
 
 	/**

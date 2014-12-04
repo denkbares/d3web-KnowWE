@@ -151,16 +151,16 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 */
 	@Override
 	public String toString() {
-		String typeString = type != null ? this.get().getClass().getSimpleName() + ": " : "";
+		String typeString = type != null ? this.get().getClass().getSimpleName() : "Type=null";
 		String content;
 		if (type != null && type instanceof Term) {
 			Section<Term> simpleTerm = Sections.cast(this, Term.class);
 			content = simpleTerm.get().getTermIdentifier(simpleTerm).toString();
 		}
 		else {
-			content = this.getText();
+			content = getText();
 		}
-		return typeString + "'" + content + "'";
+		return typeString + " (" + getTitle() + "): '" + content + "'";
 	}
 
 	/**
