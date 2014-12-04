@@ -186,7 +186,7 @@ public class PaginationRenderer implements Renderer {
 
 			result.appendHtml("<span class=fillText> to </span>");
 
-			String resultSize = getResultSize(sec, user);
+			String resultSize = getResultSize(user);
 			boolean forward = true;
 			if (!resultSize.equals("maximum lines")) {
 				if (Integer.parseInt(resultSize) < startRow + count - 1) {
@@ -215,7 +215,7 @@ public class PaginationRenderer implements Renderer {
 			result.appendHtml("<span class=fillText> Lines </span>");
 			result.appendHtml("<input size=3 class='startRow' type=\"field\" value='1'>");
 
-			result.appendHtml("<span class=fillText> to " + getResultSize(sec, user) + "</span>");
+			result.appendHtml("<span class=fillText> to " + getResultSize(user) + "</span>");
 
 			renderToolbarButton(
 					FontAwesomeIcon.NEXT, "KNOWWE.core.plugin.pagination.navigate('"
@@ -288,9 +288,9 @@ public class PaginationRenderer implements Renderer {
 		return Integer.parseInt(STARTROW_DEFAULT);
 	}
 
-	private static String getResultSize(Section<?> sec, UserContext user) {
-		if (user.getSession().getAttribute(RESULTSIZE + sec.getID()) != null) {
-			return user.getSession().getAttribute(RESULTSIZE + sec.getID()).toString();
+	private static String getResultSize(UserContext user) {
+		if (user.getRequest().getAttribute(RESULTSIZE) != null) {
+			return user.getRequest().getAttribute(RESULTSIZE).toString();
 		}
 		else {
 			return "maximum lines";
@@ -327,7 +327,7 @@ public class PaginationRenderer implements Renderer {
 	 * (true is ascending)
 	 */
 	public static Pair<String, Boolean> getSingleColumnSorting(Section<?> sec, UserContext user) {
-		if (!getSorting(sec, user, true).isEmpty()) {
+		if (!(getSorting(sec, user, true).isEmpty())) {
 			return getSorting(sec, user, true).stream().findFirst().get();
 		}
 		else {
@@ -349,6 +349,9 @@ public class PaginationRenderer implements Renderer {
 	private static List<Pair<String, Boolean>> getSorting(Section<?> sec, UserContext user, boolean onlyFirst) {
 		List<Pair<String, Boolean>> list = new LinkedList<>();
 		JSONArray sorting = getSortingArray(sec, user);
+		if (sorting.length() == 0) {
+			return list;
+		}
 		int length;
 		if (onlyFirst) {
 			length = 1;
@@ -416,7 +419,7 @@ public class PaginationRenderer implements Renderer {
 	}
 
 	private static String getResultSizeTag(Section<?> sec, UserContext user) {
-		String maxResult = getResultSize(sec, user);
+		String maxResult = getResultSize(user);
 		return "<span class=fillText> lines of " + maxResult + "</span>";
 	}
 
@@ -426,8 +429,8 @@ public class PaginationRenderer implements Renderer {
 	 *
 	 * @created 27.01.2014
 	 */
-	public static void setResultSize(UserContext context, Section<?> sec, int maxResult) {
-		context.getSession().setAttribute(RESULTSIZE + sec.getID(), Integer.toString(maxResult));
+	public static void setResultSize(UserContext context, int maxResult) {
+		context.getRequest().setAttribute(RESULTSIZE, Integer.toString(maxResult));
 	}
 
 	/**
@@ -441,7 +444,7 @@ public class PaginationRenderer implements Renderer {
 		for (Pair<String, List<String>> filter : filters) {
 			filterList.add(filter);
 		}
-		context.getSession().setAttribute(FILTER, filterList);
+		context.getRequest().setAttribute(FILTER, filterList);
 	}
 
 	/**
@@ -462,7 +465,7 @@ public class PaginationRenderer implements Renderer {
 	}
 
 	private static List<Pair<String, List<String>>> getFilterList(UserContext context) {
-		List<Pair<String, List<String>>> filterList = (List<Pair<String, List<String>>>) context.getSession()
+		List<Pair<String, List<String>>> filterList = (List<Pair<String, List<String>>>) context.getRequest()
 				.getAttribute(FILTER);
 		if (filterList == null) {
 			return new LinkedList<>();
@@ -472,7 +475,7 @@ public class PaginationRenderer implements Renderer {
 
 	private static void renderHiddenFilterDiv(UserContext context, RenderResult result, Section<?> section) {
 		List<Pair<String, List<String>>> filterList = getFilterList(context);
-		result.appendHtmlTag("div", "id", "paginationFilters", "display", "block");
+		result.appendHtmlTag("div", "id", "paginationFilters", "display", "none");
 
 		for (Pair<String, List<String>> filter : filterList) {
 			result.appendHtmlTag("div", "filterName", filter.getA());
@@ -485,7 +488,7 @@ public class PaginationRenderer implements Renderer {
 						getFilters(section, context).get(filter.getA()).contains(filterValue)) {
 					checked = "checked";
 				}
-				result.appendHtml("<input type='checkbox' onchange='KNOWWE.core.plugin.pagination.filter(this, &#39;" + section
+				result.appendHtml("<input type='checkbox' class='knowwe-paginationFilter' onchange='KNOWWE.core.plugin.pagination.filter(this, &#39;" + section
 						.getID() + "&#39;)' filterkey='" + filter.getA() + "' filtervalue='" + filterValue + "' " + checked + ">");
 				result.appendHtml(filterValue);
 				result.appendHtml("</span>");

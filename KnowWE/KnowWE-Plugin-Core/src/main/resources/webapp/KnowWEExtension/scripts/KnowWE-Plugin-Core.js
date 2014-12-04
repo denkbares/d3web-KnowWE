@@ -604,17 +604,17 @@ KNOWWE.core.plugin.pagination = function() {
 	}
 
 	function prepareFilterableElements() {
-		var filterIcon = jq$('<img/>', {
-			"src" : 'KnowWEExtension/images/filter.png',
-			"class" : 'filter'
+		var filterIcon = jq$('<i/>', {
+			"class" : 'fa fa-filter knowwe-filter'
 		});
 		jq$(this).prepend(filterIcon);
 		var text = jq$(this).text();
 		var preparedFilter = jq$("#paginationFilters div[filtername=" + text + "]").detach();
 		jq$(filterIcon).tooltipster({
-			content : jq$(preparedFilter).html(),
+			content : jq$(preparedFilter),
 			interactive : true,
-			interactiveTolerance : 1000
+			interactiveTolerance : 500,
+			theme : "tooltipster-knowwe"
 		});
 	}
 
@@ -954,6 +954,15 @@ KNOWWE.core.plugin.rightPanel = function() {
 
 		});
 
+		//make sidebar resizable
+		var maxWidth = jq$(window).width() - jq$("#favorites").outerWidth();
+		rightPanel.resizable({
+			handles : "w",
+			minWidth : 300,
+			maxWidth : maxWidth,
+			alsoResize : "#watches textarea, #watches .watchlistline"
+		});
+
 
 	}
 
@@ -970,11 +979,10 @@ KNOWWE.core.plugin.rightPanel = function() {
 		jq$("#page").animate({
 			'width' : "+=300px"
 		}, globalFloatingTime);
-		var sidebar = jq$("#rightPanel");
-		sidebar.animate({
+		rightPanel.animate({
 			left : ((jq$(window).width() + 311) + "px")
 		}, globalFloatingTime, function() {
-			sidebar.remove();
+			rightPanel.remove();
 		});
 		jq$("#pagecontent").css("margin-right", "auto");
 		jq$("#actionsBottom").css("margin-right", "auto");
@@ -983,7 +991,7 @@ KNOWWE.core.plugin.rightPanel = function() {
 	function buildRightPanel() {
 		var offsetTop = jq$(".tabs").offset().top;
 		var scrollTop = jq$(window).scrollTop();
-		var rightPanel = jq$('<div/>', {
+		rightPanel = jq$('<div/>', {
 			'id' : 'rightPanel',
 			'css' : {
 				'position' : 'absolute',
@@ -1015,15 +1023,6 @@ KNOWWE.core.plugin.rightPanel = function() {
 		rightPanel.append(rightPanelHide);
 		jq$("#content").append(rightPanel);
 
-
-		//make sidebar resizable
-		var maxWidth = jq$(window).width() - jq$("#favorites").outerWidth();
-		rightPanel.resizable({
-			handles : "w",
-			minWidth : 300,
-			maxWidth : maxWidth,
-			alsoResize : "#watches textarea, #watches .watchlistline"
-		});
 	}
 
 	function initRightPanelTools() {
@@ -1087,20 +1086,24 @@ KNOWWE.core.plugin.rightPanel = function() {
 	}
 
 	function initRightPanel(fromCookie) {
-		showSidebar = true;
-		if (fromCookie) {
-			globalFloatingTime = 0;
+		if (showSidebar) {
+
 		}
 		else {
-			globalFloatingTime = 500;
+			showSidebar = true;
+			if (fromCookie) {
+				globalFloatingTime = 0;
+			}
+			else {
+				globalFloatingTime = 500;
+			}
+			shrinkPage();
+			buildRightPanel();
+			floatRightPanel();
+			setRightPanelCookie(true);
+			bindUiActions();
+			initRightPanelTools();
 		}
-		shrinkPage();
-		buildRightPanel();
-		floatRightPanel();
-		rightPanel = jq$("#rightPanel");
-		setRightPanelCookie(true);
-		bindUiActions();
-		initRightPanelTools();
 	}
 
 	function terminateRightPanel() {
@@ -1605,6 +1608,11 @@ KNOWWE.core.plugin.rightPanel.watches = function() {
 			KNOWWE.helper.observer.subscribe("update", function() {
 				updateWatches();
 			});
+		},
+
+		addToWatches : function(text) {
+			KNOWWE.core.plugin.rightPanel.showRightPanel();
+			addWatch(text);
 		}
 	}
 }
