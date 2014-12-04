@@ -47,6 +47,7 @@ public class Article {
 	private final String title;
 
 	private final String web;
+	private final String text;
 
 	/**
 	 * The section representing the root-node of the KDOM-tree
@@ -86,7 +87,8 @@ public class Article {
 		long start = System.currentTimeMillis();
 		this.title = title;
 		this.web = web;
-		this.lastVersion = Environment.getInstance().getArticle(web, title);
+		this.text = text;
+		this.lastVersion = Environment.isInitialized() ? Environment.getInstance().getArticle(web, title) : null;
 
 		this.fullParse = fullParse
 				|| lastVersion == null
@@ -115,6 +117,7 @@ public class Article {
 		this.fullParse = false;
 		this.rootSection = Section.createSection("", getRootType(), null);
 		this.rootSection.setArticle(this);
+		this.text = "";
 	}
 
 	public void clearLastVersion() {
@@ -197,7 +200,7 @@ public class Article {
 	 * @created 25.11.2013
 	 */
 	public String getText() {
-		return getRootSection().getText();
+		return text;
 	}
 
 	@Override

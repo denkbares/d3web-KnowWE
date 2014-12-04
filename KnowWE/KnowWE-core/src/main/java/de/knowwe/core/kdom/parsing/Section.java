@@ -81,9 +81,15 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	private String id = null;
 
 	/**
-	 * Contains the text of this KDOM-node
+	 * The text of this section. For memory footprint reasons, this is normally null and the text is instead calculated
+	 * via offset from article and text length
 	 */
-	protected String text;
+	private String text;
+
+	/**
+	 * The length of the section's text, it will be used to calculate the text as soon as asked
+	 */
+	private int textLength;
 
 	/**
 	 * The child-nodes of this KDOM-node. This forms the tree-structure of KDOM.
@@ -139,8 +145,13 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	private Section(String text, T objectType, Section<?> parent) {
 		this.parent = parent;
 		this.type = objectType;
-		this.text = text;
-		if (parent != null) {
+		this.textLength = text.length();
+		if (parent == null) {
+			// Should only happen in text scenarios or while initializing... since we don't have an article, we set the
+			// text manually. As soon as an article is set, the text is removed again.
+			this.text = text;
+		}
+		else {
 			this.parent.addChild(this);
 			this.article = parent.getArticle();
 		}
@@ -223,23 +234,39 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @return the text of this Section/Node
 	 */
 	public String getText() {
-		return text;
+		if (text == null) {
+			return getArticle().getText().substring(getOffsetInArticle(), getOffsetInArticle() + textLength);
+		}
+		else {
+			return text;
+		}
 	}
 
-	/**
-	 * Sets the text of this node. This IS an article source edit operation!
-	 * through the whole tree OR initialize tree again!
-	 */
 	public void setText(String newText) {
-		this.text = newText;
-		Section<? extends Type> ancestor = this.getParent();
-		while (ancestor != null) {
-			ancestor = ancestor.getParent();
+		this.textLength = newText.length();
+		if (getArticle() == null) this.text = newText;
+		Section<? extends Type> parent = getParent();
+		if (parent != null) {
+			// we have to reset the offsets in all siblings after this section
+			boolean found = false;
+			for (Section<? extends Type> sibling : parent.getChildren()) {
+				if (sibling == this || !found) {
+					found = true;
+					continue;
+				}
+				new Sections<>(sibling).successor().forEach(successor -> {
+					successor.offsetInArticle = -1;
+					successor.offsetInParent = -1;
+				});
+			}
+			// to same for ancestors recursively
+			parent.setText(parent.collectTextsFromChildren());
 		}
 	}
 
 	public void setArticle(Article article) {
 		this.article = article;
+		this.text = null;
 	}
 
 	/**
@@ -407,7 +434,8 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 				.append(")")
 				.append(", children: ")
 				.append(getChildren().size());
-		String ot = this.getText().length() < 50 ? text : text.substring(0, 50) + "...";
+		String text = getText();
+		String ot = this.textLength < 50 ? text : text.substring(0, 50) + "...";
 		ot = ot.replaceAll("\\n", "\\\\n");
 		result.append(", \"").append(ot);
 		result.append("\"");
