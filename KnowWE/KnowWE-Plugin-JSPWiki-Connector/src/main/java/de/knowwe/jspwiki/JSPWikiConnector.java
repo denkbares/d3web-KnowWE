@@ -503,12 +503,11 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public String getArticleText(String title) {
-		return getAuthor(title, -1);
+		return getArticleText(title, -1);
 	}
 
 	@Override
 	public String getArticleText(String title, int version) {
-
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
@@ -518,25 +517,15 @@ public class JSPWikiConnector implements WikiConnector {
 			return null;
 		}
 
-		WikiContext context = new WikiContext(this.engine, this.engine
-				.getPage(title));
-
-		String pagedata = null;
+		String pageText;
 		try {
-			if (version == -1) {
-				pagedata = context.getEngine().getPureText(
-						context.getPage().getName(), context.getPage().getVersion());
-			}
-			else if (context.getEngine().pageExists(context.getPage().getName(), version)) {
-				pagedata = context.getEngine().getPureText(
-						context.getPage().getName(), version);
-			}
+			pageText = engine.getPageManager().getPageText(title, version);
 		}
 		catch (ProviderException e) {
 			return null;
 		}
 
-		return pagedata;
+		return pageText;
 	}
 
 	@SuppressWarnings("unchecked")
