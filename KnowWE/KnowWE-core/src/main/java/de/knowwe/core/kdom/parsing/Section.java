@@ -63,7 +63,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	/**
 	 * Stores Sections by their IDs.
 	 */
-	private static final Map<String, Section<?>> sectionMap = new HashMap<>(2048);
+	private static final Map<Integer, Section<?>> sectionMap = new HashMap<>(2048);
 
 	private List<Integer> position = null;
 
@@ -78,7 +78,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	/**
 	 * The ID of this Section.
 	 */
-	private String id = null;
+	private int id = -1;
 
 	/**
 	 * The text of this section. For memory footprint reasons, this is normally null and the text is instead calculated
@@ -443,10 +443,10 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	public String getID() {
-		if (id == null) {
+		if (id == -1) {
 			id = generateAndRegisterSectionID(this);
 		}
-		return id;
+		return Integer.toHexString(id);
 	}
 
 	// @Override
@@ -474,7 +474,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	protected boolean hasID() {
-		return this.id != null;
+		return this.id != -1;
 	}
 
 	/**
@@ -688,18 +688,17 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @return the ID for the given Section
 	 * @created 05.09.2011
 	 */
-	private static String generateAndRegisterSectionID(Section<?> section) {
-		int hashCode = section.getSignatureString().hashCode();
-		String id = Integer.toHexString(hashCode);
+	private static int generateAndRegisterSectionID(Section<?> section) {
+		int hash = section.getSignatureString().hashCode();
 		synchronized (sectionMap) {
-			Section<?> existingSection = sectionMap.get(id);
-			while (existingSection != null) {
-				id = Integer.toHexString(++hashCode);
-				existingSection = sectionMap.get(id);
+			Section<?> existingSection = sectionMap.get(hash);
+			while (existingSection != null || hash == -1) {
+				++hash;
+				existingSection = sectionMap.get(hash);
 			}
-			sectionMap.put(id, section);
+			sectionMap.put(hash, section);
 		}
-		return id;
+		return hash;
 	}
 
 	/**
