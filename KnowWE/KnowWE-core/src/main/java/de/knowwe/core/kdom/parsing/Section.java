@@ -733,7 +733,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 
 	private static void unregisterID(Section<?> section) {
 		synchronized (sectionMap) {
-			sectionMap.remove(section.getID());
+			sectionMap.remove(section.id);
 		}
 	}
 
@@ -745,7 +745,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 */
 	protected static Section<?> get(String id) {
 		synchronized (sectionMap) {
-			return sectionMap.get(id);
+			return sectionMap.get(Integer.parseInt(id, 16));
 		}
 	}
 
