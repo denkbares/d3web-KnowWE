@@ -44,13 +44,13 @@ public class TestCasePlayerType extends DefaultMarkupType {
 		MARKUP.addAnnotationRenderer(PackageManager.COMPILE_ATTRIBUTE_NAME, StyleRenderer.ANNOTATION);
 		MARKUP.setAnnotationDeprecated(PackageManager.COMPILE_ATTRIBUTE_NAME);
 		PackageManager.addPackageAnnotation(MARKUP);
-		MARKUP.addAnnotation(TestCaseUtils.NUM_VALUE_OUT_OF_RANGE, false, "ignore", "set");
-		MARKUP.addAnnotationRenderer(TestCaseUtils.NUM_VALUE_OUT_OF_RANGE, StyleRenderer.ANNOTATION);
+		MARKUP.addAnnotation(TestCaseUtils.VALUE_OUT_OF_RANGE, false, "skip", "set");
+		MARKUP.addAnnotationRenderer(TestCaseUtils.VALUE_OUT_OF_RANGE, StyleRenderer.ANNOTATION);
 	}
 
-	public static boolean ignoreNumValueOutOfRange(Section<?> playerSection) {
-		String ignoreAnnotation = DefaultMarkupType.getAnnotation(playerSection, TestCaseUtils.NUM_VALUE_OUT_OF_RANGE);
-		return "ignore".equals(ignoreAnnotation);
+	public static boolean skipNumValueOutOfRange(Section<?> playerSection) {
+		String ignoreAnnotation = DefaultMarkupType.getAnnotation(playerSection, TestCaseUtils.VALUE_OUT_OF_RANGE);
+		return "skip".equals(ignoreAnnotation);
 	}
 
 	public TestCasePlayerType() {

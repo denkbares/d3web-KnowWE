@@ -64,7 +64,7 @@ public class ExecuteCasesAction extends AbstractAction {
 					+ " has edited the page.");
 			return;
 		}
-		boolean ignoreNumValueOutOfRange = TestCasePlayerType.ignoreNumValueOutOfRange(playerSection);
+		boolean ignoreNumValueOutOfRange = TestCasePlayerType.skipNumValueOutOfRange(playerSection);
 		TestCaseProviderStorage providerStorage = de.knowwe.testcases.TestCaseUtils.getTestCaseProviderStorage(
 				providerSection);
 		TestCaseProvider provider = providerStorage.getTestCaseProvider(testCaseName);
