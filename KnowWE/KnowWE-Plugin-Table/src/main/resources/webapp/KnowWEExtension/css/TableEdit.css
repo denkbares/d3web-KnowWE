@@ -1,7 +1,6 @@
 .actionMenu {
 	border: 1px solid #D5D5D5; 
 	background-color: white;
-	font-family: Arial, Helvetica;
 	font-size: 9pt;
 	position: absolute; 
 	z-index: 999;

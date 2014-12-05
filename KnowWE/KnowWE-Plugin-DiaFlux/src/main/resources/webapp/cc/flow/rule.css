@@ -6,7 +6,6 @@
 }
 
 .Rule .guard {
-	font-family: Arial, Helvetica;
 	font-size: 8pt;
 	white-space: nowrap;
 	line-height: 12px;
@@ -134,7 +133,6 @@
 
 .Rule .guard optgroup {
 	color: gray;
-	font-family: Arial, Helvetica;
 	font-size: 8pt;
 	font-weight: normal;
 	text-align: center;

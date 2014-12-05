@@ -1,6 +1,5 @@
 
 .NodeEditor {
-	font-family: Arial,Helvetica;
 	font-size: 10pt;
 	position: absolute;
 	margin-top: 20px;
@@ -20,7 +19,6 @@
 
 .NodeEditor optgroup {
 	color: gray;
-	font-family: Arial,Helvetica;
 	font-size: 8pt;
 	font-weight: 100;
 	text-align: center;
