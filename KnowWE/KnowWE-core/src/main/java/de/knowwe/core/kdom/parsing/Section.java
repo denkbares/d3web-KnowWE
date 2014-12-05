@@ -745,7 +745,10 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 */
 	protected static Section<?> get(String id) {
 		synchronized (sectionMap) {
-			return sectionMap.get(Integer.parseInt(id, 16));
+			// We have to parse long and convert to int, because when converting a int to a hex string, the negative
+			// sign is lost, resulting in for Integer.parseInt() not parsable values. Parsing long and casting
+			// to int will restore the negative sign.
+			return sectionMap.get((int) Long.parseLong(id, 16));
 		}
 	}
 
