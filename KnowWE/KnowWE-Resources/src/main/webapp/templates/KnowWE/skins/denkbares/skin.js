@@ -286,20 +286,28 @@ DenkbaresSkin.toggleFavorites = function() {
 	var favorites = jq$('#favorites');
 	var page = jq$('#page');
 	var toggle = jq$('#favorites-toggle');
+	var toggleButton = jq$('#favorites-toggle-button');
 	favorites.css(DenkbaresSkin.toggleTransitionDuration);
 	page.css(DenkbaresSkin.toggleTransitionDuration);
 	toggle.css(DenkbaresSkin.toggleTransitionDuration);
+	var status = DenkbaresSkin.favoriteStatus;
 	if (DenkbaresSkin.favoriteStatus.status == 'expanded') {
-		favorites.css({left : DenkbaresSkin.favoriteStatus.favLeftCollapsed + "px"});
-		page.css({left : DenkbaresSkin.favoriteStatus.pageLeftCollapsed + "px"});
-		toggle.css({cursor : 'e-resize', left : DenkbaresSkin.favoriteStatus.pageLeftCollapsed + "px"});
-		toggle.find('i').removeClass('fa-angle-double-left').addClass('fa-angle-double-right');
+		favorites.css({left : status.favLeftCollapsed + "px"});
+		page.css({left : status.pageLeftCollapsed + "px"});
+		toggle.css({cursor : 'e-resize', left : status.pageLeftCollapsed + "px"});
+		toggle.unbind('transitionend').on('transitionend', function() {
+			toggleButton.css({'border-top-left-radius': status.toggleButtonRadiusCollapsed});
+			toggleButton.find('i').removeClass('fa-angle-double-left').addClass('fa-angle-double-right');
+		});
 		DenkbaresSkin.favoriteStatus.status = 'collapsed';
 	} else {
-		favorites.css({left : DenkbaresSkin.favoriteStatus.favLeftExpanded + "px"});
-		page.css({left : DenkbaresSkin.favoriteStatus.pageLeftExpanded + "px"});
-		toggle.css({cursor : 'w-resize', left : DenkbaresSkin.favoriteStatus.pageLeftExpanded + "px"});
-		toggle.find('i').removeClass('fa-angle-double-right').addClass('fa-angle-double-left');
+		favorites.css({left : status.favLeftExpanded + "px"});
+		page.css({left : status.pageLeftExpanded + "px"});
+		toggle.css({cursor : 'w-resize', left : status.pageLeftExpanded + "px"});
+		toggleButton.css({'border-top-left-radius': status.toggleButtonRadiusExpanded});
+		toggle.unbind('transitionend').on('transitionend', function() {
+			toggle.find('i').removeClass('fa-angle-double-right').addClass('fa-angle-double-left');
+		});
 		DenkbaresSkin.favoriteStatus.status = 'expanded';
 	}
 	jq$(page).bind('transitionend', function() {
@@ -335,9 +343,11 @@ DenkbaresSkin.addFavoriteToggle = function() {
 		favLeftExpanded : jq$('#favorites').offset().left,
 		pageLeftExpanded : jq$('#page').offset().left,
 		toggleLeftExpanded : jq$('#favorites-toggle').offset().left,
+		toggleButtonRadiusExpanded : jq$('#favorites-toggle-button').css('border-top-left-radius'),
 		favLeftCollapsed : -(jq$('#page').offset().left - 5),
 		pageLeftCollapsed : 5,
-		toggleLeftCollapsed : 5
+		toggleLeftCollapsed : 5,
+		toggleButtonRadiusCollapsed : 0
 	};
 	jq$(window).scroll(setTogglePosition);
 	jq$(window).resize(setTogglePosition);

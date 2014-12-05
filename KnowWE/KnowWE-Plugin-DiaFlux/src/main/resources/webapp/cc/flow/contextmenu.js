@@ -219,8 +219,9 @@ CCEvents.addClassListener('contextmenu', 'Rule',
 
 //createMenu when dom is ready
 document.observe("dom:loaded", function() {
-	
-	
+
+	return; // context menu is currently deactivated
+
 	contextMenuNode = new ContextMenu("contextMenuNode");
 	contextMenuNode.addItem("Cut", "theFlowchart.cut();");
 	contextMenuNode.addItem("Copy", "theFlowchart.copySelectionToClipboard();");
@@ -245,7 +246,6 @@ document.observe("dom:loaded", function() {
 	//TODO 
 	//contextMenuRule.addSeparator("Delete", "FlowEditor.removeSelection(contextMenuRule.getSelection());", Flowchart.imagePath + "contextmenu/delete.png");
 	
-	
-	
+
 });
 
