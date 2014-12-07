@@ -873,6 +873,8 @@ KNOWWE.core.plugin.rightPanel = function() {
 
 	var initScrolling = null;
 
+	var windowWidth;
+
 	function getSelected() {
 		var t = '';
 		if (window.getSelection) {
@@ -928,41 +930,62 @@ KNOWWE.core.plugin.rightPanel = function() {
 	}
 
 
+	function makeRightPanelResizable() {
+		rightPanel.resizable({
+			handles : "w",
+			minWidth : 300,
+			maxWidth : jq$(window).width() - (jq$(".tabmenu a:last-child").first().offset().left + jq$(".tabmenu a:last-child").first().outerWidth() + jq$("#actionsTop").outerWidth() + jq$("#rightPanel .ui-resizable-w").width() + 20),
+			alsoResize : "#watches textarea, #watches .watchlistline",
+			resize : function(event, ui) {
+				var resize = jq$(window).width() - jq$(rightPanel).outerWidth() - jq$("#favorites").outerWidth() + 5;
+
+				jq$("#page").css("width", resize + "px");
+			}
+		});
+	}
+
+	function restoreLayout() {
+		var resize = jq$(window).width() - jq$("#favorites").outerWidth() - 300;
+		jq$("#page").css("width", resize + "px");
+		jq$(rightPanel).css("width", "300px");
+		var pagesRightOffset = (jq$(window).width() - (jq$("#actionsTop").offset().left + jq$("#actionsTop").width()));
+		rightPanel.css("left", (jq$(window).width() - pagesRightOffset) + "px");
+	}
+
 	function floatRightPanel() {
 
 		showSidebar = true;
 
 
-		var sidebar = jq$("#rightPanel");
 		var options = {right : '0px'}
 
-		sidebar.animate(options, globalFloatingTime, function() {
-			//"left" is needed for resizable to work properly - kind of a dirty hack but don't know how to compute that "311"
-			sidebar.css("left", (jq$(window).width() - 311) + "px");
+		rightPanel.animate(options, globalFloatingTime, function() {
+			//"left" is needed for resizable to work properly
+			var pagesRightOffset = (jq$(window).width() - (jq$("#actionsTop").offset().left + jq$("#actionsTop").width()));
+			rightPanel.css("left", (jq$(window).width() - pagesRightOffset) + "px");
 		});
 		initScrolling = jq$(".tabs").offset().top;
 		jq$(window).scroll(function() {
-
 			watchesFavScroll();
 		});
 
-		jq$(window).resize(function() {
-			var rt = (jq$(window).width() - (rightPanel.offset().left + rightPanel.outerWidth()));
-			var left = rightPanel.position().left;
-			jq$("#page").width(jq$("#page").width() + rt);
-			rightPanel.css("left", left + rt);
+		windowWidth = jq$(window).width();
 
+		jq$(window).resize(function() {
+			if (windowWidth != jq$(window).width()) {
+				rightPanel.resizable("destroy");
+				//Do something
+				windowWidth = jq$(window).width();
+				restoreLayout();
+				makeRightPanelResizable();
+			}
 		});
 
 		//make sidebar resizable
-		var maxWidth = jq$(window).width() - jq$("#favorites").outerWidth();
-		rightPanel.resizable({
-			handles : "w",
-			minWidth : 300,
-			maxWidth : maxWidth,
-			alsoResize : "#watches textarea, #watches .watchlistline"
-		});
+		makeRightPanelResizable();
+	}
 
+	function restoreOriginalLayout() {
 
 	}
 
@@ -1539,7 +1562,7 @@ KNOWWE.core.plugin.rightPanel.watches = function() {
 			'class' : 'watchlist'
 		});
 
-		var watchesAddEntry = jq$("<button class='addwatch'><i class='fa fa-plus-square'></i>&nbsp;Add Watch</button>");
+		var watchesAddEntry = jq$("<button class='addwatch'><i class='fa fa-plus-circle'></i>&nbsp;Add Watch</button>");
 
 
 		var watchesAddEntryFromSelection = jq$("<button class='fromselection'><i class='fa fa-paragraph'></i>&nbsp;from Selection</button>");
