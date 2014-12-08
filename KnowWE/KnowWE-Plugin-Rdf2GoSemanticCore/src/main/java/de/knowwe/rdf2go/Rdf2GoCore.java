@@ -79,6 +79,7 @@ import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.event.EventManager;
@@ -504,8 +505,8 @@ public class Rdf2GoCore {
 			if (removeSize > 0 || insertSize > 0) {
 				synchronized (resultCache) {
 					resultCache.clear();
+					resultCacheSize = 0;
 				}
-				resultCacheSize = 0;
 			}
 
 			// For logging...
@@ -537,7 +538,7 @@ public class Rdf2GoCore {
 
 
             /*
-            Fire events
+			Fire events
              */
 			boolean removedStatements = false;
 			if (removeCache.size() > 0) {
@@ -558,7 +559,7 @@ public class Rdf2GoCore {
 			}
 
             /*
-            Logging
+			Logging
              */
 			if (verboseLog) {
 				logStatements(new TreeSet<>(insertCache), startInsert,
@@ -575,7 +576,7 @@ public class Rdf2GoCore {
 			}
 
             /*
-            Reset caches
+			Reset caches
              */
 			removeCache = new HashSet<>();
 			insertCache = new HashSet<>();
@@ -1142,6 +1143,14 @@ public class Rdf2GoCore {
 
 	private Object sparql(String query, boolean cached, long timeOutMillis, SparqlType type) {
 		String completeQuery = completeQuery(query);
+
+		// if the compile thread is calling here, we continue without all the timeout, cache, and lock
+		// they are not needed in that context and do even cause problems and overhead
+		if (CompilerManager.isCompileThread()) {
+			return new SparqlCallable(completeQuery, type, true).call();
+		}
+
+		// normal query, most likely from a renderer... do all the cache, timeout, and lock stuff
 		SparqlTask sparqlTask;
 		if (cached) {
 			synchronized (resultCache) {
@@ -1227,27 +1236,33 @@ public class Rdf2GoCore {
 
 		@Override
 		public void run() {
-			synchronized (this) {
-				this.thread = Thread.currentThread();
-				startTime = System.currentTimeMillis();
-			}
+			lock.readLock().lock();
 			try {
-				sparqlDaemonPool.execute(new SparqlTaskDaemon(this));
-				super.run();
-			}
-			finally {
 				synchronized (this) {
-					thread = null;
+					this.thread = Thread.currentThread();
+					startTime = System.currentTimeMillis();
+				}
+				try {
+					sparqlDaemonPool.execute(new SparqlTaskDaemon(this));
+					super.run();
+				}
+				finally {
+					synchronized (this) {
+						thread = null;
+					}
+				}
+				if (callable.cached) {
+					handleCacheSize(this);
+				}
+				long sparqlTime = System.currentTimeMillis() - startTime;
+				if (sparqlTime > 1000 && !isCancelled()) {
+					Log.info("Finished sparql after "
+							+ Strings.getDurationVerbalization(sparqlTime)
+							+ ": " + callable.getReadableQuery() + "...");
 				}
 			}
-			if (callable.cached) {
-				handleCacheSize(this);
-			}
-			long sparqlTime = System.currentTimeMillis() - startTime;
-			if (sparqlTime > 1000 && !isCancelled()) {
-				Log.info("Finished sparql after "
-						+ Strings.getDurationVerbalization(sparqlTime)
-						+ ": " + callable.getReadableQuery() + "...");
+			finally {
+				lock.readLock().unlock();
 			}
 		}
 
@@ -1280,32 +1295,26 @@ public class Rdf2GoCore {
 		@Override
 		public Object call() {
 			Object result;
-			lock.readLock().lock();
-			try {
-				if (type == SparqlType.CONSTRUCT) {
-					ClosableIterable<Statement> constructResult = model.sparqlConstruct(query);
-					if (cached) {
-						result = toCachedClosableIterable(constructResult);
-					}
-					else {
-						result = new LockableClosableIterable<>(lock.readLock(), constructResult);
-					}
-				}
-				else if (type == SparqlType.SELECT) {
-					QueryResultTable selectResult = model.sparqlSelect(query);
-					if (cached) {
-						result = toCachedQueryResult(selectResult);
-					}
-					else {
-						result = new LockableResultTable(lock.readLock(), selectResult);
-					}
+			if (type == SparqlType.CONSTRUCT) {
+				ClosableIterable<Statement> constructResult = model.sparqlConstruct(query);
+				if (cached) {
+					result = toCachedClosableIterable(constructResult);
 				}
 				else {
-					result = model.sparqlAsk(query);
+					result = new LockableClosableIterable<>(lock.readLock(), constructResult);
 				}
 			}
-			finally {
-				lock.readLock().unlock();
+			else if (type == SparqlType.SELECT) {
+				QueryResultTable selectResult = model.sparqlSelect(query);
+				if (cached) {
+					result = toCachedQueryResult(selectResult);
+				}
+				else {
+					result = new LockableResultTable(lock.readLock(), selectResult);
+				}
+			}
+			else {
+				result = model.sparqlAsk(query);
 			}
 			if (Thread.currentThread().isInterrupted()) {
 				// not need to waste cache size (e.g. in case of half done results that were aborted)
@@ -1315,50 +1324,34 @@ public class Rdf2GoCore {
 		}
 
 		private CachedClosableIterable<Statement> toCachedClosableIterable(ClosableIterable<Statement> result) {
-			CachedClosableIterable<Statement> cachedResult;
-			lock.readLock().lock();
-			try {
-				ArrayList<Statement> statements = new ArrayList<>();
-				ClosableIterator<Statement> iterator = result.iterator();
-				synchronized (this) {
-					this.iterator = iterator;
-				}
-				for (; !Thread.currentThread().isInterrupted() && iterator.hasNext(); ) {
-					Statement statement = iterator.next();
-					statements.add(statement);
-				}
-				iterator.close();
-				statements.trimToSize();
-				cachedResult = new CachedClosableIterable<>(statements);
+			ArrayList<Statement> statements = new ArrayList<>();
+			ClosableIterator<Statement> iterator = result.iterator();
+			synchronized (this) {
+				this.iterator = iterator;
 			}
-			finally {
-				lock.readLock().unlock();
+			for (; !Thread.currentThread().isInterrupted() && iterator.hasNext(); ) {
+				Statement statement = iterator.next();
+				statements.add(statement);
 			}
-			return cachedResult;
+			iterator.close();
+			statements.trimToSize();
+			return new CachedClosableIterable<>(statements);
 		}
 
 		private CachedQueryResultTable toCachedQueryResult(QueryResultTable result) {
-			CachedQueryResultTable cachedResult;
-			lock.readLock().lock();
-			try {
-				ArrayList<QueryRow> rows = new ArrayList<>();
-				ClosableIterator<QueryRow> iterator = result.iterator();
-				synchronized (this) {
-					this.iterator = iterator;
-				}
-				for (; !Thread.currentThread().isInterrupted() && iterator.hasNext(); ) {
-					QueryRow queryRow = iterator.next();
-					rows.add(queryRow);
-				}
-				iterator.close();
-				rows.trimToSize();
-				List<String> variables = result.getVariables();
-				cachedResult = new CachedQueryResultTable(variables, rows);
+			ArrayList<QueryRow> rows = new ArrayList<>();
+			ClosableIterator<QueryRow> iterator = result.iterator();
+			synchronized (this) {
+				this.iterator = iterator;
 			}
-			finally {
-				lock.readLock().unlock();
+			for (; !Thread.currentThread().isInterrupted() && iterator.hasNext(); ) {
+				QueryRow queryRow = iterator.next();
+				rows.add(queryRow);
 			}
-			return cachedResult;
+			iterator.close();
+			rows.trimToSize();
+			List<String> variables = result.getVariables();
+			return new CachedQueryResultTable(variables, rows);
 		}
 
 		private String getReadableQuery() {

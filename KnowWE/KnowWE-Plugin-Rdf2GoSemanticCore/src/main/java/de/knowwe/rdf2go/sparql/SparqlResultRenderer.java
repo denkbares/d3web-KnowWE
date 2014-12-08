@@ -239,7 +239,7 @@ public class SparqlResultRenderer {
 
 		int startRow = PaginationRenderer.getStartRow(section, user);
 		int count = PaginationRenderer.getCount(section, user);
-		
+
 		while (iterator.hasNext()) {
 			line++;
 			if (line == Integer.MAX_VALUE || opts.isTree() || (line >= startRow && line < (startRow

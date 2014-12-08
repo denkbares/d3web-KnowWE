@@ -91,7 +91,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 			}
 			destroyScriptCompiler.destroy();
 		}
-		// While destroying, perhaps a complete compilation was requested...
+		// While destroying, perhaps a complete compilation was requested by some of the scripts
 		if (completeCompilation && !firstCompilation) {
 			// Since we we later compile all sections in the compile step, we first have to destroy all of them.
 			// This is different from just removing and adding a new compiler to the CompilerManager without
@@ -103,26 +103,40 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 			destroyScriptCompiler.destroy();
 		}
 
+		// we get the currently used core... either use the old one or create a new, depending on the current
+		// compilation mode
+		Rdf2GoCore currentCore = this.rdf2GoCore;
+
 		// a complete compilation... we reset TerminologyManager and Rdf2GoCore
 		// we compile all sections of the compiled packages, not just the added ones
 		if (completeCompilation) {
-			this.rdf2GoCore = new Rdf2GoCore(ruleSet);
+			currentCore = new Rdf2GoCore(ruleSet);
 			createTerminologyManager();
 			sectionsOfPackage = getPackageManager().getSectionsOfPackage(packagesToCompile);
 
 		}
 		// an incremental compilation... just compile the added sections
 		else {
-			if (this.rdf2GoCore == null) this.rdf2GoCore = new Rdf2GoCore(ruleSet);
 			sectionsOfPackage = getPackageManager().getAddedSections(packagesToCompile);
 		}
 
-		for (Section<?> section : sectionsOfPackage) {
-			scriptCompiler.addSubtree(section);
-		}
-		scriptCompiler.compile();
+		// we write lock before compiling (and committing) to avoid async read access by renderer
+		// on an empty repository in case of a complete compilation with a new Rdf2GoCore
+		currentCore.lock.writeLock().lock();
+		try {
+			this.rdf2GoCore = currentCore;
 
-		rdf2GoCore.commit();
+			for (Section<?> section : sectionsOfPackage) {
+				scriptCompiler.addSubtree(section);
+			}
+
+			scriptCompiler.compile();
+
+			rdf2GoCore.commit();
+		}
+		finally {
+			currentCore.lock.writeLock().unlock();
+		}
 
 		EventManager.getInstance().fireEvent(new OntologyCompilerFinishedEvent(this));
 
@@ -159,4 +173,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 		scriptCompiler.addSection(section, scriptFilter);
 	}
 
+	public RuleSet getRuleSet() {
+		return ruleSet;
+	}
 }
