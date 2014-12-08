@@ -27,6 +27,13 @@ import java.util.stream.Collectors;
  */
 public enum FontAwesomeIcon {
 
+	//general
+	// - delete icons for ToolProvider? Or every ToolProvider needs one?
+	// -
+	//
+
+	NONE(null),
+
 	// Navigation
 	NEXT("fa-angle-right"),
 	PREVIOUS("fa-angle-left"),
@@ -34,28 +41,81 @@ public enum FontAwesomeIcon {
 	FIRST("fa-angle-double-left"),
 
 	// Sorting
-	ASCENDING("fa-caret-down"),
-	DESCENDING("fa-caret-up"),
+	ASCENDING("fa-sort-asc"),
+	DESCENDING("fa-sort-desc"),
 	FILTER("fa-filter"),
 
 	// BASICS
-	EDIT("fa-edit"),
+	EDIT("fa-pencil"),
 	HELP("fa-question-circle"),
+	INFO("fa-info-circle"),
+	ERROR("fa-exclamation-triangle knowwe-error"),
+	WARNING("fa-exclamation-triangle knowwe-warning"),
+	SEARCH("fa-search"),
+	DELETE("fa-times-circle"),
 	DOWNLOAD("fa-download"),
+	UPLOAD("fa-upoload"),
+	IMPORT("fa-upload"),
 	REFRESH("fa-refresh"),
+	QRCODE("fa-qrcode"),
+	LINK("fa-link"),
+	CLIPBOARD("fa-clipboard"),
+	CLOCK("fa-clock"),
+	SHARE("fa-share"),
+	LIGHTBULB("fa-lightbulb"),
+	SHOW("fa-plus-square-o"),
+	HIDE("fa-minus-square-o"),
+	COG("fa-cog"),
+	PREFERENCES("fa-cog"),
+	LIST("fa-list-alt"),
+	COMMENT("fa-comment-o"),
+	STATISTICS("fa-line-chart"),
+	MINUS("fa-minus"),
+	PLUS("fa-minus"),
+	ADD("fa-plus-circle"),
 
 	// KnowWE specific
+	ARTICLE("fa-file-text-o"),
 	KNOWLEDGEBASE("fa-book"),
+	VISUALEDITOR("fa-eye"),
+	//temporary?
+	SHOWTRACE("fa-code-fork"),
+	//temporary
+	RENAME("fa-font"),
+	RUN("fa-play-circle"),
+	//temporary
+	PACKAGE("fa-puzzle-piece"),
+	EDITSECTION("fa-pencil-square-o"),
+	OPENPAGE("fa-pencil-square-o"),
+	DEBUG("fa-bug"),
+	CONSISTENCY("fa-crosshairs"),
+	CHECK("fa-check-square-o"),
+	CHECKED("fa-check"),
+	DEFER("fa-share"),
+
+	LOW_PRIO("fa-exclamation-circle knowwe-lowprio"),
+	HIGH_PRIO("fa-exclamation-circle knowwe-highprio"),
+
+	// TestCase
+	EXPAND("fa-plus-square-o"),
+	COLLAPSE("fa-minus-square-o"),
+	OPENTESTCASE(LINK.cssClass),
+	EDITTABLE("fa-table"),
 
 	// ON and OFF
 	TOGGLE_ON("fa-toggle-on"),
 	TOGGLE_OFF("fa-toggle-off"),
 
 	// FILE TYPES
+	NEW_FILE("fa-file-o"),
 	FILE("fa-file"),
+	FILE_TEXT("fa-file-text-o"),
 	FILE_EXCEL("fa-file-excel-o"),
 	FILE_WORD("fa-file-word-o"),
-	FILE_PDF("fa-file-pdf-o");
+	FILE_PDF("fa-file-pdf-o"),
+	FILE_ZIP("fa-file-zip-o"),
+	FILE_CODE("fa-file-code-o"),
+	FILE_XML(FILE_CODE.getCssClass());
 
 	private final String cssClass;
 
@@ -76,6 +136,18 @@ public enum FontAwesomeIcon {
 	 */
 	public String getIcon() {
 		return "<i class='fa " + cssClass + "'></i>";
+	}
+
+	public String getIconWithAdditionalClasses(String... cssClasses) {
+		String classes = Arrays.asList(cssClasses).stream().collect(Collectors.joining(" "));
+		return "<i class='fa " + getCssClass() + " " + classes + "'></i>";
+	}
+
+	/**
+	 * @return a HTML tag for that icon
+	 */
+	public String getFixedWithIcon() {
+		return "<i class='fa " + cssClass + " fa-fw'></i>";
 	}
 
 	/**
@@ -119,6 +191,10 @@ public enum FontAwesomeIcon {
 			default:
 				return "";
 		}
+	}
+
+	public String getToolMenuItem(String description) {
+		return "<i class='fa " + cssClass + " fa-fw'></i>&nbsp;" + description;
 	}
 
 }
