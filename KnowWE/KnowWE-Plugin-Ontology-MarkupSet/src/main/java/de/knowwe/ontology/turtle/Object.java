@@ -18,6 +18,12 @@
  */
 package de.knowwe.ontology.turtle;
 
+import java.util.List;
+
+import org.ontoware.rdf2go.model.node.Node;
+import org.ontoware.rdf2go.model.node.Resource;
+import org.ontoware.rdf2go.model.node.URI;
+
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compilers;
@@ -41,220 +47,216 @@ import de.knowwe.ontology.turtle.compile.StatementProvider;
 import de.knowwe.ontology.turtle.compile.StatementProviderResult;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.Resource;
-import org.ontoware.rdf2go.model.node.URI;
-
-import java.util.List;
 
 public class Object extends AbstractType implements NodeProvider<Object>, StatementProvider<Object> {
 
-    /*
-     * With strict compilation mode on, triples are not inserted into the
-     * repository when corresponding terms have errors, i.e., do not have a
-     * valid definition. With strict compilation mode off, triples are always
-     * inserted into the triple store, not caring about type definitions.
-     */
-    static boolean STRICT_COMPILATION = false;
+	/*
+	 * With strict compilation mode on, triples are not inserted into the
+	 * repository when corresponding terms have errors, i.e., do not have a
+	 * valid definition. With strict compilation mode off, triples are always
+	 * inserted into the triple store, not caring about type definitions.
+	 */
+	static boolean STRICT_COMPILATION = false;
 
-    public Object() {
-        this.setSectionFinder(new SectionFinder() {
+	public Object() {
+		this.setSectionFinder(new SectionFinder() {
 
-            @Override
-            public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-                return SectionFinderResult.resultList(Strings.splitUnquoted(text, ",", false,
-                        TurtleMarkup.TURTLE_QUOTES));
-            }
-        });
-        this.addChildType(new BlankNode());
-        this.addChildType(new BlankNodeID());
-        this.addChildType(TurtleCollection.getInstance());
-        this.addChildType(new TurtleLiteralType());
-        this.addChildType(new BooleanLiteral());
-        this.addChildType(new NumberLiteral());
-        this.addChildType(new TurtleLongURI());
-        this.addChildType(createObjectURIWithDefinition());
-        this.addChildType(new LazyURIReference());
-    }
+			@Override
+			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
+				return SectionFinderResult.resultList(Strings.splitUnquoted(text, ",", false,
+						TurtleMarkup.TURTLE_QUOTES));
+			}
+		});
+		this.addChildType(new BlankNode());
+		this.addChildType(new BlankNodeID());
+		this.addChildType(TurtleCollection.getInstance());
+		this.addChildType(new TurtleLiteralType());
+		this.addChildType(new BooleanLiteral());
+		this.addChildType(new NumberLiteral());
+		this.addChildType(new TurtleLongURI());
+		this.addChildType(createObjectURIWithDefinition());
+		this.addChildType(new LazyURIReference());
+	}
 
-    @SuppressWarnings("unchecked")
-    private Type createObjectURIWithDefinition() {
-        TurtleURI turtleURI = new TurtleURI();
-        SimpleReference reference = Types.successor(turtleURI, ResourceReference.class);
-        reference.addCompileScript(Priority.HIGH, new ObjectPredicateKeywordDefinitionHandler(new String[]{"[\\w]*?:instance"}));
-        return turtleURI;
-    }
+	@SuppressWarnings("unchecked")
+	private Type createObjectURIWithDefinition() {
+		TurtleURI turtleURI = new TurtleURI();
+		SimpleReference reference = Types.successor(turtleURI, ResourceReference.class);
+		reference.addCompileScript(Priority.HIGH, new ObjectPredicateKeywordDefinitionHandler(new String[] { "[\\w]*?:instance" }));
+		return turtleURI;
+	}
 
-    class ObjectPredicateKeywordDefinitionHandler extends PredicateKeywordDefinitionHandler {
+	class ObjectPredicateKeywordDefinitionHandler extends PredicateKeywordDefinitionHandler {
 
-        public ObjectPredicateKeywordDefinitionHandler(String[] matchExpressions) {
-            super(matchExpressions);
-        }
+		public ObjectPredicateKeywordDefinitionHandler(String[] matchExpressions) {
+			super(matchExpressions);
+		}
 
-        @Override
-        protected List<Section<Predicate>> getPredicates(Section<SimpleReference> s) {
-            // find the one predicate relevant for this turtle object
-            Section<PredicateObjectSentenceList> predSentence = Sections.ancestor(s,
-					PredicateObjectSentenceList.class);
+		@Override
+		protected List<Section<Predicate>> getPredicates(Section<SimpleReference> s) {
+			// find the one predicate relevant for this turtle object
+			Section<PredicateSentence> predSentence = Sections.ancestor(s,
+					PredicateSentence.class);
 
-            return Sections.successors(predSentence, Predicate.class);
-        }
+			return Sections.children(predSentence, Predicate.class);
+		}
 
-        @Override
-        public void compile(OntologyCompiler compiler, Section<SimpleReference> s) {
+		@Override
+		public void compile(OntologyCompiler compiler, Section<SimpleReference> s) {
 
-            List<Section<Predicate>> predicates = getPredicates(s);
-            boolean hasInstancePredicate = false;
-            for (Section<Predicate> section : predicates) {
-                for (String exp : matchExpressions) {
+			List<Section<Predicate>> predicates = getPredicates(s);
+			boolean hasInstancePredicate = false;
+			for (Section<Predicate> section : predicates) {
+				for (String exp : matchExpressions) {
 
-                    if (section.getText().matches(exp)) {
-                        hasInstancePredicate = true;
-                    }
-                }
-            }
+					if (section.getText().matches(exp)) {
+						hasInstancePredicate = true;
+					}
+				}
+			}
 
-            // we jump out if no matching predicate was found
-            if (!hasInstancePredicate) return;
+			// we jump out if no matching predicate was found
+			if (!hasInstancePredicate) return;
 
-            // If termIdentifier is null, obviously section chose not to define
-            // a term, however so we can ignore this case
-            Identifier termIdentifier = s.get().getTermIdentifier(s);
-            if (termIdentifier != null) {
-                compiler.getTerminologyManager()
-                        .registerTermDefinition(compiler, s, de.knowwe.ontology.kdom.resource.Resource.class,
-                                termIdentifier);
-            }
-        }
-    }
+			// If termIdentifier is null, obviously section chose not to define
+			// a term, however so we can ignore this case
+			Identifier termIdentifier = s.get().getTermIdentifier(s);
+			if (termIdentifier != null) {
+				compiler.getTerminologyManager()
+						.registerTermDefinition(compiler, s, de.knowwe.ontology.kdom.resource.Resource.class,
+								termIdentifier);
+			}
+		}
+	}
 
-    @Override
-    public StatementProviderResult getStatements(Section<Object> section, Rdf2GoCompiler core) {
+	@Override
+	public StatementProviderResult getStatements(Section<Object> section, Rdf2GoCompiler core) {
 
-        StatementProviderResult result = new StatementProviderResult();
-        boolean termError = false;
-        /*
+		StatementProviderResult result = new StatementProviderResult();
+		boolean termError = false;
+		/*
          * Handle OBJECT
 		 */
-        Node object = section.get().getNode(section, core);
-        Section<TurtleURI> turtleURITermObject = Sections.child(section, TurtleURI.class);
-        if (turtleURITermObject != null && STRICT_COMPILATION) {
-            boolean isDefined = checkTurtleURIDefinition(turtleURITermObject);
-            if (!isDefined) {
-                // error message is already rendered by term reference renderer
-                // we do not insert statement in this case
-                object = null;
-                termError = true;
-            }
-        }
-        if (object == null && !termError) {
-            result.addMessage(Messages.error("'" + section.getText().replaceAll("\\s+", " ")
-                    + "' is not a valid object."));
-        }
+		Node object = section.get().getNode(section, core);
+		Section<TurtleURI> turtleURITermObject = Sections.child(section, TurtleURI.class);
+		if (turtleURITermObject != null && STRICT_COMPILATION) {
+			boolean isDefined = checkTurtleURIDefinition(turtleURITermObject);
+			if (!isDefined) {
+				// error message is already rendered by term reference renderer
+				// we do not insert statement in this case
+				object = null;
+				termError = true;
+			}
+		}
+		if (object == null && !termError) {
+			result.addMessage(Messages.error("'" + section.getText().replaceAll("\\s+", " ")
+					+ "' is not a valid object."));
+		}
 
 		/*
 		 * Handle PREDICATE
 		 */
-        Section<PredicateSentence> predSentenceSection = Sections.ancestor(section,
+		Section<PredicateSentence> predSentenceSection = Sections.ancestor(section,
 				PredicateSentence.class);
-        Section<Predicate> predicateSection = Sections.child(predSentenceSection,
+		Section<Predicate> predicateSection = Sections.child(predSentenceSection,
 				Predicate.class);
 
-        if (predicateSection == null) {
-            result.addMessage(Messages.error("No predicate section found: " + section.toString()));
-            return result;
-        }
+		if (predicateSection == null) {
+			result.addMessage(Messages.error("No predicate section found: " + section.toString()));
+			return result;
+		}
 
-        URI predicate = predicateSection.get().getURI(predicateSection, core);
+		URI predicate = predicateSection.get().getURI(predicateSection, core);
 
-        // check term definition
-        Section<TurtleURI> turtleURITerm = Sections.successor(predicateSection, TurtleURI.class);
-        if (turtleURITerm != null && STRICT_COMPILATION) {
-            boolean isDefined = checkTurtleURIDefinition(turtleURITerm);
-            if (!isDefined) {
-                // error message is already rendered by term reference renderer
-                // we do not insert statement in this case
-                predicate = null;
-                termError = true;
-            }
-        }
-        if (predicate == null && !termError) {
-            result.addMessage(Messages.error("'" + predicateSection.getText()
-                    + "' is not a valid predicate."));
-        }
+		// check term definition
+		Section<TurtleURI> turtleURITerm = Sections.successor(predicateSection, TurtleURI.class);
+		if (turtleURITerm != null && STRICT_COMPILATION) {
+			boolean isDefined = checkTurtleURIDefinition(turtleURITerm);
+			if (!isDefined) {
+				// error message is already rendered by term reference renderer
+				// we do not insert statement in this case
+				predicate = null;
+				termError = true;
+			}
+		}
+		if (predicate == null && !termError) {
+			result.addMessage(Messages.error("'" + predicateSection.getText()
+					+ "' is not a valid predicate."));
+		}
 
 		/*
 		 * Handle SUBJECT
 		 */
-        Resource subject;
-        // the subject can either be a normal turtle sentence subject
-        // OR a blank node
-        Section<BlankNode> blankNodeSection = Sections.ancestor(predSentenceSection,
+		Resource subject;
+		// the subject can either be a normal turtle sentence subject
+		// OR a blank node
+		Section<BlankNode> blankNodeSection = Sections.ancestor(predSentenceSection,
 				BlankNode.class);
-        if (blankNodeSection != null) {
-            subject = blankNodeSection.get().getResource(blankNodeSection, core);
-            if (subject == null) {
-                result.addMessage(Messages.error("'" + blankNodeSection.getText()
-                        + "' is not a valid subject."));
-            }
-        } else {
-            Section<TurtleSentence> sentence = Sections.ancestor(predSentenceSection,
+		if (blankNodeSection != null) {
+			subject = blankNodeSection.get().getResource(blankNodeSection, core);
+			if (subject == null) {
+				result.addMessage(Messages.error("'" + blankNodeSection.getText()
+						+ "' is not a valid subject."));
+			}
+		}
+		else {
+			Section<TurtleSentence> sentence = Sections.ancestor(predSentenceSection,
 					TurtleSentence.class);
-            Section<Subject> subjectSection = Sections.successor(sentence,
+			Section<Subject> subjectSection = Sections.successor(sentence,
 					Subject.class);
-            subject = subjectSection.get().getResource(subjectSection, core);
+			subject = subjectSection.get().getResource(subjectSection, core);
 
-            // check term definition
-            Section<TurtleURI> turtleURITermSubject = Sections.child(subjectSection,
+			// check term definition
+			Section<TurtleURI> turtleURITermSubject = Sections.child(subjectSection,
 					TurtleURI.class);
-            if (turtleURITermSubject != null && STRICT_COMPILATION) {
-                boolean isDefined = checkTurtleURIDefinition(turtleURITermSubject);
-                if (!isDefined) {
-                    // error message is already rendered by term reference
-                    // renderer
-                    // we do not insert statement in this case
-                    subject = null;
-                    termError = true;
-                }
-            }
+			if (turtleURITermSubject != null && STRICT_COMPILATION) {
+				boolean isDefined = checkTurtleURIDefinition(turtleURITermSubject);
+				if (!isDefined) {
+					// error message is already rendered by term reference
+					// renderer
+					// we do not insert statement in this case
+					subject = null;
+					termError = true;
+				}
+			}
 
-            if (subject == null && !termError) {
-                result.addMessage(Messages.error("'" + subjectSection.getText()
-                        + "' is not a valid subject."));
-            }
-        }
+			if (subject == null && !termError) {
+				result.addMessage(Messages.error("'" + subjectSection.getText()
+						+ "' is not a valid subject."));
+			}
+		}
 
-        // create statement if all nodes are present
-        if (object != null && predicate != null && subject != null) {
-            result.addStatement(core.getRdf2GoCore().createStatement(subject, predicate, object));
-        }
-        return result;
-    }
+		// create statement if all nodes are present
+		if (object != null && predicate != null && subject != null) {
+			result.addStatement(core.getRdf2GoCore().createStatement(subject, predicate, object));
+		}
+		return result;
+	}
 
-    private boolean checkTurtleURIDefinition(Section<TurtleURI> turtleURITerm) {
-        TermCompiler compiler = Compilers.getCompiler(turtleURITerm, TermCompiler.class);
-        TerminologyManager terminologyManager = compiler.getTerminologyManager();
-        Section<TermReference> term = Sections.successor(turtleURITerm, TermReference.class);
-        return terminologyManager.isDefinedTerm(term.get().getTermIdentifier(term));
-    }
+	private boolean checkTurtleURIDefinition(Section<TurtleURI> turtleURITerm) {
+		TermCompiler compiler = Compilers.getCompiler(turtleURITerm, TermCompiler.class);
+		TerminologyManager terminologyManager = compiler.getTerminologyManager();
+		Section<TermReference> term = Sections.successor(turtleURITerm, TermReference.class);
+		return terminologyManager.isDefinedTerm(term.get().getTermIdentifier(term));
+	}
 
-    @Override
-    @SuppressWarnings({
-            "rawtypes", "unchecked"})
-    public Node getNode(Section<Object> section, Rdf2GoCompiler core) {
-        // there should be exactly one NodeProvider child (while potentially
-        // many successors)
-        List<Section<NodeProvider>> nodeProviderSections = Sections.children(section,
+	@Override
+	@SuppressWarnings({
+			"rawtypes", "unchecked" })
+	public Node getNode(Section<Object> section, Rdf2GoCompiler core) {
+		// there should be exactly one NodeProvider child (while potentially
+		// many successors)
+		List<Section<NodeProvider>> nodeProviderSections = Sections.children(section,
 				NodeProvider.class);
-        if (nodeProviderSections != null) {
-            if (nodeProviderSections.size() == 1) {
+		if (nodeProviderSections != null) {
+			if (nodeProviderSections.size() == 1) {
 
-                Section<NodeProvider> nodeProvider = nodeProviderSections.get(0);
-                return nodeProvider.get().getNode(nodeProvider, core);
-            }
-            // if there are more NodeProvider we return null to force an error
-        }
-        return null;
-    }
+				Section<NodeProvider> nodeProvider = nodeProviderSections.get(0);
+				return nodeProvider.get().getNode(nodeProvider, core);
+			}
+			// if there are more NodeProvider we return null to force an error
+		}
+		return null;
+	}
 
 }
