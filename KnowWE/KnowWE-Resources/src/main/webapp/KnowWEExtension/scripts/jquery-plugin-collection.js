@@ -89,9 +89,9 @@
 				}
 			}).done(function(data) {
 				jq$('#' + id).replaceWith(JSON.parse(data).html);
-				if (callback) callback();
 				KNOWWE.core.actions.init();
 				KNOWWE.helper.observer.notify("afterRerender", jq$('#' + id));
+				if (callback) callback();
 			}).always(function(){
 				KNOWWE.core.util.updateProcessingState(-1);
 			});
