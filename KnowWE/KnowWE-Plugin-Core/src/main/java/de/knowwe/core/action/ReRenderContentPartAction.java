@@ -51,7 +51,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 	public static void execute(UserActionContext context, Section<?> section) throws IOException {
 		if (section == null) {
 			context.sendError(HttpServletResponse.SC_NOT_FOUND,
-					"The requested section not found on the server. " +
+					"The referenced section was not found. " +
 							"Maybe the page content is outdated. Please reload.");
 		}
 		else if (!KnowWEUtils.canView(section, context)) {

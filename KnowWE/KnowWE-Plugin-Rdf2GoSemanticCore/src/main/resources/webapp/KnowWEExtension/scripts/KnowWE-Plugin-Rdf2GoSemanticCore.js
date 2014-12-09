@@ -3,39 +3,25 @@
  * the KnowWE-Plugin-SemanticCore.
  */
 if (typeof KNOWWE == "undefined" || !KNOWWE) {
-	/**
-	 * The KNOWWE global namespace object. If KNOWWE is already defined, the
-	 * existing KNOWWE object will not be overwritten so that defined namespaces
-	 * are preserved.
-	 */
 	var KNOWWE = {};
 }
 if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
-	/**
-	 * The KNOWWE.plugin global namespace object. If KNOWWE.plugin is already
-	 * defined, the existing KNOWWE.plugin object will not be overwritten so
-	 * that defined namespaces are preserved.
-	 */
 	KNOWWE.plugin = function() {
 		return {}
 	}
 }
-/**
- * Namespace: KNOWWE.plugin.semantic The KNOWWE plugin d3web namespace.
- * Initialized empty to ensure existence.
- */
-KNOWWE.plugin.semantic = function() {
-	return {}
-}();
+KNOWWE.plugin.sparql = {};
 
-/**
- * Namespace: KNOWWE.plugin.semantic.action The namespace of the semantic things
- * in KNOWWE.
- */
-KNOWWE.plugin.sparql = function() {
-
-
-}();
+KNOWWE.plugin.sparql.retry = function(id) {
+	jq$.ajax({
+		url : 'action/ClearCachedSparqlAction',
+		type : 'post',
+		cache : false,
+		data : {SectionID: id}
+	}).success(function(data) {
+		KNOWWE.helper.observer.notify("update");
+	});
+};
 
 (function init() {
 	if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {

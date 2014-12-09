@@ -179,6 +179,14 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="ClearCachedSparqlAction">
+		<parameter id="class" value="de.knowwe.rdf2go.sparql.ClearCachedSparqlAction" />
+		<parameter id="name" value="ClearCachedSparqlAction" />
+		<parameter id="description" value="Action ClearCachedSparqlAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="RefreshSparqlAction">
 		<parameter id="class" value="de.knowwe.rdf2go.sparql.RefreshSparqlAction" />
 		<parameter id="name" value="RefreshSparqlAction" />

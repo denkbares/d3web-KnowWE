@@ -100,8 +100,11 @@ public class SparqlResultRenderer {
 			qrt = opts.getRdf2GoCore().sparqlSelect(query, true, opts.getTimeout());
 		}
 		catch (RuntimeException e) {
+			String message = e.getMessage();
+			message = message.replaceAll("[^.]\\s*$", "."); // clean up message end
 			result.appendHtml("<span class='warning'>"
-					+ e.getMessage() + "</span>");
+					+ message + " <a onclick='KNOWWE.plugin.sparql.retry(\"" + section.getID()
+					+ "\")'>Try again...</a></span>");
 			Log.warning("Exception while executing SPARQL", e);
 		}
 		if (qrt != null) {
