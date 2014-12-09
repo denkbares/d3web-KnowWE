@@ -17,9 +17,9 @@ KNOWWE.plugin.sparql.retry = function(id) {
 		url : 'action/ClearCachedSparqlAction',
 		type : 'post',
 		cache : false,
-		data : {SectionID: id}
+		data : {SectionID : id}
 	}).success(function(data) {
-		KNOWWE.helper.observer.notify("update");
+		jq$('#' + id).parents('.type_Sparql').rerender();
 	});
 };
 

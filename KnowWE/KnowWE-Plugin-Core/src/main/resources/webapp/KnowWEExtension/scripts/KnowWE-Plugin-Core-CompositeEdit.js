@@ -321,7 +321,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 					postProcessHTML(sectionId);
 
 					jq$('#compositeEdit div.defaultMarkupFrame[compositeedit=' + sectionId + ']').each(function(index, frame) {
-						KNOWWE.core.rerendercontent.animateDefaultMarkupMenu(jq$(frame));
+						_TM.animateDefaultMarkupMenu(jq$(frame));
 					});
 				},
 				onError : _EC.onErrorBehavior
@@ -577,7 +577,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 			e.stopPropagation();
 		});
 		jq$('#compositeEdit div.defaultMarkupFrame').each(function(index, frame) {
-			KNOWWE.core.rerendercontent.animateDefaultMarkupMenu(jq$(frame));
+			_TM.animateDefaultMarkupMenu(jq$(frame));
 		});
 		jq$(".extend-panel-right").click(function(e) {
 			KNOWWE.core.plugin.objectinfo.loadPreviews(jq$(this).next('div'));
@@ -652,7 +652,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 	function enableCompositeViewToolMenus(id) {
 
 		jq$(id).find('.defaultMarkupFrame').each(function(index, frame) {
-			KNOWWE.core.rerendercontent.animateDefaultMarkupMenu(jq$(frame));
+			_TM.animateDefaultMarkupMenu(jq$(frame));
 		});
 		jq$(id).find("a").click(function(e) {
 			e.stopPropagation();

@@ -94,9 +94,9 @@ public class Plugins {
 	}
 
 	/**
-	 * Returns all plugged Instantiations These are used to initialize plugins.
+	 * Returns all plugged StatusProviders. These are used to find out, if the status of the wiki has changed.
 	 *
-	 * @return List of all Instantiations
+	 * @return List of all StatusProvider
 	 */
 	public static List<StatusProvider> getStatusProviders() {
 		return getSingeltons(EXTENDED_POINT_StatusProvider, StatusProvider.class);

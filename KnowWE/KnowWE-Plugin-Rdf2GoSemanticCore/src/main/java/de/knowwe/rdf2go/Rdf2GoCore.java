@@ -380,7 +380,7 @@ public class Rdf2GoCore {
 	/**
 	 * Creates a {@link Statement} for the given objects and adds it to the
 	 * triple store. The {@link Section} is used for caching.
-	 * <p>
+	 * <p/>
 	 * You can remove the {@link Statement} using the method
 	 * {@link Rdf2GoCore#removeStatementsForSection(Section)}.
 	 *
@@ -423,7 +423,7 @@ public class Rdf2GoCore {
 	/**
 	 * Adds the given {@link Statement}s for the given {@link Section} to the
 	 * triple store.
-	 * <p>
+	 * <p/>
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatementsForSection(Section)}.
 	 *
@@ -439,7 +439,7 @@ public class Rdf2GoCore {
 	/**
 	 * Adds the given {@link Statement}s for the given {@link Section} to the
 	 * triple store.
-	 * <p>
+	 * <p/>
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatementsForSection(Section)}.
 	 *
@@ -454,7 +454,7 @@ public class Rdf2GoCore {
 
 	/**
 	 * Adds the given {@link Statement}s directly to the triple store.
-	 * <p>
+	 * <p/>
 	 * <b>Attention</b>: The added {@link Statement}s are not cached in the
 	 * {@link Rdf2GoCore}, so you are yourself responsible to remove the right
 	 * {@link Statement}s in case they are not longer valid. You can remove
@@ -470,7 +470,7 @@ public class Rdf2GoCore {
 
 	/**
 	 * Adds the given {@link Statement}s directly to the triple store.
-	 * <p>
+	 * <p/>
 	 * <b>Attention</b>: The added {@link Statement}s are not cached in the
 	 * {@link Rdf2GoCore}, so you are yourself responsible to remove the right
 	 * {@link Statement}s in case they are not longer valid. You can remove
@@ -761,7 +761,7 @@ public class Rdf2GoCore {
 	 * Returns a map of all namespaces mapped by their prefixes as they are used e.g. in Turtle and
 	 * SPARQL.<br>
 	 * <b>Example:</b> rdf: -> http://www.w3.org/1999/02/22-rdf-syntax-ns#
-	 * <p>
+	 * <p/>
 	 * Although this map seems trivial, it is helpful for optimization reasons.
 	 */
 	public Map<String, String> getNamespacePrefixes() {
@@ -997,7 +997,7 @@ public class Rdf2GoCore {
 	/**
 	 * Removes all {@link Statement}s that were added and cached for the given
 	 * {@link Section}.
-	 * <p>
+	 * <p/>
 	 * <b>Attention</b>: This method only removes {@link Statement}s that were
 	 * added (and cached) in connection with a {@link Section} using methods
 	 * like {@link Rdf2GoCore#addStatements(Section, Collection)} or
@@ -1016,7 +1016,7 @@ public class Rdf2GoCore {
 	 * {@link Article}. This method is automatically called every time an
 	 * article is parsed fully ({@link ArticleRegisteredEvent} fired) so
 	 * normally you shouldn't need to call this method yourself.
-	 * <p>
+	 * <p/>
 	 * <b>Attention</b>: This method only removes {@link Statement}s that were
 	 * added (and cached) in connection with an {@link de.knowwe.core.compile.Compiler} using the method
 	 * {@link Rdf2GoCore#addStatements(de.knowwe.core.compile.PackageCompiler, Statement...)}.

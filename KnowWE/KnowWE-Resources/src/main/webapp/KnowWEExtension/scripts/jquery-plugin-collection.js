@@ -16,6 +16,96 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
+
+/**
+ * KnowWE specific util methods using jQuery!
+ */
+
+(function(jq$) {
+
+	/**
+	 * Checks whether the selector returned any elements
+	 */
+	jq$.fn.exists = function() {
+		return this.length > 0;
+	};
+
+	/**
+	 * Scales the selected elements using a smooth css transition.
+	 */
+	jq$.fn.scale = function(scale) {
+		if (scale) {
+			this.css('transform', 'scale(' + scale + ')');
+		} else {
+			scale = "1.0";
+			var transform = this.css('transform');
+			if (transform != "none") {
+				scale = /^matrix\((\d+(\.\d+)?), .+$/.exec(transform)[1];
+			}
+			return parseFloat(scale);
+		}
+	};
+
+	/**
+	 * Rerenders the selected elements. For now, the complete default markups or ReRenderSectionMarkers are rerendered.
+	 * You can also just select successors of the default markup, the method will automatically choose the right
+	 * elements to rerender.
+	 */
+	jq$.fn.rerender = function(callback) {
+
+		this.each(function(i) {
+			var $element = jq$(this);
+			// make sure we have an element that we can rerender easily
+			if (!$element.is('.defaultMarkupFrame') && !$element.is('.ReRenderSectionMarker')) {
+				// first check if we can find a marker
+				$element = $element.parents('.ReRenderSectionMarker').first();
+				if (!$element.exists()) {
+					// fallback to default markup frame
+					$element = $element.parents('.defaultMarkupFrame').first();
+				}
+			}
+			if (!$element.exists()) return;
+
+			var id;
+			// Mode 1: ReRenderSectionMarker
+			if ($element.is('.ReRenderSectionMarker')) {
+				id = eval($element.attr('rel')).id;
+			}
+
+			// Mode 2: DefaultMarkupFrame
+			if ($element.is('.defaultMarkupFrame')) {
+				id = $element.attr('id');
+			}
+			KNOWWE.core.util.updateProcessingState(1);
+			KNOWWE.helper.observer.notify("beforeRerender", jq$('#' + id));
+			jq$.ajax({
+				url : 'action/ReRenderContentPartAction',
+				type : 'post',
+				cache : false,
+				data : {
+					action : 'ReRenderContentPartAction',
+					KWikiWeb : 'default_web',
+					SectionID : id
+				}
+			}).done(function(data) {
+				jq$('#' + id).replaceWith(JSON.parse(data).html);
+				if (callback) callback();
+				KNOWWE.core.actions.init();
+				KNOWWE.helper.observer.notify("afterRerender", jq$('#' + id));
+			}).always(function(){
+				KNOWWE.core.util.updateProcessingState(-1);
+			});
+
+		});
+
+	};
+
+})(jQuery);
+
+/**
+ * External Plugins below
+ */
+
 (function(jq$) {
 	jq$.cookie = function(key, value, options) {
 
@@ -72,25 +162,6 @@
 	});
 })(jQuery);
 
-(function(jq$) {
-	jQuery.fn.exists = function() {
-		return this.length > 0;
-	}
-
-	jQuery.fn.scale = function(scale) {
-		if (scale) {
-			this.css('transform', 'scale(' + scale + ')');
-		} else {
-			scale = "1.0";
-			var transform = this.css('transform');
-			if (transform != "none") {
-				scale = /^matrix\((\d+(\.\d+)?), .+$/.exec(transform)[1];
-			}
-			return parseFloat(scale);
-		}
-	}
-
-})(jQuery);
 
 (function(jq$) {
 	jq$.waitForFinalEvent = (function() {

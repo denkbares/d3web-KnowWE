@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -45,10 +46,12 @@ public class ReRenderContentPartAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		execute(context, Sections.get(context.getParameter("KdomNodeId")));
+		String sectionId = context.getParameter(Attributes.SECTION_ID);
+		if (sectionId == null)  sectionId = context.getParameter("KdomNodeId"); // compatibility
+		execute(context, Sections.get(sectionId));
 	}
 
-	public static void execute(UserActionContext context, Section<?> section) throws IOException {
+	private static void execute(UserActionContext context, Section<?> section) throws IOException {
 		if (section == null) {
 			context.sendError(HttpServletResponse.SC_NOT_FOUND,
 					"The referenced section was not found. " +

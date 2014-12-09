@@ -22,8 +22,6 @@ function ToolMenu() {
 	this.lastMenuId = null;
 }
 
-
-
 ToolMenu.prototype.decorateToolMenus = function(parent) {
 	parent = jq$(parent);
 	var decorators = parent ? parent.find('.toolsMenuDecorator') : jq$('.toolsMenuDecorator');
@@ -142,9 +140,34 @@ ToolMenu.prototype.hideToolsPopupMenu = function() {
 	}
 };
 
+ToolMenu.prototype.animateDefaultMarkupMenu = function($parent) {
+	if (!$parent) $parent = jq$(document);
+	$parent.each(function() {
+		var header = $parent.find('.headerMenu').first();
+		var menu = $parent.find('.markupMenu').first();
+		if (menu.length == 0) {
+			header.find('.markupMenuIndicator').hide();
+		}
+
+		header.unbind('mouseout').on('mouseout', function(e) {
+			header.stop().animate({'max-width' : 35, 'z-index' : 1000, opacity : 0.3}, 200);
+			if (menu) {
+				menu.hide();
+			}
+		}).unbind('mouseover').on('mouseover', function(e) {
+			header.stop().animate({'max-width' : 250, 'z-index' : 1500, opacity : 1}, 200);
+			if (menu) {
+				menu.show();
+				menu.stop().animate({opacity : 0.9}, 100);
+			}
+		});
+	});
+};
+
 var _TM = new ToolMenu();
 
 jq$(document).ready(function() {
+	_TM.animateDefaultMarkupMenu();
 	_TM.decorateToolMenus();
 });
 
@@ -153,7 +176,7 @@ KNOWWE.helper.observer.subscribe("flowchartrendered", function() {
 });
 
 KNOWWE.helper.observer.subscribe("afterRerender", function() {
-	var replacedElement = this;
-	KNOWWE.core.rerendercontent.animateDefaultMarkupMenu(jq$(replacedElement));
+	_TM.animateDefaultMarkupMenu(jq$(this));
+	_TM.decorateToolMenus(jq$(this));
 });
 

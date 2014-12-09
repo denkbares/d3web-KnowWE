@@ -450,7 +450,7 @@ KNOWWE.core.util.form = function() {
 				var startPos = element.selectionStart;
 				var endPos = element.selectionEnd;
 				element.value = element.value.substring(0, startPos) + value
-					+ element.value.substring(endPos, element.value.length);
+				+ element.value.substring(endPos, element.value.length);
 				element.setSelectionRange(endPos + value.length, endPos + value.length);
 			} else {
 				element.value = value;
@@ -513,22 +513,6 @@ KNOWWE.core.util.form = function() {
  */
 KNOWWE.core.rerendercontent = function() {
 
-	//helper functions for defaultmarkup menu animation
-	var hideMenu = function(header, menu) {
-		header.stop().animate({'max-width' : 35, 'z-index' : 1000, opacity : 0.3}, 200);
-		if (menu) {
-			menu.hide();
-		}
-	}
-
-	var showMenu = function(header, menu) {
-		header.stop().animate({'max-width' : 250, 'z-index' : 1500, opacity : 1}, 200);
-		if (menu) {
-			menu.show();
-			menu.stop().animate({opacity : 0.9}, 100);
-		}
-	}
-
 
 	return {
 		/**
@@ -561,10 +545,10 @@ KNOWWE.core.rerendercontent = function() {
 		/**
 		 * Function: update
 		 */
-		update : function(elements, action, fn) {
+		update : function(elements, action, callback) {
 			if (elements == undefined) elements = _KS('.ReRenderSectionMarker');
 			if (action == undefined) action = 'replace';
-			if (!fn && typeof this == "function") fn = this;
+			if (!callback && typeof this == "function") callback = this;
 
 			if (elements.length != 0) {
 				for (var i = 0; i < elements.length; i++) {
@@ -575,7 +559,7 @@ KNOWWE.core.rerendercontent = function() {
 					var params = {
 						action : 'ReRenderContentPartAction',
 						KWikiWeb : 'default_web',
-						KdomNodeId : rel.id,
+						SectionID : rel.id,
 						ajaxToHTML : "render",
 						inPre : KNOWWE.helper.tagParent(_KS('#' + rel.id), 'pre') != document
 					};
@@ -583,7 +567,7 @@ KNOWWE.core.rerendercontent = function() {
 						params.status = this.wikiStatus;
 					}
 					var url = KNOWWE.core.util.getURL(params);
-					KNOWWE.core.rerendercontent.execute(url, rel.id, action, fn, true);
+					KNOWWE.core.rerendercontent.execute(url, rel.id, action, callback, true);
 				}
 			}
 		},
@@ -600,7 +584,7 @@ KNOWWE.core.rerendercontent = function() {
 			var options = {
 				url : url,
 				response : {
-					ids : [ id ],
+					ids : [id],
 					action : action,
 					fn : function() {
 						try {
@@ -631,28 +615,6 @@ KNOWWE.core.rerendercontent = function() {
 			if (indicateProcess) KNOWWE.core.util.updateProcessingState(1);
 			KNOWWE.helper.observer.notify("beforeRerender");
 			new _KA(options).send();
-		},
-
-		/**
-		 * Function: animateDefaultMarkupMenu
-		 * Creates the animation for the menu of an defaultmarkup
-		 *
-		 * Parameters
-		 *        frame - the frame of the defaultmarkup as JQuery object
-		 */
-		animateDefaultMarkupMenu : function($frame) {
-
-			var header = $frame.find('.headerMenu').first();
-			var menu = $frame.find('.markupMenu').first();
-			if (menu.length == 0) {
-				header.find('.markupMenuIndicator').hide();
-			}
-
-			header.on('mouseout', function(e) {
-				hideMenu(header, menu);
-			}).on('mouseover', function(e) {
-				showMenu(header, menu);
-			});
 		}
 	}
 }();
@@ -663,8 +625,7 @@ KNOWWE.core.rerendercontent = function() {
  * Initialized empty to ensure existence.
  */
 KNOWWE.plugin = function() {
-	return {
-	}
+	return {}
 }();
 
 /**
@@ -682,17 +643,13 @@ var _KN = KNOWWE.helper.element
 /* Alias KNOWWE.helper.element */
 var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
 
-	/* ############################################################### */
-	/* ------------- Onload Events  ---------------------------------- */
-	/* ############################################################### */
+
+/* ############################################################### */
+/* ------------- Onload Events  ---------------------------------- */
+/* ############################################################### */
 (function init() {
 
 	window.addEvent('domready', _KL.setup);
-		window.addEvent('domready', function() {
-			jq$('.defaultMarkupFrame').each(function(index, frame) {
-				KNOWWE.core.rerendercontent.animateDefaultMarkupMenu(jq$(frame));
-			});
-		});
 
 	if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
 		window.addEvent('domready', function() {
