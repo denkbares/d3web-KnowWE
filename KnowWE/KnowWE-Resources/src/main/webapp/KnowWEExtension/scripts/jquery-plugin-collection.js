@@ -83,8 +83,6 @@
 				type : 'post',
 				cache : false,
 				data : {
-					action : 'ReRenderContentPartAction',
-					KWikiWeb : 'default_web',
 					SectionID : id
 				}
 			}).done(function(data) {

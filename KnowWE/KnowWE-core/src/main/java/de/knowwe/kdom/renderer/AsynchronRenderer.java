@@ -1,5 +1,6 @@
 package de.knowwe.kdom.renderer;
 
+import de.knowwe.core.action.ActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -37,9 +38,7 @@ public class AsynchronRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
-		boolean asynchronous = isAsynchronous(section);
-		boolean ajaxAction = user.getParameters().containsKey("action");
-		if (ajaxAction || !asynchronous) {
+		if (user instanceof ActionContext || !isAsynchronous(section)) {
 			decoratedRenderer.render(section, user, result);
 		}
 		else {
