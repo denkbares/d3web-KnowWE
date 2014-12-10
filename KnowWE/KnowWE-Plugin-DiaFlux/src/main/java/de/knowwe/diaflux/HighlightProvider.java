@@ -23,16 +23,15 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.util.Icon;
 
 /**
  * Enables highlighting of active nodes and edges
- * 
+ *
  * @author Markus Friedrich (denkbares GmbH)
  * @created 23.02.2011
  */
 public class HighlightProvider implements ToolProvider {
-
-	private static final String ICON = "KnowWEExtension/flowchart/icon/debug16.png";
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
@@ -51,14 +50,14 @@ public class HighlightProvider implements ToolProvider {
 						DiaFluxTraceHighlight.TRACE_HIGHLIGHT);
 
 		if (dohighlighting) {
-			return new DefaultTool(ICON, "Hide Trace",
+			return new DefaultTool(Icon.DEBUG, "Hide Trace",
 					"Highlights active nodes and edges in the flowchart.",
 					DiaFluxTraceHighlight.getDeactivationJSAction(),
 					Tool.CATEGORY_INFO);
 		}
 		else {
 			return new DefaultTool(
-					ICON,
+					Icon.DEBUG,
 					"Show Trace",
 					"Highlights active nodes and edges in the flowchart.",
 					DiaFluxTraceHighlight.getActivationJSAction(DiaFluxTraceHighlight.TRACE_HIGHLIGHT),

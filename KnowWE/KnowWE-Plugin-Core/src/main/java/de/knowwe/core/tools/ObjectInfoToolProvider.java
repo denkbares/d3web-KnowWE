@@ -27,14 +27,14 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.util.Icon;
 
 /**
  * ToolProvider for the ObjectInfoTagHandler.
- * 
- * @see ObjectInfoTagHandler
- * 
+ *
  * @author Sebastian Furth
  * @created 01/12/2010
+ * @see ObjectInfoTagHandler
  */
 public class ObjectInfoToolProvider implements ToolProvider {
 
@@ -53,7 +53,7 @@ public class ObjectInfoToolProvider implements ToolProvider {
 		String jsAction = "KNOWWE.core.plugin.objectinfo.createHomePage()";
 		ResourceBundle rb = Messages.getMessageBundle();
 		return new DefaultTool(
-				"KnowWEExtension/images/new_file.gif",
+				Icon.NEW_FILE,
 				rb.getString("KnowWE.ObjectInfoTagHandler.newPage"),
 				rb.getString("KnowWE.ObjectInfoTagHandler.newPageDetail"),
 				jsAction,

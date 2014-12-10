@@ -24,9 +24,9 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.util.Icon;
 
 /**
- * 
  * @author Johanna Latt
  * @created 16.04.2012
  */
@@ -60,7 +60,7 @@ public class WikiZIPDownloadProvider implements ToolProvider {
 				"&amp;" + DownloadWikiZIP.PARAM_VERSIONS + "=" + !fingerprint +
 				"'";
 		return new DefaultTool(
-				"KnowWEExtension/images/zip.jpg",
+				Icon.FILE_ZIP,
 				fingerprint
 						? "Download Finger-Print"
 						: "Download Wiki Zip",

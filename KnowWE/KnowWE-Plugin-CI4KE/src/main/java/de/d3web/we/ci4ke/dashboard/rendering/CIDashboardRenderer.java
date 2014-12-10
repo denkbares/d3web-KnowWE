@@ -184,7 +184,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 					"<a " + ToolUtils.getActionAttribute(buildTool) + ">" +
 					"<img height='14'" +
 					"title=\"" + Strings.encodeHtml(buildTool.getDescription()) + "\" " +
-					"src=\"" + buildTool.getIconPath() + "\" />" +
+					"src=\"" + buildTool.getIcon() + "\" />" +
 					"</a></div>");
 
 			warningString.append(")");

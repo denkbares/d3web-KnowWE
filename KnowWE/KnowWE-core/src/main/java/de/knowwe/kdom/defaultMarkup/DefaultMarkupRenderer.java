@@ -342,9 +342,10 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	protected void appendToolbarTools(ToolSet tools, UserContext user, RenderResult result) {
 		for (Tool tool : tools) {
-			result.appendHtmlTag("div", "class", tool.getClass().getSimpleName());
-			result.appendHtmlTag("a", false, ToolUtils.getActionAttributeName(tool), ToolUtils.getActionAttributeValue(tool));
-			result.appendHtmlElement("img", "", "title", tool.getDescription(), "src", tool.getIconPath());
+			result.appendHtmlTag("div", "class", "list-group " + tool.getClass().getSimpleName());
+			result.appendHtmlTag("a", false, "class", "list-group-item", "title", tool.getDescription(), ToolUtils.getActionAttributeName(tool), ToolUtils
+					.getActionAttributeValue(tool));
+			result.appendHtml(tool.getIcon().getIconWithFixedWidth());
 			result.appendHtmlTag("/a");
 			result.appendHtmlTag("/div");
 		}
@@ -408,16 +409,14 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	protected void appendToolAsMenuItem(Tool tool, RenderResult result) {
-		String icon = tool.getIconPath();
-		boolean hasIcon = icon != null && !icon.trim().isEmpty();
 		result.appendHtmlTag("div", "class", tool.getClass().getSimpleName());
-		result.appendHtmlTag("div", "class", "markupMenuItem");
-		result.appendHtmlTag("a", false, "class", "markupMenuItem",
+		result.appendHtmlTag("div", "class", "markupMenuItem list-group");
+		result.appendHtmlTag("a", false, "class", "markupMenuItem list-group-item",
 				"title", Strings.encodeHtml(tool.getDescription()),
 				ToolUtils.getActionAttributeName(tool),
 				ToolUtils.getActionAttributeValue(tool));
-		if (hasIcon) {
-			result.appendHtmlElement("img", "", "src", icon);
+		if (tool.getIcon() != null) {
+			result.appendHtml(tool.getIcon().getIconWithFixedWidth());
 			result.append(" ");
 		}
 		result.appendHtmlElement("span", tool.getTitle());

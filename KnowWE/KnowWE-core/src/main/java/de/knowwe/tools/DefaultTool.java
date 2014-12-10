@@ -31,15 +31,15 @@ import de.knowwe.util.Icon;
  */
 public class DefaultTool implements Tool {
 
-	private final String iconPath;
+	private final Icon icon;
 	private final String title;
 	private final String description;
 	private final String jsAction;
 	private final ActionType type;
 	private final String category;
 
-	public DefaultTool(String iconPath, String title, String description, String jsAction, ActionType type, String category) {
-		this.iconPath = iconPath;
+	public DefaultTool(Icon icon, String title, String description, String jsAction, ActionType type, String category) {
+		this.icon = icon;
 		this.title = title;
 		this.description = description;
 		this.jsAction = jsAction;
@@ -47,29 +47,17 @@ public class DefaultTool implements Tool {
 		this.category = category;
 	}
 
-	public DefaultTool(Icon icon, String title, String description, String jsAction, ActionType type, String category) {
-		this(icon.getPath(), title, description, jsAction, type, category);
-	}
-
-	public DefaultTool(String iconPath, String title, String description, String jsAction, String category) {
-		this(iconPath, title, description, jsAction, ActionType.HREF_SCRIPT, category);
-	}
-
-	public DefaultTool(String iconPath, String title, String description, String jsAction) {
-		this(iconPath, title, description, jsAction, ActionType.HREF_SCRIPT, null);
+	public DefaultTool(Icon icon, String title, String description, String jsAction, String category) {
+		this(icon, title, description, jsAction, ActionType.HREF_SCRIPT, category);
 	}
 
 	public DefaultTool(Icon icon, String title, String description, String jsAction) {
-		this(icon.getPath(), title, description, jsAction, ActionType.HREF_SCRIPT, null);
-	}
-
-	public DefaultTool(Icon icon, String title, String description, String jsAction, String category) {
-		this(icon.getPath(), title, description, jsAction, ActionType.HREF_SCRIPT, category);
+		this(icon, title, description, jsAction, ActionType.HREF_SCRIPT, null);
 	}
 
 	@Override
-	public String getIconPath() {
-		return iconPath;
+	public Icon getIcon() {
+		return icon;
 	}
 
 	@Override

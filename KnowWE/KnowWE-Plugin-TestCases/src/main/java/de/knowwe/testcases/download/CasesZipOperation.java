@@ -49,9 +49,9 @@ import de.knowwe.testcases.ProviderTriple;
 import de.knowwe.testcases.TestCasePlayerType;
 import de.knowwe.testcases.TestCaseProvider;
 import de.knowwe.testcases.TestCaseUtils;
+import de.knowwe.util.Icon;
 
 /**
- * 
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 08.09.2013
  */
@@ -169,7 +169,8 @@ public class CasesZipOperation extends FileDownloadOperation {
 
 					out.closeEntry();
 				}
-			} finally {
+			}
+			finally {
 				out.flush();
 				out.close();
 			}
@@ -213,8 +214,8 @@ public class CasesZipOperation extends FileDownloadOperation {
 	}
 
 	@Override
-	public String getFileIcon() {
-		return "KnowWEExtension/images/zip.jpg";
+	public Icon getFileIcon() {
+		return Icon.FILE_ZIP;
 	}
 
 }

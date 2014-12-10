@@ -26,7 +26,7 @@ import de.knowwe.util.Icon;
 
 /**
  * InstantEdit Tool.
- * 
+ *
  * @author Stefan Mark
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 15.06.2011
@@ -45,7 +45,7 @@ public class InstantEditToolProvider implements ToolProvider {
 
 	protected Tool getQuickEditPageTool(Section<?> section, UserContext userContext) {
 		return new InstantEditTool(
-				Icon.EDIT.getPath(),
+				Icon.EDIT,
 				"Edit Markup",
 				"Edit this markup in text mode",
 				section);

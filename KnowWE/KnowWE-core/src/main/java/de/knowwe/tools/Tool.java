@@ -19,6 +19,8 @@
 
 package de.knowwe.tools;
 
+import de.knowwe.util.Icon;
+
 /**
  * This interface provides a definition of a javascript tool that can be integrated into the
  * rendered wiki pages.
@@ -91,7 +93,7 @@ public interface Tool {
 	 * @return the path to the icon
 	 * @created 23.09.2010
 	 */
-	String getIconPath();
+	Icon getIcon();
 
 	/**
 	 * Returns the title of the tool's action. The title is used e.g. as the menu item text for the
@@ -131,13 +133,13 @@ public interface Tool {
 
 	/**
 	 * Returns the category of the tool.
-	 * <p/>
+	 * <p>
 	 * Three types of categories are possible: <ul> <li><i>(null/empty):</i> Item will not be
 	 * grouped.</li> <li><tt>category</tt>: Item belongs to group <em>category</em> and will be on
 	 * top of this category (likely used for group headers).</li> <li><tt>category/subcategory</tt>:
 	 * Item belongs to group <em>category</em> and will be sorted according to
 	 * <em>subcategory</em>.</li> </ul>
-	 * <p/>
+	 * <p>
 	 * Generally, tools are displayed in alphabetical order of their category, then subcategory and
 	 * then in order as given by the getTools() method of {@link ToolUtils}.
 	 *

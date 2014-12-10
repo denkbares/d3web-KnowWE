@@ -17,6 +17,7 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Message.Type;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
+import de.knowwe.util.Icon;
 
 public abstract class FileDownloadOperation extends AbstractLongOperation {
 
@@ -178,7 +179,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	 * @return the icon or null if no icon is displayed
 	 * @created 17.02.2014
 	 */
-	public String getFileIcon() {
+	public Icon getFileIcon() {
 		return null;
 	}
 
@@ -225,7 +226,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 						+ Tool.ActionType.class.getSimpleName() + " " + tool.getActionType().toString());
 				continue;
 			}
-			String icon = tool.getIconPath();
+			Icon icon = tool.getIcon();
 			String descr = tool.getDescription();
 			result.append("<div>");
 			result.append("<a class='action' href='javascript:")
@@ -236,8 +237,9 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 				result.append(" title='").append(Strings.encodeHtml(descr)).append("'");
 			}
 			result.append(">");
-			if (!Strings.isBlank(icon)) {
-				result.append("<img src='").append(icon).append("'></img>");
+			if (icon != null) {
+				//TODO STEFAN WORKS?
+				result.append(icon.getIcon());
 			}
 			result.append(tool.getTitle());
 			result.append("</a>");

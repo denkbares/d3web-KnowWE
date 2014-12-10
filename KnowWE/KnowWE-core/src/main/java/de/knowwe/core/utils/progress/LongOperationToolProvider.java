@@ -15,23 +15,19 @@ import de.knowwe.util.Icon;
  */
 public abstract class LongOperationToolProvider implements ToolProvider {
 
-	private final String iconPath;
+	private final Icon icon;
 	private final String title;
 	private final String description;
 	private final String category;
 
-	public LongOperationToolProvider(String iconPath, String title, String description, String category) {
-		this.iconPath = iconPath;
+	public LongOperationToolProvider(Icon icon, String title, String description, String category) {
+		this.icon = icon;
 		this.title = title;
 		this.description = description;
 		this.category = category;
 	}
 
-	public LongOperationToolProvider(Icon icon, String title, String description, String category) {
-		this(icon.getPath(), title, description, category);
-	}
-
-	public LongOperationToolProvider(String icon, String title, String description) {
+	public LongOperationToolProvider(Icon icon, String title, String description) {
 		this(icon, title, description, null);
 	}
 
@@ -44,7 +40,7 @@ public abstract class LongOperationToolProvider implements ToolProvider {
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		return new Tool[] {
-				new DefaultTool(iconPath, title, description, createJSAction(section), category)
+				new DefaultTool(icon, title, description, createJSAction(section), category)
 		};
 	}
 

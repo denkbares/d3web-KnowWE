@@ -45,7 +45,7 @@ public class TableEditToolProvider implements ToolProvider {
 
 	private Tool getEditTool(Section<?> section, UserContext userContext) {
 		return new InstantEditTool(
-				Icon.EDIT.getPath(),
+				Icon.EDITTABLE,
 				"Edit Table",
 				"Edit this table in a spreadsheet-like editor",
 				section,

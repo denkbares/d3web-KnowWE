@@ -13,6 +13,7 @@ import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.util.Icon;
 
 public class LazyURIReferenceCompleteToolProvider implements ToolProvider {
 
@@ -39,7 +40,7 @@ public class LazyURIReferenceCompleteToolProvider implements ToolProvider {
 		String jsAction = "KNOWWE.plugin.ontology.expandLazyReference('" + section.getID()
 				+ "','" + insertString + "','" + defaultMarkupID + "')";
 		return new DefaultTool(
-				"KnowWEExtension/images/edit.png",
+				Icon.EDIT,
 				"Change to '" + insertString + "'",
 				"Expand current lazy identifier to '"
 						+ insertString + "'",

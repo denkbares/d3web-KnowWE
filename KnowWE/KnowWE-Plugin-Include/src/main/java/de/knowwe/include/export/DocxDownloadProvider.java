@@ -25,14 +25,13 @@ import de.knowwe.tools.Tool;
 import de.knowwe.util.Icon;
 
 /**
- * 
  * @author Volker Belli (denkbares GmbH)
  * @created 07.02.2014
  */
 public class DocxDownloadProvider extends LongOperationToolProvider {
 
 	public DocxDownloadProvider() {
-		super(Icon.DOCUMENT_WORD.getPath(), "Download MS-Word",
+		super(Icon.FILE_WORD, "Download MS-Word",
 				"Downloads the contents in Microsoft Word 2007+ format", Tool.CATEGORY_DOWNLOAD);
 	}
 

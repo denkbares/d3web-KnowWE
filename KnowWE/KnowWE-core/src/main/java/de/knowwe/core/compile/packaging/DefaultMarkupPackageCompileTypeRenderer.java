@@ -118,18 +118,16 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 
 		String icon;
 		if (hasErrors) {
-			icon = Icon.ERROR.getPath();
+			icon = Icon.ERROR.getIcon();
 		}
 		else if (hasWarnings) {
-			icon = Icon.WARNING.getPath();
+			icon = Icon.WARNING.getIcon();
 		}
 		else {
-			icon = Icon.PACKAGE.getPath();
+			icon = Icon.PACKAGE.getIconWithAdditionalClasses("packageOpacity");
 		}
 
-		string.appendHtml("<img style='position:relative; top:2px;' class='packageOpacity' src='"
-				+ icon
-				+ "' />");
+		string.appendHtml(icon);
 		string.append(" ");
 		RenderResult subString = new RenderResult(string);
 		subString.appendHtml("<span style='color:rgb(121,79, 64);'>");

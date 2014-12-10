@@ -23,10 +23,11 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.instantedit.tools.InstantEditTool;
 import de.knowwe.instantedit.tools.InstantEditToolProvider;
 import de.knowwe.tools.Tool;
+import de.knowwe.util.Icon;
 
 /**
  * Provides spreadsheet-like instant edit capabilities for tables.
- * 
+ *
  * @author volker_belli
  * @created 16.03.2012
  */
@@ -35,7 +36,7 @@ public class TableEditToolProvider extends InstantEditToolProvider {
 	@Override
 	protected Tool getQuickEditPageTool(Section<?> section, UserContext userContext) {
 		return new InstantEditTool(
-				"KnowWEExtension/images/pencil.png",
+				Icon.EDITTABLE,
 				"Edit Table",
 				"Edit this table in a spreadsheet-like editor",
 				section,

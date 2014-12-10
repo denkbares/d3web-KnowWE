@@ -24,9 +24,11 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.util.Icon;
 
 /**
  * ToolProvider for activating a markup
+ *
  * @author Veronika Sehne (denkbares GmbH)
  * @created 11.06.2014
  */
@@ -37,7 +39,7 @@ public class OnToolProvider implements ToolProvider {
 
 		String js = "KNOWWE.core.plugin.setMarkupSectionActivationStatus('" + section.getID() + "', 'on')";
 		Tool help = new DefaultTool(
-				"KnowWEExtension/images/on.png",
+				Icon.TOGGLE_ON,
 				"Activate",
 				"Activates this section.",
 				js,

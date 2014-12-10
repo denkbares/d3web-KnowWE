@@ -5,6 +5,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.util.Icon;
 
 public class TestCasePlayerToolProvider implements ToolProvider {
 
@@ -22,7 +23,7 @@ public class TestCasePlayerToolProvider implements ToolProvider {
 
 	public Tool getCollapseTool(Section<?> section, UserContext userContext) {
 		String jsAction = "TestCasePlayer.toggleFindings('" + section.getID() + "', 'collapse');";
-		Tool collapseTool = new DefaultTool("KnowWEExtension/images/collapseall_16x16.png",
+		Tool collapseTool = new DefaultTool(Icon.COLLAPSE,
 				"Collapse findings", "Collapses all finding columns of the current test case",
 				jsAction, Tool.CATEGORY_LAST);
 		return collapseTool;
@@ -30,7 +31,7 @@ public class TestCasePlayerToolProvider implements ToolProvider {
 
 	public Tool getExpandTool(Section<?> section, UserContext userContext) {
 		String jsAction = "TestCasePlayer.toggleFindings('" + section.getID() + "', 'expand');";
-		Tool expandTool = new DefaultTool("KnowWEExtension/images/expandall_16x16.png",
+		Tool expandTool = new DefaultTool(Icon.EXPAND,
 				"Expand findings", "Expands all finding columns of the current test case",
 				jsAction, Tool.CATEGORY_LAST);
 		return expandTool;
@@ -41,14 +42,14 @@ public class TestCasePlayerToolProvider implements ToolProvider {
 		String jsAction = "var goToLink = jq$('#"
 				+ section.getID()
 				+ "').find('select').find(':selected').attr('caselink');if (goToLink) window.location=goToLink;";
-		Tool goToTool = new DefaultTool("KnowWEExtension/testcaseplayer/icon/testcaselink.png",
+		Tool goToTool = new DefaultTool(Icon.OPENTESTCASE,
 				"Open test case", "Opens the currently selected test case source", jsAction, Tool.CATEGORY_INFO);
 		return goToTool;
 	}
 
 	public Tool getDownloadCaseTool(Section<?> section, UserContext userContext) {
 		String jsAction = "TestCasePlayer.downloadCase('" + section.getID() + "')";
-		Tool downloadTool = new DefaultTool("KnowWEExtension/d3web/icon/download16.gif",
+		Tool downloadTool = new DefaultTool(Icon.DOWNLOAD,
 				"Download case", "Downloads the currently selected test case", jsAction, Tool.CATEGORY_DOWNLOAD);
 		return downloadTool;
 	}

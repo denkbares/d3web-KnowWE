@@ -28,9 +28,9 @@ import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
 import de.knowwe.tools.ToolUtils;
+import de.knowwe.util.Icon;
 
 /**
- * 
  * @author volker_belli
  * @created 06.03.2012
  */
@@ -51,7 +51,7 @@ public class HelpToolProvider implements ToolProvider {
 
 		String js = "window.location.href = '" + link + "';";
 		Tool help = new DefaultTool(
-				"KnowWEExtension/d3web/icon/help16.gif",
+				Icon.HELP,
 				"Help: " + section.get().getName(),
 				"Open help page for this markup.",
 				js,

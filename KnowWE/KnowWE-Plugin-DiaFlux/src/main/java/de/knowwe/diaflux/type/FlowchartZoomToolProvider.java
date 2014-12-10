@@ -42,7 +42,7 @@ public class FlowchartZoomToolProvider implements ToolProvider {
 				.getID() + "', 0.1)", category);
 		DefaultTool zoomToFit = new DefaultTool(Icon.NONE, "Fit", "Zooms to flowchart to fit the width of the current page", "Flowchart.zoomToFit('" + section
 				.getID() + "')", category);
-		DefaultTool spacer = new DefaultTool("", "", "", "", category);
+		DefaultTool spacer = new DefaultTool(Icon.NONE, "", "", "", category);
 		DefaultTool zoom100 = new DefaultTool(Icon.NONE, "100%", "Zooms to flowchart back to 100% size", "Flowchart.zoom100('" + section
 				.getID() + "')", category);
 		return new Tool[] { zoomOut, zoom100, zoomIn, spacer, zoomToFit };

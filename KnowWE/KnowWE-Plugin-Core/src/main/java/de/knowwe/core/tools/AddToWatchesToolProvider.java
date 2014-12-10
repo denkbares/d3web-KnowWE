@@ -29,6 +29,7 @@ import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
 import de.knowwe.tools.ToolUtils;
+import de.knowwe.util.Icon;
 
 /**
  * Created by Stefan Plehn (denkbares GmbH) on 04.12.14.
@@ -51,7 +52,7 @@ public class AddToWatchesToolProvider implements ToolProvider {
 	}
 
 	protected Tool getAddToWatchesTool(Section<? extends Term> section) {
-		return new DefaultTool(
+		return new DefaultTool(Icon.ADD,
 				"Add to watches",
 				"Add this term to the watches for debugging.",
 				createAddToWatchesAction(section),

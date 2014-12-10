@@ -26,10 +26,11 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.util.Icon;
 
 /**
  * A provider for adding a "Start a new build"-Tool for the CIDashboardType
- * 
+ *
  * @author Marc-Oliver Ochlast (denkbares GmbH)
  * @created 01.12.2010
  */
@@ -47,21 +48,20 @@ public class CIDashboardToolProvider implements ToolProvider {
 			return new Tool[] { getStartNewBuildTool(dashboardName, section.getTitle()) };
 		}
 	}
-	
-		@Override
+
+	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
 		return DefaultMarkupType.getAnnotation(section, CIDashboardType.NAME_KEY) != null;
 	}
-	
 
 	public static Tool getStartNewBuildTool(String dashboardName, String title) {
 		// Tool which starts a new build
 		String jsAction = "_CI.executeNewBuild('" + Strings.encodeURL(dashboardName) + "','"
 				+ title + "')";
 		return new DefaultTool(
-				"KnowWEExtension/ci4ke/images/16x16/clock.png",
+				Icon.CLOCK,
 				"Start a new build",
 				"Starts a new build.",
-				jsAction,Tool.CATEGORY_EXECUTE);
+				jsAction, Tool.CATEGORY_EXECUTE);
 	}
 }

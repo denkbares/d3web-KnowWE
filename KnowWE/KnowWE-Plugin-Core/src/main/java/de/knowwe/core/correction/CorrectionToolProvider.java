@@ -39,6 +39,7 @@ import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
 import de.knowwe.tools.ToolUtils;
+import de.knowwe.util.Icon;
 
 /**
  * This ToolProvider provides quick fixes for correcting small mistakes (typos) in term references.
@@ -62,7 +63,7 @@ public class CorrectionToolProvider implements ToolProvider {
 		Tool[] tools = new Tool[suggestions.size() + 1];
 
 		tools[0] = new DefaultTool(
-				"KnowWEExtension/images/quickfix.gif",
+				Icon.LIGHTBULB,
 				Messages.getMessageBundle().getString("KnowWE.Correction.do"),
 				"",
 				null,
@@ -71,7 +72,7 @@ public class CorrectionToolProvider implements ToolProvider {
 
 		for (int i = 0; i < suggestions.size(); i++) {
 			tools[i + 1] = new DefaultTool(
-					"KnowWEExtension/images/correction_change.gif",
+					Icon.SHARE,
 					suggestions.get(i).getSuggestion(),
 					"",
 					"KNOWWE.plugin.correction.doCorrection('" + section.getID() + "', '"

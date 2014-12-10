@@ -22,16 +22,16 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.progress.LongOperation;
 import de.knowwe.core.utils.progress.LongOperationToolProvider;
 import de.knowwe.tools.Tool;
+import de.knowwe.util.Icon;
 
 /**
- * 
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 09.09.2013
  */
 public class CasesZipToolProvider extends LongOperationToolProvider {
 
 	public CasesZipToolProvider() {
-		super("KnowWEExtension/images/zip.jpg", "Download all cases",
+		super(Icon.FILE_ZIP, "Download all cases",
 				"Downloads all available test cases as a zip file", Tool.CATEGORY_DOWNLOAD);
 
 	}

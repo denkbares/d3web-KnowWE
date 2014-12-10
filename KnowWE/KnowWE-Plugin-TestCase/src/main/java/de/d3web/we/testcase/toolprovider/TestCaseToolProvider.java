@@ -24,10 +24,11 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.util.Icon;
 
 /**
  * ToolProvider which provides some download links for the {@link TestCaseType}.
- * 
+ *
  * @author Sebastian Furth (denkbares GmbH)
  * @created 18/10/2010
  */
@@ -53,7 +54,7 @@ public class TestCaseToolProvider implements ToolProvider {
 				+ topic + "&amp;web=" + web + "&amp;filename=" + topic.replaceAll(" ", "_")
 				+ "_testcase.xml'";
 		return new DefaultTool(
-				"KnowWEExtension/images/xml.png",
+				Icon.FILE_XML,
 				"Download XML",
 				"Download the whole test case into a single xml file.",
 				jsAction,
@@ -66,7 +67,7 @@ public class TestCaseToolProvider implements ToolProvider {
 				+ topic + "&amp;web=" + web + "&amp;filename=" + topic.replaceAll(" ", "_")
 				+ "_testcase.txt'";
 		return new DefaultTool(
-				"KnowWEExtension/images/txt.png",
+				Icon.FILE_TEXT,
 				"Download TXT",
 				"Download the whole test case into a single txt file.",
 				jsAction,

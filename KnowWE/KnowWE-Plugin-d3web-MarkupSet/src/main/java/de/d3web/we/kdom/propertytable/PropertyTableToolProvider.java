@@ -23,9 +23,9 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.instantedit.tools.InstantEditTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.util.Icon;
 
 /**
- * 
  * @author Reinhard Hatko
  * @created 13.06.2013
  */
@@ -38,7 +38,7 @@ public class PropertyTableToolProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		return new Tool[] { new InstantEditTool("", "Edit Table",
+		return new Tool[] { new InstantEditTool(Icon.EDITTABLE, "Edit Table",
 				"Provides a spreadsheet like editor.", section, "KNOWWE.plugin.tableEditTool") };
 	}
 

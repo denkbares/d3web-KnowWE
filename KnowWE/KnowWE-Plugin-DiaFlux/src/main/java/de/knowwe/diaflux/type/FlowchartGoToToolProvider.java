@@ -35,6 +35,7 @@ import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
 import de.knowwe.tools.ToolUtils;
+import de.knowwe.util.Icon;
 
 /**
  * @author Albrecht Striffler (denkbares GmbH)
@@ -93,7 +94,7 @@ public class FlowchartGoToToolProvider implements ToolProvider {
 				termSection, FlowchartType.class);
 		String link = KnowWEUtils.getURLLink(flowchartSection);
 		String title = "Open '" + FlowchartType.getFlowchartName(flowchartSection) + "'";
-		return new OpenFlowTool("KnowWEExtension/images/article16.png",
+		return new OpenFlowTool(Icon.ARTICLE,
 				title, title, link, Tool.ActionType.HREF);
 	}
 
@@ -101,8 +102,8 @@ public class FlowchartGoToToolProvider implements ToolProvider {
 
 		private final String jsAction;
 
-		public OpenFlowTool(String iconPath, String title, String description, String jsAction, ActionType actionType) {
-			super(iconPath, title, description, jsAction, actionType, null);
+		public OpenFlowTool(Icon icon, String title, String description, String jsAction, ActionType actionType) {
+			super(icon, title, description, jsAction, actionType, null);
 			this.jsAction = jsAction;
 		}
 

@@ -38,6 +38,7 @@ import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
+import de.knowwe.util.Icon;
 
 /**
  * @author Volker Belli (denkbares GmbH)
@@ -95,7 +96,7 @@ public class DocxDownloadOperation extends FileDownloadOperation {
 		// make a copy and add update tool
 		actions = new LinkedList<Tool>(actions);
 		actions.add(new DefaultTool(
-				"KnowWEExtension/images/pencil.png",
+				Icon.EDIT,
 				"Update Version to " + nextVersion,
 				"Increments the version number of the document to be downloaded.",
 				jsAction, Tool.CATEGORY_EXECUTE));
@@ -103,8 +104,8 @@ public class DocxDownloadOperation extends FileDownloadOperation {
 	}
 
 	@Override
-	public String getFileIcon() {
-		return "KnowWEExtension/icons/word.png";
+	public Icon getFileIcon() {
+		return Icon.FILE_WORD;
 	}
 
 	/**

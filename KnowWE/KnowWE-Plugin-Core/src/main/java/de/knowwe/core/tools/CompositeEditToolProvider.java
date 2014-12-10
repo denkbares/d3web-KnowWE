@@ -53,7 +53,7 @@ public class CompositeEditToolProvider implements ToolProvider {
 
 	protected Tool getCompositeEditTool(Section<? extends Term> section) {
 		return new DefaultTool(
-				Icon.INFORMATION,
+				Icon.INFO,
 				"Show Info",
 				"Shows information about this object",
 				createCompositeEditModeAction(section),

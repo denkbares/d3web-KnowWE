@@ -25,9 +25,9 @@ import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
 import de.knowwe.tools.ToolUtils;
+import de.knowwe.util.Icon;
 
 /**
- * 
  * @author volker_belli
  * @created 17.11.2010
  */
@@ -51,7 +51,7 @@ public class FlowchartEditProvider implements ToolProvider {
 		String jsAction = createEditAction(section, userContext);
 
 		return new DefaultTool(
-				"KnowWEExtension/flowchart/icon/edit16.png",
+				Icon.EDIT,
 				"Visual Editor",
 				"Opens the visual editor for this flowchart.",
 				jsAction,
@@ -68,7 +68,7 @@ public class FlowchartEditProvider implements ToolProvider {
 
 	/**
 	 * Creates a JS-Edit link for a DiaFlux-Section.
-	 * 
+	 *
 	 * @created 29.11.2010
 	 */
 	public static String createEditLink(Section<?> section, UserContext userContext) {

@@ -26,11 +26,12 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.util.Icon;
 
 /**
  * A tool provider to add some appropriate actions to the
  * {@link ShowSolutionsRenderer}, e.g., clear case, refresh.
- * 
+ *
  * @author Joachim Baumeister (denkbares GmbH)
  * @created 19.10.2010
  */
@@ -57,7 +58,7 @@ public class StyledSolutionPanelToolProvider implements ToolProvider {
 		String jsAction = "";
 
 		return new DefaultTool(
-				"KnowWEExtension/d3web/icon/refresh16.png",
+				Icon.REFRESH,
 				label,
 				"Resets the values of the current session.",
 				jsAction,

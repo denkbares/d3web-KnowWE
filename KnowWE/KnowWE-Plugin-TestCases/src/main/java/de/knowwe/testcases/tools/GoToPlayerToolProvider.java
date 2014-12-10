@@ -34,6 +34,7 @@ import de.knowwe.testcases.TestCaseUtils;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.util.Icon;
 
 /**
  * Provides a Tool creating a tool opening a player and loading one of the
@@ -74,7 +75,7 @@ public class GoToPlayerToolProvider implements ToolProvider {
 	private Tool[] createTools(String value, Section<?> sectionInPackage) {
 		String testCaseSection = TestCasePlayerRenderer.generateSelectedTestCaseCookieKey(DefaultMarkupType.getContentSection(sectionInPackage));
 		return new Tool[] { new DefaultTool(
-				"KnowWEExtension/testcaseplayer/icon/testcaselink.png",
+				Icon.OPENTESTCASE,
 				"Show in Player",
 				"Opens this test case in an associated test case player",
 				"TestCasePlayer.change('"

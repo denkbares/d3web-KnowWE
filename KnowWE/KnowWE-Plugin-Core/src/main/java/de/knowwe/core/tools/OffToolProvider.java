@@ -24,6 +24,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.util.Icon;
 
 /**
  * ToolProvider for deactivating a markup
@@ -38,7 +39,7 @@ public class OffToolProvider implements ToolProvider {
 
 		String js = "KNOWWE.core.plugin.setMarkupSectionActivationStatus('" + section.getID() + "', 'off')";
 		Tool help = new DefaultTool(
-				"KnowWEExtension/images/off.png",
+				Icon.TOGGLE_OFF,
 				"Deactivate",
 				"Deactivates this section.",
 				js,

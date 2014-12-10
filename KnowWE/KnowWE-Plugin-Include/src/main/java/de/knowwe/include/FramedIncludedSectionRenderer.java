@@ -42,7 +42,7 @@ import de.knowwe.util.Icon;
 
 /**
  * Renderer to render an included section in default markup framed style.
- * 
+ *
  * @author Volker Belli (denkbares GmbH)
  * @created 05.02.2014
  */
@@ -70,8 +70,8 @@ public class FramedIncludedSectionRenderer extends DefaultMarkupRenderer {
 		}
 
 		return new DefaultToolSet(
-				new DefaultTool(Icon.NONE, "Open Page", "Opens page '" + targetSection.getTitle()
-						+ "'", "window.location ='" + link + "'",  Tool.CATEGORY_INFO));
+				new DefaultTool(Icon.OPENPAGE, "Open Page", "Opens page '" + targetSection.getTitle()
+						+ "'", "window.location ='" + link + "'", Tool.CATEGORY_INFO));
 	}
 
 	@Override

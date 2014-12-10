@@ -130,7 +130,7 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 				"node.innerHTML='<img style=\\'float:left\\' " +
 				"src=\\'" + imageURL + "\\' />'+node.innerHTML;";
 		return new DefaultTool(
-				"KnowWEExtension/d3web/icon/qrcode16.gif",
+				Icon.QRCODE,
 				"QR-Code",
 				"Shows the QR-Code to download the knowledge base into mobile devices.",
 				jsAction,
