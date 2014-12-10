@@ -37,7 +37,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.util.FontAwesomeIcon;
+import de.knowwe.util.Icon;
 
 /**
  * {@link #PaginationRenderer(de.knowwe.core.kdom.rendering.Renderer)} serves two main purposes: to have a
@@ -172,11 +172,11 @@ public class PaginationRenderer implements Renderer {
 				.appendHtml(">");
 		if (count != Integer.MAX_VALUE) {
 			renderToolbarButton(
-					FontAwesomeIcon.FIRST, "KNOWWE.core.plugin.pagination.navigate('"
+					Icon.FIRST, "KNOWWE.core.plugin.pagination.navigate('"
 							+ id + "', 'begin')",
 					(startRow > 1), result);
 			renderToolbarButton(
-					FontAwesomeIcon.PREVIOUS, "KNOWWE.core.plugin.pagination.navigate('"
+					Icon.PREVIOUS, "KNOWWE.core.plugin.pagination.navigate('"
 							+ id + "', 'back')",
 					(startRow > 1), result);
 			result.appendHtml("<span class=fillText> Lines </span>");
@@ -199,17 +199,17 @@ public class PaginationRenderer implements Renderer {
 			}
 
 			renderToolbarButton(
-					FontAwesomeIcon.NEXT, "KNOWWE.core.plugin.pagination.navigate('"
+					Icon.NEXT, "KNOWWE.core.plugin.pagination.navigate('"
 							+ id + "', 'forward')", forward, result);
 
 		}
 		if (count == Integer.MAX_VALUE) {
 			renderToolbarButton(
-					FontAwesomeIcon.FIRST, "KNOWWE.core.plugin.pagination.navigate('"
+					Icon.FIRST, "KNOWWE.core.plugin.pagination.navigate('"
 							+ id + "', 'begin')",
 					false, result);
 			renderToolbarButton(
-					FontAwesomeIcon.PREVIOUS, "KNOWWE.core.plugin.pagination.navigate('"
+					Icon.PREVIOUS, "KNOWWE.core.plugin.pagination.navigate('"
 							+ id + "', 'back')",
 					false, result);
 			result.appendHtml("<span class=fillText> Lines </span>");
@@ -218,14 +218,14 @@ public class PaginationRenderer implements Renderer {
 			result.appendHtml("<span class=fillText> to " + getResultSize(user) + "</span>");
 
 			renderToolbarButton(
-					FontAwesomeIcon.NEXT, "KNOWWE.core.plugin.pagination.navigate('"
+					Icon.NEXT, "KNOWWE.core.plugin.pagination.navigate('"
 							+ id + "', 'forward')", false, result);
 		}
 
 		result.appendHtml("</div>");
 	}
 
-	private static void renderToolbarButton(FontAwesomeIcon icon, String action, boolean enabled, RenderResult builder) {
+	private static void renderToolbarButton(Icon icon, String action, boolean enabled, RenderResult builder) {
 		if (enabled) {
 			builder.appendHtml("<a onclick=\"");
 			builder.appendHtml(action);
