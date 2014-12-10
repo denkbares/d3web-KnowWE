@@ -141,10 +141,11 @@ ToolMenu.prototype.hideToolsPopupMenu = function() {
 };
 
 ToolMenu.prototype.animateDefaultMarkupMenu = function($parent) {
-	if (!$parent) $parent = jq$(document);
+	if (!$parent) $parent = jq$('.defaultMarkupFrame');
 	$parent.each(function() {
-		var header = $parent.find('.headerMenu').first();
-		var menu = $parent.find('.markupMenu').first();
+		var markup = jq$(this);
+		var header = markup.find('.headerMenu').first();
+		var menu = markup.find('.markupMenu').first();
 		if (menu.length == 0) {
 			header.find('.markupMenuIndicator').hide();
 		}
