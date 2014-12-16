@@ -43,7 +43,7 @@ public abstract class SimpleReference extends AbstractType implements TermRefere
 	public SimpleReference(Class<? extends TermCompiler> compilerClass, Class<?> termObjectClass, Priority registrationPriority) {
 		this.termObjectClass = termObjectClass;
 		this.addCompileScript(registrationPriority,
-				new SimpleReferenceRegistrationScript<TermCompiler>(
+				new SimpleReferenceRegistrationScript<>(
 						(Class<TermCompiler>) compilerClass));
 	}
 

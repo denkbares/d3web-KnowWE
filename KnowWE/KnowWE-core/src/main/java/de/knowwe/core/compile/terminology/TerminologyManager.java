@@ -55,15 +55,20 @@ public class TerminologyManager {
 
 	private static final Set<Identifier> occupiedTerms = new HashSet<>();
 
-	private TermLogManager termLogManager = new TermLogManager();
+	private TermLogManager termLogManager;
+	private boolean caseSensitive;
 
 	public TerminologyManager() {
+		this(false);
+	}
 
+	public TerminologyManager(boolean caseSensitive) {
+		termLogManager = new TermLogManager(caseSensitive);
 		// extension point for plugins defining predefined terminology
-		Extension[] exts = PluginManager.getInstance().getExtensions(
+		Extension[] extensions = PluginManager.getInstance().getExtensions(
 				Plugins.EXTENDED_PLUGIN_ID,
 				Plugins.EXTENDED_POINT_Terminology);
-		for (Extension extension : exts) {
+		for (Extension extension : extensions) {
 			Object o = extension.getSingleton();
 			if (o instanceof TerminologyExtension) {
 				registerOccupiedTerm(((TerminologyExtension) o));

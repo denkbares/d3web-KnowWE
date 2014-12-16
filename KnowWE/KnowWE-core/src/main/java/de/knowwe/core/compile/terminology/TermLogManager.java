@@ -33,13 +33,20 @@ import de.d3web.strings.Identifier;
 class TermLogManager {
 
 	private final Map<Identifier, TermLog> termLogs =
-			new HashMap<Identifier, TermLog>();
+			new HashMap<>();
+	private boolean caseSensitive;
+
+	public TermLogManager(boolean caseSensitive) {
+		this.caseSensitive = caseSensitive;
+	}
 
 	public TermLog getLog(Identifier termIdentifier) {
+		termIdentifier.setCaseSensitive(caseSensitive);
 		return termLogs.get(termIdentifier);
 	}
 
 	public void putLog(Identifier termIdentifier, TermLog termLog) {
+		termIdentifier.setCaseSensitive(caseSensitive);
 		termLogs.put(termIdentifier, termLog);
 	}
 

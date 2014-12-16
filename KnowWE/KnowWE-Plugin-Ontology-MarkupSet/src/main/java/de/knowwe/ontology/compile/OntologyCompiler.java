@@ -147,7 +147,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements TermCom
 	}
 
 	private void createTerminologyManager() {
-		this.terminologyManager = new TerminologyManager();
+		this.terminologyManager = new TerminologyManager(true);
 		// register the lns abbreviation immediately as defined
 		this.getTerminologyManager().registerTermDefinition(this,
 				this.getCompileSection(), AbbreviationDefinition.class,
