@@ -89,9 +89,9 @@ public class SparqlResultRenderer {
 		result.appendHtml("<div class='sparqlTable' sparqlSectionId='" + opts.getId() + "' id='sparqlTable_" + opts
 				.getId() + "'>");
 		if (opts.isBorder()) result.appendHtml("<div class='border'>");
-		if (opts.isSorting()) {
-			query = modifyOrderByInSparqlString(section, user, query);
-		}
+//		if (opts.isSorting()) {
+//			query = modifyOrderByInSparqlString(section, user, query);
+//		}
 
 		SparqlRenderResult renderResult;
 
@@ -182,7 +182,7 @@ public class SparqlResultRenderer {
 			tablemode = true;
 			if (isTree) {
 				isNavigation = false;
-				result.append("%%warning The specified flags 'tree' and 'navigation' are not compatible.\n");
+				//result.append("%%warning The specified flags 'tree' and 'navigation' are not compatible.\n");
 			}
 		}
 
@@ -201,20 +201,9 @@ public class SparqlResultRenderer {
 				if (isTree && column++ < 2) {
 					continue;
 				}
-
 				result.appendHtml("<th>");
-//				result.appendHtml("<a href='#/' onclick=\"KNOWWE.plugin.sparql.sortResultsBy('"
-//						+ var + "', '"
-//						+ opts.getId() + "');\">");
 				result.append(var);
-//				result.appendHtml("</a>");
-//				if (hasSorting(var, opts.getSortingMap())) {
-//					String symbol = getSortingSymbol(var, opts.getSortingMap());
-//					result.appendHtml("<img src='KnowWEExtension/images/" + symbol
-//							+ "' alt='Sort by '"
-				result.appendHtml("</th>&nbsp;");
-//				}
-
+				result.appendHtml("</th>");
 			}
 			result.appendHtml("</tr>");
 		}
@@ -222,15 +211,23 @@ public class SparqlResultRenderer {
 			result.appendHtml("<ul style='white-space: normal'>");
 		}
 		ResultTableModel table = new ResultTableModel(qrt);
-		if (isTree) {
-			table = createMagicallySortedTable(table);
-		}
-
+		PaginationRenderer.setResultSize(user, table.getSize());
 		Iterator<TableRow> iterator;
 		if (isNavigation) {
+			List<Pair<String, Boolean>> multiColumnSorting = PaginationRenderer.getMultiColumnSorting(section, user);
+			table.sortRows(multiColumnSorting);
 			int startRow = PaginationRenderer.getStartRow(section, user);
 			int count = PaginationRenderer.getCount(section, user);
-			iterator = table.iterator(startRow, startRow + count);
+			if (count != Integer.MAX_VALUE) {
+				iterator = table.iterator(startRow - 1, startRow + count - 1);
+			}
+			else {
+				iterator = table.iterator();
+			}
+		}
+		else if (isTree) {
+			table = createMagicallySortedTable(table);
+			iterator = table.iterator();
 		}
 		else {
 			iterator = table.iterator();
@@ -238,72 +235,63 @@ public class SparqlResultRenderer {
 
 		List<String> classNames = new LinkedList<>();
 		Set<String> usedIDs = new HashSet<>();
-		int line = -1;
-
-		int startRow = PaginationRenderer.getStartRow(section, user);
-		int count = PaginationRenderer.getCount(section, user);
+		int line = 0;
 
 		while (iterator.hasNext()) {
 			line++;
-			if (line == Integer.MAX_VALUE || opts.isTree() || (line >= startRow && line < (startRow
-					+ count))) {
-				classNames.clear();
-				TableRow row = iterator.next();
-				if (tablemode) {
-					if (zebraMode && line % 2 != 0) {
-						classNames.add("odd");
-					}
-					if (isTree) {
-						classNames.add("treetr");
-					}
-					result.appendHtml(classNames.isEmpty()
-							? "<tr"
-							: "<tr class='" + Strings.concat(" ", classNames) + "'");
-
-					if (isTree) {
-						String valueID = valueToID(idVariable, row);
-						boolean isNew = usedIDs.add(valueID);
-						if (!isNew) {
-							valueID = UUID.randomUUID().toString();
-						}
-						result.append(" data-tt-id='sparql-id-").append(valueID).append("'");
-						String parentID = valueToID(parentVariable, row);
-						if (!Strings.isBlank(parentID) && !parentID.equals(valueID) && usedIDs.contains(parentID)) {
-							result.append(" data-tt-parent-id='sparql-id-")
-									.append(parentID).append("'");
-						}
-					}
-					result.append(">");
+			classNames.clear();
+			TableRow row = iterator.next();
+			if (tablemode) {
+				if (zebraMode && line % 2 != 0) {
+					classNames.add("odd");
 				}
+				if (isTree) {
+					classNames.add("treetr");
+				}
+				result.appendHtml(classNames.isEmpty()
+						? "<tr"
+						: "<tr class='" + Strings.concat(" ", classNames) + "'");
 
-				int column = 0;
-				for (String var : variables) {
-					// ignore first two columns if we are in tree mode
-					if (isTree && column++ < 2) {
-						continue;
+				if (isTree) {
+					String valueID = valueToID(idVariable, row);
+					boolean isNew = usedIDs.add(valueID);
+					if (!isNew) {
+						valueID = UUID.randomUUID().toString();
 					}
-
-					Node node = row.getValue(var);
-					String erg = renderNode(node, var, rawOutput, user, opts.getRdf2GoCore(),
-							RenderMode.HTML);
-
-					if (tablemode) {
-						result.appendHtml("<td>");
-						result.append(erg);
-						result.appendHtml("</td>\n");
-					}
-					else {
-						result.appendHtml("<li>");
-						result.append(erg);
-						result.appendHtml("</li>\n");
+					result.append(" data-tt-id='sparql-id-").append(valueID).append("'");
+					String parentID = valueToID(parentVariable, row);
+					if (!Strings.isBlank(parentID) && !parentID.equals(valueID) && usedIDs.contains(parentID)) {
+						result.append(" data-tt-parent-id='sparql-id-")
+								.append(parentID).append("'");
 					}
 				}
+				result.append(">");
+			}
+
+			int column = 0;
+			for (String var : variables) {
+				// ignore first two columns if we are in tree mode
+				if (isTree && column++ < 2) {
+					continue;
+				}
+
+				Node node = row.getValue(var);
+				String erg = renderNode(node, var, rawOutput, user, opts.getRdf2GoCore(),
+						RenderMode.HTML);
+
 				if (tablemode) {
-					result.appendHtml("</tr>");
+					result.appendHtml("<td>");
+					result.append(erg);
+					result.appendHtml("</td>\n");
+				}
+				else {
+					result.appendHtml("<li>");
+					result.append(erg);
+					result.appendHtml("</li>\n");
 				}
 			}
-			else {
-				iterator.next();
+			if (tablemode) {
+				result.appendHtml("</tr>");
 			}
 		}
 

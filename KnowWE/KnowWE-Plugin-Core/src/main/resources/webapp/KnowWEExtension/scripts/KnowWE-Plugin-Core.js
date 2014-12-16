@@ -543,6 +543,8 @@ KNOWWE.kdomtreetable.setOverflow = function() {
  */
 KNOWWE.core.plugin.pagination = function() {
 
+	var windowHeight;
+
 	function saveCookieAndUpdateNode(cookie, id) {
 		var cookieStr = JSON.stringify(cookie);
 		jq$.cookie("PaginationDecoratingRenderer-" + id, cookieStr);
@@ -575,16 +577,22 @@ KNOWWE.core.plugin.pagination = function() {
 		if (cookie != null && cookie.sorting != null) {
 			var sortLength;
 			if (sortingMode === 'multi') {
-				sortLength = cookie.sorting.length;
+				sortLength = (cookie.sorting).length;
 			}
 			else {
 				sortLength = 1;
 			}
 			for (var i = 0; i < sortLength; i++) {
-				var thToGetSortingSymbol = jq$("[pagination=" + sectionId
+				var sortingSymbolParent = jq$("[pagination=" + sectionId
 				+ "] th:contains('" + cookie.sorting[i].sort + "') span");
-				jq$(thToGetSortingSymbol).append(
-					getSortingSymbol(cookie.sorting[i].naturalOrder));
+				var sortingSymbol = jq$(sortingSymbolParent).find("i");
+				if (sortingSymbol.length == 1) {
+					sortingSymbol.replaceWith(
+						getSortingSymbol(cookie.sorting[i].naturalOrder));
+				}
+				else {
+					jq$(sortingSymbolParent).append(getSortingSymbol(cookie.sorting[i].naturalOrder));
+				}
 			}
 		}
 	}
@@ -618,15 +626,76 @@ KNOWWE.core.plugin.pagination = function() {
 		});
 	}
 
-	function shortTable(table) {
-		if (jq$(table).find("tr").length < 50) {
-			return true;
-		}
-		return false;
+	function isShortTable() {
+		return (jq$(this).height() < jq$(window).height());
 	}
 
-	function toggleSecondNavigation(id, display) {
-		jq$("div[pagination=" + id + "]").slice(2).css("display", display);
+	function toggleLowerPagination(visibility) {
+		var id = jq$(this).attr("pagination");
+		jq$(".knowwe-paginationToolbar[pagination=" + id + "]").slice(2, 4).css("display", visibility);
+	}
+
+	function handlePaginationBelowTableVisibility() {
+		if (isShortTable.call(this)) {
+			toggleLowerPagination.call(this, "none");
+		}
+		else {
+			toggleLowerPagination.call(this, "inline-block")
+		}
+	}
+
+	jq$(window).resize(function() {
+		if (windowHeight != jq$(window).height()) {
+			//Do something
+			windowHeight = jq$(window).height();
+			jq$("table[pagination]").each(
+				function() {
+					handlePaginationBelowTableVisibility.call(this);
+				}
+			)
+		}
+	});
+
+	function decorate() {
+
+		windowHeight = jq$(window).height();
+
+		return function() {
+			var sectionId = jq$(this).attr('pagination');
+
+			//for css purposes
+			jq$(this).addClass('knowwe-pagination');
+
+			// register count selector
+			jq$('div[pagination=' + sectionId + '] .count').on('change', function() {
+				KNOWWE.core.plugin.pagination.setCount(this, sectionId);
+			});
+
+			// register start row change event
+			jq$('div[pagination=' + sectionId + '] .startRow').on('change', function() {
+				KNOWWE.core.plugin.pagination.updateStartRow(this, sectionId);
+			});
+
+			var sortingMode = jq$(this).attr('sortable');
+
+			jq$(this).find("th").each(
+				function(i) {
+					// make <th> clickable and therefore sortable except if
+					// it's stated explicitly otherwise
+					if (typeof sortingMode != 'undefined') {
+						enableSorting.call(this, sectionId);
+					}
+					if (jq$(this).hasClass("filterable")) {
+						prepareFilterableElements.call(this);
+					}
+				}
+			);
+
+			// render sorting symbol
+			renderSortingSymbols(sectionId, sortingMode);
+
+			handlePaginationBelowTableVisibility.call(this);
+		}
 	}
 
 	return {
@@ -805,6 +874,14 @@ KNOWWE.core.plugin.pagination = function() {
 		},
 
 		decorateTable : function() {
+			var id = jq$(this).find(".knowwe-paginationToolbar").first().attr('pagination');
+			jq$(this).find("table").attr('pagination', id);
+			jq$(this).find("table[pagination]").each(
+				decorate());
+		},
+
+		decorateTables : function() {
+
 			var wrappers = jq$("div.knowwe-paginationWrapper");
 			wrappers.each(function() {
 				var id = jq$(this).attr('id');
@@ -812,46 +889,7 @@ KNOWWE.core.plugin.pagination = function() {
 			});
 
 			jq$("table[pagination]").each(
-				function() {
-					var sectionId = jq$(this).attr('pagination');
-
-					//for css purposes
-					jq$(this).addClass('knowwe-pagination');
-
-					// register count selector
-					jq$('div[pagination=' + sectionId + '] .count').on('change', function() {
-						KNOWWE.core.plugin.pagination.setCount(this, sectionId);
-					});
-
-					// register start row change event
-					jq$('div[pagination=' + sectionId + '] .startRow').on('change', function() {
-						KNOWWE.core.plugin.pagination.updateStartRow(this, sectionId);
-					});
-
-					var sortingMode = jq$(this).attr('sortable');
-
-					jq$(this).find("th").each(
-						function(i) {
-							// make <th> clickable and therefore sortable except if
-							// it's stated explicitly otherwise
-							if (typeof sortingMode != 'undefined') {
-								enableSorting.call(this, sectionId);
-							}
-							if (jq$(this).hasClass("filterable")) {
-								prepareFilterableElements.call(this);
-							}
-						});
-
-					// render sorting symbol
-					renderSortingSymbols(sectionId, sortingMode);
-
-					if (shortTable(this)) {
-						toggleSecondNavigation(sectionId, "none");
-					} else {
-						toggleSecondNavigation(sectionId, "inline-block");
-					}
-
-				});
+				decorate());
 		}
 	}
 }();
@@ -1641,17 +1679,6 @@ KNOWWE.core.plugin.rightPanel.watches = function() {
 }
 ();
 
-// add clickable table headers to every table which is a sibling to a navigation
-// bar,
-// i.e. initialized by PaginationDecoratingRenderer
-KNOWWE.helper.observer.subscribe("afterRerender", function() {
-	KNOWWE.core.plugin.pagination.decorateTable();
-	jq$("table.termReview").each(function() {
-		KNOWWE.plugin.semanticservicecore.initReviewTable(this);
-	});
-});
-
-
 //jquery-autogrow for automatic input field resizing (customized for KnowWE renaming)
 (function() {
 
@@ -1737,16 +1764,23 @@ KNOWWE.helper.observer.subscribe("afterRerender", function() {
 			KNOWWE.core.plugin.objectinfo.init();
 			KNOWWE.core.plugin.renderKDOM();
 			KNOWWE.kdomtreetable.init();
-			KNOWWE.core.plugin.pagination.decorateTable();
+			KNOWWE.core.plugin.pagination.decorateTables();
 			KNOWWE.core.plugin.rightPanel.init();
 		});
 	}
 }());
 
+KNOWWE.helper.observer.subscribe("update", function() {
+	updateWatches();
+});
+
 KNOWWE.helper.observer.subscribe("afterRerender", function() {
 	KNOWWE.tooltips.enrich(this);
 	KNOWWE.core.plugin.objectinfo.lookUp(this);
-
+	KNOWWE.core.plugin.pagination.decorateTable.call(this);
+	jq$("table.termReview").each(function() {
+		KNOWWE.plugin.semanticservicecore.initReviewTable(this);
+	});
 });
 
 Array.prototype.move = function(old_index, new_index) {

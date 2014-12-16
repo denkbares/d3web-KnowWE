@@ -34,6 +34,15 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 public class SparqlContentRenderer implements Renderer {
 
+	private static SparqlContentRenderer instance = null;
+
+	public static SparqlContentRenderer getInstance() {
+		if (instance == null) {
+			instance = new SparqlContentRenderer();
+		}
+		return instance;
+	}
+
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
 
@@ -79,7 +88,8 @@ public class SparqlContentRenderer implements Renderer {
 		}
 		else {
 
-			SparqlResultRenderer.getInstance().renderSparqlResult(Sections.cast(section, SparqlType.class), user, result);
+			SparqlResultRenderer.getInstance()
+					.renderSparqlResult(Sections.cast(section, SparqlType.class), user, result);
 
 			if (showQueryFlag != null && showQueryFlag.equalsIgnoreCase("true")) {
 					/*
@@ -92,6 +102,5 @@ public class SparqlContentRenderer implements Renderer {
 
 		}
 	}
-
 
 }

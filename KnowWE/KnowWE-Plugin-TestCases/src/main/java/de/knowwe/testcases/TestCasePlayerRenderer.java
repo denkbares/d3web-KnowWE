@@ -259,8 +259,9 @@ public class TestCasePlayerRenderer implements Renderer {
 		string.appendHtml(PaginationRenderer.getToolSeparator());
 
 		PaginationRenderer.setResultSize(user, chronology.size());
-		PaginationRenderer.renderTableSizeSelector(section, user, string);
-		PaginationRenderer.renderNavigation(section, user, string);
+		boolean show = chronology.size() > 10 ? true : false;
+		PaginationRenderer.renderPagination(section, user, string, show);
+
 	}
 
 	private String createFromKey(Section<?> section) {

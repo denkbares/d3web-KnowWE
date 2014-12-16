@@ -34,7 +34,6 @@ import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.AsynchronRenderer;
-import de.knowwe.kdom.renderer.PaginationRenderer;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
@@ -43,7 +42,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 
 	public SparqlContentType() {
 		this.setSectionFinder(AllTextFinder.getInstance());
-		this.setRenderer(new AsynchronRenderer(new PaginationRenderer(new SparqlContentRenderer())));
+		this.setRenderer(new AsynchronRenderer(new SparqlContentDecoratingRenderer()));
 		this.addCompileScript(new SparqlConstructHandler());
 	}
 
@@ -75,7 +74,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		renderOpts.setTree(Boolean.valueOf(DefaultMarkupType.getAnnotation(markupSection,
 				SparqlMarkupType.TREE)));
 		renderOpts.setBorder(checkAnnotation(markupSection, SparqlMarkupType.BORDER, true));
-		renderOpts.setNavigation(checkAnnotation(markupSection, SparqlMarkupType.NAVIGATION));
+		renderOpts.setNavigation(checkAnnotation(markupSection, SparqlMarkupType.NAVIGATION, true));
 
 		renderOpts.setTimeout(getTimeout(markupSection));
 	}
@@ -86,7 +85,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		return annotationString == null || annotationString.equals("true");
 	}
 
-	private boolean checkAnnotation(Section<?> markupSection, String annotationName, boolean defaultValue) {
+	public static boolean checkAnnotation(Section<?> markupSection, String annotationName, boolean defaultValue) {
 		String annotationString = DefaultMarkupType.getAnnotation(markupSection,
 				annotationName);
 		return annotationString == null ? defaultValue : annotationString.equals("true");

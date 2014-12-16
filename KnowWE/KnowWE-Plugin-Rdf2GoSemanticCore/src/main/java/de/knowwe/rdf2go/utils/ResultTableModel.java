@@ -21,10 +21,13 @@ package de.knowwe.rdf2go.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +41,7 @@ import org.ontoware.rdf2go.model.node.Node;
 import de.d3web.collections.SubSpanIterator;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
+import de.d3web.utils.Pair;
 
 public class ResultTableModel {
 
@@ -59,6 +63,7 @@ public class ResultTableModel {
 	}
 
 	private final Collection<TableRow> rows = new LinkedHashSet<>();
+
 	private final List<String> variables;
 
 	private Map<Node, Set<TableRow>> groupedRows = null;
@@ -66,6 +71,8 @@ public class ResultTableModel {
 	public int getSize() {
 		return rows.size();
 	}
+
+	private List<Comparator<TableRow>> comparators = new LinkedList<>();
 
 	public ResultTableModel(QueryResultTable result) {
 		this.variables = result.getVariables();
@@ -86,7 +93,30 @@ public class ResultTableModel {
 	}
 
 	public Iterator<TableRow> iterator() {
-		return rows.iterator();
+		if (comparators.isEmpty()) {
+			return rows.iterator();
+		}
+		else {
+			ArrayList<TableRow> tableRows = new ArrayList<>(rows);
+			Collections.reverse(comparators);
+			for (Comparator<TableRow> comparator : comparators) {
+				Collections.sort(tableRows, comparator);
+			}
+			return tableRows.iterator();
+		}
+	}
+
+	public void sortRows(List<Pair<String, Boolean>> sorting) {
+		for (Pair<String, Boolean> stringBooleanPair : sorting) {
+			final int factor = stringBooleanPair.getB() ? 1 : -1;
+			Comparator<TableRow> comparator = (o1, o2) -> {
+				int result = o1.getValue(stringBooleanPair.getA()).compareTo(o2.getValue(stringBooleanPair.getA()));
+				if (result != 0) return factor * result;
+				return 0;
+			};
+			comparators.add(comparator);
+		}
+
 	}
 
 	/**
@@ -96,11 +126,11 @@ public class ResultTableModel {
 	 * assumed to be the number of rows.
 	 *
 	 * @param start the first row to iterate
-	 * @param end the row to stop iteration before
+	 * @param end   the row to stop iteration before
 	 * @return an iterator for the sub-span of rows
 	 */
 	public Iterator<TableRow> iterator(int start, int end) {
-		return new SubSpanIterator<>(rows.iterator(), start, end);
+		return new SubSpanIterator<>(iterator(), start, end);
 	}
 
 	private void populateTable(QueryResultTable result) {
@@ -147,14 +177,14 @@ public class ResultTableModel {
 	 * Compares the two sparql result data tables with each other. Equality is checked if the
 	 * atLeast-flag is set false. If the atLeast-flag is set to true, only the subset relation of
 	 * expected to actual data is checked.
-	 * <p/>
+	 * <p>
 	 * CAUTION: result rows with blank nodes are ignored from consideration (graph isomorphism
 	 * problem)
 	 *
 	 * @param expectedResultTable the expected data
-	 * @param actualResultTable the actual data
-	 * @param atLeast false: equality of data is required; true: expectedData SUBSET-OF actualData
-	 * is required
+	 * @param actualResultTable   the actual data
+	 * @param atLeast             false: equality of data is required; true: expectedData SUBSET-OF actualData
+	 *                            is required
 	 * @return if the expected data is equal to (or a subset of) the actual data
 	 * @created 20.01.2014
 	 */

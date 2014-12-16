@@ -75,20 +75,20 @@ import de.knowwe.util.Icon;
  * {@link #setFilterList(de.knowwe.core.user.UserContext, de.d3web.utils.Pair[])}  }. To get the active filters use
  * {@link #getFilters(de.knowwe.core.kdom.parsing.Section, de.knowwe.core.user.UserContext)}<br><br>
  * Optionally: If the decorated renderer knows the size of its result it can use {@link
- * #setResultSize(de.knowwe.core.user.UserContext, de.knowwe.core.kdom.parsing.Section, int)} to render more
- * information in the pagination bar.
+ * #setResultSize(de.knowwe.core.user.UserContext, int)} to render more information in the pagination bar.
  *
  * @author Stefan Plehn
  * @created 14.01.2014
  */
 public class PaginationRenderer implements Renderer {
 
+	public static final String DEFAULT_NO_RESULTSIZE_SET = "maximum lines";
 	private final Renderer decoratedRenderer;
 
 	public static final String STARTROW = "startRow";
 	private static final String STARTROW_DEFAULT = "1";
 	public static final String COUNT = "count";
-	private static final String COUNT_DEFAULT = "50";
+	private static final String COUNT_DEFAULT = "20";
 	public static final String SORTING = "sorting";
 	public static final String RESULTSIZE = "resultsize";
 	private static final String FILTER = "filter";
@@ -103,16 +103,27 @@ public class PaginationRenderer implements Renderer {
 		result.appendHtmlTag("div", "class", "knowwe-paginationWrapper", "id", section.getID());
 		RenderResult table = new RenderResult(user);
 		decoratedRenderer.render(section, user, table);
-		RenderResult navigation = new RenderResult(user);
-		renderTableSizeSelector(section, user, navigation);
-		renderNavigation(section, user, navigation);
+		RenderResult pagination = new RenderResult(user);
 
-		result.append(navigation);
+		String resultString = PaginationRenderer.getResultSize(user);
+		boolean show = true;
+		if (!resultString.equals(DEFAULT_NO_RESULTSIZE_SET)) {
+			int resultSize = Integer.parseInt(resultString);
+			show = resultSize > 10 ? true : false;
+		}
+		PaginationRenderer.renderPagination(section, user, pagination, show);
+		result.append(pagination);
 		result.append(table);
-		result.append(navigation);
+		result.append(pagination);
+
 		renderHiddenFilterDiv(user, result, section);
 		result.appendHtml("</div>");
 
+	}
+
+	public static void renderPagination(Section<?> section, UserContext user, RenderResult result, boolean show) {
+		renderTableSizeSelector(section, user, result, show);
+		renderNavigation(section, user, result, show);
 	}
 
 	public static void renderToolSeparator(RenderResult navigation) {
@@ -130,11 +141,9 @@ public class PaginationRenderer implements Renderer {
 	 * @param user
 	 * @param result
 	 */
-	public static void renderTableSizeSelector(Section<?> sec, UserContext user, RenderResult result) {
+	public static void renderTableSizeSelector(Section<?> sec, UserContext user, RenderResult result, boolean show) {
 		int count = getCount(sec, user);
-		result.appendHtml("<div class='knowwe-paginationToolbar' pagination=")
-				.append(Strings.quoteSingle(sec.getID()))
-				.appendHtml(">");
+		renderToolBarElementHeader(sec, result, show);
 
 		Integer[] sizeArray = getSizeChoices(user);
 
@@ -163,13 +172,11 @@ public class PaginationRenderer implements Renderer {
 	 * @param user
 	 * @param result
 	 */
-	public static void renderNavigation(Section<?> sec, UserContext user, RenderResult result) {
+	public static void renderNavigation(Section<?> sec, UserContext user, RenderResult result, boolean show) {
 		String id = sec.getID();
 		int count = getCount(sec, user);
 		int startRow = getStartRow(sec, user);
-		result.appendHtml("<div class='knowwe-paginationToolbar avoidMenu' pagination=")
-				.append(Strings.quoteSingle(sec.getID()))
-				.appendHtml(">");
+		renderToolBarElementHeader(sec, result, show);
 		if (count != Integer.MAX_VALUE) {
 			renderToolbarButton(
 					Icon.FIRST, "KNOWWE.core.plugin.pagination.navigate('"
@@ -188,11 +195,9 @@ public class PaginationRenderer implements Renderer {
 
 			String resultSize = getResultSize(user);
 			boolean forward = true;
-			if (!resultSize.equals("maximum lines")) {
-				if (Integer.parseInt(resultSize) < startRow + count - 1) {
-					forward = false;
-					result.append(resultSize);
-				}
+			if (Integer.parseInt(resultSize) < startRow + count - 1) {
+				forward = false;
+				result.append(resultSize);
 			}
 			else {
 				result.append((startRow + count - 1));
@@ -223,6 +228,15 @@ public class PaginationRenderer implements Renderer {
 		}
 
 		result.appendHtml("</div>");
+	}
+
+	private static void renderToolBarElementHeader(Section<?> sec, RenderResult result, boolean show) {
+		result.appendHtml("<div class='knowwe-paginationToolbar' pagination=")
+				.append(Strings.quoteSingle(sec.getID()));
+		if (!show) {
+			result.append(" style='display:none'");
+		}
+		result.appendHtml(">");
 	}
 
 	private static void renderToolbarButton(Icon icon, String action, boolean enabled, RenderResult builder) {
@@ -293,7 +307,7 @@ public class PaginationRenderer implements Renderer {
 			return user.getRequest().getAttribute(RESULTSIZE).toString();
 		}
 		else {
-			return "maximum lines";
+			return DEFAULT_NO_RESULTSIZE_SET;
 		}
 
 	}
