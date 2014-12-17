@@ -30,6 +30,7 @@ import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScript;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileType;
+import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
@@ -94,6 +95,8 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 		compileType.addCompileScript(new D3webCompilerRegistrationScript());
 		MARKUP.addContentType(compileType);
 
+		MARKUP.addAnnotationNameType(PackageManager.COMPILE_ATTRIBUTE_NAME,
+				new PackageAnnotationNameType());
 		MARKUP.addAnnotationContentType(PackageManager.COMPILE_ATTRIBUTE_NAME,
 				new PackageTerm());
 	}
