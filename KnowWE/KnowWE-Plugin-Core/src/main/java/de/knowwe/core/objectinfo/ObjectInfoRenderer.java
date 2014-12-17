@@ -75,6 +75,7 @@ public class ObjectInfoRenderer implements Renderer {
 	// Parameter used in the request
 	public static final String OBJECT_NAME = "objectname";
 	public static final String TERM_IDENTIFIER = "termIdentifier";
+	public static final int MAX_NUMBER_BY_TYPE = 50;
 
 	private static DefaultMarkupRenderer defaultMarkupRenderer = new DefaultMarkupRenderer();
 
@@ -223,28 +224,39 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	private static void renderGroupedByType(UserContext user, RenderResult result, Set<Section<?>> references) {
-		Map<Type, List<Section<?>>> groupedReferences = groupByType(references);
-		for (Type markupType : groupedReferences.keySet()) {
-			RenderResult innerResult = new RenderResult(result);
-			List<Section<?>> referencesGroup = groupedReferences.get(markupType);
-			renderTermReferencesPreviewsAsync(referencesGroup, user, innerResult);
-			int count = referencesGroup.size();
-			String info = count > 1 ? String.valueOf(count) : null;
-			wrapInExtendPanel(markupType.getName(), info, innerResult, result);
+		Map<Type, List<Section<?>>> typeGroups = groupByType(references);
+		for (Entry<Type, List<Section<?>>> typeEntry : typeGroups.entrySet()) {
+			List<Section<?>> sectionsOfType = typeEntry.getValue();
+			// if we have to many sections of one type, we additionally group by article
+			if (sectionsOfType.size() > MAX_NUMBER_BY_TYPE) {
+				for (Entry<Article, List<Section<?>>> articleEntry : groupByArticle(sectionsOfType).entrySet()) {
+					RenderResult innerResult = new RenderResult(result);
+					List<Section<?>> sectionOfArticle = articleEntry.getValue();
+					renderTermReferencesPreviewsAsync(sectionOfArticle, user, innerResult);
+					wrapInExtendPanel(typeEntry.getKey().getName() + " in " + articleEntry.getKey().getTitle(),
+							String.valueOf(sectionOfArticle.size()),
+							innerResult, result);
+				}
+			}
+			// just group by type
+			else {
+				RenderResult innerResult = new RenderResult(result);
+				renderTermReferencesPreviewsAsync(sectionsOfType, user, innerResult);
+				String info = sectionsOfType.size() > 1 ? String.valueOf(sectionsOfType.size()) : null;
+				wrapInExtendPanel(typeEntry.getKey().getName(), info, innerResult, result);
+			}
 		}
 	}
 
 	private static void renderGroupedByArticle(Set<Section<?>> references, UserContext user, RenderResult result) {
 		Map<Article, List<Section<?>>> articleGroups = groupByArticle(references);
-		for (Entry<Article, List<Section<?>>> articleListEntry : articleGroups.entrySet()) {
+		for (Entry<Article, List<Section<?>>> articleEntry : articleGroups.entrySet()) {
 			RenderResult innerResult = new RenderResult(result);
-			Map<Type, List<Section<?>>> groupedReferences = groupByType(articleListEntry.getValue());
-			for (Type markupType : groupedReferences.keySet()) {
-				List<Section<?>> referencesGroup = groupedReferences.get(markupType);
-				renderTermReferencesPreviewsAsync(referencesGroup, user, innerResult);
+			for (Entry<Type, List<Section<?>>> typeEntry : groupByType(articleEntry.getValue()).entrySet()) {
+				renderTermReferencesPreviewsAsync(typeEntry.getValue(), user, innerResult);
 			}
-			wrapInExtendPanel(articleListEntry.getKey().getTitle(),
-					getSurroundingMarkupNames(articleListEntry.getValue()), innerResult, result);
+			wrapInExtendPanel(articleEntry.getKey().getTitle(),
+					getSurroundingMarkupNames(articleEntry.getValue()), innerResult, result);
 		}
 	}
 
@@ -273,7 +285,7 @@ public class ObjectInfoRenderer implements Renderer {
 
 	public static Set<Section<?>> findTermReferenceSections(String web, Identifier termIdentifier) {
 		TermInfo termInfo = TermUtils.getTermInfo(web, termIdentifier, false);
-		Set<Section<?>> sections = new HashSet<Section<?>>();
+		Set<Section<?>> sections = new HashSet<>();
 		if (termInfo == null) {
 			return sections;
 		}
@@ -284,7 +296,7 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	private static String getTermObjectClassesVerbalization(UserContext user, Identifier identifier) {
-		TreeSet<String> termClasses = new TreeSet<String>();
+		TreeSet<String> termClasses = new TreeSet<>();
 		for (Class<?> termObjectClass : getTermObjectClasses(user, identifier)) {
 			termClasses.add(termObjectClass.getSimpleName());
 		}
@@ -329,27 +341,13 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	private static Map<Type, List<Section<? extends Type>>> groupByType(Collection<Section<?>> references) {
-		Map<Type, List<Section<? extends Type>>> result =
-				new TreeMap<Type, List<Section<? extends Type>>>(new Comparator<Type>() {
-					@Override
-					public int compare(Type o1, Type o2) {
-						if (o1.getName() == null && o2.getName() == null) {
-							return 0;
-						}
-						if (o1.getName() == null) {
-							return 1;
-						}
-						if (o2.getName() == null) {
-							return -1;
-						}
-						return o1.getName().compareTo(o2.getName());
-					}
-				});
+		Map<Type, List<Section<? extends Type>>> result = new TreeMap<>(
+				Comparator.comparing(type -> type.getName() == null ? "" : type.getName()));
 		for (Section<?> reference : references) {
 			Type surroundingMarkupType = getSurroundingMarkupName(reference);
 			List<Section<? extends Type>> sectionsForType = result.get(surroundingMarkupType);
 			if (sectionsForType == null) {
-				sectionsForType = new LinkedList<Section<? extends Type>>();
+				sectionsForType = new LinkedList<>();
 			}
 			sectionsForType.add(reference);
 			result.put(surroundingMarkupType, sectionsForType);

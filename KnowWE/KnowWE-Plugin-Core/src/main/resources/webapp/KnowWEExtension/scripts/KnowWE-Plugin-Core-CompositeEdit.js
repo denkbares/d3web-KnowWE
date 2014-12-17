@@ -49,7 +49,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 			alert("You are already editing the page. Please finish your current edit before entering composite edit.");
 			return;
 		}
-		_EC.showAjaxLoader();
+		_KU.showProcessingIndicator();
 
 		initSections(id);
 		if (_CE.mode == _CE.ModeEnum.EDIT) {
@@ -69,7 +69,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 		_EC.mode = _CE;
 		_CE.enabled = true;
 
-		_EC.hideAjaxLoader();
+		_KU.hideProcessingIndicator();
 	}
 
 	function initSections(id) {
@@ -287,7 +287,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 
 	function enableEditArea(sectionId) {
 
-		_EC.showAjaxLoader();
+		_KU.showProcessingIndicator();
 
 		var params = {
 			action : 'InstantEditEnableAction',
@@ -323,13 +323,12 @@ KNOWWE.plugin.compositeEditTool = function() {
 					jq$('#compositeEdit div.defaultMarkupFrame[compositeedit=' + sectionId + ']').each(function(index, frame) {
 						_TM.animateDefaultMarkupMenu(jq$(frame));
 					});
+					_KU.hideProcessingIndicator();
 				},
 				onError : _EC.onErrorBehavior
 			}
 		};
 		new _KA(options).send();
-
-		_EC.hideAjaxLoader();
 	}
 
 	function createTextAreaID(id) {
@@ -638,7 +637,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 						});
 					}
 					enableInitialDialogState();
-					_EC.hideAjaxLoader();
+					_KU.hideProcessingIndicator();
 				},
 				onError : _EC.onErrorBehavior
 
@@ -837,13 +836,14 @@ KNOWWE.plugin.compositeEditTool = function() {
 					fn : function() {
 						$(window).removeEvents('beforeunload');
 						$(window).removeEvents('unload');
-						_EC.hideAjaxLoader();
+						_KU.hideProcessingIndicator();
 						_CE.disable();
 						_IE.disable(_CEWT.rootID, true);
 					},
 					onError : _EC.onErrorBehavior
 				}
 			};
+			_KU.showProcessingIndicator();
 			new _KA(options).send();
 
 		},
@@ -872,6 +872,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 		openCompositeEditDialog : function(identifier) {
 			closeOldDialog();
 			resetVariables();
+			_KU.showProcessingIndicator();
 			var divMarkupText = buildDefaultMarkupStructure();
 			var options = createCompositeEditDialog(identifier, divMarkupText);
 			new _KA(options).send();

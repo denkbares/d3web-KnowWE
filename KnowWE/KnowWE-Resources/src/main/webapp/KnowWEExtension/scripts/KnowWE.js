@@ -154,7 +154,7 @@ KNOWWE.core.util = function() {
 					indicator.attr('state', 'processing');
 					indicator.show();
 				}
-			}, 100);
+			}, 200);
 		}
 		else {
 			indicator.hide();
