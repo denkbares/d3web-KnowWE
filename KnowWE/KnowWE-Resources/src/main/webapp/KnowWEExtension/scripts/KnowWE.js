@@ -144,29 +144,12 @@ KNOWWE.core.util = function() {
 
 	var activityCounter = 0;
 
-	function updateProcessingIndicator() {
-		var indicator = jq$('#KnowWEProcessingIndicator');
-		if (activityCounter > 0) {
-			// to reduce flicker, we wait a bit
-			window.setTimeout(function() {
-				// if counter still positive after timeout, show indicator...
-				if (activityCounter > 0) {
-					indicator.attr('state', 'processing');
-					indicator.show();
-				}
-			}, 200);
-		}
-		else {
-			indicator.hide();
-			indicator.attr('state', 'idle');
-		}
-	}
-
 	return {
 
 		init : function() {
 			KNOWWE.core.util.addCollabsiblePluginHeader();
 		},
+
 		/**
 		 * Function updateProcessingState
 		 *
@@ -175,7 +158,21 @@ KNOWWE.core.util = function() {
 		 */
 		updateProcessingState : function(delta) {
 			activityCounter += delta;
-			updateProcessingIndicator();
+			var indicator = jq$('#KnowWEProcessingIndicator');
+			if (activityCounter > 0) {
+				// to reduce flicker, we wait a bit
+				window.setTimeout(function() {
+					// if counter still positive after timeout, show indicator...
+					if (activityCounter > 0) {
+						indicator.attr('state', 'processing');
+						indicator.show();
+					}
+				}, 200);
+			}
+			else {
+				indicator.hide();
+				indicator.attr('state', 'idle');
+			}
 		},
 		showProcessingIndicator : function() {
 			_KU.updateProcessingState(1);
