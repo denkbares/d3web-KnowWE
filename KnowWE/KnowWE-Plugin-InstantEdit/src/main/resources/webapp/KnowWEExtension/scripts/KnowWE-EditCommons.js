@@ -58,11 +58,11 @@ KNOWWE.editCommons = function() {
 		},
 
 		showAjaxLoader : function() {
-			KNOWWE.core.util.updateProcessingState(1);
+			_KU.showProcessingIndicator();
 		},
 
 		hideAjaxLoader : function() {
-			KNOWWE.core.util.updateProcessingState(-1);
+			_KU.hideProcessingIndicator();
 		},
 
 		// Maybe return given messages instead

@@ -143,7 +143,24 @@ KNOWWE.core.actions = function() {
 KNOWWE.core.util = function() {
 
 	var activityCounter = 0;
-	var indicatorShouldBeVisible = false;
+
+	function updateProcessingIndicator() {
+		var indicator = jq$('#KnowWEProcessingIndicator');
+		if (activityCounter > 0) {
+			// to reduce flicker, we wait a bit
+			window.setTimeout(function() {
+				// if counter still positive after timeout, show indicator...
+				if (activityCounter > 0) {
+					indicator.attr('state', 'processing');
+					indicator.show();
+				}
+			}, 100);
+		}
+		else {
+			indicator.hide();
+			indicator.attr('state', 'idle');
+		}
+	}
 
 	return {
 
@@ -158,33 +175,13 @@ KNOWWE.core.util = function() {
 		 */
 		updateProcessingState : function(delta) {
 			activityCounter += delta;
-
-			if (activityCounter > 0) {
-				KNOWWE.core.util.showProcessingIndicator();
-			}
-			else {
-				KNOWWE.core.util.hideProcessingIndicator();
-			}
+			updateProcessingIndicator();
 		},
 		showProcessingIndicator : function() {
-			indicatorShouldBeVisible = true;
-			window.setTimeout("KNOWWE.core.util.updateProcessingIndicator()", 100);
+			_KU.updateProcessingState(1);
 		},
 		hideProcessingIndicator : function() {
-			indicatorShouldBeVisible = false;
-			KNOWWE.core.util.updateProcessingIndicator();
-		},
-		updateProcessingIndicator : function() {
-			var indicator = jq$('#KnowWEProcessingIndicator')
-			if (indicatorShouldBeVisible) {
-				indicator.attr('state', 'processing');
-				indicator.show();
-
-			}
-			else if (!indicatorShouldBeVisible) {
-				indicator.hide();
-				indicator.attr('state', 'idle');
-			}
+			_KU.updateProcessingState(-1);
 		},
 		/**
 		 * Function: addCollabsiblePluginHeader
@@ -631,17 +628,20 @@ KNOWWE.plugin = function() {
 /**
  * Aliases for some often used namespaced function to reduce typing.
  */
-var _KE = KNOWWE.helper.event;
 /* Alias KNOWWE event. */
-var _KA = KNOWWE.helper.ajax;
+var _KE = KNOWWE.helper.event;
 /* Alias KNOWWE ajax. */
-var _KS = KNOWWE.helper.selector;
+var _KA = KNOWWE.helper.ajax;
 /* Alias KNOWWE ElementSelector */
-var _KL = KNOWWE.helper.logger;
+var _KS = KNOWWE.helper.selector;
 /* Alias KNOWWE logger */
-var _KN = KNOWWE.helper.element
+var _KL = KNOWWE.helper.logger;
 /* Alias KNOWWE.helper.element */
-var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
+var _KN = KNOWWE.helper.element;
+/* Alias KNOWWE.helper.hash */
+var _KH = KNOWWE.helper.hash;
+/* Alias KNOWWE.core */
+var _KU = KNOWWE.core.util;
 
 
 /* ############################################################### */

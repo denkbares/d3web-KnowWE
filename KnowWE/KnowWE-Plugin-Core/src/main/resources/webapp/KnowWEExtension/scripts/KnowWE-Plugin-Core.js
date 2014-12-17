@@ -311,7 +311,6 @@ KNOWWE.plugin.renaming = function() {
 		}
 		new _KA(options).send();
 		KNOWWE.core.util.updateProcessingState(1);
-		KNOWWE.core.util.updateProcessingIndicator();
 	}
 
 	function restoreOriginal(original) {
@@ -436,17 +435,18 @@ KNOWWE.core.plugin.setMarkupSectionActivationStatus = function(id, status) {
 		action : 'SetMarkupActivationStatus',
 		SectionID : id,
 		status : status
-	}
-
+	};
 	var options = {
 		url : KNOWWE.core.util.getURL(params),
 		response : {
 			action : 'none',
 			fn : function() {
 				window.location.reload();
-			}
+			},
+			onError : _EC.onErrorBehavior
 		}
-	}
+	};
+	_KU.showProcessingIndicator();
 	new _KA(options).send();
 }
 
@@ -1676,8 +1676,7 @@ KNOWWE.core.plugin.rightPanel.watches = function() {
 			addWatch(text);
 		}
 	}
-}
-();
+}();
 
 //jquery-autogrow for automatic input field resizing (customized for KnowWE renaming)
 (function() {
