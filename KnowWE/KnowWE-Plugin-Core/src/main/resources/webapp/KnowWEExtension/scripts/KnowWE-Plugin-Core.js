@@ -84,9 +84,9 @@ KNOWWE.core.plugin.objectinfo = function() {
 				ids.push(this.id);
 			});
 			jq$.ajax("action/RenderPreviewAction", {
-				data : {
-					data : JSON.stringify(json)
-				},
+				type : 'post',
+				data : 	JSON.stringify(json),
+				contentType : 'application/json, UTF-8',
 				success : function(html) {
 					KNOWWE.core.util.replaceElement(ids, html);
 					if (jq$(root).parents('#compositeEdit').length) {
@@ -94,6 +94,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 						KNOWWE.core.actions.init();
 					}
 					_TM.decorateToolMenus(root);
+					_TM.animateDefaultMarkupMenu(root);
 
 				}
 			});

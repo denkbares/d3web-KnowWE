@@ -22,10 +22,10 @@ function ToolMenu() {
 	this.lastMenuId = null;
 }
 
-ToolMenu.prototype.decorateToolMenus = function(parent) {
-	parent = jq$(parent);
-	var decorators = parent ? parent.find('.toolsMenuDecorator') : jq$('.toolsMenuDecorator');
-	jq$('.toolsMenuDecorator').each(function() {
+ToolMenu.prototype.decorateToolMenus = function($parent) {
+	if (!$parent) $parent = jq$('.defaultMarkupFrame');
+	var decorators = $parent.find('.toolsMenuDecorator');
+	decorators.each(function() {
 		var a = jq$(this);
 		if (a.data('toolMenuDecorated') === 'true') return;
 		a.parent().mouseenter(function() {
@@ -142,7 +142,8 @@ ToolMenu.prototype.hideToolsPopupMenu = function() {
 
 ToolMenu.prototype.animateDefaultMarkupMenu = function($parent) {
 	if (!$parent) $parent = jq$('.defaultMarkupFrame');
-	$parent.each(function() {
+	var $markups = $parent.is('.defaultMarkupFrame') ? $parent : $parent.find('.defaultMarkupFrame');
+	$markups.each(function() {
 		var markup = jq$(this);
 		var header = markup.find('.headerMenu').first();
 		var menu = markup.find('.markupMenu').first();

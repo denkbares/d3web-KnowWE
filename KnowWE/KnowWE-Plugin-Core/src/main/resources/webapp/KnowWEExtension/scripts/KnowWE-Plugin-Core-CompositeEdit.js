@@ -44,7 +44,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 		if (!id) {
 			id = jq$('.objectInfoPanel');
 		}
-		
+
 		if (_IE.enabled) {
 			alert("You are already editing the page. Please finish your current edit before entering composite edit.");
 			return;
@@ -572,13 +572,11 @@ KNOWWE.plugin.compositeEditTool = function() {
 		else {
 			enableCompositeViewMode();
 		}
-		_TM.decorateToolMenus('#compositeEdit .defaultMarkupFrame');
-		jq$(".toolsMenuDecorator").click(function(e) {
+		_TM.decorateToolMenus(jq$('#compositeEdit'));
+		jq$('#compositeEdit .defaultMarkupFrame').click(function(e) {
 			e.stopPropagation();
 		});
-		jq$('#compositeEdit div.defaultMarkupFrame').each(function(index, frame) {
-			_TM.animateDefaultMarkupMenu(jq$(frame));
-		});
+		_TM.animateDefaultMarkupMenu(jq$('#compositeEdit'));
 		jq$(".extend-panel-right").click(function(e) {
 			KNOWWE.core.plugin.objectinfo.loadPreviews(jq$(this).next('div'));
 			saveExpandState(this);
@@ -651,9 +649,8 @@ KNOWWE.plugin.compositeEditTool = function() {
 
 	function enableCompositeViewToolMenus(id) {
 
-		jq$(id).find('.defaultMarkupFrame').each(function(index, frame) {
-			_TM.animateDefaultMarkupMenu(jq$(frame));
-		});
+		_TM.animateDefaultMarkupMenu(jq$(id));
+		_TM.decorateToolMenus(jq$(id));
 		jq$(id).find("a").click(function(e) {
 			e.stopPropagation();
 		});
@@ -816,14 +813,16 @@ KNOWWE.plugin.compositeEditTool = function() {
 
 				jsonObj.push({
 					id : id,
-					text : text});
+					text : text
+				});
 			});
 
 			jq$.each(_CEWT.deletes, function(index, id) {
 
 				jsonObj.push({
 					id : id,
-					text : ""});
+					text : ""
+				});
 			});
 
 			var params = {
@@ -990,7 +989,7 @@ KNOWWE.plugin.compositeEditTool.wikiText = function() {
 				return true;
 			}
 			if (JSON.stringify(_CEWT.order) != JSON
-				.stringify(getSectionOrder())) {
+					.stringify(getSectionOrder())) {
 				return true;
 			}
 			for (var i = 0; i < _CE.editableSections.length; i++) {
