@@ -47,6 +47,7 @@ import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRenderer;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRendererManager;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.util.Icon;
 
 /**
  * @author volker_belli
@@ -112,7 +113,7 @@ public class CIRenderer {
 			sb.appendHtml("<tr class='" + cssClass + "'><td>");
 			// starting with a nice image...
 			Type buildResult = build.getOverallResult();
-			renderBuildStatus(buildResult, false, "", sb);
+			renderBuildStatus(buildResult, false, Icon.BULB, sb);
 
 			sb.appendHtml("</td><td>");
 			sb.appendHtml("<td>");
@@ -140,30 +141,29 @@ public class CIRenderer {
 			latestDisplayedBuildNumber = builds.get(0).getBuildNumber();
 		}
 
-		// wenn man noch weiter zurückblättern kann, rendere einen Button
-		if (latestDisplayedBuildNumber - numberOfBuilds > 0) {
-			String buttonLeft = "<button onclick=\"_CI.refreshBuildList('"
-					+ dashboardNameEncoded + "', -1 ,'"
-					+ (latestDisplayedBuildNumber - numberOfBuilds)
-					+ "','" + numberOfBuilds + "');\" style=\"margin-top: 4px; float: left;\">"
-					+ "<img src=\"KnowWEExtension/ci4ke/images/16x16/left.png\" "
-					+ "style=\"vertical-align: middle; margin-right: 5px;\">"
-					+ "</button>";
-			sb.appendHtml(buttonLeft);
-		}
+		sb.appendHtmlTag("div", "class", "ci-test-nav-outer");
+		sb.appendHtmlTag("div", "class", "ci-test-nav-inner");
 
-		// wenn man noch weiter vorblättern kann, rendere einen Button
-		if (latestDisplayedBuildNumber < latestBuildNumber) {
-			String buttonRight = "<button onclick=\"_CI.refreshBuildList('"
-					+ dashboardNameEncoded + "', -1 ,'"
-					+ (latestDisplayedBuildNumber + numberOfBuilds)
-					+ "','" + numberOfBuilds
-					+ "');\" style=\"margin-top: 4px; float: right;\">"
-					+ "<img src=\"KnowWEExtension/ci4ke/images/16x16/right.png\" "
-					+ "style=\"vertical-align: middle; margin-left: 5px;\"></button>";
-			sb.appendHtml(buttonRight);
-		}
+		String buttonLeft = makeNavButton(numberOfBuilds, latestDisplayedBuildNumber, "-", Icon.LEFT, (latestDisplayedBuildNumber - numberOfBuilds > 0));
+		String buttonRight = makeNavButton(numberOfBuilds, latestDisplayedBuildNumber, "+", Icon.RIGHT, latestDisplayedBuildNumber < latestBuildNumber);
+		sb.appendHtml(buttonLeft);
+		sb.appendHtml(buttonRight);
 
+		sb.appendHtml("</div>");
+		sb.appendHtml("</div>");
+
+	}
+
+	private String makeNavButton(int numberOfBuilds, int latestDisplayedBuildNumber, String sign, Icon icon, boolean visible) {
+		String display = visible ? "visible" : "hidden";
+		return "<button display='" + display + "' "
+				+ "onclick=\"_CI.refreshBuildList('"
+				+ dashboardNameEncoded + "', -1 ,"
+				+ (latestDisplayedBuildNumber + sign + numberOfBuilds)
+				+ ",'" + numberOfBuilds
+				+ "');\" style=\"visibility:" + display + ";\">"
+				+ icon.getIconWithAdditionalClasses("knowwe-blue")
+				+ "</button>";
 	}
 
 	/**
@@ -173,7 +173,7 @@ public class CIRenderer {
 	 */
 	public void renderCurrentBuildStatus(RenderResult result) {
 		BuildResult build = dashboard.getLatestBuild();
-		if (build != null) renderBuildStatus(build.getOverallResult(), true, "", result);
+		if (build != null) renderBuildStatus(build.getOverallResult(), true, Icon.BULB, result);
 	}
 
 	/**
@@ -284,13 +284,13 @@ public class CIRenderer {
 		String styleExpand = type == Type.SUCCESS ? "" : "style='display:none' ";
 		renderResult.appendHtml("<span " + styleExpand
 				+ "class='expandCIMessage' onclick='KNOWWE.plugin.ci4ke.expandMessage(this)'>");
-		renderBuildStatus(type, false, "_plus", renderResult);
+		renderBuildStatus(type, false, Icon.EXPAND, renderResult);
 		renderResult.appendHtml("</span>");
 
 		String styleCollapse = type == Type.SUCCESS ? "style='display:none' " : "";
 		renderResult.appendHtml("<span " + styleCollapse
 				+ "class='collapseCIMessage' onclick='KNOWWE.plugin.ci4ke.collapseMessage(this)'>");
-		renderBuildStatus(type, false, "_minus", renderResult);
+		renderBuildStatus(type, false, Icon.COLLAPSE, renderResult);
 		renderResult.appendHtml("</span>");
 	}
 
@@ -402,34 +402,29 @@ public class CIRenderer {
 		buffy.appendHtml("</H4>");
 	}
 
-	public void renderBuildStatus(Type resultType, boolean checkRunning, String imageSuffix, RenderResult result) {
+	public void renderBuildStatus(Type resultType, boolean checkRunning, Icon icon, RenderResult result) {
 
 		boolean showRunning = checkRunning && CIBuildManager.isRunning(dashboard);
 
-		String imageURL = showRunning
-				? "KnowWEExtension/images/%s"
-				: "KnowWEExtension/ci4ke/images/16x16/%s";
+		String imgBulb = "<i class='fa %s %s ci-state' dashboardName='" + dashboardNameEncoded + "'"
+				+ " running='%s'"
+				+ " title='%s'></i>";
 
-		String imgBulb = "<img class='ci-state' dashboardName='" + dashboardNameEncoded
-				+ "' src='" + imageURL
-				+ "' " + (showRunning ? "running=true " : "")
-				+ "alt='%<s' align='absmiddle' title='%s'>";
 		if (showRunning) {
-			imgBulb = String.format(imgBulb, "ajax-loader16.gif", "Build running!");
+
+			imgBulb = String.format(imgBulb, "fa-spinner", "", "true", "Build running!");
 		}
 		else {
 			switch (resultType) {
 				case SUCCESS:
-					imgBulb = String.format(imgBulb, "green" + imageSuffix + ".png",
-							"Build successful: " + Strings.encodeHtml(dashboardName));
+					imgBulb = String.format(imgBulb, icon.getCssClass(), "knowwe-ok", "false", "Build successful: " + Strings
+							.encodeHtml(dashboardName));
 				case FAILURE:
-					imgBulb = String.format(imgBulb, "red" + imageSuffix + ".png", "Build failed: "
-							+ Strings.encodeHtml(dashboardName));
+					imgBulb = String.format(imgBulb, icon.getCssClass(), "knowwe-error", "false", "Build failed: " + Strings
+							.encodeHtml(dashboardName));
 				case ERROR:
-					imgBulb = String.format(imgBulb, "grey" + imageSuffix + ".png",
-							"Build has errors: "
-									+ Strings.encodeHtml(dashboardName)
-					);
+					imgBulb = String.format(imgBulb, icon.getCssClass(), "knowwe-gray", "false", "Build has errors: " + Strings
+							.encodeHtml(dashboardName));
 			}
 		}
 
@@ -442,8 +437,8 @@ public class CIRenderer {
 
 		if (latestBuild != null || CIBuildManager.isRunning(dashboard)) {
 			CIRenderer renderer = dashboard.getRenderer();
-			renderer.renderCurrentBuildStatus(result);
 			renderer.renderBuildHealthReport(result);
+			renderer.renderCurrentBuildStatus(result);
 		}
 		result.appendHtml("<span class='ci-name'>" + dashboardName + "</span>");
 

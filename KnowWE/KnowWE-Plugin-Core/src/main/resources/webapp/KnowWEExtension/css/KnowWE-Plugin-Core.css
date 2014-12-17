@@ -675,7 +675,7 @@ input.knowwe-paginationFilter {
 #watches div.watchlistline:hover .icon {
 	visibility: visible;
 	opacity: 1;
-	transition-delay: 0.1s;
+	transition-delay: 0.5s;
 }
 
 #watches div.iconcontainer:hover .icon {
@@ -753,21 +753,24 @@ input.knowwe-paginationFilter {
 /* ------------- Font Awesome Customisation----------- */
 /* ################################################## */
 
-i.knowwe-warning {
+i.knowwe-warning, i.knowwe-yellow {
 	color: #ffd518;
 }
 
-i.knowwe-error {
-	color: #ff0c36;
+i.knowwe-error, i.knowwe-highprio, i.knowwe-red {
+	color: #CC3333
 }
 
 i.knowwe-lowprio {
 	color: #aec8ff
 }
 
-i.knowwe-highprio {
-	color: #ff0c36;
+i.knowwe-ok, i.knowwe-green {
+	color: #6A9514;
 }
 
+i.knowwe-blue {
+	color: #036;
+}
 
 

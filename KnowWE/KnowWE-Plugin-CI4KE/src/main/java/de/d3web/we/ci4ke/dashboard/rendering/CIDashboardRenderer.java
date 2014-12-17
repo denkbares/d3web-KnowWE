@@ -42,14 +42,13 @@ import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolUtils;
 
 /**
- * 
  * @author Marc-Oliver Ochlast (denkbares GmbH)
  * @created 01.12.2010
  */
 public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 	public CIDashboardRenderer() {
-		super("KnowWEExtension/ci4ke/images/22x22/ci.png");
+		super();
 	}
 
 	@Override
@@ -97,10 +96,10 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	/**
 	 * Renders out the content of a CIDashboard (build-history and rest-result
 	 * pane)
-	 * 
-	 * @created 02.12.2010
-	 * @param user the current user context to render the dashboard for
+	 *
+	 * @param user      the current user context to render the dashboard for
 	 * @param dashboard the dashboard to be rendered
+	 * @created 02.12.2010
 	 */
 	public static String renderDashboardContents(UserContext user, CIDashboard dashboard) {
 		String dashboardName = dashboard.getDashboardName();
@@ -208,8 +207,12 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			StringBuilder articleLinks = new StringBuilder();
 			boolean first = true;
 			for (String articleTitle : articleTitles) {
-				if (first) first = false;
-				else articleLinks.append(", ");
+				if (first) {
+					first = false;
+				}
+				else {
+					articleLinks.append(", ");
+				}
 				articleLinks.append(KnowWEUtils.getLinkHTMLToArticle(articleTitle));
 			}
 

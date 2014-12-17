@@ -20,9 +20,10 @@ public class CIDaemonRenderer implements Renderer {
 				CIDashboardType.NAME_KEY);
 		renderDaemonContents(section,
 				dashboardName, string);
+		string.appendHtml("&nbsp;");
 		string.append(content);
 	}
-
+	
 	public static void renderDaemonContents(Section<?> section, String dashboardName, RenderResult string) {
 
 		CIDashboard dashboard = CIDashboardManager.getDashboard(section.getArticleManager(),
@@ -40,8 +41,8 @@ public class CIDaemonRenderer implements Renderer {
 					+ KnowWEUtils.getURLLink(dashboard.getDashboardSection())
 					+ "\">");
 			CIRenderer renderer = dashboard.getRenderer();
-			renderer.renderCurrentBuildStatus(string);
 			string.appendHtml("</a>");
+			renderer.renderCurrentBuildStatus(string);
 		}
 
 	}

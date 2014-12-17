@@ -23,7 +23,7 @@ public class TestCasePlayerToolProvider implements ToolProvider {
 
 	public Tool getCollapseTool(Section<?> section, UserContext userContext) {
 		String jsAction = "TestCasePlayer.toggleFindings('" + section.getID() + "', 'collapse');";
-		Tool collapseTool = new DefaultTool(Icon.COLLAPSE,
+		Tool collapseTool = new DefaultTool(Icon.COLLAPSE_OUTLINE,
 				"Collapse findings", "Collapses all finding columns of the current test case",
 				jsAction, Tool.CATEGORY_LAST);
 		return collapseTool;
@@ -31,7 +31,7 @@ public class TestCasePlayerToolProvider implements ToolProvider {
 
 	public Tool getExpandTool(Section<?> section, UserContext userContext) {
 		String jsAction = "TestCasePlayer.toggleFindings('" + section.getID() + "', 'expand');";
-		Tool expandTool = new DefaultTool(Icon.EXPAND,
+		Tool expandTool = new DefaultTool(Icon.EXPAND_OUTLINE,
 				"Expand findings", "Expands all finding columns of the current test case",
 				jsAction, Tool.CATEGORY_LAST);
 		return expandTool;

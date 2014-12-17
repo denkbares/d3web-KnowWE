@@ -38,6 +38,10 @@ public enum Icon {
 	LAST("fa-angle-double-right"),
 	FIRST("fa-angle-double-left"),
 
+	//ARROWS
+	RIGHT("fa-arrow-right"),
+	LEFT("fa-arrow-left"),
+
 	// Sorting
 	ASCENDING("fa-sort-asc"),
 	DESCENDING("fa-sort-desc"),
@@ -58,7 +62,7 @@ public enum Icon {
 	QRCODE("fa-qrcode"),
 	LINK("fa-link"),
 	CLIPBOARD("fa-clipboard"),
-	CLOCK("fa-clock"),
+	CLOCK("fa-clock-o"),
 	SHARE("fa-share"),
 	LIGHTBULB("fa-lightbulb"),
 	SHOW("fa-plus-square-o"),
@@ -71,6 +75,7 @@ public enum Icon {
 	MINUS("fa-minus"),
 	PLUS("fa-minus"),
 	ADD("fa-plus-circle"),
+	BULB("fa-circle"),
 
 	// KnowWE specific
 	ARTICLE("fa-file-text-o"),
@@ -95,8 +100,10 @@ public enum Icon {
 	HIGH_PRIO("fa-exclamation-circle knowwe-highprio"),
 
 	// TestCase
-	EXPAND("fa-plus-square-o"),
-	COLLAPSE("fa-minus-square-o"),
+	EXPAND_OUTLINE("fa-plus-square-o"),
+	COLLAPSE_OUTLINE("fa-minus-square-o"),
+	EXPAND("fa-plus-square"),
+	COLLAPSE("fa-minus-square"),
 	OPENTESTCASE(LINK.cssClass),
 	EDITTABLE("fa-table"),
 
@@ -139,6 +146,10 @@ public enum Icon {
 	public String getIconWithAdditionalClasses(String... cssClasses) {
 		String classes = Arrays.asList(cssClasses).stream().collect(Collectors.joining(" "));
 		return "<i class='fa " + getCssClass() + " " + classes + "'></i>";
+	}
+
+	public String getIconClassWithAdditionalClasses(String cssClasses) {
+		return "<i class='fa " + getCssClass() + " " + cssClasses + "'></i>";
 	}
 
 	/**

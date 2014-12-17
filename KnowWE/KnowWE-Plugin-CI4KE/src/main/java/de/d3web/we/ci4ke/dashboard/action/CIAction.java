@@ -35,6 +35,7 @@ import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.util.Icon;
 
 public class CIAction extends AbstractAction {
 
@@ -98,7 +99,7 @@ public class CIAction extends AbstractAction {
 			BuildResult build = dashboard.getLatestBuild();
 			if (build != null) {
 				Type overallResult = build.getOverallResult();
-				renderer.renderBuildStatus(overallResult, true, "", html);
+				renderer.renderBuildStatus(overallResult, true, Icon.BULB, html);
 			}
 		}
 		else if (task.equals("refreshBuildList")) {
