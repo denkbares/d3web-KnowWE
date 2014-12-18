@@ -1661,54 +1661,51 @@ public class Rdf2GoCore {
 		}
 
 		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((article == null) ? 0 : article.hashCode());
-			return result;
-		}
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
 
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) return true;
-			if (obj == null) return false;
-			if (getClass() != obj.getClass()) return false;
-			CompilerSource other = (CompilerSource) obj;
-			if (article == null) {
-				if (other.article != null) return false;
-			}
-			else if (!article.equals(other.article)) return false;
+			CompilerSource that = (CompilerSource) o;
+
+			if (!article.equals(that.article)) return false;
+
 			return true;
 		}
 
+		@Override
+		public int hashCode() {
+			return article.hashCode();
+		}
 	}
 
 	private class SectionSource implements StatementSource {
 
-		private final int sectionID;
+		private final Section<?> section;
 
 		public SectionSource(Section<?> section) {
-			this.sectionID = section.getIntID();
+			this.section = section;
 		}
 
 		@Override
 		public Article getArticle() {
-			Section<?> section = Sections.get(sectionID);
 			return section.getArticle();
 		}
 
 		@Override
-		public int hashCode() {
-			return sectionID;
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			SectionSource that = (SectionSource) o;
+
+			if (!section.equals(that.section)) return false;
+
+			return true;
 		}
 
-		@SuppressWarnings("SimplifiableIfStatement")
 		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) return true;
-			if (obj == null) return false;
-			if (getClass() != obj.getClass()) return false;
-			return sectionID == ((SectionSource) obj).sectionID;
+		public int hashCode() {
+			return section.hashCode();
 		}
 	}
 

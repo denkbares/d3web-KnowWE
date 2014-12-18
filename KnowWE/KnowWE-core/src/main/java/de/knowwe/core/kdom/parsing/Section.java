@@ -446,17 +446,10 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * Returns the unique ID of this section.
 	 */
 	public String getID() {
-		return Sections.intToStringID(getIntID());
-	}
-
-	/**
-	 * Returns the unique ID of this section in its integer version.
-	 */
-	public int getIntID() {
 		if (!hasID()) {
 			intID = generateAndRegisterSectionID(this);
 		}
-		return intID;
+		return Integer.toHexString(intID);
 	}
 
 	private String getSignatureString() {
@@ -735,18 +728,11 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @return the Section for the given ID or null if no Section exists for this ID.
 	 */
 	protected static Section<?> get(String id) {
-		return get(Sections.stringToIntId(id));
-	}
-
-	/**
-	 * This method is protected, use {@link Sections#get(int)} instead.
-	 *
-	 * @param intId is the int version of the id of the Section to be returned
-	 * @return the Section for the given ID or null if no Section exists for this ID.
-	 */
-	protected static Section<?> get(int intId) {
 		synchronized (sectionMap) {
-			return sectionMap.get(intId);
+			// We have to parse long and convert to int, because when converting a int to a hex string, the negative
+			// sign is lost, resulting in for Integer.parseInt() not parsable values. Parsing long and casting
+			// to int will restore the negative sign.
+			return sectionMap.get((int) Long.parseLong(id, 16));
 		}
 	}
 
