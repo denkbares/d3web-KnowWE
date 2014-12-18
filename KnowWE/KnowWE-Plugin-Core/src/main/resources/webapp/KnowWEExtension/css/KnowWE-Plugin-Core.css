@@ -72,7 +72,7 @@
 
 .headerToolbar .markupHeader .markupTools div {
 	display: inline;
-	padding: 3px;
+	padding: 0 3px 0 3px;
 }
 
 .defaultMarkupFrame .markupHeaderFrame {
@@ -102,7 +102,6 @@
 
 .defaultMarkupFrame .markupTools {
 	display: inline;
-	vertical-align: -3px;
 }
 
 .defaultMarkupFrame .markupMenuIndicator {
