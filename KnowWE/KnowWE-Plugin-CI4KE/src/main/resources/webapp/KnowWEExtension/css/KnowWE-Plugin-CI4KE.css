@@ -69,6 +69,11 @@
 	white-space: normal;
 }
 
+a.ci-daemon:hover {
+	text-decoration: none;
+	opacity: 0.6;
+}
+
 .ci-test-title {
 	margin-left: 4px;
 	font-size: 12px;
