@@ -848,6 +848,33 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
+	 * @param intID is the int version of the ID of the Section to be returned
+	 * @return the Section for the given intID or null if no Section exists with this intID
+	 */
+	public static Section<?> get(int intID) {
+		return Section.get(intID);
+	}
+
+	/**
+	 * Transforms the string id of a section into the int id of a section. This is the reverse of the method {@link
+	 * Sections#intToStringID}
+	 */
+	public static int stringToIntId(String stringId) {
+		// We have to parse long and convert to int, because when converting a int to a hex string, the negative
+		// sign is lost, resulting in for Integer.parseInt() not parsable values. Parsing long and casting
+		// to int will restore the negative sign.
+		return (int) Long.parseLong(stringId, 16);
+	}
+
+	/**
+	 * Transforms the int id of a section into the string id of a section. This is the reverse of the method {@link
+	 * Sections#stringToIntId}
+	 */
+	public static String intToStringID(int intId) {
+		return Integer.toHexString(intId);
+	}
+
+	/**
 	 * Returns the section with the given id and casts it to the supplied class. For more
 	 * information see get(id) and cast(section, class);
 	 *

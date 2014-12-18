@@ -76,9 +76,9 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	private HashSet<String> packageNames = null;
 
 	/**
-	 * The ID of this Section.
+	 * The unique ID of this Section (or -1, if not initialized).
 	 */
-	private int id = -1;
+	private int intID = -1;
 
 	/**
 	 * The text of this section. For memory footprint reasons, this is normally null and the text is instead calculated
@@ -442,30 +442,22 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		return result.toString();
 	}
 
+	/**
+	 * Returns the unique ID of this section.
+	 */
 	public String getID() {
-		if (id == -1) {
-			id = generateAndRegisterSectionID(this);
-		}
-		return Integer.toHexString(id);
+		return Sections.intToStringID(getIntID());
 	}
 
-	// @Override
-	// public boolean equals(Object obj) {
-	// if (obj == null) return false;
-	// if (obj instanceof Section) {
-	// Section<?> other = (Section<?>) obj;
-	// if (other.getSignatureString().equals(this.getSignatureString())) {
-	// return true;
-	// }
-	// }
-	// return false;
-	// }
-	//
-	// @Override
-	// public int hashCode() {
-	// String signatureString = getSignatureString();
-	// return signatureString.hashCode();
-	// }
+	/**
+	 * Returns the unique ID of this section in its integer version.
+	 */
+	public int getIntID() {
+		if (!hasID()) {
+			intID = generateAndRegisterSectionID(this);
+		}
+		return intID;
+	}
 
 	private String getSignatureString() {
 		List<Integer> positionInKDOM = this.getPositionInKDOM();
@@ -473,8 +465,8 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		return getWeb() + getTitle() + positionInKDOMString + this.getText();
 	}
 
-	protected boolean hasID() {
-		return this.id != -1;
+	private boolean hasID() {
+		return this.intID != -1;
 	}
 
 	/**
@@ -689,16 +681,16 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @created 05.09.2011
 	 */
 	private static int generateAndRegisterSectionID(Section<?> section) {
-		int hash = section.getSignatureString().hashCode();
+		int idCandidate = section.getSignatureString().hashCode();
 		synchronized (sectionMap) {
-			Section<?> existingSection = sectionMap.get(hash);
-			while (existingSection != null || hash == -1) {
-				++hash;
-				existingSection = sectionMap.get(hash);
+			Section<?> existingSection = sectionMap.get(idCandidate);
+			while (existingSection != null || idCandidate == -1) {
+				++idCandidate;
+				existingSection = sectionMap.get(idCandidate);
 			}
-			sectionMap.put(hash, section);
+			sectionMap.put(idCandidate, section);
 		}
-		return hash;
+		return idCandidate;
 	}
 
 	/**
@@ -708,8 +700,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * again after changing just a few isolated spots in the article, those ids would otherwise be gone, although they
 	 * might stay the same and are still usable.<br/> We just look at the same spot/position in the KDOM. If we find a
 	 * Section and the Section also has the same type, we generate and register the id. Of course we will only catch
-	 * the
-	 * right Sections if the KDOM has not changed in this part, but if the KDOM has changed, also the ids will have
+	 * the right Sections if the KDOM has not changed in this part, but if the KDOM has changed, also the ids will have
 	 * changed and therefore we don't need them anyway. We only do this, to allow already rendered tools to still work,
 	 * if it is possible.
 	 *
@@ -733,7 +724,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 
 	private static void unregisterID(Section<?> section) {
 		synchronized (sectionMap) {
-			sectionMap.remove(section.id);
+			sectionMap.remove(section.intID);
 		}
 	}
 
@@ -744,11 +735,18 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @return the Section for the given ID or null if no Section exists for this ID.
 	 */
 	protected static Section<?> get(String id) {
+		return get(Sections.stringToIntId(id));
+	}
+
+	/**
+	 * This method is protected, use {@link Sections#get(int)} instead.
+	 *
+	 * @param intId is the int version of the id of the Section to be returned
+	 * @return the Section for the given ID or null if no Section exists for this ID.
+	 */
+	protected static Section<?> get(int intId) {
 		synchronized (sectionMap) {
-			// We have to parse long and convert to int, because when converting a int to a hex string, the negative
-			// sign is lost, resulting in for Integer.parseInt() not parsable values. Parsing long and casting
-			// to int will restore the negative sign.
-			return sectionMap.get((int) Long.parseLong(id, 16));
+			return sectionMap.get(intId);
 		}
 	}
 

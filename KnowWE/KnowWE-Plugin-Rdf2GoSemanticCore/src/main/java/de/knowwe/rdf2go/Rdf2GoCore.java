@@ -1685,10 +1685,10 @@ public class Rdf2GoCore {
 
 	private class SectionSource implements StatementSource {
 
-		private final String sectionID;
+		private final int sectionID;
 
 		public SectionSource(Section<?> section) {
-			this.sectionID = section.getID();
+			this.sectionID = section.getIntID();
 		}
 
 		@Override
@@ -1699,23 +1699,16 @@ public class Rdf2GoCore {
 
 		@Override
 		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((sectionID == null) ? 0 : sectionID.hashCode());
-			return result;
+			return sectionID;
 		}
 
+		@SuppressWarnings("SimplifiableIfStatement")
 		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) return true;
 			if (obj == null) return false;
 			if (getClass() != obj.getClass()) return false;
-			SectionSource other = (SectionSource) obj;
-			if (sectionID == null) {
-				if (other.sectionID != null) return false;
-			}
-			else if (!sectionID.equals(other.sectionID)) return false;
-			return true;
+			return sectionID == ((SectionSource) obj).sectionID;
 		}
 	}
 
