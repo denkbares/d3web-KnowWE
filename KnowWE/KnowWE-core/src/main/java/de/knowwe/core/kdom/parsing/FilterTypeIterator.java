@@ -43,7 +43,7 @@ public class FilterTypeIterator<OT extends Type> implements Iterator<Section<OT>
 	}
 
 	public static <OT extends Type> FilterTypeIterator<OT> create(Iterator<Section<?>> base, Class<OT> clazz) {
-		return new FilterTypeIterator<>(base, clazz);
+		return new FilterTypeIterator<OT>(base, clazz);
 	}
 
 	@Override
