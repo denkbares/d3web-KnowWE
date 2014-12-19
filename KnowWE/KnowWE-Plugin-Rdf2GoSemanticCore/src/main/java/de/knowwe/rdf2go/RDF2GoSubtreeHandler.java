@@ -25,6 +25,7 @@ package de.knowwe.rdf2go;
 
 import java.util.Collection;
 
+import de.d3web.utils.Log;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.CompilerMessage;
@@ -50,10 +51,11 @@ public abstract class RDF2GoSubtreeHandler<C extends Rdf2GoCompiler, T extends T
 	@Override
 	public void destroy(C compiler, Section<T> section) {
 		try {
-			compiler.getRdf2GoCore().removeStatementsForSection(section);
+			compiler.getRdf2GoCore().removeStatements(section);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			Log.severe("Exception while removing statements for section " + section.get().getName() +
+			 " " + section.getID());
 		}
 	}
 

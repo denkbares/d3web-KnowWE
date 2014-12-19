@@ -57,7 +57,7 @@ public class AbbreviatedIndividualDefinition extends AbbreviatedResourceDefiniti
 
 		@Override
 		public void destroy(OntologyCompiler compiler, Section<AbbreviatedResourceDefinition> section) {
-			Rdf2GoCore.getInstance(compiler).removeStatementsForSection(section);
+			Rdf2GoCore.getInstance(compiler).removeStatements(section);
 		}
 	}
 }

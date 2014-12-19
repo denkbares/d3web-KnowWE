@@ -97,7 +97,7 @@ public class ObjectPropertyType extends DefaultMarkupType {
 
 		@Override
 		public void destroy(OntologyCompiler compiler, Section<AbbreviatedPropertyDefinition> section) {
-			Rdf2GoCore.getInstance(compiler).removeStatementsForSection(section);
+			Rdf2GoCore.getInstance(compiler).removeStatements(section);
 		}
 	}
 
@@ -139,7 +139,7 @@ public class ObjectPropertyType extends DefaultMarkupType {
 
 				@Override
 				public void destroy(OntologyCompiler compiler, Section<DomainRangeAnnotationType> section) {
-					Rdf2GoCore.getInstance(compiler).removeStatementsForSection(section);
+					Rdf2GoCore.getInstance(compiler).removeStatements(section);
 				}
 
 			});

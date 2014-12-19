@@ -136,7 +136,7 @@ public class RelationDefinition extends AbstractType {
 
 		@Override
 		public void destroy(OntologyCompiler compiler, Section<RelationDefinition> section) {
-			Rdf2GoCore.getInstance(compiler).removeStatementsForSection(section);
+			Rdf2GoCore.getInstance(compiler).removeStatements(section);
 		}
 
 	}

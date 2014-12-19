@@ -37,7 +37,7 @@ public class TurtleCompileHandler extends OntologyHandler<TurtleSentence> {
 
 	@Override
 	public void destroy(OntologyCompiler compiler, Section<TurtleSentence> section) {
-		compiler.getRdf2GoCore().removeStatementsForSection(section);
+		compiler.getRdf2GoCore().removeStatements(section);
 	}
 
 }

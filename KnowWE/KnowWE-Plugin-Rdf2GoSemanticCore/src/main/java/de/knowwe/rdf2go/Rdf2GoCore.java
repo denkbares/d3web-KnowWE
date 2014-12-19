@@ -88,7 +88,6 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.event.ArticleRegisteredEvent;
 import de.knowwe.rdf2go.modelfactory.OWLIMLiteModelFactory;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
@@ -288,7 +287,9 @@ public class Rdf2GoCore {
 					Syntax.unregister(syntax);
 				}
 				finally {
-					tempFile.delete();
+					if (!tempFile.delete()) {
+						Log.warning("Unable to delete syntax temp file " + tempFile.getAbsolutePath());
+					}
 				}
 			}
 			catch (IOException e) {
@@ -378,40 +379,32 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Creates a {@link Statement} for the given objects and adds it to the
-	 * triple store. The {@link Section} is used for caching.
+	 * Adds the given {@link Statement}s for the given {@link SectionSource} to the
+	 * triple store.
 	 * <p/>
-	 * You can remove the {@link Statement} using the method
-	 * {@link Rdf2GoCore#removeStatementsForSection(Section)}.
+	 * You can remove the {@link Statement}s using the method
+	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
-	 * @param subject   the subject of the statement/triple
-	 * @param predicate the predicate of the statement/triple
-	 * @param object    the object of the statement/triple
-	 * @param sec       the {@link Section} for which the {@link Statement}s are added
-	 *                  and cached
-	 * @created 06.12.2010
+	 * @param source    the {@link StatementSource} for which the {@link Statement}s are
+	 *                   added and cached
+	 * @param statements the {@link Statement}s to add
 	 */
-	public void addStatement(Section<?> sec, Resource subject, URI predicate, Node object) {
-		addStatements(sec, createStatement(subject, predicate, object));
+	public void addStatements(StatementSource source, Statement... statements) {
+		addStatements(source, Arrays.asList(statements));
 	}
 
 	/**
-	 * Adds the {@link Statement}s for the given article. If the given article
-	 * is compiled again, all {@link Statement}s added for this article are
-	 * removed before the new {@link Statement}s are added again. You don't need
-	 * to remove the {@link Statement}s yourself. This method works best when
-	 * used in a {@link de.knowwe.core.compile.CompileScript}.
+	 * Adds the given {@link Statement}s for the given {@link SectionSource} to the
+	 * triple store.
+	 * <p/>
+	 * You can remove the {@link Statement}s using the method
+	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
-	 * @param compiler   the article for which the statements are added and for
-	 *                   which they are removed at full parse
-	 * @param statements the statements to add to the triple store
-	 * @created 11.06.2012
+	 * @param source    the {@link StatementSource} for which the {@link Statement}s are
+	 *                   added and cached
+	 * @param statements the {@link Statement}s to add
 	 */
-	public void addStatements(PackageCompiler compiler, Statement... statements) {
-		addStatements(new CompilerSource(compiler), Arrays.asList(statements));
-	}
-
-	private void addStatements(StatementSource source, Collection<Statement> statements) {
+	public void addStatements(StatementSource source, Collection<Statement> statements) {
 		for (Statement statement : statements) {
 			if (!statementCache.containsValue(statement)) {
 				insertCache.add(statement);
@@ -425,7 +418,7 @@ public class Rdf2GoCore {
 	 * triple store.
 	 * <p/>
 	 * You can remove the {@link Statement}s using the method
-	 * {@link Rdf2GoCore#removeStatementsForSection(Section)}.
+	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
 	 * @param section    the {@link Section} for which the {@link Statement}s are
 	 *                   added and cached
@@ -441,7 +434,7 @@ public class Rdf2GoCore {
 	 * triple store.
 	 * <p/>
 	 * You can remove the {@link Statement}s using the method
-	 * {@link Rdf2GoCore#removeStatementsForSection(Section)}.
+	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
 	 * @param section    the {@link Section} for which the {@link Statement}s are
 	 *                   added and cached
@@ -977,12 +970,17 @@ public class Rdf2GoCore {
 	 * @created 13.06.2012
 	 */
 	public void removeStatements(Collection<Statement> statements) {
-		removeStatements((StatementSource) null, statements);
+		removeStatements(null, statements);
 	}
 
-	private void removeStatements(StatementSource source) {
+	/**
+	 * Removes all statements cached for the given {@link StatementSource}.
+	 *
+	 * @param source the {@link StatementSource} for which the statements should be removed
+	 */
+	public void removeStatements(StatementSource source) {
 		Collection<Statement> statements = statementCache.getValues(source);
-		removeStatements(source, new ArrayList<Statement>(statements));
+		removeStatements(source, new ArrayList<>(statements));
 	}
 
 	private void removeStatements(StatementSource source, Collection<Statement> statements) {
@@ -1000,33 +998,14 @@ public class Rdf2GoCore {
 	 * <p/>
 	 * <b>Attention</b>: This method only removes {@link Statement}s that were
 	 * added (and cached) in connection with a {@link Section} using methods
-	 * like {@link Rdf2GoCore#addStatements(Section, Collection)} or
-	 * {@link Rdf2GoCore#addStatement(Section, Resource, URI, Node)}.
+	 * like {@link Rdf2GoCore#addStatements(Section, Collection)}.
 	 *
 	 * @param section the {@link Section} for which the {@link Statement}s
 	 *                should be removed
 	 * @created 06.12.2010
 	 */
-	public void removeStatementsForSection(Section<? extends Type> section) {
+	public void removeStatements(Section<? extends Type> section) {
 		removeStatements(new SectionSource(section));
-	}
-
-	/**
-	 * Removes all {@link Statement}s that were added and cached for the given
-	 * {@link Article}. This method is automatically called every time an
-	 * article is parsed fully ({@link ArticleRegisteredEvent} fired) so
-	 * normally you shouldn't need to call this method yourself.
-	 * <p/>
-	 * <b>Attention</b>: This method only removes {@link Statement}s that were
-	 * added (and cached) in connection with an {@link de.knowwe.core.compile.Compiler} using the method
-	 * {@link Rdf2GoCore#addStatements(de.knowwe.core.compile.PackageCompiler, Statement...)}.
-	 *
-	 * @param compiler the article for which you want to remove all
-	 *                 {@link Statement}s
-	 * @created 13.06.2012
-	 */
-	public void removeStatementsOfCompiler(PackageCompiler compiler) {
-		removeStatements(new CompilerSource(compiler));
 	}
 
 	/**
@@ -1639,73 +1618,6 @@ public class Rdf2GoCore {
 		@Override
 		public ClosableIterator<QueryRow> iterator() {
 			return new DelegateClosableIterator<>(result.iterator());
-		}
-	}
-
-	private interface StatementSource {
-
-		Article getArticle();
-	}
-
-	private static class CompilerSource implements StatementSource {
-
-		private final Article article;
-
-		public CompilerSource(PackageCompiler compiler) {
-			this.article = compiler.getCompileSection().getArticle();
-		}
-
-		@Override
-		public Article getArticle() {
-			return article;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			CompilerSource that = (CompilerSource) o;
-
-			if (!article.equals(that.article)) return false;
-
-			return true;
-		}
-
-		@Override
-		public int hashCode() {
-			return article.hashCode();
-		}
-	}
-
-	private class SectionSource implements StatementSource {
-
-		private final Section<?> section;
-
-		public SectionSource(Section<?> section) {
-			this.section = section;
-		}
-
-		@Override
-		public Article getArticle() {
-			return section.getArticle();
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			SectionSource that = (SectionSource) o;
-
-			if (!section.equals(that.section)) return false;
-
-			return true;
-		}
-
-		@Override
-		public int hashCode() {
-			return section.hashCode();
 		}
 	}
 

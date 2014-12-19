@@ -114,7 +114,7 @@ public class PropertyAnnotationType extends AbstractType {
 
 		@Override
 		public void destroy(OntologyCompiler compiler, Section<PropertyAnnotationType> section) {
-			Rdf2GoCore.getInstance(compiler).removeStatementsForSection(section);
+			Rdf2GoCore.getInstance(compiler).removeStatements(section);
 		}
 
 	}
