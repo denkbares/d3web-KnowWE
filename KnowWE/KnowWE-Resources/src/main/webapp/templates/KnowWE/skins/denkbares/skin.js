@@ -169,8 +169,8 @@ DenkbaresSkin.scrollFavorites = function() {
 	var scrollMax = docHeight - wHeight;
 	var favToScroll = favHeight - wHeight;
 	var actionsBottom = jq$("#actionsBottom");
-	var disableFixing = (actionsBottom == null
-	|| favHeight >= actionsBottom.offset().top + actionsBottom.height());
+	var disableFixing = (!actionsBottom.exists()
+		|| favHeight >= actionsBottom.offset().top + actionsBottom.height());
 	var favLeft = DenkbaresSkin.favoriteStatus.status == 'expanded' ?
 		DenkbaresSkin.favoriteStatus.favLeftExpanded : DenkbaresSkin.favoriteStatus.favLeftCollapsed;
 	jq$("#favorites").css(DenkbaresSkin.scrollTransitionDuration);
