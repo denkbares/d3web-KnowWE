@@ -345,7 +345,7 @@ public class DefaultMarkupRenderer implements Renderer {
 			result.appendHtmlTag("div", "class", "list-group " + tool.getClass().getSimpleName());
 			result.appendHtmlTag("a", false, "class", "list-group-item", "title", tool.getDescription(), ToolUtils.getActionAttributeName(tool), ToolUtils
 					.getActionAttributeValue(tool));
-			result.appendHtml(tool.getIcon().getIconWithFixedWidth());
+			result.appendHtml(tool.getIcon().fixWidth().toHtml());
 			result.appendHtmlTag("/a");
 			result.appendHtmlTag("/div");
 		}
@@ -416,7 +416,7 @@ public class DefaultMarkupRenderer implements Renderer {
 				ToolUtils.getActionAttributeName(tool),
 				ToolUtils.getActionAttributeValue(tool));
 		if (tool.getIcon() != null) {
-			result.appendHtml(tool.getIcon().getIconWithFixedWidth());
+			result.appendHtml(tool.getIcon().fixWidth().toHtml());
 			result.append(" ");
 		}
 		result.appendHtmlElement("span", tool.getTitle());

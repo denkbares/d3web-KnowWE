@@ -32,7 +32,7 @@ public class PackageAnnotationNameTypeRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult string) {
-		string.appendHtml(Icon.PACKAGE.getIconWithAdditionalClasses("packageOpacity"));
+		string.appendHtml(Icon.PACKAGE.addClasses("packageOpacity").toHtml());
 	}
 
 }

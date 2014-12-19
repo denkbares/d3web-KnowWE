@@ -19,13 +19,10 @@
 
 package de.knowwe.util;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 import de.d3web.strings.Strings;
 
 /**
- * Created by Stefan Plehn (denkbares GmbH) on 21.11.14.
+ * Created by Stefan Plehn, Albrecht Striffler (denkbares GmbH) on 21.11.14.
  * <p>
  * For further icons or an example of the existing ones;
  * http://fontawesome.io/icons/
@@ -154,7 +151,7 @@ public class Icon {
 	}
 
 	/**
-	 * @return a HTML tag for that icon
+	 * Returns the HTML tag for the current icon.
 	 */
 	public String toHtml() {
 		return "<i class='fa " + cssClass + "' "
@@ -188,53 +185,6 @@ public class Icon {
 			default:
 				return this;
 		}
-	}
-
-	public String increaseSize(int percent, String... cssClasses) {
-		String classes = Arrays.asList(cssClasses).stream().collect(Collectors.joining(" "));
-		return "<i class='" + getIncreasedSizeIconCssClass(percent) + " " + classes + "'></i>";
-	}
-
-	private String getEnlargedCssClass(int percent) {
-		switch (percent) {
-			case 33:
-				return "fa-lg";
-
-			case 100:
-				return "fa-2x";
-
-			case 200:
-				return "fa-3x";
-
-			case 300:
-				return "fa-4x";
-
-			case 400:
-				return "fa-5x";
-
-			default:
-				return "";
-		}
-	}
-
-	/**
-	 * @return a HTML tag for that icon
-	 */
-	public String getIconWithFixedWidth() {
-		return "<i class='fa " + cssClass + " fa-fw'></i>";
-	}
-
-	public String getIconWithAdditionalClasses(String... cssClasses) {
-		String classes = Arrays.asList(cssClasses).stream().collect(Collectors.joining(" "));
-		return "<i class='fa " + getCssClass() + " " + classes + "'></i>";
-	}
-
-	/**
-	 * @param percent A percentage increase of 33, 100, 200, 300, 400 is possible
-	 * @return a string for an enlarged version of that icon usable in an HTML class attribute
-	 */
-	private String getIncreasedSizeIconCssClass(int percent) {
-		return "fa " + cssClass + " " + getEnlargedCssClass(percent);
 	}
 
 }

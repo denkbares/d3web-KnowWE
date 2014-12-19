@@ -124,7 +124,7 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 			icon = Icon.WARNING.toHtml();
 		}
 		else {
-			icon = Icon.PACKAGE.getIconWithAdditionalClasses("packageOpacity");
+			icon = Icon.PACKAGE.addClasses("packageOpacity").toHtml();
 		}
 
 		string.appendHtml(icon);

@@ -245,7 +245,7 @@ public class PaginationRenderer implements Renderer {
 			builder.appendHtml(action);
 			builder.appendHtml(";\">");
 		}
-		builder.appendHtml(icon.increaseSize(33, "knowwe-paginationNavigationIcons"));
+		builder.appendHtml(icon.increaseSize(Icon.Percent.by33).addClasses("knowwe-paginationNavigationIcons").toHtml());
 		if (enabled) {
 			builder.appendHtml("</a>");
 		}

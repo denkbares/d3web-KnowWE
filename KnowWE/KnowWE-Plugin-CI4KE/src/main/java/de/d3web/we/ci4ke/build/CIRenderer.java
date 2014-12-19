@@ -162,7 +162,7 @@ public class CIRenderer {
 				+ (latestDisplayedBuildNumber + sign + numberOfBuilds)
 				+ ",'" + numberOfBuilds
 				+ "');\" style=\"visibility:" + display + ";\">"
-				+ icon.getIconWithAdditionalClasses("knowwe-blue")
+				+ icon.addClasses("knowwe-blue").toHtml()
 				+ "</button>";
 	}
 
