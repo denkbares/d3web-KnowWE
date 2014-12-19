@@ -118,10 +118,10 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 
 		String icon;
 		if (hasErrors) {
-			icon = Icon.ERROR.getIcon();
+			icon = Icon.ERROR.toHtml();
 		}
 		else if (hasWarnings) {
-			icon = Icon.WARNING.getIcon();
+			icon = Icon.WARNING.toHtml();
 		}
 		else {
 			icon = Icon.PACKAGE.getIconWithAdditionalClasses("packageOpacity");

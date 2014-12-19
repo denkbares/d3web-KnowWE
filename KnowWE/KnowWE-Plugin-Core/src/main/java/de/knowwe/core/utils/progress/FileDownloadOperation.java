@@ -239,7 +239,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 			result.append(">");
 			if (icon != null) {
 				//TODO STEFAN WORKS?
-				result.append(icon.getIcon());
+				result.append(icon.toHtml());
 			}
 			result.append(tool.getTitle());
 			result.append("</a>");

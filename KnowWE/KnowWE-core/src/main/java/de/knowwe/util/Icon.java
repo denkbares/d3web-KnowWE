@@ -22,110 +22,127 @@ package de.knowwe.util;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import de.d3web.strings.Strings;
+
 /**
  * Created by Stefan Plehn (denkbares GmbH) on 21.11.14.
  * <p>
  * For further icons or an example of the existing ones;
  * http://fontawesome.io/icons/
  */
-public enum Icon {
+public class Icon {
 
-	NONE(null),
+	public static final Icon NONE = new Icon(null);
 
 	// Navigation
-	NEXT("fa-angle-right"),
-	PREVIOUS("fa-angle-left"),
-	LAST("fa-angle-double-right"),
-	FIRST("fa-angle-double-left"),
+	public static final Icon NEXT = new Icon("fa-angle-right");
+	public static final Icon PREVIOUS = new Icon("fa-angle-left");
+	public static final Icon LAST = new Icon("fa-angle-double-right");
+	public static final Icon FIRST = new Icon("fa-angle-double-left");
 
 	//ARROWS
-	RIGHT("fa-arrow-right"),
-	LEFT("fa-arrow-left"),
+	public static final Icon RIGHT = new Icon("fa-arrow-right");
+	public static final Icon LEFT = new Icon("fa-arrow-left");
 
 	// Sorting
-	ASCENDING("fa-sort-asc"),
-	DESCENDING("fa-sort-desc"),
-	FILTER("fa-filter"),
+	public static final Icon ASCENDING = new Icon("fa-sort-asc");
+	public static final Icon DESCENDING = new Icon("fa-sort-desc");
+	public static final Icon FILTER = new Icon("fa-filter");
 
 	// BASICS
-	EDIT("fa-pencil"),
-	HELP("fa-question-circle"),
-	INFO("fa-info-circle"),
-	ERROR("fa-exclamation-triangle knowwe-error"),
-	WARNING("fa-exclamation-triangle knowwe-warning"),
-	SEARCH("fa-search"),
-	DELETE("fa-times-circle"),
-	DOWNLOAD("fa-download"),
-	UPLOAD("fa-upoload"),
-	IMPORT("fa-upload"),
-	REFRESH("fa-refresh"),
-	QRCODE("fa-qrcode"),
-	LINK("fa-link"),
-	CLIPBOARD("fa-clipboard"),
-	CLOCK("fa-clock-o"),
-	SHARE("fa-share"),
-	LIGHTBULB("fa-lightbulb"),
-	SHOW("fa-plus-square-o"),
-	HIDE("fa-minus-square-o"),
-	COG("fa-cog"),
-	PREFERENCES("fa-cog"),
-	LIST("fa-list-alt"),
-	COMMENT("fa-comment-o"),
-	STATISTICS("fa-line-chart"),
-	MINUS("fa-minus"),
-	PLUS("fa-minus"),
-	ADD("fa-plus-circle"),
-	BULB("fa-circle"),
+	public static final Icon EDIT = new Icon("fa-pencil");
+	public static final Icon HELP = new Icon("fa-question-circle");
+	public static final Icon INFO = new Icon("fa-info-circle");
+	public static final Icon ERROR = new Icon("fa-exclamation-triangle knowwe-error");
+	public static final Icon WARNING = new Icon("fa-exclamation-triangle knowwe-warning");
+	public static final Icon SEARCH = new Icon("fa-search");
+	public static final Icon DELETE = new Icon("fa-times-circle");
+	public static final Icon DOWNLOAD = new Icon("fa-download");
+	public static final Icon UPLOAD = new Icon("fa-upoload");
+	public static final Icon IMPORT = new Icon("fa-upload");
+	public static final Icon REFRESH = new Icon("fa-refresh");
+	public static final Icon QRCODE = new Icon("fa-qrcode");
+	public static final Icon LINK = new Icon("fa-link");
+	public static final Icon CLIPBOARD = new Icon("fa-clipboard");
+	public static final Icon CLOCK = new Icon("fa-clock-o");
+	public static final Icon SHARE = new Icon("fa-share");
+	public static final Icon LIGHTBULB = new Icon("fa-lightbulb");
+	public static final Icon SHOW = new Icon("fa-plus-square-o");
+	public static final Icon HIDE = new Icon("fa-minus-square-o");
+	public static final Icon COG = new Icon("fa-cog");
+	public static final Icon PREFERENCES = new Icon("fa-cog");
+	public static final Icon LIST = new Icon("fa-list-alt");
+	public static final Icon COMMENT = new Icon("fa-comment-o");
+	public static final Icon STATISTICS = new Icon("fa-line-chart");
+	public static final Icon MINUS = new Icon("fa-minus");
+	public static final Icon PLUS = new Icon("fa-minus");
+	public static final Icon ADD = new Icon("fa-plus-circle");
+	public static final Icon BULB = new Icon("fa-circle");
 
 	// KnowWE specific
-	ARTICLE("fa-file-text-o"),
-	KNOWLEDGEBASE("fa-book"),
-	VISUALEDITOR("fa-eye"),
+	public static final Icon ARTICLE = new Icon("fa-file-text-o");
+	public static final Icon KNOWLEDGEBASE = new Icon("fa-book");
+	public static final Icon VISUALEDITOR = new Icon("fa-eye");
 	//temporary?
-	SHOWTRACE("fa-code-fork"),
+	public static final Icon SHOWTRACE = new Icon("fa-code-fork");
 	//temporary
-	RENAME("fa-font"),
-	RUN("fa-play-circle"),
+	public static final Icon RENAME = new Icon("fa-font");
+	public static final Icon RUN = new Icon("fa-play-circle");
 	//temporary
-	PACKAGE("fa-puzzle-piece"),
-	EDITSECTION("fa-pencil-square-o"),
-	OPENPAGE("fa-pencil-square-o"),
-	DEBUG("fa-bug"),
-	CONSISTENCY("fa-crosshairs"),
-	CHECK("fa-check-square-o"),
-	CHECKED("fa-check"),
-	DEFER("fa-share"),
+	public static final Icon PACKAGE = new Icon("fa-puzzle-piece");
+	public static final Icon EDITSECTION = new Icon("fa-pencil-square-o");
+	public static final Icon OPENPAGE = new Icon("fa-pencil-square-o");
+	public static final Icon DEBUG = new Icon("fa-bug");
+	public static final Icon CONSISTENCY = new Icon("fa-crosshairs");
+	public static final Icon CHECK = new Icon("fa-check-square-o");
+	public static final Icon CHECKED = new Icon("fa-check");
+	public static final Icon DEFER = new Icon("fa-share");
 
-	LOW_PRIO("fa-exclamation-circle knowwe-lowprio"),
-	HIGH_PRIO("fa-exclamation-circle knowwe-highprio"),
+	public static final Icon LOW_PRIO = new Icon("fa-exclamation-circle knowwe-lowprio");
+	public static final Icon HIGH_PRIO = new Icon("fa-exclamation-circle knowwe-highprio");
 
 	// TestCase
-	EXPAND_OUTLINE("fa-plus-square-o"),
-	COLLAPSE_OUTLINE("fa-minus-square-o"),
-	EXPAND("fa-plus-square"),
-	COLLAPSE("fa-minus-square"),
-	OPENTESTCASE(LINK.cssClass),
-	EDITTABLE("fa-table"),
+	public static final Icon EXPAND_OUTLINE = new Icon("fa-plus-square-o");
+	public static final Icon COLLAPSE_OUTLINE = new Icon("fa-minus-square-o");
+	public static final Icon EXPAND = new Icon("fa-plus-square");
+	public static final Icon COLLAPSE = new Icon("fa-minus-square");
+	public static final Icon OPENTESTCASE = new Icon(LINK.cssClass);
+	public static final Icon EDITTABLE = new Icon("fa-table");
 
 	// ON and OFF
-	TOGGLE_ON("fa-toggle-on"),
-	TOGGLE_OFF("fa-toggle-off"),
+	public static final Icon TOGGLE_ON = new Icon("fa-toggle-on");
+	public static final Icon TOGGLE_OFF = new Icon("fa-toggle-off");
 
 	// FILE TYPES
-	NEW_FILE("fa-file-o"),
-	FILE("fa-file"),
-	FILE_TEXT("fa-file-text-o"),
-	FILE_EXCEL("fa-file-excel-o"),
-	FILE_WORD("fa-file-word-o"),
-	FILE_PDF("fa-file-pdf-o"),
-	FILE_ZIP("fa-file-zip-o"),
-	FILE_CODE("fa-file-code-o"),
-	FILE_XML(FILE_CODE.getCssClass());
+	public static final Icon NEW_FILE = new Icon("fa-file-o");
+	public static final Icon FILE = new Icon("fa-file");
+	public static final Icon FILE_TEXT = new Icon("fa-file-text-o");
+	public static final Icon FILE_EXCEL = new Icon("fa-file-excel-o");
+	public static final Icon FILE_WORD = new Icon("fa-file-word-o");
+	public static final Icon FILE_PDF = new Icon("fa-file-pdf-o");
+	public static final Icon FILE_ZIP = new Icon("fa-file-zip-o");
+	public static final Icon FILE_CODE = new Icon("fa-file-code-o");
+	public static final Icon FILE_XML = new Icon(FILE_CODE.getCssClass());
+
+	public static enum Percent {
+		by33,
+		by100,
+		by200,
+		by300,
+		by400
+	}
 
 	private final String cssClass;
 
+	private final String style;
+
 	private Icon(String cssClass) {
+		this(cssClass, null);
+	}
+
+	private Icon(String cssClass, String style) {
 		this.cssClass = cssClass;
+		this.style = style;
 	}
 
 	public String toString() {
@@ -139,45 +156,43 @@ public enum Icon {
 	/**
 	 * @return a HTML tag for that icon
 	 */
-	public String getIcon() {
-		return "<i class='fa " + cssClass + "'></i>";
+	public String toHtml() {
+		return "<i class='fa " + cssClass + "' "
+				+ (style == null ? "" : "style='" + style + "'") + "></i>";
 	}
 
-	public String getIconWithAdditionalClasses(String... cssClasses) {
-		String classes = Arrays.asList(cssClasses).stream().collect(Collectors.joining(" "));
-		return "<i class='fa " + getCssClass() + " " + classes + "'></i>";
+	public Icon addStyle(String style) {
+		return new Icon(cssClass, style);
 	}
 
-	public String getIconClassWithAdditionalClasses(String cssClasses) {
-		return "<i class='fa " + getCssClass() + " " + cssClasses + "'></i>";
+	public Icon addClasses(String... classes) {
+		return new Icon(cssClass + " " + Strings.concat(" ", classes), style);
 	}
 
-	/**
-	 * @return a HTML tag for that icon
-	 */
-	public String getIconWithFixedWidth() {
-		return "<i class='fa " + cssClass + " fa-fw'></i>";
+	public Icon fixWidth() {
+		return addClasses("fa-fw");
 	}
 
-	/**
-	 * @param percent A percentage increase of 33, 100, 200, 300, 400 is possible
-	 * @return a HTML tag for an enlarged version of that icon
-	 */
-	public String increaseSize(int percent) {
-		return "<i class='fa " + getIncreasedSizeIconCssClass(percent) + "'></i>";
+	public Icon increaseSize(Percent percent) {
+		switch (percent) {
+			case by33:
+				return addClasses("fa-lg");
+			case by100:
+				return addClasses("fa-2x");
+			case by200:
+				return addClasses("fa-3x");
+			case by300:
+				return addClasses("fa-4x");
+			case by400:
+				return addClasses("fa-5x");
+			default:
+				return this;
+		}
 	}
 
 	public String increaseSize(int percent, String... cssClasses) {
 		String classes = Arrays.asList(cssClasses).stream().collect(Collectors.joining(" "));
 		return "<i class='" + getIncreasedSizeIconCssClass(percent) + " " + classes + "'></i>";
-	}
-
-	/**
-	 * @param percent A percentage increase of 33, 100, 200, 300, 400 is possible
-	 * @return a string for an enlarged version of that icon usable in an HTML class attribute
-	 */
-	public String getIncreasedSizeIconCssClass(int percent) {
-		return "fa " + cssClass + " " + getEnlargedCssClass(percent);
 	}
 
 	private String getEnlargedCssClass(int percent) {
@@ -202,8 +217,24 @@ public enum Icon {
 		}
 	}
 
-	public String getToolMenuItem(String description) {
-		return "<i class='fa " + cssClass + " fa-fw'></i>&nbsp;" + description;
+	/**
+	 * @return a HTML tag for that icon
+	 */
+	public String getIconWithFixedWidth() {
+		return "<i class='fa " + cssClass + " fa-fw'></i>";
+	}
+
+	public String getIconWithAdditionalClasses(String... cssClasses) {
+		String classes = Arrays.asList(cssClasses).stream().collect(Collectors.joining(" "));
+		return "<i class='fa " + getCssClass() + " " + classes + "'></i>";
+	}
+
+	/**
+	 * @param percent A percentage increase of 33, 100, 200, 300, 400 is possible
+	 * @return a string for an enlarged version of that icon usable in an HTML class attribute
+	 */
+	private String getIncreasedSizeIconCssClass(int percent) {
+		return "fa " + cssClass + " " + getEnlargedCssClass(percent);
 	}
 
 }
