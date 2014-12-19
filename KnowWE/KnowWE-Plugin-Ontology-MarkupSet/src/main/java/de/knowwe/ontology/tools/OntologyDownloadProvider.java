@@ -61,9 +61,7 @@ public class OntologyDownloadProvider implements ToolProvider {
 
 		// JavaScript action
 		String jsAction = "window.location='action/OntologyDownloadAction" +
-				"?" + Attributes.TOPIC + "=" + section.getTitle() +
-				"&amp;" + Attributes.WEB + "=" + section.getWeb() +
-				"&amp;" + Attributes.SECTION_ID + "=" + section.getID() +
+				"?" + Attributes.SECTION_ID + "=" + section.getID() +
 				"&amp;" + OntologyDownloadAction.PARAM_SYNTAX + "=" + syntax.getName() +
 				"&amp;" + OntologyDownloadAction.PARAM_FILENAME + "=" + ontologyName + extension + "'";
 
