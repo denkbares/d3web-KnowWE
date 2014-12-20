@@ -188,7 +188,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 			KDOMIterator depthFirst = KDOMIterator.depthFirst(
 					sections, section -> Sections.canHaveSuccessor(section, clazz));
 			depthFirst.setMaxDepth(maxDepth);
-			return FilterTypeIterator.create(depthFirst, clazz);
+			return FilterTypeIterator.<R>create(depthFirst, clazz);
 		});
 	}
 
