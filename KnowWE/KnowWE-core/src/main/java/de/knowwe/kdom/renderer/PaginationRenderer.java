@@ -40,42 +40,36 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.util.Icon;
 
 /**
- * {@link #PaginationRenderer(de.knowwe.core.kdom.rendering.Renderer)} serves two main purposes: to have a
- * standard
- * and easy way to obtain all variables which are needed for controlling HTML table navigation/sorting/filtering
- * behaviour and to have a consistent
- * style for
- * the pagination of these tables. {@link #PaginationRenderer(de.knowwe.core.kdom.rendering.Renderer)} can either
- * decorate an existing {@link de.knowwe.core.kdom.rendering.Renderer} or you can use its
- * static methods for a little bit more freedom. (It's not possible at the moment to use the static methods within an
+ * {@link #PaginationRenderer(de.knowwe.core.kdom.rendering.Renderer)} serves two main purposes: to
+ * have a standard and easy way to obtain all variables which are needed for controlling HTML table
+ * navigation/sorting/filtering behaviour and to have a consistent style for the pagination of these
+ * tables. {@link #PaginationRenderer(de.knowwe.core.kdom.rendering.Renderer)} can either decorate
+ * an existing {@link de.knowwe.core.kdom.rendering.Renderer} or you can use its static methods for
+ * a little bit more freedom. (It's not possible at the moment to use the static methods within an
  * AsynchronRenderer.)
- * <p>
- * IMPORTANT: If you don't use the {@link #PaginationRenderer(de.knowwe.core.kdom.rendering.Renderer)} as a decorating
- * renderer, you have to add the
- * attribute 'pagination' where its value is the ID of that section to the table tag({@code<table
- * pagination='$sectionId'>}). <br><br>
- * The values of the pagination can be obtained by using {@link #getStartRow(de.knowwe.core.kdom.parsing.Section,
+ * <p/>
+ * IMPORTANT: If you don't use the {@link #PaginationRenderer(de.knowwe.core.kdom.rendering.Renderer)}
+ * as a decorating renderer, you have to add the attribute 'pagination' where its value is the ID of
+ * that section to the table tag({@code &lt;table pagination='$sectionId'&gt;}). <br><br> The values
+ * of the pagination can be obtained by using {@link #getStartRow(de.knowwe.core.kdom.parsing.Section,
  * de.knowwe.core.user.UserContext)} and {@link #getCount(de.knowwe.core.kdom.parsing.Section,
- * de.knowwe.core.user.UserContext)} for the navigation.<br><br>
- * Optionally: If you want to enable sorting for the table it must have defined table column headers by using
- * {@code<th>...</th>} and additionally you need to add the parameter 'sortable' with either the value 'single'
- * ({@code<table
- * pagination='$sectionId' sortable='single'>}) or
- * 'multi' ({@code<table
- * pagination='$sectionId' sortable='multi'>}) to get single column sorting or multiple column sorting
- * respectively.<br>
- * The values for the sorting can be fetched by {@link #getSingleColumnSorting(de.knowwe.core.kdom.parsing.Section,
- * de.knowwe.core.user.UserContext)} and {@link #getMultiColumnSorting(de.knowwe.core.kdom.parsing.Section,
- * de.knowwe.core.user.UserContext)} respectively. <br>
- * You can exclude columns from sorting by stating this explicitly like this: {@code<th
- * class="notSortable">...</th>}<br><br>
- * Optionally: You can apply filters to rows by preparing your table column headers with {@code<th
- * class="filterable">...</th>} and use in your decorated render class {@link #createFilter(String, String...)} and
- * then
- * {@link #setFilterList(de.knowwe.core.user.UserContext, de.d3web.utils.Pair[])}  }. To get the active filters use
- * {@link #getFilters(de.knowwe.core.kdom.parsing.Section, de.knowwe.core.user.UserContext)}<br><br>
- * Optionally: If the decorated renderer knows the size of its result it can use {@link
- * #setResultSize(de.knowwe.core.user.UserContext, int)} to render more information in the pagination bar.
+ * de.knowwe.core.user.UserContext)} for the navigation.<br><br> Optionally: If you want to enable
+ * sorting for the table it must have defined table column headers by using {@code
+ * &lt;th&gt;...&lt;/th&gt;} and additionally you need to add the parameter 'sortable' with either
+ * the value 'single' ({@code &lt;table pagination='$sectionId' sortable='single'&gt;}) or 'multi'
+ * ({@code &lt;table pagination='$sectionId' sortable='multi'&gt;}) to get single column sorting or
+ * multiple column sorting respectively.<br> The values for the sorting can be fetched by {@link
+ * #getSingleColumnSorting(de.knowwe.core.kdom.parsing.Section, de.knowwe.core.user.UserContext)}
+ * and {@link #getMultiColumnSorting(de.knowwe.core.kdom.parsing.Section,
+ * de.knowwe.core.user.UserContext)} respectively. <br> You can exclude columns from sorting by
+ * stating this explicitly like this: {@code &lt;th class="notSortable"&gt;...&lt/th&gt;}<br><br>
+ * Optionally: You can apply filters to rows by preparing your table column headers with {@code
+ * &lt;th class="filterable"&gt;...&lt;/th&gt;} and use in your decorated render class {@link
+ * #createFilter(String, String...)} and then {@link #setFilterList(de.knowwe.core.user.UserContext,
+ * de.d3web.utils.Pair[])}  }. To get the active filters use {@link #getFilters(de.knowwe.core.kdom.parsing.Section,
+ * de.knowwe.core.user.UserContext)}<br><br> Optionally: If the decorated renderer knows the size of
+ * its result it can use {@link #setResultSize(de.knowwe.core.user.UserContext, int)} to render more
+ * information in the pagination bar.
  *
  * @author Stefan Plehn
  * @created 14.01.2014
@@ -109,7 +103,7 @@ public class PaginationRenderer implements Renderer {
 		boolean show = true;
 		if (!resultString.equals(DEFAULT_NO_RESULTSIZE_SET)) {
 			int resultSize = Integer.parseInt(resultString);
-			show = resultSize > 10 ? true : false;
+			show = resultSize > 10;
 		}
 		PaginationRenderer.renderPagination(section, user, pagination, show);
 		result.append(pagination);
@@ -176,6 +170,7 @@ public class PaginationRenderer implements Renderer {
 		String id = sec.getID();
 		int count = getCount(sec, user);
 		int startRow = getStartRow(sec, user);
+		String resultSize = getResultSize(user);
 		renderToolBarElementHeader(sec, result, show);
 		if (count != Integer.MAX_VALUE) {
 			renderToolbarButton(
@@ -188,12 +183,13 @@ public class PaginationRenderer implements Renderer {
 					(startRow > 1), result);
 			result.appendHtml("<span class=fillText> Lines </span>");
 
-			result.appendHtml("<input size=3 class='startRow' type=\"field\" value='"
-					+ startRow + "'>");
+			int inputLength = Math.max(3, resultSize.length() + 1);
+			result.appendHtml("<input size=").append(inputLength)
+					.appendHtml(" class='startRow' type=\"field\" value='")
+					.append(startRow).appendHtml("'>");
 
 			result.appendHtml("<span class=fillText> to </span>");
 
-			String resultSize = getResultSize(user);
 			boolean forward = true;
 			if (Integer.parseInt(resultSize) < startRow + count - 1) {
 				forward = false;
@@ -245,7 +241,9 @@ public class PaginationRenderer implements Renderer {
 			builder.appendHtml(action);
 			builder.appendHtml(";\">");
 		}
-		builder.appendHtml(icon.increaseSize(Icon.Percent.by33).addClasses("knowwe-paginationNavigationIcons").toHtml());
+		builder.appendHtml(icon.increaseSize(Icon.Percent.by33)
+				.addClasses("knowwe-paginationNavigationIcons")
+				.toHtml());
 		if (enabled) {
 			builder.appendHtml("</a>");
 		}
@@ -313,13 +311,13 @@ public class PaginationRenderer implements Renderer {
 	}
 
 	/**
-	 * Get the chosen count in pagination bar
-	 * Handle appropriately in the decorated renderer. Be aware of maximum lengths (e.g. 10000 chars without \n for
-	 * jspwiki pipeline.)
+	 * Get the chosen count in pagination bar Handle appropriately in the decorated renderer. Be
+	 * aware of maximum lengths (e.g. 10000 chars without \n for jspwiki pipeline.)
 	 *
-	 * @param sec  the section
+	 * @param sec the section
 	 * @param user the user context
-	 * @return the count of elements to be shown (if "Max" is selected Integer.MAX_VALUE is returned!)
+	 * @return the count of elements to be shown (if "Max" is selected Integer.MAX_VALUE is
+	 * returned!)
 	 * @created 22.01.2014
 	 */
 	public static int getCount(Section<?> sec, UserContext user) {
@@ -335,10 +333,10 @@ public class PaginationRenderer implements Renderer {
 	}
 
 	/**
-	 * @param sec  the section
+	 * @param sec the section
 	 * @param user the user context
-	 * @return the latest sorting in form of a Pair. Value A represents the sorting value, value B the natural order
-	 * (true is ascending)
+	 * @return the latest sorting in form of a Pair. Value A represents the sorting value, value B
+	 * the natural order (true is ascending)
 	 */
 	public static Pair<String, Boolean> getSingleColumnSorting(Section<?> sec, UserContext user) {
 		if (!(getSorting(sec, user, true).isEmpty())) {
@@ -351,7 +349,7 @@ public class PaginationRenderer implements Renderer {
 	}
 
 	/**
-	 * @param sec  the section
+	 * @param sec the section
 	 * @param user the user context
 	 * @return a list of pairs where Value A represents the sorting value, value B the natural order
 	 * (true is ascending) ordered by their chronology (newest = first)
@@ -403,7 +401,7 @@ public class PaginationRenderer implements Renderer {
 	/**
 	 * Get all filters selected for this tab.le,
 	 *
-	 * @param sec  the section
+	 * @param sec the section
 	 * @param user the user context
 	 * @return a map with all filter names which have values to be filtered by.
 	 */
@@ -438,8 +436,8 @@ public class PaginationRenderer implements Renderer {
 	}
 
 	/**
-	 * If the decorated Renderer knows about the size of its results it can set it here for an increase of information
-	 * at the rendering in the navigation bar.
+	 * If the decorated Renderer knows about the size of its results it can set it here for an
+	 * increase of information at the rendering in the navigation bar.
 	 *
 	 * @created 27.01.2014
 	 */
@@ -448,7 +446,8 @@ public class PaginationRenderer implements Renderer {
 	}
 
 	/**
-	 * Use this method to enable those filters you created by {@link #createFilter(String, String...)}.
+	 * Use this method to enable those filters you created by {@link #createFilter(String,
+	 * String...)}.
 	 *
 	 * @param context the user context
 	 * @param filters created by {@link #createFilter(String, String...)}
@@ -464,7 +463,8 @@ public class PaginationRenderer implements Renderer {
 	/**
 	 * Create a new filter for a table column
 	 *
-	 * @param header The name of the HTML table column header (=the string inside the {@code <th></th>}) tags
+	 * @param header The name of the HTML table column header (=the string inside the {@code
+	 * <th></th>}) tags
 	 * @param values All the values you want to be able to filter by
 	 * @return a new filter (you have to enable it (and others for other columns) by calling {@link
 	 * #setFilterList(de.knowwe.core.user.UserContext, de.d3web.utils.Pair[])}.

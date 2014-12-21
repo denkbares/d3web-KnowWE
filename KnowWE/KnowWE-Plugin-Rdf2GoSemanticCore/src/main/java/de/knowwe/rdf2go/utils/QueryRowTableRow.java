@@ -39,15 +39,18 @@ public class QueryRowTableRow implements TableRow {
 
 	@Override
 	public String toString() {
-		StringBuffer buffy = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		for (String variable : variables) {
-			String verbalization = row.getValue(variable).toString();
-			if (row.getValue(variable) instanceof BlankNode) {
-				verbalization = "BlankNode";
+			Node value = row.getValue(variable);
+			if (value instanceof BlankNode) {
+				buffer.append("BlankNode");
 			}
-			buffy.append(verbalization + "  \t");
+			else {
+				buffer.append(value);
+			}
+			buffer.append("  \t");
 		}
-		return buffy.toString();
+		return buffer.toString();
 	}
 
 	@Override

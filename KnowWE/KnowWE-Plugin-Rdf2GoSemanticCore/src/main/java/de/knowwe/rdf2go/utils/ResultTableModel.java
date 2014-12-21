@@ -110,9 +110,10 @@ public class ResultTableModel {
 		for (Pair<String, Boolean> stringBooleanPair : sorting) {
 			final int factor = stringBooleanPair.getB() ? 1 : -1;
 			Comparator<TableRow> comparator = (o1, o2) -> {
-				int result = o1.getValue(stringBooleanPair.getA()).compareTo(o2.getValue(stringBooleanPair.getA()));
-				if (result != 0) return factor * result;
-				return 0;
+				Node v1 = o1.getValue(stringBooleanPair.getA());
+				Node v2 = o2.getValue(stringBooleanPair.getA());
+				int result = (v1 == v2) ? 0 : (v1 == null) ? -1 : (v2 == null) ? 1 : v1.compareTo(v2);
+				return factor * result;
 			};
 			comparators.add(comparator);
 		}
@@ -126,7 +127,7 @@ public class ResultTableModel {
 	 * assumed to be the number of rows.
 	 *
 	 * @param start the first row to iterate
-	 * @param end   the row to stop iteration before
+	 * @param end the row to stop iteration before
 	 * @return an iterator for the sub-span of rows
 	 */
 	public Iterator<TableRow> iterator(int start, int end) {
@@ -177,14 +178,14 @@ public class ResultTableModel {
 	 * Compares the two sparql result data tables with each other. Equality is checked if the
 	 * atLeast-flag is set false. If the atLeast-flag is set to true, only the subset relation of
 	 * expected to actual data is checked.
-	 * <p>
+	 * <p/>
 	 * CAUTION: result rows with blank nodes are ignored from consideration (graph isomorphism
 	 * problem)
 	 *
 	 * @param expectedResultTable the expected data
-	 * @param actualResultTable   the actual data
-	 * @param atLeast             false: equality of data is required; true: expectedData SUBSET-OF actualData
-	 *                            is required
+	 * @param actualResultTable the actual data
+	 * @param atLeast false: equality of data is required; true: expectedData SUBSET-OF actualData
+	 * is required
 	 * @return if the expected data is equal to (or a subset of) the actual data
 	 * @created 20.01.2014
 	 */
