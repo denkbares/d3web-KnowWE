@@ -30,6 +30,15 @@ used colors
 /* ################################################## */
 /* -------------- general settings    --------------- */
 /* ################################################## */
+
+.noselect {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
 textarea {
 	line-height: 16px;
 	/* we need to set this, because without a set line-height, 

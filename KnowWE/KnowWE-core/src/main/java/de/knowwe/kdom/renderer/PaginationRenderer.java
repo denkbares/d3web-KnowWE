@@ -171,6 +171,14 @@ public class PaginationRenderer implements Renderer {
 		int count = getCount(sec, user);
 		int startRow = getStartRow(sec, user);
 		String resultSize = getResultSize(user);
+		int resultMaxCount = Integer.MAX_VALUE;
+		try {
+			resultMaxCount = Integer.parseInt(resultSize);
+		}
+		catch (NumberFormatException ignored) {
+		}
+		int inputLength = Math.min(Math.max(3, resultSize.length() + 1), 6);
+
 		renderToolBarElementHeader(sec, result, show);
 		if (count != Integer.MAX_VALUE) {
 			renderToolbarButton(
@@ -183,21 +191,20 @@ public class PaginationRenderer implements Renderer {
 					(startRow > 1), result);
 			result.appendHtml("<span class=fillText> Lines </span>");
 
-			int inputLength = Math.max(3, resultSize.length() + 1);
 			result.appendHtml("<input size=").append(inputLength)
-					.appendHtml(" class='startRow' type=\"field\" value='")
+					.appendHtml(" class='startRow' type='field' value='")
 					.append(startRow).appendHtml("'>");
 
-			result.appendHtml("<span class=fillText> to </span>");
-
-			boolean forward = true;
-			if (Integer.parseInt(resultSize) < startRow + count - 1) {
-				forward = false;
-				result.append(resultSize);
+			boolean forward = false;
+			String toText = resultSize;
+			if (resultMaxCount >= startRow + count - 1) {
+				forward = true;
+				toText = String.valueOf(startRow + count - 1);
+				for (int i = (inputLength - toText.length()) * 2; i > 0; i--) {
+					toText = "&nbsp;" + toText;
+				}
 			}
-			else {
-				result.append((startRow + count - 1));
-			}
+			result.appendHtml("<span class=fillText> to </span>").append(toText);
 
 			renderToolbarButton(
 					Icon.NEXT, "KNOWWE.core.plugin.pagination.navigate('"
@@ -214,7 +221,8 @@ public class PaginationRenderer implements Renderer {
 							+ id + "', 'back')",
 					false, result);
 			result.appendHtml("<span class=fillText> Lines </span>");
-			result.appendHtml("<input size=3 class='startRow' type=\"field\" value='1'>");
+			result.appendHtml("<input size=").append(inputLength)
+					.appendHtml(" class='startRow' type='field' value='1'>");
 
 			result.appendHtml("<span class=fillText> to " + getResultSize(user) + "</span>");
 
@@ -227,7 +235,7 @@ public class PaginationRenderer implements Renderer {
 	}
 
 	private static void renderToolBarElementHeader(Section<?> sec, RenderResult result, boolean show) {
-		result.appendHtml("<div class='knowwe-paginationToolbar' pagination=")
+		result.appendHtml("<div class='knowwe-paginationToolbar noselect' pagination=")
 				.append(Strings.quoteSingle(sec.getID()));
 		if (!show) {
 			result.append(" style='display:none'");

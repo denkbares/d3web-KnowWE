@@ -601,8 +601,13 @@ KNOWWE.core.rerendercontent = function() {
 						}
 
 					},
-					onError : function() {
+					onError : function(e) {
 						if (indicateProcess) KNOWWE.core.util.updateProcessingState(-1);
+						KNOWWE.notification.error("Unexpected server error",
+							"An unexpected, but non-critical error has occurred during an asynchronuous server request. " +
+							"Some contents of this page may be displayed incorrectly. <br>" +
+							"Please <a href='javascript:window.location.reload();'>reload</a> the page or contact your administrator if the failure remains.",
+							"execute-error");
 					}
 				}
 			}
