@@ -184,11 +184,11 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return all successors for each section matching the type
 	 */
 	public <R extends Type> Sections<R> successor(int maxDepth, Class<R> clazz) {
-		return new Sections<>(() -> {
+		return new Sections<R>(() -> {
 			KDOMIterator depthFirst = KDOMIterator.depthFirst(
 					sections, section -> Sections.canHaveSuccessor(section, clazz));
 			depthFirst.setMaxDepth(maxDepth);
-			return FilterTypeIterator.<R>create(depthFirst, clazz);
+			return FilterTypeIterator.<R>create((Iterator<Section<? extends Type>>)depthFirst, clazz);
 		});
 	}
 

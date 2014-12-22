@@ -44,7 +44,6 @@ import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.kdom.filter.SectionFilter;
 
 /**
  * <p>
@@ -297,20 +296,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	/**
-	 * return the list of child nodes matching a filter
-	 *
-	 * @param filter the filter to be matched
-	 * @return the filtered list
-	 */
-	public List<Section<? extends Type>> getChildren(SectionFilter filter) {
-		ArrayList<Section<? extends Type>> list = new ArrayList<>();
-		for (Section<?> current : getChildren()) {
-			if (filter.accept(current)) list.add(current);
-		}
-		return list;
-	}
-
-	/**
 	 * Returns the parent section of this section.
 	 *
 	 * @return the parent section
@@ -359,6 +344,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		}
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public boolean removePackageName(String packageName) {
 		boolean removed = packageNames != null && packageNames.remove(packageName);
 		if (packageNames != null && packageNames.isEmpty()) packageNames = null;
@@ -480,11 +466,9 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 */
 	public void collectTextsFromLeaves(StringBuilder buffer) {
 		if (!this.getChildren().isEmpty()) {
-			for (Section<?> section : getChildren()) {
-				if (section != null) {
-					section.collectTextsFromLeaves(buffer);
-				}
-			}
+			getChildren().stream().forEach(section -> {
+				section.collectTextsFromLeaves(buffer);
+			});
 		}
 		else {
 			buffer.append(this.getText());
@@ -814,6 +798,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @param key is the key for which the Object should be removed
 	 * @created 16.03.2014
 	 */
+	@SuppressWarnings("UnusedDeclaration")
 	public Object removeObject(String key) {
 		//noinspection RedundantCast
 		return removeObject((Compiler) null, key);

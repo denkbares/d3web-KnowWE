@@ -85,7 +85,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 			});
 			jq$.ajax("action/RenderPreviewAction", {
 				type : 'post',
-				data : 	JSON.stringify(json),
+				data : JSON.stringify(json),
 				contentType : 'application/json, UTF-8',
 				success : function(html) {
 					KNOWWE.core.util.replaceElement(ids, html);
@@ -1769,10 +1769,6 @@ KNOWWE.core.plugin.rightPanel.watches = function() {
 		});
 	}
 }());
-
-KNOWWE.helper.observer.subscribe("update", function() {
-	updateWatches();
-});
 
 KNOWWE.helper.observer.subscribe("afterRerender", function() {
 	KNOWWE.tooltips.enrich(this);

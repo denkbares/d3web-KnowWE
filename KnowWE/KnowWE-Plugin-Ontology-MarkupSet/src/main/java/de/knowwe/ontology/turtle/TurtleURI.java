@@ -65,11 +65,14 @@ public class TurtleURI extends AbbreviatedResourceReference implements NodeProvi
 
 	public static Node getNodeForIdentifier(Rdf2GoCore core, Identifier identifier) {
 		if (identifier == null) return null;
-		String shortURI = Strings.encodeURL(identifier.toExternalForm());
 		String[] idPath = identifier.getPathElements();
+		String shortURI;
 		if (idPath.length == 2) {
 			String suffix = Strings.encodeURL(idPath[1]);
 			shortURI = idPath[0] + ":" + suffix;
+		}
+		else {
+			shortURI = Strings.encodeURL(identifier.toExternalForm());
 		}
 		String longURI = Rdf2GoUtils.expandNamespace(core, shortURI);
 		return core.createURI(longURI);
