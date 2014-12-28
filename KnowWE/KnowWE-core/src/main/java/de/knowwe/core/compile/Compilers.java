@@ -46,10 +46,9 @@ import de.knowwe.core.utils.KnowWEUtils;
 public class Compilers {
 
 	/**
-	 * Compiles the given {@link Section} for the given {@link Compiler} (by
-	 * calling the {@link CompileScript}s of the {@link Compiler} for the
-	 * {@link Type} of the {@link Section} and applying them to the
-	 * {@link Section}).
+	 * Compiles the given {@link Section} for the given {@link Compiler} (by calling the {@link
+	 * CompileScript}s of the {@link Compiler} for the {@link Type} of the {@link Section} and
+	 * applying them to the {@link Section}).
 	 *
 	 * @created 07.01.2014
 	 */
@@ -72,10 +71,9 @@ public class Compilers {
 	}
 
 	/**
-	 * Destroys the given {@link Section} for the given {@link Compiler} (by
-	 * calling the {@link CompileScript}s of the {@link Compiler} for the
-	 * {@link Type} of the {@link Section} and applying them to the
-	 * {@link Section}).
+	 * Destroys the given {@link Section} for the given {@link Compiler} (by calling the {@link
+	 * CompileScript}s of the {@link Compiler} for the {@link Type} of the {@link Section} and
+	 * applying them to the {@link Section}).
 	 *
 	 * @created 07.01.2014
 	 */
@@ -100,11 +98,10 @@ public class Compilers {
 	}
 
 	/**
-	 * Returns the first {@link PackageCompiler} of the given compiler class,
-	 * that compiles a {@link Section} of the type {@link PackageCompileType} on
-	 * the given article.
+	 * Returns the first {@link PackageCompiler} of the given compiler class, that compiles a {@link
+	 * Section} of the type {@link PackageCompileType} on the given article.
 	 *
-	 * @param master        the master article for which we want the {@link Compiler}
+	 * @param master the master article for which we want the {@link Compiler}
 	 * @param compilerClass the type of the {@link Compiler} we want
 	 * @return the first {@link Compiler} that compiles the given section.
 	 * @created 15.11.2013
@@ -121,10 +118,10 @@ public class Compilers {
 	}
 
 	/**
-	 * Returns the first {@link Compiler} with the given compiler class, that
-	 * compiles the given section.
+	 * Returns the first {@link Compiler} of all compilers that compiles the given section, that is
+	 * of the specified compiler class, or which extends or implements the specified compiler class.
 	 *
-	 * @param section       the section for which we want the {@link Compiler}s
+	 * @param section the section for which we want the {@link Compiler}s
 	 * @param compilerClass the type of the {@link Compiler} we want
 	 * @return the first {@link Compiler} that compiles the given section.
 	 * @created 15.11.2013
@@ -140,11 +137,9 @@ public class Compilers {
 	}
 
 	/**
-	 * Returns the first {@link Compiler} of a given ArticleManager and compiler
-	 * class.
+	 * Returns the first {@link Compiler} of a given ArticleManager and compiler class.
 	 *
-	 * @param manager       the {@link ArticleManager} for which we want the
-	 *                      {@link Compiler}s
+	 * @param manager the {@link ArticleManager} for which we want the {@link Compiler}s
 	 * @param compilerClass the type of the {@link Compiler} we want
 	 * @return the first {@link Compiler}s of a given ArticleManager and Class.
 	 * @created 15.11.2013
@@ -160,11 +155,10 @@ public class Compilers {
 	}
 
 	/**
-	 * Returns all {@link Compiler}s with the given type that compile the given
-	 * section. The returned collection has a stable order according to the
-	 * {@link CompilerComparator}.
+	 * Returns all {@link Compiler}s with the given type that compile the given section. The
+	 * returned collection has a stable order according to the {@link CompilerComparator}.
 	 *
-	 * @param section       the section for which we want the {@link Compiler}s
+	 * @param section the section for which we want the {@link Compiler}s
 	 * @param compilerClass the type of the {@link Compiler} we want
 	 * @return all {@link Compiler}s compiling the given section
 	 * @created 15.11.2013
@@ -175,7 +169,9 @@ public class Compilers {
 
 	private static <C extends Compiler> Collection<C> getCompilers(Section<?> section, Class<C> compilerClass, boolean firstOnly) {
 		Set<C> compilers = new TreeSet<>(new CompilerComparator());
-		List<Compiler> allCompilers = section.getArticleManager().getCompilerManager().getCompilers();
+		List<Compiler> allCompilers = section.getArticleManager()
+				.getCompilerManager()
+				.getCompilers();
 		for (Compiler compiler : allCompilers) {
 			if (compilerClass.isAssignableFrom(compiler.getClass())
 					&& compiler.isCompiling(section)) {
@@ -189,8 +185,7 @@ public class Compilers {
 	/**
 	 * Returns all {@link Compiler}s of a given ArticleManager and class.
 	 *
-	 * @param manager       the {@link ArticleManager} for which we want the
-	 *                      {@link Compiler}
+	 * @param manager the {@link ArticleManager} for which we want the {@link Compiler}
 	 * @param compilerClass the type of the {@link Compiler} we want
 	 * @return all {@link AbstractPackageCompiler}s compiling the given section
 	 * @created 15.11.2013
@@ -219,7 +214,8 @@ public class Compilers {
 	public static Collection<Article> getCompilingArticleObjects(Section<?> section) {
 		Collection<Article> articles = new ArrayList<>();
 		Set<String> referingArticleTitles
-				= KnowWEUtils.getPackageManager(section.getArticleManager()).getCompilingArticles(section);
+				= KnowWEUtils.getPackageManager(section.getArticleManager())
+				.getCompilingArticles(section);
 		ArticleManager articleManager = section.getArticleManager();
 		for (String title : referingArticleTitles) {
 			Article article = articleManager.getArticle(title);
@@ -230,12 +226,11 @@ public class Compilers {
 	}
 
 	/**
-	 * Returns all master articles that compile the given Section. If no master
-	 * article compiles the Section, at least the article of the Section itself
-	 * is returned, so the Collection always at least contains one article.
+	 * Returns all master articles that compile the given Section. If no master article compiles the
+	 * Section, at least the article of the Section itself is returned, so the Collection always at
+	 * least contains one article.
 	 *
-	 * @param section is the Section for which you want to know the compiling
-	 *                articles
+	 * @param section is the Section for which you want to know the compiling articles
 	 * @return a non empty Collection of articles that compile the given Section
 	 * @created 16.02.2012
 	 * @deprecated Helper method while we transition to new compiler framework

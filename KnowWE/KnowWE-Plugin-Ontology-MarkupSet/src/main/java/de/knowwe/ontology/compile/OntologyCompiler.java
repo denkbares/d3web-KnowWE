@@ -26,7 +26,6 @@ import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.ScriptCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.parsing.Section;
@@ -39,7 +38,7 @@ import de.knowwe.rdf2go.RuleSet;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.12.2013
  */
-public class OntologyCompiler extends AbstractPackageCompiler implements TermCompiler, Rdf2GoCompiler, IncrementalCompiler {
+public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoCompiler, IncrementalCompiler {
 
 	private Rdf2GoCore rdf2GoCore;
 	private TerminologyManager terminologyManager;

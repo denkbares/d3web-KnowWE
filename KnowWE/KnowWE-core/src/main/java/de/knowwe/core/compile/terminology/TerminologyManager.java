@@ -85,7 +85,7 @@ public class TerminologyManager {
 	/**
 	 * Allows to register a new term.
 	 *
-	 * @param compiler       the compiler which registers the term.
+	 * @param compiler the compiler which registers the term.
 	 * @param termDefinition is the term section defining the term.
 	 * @param termIdentifier is the term for which the section is registered
 	 */
@@ -99,7 +99,7 @@ public class TerminologyManager {
 					+ termIdentifier.toString()
 					+ "' is reserved by the system.");
 			Messages.storeMessage(compiler instanceof AbstractPackageCompiler
-					? (AbstractPackageCompiler) compiler : null,
+							? (AbstractPackageCompiler) compiler : null,
 					termDefinition, this.getClass(), msg);
 			return;
 		}
@@ -116,7 +116,7 @@ public class TerminologyManager {
 		EventManager.getInstance()
 				.fireEvent(new TermDefinitionRegisteredEvent(compiler, termIdentifier));
 		Messages.clearMessages(compiler instanceof AbstractPackageCompiler
-				? (AbstractPackageCompiler) compiler : null,
+						? (AbstractPackageCompiler) compiler : null,
 				termDefinition, this.getClass());
 	}
 
@@ -126,7 +126,7 @@ public class TerminologyManager {
 	 * returned.
 	 *
 	 * @param termIdentifier an {@link Identifier} with arbitrary case for a term for which you want
-	 *                       potential other versions with different cases
+	 * potential other versions with different cases
 	 * @return the different versions of {@link Identifier}s or an empty Collection, if the term is
 	 * undefined
 	 * @created 28.07.2012
@@ -240,7 +240,8 @@ public class TerminologyManager {
 						termClass, termIdentifier);
 			}
 		}
-		EventManager.getInstance().fireEvent(new TermDefinitionUnregisteredEvent(compiler, termIdentifier));
+		EventManager.getInstance()
+				.fireEvent(new TermDefinitionUnregisteredEvent(compiler, termIdentifier));
 	}
 
 	public synchronized void unregisterTermReference(Compiler compiler, Section<?> termReference, Class<?> termClass, Identifier termIdentifier) {
@@ -270,6 +271,12 @@ public class TerminologyManager {
 		return getAllDefinedTerms(null);
 	}
 
+	/**
+	 * Returns all local terms of the given class (e.g. Question, String,...), that are compiled in
+	 * the article with the given title.
+	 *
+	 * @created 03.11.2010
+	 */
 	public synchronized Collection<Identifier> getAllDefinedTerms(Class<?> termClass) {
 		return getAllDefinedTermLogEntries(termClass).stream()
 				.map(TermLog::getTermIdentifiers)
@@ -298,7 +305,7 @@ public class TerminologyManager {
 	 * compatible class) false is returned.
 	 *
 	 * @param termIdentifier the term to be searched for
-	 * @param clazz          the class the term must be a subclass of (or of the same class)
+	 * @param clazz the class the term must be a subclass of (or of the same class)
 	 * @return if the term has been registered as required
 	 * @created 05.03.2012
 	 */

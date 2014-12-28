@@ -44,7 +44,7 @@ public class ExpectedSparqlResultTable extends Table {
 	}
 
 	public static ResultTableModel getResultTableModel(Section<ExpectedSparqlResultTable> table, List<String> variables, Rdf2GoCompiler c) {
-		List<TableRow> rows = new ArrayList<TableRow>();
+		List<TableRow> rows = new ArrayList<>();
 		List<Section<TableLine>> lines = Sections.successors(table, TableLine.class);
 		for (Section<TableLine> line : lines) {
 			SimpleTableRow row = createResultRow(line, variables, c);

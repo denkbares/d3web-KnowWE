@@ -5,6 +5,7 @@ import de.d3web.strings.Identifier;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.ontology.kdom.sparql.SparqlNameDefinition;
 import de.knowwe.rdf2go.sparql.SparqlMarkupType;
 
 /**
@@ -26,8 +27,9 @@ public class SparqlNameRegistrationScript extends OntologyCompileScript<SparqlMa
 		String sparqlName = DefaultMarkupType.getAnnotation(section, SparqlMarkupType.NAME);
 		if (sparqlName == null) {
 			return null;
-		} else {
-			return new Identifier("SPARQL", sparqlName);
+		}
+		else {
+			return new Identifier(SparqlNameDefinition.TERM_PREFIX, sparqlName);
 		}
 	}
 

@@ -55,11 +55,11 @@ public class SparqlTestObjectProviderUtils {
 		Section<DefaultMarkupType> defaultMarkup = Sections.ancestor(section,
 				DefaultMarkupType.class);
 		if (defaultMarkup == null) return null;
-		return DefaultMarkupType.getAnnotation(defaultMarkup, "name");
+		return DefaultMarkupType.getAnnotation(defaultMarkup, SparqlMarkupType.NAME);
 	}
 
 	public static <T extends Type> Collection<Section<T>> getSectionsForNameGlobal(String sparqlName, Class<T> clazz) {
-		List<Section<T>> result = new ArrayList<Section<T>>();
+		List<Section<T>> result = new ArrayList<>();
 		
 		Collection<Section<T>> sparqlSections = Sections.successors(
 				Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB), clazz);

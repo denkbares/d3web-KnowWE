@@ -45,7 +45,7 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 	public SimpleDefinition(Class<? extends TermCompiler> compilerClass, Class<?> termObjectClass, Priority handlerPriority) {
 		this.termObjectClass = termObjectClass;
 		this.addCompileScript(handlerPriority,
-				new SimpleDefinitionRegistrationScript<TermCompiler>(
+				new SimpleDefinitionRegistrationScript<>(
 						(Class<TermCompiler>) compilerClass));
 	}
 

@@ -51,7 +51,7 @@ public class QuickInterviewSaveAction extends AbstractAction {
 	/**
 	 * Stores a new .xml file with quickinterview session information in the
 	 * attachments of he article.
-	 * 
+	 *
 	 * @param context UserActionContext with params
 	 * 
 	 */

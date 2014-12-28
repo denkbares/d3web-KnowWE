@@ -70,6 +70,8 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		m.addAnnotationRenderer(Rdf2GoCore.GLOBAL, NothingRenderer.getInstance());
 		m.addAnnotation(NAME, false);
 		m.addAnnotationRenderer(NAME, NothingRenderer.getInstance());
+		// TODO: replace class SparqlNameRegistrationScript by content type
+		// m.addAnnotationContentType(NAME, new SparqlNameDefinition());
 		PackageManager.addPackageAnnotation(m);
 	}
 

@@ -55,7 +55,7 @@ public class QuickInterviewLoadAction extends AbstractAction {
 	/**
 	 * Loads a .xml file with quickinterview session information to restore a
 	 * previous session.
-	 * 
+	 *
 	 * @param context UserActionContext with params
 	 * 
 	 */

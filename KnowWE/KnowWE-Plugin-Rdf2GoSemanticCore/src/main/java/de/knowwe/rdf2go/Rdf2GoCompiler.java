@@ -19,6 +19,7 @@
 package de.knowwe.rdf2go;
 
 import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.compile.terminology.TermCompiler;
 
 /**
  * 
@@ -27,7 +28,7 @@ import de.knowwe.core.compile.Compiler;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.12.2013
  */
-public interface Rdf2GoCompiler extends Compiler {
+public interface Rdf2GoCompiler extends Compiler, TermCompiler {
 
 	public Rdf2GoCore getRdf2GoCore();
 
