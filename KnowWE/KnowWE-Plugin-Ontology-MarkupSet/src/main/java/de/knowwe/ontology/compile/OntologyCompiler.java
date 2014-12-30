@@ -47,16 +47,23 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	private ScriptCompiler<OntologyCompiler> scriptCompiler;
 	private ScriptCompiler<OntologyCompiler> destroyScriptCompiler;
 	private final RuleSet ruleSet;
+	private final String compilingArticle;
 
 	public OntologyCompiler(PackageManager manager, Section<? extends PackageCompileType> compileSection, RuleSet ruleSet) {
 		super(manager, compileSection);
 		this.scriptCompiler = new ScriptCompiler<>(this);
 		this.destroyScriptCompiler = new ScriptCompiler<>(this);
 		this.ruleSet = ruleSet;
+		this.compilingArticle = compileSection.getTitle();
 	}
 
 	public OntologyCompiler(PackageManager manager, Section<? extends PackageCompileType> compileSection) {
 		this(manager, compileSection, null);
+	}
+
+	@Override
+	public String getArticleName() {
+		return compilingArticle;
 	}
 
 	@Override

@@ -22,9 +22,8 @@ import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.terminology.TermCompiler;
 
 /**
- * 
  * Compiler using an {@link Rdf2GoCore}.
- * 
+ *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.12.2013
  */
@@ -32,4 +31,10 @@ public interface Rdf2GoCompiler extends Compiler, TermCompiler {
 
 	public Rdf2GoCore getRdf2GoCore();
 
+	/**
+	 * Returns the name of the article that defines this ontology compiler.
+	 *
+	 * @return the compilers article name
+	 */
+	public String getArticleName();
 }

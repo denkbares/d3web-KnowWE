@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -213,6 +214,7 @@ public class Rdf2GoCore {
 
 	private Set<Statement> insertCache;
 	private Set<Statement> removeCache;
+	private long lastModified = System.currentTimeMillis();
 
 	ResourceBundle properties = ResourceBundle.getBundle("model");
 
@@ -271,6 +273,10 @@ public class Rdf2GoCore {
 		}
 		initDefaultNamespaces();
 		initAvailableSyntaxes();
+	}
+
+	public Date getLastModified() {
+		return new Date(lastModified);
 	}
 
 	private void initAvailableSyntaxes() {
@@ -576,6 +582,7 @@ public class Rdf2GoCore {
 		}
 		finally {
 			// outside of commit an auto committing connection seems to be ok
+			lastModified = System.currentTimeMillis();
 			lock.writeLock().unlock();
 		}
 	}
