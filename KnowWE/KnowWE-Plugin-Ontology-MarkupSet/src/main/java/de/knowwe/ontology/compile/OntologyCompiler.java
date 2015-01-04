@@ -23,7 +23,7 @@ import java.util.Collection;
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.IncrementalCompiler;
-import de.knowwe.core.compile.ScriptCompiler;
+import de.knowwe.core.compile.ParallelScriptCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -44,15 +44,15 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	private TerminologyManager terminologyManager;
 	private boolean completeCompilation = true;
 	private boolean firstCompilation = true;
-	private ScriptCompiler<OntologyCompiler> scriptCompiler;
-	private ScriptCompiler<OntologyCompiler> destroyScriptCompiler;
+	private ParallelScriptCompiler<OntologyCompiler> scriptCompiler;
+	private ParallelScriptCompiler<OntologyCompiler> destroyScriptCompiler;
 	private final RuleSet ruleSet;
 	private final String compilingArticle;
 
 	public OntologyCompiler(PackageManager manager, Section<? extends PackageCompileType> compileSection, RuleSet ruleSet) {
 		super(manager, compileSection);
-		this.scriptCompiler = new ScriptCompiler<>(this);
-		this.destroyScriptCompiler = new ScriptCompiler<>(this);
+		this.scriptCompiler = new ParallelScriptCompiler<>(this);
+		this.destroyScriptCompiler = new ParallelScriptCompiler<>(this);
 		this.ruleSet = ruleSet;
 		this.compilingArticle = compileSection.getTitle();
 	}
@@ -109,14 +109,12 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 			destroyScriptCompiler.destroy();
 		}
 
-		// we get the currently used core... either use the old one or create a new, depending on the current
-		// compilation mode
-		Rdf2GoCore currentCore = this.rdf2GoCore;
-
 		// a complete compilation... we reset TerminologyManager and Rdf2GoCore
 		// we compile all sections of the compiled packages, not just the added ones
 		if (completeCompilation) {
-			currentCore = new Rdf2GoCore(ruleSet);
+			Rdf2GoCore newRdf2GoCore = new Rdf2GoCore(ruleSet);
+			newRdf2GoCore.setCompiler(this);
+			this.rdf2GoCore = newRdf2GoCore;
 			createTerminologyManager();
 			sectionsOfPackage = getPackageManager().getSectionsOfPackage(packagesToCompile);
 
@@ -126,30 +124,20 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 			sectionsOfPackage = getPackageManager().getAddedSections(packagesToCompile);
 		}
 
-		// we write lock before compiling (and committing) to avoid async read access by renderer
-		// on an empty repository in case of a complete compilation with a new Rdf2GoCore
-		currentCore.lock.writeLock().lock();
-		try {
-			this.rdf2GoCore = currentCore;
-
-			for (Section<?> section : sectionsOfPackage) {
-				scriptCompiler.addSubtree(section);
-			}
-
-			scriptCompiler.compile();
-
-			rdf2GoCore.commit();
+		for (Section<?> section : sectionsOfPackage) {
+			scriptCompiler.addSubtree(section);
 		}
-		finally {
-			currentCore.lock.writeLock().unlock();
-		}
+
+		scriptCompiler.compile();
+
+		rdf2GoCore.commit();
 
 		EventManager.getInstance().fireEvent(new OntologyCompilerFinishedEvent(this));
 
 		firstCompilation = false;
 		completeCompilation = false;
-		destroyScriptCompiler = new ScriptCompiler<>(this);
-		scriptCompiler = new ScriptCompiler<>(this);
+		destroyScriptCompiler = new ParallelScriptCompiler<>(this);
+		scriptCompiler = new ParallelScriptCompiler<>(this);
 	}
 
 	private void createTerminologyManager() {

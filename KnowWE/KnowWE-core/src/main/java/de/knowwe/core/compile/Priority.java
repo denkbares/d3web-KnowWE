@@ -29,7 +29,7 @@ public class Priority implements Comparable<Priority> {
 
 	private static final HashMap<Integer, Priority> registeredPrioritiesHash = new HashMap<Integer, Priority>();
 
-	public static final Priority INIT_KB = new Priority(-1000);
+	public static final Priority INIT = new Priority(-1000);
 
 	public static final Priority HIGHEST = new Priority(-300);
 

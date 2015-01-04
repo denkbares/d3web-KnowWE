@@ -81,6 +81,7 @@ import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.CompilerManager;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.event.EventManager;
@@ -131,12 +132,16 @@ public class Rdf2GoCore {
 
 	private int resultCacheSize = 0;
 
+	private Rdf2GoCompiler compiler = null;
+
 	/**
 	 * Some models have extreme slow downs if during a SPARQL query new statements are added or removed. Concurrent
 	 * SPARQLs however are no problem. Therefore we use a lock that locks exclusively for writing but shared for
 	 * reading.
 	 */
 	public final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
+	private final Object statementLock = new Object();
 
 	public static Rdf2GoCore getInstance(Rdf2GoCompiler compiler) {
 		return compiler.getRdf2GoCore();
@@ -304,6 +309,10 @@ public class Rdf2GoCore {
 		}
 	}
 
+	public void setCompiler(Rdf2GoCompiler compiler) {
+		this.compiler = compiler;
+	}
+
 	/**
 	 * Add a namespace to the model.
 	 *
@@ -387,11 +396,11 @@ public class Rdf2GoCore {
 	/**
 	 * Adds the given {@link Statement}s for the given {@link SectionSource} to the
 	 * triple store.
-	 * <p/>
+	 * <p>
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
-	 * @param source    the {@link StatementSource} for which the {@link Statement}s are
+	 * @param source     the {@link StatementSource} for which the {@link Statement}s are
 	 *                   added and cached
 	 * @param statements the {@link Statement}s to add
 	 */
@@ -402,27 +411,29 @@ public class Rdf2GoCore {
 	/**
 	 * Adds the given {@link Statement}s for the given {@link SectionSource} to the
 	 * triple store.
-	 * <p/>
+	 * <p>
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
-	 * @param source    the {@link StatementSource} for which the {@link Statement}s are
+	 * @param source     the {@link StatementSource} for which the {@link Statement}s are
 	 *                   added and cached
 	 * @param statements the {@link Statement}s to add
 	 */
 	public void addStatements(StatementSource source, Collection<Statement> statements) {
-		for (Statement statement : statements) {
-			if (!statementCache.containsValue(statement)) {
-				insertCache.add(statement);
+		synchronized (statementLock) {
+			for (Statement statement : statements) {
+				if (!statementCache.containsValue(statement)) {
+					insertCache.add(statement);
+				}
+				statementCache.put(source, statement);
 			}
-			statementCache.put(source, statement);
 		}
 	}
 
 	/**
 	 * Adds the given {@link Statement}s for the given {@link Section} to the
 	 * triple store.
-	 * <p/>
+	 * <p>
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
@@ -438,7 +449,7 @@ public class Rdf2GoCore {
 	/**
 	 * Adds the given {@link Statement}s for the given {@link Section} to the
 	 * triple store.
-	 * <p/>
+	 * <p>
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
@@ -453,7 +464,7 @@ public class Rdf2GoCore {
 
 	/**
 	 * Adds the given {@link Statement}s directly to the triple store.
-	 * <p/>
+	 * <p>
 	 * <b>Attention</b>: The added {@link Statement}s are not cached in the
 	 * {@link Rdf2GoCore}, so you are yourself responsible to remove the right
 	 * {@link Statement}s in case they are not longer valid. You can remove
@@ -469,7 +480,7 @@ public class Rdf2GoCore {
 
 	/**
 	 * Adds the given {@link Statement}s directly to the triple store.
-	 * <p/>
+	 * <p>
 	 * <b>Attention</b>: The added {@link Statement}s are not cached in the
 	 * {@link Rdf2GoCore}, so you are yourself responsible to remove the right
 	 * {@link Statement}s in case they are not longer valid. You can remove
@@ -761,7 +772,7 @@ public class Rdf2GoCore {
 	 * Returns a map of all namespaces mapped by their prefixes as they are used e.g. in Turtle and
 	 * SPARQL.<br>
 	 * <b>Example:</b> rdf: -> http://www.w3.org/1999/02/22-rdf-syntax-ns#
-	 * <p/>
+	 * <p>
 	 * Although this map seems trivial, it is helpful for optimization reasons.
 	 */
 	public Map<String, String> getNamespacePrefixes() {
@@ -977,7 +988,9 @@ public class Rdf2GoCore {
 	 * @created 13.06.2012
 	 */
 	public void removeStatements(Collection<Statement> statements) {
-		removeStatements(null, statements);
+		synchronized (statementLock) {
+			removeStatements(null, statements);
+		}
 	}
 
 	/**
@@ -987,7 +1000,9 @@ public class Rdf2GoCore {
 	 */
 	public void removeStatements(StatementSource source) {
 		Collection<Statement> statements = statementCache.getValues(source);
-		removeStatements(source, new ArrayList<>(statements));
+		synchronized (statementLock) {
+			removeStatements(source, new ArrayList<>(statements));
+		}
 	}
 
 	private void removeStatements(StatementSource source, Collection<Statement> statements) {
@@ -1002,7 +1017,7 @@ public class Rdf2GoCore {
 	/**
 	 * Removes all {@link Statement}s that were added and cached for the given
 	 * {@link Section}.
-	 * <p/>
+	 * <p>
 	 * <b>Attention</b>: This method only removes {@link Statement}s that were
 	 * added (and cached) in connection with a {@link Section} using methods
 	 * like {@link Rdf2GoCore#addStatements(Section, Collection)}.
@@ -1153,6 +1168,10 @@ public class Rdf2GoCore {
 		// they are not needed in that context and do even cause problems and overhead
 		if (CompilerManager.isCompileThread()) {
 			return new SparqlCallable(completeQuery, type, true).call();
+		}
+		// if this Rdf2GoCore belongs to a compiler, we wait while the compilation is ongoing
+		else if (compiler != null) {
+			Compilers.awaitTermination(compiler.getCompilerManager());
 		}
 
 		// normal query, most likely from a renderer... do all the cache, timeout, and lock stuff

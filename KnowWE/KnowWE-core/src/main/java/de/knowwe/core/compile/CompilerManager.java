@@ -28,25 +28,25 @@ import de.knowwe.core.report.Messages;
  * {@link ArticleManager}. It is responsible to manage every compile process for
  * all articles and section of the {@link ArticleManager}. Therefore all compile
  * code has been removed out of sections and articles and placed here.
- * <p/>
+ * <p>
  * The compile manager holds a set of compilers. The compilers can be plugged
  * into the manager using the defined extension point. Each compiler may
  * implement its own compilation procedure. If the compiler uses the package
  * mechanism to define certain compiling bundles (such as d3web does for
  * knowledge bases or owl for triple stores) the compiler usually have multiple
  * subsequent compilers for each such individual bundle.
- * <p/>
+ * <p>
  * To enhance performance, each compiler top level compiles individually, maybe
  * in parallel. Nevertheless, if the compilers have different priorities
  * (defined through the compiler's extension), they are ordered by these
  * priorities. Only compilers with same priority may compile in parallel.
- * <p/>
+ * <p>
  */
 public class CompilerManager {
 
 	private static final Map<Class<? extends Compiler>, ScriptManager<? extends Compiler>> scriptManagers = new HashMap<>();
-
 	private int compilationCount = 0;
+
 	private final PriorityList<Double, Compiler> compilers;
 	// just a fast cache for the contains() method
 	private final HashSet<Compiler> compilerCache;
@@ -61,7 +61,6 @@ public class CompilerManager {
 		this.compilerCache = new HashSet<>();
 		this.compilers = new PriorityList<>(5d);
 		this.threadPool = createExecutorService();
-
 	}
 
 	/**
@@ -71,14 +70,14 @@ public class CompilerManager {
 		return compileThreads.containsKey(Thread.currentThread());
 	}
 
-	private static ExecutorService createExecutorService() {
-		int threadCount = Runtime.getRuntime().availableProcessors() * 3 / 2 + 1;
+	static ExecutorService createExecutorService() {
+		int threadCount = Runtime.getRuntime().availableProcessors();
 		ExecutorService pool = Executors.newFixedThreadPool(threadCount, runnable -> {
 			Thread thread = new Thread(runnable, "KnowWE-Compiler");
 			compileThreads.put(thread, null);
 			return thread;
 		});
-		Log.fine("created multicore thread pool of size " + threadCount);
+		Log.fine("Created multi core thread pool of size " + threadCount);
 		return pool;
 	}
 
@@ -176,40 +175,38 @@ public class CompilerManager {
 			// start all simultaneous compilers and
 			// observe the active ones until they all have terminated
 			final Set<Compiler> activeCompilers = new LinkedHashSet<>(simultaneousCompilers);
+
 			for (final Compiler compiler : simultaneousCompilers) {
 				// wait until we are allowed to compile
-				threadPool.execute(new Runnable() {
+				threadPool.execute(() -> {
 
-					@Override
-					public void run() {
-						long startTime = System.currentTimeMillis();
-						try {
-							// compile the content
-							compiler.compile(added, removed);
+					long startTime = System.currentTimeMillis();
+					try {
+						// compile the content
+						compiler.compile(added, removed);
+					}
+					catch (Throwable e) {
+						String msg = "Unexpected internal exception while compiling with "
+								+ compiler + ": " + e.getMessage();
+						Log.severe(msg, e);
+						for (Section<?> section : added) {
+							// it does not matter if we store the messages
+							// for the same article multiple times, because
+							// for each source there can only be one
+							// collection of messages
+							Messages.storeMessage(section.getArticle().getRootSection(),
+									this.getClass(), Messages.error(msg));
 						}
-						catch (Throwable e) {
-							String msg = "Unexpected internal exception while compiling with "
-									+ compiler + ": " + e.getMessage();
-							Log.severe(msg, e);
-							for (Section<?> section : added) {
-								// it does not matter if we store the messages
-								// for the same article multiple times, because
-								// for each source there can only be one
-								// collection of messages
-								Messages.storeMessage(section.getArticle().getRootSection(),
-										this.getClass(), Messages.error(msg));
-							}
-						}
-						finally {
-							// and notify that the compiler has finished
-							synchronized (lock) {
-								activeCompilers.remove(compiler);
-								Log.fine(compiler.getClass().getSimpleName()
-										+ " finished after "
-										+ (System.currentTimeMillis() - startTime) + "ms");
-								// 2 - notify the waiting caller of doCompile() in the synchronized block below (1)
-								lock.notifyAll();
-							}
+					}
+					finally {
+						// and notify that the compiler has finished
+						synchronized (lock) {
+							activeCompilers.remove(compiler);
+							Log.fine(compiler.getClass().getSimpleName()
+									+ " finished after "
+									+ (System.currentTimeMillis() - startTime) + "ms");
+							// 2 - notify the waiting caller of doCompile() in the synchronized block below (1)
+							lock.notifyAll();
 						}
 					}
 				});
@@ -263,7 +260,7 @@ public class CompilerManager {
 
 	/**
 	 * Adds a new compiler with the specific priority.
-	 * <p/>
+	 * <p>
 	 * Please note that it is allowed that compilers are added and removed while
 	 * compiling the wiki. Usually a more prioritized compiler may add or remove
 	 * sub-sequential Compilers depending on specific markups, e.g. defining a
@@ -290,7 +287,7 @@ public class CompilerManager {
 
 	/**
 	 * Removes an existing compiler with the specific priority.
-	 * <p/>
+	 * <p>
 	 * Please not that it is allowed that compilers are added and removed while
 	 * compiling the wiki. Usually a more prioritized compiler may add or remove
 	 * sub-sequential Compilers depending on specific markups, e.g. defining a

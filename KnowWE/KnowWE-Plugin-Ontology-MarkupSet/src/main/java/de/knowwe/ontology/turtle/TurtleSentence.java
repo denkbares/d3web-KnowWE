@@ -18,29 +18,19 @@
  */
 package de.knowwe.ontology.turtle;
 
-import java.util.List;
-
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.AnchorRenderer;
-import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.ontology.turtle.compile.TurtleCompileHandler;
 
 public class TurtleSentence extends AbstractType {
 
 	public TurtleSentence() {
-		this.setSectionFinder(new SectionFinder() {
-
-			@Override
-			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-				return SectionFinderResult.resultList(Strings.splitUnquoted(text, ".", false,
-						TurtleMarkup.TURTLE_QUOTES));
-			}
-		});
+		this.setSectionFinder((text, father, type) ->
+				SectionFinderResult.resultList(Strings.splitUnquoted(text, ".", false,
+				TurtleMarkup.TURTLE_QUOTES)));
 
 		this.setRenderer(new AnchorRenderer());
 		this.addChildType(new Subject());

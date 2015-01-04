@@ -51,7 +51,7 @@ public class OntologyType extends DefaultMarkupType {
         MARKUP.addAnnotation(ANNOTATION_COMPILE, false);
         MARKUP.addAnnotation(ANNOTATION_RULESET, false, RuleSet.values());
         DefaultMarkupPackageCompileType compileType = new DefaultMarkupPackageCompileType();
-        compileType.addCompileScript(Priority.HIGHEST, new InitTerminologyHandler());
+        compileType.addCompileScript(Priority.INIT, new InitTerminologyHandler());
         compileType.addCompileScript(new OntologyCompilerRegistrationScript());
         MARKUP.addContentType(compileType);
 
