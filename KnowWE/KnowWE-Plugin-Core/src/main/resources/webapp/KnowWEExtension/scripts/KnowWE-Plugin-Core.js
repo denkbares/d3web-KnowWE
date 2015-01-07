@@ -699,6 +699,12 @@ KNOWWE.core.plugin.pagination = function() {
 		}
 	}
 
+	function handleNoResult(pagination) {
+		if (!pagination.find('table').exists()) {
+			pagination.find(".knowwe-paginationToolbar").remove();
+		}
+	}
+
 	return {
 
 		sort : function(element, id) {
@@ -875,22 +881,20 @@ KNOWWE.core.plugin.pagination = function() {
 		},
 
 		decorateTable : function() {
+			handleNoResult(jq$(this));
 			var id = jq$(this).find(".knowwe-paginationToolbar").first().attr('pagination');
 			jq$(this).find("table").attr('pagination', id);
-			jq$(this).find("table[pagination]").each(
-				decorate());
+			jq$(this).find("table[pagination]").each(decorate());
 		},
 
 		decorateTables : function() {
-
+			handleNoResult(jq$(this));
 			var wrappers = jq$("div.knowwe-paginationWrapper");
 			wrappers.each(function() {
-				var id = jq$(this).attr('id');
-				jq$(this).find("table").attr('pagination', id);
+				jq$(this).find("table").attr('pagination', jq$(this).attr('id'));
 			});
 
-			jq$("table[pagination]").each(
-				decorate());
+			jq$("table[pagination]").each(decorate());
 		}
 	}
 }();

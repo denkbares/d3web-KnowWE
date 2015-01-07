@@ -3,7 +3,6 @@ package de.knowwe.rdf2go.sparql;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -75,7 +74,7 @@ public class SparqlResultRenderer {
 	public List<SparqlResultNodeRenderer> getNodeRenderer() {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(
 				Rdf2GoCore.PLUGIN_ID, POINT_ID);
-		List<SparqlResultNodeRenderer> renderers = new ArrayList<SparqlResultNodeRenderer>();
+		List<SparqlResultNodeRenderer> renderers = new ArrayList<>();
 		for (Extension extension : extensions) {
 			renderers.add((SparqlResultNodeRenderer) extension.getSingleton());
 		}
@@ -431,169 +430,6 @@ public class SparqlResultRenderer {
 			// rendered = KnowWEUtils.maskJSPWikiMarkup(rendered);
 		}
 		return rendered;
-	}
-
-	private String modifyOrderByInSparqlString(Section<?> sec, UserContext user, String sparqlString) {
-		StringBuilder sb = new StringBuilder(sparqlString);
-		List<Pair<String, Boolean>> multipleSorting = PaginationRenderer.getMultiColumnSorting(sec, user);
-		if (multipleSorting.isEmpty()) {
-			return sb.toString();
-		}
-		String sparqlTempString = sparqlString.toLowerCase();
-		int orderBy = sparqlTempString.lastIndexOf("order by");
-		int limit = sparqlTempString.indexOf("limit", orderBy);
-		int offset = sparqlTempString.indexOf("offset", orderBy);
-		int nextStatement;
-		if (limit > 0 && offset > 0) {
-			nextStatement = (limit < offset) ? limit : offset;
-		}
-		else if (limit > 0 && offset < 0) {
-			nextStatement = limit;
-		}
-		else if (limit < 0 && offset > 0) {
-			nextStatement = offset;
-		}
-		else {
-			nextStatement = -1;
-		}
-
-		StringBuilder sbOrder = new StringBuilder();
-
-		HashMap<Boolean, String> sortingKeyWord = new HashMap<>(2);
-		sortingKeyWord.put(true, "ASC");
-		sortingKeyWord.put(false, "DESC");
-
-		for (Pair<String, Boolean> pair : multipleSorting) {
-			sbOrder.append(" ").append(sortingKeyWord.get(pair.getB()))
-					.append("(?").append(pair.getA()).append(")");
-		}
-
-		if (orderBy == -1) {
-			if (nextStatement == -1) {
-				sb.append(" ORDER BY").append(sbOrder.toString());
-			}
-			else {
-				sb.replace(nextStatement, nextStatement, " ORDER BY" + sbOrder.toString());
-			}
-		}
-		else {
-			if (nextStatement != -1) {
-				sb.replace(orderBy, nextStatement, " ORDER BY" + sbOrder.toString());
-			}
-			else {
-				sb.replace(orderBy, sb.length(), " ORDER BY" + sbOrder.toString());
-			}
-		}
-
-		return sb.toString();
-	}
-
-	private void renderTableSizeSelector(RenderOptions options, int max, RenderResult result) {
-
-		String id = options.getId();
-		result.appendHtml("<div class='toolBar'>");
-
-		String[] sizeArray = getReasonableSizeChoices(max);
-
-		result.appendHtml("<span class=fillText>Show </span>"
-				+ "<select id='showLines" + id + "'"
-				+ " onchange=\"KNOWWE.plugin.sparql.refresh('"
-				+ id + "');\">");
-		boolean selected = false;
-		String selectedByUser = options.getNavigationLimit() + "";
-		// if no limit was selected or
-		for (String size : sizeArray) {
-			if ((size.equals(selectedByUser) && !options.isShowAll())
-					|| (size.equals("All") && !selected)) {
-				selected = true;
-				result.appendHtml("<option selected='selected' value='" + size + "'>" + size + "</option>");
-			}
-			else {
-				result.appendHtml("<option value='" + size + "'>" + size
-						+ "</option>");
-			}
-		}
-		result.appendHtml("</select><span class=fillText> lines of </span>" + max);
-
-		result.appendHtml("<div class='toolSeparator'></div>");
-		result.appendHtml("</div>");
-
-	}
-
-	private void renderNavigation(RenderOptions options, int max, RenderResult result) {
-		String id = options.getId();
-		int from = options.getNavigationOffset();
-		int selectedSizeInt;
-		if (options.isShowAll()) {
-			selectedSizeInt = max;
-		}
-		else {
-			selectedSizeInt = options.getNavigationLimit();
-		}
-		result.appendHtml("<div class='toolBar avoidMenu'>");
-		renderToolbarButton(
-				"begin.png", "KNOWWE.plugin.sparql.begin('"
-						+ id + "')",
-				(from > 1), result
-		);
-		renderToolbarButton(
-				"back.png", "KNOWWE.plugin.sparql.back('"
-						+ id + "')",
-				(from > 1), result
-		);
-		result.appendHtml("<span class=fillText> Lines </span>");
-		result.appendHtml("<input size=3 id='fromLine" + id + "' type=\"field\" onchange=\"KNOWWE.plugin.sparql.refresh('"
-				+ id + "');\" value='"
-				+ from + "'>");
-		result.appendHtml("<span class=fillText> to </span>" + Math.min(from + selectedSizeInt - 1, max));
-		renderToolbarButton(
-				"forward.png", "KNOWWE.plugin.sparql.forward('"
-						+ id + "')",
-				(!options.isShowAll() && (from + selectedSizeInt - 1 < max)), result
-		);
-		renderToolbarButton(
-				"end.png", "KNOWWE.plugin.sparql.end('"
-						+ id + "','" + max + "')",
-				(!options.isShowAll() && (from + selectedSizeInt - 1 < max)), result
-		);
-		result.appendHtml("</div>");
-
-	}
-
-	private void renderToolbarButton(String icon, String action, boolean enabled, RenderResult builder) {
-		int index = icon.lastIndexOf('.');
-		String suffix = icon.substring(index);
-		icon = icon.substring(0, index);
-		if (enabled) {
-			builder.appendHtml("<a onclick=\"");
-			builder.appendHtml(action);
-			builder.appendHtml(";\">");
-		}
-		builder.appendHtml("<span class='toolButton ");
-		builder.appendHtml(enabled ? "enabled" : "disabled");
-		builder.appendHtml("'>");
-		builder.appendHtml("<img src='KnowWEExtension/navigation_icons/");
-		builder.appendHtml(icon);
-		if (!enabled) builder.appendHtml("_deactivated");
-		builder.appendHtml(suffix).appendHtml("' /></span>");
-		if (enabled) {
-			builder.appendHtml("</a>");
-		}
-	}
-
-	private String[] getReasonableSizeChoices(int max) {
-		List<String> sizes = new LinkedList<>();
-		String[] sizeArray = new String[] {
-				"10", "20", "50", "100", "1000" };
-		for (String size : sizeArray) {
-			if (Integer.parseInt(size) < max) {
-				sizes.add(size);
-			}
-		}
-		sizes.add("All");
-
-		return sizes.toArray(new String[sizes.size()]);
-
 	}
 
 }
