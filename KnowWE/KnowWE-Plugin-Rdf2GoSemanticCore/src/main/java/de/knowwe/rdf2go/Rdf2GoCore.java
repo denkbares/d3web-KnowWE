@@ -81,7 +81,6 @@ import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.CompilerManager;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.event.EventManager;
@@ -131,8 +130,6 @@ public class Rdf2GoCore {
 	private final Map<String, SparqlTask> resultCache = new LinkedHashMap<>(16, 0.75f, true);
 
 	private int resultCacheSize = 0;
-
-	private Rdf2GoCompiler compiler = null;
 
 	/**
 	 * Some models have extreme slow downs if during a SPARQL query new statements are added or removed. Concurrent
@@ -307,10 +304,6 @@ public class Rdf2GoCore {
 				Log.warning("Unable to test available syntax, as model can't be written to temp file.", e);
 			}
 		}
-	}
-
-	public void setCompiler(Rdf2GoCompiler compiler) {
-		this.compiler = compiler;
 	}
 
 	/**
@@ -1168,10 +1161,6 @@ public class Rdf2GoCore {
 		// they are not needed in that context and do even cause problems and overhead
 		if (CompilerManager.isCompileThread()) {
 			return new SparqlCallable(completeQuery, type, true).call();
-		}
-		// if this Rdf2GoCore belongs to a compiler, we wait while the compilation is ongoing
-		else if (compiler != null) {
-			Compilers.awaitTermination(compiler.getCompilerManager());
 		}
 
 		// normal query, most likely from a renderer... do all the cache, timeout, and lock stuff

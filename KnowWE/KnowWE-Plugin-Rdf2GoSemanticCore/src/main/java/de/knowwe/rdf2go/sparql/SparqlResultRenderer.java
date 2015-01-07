@@ -21,6 +21,7 @@ import de.d3web.plugin.PluginManager;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.d3web.utils.Pair;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Messages;
@@ -135,6 +136,7 @@ public class SparqlResultRenderer {
 	 * @created 06.12.2010
 	 */
 	public SparqlRenderResult getSparqlRenderResult(QueryResultTable qrt, RenderOptions opts, UserContext user, Section section) {
+		Compilers.awaitTermination(section.getArticleManager().getCompilerManager());
 		Rdf2GoUtils.lock(qrt);
 		try {
 			return renderQueryResultLocked(qrt, opts, user, section);
