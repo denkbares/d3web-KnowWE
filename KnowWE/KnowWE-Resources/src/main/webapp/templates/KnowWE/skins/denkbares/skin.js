@@ -296,17 +296,17 @@ DenkbaresSkin.toggleFavorites = function() {
 		page.css({left : status.pageLeftCollapsed + "px"});
 		toggle.css({cursor : 'e-resize', left : status.pageLeftCollapsed + "px"});
 		toggle.unbind('transitionend').on('transitionend', function() {
-			toggleButton.css({'border-top-left-radius': status.toggleButtonRadiusCollapsed});
 			toggleButton.find('i').removeClass('fa-angle-double-left').addClass('fa-angle-double-right');
+			toggleButton.attr('title', 'Show left menu');
 		});
 		DenkbaresSkin.favoriteStatus.status = 'collapsed';
 	} else {
 		favorites.css({left : status.favLeftExpanded + "px"});
 		page.css({left : status.pageLeftExpanded + "px"});
 		toggle.css({cursor : 'w-resize', left : status.pageLeftExpanded + "px"});
-		toggleButton.css({'border-top-left-radius': status.toggleButtonRadiusExpanded});
 		toggle.unbind('transitionend').on('transitionend', function() {
-			toggle.find('i').removeClass('fa-angle-double-right').addClass('fa-angle-double-left');
+			toggleButton.find('i').removeClass('fa-angle-double-right').addClass('fa-angle-double-left');
+			toggleButton.attr('title', 'Hide left menu');
 		});
 		DenkbaresSkin.favoriteStatus.status = 'expanded';
 	}
@@ -329,10 +329,9 @@ DenkbaresSkin.scrollTop = function() {
 };
 
 DenkbaresSkin.addFavoriteToggle = function() {
-	jq$('#page').append("<div id='favorites-toggle'>" +
-	"<a id='favorites-toggle-button'>" +
-	"<i class='fa fa-angle-double-left'>" +
-	"</i></a></div>");
+	jq$('#page').before("<div id='favorites-toggle'></div>");
+	jq$('#menu-pagecontent').before("<div id='favorites-toggle-button' title='Hide left menu'>" +
+		"<i class='fa fa-angle-double-left'></i></div>");
 	var setTogglePosition = function() {
 		jq$('#favorites-toggle').css({
 			'left' : (jq$('#page').offset().left - DenkbaresSkin.scrollLeft()) + "px"
@@ -343,16 +342,15 @@ DenkbaresSkin.addFavoriteToggle = function() {
 		favLeftExpanded : jq$('#favorites').offset().left,
 		pageLeftExpanded : jq$('#page').offset().left,
 		toggleLeftExpanded : jq$('#favorites-toggle').offset().left,
-		toggleButtonRadiusExpanded : jq$('#favorites-toggle-button').css('border-top-left-radius'),
 		favLeftCollapsed : -(jq$('#page').offset().left - 5),
 		pageLeftCollapsed : 5,
-		toggleLeftCollapsed : 5,
-		toggleButtonRadiusCollapsed : 0
+		toggleLeftCollapsed : 5
 	};
 	jq$(window).scroll(setTogglePosition);
 	jq$(window).resize(setTogglePosition);
 	setTogglePosition();
 	jq$('#favorites-toggle').unbind('click').click(DenkbaresSkin.toggleFavorites);
+	jq$('#favorites-toggle-button').unbind('click').click(DenkbaresSkin.toggleFavorites);
 };
 
 KNOWWE.helper.observer.subscribe("flowchartrendered", DenkbaresSkin.resizeFlows);

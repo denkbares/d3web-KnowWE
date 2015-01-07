@@ -99,21 +99,6 @@
 	z-index: 20;
 }
 
-#favorites-toggle-button {
-	position: absolute;
-	bottom: 0;
-	width: 10px;
-	background: white;
-	border: 1px solid #9ACBFB;
-	margin-left: -2px;
-	padding-left: 2px;
-	padding-right: 1px;
-	font-size: 14px;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	border-bottom: none;
-}
-
 #footer .copyright {
 }
 
@@ -1657,14 +1642,14 @@ table.calendar tr.weekdays {
 	border: 1px solid white;
 }
 
-.tabmenu a {
+.tabmenu a, .tabmenu div {
 	float: left;
 	margin: 0 0 -1px -1px;
 	padding: 0.25em 0.5em;
 	border-top: 1px solid #fff;
 	border-left: 1px solid #9ACBFB;
 	border-right: 1px solid #9ACBFB;
-	border-bottom: 0px;
+	border-bottom: 0;
 	color: #036;
 	background: #f9f9f9;
 	background-image: url(tab-back.png);
