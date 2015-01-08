@@ -162,7 +162,6 @@ public class SparqlResultRenderer {
 		String tableID = UUID.randomUUID().toString();
 
 		List<String> variables = qrt.getVariables();
-		boolean tablemode = variables.size() > 1;
 
 		// tree table init
 		String idVariable = null;
@@ -179,38 +178,30 @@ public class SparqlResultRenderer {
 		}
 
 		// navigation mode check
-		if (isNavigation) {
-			tablemode = true;
-			if (isTree) {
-				isNavigation = false;
-				//result.append("%%warning The specified flags 'tree' and 'navigation' are not compatible.\n");
-			}
+		if (isTree) {
+			isNavigation = false;
+			//result.append("%%warning The specified flags 'tree' and 'navigation' are not compatible.\n");
 		}
 
-		if (tablemode) {
-			result.appendHtmlTag("div", "style", "overflow-x: auto");
-			result.appendHtml("<table id='").append(tableID).appendHtml("'")
-					.append(isTree
-							? " class='sparqltable sparqltreetable'"
-							: " class='sparqltable'")
-					.append(isNavigation ? " sortable='multi'" : "")
-					.append(">");
-			result.appendHtml(!zebraMode ? "<tr>" : "<tr class='odd'>");
-			int column = 0;
-			for (String var : variables) {
-				// ignore first two columns if we are in tree mode
-				if (isTree && column++ < 2) {
-					continue;
-				}
-				result.appendHtml("<th>");
-				result.append(var);
-				result.appendHtml("</th>");
+		result.appendHtmlTag("div", "style", "overflow-x: auto");
+		result.appendHtml("<table id='").append(tableID).appendHtml("'")
+				.append(isTree
+						? " class='sparqltable sparqltreetable'"
+						: " class='sparqltable'")
+				.append(isNavigation ? " sortable='multi'" : "")
+				.append(">");
+		result.appendHtml(!zebraMode ? "<tr>" : "<tr class='odd'>");
+		int column = 0;
+		for (String var : variables) {
+			// ignore first two columns if we are in tree mode
+			if (isTree && column++ < 2) {
+				continue;
 			}
-			result.appendHtml("</tr>");
+			result.appendHtml("<th>");
+			result.append(var);
+			result.appendHtml("</th>");
 		}
-		else {
-			result.appendHtml("<ul style='white-space: normal'>");
-		}
+		result.appendHtml("</tr>");
 		ResultTableModel table = new ResultTableModel(qrt);
 		PaginationRenderer.setResultSize(user, table.getSize());
 		Iterator<TableRow> iterator;
@@ -236,40 +227,38 @@ public class SparqlResultRenderer {
 
 		List<String> classNames = new LinkedList<>();
 		Set<String> usedIDs = new HashSet<>();
-		int line = 0;
+		int line = 1;
 
 		while (iterator.hasNext()) {
 			line++;
 			classNames.clear();
 			TableRow row = iterator.next();
-			if (tablemode) {
-				if (zebraMode && line % 2 != 0) {
-					classNames.add("odd");
-				}
-				if (isTree) {
-					classNames.add("treetr");
-				}
-				result.appendHtml(classNames.isEmpty()
-						? "<tr"
-						: "<tr class='" + Strings.concat(" ", classNames) + "'");
-
-				if (isTree) {
-					String valueID = valueToID(idVariable, row);
-					boolean isNew = usedIDs.add(valueID);
-					if (!isNew) {
-						valueID = UUID.randomUUID().toString();
-					}
-					result.append(" data-tt-id='sparql-id-").append(valueID).append("'");
-					String parentID = valueToID(parentVariable, row);
-					if (!Strings.isBlank(parentID) && !parentID.equals(valueID) && usedIDs.contains(parentID)) {
-						result.append(" data-tt-parent-id='sparql-id-")
-								.append(parentID).append("'");
-					}
-				}
-				result.append(">");
+			if (zebraMode && line % 2 != 0) {
+				classNames.add("odd");
 			}
+			if (isTree) {
+				classNames.add("treetr");
+			}
+			result.appendHtml(classNames.isEmpty()
+					? "<tr"
+					: "<tr class='" + Strings.concat(" ", classNames) + "'");
 
-			int column = 0;
+			if (isTree) {
+				String valueID = valueToID(idVariable, row);
+				boolean isNew = usedIDs.add(valueID);
+				if (!isNew) {
+					valueID = UUID.randomUUID().toString();
+				}
+				result.append(" data-tt-id='sparql-id-").append(valueID).append("'");
+				String parentID = valueToID(parentVariable, row);
+				if (!Strings.isBlank(parentID) && !parentID.equals(valueID) && usedIDs.contains(parentID)) {
+					result.append(" data-tt-parent-id='sparql-id-")
+							.append(parentID).append("'");
+				}
+			}
+			result.append(">");
+
+			column = 0;
 			for (String var : variables) {
 				// ignore first two columns if we are in tree mode
 				if (isTree && column++ < 2) {
@@ -280,29 +269,15 @@ public class SparqlResultRenderer {
 				String erg = renderNode(node, var, rawOutput, user, opts.getRdf2GoCore(),
 						RenderMode.HTML);
 
-				if (tablemode) {
-					result.appendHtml("<td>");
-					result.append(erg);
-					result.appendHtml("</td>\n");
-				}
-				else {
-					result.appendHtml("<li>");
-					result.append(erg);
-					result.appendHtml("</li>\n");
-				}
+				result.appendHtml("<td>");
+				result.append(erg);
+				result.appendHtml("</td>\n");
 			}
-			if (tablemode) {
-				result.appendHtml("</tr>");
-			}
+			result.appendHtml("</tr>");
 		}
 
-		if (tablemode) {
-			result.appendHtml("</table>");
-			result.appendHtml("</div>");
-		}
-		else {
-			result.appendHtml("</ul>");
-		}
+		result.appendHtml("</table>");
+		result.appendHtml("</div>");
 		return new SparqlRenderResult(result.toStringRaw());
 	}
 

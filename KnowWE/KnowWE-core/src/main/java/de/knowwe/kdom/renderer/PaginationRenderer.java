@@ -18,6 +18,7 @@
  */
 package de.knowwe.kdom.renderer;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -130,10 +131,6 @@ public class PaginationRenderer implements Renderer {
 
 	/**
 	 * Renders the result size selector.
-	 *
-	 * @param sec
-	 * @param user
-	 * @param result
 	 */
 	public static void renderTableSizeSelector(Section<?> sec, UserContext user, RenderResult result, boolean show) {
 		int count = getCount(sec, user);
@@ -161,10 +158,6 @@ public class PaginationRenderer implements Renderer {
 
 	/**
 	 * Renders the navigation icons.
-	 *
-	 * @param sec
-	 * @param user
-	 * @param result
 	 */
 	public static void renderNavigation(Section<?> sec, UserContext user, RenderResult result, boolean show) {
 		String id = sec.getID();
@@ -258,7 +251,7 @@ public class PaginationRenderer implements Renderer {
 	}
 
 	private static Integer[] getSizeChoices(UserContext user) {
-		List<Integer> sizes = new LinkedList<Integer>();
+		List<Integer> sizes = new LinkedList<>();
 		int[] sizeArray = new int[] {
 				10, 20, 50, 100, Integer.MAX_VALUE };
 		for (int size : sizeArray) {
@@ -414,7 +407,7 @@ public class PaginationRenderer implements Renderer {
 	 * @return a map with all filter names which have values to be filtered by.
 	 */
 	public static Map<String, List<String>> getFilters(Section<?> sec, UserContext user) {
-		Map<String, List<String>> activeFilters = new HashMap<String, List<String>>();
+		Map<String, List<String>> activeFilters = new HashMap<>();
 		try {
 			if (getJsonObject(sec, user) != null && getJsonObject(sec, user).has(ACTIVEFILTERS)) {
 				JSONObject json = getJsonObject(sec, user).getJSONObject(ACTIVEFILTERS);
@@ -461,10 +454,8 @@ public class PaginationRenderer implements Renderer {
 	 * @param filters created by {@link #createFilter(String, String...)}
 	 */
 	public static void setFilterList(UserContext context, Pair<String, List<String>>... filters) {
-		List<Pair<String, List<String>>> filterList = new LinkedList<Pair<String, List<String>>>();
-		for (Pair<String, List<String>> filter : filters) {
-			filterList.add(filter);
-		}
+		List<Pair<String, List<String>>> filterList = new LinkedList<>();
+		Collections.addAll(filterList, filters);
 		context.getRequest().setAttribute(FILTER, filterList);
 	}
 
@@ -478,15 +469,13 @@ public class PaginationRenderer implements Renderer {
 	 * #setFilterList(de.knowwe.core.user.UserContext, de.d3web.utils.Pair[])}.
 	 */
 	public static Pair<String, List<String>> createFilter(String header, String... values) {
-		List<String> filterTerms = new LinkedList<String>();
-		for (String value : values) {
-			filterTerms.add(value);
-		}
-		Pair filter = new Pair<>(header, filterTerms);
-		return filter;
+		List<String> filterTerms = new LinkedList<>();
+		Collections.addAll(filterTerms, values);
+		return new Pair<>(header, filterTerms);
 	}
 
 	private static List<Pair<String, List<String>>> getFilterList(UserContext context) {
+		@SuppressWarnings("unchecked")
 		List<Pair<String, List<String>>> filterList = (List<Pair<String, List<String>>>) context.getRequest()
 				.getAttribute(FILTER);
 		if (filterList == null) {

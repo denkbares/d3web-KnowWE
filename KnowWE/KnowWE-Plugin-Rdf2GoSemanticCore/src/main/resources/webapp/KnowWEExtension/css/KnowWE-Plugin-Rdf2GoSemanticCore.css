@@ -1,4 +1,4 @@
-.sparqlTable .border .sparqltable td {
+.sparqlTable .border .sparqltable td, .sparqlTable .border .sparqltable th {
 	border: 1px solid #DDD;
 }
 
