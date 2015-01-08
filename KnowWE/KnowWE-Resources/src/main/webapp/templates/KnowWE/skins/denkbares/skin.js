@@ -357,14 +357,14 @@ KNOWWE.helper.observer.subscribe("flowchartrendered", DenkbaresSkin.resizeFlows)
 
 jq$(window).scroll(DenkbaresSkin.scrollFavorites);
 jq$(window).scroll(DenkbaresSkin.highlightActiveTOC);
-jq$(window).scroll(DenkbaresSkin.scrollPage);
+//jq$(window).scroll(DenkbaresSkin.scrollPage);
 jq$(window).resize(DenkbaresSkin.scrollFavorites);
 jq$(window).resize(DenkbaresSkin.resizeFlows);
 
 jq$(document).ready(function() {
 	DenkbaresSkin.addFavoriteToggle();
 	DenkbaresSkin.cleanTrail();
-	DenkbaresSkin.initPageScroll();
+	//DenkbaresSkin.initPageScroll();
 
 	// workaround, because sometimes we are too early
 	window.setTimeout(function() {
