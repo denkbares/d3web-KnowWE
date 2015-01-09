@@ -1010,3 +1010,16 @@ jQuery.fn.insertAt = function(index, element) {
 		});
 	};
 }(jQuery || $)); // jQuery or jQuery-like library, such as Zepto
+
+
+/**
+ * DatePicker and DateTimePicker, extended from jQuery UI
+ */
+(function (jq$) {
+	jq$.datepicker.setDefaults({dateFormat: "dd.mm.yy"});
+
+	jq$.fn.datetimepicker = function(options) {
+		var $this = jq$(this);
+		$this.after("<input >");
+	}
+})(jQuery);

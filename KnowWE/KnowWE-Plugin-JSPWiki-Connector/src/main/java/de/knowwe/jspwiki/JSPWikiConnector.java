@@ -468,12 +468,6 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public Locale getLocale() {
-		WikiContext wikiContext = new WikiContext(this.engine, this.engine.getPage("Main"));
-		return Preferences.getLocale(wikiContext);
-	}
-
-	@Override
 	public Locale getLocale(HttpServletRequest request) {
 		WikiContext wikiContext = new WikiContext(this.engine, request, this.engine.getPage("Main"));
 		return Preferences.getLocale(wikiContext);

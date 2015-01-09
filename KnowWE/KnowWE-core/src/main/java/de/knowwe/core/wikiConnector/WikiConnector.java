@@ -187,11 +187,6 @@ public interface WikiConnector {
 	public Date getLastModifiedDate(String title, int version);
 
 	/**
-	 * Returns the default locale of the connected wiki
-	 */
-	public Locale getLocale();
-
-	/**
 	 * Returns the locale which was configured by the current user.
 	 *
 	 * @param request is the request from the user

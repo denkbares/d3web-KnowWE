@@ -190,11 +190,6 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public Locale getLocale() {
-		return Locale.getDefault();
-	}
-
-	@Override
 	public Locale getLocale(HttpServletRequest request) {
 		return Locale.getDefault();
 	}

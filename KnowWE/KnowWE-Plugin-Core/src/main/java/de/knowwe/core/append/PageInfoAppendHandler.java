@@ -28,7 +28,7 @@ import de.knowwe.core.wikiConnector.WikiConnector;
 /**
  * This handler appends some basic information about the page and the current
  * user to the page.
- * 
+ *
  * @author Reinhard Hatko
  * @created 18.10.2012
  */
@@ -48,6 +48,8 @@ public class PageInfoAppendHandler implements PageAppendHandler {
 		html.appendHtml("<input type='hidden' id='knowWEInfoPageVersion' value='" + version + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoPageDate' value='" + modDate + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoUser' value=" + Strings.quote(userName) + ">");
+		html.appendHtml("<input type='hidden' id='knowWEInfoLanguage' value='" + connector.getLocale(user.getRequest())
+				.getLanguage() + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoStatus' value='" + overallStatus + "'>");
 	}
 

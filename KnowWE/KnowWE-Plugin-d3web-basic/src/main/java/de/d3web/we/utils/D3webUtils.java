@@ -47,7 +47,6 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
-import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.records.SessionConversionFactory;
 import de.d3web.core.records.SessionRecord;
 import de.d3web.core.records.io.SessionPersistenceManager;
@@ -88,7 +87,7 @@ public class D3webUtils {
 	public static List<String> getPossibleScores() {
 		if (possibleScorePoints == null) {
 
-			possibleScorePoints = new ArrayList<String>();
+			possibleScorePoints = new ArrayList<>();
 
 			String n = "N";
 			String p = "P";
@@ -137,7 +136,7 @@ public class D3webUtils {
 
 	public static void storeSessionRecordsAsAttachment(String user, Collection<Session> sessions, String attachmentArticle, String attachmentName) throws IOException {
 
-		Collection<SessionRecord> sessionRecords = new LinkedList<SessionRecord>();
+		Collection<SessionRecord> sessionRecords = new LinkedList<>();
 		for (Session session : sessions) {
 			sessionRecords.add(SessionConversionFactory.copyToSessionRecord(session));
 		}
@@ -195,7 +194,7 @@ public class D3webUtils {
 
 	public static Collection<KnowledgeBase> getKnowledgeBases(ArticleManager manager) {
 		Collection<D3webCompiler> compilers = Compilers.getCompilers(manager, D3webCompiler.class);
-		Collection<KnowledgeBase> kbs = new ArrayList<KnowledgeBase>(compilers.size());
+		Collection<KnowledgeBase> kbs = new ArrayList<>(compilers.size());
 		for (D3webCompiler d3webCompiler : compilers) {
 			kbs.add(d3webCompiler.getKnowledgeBase());
 		}
@@ -497,7 +496,7 @@ public class D3webUtils {
 	 * @param newValue      the newly created Value for the dialog
 	 * @param existingValue the existing Value in the dialog
 	 * @return the Value you should set to the dialog
-	 * @created 11.08.2012
+	 * @created 08.01.2015
 	 */
 	public static Value handleEqualChoiceValues(Question question, Value newValue, Value existingValue) {
 		if (newValue instanceof ChoiceValue && newValue.equals(existingValue)) {
@@ -507,19 +506,10 @@ public class D3webUtils {
 				&& Unknown.getInstance().equals(existingValue)) {
 			newValue = UndefinedValue.getInstance();
 		}
-		if (Unknown.getInstance().equals(newValue) && !isUnknownVisible(question)) {
+		if (Unknown.getInstance().equals(newValue) && !BasicProperties.isUnknownVisible(question)) {
 			newValue = UndefinedValue.getInstance();
 		}
 		return newValue;
-	}
-
-	public static boolean isUnknownVisible(Question question) {
-		List<TerminologyObject> ancestors = KnowledgeBaseUtils.getAncestors(question);
-		for (TerminologyObject ancestor : ancestors) {
-			Boolean visible = ancestor.getInfoStore().getValue(BasicProperties.UNKNOWN_VISIBLE);
-			if (visible != null) return visible;
-		}
-		return true;
 	}
 
 	/**
