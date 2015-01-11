@@ -1017,17 +1017,16 @@ jQuery.fn.insertAt = function(index, element) {
  */
 (function (jq$) {
 
-	var dateFormat = "dd/mm/yyyy";
-	var dateTimeFormat = "dd/mm/yyyy HH:MM";
+	jq$.datepicker.setDefaults({dateFormat: "dd/mm/yy"});
 
 	var datepickerFunction = jq$.fn.datepicker;
-	jq$.fn.datepicker = function(options) {
-		this.attr('placeholder', dateFormat);
-		datepickerFunction.call(this, options);
+	jq$.fn.datepicker = function() {
+		this.attr('placeholder', "dd/mm/yyyy");
+		return datepickerFunction.apply(this, arguments);
 	}
 
 	// ok, this implementation is pretty lame so far, implement something better if needed
 	jq$.fn.datetimepicker = function() {
-		this.attr('placeholder', dateTimeFormat);
+		this.attr('placeholder', "dd/mm/yyyy HH:MM");
 	}
 })(jQuery);
