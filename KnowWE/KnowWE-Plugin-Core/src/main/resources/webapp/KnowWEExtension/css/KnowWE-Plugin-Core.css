@@ -772,4 +772,7 @@ i.knowwe-blue {
 	color: #036;
 }
 
+i.knowwe-disabled, i.knowwe-deactivated, i.knowwe-gray, i.knowwe-grey {
+	color: #999;
+}
 

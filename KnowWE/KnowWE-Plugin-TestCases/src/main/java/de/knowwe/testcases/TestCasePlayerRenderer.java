@@ -69,6 +69,8 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.notification.NotificationManager;
 import de.knowwe.notification.OutDatedSessionNotification;
 import de.knowwe.testcases.table.KnowWEConditionCheck;
+import de.knowwe.util.Icon;
+import de.knowwe.util.IconColor;
 
 /**
  * Renderer for TestCasePlayerType
@@ -124,18 +126,21 @@ public class TestCasePlayerRenderer implements Renderer {
 		int failureCount = selectedTriple.getProvider().getDebugStatus(user).getFailureCount();
 		string.appendHtmlTag("div", "style",
 				"display:inline-block; vertical-align:middle; text-align:center; padding-right: 5px");
+		string.appendHtmlTag("span", "style", "position:relative; top:-1px;");
 		if (failureCount == 0) {
-			string.appendHtmlElement("img", "", "src",
-					"KnowWEExtension/images/green_bulb.png", "title", "No check failures");
+			string.appendHtml(Icon.BULB.addColor(IconColor.OK).addTitle("No check failures").toHtml());
 		}
 		else if (failureCount == 1) {
-			string.appendHtmlElement("img", "", "src",
-					"KnowWEExtension/images/red_bulb.png", "title", "There is one failed check failure");
+			string.appendHtml(Icon.BULB.addColor(IconColor.ERROR)
+					.addTitle("There is one failed check failure")
+					.toHtml());
 		}
 		else {
-			string.appendHtmlElement("img", "", "src",
-					"KnowWEExtension/images/red_bulb.png", "title", "There are " + failureCount + " failed checks");
+			string.appendHtml(Icon.BULB.addColor(IconColor.ERROR)
+					.addTitle("There are " + failureCount + " failed checks")
+					.toHtml());
 		}
+		string.appendHtml("</span>");
 		string.appendHtmlTag("/div");
 	}
 
@@ -274,10 +279,9 @@ public class TestCasePlayerRenderer implements Renderer {
 
 	private TerminologyObject renderHeader(Section<?> section, UserContext user, ProviderTriple selectedTriple, Collection<String> additionalQuestions, Collection<Question> usedQuestions, TerminologyManager manager, TableModel tableModel) {
 		Section<? extends PackageCompileType> kbsection = selectedTriple.getC();
-		String stopButton = renderToolbarButton("stop12.png",
+		String stopButton = renderToolbarButton(Icon.STOP.addClasses("knowwe-red"),
 				"KNOWWE.plugin.d3webbasic.actions.resetSession('" + kbsection.getID()
-						+ "', TestCasePlayer.init);", user
-		);
+						+ "', TestCasePlayer.init);", user);
 		RenderResult stopButtonResult = new RenderResult(tableModel.getUserContext());
 		stopButtonResult.appendHtml(stopButton);
 		int column = 0;
@@ -444,7 +448,7 @@ public class TestCasePlayerRenderer implements Renderer {
 					+ "', '" + selectedTriple.getA().getName()
 					+ "', '" + selectedTriple.getC().getTitle() + "', this);";
 			sb.appendHtml("<a onclick=\"" + js + "\">");
-			sb.appendHtml("<img src='KnowWEExtension/testcaseplayer/icon/runto.png'>");
+			sb.appendHtml(Icon.RUN.toHtml());
 			sb.appendHtml("</a>");
 			tableModel.addCell(row, 0, sb.toStringRaw(), 2);
 		}
@@ -458,12 +462,12 @@ public class TestCasePlayerRenderer implements Renderer {
 			}
 			if (ok) {
 				RenderResult done = new RenderResult(tableModel.getUserContext());
-				done.appendHtml("<img src='KnowWEExtension/testcaseplayer/icon/done.png'>");
+				done.appendHtml(Icon.CHECKED.addClasses("knowwe-ok").toHtml());
 				tableModel.addCell(row, 0, done, 2);
 			}
 			else {
 				RenderResult done = new RenderResult(tableModel.getUserContext());
-				done.appendHtml("<img src='KnowWEExtension/testcaseplayer/icon/error.png'>");
+				done.appendHtml(Icon.ERROR.toHtml());
 				tableModel.addCell(row, 0, done, 2);
 			}
 		}
@@ -659,28 +663,25 @@ public class TestCasePlayerRenderer implements Renderer {
 		return SELECTOR_KEY + "_" + Strings.encodeURL(section.getTitle()) + i;
 	}
 
-	private String renderToolbarButton(String icon, String action, UserContext user) {
+	private String renderToolbarButton(Icon icon, String action, UserContext user) {
 		RenderResult buffer = new RenderResult(user);
 		renderToolbarButton(icon, action, true, buffer);
 		return buffer.toStringRaw();
 	}
 
-	private void renderToolbarButton(String icon, String action, boolean enabled, RenderResult builder) {
-		int index = icon.lastIndexOf('.');
-		String suffix = icon.substring(index);
-		icon = icon.substring(0, index);
+	private void renderToolbarButton(Icon icon, String action, boolean enabled, RenderResult builder) {
 		if (enabled) {
 			builder.appendHtml("<a onclick=\"");
 			builder.appendHtml(action);
 			builder.appendHtml(";\">");
 		}
-		builder.appendHtml("<span class='toolButton ");
-		builder.appendHtml(enabled ? "enabled" : "disabled");
-		builder.appendHtml("'>");
-		builder.appendHtml("<img src='KnowWEExtension/testcaseplayer/icon/");
-		builder.appendHtml(icon);
-		if (!enabled) builder.appendHtml("_deactivated");
-		builder.appendHtml(suffix).appendHtml("' /></span>");
+		if (enabled) {
+			builder.appendHtml(icon.toHtml());
+		}
+		else {
+			builder.appendHtml(icon.addColor(IconColor.DISABLED).toHtml());
+
+		}
 		if (enabled) {
 			builder.appendHtml("</a>");
 		}

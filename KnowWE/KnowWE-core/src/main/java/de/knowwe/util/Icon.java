@@ -75,6 +75,7 @@ public class Icon {
 	public static final Icon PLUS = new Icon("fa-minus");
 	public static final Icon ADD = new Icon("fa-plus-circle");
 	public static final Icon BULB = new Icon("fa-circle");
+	public static final Icon STOP = new Icon("fa-stop");
 
 	// KnowWE specific
 	public static final Icon ARTICLE = new Icon("fa-file-text-o");
@@ -84,7 +85,7 @@ public class Icon {
 	public static final Icon SHOWTRACE = new Icon("fa-code-fork");
 	//temporary
 	public static final Icon RENAME = new Icon("fa-font");
-	public static final Icon RUN = new Icon("fa-play-circle");
+	public static final Icon RUN = new Icon("fa-play");
 	//temporary
 	public static final Icon PACKAGE = new Icon("fa-puzzle-piece");
 	public static final Icon EDITSECTION = new Icon("fa-pencil-square-o");
@@ -133,13 +134,16 @@ public class Icon {
 
 	private final String style;
 
+	private final String title;
+
 	private Icon(String cssClass) {
-		this(cssClass, null);
+		this(cssClass, null, null);
 	}
 
-	private Icon(String cssClass, String style) {
+	private Icon(String cssClass, String style, String title) {
 		this.cssClass = cssClass;
 		this.style = style;
+		this.title = title;
 	}
 
 	public String toString() {
@@ -155,15 +159,23 @@ public class Icon {
 	 */
 	public String toHtml() {
 		return "<i class='fa " + cssClass + "' "
-				+ (style == null ? "" : "style='" + style + "'") + "></i>";
+				+ (style == null ? "" : "style='" + style + "'") + (title == null ? "" : "title='" + title + "'") + "></i>";
 	}
 
 	public Icon addStyle(String style) {
-		return new Icon(cssClass, style);
+		return new Icon(cssClass, style, title);
 	}
 
 	public Icon addClasses(String... classes) {
-		return new Icon(cssClass + " " + Strings.concat(" ", classes), style);
+		return new Icon(cssClass + " " + Strings.concat(" ", classes), style, title);
+	}
+
+	public Icon addColor(IconColor color) {
+		return new Icon(cssClass + " " + color, style, title);
+	}
+
+	public Icon addTitle(String title) {
+		return new Icon(cssClass, style, title);
 	}
 
 	public Icon fixWidth() {
