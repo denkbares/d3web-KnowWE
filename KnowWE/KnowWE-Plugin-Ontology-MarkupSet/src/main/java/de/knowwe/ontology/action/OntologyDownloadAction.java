@@ -5,6 +5,7 @@ package de.knowwe.ontology.action;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Collection;
 
 import org.ontoware.rdf2go.model.Syntax;
 
@@ -12,6 +13,8 @@ import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.PackageCompiler;
+import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
@@ -32,12 +35,20 @@ public class OntologyDownloadAction extends AbstractAction {
 
 		String filename = context.getParameter(PARAM_FILENAME);
 		String secID = context.getParameter(Attributes.SECTION_ID);
-		Section<?> section = Sections.get(secID);
-		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
-		Rdf2GoCore rdf2GoCore = compiler.getRdf2GoCore();
+		Section<?> section = Sections.successor(Sections.get(secID), PackageCompileType.class);
+		Collection<Rdf2GoCompiler> compilers = Compilers.getCompilers(section, Rdf2GoCompiler.class);
+		Rdf2GoCore rdf2GoCore = null;
+		for (Rdf2GoCompiler compiler: compilers) {
+			if (compiler instanceof PackageCompiler) {
+				PackageCompiler packageCompiler = (PackageCompiler) compiler;
+				if (packageCompiler.getCompileSection() == section) {
+					rdf2GoCore = compiler.getRdf2GoCore();
+					break;
+				}
+			}
+		}
 
 		Syntax syntax = Syntax.forName(context.getParameter(PARAM_SYNTAX));
-
 		String mimeType = syntax.getMimeType() + "; charset=UTF-8";
 		context.setContentType(mimeType);
 		context.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
