@@ -569,6 +569,18 @@ input.knowwe-paginationFilter {
 #rightPanel .topbar .title {
 	color: black;
 	font-weight: bold;
+	margin-left: 4px;
+}
+
+#rightPanel .topbar .title i {
+	color: black;
+	font-weight: bold;
+	margin-right: 0px;
+}
+
+#rightPanel .topbar .title i:before {
+	position: relative;
+	bottom: 1px;
 }
 
 #rightPanel .tooltitle {

@@ -30,6 +30,7 @@ import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.AnnotationType;
+import de.knowwe.util.Icon;
 
 /**
  * Renders a knowledge base markup into the wiki page.
@@ -40,7 +41,7 @@ import de.knowwe.kdom.defaultMarkup.AnnotationType;
 public final class KnowledgeBaseTypeRenderer extends DefaultMarkupPackageCompileTypeRenderer {
 
 	public KnowledgeBaseTypeRenderer() {
-		super("KnowWEExtension/d3web/icon/knowledgebase24.png");
+		super();
 	}
 
 	@Override
@@ -68,19 +69,19 @@ public final class KnowledgeBaseTypeRenderer extends DefaultMarkupPackageCompile
 			string.appendHtml("<div style='padding-top:1em;'>");
 
 			if (version != null) {
-				string.appendHtml("<img src='KnowWEExtension/d3web/icon/date16.png' /> ");
+				string.appendHtml(Icon.CALENDAR.fixWidth().addTitle("Version").toHtml() + " ");
 				string.append(version).append("\n");
 			}
 			if (author != null) {
-				string.appendHtml("<img src='KnowWEExtension/d3web/icon/author16.png' /> ");
+				string.appendHtml(Icon.USER.fixWidth().addTitle("User").toHtml() + " ");
 				string.append(author).append("\n");
 			}
 			if (comment != null) {
-				string.appendHtml("<img src='KnowWEExtension/d3web/icon/comment16.png' /> ");
+				string.appendHtml(Icon.COMMENT.fixWidth().addTitle("Comment").toHtml() + " ");
 				string.append(comment).append("\n");
 			}
 			if (filename != null) {
-				string.appendHtml("<img src='KnowWEExtension/d3web/icon/download16.gif' /> ");
+				string.appendHtml(Icon.NEW_FILE.fixWidth().addTitle("File").toHtml() + " ");
 				string.append(filename).append("\n");
 			}
 

@@ -117,11 +117,11 @@
 }
 
 /*ie6 hack*/
-* html /*#wikibody.fav-left*/                    #page, * html #wikibody.fav-right #favorites {
+* html /*#wikibody.fav-left*/                                                                     #page, * html #wikibody.fav-right #favorites {
 	margin-left: -3px; /*Three Pixel Text Jog*/
 }
 
-* html #wikibody.fav-right #page, * html /*#wikibody.fav-left*/                    #favorites {
+* html #wikibody.fav-right #page, * html /*#wikibody.fav-left*/                                                                     #favorites {
 	margin-right: -3px; /*Three Pixel Text Jog*/
 }
 
@@ -2346,3 +2346,55 @@ div.coverflow .knob {
 	float: left;
 	margin-right: 4px;
 }
+
+#searchSubmit {
+	background: none;
+	top: 2px;
+}
+
+#searchSubmit:before {
+	content: "\f002";
+	font-family: FontAwesome;
+}
+
+#actionsTop > ul > li > a.action.more {
+	background-image: none;
+	padding-right: 0.5em;
+}
+
+#actionsTop > ul > li > a.action.more:before {
+	content: "\f0dd";
+	font-family: FontAwesome;
+	float: right;
+	position: relative;
+	top: -2px;
+	margin-left: 3px;
+
+}
+
+#favorites-toggle-button i:hover {
+	color: blue;
+}
+
+a.action.quick2top {
+	float: right;
+	background: none;
+	text-indent: 0px;
+	width: 20px;
+}
+
+a.action.quick2top:hover {
+	text-decoration: none;
+	background-color: transparent !important;
+}
+
+a.action.quick2top:before {
+	font-family: FontAwesome;
+	content: "\f0de";
+	position: relative;
+	top: 1px;
+	right: 5px;
+	font-size: large;
+	margin-left: 1px;
+}
+

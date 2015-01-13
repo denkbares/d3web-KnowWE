@@ -1110,16 +1110,19 @@ KNOWWE.core.plugin.rightPanel = function() {
 
 	function bindCollapseIcons() {
 		jq$("#rightPanel").on("click", ".tool .topbar", function() {
-			if (jq$(this).find("img").attr('src') == "KnowWEExtension/images/triangleDown.png") {
-				jq$(this).find("img").attr('src', 'KnowWEExtension/images/triangleRight.png');
+			if (jq$(this).find("i").hasClass("fa-caret-down")) {
+				jq$(this).find("i").removeClass("fa-caret-down").addClass("fa-caret-right");
 				jq$(this).parent().find(".content").first().slideUp();
 			}
 			else {
-				jq$(this).find("img").attr('src', 'KnowWEExtension/images/triangleDown.png');
-				jq$(this).parent().find(".content").first().slideDown();
+				if (jq$(this).find("i").hasClass("fa-caret-right")) {
+					jq$(this).find("i").removeClass("fa-caret-right").addClass("fa-caret-down");
+					jq$(this).parent().find(".content").first().slideDown();
+				}
 			}
 		});
 	}
+
 
 	function bindHideFunctions() {
 		bindHideInPanel();
@@ -1194,15 +1197,14 @@ KNOWWE.core.plugin.rightPanel = function() {
 		var toolTopbar = jq$('<div/>', {
 			'class' : 'topbar'
 		});
-		var collapseIcon = jq$('<img/>', {
-			'class' : 'collapseicon',
-			'src' : 'KnowWEExtension/images/triangleDown.png'
+		var collapseIcon = jq$('<i/>', {
+			'class' : 'collapseicon fa fa-fw fa-caret-down'
 		});
-		var toolTitle = jq$('<span/>', {
+		var toolTitle = jq$('<div/>', {
 			'class' : 'title',
 			'text' : title
 		});
-		toolTopbar.append(collapseIcon);
+		toolTitle.prepend(collapseIcon);
 		toolTopbar.append(toolTitle);
 		return toolTopbar;
 	}
@@ -1247,6 +1249,7 @@ KNOWWE.core.plugin.rightPanel = function() {
 
 	}
 }
+
 ();
 
 KNOWWE.core.plugin.rightPanel.watches = function() {
