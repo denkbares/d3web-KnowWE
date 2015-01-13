@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileTypeRenderer;
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
@@ -98,6 +99,7 @@ public final class KnowledgeBaseTypeRenderer extends DefaultMarkupPackageCompile
 			if (KnowledgeBaseType.ANNOTATION_COMMENT.equalsIgnoreCase(name)) continue;
 			if (KnowledgeBaseType.ANNOTATION_VERSION.equalsIgnoreCase(name)) continue;
 			if (KnowledgeBaseType.ANNOTATION_FILENAME.equalsIgnoreCase(name)) continue;
+			if (PackageManager.COMPILE_ATTRIBUTE_NAME.equalsIgnoreCase(name)) continue;
 			additionalAnnotations.add(annotation);
 		}
 
