@@ -117,11 +117,11 @@
 }
 
 /*ie6 hack*/
-* html /*#wikibody.fav-left*/   #page, * html #wikibody.fav-right #favorites {
+* html /*#wikibody.fav-left*/                    #page, * html #wikibody.fav-right #favorites {
 	margin-left: -3px; /*Three Pixel Text Jog*/
 }
 
-* html #wikibody.fav-right #page, * html /*#wikibody.fav-left*/   #favorites {
+* html #wikibody.fav-right #page, * html /*#wikibody.fav-left*/                    #favorites {
 	margin-right: -3px; /*Three Pixel Text Jog*/
 }
 
@@ -2314,3 +2314,35 @@ div.coverflow .knob {
 	border-bottom: 0px;
 }
 
+.sortable .sort {
+	background-image: none;
+}
+
+.sortable .sort:before {
+	content: "\f0dc";
+	font-family: FontAwesome;
+	float: left;
+	margin-right: 4px;
+}
+
+.sortable .sortDescending {
+	background-image: none;
+}
+
+.sortable .sortDescending:before {
+	font-family: FontAwesome;
+	content: "\f0dd";
+	float: left;
+	margin-right: 4px;
+}
+
+.sortable .sortAscending {
+	background-image: none;
+}
+
+.sortable .sortAscending:before {
+	font-family: FontAwesome;
+	content: "\f0de";
+	float: left;
+	margin-right: 4px;
+}

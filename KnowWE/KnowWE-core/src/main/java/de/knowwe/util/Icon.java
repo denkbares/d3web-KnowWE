@@ -76,6 +76,7 @@ public class Icon {
 	public static final Icon ADD = new Icon("fa-plus-circle");
 	public static final Icon BULB = new Icon("fa-circle");
 	public static final Icon STOP = new Icon("fa-stop");
+	public static final Icon USER = new Icon("fa-user");
 
 	// KnowWE specific
 	public static final Icon ARTICLE = new Icon("fa-file-text-o");
@@ -95,6 +96,10 @@ public class Icon {
 	public static final Icon CHECK = new Icon("fa-check-square-o");
 	public static final Icon CHECKED = new Icon("fa-check");
 	public static final Icon DEFER = new Icon("fa-share");
+	public static final Icon ESTABLISHED = new Icon("fa-circle");
+	public static final Icon SUGGESTED = new Icon("fa-circle-o");
+	public static final Icon EXCLUDED = new Icon("fa-ban");
+	public static final Icon ABSTRACT = new Icon("fa-asterisk");
 
 	public static final Icon LOW_PRIO = new Icon("fa-exclamation-circle knowwe-lowprio");
 	public static final Icon HIGH_PRIO = new Icon("fa-exclamation-circle knowwe-highprio");
@@ -104,7 +109,7 @@ public class Icon {
 	public static final Icon COLLAPSE_OUTLINE = new Icon("fa-minus-square-o");
 	public static final Icon EXPAND = new Icon("fa-plus-square");
 	public static final Icon COLLAPSE = new Icon("fa-minus-square");
-	public static final Icon OPENTESTCASE = new Icon(LINK.cssClass);
+	public static final Icon OPENTESTCASE = new Icon(LINK.getCssClass());
 	public static final Icon EDITTABLE = new Icon("fa-table");
 
 	// ON and OFF
@@ -122,6 +127,11 @@ public class Icon {
 	public static final Icon FILE_CODE = new Icon("fa-file-code-o");
 	public static final Icon FILE_XML = new Icon(FILE_CODE.getCssClass());
 
+	//SPINNING
+	public static final Icon LOADING = new Icon("fa-spinner");
+	public static final Icon WAITING = new Icon(LOADING.getCssClass());
+	public static final Icon CALCULATING = new Icon(LOADING.getCssClass());
+
 	public static enum Percent {
 		by33,
 		by100,
@@ -136,14 +146,17 @@ public class Icon {
 
 	private final String title;
 
+	private final String id;
+
 	private Icon(String cssClass) {
-		this(cssClass, null, null);
+		this(cssClass, null, null, null);
 	}
 
-	private Icon(String cssClass, String style, String title) {
+	private Icon(String cssClass, String style, String title, String id) {
 		this.cssClass = cssClass;
 		this.style = style;
 		this.title = title;
+		this.id = id;
 	}
 
 	public String toString() {
@@ -159,23 +172,30 @@ public class Icon {
 	 */
 	public String toHtml() {
 		return "<i class='fa " + cssClass + "' "
-				+ (style == null ? "" : "style='" + style + "'") + (title == null ? "" : "title='" + title + "'") + "></i>";
+				+ (style == null ? "" : "style='" + style + "'")
+				+ (title == null ? "" : "title='" + title + "'")
+				+ (id == null ? "" : "id='" + id + "'")
+				+ "></i>";
 	}
 
 	public Icon addStyle(String style) {
-		return new Icon(cssClass, style, title);
+		return new Icon(cssClass, style, title, id);
 	}
 
 	public Icon addClasses(String... classes) {
-		return new Icon(cssClass + " " + Strings.concat(" ", classes), style, title);
+		return new Icon(cssClass + " " + Strings.concat(" ", classes), style, title, id);
 	}
 
 	public Icon addColor(IconColor color) {
-		return new Icon(cssClass + " " + color, style, title);
+		return new Icon(cssClass + " " + color, style, title, id);
 	}
 
 	public Icon addTitle(String title) {
-		return new Icon(cssClass, style, title);
+		return new Icon(cssClass, style, title, id);
+	}
+
+	public Icon addId(String id) {
+		return new Icon(cssClass, style, title, id);
 	}
 
 	public Icon fixWidth() {

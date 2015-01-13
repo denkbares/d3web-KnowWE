@@ -17,6 +17,8 @@ import de.d3web.strings.Strings;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.util.Icon;
+import de.knowwe.util.IconColor;
 
 public class SolutionPanelUtils {
 
@@ -99,33 +101,30 @@ public class SolutionPanelUtils {
 
 	public static void appendImage(Rating solutionRating, RenderResult content) {
 		if (solutionRating == null) {
-			appendImage("KnowWEExtension/images/fsp_calculating.gif",
+			appendImage(Icon.CALCULATING,
 					"value in calculation, please reload later", content);
 		}
 		else if (solutionRating.hasState(State.ESTABLISHED)) {
-			appendImage("KnowWEExtension/images/fsp_established.gif", "Established", content);
+			appendImage(Icon.ESTABLISHED.addColor(IconColor.OK), "Established", content);
 		}
 		else if (solutionRating.hasState(State.SUGGESTED)) {
-			appendImage("KnowWEExtension/images/fsp_suggested.gif", "Suggested", content);
+			appendImage(Icon.SUGGESTED.addColor(IconColor.YELLOW), "Suggested", content);
 		}
 		else if (solutionRating.hasState(State.EXCLUDED)) {
-			appendImage("KnowWEExtension/images/fsp_excluded.gif", "Excluded", content);
+			appendImage(Icon.EXCLUDED.addColor(IconColor.RED), "Excluded", content);
 		}
 	}
 
-	private static void appendImage(String filename, String altText, RenderResult content) {
-		content.appendHtml(" <img src='" + filename
-				+ "' id='sstate-update' class='pointer'"
-				+ " align='top' alt='" + Strings.encodeHtml(altText) + "'"
-				+ " title='" + Strings.encodeHtml(altText) + "' "
-				+ "/> ");
+	private static void appendImage(Icon icon, String title, RenderResult content) {
+
+		content.appendHtml(icon.addTitle(title).addId("sstate-update").toHtml() + " ");
 	}
 
 	public static void renderAbstraction(Question question, Session session, int digits, RenderResult buffer) {
 		// TODO: look for internationalization and only print getName,
 		// when no intlz is available
 		// buffer.append("* ");
-		appendImage("KnowWEExtension/images/fsp_abstraction.gif", "Abstraction", buffer);
+		appendImage(Icon.ABSTRACT, "Abstraction", buffer);
 		buffer.appendHtml("<span class=\"ABSTRACTION\">");
 		// render the abstraction question with value
 		Value value = D3webUtils.getValueNonBlocking(session, question);
@@ -177,9 +176,15 @@ public class SolutionPanelUtils {
 			// remove the brackets
 			return mcText.substring(1, mcText.length() - 1);
 		}
-		else if (value instanceof Unknown) return "Unknown";
-		else if (value instanceof UndefinedValue) return "Undefined";
-		else return value.toString();
+		else if (value instanceof Unknown) {
+			return "Unknown";
+		}
+		else if (value instanceof UndefinedValue) {
+			return "Undefined";
+		}
+		else {
+			return value.toString();
+		}
 	}
 
 }
