@@ -797,6 +797,10 @@ public class Rdf2GoCore {
 		return result;
 	}
 
+	public long getSize() {
+		return model.size();
+	}
+
 	public Object getUnderlyingModelImplementation() {
 		return model.getUnderlyingModelImplementation();
 	}
