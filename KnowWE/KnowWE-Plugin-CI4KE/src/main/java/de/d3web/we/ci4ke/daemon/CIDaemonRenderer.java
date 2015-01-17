@@ -41,7 +41,7 @@ public class CIDaemonRenderer implements Renderer {
 					+ "\">");
 			CIRenderer renderer = dashboard.getRenderer();
 			renderer.renderCurrentBuildStatus(string);
-			string.appendHtml("</a>");
+			string.appendHtml("</a> ");
 		}
 
 	}
