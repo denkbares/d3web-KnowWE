@@ -503,7 +503,7 @@ public class Rdf2GoCore {
 		try {
 			int removeSize = removeCache.size();
 			int insertSize = insertCache.size();
-			boolean verboseLog = removeSize + insertSize < 50;
+			boolean verboseLog = removeSize + insertSize < 50 && !Log.logger().isLoggable(Level.FINE);
 
 			if (removeSize > 0 || insertSize > 0) {
 				synchronized (resultCache) {
@@ -566,17 +566,19 @@ public class Rdf2GoCore {
              */
 			if (verboseLog) {
 				logStatements(new TreeSet<>(insertCache), startInsert,
+						"Removed statements:\n");
+				logStatements(new TreeSet<>(insertCache), startInsert,
 						"Inserted statements:\n");
 			}
-
-			if (!verboseLog) {
+			else {
 				Log.info("Removed " + removeSize + " statements from and added "
 						+ insertSize
 						+ " statements to " + Rdf2GoCore.class.getSimpleName() + " in "
 						+ (System.currentTimeMillis() - startRemove) + "ms.");
-				Log.info("Current number of statements: " + statementCache.size());
-
 			}
+
+			Log.info("Current number of statements: " + statementCache.size());
+
 
             /*
 			Reset caches
@@ -898,7 +900,6 @@ public class Rdf2GoCore {
 	private void logStatements(TreeSet<Statement> statements, long start, String caption) {
 		// check if we have something to log
 		if (statements.isEmpty()) return;
-		if (!Log.logger().isLoggable(Level.FINE)) return;
 
 		// sort statements at this point using tree map
 		StringBuilder buffer = new StringBuilder();

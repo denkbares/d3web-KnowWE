@@ -248,6 +248,14 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="CommitOntologyAction">
+		<parameter id="class" value="de.knowwe.ontology.action.CommitOntologyAction" />
+		<parameter id="name" value="CommitOntologyAction" />
+		<parameter id="description" value="Commits the changes in the ontology to the repository." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OntologyDownloadProvider">
 		<parameter id="class" value="de.knowwe.ontology.tools.OntologyDownloadProvider" />
 		<parameter id="name" value="OntologyDownloadProvider" />

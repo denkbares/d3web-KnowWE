@@ -26,6 +26,19 @@ if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
  */
 KNOWWE.plugin.ontology = function() {
 	return {
+		commitOntology : function(sectionID) {
+			new _KA({
+				url : KNOWWE.core.util.getURL({
+					action : 'CommitOntologyAction',
+					SectionID : sectionID
+				}),
+				fn : function() {
+					KNOWWE.core.util.hideProcessingIndicator();
+					location.reload();
+				}
+			}).send();
+			KNOWWE.core.util.showProcessingIndicator();
+		},
 		expandLazyReference : function(sectionID, newReferenceText, rerenderID) {
 			var params = {
 				action : 'ReplaceKDOMNodeAction',
@@ -39,7 +52,7 @@ KNOWWE.plugin.ontology = function() {
 						// todo: rerender markup block
 						location.reload();
 					}
-				},
+				}
 			}
 			new _KA(options).send();
 		}

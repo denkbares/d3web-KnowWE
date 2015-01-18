@@ -20,9 +20,11 @@
 
 package de.knowwe.notification;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
@@ -32,13 +34,13 @@ import de.knowwe.core.user.UserContext;
 
 /**
  * This class stores all {@link Notification}s. The class itself is stored in
- * each user's {@link HTTPSession} and is accessible by calling:
+ * each user's {@link HttpSession} and is accessible by calling:
  * 
  * <pre>
  * httpSession.getAttribute(Attributes.NOTIFICATIONMANAGER)
  * </pre>
  * 
- * on a {@link HTTPSession} object. For convenience there exist a static utility
+ * on a {@link HttpSession} object. For convenience there exist a static utility
  * method:
  * 
  * <pre>
@@ -52,7 +54,8 @@ import de.knowwe.core.user.UserContext;
  */
 public class NotificationManager {
 
-	private final Map<String, Notification> notifications = new HashMap<String, Notification>();
+	private final Map<String, Notification> userNotifications = new HashMap<>();
+	private static final Map<String, Notification> globalNotifications = Collections.synchronizedMap(new HashMap<>());
 
 	/**
 	 * Returns the NotificationManager object for a specified
@@ -85,10 +88,12 @@ public class NotificationManager {
 	 * Returns all Notifications associated with this NotificationManager.
 	 * 
 	 * @created 20.04.2012
-	 * @return all notifications for this user.
+	 * @return all userNotifications for this user.
 	 */
 	public Collection<Notification> getNotifications() {
-		return Collections.unmodifiableCollection(notifications.values());
+		List<Notification> notifications = new ArrayList<>(userNotifications.values());
+		notifications.addAll(globalNotifications.values());
+		return Collections.unmodifiableCollection(notifications);
 	}
 
 	/**
@@ -98,8 +103,6 @@ public class NotificationManager {
 	 * etc...
 	 * 
 	 * @created 20.04.2012
-	 * @param context
-	 * @param notification
 	 */
 	public static void addNotification(UserContext context, Notification notification) {
 		NotificationManager manager = NotificationManager.getNotificationManager(context);
@@ -107,14 +110,29 @@ public class NotificationManager {
 	}
 
 	/**
+	 * Adds a notification that will be visible to all users.
+	 */
+	public static void addGlobalNotification(Notification notification) {
+		globalNotifications.put(notification.getID(), notification);
+	}
+
+	/**
+	 * Removes a global notification (that was visible to all users)
+	 *
+	 * @param id the id of the notification to remove
+	 */
+	public static void removeGlobalNotification(String id) {
+		globalNotifications.remove(id);
+	}
+
+	/**
 	 * Removes the notification with the specified ID from the
 	 * NotificationManager belonging to the specified {@link UserContext}. The
 	 * id of a standard notification is it's hash-code, but in general the id
-	 * should be provided in the html markup...
+	 * should be provided in the html markup...<br/>
+	 * This also removes global notification if it has the given id.
 	 * 
 	 * @created 20.04.2012
-	 * @param context
-	 * @param id
 	 */
 	public static void removeNotification(UserContext context, String id) {
 		NotificationManager manager = NotificationManager.getNotificationManager(context);
@@ -130,21 +148,23 @@ public class NotificationManager {
 	 * @param notification the notification to be added.
 	 */
 	public void addNotification(Notification notification) {
-		if (!notifications.values().contains(notification)) {
-			notifications.put(notification.getID(), notification);
+		if (!userNotifications.values().contains(notification)) {
+			userNotifications.put(notification.getID(), notification);
 		}
 	}
 
 	/**
 	 * Removes the notification with the specified ID. The id of a standard
 	 * notification is it's hash-code, but in general the id should be provided
-	 * in the html markup...
+	 * in the html markup...<br/>
+	 * This also removes global notification if it has the given ID.
 	 * 
 	 * @created 20.04.2012
 	 * @param id the id of the notification
 	 */
 	public void removeNotification(String id) {
-		notifications.remove(id);
+		userNotifications.remove(id);
+		globalNotifications.remove(id);
 	}
 
 }

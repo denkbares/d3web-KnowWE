@@ -18,6 +18,7 @@
  */
 package de.knowwe.ontology.compile;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import de.d3web.strings.Identifier;
@@ -27,8 +28,16 @@ import de.knowwe.core.compile.ParallelScriptCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.event.Event;
+import de.knowwe.core.event.EventListener;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.Message;
+import de.knowwe.event.InitializedArticlesEvent;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.notification.NotificationManager;
+import de.knowwe.notification.StandardNotification;
 import de.knowwe.ontology.kdom.namespace.AbbreviationDefinition;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -38,8 +47,9 @@ import de.knowwe.rdf2go.RuleSet;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.12.2013
  */
-public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoCompiler, IncrementalCompiler {
+public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoCompiler, IncrementalCompiler, EventListener {
 
+	public static final String COMMIT_NOTIFICATION_ID = "CommitNotification";
 	private Rdf2GoCore rdf2GoCore;
 	private TerminologyManager terminologyManager;
 	private boolean completeCompilation = true;
@@ -51,6 +61,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 
 	public OntologyCompiler(PackageManager manager, Section<? extends PackageCompileType> compileSection, RuleSet ruleSet) {
 		super(manager, compileSection);
+		EventManager.getInstance().registerListener(this);
 		this.scriptCompiler = new ParallelScriptCompiler<>(this);
 		this.destroyScriptCompiler = new ParallelScriptCompiler<>(this);
 		this.ruleSet = ruleSet;
@@ -128,7 +139,17 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 
 		scriptCompiler.compile();
 
-		rdf2GoCore.commit();
+		Section<OntologyType> ontologySection = Sections.ancestor(getCompileSection(), OntologyType.class);
+		String commit = DefaultMarkupType.getAnnotation(ontologySection, OntologyType.ANNOTATION_COMMIT);
+		if ("onDemand".equals(commit)) {
+			NotificationManager.addGlobalNotification(new StandardNotification("There are changes not yet committed to " +
+					"the ontology repository. Committing may take some time. If you want to commit the changes now, " +
+					"click <a onclick=\"KNOWWE.plugin.ontology.commitOntology('" + getCompileSection().getID() + "')\">here</a>.",
+					Message.Type.INFO, getCommitNotificationId()));
+		}
+		else {
+			commitOntology();
+		}
 
 		EventManager.getInstance().fireEvent(new OntologyCompilerFinishedEvent(this));
 
@@ -136,6 +157,15 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 		completeCompilation = false;
 		destroyScriptCompiler = new ParallelScriptCompiler<>(this);
 		scriptCompiler = new ParallelScriptCompiler<>(this);
+	}
+
+	private String getCommitNotificationId() {
+		return COMMIT_NOTIFICATION_ID + getCompileSection().getID();
+	}
+
+	public void commitOntology() {
+		rdf2GoCore.commit();
+		NotificationManager.removeGlobalNotification(getCommitNotificationId());
 	}
 
 	private void createTerminologyManager() {
@@ -167,5 +197,15 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 
 	public RuleSet getRuleSet() {
 		return ruleSet;
+	}
+
+	@Override
+	public Collection<Class<? extends Event>> getEvents() {
+		return Arrays.asList(InitializedArticlesEvent.class);
+	}
+
+	@Override
+	public void notify(Event event) {
+		commitOntology();
 	}
 }

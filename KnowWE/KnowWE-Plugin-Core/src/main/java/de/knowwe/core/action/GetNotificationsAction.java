@@ -31,7 +31,7 @@ import de.knowwe.notification.Notification;
 import de.knowwe.notification.NotificationManager;
 
 /**
- * Returns all {@link Notifications} associated to the user's
+ * Returns all {@link Notification}s associated to the user's
  * {@link NotificationManager} in JSON.
  * 
  * @author Sebastian Furth
@@ -42,7 +42,7 @@ public class GetNotificationsAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		NotificationManager manager = NotificationManager.getNotificationManager(context);
-		List<Notification> notifications = new ArrayList<Notification>(manager.getNotifications());
+		List<Notification> notifications = new ArrayList<>(manager.getNotifications());
 		Collections.reverse(notifications);
 		JSONArray response = new JSONArray();
 		try {

@@ -43,6 +43,7 @@ public class OntologyType extends DefaultMarkupType {
 
     public static final String ANNOTATION_COMPILE = "uses";
     public static final String ANNOTATION_RULESET = "ruleset";
+    public static final String ANNOTATION_COMMIT = "commit";
 
     private static final DefaultMarkup MARKUP;
 
@@ -50,6 +51,7 @@ public class OntologyType extends DefaultMarkupType {
         MARKUP = new DefaultMarkup("Ontology");
         MARKUP.addAnnotation(ANNOTATION_COMPILE, false);
         MARKUP.addAnnotation(ANNOTATION_RULESET, false, RuleSet.values());
+        MARKUP.addAnnotation(ANNOTATION_COMMIT, false, "onSave", "onDemand");
         DefaultMarkupPackageCompileType compileType = new DefaultMarkupPackageCompileType();
         compileType.addCompileScript(Priority.INIT, new InitTerminologyHandler());
         compileType.addCompileScript(new OntologyCompilerRegistrationScript());
