@@ -139,9 +139,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 
 		scriptCompiler.compile();
 
-		Section<OntologyType> ontologySection = Sections.ancestor(getCompileSection(), OntologyType.class);
-		String commit = DefaultMarkupType.getAnnotation(ontologySection, OntologyType.ANNOTATION_COMMIT);
-		if ("onDemand".equals(commit)) {
+		if (getCommitType() == CommitType.onDemand) {
 			NotificationManager.addGlobalNotification(new StandardNotification("There are changes not yet committed to " +
 					"the ontology repository. Committing may take some time. If you want to commit the changes now, " +
 					"click <a onclick=\"KNOWWE.plugin.ontology.commitOntology('" + getCompileSection().getID() + "')\">here</a>.",
@@ -157,6 +155,19 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 		completeCompilation = false;
 		destroyScriptCompiler = new ParallelScriptCompiler<>(this);
 		scriptCompiler = new ParallelScriptCompiler<>(this);
+	}
+
+	private CommitType getCommitType() {
+		Section<OntologyType> ontologySection = Sections.ancestor(getCompileSection(), OntologyType.class);
+		String commitTypeString = DefaultMarkupType.getAnnotation(ontologySection, OntologyType.ANNOTATION_COMMIT);
+		CommitType commitType;
+		try {
+			commitType = CommitType.valueOf(commitTypeString);
+		}
+		catch (IllegalArgumentException | NullPointerException e) {
+			commitType = CommitType.onSave;
+		}
+		return commitType;
 	}
 
 	private String getCommitNotificationId() {
@@ -206,6 +217,8 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 
 	@Override
 	public void notify(Event event) {
-		commitOntology();
+		if (getCommitType() == CommitType.onDemand) {
+			commitOntology();
+		}
 	}
 }
