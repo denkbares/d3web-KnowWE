@@ -71,7 +71,8 @@ public class CIDashboardType extends DefaultMarkupType {
 		MARKUP = new DefaultMarkup("CIDashboard");
 		MARKUP.addAnnotation(NAME_KEY, true);
 		MARKUP.addAnnotation(TEST_KEY, true);
-		MARKUP.addAnnotation(TRIGGER_KEY, true, "onDemand", "onSave");
+		MARKUP.addAnnotation(TRIGGER_KEY, true, Pattern.compile(
+				"^(onDemand|onSave\\s*(\".+?\"|[^\\s]+))$"));
 
 		// allow grouping of tests
 		MARKUP.addAnnotation(GROUP_KEY, false);
