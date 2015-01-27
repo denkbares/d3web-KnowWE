@@ -28,18 +28,27 @@ public interface AuthenticationManager {
 
 	/**
 	 * Returns whether the user has administration rights.
-	 * 
-	 * @created 14.10.2010
+	 *
 	 * @return user is an admin or not
+	 * @created 14.10.2010
 	 */
 	public boolean userIsAdmin();
 
 	/**
-	 * Returns whether the user is authenticated or not.
-	 * 
+	 * Returns whether the user is authenticated or asserted or not.
+	 *
+	 * @return boolean asserted state of the user
 	 * @created 01.02.2011
-	 * @return boolean authentication state of the user
 	 */
 	public boolean userIsAsserted();
+
+	/**
+	 * Returns whether the user is authenticated or not.
+	 *
+	 * @return boolean authentication state of the user
+	 */
+	public boolean userIsAuthenticated();
+
+	//TODO method for Login
 
 }

@@ -20,14 +20,17 @@ package de.knowwe.jspwiki;
 
 import java.security.Principal;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.wiki.WikiContext;
+import org.apache.wiki.auth.WikiSecurityException;
 
 import de.knowwe.core.user.AuthenticationManager;
 
 /**
  * Implementation of the @link{AuthenticationManager} interface. All methods are
  * delegated to the @link{WikiContext} of JSPWiki.
- * 
+ *
  * @author Sebastian Furth (denkbares GmbH)
  * @created Mar 16, 2011
  */
@@ -49,6 +52,11 @@ public class JSPAuthenticationManager implements AuthenticationManager {
 	}
 
 	@Override
+	public boolean userIsAuthenticated() {
+		return context.getWikiSession().isAuthenticated();
+	}
+
+	@Override
 	public boolean userIsAdmin() {
 		Principal[] princ = context.getWikiSession().getRoles();
 		for (Principal p : princ) {
@@ -57,6 +65,12 @@ public class JSPAuthenticationManager implements AuthenticationManager {
 			}
 		}
 		return context.hasAdminPermissions();
+	}
+
+	public boolean login(HttpServletRequest request, String username, String password) throws WikiSecurityException {
+		return context.getEngine()
+				.getAuthenticationManager()
+				.login(context.getWikiSession(), request, username, password);
 	}
 
 }

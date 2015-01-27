@@ -1071,7 +1071,7 @@ public class Rdf2GoCore {
 	 * @return true if a result was cached, false if not
 	 */
 	public boolean clearSparqlResult(String query) {
-		String completeQuery = completeQuery(query);
+		String completeQuery = prependPrefixesToQuery(query);
 		synchronized (resultCache) {
 			SparqlTask removed = resultCache.remove(completeQuery);
 			if (removed != null) {
@@ -1160,7 +1160,7 @@ public class Rdf2GoCore {
 	}
 
 	private Object sparql(String query, boolean cached, long timeOutMillis, SparqlType type) {
-		String completeQuery = completeQuery(query);
+		String completeQuery = prependPrefixesToQuery(query);
 
 		// if the compile thread is calling here, we continue without all the timeout, cache, and lock
 		// they are not needed in that context and do even cause problems and overhead
@@ -1451,7 +1451,7 @@ public class Rdf2GoCore {
 		}
 	}
 
-	private String completeQuery(String query) {
+	public String prependPrefixesToQuery(String query) {
 		String completeQuery;
 		if (query.startsWith(Rdf2GoUtils.getSparqlNamespaceShorts(this))) {
 			completeQuery = query;

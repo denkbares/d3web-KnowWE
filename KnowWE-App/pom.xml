@@ -497,7 +497,13 @@
 					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-SparqlEndpoint</artifactId>
+					<version>0.2-SNAPSHOT</version>
+				</dependency>
 			</dependencies>
+
 		</profile>
 
 		<profile>
@@ -533,18 +539,18 @@
 					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
-                <dependency>
-                    <groupId>com.denkbares.ssp</groupId>
-                    <artifactId>SemanticServiceCore-Plugin-ILME</artifactId>
-                    <version>1.0-SNAPSHOT</version>
-                    <scope>compile</scope>
-                </dependency>
-                <dependency>
-                    <groupId>com.denkbares</groupId>
-                    <artifactId>KnowWE-Plugin-TermBrowser-Autocompletion</artifactId>
-                    <version>0-SNAPSHOT</version>
-                    <scope>compile</scope>
-                </dependency>
+				<dependency>
+					<groupId>com.denkbares.ssp</groupId>
+					<artifactId>SemanticServiceCore-Plugin-ILME</artifactId>
+					<version>1.0-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-TermBrowser-Autocompletion</artifactId>
+					<version>0-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
 				<!--dependency>
 					<groupId>jspwiki.plugin</groupId>
 					<artifactId>ImageMapPlus</artifactId>
