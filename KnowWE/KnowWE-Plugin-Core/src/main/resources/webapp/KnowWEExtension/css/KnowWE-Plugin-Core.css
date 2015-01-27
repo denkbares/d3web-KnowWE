@@ -191,18 +191,41 @@ span.markupMenuItem {
 
 .defaultMarkupFrame .progress-container .progress-state {
 	display: inline-block;
-	width: 16px;
-	height: 16px;
-	margin-right: 5px;
-	background-image: url("../images/progress_stop.gif");
+	position: relative;
+	top: -3px;
+	margin-right: 8px;
+	background-image: none
+}
+
+.defaultMarkupFrame .progress-container .progress-state:hover {
+	cursor: pointer;
+}
+
+.defaultMarkupFrame .progress-container .progress-state:before {
+	font-family: FontAwesome;
+	content: "\f04d";
+	color: #CC3333;
 }
 
 .defaultMarkupFrame .progress-container .progress-error .progress-state {
-	background-image: url("../images/red_bulb.png");
+	background-image: none;
+}
+
+.defaultMarkupFrame .progress-container .progress-error .progress-state:before {
+	font-family: FontAwesome;
+	content: "\f111";
+	color: #CC3333;
+	background-image: none;
 }
 
 .defaultMarkupFrame .progress-container .progress-success .progress-state {
-	background-image: url("../images/green_bulb.png");
+	background-image: none;
+}
+
+.defaultMarkupFrame .progress-container .progress-success .progress-state:before {
+	font-family: FontAwesome;
+	content: "\f111";
+	color: #6A9514;
 }
 
 .defaultMarkupFrame .progress-container .progress-message,
