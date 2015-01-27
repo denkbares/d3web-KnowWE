@@ -84,7 +84,8 @@ a.ci-daemon:hover {
 }
 
 .ci-header .ci-state {
-	width: 22px;
+	position: relative;
+	top: -1px;
 }
 
 .ci-message {
@@ -111,7 +112,7 @@ a.ci-daemon:hover {
 }
 
 .ci-state {
-	margin: 0px 1px 0px 1px;
+	margin-right: 2px;
 }
 
 .ci-forecast {

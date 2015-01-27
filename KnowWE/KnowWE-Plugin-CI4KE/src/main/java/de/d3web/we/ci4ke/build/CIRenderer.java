@@ -406,24 +406,24 @@ public class CIRenderer {
 
 		boolean showRunning = checkRunning && CIBuildManager.isRunning(dashboard);
 
-		String imgBulb = "<i class='fa %s %s ci-state' dashboardName='" + dashboardNameEncoded + "'"
+		String imgBulb = "<i class='fa %s ci-state' dashboardName='" + dashboardNameEncoded + "'"
 				+ " running='%s'"
 				+ " title='%s'></i>";
 
 		if (showRunning) {
 
-			imgBulb = String.format(imgBulb, "fa-spinner", "", "true", "Build running!");
+			imgBulb = String.format(imgBulb, "fa-spin fa-refresh", "true", "Build running!");
 		}
 		else {
 			switch (resultType) {
 				case SUCCESS:
-					imgBulb = String.format(imgBulb, icon.getCssClass(), "knowwe-ok", "false", "Build successful: " + Strings
+					imgBulb = String.format(imgBulb, icon.getCssClass() + " knowwe-ok", "false", "Build successful: " + Strings
 							.encodeHtml(dashboardName));
 				case FAILURE:
-					imgBulb = String.format(imgBulb, icon.getCssClass(), "knowwe-error", "false", "Build failed: " + Strings
+					imgBulb = String.format(imgBulb, icon.getCssClass() + " knowwe-error", "false", "Build failed: " + Strings
 							.encodeHtml(dashboardName));
 				case ERROR:
-					imgBulb = String.format(imgBulb, icon.getCssClass(), "knowwe-gray", "false", "Build has errors: " + Strings
+					imgBulb = String.format(imgBulb, icon.getCssClass() + " knowwe-gray", "false", "Build has errors: " + Strings
 							.encodeHtml(dashboardName));
 			}
 		}
