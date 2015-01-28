@@ -181,3 +181,11 @@ div.ci-test-nav-outer {
 div.ci-test-nav-inner {
 	display: inline-block;
 }
+
+span.collapseCIMessage, span.expandCIMessage {
+	cursor: pointer;
+}
+
+span.collapseCIMessage:hover, span.expandCIMessage:hover {
+	opacity: 0.6;
+}
