@@ -74,6 +74,7 @@ public class ValueTooltipRenderer extends TooltipRenderer {
 		Section<D3webTerm<NamedObject>> sec = (Section<D3webTerm<NamedObject>>) section;
 		StringBuilder builder = new StringBuilder();
 		Collection<D3webCompiler> compilers = Compilers.getCompilers(section, D3webCompiler.class);
+		boolean first = true;
 		for (D3webCompiler compiler : compilers) {
 
 			NamedObject namedObject = sec.get().getTermObject(compiler, sec);
@@ -84,6 +85,12 @@ public class ValueTooltipRenderer extends TooltipRenderer {
 				if (value == null) continue;
 				String name = knowledgeBase.getName();
 				if (name == null) name = compiler.getCompileSection().getTitle();
+				if (!first) {
+					builder.append("<br/>");
+				}
+				else {
+					first = false;
+				}
 				builder.append("Current value");
 				if (compilers.size() > 1) {
 					builder.append(" in '").append(name).append("'");
