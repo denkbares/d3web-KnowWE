@@ -324,8 +324,9 @@ public class QuestionLine extends AbstractType {
 		public QuestionText() {
 			this.setSectionFinder(new MatchUntilEndFinder(new StringSectionFinderUnquoted(
 					QTEXT_START_SYMBOL)));
-
-			this.setRenderer(StyleRenderer.PROMPT);
+			this.setRenderer((section, user, result) -> {
+				StyleRenderer.PROMPT.renderText(QTEXT_START_SYMBOL + section.getText(), user, result);
+			});
 			this.addCompileScript(Priority.HIGH, (D3webHandler<QuestionText>) (compiler, sec) -> {
 
 				Section<QuestionDefinition> qDef = Sections.successor(
@@ -350,9 +351,8 @@ public class QuestionLine extends AbstractType {
 		public static String getQuestionText(Section<QuestionText> s) {
 			String text = s.getText();
 			if (text.startsWith(QTEXT_START_SYMBOL)) {
-				text = text.substring(1).trim();
+				text = Strings.trim(text.substring(1));
 			}
-
 			return Strings.unquote(text);
 		}
 	}
