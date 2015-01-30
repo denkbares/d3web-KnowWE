@@ -506,11 +506,8 @@ public class QuickInterviewRenderer {
 		Value value = D3webUtils.getValueNonBlocking(session, q);
 		String valueString = "";
 		if (value instanceof NumValue) {
-			valueString = value.getValue().toString();
+			valueString = trimPZ(((NumValue) value).getDouble());
 		}
-
-		valueString = valueString.replaceAll("(?<=[\\.\\d]+?)0+$", "")
-				.replaceAll("\\.$", "");
 
 		String id = getID();
 		String unit = "";
