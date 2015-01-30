@@ -247,7 +247,7 @@ public class QuickInterviewRenderer {
 		// return for
 		// avoiding endless recursion
 		if (processedTOs.contains(topQuestion)) {
-			getAlreadyDefinedRendering(topQuestion, sb, depth);
+			getQABlockRendering(topQuestion, depth, parent, sb);
 			return;
 		}
 
