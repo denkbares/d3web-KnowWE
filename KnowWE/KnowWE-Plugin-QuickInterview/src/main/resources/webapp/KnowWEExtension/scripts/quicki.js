@@ -457,20 +457,7 @@ KNOWWE.plugin.quicki = function() {
 		 */
 		numAnswerClicked : function(event) {
 			event = new Event(event).stopPropagation();
-			// this (hidden) div is for submitting numValues by click-event
-			var div = (_KE.target(event).className == 'num-ok');
-
-			if (!div) {				// if enter was pressed
-				rel = eval("(" + _KE.target(event).getAttribute('rel') + ")");
-			} else {				// if div was clicked
-				// split the ID of the <div> by "_"
-				var arrSplittedID = _KE.target(event).getAttribute('id').split('_');
-				// use the second part of the splitted ID to get the <input>
-				// element
-				var inputID = 'input_' + arrSplittedID[1];
-				rel = eval("(" + $(inputID).getAttribute('rel') + ")");
-			}
-			if (!rel) return;
+			var rel = eval("(" + _KE.target(event).getAttribute('rel') + ")");
 
 			var inputtext = 'inputTextNotFound';	// default input
 
@@ -688,7 +675,7 @@ KNOWWE.plugin.quicki = function() {
 		 * questionnaire-contents on click: visible ones are hidden, hidden ones
 		 * are displayed
 		 *
-		 * Parameters: event - The fired the click event
+		 * Parameters: event - The fired click event
 		 */
 		toggleQuestionnaireVisibility : function(event) {
 

@@ -364,8 +364,7 @@ public class QuickInterviewRenderer {
 			title = "title='" + title + "' ";
 		}
 
-		sb.appendHtml("<div id='" + Strings.encodeHtml(question.getName())
-				+ "' " + "parent='"
+		sb.appendHtml("<div " + "parent='"
 				+ Strings.encodeHtml(parent.getName()) + "' " + "class='" + cssClass + "' "
 				+ title + "style='width: " + w
 				+ "px; display: inline-block;' >").append(divText).appendHtml("</div>");
@@ -426,9 +425,7 @@ public class QuickInterviewRenderer {
 		String inputSize = user.getParameter(QuickInterviewMarkup.INPUT_SIZE_KEY);
 		if (inputSize == null) inputSize = "18";
 		// assemble the input field
-		sb.appendHtml("<input class='inputtextvalue'  style='display: inline;' id='input_"
-				+ id
-				+ "' type='text' "
+		sb.appendHtml("<input class='inputtextvalue'  style='display: inline;' type='text' "
 				+ "value='"
 				+ Strings.encodeHtml(valueString)
 				+ "' "
@@ -468,7 +465,6 @@ public class QuickInterviewRenderer {
 					+ "qid:'" + Strings.encodeURL(q.getName()) + "', "
 					+ "choice:'" + Strings.encodeURL(choice.getName()) + "', "
 					+ "type:'oc', " + "}\" ";
-			String spanid = q.getName() + "_" + choice.getName();
 
 			// if a value was already set, get the value and set corresponding
 			// css class
@@ -480,7 +476,7 @@ public class QuickInterviewRenderer {
 
 			String label = getLabel(choice);
 			appendEnclosingTagOnClick("span", label, cssclass,
-					jscall, null, spanid,
+					jscall, null, null,
 					choice.getInfoStore().getValue(MMInfo.DESCRIPTION), sb);
 
 			// System.out.println(getEnclosingTagOnClick("div", "" +
@@ -553,21 +549,14 @@ public class QuickInterviewRenderer {
 		String inputSize = user.getParameter(QuickInterviewMarkup.INPUT_SIZE_KEY);
 		if (inputSize == null) inputSize = "7";
 		// assemble the input field
-		sb.appendHtml("<input class='numinput' id='input_" + id + "' type='text' "
+		sb.appendHtml("<input class='numinput' type='text' "
 				+ rangeString + "value='" + valueString + "' " + "size='" + inputSize + "' " + jscall + " />");
 
 		// print the units
 		sb.appendHtml("<div class='unit'>").append(Strings.encodeHtml(unit)).appendHtml("</div>");
 
-		// sb.append("<input type='button' value='OK' class='num-ok' />");
-
 		if (Unknown.assignedTo(value) || !suppressUnknown(q)) {
-			sb.appendHtml("<div class='separator'>");
-			// M.Ochlast: i added this (hidden) div to re-enable submitting of
-			// numValues by "clicking". This workaround is neccessary for KnowWE
-			// Systemtests (there is no Return-Key emulation possible).
-			sb.appendHtml("<div id='num-ok_" + id + "' class='num-ok'> | </div>");
-			sb.appendHtml("</div>");
+			sb.appendHtml("<div class='separator'></div>");
 		}
 
 		renderAnswerUnknown(q, "num", sb);
@@ -621,8 +610,7 @@ public class QuickInterviewRenderer {
 		String title = "Use the following date format:\n"
 				+ placeHolder + "\nTime is optional, "
 				+ "if you use time, seconds and milliseconds are optional.";
-		sb.appendHtml("<input class='inputdate'  style='display: inline;' id='input_"
-				+ id + "' type='dateValue' " + "value='" + valueString + "' placeholder='"
+		sb.appendHtml("<input class='inputdate'  style='display: inline;' type='dateValue' " + "value='" + valueString + "' placeholder='"
 				+ placeHolder + "' title='" + title + "' " + jscall + " />");
 
 		// sb.append("<input type='button' value='OK' class='date-ok' /> ");
@@ -669,9 +657,8 @@ public class QuickInterviewRenderer {
 			}
 
 			String label = getLabel(choice);
-			String spanid = q.getName() + "_" + choice.getName();
 			appendEnclosingTagOnClick("span", "" + label + "", cssclass,
-					jscall, null, spanid,
+					jscall, null, null,
 					choice.getInfoStore().getValue(MMInfo.DESCRIPTION), sb);
 
 		}
@@ -722,7 +709,6 @@ public class QuickInterviewRenderer {
 		else if (value != null) {
 			cssclass = "answerunknown";
 		}
-		String spanid = q.getName() + "_" + Unknown.getInstance().getId();
 		String prompt = MMInfo.getUnknownPrompt(q, null);
 
 		if (!(q instanceof QuestionNum)) {
@@ -730,7 +716,7 @@ public class QuickInterviewRenderer {
 			renderChoiceSeparator(sb);
 		}
 		appendEnclosingTagOnClick("div", prompt, cssclass, jscall, null,
-				spanid, null, sb);
+				null, null, sb);
 	}
 
 	/**
