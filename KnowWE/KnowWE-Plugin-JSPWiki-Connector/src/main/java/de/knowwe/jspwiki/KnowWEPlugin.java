@@ -205,7 +205,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 		JSPWikiUserContext userContext = new JSPWikiUserContext(wikiContext,
 				UserContextUtil.getParameters(httpRequest));
-
+		includeDOMResources(wikiContext);
 		/*
 		 * The special pages MoreMenu, LeftMenu and LeftMenuFooter get extra
 		 * calls: they are handled and rendered from the KDOMs in the following
@@ -219,7 +219,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				if (supportArticle != null
 						&& supportArticle.getRootSection().getText().equals(
 						content)) {
-					includeDOMResources(wikiContext);
 					return renderKDOM(content, userContext, supportArticle);
 				}
 			}
@@ -276,7 +275,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 				renderPostPageAppendHandler(userContext, title, renderResult, appendHandlers);
 
-				includeDOMResources(wikiContext);
 			}
 			stringRaw = renderResult.toStringRaw();
 			userContext.getRequest().setAttribute("renderresult" + title, stringRaw);
@@ -463,7 +461,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	 * Adds the CSS and JS files to the current page.
 	 */
 	private void includeDOMResources(WikiContext wikiContext) {
-		Object ctx = wikiContext.getVariable(TemplateManager.RESOURCE_INCLUDES);
 		ResourceLoader loader = ResourceLoader.getInstance();
 
 		List<String> script = loader.getScriptIncludes();
@@ -493,44 +490,23 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 					continue;
 				}
 			}
-			if (ctx != null && !ctx.toString().contains(resource)) {
-				if (!resource.contains("://")) {
-					TemplateManager.addResourceRequest(wikiContext,
-							ResourceLoader.RESOURCE_SCRIPT,
-							ResourceLoader.defaultScript + resource);
-				}
-				else {
-					TemplateManager.addResourceRequest(wikiContext,
-							ResourceLoader.RESOURCE_SCRIPT,
-							resource);
-				}
+			if (!resource.contains("://")) {
+				TemplateManager.addResourceRequest(wikiContext,
+						ResourceLoader.RESOURCE_SCRIPT,
+						ResourceLoader.defaultScript + resource);
 			}
-			else if (ctx == null) {
-				if (!resource.contains("://")) {
-					TemplateManager.addResourceRequest(wikiContext,
-							ResourceLoader.RESOURCE_SCRIPT,
-							ResourceLoader.defaultScript + resource);
-				}
-				else {
-					TemplateManager.addResourceRequest(wikiContext,
-							ResourceLoader.RESOURCE_SCRIPT,
-							resource);
-				}
+			else {
+				TemplateManager.addResourceRequest(wikiContext,
+						ResourceLoader.RESOURCE_SCRIPT,
+						resource);
 			}
 		}
 
 		List<String> css = loader.getStylesheetIncludes();
 		for (String resource : css) {
-			if (ctx != null && !ctx.toString().contains(resource)) {
-				TemplateManager.addResourceRequest(wikiContext,
-						ResourceLoader.RESOURCE_STYLESHEET,
-						ResourceLoader.defaultStylesheet + resource);
-			}
-			else if (ctx == null) {
-				TemplateManager.addResourceRequest(wikiContext,
-						ResourceLoader.RESOURCE_STYLESHEET,
-						ResourceLoader.defaultStylesheet + resource);
-			}
+			TemplateManager.addResourceRequest(wikiContext,
+					ResourceLoader.RESOURCE_STYLESHEET,
+					ResourceLoader.defaultStylesheet + resource);
 		}
 	}
 

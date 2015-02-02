@@ -994,6 +994,10 @@ a.tool:hover, .btn:hover {
 .username.authenticated {
 }
 
+.wikiversion {
+	display: none;
+}
+
 .wikiversion, .rssfeed {
 	font-size: 90%;
 	padding: 0.25em;
@@ -2355,6 +2359,8 @@ div.coverflow .knob {
 #searchSubmit:before {
 	content: "\f002";
 	font-family: FontAwesome;
+	top: -1px;
+	position: relative;
 }
 
 #actionsTop > ul > li > a.action.more {
