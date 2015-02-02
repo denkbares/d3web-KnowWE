@@ -426,7 +426,7 @@ public class QuickInterviewRenderer {
 				+ "ns:'" + namespace + "'," + "type:'text', " + "qtext:'"
 				+ Strings.encodeURL(q.getName()) + "', " + "}\" ";
 
-		String inputSize = DefaultMarkupType.getAnnotation(section, QuickInterviewMarkup.INPUT_SIZE_KEY);
+		String inputSize = getInputSize();
 		if (inputSize == null) inputSize = "18";
 		// assemble the input field
 		sb.appendHtml("<input class='inputtextvalue'  style='display: inline;' type='text' "
@@ -438,6 +438,15 @@ public class QuickInterviewRenderer {
 
 		sb.appendHtml("<div class='separator'></div>");
 		renderAnswerUnknown(q, "num", sb);
+	}
+
+	private String getInputSize() {
+		if (section.get() instanceof DefaultMarkupType) {
+			return DefaultMarkupType.getAnnotation(section, QuickInterviewMarkup.INPUT_SIZE_KEY);
+		} else {
+			return null;
+		}
+
 	}
 
 	/**
@@ -550,7 +559,7 @@ public class QuickInterviewRenderer {
 					+ trimPZ(range.getRight()) + "' ";
 		}
 
-		String inputSize = DefaultMarkupType.getAnnotation(section, QuickInterviewMarkup.INPUT_SIZE_KEY);
+		String inputSize = getInputSize();
 		if (inputSize == null) inputSize = "7";
 		// assemble the input field
 		sb.appendHtml("<input class='numinput' type='text' "
