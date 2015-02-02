@@ -62,6 +62,7 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.notification.NotificationManager;
 import de.knowwe.notification.OutDatedSessionNotification;
 
@@ -84,6 +85,8 @@ public class QuickInterviewRenderer {
 	private final ResourceBundle rb;
 
 	private final String kbSectionId;
+
+	private final Section<?> section;
 
 	private Map<String, String> config = null;
 
@@ -125,6 +128,7 @@ public class QuickInterviewRenderer {
 		this.kb = c.getKnowledgeBase();
 		this.session = c;
 		this.web = section.getWeb();
+		this.section = section;
 		this.kbSectionId = D3webUtils.getCompiler(section).getCompileSection().getID();
 		this.namespace = kb.getId();
 		this.rb = D3webUtils.getD3webBundle(user);
@@ -422,7 +426,7 @@ public class QuickInterviewRenderer {
 				+ "ns:'" + namespace + "'," + "type:'text', " + "qtext:'"
 				+ Strings.encodeURL(q.getName()) + "', " + "}\" ";
 
-		String inputSize = user.getParameter(QuickInterviewMarkup.INPUT_SIZE_KEY);
+		String inputSize = DefaultMarkupType.getAnnotation(section, QuickInterviewMarkup.INPUT_SIZE_KEY);
 		if (inputSize == null) inputSize = "18";
 		// assemble the input field
 		sb.appendHtml("<input class='inputtextvalue'  style='display: inline;' type='text' "
@@ -546,7 +550,7 @@ public class QuickInterviewRenderer {
 					+ trimPZ(range.getRight()) + "' ";
 		}
 
-		String inputSize = user.getParameter(QuickInterviewMarkup.INPUT_SIZE_KEY);
+		String inputSize = DefaultMarkupType.getAnnotation(section, QuickInterviewMarkup.INPUT_SIZE_KEY);
 		if (inputSize == null) inputSize = "7";
 		// assemble the input field
 		sb.appendHtml("<input class='numinput' type='text' "

@@ -103,7 +103,6 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 			String abstractions = DefaultMarkupType.getAnnotation(section,
 					ABSTRACTIONS_KEY);
 			String answers = DefaultMarkupType.getAnnotation(section, ANSWERS_KEY);
-			String inputSize = DefaultMarkupType.getAnnotation(section, INPUT_SIZE_KEY);
 			Map<String, String> parameters = user.getParameters();
 			if (unknown != null) {
 				parameters.put(UNKNOWN_KEY, unknown);
@@ -114,41 +113,18 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 			if (answers != null) {
 				parameters.put(ANSWERS_KEY, answers);
 			}
-			if (inputSize != null) {
-				try {
-					//noinspection ResultOfMethodCallIgnored
-					Integer.parseInt(inputSize);
-					parameters.put(INPUT_SIZE_KEY, inputSize);
-				}
-				catch (Exception e) {
-					// just ignore it, message will be shown by markup because of Pattern
-				}
-			}
 
-			String annotation = DefaultMarkupType.getAnnotation(section,
-					QuickInterviewMarkup.SAVE_KEY);
-
-			boolean saveSession = false;
-			if (annotation != null && annotation.equalsIgnoreCase("true")) {
-				saveSession = true;
-			}
-
-			String savehtml = "";
-			if (saveSession) {
-				savehtml = "<div id=\"sessionsave\"><form name=\"loadsave\"> "
-						+
-						"<select name=\"savedsessions\"  size=\"1\" width=\"30\"><option>-Load Session-</option>"
+			String saveAnnotation = DefaultMarkupType.getAnnotation(section, QuickInterviewMarkup.SAVE_KEY);
+			if (saveAnnotation != null && saveAnnotation.equalsIgnoreCase("true")) {
+				string.appendHtml("<div id=\"sessionsave\"><form name=\"loadsave\"> "
+						+ "<select name=\"savedsessions\"  size=\"1\" width=\"30\"><option>-Load Session-</option>"
 						+ getSavedSessions(user)
 						+ "</select><input name=\"load\" type=\"button\" value=\"Load\" onclick=\"loadQuicki('"
 						+ section.getID()
 						+ "')\"/>"
-						+
-						"<input name=\"name\" type=\"text\" size=\"20\" maxlength=\"30\" />"
-						+
-						"<input name=\"save\" type=\"button\" value=\"Save\" onclick=\"saveQuicki()\"/></form></div>";
-
+						+ "<input name=\"name\" type=\"text\" size=\"20\" maxlength=\"30\" />"
+						+ "<input name=\"save\" type=\"button\" value=\"Save\" onclick=\"saveQuicki()\"/></form></div>");
 			}
-			string.appendHtml(savehtml);
 
 			string.appendHtmlTag("div", "class", "quickinterview", "sectionId", section.getID(),
 					"id", "quickinterview_" + section.getID());
