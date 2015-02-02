@@ -83,10 +83,10 @@ public class QuestionLine extends AbstractType {
 		this.addChildType(new AbstractFlag());
 		// inline defined choice answers flag: '<low, average, high>'
 		this.addChildType(new InlineChoiceAnswerDefinition());
-		// numerical interval/bounds - height [num] (100 220)
-		this.addChildType(new NumBounds());
 		// numerical unit - height [num] {cm}
 		this.addChildType(new NumUnit());
+		// numerical interval/bounds - height [num] (100 220)
+		this.addChildType(new NumBounds());
 		// questiontext - startet by '~'
 		this.addChildType(new QuestionText());
 
