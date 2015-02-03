@@ -257,6 +257,23 @@
 			</dependencies>
 		</profile>
 
+        <profile>
+            <id>lexicon</id>
+            <activation>
+                <property>
+                    <name>lexicon</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>de.uniwue.d3web</groupId>
+                    <artifactId>KnowWE-Plugin-LexiconInterface</artifactId>
+                    <version>0.2-SNAPSHOT</version>
+                    <scope>compile</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+
 		<profile>
 			<id>ontologydebugger</id>
 			<activation>
