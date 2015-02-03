@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 
 import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
@@ -82,8 +83,9 @@ public class QClassLine extends AbstractType {
 						parentQASet.getKnowledgeBase().getRootQASet().addChild(parentQASet);
 					}
 					for (Identifier childIdentifier : childrenIdentifier) {
-						QASet childQASet = (QASet) D3webUtils.getTermObject(compiler, childIdentifier);
-						if (childQASet == null) continue;
+						NamedObject namendObject = D3webUtils.getTermObject(compiler, childIdentifier);
+						if (namendObject == null || !(namendObject instanceof QASet)) continue;
+						QASet childQASet = (QASet) namendObject;
 						parentQASet.getKnowledgeBase().getRootQASet().removeChild(childQASet);
 						parentQASet.addChild(childQASet);
 					}
