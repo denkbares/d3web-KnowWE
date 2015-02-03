@@ -461,6 +461,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	 * Adds the CSS and JS files to the current page.
 	 */
 	private void includeDOMResources(WikiContext wikiContext) {
+		Object ctx = wikiContext.getVariable(TemplateManager.RESOURCE_INCLUDES);
 		ResourceLoader loader = ResourceLoader.getInstance();
 
 		List<String> script = loader.getScriptIncludes();
@@ -490,23 +491,19 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 					continue;
 				}
 			}
-			if (!resource.contains("://")) {
-				TemplateManager.addResourceRequest(wikiContext,
-						ResourceLoader.RESOURCE_SCRIPT,
-						ResourceLoader.defaultScript + resource);
-			}
-			else {
-				TemplateManager.addResourceRequest(wikiContext,
-						ResourceLoader.RESOURCE_SCRIPT,
-						resource);
+			if (ctx == null || !ctx.toString().contains(resource)) {
+				if (!resource.contains("://")) {
+					resource = ResourceLoader.defaultScript + resource;
+				}
+				TemplateManager.addResourceRequest(wikiContext, ResourceLoader.RESOURCE_SCRIPT, resource);
 			}
 		}
 
 		List<String> css = loader.getStylesheetIncludes();
 		for (String resource : css) {
-			TemplateManager.addResourceRequest(wikiContext,
-					ResourceLoader.RESOURCE_STYLESHEET,
-					ResourceLoader.defaultStylesheet + resource);
+			if (ctx == null || !ctx.toString().contains(resource)) {
+				TemplateManager.addResourceRequest(wikiContext, ResourceLoader.RESOURCE_STYLESHEET, ResourceLoader.defaultStylesheet + resource);
+			}
 		}
 	}
 
