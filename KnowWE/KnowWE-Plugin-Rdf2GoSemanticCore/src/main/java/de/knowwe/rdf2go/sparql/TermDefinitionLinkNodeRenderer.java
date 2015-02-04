@@ -5,7 +5,6 @@ import java.util.Collection;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compilers;
-import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
@@ -29,9 +28,7 @@ public class TermDefinitionLinkNodeRenderer implements SparqlResultNodeRenderer 
 				KnowWEUtils.getArticleManager(user.getWeb()), Rdf2GoCompiler.class);
 		for (Rdf2GoCompiler rdf2GoCompiler : compilers) {
 			if (rdf2GoCompiler.getRdf2GoCore() == core) {
-				if (rdf2GoCompiler instanceof TermCompiler) {
-					manager = ((TermCompiler) rdf2GoCompiler).getTerminologyManager();
-				}
+				manager = rdf2GoCompiler.getTerminologyManager();
 			}
 		}
 		if (manager != null) {
