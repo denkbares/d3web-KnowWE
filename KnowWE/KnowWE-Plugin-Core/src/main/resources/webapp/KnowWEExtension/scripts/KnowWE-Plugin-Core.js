@@ -233,7 +233,7 @@ KNOWWE.plugin.renaming = function() {
 	/**
 	 * Renames all occurrences of a specific term.
 	 */
-	function renameTerms(oldValue, replacement, forceRename) {
+	function renameTerms(oldValue, replacement, sectionId, forceRename) {
 		if (forceRename == null)
 			forceRename = false;
 		if (oldValue && replacement) {
@@ -243,6 +243,7 @@ KNOWWE.plugin.renaming = function() {
 				action : "TermRenamingAction",
 				termname : oldValue,
 				termreplacement : replacement,
+				sectionid : sectionId,
 				force : forceRename ? "true" : "false"
 			}
 			KNOWWE.core.util.updateProcessingState(1);
@@ -258,7 +259,10 @@ KNOWWE.plugin.renaming = function() {
 					} else {
 						if (alreadyexists == 'true') {
 							if (confirm('A term with this name already exists, are you sure you want to merge both terms?')) {
-								renameTerms(oldValue, replacement, true);
+								renameTerms(oldValue, replacement, sectionId, true);
+							}
+							else {
+								KNOWWE.core.util.reloadPage();
 							}
 						}
 						else {
@@ -273,8 +277,6 @@ KNOWWE.plugin.renaming = function() {
 							}
 						}
 					}
-
-
 				},
 
 				error : function(request, status, error) {
@@ -327,13 +329,15 @@ KNOWWE.plugin.renaming = function() {
 
 		for (var occurence in otherOccurencesHashMap) {
 			var section = sectionsCache[occurence];
-			jq$(otherOccurencesHashMap[occurence]).replaceWith(section);
+			var parent = jq$(otherOccurencesHashMap[occurence]).parent();
+			jq$(otherOccurencesHashMap[occurence]).parent().html(section);
+			_TM.decorateToolMenus(parent);
 		}
 
 	}
 
 	function afterCancelEdit(setting, original) {
-		_TM.decorateToolMenus(original);
+		_TM.decorateToolMenus(jq$(original));
 	}
 
 	function showCurrentEditOnOtherOccurences(text) {
@@ -344,7 +348,7 @@ KNOWWE.plugin.renaming = function() {
 
 	function saveOriginalsAndPrepareForEdit(lastPathElement) {
 		for (var occurence in otherOccurencesHashMap) {
-			sectionsCache[occurence] = otherOccurencesHashMap[occurence].clone();
+			sectionsCache[occurence] = jq$(otherOccurencesHashMap[occurence]).parent().html();
 			jq$(otherOccurencesHashMap[occurence]).attr("sectionOccurenceId", occurence);
 			jq$(otherOccurencesHashMap[occurence]).empty();
 			jq$(otherOccurencesHashMap[occurence]).css("background-color", "yellow");
@@ -384,18 +388,21 @@ KNOWWE.plugin.renaming = function() {
 				//get edit field
 				jq$(clickedTerm).addClass("click");
 				//jq$(clickedTerm).css("display", "none");
+				var settings = {};
+				settings.select = true;
 				jq$(".click").editable(function(value, settings) {
-					renameTerms(jsonResponse.termIdentifier, value, false);
+					renameTerms(jsonResponse.termIdentifier, value, toolMenuIdentifier, false);
 					return (value)
 				}, {
 					style : "inherit",
 					onreset : cancelEdit,
-					afterreset : afterCancelEdit
+					afterreset : afterCancelEdit,
+					select : true
 
 				});
 				jq$('.click').trigger("click");
 				//replace edit field value with sectionText for encoding reasons
-				var inputField = jq$(clickedTerm).find("input").val(jsonResponse.lastPathElement);
+				var inputField = jq$(clickedTerm).find("input").val(jsonResponse.lastPathElement).select();
 				jq$(inputField).autoGrowRenameField(5);
 
 
@@ -918,6 +925,8 @@ KNOWWE.core.plugin.rightPanel = function() {
 
 	var windowWidth;
 
+	var originalPageWidth;
+
 	function getSelected() {
 		var t = '';
 		if (window.getSelection) {
@@ -989,6 +998,7 @@ KNOWWE.core.plugin.rightPanel = function() {
 
 	function restoreLayout() {
 		var resize = jq$(window).width() - jq$("#favorites").outerWidth() - 300;
+		originalPageWidth = resize;
 		jq$("#page").css("width", resize + "px");
 		jq$(rightPanel).css("width", "300px");
 		var pagesRightOffset = (jq$(window).width() - (jq$("#actionsTop").offset().left + jq$("#actionsTop").width()));
@@ -998,7 +1008,6 @@ KNOWWE.core.plugin.rightPanel = function() {
 	function floatRightPanel() {
 
 		showSidebar = true;
-
 
 		var options = {right : '0px'}
 
@@ -1042,13 +1051,15 @@ KNOWWE.core.plugin.rightPanel = function() {
 	}
 
 	function growPage() {
+		jq$("#morepopup").css("display", "none");
 		jq$("#page").animate({
-			'width' : "+=300px"
+			'width' : originalPageWidth
 		}, globalFloatingTime);
 		rightPanel.animate({
 			left : ((jq$(window).width() + 311) + "px")
 		}, globalFloatingTime, function() {
 			rightPanel.remove();
+			jq$("#morepopup").css("display", "block");
 		});
 		jq$("#pagecontent").css("margin-right", "auto");
 		jq$("#actionsBottom").css("margin-right", "auto");
@@ -1125,13 +1136,16 @@ KNOWWE.core.plugin.rightPanel = function() {
 
 
 	function bindHideFunctions() {
+		jq$("#morebutton .watches").unbind();
 		bindHideInPanel();
 		bindHideInMoreMenu();
 
 
 		function bindHideInMoreMenu() {
 			jq$("#morebutton .watches").prop("title", "Hide Right Panel");
-			jq$("#morebutton .watches").attr("onclick", "KNOWWE.core.plugin.rightPanel.hideRightPanel()");
+			jq$("#morebutton .watches").on("click", function() {
+				terminateRightPanel();
+			});
 			jq$("#morebutton .watches").text("Hide Right Panel");
 		}
 
@@ -1145,7 +1159,10 @@ KNOWWE.core.plugin.rightPanel = function() {
 
 	function changeHideToShow() {
 		jq$("#morebutton .watches").prop("title", "Show Right Panel");
-		jq$("#morebutton .watches").attr("onclick", "KNOWWE.core.plugin.rightPanel.showRightPanel()");
+		jq$("#morebutton .watches").unbind();
+		jq$("#morebutton .watches").on("click", function() {
+			KNOWWE.plugin.core.rightPanel.showRightPanel();
+		})
 		jq$("#morebutton .watches").text("Show Right Panel");
 	}
 
@@ -1166,6 +1183,7 @@ KNOWWE.core.plugin.rightPanel = function() {
 			else {
 				globalFloatingTime = 500;
 			}
+			originalPageWidth = jq$("#page").width();
 			shrinkPage();
 			buildRightPanel();
 			floatRightPanel();
@@ -1179,6 +1197,7 @@ KNOWWE.core.plugin.rightPanel = function() {
 		growPage();
 		changeHideToShow();
 		setRightPanelCookie(false);
+		showSidebar = false;
 	}
 
 	function buildToolContainer(id) {
@@ -1189,8 +1208,6 @@ KNOWWE.core.plugin.rightPanel = function() {
 				'position' : 'relative'
 			}
 		});
-
-
 	}
 
 	function buildTopBar(title) {
@@ -1489,11 +1506,11 @@ KNOWWE.core.plugin.rightPanel.watches = function() {
 
 		jq$.each(responseObject.kbsEntries, function iterateValuesFromDifferentKbs(index, value) {
 			var watchesEntryValue = createWatchesEntryValueSpan(value);
-			var tooltipcontent = jq$('<span><img src="KnowWEExtension/d3web/icon/knowledgebase24.png"></span><span>' + value.kbname + '  </span>');
+			var tooltipcontent = jq$('<span class="fa fa-book"></span><span>' + value.kbname + '  </span>');
 			jq$(watchesEntryValue).tooltipster({
 				content : tooltipcontent,
 				position : "top-left",
-				delay : 600,
+				delay : 300,
 				theme : ".tooltipster-knowwe"
 			});
 			watchesEntry.append(watchesEntryValue);
@@ -1533,7 +1550,7 @@ KNOWWE.core.plugin.rightPanel.watches = function() {
 			jq$(historyEntrySpan).tooltipster({
 				content : tooltipcontent,
 				position : "top-left",
-				delay : 600,
+				delay : 300,
 				theme : ".tooltipster-knowwe"
 			});
 		}

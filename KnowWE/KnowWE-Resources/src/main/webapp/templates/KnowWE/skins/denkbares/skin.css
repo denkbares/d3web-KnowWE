@@ -117,11 +117,11 @@
 }
 
 /*ie6 hack*/
-* html /*#wikibody.fav-left*/                                                                     #page, * html #wikibody.fav-right #favorites {
+* html /*#wikibody.fav-left*/                                                                                #page, * html #wikibody.fav-right #favorites {
 	margin-left: -3px; /*Three Pixel Text Jog*/
 }
 
-* html #wikibody.fav-right #page, * html /*#wikibody.fav-left*/                                                                     #favorites {
+* html #wikibody.fav-right #page, * html /*#wikibody.fav-left*/                                                                                #favorites {
 	margin-right: -3px; /*Three Pixel Text Jog*/
 }
 
@@ -1921,6 +1921,15 @@ div.collapse li {
 	padding: 0 0.5em;
 }
 
+.collapsebox .collapseOpen {
+
+}
+
+.collapsebox .collapseOpen:before {
+	font-family: FontAwesome;
+	content: "\f196";
+}
+
 /* +++ 930 Sortable tables +++ */
 .sortable .sortAscending, .sortable .sortDescending, .sortable .sort {
 	background-repeat: no-repeat;
@@ -2404,3 +2413,6 @@ a.action.quick2top:before {
 	margin-left: 1px;
 }
 
+#morebutton a {
+	cursor: default;
+}

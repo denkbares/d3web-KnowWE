@@ -129,7 +129,7 @@ public class Icon {
 	public static final Icon FILE_XML = new Icon(FILE_CODE.getCssClass());
 
 	//SPINNING
-	public static final Icon LOADING = new Icon("fa-spinner");
+	public static final Icon LOADING = new Icon("fa-spin fa-refresh");
 	public static final Icon WAITING = new Icon(LOADING.getCssClass());
 	public static final Icon CALCULATING = new Icon(LOADING.getCssClass());
 

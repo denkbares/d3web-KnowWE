@@ -82,10 +82,8 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="10" />
 		<parameter id="scope" value="QuestionDefinition" />
-		<parameter id="scope" value="QuestionnaireDefinition" />
 		<parameter id="scope" value="SolutionDefinition" />
 		<parameter id="scope" value="QuestionReference" />
-		<parameter id="scope" value="QuestionnaireReference" />
 		<parameter id="scope" value="QASetReference" />
 		<parameter id="scope" value="QASetDefinition" />
 		<parameter id="scope" value="AnswerReference" />

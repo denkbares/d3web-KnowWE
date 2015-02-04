@@ -141,10 +141,6 @@
 	background-color: #F9F9F9;
 }
 
-#compositeEdit a {
-	color: #036 !important;
-}
-
 #compositeEdit .onlyObjectInfoPage {
 	display: none;
 }
@@ -214,12 +210,11 @@
 	float: left !important;
 }
 
-.ui-dialog button:disabled
-{
-	background:white;
-	color:gray;
-	cursor:default;
-	opacity:0.2;
+.ui-dialog button:disabled {
+	background: white;
+	color: gray;
+	cursor: default;
+	opacity: 0.2;
 }
 
 .ui-dialog .ui-button {

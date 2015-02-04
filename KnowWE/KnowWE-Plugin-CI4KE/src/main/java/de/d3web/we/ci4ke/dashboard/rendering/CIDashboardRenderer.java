@@ -180,10 +180,9 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			warningString.appendHtml("<div id='" + id
 					+ "' style='display:inline;' class=\""
 					+ buildTool.getClass().getSimpleName() + "\" >" +
-					"<a " + ToolUtils.getActionAttribute(buildTool) + ">" +
-					"<img height='14'" +
-					"title=\"" + Strings.encodeHtml(buildTool.getDescription()) + "\" " +
-					"src=\"" + buildTool.getIcon() + "\" />" +
+					"<a " + ToolUtils.getActionAttribute(buildTool) + "" +
+					"title=\"" + Strings.encodeHtml(buildTool.getDescription()) + "\">" +
+					buildTool.getIcon().toHtml() +
 					"</a></div>");
 
 			warningString.append(")");

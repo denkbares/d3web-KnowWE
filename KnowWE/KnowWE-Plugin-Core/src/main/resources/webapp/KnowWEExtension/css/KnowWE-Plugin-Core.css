@@ -703,13 +703,13 @@ input.knowwe-paginationFilter {
 	position: relative;
 	visibility: hidden;
 	opacity: 0;
-	transition: visibility 0s linear 1s, opacity 1s linear;
+	transition: visibility 0s linear 0.2s, opacity 0.2s linear;
 }
 
 #watches div.watchlistline:hover .icon {
 	visibility: visible;
 	opacity: 1;
-	transition-delay: 0.5s;
+	transition-delay: 0.2s;
 }
 
 #watches div.iconcontainer:hover .icon {

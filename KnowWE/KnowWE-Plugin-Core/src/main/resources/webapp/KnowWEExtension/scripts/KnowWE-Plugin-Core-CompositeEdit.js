@@ -412,8 +412,8 @@ KNOWWE.plugin.compositeEditTool = function() {
 		var markupHeader = jq$('<div/>', {
 			"class" : 'markupHeader'
 		});
-		var img = jq$('<img/>', {
-			"src" : 'KnowWEExtension/images/arrow_down_lines.png'
+		var img = jq$('<i/>', {
+			"class" : 'fa fa-fw fa-lg fa-angle-down'
 		});
 		markupHeader.append(img);
 		return markupHeader;
@@ -423,8 +423,8 @@ KNOWWE.plugin.compositeEditTool = function() {
 		var markupMenu = jq$('<div/>', {
 			"class" : 'markupMenu'
 		});
-		var cancel = generateMarkUpmenuItem("_CE.cancelSection(\'" + sectionId + "\')", "Revert", "undo.png");
-		var del = generateMarkUpmenuItem("_CE.deleteSection(\'" + sectionId + "\')", "Delete this section", "delete.png");
+		var cancel = generateMarkUpmenuItem("_CE.cancelSection(\'" + sectionId + "\')", "Revert", "fa-undo");
+		var del = generateMarkUpmenuItem("_CE.deleteSection(\'" + sectionId + "\')", "Delete this section", "fa-remove");
 		markupMenu.append(cancel);
 		markupMenu.append(del);
 		return markupMenu;
@@ -438,8 +438,8 @@ KNOWWE.plugin.compositeEditTool = function() {
 			"class" : 'markupMenuItem',
 			"href" : "javascript:" + js
 		});
-		var img = jq$('<img/>', {
-			"src" : "KnowWEExtension/images/" + icon
+		var img = jq$('<i/>', {
+			"class" : "fa fa-fw " + icon
 		});
 		var span = jq$('<span/>', {
 			"text" : text
@@ -856,7 +856,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 				addEventListenerForEdit(jq$("#compositeEdit div[sectionid=" + sectionId + "]").parent());
 			};
 			_IE.disable(sectionId, false, fn)
-			_TM.decorateToolMenus('#compositeEdit div[sectionid=' + sectionId + '] .defaultMarkupFrame');
+			_TM.decorateToolMenus(jq$('#compositeEdit div[sectionid=' + sectionId + '] .defaultMarkupFrame'));
 			enableCompositeViewToolMenus(jq$('#compositeEdit div[sectionid=' + sectionId + ']'));
 		},
 

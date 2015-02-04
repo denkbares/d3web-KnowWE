@@ -56,7 +56,7 @@ public class TermRenamingAction extends AbstractAction {
 
 	public static final String TERMNAME = "termname";
 	public static final String REPLACEMENT = "termreplacement";
-
+	public static final String SECTIONID = "sectionid";
 
 	private Identifier createReplacingIdentifier(Identifier oldIdentifier, String text) {
 		String[] pathElements = oldIdentifier.getPathElements();
@@ -72,12 +72,13 @@ public class TermRenamingAction extends AbstractAction {
 		String term = context.getParameter(TERMNAME);
 		String replacement = context.getParameter(REPLACEMENT);
 		String force = context.getParameter("force");
+		String sectionId = context.getParameter(SECTIONID);
 
 		Identifier termIdentifier = Identifier.fromExternalForm(term);
 		Identifier replacementIdentifier = createReplacingIdentifier(termIdentifier, replacement);
 
 		if (force.equals("false")
-				&& getTerms(web).contains(replacementIdentifier)) {
+				&& getTerms(sectionId, web).contains(replacementIdentifier)) {
 			JSONObject response = new JSONObject();
 			try {
 				response.append("alreadyexists", "true");
@@ -100,9 +101,7 @@ public class TermRenamingAction extends AbstractAction {
 
 		while (iter.hasNext()) {
 			currentArticle = iter.next();
-			Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(
-					KnowWEUtils.getArticleManager(
-							currentArticle.getWeb()));
+			Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(Sections.get(sectionId));
 			for (TerminologyManager terminologyManager : terminologyManagers) {
 
 				// terminologyManager = KnowWEUtils
@@ -135,7 +134,8 @@ public class TermRenamingAction extends AbstractAction {
 		if (getArticlesWithoutEditRights(allTerms, context).isEmpty()) {
 			renameTerms(allTerms, termIdentifier, replacementIdentifier, mgr, context, failures, success);
 			Compilers.awaitTermination(mgr.getCompilerManager());
-			EventManager.getInstance().fireEvent(new TermRenamingEvent(mgr, context, termIdentifier, replacementIdentifier));
+			EventManager.getInstance()
+					.fireEvent(new TermRenamingEvent(mgr, context, termIdentifier, replacementIdentifier));
 			writeResponse(failures, success, termIdentifier, replacementIdentifier, context);
 		}
 		else {
@@ -251,10 +251,12 @@ public class TermRenamingAction extends AbstractAction {
 		}
 	}
 
-	public Set<Identifier> getTerms(String web) {
+	public Set<Identifier> getTerms(String sectionId, String web) {
 		// gathering all terms
 		Set<Identifier> allTerms = new HashSet<Identifier>();
-		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(KnowWEUtils.getArticleManager(web));
+
+		Section<?> section = Sections.get(sectionId);
+		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(section);
 		for (TerminologyManager terminologyManager : terminologyManagers) {
 			Collection<Identifier> allDefinedTerms = terminologyManager
 					.getAllDefinedTerms();
