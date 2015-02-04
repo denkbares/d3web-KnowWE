@@ -205,7 +205,7 @@ KNOWWE.plugin.d3webbasic.actions = function() {
 			var params = {
 				action : 'SessionResetAction',
 				SectionID : sectionId
-			}
+			};
 
 			var options = {
 				url : KNOWWE.core.util.getURL(params),
@@ -218,11 +218,10 @@ KNOWWE.plugin.d3webbasic.actions = function() {
 						}
 						KNOWWE.core.util.updateProcessingState(-1);
 					},
-					onError : function() {
-						KNOWWE.core.util.updateProcessingState(-1);
-					}
+					onError : _EC.onErrorBehavior
+
 				}
-			}
+			};
 			KNOWWE.core.util.updateProcessingState(1);
 			new _KA(options).send();
 

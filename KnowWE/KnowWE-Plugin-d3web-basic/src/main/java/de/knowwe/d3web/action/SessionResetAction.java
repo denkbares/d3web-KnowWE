@@ -32,7 +32,8 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.notification.NotificationManager;
 
 /**
- * This is a generic class for resetting d3web-Sessions using KnowWE's action mechanism. Please use this action wherever
+ * This is a generic class for resetting d3web-Sessions using KnowWE's action mechanism. Please use this action
+ * wherever
  * possible to avoid duplicate code.
  * <p/>
  * For a reset of a session the underlying knowledge base is necessary. For getting a knowledge base the name of the
@@ -61,7 +62,12 @@ public class SessionResetAction extends AbstractAction {
 		// get knowledge base
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
 		Section<?> section = Sections.get(sectionId);
-		if (section == null || !KnowWEUtils.canView(section, context)) {
+		if (section == null) {
+			context.sendError(404, "Section not found, try refreshing");
+			return;
+		}
+		if (!KnowWEUtils.canView(section, context)) {
+			context.sendError(403, "Not allowed to view article of knowledge base definition");
 			return;
 		}
 		KnowledgeBase base = D3webUtils.getKnowledgeBase(section);
