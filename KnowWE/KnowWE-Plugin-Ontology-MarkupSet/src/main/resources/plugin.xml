@@ -98,6 +98,15 @@
 		<parameter id="scope" value="TurtleURI" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="DisplayFullURITool">
+		<parameter id="class" value="de.knowwe.ontology.tools.DisplayFullURITool" />
+		<parameter id="name" value="DisplayFullURITool" />
+		<parameter id="description" value="Shows the full URI of this resource" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="50" />
+		<parameter id="scope" value="ResourceReference" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="ClassType">
 		<parameter id="class" value="de.knowwe.ontology.kdom.clazz.ClassType" />
 		<parameter id="name" value="ClassType" />
