@@ -127,6 +127,7 @@
 
 #compositeEdit .objectinfo.preview {
 	margin-bottom: 0 !important;
+	padding-left: 3px;
 	white-space: pre-wrap;
 	border: 1px solid #DDD;
 	border-right: 1px solid white;
@@ -165,10 +166,11 @@
 }
 
 #compositeEdit .ueeditmarker:after {
-	content: url(../images/pencil.png);
+	font-family: FontAwesome;
+	content: "\f040";
 	display: block;
 	position: relative;
-	left: -20px;
+	left: -15px;
 }
 
 .click input {

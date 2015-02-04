@@ -40,6 +40,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolUtils;
+import de.knowwe.util.Icon;
 
 /**
  * @author Marc-Oliver Ochlast (denkbares GmbH)
@@ -182,7 +183,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 					+ buildTool.getClass().getSimpleName() + "\" >" +
 					"<a " + ToolUtils.getActionAttribute(buildTool) + "" +
 					"title=\"" + Strings.encodeHtml(buildTool.getDescription()) + "\">" +
-					buildTool.getIcon().toHtml() +
+					buildTool.getIcon().increaseSize(Icon.Percent.by33).toHtml() +
 					"</a></div>");
 
 			warningString.append(")");

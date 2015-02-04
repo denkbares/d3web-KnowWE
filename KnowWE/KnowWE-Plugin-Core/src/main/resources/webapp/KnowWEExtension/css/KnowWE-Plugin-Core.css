@@ -547,7 +547,7 @@ input.knowwe-paginationFilter {
 	background-color: #f9f9f9;
 	padding-left: 4px;
 	color: #036;
-	z-index: 9999;
+	z-index: 500;
 }
 
 #rightPanel .rightpanelhide {
@@ -555,7 +555,7 @@ input.knowwe-paginationFilter {
 	top: -18px;
 	right: 2px;
 	cursor: pointer;
-	z-index: 9999;
+	z-index: 500;
 }
 
 #rightPanel .rightpanelhide span {
