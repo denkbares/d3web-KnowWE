@@ -19,20 +19,16 @@
  */
 package de.knowwe.rdf2go.utils;
 
-import de.d3web.collections.PartialHierarchy;
-import de.d3web.collections.PartialHierarchyTree;
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
-import de.knowwe.core.compile.Compilers;
-import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.rdf2go.Lockable;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
-import de.knowwe.rdf2go.Rdf2GoCore;
-import de.knowwe.rdf2go.Rdf2GoCore.Rdf2GoReasoning;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.model.QueryResultTable;
@@ -47,11 +43,19 @@ import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.util.RDFTool;
 import org.ontoware.rdf2go.vocabulary.RDFS;
 
-import java.net.URISyntaxException;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import de.d3web.collections.PartialHierarchy;
+import de.d3web.collections.PartialHierarchyTree;
+import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.rdf2go.Lockable;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
+import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class Rdf2GoUtils {
 
@@ -178,11 +182,6 @@ public class Rdf2GoUtils {
 
     /**
      * Returns a rdfs:label of the given concept in the given language, if existing.
-     *
-     * @param concept
-     * @param repo
-     * @param languageTag
-     * @return
      */
     public static String getLabelRDFS(URI concept, Rdf2GoCore repo, String languageTag) {
 
@@ -207,13 +206,6 @@ public class Rdf2GoUtils {
         return label;
     }
 
-    /**
-     * @param concept
-     * @param repo
-     * @param languageTag
-     * @return
-     * @created 29.04.2013
-     */
     private static String getLanguageSpecificLabel(URI concept, Rdf2GoCore repo, String languageTag) {
         if (languageTag == null) return null;
         String label = null;
@@ -337,8 +329,11 @@ public class Rdf2GoUtils {
         StringBuilder buffy = new StringBuilder();
 
         for (Entry<String, String> cur : core.getNamespaces().entrySet()) {
-            buffy.append("PREFIX " + toNamespacePrefix(cur.getKey()) + " <" + cur.getValue()
-                    + "> \n");
+            buffy.append("PREFIX ")
+					.append(toNamespacePrefix(cur.getKey()))
+					.append(" <")
+					.append(cur.getValue())
+					.append("> \n");
         }
         return buffy.toString();
     }
@@ -415,10 +410,6 @@ public class Rdf2GoUtils {
      * Returns the most specific class of the concept where '<concept> rdf:type <class>' holds.
      * For most specific one is considered to be the leaf class which has the longest path (highest depth) in the tree of all classes of the concept.
      * If there are multiple deepest classes with same depth, the result is one of those (randomly).
-     *
-     * @param core
-     * @param concept
-     * @return
      */
     public static URI findMostSpecificClass(Rdf2GoCore core, URI concept) {
         return findMostSpecificClass(getClassHierarchy(core, concept));
@@ -428,9 +419,6 @@ public class Rdf2GoUtils {
      * Returns the most specific class the given hierarchy of classes.
      * For most specific one is considered to be the leaf class which has the longest path (highest depth) in given hierarchy.
      * If there are multiple deepest classes with same depth, the result is one of those (randomly).
-     *
-     * @param classHierarchy
-     * @return
      */
     public static URI findMostSpecificClass(PartialHierarchyTree<URI> classHierarchy) {
         final Set<PartialHierarchyTree.Node<URI>> nodes = classHierarchy.getNodes();
@@ -555,15 +543,14 @@ public class Rdf2GoUtils {
     }
 
     public static void addStatement(Rdf2GoCore core, Resource subject, URI predicate, Node object, Collection<Statement> statements) {
-        if (core.getReasoningType().equals(Rdf2GoReasoning.RDF)) {
-            createUriLabel(core, subject, statements);
-            // createUriLabel(core, predicate, statements);
-            createUriLabel(core, object, statements);
-        }
         statements.add(core.createStatement(subject, predicate, object));
     }
 
-    private static void createUriLabel(Rdf2GoCore core, Node node, Collection<Statement> statements) {
+    /**
+     * This method adds a rdfs:label statement for the given Node to the collection of statements.
+	 * Be aware, that for now this only works with lns nodes!
+     */
+    public static void addRdfsLabel(Rdf2GoCore core, Node node, Collection<Statement> statements) {
         if (node instanceof URI) {
             URI uriNode = node.asURI();
             String uriNodeString = uriNode.toString();
