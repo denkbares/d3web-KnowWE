@@ -65,8 +65,8 @@ public class SetSingleFindingAction extends AbstractAction {
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
 
 		String web = context.getWeb();
-		String namespace = null;
-		String term = null;
+		String namespace;
+		String term;
 		String valueid = null;
 		namespace = Strings.decodeURL(context.getParameter(Attributes.SEMANO_NAMESPACE));
 		String tempValueID = context.getParameter(Attributes.SEMANO_VALUE_ID);

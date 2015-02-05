@@ -459,63 +459,59 @@ KNOWWE.plugin.quicki = function() {
 			event = new Event(event).stopPropagation();
 			var rel = eval("(" + _KE.target(event).getAttribute('rel') + ")");
 
-			var inputtext = 'inputTextNotFound';	// default input
-
 			// get the provided value if any is provided
-			if (_KS('#input_' + rel.oid)) {
-				inputtext = _KS('#input_' + rel.oid).value;
+			var inputtext = jq$(event.target).val();
 
-				// empty values should not be sent!
-				if (inputtext == '') {
-					KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.oid, rel.qtext,
-						{action : 'SetSingleFindingAction', ValueID : 'MaU'});
-					return;
-				}
+			// empty values should not be sent!
+			if (inputtext == '') {
+				KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.oid, rel.qtext,
+					{action : 'SetSingleFindingAction', ValueID : 'MaU'});
+				return;
+			}
 
-				// enabling float value input also with "," instead of "."
-				if (inputtext.indexOf(",") != -1) {
-					inputtext = inputtext.replace(",", ".");
-				}
-				if (!inputtext.match(/^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/)) {
-					var errormessage = 'Input needs to be a number!';
-					_KS('#' + rel.oid + "_errormsg").className = 'errormsg';
-					_KS('#' + rel.oid + "_errormsg").innerHTML = errormessage;
-					return;
-				}
-				// if range is given, validate range
-				if (rel.rangeMin != 'NaN' && rel.rangeMax != 'NaN') {
+			// enabling float value input also with "," instead of "."
+			if (inputtext.indexOf(",") != -1) {
+				inputtext = inputtext.replace(",", ".");
+			}
+			if (!inputtext.match(/^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/)) {
+				var errormessage = 'Input needs to be a number!';
+				_KS('#' + rel.oid + "_errormsg").className = 'errormsg';
+				_KS('#' + rel.oid + "_errormsg").innerHTML = errormessage;
+				return;
+			}
+			// if range is given, validate range
+			if (rel.rangeMin != 'NaN' && rel.rangeMax != 'NaN') {
 
-					var min = parseFloat(rel.rangeMin);
-					var max = parseFloat(rel.rangeMax);
-					// compare with range
-					if (parseFloat(inputtext) >= min && parseFloat(inputtext) <= max) {
+				var min = parseFloat(rel.rangeMin);
+				var max = parseFloat(rel.rangeMax);
+				// compare with range
+				if (parseFloat(inputtext) >= min && parseFloat(inputtext) <= max) {
 
-						if (_KS('#' + rel.oid + "_errormsg")) {
-							_KS('#' + rel.oid + "_errormsg").className = 'invisible';
-							_KS('#' + rel.oid + "_errormsg").innerHTML = '';
-						}
-
-						// send KNOWWE request as SingleFindingAction with given
-						// value
-						KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.oid, rel.qtext,
-							{action : 'SetSingleFindingAction', ValueNum : inputtext});
-
-					} else {
-						_KE.target(event).value = inputtext;
-
-						// and display error message
-						var errormessage = 'Input needs to be a number between ' + rel.rangeMin + ' and ' + rel.rangeMax + '!';
-						_KS('#' + rel.oid + "_errormsg").className = 'errormsg';
-						_KS('#' + rel.oid + "_errormsg").innerHTML = errormessage;
+					if (_KS('#' + rel.oid + "_errormsg")) {
+						_KS('#' + rel.oid + "_errormsg").className = 'invisible';
+						_KS('#' + rel.oid + "_errormsg").innerHTML = '';
 					}
-				}
-				// else just try to get the value and set it as finding
-				else {
+
 					// send KNOWWE request as SingleFindingAction with given
 					// value
 					KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.oid, rel.qtext,
 						{action : 'SetSingleFindingAction', ValueNum : inputtext});
+
+				} else {
+					_KE.target(event).value = inputtext;
+
+					// and display error message
+					var errormessage = 'Input needs to be a number between ' + rel.rangeMin + ' and ' + rel.rangeMax + '!';
+					_KS('#' + rel.oid + "_errormsg").className = 'errormsg';
+					_KS('#' + rel.oid + "_errormsg").innerHTML = errormessage;
 				}
+			}
+			// else just try to get the value and set it as finding
+			else {
+				// send KNOWWE request as SingleFindingAction with given
+				// value
+				KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.oid, rel.qtext,
+					{action : 'SetSingleFindingAction', ValueNum : inputtext});
 			}
 		},
 		/**
