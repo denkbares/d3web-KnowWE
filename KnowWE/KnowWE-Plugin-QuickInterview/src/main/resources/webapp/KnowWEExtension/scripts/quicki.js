@@ -525,12 +525,8 @@ KNOWWE.plugin.quicki = function() {
 			var rel = eval("(" + _KE.target(event).getAttribute('rel') + ")");
 			if (!rel) return;
 
-			var inputtext = 'inputTextNotFound';	// default input
+			var inputtext = jq$(event.target).val();
 
-			// if an input was given in the field
-			if (_KS('#input_' + rel.oid)) {
-				inputtext = _KS('#input_' + rel.oid).value;
-			}
 			if (!inputtext) {
 				KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.oid, rel.qtext,
 					{action : 'SetSingleFindingAction', ValueID : 'MaU'});
@@ -560,12 +556,8 @@ KNOWWE.plugin.quicki = function() {
 			var rel = eval("(" + _KE.target(event).getAttribute('rel') + ")");
 			if (!rel) return;
 
-			var inputtext;	// default input
+			var inputtext = jq$(event.target).val();
 
-			// if an input was given in the field
-			if (_KS('#input_' + rel.oid)) {
-				inputtext = _KS('#input_' + rel.oid).value;
-			}
 			if (!inputtext) {
 				KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.oid, rel.qtext,
 					{action : 'SetSingleFindingAction', ValueID : 'MaU'});
