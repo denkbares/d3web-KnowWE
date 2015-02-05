@@ -65,26 +65,30 @@ KNOWWE.editCommons = function() {
 			_KU.hideProcessingIndicator();
 		},
 
+		errorMessageId : "defaultErrorMessageId",
+
 		// Maybe return given messages instead
-		onErrorBehavior : function() {
+		onErrorBehavior : function(messageId) {
+			if (!messageId) messageId = _EC.errorMessageId;
 			_EC.hideAjaxLoader();
 			var status = this.status;
 			if (status == null) return;
+			KNOWWE.notification.removeNotification(messageId);
 			switch (status) {
 				case 0:
-					KNOWWE.notification.error(null, "Server appears to be offline.", status);
+					KNOWWE.notification.error(null, "Wiki appears to be offline.", messageId);
 					break;
 				case 403:
-					KNOWWE.notification.error(null, "You are not authorized to do this.", status);
+					KNOWWE.notification.error(null, "You are not authorized to do this.", messageId);
 					break;
 				case 404:
-					KNOWWE.notification.error(null, "This page no longer exists. Please reload.", status);
+					KNOWWE.notification.error(null, "This page no longer exists. Please try <a href='javascript:window.location.reload();'>reloading</a> the page or go back to an existing one.", messageId);
 					break;
 				case 409:
-					KNOWWE.notification.error(null, "This section has changed since you loaded this page. Please reload the page.", status);
+					KNOWWE.notification.error(null, "This section has changed since you loaded this page. Please try <a href='javascript:window.location.reload();'>reloading</a> the page and contact your administrator if the error remains.", messageId);
 					break;
 				default:
-					KNOWWE.notification.error(null, "Error " + status + ". Please reload the page.", status);
+					KNOWWE.notification.error(null, "Error " + status + ". Please try <a href='javascript:window.location.reload();'>reloading</a> the page and contact your administrator if the error remains.", messageId);
 					break;
 			}
 		},

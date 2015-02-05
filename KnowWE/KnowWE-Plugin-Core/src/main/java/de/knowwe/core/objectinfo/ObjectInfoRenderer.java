@@ -413,7 +413,7 @@ public class ObjectInfoRenderer implements Renderer {
 		if (root != null) return root.get();
 		root = Sections.ancestor(section, TagHandlerType.class);
 		if (root != null) return root.get();
-		return section.getParent().get();
+		return section.get();
 	}
 
 	public static void renderTermPreview(Section<?> previewSection, Collection<Section<?>> relevantSubSections, UserContext user, String cssClass, RenderResult result) {

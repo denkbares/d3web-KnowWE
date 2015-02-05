@@ -575,6 +575,7 @@ KNOWWE.core.rerendercontent = function() {
 		 */
 		execute : function(url, id, action, fn, indicateProcess) {
 			if (indicateProcess == undefined) indicateProcess = true;
+			var msgId = "executeAjax";
 			var options = {
 				url : url,
 				response : {
@@ -600,19 +601,19 @@ KNOWWE.core.rerendercontent = function() {
 							KNOWWE.helper.observer.notify("afterRerender");
 						}
 
+						KNOWWE.notification.removeNotification(msgId);
+
 					},
-					onError : function(e) {
-						if (indicateProcess) KNOWWE.core.util.updateProcessingState(-1);
-						if (this.status != 304) {
-							KNOWWE.notification.error("Unexpected server error",
-								"An unexpected, but non-critical error has occurred during an asynchronuous server request. " +
-								"Some contents of this page may be displayed incorrectly. <br>" +
-								"Please <a href='javascript:window.location.reload();'>reload</a> the page or contact your administrator if the failure remains.",
-								"execute-error");
+					onError : function() {
+						if (this.status == 304) {
+							// 304 means not change in status, so it is to be expected
+							KNOWWE.core.util.hideProcessingIndicator();
+							return;
 						}
+						_EC.onErrorBehavior.call(this, msgId);
 					}
 				}
-			}
+			};
 			if (indicateProcess) KNOWWE.core.util.updateProcessingState(1);
 			KNOWWE.helper.observer.notify("beforeRerender");
 			new _KA(options).send();

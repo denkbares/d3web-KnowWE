@@ -25,10 +25,11 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.preview.PreviewRenderer;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Renders the preview of a complete article.
- * 
+ *
  * @author Volker Belli (denkbares GmbH)
  * @created 21.02.2014
  */
@@ -36,7 +37,10 @@ public class ArticlePreviewRenderer implements PreviewRenderer {
 
 	@Override
 	public void render(Section<?> section, Collection<Section<?>> relevantSubSections, UserContext user, RenderResult result) {
-		HeaderPreviewRenderer.render(section.getChildren(), user, result);
+		result.appendHtmlElement("a", "Go to article '" + section.getTitle() + "'", "href", KnowWEUtils.getURLLink(section
+				.getArticle()));
+//		result.appendHtml(KnowWEUtils.getLinkHTMLToArticle(section.getTitle()));
+// 		HeaderPreviewRenderer.render(section.getChildren(), user, result);
 	}
 
 	@Override
