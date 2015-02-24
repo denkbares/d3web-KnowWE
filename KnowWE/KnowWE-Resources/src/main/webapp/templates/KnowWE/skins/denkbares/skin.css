@@ -1921,6 +1921,7 @@ div.collapse li {
 	padding: 0 0.5em;
 }
 
+/*
 .collapsebox .collapseOpen {
 
 }
@@ -1929,6 +1930,7 @@ div.collapse li {
 	font-family: FontAwesome;
 	content: "\f196";
 }
+*/
 
 /* +++ 930 Sortable tables +++ */
 .sortable .sortAscending, .sortable .sortDescending, .sortable .sort {
