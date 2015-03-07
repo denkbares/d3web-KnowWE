@@ -20,6 +20,7 @@
 package de.knowwe.uitest;
 
 import java.net.URL;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,6 +30,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -62,21 +64,34 @@ public class BMITest {
 		driver.get("http://www.d3web.de/Wiki.jsp?page=Body-Mass-Index");
 		By reset = By.className("reset");
 		driver.findElement(reset).click();
+		System.out.println("reset");
 		awaitRerender(reset);
 		driver.findElements(By.className("numinput")).get(0).sendKeys("2" + Keys.ENTER);
+		System.out.println("2m");
 		awaitRerender(reset);
-		driver.findElements(By.className("numinput")).get(1).sendKeys("100" + Keys.ENTER);
+		awaitRerender(reset);
+		List<WebElement> numinput = driver.findElements(By.className("numinput"));
+		System.out.println(numinput.size() + " inputs");
+		numinput.get(1).sendKeys("100" + Keys.ENTER);
+		System.out.println("100kg");
 		awaitRerender(reset);
 		assertEquals("25", driver.findElements(By.className("numinput")).get(2).getAttribute("value"));
 		assertEquals("Normal weight", driver.findElement(By.className("SOLUTION-ESTABLISHED")).getText());
 		assertEquals("bmi = 25", driver.findElement(By.className("ABSTRACTION")).getText());
+		System.out.println("Checked!");
 	}
 
 	private void awaitRerender(By by) {
+		long staleness = System.currentTimeMillis();
 		try {
-			new WebDriverWait(driver, 10).until(ExpectedConditions.stalenessOf(driver.findElement(by)));
-		} catch (TimeoutException ignore) {}
-		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(by));
+			new WebDriverWait(driver, 5).until(ExpectedConditions.stalenessOf(driver.findElement(by)));
+		} catch (TimeoutException ignore) {
+			System.out.println("timeout stale");
+		}
+		System.out.println(System.currentTimeMillis() - staleness + "ms til stale");
+		long presence = System.currentTimeMillis();
+		new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfElementLocated(by));
+		System.out.println(System.currentTimeMillis() - presence + "ms til present");
 	}
 
 	@After
