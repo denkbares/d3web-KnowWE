@@ -44,5 +44,10 @@ public interface D3webHandler<T extends Type> extends D3webCompileScript<T> {
 	default KnowledgeBase getKnowledgeBase(D3webCompiler compiler) {
 		return D3webUtils.getKnowledgeBase(compiler);
 	}
+	
+	@Override
+	default Class<D3webCompiler> getCompilerClass() {
+		return D3webCompiler.class;
+	}
 
 }
