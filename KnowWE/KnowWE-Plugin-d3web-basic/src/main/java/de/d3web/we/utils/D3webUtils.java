@@ -46,16 +46,12 @@ import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.records.SessionConversionFactory;
 import de.d3web.core.records.SessionRecord;
 import de.d3web.core.records.io.SessionPersistenceManager;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
-import de.d3web.core.session.blackboard.Blackboard;
 import de.d3web.core.session.blackboard.Fact;
-import de.d3web.core.session.values.ChoiceValue;
-import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.scoring.Score;
 import de.d3web.strings.Identifier;
@@ -294,14 +290,23 @@ public class D3webUtils {
 
 	public static void setFindingSynchronized(Fact fact, Session session, UserContext context) {
 		try {
+			//noinspection SynchronizationOnLocalVariableOrMethodParameter
 			synchronized (session) {
-				session.getBlackboard().addValueFact(fact);
+				// if the fact wants to set unknown as the value and the same fact already exists,
+				// the fact gets retracted instead, allowing to take back an answer completely.
+				Fact existingFact = session.getBlackboard().getValueFact(fact.getTerminologyObject());
+				if (Unknown.getInstance().equals(fact.getValue()) && fact.equals(existingFact)) {
+					session.getBlackboard().removeValueFact(fact);
+				}
+				else {
+					session.getBlackboard().addValueFact(fact);
+				}
 				session.touch();
 			}
 		}
 		catch (SessionTerminatedException e) {
 			Log.warning("Unable to set fact, because the current session is " +
-							"terminated (possibly due to a detected propagation loop).", e);
+					"terminated (possibly due to a detected propagation loop).", e);
 		}
 		if (context != null) {
 			EventManager.getInstance().fireEvent(new FindingSetEvent(fact, session, context));
@@ -480,36 +485,6 @@ public class D3webUtils {
 
 	private static String generateNotificationId(Session session) {
 		return session.getId() + "_loop_detected";
-	}
-
-	/**
-	 * This is a utility method for dialogs. This method returns the
-	 * {@link Value} you should set to the {@link Blackboard} if the Value
-	 * already exists:<br/>
-	 * If it is the same value, {@link Unknown} is returned.<br/>
-	 * If it is equal but Unknown, {@link UndefinedValue} is returned since there is
-	 * nothing to change.<br/>
-	 * If it is a different Value, the Value is returned unaltered.
-	 * If {@link Unknown} is not visible for the given question, instead of {@link Unknown}, {@link UndefinedValue} is
-	 * returned.
-	 *
-	 * @param newValue      the newly created Value for the dialog
-	 * @param existingValue the existing Value in the dialog
-	 * @return the Value you should set to the dialog
-	 * @created 08.01.2015
-	 */
-	public static Value handleEqualChoiceValues(Question question, Value newValue, Value existingValue) {
-		if (newValue instanceof ChoiceValue && newValue.equals(existingValue)) {
-			newValue = Unknown.getInstance();
-		}
-		else if (Unknown.getInstance().equals(newValue)
-				&& Unknown.getInstance().equals(existingValue)) {
-			newValue = UndefinedValue.getInstance();
-		}
-		if (Unknown.getInstance().equals(newValue) && !BasicProperties.isUnknownVisible(question)) {
-			newValue = UndefinedValue.getInstance();
-		}
-		return newValue;
 	}
 
 	/**
