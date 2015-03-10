@@ -420,19 +420,12 @@ KNOWWE.plugin.quicki = function() {
 				}
 			}
 
-			// do nothing caus Unknown can only be taken back if another val is
-			// set
-			if (el.className == 'answerunknownClicked') {
+			KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.qid, rel.qid,
+				{action : 'SetSingleFindingAction', ValueID : 'MaU'});
 
-			} else if (el.className == "answerunknown") {
-				KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.qid, rel.qid,
-					{action : 'SetSingleFindingAction', ValueID : 'MaU'});
+			el.className = "answerunknownClicked"; // change the highlighting
+			mcanswervals = ""; // reset the mcanswerval storage
 
-				// TODO: check if those are correct and needed at all
-				el.className = "answerunknownClicked"; // change the
-				// highlightung
-				mcanswervals = ""; // reset the mcanswerval storage
-			}
 			KNOWWE.plugin.quicki.toggleAnswerHighlightingAfterUnknown(questionID);
 
 		},
