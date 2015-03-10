@@ -35,6 +35,7 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
@@ -231,20 +232,38 @@ public class DefaultMarkupRenderer implements Renderer {
 		if (!isEmptyPlainText(first)) first = null;
 		if (!isEmptyPlainText(last)) last = null;
 		boolean listOpen = false;
+		boolean skipNext = false;
 		for (Section<?> subsec : subSections) {
 			if (subsec == first) continue;
 			if (subsec == last) continue;
-			if (listAnnotations && subsec.get() instanceof AnnotationType) {
-				if (!listOpen) {
-					result.appendHtml("\n\n<ul class='defaultMarkupAnnotations'>");
-					listOpen = true;
+			if (skipNext) {
+				skipNext = false;
+				continue;
+			}
+			de.knowwe.core.kdom.Type type = subsec.get();
+			Renderer renderer = type.getRenderer();
+			if (type instanceof AnnotationType) {
+				if (listAnnotations) {
+					if (!listOpen) {
+						result.appendHtml("\n\n<ul class='defaultMarkupAnnotations'>");
+						listOpen = true;
+					}
+					result.appendHtml("<li>");
+					renderer.render(subsec, user, result);
+					result.appendHtml("</li>");
 				}
-				result.appendHtml("<li>");
-				subsec.get().getRenderer().render(subsec, user, result);
-				result.appendHtml("</li>");
+				// if we add a "NothingRenderer" to an Annotation, the following PlainText Section
+				// containing the line break between two Annotations will still be rendered, causing
+				// vertical spaces at the end of the DefaultMarkup. Because of this, we skip here.
+				else if (renderer instanceof NothingRenderer) {
+					skipNext = true;
+				}
+				else {
+					renderer.render(subsec, user, result);
+				}
 			}
 			else {
-				subsec.get().getRenderer().render(subsec, user, result);
+				renderer.render(subsec, user, result);
 			}
 		}
 		if (listOpen) {
@@ -287,7 +306,8 @@ public class DefaultMarkupRenderer implements Renderer {
 			String newLine = "(\r?\n){2}";
 			String newLineReplacement = new RenderResult(string).appendHtml(
 					"<span>\n</span><span>\n</span>").toStringRaw();
-			string.append(content.replaceAll(newLine, newLineReplacement));
+			String cleanedContent = content.replaceAll(newLine, newLineReplacement);
+			string.append(cleanedContent);
 		}
 		else {
 			string.append("\n").append(content);
