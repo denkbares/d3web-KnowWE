@@ -76,13 +76,11 @@ KNOWWE.plugin.quicki = function() {
 
 	return {
 		applyProcessingStateToEventHandler : function(fun, event) {
-			KNOWWE.core.util.updateProcessingState(1);
 			try {
 				fun(event);
 			}
 			catch (e) { /* ignore */
 			}
-			KNOWWE.core.util.updateProcessingState(-1);
 		},
 		/**
 		 * Function: initialize add the click events and corresponding functions
@@ -92,92 +90,81 @@ KNOWWE.plugin.quicki = function() {
 
 			// select all elements with class="answer"
 			$$('.answer').each(function(element) {
-				_KE.add('click', element,
-					function(event) {
-						KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.answerClicked, event);
-					});
+				_KE.add('click', element, function(event) {
+					KNOWWE.plugin.quicki.answerClicked(event);
+				});
 			});
 			// select all elements with class="answerClicked"
 			$$('.answerClicked').each(function(element) {
-				_KE.add('click', element,
-					function(event) {
-						KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.answerClicked, event);
-					});
+				_KE.add('click', element, function(event) {
+					KNOWWE.plugin.quicki.answerClicked(event);
+				});
 			});
 
 			// select all elements with class="(.*)answerunknown(.*)"
 			// ---> class="answerunknown" and class="answerunknownClicked"
 			_KS('.answerunknown').each(function(element) {
-				_KE.add('click', element,
-					function(event) {
-						KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.answerUnknownClicked, event);
-					});
+				_KE.add('click', element, function(event) {
+					KNOWWE.plugin.quicki.answerUnknownClicked(event);
+				});
 			});
 
 			// select all elements with class="answerMC"
 			$$('.answerMC').each(function(element) {
-				_KE.add('click', element,
-					function(event) {
-						KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.answerMCCollect, event);
-					});
+				_KE.add('click', element, function(event) {
+					KNOWWE.plugin.quicki.answerMCCollect(event);
+				});
 			});
 			// select all elements with class="answerMCClicked"
 			$$('.answerMCClicked').each(function(element) {
-				_KE.add('click', element,
-					function(event) {
-						KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.answerMCCollect, event);
-					});
+				_KE.add('click', element, function(event) {
+					KNOWWE.plugin.quicki.answerMCCollect(event);
+				});
 			});
 
 			// select all elements with class="(.*)questionnaire(.*)"
 			// ---> class="questionnaire" and class="emptyQuestionnaire"
 			_KS('.questionnaire').each(function(element) {
-				_KE.add('click', element,
-					function(event) {
-						KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.toggleQuestionnaireVisibility, event);
-					});
+				_KE.add('click', element, function(event) {
+					KNOWWE.plugin.quicki.toggleQuestionnaireVisibility(event);
+				});
 			});
 
 			// add click-event for divs with class='num-ok' to submit numValues
 			// select all elements with class="num-ok"
 			$$('.num-ok').each(function(element) {
-				_KE.add('click', element,
-					function(event) {
-						KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.numAnswerClicked, event);
-					});
+				_KE.add('click', element, function(event) {
+					KNOWWE.plugin.quicki.numAnswerClicked(event);
+				});
 			});
 			// select all input fields
 			$$('.numinput, .inputdate, .inputtextvalue').each(function(element) {
-				_KE.add('blur', element,
-					function(event) {
-						KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.focusLost, event);
-					});
-				_KE.add('focus', element,
-					function(event) {
-						KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.focusGained, event);
-					});
+				_KE.add('blur', element, function(event) {
+					KNOWWE.plugin.quicki.focusLost(event);
+				});
+				_KE.add('focus', element, function(event) {
+					KNOWWE.plugin.quicki.focusGained(event);
+				});
 			});
 			// select all elements with class="numinput"
 			$$('.numinput').each(function(element) {
 				_KE.add('change', element,
 					function(event) {
-						KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.numAnswerClicked, event);
+						KNOWWE.plugin.quicki.numAnswerClicked(event);
 					});
 			});
 			// select all elements with class="inputdate"
 			$$('.inputdate').each(function(element) {
-				_KE.add('change', element,
-					function(event) {
-						KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.dateAnswerClicked, event);
-					});
+				_KE.add('change', element, function(event) {
+					KNOWWE.plugin.quicki.dateAnswerClicked(event);
+				});
 			});
 
 			// select all elements with class="inputtextvalue"
 			$$('.inputtextvalue').each(function(element) {
-				_KE.add('change', element,
-					function(event) {
-						KNOWWE.plugin.quicki.applyProcessingStateToEventHandler(KNOWWE.plugin.quicki.submitTextValue, event);
-					});
+				_KE.add('change', element, function(event) {
+					KNOWWE.plugin.quicki.submitTextValue(event);
+				});
 			});
 
 			/*
@@ -187,13 +174,16 @@ KNOWWE.plugin.quicki = function() {
 			KNOWWE.plugin.quicki.restoreQuestionnaireVis();
 
 		},
+
+		currentFocus : null,
+
 		focusGained : function(event) {
-			var rel = eval("(" + _KE.target(event).getAttribute('rel') + ")");
-			if (!rel) return;
-			toSelect = '#input_' + rel.oid;
+			var $target = jq$(event.target);
+			KNOWWE.plugin.quicki.currentFocus = $target.attr('qid');
 		},
+
 		focusLost : function(event) {
-			toSelect = null;
+			KNOWWE.plugin.quicki.currentFocus = null;
 		},
 
 		/**
@@ -202,10 +192,7 @@ KNOWWE.plugin.quicki = function() {
 		 * refresh
 		 */
 		restoreQuestionnaireVis : function() {
-
-			KNOWWE.core.util.updateProcessingState(1);
 			try {
-
 				for (var qid in questionnaireVis) {
 
 					var qvis = questionnaireVis[qid];
@@ -240,7 +227,6 @@ KNOWWE.plugin.quicki = function() {
 			}
 			catch (e) { /* ignore */
 			}
-			KNOWWE.core.util.updateProcessingState(-1);
 		},
 		/**
 		 * Function: restoreQuestionVis restores the visibility states of
@@ -692,8 +678,6 @@ KNOWWE.plugin.quicki = function() {
 			}
 		},
 		/**
-		 * TODO
-		 *
 		 * Function: toggleQuestionVisibility Toggles the visibility of
 		 * question-contents on click: visible ones are hidden, hidden ones are
 		 * displayed
@@ -729,7 +713,7 @@ KNOWWE.plugin.quicki = function() {
 				namespace : namespace,
 				ObjectID : oid,
 				TermName : termName
-			}
+			};
 
 			pDefault = KNOWWE.helper.enrich(params, pDefault);
 
@@ -749,7 +733,7 @@ KNOWWE.plugin.quicki = function() {
 						KNOWWE.core.util.updateProcessingState(-1);
 					}
 				}
-			}
+			};
 			KNOWWE.core.util.updateProcessingState(1);
 			new _KA(options).send();
 		},
@@ -767,8 +751,8 @@ KNOWWE.plugin.quicki = function() {
 			var params = {
 				namespace : KNOWWE.helper.gup('page'),
 				action : 'QuickInterviewAction',
-				SectionID : sectionId,
-			}
+				SectionID : sectionId
+			};
 
 
 			// also submit config parameters defined in the markup
@@ -778,8 +762,9 @@ KNOWWE.plugin.quicki = function() {
 				params = KNOWWE.helper.enrich(relations, params);
 
 			}
-
-			var rememberedToFocus = toSelect;
+			// we need to get this temp variable here, because on rerender, we also lose focus
+			var currentFocus = KNOWWE.plugin.quicki.currentFocus;
+			var currentCaret = jq$('#' + sectionId + ' [qid="' + currentFocus + '"]').caret();
 			var options = {
 				url : KNOWWE.core.util.getURL(params),
 				response : {
@@ -797,9 +782,11 @@ KNOWWE.plugin.quicki = function() {
 								mcanswervals += "#####"
 							});
 
-							if (rememberedToFocus) {
-								_KS(rememberedToFocus).focus();
-								_KS(rememberedToFocus).select();
+							if (currentFocus) {
+								var $input = jq$('#' + sectionId + ' [qid="' + currentFocus + '"]');
+								$input.focus();
+								$input.caret(currentCaret.begin, currentCaret.end);
+								//$input.prop("selectionEnd", currentFocus.selectionEnd);
 							}
 						}
 						catch (e) { /* ignore */
@@ -816,7 +803,7 @@ KNOWWE.plugin.quicki = function() {
 						KNOWWE.core.util.updateProcessingState(-1);
 					}
 				}
-			}
+			};
 			KNOWWE.core.util.updateProcessingState(1);
 			new _KA(options).send();
 		}
@@ -835,7 +822,7 @@ KNOWWE.plugin.quicki = function() {
 				jq$('.quickinterview').each(function() {
 					KNOWWE.plugin.quicki.showRefreshed(jq$(this).attr('sectionId'));
 				})
-			}
+			};
 			KNOWWE.helper.observer.subscribe('update', fn);
 		});
 	}

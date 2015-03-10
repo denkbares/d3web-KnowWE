@@ -429,7 +429,7 @@ public class QuickInterviewRenderer {
 		String inputSize = getInputSize();
 		if (inputSize == null) inputSize = "18";
 		// assemble the input field
-		sb.appendHtml("<input class='inputtextvalue'  style='display: inline;' type='text' "
+		sb.appendHtml("<input qid='\" + id + \"' class='inputtextvalue'  style='display: inline;' type='text' "
 				+ "value='"
 				+ Strings.encodeHtml(valueString)
 				+ "' "
@@ -443,7 +443,8 @@ public class QuickInterviewRenderer {
 	private String getInputSize() {
 		if (section.get() instanceof DefaultMarkupType) {
 			return DefaultMarkupType.getAnnotation(section, QuickInterviewMarkup.INPUT_SIZE_KEY);
-		} else {
+		}
+		else {
 			return null;
 		}
 
@@ -562,7 +563,7 @@ public class QuickInterviewRenderer {
 		String inputSize = getInputSize();
 		if (inputSize == null) inputSize = "7";
 		// assemble the input field
-		sb.appendHtml("<input class='numinput' type='text' "
+		sb.appendHtml("<input qid='" + id + "' class='numinput' type='text' "
 				+ rangeString + "value='" + valueString + "' " + "size='" + inputSize + "' " + jscall + " />");
 
 		// print the units
@@ -623,7 +624,7 @@ public class QuickInterviewRenderer {
 		String title = "Use the following date format:\n"
 				+ placeHolder + "\nTime is optional, "
 				+ "if you use time, seconds and milliseconds are optional.";
-		sb.appendHtml("<input class='inputdate'  style='display: inline;' type='dateValue' " + "value='" + valueString + "' placeholder='"
+		sb.appendHtml("<input qid='" + id + "' class='inputdate'  style='display: inline;' type='dateValue' " + "value='" + valueString + "' placeholder='"
 				+ placeHolder + "' title='" + title + "' " + jscall + " />");
 
 		// sb.append("<input type='button' value='OK' class='date-ok' /> ");
