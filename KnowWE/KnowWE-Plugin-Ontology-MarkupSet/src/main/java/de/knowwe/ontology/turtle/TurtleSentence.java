@@ -18,19 +18,22 @@
  */
 package de.knowwe.ontology.turtle;
 
-import de.d3web.strings.Strings;
+import java.util.regex.Pattern;
+
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.rendering.AnchorRenderer;
-import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.ontology.turtle.compile.TurtleCompileHandler;
 
 public class TurtleSentence extends AbstractType {
 
 	public TurtleSentence() {
-		this.setSectionFinder((text, father, type) ->
-				SectionFinderResult.resultList(Strings.splitUnquoted(text, ".", false,
-				TurtleMarkup.TURTLE_QUOTES)));
+//		this.setSectionFinder((text, father, type) ->
+//				SectionFinderResult.resultList(Strings.splitUnquoted(text, ".", false,
+//						TurtleMarkup.TURTLE_QUOTES)));
+
+		this.setSectionFinder(new RegexSectionFinder("^[^\\n\\s].*?(?=\\.\\s*$|\\z)", Pattern.MULTILINE + Pattern.DOTALL));
 
 		this.setRenderer(new AnchorRenderer());
 

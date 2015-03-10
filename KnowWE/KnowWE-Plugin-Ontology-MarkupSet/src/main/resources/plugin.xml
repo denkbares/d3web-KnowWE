@@ -67,10 +67,8 @@
 	</extension>
 
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="InlineSparql">
-		<parameter id="class"
-			value="de.knowwe.ontology.kdom.sparql.InlineSparqlMarkup" />
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="InlineSparql">
+		<parameter id="class" value="de.knowwe.ontology.kdom.sparql.InlineSparqlMarkup" />
 		<parameter id="name" value="InlineSparqlMarkup" />
 		<parameter id="description" value="KnowWEObjectType InlineSparqlMarkup" />
 		<parameter id="version" value="1.0" />
@@ -265,6 +263,14 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="NamespaceFileReloadAction">
+		<parameter id="class" value="de.knowwe.ontology.kdom.namespace.NamespaceFileReloadAction" />
+		<parameter id="name" value="NamespaceFileReloadAction" />
+		<parameter id="description" value="Reload the namespace file." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OntologyDownloadProvider">
 		<parameter id="class" value="de.knowwe.ontology.tools.OntologyDownloadProvider" />
 		<parameter id="name" value="OntologyDownloadProvider" />
@@ -386,5 +392,15 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="SparqlContentType" />
 	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="NamespaceFileReloadToolProvider">
+		<parameter id="class" value="de.knowwe.ontology.kdom.namespace.NamespaceFileReloadToolProvider" />
+		<parameter id="name" value="NamespaceFileReloadToolProvider" />
+		<parameter id="description" value="Offers a button to manually reload the file which defines the namespace." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="Namespace" />
+	</extension>
+
 
 </plugin>

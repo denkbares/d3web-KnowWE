@@ -1703,6 +1703,42 @@ KNOWWE.core.plugin.rightPanel.watches = function() {
 	}
 }();
 
+/**
+ * Namespace: KNOWWE.core.plugin.rightPanel for debugging D3web expressions in KnowWE
+ *
+ */
+KNOWWE.core.plugin.reloadNamespaceFile = function() {
+
+	function doSomething() {
+
+		return;
+
+	}
+
+
+	return {
+
+		reloadFile : function(namespaceUrl, filename, title) {
+			jq$.ajax("action/NamespaceFileReloadAction", {
+				type : 'post',
+				data : {
+					namespaceUrl : namespaceUrl,
+					filename : filename,
+					title : title
+				},
+				success : function() {
+					KNOWWE.notification.success("Success", "You successfully reloaded the namespace file in the attachment.", filename)
+					//KNOWWE.core.util.reloadPage();
+
+				},
+				error : function() {
+					KNOWWE.notification.loadNotifications();
+				}
+			});
+		}
+	}
+}();
+
 //jquery-autogrow for automatic input field resizing (customized for KnowWE renaming)
 (function() {
 

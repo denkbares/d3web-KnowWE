@@ -10,9 +10,11 @@ import org.ontoware.rdf2go.model.Syntax;
 
 import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.ontology.action.OntologyDownloadAction;
+import de.knowwe.ontology.compile.OntologyType;
 import de.knowwe.ontology.kdom.OntologyUtils;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.tools.DefaultTool;
@@ -25,6 +27,8 @@ import de.knowwe.util.Icon;
  * @created 19.04.2013
  */
 public class OntologyDownloadProvider implements ToolProvider {
+
+	public static final String TITLE = "title";
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
@@ -59,18 +63,27 @@ public class OntologyDownloadProvider implements ToolProvider {
 
 		String extension = syntax.getFilenameExtension();
 
-		// JavaScript action
-		String jsAction = "window.location='action/OntologyDownloadAction" +
-				"?" + Attributes.SECTION_ID + "=" + section.getID() +
+		List<Section<OntologyType>> ontologySections = Sections.successors(section.getArticle(), OntologyType.class);
+		String jsAction = "";
+		//if there is only one ontology section on this article provide static URL access per article name
+		String identifierForThisOntology;
+		if (ontologySections.size() == 1) {
+			identifierForThisOntology = TITLE + "=" + section.getTitle();
+		}
+		else {
+			identifierForThisOntology = Attributes.SECTION_ID + "=" + section.getID();
+		}
+		jsAction = "action/OntologyDownloadAction" +
+				"?" + identifierForThisOntology +
 				"&amp;" + OntologyDownloadAction.PARAM_SYNTAX + "=" + syntax.getName() +
-				"&amp;" + OntologyDownloadAction.PARAM_FILENAME + "=" + ontologyName + extension + "'";
-
+				"&amp;" + OntologyDownloadAction.PARAM_FILENAME + "=" + ontologyName + extension + "";
 		// assemble download tool
 		return new DefaultTool(
 				Icon.DOWNLOAD,
 				"Download " + syntax.getName().toUpperCase(),
 				"Download the entire ontology in " + syntax.getName() + " format for deployment.",
 				jsAction,
+				Tool.ActionType.HREF,
 				Tool.CATEGORY_DOWNLOAD);
 	}
 

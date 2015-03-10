@@ -29,6 +29,7 @@ import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.ontology.kdom.objectproperty.Property;
 import de.knowwe.ontology.kdom.resource.Resource;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
+import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 /**
  * SELECT DISTINCT ?resource WHERE { ?resource rdf:type rdfs:Resource . FILTER(REGEX(STR(?resource
@@ -53,10 +54,15 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 						NAMESPACE_FILTER).toString();
 		helper.registerTerminology(compiler, section, query, Resource.class);
 
-		query = new SparqlQuery().SELECT("?resource")
-				.WHERE("?resource rdf:type rdf:Property")
-				.AND_WHERE(
-						NAMESPACE_FILTER).toString();
+		query = "SELECT ?resource " +
+				"WHERE {" +
+				" {?resource rdf:type rdf:Property " + NAMESPACE_FILTER.toString() + "}" +
+				" UNION " +
+				"{?resource rdf:type owl:ObjectProperty " + NAMESPACE_FILTER.toString() + "}" +
+				" UNION " +
+				"{?resource rdf:type rdfs:subPropertyOf " + NAMESPACE_FILTER.toString() + "}" +
+				"} ";
+		query = Rdf2GoUtils.createSparqlString(compiler.getRdf2GoCore(), query);
 		helper.registerTerminology(compiler, section, query, Property.class);
 
 		// TODO: @albi: please check and discuss --> remove or extend as appropriate

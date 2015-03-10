@@ -34,6 +34,10 @@ KNOWWE.notification = function() {
 			KNOWWE.notification._add('warn', title, details, id);
 		},
 
+		success : function(title, details, id) {
+			KNOWWE.notification._add('success', title, details, id);
+		},
+
 		_getDom : function() {
 			if (!document.getElementById('KnowWENotificationDom')) {
 				// title
@@ -58,7 +62,7 @@ KNOWWE.notification = function() {
 					{
 						id : 'KnowWENotificationCounter',
 						style : 'padding: 5px; ' + 'position: fixed; '
-							+ 'top: 0px; ' + 'right: 25px;'
+						+ 'top: 0px; ' + 'right: 25px;'
 					});
 
 				// quit
@@ -66,7 +70,7 @@ KNOWWE.notification = function() {
 					{
 						id : 'KnowWENotificationQuit',
 						style : 'padding: 5px; ' + 'position: fixed; '
-							+ 'top: 0px; ' + 'right: 10px;'
+						+ 'top: 0px; ' + 'right: 10px;'
 					});
 
 				// dom
@@ -109,17 +113,22 @@ KNOWWE.notification = function() {
 				endColor = '#e6bbb8';
 			}
 
+			if (message.severity == 'success') {
+				startColor = "rgba(186, 219, 189, 0.72)";
+				endColor = "rgba(167, 249, 168, 0.72)";
+			}
+
 			// css
 			dom.attr({
 				style : 'opacity:0.95;' + 'position:fixed;' + 'z-index:2000;'
-					+ 'border-bottom:1px solid #7a7a7a;' + 'top:0px;' + 'left:0px;'
-					+ 'right:0px;' + 'width:100%;' + 'padding:5px;' + 'background-color: #f9eba5;'
-					+ 'background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(' + startColor
-					+ '), to(' + endColor + '));' + 'background-image: -webkit-linear-gradient(top, '
-					+ startColor + ',' + endColor + ');' + 'background-image: -moz-linear-gradient(top, '
-					+ startColor + ',' + endColor + ');' + 'background-image: -ms-linear-gradient(top, '
-					+ startColor + ',' + endColor + ');' + 'background-image: -o-linear-gradient(top, '
-					+ startColor + ',' + endColor + ');'
+				+ 'border-bottom:1px solid #7a7a7a;' + 'top:0px;' + 'left:0px;'
+				+ 'right:0px;' + 'width:100%;' + 'padding:5px;' + 'background-color: #f9eba5;'
+				+ 'background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(' + startColor
+				+ '), to(' + endColor + '));' + 'background-image: -webkit-linear-gradient(top, '
+				+ startColor + ',' + endColor + ');' + 'background-image: -moz-linear-gradient(top, '
+				+ startColor + ',' + endColor + ');' + 'background-image: -ms-linear-gradient(top, '
+				+ startColor + ',' + endColor + ');' + 'background-image: -o-linear-gradient(top, '
+				+ startColor + ',' + endColor + ');'
 			});
 
 			// title
@@ -159,8 +168,8 @@ KNOWWE.notification = function() {
 
 			jq$('#KnowWENotificationQuit')
 				.html(
-					'<span><a href="#" onclick="javascript:KNOWWE.notification.removeNotification(\''
-					+ message.id + '\')' + '">X</a></span>');
+				'<span><a href="#" onclick="javascript:KNOWWE.notification.removeNotification(\''
+				+ message.id + '\')' + '">X</a></span>');
 
 			// show notification bar
 			jq$('#KnowWENotificationDom').show();
@@ -243,7 +252,7 @@ KNOWWE.notification = function() {
  * Loads the notifications when DOM is ready
  */
 (function init() {
-	if (KNOWWE.helper.loadCheck([ 'Wiki.jsp' ])) {
+	if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
 		window.addEvent('domready', function() {
 			KNOWWE.notification.loadNotifications();
 			KNOWWE.helper.observer.subscribe('update',

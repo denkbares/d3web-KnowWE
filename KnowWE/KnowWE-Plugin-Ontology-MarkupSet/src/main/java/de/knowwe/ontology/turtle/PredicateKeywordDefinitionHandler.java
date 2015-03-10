@@ -30,7 +30,9 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.ontology.compile.OntologyCompileScript;
 import de.knowwe.ontology.compile.OntologyCompiler;
+import de.knowwe.ontology.kdom.objectproperty.Property;
 import de.knowwe.ontology.kdom.resource.Resource;
+import de.knowwe.ontology.turtle.compile.NodeProvider;
 
 /**
  * @author Jochen Reutelshofer (denkbares GmbH)
@@ -76,9 +78,31 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyCompileS
 			return;
 		}
 
+		Section<NodeProvider> successor = Sections.successor(predicate, NodeProvider.class);
+		String turtleURI = successor.collectTextsFromChildren();
+		Class<?> termClass = Resource.class;
+		if (turtleURI.equals("rdfs:subPropertyOf")) {
+			termClass = Property.class;
+		}
+		if (turtleURI.equals("rdf:type") || turtleURI.equals("a")) {
+			List<Section<Object>> objectSections = Sections.successors(predicate.getParent(), Object.class);
+			for (Section<Object> objectSection : objectSections) {
+				String objectText = objectSection.collectTextsFromChildren();
+				String[] properties = new String[] { "rdf:Property", "owl:Nothing", "owl:ObjectProperty", "rdf:Property",
+						"owl:TransitiveProperty", "owl:SymmetricProperty", "owl:ReflexiveProperty", "owl:OntologyProperty",
+						"owl:AsymmetricProperty", "owl:InverseFunctionalProperty", "owl:IrreflexiveProperty", "owl:",
+						"owl:FunctionalProperty", "owl:DeprecatedProperty", "owl:DatatypeProperty", "owl:AnnotationProperty",
+						"rdfs:ContainerMembershipProperty", };
+				for (String property : properties) {
+					if (objectText.equals(property)) {
+						termClass = Property.class;
+						break;
+					}
+				}
+			}
+		}
 		TerminologyManager terminologyManager = compiler.getTerminologyManager();
 		Section<?> section = terminologyManager.getTermDefiningSection(termIdentifier);
-		Class<?> termClass = Resource.class;
 		if (section != null && section.get() instanceof SimpleDefinition) {
 			Section<SimpleDefinition> simpleDefinitionSection = Sections.cast(section, SimpleDefinition.class);
 			termClass = simpleDefinitionSection.get().getTermObjectClass(simpleDefinitionSection);

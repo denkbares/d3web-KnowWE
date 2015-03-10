@@ -40,7 +40,6 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 /**
- * 
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 05.03.2013
  */
@@ -109,8 +108,9 @@ public class NamespaceFileAnnotationType extends AbstractType {
 			}
 
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
-			Section<?> abbrevDefSection = terminologyManager.getTermDefiningSection(abbrevSection.get().getTermIdentifier(
-					abbrevSection));
+			Section<?> abbrevDefSection = terminologyManager.getTermDefiningSection(abbrevSection.get()
+					.getTermIdentifier(
+							abbrevSection));
 			if (abbrevDefSection == null) {
 				return Messages.noMessage();
 			}
@@ -137,7 +137,7 @@ public class NamespaceFileAnnotationType extends AbstractType {
 		}
 	}
 
-	private static class FileNameType extends AbstractType {
+	public static class FileNameType extends AbstractType {
 
 		public FileNameType() {
 			this.setSectionFinder(AllTextFinder.getInstance());
