@@ -26,6 +26,8 @@ package de.knowwe.rdf2go;
  */
 public enum RuleSet {
 
+	NONE("owlim-rdf.ttl"),
+	RDF("owlim-rdf.ttl"),
 	RDFS("owlim-rdfs.ttl"),
 	//OWL_HORST("owlim-owl-horst.ttl"),
 	//OWL_MAX("owlim-owl-max.ttl"),
