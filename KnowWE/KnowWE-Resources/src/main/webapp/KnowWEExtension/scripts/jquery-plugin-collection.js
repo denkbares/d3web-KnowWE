@@ -47,6 +47,49 @@
 	};
 
 	/**
+	 * Sets or reads the current caret or cursor/selection.
+	 *
+	 * jq$("#id").caret(); // get the begin/end caret position
+	 * jq$("#id").caret().begin;
+	 * jq$("#id").caret().end;
+	 * jq$("#otherId").caret(5); // set the caret position by index
+	 * jq$("#otherId").caret(1, 5); // select a range
+	 *
+	 * This is an extract of the "Masked Input Plugin",
+	 * Copyright (c) 2007-2014 Josh Bush (digitalbush.com).
+	 */
+	$.fn.caret = function(begin, end) {
+		if (this.length == 0) return;
+		if (typeof begin == 'number') {
+			end = (typeof end == 'number') ? end : begin;
+			return this.each(function() {
+				if (this.setSelectionRange) {
+					this.setSelectionRange(begin, end);
+				} else if (this.createTextRange) {
+					var range = this.createTextRange();
+					range.collapse(true);
+					range.moveEnd('character', end);
+					range.moveStart('character', begin);
+					try {
+						range.select();
+					} catch (ex) {
+					}
+				}
+			});
+		} else {
+			if (this[0].setSelectionRange) {
+				begin = this[0].selectionStart;
+				end = this[0].selectionEnd;
+			} else if (document.selection && document.selection.createRange) {
+				var range = document.selection.createRange();
+				begin = 0 - range.duplicate().moveStart('character', -100000);
+				end = begin + range.text.length;
+			}
+			return {begin : begin, end : end};
+		}
+	};
+
+	/**
 	 * Rerenders the selected elements. For now, the complete default markups or ReRenderSectionMarkers are rerendered.
 	 * You can also just select successors of the default markup, the method will automatically choose the right
 	 * elements to rerender.
@@ -90,7 +133,7 @@
 				KNOWWE.core.actions.init();
 				KNOWWE.helper.observer.notify("afterRerender", jq$('#' + id));
 				if (callback) callback();
-			}).always(function(){
+			}).always(function() {
 				KNOWWE.core.util.updateProcessingState(-1);
 			});
 
@@ -737,15 +780,15 @@ jQuery.fn.insertAt = function(index, element) {
  license: MIT
  http://www.jacklmoore.com/autosize
  */
-(function ($) {
+(function($) {
 	var
 		defaults = {
-			className: 'autosizejs',
-			id: 'autosizejs',
-			append: '\n',
-			callback: false,
-			resizeDelay: 10,
-			placeholder: true
+			className : 'autosizejs',
+			id : 'autosizejs',
+			append : '\n',
+			callback : false,
+			resizeDelay : 10,
+			placeholder : true
 		},
 
 	// border:0 is unnecessary, but avoids a bug in Firefox on OSX
@@ -777,7 +820,7 @@ jQuery.fn.insertAt = function(index, element) {
 	}
 	mirror.style.lineHeight = '';
 
-	$.fn.autosize = function (options) {
+	$.fn.autosize = function(options) {
 		if (!this.length) {
 			return this;
 		}
@@ -788,7 +831,7 @@ jQuery.fn.insertAt = function(index, element) {
 			$(document.body).append(mirror);
 		}
 
-		return this.each(function () {
+		return this.each(function() {
 			var
 				ta = this,
 				$ta = $(ta),
@@ -797,11 +840,11 @@ jQuery.fn.insertAt = function(index, element) {
 				boxOffset = 0,
 				callback = $.isFunction(options.callback),
 				originalStyles = {
-					height: ta.style.height,
-					overflow: ta.style.overflow,
-					overflowY: ta.style.overflowY,
-					wordWrap: ta.style.wordWrap,
-					resize: ta.style.resize
+					height : ta.style.height,
+					overflow : ta.style.overflow,
+					overflowY : ta.style.overflowY,
+					wordWrap : ta.style.wordWrap,
+					resize : ta.style.resize
 				},
 				timeout,
 				width = $ta.width(),
@@ -813,7 +856,7 @@ jQuery.fn.insertAt = function(index, element) {
 			}
 			$ta.data('autosize', true);
 
-			if ($ta.css('box-sizing') === 'border-box' || $ta.css('-moz-box-sizing') === 'border-box' || $ta.css('-webkit-box-sizing') === 'border-box'){
+			if ($ta.css('box-sizing') === 'border-box' || $ta.css('-moz-box-sizing') === 'border-box' || $ta.css('-webkit-box-sizing') === 'border-box') {
 				boxOffset = $ta.outerHeight() - $ta.height();
 			}
 
@@ -821,13 +864,13 @@ jQuery.fn.insertAt = function(index, element) {
 			minHeight = Math.max(parseFloat($ta.css('minHeight')) - boxOffset || 0, $ta.height());
 
 			$ta.css({
-				overflow: 'hidden',
-				overflowY: 'hidden',
-				wordWrap: 'break-word' // horizontal overflow is hidden, so break-word is necessary for handling words longer than the textarea width
+				overflow : 'hidden',
+				overflowY : 'hidden',
+				wordWrap : 'break-word' // horizontal overflow is hidden, so break-word is necessary for handling words longer than the textarea width
 			});
 
 			if (taResize === 'vertical') {
-				$ta.css('resize','none');
+				$ta.css('resize', 'none');
 			} else if (taResize === 'both') {
 				$ta.css('resize', 'horizontal');
 			}
@@ -846,14 +889,14 @@ jQuery.fn.insertAt = function(index, element) {
 						width = parseFloat(style.width);
 					}
 
-					$.each(['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'], function(i,val){
+					$.each(['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'], function(i, val) {
 						width -= parseFloat(style[val]);
 					});
 				} else {
 					width = $ta.width();
 				}
 
-				mirror.style.width = Math.max(width,0) + 'px';
+				mirror.style.width = Math.max(width, 0) + 'px';
 			}
 
 			function initMirror() {
@@ -869,7 +912,7 @@ jQuery.fn.insertAt = function(index, element) {
 				// original textarea.  mirror always has a height of 0.
 				// This gives a cross-browser supported way getting the actual
 				// height of the text, through the scrollTop property.
-				$.each(typographyStyles, function(i,val){
+				$.each(typographyStyles, function(i, val) {
 					styles[val] = $ta.css(val);
 				});
 
@@ -939,22 +982,22 @@ jQuery.fn.insertAt = function(index, element) {
 					mirror.className = mirror.className;
 
 					if (callback) {
-						options.callback.call(ta,ta);
+						options.callback.call(ta, ta);
 					}
 					$ta.trigger('autosize.resized');
 				}
 			}
 
-			function resize () {
+			function resize() {
 				clearTimeout(timeout);
-				timeout = setTimeout(function(){
+				timeout = setTimeout(function() {
 					var newWidth = $ta.width();
 
 					if (newWidth !== width) {
 						width = newWidth;
 						adjust();
 					}
-				}, parseInt(options.resizeDelay,10));
+				}, parseInt(options.resizeDelay, 10));
 			}
 
 			if ('onpropertychange' in ta) {
@@ -965,8 +1008,8 @@ jQuery.fn.insertAt = function(index, element) {
 					$ta.on('input.autosize keyup.autosize', adjust);
 				} else {
 					// IE7 / IE8
-					$ta.on('propertychange.autosize', function(){
-						if(event.propertyName === 'value'){
+					$ta.on('propertychange.autosize', function() {
+						if (event.propertyName === 'value') {
 							adjust();
 						}
 					});
@@ -994,7 +1037,7 @@ jQuery.fn.insertAt = function(index, element) {
 				adjust();
 			});
 
-			$ta.on('autosize.destroy', function(){
+			$ta.on('autosize.destroy', function() {
 				mirrored = null;
 				clearTimeout(timeout);
 				$(window).off('resize', resize);
@@ -1015,9 +1058,9 @@ jQuery.fn.insertAt = function(index, element) {
 /**
  * DatePicker and DateTimePicker, extended from jQuery UI
  */
-(function (jq$) {
+(function(jq$) {
 
-	jq$.datepicker.setDefaults({dateFormat: "dd/mm/yy"});
+	jq$.datepicker.setDefaults({dateFormat : "dd/mm/yy"});
 
 	var datepickerFunction = jq$.fn.datepicker;
 	jq$.fn.datepicker = function() {

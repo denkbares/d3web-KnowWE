@@ -552,20 +552,6 @@ KNOWWE.helper.ajax = function ( options ) {
     }
     
     /**
-     * Function: createLoader
-     * Creates an AJAX loading image.
-     */
-    function createLoader(){
-        var loading = document.createElement('div');
-        var domID = document.createAttribute('id');
-        domID.nodeValue = 'KNOWWE-ajax-loader';
-        loading.setAttributeNode( domID );
-        loading.innerHTML = "<img src=\"KnowWEExtension/images/ajax-loader.gif\" width=\"32\" height=\"32\"/>";
-        
-        document.getElementsByTagName("body")[0].appendChild( loading );        
-    }
-    
-    /** 
      * Function: handleResponse
      * Handles the response from the AJAX request. If the AJAX request ended 
      * without errors the action defined in oDefault.response.action is executed.
@@ -629,12 +615,7 @@ KNOWWE.helper.ajax = function ( options ) {
 					oDefault.response.onError.call(this, http);
 				}
 	    	}
-			
-            if(oDefault.loader) {
-                var loader = document.getElementById('KNOWWE-ajax-loader');
-                loader.parentNode.removeChild( loader );
-            }
-        }  
+        }
     }    
     
     /**
@@ -664,9 +645,6 @@ KNOWWE.helper.ajax = function ( options ) {
         	 http.send( oDefault.data );
         } else {
         	http.send( oDefault.method );
-        }
-        if(oDefault.loader){
-            createLoader();
         }
     }
     /**
