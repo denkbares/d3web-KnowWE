@@ -168,7 +168,7 @@ KNOWWE.notification = function() {
 
 			jq$('#KnowWENotificationQuit')
 				.html(
-				'<span><a href="#" onclick="javascript:KNOWWE.notification.removeNotification(\''
+				'<span><a onclick="KNOWWE.notification.removeNotification(\''
 				+ message.id + '\')' + '">X</a></span>');
 
 			// show notification bar
@@ -197,14 +197,14 @@ KNOWWE.notification = function() {
 			var params = {
 				action : 'RemoveNotificationAction',
 				notificationid : id
-			}
+			};
 
 			var options = {
 				url : KNOWWE.core.util.getURL(params),
 				response : {
-					action : 'none',
+					action : 'none'
 				}
-			}
+			};
 			new _KA(options).send();
 		},
 
@@ -215,7 +215,7 @@ KNOWWE.notification = function() {
 			KNOWWE.notification.messages = [];
 			var params = {
 				action : 'GetNotificationsAction'
-			}
+			};
 
 			var options = {
 				url : KNOWWE.core.util.getURL(params),
