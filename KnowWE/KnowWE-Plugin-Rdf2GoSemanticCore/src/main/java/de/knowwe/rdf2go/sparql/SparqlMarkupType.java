@@ -54,6 +54,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		m.addAnnotation(NAVIGATION, false, "true", "false");
 		m.addAnnotationRenderer(NAVIGATION, NothingRenderer.getInstance());
 		m.addAnnotation(RENDER_QUERY, false, "true", "false");
+		m.addAnnotationRenderer(RENDER_QUERY,  NothingRenderer.getInstance());
 		m.addAnnotation(ZEBRAMODE, false, "true", "false");
 		m.addAnnotationRenderer(ZEBRAMODE, NothingRenderer.getInstance());
 		m.addAnnotation(TREE, false, "true", "false");
