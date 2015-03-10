@@ -26,7 +26,7 @@ import de.knowwe.core.action.UserActionContext;
 
 /**
  * Disables the InstantEdit mode.
- * 
+ *
  * @author Stefan Mark
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 15.06.2011
@@ -43,7 +43,7 @@ public class InstantEditDisableAction extends AbstractAction {
 			return;
 		}
 
-		if (!Environment.getInstance().getWikiConnector().userCanEditArticle(topic,
+		if (!Environment.getInstance().getWikiConnector().userCanViewArticle(topic,
 				context.getRequest())) {
 			context.sendError(403, "You do not have the permission to edit this page.");
 			return;
