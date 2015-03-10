@@ -459,6 +459,59 @@
 		</profile>
 
 		<profile>
+			<id>denkbares-free2use</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-Admin-Utils</artifactId>
+					<version>0-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-AutoComplete</artifactId>
+					<version>0-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-DenkbaresDialog</artifactId>
+					<version>0.2-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-EditMode</artifactId>
+					<version>0-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-ImageMap</artifactId>
+					<version>0-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-PlantUML</artifactId>
+					<version>0-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-Todos</artifactId>
+					<version>0-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-SparqlEndpoint</artifactId>
+					<version>0.2-SNAPSHOT</version>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
 			<id>denkbares-thrillseeker</id>
 			<dependencies>
 				<dependency>
