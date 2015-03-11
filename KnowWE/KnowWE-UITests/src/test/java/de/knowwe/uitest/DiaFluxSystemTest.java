@@ -20,11 +20,15 @@
 package de.knowwe.uitest;
 
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -37,28 +41,24 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * Created by Veronika Sehne (denkbares GmbH) on 28.01.15.
- *
+ * <p/>
  * Test the Test Protocol for DiaFlux (System Test - Manual DiaFlux BMI)
  */
 public class DiaFluxSystemTest {
 
-	private WebDriver driver;
+	private static WebDriver driver;
 
-	@Before
-	public void setUp() throws Exception {
-		// Choose the browser, version, and platform to test
-		DesiredCapabilities capabilities = DesiredCapabilities.firefox();
-		capabilities.setCapability("name", this.getClass().getSimpleName());
-		capabilities.setCapability("platform", Platform.WINDOWS);
-		// Create the connection to Sauce Labs to run the tests
-		this.driver = new RemoteWebDriver(
-				new URL("http://d3web:8c7e5a48-56dd-4cde-baf0-b17f83803044@ondemand.saucelabs.com:80/wd/hub"), capabilities);
-	}
+	/*
+	 *  If you set this to true, you can test locally, which will be much faster
+	 *  Don't commit this as true, because Jenkins build WILL fail!
+	 */
+	private static boolean devMode = false;
 
-	@Test
-	public void testDiaFlux() throws Exception {
-		driver.get("http://www.d3web.de/Wiki.jsp?page=ST-BMI");
-		String input = "%%package systemtest\n" +
+	private String inputStep1;
+	private String inputStep2;
+
+	{
+		inputStep1 = "%%package systemtest\n" +
 				"\n" +
 				"%%QuickInterview %\n" +
 				"\n" +
@@ -93,79 +93,119 @@ public class DiaFluxSystemTest {
 				"Illegal arguments\n" +
 				"%\n";
 
-		// first step: Insert Terminology and Administration
+		inputStep2 = inputStep1 + "\n%%DiaFlux \n" +
+				"%\n" +
+				"\n" +
+				"%%DiaFlux \n" +
+				"%\n" +
+				"\n" +
+				"%%DiaFlux \n" +
+				"%\n" +
+				"\n" +
+				"%%DiaFlux \n" +
+				"%";
+	}
+
+	@BeforeClass
+	public static void setUp() throws Exception {
+		// Create the connection to Sauce Labs to run the tests
+		if (devMode) {
+			driver = new RemoteWebDriver(new URL("http://localhost:9515"), DesiredCapabilities.chrome());
+		}
+		else {
+			// Choose the browser, version, and platform to test
+			DesiredCapabilities capabilities = DesiredCapabilities.firefox();
+			capabilities.setCapability("name", DiaFluxSystemTest.class.getSimpleName());
+			capabilities.setCapability("platform", Platform.WINDOWS);
+			driver = new RemoteWebDriver(
+					new URL("http://d3web:8c7e5a48-56dd-4cde-baf0-b17f83803044@ondemand.saucelabs.com:80/wd/hub"),
+					capabilities);
+		}
+		driver.manage().window().setSize(new Dimension(1024, 768));
+	}
+
+	@Before
+	public void load() throws Exception {
+		if (devMode) {
+			driver.get("http://localhost:8080/KnowWE/Wiki.jsp?page=ST-BMI");
+		}
+		else {
+			driver.get("https://www.d3web.de/Wiki.jsp?page=ST-BMI");
+			authenticate();
+		}
+	}
+
+	private void authenticate() {
 		driver.findElement(By.cssSelector("a.action.login")).click();
 		driver.findElement(By.id("j_username")).sendKeys("test");
 		driver.findElement(By.id("j_password")).sendKeys("8bGNmPjn");
 		driver.findElement(By.name("submitlogin")).click();
+	}
+
+	/**
+	 * Insert Terminology and Administration
+	 */
+	//@Test
+	public void firstStep() {
 		driver.findElement(By.id("edit-source-button")).click();
 		WebElement editorarea = (new WebDriverWait(driver, 10))
 				.until(ExpectedConditions.presenceOfElementLocated(By.id("editorarea")));
 		driver.findElement(By.id("editorarea")).clear();
-		editorarea.sendKeys(input);
-		//driver.findElement(By.id("editorarea")).sendKeys(input);
+		editorarea.sendKeys(inputStep1);
 		driver.findElement(By.name("ok")).click();
 		// hier noch ueberpruefen, dass keine Fehlermeldung aufgetreten ist
 		//assertEquals("The annotation @master is deprecated.", driver.findElement(By.id("content_b4874b07")).getText());
+	}
 
-		// second step: Insert Terminology and Administration
+	/**
+	 * Add and initialize FlowCharts.
+	 */
+	@Test
+	public void secondStep() throws Exception {
 
 		driver.findElement(By.id("edit-source-button")).click();
 		driver.findElement(By.id("editorarea")).clear();
-		driver.findElement(By.id("editorarea")).sendKeys(input + "\n%%DiaFlux \n" +
-				"%\n" +
-				"\n" +
-				"%%DiaFlux \n" +
-				"%\n" +
-				"\n" +
-				"%%DiaFlux \n" +
-				"%\n" +
-				"\n" +
-				"%%DiaFlux \n" +
-				"%");
+		driver.findElement(By.id("editorarea")).sendKeys(inputStep2);
 		driver.findElement(By.name("ok")).click();
 
-		// third step: Create DiaFlux panel with Start and Exit nodes
+		// Create DiaFlux panel with Start and Exit nodes
 		String winHandleBefore = driver.getWindowHandle();
 
 		// first DiaFlux panel
 		driver.findElement(By.cssSelector("span.information > a")).click();
-		for(String winHandle : driver.getWindowHandles()){
-			driver.switchTo().window(winHandle);
-		}
+		switchToOtherWindow(winHandleBefore);
+
 		WebElement start = driver.findElement(By.id("start_prototype"));
-		WebElement flowchart = driver.findElement(By.className("Flowchart"));
 		WebElement exit = driver.findElement(By.id("exit_prototype"));
 		driver.findElement(By.id("properties.autostart")).click();
 		driver.findElement(By.id("properties.editName")).clear();
 		driver.findElement(By.id("properties.editName")).sendKeys("BMI-Main");
-		(new Actions(driver)).dragAndDrop(start, flowchart).perform();
-		(new Actions(driver)).dragAndDrop(exit, flowchart).perform();
+		(new Actions(driver)).dragAndDropBy(start, -300, 300).perform();
+		Thread.sleep(300);
+		(new Actions(driver)).dragAndDropBy(exit, 0, 300).perform();
+		Thread.sleep(300);
 		driver.findElement(By.id("saveClose")).click();
 		driver.switchTo().window(winHandleBefore);
 
 		// second DiaFlux panel
-		driver.findElement(By.linkText("Click here to create one.")).click();
-		for(String winHandle : driver.getWindowHandles()){
-			driver.switchTo().window(winHandle);
-		}
+		By secondFlow = By.linkText("Click here to create one.");
+		awaitRerender(secondFlow);
+		driver.findElement(secondFlow).click();
+		switchToOtherWindow(winHandleBefore);
+
 		driver.findElement(By.id("properties.editName")).clear();
 		driver.findElement(By.id("properties.editName")).sendKeys("BMI-Anamnesis");
 		start = driver.findElement(By.id("start_prototype"));
-		flowchart = driver.findElement(By.className("Flowchart"));
 		exit = driver.findElement(By.id("exit_prototype"));
-		(new Actions(driver)).dragAndDrop(start, flowchart).perform();
-		(new Actions(driver)).dragAndDrop(exit, flowchart).perform();
-		// add Start and Exit to Flowchart
-		// designate Start and Exit
-		// move Start and Exit
-//		driver.findElement(By.className("exitPane")).click();
-//		(new Actions(driver)).doubleClick(driver.findElement(By.id("#node_2_highlight")));
-//		driver.findElement(By.xpath("//div[@id='flow_871e1cb3']/div/div[3]/div[2]/div[2]/input")).click();
-//		driver.findElement(By.className("value")).clear();
-//		driver.findElement(By.className("value")).sendKeys("Illegal Arguments");
-		(new Actions(driver)).dragAndDrop(exit, flowchart).perform();
-		(new Actions(driver)).dragAndDrop(exit, flowchart).perform();
+		(new Actions(driver)).dragAndDropBy(start, -300, 300).perform();
+		Thread.sleep(300);
+		(new Actions(driver)).dragAndDropBy(exit, -100, 400).perform();
+		Thread.sleep(300);
+		(new Actions(driver)).dragAndDropBy(exit, -250, 500).perform();
+		Thread.sleep(300);
+		(new Actions(driver)).dragAndDropBy(exit, 0, 500).perform();
+		Thread.sleep(300);
+
 		Actions builder = (new Actions(driver));
 		builder.moveToElement(driver.findElement(By.id("#node_2")), 400, 400);
 		builder.click();
@@ -194,11 +234,18 @@ public class DiaFluxSystemTest {
 //		driver.switchTo().window(winHandleBefore);
 	}
 
+	private void switchToOtherWindow(String winHandleBefore) {
+		Set<String> windowHandles = new HashSet<>(driver.getWindowHandles());
+		windowHandles.remove(winHandleBefore);
+		driver.switchTo().window(windowHandles.iterator().next());
+	}
 
 	private void awaitRerender(By by) {
 		try {
 			new WebDriverWait(driver, 10).until(ExpectedConditions.stalenessOf(driver.findElement(by)));
-		} catch (TimeoutException ignore) {}
+		}
+		catch (TimeoutException ignore) {
+		}
 		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(by));
 	}
 
