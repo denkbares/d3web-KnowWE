@@ -23,7 +23,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,7 +40,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
- * Created by Veronika Sehne (denkbares GmbH) on 28.01.15.
+ * Created by Veronika Sehne, Albrecht Striffler (denkbares GmbH) on 28.01.15.
  * <p/>
  * Test the Test Protocol for DiaFlux (System Test - Manual DiaFlux BMI)
  */
@@ -51,6 +51,11 @@ public class DiaFluxSystemTest {
 	/*
 	 *  If you set this to true, you can test locally, which will be much faster
 	 *  Don't commit this as true, because Jenkins build WILL fail!
+	 *
+	 *  To test locally, you also need to download the ChromeDriver from
+	 *  https://sites.google.com/a/chromium.org/chromedriver/downloads
+	 *  and start it on your machine. Also, you need a locally running KnowWE with a page "ST-BMI".
+	 *  State of the page does not matter, it will be cleared for each new test.
 	 */
 	private static boolean devMode = false;
 
@@ -148,12 +153,12 @@ public class DiaFluxSystemTest {
 	//@Test
 	public void firstStep() {
 		driver.findElement(By.id("edit-source-button")).click();
-		WebElement editorarea = (new WebDriverWait(driver, 10))
-				.until(ExpectedConditions.presenceOfElementLocated(By.id("editorarea")));
+		WebElement editorarea = new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("editorarea")));
 		driver.findElement(By.id("editorarea")).clear();
 		editorarea.sendKeys(inputStep1);
 		driver.findElement(By.name("ok")).click();
-		// hier noch ueberpruefen, dass keine Fehlermeldung aufgetreten ist
+
+		// hier noch überpruefen, dass keine Fehlermeldung aufgetreten ist
 		//assertEquals("The annotation @master is deprecated.", driver.findElement(By.id("content_b4874b07")).getText());
 	}
 
@@ -172,69 +177,72 @@ public class DiaFluxSystemTest {
 		String winHandleBefore = driver.getWindowHandle();
 
 		// first DiaFlux panel
-		driver.findElement(By.cssSelector("span.information > a")).click();
-		switchToOtherWindow(winHandleBefore);
+		createNextFlow();
+		switchToEditor(winHandleBefore);
 
-		WebElement start = driver.findElement(By.id("start_prototype"));
-		WebElement exit = driver.findElement(By.id("exit_prototype"));
 		driver.findElement(By.id("properties.autostart")).click();
-		driver.findElement(By.id("properties.editName")).clear();
-		driver.findElement(By.id("properties.editName")).sendKeys("BMI-Main");
-		(new Actions(driver)).dragAndDropBy(start, -300, 300).perform();
-		Thread.sleep(300);
-		(new Actions(driver)).dragAndDropBy(exit, 0, 300).perform();
-		Thread.sleep(300);
-		driver.findElement(By.id("saveClose")).click();
-		driver.switchTo().window(winHandleBefore);
+
+		setFlowName("BMI-Main");
+		addStartNode(-300, 300);
+		addExitNode(0, 300);
+
+		saveAndSwitchBack(winHandleBefore);
 
 		// second DiaFlux panel
-		By secondFlow = By.linkText("Click here to create one.");
-		awaitRerender(secondFlow);
-		driver.findElement(secondFlow).click();
-		switchToOtherWindow(winHandleBefore);
+		createNextFlow();
+		switchToEditor(winHandleBefore);
 
-		driver.findElement(By.id("properties.editName")).clear();
-		driver.findElement(By.id("properties.editName")).sendKeys("BMI-Anamnesis");
-		start = driver.findElement(By.id("start_prototype"));
-		exit = driver.findElement(By.id("exit_prototype"));
-		(new Actions(driver)).dragAndDropBy(start, -300, 300).perform();
-		Thread.sleep(300);
-		(new Actions(driver)).dragAndDropBy(exit, -100, 400).perform();
-		Thread.sleep(300);
-		(new Actions(driver)).dragAndDropBy(exit, -250, 500).perform();
-		Thread.sleep(300);
-		(new Actions(driver)).dragAndDropBy(exit, 0, 500).perform();
-		Thread.sleep(300);
+		setFlowName("BMI-SelectTherapy");
 
-		Actions builder = (new Actions(driver));
-		builder.moveToElement(driver.findElement(By.id("#node_2")), 400, 400);
-		builder.click();
-		builder.build().perform();
-		driver.findElement(By.id("saveClose")).click();
-		driver.switchTo().window(winHandleBefore);
+		addStartNode(-300, 300);
+		addExitNode(-100, 400);
+		addExitNode(-250, 500);
+		addExitNode(0, 500);
 
-//		// third DiaFlux panel
-//		driver.findElement(By.linkText("Click here to create one.")).click();
-//		for(String winHandle : driver.getWindowHandles()){
-//			driver.switchTo().window(winHandle);
-//		}
-//		// add Start and Exit to Flowchart
-		// designate Start and Exit
-		// move Start and Exit
-//		driver.switchTo().window(winHandleBefore);
 
-//		// fourth DiaFlux panel
-//		driver.findElement(By.linkText("Click here to create one.")).click();
-//		for(String winHandle : driver.getWindowHandles()){
-//			driver.switchTo().window(winHandle);
-//		}
-//		// add Start and Exit to Flowchart
-		// designate Start and Exit
-		// move Start and Exit
-//		driver.switchTo().window(winHandleBefore);
+		saveAndSwitchBack(winHandleBefore);
+
+		// third DiaFlux panel
+		createNextFlow();
+		switchToEditor(winHandleBefore);
+
+		setFlowName("BMI-Anamnesis");
+		addStartNode(-300, 300);
+		addStartNode(-300, 400);
+		addExitNode(-100, 350);
+
+		saveAndSwitchBack(winHandleBefore);
+
 	}
 
-	private void switchToOtherWindow(String winHandleBefore) {
+	private void createNextFlow() {
+		driver.findElement(By.linkText("Click here to create one.")).click();
+	}
+
+	private void saveAndSwitchBack(String winHandleBefore) {
+		driver.findElement(By.id("saveClose")).click();
+		driver.switchTo().window(winHandleBefore);
+		awaitRerender(By.id("pagecontent"));
+	}
+
+	private void addStartNode(int xOffset, int yOffset) throws InterruptedException {
+		WebElement start = driver.findElement(By.id("start_prototype"));
+		(new Actions(driver)).dragAndDropBy(start, xOffset, yOffset).perform();
+		Thread.sleep(300);
+	}
+
+	private void addExitNode(int xOffset, int yOffset) throws InterruptedException {
+		WebElement start = driver.findElement(By.id("exit_prototype"));
+		(new Actions(driver)).dragAndDropBy(start, xOffset, yOffset).perform();
+		Thread.sleep(300);
+	}
+
+	private void setFlowName(String flowName) {
+		driver.findElement(By.id("properties.editName")).clear();
+		driver.findElement(By.id("properties.editName")).sendKeys(flowName);
+	}
+
+	private void switchToEditor(String winHandleBefore) {
 		Set<String> windowHandles = new HashSet<>(driver.getWindowHandles());
 		windowHandles.remove(winHandleBefore);
 		driver.switchTo().window(windowHandles.iterator().next());
@@ -249,8 +257,9 @@ public class DiaFluxSystemTest {
 		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(by));
 	}
 
-	@After
-	public void tearDown() throws Exception {
-		driver.quit();
+	@AfterClass
+	public static void tearDown() throws Exception {
+		// if we quit, we don't see the status of the test at the end
+		if (!devMode) driver.quit();
 	}
 }
