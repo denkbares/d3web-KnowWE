@@ -102,6 +102,7 @@ public class DiaFluxSystemTest {
 		driver.findElement(By.id("j_username")).sendKeys("test");
 		driver.findElement(By.id("j_password")).sendKeys("8bGNmPjn");
 		driver.findElement(By.name("submitlogin")).click();
+		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.action.logout")));
 	}
 
 	@Test
@@ -327,6 +328,7 @@ public class DiaFluxSystemTest {
 		Set<String> windowHandles = new HashSet<>(driver.getWindowHandles());
 		windowHandles.remove(articleHandle);
 		driver.switchTo().window(windowHandles.iterator().next());
+		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("start_prototype")));
 	}
 
 	private void awaitRerender(By by) {
