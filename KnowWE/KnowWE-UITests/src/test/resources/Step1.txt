@@ -1,0 +1,33 @@
+%%package systemtest
+
+%%QuickInterview %
+
+%%ShowSolutions %
+
+%%KnowledgeBase
+Manual system test
+%
+
+%%Question
+Data
+- Age [num] (0 99) {years}
+- Age classification [oc] <abstract>
+-- Pediatrics
+-- Adult
+- Height [num] (0 3) {m}
+- Weight [num] (1 300) {kg}
+- bmi [num] <abstract>
+- Weight classification [oc]
+-- Normal weight
+-- Overweight
+-- Severe overweight
+- Continue selected therapy [yn]
+Therapies
+- Therapy [oc] <abstract>
+-- Mild therapy
+-- Rigorous therapy
+%
+
+%%Solution
+Illegal arguments
+%

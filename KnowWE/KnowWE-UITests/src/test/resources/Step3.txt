@@ -1,0 +1,130 @@
+%%package systemtest
+
+%%QuickInterview %
+
+%%ShowSolutions
+%
+
+%%KnowledgeBase
+Manual system test
+%
+
+%%Question
+Data
+- Age [num] (0 99) {years}
+- Age classification [oc] <abstract>
+-- Pediatrics
+-- Adult
+- Height [num] (0 3) {m}
+- Weight [num] (1 300) {kg}
+- bmi [num] <abstract>
+- Weight classification [oc]
+-- Normal weight
+-- Overweight
+-- Severe overweight
+- Continue selected therapy [yn]
+Therapies
+- Therapy [oc] <abstract>
+-- Mild therapy
+-- Rigorous therapy
+%
+
+%%Solution
+Illegal arguments
+%
+
+%%DiaFlux
+<flowchart fcid="flow_5d50b2d2" name="BMI-Main" icon="sanduhr.gif" width="553" height="50" autostart="true" idCounter="3">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="20" top="20"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_3">
+		<position left="465" top="20"></position>
+		<exit>Exit</exit>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+</flowchart>
+%
+
+%%DiaFlux
+<flowchart fcid="flow_168767af" name="BMI-Anamnesis" icon="sanduhr.gif" width="488" height="250" autostart="false" idCounter="5">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="20" top="20"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_3">
+		<position left="265" top="120"></position>
+		<exit>Illegal arguments</exit>
+	</node>
+
+	<node fcid="#node_4">
+		<position left="115" top="220"></position>
+		<exit>Weight ok</exit>
+	</node>
+
+	<node fcid="#node_5">
+		<position left="365" top="220"></position>
+		<exit>Weight problem</exit>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+</flowchart>
+%
+
+%%DiaFlux
+<flowchart fcid="flow_4b9df25d" name="BMI-SelectTherapy" icon="sanduhr.gif" width="353" height="150" autostart="false" idCounter="4">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="20" top="20"></position>
+		<start>Mild therapy</start>
+	</node>
+
+	<node fcid="#node_3">
+		<position left="20" top="120"></position>
+		<start>Rigorous therapy</start>
+	</node>
+
+	<node fcid="#node_4">
+		<position left="265" top="70"></position>
+		<exit>Done</exit>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+</flowchart>
+%
+
+%%DiaFlux
+<flowchart fcid="flow_ce62e679" name="BMI-SelectMode" icon="sanduhr.gif" width="453" height="200" autostart="false" idCounter="4">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="20" top="20"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_3">
+		<position left="265" top="170"></position>
+		<exit>Pediatrics</exit>
+	</node>
+
+	<node fcid="#node_4">
+		<position left="365" top="170"></position>
+		<exit>Adult</exit>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+</flowchart>
+%
