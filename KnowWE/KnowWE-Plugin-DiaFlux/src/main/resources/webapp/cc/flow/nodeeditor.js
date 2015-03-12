@@ -12,15 +12,15 @@ CCEvents.addClassListener('click', 'Node',
 			this.__node.select(multiple);
 		}
 
-		if (event.isRightClick()) {
-			contextMenuFlowchart.close();
-			contextMenuRule.close();
-			contextMenuNode.show(event, this.__node);
-		} else {
-			contextMenuNode.close();
-			contextMenuFlowchart.close();
-			contextMenuRule.close();
-		}
+		//if (event.isRightClick()) {
+		//	contextMenuFlowchart.close();
+		//	contextMenuRule.close();
+		//	contextMenuNode.show(event, this.__node);
+		//} else {
+		//	contextMenuNode.close();
+		//	contextMenuFlowchart.close();
+		//	contextMenuRule.close();
+		//}
 	}
 );
 
