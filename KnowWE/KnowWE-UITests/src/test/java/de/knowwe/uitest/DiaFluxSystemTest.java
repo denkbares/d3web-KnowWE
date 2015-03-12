@@ -21,6 +21,7 @@ package de.knowwe.uitest;
 
 import java.net.URL;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.AfterClass;
@@ -136,12 +137,14 @@ public class DiaFluxSystemTest {
 		}
 		else {
 			driver.get("https://www.d3web.de/Wiki.jsp?page=ST-BMI");
-			authenticate();
+			logIn();
 		}
 	}
 
-	private void authenticate() {
-		driver.findElement(By.cssSelector("a.action.login")).click();
+	private void logIn() {
+		List<WebElement> elements = driver.findElements(By.cssSelector("a.action.login"));
+		if (elements.isEmpty()) return; // already logged in
+		elements.get(0).click();
 		driver.findElement(By.id("j_username")).sendKeys("test");
 		driver.findElement(By.id("j_password")).sendKeys("8bGNmPjn");
 		driver.findElement(By.name("submitlogin")).click();
@@ -150,13 +153,9 @@ public class DiaFluxSystemTest {
 	/**
 	 * Insert Terminology and Administration
 	 */
-	//@Test
+	@Test
 	public void firstStep() {
-		driver.findElement(By.id("edit-source-button")).click();
-		WebElement editorarea = new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("editorarea")));
-		driver.findElement(By.id("editorarea")).clear();
-		editorarea.sendKeys(inputStep1);
-		driver.findElement(By.name("ok")).click();
+		changeArticleText(inputStep1);
 
 		// hier noch überpruefen, dass keine Fehlermeldung aufgetreten ist
 		//assertEquals("The annotation @master is deprecated.", driver.findElement(By.id("content_b4874b07")).getText());
@@ -168,10 +167,7 @@ public class DiaFluxSystemTest {
 	@Test
 	public void secondStep() throws Exception {
 
-		driver.findElement(By.id("edit-source-button")).click();
-		driver.findElement(By.id("editorarea")).clear();
-		driver.findElement(By.id("editorarea")).sendKeys(inputStep2);
-		driver.findElement(By.name("ok")).click();
+		changeArticleText(inputStep2);
 
 		// Create DiaFlux panel with Start and Exit nodes
 		String winHandleBefore = driver.getWindowHandle();
@@ -213,6 +209,25 @@ public class DiaFluxSystemTest {
 
 		saveAndSwitchBack(winHandleBefore);
 
+		// third DiaFlux panel
+		createNextFlow();
+		switchToEditor(winHandleBefore);
+
+		setFlowName("BMI-SelectMode");
+		addStartNode(-300, 300);
+		addExitNode(-100, 450);
+		addExitNode(0, 450);
+
+		saveAndSwitchBack(winHandleBefore);
+
+	}
+
+	private void changeArticleText(String newText) {
+		driver.findElement(By.id("edit-source-button")).click();
+		WebElement editorarea = new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("editorarea")));
+		editorarea.clear();
+		editorarea.sendKeys(newText);
+		driver.findElement(By.name("ok")).click();
 	}
 
 	private void createNextFlow() {
