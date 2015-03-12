@@ -103,6 +103,7 @@ public class DiaFluxSystemTest {
 		driver.findElement(By.id("j_password")).sendKeys("8bGNmPjn");
 		driver.findElement(By.name("submitlogin")).click();
 		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.action.logout")));
+		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
 	}
 
 	@Test
