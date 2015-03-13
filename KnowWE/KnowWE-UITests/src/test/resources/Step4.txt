@@ -1,0 +1,240 @@
+%%package systemtest
+
+%%QuickInterview %
+
+%%ShowSolutions
+%
+
+%%KnowledgeBase
+Manual system test
+%
+
+%%Question
+Data
+- Age [num] (0 99) {years}
+- Age classification [oc] <abstract>
+-- Pediatrics
+-- Adult
+- Height [num] (0 3) {m}
+- Weight [num] (1 300) {kg}
+- bmi [num] <abstract>
+- Weight classification [oc]
+-- Normal weight
+-- Overweight
+-- Severe overweight
+- Continue selected therapy [yn]
+Therapies
+- Therapy [oc] <abstract>
+-- Mild therapy
+-- Rigorous therapy
+%
+
+%%Solution
+Illegal arguments
+%
+
+%%DiaFlux
+<flowchart fcid="flow_5e624059" name="BMI-Main" icon="sanduhr.gif" width="654" height="331" autostart="true" idCounter="23">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="20" top="24"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_3">
+		<position left="465" top="24"></position>
+		<exit>Exit</exit>
+	</node>
+
+	<node fcid="#node_4">
+		<position left="245" top="20"></position>
+		<action markup="KnOffice"><![CDATA[CALL[BMI-SelectMode(Start)]]]></action>
+	</node>
+
+	<node fcid="#node_7">
+		<position left="445" top="110"></position>
+		<action markup="KnOffice"><![CDATA[CALL[BMI-Anamnesis(Start)]]]></action>
+	</node>
+
+	<node fcid="#node_11">
+		<position left="395" top="180"></position>
+		<decision><![CDATA[bmi]]></decision>
+	</node>
+
+	<node fcid="#node_13">
+		<position left="45" top="180"></position>
+		<action markup="KnOffice"><![CDATA[CALL[BMI-SelectTherapy("Mild therapy")]]]></action>
+	</node>
+
+	<node fcid="#node_14">
+		<position left="45" top="280"></position>
+		<action markup="KnOffice"><![CDATA[CALL[BMI-SelectTherapy("Rigorous therapy")]]]></action>
+	</node>
+
+	<node fcid="#node_17">
+		<position left="395" top="240"></position>
+		<action markup="KnOffice"><![CDATA["Continue selected therapy"]]></action>
+	</node>
+
+	<node fcid="#node_19">
+		<position left="565" top="300"></position>
+		<snapshot>Snapshot</snapshot>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_5">
+		<origin>#node_2</origin>
+		<target>#node_4</target>
+	</edge>
+
+	<edge fcid="#rule_6">
+		<origin>#node_4</origin>
+		<target>#node_3</target>
+		<guard markup="KnOffice"><![CDATA[IS_ACTIVE["BMI-SelectMode"(Pediatrics)]]]></guard>
+	</edge>
+
+	<edge fcid="#rule_8">
+		<origin>#node_4</origin>
+		<target>#node_7</target>
+		<guard markup="KnOffice"><![CDATA[IS_ACTIVE["BMI-SelectMode"(Adult)]]]></guard>
+	</edge>
+
+	<edge fcid="#rule_9">
+		<origin>#node_7</origin>
+		<target>#node_3</target>
+		<guard markup="KnOffice"><![CDATA[IS_ACTIVE["BMI-Anamnesis"("Illegal arguments")]]]></guard>
+	</edge>
+
+	<edge fcid="#rule_10">
+		<origin>#node_7</origin>
+		<target>#node_3</target>
+		<guard markup="KnOffice"><![CDATA[IS_ACTIVE["BMI-Anamnesis"("Weight ok")]]]></guard>
+	</edge>
+
+	<edge fcid="#rule_12">
+		<origin>#node_7</origin>
+		<target>#node_11</target>
+		<guard markup="KnOffice"><![CDATA[IS_ACTIVE["BMI-Anamnesis"("Weight problem")]]]></guard>
+	</edge>
+
+	<edge fcid="#rule_15">
+		<origin>#node_11</origin>
+		<target>#node_13</target>
+		<guard markup="timeDB"><![CDATA[eval(gradient(bmi[-7d, 0s]) >= 0 & gradient(bmi[-7d, 0s]) < 5)]]></guard>
+	</edge>
+
+	<edge fcid="#rule_16">
+		<origin>#node_11</origin>
+		<target>#node_14</target>
+		<guard markup="timeDB"><![CDATA[eval(gradient(bmi[-7d, 0s]) >= 5)]]></guard>
+	</edge>
+
+	<edge fcid="#rule_18">
+		<origin>#node_11</origin>
+		<target>#node_17</target>
+		<guard markup="timeDB"><![CDATA[eval(gradient(bmi[-7d, 0s]) < 0)]]></guard>
+	</edge>
+
+	<edge fcid="#rule_20">
+		<origin>#node_13</origin>
+		<target>#node_19</target>
+		<guard markup="KnOffice"><![CDATA[IS_ACTIVE["BMI-SelectTherapy"(Done)]]]></guard>
+	</edge>
+
+	<edge fcid="#rule_21">
+		<origin>#node_14</origin>
+		<target>#node_19</target>
+		<guard markup="KnOffice"><![CDATA[IS_ACTIVE["BMI-SelectTherapy"(Done)]]]></guard>
+	</edge>
+
+	<edge fcid="#rule_22">
+		<origin>#node_17</origin>
+		<target>#node_19</target>
+	</edge>
+
+	<edge fcid="#rule_23">
+		<origin>#node_19</origin>
+		<target>#node_7</target>
+	</edge>
+
+</flowchart>
+%
+
+%%DiaFlux
+<flowchart fcid="flow_9d2a22d4" name="BMI-Anamnesis" icon="sanduhr.gif" width="499" height="361" autostart="false" idCounter="5">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="20" top="20"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_3">
+		<position left="265" top="170"></position>
+		<exit>Illegal arguments</exit>
+	</node>
+
+	<node fcid="#node_4">
+		<position left="115" top="320"></position>
+		<exit>Weight ok</exit>
+	</node>
+
+	<node fcid="#node_5">
+		<position left="365" top="331"></position>
+		<exit>Weight problem</exit>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+</flowchart>
+%
+
+%%DiaFlux
+<flowchart fcid="flow_1c072bbf" name="BMI-SelectTherapy" icon="sanduhr.gif" width="353" height="150" autostart="false" idCounter="4">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="20" top="20"></position>
+		<start>Mild therapy</start>
+	</node>
+
+	<node fcid="#node_3">
+		<position left="20" top="120"></position>
+		<start>Rigorous therapy</start>
+	</node>
+
+	<node fcid="#node_4">
+		<position left="265" top="70"></position>
+		<exit>Done</exit>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+</flowchart>
+%
+
+%%DiaFlux
+<flowchart fcid="flow_5a4916fe" name="BMI-SelectMode" icon="sanduhr.gif" width="453" height="200" autostart="false" idCounter="4">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="20" top="20"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_3">
+		<position left="265" top="170"></position>
+		<exit>Pediatrics</exit>
+	</node>
+
+	<node fcid="#node_4">
+		<position left="365" top="170"></position>
+		<exit>Adult</exit>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+</flowchart>
+%

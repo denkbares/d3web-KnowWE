@@ -47,7 +47,7 @@ import de.d3web.strings.Strings;
 
 /**
  * Created by Veronika Sehne, Albrecht Striffler (denkbares GmbH) on 28.01.15.
- * <p/>
+ * <p>
  * Test the Test Protocol for DiaFlux (System Test - Manual DiaFlux BMI)
  */
 public class DiaFluxSystemTest {
@@ -74,7 +74,7 @@ public class DiaFluxSystemTest {
 		}
 		else {
 			// Choose the browser, version, and platform to test
-			DesiredCapabilities capabilities = DesiredCapabilities.firefox();
+			DesiredCapabilities capabilities = DesiredCapabilities.chrome();
 			capabilities.setCapability("name", DiaFluxSystemTest.class.getSimpleName());
 			capabilities.setCapability("platform", Platform.WINDOWS);
 			driver = new RemoteWebDriver(
@@ -127,8 +127,8 @@ public class DiaFluxSystemTest {
 		driver.findElement(By.id("properties.autostart")).click();
 
 		setFlowName("BMI-Main");
-		addStartNode(null, -300, 300);
-		addExitNode(null, 100, 300);
+		addStartNode(-300, 300);
+		addExitNode(100, 300);
 
 		saveAndSwitchBack(article);
 
@@ -138,10 +138,10 @@ public class DiaFluxSystemTest {
 
 		setFlowName("BMI-Anamnesis");
 
-		addStartNode(null, -300, 300);
-		addExitNode("Illegal arguments", -100, 400);
-		addExitNode("Weight ok", -250, 500);
-		addExitNode("Weight problem", 0, 500);
+		addStartNode(-300, 300);
+		addExitNode(-100, 450, "Illegal arguments");
+		addExitNode(-250, 600, "Weight ok");
+		addExitNode(0, 600, "Weight problem");
 
 		saveAndSwitchBack(article);
 
@@ -150,9 +150,9 @@ public class DiaFluxSystemTest {
 		switchToEditor(article);
 
 		setFlowName("BMI-SelectTherapy");
-		addStartNode("Mild therapy", -300, 300);
-		addStartNode("Rigorous therapy", -300, 400);
-		addExitNode("Done", -100, 350);
+		addStartNode(-300, 300, "Mild therapy");
+		addStartNode(-300, 400, "Rigorous therapy");
+		addExitNode(-100, 350, "Done");
 
 		saveAndSwitchBack(article);
 
@@ -161,15 +161,15 @@ public class DiaFluxSystemTest {
 		switchToEditor(article);
 
 		setFlowName("BMI-SelectMode");
-		addStartNode(null, -300, 300);
-		addExitNode("Pediatrics", -100, 450);
-		addExitNode("Adult", 0, 450);
+		addStartNode(-300, 300);
+		addExitNode(-100, 450, "Pediatrics");
+		addExitNode(0, 450, "Adult");
 
 		saveAndSwitchBack(article);
 
 	}
 
-	//@Test
+	@Test
 	public void implementBMIMain() throws Exception {
 		changeArticleText(readFile("Step3.txt"));
 
@@ -179,32 +179,32 @@ public class DiaFluxSystemTest {
 
 		switchToEditor(articleHandle);
 
-		addActionNode("BMI-SelectMode", -300, 60);
+		addActionNode(-300, 60, "BMI-SelectMode");
 
 		connect(2, 4);
 		connect(4, 3, "Pediatrics");
 
-		addActionNode("BMI-Anamnesis", -100, 150); // 7
+		addActionNode(-100, 150, "BMI-Anamnesis"); // 7
 
 		connect(4, 7, "Adult");
 		connect(7, 3, "Illegal arguments");
 		connect(7, 3, "Weight ok");
 
-		addActionNode("bmi", -150, 220); // 11
+		addActionNode(-150, 220, "bmi"); // 11
 
 		connect(7, 11, "Weight problem");
 
-		addActionNode("BMI-SelectTherapy", -500, 220); // 13
-		addActionNode("BMI-SelectTherapy", "Rigorous therapy", -500, 320); // 14
+		addActionNode(-500, 220, "BMI-SelectTherapy"); // 13
+		addActionNode(-500, 320, "BMI-SelectTherapy", "Rigorous therapy"); // 14
 
 		connect(11, 13, "Formula", "gradient(bmi[-7d, 0s]) >= 0 & gradient(bmi[-7d, 0s]) < 5");
 		connect(11, 14, "Formula", "gradient(bmi[-7d, 0s]) >= 5");
 
-		addActionNode("Continue selected therapy", "ask", -150, 280); // 17
+		addActionNode(-150, 280, "Continue selected therapy", "ask"); // 17
 
 		connect(11, 17, "Formula", "gradient(bmi[-7d, 0s]) < 0");
 
-		addSnapshotNode(null, -160, 340); // 19
+		addSnapshotNode(-160, 340); // 19
 
 		connect(13, 19, "Done");
 		connect(14, 19, "Done");
@@ -215,27 +215,118 @@ public class DiaFluxSystemTest {
 		saveAndSwitchBack(articleHandle);
 	}
 
-	private void connect(int sourceId, int targetId) {
-		connect(sourceId, targetId, null, null);
+	@Test
+	public void implementBMIAnamnesis() throws Exception {
+		changeArticleText(readFile("Step4.txt"));
+
+		String articleHandle = driver.getWindowHandle();
+
+		clickTool("type_DiaFlux", 2, "visual editor");
+
+		switchToEditor(articleHandle);
+
+		addActionNode(-300, 60, "Height", "ask"); // 6
+		addActionNode(-100, 60, "Weight", "always ask"); // 7
+
+		connect(2, 6);
+		connect(6, 7, "> ", "0");
+
+		addActionNode(-300, 150, "Illegal arguments"); // 10
+
+		connect(6, 10, "= ", "0");
+		connect(10, 3);
+
+		addActionNode(-100, 250, "bmi", "Formula", "Weight / (Height * Height)"); // 13
+
+		connect(7, 13, "known");
+
+		addActionNode(-500, 250, "Weight classification", "Normal weight"); // 15
+		addActionNode(-200, 320, "Weight classification", "Overweight"); // 16
+		addActionNode(0, 320, "Weight classification", "Severe overweight"); // 17
+
+		connect(13, 15, "[  ..  [", "18.5", "25");
+		connect(13, 16, "[  ..  [", "25", "30");
+		connect(13, 17, "≥ ", "30");
+
+		connect(15, 4);
+		connect(16, 5);
+		connect(17, 5);
+
+		saveAndSwitchBack(articleHandle);
 	}
 
-	private void connect(int sourceId, int targetId, String option) {
-		connect(sourceId, targetId, option, null);
+	@Test
+	public void implementBMISelectTherapy() throws Exception {
+		changeArticleText(readFile("Step5.txt"));
+
+		String articleHandle = driver.getWindowHandle();
+
+		clickTool("type_DiaFlux", 3, "visual editor");
+
+		switchToEditor(articleHandle);
+
+		// white spaces to give the auto complete some time
+		addActionNode(-300, 60, "Therapy       " + Keys.ARROW_DOWN + Keys.ARROW_DOWN , "Mild therapy"); // 5
+		addActionNode(-300, 120, "Therapy       " + Keys.ARROW_DOWN + Keys.ARROW_DOWN , "Rigorous therapy"); // 6
+
+		connect(2, 5);
+		connect(3, 6);
+		connect(5, 4);
+		connect(6, 4);
+
+		saveAndSwitchBack(articleHandle);
 	}
 
-	private void connect(int sourceId, int targetId, String option, String optionText) {
+	@Test
+	public void implementBMISelectMode() throws Exception {
+		changeArticleText(readFile("Step6.txt"));
+
+		String articleHandle = driver.getWindowHandle();
+
+		clickTool("type_DiaFlux", 4, "visual editor");
+
+		switchToEditor(articleHandle);
+
+		addActionNode(-400, 60, "Age " , "ask"); // 5
+		addActionNode(-220, 60, "Age classification" , "Adult"); // 6
+		addActionNode(-400, 120, "Age classification" , "Pediatrics"); // 7
+		addActionNode(-220, 120, "Age classification" ); // 8
+
+		connect(2, 5);
+		connect(5, 6, "> ", "14");
+		connect(5, 7, "≤ ", "14");
+		connect(6, 8);
+		connect(7, 8);
+		connect(8, 3, "Pediatrics");
+		connect(8, 4, "Adult");
+
+		saveAndSwitchBack(articleHandle);
+	}
+
+	private void connect(int sourceId, int targetId, String... text) {
 		driver.findElement(By.id("#node_" + sourceId)).click();
 		WebElement arrowTool = driver.findElement(By.className("ArrowTool"));
 		WebElement targetNode = driver.findElement(By.id("#node_" + targetId));
 		(new Actions(driver)).dragAndDrop(arrowTool, targetNode).perform();
-		if (option != null) {
+		if (text.length > 0) {
 			WebElement select = driver.findElement(By.cssSelector(".selectedRule select"));
 			select.click();
-			if (option.equalsIgnoreCase("formula")) {
+			if (text[0].equalsIgnoreCase("formula")) {
 				select.findElement(By.xpath("//option[@value='" + 13 + "']")).click();
-				driver.findElement(By.cssSelector(".selectedRule textarea")).sendKeys(optionText + Keys.ENTER);
-			} else {
-				select.findElement(By.xpath("//option[text()='" + option + "']")).click();
+				driver.findElement(By.cssSelector(".selectedRule textarea")).sendKeys(text[1] + Keys.ENTER);
+			}
+			else {
+				select.findElement(By.xpath("//option[text()='" + text[0] + "']")).click();
+				if (text.length > 1) {
+					List<WebElement> inputs = driver.findElements(By.cssSelector(".GuardEditor input"));
+					inputs.get(0).sendKeys(text[1]);
+					if (text.length > 2) {
+						inputs.get(1).sendKeys(text[2] + Keys.ENTER);
+					}
+					else {
+						inputs.get(0).sendKeys(Keys.ENTER);
+					}
+				}
 			}
 		}
 	}
@@ -275,43 +366,45 @@ public class DiaFluxSystemTest {
 		awaitRerender(By.id("pagecontent"));
 	}
 
-	private void addActionNode(String text, int xOffset, int yOffset) throws InterruptedException {
-		addActionNode(text, null, xOffset, yOffset);
+	private void addActionNode(int xOffset, int yOffset, String... text) throws InterruptedException {
+		addNode(xOffset, yOffset, By.id("decision_prototype"), By.cssSelector(".NodeEditor .ObjectSelect *"), text);
 	}
 
-	private void addActionNode(String text, String dropdown, int xOffset, int yOffset) throws InterruptedException {
-		addNode(By.id("decision_prototype"), By.cssSelector(".NodeEditor .ObjectSelect *"), text, dropdown, xOffset, yOffset);
+	private void addStartNode(int xOffset, int yOffset, String... text) throws InterruptedException {
+		addNode(xOffset, yOffset, By.id("start_prototype"), By.cssSelector(".NodeEditor .startPane input"), text);
 	}
 
-	private void addStartNode(String text, int xOffset, int yOffset) throws InterruptedException {
-		addNode(By.id("start_prototype"), By.cssSelector(".NodeEditor .startPane input"), text, null, xOffset, yOffset);
+	private void addSnapshotNode(int xOffset, int yOffset, String... text) throws InterruptedException {
+		addNode(xOffset, yOffset, By.id("snapshot_prototype"), By.cssSelector(".NodeEditor .snapshotPane input"), text);
 	}
 
-	private void addSnapshotNode(String text, int xOffset, int yOffset) throws InterruptedException {
-		addNode(By.id("snapshot_prototype"), By.cssSelector(".NodeEditor .snapshotPane input"), text, null, xOffset, yOffset);
+	private void addExitNode(int xOffset, int yOffset, String... text) throws InterruptedException {
+		addNode(xOffset, yOffset, By.id("exit_prototype"), By.cssSelector(".NodeEditor .exitPane input"), text);
 	}
 
-	private void addExitNode(String text, int xOffset, int yOffset) throws InterruptedException {
-		addNode(By.id("exit_prototype"), By.cssSelector(".NodeEditor .exitPane input"), text, null, xOffset, yOffset);
-	}
-
-	private void addNode(By prototypeSelector, By textSelector, String text, String dropdown, int xOffset, int yOffset) throws InterruptedException {
+	private void addNode(int xOffset, int yOffset, By prototypeSelector, By textSelector, String... text) throws InterruptedException {
 		WebElement start = driver.findElement(prototypeSelector);
 		new Actions(driver).dragAndDropBy(start, xOffset, yOffset).perform();
-		Thread.sleep(300);
-		if (text != null) {
+		Thread.sleep(200);
+		if (text.length > 0) {
 			List<WebElement> nodes = driver.findElements(By.cssSelector(".Flowchart > .Node"));
 			WebElement newNode = nodes.get(nodes.size() - 1);
 			new Actions(driver).doubleClick(newNode).perform();
 			driver.findElement(textSelector).click();
 			driver.findElement(textSelector).clear();
-			driver.findElement(textSelector).sendKeys(text);
+			driver.findElement(textSelector).sendKeys(text[0]);
 			Thread.sleep(100);
 			driver.findElement(textSelector).sendKeys(Keys.ENTER);
-			if (dropdown != null) {
-				WebElement select = driver.findElement(By.cssSelector(".ActionEditor select"));
-				select.click();
-				select.findElement(By.xpath("//option[text()='" + dropdown + "']")).click();
+			if (text.length > 1) {
+				WebElement actionSelect = driver.findElement(By.cssSelector(".ActionEditor select"));
+				actionSelect.click();
+				if (text[1].equalsIgnoreCase("formula")) {
+					actionSelect.findElement(By.xpath("//option[@value='" + 1 + "']")).click();
+					driver.findElement(By.cssSelector(".ActionEditor textarea")).sendKeys(text[2] + Keys.ENTER);
+				}
+				else {
+					actionSelect.findElement(By.xpath("//option[text()='" + text[1] + "']")).click();
+				}
 			}
 
 			List<WebElement> okButtons = driver.findElements(By.cssSelector(".NodeEditor .ok"));
@@ -325,7 +418,8 @@ public class DiaFluxSystemTest {
 		driver.findElement(By.id("properties.editName")).sendKeys(flowName);
 	}
 
-	private void switchToEditor(String articleHandle) {
+	private void switchToEditor(String articleHandle) throws InterruptedException {
+		Thread.sleep(300);
 		Set<String> windowHandles = new HashSet<>(driver.getWindowHandles());
 		windowHandles.remove(articleHandle);
 		driver.switchTo().window(windowHandles.iterator().next());
