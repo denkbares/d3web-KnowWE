@@ -48,6 +48,7 @@ import org.apache.wiki.event.WikiEventListener;
 import org.apache.wiki.event.WikiEventUtils;
 import org.apache.wiki.event.WikiPageEvent;
 import org.apache.wiki.event.WikiPageRenameEvent;
+import org.apache.wiki.providers.CachingProvider;
 import org.apache.wiki.providers.WikiPageProvider;
 import org.apache.wiki.ui.TemplateManager;
 
@@ -377,8 +378,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
 		articleManager.open();
 		try {
-			PageManager mgr = engine.getPageManager();
-			Collection<?> wikiPages = mgr.getAllPages();
+			Collection<?> wikiPages = getAllPages(engine);
 			long start = System.currentTimeMillis();
 			wikiPages.parallelStream().forEach(o -> {
 				WikiPage wp = (WikiPage) o;
@@ -404,6 +404,31 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 					e);
 		}
 		EventManager.getInstance().fireEvent(new InitializedArticlesEvent(articleManager));
+	}
+
+	private Collection<?> getAllPages(WikiEngine engine) throws ProviderException {
+		PageManager mgr = engine.getPageManager();
+		WikiPageProvider provider = mgr.getProvider();
+		Collection<?> wikiPages;
+		/*
+		 Why do we need this workaround? Why do we check for the CachingProvider and so forth here?
+		 JSPWiki does not handle case sensitivity in article names very well. On the one hand, it is possible in JSPWiki
+		 to have article names that only differ in the case, which is a problem if you want to use such a wiki in a
+		 case insensitive file system. On the other hand, JSPWiki will match article links case insensitively and even
+		 creates pseudo wiki pages in the CachingProvider for those links which match only case insensitive.
+		 Since KnowWE is designed with the promise that it also works with case insensitive file systems, it also
+		 handles article names case insensitively. If the CachingProvider now serves pseudo articles based on links with
+		 wrong case, we run into problems (e.g. ArticleManager in KnowWE stores articles case insensitively).
+		 To solve this, we circumvent the CachingProvider here and use the actual FileSystemProvider instead, which will
+		 not have those pseudo articles.
+		*/
+		if (provider instanceof CachingProvider) {
+			wikiPages = ((CachingProvider) provider).getRealProvider().getAllPages();
+		}
+		else {
+			wikiPages = mgr.getAllPages();
+		}
+		return wikiPages;
 	}
 
 	private String renderKDOM(String content, UserContext userContext,
