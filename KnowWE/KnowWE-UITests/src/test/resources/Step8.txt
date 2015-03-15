@@ -24,9 +24,9 @@ Data
 -- Severe overweight
 - Continue selected therapy [yn]
 Therapies
-- Therapy [oc] <abstract>
--- Mild therapy
--- Rigorous therapy
+- "Therapy üöäß&%$§`´<#>/\|=,!()[]{};:_-" [oc] <abstract>
+-- "Mild therapy üöäß&%$§`´<#>/\|=,!()[]{};:_-"
+-- "Rigorous therapy üöäß&%$§`´<#>/\|=,!()[]{};:_-"
 %
 
 %%Solution
@@ -342,25 +342,84 @@ Illegal arguments
 %
 
 %%DiaFlux
-<flowchart fcid="flow_5a4916fe" name="BMI-SelectMode" icon="sanduhr.gif" width="453" height="200" autostart="false" idCounter="4">
+<flowchart fcid="flow_5a4916fe" name="BMI-SelectMode" icon="sanduhr.gif" width="485" height="204" autostart="false" idCounter="15">
 
 	<!-- nodes of the flowchart -->
 	<node fcid="#node_2">
-		<position left="20" top="20"></position>
+		<position left="20" top="24"></position>
 		<start>Start</start>
 	</node>
 
 	<node fcid="#node_3">
-		<position left="265" top="170"></position>
+		<position left="265" top="174"></position>
 		<exit>Pediatrics</exit>
 	</node>
 
 	<node fcid="#node_4">
-		<position left="365" top="170"></position>
+		<position left="365" top="174"></position>
 		<exit>Adult</exit>
+	</node>
+
+	<node fcid="#node_5">
+		<position left="145" top="20"></position>
+		<action markup="KnOffice"><![CDATA[Age]]></action>
+	</node>
+
+	<node fcid="#node_6">
+		<position left="325" top="20"></position>
+		<action markup="KnOffice"><![CDATA["Age classification" = Adult]]></action>
+	</node>
+
+	<node fcid="#node_7">
+		<position left="145" top="80"></position>
+		<action markup="KnOffice"><![CDATA["Age classification" = Pediatrics]]></action>
+	</node>
+
+	<node fcid="#node_8">
+		<position left="325" top="80"></position>
+		<decision><![CDATA["Age classification"]]></decision>
 	</node>
 
 
 	<!-- rules of the flowchart -->
+	<edge fcid="#rule_9">
+		<origin>#node_2</origin>
+		<target>#node_5</target>
+	</edge>
+
+	<edge fcid="#rule_10">
+		<origin>#node_5</origin>
+		<target>#node_6</target>
+		<guard markup="KnOffice"><![CDATA["Age" > 14]]></guard>
+	</edge>
+
+	<edge fcid="#rule_11">
+		<origin>#node_5</origin>
+		<target>#node_7</target>
+		<guard markup="KnOffice"><![CDATA["Age" <= 14]]></guard>
+	</edge>
+
+	<edge fcid="#rule_12">
+		<origin>#node_6</origin>
+		<target>#node_8</target>
+	</edge>
+
+	<edge fcid="#rule_13">
+		<origin>#node_7</origin>
+		<target>#node_8</target>
+	</edge>
+
+	<edge fcid="#rule_14">
+		<origin>#node_8</origin>
+		<target>#node_3</target>
+		<guard markup="KnOffice"><![CDATA["Age classification" = "Pediatrics"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_15">
+		<origin>#node_8</origin>
+		<target>#node_4</target>
+		<guard markup="KnOffice"><![CDATA["Age classification" = "Adult"]]></guard>
+	</edge>
+
 </flowchart>
 %

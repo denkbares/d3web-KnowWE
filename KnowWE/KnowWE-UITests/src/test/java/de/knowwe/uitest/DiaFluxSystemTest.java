@@ -45,6 +45,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import de.d3web.strings.Strings;
 
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 /**
  * Created by Veronika Sehne, Albrecht Striffler (denkbares GmbH) on 28.01.15.
  * <p>
@@ -110,8 +113,7 @@ public class DiaFluxSystemTest {
 	public void addTerminology() throws IOException {
 		changeArticleText(readFile("Step1.txt"));
 
-		// hier noch überpruefen, dass keine Fehlermeldung aufgetreten ist
-		//assertEquals("The annotation @master is deprecated.", driver.findElement(By.id("content_b4874b07")).getText());
+		checkNoErrorsExist();
 	}
 
 	@Test
@@ -175,7 +177,7 @@ public class DiaFluxSystemTest {
 
 		String articleHandle = driver.getWindowHandle();
 
-		clickTool("type_DiaFlux", 1, "visual editor");
+		openVisualEditor(1);
 
 		switchToEditor(articleHandle);
 
@@ -213,6 +215,8 @@ public class DiaFluxSystemTest {
 		connect(19, 7);
 
 		saveAndSwitchBack(articleHandle);
+
+		checkNoErrorsExist();
 	}
 
 	@Test
@@ -221,7 +225,7 @@ public class DiaFluxSystemTest {
 
 		String articleHandle = driver.getWindowHandle();
 
-		clickTool("type_DiaFlux", 2, "visual editor");
+		openVisualEditor(2);
 
 		switchToEditor(articleHandle);
 
@@ -231,7 +235,7 @@ public class DiaFluxSystemTest {
 		connect(2, 6);
 		connect(6, 7, "> ", "0");
 
-		addActionNode(-300, 150, "Illegal arguments"); // 10
+		addActionNode(-300, 150, "Illegal arguments", "established"); // 10
 
 		connect(6, 10, "= ", "0");
 		connect(10, 3);
@@ -253,6 +257,8 @@ public class DiaFluxSystemTest {
 		connect(17, 5);
 
 		saveAndSwitchBack(articleHandle);
+
+		checkNoErrorsExist();
 	}
 
 	@Test
@@ -261,13 +267,13 @@ public class DiaFluxSystemTest {
 
 		String articleHandle = driver.getWindowHandle();
 
-		clickTool("type_DiaFlux", 3, "visual editor");
+		openVisualEditor(3);
 
 		switchToEditor(articleHandle);
 
 		// white spaces to give the auto complete some time
-		addActionNode(-300, 60, "Therapy       " + Keys.ARROW_DOWN + Keys.ARROW_DOWN , "Mild therapy"); // 5
-		addActionNode(-300, 120, "Therapy       " + Keys.ARROW_DOWN + Keys.ARROW_DOWN , "Rigorous therapy"); // 6
+		addActionNode(-300, 60, "Therapy       " + Keys.ARROW_DOWN + Keys.ARROW_DOWN, "Mild therapy"); // 5
+		addActionNode(-300, 120, "Therapy       " + Keys.ARROW_DOWN + Keys.ARROW_DOWN, "Rigorous therapy"); // 6
 
 		connect(2, 5);
 		connect(3, 6);
@@ -275,6 +281,8 @@ public class DiaFluxSystemTest {
 		connect(6, 4);
 
 		saveAndSwitchBack(articleHandle);
+
+		checkNoErrorsExist();
 	}
 
 	@Test
@@ -283,14 +291,14 @@ public class DiaFluxSystemTest {
 
 		String articleHandle = driver.getWindowHandle();
 
-		clickTool("type_DiaFlux", 4, "visual editor");
+		openVisualEditor(4);
 
 		switchToEditor(articleHandle);
 
-		addActionNode(-400, 60, "Age " , "ask"); // 5
-		addActionNode(-220, 60, "Age classification" , "Adult"); // 6
-		addActionNode(-400, 120, "Age classification" , "Pediatrics"); // 7
-		addActionNode(-220, 120, "Age classification" ); // 8
+		addActionNode(-400, 60, "Age ", "ask"); // 5
+		addActionNode(-220, 60, "Age classification", "Adult"); // 6
+		addActionNode(-400, 120, "Age classification", "Pediatrics"); // 7
+		addActionNode(-220, 120, "Age classification"); // 8
 
 		connect(2, 5);
 		connect(5, 6, "> ", "14");
@@ -301,10 +309,273 @@ public class DiaFluxSystemTest {
 		connect(8, 4, "Adult");
 
 		saveAndSwitchBack(articleHandle);
+
+		checkNoErrorsExist();
+	}
+
+	@Test
+	public void testKB1() throws IOException {
+		changeArticleText(readFile("Step7.txt"));
+
+		reset();
+		setAge("21");
+		setHeight("1.9");
+		setWeight("90");
+
+		assertBMI("24.930747922437675");
+
+		assertEquals("Adult", driver.findElements(By.className("answerClicked")).get(0).getText());
+		assertEquals("Normal weight", driver.findElements(By.className("answerClicked")).get(1).getText());
+
+		reset();
+	}
+
+	@Test
+	public void testKB2() throws IOException {
+		changeArticleText(readFile("Step7.txt"));
+
+		reset();
+		setAge("14");
+		setHeight("1.9");
+		setWeight("90");
+
+		assertBMI("");
+		assertEquals("Pediatrics", driver.findElements(By.className("answerClicked")).get(0).getText());
+		assertEquals(1, driver.findElements(By.className("answerClicked")).size());
+
+		reset();
+	}
+
+	@Test
+	public void testKB3() throws IOException {
+		changeArticleText(readFile("Step7.txt"));
+
+		reset();
+		setAge("15");
+		setHeight("1.9");
+		setWeight("200");
+
+		assertBMI("55.4016620498615");
+
+		assertEquals("Adult", driver.findElements(By.className("answerClicked")).get(0).getText());
+		assertEquals("Severe overweight", driver.findElements(By.className("answerClicked")).get(1).getText());
+
+		reset();
+	}
+
+	@Test
+	public void testKB4() throws IOException {
+		changeArticleText(readFile("Step7.txt"));
+
+		reset();
+		setAge("21");
+		setHeight("0");
+
+		assertBMI("");
+
+		assertEquals("Adult", driver.findElements(By.className("answerClicked")).get(0).getText());
+		assertEquals("Illegal arguments", driver.findElement(By.cssSelector(".SOLUTION-ESTABLISHED a")).getText());
+		// solution highlighted
+		assertEquals("color: rgb(150, 110, 120);",
+				driver.findElement(By.cssSelector(".type_Solution .clickable-term")).getAttribute("style"));
+
+		reset();
+	}
+
+	@Test
+	public void testTraces() throws IOException, InterruptedException {
+		changeArticleText(readFile("Step7.txt"));
+
+		reset();
+
+		showTraces();
+
+		// just checking the amount of highlighted nodes and edges...
+		assertActiveNodes("BMI-Main", 2, 0);
+		assertActiveEdges("BMI-Main", 1, 0);
+
+		reset();
+		setAge("21");
+		setHeight("1.9");
+		setWeight("95");
+
+		assertActiveNodes("BMI-Main", 2, 4);
+		assertActiveEdges("BMI-Main", 1, 5);
+
+		assertActiveNodes("BMI-Anamnesis", 3, 3);
+		assertActiveEdges("BMI-Anamnesis", 2, 3);
+
+		assertActiveNodes("BMI-SelectTherapy", 0, 3);
+		assertActiveEdges("BMI-SelectTherapy", 0, 2);
+
+		assertActiveNodes("BMI-SelectMode", 0, 5);
+		assertActiveEdges("BMI-SelectMode", 0, 4);
+	}
+
+	@Test
+	public void testSpecialChars() throws IOException, InterruptedException {
+		changeArticleText(readFile("Step8.txt"));
+
+		checkErrorsExist();
+
+		String articleHandle = driver.getWindowHandle();
+
+		openVisualEditor(3);
+
+		switchToEditor(articleHandle);
+
+		editActionNode(5, "Therapy üöä", "" + Keys.ARROW_DOWN);
+		editActionNode(5, "Therapy üöä", "" + Keys.ARROW_DOWN);
+		// for whatever reason, clicking ok after editing the first time does not work (also when done manually)
+		editActionNode(6, "Therapy       " + Keys.ARROW_DOWN + Keys.ARROW_DOWN, "" + Keys.ARROW_DOWN + Keys.ARROW_DOWN);
+
+		saveAndSwitchBack(articleHandle);
+
+		checkNoErrorsExist();
+
+		openVisualEditor(3);
+
+		switchToEditor(articleHandle);
+
+		setFlowName("BMI-SelectTherapy üöäß$`´/\\=,!{};:_-");
+
+		editStartNode(2, "Mild therapy üöäß$`´#/\\\\|=,!{};:_-");
+		editStartNode(3, "Rigorous therapy üöäß$`´#/\\\\|=,!{};:_-");
+
+		addCommentNode(-400, 300, "Here we test a lot of special characters üöäß&%$§`´<#>/\\\\|=,!(){};:_-"); // 11
+
+		new Actions(driver).dragAndDropBy(driver.findElement(By.id("#node_3")), -100, 0).perform();
+		connect(driver.findElement(By.id("#rule_8")).findElement(By.className("rule_selector")), 11);
+		connect(11, 6);
+
+		editExitNode(4, "Done üöäß$`´#/\\|=,!{};:_-");
+
+		saveAndSwitchBack(articleHandle);
+
+		checkErrorsExist();
+
+		openVisualEditor(1);
+
+		switchToEditor(articleHandle);
+
+		editActionNode(13, "BMI-SelectTh", "" + Keys.ARROW_DOWN);
+		// for whatever reason, clicking ok after editing the first time does not work (also when done manually)
+		editActionNode(13, "BMI-SelectTh", "" + Keys.ARROW_DOWN);
+		editActionNode(14, "BMI-SelectTh", "" + Keys.ARROW_DOWN + Keys.ARROW_DOWN);
+
+		editEdge(20, "" + Keys.ARROW_DOWN);
+		editEdge(21, "" + Keys.ARROW_DOWN);
+
+		saveAndSwitchBack(articleHandle);
+
+		checkNoErrorsExist();
+	}
+
+	@Test
+	public void testSpecialCharTraces() throws IOException, InterruptedException {
+		changeArticleText(readFile("Step9.txt"));
+
+		reset();
+
+		showTraces();
+
+		// just checking the amount of highlighted nodes and edges...
+		assertActiveNodes("BMI-Main", 2, 0);
+		assertActiveEdges("BMI-Main", 1, 0);
+
+		reset();
+		setAge("21");
+		setHeight("1.9");
+		setWeight("95");
+
+		assertBMI("26.315789473684212");
+		assertEquals("Adult", driver.findElements(By.className("answerClicked")).get(0).getText());
+		assertEquals("Overweight", driver.findElements(By.className("answerClicked")).get(1).getText());
+
+		assertActiveNodes("BMI-Main", 2, 4);
+		assertActiveEdges("BMI-Main", 1, 5);
+
+		assertActiveNodes("BMI-Anamnesis", 3, 3);
+		assertActiveEdges("BMI-Anamnesis", 2, 3);
+
+		assertActiveNodes("flow_1c072bbf", 0, 4); // BMI-SelectTherapy
+		assertActiveEdges("flow_1c072bbf", 0, 3); // BMI-SelectTherapy
+
+		assertActiveNodes("BMI-SelectMode", 0, 5);
+		assertActiveEdges("BMI-SelectMode", 0, 4);
+	}
+
+	private void showTraces() {
+		if (driver.findElements(By.className("traceActive")).isEmpty()) {
+			clickTool("type_DiaFlux", 2, "highlights active nodes");
+			new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.className("traceActive")));
+		}
+	}
+
+	private void editEdge(int edgeId, String text) {
+		WebElement rule = driver.findElement(By.id("#rule_" + edgeId));
+		rule.findElement(By.className("rule_selector")).click();
+		WebElement ruleSelect = rule.findElement(By.tagName("select"));
+		ruleSelect.click();
+		ruleSelect.sendKeys(text + Keys.ENTER);
+	}
+
+	private void checkNoErrorsExist() {
+		assertEquals(0, driver.findElements(By.className("error")).size());
+	}
+
+	private void checkErrorsExist() {
+		assertFalse(driver.findElements(By.className("error")).isEmpty());
+	}
+
+	private void assertActiveNodes(String flow, int expectedActive, int expectedSnap) {
+		assertEquals(expectedActive, driver.findElements(By.cssSelector("#" + flow + " .Node.traceActive")).size());
+		assertEquals(expectedSnap, driver.findElements(By.cssSelector("#" + flow + " .Node.traceSnap")).size());
+	}
+
+	private void assertActiveEdges(String flow, int expectedActive, int expectedSnap) {
+		int actualActive = 0;
+		int actualSnap = 0;
+		for (WebElement rule : driver.findElements(By.cssSelector("#" + flow + " .Rule"))) {
+			if (!rule.findElements(By.className("traceSnap")).isEmpty()) actualSnap++;
+			if (!rule.findElements(By.className("traceActive")).isEmpty()) actualActive++;
+		}
+		assertEquals(expectedActive, actualActive);
+		assertEquals(expectedSnap, actualSnap);
+	}
+
+	private void reset() {
+		driver.findElement(By.className("reset")).click();
+		awaitRerender(By.className("reset"));
+	}
+
+	private void assertBMI(String expected) {
+		assertEquals(expected, driver.findElements(By.className("numinput")).get(3).getAttribute("value"));
+	}
+
+	private void setWeight(String value) {
+		setValue(value, 2);
+	}
+
+	private void setHeight(String value) {
+		setValue(value, 1);
+	}
+
+	private void setAge(String value) {
+		setValue(value, 0);
+	}
+
+	private void setValue(String value, int index) {
+		driver.findElements(By.className("numinput")).get(index).sendKeys(value + Keys.ENTER);
+		awaitRerender(By.className("reset"));
 	}
 
 	private void connect(int sourceId, int targetId, String... text) {
-		driver.findElement(By.id("#node_" + sourceId)).click();
+		connect(driver.findElement(By.id("#node_" + sourceId)), targetId, text);
+	}
+
+	private void connect(WebElement source, int targetId, String... text) {
+		source.click();
 		WebElement arrowTool = driver.findElement(By.className("ArrowTool"));
 		WebElement targetNode = driver.findElement(By.id("#node_" + targetId));
 		(new Actions(driver)).dragAndDrop(arrowTool, targetNode).perform();
@@ -331,6 +602,15 @@ public class DiaFluxSystemTest {
 		}
 	}
 
+	private void openVisualEditor(int nth) throws InterruptedException {
+		int attempt = 0;
+		while (attempt < 5 && driver.getWindowHandles().size() == 1) {
+			clickTool("type_DiaFlux", nth, "visual editor");
+			Thread.sleep(500);
+			attempt++;
+		}
+	}
+
 	private void clickTool(String markupClass, int nth, String tooltipContains) {
 		WebElement markup = driver.findElements(By.className(markupClass)).get(nth - 1);
 		WebElement toolMenu = markup.findElement(By.className("headerMenu"));
@@ -342,6 +622,7 @@ public class DiaFluxSystemTest {
 	}
 
 	private void changeArticleText(String newText) {
+		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
 		driver.findElement(By.id("edit-source-button")).click();
 		WebElement editorArea = new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("editorarea")));
 		if (driver instanceof JavascriptExecutor) {
@@ -378,6 +659,10 @@ public class DiaFluxSystemTest {
 		addNode(xOffset, yOffset, By.id("snapshot_prototype"), By.cssSelector(".NodeEditor .snapshotPane input"), text);
 	}
 
+	private void addCommentNode(int xOffset, int yOffset, String... text) throws InterruptedException {
+		addNode(xOffset, yOffset, By.id("comment_prototype"), By.cssSelector(".NodeEditor .commentPane textarea"), text);
+	}
+
 	private void addExitNode(int xOffset, int yOffset, String... text) throws InterruptedException {
 		addNode(xOffset, yOffset, By.id("exit_prototype"), By.cssSelector(".NodeEditor .exitPane input"), text);
 	}
@@ -390,27 +675,51 @@ public class DiaFluxSystemTest {
 			List<WebElement> nodes = driver.findElements(By.cssSelector(".Flowchart > .Node"));
 			WebElement newNode = nodes.get(nodes.size() - 1);
 			new Actions(driver).doubleClick(newNode).perform();
-			driver.findElement(textSelector).click();
-			driver.findElement(textSelector).clear();
-			driver.findElement(textSelector).sendKeys(text[0]);
-			Thread.sleep(100);
-			driver.findElement(textSelector).sendKeys(Keys.ENTER);
-			if (text.length > 1) {
-				WebElement actionSelect = driver.findElement(By.cssSelector(".ActionEditor select"));
-				actionSelect.click();
-				if (text[1].equalsIgnoreCase("formula")) {
-					actionSelect.findElement(By.xpath("//option[@value='" + 1 + "']")).click();
-					driver.findElement(By.cssSelector(".ActionEditor textarea")).sendKeys(text[2] + Keys.ENTER);
-				}
-				else {
-					actionSelect.findElement(By.xpath("//option[text()='" + text[1] + "']")).click();
-				}
-			}
-
-			List<WebElement> okButtons = driver.findElements(By.cssSelector(".NodeEditor .ok"));
-			if (okButtons.size() == 1) okButtons.get(0).click();
+			setNodeAttributes(textSelector, text);
 		}
 
+	}
+
+	private void editStartNode(int nodeId, String... text) throws InterruptedException {
+		editNode(nodeId, By.cssSelector(".NodeEditor .startPane input"), text);
+	}
+
+	private void editExitNode(int nodeId, String... text) throws InterruptedException {
+		editNode(nodeId, By.cssSelector(".NodeEditor .exitPane input"), text);
+	}
+
+	private void editActionNode(int nodeId, String... text) throws InterruptedException {
+		editNode(nodeId, By.cssSelector(".NodeEditor .ObjectSelect *"), text);
+	}
+
+	private void editNode(int nodeId, By textSelector, String... text) throws InterruptedException {
+		new Actions(driver).doubleClick(driver.findElement(By.id("#node_" + nodeId))).perform();
+		setNodeAttributes(textSelector, text);
+	}
+
+	private void setNodeAttributes(By textSelector, String... text) throws InterruptedException {
+		driver.findElement(textSelector).click();
+		driver.findElement(textSelector).clear();
+		driver.findElement(textSelector).sendKeys(text[0]);
+		Thread.sleep(200);
+		driver.findElement(textSelector).sendKeys(Keys.ENTER);
+		if (text.length > 1) {
+			WebElement actionSelect = driver.findElement(By.cssSelector(".ActionEditor select"));
+			actionSelect.click();
+			if (text[1].equalsIgnoreCase("formula")) {
+				actionSelect.findElement(By.xpath("//option[@value='" + 1 + "']")).click();
+				driver.findElement(By.cssSelector(".ActionEditor textarea")).sendKeys(text[2] + Keys.ENTER);
+			}
+			else if (text[1].startsWith("" + Keys.ARROW_DOWN)) {
+				actionSelect.sendKeys(text[1] + Keys.ENTER);
+			}
+			else {
+				actionSelect.findElement(By.xpath("//option[text()='" + text[1] + "']")).click();
+			}
+		}
+
+		List<WebElement> okButtons = driver.findElements(By.cssSelector(".NodeEditor .ok"));
+		if (okButtons.size() == 1) okButtons.get(0).click();
 	}
 
 	private void setFlowName(String flowName) {
@@ -419,7 +728,7 @@ public class DiaFluxSystemTest {
 	}
 
 	private void switchToEditor(String articleHandle) throws InterruptedException {
-		Thread.sleep(300);
+		Thread.sleep(500);
 		Set<String> windowHandles = new HashSet<>(driver.getWindowHandles());
 		windowHandles.remove(articleHandle);
 		driver.switchTo().window(windowHandles.iterator().next());

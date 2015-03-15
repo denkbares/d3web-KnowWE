@@ -198,7 +198,7 @@ Illegal arguments
 
 	<node fcid="#node_10">
 		<position left="245" top="110"></position>
-		<decision><![CDATA["Illegal arguments"]]></decision>
+		<action markup="KnOffice"><![CDATA["Illegal arguments" = P7]]></action>
 	</node>
 
 	<node fcid="#node_13">
