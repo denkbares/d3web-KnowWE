@@ -28,12 +28,14 @@ import de.knowwe.ontology.turtle.compile.TurtleCompileHandler;
 
 public class TurtleSentence extends AbstractType {
 
+	public static final String BEGIN_OF_TURTLE_STATEMENT = "\\w<:%\\\\\\[";
+
 	public TurtleSentence() {
 //		this.setSectionFinder((text, father, type) ->
 //				SectionFinderResult.resultList(Strings.splitUnquoted(text, ".", false,
 //						TurtleMarkup.TURTLE_QUOTES)));
 
-		this.setSectionFinder(new RegexSectionFinder("^[^\\n\\s].*?(?=\\.\\s*$|\\z)", Pattern.MULTILINE + Pattern.DOTALL));
+		this.setSectionFinder(new RegexSectionFinder("[" + BEGIN_OF_TURTLE_STATEMENT + "].*?(?=\\.\\s*$|\\z)", Pattern.MULTILINE + Pattern.DOTALL));
 
 		this.setRenderer(new AnchorRenderer());
 

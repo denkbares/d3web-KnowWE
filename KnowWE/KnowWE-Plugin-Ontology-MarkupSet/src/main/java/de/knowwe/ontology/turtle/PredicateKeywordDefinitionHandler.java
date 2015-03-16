@@ -88,7 +88,7 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyCompileS
 			List<Section<Object>> objectSections = Sections.successors(predicate.getParent(), Object.class);
 			for (Section<Object> objectSection : objectSections) {
 				String objectText = objectSection.collectTextsFromChildren();
-				String[] properties = new String[] { "rdf:Property", "owl:Nothing", "owl:ObjectProperty", "rdf:Property",
+				String[] properties = new String[] { "rdf:Property", "owl:Nothing", "owl:ObjectProperty",
 						"owl:TransitiveProperty", "owl:SymmetricProperty", "owl:ReflexiveProperty", "owl:OntologyProperty",
 						"owl:AsymmetricProperty", "owl:InverseFunctionalProperty", "owl:IrreflexiveProperty", "owl:",
 						"owl:FunctionalProperty", "owl:DeprecatedProperty", "owl:DatatypeProperty", "owl:AnnotationProperty",
