@@ -233,7 +233,6 @@ TestCasePlayer.setLastSelected = function() {
 }
 
 TestCasePlayer.change = function(key_sessionid, selectedvalue) {
-	var topic = KNOWWE.helper.gup('page');
 	document.cookie = key_sessionid + "="
 		+ TestCasePlayer.encodeCookieValue(selectedvalue);
 	// KNOWWE.helper.observer.notify('update');
@@ -241,7 +240,7 @@ TestCasePlayer.change = function(key_sessionid, selectedvalue) {
 }
 
 TestCasePlayer.addCookie = function(cookievalue) {
-	var topic = KNOWWE.helper.gup('page');
+	var topic = KNOWWE.helper.getPagename();
 	document.cookie = "additionalQuestions"
 		+ TestCasePlayer.encodeCookieValue(topic) + "="
 		+ TestCasePlayer.encodeCookieValue(cookievalue);
