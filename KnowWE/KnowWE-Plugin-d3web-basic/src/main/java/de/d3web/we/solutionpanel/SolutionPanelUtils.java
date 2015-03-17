@@ -8,6 +8,7 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
+import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
@@ -175,6 +176,9 @@ public class SolutionPanelUtils {
 			String mcText = value.toString();
 			// remove the brackets
 			return mcText.substring(1, mcText.length() - 1);
+		}
+		else if (value instanceof DateValue) {
+			return ((DateValue) value).getDateOrDurationString();
 		}
 		else if (value instanceof Unknown) {
 			return "Unknown";

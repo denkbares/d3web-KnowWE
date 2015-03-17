@@ -23,6 +23,7 @@ import java.util.Random;
 import org.junit.Assert;
 import org.junit.Test;
 
+import de.d3web.strings.Strings;
 import de.knowwe.testcases.TimeStampType;
 
 /**
@@ -89,15 +90,15 @@ public class TimeStampTest {
 
 	@Test
 	public void millisToTimeStamp() throws Exception {
-		Assert.assertEquals("1ms", TimeStampType.createTimeAsTimeStamp(1));
-		Assert.assertEquals("1s", TimeStampType.createTimeAsTimeStamp(1000));
-		Assert.assertEquals("1min", TimeStampType.createTimeAsTimeStamp(1000 * 60));
-		Assert.assertEquals("1h", TimeStampType.createTimeAsTimeStamp(1000 * 60 * 60));
-		Assert.assertEquals("1d", TimeStampType.createTimeAsTimeStamp(1000 * 60 * 60 * 24));
+		Assert.assertEquals("1ms", Strings.getDurationVerbalization(1));
+		Assert.assertEquals("1s", Strings.getDurationVerbalization(1000));
+		Assert.assertEquals("1min", Strings.getDurationVerbalization((1000 * 60)));
+		Assert.assertEquals("1h", Strings.getDurationVerbalization((1000 * 60 * 60)));
+		Assert.assertEquals("1d", Strings.getDurationVerbalization(1000 * 60 * 60 * 24));
 
 		Assert.assertEquals("1d 1h 1min 1s 1ms",
-				TimeStampType.createTimeAsTimeStamp(1 + 1000 + 1000 * 60
-						+ 1000 * 60 * 60 + 1000 * 60 * 60 * 24));
+				Strings.getDurationVerbalization((long) (1 + 1000 + 1000 * 60
+						+ 1000 * 60 * 60 + 1000 * 60 * 60 * 24)));
 
 		Assert.assertEquals((1 + 1000 + 1000 * 60 + 1000 * 60 * 60 + 1000 * 60 * 60 * 24) * 10,
 				TimeStampType.getTimeInMillis("10d 10h 10min 10s 10ms"));
@@ -105,7 +106,7 @@ public class TimeStampTest {
 		Random random = new Random();
 		for (int i = 0; i < 10; i++) {
 			long l = Math.abs(random.nextInt(2000000000));
-			String timeStamp = TimeStampType.createTimeAsTimeStamp(l);
+			String timeStamp = Strings.getDurationVerbalization(l);
 			long millis = TimeStampType.getTimeInMillis(timeStamp);
 			// System.out.println(timeStamp);
 			Assert.assertEquals(l, millis);

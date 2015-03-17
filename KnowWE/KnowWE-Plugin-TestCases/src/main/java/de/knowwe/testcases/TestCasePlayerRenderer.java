@@ -337,7 +337,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		renderRunTo(selectedTriple, status, date, dateString, tableModel, row);
 		int column = 1;
 		// render date cell
-		String timeAsTimeStamp = TimeStampType.createTimeAsTimeStamp(date.getTime()
+		String timeAsTimeStamp = Strings.getDurationVerbalization(date.getTime()
 				- testCase.getStartDate().getTime());
 		if (testCase instanceof CommentedTestCase) {
 			RenderResult sb = new RenderResult(tableModel.getUserContext());
@@ -391,11 +391,8 @@ public class TestCasePlayerRenderer implements Renderer {
 		Value value = status.getValue(object, date);
 		if (value != null) {
 			String valueString = value.toString();
-			if (value.getValue() instanceof Date) {
-				Date dateValue = (Date) value.getValue();
-				if (dateValue.getTime() < TestCaseUtils.YEAR) {
-					valueString = TimeStampType.createTimeAsTimeStamp(dateValue.getTime());
-				}
+			if (value instanceof DateValue) {
+				valueString = ((DateValue) value).getDateOrDurationString();
 			}
 			tableModel.addCell(row, column, valueString, valueString.length());
 		}

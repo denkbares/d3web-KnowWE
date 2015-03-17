@@ -25,7 +25,6 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.AbstractType;
@@ -68,10 +67,6 @@ public class TimeStampType extends AbstractType {
 
 	public static boolean isValid(String sectionText) {
 		return TIMESTAMP_PATTERN.matcher(sectionText).matches();
-	}
-
-	public static String createTimeAsTimeStamp(long time) {
-		return Strings.getDurationVerbalization(time);
 	}
 
 	public static long getTimeInMillis(Section<TimeStampType> sec) {
