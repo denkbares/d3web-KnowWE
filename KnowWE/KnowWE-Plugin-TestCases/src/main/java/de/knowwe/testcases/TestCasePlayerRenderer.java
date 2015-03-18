@@ -593,7 +593,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		selectsb.appendHtml("<span class=fillText>Case </span>"
 				+ "<select id=selector" + section.getID()
 				+ " onchange=\"TestCasePlayer.change('" + key
-				+ "', this.options[this.selectedIndex].value);\">");
+				+ "', this.options[this.selectedIndex].value, '" + section.getID() + "');\">");
 		Set<String> ids = new HashSet<String>();
 		boolean unique = true;
 		for (ProviderTriple triple : providers) {

@@ -232,7 +232,13 @@ TestCasePlayer.setLastSelected = function() {
 	});
 }
 
-TestCasePlayer.change = function(key_sessionid, selectedvalue) {
+TestCasePlayer.change = function(key_sessionid, selectedvalue, sectionID) {
+	// reset pagination for other test case
+	if (sectionID) {
+		var $startRow = jq$("#" + sectionID + " .startRow");
+		$startRow.val(1);
+		KNOWWE.core.plugin.pagination.updateStartRow($startRow[0], sectionID, true);
+	}
 	document.cookie = key_sessionid + "="
 		+ TestCasePlayer.encodeCookieValue(selectedvalue);
 	// KNOWWE.helper.observer.notify('update');
