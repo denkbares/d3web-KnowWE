@@ -174,14 +174,8 @@ public class PaginationRenderer implements Renderer {
 
 		renderToolBarElementHeader(sec, result, show);
 		if (count != Integer.MAX_VALUE) {
-			renderToolbarButton(
-					Icon.FIRST, "KNOWWE.core.plugin.pagination.navigate('"
-							+ id + "', 'begin')",
-					(startRow > 1), result);
-			renderToolbarButton(
-					Icon.PREVIOUS, "KNOWWE.core.plugin.pagination.navigate('"
-							+ id + "', 'back')",
-					(startRow > 1), result);
+			renderToolbarButton(Icon.FIRST, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'begin')", (startRow > 1), result);
+			renderToolbarButton(Icon.PREVIOUS, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'back')", (startRow > 1), result);
 			result.appendHtml("<span class=fillText> Lines </span>");
 
 			result.appendHtml("<input size=").append(inputLength)
@@ -190,7 +184,7 @@ public class PaginationRenderer implements Renderer {
 
 			boolean forward = false;
 			String toText = resultSize;
-			if (resultMaxCount >= startRow + count - 1) {
+			if (resultMaxCount >= startRow + count) {
 				forward = true;
 				toText = String.valueOf(startRow + count - 1);
 				for (int i = (inputLength - toText.length()) * 2; i > 0; i--) {
@@ -199,29 +193,22 @@ public class PaginationRenderer implements Renderer {
 			}
 			result.appendHtml("<span class=fillText> to </span>").append(toText);
 
-			renderToolbarButton(
-					Icon.NEXT, "KNOWWE.core.plugin.pagination.navigate('"
-							+ id + "', 'forward')", forward, result);
+			renderToolbarButton(Icon.NEXT, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'forward')", forward, result);
+			renderToolbarButton(Icon.LAST, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'end')", forward, result);
 
 		}
 		if (count == Integer.MAX_VALUE) {
-			renderToolbarButton(
-					Icon.FIRST, "KNOWWE.core.plugin.pagination.navigate('"
-							+ id + "', 'begin')",
-					false, result);
-			renderToolbarButton(
-					Icon.PREVIOUS, "KNOWWE.core.plugin.pagination.navigate('"
-							+ id + "', 'back')",
-					false, result);
+			renderToolbarButton(Icon.FIRST, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'begin')", false, result);
+			renderToolbarButton(Icon.PREVIOUS, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'back')", false, result);
 			result.appendHtml("<span class=fillText> Lines </span>");
-			result.appendHtml("<input size=").append(inputLength)
+			result.appendHtml("<input size=")
+					.append(inputLength)
 					.appendHtml(" class='startRow' type='field' value='1'>");
 
 			result.appendHtml("<span class=fillText> to " + getResultSize(user) + "</span>");
 
-			renderToolbarButton(
-					Icon.NEXT, "KNOWWE.core.plugin.pagination.navigate('"
-							+ id + "', 'forward')", false, result);
+			renderToolbarButton(Icon.NEXT, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'forward')", false, result);
+			renderToolbarButton(Icon.LAST, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'end')", false, result);
 		}
 
 		result.appendHtml("</div>");
@@ -315,7 +302,7 @@ public class PaginationRenderer implements Renderer {
 	 * Get the chosen count in pagination bar Handle appropriately in the decorated renderer. Be
 	 * aware of maximum lengths (e.g. 10000 chars without \n for jspwiki pipeline.)
 	 *
-	 * @param sec the section
+	 * @param sec  the section
 	 * @param user the user context
 	 * @return the count of elements to be shown (if "Max" is selected Integer.MAX_VALUE is
 	 * returned!)
@@ -334,7 +321,7 @@ public class PaginationRenderer implements Renderer {
 	}
 
 	/**
-	 * @param sec the section
+	 * @param sec  the section
 	 * @param user the user context
 	 * @return the latest sorting in form of a Pair. Value A represents the sorting value, value B
 	 * the natural order (true is ascending)
@@ -350,7 +337,7 @@ public class PaginationRenderer implements Renderer {
 	}
 
 	/**
-	 * @param sec the section
+	 * @param sec  the section
 	 * @param user the user context
 	 * @return a list of pairs where Value A represents the sorting value, value B the natural order
 	 * (true is ascending) ordered by their chronology (newest = first)
@@ -402,7 +389,7 @@ public class PaginationRenderer implements Renderer {
 	/**
 	 * Get all filters selected for this tab.le,
 	 *
-	 * @param sec the section
+	 * @param sec  the section
 	 * @param user the user context
 	 * @return a map with all filter names which have values to be filtered by.
 	 */
@@ -432,8 +419,13 @@ public class PaginationRenderer implements Renderer {
 	}
 
 	private static String getResultSizeTag(Section<?> sec, UserContext user) {
-		String maxResult = getResultSize(user);
-		return "<span class=fillText> lines of " + maxResult + "</span>";
+		String resultSize = getResultSize(user);
+		String tag = "";
+		if (!resultSize.equals(DEFAULT_NO_RESULTSIZE_SET)) {
+			tag += "<input class='resultSize' style='display:none' value='" + resultSize + "'/>";
+		}
+		tag += "<span class=fillText> lines of " + resultSize + "</span>";
+		return tag;
 	}
 
 	/**
@@ -463,7 +455,7 @@ public class PaginationRenderer implements Renderer {
 	 * Create a new filter for a table column
 	 *
 	 * @param header The name of the HTML table column header (=the string inside the {@code
-	 * <th></th>}) tags
+	 *               <th></th>}) tags
 	 * @param values All the values you want to be able to filter by
 	 * @return a new filter (you have to enable it (and others for other columns) by calling {@link
 	 * #setFilterList(de.knowwe.core.user.UserContext, de.d3web.utils.Pair[])}.

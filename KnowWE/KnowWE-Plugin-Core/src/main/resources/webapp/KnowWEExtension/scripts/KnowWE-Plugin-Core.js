@@ -554,10 +554,17 @@ KNOWWE.core.plugin.pagination = function() {
 	var windowHeight;
 
 	function saveCookieAndUpdateNode(cookie, id) {
+		saveCookie(cookie, id);
+		updateNode(id);
+	}
+
+	function saveCookie(cookie, id) {
 		var cookieStr = JSON.stringify(cookie);
 		jq$.cookie("PaginationDecoratingRenderer-" + id, cookieStr);
-		KNOWWE.plugin.d3webbasic.actions.updateNode(id, KNOWWE.helper.gup('page'), null);
+	}
 
+	function updateNode(id) {
+		KNOWWE.plugin.d3webbasic.actions.updateNode(id, KNOWWE.helper.gup('page'), null);
 	}
 
 	function scrollToTopNavigation(id) {
@@ -783,31 +790,31 @@ KNOWWE.core.plugin.pagination = function() {
 
 			var count = jq$("#" + id + " .count").val();
 			var startRow = jq$("#" + id + " .startRow").val();
+			var resultSize = jq$("#" + id + " .resultSize").val();
 
-			switch (direction) {
-				case "begin":
-					startRow = 1;
-					break;
-				case "back":
-					if (count == "Max") {
+			if (count == "All") {
+				startRow = 1;
+			} else {
+				switch (direction) {
+					case "begin":
 						startRow = 1;
-					}
-					else {
+						break;
+					case "back":
 						if (parseInt(startRow) - parseInt(count) < 1) {
 							startRow = 1;
 						} else {
 							startRow = parseInt(startRow) - parseInt(count);
 						}
-					}
-					break;
-				case "forward":
-					if (count == "Max") {
-						startRow = 1;
-					} else {
+						break;
+					case "forward":
 						startRow = parseInt(startRow) + parseInt(count);
-					}
-					break;
+						break;
+					case "end":
+						startRow = parseInt(resultSize) - parseInt(count) + 1;
+						break;
+				}
 			}
+
 
 			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-" + id));
 			if (cookie == null) {
@@ -819,7 +826,7 @@ KNOWWE.core.plugin.pagination = function() {
 
 		},
 
-		updateStartRow : function(selectedRow, sectionId) {
+		updateStartRow : function(selectedRow, sectionId, preventRerender) {
 
 			var id = sectionId;
 			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-"
@@ -845,7 +852,8 @@ KNOWWE.core.plugin.pagination = function() {
 				cookie.startRow = startRow;
 				cookie.count = count;
 			}
-			saveCookieAndUpdateNode(cookie, id);
+			saveCookie(cookie, id);
+			if (!preventRerender) updateNode(id);
 		},
 
 		filter : function(checkbox, sectionId) {
