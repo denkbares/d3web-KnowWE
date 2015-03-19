@@ -60,8 +60,8 @@ public final class Messages {
 	private static final MultiMap<Message.Type, Section<?>> sectionsWithMessages = MultiMaps.synchronizedMultiMap(new DefaultMultiMap<>());
 
 	/**
-	 * Wraps a single or more {@link Message}s into a Collection to be returned
-	 * by the {@link CompileScript} implementations. {@link Message}
+	 * Wraps a single or more {@link Message}s into a Collection to be returned by the {@link
+	 * CompileScript} implementations. {@link Message}
 	 *
 	 * @param messages the {@link Message}(s) to be wrapped
 	 * @return the wrapped {@link Message}(s)
@@ -72,12 +72,11 @@ public final class Messages {
 	}
 
 	/**
-	 * Removes all {@link Message}s from the given source stored for this
-	 * Section and article.
+	 * Removes all {@link Message}s from the given source stored for this Section and article.
 	 *
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
-	 * @param section  the {@link Section} the {@link Message}s are stored for
-	 * @param source   the source the {@link Message}s are stored for
+	 * @param section the {@link Section} the {@link Message}s are stored for
+	 * @param source the source the {@link Message}s are stored for
 	 * @created 01.12.2011
 	 */
 	public static void clearMessages(Compiler compiler, Section<? extends Type> section, Class<?> source) {
@@ -85,11 +84,11 @@ public final class Messages {
 	}
 
 	/**
-	 * Removes all {@link Message}s from the given source stored for this
-	 * Section and compiler independently.
+	 * Removes all {@link Message}s from the given source stored for this Section and compiler
+	 * independently.
 	 *
 	 * @param section is the Section the {@link Message}s are stored for
-	 * @param source  is the source the {@link Message}s are stored for
+	 * @param source is the source the {@link Message}s are stored for
 	 * @created 01.12.2011
 	 */
 	public static void clearMessages(Section<? extends Type> section, Class<?> source) {
@@ -97,11 +96,10 @@ public final class Messages {
 	}
 
 	/**
-	 * Removes all {@link Message}s from all sources for stored for this Section
-	 * and article.
+	 * Removes all {@link Message}s from all sources for stored for this Section and article.
 	 *
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
-	 * @param section  is the {@link Section} the {@link Message}s are stored for
+	 * @param section is the {@link Section} the {@link Message}s are stored for
 	 * @created 01.12.2011
 	 */
 	public static void clearMessages(Compiler compiler, Section<?> section) {
@@ -113,8 +111,8 @@ public final class Messages {
 	}
 
 	/**
-	 * Removes all messages stored in any Section for the given Compiler. Should be pretty fast, because we know which
-	 * sections have messages.
+	 * Removes all messages stored in any Section for the given Compiler. Should be pretty fast,
+	 * because we know which sections have messages.
 	 *
 	 * @param compiler the compiler for which the messages should be removed
 	 */
@@ -133,7 +131,7 @@ public final class Messages {
 	 * Clears all {@link Message}s for the given article and subtree.
 	 *
 	 * @param compiler is the article you want to clear the message for
-	 * @param sec      is the root of the subtree you want to clear the message for
+	 * @param sec is the root of the subtree you want to clear the message for
 	 */
 	public static void clearMessagesRecursively(Compiler compiler, Section<?> sec) {
 		clearMessages(compiler, sec);
@@ -147,8 +145,8 @@ public final class Messages {
 	}
 
 	/**
-	 * Creates and returns a {@link Message} of the
-	 * {@link de.knowwe.core.report.Message.Type} ERROR with the given text.
+	 * Creates and returns a {@link Message} of the {@link de.knowwe.core.report.Message.Type} ERROR
+	 * with the given text.
 	 *
 	 * @param message is the text content of the created {@link Message}
 	 * @created 01.12.2011
@@ -158,9 +156,8 @@ public final class Messages {
 	}
 
 	/**
-	 * Creates and returns a {@link Message} of the
-	 * {@link de.knowwe.core.report.Message.Type} ERROR with the given
-	 * exception.
+	 * Creates and returns a {@link Message} of the {@link de.knowwe.core.report.Message.Type} ERROR
+	 * with the given exception.
 	 *
 	 * @param e the exception to take the message text from
 	 * @created 01.12.2011
@@ -170,9 +167,8 @@ public final class Messages {
 	}
 
 	/**
-	 * Filters the given Collection of {@link Message}s and returns a new
-	 * Collection containing only {@link Message}s of the
-	 * {@link de.knowwe.core.report.Message.Type} ERROR.
+	 * Filters the given Collection of {@link Message}s and returns a new Collection containing only
+	 * {@link Message}s of the {@link de.knowwe.core.report.Message.Type} ERROR.
 	 *
 	 * @created 01.12.2011
 	 */
@@ -183,17 +179,15 @@ public final class Messages {
 	}
 
 	/**
-	 * Returns an unmodifiable {@link Map} with Collections of all
-	 * {@link Message}s of the given {@link de.knowwe.core.report.Message.Type}s
-	 * stored for the given {@link Section}. The Collections are mapped by the
-	 * {@link Compiler} the {@link Message}s were stored for. If
-	 * {@link Message}s were stored without an argument {@link Compiler} , the
-	 * {@link Map} will contain this {@link Collection} with <tt>null</tt> as
-	 * the <tt>key</tt>.
+	 * Returns an unmodifiable {@link Map} with Collections of all {@link Message}s of the given
+	 * {@link de.knowwe.core.report.Message.Type}s stored for the given {@link Section}. The
+	 * Collections are mapped by the {@link Compiler} the {@link Message}s were stored for. If
+	 * {@link Message}s were stored without an argument {@link Compiler} , the {@link Map} will
+	 * contain this {@link Collection} with <tt>null</tt> as the <tt>key</tt>.
 	 *
 	 * @param section is the {@link Section} the {@link Message}s are stored for
-	 * @param types   is the {@link de.knowwe.core.report.Message.Type} of
-	 *                {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @param types is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
+	 * (set to <tt>null</tt> if you want all)
 	 * @created 16.02.2012
 	 */
 	public static Map<Compiler, Collection<Message>> getMessagesMap(Section<? extends Type> section, Message.Type... types) {
@@ -202,7 +196,8 @@ public final class Messages {
 		Map<Compiler, Object> messagesOfAllTypesBySourceByTitle = section.getObjects(MESSAGE_KEY);
 		for (Entry<Compiler, Object> entry : messagesOfAllTypesBySourceByTitle.entrySet()) {
 			@SuppressWarnings("unchecked")
-			Map<Compiler, Collection<Message>> messagesOfAllTypesBySource = (Map<Compiler, Collection<Message>>) entry.getValue();
+			Map<Compiler, Collection<Message>> messagesOfAllTypesBySource = (Map<Compiler, Collection<Message>>) entry
+					.getValue();
 			Collection<Message> messagesOfGivenTypesOfAllSourcesOfTitle = new ArrayList<>();
 			for (Collection<Message> messagesOfAllTypesOfSource : messagesOfAllTypesBySource.values()) {
 				addAllMessagesOfTypes(messagesOfAllTypesOfSource, messagesOfGivenTypesOfAllSourcesOfTitle, types);
@@ -215,11 +210,11 @@ public final class Messages {
 	}
 
 	/**
-	 * Checks if there are any messages of the specified type or the specified
-	 * types sub-tree, for any compiler and/or independent of any compiler.
+	 * Checks if there are any messages of the specified type or the specified types sub-tree, for
+	 * any compiler and/or independent of any compiler.
 	 *
 	 * @param section the root section of the sub-tree to be checked
-	 * @param types   the error messages considered
+	 * @param types the error messages considered
 	 * @return if there are any such messages
 	 * @created 06.02.2014
 	 */
@@ -232,11 +227,11 @@ public final class Messages {
 	}
 
 	/**
-	 * Checks if there are any messages of the specified type, for any compiler
-	 * and/or independent of any compiler.
+	 * Checks if there are any messages of the specified type, for any compiler and/or independent
+	 * of any compiler.
 	 *
 	 * @param section the root section of the subtree to be checked
-	 * @param types   the error messages considered
+	 * @param types the error messages considered
 	 * @return if there are any such messages
 	 * @created 06.02.2014
 	 */
@@ -248,14 +243,13 @@ public final class Messages {
 	}
 
 	/**
-	 * Returns an unmodifiable Collection containing all {@link Message}s of the
-	 * given {@link de.knowwe.core.report.Message.Type}s stored for this article
-	 * and Section.
+	 * Returns an unmodifiable Collection containing all {@link Message}s of the given {@link
+	 * de.knowwe.core.report.Message.Type}s stored for this article and Section.
 	 *
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
-	 * @param section  is the {@link Section} the {@link Message}s are stored for
-	 * @param types    is the {@link de.knowwe.core.report.Message.Type} of
-	 *                 {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @param section is the {@link Section} the {@link Message}s are stored for
+	 * @param types is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
+	 * (set to <tt>null</tt> if you want all)
 	 * @created 01.12.2011
 	 */
 	public static Collection<Message> getMessages(Compiler compiler, Section<?> section, Message.Type... types) {
@@ -271,13 +265,12 @@ public final class Messages {
 	}
 
 	/**
-	 * Returns an unmodifiable Collection containing all {@link Message}s of the
-	 * given {@link de.knowwe.core.report.Message.Type}s stored for this article
-	 * and Section.
+	 * Returns an unmodifiable Collection containing all {@link Message}s of the given {@link
+	 * de.knowwe.core.report.Message.Type}s stored for this article and Section.
 	 *
 	 * @param section is the {@link Section} the {@link Message}s are stored for
-	 * @param types   is the {@link de.knowwe.core.report.Message.Type} of
-	 *                {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @param types is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
+	 * (set to <tt>null</tt> if you want all)
 	 * @created 01.12.2011
 	 */
 	public static Collection<Message> getMessages(Section<?> section, Message.Type... types) {
@@ -285,15 +278,14 @@ public final class Messages {
 	}
 
 	/**
-	 * Returns an unmodifiable Collection containing all {@link Message}s of the
-	 * given {@link de.knowwe.core.report.Message.Type}s stored for this
-	 * article, section, and source.
+	 * Returns an unmodifiable Collection containing all {@link Message}s of the given {@link
+	 * de.knowwe.core.report.Message.Type}s stored for this article, section, and source.
 	 *
 	 * @param compiler is the article the {@link Message}s are stored for
-	 * @param section  is the Section the {@link Message}s are stored for
-	 * @param source   is the source the {@link Message}s are stored for
-	 * @param types    is the {@link de.knowwe.core.report.Message.Type} of
-	 *                 {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @param section is the Section the {@link Message}s are stored for
+	 * @param source is the source the {@link Message}s are stored for
+	 * @param types is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
+	 * (set to <tt>null</tt> if you want all)
 	 * @created 01.12.2011
 	 */
 	public static Collection<Message> getMessages(Compiler compiler, Section<?> section, Class<?> source, Message.Type... types) {
@@ -302,20 +294,20 @@ public final class Messages {
 		List<Message> allMsgs = new ArrayList<>();
 		if (msgsMap != null) {
 			Collection<Message> msgs = msgsMap.get(source.getName());
-			addAllMessagesOfTypes(msgs, allMsgs, types);
+			if (msgs != null) addAllMessagesOfTypes(msgs, allMsgs, types);
 		}
 		return Collections.unmodifiableCollection(allMsgs);
 	}
 
 	/**
-	 * Returns an unmodifiable Collection containing all {@link Message}s of the
-	 * given {@link de.knowwe.core.report.Message.Type}s stored for this section
-	 * and source, independently of any {@link Compiler}
+	 * Returns an unmodifiable Collection containing all {@link Message}s of the given {@link
+	 * de.knowwe.core.report.Message.Type}s stored for this section and source, independently of any
+	 * {@link Compiler}
 	 *
 	 * @param section is the Section the {@link Message}s are stored for
-	 * @param source  is the source the {@link Message}s are stored for
-	 * @param types   is the {@link de.knowwe.core.report.Message.Type} of
-	 *                {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @param source is the source the {@link Message}s are stored for
+	 * @param types is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
+	 * (set to <tt>null</tt> if you want all)
 	 * @created 01.12.2011
 	 */
 	public static Collection<Message> getMessages(Section<?> section, Class<?> source, Message.Type... types) {
@@ -323,17 +315,16 @@ public final class Messages {
 	}
 
 	/**
-	 * Returns an unmodifiable {@link Map} with Collections of all
-	 * {@link Message}s of the given {@link de.knowwe.core.report.Message.Type}s
-	 * stored in the KDOM subtree with the given {@link Section} as root. The
-	 * Collections are mapped by the title of the {@link Article} the
-	 * {@link Message}s were stored for. If {@link Message}s were stored without
-	 * an argument {@link Article}, the {@link Map} will contain this
-	 * {@link Collection} with <tt>null</tt> as the <tt>key</tt>.
+	 * Returns an unmodifiable {@link Map} with Collections of all {@link Message}s of the given
+	 * {@link de.knowwe.core.report.Message.Type}s stored in the KDOM subtree with the given {@link
+	 * Section} as root. The Collections are mapped by the title of the {@link Article} the {@link
+	 * Message}s were stored for. If {@link Message}s were stored without an argument {@link
+	 * Article}, the {@link Map} will contain this {@link Collection} with <tt>null</tt> as the
+	 * <tt>key</tt>.
 	 *
 	 * @param section is the {@link Section} the {@link Message}s are stored for
-	 * @param types   is the {@link de.knowwe.core.report.Message.Type} of
-	 *                {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @param types is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
+	 * (set to <tt>null</tt> if you want all)
 	 * @created 16.02.2012
 	 */
 	public static Map<Compiler, Collection<Message>> getMessagesMapFromSubtree(Section<?> section, Message.Type... types) {
@@ -358,14 +349,13 @@ public final class Messages {
 	}
 
 	/**
-	 * Returns an unmodifiable Collection containing all {@link Message}s of the
-	 * given {@link de.knowwe.core.report.Message.Type}s of the KDOM subtree
-	 * with the given Section as root.
+	 * Returns an unmodifiable Collection containing all {@link Message}s of the given {@link
+	 * de.knowwe.core.report.Message.Type}s of the KDOM subtree with the given Section as root.
 	 *
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
-	 * @param section  is the root of the KDOM subtree you want the messages from
-	 * @param types    is the {@link de.knowwe.core.report.Message.Type} of
-	 *                 {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @param section is the root of the KDOM subtree you want the messages from
+	 * @param types is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
+	 * (set to <tt>null</tt> if you want all)
 	 */
 	public static Collection<Message> getMessagesFromSubtree(Compiler compiler,
 															 Section<?> section, Message.Type... types) {
@@ -383,13 +373,13 @@ public final class Messages {
 	}
 
 	/**
-	 * Returns an unmodifiable Collection containing all {@link Message}s of the
-	 * given {@link de.knowwe.core.report.Message.Type}s of the KDOM subtree
-	 * with the given Section as root, independently of any compiler.
+	 * Returns an unmodifiable Collection containing all {@link Message}s of the given {@link
+	 * de.knowwe.core.report.Message.Type}s of the KDOM subtree with the given Section as root,
+	 * independently of any compiler.
 	 *
 	 * @param section is the root of the KDOM subtree you want the messages from
-	 * @param types   is the {@link de.knowwe.core.report.Message.Type} of
-	 *                {@link Message} you want (set to <tt>null</tt> if you want all)
+	 * @param types is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
+	 * (set to <tt>null</tt> if you want all)
 	 */
 	public static Collection<Message> getMessagesFromSubtree(Section<?> section, Message.Type... types) {
 
@@ -399,9 +389,9 @@ public final class Messages {
 	}
 
 	/**
-	 * This method is private to avoid misuse (this map is modifiable). The map
-	 * contains all {@link Message}s for the given Section and article. The
-	 * Collections are mapped by the String <tt>source.getName()</tt>.
+	 * This method is private to avoid misuse (this map is modifiable). The map contains all {@link
+	 * Message}s for the given Section and article. The Collections are mapped by the String
+	 * <tt>source.getName()</tt>.
 	 */
 	@SuppressWarnings("unchecked")
 	private static Map<String, Collection<Message>> getMessagesMap(Compiler compiler, Section<?> sec) {
@@ -429,9 +419,8 @@ public final class Messages {
 	}
 
 	/**
-	 * Filters the given Collection of {@link Message}s and returns a new
-	 * Collection containing only {@link Message}s of the
-	 * {@link de.knowwe.core.report.Message.Type} INFO.
+	 * Filters the given Collection of {@link Message}s and returns a new Collection containing only
+	 * {@link Message}s of the {@link de.knowwe.core.report.Message.Type} INFO.
 	 *
 	 * @created 01.12.2011
 	 */
@@ -442,9 +431,8 @@ public final class Messages {
 	}
 
 	/**
-	 * Filters the given Collection of {@link Message}s and returns a new
-	 * Collection containing only {@link Message}s of the
-	 * {@link de.knowwe.core.report.Message.Type} WARNING.
+	 * Filters the given Collection of {@link Message}s and returns a new Collection containing only
+	 * {@link Message}s of the {@link de.knowwe.core.report.Message.Type} WARNING.
 	 *
 	 * @created 01.12.2011
 	 */
@@ -475,8 +463,8 @@ public final class Messages {
 	}
 
 	/**
-	 * Creates and returns a {@link Message} of the
-	 * {@link de.knowwe.core.report.Message.Type} INFO with the given text.
+	 * Creates and returns a {@link Message} of the {@link de.knowwe.core.report.Message.Type} INFO
+	 * with the given text.
 	 *
 	 * @param message is the text content of the created {@link Message}
 	 * @created 01.12.2011
@@ -527,15 +515,14 @@ public final class Messages {
 	 * Stores a single Message for the given Section and source.
 	 * <p/>
 	 * <b>ATTENTION: For this method applies the same as for the method
-	 * KnowWEUtils#storeMessages(Section, Class, Class, Collection) . It can
-	 * only be used once for the given set of parameters. If you use this method
-	 * a second time with the same parameters, the first Message gets
-	 * overwritten!</b>
+	 * KnowWEUtils#storeMessages(Section, Class, Class, Collection) . It can only be used once for
+	 * the given set of parameters. If you use this method a second time with the same parameters,
+	 * the first Message gets overwritten!</b>
 	 *
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
-	 * @param section  is the {@link Section} the {@link Message}s are stored for
-	 * @param source   is the Class the message originate from
-	 * @param msg      is the message you want so store
+	 * @param section is the {@link Section} the {@link Message}s are stored for
+	 * @param source is the Class the message originate from
+	 * @param msg is the message you want so store
 	 */
 	public static void storeMessage(Compiler compiler, Section<?> section, Class<?> source, Message msg) {
 		Collection<Message> messages = Collections.emptyList();
@@ -546,36 +533,32 @@ public final class Messages {
 	}
 
 	/**
-	 * Stores a single Message for the given Section and source independent from
-	 * any compiler.
+	 * Stores a single Message for the given Section and source independent from any compiler.
 	 * <p/>
 	 * <b>ATTENTION: For this method applies the same as for the method
-	 * KnowWEUtils#storeMessages(Section, Class, Class, Collection) . It can
-	 * only be used once for the given set of parameters. If you use this method
-	 * a second time with the same parameters, the first Message gets
-	 * overwritten!</b>
+	 * KnowWEUtils#storeMessages(Section, Class, Class, Collection) . It can only be used once for
+	 * the given set of parameters. If you use this method a second time with the same parameters,
+	 * the first Message gets overwritten!</b>
 	 *
 	 * @param section is the section you want to store the message for
-	 * @param source  is the Class the message originate from
-	 * @param msg     is the message you want so store
+	 * @param source is the Class the message originate from
+	 * @param msg is the message you want so store
 	 */
 	public static void storeMessage(Section<?> section, Class<?> source, Message msg) {
 		storeMessage(null, section, source, msg);
 	}
 
 	/**
-	 * Stores the given Collection of {@link Message}s <tt>m</tt> from the Class
-	 * <tt>source</tt> for the Article <tt>article</tt> and the Section
-	 * <tt>s</tt>.
+	 * Stores the given Collection of {@link Message}s <tt>m</tt> from the Class <tt>source</tt> for
+	 * the Article <tt>article</tt> and the Section <tt>s</tt>.
 	 * <p/>
-	 * <b>ATTENTION: This method can only be used once for each article,
-	 * section, and source. If you use this Method a second time with the same
-	 * parameters, the first Collection gets overwritten!</b>
+	 * <b>ATTENTION: This method can only be used once for each article, section, and source. If you
+	 * use this Method a second time with the same parameters, the first Collection gets
+	 * overwritten!</b>
 	 *
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
-	 * @param section  is the is the {@link Section} the {@link Message}s are
-	 *                 stored for
-	 * @param source   is the Class the messages originate from
+	 * @param section is the is the {@link Section} the {@link Message}s are stored for
+	 * @param source is the Class the messages originate from
 	 * @param messages is the Collection of messages you want so store
 	 */
 	public static void storeMessages(Compiler compiler, Section<?> section, Class<?> source, Collection<Message> messages) {
@@ -646,15 +629,15 @@ public final class Messages {
 	}
 
 	/**
-	 * Stores the given Collection of {@link Message}s for the given Class in
-	 * the given Section independently from any {@link Compiler}s.
+	 * Stores the given Collection of {@link Message}s for the given Class in the given Section
+	 * independently from any {@link Compiler}s.
 	 * <p/>
-	 * <b>ATTENTION: This method can only be used once for each article,††
-	 * section, and source. If you use this Method a second time with the same
-	 * parameters, the first Collection gets overwritten!</b>
+	 * <b>ATTENTION: This method can only be used once for each article,†† section, and source. If
+	 * you use this Method a second time with the same parameters, the first Collection gets
+	 * overwritten!</b>
 	 *
-	 * @param section  is the section you want to store the messages for
-	 * @param source   is the Class the messages originate from
+	 * @param section is the section you want to store the messages for
+	 * @param source is the Class the messages originate from
 	 * @param messages is the Collection of messages you want so store
 	 */
 	public static void storeMessages(Section<?> section, Class<?> source, Collection<Message> messages) {
@@ -662,8 +645,8 @@ public final class Messages {
 	}
 
 	/**
-	 * Returns a {@link Message} to be used when a SubtreeHandler recognizes an
-	 * syntactical error within its markup.
+	 * Returns a {@link Message} to be used when a SubtreeHandler recognizes an syntactical error
+	 * within its markup.
 	 *
 	 * @param message the {@link Message} of the syntax error
 	 * @created 18.08.2010
@@ -673,12 +656,11 @@ public final class Messages {
 	}
 
 	/**
-	 * Returns a {@link Message} to be used when a SubtreeHandler recognizes an
-	 * unexpected internal error based on an exception. The error will also be
-	 * logged as a warning.
+	 * Returns a {@link Message} to be used when a SubtreeHandler recognizes an unexpected internal
+	 * error based on an exception. The error will also be logged as a warning.
 	 *
 	 * @param message the message of the error
-	 * @param e       the exception occurred
+	 * @param e the exception occurred
 	 * @created 18.08.2010
 	 */
 	public static Message internalError(String message, Throwable e) {
@@ -687,8 +669,8 @@ public final class Messages {
 	}
 
 	/**
-	 * Creates and returns a {@link Message} of the
-	 * {@link de.knowwe.core.report.Message.Type} WARNING with the given text.
+	 * Creates and returns a {@link Message} of the {@link de.knowwe.core.report.Message.Type}
+	 * WARNING with the given text.
 	 *
 	 * @param message is the text content of the created {@link Message}
 	 * @created 01.12.2011
