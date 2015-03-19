@@ -485,7 +485,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	/**
 	 * Adds the CSS and JS files to the current page.
 	 */
-	private void includeDOMResources(WikiContext wikiContext) {
+	public static void includeDOMResources(WikiContext wikiContext) {
 		Object ctx = wikiContext.getVariable(TemplateManager.RESOURCE_INCLUDES);
 		ResourceLoader loader = ResourceLoader.getInstance();
 

@@ -103,6 +103,11 @@
 			<type>war</type>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
+			<version>0.2-SNAPSHOT</version>
+		</dependency>
 
 	</dependencies>
 </project>
