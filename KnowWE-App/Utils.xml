@@ -36,6 +36,7 @@
 				<exclude name="KnowWE-Plugin-Insert-Section/**" />
 				<exclude name="KnowWE-Plugin-KnowSEC/**" />
 				<exclude name="KnowWE-Plugin-KnowSEC-Import/**" />
+				<exclude name="KnowWE-Plugin-ExperienceDatabase/**" />
 				<!-- for performance reasons... -->
 				<exclude name="KnowWE-Plugin-XSL/**" />
 			</fileset>
