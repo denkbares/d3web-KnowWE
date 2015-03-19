@@ -60,7 +60,7 @@ public class NamespaceFileReloadToolProvider implements ToolProvider {
 					.getTitle() + "');";
 			return new DefaultTool(
 					Icon.REFRESH,
-					"Reload namespace file",
+					"Reload external ontology",
 					"Reload namespace file from given URL",
 					jsAction,
 					Tool.CATEGORY_DOWNLOAD);

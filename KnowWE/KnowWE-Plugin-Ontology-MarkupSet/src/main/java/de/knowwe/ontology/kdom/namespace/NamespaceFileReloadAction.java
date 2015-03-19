@@ -58,7 +58,7 @@ public class NamespaceFileReloadAction extends AbstractAction {
 			wc.storeAttachment(article, context.getUserName(), destination);
 		}
 		catch (Exception e) {
-			String errorMessage = "You couldn't reload the specified namespace file. This is either because you don't have a working Internet connection or the given URL is not valid.";
+			String errorMessage = "You couldn't reload the specified external ontology file. This is either because you don't have a working Internet connection or the given URL is not valid.";
 			NotificationManager.addNotification(context, new StandardNotification(errorMessage, Message.Type.ERROR));
 			context.sendError(HttpServletResponse.SC_BAD_REQUEST, errorMessage);
 		}
