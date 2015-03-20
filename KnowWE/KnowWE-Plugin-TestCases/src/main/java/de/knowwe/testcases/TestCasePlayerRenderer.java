@@ -586,11 +586,11 @@ public class TestCasePlayerRenderer implements Renderer {
 
 	private ProviderTriple getAndRenderTestCaseSelection(Section<?> section, UserContext user, List<ProviderTriple> providers, RenderResult string) {
 		String key = generateSelectedTestCaseCookieKey(section);
-		String selectedID = getSelectedTestCaseId(section, user);
-		RenderResult selectsb = new RenderResult(string);
+		String selectedID = getSelectedTestCaseId(section, providers, user);
+		RenderResult selectString = new RenderResult(string);
 		// if no pair is selected, use the first
 		ProviderTriple selectedTriple = null;
-		selectsb.appendHtml("<span class=fillText>Case </span>"
+		selectString.appendHtml("<span class=fillText>Case </span>"
 				+ "<select id=selector" + section.getID()
 				+ " onchange=\"TestCasePlayer.change('" + key
 				+ "', this.options[this.selectedIndex].value, '" + section.getID() + "');\">");
@@ -617,13 +617,13 @@ public class TestCasePlayerRenderer implements Renderer {
 					attributes.add("selected");
 					selectedTriple = triple;
 				}
-				selectsb.appendHtmlElement("option", displayedID,
+				selectString.appendHtmlElement("option", displayedID,
 						attributes.toArray(new String[attributes.size()]));
 			}
 		}
-		selectsb.appendHtml("</select>");
+		selectString.appendHtml("</select>");
 		if (selectedTriple != null) {
-			string.append(selectsb);
+			string.append(selectString);
 		}
 		else {
 			Message notValidTestCaseError = Messages.warning(
@@ -634,13 +634,22 @@ public class TestCasePlayerRenderer implements Renderer {
 		return selectedTriple;
 	}
 
-	private String getTestCaseId(ProviderTriple triple) {
+	private static String getTestCaseId(ProviderTriple triple) {
 		return triple.getC().getTitle() + "/" + triple.getA().getName();
 	}
 
-	public static String getSelectedTestCaseId(Section<?> section, UserContext user) {
-		return Strings.decodeURL(KnowWEUtils.getCookie(generateSelectedTestCaseCookieKey(section),
+	public static String getSelectedTestCaseId(Section<?> section, List<ProviderTriple> providers, UserContext user) {
+		String selectedId = Strings.decodeURL(KnowWEUtils.getCookie(generateSelectedTestCaseCookieKey(section),
 				"", user), Encoding.ISO_8859_1);
+		if (Strings.isBlank(selectedId)) {
+			for (ProviderTriple provider : providers) {
+				if (provider.getProviderSection().getTitle().equals(section.getTitle())) {
+					selectedId = getTestCaseId(provider);
+					break;
+				}
+			}
+		}
+		return selectedId;
 	}
 
 	public static String generateSelectedTestCaseCookieKey(Section<?> section) {

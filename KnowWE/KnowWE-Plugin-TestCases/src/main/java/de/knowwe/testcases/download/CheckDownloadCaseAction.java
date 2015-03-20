@@ -141,7 +141,7 @@ public class CheckDownloadCaseAction extends AbstractAction {
 		List<ProviderTriple> providers =
 				de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(playerSection);
 
-		String selectedTestCaseId = TestCasePlayerRenderer.getSelectedTestCaseId(section,
+		String selectedTestCaseId = TestCasePlayerRenderer.getSelectedTestCaseId(section, providers,
 				context);
 		for (ProviderTriple triple : providers) {
 			if (triple.getA().getTestCase() != null) {
