@@ -20,11 +20,9 @@ package de.knowwe.core.compile;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
@@ -101,7 +99,7 @@ public class Compilers {
 	 * Returns the first {@link PackageCompiler} of the given compiler class, that compiles a {@link
 	 * Section} of the type {@link PackageCompileType} on the given article.
 	 *
-	 * @param master the master article for which we want the {@link Compiler}
+	 * @param master        the master article for which we want the {@link Compiler}
 	 * @param compilerClass the type of the {@link Compiler} we want
 	 * @return the first {@link Compiler} that compiles the given section.
 	 * @created 15.11.2013
@@ -121,7 +119,7 @@ public class Compilers {
 	 * Returns the first {@link Compiler} of all compilers that compiles the given section, that is
 	 * of the specified compiler class, or which extends or implements the specified compiler class.
 	 *
-	 * @param section the section for which we want the {@link Compiler}s
+	 * @param section       the section for which we want the {@link Compiler}s
 	 * @param compilerClass the type of the {@link Compiler} we want
 	 * @return the first {@link Compiler} that compiles the given section.
 	 * @created 15.11.2013
@@ -139,7 +137,7 @@ public class Compilers {
 	/**
 	 * Returns the first {@link Compiler} of a given ArticleManager and compiler class.
 	 *
-	 * @param manager the {@link ArticleManager} for which we want the {@link Compiler}s
+	 * @param manager       the {@link ArticleManager} for which we want the {@link Compiler}s
 	 * @param compilerClass the type of the {@link Compiler} we want
 	 * @return the first {@link Compiler}s of a given ArticleManager and Class.
 	 * @created 15.11.2013
@@ -155,10 +153,9 @@ public class Compilers {
 	}
 
 	/**
-	 * Returns all {@link Compiler}s with the given type that compile the given section. The
-	 * returned collection has a stable order according to the {@link CompilerComparator}.
+	 * Returns all {@link Compiler}s with the given type that compile the given section.
 	 *
-	 * @param section the section for which we want the {@link Compiler}s
+	 * @param section       the section for which we want the {@link Compiler}s
 	 * @param compilerClass the type of the {@link Compiler} we want
 	 * @return all {@link Compiler}s compiling the given section
 	 * @created 15.11.2013
@@ -168,10 +165,10 @@ public class Compilers {
 	}
 
 	private static <C extends Compiler> Collection<C> getCompilers(Section<?> section, Class<C> compilerClass, boolean firstOnly) {
-		Set<C> compilers = new TreeSet<>(new CompilerComparator());
 		List<Compiler> allCompilers = section.getArticleManager()
 				.getCompilerManager()
 				.getCompilers();
+		Collection<C> compilers = new ArrayList<>();
 		for (Compiler compiler : allCompilers) {
 			if (compilerClass.isAssignableFrom(compiler.getClass())
 					&& compiler.isCompiling(section)) {
@@ -185,7 +182,7 @@ public class Compilers {
 	/**
 	 * Returns all {@link Compiler}s of a given ArticleManager and class.
 	 *
-	 * @param manager the {@link ArticleManager} for which we want the {@link Compiler}
+	 * @param manager       the {@link ArticleManager} for which we want the {@link Compiler}
 	 * @param compilerClass the type of the {@link Compiler} we want
 	 * @return all {@link AbstractPackageCompiler}s compiling the given section
 	 * @created 15.11.2013
@@ -195,9 +192,9 @@ public class Compilers {
 	}
 
 	private static <C extends Compiler> Collection<C> getCompilers(ArticleManager manager, Class<C> compilerClass, boolean firstOnly) {
-		Set<C> compilers = new TreeSet<>(new CompilerComparator());
-		List<Compiler> allCmpilers = manager.getCompilerManager().getCompilers();
-		for (Compiler compiler : allCmpilers) {
+		List<Compiler> allCompilers = manager.getCompilerManager().getCompilers();
+		Collection<C> compilers = new ArrayList<>();
+		for (Compiler compiler : allCompilers) {
 			if (compilerClass.isAssignableFrom(compiler.getClass())) {
 				compilers.add(compilerClass.cast(compiler));
 				if (firstOnly) break;
@@ -250,27 +247,6 @@ public class Compilers {
 	 */
 	public static CompilerManager getCompilerManager(String web) {
 		return KnowWEUtils.getArticleManager(web).getCompilerManager();
-	}
-
-	public static class CompilerComparator implements Comparator<Compiler> {
-
-		@Override
-		public int compare(Compiler o1, Compiler o2) {
-			if (o1 instanceof PackageCompiler && o2 instanceof PackageCompiler) {
-				return ((PackageCompiler) o1).getCompileSection().compareTo(
-						((PackageCompiler) o2).getCompileSection());
-			}
-			else if (o1 instanceof PackageCompiler) {
-				return -1;
-			}
-			else if (o2 instanceof PackageCompiler) {
-				return 1;
-			}
-			else {
-				return o1.getClass().getSimpleName().compareTo(o2.getClass().getSimpleName());
-			}
-		}
-
 	}
 
 	public static void addSectionsToDestroyAndCompile(IncrementalCompiler compiler, Collection<Section<?>> sections, Class<?>... scriptFilter) {
