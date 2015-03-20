@@ -125,7 +125,7 @@ public class TestCasePlayerRenderer implements Renderer {
 	private void renderOverallStatus(ProviderTriple selectedTriple, UserContext user, RenderResult string) {
 		int failureCount = selectedTriple.getProvider().getDebugStatus(user).getFailureCount();
 		string.appendHtmlTag("div", "style",
-				"display:inline-block; vertical-align:middle; text-align:center; padding-right: 5px");
+				"display:inline-block; vertical-align:middle; text-align:center; padding: 0 12px 0 8px");
 		string.appendHtmlTag("span", "style", "position:relative; top:-1px;");
 		if (failureCount == 0) {
 			string.appendHtml(Icon.BULB.addColor(IconColor.OK).addTitle("No check failures").toHtml());
