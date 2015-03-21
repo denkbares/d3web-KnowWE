@@ -91,8 +91,7 @@ public class JSPWikiZipAttachment implements WikiAttachment {
 	@Override
 	public InputStream getInputStream() throws IOException {
 		try {
-			InputStream attachmentStream;
-			attachmentStream = attachmentManager.getAttachmentStream(attachment);
+			InputStream attachmentStream = attachmentManager.getAttachmentStream(attachment);
 			ZipInputStream zipStream = new ZipInputStream(attachmentStream);
 			for (ZipEntry e; (e = zipStream.getNextEntry()) != null;) {
 				if (e.getName().equals(entryName)) {
