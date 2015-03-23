@@ -397,7 +397,7 @@ public class CoveringList extends AbstractType {
 				List<Section<?>> children = relationSection.getChildren();
 				for (Section<?> s : children) {
 					buffi.append(this.renderRelationChild(s,
-							fulfilled, user, StyleRenderer.CONDITION_FULLFILLED));
+							true, user, StyleRenderer.CONDITION_FULLFILLED));
 				}
 
 			}
@@ -406,7 +406,7 @@ public class CoveringList extends AbstractType {
 				List<Section<?>> children = relationSection.getChildren();
 				for (Section<?> s : children) {
 					buffi.append(this.renderRelationChild(s,
-							fulfilled, user, StyleRenderer.CONDITION_FALSE));
+							true, user, StyleRenderer.CONDITION_FALSE));
 				}
 
 			}
@@ -415,12 +415,6 @@ public class CoveringList extends AbstractType {
 
 		/**
 		 * Renders the children of a CoveringRelation.
-		 * 
-		 * @param sec
-		 * @param fulfilled
-		 * @param user
-		 * @param color
-		 * @return
 		 */
 		private String renderRelationChild(
 				Section<?> sec, boolean fulfilled, UserContext user,

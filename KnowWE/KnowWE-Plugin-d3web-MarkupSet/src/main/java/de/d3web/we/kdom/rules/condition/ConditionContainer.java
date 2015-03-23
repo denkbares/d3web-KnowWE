@@ -19,6 +19,7 @@
 package de.d3web.we.kdom.rules.condition;
 
 import de.d3web.we.kdom.condition.CompositeCondition;
+import de.d3web.we.kdom.rules.RuleContainerRenderer;
 import de.d3web.we.kdom.rules.RuleType;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.EndLineComment;
@@ -41,5 +42,6 @@ public class ConditionContainer extends AbstractType {
 		CompositeCondition compositeCondition = new CompositeCondition();
 		compositeCondition.setAllowedTerminalConditions(RuleType.getTerminalConditions());
 		this.addChildType(compositeCondition);
+		this.setRenderer(new RuleContainerRenderer());
 	}
 }

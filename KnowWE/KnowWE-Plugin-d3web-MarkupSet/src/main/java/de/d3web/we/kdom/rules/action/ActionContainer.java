@@ -2,6 +2,7 @@ package de.d3web.we.kdom.rules.action;
 
 import de.d3web.we.kdom.action.SingleAction;
 import de.d3web.we.kdom.rules.RuleContainerFinder;
+import de.d3web.we.kdom.rules.RuleContainerRenderer;
 import de.d3web.we.kdom.rules.RuleTokenType;
 import de.d3web.we.kdom.rules.RuleType;
 import de.knowwe.core.kdom.AbstractType;
@@ -17,5 +18,6 @@ public class ActionContainer extends AbstractType {
 		setSectionFinder(new RuleContainerFinder(tokens, RuleType.INNER_TOKENS));
 		addChildType(TypePriorityList.DEFAULT_PRIORITY - 1, new RuleTokenType(tokens));
 		addChildType(new SingleAction(new RuleAction()));
+		this.setRenderer(new RuleContainerRenderer());
 	}
 }

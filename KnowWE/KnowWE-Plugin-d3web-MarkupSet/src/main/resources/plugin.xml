@@ -60,7 +60,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
-		<parameter id="css" value="AbstractionTable.css" />
+		<parameter id="css" value="KnowWE-Plugin-d3web-MarkupSet.css" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="CellContent">

@@ -1,0 +1,52 @@
+.lineerror {
+	background: #FFF6BF;
+}
+
+.cellerror {
+	background: #FFF6BF;
+}
+
+.d3webRule > span {
+	padding: 0 2px 0 2px;
+}
+
+.conditionTrue .IfCondition {
+	background-color: #CFFFCF;
+}
+
+.conditionFalse .IfCondition {
+	background-color: #FFCFCF;
+}
+
+.conditionUnknown .IfCondition {
+	background-color: #CFD5FF;
+}
+
+.exceptTrue .ExceptionCondition {
+	background-color: #CFFFCF;
+}
+
+.exceptFalse .ExceptionCondition {
+	background-color: #FFCFCF;
+}
+
+.exceptUnknown .ExceptionCondition {
+	background-color: #CFD5FF;
+}
+
+.defaultFired .ThenAction {
+	background-color: #CFFFCF;
+}
+
+.elseFired .ElseAction {
+	background-color: #CFFFCF;
+}
+
+.unknownFired .UnknownAction {
+	background-color: #CFFFCF;
+}
+
+.exceptTrue .UnknownAction {
+	background-color: transparent !important;
+}
+
