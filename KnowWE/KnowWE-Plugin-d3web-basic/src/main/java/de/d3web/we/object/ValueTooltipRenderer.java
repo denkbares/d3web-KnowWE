@@ -102,7 +102,7 @@ public class ValueTooltipRenderer extends TooltipRenderer {
 							.collect(toList());
 					filteredSourceFacts.sort(Comparator.comparing(Fact::getTerminologyObject, COMPARATOR));
 					if (!filteredSourceFacts.isEmpty()) {
-						builder.append("<p>The following input values were used the derive this value:");
+						builder.append("<p>The following input values were used to derive this value:");
 						builder.append("<ul>");
 						for (Fact sourceFact : sourceFacts) {
 							String valueString = SolutionPanelUtils.formatValue(sourceFact.getValue(), -1);
