@@ -25,7 +25,7 @@ import java.util.List;
 
 import de.d3web.strings.StringFragment;
 import de.d3web.strings.Strings;
-import de.d3web.we.kdom.condition.AnswerReferenceImpl;
+import de.d3web.we.kdom.condition.FindingAnswerReference;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.kdom.AbstractType;
@@ -41,7 +41,7 @@ public class Finding extends AbstractType {
 		QuestionReference question = new QuestionReference();
 		question.setSectionFinder(new QuestionSectionFinder());
 
-		AnswerReference answer = new AnswerReferenceImpl();
+		AnswerReference answer = new FindingAnswerReference();
 		answer.setSectionFinder(new AnswerSectionFinder());
 
 		this.addChildType(question);

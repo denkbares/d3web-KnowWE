@@ -74,7 +74,7 @@ public class Finding extends D3webCondition<Finding> {
 		this.addChildType(question);
 
 		// answer
-		AnswerReference answer = new AnswerReferenceImpl();
+		AnswerReference answer = new FindingAnswerReference();
 		answer.setSectionFinder(new AllTextFinderTrimmed());
 		this.addChildType(answer);
 	}

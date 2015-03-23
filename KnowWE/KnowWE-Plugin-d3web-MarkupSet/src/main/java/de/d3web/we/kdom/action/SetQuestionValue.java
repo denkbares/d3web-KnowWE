@@ -34,7 +34,7 @@ import de.d3web.core.session.values.TextValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.strings.Strings;
 import de.d3web.we.kdom.auxiliary.Equals;
-import de.d3web.we.kdom.condition.AnswerReferenceImpl;
+import de.d3web.we.kdom.condition.FindingAnswerReference;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
@@ -62,7 +62,7 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 		this.addChildType(qr);
 
 		this.addChildType(new UnknownValueType());
-		AnswerReference a = new AnswerReferenceImpl();
+		AnswerReference a = new FindingAnswerReference();
 		a.setSectionFinder(new AllTextFinderTrimmed());
 		this.addChildType(a);
 

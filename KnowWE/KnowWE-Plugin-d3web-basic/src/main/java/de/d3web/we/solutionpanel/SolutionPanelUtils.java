@@ -178,7 +178,7 @@ public class SolutionPanelUtils {
 			return mcText.substring(1, mcText.length() - 1);
 		}
 		else if (value instanceof DateValue) {
-			return ((DateValue) value).getDateOrDurationString();
+			return ((DateValue) value).getDateOrDurationString(true);
 		}
 		else if (value instanceof Unknown) {
 			return "Unknown";

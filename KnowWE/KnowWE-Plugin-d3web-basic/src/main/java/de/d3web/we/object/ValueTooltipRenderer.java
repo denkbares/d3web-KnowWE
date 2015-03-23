@@ -20,9 +20,7 @@ package de.d3web.we.object;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
@@ -34,7 +32,6 @@ import de.d3web.core.session.blackboard.Fact;
 import de.d3web.core.utilities.ExplanationUtils;
 import de.d3web.core.utilities.TerminologyHierarchyComparator;
 import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.solutionpanel.SolutionPanelUtils;
@@ -108,7 +105,7 @@ public class ValueTooltipRenderer extends TooltipRenderer {
 						builder.append("<p>The following input values were used the derive this value:");
 						builder.append("<ul>");
 						for (Fact sourceFact : sourceFacts) {
-							String valueString = getValueString(value, sourceFact);
+							String valueString = SolutionPanelUtils.formatValue(sourceFact.getValue(), -1);
 							Identifier identifier = new Identifier(sourceFact.getTerminologyObject().getName());
 							String urlLinkToTermDefinition = KnowWEUtils.getURLLinkToObjectInfoPage(identifier);
 							builder.append("<li>")
@@ -128,14 +125,4 @@ public class ValueTooltipRenderer extends TooltipRenderer {
 		return builder.toString();
 	}
 
-	private String getValueString(Value value, Fact sourceFact) {
-		String valueString = sourceFact.getValue().toString();
-		if (value.getValue() instanceof Date) {
-			Date dateValue = (Date) value.getValue();
-			if (dateValue.getTime() < TimeUnit.DAYS.toMillis(365)) {
-				valueString = Strings.getDurationVerbalization(dateValue.getTime());
-			}
-		}
-		return valueString;
-	}
 }

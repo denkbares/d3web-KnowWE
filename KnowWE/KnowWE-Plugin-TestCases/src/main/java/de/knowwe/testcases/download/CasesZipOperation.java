@@ -128,7 +128,7 @@ public class CasesZipOperation extends FileDownloadOperation {
 			KnowledgeBase kb = triple.getB();
 			TestCase testCase = triple.getC();
 
-			listener.updateProgress(new Float(i++) / new Float(casesToWrite.size()),
+			listener.updateProgress((float) i++ / (float) casesToWrite.size(),
 					"Transforming test case '" + testCaseName + "'");
 
 			SequentialTestCase sequentialTestCase = null;

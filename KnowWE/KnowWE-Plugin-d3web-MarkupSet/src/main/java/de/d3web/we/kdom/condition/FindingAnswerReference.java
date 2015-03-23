@@ -25,7 +25,7 @@ import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 
-public class AnswerReferenceImpl extends AnswerReference {
+public class FindingAnswerReference extends AnswerReference {
 
 	@Override
 	public Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s) {
