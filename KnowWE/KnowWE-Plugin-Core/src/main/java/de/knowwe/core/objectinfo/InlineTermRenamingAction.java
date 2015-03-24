@@ -37,6 +37,7 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.objects.TermUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -63,7 +64,7 @@ public class InlineTermRenamingAction extends AbstractAction {
 		String force = context.getParameter("force");
 
 		if (force.equals("false")
-				&& getTerms(web).contains(new Identifier(replacement))) {
+				&& TermUtils.getTermIdentifiers(web).contains(new Identifier(replacement))) {
 			JSONObject response = new JSONObject();
 			try {
 				response.append("alreadyexists", "true");
@@ -81,7 +82,7 @@ public class InlineTermRenamingAction extends AbstractAction {
 		Identifier termIdentifier = Identifier.fromExternalForm(term);
 		Identifier replacmentIdentifier = createReplacingIdentifier(termIdentifier, replacement);
 
-		Map<String, Set<Section<? extends RenamableTerm>>> allTerms = new HashMap<String, Set<Section<? extends RenamableTerm>>>();
+		Map<String, Set<Section<? extends RenamableTerm>>> allTerms = new HashMap<>();
 
 		Iterator<Article> iter = Environment.getInstance()
 				.getArticleManager(web).getArticles().iterator();
@@ -101,8 +102,7 @@ public class InlineTermRenamingAction extends AbstractAction {
 						.getTermDefiningSections(termIdentifier);
 				for (Section<?> definition : definingSections) {
 					if (definition.get() instanceof RenamableTerm) {
-						getTermSet(definition.getTitle(), allTerms).add(
-								(Section<? extends RenamableTerm>) definition);
+						getTermSet(definition.getTitle(), allTerms).add((Section<? extends RenamableTerm>) definition);
 					}
 				}
 
@@ -111,25 +111,23 @@ public class InlineTermRenamingAction extends AbstractAction {
 						.getTermReferenceSections(termIdentifier);
 				for (Section<?> reference : references) {
 					if (reference.get() instanceof RenamableTerm) {
-						getTermSet(reference.getTitle(), allTerms).add(
-								(Section<? extends RenamableTerm>) reference);
+						getTermSet(reference.getTitle(), allTerms).add((Section<? extends RenamableTerm>) reference);
 					}
 				}
 			}
 		}
 
 		ArticleManager mgr = Environment.getInstance().getArticleManager(web);
-		Set<String> failures = new HashSet<String>();
-		Set<String> success = new HashSet<String>();
+		Set<String> failures = new HashSet<>();
+		Set<String> success = new HashSet<>();
 		renameTerms(allTerms, termIdentifier, replacmentIdentifier, mgr, context, failures, success);
 		writeResponse(failures, success, termIdentifier, replacmentIdentifier, context);
 	}
 
-	private Set<Section<? extends RenamableTerm>> getTermSet(String title,
-															 Map<String, Set<Section<? extends RenamableTerm>>> allTerms) {
+	private Set<Section<? extends RenamableTerm>> getTermSet(String title, Map<String, Set<Section<? extends RenamableTerm>>> allTerms) {
 		Set<Section<? extends RenamableTerm>> terms = allTerms.get(title);
 		if (terms == null) {
-			terms = new HashSet<Section<? extends RenamableTerm>>();
+			terms = new HashSet<>();
 			allTerms.put(title, terms);
 		}
 		return terms;
@@ -184,7 +182,7 @@ public class InlineTermRenamingAction extends AbstractAction {
 			for (String title : allTerms.keySet()) {
 				if (Environment.getInstance().getWikiConnector()
 						.userCanEditArticle(title, context.getRequest())) {
-					Map<String, String> nodesMap = new HashMap<String, String>();
+					Map<String, String> nodesMap = new HashMap<>();
 					for (Section<? extends RenamableTerm> termSection : allTerms.get(title)) {
 						nodesMap.put(
 								termSection.getID(),
@@ -210,23 +208,4 @@ public class InlineTermRenamingAction extends AbstractAction {
 		return new Identifier(elements);
 	}
 
-	public Set<Identifier> getTerms(String web) {
-		// gathering all terms
-		Set<Identifier> allTerms = new HashSet<Identifier>();
-		Iterator<Article> iter = Environment.getInstance()
-				.getArticleManager(web).getArticles().iterator();
-		Article currentArticle;
-
-		TerminologyManager terminologyManager;
-		while (iter.hasNext()) {
-			currentArticle = iter.next();
-			terminologyManager = KnowWEUtils
-					.getTerminologyManager(currentArticle);
-			Collection<Identifier> allDefinedTerms = terminologyManager
-					.getAllDefinedTerms();
-			allTerms.addAll(allDefinedTerms);
-
-		}
-		return allTerms;
-	}
 }

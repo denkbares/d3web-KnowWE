@@ -1,12 +1,5 @@
 package de.knowwe.core.kdom.objects;
 
-import de.d3web.strings.Identifier;
-import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
-import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.Article;
-import de.knowwe.core.utils.KnowWEUtils;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,6 +8,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import de.d3web.strings.Identifier;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.terminology.TermCompiler;
+import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.utils.KnowWEUtils;
 
 public class TermInfoSet implements Collection<TermInfo> {
 
@@ -102,7 +103,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 	public TermInfoSet(boolean caseSensitive, Class<?>... allowedTermClasses) {
 		this.caseSensitive = caseSensitive;
 		if (allowedTermClasses == null || allowedTermClasses.length == 0) {
-			allowedTermClasses = new Class[]{ Object.class };
+			allowedTermClasses = new Class[] { Object.class };
 		}
 		this.allowedTermClasses = allowedTermClasses;
 	}
@@ -198,13 +199,10 @@ public class TermInfoSet implements Collection<TermInfo> {
 
 	public void initAllTerms(String web) {
 		ArticleManager articleManager = Environment.getInstance().getArticleManager(web);
-		for (Article article : articleManager.getArticles()) {
-			TerminologyManager termManager = KnowWEUtils.getTerminologyManager(article);
-			addAllMatchingTermInfos(termManager);
+		Collection<TermCompiler> compilers = Compilers.getCompilers(articleManager, TermCompiler.class);
+		for (TermCompiler compiler : compilers) {
+			addAllMatchingTermInfos(compiler.getTerminologyManager());
 		}
-		// add and enhance term infos also for global term manager
-		addAllMatchingTermInfos(
-				Environment.getInstance().getTerminologyManager(web, null));
 	}
 
 	private void addAllMatchingTermInfos(TerminologyManager termManager) {

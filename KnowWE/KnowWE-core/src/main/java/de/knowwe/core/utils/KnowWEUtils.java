@@ -811,8 +811,7 @@ public class KnowWEUtils {
 			return Compilers.getCompiler(KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB),
 					DefaultGlobalCompiler.class).getTerminologyManager();
 		}
-		Section<PackageCompileType> compileSection = Sections.successor(
-				article.getRootSection(), PackageCompileType.class);
+		Section<PackageCompileType> compileSection = Sections.successor(article.getRootSection(), PackageCompileType.class);
 		// to emulate old behavior (not return null) we return an empty
 		// TerminologyManager
 		if (compileSection == null) return new TerminologyManager();

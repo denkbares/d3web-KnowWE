@@ -27,7 +27,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
@@ -36,7 +35,6 @@ import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.RuleSet;
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Choice;
@@ -50,14 +48,11 @@ import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
-import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.core.knowledge.terminology.info.Property.Autosave;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.strings.Identifier;
-import de.d3web.utils.Triple;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
@@ -337,20 +332,17 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 		StringBuffer prompt = new StringBuffer();
 		StringBuffer property = new StringBuffer();
 		for (TerminologyObject t1 : nodes) {
-			if (t1 instanceof TerminologyObject
+			if (t1 != null
 					&& (t1).getInfoStore() != null) {
 				// Append the prompt for questions
 				String longname = t1.getInfoStore().getValue(MMInfo.PROMPT);
 				if (t1 instanceof Question && longname != null) {
-					prompt.append("&#126; " + longname);
+					prompt.append("&#126; ").append(longname);
 				}
 				// Append the properties
-				InfoStore rUnit = t1.getInfoStore();
-				for (Triple<Property<?>, Locale, Object> p1 : rUnit.entries()) {
-					if (p1.getA().hasState(Autosave.mminfo)) {
-						property.append(" " + p1.getA().getName() + ": "
-								+ rUnit.getClass());
-					}
+				String unit = t1.getInfoStore().getValue(MMInfo.UNIT);
+				if (unit != null) {
+					property.append("{").append(unit).append("}");
 				}
 			}
 			for (int i = 0; i < depth; i++) {

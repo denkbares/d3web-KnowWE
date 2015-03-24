@@ -1,10 +1,17 @@
 package de.knowwe.core.kdom.objects;
 
+import java.util.Collection;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
+import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
+
+import static java.util.stream.Collectors.toSet;
 
 public class TermUtils {
 
@@ -84,6 +91,22 @@ public class TermUtils {
 		TermInfoSet set = new TermInfoSet(caseSensitive, allowedTermClasses);
 		set.initTerm(web, termIdentifier);
 		return set.getTermInfo(termIdentifier);
+	}
+
+	/**
+	 * Simple method returning a set of all term identifiers of a given web.
+	 *
+	 * @param web the web for which the identifiers should be returned
+	 * @return a set of all term identifiers
+	 */
+	public static Set<Identifier> getTermIdentifiers(String web) {
+		// gathering all terms
+		return Compilers.getCompilers(Environment.getInstance()
+				.getArticleManager(web), TermCompiler.class)
+				.stream()
+				.map(compiler -> compiler.getTerminologyManager().getAllDefinedTerms())
+				.flatMap(Collection::stream)
+				.collect(toSet());
 	}
 
 }
