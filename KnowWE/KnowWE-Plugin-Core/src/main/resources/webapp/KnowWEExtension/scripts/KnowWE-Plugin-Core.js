@@ -211,7 +211,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 			//Open "Show Info" on Enter key press only if term exists - otherwise do nothing
 			element.find('.objectinfo-search').keyup(function(e) {
 				if (e.keyCode == 13) {
-					var val = jq$('#objectinfo-search').val();
+					var val = jq$('.objectinfo-search').val();
 					if (jq$.inArray(val, a) != -1) {
 						KNOWWE.plugin.compositeEditTool.openCompositeEditDialog(val);
 					}
