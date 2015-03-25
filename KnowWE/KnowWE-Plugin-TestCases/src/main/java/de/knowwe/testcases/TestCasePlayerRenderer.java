@@ -639,13 +639,16 @@ public class TestCasePlayerRenderer implements Renderer {
 	}
 
 	public static String getSelectedTestCaseId(Section<?> section, List<ProviderTriple> providers, UserContext user) {
-		String selectedId = Strings.decodeURL(KnowWEUtils.getCookie(generateSelectedTestCaseCookieKey(section),
+		final String selectedId = Strings.decodeURL(KnowWEUtils.getCookie(generateSelectedTestCaseCookieKey(section),
 				"", user), Encoding.ISO_8859_1);
-		if (Strings.isBlank(selectedId)) {
+		boolean caseExists = providers.stream()
+				.filter(triple -> getTestCaseId(triple).equals(selectedId))
+				.findFirst()
+				.isPresent();
+		if (Strings.isBlank(selectedId) || !caseExists) {
 			for (ProviderTriple provider : providers) {
 				if (provider.getProviderSection().getTitle().equals(section.getTitle())) {
-					selectedId = getTestCaseId(provider);
-					break;
+					return getTestCaseId(provider);
 				}
 			}
 		}
