@@ -25,10 +25,10 @@ TestCasePlayer.toggleFindings = function(id, action) {
 
 TestCasePlayer.registerClickableColumnHeaders = function() {
 
-	TestCasePlayer.toggelColumnStatus(jq$(this));
+	TestCasePlayer.toggleColumnStatus(jq$(this));
 }
 
-TestCasePlayer.toggelColumnStatus = function(th) {
+TestCasePlayer.toggleColumnStatus = function(th) {
 
 	var isCollapsed = th.hasClass("collapsedcolumn");
 

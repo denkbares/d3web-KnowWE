@@ -435,19 +435,19 @@ public class TestCasePlayerRenderer implements Renderer {
 	}
 
 	private void renderRunTo(ProviderTriple selectedTriple, SessionDebugStatus status, Date date, String dateString, TableModel tableModel, int row) {
+
+		RenderResult result = new RenderResult(tableModel.getUserContext());
+		String js = "TestCasePlayer.send("
+				+ "'"
+				+ selectedTriple.getB().getID()
+				+ "', '" + dateString
+				+ "', '" + selectedTriple.getA().getName()
+				+ "', '" + selectedTriple.getC().getTitle() + "', this);";
+		result.appendHtml("<a onclick=\"" + js + "\" class='tooltipster'");
 		if (status.getLastExecuted() == null
 				|| status.getLastExecuted().before(date)) {
-			RenderResult sb = new RenderResult(tableModel.getUserContext());
-			String js = "TestCasePlayer.send("
-					+ "'"
-					+ selectedTriple.getB().getID()
-					+ "', '" + dateString
-					+ "', '" + selectedTriple.getA().getName()
-					+ "', '" + selectedTriple.getC().getTitle() + "', this);";
-			sb.appendHtml("<a onclick=\"" + js + "\">");
-			sb.appendHtml(Icon.RUN.toHtml());
-			sb.appendHtml("</a>");
-			tableModel.addCell(row, 0, sb.toStringRaw(), 2);
+			result.appendHtml(" title='Run to'>");
+			result.appendHtml(Icon.RUN.toHtml());
 		}
 		else {
 			Collection<Pair<Check, Boolean>> checkResults = status.getCheckResults(date);
@@ -458,16 +458,17 @@ public class TestCasePlayerRenderer implements Renderer {
 				}
 			}
 			if (ok) {
-				RenderResult done = new RenderResult(tableModel.getUserContext());
-				done.appendHtml(Icon.CHECKED.addClasses("knowwe-ok").toHtml());
-				tableModel.addCell(row, 0, done, 2);
+				result.appendHtml(" title='Checks successful</br>Click to rerun'>");
+				result.appendHtml(Icon.CHECKED.addClasses("knowwe-ok").toHtml());
 			}
 			else {
-				RenderResult done = new RenderResult(tableModel.getUserContext());
-				done.appendHtml(Icon.ERROR.toHtml());
-				tableModel.addCell(row, 0, done, 2);
+				result.appendHtml(" title='Checks failed</br>Click to rerun'>");
+				result.appendHtml(Icon.ERROR.toHtml());
 			}
 		}
+		result.appendHtml("</a>");
+		tableModel.addCell(row, 0, result.toStringRaw(), 2);
+
 	}
 
 	private void renderCheckResults(UserContext user, TestCase testCase, SessionDebugStatus status, Date date, TableModel tableModel, int row, int column) {

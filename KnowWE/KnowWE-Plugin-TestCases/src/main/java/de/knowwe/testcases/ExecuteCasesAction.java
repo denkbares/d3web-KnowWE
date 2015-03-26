@@ -37,7 +37,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 /**
  * Action that gets called when cases should be executed with the
  * SessionDebugger
- * 
+ *
  * @author Markus Friedrich (denkbares GmbH)
  * @created 19.01.2012
  */
@@ -72,7 +72,9 @@ public class ExecuteCasesAction extends AbstractAction {
 		SessionDebugStatus status = provider.getDebugStatus(context);
 		TestCase testCase = provider.getTestCase();
 		// reset session
-		if (session != status.getSession() || status.getLastExecuted() == null) {
+		Date lastExecuted = status.getLastExecuted();
+		if (session != status.getSession() || lastExecuted == null
+				|| lastExecuted.after(endDate) || lastExecuted.equals(endDate)) {
 			session = SessionFactory.createSession(session.getKnowledgeBase(),
 					testCase.getStartDate());
 			provider.storeSession(session, context);
@@ -80,7 +82,7 @@ public class ExecuteCasesAction extends AbstractAction {
 			status.setLastExecuted(endDate);
 		}
 		else {
-			runTo(session, testCase, status.getLastExecuted(), endDate, status, ignoreNumValueOutOfRange);
+			runTo(session, testCase, lastExecuted, endDate, status, ignoreNumValueOutOfRange);
 			status.setLastExecuted(endDate);
 		}
 		D3webUtils.handleLoopDetectionNotification(providerSection.getArticleManager(), context, session);
