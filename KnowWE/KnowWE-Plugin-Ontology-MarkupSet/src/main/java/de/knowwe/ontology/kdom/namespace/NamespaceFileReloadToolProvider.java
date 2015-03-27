@@ -33,8 +33,8 @@ import de.knowwe.util.Icon;
 public class NamespaceFileReloadToolProvider implements ToolProvider {
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		Tool reloadTool = getReloadTool(section, userContext);
 		if (hasTools(section, userContext)) {
+			Tool reloadTool = getReloadTool(section, userContext);
 			return new Tool[] { reloadTool };
 		}
 		return new Tool[0];

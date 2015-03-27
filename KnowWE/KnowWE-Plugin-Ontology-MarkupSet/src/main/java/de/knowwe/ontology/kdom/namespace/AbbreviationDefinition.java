@@ -28,10 +28,13 @@ import de.knowwe.ontology.compile.OntologyCompiler;
 
 public class AbbreviationDefinition extends SimpleDefinition {
 
+	private static final String PN_CHARS_BASE = "([A-Z]|[a-z])";
+	private static final String PN_CHARS = "(_|" + PN_CHARS_BASE + "|-|[0-9])";
+
 	public AbbreviationDefinition() {
 		super(OntologyCompiler.class, AbbreviationDefinition.class, Priority.HIGHEST);
 		this.setSectionFinder(new ConstraintSectionFinder(
-				new RegexSectionFinder("\\w+"),
+				new RegexSectionFinder("(?<=^\\s*)" + PN_CHARS_BASE + "((_|[A-Z]|[a-z]|-|[0-9]|\\.)*" + PN_CHARS + ")?"),
 				AtMostOneFindingConstraint.getInstance()));
 		this.setRenderer(StyleRenderer.Questionaire);
 	}

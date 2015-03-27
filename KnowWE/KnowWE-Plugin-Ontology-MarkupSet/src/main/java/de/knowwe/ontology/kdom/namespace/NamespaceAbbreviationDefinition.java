@@ -19,6 +19,8 @@
 package de.knowwe.ontology.kdom.namespace;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 
@@ -29,7 +31,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -39,14 +40,27 @@ public class NamespaceAbbreviationDefinition extends SimpleDefinition {
 	public NamespaceAbbreviationDefinition() {
 		super(OntologyCompiler.class, NamespaceAbbreviationDefinition.class);
 		this.addCompileScript(Priority.HIGHEST, new NamespaceSubtreeHandler());
-		this.setSectionFinder(new RegexSectionFinder("\\s*\\w+\\s+\\S+\\s*"));
+		this.setSectionFinder(new RegexSectionFinder("\\s*\\S+?\\s\\S+"));
 		this.addChildType(new AbbreviationDefinition());
 		this.addChildType(new NamespaceDefinition());
 	}
 
 	@Override
 	public String getTermName(Section<? extends Term> section) {
-		return getAbbreviation(section) + " - " + getNamespace(section);
+		Section<AbbreviationDefinition> abbreviation = Sections.child(section,
+				AbbreviationDefinition.class);
+		if (abbreviation == null) {
+			return section.getText();
+		}
+		String abbreviationName = abbreviation.get().getTermName(abbreviation);
+		return abbreviationName + " - " + getNamespace(section);
+	}
+
+	@Override
+	protected boolean verifyDefinition(de.knowwe.core.compile.Compiler compiler, Section<SimpleDefinition> section) {
+		Section<AbbreviationDefinition> abbreviation = Sections.child(section,
+				AbbreviationDefinition.class);
+		return abbreviation != null;
 	}
 
 	public String getNamespace(Section<? extends Term> section) {
@@ -56,32 +70,38 @@ public class NamespaceAbbreviationDefinition extends SimpleDefinition {
 		return namespaceName;
 	}
 
-	public String getAbbreviation(Section<? extends Term> section) {
-		Section<AbbreviationDefinition> abbreviation = Sections.child(section,
-				AbbreviationDefinition.class);
-		String abbreviationName = abbreviation.get().getTermName(abbreviation);
-		return abbreviationName;
-	}
-
 	private static class NamespaceSubtreeHandler extends OntologyHandler<NamespaceAbbreviationDefinition> {
 
 		@Override
 		public Collection<Message> create(OntologyCompiler compiler, Section<NamespaceAbbreviationDefinition> section) {
 			String namespace = section.get().getNamespace(section);
+			List<Message> messages = new LinkedList<>();
 			try {
 				new URIImpl(namespace, true);
 			}
 			catch (IllegalArgumentException e) {
-				return Messages.asList(Messages.error("'" + namespace + "' is not a valid URI"));
+				Message message = new Message(Message.Type.ERROR, "'" + namespace + "' is not a valid URI");
+				messages.add(message);
 			}
-			String abbreviation = section.get().getAbbreviation(section);
-			Rdf2GoCore.getInstance(compiler).addNamespace(abbreviation, namespace);
-			return Messages.noMessage();
+			Section<AbbreviationDefinition> abbreviation = Sections.child(section,
+					AbbreviationDefinition.class);
+			if (abbreviation == null) {
+				Message message = new Message(Message.Type.ERROR, "Your namespace abbreviation is not valid");
+				messages.add(message);
+				return messages;
+
+			}
+			String abbreviationName = abbreviation.get().getTermName(abbreviation);
+			Rdf2GoCore.getInstance(compiler).addNamespace(abbreviationName, namespace);
+			return messages;
 		}
 
 		@Override
 		public void destroy(OntologyCompiler compiler, Section<NamespaceAbbreviationDefinition> section) {
-			String abbreviation = section.get().getAbbreviation(section);
+			Section<AbbreviationDefinition> abbreviation1 = Sections.child(section,
+					AbbreviationDefinition.class);
+			String abbreviationName = abbreviation1.get().getTermName(abbreviation1);
+			String abbreviation = abbreviationName;
 			Rdf2GoCore.getInstance(compiler).removeNamespace(abbreviation);
 		}
 	}
