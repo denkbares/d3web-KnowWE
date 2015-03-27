@@ -42,8 +42,8 @@ public class SessionDebugStatus {
 
 	private Session session;
 	private Date lastExecuted = null;
-	private Map<Date, Collection<Pair<Check, Boolean>>> checkResults = new HashMap<Date, Collection<Pair<Check, Boolean>>>();
-	private Map<Date, Map<TerminologyObject, Value>> timeValues = new HashMap<Date, Map<TerminologyObject, Value>>();
+	private Map<Date, Collection<Pair<Check, Boolean>>> checkResults = new HashMap<>();
+	private Map<Date, Map<TerminologyObject, Value>> timeValues = new HashMap<>();
 	private int failedChecks = 0;
 
 	public SessionDebugStatus(Session session) {
@@ -89,10 +89,10 @@ public class SessionDebugStatus {
 	public void addCheckResult(Date date, Check check, boolean result) {
 		Collection<Pair<Check, Boolean>> pairCollection = checkResults.get(date);
 		if (pairCollection == null) {
-			pairCollection = new LinkedList<Pair<Check, Boolean>>();
+			pairCollection = new LinkedList<>();
 			checkResults.put(date, pairCollection);
 		}
-		pairCollection.add(new Pair<Check, Boolean>(check, result));
+		pairCollection.add(new Pair<>(check, result));
 		if (!result) failedChecks++;
 	}
 
@@ -121,7 +121,7 @@ public class SessionDebugStatus {
 	public void finished(Date date) {
 		Map<TerminologyObject, Value> values = timeValues.get(date);
 		if (values == null) {
-			values = new HashMap<TerminologyObject, Value>();
+			values = new HashMap<>();
 			timeValues.put(date, values);
 		}
 		for (Question q : session.getKnowledgeBase().getManager().getQuestions()) {

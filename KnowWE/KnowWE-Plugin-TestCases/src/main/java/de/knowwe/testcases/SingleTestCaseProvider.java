@@ -21,7 +21,6 @@ package de.knowwe.testcases;
 import java.util.Collections;
 import java.util.List;
 
-import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
 import de.d3web.testcase.model.TestCase;
 import de.d3web.we.basic.SessionProvider;
@@ -35,28 +34,23 @@ import de.knowwe.testcases.prefix.PrefixedTestCaseProvider;
 
 /**
  * Capsules a {@link TestCase}
- * 
+ *
  * @author Markus Friedrich (denkbares GmbH)
  * @created 27.02.2012
  */
 public class SingleTestCaseProvider extends PrefixedTestCaseProvider {
 
 	private final TestCase testCase;
-	private final D3webCompiler article;
+	private final D3webCompiler compiler;
 	private final String name;
 
-	public SingleTestCaseProvider(D3webCompiler article, Section<? extends DefaultMarkupType> prefixDefiningSection, TestCase testCase, String name) {
+	public SingleTestCaseProvider(D3webCompiler compiler, Section<? extends DefaultMarkupType> prefixDefiningSection, TestCase testCase, String name) {
 		super(prefixDefiningSection);
 		this.testCase = testCase;
-		this.article = article;
+		this.compiler = compiler;
 		this.name = name;
 
 	}
-
-	// public SingleTestCaseProvider(Article article, TestCase testCase, String
-	// name) {
-	// this(article, null, testCase, name);
-	// }
 
 	@Override
 	public TestCase getActualTestCase() {
@@ -65,14 +59,12 @@ public class SingleTestCaseProvider extends PrefixedTestCaseProvider {
 
 	@Override
 	public Session getActualSession(UserContext user) {
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article);
-		Session session = SessionProvider.getSession(user, kb);
-		return session;
+		return SessionProvider.getSession(user, D3webUtils.getKnowledgeBase(compiler));
 	}
 
 	@Override
 	public SessionDebugStatus getDebugStatus(UserContext user) {
-		String key = "SessionDebugStatus_" + article.getCompileSection().getID() + "/" + getName();
+		String key = "SessionDebugStatus_" + compiler.getCompileSection().getID() + "/" + getName();
 		SessionDebugStatus status = (SessionDebugStatus) user.getSession().getAttribute(key);
 		if (status == null) {
 			status = new SessionDebugStatus(getActualSession(user));

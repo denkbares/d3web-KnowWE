@@ -71,20 +71,15 @@ public class ExecuteCasesAction extends AbstractAction {
 		Session session = provider.getActualSession(context);
 		SessionDebugStatus status = provider.getDebugStatus(context);
 		TestCase testCase = provider.getTestCase();
-		// reset session
 		Date lastExecuted = status.getLastExecuted();
 		if (session != status.getSession() || lastExecuted == null
 				|| lastExecuted.after(endDate) || lastExecuted.equals(endDate)) {
-			session = SessionFactory.createSession(session.getKnowledgeBase(),
-					testCase.getStartDate());
+			session = SessionFactory.createSession(D3webUtils.getKnowledgeBase(playerSection), testCase.getStartDate());
 			provider.storeSession(session, context);
-			runTo(session, testCase, null, endDate, status, ignoreNumValueOutOfRange);
-			status.setLastExecuted(endDate);
+			lastExecuted = null;
 		}
-		else {
-			runTo(session, testCase, lastExecuted, endDate, status, ignoreNumValueOutOfRange);
-			status.setLastExecuted(endDate);
-		}
+		runTo(session, testCase, lastExecuted, endDate, status, ignoreNumValueOutOfRange);
+		status.setLastExecuted(endDate);
 		D3webUtils.handleLoopDetectionNotification(providerSection.getArticleManager(), context, session);
 	}
 

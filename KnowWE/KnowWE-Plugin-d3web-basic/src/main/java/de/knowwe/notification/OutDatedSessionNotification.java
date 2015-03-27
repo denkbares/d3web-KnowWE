@@ -26,7 +26,7 @@ import de.knowwe.core.report.Message.Type;
  * This is a special class for out dated session notifications. The main
  * difference to {@link StandardNotification} is that the message is predefined
  * and that the article compiling the knowledge base is used as ID.
- * 
+ *
  * @author Sebastian Furth
  * @created 20.04.2012
  */
@@ -50,7 +50,7 @@ public class OutDatedSessionNotification implements Notification {
 		StringBuilder message = new StringBuilder();
 		message.append("The session for <em>");
 		message.append(title);
-		message.append("</em> is based on an out dated version of the knowledge base. ");
+		message.append("</em> is based on an outdated version of the knowledge base. ");
 		message.append("You should consider a ");
 		message.append("<a ");
 		message.append("onclick='javascript:KNOWWE.plugin.d3webbasic.actions.resetSession(\"");

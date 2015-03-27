@@ -41,7 +41,7 @@ import de.knowwe.testcases.prefix.PrefixedTestCaseProvider;
 /**
  * Abstract class providing all methods to create a {@link TestCaseProvider}
  * based on an Attachment
- * 
+ *
  * @author Markus Friedrich (denkbares GmbH)
  * @created 27.01.2012
  */
@@ -49,15 +49,10 @@ public abstract class AttachmentTestCaseProvider extends PrefixedTestCaseProvide
 
 	protected TestCase testCase;
 	protected WikiAttachment attachment;
-	protected List<Message> messages = new LinkedList<Message>();
-	private List<Message> testCaseMessages = new LinkedList<Message>();
+	protected List<Message> messages = new LinkedList<>();
+	private List<Message> testCaseMessages = new LinkedList<>();
 
 	protected final D3webCompiler compiler;
-
-	// public AttachmentTestCaseProvider(Article article, WikiAttachment
-	// attachment) {
-	// this(article, null, attachment);
-	// }
 
 	public AttachmentTestCaseProvider(D3webCompiler compiler, Section<? extends DefaultMarkupType> prefixDefiningSection, WikiAttachment attachment) {
 		super(prefixDefiningSection);
@@ -100,7 +95,7 @@ public abstract class AttachmentTestCaseProvider extends PrefixedTestCaseProvide
 
 	@Override
 	public List<Message> getMessages() {
-		List<Message> result = new LinkedList<Message>();
+		List<Message> result = new LinkedList<>();
 		result.addAll(messages);
 		result.addAll(testCaseMessages);
 		return result;
@@ -108,9 +103,7 @@ public abstract class AttachmentTestCaseProvider extends PrefixedTestCaseProvide
 
 	@Override
 	public Session getActualSession(UserContext user) {
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
-		Session session = SessionProvider.getSession(user, kb);
-		return session;
+		return SessionProvider.getSession(user, D3webUtils.getKnowledgeBase(compiler));
 	}
 
 	@Override
@@ -137,7 +130,7 @@ public abstract class AttachmentTestCaseProvider extends PrefixedTestCaseProvide
 	}
 
 	protected void updateTestCaseMessages(KnowledgeBase kb) {
-		testCaseMessages = new LinkedList<Message>();
+		testCaseMessages = new LinkedList<>();
 		if (testCase != null) {
 			for (String s : testCase.check(kb)) {
 				testCaseMessages.add(Messages.error(attachment.getPath() + ": " + s));

@@ -82,10 +82,6 @@ public class TestCasePlayerRenderer implements Renderer {
 
 	private static final String QUESTIONS_SEPARATOR = "#####";
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-	private static String SELECTOR_KEY = "selectedValue";
-	private static String QUESTION_SELECTOR_KEY = "question_selector";
-	private static String SIZE_SELECTOR_KEY = "size_selector";
-	private static String FROM_KEY = "from_position";
 	private static final Pattern[] cookiePatterns = { Pattern.compile("^columnstatus_([^_]+)_.*"),
 			Pattern.compile("^question_selector_([^_]+)_.*") };
 
@@ -197,10 +193,9 @@ public class TestCasePlayerRenderer implements Renderer {
 	private void renderTestCase(Section<?> section, UserContext user, ProviderTriple selectedTriple, Session session, TestCase testCase, SessionDebugStatus status, RenderResult string) {
 		Collection<Date> chronology = testCase.chronology();
 
-		NavigationParameters navigatorParameters = getNavigationParameters(section, user,
-				chronology);
+		NavigationParameters navigatorParameters = getNavigationParameters(section, user);
 
-		renderTestCaseHeader(section, user, testCase, chronology, navigatorParameters, string);
+		renderTestCaseHeader(section, user, testCase, chronology, string);
 
 		TableModel tableModel = getTableModel(section, user, selectedTriple, session, testCase,
 				status, chronology, navigatorParameters);
@@ -250,10 +245,10 @@ public class TestCasePlayerRenderer implements Renderer {
 		if (additionalQuestions != null && !additionalQuestions.isEmpty()) {
 			additionalQuestionsSplit = additionalQuestions.split(QUESTIONS_SEPARATOR);
 		}
-		return new LinkedHashSet<String>(Arrays.asList(additionalQuestionsSplit));
+		return new LinkedHashSet<>(Arrays.asList(additionalQuestionsSplit));
 	}
 
-	private void renderTestCaseHeader(Section<?> section, UserContext user, TestCase testCase, Collection<Date> chronology, NavigationParameters navigatorParameters, RenderResult string) {
+	private void renderTestCaseHeader(Section<?> section, UserContext user, TestCase testCase, Collection<Date> chronology, RenderResult string) {
 		string.appendHtml("<span class='fillText'> Start: </span>");
 		if (testCase.getStartDate().getTime() == 0) {
 			string.append("---");
@@ -264,17 +259,9 @@ public class TestCasePlayerRenderer implements Renderer {
 		string.appendHtml(PaginationRenderer.getToolSeparator());
 
 		PaginationRenderer.setResultSize(user, chronology.size());
-		boolean show = chronology.size() > 10 ? true : false;
+		boolean show = chronology.size() > 10;
 		PaginationRenderer.renderPagination(section, user, string, show);
 
-	}
-
-	private String createFromKey(Section<?> section) {
-		return FROM_KEY + "_" + section.getID();
-	}
-
-	private String createSizeKey(Section<?> section) {
-		return SIZE_SELECTOR_KEY + "_" + section.getID();
 	}
 
 	private TerminologyObject renderHeader(Section<?> section, UserContext user, ProviderTriple selectedTriple, Collection<String> additionalQuestions, Collection<Question> usedQuestions, TerminologyManager manager, TableModel tableModel) {
@@ -303,7 +290,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				user, manager, additionalQuestions, tableModel, column);
 	}
 
-	private NavigationParameters getNavigationParameters(Section<?> section, UserContext user, Collection<Date> chronology) {
+	private NavigationParameters getNavigationParameters(Section<?> section, UserContext user) {
 
 		NavigationParameters tableParameters = new NavigationParameters();
 		int selectedSizeString = PaginationRenderer.getCount(section, user);
@@ -359,7 +346,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				else {
 					findingString = value.toString();
 				}
-				Collection<String> errors = new LinkedList<String>();
+				Collection<String> errors = new ArrayList<>();
 				TestCaseUtils.checkValues(errors, q, value);
 				if (!errors.isEmpty()) {
 					RenderResult errorResult = new RenderResult(tableModel.getUserContext());
@@ -410,7 +397,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				sb.append(questionString);
 				sb.appendHtml("</span>");
 			}
-			Set<String> copy = new LinkedHashSet<String>(additionalQuestions);
+			Set<String> copy = new LinkedHashSet<>(additionalQuestions);
 			copy.remove(questionString);
 			String input = " <input type=\"button\" value=\"-\" onclick=\"TestCasePlayer.addCookie('"
 					+ toAdditionalQuestionsCookyString(copy) + "');\">";
@@ -522,19 +509,19 @@ public class TestCasePlayerRenderer implements Renderer {
 	}
 
 	private TerminologyObject renderObservationQuestionAdder(Section<?> section, UserContext user, TerminologyManager manager, Collection<String> alreadyAddedQuestions, TableModel tableModel, int column) {
-		String key = QUESTION_SELECTOR_KEY + "_" + section.getID();
+		String key = "question_selector_" + section.getID();
 		String cookie = KnowWEUtils.getCookie(key, "", user);
 		String selectedQuestion = Strings.decodeURL(cookie, Encoding.ISO_8859_1);
 		TerminologyObject object = null;
-		RenderResult selectsb2 = new RenderResult(user);
-		selectsb2.appendHtml("<form><select name=\"toAdd\" id=adder"
+		RenderResult result = new RenderResult(user);
+		result.appendHtml("<form><select name=\"toAdd\" id=adder"
 				+ section.getID()
 				+ " onchange=\"TestCasePlayer.change('"
 				+ key
 				+ "', this.options[this.selectedIndex].value);\">");
-		selectsb2.appendHtml("<option value='--'>--</option>");
-		boolean foundone = false;
-		List<TerminologyObject> objects = new LinkedList<TerminologyObject>();
+		result.appendHtml("<option value='--'>--</option>");
+		boolean foundOne = false;
+		List<TerminologyObject> objects = new LinkedList<>();
 		objects.addAll(manager.getQuestions());
 		objects.addAll(manager.getSolutions());
 		Collections.sort(objects, new NamedObjectComparator());
@@ -543,21 +530,21 @@ public class TestCasePlayerRenderer implements Renderer {
 			if (!alreadyAddedQuestions.contains(q.getName())) {
 				max = Math.max(max, q.getName().length());
 				if (q.getName().equals(selectedQuestion)) {
-					selectsb2.appendHtml("<option selected='selected' value='"
+					result.appendHtml("<option selected='selected' value='"
 							+ Strings.encodeHtml(q.getName()) + "' \n>"
 							+ Strings.encodeHtml(q.getName()) + "</option>");
 					object = q;
 				}
 				else {
-					selectsb2.appendHtml("<option value='"
+					result.appendHtml("<option value='"
 							+ Strings.encodeHtml(q.getName()) + "' \n>"
 							+ Strings.encodeHtml(q.getName())
 							+ "</option>");
 				}
-				foundone = true;
+				foundOne = true;
 			}
 		}
-		selectsb2.appendHtml("</select>");
+		result.appendHtml("</select>");
 		// reset value because -- is selected
 		if (object == null) {
 			user.getSession().setAttribute(key, "");
@@ -566,7 +553,7 @@ public class TestCasePlayerRenderer implements Renderer {
 			user.getSession().setAttribute(key, object.getName());
 		}
 		if (!alreadyAddedQuestions.isEmpty()) {
-			selectsb2.appendHtml("<input "
+			result.appendHtml("<input "
 					+
 					(object == null ? "disabled='disabled'" : "")
 					+ " type=\"button\" value=\"+\" onclick=\"TestCasePlayer.addCookie(&quot;"
@@ -575,12 +562,12 @@ public class TestCasePlayerRenderer implements Renderer {
 					+ "&quot;+this.form.toAdd.options[toAdd.selectedIndex].value);\"></form>");
 		}
 		else {
-			selectsb2.appendHtml("<input "
+			result.appendHtml("<input "
 					+ (object == null ? "disabled='disabled'" : "")
 					+ " type=\"button\" value=\"+\" onclick=\"TestCasePlayer.addCookie(this.form.toAdd.options[toAdd.selectedIndex].value);\"></form>");
 		}
-		if (foundone) {
-			tableModel.addCell(0, column, selectsb2.toStringRaw(), max + 3);
+		if (foundOne) {
+			tableModel.addCell(0, column, result.toStringRaw(), max + 3);
 		}
 		return object;
 	}
@@ -595,7 +582,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				+ "<select id=selector" + section.getID()
 				+ " onchange=\"TestCasePlayer.change('" + key
 				+ "', this.options[this.selectedIndex].value, '" + section.getID() + "');\">");
-		Set<String> ids = new HashSet<String>();
+		Set<String> ids = new HashSet<>();
 		boolean unique = true;
 		for (ProviderTriple triple : providers) {
 			unique &= ids.add(triple.getA().getName());
@@ -608,7 +595,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				String id = getTestCaseId(triple);
 				String displayedID = (unique) ? triple.getA().getName() : id;
 
-				List<String> attributes = new ArrayList<String>();
+				List<String> attributes = new ArrayList<>();
 				attributes.add("caselink");
 				attributes.add(KnowWEUtils.getURLLink(triple.getB()));
 				attributes.add("value");
@@ -670,7 +657,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				i++;
 			}
 		}
-		return SELECTOR_KEY + "_" + Strings.encodeURL(section.getTitle()) + i;
+		return "selectedValue_" + Strings.encodeURL(section.getTitle()) + i;
 	}
 
 	private String renderToolbarButton(Icon icon, String action, UserContext user) {

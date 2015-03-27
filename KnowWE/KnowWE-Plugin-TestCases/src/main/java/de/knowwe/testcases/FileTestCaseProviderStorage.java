@@ -52,12 +52,12 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 	private final D3webCompiler compiler;
 	protected final List<Message> messages = new LinkedList<Message>();
 	protected final Article sectionArticle;
-	protected final Section<? extends DefaultMarkupType> prefixProvidginSection;
+	protected final Section<? extends DefaultMarkupType> prefixProvidingSection;
 
 	public FileTestCaseProviderStorage(D3webCompiler compiler, Section<? extends DefaultMarkupType> prefixProvidingSection, String[] regexes) {
 		this.compiler = compiler;
 		this.sectionArticle = prefixProvidingSection.getArticle();
-		this.prefixProvidginSection = prefixProvidingSection;
+		this.prefixProvidingSection = prefixProvidingSection;
 		update(regexes);
 	}
 
@@ -139,7 +139,7 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 				}
 				if (!exists) {
 					// provider has to be newly created
-					actualList.add(createTestCaseProvider(compiler, prefixProvidginSection,
+					actualList.add(createTestCaseProvider(compiler, prefixProvidingSection,
 							attachment));
 				}
 			}

@@ -40,26 +40,26 @@ import de.knowwe.core.user.UserContext;
 /**
  * This class stores all {@link Session}s. The class itself is stored in each
  * user's HTTPSession and is accessible by calling:
- * 
+ * <p/>
  * <pre>
  * httpSession.getAttribute(Attributes.SESSIONPROVIDER)
  * </pre>
- * 
+ * <p/>
  * on a HTTPSession object. For convenience there exist two static
  * utility methods:
- * 
+ * <p/>
  * <pre>
  * SessionProvider.getSessionProvider(UserContext context)
  * </pre>
- * 
+ * <p/>
  * and
- * 
+ * <p/>
  * <pre>
  * SessionProvider.getSession(UserContext context, KnowledgeBase base)
  * </pre>
- * 
+ * <p/>
  * which does all the dirty work for you by using KnowWE's {@link UserContext}.
- * 
+ *
  * @author Sebastian Furth (denkbares GmbH)
  * @created 06.03.2012
  */
@@ -75,14 +75,14 @@ public class SessionProvider {
 	 * Returns the SessionProvider object for a specified {@link UserContext}.
 	 * If there is no SessionProvider object, a new one will be created and
 	 * stored in the provided UserContext, i. e. HTTPSession.
-	 * 
+	 * <p/>
 	 * Please be aware that this method only works with an UserContext backed by
 	 * a real HTTPSession. Otherwise there is no place to store and retrieve the
 	 * SessionProvider object.
-	 * 
-	 * @created 06.03.2012
+	 *
 	 * @param context UserContext of the current user.
 	 * @return SessionProvider object associated to the user
+	 * @created 06.03.2012
 	 */
 	private static SessionProvider getSessionProvider(UserContext context) {
 		HttpSession httpSession = context.getSession();
@@ -111,10 +111,10 @@ public class SessionProvider {
 	 * one. If the knowledge base of an existing session is not up to date and
 	 * no user facts has been set, the knowledge base will be replaced
 	 * automatically (the session will be reseted).
-	 * 
-	 * @created 06.03.2012
+	 *
 	 * @param kb the underlying knowledge base
 	 * @return session for the specified knowledge base
+	 * @created 06.03.2012
 	 */
 	private Session getSessionInternally(UserContext context, KnowledgeBase kb) {
 		Session session = sessions.get(kb.getId());
@@ -147,18 +147,22 @@ public class SessionProvider {
 	}
 
 	private void setSessionInternally(UserContext context, Session session) {
-		removeSessionInternally(context, session.getKnowledgeBase(), true);
-		sessions.put(session.getKnowledgeBase().getId(), session);
+		String key = session.getKnowledgeBase().getId();
+		if (sessions.get(key) != session) {
+			// only remove (which will also terminate the session), if this is a new session instance
+			removeSessionInternally(context, session.getKnowledgeBase(), true);
+			sessions.put(key, session);
+		}
 	}
 
 	/**
 	 * Creates and returns a new {@link Session} for the {@link KnowledgeBase}.
 	 * The created session is accessible by using the id of the knowledge base.
-	 * 
-	 * @created 06.03.2012
+	 *
 	 * @param context the {@link UserContext} the session will belong to
-	 * @param kb The underlying knowledge base
+	 * @param kb      The underlying knowledge base
 	 * @return the created session
+	 * @created 06.03.2012
 	 */
 	public static Session createSession(UserContext context, KnowledgeBase kb) {
 		SessionProvider sessionProvider = getSessionProvider(context);
@@ -177,15 +181,15 @@ public class SessionProvider {
 	 * existing session is not up to date and no user facts has been set, the
 	 * knowledge base will be replaced automatically (the session will be
 	 * reseted).
-	 * 
+	 * <p/>
 	 * Please be aware that this method only works with an UserContext backed by
 	 * a real HTTPSession. Otherwise there is no place to store and retrieve the
 	 * SessionProvider object.
-	 * 
-	 * @created 07.03.2012
+	 *
 	 * @param context UserContext of the current user.
-	 * @param base the underlying knowledge base
+	 * @param base    the underlying knowledge base
 	 * @return Session for the specified knowledge base
+	 * @created 07.03.2012
 	 */
 	public static Session getSession(UserContext context, KnowledgeBase base) {
 		SessionProvider provider = getSessionProvider(context);
@@ -197,10 +201,10 @@ public class SessionProvider {
 
 	/**
 	 * Returns a Collection of all sessions currently stored for the user.
-	 * 
-	 * @created 17.08.2012
+	 *
 	 * @param context the user context to get the sessions for
 	 * @return all sessions of the user
+	 * @created 17.08.2012
 	 */
 	public static Collection<Session> getSessions(UserContext context) {
 		SessionProvider provider = getSessionProvider(context);
@@ -213,7 +217,7 @@ public class SessionProvider {
 	/**
 	 * Checks whether the current {@link Session} uses an out dated
 	 * {@link KnowledgeBase}.
-	 * 
+	 *
 	 * @created 22.03.2012
 	 */
 	public static boolean hasOutDatedSession(UserContext context, KnowledgeBase base) {
@@ -226,10 +230,10 @@ public class SessionProvider {
 	 * there exists no session for this knowledge base ID this method will do
 	 * nothing. The removed session is also terminated, so it cannot be used
 	 * later accidentally.
-	 * 
-	 * @created 06.03.2012
+	 *
 	 * @param context the {@link UserContext} to which the session belongs
-	 * @param kb the underlying knowledge base
+	 * @param kb      the underlying knowledge base
+	 * @created 06.03.2012
 	 */
 	public static void removeSession(UserContext context, KnowledgeBase kb) {
 		removeSession(context, kb, true);
@@ -239,12 +243,12 @@ public class SessionProvider {
 	 * Removes an existing {@link Session} for the provided knowledge base. If
 	 * there exists no session for this knowledge base ID this method will do
 	 * nothing.
-	 * 
-	 * @created 06.03.2012
-	 * @param context the {@link UserContext} to which the session belongs
-	 * @param kb the underlying knowledge base
+	 *
+	 * @param context   the {@link UserContext} to which the session belongs
+	 * @param kb        the underlying knowledge base
 	 * @param terminate a boolean to decide whether the removed session should
-	 *        also be terminated or not
+	 *                  also be terminated or not
+	 * @created 06.03.2012
 	 */
 	public static void removeSession(UserContext context, KnowledgeBase kb, boolean terminate) {
 		SessionProvider sessionProvider = getSessionProvider(context);
@@ -256,11 +260,11 @@ public class SessionProvider {
 	/**
 	 * Sets the session to the specified session by using the id of the
 	 * session's underlying kb. An existing session will be overwritten!
-	 * 
-	 * @created 06.03.2012
+	 *
 	 * @param context the {@link UserContext} for which the session should be
-	 *        set
+	 *                set
 	 * @param session the session to be set
+	 * @created 06.03.2012
 	 */
 	public static void setSession(UserContext context, Session session) {
 		SessionProvider sessionProvider = getSessionProvider(context);

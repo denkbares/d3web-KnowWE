@@ -179,14 +179,22 @@ KNOWWE.notification = function() {
 		 * Removes a specified notification both from server and client
 		 */
 		removeNotification : function(id) {
-			var index = KNOWWE.notification.activeIndex;
+			var messages = KNOWWE.notification.messages;
+			var index = -1;
+			for (var i = 0; i < messages.length; i++) {
+				if (messages[i].id === id) {
+					index = i;
+					break;
+				}
+			}
+			if (index === -1) return;
 			// quit: remove current message from stack
-			KNOWWE.notification.messages.splice(index, 1);
+			messages.splice(index, 1);
 			// quit: other notifications? show them!
 			if (index > 0) {
 				KNOWWE.notification._select(index - 1);
 			} else if (index == 0
-				&& KNOWWE.notification.messages.length > 1) {
+				&& messages.length > 1) {
 				KNOWWE.notification._select(index);
 				// quit: no other notifications? hide notification
 				// bar!
