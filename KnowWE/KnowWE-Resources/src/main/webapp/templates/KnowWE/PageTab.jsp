@@ -68,7 +68,7 @@
       </fmt:message>  
       <br />
       <wiki:LinkTo><fmt:message key="view.backtocurrent"/></wiki:LinkTo>&nbsp;&nbsp;
-      <wiki:EditLink version="this"><fmt:message key="view.restore"/></wiki:EditLink>
+	  <a onclick="KNOWWE.core.restoreThisVersion()" accesskey="" title="">[Restore this version]</a>
     </div>
 
   </form>

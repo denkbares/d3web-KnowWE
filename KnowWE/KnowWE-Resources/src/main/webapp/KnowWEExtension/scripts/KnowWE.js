@@ -50,6 +50,25 @@ KNOWWE.core = function() {
 				KNOWWE.helper.observer.notify('onload')
 			}, 50);
 			//setTimeout(function(){KNOWWE.helper.observer.notify('update')}, 50);
+		},
+
+		restoreThisVersion : function() {
+			var version = document.getElementById('version').value
+			var params = {
+				restoreThisVersion : version,
+				action : 'RestoreAction'
+			};
+			var options = {
+				url : KNOWWE.core.util.getURL(params),
+				loader : true,
+				response : {
+					fn : function() {
+						window.location = "Wiki.jsp?page=" + this.responseText
+					},
+					onError : _EC.onErrorBehavior
+				}
+			};
+			new _KA(options).send();
 		}
 	}
 }();

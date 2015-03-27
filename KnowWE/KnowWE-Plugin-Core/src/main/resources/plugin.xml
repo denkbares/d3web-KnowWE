@@ -472,7 +472,6 @@
 		<parameter id="description" value="Action RestoreAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="script" value="restoreActionScript.js" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="StartOperationAction">
