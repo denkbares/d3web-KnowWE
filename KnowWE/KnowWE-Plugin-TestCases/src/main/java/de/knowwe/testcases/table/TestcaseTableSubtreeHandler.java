@@ -20,6 +20,7 @@ package de.knowwe.testcases.table;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,15 +43,16 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.DefaultTestCaseStorage;
 import de.knowwe.testcases.SingleTestCaseProvider;
 import de.knowwe.testcases.TestCaseProvider;
 import de.knowwe.testcases.TestCaseUtils;
+import de.knowwe.testcases.TimeStampType;
 
 /**
- * 
  * @author Reinhard Hatko
  * @created 27.05.2011
  */
@@ -68,12 +70,24 @@ public class TestcaseTableSubtreeHandler implements D3webHandler<TestcaseTable> 
 				new IdentityHashMap<RatedTestCase, List<Check>>();
 		List<Section<TestcaseTableLine>> lines =
 				Sections.successors(section, TestcaseTableLine.class);
+		Date lastTimeStamp = null;
 		for (Section<TestcaseTableLine> line : lines) {
 			// check for an rated test case of that line
 			RatedTestCase rtc = (RatedTestCase) KnowWEUtils.getStoredObject(compiler, line,
 					TestcaseTableLine.TESTCASE_KEY);
 			if (rtc == null) continue;
+			Date timeStamp = rtc.getTimeStamp();
+			if (lastTimeStamp != null && !timeStamp.after(lastTimeStamp)) {
+				Section<TimeStampType> timeStampSection = Sections.successor(line, TimeStampType.class);
+				//noinspection ConstantConditions
+				Messages.storeMessage(compiler, timeStampSection, this.getClass(),
+						Messages.error("Invalid time stamp '" + timeStampSection.getText()
+								+ "', each time stamp has to be after the previous one."));
+				return Messages.noMessage();
+			}
+
 			stc.add(rtc);
+			lastTimeStamp = timeStamp;
 
 			// also check for additional check conditions
 			Section<CompositeCondition> condSec =
