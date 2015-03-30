@@ -753,9 +753,8 @@ KNOWWE.core.plugin.pagination = function() {
 			saveCookieAndUpdateNode(cookie, id);
 		},
 
-		setCount : function(selected, sectionId) {
-
-			var id = sectionId;
+		setCount : function(selected, id) {
+			var $selected = jq$(selected);
 
 			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-"
 			+ id));
@@ -763,25 +762,31 @@ KNOWWE.core.plugin.pagination = function() {
 				cookie = {};
 			}
 
-			var count = selected.value;
-			var startRow = jq$('div[pagination=' + id + '] .startRow').val();
+			var lastCount = parseInt(cookie.count);
+			var resultSize = parseInt(jq$('#' + id + " .resultSize").val());
+			var count = $selected.val();
+			$selected.data('current', count);
+			var startRow = parseInt(jq$('div[pagination=' + id + '] .startRow').val());
 			var search = /^\d+$/;
 			var found = search.test(startRow);
 			if (!(found)) {
 				jq$('div[pagination=' + id + '] .startRow').val('');
 				return;
 			}
-			if (startRow <= 0) {
-				startRow = 1;
-			}
+
 			if (count == "Max") {
 				cookie.startRow = 1;
 				cookie.count = "Max";
 			} else {
+				if (startRow + lastCount === resultSize + 1) {
+					startRow = resultSize - parseInt(count) + 1;
+				}
+				if (startRow <= 0) {
+					startRow = 1;
+				}
 				cookie.startRow = startRow;
 				cookie.count = count;
 			}
-
 
 			saveCookieAndUpdateNode(cookie, id);
 		},
@@ -866,8 +871,8 @@ KNOWWE.core.plugin.pagination = function() {
 				cookie = {};
 			}
 			if (typeof cookie.filters == "undefined") {
-				cookie.filters = new Object();
-				cookie.filters[key] = new Array();
+				cookie.filters = {};
+				cookie.filters[key] = [];
 				if (checked === true) {
 					cookie.filters[key].push(value);
 				}
@@ -876,7 +881,7 @@ KNOWWE.core.plugin.pagination = function() {
 				}
 			}
 			else if (typeof cookie.filters[key] == "undefined") {
-				cookie.filters[key] = new Array();
+				cookie.filters[key] = [];
 				if (checked === true) {
 					cookie.filters[key].push(value);
 				}
