@@ -48,7 +48,7 @@ public interface UserActionContext extends UserContext {
 	 *
 	 * @return the action the user triggered (if available)
 	 */
-	public Action getAction();
+	Action getAction();
 
 	/**
 	 * Returns a special path concatenated to the action.
@@ -56,7 +56,7 @@ public interface UserActionContext extends UserContext {
 	 *
 	 * @return special path
 	 */
-	public String getPath();
+	String getPath();
 
 	/**
 	 * Returns the HTTP response object.
@@ -64,14 +64,14 @@ public interface UserActionContext extends UserContext {
 	 * @return the current HTTP response object
 	 * @created 14.10.2010
 	 */
-	public HttpServletResponse getResponse();
+	HttpServletResponse getResponse();
 
 	/**
 	 * Returns the name of the action.
 	 *
 	 * @return the name of the action
 	 */
-	public String getActionName();
+	String getActionName();
 
 	/**
 	 * Returns the AuthenticationManager of the action.
@@ -79,7 +79,7 @@ public interface UserActionContext extends UserContext {
 	 * @return AuthenticationManager
 	 * @created 25.02.2013
 	 */
-	public AuthenticationManager getManager();
+	AuthenticationManager getManager();
 
 	/**
 	 * Returns the writer of the user's http response.
@@ -88,7 +88,7 @@ public interface UserActionContext extends UserContext {
 	 * @throws IOException
 	 * @created Mar 4, 2011
 	 */
-	public Writer getWriter() throws IOException;
+	Writer getWriter() throws IOException;
 
 	/**
 	 * Returns the OutputStream of the HTTP response.
@@ -96,28 +96,28 @@ public interface UserActionContext extends UserContext {
 	 * @return the OutputStream of the HTTP response
 	 * @throws IOException
 	 */
-	public OutputStream getOutputStream() throws IOException;
+	OutputStream getOutputStream() throws IOException;
 
 	/**
 	 * Sets 'Content-Type' in the response.
 	 *
 	 * @param mimetype MIME type to send
 	 */
-	public void setContentType(String mimetype);
+	void setContentType(String mimetype);
 
 	/**
 	 * Allows to specify the length of the HTTP response. The length is the number of bytes to be sent.
 	 *
 	 * @param length content length to set
 	 */
-	public void setContentLength(int length);
+	void setContentLength(int length);
 
 	/**
 	 * Redirect the user to the specified location.
 	 *
 	 * @param location redirects the user to the given location
 	 */
-	public void sendRedirect(String location) throws IOException;
+	void sendRedirect(String location) throws IOException;
 
 	/**
 	 * Send an HTTP header with the response.
@@ -125,7 +125,7 @@ public interface UserActionContext extends UserContext {
 	 * @param name Header name
 	 * @param value value to set the header to
 	 */
-	public void setHeader(String name, String value) throws IOException;
+	void setHeader(String name, String value) throws IOException;
 
 	/**
 	 * Sends an HTTP error as response.
@@ -135,5 +135,5 @@ public interface UserActionContext extends UserContext {
 	 * @param msg error message to display. If there's an error message configured in the servlet, this message is
 	 *            proposed as message
 	 */
-	public void sendError(int sc, String msg) throws IOException;
+	void sendError(int sc, String msg) throws IOException;
 }

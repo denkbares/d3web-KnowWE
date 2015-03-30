@@ -57,7 +57,7 @@
 		<parameter id="name" value="TermInfoToolProvider" />
 		<parameter id="description" value="Offers Renaming, Show Info etc. for terms" />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="10" />
+		<parameter id="priority" value="4" />
 		<parameter id="scope" value="QuestionDefinition" />
 		<parameter id="scope" value="QuestionnaireDefinition" />
 		<parameter id="scope" value="SolutionDefinition" />
@@ -80,7 +80,7 @@
 		<parameter id="name" value="CompositeEditToolProvider" />
 		<parameter id="description" value="Offers Renaming, Show Info etc. for terms" />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="10" />
+		<parameter id="priority" value="2" />
 		<parameter id="scope" value="QuestionDefinition" />
 		<parameter id="scope" value="SolutionDefinition" />
 		<parameter id="scope" value="QuestionReference" />
@@ -287,7 +287,7 @@
 		<parameter id="name" value="ObjectInfoToolProvider" />
 		<parameter id="description" value="Offers some tools for the ObjectInfoTagHandler." />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
+		<parameter id="priority" value="3" />
 		<parameter id="scope" value="TagHandlerType/ObjectInfo" />
 	</extension>
 

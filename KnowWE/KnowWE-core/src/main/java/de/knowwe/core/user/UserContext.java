@@ -57,15 +57,6 @@ public interface UserContext {
 	public String getUserName();
 
 	/**
-	 * Returns the topic of the article the user is currently visiting.
-	 * 
-	 * @deprecated improper naming, use {@link UserContext#getTitle()} instead.
-	 * @created 14.10.2010
-	 */
-	@Deprecated
-	public String getTopic();
-
-	/**
 	 * Returns the title of the article the user is currently visiting.
 	 * 
 	 * @created 14.10.2010 s

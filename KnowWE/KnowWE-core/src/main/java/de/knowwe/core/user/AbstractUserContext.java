@@ -61,11 +61,6 @@ public abstract class AbstractUserContext implements UserContext {
 	}
 
 	@Override
-	public String getTopic() {
-		return getTitle();
-	}
-
-	@Override
 	public String getTitle() {
 		String page = this.getParameter(Attributes.TOPIC);
 		if (page == null) {

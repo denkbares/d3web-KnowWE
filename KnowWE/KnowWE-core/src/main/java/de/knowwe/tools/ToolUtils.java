@@ -31,7 +31,7 @@ public class ToolUtils {
 	}
 
 	static List<Tool> getToolInstances(Section<?> section, UserContext userContext) {
-		List<Tool> result = new LinkedList<Tool>();
+		List<Tool> result = new LinkedList<>();
 		for (Extension match : extensions.getMatches(section)) {
 			ToolProvider provider = (ToolProvider) match.getSingleton();
 			Tool[] tools = provider.getTools(section, userContext);
@@ -55,20 +55,18 @@ public class ToolUtils {
 	 * <p/>
 	 * The category string can contain at most one forward slash (/)
 	 *
-	 * @param tools
-	 * @return
 	 * @created 03.03.2011
 	 */
 	public static Map<String, Map<String, List<Tool>>> groupTools(ToolSet tools) {
-		Map<String, Map<String, List<Tool>>> toolMap = new HashMap<String, Map<String, List<Tool>>>();
+		Map<String, Map<String, List<Tool>>> toolMap = new HashMap<>();
 
 		for (Tool t : tools) {
 			String category = t.getCategory();
 
 			if (category == null || category.equals("")) {
 				if (!toolMap.containsKey(EMPTY_CATEGORY)) {
-					toolMap.put(EMPTY_CATEGORY, new HashMap<String, List<Tool>>());
-					toolMap.get(EMPTY_CATEGORY).put(EMPTY_CATEGORY, new LinkedList<Tool>());
+					toolMap.put(EMPTY_CATEGORY, new HashMap<>());
+					toolMap.get(EMPTY_CATEGORY).put(EMPTY_CATEGORY, new LinkedList<>());
 				}
 
 				toolMap.get(EMPTY_CATEGORY).get(EMPTY_CATEGORY).add(t);
@@ -77,13 +75,13 @@ public class ToolUtils {
 				String[] parts = category.split("/", 2);
 
 				if (!toolMap.containsKey(parts[0])) {
-					toolMap.put(parts[0], new HashMap<String, List<Tool>>());
+					toolMap.put(parts[0], new HashMap<>());
 				}
 
 				// items of the type "category"
 				if (parts.length < 2) {
 					if (!toolMap.get(parts[0]).containsKey(EMPTY_CATEGORY)) {
-						toolMap.get(parts[0]).put(EMPTY_CATEGORY, new LinkedList<Tool>());
+						toolMap.get(parts[0]).put(EMPTY_CATEGORY, new LinkedList<>());
 					}
 
 					toolMap.get(parts[0]).get(EMPTY_CATEGORY).add(t);
@@ -91,7 +89,7 @@ public class ToolUtils {
 				}
 				else {
 					if (!toolMap.get(parts[0]).containsKey(parts[1])) {
-						toolMap.get(parts[0]).put(parts[1], new LinkedList<Tool>());
+						toolMap.get(parts[0]).put(parts[1], new LinkedList<>());
 					}
 
 					toolMap.get(parts[0]).get(parts[1]).add(t);
@@ -117,7 +115,6 @@ public class ToolUtils {
 	 * the specified tools. Therefore, calling this method with any numbers of null will result in
 	 * an empty tool array.
 	 *
-	 * @param tools
 	 * @return the tool array with no null tools
 	 * @created 30.11.2013
 	 */

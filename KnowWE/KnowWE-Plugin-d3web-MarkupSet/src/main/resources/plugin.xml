@@ -102,7 +102,7 @@
 		<parameter id="name" value="AbstractionTableEditToolProvider" />
 		<parameter id="description" value="Offers a tool for a spreadsheet-like table editor." />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="3" />
+		<parameter id="priority" value="5" />
 		<parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
 		<parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
 		<parameter id="script" value="DefaultTableEditTool.js" />

@@ -116,14 +116,14 @@ public class KnowWEUtils {
 	public static String maskInvalidJSPWikiLinks(ArticleManager articleManager, String text) {
 		Pattern linkFinder = Pattern.compile("\\[(?:[^\\]\\|]+\\|)?([^\\]]+)\\]");
 		Matcher matcher = linkFinder.matcher(text);
-		List<Pair<Integer, Integer>> escapeIndices = new ArrayList<Pair<Integer, Integer>>();
+		List<Pair<Integer, Integer>> escapeIndices = new ArrayList<>();
 		while (matcher.find()) {
 			String link = matcher.group(1);
 			if (articleManager.getArticle(link.replaceAll("#.*$", "")) == null
 					&& !link.startsWith("http")
 					&& !link.startsWith("file")
 					&& !link.startsWith("attach")) {
-				escapeIndices.add(new Pair<Integer, Integer>(matcher.start(), matcher.end()));
+				escapeIndices.add(new Pair<>(matcher.start(), matcher.end()));
 			}
 		}
 		StringBuilder builder = new StringBuilder(text);
@@ -289,7 +289,7 @@ public class KnowWEUtils {
 	 * @created 09.02.2012
 	 */
 	public static Collection<WikiAttachment> getAttachments(String title, String regex) throws IOException {
-		Collection<WikiAttachment> result = new LinkedList<WikiAttachment>();
+		Collection<WikiAttachment> result = new LinkedList<>();
 		Collection<WikiAttachment> attachments = Environment.getInstance()
 				.getWikiConnector().getAttachments();
 		Pattern pattern;
@@ -808,6 +808,7 @@ public class KnowWEUtils {
 	@Deprecated
 	public static TerminologyManager getTerminologyManager(Article article) {
 		if (article == null) {
+			//noinspection ConstantConditions
 			return Compilers.getCompiler(KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB),
 					DefaultGlobalCompiler.class).getTerminologyManager();
 		}

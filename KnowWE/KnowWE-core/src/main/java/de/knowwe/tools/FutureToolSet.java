@@ -43,11 +43,11 @@ public class FutureToolSet implements ToolSet {
 	public boolean hasTools() {
 		if (hasTools == null) {
 			hasTools = ToolUtils.hasToolInstances(section, userContext);
-			if (!hasTools.booleanValue()) {
+			if (!hasTools) {
 				tools = Collections.emptyList();
 			}
 		}
-		return hasTools.booleanValue();
+		return hasTools;
 	}
 
 }

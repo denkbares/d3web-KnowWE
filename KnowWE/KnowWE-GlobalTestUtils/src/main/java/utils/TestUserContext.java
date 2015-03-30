@@ -81,7 +81,7 @@ public class TestUserContext implements UserContext, UserActionContext {
 		this.isAdmin = isAdmin;
 		this.isAsserted = isAsserted;
 		addParameter(Attributes.WEB, getWeb());
-		addParameter(Attributes.TOPIC, getTopic());
+		addParameter(Attributes.TITLE, getTitle());
 		addParameter(Attributes.USER, getUserName());
 	}
 
@@ -98,11 +98,6 @@ public class TestUserContext implements UserContext, UserActionContext {
 	@Override
 	public String getUserName() {
 		return userName;
-	}
-
-	@Override
-	public String getTopic() {
-		return getTitle();
 	}
 
 	@Override

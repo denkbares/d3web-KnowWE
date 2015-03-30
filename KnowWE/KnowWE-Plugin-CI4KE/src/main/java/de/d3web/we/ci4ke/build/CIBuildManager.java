@@ -51,7 +51,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class CIBuildManager {
 
-	private static final Map<CIDashboard, TestExecutor> runningBuilds = Collections.synchronizedMap(new HashMap<CIDashboard, TestExecutor>());
+	private static final Map<CIDashboard, TestExecutor> runningBuilds = Collections.synchronizedMap(new HashMap<>());
 
 	private static boolean terminatorRegistered = false;
 
@@ -66,7 +66,7 @@ public class CIBuildManager {
 			terminatorRegistered = true;
 		}
 
-		List<TestObjectProvider> providers = new ArrayList<TestObjectProvider>();
+		List<TestObjectProvider> providers = new ArrayList<>();
 		providers.add(DefaultWikiTestObjectProvider.getInstance());
 		List<TestObjectProvider> pluggedProviders = TestObjectProviderManager.getTestObjectProviders();
 		providers.addAll(pluggedProviders);
@@ -223,7 +223,7 @@ public class CIBuildManager {
 
 		@Override
 		public Collection<Class<? extends Event>> getEvents() {
-			List<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(1);
+			List<Class<? extends Event>> events = new ArrayList<>(1);
 			events.add(ArticleManagerOpenedEvent.class);
 			return events;
 		}

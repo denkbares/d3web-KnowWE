@@ -41,9 +41,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -103,10 +101,10 @@ public class CIDashboardType extends DefaultMarkupType {
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<CIDashboardType> s) throws CompilerMessage {
 
-			List<Message> msgs = new ArrayList<Message>();
+			List<Message> msgs = new ArrayList<>();
 			String triggerString = DefaultMarkupType.getAnnotation(s, TRIGGER_KEY);
 			CIBuildTriggers trigger = null;
-			Set<String> monitoredArticles = new HashSet<String>();
+			Set<String> monitoredArticles = new HashSet<>();
 
 			if (triggerString != null) {
 				Pattern pattern = Pattern.compile("(?:\".+?\"|[^\\s]+)");
@@ -147,19 +145,19 @@ public class CIDashboardType extends DefaultMarkupType {
 			// This map is used for storing tests and their parameter-list
 			// Map<String, List<String>> tests = new HashMap<String,
 			// List<String>>();
-			List<TestSpecification<?>> tests = new ArrayList<TestSpecification<?>>();
+			List<TestSpecification<?>> tests = new ArrayList<>();
 
 			List<Section<? extends AnnotationContentType>> annotationSections =
 					DefaultMarkupType.getAnnotationContentSections(s, TEST_KEY, GROUP_KEY);
 
 			// iterate over all @test-Annotations
-			List<ArgsCheckResult> messages = new ArrayList<ArgsCheckResult>();
+			List<ArgsCheckResult> messages = new ArrayList<>();
 			for (Section<? extends AnnotationContentType> annoSection : annotationSections) {
 				String type = annoSection.get().getName(annoSection);
 				if (type.equalsIgnoreCase(GROUP_KEY)) {
 					// parse group
 					String text = annoSection.getText();
-					TestSpecification<?> group = new TestSpecification<Void>(
+					TestSpecification<?> group = new TestSpecification<>(
 							new TestGroup(), "void", new String[] { text }, new String[0][]);
 					tests.add(group);
 				}
@@ -174,7 +172,7 @@ public class CIDashboardType extends DefaultMarkupType {
 					}
 				}
 			}
-			convertMessages(compiler, s, messages);
+			convertMessages(s, messages);
 
 			CIDashboard dashboard = CIDashboardManager.generateAndRegisterDashboard(s, tests);
 
@@ -188,8 +186,8 @@ public class CIDashboardType extends DefaultMarkupType {
 			throw new CompilerMessage(msgs);
 		}
 
-		private void convertMessages(DefaultGlobalCompiler compiler, Section<?> section, List<ArgsCheckResult> messages) {
-			Collection<Message> msgs = new ArrayList<Message>();
+		private void convertMessages(Section<?> section, List<ArgsCheckResult> messages) {
+			Collection<Message> msgs = new ArrayList<>();
 			for (ArgsCheckResult message : messages) {
 				if (message == null) continue;
 				String[] arguments = message.getArguments();
@@ -219,36 +217,6 @@ public class CIDashboardType extends DefaultMarkupType {
 			CIDashboardManager.unregisterDashboard(section);
 		}
 
-	}
-
-	/**
-	 * Checks if the name of the given CIDashboard-Section is not taken by any other
-	 * CIDashboard-Section in the wiki.
-	 *
-	 * @param section the name of this CIDashboard-section is checked for uniqueness
-	 * @return true if the name of the section is unique in the wiki
-	 * @created 12.11.2010
-	 */
-	public static boolean dashboardNameIsUnique(Section<CIDashboardType> section) {
-
-		String thisDashboardName = CIDashboardType.getAnnotation(section, NAME_KEY);
-
-		List<Section<CIDashboardType>> sectionList = new ArrayList<Section<CIDashboardType>>();
-		for (Article article : Environment.getInstance().
-				getArticleManager(section.getWeb()).getArticles()) {
-			Sections.successors(article.getRootSection(), CIDashboardType.class,
-					sectionList);
-		}
-
-		for (Section<CIDashboardType> s : sectionList) {
-			if (s.getID() != section.getID()) {
-				String otherDashboardName = DefaultMarkupType.getAnnotation(section, NAME_KEY);
-				if (otherDashboardName.equals(thisDashboardName)) {
-					return false;
-				}
-			}
-		}
-		return true;
 	}
 
 }
