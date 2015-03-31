@@ -55,6 +55,7 @@ public class TestCasePlayerType extends DefaultMarkupType {
 
 	public TestCasePlayerType() {
 		super(MARKUP);
+		//noinspection ConstantConditions
 		DefaultMarkupType.getContentType(this).setRenderer(
 				new ReRenderSectionMarkerRenderer(new TestCasePlayerRenderer()));
 		this.addCompileScript(new PackageRegistrationScript<TestCasePlayerType>() {
