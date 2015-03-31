@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.ontoware.rdf2go.model.QueryResultTable;
+import org.ontoware.rdf2go.model.node.Literal;
 import org.ontoware.rdf2go.model.node.Node;
 
 import de.d3web.collections.PartialHierarchy;
@@ -398,6 +399,8 @@ public class SparqlResultRenderer {
 		String rendered = node.toString();
 		if (!rawOutput) {
 			for (SparqlResultNodeRenderer nodeRenderer : nodeRenderers) {
+				if (node instanceof Literal && nodeRenderer instanceof DecodeUrlNodeRenderer) continue;
+
 				String temp = rendered;
 				rendered = nodeRenderer.renderNode(rendered, var, user, core, mode);
 				if (!temp.equals(rendered) && !nodeRenderer.allowFollowUpRenderer()) break;
