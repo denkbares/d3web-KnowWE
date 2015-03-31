@@ -27,9 +27,8 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
- * 
  * Abstract Type for questionnaire references
- * 
+ *
  * @author Jochen/Albrecht
  * @created 26.07.2010
  */
@@ -37,8 +36,7 @@ public class QuestionnaireReference extends D3webTermReference<QContainer> {
 
 	public QuestionnaireReference() {
 		this.setRenderer(StyleRenderer.Questionaire);
-		this.addCompileScript(new SimpleReferenceRegistrationScript<D3webCompiler>(
-				D3webCompiler.class));
+		this.addCompileScript(new SimpleReferenceRegistrationScript<>(D3webCompiler.class));
 	}
 
 	@Override

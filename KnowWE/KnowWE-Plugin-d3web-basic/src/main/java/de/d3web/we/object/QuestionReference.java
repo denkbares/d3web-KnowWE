@@ -35,15 +35,9 @@ import de.knowwe.kdom.renderer.StyleRenderer;
  */
 public class QuestionReference extends D3webTermReference<Question> {
 
-	public QuestionReference(boolean addRegistrationScript) {
-		this.setRenderer(new ValueTooltipRenderer(StyleRenderer.Question));
-		if (addRegistrationScript) {
-			this.addCompileScript(new SimpleReferenceRegistrationScript<>(D3webCompiler.class));
-		}
-	}
-
 	public QuestionReference() {
-		this(true);
+		this.setRenderer(new ValueTooltipRenderer(StyleRenderer.Question));
+		this.addCompileScript(new SimpleReferenceRegistrationScript<>(D3webCompiler.class));
 	}
 
 	@Override
