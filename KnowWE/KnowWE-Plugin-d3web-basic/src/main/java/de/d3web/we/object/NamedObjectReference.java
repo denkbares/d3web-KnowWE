@@ -18,28 +18,34 @@
  */
 package de.d3web.we.object;
 
+import java.util.Collection;
+
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.manage.NamedObjectFinderManager;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 
-import java.util.Collection;
-
 /**
- * 
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.02.2012
  */
 public class NamedObjectReference extends D3webTermReference<NamedObject> {
 
 	public NamedObjectReference() {
+		this(null);
+	}
+
+	public NamedObjectReference(CompileScript<D3webCompiler, Term> compileScript) {
 		this.setRenderer(new NamedObjectRenderer());
-		this.addCompileScript(new SimpleReferenceRegistrationScript<D3webCompiler>(
-				D3webCompiler.class));
+		if (compileScript == null) {
+			compileScript = new SimpleReferenceRegistrationScript<>(D3webCompiler.class);
+		}
+		this.addCompileScript(compileScript);
 	}
 
 	@Override
@@ -50,7 +56,7 @@ public class NamedObjectReference extends D3webTermReference<NamedObject> {
 	@Override
 	public NamedObject getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<NamedObject>> section) {
 		Collection<NamedObject> result = getTermObjects(compiler, section);
-		if (result.size() > 0) {
+		if (result != null && result.size() > 0) {
 			return result.iterator().next();
 		}
 		else {

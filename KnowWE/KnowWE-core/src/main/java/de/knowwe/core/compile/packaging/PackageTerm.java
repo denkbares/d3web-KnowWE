@@ -18,7 +18,6 @@
  */
 package de.knowwe.core.compile.packaging;
 
-import java.util.Collection;
 import java.util.regex.Pattern;
 
 import de.d3web.strings.Identifier;
@@ -30,8 +29,6 @@ import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -41,12 +38,10 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class PackageTerm extends SimpleReference {
 
 	public PackageTerm() {
-		super(PackageRegistrationCompiler.class, Package.class);
+		super(new SimpleReferenceRegistrationScript<>(PackageRegistrationCompiler.class, false), Package.class, Priority.BELOW_DEFAULT);
+		this.addCompileScript(Priority.LOW, new PackageNotCompiledWarningScript());
 		this.setSectionFinder(new RegexSectionFinder(Pattern.compile("\\s*((?=\\s*\\S).+?)\\s*(?:\r?\n|\\z)"), 1));
 		setRenderer(StyleRenderer.PACKAGE);
-		this.removeCompileScript(PackageRegistrationCompiler.class, SimpleReferenceRegistrationScript.class);
-		this.addCompileScript(Priority.BELOW_DEFAULT, new PackageTermReferenceRegistrationScript());
-		this.addCompileScript(Priority.LOW, new PackageNotCompiledWarningScript());
 	}
 
 	@Override
@@ -62,18 +57,6 @@ public class PackageTerm extends SimpleReference {
 	@Override
 	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
 		return newIdentifier.getLastPathElement();
-	}
-
-	private static class PackageTermReferenceRegistrationScript extends SimpleReferenceRegistrationScript<PackageRegistrationCompiler> {
-
-		public PackageTermReferenceRegistrationScript() {
-			super(PackageRegistrationCompiler.class);
-		}
-
-		@Override
-		public Collection<Message> validateReference(PackageRegistrationCompiler compiler, Section<Term> section) {
-			return Messages.noMessage();
-		}
 	}
 
 }

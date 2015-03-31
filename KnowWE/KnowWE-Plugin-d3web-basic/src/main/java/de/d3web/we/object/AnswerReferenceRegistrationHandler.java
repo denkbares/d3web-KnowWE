@@ -1,7 +1,7 @@
 package de.d3web.we.object;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
@@ -49,13 +49,13 @@ public class AnswerReferenceRegistrationHandler extends SimpleReferenceRegistrat
 					return Messages.noMessage();
 				}
 				else {
-					return Arrays.asList(Messages.error("The value '" + value
+					return Collections.singletonList(Messages.error("The value '" + value
 							+ "' is not in the defined range " + range.toString()
 							+ " of question '" + question.getName() + "'."));
 				}
 			}
 			catch (NumberFormatException e) {
-				return Arrays.asList(Messages.error("The value "
+				return Collections.singletonList(Messages.error("The value "
 						+ section.getText() + " is not a numeric answer"));
 			}
 		}

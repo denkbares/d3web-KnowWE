@@ -38,8 +38,19 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 
 	private final Class<C> compilerClass;
 
-	public SimpleReferenceRegistrationScript(Class<C> compilerClass) {
+	private final boolean validate;
+
+	/**
+	 * Creates a new compile script for the given compiler. If validate is set to false, the script will register
+	 * without checking for the validity of the reference (e.g. does a definition exist?).
+	 */
+	public SimpleReferenceRegistrationScript(Class<C> compilerClass, boolean validate) {
 		this.compilerClass = compilerClass;
+		this.validate = validate;
+	}
+
+	public SimpleReferenceRegistrationScript(Class<C> compilerClass) {
+		this(compilerClass, true);
 	}
 
 	@Override
@@ -53,7 +64,7 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 		TerminologyManager tHandler = compiler.getTerminologyManager();
 		Identifier termIdentifier = section.get().getTermIdentifier(section);
 		tHandler.registerTermReference(compiler, section, section.get().getTermObjectClass(section), termIdentifier);
-		throw new CompilerMessage(validateReference(compiler, section));
+		if (validate) throw new CompilerMessage(validateReference(compiler, section));
 	}
 
 	/**

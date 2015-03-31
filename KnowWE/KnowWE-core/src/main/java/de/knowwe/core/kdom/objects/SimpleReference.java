@@ -20,6 +20,7 @@ package de.knowwe.core.kdom.objects;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
+import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -27,7 +28,6 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
- * 
  * @author Albrecht
  * @created 16.12.2010
  */
@@ -41,10 +41,16 @@ public abstract class SimpleReference extends AbstractType implements TermRefere
 
 	@SuppressWarnings("unchecked")
 	public SimpleReference(Class<? extends TermCompiler> compilerClass, Class<?> termObjectClass, Priority registrationPriority) {
+		this(new SimpleReferenceRegistrationScript<>((Class<TermCompiler>) compilerClass), termObjectClass, registrationPriority);
+	}
+
+	public SimpleReference(CompileScript<? extends TermCompiler, ?> compileScript, Class<?> termObjectClass) {
+		this(compileScript, termObjectClass, Priority.DEFAULT);
+	}
+
+	public <C extends TermCompiler> SimpleReference(CompileScript<C, ?> compileScript, Class<?> termObjectClass, Priority registrationPriority) {
 		this.termObjectClass = termObjectClass;
-		this.addCompileScript(registrationPriority,
-				new SimpleReferenceRegistrationScript<>(
-						(Class<TermCompiler>) compilerClass));
+		this.addCompileScript(registrationPriority, compileScript);
 	}
 
 	@Override

@@ -23,6 +23,7 @@ import java.util.List;
 
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;
+import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
@@ -32,10 +33,9 @@ import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.knowledgebase.D3webCompiler;
-import de.d3web.we.object.QuestionReference;
-import de.d3web.we.object.QuestionnaireReference;
-import de.knowwe.core.compile.Compilers;
+import de.d3web.we.object.NamedObjectReference;
 import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -44,7 +44,6 @@ import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.kdom.AnonymousType;
 
 /**
- * 
  * @author Jochen
  * @created 29.07.2010
  */
@@ -53,9 +52,9 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 	public QASetIndicationAction() {
 		this.setSectionFinder(new AllTextFinderTrimmed());
 
-		AnonymousType qasetType = new AnonymousType("QuestionORQusetionnaire");
+		NamedObjectReference qasetType = new NamedObjectReference(new SimpleReferenceRegistrationScript<>(D3webCompiler.class, false));
 		qasetType.setSectionFinder(new AllTextFinderTrimmed());
-		qasetType.addCompileScript(new SetTypeHandler());
+		qasetType.addCompileScript(new CheckTypeHandler());
 
 		this.addChildType(qasetType);
 
@@ -64,22 +63,13 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 	@Override
 	public PSAction createAction(D3webCompiler compiler, Section<QASetIndicationAction> s) {
 		ActionIndication a = new ActionIndication();
-		List<QASet> qasets = new ArrayList<QASet>();
+		List<QASet> qasets = new ArrayList<>();
 		a.setQASets(qasets);
 
-		Section<QuestionReference> questionRef = Sections.successor(s, QuestionReference.class);
-		if (questionRef != null) {
-
-			Question object = questionRef.get().getTermObject(compiler, questionRef);
-			qasets.add(object);
-		}
-
-		Section<QuestionnaireReference> questionnaireRef = Sections.successor(s,
-				QuestionnaireReference.class);
-		if (questionnaireRef != null) {
-
-			QContainer object = questionnaireRef.get().getTermObject(compiler, questionnaireRef);
-			qasets.add(object);
+		Section<NamedObjectReference> objectRef = Sections.successor(s, NamedObjectReference.class);
+		if (objectRef != null) {
+			NamedObject object = objectRef.get().getTermObject(compiler, objectRef);
+			if (object instanceof QASet) qasets.add((QASet) object);
 		}
 
 		return a;
@@ -90,12 +80,7 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 		return PSMethodStrategic.class;
 	}
 
-	static class SetTypeHandler implements D3webCompileScript<AnonymousType> {
-
-		// we can only set singleton types as new types for section...
-		// we should get rid of these types all together
-		private static final QuestionReference questionRefType = new QuestionReference();
-		private static final QuestionnaireReference questionnaireRefType = new QuestionnaireReference();
+	static class CheckTypeHandler implements D3webCompileScript<AnonymousType> {
 
 		@Override
 		public void compile(D3webCompiler compiler, Section<AnonymousType> s) throws CompilerMessage {
@@ -107,20 +92,12 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 					@SuppressWarnings("unchecked")
 					Section<? extends Term> simpleDef = (Section<? extends Term>) termDefinitionSection;
 					Class<?> objectClazz = simpleDef.get().getTermObjectClass(simpleDef);
-					if (Question.class.isAssignableFrom(objectClazz)) {
-						s.setType(questionRefType);
-						Compilers.compile(compiler, s);
-						throw new CompilerMessage();
-					}
-					if (QContainer.class.isAssignableFrom(objectClazz)) {
-						s.setType(questionnaireRefType);
-						Compilers.compile(compiler, s);
+					if (Question.class.isAssignableFrom(objectClazz) || QContainer.class.isAssignableFrom(objectClazz)) {
 						throw new CompilerMessage();
 					}
 					throw CompilerMessage.error(termIdentifier + "is defined as: "
 							+ objectClazz.getName()
 							+ " - expected was Question or Questionnaire");
-
 				}
 			}
 			throw CompilerMessage.error("Could not find '"

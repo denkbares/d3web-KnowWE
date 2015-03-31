@@ -56,11 +56,11 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 
 		query = "SELECT ?resource " +
 				"WHERE {" +
-				" {?resource rdf:type rdf:Property " + NAMESPACE_FILTER.toString() + "}" +
+				" {?resource rdf:type rdf:Property " + NAMESPACE_FILTER + "}" +
 				" UNION " +
-				"{?resource rdf:type owl:ObjectProperty " + NAMESPACE_FILTER.toString() + "}" +
+				"{?resource rdf:type owl:ObjectProperty " + NAMESPACE_FILTER + "}" +
 				" UNION " +
-				"{?resource rdf:type rdfs:subPropertyOf " + NAMESPACE_FILTER.toString() + "}" +
+				"{?resource rdf:type rdfs:subPropertyOf " + NAMESPACE_FILTER + "}" +
 				"} ";
 		query = Rdf2GoUtils.createSparqlString(compiler.getRdf2GoCore(), query);
 		helper.registerTerminology(compiler, section, query, Property.class);
