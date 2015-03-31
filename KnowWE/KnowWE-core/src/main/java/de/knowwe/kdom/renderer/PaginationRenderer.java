@@ -48,7 +48,7 @@ import de.knowwe.util.Icon;
  * an existing {@link de.knowwe.core.kdom.rendering.Renderer} or you can use its static methods for
  * a little bit more freedom. (It's not possible at the moment to use the static methods within an
  * AsynchronRenderer.)
- * <p/>
+ * <p>
  * IMPORTANT: If you don't use the {@link #PaginationRenderer(de.knowwe.core.kdom.rendering.Renderer)}
  * as a decorating renderer, you have to add the attribute 'pagination' where its value is the ID of
  * that section to the table tag({@code &lt;table pagination='$sectionId'&gt;}). <br><br> The values
@@ -77,9 +77,9 @@ import de.knowwe.util.Icon;
  */
 public class PaginationRenderer implements Renderer {
 
-	public static final String DEFAULT_NO_RESULTSIZE_SET = "maximum lines";
 	private final Renderer decoratedRenderer;
 
+	public static final String UNKNOWN_RESULT_SIZE = "unknown";
 	public static final String STARTROW = "startRow";
 	private static final String STARTROW_DEFAULT = "1";
 	public static final String COUNT = "count";
@@ -100,9 +100,9 @@ public class PaginationRenderer implements Renderer {
 		decoratedRenderer.render(section, user, table);
 		RenderResult pagination = new RenderResult(user);
 
-		String resultString = PaginationRenderer.getResultSize(user);
+		String resultString = PaginationRenderer.getResultSizeString(user);
 		boolean show = true;
-		if (!resultString.equals(DEFAULT_NO_RESULTSIZE_SET)) {
+		if (!resultString.equals(UNKNOWN_RESULT_SIZE)) {
 			int resultSize = Integer.parseInt(resultString);
 			show = resultSize > 10;
 		}
@@ -138,8 +138,7 @@ public class PaginationRenderer implements Renderer {
 
 		Integer[] sizeArray = getSizeChoices(user);
 
-		result.appendHtml("<span class=fillText>Show </span>"
-				+ "<select class='count'>");
+		result.appendHtml("<span class=fillText>Show </span><select class='count'>");
 
 		for (Integer size : sizeArray) {
 			result.appendHtml("<option "
@@ -163,35 +162,35 @@ public class PaginationRenderer implements Renderer {
 		String id = sec.getID();
 		int count = getCount(sec, user);
 		int startRow = getStartRow(sec, user);
-		String resultSize = getResultSize(user);
-		int resultMaxCount = Integer.MAX_VALUE;
-		try {
-			resultMaxCount = Integer.parseInt(resultSize);
+		String resultSizeString = getResultSizeString(user);
+		int resultSize = getResultSize(user);
+		int resultSizeStringLength = Math.min(Math.max(2, ((int) Math.log10(resultSize)) + 1), 6);
+		int endRow = Math.min(resultSize, startRow + count - 1);
+
+		int fill = ((int) (Math.log10(resultSize)) - ((int) Math.log10(endRow)));
+		StringBuilder fillString = new StringBuilder("");
+		for (int i = 0; i < fill; i++) {
+			fillString.append("&nbsp;");
 		}
-		catch (NumberFormatException ignored) {
-		}
-		int inputLength = Math.min(Math.max(3, resultSize.length() + 1), 6);
 
 		renderToolBarElementHeader(sec, result, show);
 		if (count != Integer.MAX_VALUE) {
 			renderToolbarButton(Icon.FIRST, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'begin')", (startRow > 1), result);
 			renderToolbarButton(Icon.PREVIOUS, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'back')", (startRow > 1), result);
-			result.appendHtml("<span class=fillText> Lines </span>");
+			result.appendHtml("<span class=fillText> Rows </span>");
 
-			result.appendHtml("<input size=").append(inputLength)
+			result.appendHtml("<input size=").append(resultSizeStringLength)
 					.appendHtml(" class='startRow' type='field' value='")
 					.append(startRow).appendHtml("'>");
 
 			boolean forward = false;
-			String toText = resultSize;
-			if (resultMaxCount >= startRow + count) {
+			if (resultSize >= startRow + count) {
 				forward = true;
-				toText = String.valueOf(startRow + count - 1);
-				for (int i = (inputLength - toText.length()) * 2; i > 0; i--) {
-					toText = "&nbsp;" + toText;
-				}
 			}
-			result.appendHtml("<span class=fillText> to </span>").append(toText);
+			result.appendHtml("<span class=fillText> to ")
+					.append(fillString)
+					.append(endRow)
+					.appendHtml("&nbsp;</span>");
 
 			renderToolbarButton(Icon.NEXT, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'forward')", forward, result);
 			renderToolbarButton(Icon.LAST, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'end')", forward, result);
@@ -202,16 +201,35 @@ public class PaginationRenderer implements Renderer {
 			renderToolbarButton(Icon.PREVIOUS, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'back')", false, result);
 			result.appendHtml("<span class=fillText> Lines </span>");
 			result.appendHtml("<input size=")
-					.append(inputLength)
+					.append(resultSizeStringLength)
 					.appendHtml(" class='startRow' type='field' value='1'>");
 
-			result.appendHtml("<span class=fillText> to " + getResultSize(user) + "</span>");
+			if (resultSizeString.equals(UNKNOWN_RESULT_SIZE)) {
+				result.appendHtml("<span class=fillText> til end&nbsp;</span>");
+			}
+			else {
+				result.appendHtml("<span class=fillText> to ")
+						.append(fillString)
+						.append(endRow)
+						.appendHtml("&nbsp;</span>");
+			}
 
 			renderToolbarButton(Icon.NEXT, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'forward')", false, result);
 			renderToolbarButton(Icon.LAST, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'end')", false, result);
 		}
 
 		result.appendHtml("</div>");
+	}
+
+	private static int getResultSize(UserContext user) {
+		String resultSizeString = getResultSizeString(user);
+		int resultSize = Integer.MAX_VALUE;
+		try {
+			resultSize = Integer.parseInt(resultSizeString);
+		}
+		catch (NumberFormatException ignored) {
+		}
+		return resultSize;
 	}
 
 	private static void renderToolBarElementHeader(Section<?> sec, RenderResult result, boolean show) {
@@ -240,19 +258,18 @@ public class PaginationRenderer implements Renderer {
 	private static Integer[] getSizeChoices(UserContext user) {
 		List<Integer> sizes = new LinkedList<>();
 		int[] sizeArray = new int[] {
-				10, 20, 50, 100, Integer.MAX_VALUE };
+				10, 20, 50, 100, 200, 500, 1000, Integer.MAX_VALUE };
+		int resultSize = getResultSize(user);
 		for (int size : sizeArray) {
-			sizes.add(size);
+			if (size <= resultSize || size == Integer.MAX_VALUE) sizes.add(size);
 		}
 		return sizes.toArray(new Integer[sizes.size()]);
 	}
 
 	private static JSONObject getJsonObject(Section<?> section, UserContext user) {
-		if (getJSONCookieString(section,
-				user) != null) {
+		if (getJSONCookieString(section, user) != null) {
 			try {
-				return new JSONObject(Strings.decodeURL(getJSONCookieString(section,
-						user)));
+				return new JSONObject(Strings.decodeURL(getJSONCookieString(section, user)));
 			}
 			catch (JSONException e) {
 				Log.warning("Exception while parsing json", e);
@@ -278,8 +295,9 @@ public class PaginationRenderer implements Renderer {
 
 	public static int getStartRow(Section<?> sec, UserContext user) {
 		try {
-			if (getJsonObject(sec, user) != null && getJsonObject(sec, user).has(STARTROW)) {
-				return getJsonObject(sec, user).getInt(STARTROW);
+			JSONObject jsonObject = getJsonObject(sec, user);
+			if (jsonObject != null && jsonObject.has(STARTROW)) {
+				return jsonObject.getInt(STARTROW);
 			}
 		}
 		catch (JSONException e) {
@@ -288,12 +306,12 @@ public class PaginationRenderer implements Renderer {
 		return Integer.parseInt(STARTROW_DEFAULT);
 	}
 
-	private static String getResultSize(UserContext user) {
+	private static String getResultSizeString(UserContext user) {
 		if (user.getRequest().getAttribute(RESULTSIZE) != null) {
 			return user.getRequest().getAttribute(RESULTSIZE).toString();
 		}
 		else {
-			return DEFAULT_NO_RESULTSIZE_SET;
+			return UNKNOWN_RESULT_SIZE;
 		}
 
 	}
@@ -310,8 +328,9 @@ public class PaginationRenderer implements Renderer {
 	 */
 	public static int getCount(Section<?> sec, UserContext user) {
 		try {
-			if (getJsonObject(sec, user) != null && getJsonObject(sec, user).has(COUNT)) {
-				return getJsonObject(sec, user).getInt(COUNT);
+			JSONObject jsonObject = getJsonObject(sec, user);
+			if (jsonObject != null && jsonObject.has(COUNT)) {
+				return jsonObject.getInt(COUNT);
 			}
 		}
 		catch (JSONException e) {
@@ -376,8 +395,9 @@ public class PaginationRenderer implements Renderer {
 
 	private static JSONArray getSortingArray(Section<?> sec, UserContext user) {
 		try {
-			if (getJsonObject(sec, user) != null && getJsonObject(sec, user).has(SORTING)) {
-				return getJsonObject(sec, user).getJSONArray(SORTING);
+			JSONObject jsonObject = getJsonObject(sec, user);
+			if (jsonObject != null && jsonObject.has(SORTING)) {
+				return jsonObject.getJSONArray(SORTING);
 			}
 		}
 		catch (JSONException e) {
@@ -396,13 +416,14 @@ public class PaginationRenderer implements Renderer {
 	public static Map<String, List<String>> getFilters(Section<?> sec, UserContext user) {
 		Map<String, List<String>> activeFilters = new HashMap<>();
 		try {
-			if (getJsonObject(sec, user) != null && getJsonObject(sec, user).has(ACTIVEFILTERS)) {
-				JSONObject json = getJsonObject(sec, user).getJSONObject(ACTIVEFILTERS);
+			JSONObject jsonObject = getJsonObject(sec, user);
+			if (jsonObject != null && jsonObject.has(ACTIVEFILTERS)) {
+				JSONObject json = jsonObject.getJSONObject(ACTIVEFILTERS);
 
 				Iterator iterator = json.keys();
 				while (iterator.hasNext()) {
 					String key = (String) iterator.next();
-					List<String> filterValues = new LinkedList<String>();
+					List<String> filterValues = new LinkedList<>();
 					JSONArray jsonArray = json.getJSONArray(key);
 					for (int i = 0; i < jsonArray.length(); i++) {
 						filterValues.add(jsonArray.get(i).toString());
@@ -419,12 +440,16 @@ public class PaginationRenderer implements Renderer {
 	}
 
 	private static String getResultSizeTag(Section<?> sec, UserContext user) {
-		String resultSize = getResultSize(user);
+		String resultSize = getResultSizeString(user);
 		String tag = "";
-		if (!resultSize.equals(DEFAULT_NO_RESULTSIZE_SET)) {
-			tag += "<input class='resultSize' style='display:none' value='" + resultSize + "'/>";
+		if (resultSize.equals(UNKNOWN_RESULT_SIZE)) {
+			tag += "<span class=fillText> rows (overall number unknown)</span>";
 		}
-		tag += "<span class=fillText> lines of " + resultSize + "</span>";
+		else {
+			tag += "<input class='resultSize' style='display:none' value='" + resultSize + "'/>";
+			tag += "<span class=fillText>" + (getCount(sec, user) == Integer.MAX_VALUE ? "" : " of");
+			tag += " " + resultSize + " rows</span>";
+		}
 		return tag;
 	}
 
