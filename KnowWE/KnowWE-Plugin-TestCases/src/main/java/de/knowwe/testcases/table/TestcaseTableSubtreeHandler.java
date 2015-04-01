@@ -46,6 +46,8 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.table.Table;
+import de.knowwe.kdom.table.TableLine;
 import de.knowwe.testcases.DefaultTestCaseStorage;
 import de.knowwe.testcases.SingleTestCaseProvider;
 import de.knowwe.testcases.TestCaseProvider;
@@ -56,25 +58,23 @@ import de.knowwe.testcases.TimeStampType;
  * @author Reinhard Hatko
  * @created 27.05.2011
  */
-public class TestcaseTableSubtreeHandler implements D3webHandler<TestcaseTable> {
+public class TestcaseTableSubtreeHandler implements D3webHandler<Table> {
 
 	@Override
-	public Collection<Message> create(D3webCompiler compiler, Section<TestcaseTable> section) {
+	public Collection<Message> create(D3webCompiler compiler, Section<Table> section) {
 
 		TestCase testcase = new TestCase();
 		SequentialTestCase stc = new SequentialTestCase();
 
 		testcase.getRepository().add(stc);
 
-		Map<RatedTestCase, List<Check>> conditionsForRTC =
-				new IdentityHashMap<RatedTestCase, List<Check>>();
-		List<Section<TestcaseTableLine>> lines =
-				Sections.successors(section, TestcaseTableLine.class);
+		Map<RatedTestCase, List<Check>> conditionsForRTC = new IdentityHashMap<>();
+		List<Section<TableLine>> lines = Sections.successors(section, TableLine.class);
 		Date lastTimeStamp = null;
-		for (Section<TestcaseTableLine> line : lines) {
+		for (Section<TableLine> line : lines) {
 			// check for an rated test case of that line
 			RatedTestCase rtc = (RatedTestCase) KnowWEUtils.getStoredObject(compiler, line,
-					TestcaseTableLine.TESTCASE_KEY);
+					TestcaseTableLineSubtreeHandler.TESTCASE_KEY);
 			if (rtc == null) continue;
 			Date timeStamp = rtc.getTimeStamp();
 			if (lastTimeStamp != null && !timeStamp.after(lastTimeStamp)) {
@@ -115,10 +115,9 @@ public class TestcaseTableSubtreeHandler implements D3webHandler<TestcaseTable> 
 			}
 		}
 
-		List<Section<TestcaseTable>> sections = Sections.successors(
-				section.getArticle().getRootSection(), TestcaseTable.class);
+		List<Section<Table>> sections = Sections.successors(section.getArticle().getRootSection(), Table.class);
 		int i = 1;
-		for (Section<TestcaseTable> table : new TreeSet<Section<TestcaseTable>>(sections)) {
+		for (Section<Table> table : new TreeSet<>(sections)) {
 			if (table.equals(section)) {
 				break;
 			}

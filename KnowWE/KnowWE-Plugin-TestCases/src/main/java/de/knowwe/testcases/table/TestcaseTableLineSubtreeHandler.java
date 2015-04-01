@@ -23,8 +23,9 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.table.TableLine;
+import de.knowwe.kdom.table.TableUtils;
 import de.knowwe.testcases.NameType;
 import de.knowwe.testcases.TimeStampType;
 
@@ -32,10 +33,12 @@ import de.knowwe.testcases.TimeStampType;
  * @author Reinhard Hatko
  * @created 16.03.2011
  */
-final class TestcaseTableLineSubtreeHandler implements D3webHandler<TestcaseTableLine> {
+public class TestcaseTableLineSubtreeHandler implements D3webHandler<TableLine> {
+
+	public static final String TESTCASE_KEY = "TestCaseKey";
 
 	@Override
-	public Collection<Message> create(D3webCompiler article, Section<TestcaseTableLine> s) {
+	public Collection<Message> create(D3webCompiler article, Section<TableLine> s) {
 
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article);
 
@@ -59,24 +62,15 @@ final class TestcaseTableLineSubtreeHandler implements D3webHandler<TestcaseTabl
 			ratedTestCase.setName(rtcName);
 		}
 
-		List<Section<ValueType>> values = Sections.successors(s, ValueType.class);
-		for (Section<ValueType> valueSec : values) {
+		List<Section<CellValueType>> values = Sections.successors(s, CellValueType.class);
+		for (Section<CellValueType> valueSec : values) {
 			// if value is unchanged, ignore it
 			String valueString = Strings.trimQuotes(valueSec.getText());
 			if (valueString.isEmpty()) continue;
 			if (valueString.equals("-")) continue;
 
-			Section<? extends HeaderCell> headerCell = TestcaseTable.findHeaderCell(valueSec);
+			Section<?> qRef = TableUtils.getColumnHeader(valueSec, QuestionReference.class);
 
-			if (headerCell == null) {
-				Messages.storeMessage(article, valueSec, getClass(),
-						Messages.noSuchObjectError("No header found for answer '"
-								+ valueSec.getText() + "'."));
-				continue;
-			}
-
-			Section<QuestionReference> qRef =
-					Sections.successor(headerCell, QuestionReference.class);
 			if (qRef == null) continue;
 
 			String qName = Strings.trimQuotes(qRef.getText().trim());
@@ -105,7 +99,7 @@ final class TestcaseTableLineSubtreeHandler implements D3webHandler<TestcaseTabl
 			}
 		}
 
-		KnowWEUtils.storeObject(article, s, TestcaseTableLine.TESTCASE_KEY, ratedTestCase);
+		KnowWEUtils.storeObject(article, s, TestcaseTableLineSubtreeHandler.TESTCASE_KEY, ratedTestCase);
 		return Collections.emptyList();
 	}
 }

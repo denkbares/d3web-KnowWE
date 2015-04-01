@@ -22,8 +22,7 @@ package de.knowwe.kdom.table;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
-import de.knowwe.kdom.xml.XMLContent;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 
 /**
  * <p>
@@ -59,13 +58,12 @@ import de.knowwe.kdom.xml.XMLContent;
  * 
  * 
  * @author smark
- * @see XMLContent
  */
 public class Table extends AbstractType {
 
 	public Table() {
 		this.addChildType(new TableLine());
-		this.setSectionFinder(AllTextFinder.getInstance());
+		this.setSectionFinder(new AllTextFinderTrimmed());
 		this.setRenderer(new TableRenderer());
 	}
 

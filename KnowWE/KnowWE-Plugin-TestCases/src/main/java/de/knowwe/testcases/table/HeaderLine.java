@@ -19,11 +19,8 @@
 package de.knowwe.testcases.table;
 
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.report.Message.Type;
-import de.knowwe.core.report.MessageRenderer;
 import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
-import de.knowwe.kdom.table.TableCell;
 import de.knowwe.kdom.table.TableLine;
 
 /**
@@ -35,15 +32,9 @@ import de.knowwe.kdom.table.TableLine;
 public class HeaderLine extends TableLine {
 
 	public HeaderLine() {
-		replaceChildType(new HeaderCell(), TableCell.class);
-
 		setSectionFinder(new ConstraintSectionFinder(
 				new RegexSectionFinder(TableLine.LINEPATTERN),
 				AtMostOneFindingConstraint.getInstance()));
 	}
 
-	@Override
-	public MessageRenderer getMessageRenderer(Type messageType) {
-		return null;
-	}
 }

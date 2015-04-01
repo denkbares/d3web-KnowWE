@@ -23,14 +23,16 @@ import java.util.List;
 
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.rules.RuleType;
+import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.NoBlankSectionsConstraint;
 import de.knowwe.kdom.constraint.SectionFinderConstraint;
-import de.knowwe.kdom.table.TableCellContent;
+import de.knowwe.kdom.table.TableUtils;
 import de.knowwe.testcases.NameType;
 import de.knowwe.testcases.TimeStampType;
 
@@ -38,10 +40,11 @@ import de.knowwe.testcases.TimeStampType;
  * @author Florian Ziegler
  * @created 10.08.2010
  */
-public class CellContent extends TableCellContent {
+public class CellContent extends AbstractType {
 
 	public CellContent() {
-		setRenderer(new TestcaseTableCellContentRenderer());
+
+		setSectionFinder(new AllTextFinderTrimmed());
 
 		TimeStampType timeStampType = new TimeStampType();
 		timeStampType.setSectionFinder(new ConstraintSectionFinder(
@@ -58,7 +61,7 @@ public class CellContent extends TableCellContent {
 				new TableNameConstraint("Checks", null),
 				NoBlankSectionsConstraint.getInstance()));
 
-		ValueType valueType = new ValueType();
+		CellValueType valueType = new CellValueType();
 		valueType.setSectionFinder(new ConstraintSectionFinder(valueType.getSectionFinder(),
 				NoBlankSectionsConstraint.getInstance()));
 
@@ -79,8 +82,8 @@ public class CellContent extends TableCellContent {
 		}
 
 		private <T extends Type> boolean satisfiesConstraint(List<SectionFinderResult> found, Section<?> father, Class<T> type, String text) {
-			int column = TestcaseTable.getColumnIndex(father);
-			Section<? extends HeaderCell> headerCell = TestcaseTable.findHeaderCell(father);
+			int column = TableUtils.getColumn(father);
+			Section<HeaderCellContent> headerCell = TableUtils.getColumnHeader(father, HeaderCellContent.class);
 			if (headerCell == null) {
 				return false;
 			}

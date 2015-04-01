@@ -34,7 +34,7 @@ import de.knowwe.core.report.Message;
 @FunctionalInterface
 public interface D3webHandler<T extends Type> extends D3webCompileScript<T> {
 
-	public Collection<Message> create(D3webCompiler compiler, Section<T> section);
+	Collection<Message> create(D3webCompiler compiler, Section<T> section);
 
 	@Override
 	default void compile(D3webCompiler compiler, Section<T> section) throws CompilerMessage {

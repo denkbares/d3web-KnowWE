@@ -44,7 +44,7 @@ public class TestcaseTableLineRenderer extends TableLineRenderer {
 				tableLine,
 				Message.Type.ERROR);
 
-		if (errorMessages != null && !errorMessages.isEmpty()) {
+		if (!errorMessages.isEmpty()) {
 			return TESTCASELINE + " " + TESTCASEERROR;
 		}
 

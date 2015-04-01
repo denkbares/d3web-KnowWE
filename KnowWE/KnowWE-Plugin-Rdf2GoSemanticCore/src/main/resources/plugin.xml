@@ -204,19 +204,5 @@
 		<parameter id="script" value="KnowWE-Plugin-Rdf2GoSemanticCore.js" />
 	</extension>
 
-	<!--
-	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript"
-		id="DefaultMarkupOwlHandlerForRdf2Go">
-		<parameter id="class"
-			value="de.knowwe.kdom.defaultMarkup.DefaultMarkupOwlHandlerForRdf2Go" />
-		<parameter id="name" value="DefaultMarkupOwlHandlerForRdf2Go" />
-		<parameter id="description" value="Subtreehandler for Defaultmarkup to add owl knowledge" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="compilepriority" value="0" />
-		<parameter id="scope" value="DefaultMarkupType" />
-	</extension>
-	-->
-
 
 </plugin>

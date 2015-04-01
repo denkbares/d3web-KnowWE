@@ -166,4 +166,62 @@
 		<parameter id="scope" value="TestCaseTable" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="HeaderLine">
+		<parameter id="class" value="de.knowwe.testcases.table.HeaderLine" />
+		<parameter id="name" value="HeaderLine" />
+		<parameter id="description" value="Type HeaderLine" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="3" />
+		<parameter id="scope" value="TestcaseTableType/**/Table" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="HeaderCellContent">
+		<parameter id="class" value="de.knowwe.testcases.table.HeaderCellContent" />
+		<parameter id="name" value="HeaderCellContent" />
+		<parameter id="description" value="Type HeaderCellContent" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="3" />
+		<parameter id="scope" value="TestcaseTableType/**/HeaderLine/**/TableCellContent" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="CellContent">
+		<parameter id="class" value="de.knowwe.testcases.table.CellContent" />
+		<parameter id="name" value="CellContent" />
+		<parameter id="description" value="Type CellContent" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="3" />
+		<parameter id="scope" value="TestcaseTableType/**/TableLine/**/TableCellContent" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript" id="TestcaseTableSubtreeHandler">
+		<parameter id="class" value="de.knowwe.testcases.table.TestcaseTableSubtreeHandler" />
+		<parameter id="name" value="TestcaseTableSubtreeHandler" />
+		<parameter id="description" value="Handler TestcaseTableSubtreeHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="compilepriority" value="0" />
+		<parameter id="scope" value="TestcaseTableType/**/Table" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript" id="TestcaseTableLineSubtreeHandler">
+		<parameter id="class" value="de.knowwe.testcases.table.TestcaseTableLineSubtreeHandler" />
+		<parameter id="name" value="TestcaseTableLineSubtreeHandler" />
+		<parameter id="description" value="Handler TestcaseTableLineSubtreeHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="compilepriority" value="0" />
+		<parameter id="scope" value="TestcaseTableType/**/TableLine" />
+		<parameter id="exclude" value="TestcaseTableType/**/HeaderLine" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="TestcaseTableLineRenderer">
+		<parameter id="class" value="de.knowwe.testcases.table.TestcaseTableLineRenderer" />
+		<parameter id="name" value="TestcaseTableLineSubtreeHandler" />
+		<parameter id="description" value="Handler TestcaseTableLineSubtreeHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="compilepriority" value="0" />
+		<parameter id="scope" value="TestcaseTableType/**/TableLine" />
+	</extension>
+
 </plugin>

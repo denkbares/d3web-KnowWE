@@ -59,9 +59,6 @@ public class TableLineRenderer implements Renderer {
 	 * Returns the CSS-class for the given table line.
 	 * 
 	 * @created 16.03.2011
-	 * @param article
-	 * @param tableLine
-	 * @param user
 	 * @return an empty string, if no classes should be assigned to the table
 	 *         line, a string of CSS classes otherwise
 	 */

@@ -18,30 +18,23 @@
  */
 package de.knowwe.testcases.table;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.EmptyType;
 import de.knowwe.core.kdom.basicType.KeywordType;
 import de.knowwe.core.kdom.basicType.Number;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
-import de.knowwe.kdom.table.TableLine;
 
 /**
  * 
  * @author Reinhard Hatko
  * @created 21.01.2011
  */
-public class ValueType extends AbstractType {
+public class CellValueType extends AbstractType {
 
-	public ValueType() {
+	public CellValueType() {
 		setSectionFinder(new AllTextFinderTrimmed());
 		addChildType(new EmptyType());
 		addChildType(new KeywordType("UNKNOWN"));
@@ -51,27 +44,9 @@ public class ValueType extends AbstractType {
 		number.setSectionFinder(new ConstraintSectionFinder(number.getSectionFinder(),
 				SingleChildConstraint.getInstance()));
 		addChildType(number);
-		CellAnswerRef aRef = new CellAnswerRef();
+		CellAnswerReference aRef = new CellAnswerReference();
 		aRef.setRenderer(DefaultTextRenderer.getInstance());
 		addChildType(aRef);
-
-		aRef.setSectionFinder((text, father, type) -> {
-			Section<TestcaseTable> table = Sections.ancestor(father, TestcaseTable.class);
-			List<Section<TableLine>> lines = new LinkedList<>();
-			Sections.successors(table, TableLine.class, lines);
-			if (lines.size() > 1) {
-				if (text.trim().length() > 0) {
-					return SectionFinderResult.singleItemList(new SectionFinderResult(0,
-							text.length()));
-				}// no text to match
-				else {
-					return null;
-				}
-			}// in the first line of the table, there are no values
-			else {
-				return null;
-			}
-
-		});
+		aRef.setSectionFinder(new AllTextFinderTrimmed());
 	}
 }

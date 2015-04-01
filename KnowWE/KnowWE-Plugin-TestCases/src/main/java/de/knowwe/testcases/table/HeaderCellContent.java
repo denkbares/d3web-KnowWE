@@ -25,20 +25,19 @@ import de.d3web.we.object.QuestionReference;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.Messages;
-import de.knowwe.kdom.table.TableCellContent;
-import de.knowwe.kdom.table.TableCellContentRenderer;
 import de.knowwe.kdom.table.TableUtils;
 
 /**
  * @author Reinhard Hatko
  * @created 21.01.2011
  */
-public class HeaderCellContent extends TableCellContent implements RenamableTerm {
+public class HeaderCellContent extends AbstractType implements RenamableTerm {
 
 	public HeaderCellContent() {
-		setRenderer(new TableCellContentRenderer(false));
 		QuestionReference questionReference = new QuestionReference();
 		questionReference.setSectionFinder((text, father, type) -> {
 			int column = TableUtils.getColumn(father);
@@ -47,25 +46,14 @@ public class HeaderCellContent extends TableCellContent implements RenamableTerm
 					|| ((column == 0 || column == 1) && cellText.equalsIgnoreCase("Time"))
 					|| cellText.equalsIgnoreCase("Checks")) {
 				return null;
-			} else {
+			}
+			else {
 				return SectionFinderResult.singleItemList(new SectionFinderResult(0, text.length()));
 			}
 		});
 		addChildType(questionReference);
 
-		setSectionFinder((text, father, type) -> {
-
-			String trim = text.trim();
-			int start = text.indexOf(trim);
-			if (trim.length() > 0) {
-				return SectionFinderResult.singleItemList(new SectionFinderResult(
-						start, start + trim.length()));
-			}
-			else {
-				return null;
-			}
-
-		});
+		setSectionFinder(new AllTextFinderTrimmed());
 
 		this.addCompileScript((D3webHandler<HeaderCellContent>) (compiler, section) -> {
 
