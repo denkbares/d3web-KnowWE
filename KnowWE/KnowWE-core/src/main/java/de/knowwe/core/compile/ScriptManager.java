@@ -42,8 +42,6 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 
 	private final Set<Type> subtreeTypesWithScripts = Collections.synchronizedSet(new HashSet<>());
 
-	private final Map<Class<? extends Type>, Set<Type>> typesOfSameClass = Collections.synchronizedMap(new HashMap<>());
-
 	private boolean initialized = false;
 
 	public ScriptManager(Class<C> compilerClass) {
@@ -62,6 +60,11 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 	@SuppressWarnings({
 			"rawtypes", "unchecked" })
 	public <T extends Type> void addScript(Priority priority, T type, CompileScript<C, T> script) {
+		if (initialized) {
+			// adding scripts after initialization is a very bad idea, it can cause memory leaks (e.g. adding
+			// a new script with every compilation?), and also destroy various optimizations for KDOM operation
+			throw new UnsupportedOperationException("Adding scripts after initialization is not supported!");
+		}
 		// find map and create lazy if not exists
 		ScriptList list = scripts.get(type);
 		if (list == null) {
@@ -74,29 +77,8 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 		synchronized (list) {
 			list.add(priority, script);
 		}
-		if (initialized) {
-			addSubtreeTypesWithScripts(type);
-			handleNewTypesAfterInitialization(type);
-		}
 	}
 
-	private <T extends Type> void handleNewTypesAfterInitialization(T type) {
-		Set<Type> typesOfClass = typesOfSameClass.get(type.getClass());
-		if (typesOfClass == null) {
-			typesOfClass = new HashSet<>(4);
-			typesOfSameClass.put(type.getClass(), typesOfClass);
-		}
-		typesOfClass.add(type);
-		if (typesOfClass.size() > 1) {
-			// if we allow non-singleton types after initialization, we create a
-			// memory leak, because scripts and types are never removed
-			// maybe we should disallow changes to the ScriptManager and
-			// type tree all together after initialization?
-			throw new IllegalArgumentException(
-					"After initialization only scripts for singleton Types can be added " +
-							"to the ScriptManager. This is strong evidence of a faulty plugin.");
-		}
-	}
 
 	private void addSubtreeTypesWithScripts(Type type) {
 		if (!subtreeTypesWithScripts.add(type)) return;

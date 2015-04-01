@@ -80,6 +80,12 @@ import de.knowwe.plugin.Plugins;
 
 public class Environment {
 
+
+	/**
+	 * Indicates whether this environment is initialized or not.
+	 */
+	private static boolean initialized = false;
+
 	/**
 	 * Stores additional renderers if renderers are plugged via the plugin
 	 * framework The renderer plugged with highest priority _might_ decided to
@@ -133,7 +139,7 @@ public class Environment {
 	}
 
 	public static boolean isInitialized() {
-		return instance != null;
+		return initialized;
 	}
 
 	public static void initInstance(WikiConnector wiki) {
@@ -141,6 +147,7 @@ public class Environment {
 
 		instance = new Environment(wiki);
 		instance.init();
+		initialized = true;
 		EventManager.getInstance().fireEvent(InitEvent.getInstance());
 
 		Log.info("INITIALIZED KNOWWE ENVIRONMENT");
@@ -280,7 +287,7 @@ public class Environment {
 	}
 
 	private Collection<String> getLogLevelConfigs(ResourceBundle config) {
-		Collection<String> logLevelConfigs = new ArrayList<String>();
+		Collection<String> logLevelConfigs = new ArrayList<>();
 		// loop config file
 		for (String logLevel : config.keySet()) {
 			// logLevel properties start with 'loglvl'
@@ -323,7 +330,7 @@ public class Environment {
 	}
 
 	private List<File> getPluginFiles(File libDir) {
-		List<File> pluginFiles = new ArrayList<File>();
+		List<File> pluginFiles = new ArrayList<>();
 		for (File file : libDir.listFiles()) {
 			if (file.getName().contains("KnowWE-Plugin-")
 					|| file.getName().contains("d3web-Plugin-")) {
@@ -385,11 +392,11 @@ public class Environment {
 
 		// queue the queue of paths to be initialized
 		RootType root = RootType.getInstance();
-		LinkedList<Type[]> queue = new LinkedList<Type[]>();
+		LinkedList<Type[]> queue = new LinkedList<>();
 		queue.add(new Type[] { root });
 
 		// queuedTypes the already queued instances
-		HashSet<Type> queuedTypes = new HashSet<Type>();
+		HashSet<Type> queuedTypes = new HashSet<>();
 		queuedTypes.add(root);
 
 		while (!queue.isEmpty()) {
@@ -479,7 +486,7 @@ public class Environment {
 
 	public void addRendererForType(Type t, Renderer r) {
 		if (!this.additionalRenderers.containsKey(t)) {
-			this.additionalRenderers.put(t, new ArrayList<Renderer>());
+			this.additionalRenderers.put(t, new ArrayList<>());
 		}
 		List<Renderer> renderersForType = this.additionalRenderers.get(t);
 		renderersForType.add(0, r);

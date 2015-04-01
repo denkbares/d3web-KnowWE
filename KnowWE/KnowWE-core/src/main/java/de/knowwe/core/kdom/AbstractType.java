@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.CompilerManager;
@@ -55,7 +56,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 */
 	private final TypePriorityList childrenTypes = new TypePriorityList();
 
-	private final List<Type> parents = new ArrayList<Type>(2);
+	private final List<Type> parents = new ArrayList<>(2);
 
 	/**
 	 * Contains all types this type can have as successors. It can be used to
@@ -68,7 +69,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * reduce the overhead for creating this set (because it we don't need to to
 	 * it every time a new Section is created).
 	 */
-	private final Set<Class<?>> successorTypes = new HashSet<Class<?>>();
+	private final Set<Class<?>> successorTypes = new HashSet<>();
 
 	/**
 	 * allows to set a custom renderer for a type (at initialization) if a
@@ -87,8 +88,6 @@ public abstract class AbstractType implements Type, Sectionizable {
 
 	/**
 	 * Allows to set a specific sectionFinder for this type
-	 * 
-	 * @param sectionFinder
 	 */
 	@Override
 	public void setSectionFinder(SectionFinder sectionFinder) {
@@ -180,6 +179,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 
 	@Override
 	public void clearChildrenTypes() {
+		checkInitializationStatus();
 		for (Type childrenType : childrenTypes.getTypes()) {
 			if (childrenType instanceof AbstractType) {
 				removeParentChildLink((AbstractType) childrenType);
@@ -188,16 +188,25 @@ public abstract class AbstractType implements Type, Sectionizable {
 		this.childrenTypes.clear();
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T extends Type> void clearCompileScripts() {
+	/**
+	 * We assert this on every possibility to change the KDOM, because in general it is a very bad idea to edit
+	 * the KDOM after initialization. It can for example create memory leaks (because we cache a lot with types) and
+	 * it also disrupts a lot of optimizations for KDOM navigation (canHaveSuccessor and so forth).
+	 */
+	private void checkInitializationStatus() {
+		assert !Environment.isInitialized();
+	}
+
+	public void clearCompileScripts() {
 		Collection<ScriptManager<? extends Compiler>> scriptManagers = CompilerManager.getScriptManagers();
 		for (ScriptManager<? extends Compiler> manager : scriptManagers) {
-			manager.removeAllScript((T) this);
+			manager.removeAllScript(this);
 		}
 	}
 
 	@Override
 	public void addChildType(double priority, Type type) {
+		checkInitializationStatus();
 		if (type instanceof AbstractType) {
 			addParentChildLink((AbstractType) type);
 		}
@@ -276,6 +285,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * @param type the type to add
 	 */
 	public void addChildTypeLast(Type type) {
+		checkInitializationStatus();
 		childrenTypes.addLast(type);
 	}
 
