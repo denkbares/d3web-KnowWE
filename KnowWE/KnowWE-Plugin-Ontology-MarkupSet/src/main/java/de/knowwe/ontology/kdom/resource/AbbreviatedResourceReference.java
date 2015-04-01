@@ -71,6 +71,8 @@ public class AbbreviatedResourceReference extends AbstractType {
 	}
 
 	public URI getResourceURI(Rdf2GoCore core, Section<? extends AbbreviatedResourceReference> section) {
+		if(core == null) return null;
+
 		String propertyAbbreviation = getAbbreviation(section);
 		String property = getResource(section);
 		if (property == null) {

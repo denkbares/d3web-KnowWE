@@ -57,7 +57,7 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 	private Type createSubjectURIWithDefinition() {
 		TurtleURI turtleURI = new TurtleURI();
 		SimpleReference reference = Types.successor(turtleURI, ResourceReference.class);
-        reference.addCompileScript(Priority.HIGH, new SubjectPredicateKeywordDefinitionHandler(new String[]{"^" + PredicateAType.a + "$", "[\\w]*?:type", "[\\w]*?:subClassOf", "[\\w]*?:subPropertyOf"}));
+        reference.addCompileScript(Priority.HIGH, new SubjectPredicateKeywordDefinitionHandler(new String[]{"^" + PredicateAType.a + "$", "[\\w]*?:?type", "[\\w]*?:?subClassOf",  "[\\w]*?:?isA", "[\\w]*?:?subPropertyOf"}));
         return turtleURI;
     }
 

@@ -39,7 +39,7 @@ public abstract class TerminologyHelper {
 
 	public void registerTerminology(OntologyCompiler compiler, Section<?> section, String namespace) {
 		String query = new SparqlQuery().SELECT("?resource")
-				.WHERE("?resource rdf:type rdfs:Resource MINUS { ?resource rdf:type rdf:Property }")
+				.WHERE("?resource rdf:type ?any MINUS { ?resource rdf:type rdf:Property }")
 				.AND_WHERE(
 						"FILTER(REGEX(STR(?resource), \"^" + namespace + "\"))").toString();
 		Class<? extends Resource> termClass = Resource.class;

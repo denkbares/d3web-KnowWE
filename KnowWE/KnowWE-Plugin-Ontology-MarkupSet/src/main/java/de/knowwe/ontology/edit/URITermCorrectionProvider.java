@@ -33,6 +33,12 @@ public class URITermCorrectionProvider implements CorrectionProvider {
 
 		TerminologyManager terminologyManager = compiler
 				.getTerminologyManager();
+
+		if(terminologyManager == null) {
+			// no terminology manager available, hence no completions are available
+			return null;
+		}
+
 		Identifier originalTermIdentifier = ref.get().getTermIdentifier(ref);
 		if (terminologyManager.isDefinedTerm(originalTermIdentifier)) {
 			// no suggestions if term is correct
