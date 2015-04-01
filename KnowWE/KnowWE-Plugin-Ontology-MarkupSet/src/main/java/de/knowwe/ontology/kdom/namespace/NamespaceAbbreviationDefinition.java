@@ -66,8 +66,7 @@ public class NamespaceAbbreviationDefinition extends SimpleDefinition {
 	public String getNamespace(Section<? extends Term> section) {
 		Section<NamespaceDefinition> namespace = Sections.child(section,
 				NamespaceDefinition.class);
-		String namespaceName = namespace.getText();
-		return namespaceName;
+		return namespace.getText();
 	}
 
 	private static class NamespaceSubtreeHandler extends OntologyHandler<NamespaceAbbreviationDefinition> {

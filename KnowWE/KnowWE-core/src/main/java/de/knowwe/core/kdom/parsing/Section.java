@@ -122,7 +122,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 *
 	 * @see Type Each type has its own parser and renderer
 	 */
-	protected T type;
+	protected final T type;
 
 	public T get() {
 		return type;
@@ -440,7 +440,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 
 	private String getSignatureString() {
 		List<Integer> positionInKDOM = this.getPositionInKDOM();
-		String positionInKDOMString = positionInKDOM == null ? "" : positionInKDOM.toString();
+		String positionInKDOMString = positionInKDOM.toString();
 		return getWeb() + getTitle() + positionInKDOMString + this.getText();
 	}
 
@@ -466,9 +466,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 */
 	public void collectTextsFromLeaves(StringBuilder buffer) {
 		if (!this.getChildren().isEmpty()) {
-			getChildren().stream().forEach(section -> {
-				section.collectTextsFromLeaves(buffer);
-			});
+			getChildren().stream().forEach(section -> section.collectTextsFromLeaves(buffer));
 		}
 		else {
 			buffer.append(this.getText());
@@ -624,25 +622,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		return -1;
 	}
 
-	/**
-	 * Overrides type. You can only set types that are singletons!
-	 *
-	 * @param newType the new type to be set
-	 * @created 03.03.2011
-	 * @deprecated we should get rid of this method, because it can cause problems with methods depending on a static
-	 * type tree (like the methods in {@link Sections} and ScriptManager)
-	 */
-	@Deprecated
-	@SuppressWarnings("unchecked")
-	public void setType(Type newType) {
-		for (Type type : this.type.getParentTypes()) {
-			// we need to update the successor type, otherwise the methods
-			// looking for successors no longer work correctly.
-			((AbstractType) type).addSuccessorType(newType.getClass());
-		}
-		this.type = (T) newType;
-
-	}
 
 	public ArticleManager getArticleManager() {
 		return article.getArticleManager();

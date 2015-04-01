@@ -76,8 +76,8 @@ public class Table extends AbstractType {
 	public static void injectCellContentType(Type master, Type injection) {
 		Type cellContentType = de.knowwe.core.kdom.Types.successor(master,
 				TableCellContent.class);
-		if (cellContentType instanceof AbstractType) {
-			((Type) cellContentType).addChildType(injection);
+		if (cellContentType != null) {
+			cellContentType.addChildType(injection);
 		}
 	}
 

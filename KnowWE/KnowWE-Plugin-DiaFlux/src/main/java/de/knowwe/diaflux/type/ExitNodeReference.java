@@ -28,7 +28,6 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
- * 
  * @author Reinhard Hatko
  * @created 08.12.2010
  */
@@ -41,8 +40,7 @@ public class ExitNodeReference extends SimpleReference {
 
 	@Override
 	public Identifier getTermIdentifier(Section<? extends Term> section) {
-		Section<FlowchartReference> ref = Sections.successor(section.getParent(),
-				FlowchartReference.class);
+		Section<FlowchartReference> ref = Sections.successor(section.getParent(), FlowchartReference.class);
 		return new Identifier(ref.get().getTermName(ref), getTermName(section));
 	}
 

@@ -31,6 +31,7 @@ import de.knowwe.kdom.table.TableCellContent;
 public class HeaderCell extends TableCell {
 
 	public HeaderCell() {
+
 		replaceChildType(new HeaderCellContent(), TableCellContent.class);
 	}
 

@@ -19,7 +19,6 @@
 package de.knowwe.ontology.kdom.resource;
 
 import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
@@ -36,11 +35,6 @@ public class ResourceDefinition extends SimpleDefinition {
 		super(OntologyCompiler.class, termClass);
 		this.setSectionFinder(new AllTextFinderTrimmed());
 		this.setRenderer(StyleRenderer.Question);
-	}
-
-	@Override
-	public String getTermName(Section<? extends Term> section) {
-		return Strings.trimQuotes(section.getText());
 	}
 
 	@Override

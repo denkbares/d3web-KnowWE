@@ -62,7 +62,7 @@ public class LoadFlowchartAction extends AbstractAction {
 			D3webCompiler compiler = Compilers.getCompiler(master, D3webCompiler.class);
 			section = Sections.definitions(compiler, id.rest(1))
 					.ancestor(FlowchartType.class)
-					.first();
+					.getFirst();
 		}
 		else {
 			// otherwise fetch by section id

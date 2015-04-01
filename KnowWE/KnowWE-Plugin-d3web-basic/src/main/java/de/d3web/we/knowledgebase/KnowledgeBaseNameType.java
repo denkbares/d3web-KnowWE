@@ -47,11 +47,6 @@ public class KnowledgeBaseNameType extends AbstractType implements D3webTerm<Kno
 	}
 
 	@Override
-	public Identifier getTermIdentifier(Section<? extends Term> section) {
-		return new Identifier(section.getText());
-	}
-
-	@Override
 	public String getTermName(Section<? extends Term> section) {
 		return section.getText();
 	}

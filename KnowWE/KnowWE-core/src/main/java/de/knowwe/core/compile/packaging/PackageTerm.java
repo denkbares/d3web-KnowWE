@@ -45,11 +45,6 @@ public class PackageTerm extends SimpleReference {
 	}
 
 	@Override
-	public Identifier getTermIdentifier(Section<? extends Term> section) {
-		return new Identifier(getTermName(section));
-	}
-
-	@Override
 	public String getTermName(Section<? extends Term> section) {
 		return section.getText();
 	}

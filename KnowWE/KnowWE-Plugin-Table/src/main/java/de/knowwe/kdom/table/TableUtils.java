@@ -30,10 +30,10 @@ public class TableUtils {
 
 	/**
 	 * Checks whether the given Section is from the header of the table
-	 * 
-	 * @created 29.07.2012
+	 *
 	 * @param tableSection a Section of the table
 	 * @return if the given section is from the header of the table
+	 * @created 29.07.2012
 	 */
 	public static boolean isHeaderRow(Section<?> tableSection) {
 		Section<?> tableLine = getTableLine(tableSection);
@@ -43,31 +43,27 @@ public class TableUtils {
 	}
 
 	public static Section<?> getTableLine(Section<?> tableSection) {
-		Section<?> tableLine = tableSection.get() instanceof TableLine
+		return tableSection.get() instanceof TableLine
 				? tableSection
 				: Sections.ancestor(tableSection, TableLine.class);
-		return tableLine;
 	}
 
 	/**
 	 * Returns the column of the table in which the current cell occurs.
-	 * 
+	 *
 	 * @param columnSection current section
-	 * @return
 	 */
 	public static int getColumn(Section<?> columnSection) {
 		Section<?> tableCell = getTableCell(columnSection);
 		Section<?> tableLine = getTableLine(tableCell);
-		List<Section<TableCell>> tableCells = Sections.successors(tableLine,
-				TableCell.class);
+		List<Section<TableCell>> tableCells = Sections.successors(tableLine, TableCell.class);
 		return tableCells.indexOf(tableCell);
 	}
 
 	public static Section<?> getTableCell(Section<?> columnSection) {
-		Section<?> tableCell = columnSection.get() instanceof TableCell
+		return columnSection.get() instanceof TableCell
 				? columnSection
 				: Sections.ancestor(columnSection, TableCell.class);
-		return tableCell;
 	}
 
 	public static int getColumns(Section<?> tableSection) {
@@ -85,7 +81,7 @@ public class TableUtils {
 
 	/**
 	 * Returns the row of the given section inside the table
-	 * 
+	 *
 	 * @param rowSection the section inside the table you want the row of
 	 * @return the row of the section you are checking
 	 */
@@ -99,9 +95,7 @@ public class TableUtils {
 	/**
 	 * Checks the width attribute of the table tag and returns a HTML string
 	 * containing the width as CSS style information.
-	 * 
-	 * @param input
-	 * @return
+	 *
 	 */
 	public static String getWidth(String input) {
 		String pattern = "[+]?[0-9]+\\.?[0-9]+(%|px|em|mm|cm|pt|pc|in)";
@@ -122,10 +116,7 @@ public class TableUtils {
 
 	/**
 	 * returns whether the current Section is or is in a table and is sortable
-	 * 
-	 * @created 31.07.2010
-	 * @param s
-	 * @return
+	 *
 	 */
 	public static boolean sortOption(Section<?> sec) {
 		boolean sortable = false;
@@ -143,10 +134,8 @@ public class TableUtils {
 
 	/**
 	 * returns whether the current Section gets a sort button
-	 * 
+	 *
 	 * @created 31.07.2010
-	 * @param s
-	 * @return
 	 */
 	public static boolean sortTest(Section<?> s) {
 
@@ -167,34 +156,37 @@ public class TableUtils {
 	}
 
 	/**
-	 * Returns the text as String of the column heading. The column heading is
-	 * the cell in the first row and the same column as the specified cell.
-	 * 
-	 * @author Sebastian Furth
-	 * @created 20/10/2010
-	 * @param columnSection
-	 * @return column heading is String
+	 * Returns the TableCellContent section of the header for any section of a table.
 	 */
 	public static Section<TableCellContent> getColumnHeader(Section<?> columnSection) {
-		int column = getColumn(columnSection);
-		if (column == -1) return null;
-		Section<Table> table = Sections.ancestor(columnSection, Table.class);
-		Section<TableLine> line = Sections.successor(table, TableLine.class);
-		List<Section<TableCellContent>> cells = Sections.successors(line,
-				TableCellContent.class);
-		if (cells.size() <= column) return null;
-		return cells.get(column);
+		return new Sections<>(columnSection).ancestor(Table.class)
+				.successor(TableLine.class)
+				.first()
+				.successor(TableCell.class)
+				.nth(getColumn(columnSection))
+				.successor(TableCellContent.class)
+				.getFirst();
+	}
+
+	/**
+	 * Returns the section with the given type from the header for any section of a table.
+	 */
+	public static <T extends Type> Section<T> getColumnHeader(Section<?> columnSection, Class<T> headerType) {
+		return new Sections<>(columnSection).ancestor(Table.class)
+				.successor(TableLine.class)
+				.first()
+				.successor(TableCell.class)
+				.nth(getColumn(columnSection))
+				.successor(headerType).getFirst();
 	}
 
 	/**
 	 * Returns the text of the row description as String. The row description is
 	 * the text in the cell in the first column and the same row as the
 	 * specified cell.
-	 * 
-	 * @author Sebastian Furth
-	 * @created 20/10/2010
-	 * @param cell
+	 *
 	 * @return row description as String
+	 * @created 20/10/2010
 	 */
 	public static String getRowDescription(Section<?> cell) {
 		Section<TableCellContent> header = getRowHeader(cell);

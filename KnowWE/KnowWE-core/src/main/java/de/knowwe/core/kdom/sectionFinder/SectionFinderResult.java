@@ -51,20 +51,20 @@ public class SectionFinderResult implements Comparable<SectionFinderResult> {
 
 	public static List<SectionFinderResult> singleItemList(SectionFinderResult s) {
 		if (s == null) return null;
-		List<SectionFinderResult> resultList = new ArrayList<SectionFinderResult>(1);
+		List<SectionFinderResult> resultList = new ArrayList<>(1);
 		resultList.add(s);
 		return resultList;
 	}
 
 	public static List<SectionFinderResult> singleItemList(int begin, int end) {
 		SectionFinderResult s = new SectionFinderResult(begin, end);
-		List<SectionFinderResult> resultList = new ArrayList<SectionFinderResult>();
+		List<SectionFinderResult> resultList = new ArrayList<>();
 		resultList.add(s);
 		return resultList;
 	}
 
 	public static List<SectionFinderResult> resultList(List<StringFragment> fragments) {
-		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+		List<SectionFinderResult> result = new ArrayList<>();
 		for (StringFragment stringFragment : fragments) {
 			result.add(new SectionFinderResult(stringFragment.getStartTrimmed(),
 					stringFragment.getEndTrimmed()));
@@ -96,9 +96,8 @@ public class SectionFinderResult implements Comparable<SectionFinderResult> {
 	 * If you overwrite this method to return true for your own
 	 * SectionFinderResult, the result will not be validated in the Sectionizer.
 	 * Use with care and only if you know what you are doing!
-	 * 
+	 *
 	 * @created 26.07.2010
-	 * @return
 	 */
 	public boolean excludeFromValidating() {
 		return false;
@@ -107,7 +106,7 @@ public class SectionFinderResult implements Comparable<SectionFinderResult> {
 	@Override
 	public int compareTo(SectionFinderResult o) {
 		return Integer.valueOf(this.getStart())
-				.compareTo(Integer.valueOf(o.getStart()));
+				.compareTo(o.getStart());
 	}
 
 	@Override

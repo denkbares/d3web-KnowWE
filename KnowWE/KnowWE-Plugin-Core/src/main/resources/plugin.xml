@@ -73,6 +73,7 @@
 		<parameter id="scope" value="IRITermReference" />
 		<parameter id="scope" value="FlowchartOrderReference" />
 		<parameter id="scope" value="PackageTerm" />
+		<parameter id="scope" value="CellContent" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="CompositeEditToolProvider">
@@ -95,6 +96,7 @@
 		<parameter id="scope" value="IRITermReference" />
 		<parameter id="scope" value="FlowchartOrderReference" />
 		<parameter id="scope" value="PackageTerm" />
+		<parameter id="scope" value="CellContent" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="CompositeEditOpenDialogAction">
@@ -138,6 +140,7 @@
 		<parameter id="scope" value="IRITermReference" />
 		<parameter id="scope" value="FlowchartOrderReference" />
 		<parameter id="scope" value="PackageTerm" />
+		<parameter id="scope" value="CellContent" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="AddToWatchesToolProvider">

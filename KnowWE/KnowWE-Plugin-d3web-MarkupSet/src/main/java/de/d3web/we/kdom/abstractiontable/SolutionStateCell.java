@@ -29,14 +29,12 @@ public class SolutionStateCell extends AbstractType {
 		String state = Strings.trim(solutionStateCell.getText());
 		State solutionState = SolutionStateType.getSolutionState(state);
 		if (solutionState == null) {
-			if (solutionState == null) {
-				Messages.storeMessage(
-						compiler,
-						solutionStateCell,
-						this.getClass(),
-						Messages.error("No valid solution state found in '" + state + "'"));
-				return null;
-			}
+			Messages.storeMessage(
+					compiler,
+					solutionStateCell,
+					this.getClass(),
+					Messages.error("No valid solution state found in '" + state + "'"));
+			return null;
 		}
 		return new CondDState(solution, solutionState);
 	}

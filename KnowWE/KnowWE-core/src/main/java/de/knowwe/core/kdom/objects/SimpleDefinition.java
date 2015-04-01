@@ -21,7 +21,6 @@ package de.knowwe.core.kdom.objects;
 import java.util.Collection;
 
 import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Compilers;
@@ -53,22 +52,6 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 	@Override
 	public Class<?> getTermObjectClass(Section<? extends Term> section) {
 		return termObjectClass;
-	}
-
-	@Override
-	public String getTermName(Section<? extends Term> section) {
-		return Strings.unquote(section.getText());
-	}
-
-	@Override
-	public Identifier getTermIdentifier(Section<? extends Term> section) {
-		return new Identifier(getTermName(section));
-	}
-
-	@Override
-	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
-		String replacement = newIdentifier.getLastPathElement();
-		return TermUtils.quoteIfRequired(replacement);
 	}
 
 	private class SimpleDefinitionRegistrationScript<C extends TermCompiler> implements CompileScript<C, SimpleDefinition>, DestroyScript<C, SimpleDefinition> {

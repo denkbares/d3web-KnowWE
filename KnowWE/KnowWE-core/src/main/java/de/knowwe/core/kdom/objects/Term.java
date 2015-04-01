@@ -19,6 +19,7 @@
 package de.knowwe.core.kdom.objects;
 
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -26,7 +27,7 @@ import de.knowwe.core.kdom.parsing.Section;
 /**
  * Basic {@link Term} which can easily be handled for registering in a
  * {@link TerminologyManager}.
- * 
+ *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 07.02.2012
  */
@@ -34,10 +35,10 @@ public interface Term extends Type {
 
 	/**
 	 * Defines the class for which the {@link Term} should be registered.
-	 * 
-	 * @created 28.03.2013
+	 *
 	 * @param section the {@link Section} with this interface
 	 * @return the class of this {@link Term}
+	 * @created 28.03.2013
 	 */
 	public Class<?> getTermObjectClass(Section<? extends Term> section);
 
@@ -45,22 +46,26 @@ public interface Term extends Type {
 	 * Defines the {@link Identifier} which can be used to register this
 	 * {@link Term}. {@link Identifier} need to be unique inside the
 	 * {@link TerminologyManager}, the term name does not have this restriction.
-	 * 
-	 * @created 28.03.2013
+	 *
 	 * @param section the {@link Section} with this interface
 	 * @return the TermIdentifier for this {@link Section}
+	 * @created 28.03.2013
 	 */
-	public Identifier getTermIdentifier(Section<? extends Term> section);
+	default Identifier getTermIdentifier(Section<? extends Term> section) {
+		return new Identifier(getTermName(section));
+	}
 
 	/**
 	 * Defines the name of this {@link Term}. It can be used for example to
 	 * render this Term, but is often also at least part of the
 	 * {@link Identifier}.
-	 * 
-	 * @created 28.03.2013
+	 *
 	 * @param section the {@link Section} with this {@link InternalError}
 	 * @return the name of this term
+	 * @created 28.03.2013
 	 */
-	public String getTermName(Section<? extends Term> section);
+	default String getTermName(Section<? extends Term> section) {
+		return Strings.trimQuotes(section.getText());
+	}
 
 }

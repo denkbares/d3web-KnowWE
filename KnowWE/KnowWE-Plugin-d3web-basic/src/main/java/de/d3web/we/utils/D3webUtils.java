@@ -103,13 +103,12 @@ public class D3webUtils {
 	}
 
 	public static NamedObject getTermObject(D3webCompiler compiler, Identifier identifier) {
-		Collection<Section<?>> definingSections = compiler.getTerminologyManager()
-				.getTermDefiningSections(identifier);
+		Collection<Section<?>> definingSections = compiler.getTerminologyManager().getTermDefiningSections(identifier);
 		for (Section<?> definingSection : definingSections) {
 			if (definingSection.get() instanceof D3webTermDefinition) {
-				Section<D3webTermDefinition> d3webDefinitionSection =
-						Sections.cast(definingSection, D3webTermDefinition.class);
-				NamedObject termObject = d3webDefinitionSection.get().getTermObject(compiler, d3webDefinitionSection);
+				Section<D3webTermDefinition> d3webDefinitionSection = Sections.cast(definingSection, D3webTermDefinition.class);
+				@SuppressWarnings("unchecked") NamedObject termObject
+						= d3webDefinitionSection.get().getTermObject(compiler, d3webDefinitionSection);
 				if (termObject != null) return termObject;
 			}
 		}

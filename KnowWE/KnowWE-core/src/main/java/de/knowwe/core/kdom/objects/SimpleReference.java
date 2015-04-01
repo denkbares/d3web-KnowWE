@@ -18,8 +18,6 @@
  */
 package de.knowwe.core.kdom.objects;
 
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
@@ -56,22 +54,6 @@ public abstract class SimpleReference extends AbstractType implements TermRefere
 	@Override
 	public Class<?> getTermObjectClass(Section<? extends Term> section) {
 		return termObjectClass;
-	}
-
-	@Override
-	public String getTermName(Section<? extends Term> section) {
-		return Strings.unquote(section.getText());
-	}
-
-	@Override
-	public Identifier getTermIdentifier(Section<? extends Term> section) {
-		return new Identifier(getTermName(section));
-	}
-
-	@Override
-	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
-		String replacement = newIdentifier.getLastPathElement();
-		return TermUtils.quoteIfRequired(replacement);
 	}
 
 }

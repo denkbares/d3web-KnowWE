@@ -60,7 +60,7 @@ public class D3webAnswerCorrectionProvider implements CorrectionProvider {
 				termReference.getTermObjectClass(refSec));
 
 		String originalText = section.getText();
-		List<CorrectionProvider.Suggestion> suggestions = new LinkedList<CorrectionProvider.Suggestion>();
+		List<CorrectionProvider.Suggestion> suggestions = new LinkedList<>();
 		Levenstein l = new Levenstein();
 
 		for (Identifier matchedIdentifier : allDefinedLocalTermsOfType) {

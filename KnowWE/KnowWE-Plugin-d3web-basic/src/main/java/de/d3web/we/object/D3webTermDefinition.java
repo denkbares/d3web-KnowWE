@@ -29,14 +29,11 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.TermDefinition;
-import de.knowwe.core.kdom.objects.TermUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
@@ -121,12 +118,6 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 	}
 
 	@Override
-	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
-		String replacement = newIdentifier.getLastPathElement();
-		return TermUtils.quoteIfRequired(replacement);
-	}
-
-	@Override
 	public TermObject getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
 		assert section.get() instanceof D3webTermDefinition;
 		return (TermObject) section.getObject(compiler, TERM_OBJECT_STORE_KEY);
@@ -134,16 +125,6 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 
 	public void storeTermObject(D3webCompiler compiler, Section<? extends D3webTermDefinition<TermObject>> section, TermObject object) {
 		section.storeObject(compiler, TERM_OBJECT_STORE_KEY, object);
-	}
-
-	@Override
-	public String getTermName(Section<? extends Term> section) {
-		return Strings.trimQuotes(section.getText());
-	}
-
-	@Override
-	public Identifier getTermIdentifier(Section<? extends Term> section) {
-		return new Identifier(getTermName(section));
 	}
 
 }

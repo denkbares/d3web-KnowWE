@@ -25,7 +25,6 @@ import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -85,11 +84,6 @@ public class QASetReference extends D3webTermReference<QASet> {
 	@Override
 	public Class<?> getTermObjectClass(Section<? extends Term> section) {
 		return QASet.class;
-	}
-
-	@Override
-	public String getTermName(Section<? extends Term> section) {
-		return Strings.trimQuotes(section.getText());
 	}
 
 }

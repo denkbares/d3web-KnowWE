@@ -22,14 +22,10 @@ package de.d3web.we.object;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.NamedObject;
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.TermReference;
-import de.knowwe.core.kdom.objects.TermUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 
@@ -47,16 +43,6 @@ public abstract class D3webTermReference<TermObject extends NamedObject>
 		implements TermReference, D3webTerm<TermObject>, RenamableTerm {
 
 	@Override
-	public Identifier getTermIdentifier(Section<? extends Term> section) {
-		return new Identifier(getTermName(section));
-	}
-
-	@Override
-	public String getTermName(Section<? extends Term> section) {
-		return Strings.trimQuotes(section.getText());
-	}
-
-	@Override
 	public TermObject getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
 		Collection<Section<?>> termDefiningSections = compiler.getTerminologyManager()
 				.getTermDefiningSections(section.get().getTermIdentifier(section));
@@ -67,12 +53,6 @@ public abstract class D3webTermReference<TermObject extends NamedObject>
 			if (section.get().getTermObjectClass(section).isInstance(termObject)) return (TermObject) termObject;
 		}
 		return null;
-	}
-
-	@Override
-	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
-		String replacement = newIdentifier.getLastPathElement();
-		return TermUtils.quoteIfRequired(replacement);
 	}
 
 	/**

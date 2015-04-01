@@ -20,7 +20,6 @@
 package de.d3web.we.object;
 
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
@@ -43,11 +42,6 @@ public class QuestionReference extends D3webTermReference<Question> {
 	@Override
 	public Class<?> getTermObjectClass(Section<? extends Term> section) {
 		return Question.class;
-	}
-
-	@Override
-	public String getTermName(Section<? extends Term> section) {
-		return Strings.trimQuotes(section.getText());
 	}
 
 }
