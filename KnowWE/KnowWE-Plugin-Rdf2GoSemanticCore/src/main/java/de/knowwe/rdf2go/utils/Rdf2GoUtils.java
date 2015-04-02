@@ -203,6 +203,12 @@ public class Rdf2GoUtils {
 
             }
         }
+        // trim language tag if existing
+        if(label != null && label.contains("@")) {
+            if(label.lastIndexOf('@') == label.length()-3) {
+                label = label.substring(0, label.length()-3);
+            }
+        }
         return label;
     }
 
