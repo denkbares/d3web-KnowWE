@@ -28,6 +28,9 @@ import de.knowwe.core.kdom.parsing.Sections;
 
 public class TableUtils {
 
+	public static final String COLUMN_INDEX_KEY = "columnIndexKey";
+	public static final String COLUMN_HEADER_KEY = "columnHeaderKey";
+
 	/**
 	 * Checks whether the given Section is from the header of the table
 	 *
@@ -55,9 +58,15 @@ public class TableUtils {
 	 */
 	public static int getColumn(Section<?> columnSection) {
 		Section<?> tableCell = getTableCell(columnSection);
-		Section<?> tableLine = getTableLine(tableCell);
-		List<Section<TableCell>> tableCells = Sections.successors(tableLine, TableCell.class);
-		return tableCells.indexOf(tableCell);
+		Integer index = (Integer) tableCell.getObject(COLUMN_INDEX_KEY);
+		if (index == null) {
+			Section<?> tableLine = getTableLine(tableCell);
+			List<Section<TableCell>> tableCells = Sections.successors(tableLine, TableCell.class);
+			//noinspection SuspiciousMethodCalls
+			index = tableCells.indexOf(tableCell);
+			tableCell.storeObject(COLUMN_INDEX_KEY, index);
+		}
+		return index;
 	}
 
 	public static Section<?> getTableCell(Section<?> columnSection) {
@@ -68,8 +77,7 @@ public class TableUtils {
 
 	public static int getColumns(Section<?> tableSection) {
 		Section<?> tableLine = getTableLine(tableSection);
-		List<Section<TableCell>> tableCells = Sections.successors(tableLine,
-				TableCell.class);
+		List<Section<TableCell>> tableCells = Sections.successors(tableLine, TableCell.class);
 		return tableCells.size();
 	}
 
@@ -89,13 +97,13 @@ public class TableUtils {
 		Section<?> tableLine = getTableLine(rowSection);
 		Section<Table> table = Sections.ancestor(tableLine, Table.class);
 		List<Section<TableLine>> lines = Sections.successors(table, TableLine.class);
+		//noinspection SuspiciousMethodCalls
 		return lines.indexOf(tableLine);
 	}
 
 	/**
 	 * Checks the width attribute of the table tag and returns a HTML string
 	 * containing the width as CSS style information.
-	 *
 	 */
 	public static String getWidth(String input) {
 		String pattern = "[+]?[0-9]+\\.?[0-9]+(%|px|em|mm|cm|pt|pc|in)";
@@ -116,7 +124,6 @@ public class TableUtils {
 
 	/**
 	 * returns whether the current Section is or is in a table and is sortable
-	 *
 	 */
 	public static boolean sortOption(Section<?> sec) {
 		boolean sortable = false;
@@ -150,34 +157,30 @@ public class TableUtils {
 		return (sortable && isHeaderLine);
 	}
 
-	public static Type getTableType(Section<?> s) {
-		Section<? extends Table> table = Sections.ancestor(s, Table.class);
-		return table != null ? table.get() : null;
-	}
-
 	/**
 	 * Returns the TableCellContent section of the header for any section of a table.
 	 */
 	public static Section<TableCellContent> getColumnHeader(Section<?> columnSection) {
-		return new Sections<>(columnSection).ancestor(Table.class)
-				.successor(TableLine.class)
-				.first()
-				.successor(TableCell.class)
-				.nth(getColumn(columnSection))
-				.successor(TableCellContent.class)
-				.getFirst();
+		return getColumnHeader(columnSection, TableCellContent.class);
 	}
 
 	/**
 	 * Returns the section with the given type from the header for any section of a table.
 	 */
 	public static <T extends Type> Section<T> getColumnHeader(Section<?> columnSection, Class<T> headerType) {
-		return new Sections<>(columnSection).ancestor(Table.class)
-				.successor(TableLine.class)
-				.first()
-				.successor(TableCell.class)
-				.nth(getColumn(columnSection))
-				.successor(headerType).getFirst();
+		Section<?> tableCell = getTableCell(columnSection);
+		@SuppressWarnings("unchecked")
+		Sections<TableCell> headerCell = (Sections<TableCell>) tableCell.getObject(COLUMN_HEADER_KEY);
+		if (headerCell == null) {
+			headerCell = new Sections<>(columnSection)
+					.ancestor(Table.class)
+					.successor(TableLine.class)
+					.first()
+					.successor(TableCell.class)
+					.nth(getColumn(columnSection));
+			tableCell.storeObject(COLUMN_HEADER_KEY, headerCell);
+		}
+		return headerCell.successor(headerType).getFirst();
 	}
 
 	/**
