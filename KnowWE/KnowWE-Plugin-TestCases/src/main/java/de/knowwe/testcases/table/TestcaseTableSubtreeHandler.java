@@ -77,7 +77,7 @@ public class TestcaseTableSubtreeHandler implements D3webHandler<Table> {
 					TestcaseTableLineSubtreeHandler.TESTCASE_KEY);
 			if (rtc == null) continue;
 			Date timeStamp = rtc.getTimeStamp();
-			if (lastTimeStamp != null && !timeStamp.after(lastTimeStamp)) {
+			if (lastTimeStamp != null && timeStamp != null && !timeStamp.after(lastTimeStamp)) {
 				Section<TimeStampType> timeStampSection = Sections.successor(line, TimeStampType.class);
 				//noinspection ConstantConditions
 				Messages.storeMessage(compiler, timeStampSection, this.getClass(),
