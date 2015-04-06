@@ -73,6 +73,7 @@ public class TermInfoToolProvider implements ToolProvider {
 		Map<String, Section<?>> articles = new HashMap<String, Section<?>>();
 		for (TermCompiler termCompiler : Compilers.getCompilers(section, TermCompiler.class)) {
 			TerminologyManager manager = termCompiler.getTerminologyManager();
+			if(manager == null) continue;
 			Collection<Section<?>> definitions = manager.getTermDefiningSections(identifier);
 			for (Section<?> definition : definitions) {
 				Section<?> previewAncestor = PreviewManager.getInstance().getPreviewAncestor(definition);
