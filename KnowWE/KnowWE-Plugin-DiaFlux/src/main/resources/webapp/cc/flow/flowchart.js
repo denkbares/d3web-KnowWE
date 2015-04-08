@@ -28,7 +28,7 @@ Flowchart.parseXML = function(text) {
 		xml.innerHTML = text;
 		return xml;
 	}
-}
+};
 
 Flowchart.loadFlowchart = function(kdomid, parent) {
 
@@ -62,7 +62,7 @@ Flowchart.loadFlowchart = function(kdomid, parent) {
 	new _KA(options).send();
 
 
-}
+};
 
 Flowchart.update = function(parent, kdomid, xml) {
 	KNOWWE.helper.observer.notify('beforeflowchartrendered', {flow : flow});
@@ -121,7 +121,7 @@ Flowchart.prototype.setSize = function(width, height, exactSize) {
 		div.style.width = w + 'px';
 		div.style.height = h + 'px';
 	}
-}
+};
 
 Flowchart.prototype.getContentPane = function() {
 	return this.dom.firstChild;
@@ -186,7 +186,7 @@ Flowchart.prototype.addNode = function(node) {
 
 Flowchart.prototype.removeNode = function(node) {
 	this.nodes.remove(node);
-}
+};
 
 Flowchart.prototype.findNode = function(id) {
 	for (var i = 0; i < this.nodes.length; i++) {
@@ -194,7 +194,7 @@ Flowchart.prototype.findNode = function(id) {
 		if (node.getNodeModel().fcid == id) return node;
 	}
 	return null;
-}
+};
 
 Flowchart.prototype.findRule = function(id) {
 	for (var i = 0; i < this.rules.length; i++) {
@@ -202,7 +202,7 @@ Flowchart.prototype.findRule = function(id) {
 		if (rule.fcid == id) return rule;
 	}
 	return null;
-}
+};
 
 
 /**
@@ -213,7 +213,7 @@ Flowchart.prototype.findRule = function(id) {
  */
 Flowchart.prototype.isSelected = function(nodeOrRule) {
 	return this.selection.contains(nodeOrRule);
-}
+};
 
 /**
  * Flowchart.getSelectedNodes
@@ -328,11 +328,11 @@ Flowchart.prototype.render = function() {
 	this.createDroppables();
 
 	return dom;
-}
+};
 
 // implemented in floweditor.js
 Flowchart.prototype.createDroppables = function() {
-}
+};
 
 
 Flowchart.prototype.getContentSize = function() {
@@ -343,7 +343,7 @@ Flowchart.prototype.getContentSize = function() {
 		maxY = Math.max(maxY, this.nodes[i].getTop() + this.nodes[i].getHeight());
 	}
 	return [maxX, maxY];
-}
+};
 
 Flowchart.prototype.findRulesForNode = function(node) {
 	// TODO: shall be optimized by build an hashtable for each node!!!
@@ -485,16 +485,16 @@ Flowchart.prototype.getUsedArea = function() {
 		width : Math.abs(maxX - minX),
 		height : Math.abs(maxY - minY)
 	};
-}
+};
 
 
 Flowchart.get = function(sectionId) {
 	return jq$('#' + sectionId).find('.Flowchart');
-}
+};
 
 Flowchart.getScale = function(sectionId) {
 	return jq$('#' + sectionId).find('.Flowchart').scale();
-}
+};
 
 Flowchart.zoom = function(sectionId, diff) {
 	var scale = Flowchart.getScale(sectionId) + diff;
@@ -505,30 +505,61 @@ Flowchart.zoom = function(sectionId, diff) {
 	var marginLR = -(width - width * scale) / 2;
 	var marginTB = -(height - height * scale) / 2;
 	var pageWidth = parseInt(jq$('#pagecontent').css('width'));
-	if (scale < 1 && pageWidth - (width * scale) > 0.001) return;
+	if (scale < 1 && pageWidth - (width * scale) > 0.001) {
+		if (diff < 0) Flowchart.zoomToFit(sectionId);
+		return;
+	}
+	if (scale < 0.4) {
+		Flowchart.get(sectionId).css('background-image', "none");
+	} else {
+		Flowchart.get(sectionId).css('background-image', 'url(cc/image/grid_10.png)');
+	}
 	flowchart.scale(scale);
 	flowchart.css('margin', marginTB + "px " + marginLR + "px " + marginTB + "px " + marginLR + "px");
 	var index = Flowchart.flowsToFit.indexOf(sectionId);
 	if (index > -1) {
 		Flowchart.flowsToFit.splice(index, 1);
 	}
-}
+	Flowchart.handleButtonVisibility(sectionId);
+};
 
 Flowchart.zoom100 = function(sectionId) {
 	Flowchart.zoom(sectionId, 1 - Flowchart.getScale(sectionId));
-}
+};
 
-Flowchart.zoomToFit = function(sectionId) {
-	var scale = Flowchart.getScale(sectionId);
+Flowchart.getZoomToFitDiff = function(sectionId, scale) {
 	var width = parseInt(Flowchart.get(sectionId).css('width'));
 	var pageWidth = parseInt(jq$('#pagecontent').css('width'));
 	var diff = pageWidth / width - scale;
 	if (scale + diff > 1) diff = 1 - scale;
+	return diff;
+};
+
+Flowchart.zoomToFit = function(sectionId) {
+	var scale = Flowchart.getScale(sectionId);
+	var diff = Flowchart.getZoomToFitDiff(sectionId, scale);
 	Flowchart.zoom(sectionId, diff);
 	if (scale + diff < 1) {
 		Flowchart.flowsToFit.push(sectionId);
 	}
-}
+};
+
+Flowchart.handleButtonVisibility = function(sectionId) {
+	var scale = Flowchart.getScale(sectionId);
+	var diff = Flowchart.getZoomToFitDiff(sectionId, scale);
+	var items = jq$('#' + sectionId).find('.headerMenu .markupMenuInlineItem');
+	items.each(function() {
+		$this = jq$(this);
+		var text = $this.text();
+		if (scale > 0.9 && text === "+"
+			|| diff >= 0 && (text === "Fit" || text === "-")
+			|| scale === 1 && text === "100%") {
+			$this.css('opacity', '0.5');
+		} else {
+			$this.css('opacity', '1');
+		}
+	});
+};
 
 Flowchart.flowsToFit = [];
 
@@ -538,6 +569,10 @@ jq$(window).resize(function() {
 			Flowchart.zoomToFit(sectionId);
 		});
 	}, 300, "Flowchart ZoomToFitResizing");
+});
+
+KNOWWE.helper.observer.subscribe("flowchartrendered", function() {
+	Flowchart.handleButtonVisibility(jq$(this.flow.dom).parents('.type_DiaFlux').attr('id'));
 });
 
 
