@@ -56,7 +56,6 @@ public class TerminologyManager {
 	private static final Set<Identifier> occupiedTerms = new HashSet<>();
 
 	private TermLogManager termLogManager;
-	private boolean caseSensitive;
 
 	public TerminologyManager() {
 		this(false);

@@ -18,8 +18,8 @@
  */
 package de.knowwe.ontology.compile;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.AbstractPackageCompiler;
@@ -212,7 +212,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 
 	@Override
 	public Collection<Class<? extends Event>> getEvents() {
-		return Arrays.asList(InitializedArticlesEvent.class);
+		return Collections.singletonList(InitializedArticlesEvent.class);
 	}
 
 	@Override
