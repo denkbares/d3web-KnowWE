@@ -53,9 +53,11 @@ public class QuickInterviewTagHandler extends AbstractTagHandler {
 	@Override
 	public final void render(Section<?> section, UserContext userContext, Map<String, String> parameters, RenderResult result) {
 		userContext.getParameters().putAll(parameters);
+		result.appendHtmlTag("div", "id", section.getID());
 		result.appendHtmlTag("div", "class", "quickinterview", "sectionId", section.getID(), "id",
 				"quickinterview_" + section.getID());
 		QuickInterviewRenderer.renderInterview(section, userContext, result);
+		result.appendHtmlTag("/div");
 		result.appendHtmlTag("/div");
 
 	}
