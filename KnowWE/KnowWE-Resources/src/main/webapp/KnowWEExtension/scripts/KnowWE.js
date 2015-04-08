@@ -687,6 +687,19 @@ var _KU = KNOWWE.core.util;
 				KNOWWE.helper.observer.notify('update', {wikiStatus : jq$('#knowWEInfoStatus').val()});
 			}
 		});
-
+		// the following lines are for IE compatibility, they trigger the change event if the user presses return
+		var ieInputCompatibility = function($element) {
+			$element.find("input[type=text]").keyup(function(e) {
+				if (e.which === 13) {
+					jq$(this).trigger('change');
+				}
+			});
+		};
+		jq$(document).ready(function() {
+			ieInputCompatibility(jq$(document));
+		});
+		KNOWWE.helper.observer.subscribe("afterRerender", function() {
+			ieInputCompatibility(jq$(this));
+		});
 	}
 }());

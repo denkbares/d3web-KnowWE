@@ -573,6 +573,7 @@ KNOWWE.helper.ajax = function ( options ) {
 	                    	var d = document.getElementById(ids[i]);
 	                    	if( d ) {
 	                            document.getElementById(ids[i]).innerHTML = htmlText;
+                                KNOWWE.helper.observer.notify("afterRerender", document.getElementById(ids[i]));
 	                    	}
 	                    }
 	                    break;
@@ -605,8 +606,8 @@ KNOWWE.helper.ajax = function ( options ) {
 	                default:
 	                    break;
 	            }
-	            
-	            if( oDefault.response.fn ) { 
+
+	            if( oDefault.response.fn ) {
 	            	oDefault.response.fn.call( this );
 	            }
 			}
