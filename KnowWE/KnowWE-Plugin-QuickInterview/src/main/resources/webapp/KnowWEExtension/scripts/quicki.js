@@ -89,80 +89,79 @@ KNOWWE.plugin.quicki = function() {
 		initialize : function() {
 
 			// select all elements with class="answer"
-			$$('.answer').each(function(element) {
-				_KE.add('click', element, function(event) {
+			jq$('.answer').each(function() {
+				jq$(this).click(function(event) {
 					KNOWWE.plugin.quicki.answerClicked(event);
 				});
 			});
 			// select all elements with class="answerClicked"
-			$$('.answerClicked').each(function(element) {
-				_KE.add('click', element, function(event) {
+			jq$('.answerClicked').each(function() {
+				jq$(this).click(function(event) {
 					KNOWWE.plugin.quicki.answerClicked(event);
 				});
 			});
 
 			// select all elements with class="(.*)answerunknown(.*)"
 			// ---> class="answerunknown" and class="answerunknownClicked"
-			_KS('.answerunknown').each(function(element) {
-				_KE.add('click', element, function(event) {
+			jq$('.answerunknown').each(function() {
+				jq$(this).click(function(event) {
 					KNOWWE.plugin.quicki.answerUnknownClicked(event);
 				});
 			});
 
 			// select all elements with class="answerMC"
-			$$('.answerMC').each(function(element) {
-				_KE.add('click', element, function(event) {
+			jq$('.answerMC').each(function() {
+				jq$(this).click(function(event) {
 					KNOWWE.plugin.quicki.answerMCCollect(event);
 				});
 			});
 			// select all elements with class="answerMCClicked"
-			$$('.answerMCClicked').each(function(element) {
-				_KE.add('click', element, function(event) {
+			jq$('.answerMCClicked').each(function() {
+				jq$(this).click(function(event) {
 					KNOWWE.plugin.quicki.answerMCCollect(event);
 				});
 			});
 
 			// select all elements with class="(.*)questionnaire(.*)"
 			// ---> class="questionnaire" and class="emptyQuestionnaire"
-			_KS('.questionnaire').each(function(element) {
-				_KE.add('click', element, function(event) {
+			jq$('.questionnaire').each(function() {
+				jq$(this).click(function(event) {
 					KNOWWE.plugin.quicki.toggleQuestionnaireVisibility(event);
 				});
 			});
 
 			// add click-event for divs with class='num-ok' to submit numValues
 			// select all elements with class="num-ok"
-			$$('.num-ok').each(function(element) {
-				_KE.add('click', element, function(event) {
+			jq$('.num-ok').each(function() {
+				jq$(this).click(function(event) {
 					KNOWWE.plugin.quicki.numAnswerClicked(event);
 				});
 			});
 			// select all input fields
-			$$('.numinput, .inputdate, .inputtextvalue').each(function(element) {
-				_KE.add('blur', element, function(event) {
+			jq$('.numinput, .inputdate, .inputtextvalue').each(function() {
+				jq$(this).blur(function(event) {
 					KNOWWE.plugin.quicki.focusLost(event);
 				});
-				_KE.add('focus', element, function(event) {
+				jq$(this).focus(function(event) {
 					KNOWWE.plugin.quicki.focusGained(event);
 				});
 			});
 			// select all elements with class="numinput"
-			$$('.numinput').each(function(element) {
-				_KE.add('change', element,
-					function(event) {
-						KNOWWE.plugin.quicki.numAnswerClicked(event);
-					});
+			jq$('.numinput').each(function() {
+				jq$(this).change(function(event) {
+					KNOWWE.plugin.quicki.numAnswerClicked(event);
+				});
 			});
 			// select all elements with class="inputdate"
-			$$('.inputdate').each(function(element) {
-				_KE.add('change', element, function(event) {
+			jq$('.inputdate').each(function() {
+				jq$(this).change(function(event) {
 					KNOWWE.plugin.quicki.dateAnswerClicked(event);
 				});
 			});
 
 			// select all elements with class="inputtextvalue"
-			$$('.inputtextvalue').each(function(element) {
-				_KE.add('change', element, function(event) {
+			jq$('.inputtextvalue').each(function() {
+				jq$(this).change(function(event) {
 					KNOWWE.plugin.quicki.submitTextValue(event);
 				});
 			});
