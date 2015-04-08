@@ -2392,6 +2392,12 @@ div.coverflow .knob {
 
 }
 
+#rightPanel-toggle-button {
+	padding-left: 0.5em !important;
+	padding-right: 0.5em !important;
+	height: 18px;
+}
+
 #favorites-toggle-button i:hover {
 	color: blue;
 }

@@ -170,7 +170,7 @@ DenkbaresSkin.scrollFavorites = function() {
 	var favToScroll = favHeight - wHeight;
 	var actionsBottom = jq$("#actionsBottom");
 	var disableFixing = (!actionsBottom.exists()
-		|| favHeight >= actionsBottom.offset().top + actionsBottom.height());
+	|| favHeight >= actionsBottom.offset().top + actionsBottom.height());
 	var favLeft = DenkbaresSkin.favoriteStatus.status == 'expanded' ?
 		DenkbaresSkin.favoriteStatus.favLeftExpanded : DenkbaresSkin.favoriteStatus.favLeftCollapsed;
 	jq$("#favorites").css(DenkbaresSkin.scrollTransitionDuration);
@@ -295,19 +295,15 @@ DenkbaresSkin.toggleFavorites = function() {
 		favorites.css({left : status.favLeftCollapsed + "px"});
 		page.css({left : status.pageLeftCollapsed + "px"});
 		toggle.css({cursor : 'e-resize', left : status.pageLeftCollapsed + "px"});
-		toggle.unbind('transitionend').on('transitionend', function() {
-			toggleButton.find('i').removeClass('fa-angle-double-left').addClass('fa-angle-double-right');
-			toggleButton.attr('title', 'Show left menu');
-		});
+		toggleButton.attr('title', 'Show left menu');
+		toggleButton.find('i').removeClass('fa-angle-double-left').addClass('fa-angle-double-right');
 		DenkbaresSkin.favoriteStatus.status = 'collapsed';
 	} else {
 		favorites.css({left : status.favLeftExpanded + "px"});
 		page.css({left : status.pageLeftExpanded + "px"});
 		toggle.css({cursor : 'w-resize', left : status.pageLeftExpanded + "px"});
-		toggle.unbind('transitionend').on('transitionend', function() {
-			toggleButton.find('i').removeClass('fa-angle-double-right').addClass('fa-angle-double-left');
-			toggleButton.attr('title', 'Hide left menu');
-		});
+		toggleButton.attr('title', 'Hide left menu');
+		toggleButton.find('i').removeClass('fa-angle-double-right').addClass('fa-angle-double-left');
 		DenkbaresSkin.favoriteStatus.status = 'expanded';
 	}
 	jq$(page).bind('transitionend', function() {
@@ -331,7 +327,7 @@ DenkbaresSkin.scrollTop = function() {
 DenkbaresSkin.addFavoriteToggle = function() {
 	jq$('#page').before("<div id='favorites-toggle'></div>");
 	jq$('#menu-pagecontent').before("<div id='favorites-toggle-button' title='Hide left menu'>" +
-		"<i class='fa fa-angle-double-left'></i></div>");
+	"<i class='fa fa-angle-double-left'></i></div>");
 	var setTogglePosition = function() {
 		jq$('#favorites-toggle').css({
 			'left' : (jq$('#page').offset().left - DenkbaresSkin.scrollLeft()) + "px"
@@ -352,6 +348,7 @@ DenkbaresSkin.addFavoriteToggle = function() {
 	jq$('#favorites-toggle').unbind('click').click(DenkbaresSkin.toggleFavorites);
 	jq$('#favorites-toggle-button').unbind('click').click(DenkbaresSkin.toggleFavorites);
 };
+
 
 jq$(document).ready(function() {
 	DenkbaresSkin.addFavoriteToggle();

@@ -719,6 +719,10 @@ input.knowwe-paginationFilter {
 	height: 11px !important;
 }
 
+#watches textarea {
+	resize: vertical;
+}
+
 #watches button {
 	height: 22px;
 	position: relative;
@@ -753,7 +757,7 @@ input.knowwe-paginationFilter {
 
 #watches button.addwatch {
 	width: 95px;
-	border-left: 0;
+	margin-left: 8px;
 }
 
 #watches button.addwatch i {

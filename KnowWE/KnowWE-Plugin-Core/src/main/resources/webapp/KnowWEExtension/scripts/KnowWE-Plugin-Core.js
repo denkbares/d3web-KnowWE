@@ -110,7 +110,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 				var params = {
 					action : 'CreateObjectHomePageAction',
 					objectname : objectName.innerHTML
-				}
+				};
 
 				var options = {
 					url : KNOWWE.core.util.getURL(params),
@@ -121,7 +121,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 							+ objectName.innerHTML
 						}
 					}
-				}
+				};
 				new _KA(options).send();
 			}
 
@@ -151,7 +151,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 					KWikiWeb : web.val(),
 					KWikiChangeNote : changeNote,
 					force : forceRename ? "true" : "false"
-				}
+				};
 				var options = {
 					url : KNOWWE.core.util.getURL(params),
 					response : {
@@ -181,7 +181,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 							KNOWWE.core.util.updateProcessingState(-1);
 						}
 					}
-				}
+				};
 				KNOWWE.core.util.updateProcessingState(1);
 				new _KA(options).send();
 			}
@@ -245,7 +245,7 @@ KNOWWE.plugin.renaming = function() {
 				termreplacement : replacement,
 				sectionid : sectionId,
 				force : forceRename ? "true" : "false"
-			}
+			};
 			KNOWWE.core.util.updateProcessingState(1);
 			var request = jq$.ajax({
 				type : "post", url : KNOWWE.core.util.getURL(params),
@@ -294,7 +294,7 @@ KNOWWE.plugin.renaming = function() {
 		var params = {
 			action : "GetInfosForInlineTermRenamingAction",
 			SectionID : sectionId
-		}
+		};
 		var options = {
 			url : KNOWWE.core.util.getURL(params),
 			response : {
@@ -311,7 +311,7 @@ KNOWWE.plugin.renaming = function() {
 
 			}
 
-		}
+		};
 		new _KA(options).send();
 		KNOWWE.core.util.updateProcessingState(1);
 	}
@@ -456,7 +456,7 @@ KNOWWE.core.plugin.setMarkupSectionActivationStatus = function(id, status) {
 	};
 	_KU.showProcessingIndicator();
 	new _KA(options).send();
-}
+};
 
 KNOWWE.tooltips = {};
 
@@ -529,7 +529,7 @@ KNOWWE.kdomtreetable.init = function() {
 		});
 	});
 	KNOWWE.kdomtreetable.setOverflow();
-}
+};
 
 KNOWWE.kdomtreetable.setOverflow = function() {
 	jq$('.table_text').hover(function() {
@@ -938,8 +938,6 @@ KNOWWE.core.plugin.rightPanel = function() {
 
 	var windowWidth;
 
-	var originalPageWidth;
-
 	function getSelected() {
 		var t = '';
 		if (window.getSelection) {
@@ -953,7 +951,7 @@ KNOWWE.core.plugin.rightPanel = function() {
 
 	}
 
-	function watchesFavScroll() {
+	function rightPanelScroll() {
 		var element = $("rightPanel");
 		if (!element)
 			return;
@@ -991,7 +989,7 @@ KNOWWE.core.plugin.rightPanel = function() {
 				D.documentElement.scrollHeight), Math.max(D.body.offsetHeight,
 				D.documentElement.offsetHeight), Math.max(D.body.clientHeight,
 				D.documentElement.clientHeight));
-		};
+		}
 	}
 
 
@@ -999,19 +997,20 @@ KNOWWE.core.plugin.rightPanel = function() {
 		rightPanel.resizable({
 			handles : "w",
 			minWidth : 300,
-			maxWidth : jq$(window).width() - (jq$(".tabmenu a:last-child").first().offset().left + jq$(".tabmenu a:last-child").first().outerWidth() + jq$("#actionsTop").outerWidth() + jq$("#rightPanel .ui-resizable-w").width() + 20),
+			maxWidth : jq$(window).width()
+			- (jq$(".tabmenu a:last-child").first().offset().left
+			+ jq$(".tabmenu a:last-child").first().outerWidth()
+			+ jq$("#actionsTop").outerWidth()
+			+ jq$("#rightPanel .ui-resizable-w").width() + 20),
 			alsoResize : "#watches textarea, #watches .watchlistline",
 			resize : function(event, ui) {
-				var resize = jq$(window).width() - jq$(rightPanel).outerWidth() - jq$("#favorites").outerWidth() + 5;
-
-				jq$("#page").css("width", resize + "px");
+				jq$(window).resize();
 			}
 		});
 	}
 
 	function restoreLayout() {
 		var resize = jq$(window).width() - jq$("#favorites").outerWidth() - 300;
-		originalPageWidth = resize;
 		jq$("#page").css("width", resize + "px");
 		jq$(rightPanel).css("width", "300px");
 		var pagesRightOffset = (jq$(window).width() - (jq$("#actionsTop").offset().left + jq$("#actionsTop").width()));
@@ -1022,7 +1021,7 @@ KNOWWE.core.plugin.rightPanel = function() {
 
 		showSidebar = true;
 
-		var options = {right : '0px'}
+		var options = {right : '0px'};
 
 		rightPanel.animate(options, globalFloatingTime, function() {
 			//"left" is needed for resizable to work properly
@@ -1031,27 +1030,25 @@ KNOWWE.core.plugin.rightPanel = function() {
 		});
 		initScrolling = jq$(".tabs").offset().top;
 		jq$(window).scroll(function() {
-			watchesFavScroll();
+			rightPanelScroll();
 		});
 
 		windowWidth = jq$(window).width();
 
 		jq$(window).resize(function() {
-			if (windowWidth != jq$(window).width()) {
-				rightPanel.resizable("destroy");
-				//Do something
+			if (showSidebar) {
 				windowWidth = jq$(window).width();
-				restoreLayout();
-				makeRightPanelResizable();
+
+				var resize = jq$(window).width() - jq$('#rightPanel').width() - jq$("#page").offset().left;
+				jq$("#page").css("width", resize + "px");
+
+				var pagesRightOffset = (jq$(window).width() - (jq$("#actionsTop").offset().left + jq$("#actionsTop").width()));
+				rightPanel.css("left", (jq$(window).width() - pagesRightOffset) + "px");
 			}
 		});
 
 		//make sidebar resizable
 		makeRightPanelResizable();
-	}
-
-	function restoreOriginalLayout() {
-
 	}
 
 
@@ -1065,11 +1062,14 @@ KNOWWE.core.plugin.rightPanel = function() {
 
 	function growPage() {
 		jq$("#morepopup").css("display", "none");
+		var pageWidth = jq$('#page').width() + jq$('#rightPanel').width();
 		jq$("#page").animate({
-			'width' : originalPageWidth
-		}, globalFloatingTime);
+			'width' : pageWidth
+		}, globalFloatingTime, function() {
+			jq$('#page').css("width", "auto");
+		});
 		rightPanel.animate({
-			left : ((jq$(window).width() + 311) + "px")
+			left : (jq$(window).width() + "px")
 		}, globalFloatingTime, function() {
 			rightPanel.remove();
 			jq$("#morepopup").css("display", "block");
@@ -1175,7 +1175,7 @@ KNOWWE.core.plugin.rightPanel = function() {
 		jq$("#morebutton .watches").unbind();
 		jq$("#morebutton .watches").on("click", function() {
 			KNOWWE.plugin.core.rightPanel.showRightPanel();
-		})
+		});
 		jq$("#morebutton .watches").text("Show Right Panel");
 	}
 
@@ -1185,10 +1185,7 @@ KNOWWE.core.plugin.rightPanel = function() {
 	}
 
 	function initRightPanel(fromCookie) {
-		if (showSidebar) {
-
-		}
-		else {
+		if (!showSidebar) {
 			showSidebar = true;
 			if (fromCookie) {
 				globalFloatingTime = 0;
@@ -1196,13 +1193,13 @@ KNOWWE.core.plugin.rightPanel = function() {
 			else {
 				globalFloatingTime = 500;
 			}
-			originalPageWidth = jq$("#page").width();
 			shrinkPage();
 			buildRightPanel();
 			floatRightPanel();
 			setRightPanelCookie(true);
 			bindUiActions();
 			initRightPanelTools();
+			globalFloatingTime = 500;
 		}
 	}
 
@@ -1254,6 +1251,27 @@ KNOWWE.core.plugin.rightPanel = function() {
 		return content;
 	}
 
+	function isRightPanelShown() {
+		return simpleStorage.get(rightPanelStorageKey) == true;
+	}
+
+	function initRightPanelToggleButton(isShown) {
+		var orientation = (isShown ? "right" : "left");
+		var status = (isShown ? "Hide" : "Show");
+		jq$('#morebutton').after("<li><a id='rightPanel-toggle-button' title='" + status + " right panel'"
+		+ " class='action fa fa-angle-double-" + orientation + "'></a></li>");
+		jq$('#rightPanel-toggle-button').unbind('click').click(function() {
+			var $this = jq$(this);
+			if (isRightPanelShown()) {
+				KNOWWE.core.plugin.rightPanel.hideRightPanel();
+				$this.removeClass("fa-angle-double-right").addClass("fa-angle-double-left").attr("title", "Show right panel");
+			} else {
+				KNOWWE.core.plugin.rightPanel.showRightPanel();
+				$this.removeClass("fa-angle-double-left").addClass("fa-angle-double-right").attr("title", "Hide right panel");
+			}
+		});
+	}
+
 	return {
 
 		showRightPanel : function() {
@@ -1265,9 +1283,11 @@ KNOWWE.core.plugin.rightPanel = function() {
 		},
 
 		init : function() {
-			if (simpleStorage.get(rightPanelStorageKey) == true) {
+			var isShown = isRightPanelShown();
+			if (isShown) {
 				initRightPanel(true);
 			}
+			initRightPanelToggleButton(isShown);
 		},
 
 		addToolToRightPanel : function(title, id, pluginDiv) {
@@ -1278,9 +1298,7 @@ KNOWWE.core.plugin.rightPanel = function() {
 		}
 
 	}
-}
-
-();
+}();
 
 KNOWWE.core.plugin.rightPanel.watches = function() {
 
@@ -1297,7 +1315,7 @@ KNOWWE.core.plugin.rightPanel.watches = function() {
 	function bindUiActions() {
 		watches.on("click", ".watchlistentry", function(e) {
 			editWatch(this);
-		})
+		});
 		watches.on("click", ".addwatch", function(e) {
 			addWatch();
 		});
@@ -1364,7 +1382,7 @@ KNOWWE.core.plugin.rightPanel.watches = function() {
 	}
 
 	function removeWatch(that) {
-		var index = getWatchesIndex(jq$(that).parent())
+		var index = getWatchesIndex(jq$(that).parent());
 		watchesArray.splice(index, 1);
 		jq$(that).parent().remove();
 		updateCookies();
@@ -1416,7 +1434,7 @@ KNOWWE.core.plugin.rightPanel.watches = function() {
 			jq$(that).attr("title", null);
 		}
 
-		var trimmedValue = jq$(that).val().trim()
+		var trimmedValue = jq$(that).val().trim();
 		//shift+enter = newline, enter=submit
 		if (e.keyCode == 13 && !e.shiftKey) {
 			if (trimmedValue == "") {
@@ -1426,7 +1444,6 @@ KNOWWE.core.plugin.rightPanel.watches = function() {
 				// prevent default behavior
 				e.preventDefault();
 				//alert("ok");
-				return;
 			}
 			else {
 				if (watchesIndex < watchesArray.length) {
@@ -1498,28 +1515,26 @@ KNOWWE.core.plugin.rightPanel.watches = function() {
 	}
 
 	function createWatchesEntryValueSpan(value) {
-		var watchesEntryValue = jq$('<span/>', {
+		return jq$('<span/>', {
 			'class' : 'value tooltip',
 			'text' : value.value,
 			'title' : value.kbname
 		});
-		return watchesEntryValue;
 	}
 
 
 	function createWatchesEntryHistoryValueSpan(title) {
-		var watchesEntryValue = jq$('<span/>', {
+		return jq$('<span/>', {
 			'class' : 'value tooltip history',
 			'title' : title
 		});
-		return watchesEntryValue;
 	}
 
 	function handleDefaultResponse(watchesEntry, responseObject) {
 
 		jq$.each(responseObject.kbsEntries, function iterateValuesFromDifferentKbs(index, value) {
 			var watchesEntryValue = createWatchesEntryValueSpan(value);
-			var tooltipcontent = jq$('<span class="fa fa-book"></span><span>' + value.kbname + '  </span>');
+			var tooltipcontent = jq$('<span style="padding-right: 5px" class="fa fa-book"></span><span>' + value.kbname + '  </span>');
 			jq$(watchesEntryValue).tooltipster({
 				content : tooltipcontent,
 				position : "top-left",
@@ -1724,7 +1739,6 @@ KNOWWE.core.plugin.reloadNamespaceFile = function() {
 
 	function doSomething() {
 
-		return;
 
 	}
 
@@ -1740,7 +1754,7 @@ KNOWWE.core.plugin.reloadNamespaceFile = function() {
 					title : title
 				},
 				success : function() {
-					KNOWWE.notification.success("Success", "You successfully reloaded the namespace file in the attachment.", filename)
+					KNOWWE.notification.success("Success", "You successfully reloaded the namespace file in the attachment.", filename);
 					//KNOWWE.core.util.reloadPage();
 
 				},
