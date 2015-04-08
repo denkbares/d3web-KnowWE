@@ -1051,7 +1051,6 @@ KNOWWE.core.plugin.rightPanel = function() {
 		makeRightPanelResizable();
 	}
 
-
 	function shrinkPage() {
 		jq$("#page").animate({
 			'width' : "-=300px"
