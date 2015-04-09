@@ -75,6 +75,7 @@ public class BMITest {
 		numinput.get(1).sendKeys("100" + Keys.ENTER);
 		System.out.println("100kg");
 		awaitRerender(reset);
+		awaitRerender(reset);
 		assertEquals("25", driver.findElements(By.className("numinput")).get(2).getAttribute("value"));
 		assertEquals("Normal weight", driver.findElement(By.className("SOLUTION-ESTABLISHED")).getText());
 		assertEquals("bmi = 25", driver.findElement(By.className("ABSTRACTION")).getText());
