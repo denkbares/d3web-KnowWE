@@ -21,7 +21,6 @@ package de.knowwe.d3web.property;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.rules.Indent;
-import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.rendering.AnchorRenderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
@@ -67,7 +66,7 @@ public class PropertyDeclarationType extends AbstractType {
 		this.addChildType(new PropertyContentType());
 		this.addChildType(new Indent());
 
-		addCompileScript(Priority.LOW, new PropertyDeclarationHandler());
+		addCompileScript(new PropertyDeclarationHandler());
 		this.setRenderer(AnchorRenderer.getDelegateInstance());
 	}
 

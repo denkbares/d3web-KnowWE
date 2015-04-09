@@ -25,6 +25,7 @@ import de.d3web.core.inference.PSMethod;
 import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.compile.PackageCompiler;
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -37,7 +38,7 @@ public abstract class D3webRuleAction<T extends Type> extends AbstractType {
 	private static final String ACTION_STORE_KEY = "action-store-key";
 
 	public D3webRuleAction() {
-		this.addCompileScript(new ActionCreateHandler());
+		this.addCompileScript(Priority.LOW, new ActionCreateHandler());
 	}
 
 	public abstract Class<? extends PSMethod> getProblemSolverContext();
