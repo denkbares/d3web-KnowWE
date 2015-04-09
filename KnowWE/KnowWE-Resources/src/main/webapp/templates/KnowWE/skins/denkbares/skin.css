@@ -1278,7 +1278,7 @@ a.action.quick2top {
 
 /* +++ 472 PageContent.jsp +++ */
 #pagecontent {
-	padding: 0.5em 0;
+	padding: 0.5em;
 	overflow-y: visible;
 }
 
