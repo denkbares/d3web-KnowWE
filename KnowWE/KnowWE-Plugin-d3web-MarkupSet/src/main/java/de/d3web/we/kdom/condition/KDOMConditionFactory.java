@@ -55,11 +55,11 @@ public class KDOMConditionFactory {
 		if (c.get().isConjunction(c)) {
 			List<Section<? extends NonTerminalCondition>> conjuncts = c.get().getConjuncts(c);
 
-			List<Condition> conds = new ArrayList<Condition>();
+			List<Condition> conds = new ArrayList<>();
 			for (Section<? extends NonTerminalCondition> conjunct : conjuncts) {
 				Section<? extends CompositeCondition> subCondSection = Sections.child(
 						conjunct, CompositeCondition.class);
-				Condition subCond = createCondition(compiler, (Section<CompositeCondition>) subCondSection);
+				Condition subCond = createCondition(compiler,  subCondSection);
 				if (subCond == null) return null;
 				conds.add(subCond);
 			}

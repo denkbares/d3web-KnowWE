@@ -53,11 +53,10 @@ import de.knowwe.kdom.sectionFinder.OneOfStringUnquotedFinder;
 /**
  * A type implementing a cond-num TerminalCondition {@link TerminalCondition} It
  * has a allowed list of comparators
- * 
+ * <p/>
  * syntax: <questionID> <comp> <number> e.g.: mileage evaluation >= 130
- * 
+ *
  * @author Jochen
- * 
  */
 public class NumericalFinding extends D3webCondition<NumericalFinding> {
 
@@ -113,8 +112,7 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 		Section<Number> numberSec = Sections.successor(s, Number.class);
 
 		if (numberSec == null) {
-			Message error = Messages.invalidNumberError(
-					"No number on right side of comparator.");
+			Message error = Messages.invalidNumberError("No number on right side of comparator.");
 			Messages.storeMessage(compiler, s, getClass(), error);
 			return null;
 		}
@@ -124,8 +122,7 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 		Double number = Number.getNumber(numberSec);
 
 		if (number == null) {
-			Message error = Messages.invalidNumberError(
-					numberSec.getText());
+			Message error = Messages.invalidNumberError(numberSec.getText());
 			Messages.storeMessage(compiler, numberSec, getClass(), error);
 			return null;
 		}
@@ -133,24 +130,21 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 		Question q = qRef.get().getTermObject(compiler, qRef);
 
 		if (!(q instanceof QuestionNum)) {
-			// TODO some reasonable error handling here!
+			Message error = Messages.error("Expected " + QuestionNum.class.getSimpleName() + ", but was " + q.getClass()
+					.getSimpleName());
+			Messages.storeMessage(compiler, s, getClass(), error);
 			return null;
 		}
 
-		if (number != null && q != null && q instanceof QuestionNum) {
+		return createCondNum(comparator, number, q);
 
-			return createCondNum(comparator, number, q);
-
-		}
-		return null;
 	}
 
 	/**
-	 * 
-	 * @created 08.08.2013
 	 * @param comparator
 	 * @param number
 	 * @param q
+	 * @created 08.08.2013
 	 */
 	public static CondNum createCondNum(String comparator, Double number, Question q) {
 		QuestionNum qnum = (QuestionNum) q;
@@ -178,7 +172,7 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 
 	/**
 	 * Helper class allowing to search the KDOM for sections of this type
-	 * 
+	 *
 	 * @author Jochen
 	 * @created 26.10.2010
 	 */

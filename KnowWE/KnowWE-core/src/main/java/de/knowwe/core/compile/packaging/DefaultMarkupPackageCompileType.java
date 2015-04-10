@@ -105,10 +105,8 @@ public class DefaultMarkupPackageCompileType extends PackageCompileType {
 
 		@Override
 		public void destroy(PackageRegistrationCompiler compiler, Section<DefaultMarkupPackageCompileType> section) {
-			Section<DefaultMarkupType> markupSection = Sections.ancestor(
-					section, DefaultMarkupType.class);
-			String[] packageNames = (String[]) markupSection.getObject(
-					compiler, PACKAGE_DEFINITIONS_KEY);
+			Section<DefaultMarkupType> markupSection = Sections.ancestor(section, DefaultMarkupType.class);
+			String[] packageNames = (String[]) markupSection.getObject(compiler, PACKAGE_DEFINITIONS_KEY);
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
 			for (String packageName : packageNames) {
 				Identifier termIdentifier = new Identifier(packageName);

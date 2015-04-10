@@ -26,7 +26,14 @@ import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Choice;
+import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.QuestionDate;
+import de.d3web.core.knowledge.terminology.QuestionText;
+import de.d3web.core.session.Value;
 import de.d3web.core.session.values.ChoiceValue;
+import de.d3web.core.session.values.DateValue;
+import de.d3web.core.session.values.TextValue;
 import de.d3web.strings.StringFragment;
 import de.d3web.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
@@ -46,12 +53,10 @@ import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
 /**
  * A type implementing simple choice condition as child-type of
  * TerminalCondition {@link TerminalCondition}
- * 
+ * <p/>
  * syntax: <questionID> = <answerID>
- * 
- * 
+ *
  * @author Jochen
- * 
  */
 public class Finding extends D3webCondition<Finding> {
 
@@ -80,23 +85,42 @@ public class Finding extends D3webCondition<Finding> {
 	}
 
 	@Override
-	protected Condition createCondition(D3webCompiler compiler, Section<Finding> s) {
+	protected Condition createCondition(D3webCompiler compiler, Section<Finding> section) {
 
-		Section<QuestionReference> qRef = Sections.successor(s,
+		Section<QuestionReference> qRef = Sections.successor(section,
 				QuestionReference.class);
 
-		Section<AnswerReference> aRef = Sections.successor(s, AnswerReference.class);
-
+		Section<AnswerReference> aRef = Sections.successor(section, AnswerReference.class);
 		if (qRef != null && aRef != null) {
-			Choice answer = aRef.get().getTermObject(compiler, aRef);
-			if (answer == null) {
+			Question question = qRef.get().getTermObject(compiler, qRef);
+			Value value = null;
+			if (question instanceof QuestionChoice) {
+				Choice answer = aRef.get().getTermObject(compiler, aRef);
+				if (answer == null) {
+					return null;
+				}
+				else {
+					value = new ChoiceValue(answer);
+				}
+			}
+			else if (question instanceof QuestionText) {
+				value = new TextValue(Strings.trimQuotes(aRef.getText()));
+			}
+			else if (question instanceof QuestionDate) {
+				try {
+					value = DateValue.createDateValue(Strings.trimQuotes(aRef.getText()));
+				}
+				catch (IllegalArgumentException e) {
+					return null;
+				}
+			}
+			if (question == null) {
 				return null;
 			}
-			ChoiceValue value = new ChoiceValue(
-					answer);
-			return new CondEqual(qRef.get().getTermObject(compiler, qRef), value);
+			if (value != null) {
+				return new CondEqual(question, value);
+			}
 		}
-
 		return null;
 	}
 
