@@ -63,36 +63,34 @@ public class BMITest {
 	public void testBmi() throws Exception {
 		driver.get("http://www.d3web.de/Wiki.jsp?page=Body-Mass-Index");
 		By reset = By.className("reset");
+
 		driver.findElement(reset).click();
-		System.out.println("reset");
 		awaitRerender(reset);
+
 		driver.findElements(By.className("numinput")).get(0).sendKeys("2" + Keys.ENTER);
-		System.out.println("2m");
 		awaitRerender(reset);
-		awaitRerender(reset);
+
 		List<WebElement> numinput = driver.findElements(By.className("numinput"));
-		System.out.println(numinput.size() + " inputs");
 		numinput.get(1).sendKeys("100" + Keys.ENTER);
-		System.out.println("100kg");
 		awaitRerender(reset);
-		awaitRerender(reset);
+
 		assertEquals("25", driver.findElements(By.className("numinput")).get(2).getAttribute("value"));
 		assertEquals("Normal weight", driver.findElement(By.className("SOLUTION-ESTABLISHED")).getText());
 		assertEquals("bmi = 25", driver.findElement(By.className("ABSTRACTION")).getText());
-		System.out.println("Checked!");
 	}
 
 	private void awaitRerender(By by) {
-		long staleness = System.currentTimeMillis();
+		doWait(by);
+		doWait(by);
+	}
+
+	private void doWait(By by) {
 		try {
 			new WebDriverWait(driver, 5).until(ExpectedConditions.stalenessOf(driver.findElement(by)));
 		} catch (TimeoutException ignore) {
-			System.out.println("timeout stale");
+			System.out.println("Staleness check timed out!");
 		}
-		System.out.println(System.currentTimeMillis() - staleness + "ms til stale");
-		long presence = System.currentTimeMillis();
 		new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfElementLocated(by));
-		System.out.println(System.currentTimeMillis() - presence + "ms til present");
 	}
 
 	@After
