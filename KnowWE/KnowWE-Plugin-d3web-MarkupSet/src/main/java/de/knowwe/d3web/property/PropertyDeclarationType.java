@@ -21,6 +21,7 @@ package de.knowwe.d3web.property;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.rules.Indent;
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.rendering.AnchorRenderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
@@ -28,7 +29,7 @@ import de.knowwe.core.utils.Patterns;
 
 /**
  * One Property definition inside the PropertyMarkup.
- * 
+ *
  * @author Markus Friedrich, Albrecht Striffler (denkbares GmbH)
  * @created 10.11.2010
  */
@@ -67,6 +68,17 @@ public class PropertyDeclarationType extends AbstractType {
 		this.addChildType(new Indent());
 
 		addCompileScript(new PropertyDeclarationHandler());
+
+		/*
+		 We need a second pass of the handler for named objects, that are not yet created at default priority.
+		 An example for such named objects are Flows. They are created with all completed nodes and edges. The nodes
+		 and edges in turn contain actions which may rely on certain properties again (like units for QuestionNums).
+		 Because Flow ultimately may have to wait for the creation of some properties, they are created after the first
+		 pass. The second pass then will fix those property declarations for named objects like Flows, that could not
+		 be created at the first pass, because they had to wait for this first pass...
+		 */
+		addCompileScript(Priority.LOWEST, new PropertyDeclarationHandler());
+
 		this.setRenderer(AnchorRenderer.getDelegateInstance());
 	}
 

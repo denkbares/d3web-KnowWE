@@ -77,7 +77,7 @@ public class FlowchartXMLHeadType extends XMLHead {
 
 		@Override
 		public Collection<Message> create(D3webCompiler compiler, Section<FlowchartTermDef> s) {
-			Collection<Message> messages = new ArrayList<Message>(1);
+			Collection<Message> messages = new ArrayList<>(1);
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
 			Identifier termIdentifier = s.get().getTermIdentifier(s);
 			if (terminologyManager.isDefinedTerm(termIdentifier)) {

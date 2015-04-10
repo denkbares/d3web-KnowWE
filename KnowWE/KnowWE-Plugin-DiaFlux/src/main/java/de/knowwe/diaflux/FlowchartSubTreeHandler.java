@@ -40,7 +40,6 @@ import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.PackageCompiler;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
@@ -53,7 +52,6 @@ import de.knowwe.diaflux.type.FlowchartXMLHeadType;
 import de.knowwe.diaflux.type.GuardType;
 import de.knowwe.diaflux.type.NodeType;
 import de.knowwe.diaflux.type.OriginType;
-import de.knowwe.diaflux.type.PositionType;
 import de.knowwe.diaflux.type.TargetType;
 import de.knowwe.kdom.xml.AbstractXMLType;
 import de.knowwe.kdom.xml.XMLContent;
@@ -67,13 +65,6 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 	public static final String ORIGIN_KEY = "diafluxorigin";
 	public static final String ICON_KEY = "diafluxicon";
 
-	private final List<Class<? extends Type>> filteredTypes =
-			new ArrayList<Class<? extends Type>>(1);
-
-	public FlowchartSubTreeHandler() {
-		filteredTypes.add(PositionType.class);
-	}
-
 	@Override
 	public void compile(D3webCompiler article, Section<FlowchartType> s) {
 
@@ -81,8 +72,9 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 
 		Section<XMLContent> flowContent = AbstractXMLType.getContentChild(s);
 
+		Section<FlowchartXMLHeadType> head = Sections.successor(s, FlowchartXMLHeadType.class);
 		if (kb == null || flowContent == null
-				|| Sections.successor(s, FlowchartXMLHeadType.class).hasErrorInSubtree()) {
+				|| head == null || head.hasErrorInSubtree()) {
 			return;
 		}
 
@@ -107,9 +99,9 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 	}
 
 	private static List<Edge> createEdges(D3webCompiler compiler, Section<FlowchartType> flowSection, List<Node> nodes) {
-		List<Edge> result = new ArrayList<Edge>();
+		List<Edge> result = new ArrayList<>();
 
-		List<Section<EdgeType>> edgeSections = new ArrayList<Section<EdgeType>>();
+		List<Section<EdgeType>> edgeSections = new ArrayList<>();
 		Section<XMLContent> flowcontent = AbstractXMLType.getContentChild(flowSection);
 		Sections.successors(flowcontent, EdgeType.class, edgeSections);
 
@@ -126,7 +118,7 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 
 			Condition condition;
 			Section<GuardType> guardSection = Sections.successor(section, GuardType.class);
-			List<Message> msgs = new ArrayList<Message>();
+			List<Message> msgs = new ArrayList<>();
 			if (guardSection != null) {
 
 				Section<CompositeCondition> compositionConditionSection = Sections.successor(
@@ -200,8 +192,8 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 	@SuppressWarnings("unchecked")
 	private static List<Node> createNodes(D3webCompiler compiler, KnowledgeBase kb, Section<FlowchartType> flowSection) {
 
-		List<Node> result = new ArrayList<Node>();
-		ArrayList<Section<NodeType>> nodeSections = new ArrayList<Section<NodeType>>();
+		List<Node> result = new ArrayList<>();
+		ArrayList<Section<NodeType>> nodeSections = new ArrayList<>();
 		Section<XMLContent> flowcontent = AbstractXMLType.getContentChild(flowSection);
 		Sections.successors(flowcontent, NodeType.class, nodeSections);
 		for (Section<NodeType> nodeSection : nodeSections) {
@@ -209,7 +201,7 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 			NodeHandler handler = NodeHandlerManager.getInstance().findNodeHandler(compiler, kb,
 					nodeSection);
 
-			List<Message> msgs = new ArrayList<Message>();
+			List<Message> msgs = new ArrayList<>();
 			if (handler == null) {
 				msgs.add(Messages.error("No NodeHandler found for: " + nodeSection.getText()));
 			}

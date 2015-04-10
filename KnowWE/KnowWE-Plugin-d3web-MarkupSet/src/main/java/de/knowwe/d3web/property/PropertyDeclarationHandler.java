@@ -196,9 +196,7 @@ public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarat
 		try {
 			object.getInfoStore().remove(property, locale);
 		}
-		catch (IllegalArgumentException e) {
-			return;
+		catch (IllegalArgumentException ignore) {
 		}
-		return;
 	}
 }

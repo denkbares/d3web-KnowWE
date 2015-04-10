@@ -10,5 +10,4 @@ Flow.description = This is a test property
 %
 
 %%Knowledgebase
-@uses FlowchartPropertyTest
 %
