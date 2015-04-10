@@ -568,6 +568,7 @@ public class DiaFluxSystemTest {
 	private void setValue(String value, int index) {
 		driver.findElements(By.className("numinput")).get(index).sendKeys(value + Keys.ENTER);
 		awaitRerender(By.className("reset"));
+		awaitRerender(By.className("reset"));
 	}
 
 	private void connect(int sourceId, int targetId, String... text) {
