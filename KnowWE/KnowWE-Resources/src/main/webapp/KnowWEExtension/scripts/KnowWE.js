@@ -410,6 +410,30 @@ KNOWWE.core.util = function() {
 			}
 			window.location = newLocation;
 			window.location.reload(true);
+		},
+
+		isIE : function() {
+			var ua = window.navigator.userAgent;
+			var msie = ua.indexOf('MSIE ');
+			if (msie > 0) {
+				// IE 10 or older => return version number
+				return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+			}
+
+			var trident = ua.indexOf('Trident/');
+			if (trident > 0) {
+				// IE 11 => return version number
+				var rv = ua.indexOf('rv:');
+				return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+			}
+
+			var edge = ua.indexOf('Edge/');
+			if (edge > 0) {
+				// IE 12 => return version number
+				return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+			}
+			// other browser
+			return false;
 		}
 	}
 }();
@@ -687,19 +711,21 @@ var _KU = KNOWWE.core.util;
 				KNOWWE.helper.observer.notify('update', {wikiStatus : jq$('#knowWEInfoStatus').val()});
 			}
 		});
-		// the following lines are for IE compatibility, they trigger the change event if the user presses return
-		var ieInputCompatibility = function($element) {
-			$element.find("input[type=text]").keyup(function(e) {
-				if (e.which === 13) {
-					jq$(this).trigger('change');
-				}
+		if (KNOWWE.core.util.isIE()) {
+			// the following lines are for IE compatibility, they trigger the change event if the user presses return
+			var ieInputCompatibility = function($element) {
+				$element.find("input[type=text]").keyup(function(e) {
+					if (e.which === 13) {
+						jq$(this).trigger('change');
+					}
+				});
+			};
+			jq$(document).ready(function() {
+				ieInputCompatibility(jq$(document));
 			});
-		};
-		jq$(document).ready(function() {
-			ieInputCompatibility(jq$(document));
-		});
-		KNOWWE.helper.observer.subscribe("afterRerender", function() {
-			ieInputCompatibility(jq$(this));
-		});
+			KNOWWE.helper.observer.subscribe("afterRerender", function() {
+				ieInputCompatibility(jq$(this));
+			});
+		}
 	}
 }());
