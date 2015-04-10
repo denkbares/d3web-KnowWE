@@ -729,7 +729,7 @@ public class DiaFluxSystemTest {
 	}
 
 	private void switchToEditor(String articleHandle) throws InterruptedException {
-		Thread.sleep(500);
+		new WebDriverWait(driver, 10).until((WebDriver driver) -> driver.getWindowHandles().size() == 2);
 		Set<String> windowHandles = new HashSet<>(driver.getWindowHandles());
 		windowHandles.remove(articleHandle);
 		driver.switchTo().window(windowHandles.iterator().next());
@@ -738,11 +738,11 @@ public class DiaFluxSystemTest {
 
 	private void awaitRerender(By by) {
 		try {
-			new WebDriverWait(driver, 10).until(ExpectedConditions.stalenessOf(driver.findElement(by)));
+			new WebDriverWait(driver, 5).until(ExpectedConditions.stalenessOf(driver.findElement(by)));
 		}
 		catch (TimeoutException ignore) {
 		}
-		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(by));
+		new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfElementLocated(by));
 	}
 
 	private String readFile(String fileName) throws IOException {
