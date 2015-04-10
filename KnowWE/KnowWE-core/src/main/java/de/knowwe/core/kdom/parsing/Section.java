@@ -46,12 +46,12 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
 /**
- * <p>
+ * <p/>
  * This class represents a node in the Knowledge-DOM of KnowWE. Basically it has some text, one type and a list
  * of children.
- * <p>
+ * <p/>
  * Further, it has a reference to its father and a positionOffset to its fathers text.
- * <p>
+ * <p/>
  * Further information can be attached to a node (TypeInformation), to connect the text-parts with external
  * resources, e.g. knowledge bases, OWL, User-feedback-DBs etc.
  *
@@ -134,7 +134,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 
 	/**
 	 * Constructor of a node
-	 * <p>
+	 * <p/>
 	 * Important: parses itself recursively by getting the allowed childrenTypes of the local type
 	 *
 	 * @param text       the part of (article-source) text of the node
@@ -177,9 +177,8 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * If the compared Sections are from different articles, a value less than 0 will be returned, if the title of this
 	 * Section is lexicographically less than the title of the arguments Section, greater than 0 if the title of
 	 * arguments Section is lexicographically greater.<br/> If the Sections are from the same article, a value less
-	 * than
-	 * 0 will be returned, if the Section is textually located above the argument Section, a value greater than 0, if
-	 * below.<br/> If a Sections is compared with itself, 0 will be returned.
+	 * than 0 will be returned, if the Section is textually located above the argument Section, a value greater than 0,
+	 * if below.<br/> If a Sections is compared with itself, 0 will be returned.
 	 */
 	@Override
 	public int compareTo(Section<? extends Type> section) {
@@ -621,7 +620,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		}
 		return -1;
 	}
-
 
 	public ArticleManager getArticleManager() {
 		return article.getArticleManager();

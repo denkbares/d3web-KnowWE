@@ -76,6 +76,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	private static final String LEFT_MENU_FOOTER = "LeftMenuFooter";
 	private static final String LEFT_MENU = "LeftMenu";
 	private static final String MORE_MENU = "MoreMenu";
+	public static final String FULL_PARSE_FIRED = "fullParseFired";
 
 	private boolean wikiEngineInitialized = false;
 	private final List<String> supportArticleNames;
@@ -243,8 +244,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			String pureText = engine.getPureText(title, version);
 			if (!content.equals(pureText)) return content;
 		}
-		ArticleManager articleManager =
-				Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		DefaultArticleManager articleManager = getDefaultArticleManager();
 		Article existingArticle = articleManager.getArticle(title);
 		// if we have an existing article but having another case of the title,
 		// we suggest a link to correct article name
@@ -264,7 +264,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			// before the call of this preTranslate method, e.g. in an action with Sections#replace(...).
 			// in this case, the article will not be compiled at this moment and rendering does not make sense and can
 			// cause exceptions.
-			boolean isQueuedForCompilation = ((DefaultArticleManager) articleManager).isQueuedArticle(article);
+			boolean isQueuedForCompilation = articleManager.isQueuedArticle(article);
 
 			if (article != null && !isQueuedForCompilation) {
 				List<PageAppendHandler> appendHandlers = Environment.getInstance()
@@ -291,6 +291,10 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		}
 	}
 
+	private DefaultArticleManager getDefaultArticleManager() {
+		return (DefaultArticleManager) Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+	}
+
 	private Article updateArticle(WikiContext wikiContext, String content) throws InterruptedException, UpdateNotAllowedException {
 		HttpServletRequest httpRequest = wikiContext.getHttpRequest();
 		if (httpRequest == null) {
@@ -307,9 +311,10 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		if (article != null) {
 			originalText = article.getRootSection().getText();
 		}
-		String parse = UserContextUtil.getParameters(httpRequest).get("parse");
-		boolean fullParse = parse != null && (parse.equals("full") || parse.equals("true"));
-		if (fullParse || !originalText.equals(content)) {
+
+		boolean fullParse = isFullParse(httpRequest);
+		if (fullParse) httpRequest.setAttribute(FULL_PARSE_FIRED, true);
+		if (!originalText.equals(content) || fullParse) {
 			if (!Environment.getInstance().getWikiConnector().userCanEditArticle(title, httpRequest)) {
 				throw new UpdateNotAllowedException();
 			}
@@ -318,6 +323,12 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			if (fullParse) EventManager.getInstance().fireEvent(new FullParseFinishedEvent());
 		}
 		return article;
+	}
+
+	private boolean isFullParse(HttpServletRequest httpRequest) {
+		String parse = UserContextUtil.getParameters(httpRequest).get("parse");
+		Object fullParseFired = httpRequest.getAttribute(FULL_PARSE_FIRED);
+		return parse != null && (parse.equals("full") || parse.equals("true")) && fullParseFired == null;
 	}
 
 	private void renderPostPageAppendHandler(JSPWikiUserContext userContext, String title, RenderResult renderResult, List<PageAppendHandler> appendhandlers) {
@@ -374,8 +385,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	 * @created 07.06.2010
 	 */
 	private void initializeAllArticles(WikiEngine engine) {
-		ArticleManager articleManager =
-				Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		ArticleManager articleManager = getDefaultArticleManager();
 		articleManager.open();
 		try {
 			Collection<?> wikiPages = getAllPages(engine);
@@ -453,8 +463,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				&& (event.getType() == WikiPageEvent.PAGE_DELETE_REQUEST)) {
 			WikiPageEvent e = (WikiPageEvent) event;
 
-			ArticleManager amgr = Environment.getInstance()
-					.getArticleManager(Environment.DEFAULT_WEB);
+			ArticleManager amgr = getDefaultArticleManager();
 
 			Article articleToDelete = amgr.getArticle(e.getPageName());
 			if (articleToDelete != null) {

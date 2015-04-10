@@ -28,19 +28,19 @@ import de.knowwe.core.report.Messages;
  * {@link ArticleManager}. It is responsible to manage every compile process for
  * all articles and section of the {@link ArticleManager}. Therefore all compile
  * code has been removed out of sections and articles and placed here.
- * <p>
+ * <p/>
  * The compile manager holds a set of compilers. The compilers can be plugged
  * into the manager using the defined extension point. Each compiler may
  * implement its own compilation procedure. If the compiler uses the package
  * mechanism to define certain compiling bundles (such as d3web does for
  * knowledge bases or owl for triple stores) the compiler usually have multiple
  * subsequent compilers for each such individual bundle.
- * <p>
+ * <p/>
  * To enhance performance, each compiler top level compiles individually, maybe
  * in parallel. Nevertheless, if the compilers have different priorities
  * (defined through the compiler's extension), they are ordered by these
  * priorities. Only compilers with same priority may compile in parallel.
- * <p>
+ * <p/>
  */
 public class CompilerManager {
 
@@ -260,7 +260,7 @@ public class CompilerManager {
 
 	/**
 	 * Adds a new compiler with the specific priority.
-	 * <p>
+	 * <p/>
 	 * Please note that it is allowed that compilers are added and removed while
 	 * compiling the wiki. Usually a more prioritized compiler may add or remove
 	 * sub-sequential Compilers depending on specific markups, e.g. defining a
@@ -287,7 +287,7 @@ public class CompilerManager {
 
 	/**
 	 * Removes an existing compiler with the specific priority.
-	 * <p>
+	 * <p/>
 	 * Please not that it is allowed that compilers are added and removed while
 	 * compiling the wiki. Usually a more prioritized compiler may add or remove
 	 * sub-sequential Compilers depending on specific markups, e.g. defining a
