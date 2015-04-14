@@ -22,12 +22,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.QuestionDate;
+import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.strings.Strings;
@@ -42,9 +45,9 @@ import de.knowwe.d3web.property.PropertyObjectReference.PropertyAnswerReference;
 
 /**
  * Parses a line defining a property
- * 
- * Syntax of the line: IDOBjectName.Property(.Language(.Country)?)? = content
- * 
+ * <p/>
+ * Syntax of the line: ObjectName.Property[.Language[.Country]] = content
+ *
  * @author Markus Friedrich, Albrecht Striffler (denkbares GmbH)
  * @created 10.11.2010
  */
@@ -105,6 +108,12 @@ public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarat
 			return Messages.asList(Messages.syntaxError("The property value '" + content
 					+ "' is not compatible with the property '" + property + "'."));
 		}
+		try {
+			validateProperty(objects, property, value);
+		}
+		catch (IllegalArgumentException e) {
+			return Messages.asList(Messages.syntaxError(e.getMessage()));
+		}
 		for (NamedObject namedObject : objects) {
 			try {
 				namedObject.getInfoStore().addValue(property, locale, value);
@@ -125,6 +134,25 @@ public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarat
 		return Messages.noMessage();
 	}
 
+	/**
+	 * Here we collect some additional checks we need for Properties.
+	 */
+	private void validateProperty(Collection<NamedObject> objects, Property<?> property, Object value) {
+		for (NamedObject object : objects) {
+			validateProperty(object, property, value);
+		}
+	}
+
+	public static void validateProperty(NamedObject object, Property<?> property, Object value) {
+		if (property == MMInfo.UNIT && object instanceof QuestionDate && value instanceof String) {
+			String timeZoneId = (String) value;
+			TimeZone timeZone = TimeZone.getTimeZone(timeZoneId);
+			if (timeZone.equals(TimeZone.getTimeZone("GMT")) && !timeZoneId.equalsIgnoreCase("GMT")) {
+				throw new IllegalArgumentException("'" + timeZoneId + "' is not a valid time zone.");
+			}
+		}
+	}
+
 	public static Locale getLocale(Section<PropertyDeclarationType> s) {
 		Section<LocaleType> localeSection = Sections.successor(s, LocaleType.class);
 		Locale locale = InfoStore.NO_LANGUAGE;
@@ -135,7 +163,7 @@ public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarat
 	}
 
 	public static List<NamedObject> getNamedObjects(D3webCompiler compiler, Section<PropertyObjectReference> namendObjectSection) {
-		List<NamedObject> objects = new ArrayList<NamedObject>(1);
+		List<NamedObject> objects = new ArrayList<>(1);
 		NamedObject object = namendObjectSection.get().getTermObject(compiler, namendObjectSection);
 		if (object == null) {
 			Section<QuestionReference> questionReferenceSection = Sections.child(

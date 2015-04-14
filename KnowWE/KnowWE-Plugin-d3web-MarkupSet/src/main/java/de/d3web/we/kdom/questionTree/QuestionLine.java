@@ -23,6 +23,7 @@ package de.d3web.we.kdom.questionTree;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionDate;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
@@ -46,6 +47,7 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.d3web.property.PropertyDeclarationHandler;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
 import de.knowwe.kdom.renderer.StyleRenderer;
@@ -261,12 +263,16 @@ public class QuestionLine extends AbstractType {
 				if (qDef != null) {
 
 					Question question = qDef.get().getTermObject(article, qDef);
-					if (!(question instanceof QuestionNum)) {
-						return Messages.asList(Messages.objectCreationError(
-								D3webUtils.getD3webBundle()
-										.getString("KnowWE.questiontree.onlyfornumerical")));
+					if (!(question instanceof QuestionNum || question instanceof QuestionDate)) {
+						return Messages.asList(Messages.error("Units are only allowed for numerical and date questions"));
 					}
-					question.getInfoStore().addValue(MMInfo.UNIT, s.get().getUnit(s));
+					String unit = s.get().getUnit(s);
+					try {
+						PropertyDeclarationHandler.validateProperty(question, MMInfo.UNIT, unit);
+					} catch (IllegalArgumentException e) {
+						return Messages.asList(Messages.error(e.getMessage()));
+					}
+					question.getInfoStore().addValue(MMInfo.UNIT, unit);
 					return Messages.noMessage();
 
 				}

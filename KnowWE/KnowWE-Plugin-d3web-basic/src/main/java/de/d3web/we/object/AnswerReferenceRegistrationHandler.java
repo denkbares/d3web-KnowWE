@@ -12,7 +12,7 @@ import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.manage.KnowledgeBaseUtils;
-import de.d3web.core.session.values.DateValue;
+import de.d3web.core.session.ValueUtils;
 import de.d3web.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
@@ -66,7 +66,7 @@ public class AnswerReferenceRegistrationHandler extends SimpleReferenceRegistrat
 		else if (question instanceof QuestionDate) {
 			String value = Strings.trimQuotes(section.getText());
 			try {
-				DateValue.createDateValue(value);
+				ValueUtils.createDateValue((QuestionDate) question, value);
 				return Messages.noMessage();
 			}
 			catch (IllegalArgumentException e) {

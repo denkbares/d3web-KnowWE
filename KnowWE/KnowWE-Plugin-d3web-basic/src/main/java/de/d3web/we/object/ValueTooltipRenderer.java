@@ -93,7 +93,7 @@ public class ValueTooltipRenderer extends TooltipRenderer {
 					builder.append(" in '").append(name).append("'");
 				}
 				builder.append(": ");
-				builder.append(SolutionPanelUtils.formatValue(value, -1));
+				builder.append(SolutionPanelUtils.formatValue((ValueObject) namedObject, value, -1));
 
 				if (compilers.size() == 1) {
 					Collection<Fact> sourceFacts = ExplanationUtils.getSourceFactsNonBlocking(session, (TerminologyObject) namedObject);
@@ -105,7 +105,7 @@ public class ValueTooltipRenderer extends TooltipRenderer {
 						builder.append("<p>The following input values were used to derive this value:");
 						builder.append("<ul>");
 						for (Fact sourceFact : sourceFacts) {
-							String valueString = SolutionPanelUtils.formatValue(sourceFact.getValue(), -1);
+							String valueString = SolutionPanelUtils.formatValue((ValueObject) namedObject, sourceFact.getValue(), -1);
 							Identifier identifier = new Identifier(sourceFact.getTerminologyObject().getName());
 							String urlLinkToTermDefinition = KnowWEUtils.getURLLinkToObjectInfoPage(identifier);
 							builder.append("<li>")

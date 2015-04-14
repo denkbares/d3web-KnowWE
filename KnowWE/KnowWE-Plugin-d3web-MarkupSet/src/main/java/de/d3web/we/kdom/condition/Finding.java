@@ -31,8 +31,8 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionDate;
 import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.session.Value;
+import de.d3web.core.session.ValueUtils;
 import de.d3web.core.session.values.ChoiceValue;
-import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.TextValue;
 import de.d3web.strings.StringFragment;
 import de.d3web.strings.Strings;
@@ -108,7 +108,7 @@ public class Finding extends D3webCondition<Finding> {
 			}
 			else if (question instanceof QuestionDate) {
 				try {
-					value = DateValue.createDateValue(Strings.trimQuotes(aRef.getText()));
+					value = ValueUtils.createDateValue((QuestionDate) question, Strings.trimQuotes(aRef.getText()));
 				}
 				catch (IllegalArgumentException e) {
 					return null;

@@ -46,6 +46,7 @@ import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
+import de.d3web.core.session.ValueUtils;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
@@ -520,7 +521,6 @@ public class QuickInterviewRenderer {
 		}
 
 		String id = getID();
-		String unit = "";
 		Double rangeMax = Double.MAX_VALUE;
 		Double rangeMin = Double.MIN_VALUE;
 
@@ -530,10 +530,6 @@ public class QuickInterviewRenderer {
 			NumericalInterval range = (NumericalInterval) rangeValue;
 			rangeMax = range.getRight();
 			rangeMin = range.getLeft();
-		}
-		Object questionUnit = q.getInfoStore().getValue(MMInfo.UNIT);
-		if (questionUnit != null) {
-			unit = questionUnit.toString();
 		}
 
 		// assemble the JS call
@@ -567,7 +563,7 @@ public class QuickInterviewRenderer {
 				+ rangeString + "value='" + valueString + "' " + "size='" + inputSize + "' " + jscall + " />");
 
 		// print the units
-		sb.appendHtml("<div class='unit'>").append(Strings.encodeHtml(unit)).appendHtml("</div>");
+		appendUnit(q, sb);
 
 		if (Unknown.assignedTo(value) || !suppressUnknown(q)) {
 			sb.appendHtml("<div class='separator'></div>");
@@ -577,6 +573,20 @@ public class QuickInterviewRenderer {
 
 		String errmsgid = id + "_errormsg";
 		sb.appendHtml("<div id='" + errmsgid + "' class='invisible' ></div>");
+	}
+
+	private void appendUnit(Question q, RenderResult sb) {
+		String unit = getUnit(q);
+		sb.appendHtml("<div class='unit'>").append(Strings.encodeHtml(unit)).appendHtml("</div>");
+	}
+
+	private String getUnit(Question q) {
+		String unit = "";
+		Object questionUnit = q.getInfoStore().getValue(MMInfo.UNIT);
+		if (questionUnit != null) {
+			unit = questionUnit.toString();
+		}
+		return unit;
 	}
 
 	private String trimPZ(double d) {
@@ -608,7 +618,7 @@ public class QuickInterviewRenderer {
 		Value value = D3webUtils.getValueNonBlocking(session, q);
 		String valueString = "";
 		if (value instanceof DateValue) {
-			valueString = ((DateValue) value).getDateString();
+			valueString = ValueUtils.getDateVerbalization((QuestionDate) q, (DateValue) value, ValueUtils.TimeZoneDisplayMode.NEVER);
 		}
 
 		String id = getID();
@@ -626,6 +636,9 @@ public class QuickInterviewRenderer {
 				+ "if you use time, seconds and milliseconds are optional.";
 		sb.appendHtml("<input qid='" + id + "' class='inputdate'  style='display: inline;' type='dateValue' " + "value='" + valueString + "' placeholder='"
 				+ placeHolder + "' title='" + title + "' " + jscall + " />");
+
+		// print the units
+		appendUnit(q, sb);
 
 		// sb.append("<input type='button' value='OK' class='date-ok' /> ");
 		if (Unknown.assignedTo(value) || !suppressUnknown(q)) {

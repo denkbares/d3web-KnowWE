@@ -12,7 +12,7 @@ import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.QuestionValue;
 import de.d3web.core.session.Value;
-import de.d3web.core.session.ValueFactory;
+import de.d3web.core.session.ValueUtils;
 import de.d3web.empiricaltesting.Finding;
 import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.strings.Strings;
@@ -90,7 +90,7 @@ public class TestcaseTableLineSubtreeHandler implements D3webHandler<TableLine> 
 					}
 					if (existingFinding != null) {
 						QuestionValue existingValue = existingFinding.getValue();
-						Value newValue = ValueFactory.createQuestionChoiceValue((QuestionChoice) question, valueString, existingValue);
+						Value newValue = ValueUtils.createQuestionChoiceValue((QuestionChoice) question, valueString, existingValue);
 						existingFinding.setValue((QuestionValue) newValue);
 					}
 				}

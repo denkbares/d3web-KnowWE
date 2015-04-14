@@ -38,9 +38,11 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyManager;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionDate;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
+import de.d3web.core.session.ValueUtils;
 import de.d3web.core.session.values.DateValue;
 import de.d3web.core.utilities.NamedObjectComparator;
 import de.d3web.strings.Strings;
@@ -81,7 +83,7 @@ import de.knowwe.util.IconColor;
 public class TestCasePlayerRenderer implements Renderer {
 
 	private static final String QUESTIONS_SEPARATOR = "#####";
-	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	private static final Pattern[] cookiePatterns = { Pattern.compile("^columnstatus_([^_]+)_.*"),
 			Pattern.compile("^question_selector_([^_]+)_.*") };
 
@@ -254,7 +256,9 @@ public class TestCasePlayerRenderer implements Renderer {
 			string.append("---");
 		}
 		else {
-			string.append(dateFormat.format(testCase.getStartDate()));
+			synchronized (DATE_FORMAT) {
+				string.append(DATE_FORMAT.format(testCase.getStartDate()));
+			}
 		}
 		string.appendHtml(PaginationRenderer.getToolSeparator());
 
@@ -341,7 +345,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				Value value = finding.getValue();
 				String findingString;
 				if (value instanceof DateValue) {
-					findingString = ((DateValue) value).getDateString();
+					findingString = ValueUtils.getDateVerbalization((QuestionDate) q, (DateValue) value, ValueUtils.TimeZoneDisplayMode.IF_NOT_DEFAULT);
 				}
 				else {
 					findingString = value.toString();
@@ -379,7 +383,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		if (value != null) {
 			String valueString = value.toString();
 			if (value instanceof DateValue) {
-				valueString = ((DateValue) value).getDateOrDurationString();
+				valueString = ValueUtils.getDateOrDurationVerbalization((QuestionDate) object, ((DateValue) value).getDate());
 			}
 			tableModel.addCell(row, column, valueString, valueString.length());
 		}

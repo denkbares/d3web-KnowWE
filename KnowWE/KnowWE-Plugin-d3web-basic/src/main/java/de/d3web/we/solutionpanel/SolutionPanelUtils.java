@@ -1,13 +1,16 @@
 package de.d3web.we.solutionpanel;
 
 import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.core.knowledge.ValueObject;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionDate;
 import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
+import de.d3web.core.session.ValueUtils;
 import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
@@ -135,7 +138,7 @@ public class SolutionPanelUtils {
 		else {
 			buffer.append(question.getName()
 					+ " = "
-					+ formatValue(value, digits));
+					+ formatValue(question, value, digits));
 		}
 
 		// add the unit name for num question, if available
@@ -155,7 +158,7 @@ public class SolutionPanelUtils {
 	 * @return A string representation of the specified value.
 	 * @created 19.10.2010
 	 */
-	public static String formatValue(Value value, int digits) {
+	public static String formatValue(ValueObject object, Value value, int digits) {
 		if (value instanceof NumValue) {
 			Double numValue = (Double) value.getValue();
 			// check, if we need to round the value
@@ -178,7 +181,7 @@ public class SolutionPanelUtils {
 			return mcText.substring(1, mcText.length() - 1);
 		}
 		else if (value instanceof DateValue) {
-			return ((DateValue) value).getDateOrDurationString(true);
+			return ValueUtils.getDateOrDurationVerbalization((QuestionDate) object, ((DateValue) value).getDate(), true);
 		}
 		else if (value instanceof Unknown) {
 			return "Unknown";

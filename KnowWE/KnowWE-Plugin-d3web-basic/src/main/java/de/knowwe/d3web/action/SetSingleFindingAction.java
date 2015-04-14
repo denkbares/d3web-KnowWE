@@ -26,12 +26,13 @@ import java.util.Iterator;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionDate;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
+import de.d3web.core.session.ValueUtils;
 import de.d3web.core.session.blackboard.Fact;
 import de.d3web.core.session.blackboard.FactFactory;
-import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.TextValue;
 import de.d3web.strings.Strings;
@@ -118,7 +119,7 @@ public class SetSingleFindingAction extends AbstractAction {
 			}
 			else if (valuedate != null) {
 				try {
-					value = DateValue.createDateValue(valuedate);
+					value = ValueUtils.createDateValue((QuestionDate) question, valuedate);
 				}
 				catch (IllegalArgumentException e) {
 					// nothing to do, value will be null, field will be empty

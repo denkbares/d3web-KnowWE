@@ -29,6 +29,7 @@ import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionDate;
 import de.d3web.core.knowledge.terminology.QuestionText;
+import de.d3web.core.session.ValueUtils;
 import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.TextValue;
 import de.d3web.core.session.values.Unknown;
@@ -110,7 +111,7 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 			actionSetQuestion.setQuestion(question);
 			String text = answerReferenceSection.getText();
 			try {
-				DateValue dateValue = DateValue.createDateValue(text);
+				DateValue dateValue = ValueUtils.createDateValue((QuestionDate) question, text);
 				actionSetQuestion.setValue(dateValue);
 			}
 			catch (IllegalArgumentException e) {
