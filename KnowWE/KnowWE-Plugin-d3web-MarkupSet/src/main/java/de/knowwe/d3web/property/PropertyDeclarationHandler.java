@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.terminology.Choice;
@@ -33,6 +32,7 @@ import de.d3web.core.knowledge.terminology.QuestionDate;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseUtils;
+import de.d3web.core.session.ValueUtils;
 import de.d3web.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionReference;
@@ -52,6 +52,8 @@ import de.knowwe.d3web.property.PropertyObjectReference.PropertyAnswerReference;
  * @created 10.11.2010
  */
 public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarationType> {
+
+
 
 	@Override
 	public Collection<Message> create(D3webCompiler compiler, Section<PropertyDeclarationType> section) {
@@ -146,8 +148,7 @@ public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarat
 	public static void validateProperty(NamedObject object, Property<?> property, Object value) {
 		if (property == MMInfo.UNIT && object instanceof QuestionDate && value instanceof String) {
 			String timeZoneId = (String) value;
-			TimeZone timeZone = TimeZone.getTimeZone(timeZoneId);
-			if (timeZone.equals(TimeZone.getTimeZone("GMT")) && !timeZoneId.equalsIgnoreCase("GMT")) {
+			if (!ValueUtils.isValidTimeZoneId(timeZoneId)) {
 				throw new IllegalArgumentException("'" + timeZoneId + "' is not a valid time zone.");
 			}
 		}
