@@ -491,8 +491,10 @@ KNOWWE.plugin.quicki = function() {
 			var dateRegex = "(\\d\\d\\d\\d(-|\\.)\\d\\d(-|\\.)\\d\\d|\\d\\d(-|\\.)\\d\\d(-|\\.)\\d\\d\\d\\d)";
 			// HH-mm-ss-SSS, but seconds and milliseconds are optional, separator either - or :
 			var timeRegex = "\\d\\d(-|\\:)\\d\\d((-|\\:)\\d\\d((-|\\:|\\.)\\d\\d\\d)?)?";
+			// like UTC or GMT+8:00 or "Pacific Standard Time"
+			var timeZoneRegex = "((?:[a-zA-Z]\s*)+|GMT[+-]\d?\d:\d\d)";
 			// time is optional
-			var dateTimeRegex = new RegExp("^\\s*" + dateRegex + "((\\s|-)" + timeRegex + ")?\\s*$");
+			var dateTimeRegex = new RegExp("^\\s*" + dateRegex + "((\\s|-)" + timeRegex + ")?\\s*(" + timeZoneRegex + ")?$");
 			if (!(inputtext.match(dateTimeRegex))) {
 				var errormessage = 'Input has wrong format!';
 				_KS('#' + rel.oid + "_errormsg").className = 'errormsg';
