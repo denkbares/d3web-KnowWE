@@ -22,7 +22,7 @@ package de.knowwe.kdom.table;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 
 /**
  * <p>
@@ -63,7 +63,7 @@ public class Table extends AbstractType {
 
 	public Table() {
 		this.addChildType(new TableLine());
-		this.setSectionFinder(new AllTextFinderTrimmed());
+		this.setSectionFinder(AllTextFinder.getInstance());
 		this.setRenderer(new TableRenderer());
 	}
 

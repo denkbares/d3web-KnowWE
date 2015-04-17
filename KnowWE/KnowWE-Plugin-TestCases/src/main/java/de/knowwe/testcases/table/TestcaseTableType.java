@@ -19,14 +19,16 @@
 package de.knowwe.testcases.table;
 
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
+import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.table.Table;
 import de.knowwe.testcases.prefix.PrefixTestCaseRenderer;
 import de.knowwe.testcases.prefix.PrefixedTestCaseProvider;
 
 /**
- * 
  * @author Reinhard Hatko
  * @created 18.01.2011
  */
@@ -40,6 +42,13 @@ public class TestcaseTableType extends DefaultMarkupType {
 		m.addContentType(new Table());
 		PackageManager.addPackageAnnotation(m);
 		m.addAnnotation(NAME, false);
+		AnonymousType nameAnnotationType = new AnonymousType("NameAnnotationType");
+		nameAnnotationType.setRenderer(
+				(section, user, result) ->
+						result.appendHtmlElement("span", "Name:", "style", "padding-left: 4px;" + StyleRenderer.PROPERTY
+								.getCssStyle()));
+		nameAnnotationType.setSectionFinder(AllTextFinder.getInstance());
+		m.addAnnotationNameType(NAME, nameAnnotationType);
 		m.addAnnotation(PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME, false);
 	}
 

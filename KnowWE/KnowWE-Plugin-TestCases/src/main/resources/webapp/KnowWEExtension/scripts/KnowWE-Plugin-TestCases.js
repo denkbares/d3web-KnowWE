@@ -353,6 +353,16 @@ jq$(document)
 						callback(otherItems.concat(byAjax));
 					}, ajaxPrefix);
 			});
+		KNOWWE.plugin.testCases.testCaseTable.editTool.getWikiText = function(id) {
+			var wikiText = _EC.getWikiText(id);
+			if (!/%%TestCaseTable\s*\|/i.test(wikiText)) {
+				wikiText = "%%TestCaseTable\n\n" +
+							"|| Name || Time || Checks\n" +
+							"|       |       |\n" +
+							wikiText.substring(wikiText.indexOf("\n")).trim();
+			}
+			return wikiText;
+		};
 
 		// init test case player
 		TestCasePlayer.init();

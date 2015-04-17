@@ -19,8 +19,12 @@ KNOWWE.plugin.tableEditTool = function() {
 			supportLinks[id] = support;
 		},
 
+		getWikiText : function(id) {
+			return _EC.getWikiText(id);
+		},
+
 		generateHTML : function(id) {
-			originalWikiText[id] = _EC.getWikiText(id);
+			originalWikiText[id] = _EM.toolNameSpace[id].getWikiText(id);
 			return "<div id='" + createRootID(id) + "' style='position: relative;'></div>";
 
 		},
@@ -106,7 +110,7 @@ KNOWWE.plugin.tableEditTool = function() {
 		 * <li>row: the edited cell's row index (0..)
 		 * <li>col: the edited cell's column index (0..)
 		 * <ul>
-		 * The method shall cann the specified cabblack funtion with a javascript
+		 * The method shall call the specified callback funtion with a javascript
 		 * array of auto-completion suggestions. Each suggestion is a javascript
 		 * object with the following parameters:
 		 * <ul>
