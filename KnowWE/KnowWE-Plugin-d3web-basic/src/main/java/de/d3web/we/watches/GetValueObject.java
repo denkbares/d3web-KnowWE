@@ -27,8 +27,11 @@ import org.json.JSONObject;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.ValueObject;
+import de.d3web.core.knowledge.terminology.QuestionDate;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
+import de.d3web.core.session.ValueUtils;
+import de.d3web.core.session.values.DateValue;
 import de.d3web.strings.Identifier;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.knowledgebase.D3webCompiler;
@@ -42,7 +45,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Created by Stefan Plehn (denkbares GmbH) on 21.10.14.
- * <p>
+ * <p/>
  * This class resolves simple expressions. Only basic d3web conditions can be resolved.
  */
 public class GetValueObject implements ExpressionResolver {
@@ -77,7 +80,15 @@ public class GetValueObject implements ExpressionResolver {
 			try {
 				resultJsonObject.put(INFO, "simpleValue");
 				kbvalue.put("kbname", kb.getName());
-				kbvalue.put("value", value.toString());
+				String valueString;
+				if (value instanceof DateValue) {
+					valueString = ValueUtils.getDateOrDurationVerbalization((QuestionDate) valueObject,
+							((DateValue) value).getDate());
+				}
+				else {
+					valueString = value.toString();
+				}
+				kbvalue.put("value", valueString);
 				resultJsonObject.append(KBSENTRY, kbvalue);
 			}
 			catch (JSONException e) {
