@@ -21,12 +21,20 @@
 package de.knowwe.kdom;
 
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 
 public class AnonymousType extends AbstractType {
 
 	private String name;
 
 	public AnonymousType(String name) {
+		this.name = name;
+	}
+
+	public AnonymousType(String name, SectionFinder sectionFinder, Renderer renderer) {
+		setSectionFinder(sectionFinder);
+		setRenderer(renderer);
 		this.name = name;
 	}
 
