@@ -19,6 +19,7 @@
 package de.knowwe.testcases.table;
 
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -40,10 +41,12 @@ public class TestcaseTableType extends DefaultMarkupType {
 	static {
 		m = new DefaultMarkup("TestCaseTable");
 		m.addContentType(new Table());
+		m.addContentType(new AnonymousType("WhiteSpace", AllTextFinder.getInstance(), NothingRenderer.getInstance()));
 		PackageManager.addPackageAnnotation(m);
 		m.addAnnotation(NAME, false);
-		AnonymousType nameAnnotationType = new AnonymousType("NameAnnotationType");
-		nameAnnotationType.setRenderer(
+		AnonymousType nameAnnotationType = new AnonymousType(
+				"NameAnnotationType",
+				AllTextFinder.getInstance(),
 				(section, user, result) ->
 						result.appendHtmlElement("span", "Name:", "style", "padding-left: 4px;" + StyleRenderer.PROPERTY
 								.getCssStyle()));
