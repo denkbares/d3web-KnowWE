@@ -49,7 +49,7 @@ public class TestcaseTableType extends DefaultMarkupType {
 				AllTextFinder.getInstance(),
 				(section, user, result) ->
 						result.appendHtmlElement("span", "Name:", "style", "padding-left: 4px;" + StyleRenderer.PROPERTY
-								.getCssStyle()));
+								.getCssStyle()));D
 		nameAnnotationType.setSectionFinder(AllTextFinder.getInstance());
 		m.addAnnotationNameType(NAME, nameAnnotationType);
 		m.addAnnotation(PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME, false);

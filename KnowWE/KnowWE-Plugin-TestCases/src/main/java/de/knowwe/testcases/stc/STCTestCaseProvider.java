@@ -24,6 +24,7 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.empiricaltesting.LazyKnowledgeBase;
 import de.d3web.empiricaltesting.SequentialTestCase;
 import de.d3web.empiricaltesting.TestPersistence;
 import de.d3web.testcase.stc.STCWrapper;
