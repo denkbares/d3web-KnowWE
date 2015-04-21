@@ -38,15 +38,5 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
 		</dependency>
-		<!-- This dependency is needed to overwrite the dependency of JSPWiki 2.10 to the very outdated version of
-		nekohtml 0.9.5, which itself has a dependency to xercesImpl 2.4.0 which causes problems with our XML
-		persistence code. Also having the newer version of those dependencies fixes the issues, the old version
-		will be ignored.
-		This should be removed, as soon as JSPWiki updates its dependency to nekothml.-->
-		<!--dependency>
-			<groupId>net.sourceforge.nekohtml</groupId>
-			<artifactId>nekohtml</artifactId>
-			<version>1.9.19</version>
-		</dependency-->
 	</dependencies>
 </project>
