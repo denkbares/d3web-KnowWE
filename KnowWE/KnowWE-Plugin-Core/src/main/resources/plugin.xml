@@ -74,6 +74,7 @@
 		<parameter id="scope" value="FlowchartOrderReference" />
 		<parameter id="scope" value="PackageTerm" />
 		<parameter id="scope" value="CellContent" />
+		<parameter id="scope" value="TSMElementName" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="CompositeEditToolProvider">
@@ -97,6 +98,7 @@
 		<parameter id="scope" value="FlowchartOrderReference" />
 		<parameter id="scope" value="PackageTerm" />
 		<parameter id="scope" value="CellContent" />
+		<parameter id="scope" value="TSMElementName" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="CompositeEditOpenDialogAction">
@@ -141,6 +143,7 @@
 		<parameter id="scope" value="FlowchartOrderReference" />
 		<parameter id="scope" value="PackageTerm" />
 		<parameter id="scope" value="CellContent" />
+		<parameter id="scope" value="TSMElementName" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="AddToWatchesToolProvider">
