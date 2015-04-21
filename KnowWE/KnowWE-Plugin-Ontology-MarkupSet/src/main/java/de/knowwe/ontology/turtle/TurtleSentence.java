@@ -43,7 +43,7 @@ public class TurtleSentence extends AbstractType {
 		this.addChildType(new TurtleSPOSentence());
 
 		// create triples for each sentence
-		this.addCompileScript(Priority.LOWEST, new TurtleCompileHandler());
+		this.addCompileScript(Priority.LOWEST, new TurtleCompileHandler<>());
 
 	}
 
