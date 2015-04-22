@@ -28,6 +28,8 @@ import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.correction.CorrectionProvider;
+import de.knowwe.core.correction.DefaultSuggestion;
+import de.knowwe.core.correction.Suggestion;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -42,7 +44,7 @@ import de.knowwe.core.report.Message.Type;
 public class D3webCorrectionProvider implements CorrectionProvider {
 
 	@Override
-	public List<CorrectionProvider.Suggestion> getSuggestions(TermCompiler compiler, Section<?> section, int threshold) {
+	public List<Suggestion> getSuggestions(TermCompiler compiler, Section<?> section, int threshold) {
 		if (!(section.get() instanceof Term)) {
 			return null;
 		}
@@ -55,7 +57,7 @@ public class D3webCorrectionProvider implements CorrectionProvider {
 		TerminologyManager terminologyHandler = compiler.getTerminologyManager();
 		Term termReference = (Term) section.get();
 
-		List<CorrectionProvider.Suggestion> suggestions = new LinkedList<CorrectionProvider.Suggestion>();
+		List<Suggestion> suggestions = new LinkedList<Suggestion>();
 		Identifier termIdentifier = termReference.getTermIdentifier(Sections.cast(section,
 				Term.class));
 		Collection<Identifier> otherCaseVersions = terminologyHandler.getAllTermsEqualIgnoreCase(
@@ -65,7 +67,7 @@ public class D3webCorrectionProvider implements CorrectionProvider {
 		if (otherCaseVersions.size() > 1) {
 			for (Identifier match : otherCaseVersions) {
 				if (match.getLastPathElement().equals(termIdentifier.getLastPathElement())) continue;
-				suggestions.add(new CorrectionProvider.Suggestion(match.getLastPathElement(), 0));
+				suggestions.add(new DefaultSuggestion(match.getLastPathElement(), 0));
 			}
 			return suggestions;
 		}
@@ -79,7 +81,7 @@ public class D3webCorrectionProvider implements CorrectionProvider {
 		for (Identifier match : localTermMatches) {
 			double score = l.score(originalText, match.getLastPathElement());
 			if (score >= -threshold) {
-				suggestions.add(new CorrectionProvider.Suggestion(match.getLastPathElement(),
+				suggestions.add(new DefaultSuggestion(match.getLastPathElement(),
 						(int) score));
 			}
 		}

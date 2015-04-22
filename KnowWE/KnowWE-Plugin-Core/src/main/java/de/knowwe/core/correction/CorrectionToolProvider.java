@@ -29,17 +29,10 @@ import java.util.Set;
 import de.d3web.plugin.Extension;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TermCompiler;
-import de.knowwe.core.correction.CorrectionProvider.Suggestion;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.ScopeExtensions;
-import de.knowwe.tools.DefaultTool;
-import de.knowwe.tools.Tool;
-import de.knowwe.tools.ToolProvider;
-import de.knowwe.tools.ToolUtils;
-import de.knowwe.util.Icon;
 
 /**
  * This ToolProvider provides quick fixes for correcting small mistakes (typos) in term references.
@@ -48,41 +41,10 @@ import de.knowwe.util.Icon;
  * @created 19.12.2010
  * @see CorrectionProvider
  */
-public class CorrectionToolProvider implements ToolProvider {
+public class CorrectionToolProvider extends AbstractCorrectionToolProvider {
 
 	private static final ScopeExtensions extensions =
 			new ScopeExtensions("KnowWEExtensionPoints", "CorrectionProvider");
-
-	@Override
-	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		List<Suggestion> suggestions = getSuggestions(section);
-		if (suggestions.isEmpty()) {
-			return ToolUtils.emptyToolArray();
-		}
-
-		Tool[] tools = new Tool[suggestions.size() + 1];
-
-		tools[0] = new DefaultTool(
-				Icon.LIGHTBULB,
-				Messages.getMessageBundle().getString("KnowWE.Correction.do"),
-				"",
-				null,
-				Tool.CATEGORY_CORRECT
-		);
-
-		for (int i = 0; i < suggestions.size(); i++) {
-			tools[i + 1] = new DefaultTool(
-					Icon.SHARE,
-					suggestions.get(i).getSuggestion(),
-					"",
-					"KNOWWE.plugin.correction.doCorrection('" + section.getID() + "', '"
-							+ suggestions.get(i).getSuggestion() + "');",
-					Tool.CATEGORY_CORRECT + "/item"
-			);
-		}
-
-		return tools;
-	}
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
@@ -90,7 +52,8 @@ public class CorrectionToolProvider implements ToolProvider {
 		return !suggestions.isEmpty();
 	}
 
-	public static List<Suggestion> getSuggestions(Section<?> section) {
+	@Override
+	public List<Suggestion> getSuggestions(Section<?> section) {
 		Set<Suggestion> suggestions = getSuggestions(section, 1000);
 		// Sort to list of ascending distance
 		List<Suggestion> result = new LinkedList<Suggestion>(suggestions);

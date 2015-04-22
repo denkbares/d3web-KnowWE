@@ -30,6 +30,8 @@ import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.correction.CorrectionProvider;
+import de.knowwe.core.correction.DefaultSuggestion;
+import de.knowwe.core.correction.Suggestion;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 
@@ -43,7 +45,7 @@ public class D3webAnswerCorrectionProvider implements CorrectionProvider {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<CorrectionProvider.Suggestion> getSuggestions(TermCompiler compiler, Section<?> section, int threshold) {
+	public List<Suggestion> getSuggestions(TermCompiler compiler, Section<?> section, int threshold) {
 		if (!(section.get() instanceof Term)) {
 			return null;
 		}
@@ -60,7 +62,7 @@ public class D3webAnswerCorrectionProvider implements CorrectionProvider {
 				termReference.getTermObjectClass(refSec));
 
 		String originalText = section.getText();
-		List<CorrectionProvider.Suggestion> suggestions = new LinkedList<>();
+		List<Suggestion> suggestions = new LinkedList<>();
 		Levenstein l = new Levenstein();
 
 		for (Identifier matchedIdentifier : allDefinedLocalTermsOfType) {
@@ -77,7 +79,7 @@ public class D3webAnswerCorrectionProvider implements CorrectionProvider {
 			double score = l.score(originalText, matchedIdentifier.getLastPathElement());
 			if (score >= -threshold) {
 
-				suggestions.add(new CorrectionProvider.Suggestion(
+				suggestions.add(new DefaultSuggestion(
 						matchedIdentifier.getLastPathElement(), (int) score));
 			}
 		}

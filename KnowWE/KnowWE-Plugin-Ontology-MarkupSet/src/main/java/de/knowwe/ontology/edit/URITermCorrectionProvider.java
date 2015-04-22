@@ -10,6 +10,8 @@ import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.correction.CorrectionProvider;
+import de.knowwe.core.correction.DefaultSuggestion;
+import de.knowwe.core.correction.Suggestion;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -51,12 +53,12 @@ public class URITermCorrectionProvider implements CorrectionProvider {
 						.getTermObjectClass(Sections.cast(section, Term.class)));
 
 		String originalText = originalTermIdentifier.toExternalForm();
-		List<CorrectionProvider.Suggestion> suggestions = new LinkedList<CorrectionProvider.Suggestion>();
+		List<Suggestion> suggestions = new LinkedList<Suggestion>();
 		Levenstein l = new Levenstein();
 		for (Identifier match : localTermMatches) {
 			double score = l.score(originalText, match.toExternalForm());
 			if (score >= -threshold) {
-				suggestions.add(new CorrectionProvider.Suggestion(match
+				suggestions.add(new DefaultSuggestion(match
 						.getLastPathElement(), (int) score));
 			}/* infix test */
 			else if (match.getPathElementAt(0).equals(
@@ -70,7 +72,7 @@ public class URITermCorrectionProvider implements CorrectionProvider {
 					int infixScore = -1
 							* (match.getLastPathElement().length() - originalTermIdentifier
 									.getLastPathElement().length());
-					suggestions.add(new CorrectionProvider.Suggestion(match
+					suggestions.add(new DefaultSuggestion(match
 							.getLastPathElement(), infixScore));
 
 				}
@@ -82,7 +84,7 @@ public class URITermCorrectionProvider implements CorrectionProvider {
 						match.getLastPathElement(),
 						originalTermIdentifier.getLastPathElement());
 				if (singleDifferenceScore > 0.6) {
-					suggestions.add(new CorrectionProvider.Suggestion(match
+					suggestions.add(new DefaultSuggestion(match
 							.getLastPathElement(),
 							(int) (singleDifferenceScore * 10)));
 				}

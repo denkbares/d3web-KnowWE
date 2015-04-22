@@ -42,7 +42,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * <ul>
  * <li><tt>{@link Attributes.TARGET}:</tt> The KDOM node of which the content
  * will be replaced</li>
- * <li><tt>{@link KnowWEAtrributes.TEXT}:</tt> The new term reference inside the
+ * <li><tt>{@link Attributes.TEXT}:</tt> The new term reference inside the
  * node</li>
  * </ul>
  *
@@ -54,6 +54,7 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+
 		if (context.getWriter() == null) {
 			return;
 		}
@@ -74,7 +75,7 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 		newText = Strings.decodeURL(newText);
 		newText = newText.replaceAll("\\s*$", "");
 
-		Map<String, String> nodesMap = new HashMap<String, String>();
+		Map<String, String> nodesMap = new HashMap<>();
 
 		Section<?> section = Sections.get(nodeID);
 

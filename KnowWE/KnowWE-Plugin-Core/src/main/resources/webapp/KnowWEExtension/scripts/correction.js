@@ -61,9 +61,10 @@ KNOWWE.plugin.correction = function() {
 		/**
 		 * Performs correction for a given Section ID and correction
 		 */
-		doCorrection : function(sectionID, correction) {
+		doCorrection : function(sectionID, correction, actionClass) {
+			var actionClass = (typeof actionClass === 'undefined') ? 'KDOMReplaceTermNameAction' : actionClass;
 			var params = {
-					action : 'KDOMReplaceTermNameAction',
+					action : actionClass,
 					TargetNamespace :  sectionID,
 					KWiki_Topic : KNOWWE.helper.gup('page'),
 					KWikitext : encodeURIComponent(correction.replace(/\s*$/im,""))
