@@ -243,7 +243,7 @@ public class CIRenderer {
 		Test<?> test = TestManager.findTest(name);
 		String title = "";
 		if (test != null) {
-			title = test.getDescription();
+			title = test.getDescription().replace("'", "&#39;");
 		}
 
 		// render buttons
