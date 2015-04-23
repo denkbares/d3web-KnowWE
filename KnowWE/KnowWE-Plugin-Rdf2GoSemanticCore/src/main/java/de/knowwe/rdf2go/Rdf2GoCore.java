@@ -814,11 +814,11 @@ public class Rdf2GoCore {
 		addNamespace("ns", bns);
 		addNamespace(LNS_ABBREVIATION, lns);
 		addNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-		addNamespace("w", "http://www.umweltbundesamt.de/wisec#");
 		addNamespace("owl", "http://www.w3.org/2002/07/owl#");
 		addNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
 		addNamespace("xsd", "http://www.w3.org/2001/XMLSchema#");
 		addNamespace("fn", "http://www.w3.org/2005/xpath-functions#");
+		addNamespace("onto", "http://www.ontotext.com/");
 	}
 
 	/**
