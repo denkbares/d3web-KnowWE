@@ -23,10 +23,12 @@ import java.util.Collection;
 
 import org.ontoware.rdf2go.model.Syntax;
 
+import de.d3web.strings.Identifier;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
@@ -108,9 +110,23 @@ public class NamespaceFileAnnotationType extends AbstractType {
 			}
 
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
-			Section<?> abbrevDefSection = terminologyManager.getTermDefiningSection(abbrevSection.get()
-					.getTermIdentifier(
-							abbrevSection));
+			Identifier termIdentifier = abbrevSection.get().getTermIdentifier(abbrevSection);
+			Collection<Section<? extends Type>> termDefiningSections = terminologyManager.getTermDefiningSections(termIdentifier);
+			Section<?> abbrevDefSection = null;
+			if (termDefiningSections.size() == 1) {
+				abbrevDefSection = termDefiningSections.iterator().next();
+			}
+			else {
+				for (Section<? extends Type> termDefiningSection : termDefiningSections) {
+					if (termDefiningSection.get() instanceof AbbreviationDefinition) {
+						Section<AbbreviationDefinition> candidate = Sections.cast(termDefiningSection, AbbreviationDefinition.class);
+						if (candidate.get().getTermIdentifier(candidate).equals(termIdentifier)) {
+							abbrevDefSection = candidate;
+							break;
+						}
+					}
+				}
+			}
 			if (abbrevDefSection == null) {
 				return Messages.noMessage();
 			}
