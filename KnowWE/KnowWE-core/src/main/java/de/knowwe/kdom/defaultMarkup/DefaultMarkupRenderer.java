@@ -32,6 +32,7 @@ import java.util.Map.Entry;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -47,6 +48,8 @@ import de.knowwe.core.utils.progress.ProgressRenderer;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolSet;
 import de.knowwe.tools.ToolUtils;
+
+import static java.util.stream.Collectors.toList;
 
 public class DefaultMarkupRenderer implements Renderer {
 
@@ -123,6 +126,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		string.appendHtml("<span>").append(title).appendHtml("</span>");
 	}
 
+	@SuppressWarnings("UnusedParameters")
 	protected String getTitleIcon(Section<?> section, UserContext user) {
 		return this.iconPath;
 	}
@@ -136,19 +140,19 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	private static Map<Section<?>, Map<Message, Collection<Compiler>>> getMessageSectionsOfSubtree(Section<?> rootSection, Type messageType) {
-		Map<Section<?>, Map<Message, Collection<Compiler>>> collectedMessages = new LinkedHashMap<Section<?>, Map<Message, Collection<Compiler>>>();
+		Map<Section<?>, Map<Message, Collection<Compiler>>> collectedMessages = new LinkedHashMap<>();
 		for (Section<?> subTreeSection : Sections.successors(rootSection)) {
-			Collection<Compiler> compilers = new ArrayList<Compiler>(Compilers.getCompilers(
+			Collection<Compiler> compilers = new ArrayList<>(Compilers.getCompilers(
 					subTreeSection, Compiler.class));
 			compilers.add(null);
-			Map<Message, Collection<Compiler>> compilersForMessage = new LinkedHashMap<Message, Collection<Compiler>>();
+			Map<Message, Collection<Compiler>> compilersForMessage = new LinkedHashMap<>();
 			for (Compiler compiler : compilers) {
 				Collection<Message> messages = Messages.getMessages(compiler, subTreeSection,
 						messageType);
 				for (Message message : messages) {
 					Collection<Compiler> messageCompilers = compilersForMessage.get(message);
 					if (messageCompilers == null) {
-						messageCompilers = new LinkedList<Compiler>();
+						messageCompilers = new LinkedList<>();
 						compilersForMessage.put(message, messageCompilers);
 					}
 					messageCompilers.add(compiler);
@@ -187,7 +191,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		Map<Section<?>, Map<Message, Collection<Compiler>>> collectedMessages =
 				getMessageSectionsOfSubtree(rootSection, type);
 
-		Collection<String> messages = new LinkedHashSet<String>();
+		Collection<String> messages = new LinkedHashSet<>();
 		for (Section<?> section : collectedMessages.keySet()) {
 			Map<Message, Collection<Compiler>> compilerForMessage = collectedMessages.get(section);
 			for (Entry<Message, Collection<Compiler>> entry : compilerForMessage.entrySet()) {
@@ -195,17 +199,38 @@ public class DefaultMarkupRenderer implements Renderer {
 				String message = KnowWEUtils.maskJSPWikiMarkup(msg.getVerbalization());
 				// if we have multiple other article compilers
 				Collection<Compiler> compilers = entry.getValue();
-				boolean multiCompiled = compilers.size() > 1;
-				compilers.remove(null);
-				if (multiCompiled && !compilers.isEmpty()) {
+				boolean multiCompiled = isMultiCompiled(compilers, rootSection);
+				List<String> compilerVerbalizations = compilers.stream().map(compiler -> {
+					if (compiler instanceof PackageCompiler) {
+						return ((PackageCompiler) compiler).getCompileSection().getTitle();
+					}
+					else {
+						return compiler.toString();
+					}
+				}).collect(toList());
+				if (multiCompiled) {
 					message += " (compiled in ";
-					message += Strings.concat(", ", compilers);
+					message += Strings.concat(", ", compilerVerbalizations);
 					message += ")";
 				}
 				messages.add(message);
 			}
 		}
 		return messages;
+	}
+
+	private static boolean isMultiCompiled(Collection<Compiler> compilers, Section<?> rootSection) {
+		compilers.remove(null);
+		boolean moreThanOne = compilers.size() > 1;
+		if (compilers.size() == 1) {
+			Compiler compiler = compilers.iterator().next();
+			Collection<? extends Compiler> allCompilers = Compilers.getCompilers(rootSection, compiler.getClass());
+			if (allCompilers.size() > 1) {
+				// only one compiler produced the message, but there is more than one compiler compiling
+				moreThanOne = true;
+			}
+		}
+		return moreThanOne;
 	}
 
 	public static void renderMessagesOfType(Message.Type type, Collection<Message> messages, RenderResult string) {
@@ -371,6 +396,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		}
 	}
 
+	@SuppressWarnings("UnusedParameters")
 	public void appendMenu(ToolSet tools, String id, UserContext user, RenderResult result) {
 
 		if (!tools.hasTools()) return;
@@ -379,13 +405,13 @@ public class DefaultMarkupRenderer implements Renderer {
 
 		result.appendHtml("<div id='menu_" + id + "' class='markupMenu'>");
 
-		List<String> levelOneCategories = new ArrayList<String>(groupedTools.keySet());
+		List<String> levelOneCategories = new ArrayList<>(groupedTools.keySet());
 		Collections.sort(levelOneCategories);
 
 		for (String category : levelOneCategories) {
 			Map<String, List<Tool>> levelTwoTools = groupedTools.get(category);
 
-			List<String> levelTwoCategories = new ArrayList<String>(levelTwoTools.keySet());
+			List<String> levelTwoCategories = new ArrayList<>(levelTwoTools.keySet());
 			Collections.sort(levelTwoCategories);
 
 			for (String subcategory : levelTwoCategories) {
@@ -445,6 +471,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		result.appendHtmlTag("/div");
 	}
 
+	@SuppressWarnings("unused")
 	public ToolsRenderMode getRenderMode() {
 		return renderMode;
 	}
