@@ -36,7 +36,7 @@ import de.knowwe.core.report.Messages;
 
 /**
  * Compiles d3web knowledge bases.
- * 
+ *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.11.2013
  */
@@ -60,10 +60,18 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 
 	@Override
 	public TerminologyManager getTerminologyManager() {
+		if (terminologyManager == null) {
+			// in case the compiler doesn't have anything to compile...
+			return new TerminologyManager();
+		}
 		return terminologyManager;
 	}
 
 	public KnowledgeBase getKnowledgeBase() {
+		if (knowledgeBase == null) {
+
+			return KnowledgeBaseUtils.createKnowledgeBase();
+		}
 		return knowledgeBase;
 	}
 
@@ -73,7 +81,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	 * a file. The better way would be though to instead fill an existing
 	 * knowledge base with the contents read from the file. We should implement
 	 * this later and then remove this method.
-	 * 
+	 *
 	 * @created 06.01.2014
 	 */
 	public void setKnowledgeBase(KnowledgeBase knowledgeBase) {
@@ -102,8 +110,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		// the %%KnowledgeBase markup section is not part of the package, so we add it manually just for this compiler
 		scriptCompiler.addSubtree(Sections.ancestor(getCompileSection(), KnowledgeBaseType.class));
 
-
- 		scriptCompiler.compile();
+		scriptCompiler.compile();
 
 		EventManager.getInstance().fireEvent(new D3webCompilerFinishedEvent(this));
 	}

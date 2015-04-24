@@ -84,11 +84,18 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 
 	@Override
 	public Rdf2GoCore getRdf2GoCore() {
+		if (rdf2GoCore == null) {
+			// in case the compiler doesn't have anything to compile...
+			return new Rdf2GoCore(RuleSet.NONE);
+		}
 		return rdf2GoCore;
 	}
 
 	@Override
 	public TerminologyManager getTerminologyManager() {
+		if (terminologyManager == null) {
+			return new TerminologyManager();
+		}
 		return terminologyManager;
 	}
 
