@@ -207,12 +207,16 @@ public class Rdf2GoCore {
 	 * is the full namespace, e.g. rdf and
 	 * http://www.w3.org/1999/02/22-rdf-syntax-ns#
 	 */
-	private final Map<String, String> namespaces = new HashMap<>();
+	private Map<String, String> namespaces = new HashMap<>();
+
+	private final Object nsMutext = new Object();
 
 	/**
 	 * For optimization reasons, we hold a map of all namespacePrefixes as they are used e.g. in Turtle and SPARQL
 	 */
-	private final Map<String, String> namespacePrefixes = new HashMap<>();
+	private Map<String, String> namespacePrefixes = new HashMap<>();
+
+	private final Object nsPrefixMutex = new Object();
 
 	private Set<Statement> insertCache;
 	private Set<Statement> removeCache;
@@ -313,11 +317,11 @@ public class Rdf2GoCore {
 	 * @param namespace    the namespace (URL)
 	 */
 	public void addNamespace(String abbreviation, String namespace) {
-		namespaces.put(abbreviation, namespace);
-		namespacePrefixes.put(Rdf2GoUtils.toNamespacePrefix(abbreviation), namespace);
 		this.lock.writeLock().lock();
 		try {
 			model.setNamespace(abbreviation, namespace);
+			namespaces = null; // clear caches namespaces, will be get created lazy if needed
+			namespacePrefixes = null;
 		}
 		finally {
 			this.lock.writeLock().unlock();
@@ -389,7 +393,7 @@ public class Rdf2GoCore {
 	/**
 	 * Adds the given {@link Statement}s for the given {@link SectionSource} to the
 	 * triple store.
-	 * <p>
+	 * <p/>
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
@@ -404,7 +408,7 @@ public class Rdf2GoCore {
 	/**
 	 * Adds the given {@link Statement}s for the given {@link SectionSource} to the
 	 * triple store.
-	 * <p>
+	 * <p/>
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
@@ -426,7 +430,7 @@ public class Rdf2GoCore {
 	/**
 	 * Adds the given {@link Statement}s for the given {@link Section} to the
 	 * triple store.
-	 * <p>
+	 * <p/>
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
@@ -442,7 +446,7 @@ public class Rdf2GoCore {
 	/**
 	 * Adds the given {@link Statement}s for the given {@link Section} to the
 	 * triple store.
-	 * <p>
+	 * <p/>
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
@@ -457,7 +461,7 @@ public class Rdf2GoCore {
 
 	/**
 	 * Adds the given {@link Statement}s directly to the triple store.
-	 * <p>
+	 * <p/>
 	 * <b>Attention</b>: The added {@link Statement}s are not cached in the
 	 * {@link Rdf2GoCore}, so you are yourself responsible to remove the right
 	 * {@link Statement}s in case they are not longer valid. You can remove
@@ -473,7 +477,7 @@ public class Rdf2GoCore {
 
 	/**
 	 * Adds the given {@link Statement}s directly to the triple store.
-	 * <p>
+	 * <p/>
 	 * <b>Attention</b>: The added {@link Statement}s are not cached in the
 	 * {@link Rdf2GoCore}, so you are yourself responsible to remove the right
 	 * {@link Statement}s in case they are not longer valid. You can remove
@@ -760,17 +764,38 @@ public class Rdf2GoCore {
 	 * <b>Example:</b> rdf -> http://www.w3.org/1999/02/22-rdf-syntax-ns#
 	 */
 	public Map<String, String> getNamespaces() {
-		return namespaces;
+		if (namespaces == null) {
+			synchronized (nsMutext) {
+				if (namespaces == null) {
+					Map<String, String> temp = new HashMap<>();
+					temp.putAll(model.getNamespaces());
+					namespaces = temp;
+				}
+			}
+		}
+		return this.namespaces;
 	}
 
 	/**
 	 * Returns a map of all namespaces mapped by their prefixes as they are used e.g. in Turtle and
 	 * SPARQL.<br>
 	 * <b>Example:</b> rdf: -> http://www.w3.org/1999/02/22-rdf-syntax-ns#
-	 * <p>
+	 * <p/>
 	 * Although this map seems trivial, it is helpful for optimization reasons.
 	 */
 	public Map<String, String> getNamespacePrefixes() {
+		if (namespacePrefixes == null) {
+			synchronized (nsPrefixMutex) {
+				if (namespacePrefixes == null) {
+					Map<String, String> temp = new HashMap<>();
+					Map<String, String> namespaces = model.getNamespaces();
+					for (Entry<String, String> entry : namespaces.entrySet()) {
+						temp.put(Rdf2GoUtils.toNamespacePrefix(entry.getKey()), entry.getValue());
+					}
+					namespacePrefixes = temp;
+				}
+			}
+		}
 		return namespacePrefixes;
 	}
 
@@ -915,13 +940,9 @@ public class Rdf2GoCore {
 			readFrom(in);
 		}
 		else {
-			lock.writeLock().lock();
-			try {
-				model.readFrom(in, syntax);
-			}
-			finally {
-				lock.writeLock().unlock();
-			}
+			model.readFrom(in, syntax);
+			namespaces = null;
+			namespacePrefixes = null;
 		}
 	}
 
@@ -930,34 +951,22 @@ public class Rdf2GoCore {
 			readFrom(in);
 		}
 		else {
-			lock.writeLock().lock();
-			try {
-				model.readFrom(in, syntax);
-			}
-			finally {
-				lock.writeLock().unlock();
-			}
+			model.readFrom(in, syntax);
+			namespaces = null;
+			namespacePrefixes = null;
 		}
 	}
 
 	public void readFrom(InputStream in) throws ModelRuntimeException, IOException {
-		lock.writeLock().lock();
-		try {
-			model.readFrom(in);
-		}
-		finally {
-			lock.writeLock().unlock();
-		}
+		model.readFrom(in);
+		namespaces = null;
+		namespacePrefixes = null;
 	}
 
 	public void readFrom(Reader in) throws ModelRuntimeException, IOException {
-		lock.writeLock().lock();
-		try {
-			model.readFrom(in);
-		}
-		finally {
-			lock.writeLock().unlock();
-		}
+		model.readFrom(in);
+		namespaces = null;
+		namespacePrefixes = null;
 	}
 
 	public void removeAllCachedStatements() {
@@ -967,15 +976,9 @@ public class Rdf2GoCore {
 	}
 
 	public void removeNamespace(String abbreviation) {
-		namespaces.remove(abbreviation);
-		namespacePrefixes.remove(Rdf2GoUtils.toNamespacePrefix(abbreviation));
-		lock.writeLock().lock();
-		try {
-			model.removeNamespace(abbreviation);
-		}
-		finally {
-			lock.writeLock().unlock();
-		}
+		model.removeNamespace(abbreviation);
+		namespaces = null;
+		namespacePrefixes = null;
 	}
 
 	/**
@@ -1015,7 +1018,7 @@ public class Rdf2GoCore {
 	/**
 	 * Removes all {@link Statement}s that were added and cached for the given
 	 * {@link Section}.
-	 * <p>
+	 * <p/>
 	 * <b>Attention</b>: This method only removes {@link Statement}s that were
 	 * added (and cached) in connection with a {@link Section} using methods
 	 * like {@link Rdf2GoCore#addStatements(Section, Collection)}.
