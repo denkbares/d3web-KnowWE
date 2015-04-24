@@ -27,9 +27,12 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import de.d3web.strings.Strings;
+import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
+import de.knowwe.util.Icon;
 
 public class DefaultMarkup {
 
@@ -249,6 +252,10 @@ public class DefaultMarkup {
 		addAnnotation(name, mandatory, Pattern.compile(regex, flags));
 	}
 
+	public void addAnnotationIcon(String name, Icon icon) {
+		addAnnotationNameType(name, new IconType(icon));
+	}
+
 	/**
 	 * Adds a new annotation to the markup with a fixed list of possible values
 	 * (enumeration).
@@ -421,6 +428,15 @@ public class DefaultMarkup {
 	 */
 	public void setInline(boolean isInline) {
 		this.isInline = isInline;
+	}
+
+	private static class IconType extends AbstractType {
+
+		public IconType(Icon icon) {
+			this.setSectionFinder(AllTextFinder.getInstance());
+			this.setRenderer((section, user, result) -> result.appendHtml(icon.toHtml()));
+		}
+
 	}
 
 }

@@ -32,7 +32,7 @@ import de.knowwe.core.kdom.parsing.Section;
  * @author Stefan Plehn, Albrecht Striffler (denkbares GmbH)
  * @created 12.07.2013
  */
-public class DefaultMarkupPackageReferenceRegistrationHandler extends PackageRegistrationScript<DefaultMarkupType> {
+public class DefaultMarkupPackageReferenceRegistrationScript extends PackageRegistrationScript<DefaultMarkupType> {
 
 	private static final String PACKAGE_REFERENCES_KEY = "packageReferences";
 

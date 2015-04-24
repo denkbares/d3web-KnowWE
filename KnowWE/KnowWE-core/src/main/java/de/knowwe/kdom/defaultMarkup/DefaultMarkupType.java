@@ -148,7 +148,7 @@ public class DefaultMarkupType extends AbstractType {
 		this.addChildType(10, new UnknownAnnotationType());
 		this.addCompileScript(new DefaultMarkupPackageRegistrationScript());
 		this.addCompileScript(new DefaultMarkupCompileScript(markup));
-		this.addCompileScript(new DefaultMarkupPackageReferenceRegistrationHandler());
+		this.addCompileScript(new DefaultMarkupPackageReferenceRegistrationScript());
 	}
 
 	@Override

@@ -23,7 +23,9 @@ import java.util.Collection;
 import de.d3web.utils.Log;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 
 /**
  * Abstract class for PackageCompilers.
@@ -35,19 +37,37 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 
 	private final Section<? extends PackageCompileType> compileSection;
 	private final PackageManager packageManager;
+	private Class<? extends Type> compilingType;
 
 	private CompilerManager compilerManager;
 
-	public AbstractPackageCompiler(PackageManager manager, Section<? extends PackageCompileType> compileSection) {
+	public AbstractPackageCompiler(PackageManager manager,
+								   Section<? extends PackageCompileType> compileSection,
+								   Class<? extends Type> compilingType) {
 		this.compileSection = compileSection;
 		this.packageManager = manager;
+		this.compilingType = compilingType;
 		compileSection.get().registerPackageCompiler(this, compileSection);
 	}
 
 	@Override
 	public boolean isCompiling(Section<?> section) {
-		return section == compileSection
-				|| packageManager.getCompileSections(section).contains(compileSection);
+		if (section == compileSection
+				|| packageManager.getCompileSections(section).contains(compileSection)) {
+			return true;
+		}
+		Section<?> compilingMarkupSection;
+		if (section.get().getClass().isInstance(compilingType)) {
+			compilingMarkupSection = Sections.cast(section, compilingType);
+		}
+		else {
+			compilingMarkupSection = Sections.ancestor(section, compilingType);
+		}
+		if (compilingMarkupSection != null) {
+			Section<PackageCompileType> compileSection = Sections.successor(compilingMarkupSection, PackageCompileType.class);
+			if (getCompileSection() == compileSection) return true;
+		}
+		return false;
 	}
 
 	@Override

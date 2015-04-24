@@ -142,8 +142,7 @@ public class DefaultMarkupRenderer implements Renderer {
 	private static Map<Section<?>, Map<Message, Collection<Compiler>>> getMessageSectionsOfSubtree(Section<?> rootSection, Type messageType) {
 		Map<Section<?>, Map<Message, Collection<Compiler>>> collectedMessages = new LinkedHashMap<>();
 		for (Section<?> subTreeSection : Sections.successors(rootSection)) {
-			Collection<Compiler> compilers = new ArrayList<>(Compilers.getCompilers(
-					subTreeSection, Compiler.class));
+			Collection<Compiler> compilers = new ArrayList<>(Compilers.getCompilers(subTreeSection, Compiler.class));
 			compilers.add(null);
 			Map<Message, Collection<Compiler>> compilersForMessage = new LinkedHashMap<>();
 			for (Compiler compiler : compilers) {
