@@ -8,7 +8,7 @@ import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageReferenceRegistrationHandler;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageReferenceRegistrationScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageRegistrationScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -27,7 +27,7 @@ public class PackageMarkupType extends DefaultMarkupType {
 	public PackageMarkupType() {
 		super(MARKUP);
 		removeCompileScript(PackageRegistrationCompiler.class,
-				DefaultMarkupPackageReferenceRegistrationHandler.class);
+				DefaultMarkupPackageReferenceRegistrationScript.class);
 		removeCompileScript(PackageRegistrationCompiler.class,
 				DefaultMarkupPackageRegistrationScript.class);
 	}

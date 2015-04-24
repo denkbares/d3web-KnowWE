@@ -31,6 +31,7 @@ import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.Event;
 import de.knowwe.core.event.EventListener;
 import de.knowwe.core.event.EventManager;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
@@ -59,17 +60,16 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	private final RuleSet ruleSet;
 	private final String compilingArticle;
 
-	public OntologyCompiler(PackageManager manager, Section<? extends PackageCompileType> compileSection, RuleSet ruleSet) {
-		super(manager, compileSection);
+	public OntologyCompiler(PackageManager manager,
+							Section<? extends PackageCompileType> compileSection,
+							Class<? extends Type> compilingType,
+							RuleSet ruleSet) {
+		super(manager, compileSection, compilingType);
 		EventManager.getInstance().registerListener(this);
 		this.scriptCompiler = new ParallelScriptCompiler<>(this);
 		this.destroyScriptCompiler = new ParallelScriptCompiler<>(this);
 		this.ruleSet = ruleSet;
 		this.compilingArticle = compileSection.getTitle();
-	}
-
-	public OntologyCompiler(PackageManager manager, Section<? extends PackageCompileType> compileSection) {
-		this(manager, compileSection, null);
 	}
 
 	@Override
@@ -136,6 +136,8 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 		for (Section<?> section : sectionsOfPackage) {
 			scriptCompiler.addSubtree(section);
 		}
+		// the %%Ontology markup section is not part of the package, so we add it manually just for this compiler
+		scriptCompiler.addSubtree(Sections.ancestor(getCompileSection(), OntologyType.class));
 
 		scriptCompiler.compile();
 

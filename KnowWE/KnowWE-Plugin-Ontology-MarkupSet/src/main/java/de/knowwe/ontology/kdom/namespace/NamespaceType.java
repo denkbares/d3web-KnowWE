@@ -27,13 +27,10 @@ import de.knowwe.ontology.kdom.OntologyLineType;
 public class NamespaceType extends DefaultMarkupType {
 
 	private static final DefaultMarkup MARKUP;
-	private static final String FILE_ANNOTATION_NAME = "file";
 
 	static {
 		MARKUP = new DefaultMarkup("Namespace");
 		PackageManager.addPackageAnnotation(MARKUP);
-		MARKUP.addAnnotation(NamespaceType.FILE_ANNOTATION_NAME, false);
-		MARKUP.addAnnotationContentType(FILE_ANNOTATION_NAME, new NamespaceFileAnnotationType());
 		OntologyLineType lineType = new OntologyLineType();
 		// remove EndLineComm, its not practical with urls...
 		lineType.clearChildrenTypes();

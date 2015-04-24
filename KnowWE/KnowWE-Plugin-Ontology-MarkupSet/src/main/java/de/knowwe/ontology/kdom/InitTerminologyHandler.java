@@ -18,88 +18,243 @@
  */
 package de.knowwe.ontology.kdom;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
+import org.ontoware.aifbcommons.collection.ClosableIterator;
+import org.ontoware.rdf2go.model.QueryRow;
+import org.ontoware.rdf2go.model.Syntax;
+
+import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageCompileType;
+import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.core.wikiConnector.WikiConnector;
+import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.ontology.compile.ImportType;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.OntologyHandler;
+import de.knowwe.ontology.compile.OntologyType;
+import de.knowwe.ontology.kdom.namespace.AbbreviationDefinition;
 import de.knowwe.ontology.kdom.objectproperty.Property;
 import de.knowwe.ontology.kdom.resource.Resource;
+import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.RuleSet;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 /**
- * SELECT DISTINCT ?resource WHERE { ?resource rdf:type rdfs:Resource . FILTER(REGEX(STR(?resource
- * ), "^http://www.w3.org/1999/02/22-rdf-syntax-ns")) . }
+ * Adds the all the terms of the statements that are in the repository by default or are added via import to the {@link
+ * TerminologyManager}
  *
  * @author Albrecht Striffler (denkbares GmbH)
- * @created 04.03.2013
+ * @created 23.04.2015
  */
 public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> {
-
-	private static final String NAMESPACE_FILTER = "FILTER(REGEX(STR(?resource), " +
-			"\"^http://www.w3.org/(" +
-			"1999/02/22-rdf-syntax-ns#|2000/01/rdf-schema#|2002/07/owl#|2001/XMLSchema#|2005/xpath-functions#)\"))";
 
 	@Override
 	public Collection<Message> create(OntologyCompiler compiler, Section<PackageCompileType> section) {
 
-		InitTerminologyHelper helper = new InitTerminologyHelper();
-		String query = new SparqlQuery().SELECT("?resource")
-				.WHERE("{ ?resource rdf:type rdfs:Resource } UNION { ?resource rdf:type rdfs:Class } MINUS { ?resource rdf:type rdf:Property }")
-				.AND_WHERE(
-						NAMESPACE_FILTER).toString();
-		helper.registerTerminology(compiler, section, query, Resource.class);
+		registerTerminology(compiler, compiler.getRdf2GoCore(), section);
 
-		query = "SELECT ?resource " +
-				"WHERE {" +
-				" {?resource rdf:type rdf:Property " + NAMESPACE_FILTER + "}" +
-				" UNION " +
-				"{?resource rdf:type owl:ObjectProperty " + NAMESPACE_FILTER + "}" +
-				" UNION " +
-				"{?resource rdf:type rdfs:subPropertyOf " + NAMESPACE_FILTER + "}" +
-				"} ";
-		query = Rdf2GoUtils.createSparqlString(compiler.getRdf2GoCore(), query);
-		helper.registerTerminology(compiler, section, query, Property.class);
+		Section<OntologyType> ontologyMarkup = Sections.ancestor(section, OntologyType.class);
+		List<Section<? extends AnnotationContentType>> annotationContentSections = DefaultMarkupType.getAnnotationContentSections(ontologyMarkup, OntologyType.ANNOTATION_IMPORT);
 
-		// TODO: @albi: please check and discuss --> remove or extend as appropriate
-		helper.registerTerm(compiler, section, "http://www.w3.org/2005/xpath-functions#string-length", Resource.class);
-		helper.registerTerm(compiler, section, "http://www.w3.org/2001/XMLSchema#decimal", Resource.class);
+		for (Section<? extends AnnotationContentType> annotationContentSection : annotationContentSections) {
+			String importString = Strings.trimQuotes(annotationContentSection.getText());
+			URL url = null;
+			try {
+				url = new URL(importString);
+			}
+			catch (Exception ignore) {
+				// we will now, if url == null...
+			}
+			if (url == null) {
+				importAttachment(compiler, annotationContentSection, importString);
+			}
+			else {
+				String attachmentName = cacheOntology(compiler, annotationContentSection, url, importString);
+				importAttachment(compiler, annotationContentSection, attachmentName);
+			}
+		}
+
+		registerTerm(compiler, compiler.getRdf2GoCore(), section, "http://www.w3.org/2002/07/owl#Thing", Resource.class);
+		registerTerm(compiler, compiler.getRdf2GoCore(), section, "http://www.w3.org/2002/07/owl#Nothing", Resource.class);
+		registerTerm(compiler, compiler.getRdf2GoCore(), section, "http://www.w3.org/2005/xpath-functions#string-length", Resource.class);
+		registerTerm(compiler, compiler.getRdf2GoCore(), section, "http://www.w3.org/2001/XMLSchema#decimal", Resource.class);
 
 		return Messages.noMessage();
+	}
+
+	private String cacheOntology(OntologyCompiler compiler, Section<? extends AnnotationContentType> section, URL url, String importString) {
+		String attachmentName = importString.replaceAll("^https?://", "").replaceAll("\\W", "-").replaceAll("-$", "");
+
+		WikiAttachment attachment = null;
+		try {
+			Collection<WikiAttachment> attachments = KnowWEUtils.getAttachments(section.getTitle(), attachmentName + ".*");
+			if (!attachments.isEmpty()) {
+				attachment = attachments.iterator().next();
+				attachmentName = attachment.getFileName();
+			}
+		}
+		catch (IOException e) {
+			Messages.storeMessage(compiler, section, this.getClass(), Messages.error("Error while retrieving attachment '"
+					+ importString + "': " + e.getMessage()));
+			return null;
+		}
+		if (attachment == null) {
+			WikiConnector wc = Environment.getInstance().getWikiConnector();
+			try {
+				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+				connection.setRequestMethod("HEAD");
+				connection.connect();
+				List<String> locations = connection.getHeaderFields().get("Content-Location");
+				if (locations == null || locations.isEmpty()) {
+					throw new Exception("Unable to read extension name from header");
+				}
+				String location = locations.iterator().next();
+				String extension = location.substring(Math.max(0, location.lastIndexOf(".")));
+				attachmentName = attachmentName + extension;
+				connection.disconnect();
+				wc.storeAttachment(section.getTitle(), attachmentName, "SYSTEM", url.openStream());
+			}
+			catch (Exception e) {
+				Messages.storeMessage(compiler, section, this.getClass(), Messages.error("Unable to cache ontology file from '"
+						+ importString + "': " + e.getMessage()));
+				return null;
+			}
+		}
+		return attachmentName;
+	}
+
+	private void importAttachment(OntologyCompiler compiler, Section<? extends AnnotationContentType> section, String attachmentFile) {
+		Section<ImportType> importSection = Sections.successor(section, ImportType.class);
+		String path = createPath(section, attachmentFile);
+		WikiAttachment attachment;
+		try {
+			attachment = Environment.getInstance().getWikiConnector().getAttachment(
+					path);
+		}
+		catch (IOException e) {
+			Messages.storeMessage(compiler, section, this.getClass(), Messages.error("Error while retrieving attachment '"
+					+ attachmentFile + "': " + e.getMessage()));
+			return;
+		}
+		Rdf2GoCore core = compiler.getRdf2GoCore();
+		if (core == null) {
+			Messages.storeMessage(compiler, section, this.getClass(), Messages.error("No ontology repository found '"
+					+ section.getText() + "'"));
+			return;
+		}
+		if (attachment == null) {
+			Messages.storeMessage(compiler, section, this.getClass(), Messages.error("Attachment '"
+					+ section.getText().trim() + "' not found"));
+			return;
+		}
+		try {
+			String fileName = attachment.getFileName();
+			Syntax syntax = Rdf2GoUtils.syntaxForFileName(fileName);
+			core.readFrom(attachment.getInputStream(), syntax);
+		}
+		catch (Exception e) {
+			Log.severe("Exception while importing ontology", e);
+			Messages.storeMessage(compiler, section, this.getClass(), Messages.error("Error while reading ontology from '"
+					+ attachmentFile + "': " + e.getMessage()));
+			return;
+		}
+		try {
+			String fileName = attachment.getFileName();
+			Syntax syntax = Rdf2GoUtils.syntaxForFileName(fileName);
+			core.readFrom(attachment.getInputStream(), syntax);
+			// we need rdfs reasoning for the SPARQLs to work
+			Rdf2GoCore dummy = new Rdf2GoCore(RuleSet.RDFS_OPTIMIZED);
+			dummy.readFrom(attachment.getInputStream(), syntax);
+			registerTerminology(compiler, dummy, importSection);
+		}
+		catch (Exception e) {
+			Log.severe("Exception while importing ontology", e);
+			Messages.storeMessage(compiler, section, this.getClass(), Messages.error("Error while importing ontology from '"
+					+ attachmentFile + "': " + e.getMessage()));
+		}
+	}
+
+	private String createPath(Section<?> section, String attachment) {
+		String fileName = attachment.trim();
+		if (!fileName.contains("/")) {
+			return section.getTitle() + "/" + fileName;
+		}
+		return fileName;
+	}
+
+	private void registerTerminology(OntologyCompiler compiler, Rdf2GoCore rdf2GoCore, Section<?> section) {
+		String query = new SparqlQuery().SELECT("?resource")
+				.WHERE("{ ?resource rdf:type rdfs:Resource } UNION { ?resource rdf:type rdfs:Class } MINUS { ?resource rdf:type rdf:Property }")
+				.AND_WHERE("FILTER (!isBlank(?resource))")
+				.toString();
+		registerQueryResult(compiler, rdf2GoCore, section, query, Resource.class);
+
+		query = new SparqlQuery().SELECT("?resource")
+				.WHERE("{ ?resource rdf:type rdf:Property } UNION { ?resource rdf:type owl:ObjectProperty } UNION { ?resource rdf:type rdfs:subPropertyOf }")
+				.AND_WHERE("FILTER (!isBlank(?resource))")
+				.toString();
+		query = Rdf2GoUtils.createSparqlString(rdf2GoCore, query);
+		registerQueryResult(compiler, rdf2GoCore, section, query, Property.class);
+	}
+
+	public void registerQueryResult(OntologyCompiler compiler, Rdf2GoCore core, Section<?> section, String query, Class<? extends Resource> termClass) {
+		ClosableIterator<QueryRow> iterator = core.sparqlSelectIt(query);
+		while (iterator.hasNext()) {
+			QueryRow row = iterator.next();
+			String value = row.getValue("resource").toString();
+			registerTerm(compiler, core, section, value, termClass);
+		}
+	}
+
+	public void registerTerm(OntologyCompiler compiler, Rdf2GoCore core, Section<?> section, String uri, Class<?> termClass) {
+		Map<String, String> namespaces = core.getNamespaces();
+		String abbreviation = null;
+		String resource = null;
+		for (Map.Entry<String, String> entry : namespaces.entrySet()) {
+			if (uri.startsWith(entry.getValue())) {
+				abbreviation = entry.getKey();
+				resource = uri.substring(entry.getValue().length());
+				break;
+			}
+		}
+		if (abbreviation == null) {
+			Log.severe("No matching namespace found for URI, should not happen!");
+			return;
+		}
+		TerminologyManager terminologyManager = compiler.getTerminologyManager();
+		Identifier abbrResourceIdentifier = new Identifier(abbreviation, resource);
+		Identifier abbrIdentifier = new Identifier(abbreviation);
+		// rdfs identifiers will be part in every import (because we use RDFS reasoning in the model)
+		// so we skip the stuff that is already defined...
+		if (!terminologyManager.isDefinedTerm(abbrIdentifier)) {
+			terminologyManager.registerTermDefinition(compiler, section, AbbreviationDefinition.class, abbrIdentifier);
+		}
+		if (!terminologyManager.isDefinedTerm(abbrResourceIdentifier)) {
+			terminologyManager.registerTermDefinition(compiler, section, termClass, abbrResourceIdentifier);
+		}
 	}
 
 	@Override
 	public void destroy(OntologyCompiler compiler, Section<PackageCompileType> section) {
 		// no need to remove something, we get a new TerminologyManager
 		// anyway...
-	}
-
-	private static class InitTerminologyHelper extends TerminologyHelper {
-
-		@Override
-		protected String getAbbreviation(String string) {
-			String abbreviation;
-			if (string.startsWith("http://www.w3.org/1999/02/22-rdf-syntax-ns#")) {
-				abbreviation = "rdf";
-			}
-			else if (string.startsWith("http://www.w3.org/2000/01/rdf-schema#")) {
-				abbreviation = "rdfs";
-			}
-			else if (string.startsWith("http://www.w3.org/2001/XMLSchema#")) {
-				abbreviation = "xsd";
-			}
-			else if (string.startsWith("http://www.w3.org/2005/xpath-functions#")) {
-				abbreviation = "fn";
-			}
-			else {
-				abbreviation = "owl";
-			}
-			return abbreviation;
-		}
 	}
 
 }

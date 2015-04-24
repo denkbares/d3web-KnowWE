@@ -43,13 +43,13 @@ public abstract class TerminologyHelper {
 				.AND_WHERE(
 						"FILTER(REGEX(STR(?resource), \"^" + namespace + "\"))").toString();
 		Class<? extends Resource> termClass = Resource.class;
-		registerTerminology((OntologyCompiler) compiler, (Section<?>) section, (String) query, (Class<? extends Resource>) termClass);
+		registerTerminology(compiler, section, query, termClass);
 
 		query = new SparqlQuery().SELECT("?resource")
 				.WHERE("?resource rdf:type rdf:Property")
 				.AND_WHERE("FILTER(REGEX(STR(?resource), \"^" + namespace + "\"))").toString();
 		termClass = Property.class;
-		registerTerminology((OntologyCompiler) compiler, (Section<?>) section, (String) query, (Class<? extends Resource>) termClass);
+		registerTerminology(compiler, section, query, termClass);
 	}
 
 	public void registerTerminology(OntologyCompiler compiler, Section<?> section, String query, Class<? extends Resource> termClass) {

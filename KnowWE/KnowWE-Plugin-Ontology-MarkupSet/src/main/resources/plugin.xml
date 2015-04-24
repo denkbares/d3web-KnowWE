@@ -289,6 +289,15 @@
 		<parameter id="scope" value="TurtleMarkup/**/TurtleContent/TurtleSentence" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="ImportPreviewRenderer">
+		<parameter id="class" value="de.knowwe.ontology.compile.ImportPreviewRenderer" />
+		<parameter id="name" value="ImportPreviewRenderer" />
+		<parameter id="description" value="Renders a preview of a import file." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="OntologyType/**/ImportType" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="RelationPreviewRenderer">
 		<parameter id="class" value="de.knowwe.core.preview.DefaultPreviewRenderer" />
 		<parameter id="name" value="RelationPreviewRenderer" />
@@ -392,15 +401,5 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="SparqlContentType" />
 	</extension>
-
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="NamespaceFileReloadToolProvider">
-		<parameter id="class" value="de.knowwe.ontology.kdom.namespace.NamespaceFileReloadToolProvider" />
-		<parameter id="name" value="NamespaceFileReloadToolProvider" />
-		<parameter id="description" value="Offers a button to manually reload the file which defines the namespace." />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="scope" value="Namespace" />
-	</extension>
-
 
 </plugin>

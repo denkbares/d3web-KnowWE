@@ -29,7 +29,9 @@ import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.EventManager;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Messages;
 
 /**
@@ -44,8 +46,10 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	private KnowledgeBase knowledgeBase;
 	private final Section<? extends PackageCompileType> compileSection;
 
-	public D3webCompiler(PackageManager packageManager, Section<? extends PackageCompileType> compileSection) {
-		super(packageManager, compileSection);
+	public D3webCompiler(PackageManager packageManager,
+						 Section<? extends PackageCompileType> compileSection,
+						 Class<? extends Type> compilingType) {
+		super(packageManager, compileSection, compilingType);
 		this.compileSection = compileSection;
 	}
 
@@ -95,6 +99,10 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		for (Section<?> section : sectionsOfPackage) {
 			scriptCompiler.addSubtree(section);
 		}
+		// the %%KnowledgeBase markup section is not part of the package, so we add it manually just for this compiler
+		scriptCompiler.addSubtree(Sections.ancestor(getCompileSection(), KnowledgeBaseType.class));
+
+
  		scriptCompiler.compile();
 
 		EventManager.getInstance().fireEvent(new D3webCompilerFinishedEvent(this));

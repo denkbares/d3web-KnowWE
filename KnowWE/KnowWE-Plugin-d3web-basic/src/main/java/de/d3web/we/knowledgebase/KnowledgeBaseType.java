@@ -36,9 +36,8 @@ import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageReferenceRegistrationHandler;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageReferenceRegistrationScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageRegistrationScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -105,7 +104,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 		super(MARKUP);
 
 		this.removeCompileScript(PackageRegistrationCompiler.class,
-				DefaultMarkupPackageReferenceRegistrationHandler.class);
+				DefaultMarkupPackageReferenceRegistrationScript.class);
 
 		this.setRenderer(new KnowledgeBaseTypeRenderer());
 		this.addCompileScript(Priority.HIGHER, (D3webCompileScript<KnowledgeBaseType>) (compiler, section) -> {
@@ -141,37 +140,18 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 			}
 		});
 
-		// for the scripts to be compiled in a package we also have to register
-		// the KnowledgeBaseType to the correct packages (the ones compiled by
-		// its PackageCompileType section)
-		removeCompileScript(PackageRegistrationCompiler.class,
-				DefaultMarkupPackageRegistrationScript.class);
-		this.addCompileScript(new PackageRegistrationScript<KnowledgeBaseType>() {
-
-			@Override
-			public void compile(PackageRegistrationCompiler compiler, Section<KnowledgeBaseType> section) {
-				Section<DefaultMarkupPackageCompileType> compileSection = Sections.successor(
-						section, DefaultMarkupPackageCompileType.class);
-				String[] packagesToCompile = compileSection.get().getPackagesToCompile(
-						compileSection);
-				for (String packageName : packagesToCompile) {
-					compiler.getPackageManager().addSectionToPackage(section, packageName);
-				}
-			}
-
-			@Override
-			public void destroy(PackageRegistrationCompiler compiler, Section<KnowledgeBaseType> section) {
-				compiler.getPackageManager().removeSectionFromAllPackages(section);
-			}
-
-		});
+		// don't add this markup section to the packages, instead, add it to the compilation manually
+		// if we would add it to a package and that package is compiled in multiple kb markups,
+		// all kb markup sections in that package would be compiled by the each compiler, although each should
+		// only be compiled by one
+		removeCompileScript(PackageRegistrationCompiler.class, DefaultMarkupPackageRegistrationScript.class);
 	}
 
 	private static class D3webCompilerRegistrationScript extends PackageRegistrationScript<PackageCompileType> {
 
 		@Override
 		public void compile(PackageRegistrationCompiler compiler, Section<PackageCompileType> section) {
-			compiler.getCompilerManager().addCompiler(5, new D3webCompiler(compiler.getPackageManager(), section));
+			compiler.getCompilerManager().addCompiler(5, new D3webCompiler(compiler.getPackageManager(), section, KnowledgeBaseType.class));
 		}
 
 		@Override
@@ -184,4 +164,5 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 		}
 
 	}
+
 }
