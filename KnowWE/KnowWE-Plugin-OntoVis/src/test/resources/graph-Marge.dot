@@ -1,0 +1,22 @@
+digraph Konzeptuebersicht {
+graph [ rankdir="LR" ]
+"si:maggie"[  shape="box"  style="rounded" label="Maggie\nSimpson\n" ];
+"si:bart"[  shape="box"  style="rounded" label="Bart Simpson" ];
+"si:lisa"[  shape="box"  style="rounded" label="Lisa Simpson" ];
+"si:marge"[  shape="box"  style="rounded,bold" label=<<U>Marge<BR ALIGN="CENTER"/>Simpson<BR ALIGN="CENTER"/></U>> ];
+"si:lisa" -> "si:lisa" [ label = "si:sibling" arrowtail="normal"  color="black"  ];
+"si:maggie" -> "si:marge" [ label = "si:relatedWith" arrowtail="normal"  color="black"  ];
+"si:lisa" -> "si:marge" [ label = "si:relatedWith" arrowtail="normal"  color="black"  ];
+"si:bart" -> "si:marge" [ label = "si:relatedWith" arrowtail="normal"  color="black"  ];
+"si:lisa" -> "si:bart" [ label = "si:sibling" arrowtail="normal"  color="black"  ];
+"si:bart" -> "si:lisa" [ label = "si:sibling" arrowtail="normal"  color="black"  ];
+"si:lisa" -> "si:maggie" [ label = "si:sibling" arrowtail="normal"  color="black"  ];
+"si:maggie" -> "si:lisa" [ label = "si:sibling" arrowtail="normal"  color="black"  ];
+"si:marge" -> "si:bart" [ label = "si:child" arrowtail="normal"  color="black"  ];
+"si:marge" -> "si:lisa" [ label = "si:child" arrowtail="normal"  color="black"  ];
+"si:bart" -> "si:bart" [ label = "si:sibling" arrowtail="normal"  color="black"  ];
+"si:maggie" -> "si:maggie" [ label = "si:sibling" arrowtail="normal"  color="black"  ];
+"si:maggie" -> "si:bart" [ label = "si:sibling" arrowtail="normal"  color="black"  ];
+"si:bart" -> "si:maggie" [ label = "si:sibling" arrowtail="normal"  color="black"  ];
+"si:marge" -> "si:maggie" [ label = "si:child" arrowtail="normal"  color="black"  ];
+}

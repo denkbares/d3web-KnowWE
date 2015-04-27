@@ -1,0 +1,18 @@
+digraph Konzeptuebersicht {
+graph [ rankdir="LR" ]
+"si:child"[  shape="hexagon"  style="bold" label=<<U>si:child</U>> ];
+"si:relatedWith"[  shape="hexagon" label="si:relatedWith" ];
+"si:parent"[  shape="hexagon" label="si:parent" ];
+"si:parent" -> "si:relatedWith" [ label = "rdfs:subPropertyOf" arrowtail="normal"  color="black"  ];
+"si:child" -> "si:child" [ label = "owl:sameAs" arrowtail="normal"  color="black"  ];
+"si:relatedWith" -> "si:relatedWith" [ label = "owl:equivalentProperty" arrowtail="normal"  color="black"  ];
+"si:child" -> "si:relatedWith" [ label = "rdfs:subPropertyOf" arrowtail="normal"  color="black"  ];
+"si:child" -> "si:child" [ label = "owl:equivalentProperty" arrowtail="normal"  color="black"  ];
+"si:parent" -> "si:parent" [ label = "owl:sameAs" arrowtail="normal"  color="black"  ];
+"si:parent" -> "si:parent" [ label = "rdfs:subPropertyOf" arrowtail="normal"  color="black"  ];
+"si:parent" -> "si:parent" [ label = "owl:equivalentProperty" arrowtail="normal"  color="black"  ];
+"si:child" -> "si:child" [ label = "rdfs:subPropertyOf" arrowtail="normal"  color="black"  ];
+"si:relatedWith" -> "si:relatedWith" [ label = "rdfs:subPropertyOf" arrowtail="normal"  color="black"  ];
+"si:child" -> "si:parent" [ label = "owl:inverseOf" arrowtail="normal"  color="black"  ];
+"si:relatedWith" -> "si:relatedWith" [ label = "owl:sameAs" arrowtail="normal"  color="black"  ];
+}

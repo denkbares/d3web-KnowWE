@@ -1,0 +1,17 @@
+digraph Konzeptuebersicht {
+graph [ rankdir="LR" ]
+"si:gender"[  shape="hexagon" label="si:gender" ];
+"si:GenderType"[  shape="box"  style="bold" label="Gender" ];
+"si:Human"[  shape="box"  style="bold" label=<<U>Human</U>> ];
+"owl:Thing"[  shape="box"  style="bold" label="owl:Thing" ];
+"si:gender" -> "si:gender" [ label = "owl:equivalentProperty" arrowtail="normal"  color="black"  ];
+"si:gender" -> "si:gender" [ label = "rdfs:subPropertyOf" arrowtail="normal"  color="black"  ];
+"si:GenderType" -> "si:Human" [ label = "owl:disjointWith" arrowtail="normal"  color="black"  ];
+"si:Human" -> "owl:Thing" [ label = "rdfs:subClassOf" arrowtail="normal"  color="#19F193"  ];
+"si:GenderType" -> "si:GenderType" [ label = "rdfs:subClassOf" arrowtail="normal"  color="#19F193"  ];
+"si:gender" -> "owl:Thing" [ label = "rdfs:domain" arrowtail="normal"  color="black"  ];
+"si:gender" -> "si:GenderType" [ label = "rdfs:domain" arrowtail="normal"  color="black"  ];
+"owl:Thing" -> "owl:Thing" [ label = "rdfs:subClassOf" arrowtail="normal"  color="#19F193"  ];
+"si:Human" -> "si:Human" [ label = "rdfs:subClassOf" arrowtail="normal"  color="#19F193"  ];
+"si:GenderType" -> "owl:Thing" [ label = "rdfs:subClassOf" arrowtail="normal"  color="#19F193"  ];
+}

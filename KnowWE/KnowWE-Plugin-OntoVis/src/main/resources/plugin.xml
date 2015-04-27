@@ -1,0 +1,229 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-OntoVis" version="0.0.1">
+
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+	</requires>
+
+	<runtime>
+		<library id="de.d3web" path="." type="code">
+			<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="ConceptVisType">
+		<parameter id="class"
+			value="de.knowwe.rdfs.vis.markup.ConceptVisType" />
+		<parameter id="name" value="de.knowwe.rdfs.vis.markup.ConceptVisType" />
+		<parameter id="description" value="Compatibility backup for ConceptVisualizationType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="ConceptVisualizationType">
+		<parameter id="class"
+			value="de.knowwe.rdfs.vis.markup.ConceptVisualizationType" />
+		<parameter id="name" value="de.knowwe.rdfs.vis.markup.ConceptVisualizationType" />
+		<parameter id="description" value="Visualizes concepts" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+		<parameter id="css" value="d3force.css" />
+		<parameter id="css" value="d3tree.css" />
+		<parameter id="css" value="d3wheel.css" />
+		<parameter id="css" value="menustyling.css" />
+		<parameter id="script" value="d3.v3.js" />
+		<parameter id="script" value="d3force.js" />
+		<parameter id="script" value="d3tree.js" />
+		<parameter id="script" value="d3wheel.js" />
+		<parameter id="script" value="d3download.js" />
+		<parameter id="script" value="contextmenu.js" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="SparqlVisType">
+		<parameter id="class"
+			value="de.knowwe.rdfs.vis.markup.sparql.SparqlVisType" />
+		<parameter id="name" value="SparqlVisType" />
+		<parameter id="description" value="Compatibility backup for SparqlVisualizationType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="SparqlVisualizationType">
+		<parameter id="class"
+			value="de.knowwe.rdfs.vis.markup.sparql.SparqlVisualizationType" />
+		<parameter id="name" value="SparqlVisualizationType" />
+		<parameter id="description" value="Visualizes based on SPARQL SELECT" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+		<parameter id="css" value="d3force.css" />
+		<parameter id="css" value="d3tree.css" />
+		<parameter id="css" value="d3wheel.css" />
+		<parameter id="css" value="menustyling.css" />
+		<parameter id="script" value="d3.v3.js" />
+		<parameter id="script" value="d3force.js" />
+		<parameter id="script" value="d3tree.js" />
+		<parameter id="script" value="d3wheel.js" />
+		<parameter id="script" value="d3download.js" />
+		<parameter id="script" value="contextmenu.js" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="SparqlVisDesignType">
+		<parameter id="class"
+			value="de.knowwe.rdfs.vis.markup.sparql.SparqlVisDesignType" />
+		<parameter id="name" value="SparqlVisDesignType" />
+		<parameter id="description" value="KnowWEObjectType SparqlVisDesignType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="VisConfigType">
+		<parameter id="class"
+			value="de.knowwe.rdfs.vis.markup.VisConfigType" />
+		<parameter id="name" value="de.knowwe.rdfs.vis.markup.VisConfigType" />
+		<parameter id="description" value="Config Markup" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="OntoVisSVGDownloadProvider">
+		<parameter id="class"
+			value="de.knowwe.rdfs.vis.markup.OntoVisSVGDownloadProvider" />
+		<parameter id="name" value="OntoVisSVGDownloadProvider" />
+		<parameter id="description"
+			value="Offers a download button to download the graph as an svg file." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="Vis" />
+		<parameter id="scope" value="SparqlVis" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="OntoVisSVGDownload">
+		<parameter id="class" value="de.knowwe.rdfs.vis.markup.OntoVisSVGDownload" />
+		<parameter id="name" value="OntoVisSVGDownload" />
+		<parameter id="description"
+			value="Downloads the .svg-file of the displayed Graph" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="OntoVisSVGD3Download">
+		<parameter id="class" value="de.knowwe.rdfs.vis.markup.OntoVisSVGD3Download" />
+		<parameter id="name" value="OntoVisSVGD3Download" />
+		<parameter id="description" value="Downloads the .svg-file of the displayed graph" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="OntoVisDisplaySVGProvider">
+		<parameter id="class"
+			value="de.knowwe.rdfs.vis.markup.OntoVisDisplaySVGProvider" />
+		<parameter id="name" value="OntoVisDisplaySVGProvider" />
+		<parameter id="description"
+			value="Offers a button to display the graph" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="Vis" />
+		<parameter id="scope" value="SparqlVis" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="OntoVisDisplaySVG">
+		<parameter id="class" value="de.knowwe.rdfs.vis.markup.OntoVisDisplaySVG" />
+		<parameter id="name" value="OntoVisDisplaySVG" />
+		<parameter id="description"
+			value="Display the .svg-Graph" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="OntoVisDOTDownloadProvider">
+		<parameter id="class"
+			value="de.knowwe.rdfs.vis.markup.OntoVisDOTDownloadProvider" />
+		<parameter id="name" value="OntoVisDOTDownloadProvider" />
+		<parameter id="description"
+			value="Offers a download button to download the dot-file of the graph." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="Vis" />
+		<parameter id="scope" value="SparqlVis" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="OntoVisDOTDownload">
+		<parameter id="class" value="de.knowwe.rdfs.vis.markup.OntoVisDOTDownload" />
+		<parameter id="name" value="OntoVisDOTDownload" />
+		<parameter id="description"
+			value="Downloads the .dot-file of the displayed Graph" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="ExcludeCurrentConceptAction">
+		<parameter id="class"
+			value="de.knowwe.rdfs.vis.edit.ExcludeCurrentConceptAction" />
+		<parameter id="name" value="ExcludeCurrentConceptAction" />
+		<parameter id="description" value="Action ExcludeCurrentConceptAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="ExpandCurrentConceptAction">
+		<parameter id="class"
+			value="de.knowwe.rdfs.vis.edit.ExpandCurrentConceptAction" />
+		<parameter id="name" value="ExpandCurrentConceptAction" />
+		<parameter id="description" value="Action ExpandCurrentConceptAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="FindLiteralsForConceptAction">
+		<parameter id="class"
+			value="de.knowwe.rdfs.vis.edit.FindLiteralsForConceptAction" />
+		<parameter id="name" value="FindLiteralsForConceptAction" />
+		<parameter id="description" value="Action FindLiteralsForConceptAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="MakeNewVisualizationOfConceptAction">
+		<parameter id="class"
+			value="de.knowwe.rdfs.vis.edit.MakeNewVisualizationOfConceptAction" />
+		<parameter id="name" value="MakeNewVisualizationOfConceptAction" />
+		<parameter id="description" value="Action MakeNewVisualizationOfConceptAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="GoToDefinitionAction">
+		<parameter id="class"
+			value="de.knowwe.rdfs.vis.edit.GoToDefinitionAction" />
+		<parameter id="name" value="GoToDefinitionAction" />
+		<parameter id="description" value="Action GoToDefinitionAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+	</extension>
+
+</plugin>

@@ -1,0 +1,26 @@
+.node {
+  cursor: pointer;
+}
+
+.node circle {
+  fill: #fff;
+  stroke: darkblue;
+  stroke-width: 1.5px;
+}
+
+.node.expandable circle {
+	fill: lightsteelblue;
+}
+
+
+text.nodetext {
+	fill: blue;
+
+}
+
+path.link {
+  fill: none;
+  stroke: grey;
+  stroke-width: 1.5px;
+}
+

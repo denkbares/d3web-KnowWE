@@ -1,0 +1,18 @@
+digraph Konzeptuebersicht {
+graph [ rankdir="LR" ]
+"si:yuma"[  shape="box"  style="rounded" label="Yuma Hickman" ];
+"si:abraham"[  shape="box"  style="rounded,bold" label=<<U>Abraham<BR ALIGN="CENTER"/>Simpson<BR ALIGN="CENTER"/></U>> ];
+"si:homer"[  shape="box"  style="rounded" label="Homer\nSimpson\n" ];
+"si:marge"[  shape="box"  style="rounded" label="Marge\nSimpson\n" ];
+"si:maggie"[  shape="box"  style="rounded,bold" label=<<U>Maggie<BR ALIGN="CENTER"/>Simpson<BR ALIGN="CENTER"/></U>> ];
+"si:bart"[ shape="none" fontsize="0" fontcolor="white" ];
+"si:lisa"[ shape="none" fontsize="0" fontcolor="white" ];
+"si:marge" -> "si:bart" [ label="si:child" fontcolor="#8b8989" arrowhead="none"  color="#8b8989" style="dashed" ];
+"si:homer" -> "si:maggie" [ label = "si:child" arrowtail="normal"  color="black"  ];
+"si:marge" -> "si:lisa" [ label="si:child" fontcolor="#8b8989" arrowhead="none"  color="#8b8989" style="dashed" ];
+"si:yuma" -> "si:abraham" [ label = "si:child" arrowtail="normal"  color="black"  ];
+"si:abraham" -> "si:homer" [ label = "si:child" arrowtail="normal"  color="black"  ];
+"si:homer" -> "si:lisa" [ label="si:child" fontcolor="#8b8989" arrowhead="none"  color="#8b8989" style="dashed" ];
+"si:homer" -> "si:bart" [ label="si:child" fontcolor="#8b8989" arrowhead="none"  color="#8b8989" style="dashed" ];
+"si:marge" -> "si:maggie" [ label = "si:child" arrowtail="normal"  color="black"  ];
+}

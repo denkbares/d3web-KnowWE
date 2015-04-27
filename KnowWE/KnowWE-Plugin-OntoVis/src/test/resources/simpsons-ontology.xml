@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+	xmlns:w="http://www.umweltbundesamt.de/wisec#"
+	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+	xmlns:onto="http://www.ontotext.com/"
+	xmlns:ns="http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#"
+	xmlns:owl="http://www.w3.org/2002/07/owl#"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:lns="http://localhost:8080/KnowWE/Wiki.jsp?page="
+	xmlns:si="http://www.example.org/ontology#">
+
+<rdf:Description rdf:about="http://www.example.org/ontology#GenderType">
+	<rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#ownType">
+	<rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#child">
+	<rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#parent">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#Building">
+	<rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#amount">
+	<rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#male">
+	<rdf:type rdf:resource="http://www.example.org/ontology#GenderType"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#grandfather">
+	<rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#bart">
+	<rdf:type rdf:resource="http://www.example.org/ontology#Human"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#lisa">
+	<rdf:type rdf:resource="http://www.example.org/ontology#Human"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#Animal">
+	<rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#homer">
+	<rdf:type rdf:resource="http://www.example.org/ontology#Human"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#maggie">
+	<rdf:type rdf:resource="http://www.example.org/ontology#Human"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#sibling">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#burns_powerplant">
+	<rdf:type rdf:resource="http://www.example.org/ontology#Powerplant"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#Human">
+	<rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#marge">
+	<rdf:type rdf:resource="http://www.example.org/ontology#Human"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#sibling">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#yuma">
+	<rdf:type rdf:resource="http://www.example.org/ontology#Human"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#Powerplant">
+	<rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#gender">
+	<rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#female">
+	<rdf:type rdf:resource="http://www.example.org/ontology#GenderType"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#Location">
+	<rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#father">
+	<rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#burns_dog">
+	<rdf:type rdf:resource="http://www.example.org/ontology#Animal"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#spouse">
+	<rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#springfield">
+	<rdf:type rdf:resource="http://www.example.org/ontology#Location"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#owns">
+	<rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#grandparent">
+	<rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#mother">
+	<rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#abraham">
+	<rdf:type rdf:resource="http://www.example.org/ontology#Human"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#relatedWith">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ReflexiveProperty"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#burns">
+	<rdf:type rdf:resource="http://www.example.org/ontology#Human"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#age">
+	<rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#livesIn">
+	<rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#father">
+	<rdfs:subPropertyOf rdf:resource="http://www.example.org/ontology#parent"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#husband">
+	<rdfs:subPropertyOf rdf:resource="http://www.example.org/ontology#spouse"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#child">
+	<rdfs:subPropertyOf rdf:resource="http://www.example.org/ontology#relatedWith"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#parent">
+	<rdfs:subPropertyOf rdf:resource="http://www.example.org/ontology#relatedWith"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#sibling">
+	<rdfs:subPropertyOf rdf:resource="http://www.example.org/ontology#relatedWith"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#mother">
+	<rdfs:subPropertyOf rdf:resource="http://www.example.org/ontology#parent"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#gender">
+	<rdfs:domain rdf:resource="http://www.example.org/ontology#GenderType"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#Powerplant">
+	<rdfs:subClassOf rdf:resource="http://www.example.org/ontology#Building"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#marge">
+	<rdfs:label>Marge Simpson</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#GenderType">
+	<rdfs:label xml:lang="en">Gender</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#Human">
+	<rdfs:label xml:lang="de">Mensch</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#male">
+	<rdfs:label xml:lang="de">männlich</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#bart">
+	<rdfs:label>Bart Simpson</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#Powerplant">
+	<rdfs:label xml:lang="de">Kraftwerk</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#Building">
+	<rdfs:label xml:lang="en">Building</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#Animal">
+	<rdfs:label xml:lang="de">Tier</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#yuma">
+	<rdfs:label>Yuma Hickman</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#burns">
+	<rdfs:label>Charles Montgomery Burns</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#maggie">
+	<rdfs:label>Maggie Simpson</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#female">
+	<rdfs:label xml:lang="en">female</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#GenderType">
+	<rdfs:label xml:lang="de">Geschlecht</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#Location">
+	<rdfs:label xml:lang="de">Ort</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#male">
+	<rdfs:label xml:lang="en">male</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#Animal">
+	<rdfs:label xml:lang="en">Animal</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#lisa">
+	<rdfs:label>Lisa Simpson</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#Building">
+	<rdfs:label xml:lang="de">Gebäude</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#burns_powerplant">
+	<rdfs:label>Mr. Burns' nuclear power plant</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#homer">
+	<rdfs:label>Homer Simpson</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#abraham">
+	<rdfs:label>Abraham Simpson</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#burns_dog">
+	<rdfs:label>Mr. Burns' dog</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#Location">
+	<rdfs:label xml:lang="en">Location</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#springfield">
+	<rdfs:label>Springfield</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#female">
+	<rdfs:label xml:lang="de">weiblich</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#Human">
+	<rdfs:label xml:lang="en">Human</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#Powerplant">
+	<rdfs:label xml:lang="en">Power plant</rdfs:label>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#yuma">
+	<si:gender rdf:resource="http://www.example.org/ontology#female"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#marge">
+	<si:gender rdf:resource="http://www.example.org/ontology#female"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#bart">
+	<si:gender rdf:resource="http://www.example.org/ontology#male"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#burns">
+	<si:gender rdf:resource="http://www.example.org/ontology#male"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#abraham">
+	<si:gender rdf:resource="http://www.example.org/ontology#male"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#homer">
+	<si:gender rdf:resource="http://www.example.org/ontology#male"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#lisa">
+	<si:gender rdf:resource="http://www.example.org/ontology#female"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#maggie">
+	<si:gender rdf:resource="http://www.example.org/ontology#female"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#child">
+	<owl:inverseOf rdf:resource="http://www.example.org/ontology#parent"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#lisa">
+	<si:mother rdf:resource="http://www.example.org/ontology#marge"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#abraham">
+	<si:mother rdf:resource="http://www.example.org/ontology#yuma"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#bart">
+	<si:mother rdf:resource="http://www.example.org/ontology#marge"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#maggie">
+	<si:mother rdf:resource="http://www.example.org/ontology#marge"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#owns">
+	<owl:minCardinality>1</owl:minCardinality>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#grandparent">
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#grandfather">
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#marge">
+	<si:age>34</si:age>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#bart">
+	<si:age>10</si:age>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#lisa">
+	<si:age>8</si:age>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#homer">
+	<si:age>36</si:age>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#maggie">
+	<si:age>1</si:age>
+	<si:livesIn rdf:resource="http://www.example.org/ontology#springfield"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#bart">
+	<si:livesIn rdf:resource="http://www.example.org/ontology#springfield"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#lisa">
+	<si:livesIn rdf:resource="http://www.example.org/ontology#springfield"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#marge">
+	<si:livesIn rdf:resource="http://www.example.org/ontology#springfield"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#homer">
+	<si:livesIn rdf:resource="http://www.example.org/ontology#springfield"/>
+	<si:father rdf:resource="http://www.example.org/ontology#abraham"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#lisa">
+	<si:father rdf:resource="http://www.example.org/ontology#homer"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#bart">
+	<si:father rdf:resource="http://www.example.org/ontology#homer"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#maggie">
+	<si:father rdf:resource="http://www.example.org/ontology#homer"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#bart">
+	<si:sibling rdf:resource="http://www.example.org/ontology#lisa"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#maggie">
+	<si:sibling rdf:resource="http://www.example.org/ontology#lisa"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#spouse">
+	<owl:propertyDisjointWith rdf:resource="http://www.example.org/ontology#parent"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#GenderType">
+	<owl:disjointWith rdf:resource="http://www.example.org/ontology#Human"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#GenderType">
+	<rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#Human">
+	<rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#gender">
+	<rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#grandfather">
+	<owl:propertyChainAxiom rdf:parseType="Collection">
+               <owl:ObjectProperty rdf:about="http://www.example.org/ontology#parent"/>
+               <owl:ObjectProperty rdf:about="http://www.example.org/ontology#father"/>
+       </owl:propertyChainAxiom>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.example.org/ontology#grandparent">
+	<owl:propertyChainAxiom rdf:parseType="Collection">
+               <owl:ObjectProperty rdf:about="http://www.example.org/ontology#parent"/>
+               <owl:ObjectProperty rdf:about="http://www.example.org/ontology#parent"/>
+       </owl:propertyChainAxiom>
+</rdf:Description>
+
+</rdf:RDF>
