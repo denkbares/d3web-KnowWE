@@ -26,8 +26,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import de.d3web.utils.Log;
+
 /**
- * 
  * @author Jochen Reutelshöfer
  * @created 23.05.2013
  */
@@ -39,31 +40,31 @@ public class FileUtils {
 	public static final String TOMCAT_PATH_SEPARATOR = "/";
 
 	/**
-	 * 
+	 * @param file
 	 * @created 20.08.2012
-	 * @param dot
 	 */
-	public static void writeFile(File dot, String dotSource) {
+	public static void writeFile(File file, String content) {
 		try {
-			checkWriteable(dot);
+			checkWriteable(file);
 			FileWriter writer;
-			writer = new FileWriter(dot);
-			writer.append(dotSource);
+			writer = new FileWriter(file);
+			writer.append(content);
 			writer.flush();
 			writer.close();
+			Log.info("Wrote file " + file.getAbsolutePath());
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			Log.severe("Unable to write file " + file.getName(), e);
 		}
 	}
 
 	/**
 	 * Checks if the specified file can be read. If not an {@link IOException}
 	 * is thrown.
-	 * 
-	 * @created 20.04.2011
+	 *
 	 * @param file the file to read from
 	 * @throws IOException if the file cannot be read
+	 * @created 20.04.2011
 	 */
 	public static void checkReadable(File file) throws IOException {
 		if (!file.exists()) {
@@ -80,10 +81,10 @@ public class FileUtils {
 	 * Check if the specified file and the required folder structure can be
 	 * written. This prevents failures later on when the pdf will be created. If
 	 * the file cannot be written an {@link IOException} is thrown.
-	 * 
-	 * @created 20.04.2011
+	 *
 	 * @param file the file to be written
 	 * @throws IOException if the file cannot be written
+	 * @created 20.04.2011
 	 */
 	public static void checkWriteable(File file) throws IOException {
 		// create/check target output folder
@@ -114,8 +115,9 @@ public class FileUtils {
 	public static void printStream(InputStream str) throws IOException {
 		BufferedReader in = new BufferedReader(new InputStreamReader(str));
 		String inputLine;
-		while ((inputLine = in.readLine()) != null)
+		while ((inputLine = in.readLine()) != null) {
 			System.out.println(inputLine);
+		}
 		in.close();
 	}
 

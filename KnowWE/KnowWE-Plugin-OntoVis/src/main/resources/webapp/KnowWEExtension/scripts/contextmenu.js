@@ -78,13 +78,35 @@ KNOWWE.plugin.visualization = {
 		nodes.css('cursor', 'pointer');
 		nodes.off().on('click', function(e) {
 			var conceptName = this.children[0].innerHTML;
-			var clickPosition = KNOWWE.plugin.visualization.getClickPosition(e, sectionID, scrollParent);
 
-			KNOWWE.plugin.visualization.fillAndShowMenu(clickPosition.x, clickPosition.y, conceptName, sectionID)
+			// menu deactivated for now, just go to definition...
+			KNOWWE.plugin.visualization.goToDef(sectionID, conceptName);
+
+			//var clickPosition = KNOWWE.plugin.visualization.getClickPosition(e, sectionID, scrollParent);
+			//
+			//KNOWWE.plugin.visualization.fillAndShowMenu(clickPosition.x, clickPosition.y, conceptName, sectionID)
 		});
 	},
 
-	fillAndShowMenu : function(mouseX, mouseY, conceptName, sectionID) {
+	goToDef : function(sectionID, conceptName) {
+		var params = {
+			action : 'GoToDefinitionAction',
+			kdomid : sectionID,
+			concept : conceptName
+		};
+
+		var options = {
+			url : KNOWWE.core.util.getURL(params),
+			response : {
+				fn : function() {
+					window.location.href = this.response.trim();
+				}
+			}
+		};
+		new _KA(options).send();
+	}
+
+	, fillAndShowMenu : function(mouseX, mouseY, conceptName, sectionID) {
 		// add the literals for the given concept to the menu
 		KNOWWE.plugin.visualization.addLiteralsToMenu(conceptName, sectionID);
 
@@ -130,22 +152,7 @@ KNOWWE.plugin.visualization = {
 		});
 
 		jq$("#vismenu #gotodef").off().on('click', function(e) {
-			var params = {
-				action : 'GoToDefinitionAction',
-				kdomid : sectionID,
-				concept : conceptName
-			};
-
-			var options = {
-				url : KNOWWE.core.util.getURL(params),
-				response : {
-					fn : function() {
-						var url = this.response.trim();
-						window.location.href = url;
-					}
-				}
-			};
-			new _KA(options).send();
+			KNOWWE.plugin.visualization.goToDef(sectionID, conceptName);
 		});
 
 		jq$("#vismenu #newvis").off().on('click', function(e) {
@@ -302,15 +309,16 @@ KNOWWE.plugin.visualization = {
 	}
 };
 
+// deactivated for now
 // close open menus by clicking somewhere outside of them
-jq$(document).click(function(e) {
-	var clickedElement = jq$(e.target);
-	if (!clickedElement.is('#vismenu')) {
-		KNOWWE.plugin.visualization.closeContextMenu();
-	}
-});
-
-KNOWWE.helper.observer.subscribe("afterRerender", function() {
-	// add the menu-div to the page
-	KNOWWE.plugin.visualization.addHTMLMenu();
-});
+//jq$(document).click(function(e) {
+//	var clickedElement = jq$(e.target);
+//	if (!clickedElement.is('#vismenu')) {
+//		KNOWWE.plugin.visualization.closeContextMenu();
+//	}
+//});
+//
+//KNOWWE.helper.observer.subscribe("afterRerender", function() {
+//	// add the menu-div to the page
+//	KNOWWE.plugin.visualization.addHTMLMenu();
+//});

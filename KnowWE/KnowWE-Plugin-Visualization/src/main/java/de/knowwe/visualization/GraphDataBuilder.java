@@ -192,16 +192,14 @@ public abstract class GraphDataBuilder<T extends Object> {
 		if (section != null) {
 			return section.getTitle();
 		}
-
-		return "ForTestingOnly";
+		return "NO_ID";
 	}
 
 	public static String getSectionID(Section<?> section) {
 		if (section != null) {
 			return section.getID();
 		}
-
-		return "ForTestingOnly";
+		return "NO_ID";
 	}
 
 	public void createData() {

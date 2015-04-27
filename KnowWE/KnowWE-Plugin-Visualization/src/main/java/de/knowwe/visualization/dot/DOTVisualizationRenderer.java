@@ -19,6 +19,7 @@
 package de.knowwe.visualization.dot;
 
 import java.util.Map;
+import java.util.Objects;
 
 import de.knowwe.visualization.GraphDataBuilder;
 import de.knowwe.visualization.GraphVisualizationRenderer;
@@ -60,6 +61,7 @@ public class DOTVisualizationRenderer implements GraphVisualizationRenderer {
 	}
 
 	public static String getGraphFilePath(String fileID, String realPath) {
+		Objects.nonNull(fileID);
 		return getFilePath(realPath) + "graph" + fileID;
 	}
 
@@ -74,6 +76,7 @@ public class DOTVisualizationRenderer implements GraphVisualizationRenderer {
 	}
 
 	public static String getFilePath(String realPath) {
+		Objects.nonNull(realPath);
 		String tmpPath = FileUtils.KNOWWEEXTENSION_FOLDER + FileUtils.FILE_SEPARATOR
 				+ FileUtils.TMP_FOLDER
 				+ FileUtils.FILE_SEPARATOR;

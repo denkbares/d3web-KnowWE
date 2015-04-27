@@ -86,8 +86,8 @@ public class OntoVisTest {
 	}
 
 	@Test
-	public void test_Instances() {
-		Map<String, String> parameterMap = new HashMap<String, String>();
+	public void testInstances() {
+		Map<String, String> parameterMap = new HashMap<>();
 
 		parameterMap.put(OntoGraphDataBuilder.CONCEPT, "si:bart");
 
@@ -103,6 +103,8 @@ public class OntoVisTest {
 
 		parameterMap.put(OntoGraphDataBuilder.USE_LABELS, "true");
 
+		parameterMap.put(OntoGraphDataBuilder.FILE_ID, "instances");
+
 		String colorCodes = "";
 		colorCodes += "si:sibling: #511F7A;";
 		colorCodes += "si:child: #398743;";
@@ -111,7 +113,7 @@ public class OntoVisTest {
 
 		parameterMap.put(OntoGraphDataBuilder.REQUESTED_DEPTH, "1");
 		parameterMap.put(OntoGraphDataBuilder.REQUESTED_HEIGHT, "1");
-		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder("", null,
+		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder("target", null,
 				parameterMap,
 				new DummyLinkToTermDefinitionProvider(), rdfRepository);
 
@@ -142,8 +144,8 @@ public class OntoVisTest {
 	}
 
 	@Test
-	public void test_Classes() {
-		Map<String, String> parameterMap = new HashMap<String, String>();
+	public void testClasses() {
+		Map<String, String> parameterMap = new HashMap<>();
 
 		parameterMap.put(OntoGraphDataBuilder.CONCEPT, "si:Human");
 
@@ -159,6 +161,8 @@ public class OntoVisTest {
 
 		parameterMap.put(OntoGraphDataBuilder.LANGUAGE, "en");
 
+		parameterMap.put(OntoGraphDataBuilder.FILE_ID, "classes");
+
 		String colorCodes = "";
 		colorCodes += "rdfs:subClassOf: #19F193;";
 
@@ -166,7 +170,7 @@ public class OntoVisTest {
 
 		parameterMap.put(OntoGraphDataBuilder.REQUESTED_HEIGHT, "3");
 
-		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder("", null,
+		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder("target", null,
 				parameterMap,
 				new DummyLinkToTermDefinitionProvider(), rdfRepository);
 
@@ -197,8 +201,8 @@ public class OntoVisTest {
 	}
 
 	@Test
-	public void test_Properties() {
-		Map<String, String> parameterMap = new HashMap<String, String>();
+	public void testProperties() {
+		Map<String, String> parameterMap = new HashMap<>();
 
 		parameterMap.put(OntoGraphDataBuilder.CONCEPT, "si:child");
 
@@ -210,6 +214,8 @@ public class OntoVisTest {
 
 		parameterMap.put(OntoGraphDataBuilder.USE_LABELS, "true");
 
+		parameterMap.put(OntoGraphDataBuilder.FILE_ID, "properties");
+
 		String colorCodes = "";
 		colorCodes += "si:child: #398743;";
 		colorCodes += "si:parent si:color #123A56;";
@@ -219,7 +225,7 @@ public class OntoVisTest {
 
 		parameterMap.put(OntoGraphDataBuilder.REQUESTED_HEIGHT, "3");
 
-		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder("", null,
+		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder("target", null,
 				parameterMap,
 				new DummyLinkToTermDefinitionProvider(), rdfRepository);
 
@@ -250,8 +256,8 @@ public class OntoVisTest {
 	}
 
 	@Test
-	public void test_Table() {
-		Map<String, String> parameterMap = new HashMap<String, String>();
+	public void testTable() {
+		Map<String, String> parameterMap = new HashMap<>();
 
 		parameterMap.put(OntoGraphDataBuilder.CONCEPT, "si:lisa");
 
@@ -263,7 +269,9 @@ public class OntoVisTest {
 
 		parameterMap.put(OntoGraphDataBuilder.USE_LABELS, "false");
 
-		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder("", null,
+		parameterMap.put(OntoGraphDataBuilder.FILE_ID, "table");
+
+		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder("target", null,
 				parameterMap,
 				new DummyLinkToTermDefinitionProvider(), rdfRepository);
 
@@ -294,8 +302,8 @@ public class OntoVisTest {
 	}
 
 	@Test
-	public void test_TwoConcepts() {
-		Map<String, String> parameterMap = new HashMap<String, String>();
+	public void testTwoConcepts() {
+		Map<String, String> parameterMap = new HashMap<>();
 
 		parameterMap.put(OntoGraphDataBuilder.CONCEPT, "si:abraham, si:maggie");
 
@@ -315,7 +323,9 @@ public class OntoVisTest {
 
 		parameterMap.put(OntoGraphDataBuilder.REQUESTED_DEPTH, "0");
 
-		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder("", null,
+		parameterMap.put(OntoGraphDataBuilder.FILE_ID, "twoconcepts");
+
+		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder("target", null,
 				parameterMap,
 				new DummyLinkToTermDefinitionProvider(), rdfRepository);
 
@@ -346,8 +356,12 @@ public class OntoVisTest {
 	}
 
 	@Test
-	public void test_Sparql() {
-		Map<String, String> parameterMap = new HashMap<String, String>();
+	public void testSparql() {
+		Map<String, String> parameterMap = new HashMap<>();
+
+		parameterMap.put(OntoGraphDataBuilder.REAL_PATH, "target");
+
+		parameterMap.put(OntoGraphDataBuilder.FILE_ID, "sparql");
 
 		String sparql = "SELECT ?x ?y ?z\nWHERE {\n?x ?y ?z . ?x rdf:type si:Human .\n}";
 
@@ -420,8 +434,8 @@ public class OntoVisTest {
 	}
 
 	@Test
-	public void test_Inverse() {
-		Map<String, String> parameterMap = new HashMap<String, String>();
+	public void testInverse() {
+		Map<String, String> parameterMap = new HashMap<>();
 
 		parameterMap.put(OntoGraphDataBuilder.CONCEPT, "si:marge");
 
@@ -435,7 +449,9 @@ public class OntoVisTest {
 
 		parameterMap.put(OntoGraphDataBuilder.SHOW_INVERSE, "false");
 
-		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder("", null,
+		parameterMap.put(OntoGraphDataBuilder.FILE_ID, "testInverse");
+
+		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder("target", null,
 				parameterMap,
 				new DummyLinkToTermDefinitionProvider(), rdfRepository);
 

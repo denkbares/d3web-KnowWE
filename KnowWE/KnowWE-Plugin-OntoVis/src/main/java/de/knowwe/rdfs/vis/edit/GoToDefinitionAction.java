@@ -67,7 +67,8 @@ public class GoToDefinitionAction extends AbstractAction {
 					}
 				};
 			}
-		} else {
+		}
+		else {
 			uriProvider = new PackageCompileLinkToTermDefinitionProvider();
 		}
 
@@ -75,7 +76,7 @@ public class GoToDefinitionAction extends AbstractAction {
 		SparqlVisualizationType.readParameterFromAnnotation(SparqlVisualizationType.ANNOTATION_LINK_MODE, section, OntoGraphDataBuilder.LINK_MODE, parameterMap, SparqlVisualizationType.LinkMode.browse
 				.name());
 
-		String uri =  Rdf2GoUtils.expandNamespace(compiler.getRdf2GoCore(), conceptName);
+		String uri = Rdf2GoUtils.expandNamespace(compiler.getRdf2GoCore(), conceptName);
 
 		String link = Utils.createConceptURL(conceptName, parameterMap, section, uriProvider, uri);
 
