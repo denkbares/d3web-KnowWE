@@ -53,7 +53,7 @@ public class TermInfoToolProvider implements ToolProvider {
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
-		return section.get() instanceof Term;
+		return true;
 	}
 
 	private Identifier getIdentifier(Section<?> section) {

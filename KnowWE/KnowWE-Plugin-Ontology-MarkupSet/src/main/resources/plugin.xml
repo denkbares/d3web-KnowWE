@@ -199,7 +199,7 @@
 		<parameter id="description"
 			value="Offer a button to navigate to the object information page of an selected object." />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
+		<parameter id="priority" value="3" />
 		<parameter id="scope" value="ResourceDefinition" />
 		<parameter id="scope" value="ResourceReference" />
 		<parameter id="scope" value="NamespaceDefinition" />
