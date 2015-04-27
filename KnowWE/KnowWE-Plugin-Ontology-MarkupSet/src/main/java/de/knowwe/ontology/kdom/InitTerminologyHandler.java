@@ -168,17 +168,6 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 			String fileName = attachment.getFileName();
 			Syntax syntax = Rdf2GoUtils.syntaxForFileName(fileName);
 			core.readFrom(attachment.getInputStream(), syntax);
-		}
-		catch (Exception e) {
-			Log.severe("Exception while importing ontology", e);
-			Messages.storeMessage(compiler, section, this.getClass(), Messages.error("Error while reading ontology from '"
-					+ attachmentFile + "': " + e.getMessage()));
-			return;
-		}
-		try {
-			String fileName = attachment.getFileName();
-			Syntax syntax = Rdf2GoUtils.syntaxForFileName(fileName);
-			core.readFrom(attachment.getInputStream(), syntax);
 			// we need rdfs reasoning for the SPARQLs to work
 			Rdf2GoCore dummy = new Rdf2GoCore(RuleSet.RDFS_OPTIMIZED);
 			dummy.readFrom(attachment.getInputStream(), syntax);
