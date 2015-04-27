@@ -19,7 +19,6 @@
 package de.knowwe.visualization.dot;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
@@ -28,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -410,7 +408,7 @@ public class DOTRenderer {
 	 *
 	 * @created 20.08.2012
 	 */
-	public static void createAndwriteDOTFiles(String filePath, String dotSource, String user_app_path) {
+	public static void createAndwriteDOTFiles(String filePath, String dotSource, String userAppPath) {
 		File dot = createFile("dot", filePath);
 		File svg = createFile("svg", filePath);
 		File png = createFile("png", filePath);
@@ -438,11 +436,8 @@ public class DOTRenderer {
 			lowPriorityCall = "nice -n 19 ";
 		}
 
-		String dotApp = getDOTApp(user_app_path);
-		boolean exists = new File(dotApp).exists();
-		if (!exists) {
-			dotApp = "dot";
-		}
+		String dotApp = getDOTApp(userAppPath);
+
 
 		String command = lowPriorityCall + dotApp + " " + dot.getAbsolutePath() +
 				" -Tsvg -o " + svg.getAbsolutePath() + "";
@@ -467,11 +462,8 @@ public class DOTRenderer {
 			int timeout = 50000;
 			prepareSVG(svg, timeout);
 		}
-		catch (FileNotFoundException e) {
-			Log.warning(e.getMessage(), e);
-		}
 		catch (IOException e) {
-			Log.warning(e.getMessage(), e);
+			Log.warning("Exception while generating visualization", e);
 		}
 
 	}
@@ -493,18 +485,42 @@ public class DOTRenderer {
 		return newLineLabelValue;
 	}
 
-	private static String getDOTApp(String user_def_app) {
+	/**
+	 * Returns true, if a valid dot installation can be found.
+	 */
+	public static boolean checkDotInstallation(Map<String, String> parameters) {
+		String dotApp = getDOTApp(parameters.get(GraphDataBuilder.DOT_APP));
+		try {
+			Process process = Runtime.getRuntime().exec(dotApp + " -V");
+			process.waitFor(1, TimeUnit.SECONDS);
+			int exitValue = process.exitValue();
+			if (exitValue != 0) {
+				return false;
+			}
+		}
+		catch (IOException | InterruptedException e) {
+			return false;
+		}
+		return true;
+	}
+
+
+	public static String getDOTApp(String dotApp) {
 		ResourceBundle rb = ResourceBundle.getBundle("dotInstallation");
 		String app = rb.getString("path");
-		if (user_def_app != null) {
+		if (dotApp != null) {
 			if (app.endsWith(FileUtils.FILE_SEPARATOR)) {
-				app += user_def_app;
+				app += dotApp;
 			}
 			else {
 				app = app.substring(0, app.lastIndexOf(FileUtils.FILE_SEPARATOR))
 						+ FileUtils.FILE_SEPARATOR
-						+ user_def_app;
+						+ dotApp;
 			}
+
+		}
+		if (!new File(app).exists()) {
+			app = "dot";
 		}
 		return app;
 	}
@@ -520,14 +536,11 @@ public class DOTRenderer {
 
 			// check if svg file is closed, otherwise wait timeout second
 			ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
-			final Future<Boolean> handler = executor.submit(new Callable() {
-				@Override
-				public Boolean call() throws Exception {
-					while (!Utils.isFileClosed(svg)) {
-						// wait
-					}
-					return true;
+			final Future<Boolean> handler = executor.submit(() -> {
+				while (!Utils.isFileClosed(svg)) {
+					// wait
 				}
+				return true;
 			});
 
 			// cancel handler after timeout seconds
@@ -551,14 +564,8 @@ public class DOTRenderer {
 			xmlOutputter.output(doc, new FileWriter(svg));
 			Log.finest("Finished writing SVG: " + svg.getAbsolutePath());
 		}
-		catch (JDOMException e) {
-			Log.warning(e.getMessage(), e);
-		}
-		catch (InterruptedException e) {
-			Log.warning(e.getMessage(), e);
-		}
-		catch (ExecutionException e) {
-			Log.warning(e.getMessage(), e);
+		catch (JDOMException | InterruptedException | ExecutionException e) {
+			Log.warning("Exception while generating SVG", e);
 		}
 	}
 

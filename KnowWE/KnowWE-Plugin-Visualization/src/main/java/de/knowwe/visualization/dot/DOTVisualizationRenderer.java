@@ -57,46 +57,16 @@ public class DOTVisualizationRenderer implements GraphVisualizationRenderer {
 
 	@Override
 	public String getHTMLIncludeSnipplet() {
-		return createHTMLOutput();
-	}
-
-	public static String getGraphFilePath(String fileID, String realPath) {
-		Objects.nonNull(fileID);
-		return getFilePath(realPath) + "graph" + fileID;
-	}
-
-	@Override
-	public String getGraphFilePath() {
-		return getGraphFilePath(parameters.get(GraphDataBuilder.FILE_ID), parameters.get(GraphDataBuilder.REAL_PATH));
-	}
-
-	@Override
-	public String getFilePath() {
-		return getFilePath(parameters.get(GraphDataBuilder.REAL_PATH));
-	}
-
-	public static String getFilePath(String realPath) {
-		Objects.nonNull(realPath);
-		String tmpPath = FileUtils.KNOWWEEXTENSION_FOLDER + FileUtils.FILE_SEPARATOR
-				+ FileUtils.TMP_FOLDER
-				+ FileUtils.FILE_SEPARATOR;
-		String path = realPath + FileUtils.FILE_SEPARATOR + tmpPath;
-		return path;
-	}
-
-	@Override
-	public String getSource() {
-		if (source == null) {
-			return generateSource();
+		StringBuilder html = new StringBuilder();
+		if (!DOTRenderer.checkDotInstallation(parameters)) {
+			html.append("<div class='error'>")
+					.append("Unable to find a valid installation of dot/Graphviz at location '")
+					.append(DOTRenderer.getDOTApp(parameters.get(GraphDataBuilder.DOT_APP)))
+					.append("'. Graphvis (<a href='http://www.graphviz.org/'>http://www.graphviz.org/</a>)")
+					.append(" has to be installed on the server to generate the visualizations!")
+					.append("</div>");
+			return html.toString();
 		}
-		return source;
-	}
-
-	/**
-	 * @created 03.09.2012
-	 */
-	private String createHTMLOutput() {
-		StringBuffer html = new StringBuffer();
 		String style = "max-height:1000px; ";
 		if (parameters.get(GraphDataBuilder.SHOW_SCROLLBAR) != null
 				&& parameters.get(GraphDataBuilder.SHOW_SCROLLBAR).equals("false")) {
@@ -129,6 +99,38 @@ public class DOTVisualizationRenderer implements GraphVisualizationRenderer {
 			html.append(png_default);
 		}
 		return html.toString();
+	}
+
+	public static String getGraphFilePath(String fileID, String realPath) {
+		Objects.nonNull(fileID);
+		return getFilePath(realPath) + "graph" + fileID;
+	}
+
+	@Override
+	public String getGraphFilePath() {
+		return getGraphFilePath(parameters.get(GraphDataBuilder.FILE_ID), parameters.get(GraphDataBuilder.REAL_PATH));
+	}
+
+	@Override
+	public String getFilePath() {
+		return getFilePath(parameters.get(GraphDataBuilder.REAL_PATH));
+	}
+
+	public static String getFilePath(String realPath) {
+		Objects.nonNull(realPath);
+		String tmpPath = FileUtils.KNOWWEEXTENSION_FOLDER + FileUtils.FILE_SEPARATOR
+				+ FileUtils.TMP_FOLDER
+				+ FileUtils.FILE_SEPARATOR;
+		String path = realPath + FileUtils.FILE_SEPARATOR + tmpPath;
+		return path;
+	}
+
+	@Override
+	public String getSource() {
+		if (source == null) {
+			return generateSource();
+		}
+		return source;
 	}
 
 }
