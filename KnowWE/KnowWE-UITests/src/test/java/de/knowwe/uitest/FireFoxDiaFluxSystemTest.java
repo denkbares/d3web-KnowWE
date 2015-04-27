@@ -32,7 +32,7 @@ public class FireFoxDiaFluxSystemTest extends DiaFluxSystemTest {
 		else {
 			// Choose the browser, version, and platform to test
 			DesiredCapabilities capabilities = DesiredCapabilities.firefox();
-			capabilities.setCapability("name", DiaFluxSystemTest.class.getSimpleName());
+			capabilities.setCapability("name", FireFoxDiaFluxSystemTest.class.getSimpleName());
 			capabilities.setCapability("platform", Platform.WINDOWS);
 			driver = new RemoteWebDriver(
 					new URL("http://d3web:8c7e5a48-56dd-4cde-baf0-b17f83803044@ondemand.saucelabs.com:80/wd/hub"),
