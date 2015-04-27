@@ -54,9 +54,9 @@ public class OntoVisTypeRenderer extends DefaultMarkupRenderer implements PreRen
 	 * @created 13.07.2014
 	 */
 	private void findAndReadConfig(String configName, ArticleManager am, Map<String, String> parameterMap) {
-		Collection<Section<VisConfigType>> sections = Sections.successors(am, VisConfigType.class);
-		for (Section<VisConfigType> section : sections) {
-			String name = VisConfigType.getAnnotation(section, VisConfigType.ANNOTATION_NAME);
+		Collection<Section<VisualizationConfigType>> sections = Sections.successors(am, VisualizationConfigType.class);
+		for (Section<VisualizationConfigType> section : sections) {
+			String name = VisualizationConfigType.getAnnotation(section, VisualizationConfigType.ANNOTATION_NAME);
 			if (name.equals(configName)) {
 				readConfig(section, parameterMap);
 			}
@@ -66,19 +66,19 @@ public class OntoVisTypeRenderer extends DefaultMarkupRenderer implements PreRen
 	/**
 	 * @created 13.07.2014
 	 */
-	private void readConfig(Section<VisConfigType> section, Map<String, String> parameterMap) {
+	private void readConfig(Section<VisualizationConfigType> section, Map<String, String> parameterMap) {
 		// size
-		parameterMap.put(OntoGraphDataBuilder.GRAPH_SIZE, VisConfigType.getAnnotation(section,
+		parameterMap.put(OntoGraphDataBuilder.GRAPH_SIZE, VisualizationConfigType.getAnnotation(section,
 				ConceptVisualizationType.ANNOTATION_SIZE));
 
-		parameterMap.put(OntoGraphDataBuilder.GRAPH_WIDTH, VisConfigType.getAnnotation(section,
+		parameterMap.put(OntoGraphDataBuilder.GRAPH_WIDTH, VisualizationConfigType.getAnnotation(section,
 				ConceptVisualizationType.ANNOTATION_WIDTH));
 
-		parameterMap.put(OntoGraphDataBuilder.GRAPH_HEIGHT, VisConfigType.getAnnotation(section,
+		parameterMap.put(OntoGraphDataBuilder.GRAPH_HEIGHT, VisualizationConfigType.getAnnotation(section,
 				ConceptVisualizationType.ANNOTATION_HEIGHT));
 
 		// format
-		format = VisConfigType.getAnnotation(section,
+		format = VisualizationConfigType.getAnnotation(section,
 				ConceptVisualizationType.ANNOTATION_FORMAT);
 		if (format != null) {
 			format = format.toLowerCase();
@@ -137,14 +137,14 @@ public class OntoVisTypeRenderer extends DefaultMarkupRenderer implements PreRen
 		parameterMap.put(OntoGraphDataBuilder.REQUESTED_HEIGHT, getPredecessors(section));
 
 		// add to dot
-		String dotAppPrefix = VisConfigType.getAnnotation(section,
+		String dotAppPrefix = VisualizationConfigType.getAnnotation(section,
 				ConceptVisualizationType.ANNOTATION_DOT_APP);
 		if (dotAppPrefix != null) {
 			parameterMap.put(OntoGraphDataBuilder.ADD_TO_DOT, dotAppPrefix + "\n");
 		}
 
 		// colors
-		String colorRelationName = VisConfigType.getAnnotation(section,
+		String colorRelationName = VisualizationConfigType.getAnnotation(section,
 				ConceptVisualizationType.ANNOTATION_COLORS);
 		if (!Strings.isBlank(colorRelationName)) {
 			parameterMap.put(OntoGraphDataBuilder.RELATION_COLOR_CODES, Utils.createColorCodings(colorRelationName, rdfRepository, "rdf:Property"));
@@ -349,7 +349,7 @@ public class OntoVisTypeRenderer extends DefaultMarkupRenderer implements PreRen
 			parameterMap.put(OntoGraphDataBuilder.SHOW_OUTGOING_EDGES, outgoingEdges);
 		}
 
-		String showInverse = VisConfigType.getAnnotation(section, ConceptVisualizationType.ANNOTATION_SHOWINVERSE);
+		String showInverse = VisualizationConfigType.getAnnotation(section, ConceptVisualizationType.ANNOTATION_SHOWINVERSE);
 		if (showInverse != null) {
 			parameterMap.put(OntoGraphDataBuilder.SHOW_INVERSE, showInverse);
 		}

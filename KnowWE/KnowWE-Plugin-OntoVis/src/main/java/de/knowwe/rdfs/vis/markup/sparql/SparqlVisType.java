@@ -18,19 +18,6 @@
  */
 package de.knowwe.rdfs.vis.markup.sparql;
 
-import java.util.Map;
-
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.NothingRenderer;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.rdf2go.Rdf2GoCore;
-import de.knowwe.rdf2go.sparql.Rdf2GoCoreCheckRenderer;
-import de.knowwe.rdfs.vis.markup.ConceptVisualizationType;
-import de.knowwe.rdfs.vis.markup.PreRenderer;
-import de.knowwe.rdfs.vis.markup.VisualizationType;
-import de.knowwe.visualization.GraphDataBuilder;
-
 /**
  * Provides backwards compatibility for SparqlVisualization.
  *
@@ -39,11 +26,8 @@ import de.knowwe.visualization.GraphDataBuilder;
  */
 public class SparqlVisType extends SparqlVisualizationType {
 
-	@Override
-	public DefaultMarkup createMarkup() {
-		DefaultMarkup markup = super.createMarkup();
-		markup.setDeprecated("SparqlVisualization");
-		return markup;
+	public SparqlVisType() {
+		getMarkup().setDeprecated("SparqlVisualization");
 	}
 
 	@Override

@@ -38,7 +38,7 @@ import de.knowwe.rdfs.vis.OntoGraphDataBuilder;
 import de.knowwe.rdfs.vis.PreRenderWorker;
 import de.knowwe.rdfs.vis.markup.ConceptVisualizationType;
 import de.knowwe.rdfs.vis.markup.PreRenderer;
-import de.knowwe.rdfs.vis.markup.VisConfigType;
+import de.knowwe.rdfs.vis.markup.VisualizationConfigType;
 import de.knowwe.rdfs.vis.util.Utils;
 import de.knowwe.visualization.ConceptNode;
 import de.knowwe.visualization.Edge;
@@ -175,9 +175,9 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 	 * @created 13.07.2014
 	 */
 	private void findAndReadConfig(String configName, ArticleManager am, Map<String, String> parameterMap, List<Message> messages, RenderResult string) {
-		Collection<Section<VisConfigType>> sections = Sections.successors(am, VisConfigType.class);
-		for (Section<VisConfigType> section : sections) {
-			String name = VisConfigType.getAnnotation(section, VisConfigType.ANNOTATION_NAME);
+		Collection<Section<VisualizationConfigType>> sections = Sections.successors(am, VisualizationConfigType.class);
+		for (Section<VisualizationConfigType> section : sections) {
+			String name = VisualizationConfigType.getAnnotation(section, VisualizationConfigType.ANNOTATION_NAME);
 			if (name.equals(configName)) {
 				readConfig(section, parameterMap, messages, string);
 			}
@@ -187,9 +187,9 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 	/**
 	 * @created 13.07.2014
 	 */
-	private void readConfig(Section<VisConfigType> section, Map<String, String> parameterMap, List<Message> messages, RenderResult string) {
+	private void readConfig(Section<VisualizationConfigType> section, Map<String, String> parameterMap, List<Message> messages, RenderResult string) {
 		// set css layout to be used
-		String layout = VisConfigType.getAnnotation(section, SparqlVisualizationType.ANNOTATION_DESIGN);
+		String layout = VisualizationConfigType.getAnnotation(section, SparqlVisualizationType.ANNOTATION_DESIGN);
 		if (layout != null) {
 
 			String cssText = null;
@@ -235,17 +235,17 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 		}
 
 		// size
-		parameterMap.put(OntoGraphDataBuilder.GRAPH_SIZE, VisConfigType.getAnnotation(section,
+		parameterMap.put(OntoGraphDataBuilder.GRAPH_SIZE, VisualizationConfigType.getAnnotation(section,
 				SparqlVisualizationType.ANNOTATION_SIZE));
 
-		parameterMap.put(OntoGraphDataBuilder.GRAPH_HEIGHT, VisConfigType.getAnnotation(section,
+		parameterMap.put(OntoGraphDataBuilder.GRAPH_HEIGHT, VisualizationConfigType.getAnnotation(section,
 				SparqlVisualizationType.ANNOTATION_HEIGHT));
 
-		parameterMap.put(OntoGraphDataBuilder.GRAPH_WIDTH, VisConfigType.getAnnotation(section,
+		parameterMap.put(OntoGraphDataBuilder.GRAPH_WIDTH, VisualizationConfigType.getAnnotation(section,
 				SparqlVisualizationType.ANNOTATION_WIDTH));
 
 		// format
-		format = VisConfigType.getAnnotation(section,
+		format = VisualizationConfigType.getAnnotation(section,
 				SparqlVisualizationType.ANNOTATION_FORMAT);
 		if (format != null) {
 			format = format.toLowerCase();
@@ -255,45 +255,45 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 		parameterMap.put(OntoGraphDataBuilder.FORMAT, format);
 
 		// dotApp
-		String dotApp = VisConfigType.getAnnotation(section,
+		String dotApp = VisualizationConfigType.getAnnotation(section,
 				SparqlVisualizationType.ANNOTATION_DOT_APP);
 		parameterMap.put(OntoGraphDataBuilder.DOT_APP, dotApp);
 
 		// renderer
-		String rendererType = VisConfigType.getAnnotation(section, SparqlVisualizationType.ANNOTATION_RENDERER);
+		String rendererType = VisualizationConfigType.getAnnotation(section, SparqlVisualizationType.ANNOTATION_RENDERER);
 		parameterMap.put(OntoGraphDataBuilder.RENDERER, rendererType);
 
 		// visualization
-		String visualization = VisConfigType.getAnnotation(section,
+		String visualization = VisualizationConfigType.getAnnotation(section,
 				SparqlVisualizationType.ANNOTATION_VISUALIZATION);
 		parameterMap.put(OntoGraphDataBuilder.VISUALIZATION, visualization);
 
 		// master
-		String master = VisConfigType.getAnnotation(section,
+		String master = VisualizationConfigType.getAnnotation(section,
 				PackageManager.MASTER_ATTRIBUTE_NAME);
 		if (master != null) {
 			parameterMap.put(OntoGraphDataBuilder.MASTER, master);
 		}
 
 		// language
-		String lang = VisConfigType.getAnnotation(section,
+		String lang = VisualizationConfigType.getAnnotation(section,
 				SparqlVisualizationType.ANNOTATION_LANGUAGE);
 		if (lang != null) {
 			parameterMap.put(OntoGraphDataBuilder.LANGUAGE, lang);
 		}
 
 		// labels
-		String labelValue = VisConfigType.getAnnotation(section,
+		String labelValue = VisualizationConfigType.getAnnotation(section,
 				SparqlVisualizationType.ANNOTATION_LABELS);
 		parameterMap.put(OntoGraphDataBuilder.USE_LABELS, labelValue);
 
 		// rank direction
-		String rankDir = VisConfigType.getAnnotation(section,
+		String rankDir = VisualizationConfigType.getAnnotation(section,
 				SparqlVisualizationType.ANNOTATION_RANK_DIR);
 		parameterMap.put(OntoGraphDataBuilder.RANK_DIRECTION, rankDir);
 
 		// link mode
-		String linkModeValue = VisConfigType.getAnnotation(section,
+		String linkModeValue = VisualizationConfigType.getAnnotation(section,
 				SparqlVisualizationType.ANNOTATION_LINK_MODE);
 		if (linkModeValue == null) {
 			// default link mode is 'jump'
@@ -302,14 +302,14 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 		parameterMap.put(OntoGraphDataBuilder.LINK_MODE, linkModeValue);
 
 		// add to dot
-		String dotAppPrefix = VisConfigType.getAnnotation(section,
+		String dotAppPrefix = VisualizationConfigType.getAnnotation(section,
 				ConceptVisualizationType.ANNOTATION_DOT_APP);
 		if (dotAppPrefix != null) {
 			parameterMap.put(OntoGraphDataBuilder.ADD_TO_DOT, dotAppPrefix + "\n");
 		}
 
 		// showInverse flag
-		String inverseFlag = VisConfigType.getAnnotation(section,
+		String inverseFlag = VisualizationConfigType.getAnnotation(section,
 				ConceptVisualizationType.ANNOTATION_SHOWINVERSE);
 		if(inverseFlag != null) {
 			parameterMap.put(OntoGraphDataBuilder.SHOW_INVERSE, inverseFlag);
@@ -317,7 +317,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 
 
 		// colors
-		String colorRelationName = VisConfigType.getAnnotation(section,
+		String colorRelationName = VisualizationConfigType.getAnnotation(section,
 				ConceptVisualizationType.ANNOTATION_COLORS);
 
 		if (!Strings.isBlank(colorRelationName)) {

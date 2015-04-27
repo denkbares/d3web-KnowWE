@@ -19,22 +19,16 @@
 
 package de.knowwe.rdfs.vis.markup;
 
-import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
-
 /**
- * Provides backwards compativility for ConceptVisualization.
+ * Provides backwards compatibility for ConceptVisualization.
  *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 27.04.15
  */
 public class ConceptVisType extends ConceptVisualizationType {
 
-
-	@Override
-	protected DefaultMarkup createMarkup() {
-		DefaultMarkup markup = super.createMarkup();
-		markup.setDeprecated("ConceptVisualization");
-		return markup;
+	public ConceptVisType() {
+		getMarkup().setDeprecated("ConceptVisualization");
 	}
 
 	@Override
