@@ -36,6 +36,7 @@ import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.kdom.defaultMarkup.CompileMarkupPackageRegistrationScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageReferenceRegistrationScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageRegistrationScript;
@@ -140,11 +141,8 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 			}
 		});
 
-		// don't add this markup section to the packages, instead, add it to the compilation manually
-		// if we would add it to a package and that package is compiled in multiple kb markups,
-		// all kb markup sections in that package would be compiled by the each compiler, although each should
-		// only be compiled by one
 		removeCompileScript(PackageRegistrationCompiler.class, DefaultMarkupPackageRegistrationScript.class);
+		addCompileScript(new CompileMarkupPackageRegistrationScript());
 	}
 
 	private static class D3webCompilerRegistrationScript extends PackageRegistrationScript<PackageCompileType> {

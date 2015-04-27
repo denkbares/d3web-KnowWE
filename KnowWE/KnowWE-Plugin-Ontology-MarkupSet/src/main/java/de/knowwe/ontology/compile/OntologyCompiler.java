@@ -141,10 +141,13 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 		}
 
 		for (Section<?> section : sectionsOfPackage) {
-			scriptCompiler.addSubtree(section);
+			// only compile the OntologyType sections belonging to this compiler
+			if (!(section.get() instanceof OntologyType)
+					|| Sections.ancestor(getCompileSection(), OntologyType.class) == section) {
+				scriptCompiler.addSubtree(section);
+			}
 		}
-		// the %%Ontology markup section is not part of the package, so we add it manually just for this compiler
-		scriptCompiler.addSubtree(Sections.ancestor(getCompileSection(), OntologyType.class));
+
 
 		scriptCompiler.compile();
 

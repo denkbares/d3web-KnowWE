@@ -61,8 +61,7 @@ public class DefaultMarkupPackageCompileType extends PackageCompileType {
 
 	@Override
 	public String[] getPackagesToCompile(Section<? extends PackageCompileType> section) {
-		Section<DefaultMarkupType> markupSection = Sections.ancestor(section,
-				DefaultMarkupType.class);
+		Section<DefaultMarkupType> markupSection = Sections.ancestor(section, DefaultMarkupType.class);
 		List<Section<? extends AnnotationContentType>> usesSections = DefaultMarkupType.getAnnotationContentSections(markupSection, PackageManager.COMPILE_ATTRIBUTE_NAME);
 		List<Section<PackageTerm>> termSections = new ArrayList<Section<PackageTerm>>();
 		for (Section<? extends AnnotationContentType> usesSection : usesSections) {

@@ -105,10 +105,12 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		Collection<Section<?>> sectionsOfPackage = getPackageManager().getSectionsOfPackage(
 				packagesToCompile);
 		for (Section<?> section : sectionsOfPackage) {
-			scriptCompiler.addSubtree(section);
+			// only compile the KnowledgeBaseType sections belonging to this compiler
+			if (!(section.get() instanceof KnowledgeBaseType)
+					|| Sections.ancestor(getCompileSection(), KnowledgeBaseType.class) == section) {
+				scriptCompiler.addSubtree(section);
+			}
 		}
-		// the %%KnowledgeBase markup section is not part of the package, so we add it manually just for this compiler
-		scriptCompiler.addSubtree(Sections.ancestor(getCompileSection(), KnowledgeBaseType.class));
 
 		scriptCompiler.compile();
 
