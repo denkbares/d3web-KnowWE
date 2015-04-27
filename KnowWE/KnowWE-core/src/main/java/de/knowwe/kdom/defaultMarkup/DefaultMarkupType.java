@@ -130,9 +130,17 @@ public class DefaultMarkupType extends AbstractType {
 					// non-line-break item
 					"[:=\\p{Blank}]\\p{Blank}*([^/][^$]*?[%/]%)"; // CONTENT
 
-	private final DefaultMarkup markup;
+	private DefaultMarkup markup;
 
 	public DefaultMarkupType(DefaultMarkup markup) {
+		applyMarkup(markup);
+	}
+
+	public DefaultMarkupType() {
+
+	}
+
+	public void applyMarkup(DefaultMarkup markup) {
 		this.markup = markup;
 		this.setRenderer(markup.isInline()
 				? new ToolMenuDecoratingRenderer(DelegateRenderer.getInstance())
@@ -168,12 +176,16 @@ public class DefaultMarkupType extends AbstractType {
 	 * @return the contents of the content block, if the section is not null. An empty string
 	 * otherwise.
 	 * @throws IllegalArgumentException if the specified section is not of {@link
-	 * DefaultMarkupType}
+	 *                                  DefaultMarkupType}
 	 */
 	public static String getContent(Section<?> section) {
 		Section<? extends ContentType> contentSection = getContentSection(section);
-		if (contentSection != null) return contentSection.getText();
-		else return "";
+		if (contentSection != null) {
+			return contentSection.getText();
+		}
+		else {
+			return "";
+		}
 	}
 
 	/**
@@ -183,7 +195,7 @@ public class DefaultMarkupType extends AbstractType {
 	 * @param section the section to take the content section from
 	 * @return the content section
 	 * @throws IllegalArgumentException if the specified section is not of {@link
-	 * DefaultMarkupType}
+	 *                                  DefaultMarkupType}
 	 */
 	public static Section<? extends ContentType> getContentSection(Section<?> section) {
 		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
@@ -214,10 +226,10 @@ public class DefaultMarkupType extends AbstractType {
 	 * section with the specified name, null is returned.
 	 *
 	 * @param section the section to be searched
-	 * @param name the name of the annotation
+	 * @param name    the name of the annotation
 	 * @return the content string of the annotation
 	 * @throws IllegalArgumentException if the specified section is not of {@link
-	 * DefaultMarkupType}
+	 *                                  DefaultMarkupType}
 	 */
 	public static String getAnnotation(Section<?> section, String name) {
 		Section<?> annotationSection = getAnnotationContentSection(section, name);
@@ -231,7 +243,7 @@ public class DefaultMarkupType extends AbstractType {
 	 * section with the specified name, an empty array is returned.
 	 *
 	 * @param section the section to be searched
-	 * @param name the name of the annotation
+	 * @param name    the name of the annotation
 	 * @return the content strings of the found annotation
 	 * @created 26.01.2011
 	 */
@@ -253,10 +265,10 @@ public class DefaultMarkupType extends AbstractType {
 	 * annotation with the specified name, null is returned.
 	 *
 	 * @param section the section to be searched
-	 * @param name the name of the annotation
+	 * @param name    the name of the annotation
 	 * @return the annotation section
 	 * @throws IllegalArgumentException if the specified section is not of {@link
-	 * DefaultMarkupType}
+	 *                                  DefaultMarkupType}
 	 */
 	@SuppressWarnings("unchecked")
 	public static Section<? extends AnnotationContentType> getAnnotationContentSection(Section<? extends Type> section, String name) {
@@ -280,10 +292,10 @@ public class DefaultMarkupType extends AbstractType {
 	 * annotation with the specified name, an empty list is returned.
 	 *
 	 * @param section the section to be searched
-	 * @param name the name of the annotation
+	 * @param name    the name of the annotation
 	 * @return the list of annotation sections
 	 * @throws IllegalArgumentException if the specified section is not of {@link
-	 * DefaultMarkupType}
+	 *                                  DefaultMarkupType}
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Section<? extends AnnotationContentType>> getAnnotationContentSections(Section<?> section, String name) {
@@ -296,10 +308,10 @@ public class DefaultMarkupType extends AbstractType {
 	 * annotation with the specified name, an empty list is returned.
 	 *
 	 * @param section the section to be searched
-	 * @param names the names of the annotations to be returned
+	 * @param names   the names of the annotations to be returned
 	 * @return the list of annotation sections
 	 * @throws IllegalArgumentException if the specified section is not of {@link
-	 * DefaultMarkupType}
+	 *                                  DefaultMarkupType}
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Section<? extends AnnotationContentType>> getAnnotationContentSections(Section<?> section, String... names) {
@@ -361,7 +373,7 @@ public class DefaultMarkupType extends AbstractType {
 	 * @param section the section to be searched
 	 * @return the list of annotation sections
 	 * @throws IllegalArgumentException if the specified section is not of {@link
-	 * DefaultMarkupType}
+	 *                                  DefaultMarkupType}
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Section<? extends AnnotationContentType>> getAllAnnotationContentSections(Section<?> section) {
