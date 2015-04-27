@@ -394,4 +394,56 @@
 		<parameter id="scope" value="SparqlContentType" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="OntologyTableMarkup">
+		<parameter id="class" value="de.knowwe.ontology.kdom.table.OntologyTableMarkup" />
+		<parameter id="name" value="OntologyTableMarkup" />
+		<parameter id="description" value="Defines markup for ontology tables." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OntologyTableToolProvider">
+		<parameter id="class" value="de.knowwe.ontology.kdom.table.OntologyTableToolProvider" />
+		<parameter id="name" value="OntologyTableToolProvider" />
+		<parameter id="description" value="Offers a tool for a spreadsheet-like table editor." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="3" />
+		<parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
+		<parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
+		<parameter id="script" value="DefaultTableEditTool.js" />
+		<parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
+		<parameter id="css" value="KnowWE-Plugin-AutoComplete.css" />
+		<parameter id="css" value="DefaultTableEditTool.css" />
+		<parameter id="scope" value="OntologyTableMarkup" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript" id="LineHandler">
+		<parameter id="class" value="de.knowwe.ontology.kdom.table.LineHandler" />
+		<parameter id="name" value="LineHandler" />
+		<parameter id="description" value="Type LineHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4.55" />
+		<parameter id="compilepriority" value="0" />
+		<parameter id="scope" value="OntologyTableMarkup/**/TableLine" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="LineRenderer">
+		<parameter id="class" value="de.knowwe.ontology.kdom.table.LineRenderer" />
+		<parameter id="name" value="LineRenderer" />
+		<parameter id="description" value="Renderer for TableLines" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="OntologyTableMarkup/**/TableLine" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="CellContentRenderer">
+		<parameter id="class" value="de.knowwe.ontology.kdom.table.CellContentRenderer" />
+		<parameter id="name" value="CellContentRenderer" />
+		<parameter id="description" value="Renderer for CellContent" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="OntologyTableMarkup/**/TableCellContent" />
+	</extension>
+
 </plugin>

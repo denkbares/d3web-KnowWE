@@ -58,3 +58,17 @@ KNOWWE.plugin.ontology = function() {
 		}
 	}
 }();
+
+jq$(document)
+	.ready(
+	function () {
+		// Prepare for instant table editor with custom
+		// auto-complete
+		KNOWWE.plugin.ontology.tableEditTool = KNOWWE.plugin.tableEditTool
+			.create(function (callback, prefix, spreadsheet, row, col) {
+				AutoComplete.sendCompletionAction(function(byAjax) {
+					AutoComplete.unquoteTermIdentifiers(byAjax);
+					callback(byAjax);
+				}, prefix, "OntologyTableMarkup");
+			});
+	});

@@ -18,6 +18,7 @@
  */
 package de.knowwe.ontology.turtle;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.ontoware.rdf2go.model.node.Node;
@@ -97,8 +98,11 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			// find the one predicate relevant for this turtle object
 			Section<PredicateSentence> predSentence = Sections.ancestor(s,
 					PredicateSentence.class);
+			if (predSentence != null) {
+				return Sections.children(predSentence, Predicate.class);
+			}
 
-			return Sections.children(predSentence, Predicate.class);
+			return Collections.emptyList();
 		}
 
 		@Override
