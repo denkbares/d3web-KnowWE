@@ -53,7 +53,7 @@ KNOWWE.core = function() {
 		},
 
 		restoreThisVersion : function() {
-			var version = document.getElementById('version').value
+			var version = document.getElementById('version').value;
 			var params = {
 				restoreThisVersion : version,
 				action : 'RestoreAction'
@@ -139,14 +139,14 @@ KNOWWE.core.actions = function() {
 					TargetNamespace : nodeID,
 					KWikitext : selectedOption,
 					KWiki_Topic : topic
-				}
+				};
 				var options = {
 					url : KNOWWE.helper.getURL(params),
 					response : {
 						action : none,
 						fn : null
 					}
-				}
+				};
 				new _KA(options).send();
 			}
 		}
@@ -557,7 +557,7 @@ KNOWWE.core.rerendercontent = function() {
 		 */
 		init : function() {
 			KNOWWE.helper.observer.subscribe('update', KNOWWE.core.rerendercontent.update);
-			KNOWWE.core.rerendercontent.update(_KS('.asynchronRenderer'), 'replaceElement', false);
+			KNOWWE.core.rerendercontent.update(_KS('.asynchronRenderer'), 'replaceElement', null, false);
 		},
 		/**
 		 * Function: updateNode
@@ -575,14 +575,14 @@ KNOWWE.core.rerendercontent = function() {
 				KWiki_Topic : topic,
 				ajaxToHTML : ajaxToHTML
 
-			}
+			};
 			var url = KNOWWE.core.util.getURL(params);
 			KNOWWE.core.rerendercontent.execute(url, node, 'insert');
 		},
 		/**
 		 * Function: update
 		 */
-		update : function(elements, action, callback) {
+		update : function(elements, action, callback, indicateProcess) {
 			if (elements == undefined) elements = _KS('.ReRenderSectionMarker');
 			if (action == undefined) action = 'replace';
 			if (!callback && typeof this == "function") callback = this;
@@ -604,7 +604,7 @@ KNOWWE.core.rerendercontent = function() {
 						params.status = this.wikiStatus;
 					}
 					var url = KNOWWE.core.util.getURL(params);
-					KNOWWE.core.rerendercontent.execute(url, rel.id, action, callback, true);
+					KNOWWE.core.rerendercontent.execute(url, rel.id, action, callback, indicateProcess);
 				}
 			}
 		},
