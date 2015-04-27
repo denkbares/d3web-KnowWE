@@ -38,6 +38,7 @@ import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.AnnotationNameType;
 import de.knowwe.kdom.defaultMarkup.AnnotationType;
+import de.knowwe.kdom.defaultMarkup.CompileMarkupPackageRegistrationScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageReferenceRegistrationScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageRegistrationScript;
@@ -58,6 +59,7 @@ public class OntologyType extends DefaultMarkupType {
 	public static final String ANNOTATION_RULESET = "ruleset";
 	public static final String ANNOTATION_COMMIT = "commit";
 	public static final String ANNOTATION_IMPORT = "import";
+	public static final String ANNOTATION_SILENT_IMPORT = "silentImport";
 
 	private static final DefaultMarkup MARKUP;
 
@@ -68,6 +70,9 @@ public class OntologyType extends DefaultMarkupType {
 
 		MARKUP.addAnnotation(ANNOTATION_IMPORT, false);
 		MARKUP.addAnnotationIcon(ANNOTATION_IMPORT, Icon.FILE_XML.addTitle("Import"));
+
+		MARKUP.addAnnotation(ANNOTATION_SILENT_IMPORT, false);
+		MARKUP.addAnnotationIcon(ANNOTATION_SILENT_IMPORT, Icon.FILE.addTitle("Import silently (faster, but without term support)"));
 
 		MARKUP.addAnnotation(ANNOTATION_RULESET, false, RuleSet.values());
 		MARKUP.addAnnotationIcon(ANNOTATION_RULESET, Icon.COG.addTitle("Rule Set"));
@@ -101,11 +106,8 @@ public class OntologyType extends DefaultMarkupType {
 			}
 		});
 
-		// don't add this markup section to the packages, instead, add it to the compilation manually
-		// if we would add it to a package and that package is compiled in multiple ontology markups,
-		// all ontology markup sections in that package would be compiled by the each compiler, although each should
-		// only be compiled by one
 		removeCompileScript(PackageRegistrationCompiler.class, DefaultMarkupPackageRegistrationScript.class);
+		addCompileScript(new CompileMarkupPackageRegistrationScript());
 
 	}
 

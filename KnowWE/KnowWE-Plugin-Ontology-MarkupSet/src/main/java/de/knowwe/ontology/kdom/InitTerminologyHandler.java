@@ -71,8 +71,18 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 		registerTerminology(compiler, compiler.getRdf2GoCore(), section);
 
 		Section<OntologyType> ontologyMarkup = Sections.ancestor(section, OntologyType.class);
-		List<Section<? extends AnnotationContentType>> annotationContentSections = DefaultMarkupType.getAnnotationContentSections(ontologyMarkup, OntologyType.ANNOTATION_IMPORT);
+		handleImports(compiler, DefaultMarkupType.getAnnotationContentSections(ontologyMarkup, OntologyType.ANNOTATION_IMPORT), false);
+		handleImports(compiler, DefaultMarkupType.getAnnotationContentSections(ontologyMarkup, OntologyType.ANNOTATION_SILENT_IMPORT), true);
 
+		registerTerm(compiler, compiler.getRdf2GoCore(), section, "http://www.w3.org/2002/07/owl#Thing", Resource.class);
+		registerTerm(compiler, compiler.getRdf2GoCore(), section, "http://www.w3.org/2002/07/owl#Nothing", Resource.class);
+		registerTerm(compiler, compiler.getRdf2GoCore(), section, "http://www.w3.org/2005/xpath-functions#string-length", Resource.class);
+		registerTerm(compiler, compiler.getRdf2GoCore(), section, "http://www.w3.org/2001/XMLSchema#decimal", Resource.class);
+
+		return Messages.noMessage();
+	}
+
+	private void handleImports(OntologyCompiler compiler, List<Section<? extends AnnotationContentType>> annotationContentSections, boolean silent) {
 		for (Section<? extends AnnotationContentType> annotationContentSection : annotationContentSections) {
 			String importString = Strings.trimQuotes(annotationContentSection.getText());
 			URL url = null;
@@ -83,20 +93,13 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 				// we will now, if url == null...
 			}
 			if (url == null) {
-				importAttachment(compiler, annotationContentSection, importString);
+				importAttachment(compiler, annotationContentSection, importString, silent);
 			}
 			else {
 				String attachmentName = cacheOntology(compiler, annotationContentSection, url, importString);
-				importAttachment(compiler, annotationContentSection, attachmentName);
+				importAttachment(compiler, annotationContentSection, attachmentName, silent);
 			}
 		}
-
-		registerTerm(compiler, compiler.getRdf2GoCore(), section, "http://www.w3.org/2002/07/owl#Thing", Resource.class);
-		registerTerm(compiler, compiler.getRdf2GoCore(), section, "http://www.w3.org/2002/07/owl#Nothing", Resource.class);
-		registerTerm(compiler, compiler.getRdf2GoCore(), section, "http://www.w3.org/2005/xpath-functions#string-length", Resource.class);
-		registerTerm(compiler, compiler.getRdf2GoCore(), section, "http://www.w3.org/2001/XMLSchema#decimal", Resource.class);
-
-		return Messages.noMessage();
 	}
 
 	private String cacheOntology(OntologyCompiler compiler, Section<? extends AnnotationContentType> section, URL url, String importString) {
@@ -140,7 +143,7 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 		return attachmentName;
 	}
 
-	private void importAttachment(OntologyCompiler compiler, Section<? extends AnnotationContentType> section, String attachmentFile) {
+	private void importAttachment(OntologyCompiler compiler, Section<? extends AnnotationContentType> section, String attachmentFile, boolean silent) {
 		Section<ImportType> importSection = Sections.successor(section, ImportType.class);
 		String path = createPath(section, attachmentFile);
 		WikiAttachment attachment;
@@ -168,10 +171,13 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 			String fileName = attachment.getFileName();
 			Syntax syntax = Rdf2GoUtils.syntaxForFileName(fileName);
 			core.readFrom(attachment.getInputStream(), syntax);
-			// we need rdfs reasoning for the SPARQLs to work
-			Rdf2GoCore dummy = new Rdf2GoCore(RuleSet.RDFS_OPTIMIZED);
-			dummy.readFrom(attachment.getInputStream(), syntax);
-			registerTerminology(compiler, dummy, importSection);
+			if (!silent) {
+				// we need rdfs reasoning for the SPARQLs to work
+				Rdf2GoCore dummy = new Rdf2GoCore(RuleSet.RDFS_OPTIMIZED);
+				dummy.readFrom(attachment.getInputStream(), syntax);
+				// register the terminology imported in the empty dummy repository
+				registerTerminology(compiler, dummy, importSection);
+			}
 		}
 		catch (Exception e) {
 			Log.severe("Exception while importing ontology", e);
