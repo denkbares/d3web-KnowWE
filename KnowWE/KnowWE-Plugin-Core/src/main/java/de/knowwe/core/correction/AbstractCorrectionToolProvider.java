@@ -18,6 +18,7 @@
  */
 package de.knowwe.core.correction;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.knowwe.core.action.Action;
@@ -38,13 +39,19 @@ import de.knowwe.util.Icon;
 public abstract class AbstractCorrectionToolProvider implements ToolProvider {
 
 	private final Class<? extends Action> actionClass;
+	private final boolean showHeader;
 
 	public AbstractCorrectionToolProvider() {
-		this.actionClass = KDOMReplaceTermNameAction.class;
+		this(KDOMReplaceTermNameAction.class);
 	}
 
 	public AbstractCorrectionToolProvider(Class<? extends Action> actionClass) {
+		this(actionClass, true);
+	}
+
+	public AbstractCorrectionToolProvider(Class<? extends Action> actionClass, boolean showHeader) {
 		this.actionClass = actionClass;
+		this.showHeader = showHeader;
 	}
 
 	@Override
@@ -54,19 +61,21 @@ public abstract class AbstractCorrectionToolProvider implements ToolProvider {
 			return ToolUtils.emptyToolArray();
 		}
 
-		Tool[] tools = new Tool[suggestions.size() + 1];
+		List<Tool> tools = new ArrayList<>();
 
-		tools[0] = new DefaultTool(
-				Icon.LIGHTBULB,
-				Messages.getMessageBundle().getString("KnowWE.Correction.do"),
-				"",
-				null,
-				Tool.CATEGORY_CORRECT
-		);
+		if (showHeader) {
+			tools.add(new DefaultTool(
+					Icon.LIGHTBULB,
+					Messages.getMessageBundle().getString("KnowWE.Correction.do"),
+					"",
+					null,
+					Tool.CATEGORY_CORRECT
+			));
+		}
 
 		for (int i = 0; i < suggestions.size(); i++) {
 			Suggestion suggestion = suggestions.get(i);
-			tools[i + 1] = new DefaultTool(
+			tools.add(new DefaultTool(
 					Icon.SHARE,
 					suggestions.get(i).getSuggestionLabel(),
 					"",
@@ -76,10 +85,10 @@ public abstract class AbstractCorrectionToolProvider implements ToolProvider {
 							+ (!suggestion.isScript() ? "'" : "") + ", '"
 							+ actionClass.getSimpleName() + "');",
 					Tool.CATEGORY_CORRECT + "/item"
-			);
+			));
 		}
 
-		return tools;
+		return tools.toArray(new Tool[tools.size()]);
 	}
 
 	protected abstract List<Suggestion> getSuggestions(Section<?> section);
