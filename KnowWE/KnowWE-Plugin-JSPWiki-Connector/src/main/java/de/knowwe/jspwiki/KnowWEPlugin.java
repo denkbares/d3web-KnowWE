@@ -214,6 +214,11 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		 */
 		String title = wikiContext.getRealPage().getName();
 
+		// happens when showing attachments, ignore...
+		if (title.contains("/") && content.equals("")) {
+			return content;
+		}
+
 		if (supportArticleNames.contains(title)) {
 			try {
 				Article supportArticle = Environment.getInstance()
