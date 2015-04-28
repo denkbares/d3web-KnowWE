@@ -171,6 +171,7 @@ DenkbaresSkin.scrollFavorites = function() {
 	var actionsBottom = jq$("#actionsBottom");
 	var disableFixing = (!actionsBottom.exists()
 	|| favHeight >= actionsBottom.offset().top + actionsBottom.height());
+	if (!DenkbaresSkin.favoriteStatus) return;
 	var favLeft = DenkbaresSkin.favoriteStatus.status == 'expanded' ?
 		DenkbaresSkin.favoriteStatus.favLeftExpanded : DenkbaresSkin.favoriteStatus.favLeftCollapsed;
 	jq$("#favorites").css(DenkbaresSkin.scrollTransitionDuration);
