@@ -403,8 +403,6 @@ public abstract class DiaFluxSystemTest {
 		switchToEditor(articleHandle);
 
 		editActionNode(5, "Therapy üöä", "" + Keys.ARROW_DOWN);
-		// for whatever reason, clicking ok after editing the first time does not work (also when done manually)
-		editActionNode(5, "Therapy üöä", "" + Keys.ARROW_DOWN);
 		editActionNode(6, "Therapy üöä", "" + Keys.ARROW_DOWN);
 		//editActionNode(6, "Therapy       " + Keys.ARROW_DOWN + Keys.ARROW_DOWN, "" + Keys.ARROW_DOWN + Keys.ARROW_DOWN);
 
@@ -437,8 +435,6 @@ public abstract class DiaFluxSystemTest {
 
 		switchToEditor(articleHandle);
 
-		editActionNode(13, "BMI-SelectTh", "" + Keys.ARROW_DOWN);
-		// for whatever reason, clicking ok after editing the first time does not work (also when done manually)
 		editActionNode(13, "BMI-SelectTh", "" + Keys.ARROW_DOWN);
 		editActionNode(14, "BMI-SelectTh", "" + Keys.ARROW_DOWN + Keys.ARROW_DOWN);
 
