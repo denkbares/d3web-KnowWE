@@ -820,7 +820,7 @@ Flowchart.prototype.toXML = function() {
 
 	xml += '\t<!-- nodes of the flowchart -->\n';
 	for (var i = 0; i < this.nodes.length; i++) {
-		this.nodes[i].stopEdit();
+		//this.nodes[i].stopEdit();
 		xml += this.nodes[i].toXML(dx, dy) + '\n';
 	}
 

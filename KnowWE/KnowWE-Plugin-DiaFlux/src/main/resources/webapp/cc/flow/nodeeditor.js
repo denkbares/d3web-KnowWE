@@ -263,9 +263,6 @@ NodeEditor.prototype.handleOk = function() {
 			position : this.nodeModel.position
 		};
 		if (this.tabItems[0].className == 'actionTab_selected') {
-			// vor dem ok noch sicherstellen, dass
-			// das Selektionsfeld uebernommen wurde (blur() hilft hier)
-			var select = this.dom.select;
 			var action = this.actionEditor.getAction();
 			this.nodeModel.action = {
 				markup : action ? action.getMarkup() : 'NOP',
