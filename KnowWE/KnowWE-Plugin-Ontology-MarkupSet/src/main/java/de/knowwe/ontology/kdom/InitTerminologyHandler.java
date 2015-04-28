@@ -18,17 +18,6 @@
  */
 package de.knowwe.ontology.kdom;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.model.QueryRow;
-import org.ontoware.rdf2go.model.Syntax;
-
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
@@ -55,6 +44,16 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.RuleSet;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
+import org.ontoware.aifbcommons.collection.ClosableIterator;
+import org.ontoware.rdf2go.model.QueryRow;
+import org.ontoware.rdf2go.model.Syntax;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Adds the all the terms of the statements that are in the repository by default or are added via import to the {@link
@@ -196,7 +195,7 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 
 	private void registerTerminology(OntologyCompiler compiler, Rdf2GoCore rdf2GoCore, Section<?> section) {
 		String query = new SparqlQuery().SELECT("?resource")
-				.WHERE("{ ?resource rdf:type rdfs:Resource } UNION { ?resource rdf:type rdfs:Class } MINUS { ?resource rdf:type rdf:Property }")
+				.WHERE("{ ?resource rdf:type rdfs:Resource } UNION { ?resource rdf:type rdfs:Class } UNION { ?resource rdf:type owl:Class } MINUS { ?resource rdf:type rdf:Property }")
 				.AND_WHERE("FILTER (!isBlank(?resource))")
 				.toString();
 		registerQueryResult(compiler, rdf2GoCore, section, query, Resource.class);
