@@ -552,7 +552,7 @@ Flowchart.handleButtonVisibility = function(sectionId) {
 		$this = jq$(this);
 		var text = $this.text();
 		if (scale > 0.9 && text === "+"
-			|| diff >= 0 && (text === "Fit" || text === "-")
+			|| diff >= 0 && (text === "Fit" || text === "-")
 			|| scale === 1 && text === "100%") {
 			$this.css('opacity', '0.5');
 		} else {
@@ -571,9 +571,11 @@ jq$(window).resize(function() {
 	}, 300, "Flowchart ZoomToFitResizing");
 });
 
-KNOWWE.helper.observer.subscribe("flowchartrendered", function() {
-	Flowchart.handleButtonVisibility(jq$(this.flow.dom).parents('.type_DiaFlux').attr('id'));
-});
+if (typeof KNOWWE != "undefined") {
+	KNOWWE.helper.observer.subscribe("flowchartrendered", function() {
+		Flowchart.handleButtonVisibility(jq$(this.flow.dom).parents('.type_DiaFlux').attr('id'));
+	});
+}
 
 
 
