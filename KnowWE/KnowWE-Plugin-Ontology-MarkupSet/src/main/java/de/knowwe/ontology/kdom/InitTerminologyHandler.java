@@ -172,7 +172,7 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 			core.readFrom(attachment.getInputStream(), syntax);
 			if (!silent) {
 				// we need rdfs reasoning for the SPARQLs to work
-				Rdf2GoCore dummy = new Rdf2GoCore(RuleSet.RDFS_OPTIMIZED);
+				Rdf2GoCore dummy = new Rdf2GoCore(RuleSet.RDFS);
 				dummy.readFrom(attachment.getInputStream(), syntax);
 				// register the terminology imported in the empty dummy repository
 				registerTerminology(compiler, dummy, importSection);
