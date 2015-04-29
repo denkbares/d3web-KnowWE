@@ -73,7 +73,7 @@ public class CompilerManager {
 	static ExecutorService createExecutorService() {
 		// we need at least to threads here, because one thread is used to start compilation
 		// and the rest for compiling the individual compilers
-		int threadCount = Math.max(2, Runtime.getRuntime().availableProcessors());
+		int threadCount = Runtime.getRuntime().availableProcessors() + 1;
 		ExecutorService pool = Executors.newFixedThreadPool(threadCount, runnable -> {
 			Thread thread = new Thread(runnable, "KnowWE-Compiler");
 			compileThreads.put(thread, null);
