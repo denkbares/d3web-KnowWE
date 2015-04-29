@@ -23,7 +23,7 @@ function ToolMenu() {
 }
 
 ToolMenu.prototype.decorateToolMenus = function($parent) {
-	if (!$parent) $parent = jq$('.defaultMarkupFrame, .tablePopupParent');
+	if (!$parent) $parent = jq$('.toolMenuParent');
 	var decorators = $parent.find('.toolsMenuDecorator');
 	decorators.each(function() {
 		var a = jq$(this);

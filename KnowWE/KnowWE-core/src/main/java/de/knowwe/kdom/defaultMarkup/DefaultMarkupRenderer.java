@@ -307,7 +307,7 @@ public class DefaultMarkupRenderer implements Renderer {
 										  UserContext user,
 										  RenderResult string) {
 
-		String cssClass = "defaultMarkupFrame";
+		String cssClass = "defaultMarkupFrame toolMenuParent";
 		if (cssClassName != null) cssClass += " " + cssClassName;
 		string.appendHtml("<div id=\"" + sectionID + "\" class='" + cssClass + "'>\n");
 
