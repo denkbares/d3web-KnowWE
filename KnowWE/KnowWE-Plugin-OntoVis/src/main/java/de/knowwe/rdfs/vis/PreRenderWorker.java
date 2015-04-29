@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import de.d3web.utils.Log;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -76,7 +77,8 @@ public class PreRenderWorker {
 		Future futureRenderTask;
 		if (priority) {
 			futureRenderTask = priorityes.submit(renderSection);
-		} else {
+		}
+		else {
 			futureRenderTask = es.submit(renderSection);
 		}
 		workerPool.put(Utils.getFileID(section), futureRenderTask);
@@ -98,7 +100,8 @@ public class PreRenderWorker {
 		if (isPreRendering(section)) {
 			cache = true;
 			renderJob = getRunningPreRenderTaskFor(section);
-		} else {
+		}
+		else {
 			renderJob = queueSectionPreRendering(r, section, user, string, true);
 		}
 
@@ -113,11 +116,8 @@ public class PreRenderWorker {
 				}
 			}
 		}
-		catch (InterruptedException e) {
-			// intended interruption
-		}
-		catch (ExecutionException e) {
-			e.printStackTrace();
+		catch (ExecutionException | InterruptedException e) {
+			Log.severe("Exception while generating and caching graphs", e);
 		}
 
 	}
