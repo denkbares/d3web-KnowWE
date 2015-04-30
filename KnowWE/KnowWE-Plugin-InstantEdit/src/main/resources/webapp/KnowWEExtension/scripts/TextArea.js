@@ -417,20 +417,6 @@ TextArea.prototype.setSelection = function(f, a) {
 		b.select()
 	}
 
-	// scroll to the new cursor position
-	var lineNumber = area.value.substr(0, area.selectionStart).split("\n").length;
-	var lineHeight = parseInt(jq$(area).css('line-height'));
-	var areaOffset = jq$(area).offset().top;
-	var windowHeight = jq$(window).height();
-	var windowScroll = jq$(window).scrollTop();
-	var cursorOffset = lineHeight * lineNumber;
-	var totalCursorOffset = areaOffset + cursorOffset;
-	if (totalCursorOffset - lineHeight < windowScroll) {
-		jq$(window).scrollTop(totalCursorOffset - lineHeight);
-	}
-	if (totalCursorOffset > windowScroll + windowHeight) {
-		jq$(window).scrollTop(totalCursorOffset - windowHeight);
-	}
 	return this
 };
 
