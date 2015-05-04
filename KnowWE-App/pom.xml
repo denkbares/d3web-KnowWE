@@ -366,11 +366,6 @@
 					<version>0.2-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-SparqlEndpoint</artifactId>
-					<version>0.2-SNAPSHOT</version>
-				</dependency>
 			</dependencies>
 		</profile>
 
@@ -473,6 +468,11 @@
 					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-SparqlEndpoint</artifactId>
+					<version>0.2-SNAPSHOT</version>
+				</dependency>
 			</dependencies>
 		</profile>
 
@@ -520,11 +520,6 @@
 					<artifactId>KnowWE-Plugin-Todos</artifactId>
 					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
-				</dependency>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-SparqlEndpoint</artifactId>
-					<version>0.2-SNAPSHOT</version>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -584,13 +579,7 @@
 					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-SparqlEndpoint</artifactId>
-					<version>0.2-SNAPSHOT</version>
-				</dependency>
 			</dependencies>
-
 		</profile>
 
 		<profile>
