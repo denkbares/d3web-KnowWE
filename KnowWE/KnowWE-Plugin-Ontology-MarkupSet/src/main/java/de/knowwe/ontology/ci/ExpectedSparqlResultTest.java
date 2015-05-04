@@ -36,7 +36,7 @@ import de.knowwe.ontology.ci.provider.SparqlExpectedResultSection;
 import de.knowwe.ontology.ci.provider.SparqlTestObjectProviderUtils;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
-import de.knowwe.rdf2go.sparql.SparqlContentType;
+import de.knowwe.ontology.sparql.SparqlContentType;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.rdf2go.utils.ResultTableModel;
 

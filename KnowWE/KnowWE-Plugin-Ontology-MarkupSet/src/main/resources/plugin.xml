@@ -37,6 +37,116 @@
 		</library>
 	</runtime>
 
+	<extension-point id="SparqlResultNodeRenderer">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+	</extension-point>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="ClearCachedSparqlAction">
+		<parameter id="class" value="de.knowwe.ontology.sparql.ClearCachedSparqlAction" />
+		<parameter id="name" value="ClearCachedSparqlAction" />
+		<parameter id="description" value="Action ClearCachedSparqlAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="RefreshSparqlAction">
+		<parameter id="class" value="de.knowwe.ontology.sparql.RefreshSparqlAction" />
+		<parameter id="name" value="RefreshSparqlAction" />
+		<parameter id="description" value="Action RefreshSparqlAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="SparqlPreviewRenderer">
+		<parameter id="class" value="de.knowwe.ontology.sparql.SparqlPreviewRenderer" />
+		<parameter id="name" value="SparqlPreviewRenderer" />
+		<parameter id="description" value="Renders a preview of a sparql query." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="SparqlMarkupType/**/SparqlContentType" />
+	</extension>
+
+
+	<extension plugin-id="KnowWE-Plugin-Ontology-MarkupSet" point-id="SparqlResultNodeRenderer"
+			   id="ReduceNamespaceNodeRenderer">
+		<parameter id="class" value="de.knowwe.ontology.sparql.ReduceNamespaceNodeRenderer" />
+		<parameter id="name" value="ReduceNamespaceNodeRenderer" />
+		<parameter id="description" value="NodeRenderer ReduceNamespaceNodeRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="100" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="SparqlMarkupType">
+		<parameter id="class" value="de.knowwe.ontology.sparql.SparqlMarkupType" />
+		<parameter id="name" value="SparqlMarkupType" />
+		<parameter id="description" value="Type SparqlMarkupType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="3" />
+		<parameter id="scope" value="root" />
+		<parameter id="css" value="KnowWE-Plugin-Rdf2GoSemanticCore.css" />
+	</extension>
+
+	<extension plugin-id="KnowWE-Plugin-Ontology-MarkupSet" point-id="SparqlResultNodeRenderer"
+			   id="DecodeUrlNodeRenderer">
+		<parameter id="class" value="de.knowwe.ontology.sparql.DecodeUrlNodeRenderer" />
+		<parameter id="name" value="DecodeUrlNodeRenderer" />
+		<parameter id="description" value="NodeRenderer DecodeUrlNodeRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="3" />
+	</extension>
+
+	<!--extension plugin-id="KnowWE-Plugin-Rdf2GoSemanticCore"
+			point-id="SparqlResultNodeRenderer"
+			id="ShrinkNodeRenderer">
+		<parameter id="class"
+			value="de.knowwe.ontology.sparql.ShrinkNodeRenderer" />
+		<parameter id="name" value="ShrinkNodeRenderer" />
+		<parameter id="description" value="NodeRenderer ShrinkNodeRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="1000" />
+	</extension-->
+
+	<extension plugin-id="KnowWE-Plugin-Ontology-MarkupSet" point-id="SparqlResultNodeRenderer"
+			   id="TrimDataTypeNodeRenderer">
+		<parameter id="class" value="de.knowwe.ontology.sparql.TrimDataTypeNodeRenderer" />
+		<parameter id="name" value="TrimDataTypeNodeRenderer" />
+		<parameter id="description" value="NodeRenderer TrimDataTypeNodeRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="50" />
+	</extension>
+
+	<extension plugin-id="KnowWE-Plugin-Ontology-MarkupSet" point-id="SparqlResultNodeRenderer"
+			   id="TrimLocaleNodeRenderer">
+		<parameter id="class" value="de.knowwe.ontology.sparql.TrimLocaleNodeRenderer" />
+		<parameter id="name" value="TrimLocaleNodeRenderer" />
+		<parameter id="description" value="NodeRenderer TrimLocaleNodeRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="60" />
+	</extension>
+
+	<extension plugin-id="KnowWE-Plugin-Ontology-MarkupSet" point-id="SparqlResultNodeRenderer"
+			   id="TrimNamespaceNodeRenderer">
+		<parameter id="class" value="de.knowwe.ontology.sparql.TrimNamespaceNodeRenderer" />
+		<parameter id="name" value="TrimNamespaceNodeRenderer" />
+		<parameter id="description" value="NodeRenderer TrimNamespaceNodeRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="50" />
+	</extension>
+
+	<extension plugin-id="KnowWE-Plugin-Ontology-MarkupSet" point-id="SparqlResultNodeRenderer"
+			   id="ArticleLinkNodeRenderer">
+		<parameter id="class" value="de.knowwe.ontology.sparql.ArticleLinkNodeRenderer" />
+		<parameter id="name" value="ArticleLinkNodeRenderer" />
+		<parameter id="description" value="NodeRenderer ArticleLinkNodeRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="2" />
+	</extension>
+
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="OntologyType">
 		<parameter id="class" value="de.knowwe.ontology.compile.OntologyType" />
 		<parameter id="name" value="OntologyType" />

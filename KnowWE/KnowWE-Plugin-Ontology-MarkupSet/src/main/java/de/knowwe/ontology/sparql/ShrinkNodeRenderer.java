@@ -1,4 +1,4 @@
-package de.knowwe.rdf2go.sparql;
+package de.knowwe.ontology.sparql;
 
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;

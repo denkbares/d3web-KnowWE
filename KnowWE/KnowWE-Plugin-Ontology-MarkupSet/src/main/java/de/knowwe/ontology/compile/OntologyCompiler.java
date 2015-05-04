@@ -24,6 +24,7 @@ import java.util.Collections;
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.IncrementalCompiler;
+import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.ParallelScriptCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -151,14 +152,14 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 
 		scriptCompiler.compile();
 
-		if (getCommitType() == CommitType.onDemand) {
+		if (getCommitType(this) == CommitType.onDemand) {
 			NotificationManager.addGlobalNotification(new StandardNotification("There are changes not yet committed to " +
 					"the ontology repository. Committing may take some time. If you want to commit the changes now, " +
 					"click <a onclick=\"KNOWWE.plugin.ontology.commitOntology('" + getCompileSection().getID() + "')\">here</a>.",
-					Message.Type.INFO, getCommitNotificationId()));
+					Message.Type.INFO, getCommitNotificationId(this)));
 		}
 		else {
-			commitOntology();
+			commitOntology(this);
 		}
 
 		EventManager.getInstance().fireEvent(new OntologyCompilerFinishedEvent(this));
@@ -169,8 +170,8 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 		scriptCompiler = new ParallelScriptCompiler<>(this);
 	}
 
-	private CommitType getCommitType() {
-		Section<OntologyType> ontologySection = Sections.ancestor(getCompileSection(), OntologyType.class);
+	static CommitType getCommitType(OntologyCompiler compiler) {
+		Section<OntologyType> ontologySection = Sections.ancestor(compiler.getCompileSection(), OntologyType.class);
 		String commitTypeString = DefaultMarkupType.getAnnotation(ontologySection, OntologyType.ANNOTATION_COMMIT);
 		CommitType commitType;
 		try {
@@ -182,13 +183,13 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 		return commitType;
 	}
 
-	private String getCommitNotificationId() {
-		return COMMIT_NOTIFICATION_ID + getCompileSection().getID();
+	static String getCommitNotificationId(OntologyCompiler compiler) {
+		return COMMIT_NOTIFICATION_ID + compiler.getCompileSection().getID();
 	}
 
-	public void commitOntology() {
-		rdf2GoCore.commit();
-		NotificationManager.removeGlobalNotification(getCommitNotificationId());
+	public static void commitOntology(OntologyCompiler compiler) {
+		compiler.rdf2GoCore.commit();
+		NotificationManager.removeGlobalNotification(getCommitNotificationId(compiler));
 	}
 
 	private void createTerminologyManager() {
@@ -229,8 +230,8 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 
 	@Override
 	public void notify(Event event) {
-		if (getCommitType() == CommitType.onDemand) {
-			commitOntology();
+		if (getCommitType(this) == CommitType.onDemand) {
+			commitOntology(this);
 		}
 	}
 }

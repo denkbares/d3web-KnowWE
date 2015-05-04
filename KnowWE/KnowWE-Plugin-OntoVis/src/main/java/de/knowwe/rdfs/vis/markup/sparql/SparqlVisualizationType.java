@@ -25,7 +25,7 @@ import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCore;
-import de.knowwe.rdf2go.sparql.Rdf2GoCoreCheckRenderer;
+import de.knowwe.ontology.sparql.Rdf2GoCoreCheckRenderer;
 import de.knowwe.rdfs.vis.markup.ConceptVisualizationType;
 import de.knowwe.rdfs.vis.markup.PreRenderer;
 import de.knowwe.rdfs.vis.markup.VisualizationType;

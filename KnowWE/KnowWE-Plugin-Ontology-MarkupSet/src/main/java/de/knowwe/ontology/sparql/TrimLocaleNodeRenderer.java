@@ -16,17 +16,20 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.rdf2go.sparql;
+package de.knowwe.ontology.sparql;
 
 import de.knowwe.core.user.UserContext;
 import de.knowwe.rdf2go.Rdf2GoCore;
-import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
-public class TrimNamespaceNodeRenderer implements SparqlResultNodeRenderer {
+public class TrimLocaleNodeRenderer implements SparqlResultNodeRenderer {
 
 	@Override
 	public String renderNode(String text, String variable, UserContext user, Rdf2GoCore core, RenderMode mode) {
-		return Rdf2GoUtils.trimNamespace(core, text);
+		return trimLocale(text);
+	}
+
+	public static String trimLocale(String text) {
+		return text.replaceAll("@(?:de|en|fr|it|es|ru)$", "");
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package de.knowwe.rdf2go.sparql;
+package de.knowwe.ontology.sparql;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import de.knowwe.ontology.compile.OntologyType;
 import org.ontoware.rdf2go.model.QueryResultTable;
 import org.ontoware.rdf2go.model.node.Literal;
 import org.ontoware.rdf2go.model.node.Node;
@@ -74,7 +75,7 @@ public class SparqlResultRenderer {
 
 	public List<SparqlResultNodeRenderer> getNodeRenderer() {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(
-				Rdf2GoCore.PLUGIN_ID, POINT_ID);
+				OntologyType.PLUGIN_ID, POINT_ID);
 		List<SparqlResultNodeRenderer> renderers = new ArrayList<>();
 		for (Extension extension : extensions) {
 			renderers.add((SparqlResultNodeRenderer) extension.getSingleton());

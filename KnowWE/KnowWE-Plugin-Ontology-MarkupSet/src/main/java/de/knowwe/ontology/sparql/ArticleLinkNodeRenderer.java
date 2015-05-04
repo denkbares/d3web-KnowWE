@@ -1,4 +1,4 @@
-package de.knowwe.rdf2go.sparql;
+package de.knowwe.ontology.sparql;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

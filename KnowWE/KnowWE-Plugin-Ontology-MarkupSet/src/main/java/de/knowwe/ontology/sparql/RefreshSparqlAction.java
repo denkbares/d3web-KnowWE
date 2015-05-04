@@ -17,28 +17,34 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.rdf2go.sparql;
+package de.knowwe.ontology.sparql;
 
-import java.util.Collection;
+import java.io.IOException;
 
+import de.knowwe.core.Attributes;
+import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.preview.DefaultPreviewRenderer;
-import de.knowwe.core.user.UserContext;
 
 /**
- * @author stefan
- * @created 10.02.2014
+ * Provides a html to refresh a sparql table.
+ *
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 26.09.14
  */
-public class SparqlPreviewRenderer extends DefaultPreviewRenderer {
-
-	public SparqlPreviewRenderer() {
-
-	}
+public class RefreshSparqlAction extends AbstractAction {
 
 	@Override
-	public void render(Section<?> section, Collection<Section<?>> relevantSubSections, UserContext user, RenderResult result) {
-		result.append(section.getText());
+	public void execute(UserActionContext context) throws IOException {
 
+		String sectionId = context.getParameter(Attributes.SECTION_ID);
+		Section<?> section = Sections.get(sectionId);
+
+		RenderResult result = new RenderResult(context);
+		SparqlResultRenderer.getInstance()
+				.renderSparqlResult(Sections.cast(section, SparqlType.class), context, result);
+		context.getWriter().append(result.toString());
 	}
 }

@@ -19,7 +19,7 @@
 package de.knowwe.ontology.ci.provider;
 
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.rdf2go.sparql.SparqlContentType;
+import de.knowwe.ontology.sparql.SparqlContentType;
 
 /**
  * 

@@ -6,7 +6,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.ontology.kdom.sparql.SparqlNameDefinition;
-import de.knowwe.rdf2go.sparql.SparqlMarkupType;
+import de.knowwe.ontology.sparql.SparqlMarkupType;
 
 /**
  * Register sparql name in terminolgy manager

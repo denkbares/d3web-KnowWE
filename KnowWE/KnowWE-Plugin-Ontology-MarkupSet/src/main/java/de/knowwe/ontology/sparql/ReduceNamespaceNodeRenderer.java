@@ -1,4 +1,4 @@
-package de.knowwe.rdf2go.sparql;
+package de.knowwe.ontology.sparql;
 
 import de.knowwe.core.user.UserContext;
 import de.knowwe.rdf2go.Rdf2GoCore;

@@ -93,7 +93,7 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 
 			if (potentiallyMatchingIdentifiers.isEmpty()) {
 				message = "Resource '" + termName
-						+ "' not found. A resource either needs a namespace or to be defined unambiguously.";
+						+ "' not found.";
 			}
 			else if (potentiallyMatchingIdentifiers.size() == 1) {
 				identifier = potentiallyMatchingIdentifiers.iterator().next();

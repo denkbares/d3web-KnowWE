@@ -28,8 +28,8 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.ontology.ci.ExpectedSparqlResultTable;
-import de.knowwe.rdf2go.sparql.SparqlContentType;
-import de.knowwe.rdf2go.sparql.SparqlMarkupType;
+import de.knowwe.ontology.sparql.SparqlContentType;
+import de.knowwe.ontology.sparql.SparqlMarkupType;
 
 
 /**

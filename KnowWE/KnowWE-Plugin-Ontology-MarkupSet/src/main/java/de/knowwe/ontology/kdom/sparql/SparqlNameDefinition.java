@@ -28,7 +28,7 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
-import de.knowwe.rdf2go.sparql.SparqlMarkupType;
+import de.knowwe.ontology.sparql.SparqlMarkupType;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
 
 /**

@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.rdf2go.sparql;
+package de.knowwe.ontology.sparql;
 
 import java.util.regex.Pattern;
 

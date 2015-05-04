@@ -17,8 +17,10 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.rdf2go.sparql;
+package de.knowwe.ontology.sparql;
 
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.parsing.Section;
@@ -31,6 +33,10 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
+import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.node.Node;
+import org.ontoware.rdf2go.model.node.Resource;
+import org.ontoware.rdf2go.model.node.URI;
 
 public class SparqlContentRenderer implements Renderer {
 
@@ -82,9 +88,47 @@ public class SparqlContentRenderer implements Renderer {
 		String sparqlString = Rdf2GoUtils.createSparqlString(core, section.getText());
 
 		if (sparqlString.toLowerCase().startsWith("construct")) {
-			result.appendHtml("<tt>");
-			result.append(section.getText());
-			result.appendHtml("</tt>");
+			final Set<Statement> statementsFromCache = core.getStatementsFromCache(section);
+			if(statementsFromCache.size() > 0) {
+				final SparqlResultRenderer sparqlResultRenderer = SparqlResultRenderer.getInstance();
+				int limit = 20;
+				int count = 0;
+				result.append("("+statementsFromCache.size()+" statements constructed)");
+				result.appendHtml("<table>");
+				for (Statement statement : statementsFromCache) {
+					count++;
+					if(count > limit) {
+						// TODO: implement pagination and remove limit
+						result.appendHtml("<tr>");
+						int moreStatements = statementsFromCache.size() - limit;
+						result.append("\n("+moreStatements+" statements hidden)");
+						result.appendHtml("</tr>");
+						break;
+					}
+					result.appendHtml("<tr>");
+
+					result.appendHtml("<td>");
+					final Resource subject = statement.getSubject();
+					result.appendHtml(sparqlResultRenderer.renderNode(subject, "", false, user, core, RenderMode.HTML));
+					result.appendHtml("</td>");
+
+					result.appendHtml("<td>");
+					final URI predicate = statement.getPredicate();
+					result.appendHtml(sparqlResultRenderer.renderNode(predicate, "", false, user, core, RenderMode.HTML));
+					result.appendHtml("</td>");
+
+					result.appendHtml("<td>");
+					final Node object = statement.getObject();
+					result.appendHtml(sparqlResultRenderer.renderNode(object, "", false, user, core, RenderMode.HTML));
+					result.appendHtml("</td>");
+
+					result.appendHtml("</tr>");
+				}
+				result.appendHtml("</table>");
+			} else {
+				result.append("(No statements constructed)");
+			}
+
 		}
 		else {
 

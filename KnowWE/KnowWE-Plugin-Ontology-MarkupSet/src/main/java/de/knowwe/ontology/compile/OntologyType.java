@@ -55,6 +55,8 @@ import de.knowwe.util.Icon;
  */
 public class OntologyType extends DefaultMarkupType {
 
+	public static final String PLUGIN_ID = "KnowWE-Plugin-Ontology-MarkupSet";
+
 	public static final String ANNOTATION_COMPILE = "uses";
 	public static final String ANNOTATION_RULESET = "ruleset";
 	public static final String ANNOTATION_COMMIT = "commit";
@@ -121,6 +123,10 @@ public class OntologyType extends DefaultMarkupType {
 			OntologyCompiler ontologyCompiler = new OntologyCompiler(
 					compiler.getPackageManager(), section, OntologyType.class, ruleSet );
 			compiler.getCompilerManager().addCompiler(5, ontologyCompiler);
+
+			//OntologyConstructCompiler constructCompiler = new OntologyConstructCompiler(ontologyCompiler);
+			//compiler.getCompilerManager().addCompiler(6, constructCompiler);
+
 			if (ruleSetValue != null && ruleSet == null) {
 				throw CompilerMessage.warning("The rule set \"" + ruleSetValue + "\" does not exist.");
 			}

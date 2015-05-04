@@ -25,7 +25,7 @@ import java.util.List;
 import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.rdf2go.sparql.SparqlContentType;
+import de.knowwe.ontology.sparql.SparqlContentType;
 
 
 /**

@@ -33,7 +33,7 @@ public class CommitOntologyAction extends AbstractAction {
 				.filter(compiler -> compiler instanceof OntologyCompiler)
 				.findFirst();
 		Log.info("Committing ontology changes for Ontology on article '" + compileSection.getTitle() + "'");
-		optionalCompiler.ifPresent(compiler -> ((OntologyCompiler) compiler).commitOntology());
+		optionalCompiler.ifPresent(compiler -> OntologyCompiler.commitOntology(((OntologyCompiler) compiler)));
 	}
 
 }
