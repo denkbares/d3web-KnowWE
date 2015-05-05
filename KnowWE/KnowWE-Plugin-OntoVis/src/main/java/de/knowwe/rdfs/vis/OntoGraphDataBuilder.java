@@ -34,9 +34,11 @@ import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.QueryResultTable;
 import org.ontoware.rdf2go.model.QueryRow;
+import org.ontoware.rdf2go.model.node.BlankNode;
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.openrdf.model.BNode;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -506,7 +508,8 @@ public class OntoGraphDataBuilder extends GraphDataBuilder<Node> {
             final Node previousBlankNode = row.getValue(previousBlankNodeSparqlVariableName);
             if (previousBlankNode != null) {
                 // here we check for the right blank node, quit all the others
-                if (!previousBlankNode.asBlankNode().toString().equals(previousNode.asBlankNode().toString())) {
+
+                if ((!(previousBlankNode instanceof BlankNode)) || !previousBlankNode.asBlankNode().toString().equals(previousNode.asBlankNode().toString())) {
                     continue;
                 }
             }
