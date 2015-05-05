@@ -22,6 +22,7 @@ package de.knowwe.ontology.turtle;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.rendering.AnchorRenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
@@ -37,7 +38,7 @@ public class TurtleSPOSentence extends AbstractType {
     public TurtleSPOSentence() {
         this.setSectionFinder(new AllTextFinderTrimmed());
 
-        this.addChildType(new Subject());
+        this.addChildType(new Subject(new SubjectURIWithDefinition()));
         this.addChildType(PredicateObjectSentenceList.getInstance());
 
 

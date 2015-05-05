@@ -40,11 +40,11 @@ import java.util.List;
 
 public class Subject extends AbstractType implements ResourceProvider<Subject> {
 
-	public Subject() {
+	public Subject(Type subjectDefinitionType) {
 		this.addChildType(new BlankNode());
 		this.addChildType(new BlankNodeID());
 		this.addChildType(new TurtleLongURI());
-		this.addChildType(createSubjectURIWithDefinition());
+		this.addChildType(subjectDefinitionType);
 		this.addChildType(new LazyURIReference());
 		setSectionFinder(new FirstWordFinder());
 
@@ -53,27 +53,6 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 
 	}
 
-	@SuppressWarnings("unchecked")
-	private Type createSubjectURIWithDefinition() {
-		TurtleURI turtleURI = new TurtleURI();
-		SimpleReference reference = Types.successor(turtleURI, ResourceReference.class);
-        reference.addCompileScript(Priority.HIGH, new SubjectPredicateKeywordDefinitionHandler(new String[]{"^" + PredicateAType.a + "$", "[\\w]*?:?type", "[\\w]*?:?subClassOf",  "[\\w]*?:?isA", "[\\w]*?:?subPropertyOf"}));
-        return turtleURI;
-    }
-
-	class SubjectPredicateKeywordDefinitionHandler extends PredicateKeywordDefinitionHandler {
-
-		public SubjectPredicateKeywordDefinitionHandler(String[] matchExpressions) {
-			super(matchExpressions);
-		}
-
-		@Override
-		protected List<Section<Predicate>> getPredicates(Section<SimpleReference> s) {
-			// finds all predicates of the turtle sentence
-			Section<TurtleSentence> sentence = Sections.ancestor(s, TurtleSentence.class);
-			return Sections.successors(sentence, Predicate.class);
-		}
-	}
 
 	@Override
 	@SuppressWarnings({

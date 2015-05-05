@@ -21,6 +21,9 @@ package de.knowwe.ontology.kdom.table;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.knowwe.kdom.table.TableCellContent;
+import de.knowwe.ontology.turtle.Predicate;
+import de.knowwe.ontology.turtle.compile.NodeProvider;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.URI;
@@ -37,6 +40,7 @@ import de.knowwe.ontology.kdom.objectproperty.AbbreviatedPropertyReference;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
 import de.knowwe.ontology.turtle.Object;
 import de.knowwe.rdf2go.Rdf2GoCore;
+import org.openrdf.model.Resource;
 
 /**
  * @author Sebastian Furth (denkbares GmbH)
@@ -54,15 +58,14 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 
 		Rdf2GoCore core = compiler.getRdf2GoCore();
 		List<Statement> statements = new LinkedList<>();
-		Section<AbbreviatedResourceReference> subjectReference = findSubject(section);
-		URI subjectUri = subjectReference.get().getResourceURI(core, subjectReference);
+		Section<NodeProvider> subjectReference = findSubject(section);
+		Node subjectNode = subjectReference.get().getNode(subjectReference, compiler);
 		List<Section<Object>> objects = findObjects(section);
 		for (Section<Object> objectReference : objects) {
-			Section<AbbreviatedPropertyReference> propertyReference
-				= TableUtils.getColumnHeader(objectReference, AbbreviatedPropertyReference.class);
-			URI propertyUri = propertyReference.get().getPropertyURI(core, propertyReference);
+			Section<Predicate> propertyReference = TableUtils.getColumnHeader(objectReference, Predicate.class);
+			URI propertyUri = propertyReference.get().getNode(propertyReference, compiler).asURI();
 			Node objectNode = objectReference.get().getNode(objectReference, compiler);
-			statements.add(core.createStatement(subjectUri, propertyUri, objectNode));
+			statements.add(core.createStatement(subjectNode.asResource(), propertyUri, objectNode));
 		}
 
 		core.addStatements(section, statements);
@@ -72,8 +75,9 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 		return Sections.successors(section, Object.class);
 	}
 
-	private Section<AbbreviatedResourceReference> findSubject(Section<TableLine> section) {
-		return Sections.successor(section, AbbreviatedResourceReference.class);
+	private Section<NodeProvider> findSubject(Section<TableLine> section) {
+		final Section<TableCellContent> firstCell = Sections.successor(section, TableCellContent.class);
+		return Sections.successor(firstCell, NodeProvider.class);
 	}
 
 	@Override

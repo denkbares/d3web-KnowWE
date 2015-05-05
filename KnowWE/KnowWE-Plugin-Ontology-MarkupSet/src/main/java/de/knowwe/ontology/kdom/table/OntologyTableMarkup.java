@@ -28,6 +28,10 @@ import de.knowwe.kdom.table.TableIndexConstraint;
 import de.knowwe.ontology.kdom.objectproperty.AbbreviatedPropertyReference;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
 import de.knowwe.ontology.turtle.Object;
+import de.knowwe.ontology.turtle.ObjectList;
+import de.knowwe.ontology.turtle.Predicate;
+import de.knowwe.ontology.turtle.Subject;
+import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
 
 /**
  * @author Sebastian Furth (denkbares GmbH)
@@ -43,19 +47,19 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 		MARKUP.addContentType(content);
 		PackageManager.addPackageAnnotation(MARKUP);
 
-		AbbreviatedResourceReference resource = new AbbreviatedResourceReference();
+		Subject resource = new Subject(new TableSubjectURIWithDefinition());
 		resource.setSectionFinder(new ConstraintSectionFinder(
 				new AllTextFinderTrimmed(),
 				new TableIndexConstraint(0, 1, 1, Integer.MAX_VALUE)));
 		content.injectTableCellContentChildtype(resource);
 
-		AbbreviatedPropertyReference property = new AbbreviatedPropertyReference();
+		Predicate property = new Predicate();
 		property.setSectionFinder(new ConstraintSectionFinder(
 				new AllTextFinderTrimmed(),
 				new TableIndexConstraint(1, Integer.MAX_VALUE, 0, 1)));
 		content.injectTableCellContentChildtype(property);
 
-		Object object = new Object();
+		ObjectList object = new ObjectList();
 		object.setSectionFinder(new ConstraintSectionFinder(
 				new AllTextFinderTrimmed(),
 				new TableIndexConstraint(1, Integer.MAX_VALUE, 1, Integer.MAX_VALUE)));

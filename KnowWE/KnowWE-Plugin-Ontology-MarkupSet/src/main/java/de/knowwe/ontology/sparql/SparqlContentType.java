@@ -48,7 +48,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 	public SparqlContentType() {
 		this.setSectionFinder(AllTextFinder.getInstance());
 		this.setRenderer(new AsynchronRenderer(new SparqlContentDecoratingRenderer()));
-		//this.addCompileScript( Priority.LOWEST, new SparqlConstructHandler());
+		this.addCompileScript( Priority.LOWEST, new SparqlConstructHandler());
 	}
 
 	@Override
