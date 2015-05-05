@@ -71,4 +71,5 @@ public class SparqlNameReference extends SimpleReference {
 		Section<SparqlContentType> contentSection = Sections.successor(sparqlSection, SparqlContentType.class);
 		return (contentSection == null) ? null : contentSection.getText();
 	}
+
 }

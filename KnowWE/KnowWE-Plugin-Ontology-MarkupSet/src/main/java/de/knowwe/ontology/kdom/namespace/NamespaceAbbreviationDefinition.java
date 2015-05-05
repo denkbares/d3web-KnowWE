@@ -24,7 +24,9 @@ import java.util.List;
 
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 
+import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
@@ -69,6 +71,12 @@ public class NamespaceAbbreviationDefinition extends SimpleDefinition {
 		return namespace.getText();
 	}
 
+	@Override
+	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
+		// we dont want resource to be quoted by interface's default implementation
+		return newIdentifier.getLastPathElement();
+	}
+
 	private static class NamespaceSubtreeHandler extends OntologyHandler<NamespaceAbbreviationDefinition> {
 
 		@Override
@@ -103,5 +111,6 @@ public class NamespaceAbbreviationDefinition extends SimpleDefinition {
 			String abbreviation = abbreviationName;
 			Rdf2GoCore.getInstance(compiler).removeNamespace(abbreviation);
 		}
+
 	}
 }

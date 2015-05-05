@@ -11,6 +11,7 @@ import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.SimpleReference;
@@ -47,6 +48,12 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 			throw new IllegalStateException("Cannot get Node before compilation");
 		}
 		return TurtleURI.getNodeForIdentifier(compiler.getRdf2GoCore(), identifier);
+	}
+
+	@Override
+	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
+		// we dont want resource to be quoted by interface's default implementation
+		return newIdentifier.getLastPathElement();
 	}
 
 	@Override

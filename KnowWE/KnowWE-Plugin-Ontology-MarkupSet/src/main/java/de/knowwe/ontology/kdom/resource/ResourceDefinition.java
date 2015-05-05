@@ -19,6 +19,7 @@
 package de.knowwe.ontology.kdom.resource;
 
 import de.d3web.strings.Identifier;
+import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
@@ -48,5 +49,11 @@ public class ResourceDefinition extends SimpleDefinition {
 			section.storeObject(IDENTIFIER_KEY, identifier);
 		}
 		return identifier;
+	}
+
+	@Override
+	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
+		// we dont want resource to be quoted by interface's default implementation
+		return newIdentifier.getLastPathElement();
 	}
 }

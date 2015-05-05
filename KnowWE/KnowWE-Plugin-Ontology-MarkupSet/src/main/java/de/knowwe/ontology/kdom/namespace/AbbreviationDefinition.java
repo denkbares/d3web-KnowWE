@@ -18,8 +18,11 @@
  */
 package de.knowwe.ontology.kdom.namespace;
 
+import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
@@ -37,6 +40,12 @@ public class AbbreviationDefinition extends SimpleDefinition {
 				new RegexSectionFinder("(?<=^\\s*)" + PN_CHARS_BASE + "((_|[A-Z]|[a-z]|-|[0-9]|\\.)*" + PN_CHARS + ")?"),
 				AtMostOneFindingConstraint.getInstance()));
 		this.setRenderer(StyleRenderer.Questionaire);
+	}
+
+	@Override
+	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
+		// we dont want resource to be quoted by interface's default implementation
+		return newIdentifier.getLastPathElement();
 	}
 
 }
