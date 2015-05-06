@@ -28,6 +28,7 @@ import de.d3web.testing.TestParameter;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.namespace.NamespaceAbbreviationDefinition;
+import de.knowwe.ontology.kdom.resource.ResourceDefinition;
 
 /**
  * @author Sebastian Furth (denkbares GmbH)
@@ -53,7 +54,7 @@ public class URIPatternTest extends AbstractTest<OntologyCompiler> {
 	public Message execute(OntologyCompiler testObject, String[] args, String[]... ignores) throws InterruptedException {
 
 		TerminologyManager manager = testObject.getTerminologyManager();
-		Collection<Identifier> identifiers = manager.getAllDefinedTerms();
+		Collection<Identifier> identifiers = manager.getAllDefinedTermsOfType(ResourceDefinition.class);
 		Collection<Message> messages = new LinkedList<Message>();
 		for (Identifier identifier : identifiers) {
 			// check ignore patterns
