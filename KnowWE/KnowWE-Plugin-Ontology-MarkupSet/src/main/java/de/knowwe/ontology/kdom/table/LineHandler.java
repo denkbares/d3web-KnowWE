@@ -59,6 +59,10 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 		Rdf2GoCore core = compiler.getRdf2GoCore();
 		List<Statement> statements = new LinkedList<>();
 		Section<NodeProvider> subjectReference = findSubject(section);
+		if(subjectReference == null) {
+			// obviously no subject in this line, could be an empty table line
+			return;
+		}
 		Node subjectNode = subjectReference.get().getNode(subjectReference, compiler);
 		List<Section<Object>> objects = findObjects(section);
 		for (Section<Object> objectReference : objects) {
