@@ -22,15 +22,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.jdom.Attribute;
@@ -43,8 +39,8 @@ import org.jdom.output.XMLOutputter;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.visualization.ConceptNode;
+import de.knowwe.visualization.Config;
 import de.knowwe.visualization.Edge;
-import de.knowwe.visualization.GraphDataBuilder;
 import de.knowwe.visualization.GraphDataBuilder.NODE_TYPE;
 import de.knowwe.visualization.SubGraphData;
 import de.knowwe.visualization.util.FileUtils;
@@ -59,6 +55,36 @@ public class DOTRenderer {
 
 	// appearance of outer node
 	public static final String outerLabel = "[ shape=\"none\" fontsize=\"0\" fontcolor=\"white\" ];\n";
+	public static final int TIMEOUT = 50000;
+
+	private static final Set<String> cleanedCacheDirectories = new HashSet<>();
+
+	public static String getFilePath(Config config) {
+		return getDirectoryPath(config) + config.getCacheFileID();
+	}
+
+	public static String getDirectoryPath(Config config) {
+		String path = config.getCacheDirectoryPath() + FileUtils.FILE_SEPARATOR + FileUtils.KNOWWEEXTENSION_FOLDER + FileUtils.FILE_SEPARATOR
+				+ FileUtils.TMP_FOLDER
+				+ FileUtils.FILE_SEPARATOR;
+		handleCleanup(path);
+		return path;
+	}
+
+	/**
+	 * Cleans up all cache directories once on startup.
+	 */
+	protected static void handleCleanup(String path) {
+		if (cleanedCacheDirectories.add(path)) {
+			File dir = new File(path);
+			if (dir.exists() && dir.isDirectory()) {
+				for (File file1 : dir.listFiles()) {
+					//noinspection ResultOfMethodCallIgnored
+					file1.delete();
+				}
+			}
+		}
+	}
 
 	private static String buildLabel(RenderingStyle style) {
 		StringBuilder result = new StringBuilder();
@@ -99,22 +125,21 @@ public class DOTRenderer {
 	 *
 	 * @created 18.08.2012
 	 */
-	public static String createDotSources(SubGraphData data, Map<String, String> parameters) {
-		String graphtitle = "Konzeptuebersicht";
-		String dotSource = "digraph " + graphtitle + " {\n";
-		dotSource = insertPraefixed(dotSource, parameters);
-		dotSource += DOTRenderer.setSizeAndRankDir(parameters.get(GraphDataBuilder.RANK_DIRECTION),
-				parameters.get(GraphDataBuilder.GRAPH_WIDTH), parameters.get(GraphDataBuilder.GRAPH_HEIGHT),
-				parameters.get(GraphDataBuilder.GRAPH_SIZE), data.getConceptDeclarations().size());
+	public static String createDotSources(SubGraphData data, Config config) {
+		String dotSource = "digraph {\n";
+		dotSource = insertPraefixed(dotSource, config);
+		dotSource += DOTRenderer.setSizeAndRankDir(config.getRankDir(),
+				config.getWidth(), config.getHeight(),
+				config.getSize(), data.getConceptDeclarations().size());
 
-		dotSource += generateGraphSource(data, parameters);
+		dotSource += generateGraphSource(data, config);
 
 		dotSource += "}";
 
 		return dotSource;
 	}
 
-	private static String generateGraphSource(SubGraphData data, Map<String, String> parameters) {
+	private static String generateGraphSource(SubGraphData data, Config config) {
 		Collection<ConceptNode> dotSourceLabel = data.getConceptDeclarations();
 		final Map<ConceptNode, Set<Edge>> clusters = data.getClusters();
 		StringBuilder dotSource = new StringBuilder();
@@ -140,8 +165,7 @@ public class DOTRenderer {
 				//nodeLabel = "<<B>"+nodeLabel+"</B>>";
 
 				if ((!node.getType().equals(NODE_TYPE.LITERAL)) &&
-						parameters.get(GraphDataBuilder.USE_LABELS) != null && parameters.get(GraphDataBuilder.USE_LABELS)
-						.equals("false")) {
+						!config.isShowLabels()) {
 					// use of labels suppressed by the user -> show concept name, i.e. uri
 					nodeLabel = createHTMLTable(node, data, style.getFontstyle());
 				}
@@ -161,33 +185,9 @@ public class DOTRenderer {
 
 		// add level zero "default cluster"
 		for (Edge key : clusters.get(ConceptNode.DEFAULT_CLUSTER_NODE)) {
-			appendEdgeSource(parameters, dotSource, key);
+			appendEdgeSource(config, dotSource, key);
 		}
 
-		// add real clusters
-		/*
-		final Set<ConceptNode> clusterNodes = clusters.keySet();
-		for (ConceptNode clusterNode : clusterNodes) {
-			if(clusterNode != ConceptNode.DEFAULT_CLUSTER_NODE) {
-				// create graph cluster
-				final Set<Edge> clusterEdges = clusters.get(clusterNode);
-				if(clusterEdges.size() > 0) {
-					String clusterName = "subgraph cluster_"+Math.abs(clusterNode.getName().hashCode());
-					dotSource.append(clusterName +" {\n");
-					dotSource.append("color=black;\n" +
-							"style = \"dotted,rounded\";\n");
-					String clazz = clusterNode.getClazz();
-					if(clazz != null && clazz.length() > 0) {
-						dotSource.append("label =<<B>"+clazz+"</B>>\n");
-					}
-					for (Edge clusterEdge : clusterEdges) {
-						appendEdgeSource(parameters, dotSource, clusterEdge);
-					}
-					dotSource.append("}\n");
-				}
-			}
-		}
-		*/
 		return dotSource.toString();
 	}
 
@@ -271,9 +271,9 @@ public class DOTRenderer {
 		}
 	}
 
-	private static void appendEdgeSource(Map<String, String> parameters, StringBuilder dotSource, Edge key) {
+	private static void appendEdgeSource(Config config, StringBuilder dotSource, Edge key) {
 		String label = DOTRenderer.innerRelation(key.getPredicate(),
-				parameters.get(GraphDataBuilder.RELATION_COLOR_CODES));
+				config.getRelationColors());
 		if (key.isOuter()) {
 			boolean arrowHead = key.getSubject().isOuter();
 			label = DOTRenderer.getOuterEdgeLabel(key.getPredicate(), arrowHead);
@@ -307,8 +307,8 @@ public class DOTRenderer {
 				+ "\" style=\"" + style + "\" ];\n";
 	}
 
-	private static String insertPraefixed(String dotSource, Map<String, String> parameters) {
-		String added = parameters.get(GraphDataBuilder.ADD_TO_DOT);
+	private static String insertPraefixed(String dotSource, Config config) {
+		String added = config.getDotAddLine();
 		if (added != null) dotSource += added;
 
 		return dotSource;
@@ -317,14 +317,10 @@ public class DOTRenderer {
 	/**
 	 * @created 30.10.2012
 	 */
-	private static String setSizeAndRankDir(String rankDirSetting, String width, String height, String graphSize, int numberOfConcepts) {
-		String rankDir = "LR";
+	private static String setSizeAndRankDir(Config.RankDir rankDirSetting, String width, String height, String graphSize, int numberOfConcepts) {
+		String rankDir = rankDirSetting.name();
 		String size = "";
 		String ratio = "";
-
-		if (rankDirSetting != null) {
-			rankDir = rankDirSetting;
-		}
 
 		if (width != null || height != null) {
 			if (width != null) {
@@ -353,8 +349,8 @@ public class DOTRenderer {
 			else if (height != null) {
 				size = "10000000," + height + "!";
 			}
-			else if (width != null) {
-				size = width + ",10000000!";
+			else {
+				size = width + ",10000000";
 			}
 		}
 		else if (graphSize != null) {
@@ -362,15 +358,15 @@ public class DOTRenderer {
 				graphSize = graphSize.substring(0, graphSize.length() - 2);
 			}
 			if (graphSize.matches("\\d+")) {
-				size = String.valueOf(Double.valueOf(graphSize) * 0.010415597) + "!";
+				size = String.valueOf(Double.valueOf(graphSize) * 0.010415597);
 			}
 			else {
-				size = calculateAutomaticGraphSize(numberOfConcepts) + "!";
+				size = calculateAutomaticGraphSize(numberOfConcepts);
 			}
 		}
 		else {
 			if (numberOfConcepts == 1 || numberOfConcepts == 2) {
-				size = calculateAutomaticGraphSize(numberOfConcepts) + "!";
+				size = calculateAutomaticGraphSize(numberOfConcepts);
 			}
 		}
 
@@ -393,36 +389,60 @@ public class DOTRenderer {
 		return null;
 	}
 
-	public static void deleteVisualizationFiles(String filePrefix) {
-		File dot = createFile("dot", filePrefix);
-		File svg = createFile("svg", filePrefix);
-		File png = createFile("png", filePrefix);
-
-		dot.delete();
-		svg.delete();
-		png.delete();
-	}
-
 	/**
-	 * The dot, svg and png files are created and written.
+	 * The dot, svg and png files are created and written and returned (for easy cleanup).
 	 *
 	 * @created 20.08.2012
 	 */
-	public static void createAndwriteDOTFiles(String filePath, String dotSource, String userAppPath) {
-		File dot = createFile("dot", filePath);
-		File svg = createFile("svg", filePath);
-		File png = createFile("png", filePath);
+	public static File[] createAndWriteFiles(Config config, String dotSource) {
+		File dotFile = createFile("dot", getFilePath(config));
+		File svgFile = createFile("svg", getFilePath(config));
+		// File pngFile = createFile("png", filePath);
 
-		dot.delete();
-		svg.delete();
-		png.delete();
+		dotFile.delete();
+		svgFile.delete();
+		// pngFile.delete();
 
-		FileUtils.writeFile(dot, dotSource);
+		FileUtils.writeFile(dotFile, dotSource);
+
 		// create svg
 
-        /*
-		We try to call the dot process at low priority not to slow down the machine
-         */
+		try {
+			convertDot(svgFile, dotFile, getSVGCommand(config.getDotApp(), dotFile, svgFile));
+
+			// convertDot(png, dot, createPngCommand(dotApp, dot, png));
+
+			augmentSVG(svgFile);
+		}
+		catch (IOException e) {
+			Log.warning("Exception while generating visualization", e);
+		}
+		return new File[] { dotFile, svgFile };
+	}
+
+	protected static String createPngCommand(String dotApp, File dot, File png) {
+		String command = dotApp + " " + dot.getAbsolutePath() +
+				" -Tpng -o " + png.getAbsolutePath() + "";
+		if (Utils.isWindows()) {
+			command = dotApp + " \"" + dot.getAbsolutePath() +
+					"\" -Tpng -o \"" + png.getAbsolutePath() + "\"";
+		}
+		return command;
+	}
+
+	protected static String getSVGCommand(String dotApp, File dot, File svg) {
+		String lowPriorityCall = "";//getLowPriorityCall(); low priority no longer needed
+
+		String command = lowPriorityCall + dotApp + " " + dot.getAbsolutePath() +
+				" -Tsvg -o " + svg.getAbsolutePath() + "";
+		if (Utils.isWindows()) {
+			command = lowPriorityCall + dotApp + " \"" + dot.getAbsolutePath() +
+					"\" -Tsvg -o \"" + svg.getAbsolutePath() + "\"";
+		}
+		return command;
+	}
+
+	private static String getLowPriorityCall() {
 		String lowPriorityCall = "";
 		if (Utils.isMac()) {
 			lowPriorityCall = "nice -19n ";
@@ -435,37 +455,7 @@ public class DOTRenderer {
 			// assume to be linux
 			lowPriorityCall = "nice -n 19 ";
 		}
-
-		String dotApp = getDOTApp(userAppPath);
-
-
-		String command = lowPriorityCall + dotApp + " " + dot.getAbsolutePath() +
-				" -Tsvg -o " + svg.getAbsolutePath() + "";
-		if (Utils.isWindows()) {
-			command = lowPriorityCall + dotApp + " \"" + dot.getAbsolutePath() +
-					"\" -Tsvg -o \"" + svg.getAbsolutePath() + "\"";
-		}
-
-		try {
-
-			createFileOutOfDot(svg, dot, command);
-
-			// create png
-			command = dotApp + " " + dot.getAbsolutePath() +
-					" -Tpng -o " + png.getAbsolutePath() + "";
-			if (Utils.isWindows()) {
-				command = dotApp + " \"" + dot.getAbsolutePath() +
-						"\" -Tpng -o \"" + png.getAbsolutePath() + "\"";
-			}
-
-			createFileOutOfDot(png, dot, command);
-			int timeout = 50000;
-			prepareSVG(svg, timeout);
-		}
-		catch (IOException e) {
-			Log.warning("Exception while generating visualization", e);
-		}
-
+		return lowPriorityCall;
 	}
 
 	private static String createDotConceptLabel(RenderingStyle style, String targetURL, String targetLabel, boolean prepareLabel) {
@@ -488,8 +478,8 @@ public class DOTRenderer {
 	/**
 	 * Returns true, if a valid dot installation can be found.
 	 */
-	public static boolean checkDotInstallation(Map<String, String> parameters) {
-		String dotApp = getDOTApp(parameters.get(GraphDataBuilder.DOT_APP));
+	public static boolean checkDotInstallation(Config config) {
+		String dotApp = config.getDotApp();
 		try {
 			Process process = Runtime.getRuntime().exec(dotApp + " -V");
 			process.waitFor(1, TimeUnit.SECONDS);
@@ -504,68 +494,35 @@ public class DOTRenderer {
 		return true;
 	}
 
-
-	public static String getDOTApp(String dotApp) {
-		ResourceBundle rb = ResourceBundle.getBundle("dotInstallation");
-		String app = rb.getString("path");
-		if (dotApp != null) {
-			if (app.endsWith(FileUtils.FILE_SEPARATOR)) {
-				app += dotApp;
-			}
-			else {
-				app = app.substring(0, app.lastIndexOf(FileUtils.FILE_SEPARATOR))
-						+ FileUtils.FILE_SEPARATOR
-						+ dotApp;
-			}
-
-		}
-		if (!new File(app).exists()) {
-			app = "dot";
-		}
-		return app;
-	}
-
 	/**
 	 * Adds the target-tag to every URL in the svg-file
 	 *
 	 * @created 01.08.2012
 	 */
-	private static void prepareSVG(final File svg, final int timeout) throws IOException {
-		Log.finest("Starting write SVG: " + svg.getAbsolutePath());
+	private static void augmentSVG(File svg) throws IOException {
+		Log.finest("Starting to augment SVG: " + svg.getAbsolutePath());
 		try {
-
 			// check if svg file is closed, otherwise wait timeout second
-			ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
-			final Future<Boolean> handler = executor.submit(() -> {
-				while (!Utils.isFileClosed(svg)) {
-					// wait
+			long start = System.currentTimeMillis();
+			while (!Utils.isFileClosed(svg)) {
+				if ((System.currentTimeMillis() - start) > TIMEOUT) {
+					Log.warning("Exceded timeout while waiting for SVG file to be closed.");
+					return;
 				}
-				return true;
-			});
-
-			// cancel handler after timeout seconds
-			executor.schedule(new Runnable() {
-				@Override
-				public void run() {
-					handler.cancel(true);
-				}
-			}, timeout, TimeUnit.MILLISECONDS);
-
-			// svg hasn't been closed yet, return
-			if (!handler.get()) return;
+			}
 
 			Document doc = SAXBuilderSingleton.getInstance().build(svg);
 			Element root = doc.getRootElement();
 			if (root == null) return;
 
-			findAElements(root);
+			findAndAugmentElements(root);
 
 			XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 			xmlOutputter.output(doc, new FileWriter(svg));
-			Log.finest("Finished writing SVG: " + svg.getAbsolutePath());
+			Log.finest("Finished augmenting SVG: " + svg.getAbsolutePath());
 		}
-		catch (JDOMException | InterruptedException | ExecutionException e) {
-			Log.warning("Exception while generating SVG", e);
+		catch (JDOMException e) {
+			Log.warning("Exception while augmenting SVG " + svg.getAbsolutePath(), e);
 		}
 	}
 
@@ -574,16 +531,17 @@ public class DOTRenderer {
 	 *
 	 * @created 21.12.2013
 	 */
-	private static void findAElements(Element root) {
+	private static void findAndAugmentElements(Element root) {
 		List<?> children = root.getChildren();
 		Iterator<?> iter = children.iterator();
+		//noinspection WhileLoopReplaceableByForEach
 		while (iter.hasNext()) {
 			Element childElement = (Element) iter.next();
 			if (childElement.getName().equals("a")) {
 				addTargetAttribute(childElement);
 			}
 			else {
-				findAElements(childElement);
+				findAndAugmentElements(childElement);
 			}
 		}
 	}
@@ -598,7 +556,7 @@ public class DOTRenderer {
 		element.setAttribute(target);
 	}
 
-	private static void createFileOutOfDot(File file, File dot, String command) throws IOException {
+	private static void convertDot(File file, File dot, String command) throws IOException {
 		FileUtils.checkWriteable(file);
 		FileUtils.checkReadable(dot);
 		try {

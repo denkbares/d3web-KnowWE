@@ -30,43 +30,22 @@ public interface GraphVisualizationRenderer {
 
 	/**
 	 * Generates the respective presentation of the subgraph.
-	 * 
-	 * @created 27.05.2013
-	 * @return
 	 */
 	String generateSource();
 
 	/**
 	 * Returns the respective presentation of the subgraph.
-	 * 
-	 * @created 27.05.2013
-	 * @return
 	 */
 	String getSource();
 
 	/**
 	 * Returns an html snipplet to be included within the website showing the
 	 * final result of the graph visualization.
-	 * 
-	 * @created 27.05.2013
-	 * @return
 	 */
 	String getHTMLIncludeSnipplet();
 
 	/**
-	 * Returns the full path of the files that are to be created (without the file-extension but
-	 * including the file name and file ID). This is used to check if the files already exist and thus doesn't
-	 * have to be re-rendered.
-	 * @created 27.07.2014
-	 * @return
+	 * Cleans up any object that were created by this renderer.
 	 */
-	String getGraphFilePath();
-
-	/**
-	 * Returns the full path to the files that are to be created (without the file name!).
-	 * @created 27.07.2014
-	 * @return
-	 */
-	String getFilePath();
-
+	void cleanUp();
 }

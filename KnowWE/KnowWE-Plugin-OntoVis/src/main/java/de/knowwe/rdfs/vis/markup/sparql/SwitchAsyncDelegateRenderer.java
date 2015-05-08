@@ -26,6 +26,7 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.AsynchronRenderer;
+import de.knowwe.visualization.Config;
 
 /**
  * A renderer that renders d3 visualizations synchronously and dot visualization asynchronously.
@@ -53,10 +54,10 @@ public class SwitchAsyncDelegateRenderer implements Renderer {
                 DefaultMarkupType.class);
 
         // set renderer
-        String rendererType = SparqlVisualizationType.getAnnotation(defMarkupSection,
-                SparqlVisualizationType.ANNOTATION_RENDERER);
+        String rendererType = DefaultMarkupType.getAnnotation(defMarkupSection,
+                Config.RENDERER);
 
-        if(rendererType != null && rendererType.equals("d3")) {
+        if(rendererType != null && rendererType.equalsIgnoreCase("d3")) {
             visRenderer.render(content, user, result);
         } else {
             asynchronRenderer.render(content, user, result);

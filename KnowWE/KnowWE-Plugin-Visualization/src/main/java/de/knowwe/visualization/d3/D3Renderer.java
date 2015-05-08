@@ -21,11 +21,11 @@ package de.knowwe.visualization.d3;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import de.d3web.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.visualization.ConceptNode;
+import de.knowwe.visualization.Config;
 import de.knowwe.visualization.Edge;
 import de.knowwe.visualization.GraphDataBuilder;
 import de.knowwe.visualization.SubGraphData;
@@ -48,12 +48,12 @@ public class D3Renderer {
     // sectionID in paramter rein schreiben (im markup bekannt) und div dann so
     // benennen (id dann
     // mit ins javascript übergeben)
-    public static String createD3HTMLSource(SubGraphData data, Map<String, String> parameters) {
+    public static String createD3HTMLSource(SubGraphData data, Config config) {
         context = Environment.getInstance().getWikiConnector().getServletContext().getContextPath();
 
-        String visualization = parameters.get(GraphDataBuilder.VISUALIZATION);
+        String visualization = config.getVisualization().name();
 
-        htmlsource = "<div id=\"d3" + parameters.get(GraphDataBuilder.SECTION_ID)
+        htmlsource = "<div id=\"d3" + config.getSectionId()
                 + "\" style=\"overflow: auto\">\r\n";
 
         // include the necessary d3.js sources
@@ -62,28 +62,28 @@ public class D3Renderer {
 
         // default visualization: wheel
         if (visualization != null && visualization.equals("force")) {
-            drawForce(data, parameters);
+            drawForce(data, config);
         }
         else if (visualization != null && visualization.equals("tree")) {
             try {
-                drawCollapsibleTree(data, parameters);
+                drawCollapsibleTree(data, config);
             }
             catch (IllegalArgumentException e) {
                 htmlsource += "<div class='error'> No valid root concept specified </div>";
             }
         }
         else {
-            drawWheel(data, parameters);
+            drawWheel(data, config);
         }
 
         htmlsource += "</div>";
         return htmlsource;
     }
 
-    private static void drawCollapsibleTree(SubGraphData data, Map<String, String> parameters) throws IllegalArgumentException {
+    private static void drawCollapsibleTree(SubGraphData data, Config config) throws IllegalArgumentException {
 
         // uses the same JSON source as the wheel visualization
-        String concept = parameters.get(GraphDataBuilder.CONCEPT);
+        String concept = config.getConcepts().iterator().next();
         if (concept == null) return;
         writeJSONWheelSource(data, concept);
 
@@ -96,16 +96,16 @@ public class D3Renderer {
         // draw the collapsible tree visualization
         htmlsource += "<script>";
         htmlsource += " drawTree("
-                + parameters.get(GraphDataBuilder.GRAPH_SIZE)
-                + ", " + parameters.get(GraphDataBuilder.GRAPH_WIDTH)
-                + ", " + parameters.get(GraphDataBuilder.GRAPH_HEIGHT)
+                + config.getSize()
+                + ", " + config.getWidth()
+                + ", " + config.getHeight()
                 + ", " + jsonSource
-                + ", " + "\"" + parameters.get(GraphDataBuilder.SECTION_ID) + "\""
+                + ", " + "\"" + config.getSectionId() + "\""
                 + ") ";
         htmlsource += "</script>";
 
         // implement layout style
-        String cssCode = parameters.get(GraphDataBuilder.D3_FORCE_VISUALISATION_STYLE);
+        String cssCode = config.getDesign();
         if (cssCode != null) {
             htmlsource += "<style type=\"text/css\">";
             htmlsource += cssCode;
@@ -114,9 +114,9 @@ public class D3Renderer {
 
     }
 
-    private static void drawWheel(SubGraphData data, Map<String, String> parameters) throws IllegalArgumentException {
+    private static void drawWheel(SubGraphData data, Config config) throws IllegalArgumentException {
         // write the JSON source for the wheel-visualization
-        String concept = parameters.get(GraphDataBuilder.CONCEPT);
+        String concept = config.getConcepts().iterator().next();
         if (concept == null) return;
         writeJSONWheelSource(data, concept);
 
@@ -129,16 +129,16 @@ public class D3Renderer {
         // draw the wheel-visualization
         htmlsource += "<script>";
         htmlsource += " drawWheel("
-                + parameters.get(GraphDataBuilder.GRAPH_SIZE)
-                + ", " + parameters.get(GraphDataBuilder.GRAPH_WIDTH)
-                + ", " + parameters.get(GraphDataBuilder.GRAPH_HEIGHT)
+                + config.getSize()
+                + ", " + config.getWidth()
+                + ", " + config.getHeight()
                 + ", " + jsonSource
-                + ", " + "\"" + parameters.get(GraphDataBuilder.SECTION_ID) + "\""
+                + ", " + "\"" + config.getSectionId() + "\""
                 + ") ";
         htmlsource += "</script>";
 
         // implement layout style
-        String cssCode = parameters.get(GraphDataBuilder.D3_FORCE_VISUALISATION_STYLE);
+        String cssCode = config.getDesign();
         if (cssCode != null) {
             htmlsource += "<style type=\"text/css\">";
             htmlsource += cssCode;
@@ -146,7 +146,7 @@ public class D3Renderer {
         }
     }
 
-    private static void drawForce(SubGraphData data, Map<String, String> parameters) {
+    private static void drawForce(SubGraphData data, Config config) {
         // write the JSON source for the force-visualization
         writeJSONForceSource(data);
 
@@ -159,19 +159,19 @@ public class D3Renderer {
         // draw the force-visualization
         htmlsource += "<script>";
         htmlsource += " drawForce("
-                + parameters.get(GraphDataBuilder.GRAPH_SIZE)
-                + ", " + parameters.get(GraphDataBuilder.GRAPH_WIDTH)
-                + ", " + parameters.get(GraphDataBuilder.GRAPH_HEIGHT)
+                + config.getSize()
+                + ", " + config.getWidth()
+                + ", " + config.getHeight()
                 + ", " + arraySource
                 + ", " + arrayLinks
                 + ", " + "\"" + GraphDataBuilder.createBaseURL() + "\""
-                + ", " + "\"" + parameters.get(GraphDataBuilder.TITLE) + "\""
-                + ", " + "\"" + parameters.get(GraphDataBuilder.SECTION_ID) + "\""
+                + ", " + "\"" + config.getTitle() + "\""
+                + ", " + "\"" + config.getSectionId() + "\""
                 + ")";
         htmlsource += "</script>";
 
         // implement layout style
-        String cssCode = parameters.get(GraphDataBuilder.D3_FORCE_VISUALISATION_STYLE);
+        String cssCode = config.getDesign();
         if (cssCode != null) {
             htmlsource += "<style type=\"text/css\">";
             htmlsource += cssCode;

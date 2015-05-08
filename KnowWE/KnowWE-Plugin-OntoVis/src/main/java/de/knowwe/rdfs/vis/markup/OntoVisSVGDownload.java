@@ -18,58 +18,10 @@
  */
 package de.knowwe.rdfs.vis.markup;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
-import javax.servlet.ServletContext;
-
-import de.knowwe.core.action.AbstractAction;
-import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.compile.Compilers;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.ontology.compile.OntologyCompiler;
-
-/**
- * 
- * @author Johanna Latt
- * @created 20.06.2012
- */
-public class OntoVisSVGDownload extends AbstractAction {
+public class OntoVisSVGDownload extends OntoVisDownload {
 
 	@Override
-	public void execute(UserActionContext context) throws IOException {
-
-		ServletContext servletContext = context.getServletContext();
-		if (servletContext == null) return; // at wiki startup only
-		String realPath = servletContext.getRealPath("");
-		String separator = System.getProperty("file.separator");
-		String tmpPath = separator + "KnowWEExtension" + separator + "tmp" + separator;
-
-		// find graph name
-		Section<?> s = Sections.get(context.getParameter("SectionID"));
-		OntologyCompiler ontoCompiler = Compilers.getCompiler(s, OntologyCompiler.class);
-
-		String textHash = String.valueOf(s.getText().hashCode());
-		String compHash = String.valueOf(ontoCompiler.getCompileSection().getTitle().hashCode());
-
-		String path = realPath + tmpPath + "graph_" + textHash + "_" + compHash
-				+ ".svg";
-		File svg = new File(path);
-		String filename = svg.getName();
-		context.setContentType("application/x-bin");
-		context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
-		FileInputStream fis = new FileInputStream(svg);
-		OutputStream ous = context.getOutputStream();
-		byte[] readBuffer = new byte[2156];
-		int bytesIn = 0;
-		while ((bytesIn = fis.read(readBuffer)) != -1) {
-			ous.write(readBuffer, 0, bytesIn);
-		}
-		// close the Stream
-		fis.close();
-		ous.close();
+	protected String getExtension() {
+		return "svg";
 	}
 }

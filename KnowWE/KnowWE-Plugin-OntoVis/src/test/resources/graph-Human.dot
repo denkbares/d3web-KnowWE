@@ -1,4 +1,4 @@
-digraph Konzeptuebersicht {
+digraph {
 graph [ rankdir="LR" ]
 "si:gender"[  shape="hexagon" label="si:gender" ];
 "si:GenderType"[  shape="box"  style="bold" label="Gender" ];

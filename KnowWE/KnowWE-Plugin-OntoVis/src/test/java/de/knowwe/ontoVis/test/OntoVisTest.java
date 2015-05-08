@@ -25,9 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -48,6 +46,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.rdfs.vis.OntoGraphDataBuilder;
 import de.knowwe.rdfs.vis.util.Utils;
 import de.knowwe.visualization.ConceptNode;
+import de.knowwe.visualization.Config;
 import de.knowwe.visualization.Edge;
 import de.knowwe.visualization.GraphVisualizationRenderer;
 import de.knowwe.visualization.SubGraphData;
@@ -87,34 +86,25 @@ public class OntoVisTest {
 
 	@Test
 	public void testInstances() {
-		Map<String, String> parameterMap = new HashMap<>();
-
-		parameterMap.put(OntoGraphDataBuilder.CONCEPT, "si:bart");
-
-		parameterMap.put(OntoGraphDataBuilder.FORMAT, "svg");
-
-		parameterMap.put(OntoGraphDataBuilder.FILTERED_RELATIONS, "si:sibling, si:child");
-
-		parameterMap.put(OntoGraphDataBuilder.GRAPH_SIZE, "750");
-
-		parameterMap.put(OntoGraphDataBuilder.RANK_DIRECTION, "TB");
-
-		parameterMap.put(OntoGraphDataBuilder.SHOW_OUTGOING_EDGES, "true");
-
-		parameterMap.put(OntoGraphDataBuilder.USE_LABELS, "true");
-
-		parameterMap.put(OntoGraphDataBuilder.FILE_ID, "instances");
+		Config config = new Config();
+		config.setConcept("si:bart");
+		config.setFormat("svg");
+		config.addFilterRelations("si:sibling", "si:child");
+		config.setSize("750");
+		config.setRankDir(Config.RankDir.TB);
+		config.setShowOutgoingEdges(true);
+		config.setShowLabels(true);
+		config.setCacheFileID("instances");
+		config.setCacheDirectoryPath("target");
 
 		String colorCodes = "";
 		colorCodes += "si:sibling: #511F7A;";
 		colorCodes += "si:child: #398743;";
 
-		parameterMap.put(OntoGraphDataBuilder.RELATION_COLOR_CODES, colorCodes);
+		config.setRelationColors(colorCodes);
 
-		parameterMap.put(OntoGraphDataBuilder.REQUESTED_DEPTH, "1");
-		parameterMap.put(OntoGraphDataBuilder.REQUESTED_HEIGHT, "1");
-		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder("target", null,
-				parameterMap,
+		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder(null,
+				config,
 				new DummyLinkToTermDefinitionProvider(), rdfRepository);
 
 		ontoGraphDataBuilder.createData();
@@ -145,34 +135,23 @@ public class OntoVisTest {
 
 	@Test
 	public void testClasses() {
-		Map<String, String> parameterMap = new HashMap<>();
-
-		parameterMap.put(OntoGraphDataBuilder.CONCEPT, "si:Human");
-
-		parameterMap.put(OntoGraphDataBuilder.FORMAT, "png");
-
-		parameterMap.put(OntoGraphDataBuilder.EXCLUDED_NODES, "owl:Nothing");
-
-		parameterMap.put(OntoGraphDataBuilder.EXCLUDED_RELATIONS, "rdf:first, owl:equivalentClass, rdf:type, owl:assertionProperty, owl:sameAs");
-
-		parameterMap.put(OntoGraphDataBuilder.SHOW_OUTGOING_EDGES, "false");
-
-		parameterMap.put(OntoGraphDataBuilder.USE_LABELS, "true");
-
-		parameterMap.put(OntoGraphDataBuilder.LANGUAGE, "en");
-
-		parameterMap.put(OntoGraphDataBuilder.FILE_ID, "classes");
-
+		Config config = new Config();
+		config.setConcept("si:Human");
+		config.setFormat("png");
+		config.addExcludeNodes("owl:Nothing");
+		config.addExcludeRelations("rdf:first", "owl:equivalentClass", "rdf:type", "owl:assertionProperty", "owl:sameAs");
+		config.setShowOutgoingEdges(false);
+		config.setShowLabels(true);
+		config.setLanguage("en");
+		config.setCacheFileID("classes");
 		String colorCodes = "";
 		colorCodes += "rdfs:subClassOf: #19F193;";
+		config.setRelationColors(colorCodes);
+		config.setPredecessors(3);
+		config.setCacheDirectoryPath("target");
 
-		parameterMap.put(OntoGraphDataBuilder.RELATION_COLOR_CODES, colorCodes);
-
-		parameterMap.put(OntoGraphDataBuilder.REQUESTED_HEIGHT, "3");
-
-		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder("target", null,
-				parameterMap,
-				new DummyLinkToTermDefinitionProvider(), rdfRepository);
+		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder(null,
+				config, new DummyLinkToTermDefinitionProvider(), rdfRepository);
 
 		ontoGraphDataBuilder.createData();
 
@@ -202,31 +181,25 @@ public class OntoVisTest {
 
 	@Test
 	public void testProperties() {
-		Map<String, String> parameterMap = new HashMap<>();
-
-		parameterMap.put(OntoGraphDataBuilder.CONCEPT, "si:child");
-
-		parameterMap.put(OntoGraphDataBuilder.FORMAT, "svg");
-
-		parameterMap.put(OntoGraphDataBuilder.EXCLUDED_RELATIONS, "rdf:type");
-
-		parameterMap.put(OntoGraphDataBuilder.SHOW_OUTGOING_EDGES, "false");
-
-		parameterMap.put(OntoGraphDataBuilder.USE_LABELS, "true");
-
-		parameterMap.put(OntoGraphDataBuilder.FILE_ID, "properties");
+		Config config = new Config();
+		config.addConcept("si:child");
+		config.setFormat("svg");
+		config.addExcludeRelations("rdf:type");
+		config.setShowOutgoingEdges(false);
+		config.setShowLabels(true);
+		config.setCacheFileID("properties");
 
 		String colorCodes = "";
 		colorCodes += "si:child: #398743;";
 		colorCodes += "si:parent si:color #123A56;";
 		colorCodes += "si:relatedWith si:color #987F65;";
 
-		parameterMap.put(OntoGraphDataBuilder.RELATION_COLOR_CODES, colorCodes);
+		config.setRelationColors(colorCodes);
+		config.setPredecessors(3);
+		config.setCacheDirectoryPath("target");
 
-		parameterMap.put(OntoGraphDataBuilder.REQUESTED_HEIGHT, "3");
-
-		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder("target", null,
-				parameterMap,
+		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder(null,
+				config,
 				new DummyLinkToTermDefinitionProvider(), rdfRepository);
 
 		ontoGraphDataBuilder.createData();
@@ -257,22 +230,16 @@ public class OntoVisTest {
 
 	@Test
 	public void testTable() {
-		Map<String, String> parameterMap = new HashMap<>();
+		Config config = new Config();
+		config.setConcept("si:lisa");
+		config.addFilterRelations("si:age", "rdfs:label", "si:child");
+		config.setShowOutgoingEdges(false);
+		config.setShowLabels(false);
+		config.setCacheFileID("table");
+		config.setCacheDirectoryPath("target");
 
-		parameterMap.put(OntoGraphDataBuilder.CONCEPT, "si:lisa");
-
-		parameterMap.put(OntoGraphDataBuilder.FORMAT, "svg");
-
-		parameterMap.put(OntoGraphDataBuilder.FILTERED_RELATIONS, "si:age, rdfs:label, si:child");
-
-		parameterMap.put(OntoGraphDataBuilder.SHOW_OUTGOING_EDGES, "false");
-
-		parameterMap.put(OntoGraphDataBuilder.USE_LABELS, "false");
-
-		parameterMap.put(OntoGraphDataBuilder.FILE_ID, "table");
-
-		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder("target", null,
-				parameterMap,
+		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder(null,
+				config,
 				new DummyLinkToTermDefinitionProvider(), rdfRepository);
 
 		ontoGraphDataBuilder.createData();
@@ -303,31 +270,19 @@ public class OntoVisTest {
 
 	@Test
 	public void testTwoConcepts() {
-		Map<String, String> parameterMap = new HashMap<>();
+		Config config = new Config();
+		config.setConcept("si:abraham", "si:maggie");
+		config.addFilterRelations("si:child");
+		config.setShowInverse(false);
+		config.addFilterRelations("si:child");
+		config.setShowOutgoingEdges(true);
+		config.setShowLabels(true);
+		config.setSuccessors(0);
+		config.setCacheFileID("twoconcepts");
+		config.setCacheDirectoryPath("target");
 
-		parameterMap.put(OntoGraphDataBuilder.CONCEPT, "si:abraham, si:maggie");
-
-		parameterMap.put(OntoGraphDataBuilder.FORMAT, "svg");
-
-		parameterMap.put(OntoGraphDataBuilder.FILTERED_RELATIONS, "si:child");
-
-		parameterMap.put(OntoGraphDataBuilder.SHOW_INVERSE, "false");
-
-		parameterMap.put(OntoGraphDataBuilder.FILTERED_RELATIONS, "si:child");
-
-		parameterMap.put(OntoGraphDataBuilder.SHOW_OUTGOING_EDGES, "true");
-
-		parameterMap.put(OntoGraphDataBuilder.USE_LABELS, "true");
-
-		parameterMap.put(OntoGraphDataBuilder.REQUESTED_HEIGHT, "1");
-
-		parameterMap.put(OntoGraphDataBuilder.REQUESTED_DEPTH, "0");
-
-		parameterMap.put(OntoGraphDataBuilder.FILE_ID, "twoconcepts");
-
-		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder("target", null,
-				parameterMap,
-				new DummyLinkToTermDefinitionProvider(), rdfRepository);
+		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder(null,
+				config, new DummyLinkToTermDefinitionProvider(), rdfRepository);
 
 		ontoGraphDataBuilder.createData();
 
@@ -357,11 +312,10 @@ public class OntoVisTest {
 
 	@Test
 	public void testSparql() {
-		Map<String, String> parameterMap = new HashMap<>();
-
-		parameterMap.put(OntoGraphDataBuilder.REAL_PATH, "target");
-
-		parameterMap.put(OntoGraphDataBuilder.FILE_ID, "sparql");
+		Config config = new Config();
+		config.setCacheDirectoryPath("target");
+		config.setCacheFileID("sparql");
+		config.setShowLabels(false);
 
 		String sparql = "SELECT ?x ?y ?z\nWHERE {\n?x ?y ?z . ?x rdf:type si:Human .\n}";
 
@@ -386,14 +340,14 @@ public class OntoVisTest {
 				continue;
 			}
 
-			ConceptNode fromNode = Utils.createNode(parameterMap, rdfRepository, uriProvider,
+			ConceptNode fromNode = Utils.createNode(config, rdfRepository, uriProvider,
 					null, data, fromURI, true);
 			String relation = Utils.getConceptName(relationURI, rdfRepository);
 
-			ConceptNode toNode = Utils.createNode(parameterMap, rdfRepository, uriProvider, null,
+			ConceptNode toNode = Utils.createNode(config, rdfRepository, uriProvider, null,
 					data, toURI, true);
 
-			String relationLabel = Utils.createRelationLabel(parameterMap, rdfRepository, relationURI,
+			String relationLabel = Utils.createRelationLabel(config, rdfRepository, relationURI,
 					relation);
 
 			Edge newLineRelationsKey = new Edge(fromNode, relationLabel, toNode);
@@ -403,10 +357,10 @@ public class OntoVisTest {
 		}
 
 		String conceptName = data.getConceptDeclarations().iterator().next().getName();
-		parameterMap.put(OntoGraphDataBuilder.CONCEPT, conceptName);
+		config.setConcept(conceptName);
 
 		GraphVisualizationRenderer graphRenderer = new DOTVisualizationRenderer(data,
-				parameterMap);
+				config);
 		graphRenderer.generateSource();
 
 		String generatedSource = graphRenderer.getSource().trim();
@@ -435,24 +389,18 @@ public class OntoVisTest {
 
 	@Test
 	public void testInverse() {
-		Map<String, String> parameterMap = new HashMap<>();
+		Config config = new Config();
+		config.setConcept("si:marge");
+		config.addExcludeRelations("rdf:type", "onto:_checkChain3", "owl:sameAs", "si:father", "si:mother", "si:gender", "si:livesIn");
+		config.addExcludeNodes("owl:Thing", "owl:Nothing");
+		config.setShowOutgoingEdges(false);
+		config.setShowLabels(true);
+		config.setShowInverse(false);
+		config.setCacheFileID("testInverse");
+		config.setCacheDirectoryPath("target");
 
-		parameterMap.put(OntoGraphDataBuilder.CONCEPT, "si:marge");
-
-		parameterMap.put(OntoGraphDataBuilder.EXCLUDED_RELATIONS, "rdf:type, onto:_checkChain3, owl:sameAs, si:father, si:mother, si:gender, si:livesIn");
-
-		parameterMap.put(OntoGraphDataBuilder.EXCLUDED_NODES, "owl:Thing, owl:Nothing");
-
-		parameterMap.put(OntoGraphDataBuilder.SHOW_OUTGOING_EDGES, "false");
-
-		parameterMap.put(OntoGraphDataBuilder.USE_LABELS, "true");
-
-		parameterMap.put(OntoGraphDataBuilder.SHOW_INVERSE, "false");
-
-		parameterMap.put(OntoGraphDataBuilder.FILE_ID, "testInverse");
-
-		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder("target", null,
-				parameterMap,
+		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder(null,
+				config,
 				new DummyLinkToTermDefinitionProvider(), rdfRepository);
 
 		ontoGraphDataBuilder.createData();
@@ -480,7 +428,6 @@ public class OntoVisTest {
 				"Generated dot-source does not match (sorted-bytes) expected dot-source.",
 				expectedBytes, generatedBytes);
 	}
-
 
 	private List<Byte> asSortedByteList(String expectedSource) {
 		byte[] bytes = expectedSource.getBytes();

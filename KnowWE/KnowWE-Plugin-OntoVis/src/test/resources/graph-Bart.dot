@@ -1,5 +1,5 @@
-digraph Konzeptuebersicht {
-graph [ rankdir="TB" size="7.81169775!" ]
+digraph {
+graph [ rankdir="TB" size="7.81169775" ]
 "si:maggie"[  shape="box"  style="rounded" label="Maggie\nSimpson\n" ];
 "si:lisa"[  shape="box"  style="rounded" label="Lisa Simpson" ];
 "si:homer"[  shape="box"  style="rounded" label="Homer\nSimpson\n" ];

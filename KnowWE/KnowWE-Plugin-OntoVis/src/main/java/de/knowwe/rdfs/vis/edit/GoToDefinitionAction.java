@@ -31,11 +31,11 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.LinkToTermDefinitionProvider;
 import de.knowwe.core.utils.PackageCompileLinkToTermDefinitionProvider;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
-import de.knowwe.rdfs.vis.OntoGraphDataBuilder;
-import de.knowwe.rdfs.vis.markup.sparql.SparqlVisualizationType;
 import de.knowwe.rdfs.vis.util.Utils;
+import de.knowwe.visualization.Config;
 
 /**
  * @author Johanna Latt
@@ -73,12 +73,12 @@ public class GoToDefinitionAction extends AbstractAction {
 		}
 
 		Map<String, String> parameterMap = new HashMap<>();
-		SparqlVisualizationType.readParameterFromAnnotation(SparqlVisualizationType.ANNOTATION_LINK_MODE, section, OntoGraphDataBuilder.LINK_MODE, parameterMap, SparqlVisualizationType.LinkMode.browse
-				.name());
+		Config config = new Config();
+		config.readFromSection(Sections.cast(section, DefaultMarkupType.class));
 
 		String uri = Rdf2GoUtils.expandNamespace(compiler.getRdf2GoCore(), conceptName);
 
-		String link = Utils.createConceptURL(conceptName, parameterMap, section, uriProvider, uri);
+		String link = Utils.createConceptURL(conceptName, config, section, uriProvider, uri);
 
 		context.getOutputStream().write(link.toString().getBytes());
 	}

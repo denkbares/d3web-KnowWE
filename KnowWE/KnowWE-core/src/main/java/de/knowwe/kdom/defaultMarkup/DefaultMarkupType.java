@@ -248,9 +248,7 @@ public class DefaultMarkupType extends AbstractType {
 	 * @created 26.01.2011
 	 */
 	public static String[] getAnnotations(Section<?> section, String name) {
-		List<Section<? extends AnnotationContentType>> annotationSections = getAnnotationContentSections(
-				section,
-				name);
+		List<Section<? extends AnnotationContentType>> annotationSections = getAnnotationContentSections(section, name);
 		String[] result = new String[annotationSections.size()];
 		int position = 0;
 		for (Section<?> aSection : annotationSections) {

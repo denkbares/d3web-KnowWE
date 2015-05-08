@@ -37,7 +37,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import de.d3web.strings.Strings;
 
 /**
- * 
  * @author Jochen Reutelshöfer
  * @created 29.11.2012
  */
@@ -205,37 +204,41 @@ public class Utils {
 	}
 
 	public static boolean isWindows() {
-		String OS = System.getProperty("os.name").toLowerCase();
-		return (OS.indexOf("win") >= 0);
+		return getOS().contains("win");
 
 	}
 
+	protected static String getOS() {
+		return System.getProperty("os.name").toLowerCase();
+	}
+
 	public static boolean isMac() {
-		String OS = System.getProperty("os.name").toLowerCase();
-		return (OS.indexOf("mac") >= 0);
+		return getOS().contains("mac");
 
 	}
 
 	public static boolean isUnix() {
-		String OS = System.getProperty("os.name").toLowerCase();
-		return (OS.indexOf("nix") >= 0 || OS.indexOf("nux") >= 0 || OS.indexOf("aix") > 0);
+		return getOS().contains("nix") || getOS().contains("nux") || getOS().indexOf("aix") > 0;
 
 	}
 
 	public static boolean isSolaris() {
-		String OS = System.getProperty("os.name").toLowerCase();
-		return (OS.indexOf("sunos") >= 0);
+		return getOS().contains("sunos");
 
 	}
 
 	public static boolean isFileClosed(File file) {
-		if (isWindows()) return isFileClosedWindows(file);
-		return isFileClosedUnix(file);
+		if (isWindows()) {
+			return isFileClosedWindows(file);
+		}
+		else {
+			return isFileClosedUnix(file);
+		}
 	}
 
 	private static boolean isFileClosedUnix(File file) {
 		try {
-			Process plsof = new ProcessBuilder(new String[]{ "lsof", "|", "grep", file.getAbsolutePath() })
+			Process plsof = new ProcessBuilder(new String[] { "lsof", "|", "grep", file.getAbsolutePath() })
 					.start();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(plsof.getInputStream()));
 			String line;
@@ -249,8 +252,7 @@ public class Utils {
 			reader.close();
 			plsof.destroy();
 		}
-		catch (Exception ex) {
-			// TODO: handle exception ...
+		catch (Exception ignore) {
 		}
 		return true;
 	}

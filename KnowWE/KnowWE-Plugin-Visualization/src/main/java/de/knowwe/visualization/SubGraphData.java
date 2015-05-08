@@ -40,13 +40,13 @@ public class SubGraphData {
 	 *
 	 */
 	public SubGraphData() {
-		concepts = new LinkedHashMap<String, ConceptNode>();
-		clusters = new HashMap<ConceptNode, Set<Edge>>();
-		clusters.put(ConceptNode.DEFAULT_CLUSTER_NODE, new HashSet<Edge>());
+		concepts = new LinkedHashMap<>();
+		clusters = new HashMap<>();
+		clusters.put(ConceptNode.DEFAULT_CLUSTER_NODE, new HashSet<>());
 	}
 
 	public void createCluster(ConceptNode node) {
-		clusters.put(node, new HashSet<Edge>());
+		clusters.put(node, new HashSet<>());
 	}
 
 	public Map<ConceptNode, Set<Edge>> getClusters() {
@@ -69,13 +69,13 @@ public class SubGraphData {
 	 * removes all concepts from the concept set, which are not used within the edges of the default level.
 	 */
 	public void clearIsolatedNodesFromDefaultLevel() {
-		Set<ConceptNode> usedNodes = new HashSet<ConceptNode>();
+		Set<ConceptNode> usedNodes = new HashSet<>();
 		final Set<Edge> defaultLevelEdges = clusters.get(ConceptNode.DEFAULT_CLUSTER_NODE);
 		for (Edge edge : defaultLevelEdges) {
 			usedNodes.add(edge.getSubject());
 			usedNodes.add(edge.getObject());
 		}
-		Collection<String> keysToRemove = new HashSet<String>();
+		Collection<String> keysToRemove = new HashSet<>();
 		for (Map.Entry<String, ConceptNode> nodeEntry : concepts.entrySet()) {
 			if (!usedNodes.contains(nodeEntry.getValue())) {
 				keysToRemove.add(nodeEntry.getKey());
@@ -91,7 +91,7 @@ public class SubGraphData {
 	}
 
 	public Set<Edge> getAllOutoingEdgesFor(ConceptNode node) {
-		Set<Edge> result = new HashSet<Edge>();
+		Set<Edge> result = new HashSet<>();
 		final Set<Edge> defaultLevelEdges = clusters.get(ConceptNode.DEFAULT_CLUSTER_NODE);
 		for (Edge edge : defaultLevelEdges) {
 			if (edge.getSubject().equals(node)) {
@@ -106,7 +106,7 @@ public class SubGraphData {
 	}
 
 	public Set<Edge> getAllEdges() {
-		Set<Edge> allEdges = new HashSet<Edge>();
+		Set<Edge> allEdges = new HashSet<>();
 		for (ConceptNode conceptNode : clusters.keySet()) {
 			allEdges.addAll(clusters.get(conceptNode));
 		}

@@ -1,4 +1,4 @@
-digraph Konzeptuebersicht {
+digraph {
 graph [ rankdir="LR" ]
 "si:maggie"[  shape="box"  style="rounded" label="Maggie\nSimpson\n" ];
 "si:bart"[  shape="box"  style="rounded" label="Bart Simpson" ];

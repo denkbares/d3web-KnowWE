@@ -23,7 +23,6 @@ import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Map;
 
-import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.model.QueryResultTable;
 import org.ontoware.rdf2go.model.QueryRow;
 import org.ontoware.rdf2go.model.node.BlankNode;
@@ -40,6 +39,7 @@ import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.preview.PreviewManager;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.LinkToTermDefinitionProvider;
 import de.knowwe.ontology.compile.OntologyCompiler;
@@ -47,6 +47,7 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.rdfs.vis.OntoGraphDataBuilder;
 import de.knowwe.visualization.ConceptNode;
+import de.knowwe.visualization.Config;
 import de.knowwe.visualization.GraphDataBuilder;
 import de.knowwe.visualization.SubGraphData;
 import de.knowwe.visualization.dot.RenderingStyle;
@@ -56,8 +57,6 @@ import de.knowwe.visualization.dot.RenderingStyle;
  * @created 29.11.2012
  */
 public class Utils {
-
-	public static final String LINE_BREAK = "\\n";
 
 	public static String getRDFSLabel(Node concept, Rdf2GoCore repo, String languageTag) {
 
@@ -71,8 +70,7 @@ public class Utils {
 			QueryResultTable resultTable = repo.sparqlSelect(query);
 			for (QueryRow queryRow : resultTable) {
 				Node node = queryRow.getValue("x");
-				String value = node.asLiteral().toString();
-				label = value;
+				label = node.asLiteral().toString();
 				break; // we assume there is only one label
 
 			}
@@ -80,13 +78,6 @@ public class Utils {
 		return label;
 	}
 
-	/**
-	 * @param concept
-	 * @param repo
-	 * @param languageTag
-	 * @return
-	 * @created 29.04.2013
-	 */
 	private static String getLanguageSpecificLabel(Node concept, Rdf2GoCore repo, String languageTag) {
 		if (languageTag == null) return null;
 		String label = null;
@@ -96,8 +87,7 @@ public class Utils {
 		QueryResultTable resultTable = repo.sparqlSelect(query);
 		for (QueryRow queryRow : resultTable) {
 			Node node = queryRow.getValue("x");
-			String value = node.asLiteral().toString();
-			label = value;
+			label = node.asLiteral().toString();
 			if (label.charAt(label.length() - 3) == '@') {
 				label = label.substring(0, label.length() - 3);
 			}
@@ -107,17 +97,17 @@ public class Utils {
 		return label;
 	}
 
-	public static ConceptNode createNode(Map<String, String> parameters, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, SubGraphData data, Node toURI, boolean insertNewNode) {
-		return createNode(parameters, rdfRepository, uriProvider, section, data, toURI, insertNewNode, null);
+	public static ConceptNode createNode(Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, SubGraphData data, Node toURI, boolean insertNewNode) {
+		return createNode(config, rdfRepository, uriProvider, section, data, toURI, insertNewNode, null);
 	}
 
-	public static ConceptNode createNode(Map<String, String> parameters, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, SubGraphData data, Node toURI, boolean insertNewNode, String clazz) {
-		ConceptNode visNode = null;
+	public static ConceptNode createNode(Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, SubGraphData data, Node toURI, boolean insertNewNode, String clazz) {
+		ConceptNode visNode;
 
-		GraphDataBuilder.NODE_TYPE type = GraphDataBuilder.NODE_TYPE.UNDEFINED;
-		Literal toLiteral = null;
+		GraphDataBuilder.NODE_TYPE type;
+		Literal toLiteral;
 		String label = null;
-		String identifier = null;
+		String identifier;
 
 		/*
 		1. case: Node is Literal
@@ -159,7 +149,7 @@ public class Utils {
 		/*
 		2. case: Node is BlankNode
 		 */
-		BlankNode bNode = null;
+		BlankNode bNode;
 		try {
 			bNode = toURI.asBlankNode();
 			identifier = getIdentifierBNode(bNode);
@@ -200,18 +190,17 @@ public class Utils {
 				if (Rdf2GoUtils.isProperty(rdfRepository, uri)) {
 					type = GraphDataBuilder.NODE_TYPE.PROPERTY;
 				}
-				if (parameters.get(GraphDataBuilder.USE_LABELS) != null
-						&& parameters.get(GraphDataBuilder.USE_LABELS).equals("true")) {
+				if (config.isShowLabels()) {
 					label = Utils.getRDFSLabel(
 							toURI, rdfRepository,
-							parameters.get(OntoGraphDataBuilder.LANGUAGE));
+							config.getLanguage());
 				}
 				if (label == null) {
 					label = identifier;
 				}
 				RenderingStyle style = Utils.getStyle(type);
-				Utils.setClassColorCoding(toURI, style, parameters, rdfRepository);
-				visNode = new ConceptNode(identifier, type, createConceptURL(identifier, parameters,
+				Utils.setClassColorCoding(toURI, style, config, rdfRepository);
+				visNode = new ConceptNode(identifier, type, createConceptURL(identifier, config,
 						section,
 						uriProvider, uri.toString()), label, clazz, style);
 				if (insertNewNode) {
@@ -224,7 +213,7 @@ public class Utils {
 					visNode.setClazz(clazz);
 					// re-color according to newly found clazz
 					RenderingStyle style = Utils.getStyle(visNode.getType());
-					Utils.setClassColorCoding(toURI, style, parameters, rdfRepository);
+					Utils.setClassColorCoding(toURI, style, config, rdfRepository);
 					visNode.setStyle(style);
 
 				}
@@ -248,8 +237,8 @@ public class Utils {
 		return bNode.toString();
 	}
 
-	private static RenderingStyle setClassColorCoding(Node node, RenderingStyle style, Map<String, String> parameters, Rdf2GoCore rdfRepository) {
-		String classColorScheme = parameters.get(GraphDataBuilder.CLASS_COLOR_CODES);
+	private static RenderingStyle setClassColorCoding(Node node, RenderingStyle style, Config config, Rdf2GoCore rdfRepository) {
+		String classColorScheme = config.getClassColors();
 		if (classColorScheme != null && !Strings.isBlank(classColorScheme)) {
 			String shortURI = Rdf2GoUtils.reduceNamespace(rdfRepository, node.asURI().toString());
 			if (Rdf2GoUtils.isClass(rdfRepository, node.asURI())) {
@@ -275,46 +264,40 @@ public class Utils {
 	}
 
 	private static String findColor(String shortURIClass, String classColorScheme) {
-
-		String color = de.knowwe.visualization.util.Utils.getColorCode(shortURIClass, classColorScheme);
-		return color;
+		return de.knowwe.visualization.util.Utils.getColorCode(shortURIClass, classColorScheme);
 	}
 
-	public static String createConceptURL(String to, Map<String, String> parameters, Section<?> s, LinkToTermDefinitionProvider uriProvider, String uri) {
-		if (parameters.get(OntoGraphDataBuilder.LINK_MODE) != null) {
-			if (parameters.get(OntoGraphDataBuilder.LINK_MODE).equals(
-					OntoGraphDataBuilder.LINK_MODE_BROWSE)) {
-				final OntologyCompiler compiler = Compilers.getCompiler(s, OntologyCompiler.class);
-				final String shortURI = Rdf2GoUtils.reduceNamespace(compiler.getRdf2GoCore(), uri);
-				Identifier identifier = new Identifier(shortURI);
-				String[] identifierParts = shortURI.split(":");
-				if (identifierParts.length == 2) {
-					identifier = new Identifier(
-							identifierParts[0], Strings.decodeURL(identifierParts[1]));
+	public static String createConceptURL(String to, Config config, Section<?> section, LinkToTermDefinitionProvider uriProvider, String uri) {
+		if (config.getLinkMode() == Config.LinkMode.BROWSE) {
+			final OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
+			final String shortURI = Rdf2GoUtils.reduceNamespace(compiler.getRdf2GoCore(), uri);
+			Identifier identifier = new Identifier(shortURI);
+			String[] identifierParts = shortURI.split(":");
+			if (identifierParts.length == 2) {
+				identifier = new Identifier(
+						identifierParts[0], Strings.decodeURL(identifierParts[1]));
 
-				}
+			}
 
-				final TerminologyManager terminologyManager = compiler.getTerminologyManager();
-				final Section<?> termDefiningSection = terminologyManager.getTermDefiningSection(identifier);
-				if (termDefiningSection == null) {
-					// we have no definition found
-					return null;
+			final TerminologyManager terminologyManager = compiler.getTerminologyManager();
+			final Section<?> termDefiningSection = terminologyManager.getTermDefiningSection(identifier);
+			if (termDefiningSection == null) {
+				// we have no definition found
+				return null;
+			}
+			// get the closes ancestor that will have an anchor to jump to
+			Section<?> anchorAncestor = PreviewManager.getInstance()
+					.getPreviewAncestor(termDefiningSection);
+			String url = KnowWEUtils.getURLLink(anchorAncestor);
+			if (url != null) {
+				if (!url.startsWith("http:")) {
+					url = Environment.getInstance().getWikiConnector().getBaseUrl() + url;
 				}
-				// get the closes ancestor that will have an anchor to jump to
-				Section<?> anchorAncestor = PreviewManager.getInstance()
-						.getPreviewAncestor(termDefiningSection);
-				String url = KnowWEUtils.getURLLink(anchorAncestor);
-				if (url != null) {
-					if (!url.startsWith("http:")) {
-						url = Environment.getInstance().getWikiConnector().getBaseUrl() + url;
-					}
-					return url;
-				}
+				return url;
 			}
 		}
-		return OntoGraphDataBuilder.createBaseURL() + "?page="
-				+ OntoGraphDataBuilder.getSectionTitle(s)
-				+ "&concept=" + to;
+		return OntoGraphDataBuilder.createBaseURL() + "?" + (section == null ? "" : "page="
+				+ section.getTitle() + "&") + "concept=" + to;
 	}
 
 	public static String getIdentifierURI(Node uri, Rdf2GoCore repo) {
@@ -339,7 +322,7 @@ public class Utils {
 
 	public static boolean isBlankNode(Node n) {
 		try {
-			BlankNode bNode = n.asBlankNode();
+			n.asBlankNode();
 			return true;
 		}
 		catch (ClassCastException e) {
@@ -349,7 +332,7 @@ public class Utils {
 
 	public static boolean isLiteral(Node n) {
 		try {
-			Literal l = n.asLiteral();
+			n.asLiteral();
 			return true;
 		}
 		catch (ClassCastException e) {
@@ -358,7 +341,7 @@ public class Utils {
 	}
 
 	public static String getConceptName(Node uri, Rdf2GoCore repo) {
-        /*
+		/*
         handle string/literal
 		 */
 		if (isLiteral(uri)) {
@@ -413,22 +396,18 @@ public class Utils {
 	}
 
 	public static String createColorCodings(String relationName, Rdf2GoCore core, String entityName) {
-		StringBuffer result = new StringBuffer();
-
+		StringBuilder result = new StringBuilder();
 		String query = "SELECT ?entity ?color WHERE {" +
 				"?entity <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> " + entityName + " ." +
 				"?entity " + relationName + " ?color" +
 				"}";
 		QueryResultTable resultTable = core.sparqlSelect(query);
-		ClosableIterator<QueryRow> iterator = resultTable.iterator();
-		while (iterator.hasNext()) {
-			QueryRow row = iterator.next();
+		for (QueryRow row : resultTable) {
 			Node entity = row.getValue("entity");
 			String color = row.getLiteralValue("color");
 			String shortURI = Rdf2GoUtils.reduceNamespace(core, entity.toString());
-			result.append(shortURI + " " + color + ";");
+			result.append(shortURI).append(" ").append(color).append(";");
 		}
-
 		return result.toString().trim();
 	}
 
@@ -462,7 +441,16 @@ public class Utils {
 		return style;
 	}
 
-	public static String createRelationLabel(Map<String, String> parameters, Rdf2GoCore rdfRepository, Node relationURI, String relation) {
+	public static void getConceptFromRequest(UserContext user, Config config) {
+		if (user != null) {
+			String parameter = user.getParameter("concept");
+			if (parameter != null) {
+				config.setConcept(Strings.trim(parameter));
+			}
+		}
+	}
+
+	public static String createRelationLabel(Config config, Rdf2GoCore rdfRepository, Node relationURI, String relation) {
 		// is the node a literal ?
 		Literal toLiteral = null;
 		try {
@@ -483,7 +471,7 @@ public class Utils {
 			// if it is no literal look for label for the URI
 			String relationLabel = Utils.getRDFSLabel(
 					relationURI.asURI(), rdfRepository,
-					parameters.get(OntoGraphDataBuilder.LANGUAGE));
+					config.getLanguage());
 			if (relationLabel != null) {
 				relationName = relationLabel;
 			}
@@ -492,14 +480,13 @@ public class Utils {
 	}
 
 	public static String getFileID(Section<?> section) {
-		String textHash = String.valueOf(section.getText().hashCode());
 
-		OntologyCompiler ontoCompiler = Compilers.getCompiler(section, OntologyCompiler.class);
-		if (ontoCompiler == null) return null;
-		String compHash = String.valueOf(ontoCompiler.getCompileSection().getTitle().hashCode());
+		String fileID = "Visualization_" + section.getID();
 
-		String fileID = "_" + textHash + "_" + compHash;
-		return fileID;
+		OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
+		if (compiler == null) return fileID;
+
+		return fileID + "_" + Integer.toHexString(compiler.hashCode());
 	}
 
 	public static String findNewIDFromRenderResult(Sections.ReplaceResult rr) {

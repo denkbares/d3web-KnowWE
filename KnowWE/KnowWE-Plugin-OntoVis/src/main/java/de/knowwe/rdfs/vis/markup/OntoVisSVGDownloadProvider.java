@@ -25,6 +25,7 @@ import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
 import de.knowwe.util.Icon;
+import de.knowwe.visualization.Config;
 
 /**
  * @author Johanna Latt
@@ -49,8 +50,8 @@ public class OntoVisSVGDownloadProvider implements ToolProvider {
 	protected Tool getDownloadTool(Section<?> section, UserContext userContext) {
 		// tool to provide download capability
 
-		String renderer = ConceptVisualizationType.getAnnotation(section, ConceptVisualizationType.ANNOTATION_RENDERER);
-		if (renderer != null && renderer.equals("d3")) {
+		String renderer = ConceptVisualizationType.getAnnotation(section, Config.RENDERER);
+		if (renderer != null && renderer.equalsIgnoreCase("d3")) {
 			String jsAction = "downloadSVG('" + section.getID() + "')";
 			return new DefaultTool(Icon.DOWNLOAD,
 					"Download .svg",

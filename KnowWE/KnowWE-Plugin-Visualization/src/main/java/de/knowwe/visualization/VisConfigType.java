@@ -17,7 +17,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.rdfs.vis.markup;
+package de.knowwe.visualization;
 
 /**
  * Provides backwards compatibility for VisConfig.

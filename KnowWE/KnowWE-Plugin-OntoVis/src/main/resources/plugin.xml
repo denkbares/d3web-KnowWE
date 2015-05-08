@@ -86,26 +86,6 @@
 		<parameter id="scope" value="root" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="VisualizationConfigType">
-		<parameter id="class"
-			value="de.knowwe.rdfs.vis.markup.VisualizationConfigType" />
-		<parameter id="name" value="de.knowwe.rdfs.vis.markup.VisualizationConfigType" />
-		<parameter id="description" value="Config Markup" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="scope" value="root" />
-	</extension>
-
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="VisConfigType">
-		<parameter id="class"
-			value="de.knowwe.rdfs.vis.markup.VisConfigType" />
-		<parameter id="name" value="de.knowwe.rdfs.vis.markup.VisConfigType" />
-		<parameter id="description" value="Config Markup" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="scope" value="root" />
-	</extension>
-	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
 		id="OntoVisSVGDownloadProvider">
 		<parameter id="class"

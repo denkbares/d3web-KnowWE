@@ -18,25 +18,24 @@
  */
 package de.knowwe.visualization.d3;
 
-import java.util.Map;
-
+import de.knowwe.visualization.Config;
 import de.knowwe.visualization.GraphVisualizationRenderer;
 import de.knowwe.visualization.SubGraphData;
 
 public class D3VisualizationRenderer implements GraphVisualizationRenderer {
 
 	private final SubGraphData data;
-	private final Map<String, String> parameters;
+	private final Config config;
 	private String source = null;
 
-	public D3VisualizationRenderer(SubGraphData data, Map<String, String> parameters) {
+	public D3VisualizationRenderer(SubGraphData data, Config config) {
 		this.data = data;
-		this.parameters = parameters;
+		this.config = config;
 	}
 
 	@Override
 	public String generateSource() {
-		source = D3Renderer.createD3HTMLSource(data, parameters);
+		source = D3Renderer.createD3HTMLSource(data, config);
 		return source;
 	}
 
@@ -57,13 +56,8 @@ public class D3VisualizationRenderer implements GraphVisualizationRenderer {
 	}
 
 	@Override
-	public String getGraphFilePath() {
-		return null;
-	}
-
-	@Override
-	public String getFilePath() {
-		return null;
+	public void cleanUp() {
+		// nothing to clean up
 	}
 
 }

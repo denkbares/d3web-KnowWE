@@ -21,11 +21,11 @@ package de.knowwe.visualization.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 
 /**
@@ -39,18 +39,10 @@ public class FileUtils {
 	public static final String FILE_SEPARATOR = System.getProperty("file.separator");
 	public static final String TOMCAT_PATH_SEPARATOR = "/";
 
-	/**
-	 * @param file
-	 * @created 20.08.2012
-	 */
 	public static void writeFile(File file, String content) {
 		try {
 			checkWriteable(file);
-			FileWriter writer;
-			writer = new FileWriter(file);
-			writer.append(content);
-			writer.flush();
-			writer.close();
+			Strings.writeFile(file.getPath(), content);
 			Log.info("Wrote file " + file.getAbsolutePath());
 		}
 		catch (IOException e) {
@@ -89,27 +81,20 @@ public class FileUtils {
 	public static void checkWriteable(File file) throws IOException {
 		// create/check target output folder
 		File parent = file.getAbsoluteFile().getParentFile();
+		//noinspection ResultOfMethodCallIgnored
 		parent.mkdirs();
 		if (!parent.exists()) {
-			throw new IOException(
-					"failed to create non-existing parent folder: " + parent.getCanonicalPath());
+			throw new IOException("Failed to create non-existing parent folder: " + parent.getCanonicalPath());
 		}
 		// if there is already a file that cannot be overwritten,
 		// throw an exception
 		if (file.exists() && !file.canWrite()) {
-			throw new IOException(
-					"output file cannot be written: " + file.getCanonicalPath());
+			throw new IOException("Output file cannot be written: " + file.getCanonicalPath());
 		}
 
-		if (!file.exists()) {
-			try {
-				file.createNewFile();
-			}
-			catch (IOException io) {
-				throw new IOException(
-						"output file could not be created: " + file.getCanonicalPath());
-			}
-		}
+		//noinspection ResultOfMethodCallIgnored
+		file.createNewFile();
+
 	}
 
 	public static void printStream(InputStream str) throws IOException {
@@ -124,12 +109,16 @@ public class FileUtils {
 	/**
 	 * Checks if the graph-files with the given name already exist. If that is the case, the files do not have to be
 	 * rendered again but can just be re-used.
-	 *
-	 * @return
 	 */
-	public static boolean filesAlreadyRendered(String path) {
+	public static boolean filesUpToDate(String path) {
 		if (path == null) return false;
 		File graph = new File(path + ".dot");
 		return graph.exists();
+	}
+
+	public static boolean cleanupFiles(String path) {
+		if (path == null) return false;
+		File file = new File(path + ".dot");
+		return file.delete();
 	}
 }

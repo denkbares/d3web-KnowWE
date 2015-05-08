@@ -18,10 +18,10 @@
  */
 package de.knowwe.visualization.dot;
 
-import java.util.Map;
-import java.util.Objects;
+import java.io.File;
 
-import de.knowwe.visualization.GraphDataBuilder;
+import de.d3web.utils.Log;
+import de.knowwe.visualization.Config;
 import de.knowwe.visualization.GraphVisualizationRenderer;
 import de.knowwe.visualization.SubGraphData;
 import de.knowwe.visualization.util.FileUtils;
@@ -36,93 +36,50 @@ import de.knowwe.visualization.util.FileUtils;
 public class DOTVisualizationRenderer implements GraphVisualizationRenderer {
 
 	private final SubGraphData data;
-	private final Map<String, String> parameters;
+	private final Config config;
 	private String source = null;
+	private File[] createdFiles = new File[] {};
 
-	/**
-	 *
-	 */
-	public DOTVisualizationRenderer(SubGraphData data, Map<String, String> parameters) {
+	public DOTVisualizationRenderer(SubGraphData data, Config config) {
 		this.data = data;
-		this.parameters = parameters;
+		this.config = config;
 	}
 
 	@Override
-	public String generateSource() {
-		source = DOTRenderer.createDotSources(data, parameters);
-		DOTRenderer.createAndwriteDOTFiles(getGraphFilePath(), source,
-				parameters.get(GraphDataBuilder.DOT_APP));
+	public synchronized String generateSource() {
+		source = DOTRenderer.createDotSources(data, config);
+		createdFiles = DOTRenderer.createAndWriteFiles(config, source);
 		return source;
 	}
 
 	@Override
 	public String getHTMLIncludeSnipplet() {
 		StringBuilder html = new StringBuilder();
-		if (!DOTRenderer.checkDotInstallation(parameters)) {
+		if (!DOTRenderer.checkDotInstallation(config)) {
 			html.append("<div class='error'>")
 					.append("Unable to find a valid installation of dot/Graphviz at location '")
-					.append(DOTRenderer.getDOTApp(parameters.get(GraphDataBuilder.DOT_APP)))
+					.append(config.getDotApp())
 					.append("'. Graphvis (<a href='http://www.graphviz.org/'>http://www.graphviz.org/</a>)")
 					.append(" has to be installed on the server to generate the visualizations!")
 					.append("</div>");
 			return html.toString();
 		}
-		String style = "max-height:1000px; ";
-		if (parameters.get(GraphDataBuilder.SHOW_SCROLLBAR) != null
-				&& parameters.get(GraphDataBuilder.SHOW_SCROLLBAR).equals("false")) {
-			// no scroll-bars
-		}
-		else {
-			style += "overflow: auto";
-		}
-		String div_open = "<div style=\"" + style + "\">";
-		String div_close = "</div>";
-		String fileID = parameters.get(GraphDataBuilder.FILE_ID);
-		String tmpPath = FileUtils.KNOWWEEXTENSION_FOLDER + FileUtils.TOMCAT_PATH_SEPARATOR
-				+ FileUtils.TMP_FOLDER
-				+ FileUtils.TOMCAT_PATH_SEPARATOR;
+		String filePath = DOTRenderer.getFilePath(config);
+		String src = filePath.substring(filePath.indexOf(FileUtils.KNOWWEEXTENSION_FOLDER));
 
-		String png_default = div_open + "<img alt='graph' src='"
-				+ tmpPath + "graph" + fileID + ".png'>" + div_close;
-
-		String svg = div_open + "<object data='" + tmpPath
-				+ "graph" + fileID + ".svg' onload='KNOWWE.plugin.visualization.addClickEventsToGraph(this);' type=\"image/svg+xml\">" + png_default
-				+ "</object>" + div_close;
-		String format = parameters.get(GraphDataBuilder.FORMAT);
-		if (format == null) {
-			html.append(svg);
-		}
-		else if (format.equals("svg")) {
-			html.append(svg);
-		}
-		else {
-			html.append(png_default);
-		}
+		String svg = "<div style='overflow: auto'><object data='" + src + ".svg' " +
+				"onload='KNOWWE.plugin.visualization.addClickEventsToGraph(this);' type=\"image/svg+xml\"></object></div>";
+		html.append(svg);
 		return html.toString();
 	}
 
-	public static String getGraphFilePath(String fileID, String realPath) {
-		Objects.nonNull(fileID);
-		return getFilePath(realPath) + "graph" + fileID;
-	}
-
 	@Override
-	public String getGraphFilePath() {
-		return getGraphFilePath(parameters.get(GraphDataBuilder.FILE_ID), parameters.get(GraphDataBuilder.REAL_PATH));
-	}
-
-	@Override
-	public String getFilePath() {
-		return getFilePath(parameters.get(GraphDataBuilder.REAL_PATH));
-	}
-
-	public static String getFilePath(String realPath) {
-		Objects.nonNull(realPath);
-		String tmpPath = FileUtils.KNOWWEEXTENSION_FOLDER + FileUtils.FILE_SEPARATOR
-				+ FileUtils.TMP_FOLDER
-				+ FileUtils.FILE_SEPARATOR;
-		String path = realPath + FileUtils.FILE_SEPARATOR + tmpPath;
-		return path;
+	public synchronized void cleanUp() {
+		for (File createdFile : createdFiles) {
+			if (!createdFile.delete()) {
+				Log.warning("Unable to delete file " + createdFile.getAbsolutePath());
+			}
+		}
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-digraph Konzeptuebersicht {
+digraph {
 graph [ rankdir="LR" ]
 "si:bart"[  shape="box"  style="rounded" label="si:bart" ];
 "si:Human"[  shape="box"  style="bold" label="si:Human" ];
