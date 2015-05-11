@@ -23,6 +23,7 @@ package de.knowwe.kdom.sectionFinder;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.d3web.strings.QuoteSet;
 import de.d3web.strings.StringFragment;
 import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.Type;
@@ -41,24 +42,31 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 public class SplitSectionFinderUnquoted implements SectionFinder {
 
 	private final String splitKey;
-	private final char[] quoteChars;
+	private final QuoteSet[] quoteSets;
 
 	public SplitSectionFinderUnquoted(String key) {
-		this.splitKey = key;
-		this.quoteChars = new char[] { '"' };
+		this(key, '"');
 	}
 
-	public SplitSectionFinderUnquoted(String key, char[] quotes) {
+	public SplitSectionFinderUnquoted(String key, char... quoteChars) {
 		this.splitKey = key;
-		this.quoteChars = quotes;
+		quoteSets = new QuoteSet[quoteChars.length];
+		for (int i = 0; i < quoteChars.length; i++) {
+			quoteSets[i] = new QuoteSet(quoteChars[i]);
+		}
+	}
+
+	public SplitSectionFinderUnquoted(String key, QuoteSet... quoteSets) {
+		this.splitKey = key;
+		this.quoteSets = quoteSets;
 	}
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text,
 			Section<?> father, Type type) {
 
-		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-		List<StringFragment> list = Strings.splitUnquoted(text, splitKey, quoteChars);
+		List<SectionFinderResult> result = new ArrayList<>();
+		List<StringFragment> list = Strings.splitUnquoted(text, splitKey, false, quoteSets);
 		for (StringFragment stringFragment : list) {
 			result.add(new SectionFinderResult(stringFragment.getStartTrimmed(),
 					stringFragment.getEndTrimmed()));

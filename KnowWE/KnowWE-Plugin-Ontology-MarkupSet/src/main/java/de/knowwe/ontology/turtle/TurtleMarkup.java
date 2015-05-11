@@ -18,7 +18,7 @@
  */
 package de.knowwe.ontology.turtle;
 
-import de.d3web.strings.QuoteCharSet;
+import de.d3web.strings.QuoteSet;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -30,10 +30,10 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  */
 public class TurtleMarkup extends DefaultMarkupType {
 
-	public static final QuoteCharSet[] TURTLE_QUOTES = new QuoteCharSet[] {
-			QuoteCharSet.createUnaryHidingQuote('"'), QuoteCharSet.createUnaryHidingQuote('\''),
-			new QuoteCharSet('(', ')'),
-			new QuoteCharSet('[', ']'), new QuoteCharSet('<', '>') };
+	public static final QuoteSet[] TURTLE_QUOTES = new QuoteSet[] {
+			new QuoteSet('"'), new QuoteSet('\''),
+			new QuoteSet('(', ')'),
+			new QuoteSet('[', ']'), new QuoteSet('<', '>') };
 
 	private static final DefaultMarkup MARKUP;
 

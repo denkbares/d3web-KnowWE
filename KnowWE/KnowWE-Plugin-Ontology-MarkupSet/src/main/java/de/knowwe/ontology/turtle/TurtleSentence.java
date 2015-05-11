@@ -18,24 +18,24 @@
  */
 package de.knowwe.ontology.turtle;
 
-import java.util.regex.Pattern;
-
+import de.d3web.strings.QuoteSet;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.rendering.AnchorRenderer;
-import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.kdom.sectionFinder.SplitSectionFinderUnquoted;
 import de.knowwe.ontology.turtle.compile.TurtleCompileHandler;
 
 public class TurtleSentence extends AbstractType {
-
-	public static final String BEGIN_OF_TURTLE_STATEMENT = "\\w<:%\\\\\\[";
 
 	public TurtleSentence() {
 //		this.setSectionFinder((text, father, type) ->
 //				SectionFinderResult.resultList(Strings.splitUnquoted(text, ".", false,
 //						TurtleMarkup.TURTLE_QUOTES)));
 
-		this.setSectionFinder(new RegexSectionFinder("[" + BEGIN_OF_TURTLE_STATEMENT + "].*?(?=\\.\\s*$|\\z)", Pattern.MULTILINE + Pattern.DOTALL));
+		//this.setSectionFinder(new RegexSectionFinder("[\\w<:%\\\\\\[].*?(?=\\.\\s*$|\\z)", Pattern.MULTILINE + Pattern.DOTALL));
+
+		this.setSectionFinder(new SplitSectionFinderUnquoted(".",
+				QuoteSet.TRIPLE_QUOTES, new QuoteSet('<', '>'), new QuoteSet('"'), new QuoteSet('\'')));
 
 		this.setRenderer(new AnchorRenderer());
 
@@ -46,5 +46,6 @@ public class TurtleSentence extends AbstractType {
 		this.addCompileScript(Priority.LOWEST, new TurtleCompileHandler<>());
 
 	}
+
 
 }
