@@ -18,6 +18,17 @@
  */
 package de.knowwe.ontology.kdom;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import org.ontoware.aifbcommons.collection.ClosableIterator;
+import org.ontoware.rdf2go.model.QueryRow;
+import org.ontoware.rdf2go.model.Syntax;
+
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
@@ -44,16 +55,6 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.RuleSet;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
-import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.model.QueryRow;
-import org.ontoware.rdf2go.model.Syntax;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Adds the all the terms of the statements that are in the repository by default or are added via import to the {@link
@@ -222,6 +223,7 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 		String abbreviation = null;
 		String resource = null;
 		for (Map.Entry<String, String> entry : namespaces.entrySet()) {
+			if (Strings.isBlank(entry.getKey())) continue;
 			if (uri.startsWith(entry.getValue())) {
 				abbreviation = entry.getKey();
 				resource = uri.substring(entry.getValue().length());
