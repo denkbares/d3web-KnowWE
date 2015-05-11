@@ -49,17 +49,15 @@ public class JSPHelper {
 		}
 	}
 
-	private static Collection<Identifier> getAllMatches(String className, String web, String flowchartSectionID) {
-		return SearchInfoObjects.searchObjects(
-				Environment.getInstance(),
-				web, null, className, 65535, flowchartSectionID);
+	private static Collection<Identifier> getAllMatches(String className,  String flowchartSectionID) {
+		return SearchInfoObjects.searchObjects(null, className, 65535, flowchartSectionID);
 	}
 
 	public String getArticleIDsAsArray(String flowchartSectionID) {
 		List<Identifier> matches = new ArrayList<Identifier>(
-				getAllMatches("Article", this.userContext.getWeb(), flowchartSectionID));
+				getAllMatches("Article", flowchartSectionID));
 		Collections.sort(matches);
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		buffer.append("[");
 		boolean first = true;
 		for (Identifier identifier : matches) {
@@ -91,7 +89,7 @@ public class JSPHelper {
 	public String getArticleInfoObjectsAsXML(String flowchartSectionID) {
 		// search for matches
 		Collection<Identifier> matches =
-				getAllMatches("Article", this.userContext.getWeb(), flowchartSectionID);
+				getAllMatches("Article", flowchartSectionID);
 
 		// fill the response buffer
 		StringBuilder bob = new StringBuilder();
@@ -105,20 +103,15 @@ public class JSPHelper {
 		return bob.toString();
 	}
 
-	public String getReferredInfoObjectsAsXML(String flowchartSectionID) {
-		return getReferrdInfoObjectsAsXML(this.userContext.getWeb(), flowchartSectionID);
-	}
-
-	public static String getReferrdInfoObjectsAsXML(String web, String flowchartSectionID) {
-		// TODO: extract used object ids from flowchart as a list
+	public static String getReferredInfoObjectsAsXML(String flowchartSectionID) {
 		// for now we simply use all existing objects
-		Collection<Identifier> matches = getAllMatches(null, web, flowchartSectionID);
-
+		Collection<Identifier> matches = getAllMatches(null, flowchartSectionID);
+		Section<?> section = Sections.get(flowchartSectionID);
 		// fill the response buffer
 		StringBuilder bob = new StringBuilder();
 		GetInfoObjects.appendHeader(bob);
 		for (Identifier identifier : matches) {
-			GetInfoObjects.appendInfoObject(web, identifier, bob);
+			GetInfoObjects.appendInfoObject(section.getWeb(), identifier, bob);
 		}
 		GetInfoObjects.appendFooter(bob);
 
@@ -147,11 +140,6 @@ public class JSPHelper {
 		return Strings.encodeHtml(flowchart.getText());
 	}
 
-	/**
-	 * 
-	 * @created 25.11.2010
-	 * @return
-	 */
 	private String getEmptyFlowchart() {
 		String id = createNewFlowchartID();
 		return "<flowchart fcid=\"flow_"
@@ -160,11 +148,6 @@ public class JSPHelper {
 				+ "</flowchart>";
 	}
 
-	/**
-	 * 
-	 * @created 23.02.2011
-	 * @return
-	 */
 	public static String createNewFlowchartID() {
 		return UUID.randomUUID().toString().substring(0, 8);
 	}

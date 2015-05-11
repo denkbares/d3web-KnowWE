@@ -187,7 +187,7 @@
 </data>
 <%-- default kbinfo objects delivered from server --%>
 <data id="referredKBInfo" style="display:none;">
-	<%= jspHelper.getReferredInfoObjectsAsXML(kdomID) %>
+	<%= JSPHelper.getReferredInfoObjectsAsXML(kdomID) %>
 </data>
 <data id="ajaxKBInfo" style="display:none;">
 	<kbinfo></kbinfo>

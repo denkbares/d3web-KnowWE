@@ -63,6 +63,7 @@ import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
@@ -118,6 +119,11 @@ public class D3webUtils {
 	public static D3webCompiler getCompiler(Section<?> section) {
 		if (section.get() instanceof TagHandlerType) {
 			return D3webUtils.getCompiler(section.getArticle());
+		}
+		else if (section.get() instanceof PackageCompileType) {
+			Section<PackageCompileType> compileSection = Sections.cast(section, PackageCompileType.class);
+			Collection<PackageCompiler> packageCompilers = compileSection.get().getPackageCompilers(compileSection);
+			return (D3webCompiler) packageCompilers.iterator().next();
 		}
 		else {
 			return Compilers.getCompiler(section, D3webCompiler.class);

@@ -164,16 +164,16 @@ public class FlowchartUtils {
 
 	public static void insertDiaFluxResources(Section<FlowchartType> flowchart, UserContext user, String scope, RenderResult result) {
 
-		for (String cssfile : CSS) {
-			result.appendHtml("<link rel='stylesheet' type='text/css' href='" + cssfile + "' />");
+		for (String cssFile : CSS) {
+			result.appendHtml("<link rel='stylesheet' type='text/css' href='" + cssFile + "' />");
 		}
 
-		for (String jsfile : JS) {
-			result.appendHtml("<script src='" + jsfile + "' type='text/javascript'></script>");
+		for (String jsFile : JS) {
+			result.appendHtml("<script src='" + jsFile + "' type='text/javascript'></script>");
 		}
 
 		result.appendHtml("<div id='referredKBInfo' style='display:none;'>");
-		result.appendHtml(JSPHelper.getReferrdInfoObjectsAsXML(user.getWeb(), flowchart.getID()));
+		result.appendHtml(JSPHelper.getReferredInfoObjectsAsXML(flowchart.getID()));
 		result.appendHtml("\n</div>\n");
 		result.appendHtml("<script>KBInfo._updateCache($('referredKBInfo'));</script>");
 

@@ -55,19 +55,16 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.compile.Compilers;
-import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.diaflux.FlowchartSubTreeHandler;
 import de.knowwe.diaflux.FlowchartUtils;
 
 public class GetInfoObjects extends AbstractAction {
 
-	private static final String ARTICLE_IDENTIFIER_PREFIX = "$article";
+	private static final String ARTICLE_IDENTIFIER_PREFIX = "$$article$$";
 
 	public GetInfoObjects() {
 	}
@@ -90,13 +87,6 @@ public class GetInfoObjects extends AbstractAction {
 		context.getWriter().write(result);
 	}
 
-	/**
-	 * 
-	 * @created 18.03.2011
-	 * @param web
-	 * @param ids
-	 * @param bob
-	 */
 	public static void getInfoObjectsForIDs(String web, String ids, StringBuilder bob) {
 		appendHeader(bob);
 
@@ -127,49 +117,46 @@ public class GetInfoObjects extends AbstractAction {
 
 	public static void appendInfoObject(String web, Identifier identifier, StringBuilder bob) {
 		// for objects the identifier always consists
-		// of the compiling article and the object name;
-		// for articles it only consists of the article's name
+		// of the id of compiler section and the object name;
+		// for compiler it only consists of the id of the compilers compiling section
 		if (isArticleIdentifier(identifier)) {
 			// we want to have the article itself
-			appendArticleInfoObject(web, identifier.getLastPathElement(), bob);
+			appendArticleInfoObject(web, identifier, bob);
 		}
 		else {
-			// look for an object inside a compiling article
-			String title = identifier.getPathElementAt(0);
+			// look for an object inside a compiler
+			String compiler = identifier.getPathElementAt(0);
 			String objectID = identifier.getPathElementAt(1);
-			appendInfoObject(web, title, objectID, bob);
+			appendInfoObject(web, compiler, objectID, bob);
 		}
 	}
 
-	private static boolean isCompilingArticle(String web, String title) {
-		PackageManager packages = KnowWEUtils.getPackageManager(web);
-		return packages.getCompilingArticles().contains(title);
-	}
+	private static void appendArticleInfoObject(String web, Identifier articleIdentifier, StringBuilder bob) {
 
-	private static void appendArticleInfoObject(String web, String title, StringBuilder bob) {
-
-		Environment env = Environment.getInstance();
-		Article article = env.getArticle(web, title);
-		String id = createArticleIdentifier(title).toExternalForm();
+		String title = articleIdentifier.getLastPathElement();
+		String compilerId = articleIdentifier.getPathElementAt(1);
+		Article article = Environment.getInstance().getArticle(web, title);
+		String id = articleIdentifier.toExternalForm();
 
 		bob.append("\t<article");
 		bob.append(" id='").append(encodeXML(id)).append("'");
 		bob.append(" name='").append(title).append("'");
 		bob.append(">");
-
+		Section<?> compileSection = Sections.get(compilerId);
+		D3webCompiler compiler = D3webUtils.getCompiler(compileSection);
 		// check if the article is a compiling article
-		if (isCompilingArticle(web, title)) {
+		if (title.equals(compileSection.getTitle())) {
 
 			// for compiling articles use the knowledge base for the objects
-			KnowledgeBase base = D3webUtils.getKnowledgeBase(web, title);
+			KnowledgeBase base = compiler.getKnowledgeBase();
 			for (TerminologyObject object : base.getRootQASet().getChildren()) {
-				appendChild(title, object, bob);
+				appendChild(compilerId, object, bob);
 			}
-			appendChilds(web, title, base.getRootSolution(), bob);
+			appendChilds(web, compilerId, base.getRootSolution(), bob);
 			FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
 			if (flowSet != null) {
 				for (Flow flow : flowSet.getFlows()) {
-					appendChild(title, flow, bob);
+					appendChild(compilerId, flow, bob);
 				}
 			}
 		}
@@ -177,30 +164,26 @@ public class GetInfoObjects extends AbstractAction {
 			// for non-compiling articles,
 			// use the objects defined on the particular page
 			// and display them in a "flat" mode
-			List<Section<TermDefinition>> defSections =
-					Sections.successors(article.getRootSection(), TermDefinition.class);
-			nextTerm: for (Section<TermDefinition> section : defSections) {
+			List<Section<TermDefinition>> defSections = Sections.successors(article.getRootSection(), TermDefinition.class);
+			for (Section<TermDefinition> section : defSections) {
+				if (!compiler.isCompiling(section)) continue;
 				Identifier identifier = section.get().getTermIdentifier(section);
 				String objectName = identifier.getLastPathElement();
-				for (D3webCompiler compiler : Compilers.getCompilers(section, D3webCompiler.class)) {
-					KnowledgeBase base = compiler.getKnowledgeBase();
-					// append if TerminologyObject
-					TerminologyObject object = base.getManager().search(objectName);
-					String compilingArticle = compiler.getCompileSection().getTitle();
-					if ((object instanceof Solution)
-							|| (object instanceof QContainer)
-							|| (object instanceof Question)) {
-						appendChild(compilingArticle, object, bob);
-						continue nextTerm;
-					}
-					// append if flow
-					FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
-					if (flowSet != null) {
-						Flow flow = flowSet.get(objectName);
-						if (flow != null) {
-							appendChild(compilingArticle, flow, bob);
-							continue nextTerm;
-						}
+				KnowledgeBase base = compiler.getKnowledgeBase();
+				// append if TerminologyObject
+				TerminologyObject object = base.getManager().search(objectName);
+				if ((object instanceof Solution)
+						|| (object instanceof QContainer)
+						|| (object instanceof Question)) {
+					appendChild(compilerId, object, bob);
+					continue;
+				}
+				// append if flow
+				FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
+				if (flowSet != null) {
+					Flow flow = flowSet.get(objectName);
+					if (flow != null) {
+						appendChild(compilerId, flow, bob);
 					}
 				}
 			}
@@ -209,34 +192,36 @@ public class GetInfoObjects extends AbstractAction {
 		bob.append("\t</article>\n");
 	}
 
-	public static Identifier createArticleIdentifier(String title) {
-		return new Identifier(ARTICLE_IDENTIFIER_PREFIX, title);
+	public static Identifier createArticleIdentifier(String compilerId, String title) {
+		return new Identifier(ARTICLE_IDENTIFIER_PREFIX, compilerId, title);
 	}
 
 	public static boolean isArticleIdentifier(Identifier identifier) {
 		return identifier.getPathElementAt(0).equals(ARTICLE_IDENTIFIER_PREFIX);
 	}
 
-	private static void appendInfoObject(String web, String title, String objectName, StringBuilder bob) {
-		if (title == null) return;
-
-		KnowledgeBase base = D3webUtils.getKnowledgeBase(web, title);
+	private static void appendInfoObject(String web, String compilerSectionId, String objectName, StringBuilder bob) {
+		if (compilerSectionId == null) return;
+		Section<?> compileSection = Sections.get(compilerSectionId);
+		if (compileSection == null) return;
+		D3webCompiler compiler = D3webUtils.getCompiler(compileSection);
+		KnowledgeBase base = compiler.getKnowledgeBase();
 		NamedObject object = base.getManager().search(objectName);
 		if (object instanceof Solution) {
-			appendInfoObject(web, title, (Solution) object, bob);
+			appendInfoObject(web, compilerSectionId, (Solution) object, bob);
 		}
 		else if (object instanceof Question) {
-			appendInfoObject(web, title, (Question) object, bob);
+			appendInfoObject(web, compilerSectionId, (Question) object, bob);
 		}
 		else if (object instanceof QContainer) {
-			appendInfoObject(web, title, (QContainer) object, bob);
+			appendInfoObject(web, compilerSectionId, (QContainer) object, bob);
 		}
 		else {
 			// no object found in TermManager of KB
 			FlowSet set = base.getKnowledgeStore().getKnowledge(FluxSolver.FLOW_SET);
 			// next, try flowcharts
 			if (set != null && set.contains(objectName)) {
-				appendInfoObject(web, title, set.get(objectName), bob);
+				appendInfoObject(web, compilerSectionId, set.get(objectName), bob);
 			}
 			else {
 				bob.append("<unknown id='" + objectName + "'></unknown>");
@@ -272,7 +257,7 @@ public class GetInfoObjects extends AbstractAction {
 												(object instanceof QuestionNum) ? "num" :
 														(object instanceof QuestionText) ? "text" :
 																"???"
-				);
+		);
 		bob.append("'");
 		bob.append(">\n");
 		appendChilds(web, title, object, bob);

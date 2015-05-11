@@ -38,7 +38,6 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.strings.Identifier;
 import de.d3web.we.knowledgebase.D3webCompiler;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
@@ -52,24 +51,22 @@ public class SearchInfoObjects extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 
 		Map<String, String> parameterMap = context.getParameters();
-		String web = context.getWeb();
 		String phrase = parameterMap.get("phrase");
 		String classes = parameterMap.get("classes");
 		String max = parameterMap.get("maxcount");
 		String flowchartSectionID = parameterMap.get("sectionID");
 
 		int maxCount = (max != null) ? Integer.parseInt(max) : 100;
-		String result = search(Environment.getInstance(), web, phrase, classes, maxCount,
+		String result = search(phrase, classes, maxCount,
 				flowchartSectionID);
 		context.setContentType("text/xml; charset=UTF-8");
 		context.getWriter().write(result);
 	}
 
-	public static String search(Environment knowWEEnv, String web, String phraseString, String classesString, int maxCount, String flowchartSectionID) {
+	public static String search(String phraseString, String classesString, int maxCount, String flowchartSectionID) {
 		// get the matches
-		List<Identifier> matches = new ArrayList<Identifier>(
-				searchObjects(knowWEEnv, web, phraseString, classesString,
-						maxCount, flowchartSectionID));
+		List<Identifier> matches = new ArrayList<>(
+				searchObjects(phraseString, classesString, maxCount, flowchartSectionID));
 		Collections.sort(matches);
 
 		// build the page for the found matches
@@ -92,17 +89,17 @@ public class SearchInfoObjects extends AbstractAction {
 		return page.toString();
 	}
 
-	public static Collection<Identifier> searchObjects(Environment knowWEEnv, String web, String phraseString, String classesString, int maxCount, String flowchartSectionID) {
+	public static Collection<Identifier> searchObjects(String phraseString, String classesString, int maxCount, String flowchartSectionID) {
 		String[] phrases = (phraseString != null) ? phraseString.split(" ") : new String[0];
-		Set<String> classes = null;
+		Set<String> classes;
 		if (classesString == null) {
 			classesString = "article,flowchart,solution,question,qset";
 		}
-		classes = new HashSet<String>();
+		classes = new HashSet<>();
 		classes.addAll(Arrays.asList(classesString.toLowerCase().split(",")));
 
-		Set<Identifier> result = new HashSet<Identifier>();
-		Set<Section<?>> processed = new HashSet<Section<?>>();
+		Set<Identifier> result = new HashSet<>();
+		Set<Section<?>> processed = new HashSet<>();
 
 		// the examine objects inside the articles
 		Section<?> flowSection = Sections.get(flowchartSectionID);
@@ -112,17 +109,17 @@ public class SearchInfoObjects extends AbstractAction {
 			TerminologyManager manager = compiler.getTerminologyManager();
 
 			// add article for a knowledge base
+			String compilerId = compiler.getCompileSection().getID();
 			if (classes.contains("article")) {
-				Collection<Identifier> terms = manager.getAllDefinedTerms(NamedObject.class);
-				for (Identifier term : terms) {
-					Collection<Section<?>> sections = manager.getTermDefiningSections(term);
-					for (Section<?> section : sections) {
-						result.add(GetInfoObjects.createArticleIdentifier(section.getTitle()));
+				result.add(GetInfoObjects.createArticleIdentifier(compilerId, compiler.getCompileSection().getTitle()));
+				for (Identifier term : manager.getAllDefinedTerms(NamedObject.class)) {
+					for (Section<?> section : manager.getTermDefiningSections(term)) {
+						result.add(GetInfoObjects.createArticleIdentifier(compilerId, section.getTitle()));
 					}
 				}
 			}
 
-			List<Identifier> identifiers = new LinkedList<Identifier>();
+			List<Identifier> identifiers = new LinkedList<>();
 
 			// add Flowcharts
 			if (classes.contains("flowchart")) {
@@ -146,7 +143,7 @@ public class SearchInfoObjects extends AbstractAction {
 			for (Identifier identifier : identifiers) {
 				String name = identifier.getLastPathElement();
 				if (matches(name.toLowerCase(), phrases)) {
-					result.add(new Identifier(compiler.getCompileSection().getTitle(), name));
+					result.add(new Identifier(compilerId, name));
 				}
 			}
 
