@@ -112,9 +112,11 @@ public class SearchInfoObjects extends AbstractAction {
 			String compilerId = compiler.getCompileSection().getID();
 			if (classes.contains("article")) {
 				result.add(GetInfoObjects.createArticleIdentifier(compilerId, compiler.getCompileSection().getTitle()));
-				for (Identifier term : manager.getAllDefinedTerms(NamedObject.class)) {
-					for (Section<?> section : manager.getTermDefiningSections(term)) {
-						result.add(GetInfoObjects.createArticleIdentifier(compilerId, section.getTitle()));
+				if (compilers.size() == 1) {
+					for (Identifier term : manager.getAllDefinedTerms(NamedObject.class)) {
+						for (Section<?> section : manager.getTermDefiningSections(term)) {
+							result.add(GetInfoObjects.createArticleIdentifier(compilerId, section.getTitle()));
+						}
 					}
 				}
 			}

@@ -54,8 +54,7 @@ public class JSPHelper {
 	}
 
 	public String getArticleIDsAsArray(String flowchartSectionID) {
-		List<Identifier> matches = new ArrayList<Identifier>(
-				getAllMatches("Article", flowchartSectionID));
+		List<Identifier> matches = new ArrayList<>(getAllMatches("Article", flowchartSectionID));
 		Collections.sort(matches);
 		StringBuilder buffer = new StringBuilder();
 		buffer.append("[");
