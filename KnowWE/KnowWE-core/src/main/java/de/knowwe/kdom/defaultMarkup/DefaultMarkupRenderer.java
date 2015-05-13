@@ -22,9 +22,9 @@ package de.knowwe.kdom.defaultMarkup;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -151,7 +151,7 @@ public class DefaultMarkupRenderer implements Renderer {
 				for (Message message : messages) {
 					Collection<Compiler> messageCompilers = compilersForMessage.get(message);
 					if (messageCompilers == null) {
-						messageCompilers = new LinkedList<>();
+						messageCompilers = new HashSet<>();
 						compilersForMessage.put(message, messageCompilers);
 					}
 					messageCompilers.add(compiler);
