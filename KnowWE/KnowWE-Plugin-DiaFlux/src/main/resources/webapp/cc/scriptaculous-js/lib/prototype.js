@@ -79,7 +79,8 @@ var Try = {
 /* Based on Alex Arnell's inheritance implementation. */
 
 var Class = (function() {
-  function subclass() {};
+  function subclass() {
+  }
   function create() {
     var parent = null, properties = $A(arguments);
     if (Object.isFunction(properties[0]))
@@ -311,7 +312,7 @@ Object.extend(Function.prototype, (function() {
 
   function delay(timeout) {
     var __method = this, args = slice.call(arguments, 1);
-    timeout = timeout * 1000
+    timeout = timeout * 1000;
     return window.setTimeout(function() {
       return __method.apply(__method, args);
     }, timeout);
@@ -1100,7 +1101,7 @@ Array.from = $A;
 
   var CONCAT_ARGUMENTS_BUGGY = (function() {
     return [].concat(arguments)[0][0] !== 1;
-  })(1,2)
+  })(1,2);
 
   if (CONCAT_ARGUMENTS_BUGGY) arrayProto.concat = concat;
 
@@ -1109,8 +1110,7 @@ Array.from = $A;
 })();
 function $H(object) {
   return new Hash(object);
-};
-
+}
 var Hash = Class.create(Enumerable, (function() {
   function initialize(object) {
     this._object = Object.isHash(object) ? object.toObject() : Object.clone(object);
@@ -2877,7 +2877,7 @@ Object.extend(Element, Element.Methods);
 
   div = null;
 
-})(document.createElement('div'))
+})(document.createElement('div'));
 
 Element.extend = (function() {
 
@@ -3424,7 +3424,7 @@ Object.extend(Selector, {
         while (e && le != e && (/\S/).test(e)) {
           le = e;
           for (var i = 0; i<len; i++) {
-            name = p[i].name
+            name = p[i].name;
             if (m = e.match(p[i].re)) {
               v = Object.isFunction(x[name]) ? x[name](m) : new Template(x[name]).evaluate(m);
               exclusion.push("(" + v.substring(1, v.length - 1) + ")");
@@ -3551,7 +3551,7 @@ Object.extend(Selector, {
         var el = document.createElement('div'),
             isBuggy = false,
             propName = '_countedByPrototype',
-            value = 'x'
+            value = 'x';
         el[propName] = value;
         isBuggy = (el.getAttribute(propName) === value);
         el = null;
@@ -4877,3 +4877,5 @@ Element.ClassNames.prototype = {
 Object.extend(Element.ClassNames.prototype, Enumerable);
 
 /*--------------------------------------------------------------------------*/
+
+delete Array.prototype.toJSON; // deletes faulty implementation here

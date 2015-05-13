@@ -71,7 +71,7 @@ KBInfo._updateCache = function(xmlDom) {
 	}
 	//alert(Object.toJSON(changed));
 	if (changed.length > 0) KBInfo._fireCacheChangeEvent(changed);
-}
+};
 
 KBInfo._cache = { byID: [], byName: [], listeners: {} };
 
@@ -87,7 +87,7 @@ KBInfo._addToChache = function(infoObject) {
  */
 KBInfo.createKey = function(name) {
 	return KBInfo.cachePrefix + name.toLowerCase();
-}
+};
 
 /**
  * Gives the cache the hint that this info object(s) will be required later on.
@@ -98,14 +98,10 @@ KBInfo.createKey = function(name) {
 KBInfo.prepareInfoObject = function(nameOrIDOrArray) {
 	if (!nameOrIDOrArray) return;
 	if (DiaFluxUtils.isString(nameOrIDOrArray)) nameOrIDOrArray = [nameOrIDOrArray];
-	var ids = '';
-	for (var i=0; i<nameOrIDOrArray.length; i++) {
-		if (i>0) ids += ',';
-		ids += '"' + nameOrIDOrArray[i] + '"';
-	}
-	var url = "KnowWE.jsp?action=GetInfoObjects&ids=" + encodeURIComponent(ids);
+	var url = "KnowWE.jsp?action=GetInfoObjects";
 	new Ajax.Request(url, {
-		method: 'get',
+		method: 'post',
+		parameters: {ids: JSON.stringify(nameOrIDOrArray), sectionID: nodeID},
 		onSuccess: function(transport) {
 		
 			KBInfo._updateCache(transport.responseXML);
@@ -157,7 +153,7 @@ KBInfo.searchInfoObject = function(phrase, classArray, maxCount, onResult) {
 				matches: root ? KBInfo._collectNodeValues(root, 'match') : []
 			};
 			// request the info objects for the result in advance
-			KBInfo.prepareInfoObject(result.matches);
+			KBInfo.prepareInfoObject(nodeID, result.matches);
 			// inform reciever on result
 			if (onResult) onResult(result);
 		},
@@ -251,7 +247,7 @@ KBInfo.findInfoObjects = function(conditionFx, searchedValue, maxCount) {
 		return 0;
 	});
 	return result;
-}
+};
 
 KBInfo._fireCacheChangeEvent = function(changedInfoObjects) {
 	// call all general Listeners
@@ -279,7 +275,7 @@ KBInfo._fireCacheChangeEvent = function(changedInfoObjects) {
 			}
 		}		
 	}
-}
+};
 
 /**
  * Registers a listener for cache update events. 
@@ -295,7 +291,7 @@ KBInfo.addCacheChangeListener = function(listener, nameOrID) {
 	else {
 		KBInfo._cache.listeners[key] = [listener];
 	}
-}
+};
 
 /**
  * Removes a listener for cache update events. 
@@ -308,7 +304,7 @@ KBInfo.removeCacheChangeListener = function(listener, nameOrID) {
 	if (KBInfo._cache.listeners[key]) {
 		KBInfo._cache.listeners[key].remove(listener);
 	}
-}
+};
 
 
 
@@ -324,49 +320,49 @@ KBInfo.InfoObject = function(xmlDom) {
 	// even this is not true for flowcharts
 	// For IE non-prototyype (non-extended) classes we use static method variant of Element.select
 	this.childs = KBInfo._collectNodeValues(this.xmlDom, 'child');
-}
+};
 	
 /** 
  * Returns the class instance of this KBInfo object.
  */
 KBInfo.InfoObject.prototype.getClassInstance = function() {
 	//throw("KBInfo.InfoObject.getClassInstance() must be overwritten");
-}
+};
 	
 /** 
  * Returns the id of the referenced knowledgebase object.
  */
 KBInfo.InfoObject.prototype.getID = function() {
 	return this.id;
-}
+};
 	
 /** 
  * Returns the short name of an InfoObject.
  */
 KBInfo.InfoObject.prototype.getName = function() {
 	return this.name;
-}
+};
 	
 /** 
  * Returns the description of an InfoObject.
  */
 KBInfo.InfoObject.prototype.getDescription = function() {
 	return this.description;
-}
+};
 	
 /** 
  * Returns the child objects of an InfoObject.
  */
 KBInfo.InfoObject.prototype.getChilds = function() {
 	return this.childs;
-}
+};
 	
 /** 
  * Returns the url to the icon of this KBInfo object.
  */
 KBInfo.InfoObject.prototype.getIconURL = function() {
 	return null;
-}
+};
 	
 /** 
  * Returns the desired ToolTip-Text of an InfoObject.
@@ -376,7 +372,7 @@ KBInfo.InfoObject.prototype.getToolTip = function() {
 		(this.text || this.description ? ': ' : '') + 
 		(this.text ? (' \n' + this.text) : '') + 
 		(this.description ? (' \n' + this.description) : '');
-}
+};
 
 
 
@@ -395,7 +391,7 @@ KBInfo.Question = function(xmlDom) {
 	else {
 		this.range = null;
 	}
-}
+};
 
 /***/
 KBInfo.Question.prototype = new KBInfo.InfoObject();  
@@ -406,19 +402,19 @@ KBInfo.Question.prototype.getOptions = function() {
 
 KBInfo.Question.prototype.isAbstract = function() {
 	return this.is_abstract;
-}
+};
 
 KBInfo.Question.prototype.getText = function() {
 	return this.text;
-}
+};
 
 KBInfo.Question.prototype.getType = function() {
 	return this.type;
-}
+};
 
 KBInfo.Question.prototype.getClassInstance = function() {
 	return KBInfo.Question;
-}
+};
 
 KBInfo.Question.prototype.getIconURL = function() {
 	var file = 
@@ -430,11 +426,11 @@ KBInfo.Question.prototype.getIconURL = function() {
 		'text';
 	if (this.isAbstract()) file += '-abstract';
 	return KBInfo.imagePath + file + '.gif';
-}
+};
 
 KBInfo.Question.getShortClassName = function() {
 	return "Question";
-}
+};
 
 KBInfo.Question.TYPE_OC =	"oc";
 KBInfo.Question.TYPE_MC =	"mc";
@@ -449,21 +445,21 @@ KBInfo.Question.TYPE_TEXT =	"text";
 KBInfo.Solution = function(xmlDom) {
 	KBInfo.InfoObject.call(this, xmlDom);
 
-}
+};
 /****/
 KBInfo.Solution.prototype = new KBInfo.InfoObject();  
 	
 KBInfo.Solution.prototype.getClassInstance = function() {
 	return KBInfo.Solution;
-}
+};
 
 KBInfo.Solution.prototype.getIconURL = function() {
 	return KBInfo.imagePath + 'diagnosis.gif';
-}
+};
 
 KBInfo.Solution.getShortClassName = function() {
 	return "Solution";
-}
+};
 	
 
 
@@ -472,73 +468,73 @@ KBInfo.Flowchart = function(xmlDom) {
 	this.startNames = KBInfo._collectNodeValues(this.xmlDom, 'start');
 	this.exitNames = KBInfo._collectNodeValues(this.xmlDom, 'exit');
 	this.icon = this.xmlDom.getAttribute('icon');
-}
+};
 
 /***/
 KBInfo.Flowchart.prototype = new KBInfo.InfoObject();  
 
 KBInfo.Flowchart.prototype.getStartNames = function() {
 	return this.startNames;
-}
+};
 	
 KBInfo.Flowchart.prototype.getExitNames = function() {
 	return this.exitNames;
-}
+};
 	
 KBInfo.Flowchart.prototype.getClassInstance = function() {
 	return KBInfo.Flowchart;
-}
+};
 	
 KBInfo.Flowchart.prototype.getIconURL = function() {
-	var iconName = this.icon || 'flowchart.gif'
+	var iconName = this.icon || 'flowchart.gif';
 	return KBInfo.imagePath + iconName;
-}
+};
 	
 KBInfo.Flowchart.getShortClassName = function() {
 	return "Flowchart";
-}
+};
 
 
 
 KBInfo.QSet = function(xmlDom) {
 	KBInfo.InfoObject.call(this, xmlDom);
-}
+};
 
 /***/
 KBInfo.QSet.prototype = new KBInfo.InfoObject(); 
 
 KBInfo.QSet.prototype.getClassInstance = function() {
 	return KBInfo.QSet;
-}
+};
 
 KBInfo.QSet.prototype.getIconURL = function() {
 	return KBInfo.imagePath + 'qset.gif';
-}
+};
 
 KBInfo.QSet.getShortClassName = function() {
 	return "QSet";
-}
+};
 	
 
 
 KBInfo.Article = function(xmlDom) {
 	KBInfo.InfoObject.call(this, xmlDom);
 
-}
+};
 
 /****/
 KBInfo.Article.prototype = new KBInfo.InfoObject(); 
 	
 KBInfo.Article.prototype.getClassInstance = function() {
 	return KBInfo.Article;
-}
+};
 
 KBInfo.Article.prototype.getIconURL = function() {
 	return KBInfo.imagePath + 'article.gif';
-}
+};
 
 KBInfo.Article.getShortClassName = function() {
 	return "Article";
-}
+};
 
 

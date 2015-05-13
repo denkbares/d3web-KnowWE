@@ -140,7 +140,7 @@ public class FlowchartUtils {
 		RenderResult result = new RenderResult(user);
 		result.appendHtml("<div class='flowchartContainer'>");
 		if (insertRessources) {
-			insertDiaFluxResources(flowchartSection, user, scope, result);
+			insertDiaFluxResources(user, scope, result, flowchartSection);
 		}
 		result.appendHtml("<div id='" + parentId + "'>");
 		result.appendHtml("</div></div>\n");
@@ -158,11 +158,11 @@ public class FlowchartUtils {
 		return text;
 	}
 
-	public static void insertDiaFluxResources(Section<FlowchartType> flowchart, UserContext user, RenderResult result) {
-		insertDiaFluxResources(flowchart, user, DIAFLUX_SCOPE, result);
+	public static void insertDiaFluxResources(UserContext user, RenderResult result, Section<?>... flowcharts) {
+		insertDiaFluxResources(user, DIAFLUX_SCOPE, result, flowcharts);
 	}
 
-	public static void insertDiaFluxResources(Section<FlowchartType> flowchart, UserContext user, String scope, RenderResult result) {
+	public static void insertDiaFluxResources(UserContext user, String scope, RenderResult result, Section<?>... flowcharts) {
 
 		for (String cssFile : CSS) {
 			result.appendHtml("<link rel='stylesheet' type='text/css' href='" + cssFile + "' />");
@@ -173,7 +173,7 @@ public class FlowchartUtils {
 		}
 
 		result.appendHtml("<div id='referredKBInfo' style='display:none;'>");
-		result.appendHtml(JSPHelper.getReferredInfoObjectsAsXML(flowchart.getID()));
+		result.appendHtml(JSPHelper.getReferredInfoObjectsAsXML(flowcharts));
 		result.appendHtml("\n</div>\n");
 		result.appendHtml("<script>KBInfo._updateCache($('referredKBInfo'));</script>");
 

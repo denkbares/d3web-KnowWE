@@ -57,16 +57,15 @@ public class SearchInfoObjects extends AbstractAction {
 		String flowchartSectionID = parameterMap.get("sectionID");
 
 		int maxCount = (max != null) ? Integer.parseInt(max) : 100;
-		String result = search(phrase, classes, maxCount,
-				flowchartSectionID);
+		String result = search(phrase, classes, maxCount, Sections.get(flowchartSectionID));
 		context.setContentType("text/xml; charset=UTF-8");
 		context.getWriter().write(result);
 	}
 
-	public static String search(String phraseString, String classesString, int maxCount, String flowchartSectionID) {
+	public static String search(String phraseString, String classesString, int maxCount, Section<?> flowchart) {
 		// get the matches
 		List<Identifier> matches = new ArrayList<>(
-				searchObjects(phraseString, classesString, maxCount, flowchartSectionID));
+				searchObjects(phraseString, classesString, maxCount, flowchart));
 		Collections.sort(matches);
 
 		// build the page for the found matches
@@ -89,7 +88,7 @@ public class SearchInfoObjects extends AbstractAction {
 		return page.toString();
 	}
 
-	public static Collection<Identifier> searchObjects(String phraseString, String classesString, int maxCount, String flowchartSectionID) {
+	public static Collection<Identifier> searchObjects(String phraseString, String classesString, int maxCount, Section<?> flowchart) {
 		String[] phrases = (phraseString != null) ? phraseString.split(" ") : new String[0];
 		Set<String> classes;
 		if (classesString == null) {
@@ -102,21 +101,15 @@ public class SearchInfoObjects extends AbstractAction {
 		Set<Section<?>> processed = new HashSet<>();
 
 		// the examine objects inside the articles
-		Section<?> flowSection = Sections.get(flowchartSectionID);
-		if (flowSection == null) return result;
-		Collection<D3webCompiler> compilers = Compilers.getCompilers(flowSection, D3webCompiler.class);
+		Collection<D3webCompiler> compilers = Compilers.getCompilers(flowchart, D3webCompiler.class);
 		for (D3webCompiler compiler : compilers) {
 			TerminologyManager manager = compiler.getTerminologyManager();
 
 			// add article for a knowledge base
-			String compilerId = compiler.getCompileSection().getID();
 			if (classes.contains("article")) {
-				result.add(GetInfoObjects.createArticleIdentifier(compilerId, compiler.getCompileSection().getTitle()));
-				if (compilers.size() == 1) {
-					for (Identifier term : manager.getAllDefinedTerms(NamedObject.class)) {
-						for (Section<?> section : manager.getTermDefiningSections(term)) {
-							result.add(GetInfoObjects.createArticleIdentifier(compilerId, section.getTitle()));
-						}
+				for (Identifier term : manager.getAllDefinedTerms(NamedObject.class)) {
+					for (Section<?> section : manager.getTermDefiningSections(term)) {
+						result.add(GetInfoObjects.createArticleIdentifier(section.getTitle()));
 					}
 				}
 			}
@@ -145,7 +138,7 @@ public class SearchInfoObjects extends AbstractAction {
 			for (Identifier identifier : identifiers) {
 				String name = identifier.getLastPathElement();
 				if (matches(name.toLowerCase(), phrases)) {
-					result.add(new Identifier(compilerId, name));
+					result.add(identifier);
 				}
 			}
 
@@ -162,7 +155,7 @@ public class SearchInfoObjects extends AbstractAction {
 			Collection<Section<?>> definitions = manager.getTermDefiningSections(term);
 			if (Collections.disjoint(processed, definitions)) {
 				processed.addAll(definitions);
-				result.add(term);
+				result.add(new Identifier(definitions.iterator().next().getTitle(), term.getLastPathElement()));
 			}
 		}
 	}

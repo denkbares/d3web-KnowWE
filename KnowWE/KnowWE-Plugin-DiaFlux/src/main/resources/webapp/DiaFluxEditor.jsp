@@ -179,15 +179,15 @@
 	<link rel='stylesheet' type='text/css'
 		  href='KnowWEExtension/css/KnowWE-Plugin-AutoComplete.css'/>
 </head>
-<body onload="new FlowEditor(<%= jspHelper.getArticleIDsAsArray(kdomID).replace("\"", "&quot;") %>).showEditor();">
+<body onload="new FlowEditor(<%= jspHelper.getArticleIDsAsArray(Sections.get(kdomID)).replace("\"", "&quot;") %>).showEditor();">
 
 <%-- default kbinfo objects delivered from server --%>
 <data id="articleKBInfo" style="display:none;">
-	<%= jspHelper.getArticleInfoObjectsAsXML(kdomID) %>
+	<%= jspHelper.getArticleInfoObjectsAsXML(Sections.get(kdomID)) %>
 </data>
 <%-- default kbinfo objects delivered from server --%>
 <data id="referredKBInfo" style="display:none;">
-	<%= JSPHelper.getReferredInfoObjectsAsXML(kdomID) %>
+	<%= JSPHelper.getReferredInfoObjectsAsXML(Sections.get(kdomID)) %>
 </data>
 <data id="ajaxKBInfo" style="display:none;">
 	<kbinfo></kbinfo>

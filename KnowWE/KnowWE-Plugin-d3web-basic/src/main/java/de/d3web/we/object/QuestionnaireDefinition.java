@@ -90,6 +90,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 					return Messages.asList(Messages.error("The term '"
 							+ name + "' is reserved by the system."));
 				}
+				section.get().storeTermObject(compiler, section, (QContainer) termObject);
 				return Messages.asList();
 			}
 

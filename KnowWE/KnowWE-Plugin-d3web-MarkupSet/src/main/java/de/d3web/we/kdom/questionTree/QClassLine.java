@@ -78,15 +78,17 @@ public class QClassLine extends AbstractType {
 				protected void createObjectRelations(Section<TermDefinition> parentSection, D3webCompiler compiler, Identifier parentIdentifier, List<Identifier> childrenIdentifier) {
 					QASet parentQASet = (QASet) D3webUtils.getTermObject(compiler, parentIdentifier);
 					if (parentQASet == null) return;
+					QASet rootQASet = parentQASet.getKnowledgeBase().getRootQASet();
+					if (parentQASet == rootQASet) return;
 					TerminologyObject[] parents = parentQASet.getParents();
 					if (parents.length == 0) {
-						parentQASet.getKnowledgeBase().getRootQASet().addChild(parentQASet);
+						rootQASet.addChild(parentQASet);
 					}
 					for (Identifier childIdentifier : childrenIdentifier) {
-						NamedObject namendObject = D3webUtils.getTermObject(compiler, childIdentifier);
-						if (namendObject == null || !(namendObject instanceof QASet)) continue;
-						QASet childQASet = (QASet) namendObject;
-						parentQASet.getKnowledgeBase().getRootQASet().removeChild(childQASet);
+						NamedObject namedObject = D3webUtils.getTermObject(compiler, childIdentifier);
+						if (namedObject == null || !(namedObject instanceof QASet)) continue;
+						QASet childQASet = (QASet) namedObject;
+						rootQASet.removeChild(childQASet);
 						parentQASet.addChild(childQASet);
 					}
 				}

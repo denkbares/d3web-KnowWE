@@ -574,22 +574,22 @@ FlowEditor.prototype._saveFlowchartText = function(xml, closeOnSuccess) {
 
 //Flowchart event handlers
 //register select click events for flowchart
-CCEvents.addClassListener('click', 'FlowchartGroup',
-	function(event) {
-		if (!event.isRightClick()) {
-			contextMenuFlowchart.close();
-			contextMenuNode.close();
-			contextMenuRule.close();
-		}
-		// this code circumvents browser bugs
-		else {
-			contextMenuNode.close();
-			contextMenuRule.close();
-			contextMenuFlowchart.show(event, this.__flowchart.getSelection());
-		}
-
-	}
-);
+//CCEvents.addClassListener('click', 'FlowchartGroup',
+//	function(event) {
+//		if (!event.isRightClick()) {
+//			contextMenuFlowchart.close();
+//			contextMenuNode.close();
+//			contextMenuRule.close();
+//		}
+//		// this code circumvents browser bugs
+//		else {
+//			contextMenuNode.close();
+//			contextMenuRule.close();
+//			contextMenuFlowchart.show(event, this.__flowchart.getSelection());
+//		}
+//
+//	}
+//);
 
 CCEvents.addClassListener('keydown', 'FlowchartGroup',
 	function(event) {

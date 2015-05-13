@@ -23,6 +23,7 @@ package de.knowwe.diaflux.kbinfo;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,12 +50,12 @@ public class JSPHelper {
 		}
 	}
 
-	private static Collection<Identifier> getAllMatches(String className,  String flowchartSectionID) {
-		return SearchInfoObjects.searchObjects(null, className, 65535, flowchartSectionID);
+	private static Collection<Identifier> getAllMatches(String className, Section<?> flowchart) {
+		return SearchInfoObjects.searchObjects(null, className, 65535, flowchart);
 	}
 
-	public String getArticleIDsAsArray(String flowchartSectionID) {
-		List<Identifier> matches = new ArrayList<>(getAllMatches("Article", flowchartSectionID));
+	public String getArticleIDsAsArray(Section<?> flowchart) {
+		List<Identifier> matches = new ArrayList<>(getAllMatches("Article", flowchart));
 		Collections.sort(matches);
 		StringBuilder buffer = new StringBuilder();
 		buffer.append("[");
@@ -85,16 +86,16 @@ public class JSPHelper {
 		return data;
 	}
 
-	public String getArticleInfoObjectsAsXML(String flowchartSectionID) {
+	public String getArticleInfoObjectsAsXML(Section<?> flowchart) {
 		// search for matches
 		Collection<Identifier> matches =
-				getAllMatches("Article", flowchartSectionID);
+				getAllMatches("Article", flowchart);
 
 		// fill the response buffer
 		StringBuilder bob = new StringBuilder();
 		GetInfoObjects.appendHeader(bob);
-		for (Identifier id : matches) {
-			GetInfoObjects.appendInfoObject(this.userContext.getWeb(), id, bob);
+		for (Identifier identifier : matches) {
+			GetInfoObjects.appendInfoObject(flowchart, identifier, bob);
 		}
 		GetInfoObjects.appendFooter(bob);
 
@@ -102,15 +103,19 @@ public class JSPHelper {
 		return bob.toString();
 	}
 
-	public static String getReferredInfoObjectsAsXML(String flowchartSectionID) {
-		// for now we simply use all existing objects
-		Collection<Identifier> matches = getAllMatches(null, flowchartSectionID);
-		Section<?> section = Sections.get(flowchartSectionID);
+	public static String getReferredInfoObjectsAsXML(Section<?>... flowcharts) {
 		// fill the response buffer
 		StringBuilder bob = new StringBuilder();
 		GetInfoObjects.appendHeader(bob);
-		for (Identifier identifier : matches) {
-			GetInfoObjects.appendInfoObject(section.getWeb(), identifier, bob);
+
+		Collection<Identifier> allMatches = new HashSet<>();
+		for (Section<?> flowchart : flowcharts) {
+			Collection<Identifier> matches = getAllMatches(null, flowchart);
+			for (Identifier identifier : matches) {
+				if (allMatches.add(identifier)) {
+					GetInfoObjects.appendInfoObject(flowchart, identifier, bob);
+				}
+			}
 		}
 		GetInfoObjects.appendFooter(bob);
 
