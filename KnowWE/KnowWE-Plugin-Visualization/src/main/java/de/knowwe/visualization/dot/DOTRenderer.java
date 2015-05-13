@@ -420,42 +420,8 @@ public class DOTRenderer {
 		return new File[] { dotFile, svgFile };
 	}
 
-	protected static String createPngCommand(String dotApp, File dot, File png) {
-		String command = dotApp + " " + dot.getAbsolutePath() +
-				" -Tpng -o " + png.getAbsolutePath() + "";
-		if (Utils.isWindows()) {
-			command = dotApp + " \"" + dot.getAbsolutePath() +
-					"\" -Tpng -o \"" + png.getAbsolutePath() + "\"";
-		}
-		return command;
-	}
-
-	protected static String getSVGCommand(String dotApp, File dot, File svg) {
-		String lowPriorityCall = "";//getLowPriorityCall(); low priority no longer needed
-
-		String command = lowPriorityCall + dotApp + " " + dot.getAbsolutePath() +
-				" -Tsvg -o " + svg.getAbsolutePath() + "";
-		if (Utils.isWindows()) {
-			command = lowPriorityCall + dotApp + " \"" + dot.getAbsolutePath() +
-					"\" -Tsvg -o \"" + svg.getAbsolutePath() + "\"";
-		}
-		return command;
-	}
-
-	private static String getLowPriorityCall() {
-		String lowPriorityCall = "";
-		if (Utils.isMac()) {
-			lowPriorityCall = "nice -19n ";
-		}
-		else if (Utils.isWindows()) {
-			// TODO: find windows way to start process on low priority
-			lowPriorityCall = "";
-		}
-		else {
-			// assume to be linux
-			lowPriorityCall = "nice -n 19 ";
-		}
-		return lowPriorityCall;
+	protected static String[] getSVGCommand(String dotApp, File dot, File svg) {
+		return new String[] { dotApp, dot.getAbsolutePath(), "-Tsvg", "-o", svg.getAbsolutePath() };
 	}
 
 	private static String createDotConceptLabel(RenderingStyle style, String targetURL, String targetLabel, boolean prepareLabel) {
@@ -481,7 +447,8 @@ public class DOTRenderer {
 	public static boolean checkDotInstallation(Config config) {
 		String dotApp = config.getDotApp();
 		try {
-			Process process = Runtime.getRuntime().exec(dotApp + " -V");
+			ProcessBuilder builder = new ProcessBuilder(dotApp, "-V");
+			Process process = builder.start();
 			process.waitFor(1, TimeUnit.SECONDS);
 			int exitValue = process.exitValue();
 			if (exitValue != 0) {
@@ -556,16 +523,17 @@ public class DOTRenderer {
 		element.setAttribute(target);
 	}
 
-	private static void convertDot(File file, File dot, String command) throws IOException {
+	private static void convertDot(File file, File dot, String... command) throws IOException {
 		FileUtils.checkWriteable(file);
 		FileUtils.checkReadable(dot);
 		try {
-			Process process = Runtime.getRuntime().exec(command);
+			ProcessBuilder processBuilder = new ProcessBuilder(command);
+			Process process = processBuilder.start();
 			process.waitFor();
 			int exitValue = process.exitValue();
 			if (exitValue != 0) {
 				FileUtils.printStream(process.getErrorStream());
-				throw new IOException("Command could not successfully be executed: " + command);
+				throw new IOException("Command could not successfully be executed: " + Strings.concat(" ", command));
 			}
 
 		}
