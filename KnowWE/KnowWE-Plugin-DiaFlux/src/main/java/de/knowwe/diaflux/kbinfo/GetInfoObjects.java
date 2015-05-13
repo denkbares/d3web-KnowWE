@@ -22,7 +22,7 @@ package de.knowwe.diaflux.kbinfo;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -152,7 +152,7 @@ public class GetInfoObjects extends AbstractAction {
 		Collection<D3webCompiler> compilers = Compilers.getCompilers(flowchart, D3webCompiler.class);
 
 		List<Section<TermDefinition>> defSections = Sections.successors(article.getRootSection(), TermDefinition.class);
-		Set<NamedObject> objects = new HashSet<>();
+		Set<NamedObject> objects = new LinkedHashSet<>();
 		for (Section<TermDefinition> section : defSections) {
 			D3webCompiler definitionCompiler = null;
 			for (D3webCompiler compiler : compilers) {
