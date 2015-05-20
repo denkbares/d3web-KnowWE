@@ -52,7 +52,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 
-import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.RDF2Go;
@@ -91,6 +90,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.rdf2go.modelfactory.OWLIMLiteModelFactory;
+import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 public class Rdf2GoCore {
@@ -1095,7 +1095,7 @@ public class Rdf2GoCore {
 		}
 	}
 
-	public QueryResultTable sparqlSelect(SparqlQuery query) throws ModelRuntimeException {
+	public QueryResultTable sparqlSelect(SparqlQuery query) {
 		return sparqlSelect(query.toSparql(this));
 	}
 
