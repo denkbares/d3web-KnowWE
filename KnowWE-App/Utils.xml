@@ -34,40 +34,19 @@
 				<exclude name="KnowWE-Plugin-AugmentationEdit/**" />
 				<exclude name="KnowWE-Plugin-DenkbaresTmp/**" />
 				<exclude name="KnowWE-Plugin-Insert-Section/**" />
-				<exclude name="KnowWE-Plugin-KnowSEC/**" />
-				<exclude name="KnowWE-Plugin-KnowSEC-Import/**" />
-				<exclude name="KnowWE-Plugin-ExperienceDatabase/**" />
+
 				<!-- for performance reasons... -->
 				<exclude name="KnowWE-Plugin-XSL/**" />
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
-	</target>
-
-	<!-- Updates all resources needed for the profile denkbares (and denkbares and core-plugins) -->
-	<target name="update_resources denkbares-thrillseeker" depends="update_resources denkbares">
 		<copy todir="${basedir}/target/KnowWE-App-0.2-SNAPSHOT">
 			<fileset dir="${basedir}/../">
-				<include name="KnowWE-Plugins/KnowWE-Plugin-SemanticAutocompletion//src/main/resources/webapp/" />
-				<include name="KnowWE-Plugins/KnowWE-Plugin-TimeDBScript/src/main/resources/webapp/" />
-				<include name="KnowWE-Plugins/KnowWE-Plugin-SemanticServiceCore/src/main/resources/webapp/" />
 				<include name="Research/KnowWE-Plugin-d3web-TermBrowser/src/main/resources/webapp/" />
 				<include name="Research/KnowWE-Plugin-DiaFlux-Review/src/main/resources/webapp/" />
 				<include name="Research/KnowWE-Plugin-OntoVis/src/main/resources/webapp/" />
 				<include name="Research/KnowWE-Plugin-LoadKnowledgeBase/src/main/resources/webapp/" />
 				<include name="Research/KnowWE-Plugin-WikiBook/src/main/resources/webapp/" />
-				<include name="Research/KnowWE-Plugin-d3web-SimpleScoreTable/src/main/resources/webapp/" />
-				<include name="Research/KnowWE-Plugin-d3web-SparqlToExcel/src/main/resources/webapp/" />
-			</fileset>
-			<cutdirsmapper dirs="6" />
-		</copy>
-	</target>
-
-	<!-- Updates all resources needed for the profile knowsec (and denkbares and core-plugins) -->
-	<target name="update_resources knowsec" depends="update_resources denkbares">
-		<copy todir="${basedir}/target/KnowWE-App-0.2-SNAPSHOT">
-			<fileset dir="${basedir}/../">
-				<include name="KnowWE-Plugins/KnowWE-Plugin-KnowSEC/src/main/resources/webapp/" />
 				<include name="Research/KnowWE-Plugin-d3web-SimpleScoreTable/src/main/resources/webapp/" />
 				<include name="Research/KnowWE-Plugin-d3web-SparqlToExcel/src/main/resources/webapp/" />
 			</fileset>
