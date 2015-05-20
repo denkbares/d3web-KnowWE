@@ -710,4 +710,5 @@ public final class Messages {
 			sectionsWithMessages.remove(type, section);
 		}
 	}
+
 }

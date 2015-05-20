@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -478,4 +479,8 @@ public class RenderResult {
 		}
 	}
 
+	public void appendException(String message, Exception e) {
+		appendHtmlElement("span", message, "class", "error");
+		Log.severe(message, e);
+	}
 }
