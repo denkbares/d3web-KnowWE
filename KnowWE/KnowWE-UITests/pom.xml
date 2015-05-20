@@ -45,7 +45,7 @@
 
 	<profiles>
 		<profile>
-			<id>skip-ui-tests</id>
+			<id>skip-slow-tests</id>
 			<build>
 				<plugins>
 					<plugin>
