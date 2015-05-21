@@ -22,6 +22,7 @@ package de.knowwe.kdom.sectionFinder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import de.d3web.strings.QuoteSet;
 import de.d3web.strings.StringFragment;
@@ -41,7 +42,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
  */
 public class SplitSectionFinderUnquoted implements SectionFinder {
 
-	private final String splitKey;
+	private final Pattern splitKey;
 	private final QuoteSet[] quoteSets;
 
 	public SplitSectionFinderUnquoted(String key) {
@@ -49,15 +50,19 @@ public class SplitSectionFinderUnquoted implements SectionFinder {
 	}
 
 	public SplitSectionFinderUnquoted(String key, char... quoteChars) {
-		this.splitKey = key;
+		this.splitKey = Pattern.compile(Pattern.quote(key));
 		quoteSets = new QuoteSet[quoteChars.length];
 		for (int i = 0; i < quoteChars.length; i++) {
 			quoteSets[i] = new QuoteSet(quoteChars[i]);
 		}
 	}
 
-	public SplitSectionFinderUnquoted(String key, QuoteSet... quoteSets) {
-		this.splitKey = key;
+	public SplitSectionFinderUnquoted(String splitPattern, QuoteSet... quoteSets) {
+		this(Pattern.compile(Pattern.quote(splitPattern)), quoteSets);
+	}
+
+	public SplitSectionFinderUnquoted(Pattern splitPattern, QuoteSet... quoteSets) {
+		this.splitKey = splitPattern;
 		this.quoteSets = quoteSets;
 	}
 
