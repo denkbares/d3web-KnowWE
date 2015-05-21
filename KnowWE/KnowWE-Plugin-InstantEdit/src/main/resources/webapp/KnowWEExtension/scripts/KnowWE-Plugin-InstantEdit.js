@@ -85,7 +85,8 @@ KNOWWE.plugin.instantEdit = function() {
 
             var params = {
                 action: 'InstantEditEnableAction',
-                KdomNodeId: id
+                KdomNodeId: id,
+                mode: toolNameSpace.mode
             };
 
             var options = {

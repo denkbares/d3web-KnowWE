@@ -28,10 +28,9 @@ import de.knowwe.core.kdom.parsing.Sections;
 
 /**
  * Enables the InstantEdit mode.
- * 
+ *
  * @author Stefan Mark
  * @author Albrecht Striffler (denkbares GmbH)
- * 
  * @created 15.06.2011
  */
 public class InstantEditEnableAction extends AbstractAction {
@@ -39,13 +38,15 @@ public class InstantEditEnableAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String topic = context.getTitle();
+		String title = context.getTitle();
 		String web = context.getWeb();
 		String id = context.getParameter("KdomNodeId");
 
-		Article art = Environment.getInstance().getArticle(web, topic);
+		String mode = context.getParameter("mode");
+
+		Article art = Environment.getInstance().getArticle(web, title);
 		if (art == null) {
-			context.sendError(404, "Page '" + topic + "' could not be found.");
+			context.sendError(404, "Page '" + title + "' could not be found.");
 			return;
 		}
 
@@ -56,21 +57,22 @@ public class InstantEditEnableAction extends AbstractAction {
 			return;
 		}
 
-		if (!Environment.getInstance().getWikiConnector().userCanEditArticle(topic,
+		if (!Environment.getInstance().getWikiConnector().userCanEditArticle(title,
 				context.getRequest())) {
 			context.sendError(403, "You do not have the permission to edit this page.");
 			return;
 		}
 
-		boolean isLocked = Environment.getInstance().getWikiConnector().isArticleLocked(topic);
+		boolean isLocked = Environment.getInstance().getWikiConnector().isArticleLocked(title);
 		boolean isLockedCurrentUser = Environment.getInstance().getWikiConnector().isArticleLockedCurrentUser(
-				topic, context.getUserName());
+				title, context.getUserName());
 
 		String result = "{\"locked\":true}";
 
 		if (!isLocked || isLockedCurrentUser) {
-			Environment.getInstance().getWikiConnector().lockArticle(topic,
-					context.getUserName());
+			if (!"add".equals(mode)) {
+				Environment.getInstance().getWikiConnector().lockArticle(title, context.getUserName());
+			}
 			result = "{\"locked\":false}";
 		}
 
