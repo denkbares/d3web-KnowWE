@@ -18,6 +18,8 @@
  */
 package de.knowwe.ontology.turtle;
 
+import java.util.regex.Pattern;
+
 import de.d3web.strings.QuoteSet;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
@@ -34,7 +36,7 @@ public class TurtleSentence extends AbstractType {
 
 		//this.setSectionFinder(new RegexSectionFinder("[\\w<:%\\\\\\[].*?(?=\\.\\s*$|\\z)", Pattern.MULTILINE + Pattern.DOTALL));
 
-		this.setSectionFinder(new SplitSectionFinderUnquoted(".",
+		this.setSectionFinder(new SplitSectionFinderUnquoted(Pattern.compile("(?m)\\.(\\s*$|\\s*\\z)"),
 				QuoteSet.TRIPLE_QUOTES, new QuoteSet('<', '>'), new QuoteSet('"'), new QuoteSet('\'')));
 
 		this.setRenderer(new AnchorRenderer());
