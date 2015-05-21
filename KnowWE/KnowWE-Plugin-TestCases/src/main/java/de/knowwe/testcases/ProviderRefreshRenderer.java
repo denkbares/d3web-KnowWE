@@ -37,10 +37,10 @@ import de.knowwe.testcases.prefix.PrefixTestCaseRenderer;
 public class ProviderRefreshRenderer extends DefaultMarkupRenderer {
 
 	@Override
-	public void render(Section<?> section, UserContext user, RenderResult buffer) {
+	public void render(Section<?> section, UserContext user, RenderResult result) {
 		refreshProviders(section, user);
 		PrefixTestCaseRenderer.refreshPrefixWarning(section);
-		super.render(section, user, buffer);
+		super.render(section, user, result);
 	}
 
 	private void refreshProviders(Section<?> section, UserContext user) {

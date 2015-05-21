@@ -40,7 +40,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 public class Rdf2GoCoreCheckRenderer extends DefaultMarkupRenderer {
 
 	@Override
-	public void render(Section<?> section, UserContext user, RenderResult buffer) {
+	public void render(Section<?> section, UserContext user, RenderResult result) {
 		Rdf2GoCore rdf2GoCore = Rdf2GoUtils.getRdf2GoCore(Sections.cast(section,
 				DefaultMarkupType.class));
 		if (rdf2GoCore == null) {
@@ -60,6 +60,6 @@ public class Rdf2GoCoreCheckRenderer extends DefaultMarkupRenderer {
 		else {
 			Messages.clearMessages(section, getClass());
 		}
-		super.render(section, user, buffer);
+		super.render(section, user, result);
 	}
 }

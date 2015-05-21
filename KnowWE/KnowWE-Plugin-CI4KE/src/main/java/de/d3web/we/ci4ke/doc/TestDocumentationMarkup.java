@@ -57,7 +57,7 @@ public class TestDocumentationMarkup extends DefaultMarkupType {
 	class TestDocumentationRenderer extends DefaultMarkupRenderer {
 
 		@Override
-		public void render(Section<?> section, UserContext user, RenderResult string) {
+		public void render(Section<?> section, UserContext user, RenderResult result) {
 			List<String> allTests = TestManager.findAllTestNames();
 			Collections.sort(allTests);
 
@@ -73,13 +73,13 @@ public class TestDocumentationMarkup extends DefaultMarkupType {
 
 			temp.append("</table>\n");
 
-			string.append("\n%%table-filter");
-			string.append("\n%%sortable");
-			string.append("\n");
-			string.appendHtml(temp.toString());
-			string.append("\n/%");
-			string.append("\n/%");
-			string.append("\n");
+			result.append("\n%%table-filter");
+			result.append("\n%%sortable");
+			result.append("\n");
+			result.appendHtml(temp.toString());
+			result.append("\n/%");
+			result.append("\n/%");
+			result.append("\n");
 		}
 
 		private void appendTest(StringBuffer buffer, String testName) {
