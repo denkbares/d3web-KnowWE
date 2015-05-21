@@ -76,19 +76,19 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	@Override
-	public void render(Section<?> section, UserContext user, RenderResult buffer) {
+	public void render(Section<?> section, UserContext user, RenderResult result) {
 		String id = section.getID();
 		ToolSet tools = getTools(section, user);
 
 		// add an anchor to enable direct link to the section
-		RenderResult markupTitle = new RenderResult(buffer);
+		RenderResult markupTitle = new RenderResult(result);
 		KnowWEUtils.renderAnchor(section, markupTitle);
 
 		// render markup title
 		renderTitle(section, user, markupTitle);
 
 		// create content
-		RenderResult content = new RenderResult(buffer);
+		RenderResult content = new RenderResult(result);
 
 		// render messages and content
 		renderMessages(section, content);
@@ -99,7 +99,7 @@ public class DefaultMarkupRenderer implements Renderer {
 
 		renderDefaultMarkupStyled(
 				markupTitle.toStringRaw(), content.toStringRaw(),
-				id, cssClassName, tools, user, buffer);
+				id, cssClassName, tools, user, result);
 	}
 
 	protected ToolSet getTools(Section<?> section, UserContext user) {
