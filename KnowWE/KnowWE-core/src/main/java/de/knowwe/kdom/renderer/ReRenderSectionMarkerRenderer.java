@@ -46,10 +46,11 @@ public class ReRenderSectionMarkerRenderer implements Renderer {
 	public void render(Section<?> sec, UserContext user, RenderResult string) {
 		boolean ajaxAction = user.getParameters().containsKey("action");
 		if (!ajaxAction) {
-			KnowWEUtils.renderAnchor(sec, string);
-			string.appendHtml("<div class=\"ReRenderSectionMarker\" style=\"display: inline;\" rel=\"{id:'"
+			string.appendHtml("<div class='ReRenderSectionMarker' style='display: inline;' sectionId='"
+					+ sec.getID() + "' rel='{id:\""
 					+ sec.getID()
-					+ "'}\">");
+					+ "\"}'>");
+			KnowWEUtils.renderAnchor(sec, string);
 		}
 		renderer.render(sec, user, string);
 		if (!ajaxAction) {

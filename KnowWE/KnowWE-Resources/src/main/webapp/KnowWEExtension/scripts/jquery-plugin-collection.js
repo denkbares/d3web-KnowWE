@@ -94,7 +94,7 @@
 	 * You can also just select successors of the default markup, the method will automatically choose the right
 	 * elements to rerender.
 	 */
-	jq$.fn.rerender = function(callback) {
+	jq$.fn.rerender = function(callback, parameters) {
 
 		this.each(function(i) {
 			var $element = jq$(this);
@@ -112,26 +112,30 @@
 			var id;
 			// Mode 1: ReRenderSectionMarker
 			if ($element.is('.ReRenderSectionMarker')) {
-				id = eval($element.attr('rel')).id;
+				id = $element.attr('sectionId');
 			}
 
 			// Mode 2: DefaultMarkupFrame
 			if ($element.is('.defaultMarkupFrame')) {
 				id = $element.attr('id');
 			}
+			if (!parameters) parameters = {};
+			var data = {SectionID : id}
+			jq$.extend(data, parameters);
+
 			KNOWWE.core.util.updateProcessingState(1);
-			KNOWWE.helper.observer.notify("beforeRerender", jq$('#' + id));
+			KNOWWE.helper.observer.notify("beforeRerender", $element);
 			jq$.ajax({
 				url : 'action/ReRenderContentPartAction',
 				type : 'post',
 				cache : false,
-				data : {
-					SectionID : id
-				}
+				data : data
 			}).done(function(data) {
-				jq$('#' + id).replaceWith(JSON.parse(data).html);
+				var $parent = $element.is('.ReRenderSectionMarker') ? $element.parent() : null;
+				$element.replaceWith(JSON.parse(data).html);
+				var newElement = $parent ? $parent.find('.ReRenderSectionMarker') : jq$('#' + id);
 				KNOWWE.core.actions.init();
-				KNOWWE.helper.observer.notify("afterRerender", jq$('#' + id));
+				KNOWWE.helper.observer.notify("afterRerender", newElement);
 				if (callback) callback();
 			}).always(function() {
 				KNOWWE.core.util.updateProcessingState(-1);

@@ -19,9 +19,13 @@
  */
 package de.knowwe.ontology.sparql;
 
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.node.Node;
+import org.ontoware.rdf2go.model.node.Resource;
+import org.ontoware.rdf2go.model.node.URI;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -33,10 +37,6 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
-import org.ontoware.rdf2go.model.Statement;
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.Resource;
-import org.ontoware.rdf2go.model.node.URI;
 
 public class SparqlContentRenderer implements Renderer {
 
@@ -54,8 +54,7 @@ public class SparqlContentRenderer implements Renderer {
 
 		KnowWEUtils.cleanupSectionCookies(user, Pattern.compile("^SparqlRenderer-(.+)$"), 1);
 
-		Section<SparqlMarkupType> markupSection = Sections.ancestor(section,
-				SparqlMarkupType.class);
+		Section<SparqlMarkupType> markupSection = Sections.ancestor(section, SparqlMarkupType.class);
 		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(markupSection);
 		if (core == null) {
 			// we render an empty div, otherwise the ajax rerendering does not
@@ -72,7 +71,7 @@ public class SparqlContentRenderer implements Renderer {
 		if (showQueryFlag != null && showQueryFlag.equalsIgnoreCase("true")) {
 			/*
 			 * we need an opening html element around all the content as for
-			 * some reason the ajax insert onyl inserts one (the first) html
+			 * some reason the ajax insert only inserts one (the first) html
 			 * element into the page
 			 */
 			result.appendHtml("<div>");
