@@ -31,6 +31,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 public class TurtleMarkup extends DefaultMarkupType {
 
 	public static final QuoteSet[] TURTLE_QUOTES = new QuoteSet[] {
+			QuoteSet.TRIPLE_QUOTES,
 			new QuoteSet('"'), new QuoteSet('\''),
 			new QuoteSet('(', ')'),
 			new QuoteSet('[', ']'), new QuoteSet('<', '>') };
