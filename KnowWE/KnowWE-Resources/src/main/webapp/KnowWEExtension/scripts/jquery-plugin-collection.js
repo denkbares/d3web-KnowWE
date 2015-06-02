@@ -134,7 +134,8 @@
 				data : data
 			}).done(function(data) {
 				var $parent = $element.is('.ReRenderSectionMarker') ? $element.parent() : null;
-				$element.replaceWith(JSON.parse(data).html);
+				var html = JSON.parse(data).html;
+				$element.replaceWith(html);
 				var newElement = $parent ? $parent.find('.ReRenderSectionMarker') : jq$('#' + id);
 				KNOWWE.core.actions.init();
 				KNOWWE.helper.observer.notify("afterRerender", newElement);
