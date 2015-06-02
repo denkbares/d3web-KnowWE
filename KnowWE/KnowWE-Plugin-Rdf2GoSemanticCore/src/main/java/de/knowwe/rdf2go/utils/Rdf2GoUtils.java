@@ -20,6 +20,7 @@
 package de.knowwe.rdf2go.utils;
 
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -59,6 +60,15 @@ import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class Rdf2GoUtils {
+
+	private static final SimpleDateFormat XSD_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+
+	/**
+	 * Returns a {@link SimpleDateFormat} allowing to read and write ^^xsd:date
+	 */
+	public static SimpleDateFormat getXsdDateFormat() {
+		return (SimpleDateFormat) XSD_DATE_FORMAT.clone();
+	}
 
 	/**
 	 * Locks the Rdf2GoCore of the given SPARQL iterator, so the underlying ontology model cannot
