@@ -26,6 +26,12 @@ public class InstantEditUtils {
 	 */
 	private static final Set<String> blockedNames = new HashSet<>();
 
+	public static void unblockReservedTitle(String titleToUnblock) {
+		synchronized (blockedNames) {
+			blockedNames.remove(titleToUnblock);
+		}
+	}
+
 	public static String createNewEnumeratedTitle(String prefix, ArticleManager articleManager) {
 		return createNewEnumeratedTitle(prefix, articleManager, -1);
 	}
