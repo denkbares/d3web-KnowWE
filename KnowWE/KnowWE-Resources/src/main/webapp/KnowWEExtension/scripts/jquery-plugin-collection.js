@@ -120,13 +120,15 @@
 				id = $element.attr('id');
 			}
 			if (!parameters) parameters = {};
-			var data = {SectionID : id}
+			var data = {SectionID : id};
 			jq$.extend(data, parameters);
 
 			KNOWWE.core.util.updateProcessingState(1);
 			KNOWWE.helper.observer.notify("beforeRerender", $element);
 			jq$.ajax({
-				url : 'action/ReRenderContentPartAction',
+				url : KNOWWE.core.util.getURL({
+					action : 'ReRenderContentPartAction'
+				}),
 				type : 'post',
 				cache : false,
 				data : data
@@ -611,7 +613,6 @@
 					}
 					if (false !== afterreset.apply(form, [settings, self])) {
 					}
-					;
 				}
 			};
 		});
@@ -1070,7 +1071,7 @@ jQuery.fn.insertAt = function(index, element) {
 	jq$.fn.datepicker = function() {
 		this.attr('placeholder', "dd/mm/yyyy");
 		return datepickerFunction.apply(this, arguments);
-	}
+	};
 
 	// ok, this implementation is pretty lame so far, implement something better if needed
 	jq$.fn.datetimepicker = function() {
