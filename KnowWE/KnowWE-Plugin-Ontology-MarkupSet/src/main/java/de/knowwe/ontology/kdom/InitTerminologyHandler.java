@@ -231,7 +231,7 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 			}
 		}
 		if (abbreviation == null) {
-			Log.severe("No matching namespace found for URI, should not happen!");
+			Log.severe("No matching namespace found for URI '" + uri + "', should not happen!");
 			return;
 		}
 		TerminologyManager terminologyManager = compiler.getTerminologyManager();
