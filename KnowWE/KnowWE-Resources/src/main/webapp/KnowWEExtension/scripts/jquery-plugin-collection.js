@@ -133,12 +133,16 @@
 				cache : false,
 				data : data
 			}).done(function(data) {
-				var $parent = $element.is('.ReRenderSectionMarker') ? $element.parent() : null;
 				var html = JSON.parse(data).html;
-				$element.replaceWith(html);
-				var newElement = $parent ? $parent.find('.ReRenderSectionMarker') : jq$('#' + id);
+				if ($element.is('.ReRenderSectionMarker')) {
+					$element.children().remove();
+					$element.append(html);
+				} else {
+					$element.replaceWith(html);
+				}
 				KNOWWE.core.actions.init();
-				KNOWWE.helper.observer.notify("afterRerender", newElement);
+				$element = $element.is('.ReRenderSectionMarker') ? $element : jq$('#' + id);
+				KNOWWE.helper.observer.notify("afterRerender", $element);
 				if (callback) callback();
 			}).always(function() {
 				KNOWWE.core.util.updateProcessingState(-1);
