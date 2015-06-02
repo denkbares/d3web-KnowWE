@@ -131,8 +131,8 @@ KNOWWE.plugin.instantEdit = function() {
         },
 
 
-        disable: function(id, reload, f) {
-        	if (!f) f = false; // prevents JS error in KnowWE helper
+        disable: function(id, reload, fn) {
+        	if (!fn) fn = false; // prevents JS error in KnowWE helper
             var params = {
                 action: 'InstantEditDisableAction',
                 KdomNodeId: id
@@ -144,7 +144,7 @@ KNOWWE.plugin.instantEdit = function() {
                 response: {
                     action: 'none',
                     onError: _EC.onErrorBehavior,
-                    fn: f
+                    fn: fn
                 }
             };
             new _KA(options).send();
@@ -172,7 +172,9 @@ KNOWWE.plugin.instantEdit = function() {
                 KWikiChangeNote: _EC.mode.getChangeNote(id)
             };
 
-            _EC.sendChanges(newWikiText, params, function(id) { _IE.disable(id, true, null); });
+            _EC.sendChanges(newWikiText, params, function(id) {
+                _IE.disable(id, true, null);
+            });
         },
 
         /**
@@ -182,9 +184,10 @@ KNOWWE.plugin.instantEdit = function() {
 		 * @param id is the id of the source DOM element
 		 * @param title is the optional title of the added article
 		 * @param newWikiText is the optional new text of the new article
+         * @param redirect boolean, whether the user should be redirected to the newly created page after saving.
 		 *
 		 */
-        add: function(id, title, newWikiText) {
+        add: function(id, title, newWikiText, redirect) {
 
             _EC.showAjaxLoader(id);
 
@@ -201,7 +204,12 @@ KNOWWE.plugin.instantEdit = function() {
                 KWiki_Topic: title
             };
 
-            _EC.sendChanges(newWikiText, params, function(id) { _IE.disable(id, true, null); });
+            _EC.sendChanges(newWikiText, params, function(id) {
+                _IE.disable(id, !redirect, null);
+                if (redirect) {
+                    window.location.search = "?page=" + title;
+                }
+            });
 
         },
 
