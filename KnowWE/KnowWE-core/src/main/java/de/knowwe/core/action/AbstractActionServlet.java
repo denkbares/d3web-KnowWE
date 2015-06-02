@@ -111,7 +111,7 @@ public abstract class AbstractActionServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		Log.info("POST: " + request.getRequestURI());
+		Log.fine("POST: " + request.getRequestURI());
 		if (request.getPathInfo().equals("/command")) {
 			doXmlActions(request, response, request.getReader());
 		}
