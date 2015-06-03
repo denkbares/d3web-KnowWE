@@ -61,7 +61,7 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class Rdf2GoUtils {
 
-	private static final SimpleDateFormat XSD_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+	private static final SimpleDateFormat XSD_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
 	/**
 	 * Returns a {@link SimpleDateFormat} allowing to read and write ^^xsd:date
