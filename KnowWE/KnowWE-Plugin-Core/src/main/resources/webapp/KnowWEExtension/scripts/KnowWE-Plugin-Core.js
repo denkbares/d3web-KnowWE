@@ -722,8 +722,7 @@ KNOWWE.core.plugin.pagination = function() {
 	return {
 
 		sort : function(element, id) {
-			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-"
-			+ id));
+			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-" + id));
 			if (cookie == null) {
 				cookie = {};
 			}

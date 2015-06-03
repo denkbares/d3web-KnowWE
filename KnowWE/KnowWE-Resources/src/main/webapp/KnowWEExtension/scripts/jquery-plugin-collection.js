@@ -119,6 +119,7 @@
 			if ($element.is('.defaultMarkupFrame')) {
 				id = $element.attr('id');
 			}
+
 			if (!parameters) parameters = {};
 			var data = {SectionID : id};
 			jq$.extend(data, parameters);

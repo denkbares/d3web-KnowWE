@@ -48,7 +48,7 @@ import de.knowwe.util.Icon;
  * an existing {@link de.knowwe.core.kdom.rendering.Renderer} or you can use its static methods for
  * a little bit more freedom. (It's not possible at the moment to use the static methods within an
  * AsynchronRenderer.)
- * <p>
+ * <p/>
  * IMPORTANT: If you don't use the {@link #PaginationRenderer(de.knowwe.core.kdom.rendering.Renderer)}
  * as a decorating renderer, you have to add the attribute 'pagination' where its value is the ID of
  * that section to the table tag({@code &lt;table pagination='$sectionId'&gt;}). <br><br> The values
@@ -77,6 +77,7 @@ import de.knowwe.util.Icon;
  */
 public class PaginationRenderer implements Renderer {
 
+	public static final int DEFAULT_SHOW_NAVIGATION_MAX_RESULTS = 10;
 	private final Renderer decoratedRenderer;
 
 	public static final String UNKNOWN_RESULT_SIZE = "unknown";
@@ -104,7 +105,7 @@ public class PaginationRenderer implements Renderer {
 		boolean show = true;
 		if (!resultString.equals(UNKNOWN_RESULT_SIZE)) {
 			int resultSize = Integer.parseInt(resultString);
-			show = resultSize > 10;
+			show = resultSize > DEFAULT_SHOW_NAVIGATION_MAX_RESULTS;
 		}
 		PaginationRenderer.renderPagination(section, user, pagination, show);
 		result.append(pagination);
@@ -140,9 +141,13 @@ public class PaginationRenderer implements Renderer {
 
 		result.appendHtml("<span class=fillText>Show </span><select class='count'>");
 
+		boolean foundSelected = false;
 		for (Integer size : sizeArray) {
+			boolean selected = count == size;
+			if (selected) foundSelected = true;
+			boolean setSelected = selected || size == Integer.MAX_VALUE && !foundSelected;
 			result.appendHtml("<option "
-					+ (count == size ? "selected='selected' " : "")
+					+ (setSelected ? "selected='selected' " : "")
 					+ "value='" + size + "'>"
 					+ (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
 					+ "</option>");
@@ -221,7 +226,7 @@ public class PaginationRenderer implements Renderer {
 		result.appendHtml("</div>");
 	}
 
-	private static int getResultSize(UserContext user) {
+	public static int getResultSize(UserContext user) {
 		String resultSizeString = getResultSizeString(user);
 		int resultSize = Integer.MAX_VALUE;
 		try {
@@ -501,7 +506,7 @@ public class PaginationRenderer implements Renderer {
 		return filterList;
 	}
 
-	private static void renderHiddenFilterDiv(UserContext context, RenderResult result, Section<?> section) {
+	public static void renderHiddenFilterDiv(UserContext context, RenderResult result, Section<?> section) {
 		List<Pair<String, List<String>>> filterList = getFilterList(context);
 		result.appendHtmlTag("div", "id", "paginationFilters", "display", "none");
 
