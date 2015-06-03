@@ -19,9 +19,12 @@
  */
 package de.knowwe.ontology.sparql;
 
+import java.util.concurrent.TimeUnit;
+
+import org.ontoware.aifbcommons.collection.ClosableIterable;
+import org.ontoware.rdf2go.model.Statement;
+
 import de.d3web.strings.Strings;
-import de.knowwe.core.compile.DefaultGlobalCompiler;
-import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageCompileScript;
 import de.knowwe.core.kdom.AbstractType;
@@ -32,16 +35,10 @@ import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.AsynchronRenderer;
-import de.knowwe.ontology.compile.OntologyCompileScript;
-import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.OntologyConstructCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
-import org.ontoware.aifbcommons.collection.ClosableIterable;
-import org.ontoware.rdf2go.model.Statement;
-
-import java.util.concurrent.TimeUnit;
 
 public class SparqlContentType extends AbstractType implements SparqlType {
 
@@ -60,7 +57,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 
 	@Override
 	public RenderOptions getRenderOptions(Section<? extends SparqlType> section, UserContext context) {
-		Section<SparqlMarkupType> markupSection = Sections.ancestor(section, SparqlMarkupType.class);
+		Section<DefaultMarkupType> markupSection = Sections.ancestor(section, DefaultMarkupType.class);
 
 		RenderOptions renderOpts = new RenderOptions(section.getID(), context);
 
@@ -71,7 +68,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		return renderOpts;
 	}
 
-	private void setRenderOptions(Section<SparqlMarkupType> markupSection, RenderOptions renderOpts) {
+	private void setRenderOptions(Section<DefaultMarkupType> markupSection, RenderOptions renderOpts) {
 		renderOpts.setRawOutput(checkAnnotation(markupSection, SparqlMarkupType.RAW_OUTPUT));
 		renderOpts.setSorting(checkSortingAnnotation(markupSection,
 				SparqlMarkupType.SORTING));
@@ -88,7 +85,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		return section.get() instanceof SparqlContentType && Strings.startsWithIgnoreCase(section.getText().trim(), "construct");
 	}
 
-	private boolean checkSortingAnnotation(Section<SparqlMarkupType> markupSection, String sorting) {
+	private boolean checkSortingAnnotation(Section<DefaultMarkupType> markupSection, String sorting) {
 		String annotationString = DefaultMarkupType.getAnnotation(markupSection,
 				sorting);
 		return annotationString == null || annotationString.equals("true");
@@ -104,7 +101,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		return checkAnnotation(markupSection, annotationName, false);
 	}
 
-	private long getTimeout(Section<SparqlMarkupType> markupSection) {
+	private long getTimeout(Section<DefaultMarkupType> markupSection) {
 		String timeoutString = DefaultMarkupType.getAnnotation(markupSection, SparqlMarkupType.TIMEOUT);
 		long timeOutMillis = Rdf2GoCore.DEFAULT_TIMEOUT;
 		if (timeoutString != null) {

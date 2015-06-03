@@ -54,7 +54,7 @@ public class SparqlContentRenderer implements Renderer {
 
 		KnowWEUtils.cleanupSectionCookies(user, Pattern.compile("^SparqlRenderer-(.+)$"), 1);
 
-		Section<SparqlMarkupType> markupSection = Sections.ancestor(section, SparqlMarkupType.class);
+		Section<DefaultMarkupType> markupSection = Sections.ancestor(section, DefaultMarkupType.class);
 		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(markupSection);
 		if (core == null) {
 			// we render an empty div, otherwise the ajax rerendering does not
