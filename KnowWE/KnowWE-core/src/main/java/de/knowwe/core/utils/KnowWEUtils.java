@@ -25,10 +25,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -984,6 +987,9 @@ public class KnowWEUtils {
 		return Integer.toHexString(overAllStatus);
 	}
 
+	/**
+	 * Renames and article
+	 */
 	public static void renameArticle(String oldArticleTitle, String newArticleTitle) {
 		ArticleManager manager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
 		Article oldArticle = manager.getArticle(oldArticleTitle);
@@ -996,5 +1002,15 @@ public class KnowWEUtils {
 		finally {
 			manager.commit();
 		}
+	}
+
+	/**
+	 * Returns and array of locales based on sorted by preferred labels given by the browser.
+	 */
+	public static Locale[] getBrowserLocales(UserContext context) {
+		Enumeration localesEnum = context.getRequest().getLocales();
+		@SuppressWarnings("unchecked")
+		ArrayList<Locale> localList = Collections.list(localesEnum);
+		return localList.toArray(new Locale[localList.size()]);
 	}
 }
