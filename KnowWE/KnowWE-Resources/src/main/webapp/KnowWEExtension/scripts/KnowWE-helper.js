@@ -394,7 +394,7 @@ KNOWWE.helper.message = function() {
 			var hide = function(){
 				div.remove();
 				KNOWWE.helper.greyOut();
-			}
+			};
 
 			KNOWWE.helper.greyOut();
 			var div = jq$('<div>', {'class': 'message-dialog', id: 'knowwe_message'})
@@ -538,7 +538,7 @@ KNOWWE.helper.ajax = function ( options ) {
             id : '',
             fn : false
         }
-    }
+    };
     var http = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
     
     init();
@@ -647,7 +647,7 @@ KNOWWE.helper.ajax = function ( options ) {
         } else {
         	http.send( oDefault.method );
         }
-    }
+    };
     /**
      * Function: getResponse
      * Returns the text of the AJAX response.
@@ -658,7 +658,7 @@ KNOWWE.helper.ajax = function ( options ) {
     this.getResponse = function() {
         return http.responseText;
     }  
-}
+};
 
 /**
  * Class: KNOWWE.helper.element
@@ -679,7 +679,7 @@ KNOWWE.helper.element = function ( tag, properties ){
         o = tag;
     } else {   /* assume tag and properties are present, create new element */
         if(tag.constructor !== String) {
-            o = new Object();
+            o = {};
         } else {
             o =  document.createElement( tag );
         }
@@ -696,7 +696,7 @@ KNOWWE.helper.element = function ( tag, properties ){
         }
         return o1;
     }
-}
+};
 
 /**
  * The KNOWWE element functions.
@@ -931,7 +931,7 @@ KNOWWE.helper.element.prototype = {
         var clazz = this.className + ' ' + c;
         delete this.className;
         
-        this.setAttribute('class', clazz)
+        this.setAttribute('class', clazz);
         this.setAttribute('className', clazz);      
     },
     /**
@@ -1057,7 +1057,7 @@ KNOWWE.helper.selector = function(selector, context){
     while( (m = parts.shift()) ){
         if(t1){
             if(t1.constructor == Array || t1.constructor == Object){
-                t3 = new Array();
+                t3 = [];
                 var len = t1.length;
                 for(i = 0; i < len; i++){
                     context = t1[i];
@@ -1086,7 +1086,7 @@ KNOWWE.helper.selector = function(selector, context){
         return null;
     }
     
-    var tmp = new Array();
+    var tmp = [];
     var k = KNOWWE.helper.element;
     var l = t1.length;
     if(l > 0){
@@ -1179,7 +1179,7 @@ KNOWWE.helper.selector.filter = function(){
          */
         CLASS : function( context, selector ){          
             if( context === document ){
-                var e = document.getElementsByTagName('*'), r = new Array(), t;
+                var e = document.getElementsByTagName('*'), r = [], t;
                 var l = e.length;
                 for( var i = 0; i < l; i++){
                     t = this.CLASS( e[i], selector);
@@ -1188,11 +1188,11 @@ KNOWWE.helper.selector.filter = function(){
                 return r;
             }
             selector = selector.replace(/\./, '');
-            if(!context.className) return new Array();
+            if(!context.className) return [];
             if(context.className.indexOf && context.className.indexOf( selector ) !== -1 ){
                 return context;
             }
-            return new Array();
+            return [];
         },
         /**
          * Searches for a given attribute.
@@ -1205,7 +1205,7 @@ KNOWWE.helper.selector.filter = function(){
          *     The found elements.
          */
         ATTR : function( context, selector ){
-            var m, r = new Array(), t, i, l;
+            var m, r = [], t, i, l;
             
             m = KNOWWE.helper.selector.regex.ATTR.exec( selector );
             t = context.getElementsByTagName( m[1] || '*' ); /* get all elements with given tag*/
@@ -1233,7 +1233,7 @@ KNOWWE.helper.selector.filter = function(){
         SPEZIAL : function( context, selector ){
             //:input :checked :submit :button :selected
             //:div#QuestionTree
-            var r = new Array(), t, e;
+            var r = [], t, e;
             
             if( selector.indexOf('#') !== -1 ) {
                 t = selector.replace(/:/, '').split('#');
@@ -1281,7 +1281,7 @@ KNOWWE.helper.hash = function ( map ){
      */
     this.set = function(key, value){
         _data[key] = value;
-    }
+    };
     /**
      * Function: contains
      * Checks if the a value is already stored in the map. Returns TRUE if it
@@ -1299,7 +1299,7 @@ KNOWWE.helper.hash = function ( map ){
             if(i === key) return true;
         }           
         return false;
-    }
+    };
     /**
      * Function: get
      * Gets an value to the given key. If the key is not present in the map
@@ -1316,7 +1316,7 @@ KNOWWE.helper.hash = function ( map ){
             throw new Error('Map.get awaits a string as argument');
         
         return _data[key];
-    }
+    };
     /**
      * Function: forEach
      * Applies an function to every single element in the map.
@@ -1329,7 +1329,7 @@ KNOWWE.helper.hash = function ( map ){
         for(var key in _data){
             fn.call(this, key, _data[key] );
         }
-    }
+    };
     /**
      * Function: keys
      * Returns the keys of the current map.
@@ -1338,11 +1338,11 @@ KNOWWE.helper.hash = function ( map ){
      *     The keys of the map
      */
     this.keys = function(){
-        var a = new Array();
+        var a = [];
         for(var key in _data)
             a.push(key);
         return a;
-    }
+    };
     /**
      * Function: size
      * Returns the size of the map
@@ -1355,7 +1355,7 @@ KNOWWE.helper.hash = function ( map ){
         for(var i in _data)
             i++;
         return i;
-    }
+    };
     /**
      * Function: remove
      * Removes an value from the map
@@ -1366,7 +1366,7 @@ KNOWWE.helper.hash = function ( map ){
     this.remove = function( key ){
         if(key || key.constructor != String) throw new Error('Map.remove awaits a string as argument');
         delete _data[key];
-    }
+    };
     /**
      * Function: toString
      * Returns an string containing all elements of the map aks key:value pair.
@@ -1381,7 +1381,7 @@ KNOWWE.helper.hash = function ( map ){
         }
         return s;
     }   
-}
+};
 
 /**
  * Class: KNOWWE.helper.logger
@@ -1669,7 +1669,7 @@ KNOWWE.helper.logger = function(){
         getFunct : function(){
             return this.f;
         }       
-    }
+    };
     Observation.prototype.constructor  = Observation;
     /**
      * Subscribes the function to the given observer object.
@@ -1879,7 +1879,7 @@ KNOWWE.helper.overlay = function( options ){
                 oDefault.fn.call();
         }
     }
-}
+};
 
 
 /**
@@ -1915,7 +1915,7 @@ KNOWWE.helper.window = function(){
                 top : 0,
                 screenX : 0,
                 screenY : 0
-            }
+            };
             oDefault = KNOWWE.helper.enrich( options, oDefault );
             instance = window.open(oDefault.url, 'KnowWEPopup', KNOWWE.core.util.getWindowParams( oDefault ));
             instance.focus;
@@ -2076,7 +2076,7 @@ Array.prototype.toLogger = function(indent){
     }
     s += ' ]';
     return s;
-}
+};
 /**
  * Function: String.toLogger
  * Converts an array to a string.
@@ -2090,7 +2090,133 @@ Array.prototype.toLogger = function(indent){
 String.prototype.toLogger = function(indent){
     var space = KNOWWE.helper.logger.space(indent);
     return space + '"' + this + '"';
-}
+};
+
+/*
+ * Date Format 1.2.3
+ * (c) 2007-2009 Steven Levithan <stevenlevithan.com>
+ * MIT license
+ *
+ * Includes enhancements by Scott Trenda <scott.trenda.net>
+ * and Kris Kowal <cixar.com/~kris.kowal/>
+ *
+ * Accepts a date, a mask, or a date and a mask.
+ * Returns a formatted version of the given date.
+ * The date defaults to the current date/time.
+ * The mask defaults to dateFormat.masks.default.
+ */
+
+var dateFormat = function () {
+    var token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
+        timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
+        timezoneClip = /[^-+\dA-Z]/g,
+        pad = function (val, len) {
+            val = String(val);
+            len = len || 2;
+            while (val.length < len) val = "0" + val;
+            return val;
+        };
+
+    // Regexes and supporting functions are cached through closure
+    return function (date, mask, utc) {
+        var dF = dateFormat;
+
+        // You can't provide utc if you skip other args (use the "UTC:" mask prefix)
+        if (arguments.length == 1 && Object.prototype.toString.call(date) == "[object String]" && !/\d/.test(date)) {
+            mask = date;
+            date = undefined;
+        }
+
+        // Passing date through Date applies Date.parse, if necessary
+        date = date ? new Date(date) : new Date;
+        if (isNaN(date)) throw SyntaxError("invalid date");
+
+        mask = String(dF.masks[mask] || mask || dF.masks["default"]);
+
+        // Allow setting the utc argument via the mask
+        if (mask.slice(0, 4) == "UTC:") {
+            mask = mask.slice(4);
+            utc = true;
+        }
+
+        var _ = utc ? "getUTC" : "get",
+            d = date[_ + "Date"](),
+            D = date[_ + "Day"](),
+            m = date[_ + "Month"](),
+            y = date[_ + "FullYear"](),
+            H = date[_ + "Hours"](),
+            M = date[_ + "Minutes"](),
+            s = date[_ + "Seconds"](),
+            L = date[_ + "Milliseconds"](),
+            o = utc ? 0 : date.getTimezoneOffset(),
+            flags = {
+                d:    d,
+                dd:   pad(d),
+                ddd:  dF.i18n.dayNames[D],
+                dddd: dF.i18n.dayNames[D + 7],
+                m:    m + 1,
+                mm:   pad(m + 1),
+                mmm:  dF.i18n.monthNames[m],
+                mmmm: dF.i18n.monthNames[m + 12],
+                yy:   String(y).slice(2),
+                yyyy: y,
+                h:    H % 12 || 12,
+                hh:   pad(H % 12 || 12),
+                H:    H,
+                HH:   pad(H),
+                M:    M,
+                MM:   pad(M),
+                s:    s,
+                ss:   pad(s),
+                l:    pad(L, 3),
+                L:    pad(L > 99 ? Math.round(L / 10) : L),
+                t:    H < 12 ? "a"  : "p",
+                tt:   H < 12 ? "am" : "pm",
+                T:    H < 12 ? "A"  : "P",
+                TT:   H < 12 ? "AM" : "PM",
+                Z:    utc ? "UTC" : (String(date).match(timezone) || [""]).pop().replace(timezoneClip, ""),
+                o:    (o > 0 ? "-" : "+") + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4),
+                S:    ["th", "st", "nd", "rd"][d % 10 > 3 ? 0 : (d % 100 - d % 10 != 10) * d % 10]
+            };
+
+        return mask.replace(token, function ($0) {
+            return $0 in flags ? flags[$0] : $0.slice(1, $0.length - 1);
+        });
+    };
+}();
+
+// Some common format strings
+dateFormat.masks = {
+    "default":      "ddd mmm dd yyyy HH:MM:ss",
+    shortDate:      "m/d/yy",
+    mediumDate:     "mmm d, yyyy",
+    longDate:       "mmmm d, yyyy",
+    fullDate:       "dddd, mmmm d, yyyy",
+    shortTime:      "h:MM TT",
+    mediumTime:     "h:MM:ss TT",
+    longTime:       "h:MM:ss TT Z",
+    isoDate:        "yyyy-mm-dd",
+    isoTime:        "HH:MM:ss",
+    isoDateTime:    "yyyy-mm-dd'T'HH:MM:ss",
+    isoUtcDateTime: "UTC:yyyy-mm-dd'T'HH:MM:ss'Z'"
+};
+
+// Internationalization strings
+dateFormat.i18n = {
+    dayNames: [
+        "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat",
+        "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+    ],
+    monthNames: [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+        "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+    ]
+};
+
+// For convenience...
+Date.prototype.format = function (mask, utc) {
+    return dateFormat(this, mask, utc);
+};
 
 
 

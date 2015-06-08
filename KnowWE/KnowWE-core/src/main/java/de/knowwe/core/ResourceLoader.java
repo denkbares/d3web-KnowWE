@@ -104,6 +104,9 @@ public class ResourceLoader {
 		add("tooltipster.css", ResourceLoader.RESOURCE_STYLESHEET);
 		add("jquery-autocomplete.css", ResourceLoader.RESOURCE_STYLESHEET);
 		add("jquery-treeTable.css", ResourceLoader.RESOURCE_STYLESHEET);
+		add("jquery-ui.min.css", ResourceLoader.RESOURCE_STYLESHEET);
+		add("jquery-ui.structure.min.css", ResourceLoader.RESOURCE_STYLESHEET);
+		add("jquery-ui.theme.min.css", ResourceLoader.RESOURCE_STYLESHEET);
 		add("general.css", ResourceLoader.RESOURCE_STYLESHEET);
 		add("font-awesome/css/font-awesome.min.css", ResourceLoader.RESOURCE_STYLESHEET);
 		addFirst("KnowWE-notification.js", ResourceLoader.RESOURCE_SCRIPT);
@@ -115,7 +118,7 @@ public class ResourceLoader {
 		addFirst("jquery-plugin-collection.js", ResourceLoader.RESOURCE_SCRIPT);
 		addFirst("jquery-tooltipster.js", ResourceLoader.RESOURCE_SCRIPT);
 		addFirst("jquery-treeTable.js", ResourceLoader.RESOURCE_SCRIPT);
-		addFirst("jquery-ui-1.10.4.custom.min.js", ResourceLoader.RESOURCE_SCRIPT);
+		addFirst("jquery-ui.min.js", ResourceLoader.RESOURCE_SCRIPT);
 		addFirst("jquery-2.1.0.min.js", ResourceLoader.RESOURCE_SCRIPT);
 	}
 
