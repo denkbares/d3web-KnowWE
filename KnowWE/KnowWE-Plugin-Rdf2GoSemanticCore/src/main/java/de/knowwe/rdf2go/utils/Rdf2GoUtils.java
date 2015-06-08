@@ -22,8 +22,11 @@ package de.knowwe.rdf2go.utils;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -170,7 +173,7 @@ public class Rdf2GoUtils {
 	/**
 	 * Returns a rdfs:label of the given concept in the given language, if existing.
 	 *
-	 * @param uri full uri of the concept to be labeled
+	 * @param uri         full uri of the concept to be labeled
 	 * @param repo
 	 * @param languageTag
 	 * @return
@@ -408,7 +411,7 @@ public class Rdf2GoUtils {
 	 * the the concept is 'rdf:type' of. Further, if for two class in the tree 'A rdfs:subClassOf B'
 	 * holds, then A is a successor of B in the generated tree.
 	 *
-	 * @param core the repository to work with
+	 * @param core    the repository to work with
 	 * @param concept the concept for which the class tree should be generated
 	 * @return the tree of all classes that the concept belongs to
 	 */
@@ -456,11 +459,11 @@ public class Rdf2GoUtils {
 	}
 
 	/**
-	 * @param core the repository to work with
-	 * @param concept the concept for which the class tree should be generated
+	 * @param core             the repository to work with
+	 * @param concept          the concept for which the class tree should be generated
 	 * @param subClassRelation the relation that defines the subclass hierarchy (usually
-	 * rdfs:subClassOf)
-	 * @param typeRelation the property defining an instanceof relation (usally rdf:type)
+	 *                         rdfs:subClassOf)
+	 * @param typeRelation     the property defining an instanceof relation (usally rdf:type)
 	 * @return the tree of all classes that the concept belongs to
 	 * @see de.knowwe.rdf2go.utils.Rdf2GoUtils#getClassHierarchy(de.knowwe.rdf2go.Rdf2GoCore,
 	 * org.ontoware.rdf2go.model.node.URI, String, String)
@@ -592,6 +595,51 @@ public class Rdf2GoUtils {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Generates SPARQL query code selecting a string literal with the given preferred label and binds it to the
+	 * object. If multiple locales are provided, the other locales function as a fallback, if the Literal is not
+	 * available in the first locale(s).
+	 * <p></p>
+	 * <b>Example:</b> You want the string literal title of an article. Normally you would write something like<br>
+	 * <tt>?article lns:hasTitle ?Title</tt><br>
+	 * To get it with the preferred label, use the method the following way:
+	 * <tt>getPreferredLocaleLabel("?article lns:hasTitle", "?Title", getPreferredLocales())</tt><br>
+	 * The title will then be bound with the correct locale.
+	 *
+	 * @param subjectPredicate the subject and predicate of the sparql line you would write normally
+	 * @param object           the object variable name you would write normally
+	 * @param locales          the locales you want the object in, sorted by priority
+	 * @return SPARQL code binding the object with the desired locales string literal
+	 */
+	@SuppressWarnings("StringConcatenationInsideStringBufferAppend")
+	public static String getPreferredLocaleLabel(String subjectPredicate, String object, Locale... locales) {
+		StringBuilder builder = new StringBuilder();
+		for (Locale locale : locales) {
+			String localeAbbreviation = locale.toString().toUpperCase();
+			builder.append("  OPTIONAL {\n");
+			builder.append("    " + subjectPredicate + " " + object + localeAbbreviation + " .\n");
+			builder.append("    FILTER langMatches(lang(" + object + localeAbbreviation + "), \"" + localeAbbreviation + "\") .\n");
+			builder.append("  }\n\n");
+		}
+		builder.append("  BIND (");
+		insertLocaleConditional(new LinkedList<>(Arrays.asList(locales)), object, builder);
+		builder.append(" AS " + object + ") .\n\n");
+		return builder.toString();
+	}
+
+	@SuppressWarnings("StringConcatenationInsideStringBufferAppend")
+	private static void insertLocaleConditional(LinkedList<Locale> locales, String labelVar, StringBuilder builder) {
+		if (locales.isEmpty()) {
+			builder.append("\"\"");
+		}
+		else {
+			String localeLableVar = labelVar + locales.removeFirst().toString().toUpperCase();
+			builder.append("IF (BOUND(" + localeLableVar + "), " + localeLableVar + ", ");
+			insertLocaleConditional(locales, labelVar, builder);
+			builder.append(")");
+		}
 	}
 
 }
