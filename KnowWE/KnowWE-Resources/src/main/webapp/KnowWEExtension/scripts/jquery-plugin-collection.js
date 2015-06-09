@@ -98,27 +98,9 @@
 
 		this.each(function(i) {
 			var $element = jq$(this);
-			// make sure we have an element that we can rerender easily
-			if (!$element.is('.defaultMarkupFrame') && !$element.is('.ReRenderSectionMarker')) {
-				// first check if we can find a marker
-				$element = $element.parents('.ReRenderSectionMarker').first();
-				if (!$element.exists()) {
-					// fallback to default markup frame
-					$element = $element.parents('.defaultMarkupFrame').first();
-				}
-			}
-			if (!$element.exists()) return;
 
-			var id;
-			// Mode 1: ReRenderSectionMarker
-			if ($element.is('.ReRenderSectionMarker')) {
-				id = $element.attr('sectionId');
-			}
-
-			// Mode 2: DefaultMarkupFrame
-			if ($element.is('.defaultMarkupFrame')) {
-				id = $element.attr('id');
-			}
+			var id = $element.attr('sectionId');
+			if (!id) id = $element.attr('id');
 
 			if (!parameters) parameters = {};
 			var data = {SectionID : id};
