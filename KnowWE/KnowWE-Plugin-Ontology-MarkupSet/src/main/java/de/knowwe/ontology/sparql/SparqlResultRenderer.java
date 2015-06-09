@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import de.knowwe.ontology.compile.OntologyType;
 import org.ontoware.rdf2go.model.QueryResultTable;
 import org.ontoware.rdf2go.model.node.Literal;
 import org.ontoware.rdf2go.model.node.Node;
@@ -28,6 +27,7 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.renderer.PaginationRenderer;
+import de.knowwe.ontology.compile.OntologyType;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.sparql.utils.SparqlRenderResult;
@@ -91,9 +91,6 @@ public class SparqlResultRenderer {
 		result.appendHtml("<div class='sparqlTable' sparqlSectionId='" + opts.getId() + "' id='sparqlTable_" + opts
 				.getId() + "'>");
 		if (opts.isBorder()) result.appendHtml("<div class='border'>");
-//		if (opts.isSorting()) {
-//			query = modifyOrderByInSparqlString(section, user, query);
-//		}
 
 		SparqlRenderResult renderResult;
 
@@ -111,12 +108,6 @@ public class SparqlResultRenderer {
 		}
 		if (qrt != null) {
 			renderResult = getSparqlRenderResult(qrt, opts, user, section);
-
-//			if (opts.isNavigation() && !opts.isRawOutput()) {
-//				renderTableSizeSelector(opts, renderResult.getSize(), result);
-//				renderNavigation(opts, renderResult.getSize(), result);
-//
-//			}
 
 			result.appendHtml(renderResult.getHTML());
 		}
