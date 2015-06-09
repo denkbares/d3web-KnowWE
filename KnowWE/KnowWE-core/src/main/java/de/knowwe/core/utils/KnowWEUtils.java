@@ -460,6 +460,29 @@ public class KnowWEUtils {
 	}
 
 	/**
+	 * Checks whether the user is in a given wiki group.
+	 *
+	 * @param groupName the group name to check for
+	 * @param user      the user to check the group for
+	 * @return true, if the user is member of the group, false else
+	 */
+	public static boolean isInGroup(String groupName, UserContext user) {
+		return Environment.getInstance()
+				.getWikiConnector()
+				.userIsMemberOfGroup(groupName, user.getRequest());
+	}
+
+	/**
+	 * Checks whether the given user is a wiki admin.
+	 *
+	 * @param user the user to check
+	 * @return true, if the user is an admin, false else
+	 */
+	public static boolean isAdmin(UserContext user) {
+		return user.userIsAdmin();
+	}
+
+	/**
 	 * Returns if the user has the write access rights to all of the specified sections. To be more
 	 * specific, it checks if the user has the write access rights to the set of all articles that
 	 * contain the specified sections.
