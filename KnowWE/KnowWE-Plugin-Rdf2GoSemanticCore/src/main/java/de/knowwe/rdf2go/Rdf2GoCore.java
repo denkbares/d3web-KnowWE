@@ -1380,8 +1380,22 @@ public class Rdf2GoCore {
 				rows.add(queryRow);
 			}
 			iterator.close();
-			rows.trimToSize();
 			List<String> variables = result.getVariables();
+			// cleanup weird result where there is only one row it all empty nodes.
+			if (rows.size() == 1) {
+				QueryRow queryRow = rows.get(0);
+				boolean allEmpty = true;
+				for (String variable : variables) {
+					Node value = queryRow.getValue(variable);
+					if (value != null && !Strings.isBlank(value.toString())) {
+						allEmpty = false;
+						break;
+					}
+				}
+				if (allEmpty) rows.clear();
+			}
+
+			rows.trimToSize();
 			return new CachedQueryResultTable(variables, rows);
 		}
 
@@ -1651,6 +1665,10 @@ public class Rdf2GoCore {
 		@Override
 		public ClosableIterator<QueryRow> iterator() {
 			return new DelegateClosableIterator<>(result.iterator());
+		}
+
+		public List<QueryRow> getResult() {
+			return Collections.unmodifiableList(result);
 		}
 	}
 

@@ -24,7 +24,6 @@ import de.d3web.utils.Pair;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 import de.knowwe.ontology.compile.OntologyType;
@@ -140,11 +139,10 @@ public class SparqlResultRenderer {
 
 	private SparqlRenderResult renderQueryResultLocked(QueryResultTable qrt, RenderOptions opts, UserContext user, Section<?> section) {
 
-		RenderResult result = new RenderResult(user);
+		RenderResult renderResult = new RenderResult(user);
 		if (!qrt.iterator().hasNext()) {
-			result.append(Messages.getMessageBundle().getString(
-					"KnowWE.owl.query.no_result"));
-			return new SparqlRenderResult(result.toStringRaw());
+			renderResult.appendHtmlElement("span", "No results for this query", "class", "emptySparqlResult");
+			return new SparqlRenderResult(renderResult.toStringRaw());
 		}
 
 		boolean zebraMode = opts.isZebraMode();
@@ -166,35 +164,35 @@ public class SparqlResultRenderer {
 			}
 			else {
 				isTree = false;
-				result.append("%%warning The result table requires at least three columns to enable tree mode.\n");
+				renderResult.append("%%warning The renderResult table requires at least three columns to enable tree mode.\n");
 			}
 		}
 
 		// navigation mode check
 		if (isTree) {
 			isNavigation = false;
-			//result.append("%%warning The specified flags 'tree' and 'navigation' are not compatible.\n");
+			//renderResult.append("%%warning The specified flags 'tree' and 'navigation' are not compatible.\n");
 		}
 
-		result.appendHtmlTag("div", "style", "overflow-x: auto");
-		result.appendHtml("<table id='").append(tableID).appendHtml("'")
+		renderResult.appendHtmlTag("div", "style", "overflow-x: auto");
+		renderResult.appendHtml("<table id='").append(tableID).appendHtml("'")
 				.append(isTree
 						? " class='sparqltable sparqltreetable'"
 						: " class='sparqltable'")
 				.append(isNavigation ? " sortable='multi'" : "")
 				.append(">");
-		result.appendHtml(!zebraMode ? "<tr>" : "<tr class='odd'>");
+		renderResult.appendHtml(!zebraMode ? "<tr>" : "<tr class='odd'>");
 		int column = 0;
 		for (String var : variables) {
 			// ignore first two columns if we are in tree mode
 			if (isTree && column++ < 2) {
 				continue;
 			}
-			result.appendHtml("<th>");
-			result.append(var);
-			result.appendHtml("</th>");
+			renderResult.appendHtml("<th>");
+			renderResult.append(var);
+			renderResult.appendHtml("</th>");
 		}
-		result.appendHtml("</tr>");
+		renderResult.appendHtml("</tr>");
 		ResultTableModel table = new ResultTableModel(qrt);
 		PaginationRenderer.setResultSize(user, table.getSize());
 		Iterator<TableRow> iterator;
@@ -232,7 +230,7 @@ public class SparqlResultRenderer {
 			if (isTree) {
 				classNames.add("treetr");
 			}
-			result.appendHtml(classNames.isEmpty()
+			renderResult.appendHtml(classNames.isEmpty()
 					? "<tr"
 					: "<tr class='" + Strings.concat(" ", classNames) + "'");
 
@@ -242,14 +240,14 @@ public class SparqlResultRenderer {
 				if (!isNew) {
 					valueID = UUID.randomUUID().toString();
 				}
-				result.append(" data-tt-id='sparql-id-").append(valueID).append("'");
+				renderResult.append(" data-tt-id='sparql-id-").append(valueID).append("'");
 				String parentID = valueToID(parentVariable, row);
 				if (!Strings.isBlank(parentID) && !parentID.equals(valueID) && usedIDs.contains(parentID)) {
-					result.append(" data-tt-parent-id='sparql-id-")
+					renderResult.append(" data-tt-parent-id='sparql-id-")
 							.append(parentID).append("'");
 				}
 			}
-			result.append(">");
+			renderResult.append(">");
 
 			column = 0;
 			for (String var : variables) {
@@ -262,16 +260,16 @@ public class SparqlResultRenderer {
 				String erg = renderNode(node, var, rawOutput, user, opts.getRdf2GoCore(),
 						RenderMode.HTML);
 
-				result.appendHtml("<td>");
-				result.append(erg);
-				result.appendHtml("</td>\n");
+				renderResult.appendHtml("<td>");
+				renderResult.append(erg);
+				renderResult.appendHtml("</td>\n");
 			}
-			result.appendHtml("</tr>");
+			renderResult.appendHtml("</tr>");
 		}
 
-		result.appendHtml("</table>");
-		result.appendHtml("</div>");
-		return new SparqlRenderResult(result.toStringRaw());
+		renderResult.appendHtml("</table>");
+		renderResult.appendHtml("</div>");
+		return new SparqlRenderResult(renderResult.toStringRaw());
 	}
 
 	private ResultTableModel createMagicallySortedTable(ResultTableModel table) {

@@ -33,3 +33,9 @@
 	vertical-align: middle;
 	text-align: left;
 }
+
+.emptySparqlResult {
+	font-size: 140%;
+	color: grey;
+	margin: 2px;
+}
