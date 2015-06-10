@@ -189,6 +189,7 @@ public class ParallelScriptCompiler<C extends Compiler> {
 				}
 			});
 		}
+		awaitShutDownOfCurrentScripts();
 	}
 
 	@SuppressWarnings("unchecked")
