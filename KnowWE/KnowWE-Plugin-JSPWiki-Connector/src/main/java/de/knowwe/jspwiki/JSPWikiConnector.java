@@ -698,7 +698,14 @@ public class JSPWikiConnector implements WikiConnector {
 		synchronized (authmgr) {
 			PagePermission pp = PermissionFactory.getPagePermission(page,
 					"edit");
-			return authmgr.checkPermission(context.getWikiSession(), pp);
+			try {
+				return authmgr.checkPermission(context.getWikiSession(), pp);
+			}
+			catch (StackOverflowError e) {
+				// happens with very large articles
+				Log.severe("StackOverflowError while checking permissions on article '" + title + "': " + e.getMessage());
+				return false;
+			}
 		}
 	}
 

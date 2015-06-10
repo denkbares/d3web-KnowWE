@@ -58,7 +58,7 @@ public class JSPActionDispatcher extends ActionDispatcher {
 			Log.severe("IOException while executing action " + action, e);
 			throw e;
 		}
-		catch (Exception e) {
+		catch (Throwable e) {
 			String message = e.getClass().getSimpleName() + " while executing action " + action;
 			Log.severe(message, e);
 			context.sendError(500, message);
