@@ -116,8 +116,7 @@
 				cache : false,
 				data : data,
 			}).success(function(data, status, jqXHR) {
-				console.log(jqXHR.status);
-				if (jqXHR.status === 304) return; // no changes
+				if (jqXHR.status === 304) return; // no changes, do nothing
 				var parsed = JSON.parse(data);
 				var html = parsed.html;
 				if ($element.is('.ReRenderSectionMarker')) {
