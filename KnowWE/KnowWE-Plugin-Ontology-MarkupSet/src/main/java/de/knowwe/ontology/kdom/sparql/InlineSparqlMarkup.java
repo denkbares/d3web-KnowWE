@@ -19,7 +19,6 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.MessageRenderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.AsynchronRenderer;
@@ -97,14 +96,14 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 
 				Rdf2GoCore core = compiler.getRdf2GoCore();
 				query = Rdf2GoUtils.createSparqlString(core, query);
-				String sparqlResult;
+				result.appendHtmlTag("span");
 				try {
 					QueryResultTable resultTable = core.sparqlSelect(query);
 
 					ClosableIterator<QueryRow> rowIterator = resultTable.iterator();
 					List<String> variables = resultTable.getVariables();
 
-					String line = "";
+					RenderResult line = new RenderResult(result);
 					String cell;
 
 					int lines = 0;
@@ -121,13 +120,13 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 							cell = node.toString();
 							cell = Rdf2GoUtils.trimDataType(core, cell);
 							cell = Rdf2GoUtils.trimNamespace(core, cell);
-							line += cell;
+							line.appendJSPWikiMarkup(cell);
 							if (variableIterator.hasNext()) {
-								line += separator;
+								line.append(separator);
 							}
 						}
 						if (rowIterator.hasNext()) {
-							line += rowSeparator;
+							line.append(rowSeparator);
 						}
 					}
 					if (count) {
@@ -143,12 +142,12 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 							if (!foundContent) lines = 0;
 						}
 
-						sparqlResult = String.valueOf(lines);
+						result.append(String.valueOf(lines));
 					}
 					else {
-						sparqlResult = line;
+						result.append(line);
 					}
-					result.appendHtmlElement("span", KnowWEUtils.maskJSPWikiMarkup(sparqlResult));
+					result.appendHtmlTag("/span");
 				}
 				catch (Exception e) {
 					Message message = new Message(Message.Type.ERROR, "cannot execute query", e);
