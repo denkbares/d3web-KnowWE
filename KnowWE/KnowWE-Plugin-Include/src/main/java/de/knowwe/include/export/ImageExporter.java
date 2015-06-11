@@ -60,29 +60,36 @@ public class ImageExporter implements Exporter<PluginType> {
 
 	@Override
 	public void export(Section<PluginType> section, DocumentBuilder manager) throws ExportException {
-		String file = section.getText();
+		String file = Strings.trim(attr(section, "src"));
+		if (Strings.isBlank(file)) {
+			throw new ExportException("cannot export image: " +
+					"'src' does not contain a file name in " + section.getText());
+		}
 		try {
 			String title = section.getTitle();
-			file = attr(section, "src");
-			String path = title + "/" + file;
+			String path;
 			if (file.startsWith("attach/")) {
-				// image tag uses verbose image url
+				// image tag uses verbose image url: attach/article/image
 				path = file.substring(file.indexOf('/') + 1);
+			}
+			else if (file.contains("/")) {
+				// image tag uses article/image
+				path = file;
+			}
+			else {
+				// image tag uses only image name, relative to current article
+				path = title + "/" + file;
 			}
 			WikiConnector connector = Environment.getInstance().getWikiConnector();
 			WikiAttachment attachment = connector.getAttachment(path);
 
 			Dimension dim = getImageDimension(section, attachment);
-			InputStream stream = attachment.getInputStream();
-			try {
+			try (InputStream stream = attachment.getInputStream()) {
 				XWPFRun run = manager.getNewParagraph(Style.image).createRun();
 				MyXWPFRun.addPicture(
 						run, stream, getFormat(path), file,
 						Units.toEMU(dim.width),
 						Units.toEMU(dim.height));
-			}
-			finally {
-				stream.close();
 			}
 
 			String caption = attr(section, "caption");

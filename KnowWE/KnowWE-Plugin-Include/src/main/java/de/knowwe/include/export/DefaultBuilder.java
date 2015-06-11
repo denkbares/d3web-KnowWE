@@ -25,6 +25,7 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -114,6 +115,7 @@ public class DefaultBuilder implements DocumentBuilder {
 				}
 			}
 			catch (ExportException e) {
+				Log.warning("word export reported an error", e);
 				model.addMessage(Messages.error(e));
 			}
 		}
