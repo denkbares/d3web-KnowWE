@@ -415,8 +415,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			articleManager.getCompilerManager().awaitTermination();
 		}
 		catch (InterruptedException e) {
-			Log.warning("Caught InterrupedException while waiting til compilation is finished.",
-					e);
+			Log.warning("Caught InterrupedException while waiting til compilation is finished.", e);
 		}
 		EventManager.getInstance().fireEvent(new InitializedArticlesEvent(articleManager));
 	}
