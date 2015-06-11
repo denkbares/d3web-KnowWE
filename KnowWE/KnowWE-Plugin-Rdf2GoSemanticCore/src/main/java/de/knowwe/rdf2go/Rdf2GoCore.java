@@ -595,6 +595,7 @@ public class Rdf2GoCore {
 			lastModified = System.currentTimeMillis();
 			lock.writeLock().unlock();
 		}
+		EventManager.getInstance().fireEvent(new Rdf2GoCoreCommitFinishedEvent(this));
 	}
 
 	public URI createBasensURI(String value) {
