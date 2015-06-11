@@ -864,15 +864,14 @@ jspwiki.use.external.logconfig = false
 #log4j.appender.mail.layout.ConversionPattern =%d [%t] %p %c %x - %m%n
 
 #
-#  Log everything into a file, roll it over every 10 MB, keep
-#  only 14 latest ones.
+#  Log everything to console, which will the go to catalina.out
 #
-log4j.appender.FileLog = org.apache.log4j.RollingFileAppender
-log4j.appender.FileLog.MaxFileSize    = 10MB
-log4j.appender.FileLog.MaxBackupIndex = 14
-log4j.appender.FileLog.File = jspwiki.log
-log4j.appender.FileLog.layout = org.apache.log4j.PatternLayout
-log4j.appender.FileLog.layout.ConversionPattern=%d [%t] %p %c %x - %m%n
+log4j.rootLogger=WARN,console
+log4j.appender.console=org.apache.log4j.ConsoleAppender
+log4j.appender.console.layout=org.apache.log4j.PatternLayout
+log4j.appender.console.layout.ConversionPattern=%d{dd-MMM-yyyy HH:mm:ss.SSS} %p [%t] %c.%M %m%n
+log4j.appender.console.target=System.err
+
 
 #
 # If you want to use some other logging system (such as JBoss, which uses
@@ -880,7 +879,7 @@ log4j.appender.FileLog.layout.ConversionPattern=%d [%t] %p %c %x - %m%n
 # at all, you can set it to be empty.  However, I suggest that you do
 # at least to a level of WARN.
 #
-log4j.rootCategory=INFO,FileLog
+#log4j.rootCategory=INFO,FileLog
 
 # Enable if you're using mailing, above.
 #log4j.rootCategory=INFO,FileLog,mail
