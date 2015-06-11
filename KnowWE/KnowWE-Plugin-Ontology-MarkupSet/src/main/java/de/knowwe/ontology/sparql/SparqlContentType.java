@@ -35,6 +35,7 @@ import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.AsynchronRenderer;
+import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 import de.knowwe.ontology.compile.OntologyConstructCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
@@ -44,7 +45,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 
 	public SparqlContentType() {
 		this.setSectionFinder(AllTextFinder.getInstance());
-		this.setRenderer(new AsynchronRenderer(new SparqlContentDecoratingRenderer()));
+		this.setRenderer(new AsynchronRenderer(new ReRenderSectionMarkerRenderer(new SparqlContentDecoratingRenderer())));
 		this.addCompileScript( Priority.LOWEST, new SparqlConstructHandler());
 	}
 

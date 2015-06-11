@@ -241,7 +241,6 @@ TestCasePlayer.change = function(key_sessionid, selectedvalue, sectionID) {
 	}
 	document.cookie = key_sessionid + "="
 		+ TestCasePlayer.encodeCookieValue(selectedvalue);
-	// KNOWWE.helper.observer.notify('update');
 	TestCasePlayer.update();
 }
 
@@ -250,7 +249,6 @@ TestCasePlayer.addCookie = function(cookievalue) {
 	document.cookie = "additionalQuestions"
 		+ TestCasePlayer.encodeCookieValue(topic) + "="
 		+ TestCasePlayer.encodeCookieValue(cookievalue);
-	// KNOWWE.helper.observer.notify('update');
 	TestCasePlayer.update(true);
 }
 

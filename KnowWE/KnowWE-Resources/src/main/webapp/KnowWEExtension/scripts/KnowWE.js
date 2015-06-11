@@ -49,7 +49,6 @@ KNOWWE.core = function() {
 			setTimeout(function() {
 				KNOWWE.helper.observer.notify('onload')
 			}, 50);
-			//setTimeout(function(){KNOWWE.helper.observer.notify('update')}, 50);
 		},
 
 		restoreThisVersion : function() {
@@ -556,8 +555,13 @@ KNOWWE.core.rerendercontent = function() {
 		 * Function: init
 		 */
 		init : function() {
-			KNOWWE.helper.observer.subscribe('update', KNOWWE.core.rerendercontent.update);
-			KNOWWE.core.rerendercontent.update(_KS('.asynchronRenderer'), 'replaceElement', null, false);
+			KNOWWE.helper.observer.subscribe('update', function() {
+				jq$('.ReRenderSectionMarker').rerender(null, {
+					reason : "updateEvent",
+					status : jq$('#knowWEInfoStatus').val()
+				});
+			});
+			jq$('.asynchronRenderer').rerender(null, { reason : "asynchronRenderer"});
 		},
 		/**
 		 * Function: updateNode
@@ -708,7 +712,7 @@ var _KU = KNOWWE.core.util;
 				message = window.onbeforeunload();
 			}
 			if (!message) {
-				KNOWWE.helper.observer.notify('update', {wikiStatus : jq$('#knowWEInfoStatus').val()});
+				KNOWWE.helper.observer.notify('update');
 			}
 		});
 		if (KNOWWE.core.util.isIE()) {

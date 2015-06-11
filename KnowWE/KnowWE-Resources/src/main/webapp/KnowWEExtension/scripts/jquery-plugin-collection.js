@@ -114,15 +114,19 @@
 				}),
 				type : 'post',
 				cache : false,
-				data : data
-			}).done(function(data) {
-				var html = JSON.parse(data).html;
+				data : data,
+			}).success(function(data, status, jqXHR) {
+				console.log(jqXHR.status);
+				if (jqXHR.status === 304) return; // no changes
+				var parsed = JSON.parse(data);
+				var html = parsed.html;
 				if ($element.is('.ReRenderSectionMarker')) {
 					$element.children().remove();
 					$element.append(html);
 				} else {
 					$element.replaceWith(html);
 				}
+				jq$('#knowWEInfoStatus').val(parsed.status);
 				KNOWWE.core.actions.init();
 				$element = $element.is('.ReRenderSectionMarker') ? $element : jq$('#' + id);
 				KNOWWE.helper.observer.notify("afterRerender", $element);
