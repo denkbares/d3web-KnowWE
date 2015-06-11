@@ -315,12 +315,20 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 			if (parent != null) {
 				for (Section<?> child : parent.getChildren()) {
 					if (child == this) break;
-					temp += child.getText().length();
+					temp += child.textLength;
 				}
 			}
 			offsetInParent = temp;
 		}
 		return offsetInParent;
+	}
+
+	int getTextLength() {
+		return textLength;
+	}
+
+	void setOffsetInParent(int offset) {
+		this.offsetInParent = offset;
 	}
 
 	/**

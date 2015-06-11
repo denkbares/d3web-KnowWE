@@ -26,6 +26,6 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 public interface SectionizerModule {
 
-	public Section<?> createSection(String text, Type type, Section<?> father, SectionFinderResult result);
+	Section<?> createSection(String text, Type type, Section<?> father, SectionFinderResult result);
 
 }

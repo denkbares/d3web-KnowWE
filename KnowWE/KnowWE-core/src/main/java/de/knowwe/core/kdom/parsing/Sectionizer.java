@@ -38,7 +38,6 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
  */
 public class Sectionizer implements Parser {
 
-
 	private final Type type;
 
 	public Sectionizer(Type type) {
@@ -63,8 +62,18 @@ public class Sectionizer implements Parser {
 	public Section<?> parse(String text, Section<? extends Type> parent) {
 		Section<?> section = Section.createSection(text, type, parent);
 
+		// set off in parent, we can calculate it pretty efficiently here...
+		List<Section<? extends Type>> children = parent.getChildren();
+		if (children.size() == 1) {
+			section.setOffsetInParent(0);
+		} else {
+			Section<? extends Type> previousSibling = children.get(children.size() - 2);
+			section.setOffsetInParent(previousSibling.getOffsetInParent() + previousSibling.getTextLength());
+		}
+
+
 		// fetches the allowed children types of the local type
-		ArrayList<Type> types = new ArrayList<Type>();
+		ArrayList<Type> types = new ArrayList<>();
 		if (type.getChildrenTypes() != null) {
 			types.addAll(type.getChildrenTypes());
 		}
@@ -123,10 +132,9 @@ public class Sectionizer implements Parser {
 				}
 
 				if (lastEnd < result.getStart()) {
+					int newPosInTypes = type instanceof ExclusiveType ? types.size() : posInTypes;
 					splitToSections(text.substring(lastEnd, result.getStart()), father, types,
-							type instanceof ExclusiveType
-									? types.size()
-									: posInTypes);
+							newPosInTypes);
 				}
 
 				Section<?> child = null;
@@ -143,10 +151,9 @@ public class Sectionizer implements Parser {
 			}
 		}
 		if (lastEnd < text.length()) {
+			int newPosInTypes = type instanceof ExclusiveType && createdSection ? types.size() : posInTypes;
 			splitToSections(text.substring(lastEnd, text.length()), father,
-					types, type instanceof ExclusiveType && createdSection
-					? types.size()
-					: posInTypes);
+					types, newPosInTypes);
 		}
 	}
 
