@@ -31,7 +31,9 @@ public interface Exporter<T extends Type> {
 
 	Class<T> getSectionType();
 
-	boolean canExport(Section<T> section);
+	default boolean canExport(Section<T> section) {
+		return true;
+	}
 
 	void export(Section<T> section, DocumentBuilder manager) throws ExportException;
 
