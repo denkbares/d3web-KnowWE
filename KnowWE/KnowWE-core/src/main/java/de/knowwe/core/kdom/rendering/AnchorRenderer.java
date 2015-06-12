@@ -32,20 +32,31 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class AnchorRenderer implements Renderer {
 
-	private final Renderer delegate;
 	private static final AnchorRenderer DELEGATE_INSTANCE = new AnchorRenderer();
 
+	private final Renderer delegate;
+	private final String separator;
+
 	public AnchorRenderer() {
-		this(DelegateRenderer.getInstance());
+		this("");
+	}
+	public AnchorRenderer(String separator) {
+		this(DelegateRenderer.getInstance(), separator);
 	}
 
 	public AnchorRenderer(Renderer delegate) {
+		this(delegate, "");
+	}
+
+	public AnchorRenderer(Renderer delegate, String separator) {
 		this.delegate = delegate;
+		this.separator = separator;
 	}
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
 		KnowWEUtils.renderAnchor(section, result);
+		result.append(separator);
 		delegate.render(section, user, result);
 	}
 

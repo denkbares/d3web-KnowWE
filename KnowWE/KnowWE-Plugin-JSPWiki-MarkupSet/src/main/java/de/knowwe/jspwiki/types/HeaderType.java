@@ -18,19 +18,15 @@
  */
 package de.knowwe.jspwiki.types;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.basicType.LineBreak;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.AnchorRenderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.kdom.sectionFinder.SectionFinder;
-import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 /**
- * 
  * @author Lukas Brehl, Jochen
  * @created 25.05.2012
  */
@@ -54,10 +50,13 @@ public class HeaderType extends AbstractType {
 		this.markerCount = count;
 		this.setSectionFinder(new RegexSectionFinder("^" + createMarker(count)
 				+ ".*?(?=^|\\z)", Pattern.MULTILINE + Pattern.DOTALL));
+		this.setRenderer(new AnchorRenderer("\n"));
+
 		addChildType(new BoldType());
 		addChildType(new ItalicType());
 		addChildType(new TTType());
 		addChildType(new LinkType());
+		addChildType(new LineBreak());
 	}
 
 	private static String createMarker(int count) {
@@ -79,35 +78,4 @@ public class HeaderType extends AbstractType {
 	public int getMarkerCount() {
 		return markerCount;
 	}
-
-	class SectionBlockFinder implements SectionFinder {
-
-		String marker;
-
-		public SectionBlockFinder(String marker) {
-			this.marker = marker;
-		}
-
-		@Override
-		public List<SectionFinderResult> lookForSections(String text,
-				Section<?> father, Type type) {
-			List<SectionFinderResult> results = new ArrayList<SectionFinderResult>();
-			String s = text;
-			String[] sectionTypes = s.split("(^|\n)");
-			for (int i = 1; i < sectionTypes.length; i++) {
-				if (sectionTypes[i].length() >= marker.length()
-						&& sectionTypes[i].substring(0, marker.length())
-								.equals(marker)) {
-					int start = text.indexOf(sectionTypes[i]);
-					int end = start + sectionTypes[i].length();
-					SectionFinderResult result = new SectionFinderResult(start,
-							end + 1);
-					results.add(result);
-				}
-			}
-			return results;
-		}
-
-	}
-
 }

@@ -28,9 +28,9 @@
 .wikiBook-title,.wikiBook-titel {
 	text-align: center;
 	font-size: 20pt;
-	font-weight: bold; line-height : 24pt;
+	font-weight: bold;
+	line-height : 24pt;
 	display: block;
-	line-height: 24pt
 }
 
 .wikiBook-project,.wikiBook-projekt {
@@ -38,4 +38,15 @@
 	font-size: 20pt;
 	line-height: 24pt;
 	display: block;
+}
+
+.include-sourceHeaderLink.fa {
+	color:	grey;
+	font-weight: normal;
+	font-size: 75%;
+}
+
+.toc .include-sourceHeaderLink.fa {
+    /* do not show icon in TOC */
+	display: none;
 }

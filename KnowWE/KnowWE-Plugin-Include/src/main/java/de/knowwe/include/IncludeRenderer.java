@@ -23,14 +23,20 @@ import java.util.List;
 import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Message.Type;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Scope;
+import de.knowwe.jspwiki.types.HeaderType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 class IncludeRenderer extends DefaultMarkupRenderer {
+
+	private static final String HEADER_LINK_ICON = "<i class='fa fa-external-link-square include-sourceHeaderLink'></i>";
 
 	public IncludeRenderer() {
 		setPreFormattedStyle(false);
@@ -159,16 +165,29 @@ class IncludeRenderer extends DefaultMarkupRenderer {
 			result.appendHtml("<div style='zoom:" + zoom + "%; clear:both'>");
 		}
 		result.append("\n");
+
+		// create a new render result that decorated the headings with links
+		// render the link right before the line break
+		RenderResult decorated = new RenderResult(result);
+		decorated.addCustomRenderer(Scope.getScope("HeaderType/LineBreak")::matches, (s, u, r) -> {
+			Section<HeaderType> header = Sections.cast(s.getParent(), HeaderType.class);
+			r.append(" [").appendHtml(HEADER_LINK_ICON)
+					.append("|").append(KnowWEUtils.getWikiLink(header)).append("]");
+			DelegateRenderer.getRenderer(s, u).render(s, u, r);
+		});
+
 		if (framed) {
 			// used the framing renderer
 			new FramedIncludedSectionRenderer(skipHeader).render(
-					targetSection, user, result);
+					targetSection, user, decorated);
 		}
 		else {
 			// or simply render the sections belonging to the header
 			FramedIncludedSectionRenderer.renderTargetSections(
-					targetSection, skipHeader, user, result);
+					targetSection, skipHeader, user, decorated);
 		}
+
+		result.append(decorated);
 		if (zoom != 100) {
 			result.appendHtml("</div>");
 		}
