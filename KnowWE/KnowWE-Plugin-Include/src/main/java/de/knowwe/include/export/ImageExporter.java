@@ -190,6 +190,7 @@ public class ImageExporter implements Exporter<PluginType> {
 		if (Strings.isBlank(text)) return defaultValue;
 		boolean percent = text.endsWith("%");
 		text = text.replace("%", "").trim();
+		text = text.replaceAll("p[xt]$", "").trim();
 		float d = Float.valueOf(text);
 		return Math.round(percent ? (defaultValue * d / 100) : d);
 	}

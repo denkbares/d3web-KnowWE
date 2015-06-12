@@ -25,33 +25,54 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 
 import de.d3web.strings.Strings;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.jspwiki.types.PrettifyType;
 import de.knowwe.jspwiki.types.VerbatimType;
 
 /**
- * Class to export to-do Markup. Unfortunately we do not have access to that markup here, cause it is not open source
- * yet. To avoid any conflicts we handle this as a special kind of formatted default markup.
+ * Class to export to-do Markup. Unfortunately we do not have access to that markup here, cause it
+ * is not open source yet. To avoid any conflicts we handle this as a special kind of formatted
+ * default markup.
  *
  * @author Volker Belli (denkbares GmbH)
  * @created 07.02.2014
  */
-public class CodeExporter implements Exporter<VerbatimType> {
+public class CodeExporter implements Exporter<Type> {
+
+	public static final CodeExporter VERBATIM = new CodeExporter(
+			VerbatimType.class, "^\\{\\{\\{", "\\}\\}\\}$");
+
+	public static final CodeExporter PRETTIFY = new CodeExporter(
+			PrettifyType.class, "(?im)^%%prettify[\\s\\r\\n]*\\{\\{\\{", "(?im)\\}\\}\\}[\\s\\r\\n]*/?%$");
 
 	private final List<String> users = new LinkedList<>();
+	private final Class<Type> type;
+	private final String prefix;
+	private final String postfix;
 
-	@Override
-	public Class<VerbatimType> getSectionType() {
-		return VerbatimType.class;
+	private <T extends Type> CodeExporter(Class<T> type, String prefix, String postfix) {
+		//noinspection unchecked
+		this.type = (Class) type;
+		this.prefix = prefix;
+		this.postfix = postfix;
 	}
 
 	@Override
-	public void export(Section<VerbatimType> section, DocumentBuilder manager) throws ExportException {
+	public Class<Type> getSectionType() {
+		return type;
+	}
+
+	@Override
+	public void export(Section<Type> section, DocumentBuilder manager) throws ExportException {
 		// preformatted code: make each line a paragraph
-		String[] lines = Strings.trim(section.getText()).split("\n\r?");
+		String text = Strings.trim(section.getText())
+				.replaceAll(prefix, "").replaceAll(postfix, "");
+		String[] lines = Strings.trimBlankLines(text).split("\n\r?");
 		for (String line : lines) {
 			XWPFParagraph paragraph = manager.getNewParagraph(DocumentBuilder.Style.code);
 			CTR ctr = paragraph.getCTP().addNewR();
-			/*CTRPr ctrPr =*/ ctr.addNewRPr();
+			ctr.addNewRPr();
 			ctr.addNewT().setStringValue(line + "\n\r");
 			manager.closeParagraph();
 		}
