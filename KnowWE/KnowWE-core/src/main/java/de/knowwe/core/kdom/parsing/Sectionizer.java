@@ -62,15 +62,17 @@ public class Sectionizer implements Parser {
 	public Section<?> parse(String text, Section<? extends Type> parent) {
 		Section<?> section = Section.createSection(text, type, parent);
 
-		// set off in parent, we can calculate it pretty efficiently here...
-		List<Section<? extends Type>> children = parent.getChildren();
-		if (children.size() == 1) {
-			section.setOffsetInParent(0);
-		} else {
-			Section<? extends Type> previousSibling = children.get(children.size() - 2);
-			section.setOffsetInParent(previousSibling.getOffsetInParent() + previousSibling.getTextLength());
+		if (parent != null) {
+			// if we have a parent, set offsets right here, because it will be faster
+			List<Section<? extends Type>> children = parent.getChildren();
+			if (children.size() == 1) {
+				section.setOffsetInParent(0);
+			}
+			else {
+				Section<? extends Type> previousSibling = children.get(children.size() - 2);
+				section.setOffsetInParent(previousSibling.getOffsetInParent() + previousSibling.getTextLength());
+			}
 		}
-
 
 		// fetches the allowed children types of the local type
 		ArrayList<Type> types = new ArrayList<>();
