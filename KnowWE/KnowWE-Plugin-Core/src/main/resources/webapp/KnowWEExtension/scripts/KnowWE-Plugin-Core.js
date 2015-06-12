@@ -564,7 +564,7 @@ KNOWWE.core.plugin.pagination = function() {
 	}
 
 	function updateNode(id) {
-		KNOWWE.plugin.d3webbasic.actions.updateNode(id, KNOWWE.helper.gup('page'), null);
+		jq$('#' + id).rerender();
 	}
 
 	function scrollToTopNavigation(id) {
