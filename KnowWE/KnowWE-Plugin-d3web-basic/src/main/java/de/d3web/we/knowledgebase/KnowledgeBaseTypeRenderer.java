@@ -26,7 +26,6 @@ import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileTypeRenderer;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.AnnotationType;
@@ -108,7 +107,7 @@ public final class KnowledgeBaseTypeRenderer extends DefaultMarkupPackageCompile
 			string.appendHtml("<div style='padding-top:1em;'>");
 			for (Section<?> annotation : additionalAnnotations) {
 				string.appendHtml("<div>");
-				DelegateRenderer.getRenderer(annotation, user).render(annotation, user, string);
+				string.append(annotation, user);
 				string.appendHtml("</div>");
 			}
 			string.appendHtml("</div>");

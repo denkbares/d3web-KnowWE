@@ -19,6 +19,9 @@
  */
 package de.knowwe.core.kdom.rendering;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,62 +30,69 @@ import org.apache.commons.lang.StringUtils;
 
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
+import de.d3web.utils.Pair;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.filter.SectionFilter;
 
 public class RenderResult {
 
-	private final String storeKey = RenderResult.class.getName();
-
-	private String maskKey;
-
-	private final StringBuilder builder = new StringBuilder();
-
+	private static final String storeKey = RenderResult.class.getName();
 	private static final String[] HTML = new String[] {
 			"[{", "}]", "\"", "'", ">", "<", "[", "]" };
 
-	private String[] maskedHtml = new String[HTML.length];
+	private final String maskKey;
+	private final String[] maskedHtml;
+	private final StringBuilder builder = new StringBuilder();
+
+	private List<Pair<SectionFilter, Renderer>> customRenderers = Collections.emptyList();
 
 	public RenderResult(UserContext context) {
 		this(context.getRequest());
 	}
 
 	public RenderResult(HttpServletRequest request) {
-		initMaskKey(request);
-		initMaskHtml();
+		this.maskKey = createMaskKey(request);
+		this.maskedHtml = createMaskHtml(maskKey);
 	}
 
 	/**
-	 * Creates a new {@link RenderResult} using the same masking key as the
-	 * given parent.<br>
-	 * <b>Attention: </b> The newly instantiated {@link RenderResult} will not
-	 * contain any content of the given parent {@link RenderResult}. The parent
-	 * is only needed for the masking key.
-	 * 
+	 * Creates a new {@link RenderResult} using the same masking key as the given parent.<br>
+	 * <b>Attention: </b> The newly instantiated {@link RenderResult} will not contain any content
+	 * of the given parent {@link RenderResult}. The parent is only needed for the masking key.
+	 *
 	 * @param parent the parent needed for using the same masking key
 	 */
 	public RenderResult(RenderResult parent) {
 		this.maskKey = parent.maskKey;
 		this.maskedHtml = parent.maskedHtml; // NOSONAR
+		this.customRenderers = parent.customRenderers;
 	}
 
-	private void initMaskKey(HttpServletRequest request) {
+	public void addCustomRenderer(SectionFilter filter, Renderer renderer) {
+		List<Pair<SectionFilter, Renderer>> newList = new ArrayList<>(customRenderers.size() + 1);
+		newList.add(0, new Pair<>(filter, renderer));
+		newList.addAll(customRenderers);
+		customRenderers = newList;
+	}
+
+	private static String createMaskKey(HttpServletRequest request) {
 		Object storedMaskKey = request.getAttribute(storeKey);
-		if (storedMaskKey == null) {
-			int rnd = Math.abs(new Random().nextInt());
-			maskKey = Integer.toString(rnd, Character.MAX_RADIX);
-			request.setAttribute(storeKey, maskKey);
-		}
-		else {
-			maskKey = (String) storedMaskKey;
-		}
+		if (storedMaskKey != null) return (String) storedMaskKey;
+
+		int rnd = Math.abs(new Random().nextInt());
+		String maskKey = Integer.toString(rnd, Character.MAX_RADIX);
+		request.setAttribute(storeKey, maskKey);
+		return maskKey;
 	}
 
-	private void initMaskHtml() {
+	private static String[] createMaskHtml(String maskKey) {
+		String[] maskedHtml = new String[HTML.length];
 		for (int i = 0; i < HTML.length; i++) {
 			maskedHtml[i] = "@@" + maskKey + "_" + i + "@@";
 		}
+		return maskedHtml;
 	}
 
 	public RenderResult append(boolean bool) {
@@ -146,19 +156,28 @@ public class RenderResult {
 	}
 
 	/**
-	 * Appends the section to this render result. The section is rendered by
-	 * using the sections defined renderer. The method is a common shortcut for
-	 * <code>DelegateRenderer.getRenderer(section, user).render(section, user, result)</code>
-	 * . The method is nul-secure for the section. If null is specified as the
-	 * section, nothing is rendered.
-	 * 
-	 * @created 15.02.2014
+	 * Appends the section to this render result. The section is rendered by using the sections
+	 * defined renderer. The method is a common shortcut for <code>DelegateRenderer.getRenderer(section,
+	 * user).render(section, user, result)</code>. The method is null-secure for the section. If
+	 * null is specified as the section, nothing is rendered.
+	 * <p/>
+	 * This method additionally consider custom renderer that has previously been set to overwrite
+	 * the default rendering behaviour.
+	 *
 	 * @param section the section to be rendered
 	 * @return this render result
+	 * @created 15.02.2014
 	 */
 	public RenderResult append(Section<?> section, UserContext user) {
 		if (section != null) {
-			DelegateRenderer.getRenderer(section, user).render(section, user, this);
+			Renderer renderer = DelegateRenderer.getRenderer(section, user);
+			for (Pair<SectionFilter, Renderer> pair : customRenderers) {
+				if (pair.getA().accept(section)) {
+					renderer = pair.getB();
+					break;
+				}
+			}
+			renderer.render(section, user, this);
 		}
 		return this;
 	}
@@ -186,12 +205,12 @@ public class RenderResult {
 	}
 
 	/**
-	 * Appends the specified string encoded as html entities, using
-	 * {@link Strings#encodeHtml(String)}.
-	 * 
-	 * @created 20.08.2013
+	 * Appends the specified string encoded as html entities, using {@link
+	 * Strings#encodeHtml(String)}.
+	 *
 	 * @param text the text to be appended
 	 * @return a reference to this object.
+	 * @created 20.08.2013
 	 */
 	public RenderResult appendEntityEncoded(String text) {
 		builder.append(Strings.encodeHtml(text));
@@ -226,6 +245,9 @@ public class RenderResult {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (obj instanceof RenderResult) {
+			return builder.equals(((RenderResult) obj).builder);
+		}
 		return builder.equals(obj);
 	}
 
@@ -357,11 +379,10 @@ public class RenderResult {
 
 	/**
 	 * Returns the <b>unmasked</b> String of this {@link RenderResult}.
-	 * <p>
-	 * <b>Attention:</b> Do not use this method for append this
-	 * {@link RenderResult} to another. There are two other methods allowing
-	 * this: {@link RenderResult#toStringRaw()} and
-	 * {@link RenderResult#append(RenderResult)}.
+	 * <p/>
+	 * <b>Attention:</b> Do not use this method for append this {@link RenderResult} to another.
+	 * There are two other methods allowing this: {@link RenderResult#toStringRaw()} and {@link
+	 * RenderResult#append(RenderResult)}.
 	 */
 	@Override
 	public String toString() {
@@ -370,9 +391,9 @@ public class RenderResult {
 
 	/**
 	 * Returns the still masked string of this {@link RenderResult}.
-	 * 
-	 * @created 11.02.2013
+	 *
 	 * @return the still masked string of this {@link RenderResult}
+	 * @created 11.02.2013
 	 */
 	public String toStringRaw() {
 		return builder.toString();
@@ -403,41 +424,33 @@ public class RenderResult {
 	}
 
 	/**
-	 * Appends an opening and masked HTML element without having to fiddle with
-	 * strings and quoting. Just set tag name and the attributes. Attributes
-	 * need to be given in pairs. First the name of the attribute, second the
-	 * content of the attribute.
-	 * 
-	 * 
-	 * @created 05.02.2013
+	 * Appends an opening and masked HTML element without having to fiddle with strings and quoting.
+	 * Just set tag name and the attributes. Attributes need to be given in pairs. First the name of
+	 * the attribute, second the content of the attribute.
+	 *
 	 * @param tag the tag name of the HTML element
-	 * @param attributes the attributes of the HTML element: the odd elements
-	 *        are the attribute names and the even elements the attribute
-	 *        contents
-	 * @return an opening and masked HTML element with attributes
+	 * @param attributes the attributes of the HTML element: the odd elements are the attribute
+	 * names and the even elements the attribute contents
+	 * @created 05.02.2013
 	 */
 	public void appendHtmlTag(String tag, String... attributes) {
 		appendHtmlTag(tag, true, attributes);
 	}
 
 	/**
-	 * Appends an opening and masked HTML element without having to fiddle with
-	 * strings and quoting. Just set tag name and the attributes. Attributes
-	 * need to be given in pairs. First the name of the attribute, second the
-	 * content of the attribute.
-	 * 
-	 * 
-	 * @created 05.02.2013
+	 * Appends an opening and masked HTML element without having to fiddle with strings and quoting.
+	 * Just set tag name and the attributes. Attributes need to be given in pairs. First the name of
+	 * the attribute, second the content of the attribute.
+	 *
 	 * @param tag the tag name of the HTML element
 	 * @param encode decides whether the attributes will be html encoded or not
-	 * @param attributes the attributes of the HTML element: the odd elements
-	 *        are the attribute names and the even elements the attribute
-	 *        contents
-	 * @return an opening and masked HTML element with attributes
+	 * @param attributes the attributes of the HTML element: the odd elements are the attribute
+	 * names and the even elements the attribute contents
+	 * @created 05.02.2013
 	 */
 	public void appendHtmlTag(String tag, boolean encode, String... attributes) {
 		StringBuilder html = new StringBuilder();
-		html.append("<" + tag);
+		html.append("<").append(tag);
 		for (int i = 0; i + 2 <= attributes.length; i += 2) {
 			String attributeName = attributes[i];
 			String attributeValue = attributes[i + 1];
@@ -456,23 +469,21 @@ public class RenderResult {
 	}
 
 	/**
-	 * Appends a complete and masked HTML element without having to fiddle with
-	 * strings and quoting. Just set tag name, content and the attributes.
-	 * Attributes need to be given in pairs. First the name of the attribute,
-	 * second the content of the attribute.
-	 * 
-	 * 
-	 * @created 05.02.2013
+	 * Appends a complete and masked HTML element without having to fiddle with strings and quoting.
+	 * Just set tag name, content and the attributes. Attributes need to be given in pairs. First
+	 * the name of the attribute, second the content of the attribute.
+	 *
 	 * @param tag the tag name of the HTML element
 	 * @param content the content of the HTML element
-	 * @param attributes the attributes of the HTML element: the odd elements
-	 *        are the attribute names and the even elements the attribute
-	 *        contents
+	 * @param attributes the attributes of the HTML element: the odd elements are the attribute
+	 * names and the even elements the attribute contents
+	 * @created 05.02.2013
 	 */
 	public void appendHtmlElement(String tag, String content, String... attributes) {
 		if (tag.equals("img") && Strings.isBlank(content)) {
 			appendHtmlTag(tag, attributes);
-		} else {
+		}
+		else {
 			appendHtmlTag(tag, attributes);
 			append(content);
 			appendHtml("</" + tag + ">");

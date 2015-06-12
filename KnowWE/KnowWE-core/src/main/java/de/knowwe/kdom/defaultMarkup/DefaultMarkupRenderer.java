@@ -282,13 +282,8 @@ public class DefaultMarkupRenderer implements Renderer {
 				else if (renderer instanceof NothingRenderer) {
 					skipNext = true;
 				}
-				else {
-					renderer.render(subsec, user, result);
-				}
 			}
-			else {
-				renderer.render(subsec, user, result);
-			}
+			renderer.render(subsec, user, result);
 		}
 		if (listOpen) {
 			result.appendHtml("</ul>");
