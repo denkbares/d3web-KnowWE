@@ -1,4 +1,4 @@
-package de.knowwe.testcases;
+package de.knowwe.core.kdom.basicType;
 
 /*
  * Copyright (C) 2010 University Wuerzburg, Computer Science VI
@@ -25,8 +25,7 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.we.knowledgebase.D3webCompiler;
-import de.d3web.we.reviseHandler.D3webHandler;
+import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -51,7 +50,7 @@ public class TimeStampType extends AbstractType {
 	private static final String[] TIME_UNITS = {
 			"ms", "s", "min", "h", "d" };
 
-	// TODO does not work with isvalid
+	// TODO does not work with isValid
 	public static final Pattern DURATION_PATTERN = Pattern.compile(
 			DURATION,
 			Pattern.CASE_INSENSITIVE);
@@ -100,15 +99,15 @@ public class TimeStampType extends AbstractType {
 		return result;
 	}
 
-	class TimeStampSubtreeHandler implements D3webHandler<TimeStampType> {
+	class TimeStampSubtreeHandler extends DefaultGlobalCompiler.DefaultGlobalHandler<TimeStampType> {
 
 		@Override
-		public Collection<Message> create(D3webCompiler compiler, Section<TimeStampType> s) {
+		public Collection<Message> create(DefaultGlobalCompiler compiler, Section<TimeStampType> s) {
 			if (TimeStampType.isValid(s.getText())) {
 				return Collections.emptyList();
 			}
 			else {
-				LinkedList<Message> list = new LinkedList<Message>();
+				LinkedList<Message> list = new LinkedList<>();
 				list.add(Messages.syntaxError("Invalid time stamp: '" + s.getText() + "'"));
 
 				return list;

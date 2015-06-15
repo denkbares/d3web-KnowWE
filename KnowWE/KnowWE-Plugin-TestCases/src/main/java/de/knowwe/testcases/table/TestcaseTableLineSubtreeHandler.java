@@ -27,7 +27,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.table.TableLine;
 import de.knowwe.kdom.table.TableUtils;
 import de.knowwe.testcases.NameType;
-import de.knowwe.testcases.TimeStampType;
+import de.knowwe.core.kdom.basicType.TimeStampType;
 
 /**
  * @author Reinhard Hatko

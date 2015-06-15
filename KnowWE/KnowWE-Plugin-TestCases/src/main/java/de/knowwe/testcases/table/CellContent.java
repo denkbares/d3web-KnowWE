@@ -34,7 +34,7 @@ import de.knowwe.kdom.constraint.NoBlankSectionsConstraint;
 import de.knowwe.kdom.constraint.SectionFinderConstraint;
 import de.knowwe.kdom.table.TableUtils;
 import de.knowwe.testcases.NameType;
-import de.knowwe.testcases.TimeStampType;
+import de.knowwe.core.kdom.basicType.TimeStampType;
 
 /**
  * @author Florian Ziegler

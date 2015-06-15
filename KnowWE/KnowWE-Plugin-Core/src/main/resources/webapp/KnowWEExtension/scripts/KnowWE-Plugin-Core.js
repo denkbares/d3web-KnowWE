@@ -118,7 +118,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 						action : 'none',
 						fn : function() {
 							window.location = "Wiki.jsp?page="
-							+ objectName.innerHTML
+								+ objectName.innerHTML
 						}
 					}
 				};
@@ -170,9 +170,9 @@ KNOWWE.core.plugin.objectinfo = function() {
 									}
 								} else {
 									window.location.href = "Wiki.jsp?page=ObjectInfoPage&objectname="
-									+ encodeURIComponent(jsonResponse.newObjectName)
-									+ "&termIdentifier="
-									+ encodeURIComponent(jsonResponse.newTermIdentifier);
+										+ encodeURIComponent(jsonResponse.newObjectName)
+										+ "&termIdentifier="
+										+ encodeURIComponent(jsonResponse.newTermIdentifier);
 								}
 							}
 							KNOWWE.core.util.updateProcessingState(-1);
@@ -268,9 +268,9 @@ KNOWWE.plugin.renaming = function() {
 						else {
 							if (jsonResponse.objectinfopage === true) {
 								window.location.href = "Wiki.jsp?page=ObjectInfoPage&objectname="
-								+ encodeURIComponent(jsonResponse.newObjectName)
-								+ "&termIdentifier="
-								+ encodeURIComponent(jsonResponse.newTermIdentifier);
+									+ encodeURIComponent(jsonResponse.newObjectName)
+									+ "&termIdentifier="
+									+ encodeURIComponent(jsonResponse.newTermIdentifier);
 							}
 							else {
 								KNOWWE.core.util.reloadPage();
@@ -546,6 +546,24 @@ KNOWWE.kdomtreetable.setOverflow = function() {
 	});
 };
 
+KNOWWE.core.plugin.attachment = function() {
+
+	return {
+
+		update : function(sectionId) {
+			var params = {
+				action : 'AttachmentUpdateAction',
+				SectionID : sectionId
+			};
+
+			var options = {
+				url : KNOWWE.core.util.getURL(params),
+			};
+			new _KA(options).send();
+		}
+	}
+}();
+
 /**
  * Namespace: KNOWWE.core.plugin.pagination The KNOWWE plugin d3web namespace.
  */
@@ -599,7 +617,7 @@ KNOWWE.core.plugin.pagination = function() {
 			}
 			for (var i = 0; i < sortLength; i++) {
 				var sortingSymbolParent = jq$("[pagination=" + sectionId
-				+ "] th:contains('" + cookie.sorting[i].sort + "') span");
+					+ "] th:contains('" + cookie.sorting[i].sort + "') span");
 				var sortingSymbol = jq$(sortingSymbolParent).find("i");
 				if (sortingSymbol.length == 1) {
 					sortingSymbol.replaceWith(
@@ -756,7 +774,7 @@ KNOWWE.core.plugin.pagination = function() {
 			var $selected = jq$(selected);
 
 			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-"
-			+ id));
+				+ id));
 			if (cookie == null) {
 				cookie = {};
 			}
@@ -834,7 +852,7 @@ KNOWWE.core.plugin.pagination = function() {
 
 			var id = sectionId;
 			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-"
-			+ id));
+				+ id));
 			if (cookie == null) {
 				cookie = {};
 			}
@@ -1257,7 +1275,7 @@ KNOWWE.core.plugin.rightPanel = function() {
 		var orientation = (isShown ? "right" : "left");
 		var status = (isShown ? "Hide" : "Show");
 		jq$('#morebutton').after("<li><a id='rightPanel-toggle-button' title='" + status + " right panel'"
-		+ " class='action fa fa-angle-double-" + orientation + "'></a></li>");
+			+ " class='action fa fa-angle-double-" + orientation + "'></a></li>");
 		jq$('#rightPanel-toggle-button').unbind('click').click(function() {
 			var $this = jq$(this);
 			if (isRightPanelShown()) {

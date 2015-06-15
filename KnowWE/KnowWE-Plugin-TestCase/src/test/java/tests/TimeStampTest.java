@@ -24,7 +24,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import de.d3web.strings.Strings;
-import de.knowwe.testcases.TimeStampType;
+import de.knowwe.core.kdom.basicType.TimeStampType;
 
 /**
  * 

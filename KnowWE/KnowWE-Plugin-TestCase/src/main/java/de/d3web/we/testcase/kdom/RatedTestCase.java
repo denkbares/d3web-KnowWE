@@ -32,7 +32,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.kdom.renderer.StyleRenderer;
-import de.knowwe.testcases.TimeStampType;
+import de.knowwe.core.kdom.basicType.TimeStampType;
 
 public class RatedTestCase extends AbstractType {
 

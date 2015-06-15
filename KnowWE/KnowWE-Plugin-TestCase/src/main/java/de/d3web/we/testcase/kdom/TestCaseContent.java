@@ -52,7 +52,7 @@ import de.knowwe.testcases.DefaultTestCaseStorage;
 import de.knowwe.testcases.SingleTestCaseProvider;
 import de.knowwe.testcases.TestCaseProvider;
 import de.knowwe.testcases.TestCaseUtils;
-import de.knowwe.testcases.TimeStampType;
+import de.knowwe.core.kdom.basicType.TimeStampType;
 
 /**
  * TestsuiteContent

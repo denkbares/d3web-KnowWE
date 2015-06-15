@@ -32,7 +32,7 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
 
 /**
  * A type that refers to a wiki attachment and checks for its existence.
- * 
+ *
  * @author Reinhard Hatko
  * @created 06.11.2012
  */
@@ -76,8 +76,7 @@ public class AttachmentType extends AbstractType {
 
 	public static WikiAttachment getAttachment(Section<AttachmentType> section) throws IOException {
 		String path = getAbsolutePath(section);
-		return Environment.getInstance().getWikiConnector().getAttachment(
-				path);
+		return Environment.getInstance().getWikiConnector().getAttachment(path);
 
 	}
 

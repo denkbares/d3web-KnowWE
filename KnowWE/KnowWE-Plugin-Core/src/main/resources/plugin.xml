@@ -447,6 +447,32 @@
 		<parameter id="scope" value="root" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="AttachmentUpdateMarkup">
+		<parameter id="class" value="de.knowwe.core.tools.AttachmentUpdateMarkup" />
+		<parameter id="name" value="AttachmentUpdateMarkup" />
+		<parameter id="description" value="Markup to update attachments" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="AttachmentUpdateToolProvider">
+		<parameter id="class" value="de.knowwe.core.tools.AttachmentUpdateToolProvider" />
+		<parameter id="name" value="OnToolProvider" />
+		<parameter id="description" value="Offers tool to force update of attachment." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="AttachmentUpdateMarkup" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="AttachmentUpdateAction">
+		<parameter id="class" value="de.knowwe.core.tools.AttachmentUpdateAction" />
+		<parameter id="name" value="AttachmentUpdateAction" />
+		<parameter id="description" value="Action AttachmentUpdateAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="SetMarkupActivationStatus">
 		<parameter id="class" value="de.knowwe.core.tools.SetMarkupActivationStatus" />
 		<parameter id="name" value="SetMarkupActivationStatus" />
