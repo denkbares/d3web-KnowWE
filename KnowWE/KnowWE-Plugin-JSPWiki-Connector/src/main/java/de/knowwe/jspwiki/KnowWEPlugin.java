@@ -23,6 +23,7 @@ package de.knowwe.jspwiki;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -68,6 +69,7 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.user.UserContextUtil;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.event.InitializedArticlesEvent;
 import de.knowwe.event.PageRenderedEvent;
 
@@ -488,11 +490,22 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		}
 		else if (event instanceof WikiAttachmentEvent) {
 			if (event.getType() == WikiAttachmentEvent.STORED) {
-				EventManager.getInstance().fireEvent(new AttachmentStoredEvent());
+				WikiAttachmentEvent attachmentEvent = (WikiAttachmentEvent) event;
+				String path = attachmentEvent.getParentName() + "/" + attachmentEvent.getFileName();
+				try {
+					WikiAttachment attachment = Environment.getInstance()
+							.getWikiConnector().getAttachment(path);
+					EventManager.getInstance().fireEvent(new AttachmentStoredEvent(attachment));
+				}
+				catch (IOException e) {
+					Log.severe("Exception while retrieving attachment '" + path + "', unable to fire event");
+				}
 
 			}
 			else if (event.getType() == WikiAttachmentEvent.DELETED) {
-				EventManager.getInstance().fireEvent(new AttachmentDeletedEvent());
+				WikiAttachmentEvent attachmentEvent = (WikiAttachmentEvent) event;
+				EventManager.getInstance()
+						.fireEvent(new AttachmentDeletedEvent(attachmentEvent.getParentName(), attachmentEvent.getFileName()));
 			}
 		}
 		else if (event instanceof WikiEngineEvent) {
