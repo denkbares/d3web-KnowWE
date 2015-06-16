@@ -42,6 +42,7 @@ import org.apache.wiki.api.exceptions.PluginException;
 import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.api.filters.BasicPageFilter;
 import org.apache.wiki.api.plugin.WikiPlugin;
+import org.apache.wiki.event.WikiAttachmentEvent;
 import org.apache.wiki.event.WikiEngineEvent;
 import org.apache.wiki.event.WikiEvent;
 import org.apache.wiki.event.WikiEventListener;
@@ -484,6 +485,15 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			String newArticleTitle = renameEvent.getNewPageName();
 
 			KnowWEUtils.renameArticle(oldArticleTitle, newArticleTitle);
+		}
+		else if (event instanceof WikiAttachmentEvent) {
+			if (event.getType() == WikiAttachmentEvent.STORED) {
+				EventManager.getInstance().fireEvent(new AttachmentStoredEvent());
+
+			}
+			else if (event.getType() == WikiAttachmentEvent.DELETED) {
+				EventManager.getInstance().fireEvent(new AttachmentDeletedEvent());
+			}
 		}
 		else if (event instanceof WikiEngineEvent) {
 			if (event.getType() == WikiEngineEvent.INITIALIZED) {

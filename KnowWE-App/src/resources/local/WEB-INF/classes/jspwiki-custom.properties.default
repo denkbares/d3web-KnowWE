@@ -136,7 +136,7 @@ jspwiki.fileSystemProvider.pageDir = $basedir
 #    * Leave the value empty (or just comment the line out)
 #      the attachment functionality is disabled
 #
-jspwiki.attachmentProvider = BasicAttachmentProvider
+jspwiki.attachmentProvider = KnowWEAttachmentProvider
 
 #
 #  The BasicAttachmentProvider needs to know where to store the files
