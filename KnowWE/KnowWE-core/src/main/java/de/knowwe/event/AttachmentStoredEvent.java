@@ -17,9 +17,8 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.jspwiki;
+package de.knowwe.event;
 
-import de.knowwe.core.event.Event;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 
 /**
@@ -28,16 +27,17 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 16.06.15
  */
-public class AttachmentStoredEvent extends Event {
+public class AttachmentStoredEvent extends AttachmentEvent {
 
 	private WikiAttachment attachment;
 
-	public AttachmentStoredEvent(WikiAttachment attachment) {
-
+	public AttachmentStoredEvent(String web, WikiAttachment attachment) {
+		super(web, attachment.getParentName(), attachment.getFileName());
 		this.attachment = attachment;
 	}
 
 	public WikiAttachment getAttachment() {
 		return attachment;
 	}
+
 }

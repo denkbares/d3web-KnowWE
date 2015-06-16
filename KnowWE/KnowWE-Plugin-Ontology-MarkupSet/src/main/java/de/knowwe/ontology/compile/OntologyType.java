@@ -30,6 +30,7 @@ import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileTypeRenderer;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
+import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
@@ -79,7 +80,7 @@ public class OntologyType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_RULESET, false, RuleSet.values());
 		MARKUP.addAnnotationIcon(ANNOTATION_RULESET, Icon.COG.addTitle("Rule Set"));
 
-		MARKUP.addAnnotationContentType(ANNOTATION_IMPORT, new ImportType());
+		MARKUP.addAnnotationContentType(ANNOTATION_IMPORT, new AttachmentType());
 		MARKUP.addAnnotation(ANNOTATION_COMMIT, false, CommitType.values());
 		DefaultMarkupPackageCompileType compileType = new DefaultMarkupPackageCompileType();
 		compileType.addCompileScript(Priority.INIT, new InitTerminologyHandler());

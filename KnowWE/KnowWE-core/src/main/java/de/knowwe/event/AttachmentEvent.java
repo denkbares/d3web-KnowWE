@@ -17,28 +17,34 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.jspwiki;
+package de.knowwe.event;
 
 import de.knowwe.core.event.Event;
 
 /**
- * Gets fired every time an attachment is deleted.
+ * Event concerning attachments attachments
  *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 16.06.15
  */
-public class AttachmentDeletedEvent extends Event {
+public abstract class AttachmentEvent extends Event {
 
-	private final String parent;
+	private final String parentName;
 	private final String fileName;
+	private final String web;
 
-	public AttachmentDeletedEvent(String parent, String fileName) {
-		this.parent = parent;
+	public AttachmentEvent(String web, String parentName, String fileName) {
+		this.web = web;
+		this.parentName = parentName;
 		this.fileName = fileName;
 	}
 
+	public String getWeb() {
+		return web;
+	}
+
 	/**
-	 * Returns the file name of the deleted attachment. The file name is not the file
+	 * Returns the file name of the attachment. The file name is not the file
 	 * name or path to the attachment in the file system of the wiki, but the
 	 * file name with which the attachment was uploaded by a user to the wiki.
 	 */
@@ -47,10 +53,10 @@ public class AttachmentDeletedEvent extends Event {
 	}
 
 	/**
-	 * Returns the name/title of the article the attachment belonged to.
+	 * Returns the name/title of the article the attachment belongs to.
 	 */
 	public String getParentName() {
-		return parent;
+		return parentName;
 	}
 
 	/**

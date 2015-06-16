@@ -17,17 +17,18 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.ontology.compile;
-
-import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
+package de.knowwe.event;
 
 /**
- * Just a marker type to attach the preview renderer to.
+ * Gets fired every time an attachment is deleted.
+ *
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 16.06.15
  */
-public class ImportType extends AbstractType {
+public class AttachmentDeletedEvent extends AttachmentEvent {
 
-	public ImportType() {
-		setSectionFinder(AllTextFinder.getInstance());
+	public AttachmentDeletedEvent(String web, String parent, String fileName) {
+		super(web, parent, fileName);
 	}
+
 }

@@ -35,6 +35,7 @@ import de.d3web.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
@@ -44,7 +45,6 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.ontology.compile.ImportType;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.ontology.compile.OntologyType;
@@ -144,7 +144,7 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 	}
 
 	private void importAttachment(OntologyCompiler compiler, Section<? extends AnnotationContentType> section, String attachmentFile, boolean silent) {
-		Section<ImportType> importSection = Sections.successor(section, ImportType.class);
+		Section<AttachmentType> importSection = Sections.successor(section, AttachmentType.class);
 		String path = createPath(section, attachmentFile);
 		WikiAttachment attachment;
 		try {
