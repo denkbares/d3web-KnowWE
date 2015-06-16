@@ -123,6 +123,7 @@ public class AttachmentType extends AbstractType {
 
 		public AttachmentChangedListener(Section<AttachmentType> section) {
 			this.section = section;
+			EventManager.getInstance().registerListener(this);
 		}
 
 		public void destroy() {

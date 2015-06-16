@@ -23,7 +23,6 @@ package de.knowwe.jspwiki;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -50,7 +49,9 @@ import org.apache.wiki.event.WikiEventListener;
 import org.apache.wiki.event.WikiEventUtils;
 import org.apache.wiki.event.WikiPageEvent;
 import org.apache.wiki.event.WikiPageRenameEvent;
+import org.apache.wiki.providers.CachingAttachmentProvider;
 import org.apache.wiki.providers.CachingProvider;
+import org.apache.wiki.providers.WikiAttachmentProvider;
 import org.apache.wiki.providers.WikiPageProvider;
 import org.apache.wiki.ui.TemplateManager;
 
@@ -69,7 +70,6 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.user.UserContextUtil;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.event.AttachmentDeletedEvent;
 import de.knowwe.event.AttachmentStoredEvent;
 import de.knowwe.event.InitializedArticlesEvent;
@@ -146,6 +146,18 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 		WikiEventUtils.addWikiEventListener(engine.getPageManager(),
 				WikiPageRenameEvent.PAGE_RENAMED, this);
+
+		WikiAttachmentProvider currentProvider = engine.getAttachmentManager().getCurrentProvider();
+
+		if (currentProvider instanceof CachingAttachmentProvider) {
+			currentProvider = ((CachingAttachmentProvider) currentProvider).getRealProvider();
+		}
+
+		WikiEventUtils.addWikiEventListener(currentProvider,
+				WikiAttachmentEvent.STORED, this);
+
+		WikiEventUtils.addWikiEventListener(currentProvider,
+				WikiAttachmentEvent.DELETED, this);
 	}
 
 	private void initEnvironmentIfNeeded(WikiEngine wEngine) {
@@ -492,23 +504,14 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		}
 		else if (event instanceof WikiAttachmentEvent) {
 			String web = getDefaultArticleManager().getWeb();
+			WikiAttachmentEvent attachmentEvent = (WikiAttachmentEvent) event;
 			if (event.getType() == WikiAttachmentEvent.STORED) {
-				WikiAttachmentEvent attachmentEvent = (WikiAttachmentEvent) event;
-				String path = attachmentEvent.getParentName() + "/" + attachmentEvent.getFileName();
-				try {
-					WikiAttachment attachment = Environment.getInstance()
-							.getWikiConnector().getAttachment(path);
-					EventManager.getInstance().fireEvent(new AttachmentStoredEvent(web, attachment));
-				}
-				catch (IOException e) {
-					Log.severe("Exception while retrieving attachment '" + path + "', unable to fire event");
-				}
-
+				EventManager.getInstance().fireEvent(new AttachmentStoredEvent(web, attachmentEvent
+						.getParentName(), attachmentEvent.getFileName()));
 			}
 			else if (event.getType() == WikiAttachmentEvent.DELETED) {
-				WikiAttachmentEvent attachmentEvent = (WikiAttachmentEvent) event;
-				EventManager.getInstance()
-						.fireEvent(new AttachmentDeletedEvent(web, attachmentEvent.getParentName(), attachmentEvent.getFileName()));
+				EventManager.getInstance().fireEvent(new AttachmentDeletedEvent(web, attachmentEvent
+						.getParentName(), attachmentEvent.getFileName()));
 			}
 		}
 		else if (event instanceof WikiEngineEvent) {

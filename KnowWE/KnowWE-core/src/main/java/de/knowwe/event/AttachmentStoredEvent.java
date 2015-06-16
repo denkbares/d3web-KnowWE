@@ -19,8 +19,6 @@
 
 package de.knowwe.event;
 
-import de.knowwe.core.wikiConnector.WikiAttachment;
-
 /**
  * Gets fired every time a new attachment or a new attachment version is stored.
  *
@@ -29,15 +27,7 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
  */
 public class AttachmentStoredEvent extends AttachmentEvent {
 
-	private WikiAttachment attachment;
-
-	public AttachmentStoredEvent(String web, WikiAttachment attachment) {
-		super(web, attachment.getParentName(), attachment.getFileName());
-		this.attachment = attachment;
+	public AttachmentStoredEvent(String web, String parentName, String fileName) {
+		super(web, parentName, fileName);
 	}
-
-	public WikiAttachment getAttachment() {
-		return attachment;
-	}
-
 }
