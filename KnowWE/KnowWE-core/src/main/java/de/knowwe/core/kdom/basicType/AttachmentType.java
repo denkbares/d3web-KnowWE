@@ -25,7 +25,6 @@ import java.util.Collection;
 import de.d3web.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.compile.Priority;
@@ -50,7 +49,6 @@ import de.knowwe.event.AttachmentStoredEvent;
  * @created 06.11.2012
  */
 public class AttachmentType extends AbstractType {
-
 
 	private static final String LISTENER_KEY = "listener_key";
 
@@ -144,8 +142,7 @@ public class AttachmentType extends AbstractType {
 			String thisAttachmentPath = getPath(section);
 			String eventAttachmentPath = attachmentEvent.getPath();
 
-			if (thisAttachmentPath.equals(eventAttachmentPath)) {
-				if (Compilers.getCompilerManager(web).isCompiling()) return;
+			if (thisAttachmentPath.startsWith(eventAttachmentPath)) {
 
 				// basically, do a full parse...
 				ArticleManager articleManager = KnowWEUtils.getArticleManager(web);

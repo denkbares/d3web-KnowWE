@@ -72,7 +72,7 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 	private static final String EXECUTOR_KEY = "executor_key";
 	private static final String LOCK_KEY = "lock_key";
 
-	public static final String START_PATTERN = "[MMMM ][EEEE ]H:mm";
+	public static final String START_PATTERN = "[EEEE ]H:mm";
 	private static final DateTimeFormatter START_FORMATTER = DateTimeFormatter.ofPattern(START_PATTERN, Locale.ENGLISH);
 
 	private static final long MIN_INTERVAL = TimeUnit.SECONDS.toMillis(1); // we want to wait at least a second before we check again
@@ -152,12 +152,12 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 
 			if (parsedStart.isSupported(ChronoField.DAY_OF_WEEK)) {
 				start = start.with(DayOfWeek.from(parsedStart));
-				if (start.isBefore(now)) start.plusWeeks(1);
+				if (start.isBefore(now)) start = start.plusWeeks(1);
 			}
 
 			if (parsedStart.isSupported(ChronoField.MONTH_OF_YEAR)) {
 				start = start.withMonth(parsedStart.get(ChronoField.MONTH_OF_YEAR));
-				if (start.isBefore(now)) start.plusYears(1);
+				if (start.isBefore(now)) start = start.plusYears(1);
 			}
 
 			return LocalDateTime.now().until(start, ChronoUnit.MILLIS);
@@ -174,8 +174,9 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 		@Override
 		public void destroy(DefaultGlobalCompiler compiler, Section<AttachmentUpdateMarkup> section) {
 			ScheduledExecutorService scheduledExecutorService = (ScheduledExecutorService) section.getObject(compiler, EXECUTOR_KEY);
-			//noinspection ConstantConditions
-			scheduledExecutorService.shutdownNow();
+			if (scheduledExecutorService != null) {
+				scheduledExecutorService.shutdownNow();
+			}
 		}
 	}
 
@@ -184,7 +185,9 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 		Section<URLType> urlSection = Sections.successor(section, URLType.class);
 
 		URL url = URLType.getURL(urlSection);
-		if (url == null) return; // nothing to do, error will already be rendered from URLType
+		if (url == null || attachmentSection == null) {
+			return; // nothing to do, error will already be rendered from URLType
+		}
 
 		ReentrantLock lock = getLock(section);
 		if (!lock.tryLock()) {

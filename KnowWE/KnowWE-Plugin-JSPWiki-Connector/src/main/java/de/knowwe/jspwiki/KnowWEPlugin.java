@@ -46,6 +46,7 @@ import org.apache.wiki.event.WikiAttachmentEvent;
 import org.apache.wiki.event.WikiEngineEvent;
 import org.apache.wiki.event.WikiEvent;
 import org.apache.wiki.event.WikiEventListener;
+import org.apache.wiki.event.WikiEventManager;
 import org.apache.wiki.event.WikiEventUtils;
 import org.apache.wiki.event.WikiPageEvent;
 import org.apache.wiki.event.WikiPageRenameEvent;
@@ -156,11 +157,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			currentProvider = ((CachingAttachmentProvider) currentProvider).getRealProvider();
 		}
 
-		WikiEventUtils.addWikiEventListener(currentProvider,
-				WikiAttachmentEvent.STORED, this);
-
-		WikiEventUtils.addWikiEventListener(currentProvider,
-				WikiAttachmentEvent.DELETED, this);
+		WikiEventManager.addWikiEventListener(currentProvider, this);
 	}
 
 	private void initEnvironmentIfNeeded(WikiEngine wEngine) {
@@ -487,13 +484,13 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				&& (event.getType() == WikiPageEvent.PAGE_DELETE_REQUEST)) {
 			WikiPageEvent e = (WikiPageEvent) event;
 
-			ArticleManager amgr = getDefaultArticleManager();
+			ArticleManager articleManager = getDefaultArticleManager();
 
-			Article articleToDelete = amgr.getArticle(e.getPageName());
+			Article articleToDelete = articleManager.getArticle(e.getPageName());
 			if (articleToDelete != null) {
 				// somehow the event is fired twice...
 				// don't call deleteArticle if the article is already deleted
-				amgr.deleteArticle(articleToDelete);
+				articleManager.deleteArticle(articleToDelete);
 			}
 
 		}
@@ -506,15 +503,26 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			KnowWEUtils.renameArticle(oldArticleTitle, newArticleTitle);
 		}
 		else if (event instanceof WikiAttachmentEvent) {
-			String web = getDefaultArticleManager().getWeb();
+			System.out.println(event.getType());
+			DefaultArticleManager articleManager = getDefaultArticleManager();
 			WikiAttachmentEvent attachmentEvent = (WikiAttachmentEvent) event;
-			if (event.getType() == WikiAttachmentEvent.STORED) {
-				EventManager.getInstance().fireEvent(new AttachmentStoredEvent(web, attachmentEvent
-						.getParentName(), attachmentEvent.getFileName()));
+			// we open a commit frame to bundle eventual article compilations
+			// that are likely to happen with attachment events
+			articleManager.open();
+			try {
+				if (event.getType() == WikiAttachmentEvent.STORED) {
+					EventManager.getInstance()
+							.fireEvent(new AttachmentStoredEvent(articleManager.getWeb(), attachmentEvent
+									.getParentName(), attachmentEvent.getFileName()));
+				}
+				else if (event.getType() == WikiAttachmentEvent.DELETED) {
+					EventManager.getInstance()
+							.fireEvent(new AttachmentDeletedEvent(articleManager.getWeb(), attachmentEvent
+									.getParentName(), attachmentEvent.getFileName()));
+				}
 			}
-			else if (event.getType() == WikiAttachmentEvent.DELETED) {
-				EventManager.getInstance().fireEvent(new AttachmentDeletedEvent(web, attachmentEvent
-						.getParentName(), attachmentEvent.getFileName()));
+			finally {
+				articleManager.commit();
 			}
 		}
 		else if (event instanceof WikiEngineEvent) {
