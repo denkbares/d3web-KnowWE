@@ -21,49 +21,91 @@ package de.knowwe.core;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.d3web.utils.Files;
+import de.d3web.utils.Log;
+
 /**
  * KnowWERessourceLoader.
- * <p>
- * The KnowWERessourceLoader stores the JS and CSS files used to extend KNOWWE. Please use the Loader to register your
- * own JS and CSS files. The KnowWERessourceLoader was introduced to ensure the correct order of the JS files, because
- * the KnowWE-helper and KnowWE-core files should loaded first.
+ * <p/>
+ * The KnowWERessourceLoader stores the JS and CSS files used to extend KNOWWE. Please use the
+ * Loader to register your own JS and CSS files. The KnowWERessourceLoader was introduced to ensure
+ * the correct order of the JS files, because the KnowWE-helper and KnowWE-core files should loaded
+ * first.
  *
  * @author smark
  * @since 2010/02/15
  */
 public class ResourceLoader {
 
-	/**
-	 * Requests a CSS to be inserted. Value is {@value} .
-	 */
-	public static final String RESOURCE_STYLESHEET = "stylesheet";
+	public enum Type {
+		/**
+		 * Requests a CSS to be inserted.
+		 */
+		stylesheet("KnowWEExtension/css/", "css"),
 
-	/**
-	 * Requests a script to be loaded. Value is {@value} .
-	 */
-	public static final String RESOURCE_SCRIPT = "script";
+		/**
+		 * Requests a script to be loaded.
+		 */
+		script("KnowWEExtension/scripts/", "js");
 
-	/**
-	 * The default path were the scripts are stored on the server. Used to minimize typing when adding new scripts to
-	 * the loader.
-	 */
-	public static final String defaultScript = "KnowWEExtension/scripts/";
+		/**
+		 * The default path were the resources of the specified type are stored on the server. Used
+		 * to minimize typing when adding new scripts to the loader.
+		 */
+		private final String defaultPath;
+		private final String fileExtension;
 
-	/**
-	 * The default path were the CSS are stored on the server. Used to minimize typing when adding new CSS to the
-	 * loader.
-	 */
-	public static final String defaultStylesheet = "KnowWEExtension/css/";
+		Type(String defaultPath, String fileExtension) {
+			this.defaultPath = defaultPath;
+			this.fileExtension = fileExtension;
+		}
+
+		/**
+		 * Returns the path where the specified resource is stored on the server.
+		 *
+		 * @param filename the file to get the path for
+		 * @return the path pointing to the specified file (including the file name)
+		 */
+		public String getPath(String filename) {
+			return defaultPath + filename;
+		}
+
+		/**
+		 * Returns if the specified resource is of this type, checked by the file extension of the
+		 * resource's filename.
+		 *
+		 * @param filename the file to check the type
+		 * @return if the extension matches this type
+		 */
+		public boolean isValid(String filename) {
+			return Files.hasExtension(filename, fileExtension);
+		}
+
+		/**
+		 * Detects the type from teh specified file name by considering it's file extension. If no
+		 * matching Type is find for the specified file name, an IllegalArgumentException is
+		 * thrown.
+		 *
+		 * @param filename the file name to detect the type for
+		 * @return the detected type
+		 */
+		public static Type detect(String filename) {
+			for (Type type : Type.values()) {
+				if (type.isValid(filename)) return type;
+			}
+			throw new IllegalArgumentException("no known resource type for file extension: " + filename);
+		}
+	}
 
 	/**
 	 * Stores the registered script files.
 	 */
-	private final List<String> script = new LinkedList<String>();
+	private final List<String> scripts = new LinkedList<>();
 
 	/**
 	 * Stores the registered CSS files.
 	 */
-	private final List<String> stylesheets = new LinkedList<String>();
+	private final List<String> stylesheets = new LinkedList<>();
 
 	/**
 	 * Instance of the Loader. The loader is implemented as a Singleton.
@@ -71,9 +113,9 @@ public class ResourceLoader {
 	private static ResourceLoader instance;
 
 	/**
-	 * Returns the instance of the KnowWERessourceLoader.
+	 * Returns the instance of the ResourceLoader.
 	 *
-	 * @return instance The instance of the KnowWERessourceLoader
+	 * @return the singleton instance
 	 */
 	public static synchronized ResourceLoader getInstance() {
 		if (instance == null) {
@@ -83,7 +125,7 @@ public class ResourceLoader {
 	}
 
 	/**
-	 * Creates a KnowWERessourceLoader instance by first loading the KnowWE default resources.
+	 * Creates a ResourceLoader instance by first loading the KnowWE default resources.
 	 */
 	private ResourceLoader() {
 		loadDefaultResources();
@@ -91,70 +133,93 @@ public class ResourceLoader {
 
 	/**
 	 * Loads the KnowWE standard Resources:
-	 * <p>
+	 * <p/>
 	 * - KnowWE.js
-	 * <p>
+	 * <p/>
 	 * - KnowWE-helper.js
-	 * <p>
+	 * <p/>
 	 * - general.css
 	 *
 	 * @created 05.07.2010
 	 */
 	private void loadDefaultResources() {
-		add("tooltipster.css", ResourceLoader.RESOURCE_STYLESHEET);
-		add("jquery-autocomplete.css", ResourceLoader.RESOURCE_STYLESHEET);
-		add("jquery-treeTable.css", ResourceLoader.RESOURCE_STYLESHEET);
-		add("jquery-ui.min.css", ResourceLoader.RESOURCE_STYLESHEET);
-		add("jquery-ui.structure.min.css", ResourceLoader.RESOURCE_STYLESHEET);
-		add("jquery-ui.theme.min.css", ResourceLoader.RESOURCE_STYLESHEET);
-		add("general.css", ResourceLoader.RESOURCE_STYLESHEET);
-		add("font-awesome/css/font-awesome.min.css", ResourceLoader.RESOURCE_STYLESHEET);
-		addFirst("KnowWE-notification.js", ResourceLoader.RESOURCE_SCRIPT);
-		addFirst("KnowWE.js", ResourceLoader.RESOURCE_SCRIPT);
-		addFirst("KnowWE-helper.js", ResourceLoader.RESOURCE_SCRIPT);
-		addFirst("jquery-compatibility.js", ResourceLoader.RESOURCE_SCRIPT);
-		addFirst("simpleStorage.min.js", ResourceLoader.RESOURCE_SCRIPT);
-		addFirst("jquery.mousewheel.js", ResourceLoader.RESOURCE_SCRIPT);
-		addFirst("jquery-plugin-collection.js", ResourceLoader.RESOURCE_SCRIPT);
-		addFirst("jquery-tooltipster.js", ResourceLoader.RESOURCE_SCRIPT);
-		addFirst("jquery-treeTable.js", ResourceLoader.RESOURCE_SCRIPT);
-		addFirst("jquery-ui.min.js", ResourceLoader.RESOURCE_SCRIPT);
-		addFirst("jquery-2.1.0.min.js", ResourceLoader.RESOURCE_SCRIPT);
+		add("tooltipster.css", Type.stylesheet);
+		add("jquery-autocomplete.css", Type.stylesheet);
+		add("jquery-treeTable.css", Type.stylesheet);
+		add("jquery-ui.min.css", Type.stylesheet);
+		add("jquery-ui.structure.min.css", Type.stylesheet);
+		add("jquery-ui.theme.min.css", Type.stylesheet);
+		add("general.css", Type.stylesheet);
+		add("font-awesome/css/font-awesome.min.css", Type.stylesheet);
+		addFirst("KnowWE-notification.js", Type.script);
+		addFirst("KnowWE.js", Type.script);
+		addFirst("KnowWE-helper.js", Type.script);
+		addFirst("jquery-compatibility.js", Type.script);
+		addFirst("simpleStorage.min.js", Type.script);
+		addFirst("jquery.mousewheel.js", Type.script);
+		addFirst("jquery-plugin-collection.js", Type.script);
+		addFirst("jquery-tooltipster.js", Type.script);
+		addFirst("jquery-treeTable.js", Type.script);
+		addFirst("jquery-ui.min.js", Type.script);
+		addFirst("jquery-2.1.0.min.js", Type.script);
 	}
 
 	/**
-	 * Adds a resource file to the loader. Note: Only the file name has to be added. The KnowWERessourceLoader knows
-	 * the
-	 * default resource file location.
+	 * Adds a resource file to the loader. The type of the resource is detected from the file
+	 * extension of the specified file name.
+	 * <p/>
+	 * Note: Only the file name has to be added. The ResourceLoader knows the default resource file
+	 * location.
+	 *
+	 * @param file The resource file that should be added
+	 */
+	public void add(String file) {
+		Type type = Type.detect(file);
+		List<String> list = this.getList(type);
+
+		if (!list.contains(file)) {
+			checkFileType(file, type);
+			list.add(file);
+		}
+	}
+
+	/**
+	 * Adds a resource file to the loader.
+	 * <p/>
+	 * Note: Only the file name has to be added. The ResourceLoader knows the default resource file
+	 * location.
 	 *
 	 * @param file The resource file that should be added.
 	 * @param type the type of the file
 	 */
-	public void add(String file, String type) {
-		List<String> tmp = this.getList(type);
+	public void add(String file, Type type) {
+		List<String> list = this.getList(type);
 
-		if (!tmp.contains(file)) {
-			tmp.add(file);
+		if (!list.contains(file)) {
+			checkFileType(file, type);
+			list.add(file);
 		}
 	}
 
 	/**
-	 * Adds a resource file to the loader as first element. Note: Only the file name has to be added. The
-	 * KnowWERessourceLoader knows the default resource file location.
+	 * Adds a resource file to the loader as first element. Note: Only the file name has to be
+	 * added. The ResourceLoader knows the default resource file location.
 	 *
 	 * @param file The resource file that should be added.
 	 */
-	public void addFirst(String file, String type) {
-		List<String> tmp = this.getList(type);
+	public void addFirst(String file, Type type) {
+		List<String> list = this.getList(type);
+		checkFileType(file, type);
 
-		if (!tmp.contains(file)) {
-			// add as first element
-			tmp.add(0, file);
-		}
-		else {
-			tmp.remove(file);
-			// add as first element
-			tmp.add(0, file);
+		// add as first element
+		list.remove(file);
+		list.add(0, file);
+	}
+
+	private void checkFileType(String file, Type type) {
+		if (!type.isValid(file)) {
+			Log.warning("The specified file '" + file + "' " +
+					"does not seem to match the requested type " + type.name());
 		}
 	}
 
@@ -163,7 +228,7 @@ public class ResourceLoader {
 	 *
 	 * @param file The resource file that should be removed.
 	 */
-	public void remove(String file, String type) {
+	public void remove(String file, Type type) {
 		List<String> tmp = this.getList(type);
 		if (tmp.contains(file)) {
 			tmp.remove(file);
@@ -176,7 +241,7 @@ public class ResourceLoader {
 	 * @return String The script files.
 	 */
 	public List<String> getScriptIncludes() {
-		return this.script;
+		return this.scripts;
 	}
 
 	/**
@@ -188,19 +253,14 @@ public class ResourceLoader {
 		return this.stylesheets;
 	}
 
-	/**
-	 * @param type
-	 * @return
-	 */
-	private List<String> getList(String type) {
-		if (type.equals(RESOURCE_SCRIPT)) {
-			return this.script;
-		}
-		else if (type.equals(RESOURCE_STYLESHEET)) {
-			return this.stylesheets;
-		}
-		else {
-			return new LinkedList<String>();
+	private List<String> getList(Type type) {
+		switch (type) {
+			case script:
+				return this.scripts;
+			case stylesheet:
+				return this.stylesheets;
+			default:
+				throw new IllegalStateException();
 		}
 	}
 }

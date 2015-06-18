@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import de.d3web.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.ResourceLoader;
 import de.knowwe.core.compile.packaging.MasterAnnotationWarningHandler;
@@ -87,10 +88,8 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 
 	public QuickInterviewMarkup(DefaultMarkup markup) {
 		super(markup);
-		ResourceLoader.getInstance().add("quickiNeutral.css",
-				ResourceLoader.RESOURCE_STYLESHEET);
-		ResourceLoader.getInstance().add("quicki.js",
-				ResourceLoader.RESOURCE_SCRIPT);
+		ResourceLoader.getInstance().add("quickiNeutral.css");
+		ResourceLoader.getInstance().add("quicki.js");
 		this.setRenderer(new QuickInterviewMarkupRenderer());
 		this.addCompileScript(new MasterAnnotationWarningHandler());
 	}
@@ -152,25 +151,20 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 		 * @created 30.11.2012
 		 */
 		private static String getSavedSessions(UserContext user) {
-			WikiConnector wikiConnector = Environment.getInstance()
-					.getWikiConnector();
+			WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
 			StringBuilder builder = new StringBuilder();
 			try {
-				List<WikiAttachment> attachments = wikiConnector
-						.getAttachments(user.getTitle());
+				List<WikiAttachment> attachments = wikiConnector.getAttachments(user.getTitle());
 				for (WikiAttachment wikiAttachment : attachments) {
 					String fileName = wikiAttachment.getFileName();
-
 					if (fileName.endsWith("xml")) {
-						builder.append("<option value=\"" + fileName + "\">"
-								+ fileName + "</option>");
+						builder.append("<option value=\"").append(fileName).append("\">")
+								.append(fileName).append("</option>");
 					}
 				}
-
 			}
 			catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.warning("cannot read saved user session", e);
 			}
 			return builder.toString();
 		}

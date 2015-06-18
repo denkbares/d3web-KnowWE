@@ -77,7 +77,7 @@ public class Plugins {
 	private static <T> List<T> getSingeltons(String point, Class<T> clazz) {
 		PluginManager pm = PluginManager.getInstance();
 		Extension[] extensions = pm.getExtensions(EXTENDED_PLUGIN_ID, point);
-		List<T> result = new ArrayList<T>();
+		List<T> result = new ArrayList<>();
 		for (Extension e : extensions) {
 			result.add(clazz.cast(e.getSingleton()));
 		}
@@ -110,7 +110,7 @@ public class Plugins {
 	public static PriorityList<Double, Compiler> getCompilers() {
 		PluginManager pm = PluginManager.getInstance();
 		Extension[] extensions = pm.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_Compiler);
-		PriorityList<Double, Compiler> result = new PriorityList<Double, Compiler>(5d);
+		PriorityList<Double, Compiler> result = new PriorityList<>(5d);
 		for (Extension e : extensions) {
 			result.add(e.getPriority(),
 					Compiler.class.cast(e.getSingleton()));
@@ -120,7 +120,7 @@ public class Plugins {
 
 	/**
 	 * Returns a list of all plugged actions. Actions can be executed from the web. Usually be
-	 * clicking on pregenerated links on the wiki pages.
+	 * clicking on pre-generated links on the wiki pages.
 	 */
 	public static List<Action> getKnowWEAction() {
 		return getSingeltons(EXTENDED_POINT_KnowWEAction, Action.class);
@@ -176,7 +176,7 @@ public class Plugins {
 			}
 			else {
 				throw new ClassCastException(
-						"renderers can only be plugged to type instances of 'AbstractType', but not to "
+						"renderer can only be plugged to type instances of 'AbstractType', but not to "
 								+ type.getClass().getName());
 			}
 		}
@@ -241,8 +241,8 @@ public class Plugins {
 	/**
 	 * Returns a List of all plugged TagHandlers
 	 * <p/>
-	 * COMMENT: Alternatively, those taghandlers can also be introduced separately using the
-	 * taghandler.text file. There the class of the taghandler is listed and will be loaded on
+	 * COMMENT: Alternatively, those tag-handlers can also be introduced separately using the
+	 * "taghandler.text" file. There the class of the tag-handler is listed and will be loaded on
 	 * KnowWE initialization.
 	 *
 	 * @return List of TagHandlers
@@ -278,79 +278,78 @@ public class Plugins {
 	 * Initializes the Javascript files
 	 */
 	public static void initJS() {
-		PriorityList<Double, String> files = new PriorityList<Double, String>(5.0);
-		addScripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_PageAppendHandler));
-		addScripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_Type));
-		addScripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_TagHandler));
-		addScripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_ToolProvider));
-		addScripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_Renderer));
-		addScripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_KnowWEAction));
+		PriorityList<Double, String> files = new PriorityList<>(5.0);
+		addScripts(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_PageAppendHandler), files);
+		addScripts(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_Type), files);
+		addScripts(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_TagHandler), files);
+		addScripts(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_ToolProvider), files);
+		addScripts(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_Renderer), files);
+		addScripts(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_KnowWEAction), files);
 		for (String s : files) {
-			ResourceLoader.getInstance().add(s, ResourceLoader.RESOURCE_SCRIPT);
+			ResourceLoader.getInstance().add(s, ResourceLoader.Type.script);
 		}
 	}
 
 	public static void initCSS() {
-		PriorityList<Double, String> files = new PriorityList<Double, String>(5.0);
-		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_PageAppendHandler));
-		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_Type));
-		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_TagHandler));
-		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_ToolProvider));
-		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_Renderer));
-		addCSS(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
-				EXTENDED_POINT_KnowWEAction));
+		PriorityList<Double, String> files = new PriorityList<>(5.0);
+		addCSS(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_PageAppendHandler), files);
+		addCSS(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_Type), files);
+		addCSS(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_TagHandler), files);
+		addCSS(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_ToolProvider), files);
+		addCSS(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_Renderer), files);
+		addCSS(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_KnowWEAction), files);
 		for (String s : files) {
-			ResourceLoader.getInstance().addFirst(s, ResourceLoader.RESOURCE_STYLESHEET);
+			ResourceLoader.getInstance().addFirst(s, ResourceLoader.Type.stylesheet);
 		}
 	}
 
 	public static void initResources(Extension[] extensions) {
-		PriorityList<Double, String> cssFiles = new PriorityList<Double, String>(5.0);
-		addCSS(cssFiles, extensions);
+		PriorityList<Double, String> cssFiles = new PriorityList<>(5.0);
+		addCSS(extensions, cssFiles);
 		for (String s : cssFiles) {
-			ResourceLoader.getInstance().addFirst(s, ResourceLoader.RESOURCE_STYLESHEET);
+			ResourceLoader.getInstance().addFirst(s, ResourceLoader.Type.stylesheet);
 		}
-		PriorityList<Double, String> jsFiles = new PriorityList<Double, String>(5.0);
-		addScripts(jsFiles, extensions);
-		for (int i = 0; i < jsFiles.size(); i++) {
-			String filename = jsFiles.get(i);
-			ResourceLoader.getInstance().add(filename, ResourceLoader.RESOURCE_SCRIPT);
+		PriorityList<Double, String> jsFiles = new PriorityList<>(5.0);
+		addScripts(extensions, jsFiles);
+		for (String filename : jsFiles) {
+			ResourceLoader.getInstance().add(filename, ResourceLoader.Type.script);
 		}
 
 	}
 
-	private static void addScripts(PriorityList<Double, String> files, Extension[] extensions) {
+	private static void addScripts(Extension[] extensions, PriorityList<Double, String> filesCollector) {
 		for (Extension e : extensions) {
 			double priority = e.getPriority();
 			List<String> scripts = e.getParameters("script");
 			if (scripts != null) {
 				for (String s : scripts) {
-					if (!files.contains(s)) {
-						files.add(priority, s);
+					if (!filesCollector.contains(s)) {
+						filesCollector.add(priority, s);
 					}
 				}
 			}
 		}
 	}
 
-	private static void addCSS(PriorityList<Double, String> files, Extension[] extensions) {
+	private static void addCSS(Extension[] extensions, PriorityList<Double, String> filesCollector) {
 		for (Extension e : extensions) {
 			double priority = e.getPriority();
 			List<String> scripts = e.getParameters("css");
 			if (scripts != null) {
 				for (String s : scripts) {
-					files.add(priority, s);
+					filesCollector.add(priority, s);
 				}
 			}
 		}

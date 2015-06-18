@@ -32,25 +32,25 @@ public interface ArticleManager {
 	/**
 	 * Returns the Article for a given article name/title. The case of the article is ignored.
 	 */
-	public abstract Article getArticle(String title);
+	Article getArticle(String title);
 
 	/**
 	 * Returns all articles currently registered in this ArticleManager. The returned collection is unmodifiable and is
 	 * not sorted.
 	 */
-	public abstract Collection<Article> getArticles();
+	Collection<Article> getArticles();
 
 	/**
 	 * Registers a changed or new article in the manager and also compiles it. If this manager already contains an
 	 * article with the same name/title, the existing article will be replaced by the new one.
 	 */
-	public abstract void registerArticle(Article article);
+	void registerArticle(Article article);
 
-	public CompilerManager getCompilerManager();
+	CompilerManager getCompilerManager();
 
-	public String getWeb();
+	String getWeb();
 
-	public abstract void deleteArticle(Article article);
+	void deleteArticle(Article article);
 
 	/**
 	 * Opens the manager for registration of articles. Only after calling the method {@link ArticleManager#commit()}

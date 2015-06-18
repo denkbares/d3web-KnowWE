@@ -28,6 +28,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -52,7 +53,6 @@ import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
-import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.EventListener;
 import de.knowwe.core.event.EventManager;
@@ -70,16 +70,14 @@ import de.knowwe.plugin.Instantiation;
 import de.knowwe.plugin.Plugins;
 
 /**
- * This is the core class of KnowWE. It manages the {@link ArticleManager} and
- * provides methods to access {@link Article}s and other Managers. Further it is
- * connected to the used Wiki-engine, holding an instance of
- * {@link WikiConnector} and allows page saves.
+ * This is the core class of KnowWE. It manages the {@link ArticleManager} and provides methods to
+ * access {@link Article}s and other Managers. Further it is connected to the used Wiki-engine,
+ * holding an instance of {@link WikiConnector} and allows page saves.
  *
  * @author Jochen
  */
 
 public class Environment {
-
 
 	/**
 	 * Indicates whether this environment is initialized or not.
@@ -87,17 +85,16 @@ public class Environment {
 	private static boolean initialized = false;
 
 	/**
-	 * Stores additional renderers if renderers are plugged via the plugin
-	 * framework The renderer plugged with highest priority _might_ decided to
-	 * look up in this list and call other renderers
+	 * Stores additional renderer if renderer are plugged via the plugin framework The renderer
+	 * plugged with highest priority _might_ decided to look up in this list and call other
+	 * renderer.
 	 */
-	private final Map<Type, List<Renderer>> additionalRenderers = new HashMap<Type, List<Renderer>>();
+	private final Map<Type, List<Renderer>> additionalRenderer = new HashMap<>();
 
 	/**
-	 * An article manager for each web. In case of JSPWiki there is only on web
-	 * ('default_web')
+	 * An article manager for each web. In case of JSPWiki there is only on web ('default_web')
 	 */
-	private final Map<String, ArticleManager> articleManagers = new HashMap<String, ArticleManager>();
+	private final Map<String, ArticleManager> articleManagers = new HashMap<>();
 
 	/**
 	 * This is the link to the connected Wiki-engine. Allows saving pages etc.
@@ -107,7 +104,7 @@ public class Environment {
 	/**
 	 * Holding the default tag handlers of KnowWE
 	 */
-	private final Map<String, TagHandler> tagHandlers = new HashMap<String, TagHandler>();
+	private final Map<String, TagHandler> tagHandlers = new HashMap<>();
 
 	/**
 	 * The {@link CompilationMode} of KnowWE:
@@ -154,7 +151,7 @@ public class Environment {
 	}
 
 	/**
-	 * private contructor
+	 * private constructor
 	 *
 	 * @param wiki Connector to the used core wiki engine
 	 * @see #getInstance()
@@ -208,7 +205,8 @@ public class Environment {
 		defaultCompilerManager.addCompiler(2, new PackageRegistrationCompiler());
 		defaultCompilerManager.addCompiler(4, new DefaultGlobalCompiler());
 
-		List<PriorityList.Group<Double, Compiler>> priorityGroups = Plugins.getCompilers().getPriorityGroups();
+		List<PriorityList.Group<Double, Compiler>> priorityGroups = Plugins.getCompilers()
+				.getPriorityGroups();
 		for (PriorityList.Group<Double, Compiler> priorityGroup : priorityGroups) {
 			List<Compiler> compilers = priorityGroup.getElements();
 			for (Compiler compiler : compilers) {
@@ -319,7 +317,7 @@ public class Environment {
 	private void initPlugins() throws InstantiationError {
 		File libDir = new File(KnowWEUtils.getApplicationRootPath() + "/WEB-INF/lib");
 		// when testing, libDir doesn't exist, but the plugin framework is
-		// initialized in junittest, so there is no problem
+		// initialized in junit test, so there is no problem
 		// if libDir is doesn't exist in runtime, nothing will work, so this
 		// code won't be reached ;-)
 		if (libDir.exists()) {
@@ -330,8 +328,10 @@ public class Environment {
 	}
 
 	private List<File> getPluginFiles(File libDir) {
+		File[] files = libDir.listFiles();
+		if (files == null) return Collections.emptyList();
 		List<File> pluginFiles = new ArrayList<>();
-		for (File file : libDir.listFiles()) {
+		for (File file : files) {
 			if (file.getName().contains("KnowWE-Plugin-")
 					|| file.getName().contains("d3web-Plugin-")) {
 				pluginFiles.add(file);
@@ -355,24 +355,19 @@ public class Environment {
 						if (!parent.isDirectory()) {
 							parent.mkdirs();
 						}
-						FileOutputStream out = new FileOutputStream(file);
-						InputStream in = resource.getInputStream();
-						try {
+						try (FileOutputStream out = new FileOutputStream(file);
+							 InputStream in = resource.getInputStream()) {
 							byte[] buf = new byte[1024];
 							int len;
 							while ((len = in.read(buf)) != -1) {
 								out.write(buf, 0, len);
 							}
 						}
-						finally {
-							in.close();
-							out.close();
-						}
 					}
 					catch (IOException e) {
 						String msg = "Cannot instantiate plugin "
 								+ plugin
-								+ ", the following error occured while extracting its resources: "
+								+ ", the following error occurred while extracting its resources: "
 								+ e.getMessage();
 						throw new InstantiationError(msg);
 					}
@@ -382,9 +377,9 @@ public class Environment {
 	}
 
 	/**
-	 * Initialize all types by decorating them. The method makes sure that each
-	 * instance is decorated only once. To do this a breath-first-search is
-	 * used. Thus each item is initialized with the shortest path towards it.
+	 * Initialize all types by decorating them. The method makes sure that each instance is
+	 * decorated only once. To do this a breath-first-search is used. Thus each item is initialized
+	 * with the shortest path towards it.
 	 *
 	 * @created 24.10.2013
 	 */
@@ -453,29 +448,28 @@ public class Environment {
 	}
 
 	/**
-	 * Returns from the prioritized list of plugged renderers for the given type
-	 * the renderer positioned next in the priority list after the given
-	 * renderer. If the passed renderer is not contained in the given list, the
-	 * first renderer of the list is returned.
+	 * Returns from the prioritized list of plugged renderer for the given type the renderer
+	 * positioned next in the priority list after the given renderer. If the passed renderer is not
+	 * contained in the given list, the first renderer of the list is returned.
 	 *
-	 * @param type            the type we want the next renderer for
+	 * @param type the type we want the next renderer for
 	 * @param currentRenderer the current renderer
 	 * @return the next renderer
 	 * @created 04.11.2013
 	 */
 	public Renderer getNextRendererForType(Type type, Renderer currentRenderer) {
-		if (additionalRenderers.containsKey(type)) {
-			List<Renderer> pluggedRenderersForType = additionalRenderers.get(type);
-			if (pluggedRenderersForType != null) {
-				if (pluggedRenderersForType.contains(currentRenderer)) {
-					int currentIndex = pluggedRenderersForType.indexOf(currentRenderer);
-					if (pluggedRenderersForType.size() > currentIndex) {
-						return pluggedRenderersForType.get(currentIndex + 1);
+		if (additionalRenderer.containsKey(type)) {
+			List<Renderer> pluggedRendererForType = additionalRenderer.get(type);
+			if (pluggedRendererForType != null) {
+				if (pluggedRendererForType.contains(currentRenderer)) {
+					int currentIndex = pluggedRendererForType.indexOf(currentRenderer);
+					if (pluggedRendererForType.size() > currentIndex) {
+						return pluggedRendererForType.get(currentIndex + 1);
 					}
 				}
 				else {
-					if (pluggedRenderersForType.size() > 0) {
-						return pluggedRenderersForType.get(0);
+					if (pluggedRendererForType.size() > 0) {
+						return pluggedRendererForType.get(0);
 					}
 				}
 			}
@@ -485,11 +479,11 @@ public class Environment {
 	}
 
 	public void addRendererForType(Type t, Renderer r) {
-		if (!this.additionalRenderers.containsKey(t)) {
-			this.additionalRenderers.put(t, new ArrayList<>());
+		if (!this.additionalRenderer.containsKey(t)) {
+			this.additionalRenderer.put(t, new ArrayList<>());
 		}
-		List<Renderer> renderersForType = this.additionalRenderers.get(t);
-		renderersForType.add(0, r);
+		List<Renderer> rendererForType = this.additionalRenderer.get(t);
+		rendererForType.add(0, r);
 	}
 
 	/**
@@ -508,7 +502,7 @@ public class Environment {
 	/**
 	 * Returns the {@link Article} object for a given web and title
 	 *
-	 * @param web   the web of the {@link Article}
+	 * @param web the web of the {@link Article}
 	 * @param title the title of the {@link Article}
 	 */
 	public Article getArticle(String web, String title) {
@@ -555,33 +549,15 @@ public class Environment {
 	}
 
 	/**
-	 * Cloning is not allowed for the Environment of KnowWE.
-	 */
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		throw new CloneNotSupportedException();
-	}
-
-	/**
 	 * @created 15.11.2013
 	 * @deprecated
 	 */
 	@Deprecated
 	public TerminologyManager getTerminologyManager(String defaultWeb, String master) {
+		//noinspection deprecation
 		return KnowWEUtils.getTerminologyManager(master == null
 				? null
 				: KnowWEUtils.getArticleManager(
 				defaultWeb).getArticle(master));
 	}
-
-	/**
-	 * TODO: How about having a 'UserContext.getArticleManager()'?
-	 *
-	 * @deprecated remove this method after merging with trunk
-	 */
-	@Deprecated
-	public PackageManager getPackageManager(String web) {
-		return KnowWEUtils.getPackageManager(web);
-	}
-
 }

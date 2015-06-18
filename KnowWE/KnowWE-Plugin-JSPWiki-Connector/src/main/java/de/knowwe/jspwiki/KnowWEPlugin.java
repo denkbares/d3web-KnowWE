@@ -75,6 +75,9 @@ import de.knowwe.event.AttachmentStoredEvent;
 import de.knowwe.event.InitializedArticlesEvent;
 import de.knowwe.event.PageRenderedEvent;
 
+import static de.knowwe.core.ResourceLoader.Type.script;
+import static de.knowwe.core.ResourceLoader.Type.stylesheet;
+
 public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		WikiEventListener {
 
@@ -530,10 +533,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	public static void includeDOMResources(WikiContext wikiContext) {
 		Object ctx = wikiContext.getVariable(TemplateManager.RESOURCE_INCLUDES);
 		ResourceLoader loader = ResourceLoader.getInstance();
-
-		List<String> script = loader.getScriptIncludes();
-		for (String resource : script) {
-
+		for (String resource : loader.getScriptIncludes()) {
 			/*
 			 * Check whether the corresponding plugin shipping the resource is
 			 * also existing in current installation As css and js dependencies
@@ -560,16 +560,18 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			}
 			if (ctx == null || !ctx.toString().contains(resource)) {
 				if (!resource.contains("://")) {
-					resource = ResourceLoader.defaultScript + resource;
+					resource = script.getPath(resource);
 				}
-				TemplateManager.addResourceRequest(wikiContext, ResourceLoader.RESOURCE_SCRIPT, resource);
+				TemplateManager.addResourceRequest(
+						wikiContext, script.name(), resource);
 			}
 		}
 
 		List<String> css = loader.getStylesheetIncludes();
 		for (String resource : css) {
 			if (ctx == null || !ctx.toString().contains(resource)) {
-				TemplateManager.addResourceRequest(wikiContext, ResourceLoader.RESOURCE_STYLESHEET, ResourceLoader.defaultStylesheet + resource);
+				TemplateManager.addResourceRequest(wikiContext,
+						stylesheet.name(), stylesheet.getPath(resource));
 			}
 		}
 	}
