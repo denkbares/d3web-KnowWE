@@ -864,7 +864,7 @@ jspwiki.use.external.logconfig = false
 #log4j.appender.mail.layout.ConversionPattern =%d [%t] %p %c %x - %m%n
 
 #
-#  Log everything to console, which will the go to catalina.out
+#  Log everything to console, which will then go to catalina.out
 #
 log4j.rootLogger=WARN,console
 log4j.appender.console=org.apache.log4j.ConsoleAppender
