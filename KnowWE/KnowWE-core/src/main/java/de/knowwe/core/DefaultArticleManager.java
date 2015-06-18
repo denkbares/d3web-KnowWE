@@ -201,7 +201,8 @@ public class DefaultArticleManager implements ArticleManager {
 				removed = Collections.synchronizedList(new ArrayList<>());
 				synchronized (deleteAfterCompile) {
 					for (Iterator<String> iterator = deleteAfterCompile.iterator(); iterator.hasNext(); ) {
-						articleMap.remove(iterator.next());
+						Article removed = articleMap.remove(iterator.next());
+						removed.destroy(null);
 						iterator.remove();
 					}
 				}

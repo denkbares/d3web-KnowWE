@@ -135,7 +135,7 @@ public class Article {
 		rootSection.setParent(null);
 
 		if (lastVersion != null) {
-			lastVersion.destroy();
+			lastVersion.destroy(this);
 		}
 
 		EventManager.getInstance().fireEvent(new KDOMCreatedEvent(this));
@@ -143,16 +143,19 @@ public class Article {
 
 	/**
 	 * Destroy and cleans up stuff that was registered for the Sections of this article (like IDs and message caches).
+	 * Pass the new version of the article if available, there might be stuff that can be salvaged for it.
+	 *
+	 * @param newArticle the new version of the article, if there is on (allowed to be null in this case only)
 	 */
-	public void destroy() {
-		unregisterSectionRecursively(this.getRootSection());
+	public void destroy(Article newArticle) {
+		unregisterSectionRecursively(this.getRootSection(), newArticle);
 	}
 
-	private void unregisterSectionRecursively(Section<?> section) {
+	private void unregisterSectionRecursively(Section<?> section, Article newArticle) {
 		Messages.unregisterMessagesSection(section);
-		Section.unregisterOrUpdateSectionID(section, this);
+		Section.unregisterOrUpdateSectionID(section, newArticle);
 		for (Section<?> childSection : section.getChildren()) {
-			unregisterSectionRecursively(childSection);
+			unregisterSectionRecursively(childSection, newArticle);
 		}
 	}
 

@@ -673,6 +673,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	public static void unregisterOrUpdateSectionID(Section<?> section, Article newArticle) {
 		if (section.hasID()) {
 			unregisterID(section);
+			if (newArticle == null) return; // if there is a new version, try to salvage
 			Section<?> newSection = Sections.get(newArticle, section.getPositionInKDOM());
 			if (newSection != null
 					&& newSection.get().getClass().equals(section.get().getClass())) {
