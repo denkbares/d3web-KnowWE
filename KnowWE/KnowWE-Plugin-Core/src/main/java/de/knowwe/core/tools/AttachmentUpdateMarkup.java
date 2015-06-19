@@ -262,6 +262,12 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 		boolean update = urlDateTime.truncatedTo(ChronoUnit.SECONDS)
 				.isAfter(attachmentDateTime.truncatedTo(ChronoUnit.SECONDS));
 
+		if (!update) {
+			// check if urlDateTime is equal to unix time 0
+			// if it is, the time was not set (maybe because of server settings) and we just update always
+			update = urlDateTime.equals(LocalDateTime.ofInstant(Instant.ofEpochMilli(0), ZoneId.systemDefault()));
+		}
+
 		connection.disconnect();
 
 		return update;
