@@ -744,7 +744,7 @@ KNOWWE.core.plugin.pagination = function() {
 			if (cookie == null) {
 				cookie = {};
 			}
-			var sort = element.innerText;
+			var sort = jq$(element).text();
 			var sorting;
 			if (typeof cookie.sorting != 'undefined') {
 				sorting = cookie.sorting;
