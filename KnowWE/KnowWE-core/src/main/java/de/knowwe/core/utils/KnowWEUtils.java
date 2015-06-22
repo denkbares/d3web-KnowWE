@@ -784,7 +784,7 @@ public class KnowWEUtils {
 	 * Creates a wiki-markup-styled link to this section. The created link navigates the user to the
 	 * article of the section. If the section is rendered with an anchor (see method {@link
 	 * #getAnchor(Section)}) the page is also scrolled to the section.
-	 * <p/>
+	 * <p>
 	 * Please not that the link will only work if it is put into "[" ... "]" brackets and rendered
 	 * through the wiki rendering pipeline.
 	 *
@@ -809,13 +809,7 @@ public class KnowWEUtils {
 	}
 
 	public static String readStream(InputStream inputStream) {
-		try {
-			return Strings.readStream(inputStream);
-		}
-		catch (IOException e) {
-			Log.severe("Unable to read stream", e);
-			return "";
-		}
+		return Strings.readStream(inputStream);
 	}
 
 	public static void writeFile(String path, String content) {
