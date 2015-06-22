@@ -503,7 +503,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			KnowWEUtils.renameArticle(oldArticleTitle, newArticleTitle);
 		}
 		else if (event instanceof WikiAttachmentEvent) {
-			System.out.println(event.getType());
 			DefaultArticleManager articleManager = getDefaultArticleManager();
 			WikiAttachmentEvent attachmentEvent = (WikiAttachmentEvent) event;
 			// we open a commit frame to bundle eventual article compilations
