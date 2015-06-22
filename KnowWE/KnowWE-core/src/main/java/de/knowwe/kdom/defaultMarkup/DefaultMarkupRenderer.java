@@ -275,6 +275,7 @@ public class DefaultMarkupRenderer implements Renderer {
 					result.appendHtml("<li>");
 					renderer.render(subsec, user, result);
 					result.appendHtml("</li>");
+					continue;
 				}
 				// if we add a "NothingRenderer" to an Annotation, the following PlainText Section
 				// containing the line break between two Annotations will still be rendered, causing
