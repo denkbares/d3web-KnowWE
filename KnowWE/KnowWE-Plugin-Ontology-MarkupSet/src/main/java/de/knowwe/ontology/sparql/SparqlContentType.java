@@ -28,6 +28,7 @@ import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageCompileScript;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
@@ -46,7 +47,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 	public SparqlContentType() {
 		this.setSectionFinder(AllTextFinder.getInstance());
 		this.setRenderer(new AsynchronRenderer(new ReRenderSectionMarkerRenderer(new SparqlContentDecoratingRenderer())));
-		this.addCompileScript( Priority.LOWEST, new SparqlConstructHandler());
+		this.addCompileScript(Priority.LOWEST, new SparqlConstructHandler());
 	}
 
 	@Override
@@ -83,7 +84,8 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 	}
 
 	public static boolean isConstructQuery(Section<?> section) {
-		return section.get() instanceof SparqlContentType && Strings.startsWithIgnoreCase(section.getText().trim(), "construct");
+		return section.get() instanceof SparqlContentType && Strings.startsWithIgnoreCase(section.getText()
+				.trim(), "construct");
 	}
 
 	private boolean checkSortingAnnotation(Section<DefaultMarkupType> markupSection, String sorting) {
@@ -106,7 +108,14 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		String timeoutString = DefaultMarkupType.getAnnotation(markupSection, SparqlMarkupType.TIMEOUT);
 		long timeOutMillis = Rdf2GoCore.DEFAULT_TIMEOUT;
 		if (timeoutString != null) {
-			timeOutMillis = (long) (Double.parseDouble(timeoutString) * TimeUnit.SECONDS.toMillis(1));
+			try {
+				timeOutMillis = TimeStampType.getTimeInMillis(timeoutString);
+			}
+			catch (NumberFormatException e) {
+				// if we can not parse (because there is no time unit maybe, we just try parseDouble
+				timeOutMillis = (long) (Double.parseDouble(timeoutString) * TimeUnit.SECONDS.toMillis(1));
+				// if this also fails, we will have the default timeout
+			}
 		}
 		return timeOutMillis;
 	}
