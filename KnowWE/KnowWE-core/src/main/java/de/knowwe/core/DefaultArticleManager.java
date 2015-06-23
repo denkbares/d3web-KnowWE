@@ -196,9 +196,11 @@ public class DefaultArticleManager implements ArticleManager {
 	public void commit() {
 		try {
 			if (mainLock.getHoldCount() == 1) {
-				compilerManager.compile(added, removed);
-				added = Collections.synchronizedList(new ArrayList<>());
-				removed = Collections.synchronizedList(new ArrayList<>());
+				if (!added.isEmpty() || !removed.isEmpty()) {
+					compilerManager.compile(added, removed);
+					added = Collections.synchronizedList(new ArrayList<>());
+					removed = Collections.synchronizedList(new ArrayList<>());
+				}
 				synchronized (deleteAfterCompile) {
 					for (Iterator<String> iterator = deleteAfterCompile.iterator(); iterator.hasNext(); ) {
 						Article removed = articleMap.remove(iterator.next());

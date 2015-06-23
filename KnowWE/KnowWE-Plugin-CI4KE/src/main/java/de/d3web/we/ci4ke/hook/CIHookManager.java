@@ -57,7 +57,7 @@ public class CIHookManager {
 	public static synchronized void triggerHooks(Article monitoredArticle) {
 		Set<CIHook> hookSet = hooks.getValues(monitoredArticle.getTitle());
 		for (final CIHook hook : hookSet) {
-			CIBuildManager.startBuild(hook.getDashboard());
+			CIBuildManager.getInstance().startBuild(hook.getDashboard());
 		}
 	}
 }

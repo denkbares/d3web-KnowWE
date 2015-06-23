@@ -79,7 +79,7 @@ public class CIAction extends AbstractAction {
 				// is managed in JS
 				return;
 			}
-			CIBuildManager.startBuild(CIDashboardManager.getDashboard(
+			CIBuildManager.getInstance().startBuild(CIDashboardManager.getDashboard(
 					KnowWEUtils.getArticleManager(web),
 					dashboardName));
 			// TODO: Why are we rendering the old build? Necessary?

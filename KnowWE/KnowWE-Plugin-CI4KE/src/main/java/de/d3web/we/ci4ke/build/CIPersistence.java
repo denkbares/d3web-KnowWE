@@ -21,6 +21,7 @@
 package de.d3web.we.ci4ke.build;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -42,6 +43,7 @@ import org.xml.sax.SAXException;
 
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.BuildResultPersistenceHandler;
+import de.d3web.testing.TestResult;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.knowwe.core.Environment;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -77,14 +79,25 @@ public class CIPersistence {
 		return 0;
 	}
 
-	public void write(BuildResult build) throws IOException {
+	public synchronized void write(BuildResult build) throws IOException {
 		try {
+			handleTestResultAttachments(build);
+
 			Document document = BuildResultPersistenceHandler.toXML(build);
 			// we write the document as an attachment
 			write(document);
 		}
 		catch (TransformerFactoryConfigurationError | ParserConfigurationException | TransformerException e) {
 			throwUnecpectedWriterError(e);
+		}
+	}
+
+	protected void handleTestResultAttachments(BuildResult build) throws IOException {
+		for (TestResult testResult : build.getResults()) {
+			for (File file : testResult.getAttachments()) {
+				Environment.getInstance().getWikiConnector().storeAttachment(
+						dashboard.getDashboardArticle(), "CI-process", file);
+			}
 		}
 	}
 
@@ -112,9 +125,9 @@ public class CIPersistence {
 		byte[] bytes = result.getWriter().toString().getBytes();
 		ByteArrayInputStream in = new ByteArrayInputStream(bytes);
 
-		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
-		wikiConnector.storeAttachment(
-				dashboard.getDashboardArticle(), getAttachmentName(), "ci-process", in);
+		Environment.getInstance().getWikiConnector().storeAttachment(
+				dashboard.getDashboardArticle(), getAttachmentName(), "CI-process", in);
+
 	}
 
 	public BuildResult read(int buildVersion) throws IOException {

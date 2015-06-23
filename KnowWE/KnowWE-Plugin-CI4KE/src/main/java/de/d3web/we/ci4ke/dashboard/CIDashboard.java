@@ -18,6 +18,10 @@
  */
 package de.d3web.we.ci4ke.dashboard;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.TestSpecification;
 import de.d3web.utils.Log;
@@ -28,14 +32,10 @@ import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * This class represents a dashboard data structure, managing the build results,
  * their persistence and provides an appropriate renderer.
- * 
+ *
  * @author volker_belli
  * @created 19.05.2012
  */
@@ -88,9 +88,9 @@ public class CIDashboard {
 	/**
 	 * Returns the latest build stored in this dashboard or null if there is no
 	 * build stored.
-	 * 
-	 * @created 19.05.2012
+	 *
 	 * @return the latest build
+	 * @created 19.05.2012
 	 */
 	public BuildResult getLatestBuild() {
 		return getBuildIfPossible(-1, true);
@@ -100,11 +100,11 @@ public class CIDashboard {
 	 * Returns the wiki attachment that stores the results of this CIDashboard.
 	 * The method returns null if the attachment does not exist (yet), e.g. if
 	 * no build has been created/written yet.
-	 * 
-	 * @created 04.10.2013
+	 *
 	 * @return the attachment storing the results
 	 * @throws IOException if the attachment cannot be accessed, should usually
-	 *         not happen
+	 *                     not happen
+	 * @created 04.10.2013
 	 */
 	public WikiAttachment getBuildAttachment() throws IOException {
 		return persistence.getAttachment();
@@ -113,11 +113,11 @@ public class CIDashboard {
 	/**
 	 * Returns the build of the specified buildNumber stored in this dashboard
 	 * or null if this build does not exist.
-	 * 
-	 * @created 19.05.2012
+	 *
 	 * @param buildNumber the build to be returned, you can use -1 to get the
-	 *        latest build
+	 *                    latest build
 	 * @return the specified build
+	 * @created 19.05.2012
 	 */
 	public BuildResult getBuild(int buildNumber) {
 		return getBuildIfPossible(buildNumber, true);
@@ -130,13 +130,13 @@ public class CIDashboard {
 	 * the specified indexes exceed the list of history, the array contains less
 	 * than "toIndex - fromIndex" values. If there is no build between the
 	 * indexes, an empty array is returned.
-	 * 
-	 * @created 19.05.2012
-	 * @param fromIndex the newest build to be returned, you can use -1 to
-	 *        start with the latest build
+	 *
+	 * @param fromIndex      the newest build to be returned, you can use -1 to
+	 *                       start with the latest build
 	 * @param numberOfBuilds the amount of builds you want to get (the next
-	 *        older ones)
+	 *                       older ones)
 	 * @return the specified builds
+	 * @created 19.05.2012
 	 */
 	public List<BuildResult> getBuilds(int fromIndex, int numberOfBuilds) {
 		fromIndex = cap(fromIndex);
@@ -155,10 +155,10 @@ public class CIDashboard {
 	/**
 	 * If the buildNumber is to high or low, the highest available buildNumber
 	 * is returned;
-	 * 
-	 * @created 18.09.2012
+	 *
 	 * @return the highest available build number if the given is higher that
-	 *         that
+	 * that
+	 * @created 18.09.2012
 	 */
 	private int cap(int buildIndex) {
 		int latestBuildNumber = getLatestBuildNumber();
@@ -171,9 +171,9 @@ public class CIDashboard {
 	 * Adds a new build to the dashboard and makes the underlying persistence to
 	 * store that build. The given build will always be considered as the latest
 	 * build
-	 * 
-	 * @created 19.05.2012
+	 *
 	 * @param build the build to be added
+	 * @created 19.05.2012
 	 */
 	public synchronized void addNewBuild(BuildResult build) {
 		if (build == null) throw new IllegalArgumentException("build is null!");
@@ -189,19 +189,27 @@ public class CIDashboard {
 		buildCache.setLatestBuild(build);
 		buildCache.addBuild(build);
 
+
 		// attach to wiki if possible
-		try {
-			persistence.write(build);
-		}
-		catch (IOException e) {
-			// we cannot store the build as attachment
-			// so log this and continue as usual
-			Log.severe("Cannot attached build information due to internal error", e);
-		}
+		// do it asynchronously
+		new Thread("CI-Persistence") {
+			@Override
+			public void run() {
+				try {
+					persistence.write(build);
+				}
+				catch (IOException e) {
+					// we cannot store the build as attachment
+					// so log this and continue as usual
+					Log.severe("Cannot attached build information due to internal error", e);
+				}
+			}
+		}.start();
+
 	}
 
 	private BuildResult getBuildIfPossible(final int buildVersion, boolean logging) {
-		BuildResult build = null;
+		BuildResult build;
 		build = buildCache.getBuild(buildVersion);
 		if (build != null) return build;
 		try {

@@ -23,30 +23,22 @@ public class DashboadScanner implements Scanner {
 		// execute builds and
 		// wait for build thread to terminate
 		CIHookManager.triggerHooks(article);
-		CIBuildManager.awaitTermination();
+		CIBuildManager.getInstance().awaitTermination();
 
 		List<Section<CIDashboardType>> dashboardTypes = Sections.successors(
 				article.getRootSection(), CIDashboardType.class);
 
 		if (dashboardTypes.isEmpty()) return;
 
-		PrintStream out = new PrintStream(target);
-		try {
+		try (PrintStream out = new PrintStream(target)) {
 			for (Section<CIDashboardType> section : dashboardTypes) {
 				CIDashboard dashboard = CIDashboardManager.getDashboard(section);
 				out.printf("<!-- Dashboard %s -->\n", dashboard.getDashboardName());
-				InputStream in = dashboard.getBuildAttachment().getInputStream();
-				try {
+				try (InputStream in = dashboard.getBuildAttachment().getInputStream()) {
 					Streams.stream(in, out);
-				}
-				finally {
-					in.close();
 				}
 				out.print("\n");
 			}
-		}
-		finally {
-			out.close();
 		}
 	}
 
