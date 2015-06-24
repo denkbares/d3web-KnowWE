@@ -37,7 +37,7 @@ public final class Patterns {
 	 * RegEx for one german word. \w and all umlauts. no whitespace. Possesive
 	 * Quantifier -> No Backtracking
 	 */
-	public static final String WORD = "[\\wÄÖÜäöüß]++";
+	public static final String WORD = "[\\wÄÖÜäöüß_-]++";
 
 	/**
 	 * RegEx for many german words, no leading or trailing spaces are allowed,
