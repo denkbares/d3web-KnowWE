@@ -33,7 +33,6 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.Patterns;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
@@ -41,14 +40,15 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
 
 /**
- * 
+ *
+ *
  * @author volker_belli
- * @created 07.12.2010
+ * @created 06.03.2013
  */
 public class CondRegularExpression extends D3webCondition<CondRegularExpression> {
 
 	private static final Pattern PATTERN = Pattern.compile(
-			"^\\s*" + Patterns.D3IDENTIFIER + "\\s*=\\s*/(.*)/\\s*$",
+			"^.+?=\\s*/(.*)/\\s*$",
 			Pattern.CASE_INSENSITIVE);
 
 	public CondRegularExpression() {
