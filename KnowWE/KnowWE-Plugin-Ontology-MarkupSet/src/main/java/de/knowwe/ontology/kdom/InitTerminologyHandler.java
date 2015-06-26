@@ -24,6 +24,11 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.model.QueryRow;
@@ -65,9 +70,10 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  */
 public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> {
 
+	private ExecutorService executorService = Executors.newFixedThreadPool(2);
+
 	@Override
 	public Collection<Message> create(OntologyCompiler compiler, Section<PackageCompileType> section) {
-
 		registerTerminology(compiler, compiler.getRdf2GoCore(), section);
 
 		Section<OntologyType> ontologyMarkup = Sections.ancestor(section, OntologyType.class);
@@ -144,6 +150,7 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 	}
 
 	private void importAttachment(OntologyCompiler compiler, Section<? extends AnnotationContentType> section, String attachmentFile, boolean silent) {
+		long start = System.currentTimeMillis();
 		Section<AttachmentType> importSection = Sections.successor(section, AttachmentType.class);
 		String path = createPath(section, attachmentFile);
 		WikiAttachment attachment;
@@ -167,23 +174,42 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 					+ section.getText().trim() + "' not found"));
 			return;
 		}
+
+		String fileName = attachment.getFileName();
+		Syntax syntax = Rdf2GoUtils.syntaxForFileName(fileName);
+		Future<?> mainReadFuture = executorService.submit(() -> readFrom(compiler, section, core, attachment, syntax));
+		if (!silent) {
+			// we need rdfs reasoning for the SPARQLs to work
+			Rdf2GoCore dummy = new Rdf2GoCore(RuleSet.RDFS);
+			readFrom(compiler, section, dummy, attachment, syntax);
+			// register the terminology imported in the empty dummy repository
+			registerTerminology(compiler, dummy, importSection);
+		}
 		try {
-			String fileName = attachment.getFileName();
-			Syntax syntax = Rdf2GoUtils.syntaxForFileName(fileName);
+			mainReadFuture.get();
+		}
+		catch (InterruptedException | ExecutionException e) {
+			handleException(compiler, section, attachment, e);
+		}
+		long duration = System.currentTimeMillis() - start;
+		if (duration > TimeUnit.SECONDS.toMillis(1)) {
+			Log.info("Loaded ontology from attachment " + path + " in " + duration + "ms");
+		}
+	}
+
+	private void readFrom(OntologyCompiler compiler, Section<? extends AnnotationContentType> section, Rdf2GoCore core, WikiAttachment attachment, Syntax syntax) {
+		try {
 			core.readFrom(attachment.getInputStream(), syntax);
-			if (!silent) {
-				// we need rdfs reasoning for the SPARQLs to work
-				Rdf2GoCore dummy = new Rdf2GoCore(RuleSet.RDFS);
-				dummy.readFrom(attachment.getInputStream(), syntax);
-				// register the terminology imported in the empty dummy repository
-				registerTerminology(compiler, dummy, importSection);
-			}
 		}
-		catch (Exception e) {
-			Log.severe("Exception while importing ontology", e);
-			Messages.storeMessage(compiler, section, this.getClass(), Messages.error("Error while importing ontology from '"
-					+ attachmentFile + "': " + e.getMessage()));
+		catch (IOException e) {
+			handleException(compiler, section, attachment, e);
 		}
+	}
+
+	private void handleException(OntologyCompiler compiler, Section<? extends AnnotationContentType> section, WikiAttachment attachment, Exception e) {
+		Log.severe("Exception while importing ontology", e);
+		Messages.storeMessage(compiler, section, this.getClass(), Messages.error("Error while importing ontology from '"
+				+ attachment.getPath() + "': " + e.getMessage()));
 	}
 
 	private String createPath(Section<?> section, String attachment) {
