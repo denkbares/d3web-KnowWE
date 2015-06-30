@@ -156,6 +156,7 @@ public class ResourceLoader {
 		addFirst("KnowWE-helper.js", Type.script);
 		addFirst("jquery-compatibility.js", Type.script);
 		addFirst("simpleStorage.min.js", Type.script);
+		addFirst("highlight.pack.js", Type.script);
 		addFirst("jquery.mousewheel.js", Type.script);
 		addFirst("jquery-plugin-collection.js", Type.script);
 		addFirst("jquery-tooltipster.js", Type.script);
