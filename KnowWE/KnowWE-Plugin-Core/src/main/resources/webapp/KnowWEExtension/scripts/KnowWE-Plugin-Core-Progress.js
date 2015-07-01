@@ -165,7 +165,7 @@ KNOWWE.core.plugin.progress = function() {
 			var params = {
 				action : 'GetProgressAction',
 				SectionID : sectionId
-			}
+			};
 
 			var options = {
 				url : KNOWWE.core.util.getURL(params),
