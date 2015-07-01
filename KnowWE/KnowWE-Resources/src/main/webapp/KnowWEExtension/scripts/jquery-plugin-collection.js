@@ -114,7 +114,7 @@
 				}),
 				type : 'post',
 				cache : false,
-				data : data,
+				data : data
 			}).success(function(data, status, jqXHR) {
 				if (jqXHR.status === 304) return; // no changes, do nothing
 				var parsed = JSON.parse(data);
