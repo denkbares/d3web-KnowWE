@@ -34,7 +34,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -119,14 +118,7 @@ public abstract class DiaFluxSystemTest {
 	public Retry retry = new Retry(3);
 
 	private void logIn() {
-		List<WebElement> elements = getDriver().findElements(By.cssSelector("a.action.login"));
-		if (elements.isEmpty()) return; // already logged in
-		elements.get(0).click();
-		getDriver().findElement(By.id("j_username")).sendKeys("test");
-		getDriver().findElement(By.id("j_password")).sendKeys("8bGNmPjn");
-		getDriver().findElement(By.name("submitlogin")).click();
-		new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.action.logout")));
-		new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
+		UITestUtils.logIn(getDriver());
 	}
 
 	@Test
@@ -778,14 +770,7 @@ public abstract class DiaFluxSystemTest {
 	}
 
 	private void awaitRerender(By by) {
-		try {
-			if (!getDriver().findElements(by).isEmpty()) {
-				new WebDriverWait(getDriver(), 5).until(ExpectedConditions.stalenessOf(getDriver().findElement(by)));
-			}
-		}
-		catch (TimeoutException ignore) {
-		}
-		new WebDriverWait(getDriver(), 5).until(ExpectedConditions.presenceOfElementLocated(by));
+		UITestUtils.awaitRerender(getDriver(), by);
 	}
 
 	private String readFile(String fileName) throws IOException {
