@@ -223,6 +223,10 @@
 		<repository>
 			<id>infovi-artifactory</id>
 			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/repo/</url>
+			<snapshots>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>ignore</checksumPolicy>
+			</snapshots>
 		</repository>
 		<repository>
 			<id>knowwe-snapshots</id>
@@ -231,7 +235,7 @@
 				<enabled>false</enabled>
 			</releases>
 			<snapshots>
-				<updatePolicy>interval:120</updatePolicy>
+				<updatePolicy>always</updatePolicy>
 				<checksumPolicy>ignore</checksumPolicy>
 			</snapshots>
 		</repository>
