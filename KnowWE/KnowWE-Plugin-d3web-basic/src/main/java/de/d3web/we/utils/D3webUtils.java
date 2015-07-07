@@ -52,7 +52,9 @@ import de.d3web.core.records.io.SessionPersistenceManager;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.blackboard.Fact;
+import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
+import de.d3web.indication.inference.PSMethodUserSelected;
 import de.d3web.scoring.Score;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
@@ -299,9 +301,11 @@ public class D3webUtils {
 			synchronized (session) {
 				// if the fact wants to set unknown as the value and the same fact already exists,
 				// the fact gets retracted instead, allowing to take back an answer completely.
-				Fact existingFact = session.getBlackboard().getValueFact(fact.getTerminologyObject());
-				if (Unknown.getInstance().equals(fact.getValue()) && fact.equals(existingFact)) {
-					session.getBlackboard().removeValueFact(fact);
+				Fact existingFact = session.getBlackboard().getValueFact(fact.getTerminologyObject(),
+						PSMethodUserSelected.getInstance());
+				if (Unknown.getInstance().equals(fact.getValue()) && fact.equals(existingFact)
+						|| (fact.getValue().equals(UndefinedValue.getInstance()) && existingFact != null)) {
+					session.getBlackboard().removeValueFact(existingFact);
 				}
 				else {
 					session.getBlackboard().addValueFact(fact);

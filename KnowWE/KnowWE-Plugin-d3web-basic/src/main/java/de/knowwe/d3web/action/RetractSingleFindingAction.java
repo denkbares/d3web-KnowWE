@@ -103,8 +103,7 @@ public class RetractSingleFindingAction extends AbstractAction {
 		if (question != null) {
 
 			Unknown unknown = Unknown.getInstance();
-			Fact fact = FactFactory.createUserEnteredFact(question,
-					unknown);
+			Fact fact = FactFactory.createUserEnteredFact(question,	unknown);
 			D3webUtils.setFindingSynchronized(fact, session, context);
 		}
 
