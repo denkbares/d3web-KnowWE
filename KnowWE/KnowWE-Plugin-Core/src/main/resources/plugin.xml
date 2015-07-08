@@ -414,6 +414,40 @@
 		<parameter id="scope" value="DefaultMarkupType" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="KDOMRendererRevealToolProvider">
+		<parameter id="class" value="de.knowwe.core.tools.KDOMRendererRevealToolProvider" />
+		<parameter id="name" value="KDOMRendererRevealToolProvider" />
+		<parameter id="description" value="Reveals the corresponding section in the RenderKDOM markup." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="9" />
+		<parameter id="scope" value="DefaultMarkupType" />
+		<parameter id="scope" value="QuestionDefinition" />
+		<parameter id="scope" value="SolutionDefinition" />
+		<parameter id="scope" value="QuestionReference" />
+		<parameter id="scope" value="QuestionnaireReference" />
+		<parameter id="scope" value="QASetReference" />
+		<parameter id="scope" value="QASetDefinition" />
+		<parameter id="scope" value="AnswerReference" />
+		<parameter id="scope" value="AnswerDefinition" />
+		<parameter id="scope" value="SolutionReference" />
+		<parameter id="scope" value="NamedObjectReference" />
+		<parameter id="scope" value="AbstractIRITermDefinition" />
+		<parameter id="scope" value="IRITermReference" />
+		<parameter id="scope" value="FlowchartOrderReference" />
+		<parameter id="scope" value="PackageTerm" />
+		<parameter id="scope" value="CellContent" />
+		<parameter id="scope" value="TSMElementName" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="KDOMRendererCollapseAllToolProvider">
+		<parameter id="class" value="de.knowwe.core.tools.KDOMRendererCollapseAllToolProvider" />
+		<parameter id="name" value="KDOMRendererCollapseAllToolProvider" />
+		<parameter id="description" value="Collapses all nodes in the RenderKDOM markup." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="9" />
+		<parameter id="scope" value="RenderKDOM" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OffToolProvider">
 		<parameter id="class" value="de.knowwe.core.tools.OffToolProvider" />
 		<parameter id="name" value="OffToolProvider" />
