@@ -261,14 +261,14 @@ TestCasePlayer.encodeCookieValue = function(cookievalue) {
 
 TestCasePlayer.update = function(adjustLeft) {
 	var scrollInfos = {};
-	jq$('.type_TestCasePlayer').find(".ReRenderSectionMarker").each(function() {
+	jq$('.type_TestCasePlayer .ReRenderSectionMarker').each(function() {
 		var id = jq$(this).children().first().attr('id');
 		var selected = jq$('#selector' + id).val();
 		var scrollInfo = {};
 		if (selected != TestCasePlayer.lastSelected[id]) {
 			TestCasePlayer.lastSelected[id] = selected;
 		} else {
-			var tableDiv = jq$("#" + id).find('.' + "wikitable").parent();
+			var tableDiv = jq$("#" + id).find('.wikitable').parent();
 			scrollInfo.left = tableDiv.scrollLeft();
 			scrollInfo.width = tableDiv[0].scrollWidth;
 			scrollInfo.restoreScroll = true;
@@ -289,9 +289,9 @@ TestCasePlayer.update = function(adjustLeft) {
 			}
 
 		}
-	}
-	KNOWWE.helper.observer.notify('update', fn);
-}
+	};
+	jq$('.type_TestCasePlayer .ReRenderSectionMarker').rerender(fn);
+};
 
 if (!KNOWWE.plugin.testCases)
 	KNOWWE.plugin.testCases = {};

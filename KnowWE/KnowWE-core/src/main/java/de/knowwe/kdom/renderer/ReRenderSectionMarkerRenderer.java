@@ -45,9 +45,9 @@ public class ReRenderSectionMarkerRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> sec, UserContext user, RenderResult string) {
-		KnowWEUtils.renderAnchor(sec, string);
-		boolean renderWrapper = !(user instanceof UserActionContext) || !"updateEvent".equals(user.getParameter("reason"));
+		boolean renderWrapper = !(user instanceof UserActionContext) || "asynchronRenderer".equals(user.getParameter("reason"));
 		if (renderWrapper) {
+			KnowWEUtils.renderAnchor(sec, string);
 			string.appendHtml("<div class='ReRenderSectionMarker' style='display: inline;' sectionId='"
 					+ sec.getID() + "' rel='{id:\""
 					+ sec.getID()
