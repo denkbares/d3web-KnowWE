@@ -123,11 +123,12 @@
 					$element.children().remove();
 					$element.append(html);
 				} else {
-					$element.replaceWith(html);
+					var $newElement = jq$(html);
+					$element.replaceWith($newElement);
+					$element = $newElement;
 				}
 				jq$('#knowWEInfoStatus').val(parsed.status);
 				KNOWWE.core.actions.init();
-				$element = $element.is('.ReRenderSectionMarker') ? $element : jq$('#' + id);
 				KNOWWE.helper.observer.notify("afterRerender", $element);
 				if (callback) callback();
 			}).always(function() {
