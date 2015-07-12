@@ -19,7 +19,6 @@
 
 package de.knowwe.core.tools;
 
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.renderer.RenderKDOMType;
@@ -35,31 +34,29 @@ import de.knowwe.util.Icon;
  */
 public class KDOMRendererRevealToolProvider implements ToolProvider {
 
-    @Override
-    public Tool[] getTools(Section<?> section, UserContext userContext) {
-        return new Tool[]{getExpandTool(section, userContext)};
-    }
+	@Override
+	public Tool[] getTools(Section<?> section, UserContext userContext) {
+		if (hasTools(section, userContext)) {
+			return new Tool[] { getExpandTool(section, userContext) };
+		}
+		else {
+			return new Tool[] {};
+		}
+	}
 
-    @Override
-    public boolean hasTools(Section<?> section, UserContext userContext) {
-        // RenderKDOM
-        Article article = userContext.getArticle();
-        Section<RenderKDOMType> successor = Sections.successor(article, RenderKDOMType.class);
-        if (successor == null || successor.isEmpty()) {
-            return false;
-        } else {
-            return true;
-        }
-    }
+	@Override
+	public boolean hasTools(Section<?> section, UserContext userContext) {
+		return Sections.successor(section.getArticle(), RenderKDOMType.class) != null;
+	}
 
-    protected Tool getExpandTool(Section<?> section, UserContext userContext) {
-        // Tool to expand the RenderKDOM table
-        String id = section.getID();
-        String jsAction = "KNOWWE.kdomtreetable.revealRenderKDOMTable('" + id +"')";
-        return new DefaultTool(
-                Icon.EXPAND,
-                "Reveal in rendered KDOM",
-                "Reveals the corresponding section in the RenderKDOM markup.",
-                jsAction, Tool.CATEGORY_LAST);
-    }
+	protected Tool getExpandTool(Section<?> section, UserContext userContext) {
+		// Tool to expand the RenderKDOM table
+		String id = section.getID();
+		String jsAction = "KNOWWE.kdomtreetable.revealRenderKDOMTable('" + id + "')";
+		return new DefaultTool(
+				Icon.EXPAND,
+				"Reveal in rendered KDOM",
+				"Reveals the corresponding section in the RenderKDOM markup.",
+				jsAction, Tool.CATEGORY_LAST);
+	}
 }
