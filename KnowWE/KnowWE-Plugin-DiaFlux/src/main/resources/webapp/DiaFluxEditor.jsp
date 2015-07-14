@@ -173,7 +173,6 @@
 	<link rel="stylesheet" type="text/css" href="cc/flow/contextmenu.css"/>
 	<link rel="stylesheet" type="text/css" href="cc/flow/edittools.css"/>
 	<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/jquery-treeTable.css'/>
-	<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/jquery-autocomplete.css'/>
 	<link rel='stylesheet' type='text/css'
 		  href='KnowWEExtension/css/KnowWE-Plugin-AutoComplete.css'/>
 </head>

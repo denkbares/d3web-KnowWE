@@ -144,7 +144,6 @@ public class ResourceLoader {
 	 */
 	private void loadDefaultResources() {
 		add("tooltipster.css", Type.stylesheet);
-		add("jquery-autocomplete.css", Type.stylesheet);
 		add("jquery-treeTable.css", Type.stylesheet);
 		add("jquery-ui.min.css", Type.stylesheet);
 		add("jquery-ui.structure.min.css", Type.stylesheet);

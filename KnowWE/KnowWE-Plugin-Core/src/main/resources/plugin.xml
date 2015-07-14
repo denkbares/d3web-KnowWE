@@ -109,7 +109,6 @@
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="KnowWE-Plugin-Core-CompositeEdit.js" />
 		<parameter id="css" value="KnowWE-Plugin-CompositeEdit.css" />
-		<parameter id="css" value="jquery-ui.css" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="CompositeEditSaveAction">
