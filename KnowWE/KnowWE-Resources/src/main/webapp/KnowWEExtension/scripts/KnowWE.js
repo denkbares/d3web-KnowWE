@@ -486,7 +486,7 @@ KNOWWE.core.util.form = function() {
 				var startPos = element.selectionStart;
 				var endPos = element.selectionEnd;
 				element.value = element.value.substring(0, startPos) + value
-				+ element.value.substring(endPos, element.value.length);
+					+ element.value.substring(endPos, element.value.length);
 				element.setSelectionRange(endPos + value.length, endPos + value.length);
 			} else {
 				element.value = value;
@@ -556,12 +556,13 @@ KNOWWE.core.rerendercontent = function() {
 		 */
 		init : function() {
 			KNOWWE.helper.observer.subscribe('update', function() {
-				jq$('.ReRenderSectionMarker').rerender(null, {
-					reason : "updateEvent",
-					status : jq$('#knowWEInfoStatus').val()
-				});
+				var parameters = {reason : "updateEvent"};
+				if (typeof this == "object") {
+					jq$.extend(parameters, this);
+				}
+				jq$('.ReRenderSectionMarker').rerender(null, parameters);
 			});
-			jq$('.asynchronRenderer').rerender(null, { reason : "asynchronRenderer"});
+			jq$('.asynchronRenderer').rerender(null, {reason : "asynchronRenderer"});
 		},
 		/**
 		 * Function: updateNode
@@ -712,7 +713,7 @@ var _KU = KNOWWE.core.util;
 				message = window.onbeforeunload();
 			}
 			if (!message) {
-				KNOWWE.helper.observer.notify('update');
+				KNOWWE.helper.observer.notify('update', {status : jq$('#knowWEInfoStatus').val()});
 			}
 		});
 		if (KNOWWE.core.util.isIE()) {

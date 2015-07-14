@@ -146,26 +146,6 @@
 		<parameter id="scope" value="TSMElementName" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="AddToWatchesToolProvider">
-		<parameter id="class" value="de.knowwe.core.tools.AddToWatchesToolProvider" />
-		<parameter id="name" value="AddToWatchesToolProvider" />
-		<parameter id="description" value="Offer a button to add this term to the watches menu and opens it." />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="scope" value="QuestionDefinition" />
-		<parameter id="scope" value="SolutionDefinition" />
-		<parameter id="scope" value="QuestionReference" />
-		<parameter id="scope" value="QuestionnaireReference" />
-		<parameter id="scope" value="QASetReference" />
-		<parameter id="scope" value="AnswerReference" />
-		<parameter id="scope" value="AnswerDefinition" />
-		<parameter id="scope" value="SolutionReference" />
-		<parameter id="scope" value="NamedObjectReference" />
-		<parameter id="scope" value="AbstractIRITermDefinition" />
-		<parameter id="scope" value="IRITermReference" />
-		<parameter id="scope" value="FlowchartOrderReference" />
-	</extension>
-
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="TagHandlerType">
 		<parameter id="class" value="de.knowwe.core.taghandler.TagHandlerType" />
 		<parameter id="name" value="TagHandlerType" />
@@ -632,14 +612,6 @@
 		<parameter id="class" value="de.knowwe.core.action.CompileStatusProvider" />
 		<parameter id="name" value="CompileStatusProvider" />
 		<parameter id="description" value="Provides a compile status" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="GetExpressionValueAction">
-		<parameter id="class" value="de.knowwe.core.action.GetExpressionValueAction" />
-		<parameter id="name" value="GetExpressionValueAction" />
-		<parameter id="description" value="Action that gets a value for an arbitrary expression." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

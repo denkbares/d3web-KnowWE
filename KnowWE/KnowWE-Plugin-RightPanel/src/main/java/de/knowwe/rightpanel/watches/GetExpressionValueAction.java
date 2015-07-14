@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 denkbares GmbH, Germany
+ * Copyright (C) 2015 denkbares GmbH, Germany
  *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -17,7 +17,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.core.action;
+package de.knowwe.rightpanel.watches;
 
 import java.io.IOException;
 
@@ -29,6 +29,7 @@ import de.d3web.collections.PriorityList;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.expression.ExpressionResolver;
 import de.knowwe.core.utils.KnowWEUtils;
 

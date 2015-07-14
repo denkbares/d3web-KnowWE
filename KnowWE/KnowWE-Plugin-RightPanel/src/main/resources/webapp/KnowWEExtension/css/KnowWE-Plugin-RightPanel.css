@@ -1,0 +1,263 @@
+/*
+ * Copyright (C) 2015 denkbares GmbH, Germany
+ *
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+
+#rightPanel {
+	border-left: 1px solid #9ACBFB;
+	background-color: #f9f9f9;
+	padding-left: 4px;
+	color: #036;
+	z-index: 500;
+}
+
+#rightPanel .rightpanelhide {
+	position: absolute;
+	top: -18px;
+	right: 2px;
+	cursor: pointer;
+	z-index: 500;
+}
+
+#rightPanel .rightpanelhide span {
+	top: 1px;
+}
+
+#rightPanel .rightpanelhide:hover > span {
+	color: blue !important;
+}
+
+#rightPanel .rightpanelhide img {
+	position: relative;
+	top: 3px;
+}
+
+#rightPanel .topbar {
+	position: relative;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	cursor: pointer;
+	background: rgb(232, 242, 249);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#f9f9f9), to(rgb(232, 242, 249))); /* Saf4+, Chrome */
+	background-image: -webkit-linear-gradient(top, #f9f9f9, rgb(232, 242, 249)); /* Chrome 10+, Saf5.1+ */
+	background-image: -moz-linear-gradient(top, #f9f9f9, rgb(232, 242, 249)); /* FF3.6+ */
+	background-image: -ms-linear-gradient(top, #f9f9f9, rgb(232, 242, 249)); /* IE10 */
+	background-image: -o-linear-gradient(top, #f9f9f9, rgb(232, 242, 249)); /* Opera 11.10+ */
+	background-image: linear-gradient(to bottom, #f9f9f9, rgb(232, 242, 249)); /* W3C */
+	background-position: 100% 0%;
+	background-size: cover;
+	border-top: 1px solid #9ACBFB;
+	background-color: #f9f9f9;
+}
+
+#rightPanel .topbar .title {
+	color: black;
+	font-weight: bold;
+	margin-left: 4px;
+}
+
+#rightPanel .topbar .title i {
+	color: black;
+	font-weight: bold;
+	margin-right: 0px;
+}
+
+#rightPanel .topbar .title i:before {
+	position: relative;
+	bottom: 1px;
+}
+
+#rightPanel .tooltitle {
+	position: relative;
+	font-weight: bold;
+}
+
+#rightPanel .collapseicon {
+	position: relative;
+	top: 2px;
+	padding-right: 2px
+}
+
+#rightPanel .tool {
+	position: relative;
+	left: -4px;
+	width: 103%;
+	background-color: white;
+}
+
+#rightPanel .content {
+	position: relative;
+	padding-right: 2px;
+	position: relative;
+}
+
+/* watches plugin for rightPanel*/
+
+#watches .newwatch textarea {
+	min-width: 250px;
+	background-color: #F5FAFF;
+	border: 1px dashed black;
+}
+
+#watches div.watchlistline {
+	padding: 5px;
+	padding-left: 26px;
+	padding-right: 5px;
+}
+
+#watches div.watchlistline:hover {
+	background-color: rgba(240, 240, 241, 0.62);
+}
+
+#watches .watchlist .watchlistline span.expression {
+	color: rgb(0, 128, 0);
+	margin-right: 5px;
+}
+
+#watches .watchlist .watchlistline span.value {
+	color: rgb(150, 110, 120);
+}
+
+#watches .watchlist .watchlistline span.value.expressionerror {
+	color: red;
+}
+
+#watches .watchlist .watchlistline span.value ~ span.value:before {
+	content: " | ";
+	color: black;
+}
+
+#watches .watchlist .watchlistline span.historyentry ~ span.historyentry:before {
+	content: ", ";
+	color: black;
+}
+
+#watches .watchlist .history > .historyentry:before {
+	color: black;
+	content: "[";
+}
+
+#watches .watchlist .historyentry:last-child:after {
+	color: black;
+	content: "]";
+}
+
+#watches .watchlist .watchlistline span.expression::after {
+	content: "=";
+	color: black;
+	margin-left: 5px;
+}
+
+#watches div.iconcontainer {
+	display: block;
+	position: absolute;
+	width: 27px;
+	left: 0px;
+	top: 0px;
+	height: 100%;
+	cursor: pointer;
+}
+
+#watches div.iconcontainer i {
+	top: 5px;
+	left: 7px;
+	position: relative;
+	visibility: hidden;
+	opacity: 0;
+	transition: visibility 0s linear 0.2s, opacity 0.2s linear;
+}
+
+#watches div.watchlistline:hover .icon {
+	visibility: visible;
+	opacity: 1;
+	transition-delay: 0.2s;
+}
+
+#watches div.iconcontainer:hover .icon {
+	color: blue;
+}
+
+#watches div.add img {
+	height: 11px !important;
+}
+
+#watches textarea {
+	resize: vertical;
+}
+
+#watches button {
+	height: 22px;
+	position: relative;
+	color: #036 !important;
+	font-size: 12px !important;
+	margin-top: 5px;
+	margin-bottom: 8px;
+	cursor: pointer;
+	border: 0;
+	background: #F9F9F9;
+	border: 1px solid #DDD;
+}
+
+#watches button[disabled] {
+	cursor: default !important;
+	-webkit-filter: grayscale(100%);
+	-moz-filter: grayscale(100%);
+	-o-filter: grayscale(100%);
+	-ms-filter: grayscale(100%);
+	filter: grayscale(100%);
+}
+
+#watches button[disabled]:hover {
+	cursor: default !important;
+	-webkit-filter: grayscale(100%);
+	-moz-filter: grayscale(100%);
+	-o-filter: grayscale(100%);
+	-ms-filter: grayscale(100%);
+	filter: grayscale(100%);
+	background-color: #F9F9F9 !important;
+}
+
+#watches button.addwatch {
+	width: 95px;
+	margin-left: 8px;
+}
+
+#watches button.addwatch i {
+	position: relative;
+	left: -4px;
+}
+
+#watches button.fromselection {
+	width: 112px;
+	margin-left: 8px;
+}
+
+#watches button:hover {
+	color: blue !important;
+	background-color: #eee !important;
+}
+
+#watches div.watchlistentry:hover img {
+	opacity: 1;
+	height: auto;
+}
+
+#watches div.watchlistentry {
+	cursor: text;
+	word-wrap: break-word;
+	position: relative;
+}

@@ -60,7 +60,7 @@ public class ValueTooltipRenderer extends TooltipRenderer {
 	}
 
 	protected int getTooltipDelay(Section<?> section, UserContext user) {
-		return 200;
+		return 1000;
 	}
 
 	@Override

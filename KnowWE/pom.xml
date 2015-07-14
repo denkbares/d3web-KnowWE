@@ -218,6 +218,7 @@
 		<module>KnowWE-Plugin-Visualization</module>
 		<module>KnowWE-Plugin-OntoVis</module>
 		<module>KnowWE-UITests</module>
+		<module>KnowWE-Plugin-RightPanel</module>
 	</modules>
 	<repositories>
 		<repository>

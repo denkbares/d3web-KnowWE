@@ -290,7 +290,7 @@ TestCasePlayer.update = function(adjustLeft) {
 
 		}
 	};
-	jq$('.type_TestCasePlayer .ReRenderSectionMarker').rerender(fn);
+	KNOWWE.helper.observer.notify('update', fn);
 };
 
 if (!KNOWWE.plugin.testCases)
