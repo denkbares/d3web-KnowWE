@@ -160,7 +160,7 @@
 		}
 	%>
 
-	<link rel="stylesheet" type="text/css" href="KnowWEExtension/css/jquery-ui.css"/>
+	<link rel="stylesheet" type="text/css" href="KnowWEExtension/css/jquery-ui.min.css"/>
 	<link rel="stylesheet" type="text/css" href="cc/kbinfo/dropdownlist.css"/>
 	<link rel="stylesheet" type="text/css" href="cc/kbinfo/objectselect.css"/>
 	<link rel="stylesheet" type="text/css" href="cc/kbinfo/objecttree.css"/>
@@ -173,8 +173,7 @@
 	<link rel="stylesheet" type="text/css" href="cc/flow/contextmenu.css"/>
 	<link rel="stylesheet" type="text/css" href="cc/flow/edittools.css"/>
 	<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/jquery-treeTable.css'/>
-	<link rel='stylesheet' type='text/css'
-		  href='KnowWEExtension/css/KnowWE-Plugin-AutoComplete.css'/>
+	<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/KnowWE-Plugin-AutoComplete.css'/>
 </head>
 <body onload="new FlowEditor(<%= jspHelper.getArticleIDsAsArray(Sections.get(kdomID)).replace("\"", "&quot;") %>).showEditor();">
 
