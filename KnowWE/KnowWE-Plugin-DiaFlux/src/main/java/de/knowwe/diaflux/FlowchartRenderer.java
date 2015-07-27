@@ -29,7 +29,6 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.diaflux.type.FlowchartType;
 
 /**
- * 
  * @author Reinhard Hatko
  */
 public class FlowchartRenderer implements Renderer {
@@ -42,8 +41,8 @@ public class FlowchartRenderer implements Renderer {
 		// render anchor to be able to link to that flowchart
 		String anchorName = KnowWEUtils.getAnchor(sec);
 		string.appendHtml("<a name='" + anchorName + "'></a>");
-		
-		String loaderId = "loader" + section.getID();
+
+		String loaderId = section.getID();
 		string.appendHtmlElement("span", "", "class",
 				"asynchronRenderer", "id", loaderId, "style");
 
