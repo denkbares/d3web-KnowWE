@@ -259,15 +259,15 @@ KNOWWE.editCommons.elements = function() {
 	return {
 
 		getSaveButton : function(jsFunction) {
-			return "<a class=\"action save\" " + "href=\"javascript:" + jsFunction + "\"" + ">Save</a>";
+			return "<a class=\"action save\" " + "onclick=\"" + jsFunction + "\"" + ">Save</a>";
 		},
 
 		getCancelButton : function(jsFunction) {
-			return "<a class=\"action cancel\" href=\"javascript:" + jsFunction + "\"" + ">Cancel</a>";
+			return "<a class=\"action cancel\" onclick=\"" + jsFunction + "\"" + ">Cancel</a>";
 		},
 
 		getDeleteSectionButton : function(jsFunction) {
-			return "<a class=\"action delete\" href=\"javascript:" + jsFunction + "\"" + ">Delete</a>";
+			return "<a class=\"action delete\" onclick=\"" + jsFunction + "\"" + ">Delete</a>";
 		},
 
 		getSaveCancelDeleteButtons : function(id, additionalButtonArray) {
