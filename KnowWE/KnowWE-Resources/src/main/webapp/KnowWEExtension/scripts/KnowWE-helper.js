@@ -2089,6 +2089,12 @@ Array.prototype.move = function (old_index, new_index) {
     return this; // for testing purposes
 };
 
+Array.prototype.filterDuplicates = function () {
+    return this.filter(function(elem, index, self) {
+        return index == self.indexOf(elem);
+    })
+};
+
 /**
  * Function: String.toLogger
  * Converts an array to a string.
