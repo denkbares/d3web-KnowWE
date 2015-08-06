@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -47,6 +48,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.util.RDFTool;
 import org.ontoware.rdf2go.vocabulary.RDFS;
+import org.ontoware.rdf2go.vocabulary.XSD;
 
 import de.d3web.collections.PartialHierarchy;
 import de.d3web.collections.PartialHierarchyTree;
@@ -64,13 +66,15 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class Rdf2GoUtils {
 
-	private static final SimpleDateFormat XSD_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+	private static final SimpleDateFormat XSD_DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+
+	private static final SimpleDateFormat PRIVATE_XSD_DATE_TIME_FORMAT = getXsdDateTimeFormat();
 
 	/**
 	 * Returns a {@link SimpleDateFormat} allowing to read and write ^^xsd:date
 	 */
-	public static SimpleDateFormat getXsdDateFormat() {
-		return (SimpleDateFormat) XSD_DATE_FORMAT.clone();
+	public static SimpleDateFormat getXsdDateTimeFormat() {
+		return (SimpleDateFormat) XSD_DATE_TIME_FORMAT.clone();
 	}
 
 	/**
@@ -640,6 +644,21 @@ public class Rdf2GoUtils {
 			insertLocaleConditional(locales, labelVar, builder);
 			builder.append(")");
 		}
+	}
+
+	private static String getDoubleAsString(Double doubleValue) {
+		if (doubleValue.equals(Double.POSITIVE_INFINITY)) return "INF";
+		if (doubleValue.equals(Double.NEGATIVE_INFINITY)) return "-INF";
+		if (doubleValue.equals(Double.NaN)) return "NaN";
+		return doubleValue.toString();
+	}
+
+	public static Literal createDoubleLiteral(Rdf2GoCore core, double d) {
+		return core.createDatatypeLiteral(getDoubleAsString(d), XSD._double);
+	}
+
+	public static Literal createDateTimeLiteral(Rdf2GoCore core, Date date) {
+		return core.createDatatypeLiteral(PRIVATE_XSD_DATE_TIME_FORMAT.format(date), XSD._dateTime);
 	}
 
 }
