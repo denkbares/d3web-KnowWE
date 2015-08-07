@@ -36,12 +36,31 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  */
 public class UITestUtils {
 
-	public static void logIn(WebDriver driver) {
-		List<WebElement> elements = driver.findElements(By.cssSelector("a.action.login"));
-		if (elements.isEmpty()) return; // already logged in
+	public enum UseCase {
+		CLAAS, d3web
+	}
+
+	public static void logIn(WebDriver driver, UseCase use) {
+		logIn(driver, "test", "8bGNmPjn", use);
+	}
+
+	public static void logIn(WebDriver driver, String username, String password, UseCase use) {
+		List<WebElement> elements = null;
+		if (use == UseCase.CLAAS) {
+			elements = driver.findElements(By.id("logincontent"));
+		} else if (use == UseCase.d3web) {
+			elements = driver.findElements(By.cssSelector("a.action.login"));
+		}
+
+		if (elements == null) {
+			throw new NullPointerException("No Login Interface found.");
+		} else if (elements.isEmpty()) {
+			return; // already logged in
+		}
+
 		elements.get(0).click();
-		driver.findElement(By.id("j_username")).sendKeys("test");
-		driver.findElement(By.id("j_password")).sendKeys("8bGNmPjn");
+		driver.findElement(By.id("j_username")).sendKeys(username);
+		driver.findElement(By.id("j_password")).sendKeys(password);
 		driver.findElement(By.name("submitlogin")).click();
 		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.action.logout")));
 		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));

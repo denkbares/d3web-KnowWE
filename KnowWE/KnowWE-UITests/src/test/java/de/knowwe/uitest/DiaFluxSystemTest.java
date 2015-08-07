@@ -118,7 +118,7 @@ public abstract class DiaFluxSystemTest {
 	public Retry retry = new Retry(3);
 
 	private void logIn() {
-		UITestUtils.logIn(getDriver());
+		UITestUtils.logIn(getDriver(), UITestUtils.UseCase.d3web);
 	}
 
 	@Test
