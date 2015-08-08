@@ -19,7 +19,7 @@ public class ChromeDiaFluxSystemTest extends DiaFluxSystemTest {
 
 	private static RemoteWebDriver driver;
 
-	private static boolean devMode = true;
+	private static boolean devMode = false;
 
 	@BeforeClass
 	public static void setUp() throws Exception {
