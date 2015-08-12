@@ -27,10 +27,12 @@ import javax.servlet.ServletContext;
 
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.ontology.compile.OntologyCompiler;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.rdfs.vis.util.Utils;
+import de.knowwe.visualization.Config;
+import de.knowwe.visualization.dot.DOTRenderer;
 
 /**
  * 
@@ -44,21 +46,11 @@ public class OntoVisDisplaySVG extends AbstractAction {
 		ServletContext servletContext = context.getServletContext();
 		if (servletContext == null) return; // at wiki startup only
 
-		String sectionID = context.getParameter("SectionID");
-		String realPath = servletContext.getRealPath("");
-		String separator = System.getProperty("file.separator");
-		String tmpPath = separator + "KnowWEExtension" + separator + "tmp" + separator;
+		Section<?> section = Sections.get(context.getParameter("SectionID"));
+		Config config = new Config(Sections.cast(section, DefaultMarkupType.class));
+		config.setCacheFileID(Utils.getFileID(section));
+		File svg = new File(DOTRenderer.getFilePath(config) + ".svg");
 
-		// find graph name
-		Section<?> s = Sections.get(sectionID);
-		OntologyCompiler ontoCompiler = Compilers.getCompiler(s, OntologyCompiler.class);
-
-		String textHash = String.valueOf(s.getText().hashCode());
-		String compHash = String.valueOf(ontoCompiler.getCompileSection().getTitle().hashCode());
-
-		String path = realPath + tmpPath + "graph_" + textHash + "_" + compHash + ".svg";
-
-		File svg = new File(path);
 		FileInputStream fis = new FileInputStream(svg);
 		OutputStream ous = context.getOutputStream();
 		byte[] readBuffer = new byte[2156];
