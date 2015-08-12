@@ -220,11 +220,11 @@ public class DOTRenderer {
 			}
 			buffy.append("</TD>");
 
-			String conceptName = nodeLabel.replace("\\n", "<BR ALIGN=\"CENTER\"/>").replace("&", "&amp;");
+			String conceptName = escapeDot(nodeLabel.replace("\\n", "<BR ALIGN=\"CENTER\"/>"));
 
 			buffy.append("<TD BORDER=\"2\">");
 			buffy.append("<B>");
-			buffy.append(Strings.unquote(conceptName).replace("&", "&amp;"));
+			buffy.append(escapeDot(Strings.unquote(conceptName)));
 			buffy.append("</B>");
 			buffy.append("</TD>");
 			buffy.append("</TR>");
@@ -232,11 +232,11 @@ public class DOTRenderer {
 			for (Edge edge : edges) {
 				buffy.append("<TR>");
 				buffy.append("<TD BORDER=\"1\">");
-				buffy.append(edge.getPredicate().replace("&", "&amp;"));
+				buffy.append(escapeDot(edge.getPredicate()));
 				buffy.append("</TD>");
 
 				buffy.append("<TD BORDER=\"1\">");
-				buffy.append(edge.getObject().getConceptLabel().replace("&", "&amp;"));
+				buffy.append(escapeDot(edge.getObject().getConceptLabel()));
 				buffy.append("</TD>");
 				buffy.append("</TR>");
 			}
@@ -245,6 +245,14 @@ public class DOTRenderer {
 			return buffy.toString();
 		}
 	}
+
+	private static String escapeDot(String text) {
+		text = text.replace("&", "&amp;");
+		text = text.replace("<", "&lt;");
+		text = text.replace(">", "&gt;");
+		return text;
+	}
+
 
 	private static String createNodeLabel(String name, RenderingStyle.Fontstyle f) {
 		String nodeLabel = Utils.prepareLabel(name);
