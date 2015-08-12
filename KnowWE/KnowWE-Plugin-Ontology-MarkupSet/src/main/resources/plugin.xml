@@ -146,6 +146,14 @@
 		<parameter id="priority" value="2" />
 	</extension>
 
+	<extension plugin-id="KnowWE-Plugin-Ontology-MarkupSet" point-id="SparqlResultNodeRenderer"
+		id="TermDefinitionLinkNodeRenderer">
+		<parameter id="class" value="de.knowwe.ontology.sparql.TermDefinitionLinkNodeRenderer" />
+		<parameter id="name" value="TermDefinitionLinkNodeRenderer" />
+		<parameter id="description" value="NodeRenderer TermDefinitionLinkNodeRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="1.1" />
+	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="OntologyType">
 		<parameter id="class" value="de.knowwe.ontology.compile.OntologyType" />
