@@ -682,7 +682,11 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 				else {
 					filter.append(" || ");
 				}
-				filter.append(variable).append(" = ").append(conceptDeclaration.getName());
+				String concept = conceptDeclaration.getName();
+				if (concept.matches("https?://.+")) {
+					concept = "<" + concept + ">";
+				}
+				filter.append(variable).append(" = ").append(concept);
 			}
 
 		}
