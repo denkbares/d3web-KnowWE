@@ -194,7 +194,7 @@ public class DOTRenderer {
 	private static String createHTMLTable(ConceptNode node, SubGraphData data, RenderingStyle.Fontstyle f) {
 		final Map<ConceptNode, Set<Edge>> clusters = data.getClusters();
 		final Set<Edge> edges = clusters.get(node);
-		String nodeLabel = createNodeLabel(node.getName(), f);
+		String nodeLabel = createNodeLabel(escapeDot(node.getName()), f);
 
 		if (edges == null || edges.size() == 0) {
 			return nodeLabel;
@@ -220,11 +220,11 @@ public class DOTRenderer {
 			}
 			buffy.append("</TD>");
 
-			String conceptName = escapeDot(nodeLabel.replace("\\n", "<BR ALIGN=\"CENTER\"/>"));
+			String conceptName = nodeLabel.replace("\\n", "<BR ALIGN=\"CENTER\"/>");
 
 			buffy.append("<TD BORDER=\"2\">");
 			buffy.append("<B>");
-			buffy.append(escapeDot(Strings.unquote(conceptName)));
+			buffy.append(Strings.unquote(conceptName));
 			buffy.append("</B>");
 			buffy.append("</TD>");
 			buffy.append("</TR>");
