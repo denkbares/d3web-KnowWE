@@ -172,7 +172,9 @@ public class GetInfoObjects extends AbstractAction {
 				Section<D3webTermDefinition> d3webDefinition = Sections.cast(section, D3webTermDefinition.class);
 				@SuppressWarnings("unchecked")
 				NamedObject object = d3webDefinition.get().getTermObject(definitionCompiler, d3webDefinition);
-				objects.add(object);
+				if (object != null) {
+					objects.add(object);
+				}
 				continue;
 			}
 
