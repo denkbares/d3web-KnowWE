@@ -30,22 +30,19 @@ import javax.servlet.http.HttpServletResponse;
 import de.d3web.utils.Log;
 
 /**
- * ActionServlet is a Servlet for ajax-based interview or any other user
- * interfaces.
+ * ActionServlet is a Servlet for ajax-based interview or any other user interfaces.
  * <p/>
- * ActionServlet provides an extensible set of actions that can be used to
- * provide required functionality. These actions can be used from client side to
- * proceed e.g. within the interview or to deliver required information.
+ * ActionServlet provides an extensible set of actions that can be used to provide required
+ * functionality. These actions can be used from client side to proceed e.g. within the interview or
+ * to deliver required information.
  * <p/>
- * New actions can be added easily by providing a class implementing the
- * {@link Action} interface and adds it to the package specified by the
- * this.COMMAND_PACKAGE constant (or a sub-package). The command name is the
- * name of the class, or if it is in a sub-package, the class name preceded by
- * the missing sub-package names (e.g. command name for class
- * "cc.d3web.use.servlet.cmd.ajax.Restart" will be "ajax.Restart").
+ * New actions can be added easily by providing a class implementing the {@link Action} interface
+ * and adds it to the package specified by the this.COMMAND_PACKAGE constant (or a sub-package). The
+ * command name is the name of the class, or if it is in a sub-package, the class name preceded by
+ * the missing sub-package names (e.g. command name for class "cc.d3web.use.servlet.cmd.ajax.Restart"
+ * will be "ajax.Restart").
  * <p/>
- * There are two methods of calling a action:
- * <ol>
+ * There are two methods of calling a action: <ol>
  * <p/>
  * <li>A action is called by using a POST or GET for the following URL:
  * <p/>
@@ -53,11 +50,11 @@ import de.d3web.utils.Log;
  * &quot;http://&lt;host&gt;:&lt;port&gt;[/&lt;servlet-locator&gt;]/&lt;command-name&gt;[/&lt;path-suffix&gt;]&quot;
  * </pre>
  * <p/>
- * Depending on the action, it may utilize information given by query parameters
- * or the path suffix to produce the desired outcome.</li>
+ * Depending on the action, it may utilize information given by query parameters or the path suffix
+ * to produce the desired outcome.</li>
  * <p/>
- * <li>In addition you can call a series of actions using an xml structure as
- * the body of a post request (or the query string). The url of this method is:
+ * <li>In addition you can call a series of actions using an xml structure as the body of a post
+ * request (or the query string). The url of this method is:
  * <p/>
  * <pre>
  * &quot;http://&lt;host&gt;:&lt;port&gt;[/&lt;servlet-locator&gt;]/command&quot;
@@ -73,15 +70,14 @@ import de.d3web.utils.Log;
  * 	&lt;/commands&gt;
  * </pre>
  * <p/>
- * The action tag can be repeated multiple times. The example above is almost
- * identical to the following url:
+ * The action tag can be repeated multiple times. The example above is almost identical to the
+ * following url:
  * <p/>
  * <pre>
  * &quot;http://&lt;host&gt;:&lt;port&gt;[/&lt;servlet-locator&gt;]/ajax.Restart/ui.zip/index.html?foo=bla&quot;
  * </pre>
  * <p/>
- * </li>
- * </ol>
+ * </li> </ol>
  *
  * @author Volker Belli (refactored by Sebastian Furth)
  */
@@ -126,7 +122,15 @@ public abstract class AbstractActionServlet extends HttpServlet {
 		try {
 			// get action and execute it
 			Action cmd = context.getAction();
-			cmd.execute(context);
+			if (cmd == null) {
+				String message = "no action '" + getActionName(request) +
+						"' for requested path: " + request.getPathInfo();
+				Log.severe(message);
+				response.sendError(404, message);
+			}
+			else {
+				cmd.execute(context);
+			}
 		}
 		catch (Throwable e) { // NOSONAR
 			Log.severe("Exception while executing action", e);
@@ -134,7 +138,7 @@ public abstract class AbstractActionServlet extends HttpServlet {
 		}
 	}
 
-	protected abstract UserActionContext createActionContext(HttpServletRequest request, HttpServletResponse response);
+	protected abstract UserActionContext createActionContext(HttpServletRequest request, HttpServletResponse response)  throws IOException;
 
 	private void doXmlActions(HttpServletRequest request, HttpServletResponse response, Reader xmlReader) throws IOException {
 		throw new IllegalStateException("Not implemented yet");
