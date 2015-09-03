@@ -72,7 +72,7 @@ public class Icon {
 	public static final Icon COMMENT = new Icon("fa-comment-o");
 	public static final Icon STATISTICS = new Icon("fa-line-chart");
 	public static final Icon MINUS = new Icon("fa-minus");
-	public static final Icon PLUS = new Icon("fa-minus");
+	public static final Icon PLUS = new Icon("fa-plus");
 	public static final Icon ADD = new Icon("fa-plus-circle");
 	public static final Icon BULB = new Icon("fa-circle");
 	public static final Icon STOP = new Icon("fa-stop");
