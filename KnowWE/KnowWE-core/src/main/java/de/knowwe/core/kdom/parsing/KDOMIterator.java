@@ -84,7 +84,7 @@ public class KDOMIterator implements Iterator<Section<? extends Type>> {
 	 * <p/>
 	 * <b>Note:</b><br> The non-accepted node itself is NOT (!) excluded from the iteration.
 	 *
-	 * @param root the root node to start the iteration
+	 * @param root          the root node to start the iteration
 	 * @param descentFilter a filter that truncates branches if the parent node is not accepted
 	 * @see de.knowwe.kdom.filter.SectionFilter#accept(Section)
 	 */
@@ -99,13 +99,14 @@ public class KDOMIterator implements Iterator<Section<? extends Type>> {
 	 * <p/>
 	 * <b>Note:</b><br> The non-accepted node itself is NOT (!) excluded from the iteration.
 	 *
-	 * @param roots the root nodes to start the iteration
+	 * @param roots         the root nodes to start the iteration
 	 * @param descentFilter a filter that truncates branches if the parent node is not accepted
 	 * @see de.knowwe.kdom.filter.SectionFilter#accept(Section)
 	 */
 	public static <T extends Type> KDOMIterator depthFirst(Iterable<Section<T>> roots, SectionFilter descentFilter) {
 		return depthFirst(roots.iterator(), descentFilter);
 	}
+
 	/**
 	 * Creates a depth-first iterator that visits the specified root nodes and the
 	 * depth-first order of all the successor nodes. It truncates all the sub-branches from the
@@ -113,7 +114,7 @@ public class KDOMIterator implements Iterator<Section<? extends Type>> {
 	 * <p/>
 	 * <b>Note:</b><br> The non-accepted node itself is NOT (!) excluded from the iteration.
 	 *
-	 * @param roots the root nodes to start the iteration
+	 * @param roots         the root nodes to start the iteration
 	 * @param descentFilter a filter that truncates branches if the parent node is not accepted
 	 * @see de.knowwe.kdom.filter.SectionFilter#accept(Section)
 	 */
@@ -123,7 +124,7 @@ public class KDOMIterator implements Iterator<Section<? extends Type>> {
 
 	private KDOMIterator(Iterator roots, SectionFilter descentFilter) {
 		this.descentFilter = descentFilter;
-		iterators.push(roots);
+		if (roots.hasNext()) iterators.push(roots); // we do not add empty iterators...
 	}
 
 	@Override
@@ -160,7 +161,7 @@ public class KDOMIterator implements Iterator<Section<? extends Type>> {
 			List<Section> children = next.getChildren();
 			if (!children.isEmpty()) {
 				Iterator<Section> childIterator = children.iterator();
-				if (maxDepth >= 0) childIterator = new DepthIterator<>(depth+1, childIterator);
+				if (maxDepth >= 0) childIterator = new DepthIterator<>(depth + 1, childIterator);
 				iterators.push(childIterator);
 			}
 		}
