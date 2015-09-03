@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.function.BiFunction;
 
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
@@ -124,8 +125,24 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 */
 	protected final T type;
 
+	/**
+	 * Returns the type instance of this section.
+	 *
+	 * @return the type instance of this section.
+	 */
 	public T get() {
 		return type;
+	}
+
+	/**
+	 * Returns the result of the given method of this section's type applied to this section.
+	 *
+	 * @param method a method of this section's type
+	 * @param <R> the type of the returned object
+	 * @return the result of the given method applied to this section
+	 */
+	public <R> R get(BiFunction<T, Section<T>, R> method) {
+		return method.apply(get(), this);
 	}
 
 	public static <T extends Type> Section<T> createSection(String text, T o, Section<? extends Type> parent) {
