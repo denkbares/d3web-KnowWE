@@ -15,6 +15,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,6 +45,15 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 	private final Iterable<Section<T>> sections;
 
+	public static <T extends Type> Sections<T> $(Iterable<Section<? extends T>> sections) {
+		//noinspection unchecked
+		return new Sections(sections);
+	}
+
+	public static <T extends Type> Sections<T> $(Section<T> section) {
+		return new Sections<>(section);
+	}
+
 	public Sections(Section<T> section) {
 		this(Collections.singletonList(section));
 	}
@@ -52,25 +62,54 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		this.sections = sections;
 	}
 
-	public static <T extends Type> Sections<T> create(Iterable<Section<? extends T>> sections) {
-		//noinspection unchecked
-		return new Sections((Iterable) sections);
+	/**
+	 * Maps the sections to the results of the mapper function. Returns an ordinary Java util {@link Stream} instance.
+	 *
+	 * @param mapper the function to map/convert the sections to the desired results
+	 * @param <R>    the result type
+	 * @return a java stream with the results of the mapper function
+	 */
+	public <R> Stream<R> map(BiFunction<T, Section<T>, R> mapper) {
+		return stream().map(s -> s.get(mapper));
 	}
 
-	public static Sections<Type> definitions(TerminologyManager manager, Identifier identifier) {
-		return Sections.create(manager.getTermDefiningSections(identifier));
+	/**
+	 * Maps the sections to the results of the mapper function. Returns an ordinary Java util {@link Stream} instance.
+	 *
+	 * @param mapper the function to map/convert the sections to the desired results
+	 * @param <R>    the result type
+	 * @return a java stream with the results of the mapper function
+	 */
+	public <R> Stream<R> map(Function<Section<? super T>, ? extends R> mapper) {
+		return stream().map(mapper);
 	}
 
-	public static Sections<Type> definitions(TermCompiler compiler, Identifier identifier) {
+	/**
+	 * Maps the first available section to the result of the mapper function. If there is not section, <tt>null</tt> is
+	 * returned.
+	 *
+	 * @param mapper the function to map/convert the section to the result
+	 * @param <R>    the result type
+	 * @return the result returned by the mapper function for the first section
+	 */
+	public <R> R mapFirst(BiFunction<T, Section<T>, R> mapper) {
+		return map(mapper).findFirst().orElse(null);
+	}
+
+	public static Sections<? extends Type> definitions(TerminologyManager manager, Identifier identifier) {
+		return $(manager.getTermDefiningSections(identifier));
+	}
+
+	public static Sections<? extends Type> definitions(TermCompiler compiler, Identifier identifier) {
 		TerminologyManager terminologyManager = compiler.getTerminologyManager();
 		return definitions(terminologyManager, identifier);
 	}
 
-	public static Sections<Type> references(TerminologyManager manager, Identifier identifier) {
-		return Sections.create(manager.getTermReferenceSections(identifier));
+	public static Sections<? extends Type> references(TerminologyManager manager, Identifier identifier) {
+		return $(manager.getTermReferenceSections(identifier));
 	}
 
-	public static Sections<Type> references(TermCompiler compiler, Identifier identifier) {
+	public static Sections<? extends Type> references(TermCompiler compiler, Identifier identifier) {
 		TerminologyManager terminologyManager = compiler.getTerminologyManager();
 		return references(terminologyManager, identifier);
 	}
@@ -137,7 +176,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 */
 	public Sections<T> nth(int index) {
 		Section<T> nth = getNth(index);
-		return new Sections<T>(nth == null ? Collections.emptyList() : Collections.singletonList(nth));
+		return new Sections<>(nth == null ? Collections.emptyList() : Collections.singletonList(nth));
 	}
 
 	/**
@@ -212,7 +251,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 			KDOMIterator depthFirst = KDOMIterator.depthFirst(
 					sections, section -> Sections.canHaveSuccessor(section, clazz));
 			depthFirst.setMaxDepth(maxDepth);
-			return FilterTypeIterator.<R>create(depthFirst, clazz);
+			return FilterTypeIterator.create(depthFirst, clazz);
 		});
 	}
 
@@ -304,15 +343,6 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	public Sections<T> filter(SectionFilter filter) {
 		return new Sections<>(() -> SectionFilter.filter(sections.iterator(), filter));
 	}
-
-//	public Sections<T> select(Scope scope) {
-//		// TODO: falsch!!! Muss ähnlich sein wie successor(), mit Scope.canMatchSuccessor()
-//		return filter(scope::matches);
-//	}
-//
-//	public Sections<T> select(String scope) {
-//		return select(Scope.getScope(scope));
-//	}
 
 	/**
 	 * Returns a new Sections instance containing the closest ancestor of each of this instance's
