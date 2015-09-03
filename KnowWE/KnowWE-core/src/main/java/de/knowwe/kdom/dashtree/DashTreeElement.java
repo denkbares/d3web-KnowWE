@@ -51,7 +51,7 @@ public class DashTreeElement extends AbstractType {
 	}
 
 	public void setDashTreeElementContent(Type newType) {
-		this.replaceChildType(newType, elementContent.getClass());
+		this.replaceChildType(elementContent.getClass(), newType);
 		elementContent = newType;
 	}
 

@@ -101,11 +101,11 @@ public interface Type {
 	 * of the passed class, if such is existing.
 	 * 
 	 * @created 27.08.2013
-	 * @param newType type to be inserted
 	 * @param classToBeReplaced class to determine what type should be replaced
+	 * @param newType type to be inserted
 	 * @return true if a replacement has been made
 	 */
-	boolean replaceChildType(Type type, Class<? extends Type> c);
+	boolean replaceChildType(Class<? extends Type> typeToBeReplace, Type newType);
 
 	/**
 	 * Clears the list of children for this type.

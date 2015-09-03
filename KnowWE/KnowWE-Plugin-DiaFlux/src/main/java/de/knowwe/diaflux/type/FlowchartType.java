@@ -61,7 +61,7 @@ public class FlowchartType extends AbstractXMLType {
 	}
 
 	public void replaceHead() {
-		this.replaceChildType(new FlowchartXMLHeadType(), XMLHead.class);
+		this.replaceChildType(XMLHead.class, new FlowchartXMLHeadType());
 	}
 
 	public static String getFlowchartName(Section<FlowchartType> sec) {

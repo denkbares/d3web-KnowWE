@@ -126,13 +126,13 @@ public abstract class AbstractType implements Type, Sectionizable {
 	}
 
 	@Override
-	public boolean replaceChildType(Type type, Class<? extends Type> c) {
-		Type replacedType = childrenTypes.replaceType(type, c);
+	public boolean replaceChildType(Class<? extends Type> typeToBeReplace, Type newType) {
+		Type replacedType = childrenTypes.replaceType(typeToBeReplace, newType);
 		if (replacedType != null && replacedType instanceof AbstractType) {
 			removeParentChildLink((AbstractType) replacedType);
 		}
-		if (type instanceof AbstractType) {
-			addParentChildLink((AbstractType) type);
+		if (newType instanceof AbstractType) {
+			addParentChildLink((AbstractType) newType);
 		}
 		return replacedType != null;
 	}

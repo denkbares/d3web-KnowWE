@@ -416,6 +416,8 @@
 		<parameter id="scope" value="PackageTerm" />
 		<parameter id="scope" value="CellContent" />
 		<parameter id="scope" value="TSMElementName" />
+		<parameter id="scope" value="SimpleReference" />
+		<parameter id="scope" value="SimpleDefinition" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="KDOMRendererCollapseAllToolProvider">

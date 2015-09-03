@@ -36,7 +36,13 @@ import de.knowwe.core.kdom.parsing.Section;
  */
 public class AllTextFinderTrimmed implements SectionFinder {
 
+	private static AllTextFinderTrimmed instance;
 	private final boolean trimBlankLinesOnly;
+
+	public static AllTextFinderTrimmed getInstance() {
+		if (instance == null) instance = new AllTextFinderTrimmed();
+		return instance;
+	}
 
 	public AllTextFinderTrimmed() {
 		this(false);

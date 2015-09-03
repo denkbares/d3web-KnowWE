@@ -33,7 +33,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
  */
 public class DefaultMarkupPreviewRenderer extends AbstractPreviewRenderer {
 
-	public static enum Select {
+	public enum Select {
 		/**
 		 * Shows all successors matching the scope
 		 */
@@ -242,7 +242,7 @@ public class DefaultMarkupPreviewRenderer extends AbstractPreviewRenderer {
 	}
 
 	static void renderSections(List<Section<?>> previews, UserContext user, RenderResult result) {
-		List<Section<?>> list = new ArrayList<Section<?>>(previews);
+		List<Section<?>> list = new ArrayList<>(previews);
 		Collections.sort(list);
 		DefaultMarkupRenderer.renderContentSections(list, false, user, result);
 	}
@@ -253,7 +253,6 @@ public class DefaultMarkupPreviewRenderer extends AbstractPreviewRenderer {
 	 *
 	 * @param parent the parent section to start the search from
 	 * @param successors the list of potential successors
-	 * @return
 	 * @created 26.08.2013
 	 */
 	private static boolean hasSuccessor(Section<?> parent, Collection<Section<?>> successors) {

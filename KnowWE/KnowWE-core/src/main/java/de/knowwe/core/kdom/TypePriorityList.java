@@ -51,12 +51,12 @@ public class TypePriorityList {
 	 * of the passed class, if such is existing.
 	 * 
 	 * @created 27.08.2013
-	 * @param newType type to be inserted
 	 * @param classToBeReplaced class to determine what type should be replaced
+	 * @param newType type to be inserted
 	 * @return the replaced type if the replacement was successful, else
 	 *         <tt>null</tt> is returned
 	 */
-	public Type replaceType(Type newType, Class<? extends Type> classToBeReplaced) {
+	public Type replaceType(Class<? extends Type> classToBeReplaced, Type newType) {
 		for (int i = 0; i < types.size(); i++) {
 			Type type = types.get(i);
 			if (classToBeReplaced.isAssignableFrom(type.getClass())) {
