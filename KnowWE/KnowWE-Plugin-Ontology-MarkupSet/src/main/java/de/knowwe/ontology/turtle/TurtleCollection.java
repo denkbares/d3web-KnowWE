@@ -92,7 +92,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 				this.addChildType(new BlankNode());
 				this.addChildType(new BlankNodeID());
 				this.addChildType(new TurtleLiteralType());
-				this.addChildType(new TurtleLongURI());
+				this.addChildType(new EncodedTurtleURI());
 				this.addChildType(new TurtleURI());
 
 				this.setSectionFinder(new SectionFinder() {

@@ -38,7 +38,6 @@ import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.Messages;
 import de.knowwe.ontology.compile.OntologyCompiler;
@@ -60,21 +59,16 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 	static boolean STRICT_COMPILATION = false;
 
 	public Object() {
-		this.setSectionFinder(new SectionFinder() {
-
-			@Override
-			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-				return SectionFinderResult.resultList(Strings.splitUnquoted(text, ",", false,
-						TurtleMarkup.TURTLE_QUOTES));
-			}
-		});
+		this.setSectionFinder(
+				(text, father, type) ->
+						SectionFinderResult.resultList(Strings.splitUnquoted(text, ",", false, TurtleMarkup.TURTLE_QUOTES)));
 		this.addChildType(new BlankNode());
 		this.addChildType(new BlankNodeID());
 		this.addChildType(TurtleCollection.getInstance());
 		this.addChildType(new TurtleLiteralType());
 		this.addChildType(new BooleanLiteral());
 		this.addChildType(new NumberLiteral());
-		this.addChildType(new TurtleLongURI());
+		this.addChildType(new EncodedTurtleURI());
 		this.addChildType(createObjectURIWithDefinition());
 		this.addChildType(new LazyURIReference());
 	}
@@ -139,7 +133,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		StatementProviderResult result = new StatementProviderResult();
 		boolean termError = false;
 		/*
-         * Handle OBJECT
+		 * Handle OBJECT
 		 */
 		Node object = section.get().getNode(section, core);
 		Section<TurtleURI> turtleURITermObject = Sections.child(section, TurtleURI.class);

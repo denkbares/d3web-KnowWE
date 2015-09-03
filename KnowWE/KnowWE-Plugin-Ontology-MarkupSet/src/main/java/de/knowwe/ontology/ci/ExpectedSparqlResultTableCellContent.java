@@ -21,7 +21,7 @@ package de.knowwe.ontology.ci;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.ontology.turtle.TurtleLiteralType;
-import de.knowwe.ontology.turtle.TurtleLongURI;
+import de.knowwe.ontology.turtle.EncodedTurtleURI;
 import de.knowwe.ontology.turtle.TurtleURI;
 
 
@@ -35,7 +35,7 @@ public class ExpectedSparqlResultTableCellContent extends AbstractType {
 	public ExpectedSparqlResultTableCellContent() {
 		this.setSectionFinder(new AllTextFinderTrimmed());
 		this.addChildType(new TurtleLiteralType());
-		this.addChildType(new TurtleLongURI());
+		this.addChildType(new EncodedTurtleURI());
 		this.addChildType(new TurtleURI());
 	}
 }

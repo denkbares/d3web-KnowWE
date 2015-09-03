@@ -18,17 +18,13 @@
  */
 package de.knowwe.ontology.turtle;
 
-import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.Types;
-import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.kdom.renderer.CompositeRenderer;
 import de.knowwe.ontology.edit.DropTargetRenderer;
-import de.knowwe.ontology.kdom.resource.ResourceReference;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.ResourceProvider;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
@@ -36,14 +32,12 @@ import de.knowwe.rdf2go.Rdf2GoCompiler;
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
 
-import java.util.List;
-
 public class Subject extends AbstractType implements ResourceProvider<Subject> {
 
 	public Subject(Type subjectDefinitionType) {
 		this.addChildType(new BlankNode());
 		this.addChildType(new BlankNodeID());
-		this.addChildType(new TurtleLongURI());
+		this.addChildType(new EncodedTurtleURI());
 		this.addChildType(subjectDefinitionType);
 		this.addChildType(new LazyURIReference());
 		setSectionFinder(new FirstWordFinder());
