@@ -19,6 +19,7 @@
 package de.knowwe.core.compile.terminology;
 
 import de.d3web.strings.Identifier;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.objects.TermUtils;
 import de.knowwe.core.kdom.parsing.Section;
 
@@ -34,7 +35,7 @@ import de.knowwe.core.kdom.parsing.Section;
  * @author Stefan Plehn
  * @created 22.05.2013
  */
-public interface RenamableTerm {
+public interface RenamableTerm extends Type {
 
 	default String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
 		return TermUtils.quoteIfRequired(newIdentifier.getLastPathElement());

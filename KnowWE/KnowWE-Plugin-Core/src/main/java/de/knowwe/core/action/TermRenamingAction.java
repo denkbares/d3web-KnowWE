@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,7 +37,6 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.EventManager;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
@@ -64,7 +63,6 @@ public class TermRenamingAction extends AbstractAction {
 		return new Identifier(pathElements);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
@@ -93,44 +91,34 @@ public class TermRenamingAction extends AbstractAction {
 			return;
 		}
 
-		Map<String, Set<Section<? extends RenamableTerm>>> allTerms = new HashMap<String, Set<Section<? extends RenamableTerm>>>();
+		Map<String, Set<Section<? extends RenamableTerm>>> allTerms = new HashMap<>();
 
-		Iterator<Article> iter = Environment.getInstance()
-				.getArticleManager(web).getArticles().iterator();
-		Article currentArticle;
+		Set<TerminologyManager> allManagers = new HashSet<>(KnowWEUtils.getTerminologyManagers(Sections.get(sectionId)));
+		LinkedList<TerminologyManager> queue = new LinkedList<>(allManagers);
 
-		while (iter.hasNext()) {
-			currentArticle = iter.next();
-			Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(Sections.get(sectionId));
-			for (TerminologyManager terminologyManager : terminologyManagers) {
+		while (!queue.isEmpty()) {
+			TerminologyManager terminologyManager = queue.remove();
 
-				// terminologyManager = KnowWEUtils
-				// .getGlobalTerminologyManager(currentArticle.getWeb());
-				// Check if there is a TermDefinition
-				Collection<Section<?>> definingSections = terminologyManager
-						.getTermDefiningSections(termIdentifier);
-				for (Section<?> definition : definingSections) {
-					if (definition.get() instanceof RenamableTerm) {
-						getTermSet(definition.getTitle(), allTerms).add(
-								(Section<? extends RenamableTerm>) definition);
-					}
+			// Check if there is a TermDefinition
+			Collection<Section<?>> definingSections = terminologyManager.getTermDefiningSections(termIdentifier);
+			for (Section<?> definition : definingSections) {
+				if (definition.get() instanceof RenamableTerm) {
+					getTermSet(definition.getTitle(), allTerms).add(Sections.cast(definition, RenamableTerm.class));
 				}
+			}
 
-				// Check if there are References
-				Collection<Section<?>> references = terminologyManager
-						.getTermReferenceSections(termIdentifier);
-				for (Section<?> reference : references) {
-					if (reference.get() instanceof RenamableTerm) {
-						getTermSet(reference.getTitle(), allTerms).add(
-								(Section<? extends RenamableTerm>) reference);
-					}
+			// Check if there are References
+			Collection<Section<?>> references = terminologyManager.getTermReferenceSections(termIdentifier);
+			for (Section<?> reference : references) {
+				if (reference.get() instanceof RenamableTerm) {
+					getTermSet(reference.getTitle(), allTerms).add(Sections.cast(reference, RenamableTerm.class));
 				}
 			}
 		}
 
 		ArticleManager mgr = Environment.getInstance().getArticleManager(web);
-		Set<String> failures = new HashSet<String>();
-		Set<String> success = new HashSet<String>();
+		Set<String> failures = new HashSet<>();
+		Set<String> success = new HashSet<>();
 		if (getArticlesWithoutEditRights(allTerms, context).isEmpty()) {
 			renameTerms(allTerms, termIdentifier, replacementIdentifier, mgr, context, failures, success);
 			Compilers.awaitTermination(mgr.getCompilerManager());
@@ -171,7 +159,7 @@ public class TermRenamingAction extends AbstractAction {
 															 Map<String, Set<Section<? extends RenamableTerm>>> allTerms) {
 		Set<Section<? extends RenamableTerm>> terms = allTerms.get(title);
 		if (terms == null) {
-			terms = new HashSet<Section<? extends RenamableTerm>>();
+			terms = new HashSet<>();
 			allTerms.put(title, terms);
 		}
 		return terms;
