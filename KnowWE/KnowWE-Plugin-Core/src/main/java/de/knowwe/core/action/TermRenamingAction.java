@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -93,11 +92,8 @@ public class TermRenamingAction extends AbstractAction {
 
 		Map<String, Set<Section<? extends RenamableTerm>>> allTerms = new HashMap<>();
 
-		Set<TerminologyManager> allManagers = new HashSet<>(KnowWEUtils.getTerminologyManagers(Sections.get(sectionId)));
-		LinkedList<TerminologyManager> queue = new LinkedList<>(allManagers);
-
-		while (!queue.isEmpty()) {
-			TerminologyManager terminologyManager = queue.remove();
+		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(Sections.get(sectionId));
+		for (TerminologyManager terminologyManager : terminologyManagers) {
 
 			// Check if there is a TermDefinition
 			Collection<Section<?>> definingSections = terminologyManager.getTermDefiningSections(termIdentifier);

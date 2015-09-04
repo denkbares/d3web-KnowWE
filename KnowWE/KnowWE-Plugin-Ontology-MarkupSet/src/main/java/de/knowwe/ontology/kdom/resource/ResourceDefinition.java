@@ -23,10 +23,11 @@ import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.ontology.compile.OntologyCompiler;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 public class ResourceDefinition extends SimpleDefinition {
 
@@ -42,9 +43,8 @@ public class ResourceDefinition extends SimpleDefinition {
 	public Identifier getTermIdentifier(Section<? extends Term> section) {
 		Identifier identifier = (Identifier) section.getObject(IDENTIFIER_KEY);
 		if (identifier == null) {
-			Section<AbbreviatedResourceDefinition> abbResDef = Sections.ancestor(section,
-					AbbreviatedResourceDefinition.class);
-			String abbreviation = abbResDef.get().getAbbreviation(abbResDef);
+			String abbreviation = $(section).ancestor(AbbreviatedResourceDefinition.class)
+					.mapFirst(AbbreviatedResourceDefinition::getAbbreviation);
 			identifier = new Identifier(abbreviation, getTermName(section));
 			section.storeObject(IDENTIFIER_KEY, identifier);
 		}
@@ -53,7 +53,7 @@ public class ResourceDefinition extends SimpleDefinition {
 
 	@Override
 	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
-		// we dont want resource to be quoted by interface's default implementation
+		// we don't want resource to be quoted by interface's default implementation
 		return newIdentifier.getLastPathElement();
 	}
 }
