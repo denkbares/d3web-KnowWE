@@ -81,6 +81,48 @@ public class UITestUtils {
 		}
 	}
 
+	/**
+	 * Rule allowing for tests to run a defined number of times. Prints failures along the way.
+	 */
+	public static class RerunRule implements TestRule {
+
+		private int rerunCount;
+		private int successes;
+
+		public RerunRule(int rerunCount) {
+			this.rerunCount = rerunCount;
+			this.successes = 0;
+		}
+
+		public Statement apply(Statement base, Description description) {
+			return statement(base, description);
+		}
+
+		private Statement statement(final Statement base, final Description description) {
+
+			return new Statement() {
+				@Override
+				public void evaluate() throws Throwable {
+					Throwable caughtThrowable = null;
+					for (int i = 0; i < rerunCount; i++) {
+						try {
+							base.evaluate();
+							successes++;
+							System.err.println("Run " + (i + 1) + "/" + rerunCount + " of '" + description.getDisplayName() + "' successful");
+						}
+						catch (Throwable throwable) {
+							caughtThrowable = throwable;
+							System.err.println("Run " + (i + 1) + "/" + rerunCount + " of '" + description.getDisplayName() + "' failed");
+							throwable.printStackTrace();
+						}
+					}
+					System.err.println("Final statistic for " + description.getDisplayName() + ": " + successes + "/" + rerunCount + " successes");
+					if (caughtThrowable != null) throw caughtThrowable;
+				}
+			};
+		}
+	}
+
 	public static void logIn(WebDriver driver, String username, String password, UseCase use) {
 		List<WebElement> elements = null;
 		if (use == UseCase.LOGIN_PAGE) {
