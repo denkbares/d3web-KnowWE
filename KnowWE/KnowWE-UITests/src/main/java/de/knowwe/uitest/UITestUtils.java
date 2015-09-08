@@ -21,6 +21,9 @@ package de.knowwe.uitest;
 
 import java.util.List;
 
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -37,18 +40,52 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class UITestUtils {
 
 	public enum UseCase {
-		CLAAS, d3web
+		LOGIN_PAGE, NORMAL_PAGE
 	}
 
-	public static void logIn(WebDriver driver, UseCase use) {
-		logIn(driver, "test", "8bGNmPjn", use);
+	/**
+	 * Rule allowing for retries if a test fails.
+	 */
+	public static class RetryRule implements TestRule {
+
+		private int retryCount;
+
+		public RetryRule(int retryCount) {
+			this.retryCount = retryCount;
+		}
+
+		public Statement apply(Statement base, Description description) {
+			return statement(base, description);
+		}
+
+		private Statement statement(final Statement base, final Description description) {
+
+			return new Statement() {
+				@Override
+				public void evaluate() throws Throwable {
+					Throwable caughtThrowable = null;
+					for (int i = 0; i < retryCount; i++) {
+						try {
+							base.evaluate();
+							return;
+						}
+						catch (Throwable t) {
+							caughtThrowable = t;
+							System.err.println("Run " + (i + 1) + "/" + retryCount + " of '" + description.getDisplayName() + "' failed");
+						}
+					}
+					System.err.println("Giving up after " + retryCount + " failures of '" + description.getDisplayName() + "'");
+					throw caughtThrowable;
+				}
+			};
+		}
 	}
 
 	public static void logIn(WebDriver driver, String username, String password, UseCase use) {
 		List<WebElement> elements = null;
-		if (use == UseCase.CLAAS) {
+		if (use == UseCase.LOGIN_PAGE) {
 			elements = driver.findElements(By.id("logincontent"));
-		} else if (use == UseCase.d3web) {
+		} else if (use == UseCase.NORMAL_PAGE) {
 			elements = driver.findElements(By.cssSelector("a.action.login"));
 		}
 

@@ -27,9 +27,6 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -43,6 +40,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import de.d3web.strings.Strings;
 
+import static de.knowwe.uitest.UITestUtils.RetryRule;
+import static de.knowwe.uitest.UITestUtils.UseCase;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -79,46 +78,11 @@ public abstract class DiaFluxSystemTest {
 		}
 	}
 
-	public class Retry implements TestRule {
-
-		private int retryCount;
-
-		public Retry(int retryCount) {
-			this.retryCount = retryCount;
-		}
-
-		public Statement apply(Statement base, Description description) {
-			return statement(base, description);
-		}
-
-		private Statement statement(final Statement base, final Description description) {
-			return new Statement() {
-				@Override
-				public void evaluate() throws Throwable {
-					Throwable caughtThrowable = null;
-
-					// implement retry logic here
-					for (int i = 0; i < retryCount; i++) {
-						try {
-							base.evaluate();
-							return;
-						} catch (Throwable t) {
-							caughtThrowable = t;
-							System.err.println(description.getDisplayName() + ": run " + (i+1) + " failed");
-						}
-					}
-					System.err.println(description.getDisplayName() + ": giving up after " + retryCount + " failures");
-					throw caughtThrowable;
-				}
-			};
-		}
-	}
-
 	@Rule
-	public Retry retry = new Retry(3);
+	public RetryRule retry = new RetryRule(3);
 
 	private void logIn() {
-		UITestUtils.logIn(getDriver(), UITestUtils.UseCase.d3web);
+		UITestUtils.logIn(getDriver(), "test", "8bGNmPjn", UseCase.NORMAL_PAGE);
 	}
 
 	@Test
