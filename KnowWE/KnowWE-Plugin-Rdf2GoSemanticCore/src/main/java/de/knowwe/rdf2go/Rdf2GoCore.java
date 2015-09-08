@@ -828,8 +828,6 @@ public class Rdf2GoCore {
 	/**
 	 * Returns the set of statements that have been created from the given section during the compile process
 	 *
-	 * @param source
-	 * @return
 	 */
 	public Set<Statement> getStatementsFromCache(Section<?> source) {
 		return statementCache.getValues(new SectionSource(source));
@@ -1370,7 +1368,7 @@ public class Rdf2GoCore {
 			return new CachedClosableIterable<>(statements);
 		}
 
-		private CachedQueryResultTable toCachedQueryResult(QueryResultTable result) {
+		private QueryRowListResultTable toCachedQueryResult(QueryResultTable result) {
 			ArrayList<QueryRow> rows = new ArrayList<>();
 			ClosableIterator<QueryRow> iterator = result.iterator();
 			synchronized (this) {
@@ -1397,7 +1395,7 @@ public class Rdf2GoCore {
 			}
 
 			rows.trimToSize();
-			return new CachedQueryResultTable(variables, rows);
+			return new QueryRowListResultTable(variables, rows);
 		}
 
 		private String getReadableQuery() {
@@ -1510,8 +1508,8 @@ public class Rdf2GoCore {
 	}
 
 	private int getResultSize(Object result) {
-		if (result instanceof CachedQueryResultTable) {
-			CachedQueryResultTable cacheResult = (CachedQueryResultTable) result;
+		if (result instanceof QueryRowListResultTable) {
+			QueryRowListResultTable cacheResult = (QueryRowListResultTable) result;
 			return cacheResult.variables.size() * cacheResult.result.size();
 		}
 		else if (result instanceof CachedClosableIterable) {
@@ -1605,7 +1603,7 @@ public class Rdf2GoCore {
 		return ruleSet;
 	}
 
-	class CachedClosableIterable<E> implements ClosableIterable<E> {
+	static class CachedClosableIterable<E> implements ClosableIterable<E> {
 
 		private final List<E> delegate;
 
@@ -1619,7 +1617,7 @@ public class Rdf2GoCore {
 		}
 	}
 
-	class DelegateClosableIterator<E> implements ClosableIterator<E> {
+	static class DelegateClosableIterator<E> implements ClosableIterator<E> {
 
 		private final Iterator<E> delegate;
 
@@ -1648,12 +1646,12 @@ public class Rdf2GoCore {
 		}
 	}
 
-	class CachedQueryResultTable implements QueryResultTable {
+	public static class QueryRowListResultTable implements QueryResultTable {
 
 		private final List<String> variables;
 		private final List<QueryRow> result;
 
-		CachedQueryResultTable(List<String> variables, List<QueryRow> result) {
+		public QueryRowListResultTable(List<String> variables, List<QueryRow> result) {
 			this.variables = variables;
 			this.result = result;
 		}

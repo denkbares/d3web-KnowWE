@@ -96,6 +96,7 @@ public class SparqlResultRenderer {
 		QueryResultTable qrt = null;
 		try {
 			qrt = opts.getRdf2GoCore().sparqlSelect(query, true, opts.getTimeout());
+			qrt = section.get().postProcessResult(qrt, user, opts);
 		}
 		catch (RuntimeException e) {
 			String message = e.getMessage();
