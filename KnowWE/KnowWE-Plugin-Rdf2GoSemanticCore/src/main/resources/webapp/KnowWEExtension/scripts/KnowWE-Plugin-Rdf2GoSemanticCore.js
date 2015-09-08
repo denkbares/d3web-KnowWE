@@ -19,7 +19,7 @@ KNOWWE.plugin.sparql.retry = function(id) {
 		cache : false,
 		data : {SectionID : id}
 	}).success(function(data) {
-		jq$('#' + id).parents('.type_Sparql').rerender();
+		jq$('#' + id).rerender();
 	});
 };
 
