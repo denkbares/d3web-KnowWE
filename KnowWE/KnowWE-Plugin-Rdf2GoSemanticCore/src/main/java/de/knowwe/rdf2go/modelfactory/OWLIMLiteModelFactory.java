@@ -10,8 +10,13 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Properties;
 
+import com.ontotext.trree.owlim_ext.SailImpl;
+import com.ontotext.trree.owlim_ext.m;
+import de.d3web.utils.Log;
 import org.ontoware.rdf2go.Reasoning;
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.impl.AbstractModelFactory;
@@ -41,10 +46,12 @@ import org.openrdf.repository.config.RepositoryFactory;
 import org.openrdf.repository.config.RepositoryImplConfig;
 import org.openrdf.repository.config.RepositoryRegistry;
 import org.openrdf.repository.http.HTTPRepository;
+import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.StatementCollector;
+import org.openrdf.sail.Sail;
 import org.openrdf.sail.memory.model.MemValueFactory;
 
 import de.knowwe.rdf2go.RuleSet;
@@ -196,6 +203,26 @@ public class OWLIMLiteModelFactory extends AbstractModelFactory {
 		}
 
 		public void shutdown() throws RepositoryException {
+			// shutting the repository down will not probably interrupt all threads, causing severe memory leaks.
+			// we interrupt them before the actual shutdown, solving the issue
+			// has to happen before, otherwise we don't get all threads
+			try {
+				SailRepository repository = (SailRepository) this.repository;
+				Sail sail = repository.getSail();
+				if (sail instanceof SailImpl) {
+					SailImpl sailImpl = (SailImpl) sail;
+					m pool = sailImpl.getPool();
+					Field threadsField = pool.getClass().getSuperclass().getDeclaredField("if");
+					threadsField.setAccessible(true);
+					m.a[] threads = (m.a[]) threadsField.get(pool);
+					for (m.a thread : threads) {
+						thread.interrupt();
+					}
+				}
+			} catch (Exception e) {
+				Log.severe("Repository cleanup failed, probably causing a memory leak", e);
+			}
+
 			this.repository.shutDown();
 		}
 	}
