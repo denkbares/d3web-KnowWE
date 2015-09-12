@@ -184,6 +184,7 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 			readFrom(compiler, section, dummy, attachment, syntax);
 			// register the terminology imported in the empty dummy repository
 			registerTerminology(compiler, dummy, importSection);
+			dummy.destroy();
 		}
 		try {
 			mainReadFuture.get();
