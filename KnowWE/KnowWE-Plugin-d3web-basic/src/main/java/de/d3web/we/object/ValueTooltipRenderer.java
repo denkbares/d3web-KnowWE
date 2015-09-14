@@ -26,6 +26,8 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.ValueObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.blackboard.Fact;
@@ -38,6 +40,7 @@ import de.d3web.we.solutionpanel.SolutionPanelUtils;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -59,21 +62,38 @@ public class ValueTooltipRenderer extends TooltipRenderer {
 		super(decoratedRenderer);
 	}
 
+	public ValueTooltipRenderer() {
+	}
+
+	@Override
+	public boolean hasTooltip(Section<?> section, UserContext user) {
+		if (!(section.get() instanceof D3webTerm)) return false;
+		Section<D3webTerm> sec = Sections.cast(section, D3webTerm.class);
+		Collection<D3webCompiler> compilers = Compilers.getCompilers(section, D3webCompiler.class);
+		for (D3webCompiler compiler : compilers) {
+			@SuppressWarnings("unchecked")
+			NamedObject namedObject = sec.get().getTermObject(compiler, sec);
+			if (namedObject instanceof Question) return true;
+			if (namedObject instanceof Solution) return true;
+		}
+		return false;
+	}
+
 	protected int getTooltipDelay(Section<?> section, UserContext user) {
 		return 1000;
 	}
 
 	@Override
-	protected String getTooltip(Section<?> section, UserContext user) {
-		if (!(section.get() instanceof D3webTerm<?>)) return null;
+	public String getTooltip(Section<?> section, UserContext user) {
+		if (!(section.get() instanceof D3webTerm)) return null;
 
-		@SuppressWarnings("unchecked")
-		Section<D3webTerm<NamedObject>> sec = (Section<D3webTerm<NamedObject>>) section;
+		Section<D3webTerm> sec = Sections.cast(section, D3webTerm.class);
 		StringBuilder builder = new StringBuilder();
 		Collection<D3webCompiler> compilers = Compilers.getCompilers(section, D3webCompiler.class);
 		boolean first = true;
 		for (D3webCompiler compiler : compilers) {
 
+			@SuppressWarnings("unchecked")
 			NamedObject namedObject = sec.get().getTermObject(compiler, sec);
 			KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(compiler);
 			Session session = SessionProvider.getSession(user, knowledgeBase);

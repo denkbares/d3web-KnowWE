@@ -369,7 +369,7 @@ html {
 	color: #2c2c2c;
 	max-width: 75%;
 	max-height: 45%;
-	overflow: scroll;
+	overflow: auto;
 }
 
 .tooltipster-knowwe .tooltipster-content {

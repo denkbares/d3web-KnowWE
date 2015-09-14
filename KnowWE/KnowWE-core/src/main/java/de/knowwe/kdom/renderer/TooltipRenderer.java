@@ -19,13 +19,12 @@
 
 package de.knowwe.kdom.renderer;
 
-import de.d3web.strings.Strings;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Class for decorating a renderer with some tooltip. If the decorating renderer is null,
@@ -48,18 +47,20 @@ public abstract class TooltipRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
-		String tooltip = getTooltip(section, user);
-		preRenderTooltip(tooltip, getTooltipDelay(section, user), result);
+		boolean hasTooltip = hasTooltip(section, user);
+		if (hasTooltip) preRenderTooltip(section, user, result);
 		if (delegate != null) {
 			delegate.render(section, user, result);
 		}
 		else {
 			DelegateRenderer.getInstance().render(section, user, result);
 		}
-		postRenderTooltip(tooltip, result);
+		if (hasTooltip) postRenderTooltip(result);
 	}
 
-	protected abstract String getTooltip(Section<?> section, UserContext user);
+	public abstract boolean hasTooltip(Section<?> section, UserContext user);
+
+	public abstract String getTooltip(Section<?> section, UserContext user);
 
 	/**
 	 * Set the delay in milliseconds after which the tooltip will be shown. Do not overwrite if you want default delay.
@@ -68,20 +69,20 @@ public abstract class TooltipRenderer implements Renderer {
 		return -1;
 	}
 
-	private void preRenderTooltip(String tooltip, int delay, RenderResult string) {
-		if (Strings.isBlank(tooltip)) return;
-		tooltip = KnowWEUtils.maskJSPWikiMarkup(tooltip.replace('\'', '"'));
+	private void preRenderTooltip(Section<?> section, UserContext user, RenderResult string) {
+
+		String toolTipAction = "action/RenderTooltipAction"
+				+ "?" + Attributes.SECTION_ID + "=" + section.getID();
 
 		string.appendHtml("<span class='tooltipster'");
-		if (delay >= 0) {
-			string.append(" delay='").append(delay).append("'");
+		if (getTooltipDelay(section, user) >= 0) {
+			string.append(" delay='").append(user).append("'");
 		}
-		string.append(" title='").append(tooltip.replace("&", "&amp;").replace("'", "&#39;")).append("'");
+		string.append(" data-tooltip-src='").append(toolTipAction).append("'");
 		string.appendHtml(">");
 	}
 
-	private void postRenderTooltip(String tooltip, RenderResult string) {
-		if (Strings.isBlank(tooltip)) return;
+	private void postRenderTooltip(RenderResult string) {
 		string.appendHtml("</span>");
 	}
 }

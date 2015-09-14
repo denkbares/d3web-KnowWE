@@ -49,7 +49,7 @@ public class NamedObjectRenderer implements Renderer {
 		if (compiler != null) {
 			TerminologyManager tManager = compiler.getTerminologyManager();
 			if (tManager.hasTermOfClass(termIdentifier, Question.class)) {
-				renderer = new ValueTooltipRenderer(StyleRenderer.Question);
+				renderer = StyleRenderer.Question;
 			}
 			else if (tManager.hasTermOfClass(termIdentifier, QContainer.class)) {
 				renderer = StyleRenderer.Questionaire;

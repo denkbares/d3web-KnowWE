@@ -52,6 +52,14 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="RenderTooltipAction">
+		<parameter id="class" value="de.knowwe.core.action.RenderTooltipAction" />
+		<parameter id="name" value="RenderTooltipAction" />
+		<parameter id="description" value="Action RenderTooltipAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="TermInfoToolProvider">
 		<parameter id="class" value="de.knowwe.core.tools.TermInfoToolProvider" />
 		<parameter id="name" value="TermInfoToolProvider" />

@@ -41,7 +41,7 @@ public class NamedObjectReference extends D3webTermReference<NamedObject> {
 	}
 
 	public NamedObjectReference(CompileScript<D3webCompiler, Term> compileScript) {
-		this.setRenderer(new NamedObjectRenderer());
+		this.setRenderer(new ValueTooltipRenderer(new NamedObjectRenderer()));
 		if (compileScript == null) {
 			compileScript = new SimpleReferenceRegistrationScript<>(D3webCompiler.class);
 		}
