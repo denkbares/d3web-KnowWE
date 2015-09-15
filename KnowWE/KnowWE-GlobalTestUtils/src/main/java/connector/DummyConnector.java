@@ -43,6 +43,7 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiAttachmentInfo;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.core.wikiConnector.WikiPageInfo;
+import de.knowwe.jspwiki.JSPWikiConnector;
 
 public class DummyConnector implements WikiConnector {
 
@@ -301,6 +302,15 @@ public class DummyConnector implements WikiConnector {
 				dummyPageProvider, filename, title, stream);
 		dummyPageProvider.storeAttachment(attachment);
 		return attachment;
+	}
+
+	@Override
+	public void deleteAttachment(String title, String fileName, String user) throws IOException {
+		if (dummyPageProvider == null) {
+			throw new NullPointerException(
+					"PageProvider is null, so attachments cannot be deleted");
+		}
+		dummyPageProvider.deleteAttachment(JSPWikiConnector.toPath(title, fileName));
 	}
 
 	@Override

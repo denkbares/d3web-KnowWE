@@ -65,6 +65,7 @@ import org.apache.wiki.providers.WikiAttachmentProvider;
 import org.apache.wiki.util.TextUtil;
 
 import de.d3web.utils.Log;
+import de.d3web.utils.Pair;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
@@ -95,6 +96,8 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	public static final String LINK_PREFIX = "Wiki.jsp?page=";
+
+	private static final Pattern ZIP_PATTERN = Pattern.compile("^([^/]+/[^/]+\\.zip)/(.+$)");
 
 	public JSPWikiConnector(WikiEngine eng) {
 		this.context = eng.getServletContext();
@@ -265,17 +268,25 @@ public class JSPWikiConnector implements WikiConnector {
 		return getAttachment(path, -1);
 	}
 
+	private Pair<String, String> getActualPathAndEntry(String path) {
+		Matcher matcher = ZIP_PATTERN.matcher(path);
+		String entry = null;
+		String actualPath = path;
+		if (matcher.find()) {
+			actualPath = matcher.group(1);
+			entry = matcher.group(2);
+		}
+		return new Pair<>(actualPath, entry);
+	}
+
 	@Override
 	public WikiAttachment getAttachment(String path, int version) throws IOException {
 		try {
-			Pattern zipPattern = Pattern.compile("^([^/]+/[^/]+\\.zip)/(.+$)");
-			Matcher matcher = zipPattern.matcher(path);
-			String entry = null;
-			String actualPath = path;
-			if (matcher.find()) {
-				actualPath = matcher.group(1);
-				entry = matcher.group(2);
-			}
+
+			Pair<String, String> actualPathAndEntry = getActualPathAndEntry(path);
+			String actualPath = actualPathAndEntry.getA();
+			String entry = actualPathAndEntry.getB();
+
 			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
 			Attachment attachment = attachmentManager.getAttachmentInfo(actualPath, version);
 
@@ -656,13 +667,34 @@ public class JSPWikiConnector implements WikiConnector {
 			Attachment attachment = new Attachment(engine, title, filename);
 			attachment.setAuthor(user);
 			attachmentManager.storeAttachment(attachment, stream);
-			Log.info("Stored attachment '" + title + "/" + filename + "'");
+			Log.info("Stored attachment '" + toPath(title, filename) + "'");
 			if (!wasLocked) unlockArticle(title, user);
-			return getAttachment(title + "/" + filename);
+			return getAttachment(toPath(title, filename));
 		}
 		catch (ProviderException e) {
 			throw new IOException("could not store attachment");
 		}
+	}
+
+	@Override
+	public void deleteAttachment(String title, String fileName, String user) throws IOException {
+		Pair<String, String> actualPathAndEntry = getActualPathAndEntry(toPath(title, fileName));
+		if (actualPathAndEntry.getB() != null) {
+			throw new IOException("Unable to delete zip entry (" + toPath(title, fileName)
+					+ ") in zip attachment. Try to delete attachment instead.");
+		}
+		try {
+			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
+			Attachment attachment = attachmentManager.getAttachmentInfo(toPath(title, fileName));
+			attachmentManager.deleteAttachment(attachment);
+		}
+		catch (ProviderException e) {
+			throw new IOException(e);
+		}
+	}
+
+	public static String toPath(String articleTitle, String fileName) {
+		return articleTitle + "/" + fileName;
 	}
 
 	@Override

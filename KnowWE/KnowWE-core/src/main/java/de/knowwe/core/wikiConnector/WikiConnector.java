@@ -53,15 +53,16 @@ public interface WikiConnector {
 	 *
 	 * @throws IOException in case of an exception from the underlying wiki
 	 */
-	public List<WikiPageInfo> getArticleHistory(String title) throws IOException;
+	List<WikiPageInfo> getArticleHistory(String title) throws IOException;
 
 	/**
 	 * Returns the list with all available versions of the attachment page with the given name, starting with the most
 	 * recent.
+	 *
 	 * @param path the path of the attachment
 	 * @throws IOException in case of an exception from the underlying wiki
 	 */
-	public List<WikiAttachmentInfo> getAttachmentHistory(String path) throws IOException;
+	List<WikiAttachmentInfo> getAttachmentHistory(String path) throws IOException;
 
 	/**
 	 * Creates a new wiki page with given title and content and author in the
@@ -71,20 +72,20 @@ public interface WikiConnector {
 	 * @param author  the author of the new article
 	 * @param content the content of the new article
 	 */
-	public String createArticle(String title, String author, String content);
+	String createArticle(String title, String author, String content);
 
 	/**
 	 * Tests if a article with the given title exists.
 	 *
 	 * @param title the title of the article to check
 	 */
-	public boolean doesArticleExist(String title);
+	boolean doesArticleExist(String title);
 
 	/**
 	 * Returns all active users. Active users are users currently having an
 	 * active {@link HttpSession} in the wiki.
 	 */
-	public String[] getAllActiveUsers();
+	String[] getAllActiveUsers();
 
 	/**
 	 * Returns a map of all wiki articles with the titles as key and the article
@@ -92,19 +93,19 @@ public interface WikiConnector {
 	 *
 	 * @param web the web to check for the articles.
 	 */
-	public Map<String, String> getAllArticles(String web);
+	Map<String, String> getAllArticles(String web);
 
 	/**
 	 * Returns all users registered to the wiki.
 	 */
-	public String[] getAllUsers();
+	String[] getAllUsers();
 
 	/**
 	 * Returns the path to the root of the application.
 	 *
 	 * @created 12.04.2012
 	 */
-	public String getApplicationRootPath();
+	String getApplicationRootPath();
 
 	/**
 	 * Returns the {@link WikiAttachment} given by the supplied path. This
@@ -117,7 +118,7 @@ public interface WikiConnector {
 	 * @throws IOException if the attachment cannot be accessed
 	 * @created 30.08.2011
 	 */
-	public WikiAttachment getAttachment(String path) throws IOException;
+	WikiAttachment getAttachment(String path) throws IOException;
 
 	/**
 	 * Returns the {@link WikiAttachment} given by the supplied path. This
@@ -131,7 +132,7 @@ public interface WikiConnector {
 	 * @throws IOException if the attachment cannot be accessed
 	 * @created 30.08.2011
 	 */
-	public WikiAttachment getAttachment(String path, int version) throws IOException;
+	WikiAttachment getAttachment(String path, int version) throws IOException;
 
 	/**
 	 * Returns the all attachments of the article with the given title. The
@@ -142,7 +143,7 @@ public interface WikiConnector {
 	 * @return the attachments of the specified article
 	 * @throws IOException if the attachments cannot be accessed
 	 */
-	public List<WikiAttachment> getAttachments(String title) throws IOException;
+	List<WikiAttachment> getAttachments(String title) throws IOException;
 
 	/**
 	 * Returns a collection of all attachments known to the wiki. The method
@@ -152,7 +153,7 @@ public interface WikiConnector {
 	 * @return the attachments of the wiki
 	 * @throws IOException if the attachments cannot be accessed
 	 */
-	public Collection<WikiAttachment> getAttachments() throws IOException;
+	Collection<WikiAttachment> getAttachments() throws IOException;
 
 	/**
 	 * Returns the author of the specified version of the given article (by
@@ -162,19 +163,19 @@ public interface WikiConnector {
 	 * @param version the version number of which the author has to be returned
 	 * @created 14.06.2010
 	 */
-	public String getAuthor(String title, int version);
+	String getAuthor(String title, int version);
 
 	/**
 	 * Returns the URL of the running wiki.
 	 */
-	public String getBaseUrl();
+	String getBaseUrl();
 
 	/**
 	 * Returns the path to the KnowWEExtensionFolder of the wiki.
 	 *
 	 * @created 17.04.2012
 	 */
-	public String getKnowWEExtensionPath();
+	String getKnowWEExtensionPath();
 
 	/**
 	 * Returns the Date when the specified version of the article was last
@@ -184,30 +185,30 @@ public interface WikiConnector {
 	 * @param version the version of the article
 	 * @created 17.07.2010
 	 */
-	public Date getLastModifiedDate(String title, int version);
+	Date getLastModifiedDate(String title, int version);
 
 	/**
 	 * Returns the locale which was configured by the current user.
 	 *
 	 * @param request is the request from the user
 	 */
-	public Locale getLocale(HttpServletRequest request);
+	Locale getLocale(HttpServletRequest request);
 
 	/**
 	 * Returns the absolute path of the web-application
 	 */
-	public String getRealPath();
+	String getRealPath();
 
 	/**
 	 * Returns a path to safely store files to. The path must be outside the
 	 * webapps dir to prevent the files to be deleted during a wiki-redeploy
 	 */
-	public String getSavePath();
+	String getSavePath();
 
 	/**
 	 * Returns the current servlet-context object.
 	 */
-	public ServletContext getServletContext();
+	ServletContext getServletContext();
 
 	/**
 	 * Returns the most current version number of the article with the given
@@ -215,7 +216,7 @@ public interface WikiConnector {
 	 *
 	 * @param title the title of the article
 	 */
-	public int getVersion(String title);
+	int getVersion(String title);
 
 	/**
 	 * Returns the given version of the content of the article with the given
@@ -225,7 +226,7 @@ public interface WikiConnector {
 	 * @param title   the title of the article
 	 * @param version the version number of the article source to be retrieved
 	 */
-	public String getArticleText(String title, int version);
+	String getArticleText(String title, int version);
 
 	/**
 	 * Returns the content of the article with the given
@@ -233,7 +234,7 @@ public interface WikiConnector {
 	 *
 	 * @param title the title of the article
 	 */
-	public String getArticleText(String title);
+	String getArticleText(String title);
 
 	/**
 	 * Returns the change note of the given version of the article with the
@@ -243,7 +244,7 @@ public interface WikiConnector {
 	 * @param title   the title of the article
 	 * @param version the version number of the article source to be retrieved
 	 */
-	public String getChangeNote(String title, int version);
+	String getChangeNote(String title, int version);
 
 	/**
 	 * Checks whether a article has a editing lock (due to another user who has
@@ -251,7 +252,7 @@ public interface WikiConnector {
 	 *
 	 * @param title the title of the article to check the lock for
 	 */
-	public boolean isArticleLocked(String title);
+	boolean isArticleLocked(String title);
 
 	/**
 	 * Checks whether a given article is locked by the given user
@@ -259,7 +260,7 @@ public interface WikiConnector {
 	 * @param title the title of the article to check the lock for
 	 * @param user  the user to check the lock for
 	 */
-	public boolean isArticleLockedCurrentUser(String title, String user);
+	boolean isArticleLockedCurrentUser(String title, String user);
 
 	/**
 	 * Sets an editing lock on the article, denoting that the article is
@@ -268,7 +269,7 @@ public interface WikiConnector {
 	 * @param title the title of the article to be locked
 	 * @param user  the user locking the article
 	 */
-	public boolean lockArticle(String title, String user);
+	boolean lockArticle(String title, String user);
 
 	/**
 	 * Normalizes a string the same way as the wiki engine normalizes wiki text
@@ -278,7 +279,7 @@ public interface WikiConnector {
 	 * @return the normalized string
 	 * @created 12.12.2011
 	 */
-	public String normalizeString(String string);
+	String normalizeString(String string);
 
 	/**
 	 * Renders given wiki mark-up to html.
@@ -287,7 +288,7 @@ public interface WikiConnector {
 	 * @param request     the request of the user. May be null is not available.
 	 * @return the rendered article text
 	 */
-	public String renderWikiSyntax(String articleText, HttpServletRequest request);
+	String renderWikiSyntax(String articleText, HttpServletRequest request);
 
 	/**
 	 * Renders given wiki mark-up to html. Use only if no http request is
@@ -295,7 +296,7 @@ public interface WikiConnector {
 	 *
 	 * @return the rendered article text
 	 */
-	public String renderWikiSyntax(String articleText);
+	String renderWikiSyntax(String articleText);
 
 	/**
 	 * Creates a new wiki attachment of the specified path and the specified
@@ -339,13 +340,24 @@ public interface WikiConnector {
 	WikiAttachment storeAttachment(String title, String filename, String user, InputStream stream) throws IOException;
 
 	/**
+	 * Deletes the attachment <tt>fileName</tt> from the article with the given <tt>title</tt>. If the attachment is
+	 * versioned, all versions of the attachment are deleted (as if the attachment never existed).
+	 *
+	 * @param title    the title of the article the attachment is stored in
+	 * @param fileName the file name of the attachment
+	 * @param user     the user deleting the attachment
+	 * @throws IOException if the attachment cannot be deleted
+	 */
+	void deleteAttachment(String title, String fileName, String user) throws IOException;
+
+	/**
 	 * Removes the lock for the article.
 	 *
 	 * @param title the title of the article to be unlocked
 	 * @param user  the user who's lock shall be removed, if null the most recent
 	 *              lock will be removed
 	 */
-	public void unlockArticle(String title, String user);
+	void unlockArticle(String title, String user);
 
 	/**
 	 * Checks whether a user is allowed edit a given article.
@@ -353,7 +365,7 @@ public interface WikiConnector {
 	 * @param title   the title of the article to check
 	 * @param request the request of the user to check for
 	 */
-	public boolean userCanEditArticle(String title, HttpServletRequest request);
+	boolean userCanEditArticle(String title, HttpServletRequest request);
 
 	/**
 	 * Checks whether a user is allowed view a given article
@@ -361,7 +373,7 @@ public interface WikiConnector {
 	 * @param title   the title of the article to check
 	 * @param request the request of the user
 	 */
-	public boolean userCanViewArticle(String title, HttpServletRequest request);
+	boolean userCanViewArticle(String title, HttpServletRequest request);
 
 	/**
 	 * Checks whether the user is member of a given group.
@@ -369,7 +381,7 @@ public interface WikiConnector {
 	 * @param groupname the name of the group to check
 	 * @param request   the request of the user to check
 	 */
-	public boolean userIsMemberOfGroup(String groupname, HttpServletRequest request);
+	boolean userIsMemberOfGroup(String groupname, HttpServletRequest request);
 
 	/**
 	 * Saves the article (persistently) into the connected wiki
@@ -378,5 +390,5 @@ public interface WikiConnector {
 	 * @param content the content of the article to save
 	 * @param context the {@link UserContext} of the user changing the article
 	 */
-	public boolean writeArticleToWikiPersistence(String title, String content, UserContext context);
+	boolean writeArticleToWikiPersistence(String title, String content, UserContext context);
 }

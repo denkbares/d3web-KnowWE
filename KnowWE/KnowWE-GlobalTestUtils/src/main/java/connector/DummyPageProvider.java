@@ -41,6 +41,7 @@ import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.jspwiki.JSPWikiConnector;
 
 /**
  * This {@link DummyPageProvider} can be used together with the DummyConnector
@@ -232,7 +233,7 @@ public class DummyPageProvider {
 			ZipInputStream zipStream = new ZipInputStream(attachmentStream);
 			for (ZipEntry e; (e = zipStream.getNextEntry()) != null;) {
 				entryAttachments.add(new FileSystemConnectorAttachment(this,
-						attachment.getFileName() + "/" + e.getName(),
+						JSPWikiConnector.toPath(attachment.getFileName(), e.getName()),
 						attachment.getParentName(), zipStream));
 			}
 			zipStream.close();
