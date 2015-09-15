@@ -667,7 +667,8 @@ public class JSPWikiConnector implements WikiConnector {
 			Attachment attachment = new Attachment(engine, title, filename);
 			attachment.setAuthor(user);
 			attachmentManager.storeAttachment(attachment, stream);
-			Log.info("Stored attachment '" + toPath(title, filename) + "'");
+			String path = toPath(title, filename);
+			Log.info("Stored attachment '" + path + "'");
 			if (!wasLocked) unlockArticle(title, user);
 			return getAttachment(toPath(title, filename));
 		}
@@ -678,15 +679,20 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public void deleteAttachment(String title, String fileName, String user) throws IOException {
-		Pair<String, String> actualPathAndEntry = getActualPathAndEntry(toPath(title, fileName));
+		String path = toPath(title, fileName);
+		Pair<String, String> actualPathAndEntry = getActualPathAndEntry(path);
 		if (actualPathAndEntry.getB() != null) {
-			throw new IOException("Unable to delete zip entry (" + toPath(title, fileName)
+			throw new IOException("Unable to delete zip entry (" + path
 					+ ") in zip attachment. Try to delete attachment instead.");
 		}
 		try {
+			boolean wasLocked = isArticleLocked(title);
+			if (!wasLocked) lockArticle(title, user);
 			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
-			Attachment attachment = attachmentManager.getAttachmentInfo(toPath(title, fileName));
+			Attachment attachment = attachmentManager.getAttachmentInfo(path);
 			attachmentManager.deleteAttachment(attachment);
+			Log.info("Deleted attachment '" + path + "'");
+			if (!wasLocked) unlockArticle(title, user);
 		}
 		catch (ProviderException e) {
 			throw new IOException(e);
