@@ -65,14 +65,7 @@ public abstract class AbstractAction implements Action {
 							"Maybe the page content is outdated. Please reload.");
 			throw new IOException("Section with id '" + sectionId + "' was not found");
 		}
-		else if (!KnowWEUtils.canView(section, context)) {
-			String actionName = this.getClass()
-					.getSimpleName();
-			context.sendError(HttpServletResponse.SC_FORBIDDEN,
-					"You are not allowed to execute " + actionName);
-			throw new IllegalAccessError("User '" + context.getUserName() + "' tried to execute "
-					+ actionName + " with section '" + sectionId + "' but has no view rights for this section.");
-		}
+		KnowWEUtils.assertCanView(section, context);
 		return section;
 	}
 

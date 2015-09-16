@@ -28,6 +28,7 @@ import de.d3web.utils.Log;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.action.ActionDispatcher;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.wikiConnector.NotAuthorizedException;
 
 public class JSPActionDispatcher extends ActionDispatcher {
 
@@ -53,6 +54,9 @@ public class JSPActionDispatcher extends ActionDispatcher {
 		}
 		try {
 			executeAction(context);
+		}
+		catch (NotAuthorizedException e) {
+			context.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage(context.getAction(), context));
 		}
 		catch (IOException e) {
 			Log.severe("IOException while executing action " + action, e);

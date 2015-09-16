@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import de.d3web.utils.Log;
+import de.knowwe.core.wikiConnector.NotAuthorizedException;
 
 /**
  * ActionServlet is a Servlet for ajax-based interview or any other user interfaces.
@@ -129,7 +130,12 @@ public abstract class AbstractActionServlet extends HttpServlet {
 				response.sendError(404, message);
 			}
 			else {
-				cmd.execute(context);
+				try {
+					cmd.execute(context);
+				}
+				catch (NotAuthorizedException e) {
+					context.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage(cmd, context));
+				}
 			}
 		}
 		catch (Throwable e) { // NOSONAR
@@ -138,7 +144,7 @@ public abstract class AbstractActionServlet extends HttpServlet {
 		}
 	}
 
-	protected abstract UserActionContext createActionContext(HttpServletRequest request, HttpServletResponse response)  throws IOException;
+	protected abstract UserActionContext createActionContext(HttpServletRequest request, HttpServletResponse response) throws IOException;
 
 	private void doXmlActions(HttpServletRequest request, HttpServletResponse response, Reader xmlReader) throws IOException {
 		throw new IllegalStateException("Not implemented yet");

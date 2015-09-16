@@ -64,6 +64,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.wikiConnector.NotAuthorizedException;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiAttachmentInfo;
 import de.knowwe.core.wikiConnector.WikiConnector;
@@ -353,16 +354,16 @@ public class KnowWEUtils {
 	 * Returns if the user has the read access rights to the specified article.
 	 *
 	 * @param article the article to check the access rights for
-	 * @param user    the user context
+	 * @param context the user context
 	 * @return true if the user has the read access rights to the article
 	 * @created 29.11.2013
 	 */
-	public static boolean canView(Article article, UserContext user) {
+	public static boolean canView(Article article, UserContext context) {
 		WikiConnector connector = Environment.getInstance().getWikiConnector();
 		// try nine times with catching unexpected exception from AuthorizationManager
 		for (int i = 0; i < 9; i++) {
 			try {
-				return connector.userCanViewArticle(article.getTitle(), user.getRequest());
+				return connector.userCanViewArticle(article.getTitle(), context.getRequest());
 			}
 			catch (ConcurrentModificationException e) {
 				// do nothing a few times, because we have no influence here
@@ -371,20 +372,20 @@ public class KnowWEUtils {
 		}
 		// finally, if not passed successfully,
 		// try last time throwing the exception
-		return connector.userCanViewArticle(article.getTitle(), user.getRequest());
+		return connector.userCanViewArticle(article.getTitle(), context.getRequest());
 	}
 
 	/**
 	 * Returns if the user has the read access rights to all of the specified articles.
 	 *
 	 * @param articles the articles to check the access rights for
-	 * @param user     the user context
+	 * @param context  the user context
 	 * @return true if the user has the read access rights to all of the articles
 	 * @created 29.11.2013
 	 */
-	private static boolean canView(Set<Article> articles, UserContext user) {
+	private static boolean canView(Set<Article> articles, UserContext context) {
 		for (Article article : articles) {
-			if (!canView(article, user)) return false;
+			if (!canView(article, context)) return false;
 		}
 		return true;
 	}
@@ -395,12 +396,12 @@ public class KnowWEUtils {
 	 * section.
 	 *
 	 * @param section the section to check the access rights for
-	 * @param user    the user context
+	 * @param context the user context
 	 * @return true if the user has the read access rights to the section
 	 * @created 29.11.2013
 	 */
-	public static boolean canView(Section<?> section, UserContext user) {
-		return canView(section.getArticle(), user);
+	public static boolean canView(Section<?> section, UserContext context) {
+		return canView(section.getArticle(), context);
 	}
 
 	/**
@@ -409,12 +410,27 @@ public class KnowWEUtils {
 	 * contain the specified sections.
 	 *
 	 * @param sections the sections to check the access rights for
-	 * @param user     the user context
+	 * @param context  the user context
 	 * @return true if the user has the read access rights to all of the sections
 	 * @created 29.11.2013
 	 */
-	public static boolean canView(Collection<Section<?>> sections, UserContext user) {
-		return canView(Sections.collectArticles(sections), user);
+	public static boolean canView(Collection<Section<?>> sections, UserContext context) {
+		return canView(Sections.collectArticles(sections), context);
+	}
+
+	/**
+	 * Checks whether the user has read access rights to the specified section. To be more specific,
+	 * it checks if the user has the read access rights to the article that contains the specified
+	 * section. If not, a {@link NotAuthorizedException} is thrown.
+	 *
+	 * @param section the section to check the access rights for
+	 * @param context the user context
+	 * @throws NotAuthorizedException is thrown if the user has no view rights to the article of the section
+	 */
+	public static void assertCanView(Section<?> section, UserContext context) throws NotAuthorizedException {
+		if (!canView(section, context)) {
+			throw new NotAuthorizedException("No view access for section '" + section.getID() + "'.");
+		}
 	}
 
 	/**
@@ -457,6 +473,21 @@ public class KnowWEUtils {
 	 */
 	public static boolean canWrite(Section<?> section, UserContext user) {
 		return canWrite(section.getArticle(), user);
+	}
+
+	/**
+	 * Checks whether the user has write access rights to the specified section. To be more specific,
+	 * it checks if the user has the write access rights to the article that contains the specified
+	 * section. If not, a {@link NotAuthorizedException} is thrown.
+	 *
+	 * @param section the section to check the access rights for
+	 * @param context the user context
+	 * @throws NotAuthorizedException is thrown if the user has no view rights to the article of the section
+	 */
+	public static void assertCanWrite(Section<?> section, UserContext context) throws NotAuthorizedException {
+		if (!canWrite(section, context)) {
+			throw new NotAuthorizedException("No write access for section '" + section.getID() + "'.");
+		}
 	}
 
 	/**
@@ -784,7 +815,7 @@ public class KnowWEUtils {
 	 * Creates a wiki-markup-styled link to this section. The created link navigates the user to the
 	 * article of the section. If the section is rendered with an anchor (see method {@link
 	 * #getAnchor(Section)}) the page is also scrolled to the section.
-	 * <p>
+	 * <p/>
 	 * Please not that the link will only work if it is put into "[" ... "]" brackets and rendered
 	 * through the wiki rendering pipeline.
 	 *
@@ -1030,4 +1061,5 @@ public class KnowWEUtils {
 		ArrayList<Locale> localList = Collections.list(localesEnum);
 		return localList.toArray(new Locale[localList.size()]);
 	}
+
 }

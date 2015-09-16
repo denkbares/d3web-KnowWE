@@ -690,8 +690,10 @@ public class JSPWikiConnector implements WikiConnector {
 			if (!wasLocked) lockArticle(title, user);
 			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
 			Attachment attachment = attachmentManager.getAttachmentInfo(path);
-			attachmentManager.deleteAttachment(attachment);
-			Log.info("Deleted attachment '" + path + "'");
+			if (attachment != null) {
+				attachmentManager.deleteAttachment(attachment);
+				Log.info("Deleted attachment '" + path + "'");
+			}
 			if (!wasLocked) unlockArticle(title, user);
 		}
 		catch (ProviderException e) {
