@@ -20,6 +20,7 @@
 package de.knowwe.rdf2go.utils;
 
 import java.net.URISyntaxException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -658,7 +659,17 @@ public class Rdf2GoUtils {
 	}
 
 	public static Literal createDateTimeLiteral(Rdf2GoCore core, Date date) {
-		return core.createDatatypeLiteral(PRIVATE_XSD_DATE_TIME_FORMAT.format(date), XSD._dateTime);
+		String dateTimeString;
+		synchronized (PRIVATE_XSD_DATE_TIME_FORMAT) {
+			dateTimeString = PRIVATE_XSD_DATE_TIME_FORMAT.format(date);
+		}
+		return core.createDatatypeLiteral(dateTimeString, XSD._dateTime);
+	}
+
+	public static Date createDateFromDateTimeLiteral(Literal dateTimeLiteral) throws ParseException {
+		synchronized (PRIVATE_XSD_DATE_TIME_FORMAT) {
+			return PRIVATE_XSD_DATE_TIME_FORMAT.parse(dateTimeLiteral.getValue());
+		}
 	}
 
 }
