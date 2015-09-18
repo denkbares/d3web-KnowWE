@@ -365,17 +365,15 @@ html {
 	border-radius: 5px;
 	border: 1px solid #cccccc;
 	background: #ededed;
-	box-shadow: 0px 0px 14px rgba(0, 0, 0, 0.3);
+	box-shadow: 0 0 14px rgba(0, 0, 0, 0.3);
 	color: #2c2c2c;
-	max-width: 75%;
-	max-height: 45%;
-	overflow: auto;
+	padding: 8px 10px;
 }
-
 .tooltipster-knowwe .tooltipster-content {
 	font-family: Arial, sans-serif;
 	font-size: 12px;
 	line-height: 16px;
-	padding: 8px 10px;
+	overflow: auto;
+	max-width: 25vw;
+	max-height: 45vh;
 }
-
