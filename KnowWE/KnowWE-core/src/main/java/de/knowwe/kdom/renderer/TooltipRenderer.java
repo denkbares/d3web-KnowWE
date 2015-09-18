@@ -75,8 +75,9 @@ public abstract class TooltipRenderer implements Renderer {
 				+ "?" + Attributes.SECTION_ID + "=" + section.getID();
 
 		string.appendHtml("<span class='tooltipster'");
-		if (getTooltipDelay(section, user) >= 0) {
-			string.append(" delay='").append(user).append("'");
+		int tooltipDelay = getTooltipDelay(section, user);
+		if (tooltipDelay >= 0) {
+			string.append(" delay='").append(tooltipDelay).append("'");
 		}
 		string.append(" data-tooltip-src='").append(toolTipAction).append("'");
 		string.appendHtml(">");
