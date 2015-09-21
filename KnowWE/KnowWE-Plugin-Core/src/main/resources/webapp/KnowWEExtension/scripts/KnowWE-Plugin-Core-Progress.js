@@ -185,16 +185,16 @@ KNOWWE.core.plugin.progress = function() {
 							var bar = container.find("#" + opId);
 							if (bar.length == 0) {
 								container.append("<div id='" + opId + "'>" +
-								"<div class='progress-state'></div>" +
-								"<div class='progress-bar'>" +
-								"<span class='progress-bar-percent'>0 %</span>" +
-								"</div>" +
-								"<div class='progress-message'></div></div>");
+									"<div class='progress-state'></div>" +
+									"<div class='progress-bar'>" +
+									"<span class='progress-bar-percent'>0 %</span>" +
+									"</div>" +
+									"<div class='progress-message'></div></div>");
 								bar = container.find("#" + opId);
-								bar.find(".progress-state").attr('title', "click to cancel").click(function() {
-									KNOWWE.core.plugin.progress.cancelLongOperation(sectionId, opId);
-								});
 							}
+							bar.find(".progress-state").attr('title', "click to cancel").click(function() {
+								KNOWWE.core.plugin.progress.cancelLongOperation(sectionId, jq$(this).parent().attr('id'));
+							});
 							bar.removeClass("progress-error progress-success");
 							var percent = Math.floor(progress * 100);
 							bar.find(".progress-bar").progressbar({value : percent});
