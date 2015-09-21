@@ -157,15 +157,16 @@ public class CellContent extends AbstractType implements D3webTerm<NamedObject>,
 				}
 				if (namedObject instanceof Question) {
 					setType(compiler, section, CellType.QUESTION_REFERENCE);
-					throw new CompilerMessage();
 				}
 				else if (namedObject instanceof Solution) {
 					setType(compiler, section, CellType.SOLUTION_REFERENCE);
-					throw new CompilerMessage();
 				}
-				throw CompilerMessage.error("'" + section.getText()
-						+ "' is expected to be a Question or a Solution, but is a "
-						+ namedObject.getClass().getSimpleName());
+				else {
+					throw CompilerMessage.error("'" + section.getText()
+							+ "' is expected to be a Question or a Solution, but is a "
+							+ namedObject.getClass().getSimpleName());
+				}
+				Messages.clearMessages(compiler, section, this.getClass());
 			}
 		});
 	}
