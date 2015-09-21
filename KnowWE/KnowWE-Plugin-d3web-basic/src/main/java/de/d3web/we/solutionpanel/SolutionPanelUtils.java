@@ -31,7 +31,7 @@ public class SolutionPanelUtils {
 				&& (excludedParents.length == 0 || !isOrHasParent(excludedParents, to));
 	}
 
-	private static boolean isOrHasParent(String[] allowedParents, TerminologyObject object) {
+	public static boolean isOrHasParent(String[] allowedParents, TerminologyObject object) {
 
 		if (object.getParents() == null) return false;
 		if (arrayIgnoreCaseContains(allowedParents, object.getName())) return true;
