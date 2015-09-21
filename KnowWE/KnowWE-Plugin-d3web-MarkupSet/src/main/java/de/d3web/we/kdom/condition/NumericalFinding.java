@@ -37,6 +37,7 @@ import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.Number;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -128,7 +129,11 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 		}
 
 		Question q = qRef.get().getTermObject(compiler, qRef);
-
+		if (q == null) {
+			Message error = Messages.error("QuestionNum '" + qRef.get(Term::getTermName) + " 'not found.");
+			Messages.storeMessage(compiler, s, getClass(), error);
+			return null;
+		}
 		if (!(q instanceof QuestionNum)) {
 			Message error = Messages.error("Expected " + QuestionNum.class.getSimpleName() + ", but was " + q.getClass()
 					.getSimpleName());
