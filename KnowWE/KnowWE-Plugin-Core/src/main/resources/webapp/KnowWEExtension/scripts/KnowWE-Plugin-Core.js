@@ -514,7 +514,7 @@ KNOWWE.tooltips.enrich = function(element) {
 						origin.tooltipster('update', html).tooltipster('reposition');
 					},
 					error : function(request, status, error) {
-						KNOWWE.notification.error("Cannot get tooltip content", error, src);
+						KNOWWE.notification.error(error, "Cannot get tooltip content", src);
 						origin.tooltipster('hide');
 					}
 				});
