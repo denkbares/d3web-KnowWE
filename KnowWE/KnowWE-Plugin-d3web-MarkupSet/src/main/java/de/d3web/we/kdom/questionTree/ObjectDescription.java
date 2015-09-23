@@ -32,7 +32,7 @@ public class ObjectDescription extends AbstractType {
 		this.setSectionFinder(new MatchUntilEndFinder(new StringSectionFinderUnquoted(
 				QTEXT_START_SYMBOL)));
 
-		this.setRenderer(StyleRenderer.PROMPT);
+		this.setRenderer((section, user, result) -> StyleRenderer.PROMPT.renderText(QTEXT_START_SYMBOL + section.getText(), user, result));
 		this.addCompileScript((D3webHandler<ObjectDescription>) (compiler, section) -> {
 
 			@SuppressWarnings("rawtypes")

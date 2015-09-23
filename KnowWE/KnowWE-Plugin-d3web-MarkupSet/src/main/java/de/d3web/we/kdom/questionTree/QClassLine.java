@@ -57,8 +57,8 @@ public class QClassLine extends AbstractType {
 		initSectionFinder();
 		// at first the init-number
 		this.addChildType(new InitNumber());
-		// add description-type via '~'
-		this.addChildType(new ObjectDescription(MMInfo.DESCRIPTION));
+		// add prompt via '~'
+		this.addChildType(new ObjectDescription(MMInfo.PROMPT));
 
 		// finally the rest is QuestionniareDefinition
 		this.addChildType(new QuestionTreeQuestionnaireDefinition());

@@ -330,9 +330,7 @@ public class QuestionLine extends AbstractType {
 		public QuestionText() {
 			this.setSectionFinder(new MatchUntilEndFinder(new StringSectionFinderUnquoted(
 					QTEXT_START_SYMBOL)));
-			this.setRenderer((section, user, result) -> {
-				StyleRenderer.PROMPT.renderText(QTEXT_START_SYMBOL + section.getText(), user, result);
-			});
+			this.setRenderer((section, user, result) -> StyleRenderer.PROMPT.renderText(QTEXT_START_SYMBOL + section.getText(), user, result));
 			this.addCompileScript(Priority.HIGH, (D3webHandler<QuestionText>) (compiler, sec) -> {
 
 				Section<QuestionDefinition> qDef = Sections.successor(
