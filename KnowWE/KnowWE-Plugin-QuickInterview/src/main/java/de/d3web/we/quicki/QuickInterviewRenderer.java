@@ -112,7 +112,7 @@ public class QuickInterviewRenderer {
 			result.appendHtmlElement(
 					"span",
 					"No knowledge base found for this interview.",
-					"class", "error");
+					"class", "warning");
 			return;
 		}
 		Session session = SessionProvider.getSession(user, knowledgeBase);
