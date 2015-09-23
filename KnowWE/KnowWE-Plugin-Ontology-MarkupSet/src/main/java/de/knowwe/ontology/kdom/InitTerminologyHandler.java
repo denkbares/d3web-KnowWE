@@ -96,7 +96,7 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 				url = new URL(importString);
 			}
 			catch (Exception ignore) {
-				// we will now, if url == null...
+				// we will know when url == null...
 			}
 			if (url == null) {
 				importAttachment(compiler, annotationContentSection, importString, silent);
@@ -155,8 +155,7 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 		String path = createPath(section, attachmentFile);
 		WikiAttachment attachment;
 		try {
-			attachment = Environment.getInstance().getWikiConnector().getAttachment(
-					path);
+			attachment = Environment.getInstance().getWikiConnector().getAttachment(path);
 		}
 		catch (IOException e) {
 			Messages.storeMessage(compiler, section, this.getClass(), Messages.error("Error while retrieving attachment '"
