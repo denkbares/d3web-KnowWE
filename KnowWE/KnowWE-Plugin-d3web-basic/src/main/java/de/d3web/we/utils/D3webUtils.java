@@ -52,7 +52,6 @@ import de.d3web.core.records.io.SessionPersistenceManager;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.blackboard.Fact;
-import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.indication.inference.PSMethodUserSelected;
 import de.d3web.scoring.Score;
@@ -303,8 +302,7 @@ public class D3webUtils {
 				// the fact gets retracted instead, allowing to take back an answer completely.
 				Fact existingFact = session.getBlackboard().getValueFact(fact.getTerminologyObject(),
 						PSMethodUserSelected.getInstance());
-				if (Unknown.getInstance().equals(fact.getValue()) && fact.equals(existingFact)
-						|| (fact.getValue().equals(UndefinedValue.getInstance()) && existingFact != null)) {
+				if (Unknown.getInstance().equals(fact.getValue()) && fact.equals(existingFact)) {
 					session.getBlackboard().removeValueFact(existingFact);
 				}
 				else {
