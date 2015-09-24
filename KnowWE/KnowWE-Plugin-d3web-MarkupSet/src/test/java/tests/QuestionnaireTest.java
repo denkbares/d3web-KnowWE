@@ -121,8 +121,8 @@ public class QuestionnaireTest extends TestCase {
 
 				// Test Explanation
 				assertEquals("QContainer " + expected.getName() + " has wrong explanation.",
-						expected.getInfoStore().getValue(MMInfo.DESCRIPTION),
-						actual.getInfoStore().getValue(MMInfo.DESCRIPTION));
+						expected.getInfoStore().getValue(MMInfo.PROMPT),
+						actual.getInfoStore().getValue(MMInfo.PROMPT));
 			}
 		}
 		else {

@@ -178,7 +178,7 @@ public class KBTestUtilNewMarkup {
 		qc1.addChild(qc2);
 
 		QContainer qc3 = new QContainer(createdKB, "Air filter");
-		qc3.getInfoStore().addValue(MMInfo.DESCRIPTION,
+		qc3.getInfoStore().addValue(MMInfo.PROMPT,
 				"Here you can enter your observations concerning the air filter.");
 		qc1.addChild(qc3);
 
