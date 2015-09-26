@@ -92,7 +92,8 @@ public class TermRenamingAction extends AbstractAction {
 
 		Map<String, Set<Section<? extends RenamableTerm>>> allTerms = new HashMap<>();
 
-		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(Sections.get(sectionId));
+		Collection<TerminologyManager> terminologyManagers =
+				KnowWEUtils.getTerminologyManagers(Sections.get(sectionId));
 		for (TerminologyManager terminologyManager : terminologyManagers) {
 
 			// Check if there is a TermDefinition
@@ -131,8 +132,7 @@ public class TermRenamingAction extends AbstractAction {
 				}
 				sb.append(articleWithoutEditRights);
 			}
-			String errorMessage = "You are not allowed to rename this term, because you do not have permission to edit all articles on which this term occurs:You are not allowed to rename this term, because you do not have permission to edit all articles on which this term occurs: \n" +
-					sb;
+			String errorMessage = "You are not allowed to rename this term, because you do not have permission to edit all articles on which this term occurs: \n" + sb;
 			NotificationManager.addNotification(context, new StandardNotification(errorMessage, Message.Type.ERROR));
 			context.sendError(403, errorMessage);
 		}
