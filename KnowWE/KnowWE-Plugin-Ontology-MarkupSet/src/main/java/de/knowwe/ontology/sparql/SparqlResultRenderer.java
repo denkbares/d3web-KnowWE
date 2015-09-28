@@ -103,7 +103,8 @@ public class SparqlResultRenderer {
 			message = message.replaceAll("[^.]\\s*$", "."); // clean up message end
 			result.appendHtml("<span class='warning'>"
 					+ message + " <a onclick='KNOWWE.plugin.sparql.retry(\"" + section.getID()
-					+ "\")'>Try again...</a></span>");
+					+ "\")' title='Try executing the query again, maybe it is faster this time.'"
+					+ " class='tooltipster'>Try again...</a></span>");
 			Log.warning("Exception while executing SPARQL", e);
 		}
 		if (qrt != null) {
