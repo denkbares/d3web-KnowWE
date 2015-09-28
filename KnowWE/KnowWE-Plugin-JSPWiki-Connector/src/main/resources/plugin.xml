@@ -26,6 +26,16 @@
 		<parameter id="css" value="KnowWE-Plugin-JSPWiki-Connector.css" />
 		<parameter id="script" value="KnowWE-Plugin-JSPWiki-Connector.js" />
 	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="ReadOnlyMessageMarkup">
+		<parameter id="class" value="de.knowwe.jspwiki.ReadOnlyMessageMarkup" />
+		<parameter id="name" value="ReadOnlyMessageMarkup" />
+		<parameter id="description" value="Markup displaying a message if read-only mode is active" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
         id="ReadOnlyAction">

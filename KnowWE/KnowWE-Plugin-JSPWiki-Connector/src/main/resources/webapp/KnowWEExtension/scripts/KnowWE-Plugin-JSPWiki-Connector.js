@@ -1,5 +1,5 @@
 if (typeof KNOWWE == "undefined" || !KNOWWE) {
-    var KNOWWE = {};
+	var KNOWWE = {};
 }
 
 /**
@@ -8,44 +8,50 @@ if (typeof KNOWWE == "undefined" || !KNOWWE) {
  * namespaces are preserved.
  */
 if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
-    KNOWWE.plugin = {};
+	KNOWWE.plugin = {};
 }
 
 KNOWWE.plugin.jspwikiConnector = {};
 
 KNOWWE.plugin.jspwikiConnector.setReadOnly = function(checkbox) {
 
-    var params = {
-        action: 'ReadOnlyAction',
-        readonly: jq$(checkbox).prop('checked'),
-    };
+	var readonly = jq$(checkbox).prop('checked');
+	var params = {
+		action : 'ReadOnlyAction',
+		readonly : readonly
+	};
 
-    var options = {
-        url: KNOWWE.core.util.getURL(params),
-        response: {
-            action: 'none',
-            fn: function() {
-            	_EC.executeIfPrivileged(KNOWWE.plugin.jspwikiConnector.enableEditButtons, KNOWWE.plugin.jspwikiConnector.disableEditButtons);
-            },
-            onError: _EC.onErrorBehavior,
-        }
-    };
-    new _KA(options).send();
-}
+	var options = {
+		url : KNOWWE.core.util.getURL(params),
+		response : {
+			action : 'none',
+			fn : function() {
+				_EC.executeIfPrivileged(KNOWWE.plugin.jspwikiConnector.enableEditButtons, KNOWWE.plugin.jspwikiConnector.disableEditButtons);
+				if (readonly) {
+					jq$('.readOnlyMessage').css('display', 'block');
+				} else {
+					jq$('.readOnlyMessage').css('display', 'none');
+				}
+			},
+			onError : _EC.onErrorBehavior
+		}
+	};
+	new _KA(options).send();
+};
 
 KNOWWE.plugin.jspwikiConnector.enableEditButtons = function() {
 	jq$('#actionsTop').find('.edit').parent().show();
 	_IE.enableDefaultEditTool();
 	_EM.changeActionMenu();
-}
+};
 
 KNOWWE.plugin.jspwikiConnector.disableEditButtons = function() {
 	jq$('#actionsTop').find('.edit').parent().hide();
 	_IE.disableDefaultEditTool();
-}
+};
 
 jq$(document).ready(function() {
-    if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
-    	_EC.executeIfPrivileged(KNOWWE.plugin.jspwikiConnector.enableEditButtons, KNOWWE.plugin.jspwikiConnector.disableEditButtons);
-    }
+	if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
+		_EC.executeIfPrivileged(KNOWWE.plugin.jspwikiConnector.enableEditButtons, KNOWWE.plugin.jspwikiConnector.disableEditButtons);
+	}
 });
