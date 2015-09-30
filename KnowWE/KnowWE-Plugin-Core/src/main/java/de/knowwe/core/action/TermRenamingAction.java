@@ -29,6 +29,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
@@ -116,7 +117,8 @@ public class TermRenamingAction extends AbstractAction {
 		ArticleManager mgr = Environment.getInstance().getArticleManager(web);
 		Set<String> failures = new HashSet<>();
 		Set<String> success = new HashSet<>();
-		if (getArticlesWithoutEditRights(allTerms, context).isEmpty()) {
+		Set<String> articlesWithoutEditRights = getArticlesWithoutEditRights(allTerms, context);
+		if (articlesWithoutEditRights.isEmpty()) {
 			renameTerms(allTerms, termIdentifier, replacementIdentifier, mgr, context, failures, success);
 			Compilers.awaitTermination(mgr.getCompilerManager());
 			EventManager.getInstance()
@@ -124,15 +126,8 @@ public class TermRenamingAction extends AbstractAction {
 			writeResponse(failures, success, termIdentifier, replacementIdentifier, context);
 		}
 		else {
-			Set<String> articlesWithoutEditRights = getArticlesWithoutEditRights(allTerms, context);
-			StringBuilder sb = new StringBuilder();
-			for (String articleWithoutEditRights : articlesWithoutEditRights) {
-				if (sb.length() != 0) {
-					sb.append(", ");
-				}
-				sb.append(articleWithoutEditRights);
-			}
-			String errorMessage = "You are not allowed to rename this term, because you do not have permission to edit all articles on which this term occurs: \n" + sb;
+			String errorMessage = "You are not allowed to rename this term, because you do not have permission to " +
+					"edit all articles on which this term occurs: \n" + Strings.concat(", ", articlesWithoutEditRights);
 			NotificationManager.addNotification(context, new StandardNotification(errorMessage, Message.Type.ERROR));
 			context.sendError(403, errorMessage);
 		}
