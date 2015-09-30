@@ -27,7 +27,6 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
- * 
  * @author danielzugner
  * @created Nov 5, 2012
  */
@@ -52,7 +51,7 @@ public class RenderKDOMType extends DefaultMarkupType {
 		@Override
 		protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
 			String html = "";
-			html += "<table class='renderKDOMTable wikitable' article='" + section.getTitle() +"'>";
+			html += "<table class='renderKDOMTable wikitable' article='" + section.getTitle() + "'>";
 			html += "<tr>";
 			html += "<th>Type</th>";
 			html += "<th>ID</th>";
@@ -85,7 +84,12 @@ public class RenderKDOMType extends DefaultMarkupType {
 				string.append("'");
 			}
 			string.appendHtml(">");
-			string.appendHtml("<td>" + s.get().getClass().getSimpleName() + "</td>");
+			String typeName = s.get().getClass().getSimpleName();
+			if (Strings.isBlank(typeName)) {
+				typeName = s.get().getClass().getName();
+				typeName = typeName.substring(typeName.lastIndexOf(".") + 1);
+			}
+			string.appendHtml("<td>" + typeName + "</td>");
 			string.appendHtml("<td>" + s.getID() + "</td>");
 			string.appendHtml("<td>" + s.getText().length() + "</td>");
 			string.appendHtml("<td>" + s.getOffsetInParent() + "</td>");
@@ -102,4 +106,5 @@ public class RenderKDOMType extends DefaultMarkupType {
 			}
 		}
 	}
+
 }
