@@ -42,6 +42,8 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.event.TermRenamingEvent;
+import de.knowwe.event.TermRenamingFinishEvent;
+import de.knowwe.event.TermRenamingStartEvent;
 import de.knowwe.notification.NotificationManager;
 import de.knowwe.notification.StandardNotification;
 
@@ -119,10 +121,12 @@ public class TermRenamingAction extends AbstractAction {
 		Set<String> success = new HashSet<>();
 		Set<String> articlesWithoutEditRights = getArticlesWithoutEditRights(allTerms, context);
 		if (articlesWithoutEditRights.isEmpty()) {
+			EventManager.getInstance()
+					.fireEvent(new TermRenamingStartEvent(mgr, context, termIdentifier, replacementIdentifier));
 			renameTerms(allTerms, termIdentifier, replacementIdentifier, mgr, context, failures, success);
 			Compilers.awaitTermination(mgr.getCompilerManager());
 			EventManager.getInstance()
-					.fireEvent(new TermRenamingEvent(mgr, context, termIdentifier, replacementIdentifier));
+					.fireEvent(new TermRenamingFinishEvent(mgr, context, termIdentifier, replacementIdentifier));
 			writeResponse(failures, success, termIdentifier, replacementIdentifier, context);
 		}
 		else {

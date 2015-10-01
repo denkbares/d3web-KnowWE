@@ -25,12 +25,12 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.event.Event;
 
 /**
- * Event that gets fired after a term was renamed.
+ * Event that gets fired when a term is renamed.
  *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 23.10.14
  */
-public class TermRenamingEvent extends Event {
+public abstract class TermRenamingEvent extends Event {
 
 	private ArticleManager articleManager;
 	private UserActionContext context;
