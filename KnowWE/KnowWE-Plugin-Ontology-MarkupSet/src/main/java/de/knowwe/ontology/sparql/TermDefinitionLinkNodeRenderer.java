@@ -35,8 +35,7 @@ public class TermDefinitionLinkNodeRenderer implements SparqlResultNodeRenderer 
 			Section<?> termDefiningSection = manager.getTermDefiningSection(identifier);
 			if (termDefiningSection != null) {
 				if (mode == RenderMode.HTML) {
-					return KnowWEUtils.getLinkHTMLToArticle(termDefiningSection.getTitle(),
-							Strings.concat(":", split));
+					return "<a href=" + KnowWEUtils.getURLLink(termDefiningSection) + "'>" + Strings.concat(":", split) + "</a>";
 				}
 			}
 		}
