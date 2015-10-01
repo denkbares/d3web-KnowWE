@@ -41,7 +41,7 @@ public class SparqlResultRenderer {
 
 	private static SparqlResultRenderer instance = null;
 
-	private final SparqlResultNodeRenderer[] nodeRenderers;
+	private List<SparqlResultNodeRenderer> nodeRenderers;
 
 	public static SparqlResultRenderer getInstance() {
 		if (instance == null) instance = new SparqlResultRenderer();
@@ -49,9 +49,9 @@ public class SparqlResultRenderer {
 	}
 
 	private SparqlResultRenderer() {
-		List<SparqlResultNodeRenderer> nodeRenderer = getNodeRenderer();
+		List<SparqlResultNodeRenderer> nodeRenderer = getNodeRenderers();
 		optimizeNodeRenderer(nodeRenderer);
-		nodeRenderers = nodeRenderer.toArray(new SparqlResultNodeRenderer[nodeRenderer.size()]);
+		nodeRenderers = nodeRenderer;
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class SparqlResultRenderer {
 		if (containsBoth) nodeRenderer.remove(rnnRenderer);
 	}
 
-	public List<SparqlResultNodeRenderer> getNodeRenderer() {
+	public List<SparqlResultNodeRenderer> getNodeRenderers() {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(
 				OntologyType.PLUGIN_ID, POINT_ID);
 		List<SparqlResultNodeRenderer> renderers = new ArrayList<>();
@@ -80,6 +80,10 @@ public class SparqlResultRenderer {
 			renderers.add((SparqlResultNodeRenderer) extension.getSingleton());
 		}
 		return renderers;
+	}
+
+	public void setNodeRenderers(List<SparqlResultNodeRenderer> nodeRenderers) {
+		this.nodeRenderers = nodeRenderers;
 	}
 
 	public void renderSparqlResult(Section<? extends SparqlType> section, UserContext user, RenderResult result) {
@@ -118,6 +122,7 @@ public class SparqlResultRenderer {
 
 	public SparqlRenderResult getSparqlRenderResult(QueryResultTable qrt, UserContext user, Section<?> section) {
 		RenderOptions opts = new RenderOptions("defaultID", user);
+		//noinspection deprecation
 		opts.setRdf2GoCore(Rdf2GoCore.getInstance());
 		return getSparqlRenderResult(qrt, opts, user, section);
 	}
