@@ -765,13 +765,16 @@ KNOWWE.core.plugin.pagination = function() {
 		}
 	}
 
+	function readCookie(id) {
+		var cookieValue = jq$.cookie("PaginationDecoratingRenderer-" + id);
+		if (!cookieValue) cookieValue = "{}";
+		return cookie = jq$.parseJSON(cookieValue);
+	}
+
 	return {
 
 		sort : function(element, id) {
-			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-" + id));
-			if (cookie == null) {
-				cookie = {};
-			}
+			var cookie = readCookie(id);
 			var sort = jq$(element).text();
 			var sorting;
 			if (typeof cookie.sorting != 'undefined') {
@@ -801,11 +804,7 @@ KNOWWE.core.plugin.pagination = function() {
 		setCount : function(selected, id) {
 			var $selected = jq$(selected);
 
-			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-"
-				+ id));
-			if (cookie == null) {
-				cookie = {};
-			}
+			var cookie = readCookie(id);
 
 			var lastCount = parseInt(cookie.count);
 			var resultSize = parseInt(jq$('#' + id + " .resultSize").val());
@@ -866,10 +865,7 @@ KNOWWE.core.plugin.pagination = function() {
 			}
 
 
-			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-" + id));
-			if (cookie == null) {
-				cookie = {};
-			}
+			var cookie = readCookie(id);
 			cookie.startRow = startRow;
 			cookie.count = count;
 			saveCookieAndUpdateNode(cookie, id);
@@ -879,11 +875,7 @@ KNOWWE.core.plugin.pagination = function() {
 		updateStartRow : function(selectedRow, sectionId, preventRerender) {
 
 			var id = sectionId;
-			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-"
-				+ id));
-			if (cookie == null) {
-				cookie = {};
-			}
+			var cookie = readCookie(id);
 			var count = jq$("#" + id + " .count").val();
 			var startRow = selectedRow.value;
 			var search = /^\d+$/;
@@ -911,10 +903,7 @@ KNOWWE.core.plugin.pagination = function() {
 			var value = jq$(checkbox).attr("filtervalue");
 			var checked = checkbox.checked;
 
-			var cookie = jq$.parseJSON(jq$.cookie("PaginationDecoratingRenderer-" + sectionId));
-			if (cookie == null) {
-				cookie = {};
-			}
+			var cookie = readCookie(id);
 			if (typeof cookie.filters == "undefined") {
 				cookie.filters = {};
 				cookie.filters[key] = [];
