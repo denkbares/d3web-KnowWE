@@ -399,7 +399,7 @@ public class SparqlResultRenderer {
 				if (node instanceof Literal && nodeRenderer instanceof DecodeUrlNodeRenderer) continue;
 
 				String temp = rendered;
-				rendered = nodeRenderer.renderNode(rendered, var, user, core, mode);
+				rendered = nodeRenderer.renderNode(node, rendered, var, user, core, mode);
 				if (!temp.equals(rendered) && !nodeRenderer.allowFollowUpRenderer()) break;
 			}
 			// rendered = KnowWEUtils.maskJSPWikiMarkup(rendered);

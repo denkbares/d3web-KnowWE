@@ -2,6 +2,8 @@ package de.knowwe.ontology.sparql;
 
 import java.util.Collection;
 
+import org.ontoware.rdf2go.model.node.Node;
+
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compilers;
@@ -16,7 +18,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 public class TermDefinitionLinkNodeRenderer implements SparqlResultNodeRenderer {
 
 	@Override
-	public String renderNode(String text, String variable, UserContext user, Rdf2GoCore core, RenderMode mode) {
+	public String renderNode(Node node, String text, String variable, UserContext user, Rdf2GoCore core, RenderMode mode) {
 		String abbreviatedName = Rdf2GoUtils.reduceNamespace(core, text);
 		String[] split = abbreviatedName.split(":");
 		for (int i = 0; i < split.length; i++) {
