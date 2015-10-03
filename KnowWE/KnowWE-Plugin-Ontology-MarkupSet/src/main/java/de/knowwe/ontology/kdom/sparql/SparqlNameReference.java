@@ -22,15 +22,22 @@ package de.knowwe.ontology.kdom.sparql;
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.jspwiki.types.LinkType;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.ontology.sparql.SparqlContentType;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * Type that is a term reference to a sparql name.
@@ -42,7 +49,7 @@ public class SparqlNameReference extends SimpleReference {
 
 	public SparqlNameReference() {
 		super(SparqlNameDefinition.TERM_COMPILER, SparqlNameDefinition.TERM_CLASS);
-		setSectionFinder(new AllTextFinderTrimmed());
+		setSectionFinder(new RegexSectionFinder(".*"));
 		setRenderer(new ToolMenuDecoratingRenderer(StyleRenderer.CHOICE));
 	}
 
@@ -62,13 +69,25 @@ public class SparqlNameReference extends SimpleReference {
 	public String getQuery(Section<? extends SparqlNameReference> section) {
 		Identifier identifier = getTermIdentifier(section);
 		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
+		if (compiler == null) return null;
 		TerminologyManager terminologyManager = compiler.getTerminologyManager();
 		Section<?> sparqlSection = terminologyManager.getTermDefiningSection(identifier);
+		Section<SparqlContentType> contentSection = null;
 		if (sparqlSection == null) {
-			return null;
+			Section<LinkType> linkSection = $(section).ancestor(InlineSparqlMarkup.class).parent().successor(LinkType.class).getFirst();
+			if (linkSection != null) {
+				String link = linkSection.getText();
+				int start = link.lastIndexOf("|");
+				if (start < 1) start = 1;
+				link = link.substring(start + 1, link.length() - 1);
+				Article article = KnowWEUtils.getArticle(section.getWeb(), link);
+				if (article != null) {
+					contentSection = $(article.getRootSection()).successor(SparqlContentType.class)	.getFirst();
+				}
+			}
+		} else {
+			contentSection = Sections.successor(sparqlSection, SparqlContentType.class);
 		}
-
-		Section<SparqlContentType> contentSection = Sections.successor(sparqlSection, SparqlContentType.class);
 		return (contentSection == null) ? null : contentSection.getText();
 	}
 
