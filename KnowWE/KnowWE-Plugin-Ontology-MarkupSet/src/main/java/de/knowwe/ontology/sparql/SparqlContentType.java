@@ -61,7 +61,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 	public RenderOptions getRenderOptions(Section<? extends SparqlType> section, UserContext context) {
 		Section<DefaultMarkupType> markupSection = Sections.ancestor(section, DefaultMarkupType.class);
 
-		RenderOptions renderOpts = new RenderOptions(section.getID(), context);
+		RenderOptions renderOpts = new RenderOptions(section.getID());
 
 		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(markupSection);
 		renderOpts.setRdf2GoCore(core);

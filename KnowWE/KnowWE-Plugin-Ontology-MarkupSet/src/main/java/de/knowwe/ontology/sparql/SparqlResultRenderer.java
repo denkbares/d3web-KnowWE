@@ -121,7 +121,7 @@ public class SparqlResultRenderer {
 	}
 
 	public SparqlRenderResult getSparqlRenderResult(QueryResultTable qrt, UserContext user, Section<?> section) {
-		RenderOptions opts = new RenderOptions("defaultID", user);
+		RenderOptions opts = new RenderOptions("defaultID");
 		//noinspection deprecation
 		opts.setRdf2GoCore(Rdf2GoCore.getInstance());
 		return getSparqlRenderResult(qrt, opts, user, section);

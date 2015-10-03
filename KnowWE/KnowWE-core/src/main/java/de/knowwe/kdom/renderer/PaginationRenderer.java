@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.Cookie;
 
@@ -34,10 +35,12 @@ import org.json.JSONObject;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.d3web.utils.Pair;
+import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.util.Icon;
 
 /**
@@ -78,6 +81,10 @@ import de.knowwe.util.Icon;
 public class PaginationRenderer implements Renderer {
 
 	public static final int DEFAULT_SHOW_NAVIGATION_MAX_RESULTS = 10;
+	public static final String DEFAULT_COUNT_COOKIE_NAME = "PaginationDefaultCount";
+	public static final int MAX_DEFAULT_COUNT = 1000;
+	public static final String PAGINATION_COOKIE_PREFIX = "PaginationDecoratingRenderer-";
+	public static final Pattern PAGINATION_COOKIE_CLEANUP_PATTERN = Pattern.compile("^" + PAGINATION_COOKIE_PREFIX + "(.+)$");
 	private final Renderer decoratedRenderer;
 
 	public static final String UNKNOWN_RESULT_SIZE = "unknown";
@@ -96,6 +103,9 @@ public class PaginationRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
+
+		KnowWEUtils.cleanupSectionCookies(user, PAGINATION_COOKIE_CLEANUP_PATTERN, 1);
+
 		result.appendHtmlTag("div", "class", "knowwe-paginationWrapper", "id", section.getID());
 		RenderResult table = new RenderResult(user);
 		decoratedRenderer.render(section, user, table);
@@ -284,7 +294,7 @@ public class PaginationRenderer implements Renderer {
 	}
 
 	private static String getJSONCookieString(Section<?> sec, UserContext user) {
-		return getCookie(user, "PaginationDecoratingRenderer-" + sec.getID(), null);
+		return getCookie(user, PAGINATION_COOKIE_PREFIX + sec.getID(), null);
 	}
 
 	private static String getCookie(UserContext user, String cookieName, String defaultValue) {
@@ -335,13 +345,22 @@ public class PaginationRenderer implements Renderer {
 		try {
 			JSONObject jsonObject = getJsonObject(sec, user);
 			if (jsonObject != null && jsonObject.has(COUNT)) {
-				return jsonObject.getInt(COUNT);
+				int count = jsonObject.getInt(COUNT);
+				if (user instanceof UserActionContext) {
+					int newDefault = count;
+					if (count > MAX_DEFAULT_COUNT) { // we don't want the default higher than 1000
+						newDefault = MAX_DEFAULT_COUNT;
+					}
+					((UserActionContext) user).getResponse()
+							.addCookie(new Cookie(DEFAULT_COUNT_COOKIE_NAME, Integer.toString(newDefault)));
+				}
+				return count;
 			}
 		}
 		catch (JSONException e) {
 			Log.warning("Exception while parsing count", e);
 		}
-		return Integer.parseInt(COUNT_DEFAULT);
+		return Integer.parseInt(KnowWEUtils.getCookie(DEFAULT_COUNT_COOKIE_NAME, COUNT_DEFAULT, user));
 	}
 
 	/**

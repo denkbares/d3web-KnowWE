@@ -52,8 +52,6 @@ public class SparqlContentRenderer implements Renderer {
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
 
-		KnowWEUtils.cleanupSectionCookies(user, Pattern.compile("^SparqlRenderer-(.+)$"), 1);
-
 		Section<DefaultMarkupType> markupSection = Sections.ancestor(section, DefaultMarkupType.class);
 		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(markupSection);
 		if (core == null) {

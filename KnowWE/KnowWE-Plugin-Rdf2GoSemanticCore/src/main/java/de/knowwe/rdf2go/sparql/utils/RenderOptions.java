@@ -30,7 +30,7 @@ public class RenderOptions {
 	private boolean tree = false;
 	private long timeout = 10000;
 
-	public RenderOptions(String id, UserContext user) {
+	public RenderOptions(String id) {
 		this.zebraMode = true;
 		this.rawOutput = false;
 		this.sorting = false;
@@ -39,42 +39,6 @@ public class RenderOptions {
 		sortingOrder = new LinkedHashMap<>();
 		this.id = id;
 		showAll = false;
-
-		if (user == null) return;
-		// Default values from user cookie
-		Map<String, String> sortMap = new LinkedHashMap<>();
-		String cookie = KnowWEUtils.getCookie("SparqlRenderer-" + id, null, user);
-		try {
-			if (cookie != null) {
-				JSONObject json = new JSONObject(Strings.decodeURL(cookie));
-				if (!json.isNull("navigationOffset")) {
-					setNavigationOffset(json.getString("navigationOffset"));
-				}
-				if (!json.isNull("navigationLimit")) {
-					String navigationLimit = json.getString("navigationLimit");
-					if (navigationLimit.equals("All")) {
-						setShowAll(true);
-					}
-					else {
-						setNavigationLimit(navigationLimit);
-					}
-				}
-				if (!json.isNull("sorting")) {
-					JSONArray jsonArray = json.getJSONArray("sorting");
-					for (int i = 0; i < jsonArray.length(); i++) {
-						JSONObject sortPair = jsonArray.getJSONObject(i);
-						@SuppressWarnings("unchecked")
-						Iterator<String> it = sortPair.keys();
-						String key = it.next();
-						sortMap.put(key, sortPair.getString(key));
-					}
-					setSortingMap(sortMap);
-				}
-			}
-		}
-		catch (JSONException e) {
-			Log.severe("Exception while initializing render options", e);
-		}
 	}
 
 	public String getId() {
