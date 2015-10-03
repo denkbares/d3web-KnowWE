@@ -76,7 +76,7 @@ public class ContentType extends AbstractType {
 		public ContentFinder(DefaultMarkup markup) {
 			String regex_modified;
 			if (markup.isInline()) {
-				regex_modified = REGEX.replace("$INLINEENDTAG$", "|%%|/%");
+				regex_modified = REGEX.replace("$INLINEENDTAG$", "|%%|/%").replace("$LINESTART$", "^|");
 			}
 			else {
 				regex_modified = REGEX.replace("$INLINEENDTAG$", "");
