@@ -20,6 +20,7 @@
 package de.knowwe.ontology.kdom.sparql;
 
 import de.d3web.strings.Identifier;
+import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
@@ -78,11 +79,11 @@ public class SparqlNameReference extends SimpleReference {
 			if (linkSection != null) {
 				String link = linkSection.getText();
 				int start = link.lastIndexOf("|");
-				if (start < 1) start = 1;
-				link = link.substring(start + 1, link.length() - 1);
+				if (start < 1) start = 0;
+				link = Strings.trim(link.substring(start + 1, link.length() - 1));
 				Article article = KnowWEUtils.getArticle(section.getWeb(), link);
 				if (article != null) {
-					contentSection = $(article.getRootSection()).successor(SparqlContentType.class)	.getFirst();
+					contentSection = $(article.getRootSection()).successor(SparqlContentType.class).getFirst();
 				}
 			}
 		} else {
