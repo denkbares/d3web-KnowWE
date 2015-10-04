@@ -20,22 +20,17 @@
 package de.knowwe.ontology.kdom.sparql;
 
 import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
-import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.jspwiki.types.LinkType;
 import de.knowwe.kdom.renderer.StyleRenderer;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.ontology.sparql.SparqlContentType;
+import de.knowwe.ontology.sparql.SparqlMarkupType;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
@@ -60,6 +55,27 @@ public class SparqlNameReference extends SimpleReference {
 	}
 
 	/**
+	 * Returns the actual sparql section that is referenced by the section. If the section cannot be found, null is
+	 * returned.
+	 *
+	 * @param section the referencing section contain the reference name
+	 * @return the actual sparql section to be executed
+	 */
+	public Section<SparqlMarkupType> getReferencedSection(Section<? extends SparqlNameReference> section) {
+		Identifier identifier = getTermIdentifier(section);
+		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
+		if (compiler == null) return null;
+		TerminologyManager terminologyManager = compiler.getTerminologyManager();
+		Section<?> sparqlSection = terminologyManager.getTermDefiningSection(identifier);
+		if (sparqlSection == null) {
+			return null;
+		}
+		else {
+			return Sections.cast(sparqlSection, SparqlMarkupType.class);
+		}
+	}
+
+	/**
 	 * Returns the actual sparql query that is referenced by the specified referencing section. If
 	 * there is no such query, because the reference is not found of does not contain a valid sparql
 	 * query, null is returned.
@@ -68,28 +84,11 @@ public class SparqlNameReference extends SimpleReference {
 	 * @return the actual sparql query to be executed
 	 */
 	public String getQuery(Section<? extends SparqlNameReference> section) {
-		Identifier identifier = getTermIdentifier(section);
-		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
-		if (compiler == null) return null;
-		TerminologyManager terminologyManager = compiler.getTerminologyManager();
-		Section<?> sparqlSection = terminologyManager.getTermDefiningSection(identifier);
-		Section<SparqlContentType> contentSection = null;
-		if (sparqlSection == null) {
-			Section<LinkType> linkSection = $(section).ancestor(InlineSparqlMarkup.class).parent().successor(LinkType.class).getFirst();
-			if (linkSection != null) {
-				String link = linkSection.getText();
-				int start = link.lastIndexOf("|");
-				if (start < 1) start = 0;
-				link = Strings.trim(link.substring(start + 1, link.length() - 1));
-				Article article = KnowWEUtils.getArticle(section.getWeb(), link);
-				if (article != null) {
-					contentSection = $(article.getRootSection()).successor(SparqlContentType.class).getFirst();
-				}
-			}
-		} else {
-			contentSection = Sections.successor(sparqlSection, SparqlContentType.class);
-		}
-		return (contentSection == null) ? null : contentSection.getText();
+		Section<SparqlMarkupType> referencedSection = getReferencedSection(section);
+		if (referencedSection == null) return null;
+		Section<SparqlContentType> content = $(section).successor(SparqlContentType.class).getFirst();
+		if (content == null) return null;
+		return content.getText();
 	}
 
 }

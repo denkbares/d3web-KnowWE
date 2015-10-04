@@ -402,9 +402,4 @@ public class DefaultMarkupType extends AbstractType {
 		return Pattern.compile(regexp, FLAGS);
 	}
 
-	@Override
-	public MessageRenderer getMessageRenderer(Message.Type messageType) {
-		return null;
-	}
-
 }

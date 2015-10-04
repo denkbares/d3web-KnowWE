@@ -1200,7 +1200,7 @@ public class Rdf2GoCore {
 			sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, false), timeOutMillis);
 			sparqlThreadPool.execute(sparqlTask);
 		}
-		String timeOutMessage = "SPARQL took more than " + Strings.getDurationVerbalization(timeOutMillis, true)
+		String timeOutMessage = "Query took more than " + Strings.getDurationVerbalization(timeOutMillis, true)
 				+ " and was therefore canceled.";
 		try {
 			return sparqlTask.get();

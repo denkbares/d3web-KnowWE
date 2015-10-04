@@ -8,17 +8,16 @@ import org.ontoware.rdf2go.model.QueryResultTable;
 import org.ontoware.rdf2go.model.QueryRow;
 import org.ontoware.rdf2go.model.node.Node;
 
+import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
-import de.knowwe.core.report.Message;
-import de.knowwe.core.report.MessageRenderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.jspwiki.types.LinkType;
@@ -36,7 +35,7 @@ import static de.knowwe.kdom.renderer.AsynchronRenderer.ASYNCHRONOUS;
 
 /**
  * Shows contents of references of SparqlQueryInline.
- * <p/>
+ * <p>
  *
  * @author Veronika Sehne on 30.04.2014.
  */
@@ -60,7 +59,41 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotation(COUNT, false, "true", "false");
 		MARKUP.addAnnotation(ASYNCHRONOUS, false, "true", "false");
 		MARKUP.addAnnotationRenderer(ASYNCHRONOUS, NothingRenderer.getInstance());
-		MARKUP.addContentType(new SparqlNameReference());
+		MARKUP.addContentType(new InlineSparqlNameReference());
+	}
+
+	private static class InlineSparqlNameReference extends SparqlNameReference {
+
+		/**
+		 * Returns the actual sparql section that is referenced by the section. If the section cannot be found, null is returned.
+		 *
+		 * @param section the referencing section contain the reference name
+		 * @return the actual sparql section to be executed
+		 */
+		public Section<SparqlMarkupType> getReferencedSection(Section<? extends SparqlNameReference> section) {
+			Identifier identifier = getTermIdentifier(section);
+			Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
+			if (compiler == null) return null;
+			TerminologyManager terminologyManager = compiler.getTerminologyManager();
+			Section<?> sparqlSection = terminologyManager.getTermDefiningSection(identifier);
+			if (sparqlSection == null) {
+				Section<LinkType> linkSection = $(section).ancestor(InlineSparqlMarkup.class).parent().successor(LinkType.class).getFirst();
+				if (linkSection != null) {
+					String link = linkSection.getText();
+					int start = link.lastIndexOf("|");
+					if (start < 1) start = 0;
+					link = Strings.trim(link.substring(start + 1, link.length() - 1));
+					Article article = KnowWEUtils.getArticle(section.getWeb(), link);
+					if (article != null) {
+						return $(article.getRootSection()).successor(SparqlMarkupType.class).getFirst();
+					}
+				}
+			} else {
+				return Sections.cast(sparqlSection, SparqlMarkupType.class);
+			}
+			return null;
+		}
+
 	}
 
 	public InlineSparqlMarkup() {
@@ -93,19 +126,26 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 				Section<SparqlNameReference> reference = Sections.successor(
 						DefaultMarkupType.getContentSection(section), SparqlNameReference.class);
 
-				String query = reference == null ? null : reference.get().getQuery(reference);
-
+				Section<SparqlMarkupType> referencedSection = reference == null ? null : reference.get().getReferencedSection(reference);
 				Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
-				if (query == null || compiler == null) {
-					DelegateRenderer.getInstance().render(section, user, result);
-					return;
-				}
 
-				Rdf2GoCore core = compiler.getRdf2GoCore();
-				query = Rdf2GoUtils.createSparqlString(core, query);
-				result.appendHtmlTag("span");
 				try {
-					QueryResultTable resultTable = core.sparqlSelect(query);
+					if (referencedSection == null) {
+						throw new Exception("No query found.");
+					}
+					if (compiler == null) {
+						throw new Exception("No compiler found.");
+					}
+
+					Section<SparqlContentType> sparqlContent = $(referencedSection).successor(SparqlContentType.class)
+							.getFirst();
+					String query = sparqlContent.getText();
+					long timeout = SparqlContentType.getTimeout(referencedSection);
+					Rdf2GoCore core = compiler.getRdf2GoCore();
+					query = Rdf2GoUtils.createSparqlString(core, query);
+					result.appendHtmlTag("span");
+
+					QueryResultTable resultTable = core.sparqlSelect(query, true, timeout);
 
 					ClosableIterator<QueryRow> rowIterator = resultTable.iterator();
 					List<String> variables = resultTable.getVariables();
@@ -157,11 +197,7 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 					result.appendHtmlTag("/span");
 				}
 				catch (Exception e) {
-					Message message = new Message(Message.Type.ERROR, "cannot execute query", e);
-					MessageRenderer messageRenderer = section.get().getMessageRenderer(Message.Type.ERROR);
-					messageRenderer.preRenderMessage(message, user, compiler, result);
-					DelegateRenderer.getInstance().render(section, user, result);
-					messageRenderer.postRenderMessage(message, user, compiler, result);
+					result.appendHtmlElement("span", "Exception: " + e.getMessage());
 				}
 			}
 

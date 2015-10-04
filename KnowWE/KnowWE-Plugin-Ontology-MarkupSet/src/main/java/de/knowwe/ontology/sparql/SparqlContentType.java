@@ -104,7 +104,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		return checkAnnotation(markupSection, annotationName, false);
 	}
 
-	private long getTimeout(Section<DefaultMarkupType> markupSection) {
+	public static long getTimeout(Section<? extends DefaultMarkupType> markupSection) {
 		String timeoutString = DefaultMarkupType.getAnnotation(markupSection, SparqlMarkupType.TIMEOUT);
 		long timeOutMillis = Rdf2GoCore.DEFAULT_TIMEOUT;
 		if (timeoutString != null) {
