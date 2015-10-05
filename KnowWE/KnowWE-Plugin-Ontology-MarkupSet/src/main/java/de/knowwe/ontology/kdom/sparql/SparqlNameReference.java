@@ -86,7 +86,7 @@ public class SparqlNameReference extends SimpleReference {
 	public String getQuery(Section<? extends SparqlNameReference> section) {
 		Section<SparqlMarkupType> referencedSection = getReferencedSection(section);
 		if (referencedSection == null) return null;
-		Section<SparqlContentType> content = $(section).successor(SparqlContentType.class).getFirst();
+		Section<SparqlContentType> content = $(referencedSection).successor(SparqlContentType.class).getFirst();
 		if (content == null) return null;
 		return content.getText();
 	}
