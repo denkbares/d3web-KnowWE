@@ -118,29 +118,17 @@ public abstract class AbstractActionServlet extends HttpServlet {
 	}
 
 	private void doPathAction(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
 		UserActionContext context = createActionContext(request, response);
-		try {
-			// get action and execute it
-			Action cmd = context.getAction();
-			if (cmd == null) {
-				String message = "no action '" + getActionName(request) +
-						"' for requested path: " + request.getPathInfo();
-				Log.severe(message);
-				response.sendError(404, message);
-			}
-			else {
-				try {
-					cmd.execute(context);
-				}
-				catch (NotAuthorizedException e) {
-					context.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage(cmd, context));
-				}
-			}
+		Action cmd = context.getAction();
+		// get action and execute it
+		if (cmd == null) {
+			String message = "no action '" + getActionName(request) +
+					"' for requested path: " + request.getPathInfo();
+			Log.severe(message);
+			response.sendError(404, message);
 		}
-		catch (Throwable e) { // NOSONAR
-			Log.severe("Exception while executing action", e);
-			throw e;
+		else {
+			doAction(context);
 		}
 	}
 
@@ -148,6 +136,26 @@ public abstract class AbstractActionServlet extends HttpServlet {
 
 	private void doXmlActions(HttpServletRequest request, HttpServletResponse response, Reader xmlReader) throws IOException {
 		throw new IllegalStateException("Not implemented yet");
+	}
+
+	/**
+	 * Method that is called to execute the action of the specified user context.
+	 *
+	 * @param context the action context to be executed
+	 * @throws IOException
+	 */
+	protected void doAction(UserActionContext context) throws IOException {
+		Action action = context.getAction();
+		try {
+			action.execute(context);
+		}
+		catch (NotAuthorizedException e) {
+			context.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage(action, context));
+		}
+		catch (Throwable e) { // NOSONAR
+			Log.severe("Unexpected exception while executing action " + action, e);
+			throw e;
+		}
 	}
 
 	@Override

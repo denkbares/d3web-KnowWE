@@ -91,7 +91,7 @@ public class SessionProvider {
 			provider = (SessionProvider) httpSession.getAttribute(Attributes.SESSIONPROVIDER);
 			if (provider == null) {
 				provider = new SessionProvider();
-				context.getSession().setAttribute(Attributes.SESSIONPROVIDER, provider);
+				httpSession.setAttribute(Attributes.SESSIONPROVIDER, provider);
 			}
 		}
 		return provider;
@@ -197,6 +197,35 @@ public class SessionProvider {
 			return null;
 		}
 		return provider.getSessionInternally(context, base);
+	}
+
+	/**
+	 * Returns if a {@link Session} for a specified {@link UserContext} and a
+	 * {@link KnowledgeBase} has already been created. This methods tries to load an existing
+	 * SessionProvider object from the user's HTTPSession. If there is no
+	 * SessionProvider object, a new one will be created and stored in the
+	 * provided UserContext, i. e. HTTPSession.
+	 * <p/>
+	 * Please be aware that this method only works with an UserContext backed by
+	 * a real HTTPSession. Otherwise there is no place to store and retrieve the
+	 * SessionProvider object.
+	 *
+	 * @param context UserContext of the current user.
+	 * @param base    the underlying knowledge base
+	 * @return Session for the specified knowledge base
+	 * @created 05.10.2015
+	 */
+	public static boolean hasSession(UserContext context, KnowledgeBase base) {
+		SessionProvider provider = getSessionProvider(context);
+		if (provider == null) {
+			return false;
+		}
+		Session session = provider.sessions.get(base.getId());
+		if (session == null) {
+			return false;
+		}
+		// check if existing session is up to date
+		return session.getKnowledgeBase() == base;
 	}
 
 	/**
