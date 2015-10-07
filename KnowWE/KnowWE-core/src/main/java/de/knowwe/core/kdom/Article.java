@@ -74,7 +74,7 @@ public class Article {
 			EventManager.getInstance().fireEvent(new ArticleCreatedEvent(article));
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			Log.severe("Exception while creating article", e);
 		}
 		return article;
 	}
