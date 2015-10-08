@@ -185,9 +185,9 @@ KNOWWE.plugin.instantEdit = function() {
 		 * @param title is the optional title of the added article
 		 * @param newWikiText is the optional new text of the new article
          * @param redirect boolean, whether the user should be redirected to the newly created page after saving.
-		 *
+		 * @param fn the callback called after saving...
 		 */
-        add: function(id, title, newWikiText, redirect) {
+        add: function(id, title, newWikiText, redirect, fn) {
 
             _EC.showAjaxLoader(id);
 
@@ -205,6 +205,7 @@ KNOWWE.plugin.instantEdit = function() {
             };
 
             _EC.sendChanges(newWikiText, params, function(id) {
+                if (fn) fn();
                 _IE.disable(id, !redirect, null);
                 if (redirect) {
                     window.location.search = "?page=" + title;
