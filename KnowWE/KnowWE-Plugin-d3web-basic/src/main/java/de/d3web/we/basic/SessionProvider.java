@@ -68,7 +68,7 @@ public class SessionProvider {
 	private final Map<String, Session> sessions;
 
 	private SessionProvider() {
-		sessions = new HashMap<String, Session>();
+		sessions = new HashMap<>();
 	}
 
 	/**
@@ -110,7 +110,7 @@ public class SessionProvider {
 	 * there exists no session for this knowledge base this method will create
 	 * one. If the knowledge base of an existing session is not up to date and
 	 * no user facts has been set, the knowledge base will be replaced
-	 * automatically (the session will be reseted).
+	 * automatically (the session will be reset).
 	 *
 	 * @param kb the underlying knowledge base
 	 * @return session for the specified knowledge base
@@ -180,7 +180,7 @@ public class SessionProvider {
 	 * provided UserContext, i. e. HTTPSession. If the knowledge base of an
 	 * existing session is not up to date and no user facts has been set, the
 	 * knowledge base will be replaced automatically (the session will be
-	 * reseted).
+	 * reset).
 	 * <p/>
 	 * Please be aware that this method only works with an UserContext backed by
 	 * a real HTTPSession. Otherwise there is no place to store and retrieve the
@@ -251,7 +251,7 @@ public class SessionProvider {
 	 */
 	public static boolean hasOutDatedSession(UserContext context, KnowledgeBase base) {
 		Session session = getSession(context, base);
-		return session.getKnowledgeBase() != base;
+		return (session == null) || (session.getKnowledgeBase() != base);
 	}
 
 	/**
