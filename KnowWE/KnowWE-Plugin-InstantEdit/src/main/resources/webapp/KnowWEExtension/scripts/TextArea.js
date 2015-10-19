@@ -37,6 +37,9 @@ TextArea.isSelectionAtStartOfLine = function(area) {
 TextArea.replaceSelection = function(a, g) {
 	return new TextArea(a).replaceSelection(g);
 };
+TextArea.prototype.isLongerSelection = function() {
+	return this.getSelection().length > 0 && this.getSelection().indexOf('\n') >= 0;
+};
 TextArea.prototype.handleKeyDown = function(event) {
 	// with this line, we remove a hack of jspwiki-edit.js,
 	// that is no longer needed but instead messes with keydown
@@ -62,7 +65,7 @@ TextArea.prototype.handleKeyDown = function(event) {
 	var isAltOnly = !event.ctrlKey && !event.metaKey && event.altKey;
 	var isCmdOnly = (!event.ctrlKey && event.metaKey && !event.altKey)
 		|| (event.ctrlKey && !event.metaKey && !event.altKey);
-	var isLongerSelection = this.getSelection().length > 0 && this.getSelection().indexOf('\n') >= 0;
+	var isLongerSelection = this.isLongerSelection();
 	if (event.which == 38 && isAltOnly) { // alt + UP
 		event.stopPropagation();
 		event.preventDefault();
@@ -110,8 +113,8 @@ TextArea.prototype.handleKeyDown = function(event) {
 		this.moveLines("starRight");
 		return;
 	}
-	// TAB + selection length > 0 + !SHIFT
-	if (event.which == 9 && isLongerSelection && !event.shiftKey) {
+	// TAB + !SHIFT
+	if (event.which == 9 && !event.shiftKey && !(event.ctrlKey || event.altKey)) {
 		event.stopPropagation();
 		event.preventDefault();
 		event.stopImmediatePropagation();
@@ -119,12 +122,20 @@ TextArea.prototype.handleKeyDown = function(event) {
 		this.moveLines("tab");
 		return;
 	}
-	// TAB + selection length > 0 + SHIFT
-	if (event.which == 9 && isLongerSelection && event.shiftKey) {
+	// TAB + SHIFT
+	if (event.which == 9 && event.shiftKey && !(event.ctrlKey || event.altKey)) {
 		event.stopPropagation();
 		event.preventDefault();
 		this.snapshot();
 		this.moveLines("tabShift");
+		return;
+	}
+	// TAB + !SHIFT + ALT|CTRL + selection length = 0
+	if (event.which == 9 && !event.shiftKey && (event.ctrlKey || event.altKey)) {
+		event.stopPropagation();
+		event.preventDefault();
+		event.stopImmediatePropagation();
+		this.insertText("\t");
 		return;
 	}
 	// SPACE + selection length > 0 + !SHIFT
@@ -149,12 +160,6 @@ TextArea.prototype.handleKeyDown = function(event) {
 		event.preventDefault();
 		this.snapshot();
 		this.moveLines("delete");
-		return;
-	}
-	if (event.which == 9 && !event.ctrlKey && !event.altKey) {
-		event.stopPropagation();
-		event.preventDefault();
-		this.insertText("\t");
 		return;
 	}
 	if (event.which == 13 && !event.ctrlKey && !event.altKey) {
@@ -255,7 +260,7 @@ TextArea.prototype.moveLines = function(direction) {
 		var splitLines = lines.split("\n");
 		lines = "";
 		for (var line = 0; line < splitLines.length - 1; line++) {
-			lines = lines + "  " + splitLines[line] + "\n";
+			lines = lines + "\t" + splitLines[line] + "\n";
 		}
 		newPos = curPos;
 	}
@@ -271,6 +276,9 @@ TextArea.prototype.moveLines = function(direction) {
 			}
 			else if (splitLines[line].substring(0, 1) == "*") {
 				lines = lines + splitLines[line].substring(1) + "\n";
+			}
+			else if (splitLines[line].substring(0, 2) == "    ") {
+				lines = lines + splitLines[line].substring(2) + "\n";
 			}
 			else if (splitLines[line].substring(0, 2) == "  ") {
 				lines = lines + splitLines[line].substring(2) + "\n";
