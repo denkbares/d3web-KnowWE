@@ -340,8 +340,7 @@ function Spreadsheet(elementID, saveFun, cancelFun) {
 
 	this.createTable();
 	this.selectCell(0, 0);
-};
-
+}
 Spreadsheet.prototype.setWikiMarkup = function(wikiText) {
 	this.setModel(new SpreadsheetModel(wikiText, this.supportLinks));
 	this.snapshot();
@@ -577,8 +576,8 @@ Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, comma
 	// normal typing
 	else if (!command &&
 		((keyCode >= 32 && keyCode <= 90)
-			|| (keyCode >= 96 && keyCode <= 106)
-			|| (keyCode >= 186 && keyCode <= 222))) {
+		|| (keyCode >= 96 && keyCode <= 106)
+		|| (keyCode >= 186 && keyCode <= 222))) {
 		this.editCell(row, col);
 		// return false to use first key pressed as input
 		return false;
@@ -840,7 +839,7 @@ Spreadsheet.prototype.selectCell = function(row, col, multiSelect) {
 		if (!this.selectedRange) {
 			var toRow = this.selected.row;
 			var toCol = this.selected.col;
-			this.selectedRange = { toRow : toRow, toCol : toCol };
+			this.selectedRange = {toRow : toRow, toCol : toCol};
 		}
 	}
 	else {
@@ -1028,7 +1027,8 @@ Spreadsheet.prototype.copySelectedCells = function(doCut) {
 	this.copied = {
 		row : Math.min(r1, r2), col : Math.min(c1, c2),
 		toRow : Math.max(r1, r2), toCol : Math.max(c1, c2),
-		doCut : doCut };
+		doCut : doCut
+	};
 	this.forEachCopied(function(cell) {
 		cell.addClass("copied");
 	});
@@ -1103,11 +1103,9 @@ Spreadsheet.prototype.removeSelectedRows = function() {
 	if (!this.selectedRange) this.selectCell(this.selected.row, this.selected.col, true);
 	var r1 = this.selected.row;
 	var r2 = this.selectedRange.toRow;
-	var count = Math.abs(r2 - r1) + 1;
 	var upperRow = Math.min(r1, r2);
-	for (var i = 0; i < count; i++) {
-		this.removeRow(upperRow);
-	}
+	var lowerRow = Math.max(r1, r2);
+	this.removeRow(upperRow, lowerRow);
 };
 
 Spreadsheet.prototype.removeSelectedCols = function() {
@@ -1115,25 +1113,25 @@ Spreadsheet.prototype.removeSelectedCols = function() {
 	if (!this.selectedRange) this.selectCell(this.selected.row, this.selected.col, true);
 	var c1 = this.selected.col;
 	var c2 = this.selectedRange.toCol;
-	var count = Math.abs(c2 - c1) + 1;
 	var leftCol = Math.min(c1, c2);
-	for (var i = 0; i < count; i++) {
-		this.removeCol(leftCol);
-	}
+	var rightCol = Math.max(c1, c2);
+	this.removeCol(leftCol, rightCol);
 };
 
-Spreadsheet.prototype.removeRow = function(row) {
+Spreadsheet.prototype.removeRow = function(upperRow, lowerRow) {
 	this.stopEditCell();
 	if (this.size.rows <= 1) return;
 	var sr = this.selected ? Math.min(this.selected.row, this.size.rows - 2) : 0;
 	var sc = this.selected ? this.selected.col : 0;
-	if (sr > row) sr--;
+	if (sr > upperRow) sr--;
 	// copy model, removing "row"
 	var srcModel = this.getModel();
 	var destModel = new SpreadsheetModel();
 	var destRow = 0;
 	for (var srcRow = 0; srcRow < srcModel.height; srcRow++) {
-		if (srcRow == row) continue; // ignore line to delete
+		// ignore lines to delete
+		if (upperRow <= lowerRow && srcRow >= upperRow && srcRow <= lowerRow) continue;
+		if (!lowerRow && srcRow == upperRow) continue; // no range is  given, just single row
 		var destCol = 0;
 		for (var srcCol = 0; srcCol < srcModel.width; srcCol++) {
 			var isHeader = srcModel.isHeader(srcRow, srcCol);
@@ -1186,12 +1184,12 @@ Spreadsheet.prototype.addCol = function(col) {
 	this.snapshot();
 };
 
-Spreadsheet.prototype.removeCol = function(col) {
+Spreadsheet.prototype.removeCol = function(leftCol, rightCol) {
 	this.stopEditCell();
 	if (this.size.cols <= 1) return;
 	var sr = this.selected ? this.selected.row : 0;
 	var sc = this.selected ? Math.min(this.selected.col, this.size.cols - 2) : 0;
-	if (sc > col) sc--;
+	if (sc > leftCol) sc--;
 	// copy model, removing "row"
 	var srcModel = this.getModel();
 	var destModel = new SpreadsheetModel();
@@ -1199,7 +1197,9 @@ Spreadsheet.prototype.removeCol = function(col) {
 	for (var srcRow = 0; srcRow < srcModel.height; srcRow++) {
 		var destCol = 0;
 		for (var srcCol = 0; srcCol < srcModel.width; srcCol++) {
-			if (srcCol == col) continue; // ignore col to delete
+			// ignore cols to delete
+			if (leftCol <= rightCol && srcCol >= leftCol && srcCol <= rightCol) continue;
+			if (!rightCol && srcCol == leftCol) continue; // no range is  given, just single col
 			var isHeader = srcModel.isHeader(srcRow, srcCol);
 			var text = srcModel.getCellText(srcRow, srcCol);
 			destModel.setCell(destRow, destCol, text, isHeader);
@@ -1303,7 +1303,7 @@ Spreadsheet.areEqual = function(x, y) {
 			case 'object':
 				if (y[p] !== null && x[p] !== null &&
 					(y[p].constructor.toString() !== x[p].constructor.toString()
-						|| !Spreadsheet.areEqual(y[p], x[p]))) return false;
+					|| !Spreadsheet.areEqual(y[p], x[p]))) return false;
 				break;
 			case 'function':
 				if (p != 'equals' && y[p].toString() != x[p].toString()) return false;
