@@ -44,7 +44,8 @@ TextArea.prototype.handleKeyDown = function(event) {
 	// with this line, we remove a hack of jspwiki-edit.js,
 	// that is no longer needed but instead messes with keydown
 	// events of tab (keycode == 9) in chrome/webkit
-	if ($('editorarea')) $('editorarea').removeEvents('keydown');
+	var $editorarea = $('editorarea');
+	if ($editorarea) $editorarea.removeEvents('keydown');
 
 	event = jq$.event.fix(event);
 	if (_EC.isModifier(event)) {
@@ -190,82 +191,80 @@ TextArea.prototype.onCancel = function() {
 };
 TextArea.prototype.moveLines = function(direction) {
 	var area = this.area;
+	var originalSelection = this.getSelectionCoordinates();
 	this.extendSelectionToFullLines(area);
-	// get lines and
 	var lines = this.getSelection();
-	// make sure that we have a "\n" at the end (not happens in last line)
+
+	// make sure that we have a "\n" at the end (can happen in last line)
 	var missingLF = lines.charCodeAt(lines.length - 1) != 10;
 	if (missingLF) {
 		// add a line break
 		lines = lines + "\n";
-		// but the also remove one additional line break before
-		var sel = this.getSelectionCoordinates();
-		if (sel.start > 0) this.setSelection(sel.start - 1, sel.end);
 	}
+
 	this.insertText("");
 	if (direction == "delete") {
 		return;
 	}
-	var text = area.getValue();
-	var curPos = this.getCursor(area);
-	if (missingLF) curPos++;
 
-	missingLF = false;
-	var newPos;
+	var insertionPos = this.getCursor(area);
+	var newStart = insertionPos;
+	var newEnd = -1;
+
+	var text = area.getValue();
+	var splitLines = lines.split("\n");
 	if (direction == "up") {
-		newPos = text.substring(0, curPos - 1).lastIndexOf('\n') + 1;
+		insertionPos = text.substring(0, newStart - 1).lastIndexOf('\n') + 1;
+		newStart = insertionPos;
 	}
 	else if (direction == "down") {
-		newPos = text.substring(curPos).indexOf('\n');
-		if (newPos == -1) {
-			missingLF = true;
-			newPos = text.length;
+		newStart = text.substring(newStart).indexOf('\n');
+		if (newStart == -1) {
+			insertionPos = text.length;
 			lines = "\n" + lines.substring(0, lines.length - 1);
+			newStart = insertionPos + 1;
 		}
-		else newPos += curPos + 1;
+		else {
+			insertionPos += newStart + 1;
+			newStart = insertionPos;
+		}
 	}
 	else if (direction == "minusRight") {
-		var splitLines = lines.split("\n");
 		lines = "";
 		for (var line = 0; line < splitLines.length - 1; line++) {
 			lines = lines + "-" + splitLines[line] + "\n";
 		}
-		newPos = curPos;
 	}
 	else if (direction == "hashRight") {
-		var splitLines = lines.split("\n");
 		lines = "";
-		for (var line = 0; line < splitLines.length - 1; line++) {
+		for (line = 0; line < splitLines.length - 1; line++) {
 			lines = lines + "#" + splitLines[line] + "\n";
 		}
-		newPos = curPos;
 	}
 	else if (direction == "commentRight") {
-		var splitLines = lines.split("\n");
 		lines = "";
-		for (var line = 0; line < splitLines.length - 1; line++) {
+		for (line = 0; line < splitLines.length - 1; line++) {
 			lines = lines + "// " + splitLines[line] + "\n";
 		}
-		newPos = curPos;
 	}
 	else if (direction == "starRight") {
-		var splitLines = lines.split("\n");
 		lines = "";
-		for (var line = 0; line < splitLines.length - 1; line++) {
+		for (line = 0; line < splitLines.length - 1; line++) {
 			lines = lines + "*" + splitLines[line] + "\n";
 		}
-		newPos = curPos;
 	}
 	else if (direction == "tab") {
-		var splitLines = lines.split("\n");
 		lines = "";
-		for (var line = 0; line < splitLines.length - 1; line++) {
+		for (line = 0; line < splitLines.length - 1; line++) {
 			lines = lines + "\t" + splitLines[line] + "\n";
 		}
-		newPos = curPos;
+		if (originalSelection.start == originalSelection.end) {
+			newStart = originalSelection.start + 1;
+			newEnd = newStart;
+
+		}
 	}
 	else if (direction == "tabShift") {
-		var splitLines = lines.split("\n");
 		lines = "";
 		for (line = 0; line < splitLines.length - 1; line++) {
 			if (splitLines[line].substring(0, 1) == "-") {
@@ -299,18 +298,14 @@ TextArea.prototype.moveLines = function(direction) {
 				lines = lines + splitLines[line] + "\n";
 			}
 		}
-		newPos = curPos;
 	}
 	else if (direction == "space") {
-		var splitLines = lines.split("\n");
 		lines = "";
-		for (var line = 0; line < splitLines.length - 1; line++) {
+		for (line = 0; line < splitLines.length - 1; line++) {
 			lines = lines + " " + splitLines[line] + "\n";
 		}
-		newPos = curPos;
 	}
 	else if (direction == "spaceShift") {
-		var splitLines = lines.split("\n");
 		lines = "";
 		for (line = 0; line < splitLines.length - 1; line++) {
 			if (splitLines[line].substring(0, 1) == "-") {
@@ -332,18 +327,13 @@ TextArea.prototype.moveLines = function(direction) {
 				lines = lines + splitLines[line] + "\n";
 			}
 		}
-		newPos = curPos;
 	}
-	this.setSelection(newPos);
+	this.setSelection(insertionPos);
 	this.insertText(lines);
-	if (missingLF) {
-		this.setSelection(newPos + 1, newPos + lines.length);
-	}
-	else {
-		this.setSelection(newPos, newPos + lines.length);
-	}
+	if (newEnd == -1) newEnd = newStart + lines.length;
+	this.setSelection(newStart, newEnd);
 };
-TextArea.prototype.extendSelectionToFullLines = function() {
+TextArea.prototype.getLinesLimits = function() {
 	var area = this.area;
 	var text = area.getValue();
 	var sel = this.getSelectionCoordinates();
@@ -354,7 +344,12 @@ TextArea.prototype.extendSelectionToFullLines = function() {
 	var end = text.substring(sel2).indexOf("\n");
 	if (end == -1) end = text.length;
 	else end += 1 + sel2;
-	this.setSelection(start, end);
+
+	return {start : start, end : end}
+};
+TextArea.prototype.extendSelectionToFullLines = function() {
+	var linesLimits = this.getLinesLimits();
+	this.setSelection(linesLimits.start, linesLimits.end);
 };
 TextArea.prototype.undo = function() {
 	var area = this.area;
