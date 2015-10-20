@@ -57,13 +57,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.tomcat</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>6.0.20</version>
-			<type>jar</type>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-ExtensionPoints</artifactId>
 			<version>${project.version}</version>

@@ -54,13 +54,6 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>6.0.20</version>
-			<type>jar</type>
-			<scope>provided</scope>
-		</dependency>
 	</dependencies>
 
 </project>

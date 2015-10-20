@@ -161,13 +161,6 @@
 			<version>0.2-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>6.0.20</version>
-			<type>jar</type>
-			<scope>provided</scope>
-		</dependency>
 		<!--
 		<dependency>
 			<groupId>efzwo</groupId>

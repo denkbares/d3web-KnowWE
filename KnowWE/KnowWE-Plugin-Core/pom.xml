@@ -6,7 +6,7 @@
 		<groupId>de.uniwue.d3web</groupId>
 		<version>0.2-SNAPSHOT</version>
 	</parent>
-	<groupId>de.uniwue.d3web</groupId>
+
 	<artifactId>KnowWE-Plugin-Core</artifactId>
 	<version>0.2-SNAPSHOT</version>
 	<name>KnowWE-Plugin-Core</name>
@@ -17,13 +17,6 @@
 			<version>${project.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>6.0.20</version>
-			<type>jar</type>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.json</groupId>

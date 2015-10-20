@@ -9,7 +9,6 @@
 		<version>0.2-SNAPSHOT</version>
 	</parent>
 
-	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE-Plugin-CI4KE</artifactId>
 	<version>0.2-SNAPSHOT</version>
 	<name>KnowWE-Plugin-CI4KE</name>
@@ -57,13 +56,6 @@
 	</build>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.apache.tomcat</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>6.0.20</version>
-			<type>jar</type>
-			<scope>provided</scope>
-		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
