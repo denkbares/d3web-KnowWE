@@ -19,6 +19,7 @@
 package de.knowwe.ontology.kdom.table;
 
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -31,6 +32,7 @@ import de.knowwe.ontology.turtle.Object;
 import de.knowwe.ontology.turtle.ObjectList;
 import de.knowwe.ontology.turtle.Predicate;
 import de.knowwe.ontology.turtle.Subject;
+import de.knowwe.ontology.turtle.TurtleURI;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
 
 /**
@@ -41,11 +43,24 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 
 	private static DefaultMarkup MARKUP = null;
 
+	public static final String ANNOTATION_TYPE_RELATION = "typeRelation";
+
+
 	static {
 		MARKUP = new DefaultMarkup("OntologyTable");
 		Table content = new Table();
 		MARKUP.addContentType(content);
 		PackageManager.addPackageAnnotation(MARKUP);
+
+		MARKUP.addAnnotation(ANNOTATION_TYPE_RELATION, false);
+		MARKUP.addAnnotationContentType(ANNOTATION_TYPE_RELATION, new TurtleURI());
+
+		TurtleURI cell00 = new TurtleURI();
+		cell00.setSectionFinder(new ConstraintSectionFinder(
+				new AllTextFinderTrimmed(),
+				new TableIndexConstraint(0, 1, 0, 1)));
+		content.injectTableCellContentChildtype(cell00);
+
 
 		Subject resource = new Subject(new TableSubjectURIWithDefinition());
 		resource.setSectionFinder(new ConstraintSectionFinder(

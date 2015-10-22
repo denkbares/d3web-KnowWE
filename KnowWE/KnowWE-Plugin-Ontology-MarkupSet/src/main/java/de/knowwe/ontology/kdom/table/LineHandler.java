@@ -18,10 +18,15 @@
  */
 package de.knowwe.ontology.kdom.table;
 
+import de.d3web.strings.Identifier;
+import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableLine;
 import de.knowwe.kdom.table.TableUtils;
@@ -29,6 +34,7 @@ import de.knowwe.ontology.compile.OntologyCompileScript;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.turtle.Object;
 import de.knowwe.ontology.turtle.Predicate;
+import de.knowwe.ontology.turtle.TurtleURI;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.StatementProviderResult;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -36,6 +42,7 @@ import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.URI;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -74,7 +81,36 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
             }
         }
 
-        core.addStatements(section, statements);
+		/*
+		Additionally handle header cell definition;
+		A subject is type of the class specified in the first column header
+		*/
+		Message typeAnnotationMissing = null;
+		Section<TableCellContent> cell = Sections.ancestor(subjectReference, TableCellContent.class);
+		Section<TableCellContent> rowHeaderCell = TableUtils.getColumnHeader(cell);
+		Section<TurtleURI> colHeaderConcept = Sections.successor(rowHeaderCell, TurtleURI.class);
+		if(colHeaderConcept != null) {
+			Node headerClassResource = colHeaderConcept.get().getNode(colHeaderConcept, compiler);
+			Sections<DefaultMarkupType> markup = Sections.$(section).ancestor(DefaultMarkupType.class);
+			String typeRelationAnnotationValue = DefaultMarkupType.getAnnotation(markup.getFirst(), OntologyTableMarkup.ANNOTATION_TYPE_RELATION);
+			if(typeRelationAnnotationValue != null) {
+				URI propertyUri = compiler.getRdf2GoCore().createURI(typeRelationAnnotationValue);
+				statements.add(core.createStatement(subjectNode.asResource(), propertyUri, headerClassResource));
+			} else {
+				typeAnnotationMissing = new Message(Message.Type.ERROR, "If subject concepts should be defined as instance of the class given in the first column header, a type-relation has to be defined via the typeRelation-typeRelationAnnotationValue. Otherwise, leave the first cell header blank.");
+			}
+
+		}
+
+		core.addStatements(section, statements);
+
+		/*
+		Error message handling after committing statements
+		 */
+		if(typeAnnotationMissing != null) {
+			throw new CompilerMessage(typeAnnotationMissing);
+		}
+
     }
 
     private List<Section<Object>> findObjects(Section<TableLine> section) {
