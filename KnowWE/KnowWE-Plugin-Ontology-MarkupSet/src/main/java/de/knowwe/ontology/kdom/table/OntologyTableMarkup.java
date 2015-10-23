@@ -19,6 +19,7 @@
 package de.knowwe.ontology.kdom.table;
 
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
@@ -28,6 +29,7 @@ import de.knowwe.kdom.table.Table;
 import de.knowwe.kdom.table.TableIndexConstraint;
 import de.knowwe.ontology.kdom.objectproperty.AbbreviatedPropertyReference;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
+import de.knowwe.ontology.turtle.EncodedTurtleURI;
 import de.knowwe.ontology.turtle.Object;
 import de.knowwe.ontology.turtle.ObjectList;
 import de.knowwe.ontology.turtle.Predicate;
@@ -55,7 +57,7 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_TYPE_RELATION, false);
 		MARKUP.addAnnotationContentType(ANNOTATION_TYPE_RELATION, new TurtleURI());
 
-		TurtleURI cell00 = new TurtleURI();
+		BasicURIType cell00 = new BasicURIType();
 		cell00.setSectionFinder(new ConstraintSectionFinder(
 				new AllTextFinderTrimmed(),
 				new TableIndexConstraint(0, 1, 0, 1)));
@@ -86,4 +88,12 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 		super(MARKUP);
 	}
 
+	static class BasicURIType extends AbstractType {
+		public BasicURIType() {
+			this.setSectionFinder( new AllTextFinderTrimmed());
+			this.addChildType(new EncodedTurtleURI());
+			this.addChildType(new TurtleURI());
+			this.addChildType(new LazyURIReference());
+		}
+	}
 }
