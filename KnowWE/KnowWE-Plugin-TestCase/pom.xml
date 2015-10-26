@@ -8,7 +8,6 @@
     <version>0.2-SNAPSHOT</version>
   </parent>
   
-  <groupId>de.uniwue.d3web</groupId>
   <artifactId>KnowWE-Plugin-TestCase</artifactId>
   <version>0.2-SNAPSHOT</version>
   <name>KnowWE-Plugin-TestCase</name>
@@ -73,7 +72,7 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>d3web-EmpiricalTesting</artifactId>
+			<artifactId>d3web-TestCase</artifactId>
 			<version>${d3webCoreVersion}</version>
 			<scope>compile</scope>
 		</dependency>

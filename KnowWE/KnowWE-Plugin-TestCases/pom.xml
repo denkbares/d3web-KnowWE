@@ -5,7 +5,6 @@
     <groupId>de.uniwue.d3web</groupId>
     <version>0.2-SNAPSHOT</version>
   </parent>
-  <groupId>de.uniwue.d3web</groupId>
   <artifactId>KnowWE-Plugin-TestCases</artifactId>
   <version>0.2-SNAPSHOT</version>
   <name>KnowWE-Plugin-TestCases</name>
@@ -15,12 +14,6 @@
   		<artifactId>KnowWE-Plugin-d3web-basic</artifactId>
   		<version>0.2-SNAPSHOT</version>
   		<type>jar</type>
-  		<scope>compile</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>de.uniwue.d3web</groupId>
-  		<artifactId>d3web-EmpiricalTesting</artifactId>
-  		<version>0.2-SNAPSHOT</version>
   		<scope>compile</scope>
   	</dependency>
   	<dependency>

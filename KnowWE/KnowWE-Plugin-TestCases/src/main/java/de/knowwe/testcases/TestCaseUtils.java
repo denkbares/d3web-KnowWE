@@ -22,10 +22,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -57,7 +55,6 @@ import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.TestCase;
 import de.d3web.testcase.stc.DerivedQuestionCheck;
 import de.d3web.testcase.stc.DerivedSolutionCheck;
-import de.d3web.testcase.stc.STCWrapper;
 import de.d3web.utils.Triple;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
@@ -205,28 +202,19 @@ public class TestCaseUtils {
 	}
 
 	public static SequentialTestCase transformToSTC(TestCase testCase, String testCaseName, KnowledgeBase kb) {
-		SequentialTestCase stc = new SequentialTestCase();
-		Map<Date, String> rtcNames = new HashMap<>();
-		if (testCase instanceof STCWrapper) {
-			// we just use the names given in the stc, because the TestCase
-			// interface does not support names
-			SequentialTestCase actualStc = ((STCWrapper) testCase).getSequentialTestCase();
-			testCaseName = actualStc.getName();
-			for (RatedTestCase rtc : actualStc.getCases()) {
-				rtcNames.put(rtc.getTimeStamp(), rtc.getName());
-			}
+		if (testCase instanceof SequentialTestCase) {
+			return (SequentialTestCase) testCase;
 		}
+		SequentialTestCase stc = new SequentialTestCase();
 		if (testCaseName != null) {
 			stc.setName(testCaseName);
 		}
 		for (Date date : testCase.chronology()) {
 			RatedTestCase rtc = new RatedTestCase();
-			String name = rtcNames.get(date);
-			if (name != null) rtc.setName(name);
 			rtc.setTimeStamp(date);
 			addFindings(testCase, rtc, date, kb);
 			addChecks(testCase, rtc, date, kb);
-			stc.add(rtc);
+			stc.addCase(rtc);
 		}
 
 		return stc;

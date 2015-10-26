@@ -33,13 +33,13 @@ import de.d3web.empiricaltesting.RatedTestCase;
 import de.d3web.empiricaltesting.SequentialTestCase;
 import de.d3web.empiricaltesting.TestCase;
 import de.d3web.testcase.model.Check;
-import de.d3web.testcase.stc.STCWrapper;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.Conjunct;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
@@ -52,7 +52,6 @@ import de.knowwe.testcases.DefaultTestCaseStorage;
 import de.knowwe.testcases.SingleTestCaseProvider;
 import de.knowwe.testcases.TestCaseProvider;
 import de.knowwe.testcases.TestCaseUtils;
-import de.knowwe.core.kdom.basicType.TimeStampType;
 
 /**
  * @author Reinhard Hatko
@@ -86,7 +85,7 @@ public class TestcaseTableSubtreeHandler implements D3webHandler<Table> {
 				return Messages.noMessage();
 			}
 
-			stc.add(rtc);
+			stc.addCase(rtc);
 			lastTimeStamp = timeStamp;
 
 			// also check for additional check conditions
@@ -135,13 +134,12 @@ public class TestcaseTableSubtreeHandler implements D3webHandler<Table> {
 		// for this test case. Also include the additional
 		// tests of this test case
 		stc.setName(name);
-		STCWrapper wrapper = new STCWrapper(stc);
 		for (RatedTestCase rtc : conditionsForRTC.keySet()) {
 			List<Check> checks = conditionsForRTC.get(rtc);
-			wrapper.addChecks(rtc, checks.toArray(new Check[checks.size()]));
+			stc.addChecks(rtc, checks.toArray(new Check[checks.size()]));
 		}
 		SingleTestCaseProvider provider = new SingleTestCaseProvider(
-				compiler, Sections.ancestor(section, DefaultMarkupType.class), wrapper,
+				compiler, Sections.ancestor(section, DefaultMarkupType.class), stc,
 				name);
 
 		// append Storage of the TestCaseProvider

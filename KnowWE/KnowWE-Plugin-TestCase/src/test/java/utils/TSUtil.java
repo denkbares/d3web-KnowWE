@@ -142,7 +142,7 @@ public class TSUtil {
 
 		// Add RatedTestCase to SequentialTestCase
 		SequentialTestCase stc = new SequentialTestCase();
-		stc.add(rtc);
+		stc.addCase(rtc);
 		stc.setName("STC1");
 
 		// Add SequentialTestCase to the repository

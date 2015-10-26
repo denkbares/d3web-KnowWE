@@ -27,7 +27,6 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.empiricaltesting.LazyKnowledgeBase;
 import de.d3web.empiricaltesting.SequentialTestCase;
 import de.d3web.empiricaltesting.TestPersistence;
-import de.d3web.testcase.stc.STCWrapper;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.parsing.Section;
@@ -69,10 +68,9 @@ public class STCTestCaseProvider extends AttachmentTestCaseProvider {
 						+ attachment.getFileName()
 						+ " has " + cases.size()
 						+ " cases. Only files with exactly one case are allowed."));
-				return;
 			}
 			else {
-				testCase = new STCWrapper(cases.get(0));
+				testCase = cases.get(0);
 				updateTestCaseMessages(kb);
 			}
 		}

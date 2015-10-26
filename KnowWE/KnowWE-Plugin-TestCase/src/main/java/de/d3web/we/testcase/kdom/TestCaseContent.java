@@ -33,7 +33,6 @@ import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.QuestionValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.empiricaltesting.TestCase;
-import de.d3web.testcase.stc.STCWrapper;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
@@ -42,6 +41,7 @@ import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.Number;
+import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
@@ -52,7 +52,6 @@ import de.knowwe.testcases.DefaultTestCaseStorage;
 import de.knowwe.testcases.SingleTestCaseProvider;
 import de.knowwe.testcases.TestCaseProvider;
 import de.knowwe.testcases.TestCaseUtils;
-import de.knowwe.core.kdom.basicType.TimeStampType;
 
 /**
  * TestsuiteContent
@@ -73,15 +72,15 @@ public class TestCaseContent extends AbstractType {
 		@Override
 		public Collection<Message> create(D3webCompiler compiler, Section<TestCaseContent> s) {
 
-			List<Message> messages = new LinkedList<Message>();
+			List<Message> messages = new LinkedList<>();
 			KnowledgeBase kb = getKnowledgeBase(compiler);
 			if (kb != null) {
 
 				List<de.d3web.empiricaltesting.SequentialTestCase> repository =
-						new LinkedList<de.d3web.empiricaltesting.SequentialTestCase>();
+						new LinkedList<>();
 
 				// Get all SequentialTestCase sections
-				List<Section<SequentialTestCase>> stcSections = new LinkedList<Section<SequentialTestCase>>();
+				List<Section<SequentialTestCase>> stcSections = new LinkedList<>();
 				Sections.successors(s, SequentialTestCase.class, stcSections);
 
 				// Process each SequentialTestCase section
@@ -107,12 +106,12 @@ public class TestCaseContent extends AbstractType {
 					TestCase testSuite = new TestCase();
 					testSuite.setKb(kb);
 					testSuite.setRepository(repository);
-					List<TestCaseProvider> providers = new LinkedList<TestCaseProvider>();
+					List<TestCaseProvider> providers = new LinkedList<>();
 					Section<DefaultMarkupType> markupSection = Sections.ancestor(s,
 							DefaultMarkupType.class);
 					for (de.d3web.empiricaltesting.SequentialTestCase stc : testSuite.getRepository()) {
 						providers.add(new SingleTestCaseProvider(compiler, markupSection,
-								new STCWrapper(stc), s.getArticle().getTitle() + "/"
+								stc, s.getArticle().getTitle() + "/"
 										+ stc.getName()));
 					}
 					Section<DefaultMarkupType> defaultMarkupSection = Sections.ancestor(
@@ -146,7 +145,7 @@ public class TestCaseContent extends AbstractType {
 		private void createRTCs(Section<SequentialTestCase> stcSection, int stcIndex, de.d3web.empiricaltesting.SequentialTestCase stc, KnowledgeBase kb, List<Message> messages) {
 
 			// Get all RatedTestCase sections
-			List<Section<RatedTestCase>> rtcSections = new LinkedList<Section<RatedTestCase>>();
+			List<Section<RatedTestCase>> rtcSections = new LinkedList<>();
 			Sections.successors(stcSection, RatedTestCase.class, rtcSections);
 
 			// Process each RatedTestCase section
@@ -158,25 +157,18 @@ public class TestCaseContent extends AbstractType {
 				createFindings(rtcSection, stcIndex, rtcIndex, rtc, kb, messages);
 				createRatedFindings(rtcSection, stcIndex, rtcIndex, rtc, kb, messages);
 				createRatedSolutions(rtcSection, stcIndex, rtcIndex, rtc, kb, messages);
-				stc.add(rtc);
+				stc.addCase(rtc);
 			}
 
 		}
 
 		/**
-		 * 
 		 * @created 19.07.2011
-		 * @param rtcSection
-		 * @param stcIndex
-		 * @param rtcIndex
-		 * @param rtc
-		 * @param kb
-		 * @param messages
 		 */
 		private void createRatedFindings(Section<RatedTestCase> rtcSection, int stcIndex, int rtcIndex, de.d3web.empiricaltesting.RatedTestCase rtc, KnowledgeBase kb, List<Message> messages) {
 
 			// Get all Finding sections
-			List<Section<RatedFinding>> findingSections = new LinkedList<Section<RatedFinding>>();
+			List<Section<RatedFinding>> findingSections = new LinkedList<>();
 			Sections.successors(rtcSection, RatedFinding.class, findingSections);
 
 			// Process each Finding section
@@ -268,8 +260,6 @@ public class TestCaseContent extends AbstractType {
 		 * Sets the time of the RTC if a timestamp is supplied in the section.
 		 * 
 		 * @created 18.07.2011
-		 * @param rtcSection
-		 * @param rtc
 		 */
 		private void setTimeStamp(Section<RatedTestCase> rtcSection, de.d3web.empiricaltesting.RatedTestCase rtc) {
 
@@ -290,7 +280,7 @@ public class TestCaseContent extends AbstractType {
 		private void createFindings(Section<RatedTestCase> rtcSection, int stcIndex, int rtcIndex, de.d3web.empiricaltesting.RatedTestCase rtc, KnowledgeBase kb, List<Message> messages) {
 
 			// Get all Finding sections
-			List<Section<Finding>> findingSections = new LinkedList<Section<Finding>>();
+			List<Section<Finding>> findingSections = new LinkedList<>();
 			Sections.successors(rtcSection, Finding.class, findingSections);
 
 			// Process each Finding section
@@ -366,7 +356,7 @@ public class TestCaseContent extends AbstractType {
 		private void createRatedSolutions(Section<RatedTestCase> rtcSection, int stcIndex, int rtcIndex, de.d3web.empiricaltesting.RatedTestCase rtc, KnowledgeBase kb, List<Message> messages) {
 
 			// Get all RatedSolution sections
-			List<Section<RatedSolution>> ratedSolutionSections = new LinkedList<Section<RatedSolution>>();
+			List<Section<RatedSolution>> ratedSolutionSections = new LinkedList<>();
 			Sections.successors(rtcSection, RatedSolution.class, ratedSolutionSections);
 
 			// Process each RatedSolution section
@@ -405,14 +395,12 @@ public class TestCaseContent extends AbstractType {
 
 				// Create a real StateRating
 				if (stateSection != null) {
-					if (solution != null) {
-						de.d3web.empiricaltesting.StateRating rating = new de.d3web.empiricaltesting.StateRating(
-								clean(stateSection.getText().trim()));
+					de.d3web.empiricaltesting.StateRating rating = new de.d3web.empiricaltesting.StateRating(
+							clean(stateSection.getText().trim()));
 
-						// And finally create the RatedSolution
-						rtc.addExpected(new de.d3web.empiricaltesting.RatedSolution(solution,
-								rating));
-					}
+					// And finally create the RatedSolution
+					rtc.addExpected(new de.d3web.empiricaltesting.RatedSolution(solution,
+							rating));
 
 				}
 				else {
