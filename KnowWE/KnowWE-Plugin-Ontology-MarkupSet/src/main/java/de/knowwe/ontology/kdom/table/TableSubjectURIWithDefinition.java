@@ -80,20 +80,13 @@ public class TableSubjectURIWithDefinition  extends TurtleURI {
 
 			Section<TableCellContent> cell = Sections.ancestor(section, TableCellContent.class);
 			Section<TableCellContent> rowHeaderCell = TableUtils.getColumnHeader(cell);
-			Section<ResourceReference> colHeaderConceptReference = Sections.successor(rowHeaderCell, ResourceReference.class);
+			Section<OntologyTableMarkup.BasicURIType> colHeaderConceptReference = Sections.successor(rowHeaderCell, OntologyTableMarkup.BasicURIType.class);
 			if(colHeaderConceptReference == null) {
 				// no definition intended
 				return;
 			}
-			Identifier termIdentifierOfHeader = colHeaderConceptReference.get().getTermIdentifier(colHeaderConceptReference);
-
 			Class<?> termClass = Resource.class;
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
-			Section<?> headerDefinition = terminologyManager.getTermDefiningSection(termIdentifierOfHeader);
-			if (headerDefinition != null && headerDefinition.get() instanceof SimpleDefinition) {
-				Section<SimpleDefinition> simpleDefinitionSection = Sections.cast(headerDefinition, SimpleDefinition.class);
-				termClass = simpleDefinitionSection.get().getTermObjectClass(simpleDefinitionSection);
-			}
 			terminologyManager.registerTermDefinition(compiler, section, termClass, section.get().getTermIdentifier(section));
 		}
 

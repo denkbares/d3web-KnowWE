@@ -18,9 +18,13 @@
  */
 package de.knowwe.ontology.kdom.table;
 
+import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.AttachmentType;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -29,6 +33,7 @@ import de.knowwe.kdom.table.Table;
 import de.knowwe.kdom.table.TableIndexConstraint;
 import de.knowwe.ontology.kdom.objectproperty.AbbreviatedPropertyReference;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
+import de.knowwe.ontology.kdom.resource.ResourceReference;
 import de.knowwe.ontology.turtle.EncodedTurtleURI;
 import de.knowwe.ontology.turtle.Object;
 import de.knowwe.ontology.turtle.ObjectList;
@@ -36,6 +41,7 @@ import de.knowwe.ontology.turtle.Predicate;
 import de.knowwe.ontology.turtle.Subject;
 import de.knowwe.ontology.turtle.TurtleURI;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 /**
  * @author Sebastian Furth (denkbares GmbH)

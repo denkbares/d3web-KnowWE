@@ -88,9 +88,10 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 		Message typeAnnotationMissing = null;
 		Section<TableCellContent> cell = Sections.ancestor(subjectReference, TableCellContent.class);
 		Section<TableCellContent> rowHeaderCell = TableUtils.getColumnHeader(cell);
-		Section<TurtleURI> colHeaderConcept = Sections.successor(rowHeaderCell, TurtleURI.class);
+		Section<OntologyTableMarkup.BasicURIType> colHeaderConcept = Sections.successor(rowHeaderCell, OntologyTableMarkup.BasicURIType.class);
 		if(colHeaderConcept != null) {
-			Node headerClassResource = colHeaderConcept.get().getNode(colHeaderConcept, compiler);
+			Section<NodeProvider> nodeProviderSection = Sections.$(colHeaderConcept).successor(NodeProvider.class).getFirst();
+			Node headerClassResource = nodeProviderSection.get().getNode(nodeProviderSection, compiler);
 			Sections<DefaultMarkupType> markup = Sections.$(section).ancestor(DefaultMarkupType.class);
 			String typeRelationAnnotationValue = DefaultMarkupType.getAnnotation(markup.getFirst(), OntologyTableMarkup.ANNOTATION_TYPE_RELATION);
 			if(typeRelationAnnotationValue != null) {
