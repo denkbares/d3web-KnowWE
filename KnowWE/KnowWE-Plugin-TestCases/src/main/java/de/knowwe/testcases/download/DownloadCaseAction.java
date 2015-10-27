@@ -3,7 +3,7 @@ package de.knowwe.testcases.download;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.json.JSONException;
@@ -28,7 +28,7 @@ import de.knowwe.testcases.TestCasePlayerType;
 import de.knowwe.testcases.TestCaseProvider;
 import de.knowwe.testcases.TestCaseUtils;
 
-public class CheckDownloadCaseAction extends AbstractAction {
+public class DownloadCaseAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -61,7 +61,7 @@ public class CheckDownloadCaseAction extends AbstractAction {
 			return;
 		}
 
-		SequentialTestCase sequentialTestCase = null;
+		SequentialTestCase sequentialTestCase;
 		try {
 			sequentialTestCase = TestCaseUtils.transformToSTC(testCase, testCaseName,
 					session.getKnowledgeBase());
@@ -80,7 +80,7 @@ public class CheckDownloadCaseAction extends AbstractAction {
 
 		FileOutputStream out = new FileOutputStream(caseFile);
 
-		TestPersistence.getInstance().writeCases(out, Arrays.asList(sequentialTestCase), false);
+		TestPersistence.getInstance().writeCases(out, Collections.singletonList(sequentialTestCase), false);
 
 		out.flush();
 		out.close();
@@ -121,7 +121,7 @@ public class CheckDownloadCaseAction extends AbstractAction {
 		}
 		if (section == null || !(section.getParent().get() instanceof TestCasePlayerType)) {
 
-			CheckDownloadCaseAction.sendJSON(context, "error",
+			DownloadCaseAction.sendJSON(context, "error",
 					"Unable to find TestCasePlayer with id '"
 							+ playerid + "' , possibly because somebody else"
 							+ " has edited the page.");

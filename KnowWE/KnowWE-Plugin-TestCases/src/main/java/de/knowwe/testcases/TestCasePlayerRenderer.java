@@ -333,7 +333,9 @@ public class TestCasePlayerRenderer implements Renderer {
 		if (testCase instanceof CommentedTestCase) {
 			RenderResult sb = new RenderResult(tableModel.getUserContext());
 			sb.appendHtml("<br />");
-			String comment = ((CommentedTestCase) testCase).getComment(date).replace("\n", sb.toStringRaw());
+			String comment = ((CommentedTestCase) testCase).getComment(date);
+			if (comment == null) comment = "";
+			comment = comment.replace("\n", sb.toStringRaw());
 			tableModel.addCell(row, column++, comment, comment.length());
 		}
 		tableModel.addCell(row, column++, timeAsTimeStamp, timeAsTimeStamp.length());

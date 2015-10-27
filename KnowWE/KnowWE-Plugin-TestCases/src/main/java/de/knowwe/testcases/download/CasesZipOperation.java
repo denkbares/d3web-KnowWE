@@ -66,7 +66,7 @@ public class CasesZipOperation extends FileDownloadOperation {
 	}
 
 	public void before(UserActionContext user, AjaxProgressListener listener) throws IOException {
-		Section<?> section = CheckDownloadCaseAction.getPlayerSection(user);
+		Section<?> section = DownloadCaseAction.getPlayerSection(user);
 		List<ProviderTriple> providers =
 				TestCaseUtils.getTestCaseProviders(Sections.cast(section.getParent(),
 						TestCasePlayerType.class));
@@ -161,7 +161,7 @@ public class CasesZipOperation extends FileDownloadOperation {
 					String testCaseName = getNewEntryName(usedEntryNames, sequentialTestCase);
 					listener.updateProgress((float) i++ / (float) casesToWrite.size(),
 							"Zipping test case '" + testCaseName + ".xml'");
-					String fileName = CheckDownloadCaseAction.toXMLFileName(testCaseName);
+					String fileName = DownloadCaseAction.toXMLFileName(testCaseName);
 					ZipEntry e = new ZipEntry(fileName);
 					out.putNextEntry(e);
 					TestPersistence.getInstance().writeCases(out,

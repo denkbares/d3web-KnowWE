@@ -8,7 +8,7 @@ TestCasePlayer.init = function() {
 		.each(function() {
 			TestCasePlayer.addToolTip(jq$(this));
 		});
-}
+};
 
 TestCasePlayer.toggleFindings = function(id, action) {
 	jq$('#' + id).find('.wikitable').find('th').filter('[type="finding"]')
@@ -21,12 +21,11 @@ TestCasePlayer.toggleFindings = function(id, action) {
 				TestCasePlayer.expandColumn(th);
 			}
 		});
-}
+};
 
 TestCasePlayer.registerClickableColumnHeaders = function() {
-
 	TestCasePlayer.toggleColumnStatus(jq$(this));
-}
+};
 
 TestCasePlayer.toggleColumnStatus = function(th) {
 
@@ -38,13 +37,13 @@ TestCasePlayer.toggleColumnStatus = function(th) {
 		TestCasePlayer.collapseColumn(th);
 	}
 
-}
+};
 
 TestCasePlayer.downloadCase = function(sectionID) {
 	var options = {
 		url : KNOWWE.core.util.getURL({
 			playerid : sectionID,
-			action : 'CheckDownloadCaseAction'
+			action : 'DownloadCaseAction'
 		}),
 		response : {
 			action : 'none',
@@ -60,39 +59,10 @@ TestCasePlayer.downloadCase = function(sectionID) {
 			},
 			onError : _EC.onErrorBehavior
 		}
-	}
+	};
 	KNOWWE.core.util.updateProcessingState(1);
 	new _KA(options).send();
-}
-
-TestCasePlayer.downloadCasesZip = function(sectionID) {
-	var options = {
-		url : KNOWWE.core.util.getURL({
-			playerid : sectionID,
-			action : 'CheckDownloadCasesZipAction'
-		}),
-		response : {
-			action : 'none',
-			fn : function() {
-				var parsed = JSON.parse(this.responseText);
-				if (parsed.path) {
-					if (parsed.skipped) {
-						KNOWWE.notification.warn(null, parsed.skipped,
-							"tcp-note");
-					}
-					window.location = 'action/DownloadFileAction?file='
-						+ parsed.path + '&name=' + parsed.file;
-				} else {
-					KNOWWE.notification.error(null, parsed.error, "tcp-error");
-				}
-				KNOWWE.core.util.updateProcessingState(-1);
-			},
-			onError : _EC.onErrorBehavior
-		}
-	}
-	KNOWWE.core.util.updateProcessingState(1);
-	new _KA(options).send();
-}
+};
 
 TestCasePlayer.getCollapseStatus = function(th) {
 	var collapsed = "";
@@ -102,7 +72,7 @@ TestCasePlayer.getCollapseStatus = function(th) {
 		}
 	});
 	return collapsed;
-}
+};
 
 TestCasePlayer.writeCollapseStatus = function(th, collapsed) {
 	var id = th.parents(".TestCasePlayerContent").attr("id");
@@ -112,7 +82,7 @@ TestCasePlayer.writeCollapseStatus = function(th, collapsed) {
 		testCase = jq$("#selector" + id).val();
 	testCase = TestCasePlayer.encodeCookieValue(testCase);
 	document.cookie = "columnstatus_" + id + "_" + testCase + "=" + collapsed;
-}
+};
 
 TestCasePlayer.collapseColumn = function(th, animated) {
 	if (th.find("input").length > 0)
@@ -134,13 +104,13 @@ TestCasePlayer.collapseColumn = function(th, animated) {
 		TestCasePlayer.addToolTip(jq$(this));
 	});
 
-}
+};
 
 TestCasePlayer.addToolTip = function(element) {
 	if (element.is('th')) {
 		TestCasePlayer.setToolTip(element, "Expand " + element.text().trim());
 	} else if (element.is('td')) {
-		var th = element.parents('table').find('th').filter('[column="' + element.attr('column') + '"]')
+		var th = element.parents('table').find('th').filter('[column="' + element.attr('column') + '"]');
 		var data = element.clone();
 		data.find('script').remove();
 		data.find('br').replaceWith('\n');
@@ -150,7 +120,7 @@ TestCasePlayer.addToolTip = function(element) {
 			TestCasePlayer.setToolTip(element, title);
 		}
 	}
-}
+};
 
 TestCasePlayer.setToolTip = function(element, tooltip) {
 	if (element.data('hasToolTip') === 'enabled') {
@@ -163,13 +133,13 @@ TestCasePlayer.setToolTip = function(element, tooltip) {
 		});
 		element.data('hasToolTip', 'enabled');
 	}
-}
+};
 
 TestCasePlayer.removeToolTip = function(element) {
 	element.tooltipster('destroy');
 	element.attr('title', null);
 	element.data('hasToolTip', 'disabled');
-}
+};
 
 TestCasePlayer.expandColumn = function(th) {
 	if (th.find("input").length > 0)
@@ -191,7 +161,7 @@ TestCasePlayer.expandColumn = function(th) {
 
 	TestCasePlayer.writeCollapseStatus(th, collapsed);
 
-}
+};
 
 TestCasePlayer.send = function(providerId, casedate, name, topic, element) {
 
@@ -220,7 +190,7 @@ TestCasePlayer.send = function(providerId, casedate, name, topic, element) {
 	};
 	KNOWWE.core.util.updateProcessingState(1);
 	new _KA(options).send();
-}
+};
 
 TestCasePlayer.lastSelected = {};
 
@@ -230,7 +200,7 @@ TestCasePlayer.setLastSelected = function() {
 		var selected = jq$('#selector' + id).val();
 		TestCasePlayer.lastSelected[id] = selected;
 	});
-}
+};
 
 TestCasePlayer.change = function(key_sessionid, selectedvalue, sectionID) {
 	// reset pagination for other test case
@@ -242,7 +212,7 @@ TestCasePlayer.change = function(key_sessionid, selectedvalue, sectionID) {
 	document.cookie = key_sessionid + "="
 		+ TestCasePlayer.encodeCookieValue(selectedvalue);
 	TestCasePlayer.update();
-}
+};
 
 TestCasePlayer.addCookie = function(cookievalue) {
 	var topic = KNOWWE.helper.getPagename();
@@ -250,14 +220,14 @@ TestCasePlayer.addCookie = function(cookievalue) {
 		+ TestCasePlayer.encodeCookieValue(topic) + "="
 		+ TestCasePlayer.encodeCookieValue(cookievalue);
 	TestCasePlayer.update(true);
-}
+};
 
 TestCasePlayer.encodeCookieValue = function(cookievalue) {
 	var temp = escape(cookievalue);
 	temp = temp.replace('@', '%40');
 	temp = temp.replace('+', '%2B');
 	return temp;
-}
+};
 
 TestCasePlayer.update = function(adjustLeft) {
 	var scrollInfos = {};
