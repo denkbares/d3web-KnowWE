@@ -89,8 +89,7 @@ public class TestcaseTableLineSubtreeHandler implements D3webHandler<TableLine> 
 						}
 					}
 					if (existingFinding != null) {
-						QuestionValue existingValue = existingFinding.getValue();
-						Value newValue = ValueUtils.createQuestionChoiceValue((QuestionChoice) question, valueString, existingValue);
+						Value newValue = ValueUtils.createQuestionChoiceValue((QuestionChoice) question, valueString);
 						existingFinding.setValue((QuestionValue) newValue);
 					}
 				}

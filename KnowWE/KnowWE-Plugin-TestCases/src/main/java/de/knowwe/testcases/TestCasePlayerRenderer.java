@@ -28,9 +28,11 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
 
@@ -341,9 +343,14 @@ public class TestCasePlayerRenderer implements Renderer {
 		tableModel.addCell(row, column++, timeAsTimeStamp, timeAsTimeStamp.length());
 		renderCheckResults(user, testCase, status, date, tableModel, row, column++);
 		// render values of questions
+		KnowledgeBase knowledgeBase = status.getSession().getKnowledgeBase();
+		Map<TerminologyObject, List<Finding>> mappedFindings = testCase.getFindings(date, knowledgeBase)
+				.stream()
+				.collect(Collectors.groupingBy(Finding::getTerminologyObject));
 		for (Question q : usedQuestions) {
-			Finding finding = testCase.getFinding(date, q);
-			if (finding != null) {
+			List<Finding> findings = mappedFindings.get(q);
+			if (findings != null) {
+				Finding finding = findings.get(0);
 				Value value = finding.getValue();
 				String findingString;
 				if (value instanceof DateValue) {

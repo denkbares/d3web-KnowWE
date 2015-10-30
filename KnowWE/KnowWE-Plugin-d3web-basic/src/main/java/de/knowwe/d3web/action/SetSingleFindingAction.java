@@ -22,7 +22,6 @@ package de.knowwe.d3web.action;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
@@ -91,9 +90,8 @@ public class SetSingleFindingAction extends AbstractAction {
 		if (context.getParameters().containsKey("KBid")) {
 			String kbID = context.getParameter("KBid");
 			Collection<KnowledgeBase> knowledgeBases = D3webUtils.getKnowledgeBases(KnowWEUtils.getArticleManager(web));
-			Iterator<KnowledgeBase> iterator = knowledgeBases.iterator();
-			while (iterator.hasNext()) {
-				kb = iterator.next();
+			for (KnowledgeBase knowledgeBase : knowledgeBases) {
+				kb = knowledgeBase;
 				if (kb.getId() != null && kb.getId().equals(kbID)) {
 					session = SessionProvider.getSession(context, kb);
 					break;
