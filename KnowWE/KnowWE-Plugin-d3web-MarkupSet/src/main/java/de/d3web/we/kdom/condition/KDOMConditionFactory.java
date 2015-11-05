@@ -32,91 +32,80 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 
 /**
- * this class offers a method to create a (d3web-) Condition from a CompositeCondition KDOM.
+ * This class offers a method to create a (d3web-) Condition from a CompositeCondition section.
  *
- * @author Jochen
+ * @author Jochen Reutelshöfer (denkbares GmbH)
  * @created 26.07.2010
  * @see CompositeCondition
  */
 public class KDOMConditionFactory {
 
 	@SuppressWarnings("unchecked")
-	public static Condition createCondition(D3webCompiler compiler, Section<? extends CompositeCondition> c) {
-		if (c == null) return null;
+	public static Condition createCondition(D3webCompiler compiler, Section<? extends CompositeCondition> section) {
+		if (section == null) return null;
 
 		// if braced - delegate to next composite
-		if (c.get().isBraced(c)) {
-			Section<? extends NonTerminalCondition> braced = c.get().getBraced(c);
-			return createCondition(compiler,
-					Sections.successor(braced, CompositeCondition.class));
+		if (section.get().isBraced(section)) {
+			Section<? extends NonTerminalCondition> braced = section.get().getBraced(section);
+			return createCondition(compiler, Sections.successor(braced, CompositeCondition.class));
 		}
 
 		// create conjuncts
-		if (c.get().isConjunction(c)) {
-			List<Section<? extends NonTerminalCondition>> conjuncts = c.get().getConjuncts(c);
+		if (section.get().isConjunction(section)) {
+			List<Section<? extends NonTerminalCondition>> conjuncts = section.get().getConjuncts(section);
 
 			List<Condition> conds = new ArrayList<>();
 			for (Section<? extends NonTerminalCondition> conjunct : conjuncts) {
 				Section<? extends CompositeCondition> subCondSection = Sections.child(
 						conjunct, CompositeCondition.class);
-				Condition subCond = createCondition(compiler,  subCondSection);
+				Condition subCond = createCondition(compiler, subCondSection);
 				if (subCond == null) return null;
 				conds.add(subCond);
 			}
 
-			Condition cond = new CondAnd(conds);
-			return cond;
+			return new CondAnd(conds);
 		}
 
 		// create disjunctions
-		if (c.get().isDisjunction(c)) {
-			List<Section<? extends NonTerminalCondition>> disjuncts = c.get().getDisjuncts(
-					c);
+		if (section.get().isDisjunction(section)) {
+			List<Section<? extends NonTerminalCondition>> disjuncts = section.get().getDisjuncts(
+					section);
 
-			List<Condition> conds = new ArrayList<Condition>();
+			List<Condition> conds = new ArrayList<>();
 			for (Section<? extends NonTerminalCondition> disjunct : disjuncts) {
 				Section<? extends CompositeCondition> subCondSection = Sections.child(
 						disjunct, CompositeCondition.class);
-				Condition subCond = createCondition(compiler,
-						(Section<CompositeCondition>) subCondSection);
+				Condition subCond = createCondition(compiler, Sections.cast(subCondSection, CompositeCondition.class));
 				if (subCond == null) return null;
 				conds.add(subCond);
 			}
 
-			Condition cond = new CondOr(conds);
-			return cond;
+			return new CondOr(conds);
 		}
 
 		// create negations
-		if (c.get().isNegation(c)) {
+		if (section.get().isNegation(section)) {
 			// can only be one
-			Section<? extends NonTerminalCondition> neg = c.get().getNegation(
-					c);
+			Section<? extends NonTerminalCondition> neg = section.get().getNegation(section);
 			Section<? extends CompositeCondition> subCondSection = Sections.child(neg,
 					CompositeCondition.class);
-			Condition subCond = createCondition(compiler,
-					(Section<CompositeCondition>) subCondSection);
+			Condition subCond = createCondition(compiler, Sections.cast(subCondSection, CompositeCondition.class));
 			if (subCond == null) return null;
-			Condition cond = new CondNot(subCond);
-			return cond;
+			return new CondNot(subCond);
 		}
 
 		// end of recursion => (let) create terminal conditions
-		if (c.get().isTerminal(c)) {
-			Section<? extends TerminalCondition> terminal = c.get().getTerminal(c);
+		if (section.get().isTerminal(section)) {
+			Section<? extends TerminalCondition> terminal = section.get().getTerminal(section);
 
-			@SuppressWarnings("rawtypes")
-			Section<D3webCondition> termChild =
-					Sections.child(terminal, D3webCondition.class);
+			Section<D3webCondition> termChild = Sections.child(terminal, D3webCondition.class);
 
 			if (termChild == null) {
 				Log.warning("Could not create Condition for: " + terminal.getParent());
 				return null;
 			}
 
-			Condition cond = termChild.get().getCondition(compiler, termChild);
-
-			return cond;
+			return termChild.get().getCondition(compiler, termChild);
 		}
 
 		return null;

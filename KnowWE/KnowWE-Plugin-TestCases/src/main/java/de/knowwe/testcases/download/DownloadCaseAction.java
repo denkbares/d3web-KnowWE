@@ -3,16 +3,14 @@ package de.knowwe.testcases.download;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.d3web.core.session.Session;
-import de.d3web.empiricaltesting.SequentialTestCase;
-import de.d3web.empiricaltesting.TestPersistence;
 import de.d3web.testcase.model.TestCase;
+import de.d3web.testcase.persistence.TestCasePersistenceManager;
 import de.d3web.utils.Triple;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
@@ -26,7 +24,6 @@ import de.knowwe.testcases.ProviderTriple;
 import de.knowwe.testcases.TestCasePlayerRenderer;
 import de.knowwe.testcases.TestCasePlayerType;
 import de.knowwe.testcases.TestCaseProvider;
-import de.knowwe.testcases.TestCaseUtils;
 
 public class DownloadCaseAction extends AbstractAction {
 
@@ -61,18 +58,6 @@ public class DownloadCaseAction extends AbstractAction {
 			return;
 		}
 
-		SequentialTestCase sequentialTestCase;
-		try {
-			sequentialTestCase = TestCaseUtils.transformToSTC(testCase, testCaseName,
-					session.getKnowledgeBase());
-		}
-		catch (Exception e) {
-			sendJSON(context,
-					"error",
-					"Exception while creating downloadable test case file: " + e.getMessage());
-			return;
-		}
-
 		File tempDirectory = DownloadFileAction.getTempDirectory();
 		// we already have a temp directory, so the file name no longer matters
 		File caseFile = new File(tempDirectory.getAbsolutePath() + File.separator + System.currentTimeMillis());
@@ -80,7 +65,7 @@ public class DownloadCaseAction extends AbstractAction {
 
 		FileOutputStream out = new FileOutputStream(caseFile);
 
-		TestPersistence.getInstance().writeCases(out, Collections.singletonList(sequentialTestCase), false);
+		TestCasePersistenceManager.getInstance().saveTestCase(out, testCase);
 
 		out.flush();
 		out.close();

@@ -64,32 +64,32 @@ public class TestUtils {
 		StringBuilder buffi = new StringBuilder(5000000);
 		for (Integer i : ints) {
 
-			if ((i.intValue() == 128) || (i.intValue() == 228)
-					|| (i.intValue() == 252) || (i.intValue() == 246)
-					|| (i.intValue() == 214) || (i.intValue() == 196)
-					|| (i.intValue() == 220) || (i.intValue() == 223)) {
-				if (i.intValue() == 128) {
+			if ((i == 128) || (i == 228)
+					|| (i == 252) || (i == 246)
+					|| (i == 214) || (i == 196)
+					|| (i == 220) || (i == 223)) {
+				if (i == 128) {
 					buffi.append('');
 				}
-				if (i.intValue() == 228) {
+				if (i == 228) {
 					buffi.append('ä');
 				}
-				if (i.intValue() == 252) {
+				if (i == 252) {
 					buffi.append('ü');
 				}
-				if (i.intValue() == 246) {
+				if (i == 246) {
 					buffi.append('ö');
 				}
-				if (i.intValue() == 214) {
+				if (i == 214) {
 					buffi.append('ü');
 				}
-				if (i.intValue() == 196) {
+				if (i == 196) {
 					buffi.append('Ö');
 				}
-				if (i.intValue() == 220) {
+				if (i == 220) {
 					buffi.append('Ü');
 				}
-				if (i.intValue() == 223) {
+				if (i == 223) {
 					buffi.append('ß');
 				}
 			}

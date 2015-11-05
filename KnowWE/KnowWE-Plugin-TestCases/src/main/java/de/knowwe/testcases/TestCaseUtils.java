@@ -99,8 +99,7 @@ public class TestCaseUtils {
 
 	public static void storeTestCaseProviderStorage(D3webCompiler compiler, Section<?> section, TestCaseProviderStorage testCaseProviderStorage) {
 		checkSection(section);
-		section.storeObject(compiler, PROVIDER_STORAGE_KEY,
-				testCaseProviderStorage);
+		section.storeObject(compiler, PROVIDER_STORAGE_KEY,	testCaseProviderStorage);
 	}
 
 	private static void checkSection(Section<?> section) {
@@ -188,8 +187,7 @@ public class TestCaseUtils {
 				if (!(section.get() instanceof DefaultMarkupType)) continue;
 
 				D3webCompiler compiler = D3webUtils.getCompiler(section);
-				TestCaseProviderStorage testCaseProviderStorage = getTestCaseProviderStorage(
-						compiler, section);
+				TestCaseProviderStorage testCaseProviderStorage = getTestCaseProviderStorage(compiler, section);
 
 				if (testCaseProviderStorage == null) continue;
 
@@ -225,8 +223,7 @@ public class TestCaseUtils {
 			if (finding.getTerminologyObject() instanceof Question) {
 				Question question = (Question) finding.getTerminologyObject();
 				QuestionValue value = (QuestionValue) finding.getValue();
-				Finding rtcFinding = new Finding(
-						question, value);
+				Finding rtcFinding = new Finding(question, value);
 				rtc.add(rtcFinding);
 			}
 			else {

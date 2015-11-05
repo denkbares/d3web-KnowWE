@@ -29,7 +29,7 @@ public class NameType extends AbstractType {
 		this.setSectionFinder(new AllTextFinderTrimmed());
 	}
 
-	public String getRTCName(Section<NameType> section) {
+	public String getName(Section<NameType> section) {
 		return Strings.trim(section.getText());
 	}
 

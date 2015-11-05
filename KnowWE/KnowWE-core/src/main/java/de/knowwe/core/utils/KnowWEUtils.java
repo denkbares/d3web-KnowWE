@@ -542,18 +542,16 @@ public class KnowWEUtils {
 	 * Returns the term identifier if the given Section has the type SimpleTerm, the text of the
 	 * Section else.
 	 *
-	 * @param termSection the Section which should implement the interface SimpleTerm
+	 * @param section the Section which should implement the interface SimpleTerm
 	 * @created 08.02.2012
 	 */
-	public static Identifier getTermIdentifier(Section<?> termSection) {
-		if (termSection.get() instanceof Term) {
-			Section<? extends Term> simpleSection = Sections.cast(termSection,
-					Term.class);
-			return simpleSection.get().getTermIdentifier(simpleSection);
+	public static Identifier getTermIdentifier(Section<?> section) {
+		if (section.get() instanceof Term) {
+			Section<Term> termSection = Sections.cast(section, Term.class);
+			return termSection.get().getTermIdentifier(termSection);
 		}
 		else {
-			return new Identifier(
-					Strings.trimQuotes(termSection.getText()));
+			return new Identifier(Strings.trimQuotes(section.getText()));
 		}
 	}
 
@@ -566,8 +564,7 @@ public class KnowWEUtils {
 	 */
 	public static String getTermName(Section<?> termSection) {
 		if (termSection.get() instanceof Term) {
-			Section<? extends Term> simpleSection = Sections.cast(termSection,
-					Term.class);
+			Section<Term> simpleSection = Sections.cast(termSection, Term.class);
 			return simpleSection.get().getTermName(simpleSection);
 		}
 		else {
@@ -815,7 +812,7 @@ public class KnowWEUtils {
 	 * Creates a wiki-markup-styled link to this section. The created link navigates the user to the
 	 * article of the section. If the section is rendered with an anchor (see method {@link
 	 * #getAnchor(Section)}) the page is also scrolled to the section.
-	 * <p/>
+	 * <p>
 	 * Please not that the link will only work if it is put into "[" ... "]" brackets and rendered
 	 * through the wiki rendering pipeline.
 	 *

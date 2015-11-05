@@ -3,7 +3,6 @@ package de.knowwe.core.utils.progress;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -162,7 +161,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 		if (hasError()) {
 			return Collections.emptyList();
 		}
-		return Arrays.<Tool>asList(new DefaultTool(
+		return Collections.<Tool>singletonList(new DefaultTool(
 				getFileIcon(),
 				fileName,
 				"Download the created file from the server.",

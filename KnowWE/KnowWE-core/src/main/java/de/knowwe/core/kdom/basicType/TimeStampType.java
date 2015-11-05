@@ -109,7 +109,6 @@ public class TimeStampType extends AbstractType {
 			else {
 				LinkedList<Message> list = new LinkedList<>();
 				list.add(Messages.syntaxError("Invalid time stamp: '" + s.getText() + "'"));
-
 				return list;
 
 			}

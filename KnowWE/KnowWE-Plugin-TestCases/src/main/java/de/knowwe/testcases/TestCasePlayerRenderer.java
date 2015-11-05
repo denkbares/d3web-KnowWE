@@ -53,7 +53,7 @@ import de.d3web.testcase.TestCaseUtils;
 import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.Finding;
 import de.d3web.testcase.model.TestCase;
-import de.d3web.testcase.stc.CommentedTestCase;
+import de.d3web.testcase.stc.DescribedTestCase;
 import de.d3web.utils.Pair;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
@@ -279,7 +279,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		stopButtonResult.appendHtml(stopButton);
 		int column = 0;
 		tableModel.addCell(0, column++, stopButtonResult, 1);
-		if (selectedTriple.getProvider().getTestCase() instanceof CommentedTestCase) {
+		if (selectedTriple.getProvider().getTestCase() instanceof DescribedTestCase) {
 			tableModel.addCell(0, column++, "Name", "Name".length());
 		}
 		tableModel.addCell(0, column++, "Time", "Time".length());
@@ -332,10 +332,10 @@ public class TestCasePlayerRenderer implements Renderer {
 		// render date cell
 		String timeAsTimeStamp = Strings.getDurationVerbalization(date.getTime()
 				- testCase.getStartDate().getTime());
-		if (testCase instanceof CommentedTestCase) {
+		if (testCase instanceof DescribedTestCase) {
 			RenderResult sb = new RenderResult(tableModel.getUserContext());
 			sb.appendHtml("<br />");
-			String comment = ((CommentedTestCase) testCase).getComment(date);
+			String comment = ((DescribedTestCase) testCase).getDescription(date);
 			if (comment == null) comment = "";
 			comment = comment.replace("\n", sb.toStringRaw());
 			tableModel.addCell(row, column++, comment, comment.length());
@@ -347,20 +347,20 @@ public class TestCasePlayerRenderer implements Renderer {
 		Map<TerminologyObject, List<Finding>> mappedFindings = testCase.getFindings(date, knowledgeBase)
 				.stream()
 				.collect(Collectors.groupingBy(Finding::getTerminologyObject));
-		for (Question q : usedQuestions) {
-			List<Finding> findings = mappedFindings.get(q);
+		for (Question question : usedQuestions) {
+			List<Finding> findings = mappedFindings.get(question);
 			if (findings != null) {
 				Finding finding = findings.get(0);
 				Value value = finding.getValue();
 				String findingString;
 				if (value instanceof DateValue) {
-					findingString = ValueUtils.getDateVerbalization((QuestionDate) q, (DateValue) value, ValueUtils.TimeZoneDisplayMode.IF_NOT_DEFAULT);
+					findingString = ValueUtils.getDateVerbalization((QuestionDate) question, (DateValue) value, ValueUtils.TimeZoneDisplayMode.IF_NOT_DEFAULT);
 				}
 				else {
 					findingString = value.toString();
 				}
 				Collection<String> errors = new ArrayList<>();
-				TestCaseUtils.checkValues(errors, q, value);
+				TestCaseUtils.checkValues(errors, question, value);
 				if (!errors.isEmpty()) {
 					RenderResult errorResult = new RenderResult(tableModel.getUserContext());
 					errorResult.appendHtml("<div style='background-color:"
@@ -485,27 +485,25 @@ public class TestCasePlayerRenderer implements Renderer {
 				max = Math.max(max, c.getCondition().length());
 			}
 		}
-		else {
-			if (!checkResults.isEmpty()) {
-				boolean first = true;
-				for (Pair<Check, Boolean> p : checkResults) {
-					Check check = p.getA();
-					boolean success = p.getB();
-					max = Math.max(max, check.getCondition().length());
-					if (!first) sb.appendHtml("<br />");
-					first = false;
-					String color;
-					if (success) {
-						color = StyleRenderer.CONDITION_FULLFILLED;
-					}
-					else {
-						color = StyleRenderer.CONDITION_FALSE;
-					}
-					sb.appendHtml("<span style='background-color:" + color + "'>");
-					// render the condition appropriately
-					renderCheck(check, user, sb);
-					sb.appendHtml("</span>");
+		else if (!checkResults.isEmpty()) {
+			boolean first = true;
+			for (Pair<Check, Boolean> p : checkResults) {
+				Check check = p.getA();
+				boolean success = p.getB();
+				max = Math.max(max, check.getCondition().length());
+				if (!first) sb.appendHtml("<br />");
+				first = false;
+				String color;
+				if (success) {
+					color = StyleRenderer.CONDITION_FULLFILLED;
 				}
+				else {
+					color = StyleRenderer.CONDITION_FALSE;
+				}
+				sb.appendHtml("<span style='background-color:" + color + "'>");
+				// render the condition appropriately
+				renderCheck(check, user, sb);
+				sb.appendHtml("</span>");
 			}
 		}
 		sb.appendHtmlTag("/div");

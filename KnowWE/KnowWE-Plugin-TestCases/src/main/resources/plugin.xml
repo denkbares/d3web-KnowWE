@@ -22,6 +22,7 @@
 <plugin id="KnowWE-Plugin-TestCases" version="0.0.1">
 
 	<requires>
+		<import plugin-id="d3web-Plugin-TestCase" />
 		<import plugin-id="KnowWEExtensionPoints" />
 		<import plugin-id="KnowWE-Plugin-Core" />
 		<import plugin-id="KnowWE-Plugin-Table" />
@@ -193,26 +194,47 @@
 		<parameter id="scope" value="TestcaseTableType/**/TableLine/**/TableCellContent" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript" id="TestcaseTableSubtreeHandler">
-		<parameter id="class" value="de.knowwe.testcases.table.TestcaseTableSubtreeHandler" />
-		<parameter id="name" value="TestcaseTableSubtreeHandler" />
-		<parameter id="description" value="Handler TestcaseTableSubtreeHandler" />
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript" id="TestCaseTableGlobalCompileScript">
+		<parameter id="class" value="de.knowwe.testcases.table.TestCaseTableGlobalCompileScript" />
+		<parameter id="name" value="TestCaseTableGlobalCompileScript" />
+		<parameter id="description" value="Handler TestCaseTableGlobalCompileScript" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="compilepriority" value="-100" />
+		<parameter id="scope" value="TestcaseTableType/**/Table" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript" id="TestCaseTableD3webCompileScript">
+		<parameter id="class" value="de.knowwe.testcases.table.TestCaseTableD3webCompileScript" />
+		<parameter id="name" value="TestCaseTableD3webCompileScript" />
+		<parameter id="description" value="Handler TestCaseTableD3webCompileScript" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="compilepriority" value="0" />
 		<parameter id="scope" value="TestcaseTableType/**/Table" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript" id="TestcaseTableLineSubtreeHandler">
-		<parameter id="class" value="de.knowwe.testcases.table.TestcaseTableLineSubtreeHandler" />
-		<parameter id="name" value="TestcaseTableLineSubtreeHandler" />
-		<parameter id="description" value="Handler TestcaseTableLineSubtreeHandler" />
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript" id="TestCaseTableLineGlobalCompileScript">
+		<parameter id="class" value="de.knowwe.testcases.table.TestCaseTableLineGlobalCompileScript" />
+		<parameter id="name" value="TestCaseTableLineGlobalCompileScript" />
+		<parameter id="description" value="Handler TestCaseTableLineGlobalCompileScript" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="compilepriority" value="0" />
 		<parameter id="scope" value="TestcaseTableType/**/TableLine" />
 		<parameter id="exclude" value="TestcaseTableType/**/HeaderLine" />
 	</extension>
+
+	<!--extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript" id="TestCaseTableLineD3webCompileScript">
+		<parameter id="class" value="de.knowwe.testcases.table.TestCaseTableLineD3webCompileScript" />
+		<parameter id="name" value="TestCaseTableLineD3webCompileScript" />
+		<parameter id="description" value="Handler TestCaseTableLineD3webCompileScript" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="compilepriority" value="100" />
+		<parameter id="scope" value="TestcaseTableType/**/TableLine" />
+		<parameter id="exclude" value="TestcaseTableType/**/HeaderLine" />
+	</extension-->
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="TestcaseTableLineRenderer">
 		<parameter id="class" value="de.knowwe.testcases.table.TestcaseTableLineRenderer" />
@@ -221,6 +243,14 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="TestcaseTableType/**/TableLine" />
+	</extension>
+
+	<extension plugin-id="d3web-Plugin-TestCase" point-id="FragmentHandler" id="KnowWEConditionCheckHandler">
+		<parameter id="class" value="de.knowwe.testcases.download.KnowWEConditionCheckHandler" />
+		<parameter id="name" value="KnowWEConditionCheckHandler" />
+		<parameter id="description" value="Handler for KnowWEConditionCheckHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
 	</extension>
 
 </plugin>

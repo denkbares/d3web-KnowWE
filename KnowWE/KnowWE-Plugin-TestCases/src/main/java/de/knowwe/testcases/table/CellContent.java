@@ -19,6 +19,7 @@
 package de.knowwe.testcases.table;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import de.d3web.we.kdom.condition.CompositeCondition;
@@ -53,7 +54,7 @@ public class CellContent extends AbstractType {
 
 		NameType nameType = new NameType();
 		nameType.setSectionFinder(new ConstraintSectionFinder(AllTextFinder.getInstance(),
-				new TableNameConstraint("Name", Arrays.asList(0))));
+				new TableNameConstraint("Name", Collections.singletonList(0))));
 
 		CompositeCondition checkType = new CompositeCondition();
 		checkType.setAllowedTerminalConditions(RuleType.getTerminalConditions());
@@ -92,12 +93,7 @@ public class CellContent extends AbstractType {
 				headerText = headerText.substring(2);
 			}
 			boolean columnOk = columns == null || columns.contains(column);
-			if (headerText.trim().equalsIgnoreCase(name) && columnOk) {
-				return true;
-			}
-			else {
-				return false;
-			}
+			return headerText.trim().equalsIgnoreCase(name) && columnOk;
 		}
 
 		@Override

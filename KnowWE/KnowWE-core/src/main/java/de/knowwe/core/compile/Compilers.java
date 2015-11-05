@@ -117,11 +117,13 @@ public class Compilers {
 
 	/**
 	 * Returns the first {@link Compiler} of all compilers that compiles the given section, that is
-	 * of the specified compiler class, or which extends or implements the specified compiler class.
+	 * of the specified compiler class, or which extends or implements the specified compiler class. If no such compiler
+	 * exists, null is returned.
 	 *
 	 * @param section       the section for which we want the {@link Compiler}s
 	 * @param compilerClass the type of the {@link Compiler} we want
-	 * @return the first {@link Compiler} that compiles the given section.
+	 * @return the first {@link Compiler} that compiles the given section or null, if the section is not compiled by a
+	 * compiler with the given class
 	 * @created 15.11.2013
 	 */
 	public static <C extends Compiler> C getCompiler(Section<?> section, Class<C> compilerClass) {

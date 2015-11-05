@@ -28,13 +28,13 @@ import de.knowwe.core.kdom.parsing.Section;
 
 public interface SectionFilter {
 
-	public boolean accept(Section<?> section);
+	boolean accept(Section<?> section);
 
-	public static SectionFilter ALL_SECTIONS = section -> true;
+	SectionFilter ALL_SECTIONS = section -> true;
 
-	public static SectionFilter NO_SECTIONS = section -> false;
+	SectionFilter NO_SECTIONS = section -> false;
 
-	public static <T extends Type> Iterator<Section<T>> filter(Iterator<Section<T>> base, SectionFilter filter) {
+	static <T extends Type> Iterator<Section<T>> filter(Iterator<Section<T>> base, SectionFilter filter) {
 		return new FilterIterator<Section<T>>(base) {
 			@Override
 			public boolean accept(Section<T> item) {

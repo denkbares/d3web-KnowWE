@@ -27,7 +27,7 @@ import de.knowwe.core.user.UserContext;
 /**
  * Class to implement a checker that test a condition to be true.
  * 
- * @author volker_belli
+ * @author Volker Belli (denkbares GmbH)
  * @created 22.04.2012
  */
 public class KnowWEConditionCheck extends ConditionCheck {

@@ -47,12 +47,12 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
 /**
- * <p/>
+ * <p>
  * This class represents a node in the Knowledge-DOM of KnowWE. Basically it has some text, one type and a list
  * of children.
- * <p/>
+ * <p>
  * Further, it has a reference to its father and a positionOffset to its fathers text.
- * <p/>
+ * <p>
  * Further information can be attached to a node (TypeInformation), to connect the text-parts with external
  * resources, e.g. knowledge bases, OWL, User-feedback-DBs etc.
  *
@@ -138,7 +138,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * Returns the result of the given method of this section's type applied to this section.
 	 *
 	 * @param method a method of this section's type
-	 * @param <R> the type of the returned object
+	 * @param <R>    the type of the returned object
 	 * @return the result of the given method applied to this section
 	 */
 	public <R> R get(BiFunction<T, Section<T>, R> method) {
@@ -151,7 +151,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 
 	/**
 	 * Constructor of a node
-	 * <p/>
+	 * <p>
 	 * Important: parses itself recursively by getting the allowed childrenTypes of the local type
 	 *
 	 * @param text       the part of (article-source) text of the node
@@ -535,12 +535,10 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * Method that looks (recursively down) for this section whether some errors has been stored in that subtree.
 	 */
 	public boolean hasMessageInSubtree(Message.Type type) {
-		Map<Compiler, Collection<Message>> errors = Messages.getMessagesMap(
-				this, type);
+		Map<Compiler, Collection<Message>> errors = Messages.getMessagesMap(this, type);
 		if (!errors.isEmpty()) return true;
 		for (Section<?> child : getChildren()) {
-			boolean err = child.hasErrorInSubtree();
-			if (err) {
+			if (child.hasErrorInSubtree()) {
 				return true;
 			}
 		}

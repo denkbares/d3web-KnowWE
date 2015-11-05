@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,9 +32,9 @@ import de.d3web.core.io.progress.ParallelProgress;
 import de.d3web.core.io.progress.ProgressListener;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
-import de.d3web.empiricaltesting.SequentialTestCase;
-import de.d3web.empiricaltesting.TestPersistence;
 import de.d3web.testcase.model.TestCase;
+import de.d3web.testcase.persistence.TestCasePersistenceManager;
+import de.d3web.testcase.stc.DescribedTestCase;
 import de.d3web.utils.Triple;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
@@ -68,11 +67,10 @@ public class CasesZipOperation extends FileDownloadOperation {
 	public void before(UserActionContext user, AjaxProgressListener listener) throws IOException {
 		Section<?> section = DownloadCaseAction.getPlayerSection(user);
 		List<ProviderTriple> providers =
-				TestCaseUtils.getTestCaseProviders(Sections.cast(section.getParent(),
-						TestCasePlayerType.class));
+				TestCaseUtils.getTestCaseProviders(Sections.cast(section.getParent(), TestCasePlayerType.class));
 		skipped = new StringBuilder();
 		errors = new StringBuilder();
-		casesToWrite = new ArrayList<Triple<String, KnowledgeBase, TestCase>>();
+		casesToWrite = new ArrayList<>();
 
 		check(user, section, providers, casesToWrite);
 	}
@@ -90,8 +88,7 @@ public class CasesZipOperation extends FileDownloadOperation {
 			String testCaseName = provider.getName();
 
 			if (!userCanView(context, section) || !userCanView(context, testCaseSection)) {
-				skipped.append(testCaseName
-						+ ": You are not authorized to see this case.<br/>");
+				skipped.append(testCaseName).append(": You are not authorized to see this case.<br/>");
 				continue;
 			}
 
@@ -99,74 +96,56 @@ public class CasesZipOperation extends FileDownloadOperation {
 			Session session = provider.getActualSession(context);
 
 			if (session == null) {
-				skipped.append(testCaseName
-						+ ": Internal error (no session found).<br/>");
+				skipped.append(testCaseName).append(": Internal error (no session found).<br/>");
 				continue;
 			}
-			casesToWrite.add(new Triple<String, KnowledgeBase, TestCase>(testCaseName,
-					session.getKnowledgeBase(), testCase));
+			casesToWrite.add(new Triple<>(testCaseName, session.getKnowledgeBase(), testCase));
 		}
 	}
 
 	@Override
 	public void execute(UserActionContext context, File resultFile, AjaxProgressListener listener) throws IOException, InterruptedException {
 		before(context, listener);
-		ParallelProgress parallel = new ParallelProgress(listener, 50f, 50f);
+		ParallelProgress parallel = new ParallelProgress(listener, 3f, 97f);
 		ProgressListener executeListener = parallel.getSubTaskProgressListener(0);
 		ProgressListener zipListener = parallel.getSubTaskProgressListener(1);
-		List<SequentialTestCase> stcs = transform(executeListener);
-		zipSTCs(resultFile, stcs, zipListener);
+		List<TestCase> stcs = collect(executeListener);
+		zipTestCases(resultFile, stcs, zipListener);
 
 	}
 
-	private List<SequentialTestCase> transform(ProgressListener listener) throws InterruptedException {
-		List<SequentialTestCase> stcs = new ArrayList<SequentialTestCase>();
+	private List<TestCase> collect(ProgressListener listener) throws InterruptedException {
+		List<TestCase> testCases = new ArrayList<>();
 		int i = 0;
 		for (Triple<String, KnowledgeBase, TestCase> triple : casesToWrite) {
 			LongOperationUtils.checkCancel();
 			String testCaseName = triple.getA();
-			KnowledgeBase kb = triple.getB();
 			TestCase testCase = triple.getC();
 
 			listener.updateProgress((float) i++ / (float) casesToWrite.size(),
-					"Transforming test case '" + testCaseName + "'");
-
-			SequentialTestCase sequentialTestCase = null;
-			try {
-				sequentialTestCase = TestCaseUtils.transformToSTC(testCase, testCaseName, kb);
-			}
-			catch (Exception e) {
-				skipped.append(""
-						+ testCaseName
-						+ ": Internal error while creating the xml file: "
-						+ e.getMessage() + "<br/>");
-				continue;
-			}
-
-			stcs.add(sequentialTestCase);
+					"Collecting test case '" + testCaseName + "'");
+			testCases.add(testCase);
 		}
-		return stcs;
+		return testCases;
 	}
 
-	private void zipSTCs(File resultFile, List<SequentialTestCase> stcs, ProgressListener listener) throws IOException, InterruptedException {
+	private void zipTestCases(File resultFile, List<TestCase> testCases, ProgressListener listener) throws IOException, InterruptedException {
 
-		if (!stcs.isEmpty()) {
+		if (!testCases.isEmpty()) {
 
 			ZipOutputStream out = new ZipOutputStream(new FileOutputStream(resultFile));
 			try {
 				int i = 0;
-				Set<String> usedEntryNames = new HashSet<String>();
-				for (SequentialTestCase sequentialTestCase : stcs) {
+				Set<String> usedEntryNames = new HashSet<>();
+				for (TestCase testCase : testCases) {
 					LongOperationUtils.checkCancel();
-					String testCaseName = getNewEntryName(usedEntryNames, sequentialTestCase);
+					String testCaseName = getDescription(usedEntryNames, testCase);
 					listener.updateProgress((float) i++ / (float) casesToWrite.size(),
 							"Zipping test case '" + testCaseName + ".xml'");
 					String fileName = DownloadCaseAction.toXMLFileName(testCaseName);
 					ZipEntry e = new ZipEntry(fileName);
 					out.putNextEntry(e);
-					TestPersistence.getInstance().writeCases(out,
-							Arrays.asList(sequentialTestCase), false);
-
+					TestCasePersistenceManager.getInstance().saveTestCase(out, testCase);
 					out.closeEntry();
 				}
 			}
@@ -181,11 +160,19 @@ public class CasesZipOperation extends FileDownloadOperation {
 		}
 	}
 
-	private String getNewEntryName(Set<String> usedEntryNames, SequentialTestCase sequentialTestCase) {
-		String testCaseName = sequentialTestCase.getName();
+	private String getDescription(Set<String> usedEntryNames, TestCase testCase) {
+		String originalDescription;
+		if (testCase instanceof DescribedTestCase) {
+			originalDescription = ((DescribedTestCase) testCase).getDescription();
+		}
+		else {
+			originalDescription = "Unnamed";
+		}
+		originalDescription = originalDescription.replaceAll("[^ \\.-_+\\w()]", "");
 		int i = 2;
-		while (usedEntryNames.contains(testCaseName)) {
-			testCaseName = sequentialTestCase.getName() + i++;
+		String testCaseName = originalDescription;
+		while (usedEntryNames.contains(originalDescription)) {
+			testCaseName = originalDescription + i++;
 		}
 		usedEntryNames.add(testCaseName);
 		return testCaseName;
