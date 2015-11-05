@@ -353,7 +353,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				Finding finding = findings.get(0);
 				Value value = finding.getValue();
 				String findingString;
-				if (value instanceof DateValue) {
+				if (question instanceof QuestionDate && value instanceof DateValue) {
 					findingString = ValueUtils.getDateVerbalization((QuestionDate) question, (DateValue) value, ValueUtils.TimeZoneDisplayMode.IF_NOT_DEFAULT);
 				}
 				else {
