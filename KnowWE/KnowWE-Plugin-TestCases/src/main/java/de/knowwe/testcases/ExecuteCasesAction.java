@@ -90,7 +90,7 @@ public class ExecuteCasesAction extends AbstractAction {
 			for (Date date : testCase.chronology()) {
 				if ((startDate == null || date.after(startDate))
 						&& (date.before(endDate) || date.equals(endDate))) {
-					TestCaseUtils.applyFindings(session, testCase, date, ignoreNumValueOutOfRange);
+					testCase.applyFindings(date, session);
 					for (Check check : testCase.getChecks(date, session.getKnowledgeBase())) {
 						status.addCheckResult(date, check, check.check(session));
 					}

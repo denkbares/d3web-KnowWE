@@ -76,6 +76,8 @@ import de.knowwe.testcases.table.KnowWEConditionCheck;
 import de.knowwe.util.Icon;
 import de.knowwe.util.IconColor;
 
+import static java.util.stream.Collectors.*;
+
 /**
  * Renderer for TestCasePlayerType
  *
@@ -183,15 +185,14 @@ public class TestCasePlayerRenderer implements Renderer {
 	private void renderProviderMessages(TestCaseProvider provider, RenderResult string) {
 		List<Message> messages = provider.getMessages();
 		if (messages.size() > 0) {
-			DefaultMarkupRenderer.renderMessagesOfType(Type.ERROR, messages,
-					string);
+			DefaultMarkupRenderer.renderMessagesOfType(Type.ERROR, messages, string);
 		}
 	}
 
 	private void renderNoProviderWarning(Section<TestCasePlayerType> playerSection, RenderResult string) {
 		String message = "No test cases found in the packages: " + Strings.concat(", ", de.knowwe.testcases.TestCaseUtils
 				.getTestCasePackages(playerSection));
-		DefaultMarkupRenderer.renderMessagesOfType(Type.WARNING, Arrays.asList(Messages.warning(message)), string);
+		DefaultMarkupRenderer.renderMessagesOfType(Type.WARNING, Collections.singletonList(Messages.warning(message)), string);
 	}
 
 	private void renderTestCase(Section<?> section, UserContext user, ProviderTriple selectedTriple, Session session, TestCase testCase, SessionDebugStatus status, RenderResult string) {
@@ -346,7 +347,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		KnowledgeBase knowledgeBase = status.getSession().getKnowledgeBase();
 		Map<TerminologyObject, List<Finding>> mappedFindings = testCase.getFindings(date, knowledgeBase)
 				.stream()
-				.collect(Collectors.groupingBy(Finding::getTerminologyObject));
+				.collect(groupingBy(Finding::getTerminologyObject));
 		for (Question question : usedQuestions) {
 			List<Finding> findings = mappedFindings.get(question);
 			if (findings != null) {

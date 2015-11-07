@@ -19,16 +19,17 @@
 
 package de.knowwe.testcases.table;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.strings.Strings;
+import de.d3web.testcase.model.CheckTemplate;
 import de.d3web.testcase.model.DefaultFindingTemplate;
-import de.d3web.testcase.model.DefaultTestCase;
+import de.d3web.testcase.model.FindingTemplate;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.Conjunct;
-import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
@@ -48,8 +49,8 @@ import de.knowwe.testcases.download.KnowWEConditionCheckTemplate;
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
- * This script does all the stuff of the Finding and Check creation, that is independent of the actual {@link
- * D3webCompiler}s and {@link KnowledgeBase}s.
+ * Creates all the Finding- and CheckTemplates for the current line (independent of any knowledge bases or
+ * D3webCompilers).
  *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 03.11.15
@@ -57,14 +58,16 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
 public class TestCaseTableLineGlobalCompileScript extends DefaultGlobalScript<TableLine> {
 
 	private static final String LAST_TIME_STAMP_KEY = "lastTimeStamp";
+	private static final String CHECKS_KEY = "checks";
+	private static final String FINDINGS_KEY = "findings";
+	private static final String DESCRIPTION_KEY = "description";
+	private static final String DATE_KEY = "date";
 
 	@Override
 	public void compile(DefaultGlobalCompiler compiler, Section<TableLine> section) throws CompilerMessage {
 
 		Section<Table> tableSection = Sections.ancestor(section, Table.class);
 		if (tableSection == null) throw CompilerMessage.error("Parsing exception, no table found");
-
-		DefaultTestCase testCase = TestCaseTableGlobalCompileScript.getTestCase(tableSection);
 
 		Date date;
 
@@ -92,16 +95,16 @@ public class TestCaseTableLineGlobalCompileScript extends DefaultGlobalScript<Ta
 		}
 		date = new Date(timeStamp);
 
-		// make sure the date/entry appears in chronology, even if it is empty otherwise
-		testCase.addFinding(date);
+		section.storeObject(DATE_KEY, date);
 
 		Section<NameType> nameSection = $(section).successor(NameType.class).getFirst();
 		if (nameSection != null) {
-			testCase.addDescription(date, nameSection.get().getName(nameSection));
+			section.storeObject(DESCRIPTION_KEY, nameSection.get().getName(nameSection));
 		}
 
 		// Findings
 		List<Section<CellValueType>> values = $(section).successor(CellValueType.class).asList();
+		List<FindingTemplate> findingTemplates = new ArrayList<>();
 		for (Section<CellValueType> valueSec : values) {
 
 			String valueString = Strings.trimQuotes(valueSec.getText());
@@ -113,14 +116,15 @@ public class TestCaseTableLineGlobalCompileScript extends DefaultGlobalScript<Ta
 
 			String termName = KnowWEUtils.getTermName(questionReference);
 
-			testCase.addFinding(date, new DefaultFindingTemplate(termName, valueString));
-
+			findingTemplates.add(new DefaultFindingTemplate(termName, valueString));
 		}
+
+		section.storeObject(FINDINGS_KEY, findingTemplates);
 
 		// Checks
 		Section<CompositeCondition> topLevelConditionSection = $(section).successor(CompositeCondition.class)
 				.getFirst();
-
+		ArrayList<CheckTemplate> checkTemplates = new ArrayList<>();
 		if (topLevelConditionSection == null) return;
 
 		// break down top level CondAnds into individual Checks...
@@ -129,13 +133,38 @@ public class TestCaseTableLineGlobalCompileScript extends DefaultGlobalScript<Ta
 					= $(topLevelConditionSection).successor(2, CompositeCondition.class)
 					.filter(successor -> successor != topLevelConditionSection).asList();
 			for (Section<CompositeCondition> compositeSection : andComposits) {
-				testCase.addCheck(date, new KnowWEConditionCheckTemplate(compositeSection));
+				checkTemplates.add(new KnowWEConditionCheckTemplate(compositeSection));
 			}
 		}
 		else {
-			testCase.addCheck(date, new KnowWEConditionCheckTemplate(topLevelConditionSection));
+			checkTemplates.add(new KnowWEConditionCheckTemplate(topLevelConditionSection));
 		}
+		section.storeObject(CHECKS_KEY, checkTemplates);
 
+	}
+
+	public static String getDescription(Section<TableLine> tableLine) {
+		return (String) tableLine.getObject(DESCRIPTION_KEY);
+	}
+
+	public static Date getDate(Section<TableLine> tableLine) {
+		return (Date) tableLine.getObject(DATE_KEY);
+	}
+
+	public static List<CheckTemplate> getCheckTemplates(Section<TableLine> tableLine) {
+		//noinspection unchecked
+		List<CheckTemplate> checkTemplates = (List<CheckTemplate>) tableLine.getObject(CHECKS_KEY);
+		return checkTemplates == null ? Collections.emptyList() : checkTemplates;
+	}
+
+	public static void setFindingTemplates(Section<TableLine> tableLine, List<DefaultFindingTemplate> findingTemplates) {
+		tableLine.storeObject(FINDINGS_KEY, findingTemplates);
+	}
+
+	public static List<DefaultFindingTemplate> getFindingTemplates(Section<TableLine> tableLine) {
+		//noinspection unchecked
+		List<DefaultFindingTemplate> findingTemplates = (List<DefaultFindingTemplate>) tableLine.getObject(FINDINGS_KEY);
+		return findingTemplates == null ? Collections.emptyList() : findingTemplates;
 	}
 
 	private boolean isCondAnd(Section<CompositeCondition> conditionSection) {

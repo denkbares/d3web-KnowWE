@@ -210,7 +210,7 @@
 		<parameter id="description" value="Handler TestCaseTableD3webCompileScript" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="compilepriority" value="0" />
+		<parameter id="compilepriority" value="300" />
 		<parameter id="scope" value="TestcaseTableType/**/Table" />
 	</extension>
 
@@ -220,21 +220,10 @@
 		<parameter id="description" value="Handler TestCaseTableLineGlobalCompileScript" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="compilepriority" value="0" />
+		<parameter id="compilepriority" value="-300" />
 		<parameter id="scope" value="TestcaseTableType/**/TableLine" />
 		<parameter id="exclude" value="TestcaseTableType/**/HeaderLine" />
 	</extension>
-
-	<!--extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript" id="TestCaseTableLineD3webCompileScript">
-		<parameter id="class" value="de.knowwe.testcases.table.TestCaseTableLineD3webCompileScript" />
-		<parameter id="name" value="TestCaseTableLineD3webCompileScript" />
-		<parameter id="description" value="Handler TestCaseTableLineD3webCompileScript" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="compilepriority" value="100" />
-		<parameter id="scope" value="TestcaseTableType/**/TableLine" />
-		<parameter id="exclude" value="TestcaseTableType/**/HeaderLine" />
-	</extension-->
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="TestcaseTableLineRenderer">
 		<parameter id="class" value="de.knowwe.testcases.table.TestcaseTableLineRenderer" />

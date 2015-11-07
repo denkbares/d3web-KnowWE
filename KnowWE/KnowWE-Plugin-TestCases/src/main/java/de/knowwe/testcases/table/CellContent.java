@@ -18,14 +18,15 @@
  */
 package de.knowwe.testcases.table;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+
+import org.apache.commons.lang.ArrayUtils;
 
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.rules.RuleType;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -35,7 +36,6 @@ import de.knowwe.kdom.constraint.NoBlankSectionsConstraint;
 import de.knowwe.kdom.constraint.SectionFinderConstraint;
 import de.knowwe.kdom.table.TableUtils;
 import de.knowwe.testcases.NameType;
-import de.knowwe.core.kdom.basicType.TimeStampType;
 
 /**
  * @author Florian Ziegler
@@ -50,11 +50,11 @@ public class CellContent extends AbstractType {
 		TimeStampType timeStampType = new TimeStampType();
 		timeStampType.setSectionFinder(new ConstraintSectionFinder(
 				timeStampType.getSectionFinder(),
-				new TableNameConstraint("Time", Arrays.asList(0, 1))));
+				new TableNameConstraint("Time", 0, 1)));
 
 		NameType nameType = new NameType();
 		nameType.setSectionFinder(new ConstraintSectionFinder(AllTextFinder.getInstance(),
-				new TableNameConstraint("Name", Collections.singletonList(0))));
+				new TableNameConstraint("Name", 0)));
 
 		CompositeCondition checkType = new CompositeCondition();
 		checkType.setAllowedTerminalConditions(RuleType.getTerminalConditions());
@@ -72,12 +72,12 @@ public class CellContent extends AbstractType {
 		this.addChildType(valueType);
 	}
 
-	private static final class TableNameConstraint implements SectionFinderConstraint {
+	public static final class TableNameConstraint implements SectionFinderConstraint {
 
 		private final String name;
-		private final List<Integer> columns;
+		private final int[] columns;
 
-		public TableNameConstraint(String name, List<Integer> columns) {
+		public TableNameConstraint(String name, int... columns) {
 			this.name = name;
 			this.columns = columns;
 		}
@@ -92,7 +92,8 @@ public class CellContent extends AbstractType {
 			if (headerText.startsWith("||")) {
 				headerText = headerText.substring(2);
 			}
-			boolean columnOk = columns == null || columns.contains(column);
+
+			boolean columnOk = columns == null || ArrayUtils.contains(columns, column);
 			return headerText.trim().equalsIgnoreCase(name) && columnOk;
 		}
 

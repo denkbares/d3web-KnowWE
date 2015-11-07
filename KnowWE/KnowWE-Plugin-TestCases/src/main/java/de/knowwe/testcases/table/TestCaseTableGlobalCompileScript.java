@@ -19,9 +19,12 @@
 
 package de.knowwe.testcases.table;
 
+import java.util.Date;
 import java.util.List;
 
+import de.d3web.testcase.model.CheckTemplate;
 import de.d3web.testcase.model.DefaultTestCase;
+import de.d3web.testcase.model.FindingTemplate;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.kdom.basicType.TimeStampType;
@@ -34,10 +37,11 @@ import de.knowwe.kdom.table.Table;
 import de.knowwe.kdom.table.TableLine;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
+import static de.knowwe.testcases.table.TestCaseTableLineGlobalCompileScript.*;
 
 /**
  * This script does all the stuff of the TestCase creation, that is independent of the actual d3web Compilers and
- * KnowledgeBases.
+ * KnowledgeBases. Checks sequential time stamps and adds all the artifacts to the TestCase.
  *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 03.11.15
@@ -54,33 +58,52 @@ public class TestCaseTableGlobalCompileScript extends DefaultGlobalScript<Table>
 
 		List<Section<TableLine>> lines = Sections.successors(section, TableLine.class);
 
-		long lastTimeStamp = Long.MIN_VALUE;
+		checkSequentialTimeStamps(compiler, lines);
+		testCase.setDescription(getTestCaseName(section));
+
 		for (Section<TableLine> line : lines) {
-			// check sequential time stamps
-			Section<TimeStampType> timeStampSection = Sections.successor(line, TimeStampType.class);
-			if (timeStampSection != null) {
-				try {
-					long timeStamp = TimeStampType.getTimeInMillis(timeStampSection);
-					if (lastTimeStamp > timeStamp) {
-						Messages.storeMessage(compiler, timeStampSection, this.getClass(),
-								Messages.error("Invalid time stamp '" + timeStampSection.getText()
-										+ "', each time stamp has to be after the previous one."));
-						return;
-					}
-					else {
-						Messages.clearMessages(compiler, timeStampSection, this.getClass());
-					}
-				}
-				catch (NumberFormatException ignore) {
-					// invalid time, will be handled by TimeStampType already.... just skip here
-				}
+			Date date = getDate(line);
+			if (date == null) continue;
+
+			// just make sure the entry exists in the test case, even if there are no other contents...
+			testCase.addFinding(date);
+
+			for (FindingTemplate findingTemplate : getFindingTemplates(line)) {
+				testCase.addFinding(date, findingTemplate);
 			}
 
+			for (CheckTemplate checkTemplate : getCheckTemplates(line)) {
+				testCase.addCheck(date, checkTemplate);
+			}
+
+			String description = getDescription(line);
+			if (description != null) testCase.addDescription(date, description);
 		}
 
+	}
+
+	private void checkSequentialTimeStamps(DefaultGlobalCompiler compiler, List<Section<TableLine>> lines) {
+		Date lastDate = new Date(Long.MIN_VALUE);
+		for (Section<TableLine> line : lines) {
+			Section<TimeStampType> timeStampSection = Sections.successor(line, TimeStampType.class);
+			if (timeStampSection != null) {
+				Date date = getDate(line);
+				if (date != null && lastDate.after(date)) {
+					Messages.storeMessage(compiler, timeStampSection, this.getClass(),
+							Messages.error("Invalid time stamp '" + timeStampSection.getText()
+									+ "', each time stamp has to be after the previous one."));
+				}
+				else {
+					Messages.clearMessages(compiler, timeStampSection, this.getClass());
+				}
+				if (date != null) lastDate = date;
+			}
+		}
+	}
+
+	private String getTestCaseName(Section<Table> section) {
 		List<Section<Table>> sections = $(section.getArticle().getRootSection()).successor(TestcaseTableType.class)
-				.successor(Table.class)
-				.asList();
+				.successor(Table.class).asList();
 		int i = 1;
 		for (Section<Table> table : sections) {
 			if (table.equals(section)) {
@@ -96,10 +119,14 @@ public class TestCaseTableGlobalCompileScript extends DefaultGlobalScript<Table>
 		if (name == null) {
 			name = section.getArticle().getTitle() + "/TestCaseTable" + i;
 		}
-		testCase.setDescription(name);
+		return name;
 	}
 
 	public static DefaultTestCase getTestCase(Section<Table> tableSection) {
 		return (DefaultTestCase) tableSection.getObject(TEST_CASE_KEY);
+	}
+
+	public static void setTestCase(Section<Table> tableSection, DefaultTestCase testCase) {
+		tableSection.storeObject(TEST_CASE_KEY, testCase);
 	}
 }
