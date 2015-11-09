@@ -1,22 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!--
-  ~ Copyright (C) 2014 denkbares GmbH, Germany
-  ~
-  ~ This is free software; you can redistribute it and/or modify it under the
-  ~ terms of the GNU Lesser General Public License as published by the Free
-  ~ Software Foundation; either version 3 of the License, or (at your option) any
-  ~ later version.
-  ~
-  ~ This software is distributed in the hope that it will be useful, but WITHOUT
-  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-  ~ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
-  ~ details.
-  ~
-  ~ You should have received a copy of the GNU Lesser General Public License
-  ~ along with this software; if not, write to the Free Software Foundation,
-  ~ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
-  ~ site: http://www.fsf.org.
-  -->
-
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -38,22 +20,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-dependencies</id>
-						<phase>test-compile</phase>
-						<goals>
-							<goal>build-classpath</goal>
-						</goals>
-						<configuration>
-							<overWriteReleases>false</overWriteReleases>
-							<overWriteSnapshots>false</overWriteSnapshots>
-							<overWriteIfNewer>true</overWriteIfNewer>
-							<outputFile>target/dependencies/output.txt</outputFile>
-							<pathSeparator>;</pathSeparator>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -80,11 +46,11 @@
 			<plugin>
 				<groupId>de.uniwue.maven.plugins</groupId>
 				<artifactId>knowwe-versionator</artifactId>
-				<version>${versionatorVersion}</version>
 				<executions>
 					<execution>
 						<id>vers</id>
-						<phase>prepare-package</phase>
+						<!--<phase>prepare-package</phase>-->
+						<phase>none</phase>
 						<goals>
 							<goal>versionate</goal>
 						</goals>
@@ -92,6 +58,10 @@
 							<targetDir>${project.build.directory}/${pom.artifactId}-${pom.version}/WEB-INF/classes/
 							</targetDir>
 						</configuration>
+					</execution>
+					<execution>
+						<id>versionate-plugin</id>
+						<phase>none</phase>
 					</execution>
 				</executions>
 			</plugin>
