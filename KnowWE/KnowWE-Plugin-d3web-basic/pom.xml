@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<parent>
 		<artifactId>KnowWE</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
 		<version>0.2-SNAPSHOT</version>
 	</parent>
-	
-	<groupId>de.uniwue.d3web</groupId>
+
 	<artifactId>KnowWE-Plugin-d3web-basic</artifactId>
 	<version>0.2-SNAPSHOT</version>
 	<name>KnowWE-Plugin-d3web-basic</name>
-	<description> Contains basic componentes for using KnowWE with d3web, including the management of knowledge bases and a panel for displaying the currently established, suggested, excluded solutions</description>
-	
+	<description>Contains basic components for using KnowWE with d3web, including the management of knowledge bases and
+		a panel for displaying the currently established, suggested, excluded solutions
+	</description>
+
 	<dependencies>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
@@ -65,7 +67,7 @@
 			<artifactId>KnowWE-Plugin-ExtensionPoints</artifactId>
 			<version>0.2-SNAPSHOT</version>
 			<scope>compile</scope>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Plugin-SessionPersistence-Basic</artifactId>

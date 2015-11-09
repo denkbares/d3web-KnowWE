@@ -2,26 +2,31 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE</artifactId>
 	<packaging>pom</packaging>
 	<name>KnowWE</name>
 	<version>0.2-SNAPSHOT</version>
-	<url>http://www.d3web.de/</url>
+	<url>https://www.d3web.de/</url>
+
 	<issueManagement>
-		<system>Bugzilla</system>
-		<url>https://tickets.denkbares.com/</url>
+		<system>Phabricator</system>
+		<url>https://dev.denkbares.com/</url>
 	</issueManagement>
+
 	<ciManagement>
-		<system>Hudson</system>
-		<url>https://isci.informatik.uni-wuerzburg.de/hudson/</url>
+		<system>Jenkins</system>
+		<url>https://ci.denkbares.com/</url>
 	</ciManagement>
+
 	<licenses>
 		<license>
 			<name>GNU Lesser General Public License, version 3</name>
 			<url>http://www.gnu.org/licenses/lgpl.txt</url>
 		</license>
 	</licenses>
+
 	<build>
 		<defaultGoal>package</defaultGoal>
 		<plugins>
@@ -33,7 +38,6 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
-			<!-- Ignore test failures -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -97,56 +101,42 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
+				<!-- Set Versionator Version -->
 				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-dependency-plugin
-										</artifactId>
-										<versionRange>
-											[2.1,)
-										</versionRange>
-										<goals>
-											<goal>build-classpath</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-antrun-plugin
-										</artifactId>
-										<versionRange>
-											[1.3,)
-										</versionRange>
-										<goals>
-											<goal>run</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
+					<groupId>de.uniwue.maven.plugins</groupId>
+					<artifactId>knowwe-versionator</artifactId>
+					<version>1.8</version>
+					<executions>
+						<execution>
+							<id>versionate-plugin</id>
+							<phase>prepare-package</phase>
+							<goals>
+								<goal>versionate-plugin</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<!-- Generate Dependency List for JPF -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>2.10</version>
+					<executions>
+						<execution>
+							<id>copy-dependencies</id>
+							<phase>test-compile</phase>
+							<goals>
+								<goal>build-classpath</goal>
+							</goals>
+							<configuration>
+								<overWriteReleases>false</overWriteReleases>
+								<overWriteSnapshots>false</overWriteSnapshots>
+								<overWriteIfNewer>true</overWriteIfNewer>
+								<pathSeparator>;</pathSeparator>
+								<outputFile>target/dependencies/output.txt</outputFile>
+							</configuration>
+						</execution>
+					</executions>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -187,9 +177,111 @@
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.surefire.reportsPath>target/surefire-reports</sonar.surefire.reportsPath>
 		<sonar.clover.reportPath>target/site/clover/clover.xml</sonar.clover.reportPath>
-		<versionatorVersion>1.7</versionatorVersion>
 		<d3webCoreVersion>0.2-SNAPSHOT</d3webCoreVersion>
+		<d3web.version>0.2-SNAPSHOT</d3web.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.12</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>d3web-GlobalTests</artifactId>
+				<version>${d3web.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>d3web-Kernel</artifactId>
+				<version>${d3web.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>d3web-Persistence</artifactId>
+				<version>${d3web.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>d3web-Plugin-BasicProperties</artifactId>
+				<version>${d3web.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>d3web-Plugin-CostBenefit</artifactId>
+				<version>${d3web.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>d3web-Plugin-DiaFlux</artifactId>
+				<version>${d3web.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>d3web-Plugin-Interview</artifactId>
+				<version>${d3web.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>d3web-Plugin-Kernel-ExtensionPoints</artifactId>
+				<version>${d3web.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>d3web-Plugin-Persistence-Basic</artifactId>
+				<version>${d3web.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>d3web-Plugin-Persistence-ExtensionPoints</artifactId>
+				<version>${d3web.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>d3web-Plugin-SessionPersistence-Basic</artifactId>
+				<version>${d3web.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>d3web-Plugin-SessionPersistence-ExtensionPoints</artifactId>
+				<version>${d3web.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>d3web-Plugin-TestCase</artifactId>
+				<version>${d3web.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>d3web-Plugin-TestingFramework</artifactId>
+				<version>${d3web.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>d3web-Plugin-XCL</artifactId>
+				<version>${d3web.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>d3web-PluginManager</artifactId>
+				<version>${d3web.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>d3web-SessionPersistence</artifactId>
+				<version>${d3web.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>d3web-Utils</artifactId>
+				<version>${d3web.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<modules>
 		<module>KnowWE-Resources</module>
 		<module>KnowWE-core</module>
@@ -244,8 +336,8 @@
 
 	<pluginRepositories>
 		<pluginRepository>
-			<id>contrib</id>
-			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/infovi-contrib/</url>
+			<id>des-plugins-public</id>
+			<url>https://repo.denkbares.com/plugins-public</url>
 		</pluginRepository>
 	</pluginRepositories>
 

@@ -9,7 +9,6 @@
 		<version>0.2-SNAPSHOT</version>
 	</parent>
 
-	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE-Resources</artifactId>
 	<packaging>war</packaging>
 	<name>KnowWE-Resources</name>
@@ -17,26 +16,6 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-dependencies</id>
-						<phase>test-compile</phase>
-						<goals>
-							<goal>build-classpath</goal>
-						</goals>
-						<configuration>
-							<overWriteReleases>false</overWriteReleases>
-							<overWriteSnapshots>false</overWriteSnapshots>
-							<overWriteIfNewer>true</overWriteIfNewer>
-							<outputFile>target/dependencies/output.txt</outputFile>
-							<pathSeparator>;</pathSeparator>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>

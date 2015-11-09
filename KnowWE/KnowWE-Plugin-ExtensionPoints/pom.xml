@@ -8,26 +8,15 @@
 		<version>0.2-SNAPSHOT</version>
 	</parent>
 	
-	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE-Plugin-ExtensionPoints</artifactId>
 	<name>KnowWE-ExtensionPoints</name>
 	<version>0.2-SNAPSHOT</version>
-	
+
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>de.uniwue.maven.plugins</groupId>
 				<artifactId>knowwe-versionator</artifactId>
-				<version>${versionatorVersion}</version>
-				<executions>
-					<execution>
-						<id>versionate-plugin</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>versionate-plugin</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
