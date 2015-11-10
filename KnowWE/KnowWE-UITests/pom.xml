@@ -13,19 +13,6 @@
 	<version>0.2-SNAPSHOT</version>
 	<name>KnowWE-UITests</name>
 
-	<repositories>
-		<repository>
-			<id>saucelabs-repository</id>
-			<url>https://repository-saucelabs.forge.cloudbees.com/release</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-
 	<profiles>
 		<profile>
 			<id>skip-slow-tests</id>
@@ -47,7 +34,6 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
