@@ -49,13 +49,13 @@
 				<executions>
 					<execution>
 						<id>vers</id>
-						<!--<phase>prepare-package</phase>-->
-						<phase>none</phase>
+						<phase>prepare-package</phase>
 						<goals>
 							<goal>versionate</goal>
 						</goals>
 						<configuration>
-							<targetDir>${project.build.directory}/${pom.artifactId}-${pom.version}/WEB-INF/classes/
+							<targetDir>
+								${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/classes/
 							</targetDir>
 						</configuration>
 					</execution>
