@@ -21,42 +21,11 @@
 		</plugins>
 	</build>
 
-	<repositories>
-		<repository>
-			<id>semweb4j-repo</id>
-			<name>Semweb4j.org maven repo</name>
-			<url>http://semweb4j.org/repo/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository>
-		<repository>
-			<id>semweb4j-snapshots</id>
-			<name>Semweb4j.org maven snapshot repo</name>
-			<url>http://semweb4j.org/snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-				<checksumPolicy>fail</checksumPolicy>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>isci</id>
-			<name>isci-releases</name>
-			<url>https://isci.informatik.uni-wuerzburg.de/artifactory/infovi-contrib</url>
-		</repository>
-	</repositories>
-
 	<dependencies>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-Core</artifactId>
 			<version>0.2-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.semweb4j</groupId>
@@ -127,13 +96,11 @@
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-KDOMParseUtils</artifactId>
 			<version>0.2-SNAPSHOT</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-ExtensionPoints</artifactId>
 			<version>0.2-SNAPSHOT</version>
-			<scope>compile</scope>
 		</dependency>
 		<!--
 		<dependency>
@@ -142,7 +109,6 @@
 			<version>1.0</version>
 		</dependency>
 	 	-->
-
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Plugin-TestingFramework</artifactId>
