@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
 
@@ -76,7 +75,7 @@ import de.knowwe.testcases.table.KnowWEConditionCheck;
 import de.knowwe.util.Icon;
 import de.knowwe.util.IconColor;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.groupingBy;
 
 /**
  * Renderer for TestCasePlayerType
@@ -86,7 +85,7 @@ import static java.util.stream.Collectors.*;
  */
 public class TestCasePlayerRenderer implements Renderer {
 
-	private static final String QUESTIONS_SEPARATOR = "#####";
+	private static final String OBJECTS_SEPARATOR = "#####";
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	private static final Pattern[] cookiePatterns = { Pattern.compile("^columnstatus_([^_]+)_.*"),
 			Pattern.compile("^question_selector_([^_]+)_.*") };
@@ -155,7 +154,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		Session session = provider.getActualSession(user);
 		if (session == null) {
 			DefaultMarkupRenderer.renderMessagesOfType(Type.WARNING,
-					Arrays.asList(Messages.warning("No knowledge base found.")), string);
+					Collections.singletonList(Messages.warning("No knowledge base found.")), string);
 		}
 		else {
 			TestCase testCase = provider.getTestCase();
@@ -166,14 +165,13 @@ public class TestCasePlayerRenderer implements Renderer {
 
 			if (testCase != null) {
 				try {
-					renderTestCase(section, user, selectedTriple, session, testCase,
-							status, string);
+					renderTestCase(section, user, selectedTriple, string);
 				}
 				catch (IllegalArgumentException e) {
 					Message error = Messages.error("Test case not compatible to TestCasePlayer: "
 							+ e.getMessage());
 					DefaultMarkupRenderer.renderMessagesOfType(
-							Type.ERROR, Arrays.asList(error), string);
+							Type.ERROR, Collections.singletonList(error), string);
 				}
 			}
 			else {
@@ -195,21 +193,26 @@ public class TestCasePlayerRenderer implements Renderer {
 		DefaultMarkupRenderer.renderMessagesOfType(Type.WARNING, Collections.singletonList(Messages.warning(message)), string);
 	}
 
-	private void renderTestCase(Section<?> section, UserContext user, ProviderTriple selectedTriple, Session session, TestCase testCase, SessionDebugStatus status, RenderResult string) {
-		Collection<Date> chronology = testCase.chronology();
+	private void renderTestCase(Section<?> section, UserContext user, ProviderTriple selectedTriple, RenderResult string) {
 
-		NavigationParameters navigatorParameters = getNavigationParameters(section, user);
+		renderTestCaseHeader(section, user, selectedTriple, string);
 
-		renderTestCaseHeader(section, user, testCase, chronology, string);
-
-		TableModel tableModel = getTableModel(section, user, selectedTriple, session, testCase,
-				status, chronology, navigatorParameters);
+		TableModel tableModel = getTableModel(section, user, selectedTriple);
 
 		string.append(tableModel.toHtml(section, user));
 	}
 
-	private TableModel getTableModel(Section<?> section, UserContext user, ProviderTriple selectedTriple, Session session, TestCase testCase, SessionDebugStatus status, Collection<Date> chronology, NavigationParameters navigatorParameters) {
-		TerminologyManager manager = session.getKnowledgeBase().getManager();
+	private TableModel getTableModel(Section<?> section, UserContext user, ProviderTriple selectedTriple) {
+
+		NavigationParameters navigatorParameters = getNavigationParameters(section, user);
+
+		KnowledgeBase knowledgeBase = selectedTriple.getProvider().getDebugStatus(user).getSession().getKnowledgeBase();
+		TestCase testCase = selectedTriple.getProvider().getTestCase();
+		Collection<Date> chronology = testCase.chronology();
+
+		Collection<TerminologyObject> usedObjects = getUsedObjects(testCase, knowledgeBase);
+		Collection<String> additionalObjects = getAdditionalObjects(section, user);
+
 		TableModel tableModel = new TableModel(user);
 		tableModel.setName(getTestCaseId(selectedTriple));
 		KnowledgeBase base = D3webUtils.getKnowledgeBase(section);
@@ -222,13 +225,9 @@ public class TestCasePlayerRenderer implements Renderer {
 			}
 		}
 
-		Collection<String> additionalQuestions = getAdditionalQuestions(section, user);
+		TerminologyObject selectedObject = renderHeader(section, user, selectedTriple, tableModel);
+		if (selectedObject != null) additionalObjects.add(selectedObject.getName());
 
-		Collection<Question> usedQuestions = TestCaseUtils.getUsedQuestions(testCase,
-				session.getKnowledgeBase());
-
-		TerminologyObject selectedObject = renderHeader(section, user, selectedTriple,
-				additionalQuestions, usedQuestions, manager, tableModel);
 		int row = 1;
 		for (Date date : chronology) {
 			if (row < navigatorParameters.from) {
@@ -236,24 +235,35 @@ public class TestCasePlayerRenderer implements Renderer {
 				continue;
 			}
 			if (row > navigatorParameters.to) break;
-			renderRow(user, selectedTriple, status, additionalQuestions,
-					usedQuestions, manager, selectedObject, date,
-					row - navigatorParameters.from + 1, tableModel);
+			renderRow(user, selectedTriple, usedObjects, additionalObjects, date, row - navigatorParameters.from + 1, tableModel);
 			row++;
 		}
 		return tableModel;
 	}
 
-	private Collection<String> getAdditionalQuestions(Section<?> section, UserContext user) {
-		String additionalQuestions = getAdditionalQuestionsCookie(section, user);
-		String[] additionalQuestionsSplit = new String[0];
-		if (additionalQuestions != null && !additionalQuestions.isEmpty()) {
-			additionalQuestionsSplit = additionalQuestions.split(QUESTIONS_SEPARATOR);
+	public static Collection<TerminologyObject> getUsedObjects(TestCase testCase, KnowledgeBase kb) {
+		Collection<TerminologyObject> questions = new LinkedHashSet<>();
+		for (Date date : testCase.chronology()) {
+			for (Finding finding : testCase.getFindings(date, kb)) {
+				questions.add(finding.getTerminologyObject());
+			}
 		}
-		return new LinkedHashSet<>(Arrays.asList(additionalQuestionsSplit));
+		return questions;
 	}
 
-	private void renderTestCaseHeader(Section<?> section, UserContext user, TestCase testCase, Collection<Date> chronology, RenderResult string) {
+	private Collection<String> getAdditionalObjects(Section<?> section, UserContext user) {
+		String additionalObjects = getAdditionalQuestionsCookie(section, user);
+		String[] additionalObjectsSplit = new String[0];
+		if (additionalObjects != null && !additionalObjects.isEmpty()) {
+			additionalObjectsSplit = additionalObjects.split(OBJECTS_SEPARATOR);
+		}
+		return new LinkedHashSet<>(Arrays.asList(additionalObjectsSplit));
+	}
+
+	private void renderTestCaseHeader(Section<?> section, UserContext user, ProviderTriple selectedTriple, RenderResult string) {
+		TestCase testCase = selectedTriple.getProvider().getTestCase();
+		Collection<Date> chronology = testCase.chronology();
+
 		string.appendHtml("<span class='fillText'> Start: </span>");
 		if (testCase.getStartDate().getTime() == 0) {
 			string.append("---");
@@ -271,7 +281,7 @@ public class TestCasePlayerRenderer implements Renderer {
 
 	}
 
-	private TerminologyObject renderHeader(Section<?> section, UserContext user, ProviderTriple selectedTriple, Collection<String> additionalQuestions, Collection<Question> usedQuestions, TerminologyManager manager, TableModel tableModel) {
+	private TerminologyObject renderHeader(Section<?> section, UserContext user, ProviderTriple selectedTriple, TableModel tableModel) {
 		Section<? extends PackageCompileType> kbsection = selectedTriple.getC();
 		String stopButton = renderToolbarButton(Icon.STOP.addClasses("knowwe-red"),
 				"KNOWWE.plugin.d3webbasic.actions.resetSession('" + kbsection.getID()
@@ -280,18 +290,24 @@ public class TestCasePlayerRenderer implements Renderer {
 		stopButtonResult.appendHtml(stopButton);
 		int column = 0;
 		tableModel.addCell(0, column++, stopButtonResult, 1);
-		if (selectedTriple.getProvider().getTestCase() instanceof DescribedTestCase) {
+		TestCase testCase = selectedTriple.getProvider().getTestCase();
+		if (testCase instanceof DescribedTestCase && ((DescribedTestCase) testCase).hasDescriptions()) {
 			tableModel.addCell(0, column++, "Name", "Name".length());
 		}
 		tableModel.addCell(0, column++, "Time", "Time".length());
 		tableModel.addCell(0, column++, "Checks", "Checks".length());
 		tableModel.setFirstFinding(column);
-		for (Question q : usedQuestions) {
-			tableModel.addCell(0, column++, q.getName(), q.getName().length());
+		Collection<TerminologyObject> usedObjects = getUsedObjects(testCase,
+				selectedTriple.getProvider().getDebugStatus(user).getSession().getKnowledgeBase());
+		for (TerminologyObject object : usedObjects) {
+			tableModel.addCell(0, column++, object.getName(), object.getName().length());
 		}
+		TerminologyManager manager = selectedTriple.getProvider().getDebugStatus(user)
+				.getSession().getKnowledgeBase().getManager();
+		Collection<String> additionalQuestions = getAdditionalObjects(section, user);
+
 		tableModel.setLastFinding(column - 1);
-		renderObservationQuestionsHeader(additionalQuestions,
-				manager, tableModel, column);
+		renderObservationQuestionsHeader(additionalQuestions, manager, tableModel, column);
 		column += additionalQuestions.size();
 		return renderObservationQuestionAdder(section,
 				user, manager, additionalQuestions, tableModel, column);
@@ -325,67 +341,91 @@ public class TestCasePlayerRenderer implements Renderer {
 		return additionalQuestions;
 	}
 
-	private void renderRow(UserContext user, ProviderTriple selectedTriple, SessionDebugStatus status, Collection<String> additionalQuestions, Collection<Question> usedQuestions, TerminologyManager manager, TerminologyObject selectedObject, Date date, int row, TableModel tableModel) {
+	private void renderRow(UserContext user, ProviderTriple selectedTriple, Collection<TerminologyObject> usedQuestions, Collection<String> additionalQuestions, Date date, int row, TableModel tableModel) {
 		TestCase testCase = selectedTriple.getProvider().getTestCase();
-		String dateString = String.valueOf(date.getTime());
-		renderRunTo(selectedTriple, status, date, dateString, tableModel, row);
+		SessionDebugStatus status = selectedTriple.getProvider().getDebugStatus(user);
+
+		renderRunTo(selectedTriple, status, date, tableModel, row);
+
 		int column = 1;
-		// render date cell
-		String timeAsTimeStamp = Strings.getDurationVerbalization(date.getTime()
-				- testCase.getStartDate().getTime());
-		if (testCase instanceof DescribedTestCase) {
-			RenderResult sb = new RenderResult(tableModel.getUserContext());
-			sb.appendHtml("<br />");
-			String comment = ((DescribedTestCase) testCase).getDescription(date);
-			if (comment == null) comment = "";
-			comment = comment.replace("\n", sb.toStringRaw());
-			tableModel.addCell(row, column++, comment, comment.length());
-		}
-		tableModel.addCell(row, column++, timeAsTimeStamp, timeAsTimeStamp.length());
+
+		column = renderDescription(testCase, date, row, column, tableModel);
+
+		renderDate(testCase, date, row, column++, tableModel);
+
 		renderCheckResults(user, testCase, status, date, tableModel, row, column++);
-		// render values of questions
+
 		KnowledgeBase knowledgeBase = status.getSession().getKnowledgeBase();
-		Map<TerminologyObject, List<Finding>> mappedFindings = testCase.getFindings(date, knowledgeBase)
-				.stream()
-				.collect(groupingBy(Finding::getTerminologyObject));
-		for (Question question : usedQuestions) {
-			List<Finding> findings = mappedFindings.get(question);
-			if (findings != null) {
-				Finding finding = findings.get(0);
-				Value value = finding.getValue();
-				String findingString;
-				if (question instanceof QuestionDate && value instanceof DateValue) {
-					findingString = ValueUtils.getDateVerbalization((QuestionDate) question, (DateValue) value, ValueUtils.TimeZoneDisplayMode.IF_NOT_DEFAULT);
-				}
-				else {
-					findingString = value.toString();
-				}
-				Collection<String> errors = new ArrayList<>();
-				TestCaseUtils.checkValues(errors, question, value);
-				if (!errors.isEmpty()) {
-					RenderResult errorResult = new RenderResult(tableModel.getUserContext());
-					errorResult.appendHtml("<div style='background-color:"
-							+ StyleRenderer.CONDITION_FALSE + "'>");
-					errorResult.append(findingString);
-					errorResult.appendHtml("</div>");
-					findingString = errorResult.toStringRaw();
-				}
-				tableModel.addCell(row, column, findingString,
-						value.toString().length());
-			}
-			column++;
-		}
-		// render observations
+
+		column = renderFindings(testCase, date, knowledgeBase, row, column, usedQuestions, tableModel);
+
+		renderObservations(date, knowledgeBase, status, row, column, additionalQuestions, tableModel);
+	}
+
+	private void renderObservations(Date date, KnowledgeBase knowledgeBase, SessionDebugStatus status, int row, int column, Collection<String> additionalQuestions, TableModel tableModel) {
 		for (String s : additionalQuestions) {
-			TerminologyObject object = manager.search(s);
+			TerminologyObject object = knowledgeBase.getManager().search(s);
 			if (object != null) {
 				appendValueCell(status, object, date, tableModel, row, column);
 			}
 			column++;
 		}
-		if (selectedObject != null) {
-			appendValueCell(status, selectedObject, date, tableModel, row, column);
+	}
+
+	private int renderFindings(TestCase testCase, Date date, KnowledgeBase knowledgeBase, int row, int column, Collection<TerminologyObject> usedQuestions, TableModel tableModel) {
+		Map<TerminologyObject, List<Finding>> mappedFindings = testCase.getFindings(date, knowledgeBase)
+				.stream()
+				.collect(groupingBy(Finding::getTerminologyObject));
+		for (TerminologyObject question : usedQuestions) {
+			List<Finding> findings = mappedFindings.get(question);
+			if (findings != null) {
+				renderFinding(findings.get(0), row, column, tableModel);
+			}
+			column++;
 		}
+		return column;
+	}
+
+	private void renderDate(TestCase testCase, Date date, int row, int column, TableModel tableModel) {
+		String timeAsTimeStamp = Strings.getDurationVerbalization(date.getTime()
+				- testCase.getStartDate().getTime());
+		tableModel.addCell(row, column, timeAsTimeStamp, timeAsTimeStamp.length());
+	}
+
+	private int renderDescription(TestCase testCase, Date date, int row, int column, TableModel tableModel) {
+		if (testCase instanceof DescribedTestCase && ((DescribedTestCase) testCase).hasDescriptions()) {
+			RenderResult sb = new RenderResult(tableModel.getUserContext());
+			sb.appendHtml("<br />");
+			String description = ((DescribedTestCase) testCase).getDescription(date);
+			if (description == null) description = "";
+			description = description.replace("\n", sb.toStringRaw());
+			tableModel.addCell(row, column++, description, description.length());
+		}
+		return column;
+	}
+
+	private void renderFinding(Finding finding, int row, int column, TableModel tableModel) {
+		Question question = (Question) finding.getTerminologyObject();
+		Value value = finding.getValue();
+		String findingString;
+		if (question instanceof QuestionDate && value instanceof DateValue) {
+			findingString = ValueUtils.getDateVerbalization((QuestionDate) question, (DateValue) value, ValueUtils.TimeZoneDisplayMode.IF_NOT_DEFAULT);
+		}
+		else {
+			findingString = value.toString();
+		}
+		Collection<String> errors = new ArrayList<>();
+		TestCaseUtils.checkValues(errors, question, value);
+		if (!errors.isEmpty()) {
+			RenderResult errorResult = new RenderResult(tableModel.getUserContext());
+			errorResult.appendHtml("<div style='background-color:"
+					+ StyleRenderer.CONDITION_FALSE + "'>");
+			errorResult.append(findingString);
+			errorResult.appendHtml("</div>");
+			findingString = errorResult.toStringRaw();
+		}
+		tableModel.addCell(row, column, findingString,
+				value.toString().length());
 	}
 
 	private void appendValueCell(SessionDebugStatus status, TerminologyObject object, Date date, TableModel tableModel, int row, int column) {
@@ -428,20 +468,20 @@ public class TestCasePlayerRenderer implements Renderer {
 				first = false;
 			}
 			else {
-				builder.append(QUESTIONS_SEPARATOR);
+				builder.append(OBJECTS_SEPARATOR);
 			}
 			builder.append(Strings.encodeHtml(question.replace("\\", "\\\\")));
 		}
 		return builder.toString();
 	}
 
-	private void renderRunTo(ProviderTriple selectedTriple, SessionDebugStatus status, Date date, String dateString, TableModel tableModel, int row) {
+	private void renderRunTo(ProviderTriple selectedTriple, SessionDebugStatus status, Date date, TableModel tableModel, int row) {
 
 		RenderResult result = new RenderResult(tableModel.getUserContext());
 		String js = "TestCasePlayer.send("
 				+ "'"
 				+ selectedTriple.getB().getID()
-				+ "', '" + dateString
+				+ "', '" + String.valueOf(date.getTime())
 				+ "', '" + selectedTriple.getA().getName()
 				+ "', '" + selectedTriple.getC().getTitle() + "', this);";
 		result.appendHtml("<a onclick=\"" + js + "\" class='tooltipster'");
@@ -570,7 +610,7 @@ public class TestCasePlayerRenderer implements Renderer {
 					(object == null ? "disabled='disabled'" : "")
 					+ " type=\"button\" value=\"+\" onclick=\"TestCasePlayer.addCookie(&quot;"
 					+ toAdditionalQuestionsCookyString(alreadyAddedQuestions)
-					+ QUESTIONS_SEPARATOR
+					+ OBJECTS_SEPARATOR
 					+ "&quot;+this.form.toAdd.options[toAdd.selectedIndex].value);\"></form>");
 		}
 		else {
