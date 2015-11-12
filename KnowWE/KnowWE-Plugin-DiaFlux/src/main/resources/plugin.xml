@@ -87,7 +87,7 @@
 		<parameter id="description" value="Subtree handler to configure the DiaFlux problem solver." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="compilepriority" value="10" />
+		<parameter id="compilepriority" value="300" />
 		<parameter id="scope" value="KnowledgeBaseType" />
 	</extension>
 
