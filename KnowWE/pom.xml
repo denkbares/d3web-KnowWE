@@ -314,26 +314,8 @@
 		<module>KnowWE-UITests</module>
 		<module>KnowWE-Plugin-RightPanel</module>
 	</modules>
+
 	<repositories>
-		<repository>
-			<id>infovi-artifactory</id>
-			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/repo/</url>
-			<snapshots>
-				<updatePolicy>always</updatePolicy>
-				<checksumPolicy>ignore</checksumPolicy>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>knowwe-snapshots</id>
-			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/knowwe-snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<updatePolicy>always</updatePolicy>
-				<checksumPolicy>ignore</checksumPolicy>
-			</snapshots>
-		</repository>
 		<repository>
 			<snapshots>
 				<enabled>true</enabled>
@@ -355,14 +337,6 @@
 			<url>https://repo.denkbares.com/plugins-public</url>
 		</pluginRepository>
 	</pluginRepositories>
-
-	<distributionManagement>
-		<snapshotRepository>
-			<id>knowwe-snapshots</id>
-			<name>d3web Snapshots</name>
-			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/knowwe-snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
 
 	<scm>
 		<connection>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/trunk/KnowWE</connection>
