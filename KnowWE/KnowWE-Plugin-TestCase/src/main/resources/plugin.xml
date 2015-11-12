@@ -38,15 +38,6 @@
 		<parameter id="scope" value="root" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="TestCaseServlet">
-		<parameter id="class" value="de.d3web.we.testcase.action.TestCaseServlet" />
-		<parameter id="name" value="TestCaseServlet" />
-		<parameter id="description" value="Action TestCaseServlet" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
         id="InstantEditToolProvider">
         <parameter id="class"

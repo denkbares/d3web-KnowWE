@@ -51,11 +51,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>de.uniwue</groupId>
-			<artifactId>CaseGenerator</artifactId>
-			<version>${d3webCoreVersion}</version>
-		</dependency>
-		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-TestCases</artifactId>
 			<version>${project.version}</version>
