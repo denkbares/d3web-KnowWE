@@ -142,7 +142,7 @@
 		<parameter id="scope" value="root" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="CellContentRenderer">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="ListCellContentRenderer">
 		<parameter id="class" value="de.knowwe.core.kdom.rendering.DelegateRenderer" />
 		<parameter id="name" value="CellContentRenderer" />
 		<parameter id="description" value="We overrite the renderer in ListType and OrderedListType in JSPWikiMarkup to not disturb JSPWiki rendering" />

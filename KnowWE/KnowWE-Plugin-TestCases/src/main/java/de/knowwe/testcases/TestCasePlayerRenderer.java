@@ -50,10 +50,9 @@ import de.d3web.strings.Strings;
 import de.d3web.strings.Strings.Encoding;
 import de.d3web.testcase.TestCaseUtils;
 import de.d3web.testcase.model.Check;
+import de.d3web.testcase.model.DescribedTestCase;
 import de.d3web.testcase.model.Finding;
 import de.d3web.testcase.model.TestCase;
-import de.d3web.testcase.stc.DescribedTestCase;
-import de.d3web.utils.Pair;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.packaging.PackageCompileType;
@@ -235,7 +234,8 @@ public class TestCasePlayerRenderer implements Renderer {
 				continue;
 			}
 			if (row > navigatorParameters.to) break;
-			renderRow(user, selectedTriple, usedObjects, additionalObjects, date, row - navigatorParameters.from + 1, tableModel);
+			tableModel.prepareNextRow(row - navigatorParameters.from + 1);
+			renderRow(user, date, selectedTriple, usedObjects, additionalObjects, tableModel);
 			row++;
 		}
 		return tableModel;
@@ -341,70 +341,56 @@ public class TestCasePlayerRenderer implements Renderer {
 		return additionalQuestions;
 	}
 
-	private void renderRow(UserContext user, ProviderTriple selectedTriple, Collection<TerminologyObject> usedQuestions, Collection<String> additionalQuestions, Date date, int row, TableModel tableModel) {
+	protected void renderRow(UserContext user, Date date, ProviderTriple selectedTriple, Collection<TerminologyObject> usedQuestions, Collection<String> additionalQuestions, TableModel tableModel) {
 		TestCase testCase = selectedTriple.getProvider().getTestCase();
 		SessionDebugStatus status = selectedTriple.getProvider().getDebugStatus(user);
-
-		renderRunTo(selectedTriple, status, date, tableModel, row);
-
-		int column = 1;
-
-		column = renderDescription(testCase, date, row, column, tableModel);
-
-		renderDate(testCase, date, row, column++, tableModel);
-
-		renderCheckResults(user, testCase, status, date, tableModel, row, column++);
-
 		KnowledgeBase knowledgeBase = status.getSession().getKnowledgeBase();
 
-		column = renderFindings(testCase, date, knowledgeBase, row, column, usedQuestions, tableModel);
-
-		renderObservations(date, knowledgeBase, status, row, column, additionalQuestions, tableModel);
+		renderRunTo(selectedTriple, status, date, tableModel);
+		if (testCase instanceof DescribedTestCase && ((DescribedTestCase) testCase).hasDescriptions()) {
+			renderDescription(((DescribedTestCase) testCase).getDescription(date), tableModel);
+		}
+		renderDate(testCase.getStartDate(), date, tableModel);
+		renderCheckResults(user, testCase.getChecks(date, knowledgeBase), status.getCheckResults(date), tableModel);
+		renderFindings(testCase.getFindings(date, knowledgeBase), usedQuestions, tableModel);
+		renderObservations(date, knowledgeBase, status, additionalQuestions, tableModel);
 	}
 
-	private void renderObservations(Date date, KnowledgeBase knowledgeBase, SessionDebugStatus status, int row, int column, Collection<String> additionalQuestions, TableModel tableModel) {
-		for (String s : additionalQuestions) {
-			TerminologyObject object = knowledgeBase.getManager().search(s);
-			if (object != null) {
-				appendValueCell(status, object, date, tableModel, row, column);
-			}
-			column++;
+	protected void renderObservations(Date date, KnowledgeBase knowledgeBase, SessionDebugStatus status, Collection<String> additionalQuestions, TableModel tableModel) {
+		for (String objectName : additionalQuestions) {
+			appendValueCell(status, knowledgeBase.getManager().search(objectName), date, tableModel);
 		}
 	}
 
-	private int renderFindings(TestCase testCase, Date date, KnowledgeBase knowledgeBase, int row, int column, Collection<TerminologyObject> usedQuestions, TableModel tableModel) {
-		Map<TerminologyObject, List<Finding>> mappedFindings = testCase.getFindings(date, knowledgeBase)
-				.stream()
+	protected void renderFindings(Collection<Finding> findings, Collection<TerminologyObject> usedQuestions, TableModel tableModel) {
+		Map<TerminologyObject, List<Finding>> mappedFindings = findings.stream()
 				.collect(groupingBy(Finding::getTerminologyObject));
 		for (TerminologyObject question : usedQuestions) {
-			List<Finding> findings = mappedFindings.get(question);
-			if (findings != null) {
-				renderFinding(findings.get(0), row, column, tableModel);
+			List<Finding> findingList = mappedFindings.get(question);
+			if (findingList != null) {
+				renderFinding(findingList.get(0), tableModel);
 			}
-			column++;
+			else {
+				tableModel.skipColumn();
+			}
 		}
-		return column;
 	}
 
-	private void renderDate(TestCase testCase, Date date, int row, int column, TableModel tableModel) {
+	protected void renderDate(Date startDate, Date date, TableModel tableModel) {
 		String timeAsTimeStamp = Strings.getDurationVerbalization(date.getTime()
-				- testCase.getStartDate().getTime());
-		tableModel.addCell(row, column, timeAsTimeStamp, timeAsTimeStamp.length());
+				- startDate.getTime());
+		tableModel.addCell(timeAsTimeStamp, timeAsTimeStamp.length());
 	}
 
-	private int renderDescription(TestCase testCase, Date date, int row, int column, TableModel tableModel) {
-		if (testCase instanceof DescribedTestCase && ((DescribedTestCase) testCase).hasDescriptions()) {
-			RenderResult sb = new RenderResult(tableModel.getUserContext());
-			sb.appendHtml("<br />");
-			String description = ((DescribedTestCase) testCase).getDescription(date);
-			if (description == null) description = "";
-			description = description.replace("\n", sb.toStringRaw());
-			tableModel.addCell(row, column++, description, description.length());
-		}
-		return column;
+	protected void renderDescription(String description, TableModel tableModel) {
+		RenderResult sb = new RenderResult(tableModel.getUserContext());
+		sb.appendHtml("<br />");
+		if (description == null) description = "";
+		description = description.replace("\n", sb.toStringRaw());
+		tableModel.addCell(description, description.length());
 	}
 
-	private void renderFinding(Finding finding, int row, int column, TableModel tableModel) {
+	private void renderFinding(Finding finding, TableModel tableModel) {
 		Question question = (Question) finding.getTerminologyObject();
 		Value value = finding.getValue();
 		String findingString;
@@ -424,18 +410,20 @@ public class TestCasePlayerRenderer implements Renderer {
 			errorResult.appendHtml("</div>");
 			findingString = errorResult.toStringRaw();
 		}
-		tableModel.addCell(row, column, findingString,
-				value.toString().length());
+		tableModel.addCell(findingString, value.toString().length());
 	}
 
-	private void appendValueCell(SessionDebugStatus status, TerminologyObject object, Date date, TableModel tableModel, int row, int column) {
+	private void appendValueCell(SessionDebugStatus status, TerminologyObject object, Date date, TableModel tableModel) {
 		Value value = status.getValue(object, date);
-		if (value != null) {
+		if (value == null) {
+			tableModel.skipColumn();
+		}
+		else {
 			String valueString = value.toString();
 			if (value instanceof DateValue) {
 				valueString = ValueUtils.getDateOrDurationVerbalization((QuestionDate) object, ((DateValue) value).getDate());
 			}
-			tableModel.addCell(row, column, valueString, valueString.length());
+			tableModel.addCell(valueString, valueString.length());
 		}
 	}
 
@@ -475,7 +463,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		return builder.toString();
 	}
 
-	private void renderRunTo(ProviderTriple selectedTriple, SessionDebugStatus status, Date date, TableModel tableModel, int row) {
+	protected void renderRunTo(ProviderTriple selectedTriple, SessionDebugStatus status, Date date, TableModel tableModel) {
 
 		RenderResult result = new RenderResult(tableModel.getUserContext());
 		String js = "TestCasePlayer.send("
@@ -491,11 +479,11 @@ public class TestCasePlayerRenderer implements Renderer {
 			result.appendHtml(Icon.RUN.toHtml());
 		}
 		else {
-			Collection<Pair<Check, Boolean>> checkResults = status.getCheckResults(date);
+			Map<Check, Boolean> checkResults = status.getCheckResults(date);
 			boolean ok = true;
 			if (checkResults != null) {
-				for (Pair<Check, Boolean> pair : checkResults) {
-					ok &= pair.getB();
+				for (Map.Entry<Check, Boolean> pair : checkResults.entrySet()) {
+					ok &= pair.getValue();
 				}
 			}
 			if (ok) {
@@ -508,29 +496,27 @@ public class TestCasePlayerRenderer implements Renderer {
 			}
 		}
 		result.appendHtml("</a>");
-		tableModel.addCell(row, 0, result.toStringRaw(), 2);
+		tableModel.addCell(result.toStringRaw(), 2);
 
 	}
 
-	private void renderCheckResults(UserContext user, TestCase testCase, SessionDebugStatus status, Date date, TableModel tableModel, int row, int column) {
-		Collection<Pair<Check, Boolean>> checkResults = status.getCheckResults(date);
+	protected void renderCheckResults(UserContext user, Collection<Check> checks, Map<Check, Boolean> checkResults, TableModel tableModel) {
 		int max = 0;
 		RenderResult sb = new RenderResult(tableModel.getUserContext());
 		sb.appendHtmlTag("div", "style", "white-space: nowrap");
 		if (checkResults == null) {
 			boolean first = true;
-			for (Check c : testCase.getChecks(date, status.getSession().getKnowledgeBase())) {
+			for (Check check : checks) {
 				if (!first) sb.appendHtml("<br />");
 				first = false;
-				renderCheck(c, user, sb);
-				max = Math.max(max, c.getCondition().length());
+				renderCheck(check, user, sb);
+				max = Math.max(max, check.getCondition().length());
 			}
 		}
-		else if (!checkResults.isEmpty()) {
+		else {
 			boolean first = true;
-			for (Pair<Check, Boolean> p : checkResults) {
-				Check check = p.getA();
-				boolean success = p.getB();
+			for (Check check : checks) {
+				boolean success = checkResults.get(check);
 				max = Math.max(max, check.getCondition().length());
 				if (!first) sb.appendHtml("<br />");
 				first = false;
@@ -548,7 +534,7 @@ public class TestCasePlayerRenderer implements Renderer {
 			}
 		}
 		sb.appendHtmlTag("/div");
-		tableModel.addCell(row, column, sb.toStringRaw(), max);
+		tableModel.addCell(sb.toStringRaw(), max);
 	}
 
 	private void renderCheck(Check check, UserContext user, RenderResult sb) {

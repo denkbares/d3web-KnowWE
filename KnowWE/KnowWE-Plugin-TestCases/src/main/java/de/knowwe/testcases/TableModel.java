@@ -49,11 +49,26 @@ public class TableModel {
 	private String name;
 	private int firstFinding = 0;
 	private int lastFinding = 0;
+	private int currentRow = 0;
+	private int currentColumn = 0;
 
 	private final UserContext user;
 
 	public TableModel(UserContext user) {
 		this.user = user;
+	}
+
+	public void prepareNextRow(int row) {
+		this.currentRow = row;
+		this.currentColumn = 0;
+	}
+
+	public void addCell(RenderResult result, int width) {
+		addCell(result.toStringRaw(), width);
+	}
+
+	public void addCell(String value, int width) {
+		addCell(currentRow, currentColumn++, value, width);
 	}
 
 	public void addCell(int row, int column, RenderResult resultValue, int width) {
@@ -241,5 +256,13 @@ public class TableModel {
 	public void setFirstFinding(int i) {
 		this.firstFinding = i;
 
+	}
+
+	public void skipColumn() {
+		this.currentColumn++;
+	}
+
+	public void nextRow() {
+		this.prepareNextRow(currentRow + 1);
 	}
 }

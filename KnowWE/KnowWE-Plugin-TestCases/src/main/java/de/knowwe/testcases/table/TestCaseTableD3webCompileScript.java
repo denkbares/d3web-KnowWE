@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.d3web.testcase.model.DefaultTestCase;
+import de.d3web.testcase.model.DescribedTestCase;
 import de.d3web.testcase.model.TestCase;
 import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.knowledgebase.D3webCompiler;
@@ -49,7 +50,7 @@ public class TestCaseTableD3webCompileScript implements D3webCompileScript<Table
 
 		Section<DefaultMarkupType> defaultMarkupSection = $(section).ancestor(DefaultMarkupType.class).getFirst();
 
-		DefaultTestCase testCase = TestCaseTableGlobalCompileScript.getTestCase(section);
+		DescribedTestCase testCase = TestCaseTableScript.getTestCase(section);
 
 		SingleTestCaseProvider provider = new SingleTestCaseProvider(
 				compiler, Sections.ancestor(section, DefaultMarkupType.class), testCase, testCase.getDescription());

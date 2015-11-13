@@ -18,10 +18,8 @@
  */
 package de.knowwe.testcases;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 import de.d3web.core.knowledge.TerminologyObject;
@@ -30,7 +28,6 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.testcase.model.Check;
-import de.d3web.utils.Pair;
 
 /**
  * Represents the status of an SessionDebuggerSection
@@ -42,7 +39,7 @@ public class SessionDebugStatus {
 
 	private Session session;
 	private Date lastExecuted = null;
-	private Map<Date, Collection<Pair<Check, Boolean>>> checkResults = new HashMap<>();
+	private Map<Date, Map<Check, Boolean>> checkResults = new HashMap<>();
 	private Map<Date, Map<TerminologyObject, Value>> timeValues = new HashMap<>();
 	private int failedChecks = 0;
 
@@ -87,12 +84,7 @@ public class SessionDebugStatus {
 	 * @created 25.01.2012
 	 */
 	public void addCheckResult(Date date, Check check, boolean result) {
-		Collection<Pair<Check, Boolean>> pairCollection = checkResults.get(date);
-		if (pairCollection == null) {
-			pairCollection = new LinkedList<>();
-			checkResults.put(date, pairCollection);
-		}
-		pairCollection.add(new Pair<>(check, result));
+		checkResults.computeIfAbsent(date, key -> new HashMap<>()).put(check, result);
 		if (!result) failedChecks++;
 	}
 
@@ -107,7 +99,7 @@ public class SessionDebugStatus {
 	 * @return Collection of pairs representing checks and their results
 	 * @created 25.01.2012
 	 */
-	public Collection<Pair<Check, Boolean>> getCheckResults(Date date) {
+	public Map<Check, Boolean> getCheckResults(Date date) {
 		return checkResults.get(date);
 	}
 

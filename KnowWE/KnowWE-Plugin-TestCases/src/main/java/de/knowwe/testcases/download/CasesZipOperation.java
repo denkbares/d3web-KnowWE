@@ -34,7 +34,7 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
 import de.d3web.testcase.model.TestCase;
 import de.d3web.testcase.persistence.TestCasePersistenceManager;
-import de.d3web.testcase.stc.DescribedTestCase;
+import de.d3web.testcase.model.DescribedTestCase;
 import de.d3web.utils.Triple;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;

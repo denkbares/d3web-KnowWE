@@ -55,7 +55,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 03.11.15
  */
-public class TestCaseTableLineGlobalCompileScript extends DefaultGlobalScript<TableLine> {
+public class TestCaseTableLineScript extends DefaultGlobalScript<TableLine> {
 
 	private static final String LAST_TIME_STAMP_KEY = "lastTimeStamp";
 	private static final String CHECKS_KEY = "checks";
@@ -157,13 +157,9 @@ public class TestCaseTableLineGlobalCompileScript extends DefaultGlobalScript<Ta
 		return checkTemplates == null ? Collections.emptyList() : checkTemplates;
 	}
 
-	public static void setFindingTemplates(Section<TableLine> tableLine, List<DefaultFindingTemplate> findingTemplates) {
-		tableLine.storeObject(FINDINGS_KEY, findingTemplates);
-	}
-
-	public static List<DefaultFindingTemplate> getFindingTemplates(Section<TableLine> tableLine) {
+	public static List<FindingTemplate> getFindingTemplates(Section<TableLine> tableLine) {
 		//noinspection unchecked
-		List<DefaultFindingTemplate> findingTemplates = (List<DefaultFindingTemplate>) tableLine.getObject(FINDINGS_KEY);
+		List<FindingTemplate> findingTemplates = (List<FindingTemplate>) tableLine.getObject(FINDINGS_KEY);
 		return findingTemplates == null ? Collections.emptyList() : findingTemplates;
 	}
 

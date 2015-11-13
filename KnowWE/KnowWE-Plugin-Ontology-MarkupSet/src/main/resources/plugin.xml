@@ -536,7 +536,7 @@
 		<parameter id="scope" value="OntologyTableMarkup" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript" id="LineHandler">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript" id="OntologyLineHandler">
 		<parameter id="class" value="de.knowwe.ontology.kdom.table.LineHandler" />
 		<parameter id="name" value="LineHandler" />
 		<parameter id="description" value="Type LineHandler" />
@@ -546,7 +546,7 @@
 		<parameter id="scope" value="OntologyTableMarkup/**/TableLine" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="LineRenderer">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="OntologyLineRenderer">
 		<parameter id="class" value="de.knowwe.ontology.kdom.table.LineRenderer" />
 		<parameter id="name" value="LineRenderer" />
 		<parameter id="description" value="Renderer for TableLines" />
@@ -555,7 +555,7 @@
 		<parameter id="scope" value="OntologyTableMarkup/**/TableLine" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="CellContentRenderer">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="OntologyCellContentRenderer">
 		<parameter id="class" value="de.knowwe.ontology.kdom.table.CellContentRenderer" />
 		<parameter id="name" value="CellContentRenderer" />
 		<parameter id="description" value="Renderer for CellContent" />

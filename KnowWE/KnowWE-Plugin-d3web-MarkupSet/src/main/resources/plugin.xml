@@ -63,7 +63,7 @@
 		<parameter id="css" value="KnowWE-Plugin-d3web-MarkupSet.css" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="CellContent">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="AbstractionCellContent">
 		<parameter id="class" value="de.d3web.we.kdom.abstractiontable.CellContent" />
 		<parameter id="name" value="QuestionTreeRootType" />
 		<parameter id="description" value="Type CellContent" />
@@ -72,7 +72,7 @@
 		<parameter id="scope" value="AbstractionTableMarkup/**/TableCellContent" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="CellContentRenderer">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="AbstractionCellContentRenderer">
 		<parameter id="class" value="de.d3web.we.kdom.abstractiontable.CellContentRenderer" />
 		<parameter id="name" value="CellContentRenderer" />
 		<parameter id="description" value="Renderer for CellContent" />
@@ -113,7 +113,7 @@
 		<parameter id="scope" value="AbstractionTableMarkup" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript" id="LineHandler">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript" id="AbstractionLineHandler">
 		<parameter id="class" value="de.d3web.we.kdom.abstractiontable.LineHandler" />
 		<parameter id="name" value="LineHandler" />
 		<parameter id="description" value="Type LineHandler" />
@@ -123,7 +123,7 @@
 		<parameter id="scope" value="AbstractionTableMarkup/**/TableLine" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="LineRenderer">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="AbstractionLineRenderer">
 		<parameter id="class" value="de.d3web.we.kdom.abstractiontable.LineRenderer" />
 		<parameter id="name" value="LineRenderer" />
 		<parameter id="description" value="Renderer for TableLines" />

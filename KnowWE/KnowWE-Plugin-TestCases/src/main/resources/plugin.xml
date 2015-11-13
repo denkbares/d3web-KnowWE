@@ -185,7 +185,7 @@
 		<parameter id="scope" value="TestcaseTableType/**/HeaderLine/**/TableCellContent" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="CellContent">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="TestCaseCellContent">
 		<parameter id="class" value="de.knowwe.testcases.table.CellContent" />
 		<parameter id="name" value="CellContent" />
 		<parameter id="description" value="Type CellContent" />
@@ -195,7 +195,7 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript" id="TestCaseTableGlobalCompileScript">
-		<parameter id="class" value="de.knowwe.testcases.table.TestCaseTableGlobalCompileScript" />
+		<parameter id="class" value="de.knowwe.testcases.table.TestCaseTableScript" />
 		<parameter id="name" value="TestCaseTableGlobalCompileScript" />
 		<parameter id="description" value="Handler TestCaseTableGlobalCompileScript" />
 		<parameter id="version" value="1.0" />
@@ -215,7 +215,7 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript" id="TestCaseTableLineGlobalCompileScript">
-		<parameter id="class" value="de.knowwe.testcases.table.TestCaseTableLineGlobalCompileScript" />
+		<parameter id="class" value="de.knowwe.testcases.table.TestCaseTableLineScript" />
 		<parameter id="name" value="TestCaseTableLineGlobalCompileScript" />
 		<parameter id="description" value="Handler TestCaseTableLineGlobalCompileScript" />
 		<parameter id="version" value="1.0" />

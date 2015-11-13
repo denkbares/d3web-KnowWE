@@ -21,9 +21,12 @@ package de.knowwe.testcases.table;
 
 import java.util.Date;
 import java.util.List;
+import java.util.function.BiFunction;
 
+import de.d3web.testcase.model.CachingDefaultTestCase;
 import de.d3web.testcase.model.CheckTemplate;
 import de.d3web.testcase.model.DefaultTestCase;
+import de.d3web.testcase.model.DescribedTestCase;
 import de.d3web.testcase.model.FindingTemplate;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
@@ -37,7 +40,7 @@ import de.knowwe.kdom.table.Table;
 import de.knowwe.kdom.table.TableLine;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
-import static de.knowwe.testcases.table.TestCaseTableLineGlobalCompileScript.*;
+import static de.knowwe.testcases.table.TestCaseTableLineScript.*;
 
 /**
  * This script does all the stuff of the TestCase creation, that is independent of the actual d3web Compilers and
@@ -46,19 +49,18 @@ import static de.knowwe.testcases.table.TestCaseTableLineGlobalCompileScript.*;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 03.11.15
  */
-public class TestCaseTableGlobalCompileScript extends DefaultGlobalScript<Table> {
+public class TestCaseTableScript extends DefaultGlobalScript<Table> {
 
 	private static final String TEST_CASE_KEY = "textCaseKey";
 
 	@Override
 	public void compile(DefaultGlobalCompiler compiler, Section<Table> section) throws CompilerMessage {
-		DefaultTestCase testCase = new DefaultTestCase();
-
-		section.storeObject(TEST_CASE_KEY, testCase);
+		DefaultTestCase testCase = new CachingDefaultTestCase();
+		setTestCase(section, testCase);
 
 		List<Section<TableLine>> lines = Sections.successors(section, TableLine.class);
 
-		checkSequentialTimeStamps(compiler, lines);
+		checkSequentialTimeStamps(compiler, lines, (date1, date2) -> !date1.after(date2));
 		testCase.setDescription(getTestCaseName(section));
 
 		for (Section<TableLine> line : lines) {
@@ -82,13 +84,13 @@ public class TestCaseTableGlobalCompileScript extends DefaultGlobalScript<Table>
 
 	}
 
-	private void checkSequentialTimeStamps(DefaultGlobalCompiler compiler, List<Section<TableLine>> lines) {
+	protected void checkSequentialTimeStamps(DefaultGlobalCompiler compiler, List<Section<TableLine>> lines, BiFunction<Date, Date, Boolean> compareFunction) {
 		Date lastDate = new Date(Long.MIN_VALUE);
 		for (Section<TableLine> line : lines) {
 			Section<TimeStampType> timeStampSection = Sections.successor(line, TimeStampType.class);
 			if (timeStampSection != null) {
 				Date date = getDate(line);
-				if (date != null && lastDate.after(date)) {
+				if (date != null && !compareFunction.apply(date, lastDate)) {
 					Messages.storeMessage(compiler, timeStampSection, this.getClass(),
 							Messages.error("Invalid time stamp '" + timeStampSection.getText()
 									+ "', each time stamp has to be after the previous one."));
@@ -101,7 +103,7 @@ public class TestCaseTableGlobalCompileScript extends DefaultGlobalScript<Table>
 		}
 	}
 
-	private String getTestCaseName(Section<Table> section) {
+	protected String getTestCaseName(Section<Table> section) {
 		List<Section<Table>> sections = $(section.getArticle().getRootSection()).successor(TestcaseTableType.class)
 				.successor(Table.class).asList();
 		int i = 1;
@@ -122,11 +124,11 @@ public class TestCaseTableGlobalCompileScript extends DefaultGlobalScript<Table>
 		return name;
 	}
 
-	public static DefaultTestCase getTestCase(Section<Table> tableSection) {
-		return (DefaultTestCase) tableSection.getObject(TEST_CASE_KEY);
+	public static DescribedTestCase getTestCase(Section<Table> tableSection) {
+		return (DescribedTestCase) tableSection.getObject(TEST_CASE_KEY);
 	}
 
-	public static void setTestCase(Section<Table> tableSection, DefaultTestCase testCase) {
+	protected static void setTestCase(Section<Table> tableSection, DescribedTestCase testCase) {
 		tableSection.storeObject(TEST_CASE_KEY, testCase);
 	}
 }
