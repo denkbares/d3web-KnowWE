@@ -24,7 +24,6 @@ import java.util.Date;
 import de.d3web.core.inference.SessionTerminatedException;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.SessionFactory;
-import de.d3web.testcase.TestCaseUtils;
 import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.TestCase;
 import de.d3web.utils.Log;
@@ -33,6 +32,8 @@ import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+
+import static de.d3web.testcase.model.TestCase.*;
 
 /**
  * Action that gets called when cases should be executed with the
@@ -90,7 +91,7 @@ public class ExecuteCasesAction extends AbstractAction {
 			for (Date date : testCase.chronology()) {
 				if ((startDate == null || date.after(startDate))
 						&& (date.before(endDate) || date.equals(endDate))) {
-					testCase.applyFindings(date, session);
+					testCase.applyFindings(date, session, new Settings(ignoreNumValueOutOfRange));
 					for (Check check : testCase.getChecks(date, session.getKnowledgeBase())) {
 						status.addCheckResult(date, check, check.check(session));
 					}
