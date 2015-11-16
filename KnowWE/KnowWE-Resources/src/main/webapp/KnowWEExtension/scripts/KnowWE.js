@@ -557,7 +557,7 @@ KNOWWE.core.rerendercontent = function() {
 		init : function() {
 			KNOWWE.helper.observer.subscribe('update', function() {
 				var parameters = {reason : "updateEvent"};
-				if (typeof this == "object") {
+				if (typeof this == "object" && this != window) {
 					jq$.extend(parameters, this);
 				}
 				jq$('.ReRenderSectionMarker').rerender(null, parameters);
