@@ -347,8 +347,17 @@ public class TestCasePlayerRenderer implements Renderer {
 		KnowledgeBase knowledgeBase = status.getSession().getKnowledgeBase();
 
 		renderRunTo(selectedTriple, status, date, tableModel);
-		if (testCase instanceof DescribedTestCase && ((DescribedTestCase) testCase).hasDescriptions()) {
-			renderDescription(((DescribedTestCase) testCase).getDescription(date), tableModel);
+		if (testCase instanceof DescribedTestCase) {
+			DescribedTestCase describedTestCase = (DescribedTestCase) testCase;
+			if (describedTestCase.hasDescriptions()) {
+				String description = describedTestCase.getDescription(date);
+				if (Strings.isBlank(description)) {
+					tableModel.skipColumn();
+				}
+				else {
+					renderDescription(description, tableModel);
+				}
+			}
 		}
 		renderDate(testCase.getStartDate(), date, tableModel);
 		renderCheckResults(user, testCase.getChecks(date, knowledgeBase), status.getCheckResults(date), tableModel);
@@ -501,6 +510,10 @@ public class TestCasePlayerRenderer implements Renderer {
 	}
 
 	protected void renderCheckResults(UserContext user, Collection<Check> checks, Map<Check, Boolean> checkResults, TableModel tableModel) {
+		if (checks.isEmpty()) {
+			tableModel.skipColumn();
+			return;
+		}
 		int max = 0;
 		RenderResult sb = new RenderResult(tableModel.getUserContext());
 		sb.appendHtmlTag("div", "style", "white-space: nowrap");
