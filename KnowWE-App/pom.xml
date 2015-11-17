@@ -601,9 +601,9 @@
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
-					<groupId>com.denkbares</groupId>
+					<groupId>com.denkbares.ssp</groupId>
 					<artifactId>KnowWE-Plugin-SemanticServiceCore</artifactId>
-					<version>0-SNAPSHOT</version>
+					<version>1.0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
