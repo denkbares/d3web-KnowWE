@@ -34,7 +34,7 @@
 		</library>
 	</runtime>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="KnowledgeBaseDownloadProvider">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="RefreshToolProvider">
 		<parameter id="class" value="de.knowwe.core.tools.RefreshToolProvider" />
 		<parameter id="name" value="RefreshToolProvider" />
 		<parameter id="description" value="Offers a refresh button (fullParse)." />
