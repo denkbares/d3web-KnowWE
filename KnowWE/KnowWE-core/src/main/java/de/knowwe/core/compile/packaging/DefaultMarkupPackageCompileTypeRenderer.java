@@ -155,7 +155,7 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 			// renderDefectArticleNames(kdomErrors, icon, string);
 			// renderDefectArticleNames(messagesErrors, icon, string);
 		}
-		else if (hasWarnings) {
+		if (hasWarnings) {
 			string.append(" (").append(warningsCount).append(" warnings in ");
 			string.append(warningArticles.size()).append(
 					" article" + (warningArticles.size() > 1 ? "s" : "") + ")");
@@ -163,7 +163,7 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 			// renderDefectArticleNames(kdomWarnings, icon, string);
 			// renderDefectArticleNames(messagesWarnings, icon, string);
 		}
-		else {
+		if (!(hasWarnings || hasErrors)) {
 			string.appendHtml("<br/>");
 		}
 
