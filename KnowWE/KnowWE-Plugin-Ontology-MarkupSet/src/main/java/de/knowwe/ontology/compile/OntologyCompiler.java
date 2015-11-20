@@ -24,7 +24,6 @@ import java.util.Collections;
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.IncrementalCompiler;
-import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.ParallelScriptCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -111,10 +110,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 		// has not created yet.
 		if (!firstCompilation) {
 			sectionsOfPackage = getPackageManager().getRemovedSections(packagesToCompile);
-			for (Section<?> section : sectionsOfPackage) {
-				destroyScriptCompiler.addSubtree(section);
-			}
-			destroyScriptCompiler.destroy();
+			destroy(sectionsOfPackage);
 		}
 		// While destroying, perhaps a complete compilation was requested by some of the scripts
 		if (completeCompilation && !firstCompilation) {
@@ -122,10 +118,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 			// This is different from just removing and adding a new compiler to the CompilerManager without
 			// destroying in case of a full parse, because we still want to continue using the current compiler
 			sectionsOfPackage = getPackageManager().getSectionsOfPackage(packagesToCompile);
-			for (Section<?> section : sectionsOfPackage) {
-				destroyScriptCompiler.addSubtree(section);
-			}
-			destroyScriptCompiler.destroy();
+			destroy(sectionsOfPackage);
 		}
 
 		// a complete compilation... we reset TerminologyManager and Rdf2GoCore
@@ -141,16 +134,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 			sectionsOfPackage = getPackageManager().getAddedSections(packagesToCompile);
 		}
 
-		for (Section<?> section : sectionsOfPackage) {
-			// only compile the OntologyType sections belonging to this compiler
-			if (!(section.get() instanceof OntologyType)
-					|| Sections.ancestor(getCompileSection(), OntologyType.class) == section) {
-				scriptCompiler.addSubtree(section);
-			}
-		}
-
-
-		scriptCompiler.compile();
+		compile(sectionsOfPackage);
 
 		if (getCommitType(this) == CommitType.onDemand) {
 			NotificationManager.addGlobalNotification(new StandardNotification("There are changes not yet committed to " +
@@ -168,6 +152,24 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 		completeCompilation = false;
 		destroyScriptCompiler = new ParallelScriptCompiler<>(this);
 		scriptCompiler = new ParallelScriptCompiler<>(this);
+	}
+
+	private void compile(Collection<Section<?>> sectionsOfPackage) {
+		for (Section<?> section : sectionsOfPackage) {
+			// only compile the OntologyType sections belonging to this compiler
+			if (!(section.get() instanceof OntologyType)
+					|| Sections.ancestor(getCompileSection(), OntologyType.class) == section) {
+				scriptCompiler.addSubtree(section);
+			}
+		}
+		scriptCompiler.compile();
+	}
+
+	private void destroy(Collection<Section<?>> sectionsOfPackage) {
+		for (Section<?> section : sectionsOfPackage) {
+			destroyScriptCompiler.addSubtree(section);
+		}
+		destroyScriptCompiler.destroy();
 	}
 
 	static CommitType getCommitType(OntologyCompiler compiler) {
