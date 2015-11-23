@@ -1,55 +1,56 @@
 .nested-tool-menu {
-	display: inline-block;
+    display: inline-block;
 }
 
 .nested-tool-menu .controls {
-	display: none;
+    display: none;
 }
 
 .nested-tool-menu:hover .controls {
-	display: inline;
+    display: inline;
 }
 
 .nested-tool-menu:hover {
-	top: -1px;
-	bottom: -1px;
-	left: -1px;
-	right: -15px;
-	border: 1px dotted gray;
-	border-radius: 4px;
-	-moz-border-radius: 4px;
+    top: -1px;
+    bottom: -1px;
+    left: -1px;
+    right: -15px;
+    border: 1px dotted gray;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
 }
 
 .editarea .buttons {
-	padding-bottom: 10px;
+    padding-bottom: 10px;
 }
 
-.editarea a.action.save, .editarea a.action.cancel, .editarea a.action.add, .editarea a.action.delete {
-	padding: 0.25em 0.5em;
-	display: inline-block;
-	text-decoration: none;
-	line-height: normal;
-	border: 1px solid #DDD;
-	background: #F9F9F9;
-	white-space: nowrap;
-	box-sizing: content-box;
-	-moz-box-sizing: content-box;
-	-ms-box-sizing: content-box;
-	-webkit-box-sizing: content-box;
+.editarea a.action.save, .editarea a.action.cancel, .editarea a.action.add, .editarea a.action.delete, .editarea a.action.format {
+    padding: 0.25em 0.5em;
+    display: inline-block;
+    text-decoration: none;
+    line-height: normal;
+    border: 1px solid #DDD;
+    background: #F9F9F9;
+    white-space: nowrap;
+    box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    -ms-box-sizing: content-box;
+    -webkit-box-sizing: content-box;
 }
+
 .editbuttons {
-	width: 100%;
+    width: 100%;
 }
 
 .editbuttons p {
-	width: 40px;
-	display: inline-table;
+    width: 40px;
+    display: inline-table;
 }
 
 .changenotearea {
-	padding: .25em;
+    padding: .25em;
 }
 
 .changenotearea span {
-	font-weight: bold;
+    font-weight: bold;
 }
