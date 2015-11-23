@@ -123,7 +123,7 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="TestcaseTableType">
-		<parameter id="class" value="de.knowwe.testcases.table.TestCaseTableType2" />
+		<parameter id="class" value="de.knowwe.testcases.table.TestCaseTableType" />
 		<parameter id="name" value="TestcaseTableType" />
 		<parameter id="description" value=" TestcaseTableXMLType" />
 		<parameter id="version" value="1.0" />

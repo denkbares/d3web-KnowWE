@@ -33,7 +33,7 @@ import de.knowwe.testcases.prefix.PrefixedTestCaseProvider;
  * @author Reinhard Hatko
  * @created 18.01.2011
  */
-public class TestCaseTableType2 extends DefaultMarkupType {
+public class TestCaseTableType extends DefaultMarkupType {
 
 	private static DefaultMarkup MARKUP = null;
 	public static String NAME = "name";
@@ -49,7 +49,7 @@ public class TestCaseTableType2 extends DefaultMarkupType {
 		MARKUP.addAnnotationRenderer(PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME, new AnnotationRenderer("Prefix: "));
 	}
 
-	public TestCaseTableType2() {
+	public TestCaseTableType() {
 		super(MARKUP);
 		this.setRenderer(new PrefixTestCaseRenderer(this.getRenderer()));
 	}
