@@ -46,7 +46,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * This class defines the knowledge base markup. With this, you can specify a
  * knowledge base that will be compiled from names package definitions, found on
  * of all wiki articles.
- * <p/>
+ * <p>
  * As the content of the markup you must specify the knowledge base name. The
  * markup also supports the following annotations.
  * <ul>
@@ -149,7 +149,8 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 
 		@Override
 		public void compile(PackageRegistrationCompiler compiler, Section<PackageCompileType> section) {
-			compiler.getCompilerManager().addCompiler(5, new D3webCompiler(compiler.getPackageManager(), section, KnowledgeBaseType.class));
+			compiler.getCompilerManager()
+					.addCompiler(5, new D3webCompiler(compiler.getPackageManager(), section, KnowledgeBaseType.class));
 		}
 
 		@Override

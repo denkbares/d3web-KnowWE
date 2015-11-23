@@ -19,6 +19,7 @@
 package de.d3web.we.knowledgebase;
 
 import java.util.Collection;
+import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseUtils;
@@ -33,6 +34,8 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Messages;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * Compiles d3web knowledge bases.
@@ -69,7 +72,6 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 
 	public KnowledgeBase getKnowledgeBase() {
 		if (knowledgeBase == null) {
-
 			return KnowledgeBaseUtils.createKnowledgeBase();
 		}
 		return knowledgeBase;
@@ -91,8 +93,16 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	@Override
 	public void compilePackages(String[] packagesToCompile) {
 		knowledgeBase = KnowledgeBaseUtils.createKnowledgeBase();
-		// set id to title of article as default so it is no null
-		knowledgeBase.setId(compileSection.getTitle());
+		// if no id is given, generate from article title
+		List<? extends Section<? extends PackageCompileType>> kbSections = $(compileSection.getArticle()
+				.getRootSection()).successor(compileSection.get().getClass()).asList();
+		if (kbSections.size() > 1) {
+			// append number if more than on knowledge base is compiled per article
+			knowledgeBase.setId(compileSection.getTitle() + (kbSections.indexOf(compileSection) + 1));
+		}
+		else {
+			knowledgeBase.setId(compileSection.getTitle());
+		}
 
 		// we init the knowledge base before sending the start event so the
 		// knowledge base of the compiler always returns the knowledge base of
