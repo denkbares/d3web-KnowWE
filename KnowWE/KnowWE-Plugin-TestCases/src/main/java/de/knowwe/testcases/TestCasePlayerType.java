@@ -23,6 +23,7 @@ import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScript;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.kdom.defaultMarkup.AnnotationRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
@@ -30,7 +31,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
  * DefaultMarkupType for SessionDebugger
- * 
+ *
  * @author Markus Friedrich (denkbares GmbH)
  * @created 19.01.2012
  */
@@ -45,7 +46,7 @@ public class TestCasePlayerType extends DefaultMarkupType {
 		MARKUP.setAnnotationDeprecated(PackageManager.COMPILE_ATTRIBUTE_NAME);
 		PackageManager.addPackageAnnotation(MARKUP);
 		MARKUP.addAnnotation(TestCaseUtils.VALUE_OUT_OF_RANGE, false, "skip", "set");
-		MARKUP.addAnnotationRenderer(TestCaseUtils.VALUE_OUT_OF_RANGE, StyleRenderer.ANNOTATION);
+		MARKUP.addAnnotationRenderer(TestCaseUtils.VALUE_OUT_OF_RANGE, new AnnotationRenderer("Values out of range: "));
 	}
 
 	public static boolean skipNumValueOutOfRange(Section<?> playerSection) {

@@ -20,12 +20,11 @@ package de.knowwe.testcases.table;
 
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
-import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.kdom.AnonymousType;
+import de.knowwe.kdom.defaultMarkup.AnnotationRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.table.Table;
 import de.knowwe.testcases.prefix.PrefixTestCaseRenderer;
 import de.knowwe.testcases.prefix.PrefixedTestCaseProvider;
@@ -34,36 +33,24 @@ import de.knowwe.testcases.prefix.PrefixedTestCaseProvider;
  * @author Reinhard Hatko
  * @created 18.01.2011
  */
-public class TestcaseTableType extends DefaultMarkupType {
+public class TestCaseTableType2 extends DefaultMarkupType {
 
-	private static DefaultMarkup m = null;
+	private static DefaultMarkup MARKUP = null;
 	public static String NAME = "name";
 
 	static {
-		m = new DefaultMarkup("TestCaseTable");
-		m.addContentType(new Table());
-		m.addContentType(new AnonymousType("WhiteSpace", AllTextFinder.getInstance(), NothingRenderer.getInstance()));
-		PackageManager.addPackageAnnotation(m);
-		m.addAnnotation(NAME, false);
-		m.addAnnotationNameType(NAME, new AnonymousType(
-				"NameAnnotationType",
-				AllTextFinder.getInstance(),
-				getAnnotationRenderer("Name")));
-		m.addAnnotation(PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME, false);
-		m.addAnnotationNameType(PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME, new AnonymousType(
-				"PrefixAnnotationType",
-				AllTextFinder.getInstance(),
-				getAnnotationRenderer("Prefix")));
+		MARKUP = new DefaultMarkup("TestCaseTable");
+		MARKUP.addContentType(new Table());
+		MARKUP.addContentType(new AnonymousType("WhiteSpace", AllTextFinder.getInstance(), NothingRenderer.getInstance()));
+		PackageManager.addPackageAnnotation(MARKUP);
+		MARKUP.addAnnotation(NAME, false);
+		MARKUP.addAnnotationRenderer(NAME, new AnnotationRenderer("Name: "));
+		MARKUP.addAnnotation(PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME, false);
+		MARKUP.addAnnotationRenderer(PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME, new AnnotationRenderer("Prefix: "));
 	}
 
-	private static Renderer getAnnotationRenderer(String name) {
-		return (section, user, result) ->
-				result.appendHtmlElement("span", name + ":", "style", "padding-left: 4px;" + StyleRenderer.PROPERTY
-						.getCssStyle());
-	}
-
-	public TestcaseTableType() {
-		super(m);
+	public TestCaseTableType2() {
+		super(MARKUP);
 		this.setRenderer(new PrefixTestCaseRenderer(this.getRenderer()));
 	}
 }

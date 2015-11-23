@@ -104,7 +104,7 @@ public class TestCaseTableScript extends DefaultGlobalScript<Table> {
 	}
 
 	protected String getTestCaseName(Section<Table> section) {
-		List<Section<Table>> sections = $(section.getArticle().getRootSection()).successor(TestcaseTableType.class)
+		List<Section<Table>> sections = $(section.getArticle().getRootSection()).successor(TestCaseTableType2.class)
 				.successor(Table.class).asList();
 		int i = 1;
 		for (Section<Table> table : sections) {
@@ -117,7 +117,7 @@ public class TestCaseTableScript extends DefaultGlobalScript<Table> {
 		}
 
 		Section<DefaultMarkupType> defaultMarkupSection = $(section).ancestor(DefaultMarkupType.class).getFirst();
-		String name = DefaultMarkupType.getAnnotation(defaultMarkupSection, TestcaseTableType.NAME);
+		String name = DefaultMarkupType.getAnnotation(defaultMarkupSection, TestCaseTableType2.NAME);
 		if (name == null) {
 			name = section.getArticle().getTitle() + "/TestCaseTable" + i;
 		}
