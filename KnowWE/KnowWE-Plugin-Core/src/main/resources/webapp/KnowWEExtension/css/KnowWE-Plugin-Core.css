@@ -541,27 +541,27 @@ input.knowwe-paginationFilter {
 /* ------------- Font Awesome Customisation----------- */
 /* ################################################## */
 
-i.knowwe-warning, i.knowwe-yellow {
+.knowwe-warning, .knowwe-yellow {
 	color: #ffd518;
 }
 
-i.knowwe-error, i.knowwe-highprio, i.knowwe-red {
+.knowwe-error, .knowwe-highprio, .knowwe-red {
 	color: #CC3333
 }
 
-i.knowwe-lowprio {
+.knowwe-lowprio {
 	color: #aec8ff
 }
 
-i.knowwe-ok, i.knowwe-green {
+.knowwe-ok, i.knowwe-green {
 	color: #6A9514;
 }
 
-i.knowwe-blue {
+.knowwe-blue {
 	color: #036;
 }
 
-i.knowwe-disabled, i.knowwe-deactivated, i.knowwe-gray, i.knowwe-grey {
+.knowwe-disabled, .knowwe-deactivated, .knowwe-gray, .knowwe-grey {
 	color: #999;
 }
 
