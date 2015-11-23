@@ -28,7 +28,7 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 
 /**
  * Sections with this type contain the start of the annotation.
- * 
+ *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 11.11.2011
  */
@@ -51,7 +51,7 @@ public class AnnotationNameType extends AbstractType {
 
 	/**
 	 * Returns the name defined in the underlying annotation.
-	 * 
+	 *
 	 * @return the annotation's name
 	 */
 	@Override
@@ -62,29 +62,26 @@ public class AnnotationNameType extends AbstractType {
 	/**
 	 * Returns the actual name parsed from the {@link AnnotationNameType}
 	 * Section. This can differ, if the name was given as a regular expression.
-	 * 
+	 *
 	 * @return the parsed name of the annotation
 	 */
 	public String getName(Section<AnnotationNameType> section) {
-		if (!(section.get() instanceof AnnotationNameType)) {
-			throw new IllegalArgumentException("section must have the type "
-					+ AnnotationNameType.class.getSimpleName());
-		}
 		String name = (String) section.getObject(ANNOTATION_NAME_KEY);
 		if (name == null) {
 			Matcher matcher = namePattern.matcher(section.getText());
-			matcher.find();
-			// the has to be true/find something, because the
-			// section is parsed by the same regex
-			name = matcher.group(1);
-			section.storeObject(ANNOTATION_NAME_KEY, name);
+			if (matcher.find()) {
+				// the has to be true/find something, because the
+				// section is parsed by the same regex
+				name = matcher.group(1);
+				section.storeObject(ANNOTATION_NAME_KEY, name);
+			}
 		}
 		return name;
 	}
 
 	/**
 	 * Returns the underlying annotation.
-	 * 
+	 *
 	 * @return the underlying annotation
 	 */
 	public DefaultMarkup.Annotation getAnnotation() {

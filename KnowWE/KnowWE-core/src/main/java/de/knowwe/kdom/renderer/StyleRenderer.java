@@ -28,6 +28,7 @@ import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.kdom.defaultMarkup.AnnotationRenderer;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
 
 public class StyleRenderer implements Renderer {
@@ -43,7 +44,7 @@ public class StyleRenderer implements Renderer {
 			MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
 	public static final StyleRenderer CONTENT = new StyleRenderer("color:rgb(80, 80, 80)");
 	public static final StyleRenderer LOCALE = new StyleRenderer("color:rgb(0, 128, 128)");
-	public static final StyleRenderer ANNOTATION = COMMENT;
+	public static final AnnotationRenderer ANNOTATION = new AnnotationRenderer();
 
 	public static final String CLICKABLE_TERM_CLASS = "clickable-term";
 
@@ -98,7 +99,7 @@ public class StyleRenderer implements Renderer {
 				(background == null ? "" : "background-color:" + background);
 	}
 
-	public static enum MaskMode {
+	public enum MaskMode {
 		none, jspwikiMarkup, htmlEntities
 	}
 
