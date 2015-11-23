@@ -214,7 +214,7 @@ public class TestCasePlayerRenderer implements Renderer {
 
 		TableModel tableModel = new TableModel(user);
 		tableModel.setName(getTestCaseId(selectedTriple));
-		KnowledgeBase base = D3webUtils.getKnowledgeBase(section);
+		KnowledgeBase base = D3webUtils.getKnowledgeBase(selectedTriple.getKbSection());
 
 		// check if the latest knowledge base is used
 		if (base != null) {
