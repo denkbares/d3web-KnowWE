@@ -58,9 +58,12 @@ public class TableModel {
 		this.user = user;
 	}
 
-	public void prepareNextRow(int row) {
-		this.currentRow = row;
-		this.currentColumn = 0;
+	public int getCurrentColumn() {
+		return currentColumn;
+	}
+
+	public int getCurrentRow() {
+		return currentRow;
 	}
 
 	public void addCell(RenderResult result, int width) {
@@ -263,6 +266,7 @@ public class TableModel {
 	}
 
 	public void nextRow() {
-		this.prepareNextRow(currentRow + 1);
+		this.currentRow++;
+		this.currentColumn = 0;
 	}
 }

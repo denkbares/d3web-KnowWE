@@ -234,7 +234,6 @@ public class TestCasePlayerRenderer implements Renderer {
 				continue;
 			}
 			if (row > navigatorParameters.to) break;
-			tableModel.prepareNextRow(row - navigatorParameters.from + 1);
 			renderRow(user, date, selectedTriple, usedObjects, additionalObjects, tableModel);
 			row++;
 		}
@@ -309,8 +308,10 @@ public class TestCasePlayerRenderer implements Renderer {
 		tableModel.setLastFinding(column - 1);
 		renderObservationQuestionsHeader(additionalQuestions, manager, tableModel, column);
 		column += additionalQuestions.size();
-		return renderObservationQuestionAdder(section,
+		TerminologyObject terminologyObject = renderObservationQuestionAdder(section,
 				user, manager, additionalQuestions, tableModel, column);
+		tableModel.nextRow();
+		return terminologyObject;
 	}
 
 	private NavigationParameters getNavigationParameters(Section<?> section, UserContext user) {
@@ -363,6 +364,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		renderCheckResults(user, testCase.getChecks(date, knowledgeBase), status.getCheckResults(date), tableModel);
 		renderFindings(testCase.getFindings(date, knowledgeBase), usedQuestions, tableModel);
 		renderObservations(date, knowledgeBase, status, additionalQuestions, tableModel);
+		tableModel.nextRow();
 	}
 
 	protected void renderObservations(Date date, KnowledgeBase knowledgeBase, SessionDebugStatus status, Collection<String> additionalQuestions, TableModel tableModel) {
@@ -505,8 +507,8 @@ public class TestCasePlayerRenderer implements Renderer {
 			}
 		}
 		result.appendHtml("</a>");
+		// write to first column of current row
 		tableModel.addCell(result.toStringRaw(), 2);
-
 	}
 
 	protected void renderCheckResults(UserContext user, Collection<Check> checks, Map<Check, Boolean> checkResults, TableModel tableModel) {
