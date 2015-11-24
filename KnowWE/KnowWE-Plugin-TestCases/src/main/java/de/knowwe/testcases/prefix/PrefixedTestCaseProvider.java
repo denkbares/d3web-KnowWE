@@ -18,6 +18,7 @@ public abstract class PrefixedTestCaseProvider implements TestCaseProvider {
 	private String[] prefixPackages;
 	private String prefixName;
 	private String web;
+	private TestCase testCase;
 
 	public PrefixedTestCaseProvider(Section<? extends DefaultMarkupType> prefixDefiningSection) {
 		if (prefixDefiningSection == null) return;
@@ -31,10 +32,13 @@ public abstract class PrefixedTestCaseProvider implements TestCaseProvider {
 
 	@Override
 	public TestCase getTestCase() {
-		TestCase prefixTestCase = getPrefixTestCase();
-		TestCase actualTestCase = getActualTestCase();
-		if (prefixTestCase == null) return actualTestCase;
-		return new PrefixedTestCase(prefixTestCase, actualTestCase);
+		if (this.testCase == null) {
+			TestCase prefixTestCase = getPrefixTestCase();
+			TestCase actualTestCase = getActualTestCase();
+			if (prefixTestCase == null) return actualTestCase;
+			this.testCase = new PrefixedTestCase(prefixTestCase, actualTestCase);
+		}
+		return this.testCase;
 	}
 
 	public abstract TestCase getActualTestCase();
