@@ -121,7 +121,7 @@
 		<parameter id="scope" value="FlowchartReference" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="RenamingToolProvider">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="DiafluxRenamingToolProvider">
 		<parameter id="class" value="de.knowwe.core.tools.RenamingToolProvider" />
 		<parameter id="name" value="RenamingToolProvider" />
 		<parameter id="description"
