@@ -60,7 +60,7 @@ public class TestCaseTableScript extends DefaultGlobalScript<Table> {
 
 		List<Section<TableLine>> lines = Sections.successors(section, TableLine.class);
 
-		checkSequentialTimeStamps(compiler, lines, (date1, date2) -> !date1.after(date2));
+		checkSequentialTimeStamps(compiler, lines, (lastDate, date) -> lastDate.before(date));
 		testCase.setDescription(getTestCaseName(section));
 
 		for (Section<TableLine> line : lines) {
@@ -90,7 +90,7 @@ public class TestCaseTableScript extends DefaultGlobalScript<Table> {
 			Section<TimeStampType> timeStampSection = Sections.successor(line, TimeStampType.class);
 			if (timeStampSection != null) {
 				Date date = getDate(line);
-				if (date != null && !compareFunction.apply(date, lastDate)) {
+				if (date != null && !compareFunction.apply(lastDate, date)) {
 					Messages.storeMessage(compiler, timeStampSection, this.getClass(),
 							Messages.error("Invalid time stamp '" + timeStampSection.getText()
 									+ "', each time stamp has to be after the previous one."));
