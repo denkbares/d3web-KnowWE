@@ -30,6 +30,7 @@ import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.Types;
 import de.knowwe.core.user.UserContext;
@@ -48,6 +49,10 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	public static <T extends Type> Sections<T> $(Iterable<Section<? extends T>> sections) {
 		//noinspection unchecked
 		return new Sections(sections);
+	}
+
+	public static Sections<RootType> $(Article article) {
+		return new Sections<>(article.getRootSection());
 	}
 
 	public static <T extends Type> Sections<T> $(Section<T> section) {
