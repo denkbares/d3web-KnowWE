@@ -60,7 +60,7 @@ public class TestCaseTableScript extends DefaultGlobalScript<Table> {
 
 		List<Section<TableLine>> lines = Sections.successors(section, TableLine.class);
 
-		checkSequentialTimeStamps(compiler, lines, (lastDate, date) -> lastDate.before(date));
+		checkSequentialTimeStamps(compiler, lines, Date::before);
 		testCase.setDescription(getTestCaseName(section));
 
 		for (Section<TableLine> line : lines) {

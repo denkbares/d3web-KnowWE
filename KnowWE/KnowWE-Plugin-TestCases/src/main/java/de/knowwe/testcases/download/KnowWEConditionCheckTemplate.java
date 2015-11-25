@@ -19,6 +19,8 @@
 
 package de.knowwe.testcases.download;
 
+import java.util.Objects;
+
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.testcase.model.CheckTemplate;
@@ -41,7 +43,7 @@ public class KnowWEConditionCheckTemplate implements CheckTemplate {
 	private Section<CompositeCondition> section;
 
 	public KnowWEConditionCheckTemplate(Section<CompositeCondition> section) {
-		this.section = section;
+		this.section = Objects.requireNonNull(section);
 	}
 
 	public Section<CompositeCondition> getSection() {
@@ -58,5 +60,21 @@ public class KnowWEConditionCheckTemplate implements CheckTemplate {
 		Condition condition = KDOMConditionFactory.createCondition(d3webCompiler, section);
 		if (condition == null) throw new TransformationException("No valid condition found in '" + section.getText() + "'");
 		return new KnowWEConditionCheck(condition, section);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		KnowWEConditionCheckTemplate that = (KnowWEConditionCheckTemplate) o;
+
+		return section.equals(that.section);
+
+	}
+
+	@Override
+	public int hashCode() {
+		return section.hashCode();
 	}
 }
