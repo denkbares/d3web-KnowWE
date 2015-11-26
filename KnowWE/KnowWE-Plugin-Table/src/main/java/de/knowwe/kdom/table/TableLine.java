@@ -42,7 +42,7 @@ import de.knowwe.core.report.MessageRenderer;
  */
 public class TableLine extends AbstractType {
 
-	public static final String LINEREGEX = "^(\\|{1,2}.*)+\\r?\\n?";
+	public static final String LINEREGEX = "^(\\|{1,2}.*)+$";
 	public static final Pattern LINEPATTERN = Pattern.compile(LINEREGEX, Pattern.MULTILINE);
 
 	public TableLine() {
