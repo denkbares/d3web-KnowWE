@@ -22,22 +22,22 @@ package de.knowwe.kdom.table;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 
 /**
  * <p>
  * Represents the body of the <code>Table</code> tag.
  * </p>
- * 
+ * <p>
  * * This class is used to extend KnowWE with in-view editable tables. The
  * markup for this feature is the following: e.g: | cell 1 | cell 2 or || header
  * cell | normal cell;
- * 
+ * <p>
  * Now all tables will be prefixed with a button called "QuickEditFlag". This
  * buttons enabled a quick edit mode for the table. If selected, each cell will
  * be rendered as an HTML input field. Also a save button occours to save the
  * changes.
- * 
+ * <p>
  * The <code>Table</code> tag is extendible with the following attributes:
  * <ul>
  * <li>default</li>
@@ -45,25 +45,24 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
  * <li>column</li>
  * <li>row</li>
  * </ul>
- * 
+ * <p>
  * With the <code> default </code> attribute you can specify default values.
  * This values are used to render a HTML DropDown element instead of the input
  * field.
- * 
+ * <p>
  * The <code>width</code> attribute declares the width of each input field. Use
  * this if you want to avoid scrolling in the input fields.
- * 
+ * <p>
  * The <code>row</code> and <code>column</code> attribute define which row or
  * column is not editable.
- * 
- * 
+ *
  * @author smark
  */
 public class Table extends AbstractType {
 
 	public Table() {
 		this.addChildType(new TableLine());
-		this.setSectionFinder(AllTextFinder.getInstance());
+		this.setSectionFinder(new AllTextFinderTrimmed(true));
 		this.setRenderer(new TableRenderer());
 	}
 
