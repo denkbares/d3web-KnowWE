@@ -45,11 +45,11 @@ public class HighlightProvider implements ToolProvider {
 	}
 
 	protected Tool getHighlightTool(Section<?> section, UserContext userContext) {
-		boolean dohighlighting =
+		boolean doHighlighting =
 				DiaFluxTraceHighlight.checkForHighlight(userContext,
 						DiaFluxTraceHighlight.TRACE_HIGHLIGHT);
 
-		if (dohighlighting) {
+		if (doHighlighting) {
 			return new DefaultTool(Icon.DEBUG, "Hide Trace",
 					"Highlights active nodes and edges in the flowchart.",
 					DiaFluxTraceHighlight.getDeactivationJSAction(),
