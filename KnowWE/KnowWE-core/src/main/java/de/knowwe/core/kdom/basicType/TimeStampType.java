@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -42,7 +43,7 @@ import de.knowwe.core.report.Messages;
 public class TimeStampType extends AbstractType {
 
 	public static final String DURATION = "\\s*(\\d+)\\s*(ms|s|min|h|d)\\s*";
-	public static final String TIMESTAMP = "(" + DURATION + ")+";
+	public static final String TIMESTAMP = "(\\s*-?\\s*" + DURATION + ")+";
 
 	private static final long[] TIME_FACTORS = {
 			1, 1000, 60 * 1000, 60 * 60 * 1000, 24 * 60 * 60 * 1000 };
@@ -73,6 +74,14 @@ public class TimeStampType extends AbstractType {
 	}
 
 	public static long getTimeInMillis(String time) throws NumberFormatException {
+		time = Strings.trim(time);
+
+		boolean negative = false;
+		if (Strings.trim(time).startsWith("-")) {
+			negative = true;
+			time = time.substring(1);
+		}
+
 		Matcher matcher = DURATION_PATTERN.matcher(time);
 
 		long result = 0;
@@ -96,7 +105,7 @@ public class TimeStampType extends AbstractType {
 
 		}
 		if (!found) throw new NumberFormatException("No valid time found in '" + time + "'");
-		return result;
+		return result * (negative ? -1 : 1);
 	}
 
 	class TimeStampSubtreeHandler extends DefaultGlobalCompiler.DefaultGlobalHandler<TimeStampType> {
