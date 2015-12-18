@@ -85,7 +85,7 @@ public class Rdf2GoUtils {
 	 * models have extreme slow downs, if during a SPARQL query new statements are added or removed.
 	 * Concurrent SPARQLs however are no problem. Therefore we use a lock that locks exclusively for
 	 * writing but shared for reading.
-	 * <p/>
+	 * <p>
 	 *
 	 * @author Albrecht Striffler (denkbares GmbH)
 	 * @created 25.04.2014
@@ -101,7 +101,7 @@ public class Rdf2GoUtils {
 	 * models have extreme slow downs, if during a SPARQL query new statements are added or removed.
 	 * Concurrent SPARQLs however are no problem. Therefore we use a lock that locks exclusively for
 	 * writing but shared for reading.
-	 * <p/>
+	 * <p>
 	 *
 	 * @author Albrecht Striffler (denkbares GmbH)
 	 * @created 25.04.2014
@@ -117,7 +117,7 @@ public class Rdf2GoUtils {
 	 * <p><b>Explanation:</b><br> Some Rdf2Go models have extreme slow downs, if during a SPARQL
 	 * query new statements are added or removed. Concurrent SPARQLs however are no problem.
 	 * Therefore we use a lock that locks exclusively for writing but shared for reading.
-	 * <p/>
+	 * <p>
 	 *
 	 * @author Albrecht Striffler (denkbares GmbH)
 	 * @created 25.04.2014
@@ -133,7 +133,7 @@ public class Rdf2GoUtils {
 	 * <p><b>Explanation:</b><br> Some Rdf2Go models have extreme slow downs, if during a SPARQL
 	 * query new statements are added or removed. Concurrent SPARQLs however are no problem.
 	 * Therefore we use a lock that locks exclusively for writing but shared for reading.
-	 * <p/>
+	 * <p>
 	 *
 	 * @author Albrecht Striffler (denkbares GmbH)
 	 * @created 25.04.2014
