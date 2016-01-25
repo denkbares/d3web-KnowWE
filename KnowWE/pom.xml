@@ -284,6 +284,15 @@
 		</dependencies>
 	</dependencyManagement>
 
+
+	<dependencies>
+		<dependency>
+			<groupId>org.jetbrains</groupId>
+			<artifactId>annotations</artifactId>
+			<version>15.0</version>
+		</dependency>
+	</dependencies>
+
 	<modules>
 		<module>KnowWE-Resources</module>
 		<module>KnowWE-core</module>
