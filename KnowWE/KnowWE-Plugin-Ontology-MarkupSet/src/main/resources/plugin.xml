@@ -575,7 +575,7 @@
         <parameter id="priority" value="3"/>
         <parameter id="script" value="KnowWE-Plugin-InstantEdit.js"/>
         <parameter id="script" value="KnowWE-Plugin-AutoComplete.js"/>
-        <parameter id="script" value="KnowWE-Plugin-Ontoloqy-MarkupSet.js"/>
+        <parameter id="script" value="KnowWE-Plugin-Ontology-MarkupSet.js"/>
         <parameter id="script" value="DefaultEditTool.js"/>
         <parameter id="css" value="KnowWE-Plugin-InstantEdit.css"/>
         <parameter id="css" value="KnowWE-Plugin-AutoComplete.css"/>
