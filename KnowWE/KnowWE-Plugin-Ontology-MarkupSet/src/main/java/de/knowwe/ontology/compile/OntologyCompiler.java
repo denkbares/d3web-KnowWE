@@ -124,6 +124,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 		// a complete compilation... we reset TerminologyManager and Rdf2GoCore
 		// we compile all sections of the compiled packages, not just the added ones
 		if (completeCompilation) {
+			if (this.rdf2GoCore != null) this.rdf2GoCore.destroy();
 			this.rdf2GoCore = new Rdf2GoCore(ruleSet);
 			createTerminologyManager();
 			sectionsOfPackage = getPackageManager().getSectionsOfPackage(packagesToCompile);
