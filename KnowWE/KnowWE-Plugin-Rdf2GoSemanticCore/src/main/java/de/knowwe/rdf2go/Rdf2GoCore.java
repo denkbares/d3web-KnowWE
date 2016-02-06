@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.URLDecoder;
@@ -1559,6 +1560,26 @@ public class Rdf2GoCore {
 	 * @created 28.07.2014
 	 */
 	public void writeModel(Writer out, Syntax syntax) throws ModelRuntimeException, IOException {
+		this.lock.readLock().lock();
+		try {
+			model.writeTo(out, syntax);
+		}
+		finally {
+			this.lock.readLock().unlock();
+		}
+	}
+
+	/**
+	 * Writes the current repository model to the given writer in the specified
+	 * syntax.
+	 *
+	 * @param out    the target to write the model to
+	 * @param syntax the syntax of the target file
+	 * @throws ModelRuntimeException
+	 * @throws IOException
+	 * @created 28.07.2014
+	 */
+	public void writeModel(OutputStream out, Syntax syntax) throws ModelRuntimeException, IOException {
 		this.lock.readLock().lock();
 		try {
 			model.writeTo(out, syntax);

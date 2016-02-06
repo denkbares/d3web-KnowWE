@@ -25,26 +25,22 @@ import java.util.Collection;
 /**
  * An EventListener is an extension to KnowWE, that can listen to events firing
  * during operations handled by KnowWE (e.g., init, page-save...)
- * 
- * 
+ *
  * @author Jochen
- * 
  */
 public interface EventListener {
 
 	/**
-	 * returns the events {@Link Event} the listener wants to listen to.
+	 * Returns the events {@Link Event} the listener wants to listen to.
 	 * The EventManager {@link EventManager} will register the listener for
 	 * these events.
-	 * 
-	 * @return
 	 */
-	public Collection<Class<? extends Event>> getEvents();
+	Collection<Class<? extends Event>> getEvents();
 
 	/**
-	 * this method will be called when an event {@Link Event} is fired
+	 * This method will be called when an event {@Link Event} is fired
 	 * that this listener is registered for
 	 */
-	public void notify(Event event);
+	void notify(Event event);
 
 }

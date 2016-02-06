@@ -78,6 +78,7 @@ public class Icon {
 	public static final Icon STOP = new Icon("fa-stop");
 	public static final Icon USER = new Icon("fa-user");
 	public static final Icon CALENDAR = new Icon("fa-calendar");
+	public static final Icon GLOBE = new Icon("fa-globe");
 
 	// KnowWE specific
 	public static final Icon ARTICLE = new Icon("fa-file-text-o");

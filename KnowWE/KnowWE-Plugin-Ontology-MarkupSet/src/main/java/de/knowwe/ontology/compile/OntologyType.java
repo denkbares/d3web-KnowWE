@@ -18,6 +18,7 @@
  */
 package de.knowwe.ontology.compile;
 
+import java.beans.EventHandler;
 import java.util.List;
 
 import de.d3web.utils.Log;
@@ -30,6 +31,7 @@ import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileTypeRenderer;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
+import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -62,6 +64,7 @@ public class OntologyType extends DefaultMarkupType {
 	public static final String ANNOTATION_RULESET = "ruleset";
 	public static final String ANNOTATION_COMMIT = "commit";
 	public static final String ANNOTATION_IMPORT = "import";
+	public static final String ANNOTATION_EXPORT = "export";
 	public static final String ANNOTATION_SILENT_IMPORT = "silentImport";
 
 	private static final DefaultMarkup MARKUP;
@@ -73,6 +76,9 @@ public class OntologyType extends DefaultMarkupType {
 
 		MARKUP.addAnnotation(ANNOTATION_IMPORT, false);
 		MARKUP.addAnnotationIcon(ANNOTATION_IMPORT, Icon.FILE_XML.addTitle("Import"));
+
+		MARKUP.addAnnotation(ANNOTATION_EXPORT, false);
+		MARKUP.addAnnotationIcon(ANNOTATION_EXPORT, Icon.GLOBE.addTitle("Export"));
 
 		MARKUP.addAnnotation(ANNOTATION_SILENT_IMPORT, false);
 		MARKUP.addAnnotationIcon(ANNOTATION_SILENT_IMPORT, Icon.FILE.addTitle("Import silently (faster, but without term support)"));
@@ -112,6 +118,7 @@ public class OntologyType extends DefaultMarkupType {
 		removeCompileScript(PackageRegistrationCompiler.class, DefaultMarkupPackageRegistrationScript.class);
 		addCompileScript(new CompileMarkupPackageRegistrationScript());
 
+		EventManager.getInstance().registerListener(OntologyExporter.getInstance());
 	}
 
 	private static class OntologyCompilerRegistrationScript extends PackageRegistrationScript<PackageCompileType> {
