@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Formatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -183,7 +184,7 @@ public class Rdf2GoUtils {
 	 * @param languageTag
 	 * @return
 	 */
-	public static String getLabelRDFS(String uri, Rdf2GoCore repo, String languageTag) {
+	public static String getLabel(String uri, Rdf2GoCore repo, String languageTag) {
 		try {
 			new java.net.URI(uri);
 		}
@@ -191,15 +192,13 @@ public class Rdf2GoUtils {
 			Log.severe(e.getMessage());
 			return uri;
 		}
-		return getLabelRDFS(new URIImpl(uri), repo, languageTag);
+		return getLabel(new URIImpl(uri), repo, languageTag);
 	}
 
 	/**
 	 * Returns a rdfs:label of the given concept in the given language, if existing.
 	 */
-	public static String getLabelRDFS(URI concept, Rdf2GoCore repo, String languageTag) {
-
-		//TODO: prefer skos:prefLabel
+	public static String getLabel(URI concept, Rdf2GoCore repo, String languageTag) {
 
 		// try to find language specific label
 		String label = getLanguageSpecificLabel(concept, repo, languageTag);
@@ -207,10 +206,15 @@ public class Rdf2GoUtils {
 		// otherwise use standard label
 		if (label == null) {
 
-			String query = "SELECT ?x WHERE { " + concept.toSPARQL() + " rdfs:label ?x.}";
+			Formatter formatter1 = new Formatter();
+			String labelQuery = formatter1.format(SPARQL_LABEL, concept.toSPARQL()).out().toString();
+
+			String query = "SELECT ?label WHERE { "
+					+ labelQuery
+					+ "}";
 			QueryResultTable resultTable = repo.sparqlSelect(query);
 			for (QueryRow queryRow : resultTable) {
-				Node node = queryRow.getValue("x");
+				Node node = queryRow.getValue("label");
 				String value = node.asLiteral().toString();
 				label = value;
 				break; // we assume there is only one label
@@ -226,15 +230,34 @@ public class Rdf2GoUtils {
 		return label;
 	}
 
+	private static final String SPARQL_LABEL = "" +
+			"%1$s rdfs:label ?rdfsLabel .\n" +
+			"OPTIONAL { %1$s <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel . }\n" +
+			"OPTIONAL { %1$s <http://www.w3.org/2004/02/skos/core#altLabel> ?prefLabel . }\n" +
+			"BIND ( IF ( BOUND (?prefLabel), ?prefLabel, \n" +
+			"     \t\tIF ( BOUND (?altLabel), ?altLabel, ?rdfsLabel ) )\n" +
+			"     \t AS ?label ) .";
+
+	private static final String SPARQL_LABEL_LANGUAGE_CONSTRAINTS = "" +
+			"FILTER(LANGMATCHES(LANG(?rdfsLabel), '%1$s')) . " +
+			"FILTER(LANGMATCHES(LANG(?prefLabel), '%1$s')) ." +
+			"FILTER(LANGMATCHES(LANG(?altLabel), '%1$s')) .";
+
 	private static String getLanguageSpecificLabel(URI concept, Rdf2GoCore repo, String languageTag) {
 		if (languageTag == null) return null;
 		String label = null;
 
-		String query = "SELECT ?x WHERE { " + concept.toSPARQL()
-				+ " rdfs:label ?x. FILTER(LANGMATCHES(LANG(?x), \"" + languageTag + "\"))}";
+		Formatter formatter1 = new Formatter();
+		String labelQuery = formatter1.format(SPARQL_LABEL, concept.toSPARQL()).out().toString();
+
+		Formatter formatter2 = new Formatter();
+		String languageFilter = formatter2.format(SPARQL_LABEL_LANGUAGE_CONSTRAINTS, languageTag).out().toString();
+		String query = "SELECT ?label WHERE { "
+				+ labelQuery + languageFilter
+				+ "}";
 		QueryResultTable resultTable = repo.sparqlSelect(query);
 		for (QueryRow queryRow : resultTable) {
-			Node node = queryRow.getValue("x");
+			Node node = queryRow.getValue("label");
 			String value = node.asLiteral().toString();
 			label = value;
 			if (label.charAt(label.length() - 3) == '@') {
