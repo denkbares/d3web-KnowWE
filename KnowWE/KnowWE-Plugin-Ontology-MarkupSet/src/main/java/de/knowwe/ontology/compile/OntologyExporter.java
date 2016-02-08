@@ -19,18 +19,15 @@
 
 package de.knowwe.ontology.compile;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import org.ontoware.rdf2go.model.Syntax;
 
 import de.d3web.utils.Log;
-import de.d3web.utils.Streams;
 import de.knowwe.core.Environment;
 import de.knowwe.core.event.Event;
 import de.knowwe.core.event.EventListener;
@@ -118,7 +115,7 @@ public class OntologyExporter implements EventListener {
 					// cleanup so the versions don't stack to bad...
 					connector.deleteAttachment(title, annotationName, "SYSTEM");
 					rdf2GoCore.writeModel(outputStream, syntax);
-					ByteInputStream stream = new ByteInputStream(outputStream.toByteArray(), outputStream	.size());
+					ByteArrayInputStream stream = new ByteArrayInputStream(outputStream.toByteArray());
 					connector.storeAttachment(title, annotationName, "SYSTEM", stream);
 				}
 				catch (IOException e) {
