@@ -18,6 +18,7 @@
  */
 package de.knowwe.ontology.kdom;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -128,14 +129,20 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 			WikiConnector wc = Environment.getInstance().getWikiConnector();
 			try {
 				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+				String extension;
+				// first try to use the Content-Location field, i.e. support content negotiation
 				connection.setRequestMethod("HEAD");
 				connection.connect();
 				List<String> locations = connection.getHeaderFields().get("Content-Location");
-				if (locations == null || locations.isEmpty()) {
-					throw new Exception("Unable to read extension name from header");
+				if (locations != null && !locations.isEmpty()) {
+					String location = locations.iterator().next();
+					extension = location.substring(Math.max(0, location.lastIndexOf(".")));
 				}
-				String location = locations.iterator().next();
-				String extension = location.substring(Math.max(0, location.lastIndexOf(".")));
+				// if content-location is not defined, we probably access a file directly...
+				else {
+					String fileName = new File(importString).getName();
+					extension = fileName.substring(fileName.lastIndexOf("."));
+				}
 				attachmentName = attachmentName + extension;
 				connection.disconnect();
 				wc.storeAttachment(section.getTitle(), attachmentName, "SYSTEM", url.openStream());
