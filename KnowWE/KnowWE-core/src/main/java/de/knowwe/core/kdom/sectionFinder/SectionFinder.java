@@ -40,12 +40,12 @@ public interface SectionFinder {
 	 * section is found in a passed fragment, return 'null' or an empty list;
 	 * 
 	 * @param text Text fragment of the wiki article source
-	 * @param father TODO
-	 * @param type TODO
+	 * @param father the section that should be further divided in subsection
+	 * @param type the type that this sections finder is called for; from the result sections of this type will be created
 	 * @return List of SectionFinderResults with informations about what part of
 	 *         the next belongs to the ObjectType calling the SectionFinder
 	 */
-	public List<SectionFinderResult> lookForSections(
+	List<SectionFinderResult> lookForSections(
 			String text, Section<?> father, Type type);
 
 }
