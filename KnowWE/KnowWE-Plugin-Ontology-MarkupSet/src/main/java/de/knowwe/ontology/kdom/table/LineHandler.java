@@ -70,12 +70,13 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
         Node subjectNode = subjectReference.get().getNode(subjectReference, compiler);
         List<Section<Object>> objects = findObjects(section);
         for (Section<Object> objectReference : objects) {
-            if (objectReference.getParent().getParent().get() instanceof TableCellContent) {
+            if (Sections.ancestor(objectReference, TableCellContent.class) != null) {
                 Section<Predicate> propertyReference = TableUtils.getColumnHeader(objectReference, Predicate.class);
                 URI propertyUri = propertyReference.get().getNode(propertyReference, compiler).asURI();
                 Node objectNode = objectReference.get().getNode(objectReference, compiler);
                 statements.add(core.createStatement(subjectNode.asResource(), propertyUri, objectNode));
             } else {
+				// TODO: clarify whenever this case can make sense...!?
                 final StatementProviderResult statementProviderResult = objectReference.get().getStatements(objectReference, compiler);
                 statements.addAll(statementProviderResult.getStatments());
             }

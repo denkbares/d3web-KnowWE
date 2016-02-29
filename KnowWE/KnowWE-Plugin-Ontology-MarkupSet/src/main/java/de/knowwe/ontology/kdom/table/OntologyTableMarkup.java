@@ -63,30 +63,44 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_TYPE_RELATION, false);
 		MARKUP.addAnnotationContentType(ANNOTATION_TYPE_RELATION, new TurtleURI());
 
+
+		/*
+		Cell 0,0
+		 */
 		BasicURIType cell00 = new BasicURIType();
 		cell00.setSectionFinder(new ConstraintSectionFinder(
 				new AllTextFinderTrimmed(),
 				new TableIndexConstraint(0, 1, 0, 1)));
 		content.injectTableCellContentChildtype(cell00);
 
-
+		/*
+		First column: cells 0, 1-n
+		 */
 		Subject resource = new Subject(new TableSubjectURIWithDefinition());
 		resource.setSectionFinder(new ConstraintSectionFinder(
 				new AllTextFinderTrimmed(),
 				new TableIndexConstraint(0, 1, 1, Integer.MAX_VALUE)));
 		content.injectTableCellContentChildtype(resource);
 
+		/*
+		Header Row: cells 1-n, 0
+		 */
 		Predicate property = new Predicate();
 		property.setSectionFinder(new ConstraintSectionFinder(
 				new AllTextFinderTrimmed(),
 				new TableIndexConstraint(1, Integer.MAX_VALUE, 0, 1)));
 		content.injectTableCellContentChildtype(property);
 
+		/*
+		Inner cell entries: cells 1-n,1-n
+		 */
 		ObjectList object = new ObjectList();
-		object.setSectionFinder(new ConstraintSectionFinder(
+		// add aux-type to enable drop-area-rendering
+		OntologyTableCellEntry cellEntry = new OntologyTableCellEntry(object);
+		cellEntry.setSectionFinder(new ConstraintSectionFinder(
 				new AllTextFinderTrimmed(),
 				new TableIndexConstraint(1, Integer.MAX_VALUE, 1, Integer.MAX_VALUE)));
-		content.injectTableCellContentChildtype(object);
+		content.injectTableCellContentChildtype(cellEntry);
 
 	}
 
