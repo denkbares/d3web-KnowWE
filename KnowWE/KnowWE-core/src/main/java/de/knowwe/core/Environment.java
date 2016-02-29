@@ -463,7 +463,7 @@ public class Environment {
 			if (pluggedRendererForType != null) {
 				if (pluggedRendererForType.contains(currentRenderer)) {
 					int currentIndex = pluggedRendererForType.indexOf(currentRenderer);
-					if (pluggedRendererForType.size() > currentIndex) {
+					if (pluggedRendererForType.size() > currentIndex + 1) {
 						return pluggedRendererForType.get(currentIndex + 1);
 					}
 				}
