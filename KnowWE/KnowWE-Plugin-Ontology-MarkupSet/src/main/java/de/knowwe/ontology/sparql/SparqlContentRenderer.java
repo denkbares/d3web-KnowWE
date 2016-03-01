@@ -20,7 +20,6 @@
 package de.knowwe.ontology.sparql;
 
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.Node;
@@ -33,9 +32,9 @@ import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 public class SparqlContentRenderer implements Renderer {
@@ -51,7 +50,7 @@ public class SparqlContentRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
-
+		Section<SparqlType> sparqlTypeSection = Sections.cast(section, SparqlType.class);
 		Section<DefaultMarkupType> markupSection = Sections.ancestor(section, DefaultMarkupType.class);
 		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(markupSection);
 		if (core == null) {
@@ -86,19 +85,19 @@ public class SparqlContentRenderer implements Renderer {
 
 		if (sparqlString.toLowerCase().startsWith("construct")) {
 			final Set<Statement> statementsFromCache = core.getStatementsFromCache(section);
-			if(statementsFromCache.size() > 0) {
+			if (statementsFromCache.size() > 0) {
 				final SparqlResultRenderer sparqlResultRenderer = SparqlResultRenderer.getInstance();
 				int limit = 20;
 				int count = 0;
-				result.append("("+statementsFromCache.size()+" statements constructed)");
+				result.append("(" + statementsFromCache.size() + " statements constructed)");
 				result.appendHtml("<table>");
 				for (Statement statement : statementsFromCache) {
 					count++;
-					if(count > limit) {
+					if (count > limit) {
 						// TODO: implement pagination and remove limit
 						result.appendHtml("<tr>");
 						int moreStatements = statementsFromCache.size() - limit;
-						result.append("\n("+moreStatements+" statements hidden)");
+						result.append("\n(" + moreStatements + " statements hidden)");
 						result.appendHtml("</tr>");
 						break;
 					}
@@ -122,22 +121,39 @@ public class SparqlContentRenderer implements Renderer {
 					result.appendHtml("</tr>");
 				}
 				result.appendHtml("</table>");
-			} else {
+			}
+			else {
 				result.append("(No statements constructed)");
 			}
 
 		}
+		else if (sparqlString.toLowerCase().startsWith("ask")) {
+			// process sparql ask query
+			RenderOptions opts = sparqlTypeSection.get().getRenderOptions(sparqlTypeSection, user);
+			try {
+				String query = sparqlTypeSection.get().getSparqlQuery(sparqlTypeSection, user);
+				boolean askResult = opts.getRdf2GoCore().sparqlAsk(query, true, opts.getTimeout());
+				result.appendHtml("<div class='sparqlAsk' sparqlSectionId='" + opts.getId() + "'>");
+				result.append(Boolean.valueOf(askResult).toString());
+				if (opts.isBorder()) result.appendHtml("<div class='border'>");
+				if (opts.isBorder()) result.appendHtml("</div>");
+				result.appendHtml("</div>");
+			}
+			catch (RuntimeException e) {
+				SparqlResultRenderer.handleRuntimeException(sparqlTypeSection, result, e);
+			}
+		}
 		else {
 
 			SparqlResultRenderer.getInstance()
-					.renderSparqlResult(Sections.cast(section, SparqlType.class), user, result);
+					.renderSparqlResult(sparqlTypeSection, user, result);
 
 			if (showQueryFlag != null && showQueryFlag.equalsIgnoreCase("true")) {
-					/*
-					 * we need an opening html element around all the content as
-					 * for some reason the ajax insert onyl inserts one (the
-					 * first) html element into the page
-					 */
+						/*
+						 * we need an opening html element around all the content as
+						 * for some reason the ajax insert onyl inserts one (the
+						 * first) html element into the page
+						 */
 				result.appendHtml("</div>");
 			}
 

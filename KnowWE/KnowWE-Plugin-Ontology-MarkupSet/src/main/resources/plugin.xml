@@ -460,6 +460,13 @@
         <parameter id="priority" value="4"/>
     </extension>
 
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test" id="SparqlAskTest">
+		<parameter id="class" value="de.knowwe.ontology.ci.SparqlAskTest"/>
+		<parameter id="description" value="CITest SparqlAskTest"/>
+		<parameter id="version" value="1.0"/>
+		<parameter id="priority" value="4"/>
+	</extension>
+
     <extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test" id="FunctionalPropertyTest">
         <parameter id="class" value="de.knowwe.ontology.ci.FunctionalPropertyTest"/>
         <parameter id="name" value="FunctionalProperty"/>

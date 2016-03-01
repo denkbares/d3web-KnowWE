@@ -103,13 +103,7 @@ public class SparqlResultRenderer {
 			qrt = section.get().postProcessResult(qrt, user, opts);
 		}
 		catch (RuntimeException e) {
-			String message = e.getMessage();
-			message = message.replaceAll("[^.]\\s*$", "."); // clean up message end
-			result.appendHtml("<span class='warning'>"
-					+ message + " <a onclick='KNOWWE.plugin.sparql.retry(\"" + section.getID()
-					+ "\")' title='Try executing the query again, if you think it was only a temporary problem.'"
-					+ " class='tooltipster'>Try again...</a></span>");
-			Log.warning("Exception while executing SPARQL", e);
+			handleRuntimeException(section, result, e);
 		}
 		if (qrt != null) {
 			renderResult = getSparqlRenderResult(qrt, opts, user, section);
@@ -118,6 +112,16 @@ public class SparqlResultRenderer {
 		}
 		if (opts.isBorder()) result.appendHtml("</div>");
 		result.appendHtml("</div>");
+	}
+
+	public static void handleRuntimeException(Section<? extends SparqlType> section, RenderResult result, RuntimeException e) {
+		String message = e.getMessage();
+		message = message.replaceAll("[^.]\\s*$", "."); // clean up message end
+		result.appendHtml("<span class='warning'>"
+				+ message + " <a onclick='KNOWWE.plugin.sparql.retry(\"" + section.getID()
+				+ "\")' title='Try executing the query again, if you think it was only a temporary problem.'"
+				+ " class='tooltipster'>Try again...</a></span>");
+		Log.warning("Exception while executing SPARQL", e);
 	}
 
 	public SparqlRenderResult getSparqlRenderResult(QueryResultTable qrt, UserContext user, Section<?> section) {
