@@ -28,6 +28,7 @@ import java.util.Collections;
 import org.ontoware.rdf2go.model.Syntax;
 
 import de.d3web.utils.Log;
+import de.d3web.utils.Stopwatch;
 import de.knowwe.core.Environment;
 import de.knowwe.core.event.Event;
 import de.knowwe.core.event.EventListener;
@@ -109,6 +110,7 @@ public class OntologyExporter implements EventListener {
 		Thread exportTread = new Thread() {
 			@Override
 			public void run() {
+				Stopwatch stopwatch = new Stopwatch();
 				WikiConnector connector = Environment.getInstance().getWikiConnector();
 				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 				try {
@@ -120,7 +122,9 @@ public class OntologyExporter implements EventListener {
 				}
 				catch (IOException e) {
 					Log.severe("Unable to export ontology", e);
+					return;
 				}
+				Log.info("Exported ontology to attachment '" + title + "/" + annotationName + " in " + stopwatch.getDisplay());
 			}
 		};
 		exportTread.start();
