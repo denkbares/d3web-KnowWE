@@ -39,6 +39,7 @@ import de.d3web.testing.TestResult;
 import de.d3web.utils.Log;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
+import de.knowwe.core.compile.CompilationStartEvent;
 import de.knowwe.core.event.Event;
 import de.knowwe.core.event.EventListener;
 import de.knowwe.core.event.EventManager;
@@ -46,7 +47,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.progress.AjaxProgressListener;
 import de.knowwe.core.utils.progress.DefaultAjaxProgressListener;
 import de.knowwe.core.utils.progress.ProgressListenerManager;
-import de.knowwe.event.ArticleManagerOpenedEvent;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class CIBuildManager implements EventListener {
@@ -223,7 +223,7 @@ public class CIBuildManager implements EventListener {
 	@Override
 	public Collection<Class<? extends Event>> getEvents() {
 		List<Class<? extends Event>> events = new ArrayList<>(1);
-		events.add(ArticleManagerOpenedEvent.class);
+		events.add(CompilationStartEvent.class);
 		return events;
 	}
 

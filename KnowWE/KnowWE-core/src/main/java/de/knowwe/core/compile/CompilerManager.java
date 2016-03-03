@@ -142,6 +142,7 @@ public class CompilerManager {
 		threadPool.execute(() -> {
 			long startTime = System.currentTimeMillis();
 			try {
+				EventManager.getInstance().fireEvent(new CompilationStartEvent(CompilerManager.this));
 				doCompile(added, removed);
 			}
 			catch (Throwable e) {

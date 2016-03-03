@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 denkbares GmbH, Germany
+ * Copyright (C) 2016 denkbares GmbH, Germany
  *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -17,21 +17,25 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.event;
+package de.knowwe.core.compile;
 
-import de.knowwe.core.ArticleManager;
+import de.knowwe.core.event.Event;
 
 /**
- * Gets fired every time the {@link de.knowwe.core.DefaultArticleManager} of the wiki is opened (a new Article is
- * registered). It is fired, before the article manager is changed or anything is compiled. Use it to terminate
- * asynchronous tasks to avoid concurrent modifications and such.
- * <p/>
+ * Gets fired before a compilation frame starts (before any single compiler compiles).
+ *
  * @author Albrecht Striffler (denkbares GmbH)
- * @created 16.06.2014
+ * @created 03.03.2016
  */
-public class ArticleManagerOpenedEvent extends ArticleManagerEvent {
+public class CompilationStartEvent extends Event {
 
-	public ArticleManagerOpenedEvent(ArticleManager articleManager) {
-		super(articleManager);
+	private CompilerManager compilerManager;
+
+	public CompilationStartEvent(CompilerManager compilerManager) {
+		this.compilerManager = compilerManager;
+	}
+
+	public CompilerManager getCompilerManager() {
+		return compilerManager;
 	}
 }

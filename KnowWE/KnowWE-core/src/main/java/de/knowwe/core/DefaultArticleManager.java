@@ -37,7 +37,6 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.event.ArticleManagerOpenedEvent;
 import de.knowwe.event.ArticleRegisteredEvent;
 
 /**
@@ -178,7 +177,6 @@ public class DefaultArticleManager implements ArticleManager {
 			throw new IllegalStateException("Cannot register articles during compilation");
 		}
 		mainLock.lock();
-		EventManager.getInstance().fireEvent(new ArticleManagerOpenedEvent(this));
 		// Since we only start the compilation during the lock and compilation then happens asynchronously,
 		// it is possible that a threads runs to this point while compilation is still ongoing from the last lock.
 		// Since the next compilation process has to wait for the last one to finish anyway and adding new articles to
