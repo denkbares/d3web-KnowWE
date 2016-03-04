@@ -187,6 +187,9 @@ public class Environment {
 		}
 	}
 
+
+
+
 	private void initEventManager() {
 		// get all EventListeners
 		Extension[] exts = PluginManager.getInstance().getExtensions(
@@ -385,6 +388,9 @@ public class Environment {
 	 */
 	private void decorateTypeTree() {
 
+		// check whether the priorities between plugged types lead to deterministic structure of the type tree
+ 		Plugins.checkTypePriorityClarity();
+
 		// queue the queue of paths to be initialized
 		RootType root = RootType.getInstance();
 		LinkedList<Type[]> queue = new LinkedList<>();
@@ -429,6 +435,10 @@ public class Environment {
 				queue.add(childPath);
 			}
 		}
+	}
+
+	private void checkPriorityConsistency() {
+
 	}
 
 	private void initTagHandler(TagHandler tagHandler) {

@@ -20,13 +20,17 @@ package de.knowwe.plugin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import de.d3web.collections.DefaultMultiMap;
+import de.d3web.collections.MultiMap;
 import de.d3web.collections.PriorityList;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.JPFExtension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
+import de.d3web.utils.Pair;
 import de.knowwe.core.Environment;
 import de.knowwe.core.ResourceLoader;
 import de.knowwe.core.action.Action;
@@ -164,6 +168,49 @@ public class Plugins {
 		}
 	}
 
+	/**
+	 * Checks whether the priorities between plugged types is deterministic.
+	 * Scans through all type extensions for extensions that have equal scope AND equal priority.
+	 * If such case is found a warning is logged.
+	 * The scope 'root' is omitted from the test.
+	 * <p>
+	 *
+	 * Explanation: This will to problems if the SectionFinders of these types are not disjoint, for instance both using AllTextFinder().
+	 * That case can lead to indeterministic parsing results when KnowWE is launched with slightly different
+	 * configurations!
+	 *
+	 * Action to take: If the warning appears, it is recommend to adjust the priority of the types to make them distinct according to the
+	 * intended order. However, if the SectionFinders are disjoint in their acceptance behaviour there is no danger.
+	 *
+	 * Note: This test is incomplete as using Path expression with wildcards, scopes can overlap even though their string
+	 * respresentation is not equal.
+	 *
+	 */
+	public static void checkTypePriorityClarity() {
+		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_Type);
+		MultiMap<Pair<String, Double>, Extension> map = new DefaultMultiMap<>();
+		for (Extension type : extensions) {
+			List<String> scopes = type.getParameters("scope");
+			for (String scope : scopes) {
+				if(!"root".equals(scope)) {
+					map.put(new Pair<>(scope, type.getPriority()), type);
+				}
+			}
+		}
+		for (Pair<String, Double> pair : map.keySet()) {
+			Set<Extension> setOfTypesWithEqualScopeAndPriority = map.getValues(pair);
+			if(setOfTypesWithEqualScopeAndPriority.size() > 1) {
+				String message = "\nDANGER: Found types with equal scope AND priority: scope is: " + pair.getA() + " - priority is: " + pair
+						.getB() + " - the types are:\n";
+				for (Extension extension : setOfTypesWithEqualScopeAndPriority) {
+					message += "Id: "+ extension.getID() + " - Name:"+extension.getName()+"\n";
+				}
+				Log.warning(message);
+			}
+		}
+ 	}
+
 	public static void addRendererToType(Type type, Type[] path) {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_Renderer);
@@ -240,7 +287,7 @@ public class Plugins {
 
 	/**
 	 * Returns a List of all plugged TagHandlers
-	 * <p/>
+	 * <p>
 	 * COMMENT: Alternatively, those tag-handlers can also be introduced separately using the
 	 * "taghandler.text" file. There the class of the tag-handler is listed and will be loaded on
 	 * KnowWE initialization.
@@ -253,7 +300,7 @@ public class Plugins {
 
 	/**
 	 * Returns a list of all plugged PageAppendHandlers.
-	 * <p/>
+	 * <p>
 	 * These handlers allow a module to append some content to the wiki-page content. There are 2
 	 * kinds of appendHandlers one append content at top of the page, the other appends at the
 	 * bottom
