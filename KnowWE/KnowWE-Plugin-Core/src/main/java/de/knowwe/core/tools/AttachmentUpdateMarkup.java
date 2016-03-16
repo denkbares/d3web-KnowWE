@@ -31,6 +31,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
+import java.util.Base64;
 import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -216,9 +217,16 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 					return;
 				}
 
+				final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+				if (url.getUserInfo() != null) {
+					String basicAuth = "Basic " + new String(Base64.getEncoder().encode(url.getUserInfo().getBytes()));
+					connection.setRequestProperty("Authorization", basicAuth);
+				}
+
 				Environment.getInstance()
 						.getWikiConnector()
-						.storeAttachment(attachment.getParentName(), attachment.getFileName(), "SYSTEM", url.openStream());
+						.storeAttachment(attachment.getParentName(), attachment.getFileName(), "SYSTEM", connection.getInputStream());
 				Log.info("Updated attachment '" + attachment.getPath() + "' with resource from URL " + url.toString());
 				Messages.clearMessages(section, AttachmentUpdateMarkup.class);
 			}
@@ -247,6 +255,12 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 
 	protected static boolean needsUpdate(WikiAttachment attachment, URL url) throws IOException {
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+		if (url.getUserInfo() != null) {
+			String basicAuth = "Basic " + new String(Base64.getEncoder().encode(url.getUserInfo().getBytes()));
+			connection.setRequestProperty("Authorization", basicAuth);
+		}
+
 		connection.setRequestMethod("HEAD");
 		connection.connect();
 
