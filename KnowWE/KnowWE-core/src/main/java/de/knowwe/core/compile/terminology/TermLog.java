@@ -27,9 +27,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.jetbrains.annotations.NotNull;
+
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.compile.terminology.TermCompiler.MultiDefinitionMode;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
@@ -56,10 +59,10 @@ class TermLog {
 //	private final Map<String, Set<TermLogEntry>> termIdentifiers =
 //			new HashMap<>(2);
 
-	public void addTermDefinition(Compiler compiler,
-								  Section<?> termDefinition,
-								  Class<?> termClass,
-								  Identifier termIdentifier) {
+	void addTermDefinition(Compiler compiler,
+						   Section<?> termDefinition,
+						   Class<?> termClass,
+						   Identifier termIdentifier) {
 
 		termDefinitions.add(new TermLogEntry(termDefinition, termClass, termIdentifier));
 		handleMessagesForDefinition(compiler);
@@ -67,30 +70,50 @@ class TermLog {
 
 	private void handleMessagesForDefinition(Compiler compiler) {
 
-		Collection<Message> msgs = new ArrayList<>(2);
+		MultiDefinitionMode multiDefinitionMode;
+		if (compiler instanceof TermCompiler) {
+			multiDefinitionMode = ((TermCompiler) compiler).getMultiDefinitionRegistrationMode();
+		}
+		else {
+			multiDefinitionMode = MultiDefinitionMode.ignore;
+		}
+
+		Collection<Message> messages = new ArrayList<>(2);
 		if (termDefinitions.size() > 1) {
 			Set<Class<?>> termClasses = getTermClasses();
+			String term = termDefinitions.iterator()
+					.next().getTermIdentifier().toExternalForm();
 			if (termClasses.size() > 1) {
-				String term = termDefinitions.iterator()
-						.next().getTermIdentifier().toExternalForm();
-				msgs.add(Messages.ambiguousTermClassesError(term, termClasses));
+				messages.add(Messages.ambiguousTermClassesError(term, termClasses));
 			}
 			Collection<Identifier> termIdentifiers = getTermIdentifiers();
 			if (termIdentifiers.size() > 1) {
-				msgs.add(Messages.ambiguousTermCaseWarning(termIdentifiers));
+				messages.add(Messages.ambiguousTermCaseWarning(termIdentifiers));
 			}
+			if (multiDefinitionMode == MultiDefinitionMode.warn) {
+				messages.add(Messages.warning(getMultiDefinitionText(term)));
+			}
+			else if (multiDefinitionMode == MultiDefinitionMode.error) {
+				messages.add(Messages.error(getMultiDefinitionText(term)));
+			}
+
 		}
 		for (TermLogEntry termDefinition : termDefinitions) {
-			Messages.storeMessages(compiler, termDefinition.getSection(), this.getClass(), msgs);
+			Messages.storeMessages(compiler, termDefinition.getSection(), this.getClass(), messages);
 		}
 		for (TermLogEntry termReference : termReferences) {
-			Messages.storeMessages(compiler, termReference.getSection(), this.getClass(), msgs);
+			Messages.storeMessages(compiler, termReference.getSection(), this.getClass(), messages);
 		}
 	}
 
-	public void addTermReference(Compiler compiler,
-								 Section<?> termReference,
-								 Class<?> termClass, Identifier termIdentifier) {
+	@NotNull
+	private String getMultiDefinitionText(String term) {
+		return "The term '" + term + "' has multiple definitions.";
+	}
+
+	void addTermReference(Compiler compiler,
+						  Section<?> termReference,
+						  Class<?> termClass, Identifier termIdentifier) {
 
 		termReferences.add(new TermLogEntry(termReference, termClass, termIdentifier));
 		handleMessagesForReference(compiler, termReference, termIdentifier, termClass);
@@ -122,46 +145,46 @@ class TermLog {
 		Messages.storeMessages(compiler, section, this.getClass(), msgs);
 	}
 
-	public void removeTermDefinition(Compiler compiler,
-									 Section<?> termDefinition,
-									 Class<?> termClass,
-									 Identifier termIdentifier) {
+	void removeTermDefinition(Compiler compiler,
+							  Section<?> termDefinition,
+							  Class<?> termClass,
+							  Identifier termIdentifier) {
 
 		termDefinitions.remove(new TermLogEntry(termDefinition, termClass, termIdentifier));
 		Messages.clearMessages(compiler, termDefinition, this.getClass());
 		handleMessagesForDefinition(compiler);
 	}
 
-	public void removeTermReference(Compiler compiler, Section<?> termReference,
-									Class<?> termClass, Identifier termIdentifier) {
+	void removeTermReference(Compiler compiler, Section<?> termReference,
+							 Class<?> termClass, Identifier termIdentifier) {
 		termReferences.remove(new TermLogEntry(termReference, termClass, termIdentifier));
 		Messages.clearMessages(compiler, termReference, this.getClass());
 	}
 
-	public Section<? extends Type> getDefiningSection() {
+	Section<? extends Type> getDefiningSection() {
 		if (this.termDefinitions.isEmpty()) return null;
 		return this.termDefinitions.first().getSection();
 	}
 
-	public Set<Section<? extends Type>> getRedundantDefinitions() {
+	Set<Section<? extends Type>> getRedundantDefinitions() {
 		Set<Section<?>> result = getDefinitions();
 		result.remove(this.getDefiningSection());
 		return Collections.unmodifiableSet(result);
 	}
 
-	public Set<Section<? extends Type>> getDefinitions() {
+	public Set<Section<?>> getDefinitions() {
 		return Collections.unmodifiableSet(termDefinitions.stream().map(TermLogEntry::getSection).collect(toSet()));
 	}
 
-	public Set<Section<? extends Type>> getReferences() {
+	public Set<Section<?>> getReferences() {
 		return Collections.unmodifiableSet(termReferences.stream().map(TermLogEntry::getSection).collect(toSet()));
 	}
 
-	public Set<Class<?>> getTermClasses() {
+	Set<Class<?>> getTermClasses() {
 		return Collections.unmodifiableSet(termDefinitions.stream().map(TermLogEntry::getTermClass).collect(toSet()));
 	}
 
-	public Collection<Identifier> getTermIdentifiers() {
+	Collection<Identifier> getTermIdentifiers() {
 		// Identifiers hash is case insensitive, here we are case sensitive and have to hash by external form first...
 		Map<String, Identifier> identifierMap = new HashMap<>(termDefinitions.size());
 		for (TermLogEntry termDefinition : termDefinitions) {

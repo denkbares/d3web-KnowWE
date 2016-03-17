@@ -21,12 +21,15 @@ package de.knowwe.ontology.compile;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.jetbrains.annotations.NotNull;
+
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.ParallelScriptCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.Event;
 import de.knowwe.core.event.EventListener;
@@ -50,7 +53,7 @@ import de.knowwe.rdf2go.RuleSet;
  */
 public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoCompiler, IncrementalCompiler, EventListener {
 
-	public static final String COMMIT_NOTIFICATION_ID = "CommitNotification";
+	static final String COMMIT_NOTIFICATION_ID = "CommitNotification";
 	private Rdf2GoCore rdf2GoCore;
 	private TerminologyManager terminologyManager;
 	private boolean completeCompilation = true;
@@ -59,17 +62,24 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	private ParallelScriptCompiler<OntologyCompiler> destroyScriptCompiler;
 	private final RuleSet ruleSet;
 	private final String compilingArticle;
+	private MultiDefinitionMode multiDefinitionMode;
 
 	public OntologyCompiler(PackageManager manager,
 							Section<? extends PackageCompileType> compileSection,
 							Class<? extends Type> compilingType,
-							RuleSet ruleSet) {
+							RuleSet ruleSet, MultiDefinitionMode multiDefMode) {
 		super(manager, compileSection, compilingType);
 		EventManager.getInstance().registerListener(this);
+		this.multiDefinitionMode = multiDefMode == null ? MultiDefinitionMode.ignore : multiDefMode;
 		this.scriptCompiler = new ParallelScriptCompiler<>(this);
-		this.destroyScriptCompiler = new ParallelScriptCompiler<>(this);
 		this.ruleSet = ruleSet;
 		this.compilingArticle = compileSection.getTitle();
+	}
+
+	@Override
+	@NotNull
+	public MultiDefinitionMode getMultiDefinitionRegistrationMode() {
+		return multiDefinitionMode;
 	}
 
 	@Override

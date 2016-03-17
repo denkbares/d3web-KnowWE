@@ -18,9 +18,10 @@
  */
 package de.knowwe.ontology.compile;
 
-import java.beans.EventHandler;
 import java.util.List;
 
+import de.d3web.core.inference.Rule;
+import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
@@ -31,6 +32,8 @@ import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileTypeRenderer;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
+import de.knowwe.core.compile.terminology.TermCompiler;
+import de.knowwe.core.compile.terminology.TermCompiler.MultiDefinitionMode;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -50,6 +53,8 @@ import de.knowwe.ontology.kdom.InitTerminologyHandler;
 import de.knowwe.rdf2go.RuleSet;
 import de.knowwe.util.Icon;
 
+import static java.lang.Enum.valueOf;
+
 /**
  * Compiles and provides ontology from the Ontology-MarkupSet.
  *
@@ -61,7 +66,8 @@ public class OntologyType extends DefaultMarkupType {
 	public static final String PLUGIN_ID = "KnowWE-Plugin-Ontology-MarkupSet";
 
 	public static final String ANNOTATION_COMPILE = "uses";
-	public static final String ANNOTATION_RULESET = "ruleset";
+	public static final String ANNOTATION_RULE_SET = "ruleset";
+	public static final String ANNOTATION_MULTI_DEF_MODE = "multiDefinitionMode";
 	public static final String ANNOTATION_COMMIT = "commit";
 	public static final String ANNOTATION_IMPORT = "import";
 	public static final String ANNOTATION_EXPORT = "export";
@@ -83,8 +89,11 @@ public class OntologyType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_SILENT_IMPORT, false);
 		MARKUP.addAnnotationIcon(ANNOTATION_SILENT_IMPORT, Icon.FILE.addTitle("Import silently (faster, but without term support)"));
 
-		MARKUP.addAnnotation(ANNOTATION_RULESET, false, RuleSet.values());
-		MARKUP.addAnnotationIcon(ANNOTATION_RULESET, Icon.COG.addTitle("Rule Set"));
+		MARKUP.addAnnotation(ANNOTATION_RULE_SET, false, RuleSet.values());
+		MARKUP.addAnnotationIcon(ANNOTATION_RULE_SET, Icon.COG.addTitle("Rule Set"));
+
+		MARKUP.addAnnotation(ANNOTATION_MULTI_DEF_MODE, false, MultiDefinitionMode.values());
+		MARKUP.addAnnotationIcon(ANNOTATION_MULTI_DEF_MODE, Icon.ORDERED_LIST.addTitle("Multi-definition-mode"));
 
 		MARKUP.addAnnotationContentType(ANNOTATION_IMPORT, new AttachmentType());
 		MARKUP.addAnnotation(ANNOTATION_COMMIT, false, CommitType.values());
@@ -126,10 +135,12 @@ public class OntologyType extends DefaultMarkupType {
 		@Override
 		public void compile(PackageRegistrationCompiler compiler, Section<PackageCompileType> section) throws CompilerMessage {
 			Section<DefaultMarkupType> ontologyType = Sections.ancestor(section, DefaultMarkupType.class);
-			String ruleSetValue = DefaultMarkupType.getAnnotation(ontologyType, ANNOTATION_RULESET);
+			String ruleSetValue = DefaultMarkupType.getAnnotation(ontologyType, ANNOTATION_RULE_SET);
 			RuleSet ruleSet = getRuleSet(ruleSetValue);
+			String multiDefModeValue = DefaultMarkupType.getAnnotation(ontologyType, ANNOTATION_MULTI_DEF_MODE);
+			MultiDefinitionMode multiDefMode = getMultiDefinitionMode(multiDefModeValue);
 			OntologyCompiler ontologyCompiler = new OntologyCompiler(
-					compiler.getPackageManager(), section, OntologyType.class, ruleSet );
+					compiler.getPackageManager(), section, OntologyType.class, ruleSet, multiDefMode);
 			compiler.getCompilerManager().addCompiler(5, ontologyCompiler);
 
 			//OntologyConstructCompiler constructCompiler = new OntologyConstructCompiler(ontologyCompiler);
@@ -140,14 +151,22 @@ public class OntologyType extends DefaultMarkupType {
 			}
 		}
 
+		private MultiDefinitionMode getMultiDefinitionMode(String multiDefModeValue) {
+			return parseEnum(MultiDefinitionMode.class, multiDefModeValue, "multi-definition-mode");
+		}
+
 		private RuleSet getRuleSet(String ruleSetValue) {
-			if (ruleSetValue != null) {
+			return parseEnum(RuleSet.class, ruleSetValue, "rule set");
+		}
+
+		private <T extends Enum<T>> T parseEnum(Class<T> enumClass, String value, String enumName) {
+			if (value != null) {
 				try {
-					return RuleSet.valueOf(ruleSetValue);
+					return Enum.valueOf(enumClass, value);
 				}
 				catch (IllegalArgumentException e) {
-					// no such rule set!
-					Log.warning("No owlim ruleset found for: " + ruleSetValue);
+					Log.warning("'" + value + "' is not a " + enumName + ", please choose one of the following: "
+							+ Strings.concat(", ", enumClass.getEnumConstants()));
 				}
 			}
 			return null;

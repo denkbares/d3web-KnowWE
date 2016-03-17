@@ -18,14 +18,33 @@
  */
 package de.knowwe.core.compile.terminology;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
- * 
  * Compilers that uses a TerminologyManager.
  * 
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 12.12.2013
  */
 public interface TermCompiler extends de.knowwe.core.compile.Compiler {
+
+	/**
+	 * Defines how the compiler should handle multiple definitions of the same term.
+	 */
+	enum MultiDefinitionMode {
+		/**
+		 * Multiple definitions are ignored (they are considered ok, no warning/error is generated).
+		 */
+		ignore,
+		/**
+		 * If there are multiple definitions of the same term, a warning message is generated.
+		 */
+		warn,
+		/**
+		 * If there are multiple definitions of the same term, an error message is generated.
+		 */
+		error
+	}
 
 	/**
 	 * Returns the {@link TerminologyManager} that will hold all defined
@@ -35,6 +54,16 @@ public interface TermCompiler extends de.knowwe.core.compile.Compiler {
 	 * @created 30.10.2013
 	 * @return the {@link TerminologyManager} of this compiler
 	 */
-	public TerminologyManager getTerminologyManager();
+	TerminologyManager getTerminologyManager();
+
+	/**
+	 * Defines how the compiler should handle multiple definitions of the same term.
+	 *
+	 * @return the current {@link MultiDefinitionMode} of this compiler.
+	 */
+	@NotNull
+	default MultiDefinitionMode getMultiDefinitionRegistrationMode() {
+		return MultiDefinitionMode.ignore;
+	}
 
 }
