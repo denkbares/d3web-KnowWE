@@ -18,14 +18,18 @@
  */
 package de.knowwe.ontology.kdom.table;
 
-import de.d3web.strings.Identifier;
-import de.knowwe.core.kdom.objects.TermReference;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.node.Node;
+import org.ontoware.rdf2go.model.node.URI;
+
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableLine;
@@ -34,17 +38,9 @@ import de.knowwe.ontology.compile.OntologyCompileScript;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.turtle.Object;
 import de.knowwe.ontology.turtle.Predicate;
-import de.knowwe.ontology.turtle.TurtleURI;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.StatementProviderResult;
 import de.knowwe.rdf2go.Rdf2GoCore;
-import org.ontoware.rdf2go.model.Statement;
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.URI;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * @author Sebastian Furth (denkbares GmbH)
@@ -72,9 +68,11 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
         for (Section<Object> objectReference : objects) {
             if (Sections.ancestor(objectReference, TableCellContent.class) != null) {
                 Section<Predicate> propertyReference = TableUtils.getColumnHeader(objectReference, Predicate.class);
-                URI propertyUri = propertyReference.get().getNode(propertyReference, compiler).asURI();
-                Node objectNode = objectReference.get().getNode(objectReference, compiler);
-                statements.add(core.createStatement(subjectNode.asResource(), propertyUri, objectNode));
+				if (propertyReference != null) {
+					URI propertyUri = propertyReference.get().getNode(propertyReference, compiler).asURI();
+					Node objectNode = objectReference.get().getNode(objectReference, compiler);
+					statements.add(core.createStatement(subjectNode.asResource(), propertyUri, objectNode));
+				}
             } else {
 				// TODO: clarify whenever this case can make sense...!?
                 final StatementProviderResult statementProviderResult = objectReference.get().getStatements(objectReference, compiler);
