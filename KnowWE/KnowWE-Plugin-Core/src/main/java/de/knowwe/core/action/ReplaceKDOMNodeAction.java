@@ -66,14 +66,17 @@ public class ReplaceKDOMNodeAction extends AbstractAction {
 		Map<String, String> nodesMap = new HashMap<String, String>();
 		nodesMap.put(nodeID, newText);
 
-		String result = "done";
+		String result = replace(context, nodesMap);
+		return result;
+	}
 
+	public static String replace(UserActionContext context, Map<String, String> nodesMap) throws IOException {
+		String result = "done";
 		ReplaceResult replaceResult = Sections.replace(context, nodesMap);
 		replaceResult.sendErrors(context);
 		Map<String, String> newSectionIDs = replaceResult.getSectionMapping();
 		if (newSectionIDs != null && newSectionIDs.size() > 1) {
 			result = newSectionIDs.values().iterator().next();
-
 		}
 		Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
 		return result;
