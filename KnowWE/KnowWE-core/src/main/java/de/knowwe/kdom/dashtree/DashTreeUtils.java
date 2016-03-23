@@ -40,6 +40,12 @@ public class DashTreeUtils {
 	protected DashTreeUtils() {
 	}
 
+	/**
+	 * Returns a list of all successor DashTree elements of the given element.
+	 *
+	 * @param section a DashTreeElement or a sub-KDOM-node of a DashTreeElement
+	 * @return
+	 */
 	public static List<Section<DashTreeElement>> findSuccessorDashtreeElements(Section<?> section) {
 		return findSuccessorDashtreeElements(section, -1);
 	}
@@ -48,6 +54,12 @@ public class DashTreeUtils {
 		return findSuccessorDashtreeElements(section, 2);
 	}
 
+	/**
+	 * Returns a list of all successor DashTree elements of the given element to the given depth
+	 *
+	 * @param section a DashTreeElement or a sub-KDOM-node of a DashTreeElement
+	 * @return
+	 */
 	private static List<Section<DashTreeElement>> findSuccessorDashtreeElements(Section<?> section, int depth) {
 		Section<DashTreeElement> element;
 		if (section.get() instanceof DashTreeElement) {
