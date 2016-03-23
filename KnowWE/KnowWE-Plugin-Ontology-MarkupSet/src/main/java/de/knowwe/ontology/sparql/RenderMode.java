@@ -26,6 +26,6 @@ package de.knowwe.ontology.sparql;
  */
 public enum RenderMode {
 
-	HTML, PlainText
+	HTML, PlainText, ToolMenu
 
 }

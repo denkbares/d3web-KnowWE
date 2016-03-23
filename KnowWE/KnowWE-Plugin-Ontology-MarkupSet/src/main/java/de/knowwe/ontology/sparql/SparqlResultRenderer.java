@@ -23,8 +23,11 @@ import de.d3web.utils.Log;
 import de.d3web.utils.Pair;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 import de.knowwe.ontology.compile.OntologyType;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -269,7 +272,7 @@ public class SparqlResultRenderer {
 
 				Node node = row.getValue(var);
 				String erg = renderNode(node, var, rawOutput, user, opts.getRdf2GoCore(),
-						RenderMode.HTML);
+						getRenderMode(section));
 
 				renderResult.appendHtml("<td>");
 				renderResult.append(erg);
@@ -281,6 +284,18 @@ public class SparqlResultRenderer {
 		renderResult.appendHtml("</table>");
 		renderResult.appendHtml("</div>");
 		return new SparqlRenderResult(renderResult.toStringRaw());
+	}
+
+	private RenderMode getRenderMode(Section<?> section) {
+		Section<DefaultMarkupType> defaultMarkupTypeSection = Sections.ancestor(section, DefaultMarkupType.class);
+		String annotation = DefaultMarkupType.getAnnotation(defaultMarkupTypeSection, SparqlMarkupType.RENDER_MODE);
+		if(annotation != null) {
+			RenderMode renderMode = RenderMode.valueOf(annotation);
+			if(renderMode != null) {
+				return renderMode;
+			}
+		}
+		return RenderMode.HTML;
 	}
 
 	private ResultTableModel createMagicallySortedTable(ResultTableModel table) {

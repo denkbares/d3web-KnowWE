@@ -42,7 +42,7 @@ public class ToolUtils {
 		return result;
 	}
 
-	static boolean hasToolInstances(Section<?> section, UserContext userContext) {
+	public static boolean hasToolInstances(Section<?> section, UserContext userContext) {
 		for (Extension match : extensions.getMatches(section)) {
 			ToolProvider provider = (ToolProvider) match.getSingleton();
 			if (provider.hasTools(section, userContext)) return true;

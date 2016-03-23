@@ -221,6 +221,10 @@
         <parameter id="version" value="1.0"/>
         <parameter id="priority" value="50"/>
         <parameter id="scope" value="ResourceReference"/>
+        <parameter id="scope" value="TSMElementName"/>
+        <parameter id="scope" value="TSMElementId"/>
+        <parameter id="scope" value="TSMElementLocation"/>
+        <parameter id="scope" value="TSMElementType"/>
     </extension>
 
     <extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="ClassType">

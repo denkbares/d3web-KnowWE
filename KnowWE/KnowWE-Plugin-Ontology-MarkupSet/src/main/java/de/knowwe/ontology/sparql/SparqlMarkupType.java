@@ -43,6 +43,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 	public static final String BORDER = "border";
 	public static final String NAME = "name";
 	public static final String RENDER_QUERY = "showQuery";
+	public static final String RENDER_MODE = "renderMode";
 	public static final String TIMEOUT = "timeout";
 	private static DefaultMarkup m = null;
 
@@ -64,6 +65,8 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		m.addAnnotationRenderer(SORTING, NothingRenderer.getInstance());
 		m.addAnnotation(BORDER, false, "true", "false");
 		m.addAnnotationRenderer(BORDER, NothingRenderer.getInstance());
+		m.addAnnotation(RENDER_MODE, false, "PlainText", "HTML", "ToolMenu");
+		m.addAnnotationRenderer(RENDER_MODE, NothingRenderer.getInstance());
 		m.addAnnotation(AsynchronRenderer.ASYNCHRONOUS, false, "true", "false");
 		m.addAnnotationRenderer(AsynchronRenderer.ASYNCHRONOUS, NothingRenderer.getInstance());
 		m.addAnnotation(TIMEOUT, false, Pattern.compile("\\d+(\\.\\d+)?|" + TimeStampType.DURATION));
