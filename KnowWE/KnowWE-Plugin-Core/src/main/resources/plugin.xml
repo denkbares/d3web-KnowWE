@@ -63,27 +63,10 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="TermInfoToolProvider">
 		<parameter id="class" value="de.knowwe.core.tools.TermInfoToolProvider" />
 		<parameter id="name" value="TermInfoToolProvider" />
-		<parameter id="description" value="Offers Renaming, Show Info etc. for terms" />
+		<parameter id="description" value="Offers a link to the/a definition of a term" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="4" />
-		<parameter id="scope" value="QuestionDefinition" />
-		<parameter id="scope" value="QuestionnaireDefinition" />
-		<parameter id="scope" value="SolutionDefinition" />
-		<parameter id="scope" value="QuestionReference" />
-		<parameter id="scope" value="QuestionnaireReference" />
-		<parameter id="scope" value="QASetReference" />
-		<parameter id="scope" value="QASetDefinition" />
-		<parameter id="scope" value="AnswerReference" />
-		<parameter id="scope" value="AnswerDefinition" />
-		<parameter id="scope" value="SolutionReference" />
-		<parameter id="scope" value="NamedObjectReference" />
-		<parameter id="scope" value="AbstractIRITermDefinition" />
-		<parameter id="scope" value="IRITermReference" />
-		<parameter id="scope" value="FlowchartOrderReference" />
-		<parameter id="scope" value="PackageTerm" />
-		<parameter id="scope" value="CellContent" />
-		<parameter id="scope" value="TSMElementName" />
-		<parameter id="scope" value="TSMElementLocation" />
+		<parameter id="scope" value="Term" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="CompositeEditToolProvider">
@@ -92,23 +75,7 @@
 		<parameter id="description" value="Offers Renaming, Show Info etc. for terms" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="2" />
-		<parameter id="scope" value="QuestionDefinition" />
-		<parameter id="scope" value="SolutionDefinition" />
-		<parameter id="scope" value="QuestionReference" />
-		<parameter id="scope" value="QuestionnaireReference" />
-		<parameter id="scope" value="QASetReference" />
-		<parameter id="scope" value="QASetDefinition" />
-		<parameter id="scope" value="AnswerReference" />
-		<parameter id="scope" value="AnswerDefinition" />
-		<parameter id="scope" value="SolutionReference" />
-		<parameter id="scope" value="NamedObjectReference" />
-		<parameter id="scope" value="AbstractIRITermDefinition" />
-		<parameter id="scope" value="IRITermReference" />
-		<parameter id="scope" value="FlowchartOrderReference" />
-		<parameter id="scope" value="PackageTerm" />
-		<parameter id="scope" value="CellContent" />
-		<parameter id="scope" value="TSMElementName" />
-		<parameter id="scope" value="TSMElementLocation" />
+		<parameter id="scope" value="Term" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="CompositeEditOpenDialogAction">
