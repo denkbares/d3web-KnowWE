@@ -41,6 +41,45 @@ KNOWWE.plugin.tableEditTool = function() {
 				createButton("toggle_header", "png")]);
 		},
 
+		getEventInfo : function($event) {
+			return {
+				target : $event.target,
+				rect : $event.target.getBoundingClientRect(),
+				clientX : $event.clientX,
+				clientY : $event.clientY,
+				pageX : $event.pageX,
+				pageY : $event.pageY
+
+			};
+		},
+
+		handleEventInfo : function(id, eventInfo) {
+			var $td = jq$(eventInfo.target);
+			if (!$td.is("td")) {
+				$td = $td.parents('td').first();
+			}
+			if (!$td.exists()) return;
+			var column = $td.index() + 1;
+			var $tr = $td.parents("tr");
+			var row = $tr.index() + 1;
+
+			var $newTable = spreadsheet[id].element.parent();
+			var $newTr = $newTable.find("tr:nth-of-type(" + row + ")");
+			if (!$newTr.exists()) return;
+			var $newTd = $newTr.find("td:nth-of-type(" + column + ")");
+			if (!$newTd.exists()) return;
+			var newRect = $newTd[0].getBoundingClientRect();
+
+			var diffY = newRect.top - eventInfo.rect.top;
+			var diffX = newRect.left - eventInfo.rect.left;
+			jq$(window).scrollTop(jq$(window).scrollTop() + diffY);
+			jq$(window).scrollLeft(jq$(window).scrollLeft() + diffX);
+
+			var data = $newTd.data("cellInfo");
+			data.spreadsheet.selectCell(data.row, data.col);
+
+		},
+
 		postProcessHTML : function(id) {
 			spreadsheet[id] = new Spreadsheet(createRootID(id), function() {
 				_IE.save(id)
