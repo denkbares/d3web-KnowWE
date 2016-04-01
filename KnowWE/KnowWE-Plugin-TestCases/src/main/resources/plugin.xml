@@ -151,9 +151,9 @@
 
 
 	<!--  Table Editor -->
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="TableEditToolProvider">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="TestCaseTableEditToolProvider">
 		<parameter id="class" value="de.knowwe.testcases.tools.TableEditToolProvider" />
-		<parameter id="name" value="TableEditToolProvider" />
+		<parameter id="name" value="TestCaseTableEditToolProvider" />
 		<parameter id="description" value="Offers a tool for a spreadsheet-like table editor." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="3" />
