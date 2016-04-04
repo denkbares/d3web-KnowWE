@@ -78,7 +78,7 @@ public class Plugins {
 	public static final String EXTENDED_POINT_Compiler = "Compiler";
 	public static final String EXTENDED_POINT_StatusProvider = "StatusProvider";
 
-	private static <T> List<T> getSingeltons(String point, Class<T> clazz) {
+	private static <T> List<T> getSingletons(String point, Class<T> clazz) {
 		PluginManager pm = PluginManager.getInstance();
 		Extension[] extensions = pm.getExtensions(EXTENDED_PLUGIN_ID, point);
 		List<T> result = new ArrayList<>();
@@ -94,7 +94,7 @@ public class Plugins {
 	 * @return List of all Instantiations
 	 */
 	public static List<Instantiation> getInstantiations() {
-		return getSingeltons(EXTENDED_POINT_Instantiation, Instantiation.class);
+		return getSingletons(EXTENDED_POINT_Instantiation, Instantiation.class);
 	}
 
 	/**
@@ -103,7 +103,7 @@ public class Plugins {
 	 * @return List of all StatusProvider
 	 */
 	public static List<StatusProvider> getStatusProviders() {
-		return getSingeltons(EXTENDED_POINT_StatusProvider, StatusProvider.class);
+		return getSingletons(EXTENDED_POINT_StatusProvider, StatusProvider.class);
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class Plugins {
 	 * clicking on pre-generated links on the wiki pages.
 	 */
 	public static List<Action> getKnowWEAction() {
-		return getSingeltons(EXTENDED_POINT_KnowWEAction, Action.class);
+		return getSingletons(EXTENDED_POINT_KnowWEAction, Action.class);
 	}
 
 	public static void addChildrenTypesToType(Type type, Type[] path) {
@@ -174,17 +174,19 @@ public class Plugins {
 	 * If such case is found a warning is logged.
 	 * The scope 'root' is omitted from the test.
 	 * <p>
-	 *
-	 * Explanation: This will to problems if the SectionFinders of these types are not disjoint, for instance both using AllTextFinder().
+	 * <p>
+	 * Explanation: This will to problems if the SectionFinders of these types are not disjoint, for instance both using
+	 * AllTextFinder().
 	 * That case can lead to indeterministic parsing results when KnowWE is launched with slightly different
 	 * configurations!
-	 *
-	 * Action to take: If the warning appears, it is recommend to adjust the priority of the types to make them distinct according to the
+	 * <p>
+	 * Action to take: If the warning appears, it is recommend to adjust the priority of the types to make them distinct
+	 * according to the
 	 * intended order. However, if the SectionFinders are disjoint in their acceptance behaviour there is no danger.
-	 *
-	 * Note: This test is incomplete as using Path expression with wildcards, scopes can overlap even though their string
+	 * <p>
+	 * Note: This test is incomplete as using Path expression with wildcards, scopes can overlap even though their
+	 * string
 	 * respresentation is not equal.
-	 *
 	 */
 	public static void checkTypePriorityClarity() {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
@@ -193,23 +195,25 @@ public class Plugins {
 		for (Extension type : extensions) {
 			List<String> scopes = type.getParameters("scope");
 			for (String scope : scopes) {
-				if(!"root".equals(scope)) {
+				if (!"root".equals(scope)) {
 					map.put(new Pair<>(scope, type.getPriority()), type);
 				}
 			}
 		}
 		for (Pair<String, Double> pair : map.keySet()) {
 			Set<Extension> setOfTypesWithEqualScopeAndPriority = map.getValues(pair);
-			if(setOfTypesWithEqualScopeAndPriority.size() > 1) {
-				String message = "\nDANGER: Found types with equal scope AND priority: scope is: " + pair.getA() + " - priority is: " + pair
-						.getB() + " - the types are:\n";
+			if (setOfTypesWithEqualScopeAndPriority.size() > 1) {
+				String message = "Found types with equal scope AND priority. " +
+						"This is a plugin configuration error and can produce nondeterministic behavior!" +
+						"Scope is: " + pair.getA() + ", priority is: " + pair
+						.getB() + ". The types are:\n";
 				for (Extension extension : setOfTypesWithEqualScopeAndPriority) {
-					message += "Id: "+ extension.getID() + " - Name:"+extension.getName()+"\n";
+					message += "Id: " + extension.getID() + " - Name: " + extension.getName() + "\n";
 				}
-				Log.warning(message);
+				Log.severe(message);
 			}
 		}
- 	}
+	}
 
 	public static void addRendererToType(Type type, Type[] path) {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
@@ -282,7 +286,7 @@ public class Plugins {
 	}
 
 	public static List<SectionizerModule> getSectionizerModules() {
-		return getSingeltons(EXTENDED_POINT_SectionizerModule, SectionizerModule.class);
+		return getSingletons(EXTENDED_POINT_SectionizerModule, SectionizerModule.class);
 	}
 
 	/**
@@ -295,7 +299,7 @@ public class Plugins {
 	 * @return List of TagHandlers
 	 */
 	public static List<TagHandler> getTagHandlers() {
-		return getSingeltons(EXTENDED_POINT_TagHandler, TagHandler.class);
+		return getSingletons(EXTENDED_POINT_TagHandler, TagHandler.class);
 	}
 
 	/**
@@ -308,7 +312,7 @@ public class Plugins {
 	 * @return List of PageAppendHandlers
 	 */
 	public static List<PageAppendHandler> getPageAppendHandlers() {
-		return getSingeltons(EXTENDED_POINT_PageAppendHandler, PageAppendHandler.class);
+		return getSingletons(EXTENDED_POINT_PageAppendHandler, PageAppendHandler.class);
 	}
 
 	/**
@@ -318,7 +322,7 @@ public class Plugins {
 	 * @created 31/07/2012
 	 */
 	public static List<Annotation> getAnnotations() {
-		return getSingeltons(EXTENDED_POINT_Annotation, Annotation.class);
+		return getSingletons(EXTENDED_POINT_Annotation, Annotation.class);
 	}
 
 	/**
