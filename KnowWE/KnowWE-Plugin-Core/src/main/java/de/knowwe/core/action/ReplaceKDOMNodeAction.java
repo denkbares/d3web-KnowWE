@@ -75,7 +75,8 @@ public class ReplaceKDOMNodeAction extends AbstractAction {
 		ReplaceResult replaceResult = Sections.replace(context, nodesMap);
 		replaceResult.sendErrors(context);
 		Map<String, String> newSectionIDs = replaceResult.getSectionMapping();
-		if (newSectionIDs != null && newSectionIDs.size() > 1) {
+		if (newSectionIDs != null && newSectionIDs.size() == 1) {
+			// if one section has been replaced we return the new id to allow the client to just reload/rerender this section
 			result = newSectionIDs.values().iterator().next();
 		}
 		Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
