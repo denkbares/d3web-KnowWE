@@ -210,7 +210,7 @@ public class Plugins {
 				for (Extension extension : setOfTypesWithEqualScopeAndPriority) {
 					message += "Id: " + extension.getID() + " - Name: " + extension.getName() + "\n";
 				}
-				Log.severe(message);
+				Log.severe(message.substring(0, message.length() - 1));
 			}
 		}
 	}
