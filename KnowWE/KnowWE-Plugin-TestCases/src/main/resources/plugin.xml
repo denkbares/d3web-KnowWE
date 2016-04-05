@@ -103,7 +103,7 @@
 		<parameter id="scope" value="TestCasePlayerType" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="InstantEditToolProvider">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="TestCasesInstantEditToolProvider">
 		<parameter id="class" value="de.knowwe.instantedit.tools.InstantEditToolProvider" />
 		<parameter id="name" value="InstantEditToolProvider" />
 		<parameter id="description" value="Offers a button for quick editing a test case sections." />

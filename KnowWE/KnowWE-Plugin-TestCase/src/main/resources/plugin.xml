@@ -39,7 +39,7 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
-        id="InstantEditToolProvider">
+        id="TestCaseInstantEditToolProvider">
         <parameter id="class"
             value="de.knowwe.instantedit.tools.InstantEditToolProvider" />
         <parameter id="name" value="InstantEditToolProvider" />
