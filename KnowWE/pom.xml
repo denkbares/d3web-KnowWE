@@ -328,7 +328,6 @@
 		<repository>
 			<snapshots>
 				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
 				<checksumPolicy>ignore</checksumPolicy>
 			</snapshots>
 			<releases>
