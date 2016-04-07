@@ -160,7 +160,7 @@ public class RenderResult {
 	 * defined renderer. The method is a common shortcut for <code>DelegateRenderer.getRenderer(section,
 	 * user).render(section, user, result)</code>. The method is null-secure for the section. If
 	 * null is specified as the section, nothing is rendered.
-	 * <p/>
+	 * <p>
 	 * This method additionally consider custom renderer that has previously been set to overwrite
 	 * the default rendering behaviour.
 	 *
@@ -379,7 +379,7 @@ public class RenderResult {
 
 	/**
 	 * Returns the <b>unmasked</b> String of this {@link RenderResult}.
-	 * <p/>
+	 * <p>
 	 * <b>Attention:</b> Do not use this method for append this {@link RenderResult} to another.
 	 * There are two other methods allowing this: {@link RenderResult#toStringRaw()} and {@link
 	 * RenderResult#append(RenderResult)}.
@@ -428,9 +428,9 @@ public class RenderResult {
 	 * Just set tag name and the attributes. Attributes need to be given in pairs. First the name of
 	 * the attribute, second the content of the attribute.
 	 *
-	 * @param tag the tag name of the HTML element
+	 * @param tag        the tag name of the HTML element
 	 * @param attributes the attributes of the HTML element: the odd elements are the attribute
-	 * names and the even elements the attribute contents
+	 *                   names and the even elements the attribute contents
 	 * @created 05.02.2013
 	 */
 	public void appendHtmlTag(String tag, String... attributes) {
@@ -442,13 +442,13 @@ public class RenderResult {
 	 * Just set tag name and the attributes. Attributes need to be given in pairs. First the name of
 	 * the attribute, second the content of the attribute.
 	 *
-	 * @param tag the tag name of the HTML element
-	 * @param encode decides whether the attributes will be html encoded or not
+	 * @param tag        the tag name of the HTML element
+	 * @param encode     decides whether the attributes will be html encoded or not
 	 * @param attributes the attributes of the HTML element: the odd elements are the attribute
-	 * names and the even elements the attribute contents
+	 *                   names and the even elements the attribute contents
 	 * @created 05.02.2013
 	 */
-	public void appendHtmlTag(String tag, boolean encode, String... attributes) {
+	public RenderResult appendHtmlTag(String tag, boolean encode, String... attributes) {
 		StringBuilder html = new StringBuilder();
 		html.append("<").append(tag);
 		for (int i = 0; i + 2 <= attributes.length; i += 2) {
@@ -460,6 +460,7 @@ public class RenderResult {
 		}
 		html.append(">");
 		appendHtml(html.toString());
+		return this;
 	}
 
 	private static String getAttribute(boolean encode, String attributeName, String attribute) {
@@ -473,13 +474,13 @@ public class RenderResult {
 	 * Just set tag name, content and the attributes. Attributes need to be given in pairs. First
 	 * the name of the attribute, second the content of the attribute.
 	 *
-	 * @param tag the tag name of the HTML element
-	 * @param content the content of the HTML element
+	 * @param tag        the tag name of the HTML element
+	 * @param content    the content of the HTML element
 	 * @param attributes the attributes of the HTML element: the odd elements are the attribute
-	 * names and the even elements the attribute contents
+	 *                   names and the even elements the attribute contents
 	 * @created 05.02.2013
 	 */
-	public void appendHtmlElement(String tag, String content, String... attributes) {
+	public RenderResult appendHtmlElement(String tag, String content, String... attributes) {
 		if (tag.equals("img") && Strings.isBlank(content)) {
 			appendHtmlTag(tag, attributes);
 		}
@@ -488,10 +489,18 @@ public class RenderResult {
 			append(content);
 			appendHtml("</" + tag + ">");
 		}
+		return this;
 	}
 
-	public void appendException(String message, Exception e) {
+	public RenderResult appendException(String message, Throwable e) {
 		appendHtmlElement("span", message, "class", "error");
 		Log.severe(message, e);
+		return this;
+	}
+
+	public RenderResult appendException(Throwable e) {
+		appendException("Exception while rendering: " + e.getClass()
+				.getSimpleName() + (e.getMessage() == null ? "" : ": " + e.getMessage()), e);
+		return this;
 	}
 }
