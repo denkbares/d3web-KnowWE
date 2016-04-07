@@ -152,6 +152,20 @@ public class DashTreeUtils {
 	}
 
 	/**
+	 * Creates a String of the number of dashes specified.
+	 *
+	 * @param dashLevel
+	 * @return
+	 */
+	public static String createDashes(int dashLevel) {
+		String result = "";
+		for(int i = 0; i < dashLevel; i++) {
+			result += "-";
+		}
+		return  result;
+	}
+
+	/**
 	 * Delivers the (dash-)level of the element by counting leading '-'
 	 *
 	 * @param s Only works for DashSubtree oder DashTreeElement sections
