@@ -26,7 +26,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 import de.knowwe.ontology.compile.OntologyType;
@@ -140,11 +139,16 @@ public class SparqlResultRenderer {
 	 * @return html table with all results of qrt and size of qrt
 	 * @created 06.12.2010
 	 */
-	public SparqlRenderResult getSparqlRenderResult(QueryResultTable qrt, RenderOptions opts, UserContext user, Section section) {
+	public SparqlRenderResult getSparqlRenderResult(QueryResultTable qrt, RenderOptions opts, UserContext user, Section<?> section) {
 		Compilers.awaitTermination(section.getArticleManager().getCompilerManager());
 		Rdf2GoUtils.lock(qrt);
 		try {
 			return renderQueryResultLocked(qrt, opts, user, section);
+		}
+		catch (Throwable e) {
+			String message = "Exception while rendering SPARQL result";
+			Log.severe(message, e);
+			return new SparqlRenderResult(new RenderResult(user).appendException(e).toStringRaw());
 		}
 		finally {
 			Rdf2GoUtils.unlock(qrt);
@@ -289,9 +293,9 @@ public class SparqlResultRenderer {
 	private RenderMode getRenderMode(Section<?> section) {
 		Section<DefaultMarkupType> defaultMarkupTypeSection = Sections.ancestor(section, DefaultMarkupType.class);
 		String annotation = DefaultMarkupType.getAnnotation(defaultMarkupTypeSection, SparqlMarkupType.RENDER_MODE);
-		if(annotation != null) {
+		if (annotation != null) {
 			RenderMode renderMode = RenderMode.valueOf(annotation);
-			if(renderMode != null) {
+			if (renderMode != null) {
 				return renderMode;
 			}
 		}
