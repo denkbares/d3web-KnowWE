@@ -1,0 +1,85 @@
+!!! Clogged air filter
+(adapted from Wikipadia)
+
+
+!! General
+----
+[{Image src='air-filter-1.JPG' width='180' height='135' align='right' style='border: solid 1px' caption='clogged air filter' }]
+
+The (combustion) air filter prevents abrasive particulate matter from entering the engine's cylinders, where it would cause mechanical wear and oil contamination.
+
+Most fuel injected vehicles use a pleated paper filter element in the form of a flat panel. This filter is usually placed inside a plastic box connected to the throttle body with an intake tube.
+
+Older vehicles that use carburetors or throttle body fuel injection typically use a cylindrical air filter, usually a few inches high and between 6 and 16 inches in diameter. This is positioned above the carburetor or throttle body, usually in a metal or plastic container which may incorporate ducting to provide cool and/or warm inlet air, and secured with a metal or plastic lid.
+
+!! Typical Symptoms
+----
+
+Typical symptoms for a clogged air filter are for example: {{Driving issues <=> asks:: Driving}} unsteady idle speed and weak acceleration, but also problems when starting the car starting problems and an increased fuel consumption (based on {{average mileage <=> asks::  Average mileage /100km }} and {{the currently measured mileage <=> asks:: Real mileage  /100km}}  or abnormal exhaust fumes. 
+
+A typical starting problem which is connected to this problem is a barely or not {{starting engine <=> asks:: Engine start}} in combination with a {{starter <=> asks:: Starter}} that turns over.
+
+A clogged air filter can cause black exhaust fumes which will turn the color of the exhaust pipe to sooty black.
+
+!! Repair Instructions
+----
+
+[{Image src='air-filter.jpg' width='187' height='120' align='right' style='border: solid 1px' caption='aif filter change' }]
+
+A clogged air filter needs to be replaced by a new one. Therefore, the air filter housing have to be found. It will be either square (on fuel-injected engines) or round (on older carbureted engines) and about 12 inches (30 cm) in diameter. 
+
+After locating the housing the screws or clambs on the top of it have to be removed. Now the old air filter can be removed. At this point the housing should be cleaned from any dirt and debris with a clean rag.
+
+Finally the new air filter can be put in and the top of the housing can be screwed or clambed back on. 
+
+
+%%Rule
+IF Driving =  unsteady idle speed
+THEN Clogged air filter = P4
+
+IF Driving = weak acceleration
+THEN Clogged air filter = P5
+
+IF NOT  (Starter = turns over) 
+THEN Clogged air filter = N6
+
+IF "Check: Air filter." = ok
+THEN Clogged air filter = N7
+
+IF "Check: Air filter." = not ok
+THEN Clogged air filter = P7
+
+IF NOT (Driving = unsteady idle speed OR Driving = weak acceleration)
+THEN Clogged air filter = N5
+
+IF Exhaust pipe color evaluation = abnormal
+THEN Clogged air filter = P5
+
+IF Exhaust pipe color evaluation = normal
+THEN Clogged air filter = N5
+
+IF (Exhaust fumes = black AND Fuel = unleaded gasoline)
+THEN Clogged air filter = P5
+
+IF NOT (Exhaust fumes = black)
+THEN Clogged air filter = N5
+
+IF Mileage evaluation = slightly increased
+THEN Clogged air filter = P3
+
+IF Mileage evaluation = normal
+THEN Clogged air filter = N4
+
+IF Mileage evaluation = increased
+THEN Clogged air filter = P4
+
+IF NOT ((Engine start = does not start OR Engine start = engine barely starts)) 
+THEN Clogged air filter = N4
+
+IF ((Engine start = does not start OR Engine start = engine barely starts) AND Starter = turns over)
+THEN Clogged air filter = P4
+
+@package: demo
+%
+
+<tags>Demo</tags>

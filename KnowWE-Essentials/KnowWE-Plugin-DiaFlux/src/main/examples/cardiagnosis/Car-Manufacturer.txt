@@ -1,0 +1,52 @@
+!!! Car-Manufacturer 
+	
+	<flowchart fcid="sh002" name="General" icon="sanduhr.gif" width="750" height="500">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_100">
+		<position left="42" top="124"></position>
+		<start>General</start>
+	</node>
+
+	<node fcid="#node_0">
+		<position left="175" top="113"></position>
+		<action markup="KnOffice">ERFRAGE[Make of car]</action>
+	</node>
+
+	<node fcid="#node_2">
+		<position left="340" top="106"></position>
+		<action markup="KnOffice">ERFRAGE[Year of construction]</action>
+	</node>
+
+	<node fcid="#node_4">
+		<position left="538" top="124"></position>
+		<exit>done</exit>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_1">
+		<origin>#node_100</origin>
+		<target>#node_0</target>
+	</edge>
+
+	<edge fcid="#rule_3">
+		<origin>#node_0</origin>
+		<target>#node_2</target>
+	</edge>
+
+	<edge fcid="#rule_5">
+		<origin>#node_2</origin>
+		<target>#node_4</target>
+	</edge>
+
+	<preview mimetype="text/html">
+		<![CDATA[
+<DIV class="Flowchart" style=" width: 751px; height: 501px;"><DIV class="Node" style="left: 42px;top: 124px; width: 76px; height: 20px;"><DIV class="start" style=" width: 62px; height: 20px;"><DIV class="decorator" style=" width: 25px; height: 25px;"></DIV><DIV class="title" style=" width: 64px; height: 16px;">General</DIV></DIV></DIV><DIV class="Node" style="left: 175px;top: 113px; width: 106px; height: 42px;"><DIV class="question" style=" width: 104px; height: 40px;"><DIV class="decorator" style=" width: 15px; height: 18px;"></DIV><DIV class="ActionPane" style=" width: 90px; height: 39px;"><DIV class="object" style=" width: 90px; height: 19px;"><SPAN class="icon" style=" width: 16px; height: 16px;"><IMG src="http://localhost:8080/KnowWE/cc/image/kbinfo/single.gif" style=" width: 16px; height: 16px;"></IMG></SPAN>Make of car</DIV><DIV class="value" style=" width: 90px; height: 20px;">erfragen</DIV></DIV></DIV></DIV><DIV class="Node" style="left: 340px;top: 106px; width: 136px; height: 57px;"><DIV class="question" style=" width: 134px; height: 55px;"><DIV class="decorator" style=" width: 15px; height: 18px;"></DIV><DIV class="ActionPane" style=" width: 120px; height: 55px;"><DIV class="object" style=" width: 120px; height: 35px;"><SPAN class="icon" style=" width: 16px; height: 16px;"><IMG src="http://localhost:8080/KnowWE/cc/image/kbinfo/num.gif" style=" width: 16px; height: 16px;"></IMG></SPAN>Year of construction</DIV><DIV class="value" style=" width: 120px; height: 20px;">erfragen</DIV></DIV></DIV></DIV><DIV class="Node" style="left: 538px;top: 124px; width: 74px; height: 20px;"><DIV class="exit" style=" width: 60px; height: 20px;"><DIV class="decorator" style=" width: 25px; height: 25px;"></DIV><DIV class="title" style=" width: 60px; height: 16px;">done</DIV></DIV></DIV><DIV class="Rule" style="position: absolute;left: 0px;top: 0px;overflow: visible; width: 0px; height: 0px;"><DIV class="h_line" style="position: absolute;left: 118px;top: 134px;overflow: visible; width: 57px; height: 1px;"><DIV class="arrow_right" style=" width: 6px; height: 5px;"></DIV></DIV><DIV style="position: absolute;left: 118px;top: 134px;overflow: visible; width: 0px; height: 0px;"><DIV class="guard" style="position: absolute;left: 3px; width: 0px; height: 0px;"><DIV class="GuardPane" style=" width: 0px; height: 0px;"></DIV></DIV></DIV><DIV style="position: absolute;visibility: visible; width: 0px; height: 0px;"><DIV style="position: absolute;left: 115px;top: 131px;overflow: hidden; width: 63px; height: 7px;"></DIV></DIV></DIV><DIV class="Rule" style="position: absolute;left: 0px;top: 0px;overflow: visible; width: 0px; height: 0px;"><DIV class="h_line" style="position: absolute;left: 281px;top: 134px;overflow: visible; width: 59px; height: 1px;"><DIV class="arrow_right" style=" width: 6px; height: 5px;"></DIV></DIV><DIV style="position: absolute;left: 281px;top: 134px;overflow: visible; width: 0px; height: 0px;"><DIV class="guard" style="position: absolute;left: 3px; width: 0px; height: 0px;"><DIV class="GuardPane" style=" width: 0px; height: 0px;"><DIV style=" width: 0px; height: 0px;"> </DIV></DIV></DIV></DIV><DIV style="position: absolute;visibility: visible; width: 0px; height: 0px;"><DIV style="position: absolute;left: 278px;top: 131px;overflow: hidden; width: 65px; height: 7px;"></DIV></DIV></DIV><DIV class="Rule" style="position: absolute;left: 0px;top: 0px;overflow: visible; width: 0px; height: 0px;"><DIV class="h_line" style="position: absolute;left: 476px;top: 134px;overflow: visible; width: 62px; height: 1px;"><DIV class="arrow_right" style=" width: 6px; height: 5px;"></DIV></DIV><DIV style="position: absolute;left: 476px;top: 134px;overflow: visible; width: 0px; height: 0px;"><DIV class="guard" style="position: absolute;left: 3px; width: 0px; height: 0px;"><DIV class="GuardPane" style=" width: 0px; height: 0px;"><DIV style=" width: 0px; height: 0px;"> </DIV></DIV></DIV></DIV><DIV style="position: absolute;visibility: visible; width: 0px; height: 0px;"><DIV style="position: absolute;left: 473px;top: 131px;overflow: hidden; width: 68px; height: 7px;"></DIV></DIV></DIV></DIV>
+		]]>
+	</preview></flowchart>
+	
+<Kopic>    
+</Kopic>    
+
+	

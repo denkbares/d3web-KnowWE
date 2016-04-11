@@ -1,0 +1,597 @@
+<?xml version="1.0" ?><!--
+  ~ Copyright (C) 2014 denkbares GmbH, Germany
+  ~
+  ~ This is free software; you can redistribute it and/or modify it under the
+  ~ terms of the GNU Lesser General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option) any
+  ~ later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  ~ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+  ~ details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public License
+  ~ along with this software; if not, write to the Free Software Foundation,
+  ~ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+  ~ site: http://www.fsf.org.
+  -->
+
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0"
+        "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-Ontology-MarkupSet" version="0.0.1">
+
+    <requires>
+        <import plugin-id="KnowWEExtensionPoints"/>
+        <import plugin-id="KnowWE-Plugin-Core"/>
+        <import plugin-id="KnowWE-Plugin-Rdf2GoSemanticCore"/>
+        <import plugin-id="d3web-Plugin-TestingFramework"/>
+    </requires>
+
+    <runtime>
+        <library id="de.d3web" path="." type="code">
+            <export prefix="*"/>
+        </library>
+        <library id="webapp" path="webapp/" type="resources">
+            <export prefix="*"/>
+        </library>
+    </runtime>
+
+    <extension-point id="SparqlResultNodeRenderer">
+        <parameter-def id="class"/>
+        <parameter-def id="name"/>
+        <parameter-def id="description"/>
+        <parameter-def id="version"/>
+        <parameter-def id="priority" type="number"/>
+    </extension-point>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="ClearCachedSparqlAction">
+        <parameter id="class" value="de.knowwe.ontology.sparql.ClearCachedSparqlAction"/>
+        <parameter id="name" value="ClearCachedSparqlAction"/>
+        <parameter id="description" value="Action ClearCachedSparqlAction"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="RefreshSparqlAction">
+        <parameter id="class" value="de.knowwe.ontology.sparql.RefreshSparqlAction"/>
+        <parameter id="name" value="RefreshSparqlAction"/>
+        <parameter id="description" value="Action RefreshSparqlAction"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="SparqlPreviewRenderer">
+        <parameter id="class" value="de.knowwe.ontology.sparql.SparqlPreviewRenderer"/>
+        <parameter id="name" value="SparqlPreviewRenderer"/>
+        <parameter id="description" value="Renders a preview of a sparql query."/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="SparqlMarkupType/**/SparqlContentType"/>
+    </extension>
+
+
+    <extension plugin-id="KnowWE-Plugin-Ontology-MarkupSet" point-id="SparqlResultNodeRenderer"
+               id="ReduceNamespaceNodeRenderer">
+        <parameter id="class" value="de.knowwe.ontology.sparql.ReduceNamespaceNodeRenderer"/>
+        <parameter id="name" value="ReduceNamespaceNodeRenderer"/>
+        <parameter id="description" value="NodeRenderer ReduceNamespaceNodeRenderer"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="100"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="SparqlMarkupType">
+        <parameter id="class" value="de.knowwe.ontology.sparql.SparqlMarkupType"/>
+        <parameter id="name" value="SparqlMarkupType"/>
+        <parameter id="description" value="Type SparqlMarkupType"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="3"/>
+        <parameter id="scope" value="root"/>
+        <parameter id="css" value="KnowWE-Plugin-Rdf2GoSemanticCore.css"/>
+    </extension>
+
+    <extension plugin-id="KnowWE-Plugin-Ontology-MarkupSet" point-id="SparqlResultNodeRenderer"
+               id="DecodeUrlNodeRenderer">
+        <parameter id="class" value="de.knowwe.ontology.sparql.DecodeUrlNodeRenderer"/>
+        <parameter id="name" value="DecodeUrlNodeRenderer"/>
+        <parameter id="description" value="NodeRenderer DecodeUrlNodeRenderer"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="3"/>
+    </extension>
+
+    <!--extension plugin-id="KnowWE-Plugin-Rdf2GoSemanticCore"
+            point-id="SparqlResultNodeRenderer"
+            id="ShrinkNodeRenderer">
+        <parameter id="class"
+            value="de.knowwe.ontology.sparql.ShrinkNodeRenderer" />
+        <parameter id="name" value="ShrinkNodeRenderer" />
+        <parameter id="description" value="NodeRenderer ShrinkNodeRenderer" />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="1000" />
+    </extension-->
+
+    <extension plugin-id="KnowWE-Plugin-Ontology-MarkupSet" point-id="SparqlResultNodeRenderer"
+               id="TrimDataTypeNodeRenderer">
+        <parameter id="class" value="de.knowwe.ontology.sparql.TrimDataTypeNodeRenderer"/>
+        <parameter id="name" value="TrimDataTypeNodeRenderer"/>
+        <parameter id="description" value="NodeRenderer TrimDataTypeNodeRenderer"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="50"/>
+    </extension>
+
+    <extension plugin-id="KnowWE-Plugin-Ontology-MarkupSet" point-id="SparqlResultNodeRenderer"
+               id="TrimLocaleNodeRenderer">
+        <parameter id="class" value="de.knowwe.ontology.sparql.TrimLocaleNodeRenderer"/>
+        <parameter id="name" value="TrimLocaleNodeRenderer"/>
+        <parameter id="description" value="NodeRenderer TrimLocaleNodeRenderer"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="60"/>
+    </extension>
+
+    <extension plugin-id="KnowWE-Plugin-Ontology-MarkupSet" point-id="SparqlResultNodeRenderer"
+               id="TrimNamespaceNodeRenderer">
+        <parameter id="class" value="de.knowwe.ontology.sparql.TrimNamespaceNodeRenderer"/>
+        <parameter id="name" value="TrimNamespaceNodeRenderer"/>
+        <parameter id="description" value="NodeRenderer TrimNamespaceNodeRenderer"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="50"/>
+    </extension>
+
+    <extension plugin-id="KnowWE-Plugin-Ontology-MarkupSet" point-id="SparqlResultNodeRenderer"
+               id="ArticleLinkNodeRenderer">
+        <parameter id="class" value="de.knowwe.ontology.sparql.ArticleLinkNodeRenderer"/>
+        <parameter id="name" value="ArticleLinkNodeRenderer"/>
+        <parameter id="description" value="NodeRenderer ArticleLinkNodeRenderer"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="2"/>
+    </extension>
+
+    <extension plugin-id="KnowWE-Plugin-Ontology-MarkupSet" point-id="SparqlResultNodeRenderer"
+               id="TermDefinitionLinkNodeRenderer">
+        <parameter id="class" value="de.knowwe.ontology.sparql.TermDefinitionLinkNodeRenderer"/>
+        <parameter id="name" value="TermDefinitionLinkNodeRenderer"/>
+        <parameter id="description" value="NodeRenderer TermDefinitionLinkNodeRenderer"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="1.1"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="OntologyType">
+        <parameter id="class" value="de.knowwe.ontology.compile.OntologyType"/>
+        <parameter id="name" value="OntologyType"/>
+        <parameter id="description" value="Type OntologyType"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="root"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="ExpectedSparqlResultTableMarkup">
+        <parameter id="class" value="de.knowwe.ontology.ci.ExpectedSparqlResultTableMarkup"/>
+        <parameter id="name" value="ExpectedSparqlResultTableType"/>
+        <parameter id="description" value="Type ExpectedSparqlResultTableType"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="root"/>
+    </extension>
+
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript" id="SparqlNameRegistrationScript">
+        <parameter id="class" value="de.knowwe.ontology.compile.SparqlNameRegistrationScript"/>
+        <parameter id="name" value="SparqlNameRegistrationScript"/>
+        <parameter id="description" value="Type SparqlNameRegistrationScript"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="compilepriority" value="-1"/>
+        <parameter id="scope" value="SparqlMarkupType"/>
+    </extension>
+
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="InlineSparql">
+        <parameter id="class" value="de.knowwe.ontology.kdom.sparql.InlineSparqlMarkup"/>
+        <parameter id="name" value="InlineSparqlMarkup"/>
+        <parameter id="description" value="KnowWEObjectType InlineSparqlMarkup"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="de.knowwe.jspwiki.types.ParagraphType"/>
+        <parameter id="scope" value="de.knowwe.jspwiki.types.ParagraphTypeForLists"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="NamespaceType">
+        <parameter id="class" value="de.knowwe.ontology.kdom.namespace.NamespaceType"/>
+        <parameter id="name" value="NamespaceType"/>
+        <parameter id="description" value="Type NamespaceType"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="root"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="CorrectionProvider" id="URITermCorrectionToolProvider">
+        <parameter id="class" value="de.knowwe.ontology.edit.URITermCorrectionProvider"/>
+        <parameter id="name" value="URITermCorrectionToolProvider"/>
+        <parameter id="description" value="Offers to quickly correct typos in term references."/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="ResourceReference"/>
+        <parameter id="scope" value="TurtleURI"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="DisplayFullURITool">
+        <parameter id="class" value="de.knowwe.ontology.tools.DisplayFullURITool"/>
+        <parameter id="name" value="DisplayFullURITool"/>
+        <parameter id="description" value="Shows the full URI of this resource"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="50"/>
+        <parameter id="scope" value="ResourceReference"/>
+        <parameter id="scope" value="TSMElementName"/>
+        <parameter id="scope" value="TSMElementId"/>
+        <parameter id="scope" value="TSMElementLocation"/>
+        <parameter id="scope" value="TSMElementType"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="ClassType">
+        <parameter id="class" value="de.knowwe.ontology.kdom.clazz.ClassType"/>
+        <parameter id="name" value="ClassType"/>
+        <parameter id="description" value="Type ClassType"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="root"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="IndividualType">
+        <parameter id="class" value="de.knowwe.ontology.kdom.individual.IndividualType"/>
+        <parameter id="name" value="IndividualType"/>
+        <parameter id="description" value="Type IndividualType"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="root"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="ObjectPropertyType">
+        <parameter id="class" value="de.knowwe.ontology.kdom.objectproperty.ObjectPropertyType"/>
+        <parameter id="name" value="ObjectPropertyType"/>
+        <parameter id="description" value="Type ObjectPropertyType"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="root"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="RelationType">
+        <parameter id="class" value="de.knowwe.ontology.kdom.relation.RelationType"/>
+        <parameter id="name" value="RelationType"/>
+        <parameter id="description" value="Type RelationType"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="root"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="TurtleMarkupPimped">
+        <parameter id="class" value="de.knowwe.ontology.turtlePimped.TurtleMarkupPimped"/>
+        <parameter id="name" value="TurtleMarkupPimped"/>
+        <parameter id="description" value="Type TurtleMarkupPimped"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="root"/>
+        <parameter id="script" value="KnowWE-Plugin-Ontology-MarkupSet.js"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="TurtleMarkup">
+        <parameter id="class" value="de.knowwe.ontology.turtle.TurtleMarkup"/>
+        <parameter id="name" value="TurtleMarkup"/>
+        <parameter id="description" value="Type TurtleMarkup"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="root"/>
+        <parameter id="script" value="KnowWE-Plugin-Ontology-MarkupSet.js"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="LazyURIReferenceToolProvider">
+        <parameter id="class" value="de.knowwe.ontology.turtle.lazyRef.LazyURIReferenceCompleteToolProvider"/>
+        <parameter id="name" value="LazyURIReferenceToolProvider"/>
+        <parameter id="description" value="Offers options to expand a lazy URI Reference."/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="4"/>
+        <parameter id="script" value="KnowWE-Plugin-Ontology-MarkupSet.js"/>
+        <parameter id="scope" value="LazyURIReference"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OntologyMarkupInstantEditToolProvider">
+        <parameter id="class" value="de.knowwe.instantedit.tools.InstantEditToolProvider"/>
+        <parameter id="name" value="OntologyMarkupInstantEditToolProvider"/>
+        <parameter id="description" value="Offers a button for quick editing a certain section."/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="4"/>
+        <parameter id="script" value="KnowWE-EditCommons.js"/>
+        <parameter id="script" value="KnowWE-Plugin-InstantEdit.js"/>
+        <parameter id="script" value="KnowWE-Plugin-AutoComplete.js"/>
+        <parameter id="script" value="DefaultEditTool.js"/>
+        <parameter id="script" value="TextArea.js"/>
+        <parameter id="css" value="KnowWE-Plugin-InstantEdit.css"/>
+        <parameter id="css" value="KnowWE-Plugin-AutoComplete.css"/>
+        <parameter id="css" value="DefaultEditTool.css"/>
+        <parameter id="scope" value="ObjectPropertyType"/>
+        <parameter id="scope" value="ClassType"/>
+        <parameter id="scope" value="RelationType"/>
+        <parameter id="scope" value="NamespaceType"/>
+        <parameter id="scope" value="IndividualType"/>
+        <parameter id="scope" value="TurtleMarkup"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OntologyMarkupObjectInfoPageToolProvider">
+        <parameter id="class" value="de.knowwe.core.tools.TermInfoToolProvider"/>
+        <parameter id="name" value="OntologyMarkupObjectInfoPageToolProvider"/>
+        <parameter id="description"
+                   value="Offer a button to navigate to the object information page of an selected object."/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="3"/>
+        <parameter id="scope" value="ResourceDefinition"/>
+        <parameter id="scope" value="ResourceReference"/>
+        <parameter id="scope" value="NamespaceDefinition"/>
+        <parameter id="scope" value="NamespaceReference"/>
+        <parameter id="scope" value="AbbreviationDefinition"/>
+        <parameter id="scope" value="AbbreviationReference"/>
+        <parameter id="scope" value="LazyURIReference"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="CompositeEditToolProvider">
+        <parameter id="class" value="de.knowwe.core.tools.CompositeEditToolProvider"/>
+        <parameter id="name" value="CompositeEditToolProvider"/>
+        <parameter id="description" value="Offers Renaming, Show Info etc. for terms"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="10"/>
+        <parameter id="scope" value="ResourceDefinition"/>
+        <parameter id="scope" value="ResourceReference"/>
+        <parameter id="scope" value="NamespaceDefinition"/>
+        <parameter id="scope" value="NamespaceReference"/>
+        <parameter id="scope" value="AbbreviationDefinition"/>
+        <parameter id="scope" value="AbbreviationReference"/>
+        <parameter id="scope" value="LazyURIReference"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OntologyMarkupRenamingToolProvider">
+        <parameter id="class" value="de.knowwe.core.tools.RenamingToolProvider"/>
+        <parameter id="name" value="RenamingToolProvider"/>
+        <parameter id="description" value="Offer a button to rename this term."/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="ResourceDefinition"/>
+        <parameter id="scope" value="ResourceReference"/>
+        <parameter id="scope" value="NamespaceDefinition"/>
+        <parameter id="scope" value="NamespaceReference"/>
+        <parameter id="scope" value="AbbreviationDefinition"/>
+        <parameter id="scope" value="AbbreviationReference"/>
+        <parameter id="scope" value="LazyURIReference"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="OntologyDownloadAction">
+        <parameter id="class" value="de.knowwe.ontology.action.OntologyDownloadAction"/>
+        <parameter id="name" value="OntologyDownloadAction"/>
+        <parameter id="description" value="Downloads a specific ontology of a named wiki article."/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="AddStatementsAction">
+        <parameter id="class" value="de.knowwe.ontology.action.AddStatementsAction"/>
+        <parameter id="name" value="AddStatementsAction"/>
+        <parameter id="description" value="Adds some statements into a wiki article."/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="CommitOntologyAction">
+        <parameter id="class" value="de.knowwe.ontology.action.CommitOntologyAction"/>
+        <parameter id="name" value="CommitOntologyAction"/>
+        <parameter id="description" value="Commits the changes in the ontology to the repository."/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OntologyDownloadProvider">
+        <parameter id="class" value="de.knowwe.ontology.tools.OntologyDownloadProvider"/>
+        <parameter id="name" value="OntologyDownloadProvider"/>
+        <parameter id="description" value="Offers a download button to download the ontology as RDF-XML."/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="Ontology"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="TurtlePreviewRenderer">
+        <parameter id="class" value="de.knowwe.core.preview.DefaultPreviewRenderer"/>
+        <parameter id="name" value="TurtlePreviewRenderer"/>
+        <parameter id="description" value="Renders a preview of a turtle ontology markup."/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="TurtleMarkup/**/TurtleContent/TurtleSentence"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="ImportPreviewRenderer">
+        <parameter id="class" value="de.knowwe.ontology.compile.ImportPreviewRenderer"/>
+        <parameter id="name" value="ImportPreviewRenderer"/>
+        <parameter id="description" value="Renders a preview of a import file."/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="OntologyType/**/ImportType"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="RelationPreviewRenderer">
+        <parameter id="class" value="de.knowwe.core.preview.DefaultPreviewRenderer"/>
+        <parameter id="name" value="RelationPreviewRenderer"/>
+        <parameter id="description" value="Renders a preview of a relation ontology markup."/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="RelationType/**/RelationDefinition"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="ClassPreviewRenderer">
+        <parameter id="class" value="de.knowwe.ontology.kdom.preview.ClassPreviewRenderer"/>
+        <parameter id="name" value="ClassPreviewRenderer"/>
+        <parameter id="description" value="Renders a preview of a class ontology markup."/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="ClassType"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="IndividualPreviewRenderer">
+        <parameter id="class" value="de.knowwe.ontology.kdom.preview.IndividualPreviewRenderer"/>
+        <parameter id="name" value="IndividualPreviewRenderer"/>
+        <parameter id="description" value="Renders a preview of an individual ontology markup."/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="IndividualType"/>
+    </extension>
+
+    <extension plugin-id="KnowWE-Plugin-Core" point-id="Renderer" id="PredicateDropableRenderer">
+        <parameter id="class" value="de.knowwe.ontology.kdom.preview.IndividualPreviewRenderer"/>
+        <parameter id="name" value="IndividualPreviewRenderer"/>
+        <parameter id="description" value="Renders a preview of an individual ontology markup."/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="IndividualType"/>
+    </extension>
+
+    <extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test" id="URIPatternTest">
+        <parameter id="class" value="de.knowwe.ontology.ci.URIPatternTest"/>
+        <parameter id="name" value="URIPatternTest"/>
+        <parameter id="description" value="CITest URIPatternTest"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="4"/>
+    </extension>
+
+    <extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test" id="SparqlResultSizeTest">
+        <parameter id="class" value="de.knowwe.ontology.ci.SparqlResultSizeTest"/>
+        <parameter id="name" value="SparqlResultSize"/>
+        <parameter id="description" value="CITest SparqlResultSizeTest"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="4"/>
+    </extension>
+
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test" id="SparqlAskTest">
+		<parameter id="class" value="de.knowwe.ontology.ci.SparqlAskTest"/>
+		<parameter id="name" value="SparqlAsk"/>
+		<parameter id="description" value="CITest SparqlAskTest"/>
+		<parameter id="version" value="1.0"/>
+		<parameter id="priority" value="4"/>
+	</extension>
+
+    <extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test" id="FunctionalPropertyTest">
+        <parameter id="class" value="de.knowwe.ontology.ci.FunctionalPropertyTest"/>
+        <parameter id="name" value="FunctionalProperty"/>
+        <parameter id="description" value="CITest FunctionalPropertyTest"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="4"/>
+    </extension>
+
+    <extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test" id="ExpectedSparqlResultTest">
+        <parameter id="class" value="de.knowwe.ontology.ci.ExpectedSparqlResultTest"/>
+        <parameter id="name" value="SparqlResultTable"/>
+        <parameter id="description" value="CITest ExpectedSparqlResultTest"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="4"/>
+    </extension>
+
+    <extension plugin-id="d3web-Plugin-TestingFramework" point-id="TestObjectProvider"
+               id="OntologyCompilerTestObjectProvider">
+        <parameter id="class" value="de.knowwe.ontology.ci.provider.OntologyCompilerTestObjectProvider"/>
+        <parameter id="name" value="OntologyCompilerTestObjectProvider"/>
+        <parameter id="description" value="OntologyCompilerTestObjectProvider"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+    </extension>
+
+    <extension plugin-id="d3web-Plugin-TestingFramework" point-id="TestObjectProvider"
+               id="SparqlExpectedSectionTestObjectProvider">
+        <parameter id="class" value="de.knowwe.ontology.ci.provider.SparqlExpectedSectionTestObjectProvider"/>
+        <parameter id="name" value="SparqlExpectedSectionTestObjectProvider"/>
+        <parameter id="description" value="SparqlExpectedSectionTestObjectProvider"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+    </extension>
+
+    <extension plugin-id="d3web-Plugin-TestingFramework" point-id="TestObjectProvider"
+               id="SparqlQueryTestObjectProvider">
+        <parameter id="class" value="de.knowwe.ontology.ci.provider.SparqlQueryTestObjectProvider"/>
+        <parameter id="name" value="SparqlQueryTestObjectProvider"/>
+        <parameter id="description" value="SparqlQueryTestObjectProvider"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="SparqlShortURIReference">
+        <parameter id="class" value="de.knowwe.ontology.kdom.sparql.SparqlShortURIReference"/>
+        <parameter id="name" value="SparqlShortURIReference"/>
+        <parameter id="description" value="Type SparqlShortURIReference"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="SparqlContentType"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="OntologyTableMarkup">
+        <parameter id="class" value="de.knowwe.ontology.kdom.table.OntologyTableMarkup"/>
+        <parameter id="name" value="OntologyTableMarkup"/>
+        <parameter id="description" value="Defines markup for ontology tables."/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="root"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OntologyTableToolProvider">
+        <parameter id="class" value="de.knowwe.ontology.kdom.table.OntologyTableToolProvider"/>
+        <parameter id="name" value="OntologyTableToolProvider"/>
+        <parameter id="description" value="Offers a tool for a spreadsheet-like table editor."/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="3"/>
+        <parameter id="script" value="KnowWE-Plugin-InstantEdit.js"/>
+        <parameter id="script" value="KnowWE-Plugin-AutoComplete.js"/>
+        <parameter id="script" value="DefaultTableEditTool.js"/>
+        <parameter id="css" value="KnowWE-Plugin-InstantEdit.css"/>
+        <parameter id="css" value="KnowWE-Plugin-AutoComplete.css"/>
+        <parameter id="css" value="DefaultTableEditTool.css"/>
+        <parameter id="scope" value="OntologyTableMarkup"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript" id="OntologyLineHandler">
+        <parameter id="class" value="de.knowwe.ontology.kdom.table.LineHandler"/>
+        <parameter id="name" value="LineHandler"/>
+        <parameter id="description" value="Type LineHandler"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="4.55"/>
+        <parameter id="compilepriority" value="0"/>
+        <parameter id="scope" value="OntologyTableMarkup/**/TableLine"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="OntologyLineRenderer">
+        <parameter id="class" value="de.knowwe.ontology.kdom.table.LineRenderer"/>
+        <parameter id="name" value="LineRenderer"/>
+        <parameter id="description" value="Renderer for TableLines"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="OntologyTableMarkup/**/TableLine"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="OntologyCellContentRenderer">
+        <parameter id="class" value="de.knowwe.ontology.kdom.table.CellContentRenderer"/>
+        <parameter id="name" value="CellContentRenderer"/>
+        <parameter id="description" value="Renderer for CellContent"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="OntologyTableMarkup/**/TableCellContent"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+               id="SparqlEditToolProvider">
+        <parameter id="class"
+                   value="de.knowwe.ontology.sparql.utils.SparqlEditToolProvider"/>
+        <parameter id="name" value="SparqlEditToolProvider"/>
+        <parameter id="description"
+                   value="Offers a tool for formatting the sparql markup"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="3"/>
+        <parameter id="script" value="KnowWE-Plugin-InstantEdit.js"/>
+        <parameter id="script" value="KnowWE-Plugin-AutoComplete.js"/>
+        <parameter id="script" value="KnowWE-Plugin-Ontology-MarkupSet.js"/>
+        <parameter id="script" value="DefaultEditTool.js"/>
+        <parameter id="css" value="KnowWE-Plugin-InstantEdit.css"/>
+        <parameter id="css" value="KnowWE-Plugin-AutoComplete.css"/>
+        <parameter id="css" value="DefaultEditTool.css"/>
+        <parameter id="scope" value="Sparql"/>
+    </extension>
+</plugin>

@@ -1,0 +1,55 @@
+.ObjectSelect input {
+	font-family: Arial,Helvetica;
+	font-size: 10pt;
+	padding-left: 4px;
+}
+.ObjectSelect .match, .ObjectSelect .nomatch {
+	-moz-border-radius: 6px; 
+	-webkit-border-radius: 6px; 
+	border-radius: 6px; 
+	border: 1px solid #CAD8F3; 
+	padding: 1px 20px 2px 5px;
+	cursor: default;
+	font-family: Arial,Helvetica;
+	font-size: 10pt;
+	position: relative;
+	display: inline-block;
+}
+
+.ObjectSelect a:link, .ObjectSelect a:visited, .ObjectSelect a:active, .ObjectSelect a:hover, .ObjectSelect a:focus {
+	color: black;
+	text-decoration: none;
+}
+
+.ObjectSelect .nomatch {
+	background-color: #F7DEDE;
+}
+.ObjectSelect .nomatch:hover {
+	background-color: #F7CECE;
+}
+.ObjectSelect .match {
+	background-color: #DEE7F8; 
+}
+.ObjectSelect .match:hover {
+	background-color: #CED7E8; 
+}
+.ObjectSelect .editbutton { 
+	position: absolute; 
+	right: 5px; 
+	top: 6px; 
+	display: block; 
+	width: 10px; 
+	height: 8px; 
+	font-size: 1px; 
+	background: url('../image/kbinfo/edit.gif');
+}
+.ObjectSelect .editbutton:hover { 
+	background-position: 0px -8px;
+}
+.ObjectSelect .icon { 
+	position: absolute; 
+	left: 3px; 
+	top: 0px; 
+	display: block; 
+	font-size: 1px; 
+}

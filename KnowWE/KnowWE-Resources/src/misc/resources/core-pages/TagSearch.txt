@@ -1,4 +1,0 @@
-[{KnowWEPlugin tagsearch}]
-
-[{KnowWEPlugin tagcloud}]
-<tags>Admin </tags>

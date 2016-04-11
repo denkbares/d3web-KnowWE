@@ -1,0 +1,60 @@
+.ContextMenu {
+	border: 1px solid blue; 
+	background-color: white;
+	font-size: 10pt;
+	display: none; 
+	position: absolute; 
+	z-index: 999;
+}
+
+.ContextMenu ul {
+	margin: 0;
+	padding: 0.3em;
+	list-style-type: none;
+}
+
+.ContextMenu li {
+	padding: 5px 10px 5px 35px;
+	background-repeat: no-repeat;
+}
+
+.ContextMenu li:hover {
+
+	background-color: #CED7E8;
+}
+
+.ContextMenu hr {
+	border: 0;
+	border-bottom: 1px solid grey;
+	margin: 3px 0px 3px 0px;
+	width: 10em;
+}
+
+.ContextMenu a {
+	border: 0 !important;
+	text-decoration: none;
+    color: #000000;
+    cursor: default;
+}
+
+.ContextMenu a:visited {
+	border: 0 !important;
+	text-decoration: none;
+    color: #000000;
+}
+
+.ContextMenu a:hover {
+	/* text-decoration: underline !important; */
+	/* background-color: #CED7E8; */
+}
+
+.ContextMenu .topSep {
+	/*font-size: 95%;*/
+	border-top: 1px solid gray;
+	margin-top: 0.3em;
+	padding-top: 0.3em;
+}
+
+ContextMenu .disabled {
+	color: gray;		
+}

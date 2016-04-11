@@ -1,0 +1,35 @@
+!!!Master for "Car Diagnosis"
+
+On this page all articles of the wiki are included, that are relevant for the car diagnosis knowledge base. 
+The "compiled" knowledge base can be used and downloaded as a single artifact.
+
+
+[{KnowWEPlugin quickInterview}]
+
+!! Derived Solutions
+
+%%ShowSolutions
+@master: Demo - Master
+@show_established: true
+@show_suggested: true
+@show_excluded: true
+@show_abstractions: true
+%
+
+!! Definition of the Knowledge Base
+
+%%knowledgebase 
+Car faults diagnosis
+@Comment: Example car fault diagnosis knowledge base.
+@uses: demo
+/%
+
+
+!! Test Cases
+
+%%TestSuiteRunner
+A demo with some cases testing the car faults knowledge base. 
+@TestSuite Demo - Test Cases
+/%
+
+<tags>Demo </tags>

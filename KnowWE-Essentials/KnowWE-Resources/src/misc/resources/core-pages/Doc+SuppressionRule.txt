@@ -1,0 +1,18 @@
+[{TableOfContents title='Suppresion Rules - TOC}]
+
+!!1. Definition
+Basically, suppression rules are the opposite of indication rules; that is, depending on already given answers, they define that certain further question/questionnaires are not presented to the user. Furthermore it is also possible to suppress certain answer alternatives.
+
+!!2. Syntax
+!A. Suppression of questions/questionnaires
+{{{IF Year of construction < 1995
+THEN NOT [Does your car have ABS?]}}}
+In the example, the question ''Does your car have ABS?'' is suppressed (not shown to the user) if the question ''Year of construction'' was answered with a valua smaller than 1995. 
+
+!B. Suppression of answer alternatives
+{{{IF Engine start = does not start
+THEN HIDE "Battery o.k.?" = [yes]}}}
+Here, the answer alternative ''yes'' for the question ''Battery o.k.?'' is suppressed if ''Engine start'' was previously answered with ''does not start''.
+
+\\
+__Note:__ in all cases it is important that the question/answer alternative, that is to be supressed, is defined in a different questionnaire as the initiating question; otherwise the supression mechanism does not work correctly. Multiple questions/questionnaires can be specified within square brackets, separated with semicolons. 

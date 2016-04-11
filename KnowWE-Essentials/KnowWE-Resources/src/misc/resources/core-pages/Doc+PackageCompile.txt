@@ -1,0 +1,78 @@
+!! Compiling Packages
+
+Besides using [Includes|Doc IncludeMechanisms], there is now another way to build master articles and knowledge bases in KnowWE. You can simply add different Sections of different articles to a certain package and afterwards compile all the Sections added to this package in an article of your choice, e.g. a master article.
+
+! How to add a Section to package
+
+For now, it is only possible to add DefaultMarkup or XML Sections to a package.\\
+If you want to add a Section with DefaultMarkup to a package, you simply need to add the annotation 'package', together with the name of the package at the end of the Section.
+\\
+\\
+__Example:__ 
+%%prettify 
+{{{
+%%QuestionTree
+
+Quesitonnaire
+- Question
+-- Answer
+-- Another Answer
+
+@package: examplepackage
+%
+}}}
+
+If you want to add a XML Section to a package, you have to add the xml attribute package to the xml tag.
+\\
+\\
+__Example:__ 
+%%prettify 
+{{{
+<Questions-section package='examplepackage'>
+
+Quesitonnaire
+- Question
+-- Answer
+-- Another Answer
+
+</Questions-section>
+}}}
+
+There are plans to add some methods to add all sections of the article to a package, but this is not implemented yet.
+
+! How to compile a package
+
+To compile all the Sections of a package, you simply have to add the following line to the article, in which you want to compile it.
+
+%%prettify 
+{{{
+%%Compile examplepackage
+}}}
+
+You can also compile multiple packages in one article, either by adding multiple compile flags to the article or by adding multiple packages to one compile flag.
+
+%%prettify 
+{{{
+%%Compile examplepackage1, examplepackage2, examplepackage3
+}}}
+
+Every string of word-characters with a length of at least one is considered a package for this line. Also - and _ are allowed in packages.
+
+All sections marked with this package names then will be compiled in this article.
+
+! Deactivating autocompile
+
+You can deactivate autocompile inside the KnowWE_config (KnowWE-core/src/main/resources/KnowWE_config.properties) by setting packages.autocompile to false. If you do this, nothing will be compiled inside the wiki, except where it is specificly requested via the compile flag. This leads to a very fast server start, if you, for example, only compile some packages on one master article. All the local knowledge bases on the different articles will not be created.\\
+If you however want to create a local knowledge base for some articles inside the wiki, you can always use the compile flag. You don't even have to add all the Sections in your article to a package to compile it locally, inside the article you can just use the article's name to compile.\\
+So if there would be anything inside this article to compile and I would want to compile it, although autocompile is deactivated, I would add the following flag:
+%%prettify 
+{{{
+%%Compile HowToDefineAndCompilepackages
+}}}
+
+! Some things to note:
+* The article name only works as a package inside the article with this name.
+* OWL-Statements are excluded from the package-mechanics and will be compiled by default as always.
+* packages are case sensitive
+* All of this is in a very early development state... so if you have questions, some ideas how to improve this or if you encounter bugs, please contact the mailinglist or directly me via albrecht.striffler<at>gmx.de  
+<tags>Documentation package </tags>

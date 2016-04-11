@@ -1,0 +1,598 @@
+<?xml version="1.0" ?><!--
+  ~ Copyright (C) 2014 denkbares GmbH, Germany
+  ~
+  ~ This is free software; you can redistribute it and/or modify it under the
+  ~ terms of the GNU Lesser General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option) any
+  ~ later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  ~ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+  ~ details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public License
+  ~ along with this software; if not, write to the Free Software Foundation,
+  ~ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+  ~ site: http://www.fsf.org.
+  -->
+
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0"
+	"http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-Core" version="0.0.1">
+
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+	</requires>
+
+	<runtime>
+		<library id="de.d3web" path="." type="code">
+			<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="RefreshToolProvider">
+		<parameter id="class" value="de.knowwe.core.tools.RefreshToolProvider" />
+		<parameter id="name" value="RefreshToolProvider" />
+		<parameter id="description" value="Offers a refresh button (fullParse)." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="KnowledgeBase" />
+		<parameter id="scope" value="Ontology" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="DownloadFileAction">
+		<parameter id="class" value="de.knowwe.core.utils.progress.DownloadFileAction" />
+		<parameter id="name" value="DownloadFileAction" />
+		<parameter id="description" value="Action DownloadFileAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="RenderTooltipAction">
+		<parameter id="class" value="de.knowwe.core.action.RenderTooltipAction" />
+		<parameter id="name" value="RenderTooltipAction" />
+		<parameter id="description" value="Action RenderTooltipAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="TermInfoToolProvider">
+		<parameter id="class" value="de.knowwe.core.tools.TermInfoToolProvider" />
+		<parameter id="name" value="TermInfoToolProvider" />
+		<parameter id="description" value="Offers a link to the/a definition of a term" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+		<parameter id="scope" value="Term" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="CompositeEditToolProvider">
+		<parameter id="class" value="de.knowwe.core.tools.CompositeEditToolProvider" />
+		<parameter id="name" value="CompositeEditToolProvider" />
+		<parameter id="description" value="Offers Renaming, Show Info etc. for terms" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="2" />
+		<parameter id="scope" value="Term" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="CompositeEditOpenDialogAction">
+		<parameter id="class" value="de.knowwe.core.showinfo.CompositeEditOpenDialogAction" />
+		<parameter id="name" value="CompositeEditOpenDialogAction" />
+		<parameter id="description" value="Action CompositeEditOpenDialogAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-Core-CompositeEdit.js" />
+		<parameter id="css" value="KnowWE-Plugin-CompositeEdit.css" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="CompositeEditSaveAction">
+		<parameter id="class" value="de.knowwe.core.showinfo.CompositeEditSaveAction" />
+		<parameter id="name" value="CompositeEditSaveAction" />
+		<parameter id="description" value="Action CompositeEditSaveAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="RenamingToolProvider">
+		<parameter id="class" value="de.knowwe.core.tools.RenamingToolProvider" />
+		<parameter id="name" value="RenamingToolProvider" />
+		<parameter id="description"
+			value="Offer a button to navigate to the object information page of an selected object." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="QuestionDefinition" />
+		<parameter id="scope" value="QuestionnaireDefinition" />
+		<parameter id="scope" value="SolutionDefinition" />
+		<parameter id="scope" value="QuestionReference" />
+		<parameter id="scope" value="QuestionnaireReference" />
+		<parameter id="scope" value="QASetReference" />
+		<parameter id="scope" value="QASetDefinition" />
+		<parameter id="scope" value="AnswerReference" />
+		<parameter id="scope" value="AnswerDefinition" />
+		<parameter id="scope" value="SolutionReference" />
+		<parameter id="scope" value="NamedObjectReference" />
+		<parameter id="scope" value="AbstractIRITermDefinition" />
+		<parameter id="scope" value="IRITermReference" />
+		<parameter id="scope" value="FlowchartOrderReference" />
+		<parameter id="scope" value="PackageTerm" />
+		<parameter id="scope" value="CellContent" />
+		<parameter id="scope" value="TSMElementName" />
+		<parameter id="scope" value="TSMElementLocation" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="TagHandlerType">
+		<parameter id="class" value="de.knowwe.core.taghandler.TagHandlerType" />
+		<parameter id="name" value="TagHandlerType" />
+		<parameter id="description" value="Type TagHandlerType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+		<parameter id="scope" value="root" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="PackageMarkupType">
+		<parameter id="class" value="de.knowwe.core.packaging.PackageMarkupType" />
+		<parameter id="name" value="PackageMarkupType" />
+		<parameter id="description" value="Type PackageMarkupType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5.0" />
+		<parameter id="scope" value="root" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="VerbatimType">
+		<parameter id="class" value="de.knowwe.kdom.verbatim.VerbatimType" />
+		<parameter id="name" value="VerbatimType" />
+		<parameter id="description" value="Type VerbatimType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="2.5" />
+		<parameter id="scope" value="root" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="ObjectInfoType">
+		<parameter id="class" value="de.knowwe.core.objectinfo.ObjectInfoType" />
+		<parameter id="name" value="ObjectInfoType" />
+		<parameter id="description" value="Type ObjectInfoType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="2.5" />
+		<parameter id="scope" value="root" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="ObjectInfoLookUpFormType">
+		<parameter id="class" value="de.knowwe.core.objectinfo.ObjectInfoLookUpFormType" />
+		<parameter id="name" value="ObjectInfoLookUpFormType" />
+		<parameter id="description" value="Type ObjectInfoLookUpFormType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="2.5" />
+		<parameter id="scope" value="root" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler" id="VersionTagHandler">
+		<parameter id="class" value="de.knowwe.version.taghandler.VersionTagHandler" />
+		<parameter id="name" value="VersionTagHandler" />
+		<parameter id="description" value="TagHandler VersionTagHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler" id="TagHandlerListHandler">
+		<parameter id="class" value="de.knowwe.core.taghandler.TagHandlerListHandler" />
+		<parameter id="name" value="TagHandlerListHandler" />
+		<parameter id="description" value="TagHandler TagHandlerListHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler" id="ObjectTypeTreeHandler">
+		<parameter id="class" value="de.knowwe.core.taghandler.ObjectTypeTreeHandler" />
+		<parameter id="name" value="ObjectTypeTreeHandler" />
+		<parameter id="description" value="TagHandler ObjectTypeTreeHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler" id="KDOMRenderer">
+		<parameter id="class" value="de.knowwe.core.kdom.renderer.KDOMRenderer" />
+		<parameter id="name" value="KDOMRenderer" />
+		<parameter id="description" value="TagHandler KDOMRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="css" value="KnowWE-Plugin-Core.css" />
+		<parameter id="script" value="ToolMenu.js" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="RenderKDOMType">
+		<parameter id="class" value="de.knowwe.core.kdom.renderer.RenderKDOMType" />
+		<parameter id="name" value="RenderKDOMType" />
+		<parameter id="description" value="Type RenderKDOMType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+		<parameter id="scope" value="root" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="ReRenderContentPartAction">
+		<parameter id="class" value="de.knowwe.core.action.ReRenderContentPartAction" />
+		<parameter id="name" value="ReRenderContentPartAction" />
+		<parameter id="description" value="Action ReRenderContentPartAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="RenderPreviewAction">
+		<parameter id="class" value="de.knowwe.core.action.RenderPreviewAction" />
+		<parameter id="name" value="RenderPreviewAction" />
+		<parameter id="description" value="Action to render section previews asynchronously." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="ReplaceKDOMNodeAction">
+		<parameter id="class" value="de.knowwe.core.action.ReplaceKDOMNodeAction" />
+		<parameter id="name" value="ReplaceKDOMNodeAction" />
+		<parameter id="description" value="Action ReplaceKDOMNodeAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler" id="ObjectInfoTagHandler">
+		<parameter id="class" value="de.knowwe.core.taghandler.ObjectInfoTagHandler" />
+		<parameter id="name" value="ObjectInfoTagHandler" />
+		<parameter id="description" value="TagHandler ObjectInfoTagHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-Core.js" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="ObjectInfoToolProvider">
+		<parameter id="class" value="de.knowwe.core.tools.ObjectInfoToolProvider" />
+		<parameter id="name" value="ObjectInfoToolProvider" />
+		<parameter id="description" value="Offers some tools for the ObjectInfoTagHandler." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="3" />
+		<parameter id="scope" value="TagHandlerType/ObjectInfo" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="GetToolMenuAction">
+		<parameter id="class" value="de.knowwe.core.tools.GetToolMenuAction" />
+		<parameter id="name" value="GetToolMenuAction" />
+		<parameter id="description" value="Action GetToolMenuAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="CreateObjectHomePageAction">
+		<parameter id="class" value="de.knowwe.core.action.CreateObjectHomePageAction" />
+		<parameter id="name" value="CreateObjectHomePageAction" />
+		<parameter id="description" value="Action CreateObjectHomePageAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="TermRenamingAction">
+		<parameter id="class" value="de.knowwe.core.action.TermRenamingAction" />
+		<parameter id="name" value="TermRenamingAction" />
+		<parameter id="description" value="Action TermRenamingAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="GetInfosForInlineTermRenamingAction">
+		<parameter id="class" value="de.knowwe.core.action.GetRenamingInfoAction" />
+		<parameter id="name" value="GetInfosForInlineTermRenamingAction" />
+		<parameter id="description" value="Action GetInfosForInlineTermRenamingAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="InlineTermRenamingAction">
+		<parameter id="class" value="de.knowwe.core.objectinfo.InlineTermRenamingAction" />
+		<parameter id="name" value="InlineTermRenamingAction" />
+		<parameter id="description" value="Action InlineTermRenamingAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="LookUpAction">
+		<parameter id="class" value="de.knowwe.core.action.LookUpAction" />
+		<parameter id="name" value="LookUpAction" />
+		<parameter id="description" value="Action LookUpAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="GetNotificationsAction">
+		<parameter id="class" value="de.knowwe.core.action.GetNotificationsAction" />
+		<parameter id="name" value="GetNotificationsAction" />
+		<parameter id="description" value="Action GetNotificationsAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="RemoveNotificationAction">
+		<parameter id="class" value="de.knowwe.core.action.RemoveNotificationAction" />
+		<parameter id="name" value="RemoveNotificationAction" />
+		<parameter id="description" value="Action RemoveNotificationAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="KDOMReplaceTermNameAction">
+		<parameter id="class" value="de.knowwe.core.action.KDOMReplaceTermNameAction" />
+		<parameter id="name" value="KDOMReplaceTermNameAction" />
+		<parameter id="description" value="Action KDOMReplaceTermNameAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="PageAppendHandler" id="CorrectionAppendHandler">
+		<parameter id="class" value="de.knowwe.core.correction.CorrectionAppendHandler" />
+		<parameter id="name" value="CorrectionAppendHandler" />
+		<parameter id="description" value="Dummy for adding CSS/JS" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="correction.js" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="PageAppendHandler" id="PageInfoAppendHandler">
+		<parameter id="class" value="de.knowwe.core.append.PageInfoAppendHandler" />
+		<parameter id="name" value="PageInfoAppendHandler" />
+		<parameter id="description" value="Adds some infos to the page" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="CorrectionToolProvider">
+		<parameter id="class" value="de.knowwe.core.correction.CorrectionToolProvider" />
+		<parameter id="name" value="CorrectionToolProvider" />
+		<parameter id="description" value="Offers to quickly correct typos in term references." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="TermReference" />
+		<parameter id="scope" value="TermDefinition" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="PageAppendHandler" id="ProcessingStateAppendHandler">
+		<parameter id="class" value="de.knowwe.core.append.ProcessingStateAppendHandler" />
+		<parameter id="name" value="ProcessingStateAppendHandler" />
+		<parameter id="description" value="Appends hidden loader gif to be show when loading" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="HelpToolProvider">
+		<parameter id="class" value="de.knowwe.core.tools.HelpToolProvider" />
+		<parameter id="name" value="HelpToolProvider" />
+		<parameter id="description" value="Offers quick access to help pages for markups." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="9" />
+		<parameter id="scope" value="DefaultMarkupType" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="KDOMRendererRevealToolProvider">
+		<parameter id="class" value="de.knowwe.core.tools.KDOMRendererRevealToolProvider" />
+		<parameter id="name" value="KDOMRendererRevealToolProvider" />
+		<parameter id="description" value="Reveals the corresponding section in the RenderKDOM markup." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="9" />
+		<parameter id="scope" value="DefaultMarkupType" />
+		<parameter id="scope" value="QuestionDefinition" />
+		<parameter id="scope" value="SolutionDefinition" />
+		<parameter id="scope" value="QuestionReference" />
+		<parameter id="scope" value="QuestionnaireReference" />
+		<parameter id="scope" value="QASetReference" />
+		<parameter id="scope" value="QASetDefinition" />
+		<parameter id="scope" value="AnswerReference" />
+		<parameter id="scope" value="AnswerDefinition" />
+		<parameter id="scope" value="SolutionReference" />
+		<parameter id="scope" value="NamedObjectReference" />
+		<parameter id="scope" value="AbstractIRITermDefinition" />
+		<parameter id="scope" value="IRITermReference" />
+		<parameter id="scope" value="FlowchartOrderReference" />
+		<parameter id="scope" value="PackageTerm" />
+		<parameter id="scope" value="CellContent" />
+		<parameter id="scope" value="TSMElementName" />
+		<parameter id="scope" value="SimpleReference" />
+		<parameter id="scope" value="SimpleDefinition" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="KDOMRendererCollapseAllToolProvider">
+		<parameter id="class" value="de.knowwe.core.tools.KDOMRendererCollapseAllToolProvider" />
+		<parameter id="name" value="KDOMRendererCollapseAllToolProvider" />
+		<parameter id="description" value="Collapses all nodes in the RenderKDOM markup." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="9" />
+		<parameter id="scope" value="RenderKDOM" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OffToolProvider">
+		<parameter id="class" value="de.knowwe.core.tools.OffToolProvider" />
+		<parameter id="name" value="OffToolProvider" />
+		<parameter id="description" value="Offers quick access to set activationstatus = off." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="9" />
+		<parameter id="scope" value="DefaultMarkupType" />
+		<parameter id="exclude" value="OffMarkup" />
+		<parameter id="exclude" value="Identifier" />
+		<parameter id="exclude" value="Parts" />
+		<parameter id="exclude" value="Summary" />
+		<parameter id="exclude" value="Memolist" />
+		<parameter id="exclude" value="Memo" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OnToolProvider">
+		<parameter id="class" value="de.knowwe.core.tools.OnToolProvider" />
+		<parameter id="name" value="OnToolProvider" />
+		<parameter id="description" value="Offers quick access to set activationstatus = on." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="9" />
+		<parameter id="scope" value="OffMarkup" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="OffMarkup">
+		<parameter id="class" value="de.knowwe.core.tools.OffMarkup" />
+		<parameter id="name" value="OffMarkup" />
+		<parameter id="description" value="Markup with activationstatus 'off'." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="9" />
+		<parameter id="scope" value="root" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="AttachmentUpdateMarkup">
+		<parameter id="class" value="de.knowwe.core.tools.AttachmentUpdateMarkup" />
+		<parameter id="name" value="AttachmentUpdateMarkup" />
+		<parameter id="description" value="Markup to update attachments" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="AttachmentUpdateToolProvider">
+		<parameter id="class" value="de.knowwe.core.tools.AttachmentUpdateToolProvider" />
+		<parameter id="name" value="OnToolProvider" />
+		<parameter id="description" value="Offers tool to force update of attachment." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="AttachmentUpdateMarkup" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="AttachmentUpdateAction">
+		<parameter id="class" value="de.knowwe.core.tools.AttachmentUpdateAction" />
+		<parameter id="name" value="AttachmentUpdateAction" />
+		<parameter id="description" value="Action AttachmentUpdateAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="SetMarkupActivationStatus">
+		<parameter id="class" value="de.knowwe.core.tools.SetMarkupActivationStatus" />
+		<parameter id="name" value="SetMarkupActivationStatus" />
+		<parameter id="description" value="Action set the activationstatus of a markup." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-Core.js" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="RootTypeExportAction">
+		<parameter id="class" value="de.knowwe.kdom.export.RootTypeExportAction" />
+		<parameter id="name" value="RootTypeExportAction" />
+		<parameter id="description" value="Action RootTypeExportAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler" id="RootTypeExportButtonHandler">
+		<parameter id="class" value="de.knowwe.kdom.export.RootTypeExportButtonHandler" />
+		<parameter id="name" value="RootTypeExportButtonHandler" />
+		<parameter id="description" value="TagHandler RootTypeExportButtonHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="RestoreAction">
+		<parameter id="class" value="de.knowwe.core.action.RestoreAction" />
+		<parameter id="name" value="RestoreAction" />
+		<parameter id="description" value="Action RestoreAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="StartOperationAction">
+		<parameter id="class" value="de.knowwe.core.utils.progress.StartOperationAction" />
+		<parameter id="name" value="StartOperationAction" />
+		<parameter id="description"
+			value="Action to start long operations and e.g. attach the result file to the wiki page" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-Core-Progress.js" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="StartProgressAction">
+		<parameter id="class" value="de.knowwe.core.utils.progress.StartProgressAction" />
+		<parameter id="name" value="StartProgressAction" />
+		<parameter id="description"
+			value="Action to check if the long operations has started and we can start to update the progress bar" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-Core-Progress.js" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="CancelOperationAction">
+		<parameter id="class" value="de.knowwe.core.utils.progress.CancelOperationAction" />
+		<parameter id="name" value="CancelOperationAction" />
+		<parameter id="description" value="Action to cancel long operations" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-Core-Progress.js" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="RemoveOperationAction">
+		<parameter id="class" value="de.knowwe.core.utils.progress.RemoveOperationAction" />
+		<parameter id="name" value="RemoveOperationAction" />
+		<parameter id="description" value="Action to remove long operations after they have terminated" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-Core-Progress.js" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="GetProgressAction">
+		<parameter id="class" value="de.knowwe.core.utils.progress.GetProgressAction" />
+		<parameter id="name" value="GetProgressAction" />
+		<parameter id="description" value="Action to monitor long operations" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-Core-Progress.js" />
+	</extension>
+
+
+	<!-- extensions for basic preview rendering -->
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="DashTreeItemPreviewRenderer">
+		<parameter id="class" value="de.knowwe.core.preview.DashTreePreviewRenderer" />
+		<parameter id="name" value="DashTreeItemPreviewRenderer" />
+		<parameter id="description" value="Renders a preview of a paricular dashtree item." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="DashSubtree" />
+	</extension>
+
+	<!-- extensions for compilers -->
+
+	<extension plugin-id="KnowWE-Plugin-Core" point-id="Compiler" id="DefaultCompiler">
+		<parameter id="class" value="de.knowwe.core.compile.DefaultCompiler" />
+		<parameter id="name" value="DefaultCompiler" />
+		<parameter id="description"
+			value="Default compiler for all subtree handlers; provides compatibility mode and basic compile scripts." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWE-Plugin-Core" point-id="Compiler" id="PackageCompiler">
+		<parameter id="class" value="de.knowwe.core.compile.PackageCompiler" />
+		<parameter id="name" value="PackageCompiler" />
+		<parameter id="description" value="Compiler to handle package definitions and defining the package manager." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="2" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="DefaultPreviewRenderer">
+		<parameter id="class" value="de.knowwe.core.preview.DefaultPreviewRenderer" />
+		<parameter id="name" value="DefaultPreviewRenderer" />
+		<parameter id="description"
+			value="Renders a default preview for types which don't have an own preview renderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="20" />
+		<parameter id="scope" value="root/DefaultMarkupType" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="StatusProvider" id="CompileStatusProvider">
+		<parameter id="class" value="de.knowwe.core.action.CompileStatusProvider" />
+		<parameter id="name" value="CompileStatusProvider" />
+		<parameter id="description" value="Provides a compile status" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+</plugin>

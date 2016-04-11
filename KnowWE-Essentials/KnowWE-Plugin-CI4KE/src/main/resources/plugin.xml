@@ -1,0 +1,193 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-CI4KE" version="0.0.1">
+	
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+		<import plugin-id="d3web-Plugin-TestingFramework" />
+	</requires>
+	
+	<runtime>
+		<library id="de.d3web" path="." type="code">
+			<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>
+	
+	<extension-point id="ObjectNameRenderer">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+		<parameter-def id="scope" multiplicity="one-or-more" />
+		<parameter-def id="script" multiplicity="any" />
+		<parameter-def id="css" multiplicity="any" />
+	</extension-point>
+	
+	<extension plugin-id="KnowWE-Plugin-CI4KE" point-id="ObjectNameRenderer"
+		id="ArticleRenderer">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.dashboard.rendering.ArticleRenderer" />
+		<parameter id="name" value="ArticleRenderer" />
+		<parameter id="description" value="ObjectRenderer for Articles" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="de.knowwe.core.kdom.Article" />
+	</extension>
+	
+	<extension plugin-id="KnowWE-Plugin-CI4KE" point-id="ObjectNameRenderer"
+		id="TermIdentifierRenderer">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.dashboard.rendering.TermIdentifierRenderer" />
+		<parameter id="name" value="TermIdentifierRenderer" />
+		<parameter id="description" value="ObjectRenderer for TermIdentifiers" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="de.knowwe.core.compile.terminology.TermIdentifier" />
+	</extension>
+
+	<!-- (DefaultMarkup-) ObjectType for CIDashboard -->
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="CIDashboardType">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.dashboard.type.CIDashboardType" />
+		<parameter id="name" value="CIDashboardType" />
+		<parameter id="description" value="Type CIDashboardType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+        <parameter id="script" value="KnowWE-Plugin-CI4KE.js" />
+        <parameter id="css" value="KnowWE-Plugin-CI4KE.css" />
+	</extension>	
+
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="CIAction">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.dashboard.action.CIAction" />
+		<parameter id="name" value="CIAction" />
+		<parameter id="description" value="Action CIAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>	
+	
+	
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="CIStopBuildAction">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.dashboard.action.CIStopBuildAction" />
+		<parameter id="name" value="CIStopBuildAction" />
+		<parameter id="description" value="Action to stop currently running builds" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="CIGetProgressAction">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.dashboard.action.CIGetProgressAction" />
+		<parameter id="name" value="CIGetProgressAction" />
+		<parameter id="description" value="Action CIProgressAction for progress listener" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="EventListener"
+		id="CIEventForwarder">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.hook.CIEventForwarder" />
+		<parameter id="name" value="CIEventForwarder" />
+		<parameter id="description" value="EventListener CIEventForwarder" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="CIDashboardToolProvider">
+		<parameter id="class" value="de.d3web.we.ci4ke.dashboard.action.CIDashboardToolProvider" />
+		<parameter id="name" value="CIDashboardToolProvider" />
+		<parameter id="description"
+			value="Offers the possibility to start a new build." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="CIDashboardType" />
+	</extension>
+	
+	<!-- CITests -->
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
+		id="ArticleHasErrors">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.test.ArticleHasErrorsTest" />
+		<parameter id="name" value="ArticleHasErrors" />
+		<parameter id="description" value="CITest ArticleHasErrors" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
+		id="ArticleHasWarnings">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.test.ArticleHasWarningsTest" />
+		<parameter id="name" value="ArticleHasWarnings" />
+		<parameter id="description" value="CITest ArticleHasWarnings" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
+		id="ArticleContains">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.test.ArticleContainsTest" />
+		<parameter id="name" value="ArticleContains" />
+		<parameter id="description" value="CITest ArticleContains" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
+		id="SingleTermDefinition">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.test.SingleTermDefinitionTest" />
+		<parameter id="name" value="SingleTermDefinition" />
+		<parameter id="description" value="CITest SingleTermDefinition" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
+		id="TermnameConvention">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.test.TermnameConventionTest" />
+		<parameter id="name" value="TermnameConvention" />
+		<parameter id="description" value="CITest TermnameConvention" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="CIDaemonType">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.daemon.CIDaemonType" />
+		<parameter id="name" value="CIDashboardType" />
+		<parameter id="description" value="Type CIDaemonType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>	
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="TestDocumentationMarkup">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.doc.TestDocumentationMarkup" />
+		<parameter id="name" value="TestDocumentationMarkup" />
+		<parameter id="description" value="Type TestDocumentationMarkup to show test documentation" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+
+</plugin>

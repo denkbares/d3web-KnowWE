@@ -1,0 +1,22 @@
+.GuardEditor {
+	font-size: 8pt;
+	white-space: nowrap;
+	position: relative;
+	top: -5px;
+}
+
+.GuardEditor select, textarea {
+	position: relative;
+	z-index: 1000;
+}
+
+.GuardEditor input {
+	width: 40px;
+	margin-right: 4px;
+	margin-left: 2px;
+}
+
+.GuardEditor textarea.formula {
+	width: 200px;
+	margin-left: 2px;
+}

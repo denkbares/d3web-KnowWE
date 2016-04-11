@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<artifactId>KnowWE-Essentials</artifactId>
+		<groupId>de.uniwue.d3web</groupId>
+		<version>0.2-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>KnowWE-Resources</artifactId>
+	<packaging>war</packaging>
+	<name>KnowWE-Resources</name>
+	<version>0.2-SNAPSHOT</version>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.3-uniwue</version>
+				<configuration>
+					<overlays>
+						<overlay>
+							<groupId>org.apache.jspwiki</groupId>
+							<artifactId>jspwiki-knowwe-war</artifactId>
+							<excludes>
+								<exclude>WEB-INF/lib/commons-*.jar</exclude>
+							</excludes>
+						</overlay>
+					</overlays>
+				</configuration>
+				<executions>
+					<execution>
+						<id>prepare-war</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>exploded</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>corepages</id>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<phase>process-resources</phase>
+
+						<configuration>
+							<tasks>
+								<mkdir
+									dir="${project.build.directory}/${pom.name}-${pom.version}/WEB-INF/resources/core-pages/" />
+								<copy
+									todir="${project.build.directory}/${pom.name}-${pom.version}/WEB-INF/resources/core-pages/">
+									<fileset dir="src/misc/resources/core-pages/" />
+								</copy>
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<!-- Short explanation for JSPWiki: They don't really use Maven, so, the 
+			build is done by calling the `war' task of the Ant stuff that builds JSPWiki, 
+			then upload the resulting war to $your_favourite_repository or install it 
+			locally. The war:war task will then use it as an "overlay", i.e. the base 
+			of KnowWE. For that to work properly, it is important, that "<scope>runtime</scope>" 
+			stays in place. -->
+		<dependency>
+			<groupId>org.apache.jspwiki</groupId>
+			<artifactId>jspwiki-knowwe-war</artifactId>
+			<version>2.10.3-SNAPSHOT</version>
+			<type>war</type>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
+			<version>0.2-SNAPSHOT</version>
+		</dependency>
+
+	</dependencies>
+</project>

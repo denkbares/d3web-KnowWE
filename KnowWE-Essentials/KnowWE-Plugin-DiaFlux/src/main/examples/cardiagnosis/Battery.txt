@@ -1,0 +1,259 @@
+!!! Battery
+(adapted from Wikipdia)
+
+[{Image src='1.jpg' width='210' height='190' align='right' style='border: solid 1px' caption='car battery' }]
+
+[{TableOfContents }]
+
+!! General
+----
+
+A car battery is a type of rechargeable battery that supplies electric energy to an automobile. Usually this refers to an SLI battery (starting, lighting, ignition) to power the starter motor, the lights, and the ignition system of a vehicle’s engine.
+
+!! Typical Symptoms
+----
+
+Typical symptoms for an empty battery are an engine that does not or barely starts or a starter that does not turn over.
+
+
+<flowchart fcid="sh005" name="Battery Check" icon="sanduhr.gif" width="750" height="600">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_10">
+		<position left="7" top="152"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_0">
+		<position left="105" top="141"></position>
+		<action markup="KnOffice">ERFRAGE["Battery voltage?"]</action>
+	</node>
+
+	<node fcid="#node_2">
+		<position left="106" top="229"></position>
+		<action markup="KnOffice">ERFRAGE[Are terminals clean?]</action>
+	</node>
+
+	<node fcid="#node_4">
+		<position left="114" top="24"></position>
+		<action markup="KnOffice">"Empty battery" = P7</action>
+	</node>
+
+	<node fcid="#node_1">
+		<position left="329" top="134"></position>
+		<action markup="KnOffice">"Damaged Battery" = P7</action>
+	</node>
+
+	<node fcid="#node_5">
+		<position left="401" top="24"></position>
+		<action markup="KnOffice">"Wait" = "12h"</action>
+	</node>
+
+	<node fcid="#node_8">
+		<position left="567" top="17"></position>
+		<action markup="KnOffice">ERFRAGE["Battery max voltage?"]</action>
+	</node>
+
+	<node fcid="#node_6">
+		<position left="329" top="229"></position>
+		<action markup="KnOffice">"Damaged Starter" = P7</action>
+	</node>
+
+	<node fcid="#node_11">
+		<position left="586" top="141"></position>
+		<action markup="KnOffice">ERFRAGE["Car starts?"]</action>
+	</node>
+
+	<node fcid="#node_13">
+		<position left="565" top="247"></position>
+		<exit>Battery ok</exit>
+	</node>
+
+	<node fcid="#node_3">
+		<position left="266" top="24"></position>
+		<action markup="KnOffice">"Load battery" = "ok"</action>
+	</node>
+
+	<node fcid="#node_7">
+		<position left="631" top="353"></position>
+		<exit>Done</exit>
+	</node>
+
+	<node fcid="#node_9">
+		<position left="106" top="342"></position>
+		<action markup="KnOffice">"Clean Terminals" = "Start"</action>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_1">
+		<origin>#node_10</origin>
+		<target>#node_0</target>
+	</edge>
+
+	<edge fcid="#rule_5">
+		<origin>#node_0</origin>
+		<target>#node_4</target>
+		<guard markup="KnOffice">"Battery voltage?" &gt;= 11.9 UND "Battery voltage?" &lt; 12.5</guard>
+	</edge>
+
+	<edge fcid="#rule_6">
+		<origin>#node_0</origin>
+		<target>#node_2</target>
+		<guard markup="KnOffice">"Battery voltage?" &gt;= 12.5</guard>
+	</edge>
+
+	<edge fcid="#rule_2">
+		<origin>#node_0</origin>
+		<target>#node_1</target>
+		<guard markup="KnOffice">"Battery voltage?" &lt; 11.9</guard>
+	</edge>
+
+	<edge fcid="#rule_10">
+		<origin>#node_5</origin>
+		<target>#node_8</target>
+		<guard markup="KnOffice">"Wait" = "passed"</guard>
+	</edge>
+
+	<edge fcid="#rule_11">
+		<origin>#node_8</origin>
+		<target>#node_1</target>
+		<guard markup="KnOffice">"Battery max voltage?" &lt; 12.5</guard>
+	</edge>
+
+	<edge fcid="#rule_8">
+		<origin>#node_2</origin>
+		<target>#node_6</target>
+		<guard markup="KnOffice">"Are terminals clean?" = "Yes"</guard>
+	</edge>
+
+	<edge fcid="#rule_12">
+		<origin>#node_8</origin>
+		<target>#node_11</target>
+		<guard markup="KnOffice">"Battery max voltage?" &gt;= 12.5</guard>
+	</edge>
+
+	<edge fcid="#rule_14">
+		<origin>#node_11</origin>
+		<target>#node_13</target>
+		<guard markup="KnOffice">"Car starts?" = "No"</guard>
+	</edge>
+
+	<edge fcid="#rule_4">
+		<origin>#node_4</origin>
+		<target>#node_3</target>
+	</edge>
+
+	<edge fcid="#rule_7">
+		<origin>#node_3</origin>
+		<target>#node_5</target>
+	</edge>
+
+	<edge fcid="#rule_9">
+		<origin>#node_11</origin>
+		<target>#node_7</target>
+		<guard markup="KnOffice">"Car starts?" = "Yes"</guard>
+	</edge>
+
+	<edge fcid="#rule_13">
+		<origin>#node_2</origin>
+		<target>#node_9</target>
+		<guard markup="KnOffice">"Are terminals clean?" = "No"</guard>
+	</edge>
+
+	<edge fcid="#rule_15">
+		<origin>#node_9</origin>
+		<target>#node_7</target>
+		<guard markup="KnOffice">BEKANNT["Clean Terminals"]</guard>
+	</edge>
+
+	<edge fcid="#rule_16">
+		<origin>#node_6</origin>
+		<target>#node_7</target>
+	</edge>
+
+	<edge fcid="#rule_17">
+		<origin>#node_1</origin>
+		<target>#node_7</target>
+	</edge>
+
+	<preview mimetype="text/html">
+		<![CDATA[
+<DIV class="Flowchart" style=" width: 751px; height: 601px;"><DIV class="Node" style="left: 7px;top: 152px; width: 72px; height: 20px;"><DIV class="start" style=" width: 58px; height: 20px;"><DIV class="decorator" style=" width: 25px; height: 25px;"></DIV><DIV class="title" style=" width: 60px; height: 16px;">Start</DIV></DIV></DIV><DIV class="Node" style="left: 105px;top: 141px; width: 136px; height: 42px;"><DIV class="question" style=" width: 134px; height: 40px;"><DIV class="decorator" style=" width: 15px; height: 18px;"></DIV><DIV class="ActionPane" style=" width: 120px; height: 39px;"><DIV class="object" style=" width: 120px; height: 19px;"><SPAN class="icon" style=" width: 16px; height: 16px;"><IMG src="http://localhost:8080/KnowWE/cc/image/kbinfo/num.gif" style=" width: 16px; height: 16px;"></IMG></SPAN>Battery voltage?</DIV><DIV class="value" style=" width: 120px; height: 20px;">ask</DIV></DIV></DIV></DIV><DIV class="Node" style="left: 106px;top: 229px; width: 136px; height: 57px;"><DIV class="question" style=" width: 134px; height: 55px;"><DIV class="decorator" style=" width: 15px; height: 18px;"></DIV><DIV class="ActionPane" style=" width: 120px; height: 55px;"><DIV class="object" style=" width: 120px; height: 35px;"><SPAN class="icon" style=" width: 16px; height: 16px;"><IMG src="http://localhost:8080/KnowWE/cc/image/kbinfo/yesno.gif" style=" width: 16px; height: 16px;"></IMG></SPAN>Are terminals clean?</DIV><DIV class="value" style=" width: 120px; height: 20px;">ask</DIV></DIV></DIV></DIV><DIV class="Node" style="left: 114px;top: 24px; width: 119px; height: 42px;"><DIV class="action" style=" width: 105px; height: 42px;"><DIV class="decorator" style=" width: 15px; height: 18px;"></DIV><DIV class="ActionPane" style=" width: 103px; height: 39px;"><DIV class="object" style=" width: 103px; height: 19px;"><SPAN class="icon" style=" width: 16px; height: 16px;"><IMG src="http://localhost:8080/KnowWE/cc/image/kbinfo/diagnosis.gif" style=" width: 16px; height: 16px;"></IMG></SPAN>Empty battery</DIV><DIV class="value" style=" width: 103px; height: 20px;">established</DIV></DIV></DIV></DIV><DIV class="Node" style="left: 329px;top: 134px; width: 136px; height: 57px;"><DIV class="action" style=" width: 122px; height: 57px;"><DIV class="decorator" style=" width: 15px; height: 18px;"></DIV><DIV class="ActionPane" style=" width: 120px; height: 55px;"><DIV class="object" style=" width: 120px; height: 35px;"><SPAN class="icon" style=" width: 16px; height: 16px;"><IMG src="http://localhost:8080/KnowWE/cc/image/kbinfo/diagnosis.gif" style=" width: 16px; height: 16px;"></IMG></SPAN>Damaged Battery</DIV><DIV class="value" style=" width: 120px; height: 20px;">established</DIV></DIV></DIV></DIV><DIV class="Node" style="left: 401px;top: 24px; width: 96px; height: 42px;"><DIV class="flowchart" style=" width: 82px; height: 42px;"><DIV class="decorator" style=" width: 14px; height: 14px;"></DIV><DIV class="ActionPane" style=" width: 80px; height: 39px;"><DIV class="object" style=" width: 80px; height: 19px;"><SPAN class="icon" style=" width: 16px; height: 16px;"><IMG src="http://localhost:8080/KnowWE/cc/image/kbinfo/flowchart.gif" style=" width: 16px; height: 16px;"></IMG></SPAN>Wait</DIV><DIV class="value" style=" width: 80px; height: 20px;">12h</DIV></DIV></DIV></DIV><DIV class="Node" style="left: 567px;top: 17px; width: 136px; height: 57px;"><DIV class="question" style=" width: 134px; height: 55px;"><DIV class="decorator" style=" width: 15px; height: 18px;"></DIV><DIV class="ActionPane" style=" width: 120px; height: 55px;"><DIV class="object" style=" width: 120px; height: 35px;"><SPAN class="icon" style=" width: 16px; height: 16px;"><IMG src="http://localhost:8080/KnowWE/cc/image/kbinfo/num.gif" style=" width: 16px; height: 16px;"></IMG></SPAN>Battery max voltage?</DIV><DIV class="value" style=" width: 120px; height: 20px;">ask</DIV></DIV></DIV></DIV><DIV class="Node" style="left: 329px;top: 229px; width: 136px; height: 57px;"><DIV class="action" style=" width: 122px; height: 57px;"><DIV class="decorator" style=" width: 15px; height: 18px;"></DIV><DIV class="ActionPane" style=" width: 120px; height: 55px;"><DIV class="object" style=" width: 120px; height: 35px;"><SPAN class="icon" style=" width: 16px; height: 16px;"><IMG src="http://localhost:8080/KnowWE/cc/image/kbinfo/diagnosis.gif" style=" width: 16px; height: 16px;"></IMG></SPAN>Damaged Starter</DIV><DIV class="value" style=" width: 120px; height: 20px;">established</DIV></DIV></DIV></DIV><DIV class="Node" style="left: 586px;top: 141px; width: 99px; height: 42px;"><DIV class="question" style=" width: 97px; height: 40px;"><DIV class="decorator" style=" width: 15px; height: 18px;"></DIV><DIV class="ActionPane" style=" width: 83px; height: 39px;"><DIV class="object" style=" width: 83px; height: 19px;"><SPAN class="icon" style=" width: 16px; height: 16px;"><IMG src="http://localhost:8080/KnowWE/cc/image/kbinfo/yesno.gif" style=" width: 16px; height: 16px;"></IMG></SPAN>Car starts?</DIV><DIV class="value" style=" width: 83px; height: 20px;">ask</DIV></DIV></DIV></DIV><DIV class="Node" style="left: 565px;top: 247px; width: 91px; height: 20px;"><DIV class="exit" style=" width: 77px; height: 20px;"><DIV class="decorator" style=" width: 25px; height: 25px;"></DIV><DIV class="title" style=" width: 77px; height: 16px;">Battery ok</DIV></DIV></DIV><DIV class="Node" style="left: 266px;top: 24px; width: 112px; height: 42px;"><DIV class="action" style=" width: 98px; height: 42px;"><DIV class="decorator" style=" width: 15px; height: 18px;"></DIV><DIV class="ActionPane" style=" width: 96px; height: 39px;"><DIV class="object" style=" width: 96px; height: 19px;"><SPAN class="icon" style=" width: 16px; height: 16px;"><IMG src="http://localhost:8080/KnowWE/cc/image/kbinfo/single.gif" style=" width: 16px; height: 16px;"></IMG></SPAN>Load battery</DIV><DIV class="value" style=" width: 96px; height: 20px;">ok</DIV></DIV></DIV></DIV><DIV class="Node" style="left: 631px;top: 353px; width: 74px; height: 20px;"><DIV class="exit" style=" width: 60px; height: 20px;"><DIV class="decorator" style=" width: 25px; height: 25px;"></DIV><DIV class="title" style=" width: 60px; height: 16px;">Done</DIV></DIV></DIV><DIV class="Node" style="left: 106px;top: 342px; width: 136px; height: 42px;"><DIV class="flowchart" style=" width: 122px; height: 42px;"><DIV class="decorator" style=" width: 14px; height: 14px;"></DIV><DIV class="ActionPane" style=" width: 120px; height: 39px;"><DIV class="object" style=" width: 120px; height: 19px;"><SPAN class="icon" style=" width: 16px; height: 16px;"><IMG src="http://localhost:8080/KnowWE/cc/image/kbinfo/flowchart.gif" style=" width: 16px; height: 16px;"></IMG></SPAN>Clean Terminals</DIV><DIV class="value" style=" width: 120px; height: 20px;">Start</DIV></DIV></DIV></DIV><DIV class="Rule" style="position: absolute;left: 0px;top: 0px;overflow: visible; width: 0px; height: 0px;"><DIV class="h_line" style="position: absolute;left: 79px;top: 162px;overflow: visible; width: 26px; height: 1px;"><DIV class="arrow_right" style=" width: 6px; height: 5px;"></DIV></DIV><DIV style="position: absolute;left: 79px;top: 162px;overflow: visible; width: 0px; height: 0px;"><DIV class="guard" style="position: absolute;left: 3px; width: 0px; height: 0px;"><DIV class="GuardPane" style=" width: 0px; height: 0px;"><DIV style=" width: 0px; height: 0px;"> </DIV></DIV></DIV></DIV><DIV style="position: absolute;visibility: visible; width: 0px; height: 0px;"><DIV style="position: absolute;left: 76px;top: 159px;overflow: hidden; width: 32px; height: 7px;"></DIV></DIV></DIV><DIV class="Rule" style="position: absolute;left: 0px;top: 0px;overflow: visible; width: 0px; height: 0px;"><DIV class="v_line" style="position: absolute;left: 173px;top: 66px;overflow: visible; width: 1px; height: 75px;"><DIV class="arrow_up" style=" width: 5px; height: 6px;"></DIV></DIV><DIV style="position: absolute;left: 173px;top: 140px;overflow: visible; width: 0px; height: 0px;"><DIV class="guard" style="position: absolute;left: 2px;bottom: 3px; width: 50px; height: 14px;"><DIV class="GuardPane" style=" width: 50px; height: 14px;"><DIV style=" width: 50px; height: 14px;">[ 11.9 .. 12.5 [</DIV></DIV></DIV></DIV><DIV style="position: absolute;visibility: visible; width: 0px; height: 0px;"><DIV style="position: absolute;left: 170px;top: 63px;overflow: hidden; width: 7px; height: 81px;"></DIV></DIV></DIV><DIV class="Rule" style="position: absolute;left: 0px;top: 0px;overflow: visible; width: 0px; height: 0px;"><DIV class="v_line" style="position: absolute;left: 173px;top: 183px;overflow: visible; width: 1px; height: 46px;"><DIV class="arrow_down" style=" width: 5px; height: 6px;"></DIV></DIV><DIV style="position: absolute;left: 173px;top: 183px;overflow: visible; width: 0px; height: 0px;"><DIV class="guard" style="position: absolute;left: 2px;top: 3px; width: 30px; height: 14px;"><DIV class="GuardPane" style=" width: 30px; height: 14px;"><DIV style=" width: 30px; height: 14px;">≥ 12.5</DIV></DIV></DIV></DIV><DIV style="position: absolute;visibility: visible; width: 0px; height: 0px;"><DIV style="position: absolute;left: 170px;top: 180px;overflow: hidden; width: 7px; height: 52px;"></DIV></DIV></DIV><DIV class="Rule" style="position: absolute;left: 0px;top: 0px;overflow: visible; width: 0px; height: 0px;"><DIV class="h_line" style="position: absolute;left: 241px;top: 162px;overflow: visible; width: 88px; height: 1px;"><DIV class="arrow_right" style=" width: 6px; height: 5px;"></DIV></DIV><DIV style="position: absolute;left: 241px;top: 162px;overflow: visible; width: 0px; height: 0px;"><DIV class="guard" style="position: absolute;left: 3px; width: 30px; height: 14px;"><DIV class="GuardPane" style=" width: 30px; height: 14px;"><DIV style=" width: 30px; height: 14px;">< 11.9</DIV></DIV></DIV></DIV><DIV style="position: absolute;visibility: visible; width: 0px; height: 0px;"><DIV style="position: absolute;left: 238px;top: 159px;overflow: hidden; width: 94px; height: 7px;"></DIV></DIV></DIV><DIV class="Rule" style="position: absolute;left: 0px;top: 0px;overflow: visible; width: 0px; height: 0px;"><DIV class="h_line" style="position: absolute;left: 497px;top: 34px;overflow: visible; width: 70px; height: 1px;"><DIV class="arrow_right" style=" width: 6px; height: 5px;"></DIV></DIV><DIV style="position: absolute;left: 497px;top: 34px;overflow: visible; width: 0px; height: 0px;"><DIV class="guard" style="position: absolute;left: 3px; width: 36px; height: 14px;"><DIV class="GuardPane" style=" width: 36px; height: 14px;"><DIV style=" width: 36px; height: 14px;">passed</DIV></DIV></DIV></DIV><DIV style="position: absolute;visibility: visible; width: 0px; height: 0px;"><DIV style="position: absolute;left: 494px;top: 31px;overflow: hidden; width: 76px; height: 7px;"></DIV></DIV></DIV><DIV class="Rule" style="position: absolute;left: 0px;top: 0px;overflow: visible; width: 0px; height: 0px;"><DIV class="h_line" style="position: absolute;left: 513px;top: 59px;overflow: visible; width: 54px; height: 1px;"><DIV class="no_arrow" style=" width: 0px; height: 0px;"></DIV></DIV><DIV class="v_line" style="position: absolute;left: 513px;top: 59px;overflow: visible; width: 1px; height: 90px;"><DIV class="no_arrow" style=" width: 0px; height: 0px;"></DIV></DIV><DIV class="h_line" style="position: absolute;left: 465px;top: 148px;overflow: visible; width: 49px; height: 1px;"><DIV class="arrow_left" style=" width: 6px; height: 5px;"></DIV></DIV><DIV style="position: absolute;left: 566px;top: 59px;overflow: visible; width: 0px; height: 0px;"><DIV class="guard" style="position: absolute;right: 3px; width: 30px; height: 14px;"><DIV class="GuardPane" style=" width: 30px; height: 14px;"><DIV style=" width: 30px; height: 14px;">< 12.5</DIV></DIV></DIV></DIV><DIV style="position: absolute;visibility: visible; width: 0px; height: 0px;"><DIV style="position: absolute;left: 510px;top: 56px;overflow: hidden; width: 60px; height: 7px;"></DIV><DIV style="position: absolute;left: 510px;top: 56px;overflow: hidden; width: 7px; height: 96px;"></DIV><DIV style="position: absolute;left: 462px;top: 145px;overflow: hidden; width: 55px; height: 7px;"></DIV></DIV></DIV><DIV class="Rule" style="position: absolute;left: 0px;top: 0px;overflow: visible; width: 0px; height: 0px;"><DIV class="v_line" style="position: absolute;left: 635px;top: 74px;overflow: visible; width: 1px; height: 67px;"><DIV class="arrow_down" style=" width: 5px; height: 6px;"></DIV></DIV><DIV style="position: absolute;left: 635px;top: 74px;overflow: visible; width: 0px; height: 0px;"><DIV class="guard" style="position: absolute;left: 2px;top: 3px; width: 30px; height: 14px;"><DIV class="GuardPane" style=" width: 30px; height: 14px;"><DIV style=" width: 30px; height: 14px;">≥ 12.5</DIV></DIV></DIV></DIV><DIV style="position: absolute;visibility: visible; width: 0px; height: 0px;"><DIV style="position: absolute;left: 632px;top: 71px;overflow: hidden; width: 7px; height: 73px;"></DIV></DIV></DIV><DIV class="Rule" style="position: absolute;left: 0px;top: 0px;overflow: visible; width: 0px; height: 0px;"><DIV class="v_line" style="position: absolute;left: 610px;top: 183px;overflow: visible; width: 1px; height: 64px;"><DIV class="arrow_down" style=" width: 5px; height: 6px;"></DIV></DIV><DIV style="position: absolute;left: 610px;top: 183px;overflow: visible; width: 0px; height: 0px;"><DIV class="guard" style="position: absolute;left: 2px;top: 3px; width: 13px; height: 14px;"><DIV class="GuardPane" style=" width: 13px; height: 14px;"><DIV style=" width: 13px; height: 14px;">No</DIV></DIV></DIV></DIV><DIV style="position: absolute;visibility: visible; width: 0px; height: 0px;"><DIV style="position: absolute;left: 607px;top: 180px;overflow: hidden; width: 7px; height: 70px;"></DIV></DIV></DIV><DIV class="Rule" style="position: absolute;left: 0px;top: 0px;overflow: visible; width: 0px; height: 0px;"><DIV class="h_line" style="position: absolute;left: 233px;top: 45px;overflow: visible; width: 33px; height: 1px;"><DIV class="arrow_right" style=" width: 6px; height: 5px;"></DIV></DIV><DIV style="position: absolute;left: 233px;top: 45px;overflow: visible; width: 0px; height: 0px;"><DIV class="guard" style="position: absolute;left: 3px; width: 0px; height: 0px;"><DIV class="GuardPane" style=" width: 0px; height: 0px;"><DIV style=" width: 0px; height: 0px;"> </DIV></DIV></DIV></DIV><DIV style="position: absolute;visibility: visible; width: 0px; height: 0px;"><DIV style="position: absolute;left: 230px;top: 42px;overflow: hidden; width: 39px; height: 7px;"></DIV></DIV></DIV><DIV class="Rule" style="position: absolute;left: 0px;top: 0px;overflow: visible; width: 0px; height: 0px;"><DIV class="h_line" style="position: absolute;left: 378px;top: 45px;overflow: visible; width: 23px; height: 1px;"><DIV class="arrow_right" style=" width: 6px; height: 5px;"></DIV></DIV><DIV style="position: absolute;left: 378px;top: 45px;overflow: visible; width: 0px; height: 0px;"><DIV class="guard" style="position: absolute;left: 3px; width: 0px; height: 0px;"><DIV class="GuardPane" style=" width: 0px; height: 0px;"><DIV style=" width: 0px; height: 0px;"> </DIV></DIV></DIV></DIV><DIV style="position: absolute;visibility: visible; width: 0px; height: 0px;"><DIV style="position: absolute;left: 375px;top: 42px;overflow: hidden; width: 29px; height: 7px;"></DIV></DIV></DIV><DIV class="Rule" style="position: absolute;left: 0px;top: 0px;overflow: visible; width: 0px; height: 0px;"><DIV class="v_line" style="position: absolute;left: 660px;top: 183px;overflow: visible; width: 1px; height: 170px;"><DIV class="arrow_down" style=" width: 5px; height: 6px;"></DIV></DIV><DIV style="position: absolute;left: 660px;top: 183px;overflow: visible; width: 0px; height: 0px;"><DIV class="guard" style="position: absolute;left: 2px;top: 3px; width: 20px; height: 14px;"><DIV class="GuardPane" style=" width: 20px; height: 14px;"><DIV style=" width: 20px; height: 14px;">Yes</DIV></DIV></DIV></DIV><DIV style="position: absolute;visibility: visible; width: 0px; height: 0px;"><DIV style="position: absolute;left: 657px;top: 180px;overflow: hidden; width: 7px; height: 176px;"></DIV></DIV></DIV><DIV class="Rule" style="position: absolute;left: 0px;top: 0px;overflow: visible; width: 0px; height: 0px;"><DIV class="v_line" style="position: absolute;left: 174px;top: 286px;overflow: visible; width: 1px; height: 56px;"><DIV class="arrow_down" style=" width: 5px; height: 6px;"></DIV></DIV><DIV style="position: absolute;left: 174px;top: 286px;overflow: visible; width: 0px; height: 0px;"><DIV class="guard" style="position: absolute;left: 2px;top: 3px; width: 13px; height: 14px;"><DIV class="GuardPane" style=" width: 13px; height: 14px;"><DIV style=" width: 13px; height: 14px;">No</DIV></DIV></DIV></DIV><DIV style="position: absolute;visibility: visible; width: 0px; height: 0px;"><DIV style="position: absolute;left: 171px;top: 283px;overflow: hidden; width: 7px; height: 62px;"></DIV></DIV></DIV><DIV class="Rule" style="position: absolute;left: 0px;top: 0px;overflow: visible; width: 0px; height: 0px;"><DIV class="h_line" style="position: absolute;left: 242px;top: 369px;overflow: visible; width: 389px; height: 1px;"><DIV class="arrow_right" style=" width: 6px; height: 5px;"></DIV></DIV><DIV style="position: absolute;left: 242px;top: 369px;overflow: visible; width: 0px; height: 0px;"><DIV class="guard" style="position: absolute;left: 3px; width: 52px; height: 14px;"><DIV class="GuardPane" style=" width: 52px; height: 14px;"><DIV style=" width: 52px; height: 14px;">processed</DIV></DIV></DIV></DIV><DIV style="position: absolute;visibility: visible; width: 0px; height: 0px;"><DIV style="position: absolute;left: 239px;top: 366px;overflow: hidden; width: 395px; height: 7px;"></DIV></DIV></DIV><DIV class="Rule" style="position: absolute;left: 0px;top: 0px;overflow: visible; width: 0px; height: 0px;"><DIV class="h_line" style="position: absolute;left: 465px;top: 176px;overflow: visible; width: 91px; height: 1px;"><DIV class="no_arrow" style=" width: 0px; height: 0px;"></DIV></DIV><DIV class="v_line" style="position: absolute;left: 555px;top: 176px;overflow: visible; width: 1px; height: 181px;"><DIV class="no_arrow" style=" width: 0px; height: 0px;"></DIV></DIV><DIV class="h_line" style="position: absolute;left: 555px;top: 356px;overflow: visible; width: 76px; height: 1px;"><DIV class="arrow_right" style=" width: 6px; height: 5px;"></DIV></DIV><DIV style="position: absolute;left: 465px;top: 176px;overflow: visible; width: 0px; height: 0px;"><DIV class="guard" style="position: absolute;left: 3px; width: 0px; height: 0px;"><DIV class="GuardPane" style=" width: 0px; height: 0px;"><DIV style=" width: 0px; height: 0px;"> </DIV></DIV></DIV></DIV><DIV style="position: absolute;visibility: visible; width: 0px; height: 0px;"><DIV style="position: absolute;left: 462px;top: 173px;overflow: hidden; width: 97px; height: 7px;"></DIV><DIV style="position: absolute;left: 552px;top: 173px;overflow: hidden; width: 7px; height: 187px;"></DIV><DIV style="position: absolute;left: 552px;top: 353px;overflow: hidden; width: 82px; height: 7px;"></DIV></DIV></DIV><DIV class="Rule" style="position: absolute;left: 0px;top: 0px;overflow: visible; width: 0px; height: 0px;"><DIV class="h_line" style="position: absolute;left: 242px;top: 257px;overflow: visible; width: 87px; height: 1px;"><DIV class="arrow_right" style=" width: 6px; height: 5px;"></DIV></DIV><DIV style="position: absolute;left: 242px;top: 257px;overflow: visible; width: 0px; height: 0px;"><DIV class="guard" style="position: absolute;left: 3px; width: 20px; height: 14px;"><DIV class="GuardPane" style=" width: 20px; height: 14px;"><DIV style=" width: 20px; height: 14px;">Yes</DIV></DIV></DIV></DIV><DIV style="position: absolute;visibility: visible; width: 0px; height: 0px;"><DIV style="position: absolute;left: 239px;top: 254px;overflow: hidden; width: 93px; height: 7px;"></DIV></DIV></DIV><DIV class="Rule" style="position: absolute;left: 0px;top: 0px;overflow: visible; width: 0px; height: 0px;"><DIV class="h_line" style="position: absolute;left: 465px;top: 257px;overflow: visible; width: 86px; height: 1px;"><DIV class="no_arrow" style=" width: 0px; height: 0px;"></DIV></DIV><DIV class="v_line" style="position: absolute;left: 550px;top: 257px;overflow: visible; width: 1px; height: 107px;"><DIV class="no_arrow" style=" width: 0px; height: 0px;"></DIV></DIV><DIV class="h_line" style="position: absolute;left: 550px;top: 363px;overflow: visible; width: 81px; height: 1px;"><DIV class="arrow_right" style=" width: 6px; height: 5px;"></DIV></DIV><DIV style="position: absolute;left: 465px;top: 257px;overflow: visible; width: 0px; height: 0px;"><DIV class="guard" style="position: absolute;left: 3px; width: 0px; height: 0px;"><DIV class="GuardPane" style=" width: 0px; height: 0px;"><DIV style=" width: 0px; height: 0px;"> </DIV></DIV></DIV></DIV><DIV style="position: absolute;visibility: visible; width: 0px; height: 0px;"><DIV style="position: absolute;left: 462px;top: 254px;overflow: hidden; width: 92px; height: 7px;"></DIV><DIV style="position: absolute;left: 547px;top: 254px;overflow: hidden; width: 7px; height: 113px;"></DIV><DIV style="position: absolute;left: 547px;top: 360px;overflow: hidden; width: 87px; height: 7px;"></DIV></DIV></DIV></DIV>
+		]]>
+	</preview></flowchart>
+	
+	
+
+
+
+!! Repair Instructions
+----
+[{Image src='jumpercable.jpg' width='180' height='202' align='right' style='border: solid 1px' caption='jumpercable' }]
+
+In emergencies a battery can be jump started, by the battery of another vehicle or by a hand portable battery booster. Generally, this is not recommended on newer, computer-controlled vehicles as damage can easily occur.
+
+To jump start a battery the hoods of both cars need to be open. The car that provides the jump should turned off. Now one end of the jumper cables have to be clamped onto the car battary of the car providing the jump. The positive (or red) clamp should be connected to the positive(or red) battery post first. Afterwards the negative (or black) clamp can be conntected to the negative (or black) post of the battery. 
+
+Now the other end of the cables can be connected to the other car's battery by installing the positive clamp onto the positive post of the dead battery. The negative clamp should be connect to a clean ground on the engine of the dead car or directly onto the negative battery post.
+
+Now the car that is doing the jumping have to be started - now the charging beginns. After 5 - 10 minutes turn off the engine of the car that provides the jump. 
+
+Afterwards the dead car should start again. If so you can remove the cables in the opposite order you connected them (negative before positive - former dead car before providing car). If the problems still exist the battery should be changed.
+
+
+
+<Rules-section id="battery-rules">
+
+If Battery check is not ok establish Empty battery
+
+IF "Battery o.k.?" = no
+THEN Empty battery = P7
+
+If Battery check is ok exclude battery empty as solution
+
+IF "Battery o.k.?" = yes
+THEN Empty battery = N7
+
+\\
+\\
+
+IF Starter = does not turn over
+THEN Empty battery = P5
+
+IF Starter = turns over
+THEN Empty battery = N4
+
+IF (Engine start = does not start OR Engine start = engine barely starts)
+THEN Empty battery = P5
+
+IF Engine start = engine starts
+THEN Empty battery = N5
+</Rules-section>
+
+<Kopic>
+<Questions-section>
+Observations
+- Battery voltage? [num]
+- Battery max voltage? [num]
+- Are terminals clean? [yn]
+- Load battery [oc]
+-- ok
+
+
+
+
+
+
+
+
+</Questions-section>
+
+<Solutions-section>
+Empty battery
+Damaged Battery
+Battery terminals dirty
+</Solutions-section>
+</Kopic>
+
+[{KnowWEPlugin renderKDOM}]

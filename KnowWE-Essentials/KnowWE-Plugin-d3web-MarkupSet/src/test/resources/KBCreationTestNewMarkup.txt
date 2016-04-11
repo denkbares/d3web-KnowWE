@@ -1,0 +1,165 @@
+This article will be tested against a manually created KnowledgeBase.
+If you want to edit this article do also apply your changes to
+the KBCreationTestUtil class where the manually created KnowledgeBase
+is assembled. Otherwise the tests will fail!
+
+Please be careful when editing this article because the order
+of the elements does matter in the tests (especially the IDs).
+
+
+
+%%Questionnaire
+Observations #1
+- Idle speed system
+- Air filter ~ "Here you can enter your observations concerning the air filter."
+- Ignition timing
+Technical Examinations
+%
+
+%%Solution
+Mechanical problem
+- Damaged idle speed system
+- Leaking air intake system ~ "The air intake system is leaking."
+Other problem
+%
+
+%%question
+Observations
+- Exhaust fumes ~ "What is the color of the exhaust fumes?" [oc]
+-- black
+// Rule R1
+--- Fuel [oc]
+---- diesel
+---- unleaded gasoline
+-- blue
+// Rule R2
+--- &REF Fuel
+-- invisible
+// Rule R3
+--- &REF Fuel
+- "Average mileage /100km" [num] {liter} (0 30)
+-- "Num. Mileage evaluation" [num] <abstract>
+--- Mileage evaluation [oc] <abstract>
+---- normal
+---- increased
+- "Real mileage  /100km" [num]
+- Driving [mc]
+-- insufficient power on partial load
+// Rule R4
+--- "Num. Mileage evaluation" (110)
+-- insufficient power on full load
+// Rule R5
+--- "Num. Mileage evaluation" (20)
+-- unsteady idle speed
+-- everything is fine
+// Rule R6
+--- Other problem (P7)
+- Other [text]
+
+Technical Examinations
+//- "Idle speed system o.k.?" [yn]
+- "Idle speed system o.k.?" [oc]
+-- Yes
+-- No
+- SomeQuestion [yn]
+%
+
+%%Property
+KBCreationTestNewMarkup.author = test author
+KNOWLEDGEBASE.version = test version
+
+Mechanical problem.init = wrong init for solution
+ Observations.init = wrong init for questionnaire
+"Idle speed system o.k.?"#Yes.init = makes no sense
+Fuel.init = water
+  "Average mileage /100km".init = five
+  
+"Idle speed system o.k.?".init = Yes
+Mileage evaluation.init = UNKNOWN
+Other.init = text init
+Exhaust fumes.init = black
+"Real mileage  /100km".init = 6
+"Num. Mileage evaluation".init = 5.1232
+Damaged idle speed system.apriori = 121.12422135151512667623523523423
+
+  Damaged idle speed system.prompt.de = test prompt de
+Other.prompt.en = test prompt en
+Fuel#unleaded gasoline.prompt.de = benzin
+Other.prompt = test prompt no locale
+
+ Other.prompt.fr = "test prompt single quotest {[]}€!§$%&/()?`´'+;,:"
+Other.prompt.it = """test tripple quotes "{[]}€!§$%&/()?`´'+;,:#.'""same line"""
+	Other.prompt.de.DE = """
+	test tripple quotes start same line, end next line "{[]}€!§$%&/()?`´'+;,:#.'"" """
+Other.prompt.ko = 
+"""test tripple quotes start next line, end next line"""
+Driving#"unsteady idle speed".prompt.zh = 
+
+"""test tripple "{[]}€!§$%&/()?`´'+;,:#.'"" quotes after empty line, end line
+after"""
+
+Driving#insufficient power on partial load.prompt.en.US = 
+
+"""
+test tripple "{[]}€!§$%&/()?`´'+;,:#.'"" quotes start same line, end next 
+line
+"""
+  #Yes.prompt.de = Ja
+%
+
+%%Rule
+// Rule R8
+IF KNOWN["Real mileage  /100km"] AND "Average mileage /100km" > 0
+THEN "Num. Mileage evaluation" = (("Real mileage  /100km" / "Average mileage /100km") * 100.0)
+
+// Rule R9
+IF "Num. Mileage evaluation" > 130
+THEN Mileage evaluation = increased
+
+// Rule R10
+IF Driving = unsteady idle speed
+THEN "Real mileage  /100km" = ("Real mileage  /100km" + 2)
+
+// Rule R11
+IF Driving = insufficient power on full load
+THEN "Real mileage  /100km" = ("Average mileage /100km" + 2)
+
+// Rule R12
+IF Driving = insufficient power on partial load
+THEN "Real mileage  /100km" = ("Average mileage /100km" - 1)
+
+// Rule R13
+IF (Exhaust fumes = black) 
+THEN Mechanical problem = P7
+EXCEPT Fuel = diesel
+
+// Rule R14
+IF (NOT Exhaust fumes = black) OR (NOT Fuel = unleaded gasoline)
+THEN Mechanical problem = N7
+
+// Rule R15
+IF Driving = unsteady idle speed
+THEN Technical Examinations
+
+// Rule R16
+IF KNOWN[Other]
+THEN Technical Examinations
+
+// Rule R17
+IF Other problem = ESTABLISHED
+THEN Other
+%
+
+%%coveringList
+Damaged idle speed system  {
+	"Idle speed system o.k.?" = Yes [--],
+	Driving = unsteady idle speed [!],
+    "Idle speed system o.k.?" = No [++],
+    Mileage evaluation = increased [3],
+    Exhaust fumes = black,
+}
+%
+
+%%knowledgebase
+KBCreationTestNewMarkup
+%

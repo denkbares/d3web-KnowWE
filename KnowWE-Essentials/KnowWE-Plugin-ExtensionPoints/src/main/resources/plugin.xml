@@ -1,0 +1,257 @@
+<?xml version="1.0" ?><!--
+  ~ Copyright (C) 2014 denkbares GmbH, Germany
+  ~
+  ~ This is free software; you can redistribute it and/or modify it under the
+  ~ terms of the GNU Lesser General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option) any
+  ~ later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  ~ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+  ~ details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public License
+  ~ along with this software; if not, write to the Free Software Foundation,
+  ~ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+  ~ site: http://www.fsf.org.
+  -->
+
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0"
+	"http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWEExtensionPoints" version="0.0.1">
+	<!-- This plugin only defines extension points for KnowWE. -->
+
+	<extension-point id="Compiler">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+	</extension-point>
+
+	<extension-point id="Instantiation">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+	</extension-point>
+
+	<extension-point id="Action">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+		<parameter-def id="script" multiplicity="any" />
+		<parameter-def id="css" multiplicity="any" />
+	</extension-point>
+
+	<extension-point id="KnowledgeRepresentationHandler">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+	</extension-point>
+
+	<extension-point id="Type">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+		<parameter-def id="scope" multiplicity="one-or-more" />
+		<parameter-def id="exclude" multiplicity="any" />
+		<parameter-def id="script" multiplicity="any" />
+		<parameter-def id="css" multiplicity="any" />
+	</extension-point>
+
+	<extension-point id="Renderer">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+		<parameter-def id="scope" multiplicity="one-or-more" />
+		<parameter-def id="exclude" multiplicity="any" />
+		<parameter-def id="script" multiplicity="any" />
+		<parameter-def id="css" multiplicity="any" />
+	</extension-point>
+
+	<extension-point id="SubtreeHandler">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+		<parameter-def id="handlerpriority" type="number" />
+		<parameter-def id="scope" multiplicity="one-or-more" />
+		<parameter-def id="exclude" multiplicity="any" />
+	</extension-point>
+
+	<extension-point id="CompileScript">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+		<parameter-def id="compilepriority" type="number" />
+		<parameter-def id="scope" multiplicity="one-or-more" />
+		<parameter-def id="exclude" multiplicity="any" />
+	</extension-point>
+
+
+	<extension-point id="ToolProvider">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="scope" multiplicity="one-or-more" />
+		<parameter-def id="exclude" multiplicity="any" />
+		<parameter-def id="priority" type="number" />
+		<parameter-def id="script" multiplicity="any" />
+		<parameter-def id="css" multiplicity="any" />
+	</extension-point>
+
+	<extension-point id="TagHandler">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+		<parameter-def id="script" multiplicity="any" />
+		<parameter-def id="css" multiplicity="any" />
+	</extension-point>
+
+	<extension-point id="PageAppendHandler">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+		<parameter-def id="script" multiplicity="any" />
+		<parameter-def id="css" multiplicity="any" />
+	</extension-point>
+
+	<extension-point id="SemanticCoreImpl">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+	</extension-point>
+
+	<extension-point id="EventListener">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+	</extension-point>
+
+	<extension-point id="SectionizerModule">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+	</extension-point>
+
+	<extension-point id="CITest">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+	</extension-point>
+
+	<extension-point id="CorrectionProvider">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="scope" multiplicity="one-or-more" />
+		<parameter-def id="exclude" multiplicity="any" />
+		<parameter-def id="priority" type="number" />
+	</extension-point>
+
+	<extension-point id="WikibookRenderer">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="scope" multiplicity="one-or-more" />
+		<parameter-def id="exclude" multiplicity="any" />
+		<parameter-def id="priority" type="number" />
+	</extension-point>
+
+	<extension-point id="Terminology">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+	</extension-point>
+
+	<extension-point id="IncrementalCompileScript">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="scope" multiplicity="one" />
+		<parameter-def id="priority" type="number" />
+	</extension-point>
+
+	<extension-point id="Annotation">
+		<!-- optional: class of the type to be set as child of the annotation section -->
+		<parameter-def id="class" multiplicity="any" />
+		<!-- name of the annotation -->
+		<parameter-def id="name" />
+		<!-- optional: regular expression that defines the possible values of the annotation -->
+		<parameter-def id="regex" multiplicity="none-or-one" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="scope" multiplicity="one" />
+		<parameter-def id="exclude" multiplicity="any" />
+		<parameter-def id="priority" type="number" />
+		<parameter-def id="renderer" multiplicity="none-or-one" />
+	</extension-point>
+
+	<extension-point id="SearchProvider">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+	</extension-point>
+
+	<extension-point id="PreviewRenderer">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+		<parameter-def id="scope" multiplicity="one-or-more" />
+		<parameter-def id="exclude" multiplicity="any" />
+		<parameter-def id="script" multiplicity="any" />
+		<parameter-def id="css" multiplicity="any" />
+	</extension-point>
+
+	<extension-point id="StatusProvider">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+	</extension-point>
+
+	<extension-point id="ExpressionResolver">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+	</extension-point>
+
+</plugin>

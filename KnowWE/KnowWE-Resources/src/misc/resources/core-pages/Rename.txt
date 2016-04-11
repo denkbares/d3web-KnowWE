@@ -1,5 +1,0 @@
-[{KnowWEPlugin renamingtool}]
-
-
-
-[{KnowWEPlugin TypeBrowser}]

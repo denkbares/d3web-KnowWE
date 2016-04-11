@@ -1,0 +1,190 @@
+.Rule {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	overflow: visible;
+}
+
+.Rule .guard {
+	font-size: 8pt;
+	white-space: nowrap;
+	line-height: 12px;
+}
+
+.Rule .rule_highlight {
+	visibility: hidden;
+	z-index: 10;
+}
+
+.Rule .rule_highlight .h_line_highlight, .Rule .rule_highlight .v_line_highlight {
+	background-color: red;
+	position: absolute;
+	z-index: 0;
+}
+
+.Rule:hover {
+	z-index: 300;
+}
+
+.Rule.selectedRule {
+	z-index: 400;
+}
+
+.Rule:hover .guard .GuardPane {
+	background-color: rgba(255, 255, 255, 0.8);
+}
+
+.Rule.unselectedRule:hover .h_line, .Rule.unselectedRule:hover .v_line {
+	border: 1px solid black;
+	margin: -1px;
+}
+
+.Rule .rule_selector {
+	position: absolute;
+	z-index: 100;
+}
+
+.Rule .guard.vTopLeft {
+	position: absolute;
+	right: 3px;
+	bottom: 4px;
+}
+.Rule .guard.vTopRight {
+	position: absolute;
+	left: 3px;
+	bottom: 4px;
+}
+.Rule .guard.vTopRight.shifted, .Rule .guard.vTopLeft.shifted {
+	bottom: 9px;
+}
+.Rule .guard.vTopRight.shifted1, .Rule .guard.vTopLeft.shifted1 {
+	bottom: 21px;
+}
+.Rule .guard.vTopRight.shifted2, .Rule .guard.vTopLeft.shifted2 {
+	bottom: 33px;
+}
+.Rule .guard.vTopRight.shifted3, .Rule .guard.vTopLeft.shifted3 {
+	bottom: 45px;
+}
+.Rule .guard.vTopRight.shifted4, .Rule .guard.vTopLeft.shifted4 {
+	bottom: 57px;
+}
+.Rule .guard.vTopRight.shifted5, .Rule .guard.vTopLeft.shifted5 {
+	bottom: 69px;
+}
+.Rule .guard.vTopRight.shifted6, .Rule .guard.vTopLeft.shifted6 {
+	bottom: 81px;
+}
+.Rule .guard.vBottomLeft {
+	position: absolute;
+	right: 3px;
+	top: 2px;
+}
+.Rule .guard.vBottomRight {
+	position: absolute;
+	left: 3px;
+	top: 2px;
+}
+.Rule .guard.vBottomRight.shifted, .Rule .guard.vBottomLeft.shifted {
+	top: 8px;
+}
+.Rule .guard.vBottomRight.shifted1, .Rule .guard.vBottomLeft.shifted1 {
+	top: 20px;
+}
+.Rule .guard.vBottomRight.shifted2, .Rule .guard.vBottomLeft.shifted2 {
+	top: 32px;
+}
+.Rule .guard.vBottomRight.shifted3, .Rule .guard.vBottomLeft.shifted3 {
+	top: 44px;
+}
+.Rule .guard.vBottomRight.shifted4, .Rule .guard.vBottomLeft.shifted4 {
+	top: 56px;
+}
+.Rule .guard.vBottomRight.shifted5, .Rule .guard.vBottomLeft.shifted5 {
+	top: 68px;
+}
+.Rule .guard.vBottomRight.shifted6, .Rule .guard.vBottomLeft.shifted6 {
+	top: 80px;
+}
+.Rule .guard.hLeftAbove {
+	position: absolute;
+	right: 7px;
+	bottom: -1px;
+}
+.Rule .guard.hRightAbove {
+	position: absolute;
+	left: 3px;
+	bottom: -1px;
+}
+.Rule .guard.hLeftBelow {
+	position: absolute;
+	right: 7px;
+	top: 0px;
+}
+.Rule .guard.hRightBelow {
+	position: absolute;
+	left: 3px;
+	top: 0px;
+}
+
+.Rule .guard .warning {
+	background-color: #ff8;
+}
+
+.Rule .guard optgroup {
+	color: gray;
+	font-size: 8pt;
+	font-weight: normal;
+	text-align: center;
+	padding-top: 4px;
+}
+
+.Rule .h_line, .Rule .v_line {
+	position: absolute;
+	background-color: black;
+	z-index: 80;
+}
+
+.Rule .arrow {
+	position: absolute;
+	overflow: hidden;
+}
+
+.Rule .arrow_up {
+	left: -4px;
+	top: 0px;
+	width: 9px;
+	height: 9px;
+	background-image: url(../image/arrow_up.gif);
+}
+
+.Rule .arrow_down {
+	left: -4px;
+	bottom: 0px;
+	width: 9px;
+	height: 9px;
+	background-image: url(../image/arrow_down.gif);
+}
+
+.Rule .arrow_left {
+	left: 0px;
+	top: -4px;
+	width: 9px;
+	height: 9px;
+	background-image: url(../image/arrow_left.gif);
+}
+
+.Rule .arrow_right {
+	right: 0px;
+	top: -4px;
+	width: 9px;
+	height: 9px;
+	background-image: url(../image/arrow_right.gif);
+}
+
+.Rule .no_arrow {
+	position: absolute;
+	overflow: hidden;
+	width: 0px;
+	height: 0px;
+}

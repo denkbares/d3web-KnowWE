@@ -1,0 +1,31 @@
+%%TestSuite
+"Leaking air intake system (Demo)" {
+
+    Driving = insufficient power on partial load :
+    Leaking air intake system (suggested);
+    
+    Driving = unsteady idle speed :
+    Clogged air filter (suggested),
+    Leaking air intake system (suggested);
+    
+    "Check: Air filter." = ok,
+    Driving = insufficient power on full load :
+    Leaking air intake system (established);
+}
+
+"Clogged air filter (Demo)" {
+    
+    Exhaust pipe color = sooty black,
+    Fuel = unleaded gasoline :
+    Clogged air filter (suggested);
+    
+    Driving = unsteady idle speed,
+    Driving = weak acceleration,       
+    "Check: Ignition timing." = ok :
+    Clogged air filter (established);
+
+}
+@package: demo
+@KnowledgeBase Demo - Master
+/%
+

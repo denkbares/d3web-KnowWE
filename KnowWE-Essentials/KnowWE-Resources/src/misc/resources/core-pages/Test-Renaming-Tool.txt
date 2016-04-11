@@ -1,0 +1,33 @@
+!!! This is the page for testing the Renaming-Tool
+
+!!Renaming Tool
+
+This page demonstrates how the renaming tool functions. Just enter the search word in the input field below,enter an replacement and press the preview button. Befor any replacement is made, you see a list of findings from which you can choose which findings should be replaced with the entered replacement.
+
+[{KnowWEPlugin renamingtool}]
+
+The renaming tool also provides some advanced replacement settings. For this click on the "__Further settings__" link. There you can set the following things.
+* only consider uppercase or lowercase words
+* the search word has a certain context (prefix or suffix) in which it occurs
+* you can specify the type of the section in which the word accurs .e.g use this for only replace something for example in __RuleSections__ etc.
+
+The text below ist for testing purposes:
+
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, Sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, Sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+lorem ipsum dolor sit amet, consetetur sadipscing elitr, Lorem diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, Lorem diam voluptua.
+
+%%Question
+RenamingQuestion
+- The renaming tool works like a charm [oc]
+-- Yes
+-- No
+- Since when [num]
+%
+
+%%CoveringList
+Renaming tool is a charm{
+    The renaming tool works like a charm = Yes,
+}
+%
+

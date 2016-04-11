@@ -1,0 +1,13 @@
+%%Package FlowchartPropertyTest
+
+%%DiaFlux
+<flowchart fcid="flow" name="Flow" icon="sanduhr.gif" width="950" height="500" autostart="true" idCounter="1">
+</flowchart>
+%
+
+%%Property
+Flow.description = This is a test property   
+%
+
+%%Knowledgebase
+%

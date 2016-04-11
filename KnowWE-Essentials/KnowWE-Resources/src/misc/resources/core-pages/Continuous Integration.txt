@@ -1,0 +1,5 @@
+%%CIDashboard 
+@monitoredArticle = Knowledgebase-Master 
+@tests = CITest1:CITest2:CITest3 
+@trigger = onSave 
+%

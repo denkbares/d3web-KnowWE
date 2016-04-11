@@ -1,0 +1,151 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-InstantEdit" version="0.0.1">
+    
+    <requires>
+        <import plugin-id="KnowWEExtensionPoints" />
+    </requires>
+    
+    <runtime>
+        <library id="de.knowwe" path="." type="code">
+            <export prefix="*" />
+        </library>
+        <library id="webapp" path="webapp/" type="resources">
+            <export prefix="*" />
+        </library>
+    </runtime>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+        id="InstantEditToolProvider">
+        <parameter id="class"
+            value="de.knowwe.instantedit.tools.InstantEditToolProvider" />
+        <parameter id="name" value="InstantEditToolProvider" />
+        <parameter id="description"
+            value="Offers a button for quick editing a certain section." />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="4" />
+        <parameter id="script" value="KnowWE-EditCommons.js" />
+        <parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
+        <parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
+        <parameter id="script" value="DefaultEditTool.js" />
+        <parameter id="script" value="TextArea.js" />
+        <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
+        <parameter id="css" value="KnowWE-Plugin-AutoComplete.css" />
+        <parameter id="css" value="DefaultEditTool.css" />       
+        <parameter id="scope" value="KnowledgeBaseType" />
+        <parameter id="scope" value="PackageMarkupType" />
+        <parameter id="scope" value="QuestionTree" />
+        <parameter id="scope" value="QuestionnaireTreeMarkup" />
+        <parameter id="scope" value="ResourceType" />
+        <parameter id="scope" value="PropertyMarkup" />
+        <parameter id="scope" value="RulesMarkup" />
+        <parameter id="scope" value="ShowSolutionsType" />
+        <parameter id="scope" value="SolutionTreeMarkup" />
+        <parameter id="scope" value="CoveringListMarkup" />
+        <parameter id="scope" value="CIDashboardType" />
+        <parameter id="scope" value="CoveringListSettingsMarkup" />
+       	<parameter id="scope" value="OntoVisType" />
+       	<parameter id="scope" value="SparqlVisType" />
+        <parameter id="scope" value="HierarchyMarkup" />
+        <parameter id="scope" value="QuickInterviewMarkup" />
+        <parameter id="scope" value="KPIAnalysis" />
+        <parameter id="scope" value="ReadOnly" />
+        <parameter id="scope" value="RuleMarkup" />
+        <parameter id="scope" value="SemanticAutocompletionType" />
+		<parameter id="scope" value="OntologyType" />
+    </extension>
+ 
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+        id="InstantEditSaveAction">
+        <parameter id="class"
+            value="de.knowwe.instantedit.actions.InstantEditSaveAction" />
+        <parameter id="name" value="InstantEditSaveAction" />
+        <parameter id="description" value="Action InstantEditSaveAction" />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="5" />
+    </extension>
+    
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+        id="InstantEditAddArticleAction">
+        <parameter id="class"
+            value="de.knowwe.instantedit.actions.InstantEditAddArticleAction" />
+        <parameter id="name" value="InstantEditAddArticleAction" />
+        <parameter id="description" value="Action InstantEditAddArticleAction" />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="5" />
+    </extension>
+    
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+        id="InstantEditEnableAction">
+        <parameter id="class"
+            value="de.knowwe.instantedit.actions.InstantEditEnableAction" />
+        <parameter id="name" value="InstantEditEnableAction" />
+        <parameter id="description" value="Action InstantEditEnableAction" />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="5" />
+    </extension>
+    
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+        id="InstantEditDisableAction">
+        <parameter id="class"
+            value="de.knowwe.instantedit.actions.InstantEditDisableAction" />
+        <parameter id="name" value="InstantEditDisableAction" />
+        <parameter id="description" value="Action InstantEditDisableAction" />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="5" />
+    </extension>    
+    
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+        id="GetWikiTextAction">
+        <parameter id="class"
+            value="de.knowwe.instantedit.actions.GetWikiTextAction" />
+        <parameter id="name" value="GetWikiTextAction" />
+        <parameter id="description" value="Action GetWikiTextAction" />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="5" />
+    </extension> 
+    
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+        id="CheckCanEditPageAction">
+        <parameter id="class"
+            value="de.knowwe.instantedit.actions.CheckCanEditPageAction" />
+        <parameter id="name" value="CheckCanEditPageAction" />
+        <parameter id="description" value="Action CheckCanEditPageAction" />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="5" />
+    </extension>
+    
+    
+    <!--  Table Editor -->
+    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+        id="TableEditToolProvider">
+        <parameter id="class"
+            value="de.knowwe.instantedit.table.TableEditToolProvider" />
+        <parameter id="name" value="TableEditToolProvider" />
+        <parameter id="description"
+            value="Offers a tool for a spreadsheet-like table editor." />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="3" />
+        <parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
+        <parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
+        <parameter id="script" value="DefaultTableEditTool.js" />
+        <parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
+        <parameter id="css" value="KnowWE-Plugin-AutoComplete.css" />
+        <parameter id="css" value="DefaultTableEditTool.css" />       
+        <parameter id="scope" value="Table" />
+        <parameter id="scope" value="WikiTable" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="WikiTable">
+		<parameter id="class"
+			value="de.knowwe.instantedit.table.WikiTable" />
+		<parameter id="name" value="WikiTable" />
+		<parameter id="description" value="Type to match a wiki-style table." />
+		<parameter id="version" value="1.0" />
+		<!--  Needs to be lower in the priority than the TablePlugin, otherwise it will destroy it -->
+		<parameter id="priority" value="9.1" />
+		<parameter id="scope" value="root" />	
+	</extension>
+	
+</plugin>

@@ -1,0 +1,62 @@
+!!! Leaking air intake system
+adapted from Wikipedia
+
+!! General
+----
+
+A (cold) air intake is a device used to bring lower temperature air into a car's internal-combustion engine, to increase engine power and efficiency. 
+
+It also enhances efficiency through higher flow, and can increase the life of the engine by allowing it to run cooler.
+
+!! Typical Symptoms
+----
+
+A Leaking air intake system can cause symptoms like insufficient power on full or partial load. Additionally, it can be the reason for an unsteady idle speed or increased mileage.
+
+!! Repair Instructions
+----
+
+[{Image src='air_intake-system.jpg' width='180' height='130' align='right' caption='Air Intake' style='border: solid 1px;'}]
+
+If there is a leak in the air intake the only way to fix this problem is to change the air intake. 
+
+Therefor the old/factory air intake system has to be removed from the car. At this point it is highly recommended to check if there are better/custom air intakes which offer an increased engine power and efficiency than the standard/factory air intake. 
+
+Afterwards a new air filter has to be installed by attaching it to the air intake pipe. The new air filter should always be checked that it is pre-oiled and not damaged. 
+
+Finally the new air intake can be installed.
+
+%%Rule
+IF NOT (Driving = insufficient power on partial load OR 
+     Driving = unsteady idle speed OR 
+     Driving = insufficient power on full load)
+THEN Leaking air intake system  = N3
+
+IF Driving = insufficient power on full load
+THEN Leaking air intake system = P5
+
+IF Driving = insufficient power on partial load
+THEN Leaking air intake system = P3
+
+IF Driving = unsteady idle speed
+THEN Leaking air intake system = P1
+
+IF Mileage evaluation = slightly increased
+THEN Leaking air intake system = P3
+
+IF Mileage evaluation = normal
+THEN Leaking air intake system = N4
+
+IF Mileage evaluation = increased
+THEN Leaking air intake system = P4
+
+IF "Check: Air intake system." = ok
+THEN Leaking air intake system = N7
+
+IF "Check: Air intake system." = not ok
+THEN Leaking air intake system = P7
+
+@package: demo
+%
+
+<tags>Demo</tags>

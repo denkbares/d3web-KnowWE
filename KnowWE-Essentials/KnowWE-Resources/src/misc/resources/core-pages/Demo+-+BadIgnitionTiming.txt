@@ -1,0 +1,66 @@
+!!! Bad ignition timing
+adapted from Wikipedia
+
+
+!! General
+----
+
+Ignition timing is the process of setting the time that a spark will occur in the combustion chamber (during the power stroke) relative to piston position and crankshaft angular velocity.
+
+Setting the correct ignition timing is crucial in the performance of an engine. The ignition timing affects many variables including engine longevity, fuel economy, and engine power. 
+
+!! Typical Symptoms
+----
+
+Bad ignition timing can have multiple symptoms: For example, some {{starting problems <=> asks:: Starter}}  are related to bad ignition timing. So a bad ignition timing can results in a barely or not starting engine. 
+Additionally, bad ignition timing can be the reason for {{performance problems <=> asks:: Driving}} such as delayed take-off or weak acceleration. 
+Furthermore, bad ignition timing frequently causes {{engine noises <=> asks:: Engine noises}} such as ringing or knocking.
+
+
+!! Repair Instructions
+----
+
+Setting the ignition timing while monitoring engine power output with a dynamometer is one way to correctly set the ignition timing. After advancing or retarding the timing, a corresponding change in power output will usually occur. A load type dynamometer is the best way to accomplish this as the engine can be held at a steady speed and load while the timing is adjusted for maximum output.
+
+Please note that newer engines typically use electronic ignition systems (ignition controlled by a computer). Most computers from original equipment manufacturers (OEM) are not able to be modified so changing the timing is not possible. 
+
+Overall timing changes are still possible, depending on the engine design. Aftermarket engine control units allow to make changes to the timing map. This allows the timing to be advanced or retarded based on various engine applications.
+
+%%Rule
+IF NOT ((Engine start = does not start OR Engine start = engine barely starts)) 
+THEN Bad ignition timing = N5
+
+IF (Engine noises = ringing OR Engine noises = knocking)
+THEN Bad ignition timing = P5
+
+IF NOT ((Engine noises = ringing OR Engine noises = knocking)) 
+THEN Bad ignition timing = N3
+
+IF ((Engine start = does not start OR Engine start = engine barely starts) AND Starter = turns over)
+THEN Bad ignition timing = P5
+
+IF NOT (Driving = "delayed take-off" OR Driving = unsteady idle speed OR Driving = weak acceleration)
+THEN Bad ignition timing = N4
+
+IF Driving = unsteady idle speed
+THEN Bad ignition timing = P1
+
+IF Driving = "delayed take-off"
+THEN Bad ignition timing = P3
+
+IF Driving = weak acceleration
+THEN Bad ignition timing = P4
+
+IF NOT (Starter = turns over) 
+THEN Bad ignition timing = N6
+
+IF "Check: Ignition timing." = ok
+THEN Bad ignition timing = N7
+
+IF "Check: Ignition timing." = not ok
+THEN Bad ignition timing = P7
+
+@package: demo
+%
+
+<tags>Demo</tags>

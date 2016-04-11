@@ -1,0 +1,197 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-JSPWiki-MarkupSet" version="0.1">
+
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+	</requires>
+
+	<!-- <runtime> <library id="" path="." type="code"> <export prefix="*" /> 
+		</library> <library id="webapp" path="webapp/" type="resources"> <export 
+		prefix="*" /> </library> </runtime> -->
+	
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="HeaderType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.HeaderType" />
+		<parameter id="name" value="HeaderType" />
+		<parameter id="description" value="Represents a HeaderType in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="10.1" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="HeaderType2">
+		<parameter id="class" value="de.knowwe.jspwiki.types.HeaderType2" />
+		<parameter id="name" value="HeaderType2" />
+		<parameter id="description" value="Represents a HeaderType2 in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="10.2" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="HeaderType1">
+		<parameter id="class" value="de.knowwe.jspwiki.types.HeaderType1" />
+		<parameter id="name" value="HeaderType1" />
+		<parameter id="description" value="Represents a HeaderType1 in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="10.3" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="PrettifyType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.PrettifyType" />
+		<parameter id="name" value="PrettifyType" />
+		<parameter id="description" value="Represents a PrettifyType in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="1" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="VerbatimType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.VerbatimType" />
+		<parameter id="name" value="VerbatimType" />
+		<parameter id="description" value="Represents a VerbatimType in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="1.1" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="TabbedSectionType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.TabbedSectionType" />
+		<parameter id="name" value="TabbedSectionType" />
+		<parameter id="description" value="Represents a TabbedSectionType in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="2" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="CollapsibleBoxType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.CollapsibleBoxType" />
+		<parameter id="name" value="CollapsibleBoxType" />
+		<parameter id="description" value="Represents a CollapsibleBoxType in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="2" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="ParagraphTypeForLists">
+		<parameter id="class" value="de.knowwe.jspwiki.types.ParagraphTypeForLists" />
+		<parameter id="name" value="ParagraphTypeForLists" />
+		<parameter id="description" value="Represents a ParagraphTypeForLists in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="OrderedListType/**/DashTreeElementContent" />
+		<parameter id="scope" value="ListType/**/DashTreeElementContent" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="TableRow">
+		<parameter id="class" value="de.knowwe.jspwiki.types.TableRow" />
+		<parameter id="name" value="TableRow" />
+		<parameter id="description" value="Represents a TableRow in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="de.knowwe.instantedit.table.WikiTable" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="TableOfContentsType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.TableOfContentsType" />
+		<parameter id="name" value="TableOfContentsType" />
+		<parameter id="description" value="Type TableOfContentsType" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="8" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="TablePluginType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.TablePluginType" />
+		<parameter id="name" value="TablePluginType" />
+		<parameter id="description" value="Type for the brushed.jspwiki.tableplugin" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="9" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="PluginType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.PluginType" />
+		<parameter id="name" value="JSPWikiPlugin" />
+		<parameter id="description" value="Represents a JSPWiki Plugin" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="99" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="ParagraphType">
+		<parameter id="class" value="de.knowwe.jspwiki.types.ParagraphType" />
+		<parameter id="name" value="ParagraphType" />
+		<parameter id="description" value="Represents a ParagraphType in KDOM" />
+		<parameter id="version" value="0.2" />
+		<parameter id="priority" value="100" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="ListCellContentRenderer">
+		<parameter id="class" value="de.knowwe.core.kdom.rendering.DelegateRenderer" />
+		<parameter id="name" value="CellContentRenderer" />
+		<parameter id="description" value="We overrite the renderer in ListType and OrderedListType in JSPWikiMarkup to not disturb JSPWiki rendering" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="OrderedListType/**/LineEndComment" />
+		<parameter id="scope" value="ListType/**/LineEndComment" />
+	</extension>
+
+	<!-- previews -->
+	
+    <extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer"
+               id="ArticlePreviewRenderer">
+        <parameter id="class" value="de.knowwe.jspwiki.types.preview.ArticlePreviewRenderer"/>
+        <parameter id="name" value="ArticlePreviewRenderer"/>
+        <parameter id="description" value="Renders a preview of an article."/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="root"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer"
+               id="HeaderPreviewRenderer">
+        <parameter id="class" value="de.knowwe.jspwiki.types.preview.HeaderPreviewRenderer"/>
+        <parameter id="name" value="HeaderPreviewRenderer"/>
+        <parameter id="description" value="Renders a preview of a header with its content sections."/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="HeaderType"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer"
+               id="DefinitionPreviewRenderer">
+        <parameter id="class" value="de.knowwe.jspwiki.types.preview.DefinitionPreviewRenderer"/>
+        <parameter id="name" value="DefinitionPreviewRenderer"/>
+        <parameter id="description" value="Renders a preview of a definition."/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="DefinitionType"/>
+    </extension>
+
+    <extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer"
+               id="FootnotePreviewRenderer">
+        <parameter id="class" value="de.knowwe.jspwiki.types.preview.FootnotePreviewRenderer"/>
+        <parameter id="name" value="FootnotePreviewRenderer"/>
+        <parameter id="description" value="Renders a preview of a footnote"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+        <parameter id="scope" value="FootnoteType"/>
+    </extension>
+
+</plugin>
