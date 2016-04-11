@@ -278,7 +278,7 @@
 			</dependency>
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>d3web-Utils</artifactId>
+				<artifactId>denkbares-Utils</artifactId>
 				<version>${d3web.version}</version>
 			</dependency>
 		</dependencies>
