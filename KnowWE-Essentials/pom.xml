@@ -7,6 +7,7 @@
 	<artifactId>KnowWE-Essentials</artifactId>
 	<packaging>pom</packaging>
 	<version>0.2-SNAPSHOT</version>
+	<description>Essential open source KnowWE maven modules</description>
 	<url>https://www.d3web.de/</url>
 
 	<issueManagement>

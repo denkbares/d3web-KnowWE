@@ -6,7 +6,7 @@
 	<artifactId>KnowWE</artifactId>
 	<version>0.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<description>Open Source KnowWE maven parent</description>
+	<description>Open Source KnowWE parent</description>
 
 	<modules>
 		<module>KnowWE-Essentials</module>
