@@ -4,11 +4,10 @@
 	<parent>
 		<artifactId>KnowWE-Essentials</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>0.2-SNAPSHOT</version>
+		<version>0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>KnowWE-Plugin-Core</artifactId>
-	<version>0.2-SNAPSHOT</version>
 	<name>KnowWE-Plugin-Core</name>
 	<dependencies>
 		<dependency>

@@ -5,11 +5,11 @@
 	<parent>
 		<artifactId>KnowWE-Essentials</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>0.2-SNAPSHOT</version>
+		<version>0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>KnowWE-Plugin-Rdf2GoSemanticCore</artifactId>
-	<version>0.2-SNAPSHOT</version>
+	<version>0-SNAPSHOT</version>
 	<name>KnowWE-Plugin-Rdf2GoSemanticCore</name>
 
 	<build>
@@ -25,7 +25,7 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-Core</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.semweb4j</groupId>
@@ -95,12 +95,12 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-KDOMParseUtils</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-ExtensionPoints</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0-SNAPSHOT</version>
 		</dependency>
 		<!--
 		<dependency>
@@ -112,7 +112,7 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Plugin-TestingFramework</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

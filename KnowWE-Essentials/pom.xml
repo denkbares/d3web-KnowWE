@@ -6,7 +6,7 @@
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE-Essentials</artifactId>
 	<packaging>pom</packaging>
-	<version>0.2-SNAPSHOT</version>
+	<version>0-SNAPSHOT</version>
 	<description>Essential open source KnowWE maven modules</description>
 	<url>https://www.d3web.de/</url>
 
@@ -179,8 +179,8 @@
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.surefire.reportsPath>target/surefire-reports</sonar.surefire.reportsPath>
 		<sonar.clover.reportPath>target/site/clover/clover.xml</sonar.clover.reportPath>
-		<d3webCoreVersion>0.2-SNAPSHOT</d3webCoreVersion>
-		<d3web.version>0.2-SNAPSHOT</d3web.version>
+		<d3webCoreVersion>0-SNAPSHOT</d3webCoreVersion>
+		<d3web.version>0-SNAPSHOT</d3web.version>
 	</properties>
 
 	<dependencyManagement>
@@ -267,8 +267,8 @@
 				<version>${d3web.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>d3web-PluginManager</artifactId>
+				<groupId>com.denkbares</groupId>
+				<artifactId>denkbares-PluginManager</artifactId>
 				<version>${d3web.version}</version>
 			</dependency>
 			<dependency>

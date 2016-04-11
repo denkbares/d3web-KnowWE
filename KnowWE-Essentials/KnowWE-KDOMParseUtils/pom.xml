@@ -3,20 +3,19 @@
 	<parent>
 		<artifactId>KnowWE-Essentials</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>0.2-SNAPSHOT</version>
+		<version>0-SNAPSHOT</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>KnowWE-KDOMParseUtils</artifactId>
 	<name>KnowWE-KDOMParseUtils</name>
-	<version>0.2-SNAPSHOT</version>
 	<description>Some components helping to create KDOM parsers easily</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-core</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

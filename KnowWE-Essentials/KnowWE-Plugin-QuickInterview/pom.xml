@@ -6,12 +6,12 @@
 	<parent>
 		<artifactId>KnowWE-Essentials</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>0.2-SNAPSHOT</version>
+		<version>0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>KnowWE-Plugin-QuickInterview</artifactId>
 	<name>KnowWE-Plugin-QuickInterview</name>
-	<version>0.2-SNAPSHOT</version>
+	<version>0-SNAPSHOT</version>
 	<description>The default KnowWE Interview, that allows for quickly testing knowledge within KnowWE by "flatly"
 		displaying all questionnaires and questions, as well as their answers.
 	</description>

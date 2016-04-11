@@ -4,7 +4,7 @@
 
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE</artifactId>
-	<version>0.2-SNAPSHOT</version>
+	<version>0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>Open Source KnowWE parent</description>
 

@@ -6,11 +6,10 @@
 	<parent>
 		<artifactId>KnowWE-Essentials</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>0.2-SNAPSHOT</version>
+		<version>0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>KnowWE-Plugin-CI4KE</artifactId>
-	<version>0.2-SNAPSHOT</version>
 	<name>KnowWE-Plugin-CI4KE</name>
 	<description>KnowWE-Plugin: Continuous Integration for Knowledge Engineering</description>
 
@@ -52,49 +51,49 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-core</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Plugin-TestingFramework</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>denkbares-Utils</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-KDOMParseUtils</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-GlobalTestUtils</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-Core</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-ExtensionPoints</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>

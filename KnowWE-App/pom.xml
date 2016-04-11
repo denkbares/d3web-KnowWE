@@ -6,13 +6,12 @@
 	<parent>
 		<artifactId>KnowWE</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>0.2-SNAPSHOT</version>
+		<version>0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>KnowWE-App</artifactId>
 	<packaging>war</packaging>
 	<name>KnowWE-App</name>
-	<version>0.2-SNAPSHOT</version>
 	<description>Maven module for the KnowWE web app. Produces a .war file.</description>
 
 	<build>
@@ -130,7 +129,7 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Include</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
@@ -154,7 +153,7 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Ontology-MarkupSet</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
@@ -166,13 +165,13 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Rdf2GoSemanticCore</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-OntoVis</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
@@ -190,7 +189,7 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-TestCases</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
@@ -315,7 +314,7 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-d3web-Rdf2Go</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
@@ -333,7 +332,7 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-OntoVis</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
@@ -375,7 +374,7 @@
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-DenkbaresDialog</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
@@ -441,12 +440,12 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-SparqlEndpoint</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-RightPanel</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -469,7 +468,7 @@
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-DenkbaresDialog</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
@@ -499,12 +498,12 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-SparqlEndpoint</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-RightPanel</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -522,14 +521,14 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-d3web-RuleDebugger</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 				-->
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-LoadKnowledgeBase</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 
@@ -549,7 +548,7 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-SparqlToExcel</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
@@ -579,7 +578,7 @@
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-AugmentationEdit</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
@@ -591,25 +590,25 @@
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-SemanticAutocompletion</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-OntoVis</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares.ssp</groupId>
 					<artifactId>KnowWE-Plugin-SemanticServiceCore</artifactId>
-					<version>1.0-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares.ssp</groupId>
 					<artifactId>SemanticServiceCore-Plugin-ILME</artifactId>
-					<version>1.0-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
@@ -633,7 +632,7 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Flash</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
@@ -698,7 +697,7 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-d3web-Rdf2Go</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
@@ -716,13 +715,13 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-OntoVis</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-SparqlToExcel</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
@@ -734,7 +733,7 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Defi</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
@@ -893,20 +892,20 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-Core</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Plugin-CostBenefit</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-GlobalTestUtils</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
