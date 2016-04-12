@@ -6,7 +6,6 @@
 		<artifactId>KnowWE-Essentials</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
 		<version>0-SNAPSHOT</version>
-		<relativePath>..</relativePath>
 	</parent>
 
 	<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
