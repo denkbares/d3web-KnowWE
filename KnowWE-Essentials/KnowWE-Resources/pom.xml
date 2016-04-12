@@ -6,13 +6,11 @@
 	<parent>
 		<artifactId>KnowWE-Essentials</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>0-SNAPSHOT</version>
+		<version>1.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>KnowWE-Resources</artifactId>
 	<packaging>war</packaging>
-	<name>KnowWE-Resources</name>
-	<version>0-SNAPSHOT</version>
 
 	<build>
 		<plugins>
@@ -85,7 +83,7 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
-			<version>0-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 
 	</dependencies>

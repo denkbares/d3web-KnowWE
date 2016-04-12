@@ -5,11 +5,10 @@
 	<parent>
 		<artifactId>KnowWE-Essentials</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>0-SNAPSHOT</version>
+		<version>1.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
-	<name>KnowWE-Plugin-JSPWiki-MarkupSet</name>
 	<description>Contains the JSPWiki Markups and handles their correct instantiation</description>
 
 	<build>
@@ -26,14 +25,14 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-core</artifactId>
-			<version>0-SNAPSHOT</version>
+			<version>${project.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-KDOMParseUtils</artifactId>
-			<version>0-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
@@ -58,12 +57,12 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-ExtensionPoints</artifactId>
-			<version>0-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-Core</artifactId>
-			<version>0-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 </project>

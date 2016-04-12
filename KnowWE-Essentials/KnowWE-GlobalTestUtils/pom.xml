@@ -4,17 +4,16 @@
 	<parent>
 		<artifactId>KnowWE-Essentials</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>0-SNAPSHOT</version>
+		<version>1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>KnowWE-GlobalTestUtils</artifactId>
-	<name>KnowWE-GlobalTestUtils</name>
 	<description>The purpose of this project is to offer some often needed util classes for JUNIT Tests</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
-			<version>0-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>

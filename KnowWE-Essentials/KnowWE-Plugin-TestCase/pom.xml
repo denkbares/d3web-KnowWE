@@ -6,12 +6,10 @@
 	<parent>
 		<artifactId>KnowWE-Essentials</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>0-SNAPSHOT</version>
+		<version>1.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>KnowWE-Plugin-TestCase</artifactId>
-	<version>0-SNAPSHOT</version>
-	<name>KnowWE-Plugin-TestCase</name>
 	<description>KnowWE-Plugin for the EmpiricalTesting project</description>
 
 	<build>
