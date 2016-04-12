@@ -52,8 +52,13 @@
 			<version>2.47.1</version>
 		</dependency>
 		<dependency>
-			<groupId>de.uniwue.d3web</groupId>
+			<groupId>com.denkbares</groupId>
 			<artifactId>denkbares-Utils</artifactId>
+			<version>0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.denkbares</groupId>
+			<artifactId>denkbares-Strings</artifactId>
 			<version>0-SNAPSHOT</version>
 		</dependency>
 		<dependency>

@@ -20,7 +20,6 @@ package de.knowwe.ontology.compile;
 
 import java.util.List;
 
-import de.d3web.core.inference.Rule;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.compile.PackageCompiler;
@@ -32,7 +31,6 @@ import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileTypeRenderer;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
-import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TermCompiler.MultiDefinitionMode;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.basicType.AttachmentType;
@@ -52,8 +50,6 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.ontology.kdom.InitTerminologyHandler;
 import de.knowwe.rdf2go.RuleSet;
 import de.knowwe.util.Icon;
-
-import static java.lang.Enum.valueOf;
 
 /**
  * Compiles and provides ontology from the Ontology-MarkupSet.
