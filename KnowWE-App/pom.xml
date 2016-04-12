@@ -4,10 +4,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<artifactId>KnowWE-Essentials</artifactId>
+		<artifactId>KnowWE</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
 		<version>1.0-SNAPSHOT</version>
-		<relativePath>../KnowWE-Essentials</relativePath>
 	</parent>
 
 	<artifactId>KnowWE-App</artifactId>
