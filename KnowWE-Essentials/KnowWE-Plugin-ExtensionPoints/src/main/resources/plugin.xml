@@ -19,7 +19,7 @@
 
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0"
 	"http://jpf.sourceforge.net/plugin_1_0.dtd">
-<plugin id="KnowWEExtensionPoints" version="0.0.1">
+<plugin id="KnowWEExtensionPoints" version="1.0">
 	<!-- This plugin only defines extension points for KnowWE. -->
 
 	<extension-point id="Compiler">

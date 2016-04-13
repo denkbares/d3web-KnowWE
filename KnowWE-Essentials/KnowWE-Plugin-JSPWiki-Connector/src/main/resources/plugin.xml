@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
-<plugin id="KnowWE-Plugin-JSPWiki-Connector" version="0.0.1">
+<plugin id="KnowWE-Plugin-JSPWiki-Connector" version="1.0">
 	
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
@@ -20,7 +20,7 @@
 		<parameter id="class" value="de.knowwe.jspwiki.ReadOnlyMarkup" />
 		<parameter id="name" value="ReadOnlyMarkup" />
 		<parameter id="description" value="Markup for a read only switch" />
-		<parameter id="version" value="0.2" />
+		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 		<parameter id="css" value="KnowWE-Plugin-JSPWiki-Connector.css" />
@@ -32,7 +32,7 @@
 		<parameter id="class" value="de.knowwe.jspwiki.ReadOnlyMessageMarkup" />
 		<parameter id="name" value="ReadOnlyMessageMarkup" />
 		<parameter id="description" value="Markup displaying a message if read-only mode is active" />
-		<parameter id="version" value="0.2" />
+		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 	</extension>

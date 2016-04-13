@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
-<plugin id="KnowWE-Plugin-QuickInterview" version="0.0.1">
+<plugin id="KnowWE-Plugin-QuickInterview" version="1.0">
 	
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
