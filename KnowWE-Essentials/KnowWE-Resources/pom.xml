@@ -53,9 +53,9 @@
 						<configuration>
 							<tasks>
 								<mkdir
-									dir="${project.build.directory}/${pom.name}-${pom.version}/WEB-INF/resources/core-pages/" />
+									dir="${project.build.directory}/${project.name}-${project.version}/WEB-INF/resources/core-pages/" />
 								<copy
-									todir="${project.build.directory}/${pom.name}-${pom.version}/WEB-INF/resources/core-pages/">
+									todir="${project.build.directory}/${project.name}-${project.version}/WEB-INF/resources/core-pages/">
 									<fileset dir="src/misc/resources/core-pages/" />
 								</copy>
 							</tasks>
