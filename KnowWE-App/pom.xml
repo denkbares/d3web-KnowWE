@@ -100,137 +100,96 @@
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-CI4KE</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-CI4KE-d3web</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-d3web-basic</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-d3web-MarkupSet</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-DiaFlux</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Include</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-InstantEdit</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-KBRenderer</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Ontology-MarkupSet</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-QuickInterview</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Rdf2GoSemanticCore</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-OntoVis</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-TestCase</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Tagging</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-TestCases</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Wikicontent-Download</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>jspwiki.plugin</groupId>
 					<artifactId>Table</artifactId>
 					<version>0.1</version>
-					<scope>compile</scope>
 				</dependency>
 			</dependencies>
 		</profile>
 
 		<!-- ======= WIKI PLUGINS ======= -->
-
-		<profile>
-			<id>wissass</id>
-			<activation>
-				<property>
-					<name>wissass</name>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-WissKont</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-OphtoVisD3</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
 
         <profile>
             <id>lexicon</id>
@@ -244,7 +203,6 @@
                     <groupId>de.uniwue.d3web</groupId>
                     <artifactId>KnowWE-Plugin-LexiconInterface</artifactId>
                     <version>${project.version}</version>
-                    <scope>compile</scope>
                 </dependency>
             </dependencies>
         </profile>
@@ -261,37 +219,6 @@
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-OntologyDebugger</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
-			<id>proket</id>
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>d3web-Plugin-ProKEtProperties</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-ProKEt</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-InlineIndication</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-				<dependency>
-					<groupId>com.denkbares</groupId>
-					<artifactId>KnowWE-Plugin-TimeDB</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -303,37 +230,31 @@
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-KnowSEC</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-d3web-SimpleScoreTable</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-d3web-Rdf2Go</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-SparqlToExcel</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-TimeDBScript</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-OntoVis</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -345,97 +266,81 @@
 					<groupId>com.denkbares</groupId>
 					<artifactId>d3web-Plugin-Tests-ClosedSource</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>d3web-Plugin-TextbundleExport</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>d3web-Plugin-TimeDB</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-Admin-Utils</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-AutoComplete</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-DenkbaresDialog</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-EditMode</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-ImageMap</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-JournalParser</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-KBB</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-KPI</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-PlantUML</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-TimeDB</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-TimeDBScript</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-Todos</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-d3web-ClosedSource</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
@@ -457,43 +362,36 @@
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-Admin-Utils</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-AutoComplete</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-DenkbaresDialog</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-EditMode</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-ImageMap</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-PlantUML</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-Todos</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
@@ -515,71 +413,50 @@
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-DiaFlux-Review</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<!--
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-d3web-RuleDebugger</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
+									</dependency>
 				-->
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-LoadKnowledgeBase</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-WikiBook</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-d3web-SimpleScoreTable</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-SparqlToExcel</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-d3web-TermBrowser</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-TimeDBScript</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-OntoDoc</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
-			<id>augmentationedit</id>
-			<dependencies>
-				<dependency>
-					<groupId>com.denkbares</groupId>
-					<artifactId>KnowWE-Plugin-AugmentationEdit</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -591,38 +468,32 @@
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-SemanticAutocompletion</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-OntoVis</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares.ssp</groupId>
 					<artifactId>KnowWE-Plugin-SemanticServiceCore</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares.ssp</groupId>
 					<artifactId>SemanticServiceCore-Plugin-ILME</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-TermBrowser-Autocompletion</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<!--dependency>
 					<groupId>jspwiki.plugin</groupId>
 					<artifactId>ImageMapPlus</artifactId>
 					<version>20060801</version>
-					<scope>compile</scope>
-				</dependency-->
+									</dependency-->
 			</dependencies>
 		</profile>
 
@@ -633,7 +504,6 @@
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Flash</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>jspwiki.aFlashPlugin</groupId>
@@ -650,37 +520,31 @@
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-DenkbaresTmp</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-Admin-Utils</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-AutoComplete</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-EditMode</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-PlantUML</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-Todos</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -692,13 +556,11 @@
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-KMW</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-d3web-Rdf2Go</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -710,19 +572,16 @@
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-ExperienceDatabase</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-OntoVis</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-SparqlToExcel</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -734,7 +593,6 @@
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Defi</artifactId>
 					<version>${project.version}</version>
-					<scope>compile</scope>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -754,28 +612,24 @@
 			<artifactId>commons-fileupload</artifactId>
 			<version>1.2.1</version>
 			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.4</version>
 			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>taglibs</groupId>
 			<artifactId>standard</artifactId>
 			<version>1.1.2</version>
 			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.prefuse</groupId>
 			<artifactId>prefuse</artifactId>
 			<version>beta-20060220</version>
 			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
@@ -823,21 +677,18 @@
 			<artifactId>KnowWE-core</artifactId>
 			<version>${project.version}</version>
 			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom</artifactId>
 			<version>1.1</version>
 			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
 			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-httpclient</groupId>
@@ -855,38 +706,32 @@
 			<artifactId>commons-logging-api</artifactId>
 			<version>1.0.3</version>
 			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 			<version>1.3</version>
 			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Plugin-Persistence-Basic</artifactId>
 			<version>${project.version}</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
 			<version>${project.version}</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-d3web-basic</artifactId>
 			<version>${project.version}</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-d3web-MarkupSet</artifactId>
 			<version>${project.version}</version>
-			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
@@ -894,13 +739,11 @@
 			<artifactId>KnowWE-Plugin-Core</artifactId>
 			<version>${project.version}</version>
 			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Plugin-CostBenefit</artifactId>
 			<version>${project.version}</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
