@@ -21,3 +21,6 @@ overlays/
 
 # Java
 *.class
+
+#Other
+jspwiki-custom.properties
