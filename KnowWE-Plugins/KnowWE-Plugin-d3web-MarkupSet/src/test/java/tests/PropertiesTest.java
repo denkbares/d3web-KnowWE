@@ -28,6 +28,7 @@ import java.util.Locale;
 import junit.framework.TestCase;
 import utils.KBTestUtilNewMarkup;
 import utils.TestArticleManager;
+
 import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
@@ -52,10 +53,11 @@ import de.knowwe.d3web.property.init.InitPropertyHandler;
 /**
  * This class tests the %%Property markup. In the test article are a lot of
  * defined properties, here we check if they are created or not.
- * 
+ *
  * @author Albrecht Striffler (denkbares GmbH)
- * @created 16.12.2011
+ * @since 16.12.2011
  */
+@SuppressWarnings("ConstantConditions")
 public class PropertiesTest extends TestCase {
 
 	@Override
@@ -64,8 +66,7 @@ public class PropertiesTest extends TestCase {
 	}
 
 	private Article getArticle() {
-		return TestArticleManager
-				.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
+		return TestArticleManager.getArticle(KBTestUtilNewMarkup.KBCREATION_ARTICLE_FILE);
 	}
 
 	private KnowledgeBase getKB() {
@@ -139,7 +140,7 @@ public class PropertiesTest extends TestCase {
 
 		float apriori = getInfoStore("Damaged idle speed system").getValue(BasicProperties.APRIORI);
 		assertEquals("INIT QuestionChoice not set correctly",
-				new Float(121.12422135151512667623523523423).floatValue(),
+				121.12422135151512667623523523423f,
 				apriori);
 	}
 
@@ -238,20 +239,20 @@ public class PropertiesTest extends TestCase {
 		assertEquals("quoted property content not set correctly", expected, actual);
 
 		actual = getInfoStore("Other").getValue(MMInfo.PROMPT, Locale.GERMANY);
-		expected = "\r\n\ttest tripple quotes start same line, end next line " +
+		expected = "\n\ttest tripple quotes start same line, end next line " +
 				"\"{[]}€!§$%&/()?`´'+;,:#.'\"\" ";
 		assertEquals("quoted property content not set correctly", expected, actual);
 
 		actual = getChoice("Driving", "unsteady idle speed").getInfoStore().getValue(MMInfo.PROMPT,
 				Locale.CHINESE);
 		expected = "test tripple \"{[]}€!§$%&/()?`´'+;,:#.'\"\" quotes after empty " +
-				"line, end line\r\nafter";
+				"line, end line\nafter";
 		assertEquals("quoted property content not set correctly", expected, actual);
 
 		actual = getChoice("Driving", "insufficient power on partial load")
 				.getInfoStore().getValue(MMInfo.PROMPT, Locale.US);
-		expected = "\r\ntest tripple \"{[]}€!§$%&/()?`´'+;,:#.'\"\" quotes " +
-				"start same line, end next \r\nline\r\n";
+		expected = "\ntest tripple \"{[]}€!§$%&/()?`´'+;,:#.'\"\" quotes " +
+				"start same line, end next \nline\n";
 		assertEquals("quoted property content not set correctly", expected, actual);
 	}
 
