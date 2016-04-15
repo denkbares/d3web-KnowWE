@@ -18,7 +18,7 @@
  */
 package de.knowwe.ontology.sparql;
 
-import org.ontoware.rdf2go.model.node.Node;
+import org.openrdf.model.Value;
 
 import de.knowwe.core.user.UserContext;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -27,7 +27,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 public class TrimNamespaceNodeRenderer implements SparqlResultNodeRenderer {
 
 	@Override
-	public String renderNode(Node node, String text, String variable, UserContext user, Rdf2GoCore core, RenderMode mode) {
+	public String renderNode(Value node, String text, String variable, UserContext user, Rdf2GoCore core, RenderMode mode) {
 		return Rdf2GoUtils.trimNamespace(core, text);
 	}
 

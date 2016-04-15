@@ -19,11 +19,10 @@
 
 package de.knowwe.ontology.sparql;
 
-import org.ontoware.rdf2go.model.QueryResultTable;
-
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 
 /**
@@ -39,7 +38,7 @@ public interface SparqlType extends Type {
 
 	RenderOptions getRenderOptions(Section<? extends SparqlType> section, UserContext context);
 
-	default QueryResultTable postProcessResult(QueryResultTable queryResultTable, UserContext context, RenderOptions opts) {
+	default Rdf2GoCore.QueryRowListResultTable postProcessResult(Rdf2GoCore.QueryRowListResultTable queryResultTable, UserContext context, RenderOptions opts) {
 		return queryResultTable;
 	}
 }

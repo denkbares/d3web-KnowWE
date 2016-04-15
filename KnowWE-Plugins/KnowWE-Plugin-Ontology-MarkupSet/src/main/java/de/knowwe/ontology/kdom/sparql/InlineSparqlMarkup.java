@@ -3,10 +3,8 @@ package de.knowwe.ontology.kdom.sparql;
 import java.util.Iterator;
 import java.util.List;
 
-import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.model.QueryResultTable;
-import org.ontoware.rdf2go.model.QueryRow;
-import org.ontoware.rdf2go.model.node.Node;
+import org.openrdf.model.Value;
+import org.openrdf.query.BindingSet;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
@@ -145,16 +143,16 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 					query = Rdf2GoUtils.createSparqlString(core, query);
 					result.appendHtmlTag("span");
 
-					QueryResultTable resultTable = core.sparqlSelect(query, true, timeout);
+					Rdf2GoCore.QueryRowListResultTable resultTable = core.sparqlSelect(query, true, timeout);
 
-					ClosableIterator<QueryRow> rowIterator = resultTable.iterator();
+					Iterator<BindingSet> rowIterator = resultTable.iterator();
 					List<String> variables = resultTable.getVariables();
 
 					RenderResult line = new RenderResult(result);
 					String cell;
 
 					int lines = 0;
-					QueryRow row = null;
+					BindingSet row = null;
 					while (rowIterator.hasNext()) {
 						row = rowIterator.next();
 						lines++;
@@ -162,7 +160,7 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 						for (Iterator<String> variableIterator = variables.iterator(); variableIterator
 								.hasNext(); ) {
 							String variable = variableIterator.next();
-							Node node = row.getValue(variable);
+							Value node = row.getValue(variable);
 							if (node == null) continue;
 							cell = node.toString();
 							cell = Rdf2GoUtils.trimDataType(core, cell);
@@ -181,7 +179,7 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 							// special case for SPARQLs with GROUP_CONCAT... they often contain one empty result
 							boolean foundContent = false;
 							for (String variable : variables) {
-								Node node = row.getValue(variable);
+								Value node = row.getValue(variable);
 								if (node != null && !Strings.isBlank(node.toString())) {
 									foundContent = true;
 								}

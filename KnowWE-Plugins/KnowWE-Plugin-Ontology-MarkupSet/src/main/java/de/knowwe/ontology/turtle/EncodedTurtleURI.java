@@ -20,7 +20,7 @@ package de.knowwe.ontology.turtle;
 
 import java.util.regex.Pattern;
 
-import org.ontoware.rdf2go.model.node.Node;
+import org.openrdf.model.Value;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
@@ -65,7 +65,7 @@ public class EncodedTurtleURI extends AbstractType implements NodeProvider<Encod
 	}
 
 	@Override
-	public Node getNode(Section<EncodedTurtleURI> section, Rdf2GoCompiler core) {
+	public Value getNode(Section<EncodedTurtleURI> section, Rdf2GoCompiler core) {
 		String uri = getURI(section);
 		return core.getRdf2GoCore().createURI(uri);
 	}

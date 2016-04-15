@@ -35,6 +35,7 @@ import org.ontoware.rdf2go.model.QueryResultTable;
 import org.ontoware.rdf2go.model.QueryRow;
 import org.ontoware.rdf2go.model.node.Node;
 
+import com.denkbares.semanticcore.Reasoning;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
@@ -66,11 +67,11 @@ public class OntoVisTest {
 	public static void setUp() throws IOException {
 		InitPluginManager.init();
 
-		RDF2Go.register(new OWLIMLiteModelFactory(RuleSet.OWL2_RL_REDUCED_OPTIMIZED));
+		RDF2Go.register(new OWLIMLiteModelFactory(RuleSet.OWL2_RL_OPTIMIZED));
 		Model model = RDF2Go.getModelFactory().createModel();
 		model.open();
 		rdfRepository = new Rdf2GoCore("http://localhost:8080/KnowWE/Wiki.jsp?page=",
-				"http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#", model, RuleSet.OWL2_RL_REDUCED_OPTIMIZED);
+				"http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#", model, Reasoning.OWL2_RL_OPTIMIZED);
 		// rdfRepository.addNamespace("ns", bns);
 		// rdfRepository.addNamespace(LNS_ABBREVIATION, lns);
 		rdfRepository.addNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
@@ -80,8 +81,7 @@ public class OntoVisTest {
 		rdfRepository.addNamespace("si", "http://www.example.org/ontology#");
 
 		File ontologyFile = new File("src/test/resources/simpsons-ontology.xml");
-		InputStream in = new FileInputStream(ontologyFile);
-		rdfRepository.readFrom(in);
+		rdfRepository.readFrom(ontologyFile);
 	}
 
 	@Test

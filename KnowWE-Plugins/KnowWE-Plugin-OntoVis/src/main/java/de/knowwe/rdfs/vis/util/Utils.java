@@ -29,6 +29,7 @@ import org.ontoware.rdf2go.model.node.BlankNode;
 import org.ontoware.rdf2go.model.node.Literal;
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.URI;
+import org.openrdf.model.Value;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
@@ -368,7 +369,7 @@ public class Utils {
 		}
 	}
 
-	public static GraphDataBuilder.NODE_TYPE getConceptType(Node conceptURI, Rdf2GoCore rdfRepository) {
+	public static GraphDataBuilder.NODE_TYPE getConceptType(Value conceptURI, Rdf2GoCore rdfRepository) {
 		if (Utils.isLiteral(conceptURI)) {
 			return GraphDataBuilder.NODE_TYPE.LITERAL;
 		}

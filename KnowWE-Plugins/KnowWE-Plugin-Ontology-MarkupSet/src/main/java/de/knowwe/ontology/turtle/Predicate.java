@@ -18,6 +18,8 @@
  */
 package de.knowwe.ontology.turtle;
 
+import java.util.List;
+
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -28,10 +30,6 @@ import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.URIProvider;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.URI;
-
-import java.util.List;
 
 public class Predicate extends AbstractType implements URIProvider<Predicate> {
 
@@ -50,7 +48,7 @@ public class Predicate extends AbstractType implements URIProvider<Predicate> {
 	@Override
 	@SuppressWarnings({
 			"rawtypes", "unchecked" })
-	public Node getNode(Section<Predicate> section, Rdf2GoCompiler core) {
+	public org.openrdf.model.Value getNode(Section<Predicate> section, Rdf2GoCompiler core) {
 		// there should be exactly one NodeProvider successor
 		List<Section<?>> children = section.getChildren();
 		for (Section<?> child : children) {
@@ -66,7 +64,7 @@ public class Predicate extends AbstractType implements URIProvider<Predicate> {
 	}
 
 	@Override
-	public URI getURI(Section<Predicate> section, Rdf2GoCompiler core) {
-		return (URI) getNode(section, core);
+	public org.openrdf.model.URI getURI(Section<Predicate> section, Rdf2GoCompiler core) {
+		return (org.openrdf.model.URI) getNode(section, core);
 	}
 }

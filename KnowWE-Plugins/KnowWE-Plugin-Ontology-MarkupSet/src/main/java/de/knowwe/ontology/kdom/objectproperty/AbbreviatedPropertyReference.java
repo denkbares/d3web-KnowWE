@@ -18,8 +18,6 @@
  */
 package de.knowwe.ontology.kdom.objectproperty;
 
-import org.ontoware.rdf2go.model.node.URI;
-
 import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.renderer.StyleRenderer;
@@ -40,7 +38,7 @@ public class AbbreviatedPropertyReference extends AbbreviatedResourceReference {
 		return super.getResource(section);
 	}
 
-	public URI getPropertyURI(Rdf2GoCore core, Section<? extends AbbreviatedPropertyReference> section) {
+	public org.openrdf.model.URI getPropertyURI(Rdf2GoCore core, Section<? extends AbbreviatedPropertyReference> section) {
 		return super.getResourceURI(core, section);
 	}
 

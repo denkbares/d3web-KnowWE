@@ -21,25 +21,23 @@ package de.knowwe.ontology.ci;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.model.QueryResultTable;
-import org.ontoware.rdf2go.model.QueryRow;
-import org.ontoware.rdf2go.model.node.Node;
+import org.openrdf.model.Value;
+import org.openrdf.query.BindingSet;
 
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
+import de.d3web.utils.Log;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 
-
 /**
- * 
  * @author Jochen Reutelshöfer
  * @created 10.01.2014
  */
@@ -53,19 +51,18 @@ public class FunctionalPropertyTest extends AbstractTest<OntologyCompiler> {
 		SparqlQuery query = new SparqlQuery().SELECT(propVariableName).WHERE(
 				propVariableName + " rdf:type owl:FunctionalProperty");
 
-
-		List<Node> functionalProperties = new ArrayList<Node>();
-		QueryResultTable sparqlSelect = rdf2GoCore.sparqlSelect(query);
-		ClosableIterator<QueryRow> iterator = sparqlSelect.iterator();
+		List<Value> functionalProperties = new ArrayList<>();
+		Rdf2GoCore.QueryRowListResultTable sparqlSelect = rdf2GoCore.sparqlSelect(query);
+		Iterator<BindingSet> iterator = sparqlSelect.iterator();
 		while (iterator.hasNext()) {
-			QueryRow row = iterator.next();
-			Node value = row.getValue(propVariableName.substring(1));
+			BindingSet row = iterator.next();
+			Value value = row.getValue(propVariableName.substring(1));
 			functionalProperties.add(value);
 		}
 
-		Map<Node, Map<Node, Set<Node>>> conflicts = new HashMap<Node, Map<Node, Set<Node>>>();
-		for (Node prop : functionalProperties) {
-			Map<Node, Set<Node>> conflictsForProp = checkFunctionalProperty(prop, rdf2GoCore);
+		Map<Value, Map<Value, Set<Value>>> conflicts = new HashMap<Value, Map<Value, Set<Value>>>();
+		for (Value prop : functionalProperties) {
+			Map<Value, Set<Value>> conflictsForProp = checkFunctionalProperty(prop, rdf2GoCore);
 			if (conflictsForProp.size() > 0) {
 				conflicts.put(prop, conflictsForProp);
 			}
@@ -75,22 +72,20 @@ public class FunctionalPropertyTest extends AbstractTest<OntologyCompiler> {
 
 			StringBuffer message = new StringBuffer();
 			message.append("There are violations for functional properties:\n");
-			Set<Node> propConflicts = conflicts.keySet();
-			for (Node prop : propConflicts) {
+			Set<Value> propConflicts = conflicts.keySet();
+			for (Value prop : propConflicts) {
 				message.append("\n* " + prop.toString() + ":");
-				Map<Node, Set<Node>> map = conflicts.get(prop);
-				Set<Node> subjectConflictSet = map.keySet();
-				for (Node subject : subjectConflictSet) {
+				Map<Value, Set<Value>> map = conflicts.get(prop);
+				Set<Value> subjectConflictSet = map.keySet();
+				for (Value subject : subjectConflictSet) {
 					message.append("\n** Subject: " + subject.toString() + " Objects: ");
-					Set<Node> objects = map.get(subject);
-					for (Node object : objects) {
+					Set<Value> objects = map.get(subject);
+					for (Value object : objects) {
 						message.append(object.toString() + ", ");
 					}
-					
-					
+
 				}
-			
-				
+
 			}
 
 			return new Message(Type.FAILURE, message.toString());
@@ -102,32 +97,39 @@ public class FunctionalPropertyTest extends AbstractTest<OntologyCompiler> {
 		return Message.SUCCESS;
 	}
 
-	private Map<Node, Set<Node>> checkFunctionalProperty(Node prop, Rdf2GoCore core) {
+	private Map<Value, Set<Value>> checkFunctionalProperty(Value prop, Rdf2GoCore core) {
 		String subjectVariableName = "?subject";
 		String objectVariableName = "?object";
 		SparqlQuery queryFunctionalPropertyAssertions = new SparqlQuery().SELECT(
 				subjectVariableName + " " + objectVariableName).WHERE(
-				subjectVariableName + " " + prop.toSPARQL() + " " + objectVariableName);
-		QueryResultTable assertions = core.sparqlSelect(queryFunctionalPropertyAssertions);
-		ClosableIterator<QueryRow> iterator = assertions.iterator();
-		Map<Node, Set<Node>> assertionMap = new HashMap<Node, Set<Node>>();
+				subjectVariableName + " <" + prop.stringValue() + "> " + objectVariableName);
+		Rdf2GoCore.QueryRowListResultTable assertions = null;
+		try {
+			assertions = core.sparqlSelect(queryFunctionalPropertyAssertions);
+		}
+		catch (Exception e) {
+			Log.severe("Exception while executing sparql:\n" + queryFunctionalPropertyAssertions);
+			throw e;
+		}
+		Iterator<BindingSet> iterator = assertions.iterator();
+		Map<Value, Set<Value>> assertionMap = new HashMap<Value, Set<Value>>();
 		while (iterator.hasNext()) {
-			QueryRow row = iterator.next();
-			Node subject = row.getValue(subjectVariableName.substring(1));
-			Node object = row.getValue(objectVariableName.substring(1));
+			BindingSet row = iterator.next();
+			Value subject = row.getValue(subjectVariableName.substring(1));
+			Value object = row.getValue(objectVariableName.substring(1));
 			if (assertionMap.containsKey(subject)) {
 				assertionMap.get(subject).add(object);
 			}
 			else {
-				Set<Node> objects = new HashSet<Node>();
+				Set<Value> objects = new HashSet<Value>();
 				objects.add(object);
 				assertionMap.put(subject, objects);
 			}
 		}
-		Map<Node, Set<Node>> conflicts = new HashMap<Node, Set<Node>>();
-		Set<Node> keySet = assertionMap.keySet();
-		for (Node subject : keySet) {
-			Set<Node> conflictSet = checkUnity(assertionMap.get(subject), core);
+		Map<Value, Set<Value>> conflicts = new HashMap<Value, Set<Value>>();
+		Set<Value> keySet = assertionMap.keySet();
+		for (Value subject : keySet) {
+			Set<Value> conflictSet = checkUnity(assertionMap.get(subject), core);
 			if (conflictSet != null && conflictSet.size() > 1) {
 				conflicts.put(subject, conflictSet);
 			}
@@ -139,31 +141,31 @@ public class FunctionalPropertyTest extends AbstractTest<OntologyCompiler> {
 
 	/**
 	 * Determine a set of object URIs where none is owl:sameAs any other
-	 * 
-	 * @created 09.01.2014
+	 *
 	 * @param set
 	 * @param core
 	 * @return
+	 * @created 09.01.2014
 	 */
-	private Set<Node> checkUnity(Set<Node> set,Rdf2GoCore core) {
+	private Set<Value> checkUnity(Set<Value> set, Rdf2GoCore core) {
 		if (set.size() == 1) {
 			// unity asserted ;-)
 			return set;
 		}
-		Set<Node> conflictSet = new HashSet<Node>();
-		for (Node newNode : set) {
+		Set<Value> conflictSet = new HashSet<Value>();
+		for (Value newValue : set) {
 			boolean isIn = false;
-			for (Node unifiedNode : conflictSet) {
-				boolean isSame = core.sparqlAsk("ASK {" + newNode.toSPARQL() + " owl:sameAs "
-						+ unifiedNode.toSPARQL() + ". }");
+			for (Value unifiedValue : conflictSet) {
+				boolean isSame = core.sparqlAsk("ASK { <" + newValue.stringValue() + "> owl:sameAs <"
+						+ unifiedValue.stringValue() + ">. }");
 				if (isSame) {
 					isIn = true;
 					break;
 				}
-				
+
 			}
 			if (!isIn) {
-				conflictSet.add(newNode);
+				conflictSet.add(newValue);
 			}
 		}
 

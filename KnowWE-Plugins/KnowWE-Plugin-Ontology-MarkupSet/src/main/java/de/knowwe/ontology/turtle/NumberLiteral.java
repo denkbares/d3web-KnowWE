@@ -19,12 +19,12 @@
 
 package de.knowwe.ontology.turtle;
 
+import org.openrdf.model.Value;
+import org.openrdf.model.vocabulary.XMLSchema;
+
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.vocabulary.XSD;
 
 /**
  * @author Jochen Reutelshöfer
@@ -37,7 +37,7 @@ public class NumberLiteral extends de.knowwe.core.kdom.basicType.Number implemen
     }
 
     @Override
-    public Node getNode(Section<TurtleLiteralType> section, Rdf2GoCompiler core) {
+    public Value getNode(Section<TurtleLiteralType> section, Rdf2GoCompiler core) {
         /*
         The SectionFinder already assures that it actually is a valid number
          */
@@ -51,9 +51,9 @@ public class NumberLiteral extends de.knowwe.core.kdom.basicType.Number implemen
             // nothing to do
         }
 
-        URI dataType = XSD._double;
+        org.openrdf.model.URI dataType = XMLSchema.DOUBLE;
         if (isInteger) {
-            dataType = XSD._integer;
+            dataType = XMLSchema.INTEGER;
         }
         return core.getRdf2GoCore().createLiteral(section.getText(), dataType);
     }

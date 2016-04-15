@@ -23,8 +23,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.openrdf.repository.RepositoryException;
 
 import de.d3web.strings.Identifier;
+import de.d3web.utils.Log;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
@@ -109,7 +111,12 @@ public class NamespaceAbbreviationDefinition extends SimpleDefinition {
 					AbbreviationDefinition.class);
 			String abbreviationName = abbreviation1.get().getTermName(abbreviation1);
 			String abbreviation = abbreviationName;
-			Rdf2GoCore.getInstance(compiler).removeNamespace(abbreviation);
+			try {
+				Rdf2GoCore.getInstance(compiler).removeNamespace(abbreviation);
+			}
+			catch (RepositoryException e) {
+				Log.severe("Unable to remove namespace", e);
+			}
 		}
 
 	}

@@ -19,14 +19,14 @@
 
 package de.knowwe.ontology.turtle;
 
+import org.openrdf.model.Value;
+
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.OneOfStringFinderExact;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.vocabulary.RDF;
 
 /**
  * @author Jochen Reutelshöfer
@@ -42,7 +42,7 @@ public class PredicateAType extends AbstractType implements NodeProvider<TurtleL
     }
 
     @Override
-    public Node getNode(Section<TurtleLiteralType> section, Rdf2GoCompiler core) {
-        return RDF.type;
+    public Value getNode(Section<TurtleLiteralType> section, Rdf2GoCompiler core) {
+        return org.openrdf.model.vocabulary.RDF.TYPE;
     }
 }

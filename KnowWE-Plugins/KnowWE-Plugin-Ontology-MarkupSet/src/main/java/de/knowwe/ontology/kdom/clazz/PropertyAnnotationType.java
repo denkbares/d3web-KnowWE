@@ -21,11 +21,11 @@ package de.knowwe.ontology.kdom.clazz;
 import java.util.Collection;
 import java.util.List;
 
-import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.vocabulary.OWL;
-import org.ontoware.rdf2go.vocabulary.RDF;
-import org.ontoware.rdf2go.vocabulary.RDFS;
-import org.ontoware.rdf2go.vocabulary.XSD;
+import org.openrdf.model.URI;
+import org.openrdf.model.vocabulary.OWL;
+import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.model.vocabulary.RDFS;
+import org.openrdf.model.vocabulary.XMLSchema;
 
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
@@ -42,6 +42,7 @@ import de.knowwe.ontology.kdom.OntologyUtils;
 import de.knowwe.ontology.kdom.objectproperty.AbbreviatedPropertyDefinition;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
 import de.knowwe.rdf2go.Rdf2GoCore;
+
 
 public class PropertyAnnotationType extends AbstractType {
 
@@ -85,7 +86,7 @@ public class PropertyAnnotationType extends AbstractType {
 				if (classSection.hasErrorInSubtree()) continue;
 				URI classNameURI = classSection.get().getClassNameURI(core, classSection);
 				core.addStatements(section,
-						core.createStatement(propertyURI, RDFS.domain, classNameURI));
+						core.createStatement(propertyURI, RDFS.DOMAIN, classNameURI));
 			}
 
 			if (rangeSection != null) {
@@ -93,20 +94,20 @@ public class PropertyAnnotationType extends AbstractType {
 				String rangeAbbreviation = rangeSection.get().getAbbreviation(rangeSection);
 				String range = rangeSection.get().getResource(rangeSection);
 				URI rangeURI = core.createURI(rangeAbbreviation, range);
-				core.addStatements(section, core.createStatement(propertyURI, RDFS.range, rangeURI));
+				core.addStatements(section, core.createStatement(propertyURI, RDFS.RANGE, rangeURI));
 
-				if (rangeAbbreviation.equalsIgnoreCase(XSD.class.getSimpleName())) {
-					core.addStatements(section, core.createStatement(propertyURI, RDF.type,
-							OWL.DatatypeProperty));
+				if (rangeAbbreviation.equalsIgnoreCase(XMLSchema.PREFIX)) {
+					core.addStatements(section, core.createStatement(propertyURI, RDF.TYPE,
+							OWL.OBJECTPROPERTY));
 				}
 				else {
-					core.addStatements(section, core.createStatement(propertyURI, RDF.type,
-							OWL.ObjectProperty));
+					core.addStatements(section, core.createStatement(propertyURI, RDF.TYPE,
+							OWL.OBJECTPROPERTY));
 				}
 			}
 			else {
-				core.addStatements(section, core.createStatement(propertyURI, RDF.type,
-						RDF.Property));
+				core.addStatements(section, core.createStatement(propertyURI, RDF.TYPE,
+						RDF.PROPERTY));
 			}
 
 			return Messages.noMessage();

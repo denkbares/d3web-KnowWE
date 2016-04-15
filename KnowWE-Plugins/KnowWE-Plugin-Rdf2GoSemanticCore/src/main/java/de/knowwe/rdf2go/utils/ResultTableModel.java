@@ -32,24 +32,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.model.QueryResultTable;
-import org.ontoware.rdf2go.model.QueryRow;
 import org.ontoware.rdf2go.model.node.BlankNode;
-import org.ontoware.rdf2go.model.node.Node;
+import org.openrdf.model.Value;
+import org.openrdf.query.BindingSet;
 
 import de.d3web.collections.SubSpanIterator;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
 import de.d3web.utils.Pair;
+import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class ResultTableModel {
 
-	public Map<Node, Set<TableRow>> getData() {
+	public Map<Value, Set<TableRow>> getData() {
 		if (groupedRows == null) {
-			Map<Node, Set<TableRow>> data = new LinkedHashMap<>();
+			Map<Value, Set<TableRow>> data = new LinkedHashMap<>();
 			for (TableRow row : rows) {
-				Node firstNode = row.getValue(variables.get(0));
+				Value firstNode = row.getValue(variables.get(0));
 				Set<TableRow> nodeRows = data.get(firstNode);
 				if (nodeRows == null) {
 					nodeRows = new HashSet<>();
@@ -66,7 +65,7 @@ public class ResultTableModel {
 
 	private final List<String> variables;
 
-	private Map<Node, Set<TableRow>> groupedRows = null;
+	private Map<Value, Set<TableRow>> groupedRows = null;
 
 	public int getSize() {
 		return rows.size();
@@ -74,7 +73,7 @@ public class ResultTableModel {
 
 	private List<Comparator<TableRow>> comparators = new LinkedList<>();
 
-	public ResultTableModel(QueryResultTable result) {
+	public ResultTableModel(Rdf2GoCore.QueryRowListResultTable result) {
 		this.variables = result.getVariables();
 		populateTable(result);
 	}
@@ -110,9 +109,10 @@ public class ResultTableModel {
 		for (Pair<String, Boolean> stringBooleanPair : sorting) {
 			final int factor = stringBooleanPair.getB() ? 1 : -1;
 			Comparator<TableRow> comparator = (o1, o2) -> {
-				Node v1 = o1.getValue(stringBooleanPair.getA());
-				Node v2 = o2.getValue(stringBooleanPair.getA());
-				int result = (v1 == v2) ? 0 : (v1 == null) ? -1 : (v2 == null) ? 1 : v1.compareTo(v2);
+				Value v1 = o1.getValue(stringBooleanPair.getA());
+				Value v2 = o2.getValue(stringBooleanPair.getA());
+				int result = (v1 == v2) ? 0 : (v1 == null) ? -1 : (v2 == null) ? 1 : v1.stringValue()
+						.compareTo(v2.stringValue());
 				return factor * result;
 			};
 			comparators.add(comparator);
@@ -134,13 +134,10 @@ public class ResultTableModel {
 		return new SubSpanIterator<>(iterator(), start, end);
 	}
 
-	private void populateTable(QueryResultTable result) {
-		ClosableIterator<QueryRow> iterator = result.iterator();
-		while (iterator.hasNext()) {
-			QueryRow queryRow = iterator.next();
+	private void populateTable(Rdf2GoCore.QueryRowListResultTable result) {
+		for (BindingSet queryRow : result.getBindingSets()) {
 			importRow(queryRow);
 		}
-		iterator.close();
 	}
 
 	private void importRow(TableRow row) {
@@ -158,7 +155,7 @@ public class ResultTableModel {
 		return buffy.toString();
 	}
 
-	private void importRow(QueryRow queryRow) {
+	private void importRow(BindingSet queryRow) {
 		rows.add(new QueryRowTableRow(queryRow, variables));
 	}
 
@@ -166,7 +163,7 @@ public class ResultTableModel {
 		return variables;
 	}
 
-	public Collection<TableRow> findRowFor(Node ascendorParent) {
+	public Collection<TableRow> findRowFor(Value ascendorParent) {
 		return getData().get(ascendorParent);
 	}
 
@@ -232,10 +229,10 @@ public class ResultTableModel {
 		 * 3. Compare numbers for each subject node (except for blank nodes)
 		 */
 
-		Map<Node, Set<TableRow>> expectedData = expectedResultTable.getData();
-		Map<Node, Set<TableRow>> actualData = actualResultTable.getData();
-		Set<Node> keySet = actualData.keySet();
-		for (Node node : keySet) {
+		Map<Value, Set<TableRow>> expectedData = expectedResultTable.getData();
+		Map<Value, Set<TableRow>> actualData = actualResultTable.getData();
+		Set<Value> keySet = actualData.keySet();
+		for (Value node : keySet) {
 			if (!(node instanceof BlankNode)) {
 				if (!expectedData.keySet().contains(node)) {
 					errorMessages.add(new Message(Type.ERROR, "node not contained: "

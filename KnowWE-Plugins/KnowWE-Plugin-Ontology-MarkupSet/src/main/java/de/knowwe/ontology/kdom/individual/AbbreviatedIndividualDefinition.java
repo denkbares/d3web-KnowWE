@@ -3,9 +3,9 @@ package de.knowwe.ontology.kdom.individual;
 import java.util.Collection;
 import java.util.List;
 
-import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.vocabulary.OWL;
-import org.ontoware.rdf2go.vocabulary.RDF;
+import org.openrdf.model.vocabulary.OWL;
+import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.model.URI;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -18,6 +18,7 @@ import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceDefinition;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
 import de.knowwe.rdf2go.Rdf2GoCore;
+
 
 public class AbbreviatedIndividualDefinition extends AbbreviatedResourceDefinition {
 
@@ -40,7 +41,7 @@ public class AbbreviatedIndividualDefinition extends AbbreviatedResourceDefiniti
 					individualMarkup, IndividualType.TYPE_ANNOTATION_NAME);
 
 			if (contentTypeSections.isEmpty()) {
-				core.addStatements(section, core.createStatement(resourceURI, RDF.type, OWL.Thing));
+				core.addStatements(section, core.createStatement(resourceURI, RDF.TYPE, OWL.THING));
 			}
 			else {
 				for (Section<? extends AnnotationContentType> contentTypeSection : contentTypeSections) {
@@ -49,7 +50,7 @@ public class AbbreviatedIndividualDefinition extends AbbreviatedResourceDefiniti
 					if (resourceSection.hasErrorInSubtree()) return Messages.noMessage();
 					URI typeURI = resourceSection.get().getResourceURI(core, resourceSection);
 					core.addStatements(section,
-							core.createStatement(resourceURI, RDF.type, typeURI));
+							core.createStatement(resourceURI, RDF.TYPE, typeURI));
 				}
 			}
 			return Messages.noMessage();

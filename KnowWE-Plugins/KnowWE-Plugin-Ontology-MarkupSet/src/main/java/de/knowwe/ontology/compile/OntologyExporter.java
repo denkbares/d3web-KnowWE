@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.ontoware.rdf2go.model.Syntax;
+import org.openrdf.rio.RDFFormat;
 
 import de.d3web.utils.Log;
 import de.d3web.utils.Stopwatch;
@@ -104,8 +104,8 @@ public class OntologyExporter implements EventListener {
 		// if not failed yet, clean up messages
 		Messages.clearMessages(exportAnnotation, this.getClass());
 
-		Syntax parsedSyntax = Rdf2GoUtils.syntaxForFileName(annotationName);
-		final Syntax syntax = parsedSyntax == null ? Syntax.Turtle : parsedSyntax;
+		RDFFormat parsedSyntax = Rdf2GoUtils.syntaxForFileName(annotationName);
+		final RDFFormat syntax = parsedSyntax == null ? RDFFormat.TURTLE : parsedSyntax;
 
 		Thread exportTread = new Thread() {
 			@Override

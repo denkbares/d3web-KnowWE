@@ -18,8 +18,9 @@
  */
 package de.knowwe.ontology.kdom;
 
-import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.model.QueryRow;
+import java.util.Iterator;
+
+import org.openrdf.query.BindingSet;
 
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -53,10 +54,10 @@ public abstract class TerminologyHelper {
 	}
 
 	public void registerTerminology(OntologyCompiler compiler, Section<?> section, String query, Class<? extends Resource> termClass) {
-		ClosableIterator<QueryRow> iterator =
+		Iterator<BindingSet> iterator =
 				Rdf2GoCore.getInstance(compiler).sparqlSelectIt(query);
 		while (iterator.hasNext()) {
-			QueryRow row = iterator.next();
+			BindingSet row = iterator.next();
 			String value = row.getValue("resource").toString();
 			registerTerm(compiler, section, value, termClass);
 

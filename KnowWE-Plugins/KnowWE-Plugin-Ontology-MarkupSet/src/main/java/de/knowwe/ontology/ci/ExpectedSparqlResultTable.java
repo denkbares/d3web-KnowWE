@@ -21,8 +21,12 @@ package de.knowwe.ontology.ci;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ontoware.rdf2go.model.node.Node;
+import connector.DummyConnector;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
+import org.openrdf.model.impl.URIImpl;
 
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.table.Table;
@@ -54,17 +58,28 @@ public class ExpectedSparqlResultTable extends Table {
 		return new ResultTableModel(rows, variables);
 	}
 
+	private static boolean isCompatibilityMode() {
+		return !Environment.getInstance().getWikiConnector().getBaseUrl().equals(DummyConnector.BASE_URL);
+	}
+
 	@SuppressWarnings({
 			"rawtypes", "unchecked" })
 	private static SimpleTableRow createResultRow(Section<TableLine> line, List<String> variables, Rdf2GoCompiler core) {
-		List<Section<NodeProvider>> nodeProviders = Sections.successors(line,
-				NodeProvider.class);
+		List<Section<NodeProvider>> nodeProviders = Sections.successors(line, NodeProvider.class);
 		SimpleTableRow row = new SimpleTableRow();
+		boolean compatibilityMode = isCompatibilityMode();
+		String currentBaseUrl = Environment.getInstance().getWikiConnector().getBaseUrl();
 		int column = 0;
 		for (Section<NodeProvider> section : nodeProviders) {
 			String variable = variables.get(column);
-			Node node = section.get().getNode(section, core);
-			if (node != null) row.addValue(variable, node);
+			Value value = section.get().getNode(section, core);
+			if (value instanceof URI && compatibilityMode) {
+				String valueString = value.stringValue();
+				if (valueString.startsWith(DummyConnector.BASE_URL)) {
+					value = new URIImpl(currentBaseUrl + valueString.substring(DummyConnector.BASE_URL.length()));
+				}
+			}
+			if (value != null) row.addValue(variable, value);
 			column++;
 		}
 		return row;

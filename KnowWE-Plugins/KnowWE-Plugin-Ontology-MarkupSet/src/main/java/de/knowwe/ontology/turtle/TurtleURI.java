@@ -18,7 +18,7 @@
  */
 package de.knowwe.ontology.turtle;
 
-import org.ontoware.rdf2go.model.node.Node;
+import org.openrdf.model.Value;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
@@ -45,7 +45,7 @@ public class TurtleURI extends AbbreviatedResourceReference implements NodeProvi
 	}
 
 	@Override
-	public Node getNode(Section<TurtleURI> section, Rdf2GoCompiler compiler) {
+	public Value getNode(Section<TurtleURI> section, Rdf2GoCompiler compiler) {
 		Rdf2GoCore core = compiler.getRdf2GoCore();
 		String turtleURIText = section.getText();
 		Section<ResourceReference> ref = Sections.successor(section, ResourceReference.class);
@@ -63,7 +63,7 @@ public class TurtleURI extends AbbreviatedResourceReference implements NodeProvi
 		}
 	}
 
-	public static Node getNodeForIdentifier(Rdf2GoCore core, Identifier identifier) {
+	public static Value getNodeForIdentifier(Rdf2GoCore core, Identifier identifier) {
 		if (identifier == null) return null;
 		String[] idPath = identifier.getPathElements();
 		String shortURI;

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -31,10 +32,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.model.QueryRow;
-import org.ontoware.rdf2go.model.Syntax;
+import org.openrdf.query.BindingSet;
+import org.openrdf.repository.RepositoryException;
+import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFParseException;
 
+import com.denkbares.semanticcore.Reasoning;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
@@ -58,8 +61,6 @@ import de.knowwe.ontology.kdom.namespace.AbbreviationDefinition;
 import de.knowwe.ontology.kdom.objectproperty.Property;
 import de.knowwe.ontology.kdom.resource.Resource;
 import de.knowwe.rdf2go.Rdf2GoCore;
-import de.knowwe.rdf2go.RuleSet;
-import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 /**
@@ -182,11 +183,11 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 		}
 
 		String fileName = attachment.getFileName();
-		Syntax syntax = Rdf2GoUtils.syntaxForFileName(fileName);
+		RDFFormat syntax = Rdf2GoUtils.syntaxForFileName(fileName);
 		Future<?> mainReadFuture = executorService.submit(() -> readFrom(compiler, section, core, attachment, syntax));
 		if (!silent) {
 			// we need rdfs reasoning for the SPARQLs to work
-			Rdf2GoCore dummy = new Rdf2GoCore(RuleSet.RDFS);
+			Rdf2GoCore dummy = new Rdf2GoCore(Reasoning.RDFS);
 			readFrom(compiler, section, dummy, attachment, syntax);
 			// register the terminology imported in the empty dummy repository
 			registerTerminology(compiler, dummy, importSection);
@@ -204,11 +205,11 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 		}
 	}
 
-	private void readFrom(OntologyCompiler compiler, Section<? extends AnnotationContentType> section, Rdf2GoCore core, WikiAttachment attachment, Syntax syntax) {
+	private void readFrom(OntologyCompiler compiler, Section<? extends AnnotationContentType> section, Rdf2GoCore core, WikiAttachment attachment, RDFFormat syntax) {
 		try {
 			core.readFrom(attachment.getInputStream(), syntax);
 		}
-		catch (IOException e) {
+		catch (IOException | RepositoryException | RDFParseException e) {
 			handleException(compiler, section, attachment, e);
 		}
 	}
@@ -228,25 +229,31 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 	}
 
 	private void registerTerminology(OntologyCompiler compiler, Rdf2GoCore rdf2GoCore, Section<?> section) {
-		String query = new SparqlQuery().SELECT("?resource")
-				.WHERE("{ ?resource rdf:type rdfs:Resource } UNION { ?resource rdf:type rdfs:Class } UNION { ?resource rdf:type owl:Class } MINUS { ?resource rdf:type rdf:Property }")
-				.AND_WHERE("FILTER (!isBlank(?resource))")
-				.toString();
+		String query = "SELECT ?resource \n" +
+				"WHERE {\n" +
+				"\t{ ?resource rdf:type rdfs:Resource } \n" +
+				"\t\tUNION {\t?resource rdf:type rdfs:Class }\n" +
+				"\t\tUNION { ?resource rdf:type owl:Class }\n" +
+				"\tMINUS {\t?resource rdf:type rdf:Property } .\n" +
+				"\tFILTER (!isBlank(?resource)) .\n" +
+				"}";
 		registerQueryResult(compiler, rdf2GoCore, section, query, Resource.class);
 
-		query = new SparqlQuery().SELECT("?resource")
-				.WHERE("{ ?resource rdf:type rdf:Property } UNION { ?resource rdf:type owl:ObjectProperty } UNION { ?resource rdf:type rdfs:subPropertyOf }")
-				.AND_WHERE("FILTER (!isBlank(?resource))")
-				.toString();
+		query = "SELECT ?resource  WHERE {\n" +
+				"\t{ ?resource rdf:type rdf:Property } \n" +
+				"\t\tUNION {\t?resource rdf:type owl:ObjectProperty }\n" +
+				"\t\tUNION {\t?resource rdf:type rdfs:subPropertyOf } .\n" +
+				"\tFILTER (!isBlank(?resource)) .\n" +
+				"}";
 		query = Rdf2GoUtils.createSparqlString(rdf2GoCore, query);
 		registerQueryResult(compiler, rdf2GoCore, section, query, Property.class);
 	}
 
 	public void registerQueryResult(OntologyCompiler compiler, Rdf2GoCore core, Section<?> section, String query, Class<? extends Resource> termClass) {
-		ClosableIterator<QueryRow> iterator = core.sparqlSelectIt(query);
+		Iterator<BindingSet> iterator = core.sparqlSelectIt(query);
 		while (iterator.hasNext()) {
-			QueryRow row = iterator.next();
-			String value = row.getValue("resource").toString();
+			BindingSet row = iterator.next();
+			String value = row.getValue("resource").stringValue();
 			registerTerm(compiler, core, section, value, termClass);
 		}
 	}

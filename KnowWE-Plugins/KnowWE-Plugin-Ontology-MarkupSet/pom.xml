@@ -61,5 +61,10 @@
 			<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-GlobalTestUtils</artifactId>
+			<version>0.2-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>

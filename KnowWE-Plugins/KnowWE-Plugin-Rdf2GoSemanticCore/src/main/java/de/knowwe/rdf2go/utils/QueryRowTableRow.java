@@ -21,18 +21,18 @@ package de.knowwe.rdf2go.utils;
 
 import java.util.List;
 
-import org.ontoware.rdf2go.model.QueryRow;
 import org.ontoware.rdf2go.model.node.BlankNode;
-import org.ontoware.rdf2go.model.node.Node;
+import org.openrdf.model.Value;
+import org.openrdf.query.BindingSet;
 
 import de.d3web.utils.EqualsUtils;
 
 public class QueryRowTableRow implements TableRow {
 
-	private final QueryRow row;
+	private final BindingSet row;
 	private final List<String> variables;
 
-	public QueryRowTableRow(QueryRow r, List<String> variables) {
+	public QueryRowTableRow(BindingSet r, List<String> variables) {
 		row = r;
 		this.variables = variables;
 	}
@@ -41,7 +41,7 @@ public class QueryRowTableRow implements TableRow {
 	public String toString() {
 		StringBuilder buffer = new StringBuilder();
 		for (String variable : variables) {
-			Node value = row.getValue(variable);
+			Value value = row.getValue(variable);
 			if (value instanceof BlankNode) {
 				buffer.append("BlankNode");
 			}
@@ -54,7 +54,7 @@ public class QueryRowTableRow implements TableRow {
 	}
 
 	@Override
-	public Node getValue(String variable) {
+	public Value getValue(String variable) {
 		return row.getValue(variable);
 	}
 
@@ -86,7 +86,7 @@ public class QueryRowTableRow implements TableRow {
 		final int prime = 31;
 		int result = 1;
 		for (String variable : variables) {
-			Node value = row.getValue(variable);
+			Value value = row.getValue(variable);
 			int valueHash = value == null ? 0 : value.hashCode();
 			result = prime * result + valueHash;
 		}

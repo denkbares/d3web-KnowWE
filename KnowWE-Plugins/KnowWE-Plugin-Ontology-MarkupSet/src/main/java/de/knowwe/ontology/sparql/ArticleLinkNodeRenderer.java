@@ -3,7 +3,7 @@ package de.knowwe.ontology.sparql;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.ontoware.rdf2go.model.node.Node;
+import org.openrdf.model.Value;
 
 import de.d3web.strings.Strings;
 import de.knowwe.core.ArticleManager;
@@ -15,7 +15,7 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 
 	@Override
-	public String renderNode(Node node, String text, String variable, UserContext user, Rdf2GoCore core, RenderMode mode) {
+	public String renderNode(Value node, String text, String variable, UserContext user, Rdf2GoCore core, RenderMode mode) {
 		/*
 		First, check for exact matches e.g, for plain Strings
          */

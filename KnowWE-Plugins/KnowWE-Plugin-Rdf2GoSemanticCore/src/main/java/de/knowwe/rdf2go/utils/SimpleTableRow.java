@@ -25,18 +25,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.ontoware.rdf2go.model.node.Node;
+import org.openrdf.model.Value;
 
 public class SimpleTableRow implements TableRow {
 
-	private final Map<String, Node> values = new LinkedHashMap<String, Node>();
+	private final Map<String, Value> values = new LinkedHashMap<>();
 
-	public void addValue(String variable, Node n) {
+	public void addValue(String variable, Value n) {
 		values.put(variable, n);
 	}
 
 	@Override
-	public Node getValue(String Variable) {
+	public Value getValue(String Variable) {
 		return values.get(Variable);
 	}
 
@@ -49,7 +49,7 @@ public class SimpleTableRow implements TableRow {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		for (Node value : values.values()) {
+		for (Value value : values.values()) {
 			result = prime * result + value.hashCode();
 		}
 		return result;

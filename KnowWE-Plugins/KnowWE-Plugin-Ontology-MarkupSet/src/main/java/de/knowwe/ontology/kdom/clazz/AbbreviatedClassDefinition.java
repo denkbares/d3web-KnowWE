@@ -20,11 +20,6 @@ package de.knowwe.ontology.kdom.clazz;
 
 import java.util.Collection;
 
-import org.ontoware.rdf2go.model.Statement;
-import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.vocabulary.RDF;
-import org.ontoware.rdf2go.vocabulary.RDFS;
-
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.Message;
@@ -34,6 +29,9 @@ import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceDefinition;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
+import static org.openrdf.model.vocabulary.RDF.*;
+import static org.openrdf.model.vocabulary.RDFS.*;
+
 public class AbbreviatedClassDefinition extends AbbreviatedResourceDefinition {
 
 	public AbbreviatedClassDefinition() {
@@ -41,7 +39,7 @@ public class AbbreviatedClassDefinition extends AbbreviatedResourceDefinition {
 		this.addCompileScript(new AbbreviatedClassHandler());
 	}
 
-	public URI getClassNameURI(Rdf2GoCore core, Section<AbbreviatedClassDefinition> section) {
+	public org.openrdf.model.URI getClassNameURI(Rdf2GoCore core, Section<AbbreviatedClassDefinition> section) {
 		return super.getResourceURI(core, section);
 	}
 
@@ -52,9 +50,9 @@ public class AbbreviatedClassDefinition extends AbbreviatedResourceDefinition {
 
 			Rdf2GoCore core = Rdf2GoCore.getInstance(compiler);
 
-			URI classNameURI = getClassNameURI(core, section);
+			org.openrdf.model.URI classNameURI = getClassNameURI(core, section);
 
-			Statement classStatement = core.createStatement(classNameURI, RDF.type, RDFS.Class);
+			org.openrdf.model.Statement classStatement = core.createStatement(classNameURI, TYPE, CLASS);
 			core.addStatements(section, classStatement);
 
 			return Messages.noMessage();

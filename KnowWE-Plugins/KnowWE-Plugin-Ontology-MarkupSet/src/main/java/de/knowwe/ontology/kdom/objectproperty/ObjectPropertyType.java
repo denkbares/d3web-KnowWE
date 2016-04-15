@@ -20,10 +20,10 @@ package de.knowwe.ontology.kdom.objectproperty;
 
 import java.util.Collection;
 
-import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.vocabulary.OWL;
-import org.ontoware.rdf2go.vocabulary.RDF;
-import org.ontoware.rdf2go.vocabulary.RDFS;
+import org.openrdf.model.URI;
+import org.openrdf.model.vocabulary.OWL;
+import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.model.vocabulary.RDFS;
 
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
@@ -50,8 +50,7 @@ public class ObjectPropertyType extends DefaultMarkupType {
 		MARKUP = new DefaultMarkup("ObjectProperty");
 		PackageManager.addPackageAnnotation(MARKUP);
 		MARKUP.addAnnotation(DOMAIN_ANNOTATION_NAME, false);
-		MARKUP.addAnnotation(FUNCTIONAL_ANNOTATION_NAME, false, new String[] {
-				"true", "false" });
+		MARKUP.addAnnotation(FUNCTIONAL_ANNOTATION_NAME, false, "true", "false");
 		MARKUP.addAnnotationContentType(DOMAIN_ANNOTATION_NAME, new DomainRangeAnnotationType(
 				DomainRangeAnnotationType.DomainRange.DOMAIN));
 		MARKUP.addAnnotation(RANGE_ANNOTATION_NAME, false);
@@ -78,7 +77,7 @@ public class ObjectPropertyType extends DefaultMarkupType {
 			if (namespace == null) return Messages.noMessage();
 			String property = section.get().getResource(section);
 			URI propertyURI = core.createURI(namespace, property);
-			core.addStatements(section, core.createStatement(propertyURI, RDF.type, RDF.Property));
+			core.addStatements(section, core.createStatement(propertyURI, RDF.TYPE, RDF.PROPERTY));
 
 			/*
 			 * set functional property if specified
@@ -88,7 +87,7 @@ public class ObjectPropertyType extends DefaultMarkupType {
 			String annotation = DefaultMarkupType.getAnnotation(markup, FUNCTIONAL_ANNOTATION_NAME);
 			if (annotation != null && annotation.equalsIgnoreCase("true")) {
 				core.addStatements(section,
-						core.createStatement(propertyURI, RDF.type, OWL.FunctionalProperty));
+						core.createStatement(propertyURI, RDF.TYPE, OWL.FUNCTIONALPROPERTY));
 
 			}
 
@@ -105,7 +104,7 @@ public class ObjectPropertyType extends DefaultMarkupType {
 
 		public enum DomainRange {
 			DOMAIN, RANGE
-		};
+		}
 
 		/**
 		 * 
@@ -125,9 +124,9 @@ public class ObjectPropertyType extends DefaultMarkupType {
 
 					URI objectURI = section.get().getResourceURI(core, section);
 
-					URI predicateURI = RDFS.range;
+					URI predicateURI = RDFS.RANGE;
 					if (kind.equals(DomainRange.DOMAIN)) {
-						predicateURI = RDFS.domain;
+						predicateURI = RDFS.DOMAIN;
 					}
 
 					if (objectURI != null) {

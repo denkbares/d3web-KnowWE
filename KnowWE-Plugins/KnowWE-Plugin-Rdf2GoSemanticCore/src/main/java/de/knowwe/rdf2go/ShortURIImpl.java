@@ -1,11 +1,10 @@
 package de.knowwe.rdf2go;
 
-import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.openrdf.model.URI;
 
 import de.d3web.strings.Identifier;
 
-public class ShortURIImpl extends URIImpl {
+public class ShortURIImpl extends org.openrdf.model.impl.URIImpl {
 
 	private static final long serialVersionUID = -5221506155017259902L;
 	private URI uriLong;
@@ -13,11 +12,6 @@ public class ShortURIImpl extends URIImpl {
 	ShortURIImpl(String uriShort, URI uriLong) {
 		super(uriShort);
 		this.uriLong = uriLong;
-	}
-
-	@Override
-	public String toSPARQL() {
-		return uriLong.toSPARQL();
 	}
 
 	public static Identifier toIdentifier(URI uri) {

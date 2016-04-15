@@ -19,14 +19,15 @@
 
 package de.knowwe.ontology.turtle;
 
+import org.openrdf.model.Value;
+import org.openrdf.model.vocabulary.XMLSchema;
+
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.OneOfStringFinder;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.vocabulary.XSD;
 
 /**
  * @author Jochen Reutelshöfer
@@ -41,7 +42,7 @@ public class BooleanLiteral extends AbstractType implements NodeProvider<TurtleL
     }
 
     @Override
-    public Node getNode(Section<TurtleLiteralType> section, Rdf2GoCompiler core) {
-        return core.getRdf2GoCore().createLiteral(section.getText(), XSD._boolean);
+    public Value getNode(Section<TurtleLiteralType> section, Rdf2GoCompiler core) {
+        return core.getRdf2GoCore().createLiteral(section.getText(), XMLSchema.BOOLEAN);
     }
 }

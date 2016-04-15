@@ -21,9 +21,9 @@ package de.knowwe.ontology.turtle;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.Resource;
-import org.ontoware.rdf2go.vocabulary.RDF;
+import org.openrdf.model.BNode;
+import org.openrdf.model.Value;
+import org.openrdf.model.impl.BNodeImpl;
 
 import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
@@ -111,7 +111,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 	}
 
 	@Override
-	public Node getNode(Section<TurtleCollection> section, Rdf2GoCompiler core) {
+	public Value getNode(Section<TurtleCollection> section, Rdf2GoCompiler core) {
 		return core.getRdf2GoCore().createBlankNode(section.getID());
 	}
 
@@ -121,13 +121,13 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 		List<Section<CollectionItem>> listItems = new ArrayList<Section<CollectionItem>>();
 		Sections.successors(section,
 				CollectionItem.class, 2, listItems);
-		Resource listNode = getResource(section, core);
+		org.openrdf.model.Resource listNode = getResource(section, core);
 		if (listItems.size() > 0) {
 			addListStatements(listNode, 0, listItems, result, core, section);
 		}
 		else {
-			result.addStatement(core.getRdf2GoCore().createStatement(listNode, RDF.rest,
-					RDF.nil));
+			result.addStatement(core.getRdf2GoCore().createStatement(listNode, org.openrdf.model.vocabulary.RDF.REST,
+					org.openrdf.model.vocabulary.RDF.NIL));
 		}
 
 		return result;
@@ -135,7 +135,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 
 	@SuppressWarnings({
 			"unchecked", "rawtypes" })
-	private void addListStatements(Resource subject, int listIndex, List<Section<CollectionItem>> subList, StatementProviderResult result, Rdf2GoCompiler core, Section<TurtleCollection> collectionSection) {
+	private void addListStatements(org.openrdf.model.Resource subject, int listIndex, List<Section<CollectionItem>> subList, StatementProviderResult result, Rdf2GoCompiler core, Section<TurtleCollection> collectionSection) {
 
 		Section<CollectionItem> dataSection = subList.get(0);
 
@@ -144,22 +144,24 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 				NodeProvider.class);
 
 		// add data triple
-		result.addStatement(core.getRdf2GoCore().createStatement(subject, RDF.first,
+		result.addStatement(core.getRdf2GoCore().createStatement(subject, org.openrdf.model.vocabulary.RDF.FIRST,
 				dataNodeSection.get().getNode(dataNodeSection, core)));
 
 		// go on to next list element
 		List<Section<CollectionItem>> nextSublist = subList.subList(1, subList.size());
 		if (nextSublist.size() == 0) {
 			// end of list and end of recursion
-			result.addStatement(core.getRdf2GoCore().createStatement(subject, RDF.rest, RDF.nil));
+			result.addStatement(core.getRdf2GoCore()
+					.createStatement(subject, org.openrdf.model.vocabulary.RDF.REST, org.openrdf.model.vocabulary.RDF.NIL));
 
 		}
 		else {
 			listIndex++;
-			org.ontoware.rdf2go.model.node.BlankNode nextListNode = core.getRdf2GoCore()
+			BNode nextListNode = core.getRdf2GoCore()
 					.createBlankNode(collectionSection.getID()
 							+ "_" + listIndex);
-			result.addStatement(core.getRdf2GoCore().createStatement(subject, RDF.rest, nextListNode));
+			result.addStatement(core.getRdf2GoCore()
+					.createStatement(subject, org.openrdf.model.vocabulary.RDF.REST, nextListNode));
 
 			addListStatements(nextListNode, listIndex,
 					nextSublist, result, core, collectionSection);
@@ -168,8 +170,8 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 	}
 
 	@Override
-	public Resource getResource(Section<TurtleCollection> section, Rdf2GoCompiler core) {
-		return (Resource) getNode(section, core);
+	public org.openrdf.model.Resource getResource(Section<TurtleCollection> section, Rdf2GoCompiler core) {
+		return new BNodeImpl(getNode(section, core).stringValue());
 	}
 
 }

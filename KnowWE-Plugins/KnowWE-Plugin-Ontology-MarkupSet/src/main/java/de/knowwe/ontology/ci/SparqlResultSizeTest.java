@@ -18,9 +18,9 @@
  */
 package de.knowwe.ontology.ci;
 
-import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.model.QueryResultTable;
-import org.ontoware.rdf2go.model.QueryRow;
+import java.util.Iterator;
+
+import org.openrdf.query.BindingSet;
 
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
@@ -79,10 +79,9 @@ public class SparqlResultSizeTest extends AbstractTest<SparqlQuerySection> {
 
 		String sparqlString = Rdf2GoUtils.createSparqlString(core, query.getSection().getText());
 
-		QueryResultTable resultSet = core.sparqlSelect(
-				sparqlString);
+		Rdf2GoCore.QueryRowListResultTable resultSet = core.sparqlSelect(sparqlString);
 
-		ClosableIterator<QueryRow> iterator = resultSet.iterator();
+		Iterator<BindingSet> iterator = resultSet.iterator();
 		int count = 0;
 		while (iterator.hasNext()) {
 			iterator.next();

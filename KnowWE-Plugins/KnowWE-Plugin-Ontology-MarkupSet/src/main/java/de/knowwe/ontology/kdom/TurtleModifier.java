@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.ontoware.rdf2go.model.Statement;
+import org.openrdf.model.Statement;
 
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Sections;

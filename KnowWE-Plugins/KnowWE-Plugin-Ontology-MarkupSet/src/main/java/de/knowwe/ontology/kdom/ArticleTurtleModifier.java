@@ -30,14 +30,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.ontoware.rdf2go.model.Statement;
-import org.ontoware.rdf2go.model.node.DatatypeLiteral;
-import org.ontoware.rdf2go.model.node.LanguageTagLiteral;
-import org.ontoware.rdf2go.model.node.Literal;
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.PlainLiteral;
-import org.ontoware.rdf2go.model.node.Resource;
-import org.ontoware.rdf2go.model.node.URI;
+import org.openrdf.model.Literal;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
 import org.openrdf.rio.turtle.TurtleWriter;
 
 import de.d3web.strings.Strings;
@@ -432,26 +429,14 @@ public class ArticleTurtleModifier {
 	 * @return the turtle markup to represent the node's value
 	 * @created 26.11.2013
 	 */
-	private String toTurtle(Node node) {
+	private String toTurtle(Value node) {
 		if (node instanceof URI) {
-			String text = compiler.getRdf2GoCore().toShortURI(node.asURI()).toString();
+			String text = compiler.getRdf2GoCore().toShortURI((URI) node).toString();
 			if (text.startsWith("lns:")) text = text.substring(3);
 			return text;
 		}
-		if (node instanceof DatatypeLiteral) {
-			DatatypeLiteral literal = node.asDatatypeLiteral();
-			URI datatype = compiler.getRdf2GoCore().toShortURI(literal.getDatatype());
-			return Strings.quote(literal.getValue()) + "^^" + datatype;
-		}
-		if (node instanceof LanguageTagLiteral) {
-			LanguageTagLiteral literal = node.asLanguageTagLiteral();
-			return Strings.quote(literal.getValue()) + "@" + literal.getLanguageTag();
-		}
-		if (node instanceof PlainLiteral) {
-			return Strings.quote(node.asLiteral().getValue());
-		}
 		if (node instanceof Literal) {
-			return node.asLiteral().toSPARQL();
+			return node.stringValue();
 		}
 		throw new IllegalArgumentException(
 				"non-implemented conversion method for " + node.getClass());
@@ -728,7 +713,7 @@ public class ArticleTurtleModifier {
 		if (sentence == null) return false;
 		Section<Subject> subject = Sections.successor(sentence, Subject.class);
 		if (subject == null) return false;
-		Resource resource = subject.get().getResource(subject, compiler);
+		org.openrdf.model.Resource resource = subject.get().getResource(subject, compiler);
 		return resource.equals(statement.getSubject());
 	}
 
@@ -736,13 +721,13 @@ public class ArticleTurtleModifier {
 		if (predicateSentence == null) return false;
 		Section<Predicate> predicate = Sections.successor(predicateSentence, Predicate.class);
 		if (predicate == null) return false;
-		URI uri = predicate.get().getURI(predicate, compiler);
+		org.openrdf.model.URI uri = predicate.get().getURI(predicate, compiler);
 		return uri.equals(statement.getPredicate());
 	}
 
 	private boolean hasSameObject(Section<Object> object, Statement statement) {
 		if (object == null) return false;
-		Node node = object.get().getNode(object, compiler);
+		Value node = object.get().getNode(object, compiler);
 		return node.equals(statement.getObject());
 	}
 

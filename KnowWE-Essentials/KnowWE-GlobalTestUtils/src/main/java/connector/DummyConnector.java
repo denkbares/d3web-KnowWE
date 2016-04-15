@@ -48,6 +48,7 @@ import de.knowwe.jspwiki.JSPWikiConnector;
 public class DummyConnector implements WikiConnector {
 
 	private static final String DUMMY_USER = "DummyUser";
+	public static final String BASE_URL = "http://valid_dummy_base_url/";
 
 	private DummyPageProvider dummyPageProvider = null;
 
@@ -166,7 +167,7 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public String getBaseUrl() {
-		return "http://valid_dummy_base_url/";
+		return BASE_URL;
 	}
 
 	@Override

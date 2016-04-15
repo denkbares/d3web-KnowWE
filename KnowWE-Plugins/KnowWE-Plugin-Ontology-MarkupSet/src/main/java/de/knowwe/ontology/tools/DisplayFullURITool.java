@@ -19,6 +19,8 @@
 
 package de.knowwe.ontology.tools;
 
+import org.openrdf.model.URI;
+
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -30,7 +32,6 @@ import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
 import de.knowwe.util.Icon;
-import org.ontoware.rdf2go.model.node.URI;
 
 /**
  * @author Jochen Reutelshoefer (denkbares GmbH)

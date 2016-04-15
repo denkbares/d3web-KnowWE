@@ -20,9 +20,6 @@ package de.knowwe.ontology.kdom.relation;
 
 import java.util.Collection;
 
-import org.ontoware.rdf2go.model.node.Literal;
-import org.ontoware.rdf2go.model.node.URI;
-
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -99,7 +96,7 @@ public class RelationDefinition extends AbstractType {
 			Section<AbbreviatedResourceReference> abbrSubjectSection = Sections.successor(
 					subjectSection, AbbreviatedResourceReference.class);
 
-			URI subjectURI = abbrSubjectSection.get().getResourceURI(core, abbrSubjectSection);
+			org.openrdf.model.URI subjectURI = abbrSubjectSection.get().getResourceURI(core, abbrSubjectSection);
 
 			Section<PredicateType> predicateSection = Sections.child(section,
 					PredicateType.class);
@@ -110,7 +107,7 @@ public class RelationDefinition extends AbstractType {
 			Section<AbbreviatedPropertyReference> abbrObjPropSection = Sections.successor(
 					predicateSection, AbbreviatedPropertyReference.class);
 
-			URI predicatedURI = abbrObjPropSection.get().getPropertyURI(core, abbrObjPropSection);
+			org.openrdf.model.URI predicatedURI = abbrObjPropSection.get().getPropertyURI(core, abbrObjPropSection);
 
 			Section<ObjectType> objectSection = Sections.child(section,
 					ObjectType.class);
@@ -118,14 +115,14 @@ public class RelationDefinition extends AbstractType {
 			if (objectSection == null) {
 				Section<LiteralType> literalSection = Sections.child(section,
 						LiteralType.class);
-				Literal literal = literalSection.get().getLiteral(core, literalSection);
+				org.openrdf.model.Literal literal = literalSection.get().getLiteral(core, literalSection);
 				core.addStatements(section,
 						core.createStatement(subjectURI, predicatedURI, literal));
 			}
 			else {
 				Section<AbbreviatedResourceReference> abbrObjectSection = Sections.successor(
 						objectSection, AbbreviatedResourceReference.class);
-				URI objectURI = abbrObjectSection.get().getResourceURI(core, abbrObjectSection);
+				org.openrdf.model.URI objectURI = abbrObjectSection.get().getResourceURI(core, abbrObjectSection);
 
 				core.addStatements(section,
 						core.createStatement(subjectURI, predicatedURI, objectURI));

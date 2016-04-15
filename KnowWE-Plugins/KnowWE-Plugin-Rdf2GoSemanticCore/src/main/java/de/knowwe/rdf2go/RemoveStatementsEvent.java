@@ -2,7 +2,7 @@ package de.knowwe.rdf2go;
 
 import java.util.Collection;
 
-import org.ontoware.rdf2go.model.Statement;
+import org.openrdf.model.Statement;
 
 public class RemoveStatementsEvent extends ModifiedCoreDataEvent {
 

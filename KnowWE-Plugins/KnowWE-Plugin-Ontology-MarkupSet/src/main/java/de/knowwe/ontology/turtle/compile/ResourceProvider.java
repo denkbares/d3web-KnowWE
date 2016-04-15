@@ -1,6 +1,6 @@
 package de.knowwe.ontology.turtle.compile;
 
-import org.ontoware.rdf2go.model.node.Resource;
+import org.openrdf.model.Resource;
 
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;

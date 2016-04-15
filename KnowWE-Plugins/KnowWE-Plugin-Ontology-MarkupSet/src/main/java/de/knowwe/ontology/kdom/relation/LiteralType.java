@@ -20,10 +20,7 @@ package de.knowwe.ontology.kdom.relation;
 
 import java.util.regex.Pattern;
 
-import org.ontoware.rdf2go.model.node.Literal;
-import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
-import org.ontoware.rdf2go.vocabulary.XSD;
+import org.openrdf.model.vocabulary.XMLSchema;
 
 import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
@@ -57,7 +54,7 @@ public class LiteralType extends AbstractType {
 		this.addChildType(new LanguageTagPart());
 	}
 
-	public Literal getLiteral(Rdf2GoCore core, Section<LiteralType> section) {
+	public org.openrdf.model.Literal getLiteral(Rdf2GoCore core, Section<LiteralType> section) {
 		Section<LiteralPart> literalPartSection = Sections.child(section,
 				LiteralPart.class);
 		Section<XSDPart> xsdPartSection = Sections.child(section, XSDPart.class);
@@ -69,7 +66,7 @@ public class LiteralType extends AbstractType {
 			return core.createLanguageTaggedLiteral(literal,
 					langTagPartSection.get().getTag(langTagPartSection));
 		}
-		URI xsdType = null;
+		org.openrdf.model.URI xsdType = null;
 		if (xsdPartSection != null) {
 			xsdType = xsdPartSection.get().getXSDType(xsdPartSection);
 		}
@@ -79,23 +76,23 @@ public class LiteralType extends AbstractType {
 		return core.createLiteral(literal, xsdType);
 	}
 
-	private URI deriveTypeFromLiteral(String literal) {
+	private org.openrdf.model.URI deriveTypeFromLiteral(String literal) {
 		try {
 			Integer.parseInt(literal);
-			return XSD._int;
+			return XMLSchema.INTEGER;
 		}
 		catch (NumberFormatException e) {
 			// do nothing;
 		}
 		try {
 			Double.parseDouble(literal);
-			return XSD._double;
+			return XMLSchema.DOUBLE;
 		}
 		catch (NumberFormatException e) {
 			// do nothing;
 		}
 		// we don't know, just use string
-		return XSD._string;
+		return XMLSchema.STRING;
 	}
 
 	private static class LiteralPart extends AbstractType {
@@ -128,8 +125,8 @@ public class LiteralType extends AbstractType {
 			this.setSectionFinder(new RegexSectionFinder(Pattern.compile(XSD_PATTERN), 1));
 		}
 
-		public URI getXSDType(Section<XSDPart> section) {
-			return new URIImpl(XSD.XSD_NS + section.getText(), false);
+		public org.openrdf.model.URI getXSDType(Section<XSDPart> section) {
+			return new org.openrdf.model.impl.URIImpl(XMLSchema.NAMESPACE + section.getText());
 		}
 	}
 

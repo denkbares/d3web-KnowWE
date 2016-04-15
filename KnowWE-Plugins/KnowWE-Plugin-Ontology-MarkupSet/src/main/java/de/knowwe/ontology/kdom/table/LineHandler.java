@@ -21,9 +21,11 @@ package de.knowwe.ontology.kdom.table;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.ontoware.rdf2go.model.Statement;
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.URI;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
+import org.openrdf.model.impl.URIImpl;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -63,15 +65,15 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
             // obviously no subject in this line, could be an empty table line
             return;
         }
-        Node subjectNode = subjectReference.get().getNode(subjectReference, compiler);
-        List<Section<Object>> objects = findObjects(section);
+		Value subjectNode = subjectReference.get().getNode(subjectReference, compiler);
+		List<Section<Object>> objects = findObjects(section);
         for (Section<Object> objectReference : objects) {
             if (Sections.ancestor(objectReference, TableCellContent.class) != null) {
                 Section<Predicate> propertyReference = TableUtils.getColumnHeader(objectReference, Predicate.class);
 				if (propertyReference != null) {
-					URI propertyUri = propertyReference.get().getNode(propertyReference, compiler).asURI();
-					Node objectNode = objectReference.get().getNode(objectReference, compiler);
-					statements.add(core.createStatement(subjectNode.asResource(), propertyUri, objectNode));
+					URI propertyUri = (URI) propertyReference.get().getNode(propertyReference, compiler);
+					Value objectNode = objectReference.get().getNode(objectReference, compiler);
+					statements.add(core.createStatement((Resource) subjectNode, propertyUri, objectNode));
 				}
             } else {
 				// TODO: clarify whenever this case can make sense...!?
@@ -90,12 +92,12 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 		Section<OntologyTableMarkup.BasicURIType> colHeaderConcept = Sections.successor(rowHeaderCell, OntologyTableMarkup.BasicURIType.class);
 		if(colHeaderConcept != null) {
 			Section<NodeProvider> nodeProviderSection = Sections.$(colHeaderConcept).successor(NodeProvider.class).getFirst();
-			Node headerClassResource = nodeProviderSection.get().getNode(nodeProviderSection, compiler);
+			Value headerClassResource = nodeProviderSection.get().getNode(nodeProviderSection, compiler);
 			Sections<DefaultMarkupType> markup = Sections.$(section).ancestor(DefaultMarkupType.class);
 			String typeRelationAnnotationValue = DefaultMarkupType.getAnnotation(markup.getFirst(), OntologyTableMarkup.ANNOTATION_TYPE_RELATION);
 			if(typeRelationAnnotationValue != null) {
-				URI propertyUri = compiler.getRdf2GoCore().createURI(typeRelationAnnotationValue);
-				statements.add(core.createStatement(subjectNode.asResource(), propertyUri, headerClassResource));
+				org.openrdf.model.URI propertyUri = compiler.getRdf2GoCore().createURI(typeRelationAnnotationValue);
+				statements.add(core.createStatement(new URIImpl(subjectNode.stringValue()), propertyUri, headerClassResource));
 			} else {
 				typeAnnotationMissing = new Message(Message.Type.ERROR, "If subject concepts should be defined as instance of the class given in the first column header, a type-relation has to be defined via the typeRelation-typeRelationAnnotationValue. Otherwise, leave the first cell header blank.");
 			}

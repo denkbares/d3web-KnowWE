@@ -18,6 +18,9 @@
  */
 package de.knowwe.ontology.turtle;
 
+import org.openrdf.model.Resource;
+import org.openrdf.model.Value;
+
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -29,8 +32,6 @@ import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.ResourceProvider;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.Resource;
 
 public class Subject extends AbstractType implements ResourceProvider<Subject> {
 
@@ -51,7 +52,7 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 	@Override
 	@SuppressWarnings({
 			"rawtypes", "unchecked" })
-	public Node getNode(Section<Subject> section, Rdf2GoCompiler compiler) {
+	public Value getNode(Section<Subject> section, Rdf2GoCompiler compiler) {
 		// there should be exactly one NodeProvider child (while potentially
 		// many successors)
 		Section<NodeProvider> nodeProviderChild = Sections.child(section,

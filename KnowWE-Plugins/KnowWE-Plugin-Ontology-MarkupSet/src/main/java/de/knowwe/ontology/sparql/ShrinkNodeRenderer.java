@@ -1,6 +1,6 @@
 package de.knowwe.ontology.sparql;
 
-import org.ontoware.rdf2go.model.node.Node;
+import org.openrdf.model.Value;
 
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
@@ -11,7 +11,7 @@ public class ShrinkNodeRenderer implements SparqlResultNodeRenderer {
 	private final int maxLength = 75;
 
 	@Override
-	public String renderNode(Node node, String text, String variable, UserContext user, Rdf2GoCore core, RenderMode mode) {
+	public String renderNode(Value node, String text, String variable, UserContext user, Rdf2GoCore core, RenderMode mode) {
 		if ((text.length() > maxLength) && (mode == RenderMode.HTML)) {
 			String titleText = text.replaceAll("\"", "&#34;");
 			titleText = text.replaceAll("'", "&#39;");

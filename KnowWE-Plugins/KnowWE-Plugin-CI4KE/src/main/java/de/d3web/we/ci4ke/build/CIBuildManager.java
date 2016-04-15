@@ -121,7 +121,7 @@ public class CIBuildManager implements EventListener {
 	}
 
 	/**
-	 * Runs a build for the given dashboard, but does not . Waits until the build is registered in
+	 * Runs a build for the given dashboard, but does not wait until it is done. Waits until the build is registered in
 	 * the manager, but does not wait until the build is done.
 	 */
 	public synchronized void startBuild(final CIDashboard dashboard) {

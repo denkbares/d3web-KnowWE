@@ -21,9 +21,7 @@ package de.knowwe.ontology.turtle;
 import java.util.Collections;
 import java.util.List;
 
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.Resource;
-import org.ontoware.rdf2go.model.node.URI;
+import org.openrdf.model.Value;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
@@ -135,7 +133,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		/*
 		 * Handle OBJECT
 		 */
-		Node object = section.get().getNode(section, core);
+		Value object = section.get().getNode(section, core);
 		Section<TurtleURI> turtleURITermObject = Sections.child(section, TurtleURI.class);
 		if (turtleURITermObject != null && STRICT_COMPILATION) {
 			boolean isDefined = checkTurtleURIDefinition(turtleURITermObject);
@@ -164,7 +162,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			return result;
 		}
 
-		URI predicate = predicateSection.get().getURI(predicateSection, core);
+		org.openrdf.model.URI predicate = predicateSection.get().getURI(predicateSection, core);
 
 		// check term definition
 		Section<TurtleURI> turtleURITerm = Sections.successor(predicateSection, TurtleURI.class);
@@ -185,7 +183,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		/*
 		 * Handle SUBJECT
 		 */
-		Resource subject;
+		org.openrdf.model.Resource subject;
 		// the subject can either be a normal turtle sentence subject
 		// OR a blank node
 		Section<BlankNode> blankNodeSection = Sections.ancestor(predSentenceSection,
@@ -241,7 +239,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 	@Override
 	@SuppressWarnings({
 			"rawtypes", "unchecked" })
-	public Node getNode(Section<Object> section, Rdf2GoCompiler core) {
+	public Value getNode(Section<Object> section, Rdf2GoCompiler core) {
 		// there should be exactly one NodeProvider child (while potentially
 		// many successors)
 		List<Section<NodeProvider>> nodeProviderSections = Sections.children(section,

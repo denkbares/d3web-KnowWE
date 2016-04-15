@@ -18,8 +18,6 @@
  */
 package de.knowwe.ontology.kdom.resource;
 
-import org.ontoware.rdf2go.model.node.URI;
-
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -70,7 +68,7 @@ public class AbbreviatedResourceReference extends AbstractType {
 		return abbreviation;
 	}
 
-	public URI getResourceURI(Rdf2GoCore core, Section<? extends AbbreviatedResourceReference> section) {
+	public org.openrdf.model.URI getResourceURI(Rdf2GoCore core, Section<? extends AbbreviatedResourceReference> section) {
 		if(core == null) return null;
 
 		String propertyAbbreviation = getAbbreviation(section);
@@ -81,7 +79,7 @@ public class AbbreviatedResourceReference extends AbstractType {
 		return core.createURI(propertyAbbreviation, property);
 	}
 
-	public URI getShortURI(Rdf2GoCore core, Section<? extends AbbreviatedResourceReference> section) {
+	public org.openrdf.model.URI getShortURI(Rdf2GoCore core, Section<? extends AbbreviatedResourceReference> section) {
 		return core.toShortURI(getResourceURI(core, section));
 	}
 

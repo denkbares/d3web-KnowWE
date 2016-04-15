@@ -23,13 +23,13 @@ import java.util.Collections;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.denkbares.semanticcore.Reasoning;
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.ParallelScriptCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.Event;
 import de.knowwe.core.event.EventListener;
@@ -45,7 +45,6 @@ import de.knowwe.notification.StandardNotification;
 import de.knowwe.ontology.kdom.namespace.AbbreviationDefinition;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
-import de.knowwe.rdf2go.RuleSet;
 
 /**
  * @author Albrecht Striffler (denkbares GmbH)
@@ -60,14 +59,14 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	private boolean firstCompilation = true;
 	private ParallelScriptCompiler<OntologyCompiler> scriptCompiler;
 	private ParallelScriptCompiler<OntologyCompiler> destroyScriptCompiler;
-	private final RuleSet ruleSet;
+	private final Reasoning ruleSet;
 	private final String compilingArticle;
 	private MultiDefinitionMode multiDefinitionMode;
 
 	public OntologyCompiler(PackageManager manager,
 							Section<? extends PackageCompileType> compileSection,
 							Class<? extends Type> compilingType,
-							RuleSet ruleSet, MultiDefinitionMode multiDefMode) {
+							Reasoning ruleSet, MultiDefinitionMode multiDefMode) {
 		super(manager, compileSection, compilingType);
 		EventManager.getInstance().registerListener(this);
 		this.multiDefinitionMode = multiDefMode == null ? MultiDefinitionMode.ignore : multiDefMode;
@@ -96,7 +95,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	public Rdf2GoCore getRdf2GoCore() {
 		if (rdf2GoCore == null) {
 			// in case the compiler doesn't have anything to compile...
-			return new Rdf2GoCore(RuleSet.NONE);
+			return new Rdf2GoCore(Reasoning.RDF);
 		}
 		return rdf2GoCore;
 	}
@@ -232,7 +231,17 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 		scriptCompiler.addSection(section, scriptFilter);
 	}
 
-	public RuleSet getRuleSet() {
+	@Override
+	public void addSubtreeToDestroy(Section<?> section, Class<?>... scriptFilter) {
+		destroyScriptCompiler.addSubtree(section, scriptFilter);
+	}
+
+	@Override
+	public void addSubtreeToCompile(Section<?> section, Class<?>... scriptFilter) {
+		scriptCompiler.addSubtree(section, scriptFilter);
+	}
+
+	public Reasoning getReasoning() {
 		return ruleSet;
 	}
 

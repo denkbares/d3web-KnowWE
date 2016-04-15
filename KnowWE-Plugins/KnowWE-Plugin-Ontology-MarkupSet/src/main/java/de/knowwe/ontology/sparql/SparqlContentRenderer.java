@@ -21,10 +21,10 @@ package de.knowwe.ontology.sparql;
 
 import java.util.Set;
 
-import org.ontoware.rdf2go.model.Statement;
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.Resource;
-import org.ontoware.rdf2go.model.node.URI;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -114,7 +114,7 @@ public class SparqlContentRenderer implements Renderer {
 					result.appendHtml("</td>");
 
 					result.appendHtml("<td>");
-					final Node object = statement.getObject();
+					final Value object = statement.getObject();
 					result.appendHtml(sparqlResultRenderer.renderNode(object, "", false, user, core, RenderMode.HTML));
 					result.appendHtml("</td>");
 

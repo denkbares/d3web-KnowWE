@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.ontoware.rdf2go.model.QueryResultTable;
-import org.ontoware.rdf2go.model.node.Literal;
-import org.ontoware.rdf2go.model.node.Node;
+import org.openrdf.model.Literal;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
 
 import de.d3web.collections.PartialHierarchy;
 import de.d3web.collections.PartialHierarchyTree;
@@ -32,7 +32,6 @@ import de.knowwe.ontology.compile.OntologyType;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.sparql.utils.SparqlRenderResult;
-import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.rdf2go.utils.ResultTableModel;
 import de.knowwe.rdf2go.utils.SimpleTableRow;
 import de.knowwe.rdf2go.utils.TableRow;
@@ -99,7 +98,7 @@ public class SparqlResultRenderer {
 
 		SparqlRenderResult renderResult;
 
-		QueryResultTable qrt = null;
+		Rdf2GoCore.QueryRowListResultTable qrt = null;
 		try {
 			qrt = opts.getRdf2GoCore().sparqlSelect(query, true, opts.getTimeout());
 			qrt = section.get().postProcessResult(qrt, user, opts);
@@ -126,22 +125,14 @@ public class SparqlResultRenderer {
 		Log.warning("Exception while executing SPARQL", e);
 	}
 
-	public SparqlRenderResult getSparqlRenderResult(QueryResultTable qrt, UserContext user, Section<?> section) {
-		RenderOptions opts = new RenderOptions("defaultID");
-		//noinspection deprecation
-		opts.setRdf2GoCore(Rdf2GoCore.getInstance());
-		return getSparqlRenderResult(qrt, opts, user, section);
-	}
-
 	/**
 	 * @param qrt  the query result to render
 	 * @param opts the options to control the rendered output
 	 * @return html table with all results of qrt and size of qrt
 	 * @created 06.12.2010
 	 */
-	public SparqlRenderResult getSparqlRenderResult(QueryResultTable qrt, RenderOptions opts, UserContext user, Section<?> section) {
+	public SparqlRenderResult getSparqlRenderResult(Rdf2GoCore.QueryRowListResultTable qrt, RenderOptions opts, UserContext user, Section section) {
 		Compilers.awaitTermination(section.getArticleManager().getCompilerManager());
-		Rdf2GoUtils.lock(qrt);
 		try {
 			return renderQueryResultLocked(qrt, opts, user, section);
 		}
@@ -150,12 +141,9 @@ public class SparqlResultRenderer {
 			Log.severe(message, e);
 			return new SparqlRenderResult(new RenderResult(user).appendException(e).toStringRaw());
 		}
-		finally {
-			Rdf2GoUtils.unlock(qrt);
-		}
 	}
 
-	private SparqlRenderResult renderQueryResultLocked(QueryResultTable qrt, RenderOptions opts, UserContext user, Section<?> section) {
+	private SparqlRenderResult renderQueryResultLocked(Rdf2GoCore.QueryRowListResultTable qrt, RenderOptions opts, UserContext user, Section<?> section) {
 
 		RenderResult renderResult = new RenderResult(user);
 		if (!qrt.iterator().hasNext()) {
@@ -274,7 +262,7 @@ public class SparqlResultRenderer {
 					continue;
 				}
 
-				Node node = row.getValue(var);
+				Value node = row.getValue(var);
 				String erg = renderNode(node, var, rawOutput, user, opts.getRdf2GoCore(),
 						getRenderMode(section));
 
@@ -322,7 +310,7 @@ public class SparqlResultRenderer {
 		List<de.d3web.collections.PartialHierarchyTree.Node<TableRow>> rootLevelNodes = tree.getRootLevelNodesSorted(getComparator(result));
 		for (de.d3web.collections.PartialHierarchyTree.Node<TableRow> node : rootLevelNodes) {
 			TableRow row = node.getData();
-			Node topLevelConcept = row.getValue(table.getVariables().get(1));
+			Value topLevelConcept = row.getValue(table.getVariables().get(1));
 
 			if (topLevelConcept != null
 					&& !topLevelConcept.equals(row.getValue(table.getVariables().get(1)))) {
@@ -356,11 +344,11 @@ public class SparqlResultRenderer {
 
 	private Comparator<TableRow> getComparator(final ResultTableModel result) {
 		return (o1, o2) -> {
-			Node concept1 = o1.getValue(result.getVariables().get(0));
-			Node concept2 = o2.getValue(result.getVariables().get(0));
+			Value concept1 = o1.getValue(result.getVariables().get(0));
+			Value concept2 = o2.getValue(result.getVariables().get(0));
 			if (result.getVariables().size() >= 3) {
-				Node tmp1 = o1.getValue(result.getVariables().get(2));
-				Node tmp2 = o2.getValue(result.getVariables().get(2));
+				Value tmp1 = o1.getValue(result.getVariables().get(2));
+				Value tmp2 = o2.getValue(result.getVariables().get(2));
 				if (tmp1 != null && tmp2 != null) {
 					concept1 = o1.getValue(result.getVariables().get(2));
 					concept2 = o2.getValue(result.getVariables().get(2));
@@ -388,12 +376,12 @@ public class SparqlResultRenderer {
 		@SuppressWarnings("SimplifiableIfStatement")
 		private boolean checkSuccessorshipRecursively(TableRow ascendor, TableRow ancestor) {
 
-			Node ascendorNode = ascendor.getValue(data.getVariables().get(0));
-			Node potentialAncestorNode = ancestor.getValue(data.getVariables().get(0));
+			Value ascendorNode = ascendor.getValue(data.getVariables().get(0));
+			Value potentialAncestorNode = ancestor.getValue(data.getVariables().get(0));
 
 			if (ascendorNode.equals(potentialAncestorNode)) return true;
 
-			Node ascendorParent = ascendor.getValue(data.getVariables().get(1));
+			Value ascendorParent = ascendor.getValue(data.getVariables().get(1));
 			if (ascendorNode.equals(ascendorParent)) {
 				// is artificial, invalid root node
 				return false;
@@ -406,17 +394,23 @@ public class SparqlResultRenderer {
 	}
 
 	private String valueToID(String variable, TableRow row) {
-		Node value = row.getValue(variable);
+		Value value = row.getValue(variable);
 		if (value == null) return null;
 		int code = value.toString().replaceAll("[\\s\"]+", "").hashCode();
 		return Integer.toString(code);
 	}
 
-	public String renderNode(Node node, String var, boolean rawOutput, UserContext user, Rdf2GoCore core, RenderMode mode) {
+	public String renderNode(Value node, String var, boolean rawOutput, UserContext user, Rdf2GoCore core, RenderMode mode) {
 		if (node == null) {
 			return "";
 		}
-		String rendered = node.toString();
+		String rendered;
+		if (rawOutput && node instanceof Literal) {
+			rendered = renderLiteral((Literal) node);
+		}
+		else {
+			rendered = node.stringValue();
+		}
 		if (!rawOutput) {
 			for (SparqlResultNodeRenderer nodeRenderer : nodeRenderers) {
 				if (node instanceof Literal && nodeRenderer instanceof DecodeUrlNodeRenderer) continue;
@@ -428,6 +422,33 @@ public class SparqlResultRenderer {
 			// rendered = KnowWEUtils.maskJSPWikiMarkup(rendered);
 		}
 		return rendered;
+	}
+
+	/**
+	 * Right now we cant use Literal#toString, because it renders the xsd inside < >, which somehow does not render in
+	 * JSPWiki.
+	 */
+	private String renderLiteral(Literal node) {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append('"');
+		sb.append(node.getLabel());
+		sb.append('"');
+
+		String language = node.getLanguage();
+		if (language != null) {
+			sb.append('@');
+			sb.append(language);
+		}
+
+		URI datatype = node.getDatatype();
+		if (datatype != null) {
+			sb.append("^^");
+			sb.append(datatype.toString());
+			sb.append("");
+		}
+
+		return sb.toString();
 	}
 
 }

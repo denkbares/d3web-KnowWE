@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.ontoware.rdf2go.model.Statement;
-import org.ontoware.rdf2go.model.impl.StatementImpl;
+import org.openrdf.model.Statement;
+import org.openrdf.model.impl.StatementImpl;
 
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
@@ -121,7 +121,6 @@ public class AddStatementsAction extends AbstractAction {
 		for (int i = 0; i < array.length(); i++) {
 			JSONObject stmt = array.getJSONObject(i);
 			statements[i] = new StatementImpl(
-					null,
 					core.createResource(stmt.getString("subject")),
 					core.createURI(stmt.getString("predicate")),
 					core.createNode(stmt.getString("object")));

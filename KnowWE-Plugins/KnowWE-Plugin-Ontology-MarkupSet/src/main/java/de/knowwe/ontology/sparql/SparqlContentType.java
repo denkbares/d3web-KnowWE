@@ -22,7 +22,6 @@ package de.knowwe.ontology.sparql;
 import java.util.concurrent.TimeUnit;
 
 import org.ontoware.aifbcommons.collection.ClosableIterable;
-import org.ontoware.rdf2go.model.Statement;
 
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Priority;
@@ -132,10 +131,11 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 				// leads to ConcurrentModificationException in model.addAll()
 				//compiler.getRdf2GoCore().commit();
 				try {
-					ClosableIterable<Statement> sparqlConstruct = compiler.getRdf2GoCore().sparqlConstruct(
+					ClosableIterable<org.openrdf.model.Statement> sparqlConstruct = compiler.getRdf2GoCore()
+							.sparqlConstruct(
 							sparqlString);
 
-					for (Statement aSparqlConstruct : sparqlConstruct) {
+					for (org.openrdf.model.Statement aSparqlConstruct : sparqlConstruct) {
 						compiler.getRdf2GoCore().addStatements(section, aSparqlConstruct);
 					}
 				}

@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Formatter;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -38,19 +39,17 @@ import java.util.regex.Pattern;
 
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.model.QueryResultTable;
-import org.ontoware.rdf2go.model.QueryRow;
 import org.ontoware.rdf2go.model.Statement;
-import org.ontoware.rdf2go.model.Syntax;
-import org.ontoware.rdf2go.model.node.BlankNode;
 import org.ontoware.rdf2go.model.node.Literal;
 import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.Resource;
-import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.util.RDFTool;
-import org.ontoware.rdf2go.vocabulary.RDFS;
-import org.ontoware.rdf2go.vocabulary.XSD;
+import org.openrdf.model.BNode;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
+import org.openrdf.model.impl.URIImpl;
+import org.openrdf.model.vocabulary.XMLSchema;
+import org.openrdf.query.BindingSet;
+import org.openrdf.rio.RDFFormat;
 
 import de.d3web.collections.PartialHierarchy;
 import de.d3web.collections.PartialHierarchyTree;
@@ -153,24 +152,24 @@ public class Rdf2GoUtils {
 	}
 
 	public static boolean isClass(Rdf2GoCore core, URI resource) {
-		String query = "ASK { " + resource.toSPARQL() + " rdf:type rdfs:Class .}";
+		String query = "ASK { " + resource.stringValue() + " rdf:type rdfs:Class .}";
 		return core.sparqlAsk(query);
 	}
 
 	public static boolean isProperty(Rdf2GoCore core, URI resource) {
-		String query = "ASK { " + resource.toSPARQL() + " rdf:type rdf:Property .}";
+		String query = "ASK { " + resource.stringValue() + " rdf:type rdf:Property .}";
 		return core.sparqlAsk(query);
 	}
 
-	public static Collection<URI> getClasses(Rdf2GoCore core, URI instance) {
-		String query = "SELECT ?class WHERE { " + instance.toSPARQL() + " rdf:type ?class .}";
-		List<URI> resultCollection = new ArrayList<URI>();
-		QueryResultTable result = core.sparqlSelect(query);
-		ClosableIterator<QueryRow> iterator = result.iterator();
+	public static Collection<org.openrdf.model.URI> getClasses(Rdf2GoCore core, URI instance) {
+		String query = "SELECT ?class WHERE { " + instance.stringValue() + " rdf:type ?class .}";
+		List<org.openrdf.model.URI> resultCollection = new ArrayList<>();
+		Rdf2GoCore.QueryRowListResultTable result = core.sparqlSelect(query);
+		Iterator<BindingSet> iterator = result.iterator();
 		while (iterator.hasNext()) {
-			QueryRow row = iterator.next();
-			Node aClassNode = row.getValue("class");
-			URI uri = aClassNode.asURI();
+			BindingSet row = iterator.next();
+			Value aClassNode = row.getValue("class");
+			org.openrdf.model.URI uri = (org.openrdf.model.URI) aClassNode;
 			resultCollection.add(uri);
 		}
 		return resultCollection;
@@ -207,15 +206,15 @@ public class Rdf2GoUtils {
 		if (label == null) {
 
 			Formatter formatter1 = new Formatter();
-			String labelQuery = formatter1.format(SPARQL_LABEL, concept.toSPARQL()).out().toString();
+			String labelQuery = formatter1.format(SPARQL_LABEL, concept.stringValue()).out().toString();
 
 			String query = "SELECT ?label WHERE { "
 					+ labelQuery
 					+ "}";
-			QueryResultTable resultTable = repo.sparqlSelect(query);
-			for (QueryRow queryRow : resultTable) {
-				Node node = queryRow.getValue("label");
-				String value = node.asLiteral().toString();
+			Rdf2GoCore.QueryRowListResultTable resultTable = repo.sparqlSelect(query);
+			for (BindingSet queryRow : resultTable.getBindingSets()) {
+				Value node = queryRow.getValue("label");
+				String value = node.stringValue();
 				label = value;
 				break; // we assume there is only one label
 
@@ -248,17 +247,17 @@ public class Rdf2GoUtils {
 		String label = null;
 
 		Formatter formatter1 = new Formatter();
-		String labelQuery = formatter1.format(SPARQL_LABEL, concept.toSPARQL()).out().toString();
+		String labelQuery = formatter1.format(SPARQL_LABEL, concept.stringValue()).out().toString();
 
 		Formatter formatter2 = new Formatter();
 		String languageFilter = formatter2.format(SPARQL_LABEL_LANGUAGE_CONSTRAINTS, languageTag).out().toString();
 		String query = "SELECT ?label WHERE { "
 				+ labelQuery + languageFilter
 				+ "}";
-		QueryResultTable resultTable = repo.sparqlSelect(query);
-		for (QueryRow queryRow : resultTable) {
-			Node node = queryRow.getValue("label");
-			String value = node.asLiteral().toString();
+		Rdf2GoCore.QueryRowListResultTable resultTable = repo.sparqlSelect(query);
+		for (BindingSet queryRow : resultTable.getBindingSets()) {
+			Value node = queryRow.getValue("label");
+			String value = node.stringValue();
 			label = value;
 			if (label.charAt(label.length() - 3) == '@') {
 				label = label.substring(0, label.length() - 3);
@@ -443,7 +442,7 @@ public class Rdf2GoUtils {
 	 * @param concept the concept for which the class tree should be generated
 	 * @return the tree of all classes that the concept belongs to
 	 */
-	public static PartialHierarchyTree<URI> getClassHierarchy(Rdf2GoCore core, URI concept) {
+	public static PartialHierarchyTree<org.openrdf.model.URI> getClassHierarchy(Rdf2GoCore core, org.openrdf.model.URI concept) {
 		return getClassHierarchy(core, concept, "rdfs:subClassOf", "rdf:type");
 	}
 
@@ -453,7 +452,7 @@ public class Rdf2GoUtils {
 	 * depth) in the tree of all classes of the concept. If there are multiple deepest classes with
 	 * same depth, the result is one of those (randomly).
 	 */
-	public static URI findMostSpecificClass(Rdf2GoCore core, URI concept) {
+	public static URI findMostSpecificClass(Rdf2GoCore core, org.openrdf.model.URI concept) {
 		return findMostSpecificClass(getClassHierarchy(core, concept));
 	}
 
@@ -463,11 +462,11 @@ public class Rdf2GoUtils {
 	 * hierarchy. If there are multiple deepest classes with same depth, the result is one of those
 	 * (randomly).
 	 */
-	public static URI findMostSpecificClass(PartialHierarchyTree<URI> classHierarchy) {
-		final Set<PartialHierarchyTree.Node<URI>> nodes = classHierarchy.getNodes();
+	public static org.openrdf.model.URI findMostSpecificClass(PartialHierarchyTree<org.openrdf.model.URI> classHierarchy) {
+		final Set<PartialHierarchyTree.Node<org.openrdf.model.URI>> nodes = classHierarchy.getNodes();
 		int maxDepth = 0;
-		PartialHierarchyTree.Node<URI> deepestLeaf = classHierarchy.getRoot();
-		for (PartialHierarchyTree.Node<URI> node : nodes) {
+		PartialHierarchyTree.Node<org.openrdf.model.URI> deepestLeaf = classHierarchy.getRoot();
+		for (PartialHierarchyTree.Node<org.openrdf.model.URI> node : nodes) {
 			int depth = getDepth(node);
 			if (depth >= maxDepth) {
 				maxDepth = depth;
@@ -494,27 +493,27 @@ public class Rdf2GoUtils {
 	 * @param typeRelation     the property defining an instanceof relation (usally rdf:type)
 	 * @return the tree of all classes that the concept belongs to
 	 * @see de.knowwe.rdf2go.utils.Rdf2GoUtils#getClassHierarchy(de.knowwe.rdf2go.Rdf2GoCore,
-	 * org.ontoware.rdf2go.model.node.URI, String, String)
+	 * URI, String, String)
 	 */
-	public static PartialHierarchyTree<URI> getClassHierarchy(Rdf2GoCore core, URI concept, String subClassRelation, String typeRelation) {
+	public static PartialHierarchyTree<org.openrdf.model.URI> getClassHierarchy(Rdf2GoCore core, org.openrdf.model.URI concept, String subClassRelation, String typeRelation) {
 		final SubClassHierarchy subClassHierarchy = new SubClassHierarchy(core, subClassRelation);
-		PartialHierarchyTree<URI> tree = new PartialHierarchyTree<>(subClassHierarchy);
+		PartialHierarchyTree<org.openrdf.model.URI> tree = new PartialHierarchyTree<>(subClassHierarchy);
 
         /*
 		build up tree of classes
          */
-		String classQuery = "SELECT ?c WHERE { " + concept.toSPARQL() + " " + typeRelation + " ?c }";
-		final QueryResultTable queryResultTable = core.sparqlSelect(classQuery);
-		for (QueryRow queryRow : queryResultTable) {
-			Node c = queryRow.getValue("c");
-			if (c instanceof BlankNode) continue;
-			URI classUri = c.asURI();
+		String classQuery = "SELECT ?c WHERE { " + concept.stringValue() + " " + typeRelation + " ?c }";
+		final Rdf2GoCore.QueryRowListResultTable queryResultTable = core.sparqlSelect(classQuery);
+		for (BindingSet queryRow : queryResultTable.getBindingSets()) {
+			Value c = queryRow.getValue("c");
+			if (c instanceof BNode) continue;
+			org.openrdf.model.URI classUri = (org.openrdf.model.URI) c;
 			tree.insertNode(classUri);
 		}
 		return tree;
 	}
 
-	private static class SubClassHierarchy implements PartialHierarchy<URI> {
+	private static class SubClassHierarchy implements PartialHierarchy<org.openrdf.model.URI> {
 		private Rdf2GoCore core;
 		private String subClassRelation;
 
@@ -524,8 +523,8 @@ public class Rdf2GoUtils {
 		}
 
 		@Override
-		public boolean isSuccessorOf(URI node1, URI node2) {
-			return core.sparqlAsk("ASK {" + node1.toSPARQL() + " " + subClassRelation + " " + node2.toSPARQL() + "}");
+		public boolean isSuccessorOf(org.openrdf.model.URI node1, org.openrdf.model.URI node2) {
+			return core.sparqlAsk("ASK {" + node1.stringValue() + " " + subClassRelation + " " + node2.stringValue() + "}");
 		}
 	}
 
@@ -567,7 +566,7 @@ public class Rdf2GoUtils {
 		return sparqlString;
 	}
 
-	public static void addStringLiteral(Rdf2GoCore core, String subject, String predicate, String literalText, Collection<Statement> statements) {
+	public static void addStringLiteral(Rdf2GoCore core, String subject, String predicate, String literalText, Collection<org.openrdf.model.Statement> statements) {
 		addStatement(core, core.createlocalURI(subject), core.createlocalURI(predicate), core.createLiteral(literalText), statements);
 	}
 
@@ -575,7 +574,7 @@ public class Rdf2GoUtils {
 	 * Creates a statement and adds it to the list of statements. Additionally, in case of RDF
 	 * reasoning, the rdfs label of the object is created and added.
 	 */
-	public static void addStatement(Rdf2GoCore core, String subject, String predicate, String object, Collection<Statement> statements) {
+	public static void addStatement(Rdf2GoCore core, String subject, String predicate, String object, Collection<org.openrdf.model.Statement> statements) {
 		addStatement(core, core.createlocalURI(subject), core.createlocalURI(predicate), object, statements);
 	}
 
@@ -583,11 +582,11 @@ public class Rdf2GoUtils {
 	 * Creates a statement and adds it to the list of statements. Additionally, in case of RDF
 	 * reasoning, the rdfs label of the object is created and added.
 	 */
-	public static void addStatement(Rdf2GoCore core, Resource subject, URI predicate, String object, Collection<Statement> statements) {
+	public static void addStatement(Rdf2GoCore core, org.openrdf.model.Resource subject, org.openrdf.model.URI predicate, String object, Collection<org.openrdf.model.Statement> statements) {
 		addStatement(core, subject, predicate, core.createlocalURI(object), statements);
 	}
 
-	public static void addStatement(Rdf2GoCore core, Resource subject, URI predicate, Node object, Collection<Statement> statements) {
+	public static void addStatement(Rdf2GoCore core, org.openrdf.model.Resource subject, org.openrdf.model.URI predicate, Value object, Collection<org.openrdf.model.Statement> statements) {
 		statements.add(core.createStatement(subject, predicate, object));
 	}
 
@@ -595,19 +594,18 @@ public class Rdf2GoUtils {
 	 * This method adds a rdfs:label statement for the given Node to the collection of statements.
 	 * Be aware, that for now this only works with lns nodes!
 	 */
-	public static void addRdfsLabel(Rdf2GoCore core, Node node, Collection<Statement> statements) {
-		if (node instanceof URI) {
-			URI uriNode = node.asURI();
-			String uriNodeString = uriNode.toString();
-			if (uriNodeString.startsWith(core.getLocalNamespace())) {
-				String stringPart = uriNodeString.substring(core.getLocalNamespace().length());
-				Literal nodeLiteral = core.createLiteral(Strings.decodeURL(stringPart));
-				statements.add(core.createStatement(uriNode, RDFS.label,
-						nodeLiteral));
-			}
-		}
-	}
-
+//	public static void addRdfsLabel(Rdf2GoCore core, Node node, Collection<Statement> statements) {
+//		if (node instanceof URI) {
+//			URI uriNode = node.asURI();
+//			String uriNodeString = uriNode.toString();
+//			if (uriNodeString.startsWith(core.getLocalNamespace())) {
+//				String stringPart = uriNodeString.substring(core.getLocalNamespace().length());
+//				org.openrdf.model.Literal nodeLiteral = core.createLiteral(Strings.decodeURL(stringPart));
+//				statements.add(core.createStatement(uriNode, RDFS.label,
+//						nodeLiteral));
+//			}
+//		}
+//	}
 	public static String getCleanedExternalForm(Identifier identifier) {
 		String externalForm = identifier.toExternalForm();
 		if (identifier.countPathElements() == 1) {
@@ -616,13 +614,8 @@ public class Rdf2GoUtils {
 		return externalForm;
 	}
 
-	public static Syntax syntaxForFileName(String fileName) {
-		for (Syntax syntax : Syntax.collection()) {
-			if (fileName.toLowerCase().endsWith(syntax.getFilenameExtension())) {
-				return syntax;
-			}
-		}
-		return null;
+	public static RDFFormat syntaxForFileName(String fileName) {
+		return RDFFormat.forFileName(fileName);
 	}
 
 	/**
@@ -677,16 +670,16 @@ public class Rdf2GoUtils {
 		return doubleValue.toString();
 	}
 
-	public static Literal createDoubleLiteral(Rdf2GoCore core, double d) {
-		return core.createDatatypeLiteral(getDoubleAsString(d), XSD._double);
+	public static org.openrdf.model.Literal createDoubleLiteral(Rdf2GoCore core, double d) {
+		return core.createDatatypeLiteral(getDoubleAsString(d), XMLSchema.DOUBLE);
 	}
 
-	public static Literal createDateTimeLiteral(Rdf2GoCore core, Date date) {
+	public static org.openrdf.model.Literal createDateTimeLiteral(Rdf2GoCore core, Date date) {
 		String dateTimeString;
 		synchronized (PRIVATE_XSD_DATE_TIME_FORMAT) {
 			dateTimeString = PRIVATE_XSD_DATE_TIME_FORMAT.format(date);
 		}
-		return core.createDatatypeLiteral(dateTimeString, XSD._dateTime);
+		return core.createDatatypeLiteral(dateTimeString, XMLSchema.DATETIME);
 	}
 
 	public static Date createDateFromDateTimeLiteral(Literal dateTimeLiteral) throws ParseException {

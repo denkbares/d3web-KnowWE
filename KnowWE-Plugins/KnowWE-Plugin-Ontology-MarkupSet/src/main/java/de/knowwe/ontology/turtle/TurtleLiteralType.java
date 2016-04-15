@@ -20,11 +20,8 @@ package de.knowwe.ontology.turtle;
 
 import java.util.regex.Pattern;
 
-import org.ontoware.rdf2go.model.node.Literal;
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
-import org.ontoware.rdf2go.vocabulary.XSD;
+import org.openrdf.model.Value;
+import org.openrdf.model.vocabulary.XMLSchema;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -58,7 +55,7 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 		this.addChildType(new LanguageTagPart());
 	}
 
-	public Literal getLiteral(Rdf2GoCore core, Section<TurtleLiteralType> section) {
+	public org.openrdf.model.Literal getLiteral(Rdf2GoCore core, Section<TurtleLiteralType> section) {
 		Section<LiteralPart> literalPartSection = Sections.child(section,
 				LiteralPart.class);
 		Section<XSDPart> xsdPartSection = Sections.child(section, XSDPart.class);
@@ -70,7 +67,7 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 			return core.createLanguageTaggedLiteral(literal,
 					langTagPartSection.get().getTag(langTagPartSection));
 		}
-		URI xsdType = null;
+		org.openrdf.model.URI xsdType = null;
 		if (xsdPartSection != null) {
 			xsdType = xsdPartSection.get().getXSDType(xsdPartSection);
 		}
@@ -109,13 +106,13 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 			this.setSectionFinder(new RegexSectionFinder(Pattern.compile(XSD_PATTERN), 1));
 		}
 
-		public URI getXSDType(Section<XSDPart> section) {
-			return new URIImpl(XSD.XSD_NS + section.getText(), false);
+		public org.openrdf.model.URI getXSDType(Section<XSDPart> section) {
+			return new org.openrdf.model.impl.URIImpl(XMLSchema.NAMESPACE + section.getText());
 		}
 	}
 
 	@Override
-	public Node getNode(Section<TurtleLiteralType> section, Rdf2GoCompiler core) {
+	public Value getNode(Section<TurtleLiteralType> section, Rdf2GoCompiler core) {
 		return getLiteral(core.getRdf2GoCore(), section);
 	}
 

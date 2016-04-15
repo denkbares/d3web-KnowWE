@@ -19,11 +19,9 @@
 package de.knowwe.rdf2go;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.io.Writer;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -35,53 +33,59 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.ResourceBundle;
+import java.util.Objects;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 
+import info.aduna.iteration.Iterations;
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.RDF2Go;
-import org.ontoware.rdf2go.Reasoning;
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
-import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.QueryResultTable;
-import org.ontoware.rdf2go.model.QueryRow;
-import org.ontoware.rdf2go.model.Statement;
-import org.ontoware.rdf2go.model.Syntax;
-import org.ontoware.rdf2go.model.node.BlankNode;
-import org.ontoware.rdf2go.model.node.Literal;
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.Resource;
-import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.model.node.impl.LanguageTagLiteralImpl;
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.openrdf.model.BNode;
+import org.openrdf.model.Namespace;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
+import org.openrdf.model.Value;
+import org.openrdf.model.ValueFactory;
+import org.openrdf.model.impl.LiteralImpl;
+import org.openrdf.query.BindingSet;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.QueryLanguage;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.RepositoryResult;
+import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFParseException;
 
+import com.denkbares.semanticcore.Reasoning;
+import com.denkbares.semanticcore.RepositoryConnection;
+import com.denkbares.semanticcore.SemanticCore;
+import com.denkbares.semanticcore.SesameEndpoint;
+import com.denkbares.semanticcore.TupleQuery;
+import com.denkbares.semanticcore.TupleQueryResult;
+import com.denkbares.semanticcore.sparql.SPARQLEndpoint;
 import de.d3web.collections.MultiMap;
 import de.d3web.collections.MultiMaps;
 import de.d3web.collections.N2MMap;
-import de.d3web.plugin.Extension;
-import de.d3web.plugin.PluginManager;
+import de.d3web.core.inference.RuleSet;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
+import de.d3web.utils.Stopwatch;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.CompilerManager;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.event.EventManager;
@@ -90,7 +94,6 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.rdf2go.modelfactory.OWLIMLiteModelFactory;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
@@ -110,6 +113,8 @@ public class Rdf2GoCore {
 		SELECT, CONSTRUCT, ASK
 	}
 
+	private static AtomicLong coreId = new AtomicLong(0);
+
 	private static Rdf2GoCore globaleInstance;
 
 	private static final String MODEL_CONFIG_POINT_ID = "Rdf2GoModelConfig";
@@ -121,8 +126,8 @@ public class Rdf2GoCore {
 	private static final ThreadPoolExecutor sparqlThreadPool = createThreadPool(
 			Math.max(Runtime.getRuntime().availableProcessors() - 1, 1), "KnowWE-Sparql-Thread");
 
-	private static final ThreadPoolExecutor sparqlDaemonPool = createThreadPool(
-			sparqlThreadPool.getMaximumPoolSize(), "KnowWE-Sparql-Deamon");
+	private static final ThreadPoolExecutor shutDownThreadPool = createThreadPool(
+			Math.max(Runtime.getRuntime().availableProcessors() - 1, 1), "KnowWE-SemanticCore-Shutdown-Thread");
 
 	public static final int DEFAULT_TIMEOUT = 15000;
 
@@ -140,6 +145,11 @@ public class Rdf2GoCore {
 	public final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
 	private final Object statementLock = new Object();
+
+	public static Rdf2GoCore getInstance(Section<?> section) {
+		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
+		return getInstance(compiler);
+	}
 
 	public static Rdf2GoCore getInstance(Rdf2GoCompiler compiler) {
 		return compiler.getRdf2GoCore();
@@ -190,13 +200,7 @@ public class Rdf2GoCore {
 
 	private final String lns;
 
-	private org.ontoware.rdf2go.model.Model model;
-
-	private Rdf2GoModel modelType = Rdf2GoModel.SESAME;
-
-	private Rdf2GoReasoning reasoningType = Rdf2GoReasoning.RDF;
-
-	private RuleSet ruleSet;
+	private Reasoning ruleSet;
 
 	private final MultiMap<StatementSource, Statement> statementCache =
 			new N2MMap<>(
@@ -223,7 +227,7 @@ public class Rdf2GoCore {
 	private Set<Statement> removeCache;
 	private long lastModified = System.currentTimeMillis();
 
-	ResourceBundle properties = ResourceBundle.getBundle("model");
+	SemanticCore semanticCore;
 
 	/**
 	 * Initializes the Rdf2GoCore with the default settings specified
@@ -239,33 +243,35 @@ public class Rdf2GoCore {
 	 *
 	 * @param ruleSet specifies the reasoning profile.
 	 */
-	public Rdf2GoCore(RuleSet ruleSet) {
+	public Rdf2GoCore(Reasoning ruleSet) {
 		this(Environment.getInstance().getWikiConnector().getBaseUrl()
 						+ "Wiki.jsp?page=", "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#",
-				null, ruleSet
+				ruleSet
 		);
 	}
 
 	/**
 	 * Initializes the Rdf2GoCore with the specified arguments. Please note
-	 * that the RuleSet argument only has an effekt if OWLIM is used as underlying
+	 * that the RuleSet argument only has an effect if OWLIM is used as underlying
 	 * implementation.
 	 *
-	 * @param lns     the uri used as local namespace
-	 * @param bns     the uri used as base namespace
-	 * @param model   the underlying model
-	 * @param ruleSet the rule set (only relevant for OWLIM model)
+	 * @param lns       the uri used as local namespace
+	 * @param bns       the uri used as base namespace
+	 * @param reasoning the rule set (only relevant for OWLIM model)
 	 */
-	public Rdf2GoCore(String lns, String bns, Model model, RuleSet ruleSet) {
+	public Rdf2GoCore(String lns, String bns, Reasoning reasoning) {
+		Objects.requireNonNull(reasoning);
 		this.bns = bns;
 		this.lns = lns;
-		if (model == null) {
-			initModel(ruleSet);
+		try {
+			semanticCore = SemanticCore.getOrCreateInstance(String.valueOf(coreId.incrementAndGet()), reasoning);
+			Log.info("Semantic core with reasoning '" + reasoning.name() + "' initialized");
 		}
-		else {
-			this.model = model;
+		catch (IOException e) {
+			Log.severe("Unable to create SemanticCore", e);
+			return;
 		}
-		this.ruleSet = ruleSet;
+		this.ruleSet = reasoning;
 
 		insertCache = new HashSet<>();
 		removeCache = new HashSet<>();
@@ -273,42 +279,16 @@ public class Rdf2GoCore {
 		// lock probably not necessary here, just to make sure...
 		this.lock.readLock().lock();
 		try {
-			namespaces.putAll(this.model.getNamespaces());
+			this.namespaces = getSemanticCoreNameSpaces();
 		}
 		finally {
 			this.lock.readLock().unlock();
 		}
 		initDefaultNamespaces();
-		initAvailableSyntaxes();
 	}
 
 	public Date getLastModified() {
 		return new Date(lastModified);
-	}
-
-	private void initAvailableSyntaxes() {
-		List<Syntax> syntaxes = new LinkedList<>();
-		syntaxes.addAll(Syntax.collection());
-		for (Syntax syntax : syntaxes) {
-			try {
-				File tempFile = File.createTempFile("rdf2go_" + syntax, ".tmp");
-				try (FileWriter writer = new FileWriter(tempFile)) {
-					writeModel(writer, syntax);
-				}
-				catch (Exception e) {
-					// we unregister the syntax that causes errors...
-					Syntax.unregister(syntax);
-				}
-				finally {
-					if (!tempFile.delete()) {
-						Log.warning("Unable to delete syntax temp file " + tempFile.getAbsolutePath());
-					}
-				}
-			}
-			catch (IOException e) {
-				Log.warning("Unable to test available syntax, as model can't be written to temp file.", e);
-			}
-		}
 	}
 
 	/**
@@ -320,9 +300,18 @@ public class Rdf2GoCore {
 	public void addNamespace(String abbreviation, String namespace) {
 		this.lock.writeLock().lock();
 		try {
-			model.setNamespace(abbreviation, namespace);
+			RepositoryConnection connection = semanticCore.getConnection();
+			try {
+				connection.setNamespace(abbreviation, namespace);
+			}
+			finally {
+				connection.close();
+			}
 			namespaces = null; // clear caches namespaces, will be get created lazy if needed
 			namespacePrefixes = null;
+		}
+		catch (RepositoryException e) {
+			e.printStackTrace();
 		}
 		finally {
 			this.lock.writeLock().unlock();
@@ -337,8 +326,8 @@ public class Rdf2GoCore {
 	 * @return the short uri name
 	 * @created 13.11.2013
 	 */
-	public URI toShortURI(java.net.URI uri) {
-		return toShortURI(new URIImpl(uri.toString()));
+	public org.openrdf.model.URI toShortURI(java.net.URI uri) {
+		return toShortURI(new org.openrdf.model.impl.URIImpl(uri.toString()));
 	}
 
 	/**
@@ -349,10 +338,10 @@ public class Rdf2GoCore {
 	 * @return the short uri name
 	 * @created 13.11.2013
 	 */
-	public URI toShortURI(URI uri) {
+	public org.openrdf.model.URI toShortURI(org.openrdf.model.URI uri) {
 		String uriText = uri.toString();
 		int length = 0;
-		URI shortURI = uri;
+		org.openrdf.model.URI shortURI = uri;
 		for (Entry<String, String> entry : namespaces.entrySet()) {
 			String partURI = entry.getValue();
 			int partLength = partURI.length();
@@ -374,7 +363,7 @@ public class Rdf2GoCore {
 	 * @return the identifier for the specified uri
 	 * @created 13.11.2013
 	 */
-	public Identifier toIdentifier(URI uri) {
+	public Identifier toIdentifier(org.openrdf.model.URI uri) {
 		return ShortURIImpl.toIdentifier(toShortURI(uri));
 	}
 
@@ -394,7 +383,7 @@ public class Rdf2GoCore {
 	/**
 	 * Adds the given {@link Statement}s for the given {@link SectionSource} to the
 	 * triple store.
-	 * <p/>
+	 * <p>
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
@@ -409,7 +398,7 @@ public class Rdf2GoCore {
 	/**
 	 * Adds the given {@link Statement}s for the given {@link SectionSource} to the
 	 * triple store.
-	 * <p/>
+	 * <p>
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
@@ -431,7 +420,7 @@ public class Rdf2GoCore {
 	/**
 	 * Adds the given {@link Statement}s for the given {@link Section} to the
 	 * triple store.
-	 * <p/>
+	 * <p>
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
@@ -447,7 +436,7 @@ public class Rdf2GoCore {
 	/**
 	 * Adds the given {@link Statement}s for the given {@link Section} to the
 	 * triple store.
-	 * <p/>
+	 * <p>
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
@@ -462,7 +451,7 @@ public class Rdf2GoCore {
 
 	/**
 	 * Adds the given {@link Statement}s directly to the triple store.
-	 * <p/>
+	 * <p>
 	 * <b>Attention</b>: The added {@link Statement}s are not cached in the
 	 * {@link Rdf2GoCore}, so you are yourself responsible to remove the right
 	 * {@link Statement}s in case they are not longer valid. You can remove
@@ -478,7 +467,7 @@ public class Rdf2GoCore {
 
 	/**
 	 * Adds the given {@link Statement}s directly to the triple store.
-	 * <p/>
+	 * <p>
 	 * <b>Attention</b>: The added {@link Statement}s are not cached in the
 	 * {@link Rdf2GoCore}, so you are yourself responsible to remove the right
 	 * {@link Statement}s in case they are not longer valid. You can remove
@@ -517,10 +506,6 @@ public class Rdf2GoCore {
 				}
 			}
 
-			// For logging...
-			TreeSet<Statement> sortedRemoveCache = new TreeSet<>();
-			if (verboseLog) sortedRemoveCache.addAll(removeCache);
-
             /*
 			Hazard Filter:
 			Since removing statements is expansive, we do not remove statements
@@ -539,11 +524,14 @@ public class Rdf2GoCore {
 			Do actual changes on the model
              */
 			long startRemove = System.currentTimeMillis();
-			model.removeAll(removeCache.iterator());
+			RepositoryConnection connection = semanticCore.getConnection();
+			connection.begin();
+			connection.remove(removeCache);
 
 			long startInsert = System.currentTimeMillis();
-			model.addAll(insertCache.iterator());
-
+			connection.add(insertCache);
+			connection.commit();
+			connection.close();
 
             /*
 			Fire events
@@ -552,7 +540,6 @@ public class Rdf2GoCore {
 			if (removeCache.size() > 0) {
 				EventManager.getInstance()
 						.fireEvent(new RemoveStatementsEvent(Collections.unmodifiableCollection(removeCache), this));
-				if (verboseLog) logStatements(sortedRemoveCache, startRemove, "Removed statements");
 				removedStatements = true;
 			}
 			boolean insertedStatements = false;
@@ -570,9 +557,9 @@ public class Rdf2GoCore {
 			Logging
              */
 			if (verboseLog) {
-				logStatements(new TreeSet<>(insertCache), startInsert,
+				logStatements(removeCache, startInsert,
 						"Removed statements:\n");
-				logStatements(new TreeSet<>(insertCache), startInsert,
+				logStatements(insertCache, startInsert,
 						"Inserted statements:\n");
 			}
 			else {
@@ -584,12 +571,14 @@ public class Rdf2GoCore {
 
 			Log.info("Current number of statements: " + statementCache.size());
 
-
             /*
 			Reset caches
              */
 			removeCache = new HashSet<>();
 			insertCache = new HashSet<>();
+		}
+		catch (RepositoryException e) {
+			e.printStackTrace();
 		}
 		finally {
 			// outside of commit an auto committing connection seems to be ok
@@ -599,16 +588,16 @@ public class Rdf2GoCore {
 		EventManager.getInstance().fireEvent(new Rdf2GoCoreCommitFinishedEvent(this));
 	}
 
-	public URI createBasensURI(String value) {
+	public org.openrdf.model.URI createBasensURI(String value) {
 		return createURI(bns, value);
 	}
 
-	public BlankNode createBlankNode() {
-		return model.createBlankNode();
+	public BNode createBlankNode() {
+		return getValueFactory().createBNode();
 	}
 
-	public BlankNode createBlankNode(String internalID) {
-		return model.createBlankNode(internalID);
+	public BNode createBlankNode(String internalID) {
+		return getValueFactory().createBNode(internalID);
 	}
 
 	/**
@@ -617,7 +606,7 @@ public class Rdf2GoCore {
 	 * @param boolValue the value of the literal
 	 * @return a datatype literal for the specified value
 	 */
-	public Literal createDatatypeLiteral(boolean boolValue) {
+	public org.openrdf.model.Literal createDatatypeLiteral(boolean boolValue) {
 		return createDatatypeLiteral(String.valueOf(boolValue), "xsd:boolean");
 	}
 
@@ -627,7 +616,7 @@ public class Rdf2GoCore {
 	 * @param intValue the value of the literal
 	 * @return a datatype literal for the specified value
 	 */
-	public Literal createDatatypeLiteral(int intValue) {
+	public org.openrdf.model.Literal createDatatypeLiteral(int intValue) {
 		return createDatatypeLiteral(String.valueOf(intValue), "xsd:integer");
 	}
 
@@ -637,52 +626,52 @@ public class Rdf2GoCore {
 	 * @param doubleValue the value of the literal
 	 * @return a datatype literal for the specified value
 	 */
-	public Literal createDatatypeLiteral(double doubleValue) {
+	public org.openrdf.model.Literal createDatatypeLiteral(double doubleValue) {
 		return createDatatypeLiteral(String.valueOf(doubleValue), "xsd:double");
 	}
 
-	public Literal createDatatypeLiteral(String literal, String datatype) {
+	public org.openrdf.model.Literal createDatatypeLiteral(String literal, String datatype) {
 		return createDatatypeLiteral(literal, createURI(datatype));
 	}
 
-	public Literal createDatatypeLiteral(String literal, URI datatype) {
-		return model.createDatatypeLiteral(literal, datatype);
+	public org.openrdf.model.Literal createDatatypeLiteral(String literal, org.openrdf.model.URI datatype) {
+		return getValueFactory().createLiteral(literal, datatype);
 	}
 
-	public Literal createLanguageTaggedLiteral(String text) {
-		return new LanguageTagLiteralImpl(text);
+	public org.openrdf.model.Literal createLanguageTaggedLiteral(String text) {
+		return new LiteralImpl(text);
 	}
 
-	public Literal createLanguageTaggedLiteral(String text, String tag) {
-		return model.createLanguageTagLiteral(text, tag);
+	public org.openrdf.model.Literal createLanguageTaggedLiteral(String text, String tag) {
+		return getValueFactory().createLiteral(text, tag);
 	}
 
-	public Literal createLiteral(String text) {
-		return model.createPlainLiteral(text);
+	public org.openrdf.model.Literal createLiteral(String text) {
+		return getValueFactory().createLiteral(text);
 	}
 
-	public Literal createLiteral(String literal, URI datatypeURI) {
-		return model.createDatatypeLiteral(literal, datatypeURI);
+	public org.openrdf.model.Literal createLiteral(String literal, org.openrdf.model.URI datatypeURI) {
+		return getValueFactory().createLiteral(literal, datatypeURI);
 	}
 
-	public Node createNode(String uriOrLiteral) {
+	public Value createNode(String uriOrLiteral) {
 		int index = Strings.indexOfUnquoted(uriOrLiteral, "^^");
 		if (index > 0) {
 			String literal = unquoteTurtleLiteral(uriOrLiteral.substring(0, index));
 			String datatype = uriOrLiteral.substring(index + 2);
-			return model.createDatatypeLiteral(literal, model.createURI(datatype));
+			return getValueFactory().createLiteral(literal, getValueFactory().createURI(datatype));
 		}
 		index = Strings.indexOfUnquoted(uriOrLiteral, "@");
 		if (index > 0) {
 			String literal = unquoteTurtleLiteral(uriOrLiteral.substring(0, index));
 			String langugeTag = uriOrLiteral.substring(index + 1);
-			return model.createLanguageTagLiteral(literal, langugeTag);
+			return getValueFactory().createLiteral(literal, langugeTag);
 		}
 		if (uriOrLiteral.startsWith("'") && uriOrLiteral.endsWith("'")) {
-			return model.createPlainLiteral(unquoteTurtleLiteral(uriOrLiteral));
+			return getValueFactory().createLiteral(unquoteTurtleLiteral(uriOrLiteral));
 		}
 		if (uriOrLiteral.startsWith("\"") && uriOrLiteral.endsWith("\"")) {
-			return model.createPlainLiteral(unquoteTurtleLiteral(uriOrLiteral));
+			return getValueFactory().createLiteral(unquoteTurtleLiteral(uriOrLiteral));
 		}
 		return createResource(uriOrLiteral);
 	}
@@ -714,20 +703,24 @@ public class Rdf2GoCore {
 	 * @param name the relative uri (or simple name) to create a lns-uri for
 	 * @return an uri of the local namespace
 	 */
-	public URI createlocalURI(String name) {
+	public org.openrdf.model.URI createlocalURI(String name) {
 		return createURI(lns, name);
 	}
 
-	public Statement createStatement(Resource subject, URI predicate, Node object) {
-		return model.createStatement(subject, predicate, object);
+	public Statement createStatement(Resource subject, org.openrdf.model.URI predicate, Value object) {
+		return getValueFactory().createStatement(subject, predicate, object);
 	}
 
-	public URI createURI(String value) {
+	public org.openrdf.model.URI createURI(String value) {
 		if (value.startsWith(":")) value = "lns" + value;
-		return model.createURI(Rdf2GoUtils.expandNamespace(this, value));
+		return getValueFactory().createURI(Rdf2GoUtils.expandNamespace(this, value));
 	}
 
-	public URI createURI(String ns, String value) {
+	private ValueFactory getValueFactory() {
+		return semanticCore.getValueFactory();
+	}
+
+	public org.openrdf.model.URI createURI(String ns, String value) {
 		// in case ns is just the abbreviation
 		String fullNs = getNamespaces().get(ns);
 
@@ -742,7 +735,7 @@ public class Rdf2GoCore {
 	public void dumpModel() {
 		this.lock.readLock().lock();
 		try {
-			model.dump();
+//			model.dump();
 		}
 		finally {
 			this.lock.readLock().unlock();
@@ -758,7 +751,7 @@ public class Rdf2GoCore {
 	}
 
 	public Rdf2GoModel getModelType() {
-		return this.modelType;
+		return Rdf2GoModel.SWIFTOWLIM;
 	}
 
 	/**
@@ -769,20 +762,38 @@ public class Rdf2GoCore {
 		if (namespaces == null) {
 			synchronized (nsMutext) {
 				if (namespaces == null) {
-					Map<String, String> temp = new HashMap<>();
-					temp.putAll(model.getNamespaces());
-					namespaces = temp;
+					this.namespaces = getSemanticCoreNameSpaces();
 				}
 			}
 		}
 		return this.namespaces;
 	}
 
+	private Map<String, String> getSemanticCoreNameSpaces() {
+		Map<String, String> temp = new HashMap<>();
+		try {
+			RepositoryConnection connection = semanticCore.getConnection();
+			try {
+				RepositoryResult<Namespace> namespaces = connection.getNamespaces();
+				for (Namespace namespace : Iterations.asList(namespaces)) {
+					temp.put(namespace.getPrefix(), namespace.getName());
+				}
+			}
+			finally {
+				connection.close();
+			}
+		}
+		catch (RepositoryException e) {
+			e.printStackTrace();
+		}
+		return temp;
+	}
+
 	/**
 	 * Returns a map of all namespaces mapped by their prefixes as they are used e.g. in Turtle and
 	 * SPARQL.<br>
 	 * <b>Example:</b> rdf: -> http://www.w3.org/1999/02/22-rdf-syntax-ns#
-	 * <p/>
+	 * <p>
 	 * Although this map seems trivial, it is helpful for optimization reasons.
 	 */
 	public Map<String, String> getNamespacePrefixes() {
@@ -790,7 +801,7 @@ public class Rdf2GoCore {
 			synchronized (nsPrefixMutex) {
 				if (namespacePrefixes == null) {
 					Map<String, String> temp = new HashMap<>();
-					Map<String, String> namespaces = model.getNamespaces();
+					Map<String, String> namespaces = getSemanticCoreNameSpaces();
 					for (Entry<String, String> entry : namespaces.entrySet()) {
 						temp.put(Rdf2GoUtils.toNamespacePrefix(entry.getKey()), entry.getValue());
 					}
@@ -801,16 +812,16 @@ public class Rdf2GoCore {
 		return namespacePrefixes;
 	}
 
-	public URI getRDF(String prop) {
+	public org.openrdf.model.URI getRDF(String prop) {
 		return createURI("http://www.w3.org/1999/02/22-rdf-syntax-ns#", prop);
 	}
 
-	public URI getRDFS(String prop) {
+	public org.openrdf.model.URI getRDFS(String prop) {
 		return createURI("http://www.w3.org/2000/01/rdf-schema#", prop);
 	}
 
 	public Rdf2GoReasoning getReasoningType() {
-		return this.reasoningType;
+		return Rdf2GoReasoning.OWL;
 	}
 
 	/**
@@ -818,28 +829,28 @@ public class Rdf2GoCore {
 	 * @created 15.07.2012
 	 */
 	public Set<Statement> getStatements() {
-		Set<Statement> result = new HashSet<>();
 
-		for (Statement s : model) {
-			result.add(s);
+		Set<Statement> statements1 = null;
+		try {
+			RepositoryResult<Statement> statements = semanticCore.getConnection()
+					.getStatements(null, null, null, true);
+			statements1 = Iterations.asSet(statements);
 		}
-		return result;
+		catch (RepositoryException e) {
+			e.printStackTrace();
+		}
+		return statements1;
 	}
 
 	/**
 	 * Returns the set of statements that have been created from the given section during the compile process
-	 *
 	 */
 	public Set<Statement> getStatementsFromCache(Section<?> source) {
 		return statementCache.getValues(new SectionSource(source));
 	}
 
 	public long getSize() {
-		return model.size();
-	}
-
-	public Object getUnderlyingModelImplementation() {
-		return model.getUnderlyingModelImplementation();
+		return getStatements().size();
 	}
 
 	/**
@@ -856,83 +867,7 @@ public class Rdf2GoCore {
 		addNamespace("onto", "http://www.ontotext.com/");
 	}
 
-	/**
-	 * Registers and opens the specified model.
-	 *
-	 * @throws ModelRuntimeException
-	 */
-	private void initModel(RuleSet ruleSet) throws ModelRuntimeException {
-
-		try {
-			String model;
-			String reasoning;
-
-			Extension[] extensions = PluginManager.getInstance().getExtensions(
-					PLUGIN_ID, MODEL_CONFIG_POINT_ID);
-
-			if (extensions.length > 0) {
-				model = extensions[0].getParameter("model");
-				reasoning = extensions[0].getParameter("reasoning");
-			}
-			else {
-				model = properties.getString("model");
-				reasoning = properties.getString("reasoning");
-			}
-
-			modelType = Rdf2GoModel.valueOf(model.toUpperCase());
-			reasoningType = Rdf2GoReasoning.valueOf(reasoning.toUpperCase());
-		}
-		catch (IllegalArgumentException e) {
-			Log.warning("Unable to read Rdf2Go model config, using default");
-		}
-
-		synchronized (RDF2Go.class) {
-			switch (modelType) {
-				case JENA:
-					// Jena dependency currently commented out because of clashing
-					// lucene version in jspwiki
-
-					// RDF2Go.register(new
-					// org.ontoware.rdf2go.impl.jena26.ModelFactoryImpl());
-					break;
-				case BIGOWLIM:
-					// registers the customized model factory (in memory, owl-max)
-					// RDF2Go.register(new
-					// de.d3web.we.core.semantic.rdf2go.modelfactory.BigOwlimInMemoryModelFactory());
-
-					// standard bigowlim model factory:
-					// RDF2Go.register(new
-					// com.ontotext.trree.rdf2go.OwlimModelFactory());
-					break;
-				case SESAME:
-					RDF2Go.register(new org.openrdf.rdf2go.RepositoryModelFactory());
-					break;
-				case SWIFTOWLIM:
-					RDF2Go.register(new OWLIMLiteModelFactory(ruleSet));
-					break;
-				default:
-					throw new ModelRuntimeException("Model not supported");
-			}
-
-			switch (reasoningType) {
-				case OWL:
-					model = RDF2Go.getModelFactory().createModel(Reasoning.owl);
-					break;
-				case RDFS:
-					model = RDF2Go.getModelFactory().createModel(Reasoning.rdfs);
-					break;
-				default:
-					model = RDF2Go.getModelFactory().createModel();
-					break;
-			}
-		}
-
-		model.open();
-		Log.info("RDF2Go model '" + modelType + "' with reasoning '"
-				+ reasoningType + "' initialized");
-	}
-
-	private void logStatements(TreeSet<Statement> statements, long start, String caption) {
+	private void logStatements(Set<Statement> statements, long start, String caption) {
 		// check if we have something to log
 		if (statements.isEmpty()) return;
 
@@ -945,36 +880,14 @@ public class Rdf2GoCore {
 		Log.fine(caption + ":\n" + buffer.toString());
 	}
 
-	public void readFrom(InputStream in, Syntax syntax) throws IOException {
-		if (syntax == null) {
-			readFrom(in);
-		}
-		else {
-			model.readFrom(in, syntax);
-			namespaces = null;
-			namespacePrefixes = null;
-		}
-	}
-
-	public void readFrom(Reader in, Syntax syntax) throws IOException {
-		if (syntax == null) {
-			readFrom(in);
-		}
-		else {
-			model.readFrom(in, syntax);
-			namespaces = null;
-			namespacePrefixes = null;
-		}
-	}
-
-	public void readFrom(InputStream in) throws ModelRuntimeException, IOException {
-		model.readFrom(in);
+	public void readFrom(InputStream in, RDFFormat syntax) throws RDFParseException, RepositoryException, IOException {
+		semanticCore.addData(in, syntax);
 		namespaces = null;
 		namespacePrefixes = null;
 	}
 
-	public void readFrom(Reader in) throws ModelRuntimeException, IOException {
-		model.readFrom(in);
+	public void readFrom(File in) throws RDFParseException, RepositoryException, IOException {
+		semanticCore.addData(in);
 		namespaces = null;
 		namespacePrefixes = null;
 	}
@@ -985,8 +898,8 @@ public class Rdf2GoCore {
 		statementCache.clear();
 	}
 
-	public void removeNamespace(String abbreviation) {
-		model.removeNamespace(abbreviation);
+	public void removeNamespace(String abbreviation) throws RepositoryException {
+		semanticCore.getConnection().removeNamespace(abbreviation);
 		namespaces = null;
 		namespacePrefixes = null;
 	}
@@ -1028,7 +941,7 @@ public class Rdf2GoCore {
 	/**
 	 * Removes all {@link Statement}s that were added and cached for the given
 	 * {@link Section}.
-	 * <p/>
+	 * <p>
 	 * <b>Attention</b>: This method only removes {@link Statement}s that were
 	 * added (and cached) in connection with a {@link Section} using methods
 	 * like {@link Rdf2GoCore#addStatements(Section, Collection)}.
@@ -1095,7 +1008,7 @@ public class Rdf2GoCore {
 		}
 	}
 
-	public QueryResultTable sparqlSelect(SparqlQuery query) {
+	public QueryRowListResultTable sparqlSelect(SparqlQuery query) {
 		return sparqlSelect(query.toSparql(this));
 	}
 
@@ -1105,8 +1018,8 @@ public class Rdf2GoCore {
 	 * @param query the SPARQL query to perform
 	 * @return the result of the query
 	 */
-	public QueryResultTable sparqlSelect(String query) {
-		return sparqlSelect(query, true, DEFAULT_TIMEOUT);
+	public QueryRowListResultTable sparqlSelect(String query) {
+		return sparqlSelect(query, false, DEFAULT_TIMEOUT);
 	}
 
 	/**
@@ -1139,8 +1052,8 @@ public class Rdf2GoCore {
 	 * @param timeOutMillis the timeout of the query
 	 * @return the result of the query
 	 */
-	public QueryResultTable sparqlSelect(String query, boolean cached, long timeOutMillis) {
-		return (QueryResultTable) sparql(query, cached, timeOutMillis, SparqlType.SELECT);
+	public QueryRowListResultTable sparqlSelect(String query, boolean cached, long timeOutMillis) {
+		return (QueryRowListResultTable) sparql(query, cached, timeOutMillis, SparqlType.SELECT);
 	}
 
 	/**
@@ -1178,7 +1091,7 @@ public class Rdf2GoCore {
 		// if the compile thread is calling here, we continue without all the timeout, cache, and lock
 		// they are not needed in that context and do even cause problems and overhead
 		if (CompilerManager.isCompileThread()) {
-			return new SparqlCallable(completeQuery, type, true).call();
+			return new SparqlCallable(completeQuery, type, 0, true).call();
 		}
 
 		// normal query, most likely from a renderer... do all the cache, timeout, and lock stuff
@@ -1188,7 +1101,7 @@ public class Rdf2GoCore {
 				sparqlTask = resultCache.get(completeQuery);
 				if (sparqlTask == null
 						|| (sparqlTask.isCancelled() && sparqlTask.getTimeOutMillis() != timeOutMillis)) {
-					sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, true), timeOutMillis);
+					sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, timeOutMillis, true));
 					SparqlTask previous = resultCache.put(completeQuery, sparqlTask);
 					if (previous != null) {
 						resultCacheSize -= previous.getSize();
@@ -1198,7 +1111,7 @@ public class Rdf2GoCore {
 			}
 		}
 		else {
-			sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, false), timeOutMillis);
+			sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, timeOutMillis, false));
 			sparqlThreadPool.execute(sparqlTask);
 		}
 		String timeOutMessage = "Query took more than " + Strings.getDurationVerbalization(timeOutMillis, true)
@@ -1209,11 +1122,17 @@ public class Rdf2GoCore {
 		catch (CancellationException | InterruptedException c) {
 			throw new RuntimeException(timeOutMessage);
 		}
-		catch (ExecutionException e) {
-			if (e.getCause() instanceof ThreadDeath) {
+		catch (Exception e) {
+			Throwable cause = e.getCause();
+			if (cause instanceof ThreadDeath) {
 				throw new RuntimeException(timeOutMessage);
 			}
-			throw new RuntimeException(e.getCause());
+			else if (cause instanceof RuntimeException) {
+				throw (RuntimeException) cause;
+			}
+			else {
+				throw new RuntimeException(e.getCause());
+			}
 		}
 	}
 
@@ -1222,20 +1141,16 @@ public class Rdf2GoCore {
 	 */
 	private class SparqlTask extends FutureTask<Object> {
 
-		private final long timeOutMillis;
-		private long startTime = Long.MIN_VALUE;
 		private SparqlCallable callable;
-		private Thread thread = null;
 		private int size = 1;
 
-		public SparqlTask(SparqlCallable callable, long timeOutMillis) {
+		public SparqlTask(SparqlCallable callable) {
 			super(callable);
 			this.callable = callable;
-			this.timeOutMillis = timeOutMillis;
 		}
 
 		public long getTimeOutMillis() {
-			return timeOutMillis;
+			return callable.timeOutMillis;
 		}
 
 		public synchronized void setSize(int size) {
@@ -1244,57 +1159,6 @@ public class Rdf2GoCore {
 
 		public synchronized int getSize() {
 			return size;
-		}
-
-		public synchronized long getRunDuration() {
-			return hasStarted() ? System.currentTimeMillis() - startTime : 0;
-		}
-
-		public synchronized boolean hasStarted() {
-			return startTime != Long.MIN_VALUE;
-		}
-
-		public synchronized boolean isAlive() {
-			return !hasStarted() || (thread != null && thread.isAlive());
-		}
-
-		public synchronized void stop() {
-			if (thread != null) {
-				this.thread.stop();
-				this.thread = null;
-			}
-		}
-
-		@Override
-		public void run() {
-			lock.readLock().lock();
-			try {
-				synchronized (this) {
-					this.thread = Thread.currentThread();
-					startTime = System.currentTimeMillis();
-				}
-				try {
-					sparqlDaemonPool.execute(new SparqlTaskDaemon(this));
-					super.run();
-				}
-				finally {
-					synchronized (this) {
-						thread = null;
-					}
-				}
-				if (callable.cached) {
-					handleCacheSize(this);
-				}
-				long sparqlTime = System.currentTimeMillis() - startTime;
-				if (sparqlTime > 1000 && !isCancelled()) {
-					Log.info("Finished sparql after "
-							+ Strings.getDurationVerbalization(sparqlTime)
-							+ ": " + callable.getReadableQuery() + "...");
-				}
-			}
-			finally {
-				lock.readLock().unlock();
-			}
 		}
 
 		@Override
@@ -1314,38 +1178,51 @@ public class Rdf2GoCore {
 		private final String query;
 		private final SparqlType type;
 		private final boolean cached;
+		private long timeOutMillis;
 
-		private ClosableIterator<?> iterator;
+		private TupleQueryResult iterator;
 
-		private SparqlCallable(String query, SparqlType type, boolean cached) {
+		private SparqlCallable(String query, SparqlType type, long timeOutMillis, boolean cached) {
 			this.query = query;
 			this.type = type;
 			this.cached = cached;
+			this.timeOutMillis = timeOutMillis;
 		}
 
 		@Override
 		public Object call() {
-			Object result;
+			Object result = null;
 			if (type == SparqlType.CONSTRUCT) {
-				ClosableIterable<Statement> constructResult = model.sparqlConstruct(query);
-				if (cached) {
-					result = toCachedClosableIterable(constructResult);
-				}
-				else {
-					result = new LockableClosableIterable<>(lock.readLock(), constructResult);
-				}
+				result = null;
+//				ClosableIterable<Statement> constructResult = null;
+//				if (cached) {
+//					result = toCachedClosableIterable(constructResult);
+//				}
+//				else {
+//					result = new LockableClosableIterable<>(lock.readLock(), constructResult);
+//				}
 			}
 			else if (type == SparqlType.SELECT) {
-				QueryResultTable selectResult = model.sparqlSelect(query);
-				if (cached) {
-					result = toCachedQueryResult(selectResult);
+
+				try (RepositoryConnection connection = semanticCore.getConnection()) {
+					TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, this.query);
+//					tupleQuery.setMaxQueryTime((int) (timeOutMillis / 1000));
+					try (TupleQueryResult selectResult = tupleQuery.evaluate()) {
+						result = toCachedQueryResult(selectResult); // TODO: refactor to use TupleQueryResult#cachedAndClosed();
+					}
 				}
-				else {
-					result = new LockableResultTable(lock.readLock(), selectResult);
+				catch (RepositoryException | MalformedQueryException | QueryEvaluationException e) {
+					throw new RuntimeException(e);
 				}
+
 			}
 			else {
-				result = model.sparqlAsk(query);
+				try {
+					result = semanticCore.ask(query);
+				}
+				catch (RepositoryException | MalformedQueryException | QueryEvaluationException e) {
+					throw new RuntimeException(e);
+				}
 			}
 			if (Thread.currentThread().isInterrupted()) {
 				// not need to waste cache size (e.g. in case of half done results that were aborted)
@@ -1354,40 +1231,38 @@ public class Rdf2GoCore {
 			return result;
 		}
 
-		private CachedClosableIterable<Statement> toCachedClosableIterable(ClosableIterable<Statement> result) {
-			ArrayList<Statement> statements = new ArrayList<>();
-			ClosableIterator<Statement> iterator = result.iterator();
-			synchronized (this) {
-				this.iterator = iterator;
-			}
-			for (; !Thread.currentThread().isInterrupted() && iterator.hasNext(); ) {
-				Statement statement = iterator.next();
-				statements.add(statement);
-			}
-			iterator.close();
-			statements.trimToSize();
-			return new CachedClosableIterable<>(statements);
-		}
+//		private CachedClosableIterable<Statement> toCachedClosableIterable(ClosableIterable<Statement> result) {
+//			ArrayList<Statement> statements = new ArrayList<>();
+//			ClosableIterator<Statement> iterator = result.iterator();
+//			synchronized (this) {
+//				this.iterator = iterator;
+//			}
+//			for (; !Thread.currentThread().isInterrupted() && iterator.hasNext(); ) {
+//				Statement statement = iterator.next();
+//				statements.add(statement);
+//			}
+//			iterator.close();
+//			statements.trimToSize();
+//			return new CachedClosableIterable<>(statements);
+//		}
 
-		private QueryRowListResultTable toCachedQueryResult(QueryResultTable result) {
-			ArrayList<QueryRow> rows = new ArrayList<>();
-			ClosableIterator<QueryRow> iterator = result.iterator();
+		private QueryRowListResultTable toCachedQueryResult(TupleQueryResult iterator) throws QueryEvaluationException {
+			ArrayList<BindingSet> rows = new ArrayList<>();
 			synchronized (this) {
 				this.iterator = iterator;
 			}
 			for (; !Thread.currentThread().isInterrupted() && iterator.hasNext(); ) {
-				QueryRow queryRow = iterator.next();
+				BindingSet queryRow = iterator.next();
 				rows.add(queryRow);
 			}
-			iterator.close();
-			List<String> variables = result.getVariables();
+			List<String> variables = iterator.getBindingNames();
 			// cleanup weird result where there is only one row it all empty nodes.
 			if (rows.size() == 1) {
-				QueryRow queryRow = rows.get(0);
+				BindingSet bindingSet = rows.get(0);
 				boolean allEmpty = true;
 				for (String variable : variables) {
-					Node value = queryRow.getValue(variable);
-					if (value != null && !Strings.isBlank(value.toString())) {
+					Value value = bindingSet.getValue(variable);
+					if (value != null && !Strings.isBlank(value.stringValue())) {
 						allEmpty = false;
 						break;
 					}
@@ -1396,6 +1271,7 @@ public class Rdf2GoCore {
 			}
 
 			rows.trimToSize();
+			iterator.close();
 			return new QueryRowListResultTable(variables, rows);
 		}
 
@@ -1416,66 +1292,6 @@ public class Rdf2GoCore {
 			return query.substring(start, endIndex);
 		}
 
-		public void close() {
-			synchronized (this) {
-				if (this.iterator != null) {
-					iterator.close();
-				}
-			}
-		}
-	}
-
-	/**
-	 * Observes the SPARQL task end cancels/stops it, if it takes to long.
-	 * Thread#stop() is necessary, because some repositories do not react to interrupts/cancels.
-	 */
-	private class SparqlTaskDaemon implements Runnable {
-
-		private SparqlTask task;
-
-		public SparqlTaskDaemon(SparqlTask task) {
-			this.task = task;
-		}
-
-		@Override
-		public void run() {
-			try {
-				task.get(task.timeOutMillis, TimeUnit.MILLISECONDS);
-			}
-			catch (TimeoutException e) {
-
-				// we cancel the task
-				// OWLIM doesn't handel interrupting well, so we don't
-				boolean mayInterruptIfRunning = modelType != Rdf2GoModel.SWIFTOWLIM;
-				if (task.cancel(mayInterruptIfRunning)) {
-					Log.warning("Sparql timed out after "
-							+ Strings.getDurationVerbalization(task.getRunDuration())
-							+ ": " + task.callable.getReadableQuery() + "...");
-				}
-
-				// if it has not died after the sleep, we kill it
-				// (not all repositories will react to cancel)
-				if (mayInterruptIfRunning) sleep(task.timeOutMillis / 2);
-				if (task.isAlive()) {
-					task.stop();
-					Log.warning("Sparql stopped after "
-							+ Strings.getDurationVerbalization(task.getRunDuration())
-							+ ": " + task.callable.getReadableQuery() + "...");
-				}
-			}
-			catch (Exception ignore) {
-				// nothing to do
-			}
-		}
-
-		private void sleep(long timeout) {
-			try {
-				Thread.sleep(Math.max(timeout, 1000));
-			}
-			catch (InterruptedException ie) {
-				Log.warning(Thread.currentThread().getName() + " was interrupted", ie);
-			}
-		}
 	}
 
 	public String prependPrefixesToQuery(String query) {
@@ -1521,8 +1337,12 @@ public class Rdf2GoCore {
 		}
 	}
 
-	public ClosableIterator<QueryRow> sparqlSelectIt(String query) throws ModelRuntimeException {
-		return sparqlSelect(query).iterator();
+	public Iterator<BindingSet> sparqlSelectIt(String query) throws ModelRuntimeException {
+		return sparqlSelect(query).getBindingSets().iterator();
+	}
+
+	public SPARQLEndpoint getSparqlEndpoint() throws RepositoryException {
+		return new SesameEndpoint(semanticCore.getConnection());
 	}
 
 	private String verbalizeStatement(Statement statement) {
@@ -1546,7 +1366,7 @@ public class Rdf2GoCore {
 	 * @created 03.02.2012
 	 */
 	public void writeModel(Writer out) throws ModelRuntimeException, IOException {
-		writeModel(out, Syntax.RdfXml);
+		writeModel(out, RDFFormat.RDFXML);
 	}
 
 	/**
@@ -1559,10 +1379,13 @@ public class Rdf2GoCore {
 	 * @throws IOException
 	 * @created 28.07.2014
 	 */
-	public void writeModel(Writer out, Syntax syntax) throws ModelRuntimeException, IOException {
+	public void writeModel(Writer out, RDFFormat syntax) throws ModelRuntimeException, IOException {
 		this.lock.readLock().lock();
 		try {
-			model.writeTo(out, syntax);
+			semanticCore.export(out, syntax);
+		}
+		catch (RepositoryException | RDFHandlerException e) {
+			e.printStackTrace();
 		}
 		finally {
 			this.lock.readLock().unlock();
@@ -1579,10 +1402,13 @@ public class Rdf2GoCore {
 	 * @throws IOException
 	 * @created 28.07.2014
 	 */
-	public void writeModel(OutputStream out, Syntax syntax) throws ModelRuntimeException, IOException {
+	public void writeModel(OutputStream out, RDFFormat syntax) throws ModelRuntimeException, IOException {
 		this.lock.readLock().lock();
 		try {
-			model.writeTo(out, syntax);
+			semanticCore.export(out, syntax);
+		}
+		catch (RepositoryException | RDFHandlerException e) {
+			e.printStackTrace();
 		}
 		finally {
 			this.lock.readLock().unlock();
@@ -1604,23 +1430,16 @@ public class Rdf2GoCore {
 	 * Destroys this Rdf2GoCore and its underlying model.
 	 */
 	public void destroy() {
-		EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
-		this.model.close();
+		shutDownThreadPool.execute(() -> {
+			Stopwatch stopwatch = new Stopwatch();
+			EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
+			this.semanticCore.shutdown();
+			Log.info("SemanticCore shutdown in " + stopwatch.getDisplay());
+		});
 
-		// It was previously reported that this causes "crazy exceptions in ssp.core.inference"
-		// please fix these "crazy exceptions" there - we need to shutdown OWLIM properly
-		// otherwise tomcat doesn't release the memory on redeployments...
-		if (this.model instanceof OWLIMLiteModelFactory.ShutDownableRepositoryModel) {
-			try {
-				((OWLIMLiteModelFactory.ShutDownableRepositoryModel) this.model).shutdown();
-			}
-			catch (RepositoryException e) {
-				Log.severe("Unable to properly shutdown model", e);
-			}
-		}
 	}
 
-	public RuleSet getRuleSet() {
+	public Reasoning getRuleSet() {
 		return ruleSet;
 	}
 
@@ -1667,28 +1486,26 @@ public class Rdf2GoCore {
 		}
 	}
 
-	public static class QueryRowListResultTable implements QueryResultTable {
+	public static class QueryRowListResultTable {
 
 		private final List<String> variables;
-		private final List<QueryRow> result;
+		private final List<BindingSet> result;
 
-		public QueryRowListResultTable(List<String> variables, List<QueryRow> result) {
+		public QueryRowListResultTable(List<String> variables, List<BindingSet> result) {
 			this.variables = variables;
 			this.result = result;
 		}
 
-		@Override
 		public List<String> getVariables() {
 			return variables;
 		}
 
-		@Override
-		public ClosableIterator<QueryRow> iterator() {
-			return new DelegateClosableIterator<>(result.iterator());
+		public List<BindingSet> getBindingSets() {
+			return Collections.unmodifiableList(result);
 		}
 
-		public List<QueryRow> getResult() {
-			return Collections.unmodifiableList(result);
+		public Iterator<BindingSet> iterator() {
+			return getBindingSets().iterator();
 		}
 	}
 

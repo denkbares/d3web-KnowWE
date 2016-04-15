@@ -76,6 +76,16 @@ public class DefaultGlobalCompiler implements TermCompiler, IncrementalCompiler 
 		scriptCompiler.addSection(section, scriptFilter);
 	}
 
+	@Override
+	public void addSubtreeToDestroy(Section<?> section, Class<?>... scriptFilter) {
+		destroyScriptCompiler.addSubtree(section, scriptFilter);
+	}
+
+	@Override
+	public void addSubtreeToCompile(Section<?> section, Class<?>... scriptFilter) {
+		scriptCompiler.addSubtree(section, scriptFilter);
+	}
+
 	public static abstract class DefaultGlobalScript<T extends Type>
 			implements CompileScript<DefaultGlobalCompiler, T>, DestroyScript<DefaultGlobalCompiler, T> {
 

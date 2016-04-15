@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.ontoware.rdf2go.model.node.Node;
+import org.openrdf.model.Value;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
@@ -42,7 +42,7 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 	}
 
 	@Override
-	public Node getNode(Section<LazyURIReference> section, Rdf2GoCompiler compiler) {
+	public Value getNode(Section<LazyURIReference> section, Rdf2GoCompiler compiler) {
 		Identifier identifier = (Identifier) section.getObject(compiler, IDENTIFIER_KEY);
 		if (identifier == null) {
 			throw new IllegalStateException("Cannot get Node before compilation");

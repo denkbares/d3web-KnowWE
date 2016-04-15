@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collection;
 
-import org.ontoware.rdf2go.model.Syntax;
+import org.openrdf.rio.RDFFormat;
 
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
@@ -58,8 +58,8 @@ public class OntologyDownloadAction extends AbstractAction {
 			}
 		}
 
-		Syntax syntax = Syntax.forName(context.getParameter(PARAM_SYNTAX));
-		String mimeType = syntax.getMimeType() + "; charset=UTF-8";
+		RDFFormat syntax = RDFFormat.valueOf(context.getParameter(PARAM_SYNTAX));
+		String mimeType = syntax.getDefaultMIMEType() + "; charset=UTF-8";
 		context.setContentType(mimeType);
 		context.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 

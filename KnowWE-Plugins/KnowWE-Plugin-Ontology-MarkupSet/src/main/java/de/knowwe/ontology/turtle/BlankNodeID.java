@@ -20,7 +20,7 @@ package de.knowwe.ontology.turtle;
 
 import java.util.List;
 
-import org.ontoware.rdf2go.model.node.Node;
+import org.openrdf.model.Value;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
@@ -50,7 +50,7 @@ public class BlankNodeID extends AbstractType implements NodeProvider<BlankNodeI
 	}
 
 	@Override
-	public Node getNode(Section<BlankNodeID> section, Rdf2GoCompiler core) {
+	public Value getNode(Section<BlankNodeID> section, Rdf2GoCompiler core) {
 		Section<TurtleSentence> content = Sections.ancestor(section,
 				TurtleSentence.class);
 		return core.getRdf2GoCore().createBlankNode(content.getID() + "_" + section.getText());

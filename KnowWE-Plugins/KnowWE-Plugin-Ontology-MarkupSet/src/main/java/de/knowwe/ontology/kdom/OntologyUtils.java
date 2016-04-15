@@ -24,9 +24,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.ontoware.rdf2go.model.Statement;
-import org.ontoware.rdf2go.model.node.Resource;
-import org.ontoware.rdf2go.model.node.URI;
+import org.openrdf.model.Statement;
+import org.openrdf.model.Resource;
+import org.openrdf.model.URI;
 
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;

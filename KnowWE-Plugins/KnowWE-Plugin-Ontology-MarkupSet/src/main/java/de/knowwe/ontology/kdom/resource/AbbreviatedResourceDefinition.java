@@ -18,7 +18,7 @@
  */
 package de.knowwe.ontology.kdom.resource;
 
-import org.ontoware.rdf2go.model.node.URI;
+import org.openrdf.model.URI;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
