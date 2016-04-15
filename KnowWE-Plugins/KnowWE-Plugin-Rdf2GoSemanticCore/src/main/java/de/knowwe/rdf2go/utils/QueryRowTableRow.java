@@ -21,7 +21,7 @@ package de.knowwe.rdf2go.utils;
 
 import java.util.List;
 
-import org.ontoware.rdf2go.model.node.BlankNode;
+import org.openrdf.model.BNode;
 import org.openrdf.model.Value;
 import org.openrdf.query.BindingSet;
 
@@ -42,7 +42,7 @@ public class QueryRowTableRow implements TableRow {
 		StringBuilder buffer = new StringBuilder();
 		for (String variable : variables) {
 			Value value = row.getValue(variable);
-			if (value instanceof BlankNode) {
+			if (value instanceof BNode) {
 				buffer.append("BlankNode");
 			}
 			else {

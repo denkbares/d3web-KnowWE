@@ -37,13 +37,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.ontoware.aifbcommons.collection.ClosableIterable;
-import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.model.Statement;
-import org.ontoware.rdf2go.model.node.Literal;
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.util.RDFTool;
 import org.openrdf.model.BNode;
+import org.openrdf.model.Literal;
+import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
@@ -61,7 +57,6 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.rdf2go.Lockable;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
@@ -76,70 +71,6 @@ public class Rdf2GoUtils {
 	 */
 	public static SimpleDateFormat getXsdDateTimeFormat() {
 		return (SimpleDateFormat) XSD_DATE_TIME_FORMAT.clone();
-	}
-
-	/**
-	 * Locks the Rdf2GoCore of the given SPARQL iterator, so the underlying ontology model cannot
-	 * change during iteration. Be sure to always also unlock (in a try-finally block)! If you do
-	 * not unlock, nobody can write to the model again. Ever. <p><b>Explanation:</b><br> Some Rdf2Go
-	 * models have extreme slow downs, if during a SPARQL query new statements are added or removed.
-	 * Concurrent SPARQLs however are no problem. Therefore we use a lock that locks exclusively for
-	 * writing but shared for reading.
-	 * <p>
-	 *
-	 * @author Albrecht Striffler (denkbares GmbH)
-	 * @created 25.04.2014
-	 */
-	public static void lock(ClosableIterator<?> iterator) {
-		if (iterator instanceof Lockable) ((Lockable) iterator).lock();
-	}
-
-	/**
-	 * Unlocks the Rdf2GoCore of the given SPARQL iterator, so the underlying ontology model can
-	 * change again. Be sure to always unlock in a try-finally block! If the unlock fails due to an
-	 * exception, nobody can write to the model again. Ever. <p><b>Explanation:</b><br> Some Rdf2Go
-	 * models have extreme slow downs, if during a SPARQL query new statements are added or removed.
-	 * Concurrent SPARQLs however are no problem. Therefore we use a lock that locks exclusively for
-	 * writing but shared for reading.
-	 * <p>
-	 *
-	 * @author Albrecht Striffler (denkbares GmbH)
-	 * @created 25.04.2014
-	 */
-	public static void unlock(ClosableIterator<?> iterator) {
-		if (iterator instanceof Lockable) ((Lockable) iterator).unlock();
-	}
-
-	/**
-	 * Locks the Rdf2GoCore of the given QueryResultTable (or ClosableIterable), so the underlying
-	 * ontology model cannot change during iteration. Be sure to always also unlock (in a
-	 * try-finally block)! If you do not unlock, nobody can write to the model again. Ever.
-	 * <p><b>Explanation:</b><br> Some Rdf2Go models have extreme slow downs, if during a SPARQL
-	 * query new statements are added or removed. Concurrent SPARQLs however are no problem.
-	 * Therefore we use a lock that locks exclusively for writing but shared for reading.
-	 * <p>
-	 *
-	 * @author Albrecht Striffler (denkbares GmbH)
-	 * @created 25.04.2014
-	 */
-	public static void lock(ClosableIterable table) {
-		if (table instanceof Lockable) ((Lockable) table).lock();
-	}
-
-	/**
-	 * Unlocks the Rdf2GoCore of the QueryResultTable (or ClosableIterable), so the underlying
-	 * ontology model can change again. Be sure to always unlock in a try-finally block! If the
-	 * unlock fails due to an exception, nobody can write to the model again. Ever.
-	 * <p><b>Explanation:</b><br> Some Rdf2Go models have extreme slow downs, if during a SPARQL
-	 * query new statements are added or removed. Concurrent SPARQLs however are no problem.
-	 * Therefore we use a lock that locks exclusively for writing but shared for reading.
-	 * <p>
-	 *
-	 * @author Albrecht Striffler (denkbares GmbH)
-	 * @created 25.04.2014
-	 */
-	public static void unlock(ClosableIterable table) {
-		if (table instanceof Lockable) ((Lockable) table).unlock();
 	}
 
 	public static Rdf2GoCore getRdf2GoCoreForDefaultMarkupSubSection(Section<? extends Type> section) {
@@ -161,15 +92,15 @@ public class Rdf2GoUtils {
 		return core.sparqlAsk(query);
 	}
 
-	public static Collection<org.openrdf.model.URI> getClasses(Rdf2GoCore core, URI instance) {
+	public static Collection<URI> getClasses(Rdf2GoCore core, URI instance) {
 		String query = "SELECT ?class WHERE { " + instance.stringValue() + " rdf:type ?class .}";
-		List<org.openrdf.model.URI> resultCollection = new ArrayList<>();
-		Rdf2GoCore.QueryRowListResultTable result = core.sparqlSelect(query);
+		List<URI> resultCollection = new ArrayList<>();
+		Rdf2GoCore.QueryResultTable result = core.sparqlSelect(query);
 		Iterator<BindingSet> iterator = result.iterator();
 		while (iterator.hasNext()) {
 			BindingSet row = iterator.next();
 			Value aClassNode = row.getValue("class");
-			org.openrdf.model.URI uri = (org.openrdf.model.URI) aClassNode;
+			URI uri = (URI) aClassNode;
 			resultCollection.add(uri);
 		}
 		return resultCollection;
@@ -211,7 +142,7 @@ public class Rdf2GoUtils {
 			String query = "SELECT ?label WHERE { "
 					+ labelQuery
 					+ "}";
-			Rdf2GoCore.QueryRowListResultTable resultTable = repo.sparqlSelect(query);
+			Rdf2GoCore.QueryResultTable resultTable = repo.sparqlSelect(query);
 			for (BindingSet queryRow : resultTable.getBindingSets()) {
 				Value node = queryRow.getValue("label");
 				String value = node.stringValue();
@@ -254,7 +185,7 @@ public class Rdf2GoUtils {
 		String query = "SELECT ?label WHERE { "
 				+ labelQuery + languageFilter
 				+ "}";
-		Rdf2GoCore.QueryRowListResultTable resultTable = repo.sparqlSelect(query);
+		Rdf2GoCore.QueryResultTable resultTable = repo.sparqlSelect(query);
 		for (BindingSet queryRow : resultTable.getBindingSets()) {
 			Value node = queryRow.getValue("label");
 			String value = node.stringValue();
@@ -286,8 +217,8 @@ public class Rdf2GoUtils {
 		return statements.toArray(new Statement[statements.size()]);
 	}
 
-	public static String getLocalName(Node o) {
-		return RDFTool.getLabel(o);
+	public static String getLocalName(Value o) {
+		return o.stringValue();
 	}
 
 	/**
@@ -442,7 +373,7 @@ public class Rdf2GoUtils {
 	 * @param concept the concept for which the class tree should be generated
 	 * @return the tree of all classes that the concept belongs to
 	 */
-	public static PartialHierarchyTree<org.openrdf.model.URI> getClassHierarchy(Rdf2GoCore core, org.openrdf.model.URI concept) {
+	public static PartialHierarchyTree<URI> getClassHierarchy(Rdf2GoCore core, URI concept) {
 		return getClassHierarchy(core, concept, "rdfs:subClassOf", "rdf:type");
 	}
 
@@ -452,7 +383,7 @@ public class Rdf2GoUtils {
 	 * depth) in the tree of all classes of the concept. If there are multiple deepest classes with
 	 * same depth, the result is one of those (randomly).
 	 */
-	public static URI findMostSpecificClass(Rdf2GoCore core, org.openrdf.model.URI concept) {
+	public static URI findMostSpecificClass(Rdf2GoCore core, URI concept) {
 		return findMostSpecificClass(getClassHierarchy(core, concept));
 	}
 
@@ -462,11 +393,11 @@ public class Rdf2GoUtils {
 	 * hierarchy. If there are multiple deepest classes with same depth, the result is one of those
 	 * (randomly).
 	 */
-	public static org.openrdf.model.URI findMostSpecificClass(PartialHierarchyTree<org.openrdf.model.URI> classHierarchy) {
-		final Set<PartialHierarchyTree.Node<org.openrdf.model.URI>> nodes = classHierarchy.getNodes();
+	public static URI findMostSpecificClass(PartialHierarchyTree<URI> classHierarchy) {
+		final Set<PartialHierarchyTree.Node<URI>> nodes = classHierarchy.getNodes();
 		int maxDepth = 0;
-		PartialHierarchyTree.Node<org.openrdf.model.URI> deepestLeaf = classHierarchy.getRoot();
-		for (PartialHierarchyTree.Node<org.openrdf.model.URI> node : nodes) {
+		PartialHierarchyTree.Node<URI> deepestLeaf = classHierarchy.getRoot();
+		for (PartialHierarchyTree.Node<URI> node : nodes) {
 			int depth = getDepth(node);
 			if (depth >= maxDepth) {
 				maxDepth = depth;
@@ -495,25 +426,25 @@ public class Rdf2GoUtils {
 	 * @see de.knowwe.rdf2go.utils.Rdf2GoUtils#getClassHierarchy(de.knowwe.rdf2go.Rdf2GoCore,
 	 * URI, String, String)
 	 */
-	public static PartialHierarchyTree<org.openrdf.model.URI> getClassHierarchy(Rdf2GoCore core, org.openrdf.model.URI concept, String subClassRelation, String typeRelation) {
+	public static PartialHierarchyTree<URI> getClassHierarchy(Rdf2GoCore core, URI concept, String subClassRelation, String typeRelation) {
 		final SubClassHierarchy subClassHierarchy = new SubClassHierarchy(core, subClassRelation);
-		PartialHierarchyTree<org.openrdf.model.URI> tree = new PartialHierarchyTree<>(subClassHierarchy);
+		PartialHierarchyTree<URI> tree = new PartialHierarchyTree<>(subClassHierarchy);
 
         /*
 		build up tree of classes
          */
 		String classQuery = "SELECT ?c WHERE { " + concept.stringValue() + " " + typeRelation + " ?c }";
-		final Rdf2GoCore.QueryRowListResultTable queryResultTable = core.sparqlSelect(classQuery);
+		final Rdf2GoCore.QueryResultTable queryResultTable = core.sparqlSelect(classQuery);
 		for (BindingSet queryRow : queryResultTable.getBindingSets()) {
 			Value c = queryRow.getValue("c");
 			if (c instanceof BNode) continue;
-			org.openrdf.model.URI classUri = (org.openrdf.model.URI) c;
+			URI classUri = (URI) c;
 			tree.insertNode(classUri);
 		}
 		return tree;
 	}
 
-	private static class SubClassHierarchy implements PartialHierarchy<org.openrdf.model.URI> {
+	private static class SubClassHierarchy implements PartialHierarchy<URI> {
 		private Rdf2GoCore core;
 		private String subClassRelation;
 
@@ -523,7 +454,7 @@ public class Rdf2GoUtils {
 		}
 
 		@Override
-		public boolean isSuccessorOf(org.openrdf.model.URI node1, org.openrdf.model.URI node2) {
+		public boolean isSuccessorOf(URI node1, URI node2) {
 			return core.sparqlAsk("ASK {" + node1.stringValue() + " " + subClassRelation + " " + node2.stringValue() + "}");
 		}
 	}
@@ -566,7 +497,7 @@ public class Rdf2GoUtils {
 		return sparqlString;
 	}
 
-	public static void addStringLiteral(Rdf2GoCore core, String subject, String predicate, String literalText, Collection<org.openrdf.model.Statement> statements) {
+	public static void addStringLiteral(Rdf2GoCore core, String subject, String predicate, String literalText, Collection<Statement> statements) {
 		addStatement(core, core.createlocalURI(subject), core.createlocalURI(predicate), core.createLiteral(literalText), statements);
 	}
 
@@ -574,7 +505,7 @@ public class Rdf2GoUtils {
 	 * Creates a statement and adds it to the list of statements. Additionally, in case of RDF
 	 * reasoning, the rdfs label of the object is created and added.
 	 */
-	public static void addStatement(Rdf2GoCore core, String subject, String predicate, String object, Collection<org.openrdf.model.Statement> statements) {
+	public static void addStatement(Rdf2GoCore core, String subject, String predicate, String object, Collection<Statement> statements) {
 		addStatement(core, core.createlocalURI(subject), core.createlocalURI(predicate), object, statements);
 	}
 
@@ -582,11 +513,11 @@ public class Rdf2GoUtils {
 	 * Creates a statement and adds it to the list of statements. Additionally, in case of RDF
 	 * reasoning, the rdfs label of the object is created and added.
 	 */
-	public static void addStatement(Rdf2GoCore core, org.openrdf.model.Resource subject, org.openrdf.model.URI predicate, String object, Collection<org.openrdf.model.Statement> statements) {
+	public static void addStatement(Rdf2GoCore core, org.openrdf.model.Resource subject, URI predicate, String object, Collection<Statement> statements) {
 		addStatement(core, subject, predicate, core.createlocalURI(object), statements);
 	}
 
-	public static void addStatement(Rdf2GoCore core, org.openrdf.model.Resource subject, org.openrdf.model.URI predicate, Value object, Collection<org.openrdf.model.Statement> statements) {
+	public static void addStatement(Rdf2GoCore core, org.openrdf.model.Resource subject, URI predicate, Value object, Collection<Statement> statements) {
 		statements.add(core.createStatement(subject, predicate, object));
 	}
 
@@ -684,7 +615,7 @@ public class Rdf2GoUtils {
 
 	public static Date createDateFromDateTimeLiteral(Literal dateTimeLiteral) throws ParseException {
 		synchronized (PRIVATE_XSD_DATE_TIME_FORMAT) {
-			return PRIVATE_XSD_DATE_TIME_FORMAT.parse(dateTimeLiteral.getValue());
+			return PRIVATE_XSD_DATE_TIME_FORMAT.parse(dateTimeLiteral.stringValue());
 		}
 	}
 

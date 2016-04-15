@@ -19,9 +19,6 @@
 
 package de.knowwe.ontology.ci;
 
-import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.model.QueryResultTable;
-import org.ontoware.rdf2go.model.QueryRow;
 
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;

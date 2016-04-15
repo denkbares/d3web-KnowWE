@@ -38,7 +38,7 @@ public interface SparqlType extends Type {
 
 	RenderOptions getRenderOptions(Section<? extends SparqlType> section, UserContext context);
 
-	default Rdf2GoCore.QueryRowListResultTable postProcessResult(Rdf2GoCore.QueryRowListResultTable queryResultTable, UserContext context, RenderOptions opts) {
+	default Rdf2GoCore.QueryResultTable postProcessResult(Rdf2GoCore.QueryResultTable queryResultTable, UserContext context, RenderOptions opts) {
 		return queryResultTable;
 	}
 }

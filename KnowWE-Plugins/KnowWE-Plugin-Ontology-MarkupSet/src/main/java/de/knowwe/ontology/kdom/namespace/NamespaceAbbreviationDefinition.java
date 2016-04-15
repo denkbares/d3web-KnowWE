@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.RepositoryException;
 
 import de.d3web.strings.Identifier;
@@ -86,7 +86,7 @@ public class NamespaceAbbreviationDefinition extends SimpleDefinition {
 			String namespace = section.get().getNamespace(section);
 			List<Message> messages = new LinkedList<>();
 			try {
-				new URIImpl(namespace, true);
+				new URIImpl(namespace);
 			}
 			catch (IllegalArgumentException e) {
 				Message message = new Message(Message.Type.ERROR, "'" + namespace + "' is not a valid URI");

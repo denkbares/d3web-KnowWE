@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.ontoware.rdf2go.model.node.BlankNode;
+import org.openrdf.model.BNode;
 import org.openrdf.model.Value;
 import org.openrdf.query.BindingSet;
 
@@ -73,7 +73,7 @@ public class ResultTableModel {
 
 	private List<Comparator<TableRow>> comparators = new LinkedList<>();
 
-	public ResultTableModel(Rdf2GoCore.QueryRowListResultTable result) {
+	public ResultTableModel(Rdf2GoCore.QueryResultTable result) {
 		this.variables = result.getVariables();
 		populateTable(result);
 	}
@@ -134,7 +134,7 @@ public class ResultTableModel {
 		return new SubSpanIterator<>(iterator(), start, end);
 	}
 
-	private void populateTable(Rdf2GoCore.QueryRowListResultTable result) {
+	private void populateTable(Rdf2GoCore.QueryResultTable result) {
 		for (BindingSet queryRow : result.getBindingSets()) {
 			importRow(queryRow);
 		}
@@ -200,7 +200,7 @@ public class ResultTableModel {
 			// blanknodes, so for now we skip them from the check...
 			boolean containsBlankNode = false;
 			for (String var : expectedResultTable.getVariables()) {
-				if (expectedTableRow.getValue(var) instanceof BlankNode) {
+				if (expectedTableRow.getValue(var) instanceof BNode) {
 					containsBlankNode = true;
 					break;
 				}
@@ -233,7 +233,7 @@ public class ResultTableModel {
 		Map<Value, Set<TableRow>> actualData = actualResultTable.getData();
 		Set<Value> keySet = actualData.keySet();
 		for (Value node : keySet) {
-			if (!(node instanceof BlankNode)) {
+			if (!(node instanceof BNode)) {
 				if (!expectedData.keySet().contains(node)) {
 					errorMessages.add(new Message(Type.ERROR, "node not contained: "
 							+ node.toString()));

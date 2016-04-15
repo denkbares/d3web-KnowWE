@@ -6,7 +6,7 @@ package de.knowwe.ontology.tools;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.ontoware.rdf2go.model.Syntax;
+import org.openrdf.rio.RDFFormat;
 
 import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.parsing.Section;
@@ -38,14 +38,14 @@ public class OntologyDownloadProvider implements ToolProvider {
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		List<Tool> tools = new LinkedList<>();
-		for (Syntax syntax : Syntax.collection()) {
+		for (RDFFormat syntax : RDFFormat.values()) {
 			Tool tool = getDownloadTool(section, syntax);
 			if (tool != null) tools.add(tool);
 		}
 		return tools.toArray(new Tool[tools.size()]);
 	}
 
-	protected Tool getDownloadTool(Section<?> section, Syntax syntax) {
+	protected Tool getDownloadTool(Section<?> section, RDFFormat syntax) {
 
 		// check if ontology is empty
 		Rdf2GoCore ontology = Rdf2GoCore.getInstance(OntologyUtils.getOntologyCompiler(section));
@@ -61,7 +61,7 @@ public class OntologyDownloadProvider implements ToolProvider {
 			ontologyName = "ontology";
 		}
 
-		String extension = syntax.getFilenameExtension();
+		String extension = syntax.getDefaultFileExtension();
 
 		List<Section<OntologyType>> ontologySections = Sections.successors(section.getArticle(), OntologyType.class);
 		String jsAction = "";

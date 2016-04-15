@@ -143,7 +143,7 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 					query = Rdf2GoUtils.createSparqlString(core, query);
 					result.appendHtmlTag("span");
 
-					Rdf2GoCore.QueryRowListResultTable resultTable = core.sparqlSelect(query, true, timeout);
+					Rdf2GoCore.QueryResultTable resultTable = core.sparqlSelect(query, true, timeout);
 
 					Iterator<BindingSet> rowIterator = resultTable.iterator();
 					List<String> variables = resultTable.getVariables();

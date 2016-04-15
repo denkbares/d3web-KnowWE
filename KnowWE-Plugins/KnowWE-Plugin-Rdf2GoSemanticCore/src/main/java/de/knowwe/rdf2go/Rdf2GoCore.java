@@ -48,16 +48,15 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 
 import info.aduna.iteration.Iterations;
-import org.ontoware.aifbcommons.collection.ClosableIterable;
-import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Namespace;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.LiteralImpl;
+import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
@@ -117,10 +116,6 @@ public class Rdf2GoCore {
 
 	private static Rdf2GoCore globaleInstance;
 
-	private static final String MODEL_CONFIG_POINT_ID = "Rdf2GoModelConfig";
-
-	public static final String PLUGIN_ID = "KnowWE-Plugin-Rdf2GoSemanticCore";
-
 	public static final String GLOBAL = "GLOBAL";
 
 	private static final ThreadPoolExecutor sparqlThreadPool = createThreadPool(
@@ -178,6 +173,7 @@ public class Rdf2GoCore {
 
 	@Deprecated
 	public static Rdf2GoCore getInstance(String web, String master) {
+		//noinspection deprecation
 		return getInstance(KnowWEUtils.getArticleManager(web).getArticle(master));
 	}
 
@@ -300,12 +296,8 @@ public class Rdf2GoCore {
 	public void addNamespace(String abbreviation, String namespace) {
 		this.lock.writeLock().lock();
 		try {
-			RepositoryConnection connection = semanticCore.getConnection();
-			try {
+			try (RepositoryConnection connection = semanticCore.getConnection()) {
 				connection.setNamespace(abbreviation, namespace);
-			}
-			finally {
-				connection.close();
 			}
 			namespaces = null; // clear caches namespaces, will be get created lazy if needed
 			namespacePrefixes = null;
@@ -326,7 +318,7 @@ public class Rdf2GoCore {
 	 * @return the short uri name
 	 * @created 13.11.2013
 	 */
-	public org.openrdf.model.URI toShortURI(java.net.URI uri) {
+	public URI toShortURI(java.net.URI uri) {
 		return toShortURI(new org.openrdf.model.impl.URIImpl(uri.toString()));
 	}
 
@@ -338,10 +330,10 @@ public class Rdf2GoCore {
 	 * @return the short uri name
 	 * @created 13.11.2013
 	 */
-	public org.openrdf.model.URI toShortURI(org.openrdf.model.URI uri) {
+	public URI toShortURI(URI uri) {
 		String uriText = uri.toString();
 		int length = 0;
-		org.openrdf.model.URI shortURI = uri;
+		URI shortURI = uri;
 		for (Entry<String, String> entry : namespaces.entrySet()) {
 			String partURI = entry.getValue();
 			int partLength = partURI.length();
@@ -363,7 +355,7 @@ public class Rdf2GoCore {
 	 * @return the identifier for the specified uri
 	 * @created 13.11.2013
 	 */
-	public Identifier toIdentifier(org.openrdf.model.URI uri) {
+	public Identifier toIdentifier(URI uri) {
 		return ShortURIImpl.toIdentifier(toShortURI(uri));
 	}
 
@@ -588,7 +580,7 @@ public class Rdf2GoCore {
 		EventManager.getInstance().fireEvent(new Rdf2GoCoreCommitFinishedEvent(this));
 	}
 
-	public org.openrdf.model.URI createBasensURI(String value) {
+	public URI createBasensURI(String value) {
 		return createURI(bns, value);
 	}
 
@@ -607,7 +599,7 @@ public class Rdf2GoCore {
 	 * @return a datatype literal for the specified value
 	 */
 	public org.openrdf.model.Literal createDatatypeLiteral(boolean boolValue) {
-		return createDatatypeLiteral(String.valueOf(boolValue), "xsd:boolean");
+		return createDatatypeLiteral(String.valueOf(boolValue), XMLSchema.BOOLEAN);
 	}
 
 	/**
@@ -617,7 +609,7 @@ public class Rdf2GoCore {
 	 * @return a datatype literal for the specified value
 	 */
 	public org.openrdf.model.Literal createDatatypeLiteral(int intValue) {
-		return createDatatypeLiteral(String.valueOf(intValue), "xsd:integer");
+		return createDatatypeLiteral(String.valueOf(intValue), XMLSchema.INTEGER);
 	}
 
 	/**
@@ -627,14 +619,14 @@ public class Rdf2GoCore {
 	 * @return a datatype literal for the specified value
 	 */
 	public org.openrdf.model.Literal createDatatypeLiteral(double doubleValue) {
-		return createDatatypeLiteral(String.valueOf(doubleValue), "xsd:double");
+		return createDatatypeLiteral(String.valueOf(doubleValue), XMLSchema.DOUBLE);
 	}
 
 	public org.openrdf.model.Literal createDatatypeLiteral(String literal, String datatype) {
 		return createDatatypeLiteral(literal, createURI(datatype));
 	}
 
-	public org.openrdf.model.Literal createDatatypeLiteral(String literal, org.openrdf.model.URI datatype) {
+	public org.openrdf.model.Literal createDatatypeLiteral(String literal, URI datatype) {
 		return getValueFactory().createLiteral(literal, datatype);
 	}
 
@@ -650,7 +642,7 @@ public class Rdf2GoCore {
 		return getValueFactory().createLiteral(text);
 	}
 
-	public org.openrdf.model.Literal createLiteral(String literal, org.openrdf.model.URI datatypeURI) {
+	public org.openrdf.model.Literal createLiteral(String literal, URI datatypeURI) {
 		return getValueFactory().createLiteral(literal, datatypeURI);
 	}
 
@@ -703,15 +695,15 @@ public class Rdf2GoCore {
 	 * @param name the relative uri (or simple name) to create a lns-uri for
 	 * @return an uri of the local namespace
 	 */
-	public org.openrdf.model.URI createlocalURI(String name) {
+	public URI createlocalURI(String name) {
 		return createURI(lns, name);
 	}
 
-	public Statement createStatement(Resource subject, org.openrdf.model.URI predicate, Value object) {
+	public Statement createStatement(Resource subject, URI predicate, Value object) {
 		return getValueFactory().createStatement(subject, predicate, object);
 	}
 
-	public org.openrdf.model.URI createURI(String value) {
+	public URI createURI(String value) {
 		if (value.startsWith(":")) value = "lns" + value;
 		return getValueFactory().createURI(Rdf2GoUtils.expandNamespace(this, value));
 	}
@@ -720,7 +712,7 @@ public class Rdf2GoCore {
 		return semanticCore.getValueFactory();
 	}
 
-	public org.openrdf.model.URI createURI(String ns, String value) {
+	public URI createURI(String ns, String value) {
 		// in case ns is just the abbreviation
 		String fullNs = getNamespaces().get(ns);
 
@@ -772,15 +764,11 @@ public class Rdf2GoCore {
 	private Map<String, String> getSemanticCoreNameSpaces() {
 		Map<String, String> temp = new HashMap<>();
 		try {
-			RepositoryConnection connection = semanticCore.getConnection();
-			try {
+			try (RepositoryConnection connection = semanticCore.getConnection()) {
 				RepositoryResult<Namespace> namespaces = connection.getNamespaces();
 				for (Namespace namespace : Iterations.asList(namespaces)) {
 					temp.put(namespace.getPrefix(), namespace.getName());
 				}
-			}
-			finally {
-				connection.close();
 			}
 		}
 		catch (RepositoryException e) {
@@ -812,17 +800,6 @@ public class Rdf2GoCore {
 		return namespacePrefixes;
 	}
 
-	public org.openrdf.model.URI getRDF(String prop) {
-		return createURI("http://www.w3.org/1999/02/22-rdf-syntax-ns#", prop);
-	}
-
-	public org.openrdf.model.URI getRDFS(String prop) {
-		return createURI("http://www.w3.org/2000/01/rdf-schema#", prop);
-	}
-
-	public Rdf2GoReasoning getReasoningType() {
-		return Rdf2GoReasoning.OWL;
-	}
 
 	/**
 	 * @return all {@link Statement}s of the Rdf2GoCore.
@@ -1008,7 +985,7 @@ public class Rdf2GoCore {
 		}
 	}
 
-	public QueryRowListResultTable sparqlSelect(SparqlQuery query) {
+	public QueryResultTable sparqlSelect(SparqlQuery query) {
 		return sparqlSelect(query.toSparql(this));
 	}
 
@@ -1018,7 +995,7 @@ public class Rdf2GoCore {
 	 * @param query the SPARQL query to perform
 	 * @return the result of the query
 	 */
-	public QueryRowListResultTable sparqlSelect(String query) {
+	public QueryResultTable sparqlSelect(String query) {
 		return sparqlSelect(query, false, DEFAULT_TIMEOUT);
 	}
 
@@ -1032,15 +1009,15 @@ public class Rdf2GoCore {
 		return sparqlAsk(query, true, DEFAULT_TIMEOUT);
 	}
 
-	/**
-	 * Performs a cached SPARQL construct query with the default timeout of 5 seconds.
-	 *
-	 * @param query the SPARQL query to perform
-	 * @return the result of the query
-	 */
-	public ClosableIterable<Statement> sparqlConstruct(String query) {
-		return sparqlConstruct(query, true, DEFAULT_TIMEOUT);
-	}
+//	/**
+//	 * Performs a cached SPARQL construct query with the default timeout of 5 seconds.
+//	 *
+//	 * @param query the SPARQL query to perform
+//	 * @return the result of the query
+//	 */
+//	public ClosableIterable<Statement> sparqlConstruct(String query) {
+//		return sparqlConstruct(query, true, DEFAULT_TIMEOUT);
+//	}
 
 	/**
 	 * Performs a SPARQL select query with the given parameters. Be aware that, in case of an uncached query, the
@@ -1052,8 +1029,8 @@ public class Rdf2GoCore {
 	 * @param timeOutMillis the timeout of the query
 	 * @return the result of the query
 	 */
-	public QueryRowListResultTable sparqlSelect(String query, boolean cached, long timeOutMillis) {
-		return (QueryRowListResultTable) sparql(query, cached, timeOutMillis, SparqlType.SELECT);
+	public QueryResultTable sparqlSelect(String query, boolean cached, long timeOutMillis) {
+		return (QueryResultTable) sparql(query, cached, timeOutMillis, SparqlType.SELECT);
 	}
 
 	/**
@@ -1070,20 +1047,20 @@ public class Rdf2GoCore {
 		return (Boolean) sparql(query, cached, timeOutMillis, SparqlType.ASK);
 	}
 
-	/**
-	 * Performs a SPARQL construct query with the given parameters. Be aware that, in case of an uncached query, the
-	 * timeout only effects the process of creating the iterator. Retrieving elements from the iterator might again
-	 * take a long time not covered by the timeout.
-	 *
-	 * @param query         the SPARQL query to perform
-	 * @param cached        sets whether the SPARQL query is to be cached or not
-	 * @param timeOutMillis the timeout of the query
-	 * @return the result of the query
-	 */
-	@SuppressWarnings("unchecked")
-	public ClosableIterable<Statement> sparqlConstruct(String query, boolean cached, long timeOutMillis) {
-		return (ClosableIterable<Statement>) sparql(query, cached, timeOutMillis, SparqlType.CONSTRUCT);
-	}
+//	/**
+//	 * Performs a SPARQL construct query with the given parameters. Be aware that, in case of an uncached query, the
+//	 * timeout only effects the process of creating the iterator. Retrieving elements from the iterator might again
+//	 * take a long time not covered by the timeout.
+//	 *
+//	 * @param query         the SPARQL query to perform
+//	 * @param cached        sets whether the SPARQL query is to be cached or not
+//	 * @param timeOutMillis the timeout of the query
+//	 * @return the result of the query
+//	 */
+//	@SuppressWarnings("unchecked")
+//	public ClosableIterable<Statement> sparqlConstruct(String query, boolean cached, long timeOutMillis) {
+//		return (ClosableIterable<Statement>) sparql(query, cached, timeOutMillis, SparqlType.CONSTRUCT);
+//	}
 
 	private Object sparql(String query, boolean cached, long timeOutMillis, SparqlType type) {
 		String completeQuery = prependPrefixesToQuery(query);
@@ -1246,7 +1223,7 @@ public class Rdf2GoCore {
 //			return new CachedClosableIterable<>(statements);
 //		}
 
-		private QueryRowListResultTable toCachedQueryResult(TupleQueryResult iterator) throws QueryEvaluationException {
+		private QueryResultTable toCachedQueryResult(TupleQueryResult iterator) throws QueryEvaluationException {
 			ArrayList<BindingSet> rows = new ArrayList<>();
 			synchronized (this) {
 				this.iterator = iterator;
@@ -1272,7 +1249,7 @@ public class Rdf2GoCore {
 
 			rows.trimToSize();
 			iterator.close();
-			return new QueryRowListResultTable(variables, rows);
+			return new QueryResultTable(variables, rows);
 		}
 
 		private String getReadableQuery() {
@@ -1325,19 +1302,16 @@ public class Rdf2GoCore {
 	}
 
 	private int getResultSize(Object result) {
-		if (result instanceof QueryRowListResultTable) {
-			QueryRowListResultTable cacheResult = (QueryRowListResultTable) result;
+		if (result instanceof QueryResultTable) {
+			QueryResultTable cacheResult = (QueryResultTable) result;
 			return cacheResult.variables.size() * cacheResult.result.size();
-		}
-		else if (result instanceof CachedClosableIterable) {
-			return ((CachedClosableIterable) result).delegate.size();
 		}
 		else {
 			return 1;
 		}
 	}
 
-	public Iterator<BindingSet> sparqlSelectIt(String query) throws ModelRuntimeException {
+	public Iterator<BindingSet> sparqlSelectIt(String query) {
 		return sparqlSelect(query).getBindingSets().iterator();
 	}
 
@@ -1361,11 +1335,10 @@ public class Rdf2GoCore {
 	 * format.
 	 *
 	 * @param out the target to write the model to
-	 * @throws ModelRuntimeException
 	 * @throws IOException
 	 * @created 03.02.2012
 	 */
-	public void writeModel(Writer out) throws ModelRuntimeException, IOException {
+	public void writeModel(Writer out) throws IOException {
 		writeModel(out, RDFFormat.RDFXML);
 	}
 
@@ -1375,11 +1348,10 @@ public class Rdf2GoCore {
 	 *
 	 * @param out    the target to write the model to
 	 * @param syntax the syntax of the target file
-	 * @throws ModelRuntimeException
 	 * @throws IOException
 	 * @created 28.07.2014
 	 */
-	public void writeModel(Writer out, RDFFormat syntax) throws ModelRuntimeException, IOException {
+	public void writeModel(Writer out, RDFFormat syntax) throws IOException {
 		this.lock.readLock().lock();
 		try {
 			semanticCore.export(out, syntax);
@@ -1398,11 +1370,10 @@ public class Rdf2GoCore {
 	 *
 	 * @param out    the target to write the model to
 	 * @param syntax the syntax of the target file
-	 * @throws ModelRuntimeException
 	 * @throws IOException
 	 * @created 28.07.2014
 	 */
-	public void writeModel(OutputStream out, RDFFormat syntax) throws ModelRuntimeException, IOException {
+	public void writeModel(OutputStream out, RDFFormat syntax) throws IOException {
 		this.lock.readLock().lock();
 		try {
 			semanticCore.export(out, syntax);
@@ -1443,55 +1414,12 @@ public class Rdf2GoCore {
 		return ruleSet;
 	}
 
-	static class CachedClosableIterable<E> implements ClosableIterable<E> {
-
-		private final List<E> delegate;
-
-		public CachedClosableIterable(List<E> delegate) {
-			this.delegate = delegate;
-		}
-
-		@Override
-		public ClosableIterator<E> iterator() {
-			return new DelegateClosableIterator<>(delegate.iterator());
-		}
-	}
-
-	static class DelegateClosableIterator<E> implements ClosableIterator<E> {
-
-		private final Iterator<E> delegate;
-
-		public DelegateClosableIterator(Iterator<E> delegate) {
-			this.delegate = delegate;
-		}
-
-		@Override
-		public boolean hasNext() {
-			return delegate.hasNext();
-		}
-
-		@Override
-		public E next() {
-			return delegate.next();
-		}
-
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public void close() {
-			// nothing to do here
-		}
-	}
-
-	public static class QueryRowListResultTable {
+	public static class QueryResultTable implements Iterable<BindingSet> {
 
 		private final List<String> variables;
 		private final List<BindingSet> result;
 
-		public QueryRowListResultTable(List<String> variables, List<BindingSet> result) {
+		public QueryResultTable(List<String> variables, List<BindingSet> result) {
 			this.variables = variables;
 			this.result = result;
 		}

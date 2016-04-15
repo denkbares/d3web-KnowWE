@@ -19,18 +19,14 @@
 
 package de.knowwe.rdf2go;
 
-import org.ontoware.rdf2go.model.Statement;
-
-import java.util.Collection;
-
 /**
  * @author Jochen Reutelshöfer
  * @created 21.08.2014
  */
 public class ChangedStatementsEvent extends ModifiedCoreDataEvent {
 
-    public ChangedStatementsEvent(Rdf2GoCore core) {
-        super(core);
-    }
+	public ChangedStatementsEvent(Rdf2GoCore core) {
+		super(core);
+	}
 
 }

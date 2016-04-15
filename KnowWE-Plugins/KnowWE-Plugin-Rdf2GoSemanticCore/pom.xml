@@ -26,29 +26,6 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.semweb4j</groupId>
-			<artifactId>rdf2go.impl.sesame</artifactId>
-			<version>4.8.3</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.openrdf.sesame</groupId>
-					<artifactId>sesame-runtime-osgi</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.openrdf.sesame</groupId>
-					<artifactId>sesame-sail-memory</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.openrdf.sesame</groupId>
-					<artifactId>sesame-rio-rdfxml</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.openrdf.sesame</groupId>
-					<artifactId>sesame-rio-rdfjson</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
 			<groupId>com.denkbares</groupId>
 			<artifactId>denkbares-SemanticCore</artifactId>
 			<version>${project.version}</version>

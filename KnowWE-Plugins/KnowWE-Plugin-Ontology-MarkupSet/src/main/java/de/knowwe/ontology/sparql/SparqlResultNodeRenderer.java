@@ -18,15 +18,14 @@
  */
 package de.knowwe.ontology.sparql;
 
-import org.ontoware.rdf2go.model.QueryResultTable;
-import org.ontoware.rdf2go.model.node.Node;
 import org.openrdf.model.Value;
 
 import de.knowwe.core.user.UserContext;
 import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.Rdf2GoCore.QueryResultTable;
 
 /**
- * Renderer for the {@link Node}s of the {@link QueryResultTable} returned by
+ * Renderer for the {@link Value}s of the {@link QueryResultTable} returned by
  * SPARQL queries.
  * 
  * @author Albrecht Striffler (denkbares GmbH)
@@ -35,10 +34,10 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 public interface SparqlResultNodeRenderer {
 
 	/**
-	 * Gets the text of a {@link Node} from the QueryResultTable. The text might
+	 * Gets the text of a {@link Value} from the QueryResultTable. The text might
 	 * already be altered from other {@link SparqlResultNodeRenderer} called
 	 * before the current one. The argument variable is the name of variable or
-	 * column of the {@link QueryResultTable} for the current {@link Node}.
+	 * column of the {@link QueryResultTable} for the current {@link Value}.
 	 * 
 	 * @created 13.07.2012
 	 * @param node

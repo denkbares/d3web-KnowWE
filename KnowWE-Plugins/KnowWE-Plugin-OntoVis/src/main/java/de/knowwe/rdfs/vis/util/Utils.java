@@ -23,13 +23,11 @@ import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Map;
 
-import org.ontoware.rdf2go.model.QueryResultTable;
-import org.ontoware.rdf2go.model.QueryRow;
-import org.ontoware.rdf2go.model.node.BlankNode;
-import org.ontoware.rdf2go.model.node.Literal;
-import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.URI;
+import org.openrdf.model.BNode;
+import org.openrdf.model.Literal;
 import org.openrdf.model.Value;
+import org.openrdf.model.impl.LiteralImpl;
+import org.openrdf.query.BindingSet;
 
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
@@ -59,7 +57,7 @@ import de.knowwe.visualization.dot.RenderingStyle;
  */
 public class Utils {
 
-	public static String getRDFSLabel(Node concept, Rdf2GoCore repo, String languageTag) {
+	public static String getRDFSLabel(Value concept, Rdf2GoCore repo, String languageTag) {
 
 		// try to find language specific label
 		String label = getLanguageSpecificLabel(concept, repo, languageTag);
@@ -68,10 +66,10 @@ public class Utils {
 		if (label == null) {
 
 			String query = "SELECT ?x WHERE { <" + concept.toString() + "> rdfs:label ?x.}";
-			QueryResultTable resultTable = repo.sparqlSelect(query);
-			for (QueryRow queryRow : resultTable) {
-				Node node = queryRow.getValue("x");
-				label = node.asLiteral().toString();
+			Rdf2GoCore.QueryResultTable resultTable = repo.sparqlSelect(query);
+			for (BindingSet BindingSet : resultTable) {
+				Value Value = BindingSet.getValue("x");
+				label = Value.stringValue()
 				break; // we assume there is only one label
 
 			}
@@ -79,16 +77,16 @@ public class Utils {
 		return label;
 	}
 
-	private static String getLanguageSpecificLabel(Node concept, Rdf2GoCore repo, String languageTag) {
+	private static String getLanguageSpecificLabel(Value concept, Rdf2GoCore repo, String languageTag) {
 		if (languageTag == null) return null;
 		String label = null;
 
 		String query = "SELECT ?x WHERE { <" + concept.toString()
 				+ "> rdfs:label ?x. FILTER(LANGMATCHES(LANG(?x), \"" + languageTag + "\"))}";
-		QueryResultTable resultTable = repo.sparqlSelect(query);
-		for (QueryRow queryRow : resultTable) {
-			Node node = queryRow.getValue("x");
-			label = node.asLiteral().toString();
+		Rdf2GoCore.QueryResultTable resultTable = repo.sparqlSelect(query);
+		for (BindingSet BindingSet : resultTable) {
+			Value Value = BindingSet.getValue("x");
+			label = Value.stringValue();
 			if (label.charAt(label.length() - 3) == '@') {
 				label = label.substring(0, label.length() - 3);
 			}
@@ -98,12 +96,12 @@ public class Utils {
 		return label;
 	}
 
-	public static ConceptNode createNode(Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, SubGraphData data, Node toURI, boolean insertNewNode) {
-		return createNode(config, rdfRepository, uriProvider, section, data, toURI, insertNewNode, null);
+	public static ConceptNode createValue(Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, SubGraphData data, Value toURI, boolean insertNewValue) {
+		return createValue(config, rdfRepository, uriProvider, section, data, toURI, insertNewValue, null);
 	}
 
-	public static ConceptNode createNode(Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, SubGraphData data, Node toURI, boolean insertNewNode, String clazz) {
-		ConceptNode visNode;
+	public static ConceptNode createValue(Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, SubGraphData data, Value toURI, boolean insertNewValue, String clazz) {
+		ConceptNode visValue;
 
 		GraphDataBuilder.NODE_TYPE type;
 		Literal toLiteral;
@@ -111,10 +109,10 @@ public class Utils {
 		String identifier;
 
 		/*
-		1. case: Node is Literal
+		1. case: Value is Literal
 		 */
 		try {
-			toLiteral = toURI.asLiteral();
+			toLiteral = (Literal) toURI;
 			//add a key to identifier to have distinguish between concepts and literals, e.g., <lns:Q> and "Q"
 			identifier = getIdentifierLiteral(toLiteral);
 			type = GraphDataBuilder.NODE_TYPE.LITERAL;
@@ -137,36 +135,36 @@ public class Utils {
 			}
 
 			RenderingStyle style = Utils.getStyle(type);
-			visNode = new ConceptNode(identifier, type, null, label, style);
-			if (insertNewNode) {
-				data.addConcept(visNode);
+			visValue = new ConceptNode(identifier, type, null, label, style);
+			if (insertNewValue) {
+				data.addConcept(visValue);
 			}
-			return visNode;
+			return visValue;
 		}
 		catch (ClassCastException e) {
 			// do nothing as this is just a type check
 		}
 
 		/*
-		2. case: Node is BlankNode
+		2. case: Value is BNode
 		 */
-		BlankNode bNode;
+		BNode bValue;
 		try {
-			bNode = toURI.asBlankNode();
-			identifier = getIdentifierBNode(bNode);
+			bValue = (BNode) toURI;
+			identifier = getIdentifierBValue(bValue);
 
-			visNode = data.getConcept(identifier);
-			if (visNode == null) {
+			visValue = data.getConcept(identifier);
+			if (visValue == null) {
 				type = GraphDataBuilder.NODE_TYPE.BLANKNODE;
-				label = getIdentifierBNode(bNode);
+				label = getIdentifierBValue(bValue);
 				RenderingStyle style = Utils.getStyle(type);
 
-				visNode = new ConceptNode(identifier, type, null, label, style);
-				if (insertNewNode) {
-					data.addConcept(visNode);
+				visValue = new ConceptNode(identifier, type, null, label, style);
+				if (insertNewValue) {
+					data.addConcept(visValue);
 				}
 			}
-			return visNode;
+			return visValue;
 
 		}
 		catch (ClassCastException e) {
@@ -175,14 +173,14 @@ public class Utils {
 
 
 		/*
-		3. case: Node is URI-Resource
+		3. case: Value is URI-Resource
 		 */
 		try {
 			URI uri = toURI.asURI();
 			identifier = getConceptName(toURI, rdfRepository);
-			visNode = data.getConcept(identifier);
+			visValue = data.getConcept(identifier);
 
-			if (visNode == null) {
+			if (visValue == null) {
 
 				type = GraphDataBuilder.NODE_TYPE.UNDEFINED;
 				if (Rdf2GoUtils.isClass(rdfRepository, uri)) {
@@ -201,32 +199,32 @@ public class Utils {
 				}
 				RenderingStyle style = Utils.getStyle(type);
 				Utils.setClassColorCoding(toURI, style, config, rdfRepository);
-				visNode = new ConceptNode(identifier, type, createConceptURL(identifier, config,
+				visValue = new ConceptNode(identifier, type, createConceptURL(identifier, config,
 						section,
 						uriProvider, uri.toString()), label, clazz, style);
-				if (insertNewNode) {
-					data.addConcept(visNode);
+				if (insertNewValue) {
+					data.addConcept(visValue);
 				}
 			}
 			else {
 				if (clazz != null && clazz.length() > 0) {
-					// we found a type-triple and add the clazz attribute to the already existing node
-					visNode.setClazz(clazz);
+					// we found a type-triple and add the clazz attribute to the already existing Value
+					visValue.setClazz(clazz);
 					// re-color according to newly found clazz
-					RenderingStyle style = Utils.getStyle(visNode.getType());
+					RenderingStyle style = Utils.getStyle(visValue.getType());
 					Utils.setClassColorCoding(toURI, style, config, rdfRepository);
-					visNode.setStyle(style);
+					visValue.setStyle(style);
 
 				}
 			}
-			return visNode;
+			return visValue;
 		}
 		catch (ClassCastException e) {
 			// do nothing as this is just a type check
 		}
 
 		// this case should/can never happen!
-		Log.severe("No valid Node type!");
+		Log.severe("No valid Value type!");
 		return null;
 	}
 
@@ -234,22 +232,22 @@ public class Utils {
 		return toLiteral.toString().replace("\"", "") + "ONTOVIS-LITERAL";
 	}
 
-	private static String getIdentifierBNode(BlankNode bNode) {
-		return bNode.toString();
+	private static String getIdentifierBValue(BNode bValue) {
+		return bValue.toString();
 	}
 
-	private static RenderingStyle setClassColorCoding(Node node, RenderingStyle style, Config config, Rdf2GoCore rdfRepository) {
+	private static RenderingStyle setClassColorCoding(Value Value, RenderingStyle style, Config config, Rdf2GoCore rdfRepository) {
 		String classColorScheme = config.getClassColors();
 		if (classColorScheme != null && !Strings.isBlank(classColorScheme)) {
-			String shortURI = Rdf2GoUtils.reduceNamespace(rdfRepository, node.asURI().toString());
-			if (Rdf2GoUtils.isClass(rdfRepository, node.asURI())) {
+			String shortURI = Rdf2GoUtils.reduceNamespace(rdfRepository, Value.asURI().toString());
+			if (Rdf2GoUtils.isClass(rdfRepository, Value.asURI())) {
 				String color = findColor(shortURI, classColorScheme);
 				if (color != null) {
 					style.setFillcolor(color);
 				}
 			}
 			else {
-				Collection<URI> classURIs = Rdf2GoUtils.getClasses(rdfRepository, node.asURI());
+				Collection<URI> classURIs = Rdf2GoUtils.getClasses(rdfRepository, Value.asURI());
 				for (URI classURI : classURIs) {
 					String shortURIClass = Rdf2GoUtils.reduceNamespace(rdfRepository, classURI.asURI().toString());
 					String color = findColor(shortURIClass, classColorScheme);
@@ -301,7 +299,7 @@ public class Utils {
 				+ section.getTitle() + "&") + "concept=" + to;
 	}
 
-	public static String getIdentifierURI(Node uri, Rdf2GoCore repo) {
+	public static String getIdentifierURI(Value uri, Rdf2GoCore repo) {
 		try {
 			String reducedNamespace = Rdf2GoUtils.reduceNamespace(repo,
 					uri.asURI().toString());
@@ -321,9 +319,9 @@ public class Utils {
 		}
 	}
 
-	public static boolean isBlankNode(Node n) {
+	public static boolean isBNode(Value n) {
 		try {
-			n.asBlankNode();
+			n.asBNode();
 			return true;
 		}
 		catch (ClassCastException e) {
@@ -331,7 +329,7 @@ public class Utils {
 		}
 	}
 
-	public static boolean isLiteral(Node n) {
+	public static boolean isLiteral(Value n) {
 		try {
 			n.asLiteral();
 			return true;
@@ -341,7 +339,7 @@ public class Utils {
 		}
 	}
 
-	public static String getConceptName(Node uri, Rdf2GoCore repo) {
+	public static String getConceptName(Value uri, Rdf2GoCore repo) {
 		/*
         handle string/literal
 		 */
@@ -350,18 +348,18 @@ public class Utils {
 		}
 
         /*
-        handle BlankNodes
+		handle BNodes
 		 */
-		if (isBlankNode(uri)) {
-			return getIdentifierBNode(uri.asBlankNode());
+		if (isBNode(uri)) {
+			return getIdentifierBValue(uri.asBNode());
 		}
 
 		/*
 		handle URI
 		 */
 		try {
-			URI uriNode = uri.asURI();
-			return getIdentifierURI(uriNode, repo);
+			URI uriValue = uri.asURI();
+			return getIdentifierURI(uriValue, repo);
 
 		}
 		catch (ClassCastException e) {
@@ -373,7 +371,7 @@ public class Utils {
 		if (Utils.isLiteral(conceptURI)) {
 			return GraphDataBuilder.NODE_TYPE.LITERAL;
 		}
-		if (Utils.isBlankNode(conceptURI)) {
+		if (Utils.isBNode(conceptURI)) {
 			return GraphDataBuilder.NODE_TYPE.BLANKNODE;
 		}
 
@@ -403,8 +401,8 @@ public class Utils {
 				"?entity " + relationName + " ?color" +
 				"}";
 		QueryResultTable resultTable = core.sparqlSelect(query);
-		for (QueryRow row : resultTable) {
-			Node entity = row.getValue("entity");
+		for (BindingSet row : resultTable) {
+			Value entity = row.getValue("entity");
 			String color = row.getLiteralValue("color");
 			String shortURI = Rdf2GoUtils.reduceNamespace(core, entity.toString());
 			result.append(shortURI).append(" ").append(color).append(";");
@@ -451,8 +449,8 @@ public class Utils {
 		}
 	}
 
-	public static String createRelationLabel(Config config, Rdf2GoCore rdfRepository, Node relationURI, String relation) {
-		// is the node a literal ?
+	public static String createRelationLabel(Config config, Rdf2GoCore rdfRepository, Value relationURI, String relation) {
+		// is the Value a literal ?
 		Literal toLiteral = null;
 		try {
 			toLiteral = relationURI.asLiteral();

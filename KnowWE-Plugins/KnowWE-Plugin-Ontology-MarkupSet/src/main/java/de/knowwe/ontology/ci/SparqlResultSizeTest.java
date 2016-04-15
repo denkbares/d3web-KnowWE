@@ -79,7 +79,7 @@ public class SparqlResultSizeTest extends AbstractTest<SparqlQuerySection> {
 
 		String sparqlString = Rdf2GoUtils.createSparqlString(core, query.getSection().getText());
 
-		Rdf2GoCore.QueryRowListResultTable resultSet = core.sparqlSelect(sparqlString);
+		Rdf2GoCore.QueryResultTable resultSet = core.sparqlSelect(sparqlString);
 
 		Iterator<BindingSet> iterator = resultSet.iterator();
 		int count = 0;

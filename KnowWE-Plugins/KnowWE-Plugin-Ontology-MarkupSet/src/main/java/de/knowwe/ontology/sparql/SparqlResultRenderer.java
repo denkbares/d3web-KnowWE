@@ -98,7 +98,7 @@ public class SparqlResultRenderer {
 
 		SparqlRenderResult renderResult;
 
-		Rdf2GoCore.QueryRowListResultTable qrt = null;
+		Rdf2GoCore.QueryResultTable qrt = null;
 		try {
 			qrt = opts.getRdf2GoCore().sparqlSelect(query, true, opts.getTimeout());
 			qrt = section.get().postProcessResult(qrt, user, opts);
@@ -131,7 +131,7 @@ public class SparqlResultRenderer {
 	 * @return html table with all results of qrt and size of qrt
 	 * @created 06.12.2010
 	 */
-	public SparqlRenderResult getSparqlRenderResult(Rdf2GoCore.QueryRowListResultTable qrt, RenderOptions opts, UserContext user, Section section) {
+	public SparqlRenderResult getSparqlRenderResult(Rdf2GoCore.QueryResultTable qrt, RenderOptions opts, UserContext user, Section section) {
 		Compilers.awaitTermination(section.getArticleManager().getCompilerManager());
 		try {
 			return renderQueryResultLocked(qrt, opts, user, section);
@@ -143,7 +143,7 @@ public class SparqlResultRenderer {
 		}
 	}
 
-	private SparqlRenderResult renderQueryResultLocked(Rdf2GoCore.QueryRowListResultTable qrt, RenderOptions opts, UserContext user, Section<?> section) {
+	private SparqlRenderResult renderQueryResultLocked(Rdf2GoCore.QueryResultTable qrt, RenderOptions opts, UserContext user, Section<?> section) {
 
 		RenderResult renderResult = new RenderResult(user);
 		if (!qrt.iterator().hasNext()) {

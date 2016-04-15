@@ -35,7 +35,7 @@ import de.knowwe.ontology.ci.provider.SparqlTestObjectProviderUtils;
 import de.knowwe.ontology.sparql.SparqlContentType;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
-import de.knowwe.rdf2go.Rdf2GoCore.QueryRowListResultTable;
+import de.knowwe.rdf2go.Rdf2GoCore.QueryResultTable;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.rdf2go.utils.ResultTableModel;
 
@@ -94,7 +94,7 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 		String sparqlString = Rdf2GoUtils.createSparqlString(core,
 				querySection.getText());
 
-		QueryRowListResultTable resultSet = core.sparqlSelect(sparqlString);
+		QueryResultTable resultSet = core.sparqlSelect(sparqlString);
 		ResultTableModel actualResultTable = new ResultTableModel(resultSet);
 
 		List<String> variables = actualResultTable.getVariables();

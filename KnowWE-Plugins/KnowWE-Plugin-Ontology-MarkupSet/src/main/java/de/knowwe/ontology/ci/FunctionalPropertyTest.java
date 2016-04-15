@@ -52,7 +52,7 @@ public class FunctionalPropertyTest extends AbstractTest<OntologyCompiler> {
 				propVariableName + " rdf:type owl:FunctionalProperty");
 
 		List<Value> functionalProperties = new ArrayList<>();
-		Rdf2GoCore.QueryRowListResultTable sparqlSelect = rdf2GoCore.sparqlSelect(query);
+		Rdf2GoCore.QueryResultTable sparqlSelect = rdf2GoCore.sparqlSelect(query);
 		Iterator<BindingSet> iterator = sparqlSelect.iterator();
 		while (iterator.hasNext()) {
 			BindingSet row = iterator.next();
@@ -103,7 +103,7 @@ public class FunctionalPropertyTest extends AbstractTest<OntologyCompiler> {
 		SparqlQuery queryFunctionalPropertyAssertions = new SparqlQuery().SELECT(
 				subjectVariableName + " " + objectVariableName).WHERE(
 				subjectVariableName + " <" + prop.stringValue() + "> " + objectVariableName);
-		Rdf2GoCore.QueryRowListResultTable assertions = null;
+		Rdf2GoCore.QueryResultTable assertions = null;
 		try {
 			assertions = core.sparqlSelect(queryFunctionalPropertyAssertions);
 		}
