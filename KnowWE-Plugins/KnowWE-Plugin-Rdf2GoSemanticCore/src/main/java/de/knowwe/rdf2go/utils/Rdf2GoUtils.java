@@ -546,7 +546,7 @@ public class Rdf2GoUtils {
 	}
 
 	public static RDFFormat syntaxForFileName(String fileName) {
-		return RDFFormat.forFileName(fileName);
+		return RDFFormat.forFileName(fileName, RDFFormat.RDFXML);
 	}
 
 	/**

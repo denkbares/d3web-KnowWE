@@ -148,14 +148,14 @@ public class OntologyType extends DefaultMarkupType {
 		}
 
 		private MultiDefinitionMode getMultiDefinitionMode(String multiDefModeValue) {
-			return parseEnum(MultiDefinitionMode.class, multiDefModeValue, "multi-definition-mode");
+			return parseEnum(MultiDefinitionMode.class, multiDefModeValue, "multi-definition-mode", MultiDefinitionMode.ignore);
 		}
 
 		private Reasoning getRuleSet(String ruleSetValue) {
-			return parseEnum(Reasoning.class, ruleSetValue, "rule set");
+			return parseEnum(Reasoning.class, ruleSetValue, "rule set", Reasoning.OWL_HORST_OPTIMIZED);
 		}
 
-		private <T extends Enum<T>> T parseEnum(Class<T> enumClass, String value, String enumName) {
+		private <T extends Enum<T>> T parseEnum(Class<T> enumClass, String value, String enumName, T defaultValue) {
 			if (value != null) {
 				try {
 					return Enum.valueOf(enumClass, value);
@@ -165,7 +165,7 @@ public class OntologyType extends DefaultMarkupType {
 							+ Strings.concat(", ", enumClass.getEnumConstants()));
 				}
 			}
-			return null;
+			return defaultValue;
 		}
 
 		@Override
