@@ -20,22 +20,17 @@
 package de.knowwe.rdfs.vis.edit;
 
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Iterator;
 
 import org.json.JSONArray;
-import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.model.QueryRow;
-import org.ontoware.rdf2go.model.node.Node;
+import org.openrdf.model.Value;
+import org.openrdf.query.BindingSet;
 
-import de.d3web.strings.Identifier;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.utils.LinkToTermDefinitionProvider;
-import de.knowwe.core.utils.PackageCompileLinkToTermDefinitionProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdfs.vis.util.Utils;
@@ -65,16 +60,16 @@ public class FindLiteralsForConceptAction extends AbstractAction {
 
 		if (!conceptName.contains("ONTOVIS-LITERAL")) {
 			String query = "SELECT ?y ?z WHERE { " + conceptName + " ?y ?z. FILTER isLiteral(?z) }";
-			ClosableIterator<QueryRow> result =
+			Iterator<BindingSet> result =
 					rdfRepository.sparqlSelectIt(
 							query);
 			while (result.hasNext()) {
-				QueryRow row = result.next();
-				Node yNode = row.getValue("y");
-				Node zNode = row.getValue("z");
+				BindingSet row = result.next();
+				Value yNode = row.getValue("y");
+				Value zNode = row.getValue("z");
 
 				String rel = Utils.getConceptName(yNode, rdfRepository);
-				String literal = zNode.toString();
+				String literal = zNode.stringValue();
 
 				if (literal.contains("@")) {
 					String[] labelAndLanguage = literal.split("@");

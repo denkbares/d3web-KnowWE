@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openrdf.model.BNode;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
@@ -199,7 +200,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			addOutgoingEdgesSuccessors(fringeValue);
 
 			//TODO find solution for blank node
-			if (!Utils.isBlankValue(fringeValue)) {
+			if (!Utils.isBlankNode(fringeValue)) {
 				if (!literalsExpanded.contains(fringeValue)) {
 					addLiterals(fringeValue);
 				}
@@ -208,7 +209,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		}
 
 		SubpropertyEliminator.eliminateSubproperties(data, rdf2GoCore);
-		data.clearIsolatedValuesFromDefaultLevel();
+		data.clearIsolatedNodesFromDefaultLevel();
 
 		if (DEBUG_MODE) {
 
@@ -243,16 +244,10 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	}
 
 	private void addType(Value node) {
-		String query = "SELECT ?class ?pred WHERE { " + node.toSPARQL() + " ?pred ?class . FILTER regex(str(?pred),\"type\") }";
-		ClosableIterator<QueryRow> result = null;
-		try {
-			result = rdf2GoCore.sparqlSelectIt(query);
-		}
-		catch (ModelRuntimeException exception) {
-			Log.severe("invalid query: " + query + " /n" + exception.toString());
-		}
+		String query = "SELECT ?class ?pred WHERE { <" + node.stringValue() + "> ?pred ?class . FILTER regex(str(?pred),\"type\") }";
+		Iterator<BindingSet> result = rdf2GoCore.sparqlSelectIt(query);
 		while (result != null && result.hasNext()) {
-			QueryRow row = result.next();
+			BindingSet row = result.next();
 			Value yURI = row.getValue("pred");
 			Value zURI = row.getValue("class");
 			addConcept(node, zURI, yURI);
@@ -264,16 +259,10 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	}
 
 	private void addLiterals(Value fringeValue) {
-		String query = "SELECT ?literal ?pred WHERE { " + fringeValue.toSPARQL() + " ?pred ?literal . FILTER isLiteral(?literal) }";
-		ClosableIterator<QueryRow> result = null;
-		try {
-			result = rdf2GoCore.sparqlSelectIt(query);
-		}
-		catch (ModelRuntimeException exception) {
-			Log.severe("invalid query: " + query + " /n" + exception.toString());
-		}
+		String query = "SELECT ?literal ?pred WHERE { <" + fringeValue.stringValue() + "> ?pred ?literal . FILTER isLiteral(?literal) }";
+		Iterator<BindingSet> result = rdf2GoCore.sparqlSelectIt(query);
 		while (result != null && result.hasNext()) {
-			QueryRow row = result.next();
+			BindingSet row = result.next();
 			Value yURI = row.getValue("pred");
 			Value zURI = row.getValue("literal");
 			addConcept(fringeValue, zURI, yURI);
@@ -283,7 +272,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	private void insertMainConcept(Value conceptURI) {
 		String concept = getConceptName(conceptURI);
 
-		String conceptLabel = Utils.getRDFSLabel(conceptURI.asURI(), rdf2GoCore,
+		String conceptLabel = Utils.getRDFSLabel(conceptURI, rdf2GoCore,
 				config.getLanguage());
 		if (conceptLabel == null) {
 			conceptLabel = concept;
@@ -308,7 +297,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 	private void addSuccessors(Value conceptToBeExpanded, Value previousValue, Value previousPredicate, ExpandMode mode, Direction direction) {
 
-		if (Utils.isBlankValue(conceptToBeExpanded) && (previousValue == null || previousPredicate == null)) {
+		if (Utils.isBlankNode(conceptToBeExpanded) && (previousValue == null || previousPredicate == null)) {
 			throw new IllegalArgumentException("case not considered yet!");
 		}
 
@@ -327,18 +316,19 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 		String query;
 
-		if (Utils.isBlankValue(conceptToBeExpanded)) {
+		if (Utils.isBlankNode(conceptToBeExpanded)) {
 			// workaround as blank nodes are not allowed explicitly in sparql query
-			if (!Utils.isBlankValue(previousValue)) {
+			if (!Utils.isBlankNode(previousValue)) {
 				if (direction == Direction.Forward) {
 
-					query = "SELECT ?y ?z WHERE { " +
-							previousValue.toSPARQL() + " " + previousPredicate.toSPARQL() + "[ ?y ?z" + "]" +
+					query = "SELECT ?y ?z WHERE { <" +
+							previousValue.stringValue() + "> <" + previousPredicate.stringValue() + ">[ ?y ?z" + "]" +
 							"}";
 				}
 				else {
 					// case: direction == DirectionToBlankValue.Backward
-					query = "SELECT ?y ?z WHERE { [ ?y ?z" + "] " + previousPredicate.toSPARQL() + " " + previousValue.toSPARQL() + "}";
+					query = "SELECT ?y ?z WHERE { [ ?y ?z" + "] <" + previousPredicate.stringValue() + "> <" + previousValue
+							.stringValue() + ">}";
 				}
 			}
 			else {
@@ -347,35 +337,29 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
                  */
 				// this solution works but is quite inefficient
 				if (direction == Direction.Forward) {
-					query = "SELECT ?y ?z ?" + previousBlankValueSparqlVariableName + " WHERE { ?" + previousBlankValueSparqlVariableName + " " + previousPredicate
-							.toSPARQL() + "[ ?y ?z" + "]" +
+					query = "SELECT ?y ?z ?" + previousBlankValueSparqlVariableName
+							+ " WHERE { ?" + previousBlankValueSparqlVariableName + " <" + previousPredicate.stringValue() + ">[ ?y ?z" + "]" +
 							"}";
 				}
 				else {
 					// case: direction == DirectionToBlankValue.Backward
-					query = "SELECT ?y ?z ?" + previousBlankValueSparqlVariableName + " WHERE { [ ?y ?z" + "] " + previousPredicate
-							.toSPARQL() + " ?" + previousBlankValueSparqlVariableName + ". }";
+					query = "SELECT ?y ?z ?" + previousBlankValueSparqlVariableName + " WHERE { [ ?y ?z" + "] <"
+							+ previousPredicate.stringValue() + "> ?" + previousBlankValueSparqlVariableName + ". }";
 				}
 				// like this we only can show the first element of a list for instance
 				//return;
 			}
 		}
 		else {
-			query = "SELECT ?y ?z WHERE { "
-					+ conceptToBeExpanded.toSPARQL()
-					+ " ?y ?z. " + predicateFilter(Direction.Forward, "z") + nodeFilter("?z", mode) + "}";
+			query = "SELECT ?y ?z WHERE { <"
+					+ conceptToBeExpanded.stringValue()
+					+ "> ?y ?z. " + predicateFilter(Direction.Forward, "z") + nodeFilter("?z", mode) + "}";
 		}
-		ClosableIterator<QueryRow> result = null;
-		try {
-			result = rdf2GoCore.sparqlSelectIt(query);
-		}
-		catch (ModelRuntimeException exception) {
-			Log.severe("invalid query: " + query + " /n" + exception.toString());
-		}
+		Iterator<BindingSet> result = rdf2GoCore.sparqlSelectIt(query);
 		int count = 0;
 		while (result != null && result.hasNext()) {
 			count++;
-			QueryRow row = result.next();
+			BindingSet row = result.next();
 			Value yURI = row.getValue("y");
 			String y = getConceptName(yURI);
 
@@ -388,11 +372,11 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			// TODO what if there are multiple matches for ?previousBlankValueSparqlVariableName - and not all are blanknodes !?
 			if (previousBlankValue != null) {
 				// here we check for the right blank node, quit all the others
-				if (!Utils.isBlankValue(previousBlankValue)) {
+				if (!Utils.isBlankNode(previousBlankValue)) {
 					// is a completely undesired match
 					continue;
 				}
-				if (!previousBlankValue.asBlankValue().toString().equals(previousValue.asBlankValue().toString())) {
+				if (!previousBlankValue.stringValue().equals(previousValue.stringValue())) {
 					continue;
 				}
 			}
@@ -439,7 +423,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	}
 
 	private void addPredecessors(Value conceptToBeExpanded, Value previousValue, Value previousPredicate, Direction direction) {
-		if (Utils.isBlankValue(conceptToBeExpanded) && (previousValue == null || previousPredicate == null || direction == null)) {
+		if (Utils.isBlankNode(conceptToBeExpanded) && (previousValue == null || previousPredicate == null || direction == null)) {
 			throw new IllegalArgumentException("case not considered yet!");
 		}
 
@@ -453,11 +437,11 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		expandedPredecessors.add(conceptToBeExpanded);
 
 		String query;
-		if (Utils.isBlankValue(conceptToBeExpanded)) {
+		if (Utils.isBlankNode(conceptToBeExpanded)) {
 			// workaround as blank nodes are not allowed explicitly in sparql query
-			if (!Utils.isBlankValue(previousValue)) {
+			if (!Utils.isBlankNode(previousValue)) {
 				// TODO: consider direction to blank node
-				query = "SELECT ?x ?y WHERE { ?bValue " + previousPredicate.toSPARQL() + " " + previousValue.toSPARQL() + "." +
+				query = "SELECT ?x ?y WHERE { ?bValue <" + previousPredicate.stringValue() + "> <" + previousValue.stringValue() + ">." +
 						"?x ?y ?bValue." +
 						"}";
 			}
@@ -467,8 +451,8 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
                  */
 
 				// this works but is quite inefficient
-				query = "SELECT ?x ?y ?" + previousBlankValueSparqlVariableName + " WHERE { ?bValue " + previousPredicate
-						.toSPARQL() + " ?" + previousBlankValueSparqlVariableName + "." +
+				query = "SELECT ?x ?y ?" + previousBlankValueSparqlVariableName + " WHERE { ?bValue <"
+						+ previousPredicate.stringValue() + "> ?" + previousBlankValueSparqlVariableName + "." +
 						"?x ?y ?bValue." +
 						"}";
 
@@ -477,14 +461,14 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			}
 		}
 		else {
-			query = "SELECT ?x ?y WHERE { ?x ?y "
-					+ conceptToBeExpanded.toSPARQL() + " . " + predicateFilter(Direction.Backward, null) + nodeFilter("?x", ExpandMode.Normal) + "}";
+			query = "SELECT ?x ?y WHERE { ?x ?y <"
+					+ conceptToBeExpanded.stringValue() + "> . " + predicateFilter(Direction.Backward, null) + nodeFilter("?x", ExpandMode.Normal) + "}";
 		}
-		ClosableIterator<QueryRow> result = rdf2GoCore.sparqlSelectIt(query);
+		Iterator<BindingSet> result = rdf2GoCore.sparqlSelectIt(query);
 		int count = 0;
 		while (result.hasNext()) {
 			count++;
-			QueryRow row = result.next();
+			BindingSet row = result.next();
 			Value xURI = row.getValue("x");
 			String x = getConceptName(xURI);
 			NODE_TYPE nodeType = Utils.getConceptType(xURI, rdf2GoCore);
@@ -497,9 +481,8 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			if (previousBlankValue != null) {
 				// here we check for the right blank node, quit all the others
 
-				if ((!(previousBlankValue instanceof BlankValue)) || !previousBlankValue.asBlankValue()
-						.toString()
-						.equals(previousValue.asBlankValue().toString())) {
+				if ((!(previousBlankValue instanceof BNode)) || !previousBlankValue.stringValue()
+						.equals(previousValue.stringValue())) {
 					continue;
 				}
 			}
@@ -517,7 +500,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			}
 
             /*
-            TODO: this should be done _after_ the last concept node has been added to the graph
+			TODO: this should be done _after_ the last concept node has been added to the graph
              */
 			if (height == config.getPredecessors()) {
 				if (!nodeType.equals(NODE_TYPE.LITERAL)) {
@@ -550,10 +533,10 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	 */
 	private void addOutgoingEdgesSuccessors(Value conceptURI) {
 		if (Utils.isLiteral(conceptURI)) return;
-        /*
-        TODO: handle outgoing edges to blank nodes !
+		/*
+		TODO: handle outgoing edges to blank nodes !
          */
-		if (Utils.isBlankValue(conceptURI)) return;
+		if (Utils.isBlankNode(conceptURI)) return;
 
 		String conceptFilter = "Filter(true)";
 		if (!config.isShowOutgoingEdges()) {
@@ -564,9 +547,9 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 		addOutgoingSuccessorsCalls++;
 
-		String query = "SELECT ?y ?z WHERE { "
-				+ conceptURI.toSPARQL()
-				+ " ?y ?z. " + predicateFilter(Direction.Forward, "z") + " " + conceptFilter + "}";
+		String query = "SELECT ?y ?z WHERE { <"
+				+ conceptURI.stringValue()
+				+ "> ?y ?z. " + predicateFilter(Direction.Forward, "z") + " " + conceptFilter + "}";
 		Iterator<BindingSet> result =
 				rdf2GoCore.sparqlSelectIt(
 						query);
@@ -606,10 +589,10 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	 */
 	private void addOutgoingEdgesPredecessors(Value conceptURI) {
 		if (Utils.isLiteral(conceptURI)) return;
-         /*
-        TODO: handle outgoing edges to blank nodes !
+		 /*
+		TODO: handle outgoing edges to blank nodes !
          */
-		if (Utils.isBlankValue(conceptURI)) return;
+		if (Utils.isBlankNode(conceptURI)) return;
 
 		addOutgoingPredecessorsCalls++;
 
@@ -622,17 +605,17 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			conceptFilter = conceptFilter("?x", conceptDeclarations);
 		}
 
-		String query = "SELECT ?x ?y WHERE { ?x ?y "
-				+ conceptURI.toSPARQL()
-				+ " . " + predicateFilter(Direction.Backward, null) + " " + conceptFilter + "}";
-		QueryResultTable resultTable = rdf2GoCore.sparqlSelect(
+		String query = "SELECT ?x ?y WHERE { ?x ?y <"
+				+ conceptURI.stringValue()
+				+ "> . " + predicateFilter(Direction.Backward, null) + " " + conceptFilter + "}";
+		Rdf2GoCore.QueryResultTable resultTable = rdf2GoCore.sparqlSelect(
 				query);
 
-		ClosableIterator<QueryRow> result = resultTable.iterator();
+		Iterator<BindingSet> result = resultTable.iterator();
 		int count = 0;
 		while (result.hasNext()) {
 			count++;
-			QueryRow row = result.next();
+			BindingSet row = result.next();
 			Value xURI = row.getValue("x");
 			String x = getConceptName(xURI);
 			NODE_TYPE nodeType = Utils.getConceptType(xURI, rdf2GoCore);
@@ -826,7 +809,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			// this filter is already contained in the sparql query
 			return true;
 		}
-		if (excludedValue(z)) {
+		if (excludedNode(z)) {
 			return true;
 		}
 
@@ -873,7 +856,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
             no matter what class this type relation goes to, we look for a representative/meaningful class-uri to display
              */
 			try {
-				final URI uri = fromURI.asURI();
+				final URI uri = (URI) fromURI;
 				final URI mostSpecificClass = Rdf2GoUtils.findMostSpecificClass(rdf2GoCore, uri);
 				clazz = null;
 				if (mostSpecificClass != null) {
@@ -900,7 +883,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		String relationLabel = null;
 
 		if (!config.isShowLabels()) {
-			relationLabel = Utils.getRDFSLabel(relationURI.asURI(), rdf2GoCore, config.getLanguage());
+			relationLabel = Utils.getRDFSLabel(relationURI, rdf2GoCore, config.getLanguage());
 			if (relationLabel != null && relationLabel.charAt(relationLabel.length() - 3) == '@') {
 				// do not show language tag of relation labels
 				relationLabel = relationLabel.substring(0, relationLabel.length() - 3);

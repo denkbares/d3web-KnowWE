@@ -20,20 +20,17 @@
 package de.knowwe.ontoVis.test;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.ontoware.rdf2go.RDF2Go;
-import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.QueryResultTable;
-import org.ontoware.rdf2go.model.QueryRow;
-import org.ontoware.rdf2go.model.node.Node;
+import org.openrdf.model.Value;
+import org.openrdf.query.BindingSet;
+import org.openrdf.repository.RepositoryException;
+import org.openrdf.rio.RDFParseException;
 
 import com.denkbares.semanticcore.Reasoning;
 import de.d3web.plugin.test.InitPluginManager;
@@ -41,8 +38,6 @@ import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.utils.LinkToTermDefinitionProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
-import de.knowwe.rdf2go.RuleSet;
-import de.knowwe.rdf2go.modelfactory.OWLIMLiteModelFactory;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.rdfs.vis.OntoGraphDataBuilder;
 import de.knowwe.rdfs.vis.util.Utils;
@@ -64,14 +59,11 @@ public class OntoVisTest {
 	static Rdf2GoCore rdfRepository = null;
 
 	@BeforeClass
-	public static void setUp() throws IOException {
+	public static void setUp() throws IOException, RDFParseException, RepositoryException {
 		InitPluginManager.init();
 
-		RDF2Go.register(new OWLIMLiteModelFactory(RuleSet.OWL2_RL_OPTIMIZED));
-		Model model = RDF2Go.getModelFactory().createModel();
-		model.open();
 		rdfRepository = new Rdf2GoCore("http://localhost:8080/KnowWE/Wiki.jsp?page=",
-				"http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#", model, Reasoning.OWL2_RL_OPTIMIZED);
+				"http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#", Reasoning.OWL2_RL_OPTIMIZED);
 		// rdfRepository.addNamespace("ns", bns);
 		// rdfRepository.addNamespace(LNS_ABBREVIATION, lns);
 		rdfRepository.addNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
@@ -322,29 +314,29 @@ public class OntoVisTest {
 		LinkToTermDefinitionProvider uriProvider = new DummyLinkToTermDefinitionProvider();
 
 		String sparqlString = Rdf2GoUtils.createSparqlString(rdfRepository, sparql);
-		QueryResultTable resultSet = rdfRepository.sparqlSelect(sparqlString);
+		Rdf2GoCore.QueryResultTable resultSet = rdfRepository.sparqlSelect(sparqlString);
 
 		SubGraphData data = new SubGraphData();
 		List<String> variables = resultSet.getVariables();
 
-		for (QueryRow row : resultSet) {
+		for (BindingSet row : resultSet) {
 
-			Node fromURI = row.getValue(variables.get(0));
+			Value fromURI = row.getValue(variables.get(0));
 
-			Node relationURI = row.getValue(variables.get(1));
+			Value relationURI = row.getValue(variables.get(1));
 
-			Node toURI = row.getValue(variables.get(2));
+			Value toURI = row.getValue(variables.get(2));
 
 			if (fromURI == null || toURI == null || relationURI == null) {
 				Log.warning("incomplete query result row: " + row.toString());
 				continue;
 			}
 
-			ConceptNode fromNode = Utils.createNode(config, rdfRepository, uriProvider,
+			ConceptNode fromNode = Utils.createValue(config, rdfRepository, uriProvider,
 					null, data, fromURI, true);
 			String relation = Utils.getConceptName(relationURI, rdfRepository);
 
-			ConceptNode toNode = Utils.createNode(config, rdfRepository, uriProvider, null,
+			ConceptNode toNode = Utils.createValue(config, rdfRepository, uriProvider, null,
 					data, toURI, true);
 
 			String relationLabel = Utils.createRelationLabel(config, rdfRepository, relationURI,

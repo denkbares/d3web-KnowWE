@@ -25,8 +25,8 @@ import java.util.Map;
 
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
+import org.openrdf.model.URI;
 import org.openrdf.model.Value;
-import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.query.BindingSet;
 
 import de.d3web.strings.Identifier;
@@ -68,8 +68,8 @@ public class Utils {
 			String query = "SELECT ?x WHERE { <" + concept.toString() + "> rdfs:label ?x.}";
 			Rdf2GoCore.QueryResultTable resultTable = repo.sparqlSelect(query);
 			for (BindingSet BindingSet : resultTable) {
-				Value Value = BindingSet.getValue("x");
-				label = Value.stringValue()
+				Value value = BindingSet.getValue("x");
+				label = value.stringValue();
 				break; // we assume there is only one label
 
 			}
@@ -176,7 +176,7 @@ public class Utils {
 		3. case: Value is URI-Resource
 		 */
 		try {
-			URI uri = toURI.asURI();
+			URI uri = (URI) toURI;
 			identifier = getConceptName(toURI, rdfRepository);
 			visValue = data.getConcept(identifier);
 
@@ -236,20 +236,20 @@ public class Utils {
 		return bValue.toString();
 	}
 
-	private static RenderingStyle setClassColorCoding(Value Value, RenderingStyle style, Config config, Rdf2GoCore rdfRepository) {
+	private static RenderingStyle setClassColorCoding(Value value, RenderingStyle style, Config config, Rdf2GoCore rdfRepository) {
 		String classColorScheme = config.getClassColors();
 		if (classColorScheme != null && !Strings.isBlank(classColorScheme)) {
-			String shortURI = Rdf2GoUtils.reduceNamespace(rdfRepository, Value.asURI().toString());
-			if (Rdf2GoUtils.isClass(rdfRepository, Value.asURI())) {
+			String shortURI = Rdf2GoUtils.reduceNamespace(rdfRepository, value.stringValue());
+			if (Rdf2GoUtils.isClass(rdfRepository, (URI) value)) {
 				String color = findColor(shortURI, classColorScheme);
 				if (color != null) {
 					style.setFillcolor(color);
 				}
 			}
 			else {
-				Collection<URI> classURIs = Rdf2GoUtils.getClasses(rdfRepository, Value.asURI());
+				Collection<URI> classURIs = Rdf2GoUtils.getClasses(rdfRepository, (URI) value);
 				for (URI classURI : classURIs) {
-					String shortURIClass = Rdf2GoUtils.reduceNamespace(rdfRepository, classURI.asURI().toString());
+					String shortURIClass = Rdf2GoUtils.reduceNamespace(rdfRepository, classURI.stringValue());
 					String color = findColor(shortURIClass, classColorScheme);
 					if (color != null) {
 						style.setFillcolor(color);
@@ -302,7 +302,7 @@ public class Utils {
 	public static String getIdentifierURI(Value uri, Rdf2GoCore repo) {
 		try {
 			String reducedNamespace = Rdf2GoUtils.reduceNamespace(repo,
-					uri.asURI().toString());
+					uri.stringValue());
 			String[] splitURI = reducedNamespace.split(":");
 			String namespace = splitURI[0];
 			String name = splitURI[1];
@@ -319,24 +319,12 @@ public class Utils {
 		}
 	}
 
-	public static boolean isBNode(Value n) {
-		try {
-			n.asBNode();
-			return true;
-		}
-		catch (ClassCastException e) {
-			return false;
-		}
+	public static boolean isBlankNode(Value n) {
+		return n instanceof BNode;
 	}
 
 	public static boolean isLiteral(Value n) {
-		try {
-			n.asLiteral();
-			return true;
-		}
-		catch (ClassCastException e) {
-			return false;
-		}
+		return n instanceof Literal;
 	}
 
 	public static String getConceptName(Value uri, Rdf2GoCore repo) {
@@ -344,21 +332,21 @@ public class Utils {
         handle string/literal
 		 */
 		if (isLiteral(uri)) {
-			return getIdentifierLiteral(uri.asLiteral());
+			return getIdentifierLiteral((Literal) uri);
 		}
 
         /*
 		handle BNodes
 		 */
-		if (isBNode(uri)) {
-			return getIdentifierBValue(uri.asBNode());
+		if (isBlankNode(uri)) {
+			return getIdentifierBValue((BNode) uri);
 		}
 
 		/*
 		handle URI
 		 */
 		try {
-			URI uriValue = uri.asURI();
+			URI uriValue = (URI) uri;
 			return getIdentifierURI(uriValue, repo);
 
 		}
@@ -371,15 +359,15 @@ public class Utils {
 		if (Utils.isLiteral(conceptURI)) {
 			return GraphDataBuilder.NODE_TYPE.LITERAL;
 		}
-		if (Utils.isBNode(conceptURI)) {
+		if (Utils.isBlankNode(conceptURI)) {
 			return GraphDataBuilder.NODE_TYPE.BLANKNODE;
 		}
 
 		GraphDataBuilder.NODE_TYPE result = GraphDataBuilder.NODE_TYPE.UNDEFINED;
 
-		if (Rdf2GoUtils.isClass(rdfRepository, conceptURI.asURI())) return GraphDataBuilder.NODE_TYPE.CLASS;
+		if (Rdf2GoUtils.isClass(rdfRepository, (URI) conceptURI)) return GraphDataBuilder.NODE_TYPE.CLASS;
 
-		if (Rdf2GoUtils.isProperty(rdfRepository, conceptURI.asURI())) return GraphDataBuilder.NODE_TYPE.PROPERTY;
+		if (Rdf2GoUtils.isProperty(rdfRepository, (URI) conceptURI)) return GraphDataBuilder.NODE_TYPE.PROPERTY;
 
 		return result;
 	}
@@ -400,10 +388,10 @@ public class Utils {
 				"?entity <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> " + entityName + " ." +
 				"?entity " + relationName + " ?color" +
 				"}";
-		QueryResultTable resultTable = core.sparqlSelect(query);
+		Rdf2GoCore.QueryResultTable resultTable = core.sparqlSelect(query);
 		for (BindingSet row : resultTable) {
 			Value entity = row.getValue("entity");
-			String color = row.getLiteralValue("color");
+			String color = row.getValue("color").stringValue();
 			String shortURI = Rdf2GoUtils.reduceNamespace(core, entity.toString());
 			result.append(shortURI).append(" ").append(color).append(";");
 		}
@@ -453,7 +441,7 @@ public class Utils {
 		// is the Value a literal ?
 		Literal toLiteral = null;
 		try {
-			toLiteral = relationURI.asLiteral();
+			toLiteral = (Literal) relationURI;
 		}
 		catch (ClassCastException e) {
 			// do nothing
@@ -469,7 +457,7 @@ public class Utils {
 		else {
 			// if it is no literal look for label for the URI
 			String relationLabel = Utils.getRDFSLabel(
-					relationURI.asURI(), rdfRepository,
+					relationURI, rdfRepository,
 					config.getLanguage());
 			if (relationLabel != null) {
 				relationName = relationLabel;

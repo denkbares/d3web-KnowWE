@@ -283,6 +283,15 @@ public class Rdf2GoCore {
 		initDefaultNamespaces();
 	}
 
+	/**
+	 * Make sure to close the connection after use!
+	 *
+	 * @throws RepositoryException
+	 */
+	public RepositoryConnection getRepositoryConnection() throws RepositoryException {
+		return semanticCore.getConnection();
+	}
+
 	public Date getLastModified() {
 		return new Date(lastModified);
 	}

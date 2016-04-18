@@ -3,9 +3,8 @@ package de.knowwe.rdfs.vis.markup.sparql;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ontoware.rdf2go.model.QueryResultTable;
-import org.ontoware.rdf2go.model.QueryRow;
-import org.ontoware.rdf2go.model.node.Node;
+import org.openrdf.model.Value;
+import org.openrdf.query.BindingSet;
 
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
@@ -43,26 +42,26 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 		return this.getClass().getName();
 	}
 
-	private SubGraphData convertToGraph(QueryResultTable resultSet, Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, List<Message> messages) {
+	private SubGraphData convertToGraph(Rdf2GoCore.QueryResultTable resultSet, Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, List<Message> messages) {
 		SubGraphData data = new SubGraphData();
 		List<String> variables = resultSet.getVariables();
 		if (variables.size() < 3) {
 			messages.add(new Message(Message.Type.ERROR, "A sparqlvis query requires exactly three variables!"));
 			return null;
 		}
-		for (QueryRow row : resultSet) {
-			Node fromURI = row.getValue(variables.get(0));
-			Node relationURI = row.getValue(variables.get(1));
-			Node toURI = row.getValue(variables.get(2));
+		for (BindingSet row : resultSet) {
+			Value fromURI = row.getValue(variables.get(0));
+			Value relationURI = row.getValue(variables.get(1));
+			Value toURI = row.getValue(variables.get(2));
 
 			if (fromURI == null || toURI == null || relationURI == null) {
 				Log.warning("Incomplete query result row: " + row.toString());
 				continue;
 			}
 
-			ConceptNode fromNode = Utils.createNode(config, rdfRepository, uriProvider, section, data, fromURI, true);
+			ConceptNode fromNode = Utils.createValue(config, rdfRepository, uriProvider, section, data, fromURI, true);
 			String relation = Utils.getConceptName(relationURI, rdfRepository);
-			ConceptNode toNode = Utils.createNode(config, rdfRepository, uriProvider, section,
+			ConceptNode toNode = Utils.createValue(config, rdfRepository, uriProvider, section,
 					data, toURI, true);
 			String relationLabel = Utils.createRelationLabel(config, rdfRepository, relationURI,
 					relation);
@@ -101,7 +100,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 		// evaluate sparql query and create graph data
 		String sparqlString = Rdf2GoUtils.createSparqlString(core, content.getText());
 
-		QueryResultTable resultSet = core.sparqlSelect(sparqlString);
+		Rdf2GoCore.QueryResultTable resultSet = core.sparqlSelect(sparqlString);
 		SubGraphData data = convertToGraph(resultSet, config, core, uriProvider, section, messages);
 
 		// if no concept is specified, finally take first guess
