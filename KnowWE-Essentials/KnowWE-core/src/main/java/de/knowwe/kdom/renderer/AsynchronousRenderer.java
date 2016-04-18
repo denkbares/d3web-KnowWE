@@ -20,18 +20,18 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * @author Volker Belli (denkbares GmbH)
  * @created 21.11.2013
  */
-public class AsynchronRenderer implements Renderer {
+public class AsynchronousRenderer implements Renderer {
 
 	private final Renderer decoratedRenderer;
 	private final boolean inline;
 
 	public static final String ASYNCHRONOUS = "asynchronous";
 
-	public AsynchronRenderer(Renderer decoratedRenderer) {
+	public AsynchronousRenderer(Renderer decoratedRenderer) {
 		this(decoratedRenderer, false);
 	}
 
-	public AsynchronRenderer(Renderer decoratedRenderer, boolean inline) {
+	public AsynchronousRenderer(Renderer decoratedRenderer, boolean inline) {
 		this.decoratedRenderer = decoratedRenderer;
 		this.inline = inline;
 	}

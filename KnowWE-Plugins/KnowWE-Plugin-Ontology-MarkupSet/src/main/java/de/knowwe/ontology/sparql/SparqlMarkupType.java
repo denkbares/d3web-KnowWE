@@ -30,7 +30,7 @@ import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.kdom.renderer.AsynchronRenderer;
+import de.knowwe.kdom.renderer.AsynchronousRenderer;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class SparqlMarkupType extends DefaultMarkupType {
@@ -67,8 +67,8 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		m.addAnnotationRenderer(BORDER, NothingRenderer.getInstance());
 		m.addAnnotation(RENDER_MODE, false, "PlainText", "HTML", "ToolMenu");
 		m.addAnnotationRenderer(RENDER_MODE, NothingRenderer.getInstance());
-		m.addAnnotation(AsynchronRenderer.ASYNCHRONOUS, false, "true", "false");
-		m.addAnnotationRenderer(AsynchronRenderer.ASYNCHRONOUS, NothingRenderer.getInstance());
+		m.addAnnotation(AsynchronousRenderer.ASYNCHRONOUS, false, "true", "false");
+		m.addAnnotationRenderer(AsynchronousRenderer.ASYNCHRONOUS, NothingRenderer.getInstance());
 		m.addAnnotation(TIMEOUT, false, Pattern.compile("\\d+(\\.\\d+)?|" + TimeStampType.DURATION));
 		m.addAnnotationRenderer(TIMEOUT, NothingRenderer.getInstance());
 		m.addAnnotation(Rdf2GoCore.GLOBAL, false, "true", "false");

@@ -3,7 +3,7 @@ package de.knowwe.rdfs.vis.markup;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.kdom.renderer.AsynchronRenderer;
+import de.knowwe.kdom.renderer.AsynchronousRenderer;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.visualization.Config;
 
@@ -19,7 +19,7 @@ public class ConceptVisualizationType extends DefaultMarkupType implements Visua
 
 	public ConceptVisualizationType() {
 		applyMarkup(createMarkup());
-		this.setRenderer(new AsynchronRenderer(getPreRenderer()));
+		this.setRenderer(new AsynchronousRenderer(getPreRenderer()));
 	}
 
 	protected DefaultMarkup createMarkup() {

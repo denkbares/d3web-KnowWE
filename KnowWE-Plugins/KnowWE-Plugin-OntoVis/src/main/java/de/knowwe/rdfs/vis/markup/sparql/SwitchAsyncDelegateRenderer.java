@@ -25,7 +25,7 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.kdom.renderer.AsynchronRenderer;
+import de.knowwe.kdom.renderer.AsynchronousRenderer;
 import de.knowwe.visualization.Config;
 
 /**
@@ -38,11 +38,11 @@ public class SwitchAsyncDelegateRenderer implements Renderer {
 
 
     private final SparqlVisualizationTypeRenderer visRenderer;
-    private final AsynchronRenderer asynchronRenderer;
+    private final AsynchronousRenderer asynchronRenderer;
 
     public SwitchAsyncDelegateRenderer() {
         visRenderer = new SparqlVisualizationTypeRenderer();
-        asynchronRenderer = new AsynchronRenderer(visRenderer);
+        asynchronRenderer = new AsynchronousRenderer(visRenderer);
     }
 
     @Override

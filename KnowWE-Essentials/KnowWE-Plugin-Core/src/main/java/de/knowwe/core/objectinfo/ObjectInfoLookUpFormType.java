@@ -20,7 +20,7 @@ package de.knowwe.core.objectinfo;
 
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.kdom.renderer.AsynchronRenderer;
+import de.knowwe.kdom.renderer.AsynchronousRenderer;
 
 /**
  * Renders a small input field with auto completion to open object infos of terms.
@@ -41,7 +41,7 @@ public class ObjectInfoLookUpFormType extends DefaultMarkupType {
 
 	public ObjectInfoLookUpFormType() {
 		super(MARKUP);
-		setRenderer(new AsynchronRenderer(new ObjectInfoLookUpFormRenderer(), true));
+		setRenderer(new AsynchronousRenderer(new ObjectInfoLookUpFormRenderer(), true));
 	}
 
 }

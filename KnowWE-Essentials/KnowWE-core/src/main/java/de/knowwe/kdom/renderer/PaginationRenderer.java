@@ -50,7 +50,7 @@ import de.knowwe.util.Icon;
  * tables. {@link #PaginationRenderer(de.knowwe.core.kdom.rendering.Renderer)} can either decorate
  * an existing {@link de.knowwe.core.kdom.rendering.Renderer} or you can use its static methods for
  * a little bit more freedom. (It's not possible at the moment to use the static methods within an
- * AsynchronRenderer.)
+ * AsynchronousRenderer.)
  * <p/>
  * IMPORTANT: If you don't use the {@link #PaginationRenderer(de.knowwe.core.kdom.rendering.Renderer)}
  * as a decorating renderer, you have to add the attribute 'pagination' where its value is the ID of

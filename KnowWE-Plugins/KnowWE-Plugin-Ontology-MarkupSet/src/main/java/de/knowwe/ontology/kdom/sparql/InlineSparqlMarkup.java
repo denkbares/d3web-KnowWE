@@ -21,7 +21,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.jspwiki.types.LinkType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.kdom.renderer.AsynchronRenderer;
+import de.knowwe.kdom.renderer.AsynchronousRenderer;
 import de.knowwe.ontology.sparql.SparqlContentType;
 import de.knowwe.ontology.sparql.SparqlMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
@@ -29,7 +29,7 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
-import static de.knowwe.kdom.renderer.AsynchronRenderer.ASYNCHRONOUS;
+import static de.knowwe.kdom.renderer.AsynchronousRenderer.ASYNCHRONOUS;
 
 /**
  * Shows contents of references of SparqlQueryInline.
@@ -96,7 +96,7 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 
 	public InlineSparqlMarkup() {
 		super(MARKUP);
-		this.setRenderer(new AsynchronRenderer(new Renderer() {
+		this.setRenderer(new AsynchronousRenderer(new Renderer() {
 
 			@Override
 			public void render(Section<?> section, UserContext user, RenderResult result) {
