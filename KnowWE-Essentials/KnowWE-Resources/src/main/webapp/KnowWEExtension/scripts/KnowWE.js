@@ -562,7 +562,7 @@ KNOWWE.core.rerendercontent = function() {
 				}
 				jq$('.ReRenderSectionMarker').rerender(null, parameters);
 			});
-			jq$('.asynchronRenderer').rerender(null, {reason : "asynchronRenderer"});
+			jq$('.asynchronRenderer').rerender(null, {reason : "asynchronRenderer", globalProcessingState : false});
 		},
 		/**
 		 * Function: updateNode
