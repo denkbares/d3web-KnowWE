@@ -317,7 +317,7 @@ public class OntoVisTest {
 		Rdf2GoCore.QueryResultTable resultSet = rdfRepository.sparqlSelect(sparqlString);
 
 		SubGraphData data = new SubGraphData();
-		List<String> variables = resultSet.getVariables();
+		List<String> variables = resultSet.getBindingNames();
 
 		for (BindingSet row : resultSet) {
 

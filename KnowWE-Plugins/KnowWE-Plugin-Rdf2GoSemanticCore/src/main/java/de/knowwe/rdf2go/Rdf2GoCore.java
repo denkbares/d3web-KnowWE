@@ -524,15 +524,15 @@ public class Rdf2GoCore {
             /*
 			Do actual changes on the model
              */
-			long startRemove = System.currentTimeMillis();
-			RepositoryConnection connection = semanticCore.getConnection();
-			connection.begin();
-			connection.remove(removeCache);
+			long connectionStart = System.currentTimeMillis();
+			try (RepositoryConnection connection = semanticCore.getConnection()) {
+				connection.begin();
 
-			long startInsert = System.currentTimeMillis();
-			connection.add(insertCache);
-			connection.commit();
-			connection.close();
+				connection.remove(removeCache);
+				connection.add(insertCache);
+
+				connection.commit();
+			}
 
             /*
 			Fire events
@@ -558,16 +558,16 @@ public class Rdf2GoCore {
 			Logging
              */
 			if (verboseLog) {
-				logStatements(removeCache, startInsert,
+				logStatements(removeCache, connectionStart,
 						"Removed statements:\n");
-				logStatements(insertCache, startInsert,
+				logStatements(insertCache, connectionStart,
 						"Inserted statements:\n");
 			}
 			else {
 				Log.info("Removed " + removeSize + " statements from and added "
 						+ insertSize
 						+ " statements to " + Rdf2GoCore.class.getSimpleName() + " in "
-						+ (System.currentTimeMillis() - startRemove) + "ms.");
+						+ (System.currentTimeMillis() - connectionStart) + "ms.");
 			}
 
 			Log.info("Current number of statements: " + statementCache.size());
@@ -809,7 +809,6 @@ public class Rdf2GoCore {
 		return namespacePrefixes;
 	}
 
-
 	/**
 	 * @return all {@link Statement}s of the Rdf2GoCore.
 	 * @created 15.07.2012
@@ -1005,7 +1004,7 @@ public class Rdf2GoCore {
 	 * @return the result of the query
 	 */
 	public QueryResultTable sparqlSelect(String query) {
-		return sparqlSelect(query, false, DEFAULT_TIMEOUT);
+		return sparqlSelect(query, true, DEFAULT_TIMEOUT);
 	}
 
 	/**
@@ -1179,22 +1178,19 @@ public class Rdf2GoCore {
 		public Object call() {
 			Object result = null;
 			if (type == SparqlType.CONSTRUCT) {
-				result = null;
-//				ClosableIterable<Statement> constructResult = null;
-//				if (cached) {
-//					result = toCachedClosableIterable(constructResult);
-//				}
-//				else {
-//					result = new LockableClosableIterable<>(lock.readLock(), constructResult);
-//				}
+				result = null; // TODO
 			}
 			else if (type == SparqlType.SELECT) {
 
 				try (RepositoryConnection connection = semanticCore.getConnection()) {
 					TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, this.query);
-//					tupleQuery.setMaxQueryTime((int) (timeOutMillis / 1000));
-					try (TupleQueryResult selectResult = tupleQuery.evaluate()) {
-						result = toCachedQueryResult(selectResult); // TODO: refactor to use TupleQueryResult#cachedAndClosed();
+					tupleQuery.setMaxQueryTime((int) (timeOutMillis / 1000));
+					TupleQueryResult queryResult = tupleQuery.evaluate();
+					if (cached) {
+						result = queryResult.cachedAndClosed();
+					}
+					else {
+						result = queryResult;
 					}
 				}
 				catch (RepositoryException | MalformedQueryException | QueryEvaluationException e) {
@@ -1231,35 +1227,6 @@ public class Rdf2GoCore {
 //			statements.trimToSize();
 //			return new CachedClosableIterable<>(statements);
 //		}
-
-		private QueryResultTable toCachedQueryResult(TupleQueryResult iterator) throws QueryEvaluationException {
-			ArrayList<BindingSet> rows = new ArrayList<>();
-			synchronized (this) {
-				this.iterator = iterator;
-			}
-			for (; !Thread.currentThread().isInterrupted() && iterator.hasNext(); ) {
-				BindingSet queryRow = iterator.next();
-				rows.add(queryRow);
-			}
-			List<String> variables = iterator.getBindingNames();
-			// cleanup weird result where there is only one row it all empty nodes.
-			if (rows.size() == 1) {
-				BindingSet bindingSet = rows.get(0);
-				boolean allEmpty = true;
-				for (String variable : variables) {
-					Value value = bindingSet.getValue(variable);
-					if (value != null && !Strings.isBlank(value.stringValue())) {
-						allEmpty = false;
-						break;
-					}
-				}
-				if (allEmpty) rows.clear();
-			}
-
-			rows.trimToSize();
-			iterator.close();
-			return new QueryResultTable(variables, rows);
-		}
 
 		private String getReadableQuery() {
 			String query = this.query.replace("\n", " ").replaceAll("\t|\\s\\s+", " ");
@@ -1313,7 +1280,12 @@ public class Rdf2GoCore {
 	private int getResultSize(Object result) {
 		if (result instanceof QueryResultTable) {
 			QueryResultTable cacheResult = (QueryResultTable) result;
-			return cacheResult.variables.size() * cacheResult.result.size();
+			try {
+				return cacheResult.getBindingNames().size() * cacheResult.getBindingSets().size();
+			}
+			catch (QueryEvaluationException e) {
+				return 1;
+			}
 		}
 		else {
 			return 1;
@@ -1423,27 +1395,12 @@ public class Rdf2GoCore {
 		return ruleSet;
 	}
 
-	public static class QueryResultTable implements Iterable<BindingSet> {
+	public static class QueryResultTable extends TupleQueryResult {
 
-		private final List<String> variables;
-		private final List<BindingSet> result;
-
-		public QueryResultTable(List<String> variables, List<BindingSet> result) {
-			this.variables = variables;
-			this.result = result;
+		public QueryResultTable() {
+			super(null, null);
 		}
 
-		public List<String> getVariables() {
-			return variables;
-		}
-
-		public List<BindingSet> getBindingSets() {
-			return Collections.unmodifiableList(result);
-		}
-
-		public Iterator<BindingSet> iterator() {
-			return getBindingSets().iterator();
-		}
 	}
 
 }

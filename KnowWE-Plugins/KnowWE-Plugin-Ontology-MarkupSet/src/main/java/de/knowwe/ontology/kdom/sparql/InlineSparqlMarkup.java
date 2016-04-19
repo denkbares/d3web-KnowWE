@@ -146,7 +146,7 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 					Rdf2GoCore.QueryResultTable resultTable = core.sparqlSelect(query, true, timeout);
 
 					Iterator<BindingSet> rowIterator = resultTable.iterator();
-					List<String> variables = resultTable.getVariables();
+					List<String> variables = resultTable.getBindingNames();
 
 					RenderResult line = new RenderResult(result);
 					String cell;

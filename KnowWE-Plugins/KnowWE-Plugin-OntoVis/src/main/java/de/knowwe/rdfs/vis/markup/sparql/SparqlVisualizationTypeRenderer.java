@@ -44,7 +44,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 
 	private SubGraphData convertToGraph(Rdf2GoCore.QueryResultTable resultSet, Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, List<Message> messages) {
 		SubGraphData data = new SubGraphData();
-		List<String> variables = resultSet.getVariables();
+		List<String> variables = resultSet.getBindingNames();
 		if (variables.size() < 3) {
 			messages.add(new Message(Message.Type.ERROR, "A sparqlvis query requires exactly three variables!"));
 			return null;

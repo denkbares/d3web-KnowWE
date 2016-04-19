@@ -74,7 +74,7 @@ public class ResultTableModel {
 	private List<Comparator<TableRow>> comparators = new LinkedList<>();
 
 	public ResultTableModel(Rdf2GoCore.QueryResultTable result) {
-		this.variables = result.getVariables();
+		this.variables = result.getBindingNames();
 		populateTable(result);
 	}
 

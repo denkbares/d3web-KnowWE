@@ -158,15 +158,15 @@ public class SparqlResultRenderer {
 
 		String tableID = UUID.randomUUID().toString();
 
-		List<String> variables = qrt.getVariables();
+		List<String> variables = qrt.getBindingNames();
 
 		// tree table init
 		String idVariable = null;
 		String parentVariable = null;
 		if (isTree) {
-			if (qrt.getVariables().size() > 2) {
-				idVariable = qrt.getVariables().get(0);
-				parentVariable = qrt.getVariables().get(1);
+			if (qrt.getBindingNames().size() > 2) {
+				idVariable = qrt.getBindingNames().get(0);
+				parentVariable = qrt.getBindingNames().get(1);
 			}
 			else {
 				isTree = false;

@@ -19,6 +19,7 @@
 
 package de.knowwe.ontology.sparql;
 
+import com.denkbares.semanticcore.ClosableTupleQueryResult;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
@@ -38,7 +39,7 @@ public interface SparqlType extends Type {
 
 	RenderOptions getRenderOptions(Section<? extends SparqlType> section, UserContext context);
 
-	default Rdf2GoCore.QueryResultTable postProcessResult(Rdf2GoCore.QueryResultTable queryResultTable, UserContext context, RenderOptions opts) {
+	default ClosableTupleQueryResult postProcessResult(Rdf2GoCore.QueryResultTable queryResultTable, UserContext context, RenderOptions opts) {
 		return queryResultTable;
 	}
 }
