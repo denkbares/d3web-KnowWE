@@ -6,6 +6,7 @@ import java.util.List;
 import org.openrdf.model.Value;
 import org.openrdf.query.BindingSet;
 
+import com.denkbares.semanticcore.TupleQueryResult;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compilers;
@@ -143,7 +144,7 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 					query = Rdf2GoUtils.createSparqlString(core, query);
 					result.appendHtmlTag("span");
 
-					Rdf2GoCore.QueryResultTable resultTable = core.sparqlSelect(query, true, timeout);
+					TupleQueryResult resultTable = core.sparqlSelect(query, true, timeout);
 
 					Iterator<BindingSet> rowIterator = resultTable.iterator();
 					List<String> variables = resultTable.getBindingNames();

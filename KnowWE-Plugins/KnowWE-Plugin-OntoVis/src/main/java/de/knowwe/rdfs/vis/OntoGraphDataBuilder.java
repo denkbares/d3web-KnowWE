@@ -35,6 +35,7 @@ import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.BindingSet;
 
+import com.denkbares.semanticcore.TupleQueryResult;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.kdom.parsing.Section;
@@ -608,7 +609,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		String query = "SELECT ?x ?y WHERE { ?x ?y <"
 				+ conceptURI.stringValue()
 				+ "> . " + predicateFilter(Direction.Backward, null) + " " + conceptFilter + "}";
-		Rdf2GoCore.QueryResultTable resultTable = rdf2GoCore.sparqlSelect(
+		TupleQueryResult resultTable = rdf2GoCore.sparqlSelect(
 				query);
 
 		Iterator<BindingSet> result = resultTable.iterator();

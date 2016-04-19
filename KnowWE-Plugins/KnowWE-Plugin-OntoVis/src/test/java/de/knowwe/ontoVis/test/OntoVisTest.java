@@ -32,6 +32,7 @@ import org.openrdf.query.BindingSet;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFParseException;
 
+import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.semanticcore.Reasoning;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.strings.Strings;
@@ -314,7 +315,7 @@ public class OntoVisTest {
 		LinkToTermDefinitionProvider uriProvider = new DummyLinkToTermDefinitionProvider();
 
 		String sparqlString = Rdf2GoUtils.createSparqlString(rdfRepository, sparql);
-		Rdf2GoCore.QueryResultTable resultSet = rdfRepository.sparqlSelect(sparqlString);
+		CachedTupleQueryResult resultSet = rdfRepository.sparqlSelect(sparqlString);
 
 		SubGraphData data = new SubGraphData();
 		List<String> variables = resultSet.getBindingNames();

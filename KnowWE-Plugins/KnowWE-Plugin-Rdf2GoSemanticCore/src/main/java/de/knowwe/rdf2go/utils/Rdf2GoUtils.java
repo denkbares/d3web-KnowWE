@@ -47,6 +47,7 @@ import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.query.BindingSet;
 import org.openrdf.rio.RDFFormat;
 
+import com.denkbares.semanticcore.TupleQueryResult;
 import de.d3web.collections.PartialHierarchy;
 import de.d3web.collections.PartialHierarchyTree;
 import de.d3web.strings.Identifier;
@@ -95,7 +96,7 @@ public class Rdf2GoUtils {
 	public static Collection<URI> getClasses(Rdf2GoCore core, URI instance) {
 		String query = "SELECT ?class WHERE { " + instance.stringValue() + " rdf:type ?class .}";
 		List<URI> resultCollection = new ArrayList<>();
-		Rdf2GoCore.QueryResultTable result = core.sparqlSelect(query);
+		TupleQueryResult result = core.sparqlSelect(query);
 		Iterator<BindingSet> iterator = result.iterator();
 		while (iterator.hasNext()) {
 			BindingSet row = iterator.next();
@@ -142,7 +143,7 @@ public class Rdf2GoUtils {
 			String query = "SELECT ?label WHERE { "
 					+ labelQuery
 					+ "}";
-			Rdf2GoCore.QueryResultTable resultTable = repo.sparqlSelect(query);
+			TupleQueryResult resultTable = repo.sparqlSelect(query);
 			for (BindingSet queryRow : resultTable.getBindingSets()) {
 				Value node = queryRow.getValue("label");
 				String value = node.stringValue();
@@ -185,7 +186,7 @@ public class Rdf2GoUtils {
 		String query = "SELECT ?label WHERE { "
 				+ labelQuery + languageFilter
 				+ "}";
-		Rdf2GoCore.QueryResultTable resultTable = repo.sparqlSelect(query);
+		TupleQueryResult resultTable = repo.sparqlSelect(query);
 		for (BindingSet queryRow : resultTable.getBindingSets()) {
 			Value node = queryRow.getValue("label");
 			String value = node.stringValue();
@@ -434,7 +435,7 @@ public class Rdf2GoUtils {
 		build up tree of classes
          */
 		String classQuery = "SELECT ?c WHERE { " + concept.stringValue() + " " + typeRelation + " ?c }";
-		final Rdf2GoCore.QueryResultTable queryResultTable = core.sparqlSelect(classQuery);
+		final TupleQueryResult queryResultTable = core.sparqlSelect(classQuery);
 		for (BindingSet queryRow : queryResultTable.getBindingSets()) {
 			Value c = queryRow.getValue("c");
 			if (c instanceof BNode) continue;

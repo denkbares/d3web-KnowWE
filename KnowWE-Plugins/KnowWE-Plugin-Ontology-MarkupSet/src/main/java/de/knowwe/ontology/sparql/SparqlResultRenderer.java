@@ -14,6 +14,7 @@ import org.openrdf.model.Literal;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 
+import com.denkbares.semanticcore.CachedTupleQueryResult;
 import de.d3web.collections.PartialHierarchy;
 import de.d3web.collections.PartialHierarchyTree;
 import de.d3web.plugin.Extension;
@@ -98,9 +99,9 @@ public class SparqlResultRenderer {
 
 		SparqlRenderResult renderResult;
 
-		Rdf2GoCore.QueryResultTable qrt = null;
+		CachedTupleQueryResult qrt = null;
 		try {
-			qrt = opts.getRdf2GoCore().sparqlSelect(query, true, opts.getTimeout());
+			qrt = (CachedTupleQueryResult) opts.getRdf2GoCore().sparqlSelect(query, true, opts.getTimeout());
 			qrt = section.get().postProcessResult(qrt, user, opts);
 		}
 		catch (RuntimeException e) {
@@ -131,7 +132,7 @@ public class SparqlResultRenderer {
 	 * @return html table with all results of qrt and size of qrt
 	 * @created 06.12.2010
 	 */
-	public SparqlRenderResult getSparqlRenderResult(Rdf2GoCore.QueryResultTable qrt, RenderOptions opts, UserContext user, Section section) {
+	public SparqlRenderResult getSparqlRenderResult(CachedTupleQueryResult qrt, RenderOptions opts, UserContext user, Section section) {
 		Compilers.awaitTermination(section.getArticleManager().getCompilerManager());
 		try {
 			return renderQueryResultLocked(qrt, opts, user, section);
@@ -143,7 +144,7 @@ public class SparqlResultRenderer {
 		}
 	}
 
-	private SparqlRenderResult renderQueryResultLocked(Rdf2GoCore.QueryResultTable qrt, RenderOptions opts, UserContext user, Section<?> section) {
+	private SparqlRenderResult renderQueryResultLocked(CachedTupleQueryResult qrt, RenderOptions opts, UserContext user, Section<?> section) {
 
 		RenderResult renderResult = new RenderResult(user);
 		if (!qrt.iterator().hasNext()) {

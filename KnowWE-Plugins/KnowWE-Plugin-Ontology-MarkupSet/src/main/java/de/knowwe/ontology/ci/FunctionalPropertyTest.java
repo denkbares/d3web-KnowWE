@@ -29,6 +29,7 @@ import java.util.Set;
 import org.openrdf.model.Value;
 import org.openrdf.query.BindingSet;
 
+import com.denkbares.semanticcore.TupleQueryResult;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
@@ -52,7 +53,7 @@ public class FunctionalPropertyTest extends AbstractTest<OntologyCompiler> {
 				propVariableName + " rdf:type owl:FunctionalProperty");
 
 		List<Value> functionalProperties = new ArrayList<>();
-		Rdf2GoCore.QueryResultTable sparqlSelect = rdf2GoCore.sparqlSelect(query);
+		TupleQueryResult sparqlSelect = rdf2GoCore.sparqlSelect(query);
 		Iterator<BindingSet> iterator = sparqlSelect.iterator();
 		while (iterator.hasNext()) {
 			BindingSet row = iterator.next();
@@ -103,7 +104,7 @@ public class FunctionalPropertyTest extends AbstractTest<OntologyCompiler> {
 		SparqlQuery queryFunctionalPropertyAssertions = new SparqlQuery().SELECT(
 				subjectVariableName + " " + objectVariableName).WHERE(
 				subjectVariableName + " <" + prop.stringValue() + "> " + objectVariableName);
-		Rdf2GoCore.QueryResultTable assertions = null;
+		TupleQueryResult assertions = null;
 		try {
 			assertions = core.sparqlSelect(queryFunctionalPropertyAssertions);
 		}

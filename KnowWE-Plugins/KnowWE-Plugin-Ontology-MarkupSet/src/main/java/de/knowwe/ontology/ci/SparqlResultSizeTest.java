@@ -22,6 +22,7 @@ import java.util.Iterator;
 
 import org.openrdf.query.BindingSet;
 
+import com.denkbares.semanticcore.TupleQueryResult;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.TestParameter.Mode;
@@ -79,7 +80,7 @@ public class SparqlResultSizeTest extends AbstractTest<SparqlQuerySection> {
 
 		String sparqlString = Rdf2GoUtils.createSparqlString(core, query.getSection().getText());
 
-		Rdf2GoCore.QueryResultTable resultSet = core.sparqlSelect(sparqlString);
+		TupleQueryResult resultSet = core.sparqlSelect(sparqlString);
 
 		Iterator<BindingSet> iterator = resultSet.iterator();
 		int count = 0;

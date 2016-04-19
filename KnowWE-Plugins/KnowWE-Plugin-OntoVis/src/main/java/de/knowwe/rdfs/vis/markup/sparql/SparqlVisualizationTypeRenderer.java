@@ -6,6 +6,7 @@ import java.util.List;
 import org.openrdf.model.Value;
 import org.openrdf.query.BindingSet;
 
+import com.denkbares.semanticcore.CachedTupleQueryResult;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.kdom.parsing.Section;
@@ -42,7 +43,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 		return this.getClass().getName();
 	}
 
-	private SubGraphData convertToGraph(Rdf2GoCore.QueryResultTable resultSet, Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, List<Message> messages) {
+	private SubGraphData convertToGraph(CachedTupleQueryResult resultSet, Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, List<Message> messages) {
 		SubGraphData data = new SubGraphData();
 		List<String> variables = resultSet.getBindingNames();
 		if (variables.size() < 3) {
@@ -100,7 +101,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 		// evaluate sparql query and create graph data
 		String sparqlString = Rdf2GoUtils.createSparqlString(core, content.getText());
 
-		Rdf2GoCore.QueryResultTable resultSet = core.sparqlSelect(sparqlString);
+		CachedTupleQueryResult resultSet = core.sparqlSelect(sparqlString);
 		SubGraphData data = convertToGraph(resultSet, config, core, uriProvider, section, messages);
 
 		// if no concept is specified, finally take first guess

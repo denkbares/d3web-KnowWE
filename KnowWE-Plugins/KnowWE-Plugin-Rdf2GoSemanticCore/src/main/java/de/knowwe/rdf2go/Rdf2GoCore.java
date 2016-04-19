@@ -60,6 +60,7 @@ import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.QueryInterruptedException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
@@ -67,6 +68,7 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 
+import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.semanticcore.Reasoning;
 import com.denkbares.semanticcore.RepositoryConnection;
 import com.denkbares.semanticcore.SemanticCore;
@@ -993,7 +995,7 @@ public class Rdf2GoCore {
 		}
 	}
 
-	public QueryResultTable sparqlSelect(SparqlQuery query) {
+	public TupleQueryResult sparqlSelect(SparqlQuery query) {
 		return sparqlSelect(query.toSparql(this));
 	}
 
@@ -1003,8 +1005,8 @@ public class Rdf2GoCore {
 	 * @param query the SPARQL query to perform
 	 * @return the result of the query
 	 */
-	public QueryResultTable sparqlSelect(String query) {
-		return sparqlSelect(query, true, DEFAULT_TIMEOUT);
+	public CachedTupleQueryResult sparqlSelect(String query) {
+		return (CachedTupleQueryResult) sparqlSelect(query, true, DEFAULT_TIMEOUT);
 	}
 
 	/**
@@ -1037,8 +1039,8 @@ public class Rdf2GoCore {
 	 * @param timeOutMillis the timeout of the query
 	 * @return the result of the query
 	 */
-	public QueryResultTable sparqlSelect(String query, boolean cached, long timeOutMillis) {
-		return (QueryResultTable) sparql(query, cached, timeOutMillis, SparqlType.SELECT);
+	public TupleQueryResult sparqlSelect(String query, boolean cached, long timeOutMillis) {
+		return (TupleQueryResult) sparql(query, cached, timeOutMillis, SparqlType.SELECT);
 	}
 
 	/**
@@ -1079,7 +1081,7 @@ public class Rdf2GoCore {
 			return new SparqlCallable(completeQuery, type, 0, true).call();
 		}
 
-		// normal query, most likely from a renderer... do all the cache, timeout, and lock stuff
+		// normal query, e.g.  from a renderer... do all the cache and timeout stuff
 		SparqlTask sparqlTask;
 		if (cached) {
 			synchronized (resultCache) {
@@ -1193,6 +1195,9 @@ public class Rdf2GoCore {
 						result = queryResult;
 					}
 				}
+				catch (QueryInterruptedException e) {
+					Log.warning("Query took more than " + Strings.getDurationVerbalization(timeOutMillis) + ": " + getReadableQuery());
+				}
 				catch (RepositoryException | MalformedQueryException | QueryEvaluationException e) {
 					throw new RuntimeException(e);
 				}
@@ -1212,21 +1217,6 @@ public class Rdf2GoCore {
 			}
 			return result;
 		}
-
-//		private CachedClosableIterable<Statement> toCachedClosableIterable(ClosableIterable<Statement> result) {
-//			ArrayList<Statement> statements = new ArrayList<>();
-//			ClosableIterator<Statement> iterator = result.iterator();
-//			synchronized (this) {
-//				this.iterator = iterator;
-//			}
-//			for (; !Thread.currentThread().isInterrupted() && iterator.hasNext(); ) {
-//				Statement statement = iterator.next();
-//				statements.add(statement);
-//			}
-//			iterator.close();
-//			statements.trimToSize();
-//			return new CachedClosableIterable<>(statements);
-//		}
 
 		private String getReadableQuery() {
 			String query = this.query.replace("\n", " ").replaceAll("\t|\\s\\s+", " ");
@@ -1278,8 +1268,8 @@ public class Rdf2GoCore {
 	}
 
 	private int getResultSize(Object result) {
-		if (result instanceof QueryResultTable) {
-			QueryResultTable cacheResult = (QueryResultTable) result;
+		if (result instanceof TupleQueryResult) {
+			TupleQueryResult cacheResult = (TupleQueryResult) result;
 			try {
 				return cacheResult.getBindingNames().size() * cacheResult.getBindingSets().size();
 			}
@@ -1393,14 +1383,6 @@ public class Rdf2GoCore {
 
 	public Reasoning getRuleSet() {
 		return ruleSet;
-	}
-
-	public static class QueryResultTable extends TupleQueryResult {
-
-		public QueryResultTable() {
-			super(null, null);
-		}
-
 	}
 
 }

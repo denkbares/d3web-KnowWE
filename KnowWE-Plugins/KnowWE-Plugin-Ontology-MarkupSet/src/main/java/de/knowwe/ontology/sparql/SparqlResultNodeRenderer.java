@@ -22,7 +22,6 @@ import org.openrdf.model.Value;
 
 import de.knowwe.core.user.UserContext;
 import de.knowwe.rdf2go.Rdf2GoCore;
-import de.knowwe.rdf2go.Rdf2GoCore.QueryResultTable;
 
 /**
  * Renderer for the {@link Value}s of the {@link QueryResultTable} returned by

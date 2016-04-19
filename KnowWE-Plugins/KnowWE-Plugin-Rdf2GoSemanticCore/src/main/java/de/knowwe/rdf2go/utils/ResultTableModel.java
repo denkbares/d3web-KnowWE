@@ -36,11 +36,12 @@ import org.openrdf.model.BNode;
 import org.openrdf.model.Value;
 import org.openrdf.query.BindingSet;
 
+import com.denkbares.semanticcore.CachedTupleQueryResult;
+import com.denkbares.semanticcore.TupleQueryResult;
 import de.d3web.collections.SubSpanIterator;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
 import de.d3web.utils.Pair;
-import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class ResultTableModel {
 
@@ -73,7 +74,7 @@ public class ResultTableModel {
 
 	private List<Comparator<TableRow>> comparators = new LinkedList<>();
 
-	public ResultTableModel(Rdf2GoCore.QueryResultTable result) {
+	public ResultTableModel(CachedTupleQueryResult result) {
 		this.variables = result.getBindingNames();
 		populateTable(result);
 	}
@@ -134,7 +135,7 @@ public class ResultTableModel {
 		return new SubSpanIterator<>(iterator(), start, end);
 	}
 
-	private void populateTable(Rdf2GoCore.QueryResultTable result) {
+	private void populateTable(TupleQueryResult result) {
 		for (BindingSet queryRow : result.getBindingSets()) {
 			importRow(queryRow);
 		}

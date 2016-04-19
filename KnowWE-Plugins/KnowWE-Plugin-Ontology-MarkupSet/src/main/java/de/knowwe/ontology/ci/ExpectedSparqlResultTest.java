@@ -22,6 +22,7 @@ package de.knowwe.ontology.ci;
 import java.util.Collection;
 import java.util.List;
 
+import com.denkbares.semanticcore.CachedTupleQueryResult;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
@@ -35,7 +36,6 @@ import de.knowwe.ontology.ci.provider.SparqlTestObjectProviderUtils;
 import de.knowwe.ontology.sparql.SparqlContentType;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
-import de.knowwe.rdf2go.Rdf2GoCore.QueryResultTable;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.rdf2go.utils.ResultTableModel;
 
@@ -94,7 +94,7 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 		String sparqlString = Rdf2GoUtils.createSparqlString(core,
 				querySection.getText());
 
-		QueryResultTable resultSet = core.sparqlSelect(sparqlString);
+		CachedTupleQueryResult resultSet = core.sparqlSelect(sparqlString);
 		ResultTableModel actualResultTable = new ResultTableModel(resultSet);
 
 		List<String> variables = actualResultTable.getVariables();

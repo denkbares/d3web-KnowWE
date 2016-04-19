@@ -29,6 +29,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.query.BindingSet;
 
+import com.denkbares.semanticcore.TupleQueryResult;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
@@ -66,7 +67,7 @@ public class Utils {
 		if (label == null) {
 
 			String query = "SELECT ?x WHERE { <" + concept.toString() + "> rdfs:label ?x.}";
-			Rdf2GoCore.QueryResultTable resultTable = repo.sparqlSelect(query);
+			TupleQueryResult resultTable = repo.sparqlSelect(query);
 			for (BindingSet BindingSet : resultTable) {
 				Value value = BindingSet.getValue("x");
 				label = value.stringValue();
@@ -83,7 +84,7 @@ public class Utils {
 
 		String query = "SELECT ?x WHERE { <" + concept.toString()
 				+ "> rdfs:label ?x. FILTER(LANGMATCHES(LANG(?x), \"" + languageTag + "\"))}";
-		Rdf2GoCore.QueryResultTable resultTable = repo.sparqlSelect(query);
+		TupleQueryResult resultTable = repo.sparqlSelect(query);
 		for (BindingSet BindingSet : resultTable) {
 			Value Value = BindingSet.getValue("x");
 			label = Value.stringValue();
@@ -388,7 +389,7 @@ public class Utils {
 				"?entity <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> " + entityName + " ." +
 				"?entity " + relationName + " ?color" +
 				"}";
-		Rdf2GoCore.QueryResultTable resultTable = core.sparqlSelect(query);
+		TupleQueryResult resultTable = core.sparqlSelect(query);
 		for (BindingSet row : resultTable) {
 			Value entity = row.getValue("entity");
 			String color = row.getValue("color").stringValue();
