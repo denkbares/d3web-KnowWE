@@ -118,7 +118,8 @@ public class SparqlResultRenderer {
 
 	public static void handleRuntimeException(Section<? extends SparqlType> section, RenderResult result, RuntimeException e) {
 		String message = e.getMessage();
-		message = message.replaceAll("[^.]\\s*$", "."); // clean up message end
+		message = Strings.trimRight(message);
+		if (!message.endsWith(".")) message += ".";
 		result.appendHtml("<span class='warning'>"
 				+ message + " <a onclick='KNOWWE.plugin.sparql.retry(\"" + section.getID()
 				+ "\")' title='Try executing the query again, if you think it was only a temporary problem.'"

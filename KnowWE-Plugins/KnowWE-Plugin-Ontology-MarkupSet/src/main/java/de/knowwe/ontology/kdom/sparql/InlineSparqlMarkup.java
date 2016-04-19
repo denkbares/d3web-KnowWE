@@ -64,7 +64,8 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 	private static class InlineSparqlNameReference extends SparqlNameReference {
 
 		/**
-		 * Returns the actual sparql section that is referenced by the section. If the section cannot be found, null is returned.
+		 * Returns the actual sparql section that is referenced by the section. If the section cannot be found, null is
+		 * returned.
 		 *
 		 * @param section the referencing section contain the reference name
 		 * @return the actual sparql section to be executed
@@ -76,7 +77,10 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
 			Section<?> sparqlSection = terminologyManager.getTermDefiningSection(identifier);
 			if (sparqlSection == null) {
-				Section<LinkType> linkSection = $(section).ancestor(InlineSparqlMarkup.class).parent().successor(LinkType.class).getFirst();
+				Section<LinkType> linkSection = $(section).ancestor(InlineSparqlMarkup.class)
+						.parent()
+						.successor(LinkType.class)
+						.getFirst();
 				if (linkSection != null) {
 					String link = linkSection.getText();
 					int start = link.lastIndexOf("|");
@@ -87,7 +91,8 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 						return $(article.getRootSection()).successor(SparqlMarkupType.class).getFirst();
 					}
 				}
-			} else {
+			}
+			else {
 				return Sections.cast(sparqlSection, SparqlMarkupType.class);
 			}
 			return null;
@@ -125,7 +130,8 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 				Section<SparqlNameReference> reference = Sections.successor(
 						DefaultMarkupType.getContentSection(section), SparqlNameReference.class);
 
-				Section<SparqlMarkupType> referencedSection = reference == null ? null : reference.get().getReferencedSection(reference);
+				Section<SparqlMarkupType> referencedSection = reference == null ? null : reference.get()
+						.getReferencedSection(reference);
 				Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
 
 				try {
@@ -196,7 +202,7 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 					result.appendHtmlTag("/span");
 				}
 				catch (Exception e) {
-					result.appendHtmlElement("span", "Exception: " + e.getMessage());
+					result.appendHtmlElement("span", e.getMessage());
 				}
 			}
 

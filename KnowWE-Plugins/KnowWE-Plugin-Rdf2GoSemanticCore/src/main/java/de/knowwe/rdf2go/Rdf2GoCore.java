@@ -1178,15 +1178,17 @@ public class Rdf2GoCore {
 
 		@Override
 		public Object call() {
+			Stopwatch stopwatch = new Stopwatch();
 			Object result = null;
 			if (type == SparqlType.CONSTRUCT) {
 				result = null; // TODO
 			}
 			else if (type == SparqlType.SELECT) {
 
+				int timeOutSeconds = (int) (timeOutMillis / 1000);
 				try (RepositoryConnection connection = semanticCore.getConnection()) {
 					TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, this.query);
-					tupleQuery.setMaxQueryTime((int) (timeOutMillis / 1000));
+					tupleQuery.setMaxExecutionTime(timeOutSeconds);
 					TupleQueryResult queryResult = tupleQuery.evaluate();
 					if (cached) {
 						result = queryResult.cachedAndClosed();
@@ -1196,9 +1198,11 @@ public class Rdf2GoCore {
 					}
 				}
 				catch (QueryInterruptedException e) {
-					Log.warning("Query took more than " + Strings.getDurationVerbalization(timeOutMillis) + ": " + getReadableQuery());
+					Log.warning("SPARQL query took more than " + Strings.getDurationVerbalization(timeOutMillis) + " and was therefore canceled: " + getReadableQuery());
+					throw new RuntimeException(e);
 				}
 				catch (RepositoryException | MalformedQueryException | QueryEvaluationException e) {
+					Log.severe("Exception while executing SPARQL query: " + getReadableQuery());
 					throw new RuntimeException(e);
 				}
 
@@ -1214,6 +1218,9 @@ public class Rdf2GoCore {
 			if (Thread.currentThread().isInterrupted()) {
 				// not need to waste cache size (e.g. in case of half done results that were aborted)
 				result = null;
+			}
+			if (stopwatch.getTime() > 1000) {
+				Log.warning("SPARQL query finished after " + stopwatch.getDisplay() + ": " + getReadableQuery());
 			}
 			return result;
 		}
@@ -1232,7 +1239,7 @@ public class Rdf2GoCore {
 			}
 			if (start == -1) start = 0;
 			final int endIndex = query.length() - start > 75 ? start + 75 : query.length();
-			return query.substring(start, endIndex);
+			return query.substring(start, endIndex) + "...";
 		}
 
 	}
