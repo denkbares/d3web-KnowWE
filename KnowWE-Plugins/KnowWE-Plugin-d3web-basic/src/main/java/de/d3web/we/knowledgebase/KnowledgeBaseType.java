@@ -121,7 +121,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 			String status = getAnnotation(section, ANNOTATION_STATUS);
 			String affiliation = getAnnotation(section, ANNOTATION_AFFILIATION);
 
-			// register package defintion
+			// register package definition
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
 			terminologyManager.registerTermDefinition(compiler, section,
 					KnowledgeBase.class, new Identifier("KNOWLEDGEBASE"));
