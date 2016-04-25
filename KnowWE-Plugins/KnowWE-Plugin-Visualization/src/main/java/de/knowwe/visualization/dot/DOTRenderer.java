@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -128,6 +129,28 @@ public class DOTRenderer {
 	public static String createDotSources(SubGraphData data, Config config) {
 		String dotSource = "digraph {\n";
 		dotSource = insertPraefixed(dotSource, config);
+
+		// printing title of graph top left of visualization
+		if(config.getTitle() != null) {
+			dotSource += "graph [label = \""+config.getTitle()+" ("+new Date()+")\", labelloc = \"t\", labeljust = \"left\", fontsize = 24];\n";
+		}
+
+		// using rankSame constraints for custom layouting of specified
+		String rankSameValue = config.getRankSame();
+		if(!Strings.isBlank(rankSameValue)) {
+			String valueResult = rankSameValue;
+			if(rankSameValue.contains(",")) {
+				String [] values = rankSameValue.split(",");
+				valueResult = "";
+				for (String value : values) {
+					valueResult +=  "\""+value.trim()+"\" ";
+				}
+			}
+			//{rank=same; q4 q3}
+			dotSource += "{rank=same; "+valueResult+"}\n";
+		}
+
+		// set graph size and rankDir
 		dotSource += DOTRenderer.setSizeAndRankDir(config.getRankDir(),
 				config.getWidth(), config.getHeight(),
 				config.getSize(), data.getConceptDeclarations().size());

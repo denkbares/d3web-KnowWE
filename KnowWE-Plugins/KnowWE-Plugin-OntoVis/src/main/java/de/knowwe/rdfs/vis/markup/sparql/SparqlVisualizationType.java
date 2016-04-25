@@ -34,9 +34,6 @@ import de.knowwe.visualization.Config;
 
 public class SparqlVisualizationType extends DefaultMarkupType implements VisualizationType {
 
-
-
-
 	public SparqlVisualizationType() {
 		applyMarkup(createMarkup());
 		this.setRenderer(new Rdf2GoCoreCheckRenderer());
@@ -101,6 +98,13 @@ public class SparqlVisualizationType extends DefaultMarkupType implements Visual
 
 		markup.addAnnotation(Config.PRERENDER, false);
 		markup.addAnnotationRenderer(Config.PRERENDER, NothingRenderer.getInstance());
+
+		markup.addAnnotation(Config.TITLE, false);
+		markup.addAnnotationRenderer(Config.TITLE, NothingRenderer.getInstance());
+
+		markup.addAnnotation(Config.RANK_SAME, false);
+		markup.addAnnotationRenderer(Config.RANK_SAME, NothingRenderer.getInstance());
+
 		return markup;
 	}
 

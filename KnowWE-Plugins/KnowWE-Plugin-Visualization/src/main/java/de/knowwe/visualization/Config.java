@@ -60,12 +60,14 @@ public class Config {
 	public static final String LANGUAGE = "language";
 	public static final String LINK_MODE = "linkMode";
 	public static final String RANK_DIR = "rankDir";
+	public static final String RANK_SAME = "rankSame";
 	public static final String DOT_APP = "dotApp";
 	public static final String ADD_TO_DOT = "dotAddLine";
 	public static final String RENDERER = "renderer";
 	public static final String VISUALIZATION = "visualization";
 	public static final String DESIGN = "design";
 	public static final String PRERENDER = "prerender";
+	public static final String TITLE = "title";
 
 	public Config() {
 	}
@@ -135,6 +137,7 @@ public class Config {
 	private String language = null;
 	private LinkMode linkMode = LinkMode.JUMP;
 	private RankDir rankDir = RankDir.LR;
+	private String rankSame = null;
 	private String dotApp = "dot";
 	private String dotAddLine = null;
 	private Renderer renderer = Renderer.DOT;
@@ -191,7 +194,8 @@ public class Config {
 		setDesign(DefaultMarkupType.getAnnotation(section, DESIGN));
 		setPrerender(DefaultMarkupType.getAnnotation(section, PRERENDER));
 		setSectionId(section.getID());
-		setTitle(section.getTitle());
+		setTitle(DefaultMarkupType.getAnnotation(section, TITLE));
+		setRankSame(DefaultMarkupType.getAnnotation(section, RANK_SAME));
 	}
 
 	private <E extends Enum<E>> void parseAndSetEnum(Section<? extends DefaultMarkupType> section, String annotationName, Class<E> enumType, Consumer<E> setter) {
@@ -215,6 +219,15 @@ public class Config {
 			setter.accept(annotation.equalsIgnoreCase("true"));
 		}
 	}
+
+	public String getRankSame() {
+		return rankSame;
+	}
+
+	public void setRankSame(String rankSame) {
+		this.rankSame = rankSame;
+	}
+
 
 	private void parseAndSetInt(Section<? extends DefaultMarkupType> section, String annotationName, Consumer<Integer> setter) {
 		String annotation = DefaultMarkupType.getAnnotation(section, annotationName);
