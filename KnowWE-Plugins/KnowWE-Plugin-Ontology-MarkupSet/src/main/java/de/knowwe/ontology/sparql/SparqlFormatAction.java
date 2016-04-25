@@ -190,9 +190,8 @@ public class SparqlFormatAction extends AbstractAction {
 		int startSecelt = 0;
 		int startWhere = 0;
 		boolean select = false;
-		int newDepth = depth;
+		boolean where = false;
 
-		//Call preperation-methods
 		tmpWikiText = addWhitespacesBeforeAndAfterBrackets(tmpWikiText);
 		tmpWikiText = newLineAfterEachPoint(tmpWikiText);
 		tmpWikiText = removeDoubleSpaces(tmpWikiText);
@@ -215,6 +214,7 @@ public class SparqlFormatAction extends AbstractAction {
 				}
 			}
 
+			//Only work on text if the current character is not quoted or the last character of the text.
 			if (!quoted && !checkLastChar(tmpWikiText, i)) {
 
 				//Indent '%' right
@@ -228,38 +228,89 @@ public class SparqlFormatAction extends AbstractAction {
 
 				//Detect and save SELECT
 				if (tmpWikiText.toString().regionMatches(true, i, "select", 0, 6)) {
+
 					if (!select) {
 						select = true;
 						startSecelt = i;
 						tmpWikiText = checkIfKeywordIsWrongIndented(tmpWikiText, i);
 						i = i + 3;
+					} else {
+						int bracketCounter = 1;
+						boolean run = true;
+						int h = i + 2;
+						String a = "";
+						String b = "";
+						String c = "";
+
+						//Count brackets and detect start and end of the subquery.
+						while (run) {
+							//Count Brackets
+							if (tmpWikiText.charAt(h) == '{') {
+								bracketCounter++;
+							}
+							if (tmpWikiText.charAt(h) == '}') {
+
+								bracketCounter--;
+								if (bracketCounter == 0) {
+									/*Divide tmpWikiText into 3 sections. Section one contains the
+									 text before the subquery, section two contains the text of the
+									 subquery and section three contains the rest.*/
+									a = tmpWikiText.substring(0, i);
+									b = tmpWikiText.substring(i, h + 1);
+									c = tmpWikiText.substring(h + 1, tmpWikiText.length());
+
+									StringBuilder tmp = new StringBuilder(b);
+									//recursive call of formatSparql with the subquery.
+									tmp = formatSparql(tmp, depth);
+
+									StringBuilder one = new StringBuilder(a);
+									one.append(tmp);
+									i = one.length();
+									depth--;
+									one.append(c);
+									tmpWikiText = one;
+									run = false;
+								}
+							}
+							if (h == tmpWikiText.length() - 1) {
+								run = false;
+							}
+							h++;
+						}
 					}
 				}
 
 				//Detect and save WHERE
 				if (tmpWikiText.toString().regionMatches(true, i, "where", 0, 5)) {
-					startWhere = i;
-					tmpWikiText = checkIfKeywordIsWrongIndented(tmpWikiText, i);
-					i = i + 3;
+					if (!where) {
+						where = true;
+						tmpWikiText = checkIfKeywordIsWrongIndented(tmpWikiText, i);
+						i = i + 3;
+					}
 				}
 
 				//Detect and save ORDER BY
 				if (tmpWikiText.toString().regionMatches(true, i, "order by", 0, 8)) {
 					tmpWikiText = checkIfKeywordIsWrongIndented(tmpWikiText, i);
-					i++;
 				}
 
 				//Count Brackets
 				if (tmpWikiText.charAt(i) == '{') {
-					newDepth++;
+					depth++;
 				}
 				if (tmpWikiText.charAt(i) == '}') {
-					newDepth--;
+					depth--;
+					if (depth == 0) {
+						if (checkIFLastBracketIsInNewLine(tmpWikiText, i)) {
+							tmpWikiText = indentLastBracket(tmpWikiText, i);
+							i++;
+						}
+					}
 				}
 
 				//indent lines
 				if (tmpWikiText.charAt(i) == '\n' && !checkLastChar(tmpWikiText, i)) {
-					tmpWikiText = indent(tmpWikiText, i, newDepth);
+					tmpWikiText = indent(tmpWikiText, i, depth);
 				}
 
 				//handle optionals and content
@@ -275,7 +326,6 @@ public class SparqlFormatAction extends AbstractAction {
 				return tmpWikiText;
 			}
 		}
-
 		tmpWikiText = removeAllSpacesBeforeLinebreaks(tmpWikiText);
 		tmpWikiText = removeEmptyLines(tmpWikiText);
 		tmpWikiText = removeDoubleSpaces(tmpWikiText);
@@ -336,8 +386,10 @@ public class SparqlFormatAction extends AbstractAction {
 	private StringBuilder removeAllSpacesBeforeLinebreaks(StringBuilder tmpWikiText) {
 
 		for (int i = 0; i < tmpWikiText.length(); i++) {
-			if (tmpWikiText.charAt(i) == ' ' && tmpWikiText.charAt(i + 1) == '\n') {
-				tmpWikiText.deleteCharAt(i);
+			if (!checkLastChar(tmpWikiText, i)) {
+				if (tmpWikiText.charAt(i) == ' ' && tmpWikiText.charAt(i + 1) == '\n') {
+					tmpWikiText.deleteCharAt(i);
+				}
 			}
 		}
 		return tmpWikiText;
