@@ -77,6 +77,23 @@ KNOWWE.plugin.sparql.editTool.generateButtons = function (id) {
  *   * adds new lines after "{" and "." // todo add no new line if "}" is in the same line
  */
 KNOWWE.plugin.sparql.editTool.format = function (id) {
+
+    var textarea = jq$("#defaultEdit" + id);
+    var wikiText = textarea.val();
+
+    var ajax = jq$.ajax("action/SparqlFormatAction", {
+        data: {
+            sectionID: id,
+            wikiText : wikiText
+        },
+        cache: false,
+        success: function (json) {
+            textarea.val(json.wikiText);
+        }
+    });
+
+    return;
+
     var unnecessaryWhitespaces = new RegExp("(\\n(\\s)*){3,}", "g");
     var replaceUnnecessaryWhitspacesWith = "\n\n";
     var missingWhitespaces = new RegExp("(%%Sparql)(?=[^\\n])", "g");
