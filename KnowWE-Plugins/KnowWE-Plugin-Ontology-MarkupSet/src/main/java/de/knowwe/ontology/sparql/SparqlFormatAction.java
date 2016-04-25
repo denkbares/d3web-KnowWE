@@ -116,7 +116,7 @@ public class SparqlFormatAction extends AbstractAction {
 									c = tmpWikiText.substring(h + 1, tmpWikiText.length());
 
 									StringBuilder tmp = new StringBuilder(b);
-									System.out.println("tmp = " + tmp);
+//									System.out.println("tmp = " + tmp);
 									tmp = formatSparql(tmp, depth);
 
 									StringBuilder one = new StringBuilder(a);
