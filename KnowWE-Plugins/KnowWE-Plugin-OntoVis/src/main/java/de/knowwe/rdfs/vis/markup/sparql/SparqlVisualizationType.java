@@ -92,7 +92,6 @@ public class SparqlVisualizationType extends DefaultMarkupType implements Visual
 		markup.addAnnotation(Config.COLORS, false);
 		markup.addAnnotationRenderer(Config.COLORS, NothingRenderer.getInstance());
 
-
 		markup.addAnnotation(Config.CONFIG, false);
 		markup.addAnnotationRenderer(Config.CONFIG, NothingRenderer.getInstance());
 
@@ -104,6 +103,12 @@ public class SparqlVisualizationType extends DefaultMarkupType implements Visual
 
 		markup.addAnnotation(Config.RANK_SAME, false);
 		markup.addAnnotationRenderer(Config.RANK_SAME, NothingRenderer.getInstance());
+
+		markup.addAnnotation(Config.OVERLAP, false, Config.Overlap.values()  );
+		markup.addAnnotationRenderer(Config.OVERLAP, NothingRenderer.getInstance());
+
+		markup.addAnnotation(Config.LAYOUT, false, Config.Layout.values());
+		markup.addAnnotationRenderer(Config.LAYOUT, NothingRenderer.getInstance());
 
 		return markup;
 	}
