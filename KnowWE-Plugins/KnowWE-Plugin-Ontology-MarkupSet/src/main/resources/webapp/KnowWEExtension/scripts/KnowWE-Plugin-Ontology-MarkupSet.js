@@ -67,14 +67,9 @@ KNOWWE.plugin.sparql.editTool.generateButtons = function (id) {
         "Format</a>"]);
 };
 
-// todo move to Java and use methods of Strings.java
+
 /*
- *   Formats Sparql markups
- *   current:
- *   * deletes unnecessary Whitespaces (e.g. 2+ empty lines --> 1 empty line, spaces at the beginning of a line),
- *   * adds a \n after "%%Sparql" if its missing,
- *   * adds tabs at the beginning of a line if the depth is 1 or higher // todo one tab less before a "}"
- *   * adds new lines after "{" and "." // todo add no new line if "}" is in the same line
+ *   Sends sparql's to the server and receives formatted sparqls.
  */
 KNOWWE.plugin.sparql.editTool.format = function (id) {
 

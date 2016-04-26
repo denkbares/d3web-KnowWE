@@ -6,7 +6,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by MB on 21.03.16.
+ * Created by Maximilian Brell on 21.03.16.
  */
 public class SparqlFormatterTest {
 
@@ -49,7 +49,7 @@ public class SparqlFormatterTest {
 				"ORDER BY ?Name ?CAS ?EC";
 
 		SparqlFormatAction sparqlFormatAction = new SparqlFormatAction();
-		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql)).toString();
+		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql), 0).toString();
 
 		assertEquals("Compared Sparqls are not equal", expectedSparql, formattedSparql);
 	}
@@ -120,7 +120,7 @@ public class SparqlFormatterTest {
 				"%";
 
 		SparqlFormatAction sparqlFormatAction = new SparqlFormatAction();
-		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql)).toString();
+		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql), 0).toString();
 
 		assertEquals("Compared Sparqls are not equal", expectedSparql, formattedSparql);
 	}
@@ -295,7 +295,7 @@ public class SparqlFormatterTest {
 				"%";
 
 		SparqlFormatAction sparqlFormatAction = new SparqlFormatAction();
-		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql)).toString();
+		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql), 0).toString();
 
 		assertEquals("Compared Sparqls are not equal", expectedSparql, formattedSparql);
 	}
@@ -339,7 +339,7 @@ public class SparqlFormatterTest {
 				"%\n";
 
 		SparqlFormatAction sparqlFormatAction = new SparqlFormatAction();
-		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql)).toString();
+		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql), 0).toString();
 
 		assertEquals("Compared Sparqls are not equal", expectedSparql, formattedSparql);
 	}
@@ -384,7 +384,7 @@ public class SparqlFormatterTest {
 				"%";
 
 		SparqlFormatAction sparqlFormatAction = new SparqlFormatAction();
-		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql)).toString();
+		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql), 0).toString();
 
 		assertEquals("Compared Sparqls are not equal", expectedSparql, formattedSparql);
 	}
@@ -445,7 +445,7 @@ public class SparqlFormatterTest {
 				"%";
 
 		SparqlFormatAction sparqlFormatAction = new SparqlFormatAction();
-		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql)).toString();
+		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql), 0).toString();
 
 		assertEquals("Compared Sparqls are not equal", expectedSparql, formattedSparql);
 	}
@@ -486,9 +486,210 @@ public class SparqlFormatterTest {
 				"%";
 
 		SparqlFormatAction sparqlFormatAction = new SparqlFormatAction();
-		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql)).toString();
+		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql), 0).toString();
 
 		assertEquals("Compared Sparqls are not equal", expectedSparql, formattedSparql);
 	}
 
+
+	@Test
+	public void testEncapsulatedSparql() {
+		String testSparql = "%%Sparql\n" +
+				"  SELECT ?BfR ?CC ?Dossier ?EC ?Name ?Decisions ?Reasons ?1 ?M1 ?2 ?M2 ?3 ?M3 ?4 ?M4 ?5 ?M5 ?6 ?M6 ?7 ?M7 ?8 ?M8 ?9 ?M9 ?10 ?M10 ?11 ?M11 ?Memos WHERE {\n" +
+				"    ?CC rdf:type <lns:Compliance+Check> .\n" +
+				"    OPTIONAL { ?CC <lns:hasDossier+UUID> ?Dossier }\n" +
+				"    OPTIONAL { ?CC <lns:hasFirstEC+Number> ?EC }\n" +
+				"    OPTIONAL { ?CC <lns:hasFirstSubstance+Name> ?Name }\n" +
+				"    OPTIONAL { ?CC <lns:hasFirstBfR-Nummer> ?BfR }\n" +
+				"    \n" +
+				"      ?CC lns:hasSession ?Session .\n" +
+				"      ?CC lns:hasEstablished ?DecisionsTO .\n" +
+				"      ?DecisionsTO rdfs:subClassOf <lns:Decisions+on+Compliance+Abbaubarkeit> .\n" +
+				"      ?DecisionsTO rdfs:label ?Decisions .\n" +
+				"      Filter regex(?Decisions, \"UC Biotische Abbaubarkeit\")\n" +
+				"      \n" +
+				"      OPTIONAL {\n" +
+				"      SELECT (GROUP_CONCAT(?Reason ; separator = \"\\n\") AS ?Reasons) WHERE {        \n" +
+				"        ?CC lns:hasEstablished ?ReasonsTO .\n" +
+				"        ?ReasonsTO rdfs:subClassOf <lns:Decisions+on+Compliance+Abbaubarkeit> .\n" +
+				"        ?ReasonsTO rdfs:label ?Reason .\n" +
+				"        Filter regex(?Reason, \"UCBA\")\n" +
+				"        }\n" +
+				"        ORDER BY ?Reason\n" +
+				"      }\n" +
+				"            \n" +
+				"      OPTIONAL {\n" +
+				"         ?Session lns:hasFact ?Fact4 .\n" +
+				"         ?Fact4 lns:hasTerminologyObject <lns:UCBA1> .\n" +
+				"         ?Fact4 lns:hasValue ?1 .\n" +
+				"        }\n" +
+				"\n" +
+				"   \n" +
+				"        \n" +
+				"      OPTIONAL {\n" +
+				"         ?Session lns:hasFact ?Fact7 .\n" +
+				"         ?Fact7 lns:hasTerminologyObject <lns:UCBA4> .\n" +
+				"         ?Fact7 lns:hasValue ?4 .\n" +
+				"        }\n" +
+				"\n" +
+				"      OPTIONAL {\n" +
+				"    \t?CC lns:hasMemo ?MemoId5 .\n" +
+				"    \t?MemoId5 lns:hasFact ?Fact5x .\n" +
+				"    \t?Fact5x lns:hasQuestion <lns:UCBA5> .\n" +
+				"        ?MemoId5 lns:hasContent ?M5 .\n" +
+				"       }\n" +
+				"        \n" +
+				"      OPTIONAL {\n" +
+				"         ?Session lns:hasFact ?Fact9 .\n" +
+				"         ?Fact9 lns:hasTerminologyObject <lns:UCBA6> .\n" +
+				"         ?Fact9 lns:hasValue ?6 .\n" +
+				"        }\n" +
+				"\n" +
+				"      OPTIONAL {\n" +
+				"    \t?CC lns:hasMemo ?MemoId6 .\n" +
+				"    \t?MemoId6 lns:hasFact ?Fact6x .\n" +
+				"    \t?Fact6x lns:hasQuestion <lns:UCBA6> .\n" +
+				"        ?MemoId6 lns:hasContent ?M6 .\n" +
+				"       }\n" +
+				"        \n" +
+				"      OPTIONAL {\n" +
+				"         ?Session lns:hasFact ?Fact10 .\n" +
+				"         ?Fact10 lns:hasTerminologyObject <lns:UCBA7> .\n" +
+				"         ?Fact10 lns:hasValue ?7 .\n" +
+				"        }\n" +
+				"\n" +
+				"\n" +
+				"                \n" +
+				"      OPTIONAL {\n" +
+				"         ?Session lns:hasFact ?Fact12 .\n" +
+				"         ?Fact12 lns:hasTerminologyObject <lns:UCBA9> .\n" +
+				"         ?Fact12 lns:hasValue ?9 .\n" +
+				"        }\n" +
+				"\n" +
+				"\n" +
+				"\n" +
+				"          \n" +
+				"      OPTIONAL {\n" +
+				"         SELECT (GROUP_CONCAT(?Memo ; separator = \"\\n\") AS ?Memos) WHERE {\n" +
+				"         ?CC lns:hasMemo ?MemoId .\n" +
+				"         ?MemoId lns:hasTitle ?Titel .\n" +
+				"         Filter regex(?Titel, \"BioDeg\")\n" +
+				"         ?MemoId lns:hasContent ?Memo .\n" +
+				"         }\n" +
+				"         ORDER BY ?Memo\n" +
+				"        }         \n" +
+				"      }    \n" +
+				"\n" +
+				"GROUP BY ?BfR ?CC ?Dossier ?EC ?Name ?Decisions ?Reasons ?1 ?M1 ?2 ?M2 ?3 ?M3 ?4 ?M4 ?5 ?M5 ?6 ?M6 ?7 ?M7 ?8 ?M8 ?9 ?M9 ?10 ?M10 ?11 ?M11 ?Memos\n" +
+				"ORDER BY ?BfR\n" +
+				"  \n" +
+				"@timeout: 120s\n" +
+				"%\n";
+
+		String expectedSparql = "%%Sparql\n" +
+				"SELECT ?BfR ?CC ?Dossier ?EC ?Name ?Decisions ?Reasons ?1 ?M1 ?2 ?M2 ?3 ?M3 ?4 ?M4 ?5 ?M5 ?6 ?M6 ?7 ?M7 ?8 ?M8 ?9 ?M9 ?10 ?M10 ?11 ?M11 ?Memos\n" +
+				"WHERE {\n" +
+				"\t?CC rdf:type <lns:Compliance+Check> .\n" +
+				"\tOPTIONAL { ?CC <lns:hasDossier+UUID> ?Dossier }\n" +
+				"\tOPTIONAL { ?CC <lns:hasFirstEC+Number> ?EC }\n" +
+				"\tOPTIONAL { ?CC <lns:hasFirstSubstance+Name> ?Name }\n" +
+				"\tOPTIONAL { ?CC <lns:hasFirstBfR-Nummer> ?BfR }\n" +
+				"\t\n" +
+				"\t?CC lns:hasSession ?Session .\n" +
+				"\t?CC lns:hasEstablished ?DecisionsTO .\n" +
+				"\t?DecisionsTO rdfs:subClassOf <lns:Decisions+on+Compliance+Abbaubarkeit> .\n" +
+				"\t?DecisionsTO rdfs:label ?Decisions .\n" +
+				"\tFilter regex(?Decisions, \"UC Biotische Abbaubarkeit\" )\n" +
+				"\t\n" +
+				"\tOPTIONAL {\n" +
+				"\t\tSELECT (GROUP_CONCAT(?Reason ; separator = \"\\n\" ) AS ?Reasons)\n" +
+				"\t\tWHERE {\n" +
+				"\t\t\t?CC lns:hasEstablished ?ReasonsTO .\n" +
+				"\t\t\t?ReasonsTO rdfs:subClassOf <lns:Decisions+on+Compliance+Abbaubarkeit> .\n" +
+				"\t\t\t?ReasonsTO rdfs:label ?Reason .\n" +
+				"\t\t\tFilter regex(?Reason, \"UCBA\" )\n" +
+				"\t\t}\n" +
+				"\t\tORDER BY ?Reason\n" +
+				"\t}\n" +
+				"\t\n" +
+				"\tOPTIONAL {\n" +
+				"\t\t?Session lns:hasFact ?Fact4 .\n" +
+				"\t\t?Fact4 lns:hasTerminologyObject <lns:UCBA1> .\n" +
+				"\t\t?Fact4 lns:hasValue ?1 .\n" +
+				"\t}\n" +
+				"\t\n" +
+				"\tOPTIONAL {\n" +
+				"\t\t?Session lns:hasFact ?Fact7 .\n" +
+				"\t\t?Fact7 lns:hasTerminologyObject <lns:UCBA4> .\n" +
+				"\t\t?Fact7 lns:hasValue ?4 .\n" +
+				"\t}\n" +
+				"\t\n" +
+				"\tOPTIONAL {\n" +
+				"\t\t?CC lns:hasMemo ?MemoId5 .\n" +
+				"\t\t?MemoId5 lns:hasFact ?Fact5x .\n" +
+				"\t\t?Fact5x lns:hasQuestion <lns:UCBA5> .\n" +
+				"\t\t?MemoId5 lns:hasContent ?M5 .\n" +
+				"\t}\n" +
+				"\t\n" +
+				"\tOPTIONAL {\n" +
+				"\t\t?Session lns:hasFact ?Fact9 .\n" +
+				"\t\t?Fact9 lns:hasTerminologyObject <lns:UCBA6> .\n" +
+				"\t\t?Fact9 lns:hasValue ?6 .\n" +
+				"\t}\n" +
+				"\t\n" +
+				"\tOPTIONAL {\n" +
+				"\t\t?CC lns:hasMemo ?MemoId6 .\n" +
+				"\t\t?MemoId6 lns:hasFact ?Fact6x .\n" +
+				"\t\t?Fact6x lns:hasQuestion <lns:UCBA6> .\n" +
+				"\t\t?MemoId6 lns:hasContent ?M6 .\n" +
+				"\t}\n" +
+				"\t\n" +
+				"\tOPTIONAL {\n" +
+				"\t\t?Session lns:hasFact ?Fact10 .\n" +
+				"\t\t?Fact10 lns:hasTerminologyObject <lns:UCBA7> .\n" +
+				"\t\t?Fact10 lns:hasValue ?7 .\n" +
+				"\t}\n" +
+				"\t\n" +
+				"\tOPTIONAL {\n" +
+				"\t\t?Session lns:hasFact ?Fact12 .\n" +
+				"\t\t?Fact12 lns:hasTerminologyObject <lns:UCBA9> .\n" +
+				"\t\t?Fact12 lns:hasValue ?9 .\n" +
+				"\t}\n" +
+				"\t\n" +
+				"\tOPTIONAL {\n" +
+				"\t\tSELECT (GROUP_CONCAT(?Memo ; separator = \"\\n\" ) AS ?Memos)\n" +
+				"\t\tWHERE {\n" +
+				"\t\t\t?CC lns:hasMemo ?MemoId .\n" +
+				"\t\t\t?MemoId lns:hasTitle ?Titel .\n" +
+				"\t\t\tFilter regex(?Titel, \"BioDeg\" )\n" +
+				"\t\t\t?MemoId lns:hasContent ?Memo .\n" +
+				"\t\t}\n" +
+				"\t\tORDER BY ?Memo\n" +
+				"\t}\n" +
+				"}\n" +
+				"\n" +
+				"GROUP BY ?BfR ?CC ?Dossier ?EC ?Name ?Decisions ?Reasons ?1 ?M1 ?2 ?M2 ?3 ?M3 ?4 ?M4 ?5 ?M5 ?6 ?M6 ?7 ?M7 ?8 ?M8 ?9 ?M9 ?10 ?M10 ?11 ?M11 ?Memos\n" +
+				"ORDER BY ?BfR\n" +
+				"\n" +
+				"@timeout: 120s\n" +
+				"%\n";
+
+		SparqlFormatAction sparqlFormatAction = new SparqlFormatAction();
+		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql), 0).toString();
+
+		assertEquals("Compared Sparqls are not equal", expectedSparql, formattedSparql);
+	}
+
+	@Test
+	public void testIndention() {
+		String testSparql = "SELECT { asdasd WHERE }";
+
+		String expectedSparql = "SELECT { asdasd\n" +
+				"\tWHERE }";
+
+		SparqlFormatAction sparqlFormatAction = new SparqlFormatAction();
+		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql), 0).toString();
+
+		assertEquals("Compared Sparqls are not equal", expectedSparql, formattedSparql);
+	}
 }

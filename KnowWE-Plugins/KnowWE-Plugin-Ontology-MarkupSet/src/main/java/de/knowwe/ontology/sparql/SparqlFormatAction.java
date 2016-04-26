@@ -18,7 +18,7 @@ public class SparqlFormatAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 
 		String wikiText = context.getParameter("wikiText");
-		StringBuilder formattedWikiText = formatSparql(new StringBuilder(wikiText));
+		StringBuilder formattedWikiText = formatSparql(new StringBuilder(wikiText), 0);
 
 		if (context.getWriter() != null) {
 			context.setContentType("application/json; charset=UTF-8");
@@ -32,157 +32,6 @@ public class SparqlFormatAction extends AbstractAction {
 		}
 
 	}
-
-	public StringBuilder formatSparql(StringBuilder wikiText) {
-		StringBuilder tmpWikiText = wikiText;
-		boolean quoted = false;
-		int startSecelt = 0;
-		int startWhere = 0;
-		int depth = 0;
-		boolean select = false;
-		boolean where = false;
-
-		tmpWikiText = addWhitespacesBeforeAndAfterBrackets(tmpWikiText);
-		tmpWikiText = newLineAfterEachPoint(tmpWikiText);
-		tmpWikiText = removeDoubleSpaces(tmpWikiText);
-		tmpWikiText = removeFirstWhitepaceInLine(tmpWikiText);
-		tmpWikiText = removeEmptyLines(tmpWikiText);
-		tmpWikiText = addWhitespaceBeforePoints(tmpWikiText);
-
-		//Count Brackets and set Indices of Keywords
-		for (int i = 0; i < tmpWikiText.length(); i++) {
-
-			//Set quoted and !quoted
-			if ((int) tmpWikiText.charAt(i) == 34) {
-				if (!quoted) {
-					tmpWikiText = addWhitespace(tmpWikiText, i);
-					i++;
-					quoted = true;
-				} else {
-					tmpWikiText = addWhitespace(tmpWikiText, i + 1);
-					quoted = false;
-				}
-			}
-
-			//Only work on text if the current character is not quoted or the last character of the text.
-			if (!quoted && !checkLastChar(tmpWikiText, i)) {
-
-				//Indent '%' right
-				if (tmpWikiText.charAt(i) == '%') {
-					if (i > 0) {
-						if (tmpWikiText.charAt(i - 1) == '\t' || tmpWikiText.charAt(i - 1) == ' ') {
-							tmpWikiText.deleteCharAt(i - 1);
-						}
-					}
-				}
-
-				//Detect and save SELECT
-				if (tmpWikiText.toString().regionMatches(true, i, "select", 0, 6)) {
-
-					if (!select) {
-						select = true;
-						startSecelt = i;
-						tmpWikiText = checkIfKeywordIsWrongIndented(tmpWikiText, i);
-						i = i + 3;
-					} else {
-						int bracketCounter = 1;
-						boolean run = true;
-						int h = i + 2;
-						String a = "";
-						String b = "";
-						String c = "";
-
-						//Count brackets and detect start and end of the subquery.
-						while (run) {
-							//Count Brackets
-							if (tmpWikiText.charAt(h) == '{') {
-								bracketCounter++;
-							}
-							if (tmpWikiText.charAt(h) == '}') {
-
-								bracketCounter--;
-								if (bracketCounter == 0) {
-									/*Divide tmpWikiText into 3 sections. Section one contains the
-									 text before the subquery, section two contains the text of the
-									 subquery and section three contains the rest.*/
-									a = tmpWikiText.substring(0, i);
-									b = tmpWikiText.substring(i, h + 1);
-									c = tmpWikiText.substring(h + 1, tmpWikiText.length());
-
-									StringBuilder tmp = new StringBuilder(b);
-									//recursive call of formatSparql with the subquery.
-									tmp = formatSparql(tmp, depth);
-
-									StringBuilder one = new StringBuilder(a);
-									one.append(tmp);
-									i = one.length();
-									depth--;
-									one.append(c);
-									tmpWikiText = one;
-									run = false;
-								}
-							}
-							if (h == tmpWikiText.length() - 1) {
-								run = false;
-							}
-							h++;
-						}
-					}
-				}
-
-				//Detect and save WHERE
-				if (tmpWikiText.toString().regionMatches(true, i, "where", 0, 5)) {
-					if (!where) {
-						where = true;
-						tmpWikiText = checkIfKeywordIsWrongIndented(tmpWikiText, i);
-						i = i + 3;
-					}
-				}
-
-				//Detect and save ORDER BY
-				if (tmpWikiText.toString().regionMatches(true, i, "order by", 0, 8)) {
-					tmpWikiText = checkIfKeywordIsWrongIndented(tmpWikiText, i);
-				}
-
-				//Count Brackets
-				if (tmpWikiText.charAt(i) == '{') {
-					depth++;
-				}
-				if (tmpWikiText.charAt(i) == '}') {
-					depth--;
-					if (depth == 0) {
-						if (checkIFLastBracketIsInNewLine(tmpWikiText, i)) {
-							tmpWikiText = indentLastBracket(tmpWikiText, i);
-							i++;
-						}
-					}
-				}
-
-				//indent lines
-				if (tmpWikiText.charAt(i) == '\n' && !checkLastChar(tmpWikiText, i)) {
-					tmpWikiText = indent(tmpWikiText, i, depth);
-				}
-
-				//handle optionals and content
-				if (tmpWikiText.toString().regionMatches(true, i, "optional", 0, 8)) {
-					if (checkIfAttributesAreTooLong(tmpWikiText, i)) {
-						tmpWikiText = addnewLinesBeforeAndAfterBrackets(tmpWikiText, i);
-					}
-				}
-			}
-
-			//Breaks the loop if tmpWikitext has more than 9999 characters to avoid an endless loop.
-			if (i > 9999) {
-				return tmpWikiText;
-			}
-		}
-		tmpWikiText = removeAllSpacesBeforeLinebreaks(tmpWikiText);
-		tmpWikiText = removeEmptyLines(tmpWikiText);
-		tmpWikiText = removeDoubleSpaces(tmpWikiText);
-
-		return tmpWikiText;
-	}
-
 
 	public StringBuilder formatSparql(StringBuilder wikiText, int depth) {
 		StringBuilder tmpWikiText = wikiText;
@@ -285,7 +134,6 @@ public class SparqlFormatAction extends AbstractAction {
 					if (!where) {
 						where = true;
 						tmpWikiText = checkIfKeywordIsWrongIndented(tmpWikiText, i);
-						i = i + 3;
 					}
 				}
 
@@ -308,16 +156,16 @@ public class SparqlFormatAction extends AbstractAction {
 					}
 				}
 
-				//indent lines
-				if (tmpWikiText.charAt(i) == '\n' && !checkLastChar(tmpWikiText, i)) {
-					tmpWikiText = indent(tmpWikiText, i, depth);
-				}
-
 				//handle optionals and content
 				if (tmpWikiText.toString().regionMatches(true, i, "optional", 0, 8)) {
 					if (checkIfAttributesAreTooLong(tmpWikiText, i)) {
 						tmpWikiText = addnewLinesBeforeAndAfterBrackets(tmpWikiText, i);
 					}
+				}
+
+				//indent lines
+				if (tmpWikiText.charAt(i) == '\n' && !checkLastChar(tmpWikiText, i)) {
+					tmpWikiText = indent(tmpWikiText, i, depth);
 				}
 			}
 
@@ -347,13 +195,7 @@ public class SparqlFormatAction extends AbstractAction {
 
 	private boolean checkIFLastBracketIsInNewLine(StringBuilder tmpWikiText, int i) {
 
-		if (tmpWikiText.charAt(i - 1) != '\n') {
-			return true;
-		}
-		if (tmpWikiText.charAt(i - 1) != '\n' && tmpWikiText.charAt(i - 2) != '\n') {
-			return true;
-		}
-		return false;
+		return tmpWikiText.charAt(i - 1) != '\n' || tmpWikiText.charAt(i - 1) != '\n' && tmpWikiText.charAt(i - 2) != '\n';
 	}
 
 	/* This method adds new lines before the last closing bracket if they are not already existing. */
@@ -372,8 +214,7 @@ public class SparqlFormatAction extends AbstractAction {
 	private StringBuilder checkIfKeywordIsWrongIndented(StringBuilder tmpWikiText, int i) {
 
 		if (i > 0) {
-			if (tmpWikiText.charAt(i - 1) != '\n'
-					) {
+			if (tmpWikiText.charAt(i - 1) != '\n') {
 				if (tmpWikiText.charAt(i - 1) != '\t') {
 					tmpWikiText = addNewLine(tmpWikiText, i);
 				}
@@ -399,7 +240,6 @@ public class SparqlFormatAction extends AbstractAction {
 	/* Adds new lines before and after brackets if they aren't already there.*/
 	private StringBuilder addnewLinesBeforeAndAfterBrackets(StringBuilder tmpWikiText, int i) {
 
-		boolean run = true;
 		while (true) {
 			if (tmpWikiText.charAt(i) == '{') {
 
@@ -410,9 +250,7 @@ public class SparqlFormatAction extends AbstractAction {
 			if (tmpWikiText.charAt(i) == '}') {
 				if (tmpWikiText.charAt(i - 1) != '\n') {
 					tmpWikiText = addNewLine(tmpWikiText, i);
-					i++;
 				}
-				run = false;
 				return tmpWikiText;
 			}
 			i++;
@@ -463,7 +301,6 @@ public class SparqlFormatAction extends AbstractAction {
 
 		while (run) {
 			char currentChar = tmpWikiText.charAt(loopCounter);
-
 			if (currentChar == '<') {
 				masked = true;
 			}
