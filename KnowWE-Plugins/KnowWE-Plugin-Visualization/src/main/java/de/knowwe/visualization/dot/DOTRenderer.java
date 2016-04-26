@@ -131,7 +131,7 @@ public class DOTRenderer {
 
 		// printing title of graph top left of visualization
 		if(config.getTitle() != null) {
-			dotSource += "graph [label = \""+config.getTitle()+" ("+new Date()+")\", labelloc = \"t\", labeljust = \"left\", fontsize = 24];\n";
+			dotSource += "graph [label = \""+config.getTitle()+" ("+new Date()+")\", labelloc = \"t\", labeljust = \"left\", fontsize = 10];\n";
 		}
 
 		//only useful for neato, ignored for dot
