@@ -48,7 +48,7 @@ public class SparqlFormatAction extends AbstractAction {
 		tmpWikiText = removeEmptyLines(tmpWikiText);
 		tmpWikiText = addWhitespaceBeforePoints(tmpWikiText);
 
-		//Count Brackets and set Indices of Keywords
+		// Count Brackets and set Indices of Keywords.
 		for (int i = 0; i < tmpWikiText.length(); i++) {
 
 			//Set quoted and !quoted
