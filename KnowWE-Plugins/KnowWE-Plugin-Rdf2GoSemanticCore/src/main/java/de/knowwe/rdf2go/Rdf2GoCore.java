@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.lang.ref.WeakReference;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,13 +39,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 
 import info.aduna.iteration.Iterations;
@@ -126,6 +128,8 @@ public class Rdf2GoCore {
 	private static final ThreadPoolExecutor shutDownThreadPool = createThreadPool(
 			Math.max(Runtime.getRuntime().availableProcessors() - 1, 1), "KnowWE-SemanticCore-Shutdown-Thread");
 
+	private Timer sparqlTimer = new Timer("SparqlTimoutTimer", true);
+
 	public static final int DEFAULT_TIMEOUT = 15000;
 
 	private static final int DEFAULT_MAX_CACHE_SIZE = 1000000; // should be below 100 MB of cache (we count each cell)
@@ -139,7 +143,6 @@ public class Rdf2GoCore {
 	 * SPARQLs however are no problem. Therefore we use a lock that locks exclusively for writing but shared for
 	 * reading.
 	 */
-	public final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
 	private final Object statementLock = new Object();
 
@@ -275,13 +278,7 @@ public class Rdf2GoCore {
 		removeCache = new HashSet<>();
 
 		// lock probably not necessary here, just to make sure...
-		this.lock.readLock().lock();
-		try {
-			this.namespaces = getSemanticCoreNameSpaces();
-		}
-		finally {
-			this.lock.readLock().unlock();
-		}
+		this.namespaces = getSemanticCoreNameSpaces();
 		initDefaultNamespaces();
 	}
 
@@ -305,19 +302,17 @@ public class Rdf2GoCore {
 	 * @param namespace    the namespace (URL)
 	 */
 	public void addNamespace(String abbreviation, String namespace) {
-		this.lock.writeLock().lock();
-		try {
-			try (RepositoryConnection connection = semanticCore.getConnection()) {
-				connection.setNamespace(abbreviation, namespace);
+		synchronized (nsMutext) {
+			try {
+				try (RepositoryConnection connection = semanticCore.getConnection()) {
+					connection.setNamespace(abbreviation, namespace);
+				}
+				namespaces = null; // clear caches namespaces, will be get created lazy if needed
+				namespacePrefixes = null;
 			}
-			namespaces = null; // clear caches namespaces, will be get created lazy if needed
-			namespacePrefixes = null;
-		}
-		catch (RepositoryException e) {
-			e.printStackTrace();
-		}
-		finally {
-			this.lock.writeLock().unlock();
+			catch (RepositoryException e) {
+				Log.severe("Exception while adding namespace", e);
+			}
 		}
 	}
 
@@ -494,9 +489,6 @@ public class Rdf2GoCore {
 	 */
 	public void commit() {
 
-		// we need a connection without autocommit here, otherwise OWLIM dies...
-		lock.writeLock().lock();
-
 		try {
 			int removeSize = removeCache.size();
 			int insertSize = insertCache.size();
@@ -581,14 +573,13 @@ public class Rdf2GoCore {
 			insertCache = new HashSet<>();
 		}
 		catch (RepositoryException e) {
-			e.printStackTrace();
+			Log.severe("Exception while committing changes to repository", e);
 		}
 		finally {
 			// outside of commit an auto committing connection seems to be ok
 			lastModified = System.currentTimeMillis();
-			lock.writeLock().unlock();
+			EventManager.getInstance().fireEvent(new Rdf2GoCoreCommitFinishedEvent(this));
 		}
-		EventManager.getInstance().fireEvent(new Rdf2GoCoreCommitFinishedEvent(this));
 	}
 
 	public URI createBasensURI(String value) {
@@ -730,21 +721,6 @@ public class Rdf2GoCore {
 		return createURI((fullNs == null ? ns : fullNs) + Strings.encodeURL(value));
 	}
 
-	/**
-	 * Dumps the whole content of the model via System.out
-	 *
-	 * @created 05.01.2011
-	 */
-	public void dumpModel() {
-		this.lock.readLock().lock();
-		try {
-//			model.dump();
-		}
-		finally {
-			this.lock.readLock().unlock();
-		}
-	}
-
 	public String getBaseNamespace() {
 		return bns;
 	}
@@ -762,14 +738,16 @@ public class Rdf2GoCore {
 	 * <b>Example:</b> rdf -> http://www.w3.org/1999/02/22-rdf-syntax-ns#
 	 */
 	public Map<String, String> getNamespaces() {
+		Map<String, String> namespaces = this.namespaces;
 		if (namespaces == null) {
 			synchronized (nsMutext) {
-				if (namespaces == null) {
+				if (this.namespaces == null) {
 					this.namespaces = getSemanticCoreNameSpaces();
 				}
+				namespaces = this.namespaces;
 			}
 		}
-		return this.namespaces;
+		return namespaces;
 	}
 
 	private Map<String, String> getSemanticCoreNameSpaces() {
@@ -796,15 +774,16 @@ public class Rdf2GoCore {
 	 * Although this map seems trivial, it is helpful for optimization reasons.
 	 */
 	public Map<String, String> getNamespacePrefixes() {
+		Map<String, String> namespacePrefixes = this.namespacePrefixes;
 		if (namespacePrefixes == null) {
 			synchronized (nsPrefixMutex) {
-				if (namespacePrefixes == null) {
-					Map<String, String> temp = new HashMap<>();
+				if (this.namespacePrefixes == null) {
+					namespacePrefixes = new HashMap<>();
 					Map<String, String> namespaces = getSemanticCoreNameSpaces();
 					for (Entry<String, String> entry : namespaces.entrySet()) {
-						temp.put(Rdf2GoUtils.toNamespacePrefix(entry.getKey()), entry.getValue());
+						namespacePrefixes.put(Rdf2GoUtils.toNamespacePrefix(entry.getKey()), entry.getValue());
 					}
-					namespacePrefixes = temp;
+					this.namespacePrefixes = namespacePrefixes;
 				}
 			}
 		}
@@ -1087,7 +1066,7 @@ public class Rdf2GoCore {
 			synchronized (resultCache) {
 				sparqlTask = resultCache.get(completeQuery);
 				if (sparqlTask == null
-						|| (sparqlTask.isCancelled() && sparqlTask.getTimeOutMillis() != timeOutMillis)) {
+						|| (sparqlTask.isCancelled() && sparqlTask.callable.timeOutMillis != timeOutMillis)) {
 					sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, timeOutMillis, true));
 					SparqlTask previous = resultCache.put(completeQuery, sparqlTask);
 					if (previous != null) {
@@ -1130,14 +1109,11 @@ public class Rdf2GoCore {
 
 		private SparqlCallable callable;
 		private int size = 1;
+		private TimerTask timerTask;
 
 		public SparqlTask(SparqlCallable callable) {
 			super(callable);
 			this.callable = callable;
-		}
-
-		public long getTimeOutMillis() {
-			return callable.timeOutMillis;
 		}
 
 		public synchronized void setSize(int size) {
@@ -1149,10 +1125,73 @@ public class Rdf2GoCore {
 		}
 
 		@Override
+		public void run() {
+			Stopwatch stopwatch = new Stopwatch();
+			startTimeout();
+			try {
+				super.run();
+			}
+			finally {
+				cancelTimeout();
+			}
+			if (callable.cached) {
+				handleCacheSize(this);
+			}
+			if (stopwatch.getTime() > 1000 && !isCancelled()) {
+				Log.warning("SPARQL query finished after " + stopwatch.getDisplay() + ": " + getReadableQuery(callable.query, callable.type));
+			}
+		}
+
+		@Override
 		protected void set(Object o) {
 			super.set(o);
 			if (callable.cached) {
 				setSize(getResultSize(o));
+			}
+		}
+
+		/**
+		 * We normally use the build-in sesame timeout to terminate queries that are too slow. In some cases though,
+		 * these timeouts do not work as desired (probably not well implemented by underlying repos) so we use this
+		 * kill switch to make sure the query is terminated after 150% of the intended timeout.
+		 */
+		private TimerTask startTimeout() {
+			if (callable.timeOutMillis <= 0) return null;
+			WeakReference<Thread> threadRef = new WeakReference<>(Thread.currentThread());
+			long stopTimeout = callable.timeOutMillis * 2;
+			timerTask = new TimerTask() {
+				@Override
+				public void run() {
+					if (isDone()) return;
+
+					// we cancel the task
+					SparqlTask.this.cancel(true);
+
+					// if it has not died after the sleep, we kill it
+					// (not all repositories will react to cancel)
+					try {
+						Thread.sleep(Math.max(callable.timeOutMillis, 1000));
+					}
+					catch (InterruptedException ie) {
+						return;
+					}
+
+					Thread thread = threadRef.get();
+					if (thread != null && thread.isAlive()) {
+						//noinspection deprecation
+						thread.stop();
+						Log.warning("SPARQL query took more than " + Strings.getDurationVerbalization(callable.timeOutMillis)
+								+ " and was therefore canceled: " + getReadableQuery(callable.query, callable.type));
+					}
+				}
+			};
+			sparqlTimer.schedule(timerTask, stopTimeout);
+			return timerTask;
+		}
+
+		private void cancelTimeout() {
+			if (timerTask != null) {
+				timerTask.cancel();
 			}
 		}
 	}
@@ -1167,8 +1206,6 @@ public class Rdf2GoCore {
 		private final boolean cached;
 		private long timeOutMillis;
 
-		private TupleQueryResult iterator;
-
 		private SparqlCallable(String query, SparqlType type, long timeOutMillis, boolean cached) {
 			this.query = query;
 			this.type = type;
@@ -1178,10 +1215,9 @@ public class Rdf2GoCore {
 
 		@Override
 		public Object call() {
-			Stopwatch stopwatch = new Stopwatch();
-			Object result = null;
+			Object result;
 			if (type == SparqlType.CONSTRUCT) {
-				result = null; // TODO
+				result = null; // TODO?
 			}
 			else if (type == SparqlType.SELECT) {
 
@@ -1198,11 +1234,12 @@ public class Rdf2GoCore {
 					}
 				}
 				catch (QueryInterruptedException e) {
-					Log.warning("SPARQL query took more than " + Strings.getDurationVerbalization(timeOutMillis) + " and was therefore canceled: " + getReadableQuery());
+					Log.warning("SPARQL query took more than " + Strings.getDurationVerbalization(timeOutMillis)
+							+ " and was therefore canceled: " + getReadableQuery(query, type));
 					throw new RuntimeException(e);
 				}
 				catch (RepositoryException | MalformedQueryException | QueryEvaluationException e) {
-					Log.severe("Exception while executing SPARQL query: " + getReadableQuery());
+					Log.severe("Exception while executing SPARQL query: " + getReadableQuery(query, type));
 					throw new RuntimeException(e);
 				}
 
@@ -1219,29 +1256,26 @@ public class Rdf2GoCore {
 				// not need to waste cache size (e.g. in case of half done results that were aborted)
 				result = null;
 			}
-			if (stopwatch.getTime() > 1000) {
-				Log.warning("SPARQL query finished after " + stopwatch.getDisplay() + ": " + getReadableQuery());
-			}
 			return result;
 		}
 
-		private String getReadableQuery() {
-			String query = this.query.replace("\n", " ").replaceAll("\t|\\s\\s+", " ");
-			int start = -1;
-			if (type == SparqlType.ASK) {
-				start = query.toLowerCase().indexOf("ask");
-			}
-			else if (type == SparqlType.SELECT) {
-				start = query.toLowerCase().indexOf("select");
-			}
-			else if (type == SparqlType.CONSTRUCT) {
-				start = query.toLowerCase().indexOf("construct");
-			}
-			if (start == -1) start = 0;
-			final int endIndex = query.length() - start > 75 ? start + 75 : query.length();
-			return query.substring(start, endIndex) + "...";
-		}
+	}
 
+	private String getReadableQuery(String query, SparqlType type) {
+		query = query.replace("\n", " ").replaceAll("\t|\\s\\s+", " ");
+		int start = -1;
+		if (type == SparqlType.ASK) {
+			start = query.toLowerCase().indexOf("ask");
+		}
+		else if (type == SparqlType.SELECT) {
+			start = query.toLowerCase().indexOf("select");
+		}
+		else if (type == SparqlType.CONSTRUCT) {
+			start = query.toLowerCase().indexOf("construct");
+		}
+		if (start == -1) start = 0;
+		final int endIndex = query.length() - start > 75 ? start + 75 : query.length();
+		return query.substring(start, endIndex) + "...";
 	}
 
 	public String prependPrefixesToQuery(String query) {
@@ -1330,15 +1364,11 @@ public class Rdf2GoCore {
 	 * @created 28.07.2014
 	 */
 	public void writeModel(Writer out, RDFFormat syntax) throws IOException {
-		this.lock.readLock().lock();
 		try {
 			semanticCore.export(out, syntax);
 		}
 		catch (RepositoryException | RDFHandlerException e) {
-			e.printStackTrace();
-		}
-		finally {
-			this.lock.readLock().unlock();
+			throw new IOException(e);
 		}
 	}
 
@@ -1352,15 +1382,11 @@ public class Rdf2GoCore {
 	 * @created 28.07.2014
 	 */
 	public void writeModel(OutputStream out, RDFFormat syntax) throws IOException {
-		this.lock.readLock().lock();
 		try {
 			semanticCore.export(out, syntax);
 		}
 		catch (RepositoryException | RDFHandlerException e) {
-			e.printStackTrace();
-		}
-		finally {
-			this.lock.readLock().unlock();
+			throw new IOException(e);
 		}
 	}
 
