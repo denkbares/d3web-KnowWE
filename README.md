@@ -2,7 +2,7 @@ KnowWE
 ======
 
 KnowWE is a Semantic Wiki that provides the possibility to define and maintain ontologies together with strong problem-solving knowledge.
-Ontologies can be formulated using the RDF(S) or OWL standard: RDF(S) can be included by using the turtle markup, whereas the markup for OWL uses the Manchester syntax.
+Ontologies can be formulated using the RDF(S) or OWL standard: they can be included by using the turtle markup.
 Additionally, KnowWE provides markups for the formalization of the strong problem-solving methods of [d3web](https://github.com/denkbares/d3web-Runtime).
 
 Getting started
